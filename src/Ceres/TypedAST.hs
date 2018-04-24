@@ -43,3 +43,41 @@ data PrimVal t where
 
 data Record (cls :: Symbol) (prop :: [Symbol])
 
+-- data ObjType = ObjType
+--   { attrs :: [Attr]
+--   }
+
+-- data Attr = Attr
+--   { name :: Text
+--   , typ :: Typ
+--   }
+
+-- data Typ =
+--   ObjTypeT ObjType |
+--   FunTypeT ObjType Typ |
+--   NumT |
+--   BoolT |
+--   StrT |
+--   NatT
+
+data ObjType = ObjType
+  { attrs :: [Attr]
+  -- constraints ::
+  } deriving (Show, Eq)
+
+data Attr = Attr
+  { name :: Text
+  , typ :: Typ
+  } deriving (Show, Eq)
+
+data Typ =
+  ObjTypeT ObjType |
+  FunTypeT ObjType Typ |
+  UnionT [Typ] |
+  LabelT Text |
+  TypT |
+  NumT |
+  BoolT |
+  StrT |
+  NatT
+  deriving (Show, Eq)

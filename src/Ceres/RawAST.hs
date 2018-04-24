@@ -22,31 +22,47 @@ import Text.Megaparsec (SourcePos)
 --   } deriving (Show)
 
 newtype Identifier = Identifier Text
+  deriving (Show)
 
 data Expr =
   LitE SourcePos Literal |
   IdentE SourcePos Identifier |
-  TypeE SourcePos TypeExpr |
-  ObjE SourcePos ObjExpr
+  -- TypeE SourcePos TypeExpr |
+  ObjE SourcePos ObjExpr |
+  BinOpE BinOp Expr Expr
+  deriving (Show)
+
+data BinOp = Add | Sub | Mult | Div | Or | And | Eq | Gte | Gt | Lte | Lt
+  deriving (Show)
+
 
 data Literal =
   NumLit Double |
+  IntLit Integer |
   BoolLit Bool |
   StrLit Text
+  deriving (Show)
 
 data ObjExpr = ObjExpr
   { fields :: [FieldExpr]
-  , objCopyId :: Maybe Identifier
+  -- , objCopyId :: Maybe Identifier
   }
+  deriving (Show)
 
 data FieldExpr =
-  FieldAssignExpr SourcePos Identifier (Maybe TypeExpr) Expr |
-  FieldCopyExpr SourcePos Identifier
+  FieldExpr SourcePos Identifier (Maybe TypeExpr) (Maybe Expr) |
+  FunExpr SourcePos Identifier ObjExpr TypeExpr (Maybe Expr)
+  deriving (Show)
+  -- FieldAssignExpr SourcePos Identifier (Maybe TypeExpr) Expr |
+  -- FieldCopyExpr SourcePos Identifier
+  -- deriving (Show)
 
-data TypeExpr =
-  PrimTE SourcePos PrimType
+data TypeExpr = TypeExpr Identifier
+  -- PrimTE SourcePos PrimType
+  deriving (Show)
 
 data PrimType = NumT | BoolT | StrT | NatT
+  deriving (Show)
 
 data ObjTypeDef = ObjTypeDef
   { fields :: [FieldDef] }

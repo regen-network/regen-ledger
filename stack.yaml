@@ -9,5 +9,5 @@ extra-deps:
 - dotgen-0.4.2
 - fgl-visualize-0.1.0.1
 nix:
-  enable: true
+  # enable: true
   packages: [z3]

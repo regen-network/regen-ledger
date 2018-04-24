@@ -25,6 +25,7 @@ dependencies:
 - megaparsec
 - haskell-lsp
 - hslua
+- text
 
 default-extensions:
   - NoImplicitPrelude
