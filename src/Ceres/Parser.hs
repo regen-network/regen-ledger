@@ -52,7 +52,7 @@ expr =
   try opParser <|>
   try (LitE <$> getPosition <*> literal) <|>
   IdentE <$> getPosition <*> identifier  <|>
-  ObjE <$> getPosition <*> objExpr <|>
+  ObjE <$> getPosition <*> objExpr
   where
     opParser = makeExprParser expr
       [ [binary "*" Mult, binary "/" Div] 

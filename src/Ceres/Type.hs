@@ -16,15 +16,21 @@ data Typ = Typ
   { objType :: Maybe ObjConstraint
   , canBeNone :: Bool
   , canBeString :: Bool
-  , stringConstraint Maybe (StringConstraint Bool)
+  , stringConstraint :: Maybe (StringConstraint Bool)
   , canBeIRI :: Bool
-  , iriConstraint Maybe (IRIConstraint Bool)
+  , iriConstraint :: Maybe (IRIConstraint Bool)
   , canBeInt :: Bool
   , intConstraint :: Maybe (IntConstraint Bool)
   , canBeDouble :: Bool
   , doubleConstraint :: Maybe (DoubleConstraint Bool)
   , setType :: Maybe Typ
+  , functionType :: Maybe FunctionType
   -- TODO dependent terms
+  }
+
+data FunctionType = FunctionType
+  { args :: ObjConstraint
+  , ret :: Typ
   }
 
 data IntConstraint a where
@@ -56,9 +62,9 @@ data DoubleConstraint a where
   Or_D :: DoubleConstraint Bool -> DoubleConstraint Bool -> DoubleConstraint Bool
 
 data IRIConstraint a where
-  And_I :: IRIConstraint Bool -> IRIConstraint Bool -> IRIConstraint Bool
-  Or_I :: IRIConstraint Bool -> IRIConstraint Bool -> IRIConstraint Bool
-  Eq_I :: Text -> IRIConstraint Bool
+  And_IRI :: IRIConstraint Bool -> IRIConstraint Bool -> IRIConstraint Bool
+  Or_IRI :: IRIConstraint Bool -> IRIConstraint Bool -> IRIConstraint Bool
+  Eq_IRI :: Text -> IRIConstraint Bool
   RefersToType :: Typ -> IRIConstraint Bool
 
 data StringConstraint a where

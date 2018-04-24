@@ -22,10 +22,12 @@ description:         Please see the README on Github at <https://github.com/gith
 dependencies:
 - base
 - classy-prelude
-- megaparsec
+- data-default
 - haskell-lsp
 - hslua
+- megaparsec
 - text
+- type-fun
 
 default-extensions:
   - NoImplicitPrelude
@@ -52,6 +54,12 @@ default-extensions:
 
 library:
   source-dirs: src
+  ghc-options:
+    - -Wall
+    - -Wcompat
+    - -Wincomplete-record-updates
+    - -Wincomplete-uni-patterns 
+    - -Wredundant-constraints 
 
 executables:
   xrn-exe:

@@ -11,4 +11,5 @@ data Value =
   IRI_V Text |
   ObjV (HashMap Text Value) |
   SetV (Set Value)
+  -- FunV 
   deriving (Show, Eq)

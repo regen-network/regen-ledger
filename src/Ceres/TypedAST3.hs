@@ -1,5 +1,5 @@
 {-# LANGUAGE TypeInType #-}
-module Ceres.TypedAST2 where
+module Ceres.TypedAST3 where
 
 import XRN.Prelude
 
