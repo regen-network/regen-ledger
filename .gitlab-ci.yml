@@ -1,4 +1,4 @@
-image: fpco/stack-build:11.6
+image: fpco/stack-build:lts-11.6
 
 build:
    script:
