@@ -1,0 +1,5 @@
+image: fpco/stack-build:11.6
+
+build:
+   script:
+     - stack build
