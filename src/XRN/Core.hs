@@ -35,3 +35,6 @@ data Query t where
 
 
 class Monad m => MonadTx m where
+
+main :: IO ()
+main = pure ()

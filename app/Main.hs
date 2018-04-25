@@ -1,6 +1,5 @@
-module Main where
+module Main
+  (module XRN.Core)
+where
 
-import XRN.Prelude
-
-main :: IO ()
-main = pure ()
+import XRN.Core

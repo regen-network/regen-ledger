@@ -64,7 +64,7 @@ library:
     - -Wredundant-constraints 
 
 executables:
-  xrn-exe:
+  xrn:
     main:                Main.hs
     source-dirs:         app
     ghc-options:

@@ -1,5 +1,5 @@
 {-# LANGUAGE TypeInType #-}
-module Ceres.TypedAST4 where
+module Ceres.Core where
 
 import XRN.Prelude hiding (Type)
 import qualified Data.Text as T

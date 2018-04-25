@@ -1,5 +1,19 @@
 image: fpco/stack-build:lts-11.6
 
+cache:
+  paths:
+    - .stack-work
+
 build:
-   script:
+  script:
      - stack build
+
+test:
+  script:
+     - stack test
+
+# deploy:
+#   script:
+#     - stack install
+#   only:
+#     - master
