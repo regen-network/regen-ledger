@@ -26,6 +26,7 @@ dependencies:
 - haskell-lsp
 - hslua
 - megaparsec
+- mtl
 - text
 - type-fun
 
@@ -51,6 +52,7 @@ default-extensions:
   - NamedFieldPuns
   - PatternGuards
   - PolyKinds
+  - DeriveGeneric
 
 library:
   source-dirs: src
