@@ -20,18 +20,29 @@ extra-source-files:
 description:         Please see the README on Github at <https://github.com/githubuser/xrn#readme>
 
 dependencies:
+# - haskell-abci
+- aeson
 - base
 - classy-prelude
 - data-default
-# - haskell-abci
 - haskell-lsp
+- hslogger
 - hslua
+- language-ecmascript
+- lens
 - megaparsec
 - mtl
 - optparse-applicative
+- prettyprinter
 - simple-smt
+- sourcemap
+- stm
+- string-conversions
 - text
 - type-fun
+- unordered-containers
+- vector
+- yi-rope
 
 default-extensions:
   - NoImplicitPrelude
@@ -56,6 +67,7 @@ default-extensions:
   - PatternGuards
   - PolyKinds
   - DeriveGeneric
+  - MultiWayIf
 
 library:
   source-dirs: src
@@ -69,7 +81,17 @@ library:
 executables:
   xrn:
     main:                Main.hs
-    source-dirs:         app
+    source-dirs:         app/xrn
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - xrn
+
+  ceres:
+    main:                Main.hs
+    source-dirs:         app/ceres
     ghc-options:
     - -threaded
     - -rtsopts

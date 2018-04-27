@@ -3,6 +3,8 @@ module Ceres.Core where
 
 import XRN.Prelude hiding (Type)
 import qualified Data.Text as T
+import Text.Megaparsec (SourcePos(..))
+import Ceres.Loc
 import qualified Ceres.SMT as SMT
 
 newtype IRI = IRI Text
@@ -67,13 +69,13 @@ lteInt :: Name
 lteInt = ceres "<="
 
 data Term where
-  LiteralT :: Literal -> Term
-  TypeT :: Type -> Term
-  VarT :: Name -> Term
-  ObjT :: ObjTerm -> Term
-  SetT :: [Term] -> Term
-  AppT :: Term -> ObjTerm -> Term
-  CaseT :: [(Term, Term)] -> (Maybe Term) -> Term
+  LiteralT :: Loc -> Literal -> Term
+  -- TypeT :: Type -> Term
+  VarT :: Loc -> Name -> Term
+  ObjT :: Loc -> ObjTerm -> Term
+  SetT :: Loc -> [Term] -> Term
+  AppT :: Loc -> Term -> ObjTerm -> Term
+  CaseT :: Loc -> [(Term, Term)] -> (Maybe Term) -> Term
   -- ForeignT :: proxy a -> Ptr a -> OpaqueType -> Term
   deriving (Eq, Generic)
 
@@ -85,7 +87,8 @@ data ObjTerm = ObjTerm [ObjBinding]
 instance Hashable ObjTerm
 
 data ObjBinding = ObjBinding
-  { name :: Text
+  { loc :: Loc
+  , name :: Text
   , typ :: Maybe Term
   , value :: Term
   } deriving (Eq, Generic)
@@ -336,7 +339,7 @@ binFnTy' ty ret = def
     allowOne $ def
     { args = def { localAttrs = mapFromList [("x", ty), ("y", ty)] }
     , ret
-    , termination = Bounded (LiteralT (IntC 1))
+    , termination = Bounded (LiteralT Internal (IntC 1))
     }
   }
 
@@ -357,12 +360,12 @@ type TC = ExceptT TypeError (ReaderT () IO)
 
 checkType :: Env -> Term -> Type -> TC (Term, Type)
 checkType env term typ@Type{..}
-  | LiteralT None <- term, canBeNone = pure (term, noneT)
-  | LiteralT (BoolC _) <- term, canBeBool = pure (term, boolT)
-  | LiteralT (IntC _) <- term, AllowAny <- intConstraints = pure (term, intT)
-  | LiteralT (DoubleC _) <- term, AllowAny <- doubleConstraints = pure (term, doubleT)
-  | LiteralT (StringC _) <- term, AllowAny <- stringConstraints = pure (term, stringT)
-  | LiteralT (IRI_C _) <- term, AllowAny <- iriConstraints = pure (term, iriT)
+  | LiteralT _ None <- term, canBeNone = pure (term, noneT)
+  | LiteralT _ (BoolC _) <- term, canBeBool = pure (term, boolT)
+  | LiteralT _ (IntC _) <- term, AllowAny <- intConstraints = pure (term, intT)
+  | LiteralT _ (DoubleC _) <- term, AllowAny <- doubleConstraints = pure (term, doubleT)
+  | LiteralT _ (StringC _) <- term, AllowAny <- stringConstraints = pure (term, stringT)
+  | LiteralT _ (IRI_C _) <- term, AllowAny <- iriConstraints = pure (term, iriT)
   -- | VarT name <- term =
   --     case lookup name env of
   --       Just (term',typ') -> checkType env term' typ
@@ -371,13 +374,13 @@ checkType env term typ@Type{..}
 
 inferType :: Env -> Term -> TC Type
 inferType env term
-  | LiteralT None <- term = pure noneT
-  | LiteralT (BoolC _) <- term = pure boolT
-  | LiteralT (IntC _) <- term = pure intT
-  | LiteralT (DoubleC _) <- term = pure doubleT
-  | LiteralT (StringC _) <- term = pure stringT
-  | LiteralT (IRI_C _) <- term = pure iriT
-  | LiteralT (IRI_C _) <- term = pure iriT
+  | LiteralT _ None <- term = pure noneT
+  | LiteralT _ (BoolC _) <- term = pure boolT
+  | LiteralT _ (IntC _) <- term = pure intT
+  | LiteralT _ (DoubleC _) <- term = pure doubleT
+  | LiteralT _ (StringC _) <- term = pure stringT
+  | LiteralT _ (IRI_C _) <- term = pure iriT
+  | LiteralT _ (IRI_C _) <- term = pure iriT
   | otherwise = throwError $ CantInferType { term }
 
 -- | Tries to check the 'Term' as a valid 'Type' expression

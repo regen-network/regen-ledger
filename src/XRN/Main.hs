@@ -1,4 +1,4 @@
-module XRN.Core where
+module XRN.Main where
 
 import XRN.Prelude
 import GHC.TypeLits

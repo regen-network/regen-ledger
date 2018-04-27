@@ -9,3 +9,4 @@ import Data.Proxy as X (Proxy(..))
 import GHC.TypeLits as X (Nat, Symbol)
 import Data.Default as X
 import Control.Monad.Except as X (MonadError (..), ExceptT)
+import Data.String.Conversions as X hiding ((<>))

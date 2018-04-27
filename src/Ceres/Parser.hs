@@ -2,7 +2,7 @@ module Ceres.Parser where
 
 import XRN.Prelude hiding (try)
 import Ceres.RawAST
-import Text.Megaparsec (Parsec, try, between, getPosition, sepBy, optional, takeWhile1P)
+import Text.Megaparsec (Parsec, try, between, getPosition, optional, takeWhile1P)
 import qualified Text.Megaparsec as P
 import Text.Megaparsec.Char (space1, letterChar, alphaNumChar)
 import Text.Megaparsec.Expr (makeExprParser, Operator(..))
@@ -49,7 +49,7 @@ identifier = Identifier . T.pack <$> (lexeme . try) p
 
 expr :: Parser Expr
 expr =
-  try opParser <|>
+  -- try opParser <|>
   try (LitE <$> getPosition <*> literal) <|>
   IdentE <$> getPosition <*> identifier  <|>
   ObjE <$> getPosition <*> objExpr
@@ -75,6 +75,7 @@ literal =
 objExpr :: Parser ObjExpr
 objExpr = braces objExpr'
 
+objExpr' :: Parser ObjExpr
 objExpr' = ObjExpr <$> P.sepEndBy fieldExpr (symbol ";" <|> symbol ",")
 
 fieldExpr :: Parser FieldExpr
@@ -115,3 +116,5 @@ test1 :: IO ()
 test1 = do
   txt <- T.readFile "test/Test1.ceres"
   P.parseTest module_ txt
+
+-- test2 = P.parseTest expr "1"
