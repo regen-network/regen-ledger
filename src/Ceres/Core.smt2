@@ -73,6 +73,15 @@
          (is-ABool (obj_get (obj boolT) "canBeNone"))
          (not (bool (obj_get (obj boolT) "canBeNone")))))
 
+(declare-const noneT Val)
+
+(assert (and
+         (is-AnObj noneT)
+         (is-ABool (obj_get (obj noneT) "canBeBool"))
+         (not (bool (obj_get (obj noneT) "canBeBool")))
+         (is-ABool (obj_get (obj noneT) "canBeNone"))
+         (bool (obj_get (obj noneT) "canBeNone"))))
+
 (push)
 
 (assert (is-Type boolT))
@@ -113,3 +122,33 @@
 
 (pop)
 
+(push)
+
+(define-fun is-DepPair ((o0 Obj)) Bool
+  (and
+   (is-Type (obj_get o0 "a"))
+   (isa (obj_get o0 "b") (obj_get o0 "a"))))
+
+(push)
+
+(declare-const o0 Obj)
+
+(assert (is-DepPair o0))
+
+(assert (= boolT (obj_get o0 "a")))
+
+(push)
+
+(assert (= true (bool (obj_get o0 "b"))))
+
+(check-sat)
+
+(pop)
+
+(push)
+
+(assert (not (is-ABool (obj_get o0 "b"))))
+
+(check-sat)
+
+(pop)
