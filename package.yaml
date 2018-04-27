@@ -23,10 +23,13 @@ dependencies:
 - base
 - classy-prelude
 - data-default
+# - haskell-abci
 - haskell-lsp
 - hslua
 - megaparsec
 - mtl
+- optparse-applicative
+- simple-smt
 - text
 - type-fun
 

@@ -2,6 +2,7 @@ module XRN.Core where
 
 import XRN.Prelude
 import GHC.TypeLits
+import Options.Applicative
 
 data Cardinality = One | Many
 
@@ -36,5 +37,26 @@ data Query t where
 
 class Monad m => MonadTx m where
 
+data NodeOpts = NodeOpts
+  {
+  }
+
+nodeOpts :: Parser NodeOpts
+nodeOpts = pure NodeOpts {}
+
+runNode :: NodeOpts -> IO ()
+runNode opts = do
+  pure ()
+
+opts :: Parser (IO ())
+opts = subparser (
+  command "node" (info (runNode <$> nodeOpts) (progDesc "Start a node"))
+  )
+
 main :: IO ()
-main = pure ()
+main = do
+  putStrLn "Regen Ledger"
+  putStrLn ""
+  join $
+    customExecParser (prefs $ showHelpOnEmpty <> showHelpOnError <> disambiguate) $
+    info (opts <**> helper) idm
