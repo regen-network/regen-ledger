@@ -1,12 +1,9 @@
 image: fpco/stack-build:lts-11.6
 
-variables:
-  STACK_ROOT: .stack
-
 cache:
   paths:
     - .stack-work
-    - .stack
+    - "$HOME/.stack"
 
 build:
   script:
