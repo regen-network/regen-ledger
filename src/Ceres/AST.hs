@@ -1,4 +1,4 @@
-module Ceres.Syntax where
+module Ceres.AST where
 
 import XRN.Prelude
 import Text.Megaparsec (SourcePos)

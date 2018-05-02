@@ -1,7 +1,7 @@
 module Ceres.Diagnostics where
 
 import XRN.Prelude
-import Ceres.Syntax
+import Ceres.AST
 import Language.Haskell.LSP.TH.DataTypesJSON (Diagnostic(..), DiagnosticSeverity(..))
 import qualified Language.Haskell.LSP.TH.DataTypesJSON as LSP
 import qualified Text.Megaparsec as P

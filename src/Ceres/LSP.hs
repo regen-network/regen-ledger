@@ -29,10 +29,7 @@ import           Language.Haskell.LSP.VFS
 import           System.Exit
 import qualified System.Log.Logger                     as L
 import qualified Yi.Rope                               as Yi
-import Ceres.Parser (ceresModule)
-import Ceres.Diagnostics (objExprDiagnostics, parseErrorDiagnostic)
-import qualified Text.Megaparsec as P
-import qualified Data.Text.IO as T
+import qualified Ceres.Compile as Ceres
 
 
 -- ---------------------------------------------------------------------
@@ -316,16 +313,9 @@ toWorkspaceEdit _ = Nothing
 -- "textDocument/publishDiagnostics" notification
 sendDiagnostics :: J.Uri -> Text -> Maybe Int -> R () ()
 sendDiagnostics fileUri txt mversion = do
-  let mFilePath = J.uriToFilePath fileUri
-  case mFilePath of
-    Just filePath -> do
   -- reactorSend $ J.NotificationMessage "2.0" "textDocument/publishDiagnostics" (Just r)
-      let res = P.parse ceresModule filePath txt
-      let diags = case res of
-                    Right objExpr -> objExprDiagnostics objExpr
-                    Left err -> [parseErrorDiagnostic err]
-      publishDiagnostics 100 fileUri mversion (partitionBySource diags)
-    _ -> pure ()
+  let res = Ceres.compileOne Ceres.CompilerOptions {} Ceres.CompilerState {} fileUri txt
+  publishDiagnostics 100 fileUri mversion (partitionBySource (Ceres.diagnostics res))
 
 -- ---------------------------------------------------------------------
 

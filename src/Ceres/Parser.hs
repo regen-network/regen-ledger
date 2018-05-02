@@ -1,7 +1,7 @@
 module Ceres.Parser where
 
 import XRN.Prelude hiding (try)
-import Ceres.Syntax
+import Ceres.AST
 import Text.Megaparsec (Parsec, try, between, getPosition, optional, takeWhile1P)
 import qualified Text.Megaparsec as P
 import Text.Megaparsec.Char (space1, letterChar, alphaNumChar)
@@ -69,8 +69,8 @@ expr = P.withRecovery (\e -> pure $ ParseErrorE e) expr'
   where
     expr' =
       wrapRange (LitE <$> commentWS <*> literal) <|>
-      wrapRange (ObjE <$> commentWS <*> objExpr)
---   IdentE <$> getPosition <*> identifier  <|>
+      wrapRange (ObjE <$> commentWS <*> objExpr) <|>
+      wrapRange (IdentE <$> commentWS <*> identifier)
 --   where
 --     opParser = makeExprParser expr
 --       [ [binary "*" Mult, binary "/" Div] 
