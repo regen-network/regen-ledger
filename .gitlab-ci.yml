@@ -9,10 +9,12 @@ cache:
     - .stack
 
 build:
+  stage: build
   script:
      - stack build
 
 test:
+  stage: test
   script:
      - stack test
 
