@@ -153,3 +153,15 @@
 
 (pop)
 
+(declare-fun has-type (Val String) Bool)
+
+(assert (forall ((v Val))
+                (=> (has-type v "bool") (is-ABool v))))
+
+(declare-const b0 Val)
+
+(assert (has-type b0 "bool"))
+
+(assert (not (is-ABool b0)))
+
+(check-sat)

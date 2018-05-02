@@ -29,6 +29,10 @@ import           Language.Haskell.LSP.VFS
 import           System.Exit
 import qualified System.Log.Logger                     as L
 import qualified Yi.Rope                               as Yi
+import Ceres.Parser (ceresModule)
+import Ceres.Diagnostics (objExprDiagnostics, parseErrorDiagnostic)
+import qualified Text.Megaparsec as P
+import qualified Data.Text.IO as T
 
 
 -- ---------------------------------------------------------------------
@@ -177,9 +181,13 @@ reactor lf inp = do
             doc  = notification ^. J.params
                                  . J.textDocument
                                  . J.uri
+
+            txt  = notification ^. J.params
+                                 . J.textDocument
+                                 . J.text
             fileName =  J.uriToFilePath doc
         liftIO $ U.logs $ "********* fileName=" ++ show fileName
-        sendDiagnostics doc (Just 0)
+        sendDiagnostics doc txt (Just 0)
 
       -- -------------------------------
 
@@ -205,9 +213,12 @@ reactor lf inp = do
             doc  = notification ^. J.params
                                  . J.textDocument
                                  . J.uri
+            -- txt  = notification ^. J.params
+            --                      . J.textDocument
+            --                      . J.text
             fileName = J.uriToFilePath doc
         liftIO $ U.logs $ "********* fileName=" ++ show fileName
-        sendDiagnostics doc Nothing
+        -- sendDiagnostics doc txt Nothing
 
       -- -------------------------------
 
@@ -303,18 +314,18 @@ toWorkspaceEdit _ = Nothing
 
 -- | Analyze the file and send any diagnostics to the client in a
 -- "textDocument/publishDiagnostics" notification
-sendDiagnostics :: J.Uri -> Maybe Int -> R () ()
-sendDiagnostics fileUri mversion = do
-  let
-    diags = [J.Diagnostic
-              (J.Range (J.Position 0 1) (J.Position 0 5))
-              (Just J.DsWarning)  -- severity
-              Nothing  -- code
-              (Just "lsp-hello") -- source
-              "Example diagnostic message"
-            ]
+sendDiagnostics :: J.Uri -> Text -> Maybe Int -> R () ()
+sendDiagnostics fileUri txt mversion = do
+  let mFilePath = J.uriToFilePath fileUri
+  case mFilePath of
+    Just filePath -> do
   -- reactorSend $ J.NotificationMessage "2.0" "textDocument/publishDiagnostics" (Just r)
-  publishDiagnostics 100 fileUri mversion (partitionBySource diags)
+      let res = P.parse ceresModule filePath txt
+      let diags = case res of
+                    Right objExpr -> objExprDiagnostics objExpr
+                    Left err -> [parseErrorDiagnostic err]
+      publishDiagnostics 100 fileUri mversion (partitionBySource diags)
+    _ -> pure ()
 
 -- ---------------------------------------------------------------------
 

@@ -1,0 +1,23 @@
+#+TITLE: The Ceres Programming Language: Working Specification
+
+* Use Cases
+** ESP's
+** EC's
+** Frontend Apps
+** Network Servers
+* Design Goals
+** Interoperability
+** Correctness
+** Predictable Computational Complexity
+* Design Principles
+** Readability is more important than brevity
+** Explicit is better than implicit
+** Developer experience is a first-class concern
+** Long term utility is never sacrified for short term convenience
+** The pros and the cons of every feature should be considered
+** Features should follow naturally from design goals and principles
+** (Clarity is more important than convenience?)
+* High-Level Design Choices
+** Type system should have as much of the expressivity of schemas as possible
+** Ocaml-like module system
+** White-space sensitive
