@@ -1,0 +1,8 @@
+import <http://www.w3.org/ns/sosa> as sosa
+import <https://regen.network> as xrn
+
+@id = <https://example.org/observation01234>
+@type = sosa.Observation
+sosa.madeBySensor = <http://example.org/mySensor>
+sosa.resultTime = "2017-01-01T10:00:00Z"#DateTime
+xrn.hashSHA256 = 0x6b15e5dcbfd5d10249a05802ec3956f2e8f685e1cdf2553f348628c2658e51a8

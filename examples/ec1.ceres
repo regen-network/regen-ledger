@@ -1,0 +1,16 @@
+import <https://regen.network> as xrn
+import <https://regen.network/esp> as esp
+import <https://regen.network/ec> as ec
+
+@type = xrn.EC
+ec.title = "Rewards for No-Till Agriculture in the US"
+ec.currency = xrn.XRN
+ec.phases = [{
+  ec.phaseCondition =
+    allow where
+      ?espResult['esp.issuer] == <https://example.org/noTillFoundation>
+      ?espResult['esp.name] == "no-till"
+      ?espResult['esp.result] == true
+  // Commutes the reward amount in terms of total land area that passes the condition
+  ec.rewardAmount = {landArea} => landArea * 100
+}]
