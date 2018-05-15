@@ -1,0 +1,17 @@
+ESPInputDataOptions = type {
+  includeSentinel2: Num | None
+  includeLandsat8: Num | None
+}
+
+ESPInputData(opts: ESPInputDataOptions) = type {
+  sentinel2: if opts.includeSentinel2 then List(Sentinel2Image) else None
+  landsat8: if opts.includeLandsat8 then List(Landsat8Image) else None
+}
+
+type ESP = type {
+  name: String
+  title: String
+  resultType: Type
+  inputDataOptions: ESPInputDataOptions
+  algorithm(inputData: ESPInputData(inputDataOptions): resultType
+}

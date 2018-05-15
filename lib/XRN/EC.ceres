@@ -1,0 +1,13 @@
+prop currency : XRN.Currency
+
+prop rewardAmount : {landArea:?} => Num
+
+type Phase = {
+  rewardAmount
+}
+
+prop phases : List Phase
+
+type EC = {
+  currency
+}
