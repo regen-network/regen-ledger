@@ -17,7 +17,25 @@
 ** The pros and the cons of every feature should be considered
 ** Features should follow naturally from design goals and principles
 ** (Clarity is more important than convenience?)
-* High-Level Design Choices
+* Design Choices
+** Align with existing open data efforts where possible:
+*** [[http://http://www.qudt.org][QUDT Units]]
+*** [[https://www.w3.org/2017/sdwig/][Spatial Data on the Web]]
+**** [[https://www.w3.org/TR/vocab-ssn/][Semantic Sensor Network Ontology]]
+**** [[https://www.w3.org/TR/owl-time/][Time Ontology in OWL]]
+*** [[https://www.w3.org/2017/dxwg/wiki/Main_Page][Data Exchange Working Group]]
+**** [[https://w3c.github.io/dxwg/dcat/][Data Catalog Vocabulary]]
+*** [[https://www.w3.org/2017/vc/WG/][Verifiable Claims Working Group]]
+*** [[http://identity.foundation/working-groups][Decentralized Identity Foundation]]
+*** Open Data Formats/Meta-standards
+**** [[https://www.w3.org/2013/data/][W3C Data Activity]]
+**** [[https://json-ld.org/][JSON-LD]]
+**** [[https://www.w3.org/TR/shacl/][Shapes Constraint Language (SHACL)]]
+**** [[http://shex.io/][Shape Expressions (ShEx)]]
+**** [[https://www.w3.org/OWL/][Web Ontology Language (OWL)]]
+**** [[https://www.w3.org/2013/csvw/wiki/Main_Page][CSV on the Web]]
 ** Type system should have as much of the expressivity of schemas as possible
-** Ocaml-like module system
+** Namespacing/Scope Semantics
+*** We want to support the efficient construction of RDF graphs and nodes
+*** 
 ** White-space sensitive

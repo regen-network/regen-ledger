@@ -1,0 +1,3 @@
+module XRN
+
+type Currency = 'XRN | 'ATOM | 'PHOTON | 'ETH

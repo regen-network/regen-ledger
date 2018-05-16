@@ -2,7 +2,7 @@ import <https://regen.network> as xrn
 import <https://regen.network/esp> as esp
 
 @type = xrn.ESP
-xrn.org = <https://example.org/myOrg>
+xrn.org = <https://example.org/noTillFoundation>
 esp.name = "no-till"
 esp.title = "No Till Agriculture Protocol"
 esp.resultType = Boolean
