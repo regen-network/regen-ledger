@@ -8,10 +8,10 @@ ESPInputData(opts: ESPInputDataOptions) = type {
   landsat8: if opts.includeLandsat8 then List(Landsat8Image) else None
 }
 
-type ESP = type {
+ESP = type {
   name: String
   title: String
   resultType: Type
   inputDataOptions: ESPInputDataOptions
-  algorithm(inputData: ESPInputData(inputDataOptions): resultType
+  algorithm(inputData: ESPInputData(inputDataOptions)): resultType
 }
