@@ -1,0 +1,12 @@
+#+TITLE: The Ceres Programming Language (Working Specification)
+
+* Design Goals
+
+* Design Choices
+
+* The Ceres Language
+** Literals and Basic Types
+*** Integers
+
+Integer literals consist of the digits `0-9`, with an optional leading `-` sign, and hex literals prefixed with `0x`. There is one core `Int` type which is a 
+
