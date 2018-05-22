@@ -1,0 +1,89 @@
+grammar network.regen.ceres.Ceres hidden(WS, ML_COMMENT, SL_COMMENT)
+
+generate ceres "http://www.regen.network/ceres/Ceres"
+
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+
+Model:
+	decls+=Decl*;
+	
+Decl:
+	key=ID (':' type=Expr)? '=' expr=Expr ';';
+
+Expr returns Expr:
+	InfixR2;
+
+// Precedence and associativity rules are consistent with the Haskell Prelude and not C-based languages
+// meaning that '|' and '&' are right associative. Custom operator precedence and associativity
+// follow Ocaml rules where the rules are inherited from those of the first character in the custom operator. 
+
+InfixR2 returns Expr:
+	InfixR3 ({InfixR2.left=current} op=OP2 right=InfixR2)?
+;
+
+terminal OP2: '|' OP_CHARS;
+
+InfixR3 returns Expr:
+	InfixL4 ({InfixR3.left=current} op=OP3 right=InfixR3)?
+;
+
+terminal OP3: '&' OP_CHARS;
+
+InfixL4 returns Expr:
+	InfixL6 ({InfixL4.left=current} op=OP4 right=InfixL6)*
+;
+
+terminal OP4: ('==' | '<' | '>') OP_CHARS;
+
+InfixL6 returns Expr:
+	InfixL7 ({InfixL6.left=current} op=OP6 right=InfixL7)*;
+
+terminal OP6: ('+' | '-') OP_CHARS;
+
+InfixL7 returns Expr:
+	Atom ({InfixL7.left=current} op=OP7 right=Atom)*;
+
+terminal OP7: ('*' | '/' | '%') OP_CHARS;
+
+Atom returns Expr:
+	Literal |
+	'(' Expr ')' |
+	ObjExpr |
+	{VarRef} value=ID;
+	
+ObjExpr returns Expr:
+	{ObjExpr} '{'
+	   bindings+=ObjBinding*
+	'}'
+;
+
+ObjBinding:
+	key=ObjPropName (':' type=Expr)? ('=' value=Expr)? ';'
+;
+
+ObjPropName:
+	{ObjSymProp} value=SYMBOL |
+	{ObjPathProp} path+=ID ('.' path+=ID)*
+;
+	
+Literal:
+	{SymbolLit} value=SYMBOL |
+	{IntLit} value=INTEGER |
+	{StrLit} value=STRING
+;
+
+terminal OP_CHARS: ('!' | '$' | '%' | '&' | '*' | '+' | '-' | '.' | '/' | ':' | '<' | '=' | '>' | '?' | '^' | '|' | '~')*;
+
+terminal INTEGER: ('0'..'9')+;
+terminal STRING:
+			'"' ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|'"') )* '"' |
+			"'" ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|"'") )* "'"
+		;
+terminal ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
+terminal SYMBOL: '\'' ID;
+terminal ML_COMMENT : '/*' -> '*/';
+terminal SL_COMMENT : '//' !('\n'|'\r')* ('\r'? '\n')?;
+
+terminal WS         : (' '|'\t'|'\r'|'\n')+;
+terminal BEGIN: 'synthetic:BEGIN';  // increase indentation
+terminal END: 'synthetic:END';      // decrease indentation

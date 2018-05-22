@@ -1,12 +1,16 @@
 #+TITLE: The Ceres Programming Language (Working Specification)
 
 * Design Goals
-
+** Support rich, interoperable data models
+** S typingtrong
 * Design Choices
-
+** Align with the RDF data model
+** Separate compilation from type-checking
 * The Ceres Language
 ** Literals and Basic Types
 *** Integers
 
-Integer literals consist of the digits `0-9`, with an optional leading `-` sign, and hex literals prefixed with `0x`. There is one core `Int` type which is a 
+Integer literals consist of the digits `0-9`, with an optional leading `-` sign,
+and hex literals prefixed with `0x`. Integer literals are always interpreted as 
+arbitrary-precision integers, unless explicity qualified otherwise (TODO).
 

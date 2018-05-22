@@ -1,0 +1,43 @@
+{
+  "@context": {
+    "xrn":"https://regen.network/schema#",
+    "esp":"https://regen.network/schema/esp#",
+    "carbon":"https://regen.network/vocab/carbon#",
+    "qudt":"https://qudt.org/schema/qudt#",
+    "unit":"http://qudt.org/vocab/unit#",
+    "ogc":"http://www.opengis.net/ont/geosparql#",
+    "time":"http://www.w3.org/2006/time#",
+    "date":{
+        "@id":"time:inXSDDate",
+        "@type":"http://www.w3.org/2001/XMLSchema#dateTime"
+    }
+  },
+  "@id":"xrn:espResult/14FC4A0E226AAC3A92587A95C55BED2092DE1B1DAB0FCFECC1287F0F1F41FB91",
+  "@type":"esp:ESPResult",
+  "xrn:dataHash":"14FC4A0E226AAC3A92587A95C55BED2092DE1B1DAB0FCFECC1287F0F1F41FB91",
+  "xrn:org":"example-org",
+  "esp:name":"example-carbon-protocol",
+  "esp:version":"2017",
+  "xrn:location":{
+    "@type":"ogc:wktLiteral",
+    "@value":"POLYGON((-73.95802747658388 40.800367743610536,-73.98154508522646 40.76813328964698,-73.97347700050966 40.764297908207396,-73.94944440773622 40.79692408280419,-73.95802747658388 40.800367743610536))"
+  },
+  "esp:timePeriod":{
+      "@type":"time:Interval",
+      "time:hasBeginning":{
+          "@type":"time:Instant",
+          "date":"2017-01-01"
+      },
+      "time:hasEnd":{
+          "@type":"time:Instant",
+          "date":"2017-12-31"
+      }
+  },
+  "esp:result":{
+    "carbon:carbonSequestered":{
+      "qudt:quantityValue": 107.3,
+      "qudt:standardUncertainty":"3.0",
+      "qudt:unit": {"@id":"unit:MetricTon"}
+    }
+  }
+}
