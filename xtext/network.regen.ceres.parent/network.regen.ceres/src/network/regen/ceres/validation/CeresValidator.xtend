@@ -3,6 +3,8 @@
  */
 package network.regen.ceres.validation
 
+import org.eclipse.xtext.validation.Check
+import network.regen.ceres.ceres.Model
 
 /**
  * This class contains custom validation rules. 
@@ -21,5 +23,7 @@ class CeresValidator extends AbstractCeresValidator {
 //					INVALID_NAME)
 //		}
 //	}
-	
+    @Check
+    def typecheck(Model model) {
+    }
 }

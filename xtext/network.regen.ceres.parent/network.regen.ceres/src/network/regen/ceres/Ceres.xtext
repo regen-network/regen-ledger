@@ -8,7 +8,7 @@ Model:
 	decls+=Decl*;
 	
 Decl:
-	key=ID (':' type=Expr)? '=' expr=Expr ';';
+	name=ID (':' type=Expr)? '=' expr=Expr ';';
 
 Expr returns Expr:
 	InfixR2;
@@ -49,11 +49,11 @@ Atom returns Expr:
 	Literal |
 	'(' Expr ')' |
 	ObjExpr |
-	{VarRef} value=ID;
+	{VarRef} value=[ecore::EObject];
 	
 ObjExpr returns Expr:
 	{ObjExpr} '{'
-	   bindings+=ObjBinding*
+	  bindings+=ObjBinding*
 	'}'
 ;
 
@@ -62,8 +62,8 @@ ObjBinding:
 ;
 
 ObjPropName:
-	{ObjSymProp} value=SYMBOL |
-	{ObjPathProp} path+=ID ('.' path+=ID)*
+	{ObjPathProp} root=[ecore::EObject] ('.' path+=ID)* |
+	{ObjSymProp} value=SYMBOL
 ;
 	
 Literal:
@@ -80,7 +80,7 @@ terminal STRING:
 			"'" ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|"'") )* "'"
 		;
 terminal ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
-terminal SYMBOL: '\'' ID;
+terminal SYMBOL: "^" ID;
 terminal ML_COMMENT : '/*' -> '*/';
 terminal SL_COMMENT : '//' !('\n'|'\r')* ('\r'? '\n')?;
 
