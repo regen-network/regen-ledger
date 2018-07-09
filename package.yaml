@@ -70,7 +70,7 @@ default-extensions:
   - MultiWayIf
 
 library:
-  source-dirs: src
+  source-dirs: hs
   ghc-options:
     - -Wall
     - -Wcompat
