@@ -30,9 +30,10 @@ interface IAVLTree<K: Comparable<K>, V> /*: Map<K, V>*/ {
     fun containsKey(key: K): Boolean
     val size: Long
     fun isEmpty(): Boolean
+    val root: IAVLNode<K, V>?
 }
 
-class SimpleAVLTree<K: Comparable<K>, V>(val root: IAVLNode<K, V>? = null): IAVLTree<K, V> {
+class SimpleAVLTree<K: Comparable<K>, V>(override val root: IAVLNode<K, V>? = null): IAVLTree<K, V> {
     override val size: Long
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 

@@ -10,3 +10,4 @@ pluginManagement {
 rootProject.name = 'regen-network'
 
 include 'ceres-base'
+include 'ceres-base-jvm'
