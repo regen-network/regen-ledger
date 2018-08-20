@@ -1,5 +1,5 @@
 plugins {
-    id 'kotlin-platform-common' version '1.2.60'
+    id 'kotlin-platform-common' version '1.2.61'
 }
 
 group 'regen-network'

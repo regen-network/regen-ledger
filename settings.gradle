@@ -7,5 +7,6 @@ pluginManagement {
         }
     }
 }
-rootProject.name = 'ceres-base'
+rootProject.name = 'regen-network'
 
+include 'ceres-base'
