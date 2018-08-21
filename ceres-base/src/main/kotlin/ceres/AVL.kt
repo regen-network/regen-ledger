@@ -46,6 +46,19 @@ interface IAVLTree<K: Comparable<K>, V> /*: Map<K, V>*/ {
     val root: IAVLNode<K, V>?
 }
 
+interface IAVLSet<K: Comparable<K>> {
+    suspend fun contains(key: K): Boolean
+    suspend fun add(key: K): IAVLSet<K>
+}
+
+data class AVLSet<K: Comparable<K>>(val tree: IAVLTree<K, Unit>): IAVLSet<K> {
+    override suspend fun contains(key: K): Boolean = tree.containsKey(key)
+
+    override suspend fun add(key: K): IAVLSet<K> =
+            AVLSet(tree.set(key, Unit))
+
+}
+
 class SimpleAVLTree<K: Comparable<K>, V> (override val root: IAVLNode<K, V>? = null): IAVLTree<K, V> {
     override val size: Long
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.

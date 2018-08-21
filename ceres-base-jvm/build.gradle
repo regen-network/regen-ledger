@@ -3,13 +3,22 @@ apply plugin: 'kotlin-platform-jvm'
 group 'network.regen'
 version '1.0-SNAPSHOT'
 
+repositories {
+    maven {
+        url  "https://dl.bintray.com/terl/lazysodium-maven"
+    }
+}
+
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile "com.goterl.lazycode:lazysodium-java:3.3.0"
+    compile "net.java.dev.jna:jna:4.5.2"
     testCompile "junit:junit:4.12"
     testCompile "org.jetbrains.kotlin:kotlin-test"
     testCompile "org.jetbrains.kotlin:kotlin-test-junit"
     expectedBy project(":ceres-base")
 }
+
 
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
