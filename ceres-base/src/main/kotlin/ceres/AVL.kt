@@ -1,5 +1,6 @@
 package ceres.AVL
 
+import ceres.util.reduceAcc
 import kotlin.math.max
 
 interface IAVLNode<K: Comparable<K>, V> {
@@ -25,15 +26,27 @@ fun <K:Comparable<K>, V> makeSimpleAVLNode(key: K, value: V, left: IAVLNode<K, V
 
 interface IAVLTree<K: Comparable<K>, V> /*: Map<K, V>*/ {
     fun set(key: K, value: V): IAVLTree<K, V>
+
+    fun setMany(pairs: Sequence<Pair<K, V>>): IAVLTree<K, V> =
+        pairs.reduceAcc(this, {acc, elem -> acc.set(elem.first, elem.second)})
+
+    fun setMany(pairs: Iterable<Pair<K, V>>): IAVLTree<K, V> =
+            pairs.reduceAcc(this, {acc, elem -> acc.set(elem.first, elem.second)})
+
     fun get(key: K): V?
+
     fun delete(key: K): IAVLTree<K, V>
+
     fun containsKey(key: K): Boolean
+
     val size: Long
+
     fun isEmpty(): Boolean
+
     val root: IAVLNode<K, V>?
 }
 
-class SimpleAVLTree<K: Comparable<K>, V>(override val root: IAVLNode<K, V>? = null): IAVLTree<K, V> {
+class SimpleAVLTree<K: Comparable<K>, V> (override val root: IAVLNode<K, V>? = null): IAVLTree<K, V> {
     override val size: Long
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 
@@ -127,4 +140,4 @@ fun <K: Comparable<K>, V> balance(key: K, value: V, left: IAVLNode<K,V>?, right:
 }
 
 fun <K: Comparable<K>, V> IAVLNode<K, V>?.calcHeight() : Int =
-        if(this == null) 0 else max(this.left.calcHeight(), this.right.calcHeight())
+        if(this == null) 0 else max(this.left.calcHeight(), this.right.calcHeight()) + 1

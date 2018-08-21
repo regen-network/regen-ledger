@@ -1,7 +1,7 @@
 package ceres.AVL
 
-import kotlin.coroutines.experimental.buildSequence
 import kotlin.math.abs
+import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -26,28 +26,35 @@ fun <T: Comparable<T>> IAVLNode<T, T>?.allValues(): Sequence<T> {
 }
 
 fun <T: Comparable<T>> assertAllValuesInOrder(values: Iterable<T>, tree: IAVLTree<T, T>) {
-    assertEquals(values.toList(), tree.root.allValues().toList())
+    val treeValues = tree.root.allValues().toList()
+    //println("treeValues:${treeValues}")
+    assertEquals(values.toList(), treeValues)
 }
 
-fun <T: Comparable<T>> assertIsBalanced(node: IAVLNode<T, T>) {
-    assertEquals(node.height, node.calcHeight())
-    val diff = node.left.nodeHeight - node.right.nodeHeight
+fun <T: Comparable<T>, V> IAVLNode<T, V>.assertIsBalanced() {
+    assertEquals(height, calcHeight())
+    val diff = left.nodeHeight - right.nodeHeight
     assertTrue(abs(diff) <= 1)
+    left?.assertIsBalanced()
+    right?.assertIsBalanced()
 }
 
 fun <T: Comparable<T>> assertWellBehaved(expected: Iterable<T>, tree: IAVLTree<T, T>) {
     assertAllValuesPresent(expected, tree)
     assertAllValuesInOrder(expected, tree)
-    val root = tree.root
-    if(root != null)
-        assertIsBalanced(root)
+    tree.root?.assertIsBalanced()
 }
 
+fun <T: Comparable<T>> makeTreeSet(values: Iterable<T>) = SimpleAVLTree<T, T>().setMany(values.map { it to it })
+
+fun <T: Comparable<T>> testTree(values: Iterable<T>) = assertWellBehaved(values, makeTreeSet(values))
 
 class AVLTest {
     @Test fun test() {
         for(i in 1..100) {
-            Random.next()
+            val values = generateSequence { Random.nextDouble() }.take(100).sorted().toList()
+            //println("values:${values}")
+            testTree(values.toList())
         }
     }
 }
