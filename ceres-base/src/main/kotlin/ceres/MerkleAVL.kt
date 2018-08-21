@@ -2,14 +2,17 @@ package ceres.avl
 
 import ceres.AVL.IAVLNode
 import ceres.crypto.LibSodium
+import ceres.storage.IKVStore
 
 interface IMerkleAVLNode<K: Comparable<K>, V>: IAVLNode<K, V> {
     val hash: ByteArray
 }
 
+data class MerkleAVLContext<K, V, S>(val keySerializer: Serializer<K, S>, val valueSerializer: Serializer<V, S>)
+
 data class MerkleAVLNode<K: Comparable<K>, V>(
         override val key: K, override val value: V, override val left: IMerkleAVLNode<K, V>?, override val right: IMerkleAVLNode<K, V>?,
-        override val height: Int, override val rank: Long, val context: MerkleAVLContext<K, V>): IMerkleAVLNode<K, V> {
+        override val height: Int, override val rank: Long, val context: MerkleAVLContext<K, V, *>): IMerkleAVLNode<K, V> {
 
     override fun setValue(value: V): IAVLNode<K, V> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -35,16 +38,11 @@ data class MerkleAVLNode<K: Comparable<K>, V>(
     }
 }
 
-interface IKVStore {
-    suspend fun get(key: ByteArray): ByteArray?
-    suspend fun set(key: ByteArray, value: ByteArray)
-    suspend fun delete(key: ByteArray)
-}
 
-data class StoredMerkleAVLContext<K, V>(val keySerializer: Serializer<K>, val valueSerializer: Serializer<V>, val kvStore: IKVStore)
+data class StoredMerkleAVLContext<K, V, S>(val keySerializer: Serializer<K, S>, val valueSerializer: Serializer<V, S>, val kvStore: IKVStore<S, S>)
 
-data class StoredMerkleAVLNode<K: Comparable<K>, V>(val hash: ByteArray, val context: StoredMerkleAVLContext<K, V>) {
-    data class StoredData(val bytes: ByteArray) {
+data class StoredMerkleAVLNode<K: Comparable<K>, V, S>(val id: S, val context: StoredMerkleAVLContext<K, V, S>) {
+    inner class StoredData(val data: S) {
 
     }
 
@@ -53,7 +51,7 @@ data class StoredMerkleAVLNode<K: Comparable<K>, V>(val hash: ByteArray, val con
     suspend fun getStoredData(): StoredData? {
         if(storedData != null)
             return storedData
-        val v = context.kvStore.get(hash)
+        val v = context.kvStore.get(id)
         if(v == null)
             throw IllegalStateException()
         storedData = StoredData(v)
@@ -62,9 +60,8 @@ data class StoredMerkleAVLNode<K: Comparable<K>, V>(val hash: ByteArray, val con
 
 }
 
-interface Serializer<T> {
+interface Serializer<T, S> {
     fun toBytes(t: T): ByteArray
-    fun fromBytes(bytes: ByteArray): T
+    fun serialize(t: T): S
+    fun deserialize(s: S): T
 }
-
-data class MerkleAVLContext<K, V>(val keySerializer: Serializer<K>, val valueSerializer: Serializer<V>)
