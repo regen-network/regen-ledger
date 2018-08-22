@@ -8,6 +8,8 @@
       <module name="ceres-base_test" target="1.8" />
       <module name="ceres-jvm_main" target="1.8" />
       <module name="ceres-jvm_test" target="1.8" />
+      <module name="regen-ledger_main" target="1.8" />
+      <module name="regen-ledger_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

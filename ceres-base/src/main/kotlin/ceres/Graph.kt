@@ -4,6 +4,11 @@ import ceres.AVL.IAVLSet
 import ceres.AVL.IAVLTree
 import ceres.avl.Serializer
 
+sealed class ID {
+    data class LocalImmutable(val hash: ByteArray): ID()
+    data class LocalStateful(val id: Long): ID()
+}
+
 inline data class IRI(val iri: String): Comparable<IRI> {
     override fun compareTo(other: IRI) = iri.compareTo(other.iri)
 }
@@ -24,6 +29,7 @@ data class LangString(val lang: String, val value: String): Comparable<LangStrin
     }
 }
 
+
 abstract sealed class RDFValue<T: Comparable<T>>: Comparable<RDFValue<T>> {
     enum class TypeID(val id: Short) {
         IRI(0),
@@ -33,7 +39,13 @@ abstract sealed class RDFValue<T: Comparable<T>>: Comparable<RDFValue<T>> {
         INT(4),
         LONG(5),
         DOUBLE(6),
-        BOOL(7)
+        BOOL(7),
+        DATETIME(8),
+        DATE(9),
+        TIME(10),
+        BIGINT(11),
+        POINT(20),
+        POLYGON(21)
     }
 
     abstract val typeID: TypeID
@@ -80,7 +92,8 @@ data class EAV(val ent: IRI, val attr: IRI, val value: RDFValue<*>): Comparable<
         if(x != 0) return x
         val y = attr.compareTo(other.attr)
         if(y != 0) return y
-        return value.compareTo(other.value)
+        //return value.compareTo(other.value)
+        TODO()
     }
 }
 
@@ -94,11 +107,12 @@ data class VAE(val value: IRI, val attr: IRI, val ent: IRI): Comparable<VAE> {
     }
 }
 
-data class VE(val value: RDFValue, val ent: RDFValue.IRI): Comparable<VE> {
+data class VE(val value: RDFValue<*>, val ent: IRI): Comparable<VE> {
     override fun compareTo(other: VE): Int {
-        val x = value.compareTo(other.value)
-        if(x != 0) return x
-        return ent.compareTo(other.ent)
+        TODO()
+//        val x = value.compareTo(other.value)
+//        if(x != 0) return x
+//        return ent.compareTo(other.ent)
     }
 }
 
@@ -107,9 +121,15 @@ data class Graph(
         val vae: IAVLSet<VAE>
 
 ) {
-    fun get(iri: RDFValue.IRI): Node? {
+    fun get(iri: IRI): Node? {
         TODO()
     }
+}
+
+interface IDB {
+}
+
+interface IBlockchainDB: IDB {
 }
 
 interface ValueSet {
@@ -119,3 +139,4 @@ interface ValueSet {
 class Node {
     //fun get(attr: IRI): ValueSet
 }
+

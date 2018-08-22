@@ -3,6 +3,8 @@ apply plugin: 'kotlin'
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "org.rocksdb:rocksdbjni:5.5.1"
+    compile project(":ceres-base")
+    compile project(":ceres-base-jvm")
 }
 
 compileKotlin {

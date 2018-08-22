@@ -1,10 +1,10 @@
 package ceres.rocksdb
 
-import ceres.avl.IKVStore
+import ceres.storage.IKVStore
 import org.rocksdb.Options
 import org.rocksdb.RocksDB
 
-private fun openDb(path: String): RocksDB {
+fun openRocksDb(path: String): RocksDB {
     val options = Options().setCreateIfMissing(true)
     val db = RocksDB.open(options, path)
     if(db == null)
@@ -12,14 +12,14 @@ private fun openDb(path: String): RocksDB {
     return db
 }
 
-class RocksDBKVStore(val db: RocksDB): IKVStore {
+class RocksDBKVStore(val db: RocksDB): IKVStore<ByteArray, ByteArray> {
     companion object {
         init {
             RocksDB.loadLibrary()
         }
     }
 
-    constructor(path: String): this(openDb(path)) {}
+    constructor(path: String): this(openRocksDb(path)) {}
 
     override suspend fun get(key: ByteArray): ByteArray? = db.get(key)
 
