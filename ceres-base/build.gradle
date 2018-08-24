@@ -4,7 +4,8 @@ group 'regen-network'
 version '1.0-SNAPSHOT'
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-common"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-common:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     testCompile "org.jetbrains.kotlin:kotlin-test-annotations-common"
     testCompile "org.jetbrains.kotlin:kotlin-test-common"
     testCompile 'io.kotlintest:kotlintest-runner-junit5:3.1.7'

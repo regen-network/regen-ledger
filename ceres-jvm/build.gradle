@@ -1,8 +1,14 @@
 apply plugin: 'kotlin'
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "org.rocksdb:rocksdbjni:5.5.1"
+    compile "com.github.jtendermint:jabci:0.20.0.1"
+    compile "io.ktor:ktor-server-netty:0.9.3"
+    compile "com.xenomachina:kotlin-argparser:2.0.7"
+    compile 'io.github.microutils:kotlin-logging:1.5.9'
+    compile "ch.qos.logback:logback-classic:1.2.1"
     compile project(":ceres-base")
     compile project(":ceres-base-jvm")
 }

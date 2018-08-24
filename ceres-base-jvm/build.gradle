@@ -10,7 +10,8 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "com.goterl.lazycode:lazysodium-java:3.3.0"
     compile "net.java.dev.jna:jna:4.5.2"
     testCompile "junit:junit:4.12"

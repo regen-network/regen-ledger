@@ -116,20 +116,33 @@ data class VE(val value: RDFValue<*>, val ent: IRI): Comparable<VE> {
     }
 }
 
+interface IGraph {
+    fun get(iri: IRI): Node?
+    fun insert(ent: IRI, attr: IRI, value: RDFValue<*>): IGraph
+    fun delete(ent: IRI, attr: IRI, value: RDFValue<*>): IGraph
+}
+
 data class Graph(
         val eav: IAVLSet<EAV>,
         val vae: IAVLSet<VAE>
 
-) {
-    fun get(iri: IRI): Node? {
+) : IGraph {
+    override fun get(iri: IRI): Node? {
+        TODO()
+    }
+
+    override fun insert(ent: IRI, attr: IRI, value: RDFValue<*>): Graph {
+        TODO()
+    }
+
+    override fun delete(ent: IRI, attr: IRI, value: RDFValue<*>): Graph {
         TODO()
     }
 }
 
 interface IDB {
-}
-
-interface IBlockchainDB: IDB {
+    fun transact(newGraph: Graph)
+    fun commit()
 }
 
 interface ValueSet {
