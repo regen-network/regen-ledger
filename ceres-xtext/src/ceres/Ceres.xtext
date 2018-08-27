@@ -1,0 +1,9 @@
+grammar ceres.Ceres with org.eclipse.xtext.common.Terminals
+
+generate ceres "http://www.Ceres.ceres"
+
+Model:
+	greetings+=Greeting*;
+	
+Greeting:
+	'Hello' name=ID '!';
