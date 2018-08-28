@@ -1,6 +1,7 @@
 allprojects {
     buildscript {
         ext.kotlin_version = '1.3-M1'
+	      ext.xtextVersion = '2.14.0'
 
         repositories {
             mavenCentral()
@@ -9,6 +10,7 @@ allprojects {
         }
         dependencies {
             classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+		        classpath 'org.xtext:xtext-gradle-plugin:1.0.21'
         }
 
     }
@@ -18,4 +20,19 @@ allprojects {
         maven { url 'http://dl.bintray.com/kotlin/kotlin-eap' }
         maven { url "https://dl.bintray.com/kotlin/ktor" }
     }
+
+}
+
+subprojects {
+	
+	version = '1.0.0-SNAPSHOT'
+	
+  apply plugin: 'eclipse'
+
+  //sourceCompatibility = '1.8'
+  //targetCompatibility = '1.8'
+
+  configurations.all {
+      exclude group: 'asm'
+  }
 }

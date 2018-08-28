@@ -10,7 +10,7 @@ Workflow {
 	component = XtextGenerator {
 		configuration = {
 			project = StandardProjectConfig {
-				baseName = "ceres"
+				baseName = "ceres-xtext"
 				rootPath = rootPath
 				eclipsePlugin = {
 					enabled = true

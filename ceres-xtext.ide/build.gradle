@@ -1,0 +1,40 @@
+plugins {
+	id 'com.github.johnrengelman.shadow' version '2.0.1'
+}
+
+apply plugin: 'java'
+apply plugin: 'org.xtext.xtend'
+apply plugin: 'kotlin'
+
+dependencies {
+	compile project(':ceres-xtext')
+	compile "org.eclipse.xtext:org.eclipse.xtext.ide:${xtextVersion}"
+	compile "org.eclipse.xtext:org.eclipse.xtext.xbase.ide:${xtextVersion}"
+  compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+  compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+}
+
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+mainClassName = "org.eclipse.xtext.ide.server.ServerLauncher"
+
+shadowJar {
+	from(project.convention.getPlugin(JavaPluginConvention).sourceSets.main.output)
+	configurations = [project.configurations.runtime]
+	exclude('META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA','schema/*',
+		'.options', '.api_description', '*.profile', '*.html', 'about.*', 'about_files/*',
+		'plugin.xml', 'modeling32.png', 'systembundle.properties', 'profile.list')
+	classifier = 'ls'
+	append('plugin.properties')
+}
+//this is an eclipse plugin project
+eclipseClasspath.enabled=false
+cleanEclipseClasspath.enabled=false
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
