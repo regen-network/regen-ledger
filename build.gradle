@@ -28,6 +28,7 @@ subprojects {
 	version = '1.0.0-SNAPSHOT'
 	
   apply plugin: 'eclipse'
+	apply from: "${rootDir}/gradle/maven-deployment.gradle"
 
   //sourceCompatibility = '1.8'
   //targetCompatibility = '1.8'
