@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: ceres.xtext.ide
+Bundle-ManifestVersion: 2
+Bundle-Name: ceres.xtext.ide
+Bundle-Vendor: My Company
+Bundle-Version: 1.0.0.qualifier
+Bundle-SymbolicName: ceres.xtext.ide; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: ceres.xtext,
+ org.eclipse.xtext.ide,
+ org.eclipse.xtext.xbase.ide,
+ org.antlr.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: ceres.xtext.ide.contentassist.antlr,
+ ceres.xtext.ide.contentassist.antlr.internal
+

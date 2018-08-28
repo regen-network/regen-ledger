@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>ceres</groupId>
+	<groupId>ceres.xtext</groupId>
 	<version>1.0.0-SNAPSHOT</version>
-	<artifactId>ceres.parent</artifactId>
+	<artifactId>ceres.xtext.parent</artifactId>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -12,7 +12,8 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<!-- Tycho settings -->
-		<tycho-version>1.1.0</tycho-version>
+		<!-- Java 10 and JUnit 5 support require Tycho 1.2.0, which was not released at release date of Xtext 2.14.0. When not available downgrade to Java 9, JUnit 4 and Tycho 1.1.0. -->
+		<tycho-version>1.2.0</tycho-version>
 		<!-- Define overridable properties for tycho-surefire-plugin -->
 		<platformSystemProperties></platformSystemProperties>
 		<moduleProperties></moduleProperties>
@@ -20,10 +21,10 @@
 		<tycho.testArgLine></tycho.testArgLine>
 	</properties>
 	<modules>
-		<module>ceres</module>
-		<module>ceres.ide</module>
-		<module>ceres.ui</module>
-		<module>ceres.target</module>
+		<module>ceres.xtext</module>
+		<module>ceres.xtext.ide</module>
+		<module>ceres.xtext.ui</module>
+		<module>ceres.xtext.target</module>
 	</modules>
 	<build>
 		<plugins>
@@ -40,8 +41,8 @@
 				<configuration>
 					<target>
 						<artifact>
-							<groupId>ceres</groupId>
-							<artifactId>ceres.target</artifactId>
+							<groupId>ceres.xtext</groupId>
+							<artifactId>ceres.xtext.target</artifactId>
 							<version>${project.version}</version>
 						</artifact>
 					</target>
