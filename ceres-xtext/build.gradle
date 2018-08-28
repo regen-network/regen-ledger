@@ -6,6 +6,15 @@ dependencies {
 	compile "org.eclipse.xtext:org.eclipse.xtext:${xtextVersion}"
 	compile "org.eclipse.xtext:org.eclipse.xtext.xbase:${xtextVersion}"
 }
+
+sourceSets {
+	main {
+		java.srcDirs = ["src", "src-gen"]
+        xtendOutputDir = "xtend-gen"
+	}
+}
+
+
 configurations {
 	mwe2 {
 		extendsFrom compile

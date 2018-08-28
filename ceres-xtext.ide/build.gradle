@@ -6,6 +6,13 @@ apply plugin: 'java'
 apply plugin: 'org.xtext.xtend'
 apply plugin: 'kotlin'
 
+sourceSets {
+	main {
+		java.srcDirs = ["src", "src-gen"]
+		xtendOutputDir = "xtend-gen"
+	}
+}
+
 dependencies {
 	compile project(':ceres-xtext')
 	compile "org.eclipse.xtext:org.eclipse.xtext.ide:${xtextVersion}"

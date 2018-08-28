@@ -4,7 +4,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: ceres
 Bundle-Vendor: My Company
 Bundle-Version: 1.0.0.qualifier
-Bundle-SymbolicName: ceres; singleton:=true
+Bundle-SymbolicName: ceres-xtext;singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.xtext,
  org.eclipse.xtext.xbase,
@@ -16,15 +16,18 @@ Require-Bundle: org.eclipse.xtext,
  org.eclipse.emf.common,
  org.eclipse.xtend.lib;bundle-version="2.14.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: ceres.ceres.util,
+Import-Package: org.apache.log4j
+Export-Package: ceres-xtext.ceres.util,
  ceres.generator,
  ceres.validation,
  ceres.parser.antlr,
  ceres.services,
  ceres.scoping,
- ceres.ceres,
+ ceres-xtext.ceres,
+ ceres.parser.antlr.lexer,
  ceres,
  ceres.ceres.impl,
  ceres.serializer,
- ceres.parser.antlr.internal
-Import-Package: org.apache.log4j
+ ceres.parser.antlr.internal,
+ ceres.ceres.util,
+ ceres.ceres

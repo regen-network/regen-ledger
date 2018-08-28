@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>network.regen.ceres</groupId>
+	<groupId>ceres</groupId>
 	<version>1.0.0-SNAPSHOT</version>
-	<artifactId>ceres-xtext.parent</artifactId>
+	<artifactId>ceres.parent</artifactId>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -20,10 +20,10 @@
 		<tycho.testArgLine></tycho.testArgLine>
 	</properties>
 	<modules>
-		<module>ceres-xtext</module>
-		<module>ceres-xtext.ide</module>
-		<module>ceres-xtext.ui</module>
-		<module>ceres-xtext.target</module>
+		<module>ceres</module>
+		<module>ceres.ide</module>
+		<module>ceres.ui</module>
+		<module>ceres.target</module>
 	</modules>
 	<build>
 		<plugins>
@@ -40,8 +40,8 @@
 				<configuration>
 					<target>
 						<artifact>
-							  <groupId>network.regen.ceres</groupId>
-							<artifactId>ceres-xtext.target</artifactId>
+							<groupId>ceres</groupId>
+							<artifactId>ceres.target</artifactId>
 							<version>${project.version}</version>
 						</artifact>
 					</target>

@@ -6,7 +6,7 @@
 		<artifactId>ceres.parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>ceres</artifactId>
+	<artifactId>ceres-xtext</artifactId>
 	<packaging>eclipse-plugin</packaging>
 
 	<build>
@@ -74,19 +74,19 @@
 				<configuration>
 					<filesets combine.children="append">
 						<fileset>
-							<directory>${basedir}/../ceres/src-gen/</directory>
+							<directory>${basedir}/../ceres-xtext/src-gen/</directory>
 							<includes>
 								<include>**/*</include>
 							</includes>
 						</fileset>
 						<fileset>
-							<directory>${basedir}/../ceres.ide/src-gen/</directory>
+							<directory>${basedir}/../ceres-xtext.ide/src-gen/</directory>
 							<includes>
 								<include>**/*</include>
 							</includes>
 						</fileset>
 						<fileset>
-							<directory>${basedir}/../ceres.ui/src-gen/</directory>
+							<directory>${basedir}/../ceres-xtext.ui/src-gen/</directory>
 							<includes>
 								<include>**/*</include>
 							</includes>

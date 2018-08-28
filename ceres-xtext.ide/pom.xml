@@ -137,14 +137,14 @@
 					</transformers>
 					<artifactSet>
 						<excludes><!-- avoid duplicate inclusion due to addjars plugin -->
-							<exclude>*:ceres.ide-org.eclipse.lsp4j*</exclude>
-							<exclude>*:ceres.ide-org.eclipse.xtext.xbase.lib*</exclude>
-							<exclude>*:ceres.ide-org.eclipse.xtend.lib*</exclude>
-							<exclude>*:ceres.ide-com.google.guava*</exclude>
-							<exclude>*:ceres.ide-asm*</exclude>
-							<exclude>*:ceres.ide-log4j*</exclude>
-							<exclude>*:ceres.ide-org.objectweb.asm*</exclude>
-							<exclude>*:ceres.ide-org.apache.log4j*</exclude>
+							<exclude>*:ceres-xtext.ide-org.eclipse.lsp4j*</exclude>
+							<exclude>*:ceres-xtext.ide-org.eclipse.xtext.xbase.lib*</exclude>
+							<exclude>*:ceres-xtext.ide-org.eclipse.xtend.lib*</exclude>
+							<exclude>*:ceres-xtext.ide-com.google.guava*</exclude>
+							<exclude>*:ceres-xtext.ide-asm*</exclude>
+							<exclude>*:ceres-xtext.ide-log4j*</exclude>
+							<exclude>*:ceres-xtext.ide-org.objectweb.asm*</exclude>
+							<exclude>*:ceres-xtext.ide-org.apache.log4j*</exclude>
 						</excludes>
 					</artifactSet>
 					<filters>
