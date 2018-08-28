@@ -26,5 +26,6 @@ Export-Package: ceres.xtext.parser.antlr,
  ceres.xtext.generator,
  ceres.xtext.validation,
  ceres.xtext.scoping,
- ceres.xtext.ceres.util
+ ceres.xtext.ceres.util,
+ ceres.xtext.parser.antlr.lexer
 Import-Package: org.apache.log4j
