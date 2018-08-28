@@ -1,0 +1,7 @@
+balance = {
+
+}
+
+account = {
+  @type = owl.Class
+}

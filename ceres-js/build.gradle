@@ -1,0 +1,16 @@
+
+plugins {
+    id 'kotlin2js' version '1.3-M1'
+}
+
+version 'unspecified'
+
+repositories {
+    maven {     url 'http://dl.bintray.com/kotlin/kotlin-eap' }
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-js"
+    testCompile "org.jetbrains.kotlin:kotlin-test-js"
+}
