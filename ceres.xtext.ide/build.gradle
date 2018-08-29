@@ -6,12 +6,7 @@ apply plugin: 'java'
 apply plugin: 'org.xtext.xtend'
 apply plugin: 'kotlin'
 
-sourceSets {
-	main {
-		java.srcDirs = ["src", "src-gen"]
-		xtendOutputDir = "xtend-gen"
-	}
-}
+apply from: "${rootDir}/gradle/source-layout.gradle"
 
 dependencies {
 	compile project(':ceres.xtext')

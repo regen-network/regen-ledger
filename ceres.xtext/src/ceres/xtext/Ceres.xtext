@@ -68,13 +68,13 @@ ObjPropName:
 	
 Literal:
 	{SymbolLit} value=SYMBOL |
-	{IntLit} value=INTEGER |
+	{IntLit} value=INT |
 	{StrLit} value=STRING
 ;
 
 terminal OP_CHARS: ('!' | '$' | '%' | '&' | '*' | '+' | '-' | '.' | '/' | ':' | '<' | '=' | '>' | '?' | '^' | '|' | '~')*;
 
-terminal INTEGER: ('0'..'9')+;
+//terminal INTEGER: ('0'..'9')+;
 //terminal STRING:
 //			'"' ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|'"') )* '"' |
 //			"'" ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|"'") )* "'"

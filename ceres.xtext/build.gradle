@@ -7,12 +7,7 @@ dependencies {
 	compile "org.eclipse.xtext:org.eclipse.xtext.xbase:${xtextVersion}"
 }
 
-sourceSets {
-	main {
-		java.srcDirs = ["src", "src-gen"]
-        xtendOutputDir = "xtend-gen"
-	}
-}
+apply from: "${rootDir}/gradle/source-layout.gradle"
 
 configurations {
 	mwe2 {
