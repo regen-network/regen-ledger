@@ -3,7 +3,7 @@
 <plugin>
 	<extension point="org.eclipse.emf.ecore.generated_package">
 		<package 
-			uri = "http://www.xtext.ceres/Ceres"
+			uri = "https://regen.network/ceres"
 			class = "ceres.xtext.ceres.CeresPackage"
 			genModel = "model/generated/Ceres.genmodel" />
 	</extension>

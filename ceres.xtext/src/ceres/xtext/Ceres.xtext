@@ -1,4 +1,4 @@
-grammar ceres.xtext.Ceres hidden(WS, ML_COMMENT, SL_COMMENT)
+grammar ceres.xtext.Ceres with org.eclipse.xtext.common.Terminals
 
 generate ceres "https://regen.network/ceres"
 
@@ -75,15 +75,9 @@ Literal:
 terminal OP_CHARS: ('!' | '$' | '%' | '&' | '*' | '+' | '-' | '.' | '/' | ':' | '<' | '=' | '>' | '?' | '^' | '|' | '~')*;
 
 terminal INTEGER: ('0'..'9')+;
-terminal STRING:
-			'"' ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|'"') )* '"' |
-			"'" ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|"'") )* "'"
-		;
-terminal ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
+//terminal STRING:
+//			'"' ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|'"') )* '"' |
+//			"'" ( '\\' . /* 'b'|'t'|'n'|'f'|'r'|'u'|'"'|"'"|'\\' */ | !('\\'|"'") )* "'"
+//		;
+//terminal ID: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'_'|'0'..'9')*;
 terminal SYMBOL: "^" ID;
-terminal ML_COMMENT : '/*' -> '*/';
-terminal SL_COMMENT : '//' !('\n'|'\r')* ('\r'? '\n')?;
-
-terminal WS         : (' '|'\t'|'\r'|'\n')+;
-terminal BEGIN: 'synthetic:BEGIN';  // increase indentation
-terminal END: 'synthetic:END';      // decrease indentation

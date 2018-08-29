@@ -12,6 +12,5 @@ Require-Bundle: ceres.xtext,
  org.antlr.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: ceres.xtext.ide.contentassist.antlr,
- ceres.xtext.ide.contentassist.antlr.internal,
- ceres.xtext.ide.contentassist.antlr.lexer
+ ceres.xtext.ide.contentassist.antlr.internal
 
