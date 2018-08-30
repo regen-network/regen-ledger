@@ -9,7 +9,7 @@ sealed class ID {
     data class LocalStateful(val id: Long): ID()
 }
 
-inline data class IRI(val iri: String): Comparable<IRI> {
+data class IRI(val iri: String): Comparable<IRI> {
     override fun compareTo(other: IRI) = iri.compareTo(other.iri)
 }
 

@@ -1,8 +1,14 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
+}
 apply plugin: 'kotlin'
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    api "org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlin_version"
+    api "org.jetbrains.kotlin:kotlin-script-util:$kotlin_version"
+    api "org.jetbrains.kotlin:kotlin-script-runtime:$kotlin_version"
     compile "org.rocksdb:rocksdbjni:5.5.1"
     compile "com.github.jtendermint:jabci:0.20.0.1"
     compile "io.ktor:ktor-server-netty:0.9.3"

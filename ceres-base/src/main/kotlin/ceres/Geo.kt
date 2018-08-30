@@ -1,13 +1,36 @@
 package ceres.geo
 
-interface Geometry
+interface Geometry {
+    fun boundingBox(): IBoundingBox
+}
 
 data class Point(
     val lat: Double,
     val lon: Double
-) : Geometry
+) : Geometry {
+    override fun boundingBox(): IBoundingBox =
+        BoundingBox(lon, lat, lon, lat)
 
-data class Polygon(
-    val exteriorRing: List<Point>,
+}
+
+expect class Polygon {
+    val exteriorRing: List<Point>
     val interiorRings: List<List<Point>>
-) : Geometry
+}
+
+interface ToBoundingBox {
+}
+
+interface IBoundingBox {
+    val minX: Double
+    val minY: Double
+    val maxX: Double
+    val maxY: Double
+}
+
+data class BoundingBox(
+    override val minX: Double,
+    override val minY: Double,
+    override val maxX: Double,
+    override val maxY: Double
+): IBoundingBox

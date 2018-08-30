@@ -1,13 +1,27 @@
-apply plugin: 'java'
 apply plugin: 'kotlin'
+apply plugin: 'java'
 apply plugin: 'org.xtext.xtend'
 
 dependencies {
 	compile "org.eclipse.xtext:org.eclipse.xtext:${xtextVersion}"
 	compile "org.eclipse.xtext:org.eclipse.xtext.xbase:${xtextVersion}"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+}
+
+repositories {
+    maven {
+        url 'http://dl.bintray.com/kotlin/kotlin-eap'
+    }
+    mavenCentral()
 }
 
 apply from: "${rootDir}/gradle/source-layout.gradle"
+sourceSets {
+    main {
+        kotlin.srcDirs += "src"
+    }
+}
 
 configurations {
 	mwe2 {
@@ -39,3 +53,13 @@ eclipse.classpath.plusConfigurations += [configurations.mwe2]
 //this is an eclipse plugin project
 eclipseClasspath.enabled=false
 cleanEclipseClasspath.enabled=false
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
