@@ -8,7 +8,32 @@ Model:
 	decls+=Decl*;
 	
 Decl:
-	name=ID (':' type=Expr)? '=' expr=Expr ';';
+	ValDecl |
+	FunDecl |
+	Expr ';'
+	;
+	
+ValDecl:
+	name=ID (':' type=Expr)? '=' expr=Expr ';'
+;
+
+FunDecl:
+	name=ID '('
+	  (params+=FunParam (',' params+=FunParam)* )? 
+	')'
+	('[' (effects+=EffParam (',' effects+=EffParam)* )? ']')?
+	 (':' type=Expr)? '{'
+	   statements+=Decl*
+	'}'
+;
+
+FunParam:
+	name=ID (':' type=Expr)?
+;
+
+EffParam:
+	name=ID
+;
 
 Expr returns Expr:
 	InfixR2;
@@ -18,52 +43,66 @@ Expr returns Expr:
 // follow Ocaml rules where the rules are inherited from those of the first character in the custom operator. 
 
 InfixR2 returns Expr:
-	InfixR3 ({InfixR2.left=current} op=OP2 right=InfixR2)?
+	InfixR3 ({BinOp.left=current} op=OP2 right=InfixR2)?
 ;
 
 terminal OP2: '|' OP_CHARS;
 
 InfixR3 returns Expr:
-	InfixL4 ({InfixR3.left=current} op=OP3 right=InfixR3)?
+	InfixL4 ({BinOp.left=current} op=OP3 right=InfixR3)?
 ;
 
 terminal OP3: '&' OP_CHARS;
 
 InfixL4 returns Expr:
-	InfixL6 ({InfixL4.left=current} op=OP4 right=InfixL6)*
+	InfixL6 ({BinOp.left=current} op=OP4 right=InfixL6)*
 ;
 
 terminal OP4: ('==' | '<' | '>') OP_CHARS;
 
 InfixL6 returns Expr:
-	InfixL7 ({InfixL6.left=current} op=OP6 right=InfixL7)*;
+	InfixL7 ({BinOp.left=current} op=OP6 right=InfixL7)*;
 
 terminal OP6: ('+' | '-') OP_CHARS;
 
 InfixL7 returns Expr:
-	Atom ({InfixL7.left=current} op=OP7 right=Atom)*;
+	Atom ({BinOp.left=current} op=OP7 right=Atom)*;
 
 terminal OP7: ('*' | '/' | '%') OP_CHARS;
 
 Atom returns Expr:
 	Literal |
 	'(' Expr ')' |
-	ObjExpr |
+	NodeExpr |
+	SetExpr |
+	ListExpr |
 	{VarRef} value=[ecore::EObject];
 	
-ObjExpr returns Expr:
-	{ObjExpr} '{'
-	  bindings+=ObjBinding*
+NodeExpr returns Expr:
+	{NodeExpr} '{'
+	  (bindings+=NodeBinding (',' bindings+=NodeBinding)* ','?)?
 	'}'
 ;
 
-ObjBinding:
-	key=ObjPropName (':' type=Expr)? ('=' value=Expr)? ';'
+NodeBinding:
+	key=NodePropName (':' value=Expr)?
 ;
 
-ObjPropName:
-	{ObjPathProp} root=[ecore::EObject] ('.' path+=ID)* |
-	{ObjSymProp} value=SYMBOL
+NodePropName:
+	{NodePathProp} root=[ecore::EObject] ('.' path+=ID)* |
+	{NodeSymProp} value=SYMBOL
+;
+
+SetExpr returns Expr:
+	{SetExpr} '#{'
+	  (elements+=Expr (',' elements+=Expr)* ','?)?
+	'}'
+;
+
+ListExpr returns Expr:
+	{ListExpr} '['
+	  (elements+=Expr (',' elements+=Expr)* ','?)?
+	']'
 ;
 	
 Literal:
