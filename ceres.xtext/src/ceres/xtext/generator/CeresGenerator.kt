@@ -10,14 +10,10 @@ import org.eclipse.xtext.generator.IGeneratorContext
  * 
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
  */
-class CeresGeneratorKt: AbstractGenerator() {
+open class CeresGeneratorKt: AbstractGenerator() {
 
 	override fun doGenerate(resource: Resource, fsa: IFileSystemAccess2, context: IGeneratorContext ) {
-		fsa.generateFile("test1.kt", "package test1")
-//		fsa.generateFile('greetings.txt', 'People to greet: ' + 
-//			resource.allContents
-//				.filter(Greeting)
-//				.map[name]
-//				.join(', '))
+//		fsa.generateFile("test1.kt", "package test1")
+		fsa.generateFile("greetings.txt", resource.uri.toString() + " from kt!")
 	}
 }

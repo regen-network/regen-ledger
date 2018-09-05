@@ -13,11 +13,13 @@ Decl:
 	Expr ';'
 	;
 	
-ValDecl:
+ValDecl returns Decl:
+	{ValDecl}
 	name=ID (':' type=Expr)? '=' expr=Expr ';'
 ;
 
-FunDecl:
+FunDecl returns Decl:
+	{FunDecl}
 	name=ID '('
 	  (params+=FunParam (',' params+=FunParam)* )? 
 	')'
@@ -76,7 +78,8 @@ Atom returns Expr:
 	NodeExpr |
 	SetExpr |
 	ListExpr |
-	{VarRef} value=[ecore::EObject];
+	CaseExpr |
+	{VarRef} value=[Decl];
 	
 NodeExpr returns Expr:
 	{NodeExpr} '{'
@@ -103,6 +106,16 @@ ListExpr returns Expr:
 	{ListExpr} '['
 	  (elements+=Expr (',' elements+=Expr)* ','?)?
 	']'
+;
+
+CaseExpr returns Expr:
+	{CaseExpr} 'case' '{'
+	  cases+=CaseClause*
+	'}'
+;
+
+CaseClause:
+	test=Expr '->' expr=Expr ';'
 ;
 	
 Literal:

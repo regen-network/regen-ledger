@@ -7,19 +7,26 @@ import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
+import org.eclipse.emf.common.util.TreeIterator
+import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.common.util.EList
 
-/**
+/** 
  * Generates code from your model files on save.
- * 
  * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
  */
 class CeresGenerator extends AbstractGenerator {
-
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-//		fsa.generateFile('greetings.txt', 'People to greet: ' + 
-//			resource.allContents
-//				.filter(Greeting)
-//				.map[name]
-//				.join(', '))
+		fsa.generateFile(
+			"test.kt",
+			resource.contents.emit
+		)
+	}
+	
+	def emit(EList<EObject> decls) {
+		'''
+		«FOR EObject decl: decls»
+		«ENDFOR»
+		'''
 	}
 }
