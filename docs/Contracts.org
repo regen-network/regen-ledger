@@ -1,0 +1,3 @@
+* Contracts
+** Conditions
+*** Satisfaction of such and such verification protocol for the land in question
