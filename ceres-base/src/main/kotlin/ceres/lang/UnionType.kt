@@ -1,7 +1,23 @@
 package ceres.lang.uniontyped
 
+import ceres.graph.IRI
+import ceres.lang.Refinement
+
+sealed class Allow<in T> {
+    object Any: Allow<Any>()
+    data class Some<T>(val param: T): Allow<T>()
+    object None: Allow<Any>()
+}
+
+typealias AllowList<T> = Allow<Set<T>>
+
 data class UnionType(
-    val canBeNone: Boolean
+    // This covers None and Bool types
+    val exactIRIs: Set<IRI>,
+    val funTypes: AllowList<FunctionType>,
+    val intConstraints: Allow<Refinement>,
+    val doubleConstraints: Allow<Refinement>,
+    val stringConstraints: Boolean
 )
 
 data class FunctionType(

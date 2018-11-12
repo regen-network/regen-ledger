@@ -31,12 +31,12 @@
 ** Reproducable External Function Execution
    In order to allow for complex scientific algorithms to be part of the verification pipeline, an external function execution framework is specified.
 *** External Function Specification
-  External functions are stored in a git repository with the following conventions:
+    External functions are stored in a git repository with the following conventions:
   - a configuration file at the root that specifies the schema of the input and output data of the function
   - [Nix](https://nixos.org) based dependency management. Nix manages repeatable dependency installation correctly, unlike other systems such as Docker
   - it is assumed that the code executes in a container with no network access
 *** External Function References
-  External functions can be referenced in protocols in a type safe manner. An important part of function references is the input query. It is assumed that external functions will require both user provided data, such as sensor logs, and public data, such as satellite or weather data, as input. While the git repositories for functions specify the input data types, the queries to retrieve that data are specified at the call site. However, it is expected that the invocation framework for each function will handle the actual aggregation of such data. For instance, an execution framework may be constructed for Amazon Web Services or Google Cloud which both host large repositories of public satellite and weather data. The execution framework would receive the input query, collect all the relevant data, and then call the function.
+    External functions can be referenced in protocols in a type safe manner. An important part of function references is the input query. It is assumed that external functions will require both user provided data, such as sensor logs, and public data, such as satellite or weather data, as input. While the git repositories for functions specify the input data types, the queries to retrieve that data are specified at the call site. However, it is expected that the invocation framework for each function will handle the actual aggregation of such data. For instance, an execution framework may be constructed for Amazon Web Services or Google Cloud which both host large repositories of public satellite and weather data. The execution framework would receive the input query, collect all the relevant data, and then call the function.
 *** Execution Records
 *** Execution Framework
 * Data Access

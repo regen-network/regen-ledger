@@ -17,7 +17,7 @@ fun <T: Comparable<T>> IAVLNode<T, T>?.allValues(): Sequence<T> {
     if(this == null)
         return emptySequence()
     val This = this
-    return buildSequence {
+    return sequence {
         yieldAll(This.left.allValues())
         assertEquals(This.key, This.value)
         yield(This.key)
