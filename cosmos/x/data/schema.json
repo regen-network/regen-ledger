@@ -1,0 +1,10 @@
+{
+    "definitions":{
+        "MsgRegisterSchema":{
+            "title":"MsgRegisterSchema",
+            "type":"Object",
+            "properties":{
+            }
+        }
+    }
+}
