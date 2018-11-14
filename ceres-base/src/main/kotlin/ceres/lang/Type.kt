@@ -7,11 +7,21 @@ sealed class Type<out T>
 
 sealed class ValidationResult<out T> {
     data class Success<T>(val value: T): ValidationResult<T>()
-    data class Error<T>(val err: String)
+    data class Error<T>(val path: String, val err: String)
 }
 
+typealias ValidationErrors = List<ValidationError>
+
+data class ValidationError(val error: String, val path: List<String> = emptyList())
+
+fun error(error: String): ValidationErrors =
+    listOf(ValidationError(error))
+
+val noErrors: ValidationErrors = emptyList()
+
+
 sealed class PropertyType<T>: Type<T>() {
-    abstract fun validate(value: Any): ValidationResult<T>
+    abstract fun validate(value: Any): ValidationErrors
 }
 
 sealed class DataType<T : Any>(): PropertyType<T>() {
@@ -21,20 +31,18 @@ sealed class DataType<T : Any>(): PropertyType<T>() {
 data class EntityType(
     val properties: List<Property<Any?>>,
     val constraints: List<Refinement>): PropertyType<Any>() {
-    override fun validate(value: Any): ValidationResult<Any> {
+    override fun validate(value: Any): ValidationErrors {
         if(value !is Entity)
-            TODO()
+            return error("type.Entity")
 
-        for (prop in properties) {
-            prop.validate(value.get(prop.name))
+        return properties.fold(noErrors) { errs, prop ->
+            errs.plus(prop.validate(value.get(prop.name)))
         }
-
-        return ValidationResult.Success(value)
     }
 }
 
 sealed class Property<T> {
-    abstract fun validate(value: Any?): ValidationResult<T>
+    abstract fun validate(value: Any?): ValidationErrors
 
     abstract val name: String
 }
@@ -43,7 +51,7 @@ data class OneProperty<T: Any>(
     override val name: String,
     val type: PropertyType<T>
 ): Property<T>() {
-    override fun validate(value: Any?): ValidationResult<T> {
+    override fun validate(value: Any?): ValidationErrors {
         if(value == null)
             TODO()
         return type.validate(value)
@@ -54,9 +62,9 @@ data class ZeroOrOneProperty<T: Any>(
     override val name: String,
     val type: PropertyType<T>
 ): Property<T?>() {
-    override fun validate(value: Any?): ValidationResult<T?> {
+    override fun validate(value: Any?): ValidationErrors {
         if(value == null)
-            return ValidationResult.Success(null)
+            return noErrors
         return type.validate(value)
     }
 }
@@ -67,14 +75,26 @@ sealed class SetProperty<T: Any>(
     val minCount: Int? = null,
     val maxCount: Int? = null
 ): Property<Set<T>>() {
-    override fun validate(value: Any?): ValidationResult<Set<T>> {
+    override fun validate(value: Any?): ValidationErrors {
         if(value !is Set<*>)
             TODO()
-        for(x in value) {
-            if (x == null)
-                TODO()
-                type.validate(x)
-        }
+        // TODO check counts
+        return value.fold(noErrors, { errs, x ->
+            if(x == null) errs.plus(error("nullElement"))
+            else errs.plus(type.validate(x))
+        })
+    }
+}
+
+sealed class ListProperty<T: Any>(
+    override val name: String,
+    val type: PropertyType<T>,
+    val minCount: Int? = null,
+    val maxCount: Int? = null
+): Property<List<T>>() {
+    override fun validate(value: Any?): ValidationErrors {
+        if(value !is List<*>)
+            TODO()
         TODO()
     }
 }
@@ -85,10 +105,10 @@ sealed class NumericType<T : Any>: DataType<T>() {
 }
 
 data class IntegerType(override val minValue: Integer? = null, override val maxValue: Integer? = null): NumericType<Integer>() {
-    override fun validate(value: Any): ValidationResult<Integer> {
+    override fun validate(value: Any): ValidationErrors {
         if(value !is Integer)
             TODO()
-        return ValidationResult.Success(value)
+        return noErrors
     }
 
     override val type: KClass<Integer>
@@ -96,14 +116,14 @@ data class IntegerType(override val minValue: Integer? = null, override val maxV
 }
 
 data class DoubleType(override val minValue: Double? = null, override val maxValue: Double? = null): NumericType<Double>() {
-    override fun validate(value: Any): ValidationResult<Double> {
+    override fun validate(value: Any): ValidationErrors {
         if(value !is Double)
             TODO()
         if(minValue != null && value < minValue)
             TODO()
         if(maxValue != null && value > maxValue)
             TODO()
-        return ValidationResult.Success(value)
+        return noErrors
     }
 
     override val type: KClass<Double>
@@ -111,12 +131,12 @@ data class DoubleType(override val minValue: Double? = null, override val maxVal
 }
 
 data class StringType(val regex: Regex?): DataType<String>() {
-    override fun validate(value: Any): ValidationResult<String> {
+    override fun validate(value: Any): ValidationErrors {
         if(value !is String)
             TODO()
         if(regex != null && !regex.matches(value))
             TODO()
-        return ValidationResult.Success(value)
+        return noErrors
     }
 
     override val type: KClass<String>
@@ -126,12 +146,12 @@ data class StringType(val regex: Regex?): DataType<String>() {
 data class BoolType(
     /** Used to restrict value in refinement contexts */ val value: Boolean?
 ): DataType<Boolean>() {
-    override fun validate(v: Any): ValidationResult<Boolean> {
+    override fun validate(v: Any): ValidationErrors {
         if(v !is Boolean)
             TODO()
         if(value != null && v != value)
             TODO()
-        return ValidationResult.Success(v)
+        return noErrors
     }
 
     override val type: KClass<Boolean>
