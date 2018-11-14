@@ -1,36 +1,26 @@
 package ceres.lang
 
+import ceres.JSONValue
+import ceres.geo.Point
+import ceres.geo.Polygon
 import ceres.lang.smtlib.RExpr
 import kotlin.reflect.KClass
 
-sealed class Type<out T>
+sealed class Type
 
-sealed class ValidationResult<out T> {
-    data class Success<T>(val value: T): ValidationResult<T>()
-    data class Error<T>(val path: String, val err: String)
-}
-
-typealias ValidationErrors = List<ValidationError>
-
-data class ValidationError(val error: String, val path: List<String> = emptyList())
-
-fun error(error: String): ValidationErrors =
-    listOf(ValidationError(error))
-
-val noErrors: ValidationErrors = emptyList()
-
-
-sealed class PropertyType<T>: Type<T>() {
+sealed class PropertyType<T : Any>: Type() {
+    abstract val kClass: KClass<T>
     abstract fun validate(value: Any): ValidationErrors
-}
-
-sealed class DataType<T : Any>(): PropertyType<T>() {
-    abstract val type: KClass<T>
+    //abstract fun fromJson(value: JSONValue): T?
+    //abstract fun toJSON(value: T): JSONValue
 }
 
 data class EntityType(
     val properties: List<Property<Any?>>,
-    val constraints: List<Refinement>): PropertyType<Any>() {
+    val constraints: List<Refinement>): PropertyType<Entity>() {
+    override val kClass: KClass<Entity>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
     override fun validate(value: Any): ValidationErrors {
         if(value !is Entity)
             return error("type.Entity")
@@ -41,15 +31,26 @@ data class EntityType(
     }
 }
 
+data class DisjointEntityUnion(val entityTypes: List<EntityType>): PropertyType<Entity>() {
+    override val kClass: KClass<Entity>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
+    override fun validate(value: Any): ValidationErrors {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+}
+
 sealed class Property<T> {
     abstract fun validate(value: Any?): ValidationErrors
-
     abstract val name: String
+    abstract val iri: String?
+
 }
 
 data class OneProperty<T: Any>(
     override val name: String,
-    val type: PropertyType<T>
+    val type: PropertyType<T>,
+    override val iri: String? = null
 ): Property<T>() {
     override fun validate(value: Any?): ValidationErrors {
         if(value == null)
@@ -60,7 +61,8 @@ data class OneProperty<T: Any>(
 
 data class ZeroOrOneProperty<T: Any>(
     override val name: String,
-    val type: PropertyType<T>
+    val type: PropertyType<T>,
+    override val iri: String? = null
 ): Property<T?>() {
     override fun validate(value: Any?): ValidationErrors {
         if(value == null)
@@ -72,6 +74,7 @@ data class ZeroOrOneProperty<T: Any>(
 sealed class SetProperty<T: Any>(
     override val name: String,
     val type: PropertyType<T>,
+    override val iri: String? = null,
     val minCount: Int? = null,
     val maxCount: Int? = null
 ): Property<Set<T>>() {
@@ -89,6 +92,7 @@ sealed class SetProperty<T: Any>(
 sealed class ListProperty<T: Any>(
     override val name: String,
     val type: PropertyType<T>,
+    override val iri: String? = null,
     val minCount: Int? = null,
     val maxCount: Int? = null
 ): Property<List<T>>() {
@@ -99,23 +103,42 @@ sealed class ListProperty<T: Any>(
     }
 }
 
+sealed class DataType<T : Any>(): PropertyType<T>() {
+    abstract val iri: String
+}
+
 sealed class NumericType<T : Any>: DataType<T>() {
     abstract val minValue: T?
     abstract val maxValue: T?
+    abstract val multipleOf: T?
 }
 
-data class IntegerType(override val minValue: Integer? = null, override val maxValue: Integer? = null): NumericType<Integer>() {
+data class IntegerType(override val minValue: Integer? = null, override val maxValue: Integer? = null,
+                       override val multipleOf: Integer? = null
+): NumericType<Integer>() {
+    override val iri: String
+        get() = "http://www.w3.org/2001/XMLSchema#integer"
+
     override fun validate(value: Any): ValidationErrors {
         if(value !is Integer)
             TODO()
         return noErrors
     }
 
-    override val type: KClass<Integer>
+    override val kClass: KClass<Integer>
         get() = Integer::class
 }
 
-data class DoubleType(override val minValue: Double? = null, override val maxValue: Double? = null): NumericType<Double>() {
+data class DoubleType(
+    override val minValue: Double? = null,
+    override val maxValue: Double? = null,
+    override val multipleOf: Double? = null,
+    val exclusiveMin: Boolean = false,
+    val exclusiveMax: Boolean = false
+): NumericType<Double>() {
+    override val iri: String
+        get() = "http://www.w3.org/2001/XMLSchema#double"
+
     override fun validate(value: Any): ValidationErrors {
         if(value !is Double)
             TODO()
@@ -126,11 +149,14 @@ data class DoubleType(override val minValue: Double? = null, override val maxVal
         return noErrors
     }
 
-    override val type: KClass<Double>
+    override val kClass: KClass<Double>
         get() = Double::class
 }
 
-data class StringType(val regex: Regex?): DataType<String>() {
+data class StringType(val minLength: Int? = null, val maxLength: Int? = null, val regex: Regex?): DataType<String>() {
+    override val iri: String
+        get() = "http://www.w3.org/2001/XMLSchema#string"
+
     override fun validate(value: Any): ValidationErrors {
         if(value !is String)
             TODO()
@@ -139,13 +165,37 @@ data class StringType(val regex: Regex?): DataType<String>() {
         return noErrors
     }
 
-    override val type: KClass<String>
+    override val kClass: KClass<String>
         get() = String::class
+}
+
+data class EnumValue(val value: String, val iri: String?)
+
+data class EnumType(val values: Set<EnumValue>): PropertyType<String>() {
+    override val kClass: KClass<String>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
+    override fun validate(value: Any): ValidationErrors {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+}
+
+// TODO
+object IRIType: PropertyType<String>() {
+    override val kClass: KClass<String>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
+    override fun validate(value: Any): ValidationErrors {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }
 
 data class BoolType(
     /** Used to restrict value in refinement contexts */ val value: Boolean?
 ): DataType<Boolean>() {
+    override val iri: String
+        get() = "http://www.w3.org/2001/XMLSchema#boolean"
+
     override fun validate(v: Any): ValidationErrors {
         if(v !is Boolean)
             TODO()
@@ -154,26 +204,47 @@ data class BoolType(
         return noErrors
     }
 
-    override val type: KClass<Boolean>
+    override val kClass: KClass<Boolean>
         get() = Boolean::class
 }
 
-object NilType: Type<Nil>()
+object NilType: Type()
 
 //object DateType: DataType()
-//
 //object TimeType: DataType()
-//
-//object DataTimeType: DataType()
+//object DateTimeType: DataType()
+//object DurationType: DataType()
+
+object PointType: DataType<Point>() {
+    override fun validate(value: Any): ValidationErrors {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override val kClass: KClass<Point>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+    override val iri: String
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+}
+
+object PolygonType: DataType<Polygon>() {
+    override fun validate(value: Any): ValidationErrors {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override val kClass: KClass<Polygon>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+    override val iri: String
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+}
 
 data class FunctionType(
-    val params: List<Pair<String, Type<Any>>>,
-    val ret: Type<Any>,
+    val params: List<Pair<String, Type>>,
+    val ret: Type,
     val suspend: Boolean = false,
     val terminationConstraint: TerminationConstraint = TerminationConstraint.Partial
 // TODO allowedPrimitives
 // TODO contextParams
-): Type<Function<Any>>()
+): Type()
 
 sealed class TerminationConstraint {
     object Total: TerminationConstraint()
@@ -181,11 +252,23 @@ sealed class TerminationConstraint {
     object Partial: TerminationConstraint()
 }
 
-data class SetType<T>(val elemType: Type<T>): Type<Set<T>>()
+// NOTE:
+// SetType and ListType are not property types because we want to handle cardinality of Entity properties differently
 
-data class ListType<T>(val elemType: Type<T>): Type<List<T>>()
+data class SetType<T>(val elemType: Type): Type()
+
+data class ListType<T>(val elemType: Type): Type()
 
 //data class OpaquePlatformType(val id: String): Type ()
+
+typealias ValidationErrors = List<ValidationError>
+
+data class ValidationError(val error: String, val path: List<String> = emptyList())
+
+fun error(error: String): ValidationErrors =
+    listOf(ValidationError(error))
+
+val noErrors: ValidationErrors = emptyList()
 
 typealias Refinement = (varname: String) -> RExpr<Boolean>
 
