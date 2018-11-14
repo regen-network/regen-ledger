@@ -1,7 +1,7 @@
 package ceres.lang.smtlib
 
 import ceres.lang.Integer
-import ceres.ast.Real
+import ceres.lang.Real
 
 /**
  * A refinement typing expression

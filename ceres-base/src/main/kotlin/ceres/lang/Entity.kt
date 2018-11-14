@@ -1,9 +1,9 @@
 package ceres.lang
 
-interface Entity {
-    fun get(prop: String): Any?
-}
+import ceres.data.PersistentMap
 
-interface PersistentEntity: Entity {
-    fun set(prop: String, value: Any?): PersistentEntity
-}
+interface Entity: Map<String, Any>
+
+interface PersistentEntity: PersistentMap<String, Any>
+
+class EntityImpl(val map: PersistentMap<String, Any>): PersistentEntity, PersistentMap<String, Any> by map

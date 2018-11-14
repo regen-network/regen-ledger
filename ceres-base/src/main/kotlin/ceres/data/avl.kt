@@ -1,6 +1,7 @@
-package ceres.AVL
+package ceres.data.avl
 
-import ceres.util.reduceAcc
+import ceres.data.PersistentMap
+import ceres.data.PersistentSet
 import kotlin.math.max
 
 interface IAVLNode<K: Comparable<K>, V> {
@@ -23,44 +24,47 @@ data class SimpleAVLNode<K: Comparable<K>, V>(override val key: K, override val 
 fun <K:Comparable<K>, V> makeSimpleAVLNode(key: K, value: V, left: IAVLNode<K, V>?, right: IAVLNode<K, V>?): IAVLNode<K, V> =
     SimpleAVLNode(key, value, left, right, 1 + max(left?.height ?: 0, right?.height ?: 0), 0)
 
-
-interface IAVLTree<K: Comparable<K>, V> /*: Map<K, V>*/ {
-    fun set(key: K, value: V): IAVLTree<K, V>
-
-    fun setMany(pairs: Sequence<Pair<K, V>>): IAVLTree<K, V> =
-        pairs.reduceAcc(this, {acc, elem -> acc.set(elem.first, elem.second)})
-
-    fun setMany(pairs: Iterable<Pair<K, V>>): IAVLTree<K, V> =
-            pairs.reduceAcc(this, {acc, elem -> acc.set(elem.first, elem.second)})
-
-    fun get(key: K): V?
-
-    fun delete(key: K): IAVLTree<K, V>
-
-    fun containsKey(key: K): Boolean
-
-    val size: Long
-
-    fun isEmpty(): Boolean
-
+interface IAVLTree<K: Comparable<K>, V>: PersistentMap<K, V> {
     val root: IAVLNode<K, V>?
 }
 
-interface IAVLSet<K: Comparable<K>> {
-    suspend fun contains(key: K): Boolean
-    suspend fun add(key: K): IAVLSet<K>
-}
+data class AVLSet<K: Comparable<K>>(val tree: PersistentMap<K, Unit> = SimpleAVLTree<K, Unit>()): PersistentSet<K> {
+    override val size: Int
+        get() = tree.size
 
-data class AVLSet<K: Comparable<K>>(val tree: IAVLTree<K, Unit>): IAVLSet<K> {
-    override suspend fun contains(key: K): Boolean = tree.containsKey(key)
+    override fun containsAll(elements: Collection<K>): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
-    override suspend fun add(key: K): IAVLSet<K> =
+    override fun isEmpty(): Boolean {
+        return size == 0
+    }
+
+    override fun iterator(): Iterator<K> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun contains(key: K): Boolean = tree.containsKey(key)
+
+    override fun add(key: K): PersistentSet<K> =
             AVLSet(tree.set(key, Unit))
-
 }
 
 class SimpleAVLTree<K: Comparable<K>, V> (override val root: IAVLNode<K, V>? = null): IAVLTree<K, V> {
-    override val size: Long
+    override val entries: Set<Map.Entry<K, V>>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
+    override val keys: Set<K>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
+    override val values: Collection<V>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
+    override fun containsValue(value: V): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override val size: Int
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 
     override fun containsKey(key: K) = root?.findNode(key) != null
