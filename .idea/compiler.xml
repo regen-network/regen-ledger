@@ -18,8 +18,18 @@
       <module name="ceres.xtext.ide_test" target="1.8" />
       <module name="ceres.xtext_main" target="1.8" />
       <module name="ceres.xtext_test" target="1.8" />
+      <module name="network.regen.ceres-base-jvm.main" target="1.8" />
+      <module name="network.regen.ceres-base-jvm.test" target="1.8" />
       <module name="regen-ledger_main" target="1.8" />
       <module name="regen-ledger_test" target="1.8" />
+      <module name="regen-network.ceres-base.main" target="1.8" />
+      <module name="regen-network.ceres-base.test" target="1.8" />
+      <module name="regen-network.ceres-js.main" target="1.8" />
+      <module name="regen-network.ceres-js.test" target="1.8" />
+      <module name="regen-network.ceres-jvm.main" target="1.8" />
+      <module name="regen-network.ceres-jvm.test" target="1.8" />
+      <module name="regen-network.regen-ledger.main" target="1.8" />
+      <module name="regen-network.regen-ledger.test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

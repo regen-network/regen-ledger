@@ -1,6 +1,6 @@
 package ceres.lang.smtlib
 
-import ceres.ast.Integer
+import ceres.lang.Integer
 import ceres.ast.Real
 
 /**

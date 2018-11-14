@@ -1,4 +1,4 @@
-package ceres.ast
+package ceres.lang
 
 import java.math.BigDecimal
 import java.math.BigInteger

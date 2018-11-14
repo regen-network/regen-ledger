@@ -1,27 +1,35 @@
 package ceres.schema
 
-sealed class Property() {
-    abstract val name: String
+import ceres.lang.*
 
-    data class DataProperty(
-        override val name: String,
-        val datatype: Datatype): Property()
-
-    data class ObjectProperty(
-        override val name: String,
-        val cls: Class): Property()
+fun EntityType.validateEntity(entity: Entity) {
+    for (prop in properties) {
+        prop.validateProperty(entity.get(prop.name))
+    }
 }
 
-data class Class(
-    val name: String,
-    val properties: ClassPropertyRef
-)
+fun Property<*>.validateProperty(value: Any?) =
+    when(this) {
+        is OneProperty<*> -> this.validateOneProperty(value)
+        is ZeroOrOneProperty<*> -> this.validateZeroOrOneProperty(value)
+        is ManyProperty<*> -> this.validateManyProperty(value)
+    }
 
-data class ClassPropertyRef(
-    val prop: Property,
-    val required: Boolean
-)
+fun OneProperty<*>.validateOneProperty(value: Any?) {
+    if (value == null)
+        TODO()
+    when(type) {
+        EntityType
+    }
 
-data class Datatype(
-    val name: String
-)
+}
+
+fun ZeroOrOneProperty<*>.validateZeroOrOneProperty(value: Any?) {
+
+}
+
+fun ManyProperty<*>.validateManyProperty(value: Any?) {
+
+}
+
+
