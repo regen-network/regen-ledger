@@ -1,7 +1,7 @@
 package ceres.avl
 
-import ceres.AVL.IAVLNode
 import ceres.crypto.LibSodium
+import ceres.data.avl.IAVLNode
 import ceres.storage.IKVStore
 
 interface IMerkleAVLNode<K: Comparable<K>, V>: IAVLNode<K, V> {

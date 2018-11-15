@@ -1,5 +1,6 @@
 package ceres.AVL
 
+import ceres.data.avl.*
 import kotlin.math.abs
 import kotlin.random.Random
 import kotlin.test.Test
@@ -45,9 +46,9 @@ fun <T: Comparable<T>> assertWellBehaved(expected: Iterable<T>, tree: IAVLTree<T
     tree.root?.assertIsBalanced()
 }
 
-fun <T: Comparable<T>> makeTreeSet(values: Iterable<T>) = SimpleAVLTree<T, T>().setMany(values.map { it to it })
+fun <T: Comparable<T>> makeTreeSet(values: Iterable<T>) = SimpleAVLTree<T, T>().setMany(values.map { it to it }) as SimpleAVLTree<T, T>
 
-fun <T: Comparable<T>> testTree(values: Iterable<T>) = assertWellBehaved(values, makeTreeSet(values))
+fun <T: Comparable<T>> testTree(values: Iterable<T>) = assertWellBehaved<T>(values, makeTreeSet(values))
 
 class AVLTest {
     @Test fun test() {

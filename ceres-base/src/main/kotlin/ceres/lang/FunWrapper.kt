@@ -20,7 +20,6 @@ fun AbstractFun.invoke(params: List<Any?>): Any? =
         5 -> invoke(params[0], params[1], params[2], params[3], params[4])
         else -> invoke(*params.toTypedArray())
     }
-}
 
 typealias Fun0<R> = () -> R
 typealias Fun1<R, A> = (A) -> R

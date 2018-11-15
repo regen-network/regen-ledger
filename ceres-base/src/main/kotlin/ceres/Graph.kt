@@ -1,8 +1,7 @@
 package ceres.graph
 
-import ceres.AVL.IAVLSet
-import ceres.AVL.IAVLTree
 import ceres.avl.Serializer
+import ceres.data.PersistentSet
 
 sealed class ID {
     data class LocalImmutable(val hash: ByteArray): ID()
@@ -123,8 +122,8 @@ interface IGraph {
 }
 
 data class Graph(
-        val eav: IAVLSet<EAV>,
-        val vae: IAVLSet<VAE>
+        val eav: PersistentSet<EAV>,
+        val vae: PersistentSet<VAE>
 
 ) : IGraph {
     override fun get(iri: IRI): Node? {
