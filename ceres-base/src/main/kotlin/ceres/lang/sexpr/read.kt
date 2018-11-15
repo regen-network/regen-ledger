@@ -1,18 +1,26 @@
-package ceres.lang.sexpr
+package ceres.lang.sexpr.read
 
+import ceres.lang.sexpr.*
 import ceres.parser.*
 import ceres.parser.char.*
 
-fun read(str: String, uri: String? = null): ParseResult<Char, List<SExpr>> =
-        parseString(::reader, str, uri)
+//fun reader(tokenSource: TokenSource<Char>)
+//        = reader_.parse(tokenSource)
+//
+//fun sexpr(tokenSource: TokenSource<Char>)
+//        = sexpr.parse(tokenSource)
 
-fun reader(tokenSource: TokenSource<Char>)
-        = reader_(tokenSource)
+object reader: Parser<Char, List<SExpr>> {
+    override fun parse(tokens: TokenSource<Char>): ParseResult<Char, List<SExpr>> =
+            reader_.parse(tokens)
+}
 
-fun sexpr(tokenSource: TokenSource<Char>)
-        = sexpr_(tokenSource)
+object sexpr: Parser<Char, SExpr> {
+    override fun parse(tokens: TokenSource<Char>): ParseResult<Char, SExpr> =
+            sexpr_.parse(tokens)
+}
 
-val ws: Parser<Char, Unit> = star(testChar({
+val ws: Parser<Char, Unit> = star(testToken({
     when (it) {
         ' ' -> true
         ',' -> true
@@ -24,17 +32,17 @@ val ws: Parser<Char, Unit> = star(testChar({
 }, { "Expected whitespace, found ${it}" })).ignore()
 
 val parens =
-    cat(char('('), ::reader, char(')')).map { x, loc ->
+    cat(char('('), reader, char(')')).map { x, loc ->
         Parens(x.second, loc)
     }
 
 val curly =
-    cat(char('{'), ::reader, char('}')).map { x, loc ->
+    cat(char('{'), reader, char('}')).map { x, loc ->
         Curly(x.second, loc)
     }
 
 val square =
-    cat(char('['), ::reader, char(']')).map { x, loc ->
+    cat(char('['), reader, char(']')).map { x, loc ->
         Square(x.second, loc)
     }
 
@@ -50,8 +58,8 @@ fun idChar(ch: Char): Boolean =
 
 val identifier: Parser<Char, String> =
     cat(
-        testChar(::idStartChar, { "${it} is not a valid identifier start character" }),
-        star(testChar(::idChar, { "${it} is not a valid identifier character" }))
+        testToken(::idStartChar, { "${it} is not a valid identifier start character" }),
+        star(testToken(::idChar, { "${it} is not a valid identifier character" }))
     ).map { x, _ ->
         String(charArrayOf(x.first) + x.second)
     }
@@ -75,7 +83,7 @@ val nil: Parser<Char, Nil> =
     str("nil").map({ _, loc -> Nil(loc) })
 
 val tagged: Parser<Char, Tagged> =
-    cat(char('#'), opt(identifier), ::sexpr).map({ x, loc ->
+    cat(char('#'), opt(identifier), sexpr).map({ x, loc ->
         Tagged(x.second, x.third, loc)
     })
 
@@ -89,9 +97,9 @@ val sexpr_: Parser<Char, SExpr> =
     )
 
 val reader_: Parser<Char, List<SExpr>> =
-    cat(star(cat(opt(ws), sexpr_).map {x,_ -> x.second}),
+    cat(star(cat(opt(ws), sexpr_).map { x, _ -> x.second}),
         opt(ws)).map {x,_ -> x.first}
 
-//        cat(star(cat(opt(ws), sexpr_)
-//            .map {x,_ -> x.second}), opt(ws))
-//            .map {x,_ -> x.first}
+fun read(str: String, uri: String? = null): ParseResult<Char, List<SExpr>> =
+    parseString(reader_, str, uri)
+

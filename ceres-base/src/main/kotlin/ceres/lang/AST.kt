@@ -52,7 +52,6 @@ data class FunCall(val fn: Expr, val args: List<Expr>, override val sourceLoc: S
         val argVals = args.map { it.eval(env) }
         return fn.invoke(argVals)
     }
-
     override fun typeCheck(env: TypeCheckEnv): TypeResult {
         return when (val fnChk = fn.typeCheck(env)) {
             is TypeResult.Checked ->

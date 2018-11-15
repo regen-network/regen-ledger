@@ -6,7 +6,15 @@ import ceres.test.seed.*
 import ceres.test.shrink.*
 import kotlin.random.*
 
-inline class Gen<A>(val runGen: (Size, Seed) -> Tree<A>)
+interface HasGen<A> {
+    val gen: Gen<A>
+}
+
+inline class Gen<A>(val runGen: (Size, Seed) -> Tree<A>): HasGen<A> {
+    override val gen: Gen<A>
+        get() = this
+}
+
 
 fun <A> generate(f: (Size, Seed) -> A): Gen<A> =
     Gen({ size, seed -> treeOf(f(size, seed)) })
@@ -19,7 +27,7 @@ fun <A, B> Gen<A>.mapGenT(f: (Tree<A>) -> Tree<B>): Gen<B> =
 fun <A, B> Gen<A>.map(f: (A) -> B): Gen<B> =
         mapGenT { it.map(f) }
 
-fun <A, B> Gen<A>.bind(f: (A) -> Gen<B>): Gen<B> =
+fun <A, B> Gen<A>.bind(f: (A) -> HasGen<B>): Gen<B> =
         Gen({ size, seed ->
             val (sk, sm) = seed.split()
 //            Tree({
@@ -79,7 +87,7 @@ fun <A> element(xs: List<A>): Gen<A> =
     else
         int(constantRange(0, xs.size)).map { xs[it] }
 
-fun <A> choice(xs: List<Gen<A>>): Gen<A> =
+fun <A> choice(xs: List<HasGen<A>>): Gen<A> =
     if (xs.isEmpty())
         throw IllegalArgumentException("element used with empty list")
     else

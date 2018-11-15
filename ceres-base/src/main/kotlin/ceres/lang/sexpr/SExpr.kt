@@ -8,36 +8,45 @@ sealed class SExpr: HasSourceLoc
 
 fun List<SExpr>.str() = map { it.toString() }.joinToString(" ")
 
-data class Parens(val xs: List<SExpr>, override val sourceLoc: SourceLoc? = null): SExpr() {
-    override fun toString(): String = "(${xs.str()})"
+abstract class HasElements: SExpr() {
+    abstract val elements: List<SExpr>
 }
 
-data class Square(val xs: List<SExpr>, override val sourceLoc: SourceLoc? = null): SExpr() {
+data class Parens(override val elements: List<SExpr>, override val sourceLoc: SourceLoc? = null): HasElements() {
+    override fun toString(): String = "(${elements.str()})"
+}
+
+data class Square(override val elements: List<SExpr>, override val sourceLoc: SourceLoc? = null): HasElements() {
     override fun toString(): String {
-        println(xs)
-        return "[${xs.str()}]"
+        println(elements)
+        return "[${elements.str()}]"
     }
 }
 
-data class Curly(val xs: List<SExpr>, override val sourceLoc: SourceLoc? = null): SExpr() {
-    override fun toString(): String = "{${xs.str()}}"
+data class Curly(override val elements: List<SExpr>, override val sourceLoc: SourceLoc? = null): HasElements() {
+    override fun toString(): String = "{${elements.str()}}"
 }
 
-data class Symbol(val name: String, override val sourceLoc: SourceLoc? = null): SExpr() {
+abstract class Named: SExpr() {
+    abstract val name: String
+}
+
+data class Symbol(override val name: String, override val sourceLoc: SourceLoc? = null): Named() {
     override fun toString(): String = name
 }
 
-data class Keyword(val name: String, override val sourceLoc: SourceLoc? = null): SExpr() {
+data class Keyword(override val name: String, override val sourceLoc: SourceLoc? = null): Named() {
     override fun toString(): String = ":${name}"
+}
+
+data class Str(override val name: String, override val sourceLoc: SourceLoc? = null): Named() {
+    override fun toString() = "\"" + name.map(::escapeChar).joinToString() + "\""
 }
 
 data class Num(val x: Number, override val sourceLoc: SourceLoc? = null): SExpr() {
     override fun toString() = x.toString()
 }
 
-data class Str(val x: String, override val sourceLoc: SourceLoc? = null): SExpr() {
-    override fun toString() = "\"" + x.map(::escapeChar).joinToString() + "\""
-}
 
 fun escapeChar(ch: Char) = when(ch) {
     '\"' -> "\\\""

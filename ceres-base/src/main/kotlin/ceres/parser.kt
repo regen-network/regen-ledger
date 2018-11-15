@@ -1,5 +1,9 @@
 package ceres.parser
 
+import ceres.test.gen.Gen
+import ceres.test.gen.HasGen
+import ceres.test.gen.choice
+
 interface Source {
     val uri: String?
 }
@@ -25,6 +29,9 @@ sealed class ParseResult<T, out R> {
 }
 
 fun <T> TokenSource<T>.sourceLoc(left: TokenSource<T>?): SourceLoc {
+    // TODO allow the token source to override this (ex. SExpr tokens should still point to the original string source if possible, or to a code source if not)
+    // would also be great if the token source could point to both the relevant parsed expression
+    // and preceding whitespace/comments for re-formatting and docstring extraction
     return SourceLoc(source, loc, left?.loc ?: loc)
 }
 
@@ -40,74 +47,99 @@ fun <T, R> TokenSource<T>.unexpectedEof(): ParseResult<T, R> {
     return ParseResult.Error(listOf(ParseError("Unexpected EOF", sourceLoc(null))))
 }
 
-typealias Parser<Token, Result> = (TokenSource<Token>) -> ParseResult<Token, Result>
-
-fun <T, A, B> cat(a: Parser<T, A>, b: Parser<T, B>): Parser<T, Pair<A, B>> = {
-    when (val aRes = a(it)) {
-        is ParseResult.Success ->
-            when (val bRes = b(aRes.left)) {
-                is ParseResult.Success ->
-                    it.parsed(aRes.result to bRes.result, bRes.left)
-                is ParseResult.Error -> bRes as ParseResult<T, Pair<A, B>>
-            }
-        is ParseResult.Error -> aRes as ParseResult<T, Pair<A, B>>
-    }
+interface Parser<Token, out Result>: HasGen<Sequence<Token>> {
+    fun parse(tokens: TokenSource<Token>): ParseResult<Token, Result>
 }
+
+class cat2<T, A, B>(val a: Parser<T, A>, val b: Parser<T, B>) : Parser<T, Pair<A, B>> {
+    override val gen: Gen<Sequence<T>>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
+    override fun parse(ts: TokenSource<T>): ParseResult<T, Pair<A, B>> =
+        when (val aRes = a.parse(ts)) {
+            is ParseResult.Success ->
+                when (val bRes = b.parse(aRes.left)) {
+                    is ParseResult.Success ->
+                        ts.parsed(aRes.result to bRes.result, bRes.left)
+                    is ParseResult.Error -> bRes as ParseResult<T, Pair<A, B>>
+                }
+            is ParseResult.Error -> aRes as ParseResult<T, Pair<A, B>>
+        }
+}
+
+fun <T, A, B> cat(a: Parser<T, A>, b: Parser<T, B>): Parser<T, Pair<A, B>> = cat2(a, b)
 
 fun <T, A, B, C> cat(a: Parser<T, A>, b: Parser<T, B>, c: Parser<T, C>): Parser<T, Triple<A, B, C>> =
     cat(cat(a, b), c).map { x, _ ->
         Triple(x.first.first, x.first.second, x.second)
     }
 
-
 //data class Tuple4<A, B, C, D>(val a: A, val b: B, val c: C, val d: D)
 //
 //data class Tuple5<A, B, C, D, E>(val a: A, val b: B, val c: C, val d: D, val e: E)
 
-fun <T, R> alt(vararg parsers: Parser<T, R>): Parser<T, R> = fun(ts: TokenSource<T>): ParseResult<T, R> {
-    for (parser in parsers) {
-        val res = parser(ts)
-        when (res) {
-            is ParseResult.Success -> return res
-            else -> {
+class alt<T, R>(vararg val parsers: Parser<T, R>) : Parser<T, R> {
+    override val gen: Gen<Sequence<T>> by lazy {
+        choice(parsers.toList())
+    }
+
+    override fun parse(ts: TokenSource<T>): ParseResult<T, R> {
+        for (parser in parsers) {
+            val res = parser.parse(ts)
+            when (res) {
+                is ParseResult.Success -> return res
+                else -> {
+                }
             }
         }
-    }
-    return ts.error("Expected one of the alternatives", ts)
-}
-
-fun <T, R> opt(parser: Parser<T, R>): Parser<T, R?> = {
-    when (val res = parser(it)) {
-        is ParseResult.Success -> res
-        is ParseResult.Error -> it.parsed(null, it)
+        return ts.error("Expected one of the alternatives", ts)
     }
 }
 
-fun <T, R> star(parser: Parser<T, R>): Parser<T, List<R>> = {
-    val res = mutableListOf<R>()
-    var curTs: TokenSource<T> = it
-    loop@ while (true) {
-        val x = parser(curTs)
-        when (x) {
-            is ParseResult.Success -> {
-                res.add(x.result)
-                curTs = x.left
-            }
-            is ParseResult.Error -> break@loop
+class opt<T, R>(val parser: Parser<T, R>) : Parser<T, R?> {
+    override val gen: Gen<Sequence<T>>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
+    override fun parse(tokens: TokenSource<T>): ParseResult<T, R?> =
+        when (val res = parser.parse(tokens)) {
+            is ParseResult.Success -> res
+            is ParseResult.Error -> tokens.parsed(null, tokens)
         }
-    }
-    it.parsed(res, curTs)
 }
 
-fun <T, R> plus(parser: Parser<T, R>): Parser<T, List<R>> {
-    val p = star(parser)
-    return {
-        when (val res = p(it)) {
+class star<T, R>(val parser: Parser<T, R>) : Parser<T, List<R>> {
+    override val gen: Gen<Sequence<T>>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
+    override fun parse(tokens: TokenSource<T>): ParseResult<T, List<R>> {
+        val res = mutableListOf<R>()
+        var curTs: TokenSource<T> = tokens
+        loop@ while (true) {
+            val x = parser.parse(curTs)
+            when (x) {
+                is ParseResult.Success -> {
+                    res.add(x.result)
+                    curTs = x.left
+                }
+                is ParseResult.Error -> break@loop
+            }
+        }
+        return tokens.parsed(res, curTs)
+    }
+}
+
+class plus<T, R>(parser: Parser<T, R>) : Parser<T, List<R>> {
+    override val gen: Gen<Sequence<T>>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
+    val pstar = star(parser)
+    override fun parse(tokens: TokenSource<T>): ParseResult<T, List<R>> {
+        when (val res = pstar.parse(tokens)) {
             is ParseResult.Success ->
                 if (res.result.size == 0)
-                    it.error("Expected non-empty", it)
-                else res
-            is ParseResult.Error -> res
+                    return tokens.error("Expected non-empty", tokens)
+                else return res
+            is ParseResult.Error -> return res
         }
     }
 }
@@ -123,13 +155,50 @@ fun <T, R> plus(parser: Parser<T, R>): Parser<T, List<R>> {
 //fun <T, R> sepByBefEnd(parser: Parser<T, R>, sep: Parser<T, *>): Parser<T, List<R>> =
 //    cat(opt(sep), sepByEnd(parser, sep)).map { x, _ -> x.second }
 
-fun <T, A, B> Parser<T, A>.map(f: (A, SourceLoc) -> B): Parser<T, B> = {
-    when (val res = this(it)) {
-        is ParseResult.Success -> it.parsed(f(res.result, res.loc), res.left)
+class Mapper<T, A, B>(val parser: Parser<T, A>, val f: (A, SourceLoc) -> B): Parser<T, B> {
+    override val gen: Gen<Sequence<T>>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
+    override fun parse(tokens: TokenSource<T>): ParseResult<T, B> =
+    when (val res = parser.parse(tokens)) {
+        is ParseResult.Success -> tokens.parsed(f(res.result, res.loc), res.left)
         is ParseResult.Error -> ParseResult.Error(res.errors)
     }
 }
 
+fun <T, A, B> Parser<T, A>.map(f: (A, SourceLoc) -> B): Parser<T, B> = Mapper(this, f)
+
 fun <T, A> Parser<T, A>.ignore(): Parser<T, Unit> = map { _, _ -> Unit }
 
+class Binder<S, T, A, B>(val parser: Parser<T, A>, val f: (A, SourceLoc) -> ParseResult<S, B>): Parser<T, B> {
+    override val gen: Gen<Sequence<T>>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 
+    override fun parse(tokens: TokenSource<T>): ParseResult<T, B> =
+        when (val res = parser.parse(tokens)) {
+            is ParseResult.Success ->
+                when(val subRes = f(res.result, res.loc)) {
+                    is ParseResult.Success -> ParseResult.Success(subRes.result, res.loc, res.left)
+                    is ParseResult.Error -> ParseResult.Error(subRes.errors, res.left)
+                }
+            is ParseResult.Error -> ParseResult.Error(res.errors)
+        }
+}
+
+fun <S, T, A, B> Parser<T, A>.bind(f: (A, SourceLoc) -> ParseResult<S, B>): Parser<T, B> =
+    Binder(this, f)
+
+class testToken<T>(val f: (T) -> Boolean, val err: (T) -> String) : Parser<T, T> {
+    override val gen: Gen<Sequence<T>>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
+    override fun parse(tokens: TokenSource<T>): ParseResult<T, T> {
+        val cur = tokens.cur
+        return if (cur == null) tokens.unexpectedEof()
+        else if (f(cur)) {
+            tokens.parsed(cur, tokens.next())
+        } else {
+            tokens.error(err(cur), tokens)
+        }
+    }
+}
