@@ -3,8 +3,8 @@ package ceres.lang.ast
 import ceres.data.PersistentMap
 import ceres.data.avlMapOf
 import ceres.lang.*
-import ceres.lang.util.HasSourceLoc
-import ceres.lang.util.SourceLoc
+import ceres.parser.HasSourceLoc
+import ceres.parser.SourceLoc
 
 //sealed class NodeBinding {
 //    data class PropValue(val name: Expr.ID, val value: Expr)
