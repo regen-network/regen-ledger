@@ -3,6 +3,7 @@ package ceres.lang.sexpr.read
 import ceres.lang.sexpr.*
 import ceres.parser.*
 import ceres.parser.char.*
+import ceres.test.gen.Gen
 
 //fun reader(tokenSource: TokenSource<Char>)
 //        = reader_.parse(tokenSource)
@@ -10,17 +11,29 @@ import ceres.parser.char.*
 //fun sexpr(tokenSource: TokenSource<Char>)
 //        = sexpr.parse(tokenSource)
 
+fun read(str: String, uri: String? = null) =
+    parseString(reader, str, uri)
+
+fun readExpr(str: String, uri: String? = null) =
+    parseString(sexpr, str, uri)
+
 object reader: Parser<Char, List<SExpr>> {
+    override val gen: Gen<List<Char>>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
     override fun parse(tokens: TokenSource<Char>): ParseResult<Char, List<SExpr>> =
             reader_.parse(tokens)
 }
 
 object sexpr: Parser<Char, SExpr> {
+    override val gen: Gen<List<Char>>
+        get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
+
     override fun parse(tokens: TokenSource<Char>): ParseResult<Char, SExpr> =
             sexpr_.parse(tokens)
 }
 
-val ws: Parser<Char, Unit> = star(testToken({
+val ws: Parser<Char, Unit> = star(testToken<Char>({
     when (it) {
         ' ' -> true
         ',' -> true
@@ -52,6 +65,11 @@ fun idStartChar(ch: Char): Boolean =
             || ch == '>'
             || ch == '<'
             || ch == '='
+            || ch == '+'
+            || ch == '-'
+            || ch == '.'
+            || ch == '*'
+            || ch == '!'
 
 fun idChar(ch: Char): Boolean =
     idStartChar(ch) || ch >= '0' && ch <= '9'
@@ -99,7 +117,4 @@ val sexpr_: Parser<Char, SExpr> =
 val reader_: Parser<Char, List<SExpr>> =
     cat(star(cat(opt(ws), sexpr_).map { x, _ -> x.second}),
         opt(ws)).map {x,_ -> x.first}
-
-fun read(str: String, uri: String? = null): ParseResult<Char, List<SExpr>> =
-    parseString(reader_, str, uri)
 

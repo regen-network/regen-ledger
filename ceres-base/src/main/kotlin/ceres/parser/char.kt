@@ -33,7 +33,7 @@ data class StringSource(val text: CharSequence, override val uri: String?) : Sou
 fun char(x: Char): Parser<Char, Char> = testToken({ it == x }, { "Expected ${x}, got ${it}" })
 
 class str(val x: String) : Parser<Char, String> {
-    override val gen: Gen<Sequence<Char>>
+    override val gen: Gen<List<Char>>
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 
     override fun parse(tokens: TokenSource<Char>): ParseResult<Char, String> {

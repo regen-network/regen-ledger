@@ -14,17 +14,7 @@ fun <T: Comparable<T>> assertAllValuesPresent(values: Iterable<T>, tree: IAVLTre
     }
 }
 
-fun <T: Comparable<T>> IAVLNode<T, T>?.allValues(): Sequence<T> {
-    if(this == null)
-        return emptySequence()
-    val This = this
-    return sequence {
-        yieldAll(This.left.allValues())
-        assertEquals(This.key, This.value)
-        yield(This.key)
-        yieldAll(This.right.allValues())
-    }
-}
+fun <T: Comparable<T>> IAVLNode<T, T>?.allValues(): Sequence<T> = this.entries().map { it.value }
 
 fun <T: Comparable<T>> assertAllValuesInOrder(values: Iterable<T>, tree: IAVLTree<T, T>) {
     val treeValues = tree.root.allValues().toList()

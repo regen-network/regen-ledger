@@ -1,5 +1,6 @@
 target/
 xrn.cabal
+.ceres-repl-history
 
 # Created by https://www.gitignore.io/api/vim,java,xtext,scala,emacs,gradle,kotlin,eclipse,haskell,intellij,macos
 

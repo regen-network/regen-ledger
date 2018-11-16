@@ -26,6 +26,7 @@ data class ParseError(val error: String, val loc: SourceLoc)
 sealed class ParseResult<T, out R> {
     data class Success<T, R>(val result: R, val loc: SourceLoc, val left: TokenSource<T>) : ParseResult<T, R>()
     data class Error<T, R>(val errors: List<ParseError>, val left: TokenSource<T>? = null) : ParseResult<T, R>()
+    //TODO custom error messages
 }
 
 fun <T> TokenSource<T>.sourceLoc(left: TokenSource<T>?): SourceLoc {
@@ -47,12 +48,13 @@ fun <T, R> TokenSource<T>.unexpectedEof(): ParseResult<T, R> {
     return ParseResult.Error(listOf(ParseError("Unexpected EOF", sourceLoc(null))))
 }
 
-interface Parser<Token, out Result>: HasGen<Sequence<Token>> {
+interface Parser<Token, out Result>: HasGen<List<Token>> {
     fun parse(tokens: TokenSource<Token>): ParseResult<Token, Result>
+    // TODO unparse(result: Result): List<Token>
 }
 
 class cat2<T, A, B>(val a: Parser<T, A>, val b: Parser<T, B>) : Parser<T, Pair<A, B>> {
-    override val gen: Gen<Sequence<T>>
+    override val gen: Gen<List<T>>
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 
     override fun parse(ts: TokenSource<T>): ParseResult<T, Pair<A, B>> =
@@ -79,7 +81,7 @@ fun <T, A, B, C> cat(a: Parser<T, A>, b: Parser<T, B>, c: Parser<T, C>): Parser<
 //data class Tuple5<A, B, C, D, E>(val a: A, val b: B, val c: C, val d: D, val e: E)
 
 class alt<T, R>(vararg val parsers: Parser<T, R>) : Parser<T, R> {
-    override val gen: Gen<Sequence<T>> by lazy {
+    override val gen: Gen<List<T>> by lazy {
         choice(parsers.toList())
     }
 
@@ -97,7 +99,7 @@ class alt<T, R>(vararg val parsers: Parser<T, R>) : Parser<T, R> {
 }
 
 class opt<T, R>(val parser: Parser<T, R>) : Parser<T, R?> {
-    override val gen: Gen<Sequence<T>>
+    override val gen: Gen<List<T>>
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 
     override fun parse(tokens: TokenSource<T>): ParseResult<T, R?> =
@@ -108,7 +110,7 @@ class opt<T, R>(val parser: Parser<T, R>) : Parser<T, R?> {
 }
 
 class star<T, R>(val parser: Parser<T, R>) : Parser<T, List<R>> {
-    override val gen: Gen<Sequence<T>>
+    override val gen: Gen<List<T>>
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 
     override fun parse(tokens: TokenSource<T>): ParseResult<T, List<R>> {
@@ -129,7 +131,7 @@ class star<T, R>(val parser: Parser<T, R>) : Parser<T, List<R>> {
 }
 
 class plus<T, R>(parser: Parser<T, R>) : Parser<T, List<R>> {
-    override val gen: Gen<Sequence<T>>
+    override val gen: Gen<List<T>>
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 
     val pstar = star(parser)
@@ -156,7 +158,7 @@ class plus<T, R>(parser: Parser<T, R>) : Parser<T, List<R>> {
 //    cat(opt(sep), sepByEnd(parser, sep)).map { x, _ -> x.second }
 
 class Mapper<T, A, B>(val parser: Parser<T, A>, val f: (A, SourceLoc) -> B): Parser<T, B> {
-    override val gen: Gen<Sequence<T>>
+    override val gen: Gen<List<T>>
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 
     override fun parse(tokens: TokenSource<T>): ParseResult<T, B> =
@@ -171,7 +173,7 @@ fun <T, A, B> Parser<T, A>.map(f: (A, SourceLoc) -> B): Parser<T, B> = Mapper(th
 fun <T, A> Parser<T, A>.ignore(): Parser<T, Unit> = map { _, _ -> Unit }
 
 class Binder<S, T, A, B>(val parser: Parser<T, A>, val f: (A, SourceLoc) -> ParseResult<S, B>): Parser<T, B> {
-    override val gen: Gen<Sequence<T>>
+    override val gen: Gen<List<T>>
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 
     override fun parse(tokens: TokenSource<T>): ParseResult<T, B> =
@@ -189,7 +191,7 @@ fun <S, T, A, B> Parser<T, A>.bind(f: (A, SourceLoc) -> ParseResult<S, B>): Pars
     Binder(this, f)
 
 class testToken<T>(val f: (T) -> Boolean, val err: (T) -> String) : Parser<T, T> {
-    override val gen: Gen<Sequence<T>>
+    override val gen: Gen<List<T>>
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 
     override fun parse(tokens: TokenSource<T>): ParseResult<T, T> {

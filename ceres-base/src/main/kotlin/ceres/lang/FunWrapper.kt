@@ -1,16 +1,16 @@
 package ceres.lang
 
 interface AbstractFun {
-    fun invoke(): Any? = NotImplementedError()
-    fun invoke(a: Any?): Any? = NotImplementedError()
-    fun invoke(a: Any?, b: Any?): Any? = NotImplementedError()
-    fun invoke(a: Any?, b: Any?, c: Any?): Any? = NotImplementedError()
-    fun invoke(a: Any?, b: Any?, c: Any?, d: Any?): Any? = NotImplementedError()
-    fun invoke(a: Any?, b: Any?, c: Any?, d: Any?, e: Any?): Any? = NotImplementedError()
-    fun invoke(vararg params: Any?): Any? = NotImplementedError()
+    fun invoke(): Any? = IllegalStateException("fun doesn't take arity 0")
+    fun invoke(a: Any?): Any? = IllegalStateException("fun doesn't take arity 1")
+    fun invoke(a: Any?, b: Any?): Any? = IllegalStateException("fun doesn't take arity 2")
+    fun invoke(a: Any?, b: Any?, c: Any?): Any? = IllegalStateException("fun doesn't take arity 3")
+    fun invoke(a: Any?, b: Any?, c: Any?, d: Any?): Any? = IllegalStateException("fun doesn't take arity 4")
+    fun invoke(a: Any?, b: Any?, c: Any?, d: Any?, e: Any?): Any? = IllegalStateException("fun doesn't take arity 5")
+    fun invoke(vararg params: Any?): Any? = IllegalStateException("fun doesn't take arity ${params.size}")
 }
 
-fun AbstractFun.invoke(params: List<Any?>): Any? =
+fun AbstractFun.call(params: List<Any?>): Any? =
     when(params.size) {
         0 -> invoke()
         1 -> invoke(params[0])

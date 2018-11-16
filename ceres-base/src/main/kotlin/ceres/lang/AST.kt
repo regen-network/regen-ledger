@@ -48,9 +48,9 @@ sealed class Expr : HasSourceLoc {
 
 data class FunCall(val fn: Expr, val args: List<Expr>, override val sourceLoc: SourceLoc? = null) : Expr() {
     override fun eval(env: EvalEnv): Any? {
-        val fn = fn.eval(env) as AbstractFun
+        val f = fn.eval(env) as AbstractFun
         val argVals = args.map { it.eval(env) }
-        return fn.invoke(argVals)
+        return f.call(argVals)
     }
     override fun typeCheck(env: TypeCheckEnv): TypeResult {
         return when (val fnChk = fn.typeCheck(env)) {
