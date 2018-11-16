@@ -126,8 +126,13 @@ data class FunCall(val fn: Expr, val args: List<Expr>, override val sourceLoc: S
                             is TypeResult.Checked -> {
                                 if (eval) {
                                     val fn = fnChk.value as? TypedFun
-                                    if (fn != null)
-                                        return fn.evalChecked(argsChecked)
+                                    if (fn != null) {
+                                        val evalRes = fn.evalChecked(argsChecked)
+                                        // Don't return an evaluation error because
+                                        // it could be because of un-evaluated parameters
+                                        if(evalRes is TypeResult.Checked)
+                                            return evalRes
+                                    }
                                 }
                                 return retTc
                             }

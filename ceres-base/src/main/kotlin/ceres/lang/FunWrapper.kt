@@ -12,6 +12,8 @@ abstract class FunWrapper(override val type: FunctionType): TypedFun {
     open fun invoke(a: Any?, b: Any?, c: Any?, d: Any?, e: Any?): Any? = IllegalStateException("fun doesn't take arity 5")
     open fun invoke(vararg params: Any?): Any? = IllegalStateException("fun doesn't take arity ${params.size}")
     override fun evalChecked(params: List<TypeResult.Checked>): TypeResult {
+        if(!params.all { it.hasValue })
+            return TypeResult.Errors(listOf(TypeError("Cannot evaluate wrapped function with unevaluated parameters.", null)))
         val res = when (params.size) {
             0 -> invoke()
             1 -> invoke(params[0].value)
