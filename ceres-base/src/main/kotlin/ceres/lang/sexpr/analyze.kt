@@ -1,5 +1,6 @@
 package ceres.lang.sexpr.analyze
 
+import ceres.lang.StringType
 import ceres.lang.ast.*
 import ceres.lang.sexpr.*
 import ceres.lang.sexpr.read.reader
@@ -63,7 +64,7 @@ val funCall: Parser<SExpr, FunCall> =
 val varRef = sym.map {x, loc -> VarRef((x as Symbol).name, loc)}
 
 val strL = testToken<SExpr>({it is Str},{"Expected a string, got $[it"})
-    .map {x, loc -> StringL((x as Str).name, loc)}
+    .map {x, loc -> Literal((x as Str).name, StringType(), loc)}
 
 val orExpr = parens(cat(sym(str("or")), plus(expr))).map {x, loc -> OrExpr(x.second, loc)}
 

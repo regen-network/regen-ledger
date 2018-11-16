@@ -17,6 +17,7 @@ dependencies {
     compile 'io.github.microutils:kotlin-logging:1.5.9'
     compile "ch.qos.logback:logback-classic:1.2.1"
     compile "org.jline:jline:3.9.0"
+    compile group: 'org.eclipse.lsp4j', name: 'org.eclipse.lsp4j', version: '0.5.0'
     compile project(":ceres-base")
     compile project(":ceres-base-jvm")
 //    compile project(":ceres.xtext")

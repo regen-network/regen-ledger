@@ -1,6 +1,8 @@
 package ceres.lang.sexpr.repl
 
+import ceres.lang.DoubleType
 import ceres.lang.ast.EvalEnv
+import ceres.lang.ast.checked
 import ceres.lang.sexpr.analyze.exprParser
 import ceres.parser.ParseResult
 import ceres.parser.char.parseString
@@ -28,7 +30,10 @@ interface IOStreams {
 }
 
 suspend fun repl(io: IOStreams, env: EvalEnv) {
-    var env = env.with("x" to 0.0, "y" to 1.0)
+    var env = env.with(
+        "x" to checked(DoubleType.default, 0.0),
+        "y" to checked(DoubleType.default, 1.0)
+    )
     val completer = object: Completer {
         override fun complete() = env.keys
     }
@@ -45,8 +50,11 @@ suspend fun repl(io: IOStreams, env: EvalEnv) {
         when(parseRes) {
             is ParseResult.Success -> {
                 try {
-                    val res = parseRes.result.eval(env)
-                    out.writeLn(res.toString())
+                    val expr = parseRes.result
+                    val tc = expr.typeCheck(env, true)
+//                    val res = expr.eval(env)
+//                    out.writeLn(res.toString())
+                    out.writeLn(tc.toString())
                 } catch (ex: Throwable) {
                     err.reportEx(ex)
                 }

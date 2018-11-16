@@ -12,10 +12,21 @@ import ceres.lang.smtlib.RExpr
 import kotlin.reflect.KClass
 
 sealed class Type {
-    abstract fun checkSubType(type: Type): String?
-    abstract fun union(type: Type): Either<String, Type>
+    abstract fun __checkSubType(subType: Type): String?
+    abstract fun __union(type: Type): Either<String, Type>
     // TODO abstract fun intersection(type: Type): Either<String, Type>
 }
+
+fun Type.checkSubType(subType: Type) =
+    this.__checkSubType(subType)
+
+fun Type.union(type: Type) =
+    when(type) {
+        EmptyType -> Success(this)
+        else -> this.__union(type)
+    }
+
+private fun Type.subTypeError(subType: Type) = "${subType} can't be a sub-type of ${this}"
 
 sealed class PropertyType<T : Any> : Type() {
     abstract val kClass: KClass<T>
@@ -29,11 +40,11 @@ data class EntityType(
     val constraints: List<Refinement>
 ) : PropertyType<Entity>() {
 
-    override fun checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun union(type: Type): Either<String, Type> {
+    override fun __union(type: Type): Either<String, Type> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -51,11 +62,11 @@ data class EntityType(
 }
 
 data class DisjointEntityUnion(val entityTypes: List<EntityType>) : PropertyType<Entity>() {
-    override fun checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun union(type: Type): Either<String, Type> {
+    override fun __union(type: Type): Either<String, Type> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -144,11 +155,11 @@ data class IntegerType(
     override val minValue: Integer? = null, override val maxValue: Integer? = null,
     override val multipleOf: Integer? = null
 ) : NumericType<Integer>() {
-    override fun union(type: Type): Either<String, Type> {
+    override fun __union(type: Type): Either<String, Type> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -172,11 +183,17 @@ data class DoubleType(
     val exclusiveMin: Boolean = false,
     val exclusiveMax: Boolean = false
 ) : NumericType<Double>() {
-    override fun checkSubType(type: Type): String? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    companion object {
+        val default = DoubleType()
     }
 
-    override fun union(type: Type): Either<String, Type> {
+    override fun __checkSubType(subType: Type): String? =
+        when(subType) {
+            is DoubleType -> null // TODO refinements
+            else -> subTypeError(subType)
+        }
+
+    override fun __union(type: Type): Either<String, Type> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -199,11 +216,11 @@ data class DoubleType(
 
 data class StringType(val minLength: Int? = null, val maxLength: Int? = null, val regex: Regex? = null) :
     DataType<String>() {
-    override fun checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun union(type: Type): Either<String, Type> {
+    override fun __union(type: Type): Either<String, Type> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -225,11 +242,11 @@ data class StringType(val minLength: Int? = null, val maxLength: Int? = null, va
 data class EnumValue(val value: String, val iri: String?)
 
 data class EnumType(val values: Set<EnumValue>) : PropertyType<String>() {
-    override fun checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun union(type: Type): Either<String, Type> {
+    override fun __union(type: Type): Either<String, Type> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -255,11 +272,15 @@ data class BoolType(
     /** Used to restrict value in refinement contexts */
     val value: Boolean? = null
 ) : DataType<Boolean>() {
-    override fun union(type: Type): Either<String, Type> {
+    companion object {
+        val default = BoolType()
+    }
+
+    override fun __union(type: Type): Either<String, Type> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun checkSubType(type: Type): String? =
+    override fun __checkSubType(type: Type): String? =
         when (type) {
             is BoolType -> null // TODO refinement
             else -> "Expected Bool, got ${type}"
@@ -283,13 +304,13 @@ data class BoolType(
 val boolType = BoolType()
 
 object NilType : Type() {
-    override fun checkSubType(type: Type): String? =
+    override fun __checkSubType(type: Type): String? =
             when(type) {
                 NilType -> null
-                else -> "${type} can't be a sub-type of ${this}"
+                else -> subTypeError(type)
             }
 
-    override fun union(type: Type): Either<String, Type> =
+    override fun __union(type: Type): Either<String, Type> =
             when(type) {
                 EmptyType -> Success(this)
                 NilType -> Success(this)
@@ -299,17 +320,17 @@ object NilType : Type() {
 }
 
 object EmptyType: Type() {
-    override fun checkSubType(type: Type): String? = "${this} has no subtypes"
+    override fun __checkSubType(type: Type): String? = "${this} has no subtypes"
 
-    override fun union(type: Type): Either<String, Type> = Success(type)
+    override fun __union(type: Type): Either<String, Type> = Success(type)
 }
 
 object TypeType: Type() {
-    override fun checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun union(type: Type): Either<String, Type> {
+    override fun __union(type: Type): Either<String, Type> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -321,11 +342,11 @@ object TypeType: Type() {
 //object DurationType: DataType()
 
 object PointType : DataType<Point>() {
-    override fun checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun union(type: Type): Either<String, Type> {
+    override fun __union(type: Type): Either<String, Type> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -340,11 +361,11 @@ object PointType : DataType<Point>() {
 }
 
 object PolygonType : DataType<Polygon>() {
-    override fun checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun union(type: Type): Either<String, Type> {
+    override fun __union(type: Type): Either<String, Type> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -359,18 +380,20 @@ object PolygonType : DataType<Polygon>() {
 }
 
 data class FunctionType(
-    val params: List<Pair<String, Type>>,
-    val ret: Type,
+    val params: List<Pair<String, Expr>>, // TODO change Type to Expr
+    val ret: Expr,
     val suspend: Boolean = false,
-    val terminationConstraint: TerminationConstraint = TerminationConstraint.Partial
+    val terminationConstraint: TerminationConstraint = TerminationConstraint.Partial,
+    val smtIntrinsic: Boolean = false
+// TODO refinement constraints
 // TODO allowedPrimitives
 // TODO contextParams
 ) : Type() {
-    override fun checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun union(type: Type): Either<String, Type> {
+    override fun __union(type: Type): Either<String, Type> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
@@ -385,31 +408,31 @@ sealed class TerminationConstraint {
 // SetType and ListType are not property types because we want to handle cardinality of Entity properties differently
 
 data class NullableType(val type: Type) : Type() {
-    override fun checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun union(type: Type): Either<String, Type> {
+    override fun __union(type: Type): Either<String, Type> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
 
 data class SetType(val elemType: Type) : Type() {
-    override fun checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun union(type: Type): Either<String, Type> {
+    override fun __union(type: Type): Either<String, Type> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
 
 data class ListType(val elemType: Type) : Type() {
-    override fun checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun union(type: Type): Either<String, Type> {
+    override fun __union(type: Type): Either<String, Type> {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

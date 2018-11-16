@@ -86,7 +86,7 @@ suspend fun main() {
         try {
             repl(ConsoleIO, BaseEvalEnv)
         } catch (ex: UserInterruptException) {
-            println("Clearing REPL state (use Ctrl-D to exit)")
+            println("Aborting and clearing REPL state (use Ctrl-D to exit)")
             // cancel current operation and restart repl
         } catch (ex: EndOfFileException) {
             println("Goodbye!")
