@@ -29,7 +29,7 @@ import (
 )
 
 // DefaultNodeHome sets the folder where the applcation data and configuration will be stored
-var DefaultNodeHome = os.ExpandEnv("$HOME/.nsd")
+var DefaultNodeHome = os.ExpandEnv("$HOME/.xrnd")
 
 const (
 	flagOverwrite = "overwrite"
@@ -42,8 +42,8 @@ func main() {
 	ctx := server.NewDefaultContext()
 
 	rootCmd := &cobra.Command{
-		Use:               "nsd",
-		Short:             "nameservice App Daemon (server)",
+		Use:               "xrn",
+		Short:             "Regen Ledger App Daemon (server)",
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
 
@@ -53,7 +53,7 @@ func main() {
 	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
 
 	// prepare and add flags
-	executor := cli.PrepareBaseCmd(rootCmd, "NS", DefaultNodeHome)
+	executor := cli.PrepareBaseCmd(rootCmd, "XRN", DefaultNodeHome)
 	err := executor.Execute()
 	if err != nil {
 		// handle with #870
@@ -115,7 +115,7 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 
 			cfg.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
 
-			fmt.Printf("Initialized nsd configuration and bootstrapping files in %s...\n", viper.GetString(cli.HomeFlag))
+			fmt.Printf("Initialized xrnd configuration and bootstrapping files in %s...\n", viper.GetString(cli.HomeFlag))
 			return nil
 		},
 	}
@@ -136,7 +136,7 @@ func AddGenesisAccountCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command 
 		Long: strings.TrimSpace(`
 Adds accounts to the genesis file so that you can start a chain with coins in the CLI:
 
-$ nsd add-genesis-account cosmos1tse7r2fadvlrrgau3pa0ss7cqh55wrv6y9alwh 1000STAKE,1000mycoin
+$ xrnd add-genesis-account cosmos1tse7r2fadvlrrgau3pa0ss7cqh55wrv6y9alwh 1000STAKE,1000mycoin
 `),
 		RunE: func(_ *cobra.Command, args []string) error {
 			addr, err := sdk.AccAddressFromBech32(args[0])
