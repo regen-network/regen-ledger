@@ -66,6 +66,12 @@ val varRef = sym.map {x, loc -> VarRef((x as Symbol).name, loc)}
 val strL = testToken<SExpr>({it is Str},{"Expected a string, got $[it"})
     .map {x, loc -> Literal((x as Str).name, StringType(), loc)}
 
+// TODO:
+//val numL = testToken<SExpr>({it is Num},{"Expected a number, got $[it"})
+//    .map {x, loc ->
+//        val num = (x as Num).x
+//        if(num.contains(".")) Literal(Double.parse(num, DoubleType(), loc)}
+
 val orExpr = parens(cat(sym(str("or")), plus(expr))).map {x, loc -> OrExpr(x.second, loc)}
 
 val andExpr = parens(cat(sym(str("and")), plus(expr))).map {x, loc -> AndExpr(x.second, loc)}

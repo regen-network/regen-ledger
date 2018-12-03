@@ -1,8 +1,8 @@
 package ceres.lang.ast
 
-import ceres.data.PersistentMap
-import ceres.data.avlMapOf
+import ceres.data.*
 import ceres.lang.*
+import ceres.lang.smtlib.SmtEngine
 import ceres.parser.HasSourceLoc
 import ceres.parser.SourceLoc
 
@@ -13,22 +13,48 @@ import ceres.parser.SourceLoc
 
 
 // TODO SMT refinements
+// TODO cost checking
+// TODO allowed fn list
+// TODO effects?
 // TODO type inference
 // TODO holes?
 
 //data class TypeCheckEnv(val bindings: PersistentMap<String, Type>) : PersistentMap<String, Type> by bindings
 
-data class Env(val bindings: PersistentMap<String, TypeResult.Checked> = avlMapOf()) :
-    PersistentMap<String, TypeResult.Checked> by bindings {
-    fun with(vararg pairs: Pair<String, TypeResult.Checked>): Env = Env(bindings.setMany(pairs.asIterable()))
-    fun with(pairs: Iterable<Pair<String, TypeResult.Checked>>): Env = Env(bindings.setMany(pairs))
+data class TypeCheckOpts(
+    val enableTypeInference: Boolean = true,
+    val enableDependentTypes: Boolean = true
+)
+
+data class Env(
+    val bindings: PersistentMap<String, TypeResult.Checked> = avlMapOf(),
+    val smtEngine: SmtEngine? = null,
+    val opts: TypeCheckOpts = TypeCheckOpts(),
+    var deps: MutableSet<String> = mutableSetOf()
+) {
+    operator fun get(name: String): TypeResult.Checked? {
+        deps.add(name)
+        return bindings.get(name)
+    }
+
+    fun with(vararg pairs: Pair<String, TypeResult.Checked>): Env =
+        copy(bindings = bindings.setMany(pairs.asIterable()))
+
+    fun with(pairs: Iterable<Pair<String, TypeResult.Checked>>): Env =
+        copy(bindings = bindings.setMany(pairs))
 }
 
 typealias EvalEnv = Env
 typealias TypeCheckEnv = Env
 
 sealed class TypeResult {
-    data class Checked(val type: Type, val value: Any? = null, val hasValue: Boolean = false) : TypeResult() {
+    data class Checked(
+        val type: Type,
+        val value: Any? = null,
+        val hasValue: Boolean = false,
+        val smtName: String? = null,
+        val referencedSymbols: PersistentSet<String> = emptyAvlSet()
+    ) : TypeResult() {
         override fun toString(): String = "${value}: ${type}"
     }
 
@@ -53,7 +79,7 @@ fun checked(type: Type, value: Any? = null, hasValue: Boolean = false): TypeResu
     TypeResult.Checked(type, value, if (value != null) true else hasValue)
 
 sealed class Expr : HasSourceLoc {
-    abstract fun typeCheck(env: TypeCheckEnv, eval: Boolean): TypeResult
+    abstract fun typeCheck(env: Env, eval: Boolean): TypeResult
     protected fun error(msg: String, expr: Expr? = null): TypeResult.Errors =
         TypeResult.Errors(listOf(TypeError(msg, if (expr != null) expr else this)))
 }
@@ -61,18 +87,27 @@ sealed class Expr : HasSourceLoc {
 interface TypedFun {
     fun evalChecked(params: List<TypeResult.Checked>): TypeResult
     val type: FunctionType
+    val smtEncoder: SmtEncoder?
 }
 
 fun checkFnCall(fnTy: FunctionType, env: Env, argsChecked: List<TypeResult.Checked>): TypeResult {
+    fun error(msg: String): TypeResult.Errors {
+        return TypeResult.Errors(listOf(TypeError(msg, null)))
+    }
+
     val params = fnTy.params
     val nParams = params.size
+    val nArgs = argsChecked.size
+
+
+    if (nArgs != nParams)
+        return error("Expected ${nParams} args but got ${nArgs}")
+
+    // TODO add each arg param one by one while checking
     val envArgs = env.with(
         argsChecked.mapIndexed { idx, argTc -> params[idx].first to argTc }
     )
 
-    fun error(msg: String): TypeResult.Errors {
-        return TypeResult.Errors(listOf(TypeError(msg, null)))
-    }
     for (idx in 0 until nParams) {
         val param = params[idx]
         val argTc = argsChecked[idx]
@@ -111,11 +146,6 @@ data class FunCall(val fn: Expr, val args: List<Expr>, override val sourceLoc: S
             is TypeResult.Checked ->
                 when (val fnTy = fnChk.type) {
                     is FunctionType -> {
-                        val params = fnTy.params
-                        val nArgs = args.size
-                        val nParams = params.size
-                        if (nArgs != nParams)
-                            return error("Expected ${nParams} args but got ${nArgs}")
                         val argsTc = args.map { it.typeCheck(env, eval) }
                         val errs = argsTc.filterIsInstance<TypeResult.Errors>()
                         if (!errs.isEmpty())
@@ -130,7 +160,7 @@ data class FunCall(val fn: Expr, val args: List<Expr>, override val sourceLoc: S
                                         val evalRes = fn.evalChecked(argsChecked)
                                         // Don't return an evaluation error because
                                         // it could be because of un-evaluated parameters
-                                        if(evalRes is TypeResult.Checked)
+                                        if (evalRes is TypeResult.Checked)
                                             return evalRes
                                     }
                                 }
@@ -201,7 +231,11 @@ data class FunExpr(
         }
     }
 
-    inner class EvalWrapper(var env: EvalEnv, override val type: FunctionType) : TypedFun {
+    inner class EvalWrapper(
+        var env: EvalEnv,
+        override val type: FunctionType,
+        override val smtEncoder: SmtEncoder? = null
+    ) : TypedFun {
         override fun evalChecked(params: List<TypeResult.Checked>): TypeResult {
             if (params.size != args.size)
                 throw IllegalArgumentException("${args.size} arity function invoked with ${params.size} arguments")
@@ -244,19 +278,30 @@ data class CondExpr(
 //    }
 
     override fun typeCheck(env: TypeCheckEnv, eval: Boolean): TypeResult {
-        var ret = clauses.fold(checked(EmptyType), { ret, clause ->
+        var ret = checked(EmptyType)
+        for(clause in clauses) {
             when (val ra = clause.first.typeCheck(env, eval)) {
                 is TypeResult.Checked ->
                     when (val condErr = boolType.checkSubType(ra.type)) {
-                        null -> TODO()
+                        null -> {
+                            val clauseTc = clause.second.typeCheck(env, eval)
+                            when (clauseTc) {
+                                is TypeResult.Checked ->  {
+                                    if(eval && ra.value == true && clauseTc.hasValue) {
+                                        return clauseTc
+                                    }
+                                    ret = checked(ret.type.union(clauseTc.type))
+                                }
+                                is TypeResult.Errors -> return clauseTc
+                            }
+                        }
                         else -> {
-//                            ret + error(condErr, clause.first)
-                            TODO()
+                            return error(condErr)
                         }
                     }
-                is TypeResult.Errors -> return ret + ra
+                is TypeResult.Errors -> return ra
             }
-        })
+        }
         return ret
     }
 }
@@ -298,10 +343,14 @@ data class ObjTypeExpr(val pairs: List<Pair<String, PropertyTypeExpr>>, override
 }
 
 data class VarRef(val name: String, override val sourceLoc: SourceLoc? = null) : Expr() {
+//    override fun smtEncoder(env: Env): String? {
+//        return env[name]?.smtName
+//    }
+
     override fun typeCheck(env: TypeCheckEnv, eval: Boolean): TypeResult =
         when (val ty = env[name]) {
             null -> error("Unresolved references to ${name}")
-            else -> ty
+            else -> ty.copy(referencedSymbols = avlSetOf(name))
         }
 }
 
@@ -338,6 +387,10 @@ data class OrExpr(val exprs: List<Expr>, override val sourceLoc: SourceLoc? = nu
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+//    override fun smtEncoder(env: Env): String? {
+//        return "(or ${exprs.map { smtEncoder(env) }.joinToString(" ")})"
+//    }
+
 //    override fun eval(env: EvalEnv): Any? {
 //        for (expr in exprs) {
 //            if (expr.eval(env) == true)
@@ -359,6 +412,12 @@ data class AndExpr(val exprs: List<Expr>, override val sourceLoc: SourceLoc? = n
 //        }
 //        return true
 //    }
+}
+
+data class NotExpr(val exprs: List<Expr>, override val sourceLoc: SourceLoc? = null) : Expr() {
+    override fun typeCheck(env: TypeCheckEnv, eval: Boolean): TypeResult {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }
 
 data class Literal<T>(val value: T, val type: Type, override val sourceLoc: SourceLoc? = null) : Expr() {
@@ -402,4 +461,52 @@ data class Decl(
 
 data class Module(val decls: List<Decl>)
 
+data class CheckedModule(val env: Env, val errs: List<TypeResult.Errors>)
 
+// Dependent type checking can get expensive, this is an attempt to keep things performant
+class CachingTypeChecker {
+    var lastCheck: MutableMap<String, Triple<Expr, Set<String>, TypeResult>> = mutableMapOf()
+
+    fun check(module: Module): CheckedModule {
+        // TODO override equals for all Expr's to exlude sourceLoc
+        var env = Env()
+        val errs = mutableListOf<TypeResult.Errors>()
+        val changed = mutableSetOf<String>()
+
+        var thisCheck: MutableMap<String, Triple<Expr, Set<String>, TypeResult>> = mutableMapOf()
+
+        fun addTypeResult(name: String, res: Triple<Expr, Set<String>, TypeResult>) {
+            when (val tc = res.third) {
+                is TypeResult.Checked -> {
+                    env = env.with(name to tc)
+                }
+                is TypeResult.Errors -> errs.add(tc)
+            }
+            thisCheck.put(name, res)
+        }
+
+
+        for (decl in module.decls) {
+            val name = decl.name
+            val expr = decl.value
+            val last = lastCheck[name]
+            if (last != null) {
+                if (expr == last.first) {
+                    val lastDeps = last.second
+                    if (!lastDeps.any { changed.contains(it) } && env.bindings.keys.containsAll(lastDeps)) {
+                        println("Type-check cache hit")
+                        addTypeResult(name, last)
+                        continue
+                    }
+                }
+            }
+            changed.add(name)
+            val tc = expr.typeCheck(env, false)
+            addTypeResult(name, Triple(expr, env.deps, tc))
+            env.deps = mutableSetOf()
+
+        }
+        lastCheck = thisCheck
+        return CheckedModule(env, errs)
+    }
+}

@@ -5,4 +5,4 @@ import java.math.BigInteger
 
 actual typealias Integer = BigInteger
 
-actual typealias Real = BigDecimal
+actual typealias Decimal = BigDecimal

@@ -43,7 +43,7 @@ data class Str(override val name: String, override val sourceLoc: SourceLoc? = n
     override fun toString() = "\"" + name.map(::escapeChar).joinToString() + "\""
 }
 
-data class Num(val x: Number, override val sourceLoc: SourceLoc? = null): SExpr() {
+data class Num(val x: String, override val sourceLoc: SourceLoc? = null): SExpr() {
     override fun toString() = x.toString()
 }
 

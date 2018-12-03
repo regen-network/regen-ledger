@@ -35,7 +35,7 @@ suspend fun repl(io: IOStreams, env: EvalEnv) {
         "y" to checked(DoubleType.default, 1.0)
     )
     val completer = object: Completer {
-        override fun complete() = env.keys
+        override fun complete() = env.bindings.keys
     }
     val input = io.input(completer)
     val out = io.output
