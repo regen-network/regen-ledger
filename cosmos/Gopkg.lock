@@ -122,13 +122,12 @@
 
 [[projects]]
   branch = "jack/027"
-  digest = "1:735bcee48e06a1afacaab0ee7cba65941304c60b96436111d1fe117a54b1b421"
+  digest = "1:7c6619342410ba641c07813352fca12a1ffd9f516606ce2d32d37759e32c2234"
   name = "github.com/cosmos/sdk-application-tutorial"
   packages = [
     "x/nameservice",
     "x/nameservice/client",
     "x/nameservice/client/cli",
-    "x/nameservice/client/rest",
   ]
   pruneopts = "UT"
   revision = "9516bbc432157aeec01e32407e2080e4c80b14f2"
@@ -776,7 +775,6 @@
     "github.com/cosmos/cosmos-sdk/x/stake",
     "github.com/cosmos/sdk-application-tutorial/x/nameservice",
     "github.com/cosmos/sdk-application-tutorial/x/nameservice/client",
-    "github.com/cosmos/sdk-application-tutorial/x/nameservice/client/rest",
     "github.com/regen-network/gojsonschema",
     "github.com/spf13/cobra",
     "github.com/spf13/viper",

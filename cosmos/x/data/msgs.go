@@ -3,18 +3,17 @@ package data
 import (
 	"encoding/json"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/gojsonschema"
 )
 
-type MsgRegisterSchema struct {
-	// TODO figure out how to do naming and version - essentially schemas which are upgrades of previous versions and maintain backwards compatibility
-	// Name string
-	// Version string
-	Schema string
-}
+//type MsgRegisterSchema struct {
+//	// TODO figure out how to do naming and version - essentially schemas which are upgrades of previous versions and maintain backwards compatibility
+//	// Name string
+//	// Version string
+//	Schema string
+//}
 
 type MsgStoreData struct {
-	SchemaRef string
+	//SchemaRef string
 	Data string
 }
 
@@ -22,47 +21,53 @@ type MsgStoreDataPointer struct {
 	Hash string
 	HashAlg string
 	Url string
-	SchemaRef string
+	//SchemaRef string
 	PartialData string
 }
 
 
-func NewMsgRegisterSchema(schema string) MsgRegisterSchema {
-	return MsgRegisterSchema {
-		Schema: schema,
+//func NewMsgRegisterSchema(schema string) MsgRegisterSchema {
+//	return MsgRegisterSchema {
+//		Schema: schema,
+//	}
+//}
+//
+//func (msg MsgRegisterSchema) Route() string { return "data" }
+//
+//func (msg MsgRegisterSchema) Type() string { return "register_schema" }
+//
+//func (msg MsgRegisterSchema) ValidateBasic() sdk.Error {
+//	if msg.Schema == ""  {
+//		return sdk.ErrUnknownRequest("Schema cannot be empty")
+//	}
+//
+//	loader := gojsonschema.NewStringLoader(msg.Schema)
+//	sl := gojsonschema.NewSchemaLoader()
+//	_, err := sl.Compile(loader)
+//
+//	if err != nil {
+//		return sdk.ErrUnknownRequest(err.Error())
+//	}
+//	return nil
+//}
+//
+//
+//func (msg MsgRegisterSchema) GetSignBytes() []byte {
+//	b, err := json.Marshal(msg)
+//	if err != nil {
+//		panic(err)
+//	}
+//	return sdk.MustSortJSON(b)
+//}
+//
+//func (msg MsgRegisterSchema) GetSigners() []sdk.AccAddress {
+//	return nil
+//}
+
+func NewMsgStoreData(data string) MsgStoreData {
+	return MsgStoreData{
+        Data:data,
 	}
-}
-
-func (msg MsgRegisterSchema) Route() string { return "data" }
-
-func (msg MsgRegisterSchema) Type() string { return "register_schema" }
-
-func (msg MsgRegisterSchema) ValidateBasic() sdk.Error {
-	if msg.Schema == ""  {
-		return sdk.ErrUnknownRequest("Schema cannot be empty")
-	}
-
-	loader := gojsonschema.NewStringLoader(msg.Schema)
-	sl := gojsonschema.NewSchemaLoader()
-	_, err := sl.Compile(loader)
-
-	if err != nil {
-		return sdk.ErrUnknownRequest(err.Error())
-	}
-	return nil
-}
-
-
-func (msg MsgRegisterSchema) GetSignBytes() []byte {
-	b, err := json.Marshal(msg)
-	if err != nil {
-		panic(err)
-	}
-	return sdk.MustSortJSON(b)
-}
-
-func (msg MsgRegisterSchema) GetSigners() []sdk.AccAddress {
-	return nil
 }
 
 func (msg MsgStoreData) Route() string { return "data" }
@@ -70,9 +75,9 @@ func (msg MsgStoreData) Route() string { return "data" }
 func (msg MsgStoreData) Type() string { return "store_data" }
 
 func (msg MsgStoreData) ValidateBasic() sdk.Error {
-	if msg.SchemaRef == "" {
-		return sdk.ErrUnknownRequest("SchemaRef cannot be empty")
-	}
+	//if msg.SchemaRef == "" {
+	//	return sdk.ErrUnknownRequest("SchemaRef cannot be empty")
+	//}
 	if msg.Data == "" {
 		return sdk.ErrUnknownRequest("Data cannot be empty")
 	}

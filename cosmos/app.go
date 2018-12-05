@@ -2,8 +2,6 @@ package app
 
 import (
 	"encoding/json"
-	"github.com/cosmos/sdk-application-tutorial/x/nameservice"
-
 	"github.com/tendermint/tendermint/libs/log"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -73,19 +71,20 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 	// The FeeCollectionKeeper collects transaction fees and renders them to the fee distribution module
 	app.feeCollectionKeeper = auth.NewFeeCollectionKeeper(cdc, app.keyFeeCollection)
 
-	app.dataKeeper = data.NewKeeper(app.schemaStoreKey, app.dataStoreKey, cdc)
+	app.dataKeeper = data.NewKeeper(app.dataStoreKey, cdc)
 
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
 
 	// The app.Router is the main transaction router where each module registers its routes
-	// Register the bank and nameservice routes here
+	// Register the bank and data routes here
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
+		AddRoute("data", data.NewHandler(app.dataKeeper))
 
 	// The app.QueryRouter is the main query router where each module registers its routes
-	// app.QueryRouter().
-	// 	AddRoute("nameservice", nameservice.NewQuerier(app.nsKeeper))
+	app.QueryRouter().
+		AddRoute("data", data.NewQuerier(app.dataKeeper))
 
 	// The initChainer handles translating the genesis.json file into initial state for the network
 	app.SetInitChainer(app.initChainer)
@@ -156,7 +155,7 @@ func MakeCodec() *codec.Codec {
 	var cdc = codec.New()
 	auth.RegisterCodec(cdc)
 	bank.RegisterCodec(cdc)
-	nameservice.RegisterCodec(cdc)
+	data.RegisterCodec(cdc)
 	stake.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)

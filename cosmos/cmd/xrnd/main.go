@@ -153,7 +153,7 @@ $ xrnd add-genesis-account cosmos1tse7r2fadvlrrgau3pa0ss7cqh55wrv6y9alwh 1000STA
 			config := ctx.Config
 			genFile := config.GenesisFile()
 			if !common.FileExists(genFile) {
-				return fmt.Errorf("%s does not exist, run `gaiad init` first", genFile)
+				return fmt.Errorf("%s does not exist, run `xrnd init` first", genFile)
 			}
 			genContents, err := ioutil.ReadFile(genFile)
 			if err != nil {
