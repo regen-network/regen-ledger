@@ -53,8 +53,13 @@ func (k Keeper) GetData(ctx sdk.Context, id string) string {
 	return string(bz)
 }
 
+const (
+	gasForHashAndLookup = 100
+	gasPerByteStorage = 100
+)
+
 func (k Keeper) StoreData(ctx sdk.Context, data string) string {
-	// TODO consume gas
+	ctx.GasMeter().ConsumeGas(gasForHashAndLookup, "hash data")
 	store := ctx.KVStore(k.dataStoreKey)
 	hash := blake2b.Sum256([]byte(data))
 	id := base64.URLEncoding.EncodeToString(hash[:])
@@ -62,6 +67,8 @@ func (k Keeper) StoreData(ctx sdk.Context, data string) string {
 	if existing != ""  {
 		return id
 	}
+	bytes := len(data)
+	ctx.GasMeter().ConsumeGas(gasPerByteStorage * uint64(bytes), "store data")
 	store.Set([]byte(id), []byte(data))
 	return id
 }
