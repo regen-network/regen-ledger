@@ -3,6 +3,8 @@ package ceres.lang
 object Nil
 
 expect class Integer {
+    constructor(x: Long)
+    constructor(x: String)
     fun add(y: Integer): Integer
     fun subtract(y: Integer): Integer
     fun multiply(y: Integer): Integer

@@ -53,6 +53,7 @@ sealed class TypeResult {
         val type: Type,
         val value: Any? = null,
         val hasValue: Boolean = false,
+        val cost: Expr? = null,
         val smtEncoding: SMTExpr? = null,
         val referencedSymbols: PersistentSet<String> = emptyAvlSet()
     ) : TypeResult() {
@@ -81,8 +82,8 @@ sealed class TypeResult {
 
 data class TypeError(val msg: String, val expr: Expr?)
 
-fun checked(type: Type, value: Any? = null, hasValue: Boolean = false, smtEncoding: SMTExpr? = null): TypeResult.Checked =
-    TypeResult.Checked(type, value, hasValue = if (value != null) true else hasValue, smtEncoding = smtEncoding)
+fun checked(type: Type, value: Any? = null, hasValue: Boolean = false, cost: Expr? = null, smtEncoding: SMTExpr? = null): TypeResult.Checked =
+    TypeResult.Checked(type, value, hasValue = if (value != null) true else hasValue, cost = cost, smtEncoding = smtEncoding)
 
 enum class EvalType {
     None, Eval, SmtEncode
@@ -97,6 +98,8 @@ sealed class Expr : HasSourceLoc {
 interface TypedFun {
     fun evalChecked(params: List<TypeResult.Checked>): TypeResult
     fun smtEncode(params: List<TypeResult.Checked>): TypeResult
+//    fun calcCost(params: List<TypeResult.Checked>): TypeResult
+    val cost: Expr?
     val type: FunctionType
 }
 
@@ -128,7 +131,7 @@ fun checkFnCall(fnTy: FunctionType, env: Env, argsChecked: List<TypeResult.Check
                         if (ty == null) {
                             return error("Can't resolve type from expression ${param.second}")
                         } else {
-                            val sres = ty.checkSubType(argTc.type)
+                            val sres = ty.checkSubType(argTc.type, env, param.first)
                             if (sres != null) return error(sres)
                         }
                     }
@@ -233,7 +236,7 @@ data class FunExpr(
                     is TypeResult.Checked ->
                         when (ret.type) {
                             TypeType -> {
-                                val err = res.type.checkSubType(ret.value as Type)
+                                val err = res.type.checkSubType(ret.value as Type, env)
                                 TODO()
                             }
                             else -> TODO("must eval to a type")
@@ -265,6 +268,10 @@ data class FunExpr(
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
+        override val cost: Expr?
+          get() {
+              TODO()
+          }
     }
 }
 

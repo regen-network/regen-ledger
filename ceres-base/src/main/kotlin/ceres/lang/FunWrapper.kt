@@ -3,8 +3,9 @@ package ceres.lang
 import ceres.data.Failure
 import ceres.data.Success
 import ceres.lang.smtlib.SMTExpr
+import ceres.test.gen.int
 
-abstract class FunWrapper(override val type: FunctionType, val smtEncoder: SmtEncoder? = null) : TypedFun {
+abstract class FunWrapper(override val type: FunctionType, override val cost: Expr? = null, val smtEncoder: SmtEncoder? = null) : TypedFun {
     open fun invoke(): Any? = IllegalStateException("fun doesn't take arity 0")
     open fun invoke(a: Any?): Any? = IllegalStateException("fun doesn't take arity 1")
     open fun invoke(a: Any?, b: Any?): Any? = IllegalStateException("fun doesn't take arity 2")
@@ -72,14 +73,16 @@ typealias Fun3<R, A, B, C> = (A, B, C) -> R
 typealias Fun4<R, A, B, C, D> = (A, B, C, D) -> R
 typealias Fun5<R, A, B, C, D, E> = (A, B, C, D, E) -> R
 
-fun <R> wrap0(ty: FunctionType, f: Fun0<R>, smtEncoder: SmtEncoder? = null) =
+fun intL(x: Long): Expr = Literal(Integer(x), IntegerType.default)
+
+fun <R> wrap0(ty: FunctionType, f: Fun0<R>, cost: Expr? = intL(1), smtEncoder: SmtEncoder? = null) =
     checked(ty,
-        object : FunWrapper(ty, smtEncoder) {
+        object : FunWrapper(ty, cost, smtEncoder) {
             override fun invoke(): Any? = f()
         }
     )
 
-fun <R, A> wrap1(ty: FunctionType, f: Fun1<R, A>, smtEncoder: ((SMTExpr) -> SMTExpr)? = null): TypeResult.Checked {
+fun <R, A> wrap1(ty: FunctionType, f: Fun1<R, A>, cost: Expr? = intL(1), smtEncoder: ((SMTExpr) -> SMTExpr)? = null): TypeResult.Checked {
     val enc: SmtEncoder? = if (smtEncoder == null) null else { vars ->
         if (vars.size != 1)
             Failure<String, SMTExpr>("Expected 1 arg, got ${vars.size}")
@@ -87,7 +90,7 @@ fun <R, A> wrap1(ty: FunctionType, f: Fun1<R, A>, smtEncoder: ((SMTExpr) -> SMTE
             Success<String, SMTExpr>(smtEncoder(vars[0]))
     }
     return checked(ty,
-        object : FunWrapper(ty, enc) {
+        object : FunWrapper(ty, cost, enc) {
             override fun invoke(a: Any?): Any? = f(a as A)
         }
     )
@@ -96,6 +99,7 @@ fun <R, A> wrap1(ty: FunctionType, f: Fun1<R, A>, smtEncoder: ((SMTExpr) -> SMTE
 fun <R, A, B> wrap2(
     ty: FunctionType,
     f: Fun2<R, A, B>,
+    cost: Expr? = intL(1),
     smtEncoder: ((SMTExpr, SMTExpr) -> SMTExpr)? = null
 ): TypeResult.Checked {
     val enc: SmtEncoder? = if (smtEncoder == null) null else { vars ->
@@ -105,15 +109,17 @@ fun <R, A, B> wrap2(
             Success<String, SMTExpr>(smtEncoder(vars[0], vars[1]))
     }
     return checked(ty,
-        object : FunWrapper(ty, enc) {
+        object : FunWrapper(ty, cost, enc) {
             override fun invoke(a: Any?, b: Any?): Any? = f(a as A, b as B)
         }
     )
 }
 
-fun <R, A, B, C> wrap3(ty: FunctionType, f: Fun3<R, A, B, C>, smtEncoder: SmtEncoder? = null) =
+fun <R, A, B, C> wrap3(ty: FunctionType, f: Fun3<R, A, B, C>,
+                       cost: Expr? = intL(1),
+                       smtEncoder: SmtEncoder? = null) =
     checked(ty,
-        object : FunWrapper(ty, smtEncoder) {
+        object : FunWrapper(ty, cost, smtEncoder) {
             override fun invoke(a: Any?, b: Any?, c: Any?): Any? = f(a as A, b as B, c as C)
         }
     )

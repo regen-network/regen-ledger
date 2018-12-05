@@ -1,6 +1,7 @@
 package ceres.lang
 
 import ceres.data.avlMapOf
+import ceres.lang.smtlib.IntegerE
 import ceres.lang.smtlib.SMTExpr
 import ceres.lang.smtlib.list
 import ceres.lang.smtlib.sym
@@ -27,7 +28,7 @@ fun smt2(f: String): (SMTExpr, SMTExpr) -> SMTExpr = { x, y -> list(sym(f), x, y
 
 fun smtEncode2FpRNE(f: String): (SMTExpr, SMTExpr) -> SMTExpr = {x, y -> list(sym(f), sym("RNE"), x, y) }
 
-val BaseEvalEnv = EvalEnv(avlMapOf(
+val BaseEvalEnv = Env(avlMapOf(
     "+" to wrap2(iiiFn, { x:Integer, y:Integer -> x.add(y)}, smtEncoder = smt2("+")),
     "-" to wrap2(iiiFn, { x:Integer, y:Integer -> x.subtract(y)}, smtEncoder = smt2("-")),
     "*" to wrap2(iiiFn, { x:Integer, y:Integer -> x.multiply(y)}, smtEncoder = smt2("*")),
@@ -50,5 +51,11 @@ val BaseEvalEnv = EvalEnv(avlMapOf(
     // TODO add decimal support
 //TODO    "!=" to FunExpr(),
     "not" to wrap1(bbbFn, { x:Boolean -> !x}, smtEncoder = {list(sym("not"), it)}) // TODO: maybe impl as Expr
+))
+
+val CostEnv= Env( avlMapOf(
+//    "cost" to wrap1(
+////        fnTy(FunctionType)
+//    )
 ))
 
