@@ -2,6 +2,7 @@ package ceres.lang
 
 import ceres.data.Failure
 import ceres.data.Success
+import ceres.lang.smtlib.SMTExpr
 
 abstract class FunWrapper(override val type: FunctionType, val smtEncoder: SmtEncoder? = null) : TypedFun {
     open fun invoke(): Any? = IllegalStateException("fun doesn't take arity 0")
@@ -78,12 +79,12 @@ fun <R> wrap0(ty: FunctionType, f: Fun0<R>, smtEncoder: SmtEncoder? = null) =
         }
     )
 
-fun <R, A> wrap1(ty: FunctionType, f: Fun1<R, A>, smtEncoder: ((String) -> String)? = null): TypeResult.Checked {
+fun <R, A> wrap1(ty: FunctionType, f: Fun1<R, A>, smtEncoder: ((SMTExpr) -> SMTExpr)? = null): TypeResult.Checked {
     val enc: SmtEncoder? = if (smtEncoder == null) null else { vars ->
         if (vars.size != 1)
-            Failure<String, String>("Expected 1 arg, got ${vars.size}")
+            Failure<String, SMTExpr>("Expected 1 arg, got ${vars.size}")
         else
-            Success<String, String>(smtEncoder(vars[0]))
+            Success<String, SMTExpr>(smtEncoder(vars[0]))
     }
     return checked(ty,
         object : FunWrapper(ty, enc) {
@@ -95,13 +96,13 @@ fun <R, A> wrap1(ty: FunctionType, f: Fun1<R, A>, smtEncoder: ((String) -> Strin
 fun <R, A, B> wrap2(
     ty: FunctionType,
     f: Fun2<R, A, B>,
-    smtEncoder: ((String, String) -> String)? = null
+    smtEncoder: ((SMTExpr, SMTExpr) -> SMTExpr)? = null
 ): TypeResult.Checked {
     val enc: SmtEncoder? = if (smtEncoder == null) null else { vars ->
         if (vars.size < 2)
-            Failure<String, String>("Expected 2 args, got ${vars.size}")
+            Failure<String, SMTExpr>("Expected 2 args, got ${vars.size}")
         else
-            Success<String, String>(smtEncoder(vars[0], vars[1]))
+            Success<String, SMTExpr>(smtEncoder(vars[0], vars[1]))
     }
     return checked(ty,
         object : FunWrapper(ty, enc) {

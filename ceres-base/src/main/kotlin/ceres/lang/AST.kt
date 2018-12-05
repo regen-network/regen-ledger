@@ -1,6 +1,7 @@
 package ceres.lang
 
 import ceres.data.*
+import ceres.lang.smtlib.SMTExpr
 import ceres.lang.smtlib.SmtEngine
 import ceres.parser.HasSourceLoc
 import ceres.parser.SourceLoc
@@ -28,8 +29,8 @@ data class TypeCheckOpts(
 data class Env(
     val bindings: PersistentMap<String, TypeResult.Checked> = avlMapOf(),
     val smtEngine: SmtEngine? = null,
+    val smtAssertions: List<SMTExpr> = emptyList(),
     val opts: TypeCheckOpts = TypeCheckOpts(),
-    val smtEncode: Boolean = false,
     var deps: MutableSet<String> = mutableSetOf()
 ) {
     operator fun get(name: String): TypeResult.Checked? {
@@ -52,7 +53,7 @@ sealed class TypeResult {
         val type: Type,
         val value: Any? = null,
         val hasValue: Boolean = false,
-        val smtEncoding: String? = null,
+        val smtEncoding: SMTExpr? = null,
         val referencedSymbols: PersistentSet<String> = emptyAvlSet()
     ) : TypeResult() {
         override fun toString(): String = "${value}: ${type}"
@@ -80,7 +81,7 @@ sealed class TypeResult {
 
 data class TypeError(val msg: String, val expr: Expr?)
 
-fun checked(type: Type, value: Any? = null, hasValue: Boolean = false, smtEncoding: String? = null): TypeResult.Checked =
+fun checked(type: Type, value: Any? = null, hasValue: Boolean = false, smtEncoding: SMTExpr? = null): TypeResult.Checked =
     TypeResult.Checked(type, value, hasValue = if (value != null) true else hasValue, smtEncoding = smtEncoding)
 
 enum class EvalType {

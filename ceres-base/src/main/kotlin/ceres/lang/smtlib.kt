@@ -6,6 +6,19 @@ import ceres.lang.Decimal
 
 // TODO maybe deprecate Real/Decimal support?
 
+sealed class SMTExpr {
+    data class SList(val xs: List<SMTExpr>): SMTExpr()
+    data class Sym(val value: String): SMTExpr()
+    data class IntL(val value: String): SMTExpr()
+    data class RealL(val value: String): SMTExpr()
+    data class StrL(val value: String): SMTExpr()
+}
+
+fun sym(x: String) = SMTExpr.Sym(x)
+
+fun list(vararg xs: SMTExpr) = SMTExpr.SList(xs.toList())
+
+
 /**
  * A refinement typing expression
  */
@@ -105,6 +118,7 @@ interface SmtEngine {
 class CachingSmtEngine(val engine: SmtEngine): SmtEngine {
     val cache: Cache<SmtContext, CheckSat> = TODO()
 
+    // TODO just pass in list of assertions and env of vars and let this derive the context
     override fun checkSat(ctx: SmtContext): CheckSat {
         val hit = cache[ctx]
         if(hit != null)

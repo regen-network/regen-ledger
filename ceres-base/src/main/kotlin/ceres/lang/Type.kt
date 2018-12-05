@@ -1,21 +1,21 @@
 package ceres.lang
 
 import ceres.data.Either
-import ceres.data.Success
 import ceres.geo.Point
 import ceres.geo.Polygon
-import ceres.lang.Expr
 import ceres.lang.smtlib.RExpr
+import ceres.lang.smtlib.SMTExpr
 import kotlin.reflect.KClass
 
 sealed class Type {
-    abstract fun __checkSubType(subType: Type): String?
+    abstract fun __checkSubType(subType: Type, env: Env, targetVar: String): String?
     abstract fun __union(type: Type): Type
+    open val smtSort: String? = null
     // TODO abstract fun intersection(type: Type): Either<String, Type>
 }
 
-fun Type.checkSubType(subType: Type) =
-    this.__checkSubType(subType)
+fun Type.checkSubType(subType: Type, env: Env, targetVar: String) =
+    this.__checkSubType(subType, env, targetVar)
 
 fun Type.union(type: Type) =
     when(type) {
@@ -37,7 +37,7 @@ data class EntityType(
     val constraints: List<Refinement>
 ) : PropertyType<Entity>() {
 
-    override fun __checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type, env: Env, targetVar: String): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -59,7 +59,7 @@ data class EntityType(
 }
 
 data class DisjointEntityUnion(val entityTypes: List<EntityType>) : PropertyType<Entity>() {
-    override fun __checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type, env: Env, targetVar: String): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -160,7 +160,7 @@ data class IntegerType(
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun __checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type, env: Env, targetVar: String): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -186,7 +186,7 @@ data class DecimalType(
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun __checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type, env: Env, targetVar: String): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -214,7 +214,7 @@ data class DoubleType(
         val default = DoubleType()
     }
 
-    override fun __checkSubType(subType: Type): String? =
+    override fun __checkSubType(subType: Type, env: Env, targetVar: String): String? =
         when(subType) {
             is DoubleType -> null // TODO refinements
             else -> subTypeError(subType)
@@ -243,7 +243,7 @@ data class DoubleType(
 
 data class StringType(val minLength: Int? = null, val maxLength: Int? = null, val regex: Regex? = null) :
     DataType<String>() {
-    override fun __checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type, env: Env, targetVar: String): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -269,7 +269,7 @@ data class StringType(val minLength: Int? = null, val maxLength: Int? = null, va
 data class EnumValue(val value: String, val iri: String?)
 
 data class EnumType(val values: Set<EnumValue>) : PropertyType<String>() {
-    override fun __checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type, env: Env, targetVar: String): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -307,7 +307,7 @@ data class BoolType(
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun __checkSubType(type: Type): String? =
+    override fun __checkSubType(type: Type, env: Env, targetVar: String): String? =
         when (type) {
             is BoolType -> null // TODO refinement
             else -> "Expected Bool, got ${type}"
@@ -331,7 +331,7 @@ data class BoolType(
 val boolType = BoolType()
 
 object NilType : Type() {
-    override fun __checkSubType(type: Type): String? =
+    override fun __checkSubType(type: Type, env: Env, targetVar: String): String? =
             when(type) {
                 NilType -> null
                 else -> subTypeError(type)
@@ -347,13 +347,13 @@ object NilType : Type() {
 }
 
 object EmptyType: Type() {
-    override fun __checkSubType(type: Type): String? = "${this} has no subtypes"
+    override fun __checkSubType(type: Type, env: Env, targetVar: String): String? = "${this} has no subtypes"
 
     override fun __union(type: Type): Type = type
 }
 
 object TypeType: Type() {
-    override fun __checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type, env: Env, targetVar: String): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -369,7 +369,7 @@ object TypeType: Type() {
 //object DurationType: DataType()
 
 object PointType : DataType<Point>() {
-    override fun __checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type, env: Env, targetVar: String): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -388,7 +388,7 @@ object PointType : DataType<Point>() {
 }
 
 object PolygonType : DataType<Polygon>() {
-    override fun __checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type, env: Env, targetVar: String): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -406,7 +406,7 @@ object PolygonType : DataType<Polygon>() {
         get() = TODO("not implemented") //To change initializer of created properties use File | Settings | File Templates.
 }
 
-typealias SmtEncoder = (Array<String>) -> Either<String, String>
+typealias SmtEncoder = (Array<SMTExpr>) -> Either<String, SMTExpr>
 
 data class FunctionType(
     val params: List<Pair<String, Expr>>, // TODO change Type to Expr
@@ -420,7 +420,7 @@ data class FunctionType(
 // TODO allowedPrimitives
 // TODO contextParams (a method for introducing effects)
 ) : Type() {
-    override fun __checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type, env: Env, targetVar: String): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -439,7 +439,7 @@ sealed class TerminationConstraint {
 // SetType and ListType are not property types because we want to handle cardinality of Entity properties differently
 
 data class NullableType(val type: Type) : Type() {
-    override fun __checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type, env: Env, targetVar: String): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -449,7 +449,7 @@ data class NullableType(val type: Type) : Type() {
 }
 
 data class SetType(val elemType: Type) : Type() {
-    override fun __checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type, env: Env, targetVar: String): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -459,7 +459,7 @@ data class SetType(val elemType: Type) : Type() {
 }
 
 data class ListType(val elemType: Type) : Type() {
-    override fun __checkSubType(type: Type): String? {
+    override fun __checkSubType(type: Type, env: Env, targetVar: String): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -469,7 +469,7 @@ data class ListType(val elemType: Type) : Type() {
 }
 
 data class RefinedType(val type: Type, val refinement: Expr, val refinementVar: String): Type() {
-    override fun __checkSubType(subType: Type): String? {
+    override fun __checkSubType(subType: Type, env: Env, targetVar: String): String? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

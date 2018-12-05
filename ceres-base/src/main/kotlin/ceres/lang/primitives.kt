@@ -1,10 +1,9 @@
 package ceres.lang
 
-import ceres.data.Failure
-import ceres.data.Success
 import ceres.data.avlMapOf
-import ceres.lang.ast.EvalEnv
-import ceres.lang.ast.Literal
+import ceres.lang.smtlib.SMTExpr
+import ceres.lang.smtlib.list
+import ceres.lang.smtlib.sym
 
 private fun fnTy(retTy: Type, vararg params: Pair<String, Type>, smtEncoder: SmtEncoder? = null) =
     FunctionType(params.map { it.first to Literal(it.second, TypeType)}, Literal(retTy, TypeType), smtEncoder = smtEncoder)
@@ -24,9 +23,9 @@ private val iibFn =
 private val bbbFn =
     fnTy(BoolType.default, "x" to BoolType.default)
 
-fun smt2(f: String): (String, String) -> String = {x, y -> "($f $x $y)" }
+fun smt2(f: String): (SMTExpr, SMTExpr) -> SMTExpr = { x, y -> list(sym(f), x, y) }
 
-fun smtEncode2FpRNE(f: String): (String, String) -> String = {x, y -> "($f RNE $x $y)" }
+fun smtEncode2FpRNE(f: String): (SMTExpr, SMTExpr) -> SMTExpr = {x, y -> list(sym(f), sym("RNE"), x, y) }
 
 val BaseEvalEnv = EvalEnv(avlMapOf(
     "+" to wrap2(iiiFn, { x:Integer, y:Integer -> x.add(y)}, smtEncoder = smt2("+")),
@@ -50,6 +49,6 @@ val BaseEvalEnv = EvalEnv(avlMapOf(
     "==." to wrap2(bbbFn, { x:Any?, y:Any? -> x == y}, smtEncoder = smt2("fp.eq")),
     // TODO add decimal support
 //TODO    "!=" to FunExpr(),
-    "not" to wrap1(bbbFn, { x:Boolean -> !x}, smtEncoder = {"(not $it}"}) // TODO: maybe impl as Expr
+    "not" to wrap1(bbbFn, { x:Boolean -> !x}, smtEncoder = {list(sym("not"), it)}) // TODO: maybe impl as Expr
 ))
 
