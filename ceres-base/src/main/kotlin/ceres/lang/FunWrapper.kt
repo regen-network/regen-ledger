@@ -1,11 +1,9 @@
 package ceres.lang
 
-import ceres.data.Either
 import ceres.data.Failure
 import ceres.data.Success
-import ceres.lang.ast.*
 
-abstract class FunWrapper(override val type: FunctionType, override val smtEncoder: SmtEncoder? = null) : TypedFun {
+abstract class FunWrapper(override val type: FunctionType, val smtEncoder: SmtEncoder? = null) : TypedFun {
     open fun invoke(): Any? = IllegalStateException("fun doesn't take arity 0")
     open fun invoke(a: Any?): Any? = IllegalStateException("fun doesn't take arity 1")
     open fun invoke(a: Any?, b: Any?): Any? = IllegalStateException("fun doesn't take arity 2")
@@ -36,9 +34,33 @@ abstract class FunWrapper(override val type: FunctionType, override val smtEncod
         }
         val retTc = checkFnCall(type, Env(), params)
         when (retTc) {
-            is TypeResult.Checked -> return checked(retTc.type, res, true)
+            is TypeResult.Checked ->
+                return checked(retTc.type, res, true)
             is TypeResult.Errors -> return retTc
         }
+    }
+
+    override fun smtEncode(params: List<TypeResult.Checked>): TypeResult {
+        if (smtEncoder != null) {
+            val paramEncodings = params.map { it.smtEncoding }.filterNotNull()
+            if (paramEncodings.size == params.size) {
+                val res = smtEncoder.invoke(paramEncodings.toTypedArray())
+                when(res) {
+                    is Success -> {
+                        val retTc = checkFnCall(type, Env(), params)
+                        when (retTc) {
+                            is TypeResult.Checked ->
+                                return checked(retTc.type, smtEncoding = res.result)
+                            is TypeResult.Errors -> return retTc
+                        }
+                    }
+                    is Failure -> {
+                        return TypeResult.error("SMT encoder returned error: ${res.error}")
+                    }
+                }
+            }
+            else return TypeResult.error("Have an SMT encoder, but parameters themselves aren't SMT encoded properly")
+        } else return TypeResult.error("No SMT encoder for ${this}")
     }
 }
 
@@ -57,7 +79,7 @@ fun <R> wrap0(ty: FunctionType, f: Fun0<R>, smtEncoder: SmtEncoder? = null) =
     )
 
 fun <R, A> wrap1(ty: FunctionType, f: Fun1<R, A>, smtEncoder: ((String) -> String)? = null): TypeResult.Checked {
-    val enc: SmtEncoder? = if(smtEncoder == null) null else { vars ->
+    val enc: SmtEncoder? = if (smtEncoder == null) null else { vars ->
         if (vars.size != 1)
             Failure<String, String>("Expected 1 arg, got ${vars.size}")
         else
@@ -70,16 +92,19 @@ fun <R, A> wrap1(ty: FunctionType, f: Fun1<R, A>, smtEncoder: ((String) -> Strin
     )
 }
 
-fun <R, A, B> wrap2(ty: FunctionType, f: Fun2<R, A, B>, smtEncoder: ((String, String) -> String)? = null): TypeResult.Checked {
-    val enc: SmtEncoder? = if(smtEncoder == null) null else { vars ->
-                if (vars.size < 2)
-                    Failure<String, String>("Expected 2 args, got ${vars.size}")
-                else
-                    Success<String, String>(smtEncoder(vars[0], vars[1]))
+fun <R, A, B> wrap2(
+    ty: FunctionType,
+    f: Fun2<R, A, B>,
+    smtEncoder: ((String, String) -> String)? = null
+): TypeResult.Checked {
+    val enc: SmtEncoder? = if (smtEncoder == null) null else { vars ->
+        if (vars.size < 2)
+            Failure<String, String>("Expected 2 args, got ${vars.size}")
+        else
+            Success<String, String>(smtEncoder(vars[0], vars[1]))
     }
     return checked(ty,
-        object : FunWrapper(ty, enc)
-        {
+        object : FunWrapper(ty, enc) {
             override fun invoke(a: Any?, b: Any?): Any? = f(a as A, b as B)
         }
     )

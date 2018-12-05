@@ -4,7 +4,7 @@ import ceres.data.Either
 import ceres.data.Success
 import ceres.geo.Point
 import ceres.geo.Polygon
-import ceres.lang.ast.Expr
+import ceres.lang.Expr
 import ceres.lang.smtlib.RExpr
 import kotlin.reflect.KClass
 
@@ -466,6 +466,17 @@ data class ListType(val elemType: Type) : Type() {
     override fun __union(type: Type): Type {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
+}
+
+data class RefinedType(val type: Type, val refinement: Expr, val refinementVar: String): Type() {
+    override fun __checkSubType(subType: Type): String? {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun __union(type: Type): Type {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
 }
 
 //data class OpaquePlatformType(val id: String): Type ()
