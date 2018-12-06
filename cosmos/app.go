@@ -92,6 +92,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 	app.MountStores(
 		app.keyMain,
 		app.keyAccount,
+		app.dataStoreKey,
 	)
 
 	err := app.LoadLatestVersion(app.keyMain)

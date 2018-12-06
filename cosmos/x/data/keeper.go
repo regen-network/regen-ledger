@@ -1,7 +1,6 @@
 package data
 
 import (
-	"encoding/base64"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"golang.org/x/crypto/blake2b"
 	"math"
@@ -54,21 +53,21 @@ func NewKeeper(
 //	return id
 //}
 
-func (k Keeper) GetData(ctx sdk.Context, id string) []byte {
-	return k.getDataRecord(ctx, id).Data
+func (k Keeper) GetData(ctx sdk.Context, hash []byte) []byte {
+	return k.getDataRecord(ctx, hash).Data
 }
 
-func (k Keeper) GetDataBlockHeight(ctx sdk.Context, id string) int64 {
-	bh := k.getDataRecord(ctx, id).BlockHeight
+func (k Keeper) GetDataBlockHeight(ctx sdk.Context, hash []byte) int64 {
+	bh := k.getDataRecord(ctx, hash).BlockHeight
 	if bh <= 0 {
 		return math.MaxInt64
 	}
 	return bh
 }
 
-func (k Keeper) getDataRecord(ctx sdk.Context, id string) (data DataRecord) {
+func (k Keeper) getDataRecord(ctx sdk.Context, hash []byte) (data DataRecord) {
 	store := ctx.KVStore(k.dataStoreKey)
-	bz := store.Get([]byte(id))
+	bz := store.Get(hash)
 	if bz == nil {
 		return
 	}
@@ -80,14 +79,14 @@ const (
 	gasPerByteStorage   = 100
 )
 
-func (k Keeper) StoreData(ctx sdk.Context, data []byte) string {
+func (k Keeper) StoreData(ctx sdk.Context, data []byte) []byte {
 	ctx.GasMeter().ConsumeGas(gasForHashAndLookup, "hash data")
 	store := ctx.KVStore(k.dataStoreKey)
-	hash := blake2b.Sum256([]byte(data))
-	id := base64.URLEncoding.EncodeToString(hash[:])
-	existing := k.getDataRecord(ctx, id)
+	hashBz := blake2b.Sum256([]byte(data))
+	hash := hashBz[:]
+	existing := k.getDataRecord(ctx, hash)
 	if existing.BlockHeight != 0 {
-		return id
+		return hash
 	}
 	bytes := len(data)
 	ctx.GasMeter().ConsumeGas(gasPerByteStorage*uint64(bytes), "store data")
@@ -95,8 +94,8 @@ func (k Keeper) StoreData(ctx sdk.Context, data []byte) string {
 		Data:data,
 		BlockHeight:ctx.BlockHeight(),
 	})
-	store.Set([]byte(id), bz)
-	return id
+	store.Set(hash, bz)
+	return hash
 }
 
 //func (k Keeper) GetDataPointer(ctx sdk.Context, id string) string {

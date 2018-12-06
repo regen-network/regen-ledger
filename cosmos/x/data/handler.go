@@ -20,6 +20,8 @@ func NewHandler(keeper Keeper) sdk.Handler {
 }
 
 func handleMsgStoreData(ctx sdk.Context, keeper Keeper, msg MsgStoreData) sdk.Result {
-	keeper.StoreData(ctx, msg.Data)
-	return sdk.Result{}
+	hash := keeper.StoreData(ctx, msg.Data)
+	return sdk.Result{
+		Data: hash,
+	}
 }

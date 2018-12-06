@@ -68,6 +68,7 @@ type MsgStoreData struct {
 func NewMsgStoreData(data []byte, signer sdk.AccAddress) MsgStoreData {
 	return MsgStoreData{
         Data:data,
+        Signer:signer,
 	}
 }
 
