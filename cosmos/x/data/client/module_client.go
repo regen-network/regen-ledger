@@ -28,6 +28,10 @@ func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 		datacmd.GetCmdGetData(mc.storeKey, mc.cdc),
 	)...)
 
+	dataQueryCmd.AddCommand(client.GetCommands(
+		datacmd.GetCmdGetDataBlockHeight(mc.storeKey, mc.cdc),
+	)...)
+
 	return dataQueryCmd
 }
 

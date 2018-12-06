@@ -1,9 +1,9 @@
 package data
 
 import (
-"fmt"
+	"fmt"
 
-sdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // NewHandler returns a handler for "data" type messages.
@@ -21,7 +21,10 @@ func NewHandler(keeper Keeper) sdk.Handler {
 
 func handleMsgStoreData(ctx sdk.Context, keeper Keeper, msg MsgStoreData) sdk.Result {
 	hash := keeper.StoreData(ctx, msg.Data)
+	tags := sdk.EmptyTags()
+	tags.AppendTag("data", hash)
 	return sdk.Result{
 		Data: hash,
+		Tags: tags,
 	}
 }
