@@ -14,16 +14,17 @@ import (
 
 type MsgStoreData struct {
 	//SchemaRef string
-	Data string
+	Data []byte
+	Signer sdk.AccAddress
 }
 
-type MsgStoreDataPointer struct {
-	Hash string
-	HashAlg string
-	Url string
-	//SchemaRef string
-	PartialData string
-}
+//type MsgStoreDataPointer struct {
+//	Hash string
+//	HashAlg string
+//	Url string
+//	//SchemaRef string
+//	PartialData string
+//}
 
 
 //func NewMsgRegisterSchema(schema string) MsgRegisterSchema {
@@ -64,7 +65,7 @@ type MsgStoreDataPointer struct {
 //	return nil
 //}
 
-func NewMsgStoreData(data string) MsgStoreData {
+func NewMsgStoreData(data []byte, signer sdk.AccAddress) MsgStoreData {
 	return MsgStoreData{
         Data:data,
 	}
@@ -78,7 +79,7 @@ func (msg MsgStoreData) ValidateBasic() sdk.Error {
 	//if msg.SchemaRef == "" {
 	//	return sdk.ErrUnknownRequest("SchemaRef cannot be empty")
 	//}
-	if msg.Data == "" {
+	if len(msg.Data) == 0 {
 		return sdk.ErrUnknownRequest("Data cannot be empty")
 	}
 	// Schema gets looked up and validated on the blockchain
@@ -95,36 +96,34 @@ func (msg MsgStoreData) GetSignBytes() []byte {
 }
 
 func (msg MsgStoreData) GetSigners() []sdk.AccAddress {
-	return nil
+	return []sdk.AccAddress{msg.Signer}
 }
 
-func (msg MsgStoreDataPointer) Route() string { return "data" }
-
-func (msg MsgStoreDataPointer) Type() string { return "store_data_pointer" }
-
-func (msg MsgStoreDataPointer) ValidateBasic() sdk.Error {
-	if msg.Hash == "" {
-		return sdk.ErrUnknownRequest("Hash cannot be empty")
-	}
-	if msg.HashAlg == "" {
-		return sdk.ErrUnknownRequest("HashAlg cannot be empty")
-	}
-	if msg.Url == "" {
-		return sdk.ErrUnknownRequest("Url cannot be empty")
-	}
-	// Schema and PartialData are optional and not validated
-	return nil
-}
-
-
-func (msg MsgStoreDataPointer) GetSignBytes() []byte {
-	b, err := json.Marshal(msg)
-	if err != nil {
-		panic(err)
-	}
-	return sdk.MustSortJSON(b)
-}
-
-func (msg MsgStoreDataPointer) GetSigners() []sdk.AccAddress {
-	return nil
-}
+//func (msg MsgStoreDataPointer) Route() string { return "data" }
+//
+//func (msg MsgStoreDataPointer) Type() string { return "store_data_pointer" }
+//
+//func (msg MsgStoreDataPointer) ValidateBasic() sdk.Error {
+//	if msg.Hash == "" {
+//		return sdk.ErrUnknownRequest("Hash cannot be empty")
+//	}
+//	if msg.HashAlg == "" {
+//		return sdk.ErrUnknownRequest("HashAlg cannot be empty")
+//	}
+//	if msg.Url == "" {
+//		return sdk.ErrUnknownRequest("Url cannot be empty")
+//	}
+//	// Schema and PartialData are optional and not validated
+//	return nil
+//}
+//
+//func (msg MsgStoreDataPointer) GetSignBytes() []byte {
+//	b, err := json.Marshal(msg)
+//	if err != nil {
+//		panic(err)
+//	}
+//	return sdk.MustSortJSON(b)
+//}
+//
+//func (msg MsgStoreDataPointer) GetSigners() []sdk.AccAddress {
+//}

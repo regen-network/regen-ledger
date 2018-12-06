@@ -8,5 +8,5 @@ import (
 func RegisterCodec(cdc *codec.Codec) {
 	//cdc.RegisterConcrete(MsgRegisterSchema{}, "data/RegisterSchema", nil)
 	cdc.RegisterConcrete(MsgStoreData{}, "data/MsgStoreData", nil)
-	cdc.RegisterConcrete(MsgStoreDataPointer{}, "data/MsgStoreDataPointer", nil)
+	//cdc.RegisterConcrete(MsgStoreDataPointer{}, "data/MsgStoreDataPointer", nil)
 }

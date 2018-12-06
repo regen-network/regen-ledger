@@ -13,8 +13,8 @@ import (
 
 func GetCmdStoreData(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "store-data [data]",
-		Short: "store-data",
+		Use:   "store [data]",
+		Short: "store some data on the blockchain",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
@@ -25,8 +25,13 @@ func GetCmdStoreData(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			msg := data.NewMsgStoreData(args[0])
-			err := msg.ValidateBasic()
+			account, err := cliCtx.GetFromAddress()
+			if err != nil {
+				return err
+			}
+
+			msg := data.NewMsgStoreData([]byte(args[0]), account)
+			err = msg.ValidateBasic()
 			if err != nil {
 				return err
 			}
