@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab.com/regen-network/regen-ledger/cosmos/x/data"
+	"gitlab.com/regen-network/regen-ledger/x/data"
 
 	"github.com/gorilla/mux"
 )

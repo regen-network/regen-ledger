@@ -2,7 +2,7 @@ package client
 
 import (
 	"github.com/cosmos/cosmos-sdk/client"
-	datacmd "gitlab.com/regen-network/regen-ledger/cosmos/x/data/client/cli"
+	datacmd "gitlab.com/regen-network/regen-ledger/x/data/client/cli"
 	"github.com/spf13/cobra"
 	amino "github.com/tendermint/go-amino"
 )

@@ -18,9 +18,9 @@ import (
 	auth "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
-	dataclient "gitlab.com/regen-network/regen-ledger/cosmos/x/data/client"
-	datarest "gitlab.com/regen-network/regen-ledger/cosmos/x/data/client/rest"
-	"gitlab.com/regen-network/regen-ledger/cosmos"
+	dataclient "gitlab.com/regen-network/regen-ledger/x/data/client"
+	datarest "gitlab.com/regen-network/regen-ledger/x/data/client/rest"
+	"gitlab.com/regen-network/regen-ledger"
 )
 
 const (
