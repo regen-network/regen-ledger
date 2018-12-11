@@ -1,9 +1,0 @@
-version: '3'
-services:
-  tendermint:
-    image: tendermint/tendermint:0.22.8
-    command: node
-    volumes:
-      - ./.xrn/tendermint:/tendermint
-
-    

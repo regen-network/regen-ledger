@@ -1,9 +1,0 @@
-export <http://qudt.org/schema/qudt/> as qudt
-export <http://qudt.org/vocab/unit/> as unit
-
-UnitQuantity(unit: qudt.Unit) = type {
-  @type = qudt.QuantityValue
-  qudt.unit = unit
-}
-
-Hectares = UnitQuantity(unit.HA)

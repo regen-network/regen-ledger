@@ -1,8 +1,0 @@
-class Phase {
-  rewardAmount : {landArea: Units.Hectares} => Num
-}
-
-class EC {
-  currency: XRN.Currency
-  phases: List Phase
-}
