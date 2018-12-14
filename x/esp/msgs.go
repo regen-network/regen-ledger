@@ -6,24 +6,25 @@ import (
 )
 
 type MsgCreateESP struct {
+	Curator []byte
 	Name string
-	Org []byte
 	Signers []sdk.AccAddress
 }
 
 type MsgRegisterESPVersion struct {
+	Curator []byte
 	Name string
 	Version string
 	Schema string
 	SchemaType SchemaType
-	Org []byte
 	Signers []sdk.AccAddress
 }
 
 type MsgReportESPResult struct {
+	Curator []byte
 	Name string
-	Org []byte
 	Version string
+	Verifier []byte
 	Data []byte
 	PolygonEWKB []byte
 	Signers []sdk.AccAddress
