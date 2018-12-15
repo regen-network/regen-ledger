@@ -3,16 +3,17 @@ package esp
 import (
 	"encoding/json"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"gitlab.com/regen-network/regen-ledger/x/agent"
 )
 
 type MsgCreateESP struct {
-	Curator []byte
+	Curator agent.AgentId
 	Name string
 	Signers []sdk.AccAddress
 }
 
 type MsgRegisterESPVersion struct {
-	Curator []byte
+	Curator agent.AgentId
 	Name string
 	Version string
 	Schema string
@@ -21,10 +22,10 @@ type MsgRegisterESPVersion struct {
 }
 
 type MsgReportESPResult struct {
-	Curator []byte
+	Curator agent.AgentId
 	Name string
 	Version string
-	Verifier []byte
+	Verifier agent.AgentId
 	Data []byte
 	PolygonEWKB []byte
 	Signers []sdk.AccAddress
@@ -36,10 +37,10 @@ const (
 	JSONSchema SchemaType = 1
 )
 
-func NewMsgCreateESP(name string, org []byte, signers []sdk.AccAddress) MsgCreateESP {
+func NewMsgCreateESP(name string, curator agent.AgentId, signers []sdk.AccAddress) MsgCreateESP {
 	return MsgCreateESP{
 		Name:name,
-		Org:org,
+		Curator:curator,
 		Signers:signers,
 	}
 }

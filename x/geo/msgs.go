@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-type MsgCreateGeometry struct {
+type MsgRegisterGeometry struct {
 	Geometry Geometry
 	Signer sdk.AccAddress
 }
