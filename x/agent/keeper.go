@@ -59,6 +59,7 @@ func (keeper Keeper) UpdateAgentInfo(ctx sdk.Context, id AgentId, signers []sdk.
 }
 
 func (keeper Keeper) Authorize(ctx sdk.Context, id AgentId, signers []sdk.AccAddress) bool {
+	ctx.GasMeter().ConsumeGas(10, "agent auth")
 	info, err := keeper.GetAgentInfo(ctx, id)
 	if err != nil {
 		return false
@@ -76,6 +77,7 @@ func (keeper Keeper) Authorize(ctx sdk.Context, id AgentId, signers []sdk.AccAdd
 		addr := info.Addresses[i]
 		// TODO Use a hash map to optimize this
 		for j := 0; j < nSigners; j++ {
+			ctx.GasMeter().ConsumeGas(10, "check addr")
 			if bytes.Compare(addr, signers[j]) == 0 {
 				sigCount++
 				if sigCount >= sigThreshold {

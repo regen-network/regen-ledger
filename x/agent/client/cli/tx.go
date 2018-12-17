@@ -9,6 +9,7 @@ import (
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
 	"gitlab.com/regen-network/regen-ledger/x/agent"
+	"github.com/satori/go.uuid"
 )
 
 func addrsFromHexArray(arr []string) []sdk.AccAddress {
@@ -45,9 +46,9 @@ func GetCmdCreateAgent(cdc *codec.Codec) *cobra.Command {
 	var agents []string
 
 	cmd := &cobra.Command{
-		Use:   "create-agent [id] [OPTIONS]",
+		Use:   "create-agent [OPTIONS]",
 		Short: "create an agent",
-		Args:  cobra.MinimumNArgs(1),
+		//Args:  cobra.MinimumNArgs(1),
 		PreRun: func(cmd *cobra.Command, args []string) {
 
 		},
@@ -73,7 +74,8 @@ func GetCmdCreateAgent(cdc *codec.Codec) *cobra.Command {
 				Agents:            agentsFromHexArray(agents),
 			}
 
-			msg := agent.NewMsgCreateAgent([]byte(args[0]), info, account)
+
+			msg := agent.NewMsgCreateAgent(uuid.NewV4().Bytes(), info, account)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
