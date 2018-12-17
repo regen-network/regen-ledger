@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"github.com/tendermint/tendermint/libs/log"
+	"gitlab.com/regen-network/regen-ledger/x/agent"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -31,11 +32,13 @@ type xrnApp struct {
 	keyFeeCollection *sdk.KVStoreKey
 	schemaStoreKey  *sdk.KVStoreKey
 	dataStoreKey  *sdk.KVStoreKey
+	agentStoreKey  *sdk.KVStoreKey
 
 	accountKeeper       auth.AccountKeeper
 	bankKeeper          bank.Keeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
 	dataKeeper data.Keeper
+	agentKeeper agent.Keeper
 }
 
 func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
@@ -73,6 +76,8 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 
 	app.dataKeeper = data.NewKeeper(app.dataStoreKey, cdc)
 
+	app.agentKeeper = agent.NewKeeper(app.agentStoreKey, cdc)
+
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
 
@@ -80,11 +85,13 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 	// Register the bank and data routes here
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
-		AddRoute("data", data.NewHandler(app.dataKeeper))
+		AddRoute("data", data.NewHandler(app.dataKeeper)).
+		AddRoute("agent", agent.NewHandler(app.agentKeeper))
 
 	// The app.QueryRouter is the main query router where each module registers its routes
 	app.QueryRouter().
-		AddRoute("data", data.NewQuerier(app.dataKeeper))
+		AddRoute("data", data.NewQuerier(app.dataKeeper)).
+		AddRoute("agent", agent.NewQuerier(app.agentKeeper))
 
 	// The initChainer handles translating the genesis.json file into initial state for the network
 	app.SetInitChainer(app.initChainer)
@@ -93,6 +100,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		app.keyMain,
 		app.keyAccount,
 		app.dataStoreKey,
+		app.agentStoreKey,
 	)
 
 	err := app.LoadLatestVersion(app.keyMain)
@@ -157,6 +165,7 @@ func MakeCodec() *codec.Codec {
 	auth.RegisterCodec(cdc)
 	bank.RegisterCodec(cdc)
 	data.RegisterCodec(cdc)
+	agent.RegisterCodec(cdc)
 	stake.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)

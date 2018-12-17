@@ -9,13 +9,8 @@ type AgentId []byte
 type AuthPolicy int
 
 const (
-	Multisig AuthPolicy = 1
+	MultiSig AuthPolicy = 1
 )
-
-type AgentRef struct {
-	Agent   AgentId
-	Address sdk.AccAddress
-}
 
 // An agent can be used to abstract over users and groups
 // It could be used by a single user to manage multiple devices and setup a multisig policy
@@ -26,3 +21,18 @@ type AgentInfo struct {
 	Agents            []AgentRef
 	MultisigThreshold int
 }
+
+type AgentRefType int
+
+const (
+	AgentRef_Agent AgentRefType = 1
+	AgentRef_Address AgentRefType = 2
+)
+
+
+type AgentRef struct {
+	Type AgentRefType
+	Agent   AgentId
+	Address sdk.AccAddress
+}
+
