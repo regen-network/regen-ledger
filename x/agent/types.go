@@ -17,22 +17,9 @@ const (
 // It could be used to group individuals into a group or several groups/users into a larger group
 type AgentInfo struct {
 	AuthPolicy AuthPolicy
-	// List of either agents or account addresses
-	Agents            []AgentRef
+	// An Agent can have either addresses or other agents as members
+	Addresses []sdk.AccAddress
+	Agents []AgentId
 	MultisigThreshold int
-}
-
-type AgentRefType int
-
-const (
-	AgentRef_Agent AgentRefType = 1
-	AgentRef_Address AgentRefType = 2
-)
-
-
-type AgentRef struct {
-	Type AgentRefType
-	Agent   AgentId
-	Address sdk.AccAddress
 }
 

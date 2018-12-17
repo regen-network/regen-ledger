@@ -19,6 +19,7 @@ import (
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 	dataclient "gitlab.com/regen-network/regen-ledger/x/data/client"
+	agentclient "gitlab.com/regen-network/regen-ledger/x/agent/client"
 	datarest "gitlab.com/regen-network/regen-ledger/x/data/client/rest"
 	"gitlab.com/regen-network/regen-ledger"
 )
@@ -26,6 +27,7 @@ import (
 const (
 	storeAcc = "acc"
 	storeData  = "data"
+	storeAgent  = "agent"
 )
 
 var defaultCLIHome = os.ExpandEnv("$HOME/.xrncli")
@@ -44,6 +46,7 @@ func main() {
 
 	mc := []sdk.ModuleClients{
 		dataclient.NewModuleClient(storeData, cdc),
+		agentclient.NewModuleClient(storeAgent, cdc),
 	}
 
 	rootCmd := &cobra.Command{

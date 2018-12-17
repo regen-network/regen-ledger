@@ -17,6 +17,14 @@ type MsgUpdateAgent struct {
 	Signers []sdk.AccAddress
 }
 
+func NewMsgCreateAgent(id []byte, info AgentInfo, signer sdk.AccAddress) MsgCreateAgent {
+	return MsgCreateAgent{
+        Id: id,
+        Data: info,
+		Signer:signer,
+	}
+}
+
 func (msg MsgCreateAgent) Route() string { return "agent" }
 
 func (msg MsgCreateAgent) Type() string { return "create" }

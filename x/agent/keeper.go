@@ -28,7 +28,7 @@ func (keeper Keeper) GetAgentInfo(ctx sdk.Context, id AgentId) (info AgentInfo, 
 	}
 	marshalErr := keeper.cdc.UnmarshalBinaryBare(bz, &info)
 	if marshalErr != nil {
-        return info, sdk.ErrUnknownRequest(marshalErr.Error())
+		return info, sdk.ErrUnknownRequest(marshalErr.Error())
 	}
 	return info, nil
 }
@@ -59,38 +59,42 @@ func (keeper Keeper) UpdateAgentInfo(ctx sdk.Context, id AgentId, signers []sdk.
 }
 
 func (keeper Keeper) Authorize(ctx sdk.Context, id AgentId, signers []sdk.AccAddress) bool {
-	info, err := keeper.getAgentInfo(ctx, id)
+	info, err := keeper.GetAgentInfo(ctx, id)
 	if err != nil {
 		return false
 	}
 	if info.AuthPolicy != MultiSig {
-        panic("Unknown auth policy")
+		panic("Unknown auth policy")
 	}
-	nAgents := len(info.Agents)
+
+	sigCount := 0
+	sigThreshold := info.MultisigThreshold
+
+	nAddrs := len(info.Addresses)
 	nSigners := len(signers)
-	for i := 0; i < nAgents; i++ {
-		agentRef := info.Agents[i]
-		switch agentRef.Type {
-		case AgentRef_Agent:
-			if !keeper.Authorize(ctx, agentRef.Agent, signers) {
-				return false
-			}
-		case AgentRef_Address:
-			addr := agentRef.Address
-			foundSig := false
-			// TODO Use a hash map to optimize this
-			for j := 0; j < nSigners; j++ {
-				if bytes.Compare(addr, signers[j]) == 0 {
-                    foundSig = true
-                    break
+	for i := 0; i < nAddrs; i++ {
+		addr := info.Addresses[i]
+		// TODO Use a hash map to optimize this
+		for j := 0; j < nSigners; j++ {
+			if bytes.Compare(addr, signers[j]) == 0 {
+				sigCount++
+				if sigCount >= sigThreshold {
+					return true
 				}
+				break
 			}
-			if !foundSig {
-				return false
-			}
-		default:
-			panic("Unknown AgentRef type")
 		}
 	}
-	return true
+
+	nAgents := len(info.Agents)
+	for i := 0; i < nAgents; i++ {
+		agentId := info.Agents[i]
+		if keeper.Authorize(ctx, agentId, signers) {
+			sigCount++
+			if sigCount >= sigThreshold {
+				return true
+			}
+		}
+	}
+	return false
 }

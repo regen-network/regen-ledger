@@ -4,7 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
 	"github.com/tendermint/go-amino"
-	datacmd "gitlab.com/regen-network/regen-ledger/x/data/client/cli"
+	agentcmd "gitlab.com/regen-network/regen-ledger/x/agent/client/cli"
 )
 
 // ModuleClient exports all client functionality from this module
@@ -19,32 +19,29 @@ func NewModuleClient(storeKey string, cdc *amino.Codec) ModuleClient {
 
 // GetQueryCmd returns the cli query commands for this module
 func (mc ModuleClient) GetQueryCmd() *cobra.Command {
-	dataQueryCmd := &cobra.Command{
-		Use:   "data",
-		Short: "Querying commands for the data module",
+	agentQueryCmd := &cobra.Command{
+		Use:   "agent",
+		Short: "Querying commands for the agent module",
 	}
 
-	dataQueryCmd.AddCommand(client.GetCommands(
-		datacmd.GetCmdGetData(mc.storeKey, mc.cdc),
-	)...)
+	//dataQueryCmd.AddCommand(client.GetCommands(
+	//	datacmd.GetCmdGetData(mc.storeKey, mc.cdc),
+	//)...)
 
-	dataQueryCmd.AddCommand(client.GetCommands(
-		datacmd.GetCmdGetDataBlockHeight(mc.storeKey, mc.cdc),
-	)...)
-
-	return dataQueryCmd
+	return agentQueryCmd
 }
 
 // GetTxCmd returns the transaction commands for this module
 func (mc ModuleClient) GetTxCmd() *cobra.Command {
-	dataTxCmd := &cobra.Command{
-		Use:   "data",
-		Short: "Data transactions subcommands",
+	agentTxCmd := &cobra.Command{
+		Use:   "agent",
+		Short: "Agent transactions subcommands",
 	}
 
-	dataTxCmd.AddCommand(client.PostCommands(
-		datacmd.GetCmdStoreData(mc.cdc),
+	agentTxCmd.AddCommand(client.PostCommands(
+		agentcmd.GetCmdCreateAgent(mc.cdc),
 	)...)
 
-	return dataTxCmd
+	return agentTxCmd
 }
+
