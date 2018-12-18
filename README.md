@@ -9,6 +9,6 @@ is the command line blockchain client. Both of them provide help messages when r
 
 This zone contains the following modules:
 
-* [Data](x/data/README.md)
 * [ESP](x/esp/README.md)
 * [Agent](x/agent/README.md)
+* [Data](x/data/README.md)
