@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/tendermint/tendermint/libs/log"
 	"gitlab.com/regen-network/regen-ledger/x/agent"
+	"gitlab.com/regen-network/regen-ledger/x/esp"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -32,12 +33,15 @@ type xrnApp struct {
 	keyFeeCollection *sdk.KVStoreKey
 	schemaStoreKey  *sdk.KVStoreKey
 	dataStoreKey  *sdk.KVStoreKey
+	espStoreKey  *sdk.KVStoreKey
+	espResultStoreKey  *sdk.KVStoreKey
 	agentStoreKey  *sdk.KVStoreKey
 
 	accountKeeper       auth.AccountKeeper
 	bankKeeper          bank.Keeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
 	dataKeeper data.Keeper
+	espKeeper esp.Keeper
 	agentKeeper agent.Keeper
 }
 
@@ -58,6 +62,8 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		keyAccount:       sdk.NewKVStoreKey("acc"),
 		keyFeeCollection: sdk.NewKVStoreKey("fee_collection"),
 		schemaStoreKey: sdk.NewKVStoreKey("schema"),
+		espStoreKey: sdk.NewKVStoreKey("esp"),
+		espResultStoreKey: sdk.NewKVStoreKey("esp_result"),
 		dataStoreKey: sdk.NewKVStoreKey("data"),
 	}
 
@@ -86,6 +92,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
 		AddRoute("data", data.NewHandler(app.dataKeeper)).
+		AddRoute("esp", esp.NewHandler(app.espKeeper)).
 		AddRoute("agent", agent.NewHandler(app.agentKeeper))
 
 	// The app.QueryRouter is the main query router where each module registers its routes
@@ -100,6 +107,8 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		app.keyMain,
 		app.keyAccount,
 		app.dataStoreKey,
+		app.espStoreKey,
+		app.espResultStoreKey,
 		app.agentStoreKey,
 	)
 
@@ -165,6 +174,7 @@ func MakeCodec() *codec.Codec {
 	auth.RegisterCodec(cdc)
 	bank.RegisterCodec(cdc)
 	data.RegisterCodec(cdc)
+	esp.RegisterCodec(cdc)
 	agent.RegisterCodec(cdc)
 	stake.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
