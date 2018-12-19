@@ -1,4 +1,7 @@
-{ config, pkgs, ... }:                              
+{ config, pkgs, lib, ... }:
+
+with lib;
+
 let
   xrndCfg = config.services.xrnd;
   xrnrestCfg = config.services.xrnrest;
@@ -6,6 +9,16 @@ let
 in
 {
   options = {
+    programs.xrn = {
+      enable =
+        mkOption {
+          type = types.bool;
+          default = false;
+          description = ''
+            Whether to install regen-ledger.
+          '';
+        };
+    };
     services.xrnd = {
       enable =
         mkOption {
@@ -35,30 +48,35 @@ in
         };
     };
   };
-  config = mkIf xrndCfg.enable {
-    environment.systemPackages = [ xrn ];
-      users.groups.xrn = {};
-      users.users.xrnd = {
-        isSystemUser = true;
-        group = "xrn";
-        home = xrndCfg.home;
-      };
-      systemd.services.xrnd = {
-        description = "Regen Ledger Daemon";
-        wantedBy = [ "multi-user.target" ];
-        after = [ "network.target" ];
-        path = [ xrn ];
-        preStart = ''
-          chown -R xrnd:xrn ${xrndCfg.home}
-        '';
-        script = ''
-          xrnd start --home ${xrndCfg.home}
-        '';
-        serviceConfig = {
-          User = "xrnd";
-          Group = "xrn";
-          PermissionsStartOnly = true;
+  config = mkMerge [
+    (mkIf config.programs.xrn.enable {
+      environment.systemPackages = [ xrn ];
+    })
+
+    (mkIf xrndCfg.enable {
+        users.groups.xrn = {};
+        users.users.xrnd = {
+          isSystemUser = true;
+          group = "xrn";
+          home = xrndCfg.home;
         };
-      };
-  };
+        systemd.services.xrnd = {
+          description = "Regen Ledger Daemon";
+          wantedBy = [ "multi-user.target" ];
+          after = [ "network.target" ];
+          path = [ xrn ];
+          preStart = ''
+            chown -R xrnd:xrn ${xrndCfg.home}
+          '';
+          script = ''
+            xrnd start --home ${xrndCfg.home}
+          '';
+          serviceConfig = {
+            User = "xrnd";
+            Group = "xrn";
+            PermissionsStartOnly = true;
+          };
+        };
+    })
+  ];
 }
