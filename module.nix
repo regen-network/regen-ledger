@@ -55,11 +55,15 @@ in
 
     (mkIf xrndCfg.enable {
         users.groups.xrn = {};
+
         users.users.xrnd = {
           isSystemUser = true;
           group = "xrn";
           home = xrndCfg.home;
         };
+
+        networking.firewall.allowedTCPPorts = [ 26656 ];
+
         systemd.services.xrnd = {
           description = "Regen Ledger Daemon";
           wantedBy = [ "multi-user.target" ];
