@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/tendermint/tendermint/privval"
 	"io"
 	"io/ioutil"
 	"os"
