@@ -70,7 +70,7 @@ in
           home = xrndCfg.home;
         };
 
-        networking.firewall.allowedTCPPorts = [ 26656 ];
+        networking.firewall.allowedTCPPorts = [ 26656 26657 ];
 
         systemd.services.xrnd = {
           description = "Regen Ledger Daemon";
