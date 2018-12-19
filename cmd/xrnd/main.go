@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/tendermint/tendermint/privval"
 	"io"
 	"io/ioutil"
 	"os"
@@ -33,6 +34,7 @@ var DefaultNodeHome = os.ExpandEnv("$HOME/.xrnd")
 
 const (
 	flagOverwrite = "overwrite"
+	flagPath = "path"
 )
 
 func main() {
@@ -49,6 +51,7 @@ func main() {
 
 	rootCmd.AddCommand(InitCmd(ctx, cdc))
 	rootCmd.AddCommand(AddGenesisAccountCmd(ctx, cdc))
+	rootCmd.AddCommand(InitPrivValidator(ctx, cdc))
 
 	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
 
@@ -123,6 +126,27 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().String(cli.HomeFlag, DefaultNodeHome, "node's home directory")
 	cmd.Flags().String(client.FlagChainID, "", "genesis file chain-id, if left blank will be randomly created")
 	cmd.Flags().BoolP(flagOverwrite, "o", false, "overwrite the genesis.json file")
+
+	return cmd
+}
+
+func InitPrivValidator(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "init-priv-validator",
+		Short: "Create priv-validator file",
+		Args:  cobra.NoArgs,
+		RunE: func(_ *cobra.Command, _ []string) error {
+			path := viper.GetString(flagPath)
+
+			filePv := privval.GenFilePV(path)
+			filePv.Save()
+
+			fmt.Printf("Created private validator file at %s\n", path)
+			return nil
+		},
+	}
+
+	cmd.Flags().String(flagPath, "priv-validator.json", "path to create file at")
 
 	return cmd
 }
