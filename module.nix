@@ -36,6 +36,14 @@ in
             Path to xrnd home folder. Must be created before the service is started.
           '';
         };
+      moniker =
+        mkOption {
+          type = types.str;
+          default = "node0";
+          description = ''
+            The node moniker.
+          '';
+        };
     };
     services.xrnrest = {
       enable =
@@ -73,7 +81,7 @@ in
             chown -R xrnd:xrn ${xrndCfg.home}
           '';
           script = ''
-            xrnd start --home ${xrndCfg.home}
+            xrnd start --moniker ${xrndCfg.moniker} --home ${xrndCfg.home}
           '';
           serviceConfig = {
             User = "xrnd";
