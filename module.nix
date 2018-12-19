@@ -90,5 +90,31 @@ in
           };
         };
     })
+
+    (mkIf xrnrestCfg.enable {
+        users.groups.xrn = {};
+
+        users.users.xrnrest = {
+          isSystemUser = true;
+          group = "xrn";
+        };
+
+        networking.firewall.allowedTCPPorts = [ 1317 ];
+
+        systemd.services.xrncli = {
+          description = "Regen Ledger REST Server";
+          wantedBy = [ "multi-user.target" ];
+          after = [ "xrnd.service" ];
+          path = [ xrn ];
+          script = ''
+            xrncli rest-server --trust-node true
+          '';
+          serviceConfig = {
+            User = "xrncli";
+            Group = "xrn";
+            PermissionsStartOnly = true;
+          };
+        };
+    })
   ];
 }
