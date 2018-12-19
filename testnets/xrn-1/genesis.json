@@ -17,10 +17,10 @@
   },
   "validators": [
     {
-      "address": "257726DE14B54B6266B3830D64E103AF5DFF2B96",
+      "address": "AED276455B59745C5C83C123CD702F86BBFF82D9",
       "pub_key": {
         "type": "tendermint/PubKeyEd25519",
-        "value": "LhgzDLsPL6cfJAm5xVt8o8qiL7QTM9jixsoqHWCQ2/4="
+        "value": "y8NJEegsDw0jShnPd98nIkBdNhzy3I06J27bD7BtbcQ="
       },
       "power": "10",
       "name": "xrn-us-east-1"
