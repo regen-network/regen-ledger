@@ -31,7 +31,7 @@ type xrnApp struct {
 	keyMain          *sdk.KVStoreKey
 	keyAccount       *sdk.KVStoreKey
 	keyFeeCollection *sdk.KVStoreKey
-	schemaStoreKey  *sdk.KVStoreKey
+	//schemaStoreKey  *sdk.KVStoreKey
 	dataStoreKey  *sdk.KVStoreKey
 	espStoreKey  *sdk.KVStoreKey
 	espResultStoreKey  *sdk.KVStoreKey
@@ -61,10 +61,11 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		keyMain:          sdk.NewKVStoreKey("main"),
 		keyAccount:       sdk.NewKVStoreKey("acc"),
 		keyFeeCollection: sdk.NewKVStoreKey("fee_collection"),
-		schemaStoreKey: sdk.NewKVStoreKey("schema"),
+		//schemaStoreKey: sdk.NewKVStoreKey("schema"),
 		espStoreKey: sdk.NewKVStoreKey("esp"),
 		espResultStoreKey: sdk.NewKVStoreKey("esp_result"),
 		dataStoreKey: sdk.NewKVStoreKey("data"),
+		agentStoreKey: sdk.NewKVStoreKey("agent"),
 	}
 
 	// The AccountKeeper handles address -> account lookups
