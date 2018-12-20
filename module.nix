@@ -101,7 +101,7 @@ in
 
         networking.firewall.allowedTCPPorts = [ 1317 ];
 
-        systemd.services.xrncli = {
+        systemd.services.xrnrest = {
           description = "Regen Ledger REST Server";
           wantedBy = [ "multi-user.target" ];
           after = [ "xrnd.service" ];
@@ -110,7 +110,7 @@ in
             xrncli rest-server --trust-node true
           '';
           serviceConfig = {
-            User = "xrncli";
+            User = "xrnrest";
             Group = "xrn";
             PermissionsStartOnly = true;
           };
