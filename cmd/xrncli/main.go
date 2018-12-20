@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"github.com/spf13/viper"
 	"os"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -56,7 +58,7 @@ func main() {
 
 	// Construct Root Command
 	rootCmd.AddCommand(
-		rpc.InitClientCommand(),
+		initClientCommand(),
 		rpc.StatusCommand(),
 		client.ConfigCmd(),
 		queryCmd(cdc, mc),
@@ -70,10 +72,40 @@ func main() {
 	)
 
 	executor := cli.PrepareMainCmd(rootCmd, "XRN", defaultCLIHome)
+	fmt.Println(viper.ConfigFileUsed())
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
 	}
+}
+
+const (
+	// one of the following should be provided to verify the connection
+	flagGenesis = "genesis"
+	flagCommit  = "commit"
+	flagValHash = "validator-set"
+)
+
+// not implemented in "github.com/cosmos/cosmos-sdk/client/rpc"
+// so implementing here
+func initClientCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "init",
+		Short: "Initialize light client",
+		RunE: func(cmd *cobra.Command, args []string) error {
+            fmt.Println("Not implemented")
+            return nil
+		},
+	}
+	cmd.Flags().StringP(client.FlagChainID, "c", "", "ID of chain we connect to")
+	cmd.Flags().StringP(client.FlagNode, "n", "tcp://localhost:26657", "Node to connect to")
+	cmd.Flags().String(flagGenesis, "", "Genesis file to verify header validity")
+	cmd.Flags().String(flagCommit, "", "File with trusted and signed header")
+	cmd.Flags().String(flagValHash, "", "Hash of trusted validator set (hex-encoded)")
+	viper.BindPFlag(client.FlagChainID, cmd.Flags().Lookup(client.FlagChainID))
+	viper.BindPFlag(client.FlagNode, cmd.Flags().Lookup(client.FlagNode))
+
+	return cmd
 }
 
 func registerRoutes(rs *lcd.RestServer) {
@@ -105,6 +137,8 @@ func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
 		queryCmd.AddCommand(m.GetQueryCmd())
 	}
 
+	addNodeFlags(queryCmd)
+
 	return queryCmd
 }
 
@@ -126,6 +160,14 @@ func txCmd(cdc *amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
 		txCmd.AddCommand(m.GetTxCmd())
 	}
 
+	addNodeFlags(txCmd)
+
 	return txCmd
+}
+
+func addNodeFlags(cmd *cobra.Command) {
+	cmd.Flags().String(client.FlagNode, "tcp://localhost:26657", "Node to connect to")
+	cmd.Flags().Bool(client.FlagTrustNode, false, "Trust connected full node (don't verify proofs for responses)")
+	cmd.Flags().Bool(client.FlagChainID, false, "Chain ID of Tendermint node")
 }
 
