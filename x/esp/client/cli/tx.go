@@ -1,46 +1,90 @@
 package cli
 
 import (
+	"encoding/hex"
 	"github.com/spf13/cobra"
-	"gitlab.com/regen-network/regen-ledger/x/data"
+	agentcli "gitlab.com/regen-network/regen-ledger/x/agent/client/cli"
 	"gitlab.com/regen-network/regen-ledger/x/esp"
+	"gitlab.com/regen-network/regen-ledger/x/proposal"
+	proposalcli "gitlab.com/regen-network/regen-ledger/x/proposal/client/cli"
 
-	"github.com/cosmos/cosmos-sdk/client/context"
-	"github.com/cosmos/cosmos-sdk/client/utils"
+	//"github.com/twpayne/go-geom/encoding/ewkbhex"
+	//"github.com/twpayne/go-geom/encoding/ewkb"
+
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 )
 
-func GetCmdRegisterESP(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "register [data]",
-		Short: "Register and ESP version",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
+func GetCmdProposeVersion(cdc *codec.Codec) *cobra.Command {
+	var verifiers []string
 
-			txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+	cmd := proposalcli.GetCmdPropose(cdc, func(cmd *cobra.Command, args []string) (action proposal.ProposalAction, e error) {
+		curatorHex := args[0]
+		curator, err := hex.DecodeString(curatorHex)
+		if err != nil {
+			return nil, err
+		}
 
-			if err := cliCtx.EnsureAccountExists(); err != nil {
-				return err
-			}
+		name := args[1]
 
-			account, err := cliCtx.GetFromAddress()
-			if err != nil {
-				return err
-			}
+		version := args[2]
 
-			msg := esp.NewMsgRegisterESPVersion()
-			err = msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
+		verifierAgents := agentcli.AgentsFromHexArray(verifiers)
 
-			cliCtx.PrintResponse = true
+		return esp.ActionRegisterESPVersion{
+			Curator: curator,
+			Name:    name,
+			Version: version,
+			Spec:    esp.ESPVersionSpec{Verifiers: verifierAgents,},
+		}, nil
+	})
 
-			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
-		},
-	}
+	cmd.Args = cobra.ExactArgs(3)
+	cmd.Use = "propose-version [curator] [name] [version] --verifiers [verifiers]"
+	cmd.Short = "Propose an ESP version"
+	cmd.Flags().StringArrayVar(&verifiers, "verifiers", []string{}, "ESP verifier agent ID's")
+	return cmd
 }
 
+func GetCmdReportResult(cdc *codec.Codec) *cobra.Command {
+	cmd := proposalcli.GetCmdPropose(cdc, func(cmd *cobra.Command, args []string) (action proposal.ProposalAction, e error) {
+		curatorHex := args[0]
+		curator, err := hex.DecodeString(curatorHex)
+		if err != nil {
+			return nil, err
+		}
+
+		name := args[1]
+
+		version := args[2]
+
+        verifierHex := args[3]
+		verifier, err := hex.DecodeString(verifierHex)
+		if err != nil {
+			return nil, err
+		}
+
+		polygonHex := args[4]
+		polygon, err := hex.DecodeString(polygonHex)
+		if err != nil {
+			return nil, err
+		}
+
+		data := args[5]
+
+		return esp.ActionReportESPResult{
+			Curator: curator,
+			Name:    name,
+			Version: version,
+			Verifier:verifier,
+			Result:esp.ESPResult{
+				Data:[]byte(data),
+				PolygonEWKB:polygon,
+			},
+		}, nil
+	})
+
+	cmd.Args = cobra.ExactArgs(6)
+	cmd.Use = "propose-result [curator] [name] [version] [verifier] [polygon-ewkb-hex] [data]"
+	cmd.Short = "Propose an ESP result"
+	return cmd
+}

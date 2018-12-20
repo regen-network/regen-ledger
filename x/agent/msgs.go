@@ -30,7 +30,7 @@ func (msg MsgCreateAgent) Route() string { return "agent" }
 func (msg MsgCreateAgent) Type() string { return "create" }
 
 func (info AgentInfo) ValidateBasic() sdk.Error {
-	if len(info.Agents) <= 0 {
+	if len(info.Agents) <= 0 && len(info.Addresses) <= 0 {
 		return sdk.ErrUnknownRequest("Agent info must reference a non-empty set of members")
 	}
 	if info.AuthPolicy != MultiSig {

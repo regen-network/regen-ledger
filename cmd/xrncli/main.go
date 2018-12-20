@@ -19,15 +19,17 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	cmn "github.com/tendermint/tendermint/libs/common"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	auth "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
+	cmn "github.com/tendermint/tendermint/libs/common"
 	"gitlab.com/regen-network/regen-ledger"
 	agentclient "gitlab.com/regen-network/regen-ledger/x/agent/client"
 	dataclient "gitlab.com/regen-network/regen-ledger/x/data/client"
 	datarest "gitlab.com/regen-network/regen-ledger/x/data/client/rest"
+	espclient "gitlab.com/regen-network/regen-ledger/x/esp/client"
+	proposalclient "gitlab.com/regen-network/regen-ledger/x/proposal/client"
 )
 
 const (
@@ -51,6 +53,8 @@ func main() {
 	config.Seal()
 
 	mc := []sdk.ModuleClients{
+		espclient.NewModuleClient(cdc),
+		proposalclient.NewModuleClient(cdc),
 		dataclient.NewModuleClient(storeData, cdc),
 		agentclient.NewModuleClient(storeAgent, cdc),
 	}
@@ -138,8 +142,8 @@ func initClientCommand() *cobra.Command {
 				var buffer bytes.Buffer
 
 				if err := configTemplate.Execute(&buffer, cliConfig{
-					Node:node,
-					ChainId:chainId,
+					Node:    node,
+					ChainId: chainId,
 				}); err != nil {
 					panic(err)
 				}

@@ -2,6 +2,7 @@ package cli
 
 import (
 	"encoding/hex"
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -12,21 +13,21 @@ import (
 	"github.com/satori/go.uuid"
 )
 
-func addrsFromHexArray(arr []string) []sdk.AccAddress {
+func addrsFromBech32Array(arr []string) []sdk.AccAddress {
 	n := len(arr)
 	res := make([]sdk.AccAddress, n)
 	for i := 0; i < n; i++ {
 		str := arr[i]
-		bz, err := hex.DecodeString(str)
+		acc, err := sdk.AccAddressFromBech32(str)
 		if err != nil {
 			panic(err)
 		}
-		res[i] = bz
+		res[i] = acc
 	}
 	return res
 }
 
-func agentsFromHexArray(arr []string) []agent.AgentId {
+func AgentsFromHexArray(arr []string) []agent.AgentId {
 	n := len(arr)
 	res := make([]agent.AgentId, n)
 	for i := 0; i < n; i++ {
@@ -70,12 +71,16 @@ func GetCmdCreateAgent(cdc *codec.Codec) *cobra.Command {
 			info := agent.AgentInfo{
 				AuthPolicy:        agent.MultiSig,
 				MultisigThreshold: threshold,
-				Addresses:         addrsFromHexArray(addrs),
-				Agents:            agentsFromHexArray(agents),
+				Addresses:         addrsFromBech32Array(addrs),
+				Agents:            AgentsFromHexArray(agents),
 			}
 
 
-			msg := agent.NewMsgCreateAgent(uuid.NewV4().Bytes(), info, account)
+			id := uuid.NewV4().Bytes()
+
+			fmt.Printf("Creating agent with ID %s\n", hex.EncodeToString(id))
+
+			msg := agent.NewMsgCreateAgent(id, info, account)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err
