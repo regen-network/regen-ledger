@@ -2,16 +2,18 @@ package esp
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/btcsuite/btcutil/bech32"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"gitlab.com/regen-network/regen-ledger/x/agent"
+	"gitlab.com/regen-network/regen-ledger/x/proposal"
 
 	//"github.com/twpayne/go-geom/encoding/ewkb"
 )
 
 type Keeper struct {
-	espStoreKey sdk.StoreKey
+	espStoreKey       sdk.StoreKey
 	espResultStoreKey sdk.StoreKey
 
 	agentKeeper agent.Keeper
@@ -19,17 +21,39 @@ type Keeper struct {
 	cdc *codec.Codec
 }
 
+func (keeper Keeper) CanHandle(action proposal.ProposalAction) bool {
+	switch action.(type) {
+	case ActionRegisterESPVersion:
+		return true
+	case ActionReportESPResult:
+		return true
+	default:
+		return false
+	}
+}
+
+func (keeper Keeper) Handle(ctx sdk.Context, action proposal.ProposalAction, approvers []sdk.AccAddress) sdk.Result {
+	switch action := action.(type) {
+	case ActionRegisterESPVersion:
+		return keeper.RegisterESPVersion(ctx, action.Curator, action.Name, action.Version, action.Spec, approvers)
+	case ActionReportESPResult:
+		return keeper.ReportESPResult(ctx, action.Curator, action.Name, action.Version, action.Verifier, action.Result, approvers)
+	default:
+		errMsg := fmt.Sprintf("Unrecognized data action type: %v", action.Type())
+		return sdk.ErrUnknownRequest(errMsg).Result()
+	}
+}
+
 func NewKeeper(
 	espStoreKey sdk.StoreKey,
 	espResultStoreKey sdk.StoreKey,
 	cdc *codec.Codec) Keeper {
 	return Keeper{
-		espStoreKey:espStoreKey,
-		espResultStoreKey:espResultStoreKey,
-		cdc:          cdc,
+		espStoreKey:       espStoreKey,
+		espResultStoreKey: espResultStoreKey,
+		cdc:               cdc,
 	}
 }
-
 
 func espKey(curator agent.AgentId, name string, version string) string {
 	k, err := bech32.Encode("", curator)
@@ -39,17 +63,21 @@ func espKey(curator agent.AgentId, name string, version string) string {
 	return k + "/" + name + "/" + version
 }
 
-func (keeper Keeper) RegisterESPVersion(ctx sdk.Context, curator agent.AgentId, name string, version string, spec ESPVersionSpec, signers []sdk.AccAddress)  sdk.CodeType {
+func (keeper Keeper) RegisterESPVersion(ctx sdk.Context, curator agent.AgentId, name string, version string, spec ESPVersionSpec, signers []sdk.AccAddress) sdk.Result {
 	// TODO consume gas
 
 	key := espKey(curator, name, version)
 	store := ctx.KVStore(keeper.espStoreKey)
 	if store.Has([]byte(key)) {
-		return sdk.CodeUnknownRequest
+		return sdk.Result{
+			Code: sdk.CodeUnknownRequest,
+		}
 	}
 
 	if !keeper.agentKeeper.Authorize(ctx, curator, signers) {
-		return sdk.CodeUnauthorized
+		return sdk.Result{
+			Code: sdk.CodeUnauthorized,
+		}
 	}
 
 	bz, err := keeper.cdc.MarshalBinaryBare(spec)
@@ -59,7 +87,7 @@ func (keeper Keeper) RegisterESPVersion(ctx sdk.Context, curator agent.AgentId, 
 
 	store.Set([]byte(key), bz)
 
-	return sdk.CodeOK
+	return sdk.Result{Code: sdk.CodeOK}
 }
 
 func (keeper Keeper) GetESPVersion(ctx sdk.Context, curator agent.AgentId, name string, version string) (spec ESPVersionSpec, err sdk.Error) {
@@ -73,12 +101,14 @@ func (keeper Keeper) GetESPVersion(ctx sdk.Context, curator agent.AgentId, name 
 	return spec, nil
 }
 
-func (keeper Keeper) ReportESPResult(ctx sdk.Context, curator agent.AgentId, name string, version string, verifier agent.AgentId, result ESPResult, signers []sdk.AccAddress)  sdk.CodeType {
+func (keeper Keeper) ReportESPResult(ctx sdk.Context, curator agent.AgentId, name string, version string, verifier agent.AgentId, result ESPResult, signers []sdk.AccAddress) sdk.Result {
 	// TODO consume gas
 	spec, err := keeper.GetESPVersion(ctx, curator, name, version)
 
 	if err != nil {
-		return sdk.CodeUnknownRequest
+		return sdk.Result{
+			Code: sdk.CodeUnknownRequest,
+		}
 	}
 
 	canVerify := false
@@ -95,15 +125,19 @@ func (keeper Keeper) ReportESPResult(ctx sdk.Context, curator agent.AgentId, nam
 	}
 
 	if !canVerify {
-		return sdk.CodeUnauthorized
+		return sdk.Result{
+			Code: sdk.CodeUnauthorized,
+		}
 	}
 
 	if !keeper.agentKeeper.Authorize(ctx, verifier, signers) {
-		return sdk.CodeUnauthorized
+		return sdk.Result{
+			Code: sdk.CodeUnauthorized,
+		}
 	}
 
 	// TODO verify geometry
 	// TODO verify schema
 
-	return sdk.CodeOK
+	return sdk.Result{Code: sdk.CodeOK}
 }

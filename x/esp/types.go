@@ -9,8 +9,8 @@ const (
 )
 
 type ESPVersionSpec struct {
-	SchemaType SchemaType
-	Schema string
+	//SchemaType SchemaType
+	//Schema string
 	Verifiers []agent.AgentId
 }
 

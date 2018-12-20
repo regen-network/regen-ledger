@@ -5,12 +5,13 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	"gitlab.com/regen-network/regen-ledger/x/agent"
 	"gitlab.com/regen-network/regen-ledger/x/esp"
+	"gitlab.com/regen-network/regen-ledger/x/proposal"
+	"gitlab.com/regen-network/regen-ledger/x/data"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	"github.com/cosmos/cosmos-sdk/x/stake"
-	"gitlab.com/regen-network/regen-ledger/x/data"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -36,6 +37,7 @@ type xrnApp struct {
 	espStoreKey  *sdk.KVStoreKey
 	espResultStoreKey  *sdk.KVStoreKey
 	agentStoreKey  *sdk.KVStoreKey
+	proposalStoreKey  *sdk.KVStoreKey
 
 	accountKeeper       auth.AccountKeeper
 	bankKeeper          bank.Keeper
@@ -43,6 +45,7 @@ type xrnApp struct {
 	dataKeeper data.Keeper
 	espKeeper esp.Keeper
 	agentKeeper agent.Keeper
+	proposalKeeper proposal.Keeper
 }
 
 func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
@@ -66,6 +69,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		espResultStoreKey: sdk.NewKVStoreKey("esp_result"),
 		dataStoreKey: sdk.NewKVStoreKey("data"),
 		agentStoreKey: sdk.NewKVStoreKey("agent"),
+		proposalStoreKey:sdk.NewKVStoreKey("proposal"),
 	}
 
 	// The AccountKeeper handles address -> account lookups
@@ -85,6 +89,11 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 
 	app.agentKeeper = agent.NewKeeper(app.agentStoreKey, cdc)
 
+	proposalRouter := proposal.NewRouter().
+		AddRoute("esp", app.espKeeper)
+
+	app.proposalKeeper = proposal.NewKeeper(app.proposalStoreKey, proposalRouter, cdc)
+
 	// The AnteHandler handles signature verification and transaction pre-processing
 	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
 
@@ -93,8 +102,8 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
 		AddRoute("data", data.NewHandler(app.dataKeeper)).
-		AddRoute("esp", esp.NewHandler(app.espKeeper)).
-		AddRoute("agent", agent.NewHandler(app.agentKeeper))
+		AddRoute("agent", agent.NewHandler(app.agentKeeper)).
+		AddRoute("proposal", proposal.NewHandler(app.proposalKeeper))
 
 	// The app.QueryRouter is the main query router where each module registers its routes
 	app.QueryRouter().
@@ -111,6 +120,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		app.espStoreKey,
 		app.espResultStoreKey,
 		app.agentStoreKey,
+		app.proposalStoreKey,
 	)
 
 	err := app.LoadLatestVersion(app.keyMain)

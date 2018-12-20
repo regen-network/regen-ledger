@@ -5,6 +5,6 @@ import (
 )
 
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgRegisterESPVersion{}, "esp/MsgRegisterESPVersion", nil)
-	cdc.RegisterConcrete(MsgReportESPResult{}, "esp/MsgReportESPResult", nil)
+	cdc.RegisterConcrete(ActionRegisterESPVersion{}, "esp/ActionRegisterESPVersion", nil)
+	cdc.RegisterConcrete(ActionReportESPResult{}, "esp/ActionReportESPResult", nil)
 }
