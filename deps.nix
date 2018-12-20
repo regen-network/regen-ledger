@@ -460,6 +460,15 @@
     };
   }
   {
+    goPackagePath  = "github.com/twpayne/go-geom";
+    fetch = {
+      type = "git";
+      url = "https://github.com/twpayne/go-geom";
+      rev =  "b7ac42d71aed192a66e22bbf2e0651a81aff0056";
+      sha256 = "1w0kq0xswn73cnwm919immpalhk88ky65nvprxsvsq5bvy3ai84r";
+    };
+  }
+  {
     goPackagePath  = "github.com/zondax/ledger-cosmos-go";
     fetch = {
       type = "git";
