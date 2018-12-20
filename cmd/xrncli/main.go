@@ -146,7 +146,7 @@ func initClientCommand() *cobra.Command {
 
 				cmn.MustWriteFile(configFilePath, buffer.Bytes(), 0644)
 			} else {
-				fmt.Println("config.toml already exists")
+				fmt.Printf("%s already exists\n", configFilePath)
 			}
 
 			return nil

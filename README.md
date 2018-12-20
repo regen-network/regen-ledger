@@ -14,3 +14,8 @@ This Cosmos zone contains the following modules:
 * [ESP](x/esp/README.md)
 * [Agent](x/agent/README.md)
 * [Data](x/data/README.md)
+
+## Testnet Status
+
+See [testnets/](./testnets)
+
