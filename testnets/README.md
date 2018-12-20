@@ -11,9 +11,9 @@ the testnet will be setup with more security hardening via sentry and seed nodes
 
 The validator node URL's are as follows:
 
-* [xrn-us-east-1.regen.network](https://xrn-us-east-1.regen.network:26657)
-* [xrn-us-west-1.regen.network](https://xrn-us-west-1.regen.network:26657)
-* [xrn-eu-central-1.regen.network](https://xrn-eu-central-1.regen.network:26657)
+* [xrn-us-east-1.regen.network](http://xrn-us-east-1.regen.network:26657)
+* [xrn-us-west-1.regen.network](http://xrn-us-west-1.regen.network:26657)
+* [xrn-eu-central-1.regen.network](http://xrn-eu-central-1.regen.network:26657)
 
 `xrncli` can be configured to connect to the testnet as follows:
 
