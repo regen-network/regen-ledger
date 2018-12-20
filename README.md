@@ -1,13 +1,15 @@
 # Regen Ledger Cosmos Zone
 
+A distributed ledger for ecological data built on top of the
+[cosmos-sdk](http://github.com/cosmos/cosmos-sdk).
+
 ## Getting Started
 
-Run `make install` to build the code. `xrnd` is the blockchain daemon. `xrncli`
-is the command line blockchain client. Both of them provide help messages when run.
+See [Getting Started](docs/getting_started.md).
 
 ## Modules
 
-This zone contains the following modules:
+This Cosmos zone contains the following modules:
 
 * [ESP](x/esp/README.md)
 * [Agent](x/agent/README.md)
