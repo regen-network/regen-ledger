@@ -68,8 +68,8 @@
     fetch = {
       type = "git";
       url = "https://github.com/cosmos/cosmos-sdk";
-      rev =  "65beea44303785dccac4f7b7f13f758bdd19c9f8";
-      sha256 = "14vjckk52fyd64aj7vkf1cniqmsydg5xg6ivrlvg4inm03b5ykr7";
+      rev =  "46620d4abc0909c7125ee86f6df1e6765a269edf";
+      sha256 = "1jywlsrnpq2jl97aqlp0bv47m6f9y1xfi9iw0fmv9ass5v1a5g4i";
     };
   }
   {
@@ -455,8 +455,8 @@
     fetch = {
       type = "git";
       url = "https://github.com/tendermint/tendermint";
-      rev =  "44b769b1acd0b2aaa8c199b0885bc2811191fb2e";
-      sha256 = "1c93dvb3r7np4w4d901qmpslrn7dibgigk4y64jy772ar5fmsm14";
+      rev =  "0138530df202f5b8e8be1edb9c2f705e404a79cb";
+      sha256 = "0456a8islcy80n4w8lgyl81qaah3i4xw1lvjaq3basljpqhdxmsj";
     };
   }
   {

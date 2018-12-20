@@ -57,8 +57,7 @@
   revision = "d4cc87b860166d00d6b5b9e0d3b3d71d6088d4d4"
 
 [[projects]]
-  branch = "develop"
-  digest = "1:4e567e9d63f29c982dcf41033f493e75ab75a34aa1f13cc29018680b32400c98"
+  digest = "1:0fa63da570184c2337ac76bac08d3c325c3419395ad897af3bc8fca526c60a27"
   name = "github.com/cosmos/cosmos-sdk"
   packages = [
     "baseapp",
@@ -119,7 +118,8 @@
     "x/stake/types",
   ]
   pruneopts = "UT"
-  revision = "65beea44303785dccac4f7b7f13f758bdd19c9f8"
+  revision = "46620d4abc0909c7125ee86f6df1e6765a269edf"
+  version = "v0.28.1"
 
 [[projects]]
   digest = "1:e8a3550c8786316675ff54ad6f09d265d129c9d986919af7f541afba50d87ce2"
@@ -519,7 +519,7 @@
   version = "v0.12.0"
 
 [[projects]]
-  digest = "1:629ec3e6d89da546c9b7f329ab54a843b2d8da932a3ed44e0e883dba5bb757e5"
+  digest = "1:f94f468c7cd1fc3693ebc16011f26ec26538761cdcd182b3a28faa649a7d55e2"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/client",
@@ -584,8 +584,8 @@
     "version",
   ]
   pruneopts = "UT"
-  revision = "44b769b1acd0b2aaa8c199b0885bc2811191fb2e"
-  version = "v0.27.0-dev1"
+  revision = "0138530df202f5b8e8be1edb9c2f705e404a79cb"
+  version = "v0.27.3"
 
 [[projects]]
   digest = "1:a7485b2a69f996923f9d3406a9a853fd8eb31818515e985a830d71f88f6a925b"
@@ -727,6 +727,7 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/btcsuite/btcutil/bech32",
     "github.com/cosmos/cosmos-sdk/baseapp",
     "github.com/cosmos/cosmos-sdk/client",
     "github.com/cosmos/cosmos-sdk/client/context",
