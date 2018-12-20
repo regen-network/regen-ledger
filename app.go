@@ -7,6 +7,7 @@ import (
 	"gitlab.com/regen-network/regen-ledger/x/esp"
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
 	"gitlab.com/regen-network/regen-ledger/x/data"
+	"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -55,6 +56,8 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 
 	// BaseApp handles interactions with Tendermint through the ABCI protocol
 	bApp := bam.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc))
+
+	bApp.SetCommitMultiStoreTracer(os.Stdout)
 
 	// Here you initialize your application with the store keys it requires
 	var app = &xrnApp{
