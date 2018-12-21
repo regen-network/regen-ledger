@@ -67,9 +67,9 @@
     goPackagePath  = "github.com/cosmos/cosmos-sdk";
     fetch = {
       type = "git";
-      url = "https://github.com/cosmos/cosmos-sdk";
-      rev =  "46620d4abc0909c7125ee86f6df1e6765a269edf";
-      sha256 = "1jywlsrnpq2jl97aqlp0bv47m6f9y1xfi9iw0fmv9ass5v1a5g4i";
+      url = "https://github.com/regen-network/cosmos-sdk";
+      rev =  "1a6bed2b19bbdde46b97d228200f8904e4abb261";
+      sha256 = "142r6fidmrlyyiwsi5hynvb6dkp6lxz9j0p08pr8zxplbqip0n11";
     };
   }
   {
