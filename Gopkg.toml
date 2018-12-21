@@ -24,9 +24,10 @@
 #   go-tests = true
 #   unused-packages = true
 
-[[constraint]]
+[[override]]
   name = "github.com/cosmos/cosmos-sdk"
-  version = "v0.28.1"
+  source = "https://github.com/regen-network/cosmos-sdk"
+  branch = "aaronc/v0.28.1-trace-commit"
 
 [[override]]
   name = "github.com/golang/protobuf"

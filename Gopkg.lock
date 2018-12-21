@@ -57,7 +57,8 @@
   revision = "d4cc87b860166d00d6b5b9e0d3b3d71d6088d4d4"
 
 [[projects]]
-  digest = "1:0fa63da570184c2337ac76bac08d3c325c3419395ad897af3bc8fca526c60a27"
+  branch = "aaronc/v0.28.1-trace-commit"
+  digest = "1:4e2e36a74909bcfc41fc505493545159e593da53d908e15bc69b9c345e6d7ebf"
   name = "github.com/cosmos/cosmos-sdk"
   packages = [
     "baseapp",
@@ -118,8 +119,8 @@
     "x/stake/types",
   ]
   pruneopts = "UT"
-  revision = "46620d4abc0909c7125ee86f6df1e6765a269edf"
-  version = "v0.28.1"
+  revision = "1a6bed2b19bbdde46b97d228200f8904e4abb261"
+  source = "https://github.com/regen-network/cosmos-sdk"
 
 [[projects]]
   digest = "1:e8a3550c8786316675ff54ad6f09d265d129c9d986919af7f541afba50d87ce2"
