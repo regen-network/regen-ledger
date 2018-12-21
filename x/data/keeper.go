@@ -17,8 +17,8 @@ type Keeper struct {
 }
 
 type DataRecord struct {
-	Data        []byte
-	BlockHeight int64
+	Data        []byte `json:"data"`
+	BlockHeight int64 `json:"block_height"`
 }
 
 // NewKeeper creates new instances of the nameservice Keeper

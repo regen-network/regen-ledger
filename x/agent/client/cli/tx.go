@@ -47,7 +47,7 @@ func GetCmdCreateAgent(cdc *codec.Codec) *cobra.Command {
 	var agents []string
 
 	cmd := &cobra.Command{
-		Use:   "create-agent [OPTIONS]",
+		Use:   "create",
 		Short: "create an agent",
 		//Args:  cobra.MinimumNArgs(1),
 		PreRun: func(cmd *cobra.Command, args []string) {
@@ -75,10 +75,10 @@ func GetCmdCreateAgent(cdc *codec.Codec) *cobra.Command {
 				Agents:            AgentsFromHexArray(agents),
 			}
 
-
 			id := uuid.NewV4().Bytes()
 
 			fmt.Printf("Creating agent with ID %s\n", hex.EncodeToString(id))
+			fmt.Println("From ", account.String())
 
 			msg := agent.NewMsgCreateAgent(id, info, account)
 			err = msg.ValidateBasic()

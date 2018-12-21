@@ -6,9 +6,9 @@ import (
 )
 
 type MsgCreateAgent struct {
-	Id AgentId
-	Data AgentInfo
-	Signer sdk.AccAddress
+	Id AgentId `json:"id"`
+	Data AgentInfo `json:"data"`
+	Signer sdk.AccAddress `json:"signer"`
 }
 
 type MsgUpdateAgent struct {

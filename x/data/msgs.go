@@ -14,8 +14,8 @@ import (
 
 type MsgStoreData struct {
 	//SchemaRef string
-	Data []byte
-	Signer sdk.AccAddress
+	Data []byte `json:"data"`
+	Signer sdk.AccAddress `json:"signer"`
 }
 
 //type MsgStoreDataPointer struct {

@@ -16,10 +16,10 @@ const (
 // It could be used by a single user to manage multiple devices and setup a multisig policy
 // It could be used to group individuals into a group or several groups/users into a larger group
 type AgentInfo struct {
-	AuthPolicy AuthPolicy
+	AuthPolicy AuthPolicy `json:"auth_policy"`
 	// An Agent can have either addresses or other agents as members
-	Addresses []sdk.AccAddress
-	Agents []AgentId
-	MultisigThreshold int
+	Addresses []sdk.AccAddress `json:"addresses"`
+	Agents []AgentId `json:"agents"`
+	MultisigThreshold int `json:"multisig_threshold"`
 }
 
