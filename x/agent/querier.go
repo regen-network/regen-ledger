@@ -1,10 +1,10 @@
 package agent
 
 import (
-	"encoding/hex"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
+	"strconv"
 )
 
 // query endpoints supported by the governance Querier
@@ -23,18 +23,16 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 	}
 }
 
-func fromHex(str string) []byte {
-	bz, err := hex.DecodeString(str)
-	if err != nil {
-		panic(err)
-	}
-	return bz
-}
 
 func queryAgent(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) (res []byte, err sdk.Error) {
-	id := path[0]
+	idStr := path[0]
 
-	info, err := keeper.GetAgentInfo(ctx, fromHex(id))
+	id, parseErr := strconv.ParseUint(idStr, 10, 64)
+	if parseErr != nil {
+		return []byte{}, sdk.ErrUnknownRequest("Can't parse id")
+	}
+
+	info, err := keeper.GetAgentInfo(ctx, AgentID(id))
 
 	if err != nil {
 		return []byte{}, sdk.ErrUnknownRequest("could not resolve id")

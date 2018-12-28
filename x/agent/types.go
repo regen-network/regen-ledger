@@ -4,7 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-type AgentId []byte
+// TODO change to auto-increment uint64
+type AgentID = uint64
 
 type AuthPolicy int
 
@@ -19,7 +20,7 @@ type AgentInfo struct {
 	AuthPolicy AuthPolicy `json:"auth_policy"`
 	// An Agent can have either addresses or other agents as members
 	Addresses []sdk.AccAddress `json:"addresses"`
-	Agents []AgentId `json:"agents"`
-	MultisigThreshold int `json:"multisig_threshold"`
+	Agents []AgentID           `json:"agents"`
+	MultisigThreshold int      `json:"multisig_threshold"`
 }
 

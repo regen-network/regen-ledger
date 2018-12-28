@@ -11,7 +11,7 @@ const (
 type ESPVersionSpec struct {
 	//SchemaType SchemaType
 	//Schema string
-	Verifiers []agent.AgentId
+	Verifiers []agent.AgentID
 }
 
 type ESPResult struct {

@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"github.com/tendermint/tendermint/libs/log"
 	"gitlab.com/regen-network/regen-ledger/x/agent"
+	"gitlab.com/regen-network/regen-ledger/x/consortium"
 	"gitlab.com/regen-network/regen-ledger/x/esp"
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
 	"gitlab.com/regen-network/regen-ledger/x/data"
+	"gitlab.com/regen-network/regen-ledger/x/upgrade"
 	"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -39,6 +41,8 @@ type xrnApp struct {
 	espResultStoreKey  *sdk.KVStoreKey
 	agentStoreKey  *sdk.KVStoreKey
 	proposalStoreKey  *sdk.KVStoreKey
+	upgradeStoreKey  *sdk.KVStoreKey
+	consortiumStoreKey  *sdk.KVStoreKey
 
 	accountKeeper       auth.AccountKeeper
 	bankKeeper          bank.Keeper
@@ -47,6 +51,8 @@ type xrnApp struct {
 	espKeeper esp.Keeper
 	agentKeeper agent.Keeper
 	proposalKeeper proposal.Keeper
+	upgradeKeeper upgrade.Keeper
+	consortiumKeeper consortium.Keeper
 }
 
 func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
@@ -69,10 +75,13 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		keyFeeCollection: sdk.NewKVStoreKey("fee_collection"),
 		//schemaStoreKey: sdk.NewKVStoreKey("schema"),
 		espStoreKey: sdk.NewKVStoreKey("esp"),
+		// TODO switch to a single key per keeper
 		espResultStoreKey: sdk.NewKVStoreKey("esp_result"),
 		dataStoreKey: sdk.NewKVStoreKey("data"),
 		agentStoreKey: sdk.NewKVStoreKey("agent"),
 		proposalStoreKey:sdk.NewKVStoreKey("proposal"),
+		upgradeStoreKey:sdk.NewKVStoreKey("upgrade"),
+		consortiumStoreKey:sdk.NewKVStoreKey("consortium"),
 	}
 
 	// The AccountKeeper handles address -> account lookups
@@ -91,9 +100,13 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 	app.dataKeeper = data.NewKeeper(app.dataStoreKey, cdc)
 
 	app.agentKeeper = agent.NewKeeper(app.agentStoreKey, cdc)
+	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc, 0)
+
+	app.consortiumKeeper = consortium.NewKeeper(app.consortiumStoreKey, cdc, app.agentKeeper, app.upgradeKeeper)
 
 	proposalRouter := proposal.NewRouter().
-		AddRoute("esp", app.espKeeper)
+		AddRoute("esp", app.espKeeper).
+		AddRoute("consortium", app.consortiumKeeper)
 
 	app.proposalKeeper = proposal.NewKeeper(app.proposalStoreKey, proposalRouter, cdc)
 
@@ -115,6 +128,8 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 
 	// The initChainer handles translating the genesis.json file into initial state for the network
 	app.SetInitChainer(app.initChainer)
+	app.SetBeginBlocker(app.BeginBlocker)
+	app.SetEndBlocker(app.EndBlocker)
 
 	app.MountStores(
 		app.keyMain,
@@ -124,6 +139,8 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		app.espResultStoreKey,
 		app.agentStoreKey,
 		app.proposalStoreKey,
+		app.upgradeStoreKey,
+		app.consortiumStoreKey,
 	)
 
 	err := app.LoadLatestVersion(app.keyMain)
@@ -137,6 +154,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 // GenesisState represents chain state at the start of the chain. Any initial state (account balances) are stored here.
 type GenesisState struct {
 	Accounts []*auth.BaseAccount `json:"accounts"`
+	Agents map[uint64]agent.AgentInfo `json:"agents"`
 }
 
 func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
@@ -153,7 +171,22 @@ func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.
 		app.accountKeeper.SetAccount(ctx, acc)
 	}
 
+	// TODO add agents
+
+	app.consortiumKeeper.SetValidators(ctx, req.Validators)
+
 	return abci.ResponseInitChain{}
+}
+
+func (app *xrnApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+	app.upgradeKeeper.BeginBlocker(ctx, req)
+	return abci.ResponseBeginBlock{}
+}
+
+func (app *xrnApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+	validatorUpdates := app.consortiumKeeper.EndBlocker(ctx)
+	return abci.ResponseEndBlock{ValidatorUpdates: validatorUpdates}
+
 }
 
 // ExportAppStateAndValidators does the things

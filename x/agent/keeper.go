@@ -2,6 +2,7 @@ package agent
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,9 +21,17 @@ func NewKeeper(agentStoreKey sdk.StoreKey, cdc *codec.Codec) Keeper {
 	}
 }
 
-func (keeper Keeper) GetAgentInfo(ctx sdk.Context, id AgentId) (info AgentInfo, err sdk.Error) {
+var (
+	keyNewAgentID = []byte("newAgentID")
+)
+
+func keyAgentID(id AgentID) []byte {
+	return []byte(fmt.Sprintf("#%d", id))
+}
+
+func (keeper Keeper) GetAgentInfo(ctx sdk.Context, id AgentID) (info AgentInfo, err sdk.Error) {
 	store := ctx.KVStore(keeper.agentStoreKey)
-	bz := store.Get(id)
+	bz := store.Get(keyAgentID(id))
 	if bz == nil {
 		return info, sdk.ErrUnknownRequest("Not found")
 	}
@@ -33,24 +42,35 @@ func (keeper Keeper) GetAgentInfo(ctx sdk.Context, id AgentId) (info AgentInfo, 
 	return info, nil
 }
 
-func (keeper Keeper) CreateAgent(ctx sdk.Context, id AgentId, info AgentInfo) {
+func (keeper Keeper) getNewAgentId(ctx sdk.Context) (agentId AgentID) {
 	store := ctx.KVStore(keeper.agentStoreKey)
-	if store.Has(id) {
-		panic("Agent ID already exists")
+	bz := store.Get(keyNewAgentID)
+	if bz == nil {
+		agentId = 0
+	} else {
+		keeper.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &agentId)
 	}
-	keeper.setAgentInfo(ctx, id, info)
+	bz = keeper.cdc.MustMarshalBinaryLengthPrefixed(agentId + 1)
+	store.Set(keyNewAgentID, bz)
+	return agentId
 }
 
-func (keeper Keeper) setAgentInfo(ctx sdk.Context, id AgentId, info AgentInfo) {
+func (keeper Keeper) CreateAgent(ctx sdk.Context, info AgentInfo) AgentID {
+	id := keeper.getNewAgentId(ctx)
+	keeper.setAgentInfo(ctx, id, info)
+	return id
+}
+
+func (keeper Keeper) setAgentInfo(ctx sdk.Context, id AgentID, info AgentInfo) {
 	store := ctx.KVStore(keeper.agentStoreKey)
 	bz, err := keeper.cdc.MarshalBinaryBare(info)
 	if err != nil {
 		panic(err)
 	}
-	store.Set(id, bz)
+	store.Set(keyAgentID(id), bz)
 }
 
-func (keeper Keeper) UpdateAgentInfo(ctx sdk.Context, id AgentId, signers []sdk.AccAddress, info AgentInfo) bool {
+func (keeper Keeper) UpdateAgentInfo(ctx sdk.Context, id AgentID, signers []sdk.AccAddress, info AgentInfo) bool {
 	if !keeper.Authorize(ctx, id, signers) {
 		return false
 	}
@@ -58,12 +78,16 @@ func (keeper Keeper) UpdateAgentInfo(ctx sdk.Context, id AgentId, signers []sdk.
 	return true
 }
 
-func (keeper Keeper) Authorize(ctx sdk.Context, id AgentId, signers []sdk.AccAddress) bool {
+func (keeper Keeper) Authorize(ctx sdk.Context, id AgentID, signers []sdk.AccAddress) bool {
 	ctx.GasMeter().ConsumeGas(10, "agent auth")
 	info, err := keeper.GetAgentInfo(ctx, id)
 	if err != nil {
 		return false
 	}
+	return keeper.AuthorizeAgentInfo(ctx, &info, signers)
+}
+
+func (keeper Keeper) AuthorizeAgentInfo(ctx sdk.Context, info *AgentInfo, signers []sdk.AccAddress) bool {
 	if info.AuthPolicy != MultiSig {
 		panic("Unknown auth policy")
 	}

@@ -1,8 +1,6 @@
 package cli
 
 import (
-	"encoding/hex"
-	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -10,7 +8,7 @@ import (
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
 	"gitlab.com/regen-network/regen-ledger/x/agent"
-	"github.com/satori/go.uuid"
+	"strconv"
 )
 
 func addrsFromBech32Array(arr []string) []sdk.AccAddress {
@@ -27,16 +25,16 @@ func addrsFromBech32Array(arr []string) []sdk.AccAddress {
 	return res
 }
 
-func AgentsFromHexArray(arr []string) []agent.AgentId {
+func AgentsFromArray(arr []string) []agent.AgentID {
 	n := len(arr)
-	res := make([]agent.AgentId, n)
+	res := make([]agent.AgentID, n)
 	for i := 0; i < n; i++ {
 		str := arr[i]
-		bz, err := hex.DecodeString(str)
+		id, err := strconv.ParseUint(str, 10, 64)
 		if err != nil {
 			panic(err)
 		}
-		res[i] = bz
+		res[i] = agent.AgentID(id)
 	}
 	return res
 }
@@ -72,15 +70,10 @@ func GetCmdCreateAgent(cdc *codec.Codec) *cobra.Command {
 				AuthPolicy:        agent.MultiSig,
 				MultisigThreshold: threshold,
 				Addresses:         addrsFromBech32Array(addrs),
-				Agents:            AgentsFromHexArray(agents),
+				Agents:            AgentsFromArray(agents),
 			}
 
-			id := uuid.NewV4().Bytes()
-
-			fmt.Printf("Creating agent with ID %s\n", hex.EncodeToString(id))
-			fmt.Println("From ", account.String())
-
-			msg := agent.NewMsgCreateAgent(id, info, account)
+			msg := agent.NewMsgCreateAgent(info, account)
 			err = msg.ValidateBasic()
 			if err != nil {
 				return err

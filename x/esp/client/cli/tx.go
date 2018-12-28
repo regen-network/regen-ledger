@@ -7,6 +7,7 @@ import (
 	"gitlab.com/regen-network/regen-ledger/x/esp"
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
 	proposalcli "gitlab.com/regen-network/regen-ledger/x/proposal/client/cli"
+	"strconv"
 
 	//"github.com/twpayne/go-geom/encoding/ewkbhex"
 	//"github.com/twpayne/go-geom/encoding/ewkb"
@@ -18,8 +19,8 @@ func GetCmdProposeVersion(cdc *codec.Codec) *cobra.Command {
 	var verifiers []string
 
 	cmd := proposalcli.GetCmdPropose(cdc, func(cmd *cobra.Command, args []string) (action proposal.ProposalAction, e error) {
-		curatorHex := args[0]
-		curator, err := hex.DecodeString(curatorHex)
+		curatorStr := args[0]
+		curator, err := strconv.ParseUint(curatorStr, 10, 64)
 		if err != nil {
 			return nil, err
 		}
@@ -28,7 +29,7 @@ func GetCmdProposeVersion(cdc *codec.Codec) *cobra.Command {
 
 		version := args[2]
 
-		verifierAgents := agentcli.AgentsFromHexArray(verifiers)
+		verifierAgents := agentcli.AgentsFromArray(verifiers)
 
 		return esp.ActionRegisterESPVersion{
 			Curator: curator,
@@ -47,8 +48,8 @@ func GetCmdProposeVersion(cdc *codec.Codec) *cobra.Command {
 
 func GetCmdReportResult(cdc *codec.Codec) *cobra.Command {
 	cmd := proposalcli.GetCmdPropose(cdc, func(cmd *cobra.Command, args []string) (action proposal.ProposalAction, e error) {
-		curatorHex := args[0]
-		curator, err := hex.DecodeString(curatorHex)
+		curatorStr := args[0]
+		curator, err := strconv.ParseUint(curatorStr, 10, 64)
 		if err != nil {
 			return nil, err
 		}
@@ -57,8 +58,8 @@ func GetCmdReportResult(cdc *codec.Codec) *cobra.Command {
 
 		version := args[2]
 
-        verifierHex := args[3]
-		verifier, err := hex.DecodeString(verifierHex)
+        verifierStr := args[3]
+		verifier, err := strconv.ParseUint(verifierStr, 10, 64)
 		if err != nil {
 			return nil, err
 		}

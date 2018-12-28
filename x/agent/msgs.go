@@ -6,20 +6,18 @@ import (
 )
 
 type MsgCreateAgent struct {
-	Id AgentId `json:"id"`
-	Data AgentInfo `json:"data"`
+	Data   AgentInfo      `json:"data"`
 	Signer sdk.AccAddress `json:"signer"`
 }
 
 type MsgUpdateAgent struct {
-	Id AgentId
-	Data AgentInfo
+	Id      AgentID
+	Data    AgentInfo
 	Signers []sdk.AccAddress
 }
 
-func NewMsgCreateAgent(id []byte, info AgentInfo, signer sdk.AccAddress) MsgCreateAgent {
+func NewMsgCreateAgent(info AgentInfo, signer sdk.AccAddress) MsgCreateAgent {
 	return MsgCreateAgent{
-        Id: id,
         Data: info,
 		Signer:signer,
 	}
@@ -44,9 +42,6 @@ func (info AgentInfo) ValidateBasic() sdk.Error {
 
 func (msg MsgCreateAgent) ValidateBasic() sdk.Error {
 	// TODO what are valid agent ID's
-	if len(msg.Id) == 0 {
-		return sdk.ErrUnknownRequest("Agent ID can't be empty")
-	}
 	return msg.Data.ValidateBasic()
 }
 

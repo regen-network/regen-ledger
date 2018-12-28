@@ -11,6 +11,7 @@ type route struct {
 }
 
 type Router struct {
+	// TODO change this to a map
 	routes []route
 }
 

@@ -1,9 +1,7 @@
 package esp
 
 import (
-	"bytes"
 	"fmt"
-	"github.com/btcsuite/btcutil/bech32"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"gitlab.com/regen-network/regen-ledger/x/agent"
@@ -39,7 +37,7 @@ func (keeper Keeper) Handle(ctx sdk.Context, action proposal.ProposalAction, app
 	case ActionReportESPResult:
 		return keeper.ReportESPResult(ctx, action.Curator, action.Name, action.Version, action.Verifier, action.Result, approvers)
 	default:
-		errMsg := fmt.Sprintf("Unrecognized data action type: %v", action.Type())
+		errMsg := fmt.Sprintf("Unrecognized action type: %v", action.Type())
 		return sdk.ErrUnknownRequest(errMsg).Result()
 	}
 }
@@ -55,15 +53,11 @@ func NewKeeper(
 	}
 }
 
-func espKey(curator agent.AgentId, name string, version string) string {
-	k, err := bech32.Encode("", curator)
-	if err != nil {
-		panic(err)
-	}
-	return k + "/" + name + "/" + version
+func espKey(curator agent.AgentID, name string, version string) string {
+	return fmt.Sprintf("%d/%s/%s", curator, name, version)
 }
 
-func (keeper Keeper) RegisterESPVersion(ctx sdk.Context, curator agent.AgentId, name string, version string, spec ESPVersionSpec, signers []sdk.AccAddress) sdk.Result {
+func (keeper Keeper) RegisterESPVersion(ctx sdk.Context, curator agent.AgentID, name string, version string, spec ESPVersionSpec, signers []sdk.AccAddress) sdk.Result {
 	// TODO consume gas
 
 	key := espKey(curator, name, version)
@@ -90,7 +84,7 @@ func (keeper Keeper) RegisterESPVersion(ctx sdk.Context, curator agent.AgentId, 
 	return sdk.Result{Code: sdk.CodeOK}
 }
 
-func (keeper Keeper) GetESPVersion(ctx sdk.Context, curator agent.AgentId, name string, version string) (spec ESPVersionSpec, err sdk.Error) {
+func (keeper Keeper) GetESPVersion(ctx sdk.Context, curator agent.AgentID, name string, version string) (spec ESPVersionSpec, err sdk.Error) {
 	key := espKey(curator, name, version)
 	store := ctx.KVStore(keeper.espStoreKey)
 	bz := store.Get([]byte(key))
@@ -101,7 +95,7 @@ func (keeper Keeper) GetESPVersion(ctx sdk.Context, curator agent.AgentId, name 
 	return spec, nil
 }
 
-func (keeper Keeper) ReportESPResult(ctx sdk.Context, curator agent.AgentId, name string, version string, verifier agent.AgentId, result ESPResult, signers []sdk.AccAddress) sdk.Result {
+func (keeper Keeper) ReportESPResult(ctx sdk.Context, curator agent.AgentID, name string, version string, verifier agent.AgentID, result ESPResult, signers []sdk.AccAddress) sdk.Result {
 	// TODO consume gas
 	spec, err := keeper.GetESPVersion(ctx, curator, name, version)
 
@@ -118,7 +112,7 @@ func (keeper Keeper) ReportESPResult(ctx sdk.Context, curator agent.AgentId, nam
 	n := len(verifiers)
 
 	for i := 0; i < n; i++ {
-		if bytes.Compare(verifier, verifiers[i]) == 0 {
+		if verifier == verifiers[i] {
 			canVerify = true
 			break
 		}

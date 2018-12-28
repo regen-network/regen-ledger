@@ -23,8 +23,8 @@ func NewHandler(keeper Keeper) sdk.Handler {
 
 
 func handleMsgCreateAgent(ctx sdk.Context, keeper Keeper, msg MsgCreateAgent) sdk.Result {
-	keeper.CreateAgent(ctx, msg.Id, msg.Data)
-	return sdk.Result{}
+	id := keeper.CreateAgent(ctx, msg.Data)
+	return sdk.Result{Data:[]byte(fmt.Sprintf("%d", id))}
 }
 
 func handleMsgUpdateAgent(ctx sdk.Context, keeper Keeper, msg MsgUpdateAgent) sdk.Result {

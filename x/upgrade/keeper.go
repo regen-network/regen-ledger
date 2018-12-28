@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 type Keeper struct {
@@ -73,7 +74,7 @@ func (keeper Keeper) SetDoShutdowner(ctx sdk.Context, doShutdowner func()) {
 	keeper.doShutdowner = doShutdowner
 }
 
-func (keeper Keeper) OnBeginBlock(ctx sdk.Context) {
+func (keeper Keeper) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) {
 	if !keeper.haveCachedInfo {
 		err := keeper.GetUpgradeInfo(ctx, &keeper.info)
 		if err != nil {

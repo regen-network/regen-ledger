@@ -7,21 +7,21 @@ import (
 )
 
 type ActionRegisterESPVersion struct {
-	Curator agent.AgentId
+	Curator agent.AgentID
 	Name string
 	Version string
 	Spec ESPVersionSpec
 }
 
 type ActionReportESPResult struct {
-	Curator agent.AgentId
+	Curator agent.AgentID
 	Name string
 	Version string
-	Verifier agent.AgentId
+	Verifier agent.AgentID
 	Result ESPResult
 }
 
-func NewActionRegisterESPVersion(curator agent.AgentId, name string, version string, spec ESPVersionSpec) ActionRegisterESPVersion {
+func NewActionRegisterESPVersion(curator agent.AgentID, name string, version string, spec ESPVersionSpec) ActionRegisterESPVersion {
 	return ActionRegisterESPVersion{
 		Curator:curator,
 		Name:name,
