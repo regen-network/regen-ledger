@@ -7,18 +7,18 @@ import (
 )
 
 type ActionRegisterESPVersion struct {
-	Curator agent.AgentID
-	Name string
-	Version string
-	Spec ESPVersionSpec
+	Curator agent.AgentID `json:"curator"`
+	Name string `json:"name"`
+	Version string `json:"version"`
+	Spec ESPVersionSpec `json:"spec"`
 }
 
 type ActionReportESPResult struct {
-	Curator agent.AgentID
-	Name string
-	Version string
-	Verifier agent.AgentID
-	Result ESPResult
+	Curator agent.AgentID `json:"curator"`
+	Name string `json:"name"`
+	Version string `json:"version"`
+	Verifier agent.AgentID `json:"verifier"`
+	Result ESPResult `json:"result"`
 }
 
 func NewActionRegisterESPVersion(curator agent.AgentID, name string, version string, spec ESPVersionSpec) ActionRegisterESPVersion {

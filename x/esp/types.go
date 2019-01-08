@@ -11,11 +11,11 @@ const (
 type ESPVersionSpec struct {
 	//SchemaType SchemaType
 	//Schema string
-	Verifiers []agent.AgentID
+	Verifiers []agent.AgentID `json:"verifiers"`
 }
 
 type ESPResult struct {
-	Data []byte
+	Data []byte `json:"data"`
 	// TODO use geo keeper to save space
-	PolygonEWKB []byte
+	PolygonEWKB []byte `json:"polygon_ewkb"`
 }
