@@ -6,24 +6,24 @@ sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type MsgCreateProposal struct {
-	Proposer sdk.AccAddress
-	Action ProposalAction
+	Proposer sdk.AccAddress `json:"proposer"`
+	Action ProposalAction `json:"action"`
 }
 
 type MsgVote struct {
-	ProposalId []byte
-	Voter sdk.AccAddress
-	Vote bool
+	ProposalId []byte `json:"proposal_id"`
+	Voter sdk.AccAddress `json:"voter"`
+	Vote bool `json:"vote"`
 }
 
 type MsgTryExecuteProposal struct {
-	ProposalId []byte
-	Signer sdk.AccAddress
+	ProposalId []byte `json:"proposal_id"`
+	Signer sdk.AccAddress `json:"signer"`
 }
 
 type MsgWithdrawProposal struct {
-	ProposalId []byte
-	Proposer sdk.AccAddress
+	ProposalId []byte `json:"proposal_id"`
+	Proposer sdk.AccAddress `json:"proposer"`
 }
 
 func NewMsgCreateProposal(proposer sdk.AccAddress, action ProposalAction) MsgCreateProposal {

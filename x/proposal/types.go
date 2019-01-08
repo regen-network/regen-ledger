@@ -3,9 +3,9 @@ package proposal
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 type Proposal struct {
-	Proposer  sdk.AccAddress
-	Action    ProposalAction
-	Approvers []sdk.AccAddress
+	Proposer  sdk.AccAddress `json:"proposer"`
+	Action    ProposalAction `json:"action"`
+	Approvers []sdk.AccAddress `json:"approvers,omitempty"`
 }
 
 type ProposalAction interface {
