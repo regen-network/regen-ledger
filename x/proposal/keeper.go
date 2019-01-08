@@ -2,6 +2,8 @@ package proposal
 
 import (
 	"bytes"
+	"encoding/hex"
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"golang.org/x/crypto/blake2b"
@@ -31,7 +33,7 @@ func (keeper Keeper) Propose(ctx sdk.Context, proposer sdk.AccAddress, action Pr
 	if store.Has(id) {
 		return sdk.Result{
 			Code: sdk.CodeUnknownRequest,
-			Log:  "already exists",
+			Log:  fmt.Sprintf("proposal %s already exists", hex.EncodeToString(id)),
 		}
 	}
 
@@ -43,7 +45,7 @@ func (keeper Keeper) Propose(ctx sdk.Context, proposer sdk.AccAddress, action Pr
 
 	keeper.storeProposal(ctx, id, &prop)
 
-	return sdk.Result{Code: sdk.CodeOK}
+	return sdk.Result{Code: sdk.CodeOK, Data: id}
 }
 
 func (keeper Keeper) storeProposal(ctx sdk.Context, id []byte, proposal *Proposal) {
@@ -59,6 +61,7 @@ func (keeper Keeper) storeProposal(ctx sdk.Context, id []byte, proposal *Proposa
 func (keeper Keeper) GetProposal(ctx sdk.Context, id []byte) (proposal *Proposal, err sdk.Error) {
 	store := ctx.KVStore(keeper.storeKey)
 	bz := store.Get(id)
+	proposal = &Proposal{}
 	marshalErr := keeper.cdc.UnmarshalBinaryBare(bz, proposal)
 	if marshalErr != nil {
 		return proposal, sdk.ErrUnknownRequest(marshalErr.Error())

@@ -11,8 +11,7 @@ import (
 )
 
 type Keeper struct {
-	espStoreKey       sdk.StoreKey
-	espResultStoreKey sdk.StoreKey
+	storeKey sdk.StoreKey
 
 	agentKeeper agent.Keeper
 
@@ -43,26 +42,26 @@ func (keeper Keeper) Handle(ctx sdk.Context, action proposal.ProposalAction, app
 }
 
 func NewKeeper(
-	espStoreKey sdk.StoreKey,
-	espResultStoreKey sdk.StoreKey,
+	storeKey sdk.StoreKey,
+	agentKeeper agent.Keeper,
 	cdc *codec.Codec) Keeper {
 	return Keeper{
-		espStoreKey:       espStoreKey,
-		espResultStoreKey: espResultStoreKey,
-		cdc:               cdc,
+		storeKey:    storeKey,
+		agentKeeper: agentKeeper,
+		cdc:         cdc,
 	}
 }
 
-func espKey(curator agent.AgentID, name string, version string) string {
-	return fmt.Sprintf("%d/%s/%s", curator, name, version)
+func espKey(curator agent.AgentID, name string, version string) []byte {
+	return []byte(fmt.Sprintf("esp:%d/%s/%s", curator, name, version))
 }
 
 func (keeper Keeper) RegisterESPVersion(ctx sdk.Context, curator agent.AgentID, name string, version string, spec ESPVersionSpec, signers []sdk.AccAddress) sdk.Result {
 	// TODO consume gas
 
 	key := espKey(curator, name, version)
-	store := ctx.KVStore(keeper.espStoreKey)
-	if store.Has([]byte(key)) {
+	store := ctx.KVStore(keeper.storeKey)
+	if store.Has(key) {
 		return sdk.Result{
 			Code: sdk.CodeUnknownRequest,
 		}
@@ -86,7 +85,7 @@ func (keeper Keeper) RegisterESPVersion(ctx sdk.Context, curator agent.AgentID, 
 
 func (keeper Keeper) GetESPVersion(ctx sdk.Context, curator agent.AgentID, name string, version string) (spec ESPVersionSpec, err sdk.Error) {
 	key := espKey(curator, name, version)
-	store := ctx.KVStore(keeper.espStoreKey)
+	store := ctx.KVStore(keeper.storeKey)
 	bz := store.Get([]byte(key))
 	marshalErr := keeper.cdc.UnmarshalBinaryBare(bz, &spec)
 	if marshalErr != nil {
@@ -132,6 +131,6 @@ func (keeper Keeper) ReportESPResult(ctx sdk.Context, curator agent.AgentID, nam
 
 	// TODO verify geometry
 	// TODO verify schema
-
-	return sdk.Result{Code: sdk.CodeOK}
+	// TODO store result
+	return sdk.Result{Code: sdk.CodeUnknownRequest, Log: "not implemented"}
 }

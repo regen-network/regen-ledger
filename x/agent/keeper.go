@@ -35,6 +35,7 @@ func (keeper Keeper) GetAgentInfo(ctx sdk.Context, id AgentID) (info AgentInfo, 
 	if bz == nil {
 		return info, sdk.ErrUnknownRequest("Not found")
 	}
+    info = AgentInfo{}
 	marshalErr := keeper.cdc.UnmarshalBinaryBare(bz, &info)
 	if marshalErr != nil {
 		return info, sdk.ErrUnknownRequest(marshalErr.Error())

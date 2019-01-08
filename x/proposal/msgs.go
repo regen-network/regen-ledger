@@ -26,13 +26,6 @@ type MsgWithdrawProposal struct {
 	Proposer sdk.AccAddress `json:"proposer"`
 }
 
-func NewMsgCreateProposal(proposer sdk.AccAddress, action ProposalAction) MsgCreateProposal {
-	return MsgCreateProposal{
-		Proposer:proposer,
-		Action:action,
-	}
-}
-
 func (msg MsgCreateProposal) Route() string { return "proposal" }
 
 func (msg MsgCreateProposal) Type() string { return "create" }
@@ -51,10 +44,6 @@ func (msg MsgCreateProposal) GetSignBytes() []byte {
 
 func (msg MsgCreateProposal) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Proposer}
-}
-
-func NewMsgVote(proposalId []byte, voter sdk.AccAddress, vote bool) MsgVote {
-	return MsgVote{ProposalId: proposalId, Voter: voter, Vote: vote}
 }
 
 func (msg MsgVote) Route() string { return "proposal" }
@@ -93,10 +82,6 @@ func (msg MsgTryExecuteProposal) GetSignBytes() []byte {
 
 func (msg MsgTryExecuteProposal) GetSigners() []sdk.AccAddress {
     return []sdk.AccAddress{msg.Signer}
-}
-
-func NewMsgWithdrawProposal(proposalId []byte, proposer sdk.AccAddress) MsgWithdrawProposal {
-	return MsgWithdrawProposal{ProposalId: proposalId, Proposer: proposer}
 }
 
 func (msg MsgWithdrawProposal) Route() string {

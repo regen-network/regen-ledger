@@ -9,7 +9,7 @@ import (
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
 	"gitlab.com/regen-network/regen-ledger/x/data"
 	"gitlab.com/regen-network/regen-ledger/x/upgrade"
-	"os"
+	//"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -37,7 +37,6 @@ type xrnApp struct {
 	//schemaStoreKey  *sdk.KVStoreKey
 	dataStoreKey  *sdk.KVStoreKey
 	espStoreKey  *sdk.KVStoreKey
-	espResultStoreKey  *sdk.KVStoreKey
 	agentStoreKey  *sdk.KVStoreKey
 	proposalStoreKey  *sdk.KVStoreKey
 	upgradeStoreKey  *sdk.KVStoreKey
@@ -62,7 +61,8 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 	// BaseApp handles interactions with Tendermint through the ABCI protocol
 	bApp := bam.NewBaseApp(appName, logger, db, auth.DefaultTxDecoder(cdc))
 
-	bApp.SetCommitMultiStoreTracer(os.Stdout)
+	// Enable this for low-level debugging
+	// bApp.SetCommitMultiStoreTracer(os.Stdout)
 
 	// Here you initialize your application with the store keys it requires
 	var app = &xrnApp{
@@ -74,8 +74,6 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		keyFeeCollection: sdk.NewKVStoreKey("fee_collection"),
 		//schemaStoreKey: sdk.NewKVStoreKey("schema"),
 		espStoreKey: sdk.NewKVStoreKey("esp"),
-		// TODO switch to a single key per keeper
-		espResultStoreKey: sdk.NewKVStoreKey("esp_result"),
 		dataStoreKey: sdk.NewKVStoreKey("data"),
 		agentStoreKey: sdk.NewKVStoreKey("agent"),
 		proposalStoreKey:sdk.NewKVStoreKey("proposal"),
@@ -99,6 +97,9 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 	app.dataKeeper = data.NewKeeper(app.dataStoreKey, cdc)
 
 	app.agentKeeper = agent.NewKeeper(app.agentStoreKey, cdc)
+
+	app.espKeeper = esp.NewKeeper(app.espStoreKey, app.agentKeeper, cdc)
+
 	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc, 0)
 
 	app.consortiumKeeper = consortium.NewKeeper(app.consortiumStoreKey, cdc, app.agentKeeper, app.upgradeKeeper)
@@ -135,7 +136,6 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		app.keyAccount,
 		app.dataStoreKey,
 		app.espStoreKey,
-		app.espResultStoreKey,
 		app.agentStoreKey,
 		app.proposalStoreKey,
 		app.upgradeStoreKey,
@@ -222,6 +222,7 @@ func MakeCodec() *codec.Codec {
 	data.RegisterCodec(cdc)
 	esp.RegisterCodec(cdc)
 	agent.RegisterCodec(cdc)
+	proposal.RegisterCodec(cdc)
 	consortium.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
