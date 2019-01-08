@@ -57,8 +57,7 @@
   revision = "d4cc87b860166d00d6b5b9e0d3b3d71d6088d4d4"
 
 [[projects]]
-  branch = "aaronc/v0.28.1-trace-commit"
-  digest = "1:4e2e36a74909bcfc41fc505493545159e593da53d908e15bc69b9c345e6d7ebf"
+  digest = "1:c65a162ff975d2e9a593a2cced80308b7d58a07b54e62437c3c70dfd6a5cb668"
   name = "github.com/cosmos/cosmos-sdk"
   packages = [
     "baseapp",
@@ -119,8 +118,8 @@
     "x/stake/types",
   ]
   pruneopts = "UT"
-  revision = "1a6bed2b19bbdde46b97d228200f8904e4abb261"
-  source = "https://github.com/regen-network/cosmos-sdk"
+  revision = "6bff7082607a2c36439f8b6218816878c41ca6af"
+  version = "v0.29.1"
 
 [[projects]]
   digest = "1:e8a3550c8786316675ff54ad6f09d265d129c9d986919af7f541afba50d87ce2"
@@ -406,14 +405,6 @@
   version = "v1.6.0"
 
 [[projects]]
-  digest = "1:274f67cb6fed9588ea2521ecdac05a6d62a8c51c074c1fccc6a49a40ba80e925"
-  name = "github.com/satori/go.uuid"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
-  version = "v1.2.0"
-
-[[projects]]
   digest = "1:6a4a11ba764a56d2758899ec6f3848d24698d48442ebce85ee7a3f63284526cd"
   name = "github.com/spf13/afero"
   packages = [
@@ -520,7 +511,7 @@
   version = "v0.12.0"
 
 [[projects]]
-  digest = "1:f94f468c7cd1fc3693ebc16011f26ec26538761cdcd182b3a28faa649a7d55e2"
+  digest = "1:fbf8a69c035430a7f06fe0b725ef9ef1ea02366a35d35a0f4c2c2c77b5d1d9cb"
   name = "github.com/tendermint/tendermint"
   packages = [
     "abci/client",
@@ -585,8 +576,8 @@
     "version",
   ]
   pruneopts = "UT"
-  revision = "0138530df202f5b8e8be1edb9c2f705e404a79cb"
-  version = "v0.27.3"
+  revision = "1e1ca15bccedc16c2452c73745c3c2b5df91ae96"
+  version = "v0.27.4"
 
 [[projects]]
   digest = "1:a7485b2a69f996923f9d3406a9a853fd8eb31818515e985a830d71f88f6a925b"
@@ -728,7 +719,6 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/btcsuite/btcutil/bech32",
     "github.com/cosmos/cosmos-sdk/baseapp",
     "github.com/cosmos/cosmos-sdk/client",
     "github.com/cosmos/cosmos-sdk/client/context",
@@ -749,9 +739,7 @@
     "github.com/cosmos/cosmos-sdk/x/bank",
     "github.com/cosmos/cosmos-sdk/x/bank/client/cli",
     "github.com/cosmos/cosmos-sdk/x/bank/client/rest",
-    "github.com/cosmos/cosmos-sdk/x/stake",
     "github.com/gorilla/mux",
-    "github.com/satori/go.uuid",
     "github.com/spf13/cobra",
     "github.com/spf13/viper",
     "github.com/tendermint/go-amino",
