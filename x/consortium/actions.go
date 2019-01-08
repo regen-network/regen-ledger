@@ -11,6 +11,10 @@ type ActionScheduleUpgrade struct {
 	upgradeInfo upgrade.UpgradeInfo
 }
 
+/*
+This action is a temporary placeholder for more
+thorough validator delegation and staking support
+ */
 type ActionChangeValidatorSet struct {
 	validators []abci.ValidatorUpdate
 }
@@ -18,13 +22,9 @@ type ActionChangeValidatorSet struct {
 // TODO token inflation rate
 // TODO token minting rewards
 
-func (action ActionScheduleUpgrade) Route() string {
-	return "consortium"
-}
+func (action ActionScheduleUpgrade) Route() string { return "consortium" }
 
-func (action ActionScheduleUpgrade) Type() string {
-    return "upgrade"
-}
+func (action ActionScheduleUpgrade) Type() string { return "upgrade" }
 
 func (action ActionScheduleUpgrade) ValidateBasic() sdk.Error {
 	return nil
@@ -38,5 +38,18 @@ func (action ActionScheduleUpgrade) GetSignBytes() []byte {
 	return sdk.MustSortJSON(b)
 }
 
+func (action ActionChangeValidatorSet) Route() string { return "consortium" }
 
+func (action ActionChangeValidatorSet) Type() string { return "changeValidatorSet" }
 
+func (action ActionChangeValidatorSet) ValidateBasic() sdk.Error {
+	panic("implement me")
+}
+
+func (action ActionChangeValidatorSet) GetSignBytes() []byte {
+	b, err := json.Marshal(action)
+	if err != nil {
+		panic(err)
+	}
+	return sdk.MustSortJSON(b)
+}

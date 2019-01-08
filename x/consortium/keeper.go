@@ -38,6 +38,8 @@ func (keeper Keeper) CanHandle(action proposal.ProposalAction) bool {
 	switch action.(type) {
 	case ActionScheduleUpgrade:
 		return true
+	case ActionChangeValidatorSet:
+		return true
 	default:
 		return false
 	}
@@ -47,6 +49,8 @@ func (keeper Keeper) Handle(ctx sdk.Context, action proposal.ProposalAction, vot
 	switch action := action.(type) {
 	case ActionScheduleUpgrade:
 		return keeper.handleActionScheduleUpgrade(ctx, action, voters)
+	//case ActionChangeValidatorSet:
+	//	return keeper.handleActionScheduleUpgrade(ctx, action, voters)
 	default:
 		errMsg := fmt.Sprintf("Unrecognized action type: %v", action.Type())
 		return sdk.ErrUnknownRequest(errMsg).Result()
