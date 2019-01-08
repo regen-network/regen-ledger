@@ -11,9 +11,9 @@ type MsgCreateAgent struct {
 }
 
 type MsgUpdateAgent struct {
-	Id      AgentID
-	Data    AgentInfo
-	Signers []sdk.AccAddress
+	Id      AgentID `json:"id"`
+	Data    AgentInfo `json:"data"`
+	Signers []sdk.AccAddress `json:"signers"`
 }
 
 func NewMsgCreateAgent(info AgentInfo, signer sdk.AccAddress) MsgCreateAgent {

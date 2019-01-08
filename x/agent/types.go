@@ -19,8 +19,8 @@ const (
 type AgentInfo struct {
 	AuthPolicy AuthPolicy `json:"auth_policy"`
 	// An Agent can have either addresses or other agents as members
-	Addresses []sdk.AccAddress `json:"addresses"`
-	Agents []AgentID           `json:"agents"`
+	Addresses []sdk.AccAddress `json:"addresses,omitempty"`
+	Agents []AgentID           `json:"agents,omitempty"`
 	MultisigThreshold int      `json:"multisig_threshold"`
 }
 

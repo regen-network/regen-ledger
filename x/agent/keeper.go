@@ -48,9 +48,9 @@ func (keeper Keeper) getNewAgentId(ctx sdk.Context) (agentId AgentID) {
 	if bz == nil {
 		agentId = 0
 	} else {
-		keeper.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &agentId)
+		keeper.cdc.MustUnmarshalBinaryBare(bz, &agentId)
 	}
-	bz = keeper.cdc.MustMarshalBinaryLengthPrefixed(agentId + 1)
+	bz = keeper.cdc.MustMarshalBinaryBare(agentId + 1)
 	store.Set(keyNewAgentID, bz)
 	return agentId
 }
