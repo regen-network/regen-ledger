@@ -36,6 +36,15 @@ func (msg ActionRegisterESPVersion) Route() string { return "esp" }
 func (msg ActionRegisterESPVersion) Type() string { return "register" }
 
 func (msg ActionRegisterESPVersion) ValidateBasic() sdk.Error {
+	if len(msg.Name) == 0 {
+		return sdk.ErrUnknownRequest("Name cannot be empty")
+	}
+	if len(msg.Version) == 0 {
+		return sdk.ErrUnknownRequest("Version cannot be empty")
+	}
+	if len(msg.Spec.Verifiers) == 0 {
+		return sdk.ErrUnknownRequest("Verifiers cannot be empty")
+	}
 	return nil
 }
 
