@@ -2,9 +2,9 @@
 
 ## Testnet Status
 
-### `xrn-1`
+### `xrn-test-2`
 
-The initial Regen Ledger testnet `xrn-1` has been deployed.
+Deployed at `2018-12-19T20:40:06.463846Z`, live as of this writing.
 
 In this testnet, validator nodes currently have ports 26656, 26657 and 1317 open for testing purposes. In the future,
 the testnet will be setup with more security hardening via sentry and seed nodes.
@@ -18,8 +18,12 @@ The validator node URL's are as follows:
 `xrncli` can be configured to connect to the testnet as follows:
 
 ```sh
-xrncli init --chain-id xrn-1 --node tcp://xrn-us-east-1.regen.network:26657
+xrncli init --chain-id xrn-test-2 --node tcp://xrn-us-east-1.regen.network:26657
 ```
+
+### `xrn-1`
+
+The initial Regen Ledger testnet `xrn-1` was deployed on 2018-12-19.
 
 ## Running a full node in the cloud
 

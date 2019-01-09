@@ -185,8 +185,9 @@ func (app *xrnApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abc
 }
 
 func (app *xrnApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	validatorUpdates := app.consortiumKeeper.EndBlocker(ctx)
-	return abci.ResponseEndBlock{ValidatorUpdates: validatorUpdates}
+	//validatorUpdates := app.consortiumKeeper.EndBlocker(ctx)
+	//return abci.ResponseEndBlock{ValidatorUpdates: validatorUpdates}
+	return abci.ResponseEndBlock{}
 }
 
 // ExportAppStateAndValidators does the things
