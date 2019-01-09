@@ -1,11 +1,13 @@
 package esp
 
 import (
+	"encoding/hex"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"gitlab.com/regen-network/regen-ledger/x/agent"
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
+	"golang.org/x/crypto/blake2b"
 
 	//"github.com/twpayne/go-geom/encoding/ewkb"
 )
@@ -94,6 +96,10 @@ func (keeper Keeper) GetESPVersion(ctx sdk.Context, curator agent.AgentID, name 
 	return spec, nil
 }
 
+func espResultKey(curator agent.AgentID, name string, version string, resHash []byte) []byte {
+	return []byte(fmt.Sprintf("result:%d/%s/%s/%s", curator, name, version, hex.EncodeToString(resHash)))
+}
+
 func (keeper Keeper) ReportESPResult(ctx sdk.Context, curator agent.AgentID, name string, version string, verifier agent.AgentID, result ESPResult, signers []sdk.AccAddress) sdk.Result {
 	// TODO consume gas
 	spec, err := keeper.GetESPVersion(ctx, curator, name, version)
@@ -101,6 +107,7 @@ func (keeper Keeper) ReportESPResult(ctx sdk.Context, curator agent.AgentID, nam
 	if err != nil {
 		return sdk.Result{
 			Code: sdk.CodeUnknownRequest,
+			Log: "can't find ESP version",
 		}
 	}
 
@@ -131,6 +138,16 @@ func (keeper Keeper) ReportESPResult(ctx sdk.Context, curator agent.AgentID, nam
 
 	// TODO verify geometry
 	// TODO verify schema
-	// TODO store result
-	return sdk.Result{Code: sdk.CodeUnknownRequest, Log: "not implemented"}
+
+	store := ctx.KVStore(keeper.storeKey)
+	bz := keeper.cdc.MustMarshalBinaryBare(result)
+	hash, hashErr := blake2b.New256(nil)
+	if hashErr != nil {
+		panic(hashErr)
+	}
+	hash.Write(bz)
+	hashBz := hash.Sum(nil)
+	store.Set(espResultKey(curator, name, version, hashBz), bz)
+
+	return sdk.Result{Code: sdk.CodeOK, Data:hashBz}
 }

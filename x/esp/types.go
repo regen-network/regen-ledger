@@ -15,7 +15,7 @@ type ESPVersionSpec struct {
 }
 
 type ESPResult struct {
-	Data []byte `json:"data"`
 	// TODO use geo keeper to save space
-	PolygonEWKB []byte `json:"polygon_ewkb"`
+	PolygonEWKB []byte `json:"polygon_ewkb,omitempty"`
+	Data []byte `json:"data"`
 }

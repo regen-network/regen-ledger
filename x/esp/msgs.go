@@ -61,8 +61,15 @@ func (msg ActionReportESPResult) Route() string { return "esp" }
 func (msg ActionReportESPResult) Type() string { return "report_result" }
 
 func (msg ActionReportESPResult) ValidateBasic() sdk.Error {
-	// TODO validate schema
-
+	if len(msg.Name) == 0 {
+		return sdk.ErrUnknownRequest("Name cannot be empty")
+	}
+	if len(msg.Version) == 0 {
+		return sdk.ErrUnknownRequest("Version cannot be empty")
+	}
+	if len(msg.Result.Data) == 0 {
+		return sdk.ErrUnknownRequest("Result data cannot be empty")
+	}
 	return nil
 }
 
