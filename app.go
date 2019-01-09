@@ -5,9 +5,9 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	"gitlab.com/regen-network/regen-ledger/x/agent"
 	"gitlab.com/regen-network/regen-ledger/x/consortium"
+	"gitlab.com/regen-network/regen-ledger/x/data"
 	"gitlab.com/regen-network/regen-ledger/x/esp"
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
-	"gitlab.com/regen-network/regen-ledger/x/data"
 	"gitlab.com/regen-network/regen-ledger/x/upgrade"
 	//"os"
 
@@ -35,22 +35,22 @@ type xrnApp struct {
 	keyAccount       *sdk.KVStoreKey
 	keyFeeCollection *sdk.KVStoreKey
 	//schemaStoreKey  *sdk.KVStoreKey
-	dataStoreKey  *sdk.KVStoreKey
-	espStoreKey  *sdk.KVStoreKey
-	agentStoreKey  *sdk.KVStoreKey
-	proposalStoreKey  *sdk.KVStoreKey
-	upgradeStoreKey  *sdk.KVStoreKey
-	consortiumStoreKey  *sdk.KVStoreKey
+	dataStoreKey       *sdk.KVStoreKey
+	espStoreKey        *sdk.KVStoreKey
+	agentStoreKey      *sdk.KVStoreKey
+	proposalStoreKey   *sdk.KVStoreKey
+	upgradeStoreKey    *sdk.KVStoreKey
+	consortiumStoreKey *sdk.KVStoreKey
 
 	accountKeeper       auth.AccountKeeper
 	bankKeeper          bank.Keeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
-	dataKeeper data.Keeper
-	espKeeper esp.Keeper
-	agentKeeper agent.Keeper
-	proposalKeeper proposal.Keeper
-	upgradeKeeper upgrade.Keeper
-	consortiumKeeper consortium.Keeper
+	dataKeeper          data.Keeper
+	espKeeper           esp.Keeper
+	agentKeeper         agent.Keeper
+	proposalKeeper      proposal.Keeper
+	upgradeKeeper       upgrade.Keeper
+	consortiumKeeper    consortium.Keeper
 }
 
 func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
@@ -73,12 +73,12 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		keyAccount:       sdk.NewKVStoreKey("acc"),
 		keyFeeCollection: sdk.NewKVStoreKey("fee_collection"),
 		//schemaStoreKey: sdk.NewKVStoreKey("schema"),
-		espStoreKey: sdk.NewKVStoreKey("esp"),
-		dataStoreKey: sdk.NewKVStoreKey("data"),
-		agentStoreKey: sdk.NewKVStoreKey("agent"),
-		proposalStoreKey:sdk.NewKVStoreKey("proposal"),
-		upgradeStoreKey:sdk.NewKVStoreKey("upgrade"),
-		consortiumStoreKey:sdk.NewKVStoreKey("consortium"),
+		espStoreKey:        sdk.NewKVStoreKey("esp"),
+		dataStoreKey:       sdk.NewKVStoreKey("data"),
+		agentStoreKey:      sdk.NewKVStoreKey("agent"),
+		proposalStoreKey:   sdk.NewKVStoreKey("proposal"),
+		upgradeStoreKey:    sdk.NewKVStoreKey("upgrade"),
+		consortiumStoreKey: sdk.NewKVStoreKey("consortium"),
 	}
 
 	// The AccountKeeper handles address -> account lookups
@@ -153,7 +153,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 // GenesisState represents chain state at the start of the chain. Any initial state (account balances) are stored here.
 type GenesisState struct {
 	Accounts []*auth.BaseAccount `json:"accounts"`
-	Agents []agent.AgentInfo `json:"agents"`
+	Agents   []agent.AgentInfo   `json:"agents"`
 }
 
 func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
@@ -187,7 +187,6 @@ func (app *xrnApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abc
 func (app *xrnApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	validatorUpdates := app.consortiumKeeper.EndBlocker(ctx)
 	return abci.ResponseEndBlock{ValidatorUpdates: validatorUpdates}
-
 }
 
 // ExportAppStateAndValidators does the things

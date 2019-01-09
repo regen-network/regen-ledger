@@ -49,8 +49,8 @@ func (keeper Keeper) Handle(ctx sdk.Context, action proposal.ProposalAction, vot
 	switch action := action.(type) {
 	case ActionScheduleUpgrade:
 		return keeper.handleActionScheduleUpgrade(ctx, action, voters)
-	//case ActionChangeValidatorSet:
-	//	return keeper.handleActionScheduleUpgrade(ctx, action, voters)
+	case ActionChangeValidatorSet:
+		return keeper.handleActionChangeValidatorSet(ctx, action, voters)
 	default:
 		errMsg := fmt.Sprintf("Unrecognized action type: %v", action.Type())
 		return sdk.ErrUnknownRequest(errMsg).Result()
@@ -65,12 +65,27 @@ func (keeper Keeper) handleActionScheduleUpgrade(ctx sdk.Context, action ActionS
 	return sdk.Result{Code: sdk.CodeOK}
 }
 
+func (keeper Keeper) handleActionChangeValidatorSet(ctx sdk.Context, action ActionChangeValidatorSet, signers []sdk.AccAddress) sdk.Result {
+	keeper.SetValidators(ctx, action.Validators)
+	return sdk.Result{Code: sdk.CodeOK}
+}
+func (keeper Keeper) GetValidators(ctx sdk.Context) []abci.ValidatorUpdate {
+	store := ctx.KVStore(keeper.storeKey)
+	bz := store.Get(keyValidators)
+	if bz == nil {
+		panic("Validators not set")
+	}
+	var validators []abci.ValidatorUpdate
+	keeper.cdc.MustUnmarshalBinaryBare(bz, &validators)
+	return validators
+}
+
 func (keeper Keeper) SetValidators(ctx sdk.Context, validators []abci.ValidatorUpdate) {
 	store := ctx.KVStore(keeper.storeKey)
-	bz := keeper.cdc.MustMarshalBinaryLengthPrefixed(validators)
+	bz := keeper.cdc.MustMarshalBinaryBare(validators)
 	store.Set(keyValidators, bz)
 }
 
-func (keeper Keeper) EndBlocker(context sdk.Context) []abci.ValidatorUpdate {
-	return abci.ValidatorUpdates{}
+func (keeper Keeper) EndBlocker(ctx sdk.Context) []abci.ValidatorUpdate {
+	return keeper.GetValidators(ctx)
 }
