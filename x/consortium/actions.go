@@ -27,6 +27,9 @@ func (action ActionScheduleUpgrade) Route() string { return "consortium" }
 func (action ActionScheduleUpgrade) Type() string { return "upgrade" }
 
 func (action ActionScheduleUpgrade) ValidateBasic() sdk.Error {
+	if action.upgradeInfo.Height <= 0 {
+		return sdk.ErrUnknownRequest("Upgrade height must be greater than 0")
+	}
 	return nil
 }
 

@@ -24,7 +24,7 @@ type UpgradeInfo struct {
 
 	// Any application specific upgrade info to be included on-chain
 	// such as a git commit that validators could automatically upgrade to
-	Info   string `json:"info"`
+	Memo string `json:"memo"`
 }
 
 const (
@@ -100,7 +100,7 @@ func (keeper Keeper) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) {
 		if doShutdowner != nil {
 			doShutdowner()
 		} else {
-			panic(fmt.Sprintf("UPGRADE NEEDED at height %d: %s", upgradeHeight, keeper.info))
+			panic(fmt.Sprintf("UPGRADE NEEDED at height %d: %s", upgradeHeight, keeper.info.Memo))
 		}
 	}
 }
