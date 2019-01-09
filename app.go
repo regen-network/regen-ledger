@@ -100,7 +100,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 
 	app.espKeeper = esp.NewKeeper(app.espStoreKey, app.agentKeeper, cdc)
 
-	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc, 0)
+	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc, 1000)
 
 	app.consortiumKeeper = consortium.NewKeeper(app.consortiumStoreKey, cdc, app.agentKeeper, app.upgradeKeeper)
 
