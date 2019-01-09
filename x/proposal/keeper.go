@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"gitlab.com/regen-network/regen-ledger/utils"
 	"golang.org/x/crypto/blake2b"
 )
 
@@ -20,11 +21,17 @@ func NewKeeper(storeKey sdk.StoreKey, handler ProposalHandler, cdc *codec.Codec)
 }
 
 func (keeper Keeper) Propose(ctx sdk.Context, proposer sdk.AccAddress, action ProposalAction) sdk.Result {
-	if !keeper.handler.CanHandle(action) {
+	canHandle, res := keeper.handler.CheckProposal(ctx, action)
+
+	if !canHandle {
 		return sdk.Result{
 			Code: sdk.CodeUnknownRequest,
-			Log:  "can't handle this proposal type",
+			Log: "unknown proposal type",
 		}
+	}
+
+	if res.Code != sdk.CodeOK {
+		return res
 	}
 
 	store := ctx.KVStore(keeper.storeKey)
@@ -45,7 +52,9 @@ func (keeper Keeper) Propose(ctx sdk.Context, proposer sdk.AccAddress, action Pr
 
 	keeper.storeProposal(ctx, id, &prop)
 
-	return sdk.Result{Code: sdk.CodeOK, Data: id}
+	res.Tags = res.Tags.AppendTag("proposal.id", []byte(utils.MustEncodeBech32("proposal", id)))
+
+	return res
 }
 
 func (keeper Keeper) storeProposal(ctx sdk.Context, id []byte, proposal *Proposal) {
@@ -130,7 +139,7 @@ func (keeper Keeper) Vote(ctx sdk.Context, proposalId []byte, voter sdk.AccAddre
 
 	keeper.storeProposal(ctx, proposalId, &newProp)
 
-	return sdk.Result{Code: sdk.CodeOK}
+	return sdk.Result{Code: sdk.CodeOK, Tags: sdk.NewTags("proposal.id", []byte(utils.MustEncodeBech32("proposal", proposalId)))}
 }
 
 func (keeper Keeper) TryExecute(ctx sdk.Context, proposalId []byte) sdk.Result {
@@ -143,7 +152,7 @@ func (keeper Keeper) TryExecute(ctx sdk.Context, proposalId []byte) sdk.Result {
 		}
 	}
 
-	res := keeper.handler.Handle(ctx, proposal.Action, proposal.Approvers)
+	res := keeper.handler.HandleProposal(ctx, proposal.Action, proposal.Approvers)
 
 	if res.Code == sdk.CodeOK {
 		store := ctx.KVStore(keeper.storeKey)

@@ -3,8 +3,8 @@ package proposal
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 type Proposal struct {
-	Proposer  sdk.AccAddress `json:"proposer"`
-	Action    ProposalAction `json:"action"`
+	Proposer  sdk.AccAddress   `json:"proposer"`
+	Action    ProposalAction   `json:"action"`
 	Approvers []sdk.AccAddress `json:"approvers,omitempty"`
 }
 
@@ -24,10 +24,13 @@ type ProposalAction interface {
 	// Get the canonical byte representation of the Msg.
 	GetSignBytes() []byte
 
-	//Handle(ctx sdk.Context, votes []sdk.AccAddress) sdk.Result
+	//HandleProposal(ctx sdk.Context, votes []sdk.AccAddress) sdk.Result
 }
 
 type ProposalHandler interface {
-	CanHandle(action ProposalAction) bool
-	Handle(ctx sdk.Context, action ProposalAction, voters []sdk.AccAddress) sdk.Result
+	// Returns a true or false value as to whether the handler can handle this type of
+	// proposal and a result that either can contain Tags for indexing for valid proposals
+	// or error messsages for invalidate proposals
+	CheckProposal(ctx sdk.Context, action ProposalAction) (bool, sdk.Result)
+	HandleProposal(ctx sdk.Context, action ProposalAction, voters []sdk.AccAddress) sdk.Result
 }

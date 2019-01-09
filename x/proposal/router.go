@@ -1,7 +1,7 @@
 package proposal
 
 import (
-	types "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"regexp"
 )
 
@@ -32,26 +32,26 @@ func (rtr *Router) AddRoute(r string, h ProposalHandler) *Router {
 	return rtr
 }
 
-func (rtr *Router) CanHandle(action ProposalAction) bool {
+func (rtr *Router) CheckProposal(ctx sdk.Context, action ProposalAction) (bool, sdk.Result) {
 	for _, route := range rtr.routes {
 		if route.r == action.Route() {
-            canHandle := route.h.CanHandle(action)
-            if canHandle {
-            	return true
+			canHandle, res := route.h.CheckProposal(ctx, action)
+			if canHandle {
+				return true, res
 			}
 		}
 	}
-	return false
+	return false, sdk.Result{Code: sdk.CodeUnknownRequest}
 }
 
-func (rtr *Router) Handle(ctx types.Context, action ProposalAction, voters []types.AccAddress) types.Result {
+func (rtr *Router) HandleProposal(ctx sdk.Context, action ProposalAction, voters []sdk.AccAddress) sdk.Result {
 	for _, route := range rtr.routes {
 		if route.r == action.Route() {
-			return route.h.Handle(ctx, action, voters)
+			return route.h.HandleProposal(ctx, action, voters)
 		}
 	}
-	return types.Result{
-		Code:types.CodeUnknownRequest,
-		Log:"can't find handler",
+	return sdk.Result{
+		Code: sdk.CodeUnknownRequest,
+		Log:  "can't find handler",
 	}
 }

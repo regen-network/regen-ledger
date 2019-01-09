@@ -20,18 +20,18 @@ type Keeper struct {
 	cdc *codec.Codec
 }
 
-func (keeper Keeper) CanHandle(action proposal.ProposalAction) bool {
+func (keeper Keeper) CheckProposal(ctx sdk.Context, action proposal.ProposalAction) (bool, sdk.Result) {
 	switch action.(type) {
 	case ActionRegisterESPVersion:
-		return true
+		return true, sdk.Result{Code:sdk.CodeOK}
 	case ActionReportESPResult:
-		return true
+		return true, sdk.Result{Code:sdk.CodeOK}
 	default:
-		return false
+		return false, sdk.Result{Code:sdk.CodeUnknownRequest}
 	}
 }
 
-func (keeper Keeper) Handle(ctx sdk.Context, action proposal.ProposalAction, approvers []sdk.AccAddress) sdk.Result {
+func (keeper Keeper) HandleProposal(ctx sdk.Context, action proposal.ProposalAction, approvers []sdk.AccAddress) sdk.Result {
 	switch action := action.(type) {
 	case ActionRegisterESPVersion:
 		return keeper.RegisterESPVersion(ctx, action.Curator, action.Name, action.Version, action.Spec, approvers)

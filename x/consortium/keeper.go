@@ -34,18 +34,18 @@ func NewKeeper(storeKey sdk.StoreKey, cdc *codec.Codec, agentKeeper agent.Keeper
 	}
 }
 
-func (keeper Keeper) CanHandle(action proposal.ProposalAction) bool {
+func (keeper Keeper) CheckProposal(ctx sdk.Context, action proposal.ProposalAction) (bool, sdk.Result) {
 	switch action.(type) {
 	case ActionScheduleUpgrade:
-		return true
+		return true, sdk.Result{Code:sdk.CodeOK}
 	case ActionChangeValidatorSet:
-		return true
+		return true, sdk.Result{Code:sdk.CodeOK}
 	default:
-		return false
+		return false, sdk.Result{Code:sdk.CodeUnknownRequest}
 	}
 }
 
-func (keeper Keeper) Handle(ctx sdk.Context, action proposal.ProposalAction, voters []sdk.AccAddress) sdk.Result {
+func (keeper Keeper) HandleProposal(ctx sdk.Context, action proposal.ProposalAction, voters []sdk.AccAddress) sdk.Result {
 	switch action := action.(type) {
 	case ActionScheduleUpgrade:
 		return keeper.handleActionScheduleUpgrade(ctx, action, voters)
