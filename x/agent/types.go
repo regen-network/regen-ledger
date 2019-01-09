@@ -10,7 +10,7 @@ type AgentID = uint64
 type AuthPolicy int
 
 const (
-	MultiSig AuthPolicy = 1
+	MultiSig AuthPolicy = 0
 )
 
 // An agent can be used to abstract over users and groups
@@ -19,8 +19,8 @@ const (
 type AgentInfo struct {
 	AuthPolicy AuthPolicy `json:"auth_policy"`
 	// An Agent can have either addresses or other agents as members
-	Addresses []sdk.AccAddress `json:"addresses,omitempty"`
-	Agents []AgentID           `json:"agents,omitempty"`
-	MultisigThreshold int      `json:"multisig_threshold"`
+	Addresses         []sdk.AccAddress `json:"addresses,omitempty"`
+	Agents            []AgentID        `json:"agents,omitempty"`
+	MultisigThreshold int              `json:"multisig_threshold"`
+	Memo              string           `json:"memo,omitempty"`
 }
-

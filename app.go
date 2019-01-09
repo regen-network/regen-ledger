@@ -153,7 +153,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 // GenesisState represents chain state at the start of the chain. Any initial state (account balances) are stored here.
 type GenesisState struct {
 	Accounts []*auth.BaseAccount `json:"accounts"`
-	Agents map[uint64]agent.AgentInfo `json:"agents"`
+	Agents []agent.AgentInfo `json:"agents"`
 }
 
 func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
@@ -170,7 +170,9 @@ func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.
 		app.accountKeeper.SetAccount(ctx, acc)
 	}
 
-	// TODO add agents
+	for _, agt := range genesisState.Agents {
+		app.agentKeeper.CreateAgent(ctx, agt)
+	}
 
 	app.consortiumKeeper.SetValidators(ctx, req.Validators)
 
