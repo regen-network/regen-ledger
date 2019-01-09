@@ -61,7 +61,7 @@ func (keeper Keeper) handleActionScheduleUpgrade(ctx sdk.Context, action ActionS
 	if !keeper.agentKeeper.Authorize(ctx, consortiumAgentId, signers) {
 		return sdk.Result{Code: sdk.CodeUnauthorized}
 	}
-	keeper.upgradeKeeper.ScheduleUpgrade(ctx, action.upgradeInfo)
+	keeper.upgradeKeeper.ScheduleUpgrade(ctx, action.UpgradeInfo)
 	return sdk.Result{Code: sdk.CodeOK}
 }
 
@@ -74,4 +74,3 @@ func (keeper Keeper) SetValidators(ctx sdk.Context, validators []abci.ValidatorU
 func (keeper Keeper) EndBlocker(context sdk.Context) []abci.ValidatorUpdate {
 	return abci.ValidatorUpdates{}
 }
-

@@ -9,7 +9,7 @@ import (
 
 type Keeper struct {
 	storeKey          sdk.StoreKey
-	cdc *codec.Codec
+	cdc               *codec.Codec
 	lastUpgradeHeight int64
 	info              UpgradeInfo
 	haveCachedInfo    bool
@@ -20,11 +20,11 @@ type Keeper struct {
 
 type UpgradeInfo struct {
 	// The height at which the upgrade must be performed
-	Height int64  `json:"height"`
+	Height int64 `json:"height"`
 
 	// Any application specific upgrade info to be included on-chain
 	// such as a git commit that validators could automatically upgrade to
-	Memo string `json:"memo"`
+	Memo string `json:"memo,omitempty"`
 }
 
 const (
@@ -34,7 +34,7 @@ const (
 func NewKeeper(storeKey sdk.StoreKey, cdc *codec.Codec, lastUpgradeHeight int64) Keeper {
 	return Keeper{
 		storeKey:          storeKey,
-		cdc: cdc,
+		cdc:               cdc,
 		lastUpgradeHeight: lastUpgradeHeight,
 		haveCachedInfo:    false,
 	}

@@ -8,15 +8,15 @@ import (
 )
 
 type ActionScheduleUpgrade struct {
-	upgradeInfo upgrade.UpgradeInfo
+	UpgradeInfo upgrade.UpgradeInfo `json:"upgrade_info"`
 }
 
 /*
 This action is a temporary placeholder for more
 thorough validator delegation and staking support
- */
+*/
 type ActionChangeValidatorSet struct {
-	validators []abci.ValidatorUpdate
+	Validators []abci.ValidatorUpdate `json:"validators"`
 }
 
 // TODO token inflation rate
@@ -27,7 +27,7 @@ func (action ActionScheduleUpgrade) Route() string { return "consortium" }
 func (action ActionScheduleUpgrade) Type() string { return "upgrade" }
 
 func (action ActionScheduleUpgrade) ValidateBasic() sdk.Error {
-	if action.upgradeInfo.Height <= 0 {
+	if action.UpgradeInfo.Height <= 0 {
 		return sdk.ErrUnknownRequest("Upgrade height must be greater than 0")
 	}
 	return nil

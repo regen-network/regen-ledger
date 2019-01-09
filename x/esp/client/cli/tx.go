@@ -35,12 +35,12 @@ func GetCmdProposeVersion(cdc *codec.Codec) *cobra.Command {
 			Curator: curator,
 			Name:    name,
 			Version: version,
-			Spec:    esp.ESPVersionSpec{Verifiers: verifierAgents,},
+			Spec:    esp.ESPVersionSpec{Verifiers: verifierAgents},
 		}, nil
 	})
 
 	cmd.Args = cobra.ExactArgs(3)
-	cmd.Use = "propose-version [curator] [name] [version] --verifiers [verifiers]"
+	cmd.Use = "propose-version <curator> <name> <version> --verifiers <verifiers-list>"
 	cmd.Short = "Propose an ESP version"
 	cmd.Flags().StringArrayVar(&verifiers, "verifiers", []string{}, "ESP verifier agent ID's")
 	return cmd
@@ -58,7 +58,7 @@ func GetCmdReportResult(cdc *codec.Codec) *cobra.Command {
 
 		version := args[2]
 
-        verifierStr := args[3]
+		verifierStr := args[3]
 		verifier, err := strconv.ParseUint(verifierStr, 10, 64)
 		if err != nil {
 			return nil, err
@@ -73,19 +73,19 @@ func GetCmdReportResult(cdc *codec.Codec) *cobra.Command {
 		data := args[5]
 
 		return esp.ActionReportESPResult{
-			Curator: curator,
-			Name:    name,
-			Version: version,
-			Verifier:verifier,
-			Result:esp.ESPResult{
-				Data:[]byte(data),
-				PolygonEWKB:polygon,
+			Curator:  curator,
+			Name:     name,
+			Version:  version,
+			Verifier: verifier,
+			Result: esp.ESPResult{
+				Data:        []byte(data),
+				PolygonEWKB: polygon,
 			},
 		}, nil
 	})
 
 	cmd.Args = cobra.ExactArgs(6)
-	cmd.Use = "propose-result [curator] [name] [version] [verifier] [polygon-ewkb-hex] [data]"
+	cmd.Use = "propose-result <curator> <name> <version> <verifier> <polygon-ewkb-hex> <data>"
 	cmd.Short = "Propose an ESP result"
 	return cmd
 }

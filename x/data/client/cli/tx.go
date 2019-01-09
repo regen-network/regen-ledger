@@ -13,7 +13,7 @@ import (
 
 func GetCmdStoreData(cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "store [data]",
+		Use:   "store <data>",
 		Short: "store some data on the blockchain",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
