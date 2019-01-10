@@ -82,7 +82,8 @@ func main() {
 	)
 
 	executor := cli.PrepareMainCmd(rootCmd, "XRN", defaultCLIHome)
-	fmt.Println(viper.ConfigFileUsed())
+	fmt.Printf("Viper file %s\n", viper.GetViper().ConfigFileUsed())
+	fmt.Printf("%+v\n",viper.AllSettings())
 	err := executor.Execute()
 	if err != nil {
 		panic(err)

@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/tendermint/tendermint/libs/log"
 	"gitlab.com/regen-network/regen-ledger/x/agent"
 	"gitlab.com/regen-network/regen-ledger/x/consortium"
@@ -41,6 +42,8 @@ type xrnApp struct {
 	proposalStoreKey   *sdk.KVStoreKey
 	upgradeStoreKey    *sdk.KVStoreKey
 	consortiumStoreKey *sdk.KVStoreKey
+	keyParams        *sdk.KVStoreKey
+	tkeyParams       *sdk.TransientStoreKey
 
 	accountKeeper       auth.AccountKeeper
 	bankKeeper          bank.Keeper
@@ -51,6 +54,7 @@ type xrnApp struct {
 	proposalKeeper      proposal.Keeper
 	upgradeKeeper       upgrade.Keeper
 	consortiumKeeper    consortium.Keeper
+	paramsKeeper        params.Keeper
 }
 
 func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
@@ -79,12 +83,17 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		proposalStoreKey:   sdk.NewKVStoreKey("proposal"),
 		upgradeStoreKey:    sdk.NewKVStoreKey("upgrade"),
 		consortiumStoreKey: sdk.NewKVStoreKey("consortium"),
+		keyParams:        sdk.NewKVStoreKey(params.StoreKey),
+		tkeyParams:       sdk.NewTransientStoreKey(params.TStoreKey),
 	}
+
+	app.paramsKeeper = params.NewKeeper(app.cdc, app.keyParams, app.tkeyParams)
 
 	// The AccountKeeper handles address -> account lookups
 	app.accountKeeper = auth.NewAccountKeeper(
 		app.cdc,
 		app.keyAccount,
+		app.paramsKeeper.Subspace(auth.DefaultParamspace),
 		auth.ProtoBaseAccount,
 	)
 
@@ -140,7 +149,10 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		app.proposalStoreKey,
 		app.upgradeStoreKey,
 		app.consortiumStoreKey,
+		app.keyParams,
 	)
+
+	app.MountStoresTransient(app.tkeyParams)
 
 	err := app.LoadLatestVersion(app.keyMain)
 	if err != nil {

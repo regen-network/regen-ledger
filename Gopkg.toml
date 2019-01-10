@@ -24,14 +24,14 @@
 #   go-tests = true
 #   unused-packages = true
 
-[[constraint]]
-  name = "github.com/cosmos/cosmos-sdk"
-  version = "v0.29.1"
-
-#[[override]]
+#[[constraint]]
 #  name = "github.com/cosmos/cosmos-sdk"
-#  source = "https://github.com/regen-network/cosmos-sdk"
-#  branch = "aaronc/v0.28.1-trace-commit"
+#  version = "v0.29.1"
+
+[[override]]
+  name = "github.com/cosmos/cosmos-sdk"
+  source = "https://github.com/regen-network/cosmos-sdk"
+  branch = "regen-network/cli-handle-result"
 
 [[override]]
   name = "github.com/golang/protobuf"
@@ -63,7 +63,7 @@
 
 [[override]]
   name = "github.com/tendermint/tendermint"
-  version = "v0.27.4"
+  version = "v0.27.3"
 
 [[override]]
   name = "golang.org/x/crypto"

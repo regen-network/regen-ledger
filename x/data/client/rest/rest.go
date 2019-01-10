@@ -70,7 +70,7 @@ func storeDataHandler(cdc *codec.Codec, cliCtx context.CLIContext) http.HandlerF
 		}
 
 		baseReq := req.BaseReq.Sanitize()
-		if !baseReq.ValidateBasic(w, cliCtx) {
+		if !baseReq.ValidateBasic(w) {
 			return
 		}
 
