@@ -28,10 +28,12 @@ func GetCmdProposeVersion(cdc *codec.Codec) *cobra.Command {
 		verifierAgents := agentcli.AgentsFromArray(verifiers)
 
 		return esp.ActionRegisterESPVersion{
-			Curator: curator,
-			Name:    name,
-			Version: version,
-			Spec:    esp.ESPVersionSpec{Verifiers: verifierAgents},
+			ESPVersionSpec: esp.ESPVersionSpec{
+				Curator:   curator,
+				Name:      name,
+				Version:   version,
+				Verifiers: verifierAgents,
+			},
 		}, nil
 	})
 
@@ -61,11 +63,11 @@ func GetCmdReportResult(cdc *codec.Codec) *cobra.Command {
 		data := args[5]
 
 		return esp.ActionReportESPResult{
-			Curator:  curator,
-			Name:     name,
-			Version:  version,
-			Verifier: verifier,
-			Result: esp.ESPResult{
+			ESPResult: esp.ESPResult{
+				Curator:     curator,
+				Name:        name,
+				Version:     version,
+				Verifier:    verifier,
 				Data:        []byte(data),
 				PolygonEWKB: polygon,
 			},

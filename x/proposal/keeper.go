@@ -2,7 +2,6 @@ package proposal
 
 import (
 	"bytes"
-	"encoding/hex"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,13 +19,29 @@ func NewKeeper(storeKey sdk.StoreKey, handler ProposalHandler, cdc *codec.Codec)
 	return Keeper{storeKey: storeKey, handler: handler, cdc: cdc}
 }
 
+const (
+	Bech32Prefix = "proposal"
+)
+
+func mustEncodeProposalIDBech32(id []byte) string {
+	return utils.MustEncodeBech32(Bech32Prefix, id)
+}
+
+func MustDecodeProposalIDBech32(bech string) []byte {
+	hrp, id := utils.MustDecodeBech32(bech)
+	if hrp != Bech32Prefix {
+		panic(fmt.Sprintf("Expected bech32 prefix %s", Bech32Prefix))
+	}
+	return id
+}
+
 func (keeper Keeper) Propose(ctx sdk.Context, proposer sdk.AccAddress, action ProposalAction) sdk.Result {
 	canHandle, res := keeper.handler.CheckProposal(ctx, action)
 
 	if !canHandle {
 		return sdk.Result{
 			Code: sdk.CodeUnknownRequest,
-			Log: "unknown proposal type",
+			Log:  "unknown proposal type",
 		}
 	}
 
@@ -37,10 +52,11 @@ func (keeper Keeper) Propose(ctx sdk.Context, proposer sdk.AccAddress, action Pr
 	store := ctx.KVStore(keeper.storeKey)
 	hashBz := blake2b.Sum256(action.GetSignBytes())
 	id := hashBz[:]
+	bech := mustEncodeProposalIDBech32(id)
 	if store.Has(id) {
 		return sdk.Result{
 			Code: sdk.CodeUnknownRequest,
-			Log:  fmt.Sprintf("proposal %s already exists", hex.EncodeToString(id)),
+			Log:  fmt.Sprintf("proposal %s already exists", bech),
 		}
 	}
 
@@ -53,7 +69,7 @@ func (keeper Keeper) Propose(ctx sdk.Context, proposer sdk.AccAddress, action Pr
 	keeper.storeProposal(ctx, id, &prop)
 
 	res.Tags = res.Tags.
-		AppendTag("proposal.id", []byte(utils.MustEncodeBech32("proposal", id))).
+		AppendTag("proposal.id", []byte(bech)).
 		AppendTag("proposal.action", []byte(action.Type()))
 
 	return res
@@ -142,10 +158,10 @@ func (keeper Keeper) Vote(ctx sdk.Context, proposalId []byte, voter sdk.AccAddre
 	keeper.storeProposal(ctx, proposalId, &newProp)
 
 	return sdk.Result{Code: sdk.CodeOK,
-		Tags: sdk.NewTags(
-			"proposal.id", []byte(utils.MustEncodeBech32("proposal", proposalId)),
-			"proposal.action", []byte(proposal.Action.Type()),
-			)}
+		Tags: sdk.EmptyTags().
+			AppendTag("proposal.id", []byte(mustEncodeProposalIDBech32(proposalId))).
+			AppendTag("proposal.action", []byte(proposal.Action.Type())),
+	}
 }
 
 func (keeper Keeper) TryExecute(ctx sdk.Context, proposalId []byte) sdk.Result {
@@ -188,5 +204,8 @@ func (keeper Keeper) Withdraw(ctx sdk.Context, proposalId []byte, proposer sdk.A
 	store := ctx.KVStore(keeper.storeKey)
 	store.Delete(proposalId)
 
-	return sdk.Result{Code: sdk.CodeOK}
+	return sdk.Result{Code: sdk.CodeOK,
+		Tags: sdk.EmptyTags().
+			AppendTag("proposal.id", []byte(mustEncodeProposalIDBech32(proposalId))),
+	}
 }

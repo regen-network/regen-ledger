@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"encoding/hex"
 	"github.com/spf13/cobra"
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
 
@@ -68,11 +67,7 @@ func getRunVote(cdc *codec.Codec, approve bool) func(cmd *cobra.Command, args []
   		return err
   	}
 
-  	id, err := hex.DecodeString(args[0])
-
-  	if err != nil {
-  		return err
-  	}
+  	id := proposal.MustDecodeProposalIDBech32(args[0])
 
   	msg := proposal.MsgVote{
   		ProposalId:id,
@@ -127,11 +122,7 @@ func GetCmdTryExec(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			id, err := hex.DecodeString(args[0])
-
-			if err != nil {
-				return err
-			}
+			id := proposal.MustDecodeProposalIDBech32(args[0])
 
 			msg := proposal.MsgTryExecuteProposal{
 				ProposalId:id,
@@ -168,11 +159,7 @@ func GetCmdWithdraw(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			id, err := hex.DecodeString(args[0])
-
-			if err != nil {
-				return err
-			}
+			id := proposal.MustDecodeProposalIDBech32(args[0])
 
 			msg := proposal.MsgWithdrawProposal{
 				ProposalId:id,
