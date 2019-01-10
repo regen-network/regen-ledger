@@ -57,7 +57,7 @@
   revision = "d4cc87b860166d00d6b5b9e0d3b3d71d6088d4d4"
 
 [[projects]]
-  digest = "1:c65a162ff975d2e9a593a2cced80308b7d58a07b54e62437c3c70dfd6a5cb668"
+  digest = "1:b3620b053e7d332c8f0cb6ba58e25abcd47334dd7dada40fa1b175dda88c6af5"
   name = "github.com/cosmos/cosmos-sdk"
   packages = [
     "baseapp",
@@ -108,6 +108,7 @@
     "x/params/subspace",
     "x/slashing",
     "x/slashing/client/rest",
+    "x/slashing/tags",
     "x/stake",
     "x/stake/client/cli",
     "x/stake/client/rest",
@@ -118,8 +119,8 @@
     "x/stake/types",
   ]
   pruneopts = "UT"
-  revision = "6bff7082607a2c36439f8b6218816878c41ca6af"
-  version = "v0.29.1"
+  revision = "915ef12facc9cca48a249467c3acff63f4e32f17"
+  source = "https://github.com/regen-network/cosmos-sdk"
 
 [[projects]]
   digest = "1:e8a3550c8786316675ff54ad6f09d265d129c9d986919af7f541afba50d87ce2"

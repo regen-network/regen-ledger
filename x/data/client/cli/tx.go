@@ -2,6 +2,7 @@ package cli
 
 import (
 	"github.com/spf13/cobra"
+	utils2 "gitlab.com/regen-network/regen-ledger/utils"
 	"gitlab.com/regen-network/regen-ledger/x/data"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -37,6 +38,7 @@ func GetCmdStoreData(cdc *codec.Codec) *cobra.Command {
 			}
 
 			cliCtx.PrintResponse = true
+			cliCtx.ResponsePrinter = utils2.PrintCLIResponse_Base64Data
 
 			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
 		},

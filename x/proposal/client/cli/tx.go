@@ -2,6 +2,7 @@ package cli
 
 import (
 	"github.com/spf13/cobra"
+	utils2 "gitlab.com/regen-network/regen-ledger/utils"
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -36,8 +37,8 @@ func GetCmdPropose(cdc *codec.Codec, actionCreator ActionCreator) *cobra.Command
 			}
 
 			msg := proposal.MsgCreateProposal{
-				Proposer:account,
-				Action:action,
+				Proposer: account,
+				Action:   action,
 			}
 			err = msg.ValidateBasic()
 			if err != nil {
@@ -45,44 +46,45 @@ func GetCmdPropose(cdc *codec.Codec, actionCreator ActionCreator) *cobra.Command
 			}
 
 			cliCtx.PrintResponse = true
+			cliCtx.ResponsePrinter = utils2.PrintCLIResponse_StringData
 
 			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
 		},
 	}
 }
 
-
 func getRunVote(cdc *codec.Codec, approve bool) func(cmd *cobra.Command, args []string) error {
-  return func(cmd *cobra.Command, args []string) error {
-  	cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
+	return func(cmd *cobra.Command, args []string) error {
+		cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
-  	txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
+		txBldr := authtxb.NewTxBuilderFromCLI().WithTxEncoder(utils.GetTxEncoder(cdc))
 
-  	if err := cliCtx.EnsureAccountExists(); err != nil {
-  		return err
-  	}
+		if err := cliCtx.EnsureAccountExists(); err != nil {
+			return err
+		}
 
-  	account, err := cliCtx.GetFromAddress()
-  	if err != nil {
-  		return err
-  	}
+		account, err := cliCtx.GetFromAddress()
+		if err != nil {
+			return err
+		}
 
-  	id := proposal.MustDecodeProposalIDBech32(args[0])
+		id := proposal.MustDecodeProposalIDBech32(args[0])
 
-  	msg := proposal.MsgVote{
-  		ProposalId:id,
-  		Voter:account,
-  		Vote:approve,
-  	}
-  	err = msg.ValidateBasic()
-  	if err != nil {
-  		return err
-  	}
+		msg := proposal.MsgVote{
+			ProposalId: id,
+			Voter:      account,
+			Vote:       approve,
+		}
+		err = msg.ValidateBasic()
+		if err != nil {
+			return err
+		}
 
-  	cliCtx.PrintResponse = true
+		cliCtx.PrintResponse = true
+		cliCtx.ResponsePrinter = utils2.PrintCLIResponse_StringData
 
-  	return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
-  }
+		return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
+	}
 }
 
 func GetCmdApprove(cdc *codec.Codec) *cobra.Command {
@@ -90,7 +92,7 @@ func GetCmdApprove(cdc *codec.Codec) *cobra.Command {
 		Use:   "approve [ID]",
 		Short: "vote to approve a proposal",
 		Args:  cobra.ExactArgs(1),
-		RunE: getRunVote(cdc, true),
+		RunE:  getRunVote(cdc, true),
 	}
 }
 
@@ -99,7 +101,7 @@ func GetCmdUnapprove(cdc *codec.Codec) *cobra.Command {
 		Use:   "unapprove [ID]",
 		Short: "vote to un-approve a proposal that you have previously approved",
 		Args:  cobra.ExactArgs(1),
-		RunE: getRunVote(cdc, false),
+		RunE:  getRunVote(cdc, false),
 	}
 }
 
@@ -125,8 +127,8 @@ func GetCmdTryExec(cdc *codec.Codec) *cobra.Command {
 			id := proposal.MustDecodeProposalIDBech32(args[0])
 
 			msg := proposal.MsgTryExecuteProposal{
-				ProposalId:id,
-				Signer:account,
+				ProposalId: id,
+				Signer:     account,
 			}
 			err = msg.ValidateBasic()
 			if err != nil {
@@ -134,6 +136,7 @@ func GetCmdTryExec(cdc *codec.Codec) *cobra.Command {
 			}
 
 			cliCtx.PrintResponse = true
+			cliCtx.ResponsePrinter = utils2.PrintCLIResponse_StringData
 
 			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
 		},
@@ -162,8 +165,8 @@ func GetCmdWithdraw(cdc *codec.Codec) *cobra.Command {
 			id := proposal.MustDecodeProposalIDBech32(args[0])
 
 			msg := proposal.MsgWithdrawProposal{
-				ProposalId:id,
-				Proposer:account,
+				ProposalId: id,
+				Proposer:   account,
 			}
 			err = msg.ValidateBasic()
 			if err != nil {

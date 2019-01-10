@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/spf13/viper"
 	"os"
 	"path/filepath"
 	"text/template"
@@ -82,8 +81,6 @@ func main() {
 	)
 
 	executor := cli.PrepareMainCmd(rootCmd, "XRN", defaultCLIHome)
-	fmt.Printf("Viper file %s\n", viper.GetViper().ConfigFileUsed())
-	fmt.Printf("%+v\n",viper.AllSettings())
 	err := executor.Execute()
 	if err != nil {
 		panic(err)

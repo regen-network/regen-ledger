@@ -74,8 +74,8 @@ func GetCmdCreateAgent(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			cliCtx.PrintResponse = false
-            cliCtx.ResponseHandler = utils2.PrintCLIResponse_StringData
+			cliCtx.PrintResponse = true
+			cliCtx.ResponsePrinter = utils2.PrintCLIResponse_StringData
 
 			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
 		},
