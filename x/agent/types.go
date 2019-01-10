@@ -24,3 +24,4 @@ type AgentInfo struct {
 	MultisigThreshold int              `json:"multisig_threshold"`
 	Memo              string           `json:"memo,omitempty"`
 }
+

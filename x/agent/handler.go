@@ -24,10 +24,14 @@ func NewHandler(keeper Keeper) sdk.Handler {
 
 func handleMsgCreateAgent(ctx sdk.Context, keeper Keeper, msg MsgCreateAgent) sdk.Result {
 	id := keeper.CreateAgent(ctx, msg.Data)
-	return sdk.Result{Data:[]byte(fmt.Sprintf("%d", id))}
+	return sdk.Result{
+		Tags: sdk.NewTags("agent.id", []byte(MustEncodeBech32AgentID(id))),
+	}
 }
 
 func handleMsgUpdateAgent(ctx sdk.Context, keeper Keeper, msg MsgUpdateAgent) sdk.Result {
 	keeper.UpdateAgentInfo(ctx, msg.Id, msg.Signers, msg.Data)
-	return sdk.Result{}
+	return sdk.Result{
+		Tags: sdk.NewTags("agent.id", []byte(MustEncodeBech32AgentID(msg.Id))),
+	}
 }

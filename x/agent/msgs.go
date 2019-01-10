@@ -25,7 +25,7 @@ func NewMsgCreateAgent(info AgentInfo, signer sdk.AccAddress) MsgCreateAgent {
 
 func (msg MsgCreateAgent) Route() string { return "agent" }
 
-func (msg MsgCreateAgent) Type() string { return "create" }
+func (msg MsgCreateAgent) Type() string { return "agent.create" }
 
 func (info AgentInfo) ValidateBasic() sdk.Error {
 	if len(info.Agents) <= 0 && len(info.Addresses) <= 0 {
@@ -59,7 +59,7 @@ func (msg MsgCreateAgent) GetSigners() []sdk.AccAddress {
 
 func (msg MsgUpdateAgent) Route() string { return "agent" }
 
-func (msg MsgUpdateAgent) Type() string { return "update" }
+func (msg MsgUpdateAgent) Type() string { return "agent.update" }
 
 func (msg MsgUpdateAgent) ValidateBasic() sdk.Error {
 	return msg.Data.ValidateBasic()

@@ -52,7 +52,9 @@ func (keeper Keeper) Propose(ctx sdk.Context, proposer sdk.AccAddress, action Pr
 
 	keeper.storeProposal(ctx, id, &prop)
 
-	res.Tags = res.Tags.AppendTag("proposal.id", []byte(utils.MustEncodeBech32("proposal", id)))
+	res.Tags = res.Tags.
+		AppendTag("proposal.id", []byte(utils.MustEncodeBech32("proposal", id))).
+		AppendTag("proposal.action", []byte(action.Type()))
 
 	return res
 }
@@ -139,7 +141,11 @@ func (keeper Keeper) Vote(ctx sdk.Context, proposalId []byte, voter sdk.AccAddre
 
 	keeper.storeProposal(ctx, proposalId, &newProp)
 
-	return sdk.Result{Code: sdk.CodeOK, Tags: sdk.NewTags("proposal.id", []byte(utils.MustEncodeBech32("proposal", proposalId)))}
+	return sdk.Result{Code: sdk.CodeOK,
+		Tags: sdk.NewTags(
+			"proposal.id", []byte(utils.MustEncodeBech32("proposal", proposalId)),
+			"proposal.action", []byte(proposal.Action.Type()),
+			)}
 }
 
 func (keeper Keeper) TryExecute(ctx sdk.Context, proposalId []byte) sdk.Result {

@@ -28,7 +28,7 @@ type MsgWithdrawProposal struct {
 
 func (msg MsgCreateProposal) Route() string { return "proposal" }
 
-func (msg MsgCreateProposal) Type() string { return "create" }
+func (msg MsgCreateProposal) Type() string { return "proposal.create" }
 
 func (msg MsgCreateProposal) ValidateBasic() sdk.Error {
 	return msg.Action.ValidateBasic()
@@ -48,7 +48,7 @@ func (msg MsgCreateProposal) GetSigners() []sdk.AccAddress {
 
 func (msg MsgVote) Route() string { return "proposal" }
 
-func (msg MsgVote) Type() string { return "vote" }
+func (msg MsgVote) Type() string { return "proposal.vote" }
 
 func (msg MsgVote) ValidateBasic() sdk.Error { return nil }
 
@@ -66,7 +66,7 @@ func (msg MsgVote) GetSigners() []sdk.AccAddress {
 
 func (msg MsgTryExecuteProposal) Route() string { return "proposal" }
 
-func (msg MsgTryExecuteProposal) Type() string { return "try-exec" }
+func (msg MsgTryExecuteProposal) Type() string { return "proposal.exec" }
 
 func (msg MsgTryExecuteProposal) ValidateBasic() sdk.Error {
 	return nil
@@ -84,13 +84,9 @@ func (msg MsgTryExecuteProposal) GetSigners() []sdk.AccAddress {
     return []sdk.AccAddress{msg.Signer}
 }
 
-func (msg MsgWithdrawProposal) Route() string {
-	return "proposal"
-}
+func (msg MsgWithdrawProposal) Route() string { return "proposal" }
 
-func (msg MsgWithdrawProposal) Type() string {
-	return "withdraw"
-}
+func (msg MsgWithdrawProposal) Type() string { return "proposal.withdraw" }
 
 func (msg MsgWithdrawProposal) ValidateBasic() sdk.Error {
     return nil

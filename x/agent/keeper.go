@@ -2,8 +2,10 @@ package agent
 
 import (
 	"bytes"
+	"encoding/binary"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"gitlab.com/regen-network/regen-ledger/utils"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -41,6 +43,30 @@ func (keeper Keeper) GetAgentInfo(ctx sdk.Context, id AgentID) (info AgentInfo, 
 		return info, sdk.ErrUnknownRequest(marshalErr.Error())
 	}
 	return info, nil
+}
+
+const (
+	Bech32Prefix = "xrnagt"
+)
+
+
+func MustEncodeBech32AgentID(id AgentID) string {
+	buf := make([]byte, binary.MaxVarintLen64)
+	n := binary.PutUvarint(buf, id)
+	return utils.MustEncodeBech32(Bech32Prefix, buf[:n])
+}
+
+func MustDecodeBech32AgentID(bech string) AgentID {
+	var id AgentID
+	hrp, bz := utils.MustDecodeBech32(bech)
+	if hrp != Bech32Prefix {
+		panic(fmt.Sprintf("Bech32 AgentID must start with %s", Bech32Prefix))
+	}
+	id, n := binary.Uvarint(bz)
+	if n <= 0 {
+		panic("Error decoding AgentID")
+	}
+	return id
 }
 
 func (keeper Keeper) getNewAgentId(ctx sdk.Context) (agentId AgentID) {

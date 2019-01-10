@@ -8,7 +8,6 @@ import (
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
 	"gitlab.com/regen-network/regen-ledger/x/agent"
-	"strconv"
 )
 
 func addrsFromBech32Array(arr []string) []sdk.AccAddress {
@@ -29,12 +28,7 @@ func AgentsFromArray(arr []string) []agent.AgentID {
 	n := len(arr)
 	res := make([]agent.AgentID, n)
 	for i := 0; i < n; i++ {
-		str := arr[i]
-		id, err := strconv.ParseUint(str, 10, 64)
-		if err != nil {
-			panic(err)
-		}
-		res[i] = agent.AgentID(id)
+		res[i] = agent.MustDecodeBech32AgentID(arr[i])
 	}
 	return res
 }

@@ -3,11 +3,11 @@ package cli
 import (
 	"encoding/hex"
 	"github.com/spf13/cobra"
+	"gitlab.com/regen-network/regen-ledger/x/agent"
 	agentcli "gitlab.com/regen-network/regen-ledger/x/agent/client/cli"
 	"gitlab.com/regen-network/regen-ledger/x/esp"
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
 	proposalcli "gitlab.com/regen-network/regen-ledger/x/proposal/client/cli"
-	"strconv"
 
 	//"github.com/twpayne/go-geom/encoding/ewkbhex"
 	//"github.com/twpayne/go-geom/encoding/ewkb"
@@ -19,11 +19,7 @@ func GetCmdProposeVersion(cdc *codec.Codec) *cobra.Command {
 	var verifiers []string
 
 	cmd := proposalcli.GetCmdPropose(cdc, func(cmd *cobra.Command, args []string) (action proposal.ProposalAction, e error) {
-		curatorStr := args[0]
-		curator, err := strconv.ParseUint(curatorStr, 10, 64)
-		if err != nil {
-			return nil, err
-		}
+		curator := agent.MustDecodeBech32AgentID(args[0])
 
 		name := args[1]
 
@@ -48,21 +44,13 @@ func GetCmdProposeVersion(cdc *codec.Codec) *cobra.Command {
 
 func GetCmdReportResult(cdc *codec.Codec) *cobra.Command {
 	cmd := proposalcli.GetCmdPropose(cdc, func(cmd *cobra.Command, args []string) (action proposal.ProposalAction, e error) {
-		curatorStr := args[0]
-		curator, err := strconv.ParseUint(curatorStr, 10, 64)
-		if err != nil {
-			return nil, err
-		}
+		curator := agent.MustDecodeBech32AgentID(args[0])
 
 		name := args[1]
 
 		version := args[2]
 
-		verifierStr := args[3]
-		verifier, err := strconv.ParseUint(verifierStr, 10, 64)
-		if err != nil {
-			return nil, err
-		}
+		verifier := agent.MustDecodeBech32AgentID(args[3])
 
 		polygonHex := args[4]
 		polygon, err := hex.DecodeString(polygonHex)

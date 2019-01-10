@@ -33,7 +33,7 @@ func NewActionRegisterESPVersion(curator agent.AgentID, name string, version str
 
 func (msg ActionRegisterESPVersion) Route() string { return "esp" }
 
-func (msg ActionRegisterESPVersion) Type() string { return "register" }
+func (msg ActionRegisterESPVersion) Type() string { return "esp.register_version" }
 
 func (msg ActionRegisterESPVersion) ValidateBasic() sdk.Error {
 	if len(msg.Name) == 0 {
@@ -58,7 +58,7 @@ func (msg ActionRegisterESPVersion) GetSignBytes() []byte {
 
 func (msg ActionReportESPResult) Route() string { return "esp" }
 
-func (msg ActionReportESPResult) Type() string { return "report_result" }
+func (msg ActionReportESPResult) Type() string { return "esp.report_result" }
 
 func (msg ActionReportESPResult) ValidateBasic() sdk.Error {
 	if len(msg.Name) == 0 {

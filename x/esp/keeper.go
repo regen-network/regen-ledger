@@ -21,13 +21,15 @@ type Keeper struct {
 }
 
 func (keeper Keeper) CheckProposal(ctx sdk.Context, action proposal.ProposalAction) (bool, sdk.Result) {
-	switch action.(type) {
+	switch action := action.(type) {
 	case ActionRegisterESPVersion:
-		return true, sdk.Result{Code:sdk.CodeOK}
+		return true, sdk.Result{
+			Tags: sdk.EmptyTags().AppendTag("proposal.agent", []byte(agent.MustEncodeBech32AgentID(action.Curator))),
+		}
 	case ActionReportESPResult:
-		return true, sdk.Result{Code:sdk.CodeOK}
+		return true, sdk.Result{}
 	default:
-		return false, sdk.Result{Code:sdk.CodeUnknownRequest}
+		return false, sdk.Result{Code: sdk.CodeUnknownRequest}
 	}
 }
 
@@ -107,7 +109,7 @@ func (keeper Keeper) ReportESPResult(ctx sdk.Context, curator agent.AgentID, nam
 	if err != nil {
 		return sdk.Result{
 			Code: sdk.CodeUnknownRequest,
-			Log: "can't find ESP version",
+			Log:  "can't find ESP version",
 		}
 	}
 
@@ -149,5 +151,5 @@ func (keeper Keeper) ReportESPResult(ctx sdk.Context, curator agent.AgentID, nam
 	hashBz := hash.Sum(nil)
 	store.Set(espResultKey(curator, name, version, hashBz), bz)
 
-	return sdk.Result{Code: sdk.CodeOK, Data:hashBz}
+	return sdk.Result{Code: sdk.CodeOK, Data: hashBz}
 }
