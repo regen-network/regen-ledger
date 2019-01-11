@@ -2,12 +2,12 @@ package geo
 
 type GeometryType int
 
-const (
-	Polygon GeometryType = 1
-	Point GeometryType = 2
-)
+//const (
+//	Point   GeometryType = 0
+//	Polygon GeometryType = 1
+//)
 
 type Geometry struct {
-	EWKB []byte
-	Type GeometryType
+	//Type GeometryType `json:"type"`
+	EWKB []byte `json:"ewkb,omitempty"`
 }

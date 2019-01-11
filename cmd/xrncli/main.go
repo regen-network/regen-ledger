@@ -29,6 +29,7 @@ import (
 	dataclient "gitlab.com/regen-network/regen-ledger/x/data/client"
 	datarest "gitlab.com/regen-network/regen-ledger/x/data/client/rest"
 	espclient "gitlab.com/regen-network/regen-ledger/x/esp/client"
+	geoclient "gitlab.com/regen-network/regen-ledger/x/geo/client"
 	proposalclient "gitlab.com/regen-network/regen-ledger/x/proposal/client"
 )
 
@@ -55,6 +56,7 @@ func main() {
 	mc := []sdk.ModuleClients{
 		espclient.NewModuleClient(cdc),
 		proposalclient.NewModuleClient(cdc),
+		geoclient.NewModuleClient(cdc),
 		dataclient.NewModuleClient(storeData, cdc),
 		agentclient.NewModuleClient(storeAgent, cdc),
 		consortiumclient.NewModuleClient(cdc),

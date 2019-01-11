@@ -8,6 +8,7 @@ import (
 	"gitlab.com/regen-network/regen-ledger/x/consortium"
 	"gitlab.com/regen-network/regen-ledger/x/data"
 	"gitlab.com/regen-network/regen-ledger/x/esp"
+	"gitlab.com/regen-network/regen-ledger/x/geo"
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
 	"gitlab.com/regen-network/regen-ledger/x/upgrade"
 	//"os"
@@ -38,6 +39,7 @@ type xrnApp struct {
 	//schemaStoreKey  *sdk.KVStoreKey
 	dataStoreKey       *sdk.KVStoreKey
 	espStoreKey        *sdk.KVStoreKey
+	geoStoreKey        *sdk.KVStoreKey
 	agentStoreKey      *sdk.KVStoreKey
 	proposalStoreKey   *sdk.KVStoreKey
 	upgradeStoreKey    *sdk.KVStoreKey
@@ -50,6 +52,7 @@ type xrnApp struct {
 	feeCollectionKeeper auth.FeeCollectionKeeper
 	dataKeeper          data.Keeper
 	espKeeper           esp.Keeper
+	geoKeeper           geo.Keeper
 	agentKeeper         agent.Keeper
 	proposalKeeper      proposal.Keeper
 	upgradeKeeper       upgrade.Keeper
@@ -78,6 +81,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		keyFeeCollection: sdk.NewKVStoreKey("fee_collection"),
 		//schemaStoreKey: sdk.NewKVStoreKey("schema"),
 		espStoreKey:        sdk.NewKVStoreKey("esp"),
+		geoStoreKey:        sdk.NewKVStoreKey("geo"),
 		dataStoreKey:       sdk.NewKVStoreKey("data"),
 		agentStoreKey:      sdk.NewKVStoreKey("agent"),
 		proposalStoreKey:   sdk.NewKVStoreKey("proposal"),
@@ -107,6 +111,8 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 
 	app.agentKeeper = agent.NewKeeper(app.agentStoreKey, cdc)
 
+	app.geoKeeper = geo.NewKeeper(app.geoStoreKey, cdc)
+
 	app.espKeeper = esp.NewKeeper(app.espStoreKey, app.agentKeeper, cdc)
 
 	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc, 1000)
@@ -127,6 +133,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 	app.Router().
 		AddRoute("bank", bank.NewHandler(app.bankKeeper)).
 		AddRoute("data", data.NewHandler(app.dataKeeper)).
+		AddRoute("geo", geo.NewHandler(app.geoKeeper)).
 		AddRoute("agent", agent.NewHandler(app.agentKeeper)).
 		AddRoute("proposal", proposal.NewHandler(app.proposalKeeper))
 
@@ -145,6 +152,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		app.keyAccount,
 		app.dataStoreKey,
 		app.espStoreKey,
+		app.geoStoreKey,
 		app.agentStoreKey,
 		app.proposalStoreKey,
 		app.upgradeStoreKey,
@@ -235,6 +243,7 @@ func MakeCodec() *codec.Codec {
 	bank.RegisterCodec(cdc)
 	data.RegisterCodec(cdc)
 	esp.RegisterCodec(cdc)
+	geo.RegisterCodec(cdc)
 	agent.RegisterCodec(cdc)
 	proposal.RegisterCodec(cdc)
 	consortium.RegisterCodec(cdc)

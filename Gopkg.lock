@@ -581,6 +581,19 @@
   version = "v0.27.4"
 
 [[projects]]
+  digest = "1:85acb73b8e0928f8f02c4e669b90c22f132c0485b4f4ff4f7903513c9e9ad7a3"
+  name = "github.com/twpayne/go-geom"
+  packages = [
+    ".",
+    "encoding/ewkb",
+    "encoding/geojson",
+    "encoding/wkbcommon",
+  ]
+  pruneopts = "UT"
+  revision = "2765d30ef0a0c3b53a86101809b7ae00a99cbd93"
+  version = "v1.0.4"
+
+[[projects]]
   digest = "1:a7485b2a69f996923f9d3406a9a853fd8eb31818515e985a830d71f88f6a925b"
   name = "github.com/zondax/ledger-cosmos-go"
   packages = ["."]
@@ -754,6 +767,10 @@
     "github.com/tendermint/tendermint/libs/log",
     "github.com/tendermint/tendermint/rpc/core/types",
     "github.com/tendermint/tendermint/types",
+    "github.com/twpayne/go-geom",
+    "github.com/twpayne/go-geom/encoding/ewkb",
+    "github.com/twpayne/go-geom/encoding/geojson",
+    "github.com/twpayne/go-geom/encoding/wkbcommon",
     "golang.org/x/crypto/blake2b",
   ]
   solver-name = "gps-cdcl"
