@@ -43,19 +43,67 @@ consolidated into a single reference section.
 
 ## Data and RDF Indexes
 
-[RDF](https://www.w3.org/TR/rdf11-concepts/) data is at the core of Regen
-Ledger's data technologies. The rationale for this choice is documented
-in a separate section [Why RDF?](#why-rdf).
+[RDF](https://www.w3.org/TR/rdf11-concepts/) data (serialized as [JSON-LD](https://json-ld.org))
+and [Sparql](https://www.w3.org/TR/sparql11-query/)
+are at the core of Regen Ledger's data technologies.
 
-This section documents what types of RDF data can be stored or tracked
-on-chain via the `data` module and how this data should be indexed in an
-RDF database and available through its Sparql query engine.
+### Rationale
+
+The potential usage of RDF technologies in Regen Ledger originated from a
+number of aims:
+
+1. We would like to have namespaced identifiers for elements in data
+schemas that can be shared between different schemas and optionally
+have some semantic meaning defined elsewhere
+2. The goal of creating an ecological data commons is a priority for
+Regen Network
+
+RDF technology and the movement which created it are closely enough
+aligned with these goals that it was a technology considered from early on.
+
+Beyond these initial desires for a data commons, there are a few other
+more immediate needs have been identified:
+
+1. We need to have a way to provide off-chain and on-chain compute functions
+access to data that is already stored on-chain as well as remote data that
+is tracked by hash on the blockchain
+2. Ideally we could just query the blockchain for that data in a contract
+3. We need some basic functional programming language that can be used to
+compute new data to be stored on chain based on data already on chain. For
+instance, we might need to convert tons of carbon in some verification claim
+to coins to be released from escrow or minted. Or we might want to convert
+tons of carbon to a regeneration score.
+
+Sparql seems like a natural fit for 1 and 2, although there are other options
+like SQL. Sparql may seem like a strange choice for 3 because it's not marketed
+as a programming language. But upon studying our use cases more, it became clear
+that most things like generating new ecological claims from existing claims or
+computing a reward amount from ecological claims could be achieved by querying
+the existing claims and generating some new claim. Sparql `CONSTRUCT` allows
+us to query an existing RDF dataset and produce a new RDF graph. Sparql has
+full expression support, geo-spatial support via GeoSparql, and also the ability
+to query remote endpoints via federation which could be used to include off-chain
+data tracked by hash on chain in a single query. While an ideal solution
+might also include a more robust type checker and some other nice features, it
+seems like Sparql checks most of the boxes to achieve these immediate important
+needs for the system. In the future, a more custom built programming language,
+which we have been calling Ceres, may reach maturity and fulfill a similar
+role and even be adapted to work on-chain. For now, it appears existing RDF and
+Sparql tools can be adapted to provide sufficient near term functionality.
+
+RDF and Sparql are not without their limitations. In particular, despite
+being in existence for more than a decade these technologies have yet to
+see widespread adoption which limits the existence of high quality tools
+for using them. Numerous other criticism have been directed towards the
+semantic web movement as a whole. Nonetheless, we feel like the technologies
+as they are specified are a good enough fit and that the existing open source
+tooling is mature enough to justify their usage for this application.
 
 ### Storing and Tracking Graphs and Dataset
 
-Arbitrary RDF graphs or datasets can be stored or tracked on-chain. For
-indexing reasons, the `data` module differentiates from graphs and
-datasets although the procedure for storing them is similar.
+Arbitrary RDF graphs or datasets can be stored or tracked on-chain via
+the `data` module. For indexing reasons, the `data` module differentiates between
+graphs and datasets although the procedure for storing them is similar.
 
 #### Storing
 
@@ -239,8 +287,4 @@ well known data sources like public satellite imagery.
 ## Ecological State Protocols
 
 ## Identity Claims
-
-## Rationale
-
-### Why RDF?
 
