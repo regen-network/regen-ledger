@@ -114,42 +114,119 @@ throw a data inconsistency error if hash verification fails. Query authors
 can ignore issues with bad or missing off-chain datasets using the
 `SERVICE SILENT`  construct.
 
-## Agents
+## Verification Framework
 
-## Verification Compute Functions
+### Goals
 
-## Rationale
+The goal of the Regen Ledger verification framework is to provide a way to
+come to consensus around world state, in particular the ecological health
+of different parts of the world, while either relying minimally on
+"trusted third parties" or having more trust and transparency into the
+conclusions of trusted third parties. Note that eliminating trusted third
+parties altogether is a non-goal of the verification framework as the effort
+to do that may have too many unintended side effects. Our goal, rather, is
+to increase transparency wherever possibly, while recognizing both the real-world
+utility as well as risks of relying on other humans.
 
-Verification compute functions are functions that are run off-chain
+### Components
+
+The verification framework as a whole relies on two components:
+the [Oracle Function and Consensus Framework](#oracle-function-and-consensus-framework)
+and [Agents](#agents). Oracle functions are a way of coming to conclusions
+about world state, in particular ecological state just by relying on "well-known"
+data. Agents are a way of creating organizations of individuals and groups
+that can gain and lose rights to act as trusted third party verifiers at
+various steps in verification protocols.
+
+### Dealing with Uncertainty
+
+## Oracle Function and Consensus Framework
+
+## Rationale for Oracle Functions
+
+Oracle functions are functions that are run off-chain
 (at least for now) and should give deterministic results - i.e. give
 the same output given the same input, while at the same time having
-access to "well known world state" up to a certain point in time. This
-"well known world state" access is one of the key differentiating factors
-of the verification compute function framework. In functional programming
+access to "well-known world state" up to a certain point in time. This
+"well-known world state" access is one of the key differentiating factors
+of the oracle function framework. In functional programming
 a pure function usually has no access to external resources like the file
 system and HTTP resources. However, because we are building a system
 with cryptographic integrity checks - in particular a blockchain which
 also gives us a form of consensus around what is known when - we can
-make this data available to compute functions. 
+make this data available to oracle functions. So the base world state
+that is available to all oracle functions is the set of data stored on
+Regen Ledger up to a certain height plus all of the remote, off-chain
+data which has been stored by hash up to that height. In addition to
+this data set, we also make available other data that is "well-known"
+enough to be reasonably tamper resistant. This data includes the
+satellite imagery collections produced by ESA and NASA, and may be expanded
+to include other well-known "public" data sets.
+
+## Achieving Determinism and Consensus
+
+One of the primary goals of oracle functions is to be able to achieve
+a deterministic result that all observers can agree is the one correct
+result of running the function with the given inputs. There are many
+things that could get in the way of this, such as:
+
+1. Floating point indeterminism 
+2. Improper function implementation that uses non-deterministic world state
+leaked into compute environments such as random number generators, the system
+clock, and unintentional access to the file system and/or network
+3. Inconsistent access to remote resources tracked on the blockchain (i.e. some
+oracle runners may have read access to those resources and others may not)
+4. Willful misrepresentation on the part of oracle runners
+5. Faulty indexing of blockchain state or faulty function execution
+6. Hash pre-image attacks
+
+For each of these cases, let's explore who is at fault (if anyone) and what can be
+done:
+1. Use of floating point math probably can't be avoided in ecological data science,
+so we should take whatever precautions we can to minimize indeterminism, but realistically
+we probably can't eliminate it (insert REFERENCES). Ultimately this is nobody's fault
+and is something that needs to be dealt with as an explicit part of the consensus algorithm.
+i.e. oracles must come to consensus around an agreed upon floating point result and to
+be able to achieve this, protocol curators must ensure that functions that use floating
+point math provide sufficient tolerance ranges
+2. This is ultimately the fault of the protocol curator. There must be some mechanism
+for coming to consensus that this is the issue and for dealing with the aftermath
+(which probably in the ideal case results in fixing the underlying compute function,
+but this may or may not be possible in all cases)
+3. This is the fault of the verification requester assuming they have access to the data.
+To deal with this, there must be a protocol for oracles to report which remote resources
+they were not able to access and a way for verification requesters to re-run functions
+which are inconsistent for this reason after they have either fixed remote access
+permissions or availability, or instructed oracles to ignore certain inaccessible resources
+consistently
+4. There must be a protocol for identifying and dealing with malicious activity on
+the part of oracle runners which results in them being banned from the system and
+probably the seizure of some bond amount
+5. This is the fault of the oracle runner, but is not necessarily malicious. It may
+result in the slashing of an oracle bond, but does not necessarily result in system
+banning unless it is consistently unresolved
+6. For now we assume we can avoid this entirely by choice of a sufficiently robust hash
+algorithm, but this assumption should be re-examined as quantum computers evolve
+
+## Oracle Function Types
 
 The following types of compute functions are defined:
 
 ### SPARQL Functions
 
 SPARQL compute functions specify are get compute results from
-from the data that is already stored or tracked on
+from the data that is already stored and tracked on
 Regen Ledger.
 
 #### SPARQL CONSTRUCT
 
-[SPARQL CONSTRUCT]() compute functions specify are used to generate a
-new RDF from the RDF dataset index of data already stored or tracked on
-Regen Ledger.
+[SPARQL CONSTRUCT]() functions are used to generate new RDF graphs from the
+data already tracked and stored on Regen Ledger.
 
 #### SPARQL ASK
 
-[SPARQL ASK]() compute functions compute a boolean true/false value from
-the index of data already stored or tracked on Regen Ledger.
+[SPARQL ASK]() functions compute a boolean true/false value from
+the data already stored and tracked on Regen Ledger.
 
 ### Docker Image
 
@@ -157,7 +234,7 @@ Docker compute functions are used to do more complex computations that
 can depend both on data store or tagged on Regen Ledger as well as other
 well known data sources like public satellite imagery.
 
-## Verification
+## Agents
 
 ## Ecological State Protocols
 
