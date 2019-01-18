@@ -90,6 +90,9 @@ needs for the system. In the future, a more custom built programming language,
 which we have been calling Ceres, may reach maturity and fulfill a similar
 role and even be adapted to work on-chain. For now, it appears existing RDF and
 Sparql tools can be adapted to provide sufficient near term functionality.
+In addition, there are some potential upsides that could arise out of the usage
+of Sparql in terms of schema alignment - for instance Sparql engines can support
+RDFS and OWL inferencing for out of the box things like sub-classes and sub-properties.
 
 RDF and Sparql are not without their limitations. In particular, despite
 being in existence for more than a decade these technologies have yet to
@@ -98,6 +101,34 @@ for using them. Numerous other criticism have been directed towards the
 semantic web movement as a whole. Nonetheless, we feel like the technologies
 as they are specified are a good enough fit and that the existing open source
 tooling is mature enough to justify their usage for this application.
+
+#### Potential Alternatives
+
+One potential alternative to using Sparql and a query language in general is to rely
+on verification requesters pushing data to protocols. For instance, if there is a
+protocol that requires carbon verification, the verification requester could just
+push a signed carbon verification claim and be done with it. If the protocol
+code simply had access to the blockchain key-value store, it could do simple verification
+that the claim exist on the blockchain. While this type of configuration could work for
+a lot of cases, it prevents other desirable use cases like checking for the absence
+of a valid counter claim in the blockchain registry of claims. Maybe this could be mitigated
+by providing raw index access to the contract programming language, but going down along
+this path we eventually end up reinventing the whole infrastructure for a database and
+query language. If we could do this in a type-safe, formally verified way like we were
+planning with Ceres, this might actually be desirable, but it will require significant
+time and personnel investment and this needs to be planned along with other priorities.
+Another option which could provide similar benefits is finding an appropriate RDF
+schema language (possibly a subset of SHACL) which allows us to do sophisticated type
+checking of a subset of Sparql queries. Within the RDF space, it's worth mentioning that
+there are other logic languages such as RIF, Silk-2, Ergo, etc. that could prove
+useful for our use cases. This all is worth exploring when we have more actual usage
+experience. Another alternative that was considered was simply using a dialect of SQL
+which has expression and query support. The downsides of SQL compared to Sparql are
+that SQL is generally tied to a storage engine whereas Sparql can be applied to memory
+and persistent datasets and patched together or filtered combinations of these, Sparql
+supports late-bound external data sources via `SERVICE`, and the RDF data model is more
+flexible and consistent across the whole domain (graphs all the way down) - SQL with JSON
+support could work but is a bit less elegant.
 
 ### Storing and Tracking Graphs and Dataset
 
@@ -161,6 +192,8 @@ should verify the hash of the dataset before completing the query and
 throw a data inconsistency error if hash verification fails. Query authors
 can ignore issues with bad or missing off-chain datasets using the
 `SERVICE SILENT`  construct.
+
+### Efficient binary serialization of RDF
 
 ## Verification Framework
 
