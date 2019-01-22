@@ -80,7 +80,7 @@ as a programming language. But upon studying our use cases more, it became clear
 that most things like generating new ecological claims from existing claims or
 computing a reward amount from ecological claims could be achieved by querying
 the existing claims and generating some new claim. Sparql `CONSTRUCT` allows
-us to query an existing RDF dataset and produce a new RDF graph. Sparql has
+us to query an existing RDF dataset and produce a new RDF graph from that. Sparql has
 full expression support, geo-spatial support via GeoSparql, and also the ability
 to query remote endpoints via federation which could be used to include off-chain
 data tracked by hash on chain in a single query. While an ideal solution
@@ -289,6 +289,73 @@ banning unless it is consistently unresolved
 6. For now we assume we can avoid this entirely by choice of a sufficiently robust hash
 algorithm, but this assumption should be re-examined as quantum computers evolve
 
+### Oracle Consensus Protocol
+
+The oracle consensus protocol is a mechanism for coming to reasonable consensus
+about the correct results of off-chain computations. A number of factors unique
+to the use cases we are solving for are:
+
+* Some computations in the system may be fairly intensive taking several minutes
+  or even hours (geospatial data analysis)
+* We do not need instant finality for most of these computational results. Ecological
+  change of state occurs on the timescale of months and years, so a few extra minutes,
+  hours or even days to achieve consensus around analysis results is usually reasonable
+* The results of some calculations need to be public and stored back on the ledger
+  and other results need to remain private, but some amount of tracking via hashes
+  on the ledger is advantageous and increases trust
+  
+The planned algorithm is outlined below:
+
+* An oracle pool refers to a set of oracles sharing common contracts around
+  cost, bonding, and arbitration - these monetary details will be discussed separately.
+  For the sake of the cryptographic algorithm, we assume that all oracles are bonded,
+  have agreed to certain per computation payment terms, and have consented to have all disputes
+  that can't be resolved computationally resolved by the named arbiter. We also
+  assume that the compute function or verification protocol curator is also bonded
+  and has agreed to the same named arbiter
+* A verification protocol requesting computation will normally specify the minimum
+  number of oracles that need to perform a computation. Note that due to the
+  challenge process and challenge window, it may often be safe to set this value to 1.
+  For this example let us assume that the minimum is 2 and that a third oracle is
+  asked to perform the computation as well 10% of the time randomly
+* When a computation is requested of an oracle, the first oracle to do the computation
+  is chosen at random based on the modulus of a block hash
+* Once the first oracle has completed the computation, they choose a random nonce
+  which they keep private and then store the hash of the nonce appended to the
+  computation result on the blockchain. This makes it hard for another oracle to
+  brute force guess the computation result when the possible result set is small (for instance binary or integral)
+* The second computation oracle is chosen randomly based on the result of the block hash
+  where the first oracle tracks their result. The second oracle performs the computation
+  and tracks it on the blockchain using the same nonce + hash method
+* A third oracle may or may not be chosen randomly based on the block hash of the second
+  oracle's result
+* Once the initial oracle set has computed all results, they privately share the results
+  of their computation and the nonces they used (either through secure back-channels or by public PGP messages).
+  The oracles check both that the hashes stored on the blockchain knowing these nonces
+  and also the computation results. Because a function may specify floating point tolerance ranges,
+  the oracles may be checking that results are within the tolerance range as opposed to identical.
+  Each oracle votes publicly on the blockchain about the correctness of the results of
+  the other oracles
+* If there is not 100% agreement amongst this initial oracle set, additional oracles will be
+  selected until either there are 4 out of 5 or 7 out of 9 oracles that agree upon the result.
+  If either 4 out of 5 or 7 out of 9 oracles concur on the result, it will be assumed
+  that the oracles that disagreed are byzantine and will have their bonds slashed unless a
+  successful appeal to the arbiter determines that indeterminism in the compute function
+  was responsible for the discrepancy. If either 100% initial agreement or 4 out of 5 or 7
+  out of 9 consensus cannot be achieved, the compute function or verification protocol 
+  curator will be held as the responsible party and have their bond slashed as well as
+  compute function suspended unless the arbiter determines upon appeal that in fact byzantine
+  oracles were present
+* The verification protocol depending on this computation will usually set a challenge
+  window depending on the computational complexity and stakes. During the challenge window
+  a third party observer may challenge the oracle's result and have the arbiter intervene.
+  This involves posting a bond which may be broken if the arbiter decides against the challenger.
+  Third party observers will often be the verification requester and curator themselves.
+  This challenge window enables protocol authors to sometimes set the minimum compute oracle
+  threshold to 1 for very complex computations
+* Note that the protocol above is identical for cases where results are eventually made
+  public or kept private
+
 ## Oracle Function Types
 
 The following types of compute functions are defined:
@@ -320,4 +387,8 @@ well known data sources like public satellite imagery.
 ## Ecological State Protocols
 
 ## Identity Claims
+
+## Financial Instruments
+
+### Ecosystem Health Endowments
 
