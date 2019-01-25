@@ -140,9 +140,9 @@ graphs and datasets although the procedure for storing them is similar.
 
 To store data on-chain, a valid RDF dataset can be submitted in a
 supported format (JSON-LD currently). The URI for a graph will be of the
-format `xrn://<block-height>graph/<hash>` where `block-height` is the
+format `xrn://<block-height>/graph/<hash>` where `block-height` is the
 hex-encoded block height at which the data was committed `<hash>` is the [URDNA2015](https://json-ld.github.io/normalization/spec/)
-hash of the data. Likewise, datasets get the URI `xrn:dataset/<hash>`.
+hash of the data. Likewise, datasets get the URI `xrn://<block-height>/dataset/<hash>`.
 Note that all simple graphs will be accessible from the dataset URI's
 as well as they are also valid datasets.
 
