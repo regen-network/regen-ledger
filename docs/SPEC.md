@@ -304,7 +304,7 @@ to the use cases we are solving for are:
   and other results need to remain private, but some amount of tracking via hashes
   on the ledger is advantageous and increases trust
   
-The planned algorithm is outlined below:
+Outlined below is the proposed protocol for byzantine fault tolerant off-chain computations:
 
 * An oracle pool refers to a set of oracles sharing common contracts around
   cost, bonding, and arbitration - these monetary details will be discussed separately.
@@ -350,7 +350,7 @@ The planned algorithm is outlined below:
   window depending on the computational complexity and stakes. During the challenge window
   a third party observer may challenge the oracle's result and have the arbiter intervene.
   This involves posting a bond which may be broken if the arbiter decides against the challenger.
-  Third party observers will often be the verification requester and curator themselves.
+  
   This challenge window enables protocol authors to sometimes set the minimum compute oracle
   threshold to 1 for very complex computations
 * Note that the protocol above is identical for cases where results are eventually made
@@ -388,7 +388,11 @@ well known data sources like public satellite imagery.
 
 ## Identity Claims
 
-## Financial Instruments
+## Contracts
+
+### Escrow Accounts
+
+### Token Minting
 
 ### Ecosystem Health Endowments
 
