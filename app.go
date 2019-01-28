@@ -44,8 +44,8 @@ type xrnApp struct {
 	proposalStoreKey   *sdk.KVStoreKey
 	upgradeStoreKey    *sdk.KVStoreKey
 	consortiumStoreKey *sdk.KVStoreKey
-	keyParams        *sdk.KVStoreKey
-	tkeyParams       *sdk.TransientStoreKey
+	keyParams          *sdk.KVStoreKey
+	tkeyParams         *sdk.TransientStoreKey
 
 	accountKeeper       auth.AccountKeeper
 	bankKeeper          bank.Keeper
@@ -80,15 +80,15 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		keyAccount:       sdk.NewKVStoreKey("acc"),
 		keyFeeCollection: sdk.NewKVStoreKey("fee_collection"),
 		//schemaStoreKey: sdk.NewKVStoreKey("schema"),
+		dataStoreKey:       sdk.NewKVStoreKey("data"),
 		espStoreKey:        sdk.NewKVStoreKey("esp"),
 		geoStoreKey:        sdk.NewKVStoreKey("geo"),
-		dataStoreKey:       sdk.NewKVStoreKey("data"),
 		agentStoreKey:      sdk.NewKVStoreKey("agent"),
 		proposalStoreKey:   sdk.NewKVStoreKey("proposal"),
 		upgradeStoreKey:    sdk.NewKVStoreKey("upgrade"),
 		consortiumStoreKey: sdk.NewKVStoreKey("consortium"),
-		keyParams:        sdk.NewKVStoreKey(params.StoreKey),
-		tkeyParams:       sdk.NewTransientStoreKey(params.TStoreKey),
+		keyParams:          sdk.NewKVStoreKey(params.StoreKey),
+		tkeyParams:         sdk.NewTransientStoreKey(params.TStoreKey),
 	}
 
 	app.paramsKeeper = params.NewKeeper(app.cdc, app.keyParams, app.tkeyParams)
@@ -150,6 +150,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 	app.MountStores(
 		app.keyMain,
 		app.keyAccount,
+		app.keyFeeCollection,
 		app.dataStoreKey,
 		app.espStoreKey,
 		app.geoStoreKey,
@@ -174,6 +175,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 type GenesisState struct {
 	Accounts []*auth.BaseAccount `json:"accounts"`
 	Agents   []agent.AgentInfo   `json:"agents"`
+	AuthData auth.GenesisState   `json:"auth"`
 }
 
 func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
@@ -195,6 +197,8 @@ func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.
 	}
 
 	app.consortiumKeeper.SetValidators(ctx, req.Validators)
+
+	auth.InitGenesis(ctx, app.accountKeeper, app.feeCollectionKeeper, genesisState.AuthData)
 
 	return abci.ResponseInitChain{}
 }

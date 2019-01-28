@@ -2,10 +2,8 @@ package geo
 
 import (
 	"fmt"
-	"github.com/twpayne/go-geom/encoding/wkbcommon"
-	"gitlab.com/regen-network/regen-ledger/utils"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/twpayne/go-geom/encoding/wkbcommon"
 )
 
 // NewHandler returns a handler for "data" type messages.
@@ -26,10 +24,5 @@ func NewHandler(keeper Keeper) sdk.Handler {
 }
 
 func handleMsgStoreGeometry(ctx sdk.Context, keeper Keeper, msg MsgStoreGeometry) sdk.Result {
-	hash := keeper.StoreGeometry(ctx, msg.Data)
-	tags := sdk.EmptyTags()
-	tags.AppendTag("geo.id", []byte(utils.MustEncodeBech32("xrngeo", hash)))
-	return sdk.Result{ Tags: tags }
+	return keeper.StoreGeometry(ctx, msg.Data)
 }
-
-

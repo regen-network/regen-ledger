@@ -2,19 +2,17 @@ package cli
 
 import (
 	"encoding/binary"
-	"encoding/hex"
-	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
+	"github.com/twpayne/go-geom"
+	"github.com/twpayne/go-geom/encoding/ewkb"
+	"github.com/twpayne/go-geom/encoding/geojson"
 	utils2 "gitlab.com/regen-network/regen-ledger/utils"
 	"gitlab.com/regen-network/regen-ledger/x/geo"
-	"github.com/twpayne/go-geom"
-	"github.com/twpayne/go-geom/encoding/geojson"
-	"github.com/twpayne/go-geom/encoding/ewkb"
 )
 
 func GetCmdStoreGeometry(cdc *codec.Codec) *cobra.Command {
@@ -52,13 +50,11 @@ func GetCmdStoreGeometry(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			fmt.Printf("%s", hex.EncodeToString(bz))
-
 			msg := geo.MsgStoreGeometry{
-				Data:geo.Geometry{
-					EWKB:bz,
+				Data: geo.Geometry{
+					EWKB: bz,
 				},
-				Signer:account,
+				Signer: account,
 			}
 			err = msg.ValidateBasic()
 			if err != nil {
@@ -73,4 +69,3 @@ func GetCmdStoreGeometry(cdc *codec.Codec) *cobra.Command {
 	}
 	return cmd
 }
-
