@@ -4,7 +4,9 @@
 
 ### Building from source
 
-Prerequistes: The [Go](https://golang.org/doc/install) compiler and GNU make
+Prerequisites: The [Go](https://golang.org/doc/install) compiler **version 1.11** (we use
+go modules) or later and GNU make. The go bin path (usually `$HOME/go/bin`) should be
+on your system `PATH`.
 
 Run `make install` to build the code.`xrnd` is the blockchain daemon. `xrncli`
 is the command line blockchain client. Both of them provide help messages when run.
