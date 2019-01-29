@@ -55,11 +55,7 @@ func GetCmdCreateAgent(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			account, err := cliCtx.GetFromAddress()
-
-			if err != nil {
-				return err
-			}
+			account := cliCtx.GetFromAddress()
 
 			info := agent.AgentInfo{
 				AuthPolicy:        agent.MultiSig,
@@ -69,15 +65,15 @@ func GetCmdCreateAgent(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := agent.NewMsgCreateAgent(info, account)
-			err = msg.ValidateBasic()
+			err := msg.ValidateBasic()
 			if err != nil {
 				return err
 			}
 
 			cliCtx.PrintResponse = true
-			cliCtx.ResponsePrinter = utils2.PrintCLIResponse_StringData
+			cliCtx.ResponseHandler = utils2.PrintCLIResponse_StringData
 
-			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
+			return utils.CompleteAndBroadcastTxCLI(txBldr, cliCtx, []sdk.Msg{msg})
 		},
 	}
 

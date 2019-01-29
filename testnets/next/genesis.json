@@ -1,0 +1,87 @@
+{
+  "genesis_time": "2018-12-19T20:40:06.463846Z",
+  "chain_id": "xrn-test-2",
+  "consensus_params": {
+    "block_size": {
+      "max_bytes": "22020096",
+      "max_gas": "-1"
+    },
+    "evidence": {
+      "max_age": "100000"
+    },
+    "validator": {
+      "pub_key_types": [
+        "ed25519"
+      ]
+    }
+  },
+  "validators": [
+    {
+      "address": "AED276455B59745C5C83C123CD702F86BBFF82D9",
+      "pub_key": {
+        "type": "tendermint/PubKeyEd25519",
+        "value": "y8NJEegsDw0jShnPd98nIkBdNhzy3I06J27bD7BtbcQ="
+      },
+      "power": "10",
+      "name": "xrn-us-east-1"
+    },
+    {
+      "address": "EA568739F17B97A9E5A40C136DDE2DCBF5A5C41E",
+      "pub_key": {
+        "type": "tendermint/PubKeyEd25519",
+        "value": "6w7rDxkf/XimOZPnVudv2yzNP8OqbUcVeVwrU1M7fQo="
+      },
+      "power": "10",
+      "name": "xrn-eu-central-1"
+    },
+    {
+      "address": "19BD0AD7B756869FEB1DE0CEEE9C5F5E9F8754C8",
+      "pub_key": {
+        "type": "tendermint/PubKeyEd25519",
+        "value": "wI8PRMyvxxdZanoQ9GrNxYRZgA9M35NojQHwE1t2vgQ="
+      },
+      "power": "10",
+      "name": "xrn-us-west-1"
+    }
+  ],
+  "app_hash": "",
+  "app_state": {
+    "accounts": [
+      {
+        "address": "cosmos1xrsmkqh305m09tc5x73v4t3wtcuqmf6cwzllx3",
+        "coins": [
+          {
+            "denom": "xrn",
+            "amount": "100000000"
+          }
+        ],
+        "public_key": null,
+        "account_number": "0",
+        "sequence": "0"
+      }
+    ],
+    "agents": [
+      {
+        "auth_policy": "0",
+        "addresses": [
+          "cosmos1xrsmkqh305m09tc5x73v4t3wtcuqmf6cwzllx3"
+        ],
+        "multisig_threshold": "1",
+        "memo": "consortium"
+      }
+    ],
+    "auth": {
+      "collected_fees": null,
+      "params": {
+        "MemoCostPerByte": "3",
+        "MaxMemoCharacters": "256",
+        "TxSigLimit": "7",
+        "SigVerifyCostED25519": "590",
+        "SigVerifyCostSecp256k1": "1000"
+      }
+    },
+    "bank": {
+      "send_enabled": true
+    }
+  }
+}

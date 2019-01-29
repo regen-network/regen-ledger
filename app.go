@@ -102,7 +102,10 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 	)
 
 	// The BankKeeper allows you perform sdk.Coins interactions
-	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper)
+	app.bankKeeper = bank.NewBaseKeeper(app.accountKeeper,
+		app.paramsKeeper.Subspace(bank.DefaultParamspace),
+		bank.DefaultCodespace,
+	)
 
 	// The FeeCollectionKeeper collects transaction fees and renders them to the fee distribution module
 	app.feeCollectionKeeper = auth.NewFeeCollectionKeeper(cdc, app.keyFeeCollection)
@@ -176,6 +179,7 @@ type GenesisState struct {
 	Accounts []*auth.BaseAccount `json:"accounts"`
 	Agents   []agent.AgentInfo   `json:"agents"`
 	AuthData auth.GenesisState   `json:"auth"`
+	BankData bank.GenesisState   `json:"bank"`
 }
 
 func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
@@ -199,6 +203,7 @@ func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.
 	app.consortiumKeeper.SetValidators(ctx, req.Validators)
 
 	auth.InitGenesis(ctx, app.accountKeeper, app.feeCollectionKeeper, genesisState.AuthData)
+	bank.InitGenesis(ctx, app.bankKeeper, genesisState.BankData)
 
 	return abci.ResponseInitChain{}
 }

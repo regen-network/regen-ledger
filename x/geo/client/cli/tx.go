@@ -30,16 +30,13 @@ func GetCmdStoreGeometry(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			account, err := cliCtx.GetFromAddress()
-			if err != nil {
-				return err
-			}
+			account := cliCtx.GetFromAddress()
 
 			geojsonStr := args[0]
 
 			var geometry geom.T
 
-			err = geojson.Unmarshal([]byte(geojsonStr), &geometry)
+			err := geojson.Unmarshal([]byte(geojsonStr), &geometry)
 			if err != nil {
 				return err
 			}
@@ -62,9 +59,9 @@ func GetCmdStoreGeometry(cdc *codec.Codec) *cobra.Command {
 			}
 
 			cliCtx.PrintResponse = true
-			cliCtx.ResponsePrinter = utils2.PrintCLIResponse_StringData
+			cliCtx.ResponseHandler = utils2.PrintCLIResponse_StringData
 
-			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
+			return utils.CompleteAndBroadcastTxCLI(txBldr, cliCtx, []sdk.Msg{msg})
 		},
 	}
 	return cmd

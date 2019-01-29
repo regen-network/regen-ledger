@@ -25,10 +25,7 @@ func GetCmdPropose(cdc *codec.Codec, actionCreator ActionCreator) *cobra.Command
 				return err
 			}
 
-			account, err := cliCtx.GetFromAddress()
-			if err != nil {
-				return err
-			}
+			account := cliCtx.GetFromAddress()
 
 			action, err := actionCreator(cmd, args)
 
@@ -46,9 +43,9 @@ func GetCmdPropose(cdc *codec.Codec, actionCreator ActionCreator) *cobra.Command
 			}
 
 			cliCtx.PrintResponse = true
-			cliCtx.ResponsePrinter = utils2.PrintCLIResponse_StringData
+			cliCtx.ResponseHandler = utils2.PrintCLIResponse_StringData
 
-			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
+			return utils.CompleteAndBroadcastTxCLI(txBldr, cliCtx, []sdk.Msg{msg})
 		},
 	}
 }
@@ -63,10 +60,7 @@ func getRunVote(cdc *codec.Codec, approve bool) func(cmd *cobra.Command, args []
 			return err
 		}
 
-		account, err := cliCtx.GetFromAddress()
-		if err != nil {
-			return err
-		}
+		account := cliCtx.GetFromAddress()
 
 		id := proposal.MustDecodeProposalIDBech32(args[0])
 
@@ -75,15 +69,15 @@ func getRunVote(cdc *codec.Codec, approve bool) func(cmd *cobra.Command, args []
 			Voter:      account,
 			Vote:       approve,
 		}
-		err = msg.ValidateBasic()
+		err := msg.ValidateBasic()
 		if err != nil {
 			return err
 		}
 
 		cliCtx.PrintResponse = true
-		cliCtx.ResponsePrinter = utils2.PrintCLIResponse_StringData
+		cliCtx.ResponseHandler = utils2.PrintCLIResponse_StringData
 
-		return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
+		return utils.CompleteAndBroadcastTxCLI(txBldr, cliCtx, []sdk.Msg{msg})
 	}
 }
 
@@ -119,10 +113,7 @@ func GetCmdTryExec(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			account, err := cliCtx.GetFromAddress()
-			if err != nil {
-				return err
-			}
+			account := cliCtx.GetFromAddress()
 
 			id := proposal.MustDecodeProposalIDBech32(args[0])
 
@@ -130,15 +121,15 @@ func GetCmdTryExec(cdc *codec.Codec) *cobra.Command {
 				ProposalId: id,
 				Signer:     account,
 			}
-			err = msg.ValidateBasic()
+			err := msg.ValidateBasic()
 			if err != nil {
 				return err
 			}
 
 			cliCtx.PrintResponse = true
-			cliCtx.ResponsePrinter = utils2.PrintCLIResponse_StringData
+			cliCtx.ResponseHandler = utils2.PrintCLIResponse_StringData
 
-			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
+			return utils.CompleteAndBroadcastTxCLI(txBldr, cliCtx, []sdk.Msg{msg})
 		},
 	}
 }
@@ -157,10 +148,7 @@ func GetCmdWithdraw(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			account, err := cliCtx.GetFromAddress()
-			if err != nil {
-				return err
-			}
+			account := cliCtx.GetFromAddress()
 
 			id := proposal.MustDecodeProposalIDBech32(args[0])
 
@@ -168,14 +156,14 @@ func GetCmdWithdraw(cdc *codec.Codec) *cobra.Command {
 				ProposalId: id,
 				Proposer:   account,
 			}
-			err = msg.ValidateBasic()
+			err := msg.ValidateBasic()
 			if err != nil {
 				return err
 			}
 
 			cliCtx.PrintResponse = true
 
-			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
+			return utils.CompleteAndBroadcastTxCLI(txBldr, cliCtx, []sdk.Msg{msg})
 		},
 	}
 }

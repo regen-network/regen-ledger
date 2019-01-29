@@ -50,7 +50,7 @@ require (
 	github.com/tendermint/btcd v0.0.0-20180816174608-e5840949ff4f
 	github.com/tendermint/go-amino v0.14.1
 	github.com/tendermint/iavl v0.12.0
-	github.com/tendermint/tendermint v0.27.4
+	github.com/tendermint/tendermint v0.29.1
 	github.com/twpayne/go-geom v1.0.4
 	github.com/zondax/ledger-cosmos-go v0.9.2
 	golang.org/x/crypto v0.0.0-20170930174604-9419663f5a44
@@ -64,4 +64,4 @@ require (
 
 replace golang.org/x/crypto => github.com/tendermint/crypto v0.0.0-20180820045704-3764759f34a5
 
-replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.19.1-0.20190110184329-915ef12facc9
+replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.19.1-0.20190129211355-6e1f27eea179 // indirect

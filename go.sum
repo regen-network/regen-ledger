@@ -88,6 +88,10 @@ github.com/rcrowley/go-metrics v0.0.0-20180503174638-e2704e165165 h1:nkcn14uNmFE
 github.com/rcrowley/go-metrics v0.0.0-20180503174638-e2704e165165/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
 github.com/regen-network/cosmos-sdk v0.19.1-0.20190110184329-915ef12facc9 h1:6NJQfdwUI1AG6VdGIlUrxWA/J6CdodCj/Ym7n7Hnngw=
 github.com/regen-network/cosmos-sdk v0.19.1-0.20190110184329-915ef12facc9/go.mod h1:NlvB7hxh2AcqplzmTCqBuuRDIb0qYqRo/e/f+0e7BhE=
+github.com/regen-network/cosmos-sdk v0.19.1-0.20190129210756-64554b6839f2 h1:PL2tlPB4j8tgp3qxl6YvNIXfL83G8NP+SIdAgfa3Hhc=
+github.com/regen-network/cosmos-sdk v0.19.1-0.20190129210756-64554b6839f2/go.mod h1:NlvB7hxh2AcqplzmTCqBuuRDIb0qYqRo/e/f+0e7BhE=
+github.com/regen-network/cosmos-sdk v0.19.1-0.20190129211355-6e1f27eea179 h1:YQCak8qFbbv+qgAe4nfJpzevQBwC4hRU/gmMDC5D1c0=
+github.com/regen-network/cosmos-sdk v0.19.1-0.20190129211355-6e1f27eea179/go.mod h1:NlvB7hxh2AcqplzmTCqBuuRDIb0qYqRo/e/f+0e7BhE=
 github.com/regen-network/cosmos-sdk v0.25.0 h1:kN3AldBj2T7iFAbuVAWp0gUoT+LkSoWoPNFec3EWXxo=
 github.com/rs/cors v1.6.0 h1:G9tHG9lebljV9mfp9SNPDL36nCDxmo3zTlAf1YgvzmI=
 github.com/rs/cors v1.6.0/go.mod h1:gFx+x8UowdsKA9AchylcLynDq+nNFfI8FkUZdN/jGCU=
@@ -118,6 +122,10 @@ github.com/tendermint/iavl v0.12.0 h1:xcaFAr+ycqCj7WN1RzL2EfcBioRDOHcU1oWcg83K02
 github.com/tendermint/iavl v0.12.0/go.mod h1:EoKMMv++tDOL5qKKVnoIqtVPshRrEPeJ0WsgDOLAauM=
 github.com/tendermint/tendermint v0.27.4 h1:rytK6+o/TYPhLJJu/tRaq6PBx/25VGAwiee2qdNnFsY=
 github.com/tendermint/tendermint v0.27.4/go.mod h1:ymcPyWblXCplCPQjbOYbrF1fWnpslATMVqiGgWbZrlc=
+github.com/tendermint/tendermint v0.29.0 h1:zaJwtaAQVUC4QxqImtpPlCpMGroVvPU0g75ZTlvmFg8=
+github.com/tendermint/tendermint v0.29.0/go.mod h1:ymcPyWblXCplCPQjbOYbrF1fWnpslATMVqiGgWbZrlc=
+github.com/tendermint/tendermint v0.29.1 h1:9QwXNxtxgfekONjEBvnZp2g3mQH/fS5QiUyEXo7QOGs=
+github.com/tendermint/tendermint v0.29.1/go.mod h1:ymcPyWblXCplCPQjbOYbrF1fWnpslATMVqiGgWbZrlc=
 github.com/twpayne/go-geom v1.0.4 h1:kCCRCGlL0Bg2IihXDyZgs1mD+g05UCuTRknhfLLmIGc=
 github.com/twpayne/go-geom v1.0.4/go.mod h1:Xt2LAX0JiP94UWCnKKpDtx/d5g94AQNOCbmsa78dU0s=
 github.com/twpayne/go-kml v1.0.0/go.mod h1:LlvLIQSfMqYk2O7Nx8vYAbSLv4K9rjMvLlEdUKWdjq0=

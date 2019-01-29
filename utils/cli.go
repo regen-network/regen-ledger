@@ -23,17 +23,17 @@ type CLIResponse struct {
 	Tags      []KVPair `json:"tags,omitempty"`
 }
 
-func PrintCLIResponse_Base64Data(res *core_types.ResultBroadcastTxCommit) string {
+func PrintCLIResponse_Base64Data(res *core_types.ResultBroadcastTxCommit) (*core_types.ResultBroadcastTxCommit, error) {
 	return PrintCLIResponse(res, func(data []byte) string {
 		return base64.URLEncoding.EncodeToString(data)
 	})
 }
 
-func PrintCLIResponse_StringData(res *core_types.ResultBroadcastTxCommit) string {
+func PrintCLIResponse_StringData(res *core_types.ResultBroadcastTxCommit) (*core_types.ResultBroadcastTxCommit, error) {
 	return PrintCLIResponse(res, func(data []byte) string { return string(data) })
 }
 
-func PrintCLIResponse(res *core_types.ResultBroadcastTxCommit, dataEncoder func(data []byte) string) string {
+func PrintCLIResponse(res *core_types.ResultBroadcastTxCommit, dataEncoder func(data []byte) string) (*core_types.ResultBroadcastTxCommit, error) {
 	tags := make([]KVPair, len(res.DeliverTx.Tags))
 	for i, tag := range res.DeliverTx.Tags {
 		tags[i] = KVPair{Key: string(tag.Key), Value: string(tag.Value)}
@@ -50,8 +50,9 @@ func PrintCLIResponse(res *core_types.ResultBroadcastTxCommit, dataEncoder func(
 	}
 	b, err := json.MarshalIndent(cliRes, "", "  ")
 	if err != nil {
-		return fmt.Sprint("error: ", err)
+		fmt.Print("error: ", err)
 	} else {
-		return fmt.Sprintf("%s\n", b)
+		fmt.Printf("%s\n", b)
 	}
+	return res, nil
 }

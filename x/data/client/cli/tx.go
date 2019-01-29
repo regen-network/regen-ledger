@@ -26,21 +26,18 @@ func GetCmdStoreData(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			account, err := cliCtx.GetFromAddress()
-			if err != nil {
-				return err
-			}
+			account := cliCtx.GetFromAddress()
 
 			msg := data.NewMsgStoreData([]byte(args[0]), account)
-			err = msg.ValidateBasic()
+			err := msg.ValidateBasic()
 			if err != nil {
 				return err
 			}
 
 			cliCtx.PrintResponse = true
-			cliCtx.ResponsePrinter = utils2.PrintCLIResponse_Base64Data
+			cliCtx.ResponseHandler = utils2.PrintCLIResponse_Base64Data
 
-			return utils.CompleteAndBroadcastTxCli(txBldr, cliCtx, []sdk.Msg{msg})
+			return utils.CompleteAndBroadcastTxCLI(txBldr, cliCtx, []sdk.Msg{msg})
 		},
 	}
 }

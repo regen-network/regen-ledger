@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/tendermint/tendermint/privval"
 	"io"
 	"io/ioutil"
 	"os"
@@ -21,11 +22,11 @@ import (
 
 	gaiaInit "github.com/cosmos/cosmos-sdk/cmd/gaia/init"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	app "gitlab.com/regen-network/regen-ledger"
 	abci "github.com/tendermint/tendermint/abci/types"
 	cfg "github.com/tendermint/tendermint/config"
 	dbm "github.com/tendermint/tendermint/libs/db"
 	tmtypes "github.com/tendermint/tendermint/types"
+	app "gitlab.com/regen-network/regen-ledger"
 )
 
 // DefaultNodeHome sets the folder where the applcation data and configuration will be stored
@@ -33,7 +34,7 @@ var DefaultNodeHome = os.ExpandEnv("$HOME/.xrnd")
 
 const (
 	flagOverwrite = "overwrite"
-	flagPath = "path"
+	flagPath      = "path"
 )
 
 func main() {
@@ -104,7 +105,9 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			pk := gaiaInit.ReadOrCreatePrivValidator(config.PrivValidatorFile())
+			pk := privval.LoadOrGenFilePV(config.PrivValidatorKeyFile(),
+				config.PrivValidatorStateFile()).GetPubKey()
+
 			_, _, validator, err := server.SimpleAppGenTx(cdc, pk)
 			if err != nil {
 				return err
