@@ -1,11 +1,11 @@
 package cli
 
 import (
-	"encoding/hex"
 	"github.com/spf13/cobra"
 	"gitlab.com/regen-network/regen-ledger/x/agent"
 	agentcli "gitlab.com/regen-network/regen-ledger/x/agent/client/cli"
 	"gitlab.com/regen-network/regen-ledger/x/esp"
+	"gitlab.com/regen-network/regen-ledger/x/geo"
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
 	proposalcli "gitlab.com/regen-network/regen-ledger/x/proposal/client/cli"
 
@@ -54,22 +54,18 @@ func GetCmdReportResult(cdc *codec.Codec) *cobra.Command {
 
 		verifier := agent.MustDecodeBech32AgentID(args[3])
 
-		polygonHex := args[4]
-		polygon, err := hex.DecodeString(polygonHex)
-		if err != nil {
-			return nil, err
-		}
+		geoId := geo.MustDecodeBech32GeoID(args[4])
 
 		data := args[5]
 
 		return esp.ActionReportESPResult{
 			ESPResult: esp.ESPResult{
-				Curator:     curator,
-				Name:        name,
-				Version:     version,
-				Verifier:    verifier,
-				Data:        []byte(data),
-				PolygonEWKB: polygon,
+				Curator:  curator,
+				Name:     name,
+				Version:  version,
+				Verifier: verifier,
+				Data:     []byte(data),
+				GeoID:    geoId,
 			},
 		}, nil
 	})
