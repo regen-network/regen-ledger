@@ -75,7 +75,7 @@ func GetCmdReportResult(cdc *codec.Codec) *cobra.Command {
 	})
 
 	cmd.Args = cobra.ExactArgs(6)
-	cmd.Use = "propose-result <curator> <name> <version> <verifier> <polygon-ewkb-hex> <data>"
+	cmd.Use = "propose-result <curator> <name> <version> <verifier> <geo-id> <data>"
 	cmd.Short = "Propose an ESP result"
 	return cmd
 }
