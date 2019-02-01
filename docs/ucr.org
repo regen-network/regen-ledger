@@ -1,0 +1,19 @@
+#+TITLE: Use Cases and Requirements
+* Use Cases
+* Requirements 
+** It should be possible to store arbitrary data on the blockchain for a fee
+   :PROPERTIES:
+   :CUSTOM_ID: R-StoreData
+   :END:
+** It should be possible to track arbitrary off-chain data by hash on the blockchain, thus generating a proof of timestamp
+   :PROPERTIES:
+   :CUSTOM_ID: R-TrackData
+   :END:
+** On-chain and off-chain data should be available in the index available to oracles
+   :PROPERTIES:
+   :CUSTOM_ID: R-IndexData
+   :END:
+** There must be a robust way for dealing with hash collisions, especially with respect to off-chain data whose content is opaque
+   :PROPERTIES:
+   :CUSTOM_ID: R-HandleHashCollisions
+   :END:
