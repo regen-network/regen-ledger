@@ -8,6 +8,7 @@ import (
 	"gitlab.com/regen-network/regen-ledger/utils"
 	"gitlab.com/regen-network/regen-ledger/x/agent"
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
+	"gitlab.com/regen-network/regen-ledger/x/geo"
 	"golang.org/x/crypto/blake2b"
 
 	//"github.com/twpayne/go-geom/encoding/ewkb"
@@ -151,9 +152,9 @@ func (keeper Keeper) ReportESPResult(ctx sdk.Context, result ESPResult, signers 
 	}
 
 	// Verify geometry exists
-	geo_id, err := keeper.geoKeeper.GetGeometry(ctx, result.GeoID)
+	geoID := keeper.geoKeeper.GetGeometry(ctx, result.GeoID)
 
-	if err != nil {
+	if geoID == nil {
 		return sdk.Result{
 			Code: sdk.CodeUnknownRequest,
 			Log:  "can't find geo",
