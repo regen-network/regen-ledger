@@ -152,9 +152,15 @@ func (keeper Keeper) ReportESPResult(ctx sdk.Context, result ESPResult, signers 
 	}
 
 	// Verify geometry exists
+<<<<<<< HEAD
 	geoID := keeper.geoKeeper.GetGeometry(ctx, result.GeoID)
 
 	if geoID == nil {
+=======
+	geo_id, err := keeper.geoKeeper.GetGeometry(ctx, result.GeoID)
+
+	if err != nil {
+>>>>>>> 857d8e3013a1eed402d38275ddda7509baec64ee
 		return sdk.Result{
 			Code: sdk.CodeUnknownRequest,
 			Log:  "can't find geo",
