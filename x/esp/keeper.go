@@ -18,6 +18,8 @@ type Keeper struct {
 
 	agentKeeper agent.Keeper
 
+	geoKeeper geo.Keeper
+
 	cdc *codec.Codec
 }
 
@@ -53,10 +55,12 @@ func (keeper Keeper) HandleProposal(ctx sdk.Context, action proposal.ProposalAct
 func NewKeeper(
 	storeKey sdk.StoreKey,
 	agentKeeper agent.Keeper,
+	geoKeeper geo.Keeper,
 	cdc *codec.Codec) Keeper {
 	return Keeper{
 		storeKey:    storeKey,
 		agentKeeper: agentKeeper,
+		geoKeeper: geoKeeper,
 		cdc:         cdc,
 	}
 }
@@ -146,7 +150,17 @@ func (keeper Keeper) ReportESPResult(ctx sdk.Context, result ESPResult, signers 
 		}
 	}
 
-	// TODO verify geometry
+	// Verify geometry exists
+	geo_id, err := keeper.geoKeeper.GetGeometry(ctx, result.GeoID)
+
+	if err != nil {
+		return sdk.Result{
+			Code: sdk.CodeUnknownRequest,
+			Log:  "can't find geo",
+		}
+	}
+
+
 	// TODO verify schema
 
 	store := ctx.KVStore(keeper.storeKey)
