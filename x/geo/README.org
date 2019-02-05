@@ -19,7 +19,7 @@
 * Motivation and Rationale
   While geographic features could be stored as literals everywhere they are needed, precise measurements of real world objects like a polygon that describes an irregularly shaped field can become quite large because of the number of points required to be precise. Having a single storage space for these objects reduces overall storage requirements. Geographic features are also referenced by hash on-chain which provides for content addressability and reduces duplication.
 * Transaction Messages and Types
-** Store geographic feature on-chain
+** TODO Store geographic feature on-chain
 #+BEGIN_SRC go :tangle types.go
   type MsgStoreGeo struct {
     Data Geometry `json:"data"`
@@ -46,11 +46,12 @@
 #+END_SRC
 
 ** Identifiers
-*** Stored ~GeoFeature~
-    Stored ~GeoFeature~'s are referenced by the identifier ~xrn://<block-hash>/<hash>~ where ~<hash>~ is the bech32 encoding with prefix ~geo~ of the Blake2b 256-bit hash of the EWKB representation of the geographic feature.
+*** TODO ~Geometry~ URI's
+    Stored ~Geometry~'s are referenced by the URI created by the bech32 encoding of the Blake2b 256-bit hash of the EWKB representation of the geographic feature prefixed with ~xrn://<block-hash>/geo/~.
 ** Indexing and Queries
    Geographic features are indexed by both the Postgis and RDF indexers.
-*** Postgis
+*** TODO Postgis
+    ~Geometry~'s will be indexed in the table ~geo~ defined as:
 #+BEGIN_SRC sql :tangle geo.sql
   CREATE TABLE geo (
     hash bytea NOT NULL PRIMARY KEY,
@@ -62,12 +63,13 @@
 
   CREATE INDEX geo_geom_gist ON geo USING GIST ( geom );
 #+END_SRC
-*** RDF
+*** TODO RDF
+    ~Geometry~'s will be indexed in the RDF store as below and available in both the default graph and the named graph identified by the ~Geometry~ URI.
 #+BEGIN_SRC turtle
 PREFIX geo: <http://www.opengis.net/ont/geosparql#>
 PREFIX sf: <http://www.opengis.net/ont/sf#>
 
-<xrn://1234/geosghj38sdgh358>
+<xrn://1234/geo/sghj38sdgh358>
   a sf:Point ;
   geo:asWKT "Point(-83.38 33.95)"^^<geo:wktLiteral> .
 #+END_SRC
