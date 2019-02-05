@@ -15,7 +15,7 @@
 
 #+END_SRC
 * Overview
-  The `geo` module provides an efficient storage space for on-chain geographic features that can be referenced by other modules.
+  The ~geo~ module provides an efficient storage space for on-chain geographic features that can be referenced by other modules.
 * Motivation and Rationale
   While geographic features could be stored as literals everywhere they are needed, precise measurements of real world objects like a polygon that describes an irregularly shaped field can become quite large because of the number of points required to be precise. Having a single storage space for these objects reduces overall storage requirements. Geographic features are also referenced by hash on-chain which provides for content addressability and reduces duplication.
 * Transaction Messages and Types
@@ -46,8 +46,8 @@
 #+END_SRC
 
 ** Identifiers
-*** Stored `GeoFeature`
-    Stored `GeoFeature's are referenced by the identifier `xrn://<block-hash>/<hash>` where `<hash>` is the bech32 encoding with prefix `geo` of the Blake2b 256-bit hash of the EWKB representation of the geographic feature.
+*** Stored ~GeoFeature~
+    Stored ~GeoFeature~'s are referenced by the identifier ~xrn://<block-hash>/<hash>~ where ~<hash>~ is the bech32 encoding with prefix ~geo~ of the Blake2b 256-bit hash of the EWKB representation of the geographic feature.
 ** Indexing and Queries
    Geographic features are indexed by both the Postgis and RDF indexers.
 *** Postgis
