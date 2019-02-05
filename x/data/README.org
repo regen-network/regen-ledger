@@ -106,5 +106,36 @@ enhanced with robust, opt-in schema-validation support in the future.
     Url string `json:"url,omitempty"`
   }
 #+END_SRC
+* Identifiers
+** On-chain graphs
+   On-chain graphs are identified by the URI formed by encoding the URNDNA2015_BLAKE2B_256 hash of the graph with the prefix ~xrn://<block-number>/g/~.
+** Off-chain datasets
+   Off-chain datasets are identified by the URI formed by encoding the URNDNA2015_BLAKE2B_256 hash of the dataset with the prefix ~xrn://<block-number>/ds/~.
+** On-chain raw data
+   On-chain raw data is identified by the URI formed by encoding the Blake2b 256-bit hash of the data prefixed with ~xrn://<block-number>/da/~.
+** Off-chain raw data
+   Off-chain raw data is identified by the URI formed by encoding the Blake2b 256-bit hash of the data prefixed with ~xrn://<block-number>/dt/~.
+* Indexing and Queries
+** Postgresql
+#+BEGIN_SRC sql :tangle data.sql
+  CREATE TABLE "data" (
+    uri text NOT NULL PRIMARY KEY,
+    tx bytea NOT NULL REFERENCES tx,
+    graph jsonb,
+    raw_data bytea
+  );
 
-* Queries and Indexing
+  COMMENT ON COLUMN graph.graph IS 'The JSON-LD expanded form representation of an on-chain graph';
+
+  COMMENT ON COLUMN graph.raw_data IS 'Raw data bytes for on-chain raw data';
+#+END_SRC
+** RDF
+*** On-chain graphs
+    On chain graphs are indexed in the RDF store in the named graph identified with the graph identifier URI. They are annotated in the default graph as follows (where ~xrn://12345/g/1xq52sutm~ is an example graph URI):
+
+#+BEGIN_SRC turtle
+PREFIX xrn: <http://regen.network/schema#>
+
+<xrn://12345/g/1xq52sutm>
+  xrn:tx <xrn://12345/tx/abcdef1234567> .
+#+END_SRC

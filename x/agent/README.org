@@ -1,0 +1,17 @@
+#+TITLE: Agent Module
+
+* Overview
+
+The agent module provides a mechanism that can be used to support basic
+multi-party organizations and to allow individuals to facilitate authorization 
+via multiple keys. In the future, it may be extended to support more sophisticated
+multi-party authorization schemes.
+
+* Motivation and Rationale
+
+* Transaction Messages and Types
+
+* Identifiers
+  Agents are identified by the URI formed by taking the bech32 encoding of the agent's integer ID with the prefix ~xrn:agt/~.
+
+* Indexing and Queries

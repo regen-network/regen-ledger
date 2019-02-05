@@ -47,14 +47,14 @@
 
 ** Identifiers
 *** TODO ~Geometry~ URI's
-    Stored ~Geometry~'s are referenced by the URI created by the bech32 encoding of the Blake2b 256-bit hash of the EWKB representation of the geographic feature prefixed with ~xrn://<block-hash>/geo/~.
+    Stored ~Geometry~'s are referenced by the URI created by the bech32 encoding of the Blake2b 256-bit hash of the EWKB representation of the geographic feature prefixed with ~xrn://<block-number>/geo/~.
 ** Indexing and Queries
    Geographic features are indexed by both the Postgis and RDF indexers.
 *** TODO Postgis
     ~Geometry~'s will be indexed in the table ~geo~ defined as:
 #+BEGIN_SRC sql :tangle geo.sql
   CREATE TABLE geo (
-    hash bytea NOT NULL PRIMARY KEY,
+    uri text NOT NULL PRIMARY KEY,
     tx bytea NOT NULL REFERENCES tx,
     -- Both the Postgis geography and geometry representations are stored
     geog geography NOT NULL,
