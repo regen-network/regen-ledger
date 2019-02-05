@@ -40,7 +40,7 @@ enhanced with robust, opt-in schema-validation support in the future.
 
 #+BEGIN_SRC go :tangle types.go
   type MsgStoreGraph struct {
-    // RDF graph data in N-Triples text format
+    // RDF graph data in N-Triples text format with no blank nodes allowed!
     NTriples string `json:"ntriples"`
 	  // Expected hash of the graph. The transaction will be rejected if this hash can't be verified.
     URDNA2015_BLAKE2B_256_Hash []byte `json:"urdna2015_blake2b_256_hash"`
@@ -48,46 +48,26 @@ enhanced with robust, opt-in schema-validation support in the future.
   }
 #+END_SRC
 
-[[https://www.w3.org/TR/n-triples/][N-Triples]] format has been chosen as a starting point because it is easy to parse and self-contained.
+[[https://www.w3.org/TR/n-triples/][N-Triples]] format has been chosen as a starting point because it is easy to parse and self-contained. **Blank nodes are not allowed in on-chain graphs!** This restriction makes it easy to verify that the dataset is canonicalized and that the hash matches, without having to run the full canonicalization algorithm on-chain. The N-Triples data passed in must be in canonicalized form which essentially means that it is sorted because blank nodes are not allowed.
 
 *** NOTE The reason JSON-LD has not been chosen for on-chain usage is that the way `@context` is designed explicitly requires JSON-LD processors to pull off-chain HTTP data which is indeterministic.
 
-*** TODO In the future, we would like to support other self-contained formats such as Turtle and binary formats.
+*** TODO In the future, we would like to support a compact binary format.
 
-*** TODO Should the URDNA2015 hash be verified on chain or should this be left to indexers?
-    The danger with doing it on-chain now is that there currently is no known algorithm for verifying that a graph is normalized that is guaranteed to terminate in linear time: https://github.com/json-ld/normalization/issues/11.
-
-    A short-term workaround would be to only allow graphs that have no blank nodes. Then verifying that data is normalized is simply a matter of verifying that it's sorted. Then in the future we can allow graphs with blank nodes when we have a way of verifying that blank nodes have been assigned canonically.
-
-*** TODO should data format (i.e. JSON/JSON-LD/etc.) and/or schema (i.e. SCHACL/SHEX/JSON-SCHEMA) be tracked and/or verified on-chain?
+*** TODO should data schema (i.e. SCHACL/SHEX/JSON-SCHEMA) be tracked and/or verified on-chain?
     It might be useful to track format on-chain but not verify it. For a given format there could be multiple schemas that it satisfies. My current thoughts are that this is a type of verification/validation that can be done off chain and there can be on-chain attestations about that - ARC.
 
-** Store arbitrary data on-chain
+** Track off-chain RDF dataset
    
 #+BEGIN_SRC go :tangle types.go
-  type DataFormat int
-
-  const (
-    Unknown DataFormat = 0
-    JSON_LD DataFormat = 1
-    NQuads DataFormat  = 2
-    Turtle DataFormat  = 3
-    TriG DataFormat    = 4
-    JSON DataFormat    = 5
-    XML DataFormat     = 6
-    YAML DataFormat    = 7
-    TIFF DataFormat    = 8
-  )
-
-  type MsgStoreData struct {
-  	//SchemaRef string
-  	Data []byte `json:"data"`
-    Format DataFormat `json:"format,omitempty"`
-  	Signer sdk.AccAddress `json:"signer"`
+  type MsgTrackDataset struct {
+    URDNA2015_BLAKE2B_256_Hash []byte `json:"urdna2015_blake2b_256_hash"`
+    Url string `json:"url,omitempty"`
+    Signer sdk.AccAddress `json:"signer"`
   }
 #+END_SRC
-
-** Track off-chain RDF dataset
+   
+** Track arbitrary off-chain data
 
 #+BEGIN_SRC go :tangle types.go
   type HashAlgorithm int
@@ -95,34 +75,42 @@ enhanced with robust, opt-in schema-validation support in the future.
   const (
     BLAKE2B_256 HashAlgorithm = 0
     SHA256 HashAlgorithm = 1
-    URDNA2015 HashAlgorithm = 2
-    URGNA2012 HashAlgorithm = 3
   )
 
   type MsgTrackData struct {
     Hash []byte `json:"hash"`
     Algorithm HashAlgorithm `json:"algorithm"`
-    Format DataFormat `json:"format,omitempty"`
     Url string `json:"url,omitempty"`
+    Signer sdk.AccAddress `json:"signer"`
   }
 #+END_SRC
+
+** TODO Store arbitrary data on-chain
+   This is a use case we may want to support but for now are not supporting it because it is questionable whether we should encourage storing data on-chain that can't be interpreted by other on-chain infrastructure.
+
+** TODO allow for tracking off-chain data which has a salt/nonce introduced
+
+** TODO allow for multiple URL's to be provided for off-chain data and to allow possible ways to deal with hash collisions
+
+** TODO possibly make URL's for off-chain data optional
+   
 * Identifiers
 ** On-chain graphs
    On-chain graphs are identified by the URI formed by encoding the URNDNA2015_BLAKE2B_256 hash of the graph with the prefix ~xrn://<block-number>/g/~.
 ** Off-chain datasets
    Off-chain datasets are identified by the URI formed by encoding the URNDNA2015_BLAKE2B_256 hash of the dataset with the prefix ~xrn://<block-number>/ds/~.
-** On-chain raw data
-   On-chain raw data is identified by the URI formed by encoding the Blake2b 256-bit hash of the data prefixed with ~xrn://<block-number>/da/~.
 ** Off-chain raw data
    Off-chain raw data is identified by the URI formed by encoding the Blake2b 256-bit hash of the data prefixed with ~xrn://<block-number>/dt/~.
+** On-chain raw data??
+   On-chain raw data is identified by the URI formed by encoding the Blake2b 256-bit hash of the data prefixed with ~xrn://<block-number>/da/~.
 * Indexing and Queries
 ** Postgresql
 #+BEGIN_SRC sql :tangle data.sql
   CREATE TABLE "data" (
     uri text NOT NULL PRIMARY KEY,
     tx bytea NOT NULL REFERENCES tx,
-    graph jsonb,
-    raw_data bytea
+    graph jsonb
+    --raw_data bytea
   );
 
   COMMENT ON COLUMN graph.graph IS 'The JSON-LD expanded form representation of an on-chain graph';
@@ -130,6 +118,17 @@ enhanced with robust, opt-in schema-validation support in the future.
   COMMENT ON COLUMN graph.raw_data IS 'Raw data bytes for on-chain raw data';
 #+END_SRC
 ** RDF
+*** Schema
+#+BEGIN_SRC turtle
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX xrn: <http://regen.network/schema#>
+
+xrn:urdna2015Blake2b256Hash a rdf:Property ;
+  rdfs:range xsd:base64Binary .
+
+#+END_SRC
 *** On-chain graphs
     On chain graphs are indexed in the RDF store in the named graph identified with the graph identifier URI. They are annotated in the default graph as follows (where ~xrn://12345/g/1xq52sutm~ is an example graph URI):
 
@@ -137,5 +136,6 @@ enhanced with robust, opt-in schema-validation support in the future.
 PREFIX xrn: <http://regen.network/schema#>
 
 <xrn://12345/g/1xq52sutm>
-  xrn:tx <xrn://12345/tx/abcdef1234567> .
+  xrn:tx <xrn://12345/tx/abcdef1234567> ;
+  xrn:urdna2015Blake2b256Hash "sdgbhABN38dsfgn23t=" .
 #+END_SRC

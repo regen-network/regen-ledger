@@ -1,0 +1,62 @@
+#+TITLE: Schema
+
+* Overview
+
+
+* Motivation and Rationale
+  
+* Transaction Messages and Types
+
+** Define Property
+   
+#+BEGIN_SRC go :tangle types.go
+  type PropertyType int
+
+  const (
+    OBJECT PropertyType = 0
+    STRING
+    INTEGER
+    DECIMAL
+    BOOL
+    DOUBLE
+    DATETIME
+    DATE
+    TIME
+    DURATION
+    BASE64
+    ANYURI
+    WKT
+  )
+
+  type PropertyID int64
+
+  type ClassID int64
+
+  type ActionDefineProperty struct {
+    Agent agent.AgentID `json:"agent"`
+    Name String `json:"name"`
+    Many Bool `json:"many,omitempty"`
+    Type PropertyType `json:"type,omitempty"`
+    Class ClassID `json:"class,omitempty"`
+    Label []LangString `json:"label,omitempty"`
+    Comment []LangString `json:"label,omitempty"`
+  }
+
+  type ActionDefineClass struct {
+    Agent agent.AgentID `json:"agent"`
+    Name String `json:"name"`
+    Properties []PropertyRef `json:"properties,omitempty"`
+    Label []LangString `json:"label,omitempty"`
+    Comment []LangString `json:"label,omitempty"`
+  }
+
+  type PropertyRef struct {
+    Property PropertyID `json:"property"`
+    Required Bool `json:"required,omitempty"`
+  }
+
+  type LangString struct {
+    Text String `json:"text,omitempty"`
+    Language String `json:"lang,omitempty"`
+  }
+#+END_SRC
