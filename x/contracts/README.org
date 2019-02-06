@@ -1,0 +1,68 @@
+* FSM approach
+
+#+BEGIN_SRC go
+  // A contract template
+  type Contract struct {
+    States []State
+  }
+  
+  type State struct {
+    Name string
+    // Sparql CONSTRUCT's that should be executed
+    // when entering this state
+    OnEnter []string
+    // Sparql CONSTRUCT's that should be executed
+    // when re-entering this state
+    OnReEnter []string
+    // Sparql select that should be executed when entering or
+    // re-entering this state to get the next transition time
+    // (the time when the transition clauses should be executed
+    // until one of them succeeds or they all fail and a re-enter
+    // occurs)
+    GetTransitionTime string
+    Transitions []Transition
+  }
+  
+  type Transition struct {
+    // state this transition would go to
+    To string
+    // Sparql ASK query that returns true if the state
+    // transition should go forward
+    ShouldTransition string
+    // Sparql CONSTRUCT's that should be executed
+    // when exiting this state on this transition branch
+    OnExit []string
+  }
+  
+  type ContractState struct {
+    balance sdk.Coins
+    state string
+    // The parameters the contract instance was initialized with
+    parameters string
+    nextTransitionTime time.Time
+  }
+#+END_SRC go
+
+#+BEGIN_SRC trig
+_:a a xrn:DepositRecepit ;
+  xrn:to <xrn:address0123456> ;
+  xrn:coins [
+    xrn:denom "XRN" .
+    xrn:amount 1234 .
+  ].
+
+_:b a xrn:EscrowInitializer ;
+  xrn:contractTemplate <xrn:contract1234> ;
+  xrn:contractParams _:params ;
+  xrn:coins [
+    xrn:denom "XRN" .
+    xrn:amount 2345 .
+  ].
+
+_:params {
+  
+}
+#+END_SRC
+
+** Sparql ASK and CONSTRUCT
+   Sparql ASK and CONSTRUCT are basic building blocks of this approach to constructs, with ASK queries being the boolean condition that guards transition between states and CONSTRUCT expressions being used to create events such as payments, minting, contract creation, and claim signing on state transitions.
