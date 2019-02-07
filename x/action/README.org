@@ -1,4 +1,3 @@
-
 #+BEGIN_SRC go
   
   type CapabilityKeeper interface {
