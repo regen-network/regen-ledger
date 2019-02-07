@@ -14,6 +14,38 @@ for visualization of global ecological health.
 * Motivation and Rationale
 
 * Transaction Messages and Types
+  
+#+BEGIN_SRC go
+type ESPVersionID []byte
+
+type ESPVersionSpec {
+	Curator agent.AgentID `json:"curator"`
+	Name string `json:"name"`
+	Version string `json:"version"`
+	Verifiers []action.ActorID `json:"verifiers"`
+  // TODO ClaimSchema schema.SchemaID??
+}
+
+type ESPResult struct {
+  ESP ESPVersionID
+	Verifier action.ActorID `json:"verifier"`
+  Geo geo.GeoID
+  Claim data.DataID
+}
+
+type ActionRegisterESPVersion struct {
+	Curator agent.AgentID `json:"curator"`
+	Name string `json:"name"`
+	Version string `json:"version"`
+	Verifiers []action.ActorID `json:"verifiers"`
+}
+
+type ActionReportESPResult struct {
+  ESP ESPVersionID
+  Geo geo.GeoID
+  Claim data.DataID
+}
+#+END_SRC go
 
 * Identifiers
   ESP's are identified by the URI formed by taking the agent URI and appending ~/esp/<name>/<version>+<block-number>~.

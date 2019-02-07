@@ -1,0 +1,122 @@
+
+#+BEGIN_SRC go
+  
+  type CapabilityKeeper interface {
+    // Store capabilities under the key actor-id/capability-id
+    // Grant stores a root flag, and delegate
+    GrantRootCapability(actor ActorID, capability ActionCapability)
+    RevokeRootCapability(actor ActorID, capability ActionCapability)
+    Delegate(grantor ActorID, actor ActorID, capability ActionCapability)
+    Undelegate(grantor ActorID, actor ActorID, capability ActionCapability)
+    HasCapability(actor ActorID, capability ActionCapability) bool
+  }
+  
+  type capabilityGrant {
+    // set if this is actor should be granted the capability at a "root" level
+    root bool
+    // all the actors that delegated this capability to the actor
+    // the capability should be cleared if root is false and this array is cleared
+    delegatedBy []ActorID
+    
+    // whenever this capability is undelegated or revoked, these delegations
+    // need to be cleared recursively
+    delegatedTo []ActorID
+  }
+
+  type ActorID []byte
+  
+  type Actor interface {
+    ActorID() ActorID
+  }
+
+  type Action interface {
+    RequiredCapability() ActionCapability
+  	// Return the message type.
+  	// Must be alphanumeric or empty.
+  	Route() string
+  
+  	// Returns a human-readable string for the message, intended for utilization
+  	// within tags
+  	Type() string
+  
+  	// ValidateBasic does a simple validation check that
+  	// doesn't require access to any other information.
+  	ValidateBasic() sdk.Error
+  
+  	// Get the canonical byte representation of the Msg.
+  	GetSignBytes() []byte
+  
+  	//HandleProposal(ctx sdk.Context, votes []sdk.AccAddress) sdk.Result
+  }
+  
+  type ActionDispatcher interface {
+	  DispatchAction(ctx sdk.Context, actor Actor, action Action) ActionResult
+  }
+  
+  type ActionResult interface {
+  }
+  
+  // Wraps both agents and contracts which can have capabilities
+  type ActorKeeper interface {
+    Delegate(actor ActorID, capabilities []ActionCapability)
+    // TODO Undelegate
+  }
+  
+  type Action interface {
+  }
+  
+  type ActionCapability interface {
+    // Every capability should be have a system wide unique ID that includes
+    // both the type of capability and any params associated with it
+    CapabilityID () String
+    // Whether the specified action is allowed by this capability
+    Accept(action Action) Bool
+    // Whether capability is a sub-capability of this capability
+    IsSubCapability(capability ActionCapability) Bool
+    // TODO return who delegated the capability so it can be undelegated
+    Delegator() interface{}
+    // or maybe:
+    CanUndelegate (credential interface{}) Bool
+  }
+
+  type SendAction struct {
+  }
+  
+  type SendActionCapability struct {
+    Account sdk.AccAddress
+  }
+  
+  type IssueESPResultAction struct {
+    Geo GeoID
+    ESP ESP_ID
+    Claim DataID
+  }
+  
+  type IssueESPResultActionCapability struct {
+    ESP ESP_ID
+  }
+  
+  // issues a credential to some identity (key or address), probably just sdk.AccAddress
+  type IssueCredentialAction struct {
+    Subject sdk.AccAddress
+    Credential CredentialID
+    Claim DataID
+  }
+  
+  type MintAction struct {
+  }
+  
+  type CreateContractAction struct {
+    Code data.DataID
+    InitialState data.DataID
+    Capabilities []ActionCapability
+    // TODO initial coins
+  }
+  
+  type DelegateAction struct {
+    Capabilities []ActionCapability
+  }
+  
+  type UndelegateAction struct {
+  }
+#+END_SRC go
