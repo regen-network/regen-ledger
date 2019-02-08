@@ -27,8 +27,7 @@ type ESPResult struct {
 	Name string `json:"name"`
 	Version string `json:"version"`
 	Verifier agent.AgentID `json:"verifier"`
-	// TODO maybe use geo keeper to save space with large polygons
-	PolygonEWKB []byte `json:"polygon_ewkb,omitempty"`
+	GeoID []byte `json:"geo_id,omitempty"`
 	Data []byte `json:"data"`
 	// TODO link this to data module for either on or off-chain result storage
 }

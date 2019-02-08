@@ -116,7 +116,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 
 	app.geoKeeper = geo.NewKeeper(app.geoStoreKey, cdc)
 
-	app.espKeeper = esp.NewKeeper(app.espStoreKey, app.agentKeeper, cdc)
+	app.espKeeper = esp.NewKeeper(app.espStoreKey, app.agentKeeper, app.geoKeeper, cdc)
 
 	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc, 1000)
 

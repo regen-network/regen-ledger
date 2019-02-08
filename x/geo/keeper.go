@@ -1,6 +1,7 @@
 package geo
 
 import (
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"gitlab.com/regen-network/regen-ledger/utils"
@@ -12,6 +13,10 @@ type Keeper struct {
 
 	cdc *codec.Codec
 }
+
+const (
+	Bech32Prefix = "xrngeo"
+)
 
 func NewKeeper(storeKey sdk.StoreKey, cdc *codec.Codec) Keeper {
 	return Keeper{storeKey: storeKey, cdc: cdc}
@@ -47,6 +52,14 @@ func (keeper Keeper) StoreGeometry(ctx sdk.Context, geometry Geometry) sdk.Resul
 	}
 	store.Set(hashBz, bz)
 	tags := sdk.EmptyTags()
-	tags = tags.AppendTag("geo.id", []byte(utils.MustEncodeBech32("xrngeo", hashBz)))
+	tags = tags.AppendTag("geo.id", []byte(utils.MustEncodeBech32(Bech32Prefix, hashBz)))
 	return sdk.Result{Tags: tags}
+}
+
+func MustDecodeBech32GeoID(bech string) []byte {
+	hrp, bz := utils.MustDecodeBech32(bech)
+	if hrp != Bech32Prefix {
+		panic(fmt.Sprintf("Bech32 GeoID must start with %s", Bech32Prefix))
+	}
+	return bz
 }
