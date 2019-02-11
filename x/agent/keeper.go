@@ -16,8 +16,6 @@ type Keeper struct {
 	cdc *codec.Codec
 }
 
-
-
 func NewKeeper(agentStoreKey sdk.StoreKey, cdc *codec.Codec) Keeper {
 	return Keeper{
 		agentStoreKey: agentStoreKey,

@@ -24,9 +24,9 @@ func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 		Short: "Querying commands for the agent module",
 	}
 
-	//dataQueryCmd.AddCommand(client.GetCommands(
-	//	datacmd.GetCmdGetData(mc.storeKey, mc.cdc),
-	//)...)
+	agentQueryCmd.AddCommand(client.GetCommands(
+		agentcmd.GetCmdAgent(mc.storeKey, mc.cdc),
+	)...)
 
 	return agentQueryCmd
 }
