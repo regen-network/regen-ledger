@@ -9,10 +9,10 @@ import (
 )
 
 // GetCmdAgent queries information about an agent
-func GetCmdAgent(queryRoute string, cdc *codec.Codec) *cobra.Command {
+func GetCmdGetAgent(queryRoute string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
-		Use:   "agent [id]",
-		Short: "Query agent info",
+		Use:   "get [id]",
+		Short: "get agent by id",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
