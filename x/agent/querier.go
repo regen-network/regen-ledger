@@ -4,7 +4,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"strconv"
 )
 
 // query endpoints supported by the governance Querier
@@ -27,12 +26,9 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 func queryAgent(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) (res []byte, err sdk.Error) {
 	idStr := path[0]
 
-	id, parseErr := strconv.ParseUint(idStr, 10, 64)
-	if parseErr != nil {
-		return []byte{}, sdk.ErrUnknownRequest("Can't parse id")
-	}
+	decodedId := MustDecodeBech32AgentID(idStr)
 
-	info, err := keeper.GetAgentInfo(ctx, AgentID(id))
+	info, err := keeper.GetAgentInfo(ctx, AgentID(decodedId))
 
 	if err != nil {
 		return []byte{}, sdk.ErrUnknownRequest("could not resolve id")

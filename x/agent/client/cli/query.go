@@ -18,8 +18,9 @@ func GetCmdGetAgent(queryRoute string, cdc *codec.Codec) *cobra.Command {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			id := args[0]
 
-			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/agent/%s", queryRoute, id), nil)
+			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/get/%s", queryRoute, id), nil)
 			if err != nil {
+				fmt.Println(err)
 				fmt.Printf("could not resolve agent - %s \n", string(id))
 				return nil
 			}
