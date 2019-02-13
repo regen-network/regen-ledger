@@ -37,6 +37,7 @@ const (
 	storeAcc   = "acc"
 	storeData  = "data"
 	storeAgent = "agent"
+	storeProposal = "proposal"
 )
 
 var defaultCLIHome = os.ExpandEnv("$HOME/.xrncli")
@@ -55,7 +56,7 @@ func main() {
 
 	mc := []sdk.ModuleClients{
 		espclient.NewModuleClient(cdc),
-		proposalclient.NewModuleClient(cdc),
+		proposalclient.NewModuleClient(storeProposal, cdc),
 		geoclient.NewModuleClient(cdc),
 		dataclient.NewModuleClient(storeData, cdc),
 		agentclient.NewModuleClient(storeAgent, cdc),

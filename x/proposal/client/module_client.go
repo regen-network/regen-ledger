@@ -9,11 +9,12 @@ import (
 
 // ModuleClient exports all client functionality from this module
 type ModuleClient struct {
+	storeKey string
 	cdc *amino.Codec
 }
 
-func NewModuleClient(cdc *amino.Codec) ModuleClient {
-	return ModuleClient{cdc}
+func NewModuleClient(storeKey string, cdc *amino.Codec) ModuleClient {
+	return ModuleClient{storeKey, cdc}
 }
 
 // GetQueryCmd returns the cli query commands for this module
@@ -23,9 +24,9 @@ func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 		Short: "Querying commands for the proposal module",
 	}
 
-	//proposalQueryCmd.AddCommand(client.GetCommands(
-	//	//proposalcmd.GetCmdGetData(mc.storeKey, mc.cdc),
-	//)...)
+	proposalQueryCmd.AddCommand(client.GetCommands(
+		proposalcmd.GetCmdGetProposal(mc.storeKey, mc.cdc),
+	)...)
 
 	return proposalQueryCmd
 }
