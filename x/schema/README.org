@@ -32,11 +32,11 @@
    Classes, properties and labels receive an auto-incremented integer ID. This ID is used in references in class and property definitions and can also used for saving storage space in a binary RDF serialization format.
 
 #+BEGIN_SRC go :tangle types.go
-  type PropertyID int64
+  type PropertyID uint64
 
-  type ClassID int64
+  type ClassID uint64
 
-  type LabelID int64
+  type LabelID uint64
 #+END_SRC
 
 ** Define Property

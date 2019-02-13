@@ -1,17 +1,46 @@
-#+TITLE: Agent Module
+#+TITLE: Group Module
 
 * Overview
 
-The agent module provides a mechanism that can be used to support basic
+The group module provides a mechanism that can be used to support basic
 multi-party organizations and to allow individuals to facilitate authorization 
-via multiple keys. In the future, it may be extended to support more sophisticated
+via multiple keys (key groups). In the future, it may be extended to support more sophisticated
 multi-party authorization schemes.
 
 * Motivation and Rationale
 
 * Transaction Messages and Types
+#+BEGIN_SRC go
+type AuthPolicy int
+
+const (
+	MultiSig AuthPolicy = 0
+)
+
+// A group can be used to abstract over users and groups
+// It could be used by a single user to manage multiple devices and setup a multisig policy
+// It could be used to group individuals into a group or several groups/users into a larger group
+type Group struct {
+	AuthPolicy AuthPolicy `json:"auth_policy"`
+	// An Group can have any Account with an AccAddress as a member, including other groups
+	Members         []Member `json:"addresses,omitempty"`
+  // A big integer is used here to avoid any potential vulnerabilities from overflow errors
+  // where large power and threshold values are used
+	MultisigThreshold big.Int `json:"multisig_threshold"`
+  // TODO maybe make this something more specific to a domain name or a claim on identity? or Memo leave it generic
+	Memo              string           `json:"memo,omitempty"`
+}
+
+type Member struct {
+  Address sdk.AccAddress `json:"address"`
+  Power big.Int `json:"power,omitempty"`
+}
+
+
+
+#+END_SRC go
 
 * Identifiers
-  Agents are identified by the URI formed by taking the bech32 encoding of the agent's integer ID with the prefix ~xrn:agt/~.
+  Groups implement the ~Account~ interface and thus have an ~AccAddress~. Internally an group ID is an ~uint64~ which is assigned on an auto-increment basis. The ~AccAddress~ for an group is made by concatenating the prefix ~G~ (as ~[]byte~) and the [[https://golang.org/pkg/encoding/binary/#PutUvarint][varint]] encoding of the ~uint64~ account ID. The textual representation of an group account is obtained by taking the bech32 encoding of this ~AccAddress~ with the prefix ~xrn:~ which also is a valid URI.
 
 * Indexing and Queries

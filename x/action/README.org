@@ -1,13 +1,16 @@
 #+BEGIN_SRC go
+  type ActionDispatcher interface {
+	  DispatchAction(ctx sdk.Context, actor Actor, action Action) ActionResult
+  }
   
   type CapabilityKeeper interface {
     // Store capabilities under the key actor-id/capability-id
     // Grant stores a root flag, and delegate
-    GrantRootCapability(actor ActorID, capability ActionCapability)
-    RevokeRootCapability(actor ActorID, capability ActionCapability)
-    Delegate(grantor ActorID, actor ActorID, capability ActionCapability)
-    Undelegate(grantor ActorID, actor ActorID, capability ActionCapability)
-    HasCapability(actor ActorID, capability ActionCapability) bool
+    GrantRootCapability(ctx sdk.Context, actor sdk.AccAddress, capability ActionCapability)
+    RevokeRootCapability(ctx sdk.Context, actor sdk.AccAddress, capability ActionCapability)
+    Delegate(ctx sdk.Context, grantor sdk.AccAddress, actor sdk.AccAddress, capability ActionCapability)
+    Undelegate(ctx sdk.Context, grantor sdk.AccAddress, actor sdk.AccAddress, capability ActionCapability)
+    HasCapability(ctx sdk.Context, actor sdk.AccAddress, capability ActionCapability) bool
   }
   
   type capabilityGrant {
@@ -15,21 +18,21 @@
     root bool
     // all the actors that delegated this capability to the actor
     // the capability should be cleared if root is false and this array is cleared
-    delegatedBy []ActorID
+    delegatedBy []sdk.AccAddress
     
     // whenever this capability is undelegated or revoked, these delegations
     // need to be cleared recursively
-    delegatedTo []ActorID
+    delegatedTo []sdk.AccAddress
   }
 
-  type ActorID []byte
+  type sdk.AccAddress []byte
   
   type Actor interface {
-    ActorID() ActorID
+    sdk.AccAddress() sdk.AccAddress
   }
 
   type Action interface {
-    RequiredCapability() ActionCapability
+    RequiredCapabilities() []ActionCapability
   	// Return the message type.
   	// Must be alphanumeric or empty.
   	Route() string
@@ -48,20 +51,7 @@
   	//HandleProposal(ctx sdk.Context, votes []sdk.AccAddress) sdk.Result
   }
   
-  type ActionDispatcher interface {
-	  DispatchAction(ctx sdk.Context, actor Actor, action Action) ActionResult
-  }
-  
   type ActionResult interface {
-  }
-  
-  // Wraps both agents and contracts which can have capabilities
-  type ActorKeeper interface {
-    Delegate(actor ActorID, capabilities []ActionCapability)
-    // TODO Undelegate
-  }
-  
-  type Action interface {
   }
   
   type ActionCapability interface {
@@ -70,12 +60,12 @@
     CapabilityID () String
     // Whether the specified action is allowed by this capability
     Accept(action Action) Bool
-    // Whether capability is a sub-capability of this capability
-    IsSubCapability(capability ActionCapability) Bool
-    // TODO return who delegated the capability so it can be undelegated
-    Delegator() interface{}
-    // or maybe:
-    CanUndelegate (credential interface{}) Bool
+    //// Whether capability is a sub-capability of this capability
+    //IsSubCapability(capability ActionCapability) Bool
+    //// TODO return who delegated the capability so it can be undelegated
+    //Delegator() interface{}
+    //// or maybe:
+    //CanUndelegate (credential interface{}) Bool
   }
 
   type SendAction struct {

@@ -19,25 +19,25 @@ for visualization of global ecological health.
 type ESPVersionID []byte
 
 type ESPVersionSpec {
-	Curator agent.AgentID `json:"curator"`
+	Curator sdk.AccAddress `json:"curator"`
 	Name string `json:"name"`
 	Version string `json:"version"`
-	Verifiers []action.ActorID `json:"verifiers"`
+	Verifiers []sdk.AccAddress `json:"verifiers"`
   // TODO ClaimSchema schema.SchemaID??
 }
 
 type ESPResult struct {
   ESP ESPVersionID
-	Verifier action.ActorID `json:"verifier"`
+	Verifier sdk.AccAddress `json:"verifier"`
   Geo geo.GeoID
   Claim data.DataID
 }
 
 type ActionRegisterESPVersion struct {
-	Curator agent.AgentID `json:"curator"`
+	Curator sdk.AccAddress `json:"curator"`
 	Name string `json:"name"`
 	Version string `json:"version"`
-	Verifiers []action.ActorID `json:"verifiers"`
+	Verifiers []sdk.AccAddress `json:"verifiers"`
 }
 
 type ActionReportESPResult struct {
