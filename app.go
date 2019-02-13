@@ -143,7 +143,9 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 	// The app.QueryRouter is the main query router where each module registers its routes
 	app.QueryRouter().
 		AddRoute("data", data.NewQuerier(app.dataKeeper)).
-		AddRoute("agent", agent.NewQuerier(app.agentKeeper))
+		AddRoute("agent", agent.NewQuerier(app.agentKeeper)).
+		AddRoute("proposal", proposal.NewQuerier(app.proposalKeeper))
+
 
 	// The initChainer handles translating the genesis.json file into initial state for the network
 	app.SetInitChainer(app.initChainer)
