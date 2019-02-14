@@ -44,6 +44,9 @@
     EWKB []byte `json:"ewkb,omitempty"`
   }
 #+END_SRC
+*** TODO we probably don't need to store points here, no use for anything other than polygons here
+*** TODO should this module provide support for off-chain geo-features for protecting privacy??
+    Should this support include some sort of nonce support like in data?
 
 ** Identifiers
 *** TODO ~Geometry~ URI's

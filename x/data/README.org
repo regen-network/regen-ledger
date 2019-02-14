@@ -66,6 +66,9 @@ enhanced with robust, opt-in schema-validation support in the future.
     Signer sdk.AccAddress `json:"signer"`
   }
 #+END_SRC
+
+*** TODO should data stores that reference off-chain data have their own on-chain reference and data tracking instead of a URL just reference the service via which it can be retrieved by hash?
+    i.e. if we know the service ID we can just do an HTTP GET for ~<service-base-uri>/<hash>~.
    
 ** Track arbitrary off-chain data
 
@@ -93,6 +96,9 @@ enhanced with robust, opt-in schema-validation support in the future.
 ** TODO allow for multiple URL's to be provided for off-chain data and to allow possible ways to deal with hash collisions
 
 ** TODO possibly make URL's for off-chain data optional
+
+** TODO support for tracking the merkle roots of off-chain data stores
+   This should probably be coordinated with the IBC spec
    
 * Identifiers
 ** On-chain graphs
