@@ -23,9 +23,12 @@ func TestMain(m *testing.M) {
 	ci, found := os.LookupEnv("CI")
 	if found && len(ci) != 0 {
 		println("In CI")
-		println(os.Getenv("CI_PROJECT_DIR"))
-		f, err := os.Create(fmt.Sprintf("%s/build/TEST_%s.xml", os.Getenv("CI_PROJECT_DIR"), suiteName))
-		if err == nil {
+		testfileName := fmt.Sprintf("%s/build/TEST_%s.xml", os.Getenv("CI_PROJECT_DIR"), suiteName)
+		println(os.Getenv(testfileName))
+		f, err := os.Create(testfileName)
+		if err != nil {
+			fmt.Printf("Error creating test output file: %+v", err)
+		} else {
 			opt.Output = f
 			opt.Format = "junit"
 		}

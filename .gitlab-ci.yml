@@ -1,6 +1,9 @@
-stages:
-  - build
-  - test
+variables:
+  GOPATH: .go
+
+cache:
+  paths:
+    .go/pkg/mod
 
 build:
   image: golang:1.11.5
