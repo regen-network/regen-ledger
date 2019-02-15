@@ -3,7 +3,7 @@ variables:
 
 cache:
   paths:
-    .go/pkg/mod
+    - .go/pkg/mod
 
 build:
   image: golang:1.11.5
