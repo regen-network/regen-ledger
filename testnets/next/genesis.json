@@ -58,6 +58,18 @@
         "public_key": null,
         "account_number": "0",
         "sequence": "0"
+      },
+      {
+        "address": "cosmos1s77szsyzh9hk2tkwwh3v39m6jnzzyvjcamt6x7",
+        "coins": [
+          {
+            "denom": "xrn",
+            "amount": "100000000"
+          }
+        ],
+        "public_key": null,
+        "account_number": "0",
+        "sequence": "0"
       }
     ],
     "agents": [

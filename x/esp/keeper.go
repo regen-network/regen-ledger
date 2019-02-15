@@ -8,6 +8,7 @@ import (
 	"gitlab.com/regen-network/regen-ledger/utils"
 	"gitlab.com/regen-network/regen-ledger/x/agent"
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
+	"gitlab.com/regen-network/regen-ledger/x/geo"
 	"golang.org/x/crypto/blake2b"
 
 	//"github.com/twpayne/go-geom/encoding/ewkb"
@@ -17,6 +18,8 @@ type Keeper struct {
 	storeKey sdk.StoreKey
 
 	agentKeeper agent.Keeper
+
+	geoKeeper geo.Keeper
 
 	cdc *codec.Codec
 }
@@ -53,10 +56,12 @@ func (keeper Keeper) HandleProposal(ctx sdk.Context, action proposal.ProposalAct
 func NewKeeper(
 	storeKey sdk.StoreKey,
 	agentKeeper agent.Keeper,
+	geoKeeper geo.Keeper,
 	cdc *codec.Codec) Keeper {
 	return Keeper{
 		storeKey:    storeKey,
 		agentKeeper: agentKeeper,
+		geoKeeper: geoKeeper,
 		cdc:         cdc,
 	}
 }
@@ -146,7 +151,17 @@ func (keeper Keeper) ReportESPResult(ctx sdk.Context, result ESPResult, signers 
 		}
 	}
 
-	// TODO verify geometry
+	// Verify geometry exists
+	geoID := keeper.geoKeeper.GetGeometry(ctx, result.GeoID)
+
+	if geoID == nil {
+		return sdk.Result{
+			Code: sdk.CodeUnknownRequest,
+			Log:  "can't find geo",
+		}
+	}
+
+
 	// TODO verify schema
 
 	store := ctx.KVStore(keeper.storeKey)
