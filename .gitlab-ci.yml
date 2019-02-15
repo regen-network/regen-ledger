@@ -21,5 +21,4 @@ test:
 lint:
   image: golang:1.11.5
   script:
-    - export PATH=$PATH:$GOPATH/bin
     - make lint
