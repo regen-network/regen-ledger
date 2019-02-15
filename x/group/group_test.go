@@ -19,7 +19,7 @@ func init() {
 }
 
 func TestMain(m *testing.M) {
-	const suiteName = "group"
+	/*const suiteName = "group"
 	ci, found := os.LookupEnv("CI")
 	if found && len(ci) != 0 {
 		testfileName := fmt.Sprintf("%s/TEST_%s.xml", os.Getenv("CI_PROJECT_DIR"), suiteName)
@@ -30,7 +30,7 @@ func TestMain(m *testing.M) {
 			opt.Output = f
 			opt.Format = "junit"
 		}
-	}
+	}*/
 
 	flag.Parse()
 	opt.Paths = flag.Args()
