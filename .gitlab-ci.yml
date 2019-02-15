@@ -16,4 +16,4 @@ test:
     - make test
   artifacts:
     reports:
-      junit: "build/TEST_*.xml"
+      junit: "TEST_*.xml"
