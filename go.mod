@@ -1,7 +1,7 @@
 module gitlab.com/regen-network/regen-ledger
 
 require (
-	github.com/DATA-DOG/godog v0.7.10 // indirect
+	github.com/DATA-DOG/godog v0.7.10
 	github.com/ZondaX/hid-go v0.4.0
 	github.com/ZondaX/ledger-go v0.4.0
 	github.com/bartekn/go-bip39 v0.0.0-20171116152956-a05967ea095d

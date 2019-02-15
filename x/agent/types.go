@@ -1,4 +1,4 @@
-package group
+package agent
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
