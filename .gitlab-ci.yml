@@ -2,3 +2,4 @@ build:
   image: golang:1.11.5
   script:
     - make install
+    - make test
