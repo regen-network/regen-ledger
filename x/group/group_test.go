@@ -22,6 +22,8 @@ func TestMain(m *testing.M) {
 	const suiteName = "group"
 	ci, found := os.LookupEnv("CI")
 	if found && len(ci) != 0 {
+		println("In CI")
+		println(os.Getenv("CI_PROJECT_DIR"))
 		f, err := os.Create(fmt.Sprintf("%s/build/TEST_%s.xml", os.Getenv("CI_PROJECT_DIR"), suiteName))
 		if err == nil {
 			opt.Output = f
