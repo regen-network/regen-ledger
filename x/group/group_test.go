@@ -2,6 +2,7 @@ package group
 
 import (
 	"flag"
+	"fmt"
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/colors"
 	"os"
@@ -18,9 +19,10 @@ func init() {
 }
 
 func TestMain(m *testing.M) {
+	const suiteName = "group"
 	ci, found := os.LookupEnv("CI")
 	if found && len(ci) != 0 {
-		f, err := os.Create("test_output.xml")
+		f, err := os.Create(fmt.Sprintf("%s/build/TEST_%s.xml", os.Getenv("CI_PROJECT_DIR"), suiteName))
 		if err == nil {
 			opt.Output = f
 			opt.Format = "junit"
@@ -68,8 +70,6 @@ func theyShouldGetBackTheGroupDetailsInJSONFormat() error {
 	return godog.ErrPending
 }
 
-
-
 func FeatureContext(s *godog.Suite) {
 	s.Step(`^a public key address$`, aPublicKeyAddress)
 	s.Step(`^a user creates a group with that address$`, aUserCreatesAGroupWithThatAddress)
@@ -79,4 +79,3 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^a user gets the group details on the command line$`, aUserGetsTheGroupDetailsOnTheCommandLine)
 	s.Step(`^they should get back the group details in JSON format$`, theyShouldGetBackTheGroupDetailsInJSONFormat)
 }
-
