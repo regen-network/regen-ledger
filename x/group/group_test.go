@@ -18,6 +18,7 @@ func init() {
 }
 
 func TestMain(m *testing.M) {
+	println("TEST")
 	flag.Parse()
 	opt.Paths = flag.Args()
 
@@ -31,7 +32,43 @@ func TestMain(m *testing.M) {
 	os.Exit(status)
 }
 
+func aPublicKeyAddress() error {
+	return godog.ErrPending
+}
+
+func aUserCreatesAGroupWithThatAddress() error {
+	return godog.ErrPending
+}
+
+func aDecisionThresholdOf(arg1 int) error {
+	return godog.ErrPending
+}
+
+func theyShouldGetANewGroupAddressBack() error {
+	return godog.ErrPending
+}
+
+func aGroupID() error {
+	return godog.ErrPending
+}
+
+func aUserGetsTheGroupDetailsOnTheCommandLine() error {
+	return godog.ErrPending
+}
+
+func theyShouldGetBackTheGroupDetailsInJSONFormat() error {
+	return godog.ErrPending
+}
+
+
 
 func FeatureContext(s *godog.Suite) {
-
+	s.Step(`^a public key address$`, aPublicKeyAddress)
+	s.Step(`^a user creates a group with that address$`, aUserCreatesAGroupWithThatAddress)
+	s.Step(`^a decision threshold of (\d+)$`, aDecisionThresholdOf)
+	s.Step(`^they should get a new group address back$`, theyShouldGetANewGroupAddressBack)
+	s.Step(`^a group ID$`, aGroupID)
+	s.Step(`^a user gets the group details on the command line$`, aUserGetsTheGroupDetailsOnTheCommandLine)
+	s.Step(`^they should get back the group details in JSON format$`, theyShouldGetBackTheGroupDetailsInJSONFormat)
 }
+
