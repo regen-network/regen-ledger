@@ -1,5 +1,6 @@
 variables:
   GOPATH: "$CI_PROJECT_DIR/.go"
+  PATH: "$PATH:$GOPATH/bin"
 
 cache:
   paths:
