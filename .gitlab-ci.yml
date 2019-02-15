@@ -1,5 +1,16 @@
+stages:
+  - build
+  - test
+  -
 build:
   image: golang:1.11.5
   script:
     - make install
+
+test:
+  image: golang:1.11.5
+  script:
     - make test
+  artifacts:
+    reports:
+      junit: "**/test_output.xml"

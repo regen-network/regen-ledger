@@ -18,7 +18,15 @@ func init() {
 }
 
 func TestMain(m *testing.M) {
-	println("TEST")
+	ci, found := os.LookupEnv("CI")
+	if found && len(ci) != 0 {
+		f, err := os.Create("test_output.xml")
+		if err == nil {
+			opt.Output = f
+			opt.Format = "junit"
+		}
+	}
+
 	flag.Parse()
 	opt.Paths = flag.Args()
 
