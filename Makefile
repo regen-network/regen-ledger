@@ -8,5 +8,5 @@ test:
 	go test ./... -godog.strict
 
 lint:
-	@[ -x $(which golint) ] || go get -u golang.org/x/lint/golint
+	[ -x $(which golint) ] || go get -u golang.org/x/lint/golint
 	golint ./...
