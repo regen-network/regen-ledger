@@ -17,3 +17,8 @@ test:
   artifacts:
     reports:
       junit: "TEST_*.xml"
+
+lint:
+  image: golang:1.11.5
+  script:
+    - make lint

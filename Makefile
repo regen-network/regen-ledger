@@ -6,3 +6,6 @@ install:
 
 test:
 	go test ./... -godog.strict
+
+lint:
+	golint ./...
