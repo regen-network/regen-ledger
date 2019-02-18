@@ -182,9 +182,8 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		app.upgradeStoreKey,
 		app.consortiumStoreKey,
 		app.keyParams,
+		app.tkeyParams,
 	)
-
-	app.MountStoresTransient(app.tkeyParams)
 
 	err := app.LoadLatestVersion(app.keyMain)
 	if err != nil {

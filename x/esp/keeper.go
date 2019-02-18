@@ -28,13 +28,13 @@ func (keeper Keeper) CheckProposal(ctx sdk.Context, action proposal.ProposalActi
 	switch action := action.(type) {
 	case ActionRegisterESPVersion:
 		return true, sdk.Result{
-			Tags: sdk.EmptyTags().AppendTag("proposal.group", []byte(action.Curator.String())),
+			Tags: sdk.EmptyTags().AppendTag("proposal.group", action.Curator.String()),
 		}
 	case ActionReportESPResult:
 		return true, sdk.Result{
 			Tags: sdk.EmptyTags().
-				AppendTag("proposal.group", []byte(action.Verifier.String())).
-				AppendTag("esp.id", []byte(espVersionId(action.Curator, action.Name, action.Version))),
+				AppendTag("proposal.group", action.Verifier.String()).
+				AppendTag("esp.id", espVersionId(action.Curator, action.Name, action.Version)),
 		}
 	default:
 		return false, sdk.Result{Code: sdk.CodeUnknownRequest}
@@ -96,7 +96,7 @@ func (keeper Keeper) RegisterESPVersion(ctx sdk.Context, spec ESPVersionSpec, si
 
 	return sdk.Result{
 		Code: sdk.CodeOK,
-		Tags: sdk.EmptyTags().AppendTag("esp.id", []byte(id)),
+		Tags: sdk.EmptyTags().AppendTag("esp.id", id),
 	}
 }
 
@@ -176,7 +176,7 @@ func (keeper Keeper) ReportESPResult(ctx sdk.Context, result ESPResult, signers 
 	return sdk.Result{
 		Code: sdk.CodeOK,
 		Tags: sdk.EmptyTags().
-			AppendTag("esp.id", []byte(espVersionId(result.Curator, result.Name, result.Version))).
-			AppendTag("esp.result", []byte(util.MustEncodeBech32("espr", hashBz))),
+			AppendTag("esp.id", espVersionId(result.Curator, result.Name, result.Version)).
+			AppendTag("esp.result", util.MustEncodeBech32("espr", hashBz)),
 	}
 }

@@ -16,7 +16,7 @@ type Group struct {
 	// A member gets as many votes as is indicated by their Weight field.
 	// A big integer is used here to avoid any potential vulnerabilities from overflow errors
 	// where large weight and threshold values are used.
-	DecisionThreshold sdk.Int `json:"decision_threshold,omitempty"`
+	DecisionThreshold sdk.Int `json:"decision_threshold"`
 	// TODO maybe make this something more specific to a domain name or a claim on identity? or Memo leave it generic
 	Memo string `json:"memo,omitempty"`
 }
@@ -26,7 +26,7 @@ type Member struct {
 	// The address of a group member. Can be another group or a contract
 	Address sdk.AccAddress `json:"address"`
 	// The integral weight of this member with respect to other members and the decision threshold
-	Weight sdk.Int `json:"weight,omitempty"`
+	Weight sdk.Int `json:"weight"`
 }
 
 // Creates a group on the blockchain

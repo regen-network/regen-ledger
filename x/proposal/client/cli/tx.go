@@ -2,7 +2,6 @@ package cli
 
 import (
 	"github.com/spf13/cobra"
-	utils2 "gitlab.com/regen-network/regen-ledger/util"
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -43,7 +42,6 @@ func GetCmdPropose(cdc *codec.Codec, actionCreator ActionCreator) *cobra.Command
 			}
 
 			cliCtx.PrintResponse = true
-			cliCtx.ResponseHandler = utils2.PrintCLIResponse_StringData
 
 			return utils.CompleteAndBroadcastTxCLI(txBldr, cliCtx, []sdk.Msg{msg})
 		},
@@ -75,7 +73,6 @@ func getRunVote(cdc *codec.Codec, approve bool) func(cmd *cobra.Command, args []
 		}
 
 		cliCtx.PrintResponse = true
-		cliCtx.ResponseHandler = utils2.PrintCLIResponse_StringData
 
 		return utils.CompleteAndBroadcastTxCLI(txBldr, cliCtx, []sdk.Msg{msg})
 	}
@@ -127,7 +124,6 @@ func GetCmdTryExec(cdc *codec.Codec) *cobra.Command {
 			}
 
 			cliCtx.PrintResponse = true
-			cliCtx.ResponseHandler = utils2.PrintCLIResponse_StringData
 
 			return utils.CompleteAndBroadcastTxCLI(txBldr, cliCtx, []sdk.Msg{msg})
 		},

@@ -69,8 +69,8 @@ func (keeper Keeper) Propose(ctx sdk.Context, proposer sdk.AccAddress, action Pr
 	keeper.storeProposal(ctx, id, &prop)
 
 	res.Tags = res.Tags.
-		AppendTag("proposal.id", []byte(bech)).
-		AppendTag("proposal.action", []byte(action.Type()))
+		AppendTag("proposal.id", bech).
+		AppendTag("proposal.action", action.Type())
 
 	return res
 }
@@ -159,8 +159,8 @@ func (keeper Keeper) Vote(ctx sdk.Context, proposalId []byte, voter sdk.AccAddre
 
 	return sdk.Result{Code: sdk.CodeOK,
 		Tags: sdk.EmptyTags().
-			AppendTag("proposal.id", []byte(mustEncodeProposalIDBech32(proposalId))).
-			AppendTag("proposal.action", []byte(proposal.Action.Type())),
+			AppendTag("proposal.id", mustEncodeProposalIDBech32(proposalId)).
+			AppendTag("proposal.action", proposal.Action.Type()),
 	}
 }
 
@@ -206,6 +206,6 @@ func (keeper Keeper) Withdraw(ctx sdk.Context, proposalId []byte, proposer sdk.A
 
 	return sdk.Result{Code: sdk.CodeOK,
 		Tags: sdk.EmptyTags().
-			AppendTag("proposal.id", []byte(mustEncodeProposalIDBech32(proposalId))),
+			AppendTag("proposal.id", mustEncodeProposalIDBech32(proposalId)),
 	}
 }

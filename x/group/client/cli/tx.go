@@ -8,7 +8,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
-	utils2 "gitlab.com/regen-network/regen-ledger/util"
 	"gitlab.com/regen-network/regen-ledger/x/group"
 	"strings"
 )
@@ -77,7 +76,6 @@ func GetCmdCreateGroup(cdc *codec.Codec) *cobra.Command {
 			}
 
 			cliCtx.PrintResponse = true
-			cliCtx.ResponseHandler = utils2.PrintCLIResponse_StringData
 
 			return utils.CompleteAndBroadcastTxCLI(txBldr, cliCtx, []sdk.Msg{msg})
 		},

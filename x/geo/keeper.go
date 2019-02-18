@@ -52,7 +52,7 @@ func (keeper Keeper) StoreGeometry(ctx sdk.Context, geometry Geometry) sdk.Resul
 	}
 	store.Set(hashBz, bz)
 	tags := sdk.EmptyTags()
-	tags = tags.AppendTag("geo.id", []byte(util.MustEncodeBech32(Bech32Prefix, hashBz)))
+	tags = tags.AppendTag("geo.id", util.MustEncodeBech32(Bech32Prefix, hashBz))
 	return sdk.Result{Tags: tags}
 }
 

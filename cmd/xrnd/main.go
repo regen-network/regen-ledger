@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/privval"
 	"io"
 	"io/ioutil"
@@ -52,7 +53,7 @@ func main() {
 	rootCmd.AddCommand(InitCmd(ctx, cdc))
 	rootCmd.AddCommand(AddGenesisAccountCmd(ctx, cdc))
 
-	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
+	server.AddCommands(ctx, cdc, rootCmd, newApp, appExporter())
 
 	// prepare and add flags
 	executor := cli.PrepareBaseCmd(rootCmd, "XRN", DefaultNodeHome)
@@ -67,10 +68,12 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 	return app.NewXrnApp(logger, db)
 }
 
-func exportAppStateAndTMValidators(logger log.Logger, db dbm.DB, _ io.Writer, _ int64, _ bool) (
-	json.RawMessage, []tmtypes.GenesisValidator, error) {
-	dapp := app.NewXrnApp(logger, db)
-	return dapp.ExportAppStateAndValidators()
+func appExporter() server.AppExporter {
+	return func(logger log.Logger, db dbm.DB, _ io.Writer, _ int64, _ bool, _ []string) (
+		json.RawMessage, []tmtypes.GenesisValidator, error) {
+		dapp := app.NewXrnApp(logger, db)
+		return dapp.ExportAppStateAndValidators()
+	}
 }
 
 // InitCmd initializes all files for tendermint and application
@@ -108,7 +111,7 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 			pk := privval.LoadOrGenFilePV(config.PrivValidatorKeyFile(),
 				config.PrivValidatorStateFile()).GetPubKey()
 
-			_, _, validator, err := server.SimpleAppGenTx(cdc, pk)
+			_, _, validator, err := SimpleAppGenTx(cdc, pk)
 			if err != nil {
 				return err
 			}
@@ -190,4 +193,37 @@ $ xrnd add-genesis-account cosmos1tse7r2fadvlrrgau3pa0ss7cqh55wrv6y9alwh 1000STA
 		},
 	}
 	return cmd
+}
+
+// SimpleAppGenTx returns a simple GenTx command that makes the node a validator from the start
+func SimpleAppGenTx(cdc *codec.Codec, pk crypto.PubKey) (
+	appGenTx, cliPrint json.RawMessage, validator tmtypes.GenesisValidator, err error) {
+
+	addr, secret, err := server.GenerateCoinKey()
+	if err != nil {
+		return
+	}
+
+	bz, err := cdc.MarshalJSON(struct {
+		Addr sdk.AccAddress `json:"addr"`
+	}{addr})
+	if err != nil {
+		return
+	}
+
+	appGenTx = json.RawMessage(bz)
+
+	bz, err = cdc.MarshalJSON(map[string]string{"secret": secret})
+	if err != nil {
+		return
+	}
+
+	cliPrint = json.RawMessage(bz)
+
+	validator = tmtypes.GenesisValidator{
+		PubKey: pk,
+		Power:  10,
+	}
+
+	return
 }

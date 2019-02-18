@@ -9,7 +9,7 @@ require (
 	github.com/bgentry/speakeasy v0.1.0
 	github.com/btcsuite/btcd v0.0.0-20181130015935-7d2daa5bfef2
 	github.com/btcsuite/btcutil v0.0.0-20180706230648-ab6388e0c60a
-	github.com/cosmos/cosmos-sdk v0.30.0
+	github.com/cosmos/cosmos-sdk v0.32.0
 	github.com/cosmos/go-bip39 v0.0.0-20180618194314-52158e4697b8
 	github.com/davecgh/go-spew v1.1.1
 	github.com/fsnotify/fsnotify v1.4.7
@@ -51,7 +51,7 @@ require (
 	github.com/tendermint/btcd v0.0.0-20180816174608-e5840949ff4f
 	github.com/tendermint/go-amino v0.14.1
 	github.com/tendermint/iavl v0.12.0
-	github.com/tendermint/tendermint v0.29.1
+	github.com/tendermint/tendermint v0.30.0
 	github.com/twpayne/go-geom v1.0.4
 	github.com/zondax/ledger-cosmos-go v0.9.2
 	golang.org/x/crypto v0.0.0-20190211182817-74369b46fc67
@@ -64,7 +64,5 @@ require (
 )
 
 replace golang.org/x/crypto => github.com/tendermint/crypto v0.0.0-20180820045704-3764759f34a5
-
-replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.19.1-0.20190129211355-6e1f27eea179 // indirect
 
 // replace github.com/DATA-DOG/godog => github.com/regen-network/godog v0.0.0-0.20190215155814-31cb7bc0e9a6bdc4c3116e54eecbc6ce453d9a2b

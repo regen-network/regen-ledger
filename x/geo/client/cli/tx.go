@@ -11,7 +11,6 @@ import (
 	"github.com/twpayne/go-geom"
 	"github.com/twpayne/go-geom/encoding/ewkb"
 	"github.com/twpayne/go-geom/encoding/geojson"
-	utils2 "gitlab.com/regen-network/regen-ledger/util"
 	"gitlab.com/regen-network/regen-ledger/x/geo"
 )
 
@@ -59,7 +58,6 @@ func GetCmdStoreGeometry(cdc *codec.Codec) *cobra.Command {
 			}
 
 			cliCtx.PrintResponse = true
-			cliCtx.ResponseHandler = utils2.PrintCLIResponse_StringData
 
 			return utils.CompleteAndBroadcastTxCLI(txBldr, cliCtx, []sdk.Msg{msg})
 		},
