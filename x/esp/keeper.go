@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab.com/regen-network/regen-ledger/utils"
+	"gitlab.com/regen-network/regen-ledger/util"
 	"gitlab.com/regen-network/regen-ledger/x/geo"
 	"gitlab.com/regen-network/regen-ledger/x/group"
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
@@ -177,6 +177,6 @@ func (keeper Keeper) ReportESPResult(ctx sdk.Context, result ESPResult, signers 
 		Code: sdk.CodeOK,
 		Tags: sdk.EmptyTags().
 			AppendTag("esp.id", []byte(espVersionId(result.Curator, result.Name, result.Version))).
-			AppendTag("esp.result", []byte(utils.MustEncodeBech32("espr", hashBz))),
+			AppendTag("esp.result", []byte(util.MustEncodeBech32("espr", hashBz))),
 	}
 }

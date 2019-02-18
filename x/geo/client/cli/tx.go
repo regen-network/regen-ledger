@@ -11,7 +11,7 @@ import (
 	"github.com/twpayne/go-geom"
 	"github.com/twpayne/go-geom/encoding/ewkb"
 	"github.com/twpayne/go-geom/encoding/geojson"
-	utils2 "gitlab.com/regen-network/regen-ledger/utils"
+	utils2 "gitlab.com/regen-network/regen-ledger/util"
 	"gitlab.com/regen-network/regen-ledger/x/geo"
 )
 

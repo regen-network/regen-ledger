@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
-	utils2 "gitlab.com/regen-network/regen-ledger/utils"
+	utils2 "gitlab.com/regen-network/regen-ledger/util"
 	"gitlab.com/regen-network/regen-ledger/x/group"
 	"strings"
 )

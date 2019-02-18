@@ -2,7 +2,7 @@ package cli
 
 import (
 	"github.com/spf13/cobra"
-	utils2 "gitlab.com/regen-network/regen-ledger/utils"
+	utils2 "gitlab.com/regen-network/regen-ledger/util"
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
