@@ -1,0 +1,158 @@
+* FSM approach
+
+#+BEGIN_SRC go
+  // A contract template
+  type Contract struct {
+    States []State
+  }
+  
+  type State struct {
+    Name string
+    // Sparql CONSTRUCT's that should be executed
+    // when entering this state
+    OnEnter []string
+    // Sparql CONSTRUCT's that should be executed
+    // when re-entering this state
+    OnReEnter []string
+    // Sparql select that should be executed when entering or
+    // re-entering this state to get the next transition time
+    // (the time when the transition clauses should be executed
+    // until one of them succeeds or they all fail and a re-enter
+    // occurs)
+    GetTransitionTime string
+    Transitions []Transition
+  }
+  
+  type Transition struct {
+    // state this transition would go to
+    To string
+    // Sparql ASK query that returns true if the state
+    // transition should go forward
+    ShouldTransition string
+    // Sparql CONSTRUCT's that should be executed
+    // when exiting this state on this transition branch
+    OnExit []string
+  }
+  
+  type ContractState struct {
+    balance sdk.Coins
+    state string
+    // The parameters the contract instance was initialized with
+    parameters string
+    nextTransitionTime time.Time
+  }
+#+END_SRC go
+
+#+BEGIN_SRC trig
+_:a a xrn:DepositRecepit ;
+  xrn:to <xrn:address0123456> ;
+  xrn:coins [
+    xrn:denom "XRN" .
+    xrn:amount 1234 .
+  ].
+
+_:b a xrn:EscrowInitializer ;
+  xrn:contractTemplate <xrn:contract1234> ;
+  xrn:contractParams _:params ;
+  xrn:coins [
+    xrn:denom "XRN" .
+    xrn:amount 2345 .
+  ].
+
+_:params {
+  
+}
+#+END_SRC
+
+** Sparql ASK and CONSTRUCT
+   Sparql ASK and CONSTRUCT are basic building blocks of this approach to constructs, with ASK queries being the boolean condition that guards transition between states and CONSTRUCT expressions being used to create events such as payments, minting, contract creation, and claim signing on state transitions.
+* Minimum Knowledge State Machine Approach
+  This approach could work with the above state machine approach but offloads the whole knowledge of code to just some data that gets pointed to and maybe has a schema. There needs to be specification on what valid code formats are for oracle consensus, but the blockchain itself only needs to know pointers to the code and current state and receive the actions that occur on transitions.
+
+#+BEGIN_SRC go
+  type ProcessingState int
+  
+  const (
+    CanAcceptInput ProcessingState = 0
+    Transitioning
+    ChallengeWindow
+    Finalized
+  )
+  
+  type ContractState struct {
+    balance sdk.Coins
+    code data.DataID
+    contractState data.DataID
+    processingState ProcessingState
+    capabilities []ActionCapability
+    // TODO transition/challenge time window
+    // TODO oracle requirements
+    // TODO arbiter
+  }
+#+END_SRC go
+
+** Contract Actions
+   
+#+BEGIN_SRC go
+  type ActorID []byte
+  
+  // Wraps both agents and contracts which can have capabilities
+  type ActorKeeper interface {
+    func Delegate(actor ActorID, capabilities []ActionCapability)
+    // TODO Undelegate
+  }
+  
+  type Action interface {
+  }
+  
+  type ActionCapability {
+    // Whether the specified action is allowed by this capability
+    func Accept(action Action) Bool
+    // Whether capability is a sub-capability of this capability
+    func IsSubCapability(capability ActionCapability) Bool
+    // TODO return who delegated the capability so it can be undelegated
+    func Delegator() interface{}
+    // or maybe:
+    func CanUndelegate (credential interface{}) Bool
+  }
+
+  type SendAction struct {
+  }
+  
+  type SendActionCapability struct {
+    Account sdk.AccAddress
+  }
+  
+  type IssueESPResultAction struct {
+    Geo GeoID
+    ESP ESP_ID
+    Claim DataID
+  }
+  
+  type IssueESPResultActionCapability struct {
+  }
+  
+  // issues a credential to some identity (key or address), probably just sdk.AccAddress
+  type IssueCredentialAction struct {
+    Subject sdk.AccAddress
+    Credential CredentialID
+    Claim DataID
+  }
+  
+  type MintAction struct {
+  }
+  
+  type CreateContractAction struct {
+    Code data.DataID
+    InitialState data.DataID
+    Capabilities []ActionCapability
+    // TODO initial coins
+  }
+  
+  type DelegateAction struct {
+    Capabilities []ActionCapability
+  }
+  
+  type UndelegateAction struct {
+  }
+#+END_SRC go

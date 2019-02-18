@@ -1,6 +1,7 @@
 module gitlab.com/regen-network/regen-ledger
 
 require (
+	github.com/DATA-DOG/godog v0.7.10
 	github.com/ZondaX/hid-go v0.4.0
 	github.com/ZondaX/ledger-go v0.4.0
 	github.com/bartekn/go-bip39 v0.0.0-20171116152956-a05967ea095d
@@ -53,15 +54,17 @@ require (
 	github.com/tendermint/tendermint v0.29.1
 	github.com/twpayne/go-geom v1.0.4
 	github.com/zondax/ledger-cosmos-go v0.9.2
-	golang.org/x/crypto v0.0.0-20170930174604-9419663f5a44
-	golang.org/x/net v0.0.0-20181106065722-10aee1819953
+	golang.org/x/crypto v0.0.0-20190211182817-74369b46fc67
+	golang.org/x/net v0.0.0-20190213061140-3a22650c66bd
 	golang.org/x/sys v0.0.0-20181128092732-4ed8d59d0b35
-	golang.org/x/text v0.3.0
-	google.golang.org/genproto v0.0.0-20181202183823-bd91e49a0898
-	google.golang.org/grpc v1.16.0
+	golang.org/x/text v0.3.1-0.20180807135948-17ff2d5776d2
+	google.golang.org/genproto v0.0.0-20190201180003-4b09977fb922
+	google.golang.org/grpc v1.17.0
 	gopkg.in/yaml.v2 v2.2.2
 )
 
 replace golang.org/x/crypto => github.com/tendermint/crypto v0.0.0-20180820045704-3764759f34a5
 
 replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.19.1-0.20190129211355-6e1f27eea179 // indirect
+
+// replace github.com/DATA-DOG/godog => github.com/regen-network/godog v0.0.0-0.20190215155814-31cb7bc0e9a6bdc4c3116e54eecbc6ce453d9a2b

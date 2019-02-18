@@ -1,0 +1,23 @@
+#+BEGIN_SRC go
+type InitialBalance interface {
+  Address sdk.AccAddress
+  Balance sdk.Int
+}
+
+type TokenId []byte
+
+type TokenKeeper interface {
+  CreateToken(ctx sdk.Context, denom string, minter sdk.AccAddress, initialBalances []InitialBalance)
+  GetSupply(ctx sdk.Context, denom string) sdk.Int
+}
+
+type ActionMint interface {
+  Denom string
+  Amount sdk.Int
+  Address sdk.AccAddress
+}
+
+type MintCapability interface {
+  Denom string
+}
+#+END_SRC go
