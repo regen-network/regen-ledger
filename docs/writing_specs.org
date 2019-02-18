@@ -81,3 +81,6 @@ With these three purposes in mind, specification documents are designed to be us
 ** CLI Tutorial (optional)
    A tutorial walk-through of using the module using the ~xrncli~ command line tool.
 
+* Tests (experimental)
+  Test specifications are to be written in the [[https://docs.cucumber.io/gherkin/][Gherkin]] syntax either in the ~README.org~ specification as Org Babel blocks or on the disk in ~.feature~ files. While Org Babel may make sense during the design phase, it may make sense to remove Gherkin from the specification once it has been implemented and is just serving as documentation. A suitable BDD testing framework such as [[https://cucumber.io][Cucumber]] or [[https://github.com/DATA-DOG/godog][godog]] should be used to execute the specifications. Developers should generally write Gherkin specs and review them together with the rest of the product team. Although Gherkin tests are beneficial from a design communication standpoint, developers should also write [[https://hypothesis.works/articles/quickcheck-in-every-language/][property based tests]] wherever that serves to improve code correctness (it may be possible in the future to [[https://cucumber.io/blog/2017/04/27/property-based-testing][integrate BDD and property based testing]].
+
