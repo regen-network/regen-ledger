@@ -2,7 +2,6 @@ package group
 
 import (
 	"flag"
-	"fmt"
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/colors"
 	"os"

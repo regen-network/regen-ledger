@@ -67,4 +67,4 @@ replace golang.org/x/crypto => github.com/tendermint/crypto v0.0.0-2018082004570
 
 replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.19.1-0.20190129211355-6e1f27eea179 // indirect
 
-replace github.com/DATA-DOG/godog => github.com/regen-network/godog v0.0.0-0.20190215155814-31cb7bc0e9a6bdc4c3116e54eecbc6ce453d9a2b
+// replace github.com/DATA-DOG/godog => github.com/regen-network/godog v0.0.0-0.20190215155814-31cb7bc0e9a6bdc4c3116e54eecbc6ce453d9a2b
