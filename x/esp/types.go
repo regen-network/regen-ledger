@@ -1,6 +1,6 @@
 package esp
 
-import "gitlab.com/regen-network/regen-ledger/x/agent"
+import sdk "github.com/cosmos/cosmos-sdk/types"
 
 //type SchemaType int
 //
@@ -11,23 +11,23 @@ import "gitlab.com/regen-network/regen-ledger/x/agent"
 type ESPVersionSpec struct {
 	//SchemaType SchemaType
 	//Schema string
-	Curator agent.AgentID `json:"curator"`
-	Name string `json:"name"`
-	Version string `json:"version"`
-	Verifiers []agent.AgentID `json:"verifiers"`
+	Curator   sdk.AccAddress   `json:"curator"`
+	Name      string           `json:"name"`
+	Version   string           `json:"version"`
+	Verifiers []sdk.AccAddress `json:"verifiers"`
 	// TODO
-	// * compute functions run by oracles vs agent verifiers
+	// * compute functions run by oracles vs group verifiers
 	// * commission for verifying ESP that goes to curator - simple WASM function
 	//   taking hectares and dates as input
 	// * can we include cost of verification or is that in another subsystem?
 }
 
 type ESPResult struct {
-	Curator agent.AgentID `json:"curator"`
-	Name string `json:"name"`
-	Version string `json:"version"`
-	Verifier agent.AgentID `json:"verifier"`
-	GeoID []byte `json:"geo_id,omitempty"`
-	Data []byte `json:"data"`
+	Curator  sdk.AccAddress `json:"curator"`
+	Name     string         `json:"name"`
+	Version  string         `json:"version"`
+	Verifier sdk.AccAddress `json:"verifier"`
+	GeoID    []byte         `json:"geo_id,omitempty"`
+	Data     []byte         `json:"data"`
 	// TODO link this to data module for either on or off-chain result storage
 }

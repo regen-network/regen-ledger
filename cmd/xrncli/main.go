@@ -24,19 +24,19 @@ import (
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 	cmn "github.com/tendermint/tendermint/libs/common"
 	"gitlab.com/regen-network/regen-ledger"
-	agentclient "gitlab.com/regen-network/regen-ledger/x/agent/client"
 	consortiumclient "gitlab.com/regen-network/regen-ledger/x/consortium/client"
 	dataclient "gitlab.com/regen-network/regen-ledger/x/data/client"
 	datarest "gitlab.com/regen-network/regen-ledger/x/data/client/rest"
 	espclient "gitlab.com/regen-network/regen-ledger/x/esp/client"
 	geoclient "gitlab.com/regen-network/regen-ledger/x/geo/client"
+	agentclient "gitlab.com/regen-network/regen-ledger/x/group/client"
 	proposalclient "gitlab.com/regen-network/regen-ledger/x/proposal/client"
 )
 
 const (
-	storeAcc   = "acc"
-	storeData  = "data"
-	storeAgent = "agent"
+	storeAcc      = "acc"
+	storeData     = "data"
+	storeAgent    = "group"
 	storeProposal = "proposal"
 )
 

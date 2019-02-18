@@ -4,7 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
 	"github.com/tendermint/go-amino"
-	agentcmd "gitlab.com/regen-network/regen-ledger/x/agent/client/cli"
+	agentcmd "gitlab.com/regen-network/regen-ledger/x/group/client/cli"
 )
 
 // ModuleClient exports all client functionality from this module
@@ -20,12 +20,12 @@ func NewModuleClient(storeKey string, cdc *amino.Codec) ModuleClient {
 // GetQueryCmd returns the cli query commands for this module
 func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 	agentQueryCmd := &cobra.Command{
-		Use:   "agent",
-		Short: "Querying commands for the agent module",
+		Use:   "group",
+		Short: "Querying commands for the group module",
 	}
 
 	agentQueryCmd.AddCommand(client.GetCommands(
-		agentcmd.GetCmdGetAgent(mc.storeKey, mc.cdc),
+		agentcmd.GetCmdGetGroup(mc.storeKey, mc.cdc),
 	)...)
 
 	return agentQueryCmd
@@ -34,14 +34,13 @@ func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 // GetTxCmd returns the transaction commands for this module
 func (mc ModuleClient) GetTxCmd() *cobra.Command {
 	agentTxCmd := &cobra.Command{
-		Use:   "agent",
+		Use:   "group",
 		Short: "Agent transactions subcommands",
 	}
 
 	agentTxCmd.AddCommand(client.PostCommands(
-		agentcmd.GetCmdCreateAgent(mc.cdc),
+		agentcmd.GetCmdCreateGroup(mc.cdc),
 	)...)
 
 	return agentTxCmd
 }
-

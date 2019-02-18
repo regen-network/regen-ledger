@@ -11,9 +11,9 @@ See [Getting Started](docs/getting_started.md).
 
 This Cosmos zone contains the following modules:
 
-* [ESP](x/esp/README.md)
-* [Agent](x/agent/README.md)
-* [Data](x/data/README.md)
+* [ESP](x/esp/README.org)
+* [Group](x/group/README.org)
+* [Data](x/data/README.org)
 
 ## Testnet Status
 

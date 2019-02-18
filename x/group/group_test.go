@@ -1,4 +1,4 @@
-package agent
+package group
 
 import (
 	"flag"
@@ -43,6 +43,8 @@ func TestMain(m *testing.M) {
 	}
 	os.Exit(status)
 }
+
+var pubKey []byte
 
 func aPublicKeyAddress() error {
 	return godog.ErrPending

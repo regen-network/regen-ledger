@@ -8,40 +8,40 @@ import (
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
 	"github.com/spf13/cobra"
 	utils2 "gitlab.com/regen-network/regen-ledger/utils"
-	"gitlab.com/regen-network/regen-ledger/x/agent"
+	"gitlab.com/regen-network/regen-ledger/x/group"
+	"strings"
 )
 
-func addrsFromBech32Array(arr []string) []sdk.AccAddress {
+func membersFromArray(arr []string) []group.Member {
 	n := len(arr)
-	res := make([]sdk.AccAddress, n)
+	res := make([]group.Member, n)
 	for i := 0; i < n; i++ {
-		str := arr[i]
-		acc, err := sdk.AccAddressFromBech32(str)
+		strs := strings.Split(arr[i], "=")
+		if len(strs) <= 0 {
+			panic("empty array")
+		}
+		acc, err := sdk.AccAddressFromBech32(strs[0])
 		if err != nil {
 			panic(err)
 		}
-		res[i] = acc
+		mem := group.Member{Address: acc}
+		if len(strs) == 2 {
+			mem.Weight.SetString(strs[1], 10)
+		} else {
+			mem.Weight.SetInt64(1)
+		}
+		res[i] = mem
 	}
 	return res
 }
 
-func AgentsFromArray(arr []string) []agent.AgentID {
-	n := len(arr)
-	res := make([]agent.AgentID, n)
-	for i := 0; i < n; i++ {
-		res[i] = agent.MustDecodeBech32AgentID(arr[i])
-	}
-	return res
-}
-
-func GetCmdCreateAgent(cdc *codec.Codec) *cobra.Command {
-	var threshold int
-	var addrs []string
-	var agents []string
+func GetCmdCreateGroup(cdc *codec.Codec) *cobra.Command {
+	var threshold int64
+	var members []string
 
 	cmd := &cobra.Command{
 		Use:   "create",
-		Short: "create an agent",
+		Short: "create an group",
 		//Args:  cobra.MinimumNArgs(1),
 		PreRun: func(cmd *cobra.Command, args []string) {
 
@@ -57,14 +57,12 @@ func GetCmdCreateAgent(cdc *codec.Codec) *cobra.Command {
 
 			account := cliCtx.GetFromAddress()
 
-			info := agent.AgentInfo{
-				AuthPolicy:        agent.MultiSig,
-				MultisigThreshold: threshold,
-				Addresses:         addrsFromBech32Array(addrs),
-				Agents:            AgentsFromArray(agents),
+			info := group.Group{
+				Members: membersFromArray(members),
 			}
+			info.DecisionThreshold.SetInt64(threshold)
 
-			msg := agent.NewMsgCreateAgent(info, account)
+			msg := group.NewMsgCreateGroup(info, account)
 			err := msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -77,9 +75,8 @@ func GetCmdCreateAgent(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().IntVar(&threshold, "threshold", 0, "Multisig threshold")
-	cmd.Flags().StringArrayVar(&addrs, "addrs", []string{}, "Address")
-	cmd.Flags().StringArrayVar(&agents, "agents", []string{}, "Agents")
+	cmd.Flags().Int64Var(&threshold, "decision-threshold", 0, "Decision threshold")
+	cmd.Flags().StringArrayVar(&members, "members", []string{}, "Members")
 
 	return cmd
 }
