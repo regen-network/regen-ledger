@@ -2,8 +2,8 @@ package group
 
 import (
 	"encoding/json"
+	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"math/big"
 )
 
 func NewMsgCreateGroup(group Group, signer sdk.AccAddress) MsgCreateGroup {
@@ -21,8 +21,8 @@ func (info Group) ValidateBasic() sdk.Error {
 	if len(info.Members) <= 0 {
 		return sdk.ErrUnknownRequest("Group must reference a non-empty set of members")
 	}
-	if info.DecisionThreshold.Cmp(big.NewInt(0)) <= 0 {
-		return sdk.ErrUnknownRequest("DecisionThreshold must be a positive integer")
+	if !info.DecisionThreshold.IsPositive() {
+		return sdk.ErrUnknownRequest(fmt.Sprintf("DecisionThreshold must be a positive integer, got %s", info.DecisionThreshold.String()))
 	}
 	return nil
 }

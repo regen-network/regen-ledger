@@ -5,8 +5,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"math/big"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -100,7 +98,7 @@ func (keeper Keeper) Authorize(ctx sdk.Context, address sdk.AccAddress, signers 
 }
 
 func (keeper Keeper) AuthorizeGroupInfo(ctx sdk.Context, info *Group, signers []sdk.AccAddress) bool {
-	voteCount := big.NewInt(0)
+	voteCount := sdk.NewInt(0)
 	sigThreshold := info.DecisionThreshold
 
 	nMembers := len(info.Members)
@@ -111,8 +109,9 @@ func (keeper Keeper) AuthorizeGroupInfo(ctx sdk.Context, info *Group, signers []
 		for j := 0; j < nSigners; j++ {
 			ctx.GasMeter().ConsumeGas(10, "check addr")
 			if bytes.Compare(mem.Address, signers[j]) == 0 || keeper.Authorize(ctx, mem.Address, signers) {
-				voteCount = voteCount.Add(voteCount, &mem.Weight)
-				if voteCount.Cmp(&sigThreshold) >= 0 {
+				voteCount = voteCount.Add(mem.Weight)
+				diff := voteCount.Sub(sigThreshold)
+				if diff.IsZero() || diff.IsPositive() {
 					return true
 				}
 				break

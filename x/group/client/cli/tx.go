@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -24,11 +25,17 @@ func membersFromArray(arr []string) []group.Member {
 		if err != nil {
 			panic(err)
 		}
-		mem := group.Member{Address: acc}
+		mem := group.Member{
+			Address: acc,
+		}
 		if len(strs) == 2 {
-			mem.Weight.SetString(strs[1], 10)
+			var ok bool
+			mem.Weight, ok = sdk.NewIntFromString(strs[1])
+			if !ok {
+				panic(fmt.Errorf("invalid weight: %s", strs[i]))
+			}
 		} else {
-			mem.Weight.SetInt64(1)
+			mem.Weight = sdk.NewInt(1)
 		}
 		res[i] = mem
 	}
@@ -58,11 +65,12 @@ func GetCmdCreateGroup(cdc *codec.Codec) *cobra.Command {
 			account := cliCtx.GetFromAddress()
 
 			info := group.Group{
-				Members: membersFromArray(members),
+				Members:           membersFromArray(members),
+				DecisionThreshold: sdk.NewInt(threshold),
 			}
-			info.DecisionThreshold.SetInt64(threshold)
 
 			msg := group.NewMsgCreateGroup(info, account)
+			fmt.Printf("%+v\n", msg)
 			err := msg.ValidateBasic()
 			if err != nil {
 				return err
@@ -75,7 +83,7 @@ func GetCmdCreateGroup(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Int64Var(&threshold, "decision-threshold", 0, "Decision threshold")
+	cmd.Flags().Int64Var(&threshold, "decision-threshold", 1, "Decision threshold")
 	cmd.Flags().StringArrayVar(&members, "members", []string{}, "Members")
 
 	return cmd
