@@ -76,9 +76,9 @@ type xrnApp struct {
 func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 
 	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount(sdk.Bech32PrefixAccAddr, sdk.Bech32PrefixAccPub)
-	config.SetBech32PrefixForValidator(sdk.Bech32PrefixValAddr, sdk.Bech32PrefixValPub)
-	config.SetBech32PrefixForConsensusNode(sdk.Bech32PrefixConsAddr, sdk.Bech32PrefixConsPub)
+	config.SetBech32PrefixForAccount(Bech32PrefixAccAddr, Bech32PrefixAccPub)
+	config.SetBech32PrefixForValidator(Bech32PrefixValAddr, Bech32PrefixValPub)
+	config.SetBech32PrefixForConsensusNode(Bech32PrefixConsAddr, Bech32PrefixConsPub)
 	config.Seal()
 
 	// First define the top level codec that will be shared by the different modules
