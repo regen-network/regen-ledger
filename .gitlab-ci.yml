@@ -14,7 +14,7 @@ test:
   image: golang:1.11.5
   script:
     - GOFLAGS=-cover make test
-  coverage: '\d+.\d+% of statements'
+  coverage: '/\d+.\d+% of statements/'
   artifacts:
     reports:
       junit: "TEST_*.xml"
