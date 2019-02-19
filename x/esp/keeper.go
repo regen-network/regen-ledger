@@ -1,23 +1,23 @@
 package esp
 
 import (
+	"bytes"
 	"encoding/hex"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab.com/regen-network/regen-ledger/utils"
-	"gitlab.com/regen-network/regen-ledger/x/agent"
-	"gitlab.com/regen-network/regen-ledger/x/proposal"
+	"gitlab.com/regen-network/regen-ledger/util"
 	"gitlab.com/regen-network/regen-ledger/x/geo"
+	"gitlab.com/regen-network/regen-ledger/x/group"
+	"gitlab.com/regen-network/regen-ledger/x/proposal"
 	"golang.org/x/crypto/blake2b"
-
 	//"github.com/twpayne/go-geom/encoding/ewkb"
 )
 
 type Keeper struct {
 	storeKey sdk.StoreKey
 
-	agentKeeper agent.Keeper
+	agentKeeper group.Keeper
 
 	geoKeeper geo.Keeper
 
@@ -28,13 +28,13 @@ func (keeper Keeper) CheckProposal(ctx sdk.Context, action proposal.ProposalActi
 	switch action := action.(type) {
 	case ActionRegisterESPVersion:
 		return true, sdk.Result{
-			Tags: sdk.EmptyTags().AppendTag("proposal.agent", []byte(agent.MustEncodeBech32AgentID(action.Curator))),
+			Tags: sdk.EmptyTags().AppendTag("proposal.group", action.Curator.String()),
 		}
 	case ActionReportESPResult:
 		return true, sdk.Result{
 			Tags: sdk.EmptyTags().
-				AppendTag("proposal.agent", []byte(agent.MustEncodeBech32AgentID(action.Verifier))).
-				AppendTag("esp.id", []byte(espVersionId(action.Curator, action.Name, action.Version))),
+				AppendTag("proposal.group", action.Verifier.String()).
+				AppendTag("esp.id", espVersionId(action.Curator, action.Name, action.Version)),
 		}
 	default:
 		return false, sdk.Result{Code: sdk.CodeUnknownRequest}
@@ -55,19 +55,19 @@ func (keeper Keeper) HandleProposal(ctx sdk.Context, action proposal.ProposalAct
 
 func NewKeeper(
 	storeKey sdk.StoreKey,
-	agentKeeper agent.Keeper,
+	agentKeeper group.Keeper,
 	geoKeeper geo.Keeper,
 	cdc *codec.Codec) Keeper {
 	return Keeper{
 		storeKey:    storeKey,
 		agentKeeper: agentKeeper,
-		geoKeeper: geoKeeper,
+		geoKeeper:   geoKeeper,
 		cdc:         cdc,
 	}
 }
 
-func espVersionId(curator agent.AgentID, name string, version string) string {
-	return fmt.Sprintf("esp:%s/%s/%s", agent.MustEncodeBech32AgentID(curator), name, version)
+func espVersionId(curator sdk.AccAddress, name string, version string) string {
+	return fmt.Sprintf("esp:%s/%s/%s", curator.String(), name, version)
 }
 
 func (keeper Keeper) RegisterESPVersion(ctx sdk.Context, spec ESPVersionSpec, signers []sdk.AccAddress) sdk.Result {
@@ -96,11 +96,11 @@ func (keeper Keeper) RegisterESPVersion(ctx sdk.Context, spec ESPVersionSpec, si
 
 	return sdk.Result{
 		Code: sdk.CodeOK,
-		Tags: sdk.EmptyTags().AppendTag("esp.id", []byte(id)),
+		Tags: sdk.EmptyTags().AppendTag("esp.id", id),
 	}
 }
 
-func (keeper Keeper) GetESPVersion(ctx sdk.Context, curator agent.AgentID, name string, version string) (spec ESPVersionSpec, err sdk.Error) {
+func (keeper Keeper) GetESPVersion(ctx sdk.Context, curator sdk.AccAddress, name string, version string) (spec ESPVersionSpec, err sdk.Error) {
 	key := espVersionId(curator, name, version)
 	store := ctx.KVStore(keeper.storeKey)
 	bz := store.Get([]byte(key))
@@ -133,7 +133,7 @@ func (keeper Keeper) ReportESPResult(ctx sdk.Context, result ESPResult, signers 
 	n := len(verifiers)
 
 	for i := 0; i < n; i++ {
-		if result.Verifier == verifiers[i] {
+		if bytes.Compare(result.Verifier, verifiers[i]) == 0 {
 			canVerify = true
 			break
 		}
@@ -161,7 +161,6 @@ func (keeper Keeper) ReportESPResult(ctx sdk.Context, result ESPResult, signers 
 		}
 	}
 
-
 	// TODO verify schema
 
 	store := ctx.KVStore(keeper.storeKey)
@@ -177,7 +176,7 @@ func (keeper Keeper) ReportESPResult(ctx sdk.Context, result ESPResult, signers 
 	return sdk.Result{
 		Code: sdk.CodeOK,
 		Tags: sdk.EmptyTags().
-			AppendTag("esp.id", []byte(espVersionId(result.Curator, result.Name, result.Version))).
-			AppendTag("esp.result", []byte(utils.MustEncodeBech32("espr", hashBz))),
+			AppendTag("esp.id", espVersionId(result.Curator, result.Name, result.Version)).
+			AppendTag("esp.result", util.MustEncodeBech32("espr", hashBz)),
 	}
 }

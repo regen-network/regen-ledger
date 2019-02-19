@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab.com/regen-network/regen-ledger/utils"
+	"gitlab.com/regen-network/regen-ledger/util"
 	"golang.org/x/crypto/blake2b"
 )
 
@@ -24,11 +24,11 @@ const (
 )
 
 func mustEncodeProposalIDBech32(id []byte) string {
-	return utils.MustEncodeBech32(Bech32Prefix, id)
+	return util.MustEncodeBech32(Bech32Prefix, id)
 }
 
 func MustDecodeProposalIDBech32(bech string) []byte {
-	hrp, id := utils.MustDecodeBech32(bech)
+	hrp, id := util.MustDecodeBech32(bech)
 	if hrp != Bech32Prefix {
 		panic(fmt.Sprintf("Expected bech32 prefix %s", Bech32Prefix))
 	}
@@ -69,8 +69,8 @@ func (keeper Keeper) Propose(ctx sdk.Context, proposer sdk.AccAddress, action Pr
 	keeper.storeProposal(ctx, id, &prop)
 
 	res.Tags = res.Tags.
-		AppendTag("proposal.id", []byte(bech)).
-		AppendTag("proposal.action", []byte(action.Type()))
+		AppendTag("proposal.id", bech).
+		AppendTag("proposal.action", action.Type())
 
 	return res
 }
@@ -159,8 +159,8 @@ func (keeper Keeper) Vote(ctx sdk.Context, proposalId []byte, voter sdk.AccAddre
 
 	return sdk.Result{Code: sdk.CodeOK,
 		Tags: sdk.EmptyTags().
-			AppendTag("proposal.id", []byte(mustEncodeProposalIDBech32(proposalId))).
-			AppendTag("proposal.action", []byte(proposal.Action.Type())),
+			AppendTag("proposal.id", mustEncodeProposalIDBech32(proposalId)).
+			AppendTag("proposal.action", proposal.Action.Type()),
 	}
 }
 
@@ -206,6 +206,6 @@ func (keeper Keeper) Withdraw(ctx sdk.Context, proposalId []byte, proposer sdk.A
 
 	return sdk.Result{Code: sdk.CodeOK,
 		Tags: sdk.EmptyTags().
-			AppendTag("proposal.id", []byte(mustEncodeProposalIDBech32(proposalId))),
+			AppendTag("proposal.id", mustEncodeProposalIDBech32(proposalId)),
 	}
 }

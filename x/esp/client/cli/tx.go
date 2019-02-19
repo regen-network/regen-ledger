@@ -1,9 +1,8 @@
 package cli
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
-	"gitlab.com/regen-network/regen-ledger/x/agent"
-	agentcli "gitlab.com/regen-network/regen-ledger/x/agent/client/cli"
 	"gitlab.com/regen-network/regen-ledger/x/esp"
 	"gitlab.com/regen-network/regen-ledger/x/geo"
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
@@ -15,17 +14,34 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 )
 
+func addrsFromBech32Array(arr []string) []sdk.AccAddress {
+	n := len(arr)
+	res := make([]sdk.AccAddress, n)
+	for i := 0; i < n; i++ {
+		str := arr[i]
+		acc, err := sdk.AccAddressFromBech32(str)
+		if err != nil {
+			panic(err)
+		}
+		res[i] = acc
+	}
+	return res
+}
+
 func GetCmdProposeVersion(cdc *codec.Codec) *cobra.Command {
 	var verifiers []string
 
 	cmd := proposalcli.GetCmdPropose(cdc, func(cmd *cobra.Command, args []string) (action proposal.ProposalAction, e error) {
-		curator := agent.MustDecodeBech32AgentID(args[0])
+		curator, e := sdk.AccAddressFromBech32(args[0])
+		if e != nil {
+			return action, e
+		}
 
 		name := args[1]
 
 		version := args[2]
 
-		verifierAgents := agentcli.AgentsFromArray(verifiers)
+		verifierAgents := addrsFromBech32Array(verifiers)
 
 		return esp.ActionRegisterESPVersion{
 			ESPVersionSpec: esp.ESPVersionSpec{
@@ -40,19 +56,25 @@ func GetCmdProposeVersion(cdc *codec.Codec) *cobra.Command {
 	cmd.Args = cobra.ExactArgs(3)
 	cmd.Use = "propose-version <curator> <name> <version> --verifiers <verifiers-list>"
 	cmd.Short = "Propose an ESP version"
-	cmd.Flags().StringArrayVar(&verifiers, "verifiers", []string{}, "ESP verifier agent ID's")
+	cmd.Flags().StringArrayVar(&verifiers, "verifiers", []string{}, "ESP verifier group ID's")
 	return cmd
 }
 
 func GetCmdReportResult(cdc *codec.Codec) *cobra.Command {
 	cmd := proposalcli.GetCmdPropose(cdc, func(cmd *cobra.Command, args []string) (action proposal.ProposalAction, e error) {
-		curator := agent.MustDecodeBech32AgentID(args[0])
+		curator, e := sdk.AccAddressFromBech32(args[0])
+		if e != nil {
+			return action, e
+		}
 
 		name := args[1]
 
 		version := args[2]
 
-		verifier := agent.MustDecodeBech32AgentID(args[3])
+		verifier, e := sdk.AccAddressFromBech32(args[3])
+		if e != nil {
+			return action, e
+		}
 
 		geoId := geo.MustDecodeBech32GeoID(args[4])
 

@@ -1,7 +1,6 @@
-package data
+package group
 
 import (
-	"encoding/hex"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,8 +10,8 @@ import (
 func NewHandler(keeper Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
 		switch msg := msg.(type) {
-		case MsgStoreData:
-			return handleMsgStoreData(ctx, keeper, msg)
+		case MsgCreateGroup:
+			return handleMsgCreateGroup(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("Unrecognized data Msg type: %v", msg.Type())
 			return sdk.ErrUnknownRequest(errMsg).Result()
@@ -20,12 +19,9 @@ func NewHandler(keeper Keeper) sdk.Handler {
 	}
 }
 
-func handleMsgStoreData(ctx sdk.Context, keeper Keeper, msg MsgStoreData) sdk.Result {
-	hash := keeper.StoreData(ctx, msg.Data)
-	tags := sdk.EmptyTags()
-	tags.AppendTag("data.hash", hex.EncodeToString(hash))
+func handleMsgCreateGroup(ctx sdk.Context, keeper Keeper, msg MsgCreateGroup) sdk.Result {
+	id := keeper.CreateGroup(ctx, msg.Data)
 	return sdk.Result{
-		Data: hash,
-		Tags: tags,
+		Tags: sdk.NewTags("group.id", []byte(id.String())),
 	}
 }

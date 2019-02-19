@@ -5,7 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"gitlab.com/regen-network/regen-ledger/x/agent"
+	"gitlab.com/regen-network/regen-ledger/x/group"
 	"gitlab.com/regen-network/regen-ledger/x/proposal"
 	"gitlab.com/regen-network/regen-ledger/x/upgrade"
 )
@@ -13,19 +13,16 @@ import (
 type Keeper struct {
 	storeKey      sdk.StoreKey
 	cdc           *codec.Codec
-	agentKeeper   agent.Keeper
+	agentKeeper   group.Keeper
 	upgradeKeeper upgrade.Keeper
 }
 
-const (
-	consortiumAgentId = 0
-)
-
 var (
-	keyValidators = []byte("validators")
+	consortiumGroupId = group.GroupAddrFromUint64(0)
+	keyValidators     = []byte("validators")
 )
 
-func NewKeeper(storeKey sdk.StoreKey, cdc *codec.Codec, agentKeeper agent.Keeper, upgradeKeeper upgrade.Keeper) Keeper {
+func NewKeeper(storeKey sdk.StoreKey, cdc *codec.Codec, agentKeeper group.Keeper, upgradeKeeper upgrade.Keeper) Keeper {
 	return Keeper{
 		storeKey:      storeKey,
 		cdc:           cdc,
@@ -37,11 +34,11 @@ func NewKeeper(storeKey sdk.StoreKey, cdc *codec.Codec, agentKeeper agent.Keeper
 func (keeper Keeper) CheckProposal(ctx sdk.Context, action proposal.ProposalAction) (bool, sdk.Result) {
 	switch action.(type) {
 	case ActionScheduleUpgrade:
-		return true, sdk.Result{Code:sdk.CodeOK}
+		return true, sdk.Result{Code: sdk.CodeOK}
 	case ActionChangeValidatorSet:
-		return true, sdk.Result{Code:sdk.CodeOK}
+		return true, sdk.Result{Code: sdk.CodeOK}
 	default:
-		return false, sdk.Result{Code:sdk.CodeUnknownRequest}
+		return false, sdk.Result{Code: sdk.CodeUnknownRequest}
 	}
 }
 
@@ -58,7 +55,7 @@ func (keeper Keeper) HandleProposal(ctx sdk.Context, action proposal.ProposalAct
 }
 
 func (keeper Keeper) handleActionScheduleUpgrade(ctx sdk.Context, action ActionScheduleUpgrade, signers []sdk.AccAddress) sdk.Result {
-	if !keeper.agentKeeper.Authorize(ctx, consortiumAgentId, signers) {
+	if !keeper.agentKeeper.Authorize(ctx, consortiumGroupId, signers) {
 		return sdk.Result{Code: sdk.CodeUnauthorized}
 	}
 	keeper.upgradeKeeper.ScheduleUpgrade(ctx, action.UpgradeInfo)

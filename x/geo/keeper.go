@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab.com/regen-network/regen-ledger/utils"
+	"gitlab.com/regen-network/regen-ledger/util"
 	"golang.org/x/crypto/blake2b"
 )
 
@@ -52,12 +52,12 @@ func (keeper Keeper) StoreGeometry(ctx sdk.Context, geometry Geometry) sdk.Resul
 	}
 	store.Set(hashBz, bz)
 	tags := sdk.EmptyTags()
-	tags = tags.AppendTag("geo.id", []byte(utils.MustEncodeBech32(Bech32Prefix, hashBz)))
+	tags = tags.AppendTag("geo.id", util.MustEncodeBech32(Bech32Prefix, hashBz))
 	return sdk.Result{Tags: tags}
 }
 
 func MustDecodeBech32GeoID(bech string) []byte {
-	hrp, bz := utils.MustDecodeBech32(bech)
+	hrp, bz := util.MustDecodeBech32(bech)
 	if hrp != Bech32Prefix {
 		panic(fmt.Sprintf("Bech32 GeoID must start with %s", Bech32Prefix))
 	}

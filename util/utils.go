@@ -1,4 +1,4 @@
-package utils
+package util
 
 import (
 	"github.com/tendermint/tendermint/libs/bech32"
