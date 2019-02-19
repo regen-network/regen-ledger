@@ -13,7 +13,8 @@ build:
 test:
   image: golang:1.11.5
   script:
-    - make test
+    - GOFLAGS=-cover make test
+  coverage: '\d+.\d+% of statements'
   artifacts:
     reports:
       junit: "TEST_*.xml"
