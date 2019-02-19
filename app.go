@@ -141,7 +141,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 
 	app.dataKeeper = data.NewKeeper(app.dataStoreKey, app.schemaKeeper, cdc)
 
-	app.agentKeeper = group.NewKeeper(app.agentStoreKey, cdc)
+	app.agentKeeper = group.NewKeeper(app.agentStoreKey, cdc, app.accountKeeper)
 
 	app.geoKeeper = geo.NewKeeper(app.geoStoreKey, cdc, app.pgIndexer)
 

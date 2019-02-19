@@ -6,19 +6,30 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/tendermint/tendermint/crypto"
 )
 
 type Keeper struct {
 	groupStoreKey sdk.StoreKey
-
-	cdc *codec.Codec
+	cdc           *codec.Codec
+	accountKeeper auth.AccountKeeper
 }
 
-func NewKeeper(groupStoreKey sdk.StoreKey, cdc *codec.Codec) Keeper {
+func NewKeeper(groupStoreKey sdk.StoreKey, cdc *codec.Codec, accountKeeper auth.AccountKeeper) Keeper {
 	return Keeper{
-		groupStoreKey: groupStoreKey,
-		cdc:           cdc,
+		groupStoreKey,
+		cdc,
+		accountKeeper,
 	}
+}
+
+type GroupAccount struct {
+	*auth.BaseAccount
+}
+
+func (acc *GroupAccount) SetPubKey(pubKey crypto.PubKey) error {
+	return fmt.Errorf("cannot set a PubKey on a Group account")
 }
 
 var (
@@ -65,10 +76,20 @@ func (keeper Keeper) getNewGroupId(ctx sdk.Context) sdk.AccAddress {
 	return GroupAddrFromUint64(groupId)
 }
 
-func (keeper Keeper) CreateGroup(ctx sdk.Context, info Group) sdk.AccAddress {
+func (keeper Keeper) CreateGroup(ctx sdk.Context, info Group) (sdk.AccAddress, error) {
 	id := keeper.getNewGroupId(ctx)
 	keeper.setGroupInfo(ctx, id, info)
-	return id
+	acct := &GroupAccount{
+		BaseAccount: &auth.BaseAccount{
+			Address: id,
+		},
+	}
+	existingAcc := keeper.accountKeeper.GetAccount(ctx, id)
+	if existingAcc != nil {
+		return nil, fmt.Errorf("account with address %s already exists", id.String())
+	}
+	keeper.accountKeeper.SetAccount(ctx, acct)
+	return id, nil
 }
 
 func (keeper Keeper) setGroupInfo(ctx sdk.Context, id sdk.AccAddress, info Group) {
