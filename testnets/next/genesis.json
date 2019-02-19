@@ -85,7 +85,7 @@
     "auth": {
       "collected_fees": null,
       "params": {
-        "MemoCostPerByte": "3",
+        "TxSizeCostPerByte": "3",
         "MaxMemoCharacters": "256",
         "TxSigLimit": "7",
         "SigVerifyCostED25519": "590",
