@@ -54,7 +54,7 @@ With these three purposes in mind, specification documents are designed to be us
    - any important behavioral notes for both implementers and users
    - transaction fees and their rationale
    - what ~Tags~ and/or ~Data~ to expect in the transaction response
-   
+    
 *** Org Babel source code
     The code for each message/type should be specified in an [[https://orgmode.org/worg/org-contrib/babel/][Org Babel]] code block that gets tangled into ~types.go~. In the preamble to the ~README.org~ file code block (usually with ~:exports none~) should specify a preamble to ~types.go~ that looks something like this (this code block can and should be used as a snippet to start from):
 
@@ -81,6 +81,5 @@ With these three purposes in mind, specification documents are designed to be us
 ** CLI Tutorial (optional)
    A tutorial walk-through of using the module using the ~xrncli~ command line tool.
 
-* Tests (experimental)
-  Test specifications are to be written in the [[https://docs.cucumber.io/gherkin/][Gherkin]] syntax either in the ~README.org~ specification as Org Babel blocks or on the disk in ~.feature~ files. While Org Babel may make sense during the design phase, it may make sense to remove Gherkin from the specification once it has been implemented and is just serving as documentation. A suitable BDD testing framework such as [[https://cucumber.io][Cucumber]] or [[https://github.com/DATA-DOG/godog][godog]] should be used to execute the specifications. Developers should generally write Gherkin specs and review them together with the rest of the product team. Although Gherkin tests are beneficial from a design communication standpoint, developers should also write [[https://hypothesis.works/articles/quickcheck-in-every-language/][property based tests]] wherever that serves to improve code correctness (it may be possible in the future to [[https://cucumber.io/blog/2017/04/27/property-based-testing][integrate BDD and property based testing]].
-
+* Tests Specifications (experimental)
+  Test specifications can be written in the [[https://docs.cucumber.io/gherkin/][Gherkin]] syntax in ~.feature~ files or as Org Babel in ~README.org~, but ~.feature~ files are preferred for the long term as Gherkin isn't so pretty in documentation. A suitable BDD testing framework such as [[https://cucumber.io][Cucumber]] or [[https://github.com/DATA-DOG/godog][godog]] should be used to execute the specifications. Gherkin specs SHOULD ALWAYS be written by developers and reviewed by the product team and NEVER by developers in isolation. Gherkin-based tests should not be a replacement for other more comprehensive tests that ensure program correctness. Their primary purpose is to serve as a communication tool for aligning product and design. Please read this comment by the creator of Cucumber: https://news.ycombinator.com/item?id=10194242. This is also helpful to give context: http://blog.jonasbandi.net/2010/03/classifying-bdd-tools-unit-test-driven.html.
