@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/tendermint/tendermint/libs/log"
+	"gitlab.com/regen-network/regen-ledger/index"
+	"gitlab.com/regen-network/regen-ledger/index/postgresql"
 	"gitlab.com/regen-network/regen-ledger/x/consortium"
 	"gitlab.com/regen-network/regen-ledger/x/data"
 	"gitlab.com/regen-network/regen-ledger/x/esp"
@@ -71,9 +73,11 @@ type xrnApp struct {
 	upgradeKeeper       upgrade.Keeper
 	consortiumKeeper    consortium.Keeper
 	paramsKeeper        params.Keeper
+
+	pgIndexer index.Indexer
 }
 
-func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
+func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForAccount(Bech32PrefixAccAddr, Bech32PrefixAccPub)
@@ -108,6 +112,17 @@ func NewXrnApp(logger log.Logger, db dbm.DB) *xrnApp {
 		consortiumStoreKey: sdk.NewKVStoreKey("consortium"),
 		keyParams:          sdk.NewKVStoreKey(params.StoreKey),
 		tkeyParams:         sdk.NewTransientStoreKey(params.TStoreKey),
+		pgIndexer:          index.NewNilIndexer(),
+	}
+
+	if len(postgresUrl) != 0 {
+		pgIndexer, err := postgresql.NewIndexer(postgresUrl)
+		if err == nil {
+			app.pgIndexer = pgIndexer
+			logger.Info("Started PostgreSQL Indexer")
+		} else {
+			logger.Error("Error Starting PostgreSQL Indexer", err)
+		}
 	}
 
 	app.paramsKeeper = params.NewKeeper(app.cdc, app.keyParams, app.tkeyParams)
@@ -236,6 +251,37 @@ func (app *xrnApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.Re
 	//validatorUpdates := app.consortiumKeeper.EndBlocker(ctx)
 	//return abci.ResponseEndBlock{ValidatorUpdates: validatorUpdates}
 	return abci.ResponseEndBlock{}
+}
+
+func (app *xrnApp) InitChain(req abci.RequestInitChain) (res abci.ResponseInitChain) {
+	res = app.BaseApp.InitChain(req)
+	app.pgIndexer.OnInitChain(req, res)
+	return res
+}
+
+func (app *xrnApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseBeginBlock) {
+	res = app.BaseApp.BeginBlock(req)
+	app.pgIndexer.OnBeginBlock(req, res)
+	return res
+}
+
+func (app *xrnApp) DeliverTx(txBytes []byte) (res abci.ResponseDeliverTx) {
+	app.pgIndexer.BeforeDeliverTx(txBytes)
+	res = app.BaseApp.DeliverTx(txBytes)
+	app.pgIndexer.AfterDeliverTx(res)
+	return res
+}
+
+func (app *xrnApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBlock) {
+	res = app.BaseApp.EndBlock(req)
+	app.pgIndexer.OnEndBlock(req, res)
+	return res
+}
+
+func (app *xrnApp) Commit() (res abci.ResponseCommit) {
+	res = app.BaseApp.Commit()
+	app.pgIndexer.OnCommit(res)
+	return res
 }
 
 // ExportAppStateAndValidators does the things
