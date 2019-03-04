@@ -16,6 +16,9 @@ type indexer struct {
 	blockHeader abci.Header
 }
 
+// NewIndexer creates a PostgreSQL indexer that does default
+// block and transaction indexing and can be used by keepers
+// for custom indexing.
 func NewIndexer(connString string, txDecoder sdk.TxDecoder) (Indexer, error) {
 	conn, err := sql.Open("postgres", connString)
 	if err != nil {
