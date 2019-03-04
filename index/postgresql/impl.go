@@ -3,7 +3,6 @@ package postgresql
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/lib/pq"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -37,7 +36,6 @@ func (indexer *indexer) Exec(query string, args ...interface{}) {
 }
 
 func (indexer *indexer) OnInitChain(abci.RequestInitChain, abci.ResponseInitChain) {
-	fmt.Println(initSchema)
 	_, err := indexer.conn.Exec(initSchema)
 	if err != nil {
 		panic(err)
@@ -66,12 +64,12 @@ func (indexer *indexer) BeforeDeliverTx(txBytes []byte) {
 	var jsonStr interface{} = nil
 	if err == nil {
 		j, err := json.Marshal(tx)
-		if err != nil {
+		if err == nil {
 			jsonStr = string(j)
 		}
 	}
 	indexer.Exec("INSERT INTO tx (hash, block, bytes, tx_json) VALUES ($1, $2, $3, $4)",
-		hash, txBytes, jsonStr, indexer.blockHeader.Height)
+		hash, indexer.blockHeader.Height, txBytes, jsonStr)
 	indexer.Exec("SAVEPOINT msg_state")
 
 }
@@ -86,7 +84,7 @@ func (indexer *indexer) AfterDeliverTx(txBytes []byte, res abci.ResponseDeliverT
 	indexer.Exec("UPDATE tx SET code = $1, result = $2 WHERE hash = $3",
 		res.Code, res.Data, hash)
 	for _, tag := range res.Tags {
-		indexer.Exec("INSERT INTO tx_tags (block, key, value) VALUES ($1, $2, $3)",
+		indexer.Exec("INSERT INTO tx_tags (tx, key, value) VALUES ($1, $2, $3)",
 			hash, string(tag.Key), string(tag.Value))
 	}
 }
@@ -122,8 +120,8 @@ CREATE TABLE tx (
   hash bytea NOT NULL PRIMARY KEY,
   block BIGINT NOT NULL REFERENCES block,
   bytes bytea NOT NULL,
-  tx_json jsonb NOT NULL,
-  code int NOT NULL,
+  tx_json jsonb,
+  code int,
   result bytea
 );
 
