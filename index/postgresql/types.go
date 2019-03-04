@@ -1,10 +1,9 @@
 package postgresql
 
-import (
-	"database/sql"
-)
+import "gitlab.com/regen-network/regen-ledger/index"
 
-type Indexer struct {
-	conn  *sql.DB
-	curTx *sql.Tx
+type Indexer interface {
+	index.Indexer
+
+	Exec(query string, args ...interface{})
 }

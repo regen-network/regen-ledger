@@ -4,7 +4,6 @@ with lib;
 
 let
   xrndCfg = config.services.xrnd;
-  xrnrestCfg = config.services.xrnrest;
   xrn = (import ./default.nix);
 in
 {
@@ -44,15 +43,19 @@ in
             The node moniker.
           '';
         };
-    };
-    services.xrnrest = {
-      enable =
+      restServer =
         mkOption {
           type = types.bool;
           default = false;
           description = ''
             Whether to run the xrncli REST server.
           '';
+        };
+      postgresIndexUrl =
+        mkOption {
+          type = types.str;
+          default = "";
+          description = "The URL of the Postgres server to index to. Postgres indexing will be disabled if this is not set.";
         };
     };
   };
@@ -83,6 +86,9 @@ in
           script = ''
             xrnd start --moniker ${xrndCfg.moniker} --home ${xrndCfg.home}
           '';
+          environment = {
+            POSTGRES_INDEX_URL = xrndCfg.postgresIndexUrl;
+          };
           serviceConfig = {
             User = "xrnd";
             Group = "xrn";
@@ -91,7 +97,7 @@ in
         };
     })
 
-    (mkIf xrnrestCfg.enable {
+    (mkIf xrndCfg.restServer {
         users.groups.xrn = {};
 
         users.users.xrnrest = {
