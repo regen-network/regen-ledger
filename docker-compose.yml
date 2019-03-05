@@ -1,0 +1,10 @@
+version: '3'
+services:
+  postgres:
+    image: mdillon/postgis:11
+    environment:
+      - POSTGRES_DB=xrn
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./.postgres:/var/lib/postgresql/data

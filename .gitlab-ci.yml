@@ -6,6 +6,7 @@ cache:
     - .go/pkg/mod
 
 build:
+  stage: build
   image: golang:1.11.5
   script:
     - make install
@@ -19,7 +20,18 @@ test:
     reports:
       junit: "TEST_*.xml"
 
-lint:
-  image: golang:1.11.5
-  script:
-    - make lint
+#integration_test:
+#  image: golang:1.11.5
+#  services:
+#    - mdillon/postgis:11
+#  script:
+#    - GOFLAGS=-cover make test
+#  coverage: '/\d+.\d+% of statements/'
+#  artifacts:
+#    reports:
+#      junit: "TEST_*.xml"
+
+#lint:
+#  image: golang:1.11.5
+#  script:
+#    - make lint

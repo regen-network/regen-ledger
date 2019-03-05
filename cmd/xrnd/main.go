@@ -65,13 +65,14 @@ func main() {
 }
 
 func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
-	return app.NewXrnApp(logger, db)
+	pgUrl := os.Getenv("POSTGRES_INDEX_URL")
+	return app.NewXrnApp(logger, db, pgUrl)
 }
 
 func appExporter() server.AppExporter {
 	return func(logger log.Logger, db dbm.DB, _ io.Writer, _ int64, _ bool, _ []string) (
 		json.RawMessage, []tmtypes.GenesisValidator, error) {
-		dapp := app.NewXrnApp(logger, db)
+		dapp := app.NewXrnApp(logger, db, "")
 		return dapp.ExportAppStateAndValidators()
 	}
 }

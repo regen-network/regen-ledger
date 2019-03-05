@@ -1,4 +1,5 @@
 test_output.xml
+.postgres
 
 # Created by https://www.gitignore.io/api/go,vim,emacs,intellij
 # Edit at https://www.gitignore.io/?templates=go,vim,emacs,intellij

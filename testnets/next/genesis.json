@@ -48,19 +48,7 @@
   "app_state": {
     "accounts": [
       {
-        "address": "cosmos1xrsmkqh305m09tc5x73v4t3wtcuqmf6cwzllx3",
-        "coins": [
-          {
-            "denom": "xrn",
-            "amount": "100000000"
-          }
-        ],
-        "public_key": null,
-        "account_number": "0",
-        "sequence": "0"
-      },
-      {
-        "address": "cosmos1s77szsyzh9hk2tkwwh3v39m6jnzzyvjcamt6x7",
+        "address": "xrn:1xrsmkqh305m09tc5x73v4t3wtcuqmf6cgy2taw",
         "coins": [
           {
             "denom": "xrn",
@@ -72,16 +60,7 @@
         "sequence": "0"
       }
     ],
-    "agents": [
-      {
-        "auth_policy": "0",
-        "addresses": [
-          "cosmos1xrsmkqh305m09tc5x73v4t3wtcuqmf6cwzllx3"
-        ],
-        "multisig_threshold": "1",
-        "memo": "consortium"
-      }
-    ],
+    "groups": [],
     "auth": {
       "collected_fees": null,
       "params": {

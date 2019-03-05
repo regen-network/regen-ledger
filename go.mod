@@ -24,6 +24,7 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jmhodges/levigo v0.0.0-20161115193449-c42d9e0ca023 // indirect
+	github.com/lib/pq v1.0.0
 	github.com/magiconair/properties v1.8.0 // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
@@ -51,6 +52,7 @@ require (
 	github.com/twpayne/go-geom v1.0.4
 	github.com/zondax/ledger-cosmos-go v0.9.2 // indirect
 	golang.org/x/crypto v0.0.0-20170930174604-9419663f5a44
+	golang.org/x/lint v0.0.0-20181217174547-8f45f776aaf1 // indirect
 	golang.org/x/net v0.0.0-20190213061140-3a22650c66bd // indirect
 	golang.org/x/sys v0.0.0-20181128092732-4ed8d59d0b35 // indirect
 	golang.org/x/text v0.3.1-0.20180807135948-17ff2d5776d2 // indirect
