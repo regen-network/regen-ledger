@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"gitlab.com/regen-network/regen-ledger/index/postgresql"
 	"gitlab.com/regen-network/regen-ledger/util"
 	"golang.org/x/crypto/blake2b"
 )
@@ -12,14 +13,16 @@ type Keeper struct {
 	storeKey sdk.StoreKey
 
 	cdc *codec.Codec
+
+	pgIndexer postgresql.Indexer
 }
 
 const (
-	Bech32Prefix = "xrngeo"
+	Bech32Prefix = "xrn:geo/"
 )
 
-func NewKeeper(storeKey sdk.StoreKey, cdc *codec.Codec) Keeper {
-	return Keeper{storeKey: storeKey, cdc: cdc}
+func NewKeeper(storeKey sdk.StoreKey, cdc *codec.Codec, pgIndexer postgresql.Indexer) Keeper {
+	return Keeper{storeKey, cdc, pgIndexer}
 }
 
 func (keeper Keeper) GetGeometry(ctx sdk.Context, hash []byte) []byte {
@@ -41,7 +44,8 @@ func (keeper Keeper) StoreGeometry(ctx sdk.Context, geometry Geometry) sdk.Resul
 	if err != nil {
 		panic(err)
 	}
-	hash.Write(geometry.EWKB)
+	ewkb := geometry.EWKB
+	hash.Write(ewkb)
 	hashBz := hash.Sum(nil)
 	existing := store.Get(hashBz)
 	if existing != nil {
@@ -52,7 +56,16 @@ func (keeper Keeper) StoreGeometry(ctx sdk.Context, geometry Geometry) sdk.Resul
 	}
 	store.Set(hashBz, bz)
 	tags := sdk.EmptyTags()
-	tags = tags.AppendTag("geo.id", util.MustEncodeBech32(Bech32Prefix, hashBz))
+	url := util.MustEncodeBech32(Bech32Prefix, hashBz)
+	tags = tags.AppendTag("geo.id", url)
+
+	// Do Indexing
+	if keeper.pgIndexer != nil {
+		keeper.pgIndexer.Exec(
+			"INSERT INTO geo (url, geog, geom) VALUES ($1, st_geogfromwkb($2), st_geomfromewkb($3))",
+			url, ewkb, ewkb)
+	}
+
 	return sdk.Result{Tags: tags}
 }
 

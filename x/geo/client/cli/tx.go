@@ -46,9 +46,15 @@ func GetCmdStoreGeometry(cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
+			typ, err := geo.GetFeatureType(geometry)
+			if err != nil {
+				return err
+			}
+
 			msg := geo.MsgStoreGeometry{
 				Data: geo.Geometry{
 					EWKB: bz,
+					Type: typ,
 				},
 				Signer: account,
 			}

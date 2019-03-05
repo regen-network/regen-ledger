@@ -117,6 +117,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 	if len(postgresUrl) != 0 {
 		pgIndexer, err := postgresql.NewIndexer(postgresUrl, txDecoder)
 		if err == nil {
+			pgIndexer.AddMigration(geo.PostgresSchema)
 			app.pgIndexer = pgIndexer
 			logger.Info("Started PostgreSQL Indexer")
 		} else {
@@ -147,7 +148,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 
 	app.agentKeeper = group.NewKeeper(app.agentStoreKey, cdc)
 
-	app.geoKeeper = geo.NewKeeper(app.geoStoreKey, cdc)
+	app.geoKeeper = geo.NewKeeper(app.geoStoreKey, cdc, app.pgIndexer)
 
 	app.espKeeper = esp.NewKeeper(app.espStoreKey, app.agentKeeper, app.geoKeeper, cdc)
 
