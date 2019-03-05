@@ -31,7 +31,7 @@ test:
 #    reports:
 #      junit: "TEST_*.xml"
 
-lint:
-  image: golang:1.11.5
-  script:
-    - make lint
+#lint:
+#  image: golang:1.11.5
+#  script:
+#    - make lint
