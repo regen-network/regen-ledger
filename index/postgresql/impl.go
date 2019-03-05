@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	// Imports Postgres driver
 	_ "github.com/lib/pq"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto"
@@ -11,9 +12,14 @@ import (
 
 type indexer struct {
 	conn        *sql.DB
-	curTx       *sql.Tx
 	txDecoder   sdk.TxDecoder
+	migrations  []string
+	curTx       *sql.Tx
 	blockHeader abci.Header
+}
+
+func (indexer indexer) AddMigration(ddl string) {
+	indexer.migrations = append(indexer.migrations, ddl)
 }
 
 // NewIndexer creates a PostgreSQL indexer that does default
@@ -39,9 +45,15 @@ func (indexer *indexer) Exec(query string, args ...interface{}) {
 }
 
 func (indexer *indexer) OnInitChain(abci.RequestInitChain, abci.ResponseInitChain) {
-	_, err := indexer.conn.Exec(initSchema)
+	_, err := indexer.conn.Exec(InitialSchema)
 	if err != nil {
 		panic(err)
+	}
+	for _, ddl := range indexer.migrations {
+		_, err := indexer.conn.Exec(ddl)
+		if err != nil {
+			panic(err)
+		}
 	}
 }
 
@@ -64,7 +76,7 @@ func (indexer *indexer) BeforeDeliverTx(txBytes []byte) {
 	// TODO avoid decoding Tx here because it has already been done elsewhere
 	hash := crypto.Sha256(txBytes)
 	tx, err := indexer.txDecoder(txBytes)
-	var jsonStr interface{} = nil
+	var jsonStr interface{}
 	if err == nil {
 		j, err := json.Marshal(tx)
 		if err == nil {
@@ -111,32 +123,3 @@ func (indexer *indexer) OnCommit(abci.ResponseCommit) {
 	}
 	indexer.curTx = nil
 }
-
-var initSchema = `
-CREATE TABLE block (
-  height BIGINT NOT NULL PRIMARY KEY,
-  time timestamptz NOT NULL,
-  hash bytea
-);
-
-CREATE TABLE tx (
-  hash bytea NOT NULL PRIMARY KEY,
-  block BIGINT NOT NULL REFERENCES block,
-  bytes bytea NOT NULL,
-  tx_json jsonb,
-  code int,
-  result bytea
-);
-
-CREATE TABLE block_tags (
-  block bigint NOT NULL REFERENCES block,
-  key text not null,
-  value text not null
-);
-
-CREATE TABLE tx_tags (
-  tx bytea NOT NULL REFERENCES tx,
-  key text not null,
-  value text not null
-);
-`
