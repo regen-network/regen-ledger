@@ -18,10 +18,6 @@ type indexer struct {
 	blockHeader abci.Header
 }
 
-func (indexer indexer) AddMigration(ddl string) {
-	indexer.migrations = append(indexer.migrations, ddl)
-}
-
 // NewIndexer creates a PostgreSQL indexer that does default
 // block and transaction indexing and can be used by keepers
 // for custom indexing.
@@ -30,7 +26,11 @@ func NewIndexer(connString string, txDecoder sdk.TxDecoder) (Indexer, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &indexer{conn: conn, txDecoder: txDecoder}, nil
+	return &indexer{conn: conn, txDecoder: txDecoder, migrations: []string{}}, nil
+}
+
+func (indexer *indexer) AddMigration(ddl string) {
+	indexer.migrations = append(indexer.migrations, ddl)
 }
 
 func (indexer *indexer) Exec(query string, args ...interface{}) {
