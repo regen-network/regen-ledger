@@ -27,7 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [\#163987749](https://www.pivotaltracker.com/story/show/163987749) [\#163831108](https://www.pivotaltracker.com/story/show/163831108) Configured Gitlab CI for build and tests
 - [\#163963339](https://www.pivotaltracker.com/story/show/163963339) Upgrade to latest Cosmos SDK
 - [\#164334136](https://www.pivotaltracker.com/story/show/164334136) Implement Postgreql indexer package
-
+- [\#164380651](https://www.pivotaltracker.com/story/show/164380651) Implement Postgres indexing for geo module
+    
 ## [0.3.0] - 2018-01-09
 
 - Updated `xrn-test-2` testnet at height `1000`
