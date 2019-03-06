@@ -12,7 +12,7 @@ type MsgStoreGeo struct {
 type FeatureType int
 
 const (
-	Point FeatureType = 0
+	Point FeatureType = iota
 	LineString
 	Polygon
 	MultiPoint
