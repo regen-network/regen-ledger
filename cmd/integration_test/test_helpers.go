@@ -3,6 +3,8 @@ package clitest
 import (
 	"encoding/json"
 	"fmt"
+	"gitlab.com/regen-network/regen-ledger" // package app
+
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
@@ -13,25 +15,24 @@ import (
 	cmn "github.com/tendermint/tendermint/libs/common"
 
 	"github.com/cosmos/cosmos-sdk/client/keys"
-	"github.com/cosmos/cosmos-sdk/cmd/gaia/app"
 	appInit "github.com/cosmos/cosmos-sdk/cmd/gaia/init"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/gov"
-	"github.com/cosmos/cosmos-sdk/x/slashing"
-	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
 const (
 	denom        = "xrn"
+	feeDenom	 = "xrn"
+	fee2Denom	 = "xrn"
+	fooDenom	 = "xrn"
 	keyFoo       = "foo"
 	keyBar       = "bar"
 	keyBaz       = "baz"
-	keyVesting   = "vesting"
 	keyFooBarBaz = "foobarbaz"
+	DefaultKeyPass = "12345678"
 )
 
 var (
@@ -104,15 +105,14 @@ func InitFixtures(t *testing.T) (f *Fixtures) {
 	f.KeysAdd(keyFoo)
 	f.KeysAdd(keyBar)
 	f.KeysAdd(keyBaz)
-	f.KeysAdd(keyVesting)
 	f.KeysAdd(keyFooBarBaz, "--multisig-threshold=2", fmt.Sprintf(
 		"--multisig=%s,%s,%s", keyFoo, keyBar, keyBaz))
 
 	// Ensure that CLI output is in JSON format
 	f.CLIConfig("output", "json")
 
-	// NOTE: GDInit sets the ChainID
-	f.GDInit(keyFoo)
+	// NOTE: XDInit sets the ChainID
+	f.XDInit(keyFoo)
 	f.CLIConfig("chain-id", f.ChainID)
 
 	// Start an account with tokens
@@ -137,21 +137,21 @@ func (f *Fixtures) Flags() string {
 }
 
 //___________________________________________________________________________________
-// gaiad
+// xrnd
 
-// UnsafeResetAll is gaiad unsafe-reset-all
+// UnsafeResetAll is xrnd unsafe-reset-all
 func (f *Fixtures) UnsafeResetAll(flags ...string) {
-	cmd := fmt.Sprintf("gaiad --home=%s unsafe-reset-all", f.XDHome)
+	cmd := fmt.Sprintf("xrnd --home=%s unsafe-reset-all", f.XDHome)
 	executeWrite(f.T, addFlags(cmd, flags))
 	err := os.RemoveAll(filepath.Join(f.XDHome, "config", "gentx"))
 	require.NoError(f.T, err)
 }
 
-// GDInit is gaiad init
-// NOTE: GDInit sets the ChainID for the Fixtures instance
-func (f *Fixtures) GDInit(moniker string, flags ...string) {
-	cmd := fmt.Sprintf("gaiad init -o --home=%s %s", f.XDHome, moniker)
-	_, stderr := tests.ExecuteT(f.T, addFlags(cmd, flags), app.DefaultKeyPass)
+// XDInit is xrnd init
+// NOTE: XDInit sets the ChainID for the Fixtures instance
+func (f *Fixtures) XDInit(moniker string, flags ...string) {
+	cmd := fmt.Sprintf("xrnd init -o --home=%s %s", f.XDHome, moniker)
+	_, stderr := tests.ExecuteT(f.T, addFlags(cmd, flags), DefaultKeyPass)
 
 	var chainID string
 	var initRes map[string]json.RawMessage
@@ -165,78 +165,78 @@ func (f *Fixtures) GDInit(moniker string, flags ...string) {
 	f.ChainID = chainID
 }
 
-// AddGenesisAccount is gaiad add-genesis-account
+// AddGenesisAccount is xrnd add-genesis-account
 func (f *Fixtures) AddGenesisAccount(address sdk.AccAddress, coins sdk.Coins, flags ...string) {
-	cmd := fmt.Sprintf("gaiad add-genesis-account %s %s --home=%s", address, coins, f.XDHome)
+	cmd := fmt.Sprintf("xrnd add-genesis-account %s %s --home=%s", address, coins, f.XDHome)
 	executeWriteCheckErr(f.T, addFlags(cmd, flags))
 }
 
-// GenTx is gaiad gentx
+// GenTx is xrnd gentx
 func (f *Fixtures) GenTx(name string, flags ...string) {
-	cmd := fmt.Sprintf("gaiad gentx --name=%s --home=%s --home-client=%s", name, f.XDHome, f.XCLIHome)
-	executeWriteCheckErr(f.T, addFlags(cmd, flags), app.DefaultKeyPass)
+	cmd := fmt.Sprintf("xrnd gentx --name=%s --home=%s --home-client=%s", name, f.XDHome, f.XCLIHome)
+	executeWriteCheckErr(f.T, addFlags(cmd, flags), DefaultKeyPass)
 }
 
-// CollectGenTxs is gaiad collect-gentxs
+// CollectGenTxs is xrnd collect-gentxs
 func (f *Fixtures) CollectGenTxs(flags ...string) {
-	cmd := fmt.Sprintf("gaiad collect-gentxs --home=%s", f.XDHome)
-	executeWriteCheckErr(f.T, addFlags(cmd, flags), app.DefaultKeyPass)
+	cmd := fmt.Sprintf("xrnd collect-gentxs --home=%s", f.XDHome)
+	executeWriteCheckErr(f.T, addFlags(cmd, flags), DefaultKeyPass)
 }
 
-// GDStart runs gaiad start with the appropriate flags and returns a process
-func (f *Fixtures) GDStart(flags ...string) *tests.Process {
-	cmd := fmt.Sprintf("gaiad start --home=%s --rpc.laddr=%v --p2p.laddr=%v", f.XDHome, f.RPCAddr, f.P2PAddr)
+// XDStart runs xrnd start with the appropriate flags and returns a process
+func (f *Fixtures) XDStart(flags ...string) *tests.Process {
+	cmd := fmt.Sprintf("xrnd start --home=%s --rpc.laddr=%v --p2p.laddr=%v", f.XDHome, f.RPCAddr, f.P2PAddr)
 	proc := tests.GoExecuteTWithStdout(f.T, addFlags(cmd, flags))
 	tests.WaitForTMStart(f.Port)
 	tests.WaitForNextNBlocksTM(1, f.Port)
 	return proc
 }
 
-// GDTendermint returns the results of gaiad tendermint [query]
+// GDTendermint returns the results of xrnd tendermint [query]
 func (f *Fixtures) GDTendermint(query string) string {
-	cmd := fmt.Sprintf("gaiad tendermint %s --home=%s", query, f.XDHome)
+	cmd := fmt.Sprintf("xrnd tendermint %s --home=%s", query, f.XDHome)
 	success, stdout, stderr := executeWriteRetStdStreams(f.T, cmd)
 	require.Empty(f.T, stderr)
 	require.True(f.T, success)
 	return strings.TrimSpace(stdout)
 }
 
-// ValidateGenesis runs gaiad validate-genesis
+// ValidateGenesis runs xrnd validate-genesis
 func (f *Fixtures) ValidateGenesis() {
-	cmd := fmt.Sprintf("gaiad validate-genesis --home=%s", f.XDHome)
+	cmd := fmt.Sprintf("xrnd validate-genesis --home=%s", f.XDHome)
 	executeWriteCheckErr(f.T, cmd)
 }
 
 //___________________________________________________________________________________
-// gaiacli keys
+// xrncli keys
 
-// KeysDelete is gaiacli keys delete
+// KeysDelete is xrncli keys delete
 func (f *Fixtures) KeysDelete(name string, flags ...string) {
-	cmd := fmt.Sprintf("gaiacli keys delete --home=%s %s", f.XCLIHome, name)
+	cmd := fmt.Sprintf("xrncli keys delete --home=%s %s", f.XCLIHome, name)
 	executeWrite(f.T, addFlags(cmd, append(append(flags, "-y"), "-f")))
 }
 
-// KeysAdd is gaiacli keys add
+// KeysAdd is xrncli keys add
 func (f *Fixtures) KeysAdd(name string, flags ...string) {
-	cmd := fmt.Sprintf("gaiacli keys add --home=%s %s", f.XCLIHome, name)
-	executeWriteCheckErr(f.T, addFlags(cmd, flags), app.DefaultKeyPass)
+	cmd := fmt.Sprintf("xrncli keys add --home=%s %s", f.XCLIHome, name)
+	executeWriteCheckErr(f.T, addFlags(cmd, flags), DefaultKeyPass)
 }
 
-// KeysAddRecover prepares gaiacli keys add --recover
+// KeysAddRecover prepares xrncli keys add --recover
 func (f *Fixtures) KeysAddRecover(name, mnemonic string, flags ...string) {
-	cmd := fmt.Sprintf("gaiacli keys add --home=%s --recover %s", f.XCLIHome, name)
-	executeWriteCheckErr(f.T, addFlags(cmd, flags), app.DefaultKeyPass, mnemonic)
+	cmd := fmt.Sprintf("xrncli keys add --home=%s --recover %s", f.XCLIHome, name)
+	executeWriteCheckErr(f.T, addFlags(cmd, flags), DefaultKeyPass, mnemonic)
 }
 
-// KeysAddRecoverHDPath prepares gaiacli keys add --recover --account --index
+// KeysAddRecoverHDPath prepares xrncli keys add --recover --account --index
 func (f *Fixtures) KeysAddRecoverHDPath(name, mnemonic string, account uint32, index uint32, flags ...string) {
-	cmd := fmt.Sprintf("gaiacli keys add --home=%s --recover %s --account %d --index %d", f.XCLIHome, name, account, index)
-	executeWriteCheckErr(f.T, addFlags(cmd, flags), app.DefaultKeyPass, mnemonic)
+	cmd := fmt.Sprintf("xrncli keys add --home=%s --recover %s --account %d --index %d", f.XCLIHome, name, account, index)
+	executeWriteCheckErr(f.T, addFlags(cmd, flags), DefaultKeyPass, mnemonic)
 }
 
-// KeysShow is gaiacli keys show
+// KeysShow is xrncli keys show
 func (f *Fixtures) KeysShow(name string, flags ...string) keys.KeyOutput {
-	cmd := fmt.Sprintf("gaiacli keys show --home=%s %s", f.XCLIHome, name)
+	cmd := fmt.Sprintf("xrncli keys show --home=%s %s", f.XCLIHome, name)
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var ko keys.KeyOutput
 	err := keys.UnmarshalJSON([]byte(out), &ko)
@@ -253,97 +253,57 @@ func (f *Fixtures) KeyAddress(name string) sdk.AccAddress {
 }
 
 //___________________________________________________________________________________
-// gaiacli config
+// xrncli config
 
-// CLIConfig is gaiacli config
+// CLIConfig is xrncli config
 func (f *Fixtures) CLIConfig(key, value string, flags ...string) {
-	cmd := fmt.Sprintf("gaiacli config --home=%s %s %s", f.XCLIHome, key, value)
+	cmd := fmt.Sprintf("xrncli config --home=%s %s %s", f.XCLIHome, key, value)
 	executeWriteCheckErr(f.T, addFlags(cmd, flags))
 }
 
 //___________________________________________________________________________________
-// gaiacli tx send/sign/broadcast
+// xrncli tx send/sign/broadcast
 
-// TxSend is gaiacli tx send
+// TxSend is xrncli tx send
 func (f *Fixtures) TxSend(from string, to sdk.AccAddress, amount sdk.Coin, flags ...string) (bool, string, string) {
-	cmd := fmt.Sprintf("gaiacli tx send %s %s %v --from=%s", to, amount, f.Flags(), from)
-	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), app.DefaultKeyPass)
+	cmd := fmt.Sprintf("xrncli tx send %s %s %v --from=%s", to, amount, f.Flags(), from)
+	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), DefaultKeyPass)
 }
 
-// TxSign is gaiacli tx sign
+// TxSign is xrncli tx sign
 func (f *Fixtures) TxSign(signer, fileName string, flags ...string) (bool, string, string) {
-	cmd := fmt.Sprintf("gaiacli tx sign %v --name=%s %v", f.Flags(), signer, fileName)
-	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), app.DefaultKeyPass)
+	cmd := fmt.Sprintf("xrncli tx sign %v --name=%s %v", f.Flags(), signer, fileName)
+	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), DefaultKeyPass)
 }
 
-// TxBroadcast is gaiacli tx broadcast
+// TxBroadcast is xrncli tx broadcast
 func (f *Fixtures) TxBroadcast(fileName string, flags ...string) (bool, string, string) {
-	cmd := fmt.Sprintf("gaiacli tx broadcast %v %v", f.Flags(), fileName)
-	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), app.DefaultKeyPass)
+	cmd := fmt.Sprintf("xrncli tx broadcast %v %v", f.Flags(), fileName)
+	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), DefaultKeyPass)
 }
 
-// TxEncode is gaiacli tx encode
+// TxEncode is xrncli tx encode
 func (f *Fixtures) TxEncode(fileName string, flags ...string) (bool, string, string) {
-	cmd := fmt.Sprintf("gaiacli tx encode %v %v", f.Flags(), fileName)
-	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), app.DefaultKeyPass)
+	cmd := fmt.Sprintf("xrncli tx encode %v %v", f.Flags(), fileName)
+	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), DefaultKeyPass)
 }
 
-// TxMultisign is gaiacli tx multisign
+// TxMultisign is xrncli tx multisign
 func (f *Fixtures) TxMultisign(fileName, name string, signaturesFiles []string,
 	flags ...string) (bool, string, string) {
 
-	cmd := fmt.Sprintf("gaiacli tx multisign %v %s %s %s", f.Flags(),
+	cmd := fmt.Sprintf("xrncli tx multisign %v %s %s %s", f.Flags(),
 		fileName, name, strings.Join(signaturesFiles, " "),
 	)
 	return executeWriteRetStdStreams(f.T, cmd)
 }
 
 //___________________________________________________________________________________
-// gaiacli tx staking
+// xrncli query account
 
-// TxStakingCreateValidator is gaiacli tx staking create-validator
-func (f *Fixtures) TxStakingCreateValidator(from, consPubKey string, amount sdk.Coin, flags ...string) (bool, string, string) {
-	cmd := fmt.Sprintf("gaiacli tx staking create-validator %v --from=%s --pubkey=%s", f.Flags(), from, consPubKey)
-	cmd += fmt.Sprintf(" --amount=%v --moniker=%v --commission-rate=%v", amount, from, "0.05")
-	cmd += fmt.Sprintf(" --commission-max-rate=%v --commission-max-change-rate=%v", "0.20", "0.10")
-	cmd += fmt.Sprintf(" --min-self-delegation=%v", "1")
-	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), app.DefaultKeyPass)
-}
-
-// TxStakingUnbond is gaiacli tx staking unbond
-func (f *Fixtures) TxStakingUnbond(from, shares string, validator sdk.ValAddress, flags ...string) bool {
-	cmd := fmt.Sprintf("gaiacli tx staking unbond %s %v --from=%s %v", validator, shares, from, f.Flags())
-	return executeWrite(f.T, addFlags(cmd, flags), app.DefaultKeyPass)
-}
-
-//___________________________________________________________________________________
-// gaiacli tx gov
-
-// TxGovSubmitProposal is gaiacli tx gov submit-proposal
-func (f *Fixtures) TxGovSubmitProposal(from, typ, title, description string, deposit sdk.Coin, flags ...string) (bool, string, string) {
-	cmd := fmt.Sprintf("gaiacli tx gov submit-proposal %v --from=%s --type=%s", f.Flags(), from, typ)
-	cmd += fmt.Sprintf(" --title=%s --description=%s --deposit=%s", title, description, deposit)
-	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), app.DefaultKeyPass)
-}
-
-// TxGovDeposit is gaiacli tx gov deposit
-func (f *Fixtures) TxGovDeposit(proposalID int, from string, amount sdk.Coin, flags ...string) (bool, string, string) {
-	cmd := fmt.Sprintf("gaiacli tx gov deposit %d %s --from=%s %v", proposalID, amount, from, f.Flags())
-	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), app.DefaultKeyPass)
-}
-
-// TxGovVote is gaiacli tx gov vote
-func (f *Fixtures) TxGovVote(proposalID int, option gov.VoteOption, from string, flags ...string) (bool, string, string) {
-	cmd := fmt.Sprintf("gaiacli tx gov vote %d %s --from=%s %v", proposalID, option, from, f.Flags())
-	return executeWriteRetStdStreams(f.T, addFlags(cmd, flags), app.DefaultKeyPass)
-}
-
-//___________________________________________________________________________________
-// gaiacli query account
-
-// QueryAccount is gaiacli query account
+// QueryAccount is xrncli query account
 func (f *Fixtures) QueryAccount(address sdk.AccAddress, flags ...string) auth.BaseAccount {
-	cmd := fmt.Sprintf("gaiacli query account %s %v", address, f.Flags())
+	cmd := fmt.Sprintf("xrncli query account %s %v", address, f.Flags())
 	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
 	var initRes map[string]json.RawMessage
 	err := json.Unmarshal([]byte(out), &initRes)
@@ -358,11 +318,11 @@ func (f *Fixtures) QueryAccount(address sdk.AccAddress, flags ...string) auth.Ba
 }
 
 //___________________________________________________________________________________
-// gaiacli query txs
+// xrncli query txs
 
-// QueryTxs is gaiacli query txs
+// QueryTxs is xrncli query txs
 func (f *Fixtures) QueryTxs(page, limit int, tags ...string) []sdk.TxResponse {
-	cmd := fmt.Sprintf("gaiacli query txs --page=%d --limit=%d --tags='%s' %v", page, limit, queryTags(tags), f.Flags())
+	cmd := fmt.Sprintf("xrncli query txs --page=%d --limit=%d --tags='%s' %v", page, limit, queryTags(tags), f.Flags())
 	out, _ := tests.ExecuteT(f.T, cmd, "")
 	var txs []sdk.TxResponse
 	cdc := app.MakeCodec()
@@ -373,200 +333,9 @@ func (f *Fixtures) QueryTxs(page, limit int, tags ...string) []sdk.TxResponse {
 
 // QueryTxsInvalid query txs with wrong parameters and compare expected error
 func (f *Fixtures) QueryTxsInvalid(expectedErr error, page, limit int, tags ...string) {
-	cmd := fmt.Sprintf("gaiacli query txs --page=%d --limit=%d --tags='%s' %v", page, limit, queryTags(tags), f.Flags())
+	cmd := fmt.Sprintf("xrncli query txs --page=%d --limit=%d --tags='%s' %v", page, limit, queryTags(tags), f.Flags())
 	_, err := tests.ExecuteT(f.T, cmd, "")
 	require.EqualError(f.T, expectedErr, err)
-}
-
-//___________________________________________________________________________________
-// gaiacli query staking
-
-// QueryStakingValidator is gaiacli query staking validator
-func (f *Fixtures) QueryStakingValidator(valAddr sdk.ValAddress, flags ...string) staking.Validator {
-	cmd := fmt.Sprintf("gaiacli query staking validator %s %v", valAddr, f.Flags())
-	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
-	var validator staking.Validator
-	cdc := app.MakeCodec()
-	err := cdc.UnmarshalJSON([]byte(out), &validator)
-	require.NoError(f.T, err, "out %v\n, err %v", out, err)
-	return validator
-}
-
-// QueryStakingUnbondingDelegationsFrom is gaiacli query staking unbonding-delegations-from
-func (f *Fixtures) QueryStakingUnbondingDelegationsFrom(valAddr sdk.ValAddress, flags ...string) []staking.UnbondingDelegation {
-	cmd := fmt.Sprintf("gaiacli query staking unbonding-delegations-from %s %v", valAddr, f.Flags())
-	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
-	var ubds []staking.UnbondingDelegation
-	cdc := app.MakeCodec()
-	err := cdc.UnmarshalJSON([]byte(out), &ubds)
-	require.NoError(f.T, err, "out %v\n, err %v", out, err)
-	return ubds
-}
-
-// QueryStakingDelegationsTo is gaiacli query staking delegations-to
-func (f *Fixtures) QueryStakingDelegationsTo(valAddr sdk.ValAddress, flags ...string) []staking.Delegation {
-	cmd := fmt.Sprintf("gaiacli query staking delegations-to %s %v", valAddr, f.Flags())
-	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
-	var delegations []staking.Delegation
-	cdc := app.MakeCodec()
-	err := cdc.UnmarshalJSON([]byte(out), &delegations)
-	require.NoError(f.T, err, "out %v\n, err %v", out, err)
-	return delegations
-}
-
-// QueryStakingPool is gaiacli query staking pool
-func (f *Fixtures) QueryStakingPool(flags ...string) staking.Pool {
-	cmd := fmt.Sprintf("gaiacli query staking pool %v", f.Flags())
-	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
-	var pool staking.Pool
-	cdc := app.MakeCodec()
-	err := cdc.UnmarshalJSON([]byte(out), &pool)
-	require.NoError(f.T, err, "out %v\n, err %v", out, err)
-	return pool
-}
-
-// QueryStakingParameters is gaiacli query staking parameters
-func (f *Fixtures) QueryStakingParameters(flags ...string) staking.Params {
-	cmd := fmt.Sprintf("gaiacli query staking params %v", f.Flags())
-	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
-	var params staking.Params
-	cdc := app.MakeCodec()
-	err := cdc.UnmarshalJSON([]byte(out), &params)
-	require.NoError(f.T, err, "out %v\n, err %v", out, err)
-	return params
-}
-
-//___________________________________________________________________________________
-// gaiacli query gov
-
-// QueryGovParamDeposit is gaiacli query gov param deposit
-func (f *Fixtures) QueryGovParamDeposit() gov.DepositParams {
-	cmd := fmt.Sprintf("gaiacli query gov param deposit %s", f.Flags())
-	out, _ := tests.ExecuteT(f.T, cmd, "")
-	var depositParam gov.DepositParams
-	cdc := app.MakeCodec()
-	err := cdc.UnmarshalJSON([]byte(out), &depositParam)
-	require.NoError(f.T, err, "out %v\n, err %v", out, err)
-	return depositParam
-}
-
-// QueryGovParamVoting is gaiacli query gov param voting
-func (f *Fixtures) QueryGovParamVoting() gov.VotingParams {
-	cmd := fmt.Sprintf("gaiacli query gov param voting %s", f.Flags())
-	out, _ := tests.ExecuteT(f.T, cmd, "")
-	var votingParam gov.VotingParams
-	cdc := app.MakeCodec()
-	err := cdc.UnmarshalJSON([]byte(out), &votingParam)
-	require.NoError(f.T, err, "out %v\n, err %v", out, err)
-	return votingParam
-}
-
-// QueryGovParamTallying is gaiacli query gov param tallying
-func (f *Fixtures) QueryGovParamTallying() gov.TallyParams {
-	cmd := fmt.Sprintf("gaiacli query gov param tallying %s", f.Flags())
-	out, _ := tests.ExecuteT(f.T, cmd, "")
-	var tallyingParam gov.TallyParams
-	cdc := app.MakeCodec()
-	err := cdc.UnmarshalJSON([]byte(out), &tallyingParam)
-	require.NoError(f.T, err, "out %v\n, err %v", out, err)
-	return tallyingParam
-}
-
-// QueryGovProposals is gaiacli query gov proposals
-func (f *Fixtures) QueryGovProposals(flags ...string) gov.Proposals {
-	cmd := fmt.Sprintf("gaiacli query gov proposals %v", f.Flags())
-	stdout, stderr := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
-	if strings.Contains(stderr, "No matching proposals found") {
-		return gov.Proposals{}
-	}
-	require.Empty(f.T, stderr)
-	var out gov.Proposals
-	cdc := app.MakeCodec()
-	err := cdc.UnmarshalJSON([]byte(stdout), &out)
-	require.NoError(f.T, err)
-	return out
-}
-
-// QueryGovProposal is gaiacli query gov proposal
-func (f *Fixtures) QueryGovProposal(proposalID int, flags ...string) gov.Proposal {
-	cmd := fmt.Sprintf("gaiacli query gov proposal %d %v", proposalID, f.Flags())
-	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
-	var proposal gov.Proposal
-	cdc := app.MakeCodec()
-	err := cdc.UnmarshalJSON([]byte(out), &proposal)
-	require.NoError(f.T, err, "out %v\n, err %v", out, err)
-	return proposal
-}
-
-// QueryGovVote is gaiacli query gov vote
-func (f *Fixtures) QueryGovVote(proposalID int, voter sdk.AccAddress, flags ...string) gov.Vote {
-	cmd := fmt.Sprintf("gaiacli query gov vote %d %s %v", proposalID, voter, f.Flags())
-	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
-	var vote gov.Vote
-	cdc := app.MakeCodec()
-	err := cdc.UnmarshalJSON([]byte(out), &vote)
-	require.NoError(f.T, err, "out %v\n, err %v", out, err)
-	return vote
-}
-
-// QueryGovVotes is gaiacli query gov votes
-func (f *Fixtures) QueryGovVotes(proposalID int, flags ...string) []gov.Vote {
-	cmd := fmt.Sprintf("gaiacli query gov votes %d %v", proposalID, f.Flags())
-	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
-	var votes []gov.Vote
-	cdc := app.MakeCodec()
-	err := cdc.UnmarshalJSON([]byte(out), &votes)
-	require.NoError(f.T, err, "out %v\n, err %v", out, err)
-	return votes
-}
-
-// QueryGovDeposit is gaiacli query gov deposit
-func (f *Fixtures) QueryGovDeposit(proposalID int, depositor sdk.AccAddress, flags ...string) gov.Deposit {
-	cmd := fmt.Sprintf("gaiacli query gov deposit %d %s %v", proposalID, depositor, f.Flags())
-	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
-	var deposit gov.Deposit
-	cdc := app.MakeCodec()
-	err := cdc.UnmarshalJSON([]byte(out), &deposit)
-	require.NoError(f.T, err, "out %v\n, err %v", out, err)
-	return deposit
-}
-
-// QueryGovDeposits is gaiacli query gov deposits
-func (f *Fixtures) QueryGovDeposits(propsalID int, flags ...string) []gov.Deposit {
-	cmd := fmt.Sprintf("gaiacli query gov deposits %d %v", propsalID, f.Flags())
-	out, _ := tests.ExecuteT(f.T, addFlags(cmd, flags), "")
-	var deposits []gov.Deposit
-	cdc := app.MakeCodec()
-	err := cdc.UnmarshalJSON([]byte(out), &deposits)
-	require.NoError(f.T, err, "out %v\n, err %v", out, err)
-	return deposits
-}
-
-//___________________________________________________________________________________
-// query slashing
-
-// QuerySigningInfo returns the signing info for a validator
-func (f *Fixtures) QuerySigningInfo(val string) slashing.ValidatorSigningInfo {
-	cmd := fmt.Sprintf("gaiacli query slashing signing-info %s %s", val, f.Flags())
-	res, errStr := tests.ExecuteT(f.T, cmd, "")
-	require.Empty(f.T, errStr)
-	cdc := app.MakeCodec()
-	var sinfo slashing.ValidatorSigningInfo
-	err := cdc.UnmarshalJSON([]byte(res), &sinfo)
-	require.NoError(f.T, err)
-	return sinfo
-}
-
-// QuerySlashingParams is gaiacli query slashing params
-func (f *Fixtures) QuerySlashingParams() slashing.Params {
-	cmd := fmt.Sprintf("gaiacli query slashing params %s", f.Flags())
-	res, errStr := tests.ExecuteT(f.T, cmd, "")
-	require.Empty(f.T, errStr)
-	cdc := app.MakeCodec()
-	var params slashing.Params
-	err := cdc.UnmarshalJSON([]byte(res), &params)
-	require.NoError(f.T, err)
-	return params
 }
 
 //___________________________________________________________________________________

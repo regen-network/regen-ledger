@@ -4,27 +4,22 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 	"testing"
-	"time"
-
-	"github.com/tendermint/tendermint/crypto/ed25519"
-
-	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/cmd/gaia/app"
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/gov"
 )
 
-func TestGaiaCLIKeysAddMultisig(t *testing.T) {
+func TestXrnCLIKeysAddMultisig(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 
@@ -44,7 +39,7 @@ func TestGaiaCLIKeysAddMultisig(t *testing.T) {
 	require.NotEqual(t, f.KeysShow("msig3").Address, f.KeysShow("msig4").Address)
 }
 
-func TestGaiaCLIKeysAddRecover(t *testing.T) {
+func TestXrnCLIKeysAddRecover(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 
@@ -52,7 +47,7 @@ func TestGaiaCLIKeysAddRecover(t *testing.T) {
 	require.Equal(t, "cosmos1qcfdf69js922qrdr4yaww3ax7gjml6pdds46f4", f.KeyAddress("test-recover").String())
 }
 
-func TestGaiaCLIKeysAddRecoverHDPath(t *testing.T) {
+func TestXrnCLIKeysAddRecoverHDPath(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 
@@ -69,18 +64,18 @@ func TestGaiaCLIKeysAddRecoverHDPath(t *testing.T) {
 	require.Equal(t, "cosmos1v9plmhvyhgxk3th9ydacm7j4z357s3nhtwsjat", f.KeyAddress("test-recoverH4").String())
 }
 
-func TestGaiaCLIMinimumFees(t *testing.T) {
+func TestXrnCLIMinimumFees(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 
-	// start gaiad server with minimum fees
+	// start xrnd server with minimum fees
 	minGasPrice, _ := sdk.NewDecFromStr("0.000006")
 	fees := fmt.Sprintf(
 		"--minimum-gas-prices=%s,%s",
 		sdk.NewDecCoinFromDec(feeDenom, minGasPrice),
 		sdk.NewDecCoinFromDec(fee2Denom, minGasPrice),
 	)
-	proc := f.GDStart(fees)
+	proc := f.XDStart(fees)
 	defer proc.Stop(false)
 
 	barAddr := f.KeyAddress(keyBar)
@@ -105,13 +100,13 @@ func TestGaiaCLIMinimumFees(t *testing.T) {
 	f.Cleanup()
 }
 
-func TestGaiaCLIGasPrices(t *testing.T) {
+func TestXrnCLIGasPrices(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 
-	// start gaiad server with minimum fees
+	// start xrnd server with minimum fees
 	minGasPrice, _ := sdk.NewDecFromStr("0.000006")
-	proc := f.GDStart(fmt.Sprintf("--minimum-gas-prices=%s", sdk.NewDecCoinFromDec(feeDenom, minGasPrice)))
+	proc := f.XDStart(fmt.Sprintf("--minimum-gas-prices=%s", sdk.NewDecCoinFromDec(feeDenom, minGasPrice)))
 	defer proc.Stop(false)
 
 	barAddr := f.KeyAddress(keyBar)
@@ -138,13 +133,13 @@ func TestGaiaCLIGasPrices(t *testing.T) {
 	f.Cleanup()
 }
 
-func TestGaiaCLIFeesDeduction(t *testing.T) {
+func TestXrnCLIFeesDeduction(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 
-	// start gaiad server with minimum fees
+	// start xrnd server with minimum fees
 	minGasPrice, _ := sdk.NewDecFromStr("0.000006")
-	proc := f.GDStart(fmt.Sprintf("--minimum-gas-prices=%s", sdk.NewDecCoinFromDec(feeDenom, minGasPrice)))
+	proc := f.XDStart(fmt.Sprintf("--minimum-gas-prices=%s", sdk.NewDecCoinFromDec(feeDenom, minGasPrice)))
 	defer proc.Stop(false)
 
 	// Save key addresses for later use
@@ -190,12 +185,12 @@ func TestGaiaCLIFeesDeduction(t *testing.T) {
 	f.Cleanup()
 }
 
-func TestGaiaCLISend(t *testing.T) {
+func TestXrnCLISend(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 
-	// start gaiad server
-	proc := f.GDStart()
+	// start xrnd server
+	proc := f.XDStart()
 	defer proc.Stop(false)
 
 	// Save key addresses for later use
@@ -248,12 +243,12 @@ func TestGaiaCLISend(t *testing.T) {
 	f.Cleanup()
 }
 
-func TestGaiaCLIGasAuto(t *testing.T) {
+func TestXrnCLIGasAuto(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 
-	// start gaiad server
-	proc := f.GDStart()
+	// start xrnd server
+	proc := f.XDStart()
 	defer proc.Stop(false)
 
 	fooAddr := f.KeyAddress(keyFoo)
@@ -306,229 +301,12 @@ func TestGaiaCLIGasAuto(t *testing.T) {
 	f.Cleanup()
 }
 
-func TestGaiaCLICreateValidator(t *testing.T) {
+func TestXrnCLIQueryTxPagination(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 
-	// start gaiad server
-	proc := f.GDStart()
-	defer proc.Stop(false)
-
-	barAddr := f.KeyAddress(keyBar)
-	barVal := sdk.ValAddress(barAddr)
-
-	consPubKey := sdk.MustBech32ifyConsPub(ed25519.GenPrivKey().PubKey())
-
-	sendTokens := sdk.TokensFromTendermintPower(10)
-	f.TxSend(keyFoo, barAddr, sdk.NewCoin(denom, sendTokens))
-	tests.WaitForNextNBlocksTM(1, f.Port)
-
-	barAcc := f.QueryAccount(barAddr)
-	require.Equal(t, sendTokens, barAcc.GetCoins().AmountOf(denom))
-
-	// Generate a create validator transaction and ensure correctness
-	success, stdout, stderr := f.TxStakingCreateValidator(keyBar, consPubKey, sdk.NewInt64Coin(denom, 2), "--generate-only")
-
-	require.True(f.T, success)
-	require.Empty(f.T, stderr)
-	msg := unmarshalStdTx(f.T, stdout)
-	require.NotZero(t, msg.Fee.Gas)
-	require.Equal(t, len(msg.Msgs), 1)
-	require.Equal(t, 0, len(msg.GetSignatures()))
-
-	// Test --dry-run
-	newValTokens := sdk.TokensFromTendermintPower(2)
-	success, _, _ = f.TxStakingCreateValidator(keyBar, consPubKey, sdk.NewCoin(denom, newValTokens), "--dry-run")
-	require.True(t, success)
-
-	// Create the validator
-	f.TxStakingCreateValidator(keyBar, consPubKey, sdk.NewCoin(denom, newValTokens))
-	tests.WaitForNextNBlocksTM(1, f.Port)
-
-	// Ensure funds were deducted properly
-	barAcc = f.QueryAccount(barAddr)
-	require.Equal(t, sendTokens.Sub(newValTokens), barAcc.GetCoins().AmountOf(denom))
-
-	// Ensure that validator state is as expected
-	validator := f.QueryStakingValidator(barVal)
-	require.Equal(t, validator.OperatorAddr, barVal)
-	require.True(sdk.IntEq(t, newValTokens, validator.Tokens))
-
-	// Query delegations to the validator
-	validatorDelegations := f.QueryStakingDelegationsTo(barVal)
-	require.Len(t, validatorDelegations, 1)
-	require.NotZero(t, validatorDelegations[0].Shares)
-
-	// unbond a single share
-	unbondTokens := sdk.TokensFromTendermintPower(1)
-	success = f.TxStakingUnbond(keyBar, unbondTokens.String(), barVal)
-	require.True(t, success)
-	tests.WaitForNextNBlocksTM(1, f.Port)
-
-	// Ensure bonded staking is correct
-	remainingTokens := newValTokens.Sub(unbondTokens)
-	validator = f.QueryStakingValidator(barVal)
-	require.Equal(t, remainingTokens, validator.Tokens)
-
-	// Get unbonding delegations from the validator
-	validatorUbds := f.QueryStakingUnbondingDelegationsFrom(barVal)
-	require.Len(t, validatorUbds, 1)
-	require.Len(t, validatorUbds[0].Entries, 1)
-	require.Equal(t, remainingTokens.String(), validatorUbds[0].Entries[0].Balance.String())
-
-	f.Cleanup()
-}
-
-func TestGaiaCLISubmitProposal(t *testing.T) {
-	t.Parallel()
-	f := InitFixtures(t)
-
-	// start gaiad server
-	proc := f.GDStart()
-	defer proc.Stop(false)
-
-	f.QueryGovParamDeposit()
-	f.QueryGovParamVoting()
-	f.QueryGovParamTallying()
-
-	fooAddr := f.KeyAddress(keyFoo)
-
-	fooAcc := f.QueryAccount(fooAddr)
-	startTokens := sdk.TokensFromTendermintPower(50)
-	require.Equal(t, startTokens, fooAcc.GetCoins().AmountOf(sdk.DefaultBondDenom))
-
-	proposalsQuery := f.QueryGovProposals()
-	require.Empty(t, proposalsQuery)
-
-	// Test submit generate only for submit proposal
-	proposalTokens := sdk.TokensFromTendermintPower(5)
-	success, stdout, stderr := f.TxGovSubmitProposal(
-		keyFoo, "Text", "Test", "test", sdk.NewCoin(denom, proposalTokens), "--generate-only")
-	require.True(t, success)
-	require.Empty(t, stderr)
-	msg := unmarshalStdTx(t, stdout)
-	require.NotZero(t, msg.Fee.Gas)
-	require.Equal(t, len(msg.Msgs), 1)
-	require.Equal(t, 0, len(msg.GetSignatures()))
-
-	// Test --dry-run
-	success, _, _ = f.TxGovSubmitProposal(keyFoo, "Text", "Test", "test", sdk.NewCoin(denom, proposalTokens), "--dry-run")
-	require.True(t, success)
-
-	// Create the proposal
-	f.TxGovSubmitProposal(keyFoo, "Text", "Test", "test", sdk.NewCoin(denom, proposalTokens))
-	tests.WaitForNextNBlocksTM(1, f.Port)
-
-	// Ensure transaction tags can be queried
-	txs := f.QueryTxs(1, 50, "action:submit_proposal", fmt.Sprintf("proposer:%s", fooAddr))
-	require.Len(t, txs, 1)
-
-	// Ensure deposit was deducted
-	fooAcc = f.QueryAccount(fooAddr)
-	require.Equal(t, startTokens.Sub(proposalTokens), fooAcc.GetCoins().AmountOf(denom))
-
-	// Ensure propsal is directly queryable
-	proposal1 := f.QueryGovProposal(1)
-	require.Equal(t, uint64(1), proposal1.GetProposalID())
-	require.Equal(t, gov.StatusDepositPeriod, proposal1.GetStatus())
-
-	// Ensure query proposals returns properly
-	proposalsQuery = f.QueryGovProposals()
-	require.Equal(t, uint64(1), proposalsQuery[0].GetProposalID())
-
-	// Query the deposits on the proposal
-	deposit := f.QueryGovDeposit(1, fooAddr)
-	require.Equal(t, proposalTokens, deposit.Amount.AmountOf(denom))
-
-	// Test deposit generate only
-	depositTokens := sdk.TokensFromTendermintPower(10)
-	success, stdout, stderr = f.TxGovDeposit(1, keyFoo, sdk.NewCoin(denom, depositTokens), "--generate-only")
-	require.True(t, success)
-	require.Empty(t, stderr)
-	msg = unmarshalStdTx(t, stdout)
-	require.NotZero(t, msg.Fee.Gas)
-	require.Equal(t, len(msg.Msgs), 1)
-	require.Equal(t, 0, len(msg.GetSignatures()))
-
-	// Run the deposit transaction
-	f.TxGovDeposit(1, keyFoo, sdk.NewCoin(denom, depositTokens))
-	tests.WaitForNextNBlocksTM(1, f.Port)
-
-	// test query deposit
-	deposits := f.QueryGovDeposits(1)
-	require.Len(t, deposits, 1)
-	require.Equal(t, proposalTokens.Add(depositTokens), deposits[0].Amount.AmountOf(denom))
-
-	// Ensure querying the deposit returns the proper amount
-	deposit = f.QueryGovDeposit(1, fooAddr)
-	require.Equal(t, proposalTokens.Add(depositTokens), deposit.Amount.AmountOf(denom))
-
-	// Ensure tags are set on the transaction
-	txs = f.QueryTxs(1, 50, "action:deposit", fmt.Sprintf("depositor:%s", fooAddr))
-	require.Len(t, txs, 1)
-
-	// Ensure account has expected amount of funds
-	fooAcc = f.QueryAccount(fooAddr)
-	require.Equal(t, startTokens.Sub(proposalTokens.Add(depositTokens)), fooAcc.GetCoins().AmountOf(denom))
-
-	// Fetch the proposal and ensure it is now in the voting period
-	proposal1 = f.QueryGovProposal(1)
-	require.Equal(t, uint64(1), proposal1.GetProposalID())
-	require.Equal(t, gov.StatusVotingPeriod, proposal1.GetStatus())
-
-	// Test vote generate only
-	success, stdout, stderr = f.TxGovVote(1, gov.OptionYes, keyFoo, "--generate-only")
-	require.True(t, success)
-	require.Empty(t, stderr)
-	msg = unmarshalStdTx(t, stdout)
-	require.NotZero(t, msg.Fee.Gas)
-	require.Equal(t, len(msg.Msgs), 1)
-	require.Equal(t, 0, len(msg.GetSignatures()))
-
-	// Vote on the proposal
-	f.TxGovVote(1, gov.OptionYes, keyFoo)
-	tests.WaitForNextNBlocksTM(1, f.Port)
-
-	// Query the vote
-	vote := f.QueryGovVote(1, fooAddr)
-	require.Equal(t, uint64(1), vote.ProposalID)
-	require.Equal(t, gov.OptionYes, vote.Option)
-
-	// Query the votes
-	votes := f.QueryGovVotes(1)
-	require.Len(t, votes, 1)
-	require.Equal(t, uint64(1), votes[0].ProposalID)
-	require.Equal(t, gov.OptionYes, votes[0].Option)
-
-	// Ensure tags are applied to voting transaction properly
-	txs = f.QueryTxs(1, 50, "action:vote", fmt.Sprintf("voter:%s", fooAddr))
-	require.Len(t, txs, 1)
-
-	// Ensure no proposals in deposit period
-	proposalsQuery = f.QueryGovProposals("--status=DepositPeriod")
-	require.Empty(t, proposalsQuery)
-
-	// Ensure the proposal returns as in the voting period
-	proposalsQuery = f.QueryGovProposals("--status=VotingPeriod")
-	require.Equal(t, uint64(1), proposalsQuery[0].GetProposalID())
-
-	// submit a second test proposal
-	f.TxGovSubmitProposal(keyFoo, "Text", "Apples", "test", sdk.NewCoin(denom, proposalTokens))
-	tests.WaitForNextNBlocksTM(1, f.Port)
-
-	// Test limit on proposals query
-	proposalsQuery = f.QueryGovProposals("--limit=1")
-	require.Equal(t, uint64(2), proposalsQuery[0].GetProposalID())
-
-	f.Cleanup()
-}
-
-func TestGaiaCLIQueryTxPagination(t *testing.T) {
-	t.Parallel()
-	f := InitFixtures(t)
-
-	// start gaiad server
-	proc := f.GDStart()
+	// start xrnd server
+	proc := f.XDStart()
 	defer proc.Stop(false)
 
 	fooAddr := f.KeyAddress(keyFoo)
@@ -572,12 +350,12 @@ func TestGaiaCLIQueryTxPagination(t *testing.T) {
 	f.QueryTxsInvalid(errors.New("ERROR: limit must greater than 0"), 1, 0, fmt.Sprintf("sender:%s", fooAddr))
 }
 
-func TestGaiaCLIValidateSignatures(t *testing.T) {
+func TestXrnCLIValidateSignatures(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 
-	// start gaiad server
-	proc := f.GDStart()
+	// start xrnd server
+	proc := f.XDStart()
 	defer proc.Stop(false)
 
 	fooAddr := f.KeyAddress(keyFoo)
@@ -622,12 +400,12 @@ func TestGaiaCLIValidateSignatures(t *testing.T) {
 	f.Cleanup()
 }
 
-func TestGaiaCLISendGenerateSignAndBroadcast(t *testing.T) {
+func TestXrnCLISendGenerateSignAndBroadcast(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 
-	// start gaiad server
-	proc := f.GDStart()
+	// start xrnd server
+	proc := f.XDStart()
 	defer proc.Stop(false)
 
 	fooAddr := f.KeyAddress(keyFoo)
@@ -713,12 +491,12 @@ func TestGaiaCLISendGenerateSignAndBroadcast(t *testing.T) {
 	f.Cleanup()
 }
 
-func TestGaiaCLIMultisignInsufficientCosigners(t *testing.T) {
+func TestXrnCLIMultisignInsufficientCosigners(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 
-	// start gaiad server with minimum fees
-	proc := f.GDStart()
+	// start xrnd server with minimum fees
+	proc := f.XDStart()
 	defer proc.Stop(false)
 
 	fooBarBazAddr := f.KeyAddress(keyFooBarBaz)
@@ -762,12 +540,12 @@ func TestGaiaCLIMultisignInsufficientCosigners(t *testing.T) {
 	require.False(t, success)
 }
 
-func TestGaiaCLIEncode(t *testing.T) {
+func TestXrnCLIEncode(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 
-	// start gaiad server
-	proc := f.GDStart()
+	// start xrnd server
+	proc := f.XDStart()
 	defer proc.Stop(false)
 
 	cdc := app.MakeCodec()
@@ -798,12 +576,12 @@ func TestGaiaCLIEncode(t *testing.T) {
 	require.Equal(t, "deadbeef", decodedTx.Memo)
 }
 
-func TestGaiaCLIMultisignSortSignatures(t *testing.T) {
+func TestXrnCLIMultisignSortSignatures(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 
-	// start gaiad server with minimum fees
-	proc := f.GDStart()
+	// start xrnd server with minimum fees
+	proc := f.XDStart()
 	defer proc.Stop(false)
 
 	fooBarBazAddr := f.KeyAddress(keyFooBarBaz)
@@ -860,12 +638,12 @@ func TestGaiaCLIMultisignSortSignatures(t *testing.T) {
 	require.True(t, success)
 }
 
-func TestGaiaCLIMultisign(t *testing.T) {
+func TestXrnCLIMultisign(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 
-	// start gaiad server with minimum fees
-	proc := f.GDStart()
+	// start xrnd server with minimum fees
+	proc := f.XDStart()
 	defer proc.Stop(false)
 
 	fooBarBazAddr := f.KeyAddress(keyFooBarBaz)
@@ -923,7 +701,7 @@ func TestGaiaCLIMultisign(t *testing.T) {
 	require.True(t, success)
 }
 
-func TestGaiaCLIConfig(t *testing.T) {
+func TestXrnCLIConfig(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 	node := fmt.Sprintf("%s:%s", f.RPCAddr, f.Port)
@@ -950,7 +728,7 @@ trust-node = true
 	f.Cleanup()
 }
 
-func TestGaiadCollectGentxs(t *testing.T) {
+func TestXrndCollectGentxs(t *testing.T) {
 	t.Parallel()
 	f := NewFixtures(t)
 
@@ -969,7 +747,7 @@ func TestGaiadCollectGentxs(t *testing.T) {
 	f.CLIConfig("output", "json")
 
 	// Run init
-	f.GDInit(keyFoo)
+	f.XDInit(keyFoo)
 
 	// Add account to genesis.json
 	f.AddGenesisAccount(f.KeyAddress(keyFoo), startCoins)
@@ -983,7 +761,7 @@ func TestGaiadCollectGentxs(t *testing.T) {
 	f.Cleanup(gentxDir)
 }
 
-func TestGaiadAddGenesisAccount(t *testing.T) {
+func TestXrndAddGenesisAccount(t *testing.T) {
 	t.Parallel()
 	f := NewFixtures(t)
 
@@ -1002,7 +780,7 @@ func TestGaiadAddGenesisAccount(t *testing.T) {
 	f.CLIConfig("output", "json")
 
 	// Run init
-	f.GDInit(keyFoo)
+	f.XDInit(keyFoo)
 
 	// Add account to genesis.json
 	bazCoins := sdk.Coins{
@@ -1019,30 +797,12 @@ func TestGaiadAddGenesisAccount(t *testing.T) {
 	require.True(t, genesisState.Accounts[1].Coins.IsEqual(bazCoins))
 }
 
-func TestSlashingGetParams(t *testing.T) {
-	t.Parallel()
-	f := InitFixtures(t)
-
-	// start gaiad server
-	proc := f.GDStart()
-	defer proc.Stop(false)
-
-	params := f.QuerySlashingParams()
-	require.Equal(t, time.Duration(120000000000), params.MaxEvidenceAge)
-	require.Equal(t, int64(100), params.SignedBlocksWindow)
-	require.Equal(t, sdk.NewDecWithPrec(5, 1), params.MinSignedPerWindow)
-
-	sinfo := f.QuerySigningInfo(f.GDTendermint("show-validator"))
-	require.Equal(t, int64(0), sinfo.StartHeight)
-	require.False(t, sinfo.Tombstoned)
-}
-
 func TestValidateGenesis(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
 
-	// start gaiad server
-	proc := f.GDStart()
+	// start xrnd server
+	proc := f.XDStart()
 	defer proc.Stop(false)
 
 	f.ValidateGenesis()

@@ -8,7 +8,7 @@ test:
 	go test ./... -godog.strict
 
 integration_test:
-	@go test -p 4 `go list github.com/cosmos/cosmos-sdk/cmd/gaia/cli_test` -tags=cli_test
+	@go test -p 4 `go list gitlab.com/regen-network/regen-ledger/cmd/integration_test` -tags=cli_test
 
 lint:
 	go get -u golang.org/x/lint/golint
