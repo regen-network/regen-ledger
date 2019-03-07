@@ -20,83 +20,141 @@ import (
 	"testing"
 )
 
+// This file gives a walk-through tutorial of how to create property-based unit tests
+// using gopter. It also shows the generally method for doing unit tests of Cosmos SDK
+// module keepers
+//
+// Property-based testing is a methodology of using randomly generated values in testing.
+// It allows us to easily test a lot more edge cases than we could create manually.
+// Here's a good intro article: https://hypothesis.works/articles/what-is-property-based-testing/
+
 // This struct defines a context that any test in this module
-// can use to access a Keeper and an SDK context
+// can use to access a Keeper and an SDK context. When testing a
+// keeper we would usually define something like this at minimum
+// and we will often want to add other values here - like keepers
+// for other modules we're using. See the many examples in the Cosmos SDK
+// itself for more info
 type testCtx struct {
 	keeper Keeper
 	ctx    sdk.Context
 }
 
-// This is can be used by any test to configure a testCtx
+// This function actually sets up our testCtx and can be used by
+// any test in this module to get an instance of the keeper
 func setupTestCtx() testCtx {
+	// Create a memory DB and a CommitMultiStore. In production
+	// these things are done in sdk.BaseApp using a disk-backed DB
 	db := dbm.NewMemDB()
+	cms := store.NewCommitMultiStore(db)
+
+	// Create a key for our store. In more complex cases we'll need keys for other module stores
 	key := sdk.NewKVStoreKey("geo")
 
-	cms := store.NewCommitMultiStore(db)
-	cms.MountStoreWithDB(key, sdk.StoreTypeIAVL, db)
-	_ = cms.LoadLatestVersion()
-
+	// Create an amino codec
 	cdc := codec.New()
+	// and register it with this module. In more complex cases, we'll have to register other module codecs
 	RegisterCodec(cdc)
 
+	// Create a Keeper for this module. In more complex cases, we'll need to create keepers for other modules and
+	// link them together
+	keeper := NewKeeper(key, cdc, nil)
+
+	// Mount the key on our store. For more complex keeper's, we'll have to mount the keys for other module stores.
+	// The equivalent of app.MountStores used in production
+	cms.MountStoreWithDB(key, sdk.StoreTypeIAVL, db)
+
+	// Load the latest version of the CommitMultiStore and
+	// create an sdk.Context for our CommitMultiStore. Done inside sdk.BaseApp in production
+	_ = cms.LoadLatestVersion()
 	ctx := sdk.NewContext(cms, abci.Header{}, false, log.NewNopLogger())
 
-	return testCtx{
-		NewKeeper(key, cdc, nil),
-		ctx,
-	}
+	// Return a testCtx
+	return testCtx{keeper, ctx}
 }
 
-// This example test is going to generate some random geometries (geom.T),
-// store them on the blockchain and test that we can retrieve the same geometries back.
+// This example test is going to generate some random geometries (geom.T) using the property-based testing framework
+// provided by gopter, store them on the blockchain and test that we can retrieve the same geometries back.
 //
-// In order to do that we need to create a generator for Geometry that will generate
-// random geometry values that correspond to what our geo module accepts.
-//
-// The main methods to use for creating new generators using gopter are
-// are gopter.DeriveGen, gopter.Gen.Map and gopter.Gen.FlatMap. See FeatureTypeGen(),
-// GenWGS84XYCoord(), and GenGeomT() for walkthroughs of how to create generators
-// using these functions.
 func TestKeeper_StoreGeometry(t *testing.T) {
+	// Setup the test context
 	setup := setupTestCtx()
+
+	// Create new properties for us to define gopter property tests.
+	// We could optionally pass in some parameters here, for example to
+	// change the number of tests to run for each property (the default is 100).
 	properties := gopter.NewProperties(nil)
 
-	properties.Property("can store and retrieve geo shapes", prop.ForAll(
-		func(g geom.T) (bool, error) {
-			bz, err := ewkb.Marshal(g, binary.LittleEndian)
-			if err != nil {
-				return false, err
-			}
-			typ, err := GetFeatureType(g)
-			if err != nil {
-				return false, err
-			}
-			addr, err := setup.keeper.StoreGeometry(setup.ctx, Geometry{EWKB: bz, Type: typ})
-			if err != nil {
-				return false, fmt.Errorf(err.Error())
-			}
-			bzCopy := setup.keeper.GetGeometry(setup.ctx, addr)
-			if !bytes.Equal(bz, bzCopy) {
-				return false, fmt.Errorf("EWKB doesn't match")
-			}
-			gCopy, err := ewkb.Unmarshal(bzCopy)
-			if err != nil {
-				return false, err
-			}
-			if g.Layout() != gCopy.Layout() || g.SRID() != gCopy.SRID() { // TODO compare coords
-				return false, fmt.Errorf("geometries don't match")
-			}
-			return true, nil
-		},
-		GenGeomT(),
-	))
+	// This adds a gopter.Prop to test
+	properties.Property("can store and retrieve geo shapes",
+		// prop.ForAll creates a gopter.Prop that tests a "for all"
+		// type assertion. In this case "for all geometries that we can create, we can store and retrieve them"
+		prop.ForAll(
+			// The first argument to ForAll is a function that takes a generated value and
+			// tests whether our property holds for that generated value. In this case we
+			// generate a geometry (our test is "for all geometries") and test whether the property
+			// applies. We return true if the property holds or false and an error value if it fails
+			func(g geom.T) (bool, error) {
+				// Convert the geometry to EWKB format
+				bz, err := ewkb.Marshal(g, binary.LittleEndian)
+				if err != nil {
+					return false, err
+				}
 
+				// Get the FeatureType of the geom
+				typ, err := GetFeatureType(g)
+				if err != nil {
+					return false, err
+				}
+
+				// Try to store the geometry
+				addr, err := setup.keeper.StoreGeometry(setup.ctx, Geometry{EWKB: bz, Type: typ})
+				if err != nil {
+					return false, fmt.Errorf(err.Error())
+				}
+
+				// Try to retrieve the geometry
+				bzCopy := setup.keeper.GetGeometry(setup.ctx, addr)
+				if !bytes.Equal(bz, bzCopy) {
+					return false, fmt.Errorf("EWKB doesn't match")
+				}
+
+				// Convert it back from EWKB format
+				gCopy, err := ewkb.Unmarshal(bzCopy)
+				if err != nil {
+					return false, err
+				}
+
+				// Check that things match
+				if g.Layout() != gCopy.Layout() || g.SRID() != gCopy.SRID() { // TODO compare coords
+					return false, fmt.Errorf("geometries don't match")
+				}
+
+				// If we get here the prioperty held successfully
+				return true, nil
+			},
+
+			// The second argument of ForAll is the generator that generates the values
+			// we use the above function to test a property for
+			GenGeomT(),
+			// GenGeomT() returns a custom generator (an instance of gopter.Gen).
+			// While gopter's gen package provides basic generators we can use for many cases,
+			// we'll often need to create custom generators. The main methods used
+			// here for doing so are gopter.DeriveGen, gopter.Gen.Map and gopter.Gen.FlatMap.
+			// The rest of this file gives a walkthrough of how to use them
+		))
+
+	// Run the property tests
 	properties.TestingRun(t)
 }
 
-// This test is just here show how to generate sample
+// Before we get into creating custom generators, this test is here to show us how to test
+// generators using their Sample method
 func TestGenerators(t *testing.T) {
-	// We can use Sample to generate a sample value for a Gen to see if our generator is working correctly
+	// Sample generates a sample value of a Gen. We can use it to see if generator is working as we expect it
+	// It returns two values - the first the generated value (if one was generated) and the second, a bool
+	// that indicates whether a value was or wasn't generated. Sometimes due to the state of a generator,
+	// gopter can't generate a value and you'll either need to do some tweaking of your generator or call Sample()
+	// a few more times
 	theFeatureType, wasGenerated := FeatureTypeGen().Sample()
 	fmt.Println("A random FeatureType", theFeatureType, "was generated", wasGenerated)
 
