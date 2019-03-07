@@ -1,6 +1,7 @@
 package geo
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -48,7 +49,7 @@ func FeatureTypeGen() gopter.Gen {
 	})
 }
 
-func GenWGS84XYCoords() gopter.Gen {
+func GenWGS84XYCoord() gopter.Gen {
 	return gopter.DeriveGen(
 		func(x float64, y float64) geom.Coord {
 			return geom.Coord([]float64{x, y})
@@ -64,7 +65,7 @@ func GenWGS84XYCoords() gopter.Gen {
 func GenCoords() gopter.Gen {
 	return gen.IntRange(3, 50).FlatMap(
 		func(n interface{}) gopter.Gen {
-			return gen.SliceOfN(n.(int), GenWGS84XYCoords())
+			return gen.SliceOfN(n.(int), GenWGS84XYCoord())
 		},
 		reflect.TypeOf([]geom.Coord{}),
 	)
@@ -78,16 +79,17 @@ func GenGeomT() gopter.Gen {
 				return gopter.DeriveGen(
 					func(coord geom.Coord) *geom.Point {
 						pt := geom.NewPoint(geom.XY)
-						pt.SetSRID(4326) //WGS84
+						pt.SetSRID(WGS84_SRID)
 						return pt.MustSetCoords(coord)
 					},
 					func(pt *geom.Point) geom.Coord { return pt.Coords() },
-					GenWGS84XYCoords(),
+					GenWGS84XYCoord(),
 				)
 			case LineString:
 				return gopter.DeriveGen(
 					func(coords []geom.Coord) *geom.LineString {
 						ls := geom.NewLineString(geom.XY)
+						ls.SetSRID(WGS84_SRID)
 						return ls.MustSetCoords(coords)
 					},
 					func(poly *geom.LineString) []geom.Coord { return poly.Coords() },
@@ -97,6 +99,7 @@ func GenGeomT() gopter.Gen {
 				return gopter.DeriveGen(
 					func(ring []geom.Coord) *geom.Polygon {
 						poly := geom.NewPolygon(geom.XY)
+						poly.SetSRID(WGS84_SRID)
 						return poly.MustSetCoords([][]geom.Coord{ring})
 					},
 					func(poly *geom.Polygon) []geom.Coord { return poly.Coords()[0] },
@@ -106,18 +109,19 @@ func GenGeomT() gopter.Gen {
 				return gopter.DeriveGen(
 					func(coords []geom.Coord) *geom.MultiPoint {
 						pt := geom.NewMultiPoint(geom.XY)
-						pt.SetSRID(4326) //WGS84
+						pt.SetSRID(WGS84_SRID)
 						return pt.MustSetCoords(coords)
 					},
 					func(pt *geom.MultiPoint) []geom.Coord {
 						return pt.Coords()
 					},
-					GenWGS84XYCoords(),
+					GenCoords(),
 				)
 			case MultiLineString:
 				return gopter.DeriveGen(
 					func(coords []geom.Coord) *geom.MultiLineString {
 						ls := geom.NewMultiLineString(geom.XY)
+						ls.SetSRID(WGS84_SRID)
 						return ls.MustSetCoords([][]geom.Coord{coords})
 					},
 					func(poly *geom.MultiLineString) []geom.Coord { return poly.Coords()[0] },
@@ -127,7 +131,8 @@ func GenGeomT() gopter.Gen {
 				return gopter.DeriveGen(
 					func(ring []geom.Coord) *geom.MultiPolygon {
 						poly := geom.NewMultiPolygon(geom.XY)
-						return poly.MustSetCoords([][][]geom.Coord{[][]geom.Coord{ring}})
+						poly.SetSRID(WGS84_SRID)
+						return poly.MustSetCoords([][][]geom.Coord{{ring}})
 					},
 					func(poly *geom.MultiPolygon) []geom.Coord { return poly.Coords()[0][0] },
 					GenCoords(),
@@ -153,11 +158,22 @@ func TestKeeper_StoreGeometry(t *testing.T) {
 			if err != nil {
 				return false, err
 			}
-			_, err = setup.keeper.StoreGeometry(setup.ctx, Geometry{EWKB: bz, Type: typ})
+			addr, err := setup.keeper.StoreGeometry(setup.ctx, Geometry{EWKB: bz, Type: typ})
 			if err != nil {
 				return false, fmt.Errorf(err.Error())
 			}
-			panic("TODO: should Store and Get Geometry use the URL or []byte hash?")
+			bzCopy := setup.keeper.GetGeometry(setup.ctx, addr)
+			if !bytes.Equal(bz, bzCopy) {
+				return false, fmt.Errorf("EWKB doesn't match")
+			}
+			gCopy, err := ewkb.Unmarshal(bzCopy)
+			if err != nil {
+				return false, err
+			}
+			if g.Layout() != gCopy.Layout() || g.SRID() != gCopy.SRID() { // TODO compare coords
+				return false, fmt.Errorf("geometries don't match")
+			}
+			return true, nil
 		},
 		GenGeomT(),
 	))

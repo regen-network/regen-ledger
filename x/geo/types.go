@@ -27,6 +27,8 @@ type Geometry struct {
 	EWKB []byte `json:"ewkb,omitempty"`
 }
 
+type GeoAddress []byte
+
 const PostgresSchema = `
 CREATE TABLE geo (
   url text NOT NULL PRIMARY KEY,
