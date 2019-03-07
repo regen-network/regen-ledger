@@ -32,9 +32,7 @@ func (keeper Keeper) GetGeometry(ctx sdk.Context, addr GeoAddress) []byte {
 	if bz == nil {
 		return nil
 	}
-	var geom []byte
-	keeper.cdc.MustUnmarshalBinaryBare(bz, &geom)
-	return geom
+	return bz
 }
 
 func GeoURL(addr GeoAddress) string {
@@ -44,7 +42,6 @@ func GeoURL(addr GeoAddress) string {
 func (keeper Keeper) StoreGeometry(ctx sdk.Context, geometry Geometry) (addr GeoAddress, err sdk.Error) {
 	// TODO consume gas
 	store := ctx.KVStore(keeper.storeKey)
-	bz := keeper.cdc.MustMarshalBinaryBare(geometry)
 	hash, e := blake2b.New256(nil)
 	if e != nil {
 		return nil, sdk.ErrUnknownRequest(e.Error())
@@ -56,7 +53,7 @@ func (keeper Keeper) StoreGeometry(ctx sdk.Context, geometry Geometry) (addr Geo
 	if existing != nil {
 		return nil, sdk.ErrUnknownRequest("already exists")
 	}
-	store.Set(hashBz, bz)
+	store.Set(hashBz, ewkb)
 
 	// Do Indexing
 	if keeper.pgIndexer != nil {

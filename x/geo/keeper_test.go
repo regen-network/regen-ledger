@@ -80,9 +80,11 @@ func TestKeeper_StoreGeometry(t *testing.T) {
 	setup := setupTestCtx()
 
 	// Create new properties for us to define gopter property tests.
-	// We could optionally pass in some parameters here, for example to
+	// We can pass in some parameters here, for example to
 	// change the number of tests to run for each property (the default is 100).
-	properties := gopter.NewProperties(nil)
+	params := gopter.DefaultTestParameters()
+	params.MaxDiscardRatio = 10 // TODO: fix this, we need to set it because our generator produces so many nil values
+	properties := gopter.NewProperties(params)
 
 	// This adds a gopter.Prop to test
 	properties.Property("can store and retrieve geo shapes",
@@ -125,34 +127,38 @@ func TestKeeper_StoreGeometry(t *testing.T) {
 				}
 
 				// Check that things match
-				if g.Layout() != gCopy.Layout() || g.SRID() != gCopy.SRID() { // TODO compare coords
-					return false, fmt.Errorf("geometries don't match")
+				err = GeomEqual(g, gCopy)
+				if err != nil {
+					return false, err
 				}
 
-				// If we get here the prioperty held successfully
+				// If we get here the property held successfully
 				return true, nil
 			},
 
 			// The second argument of ForAll is the generator that generates the values
 			// we use the above function to test a property for
 			GenGeomT(),
-			// GenGeomT() returns a custom generator (an instance of gopter.Gen).
-			// While gopter's gen package provides basic generators we can use for many cases,
-			// we'll often need to create custom generators. The main methods used
-			// here for doing so are gopter.DeriveGen, gopter.Gen.Map and gopter.Gen.FlatMap.
-			// The rest of this file gives a walkthrough of how to use them
+			// GenGeomT() returns a custom generator (an instance of gopter.Gen) that we have created in this file
+			//
+			// Gopter's gen package provides basic generators that you should familiarize yourself with first:
+			// https://godoc.org/github.com/leanovate/gopter/gen.
+			//
+			// The rest of this file gives a walkthrough of how to create customer generators using the built-in
+			// generators and the DeriveGen and FlatMap methods. This approach should enable you to create custom
+			// generators for most use cases. Occasionally, you may need other functionality like the SuchThat() or
+			// Map() method. Refer to the gopter documentation for more details.
 		))
 
 	// Run the property tests
 	properties.TestingRun(t)
 }
 
-// Before we get into creating custom generators, this test is here to show us how to test
-// generators using their Sample method
+// Before we get into creating custom generators, this test shows us how to play around with generators using their Sample method
 func TestGenerators(t *testing.T) {
-	// Sample generates a sample value of a Gen. We can use it to see if generator is working as we expect it
-	// It returns two values - the first the generated value (if one was generated) and the second, a bool
-	// that indicates whether a value was or wasn't generated. Sometimes due to the state of a generator,
+	// Sample() generates a sample value of a Gen. We can use it to see if generator is working as we expect it.
+	// It returns two values - first the generated value (if one was generated) and second, a bool
+	// indicating whether a value was or wasn't generated. Sometimes due to the state of a generator,
 	// gopter can't generate a value and you'll either need to do some tweaking of your generator or call Sample()
 	// a few more times
 	theFeatureType, wasGenerated := FeatureTypeGen().Sample()
@@ -172,21 +178,10 @@ func TestGenerators(t *testing.T) {
 	fmt.Println("A random geometry", string(geoJson), "was generated", wasGenerated)
 }
 
-// This generates an int using gen.IntRange and converts it to a FeatureType using gopter.Map
-func FeatureTypeGen() gopter.Gen {
-	// IntRange generates int's in a specified range (in this example we use the min and max values of
-	// the FeatureType enumeration). IntRange is included in the gen package of gopter
-	// along with a lot of other helpful generators that you should take a look at
-	// (https://godoc.org/github.com/leanovate/gopter/gen).
-	return gen.IntRange(int(Point), int(MultiPolygon)).
-		// Map is a method on a Gen that takes a value produced by that generator
-		// and lets the user provide a function that converts that value to another type.
-		// It is used here to cast an int as a FeatureType
-		Map(func(x int) FeatureType { return FeatureType(x) })
-}
-
-// This generates a geom.Coord with simple XY layout for the WGS84 projection
-// It uses DeriveGen to take two float64's and turn them into a Coord
+// This is our first custom generator.
+// It generates a geom.Coord with a latitude/longitude (XY) coordinate in the WGS84 projection.
+// It uses DeriveGen to take two float64's and turn them into a Coord.
+// DeriveGen is the recommended method to create new generators when possible.
 func GenWGS84XYCoord() gopter.Gen {
 	return gopter.DeriveGen(
 		// The first argument to DeriveGen is a function that takes the generated
@@ -211,7 +206,10 @@ func GenWGS84XYCoord() gopter.Gen {
 	)
 }
 
-// This function generates a slice of coordinates using FlatMap
+// This function generates a slice of coordinates using FlatMap. FlatMap is only to be used instead of DeriveGen
+// when we know we need to create a new generator from a generated value. If you are just mapping values from some
+// existing values into a new type, you should probably use DeriveGen. Here we are randomly generated a number,
+// and then creating a new generator based on that number
 func GenCoords() gopter.Gen {
 	// We use gen.IntRange to generate the length of the slice that we are going to create randomly.
 	// In this case we've decided to make a slice with 3 to 50 elements
@@ -236,6 +234,24 @@ func GenCoords() gopter.Gen {
 			// our new generator. reflect.TypeOf can be used to get a Type from any value
 			reflect.TypeOf([]geom.Coord{}),
 		)
+}
+
+// This generates an int using gen.IntRange and converts it to a FeatureType using gopter.DeriveGen
+func FeatureTypeGen() gopter.Gen {
+	// along with a lot of other helpful generators that you should take a look at
+	//
+	return gopter.DeriveGen(
+		// cast int to FeatureType
+		func(x int) FeatureType {
+			return FeatureType(x)
+		},
+		// cast FeatureType back to int
+		func(ft FeatureType) int {
+			return int(ft)
+		},
+		// gen.IntRange generates int's in the range of min and max values of the FeatureType enumeration
+		gen.IntRange(int(Point), int(MultiPolygon)),
+	)
 }
 
 // This function generates a geom.T using FlatMap. It looks more involved
@@ -322,4 +338,46 @@ func GenGeomT() gopter.Gen {
 		},
 		// The interface type for geom.T (go requires some strange syntax to get this)
 		reflect.TypeOf((*geom.T)(nil)))
+}
+
+func GeomEqual(a geom.T, b geom.T) error {
+	if a.Layout() != b.Layout() {
+		return fmt.Errorf("layouts not equal")
+	}
+	if a.SRID() != b.SRID() {
+		return fmt.Errorf("SRID's not equal")
+	}
+	if !floatSlicesEqual(a.FlatCoords(), b.FlatCoords()) {
+		return fmt.Errorf("flat coords not equal: %+v, %+v", a.FlatCoords(), b.FlatCoords())
+	}
+	if !intSlicesEqual(a.Ends(), b.Ends()) {
+		return fmt.Errorf("ends not equal: %+v, %+v", a.Ends(), b.Ends())
+	}
+	return nil
+}
+
+func floatSlicesEqual(a []float64, b []float64) bool {
+
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func intSlicesEqual(a []int, b []int) bool {
+
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+	return true
 }
