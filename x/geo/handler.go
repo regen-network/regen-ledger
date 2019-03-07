@@ -24,5 +24,11 @@ func NewHandler(keeper Keeper) sdk.Handler {
 }
 
 func handleMsgStoreGeometry(ctx sdk.Context, keeper Keeper, msg MsgStoreGeometry) sdk.Result {
-	return keeper.StoreGeometry(ctx, msg.Data)
+	url, err := keeper.StoreGeometry(ctx, msg.Data)
+	if err != nil {
+		return err.Result()
+	}
+	tags := sdk.EmptyTags()
+	tags = tags.AppendTag("geo.id", url)
+	return sdk.Result{Tags: tags}
 }

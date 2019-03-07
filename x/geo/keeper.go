@@ -36,28 +36,23 @@ func (keeper Keeper) GetGeometry(ctx sdk.Context, hash []byte) []byte {
 	return geom
 }
 
-func (keeper Keeper) StoreGeometry(ctx sdk.Context, geometry Geometry) sdk.Result {
+func (keeper Keeper) StoreGeometry(ctx sdk.Context, geometry Geometry) (url string, err sdk.Error) {
 	// TODO consume gas
 	store := ctx.KVStore(keeper.storeKey)
 	bz := keeper.cdc.MustMarshalBinaryBare(geometry)
-	hash, err := blake2b.New256(nil)
-	if err != nil {
-		panic(err)
+	hash, e := blake2b.New256(nil)
+	if e != nil {
+		return "", sdk.ErrUnknownRequest(e.Error())
 	}
 	ewkb := geometry.EWKB
 	hash.Write(ewkb)
 	hashBz := hash.Sum(nil)
 	existing := store.Get(hashBz)
 	if existing != nil {
-		return sdk.Result{
-			Code: sdk.CodeUnknownRequest,
-			Log:  "already exists",
-		}
+		return "", sdk.ErrUnknownRequest("already exists")
 	}
 	store.Set(hashBz, bz)
-	tags := sdk.EmptyTags()
-	url := util.MustEncodeBech32(Bech32Prefix, hashBz)
-	tags = tags.AppendTag("geo.id", url)
+	url = util.MustEncodeBech32(Bech32Prefix, hashBz)
 
 	// Do Indexing
 	if keeper.pgIndexer != nil {
@@ -66,7 +61,7 @@ func (keeper Keeper) StoreGeometry(ctx sdk.Context, geometry Geometry) sdk.Resul
 			url, ewkb, ewkb)
 	}
 
-	return sdk.Result{Tags: tags}
+	return url, nil
 }
 
 func MustDecodeBech32GeoID(bech string) []byte {
