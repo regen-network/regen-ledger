@@ -1,0 +1,29 @@
+@startuml
+actor Requester
+database Blockchain
+entity Oracle1
+entity Oracle2
+Requester -> Blockchain: MsgRequestCompute
+Blockchain --> Oracle1: (1st oracle selected randomly)
+activate Oracle1
+Oracle1 -> Oracle1: run computation
+Oracle1 -> Blockchain: MsgCommitResult
+deactivate Oracle1
+
+Blockchain --> Oracle2: (2nd oracle selected randomly)
+activate Oracle2
+Oracle2 -> Blockchain: MsgCommitResult
+deactivate Oracle2
+
+...end of round randomly determined...
+
+Oracle1 -> Blockchain: MsgVoteResult
+Oracle2 -> Blockchain: MsgVoteResult
+
+alt oracles agree
+    Oracle1 -> Blockchain: MsgShareResult
+else oracles disagree
+    ...run another round...
+end
+
+@enduml
