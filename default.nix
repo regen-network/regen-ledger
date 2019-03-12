@@ -3,7 +3,7 @@ with import <nixpkgs>{};
 buildGoPackage rec {
   name = "regen-ledger";
 
-  goPackagePath = "gitlab.com/regen-network/regen-ledger";
+  goPackagePath = "github.com/regen-network/regen-ledger";
   subPackages = [ "cmd/xrnd" "cmd/xrncli" ];
 
   src = ./.;
@@ -20,6 +20,6 @@ buildGoPackage rec {
   meta = with stdenv.lib; {
     description = "Regen Networks's Regen Ledger distributed ledger for planetary regeneration";
     # TODO license = licenses.bsd3;
-    homepage = https://gitlab.com/regen-network/regen-ledger;
+    homepage = https://github.com/regen-network/regen-ledger;
   };
 }

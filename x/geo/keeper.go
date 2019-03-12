@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab.com/regen-network/regen-ledger/index/postgresql"
-	"gitlab.com/regen-network/regen-ledger/util"
+	"github.com/regen-network/regen-ledger/index/postgresql"
+	"github.com/regen-network/regen-ledger/util"
 	"golang.org/x/crypto/blake2b"
 )
 

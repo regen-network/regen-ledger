@@ -9,7 +9,7 @@ functionality specified may be at various stages of implementation,
 this document will attempt to track those statuses but there may be
 significant discrepancies until the system is stable. Community input
 is definitely welcome. The primary forum for public comments is
-[Gitlab Issues](https://gitlab.com/regen-network/regen-ledger/issues).
+[Gitlab Issues](https://github.com/regen-network/regen-ledger/issues).
 
 ### Philosophy
 

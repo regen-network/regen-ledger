@@ -1,11 +1,11 @@
 package cli
 
 import (
+	"github.com/regen-network/regen-ledger/x/consortium"
+	"github.com/regen-network/regen-ledger/x/proposal"
+	proposalcli "github.com/regen-network/regen-ledger/x/proposal/client/cli"
+	"github.com/regen-network/regen-ledger/x/upgrade"
 	"github.com/spf13/cobra"
-	"gitlab.com/regen-network/regen-ledger/x/consortium"
-	"gitlab.com/regen-network/regen-ledger/x/proposal"
-	proposalcli "gitlab.com/regen-network/regen-ledger/x/proposal/client/cli"
-	"gitlab.com/regen-network/regen-ledger/x/upgrade"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/codec"

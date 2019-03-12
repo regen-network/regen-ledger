@@ -1,4 +1,4 @@
-module gitlab.com/regen-network/regen-ledger
+module github.com/regen-network/regen-ledger
 
 require (
 	github.com/DATA-DOG/godog v0.7.10

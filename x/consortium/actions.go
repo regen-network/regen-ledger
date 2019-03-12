@@ -3,8 +3,8 @@ package consortium
 import (
 	"encoding/json"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/x/upgrade"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"gitlab.com/regen-network/regen-ledger/x/upgrade"
 )
 
 type ActionScheduleUpgrade struct {

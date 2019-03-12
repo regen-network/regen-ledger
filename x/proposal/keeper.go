@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab.com/regen-network/regen-ledger/util"
+	"github.com/regen-network/regen-ledger/util"
 	"golang.org/x/crypto/blake2b"
 )
 

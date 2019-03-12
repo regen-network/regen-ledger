@@ -3,7 +3,7 @@
 // keepers for custom indexing
 package postgresql
 
-import "gitlab.com/regen-network/regen-ledger/index"
+import "github.com/regen-network/regen-ledger/index"
 
 // Indexer is a PostgreSQL based Indexer
 type Indexer interface {

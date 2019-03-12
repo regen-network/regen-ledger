@@ -2,7 +2,7 @@ package esp
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab.com/regen-network/regen-ledger/x/geo"
+	"github.com/regen-network/regen-ledger/x/geo"
 )
 
 //type SchemaType int
