@@ -96,44 +96,7 @@ func TestKeeper_StoreGeometry(t *testing.T) {
 			// generate a geometry (our test is "for all geometries") and test whether the property
 			// applies. We return true if the property holds or false and an error value if it fails
 			func(g geom.T) (bool, error) {
-				// Convert the geometry to EWKB format
-				bz, err := ewkb.Marshal(g, binary.LittleEndian)
-				if err != nil {
-					return false, err
-				}
-
-				// Get the FeatureType of the geom
-				typ, err := GetFeatureType(g)
-				if err != nil {
-					return false, err
-				}
-
-				// Try to store the geometry
-				addr, err := setup.keeper.StoreGeometry(setup.ctx, Geometry{EWKB: bz, Type: typ})
-				if err != nil {
-					return false, fmt.Errorf(err.Error())
-				}
-
-				// Try to retrieve the geometry
-				bzCopy := setup.keeper.GetGeometry(setup.ctx, addr)
-				if !bytes.Equal(bz, bzCopy) {
-					return false, fmt.Errorf("EWKB doesn't match")
-				}
-
-				// Convert it back from EWKB format
-				gCopy, err := ewkb.Unmarshal(bzCopy)
-				if err != nil {
-					return false, err
-				}
-
-				// Check that things match
-				err = GeomEqual(g, gCopy)
-				if err != nil {
-					return false, err
-				}
-
-				// If we get here the property held successfully
-				return true, nil
+				return CanSaveAndRetrieveAGeometry(setup, g)
 			},
 
 			// The second argument of ForAll is the generator that generates the values
@@ -145,13 +108,64 @@ func TestKeeper_StoreGeometry(t *testing.T) {
 			// https://godoc.org/github.com/leanovate/gopter/gen.
 			//
 			// The rest of this file gives a walkthrough of how to create customer generators using the built-in
-			// generators and the DeriveGen and FlatMap methods. This approach should enable you to create custom
-			// generators for most use cases. Occasionally, you may need other functionality like the SuchThat() or
-			// Map() method. Refer to the gopter documentation for more details.
+			// generators and the Map, DeriveGen and FlatMap methods. This approach should enable you to create custom
+			// generators for most use cases. Occasionally, you may need other functionality like the SuchThat()
+			// method. Refer to the gopter documentation for more details.
 		))
 
 	// Run the property tests
 	properties.TestingRun(t)
+}
+
+func CanSaveAndRetrieveAGeometry(setup testCtx, g geom.T) (bool, error) {
+	// Convert the geometry to EWKB format
+	bz, err := ewkb.Marshal(g, binary.LittleEndian)
+	if err != nil {
+		return false, err
+	}
+
+	// Get the FeatureType of the geom
+	typ, err := GetFeatureType(g)
+	if err != nil {
+		return false, err
+	}
+
+	// Try to store the geometry
+	addr, err := setup.keeper.StoreGeometry(setup.ctx, Geometry{EWKB: bz, Type: typ})
+	if err != nil {
+		return false, fmt.Errorf(err.Error())
+	}
+
+	// Try to retrieve the geometry
+	bzCopy := setup.keeper.GetGeometry(setup.ctx, addr)
+	if !bytes.Equal(bz, bzCopy) {
+		return false, fmt.Errorf("EWKB doesn't match")
+	}
+
+	// Convert it back from EWKB format
+	gCopy, err := ewkb.Unmarshal(bzCopy)
+	if err != nil {
+		return false, err
+	}
+
+	// Check that things match
+	err = GeomEqual(g, gCopy)
+	if err != nil {
+		return false, err
+	}
+
+	// If we get here the property held successfully
+	return true, nil
+}
+
+func GenGeomsTest(geomGen gopter.Gen) {
+	geoJsonGen := geomGen.Map(func(g geom.T) string {
+		geoJsonBz, _ := geojson.Marshal(g.(geom.T))
+		geoJsonStr := string(geoJsonBz)
+		return geoJsonStr
+	})
+	samples, wasGenerated := gen.SliceOfN(10, geoJsonGen).Sample()
+	fmt.Println("Random geometries", samples, "were generated", wasGenerated)
 }
 
 // Before we get into creating custom generators, this test shows us how to play around with generators using their Sample method
@@ -170,12 +184,13 @@ func TestGenerators(t *testing.T) {
 	coords, wasGenerated := GenCoords().Sample()
 	fmt.Println("A random slice of WGS84 Coord's", coords, "was generated", wasGenerated)
 
-	g, wasGenerated := GenGeomT().Sample()
-	var geoJson []byte
-	if wasGenerated {
-		geoJson, _ = geojson.Marshal(g.(geom.T))
-	}
-	fmt.Println("A random geometry", string(geoJson), "was generated", wasGenerated)
+	GenGeomsTest(GenPoint())
+	GenGeomsTest(GenLineString())
+	GenGeomsTest(GenPolygon())
+	GenGeomsTest(GenMultiPoint())
+	GenGeomsTest(GenMultiLineString())
+	GenGeomsTest(GenPolygon())
+	GenGeomsTest(GenGeomT())
 }
 
 // This is our first custom generator.
@@ -264,72 +279,22 @@ func GenGeomT() gopter.Gen {
 			switch ft.(FeatureType) {
 			case Point:
 				// Here DeriveGen is used to convert a Coord to a Point with the WGS84 SRID
-				return gopter.DeriveGen(
-					func(coord geom.Coord) *geom.Point {
-						pt := geom.NewPoint(geom.XY)
-						pt.SetSRID(WGS84_SRID)
-						return pt.MustSetCoords(coord)
-					},
-					func(pt *geom.Point) geom.Coord { return pt.Coords() },
-					GenWGS84XYCoord(),
-				)
+				return GenPoint()
 			case LineString:
 				// Here DeriveGen is used to convert a []Coord to LineString
-				return gopter.DeriveGen(
-					func(coords []geom.Coord) *geom.LineString {
-						ls := geom.NewLineString(geom.XY)
-						ls.SetSRID(WGS84_SRID)
-						return ls.MustSetCoords(coords)
-					},
-					func(poly *geom.LineString) []geom.Coord { return poly.Coords() },
-					GenCoords(),
-				)
+				return GenLineString()
 			case Polygon:
 				// Here DeriveGen is used to convert a []Coord to Polygon
-				return gopter.DeriveGen(
-					func(ring []geom.Coord) *geom.Polygon {
-						poly := geom.NewPolygon(geom.XY)
-						poly.SetSRID(WGS84_SRID)
-						return poly.MustSetCoords([][]geom.Coord{ring})
-					},
-					func(poly *geom.Polygon) []geom.Coord { return poly.Coords()[0] },
-					GenCoords(),
-				)
+				return GenPolygon()
 			case MultiPoint:
 				// Here DeriveGen is used to convert a []Coord to MultiPoint
-				return gopter.DeriveGen(
-					func(coords []geom.Coord) *geom.MultiPoint {
-						pt := geom.NewMultiPoint(geom.XY)
-						pt.SetSRID(WGS84_SRID)
-						return pt.MustSetCoords(coords)
-					},
-					func(pt *geom.MultiPoint) []geom.Coord {
-						return pt.Coords()
-					},
-					GenCoords(),
-				)
+				return GenMultiPoint()
 			case MultiLineString:
 				// Here DeriveGen is used to convert a []Coord to MultiLineString
-				return gopter.DeriveGen(
-					func(coords []geom.Coord) *geom.MultiLineString {
-						ls := geom.NewMultiLineString(geom.XY)
-						ls.SetSRID(WGS84_SRID)
-						return ls.MustSetCoords([][]geom.Coord{coords})
-					},
-					func(poly *geom.MultiLineString) []geom.Coord { return poly.Coords()[0] },
-					GenCoords(),
-				)
+				return GenMultiLineString()
 			case MultiPolygon:
 				// Here DeriveGen is used to convert a []Coord to MultiPolygon
-				return gopter.DeriveGen(
-					func(ring []geom.Coord) *geom.MultiPolygon {
-						poly := geom.NewMultiPolygon(geom.XY)
-						poly.SetSRID(WGS84_SRID)
-						return poly.MustSetCoords([][][]geom.Coord{{ring}})
-					},
-					func(poly *geom.MultiPolygon) []geom.Coord { return poly.Coords()[0][0] },
-					GenCoords(),
-				)
+				return GenMultiPolygon()
 			default:
 				// Our generator shouldn't have produced a FeatureType we didn't expect
 				// so if we get here we panic
@@ -338,6 +303,77 @@ func GenGeomT() gopter.Gen {
 		},
 		// The interface type for geom.T (go requires some strange syntax to get this)
 		reflect.TypeOf((*geom.T)(nil)))
+}
+
+func GenPoint() gopter.Gen {
+	return gopter.DeriveGen(
+		func(coord geom.Coord) *geom.Point {
+			pt := geom.NewPoint(geom.XY)
+			pt.SetSRID(WGS84_SRID)
+			return pt.MustSetCoords(coord)
+		},
+		func(pt *geom.Point) geom.Coord { return pt.Coords() },
+		GenWGS84XYCoord(),
+	)
+}
+
+func GenLineString() gopter.Gen {
+	// Map() is a simpler way of creating a new generator from an existing generator
+	// than DeriveGen(). It just takes one parameter which is exactly the same as the
+	// first parameter to DeriveGen(). It appears that sometimes the two-way mapping
+	// that DeriveGen() causes a lot of data to be thrown away (possibly if the underlying type does some
+	// internal modifications to the generated data). So in many cases, it may be
+	// better to just use the simpler Map() method if generators with DeriveGen() cause
+	// a lot of data to be thrown away. Use the Sample() method to test this as demonstrated
+	// in TestGenerators()
+	return GenCoords().Map(
+		func(coords []geom.Coord) *geom.LineString {
+			ls := geom.NewLineString(geom.XY)
+			ls.SetSRID(WGS84_SRID)
+			ls = ls.MustSetCoords(coords)
+			return ls
+		},
+	)
+}
+
+func GenPolygon() gopter.Gen {
+	return GenCoords().Map(
+		func(ring []geom.Coord) *geom.Polygon {
+			poly := geom.NewPolygon(geom.XY)
+			poly.SetSRID(WGS84_SRID)
+			return poly.MustSetCoords([][]geom.Coord{ring})
+		},
+	)
+}
+
+func GenMultiPoint() gopter.Gen {
+	return GenCoords().Map(
+		func(coords []geom.Coord) *geom.MultiPoint {
+			pt := geom.NewMultiPoint(geom.XY)
+			pt.SetSRID(WGS84_SRID)
+			return pt.MustSetCoords(coords)
+		},
+	)
+}
+
+func GenMultiLineString() gopter.Gen {
+	return GenCoords().Map(
+		func(coords []geom.Coord) *geom.MultiLineString {
+			ls := geom.NewMultiLineString(geom.XY)
+			ls.SetSRID(WGS84_SRID)
+			return ls.MustSetCoords([][]geom.Coord{coords})
+		},
+	)
+}
+
+func GenMultiPolygon() gopter.Gen {
+	return GenCoords().Map(
+		func(ring []geom.Coord) *geom.MultiPolygon {
+			poly := geom.NewMultiPolygon(geom.XY)
+			poly.SetSRID(WGS84_SRID)
+			return poly.MustSetCoords([][][]geom.Coord{{ring}})
+		},
+	)
 }
 
 func GeomEqual(a geom.T, b geom.T) error {
