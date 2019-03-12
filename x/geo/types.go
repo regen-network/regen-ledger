@@ -12,7 +12,7 @@ type MsgStoreGeo struct {
 type FeatureType int
 
 const (
-	Point FeatureType = 0
+	Point FeatureType = iota
 	LineString
 	Polygon
 	MultiPoint
@@ -26,6 +26,8 @@ type Geometry struct {
 	// system and represent a Point, LineString, Polygon, MultiPoint, MultiLineString or MultiPolygon
 	EWKB []byte `json:"ewkb,omitempty"`
 }
+
+type GeoAddress []byte
 
 const PostgresSchema = `
 CREATE TABLE geo (

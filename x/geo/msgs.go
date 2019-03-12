@@ -46,6 +46,10 @@ func (msg MsgStoreGeometry) ValidateBasic() sdk.Error {
 		return sdk.ErrUnknownRequest(fmt.Sprintf("Geometry is not in EWKB format: %+v", err))
 	}
 
+	if g.SRID() != WGS84_SRID {
+		return sdk.ErrUnknownRequest(fmt.Sprintf("Geometry does not use WGS84 SRID, got %d", g.SRID()))
+	}
+
 	featureType := msg.Data.Type
 	actual, err := GetFeatureType(g)
 

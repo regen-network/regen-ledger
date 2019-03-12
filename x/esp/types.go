@@ -1,6 +1,9 @@
 package esp
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"gitlab.com/regen-network/regen-ledger/x/geo"
+)
 
 //type SchemaType int
 //
@@ -27,7 +30,7 @@ type ESPResult struct {
 	Name     string         `json:"name"`
 	Version  string         `json:"version"`
 	Verifier sdk.AccAddress `json:"verifier"`
-	GeoID    []byte         `json:"geo_id,omitempty"`
+	GeoID    geo.GeoAddress `json:"geo_id,omitempty"`
 	Data     []byte         `json:"data"`
 	// TODO link this to data module for either on or off-chain result storage
 }

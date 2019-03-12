@@ -19,54 +19,50 @@ type Keeper struct {
 
 const (
 	Bech32Prefix = "xrn:geo/"
+	WGS84_SRID   = 4326
 )
 
 func NewKeeper(storeKey sdk.StoreKey, cdc *codec.Codec, pgIndexer postgresql.Indexer) Keeper {
 	return Keeper{storeKey, cdc, pgIndexer}
 }
 
-func (keeper Keeper) GetGeometry(ctx sdk.Context, hash []byte) []byte {
+func (keeper Keeper) GetGeometry(ctx sdk.Context, addr GeoAddress) []byte {
 	store := ctx.KVStore(keeper.storeKey)
-	bz := store.Get(hash)
+	bz := store.Get(addr)
 	if bz == nil {
 		return nil
 	}
-	var geom []byte
-	keeper.cdc.MustUnmarshalBinaryBare(bz, &geom)
-	return geom
+	return bz
 }
 
-func (keeper Keeper) StoreGeometry(ctx sdk.Context, geometry Geometry) sdk.Result {
+func GeoURL(addr GeoAddress) string {
+	return util.MustEncodeBech32(Bech32Prefix, addr)
+}
+
+func (keeper Keeper) StoreGeometry(ctx sdk.Context, geometry Geometry) (addr GeoAddress, err sdk.Error) {
 	// TODO consume gas
 	store := ctx.KVStore(keeper.storeKey)
-	bz := keeper.cdc.MustMarshalBinaryBare(geometry)
-	hash, err := blake2b.New256(nil)
-	if err != nil {
-		panic(err)
+	hash, e := blake2b.New256(nil)
+	if e != nil {
+		return nil, sdk.ErrUnknownRequest(e.Error())
 	}
 	ewkb := geometry.EWKB
 	hash.Write(ewkb)
 	hashBz := hash.Sum(nil)
 	existing := store.Get(hashBz)
 	if existing != nil {
-		return sdk.Result{
-			Code: sdk.CodeUnknownRequest,
-			Log:  "already exists",
-		}
+		return nil, sdk.ErrUnknownRequest("already exists")
 	}
-	store.Set(hashBz, bz)
-	tags := sdk.EmptyTags()
-	url := util.MustEncodeBech32(Bech32Prefix, hashBz)
-	tags = tags.AppendTag("geo.id", url)
+	store.Set(hashBz, ewkb)
 
 	// Do Indexing
 	if keeper.pgIndexer != nil {
 		keeper.pgIndexer.Exec(
 			"INSERT INTO geo (url, geog, geom) VALUES ($1, st_geogfromwkb($2), st_geomfromewkb($3))",
-			url, ewkb, ewkb)
+			GeoURL(hashBz), ewkb, ewkb)
 	}
 
-	return sdk.Result{Tags: tags}
+	return hashBz, nil
 }
 
 func MustDecodeBech32GeoID(bech string) []byte {
