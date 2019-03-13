@@ -22,15 +22,15 @@ import (
 	auth "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
+	"github.com/regen-network/regen-ledger"
+	consortiumclient "github.com/regen-network/regen-ledger/x/consortium/client"
+	dataclient "github.com/regen-network/regen-ledger/x/data/client"
+	datarest "github.com/regen-network/regen-ledger/x/data/client/rest"
+	espclient "github.com/regen-network/regen-ledger/x/esp/client"
+	geoclient "github.com/regen-network/regen-ledger/x/geo/client"
+	agentclient "github.com/regen-network/regen-ledger/x/group/client"
+	proposalclient "github.com/regen-network/regen-ledger/x/proposal/client"
 	cmn "github.com/tendermint/tendermint/libs/common"
-	"gitlab.com/regen-network/regen-ledger"
-	consortiumclient "gitlab.com/regen-network/regen-ledger/x/consortium/client"
-	dataclient "gitlab.com/regen-network/regen-ledger/x/data/client"
-	datarest "gitlab.com/regen-network/regen-ledger/x/data/client/rest"
-	espclient "gitlab.com/regen-network/regen-ledger/x/esp/client"
-	geoclient "gitlab.com/regen-network/regen-ledger/x/geo/client"
-	agentclient "gitlab.com/regen-network/regen-ledger/x/group/client"
-	proposalclient "gitlab.com/regen-network/regen-ledger/x/proposal/client"
 )
 
 const (

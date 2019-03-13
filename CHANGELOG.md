@@ -60,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [\#162640230](https://www.pivotaltracker.com/story/show/162640230) Register ESP version cosmos msg
 - Created `data` module
 
-[Unreleased]: https://gitlab.com/regen-network/regen-ledger/compare/v0.3.0...HEAD
-[0.3.0]: https://gitlab.com/regen-network/regen-ledger/compare/v0.2.0...v0.3.0
-[0.2.0]: https://gitlab.com/regen-network/regen-ledger/compare/v0.1.0...v0.2.0
-[0.1.0]: https://gitlab.com/regen-network/regen-ledger/compare/fcc6887b...v0.1.0
+[Unreleased]: https://github.com/regen-network/regen-ledger/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/regen-network/regen-ledger/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/regen-network/regen-ledger/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/regen-network/regen-ledger/compare/fcc6887b...v0.1.0

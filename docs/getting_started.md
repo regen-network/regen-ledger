@@ -14,7 +14,7 @@ is the command line blockchain client. Both of them provide help messages when r
 ## Configuring the command line client
 
 By default the command line client will connect to a [local node](#running-a-local-node).
-To connect to a testnet, you must know the testnet's chain ID and the address of the node. The current [deployed testnet](https://gitlab.com/regen-network/regen-ledger/tree/master/testnets) chain ID is `xrn-1`.
+To connect to a testnet, you must know the testnet's chain ID and the address of the node. The current [deployed testnet](https://github.com/regen-network/regen-ledger/tree/master/testnets) chain ID is `xrn-1`.
 
 `xrncli` can be configured to connect to a testnet node automatically by setting these
 parameters in `$HOME/.xrncli/config/config.toml`. This file can be generated

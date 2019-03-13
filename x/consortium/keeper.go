@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/x/group"
+	"github.com/regen-network/regen-ledger/x/proposal"
+	"github.com/regen-network/regen-ledger/x/upgrade"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"gitlab.com/regen-network/regen-ledger/x/group"
-	"gitlab.com/regen-network/regen-ledger/x/proposal"
-	"gitlab.com/regen-network/regen-ledger/x/upgrade"
 )
 
 type Keeper struct {

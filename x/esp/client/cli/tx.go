@@ -2,11 +2,11 @@ package cli
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/x/esp"
+	"github.com/regen-network/regen-ledger/x/geo"
+	"github.com/regen-network/regen-ledger/x/proposal"
+	proposalcli "github.com/regen-network/regen-ledger/x/proposal/client/cli"
 	"github.com/spf13/cobra"
-	"gitlab.com/regen-network/regen-ledger/x/esp"
-	"gitlab.com/regen-network/regen-ledger/x/geo"
-	"gitlab.com/regen-network/regen-ledger/x/proposal"
-	proposalcli "gitlab.com/regen-network/regen-ledger/x/proposal/client/cli"
 
 	//"github.com/twpayne/go-geom/encoding/ewkbhex"
 	//"github.com/twpayne/go-geom/encoding/ewkb"

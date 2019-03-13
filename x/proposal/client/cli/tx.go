@@ -1,8 +1,8 @@
 package cli
 
 import (
+	"github.com/regen-network/regen-ledger/x/proposal"
 	"github.com/spf13/cobra"
-	"gitlab.com/regen-network/regen-ledger/x/proposal"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/client/utils"

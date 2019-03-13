@@ -2,15 +2,15 @@ package client
 
 import (
 	"github.com/cosmos/cosmos-sdk/client"
+	proposalcmd "github.com/regen-network/regen-ledger/x/proposal/client/cli"
 	"github.com/spf13/cobra"
 	"github.com/tendermint/go-amino"
-	proposalcmd "gitlab.com/regen-network/regen-ledger/x/proposal/client/cli"
 )
 
 // ModuleClient exports all client functionality from this module
 type ModuleClient struct {
 	storeKey string
-	cdc *amino.Codec
+	cdc      *amino.Codec
 }
 
 func NewModuleClient(storeKey string, cdc *amino.Codec) ModuleClient {

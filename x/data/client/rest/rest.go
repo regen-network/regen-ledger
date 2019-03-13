@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab.com/regen-network/regen-ledger/x/data"
+	"github.com/regen-network/regen-ledger/x/data"
 
 	"github.com/gorilla/mux"
 )
