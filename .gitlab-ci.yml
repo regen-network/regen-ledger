@@ -1,5 +1,6 @@
 variables:
   GOPATH: "$CI_PROJECT_DIR/.go"
+  CODECOV_TOKEN: "ae4050d3-73ab-4ad4-957e-1355539e669f"
 
 cache:
   paths:
@@ -15,6 +16,8 @@ test:
   image: golang:1.11.5
   script:
     - GOFLAGS=-cover make test
+  after_script:
+    - bash <(curl -s https://codecov.io/bash) -t "${CODECOV_TOKEN}"
   coverage: '/\d+.\d+% of statements/'
   artifacts:
     reports:
