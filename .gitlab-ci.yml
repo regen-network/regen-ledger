@@ -17,8 +17,7 @@ test:
     - GOFLAGS=-cover make test
   after_script:
     - make test_cover
-    - export CODECOV_TOKEN="ae4050d3-73ab-4ad4-957e-1355539e669f"
-    - bash <(curl -s https://codecov.io/bash) -f coverage.txt
+    - bash <(curl -s https://codecov.io/bash) -f coverage.txt -t $CODECOV_TOKEN
 
 #integration_test:
 #  image: golang:1.11.5
