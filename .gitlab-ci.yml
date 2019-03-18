@@ -14,10 +14,10 @@ build:
 test:
   image: golang:1.11.5
   script:
-    - GOFLAGS=-cover make test
+    - GOFLAGS=-cover make test >> coverage.txt
   after_script:
     - export CODECOV_TOKEN="ae4050d3-73ab-4ad4-957e-1355539e669f"
-    - bash <(curl -s https://codecov.io/bash)
+    - bash <(curl -s https://codecov.io/bash) -f coverage.txt
   coverage: '/\d+.\d+% of statements/'
   artifacts:
     reports:
