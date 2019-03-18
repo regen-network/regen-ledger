@@ -24,6 +24,7 @@ import (
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 	cmn "github.com/tendermint/tendermint/libs/common"
 	"gitlab.com/regen-network/regen-ledger"
+	_ "gitlab.com/regen-network/regen-ledger"
 	consortiumclient "gitlab.com/regen-network/regen-ledger/x/consortium/client"
 	dataclient "gitlab.com/regen-network/regen-ledger/x/data/client"
 	datarest "gitlab.com/regen-network/regen-ledger/x/data/client/rest"
@@ -46,13 +47,6 @@ func main() {
 	cobra.EnableCommandSorting = false
 
 	cdc := app.MakeCodec()
-
-	// Read in the configuration file for the sdk
-	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount(app.Bech32PrefixAccAddr, app.Bech32PrefixAccPub)
-	config.SetBech32PrefixForValidator(app.Bech32PrefixValAddr, app.Bech32PrefixValPub)
-	config.SetBech32PrefixForConsensusNode(app.Bech32PrefixConsAddr, app.Bech32PrefixConsPub)
-	config.Seal()
 
 	mc := []sdk.ModuleClients{
 		espclient.NewModuleClient(cdc),

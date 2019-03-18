@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -44,7 +43,7 @@ func TestXrnCLIKeysAddRecover(t *testing.T) {
 	f := InitFixtures(t)
 
 	f.KeysAddRecover("test-recover", "dentist task convince chimney quality leave banana trade firm crawl eternal easily")
-	require.Equal(t, "cosmos1qcfdf69js922qrdr4yaww3ax7gjml6pdds46f4", f.KeyAddress("test-recover").String())
+	require.Equal(t, "xrn:1qcfdf69js922qrdr4yaww3ax7gjml6pdtkqwj2", f.KeyAddress("test-recover").String())
 }
 
 func TestXrnCLIKeysAddRecoverHDPath(t *testing.T) {
@@ -726,39 +725,6 @@ trust-node = true
 	require.Equal(t, expectedConfig, string(config))
 
 	f.Cleanup()
-}
-
-func TestXrndCollectGentxs(t *testing.T) {
-	t.Parallel()
-	f := NewFixtures(t)
-
-	// Initialise temporary directories
-	gentxDir, err := ioutil.TempDir("", "")
-	gentxDoc := filepath.Join(gentxDir, "gentx.json")
-	require.NoError(t, err)
-
-	// Reset testing path
-	f.UnsafeResetAll()
-
-	// Initialize keys
-	f.KeysAdd(keyFoo)
-
-	// Configure json output
-	f.CLIConfig("output", "json")
-
-	// Run init
-	f.XDInit(keyFoo)
-
-	// Add account to genesis.json
-	f.AddGenesisAccount(f.KeyAddress(keyFoo), startCoins)
-
-	// Write gentx file
-	f.GenTx(keyFoo, fmt.Sprintf("--output-document=%s", gentxDoc))
-
-	// Collect gentxs from a custom directory
-	f.CollectGenTxs(fmt.Sprintf("--gentx-dir=%s", gentxDir))
-
-	f.Cleanup(gentxDir)
 }
 
 func TestXrndAddGenesisAccount(t *testing.T) {

@@ -21,17 +21,19 @@ import (
 	"github.com/cosmos/cosmos-sdk/tests"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+
+	_ "gitlab.com/regen-network/regen-ledger"
 )
 
 const (
-	denom        = "xrn"
-	feeDenom	 = "xrn"
-	fee2Denom	 = "xrn"
-	fooDenom	 = "xrn"
-	keyFoo       = "foo"
-	keyBar       = "bar"
-	keyBaz       = "baz"
-	keyFooBarBaz = "foobarbaz"
+	denom          = "xrn"
+	feeDenom       = "xrn"
+	fee2Denom      = "xrn"
+	fooDenom       = "xrn"
+	keyFoo         = "foo"
+	keyBar         = "bar"
+	keyBaz         = "baz"
+	keyFooBarBaz   = "foobarbaz"
 	DefaultKeyPass = "12345678"
 )
 
@@ -92,6 +94,7 @@ func (f Fixtures) GenesisState() app.GenesisState {
 // InitFixtures is called at the beginning of a test
 // and initializes a chain with 1 validator
 func InitFixtures(t *testing.T) (f *Fixtures) {
+
 	f = NewFixtures(t)
 
 	// Reset test state
@@ -117,8 +120,6 @@ func InitFixtures(t *testing.T) (f *Fixtures) {
 
 	// Start an account with tokens
 	f.AddGenesisAccount(f.KeyAddress(keyFoo), startCoins)
-	f.GenTx(keyFoo)
-	f.CollectGenTxs()
 	return
 }
 
@@ -169,18 +170,6 @@ func (f *Fixtures) XDInit(moniker string, flags ...string) {
 func (f *Fixtures) AddGenesisAccount(address sdk.AccAddress, coins sdk.Coins, flags ...string) {
 	cmd := fmt.Sprintf("xrnd add-genesis-account %s %s --home=%s", address, coins, f.XDHome)
 	executeWriteCheckErr(f.T, addFlags(cmd, flags))
-}
-
-// GenTx is xrnd gentx
-func (f *Fixtures) GenTx(name string, flags ...string) {
-	cmd := fmt.Sprintf("xrnd gentx --name=%s --home=%s --home-client=%s", name, f.XDHome, f.XCLIHome)
-	executeWriteCheckErr(f.T, addFlags(cmd, flags), DefaultKeyPass)
-}
-
-// CollectGenTxs is xrnd collect-gentxs
-func (f *Fixtures) CollectGenTxs(flags ...string) {
-	cmd := fmt.Sprintf("xrnd collect-gentxs --home=%s", f.XDHome)
-	executeWriteCheckErr(f.T, addFlags(cmd, flags), DefaultKeyPass)
 }
 
 // XDStart runs xrnd start with the appropriate flags and returns a process

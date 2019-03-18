@@ -76,14 +76,15 @@ type xrnApp struct {
 	pgIndexer postgresql.Indexer
 }
 
-func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
-
+func init() {
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForAccount(Bech32PrefixAccAddr, Bech32PrefixAccPub)
 	config.SetBech32PrefixForValidator(Bech32PrefixValAddr, Bech32PrefixValPub)
 	config.SetBech32PrefixForConsensusNode(Bech32PrefixConsAddr, Bech32PrefixConsPub)
 	config.Seal()
+}
 
+func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 	// First define the top level codec that will be shared by the different modules
 	cdc := MakeCodec()
 

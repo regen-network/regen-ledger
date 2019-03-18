@@ -80,10 +80,10 @@ func appExporter() server.AppExporter {
 // InitCmd initializes all files for tendermint and application
 func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "init",
+		Use:   "init [moniker]",
 		Short: "Initialize genesis config, priv-validator file, and p2p-node file",
-		Args:  cobra.NoArgs,
-		RunE: func(_ *cobra.Command, _ []string) error {
+		Args:  cobra.ExactArgs(1),
+		RunE: func(_ *cobra.Command, args []string) error {
 			config := ctx.Config
 			config.SetRoot(viper.GetString(cli.HomeFlag))
 
@@ -92,10 +92,12 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 				chainID = fmt.Sprintf("test-chain-%v", common.RandStr(6))
 			}
 
-			_, _, err := gaiaInit.InitializeNodeValidatorFiles(config)
+			nodeID, _, err := gaiaInit.InitializeNodeValidatorFiles(config)
 			if err != nil {
 				return err
 			}
+
+			config.Moniker = args[0]
 
 			var appState json.RawMessage
 			genFile := config.GenesisFile()
@@ -121,10 +123,10 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			cfg.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
+			toPrint := printInfo{config.Moniker, chainID, nodeID, appState}
 
-			fmt.Printf("Initialized xrnd configuration and bootstrapping files in %s...\n", viper.GetString(cli.HomeFlag))
-			return nil
+			cfg.WriteConfigFile(filepath.Join(config.RootDir, "config", "config.toml"), config)
+			return displayInfo(cdc, toPrint)
 		},
 	}
 
@@ -133,6 +135,23 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 	cmd.Flags().BoolP(flagOverwrite, "o", false, "overwrite the genesis.json file")
 
 	return cmd
+}
+
+type printInfo struct {
+	Moniker    string          `json:"moniker"`
+	ChainID    string          `json:"chain_id"`
+	NodeID     string          `json:"node_id"`
+	AppMessage json.RawMessage `json:"app_message"`
+}
+
+func displayInfo(cdc *codec.Codec, info printInfo) error {
+	out, err := codec.MarshalJSONIndent(cdc, info)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintf(os.Stderr, "%s\n", string(out)) // nolint: errcheck
+	return nil
 }
 
 // AddGenesisAccountCmd allows users to add accounts to the genesis file
