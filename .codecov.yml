@@ -22,4 +22,4 @@ comment:
 ignore:
   - "docs"
   - "*.md"
-  - "*.rst"
+  - "*.org"
