@@ -10,8 +10,6 @@ import (
 type Keeper struct {
 	storeKey        sdk.StoreKey
 	cdc             *codec.Codec
-	plan            UpgradePlan
-	haveCachedInfo  bool
 	doShutdowner    func(sdk.Context, UpgradePlan)
 	upgradeHandlers map[string]UpgradeHandler
 }
@@ -24,7 +22,6 @@ func NewKeeper(storeKey sdk.StoreKey, cdc *codec.Codec) Keeper {
 	return Keeper{
 		storeKey:        storeKey,
 		cdc:             cdc,
-		haveCachedInfo:  false,
 		upgradeHandlers: map[string]UpgradeHandler{},
 	}
 }
@@ -72,14 +69,14 @@ func (plan UpgradePlan) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (keeper Keeper) GetUpgradeInfo(ctx sdk.Context, plan *UpgradePlan) sdk.Error {
+func (keeper Keeper) GetUpgradeInfo(ctx sdk.Context) (plan UpgradePlan, err sdk.Error) {
 	store := ctx.KVStore(keeper.storeKey)
 	bz := store.Get([]byte(planKey))
 	if bz == nil {
-		return sdk.ErrUnknownRequest("Not found")
+		return plan, sdk.ErrUnknownRequest("Not found")
 	}
 	keeper.cdc.MustUnmarshalBinaryBare(bz, &plan)
-	return nil
+	return plan, nil
 }
 
 func (keeper *Keeper) SetDoShutdowner(doShutdowner func(ctx sdk.Context, plan UpgradePlan)) {
@@ -94,36 +91,31 @@ func (keeper *Keeper) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) 
 	blockTime := ctx.BlockHeader().Time
 	blockHeight := ctx.BlockHeight()
 
-	if !keeper.haveCachedInfo {
-		err := keeper.GetUpgradeInfo(ctx, &keeper.plan)
-		if err != nil {
-			return
-		}
-		keeper.haveCachedInfo = true
+	plan, err := keeper.GetUpgradeInfo(ctx)
+	if err != nil {
+		return
 	}
 
-	if keeper.haveCachedInfo {
-		upgradeTime := keeper.plan.Time
-		upgradeHeight := keeper.plan.Height
-		if (!upgradeTime.IsZero() && !blockTime.Before(upgradeTime)) || upgradeHeight <= blockHeight {
-			handler, ok := keeper.upgradeHandlers[keeper.plan.Name]
-			if ok {
-				// We have an upgrade handler for this upgrade name, so apply the upgrade
-				ctx.Logger().Info(fmt.Sprintf("Applying upgrade \"%s\" at height %d", keeper.plan.Name, blockHeight))
-				handler(ctx, keeper.plan)
-				keeper.ClearUpgradePlan(ctx)
-				// Mark this upgrade name as being done so the name can't be reused accidentally
-				store := ctx.KVStore(keeper.storeKey)
-				store.Set(upgradeDoneKey(keeper.plan.Name), []byte("1"))
+	upgradeTime := plan.Time
+	upgradeHeight := plan.Height
+	if (!upgradeTime.IsZero() && !blockTime.Before(upgradeTime)) || upgradeHeight <= blockHeight {
+		handler, ok := keeper.upgradeHandlers[plan.Name]
+		if ok {
+			// We have an upgrade handler for this upgrade name, so apply the upgrade
+			ctx.Logger().Info(fmt.Sprintf("Applying upgrade \"%s\" at height %d", plan.Name, blockHeight))
+			handler(ctx, plan)
+			keeper.ClearUpgradePlan(ctx)
+			// Mark this upgrade name as being done so the name can't be reused accidentally
+			store := ctx.KVStore(keeper.storeKey)
+			store.Set(upgradeDoneKey(plan.Name), []byte("1"))
+		} else {
+			// We don't have an upgrade handler for this upgrade name, meaning this software is out of date so shutdown
+			ctx.Logger().Error(fmt.Sprintf("UPGRADE \"%s\" NEEDED needed at height %d: %s", plan.Name, blockHeight, plan.Memo))
+			doShutdowner := keeper.doShutdowner
+			if doShutdowner != nil {
+				doShutdowner(ctx, plan)
 			} else {
-				// We don't have an upgrade handler for this upgrade name, meaning this software is out of date so shutdown
-				ctx.Logger().Error(fmt.Sprintf("UPGRADE \"%s\" NEEDED needed at height %d: %s", keeper.plan.Name, blockHeight, keeper.plan.Memo))
-				doShutdowner := keeper.doShutdowner
-				if doShutdowner != nil {
-					doShutdowner(ctx, keeper.plan)
-				} else {
-					panic("UPGRADE REQUIRED!")
-				}
+				panic("UPGRADE REQUIRED!")
 			}
 		}
 	}

@@ -84,8 +84,7 @@ func (s *TestSuite) VerifyDoUpgrade() {
 
 func (s *TestSuite) VerifyCleared(newCtx sdk.Context) {
 	s.T().Log("Verify that the upgrade plan has been cleared")
-	var plan UpgradePlan
-	err := s.keeper.GetUpgradeInfo(newCtx, &plan)
+	_, err := s.keeper.GetUpgradeInfo(newCtx)
 	s.Require().NotNil(err)
 	s.Require().Equal(sdk.CodeUnknownRequest, err.Code())
 }
