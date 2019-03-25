@@ -11,7 +11,12 @@ import (
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/proposal"
 	"github.com/regen-network/regen-ledger/x/upgrade"
+	"github.com/spf13/viper"
+	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
+	"io/ioutil"
+	"path/filepath"
+
 	//"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -152,7 +157,11 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 
 	app.espKeeper = esp.NewKeeper(app.espStoreKey, app.agentKeeper, app.geoKeeper, cdc)
 
-	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc, 1000)
+	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc)
+	app.upgradeKeeper.SetBeforeShutdowner(app.willUpgrade)
+	app.upgradeKeeper.SetUpgradeHandler("test3", func(ctx sdk.Context, plan upgrade.UpgradePlan) {
+		ctx.Logger().Info("In upgrade 3 handler!")
+	})
 
 	app.consortiumKeeper = consortium.NewKeeper(app.consortiumStoreKey, cdc, app.agentKeeper, app.upgradeKeeper)
 
@@ -230,8 +239,8 @@ func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.
 		app.accountKeeper.SetAccount(ctx, acc)
 	}
 
-	for _, group := range genesisState.Groups {
-		app.agentKeeper.CreateGroup(ctx, group)
+	for _, g := range genesisState.Groups {
+		app.agentKeeper.CreateGroup(ctx, g)
 	}
 
 	app.consortiumKeeper.SetValidators(ctx, req.Validators)
@@ -240,6 +249,13 @@ func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.
 	bank.InitGenesis(ctx, app.bankKeeper, genesisState.BankData)
 
 	return abci.ResponseInitChain{}
+}
+
+func (app *xrnApp) willUpgrade(plan upgrade.UpgradePlan) {
+	if len(plan.Memo) != 0 {
+		home := viper.GetString(cli.HomeFlag)
+		_ = ioutil.WriteFile(filepath.Join(home, "data", "upgrade-info"), []byte(plan.Memo), 0644)
+	}
 }
 
 func (app *xrnApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {

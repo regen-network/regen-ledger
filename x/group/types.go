@@ -11,7 +11,7 @@ import (
 // It could be used by a single user to manage multiple devices and setup a multisig policy.
 type Group struct {
 	// The members of the group and their associated weight
-	Members []Member `json:"addresses,omitempty"`
+	Members []Member `json:"members,omitempty"`
 	// Specifies the number of votes that must be accumulated in order for a decision to be made by the group.
 	// A member gets as many votes as is indicated by their Weight field.
 	// A big integer is used here to avoid any potential vulnerabilities from overflow errors

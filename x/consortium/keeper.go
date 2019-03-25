@@ -35,6 +35,8 @@ func (keeper Keeper) CheckProposal(ctx sdk.Context, action proposal.ProposalActi
 	switch action.(type) {
 	case ActionScheduleUpgrade:
 		return true, sdk.Result{Code: sdk.CodeOK}
+	case ActionCancelUpgrade:
+		return true, sdk.Result{Code: sdk.CodeOK}
 	case ActionChangeValidatorSet:
 		return true, sdk.Result{Code: sdk.CodeOK}
 	default:
@@ -46,6 +48,8 @@ func (keeper Keeper) HandleProposal(ctx sdk.Context, action proposal.ProposalAct
 	switch action := action.(type) {
 	case ActionScheduleUpgrade:
 		return keeper.handleActionScheduleUpgrade(ctx, action, voters)
+	case ActionCancelUpgrade:
+		return keeper.handleActionCancelUpgrade(ctx, action, voters)
 	case ActionChangeValidatorSet:
 		return keeper.handleActionChangeValidatorSet(ctx, action, voters)
 	default:
@@ -58,14 +62,26 @@ func (keeper Keeper) handleActionScheduleUpgrade(ctx sdk.Context, action ActionS
 	if !keeper.agentKeeper.Authorize(ctx, consortiumGroupId, signers) {
 		return sdk.Result{Code: sdk.CodeUnauthorized}
 	}
-	keeper.upgradeKeeper.ScheduleUpgrade(ctx, action.UpgradeInfo)
-	return sdk.Result{Code: sdk.CodeOK}
+	err := keeper.upgradeKeeper.ScheduleUpgrade(ctx, action.Plan)
+	if err != nil {
+		return err.Result()
+	}
+	return sdk.Result{}
+}
+
+func (keeper Keeper) handleActionCancelUpgrade(ctx sdk.Context, _ ActionCancelUpgrade, signers []sdk.AccAddress) sdk.Result {
+	if !keeper.agentKeeper.Authorize(ctx, consortiumGroupId, signers) {
+		return sdk.Result{Code: sdk.CodeUnauthorized}
+	}
+	keeper.upgradeKeeper.ClearUpgradePlan(ctx)
+	return sdk.Result{}
 }
 
 func (keeper Keeper) handleActionChangeValidatorSet(ctx sdk.Context, action ActionChangeValidatorSet, signers []sdk.AccAddress) sdk.Result {
 	keeper.SetValidators(ctx, action.Validators)
-	return sdk.Result{Code: sdk.CodeOK}
+	return sdk.Result{}
 }
+
 func (keeper Keeper) GetValidators(ctx sdk.Context) []abci.ValidatorUpdate {
 	store := ctx.KVStore(keeper.storeKey)
 	bz := store.Get(keyValidators)

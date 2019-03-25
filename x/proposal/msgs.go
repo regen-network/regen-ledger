@@ -1,29 +1,31 @@
 package proposal
 
 import (
-"encoding/json"
-sdk "github.com/cosmos/cosmos-sdk/types"
+	"encoding/json"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 type MsgCreateProposal struct {
 	Proposer sdk.AccAddress `json:"proposer"`
-	Action ProposalAction `json:"action"`
+	Action   ProposalAction `json:"action"`
+	// Whether to try to execute this propose right away upon creation
+	Exec bool `json:"exec,omitempty"`
 }
 
 type MsgVote struct {
-	ProposalId []byte `json:"proposal_id"`
-	Voter sdk.AccAddress `json:"voter"`
-	Vote bool `json:"vote"`
+	ProposalId []byte         `json:"proposal_id"`
+	Voter      sdk.AccAddress `json:"voter"`
+	Vote       bool           `json:"vote"`
 }
 
 type MsgTryExecuteProposal struct {
-	ProposalId []byte `json:"proposal_id"`
-	Signer sdk.AccAddress `json:"signer"`
+	ProposalId []byte         `json:"proposal_id"`
+	Signer     sdk.AccAddress `json:"signer"`
 }
 
 type MsgWithdrawProposal struct {
-	ProposalId []byte `json:"proposal_id"`
-	Proposer sdk.AccAddress `json:"proposer"`
+	ProposalId []byte         `json:"proposal_id"`
+	Proposer   sdk.AccAddress `json:"proposer"`
 }
 
 func (msg MsgCreateProposal) Route() string { return "proposal" }
@@ -81,7 +83,7 @@ func (msg MsgTryExecuteProposal) GetSignBytes() []byte {
 }
 
 func (msg MsgTryExecuteProposal) GetSigners() []sdk.AccAddress {
-    return []sdk.AccAddress{msg.Signer}
+	return []sdk.AccAddress{msg.Signer}
 }
 
 func (msg MsgWithdrawProposal) Route() string { return "proposal" }
@@ -89,7 +91,7 @@ func (msg MsgWithdrawProposal) Route() string { return "proposal" }
 func (msg MsgWithdrawProposal) Type() string { return "proposal.withdraw" }
 
 func (msg MsgWithdrawProposal) ValidateBasic() sdk.Error {
-    return nil
+	return nil
 }
 
 func (msg MsgWithdrawProposal) GetSignBytes() []byte {
@@ -101,5 +103,5 @@ func (msg MsgWithdrawProposal) GetSignBytes() []byte {
 }
 
 func (msg MsgWithdrawProposal) GetSigners() []sdk.AccAddress {
-    return []sdk.AccAddress{msg.Proposer}
+	return []sdk.AccAddress{msg.Proposer}
 }
