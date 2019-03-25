@@ -8,14 +8,13 @@ import (
 )
 
 type Keeper struct {
-	storeKey         sdk.StoreKey
-	cdc              *codec.Codec
-	plan             UpgradePlan
-	haveCachedInfo   bool
-	willUpgrader     func(UpgradePlan)
-	beforeShutdowner func(UpgradePlan)
-	doShutdowner     func()
-	upgradeHandlers  map[string]UpgradeHandler
+	storeKey        sdk.StoreKey
+	cdc             *codec.Codec
+	plan            UpgradePlan
+	haveCachedInfo  bool
+	willUpgrader    func(UpgradePlan)
+	doShutdowner    func(sdk.Context, UpgradePlan)
+	upgradeHandlers map[string]UpgradeHandler
 }
 
 const (
@@ -87,15 +86,11 @@ func (keeper Keeper) GetUpgradeInfo(ctx sdk.Context, plan *UpgradePlan) sdk.Erro
 	return nil
 }
 
-func (keeper Keeper) SetWillUpgrader(willUpgrader func(plan UpgradePlan)) {
+func (keeper *Keeper) SetWillUpgrader(willUpgrader func(plan UpgradePlan)) {
 	keeper.willUpgrader = willUpgrader
 }
 
-func (keeper Keeper) SetBeforeShutdowner(beforeShutdowner func(plan UpgradePlan)) {
-	keeper.beforeShutdowner = beforeShutdowner
-}
-
-func (keeper Keeper) SetDoShutdowner(doShutdowner func()) {
+func (keeper *Keeper) SetDoShutdowner(doShutdowner func(ctx sdk.Context, plan UpgradePlan)) {
 	keeper.doShutdowner = doShutdowner
 }
 
@@ -103,7 +98,7 @@ func upgradeDoneKey(name string) []byte {
 	return []byte(fmt.Sprintf("done/%s", name))
 }
 
-func (keeper Keeper) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) {
+func (keeper *Keeper) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) {
 	blockTime := ctx.BlockHeader().Time
 	blockHeight := ctx.BlockHeight()
 
@@ -137,17 +132,11 @@ func (keeper Keeper) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) {
 				store.Set(upgradeDoneKey(keeper.plan.Name), []byte("1"))
 			} else {
 				// We don't have an upgrade handler for this upgrade name, meaning this software is out of date so shutdown
-
-				beforeShutdowner := keeper.beforeShutdowner
-				if beforeShutdowner != nil {
-					beforeShutdowner(keeper.plan)
-				}
-
 				doShutdowner := keeper.doShutdowner
 				if doShutdowner != nil {
-					doShutdowner()
+					doShutdowner(ctx, keeper.plan)
 				} else {
-					panic(fmt.Sprintf("UPGRADE NEEDED \"%s\" needed at height %d: %s", keeper.plan.Name, blockHeight, keeper.plan.Memo))
+					panic(fmt.Sprintf("UPGRADE \"%s\" NEEDED needed at height %d: %s", keeper.plan.Name, blockHeight, keeper.plan.Memo))
 				}
 			}
 		}

@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/regen-network/regen-ledger/index/postgresql"
 	"github.com/regen-network/regen-ledger/x/consortium"
@@ -15,8 +16,8 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
 	"io/ioutil"
+	"os"
 	"path/filepath"
-
 	//"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -158,7 +159,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 	app.espKeeper = esp.NewKeeper(app.espStoreKey, app.agentKeeper, app.geoKeeper, cdc)
 
 	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc)
-	app.upgradeKeeper.SetBeforeShutdowner(app.willUpgrade)
+	app.upgradeKeeper.SetDoShutdowner(app.shutdownOnUpgrade)
 	app.upgradeKeeper.SetUpgradeHandler("test3", func(ctx sdk.Context, plan upgrade.UpgradePlan) {
 		ctx.Logger().Info("In upgrade 3 handler!")
 	})
@@ -251,11 +252,13 @@ func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.
 	return abci.ResponseInitChain{}
 }
 
-func (app *xrnApp) willUpgrade(plan upgrade.UpgradePlan) {
+func (app *xrnApp) shutdownOnUpgrade(ctx sdk.Context, plan upgrade.UpgradePlan) {
 	if len(plan.Memo) != 0 {
 		home := viper.GetString(cli.HomeFlag)
 		_ = ioutil.WriteFile(filepath.Join(home, "data", "upgrade-info"), []byte(plan.Memo), 0644)
 	}
+	ctx.Logger().Error(fmt.Sprintf("UPGRADE \"%s\" NEEDED needed at height %d: %s", plan.Name, ctx.BlockHeight(), plan.Memo))
+	os.Exit(1)
 }
 
 func (app *xrnApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
