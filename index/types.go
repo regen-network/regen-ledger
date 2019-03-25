@@ -12,6 +12,8 @@ import (
 type Indexer interface {
 	// OnInitChain intercepts the InitChain ABCI method
 	OnInitChain(abci.RequestInitChain, abci.ResponseInitChain)
+	// ApplyMigrations applies any pending migrations
+	ApplyMigrations()
 	// OnBeginBlock intercepts the BeginBlock ABCI method
 	OnBeginBlock(abci.RequestBeginBlock, abci.ResponseBeginBlock)
 	// BeforeDeliverTx should be called on the ABCI DeliverTx method

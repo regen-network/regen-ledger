@@ -13,7 +13,7 @@ import (
 type indexer struct {
 	conn        *sql.DB
 	txDecoder   sdk.TxDecoder
-	migrations  []string
+	migrations  map[string][]string
 	curTx       *sql.Tx
 	blockHeader abci.Header
 }
@@ -26,11 +26,11 @@ func NewIndexer(connString string, txDecoder sdk.TxDecoder) (Indexer, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &indexer{conn: conn, txDecoder: txDecoder, migrations: []string{}}, nil
+	return &indexer{conn: conn, txDecoder: txDecoder, migrations: make(map[string][]string)}, nil
 }
 
-func (indexer *indexer) AddMigration(ddl string) {
-	indexer.migrations = append(indexer.migrations, ddl)
+func (indexer *indexer) AddMigrations(module string, ddlStatements []string) {
+	indexer.migrations[module] = ddlStatements
 }
 
 func (indexer *indexer) Exec(query string, args ...interface{}) {
@@ -45,12 +45,50 @@ func (indexer *indexer) Exec(query string, args ...interface{}) {
 }
 
 func (indexer *indexer) OnInitChain(abci.RequestInitChain, abci.ResponseInitChain) {
-	_, err := indexer.conn.Exec(InitialSchema)
+	indexer.ApplyMigrations()
+}
+
+var baseMigrations = []string{InitialSchema}
+
+func (indexer *indexer) ApplyMigrations() {
+	_, err := indexer.conn.Exec(`CREATE TABLE IF NOT EXISTS __migration_state (
+      module text PRIMARY KEY,
+      version int,
+      other jsonb
+	);`)
 	if err != nil {
 		panic(err)
 	}
-	for _, ddl := range indexer.migrations {
-		_, err := indexer.conn.Exec(ddl)
+	indexer.applyModuleMigrations("", baseMigrations)
+	for key, value := range indexer.migrations {
+		indexer.applyModuleMigrations(key, value)
+	}
+}
+
+func (indexer *indexer) applyModuleMigrations(module string, ddl []string) {
+	row := indexer.conn.QueryRow("SELECT version FROM __migration_state WHERE module = $1", module)
+	version := 0
+	haveRow := false
+	if row != nil {
+		err := row.Scan(&version)
+		if err == nil {
+			haveRow = true
+		}
+	}
+	n := len(ddl)
+	for i := version; i < n; i++ {
+		_, err := indexer.conn.Exec(ddl[i])
+		if err != nil {
+			panic(err)
+		}
+	}
+	if !haveRow {
+		_, err := indexer.conn.Exec("INSERT INTO __migration_state (module, version) VALUES ($1, $2)", module, n)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		_, err := indexer.conn.Exec("UPDATE __migration_state SET version = $1 WHERE module = $2", n, module)
 		if err != nil {
 			panic(err)
 		}

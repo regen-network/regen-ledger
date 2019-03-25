@@ -123,7 +123,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 	if len(postgresUrl) != 0 {
 		pgIndexer, err := postgresql.NewIndexer(postgresUrl, txDecoder)
 		if err == nil {
-			pgIndexer.AddMigration(geo.PostgresSchema)
+			pgIndexer.AddMigrations("geo", geo.PostgresMigrations)
 			app.pgIndexer = pgIndexer
 			logger.Info("Started PostgreSQL Indexer")
 		} else {
