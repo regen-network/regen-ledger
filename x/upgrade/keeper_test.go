@@ -32,26 +32,26 @@ func (s *TestSuite) SetupTest() {
 }
 
 func (s *TestSuite) TestRequireName() {
-	err := s.keeper.ScheduleUpgrade(s.ctx, UpgradePlan{})
+	err := s.keeper.ScheduleUpgrade(s.ctx, Plan{})
 	s.Require().NotNil(err)
 	s.Require().Equal(sdk.CodeUnknownRequest, err.Code())
 }
 
 func (s *TestSuite) TestRequireFutureTime() {
-	err := s.keeper.ScheduleUpgrade(s.ctx, UpgradePlan{Name: "test", Time: s.ctx.BlockHeader().Time})
+	err := s.keeper.ScheduleUpgrade(s.ctx, Plan{Name: "test", Time: s.ctx.BlockHeader().Time})
 	s.Require().NotNil(err)
 	s.Require().Equal(sdk.CodeUnknownRequest, err.Code())
 }
 
 func (s *TestSuite) TestRequireFutureBlock() {
-	err := s.keeper.ScheduleUpgrade(s.ctx, UpgradePlan{Name: "test", Height: s.ctx.BlockHeight()})
+	err := s.keeper.ScheduleUpgrade(s.ctx, Plan{Name: "test", Height: s.ctx.BlockHeight()})
 	s.Require().NotNil(err)
 	s.Require().Equal(sdk.CodeUnknownRequest, err.Code())
 }
 
 func (s *TestSuite) TestDoTimeUpgrade() {
 	s.T().Log("Verify can schedule an upgrade")
-	err := s.keeper.ScheduleUpgrade(s.ctx, UpgradePlan{Name: "test", Time: time.Now()})
+	err := s.keeper.ScheduleUpgrade(s.ctx, Plan{Name: "test", Time: time.Now()})
 	s.Require().Nil(err)
 
 	s.VerifyDoUpgrade()
@@ -59,7 +59,7 @@ func (s *TestSuite) TestDoTimeUpgrade() {
 
 func (s *TestSuite) TestDoHeightUpgrade() {
 	s.T().Log("Verify can schedule an upgrade")
-	err := s.keeper.ScheduleUpgrade(s.ctx, UpgradePlan{Name: "test", Height: s.ctx.BlockHeight() + 1})
+	err := s.keeper.ScheduleUpgrade(s.ctx, Plan{Name: "test", Height: s.ctx.BlockHeight() + 1})
 	s.Require().Nil(err)
 
 	s.VerifyDoUpgrade()
@@ -74,7 +74,7 @@ func (s *TestSuite) VerifyDoUpgrade() {
 	})
 
 	s.T().Log("Verify that the upgrade can be successfully applied with a handler")
-	s.keeper.SetUpgradeHandler("test", func(ctx sdk.Context, plan UpgradePlan) {})
+	s.keeper.SetUpgradeHandler("test", func(ctx sdk.Context, plan Plan) {})
 	s.Require().NotPanics(func() {
 		s.keeper.BeginBlocker(newCtx, req)
 	})
@@ -84,14 +84,13 @@ func (s *TestSuite) VerifyDoUpgrade() {
 
 func (s *TestSuite) VerifyCleared(newCtx sdk.Context) {
 	s.T().Log("Verify that the upgrade plan has been cleared")
-	_, err := s.keeper.GetUpgradeInfo(newCtx)
-	s.Require().NotNil(err)
-	s.Require().Equal(sdk.CodeUnknownRequest, err.Code())
+	_, havePlan := s.keeper.GetUpgradePlan(newCtx)
+	s.Require().False(havePlan)
 }
 
 func (s *TestSuite) TestCanClear() {
 	s.T().Log("Verify upgrade is scheduled")
-	err := s.keeper.ScheduleUpgrade(s.ctx, UpgradePlan{Name: "test", Time: time.Now()})
+	err := s.keeper.ScheduleUpgrade(s.ctx, Plan{Name: "test", Time: time.Now()})
 	s.Require().Nil(err)
 
 	s.keeper.ClearUpgradePlan(s.ctx)
@@ -102,7 +101,7 @@ func (s *TestSuite) TestCanClear() {
 func (s *TestSuite) TestCantApplySameUpgradeTwice() {
 	s.TestDoTimeUpgrade()
 	s.T().Log("Verify an upgrade named \"test\" can't be scheduled twice")
-	err := s.keeper.ScheduleUpgrade(s.ctx, UpgradePlan{Name: "test", Time: time.Now()})
+	err := s.keeper.ScheduleUpgrade(s.ctx, Plan{Name: "test", Time: time.Now()})
 	s.Require().NotNil(err)
 	s.Require().Equal(sdk.CodeUnknownRequest, err.Code())
 }
@@ -110,12 +109,12 @@ func (s *TestSuite) TestCantApplySameUpgradeTwice() {
 func (s *TestSuite) TestDoShutdowner() {
 	s.T().Log("Set a custom DoShutdowner")
 	shutdownerCalled := false
-	s.keeper.SetDoShutdowner(func(ctx sdk.Context, plan UpgradePlan) {
+	s.keeper.SetDoShutdowner(func(ctx sdk.Context, plan Plan) {
 		shutdownerCalled = true
 	})
 
 	s.T().Log("Run an upgrade and verify that the custom shutdowner was called and no panic happened")
-	err := s.keeper.ScheduleUpgrade(s.ctx, UpgradePlan{Name: "test", Time: time.Now()})
+	err := s.keeper.ScheduleUpgrade(s.ctx, Plan{Name: "test", Time: time.Now()})
 	s.Require().Nil(err)
 
 	header := abci.Header{Height: s.ctx.BlockHeight() + 1, Time: time.Now()}

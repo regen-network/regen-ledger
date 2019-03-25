@@ -5,7 +5,7 @@ install:
 	go install ./cmd/xrncli
 
 test:
-	go test ./... -godog.strict
+	go test ./...
 
 lint:
 	go get -u golang.org/x/lint/golint

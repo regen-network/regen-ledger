@@ -7,33 +7,36 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
+// Keeper of the upgrade module
 type Keeper struct {
 	storeKey        sdk.StoreKey
 	cdc             *codec.Codec
-	doShutdowner    func(sdk.Context, UpgradePlan)
-	upgradeHandlers map[string]UpgradeHandler
+	doShutdowner    func(sdk.Context, Plan)
+	upgradeHandlers map[string]Handler
 }
 
 const (
 	planKey = "plan"
 )
 
+// NewKeeper constructs an upgrade keeper
 func NewKeeper(storeKey sdk.StoreKey, cdc *codec.Codec) Keeper {
 	return Keeper{
 		storeKey:        storeKey,
 		cdc:             cdc,
-		upgradeHandlers: map[string]UpgradeHandler{},
+		upgradeHandlers: map[string]Handler{},
 	}
 }
 
-// Sets an upgrade handler for the upgrade specified by name. This handler will be called when the upgrade
+// SetUpgradeHandler sets an UpgradeHandler for the upgrade specified by name. This handler will be called when the upgrade
 // with this name is applied. In order for an upgrade with the given name to proceed, a handler for this upgrade
 // must be set even if it is a no-op function.
-func (keeper Keeper) SetUpgradeHandler(name string, upgradeHandler UpgradeHandler) {
+func (keeper Keeper) SetUpgradeHandler(name string, upgradeHandler Handler) {
 	keeper.upgradeHandlers[name] = upgradeHandler
 }
 
-func (keeper Keeper) ScheduleUpgrade(ctx sdk.Context, plan UpgradePlan) sdk.Error {
+// ScheduleUpgrade schedules an upgrade based on the specified plan
+func (keeper Keeper) ScheduleUpgrade(ctx sdk.Context, plan Plan) sdk.Error {
 	err := plan.ValidateBasic()
 	if err != nil {
 		return err
@@ -56,12 +59,14 @@ func (keeper Keeper) ScheduleUpgrade(ctx sdk.Context, plan UpgradePlan) sdk.Erro
 	return nil
 }
 
+// ClearUpgradePlan clears any schedule upgrade
 func (keeper Keeper) ClearUpgradePlan(ctx sdk.Context) {
 	store := ctx.KVStore(keeper.storeKey)
 	store.Delete([]byte(planKey))
 }
 
-func (plan UpgradePlan) ValidateBasic() sdk.Error {
+// ValidateBasic does basic validation of an Plan
+func (plan Plan) ValidateBasic() sdk.Error {
 	if len(plan.Name) == 0 {
 		return sdk.ErrUnknownRequest("Name cannot be empty")
 
@@ -69,17 +74,22 @@ func (plan UpgradePlan) ValidateBasic() sdk.Error {
 	return nil
 }
 
-func (keeper Keeper) GetUpgradeInfo(ctx sdk.Context) (plan UpgradePlan, err sdk.Error) {
+// GetUpgradePlan returns the currently scheduled Plan if any, setting havePlan to true if there is a scheduled
+// upgrade or false if there is none
+func (keeper Keeper) GetUpgradePlan(ctx sdk.Context) (plan Plan, havePlan bool) {
 	store := ctx.KVStore(keeper.storeKey)
 	bz := store.Get([]byte(planKey))
 	if bz == nil {
-		return plan, sdk.ErrUnknownRequest("Not found")
+		return plan, false
 	}
 	keeper.cdc.MustUnmarshalBinaryBare(bz, &plan)
-	return plan, nil
+	return plan, true
 }
 
-func (keeper *Keeper) SetDoShutdowner(doShutdowner func(ctx sdk.Context, plan UpgradePlan)) {
+// SetDoShutdowner sets a custom shutdown function for the upgrade module. This shutdown
+// function will be called during the BeginBlock method when an upgrade is required
+// instead of panic'ing which is the default behavior
+func (keeper *Keeper) SetDoShutdowner(doShutdowner func(ctx sdk.Context, plan Plan)) {
 	keeper.doShutdowner = doShutdowner
 }
 
@@ -87,12 +97,13 @@ func upgradeDoneKey(name string) []byte {
 	return []byte(fmt.Sprintf("done/%s", name))
 }
 
+// BeginBlocker should be called inside the BeginBlocker method of any app using the upgrade module
 func (keeper *Keeper) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) {
 	blockTime := ctx.BlockHeader().Time
 	blockHeight := ctx.BlockHeight()
 
-	plan, err := keeper.GetUpgradeInfo(ctx)
-	if err != nil {
+	plan, havePlan := keeper.GetUpgradePlan(ctx)
+	if !havePlan {
 		return
 	}
 
@@ -110,7 +121,7 @@ func (keeper *Keeper) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) 
 			store.Set(upgradeDoneKey(plan.Name), []byte("1"))
 		} else {
 			// We don't have an upgrade handler for this upgrade name, meaning this software is out of date so shutdown
-			ctx.Logger().Error(fmt.Sprintf("UPGRADE \"%s\" NEEDED needed at height %d: %s", plan.Name, blockHeight, plan.Memo))
+			ctx.Logger().Error(fmt.Sprintf("UPGRADE \"%s\" NEEDED needed at height %d: %s", plan.Name, blockHeight, plan.Info))
 			doShutdowner := keeper.doShutdowner
 			if doShutdowner != nil {
 				doShutdowner(ctx, plan)

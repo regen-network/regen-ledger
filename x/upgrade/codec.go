@@ -6,5 +6,5 @@ import (
 
 // RegisterCodec registers concrete types on the Amino codec
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(UpgradePlan{}, "upgrade/UpgradePlan", nil)
+	cdc.RegisterConcrete(Plan{}, "upgrade/Plan", nil)
 }

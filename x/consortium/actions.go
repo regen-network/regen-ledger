@@ -8,7 +8,7 @@ import (
 )
 
 type ActionScheduleUpgrade struct {
-	Plan upgrade.UpgradePlan `json:"upgrade_plan"`
+	Plan upgrade.Plan `json:"upgrade_plan"`
 }
 
 type ActionCancelUpgrade struct {
