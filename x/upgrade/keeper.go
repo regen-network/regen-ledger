@@ -12,7 +12,6 @@ type Keeper struct {
 	cdc             *codec.Codec
 	plan            UpgradePlan
 	haveCachedInfo  bool
-	willUpgrader    func(UpgradePlan)
 	doShutdowner    func(sdk.Context, UpgradePlan)
 	upgradeHandlers map[string]UpgradeHandler
 }
@@ -43,7 +42,7 @@ func (keeper Keeper) ScheduleUpgrade(ctx sdk.Context, plan UpgradePlan) sdk.Erro
 		return err
 	}
 	if !plan.Time.IsZero() {
-		if plan.Time.Before(ctx.BlockHeader().Time) {
+		if !plan.Time.After(ctx.BlockHeader().Time) {
 			return sdk.ErrUnknownRequest("Upgrade cannot be scheduled in the past")
 		}
 	} else {
@@ -79,15 +78,8 @@ func (keeper Keeper) GetUpgradeInfo(ctx sdk.Context, plan *UpgradePlan) sdk.Erro
 	if bz == nil {
 		return sdk.ErrUnknownRequest("Not found")
 	}
-	marshalErr := keeper.cdc.UnmarshalBinaryBare(bz, &plan)
-	if marshalErr != nil {
-		return sdk.ErrUnknownRequest(marshalErr.Error())
-	}
+	keeper.cdc.MustUnmarshalBinaryBare(bz, &plan)
 	return nil
-}
-
-func (keeper *Keeper) SetWillUpgrader(willUpgrader func(plan UpgradePlan)) {
-	keeper.willUpgrader = willUpgrader
 }
 
 func (keeper *Keeper) SetDoShutdowner(doShutdowner func(ctx sdk.Context, plan UpgradePlan)) {
@@ -108,19 +100,12 @@ func (keeper *Keeper) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) 
 			return
 		}
 		keeper.haveCachedInfo = true
-		// TODO verify this will always get called at the right time
-		if (!keeper.plan.Time.IsZero() && keeper.plan.Time.After(blockTime)) || keeper.plan.Height > blockHeight {
-			willUpgrader := keeper.willUpgrader
-			if willUpgrader != nil {
-				willUpgrader(keeper.plan)
-			}
-		}
 	}
 
 	if keeper.haveCachedInfo {
 		upgradeTime := keeper.plan.Time
 		upgradeHeight := keeper.plan.Height
-		if (!upgradeTime.IsZero() && (upgradeTime.Before(blockTime) || upgradeTime.Equal(blockTime))) || upgradeHeight <= blockHeight {
+		if (!upgradeTime.IsZero() && !blockTime.Before(upgradeTime)) || upgradeHeight <= blockHeight {
 			handler, ok := keeper.upgradeHandlers[keeper.plan.Name]
 			if ok {
 				// We have an upgrade handler for this upgrade name, so apply the upgrade
@@ -132,11 +117,12 @@ func (keeper *Keeper) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) 
 				store.Set(upgradeDoneKey(keeper.plan.Name), []byte("1"))
 			} else {
 				// We don't have an upgrade handler for this upgrade name, meaning this software is out of date so shutdown
+				ctx.Logger().Error(fmt.Sprintf("UPGRADE \"%s\" NEEDED needed at height %d: %s", keeper.plan.Name, blockHeight, keeper.plan.Memo))
 				doShutdowner := keeper.doShutdowner
 				if doShutdowner != nil {
 					doShutdowner(ctx, keeper.plan)
 				} else {
-					panic(fmt.Sprintf("UPGRADE \"%s\" NEEDED needed at height %d: %s", keeper.plan.Name, blockHeight, keeper.plan.Memo))
+					panic("UPGRADE REQUIRED!")
 				}
 			}
 		}

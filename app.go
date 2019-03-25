@@ -350,6 +350,7 @@ func MakeCodec() *codec.Codec {
 	group.RegisterCodec(cdc)
 	proposal.RegisterCodec(cdc)
 	consortium.RegisterCodec(cdc)
+	upgrade.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
 	return cdc
