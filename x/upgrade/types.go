@@ -28,19 +28,18 @@ type Plan struct {
 	Info string `json:"info,omitempty"`
 }
 
-// UpgradeHandler specifies the type of function that is called when an upgrade is applied
+// Handler specifies the type of function that is called when an upgrade is applied
 type Handler func(ctx sdk.Context, plan Plan)
 
 func (plan Plan) String() string {
+	var whenStr string
 	if !plan.Time.IsZero() {
-		return fmt.Sprintf(`Upgrade Plan
-  Name: %s
-  Time: %s
-  Info: %s`, plan.Name, plan.Time.Format(time.RFC3339), plan.Info)
+		whenStr = fmt.Sprintf("Time: %s", plan.Time.Format(time.RFC3339))
 	} else {
-		return fmt.Sprintf(`Upgrade Plan
-  Name: %s
-  Height: %d
-  Info: %s`, plan.Name, plan.Height, plan.Info)
+		whenStr = fmt.Sprintf("Height: %d", plan.Height)
 	}
+	return fmt.Sprintf(`Upgrade Plan
+  Name: %s
+  %s
+  Info: %s`, plan.Name, whenStr, plan.Info)
 }

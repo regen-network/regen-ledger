@@ -160,9 +160,6 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 
 	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc)
 	app.upgradeKeeper.SetDoShutdowner(app.shutdownOnUpgrade)
-	app.upgradeKeeper.SetUpgradeHandler("test3", func(ctx sdk.Context, plan upgrade.Plan) {
-		ctx.Logger().Info("In upgrade 3 handler!")
-	})
 
 	app.consortiumKeeper = consortium.NewKeeper(app.consortiumStoreKey, cdc, app.agentKeeper, app.upgradeKeeper)
 

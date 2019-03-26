@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// GetQueryCmd creates a query sub-command for the upgrade module using cmdName as the name of the sub-command.
 func GetQueryCmd(cmdName string, storeName string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   cmdName,

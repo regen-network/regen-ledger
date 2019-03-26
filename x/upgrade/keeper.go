@@ -16,6 +16,7 @@ type Keeper struct {
 }
 
 const (
+	// PlanKey specifies the key under which an upgrade plan is stored in the store
 	PlanKey = "plan"
 )
 

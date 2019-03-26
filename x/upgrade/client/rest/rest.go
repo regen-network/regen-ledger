@@ -10,6 +10,7 @@ import (
 	"net/http"
 )
 
+// RegisterRoutes registers REST routes for the upgrade module under the path specified by routeName.
 func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, cdc *codec.Codec, routeName string, storeName string) {
 	r.HandleFunc(fmt.Sprintf("/%s", routeName), getUpgradePlanHandler(cdc, cliCtx, storeName)).Methods("GET")
 }
