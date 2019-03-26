@@ -7,6 +7,9 @@ install:
 test:
 	go test ./... -godog.strict
 
+test_cover:
+	bash -x tests/test_cover.sh
+
 lint:
 	go get -u golang.org/x/lint/golint
 	${GOPATH}/bin/golint -set_exit_status ./...
