@@ -79,12 +79,21 @@ in
           description = "Regen Ledger Daemon";
           wantedBy = [ "multi-user.target" ];
           after = [ "network.target" ];
-          path = [ xrn ];
+          path = [ xrn pkgs.jq ];
           preStart = ''
             chown -R xrnd:xrn ${xrndCfg.home}
           '';
           script = ''
             xrnd start --moniker ${xrndCfg.moniker} --home ${xrndCfg.home}
+          '';
+          postStop = ''
+            export UPGRADE_COMMIT=$(jq '.commit' < ${xrndCfg.home}/data/upgrade-info)
+            if  [ $UPGRADE_COMMIT != "null" ]; then
+              cd /root/regen-ledger
+              git clean -f
+              git checkout -f $UPGRADE_COMMIT
+              nixos-rebuild switch
+            fi
           '';
           environment = {
             POSTGRES_INDEX_URL = xrndCfg.postgresIndexUrl;

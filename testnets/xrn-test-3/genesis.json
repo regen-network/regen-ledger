@@ -1,6 +1,6 @@
 {
   "genesis_time": "2018-12-19T20:40:06.463846Z",
-  "chain_id": "xrn-test-next",
+  "chain_id": "xrn-test-3",
   "consensus_params": {
     "block_size": {
       "max_bytes": "22020096",
