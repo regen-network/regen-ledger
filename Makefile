@@ -5,7 +5,7 @@ install:
 	go install ./cmd/xrncli
 
 test:
-	go test ./... -godog.strict
+	go test ./...
 
 test_cover:
 	bash -x tests/test_cover.sh

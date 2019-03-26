@@ -30,6 +30,8 @@ import (
 	geoclient "github.com/regen-network/regen-ledger/x/geo/client"
 	agentclient "github.com/regen-network/regen-ledger/x/group/client"
 	proposalclient "github.com/regen-network/regen-ledger/x/proposal/client"
+	upgradecli "github.com/regen-network/regen-ledger/x/upgrade/client/cli"
+	upgraderest "github.com/regen-network/regen-ledger/x/upgrade/client/rest"
 	cmn "github.com/tendermint/tendermint/libs/common"
 )
 
@@ -38,6 +40,7 @@ const (
 	storeData     = "data"
 	storeAgent    = "group"
 	storeProposal = "proposal"
+	storeUpgrade  = "upgrade"
 )
 
 var defaultCLIHome = os.ExpandEnv("$HOME/.xrncli")
@@ -178,6 +181,7 @@ func registerRoutes(rs *lcd.RestServer) {
 	auth.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeAcc)
 	bank.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	datarest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeData)
+	upgraderest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, "upgrade-plan", storeUpgrade)
 }
 
 func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
@@ -199,6 +203,8 @@ func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
 	for _, m := range mc {
 		queryCmd.AddCommand(m.GetQueryCmd())
 	}
+
+	queryCmd.AddCommand(upgradecli.GetQueryCmd("upgrade-plan", storeUpgrade, cdc))
 
 	addNodeFlags(queryCmd)
 

@@ -8,7 +8,10 @@ import (
 )
 
 type ActionScheduleUpgrade struct {
-	UpgradeInfo upgrade.UpgradeInfo `json:"upgrade_info"`
+	Plan upgrade.Plan `json:"upgrade_plan"`
+}
+
+type ActionCancelUpgrade struct {
 }
 
 /*
@@ -24,13 +27,10 @@ type ActionChangeValidatorSet struct {
 
 func (action ActionScheduleUpgrade) Route() string { return "consortium" }
 
-func (action ActionScheduleUpgrade) Type() string { return "upgrade" }
+func (action ActionScheduleUpgrade) Type() string { return "consortium.upgrade" }
 
 func (action ActionScheduleUpgrade) ValidateBasic() sdk.Error {
-	if action.UpgradeInfo.Height <= 0 {
-		return sdk.ErrUnknownRequest("Upgrade height must be greater than 0")
-	}
-	return nil
+	return action.Plan.ValidateBasic()
 }
 
 func (action ActionScheduleUpgrade) GetSignBytes() []byte {
@@ -41,9 +41,25 @@ func (action ActionScheduleUpgrade) GetSignBytes() []byte {
 	return sdk.MustSortJSON(b)
 }
 
+func (ActionCancelUpgrade) Route() string { return "consortium" }
+
+func (ActionCancelUpgrade) Type() string { return "consortium.cancel-upgrade" }
+
+func (ActionCancelUpgrade) ValidateBasic() sdk.Error {
+	return nil
+}
+
+func (action ActionCancelUpgrade) GetSignBytes() []byte {
+	b, err := json.Marshal(action)
+	if err != nil {
+		panic(err)
+	}
+	return sdk.MustSortJSON(b)
+}
+
 func (action ActionChangeValidatorSet) Route() string { return "consortium" }
 
-func (action ActionChangeValidatorSet) Type() string { return "changeValidatorSet" }
+func (action ActionChangeValidatorSet) Type() string { return "consortium.changeValidatorSet" }
 
 func (action ActionChangeValidatorSet) ValidateBasic() sdk.Error {
 	panic("implement me")

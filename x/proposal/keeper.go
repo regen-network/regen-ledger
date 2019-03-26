@@ -35,18 +35,15 @@ func MustDecodeProposalIDBech32(bech string) []byte {
 	return id
 }
 
-func (keeper Keeper) Propose(ctx sdk.Context, proposer sdk.AccAddress, action ProposalAction) sdk.Result {
+func (keeper Keeper) Propose(ctx sdk.Context, proposer sdk.AccAddress, action ProposalAction) ([]byte, sdk.Result) {
 	canHandle, res := keeper.handler.CheckProposal(ctx, action)
 
 	if !canHandle {
-		return sdk.Result{
-			Code: sdk.CodeUnknownRequest,
-			Log:  "unknown proposal type",
-		}
+		return nil, sdk.ErrUnknownRequest("unknown proposal type").Result()
 	}
 
 	if res.Code != sdk.CodeOK {
-		return res
+		return nil, res
 	}
 
 	store := ctx.KVStore(keeper.storeKey)
@@ -54,10 +51,7 @@ func (keeper Keeper) Propose(ctx sdk.Context, proposer sdk.AccAddress, action Pr
 	id := hashBz[:]
 	bech := mustEncodeProposalIDBech32(id)
 	if store.Has(id) {
-		return sdk.Result{
-			Code: sdk.CodeUnknownRequest,
-			Log:  fmt.Sprintf("proposal %s already exists", bech),
-		}
+		return id, sdk.ErrUnknownRequest(fmt.Sprintf("proposal %s already exists", bech)).Result()
 	}
 
 	prop := Proposal{
@@ -69,10 +63,9 @@ func (keeper Keeper) Propose(ctx sdk.Context, proposer sdk.AccAddress, action Pr
 	keeper.storeProposal(ctx, id, &prop)
 
 	res.Tags = res.Tags.
-		AppendTag("proposal.id", bech).
+		AppendTag("proposal.id", mustEncodeProposalIDBech32(id)).
 		AppendTag("proposal.action", action.Type())
-
-	return res
+	return id, res
 }
 
 func (keeper Keeper) storeProposal(ctx sdk.Context, id []byte, proposal *Proposal) {
@@ -168,10 +161,7 @@ func (keeper Keeper) TryExecute(ctx sdk.Context, proposalId []byte) sdk.Result {
 	proposal, err := keeper.GetProposal(ctx, proposalId)
 
 	if err != nil {
-		return sdk.Result{
-			Code: sdk.CodeUnknownRequest,
-			Log:  "can't find proposal",
-		}
+		return sdk.ErrUnknownRequest("can't find proposal").Result()
 	}
 
 	res := keeper.handler.HandleProposal(ctx, proposal.Action, proposal.Approvers)
@@ -179,6 +169,7 @@ func (keeper Keeper) TryExecute(ctx sdk.Context, proposalId []byte) sdk.Result {
 	if res.Code == sdk.CodeOK {
 		store := ctx.KVStore(keeper.storeKey)
 		store.Delete(proposalId)
+		res.Tags = res.Tags.AppendTag("action", proposal.Action.Type())
 	}
 
 	return res

@@ -24,9 +24,18 @@ func NewHandler(keeper Keeper) sdk.Handler {
 	}
 }
 
-
 func handleMsgCreateProposal(ctx sdk.Context, keeper Keeper, msg MsgCreateProposal) sdk.Result {
-	return keeper.Propose(ctx, msg.Proposer, msg.Action)
+	id, res := keeper.Propose(ctx, msg.Proposer, msg.Action)
+	if res.Code != sdk.CodeOK {
+		return res
+	}
+	if msg.Exec {
+		res := keeper.TryExecute(ctx, id)
+		if res.Code == sdk.CodeOK {
+			return res
+		}
+	}
+	return res
 }
 
 func handleMsgVote(ctx sdk.Context, keeper Keeper, msg MsgVote) sdk.Result {
@@ -40,4 +49,3 @@ func handleMsgTryExecuteProposal(ctx sdk.Context, keeper Keeper, msg MsgTryExecu
 func handleMsgWithdrawProposal(ctx sdk.Context, keeper Keeper, msg MsgWithdrawProposal) sdk.Result {
 	return keeper.Withdraw(ctx, msg.ProposalId, msg.Proposer)
 }
-

@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/regen-network/regen-ledger/index/postgresql"
 	"github.com/regen-network/regen-ledger/x/consortium"
@@ -11,7 +12,12 @@ import (
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/proposal"
 	"github.com/regen-network/regen-ledger/x/upgrade"
+	"github.com/spf13/viper"
+	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	//"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -117,7 +123,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 	if len(postgresUrl) != 0 {
 		pgIndexer, err := postgresql.NewIndexer(postgresUrl, txDecoder)
 		if err == nil {
-			pgIndexer.AddMigration(geo.PostgresSchema)
+			pgIndexer.AddMigrations("geo", geo.PostgresMigrations)
 			app.pgIndexer = pgIndexer
 			logger.Info("Started PostgreSQL Indexer")
 		} else {
@@ -152,7 +158,8 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 
 	app.espKeeper = esp.NewKeeper(app.espStoreKey, app.agentKeeper, app.geoKeeper, cdc)
 
-	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc, 1000)
+	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc)
+	app.upgradeKeeper.SetDoShutdowner(app.shutdownOnUpgrade)
 
 	app.consortiumKeeper = consortium.NewKeeper(app.consortiumStoreKey, cdc, app.agentKeeper, app.upgradeKeeper)
 
@@ -230,8 +237,8 @@ func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.
 		app.accountKeeper.SetAccount(ctx, acc)
 	}
 
-	for _, group := range genesisState.Groups {
-		app.agentKeeper.CreateGroup(ctx, group)
+	for _, g := range genesisState.Groups {
+		app.agentKeeper.CreateGroup(ctx, g)
 	}
 
 	app.consortiumKeeper.SetValidators(ctx, req.Validators)
@@ -240,6 +247,15 @@ func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.
 	bank.InitGenesis(ctx, app.bankKeeper, genesisState.BankData)
 
 	return abci.ResponseInitChain{}
+}
+
+func (app *xrnApp) shutdownOnUpgrade(ctx sdk.Context, plan upgrade.Plan) {
+	if len(plan.Info) != 0 {
+		home := viper.GetString(cli.HomeFlag)
+		_ = ioutil.WriteFile(filepath.Join(home, "data", "upgrade-info"), []byte(plan.Info), 0644)
+	}
+	ctx.Logger().Error(fmt.Sprintf("UPGRADE \"%s\" NEEDED needed at height %d: %s", plan.Name, ctx.BlockHeight(), plan.Info))
+	os.Exit(1)
 }
 
 func (app *xrnApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
@@ -331,6 +347,7 @@ func MakeCodec() *codec.Codec {
 	group.RegisterCodec(cdc)
 	proposal.RegisterCodec(cdc)
 	consortium.RegisterCodec(cdc)
+	upgrade.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
 	return cdc

@@ -97,7 +97,7 @@ in
         };
     })
 
-    (mkIf xrndCfg.restServer {
+    (mkIf (xrndCfg.enable && xrndCfg.restServer) {
         users.groups.xrn = {};
 
         users.users.xrnrest = {

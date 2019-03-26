@@ -14,7 +14,9 @@ import (
 type ActionCreator func(cmd *cobra.Command, args []string) (proposal.ProposalAction, error)
 
 func GetCmdPropose(cdc *codec.Codec, actionCreator ActionCreator) *cobra.Command {
-	return &cobra.Command{
+	var exec bool
+
+	cmd := &cobra.Command{
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc).WithAccountDecoder(cdc)
 
@@ -35,6 +37,7 @@ func GetCmdPropose(cdc *codec.Codec, actionCreator ActionCreator) *cobra.Command
 			msg := proposal.MsgCreateProposal{
 				Proposer: account,
 				Action:   action,
+				Exec:     exec,
 			}
 			err = msg.ValidateBasic()
 			if err != nil {
@@ -46,6 +49,8 @@ func GetCmdPropose(cdc *codec.Codec, actionCreator ActionCreator) *cobra.Command
 			return utils.CompleteAndBroadcastTxCLI(txBldr, cliCtx, []sdk.Msg{msg})
 		},
 	}
+	cmd.Flags().BoolVar(&exec, "exec", false, "try to execute the proposal immediately")
+	return cmd
 }
 
 func getRunVote(cdc *codec.Codec, approve bool) func(cmd *cobra.Command, args []string) error {

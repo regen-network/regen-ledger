@@ -29,6 +29,10 @@ type Geometry struct {
 
 type GeoAddress []byte
 
+var PostgresMigrations = []string{
+	PostgresSchema,
+}
+
 const PostgresSchema = `
 CREATE TABLE geo (
   url text NOT NULL PRIMARY KEY,
