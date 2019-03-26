@@ -1,5 +1,3 @@
-package upgrade
-
 /*
 Package upgrade provides a Cosmos SDK module that can be used for smoothly upgrading a live Cosmos blockchain to a
 new software version. It accomplishes this by providing a BeginBlocker hook that prevents the blockchain state
@@ -51,3 +49,4 @@ but usually not exit the process. This behavior can be overriden using the keepe
 shutdown method could perform some other steps such as alerting some other running process to try to install the
 new software version automatically, as well as crashing the program with os.Exit() instead of panic.
 */
+package upgrade

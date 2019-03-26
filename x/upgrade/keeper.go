@@ -69,7 +69,7 @@ func (keeper Keeper) ClearUpgradePlan(ctx sdk.Context) {
 	store.Delete([]byte(PlanKey))
 }
 
-// ValidateBasic does basic validation of an Plan
+// ValidateBasic does basic validation of a Plan
 func (plan Plan) ValidateBasic() sdk.Error {
 	if len(plan.Name) == 0 {
 		return sdk.ErrUnknownRequest("Name cannot be empty")
