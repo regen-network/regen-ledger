@@ -16,7 +16,7 @@ type Keeper struct {
 }
 
 const (
-	planKey = "plan"
+	PlanKey = "plan"
 )
 
 // NewKeeper constructs an upgrade keeper
@@ -45,6 +45,9 @@ func (keeper Keeper) ScheduleUpgrade(ctx sdk.Context, plan Plan) sdk.Error {
 		if !plan.Time.After(ctx.BlockHeader().Time) {
 			return sdk.ErrUnknownRequest("Upgrade cannot be scheduled in the past")
 		}
+		if plan.Height != 0 {
+			return sdk.ErrUnknownRequest("Only one of Time or Height should be specified")
+		}
 	} else {
 		if plan.Height <= ctx.BlockHeight() {
 			return sdk.ErrUnknownRequest("Upgrade cannot be scheduled in the past")
@@ -55,14 +58,14 @@ func (keeper Keeper) ScheduleUpgrade(ctx sdk.Context, plan Plan) sdk.Error {
 		return sdk.ErrUnknownRequest(fmt.Sprintf("Upgrade with name %s has already been completed", plan.Name))
 	}
 	bz := keeper.cdc.MustMarshalBinaryBare(plan)
-	store.Set([]byte(planKey), bz)
+	store.Set([]byte(PlanKey), bz)
 	return nil
 }
 
 // ClearUpgradePlan clears any schedule upgrade
 func (keeper Keeper) ClearUpgradePlan(ctx sdk.Context) {
 	store := ctx.KVStore(keeper.storeKey)
-	store.Delete([]byte(planKey))
+	store.Delete([]byte(PlanKey))
 }
 
 // ValidateBasic does basic validation of an Plan
@@ -78,7 +81,7 @@ func (plan Plan) ValidateBasic() sdk.Error {
 // upgrade or false if there is none
 func (keeper Keeper) GetUpgradePlan(ctx sdk.Context) (plan Plan, havePlan bool) {
 	store := ctx.KVStore(keeper.storeKey)
-	bz := store.Get([]byte(planKey))
+	bz := store.Get([]byte(PlanKey))
 	if bz == nil {
 		return plan, false
 	}

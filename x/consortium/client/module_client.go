@@ -35,6 +35,7 @@ func (mc ModuleClient) GetTxCmd() *cobra.Command {
 
 	consortiumTxCmd.AddCommand(client.PostCommands(
 		consortiumcmd.GetCmdProposeUpgrade(mc.cdc),
+		consortiumcmd.GetCmdProposeCancelUpgrade(mc.cdc),
 	)...)
 
 	return consortiumTxCmd

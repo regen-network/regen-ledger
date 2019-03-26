@@ -169,6 +169,7 @@ func (keeper Keeper) TryExecute(ctx sdk.Context, proposalId []byte) sdk.Result {
 	if res.Code == sdk.CodeOK {
 		store := ctx.KVStore(keeper.storeKey)
 		store.Delete(proposalId)
+		res.Tags = res.Tags.AppendTag("action", proposal.Action.Type())
 	}
 
 	return res

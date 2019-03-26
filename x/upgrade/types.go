@@ -1,6 +1,9 @@
 package upgrade
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 // Plan specifies information about a planned upgrade and when it should occur
@@ -27,3 +30,17 @@ type Plan struct {
 
 // UpgradeHandler specifies the type of function that is called when an upgrade is applied
 type Handler func(ctx sdk.Context, plan Plan)
+
+func (plan Plan) String() string {
+	if !plan.Time.IsZero() {
+		return fmt.Sprintf(`Upgrade Plan
+  Name: %s
+  Time: %s
+  Info: %s`, plan.Name, plan.Time.Format(time.RFC3339), plan.Info)
+	} else {
+		return fmt.Sprintf(`Upgrade Plan
+  Name: %s
+  Height: %d
+  Info: %s`, plan.Name, plan.Height, plan.Info)
+	}
+}

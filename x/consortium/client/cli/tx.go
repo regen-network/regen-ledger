@@ -28,10 +28,6 @@ func GetCmdProposeUpgrade(cdc *codec.Codec) *cobra.Command {
 			if err != nil {
 				return nil, fmt.Errorf("error parsing time: %+v", err)
 			}
-
-			if height != 0 {
-				return nil, fmt.Errorf("only one of --time or --height should be specified")
-			}
 		}
 
 		info := make(map[string]interface{})
@@ -52,10 +48,21 @@ func GetCmdProposeUpgrade(cdc *codec.Codec) *cobra.Command {
 	})
 
 	cmd.Args = cobra.ExactArgs(1)
-	cmd.Use = "propose-upgrade <name> [--time <time> | --height <height>] [--commit <commit-hash>]"
-	cmd.Short = "Propose an ESP version"
-	cmd.Flags().StringVar(&timeStr, "time", "", "The time after which the upgrade must happen in ISO8601/RFC3339 format (omit if using --upgrade-height)")
-	cmd.Flags().Int64Var(&height, "height", 0, "The height at which the upgrade must happen (omit if using --upgrade-time)")
-	cmd.Flags().StringVar(&commit, "commit", "", "The git commit hash of the version of the software to upgrade to")
+	cmd.Use = "propose-upgrade <name> [--upgrade-time <time> | --upgrade-height <height>] [--upgrade-commit <commit-hash>]"
+	cmd.Short = "Propose a software upgrade"
+	cmd.Flags().StringVar(&timeStr, "upgrade-time", "", "The time after which the upgrade must happen in ISO8601/RFC3339 format (omit if using --upgrade-height)")
+	cmd.Flags().Int64Var(&height, "upgrade-height", 0, "The height at which the upgrade must happen (omit if using --upgrade-time)")
+	cmd.Flags().StringVar(&commit, "upgrade-commit", "", "The git commit hash of the version of the software to upgrade to")
+	return cmd
+}
+
+func GetCmdProposeCancelUpgrade(cdc *codec.Codec) *cobra.Command {
+	cmd := proposalcli.GetCmdPropose(cdc, func(cmd *cobra.Command, args []string) (action proposal.ProposalAction, e error) {
+		return consortium.ActionCancelUpgrade{}, nil
+	})
+
+	cmd.Args = cobra.ExactArgs(0)
+	cmd.Use = "propose-cancel-upgrade <name> [--upgrade-time <time> | --upgrade-height <height>] [--upgrade-commit <commit-hash>]"
+	cmd.Short = "Propose that a pending software upgrade be cancelled"
 	return cmd
 }
