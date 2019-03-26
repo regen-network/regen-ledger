@@ -125,7 +125,7 @@ func (keeper *Keeper) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) 
 			store.Set(upgradeDoneKey(plan.Name), []byte("1"))
 		} else {
 			// We don't have an upgrade handler for this upgrade name, meaning this software is out of date so shutdown
-			ctx.Logger().Error(fmt.Sprintf("UPGRADE \"%s\" NEEDED needed at height %d: %s", plan.Name, blockHeight, plan.Info))
+			ctx.Logger().Error(fmt.Sprintf("UPGRADE \"%s\" NEEDED at height %d: %s", plan.Name, blockHeight, plan.Info))
 			doShutdowner := keeper.doShutdowner
 			if doShutdowner != nil {
 				doShutdowner(ctx, plan)

@@ -49,6 +49,12 @@ func (s *TestSuite) TestRequireFutureBlock() {
 	s.Require().Equal(sdk.CodeUnknownRequest, err.Code())
 }
 
+func (s *TestSuite) TestCantSetBothTimeAndHeight() {
+	err := s.keeper.ScheduleUpgrade(s.ctx, Plan{Name: "test", Time: time.Now(), Height: s.ctx.BlockHeight() + 1})
+	s.Require().NotNil(err)
+	s.Require().Equal(sdk.CodeUnknownRequest, err.Code())
+}
+
 func (s *TestSuite) TestDoTimeUpgrade() {
 	s.T().Log("Verify can schedule an upgrade")
 	err := s.keeper.ScheduleUpgrade(s.ctx, Plan{Name: "test", Time: time.Now()})
