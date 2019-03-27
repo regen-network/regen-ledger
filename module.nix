@@ -5,6 +5,7 @@ with lib;
 let
   xrndCfg = config.services.xrnd;
   xrn_build = pkg:
+    with import <nixpkgs>{};
     buildGoModule rec {
       name = "regen-ledger";
 
@@ -69,23 +70,23 @@ in
             Whether to run the xrncli REST server.
           '';
         };
-      enablePostgresIndex =
+      enablePostgres =
         mkOption {
           type = types.bool;
           default = false;
-          description = "Automatically enable the Postgresql service and index to a database named xrn. Shouldn't be used together with postgresIndexUrl";
+          description = "Automatically enable the Postgresql service and index to a database named xrn. Shouldn't be used together with postgresUrl";
         };
-      postgresIndexUrl =
+      postgresUrl =
         mkOption {
           type = types.str;
           default = "";
-          description = "The URL of a Postgresql database to index to. Shouldn't be used together with enablePostgresIndex";
+          description = "The URL of a Postgresql database to index to. Shouldn't be used together with enablePostgres";
         };
     };
   };
   config = mkMerge [
     (mkIf config.programs.xrn.enable {
-      environment.systemPackages = [ xrn ];
+      environment.systemPackages = [ xrncli xrnd ];
     })
 
     (mkIf xrndCfg.enable {
@@ -116,11 +117,11 @@ in
               cd /root/regen-ledger
               git clean -f
               git checkout -f $UPGRADE_COMMIT
-              nixos-rebuild switch
+              nixos-rebuild --upgrade switch
             fi
           '';
           environment = {
-            POSTGRES_INDEX_URL = xrndCfg.postgresIndexUrl;
+            POSTGRES_INDEX_URL = if xrndCfg.enablePostgres then "host=/ user=xrnd dbname=xrn sslmode=disable" else xrndCfg.postgresUrl;
           };
           serviceConfig = {
             User = "xrnd";
@@ -162,12 +163,19 @@ in
             enable = true;
             enableTCPIP = true;
             package = pkgs.postgresql_11;
-            extraPlugins = (pkgs.postgis.override { postgresql = pkgs.postgresql_11; });
+            extraPlugins = [(pkgs.postgis.override { postgresql = pkgs.postgresql_11; })];
             authentication = ''
+              
             '';
-            initialScript = ''
+            initialScript = pkgs.writeText "backend-initScript" ''
+              CREATE USER xrnd; 
+              CREATE DATABASE xrn;
+              GRANT ALL PRIVILEGES ON DATABASE xrn TO xrnd;
+	      GRANT SELECT ON ALL TABLES IN SCHEMA public to PUBLIC;
             '';
         };
+        # Open fire-wall port for production. WARNING don't put this into production validators:
+       	networking.firewall.allowedTCPPorts = [ 5432 ];
     })
   ];
 }
