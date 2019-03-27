@@ -117,6 +117,7 @@ in
               cd /root/regen-ledger
               git clean -f
               git checkout -f $UPGRADE_COMMIT
+              rm ${xrndCfg.home}/data/upgrade-info)
               nixos-rebuild --upgrade switch
             fi
           '';
