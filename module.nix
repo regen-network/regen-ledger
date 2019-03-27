@@ -121,7 +121,7 @@ in
             fi
           '';
           environment = {
-            POSTGRES_INDEX_URL = if xrndCfg.enablePostgres then "host=/ user=xrnd dbname=xrn sslmode=disable" else xrndCfg.postgresUrl;
+            POSTGRES_INDEX_URL = if xrndCfg.enablePostgres then "host=/tmp/.s.PGSQL.5432 user=xrnd dbname=xrn sslmode=disable" else xrndCfg.postgresUrl;
           };
           serviceConfig = {
             User = "xrnd";
@@ -164,14 +164,18 @@ in
             enableTCPIP = true;
             package = pkgs.postgresql_11;
             extraPlugins = [(pkgs.postgis.override { postgresql = pkgs.postgresql_11; })];
-            authentication = ''
-              
-            '';
             initialScript = pkgs.writeText "backend-initScript" ''
               CREATE USER xrnd; 
               CREATE DATABASE xrn;
               GRANT ALL PRIVILEGES ON DATABASE xrn TO xrnd;
-	      GRANT SELECT ON ALL TABLES IN SCHEMA public to PUBLIC;
+              CREATE USER guest;
+	          GRANT SELECT ON ALL TABLES IN SCHEMA public to PUBLIC;
+            '';
+            authentication = ''
+              local all xrnd trust
+              host xrn guest 0.0.0.0/0 trust
+              host xrn guest ::0/0 trust
+
             '';
         };
         # Open fire-wall port for production. WARNING don't put this into production validators:
