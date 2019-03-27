@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [\#163963339](https://www.pivotaltracker.com/story/show/163963339) Upgrade to latest Cosmos SDK
 - [\#164334136](https://www.pivotaltracker.com/story/show/164334136) Implement Postgreql indexer package
 - [\#164380651](https://www.pivotaltracker.com/story/show/164380651) Implement Postgres indexing for geo module
+- [\#17](https://github.com/regen-network/regen-ledger/issues/17) Add define property schema support
     
 ## [0.3.0] - 2018-01-09
 
