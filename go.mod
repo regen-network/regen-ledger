@@ -52,7 +52,7 @@ require (
 	github.com/tendermint/iavl v0.12.0 // indirect
 	github.com/tendermint/tendermint v0.30.0
 	github.com/twpayne/go-geom v1.0.4
-	github.com/zondax/ledger-cosmos-go v0.9.2 // indirect
+	github.com/zondax/ledger-cosmos-go v0.9.9 // indirect
 	golang.org/x/crypto v0.0.0-20170930174604-9419663f5a44
 	golang.org/x/lint v0.0.0-20181217174547-8f45f776aaf1 // indirect
 	golang.org/x/net v0.0.0-20190213061140-3a22650c66bd // indirect
