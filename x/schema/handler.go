@@ -20,11 +20,11 @@ func NewHandler(keeper Keeper) sdk.Handler {
 }
 
 func handlePropertyDefinition(ctx sdk.Context, keeper Keeper, def PropertyDefinition) sdk.Result {
-	_, url, err := keeper.DefineProperty(ctx, def)
+	id, url, err := keeper.DefineProperty(ctx, def)
 	if err != nil {
 		return err.Result()
 	}
 	res := sdk.Result{}
-	res.Tags = res.Tags.AppendTag("property.url", url)
+	res.Tags = res.Tags.AppendTag("property.url", url).AppendTag("property.id", fmt.Sprintf("%d", id))
 	return res
 }

@@ -164,6 +164,7 @@ func (s *TestSuite) TestDefinePropertyHandler() {
 	res := s.handler(s.ctx, prop1)
 	s.Require().Equal(sdk.CodeOK, res.Code)
 	s.Require().Equal(prop1.URL(), string(res.Tags[0].Value))
+	s.Require().Equal("1", string(res.Tags[1].Value))
 }
 
 func TestTestSuite(t *testing.T) {
