@@ -22,6 +22,8 @@ import (
 	auth "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
+	upgradecli "github.com/cosmos/cosmos-sdk/x/upgrade/client/cli"
+	upgraderest "github.com/cosmos/cosmos-sdk/x/upgrade/client/rest"
 	"github.com/regen-network/regen-ledger"
 	consortiumclient "github.com/regen-network/regen-ledger/x/consortium/client"
 	dataclient "github.com/regen-network/regen-ledger/x/data/client"
@@ -30,8 +32,6 @@ import (
 	geoclient "github.com/regen-network/regen-ledger/x/geo/client"
 	agentclient "github.com/regen-network/regen-ledger/x/group/client"
 	proposalclient "github.com/regen-network/regen-ledger/x/proposal/client"
-	upgradecli "github.com/regen-network/regen-ledger/x/upgrade/client/cli"
-	upgraderest "github.com/regen-network/regen-ledger/x/upgrade/client/rest"
 	cmn "github.com/tendermint/tendermint/libs/common"
 )
 

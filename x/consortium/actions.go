@@ -3,7 +3,7 @@ package consortium
 import (
 	"encoding/json"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/x/upgrade"
+	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 

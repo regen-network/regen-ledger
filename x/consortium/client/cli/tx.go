@@ -3,10 +3,10 @@ package cli
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	"github.com/regen-network/regen-ledger/x/consortium"
 	"github.com/regen-network/regen-ledger/x/proposal"
 	proposalcli "github.com/regen-network/regen-ledger/x/proposal/client/cli"
-	"github.com/regen-network/regen-ledger/x/upgrade"
 	"github.com/spf13/cobra"
 	"time"
 
