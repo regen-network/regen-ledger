@@ -79,11 +79,9 @@ func (ty PropertyType) String() string {
 
 func (a Arity) String() string {
 	names := [...]string{
-		"Object",
-		"String",
-		"Integer",
-		"Double",
-		"Bool",
+		"One",
+		"Unordered",
+		"Ordered",
 	}
 	if int(a) > len(names) {
 		return ""

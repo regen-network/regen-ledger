@@ -16,7 +16,7 @@ func (PropertyDefinition) Type() string { return "schema.define-property" }
 // PropertyNameRegex defines the valid characters for property names. Only lowercase ascii letters are allowed, property
 // names must start with a letter and can otherwise also contain numbers and underscores. Snake case is preferred
 // as a number of sources point suggest it has enhanced readability as opposed to camel case
-const PropertyNameRegex = "^[a-z][a-z0-9_]+$"
+const PropertyNameRegex = "^[a-z][a-zA-Z0-9_]*$"
 
 var propertyNameRegexCompiled = regexp.MustCompile(PropertyNameRegex)
 
@@ -36,6 +36,9 @@ func (prop PropertyDefinition) ValidateBasic() sdk.Error {
 	}
 	if prop.Arity.String() == "" {
 		return sdk.ErrUnknownRequest(fmt.Sprintf("unknown Arity %d", prop.PropertyType))
+	}
+	if prop.PropertyType == TyBool && prop.Arity == UnorderedSet {
+		return sdk.ErrUnknownRequest("bool properties cannot have UnorderedSet Arity")
 	}
 	return nil
 }

@@ -2,8 +2,6 @@ package geo
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/util"
-	"net/url"
 )
 
 type MsgStoreGeo struct {
@@ -27,22 +25,6 @@ type Geometry struct {
 	// EWKB representation of the geo feature. Must be in the WGS84 coordinate
 	// system and represent a Point, LineString, Polygon, MultiPoint, MultiLineString or MultiPolygon
 	EWKB []byte `json:"ewkb,omitempty"`
-}
-
-type Address []byte
-
-// String returns the string URI representation mof the Address
-func (addr Address) String() string {
-	return util.MustEncodeBech32(Bech32Prefix, addr)
-}
-
-// URI returns the URI representation mof the Address
-func (addr Address) URI() *url.URL {
-	uri, err := url.Parse(addr.String())
-	if err != nil {
-		panic(err)
-	}
-	return uri
 }
 
 var PostgresMigrations = []string{

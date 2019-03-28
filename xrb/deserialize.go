@@ -3,6 +3,7 @@ package xrb
 import (
 	"encoding/binary"
 	"fmt"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/schema"
 	"io"
 )
@@ -27,7 +28,7 @@ type dszContext struct {
 func (ctx *dszContext) readGraph() (g *graph, err error) {
 	ctx.version = ctx.mustReadUvarint()
 	haveRootNode := ctx.mustReadByte()
-	g = &graph{nodeNames: []string{}, nodes: make(map[string]*node)}
+	g = &graph{nodeNames: []types.HasURI{}, nodes: make(map[string]*node)}
 	if haveRootNode == 1 {
 		r, err := ctx.readNodeProperties()
 		if err != nil {
@@ -44,26 +45,27 @@ func (ctx *dszContext) readGraph() (g *graph, err error) {
 			return nil, err
 		}
 		g.nodeNames = append(g.nodeNames, n.id)
-		g.nodes[n.id] = n
+		g.nodes[n.id.String()] = n
 	}
 	return g, nil
 }
 
 func (ctx *dszContext) readNode() (n *node, err error) {
-	id, err := ctx.readString()
-	if err != nil {
-		return nil, err
-	}
-	n, err = ctx.readNodeProperties()
-	if err != nil {
-		return nil, err
-	}
-	n.id = id
-	return n, nil
+	panic("TODO")
+	//id, err := ctx.readString()
+	//if err != nil {
+	//	return nil, err
+	//}
+	//n, err = ctx.readNodeProperties()
+	//if err != nil {
+	//	return nil, err
+	//}
+	//n.id = id
+	//return n, nil
 }
 
 func (ctx *dszContext) readNodeProperties() (n *node, err error) {
-	n = &node{properties: make(map[string]interface{}), propertyNames: []string{}}
+	n = &node{properties: make(map[schema.PropertyID]interface{}), propertyNames: []Property{}}
 	nProps := ctx.mustReadVarint()
 	for i := int64(0); i < nProps; i++ {
 		url, value, err := ctx.readProperty()
@@ -73,32 +75,32 @@ func (ctx *dszContext) readNodeProperties() (n *node, err error) {
 			return nil, err
 		}
 		n.propertyNames = append(n.propertyNames, url)
-		n.properties[url] = value
+		n.properties[url.ID()] = value
 	}
 	return n, nil
 }
 
-func (ctx *dszContext) readProperty() (url string, value interface{}, err error) {
+func (ctx *dszContext) readProperty() (prop Property, value interface{}, err error) {
 	prefix := ctx.mustReadByte()
 	if prefix != 0 {
-		return "", nil, fmt.Errorf("unexpected property ID prefix %d", prefix)
+		return nil, nil, fmt.Errorf("unexpected property ID prefix %d", prefix)
 	}
 	id, err := binary.ReadUvarint(ctx.r)
 	if err != nil {
-		return "", nil, err
+		return nil, nil, err
 	}
-	prop, found := ctx.resolver.GetPropertyByID(schema.PropertyID(id))
-	if !found {
-		return "", nil, fmt.Errorf("can't resolve property with ID %d", id)
+	prop = ctx.resolver.GetPropertyByID(schema.PropertyID(id))
+	if prop == nil {
+		return nil, nil, fmt.Errorf("can't resolve property with ID %d", id)
 	}
 	val, err := ctx.readValue(prop)
 	if err != nil {
-		return "", nil, err
+		return nil, nil, err
 	}
-	return prop.URI().String(), val, nil
+	return prop, val, nil
 }
 
-func (ctx *dszContext) readValue(prop schema.PropertyDefinition) (x interface{}, err error) {
+func (ctx *dszContext) readValue(prop Property) (x interface{}, err error) {
 	panic("TODO")
 }
 

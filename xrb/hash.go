@@ -16,6 +16,10 @@ func newHasher() *hasher {
 	return &hasher{bufio.NewWriter(b), b}
 }
 
+func (ha *hasher) hashGraph(g Graph) {
+	panic("TODO")
+}
+
 func (ha *hasher) write(x string) {
 	_, err := ha.WriteString(x)
 	if err != nil {

@@ -4,15 +4,10 @@ import (
 	"bufio"
 	"encoding/binary"
 	"fmt"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/schema"
 	"io"
 )
-
-type SchemaResolver interface {
-	GetPropertyByURL(url string) (schema.PropertyDefinition, bool)
-	GetPropertyByID(id schema.PropertyID) (schema.PropertyDefinition, bool)
-	GetPropertyID(url string) schema.PropertyID
-}
 
 func SerializeGraph(schema SchemaResolver, g Graph, w io.Writer) (hash []byte, err error) {
 	ctx := &szContext{schema, bufio.NewWriter(w), newHasher()}
@@ -41,30 +36,31 @@ type propInfo struct {
 
 func (s *szContext) serializeGraph(g Graph) error {
 	// Write the format version
-	writeVarUint64(s.w, 0)
+	s.writeVarUint64(0)
 	// TODO add chain height and maybe highest known property id
 	r := g.RootNode()
 	if r != nil {
-		writeByte(s.w, 1) // 1 for root node
+		s.writeByte(1) // 1 for root node
 		s.serializeNode(true, r)
 	} else {
-		writeByte(s.w, 0) // 0 for no root node
+		s.writeByte(0) // 0 for no root node
 	}
 	nodes := g.Nodes()
-	writeVarInt(s.w, len(nodes))
+	s.writeVarInt(len(nodes))
 	var last string
 	for _, n := range nodes {
-		if n == "" {
+		if n == nil {
 			panic("node ID cannot be nil")
 		}
+		uri := n.URI().String()
 		if last != "" {
-			if n < last {
+			if uri < last {
 				panic("nodes not in sorted order") // Node implementation error so panic
 			}
-			if last == n {
+			if last == uri {
 				panic("duplicate node ID")
 			}
-			last = n
+			last = uri
 		}
 		s.serializeNode(false, g.GetNode(n))
 	}
@@ -73,44 +69,60 @@ func (s *szContext) serializeGraph(g Graph) error {
 
 func (s *szContext) serializeNode(root bool, n Node) {
 	if !root {
-		writeString(s.w, n.ID())
+		s.writeID(n.ID())
 	}
-	id := n.ID()
+	//id := n.ID()
 	props := n.Properties()
-	writeVarInt(s.w, len(props))
+	s.writeVarInt(len(props))
 	for _, url := range props {
-		if root {
-			s.hashText.write("_:_\n")
-		} else {
-			s.hashText.writeIRI(id)
-			s.hashText.write("\n")
-		}
+		//if root {
+		//	s.hashText.write("_:_\n")
+		//} else {
+		//	s.hashText.writeIRI(id)
+		//	s.hashText.write("\n")
+		//}
 		s.writeProperty(s.w, url, n.GetProperty(url))
 	}
 }
 
-func (s *szContext) writeProperty(w *bufio.Writer, name string, value interface{}) {
-	info, found := s.resolver.GetPropertyByURL(name)
-	if !found {
-		panic("TODO")
+func (s *szContext) writeID(id types.HasURI) {
+	switch id := id.(type) {
+	case AccAddressID:
+		s.writeByte(prefixAccAddress)
+		s.writeBytes(id.AccAddress)
+	case types.GeoAddress:
+		s.writeByte(prefixGeoAddress)
+		s.writeBytes(id)
+		// TODO
+	case types.DataAddress:
+		s.writeByte(prefixDataAddress)
+		s.writeBytes(id)
+		// TODO
+	case HashID:
+		s.writeByte(prefixHashID)
+		s.writeString(id.String())
+	default:
 	}
-	// PropertyID's get prefixed with byte 0
-	writeByte(w, 0)
-	writeVarUint64(w, uint64(s.resolver.GetPropertyID(info.URI().String())))
-
-	s.writePropertyValue(info.Arity, info.PropertyType, value)
 }
 
-func writeVarUint64(w *bufio.Writer, x uint64) {
+func (s *szContext) writeProperty(w *bufio.Writer, p Property, value interface{}) {
+	// PropertyID's get prefixed with byte 0
+	s.writeByte(prefixPropertyID)
+	s.writeVarUint64(uint64(p.ID()))
+
+	s.writePropertyValue(p.Arity(), p.Type(), value)
+}
+
+func (s *szContext) writeVarUint64(x uint64) {
 	buf := make([]byte, binary.MaxVarintLen64)
 	n := binary.PutUvarint(buf, x)
-	mustWrite(w, buf[:n])
+	mustWrite(s.w, buf[:n])
 }
 
-func writeVarInt(w *bufio.Writer, x int) {
+func (s *szContext) writeVarInt(x int) {
 	buf := make([]byte, binary.MaxVarintLen64)
 	n := binary.PutVarint(buf, int64(x))
-	mustWrite(w, buf[:n])
+	mustWrite(s.w, buf[:n])
 }
 
 func mustWrite(w *bufio.Writer, buf []byte) {
@@ -120,11 +132,15 @@ func mustWrite(w *bufio.Writer, buf []byte) {
 	}
 }
 
-func writeByte(w *bufio.Writer, x byte) {
-	mustWrite(w, []byte{x})
+func (s *szContext) writeByte(x byte) {
+	mustWrite(s.w, []byte{x})
 }
 
-func writeString(w *bufio.Writer, str string) {
+func (s *szContext) writeString(str string) {
+	panic("TODO")
+}
+
+func (s *szContext) writeBytes(bytes []byte) {
 	panic("TODO")
 }
 
@@ -157,7 +173,7 @@ func (s *szContext) writePropertyOne(ty schema.PropertyType, value interface{}) 
 		if !ok {
 			panic(fmt.Sprintf("Expected string value, got %+v", value))
 		}
-		writeString(s.w, x)
+		s.writeString(x)
 	case schema.TyDouble:
 		x, ok := value.(float64)
 		if !ok {
@@ -185,16 +201,16 @@ func (s *szContext) writePropertyMany(ty schema.PropertyType, value interface{},
 		if !ok {
 			panic(fmt.Sprintf("Expected []string value, got %+v", value))
 		}
-		writeVarInt(s.w, len(arr))
+		s.writeVarInt(len(arr))
 		for _, x := range arr {
-			writeString(s.w, x)
+			s.writeString(x)
 		}
 	case schema.TyDouble:
 		arr, ok := value.([]float64)
 		if !ok {
 			panic(fmt.Sprintf("Expected []float64 value, got %+v", value))
 		}
-		writeVarInt(s.w, len(arr))
+		s.writeVarInt(len(arr))
 		for _, x := range arr {
 			writeFloat64(s.w, x)
 		}
@@ -203,7 +219,7 @@ func (s *szContext) writePropertyMany(ty schema.PropertyType, value interface{},
 		if !ok {
 			panic(fmt.Sprintf("Expected []bool value, got %+v", value))
 		}
-		writeVarInt(s.w, len(arr))
+		s.writeVarInt(len(arr))
 		for _, x := range arr {
 			writeBool(s.w, x)
 		}
