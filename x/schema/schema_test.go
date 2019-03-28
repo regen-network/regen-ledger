@@ -76,26 +76,29 @@ func (s *TestSuite) TestPropertyCanOnlyBeDefinedOnce() {
 }
 
 func (s *TestSuite) TestCheckPropertyType() {
-	s.T().Log("valid property type should be accepted")
+	s.T().Log("invalid property type should be rejected")
 	prop1 := PropertyDefinition{
 		Creator:      s.anAddr,
 		Name:         "test1",
-		PropertyType: TyBool,
-	}
-	err := prop1.ValidateBasic()
-	s.Require().Nil(err)
-	_, _, err = s.keeper.DefineProperty(s.ctx, prop1)
-	s.Require().Nil(err)
-
-	s.T().Log("invalid property type should be rejected")
-	prop2 := PropertyDefinition{
-		Creator:      s.anAddr,
-		Name:         "test2",
 		PropertyType: PropertyType(12345678),
 	}
-	err = prop2.ValidateBasic()
+	err := prop1.ValidateBasic()
 	s.Require().NotNil(err)
-	_, _, err = s.keeper.DefineProperty(s.ctx, prop2)
+	_, _, err = s.keeper.DefineProperty(s.ctx, prop1)
+	s.Require().NotNil(err)
+}
+
+func (s *TestSuite) TestCheckArity() {
+	s.T().Log("invalid arity should be rejected")
+	prop1 := PropertyDefinition{
+		Creator:      s.anAddr,
+		Name:         "test1",
+		PropertyType: TyObject,
+		Arity:        Arity(513848),
+	}
+	err := prop1.ValidateBasic()
+	s.Require().NotNil(err)
+	_, _, err = s.keeper.DefineProperty(s.ctx, prop1)
 	s.Require().NotNil(err)
 }
 
@@ -115,7 +118,7 @@ func (s *TestSuite) TestCanRetrieveProperty() {
 	s.Require().True(bytes.Equal(prop.Creator, propCopy.Creator))
 	s.Require().Equal(prop.Name, propCopy.Name)
 	s.Require().Equal(prop.PropertyType, propCopy.PropertyType)
-	s.Require().Equal(prop.Many, propCopy.Many)
+	s.Require().Equal(prop.Arity, propCopy.Arity)
 
 	s.T().Log("try retrieve property id from URL")
 	idCopy := s.keeper.GetPropertyID(s.ctx, url)
@@ -138,7 +141,7 @@ func (s *TestSuite) TestIncrementPropertyID() {
 		Creator:      s.anAddr,
 		Name:         "test2",
 		PropertyType: TyString,
-		Many:         true,
+		Arity:        UnorderedSet,
 	}
 	id2, url2, err := s.keeper.DefineProperty(s.ctx, prop2)
 	s.Require().Nil(err)
@@ -159,7 +162,7 @@ func (s *TestSuite) TestPropertyNameRegex() {
 		Creator:      s.anAddr,
 		Name:         "TestCamelCase",
 		PropertyType: TyString,
-		Many:         true,
+		Arity:        OrderedSet,
 	}
 	err := prop1.ValidateBasic()
 	s.Require().NotNil(err)

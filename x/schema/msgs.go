@@ -34,6 +34,9 @@ func (prop PropertyDefinition) ValidateBasic() sdk.Error {
 	if prop.PropertyType.String() == "" {
 		return sdk.ErrUnknownRequest(fmt.Sprintf("unknown PropertyType %d", prop.PropertyType))
 	}
+	if prop.Arity.String() == "" {
+		return sdk.ErrUnknownRequest(fmt.Sprintf("unknown Arity %d", prop.PropertyType))
+	}
 	return nil
 }
 

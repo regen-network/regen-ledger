@@ -21,6 +21,14 @@ const (
 	TyBool
 )
 
+type Arity int
+
+const (
+	One Arity = iota
+	UnorderedSet
+	OrderedSet
+)
+
 // PropertyID is the integer ID of property starting from 1 with 0 indicating no property
 type PropertyID uint64
 
@@ -32,21 +40,17 @@ type PropertyDefinition struct {
 	Name string `json:"name"`
 	// Many indicates whether or not this property can be assigned more than once to a given node/object. If it is
 	// false, then the property can only be assigned once for a given node/object
-	Many bool `json:"many:omitempty"`
+	Arity Arity `json:"arity:omitempty"`
 	// PropertyType indicates the data type of the property
 	PropertyType PropertyType `json:"type,omitempty"`
 }
 
 func (prop PropertyDefinition) String() string {
-	arity := "One"
-	if prop.Many {
-		arity = "Many"
-	}
 	return fmt.Sprintf(`Property
 URL: %s,
 Arity: %s
 Type: %s
-`, prop.URL(), arity, prop.PropertyType.String())
+`, prop.URL(), prop.Arity.String(), prop.PropertyType.String())
 }
 
 // URL returns the URL of the property
@@ -66,4 +70,18 @@ func (ty PropertyType) String() string {
 		return ""
 	}
 	return names[ty]
+}
+
+func (a Arity) String() string {
+	names := [...]string{
+		"Object",
+		"String",
+		"Integer",
+		"Double",
+		"Bool",
+	}
+	if int(a) > len(names) {
+		return ""
+	}
+	return names[a]
 }
