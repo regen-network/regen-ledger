@@ -6,23 +6,32 @@ import (
 	"fmt"
 	"github.com/regen-network/regen-ledger/x/schema"
 	"io"
-	"strconv"
 )
 
-type Serializer struct {
-	properties map[string]propInfo
+type SchemaResolver interface {
+	GetPropertyByURL(url string) (schema.PropertyDefinition, bool)
+	GetPropertyByID(id schema.PropertyID) (schema.PropertyDefinition, bool)
+	GetPropertyID(url string) schema.PropertyID
 }
 
-func (sz *Serializer) SerializeGraph(g Graph, w io.Writer) (hash []byte, err error) {
-	panic("TODO")
+func SerializeGraph(schema SchemaResolver, g Graph, w io.Writer) (hash []byte, err error) {
+	ctx := &szContext{schema, bufio.NewWriter(w), newHasher()}
+	err = ctx.serializeGraph(g)
+	if err != nil {
+		return nil, err
+	}
+	err = ctx.w.Flush()
+	if err != nil {
+		return nil, err
+	}
+	hash = ctx.hashText.hash()
+	return hash, nil
 }
 
 type szContext struct {
-	*Serializer
-	w bufio.Writer
-	//resGraph graph
-	//curResNode node
-	hashText hashAcc
+	resolver SchemaResolver
+	w        *bufio.Writer
+	hashText *hasher
 }
 
 type propInfo struct {
@@ -30,18 +39,7 @@ type propInfo struct {
 	def schema.PropertyDefinition
 }
 
-//type graph struct {
-//	rootNode *node
-//	nodes map[string]*node
-//}
-//
-//type node struct {
-//	id         string
-//	// TODO classes    []string
-//	properties map[string]interface{}
-//}
-
-func (s *szContext) serializeGraph(g Graph) {
+func (s *szContext) serializeGraph(g Graph) error {
 	// Write the format version
 	writeVarUint64(s.w, 0)
 	// TODO add chain height and maybe highest known property id
@@ -70,6 +68,7 @@ func (s *szContext) serializeGraph(g Graph) {
 		}
 		s.serializeNode(false, g.GetNode(n))
 	}
+	return nil
 }
 
 func (s *szContext) serializeNode(root bool, n Node) {
@@ -77,7 +76,9 @@ func (s *szContext) serializeNode(root bool, n Node) {
 		writeString(s.w, n.ID())
 	}
 	id := n.ID()
-	for _, url := range n.Properties() {
+	props := n.Properties()
+	writeVarInt(s.w, len(props))
+	for _, url := range props {
 		if root {
 			s.hashText.write("_:_\n")
 		} else {
@@ -88,54 +89,54 @@ func (s *szContext) serializeNode(root bool, n Node) {
 	}
 }
 
-func writeVarUint64(w bufio.Writer, x uint64) {
+func (s *szContext) writeProperty(w *bufio.Writer, name string, value interface{}) {
+	info, found := s.resolver.GetPropertyByURL(name)
+	if !found {
+		panic("TODO")
+	}
+	// PropertyID's get prefixed with byte 0
+	writeByte(w, 0)
+	writeVarUint64(w, uint64(s.resolver.GetPropertyID(info.URL())))
+
+	s.writePropertyValue(info.Arity, info.PropertyType, value)
+}
+
+func writeVarUint64(w *bufio.Writer, x uint64) {
 	buf := make([]byte, binary.MaxVarintLen64)
 	n := binary.PutUvarint(buf, x)
 	mustWrite(w, buf[:n])
 }
 
-func writeVarInt(w bufio.Writer, x int) {
+func writeVarInt(w *bufio.Writer, x int) {
 	buf := make([]byte, binary.MaxVarintLen64)
 	n := binary.PutVarint(buf, int64(x))
 	mustWrite(w, buf[:n])
 }
 
-func mustWrite(w bufio.Writer, buf []byte) {
+func mustWrite(w *bufio.Writer, buf []byte) {
 	_, err := w.Write(buf)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func writeByte(w bufio.Writer, x byte) {
+func writeByte(w *bufio.Writer, x byte) {
 	mustWrite(w, []byte{x})
 }
 
-func writeString(w bufio.Writer, str string) {
+func writeString(w *bufio.Writer, str string) {
 	panic("TODO")
 }
 
-func writeBool(w bufio.Writer, x bool) {
+func writeBool(w *bufio.Writer, x bool) {
 	panic("TODO")
 }
 
-func writeFloat64(w bufio.Writer, x float64) {
+func writeFloat64(w *bufio.Writer, x float64) {
 	panic("TODO")
 }
 
-func (s *szContext) writeProperty(w bufio.Writer, name string, value interface{}) {
-	info, found := s.properties[name]
-	if !found {
-		panic("TODO")
-	}
-	// PropertyID's get prefixed with byte 0
-	writeByte(w, 0)
-	writeVarUint64(w, uint64(info.id))
-
-	s.writePropertyValue(w, info.def.Arity, info.def.PropertyType, value)
-}
-
-func (s *szContext) writePropertyValue(w bufio.Writer, arity schema.Arity, ty schema.PropertyType, value interface{}) {
+func (s *szContext) writePropertyValue(arity schema.Arity, ty schema.PropertyType, value interface{}) {
 	switch arity {
 	case schema.One:
 		s.writePropertyOne(ty, value)
@@ -212,41 +213,4 @@ func (s *szContext) writePropertyMany(ty schema.PropertyType, value interface{},
 		panic("Can't handle object values yet")
 	default:
 	}
-}
-
-type hashAcc struct {
-	bufio.Writer
-}
-
-func (ha *hashAcc) write(x string) {
-	_, err := ha.WriteString(x)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func (ha *hashAcc) writeStringLiteral(x string, typeIri string, lang string) {
-	ha.write("\"")
-	ha.write(strconv.Quote(x))
-	ha.write("\"")
-	if typeIri != "" {
-		if lang != "" {
-			panic("cannot specify both a data type IRI and a language tag")
-		}
-		ha.write("^^")
-		ha.writeIRI(typeIri)
-	} else if lang != "" {
-		ha.write("@")
-		ha.write(lang)
-	}
-}
-
-func (ha *hashAcc) writeIRI(x string) {
-	ha.write("<")
-	ha.write(x)
-	ha.write("> ")
-}
-
-func (ha *hashAcc) finishLine() {
-	ha.write(".\n")
 }
