@@ -105,13 +105,12 @@ in
                 cd /root/regen-ledger
                 git clean -f
                 git checkout -f $UPGRADE_COMMIT
-                rm ${xrndCfg.home}/data/upgrade-info)
                 nixos-rebuild --upgrade switch
               fi
             fi
           '';
           environment = {
-            POSTGRES_INDEX_URL = if xrndCfg.enablePostgres then "host=/tmp/.s.PGSQL.5432 user=xrnd dbname=xrn sslmode=disable" else xrndCfg.postgresUrl;
+            POSTGRES_INDEX_URL = if xrndCfg.enablePostgres then "host=/tmp user=xrnd dbname=xrn sslmode=disable" else xrndCfg.postgresUrl;
           };
           serviceConfig = {
             User = "xrnd";
@@ -157,6 +156,7 @@ in
             initialScript = pkgs.writeText "backend-initScript" ''
               CREATE USER xrnd; 
               CREATE DATABASE xrn;
+              CREATE EXTENSIOn postgis;
               GRANT ALL PRIVILEGES ON DATABASE xrn TO xrnd;
               CREATE USER guest;
 	          GRANT SELECT ON ALL TABLES IN SCHEMA public to PUBLIC;
