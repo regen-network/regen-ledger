@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/schema"
+	"golang.org/x/crypto/blake2b"
 	"net/url"
 	"strconv"
 )
@@ -22,6 +23,7 @@ type Graph interface {
 	Nodes() []types.HasURI
 	RootNode() Node
 	GetNode(id types.HasURI) Node
+	Hash() []byte
 	fmt.Stringer
 }
 
@@ -79,6 +81,15 @@ func (g graph) String() string {
 		w.WriteString("\n\n")
 	}
 	return w.String()
+}
+
+func (g graph) Hash() []byte {
+	h, err := blake2b.New256(nil)
+	if err != nil {
+		panic(err)
+	}
+	h.Write([]byte(g.String()))
+	return h.Sum(nil)
 }
 
 type node struct {

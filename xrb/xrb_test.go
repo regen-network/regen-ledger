@@ -11,6 +11,7 @@ import (
 	"github.com/leanovate/gopter/gen"
 	"github.com/leanovate/gopter/prop"
 	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/util"
 	"github.com/regen-network/regen-ledger/x/schema"
 	"github.com/stretchr/testify/suite"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -109,7 +110,10 @@ func (s *TestSuite) TestGenGraph() {
 	gs, ok := gen.SliceOfN(3, s.GenGraph()).Sample()
 	if ok {
 		for _, g := range gs.([]*graph) {
-			s.T().Log(g.String())
+			s.T().Logf("Graph %s:\n %s",
+				util.MustEncodeBech32(types.Bech32DataAddressPrefix, g.Hash()),
+				g.String(),
+			)
 		}
 	}
 }
