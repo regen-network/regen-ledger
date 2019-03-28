@@ -9,7 +9,7 @@ let
 
       src = ./.;
 
-      modSha256 = "0cfb481v5cl7g2klffni4nx1wnd35kc49r0ahs348dr7zk6462dc";
+      modSha256 = "04njsrhq0qkbh6xdgnrf1nq1q4bjpkmg2vq7ygh5v5z1iz7v8brz";
 
       meta = with stdenv.lib; {
         description = "Distributed ledger for planetary regeneration";
