@@ -121,7 +121,7 @@ func (s *TestSuite) TestCanRetrieveProperty() {
 	s.Require().Equal(prop.Arity, propCopy.Arity)
 
 	s.T().Log("try retrieve property id from URL")
-	idCopy := s.keeper.GetPropertyID(s.ctx, url)
+	idCopy := s.keeper.GetPropertyID(s.ctx, url.String())
 	s.Require().Equal(id, idCopy)
 }
 
@@ -177,7 +177,7 @@ func (s *TestSuite) TestDefinePropertyHandler() {
 	}
 	res := s.handler(s.ctx, prop1)
 	s.Require().Equal(sdk.CodeOK, res.Code)
-	s.Require().Equal(prop1.URL(), string(res.Tags[0].Value))
+	s.Require().Equal(prop1.URI().String(), string(res.Tags[0].Value))
 	s.Require().Equal("1", string(res.Tags[1].Value))
 }
 

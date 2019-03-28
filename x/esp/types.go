@@ -30,7 +30,7 @@ type ESPResult struct {
 	Name     string         `json:"name"`
 	Version  string         `json:"version"`
 	Verifier sdk.AccAddress `json:"verifier"`
-	GeoID    geo.GeoAddress `json:"geo_id,omitempty"`
+	GeoID    geo.Address    `json:"geo_id,omitempty"`
 	Data     []byte         `json:"data"`
 	// TODO link this to data module for either on or off-chain result storage
 }

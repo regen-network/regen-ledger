@@ -29,6 +29,6 @@ func handleMsgStoreGeometry(ctx sdk.Context, keeper Keeper, msg MsgStoreGeometry
 		return err.Result()
 	}
 	tags := sdk.EmptyTags()
-	tags = tags.AppendTag("geo.id", GeoURL(addr))
+	tags = tags.AppendTag("geo.id", addr.String())
 	return sdk.Result{Tags: tags}
 }

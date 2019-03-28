@@ -96,7 +96,7 @@ func (s *szContext) writeProperty(w *bufio.Writer, name string, value interface{
 	}
 	// PropertyID's get prefixed with byte 0
 	writeByte(w, 0)
-	writeVarUint64(w, uint64(s.resolver.GetPropertyID(info.URL())))
+	writeVarUint64(w, uint64(s.resolver.GetPropertyID(info.URI().String())))
 
 	s.writePropertyValue(info.Arity, info.PropertyType, value)
 }

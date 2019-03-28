@@ -3,6 +3,7 @@ package schema
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"net/url"
 )
 
 // PropertyType indicates the data type of a property
@@ -47,15 +48,19 @@ type PropertyDefinition struct {
 
 func (prop PropertyDefinition) String() string {
 	return fmt.Sprintf(`Property
-URL: %s,
+URI: %s,
 Arity: %s
 Type: %s
-`, prop.URL(), prop.Arity.String(), prop.PropertyType.String())
+`, prop.URI(), prop.Arity.String(), prop.PropertyType.String())
 }
 
 // URL returns the URL of the property
-func (prop PropertyDefinition) URL() string {
-	return fmt.Sprintf("%s/%s", prop.Creator.String(), prop.Name)
+func (prop PropertyDefinition) URI() *url.URL {
+	uri, err := url.Parse(fmt.Sprintf("%s/%s", prop.Creator.String(), prop.Name))
+	if err != nil {
+		panic(err)
+	}
+	return uri
 }
 
 func (ty PropertyType) String() string {

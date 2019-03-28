@@ -95,7 +95,7 @@ func (ctx *dszContext) readProperty() (url string, value interface{}, err error)
 	if err != nil {
 		return "", nil, err
 	}
-	return prop.URL(), val, nil
+	return prop.URI().String(), val, nil
 }
 
 func (ctx *dszContext) readValue(prop schema.PropertyDefinition) (x interface{}, err error) {
