@@ -154,6 +154,17 @@ func (s *TestSuite) TestPropertyNotFound() {
 	s.Require().Equal(PropertyID(0), id)
 }
 
+func (s *TestSuite) TestPropertyNameRegex() {
+	prop1 := PropertyDefinition{
+		Creator:      s.anAddr,
+		Name:         "TestCamelCase",
+		PropertyType: TyString,
+		Many:         true,
+	}
+	err := prop1.ValidateBasic()
+	s.Require().NotNil(err)
+}
+
 func (s *TestSuite) TestDefinePropertyHandler() {
 	s.T().Log("create one property")
 	prop1 := PropertyDefinition{
