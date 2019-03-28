@@ -107,18 +107,24 @@ in
           path = [ xrnd pkgs.jq ];
           preStart = ''
             chown -R xrnd:xrn ${xrndCfg.home}
+            if [ -e ${xrndCfg.home}/data/upgrade-info ]; then
+              mv ${xrndCfg.home}/data/upgrade-info ${xrndCfg.home}/data/upgrade-info.bak
+            fi
           '';
           script = ''
             xrnd start --moniker ${xrndCfg.moniker} --home ${xrndCfg.home}
           '';
           postStop = ''
-            export UPGRADE_COMMIT=$(jq '.commit' < ${xrndCfg.home}/data/upgrade-info)
-            if  [ $UPGRADE_COMMIT != "null" ]; then
-              cd /root/regen-ledger
-              git clean -f
-              git checkout -f $UPGRADE_COMMIT
-              rm ${xrndCfg.home}/data/upgrade-info)
-              nixos-rebuild --upgrade switch
+            if [ -e ${xrndCfg.home}/data/upgrade-info ]; then
+              mv ${xrndCfg.home}/data/upgrade-info ${xrndCfg.home}/data/upgrade-info.bak
+              export UPGRADE_COMMIT=$(jq '.commit' < ${xrndCfg.home}/data/upgrade-info.bak)
+              if  [ $UPGRADE_COMMIT != "null" ]; then
+                cd /root/regen-ledger
+                git clean -f
+                git checkout -f $UPGRADE_COMMIT
+                rm ${xrndCfg.home}/data/upgrade-info)
+                nixos-rebuild --upgrade switch
+              fi
             fi
           '';
           environment = {
@@ -176,7 +182,6 @@ in
               local all xrnd trust
               host xrn guest 0.0.0.0/0 trust
               host xrn guest ::0/0 trust
-
             '';
         };
         # Open fire-wall port for production. WARNING don't put this into production validators:
