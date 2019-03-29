@@ -33,7 +33,7 @@ func PropertyURLKey(url string) []byte {
 }
 
 // GetProperty returns a PropertyDefinition given a PropertyID if one exists
-func (keeper Keeper) GetProperty(ctx sdk.Context, id PropertyID) (prop PropertyDefinition, found bool) {
+func (keeper Keeper) GetPropertyDefinition(ctx sdk.Context, id PropertyID) (prop PropertyDefinition, found bool) {
 	store := ctx.KVStore(keeper.storeKey)
 	bz := store.Get(PropertyKey(id))
 	if bz == nil {

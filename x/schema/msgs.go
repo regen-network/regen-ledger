@@ -3,6 +3,7 @@ package schema
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/regen-network/regen-ledger/graph"
 	"regexp"
 )
 import sdk "github.com/cosmos/cosmos-sdk/types"
@@ -37,7 +38,7 @@ func (prop PropertyDefinition) ValidateBasic() sdk.Error {
 	if prop.Arity.String() == "" {
 		return sdk.ErrUnknownRequest(fmt.Sprintf("unknown Arity %d", prop.PropertyType))
 	}
-	if prop.PropertyType == TyBool && prop.Arity == UnorderedSet {
+	if prop.PropertyType == graph.TyBool && prop.Arity == graph.UnorderedSet {
 		return sdk.ErrUnknownRequest("bool properties cannot have UnorderedSet Arity")
 	}
 	return nil

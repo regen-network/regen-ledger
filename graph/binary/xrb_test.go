@@ -1,4 +1,4 @@
-package xrb
+package binary
 
 import (
 	"bytes"
@@ -10,6 +10,8 @@ import (
 	"github.com/leanovate/gopter"
 	"github.com/leanovate/gopter/gen"
 	"github.com/leanovate/gopter/prop"
+	"github.com/regen-network/regen-ledger/graph"
+	"github.com/regen-network/regen-ledger/graph/impl"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/util"
 	"github.com/regen-network/regen-ledger/x/schema"
@@ -52,55 +54,55 @@ func (s *TestSuite) SetupSuite() {
 	p1, _, err := s.keeper.DefineProperty(s.ctx, schema.PropertyDefinition{
 		Creator:      s.anAddr,
 		Name:         "name",
-		PropertyType: schema.TyString,
+		PropertyType: graph.TyString,
 	})
 	s.Require().Nil(err)
 	p2, _, err := s.keeper.DefineProperty(s.ctx, schema.PropertyDefinition{
 		Creator:      s.anAddr,
 		Name:         "x",
-		PropertyType: schema.TyDouble,
+		PropertyType: graph.TyDouble,
 	})
 	s.Require().Nil(err)
 	p3, _, err := s.keeper.DefineProperty(s.ctx, schema.PropertyDefinition{
 		Creator:      s.anAddr,
 		Name:         "b",
-		PropertyType: schema.TyBool,
+		PropertyType: graph.TyBool,
 	})
 	s.Require().Nil(err)
 	p4, _, err := s.keeper.DefineProperty(s.ctx, schema.PropertyDefinition{
 		Creator:      s.anAddr,
 		Name:         "names",
-		PropertyType: schema.TyString,
-		Arity:        schema.UnorderedSet,
+		PropertyType: graph.TyString,
+		Arity:        graph.UnorderedSet,
 	})
 	s.Require().Nil(err)
 	p5, _, err := s.keeper.DefineProperty(s.ctx, schema.PropertyDefinition{
 		Creator:      s.anAddr,
 		Name:         "xs",
-		PropertyType: schema.TyDouble,
-		Arity:        schema.UnorderedSet,
+		PropertyType: graph.TyDouble,
+		Arity:        graph.UnorderedSet,
 	})
 	s.Require().Nil(err)
 	s.Require().Nil(err)
 	p6, _, err := s.keeper.DefineProperty(s.ctx, schema.PropertyDefinition{
 		Creator:      s.anAddr,
 		Name:         "nameList",
-		PropertyType: schema.TyString,
-		Arity:        schema.OrderedSet,
+		PropertyType: graph.TyString,
+		Arity:        graph.OrderedSet,
 	})
 	s.Require().Nil(err)
 	p7, _, err := s.keeper.DefineProperty(s.ctx, schema.PropertyDefinition{
 		Creator:      s.anAddr,
 		Name:         "xList",
-		PropertyType: schema.TyDouble,
-		Arity:        schema.OrderedSet,
+		PropertyType: graph.TyDouble,
+		Arity:        graph.OrderedSet,
 	})
 	s.Require().Nil(err)
 	p8, _, err := s.keeper.DefineProperty(s.ctx, schema.PropertyDefinition{
 		Creator:      s.anAddr,
 		Name:         "bList",
-		PropertyType: schema.TyBool,
-		Arity:        schema.OrderedSet,
+		PropertyType: graph.TyBool,
+		Arity:        graph.OrderedSet,
 	})
 	s.Require().Nil(err)
 	s.props = []schema.PropertyID{p1, p2, p3, p4, p5, p6, p7, p8}
@@ -109,9 +111,9 @@ func (s *TestSuite) SetupSuite() {
 func (s *TestSuite) TestGenGraph() {
 	gs, ok := gen.SliceOfN(3, s.GenGraph()).Sample()
 	if ok {
-		for _, g := range gs.([]*graph) {
+		for _, g := range gs.([]graph.Graph) {
 			s.T().Logf("Graph %s:\n %s",
-				util.MustEncodeBech32(types.Bech32DataAddressPrefix, g.Hash()),
+				util.MustEncodeBech32(types.Bech32DataAddressPrefix, graph.Hash(g)),
 				g.String(),
 			)
 		}
@@ -121,18 +123,29 @@ func (s *TestSuite) TestGenGraph() {
 func (s *TestSuite) TestProperties() {
 	params := gopter.DefaultTestParameters()
 	properties := gopter.NewProperties(params)
-	properties.Property("can round trip serialize/deserialize graphs and calculate the same hashes",
-		prop.ForAll(func(g Graph) (bool, error) {
+	properties.Property("can round trip serialize/deserialize graphs with same hashes",
+		prop.ForAll(func(g1 graph.Graph) (bool, error) {
+			txt1, err := graph.CanonicalString(g1)
+			if err != nil {
+				return false, err
+			}
+			hash1 := graph.Hash(g1)
 			w := new(bytes.Buffer)
-			hash, err := SerializeGraph(s.resolver, g, w)
+			err = SerializeGraph(s.resolver, g1, w)
 			if err != nil {
 				return false, err
 			}
-			_, hashCopy, err := DeserializeGraph(s.resolver, w)
+			g2, err := DeserializeGraph(s.resolver, w)
+			txt2, err := graph.CanonicalString(g1)
 			if err != nil {
 				return false, err
 			}
-			if !bytes.Equal(hash, hashCopy) {
+			hash2 := graph.Hash(g2)
+			s.T().Logf("%s %s", txt1, txt2)
+			if txt1 != txt2 {
+				return false, fmt.Errorf("canonical strings do not match")
+			}
+			if !bytes.Equal(hash1, hash2) {
 				return false, fmt.Errorf("hashes do not match")
 			}
 
@@ -144,22 +157,18 @@ func (s *TestSuite) TestProperties() {
 }
 
 func (s *TestSuite) GenGraph() gopter.Gen {
-	return GenSlice(0, 20, s.GenNode(), reflect.TypeOf([]*node{})).
-		Map(func(xs []*node) *graph {
-			g := &graph{}
+	return GenSlice(0, 20, s.GenNode(), reflect.TypeOf([]graph.Node{})).
+		Map(func(xs []graph.Node) graph.Graph {
+			g := impl.NewGraph()
 			n := len(xs)
 			if n > 0 && n%2 == 0 {
 				root := xs[0]
-				root.id = nil
-				g.rootNode = root
+				root.SetID(nil)
+				g.WithNode(root)
 				xs = xs[1:n]
 			}
-			g.nodeNames = make([]types.HasURI, len(xs))
-			g.nodes = make(map[string]*node)
-			for i, node := range xs {
-				id := node.id
-				g.nodeNames[i] = id
-				g.nodes[id.String()] = node
+			for _, node := range xs {
+				g.WithNode(node)
 			}
 			return g
 		})
@@ -168,20 +177,15 @@ func (s *TestSuite) GenGraph() gopter.Gen {
 func (s *TestSuite) GenNode() gopter.Gen {
 	return s.GenProps().FlatMap(func(x interface{}) gopter.Gen {
 		pvs := x.([]propVal)
-		propNames := make([]Property, len(pvs))
-		props := make(map[schema.PropertyID]interface{})
-		for i, pv := range pvs {
-			propNames[i] = pv.prop
-			props[pv.prop.ID()] = pv.val
+		node := impl.NewNode(nil)
+		for _, pv := range pvs {
+			node.SetProperty(pv.prop, pv.val)
 		}
-		return s.GenID().Map(func(id types.HasURI) *node {
-			return &node{
-				id,
-				propNames,
-				props,
-			}
+		return s.GenID().Map(func(id types.HasURI) graph.Node {
+			node.SetID(id)
+			return node
 		})
-	}, reflect.TypeOf(&node{}))
+	}, reflect.TypeOf((*graph.Node)(nil)))
 }
 
 func (s *TestSuite) GenID() gopter.Gen {
@@ -192,8 +196,6 @@ func (s *TestSuite) GenID() gopter.Gen {
 				return GenGeoAddress()
 			case prefixAccAddress:
 				return GenAccAddressID()
-			case prefixDataAddress:
-				return GenDataAddress()
 			case prefixHashID:
 				return GenHashID()
 			default:
@@ -212,13 +214,6 @@ func GenGeoAddress() gopter.Gen {
 		})
 }
 
-func GenDataAddress() gopter.Gen {
-	return gen.SliceOfN(20, gen.UInt8()).Map(
-		func(xs []byte) types.DataAddress {
-			return types.DataAddress(xs)
-		})
-}
-
 func GenAccAddressID() gopter.Gen {
 	return gen.SliceOfN(20, gen.UInt8()).Map(
 		func(xs []byte) AccAddressID {
@@ -233,20 +228,8 @@ func GenHashID() gopter.Gen {
 }
 
 type propVal struct {
-	prop Property
+	prop graph.Property
 	val  interface{}
-}
-
-type propVals []propVal
-
-func (pv propVals) Len() int { return len(pv) }
-
-func (pv propVals) Swap(i, j int) {
-	pv[i], pv[j] = pv[j], pv[i]
-}
-
-func (pv propVals) Less(i, j int) bool {
-	return pv[i].prop.URI().String() < pv[j].prop.URI().String()
 }
 
 func (s *TestSuite) GenProps() gopter.Gen {
@@ -254,27 +237,19 @@ func (s *TestSuite) GenProps() gopter.Gen {
 	return GenSlice(0, nProps,
 		gen.UInt64Range(1, uint64(nProps)).
 			FlatMap(func(x interface{}) gopter.Gen {
-				prop := s.resolver.GetPropertyByID(schema.PropertyID(x.(uint64)))
-				if prop == nil {
+				p := s.resolver.GetPropertyByID(schema.PropertyID(x.(uint64)))
+				if p == nil {
 					panic("can't resolve property")
 				}
-				return GenValue(prop.Arity(), prop.Type()).Map(
+				return GenValue(p.Arity(), p.Type()).Map(
 					func(v *gopter.GenResult) *gopter.GenResult {
 						return gopter.NewGenResult(
-							propVal{prop, v.Result},
+							propVal{p, v.Result},
 							v.Shrinker)
 					})
 			}, reflect.TypeOf(propVal{})),
 		reflect.TypeOf([]propVal{}),
-	).Map(func(xs []propVal) []propVal {
-		props := make([]propVal, len(xs))
-		copy(props, xs)
-		unique.Slice(&props, func(i, j int) bool {
-			return xs[i].prop.URI().String() < xs[j].prop.URI().String()
-		})
-		sort.Sort(propVals(props))
-		return props
-	})
+	)
 }
 
 func UniqueStrings(xs []string) []string {
@@ -311,32 +286,30 @@ func GenSlice(min int, max int, g gopter.Gen, ty reflect.Type) gopter.Gen {
 	return gen.IntRange(min, max).FlatMap(
 		func(n interface{}) gopter.Gen {
 			return gen.SliceOfN(n.(int), g)
-		},
-		reflect.TypeOf([]schema.PropertyID{}),
-	)
+		}, ty)
 }
 
-func GenValue(arity schema.Arity, propertyType schema.PropertyType) gopter.Gen {
+func GenValue(arity graph.Arity, propertyType graph.PropertyType) gopter.Gen {
 	switch arity {
-	case schema.One:
+	case graph.One:
 		return GenOneValue(propertyType)
-	case schema.UnorderedSet:
+	case graph.UnorderedSet:
 		return GenUnorderedSet(propertyType)
-	case schema.OrderedSet:
+	case graph.OrderedSet:
 		return GenOrderedSet(propertyType)
 	default:
 		panic("unknown arity")
 	}
 }
 
-func GenUnorderedSet(propertyType schema.PropertyType) gopter.Gen {
+func GenUnorderedSet(propertyType graph.PropertyType) gopter.Gen {
 	switch propertyType {
-	case schema.TyString:
+	case graph.TyString:
 		return GenSlice(0, 50, gen.AnyString(), reflect.TypeOf([]string{})).
 			Map(func(xs []string) []string {
 				return UniqueSortedStrings(xs)
 			})
-	case schema.TyDouble:
+	case graph.TyDouble:
 		return GenSlice(0, 50, gen.Float64(), reflect.TypeOf([]float64{})).
 			Map(func(xs []float64) []float64 {
 				return UniqueSortedFloat64s(xs)
@@ -345,26 +318,26 @@ func GenUnorderedSet(propertyType schema.PropertyType) gopter.Gen {
 		panic(fmt.Sprintf("don't know how to handle PropertyType %s", propertyType.String()))
 	}
 }
-func GenOrderedSet(propertyType schema.PropertyType) gopter.Gen {
+func GenOrderedSet(propertyType graph.PropertyType) gopter.Gen {
 	switch propertyType {
-	case schema.TyString:
+	case graph.TyString:
 		return GenSlice(0, 50, gen.AnyString(), reflect.TypeOf([]string{}))
-	case schema.TyDouble:
+	case graph.TyDouble:
 		return GenSlice(0, 50, gen.Float64(), reflect.TypeOf([]float64{}))
-	case schema.TyBool:
+	case graph.TyBool:
 		return GenSlice(0, 50, gen.Bool(), reflect.TypeOf([]bool{}))
 	default:
 		panic(fmt.Sprintf("don't know how to handle PropertyType %s", propertyType.String()))
 	}
 }
 
-func GenOneValue(propertyType schema.PropertyType) gopter.Gen {
+func GenOneValue(propertyType graph.PropertyType) gopter.Gen {
 	switch propertyType {
-	case schema.TyString:
+	case graph.TyString:
 		return gen.AnyString()
-	case schema.TyDouble:
+	case graph.TyDouble:
 		return gen.Float64()
-	case schema.TyBool:
+	case graph.TyBool:
 		return gen.Bool()
 	default:
 		panic(fmt.Sprintf("don't know how to handle PropertyType %s", propertyType.String()))

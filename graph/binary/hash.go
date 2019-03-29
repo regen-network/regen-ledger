@@ -1,8 +1,9 @@
-package xrb
+package binary
 
 import (
 	"bufio"
 	"bytes"
+	"github.com/regen-network/regen-ledger/graph"
 	"strconv"
 )
 
@@ -16,7 +17,7 @@ func newHasher() *hasher {
 	return &hasher{bufio.NewWriter(b), b}
 }
 
-func (ha *hasher) hashGraph(g Graph) {
+func (ha *hasher) hashGraph(g graph.Graph) {
 	panic("TODO")
 }
 

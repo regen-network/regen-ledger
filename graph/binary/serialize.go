@@ -1,47 +1,44 @@
-package xrb
+package binary
 
 import (
 	"bufio"
 	"encoding/binary"
 	"fmt"
+	"github.com/regen-network/regen-ledger/graph"
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/schema"
 	"io"
+	"math"
 )
 
-func SerializeGraph(schema SchemaResolver, g Graph, w io.Writer) (hash []byte, err error) {
-	ctx := &szContext{schema, bufio.NewWriter(w), newHasher()}
-	err = ctx.serializeGraph(g)
+func SerializeGraph(schema SchemaResolver, g graph.Graph, w io.Writer) error {
+	ctx := &szContext{schema, bufio.NewWriter(w)}
+	err := ctx.serializeGraph(g)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	err = ctx.w.Flush()
 	if err != nil {
-		return nil, err
+		return err
 	}
-	hash = ctx.hashText.hash()
-	return hash, nil
+	return nil
 }
 
 type szContext struct {
 	resolver SchemaResolver
 	w        *bufio.Writer
-	hashText *hasher
 }
 
-type propInfo struct {
-	id  schema.PropertyID
-	def schema.PropertyDefinition
-}
-
-func (s *szContext) serializeGraph(g Graph) error {
+func (s *szContext) serializeGraph(g graph.Graph) error {
 	// Write the format version
 	s.writeVarUint64(0)
 	// TODO add chain height and maybe highest known property id
 	r := g.RootNode()
 	if r != nil {
 		s.writeByte(1) // 1 for root node
-		s.serializeNode(true, r)
+		err := s.serializeNode(true, r)
+		if err != nil {
+			return err
+		}
 	} else {
 		s.writeByte(0) // 0 for no root node
 	}
@@ -62,14 +59,20 @@ func (s *szContext) serializeGraph(g Graph) error {
 			}
 			last = uri
 		}
-		s.serializeNode(false, g.GetNode(n))
+		err := s.serializeNode(false, g.GetNode(n))
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
-func (s *szContext) serializeNode(root bool, n Node) {
+func (s *szContext) serializeNode(root bool, n graph.Node) error {
 	if !root {
-		s.writeID(n.ID())
+		err := s.writeID(n.ID())
+		if err != nil {
+			return err
+		}
 	}
 	//id := n.ID()
 	props := n.Properties()
@@ -81,41 +84,53 @@ func (s *szContext) serializeNode(root bool, n Node) {
 		//	s.hashText.writeIRI(id)
 		//	s.hashText.write("\n")
 		//}
-		s.writeProperty(s.w, url, n.GetProperty(url))
+		err := s.writeProperty(s.w, url, n.GetProperty(url))
+		if err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
-func (s *szContext) writeID(id types.HasURI) {
+func (s *szContext) writeID(id types.HasURI) error {
 	switch id := id.(type) {
 	case AccAddressID:
 		s.writeByte(prefixAccAddress)
-		s.writeBytes(id.AccAddress)
+		s.writeByteSlice(id.AccAddress)
 	case types.GeoAddress:
 		s.writeByte(prefixGeoAddress)
-		s.writeBytes(id)
-		// TODO
-	case types.DataAddress:
-		s.writeByte(prefixDataAddress)
-		s.writeBytes(id)
+		s.writeByteSlice(id)
 		// TODO
 	case HashID:
 		s.writeByte(prefixHashID)
 		s.writeString(id.String())
 	default:
+		return fmt.Errorf("unexpected ID %s", id.String())
 	}
+	return nil
 }
 
-func (s *szContext) writeProperty(w *bufio.Writer, p Property, value interface{}) {
+func (s *szContext) writeProperty(w *bufio.Writer, p graph.Property, value interface{}) error {
 	// PropertyID's get prefixed with byte 0
 	s.writeByte(prefixPropertyID)
-	s.writeVarUint64(uint64(p.ID()))
-
+	id := s.resolver.GetPropertyID(p)
+	if id == 0 {
+		return fmt.Errorf("can't resolve property %s in schema", p.URI())
+	}
+	s.writeVarInt64(int64(id))
 	s.writePropertyValue(p.Arity(), p.Type(), value)
+	return nil
 }
 
 func (s *szContext) writeVarUint64(x uint64) {
 	buf := make([]byte, binary.MaxVarintLen64)
 	n := binary.PutUvarint(buf, x)
+	mustWrite(s.w, buf[:n])
+}
+
+func (s *szContext) writeVarInt64(x int64) {
+	buf := make([]byte, binary.MaxVarintLen64)
+	n := binary.PutVarint(buf, x)
 	mustWrite(s.w, buf[:n])
 }
 
@@ -137,28 +152,35 @@ func (s *szContext) writeByte(x byte) {
 }
 
 func (s *szContext) writeString(str string) {
-	panic("TODO")
+	s.writeByteSlice([]byte(str))
 }
 
-func (s *szContext) writeBytes(bytes []byte) {
-	panic("TODO")
+func (s *szContext) writeByteSlice(bytes []byte) {
+	s.writeVarInt(len(bytes))
+	mustWrite(s.w, bytes)
 }
 
-func writeBool(w *bufio.Writer, x bool) {
-	panic("TODO")
+func (s *szContext) writeBool(x bool) {
+	if !x {
+		s.writeByte(0)
+	} else {
+		s.writeByte(1)
+	}
 }
 
-func writeFloat64(w *bufio.Writer, x float64) {
-	panic("TODO")
+func (s *szContext) writeFloat64(x float64) {
+	var buf [8]byte
+	binary.LittleEndian.PutUint64(buf[:], math.Float64bits(x))
+	mustWrite(s.w, buf[:])
 }
 
-func (s *szContext) writePropertyValue(arity schema.Arity, ty schema.PropertyType, value interface{}) {
+func (s *szContext) writePropertyValue(arity graph.Arity, ty graph.PropertyType, value interface{}) {
 	switch arity {
-	case schema.One:
+	case graph.One:
 		s.writePropertyOne(ty, value)
-	case schema.UnorderedSet:
+	case graph.UnorderedSet:
 		s.writePropertyMany(ty, value, false)
-	case schema.OrderedSet:
+	case graph.OrderedSet:
 		s.writePropertyMany(ty, value, true)
 	default:
 		panic("unknown arity")
@@ -166,37 +188,37 @@ func (s *szContext) writePropertyValue(arity schema.Arity, ty schema.PropertyTyp
 	}
 }
 
-func (s *szContext) writePropertyOne(ty schema.PropertyType, value interface{}) {
+func (s *szContext) writePropertyOne(ty graph.PropertyType, value interface{}) {
 	switch ty {
-	case schema.TyString:
+	case graph.TyString:
 		x, ok := value.(string)
 		if !ok {
 			panic(fmt.Sprintf("Expected string value, got %+v", value))
 		}
 		s.writeString(x)
-	case schema.TyDouble:
+	case graph.TyDouble:
 		x, ok := value.(float64)
 		if !ok {
 			panic(fmt.Sprintf("Expected float64 value, got %+v", value))
 		}
-		writeFloat64(s.w, x)
-	case schema.TyBool:
+		s.writeFloat64(x)
+	case graph.TyBool:
 		x, ok := value.(bool)
 		if !ok {
 			panic(fmt.Sprintf("Expected bool value, got %+v", value))
 		}
-		writeBool(s.w, x)
-	case schema.TyInteger:
+		s.writeBool(x)
+	case graph.TyInteger:
 		panic("Can't handle integer values yet")
-	case schema.TyObject:
+	case graph.TyObject:
 		panic("Can't handle object values yet")
 	default:
 	}
 }
 
-func (s *szContext) writePropertyMany(ty schema.PropertyType, value interface{}, ordered bool) {
+func (s *szContext) writePropertyMany(ty graph.PropertyType, value interface{}, ordered bool) {
 	switch ty {
-	case schema.TyString:
+	case graph.TyString:
 		arr, ok := value.([]string)
 		if !ok {
 			panic(fmt.Sprintf("Expected []string value, got %+v", value))
@@ -205,27 +227,27 @@ func (s *szContext) writePropertyMany(ty schema.PropertyType, value interface{},
 		for _, x := range arr {
 			s.writeString(x)
 		}
-	case schema.TyDouble:
+	case graph.TyDouble:
 		arr, ok := value.([]float64)
 		if !ok {
 			panic(fmt.Sprintf("Expected []float64 value, got %+v", value))
 		}
 		s.writeVarInt(len(arr))
 		for _, x := range arr {
-			writeFloat64(s.w, x)
+			s.writeFloat64(x)
 		}
-	case schema.TyBool:
+	case graph.TyBool:
 		arr, ok := value.([]bool)
 		if !ok {
 			panic(fmt.Sprintf("Expected []bool value, got %+v", value))
 		}
 		s.writeVarInt(len(arr))
 		for _, x := range arr {
-			writeBool(s.w, x)
+			s.writeBool(x)
 		}
-	case schema.TyInteger:
+	case graph.TyInteger:
 		panic("Can't handle integer values yet")
-	case schema.TyObject:
+	case graph.TyObject:
 		panic("Can't handle object values yet")
 	default:
 	}
