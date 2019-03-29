@@ -218,14 +218,14 @@ func GenGeoAddress() gopter.Gen {
 
 func GenAccAddressID() gopter.Gen {
 	return gen.SliceOfN(20, gen.UInt8()).Map(
-		func(xs []byte) AccAddressID {
-			return AccAddressID{sdk.AccAddress(xs)}
+		func(xs []byte) graph.AccAddressID {
+			return graph.AccAddressID{sdk.AccAddress(xs)}
 		})
 }
 
 func GenHashID() gopter.Gen {
-	return gen.Identifier().Map(func(x string) HashID {
-		return HashID{x}
+	return gen.Identifier().Map(func(x string) graph.HashID {
+		return graph.HashID{x}
 	})
 }
 

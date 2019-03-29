@@ -69,9 +69,9 @@ func (ctx *dszContext) readID() (id types.HasURI, err error) {
 	case prefixGeoAddress:
 		return types.GeoAddress(ctx.readByteSlice()), nil
 	case prefixAccAddress:
-		return AccAddressID{sdk.AccAddress(ctx.readByteSlice())}, nil
+		return graph.AccAddressID{sdk.AccAddress(ctx.readByteSlice())}, nil
 	case prefixHashID:
-		return HashID{ctx.readString()}, nil
+		return graph.HashID{Fragment: ctx.readString()}, nil
 	default:
 		return nil, fmt.Errorf("unexpected ID prefix %d", prefix)
 	}
@@ -82,8 +82,6 @@ func (ctx *dszContext) readNodeProperties() (n graph.Node, err error) {
 	nProps := ctx.mustReadVarint()
 	for i := 0; i < nProps; i++ {
 		prop, value, err := ctx.readProperty()
-		// TODO verify ordering
-		// hash
 		if err != nil {
 			return nil, err
 		}

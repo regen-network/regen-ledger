@@ -64,7 +64,6 @@ func (s *szContext) serializeNode(root bool, n graph.Node) error {
 			return err
 		}
 	}
-	//id := n.ID()
 	props := n.Properties()
 	s.writeVarInt(len(props))
 	for _, url := range props {
@@ -81,12 +80,12 @@ func (s *szContext) writeID(id types.HasURI) error {
 	case types.GeoAddress:
 		s.writeByte(prefixGeoAddress)
 		s.writeByteSlice(id)
-	case AccAddressID:
+	case graph.AccAddressID:
 		s.writeByte(prefixAccAddress)
 		s.writeByteSlice(id.AccAddress)
-	case HashID:
+	case graph.HashID:
 		s.writeByte(prefixHashID)
-		s.writeString(id.fragment)
+		s.writeString(id.Fragment)
 	default:
 		return fmt.Errorf("unexpected ID %s", id.String())
 	}
@@ -94,7 +93,6 @@ func (s *szContext) writeID(id types.HasURI) error {
 }
 
 func (s *szContext) writeProperty(w *bufio.Writer, p graph.Property, value interface{}) error {
-	// PropertyID's get prefixed with byte 0
 	s.writeByte(prefixPropertyID)
 	id := s.resolver.GetPropertyID(p)
 	if id == 0 {
