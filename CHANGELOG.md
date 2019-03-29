@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - [\#163156528](https://www.pivotaltracker.com/story/show/163156528) Use stored geo shape for ESP results
 - [\#164056249](https://www.pivotaltracker.com/story/show/164056249) Rename `agent` -> `group` module, align structure of groups with specification document
+- [\#16](https://github.com/regen-network/regen-ledger/issues/16) The on-chain store data command now only works with graphs defined by the graph package
 
 ### Added
 
@@ -29,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [\#164334136](https://www.pivotaltracker.com/story/show/164334136) Implement Postgreql indexer package
 - [\#164380651](https://www.pivotaltracker.com/story/show/164380651) Implement Postgres indexing for geo module
 - [\#17](https://github.com/regen-network/regen-ledger/issues/17) Add define property schema support
+- [\#18](https://github.com/regen-network/regen-ledger/issues/18) Graph package and binary serialization format
     
 ## [0.3.0] - 2018-01-09
 
