@@ -12,14 +12,18 @@ type MsgStoreGraph struct {
 	Signer sdk.AccAddress `json:"signer"`
 }
 
+// NewMsgStoreGraph creates a MsgStoreGraph
 func NewMsgStoreGraph(hash []byte, data []byte, signer sdk.AccAddress) MsgStoreGraph {
 	return MsgStoreGraph{Hash: hash, Data: data, Signer: signer}
 }
 
+// Route returns the Msg route
 func (msg MsgStoreGraph) Route() string { return "data" }
 
+// Type returns the Msg type
 func (msg MsgStoreGraph) Type() string { return "store_data" }
 
+// ValidateBasic performs basic validation
 func (msg MsgStoreGraph) ValidateBasic() sdk.Error {
 	if len(msg.Hash) == 0 {
 		return sdk.ErrUnknownRequest("Hash cannot be empty")
@@ -30,6 +34,7 @@ func (msg MsgStoreGraph) ValidateBasic() sdk.Error {
 	return nil
 }
 
+// GetSignBytes gets bytes to sign over
 func (msg MsgStoreGraph) GetSignBytes() []byte {
 	b, err := json.Marshal(msg)
 	if err != nil {
@@ -38,6 +43,7 @@ func (msg MsgStoreGraph) GetSignBytes() []byte {
 	return sdk.MustSortJSON(b)
 }
 
+// GetSigners returns the Msg signers
 func (msg MsgStoreGraph) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{msg.Signer}
 }

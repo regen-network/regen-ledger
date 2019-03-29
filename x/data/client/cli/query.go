@@ -1,31 +1,36 @@
 package cli
 
 import (
-	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/spf13/cobra"
 )
 
-func GetCmdGetData(queryRoute string, cdc *codec.Codec) *cobra.Command {
+// GetCmdGetData returns a command
+func GetCmdGetData(storeName string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
 		Use:   "get [id]",
 		Short: "get data by id",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			id := args[0]
+			bech := args[0]
 
-			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/get/%s", queryRoute, id), nil)
+			addr, err := types.DecodeBech32DataAddress(bech)
 			if err != nil {
-				fmt.Printf("could not resolve data - %s \n", string(id))
-				return nil
+				return err
 			}
 
-			fmt.Println(string(res))
+			_, err = cliCtx.QueryStore([]byte(addr), storeName)
+			if err != nil {
+				return err
+			}
 
-			return nil
+			panic("TODO")
+			//graph, err := binary.DeserializeGraph(resolver, res)
+			//
+			//return cliCtx.PrintOutput(graph.String())
 		},
 	}
 }

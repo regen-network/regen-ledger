@@ -13,6 +13,7 @@ type ModuleClient struct {
 	cdc      *amino.Codec
 }
 
+// NewModuleClient creates a data module client
 func NewModuleClient(storeKey string, cdc *amino.Codec) ModuleClient {
 	return ModuleClient{storeKey, cdc}
 }

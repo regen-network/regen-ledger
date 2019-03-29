@@ -28,6 +28,7 @@ func NewKeeper(dataStoreKey sdk.StoreKey, schemaKeeper schema.Keeper, cdc *codec
 	}
 }
 
+// GetData returns the data if it exists or returns an error
 func (k Keeper) GetData(ctx sdk.Context, addr types.DataAddress) ([]byte, sdk.Error) {
 	store := ctx.KVStore(k.dataStoreKey)
 	bz := store.Get(addr)
@@ -47,6 +48,7 @@ const (
 	gasPerByteStorage   = 100
 )
 
+// StoreGraph stores a graph with the binary representation data and the provided hash
 func (k Keeper) StoreGraph(ctx sdk.Context, hash []byte, data []byte) (types.DataAddress, sdk.Error) {
 	ctx.GasMeter().ConsumeGas(gasForHashAndLookup, "hash data")
 	g, err := binary.DeserializeGraph(schema.NewOnChainSchemaResolver(k.schemaKeeper, ctx), bytes2.NewBuffer(data))

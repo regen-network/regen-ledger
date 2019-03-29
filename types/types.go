@@ -62,13 +62,21 @@ func GetDataAddressOnChainGraph(hash []byte) DataAddress {
 	return append([]byte{DataAddressPrefixOnChainGraph}, hash...)
 }
 
-func MustDecodeDataURL(url string) DataAddress {
-	hrp, bz, err := bech32.DecodeAndConvert(url)
+func MustDecodeBech32DataAddress(url string) DataAddress {
+	addr, err := DecodeBech32DataAddress(url)
 	if err != nil {
 		panic(err)
 	}
-	if hrp == Bech32DataAddressPrefix {
-		return GetDataAddressOnChainGraph(bz)
+	return addr
+}
+
+func DecodeBech32DataAddress(url string) (DataAddress, error) {
+	hrp, bz, err := bech32.DecodeAndConvert(url)
+	if err != nil {
+		return nil, err
 	}
-	panic("can't decode data URL")
+	if hrp == Bech32DataAddressPrefix {
+		return GetDataAddressOnChainGraph(bz), nil
+	}
+	return nil, fmt.Errorf("can't decode data URL")
 }

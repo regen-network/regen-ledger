@@ -74,7 +74,7 @@ func (s *Suite) TestStoreDataGraph() {
 				}
 
 				url := res.Tags[0].Value
-				addr2 := types.MustDecodeDataURL(string(url))
+				addr2 := types.MustDecodeBech32DataAddress(string(url))
 				if !bytes.Equal(addr, addr2) {
 					return false, fmt.Errorf("unexpected DataAddress %+v, %+v", []byte(addr), []byte(addr2))
 				}
