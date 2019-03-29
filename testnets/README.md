@@ -2,9 +2,9 @@
 
 ## Testnet Status
 
-### `xrn-test-2`
+### `xrn-test-3`
 
-Deployed at `2018-12-19T20:40:06.463846Z`, live as of this writing.
+Testnet `xrn-test-3` started producing blocks at `2019-03-29T19:44:44.571815638Z` and is live as of this writing.
 
 In this testnet, validator nodes currently have ports 26656, 26657 and 1317 open for testing purposes. In the future,
 the testnet will be setup with more security hardening via sentry and seed nodes.
@@ -20,6 +20,10 @@ The validator node URL's are as follows:
 ```sh
 xrncli init --chain-id xrn-test-2 --node tcp://xrn-us-east-1.regen.network:26657
 ```
+
+### `xrn-test-2`
+
+Deployed at `2018-12-19T20:40:06.463846Z`.
 
 ### `xrn-1`
 
