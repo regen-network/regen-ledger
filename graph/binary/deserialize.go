@@ -4,16 +4,16 @@ import (
 	"encoding/binary"
 	"fmt"
 	"github.com/regen-network/regen-ledger/graph"
+	"github.com/regen-network/regen-ledger/graph/binary/consts"
 	"github.com/regen-network/regen-ledger/graph/impl"
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/schema"
 	"io"
 	"math"
 )
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 // DeserializeGraph deserializes a Graph from a binary reader
-func DeserializeGraph(resolver SchemaResolver, r io.ByteScanner) (g graph.Graph, err error) {
+func DeserializeGraph(resolver graph.SchemaResolver, r io.ByteScanner) (g graph.Graph, err error) {
 	ctx := &dszContext{resolver, r, 0}
 	g, err = ctx.readGraph()
 	if err != nil {
@@ -23,7 +23,7 @@ func DeserializeGraph(resolver SchemaResolver, r io.ByteScanner) (g graph.Graph,
 }
 
 type dszContext struct {
-	resolver SchemaResolver
+	resolver graph.SchemaResolver
 	r        io.ByteScanner
 	version  uint64
 }
@@ -66,11 +66,11 @@ func (ctx *dszContext) readNode() (n graph.Node, err error) {
 func (ctx *dszContext) readID() (id types.HasURI, err error) {
 	prefix := ctx.mustReadByte()
 	switch prefix {
-	case prefixGeoAddress:
+	case consts.PrefixGeoAddress:
 		return types.GeoAddress(ctx.readByteSlice()), nil
-	case prefixAccAddress:
+	case consts.PrefixAccAddress:
 		return graph.AccAddressID{sdk.AccAddress(ctx.readByteSlice())}, nil
-	case prefixHashID:
+	case consts.PrefixHashID:
 		return graph.HashID{Fragment: ctx.readString()}, nil
 	default:
 		return nil, fmt.Errorf("unexpected ID prefix %d", prefix)
@@ -92,11 +92,11 @@ func (ctx *dszContext) readNodeProperties() (n graph.Node, err error) {
 
 func (ctx *dszContext) readProperty() (prop graph.Property, value interface{}, err error) {
 	prefix := ctx.mustReadByte()
-	if prefix != prefixPropertyID {
+	if prefix != consts.PrefixPropertyID {
 		return nil, nil, fmt.Errorf("unexpected property ID prefix %d", prefix)
 	}
 	id := ctx.mustReadVarint64()
-	prop = ctx.resolver.GetPropertyByID(schema.PropertyID(id))
+	prop = ctx.resolver.GetPropertyByID(graph.PropertyID(id))
 	if prop == nil {
 		return nil, nil, fmt.Errorf("can't resolve property with ID %d", id)
 	}

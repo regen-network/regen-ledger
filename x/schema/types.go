@@ -7,9 +7,6 @@ import (
 	"net/url"
 )
 
-// PropertyID is the integer ID of property starting from 1 with 0 indicating no property
-type PropertyID int64
-
 // PropertyDefinition defines the schema for a property
 type PropertyDefinition struct {
 	// Creator is the entity that defined this property

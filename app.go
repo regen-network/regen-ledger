@@ -11,6 +11,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/geo"
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/proposal"
+	"github.com/regen-network/regen-ledger/x/schema"
 	"github.com/regen-network/regen-ledger/x/upgrade"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/cli"
@@ -45,6 +46,7 @@ type xrnApp struct {
 	keyFeeCollection *sdk.KVStoreKey
 	//schemaStoreKey  *sdk.KVStoreKey
 	dataStoreKey       *sdk.KVStoreKey
+	schemaStoreKey     *sdk.KVStoreKey
 	espStoreKey        *sdk.KVStoreKey
 	geoStoreKey        *sdk.KVStoreKey
 	agentStoreKey      *sdk.KVStoreKey
@@ -58,6 +60,7 @@ type xrnApp struct {
 	bankKeeper          bank.Keeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
 	dataKeeper          data.Keeper
+	schemaKeeper        schema.Keeper
 	espKeeper           esp.Keeper
 	geoKeeper           geo.Keeper
 	agentKeeper         group.Keeper
@@ -93,6 +96,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 		keyFeeCollection: sdk.NewKVStoreKey("fee_collection"),
 		//schemaStoreKey: sdk.NewKVStoreKey("schema"),
 		dataStoreKey:       sdk.NewKVStoreKey("data"),
+		schemaStoreKey:     sdk.NewKVStoreKey("schema"),
 		espStoreKey:        sdk.NewKVStoreKey("esp"),
 		geoStoreKey:        sdk.NewKVStoreKey("geo"),
 		agentStoreKey:      sdk.NewKVStoreKey("group"),
@@ -133,7 +137,9 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 	// The FeeCollectionKeeper collects transaction fees and renders them to the fee distribution module
 	app.feeCollectionKeeper = auth.NewFeeCollectionKeeper(cdc, app.keyFeeCollection)
 
-	app.dataKeeper = data.NewKeeper(app.dataStoreKey, cdc)
+	app.schemaKeeper = schema.NewKeeper(app.schemaStoreKey, cdc)
+
+	app.dataKeeper = data.NewKeeper(app.dataStoreKey, app.schemaKeeper, cdc)
 
 	app.agentKeeper = group.NewKeeper(app.agentStoreKey, cdc)
 
@@ -162,7 +168,8 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 		AddRoute("data", data.NewHandler(app.dataKeeper)).
 		AddRoute("geo", geo.NewHandler(app.geoKeeper)).
 		AddRoute("group", group.NewHandler(app.agentKeeper)).
-		AddRoute("proposal", proposal.NewHandler(app.proposalKeeper))
+		AddRoute("proposal", proposal.NewHandler(app.proposalKeeper)).
+		AddRoute("schema", schema.NewHandler(app.schemaKeeper))
 
 	// The app.QueryRouter is the main query router where each module registers its routes
 	app.QueryRouter().
@@ -179,6 +186,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 		app.keyMain,
 		app.keyAccount,
 		app.keyFeeCollection,
+		app.schemaStoreKey,
 		app.dataStoreKey,
 		app.espStoreKey,
 		app.geoStoreKey,

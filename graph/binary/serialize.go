@@ -5,13 +5,14 @@ import (
 	"encoding/binary"
 	"fmt"
 	"github.com/regen-network/regen-ledger/graph"
+	"github.com/regen-network/regen-ledger/graph/binary/consts"
 	"github.com/regen-network/regen-ledger/types"
 	"io"
 	"math"
 )
 
 // SerializeGraph serializes a Graph in binary format
-func SerializeGraph(schema SchemaResolver, g graph.Graph, w io.Writer) error {
+func SerializeGraph(schema graph.SchemaResolver, g graph.Graph, w io.Writer) error {
 	ctx := &szContext{schema, bufio.NewWriter(w)}
 	err := ctx.serializeGraph(g)
 	if err != nil {
@@ -25,7 +26,7 @@ func SerializeGraph(schema SchemaResolver, g graph.Graph, w io.Writer) error {
 }
 
 type szContext struct {
-	resolver SchemaResolver
+	resolver graph.SchemaResolver
 	w        *bufio.Writer
 }
 
@@ -78,13 +79,13 @@ func (s *szContext) serializeNode(root bool, n graph.Node) error {
 func (s *szContext) writeID(id types.HasURI) error {
 	switch id := id.(type) {
 	case types.GeoAddress:
-		s.writeByte(prefixGeoAddress)
+		s.writeByte(consts.PrefixGeoAddress)
 		s.writeByteSlice(id)
 	case graph.AccAddressID:
-		s.writeByte(prefixAccAddress)
+		s.writeByte(consts.PrefixAccAddress)
 		s.writeByteSlice(id.AccAddress)
 	case graph.HashID:
-		s.writeByte(prefixHashID)
+		s.writeByte(consts.PrefixHashID)
 		s.writeString(id.Fragment)
 	default:
 		return fmt.Errorf("unexpected ID %s", id.String())
@@ -93,7 +94,7 @@ func (s *szContext) writeID(id types.HasURI) error {
 }
 
 func (s *szContext) writeProperty(w *bufio.Writer, p graph.Property, value interface{}) error {
-	s.writeByte(prefixPropertyID)
+	s.writeByte(consts.PrefixPropertyID)
 	id := s.resolver.GetPropertyID(p)
 	if id == 0 {
 		return fmt.Errorf("can't resolve property %s in schema", p.URI())
