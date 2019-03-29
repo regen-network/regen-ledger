@@ -2,7 +2,7 @@ package esp
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/x/geo"
+	"github.com/regen-network/regen-ledger/types"
 )
 
 //type SchemaType int
@@ -26,11 +26,11 @@ type ESPVersionSpec struct {
 }
 
 type ESPResult struct {
-	Curator  sdk.AccAddress `json:"curator"`
-	Name     string         `json:"name"`
-	Version  string         `json:"version"`
-	Verifier sdk.AccAddress `json:"verifier"`
-	GeoID    geo.GeoAddress `json:"geo_id,omitempty"`
-	Data     []byte         `json:"data"`
+	Curator  sdk.AccAddress   `json:"curator"`
+	Name     string           `json:"name"`
+	Version  string           `json:"version"`
+	Verifier sdk.AccAddress   `json:"verifier"`
+	GeoID    types.GeoAddress `json:"geo_id,omitempty"`
+	Data     []byte           `json:"data"`
 	// TODO link this to data module for either on or off-chain result storage
 }

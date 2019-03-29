@@ -27,8 +27,6 @@ type Geometry struct {
 	EWKB []byte `json:"ewkb,omitempty"`
 }
 
-type GeoAddress []byte
-
 var PostgresMigrations = []string{
 	PostgresSchema,
 }

@@ -3,6 +3,7 @@ package schema
 import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"net/url"
 )
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -32,7 +33,7 @@ func PropertyURLKey(url string) []byte {
 }
 
 // GetProperty returns a PropertyDefinition given a PropertyID if one exists
-func (keeper Keeper) GetProperty(ctx sdk.Context, id PropertyID) (prop PropertyDefinition, found bool) {
+func (keeper Keeper) GetPropertyDefinition(ctx sdk.Context, id PropertyID) (prop PropertyDefinition, found bool) {
 	store := ctx.KVStore(keeper.storeKey)
 	bz := store.Get(PropertyKey(id))
 	if bz == nil {
@@ -57,21 +58,22 @@ func (keeper Keeper) GetPropertyID(ctx sdk.Context, propertyURL string) Property
 
 // DefineProperty defines a property within the state store return the property's id and URL if it was defined
 // successfully or else an error
-func (keeper Keeper) DefineProperty(ctx sdk.Context, def PropertyDefinition) (id PropertyID, url string, err sdk.Error) {
+func (keeper Keeper) DefineProperty(ctx sdk.Context, def PropertyDefinition) (id PropertyID, uri *url.URL, err sdk.Error) {
 	err = def.ValidateBasic()
 	if err != nil {
-		return 0, "", err
+		return 0, nil, err
 	}
-	url = def.URL()
+	uri = def.URI()
+	uriKey := PropertyURLKey(uri.String())
 	store := ctx.KVStore(keeper.storeKey)
-	if store.Has(PropertyURLKey(url)) {
-		return id, url, sdk.ErrUnknownRequest("property already defined")
+	if store.Has(uriKey) {
+		return id, uri, sdk.ErrUnknownRequest("property already defined")
 	}
 	id = keeper.nextPropertyID(ctx)
 	bz := keeper.cdc.MustMarshalBinaryBare(def)
 	store.Set(PropertyKey(id), bz)
-	store.Set(PropertyURLKey(url), keeper.cdc.MustMarshalBinaryBare(id))
-	return id, url, nil
+	store.Set(uriKey, keeper.cdc.MustMarshalBinaryBare(id))
+	return id, uri, nil
 }
 
 func (keeper Keeper) nextPropertyID(ctx sdk.Context) PropertyID {

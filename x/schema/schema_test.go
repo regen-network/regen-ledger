@@ -5,6 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/graph"
 	"github.com/stretchr/testify/suite"
 	abci "github.com/tendermint/tendermint/abci/types"
 	dbm "github.com/tendermint/tendermint/libs/db"
@@ -39,7 +40,7 @@ func (s *TestSuite) TestCreatorCantBeEmpty() {
 	s.T().Log("define property")
 	prop1 := PropertyDefinition{
 		Name:         "test1",
-		PropertyType: TyBool,
+		PropertyType: graph.TyBool,
 	}
 	_, _, err := s.keeper.DefineProperty(s.ctx, prop1)
 	s.Require().NotNil(err)
@@ -49,7 +50,7 @@ func (s *TestSuite) TestNameCantBeEmpty() {
 	s.T().Log("define property")
 	prop1 := PropertyDefinition{
 		Creator:      s.anAddr,
-		PropertyType: TyBool,
+		PropertyType: graph.TyBool,
 	}
 	_, _, err := s.keeper.DefineProperty(s.ctx, prop1)
 	s.Require().NotNil(err)
@@ -60,7 +61,7 @@ func (s *TestSuite) TestPropertyCanOnlyBeDefinedOnce() {
 	prop1 := PropertyDefinition{
 		Creator:      s.anAddr,
 		Name:         "test1",
-		PropertyType: TyBool,
+		PropertyType: graph.TyBool,
 	}
 	_, _, err := s.keeper.DefineProperty(s.ctx, prop1)
 	s.Require().Nil(err)
@@ -69,33 +70,36 @@ func (s *TestSuite) TestPropertyCanOnlyBeDefinedOnce() {
 	prop2 := PropertyDefinition{
 		Creator:      s.anAddr,
 		Name:         "test1",
-		PropertyType: TyInteger,
+		PropertyType: graph.TyInteger,
 	}
 	_, _, err = s.keeper.DefineProperty(s.ctx, prop2)
 	s.Require().NotNil(err)
 }
 
 func (s *TestSuite) TestCheckPropertyType() {
-	s.T().Log("valid property type should be accepted")
+	s.T().Log("invalid property type should be rejected")
 	prop1 := PropertyDefinition{
 		Creator:      s.anAddr,
 		Name:         "test1",
-		PropertyType: TyBool,
+		PropertyType: graph.PropertyType(12345678),
 	}
 	err := prop1.ValidateBasic()
-	s.Require().Nil(err)
-	_, _, err = s.keeper.DefineProperty(s.ctx, prop1)
-	s.Require().Nil(err)
-
-	s.T().Log("invalid property type should be rejected")
-	prop2 := PropertyDefinition{
-		Creator:      s.anAddr,
-		Name:         "test2",
-		PropertyType: PropertyType(12345678),
-	}
-	err = prop2.ValidateBasic()
 	s.Require().NotNil(err)
-	_, _, err = s.keeper.DefineProperty(s.ctx, prop2)
+	_, _, err = s.keeper.DefineProperty(s.ctx, prop1)
+	s.Require().NotNil(err)
+}
+
+func (s *TestSuite) TestCheckArity() {
+	s.T().Log("invalid arity should be rejected")
+	prop1 := PropertyDefinition{
+		Creator:      s.anAddr,
+		Name:         "test1",
+		PropertyType: graph.TyObject,
+		Arity:        graph.Arity(513848),
+	}
+	err := prop1.ValidateBasic()
+	s.Require().NotNil(err)
+	_, _, err = s.keeper.DefineProperty(s.ctx, prop1)
 	s.Require().NotNil(err)
 }
 
@@ -104,21 +108,21 @@ func (s *TestSuite) TestCanRetrieveProperty() {
 	prop := PropertyDefinition{
 		Creator:      s.anAddr,
 		Name:         "test1",
-		PropertyType: TyBool,
+		PropertyType: graph.TyBool,
 	}
 	id, url, err := s.keeper.DefineProperty(s.ctx, prop)
 	s.Require().Nil(err)
 
 	s.T().Log("try retrieve property")
-	propCopy, found := s.keeper.GetProperty(s.ctx, id)
+	propCopy, found := s.keeper.GetPropertyDefinition(s.ctx, id)
 	s.Require().True(found)
 	s.Require().True(bytes.Equal(prop.Creator, propCopy.Creator))
 	s.Require().Equal(prop.Name, propCopy.Name)
 	s.Require().Equal(prop.PropertyType, propCopy.PropertyType)
-	s.Require().Equal(prop.Many, propCopy.Many)
+	s.Require().Equal(prop.Arity, propCopy.Arity)
 
 	s.T().Log("try retrieve property id from URL")
-	idCopy := s.keeper.GetPropertyID(s.ctx, url)
+	idCopy := s.keeper.GetPropertyID(s.ctx, url.String())
 	s.Require().Equal(id, idCopy)
 }
 
@@ -127,7 +131,7 @@ func (s *TestSuite) TestIncrementPropertyID() {
 	prop1 := PropertyDefinition{
 		Creator:      s.anAddr,
 		Name:         "test1",
-		PropertyType: TyBool,
+		PropertyType: graph.TyBool,
 	}
 	id, url, err := s.keeper.DefineProperty(s.ctx, prop1)
 	s.Require().Nil(err)
@@ -137,8 +141,8 @@ func (s *TestSuite) TestIncrementPropertyID() {
 	prop2 := PropertyDefinition{
 		Creator:      s.anAddr,
 		Name:         "test2",
-		PropertyType: TyString,
-		Many:         true,
+		PropertyType: graph.TyString,
+		Arity:        graph.UnorderedSet,
 	}
 	id2, url2, err := s.keeper.DefineProperty(s.ctx, prop2)
 	s.Require().Nil(err)
@@ -147,11 +151,22 @@ func (s *TestSuite) TestIncrementPropertyID() {
 }
 
 func (s *TestSuite) TestPropertyNotFound() {
-	_, found := s.keeper.GetProperty(s.ctx, 0)
+	_, found := s.keeper.GetPropertyDefinition(s.ctx, 0)
 	s.Require().False(found)
 
 	id := s.keeper.GetPropertyID(s.ctx, "")
 	s.Require().Equal(PropertyID(0), id)
+}
+
+func (s *TestSuite) TestPropertyNameRegex() {
+	prop1 := PropertyDefinition{
+		Creator:      s.anAddr,
+		Name:         "TestCamelCase",
+		PropertyType: graph.TyString,
+		Arity:        graph.OrderedSet,
+	}
+	err := prop1.ValidateBasic()
+	s.Require().NotNil(err)
 }
 
 func (s *TestSuite) TestDefinePropertyHandler() {
@@ -159,11 +174,12 @@ func (s *TestSuite) TestDefinePropertyHandler() {
 	prop1 := PropertyDefinition{
 		Creator:      s.anAddr,
 		Name:         "test1",
-		PropertyType: TyBool,
+		PropertyType: graph.TyBool,
 	}
 	res := s.handler(s.ctx, prop1)
 	s.Require().Equal(sdk.CodeOK, res.Code)
-	s.Require().Equal(prop1.URL(), string(res.Tags[0].Value))
+	s.Require().Equal(prop1.URI().String(), string(res.Tags[0].Value))
+	s.Require().Equal("1", string(res.Tags[1].Value))
 }
 
 func TestTestSuite(t *testing.T) {
