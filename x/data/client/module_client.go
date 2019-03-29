@@ -26,9 +26,6 @@ func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 
 	dataQueryCmd.AddCommand(client.GetCommands(
 		datacmd.GetCmdGetData(mc.storeKey, mc.cdc),
-	)...)
-
-	dataQueryCmd.AddCommand(client.GetCommands(
 		datacmd.GetCmdGetDataBlockHeight(mc.storeKey, mc.cdc),
 	)...)
 
@@ -42,9 +39,9 @@ func (mc ModuleClient) GetTxCmd() *cobra.Command {
 		Short: "Data transactions subcommands",
 	}
 
-	dataTxCmd.AddCommand(client.PostCommands(
-		datacmd.GetCmdStoreData(mc.cdc),
-	)...)
+	//dataTxCmd.AddCommand(client.PostCommands(
+	//	datacmd.GetCmdStoreData(mc.cdc),
+	//)...)
 
 	return dataTxCmd
 }

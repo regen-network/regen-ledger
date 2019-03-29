@@ -32,6 +32,10 @@ type onChainSchemaResolver struct {
 	ctx    sdk.Context
 }
 
+func NewOnChainSchemaResolver(keeper schema.Keeper, ctx sdk.Context) SchemaResolver {
+	return &onChainSchemaResolver{keeper: keeper, ctx: ctx}
+}
+
 func (res onChainSchemaResolver) GetPropertyID(p graph.Property) schema.PropertyID {
 	return res.keeper.GetPropertyID(res.ctx, p.URI().String())
 }

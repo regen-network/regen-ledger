@@ -11,7 +11,7 @@ import (
 func NewHandler(keeper Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
 		switch msg := msg.(type) {
-		case MsgStoreData:
+		case MsgStoreGraph:
 			return handleMsgStoreData(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("Unrecognized data Msg type: %v", msg.Type())
@@ -20,8 +20,11 @@ func NewHandler(keeper Keeper) sdk.Handler {
 	}
 }
 
-func handleMsgStoreData(ctx sdk.Context, keeper Keeper, msg MsgStoreData) sdk.Result {
-	hash := keeper.StoreData(ctx, msg.Data)
+func handleMsgStoreData(ctx sdk.Context, keeper Keeper, msg MsgStoreGraph) sdk.Result {
+	hash, err := keeper.StoreGraph(ctx, msg.Hash, msg.Data)
+	if err != nil {
+		return err.Result()
+	}
 	tags := sdk.EmptyTags()
 	tags.AppendTag("data.hash", hex.EncodeToString(hash))
 	return sdk.Result{

@@ -1,8 +1,13 @@
 package data
 
 import (
+	bytes2 "bytes"
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"golang.org/x/crypto/blake2b"
+	"github.com/regen-network/regen-ledger/graph"
+	"github.com/regen-network/regen-ledger/graph/binary"
+	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/x/schema"
 	"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,46 +17,23 @@ import (
 type Keeper struct {
 	//schemaStoreKey  sdk.StoreKey
 	dataStoreKey sdk.StoreKey
-
-	cdc *codec.Codec // The wire codec for binary encoding/decoding.
+	schemaKeeper schema.Keeper
+	cdc          *codec.Codec // The wire codec for binary encoding/decoding.
 }
 
 type DataRecord struct {
 	Data        []byte `json:"data"`
-	BlockHeight int64 `json:"block_height"`
+	BlockHeight int64  `json:"block_height"`
 }
 
 // NewKeeper creates new instances of the nameservice Keeper
-func NewKeeper(
-//schemaStoreKey sdk.StoreKey,
-	dataStoreKey sdk.StoreKey, cdc *codec.Codec) Keeper {
+func NewKeeper(dataStoreKey sdk.StoreKey, schemaKeeper schema.Keeper, cdc *codec.Codec) Keeper {
 	return Keeper{
-		//schemaStoreKey: schemaStoreKey,
-		dataStoreKey: dataStoreKey,
-		cdc:          cdc,
+		dataStoreKey,
+		schemaKeeper,
+		cdc,
 	}
 }
-
-//func (k Keeper) GetSchema(ctx sdk.Context, id string) (*gojsonschema.Schema, error) {
-//	store := ctx.KVStore(k.schemaStoreKey)
-//	bz := store.Get([]byte(id))
-//	loader := gojsonschema.NewStringLoader(string(bz))
-//	sl := gojsonschema.NewSchemaLoader()
-//	schema, err := sl.Compile(loader)
-//
-//	if err != nil {
-//		return nil, err
-//	}
-//	return schema, nil
-//}
-//
-//func (k Keeper) RegisterSchema(ctx sdk.Context, schema string) string {
-//	store := ctx.KVStore(k.schemaStoreKey)
-//	hash := blake2b.Sum256([]byte(schema))
-//	id := base64.URLEncoding.EncodeToString(hash[:])
-//	store.Set([]byte(id), []byte(schema))
-//	return id
-//}
 
 func (k Keeper) GetData(ctx sdk.Context, hash []byte) []byte {
 	return k.getDataRecord(ctx, hash).Data
@@ -79,38 +61,30 @@ const (
 	gasPerByteStorage   = 100
 )
 
-func (k Keeper) StoreData(ctx sdk.Context, data []byte) []byte {
+func (k Keeper) StoreGraph(ctx sdk.Context, hash []byte, data []byte) (types.DataAddress, sdk.Error) {
 	ctx.GasMeter().ConsumeGas(gasForHashAndLookup, "hash data")
+	g, err := binary.DeserializeGraph(binary.NewOnChainSchemaResolver(k.schemaKeeper, ctx), bytes2.NewBuffer(data))
+	if err != nil {
+		return nil, sdk.ErrUnknownRequest(fmt.Sprintf("error deserializing graph %s", err.Error()))
+	}
+	hash2 := graph.Hash(g)
+	if !bytes2.Equal(hash, hash2) {
+		return nil, sdk.ErrUnknownRequest("incorrect graph hash")
+	}
 	store := ctx.KVStore(k.dataStoreKey)
-	hashBz := blake2b.Sum256([]byte(data))
-	hash := hashBz[:]
 	existing := k.getDataRecord(ctx, hash)
 	if existing.BlockHeight != 0 {
-		return hash
+		return nil, sdk.ErrUnknownRequest("already exists")
 	}
 	bytes := len(data)
 	ctx.GasMeter().ConsumeGas(gasPerByteStorage*uint64(bytes), "store data")
 	bz := k.encodeDataRecord(DataRecord{
-		Data:data,
-		BlockHeight:ctx.BlockHeight(),
+		Data:        data,
+		BlockHeight: ctx.BlockHeight(),
 	})
 	store.Set(hash, bz)
-	return hash
+	return hash, nil
 }
-
-//func (k Keeper) GetDataPointer(ctx sdk.Context, id string) string {
-//	store := ctx.KVStore(k.dataStoreKey)
-//	bz := store.Get([]byte(id))
-//	return string(bz)
-//}
-//
-//func (k Keeper) PutDataPointer(ctx sdk.Context, data string) string {
-//	store := ctx.KVStore(k.dataStoreKey)
-//	hash := blake2b.Sum256([]byte(data))
-//	id := base64.URLEncoding.EncodeToString(hash[:])
-//	store.Set([]byte(id), []byte(data))
-//	return id
-//}
 
 func (k Keeper) encodeDataRecord(data DataRecord) []byte {
 	bz, err := k.cdc.MarshalBinaryBare(data)
