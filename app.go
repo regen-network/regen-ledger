@@ -186,6 +186,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 
 	// The app.QueryRouter is the main query router where each module registers its routes
 	app.QueryRouter().
+		AddRoute("acc", auth.NewQuerier(app.accountKeeper)).
 		AddRoute("data", data.NewQuerier(app.dataKeeper)).
 		AddRoute("group", group.NewQuerier(app.agentKeeper)).
 		AddRoute("proposal", proposal.NewQuerier(app.proposalKeeper))
