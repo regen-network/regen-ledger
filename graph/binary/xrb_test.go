@@ -136,12 +136,14 @@ func (s *TestSuite) TestProperties() {
 				return false, err
 			}
 			g2, err := DeserializeGraph(s.resolver, w)
+			if err != nil {
+				return false, err
+			}
 			txt2, err := graph.CanonicalString(g1)
 			if err != nil {
 				return false, err
 			}
 			hash2 := graph.Hash(g2)
-			s.T().Logf("%s %s", txt1, txt2)
 			if txt1 != txt2 {
 				return false, fmt.Errorf("canonical strings do not match")
 			}
@@ -305,12 +307,12 @@ func GenValue(arity graph.Arity, propertyType graph.PropertyType) gopter.Gen {
 func GenUnorderedSet(propertyType graph.PropertyType) gopter.Gen {
 	switch propertyType {
 	case graph.TyString:
-		return GenSlice(0, 50, gen.AnyString(), reflect.TypeOf([]string{})).
+		return GenSlice(1, 50, gen.AnyString(), reflect.TypeOf([]string{})).
 			Map(func(xs []string) []string {
 				return UniqueSortedStrings(xs)
 			})
 	case graph.TyDouble:
-		return GenSlice(0, 50, gen.Float64(), reflect.TypeOf([]float64{})).
+		return GenSlice(1, 50, gen.Float64(), reflect.TypeOf([]float64{})).
 			Map(func(xs []float64) []float64 {
 				return UniqueSortedFloat64s(xs)
 			})
@@ -321,11 +323,11 @@ func GenUnorderedSet(propertyType graph.PropertyType) gopter.Gen {
 func GenOrderedSet(propertyType graph.PropertyType) gopter.Gen {
 	switch propertyType {
 	case graph.TyString:
-		return GenSlice(0, 50, gen.AnyString(), reflect.TypeOf([]string{}))
+		return GenSlice(1, 50, gen.AnyString(), reflect.TypeOf([]string{}))
 	case graph.TyDouble:
-		return GenSlice(0, 50, gen.Float64(), reflect.TypeOf([]float64{}))
+		return GenSlice(1, 50, gen.Float64(), reflect.TypeOf([]float64{}))
 	case graph.TyBool:
-		return GenSlice(0, 50, gen.Bool(), reflect.TypeOf([]bool{}))
+		return GenSlice(1, 50, gen.Bool(), reflect.TypeOf([]bool{}))
 	default:
 		panic(fmt.Sprintf("don't know how to handle PropertyType %s", propertyType.String()))
 	}

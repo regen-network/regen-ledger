@@ -44,20 +44,9 @@ func (s *szContext) serializeGraph(g graph.Graph) error {
 	}
 	nodes := g.Nodes()
 	s.writeVarInt(len(nodes))
-	var last string
 	for _, n := range nodes {
 		if n == nil {
 			panic("node ID cannot be nil")
-		}
-		uri := n.URI().String()
-		if last != "" {
-			if uri < last {
-				panic("nodes not in sorted order") // Node implementation error so panic
-			}
-			if last == uri {
-				panic("duplicate node ID")
-			}
-			last = uri
 		}
 		err := s.serializeNode(false, g.GetNode(n))
 		if err != nil {
@@ -78,12 +67,6 @@ func (s *szContext) serializeNode(root bool, n graph.Node) error {
 	props := n.Properties()
 	s.writeVarInt(len(props))
 	for _, url := range props {
-		//if root {
-		//	s.hashText.write("_:_\n")
-		//} else {
-		//	s.hashText.writeIRI(id)
-		//	s.hashText.write("\n")
-		//}
 		err := s.writeProperty(s.w, url, n.GetProperty(url))
 		if err != nil {
 			return err
@@ -103,7 +86,7 @@ func (s *szContext) writeID(id types.HasURI) error {
 		// TODO
 	case HashID:
 		s.writeByte(prefixHashID)
-		s.writeString(id.String())
+		s.writeString(id.fragment)
 	default:
 		return fmt.Errorf("unexpected ID %s", id.String())
 	}
@@ -213,6 +196,7 @@ func (s *szContext) writePropertyOne(ty graph.PropertyType, value interface{}) {
 	case graph.TyObject:
 		panic("Can't handle object values yet")
 	default:
+		panic("Unknown PropertyType")
 	}
 }
 
@@ -250,5 +234,6 @@ func (s *szContext) writePropertyMany(ty graph.PropertyType, value interface{}, 
 	case graph.TyObject:
 		panic("Can't handle object values yet")
 	default:
+		panic("Unknown PropertyType")
 	}
 }
