@@ -78,13 +78,12 @@ func (s *szContext) serializeNode(root bool, n graph.Node) error {
 
 func (s *szContext) writeID(id types.HasURI) error {
 	switch id := id.(type) {
-	case AccAddressID:
-		s.writeByte(prefixAccAddress)
-		s.writeByteSlice(id.AccAddress)
 	case types.GeoAddress:
 		s.writeByte(prefixGeoAddress)
 		s.writeByteSlice(id)
-		// TODO
+	case AccAddressID:
+		s.writeByte(prefixAccAddress)
+		s.writeByteSlice(id.AccAddress)
 	case HashID:
 		s.writeByte(prefixHashID)
 		s.writeString(id.fragment)
