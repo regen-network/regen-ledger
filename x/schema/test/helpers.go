@@ -38,56 +38,61 @@ func (s *Harness) Setup() {
 }
 
 func (s *Harness) CreateSampleSchema() {
+	CreateSampleSchema(s.Suite, s.Keeper, s.Ctx, s.AnAddr)
+}
+
+func CreateSampleSchema(s suite.Suite, keeper schema.Keeper, ctx sdk.Context, anAddr sdk.AccAddress) {
+	anAddr = sdk.AccAddress{0, 1, 2, 3, 4, 5, 6, 7, 8}
 	// create a mock schema
-	_, _, err := s.Keeper.DefineProperty(s.Ctx, schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+	_, _, err := keeper.DefineProperty(ctx, schema.PropertyDefinition{
+		Creator:      anAddr,
 		Name:         "name",
 		PropertyType: graph.TyString,
 	})
 	s.Require().Nil(err)
-	_, _, err = s.Keeper.DefineProperty(s.Ctx, schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+	_, _, err = keeper.DefineProperty(ctx, schema.PropertyDefinition{
+		Creator:      anAddr,
 		Name:         "x",
 		PropertyType: graph.TyDouble,
 	})
 	s.Require().Nil(err)
-	_, _, err = s.Keeper.DefineProperty(s.Ctx, schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+	_, _, err = keeper.DefineProperty(ctx, schema.PropertyDefinition{
+		Creator:      anAddr,
 		Name:         "b",
 		PropertyType: graph.TyBool,
 	})
 	s.Require().Nil(err)
-	_, _, err = s.Keeper.DefineProperty(s.Ctx, schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+	_, _, err = keeper.DefineProperty(ctx, schema.PropertyDefinition{
+		Creator:      anAddr,
 		Name:         "names",
 		PropertyType: graph.TyString,
 		Arity:        graph.UnorderedSet,
 	})
 	s.Require().Nil(err)
-	_, _, err = s.Keeper.DefineProperty(s.Ctx, schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+	_, _, err = keeper.DefineProperty(ctx, schema.PropertyDefinition{
+		Creator:      anAddr,
 		Name:         "xs",
 		PropertyType: graph.TyDouble,
 		Arity:        graph.UnorderedSet,
 	})
 	s.Require().Nil(err)
 	s.Require().Nil(err)
-	_, _, err = s.Keeper.DefineProperty(s.Ctx, schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+	_, _, err = keeper.DefineProperty(ctx, schema.PropertyDefinition{
+		Creator:      anAddr,
 		Name:         "nameList",
 		PropertyType: graph.TyString,
 		Arity:        graph.OrderedSet,
 	})
 	s.Require().Nil(err)
-	_, _, err = s.Keeper.DefineProperty(s.Ctx, schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+	_, _, err = keeper.DefineProperty(ctx, schema.PropertyDefinition{
+		Creator:      anAddr,
 		Name:         "xList",
 		PropertyType: graph.TyDouble,
 		Arity:        graph.OrderedSet,
 	})
 	s.Require().Nil(err)
-	_, _, err = s.Keeper.DefineProperty(s.Ctx, schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+	_, _, err = keeper.DefineProperty(ctx, schema.PropertyDefinition{
+		Creator:      anAddr,
 		Name:         "bList",
 		PropertyType: graph.TyBool,
 		Arity:        graph.OrderedSet,

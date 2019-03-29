@@ -4,13 +4,11 @@ import (
 	"encoding/hex"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"math"
-	"strconv"
 )
 
 // query endpoints supported by the governance Querier
 const (
-	QueryData = "get"
+	QueryData            = "get"
 	QueryDataBlockHeight = "block-height"
 )
 
@@ -19,8 +17,6 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 		switch path[0] {
 		case QueryData:
 			return queryData(ctx, path[1:], req, keeper)
-		case QueryDataBlockHeight:
-			return queryDataBlockHeight(ctx, path[1:], req, keeper)
 		default:
 			return nil, sdk.ErrUnknownRequest("unknown data query endpoint")
 		}
@@ -45,16 +41,4 @@ func queryData(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Kee
 	}
 
 	return value, nil
-}
-
-func queryDataBlockHeight(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) (res []byte, err sdk.Error) {
-	id := path[0]
-
-	value := keeper.GetDataBlockHeight(ctx, fromHex(id))
-
-	if value == math.MaxInt64 {
-		return []byte{}, sdk.ErrUnknownRequest("could not resolve id")
-	}
-
-	return []byte(strconv.FormatInt(value, 10)), nil
 }

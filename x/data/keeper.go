@@ -4,13 +4,11 @@ import (
 	bytes2 "bytes"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/graph"
 	"github.com/regen-network/regen-ledger/graph/binary"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/schema"
-	"math"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // Keeper maintains the link to data storage and exposes getter/setter methods for the various parts of the state machine
@@ -19,11 +17,6 @@ type Keeper struct {
 	dataStoreKey sdk.StoreKey
 	schemaKeeper schema.Keeper
 	cdc          *codec.Codec // The wire codec for binary encoding/decoding.
-}
-
-type DataRecord struct {
-	Data        []byte `json:"data"`
-	BlockHeight int64  `json:"block_height"`
 }
 
 // NewKeeper creates new instances of the nameservice Keeper
@@ -36,24 +29,12 @@ func NewKeeper(dataStoreKey sdk.StoreKey, schemaKeeper schema.Keeper, cdc *codec
 }
 
 func (k Keeper) GetData(ctx sdk.Context, hash []byte) []byte {
-	return k.getDataRecord(ctx, hash).Data
-}
-
-func (k Keeper) GetDataBlockHeight(ctx sdk.Context, hash []byte) int64 {
-	bh := k.getDataRecord(ctx, hash).BlockHeight
-	if bh <= 0 {
-		return math.MaxInt64
-	}
-	return bh
-}
-
-func (k Keeper) getDataRecord(ctx sdk.Context, hash []byte) (data DataRecord) {
 	store := ctx.KVStore(k.dataStoreKey)
 	bz := store.Get(hash)
 	if bz == nil {
-		return
+		return nil
 	}
-	return k.decodeDataRecord(bz)
+	return bz
 }
 
 const (
@@ -72,32 +53,12 @@ func (k Keeper) StoreGraph(ctx sdk.Context, hash []byte, data []byte) (types.Dat
 		return nil, sdk.ErrUnknownRequest("incorrect graph hash")
 	}
 	store := ctx.KVStore(k.dataStoreKey)
-	existing := k.getDataRecord(ctx, hash)
-	if existing.BlockHeight != 0 {
+	existing := k.GetData(ctx, hash)
+	if existing != nil {
 		return nil, sdk.ErrUnknownRequest("already exists")
 	}
 	bytes := len(data)
 	ctx.GasMeter().ConsumeGas(gasPerByteStorage*uint64(bytes), "store data")
-	bz := k.encodeDataRecord(DataRecord{
-		Data:        data,
-		BlockHeight: ctx.BlockHeight(),
-	})
-	store.Set(hash, bz)
+	store.Set(hash, data)
 	return hash, nil
-}
-
-func (k Keeper) encodeDataRecord(data DataRecord) []byte {
-	bz, err := k.cdc.MarshalBinaryBare(data)
-	if err != nil {
-		panic(err)
-	}
-	return bz
-}
-
-func (k Keeper) decodeDataRecord(bz []byte) (data DataRecord) {
-	err := k.cdc.UnmarshalBinaryBare(bz, &data)
-	if err != nil {
-		panic(err)
-	}
-	return
 }

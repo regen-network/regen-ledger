@@ -29,25 +29,3 @@ func GetCmdGetData(queryRoute string, cdc *codec.Codec) *cobra.Command {
 		},
 	}
 }
-
-func GetCmdGetDataBlockHeight(queryRoute string, cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "block-height [id]",
-		Short: "get the block height at which this data was committed",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			id := args[0]
-
-			res, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/block-height/%s", queryRoute, id), nil)
-			if err != nil {
-				fmt.Printf("could not resolve data - %s \n", string(id))
-				return nil
-			}
-
-			fmt.Println(string(res))
-
-			return nil
-		},
-	}
-}
