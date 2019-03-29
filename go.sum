@@ -209,6 +209,8 @@ github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a/go.mod h1:bCqn
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190326185332-6a8efff406de h1:tP5TH3socn47RvrpedWpLe4/YJ1KQvYKHtJIQpodE2s=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190328142727-7fc01b12c61a h1:YDmIx+KpkiEoEb1MKiVmM+C6JDpI03w1dUB5U/uWI8I=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190328142727-7fc01b12c61a/go.mod h1:oCcUKqg11Ie72fift+r96GQdVhOhe5gSpiF0OSltN4g=
+github.com/regen-network/cosmos-sdk v0.0.0-0.20190328142727-e7d1e85e48888622c72353de322755b250f3df79 h1:7ZiXKGove/krZdCz2FCssAudmnBKnzLx6QfdqNroYgI=
+github.com/regen-network/cosmos-sdk v0.0.0-0.20190328142727-e7d1e85e48888622c72353de322755b250f3df79/go.mod h1:oCcUKqg11Ie72fift+r96GQdVhOhe5gSpiF0OSltN4g=
 github.com/regen-network/cosmos-sdk v0.19.1-0.20190110184329-915ef12facc9 h1:6NJQfdwUI1AG6VdGIlUrxWA/J6CdodCj/Ym7n7Hnngw=
 github.com/regen-network/cosmos-sdk v0.19.1-0.20190110184329-915ef12facc9/go.mod h1:NlvB7hxh2AcqplzmTCqBuuRDIb0qYqRo/e/f+0e7BhE=
 github.com/regen-network/cosmos-sdk v0.19.1-0.20190129210756-64554b6839f2 h1:PL2tlPB4j8tgp3qxl6YvNIXfL83G8NP+SIdAgfa3Hhc=
