@@ -17,8 +17,8 @@ import (
 )
 
 func Graph(resolver graph.SchemaResolver) gopter.Gen {
-	return slice(0, 20, Node(resolver), reflect.TypeOf([]graph.Node{})).
-		Map(func(xs []graph.Node) graph.Graph {
+	return slice(0, 20, Node(resolver), reflect.TypeOf([]*impl.NodeImpl{})).
+		Map(func(xs []*impl.NodeImpl) graph.Graph {
 			g := impl.NewGraph()
 			n := len(xs)
 			if n > 0 && n%2 == 1 {
@@ -41,11 +41,11 @@ func Node(resolver graph.SchemaResolver) gopter.Gen {
 		for _, pv := range pvs {
 			node.SetProperty(pv.prop, pv.val)
 		}
-		return ID().Map(func(id types.HasURI) graph.Node {
+		return ID().Map(func(id types.HasURI) *impl.NodeImpl {
 			node.SetID(id)
-			return node
+			return node.(*impl.NodeImpl)
 		})
-	}, reflect.TypeOf((*graph.Node)(nil)))
+	}, reflect.TypeOf(impl.NewNode(nil)))
 }
 
 func ID() gopter.Gen {
@@ -94,8 +94,7 @@ type propVal struct {
 
 func Props(resolver graph.SchemaResolver) gopter.Gen {
 	return slice(0, 10,
-		gen.Int64Range(int64(resolver.MinPropertyID()), int64(resolver.MaxPropertyID())).
-			SuchThat(func(x int64) bool { return x != 0 }).
+		gen.Int64Range(1, int64(resolver.MaxPropertyID())).
 			FlatMap(func(x interface{}) gopter.Gen {
 				p := resolver.GetPropertyByID(graph.PropertyID(x.(int64)))
 				if p == nil {

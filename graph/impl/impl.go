@@ -6,7 +6,7 @@ import (
 	"sort"
 )
 
-type graphImpl struct {
+type GraphImpl struct {
 	rootNode  graph.Node
 	nodeNames []types.HasURI
 	nodes     map[string]graph.Node
@@ -14,22 +14,22 @@ type graphImpl struct {
 
 // NewGraph creates a new Graph with no nodes
 func NewGraph() graph.Graph {
-	return &graphImpl{nodeNames: []types.HasURI{}, nodes: make(map[string]graph.Node)}
+	return &GraphImpl{nodeNames: []types.HasURI{}, nodes: make(map[string]graph.Node)}
 }
 
 // NewNode creates a new Node with the provided ID
 func NewNode(id types.HasURI) graph.Node {
-	return &node{id: id, propertyNames: []graph.Property{}, properties: make(map[string]interface{})}
+	return &NodeImpl{id: id, propertyNames: []graph.Property{}, properties: make(map[string]interface{})}
 }
 
-type node struct {
+type NodeImpl struct {
 	id types.HasURI
 	// TODO classes    []string
 	propertyNames []graph.Property
 	properties    map[string]interface{}
 }
 
-func (n *node) Classes() []graph.Class {
+func (n *NodeImpl) Classes() []graph.Class {
 	panic("classes aren't supported yet")
 }
 
@@ -47,7 +47,7 @@ func (s sortNodeNames) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 
-func (g *graphImpl) WithNode(node graph.Node) {
+func (g *GraphImpl) WithNode(node graph.Node) {
 	if node.ID() == nil {
 		g.rootNode = node
 	} else {
@@ -61,7 +61,7 @@ func (g *graphImpl) WithNode(node graph.Node) {
 	}
 }
 
-func (g *graphImpl) WithoutNode(id types.HasURI) {
+func (g *GraphImpl) WithoutNode(id types.HasURI) {
 	if id == nil {
 		g.rootNode = nil
 	} else {
@@ -81,7 +81,7 @@ func (g *graphImpl) WithoutNode(id types.HasURI) {
 	}
 }
 
-func (n *node) SetID(id types.HasURI) {
+func (n *NodeImpl) SetID(id types.HasURI) {
 	n.id = id
 }
 
@@ -99,7 +99,7 @@ func (s sortProperties) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 
-func (n *node) SetProperty(property graph.Property, value interface{}) {
+func (n *NodeImpl) SetProperty(property graph.Property, value interface{}) {
 	// TODO validate value
 	key := property.URI().String()
 	_, found := n.properties[key]
@@ -110,11 +110,11 @@ func (n *node) SetProperty(property graph.Property, value interface{}) {
 	n.properties[key] = value
 }
 
-func (n *node) DeleteProperty(property graph.Property) {
+func (n *NodeImpl) DeleteProperty(property graph.Property) {
 	panic("implement me")
 }
 
-func (n *node) String() string {
+func (n *NodeImpl) String() string {
 	s, err := graph.CanonicalNodeString(n)
 	if err != nil {
 		panic(err)
@@ -122,31 +122,31 @@ func (n *node) String() string {
 	return s
 }
 
-func (g *graphImpl) RootNode() graph.Node {
+func (g *GraphImpl) RootNode() graph.Node {
 	return g.rootNode
 }
 
-func (g *graphImpl) Nodes() []types.HasURI {
+func (g *GraphImpl) Nodes() []types.HasURI {
 	return g.nodeNames
 }
 
-func (g *graphImpl) GetNode(url types.HasURI) graph.Node {
+func (g *GraphImpl) GetNode(url types.HasURI) graph.Node {
 	return g.nodes[url.String()]
 }
 
-func (n *node) ID() types.HasURI {
+func (n *NodeImpl) ID() types.HasURI {
 	return n.id
 }
 
-func (n *node) Properties() []graph.Property {
+func (n *NodeImpl) Properties() []graph.Property {
 	return n.propertyNames
 }
 
-func (n *node) GetProperty(property graph.Property) interface{} {
+func (n *NodeImpl) GetProperty(property graph.Property) interface{} {
 	return n.properties[property.URI().String()]
 }
 
-func (g *graphImpl) String() string {
+func (g *GraphImpl) String() string {
 	s, err := graph.CanonicalString(g)
 	if err != nil {
 		panic(err)

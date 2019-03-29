@@ -63,7 +63,7 @@ const (
 
 func (k Keeper) StoreGraph(ctx sdk.Context, hash []byte, data []byte) (types.DataAddress, sdk.Error) {
 	ctx.GasMeter().ConsumeGas(gasForHashAndLookup, "hash data")
-	g, err := binary.DeserializeGraph(binary.NewOnChainSchemaResolver(k.schemaKeeper, ctx), bytes2.NewBuffer(data))
+	g, err := binary.DeserializeGraph(schema.NewOnChainSchemaResolver(k.schemaKeeper, ctx), bytes2.NewBuffer(data))
 	if err != nil {
 		return nil, sdk.ErrUnknownRequest(fmt.Sprintf("error deserializing graph %s", err.Error()))
 	}
