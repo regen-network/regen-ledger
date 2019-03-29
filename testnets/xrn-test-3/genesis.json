@@ -26,10 +26,10 @@
       "name": "xrn-us-east-1"
     },
     {
-      "address": "EA568739F17B97A9E5A40C136DDE2DCBF5A5C41E",
+      "address": "4A37890284F73FBF56524D4D7AA1E9510D289847",
       "pub_key": {
         "type": "tendermint/PubKeyEd25519",
-        "value": "6w7rDxkf/XimOZPnVudv2yzNP8OqbUcVeVwrU1M7fQo="
+        "value": "/4wlLgYd7ylvu69Cu1aUgk6wG+CpmWZo89z/XnpLinc="
       },
       "power": "10",
       "name": "xrn-eu-central-1"
