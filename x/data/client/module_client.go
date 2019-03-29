@@ -13,6 +13,7 @@ type ModuleClient struct {
 	cdc      *amino.Codec
 }
 
+// NewModuleClient creates a data module client
 func NewModuleClient(storeKey string, cdc *amino.Codec) ModuleClient {
 	return ModuleClient{storeKey, cdc}
 }
@@ -28,10 +29,6 @@ func (mc ModuleClient) GetQueryCmd() *cobra.Command {
 		datacmd.GetCmdGetData(mc.storeKey, mc.cdc),
 	)...)
 
-	dataQueryCmd.AddCommand(client.GetCommands(
-		datacmd.GetCmdGetDataBlockHeight(mc.storeKey, mc.cdc),
-	)...)
-
 	return dataQueryCmd
 }
 
@@ -42,9 +39,9 @@ func (mc ModuleClient) GetTxCmd() *cobra.Command {
 		Short: "Data transactions subcommands",
 	}
 
-	dataTxCmd.AddCommand(client.PostCommands(
-		datacmd.GetCmdStoreData(mc.cdc),
-	)...)
+	//dataTxCmd.AddCommand(client.PostCommands(
+	//	datacmd.GetCmdStoreData(mc.cdc),
+	//)...)
 
 	return dataTxCmd
 }

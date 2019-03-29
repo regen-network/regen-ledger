@@ -87,7 +87,7 @@ func beAbleToRetrieveTheGroupDetailsWithThatAddress() error {
 	for i, mem := range group.Members {
 		memRetrieved := groupRetrieved.Members[i]
 		if !bytes.Equal(mem.Address, memRetrieved.Address) {
-			return fmt.Errorf("wrong member Address")
+			return fmt.Errorf("wrong member GeoAddress")
 		}
 		if !mem.Weight.Equal(memRetrieved.Weight) {
 			return fmt.Errorf("wrong member Weight")
