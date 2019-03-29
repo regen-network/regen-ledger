@@ -8,8 +8,7 @@ import (
 
 // query endpoints supported by the governance Querier
 const (
-	QueryData            = "get"
-	QueryDataBlockHeight = "block-height"
+	QueryData = "get"
 )
 
 func NewQuerier(keeper Keeper) sdk.Querier {
@@ -31,10 +30,13 @@ func fromHex(str string) []byte {
 	return bz
 }
 
-func queryData(ctx sdk.Context, path []string, req abci.RequestQuery, keeper Keeper) (res []byte, err sdk.Error) {
+func queryData(ctx sdk.Context, path []string, _ abci.RequestQuery, keeper Keeper) (res []byte, err sdk.Error) {
 	id := path[0]
 
-	value := keeper.GetData(ctx, fromHex(id))
+	value, err := keeper.GetData(ctx, fromHex(id))
+	if err != nil {
+		return nil, err
+	}
 
 	if len(value) == 0 {
 		return []byte{}, sdk.ErrUnknownRequest("could not resolve id")

@@ -28,13 +28,18 @@ func NewKeeper(dataStoreKey sdk.StoreKey, schemaKeeper schema.Keeper, cdc *codec
 	}
 }
 
-func (k Keeper) GetData(ctx sdk.Context, hash []byte) []byte {
+func (k Keeper) GetData(ctx sdk.Context, addr types.DataAddress) ([]byte, sdk.Error) {
 	store := ctx.KVStore(k.dataStoreKey)
-	bz := store.Get(hash)
-	if bz == nil {
-		return nil
+	bz := store.Get(addr)
+	if bz == nil || len(bz) < 1 {
+		return nil, sdk.ErrUnknownRequest("not found")
 	}
-	return bz
+	switch addr[0] {
+	case types.DataAddressPrefixOnChainGraph:
+		return bz, nil
+	default:
+		return nil, sdk.ErrUnknownRequest("bad address")
+	}
 }
 
 const (
@@ -53,12 +58,13 @@ func (k Keeper) StoreGraph(ctx sdk.Context, hash []byte, data []byte) (types.Dat
 		return nil, sdk.ErrUnknownRequest("incorrect graph hash")
 	}
 	store := ctx.KVStore(k.dataStoreKey)
-	existing := k.GetData(ctx, hash)
-	if existing != nil {
+	addr := types.GetDataAddressOnChainGraph(hash)
+	existing, err := k.GetData(ctx, addr)
+	if err == nil && existing != nil {
 		return nil, sdk.ErrUnknownRequest("already exists")
 	}
 	bytes := len(data)
 	ctx.GasMeter().ConsumeGas(gasPerByteStorage*uint64(bytes), "store data")
-	store.Set(hash, data)
-	return hash, nil
+	store.Set(addr, data)
+	return addr, nil
 }

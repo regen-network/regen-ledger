@@ -10,6 +10,7 @@ require (
 	github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973 // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect
 	github.com/btcsuite/btcd v0.0.0-20181130015935-7d2daa5bfef2 // indirect
+	github.com/btcsuite/btcutil v0.0.0-20180706230648-ab6388e0c60a
 	github.com/campoy/unique v0.0.0-20180121183637-88950e537e7e
 	github.com/cosmos/cosmos-sdk v0.32.0
 	//github.com/cosmos/cosmos-sdk v0.32.0

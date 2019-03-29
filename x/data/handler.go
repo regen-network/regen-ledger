@@ -1,7 +1,6 @@
 package data
 
 import (
-	"encoding/hex"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,14 +20,11 @@ func NewHandler(keeper Keeper) sdk.Handler {
 }
 
 func handleMsgStoreData(ctx sdk.Context, keeper Keeper, msg MsgStoreGraph) sdk.Result {
-	hash, err := keeper.StoreGraph(ctx, msg.Hash, msg.Data)
+	addr, err := keeper.StoreGraph(ctx, msg.Hash, msg.Data)
 	if err != nil {
 		return err.Result()
 	}
-	tags := sdk.EmptyTags()
-	tags.AppendTag("data.hash", hex.EncodeToString(hash))
-	return sdk.Result{
-		Data: hash,
-		Tags: tags,
-	}
+	res := sdk.Result{Data: addr}
+	res.Tags = res.Tags.AppendTag("data.address", addr.String())
+	return res
 }

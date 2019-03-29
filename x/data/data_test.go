@@ -11,6 +11,7 @@ import (
 	"github.com/regen-network/regen-ledger/graph"
 	"github.com/regen-network/regen-ledger/graph/binary"
 	"github.com/regen-network/regen-ledger/graph/gen"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/schema"
 	schematest "github.com/regen-network/regen-ledger/x/schema/test"
@@ -63,12 +64,19 @@ func (s *Suite) TestStoreDataGraph() {
 			}
 			hash := graph.Hash(g1)
 
-			// check if we have exisitng data (because the generator repeats values)
-			bz := s.Keeper.GetData(s.Ctx, hash)
+			// check if we have existing data (because the generator repeats values)
+			addr := types.GetDataAddressOnChainGraph(hash)
+			bz, err := s.Keeper.GetData(s.Ctx, addr)
 			if bz == nil {
 				res := s.Handler(s.Ctx, data.MsgStoreGraph{Hash: hash, Data: buf.Bytes(), Signer: s.AnAddr})
 				if res.Code != sdk.CodeOK {
 					return false, fmt.Errorf("%+v", res)
+				}
+
+				url := res.Tags[0].Value
+				addr2 := types.MustDecodeDataURL(string(url))
+				if !bytes.Equal(addr, addr2) {
+					return false, fmt.Errorf("unexpected DataAddress %+v, %+v", []byte(addr), []byte(addr2))
 				}
 
 				// verify can't store same graph again
@@ -77,7 +85,10 @@ func (s *Suite) TestStoreDataGraph() {
 					return false, fmt.Errorf("shouldn't be able to store the same graph twice")
 				}
 
-				bz = s.Keeper.GetData(s.Ctx, hash)
+				bz, err = s.Keeper.GetData(s.Ctx, addr)
+				if err != nil {
+					return false, err
+				}
 			}
 
 			g2, err := binary.DeserializeGraph(s.Resolver, bytes.NewBuffer(bz))
