@@ -1,34 +1,42 @@
-module gitlab.com/regen-network/regen-ledger
+module github.com/regen-network/regen-ledger
 
 require (
+	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/DATA-DOG/godog v0.7.10
+	github.com/VividCortex/gohistogram v1.0.0 // indirect
 	github.com/ZondaX/hid-go v0.4.0 // indirect
 	github.com/ZondaX/ledger-go v0.4.0 // indirect
 	github.com/bartekn/go-bip39 v0.0.0-20171116152956-a05967ea095d // indirect
 	github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973 // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect
 	github.com/btcsuite/btcd v0.0.0-20181130015935-7d2daa5bfef2 // indirect
+	github.com/btcsuite/btcutil v0.0.0-20180706230648-ab6388e0c60a
+	github.com/campoy/unique v0.0.0-20180121183637-88950e537e7e
 	github.com/cosmos/cosmos-sdk v0.32.0
 	//github.com/cosmos/cosmos-sdk v0.32.0
 	github.com/cosmos/go-bip39 v0.0.0-20180618194314-52158e4697b8 // indirect
 	github.com/ethereum/go-ethereum v1.8.22 // indirect
-	github.com/fsnotify/fsnotify v1.4.7 // indirect
+	github.com/fortytw2/leaktest v1.3.0 // indirect
 	github.com/go-kit/kit v0.6.0 // indirect
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/gogo/protobuf v1.1.1 // indirect
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
+	github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.6.2
 	github.com/gorilla/websocket v1.4.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jmhodges/levigo v0.0.0-20161115193449-c42d9e0ca023 // indirect
+	github.com/leanovate/gopter v0.0.0-20190000000000-6e7780f59df75750618bf30eeafcb1a88e457fcb
 	github.com/lib/pq v1.0.0
 	github.com/magiconair/properties v1.8.0 // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
+	github.com/onsi/ginkgo v1.8.0 // indirect
+	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.2.0 // indirect
 	github.com/pkg/errors v0.8.0 // indirect
 	github.com/prometheus/client_golang v0.9.1 // indirect
@@ -44,6 +52,7 @@ require (
 	github.com/spf13/jwalterweatherman v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.3 // indirect
 	github.com/spf13/viper v1.0.3
+	github.com/stretchr/testify v1.2.2
 	github.com/syndtr/goleveldb v0.0.0-20181128100959-b001fa50d6b2 // indirect
 	github.com/tendermint/btcd v0.0.0-20180816174608-e5840949ff4f // indirect
 	github.com/tendermint/go-amino v0.14.1
@@ -52,7 +61,6 @@ require (
 	github.com/twpayne/go-geom v1.0.4
 	github.com/zondax/ledger-cosmos-go v0.9.2 // indirect
 	golang.org/x/crypto v0.0.0-20170930174604-9419663f5a44
-	golang.org/x/lint v0.0.0-20181217174547-8f45f776aaf1 // indirect
 	golang.org/x/net v0.0.0-20190213061140-3a22650c66bd // indirect
 	golang.org/x/sys v0.0.0-20181128092732-4ed8d59d0b35 // indirect
 	golang.org/x/text v0.3.1-0.20180807135948-17ff2d5776d2 // indirect

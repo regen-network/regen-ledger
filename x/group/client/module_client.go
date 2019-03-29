@@ -2,9 +2,9 @@ package client
 
 import (
 	"github.com/cosmos/cosmos-sdk/client"
+	agentcmd "github.com/regen-network/regen-ledger/x/group/client/cli"
 	"github.com/spf13/cobra"
 	"github.com/tendermint/go-amino"
-	agentcmd "gitlab.com/regen-network/regen-ledger/x/group/client/cli"
 )
 
 // ModuleClient exports all client functionality from this module

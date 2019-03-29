@@ -2,9 +2,9 @@ package client
 
 import (
 	"github.com/cosmos/cosmos-sdk/client"
+	geocmd "github.com/regen-network/regen-ledger/x/geo/client/cli"
 	"github.com/spf13/cobra"
 	"github.com/tendermint/go-amino"
-	geocmd "gitlab.com/regen-network/regen-ledger/x/geo/client/cli"
 )
 
 // ModuleClient exports all client functionality from this module

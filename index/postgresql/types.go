@@ -3,7 +3,7 @@
 // keepers for custom indexing
 package postgresql
 
-import "gitlab.com/regen-network/regen-ledger/index"
+import "github.com/regen-network/regen-ledger/index"
 
 // Indexer is a PostgreSQL based Indexer
 type Indexer interface {
@@ -12,7 +12,7 @@ type Indexer interface {
 	// AddMigration adds a migration to the list of migrations to be run during
 	// InitChain or an upgrade. Migrations will be run in the order
 	// they are added
-	AddMigration(ddl string)
+	AddMigrations(module string, ddlStatements []string)
 
 	// Exec executes a PostgreSQL statement against the database.
 	// Can be used in keepers for custom indexing

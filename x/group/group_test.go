@@ -8,12 +8,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/util"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 	dbm "github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
-	"gitlab.com/regen-network/regen-ledger/util"
 	"testing"
 )
 
@@ -87,7 +87,7 @@ func beAbleToRetrieveTheGroupDetailsWithThatAddress() error {
 	for i, mem := range group.Members {
 		memRetrieved := groupRetrieved.Members[i]
 		if !bytes.Equal(mem.Address, memRetrieved.Address) {
-			return fmt.Errorf("wrong member Address")
+			return fmt.Errorf("wrong member GeoAddress")
 		}
 		if !mem.Weight.Equal(memRetrieved.Weight) {
 			return fmt.Errorf("wrong member Weight")

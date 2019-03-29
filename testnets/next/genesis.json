@@ -1,6 +1,6 @@
 {
   "genesis_time": "2018-12-19T20:40:06.463846Z",
-  "chain_id": "xrn-test-2",
+  "chain_id": "xrn-test-next",
   "consensus_params": {
     "block_size": {
       "max_bytes": "22020096",
@@ -60,7 +60,18 @@
         "sequence": "0"
       }
     ],
-    "groups": [],
+    "groups": [
+      {
+        "decision_threshold": "1",
+        "members": [
+          {
+            "address": "xrn:1xrsmkqh305m09tc5x73v4t3wtcuqmf6cgy2taw",
+            "weight": "1"
+          }
+        ],
+        "memo": "Regen Consortium"
+      }
+    ],
     "auth": {
       "collected_fees": null,
       "params": {

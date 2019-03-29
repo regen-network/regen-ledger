@@ -2,16 +2,23 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/x/params"
+	"github.com/regen-network/regen-ledger/index/postgresql"
+	"github.com/regen-network/regen-ledger/x/consortium"
+	"github.com/regen-network/regen-ledger/x/data"
+	"github.com/regen-network/regen-ledger/x/esp"
+	"github.com/regen-network/regen-ledger/x/geo"
+	"github.com/regen-network/regen-ledger/x/group"
+	"github.com/regen-network/regen-ledger/x/proposal"
+	"github.com/regen-network/regen-ledger/x/schema"
+	"github.com/regen-network/regen-ledger/x/upgrade"
+	"github.com/spf13/viper"
+	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
-	"gitlab.com/regen-network/regen-ledger/index/postgresql"
-	"gitlab.com/regen-network/regen-ledger/x/consortium"
-	"gitlab.com/regen-network/regen-ledger/x/data"
-	"gitlab.com/regen-network/regen-ledger/x/esp"
-	"gitlab.com/regen-network/regen-ledger/x/geo"
-	"gitlab.com/regen-network/regen-ledger/x/group"
-	"gitlab.com/regen-network/regen-ledger/x/proposal"
-	"gitlab.com/regen-network/regen-ledger/x/upgrade"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	//"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -28,19 +35,6 @@ import (
 
 const (
 	appName = "xrn"
-
-	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
-	Bech32PrefixAccAddr = "xrn:"
-	// Bech32PrefixAccPub defines the Bech32 prefix of an account's public key
-	Bech32PrefixAccPub = "xrn:pub"
-	// Bech32PrefixValAddr defines the Bech32 prefix of a validator's operator address
-	Bech32PrefixValAddr = "xrn:valoper"
-	// Bech32PrefixValPub defines the Bech32 prefix of a validator's operator public key
-	Bech32PrefixValPub = "xrn:valoperpub"
-	// Bech32PrefixConsAddr defines the Bech32 prefix of a consensus node address
-	Bech32PrefixConsAddr = "xrn:valcons"
-	// Bech32PrefixConsPub defines the Bech32 prefix of a consensus node public key
-	Bech32PrefixConsPub = "xrn:valconspub"
 )
 
 type xrnApp struct {
@@ -52,6 +46,7 @@ type xrnApp struct {
 	keyFeeCollection *sdk.KVStoreKey
 	//schemaStoreKey  *sdk.KVStoreKey
 	dataStoreKey       *sdk.KVStoreKey
+	schemaStoreKey     *sdk.KVStoreKey
 	espStoreKey        *sdk.KVStoreKey
 	geoStoreKey        *sdk.KVStoreKey
 	agentStoreKey      *sdk.KVStoreKey
@@ -65,6 +60,7 @@ type xrnApp struct {
 	bankKeeper          bank.Keeper
 	feeCollectionKeeper auth.FeeCollectionKeeper
 	dataKeeper          data.Keeper
+	schemaKeeper        schema.Keeper
 	espKeeper           esp.Keeper
 	geoKeeper           geo.Keeper
 	agentKeeper         group.Keeper
@@ -77,11 +73,7 @@ type xrnApp struct {
 }
 
 func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
-
 	config := sdk.GetConfig()
-	config.SetBech32PrefixForAccount(Bech32PrefixAccAddr, Bech32PrefixAccPub)
-	config.SetBech32PrefixForValidator(Bech32PrefixValAddr, Bech32PrefixValPub)
-	config.SetBech32PrefixForConsensusNode(Bech32PrefixConsAddr, Bech32PrefixConsPub)
 	config.Seal()
 
 	// First define the top level codec that will be shared by the different modules
@@ -104,6 +96,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 		keyFeeCollection: sdk.NewKVStoreKey("fee_collection"),
 		//schemaStoreKey: sdk.NewKVStoreKey("schema"),
 		dataStoreKey:       sdk.NewKVStoreKey("data"),
+		schemaStoreKey:     sdk.NewKVStoreKey("schema"),
 		espStoreKey:        sdk.NewKVStoreKey("esp"),
 		geoStoreKey:        sdk.NewKVStoreKey("geo"),
 		agentStoreKey:      sdk.NewKVStoreKey("group"),
@@ -117,7 +110,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 	if len(postgresUrl) != 0 {
 		pgIndexer, err := postgresql.NewIndexer(postgresUrl, txDecoder)
 		if err == nil {
-			pgIndexer.AddMigration(geo.PostgresSchema)
+			pgIndexer.AddMigrations("geo", geo.PostgresMigrations)
 			app.pgIndexer = pgIndexer
 			logger.Info("Started PostgreSQL Indexer")
 		} else {
@@ -144,7 +137,9 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 	// The FeeCollectionKeeper collects transaction fees and renders them to the fee distribution module
 	app.feeCollectionKeeper = auth.NewFeeCollectionKeeper(cdc, app.keyFeeCollection)
 
-	app.dataKeeper = data.NewKeeper(app.dataStoreKey, cdc)
+	app.schemaKeeper = schema.NewKeeper(app.schemaStoreKey, cdc)
+
+	app.dataKeeper = data.NewKeeper(app.dataStoreKey, app.schemaKeeper, cdc)
 
 	app.agentKeeper = group.NewKeeper(app.agentStoreKey, cdc)
 
@@ -152,7 +147,8 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 
 	app.espKeeper = esp.NewKeeper(app.espStoreKey, app.agentKeeper, app.geoKeeper, cdc)
 
-	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc, 1000)
+	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc)
+	app.upgradeKeeper.SetDoShutdowner(app.shutdownOnUpgrade)
 
 	app.consortiumKeeper = consortium.NewKeeper(app.consortiumStoreKey, cdc, app.agentKeeper, app.upgradeKeeper)
 
@@ -172,7 +168,8 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 		AddRoute("data", data.NewHandler(app.dataKeeper)).
 		AddRoute("geo", geo.NewHandler(app.geoKeeper)).
 		AddRoute("group", group.NewHandler(app.agentKeeper)).
-		AddRoute("proposal", proposal.NewHandler(app.proposalKeeper))
+		AddRoute("proposal", proposal.NewHandler(app.proposalKeeper)).
+		AddRoute("schema", schema.NewHandler(app.schemaKeeper))
 
 	// The app.QueryRouter is the main query router where each module registers its routes
 	app.QueryRouter().
@@ -189,6 +186,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 		app.keyMain,
 		app.keyAccount,
 		app.keyFeeCollection,
+		app.schemaStoreKey,
 		app.dataStoreKey,
 		app.espStoreKey,
 		app.geoStoreKey,
@@ -230,8 +228,8 @@ func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.
 		app.accountKeeper.SetAccount(ctx, acc)
 	}
 
-	for _, group := range genesisState.Groups {
-		app.agentKeeper.CreateGroup(ctx, group)
+	for _, g := range genesisState.Groups {
+		app.agentKeeper.CreateGroup(ctx, g)
 	}
 
 	app.consortiumKeeper.SetValidators(ctx, req.Validators)
@@ -240,6 +238,15 @@ func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.
 	bank.InitGenesis(ctx, app.bankKeeper, genesisState.BankData)
 
 	return abci.ResponseInitChain{}
+}
+
+func (app *xrnApp) shutdownOnUpgrade(ctx sdk.Context, plan upgrade.Plan) {
+	if len(plan.Info) != 0 {
+		home := viper.GetString(cli.HomeFlag)
+		_ = ioutil.WriteFile(filepath.Join(home, "data", "upgrade-info"), []byte(plan.Info), 0644)
+	}
+	ctx.Logger().Error(fmt.Sprintf("UPGRADE \"%s\" NEEDED needed at height %d: %s", plan.Name, ctx.BlockHeight(), plan.Info))
+	os.Exit(1)
 }
 
 func (app *xrnApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
@@ -331,6 +338,7 @@ func MakeCodec() *codec.Codec {
 	group.RegisterCodec(cdc)
 	proposal.RegisterCodec(cdc)
 	consortium.RegisterCodec(cdc)
+	upgrade.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
 	return cdc

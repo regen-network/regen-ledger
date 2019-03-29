@@ -12,7 +12,7 @@ type MsgStoreGeo struct {
 type FeatureType int
 
 const (
-	Point FeatureType = 0
+	Point FeatureType = iota
 	LineString
 	Polygon
 	MultiPoint
@@ -25,6 +25,10 @@ type Geometry struct {
 	// EWKB representation of the geo feature. Must be in the WGS84 coordinate
 	// system and represent a Point, LineString, Polygon, MultiPoint, MultiLineString or MultiPolygon
 	EWKB []byte `json:"ewkb,omitempty"`
+}
+
+var PostgresMigrations = []string{
+	PostgresSchema,
 }
 
 const PostgresSchema = `

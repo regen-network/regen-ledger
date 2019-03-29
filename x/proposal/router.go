@@ -41,7 +41,7 @@ func (rtr *Router) CheckProposal(ctx sdk.Context, action ProposalAction) (bool, 
 			}
 		}
 	}
-	return false, sdk.Result{Code: sdk.CodeUnknownRequest}
+	return false, sdk.ErrUnknownRequest("can't handle proposal").Result()
 }
 
 func (rtr *Router) HandleProposal(ctx sdk.Context, action ProposalAction, voters []sdk.AccAddress) sdk.Result {

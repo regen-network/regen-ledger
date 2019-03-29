@@ -7,11 +7,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtxb "github.com/cosmos/cosmos-sdk/x/auth/client/txbuilder"
+	"github.com/regen-network/regen-ledger/x/geo"
 	"github.com/spf13/cobra"
 	"github.com/twpayne/go-geom"
 	"github.com/twpayne/go-geom/encoding/ewkb"
 	"github.com/twpayne/go-geom/encoding/geojson"
-	"gitlab.com/regen-network/regen-ledger/x/geo"
 )
 
 func GetCmdStoreGeometry(cdc *codec.Codec) *cobra.Command {

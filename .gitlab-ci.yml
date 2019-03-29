@@ -15,10 +15,9 @@ test:
   image: golang:1.11.5
   script:
     - GOFLAGS=-cover make test
-  coverage: '/\d+.\d+% of statements/'
-  artifacts:
-    reports:
-      junit: "TEST_*.xml"
+  after_script:
+    - make test_cover
+    - bash <(curl -s https://codecov.io/bash) -f coverage.txt -t $CODECOV_TOKEN
 
 #integration_test:
 #  image: golang:1.11.5

@@ -1,7 +1,6 @@
 package data
 
 import (
-	"encoding/hex"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,7 +10,7 @@ import (
 func NewHandler(keeper Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) sdk.Result {
 		switch msg := msg.(type) {
-		case MsgStoreData:
+		case MsgStoreGraph:
 			return handleMsgStoreData(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("Unrecognized data Msg type: %v", msg.Type())
@@ -20,12 +19,12 @@ func NewHandler(keeper Keeper) sdk.Handler {
 	}
 }
 
-func handleMsgStoreData(ctx sdk.Context, keeper Keeper, msg MsgStoreData) sdk.Result {
-	hash := keeper.StoreData(ctx, msg.Data)
-	tags := sdk.EmptyTags()
-	tags.AppendTag("data.hash", hex.EncodeToString(hash))
-	return sdk.Result{
-		Data: hash,
-		Tags: tags,
+func handleMsgStoreData(ctx sdk.Context, keeper Keeper, msg MsgStoreGraph) sdk.Result {
+	addr, err := keeper.StoreGraph(ctx, msg.Hash, msg.Data)
+	if err != nil {
+		return err.Result()
 	}
+	res := sdk.Result{Data: addr}
+	res.Tags = res.Tags.AppendTag("data.address", addr.String())
+	return res
 }
