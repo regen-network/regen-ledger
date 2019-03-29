@@ -10,6 +10,7 @@ import (
 	"math"
 )
 
+// SerializeGraph serializes a Graph in binary format
 func SerializeGraph(schema SchemaResolver, g graph.Graph, w io.Writer) error {
 	ctx := &szContext{schema, bufio.NewWriter(w)}
 	err := ctx.serializeGraph(g)

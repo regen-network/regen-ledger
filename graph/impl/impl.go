@@ -14,16 +14,20 @@ type graphImpl struct {
 	nodes     map[string]graph.Node
 }
 
+// NewGraph creates a new Graph with no nodes
 func NewGraph() graph.Graph {
 	return &graphImpl{nodeNames: []types.HasURI{}, nodes: make(map[string]graph.Node)}
 }
 
+// NewNode creates a new Node with the provided ID
 func NewNode(id types.HasURI) graph.Node {
 	return &node{id: id, propertyNames: []graph.Property{}, properties: make(map[string]interface{})}
 }
 
+// NewProperty wraps a PropertyDefinition as a Property
+// TODO move this to the schema module
 func NewProperty(propertyDefinition schema.PropertyDefinition, id schema.PropertyID, uri *url.URL) graph.Property {
-	return &property{PropertyDefinition: propertyDefinition, id: id, uri: uri}
+	return &property{PropertyDefinition: propertyDefinition, uri: uri}
 }
 
 type node struct {
@@ -128,12 +132,7 @@ func (n *node) String() string {
 
 type property struct {
 	schema.PropertyDefinition
-	id  schema.PropertyID
 	uri *url.URL
-}
-
-func (p *property) ID() schema.PropertyID {
-	return p.id
 }
 
 func (p *property) URI() *url.URL {

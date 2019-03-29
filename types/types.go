@@ -8,6 +8,7 @@ import (
 
 type HasURI interface {
 	fmt.Stringer
+	// URI returns the URI representation of the underlying type
 	URI() *url.URL
 }
 

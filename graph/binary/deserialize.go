@@ -12,6 +12,7 @@ import (
 )
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
+// DeserializeGraph deserializes a Graph from a binary reader
 func DeserializeGraph(resolver SchemaResolver, r io.ByteScanner) (g graph.Graph, err error) {
 	ctx := &dszContext{resolver, r, 0}
 	g, err = ctx.readGraph()

@@ -1,3 +1,5 @@
+/*Package graph defines a graph data representation for use in on and off ledger claims.
+ */
 package graph
 
 import (
@@ -25,14 +27,19 @@ const (
 	TyBool
 )
 
+// Arity defines the valid arity of property values
 type Arity int
 
 const (
+	// One defines an arity in which a property can occur zero or once on a given node
 	One Arity = iota
+	// UnorderedSet defines an arity in which a property can occur as an unordered set on a node
 	UnorderedSet
+	// OrderedSet defines an arity in which a property can occur as an ordered set or list on a node
 	OrderedSet
 )
 
+// Property defines the schema for a property that can occur on a node
 type Property interface {
 	URI() *url.URL
 	Arity() Arity
@@ -40,6 +47,7 @@ type Property interface {
 	fmt.Stringer
 }
 
+// Graph is a data structure that contains Nodes and can optionally have an unlabeled "root node"
 type Graph interface {
 	Nodes() []types.HasURI
 	RootNode() Node
@@ -51,6 +59,7 @@ type Graph interface {
 	fmt.Stringer
 }
 
+// Node defines a data structure that can have properties and is labelled with an ID
 type Node interface {
 	ID() types.HasURI
 	Properties() []Property
@@ -64,6 +73,7 @@ type Node interface {
 	fmt.Stringer
 }
 
+// Class defines a schema that applies to a Node as a whole
 type Class interface {
 	// RequiredProperties returns a slice of properties with arity one that are required
 	RequiredProperties() []Property
@@ -96,6 +106,7 @@ func (a Arity) String() string {
 	return names[a]
 }
 
+// CanonicalString returns the canonical string representation of a Graph
 func CanonicalString(g Graph) (string, error) {
 	w := new(bytes.Buffer)
 	r := g.RootNode()
@@ -118,6 +129,7 @@ func CanonicalString(g Graph) (string, error) {
 	return w.String(), nil
 }
 
+// CanonicalNodeString returns the canonical string representation of a Node
 func CanonicalNodeString(n Node) (string, error) {
 	w := new(bytes.Buffer)
 	if n.ID() == nil {
@@ -145,6 +157,7 @@ func CanonicalNodeString(n Node) (string, error) {
 	return w.String(), nil
 }
 
+// Hash returns the canonical hash of a Graph. This algorithm uses a Blake2b 256-bit hash of the CanonicalString
 func Hash(g Graph) []byte {
 	h, err := blake2b.New256(nil)
 	if err != nil {
@@ -154,6 +167,7 @@ func Hash(g Graph) []byte {
 	return h.Sum(nil)
 }
 
+// ValidatePrintValue validates a value against a Property and prints its canonical representation of a validation error
 func ValidatePrintValue(prop Property, value interface{}) (string, error) {
 	switch value := value.(type) {
 	case string:

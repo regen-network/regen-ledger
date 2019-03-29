@@ -1,5 +1,4 @@
 /*
-Package xrb defines an efficient RDF binary serialization format
-XRB (XRN RDF Binary) that integrates with the Regen Ledger schema module
+Package binary defines an efficient binary serialization format of the Regen Ledger graph data structures.
 */
 package binary

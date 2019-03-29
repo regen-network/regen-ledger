@@ -20,6 +20,7 @@ const (
 	prefixPropertyID byte = 0
 )
 
+// SchemaResolver resolves properties against a schema
 type SchemaResolver interface {
 	GetPropertyByURL(url string) graph.Property
 	GetPropertyByID(id schema.PropertyID) graph.Property
