@@ -12,8 +12,8 @@ type MsgStoreGraph struct {
 	Signer sdk.AccAddress `json:"signer"`
 }
 
-func NewMsgStoreGraph(hash []byte, data []byte, signer sdk.AccAddress) *MsgStoreGraph {
-	return &MsgStoreGraph{Hash: hash, Data: data, Signer: signer}
+func NewMsgStoreGraph(hash []byte, data []byte, signer sdk.AccAddress) MsgStoreGraph {
+	return MsgStoreGraph{Hash: hash, Data: data, Signer: signer}
 }
 
 func (msg MsgStoreGraph) Route() string { return "data" }

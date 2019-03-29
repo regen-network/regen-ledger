@@ -3,8 +3,6 @@ package impl
 import (
 	"github.com/regen-network/regen-ledger/graph"
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/x/schema"
-	"net/url"
 	"sort"
 )
 
@@ -22,12 +20,6 @@ func NewGraph() graph.Graph {
 // NewNode creates a new Node with the provided ID
 func NewNode(id types.HasURI) graph.Node {
 	return &node{id: id, propertyNames: []graph.Property{}, properties: make(map[string]interface{})}
-}
-
-// NewProperty wraps a PropertyDefinition as a Property
-// TODO move this to the schema module
-func NewProperty(propertyDefinition schema.PropertyDefinition, id schema.PropertyID, uri *url.URL) graph.Property {
-	return &property{PropertyDefinition: propertyDefinition, uri: uri}
 }
 
 type node struct {
@@ -128,23 +120,6 @@ func (n *node) String() string {
 		panic(err)
 	}
 	return s
-}
-
-type property struct {
-	schema.PropertyDefinition
-	uri *url.URL
-}
-
-func (p *property) URI() *url.URL {
-	return p.uri
-}
-
-func (p *property) Arity() graph.Arity {
-	return p.PropertyDefinition.Arity
-}
-
-func (p *property) Type() graph.PropertyType {
-	return p.PropertyDefinition.PropertyType
 }
 
 func (g *graphImpl) RootNode() graph.Node {
