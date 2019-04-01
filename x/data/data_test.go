@@ -3,8 +3,6 @@ package data_test
 import (
 	"bytes"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/leanovate/gopter"
 	"github.com/leanovate/gopter/prop"
@@ -13,43 +11,26 @@ import (
 	"github.com/regen-network/regen-ledger/graph/gen"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
-	"github.com/regen-network/regen-ledger/x/schema"
 	schematest "github.com/regen-network/regen-ledger/x/schema/test"
 	"github.com/stretchr/testify/suite"
-	abci "github.com/tendermint/tendermint/abci/types"
-	dbm "github.com/tendermint/tendermint/libs/db"
-	"github.com/tendermint/tendermint/libs/log"
 	"testing"
 )
 
 type Suite struct {
-	suite.Suite
-	SchemaKeeper schema.Keeper
-	Keeper       data.Keeper
-	Handler      sdk.Handler
-	Ctx          sdk.Context
-	Cms          store.CommitMultiStore
-	AnAddr       sdk.AccAddress
-	Resolver     graph.SchemaResolver
+	schematest.Harness
+	Keeper  data.Keeper
+	Handler sdk.Handler
 }
 
 func (s *Suite) SetupTest() {
-	db := dbm.NewMemDB()
-	s.Cms = store.NewCommitMultiStore(db)
-	schemaKey := sdk.NewKVStoreKey("schema")
+	s.Setup()
 	dataKey := sdk.NewKVStoreKey("data")
-	cdc := codec.New()
-	schema.RegisterCodec(cdc)
-	s.SchemaKeeper = schema.NewKeeper(schemaKey, cdc)
-	s.Keeper = data.NewKeeper(dataKey, s.SchemaKeeper, cdc)
-	s.Cms.MountStoreWithDB(schemaKey, sdk.StoreTypeIAVL, db)
-	s.Cms.MountStoreWithDB(dataKey, sdk.StoreTypeIAVL, db)
-	_ = s.Cms.LoadLatestVersion()
-	s.Ctx = sdk.NewContext(s.Cms, abci.Header{}, false, log.NewNopLogger())
-	s.AnAddr = sdk.AccAddress{0, 1, 2, 3, 4, 5, 6, 7, 8}
+	data.RegisterCodec(s.Cdc)
+	s.Keeper = data.NewKeeper(dataKey, s.Harness.Keeper, s.Cdc)
 	s.Handler = data.NewHandler(s.Keeper)
-	s.Resolver = schema.NewOnChainSchemaResolver(s.SchemaKeeper, s.Ctx)
-	schematest.CreateSampleSchema(s.Suite, s.SchemaKeeper, s.Ctx, s.AnAddr)
+	s.Cms.MountStoreWithDB(dataKey, sdk.StoreTypeIAVL, s.Db)
+	_ = s.Cms.LoadLatestVersion()
+	s.CreateSampleSchema()
 }
 
 func (s *Suite) TestStoreDataGraph() {
@@ -68,7 +49,7 @@ func (s *Suite) TestStoreDataGraph() {
 			addr := types.GetDataAddressOnChainGraph(hash)
 			bz, err := s.Keeper.GetData(s.Ctx, addr)
 			if bz == nil {
-				res := s.Handler(s.Ctx, data.MsgStoreGraph{Hash: hash, Data: buf.Bytes(), Signer: s.AnAddr})
+				res := s.Handler(s.Ctx, data.MsgStoreGraph{Hash: hash, Data: buf.Bytes(), Signer: s.Addr1})
 				if res.Code != sdk.CodeOK {
 					return false, fmt.Errorf("%+v", res)
 				}
@@ -80,7 +61,7 @@ func (s *Suite) TestStoreDataGraph() {
 				}
 
 				// verify can't store same graph again
-				res = s.Handler(s.Ctx, data.MsgStoreGraph{Hash: hash, Data: buf.Bytes(), Signer: s.AnAddr})
+				res = s.Handler(s.Ctx, data.MsgStoreGraph{Hash: hash, Data: buf.Bytes(), Signer: s.Addr1})
 				if res.Code == sdk.CodeOK {
 					return false, fmt.Errorf("shouldn't be able to store the same graph twice")
 				}

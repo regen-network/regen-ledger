@@ -1,4 +1,4 @@
-package data
+package claim
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -6,5 +6,5 @@ import (
 
 // RegisterCodec registers concrete types on the Amino codec
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgStoreGraph{}, "data/MsgStoreGraph", nil)
+	cdc.RegisterConcrete(MsgSignClaim{}, "claim/MsgSignClaim", nil)
 }
