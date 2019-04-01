@@ -1,4 +1,9 @@
 # Regen Ledger Cosmos Zone
+![banner](docs/regen-network-image.jpg)
+
+[![pipeline status](https://gitlab.com/regen-network/regen-ledger/badges/master/pipeline.svg)](https://gitlab.com/regen-network/regen-ledger/commits/master)
+[![codecov](https://codecov.io/gh/regen-network/regen-ledger/branch/master/graph/badge.svg)](https://codecov.io/gh/cregen-network/regen-ledger)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 A distributed ledger for ecological data built on top of the
 [cosmos-sdk](http://github.com/cosmos/cosmos-sdk).
