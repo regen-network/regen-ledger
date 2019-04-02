@@ -6,6 +6,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Go Report Card](https://goreportcard.com/badge/github.com/regen-network/regen-ledger)](https://goreportcard.com/report/github.com/regen-network/regen-ledger)
 <a href="https://zenhub.com"><img src="https://raw.githubusercontent.com/ZenHubIO/support/master/zenhub-badge.png"></a>
+[![GoDoc](https://godoc.org/github.com/regen-network/regen-ledger?status.svg)](http://godoc.org/github.com/regen-network/regen-ledger)
 
 A distributed ledger for ecological data built on top of the
 [cosmos-sdk](http://github.com/cosmos/cosmos-sdk).
