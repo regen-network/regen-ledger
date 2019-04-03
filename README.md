@@ -20,10 +20,10 @@ See [Getting Started](docs/getting_started.md).
 
 Regen Ledger aims to provides the following core features:
 * a database of ecological state and change of state claims that spans both
-on an off-chain data sources
-* mechanisms for automating the assessment of ecological claims, payments
-and the issuance of tokens and credits via compute functions and contracts
-* infrastructure for issuing ecologically-backed asset tokens and credits
+on an off-chain data sources ([Ecological State Database](#ecological-state-database))
+* mechanisms for automating the assessment of ecological state, making payments,
+and the issuance of tokens and credits ([Cimpute Functions and Ecological Contracts](#compute-functions-and-ecological-contracts))
+* infrastructure for issuing ecologically-backed asset tokens and credits ([Tokens and Credits](#tokens-and-credits))
 
 This project is under heavy development and as result the above features are
 implemented to varying degrees of completeness.
