@@ -16,9 +16,9 @@ A distributed ledger for ecology built on top of the
 
 See [Getting Started](docs/getting_started.md).
 
-## Overview
+## Core Features
 
-Regen Ledger aims to provide:
+Regen Ledger aims to provides the following core features:
 * a database of ecological state and change of state claims that spans both
 on an off-chain data sources
 * mechanisms for automating the assessment of ecological claims, payments
