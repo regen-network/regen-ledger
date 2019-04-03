@@ -32,11 +32,14 @@ implemented to varying degrees of completeness.
 
 One of the core functionalities of Regen Ledger is providing a structured
 database of claims regarding ecological state and change of state. A claim is
-made up of a few very basic pieces of information - the geo-polygon of the area
-of the Earth being referred to, what is being claimed about this geographical
-region, who is making the claim, and any supporting evidence they would like
-to associate with their claim. The actual data for claims can be stored on or
-off the Regen Ledger blockchain. If the claim data is stored on the blockchain,
+made up of a few very basic pieces of information:
+- the geo-polygon of the region of the Earth being referred to,
+- what is being claimed about this geographical region,
+- who is making the claim, and
+- any supporting evidence the claimant would like to associate with their claim
+ 
+The actual data for claims can be stored on or off the Regen Ledger blockchain. 
+If the claim data is stored on the blockchain,
 it is publicly available to the whole world. The data for a claim can also be
 stored elsewhere in order to keep the data private but "tracked" on-chain by
 providing a cryptographic hash and URL, as well as possibly some metadata about
