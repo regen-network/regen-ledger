@@ -33,23 +33,23 @@ implemented to varying degrees of completeness.
 One of the core functionalities of Regen Ledger is providing a structured
 database of claims regarding ecological state and change of state. A claim is
 made up of a few very basic pieces of information:
-- the geo-polygon of the region of the Earth being referred to,
+- the geo-polygon of the portion of the Earth being referred to,
 - what is being claimed about this geographical region,
 - who is making the claim, and
 - any supporting evidence the claimant would like to associate with their claim
  
 The actual data for claims can be stored on or off the Regen Ledger blockchain. 
-If the claim data is stored on the blockchain,
-it is publicly available to the whole world. The data for a claim can also be
-stored elsewhere in order to keep the data private but "tracked" on-chain by
+In order to make claim data publicly available to the whole world, it can
+be stored directly on the blockchain. In order to keep some or all of the
+data private, it can be stored off-chain but "tracked" on-chain by
 providing a cryptographic hash and URL, as well as possibly some metadata about
 the claim. 
 
-The facilities for storing data on-chain and tracking data off chain
+The facilities for storing data on-chain and tracking data off-chain
 are managed by Regen Leder's [data](https://godoc.org/github.com/regen-network/regen-ledger/x/data)
 and [geo](https://godoc.org/github.com/regen-network/regen-ledger/x/geo) modules.
 In order to make it easy to write software that can automatically reason about
-claim data, the schemas for all such data must be registered using Regen
+claim data, the schemas for all such data must be registered with Regen
 Ledger's [schema](https://godoc.org/github.com/regen-network/regen-ledger/x/schema)
 module and all submitted data must conform to these schemas. The actually
 signing of claims is managed by the [claim](https://godoc.org/github.com/regen-network/regen-ledger/x/claim)
