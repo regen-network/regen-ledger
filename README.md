@@ -64,8 +64,8 @@ functions and contracts.
 ### Compute Functions and Ecological Contracts
 
 Regen Ledger aims to provide a framework for executing compute functions that
-take Regen Ledger's ecological state database as well as other "well-known"
-public data sources satellite imagery from NASA and ESA as input. This framework
+take as input Regen Ledger's ecological state database as well as other "well-known"
+public data sources, such as satellite imagery from NASA and ESA. This framework
 will define:
 - how compute functions can uniformly access private, off-chain data
 given appropriate permissions
@@ -79,14 +79,15 @@ This functionality will be managed by the oracle module and described in more de
 
 Ecological contracts in Regen Ledger are modelled as state machines that effectively "observe"
 the ecological state database for certain conditions and which execute certain
-actions when those conditions are encountered. For instance, a contract could
+actions when those conditions are met. For instance, a contract could
 be written to make a payment to a farmer at the end of the year if the ecological
 state database included claims from a reputable source that the farmer had
 used certain practices like cover cropping. Or a contract could be setup as
 effectively a "land trust" for a forest that accumulates credits while it
-remains forested, but has them slashed whenever a deforestation event is tracked
-in the ecological state database. This functionality will be managed by the
-contract module.
+remains forested but has them slashed whenever a deforestation event is tracked
+in the ecological state database.
+
+The functionality for ecological contracts will be managed by the contract module.
 
 ### Tokens and Credits
 
