@@ -8,6 +8,8 @@
 [![GoDoc](https://godoc.org/github.com/regen-network/regen-ledger?status.svg)](http://godoc.org/github.com/regen-network/regen-ledger)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Go Report Card](https://goreportcard.com/badge/github.com/regen-network/regen-ledger)](https://goreportcard.com/report/github.com/regen-network/regen-ledger)
+[![Gitter chat](https://badges.gitter.im/regen-network/regen-ledger.png)](https://gitter.im/regen-network/regen-ledger "Gitter chat")
+
 
 A distributed ledger for ecology built on top of the 
 [cosmos-sdk](http://github.com/cosmos/cosmos-sdk).
