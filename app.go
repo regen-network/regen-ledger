@@ -255,15 +255,15 @@ func (app *xrnApp) shutdownOnUpgrade(ctx sdk.Context, plan upgrade.Plan) {
 	os.Exit(1)
 }
 
-func (app *xrnApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+func (app *xrnApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) (abci.ResponseBeginBlock, error) {
 	app.upgradeKeeper.BeginBlocker(ctx, req)
-	return abci.ResponseBeginBlock{}
+	return abci.ResponseBeginBlock{}, nil
 }
 
-func (app *xrnApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+func (app *xrnApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) (abci.ResponseEndBlock, error) {
 	//validatorUpdates := app.consortiumKeeper.EndBlocker(ctx)
 	//return abci.ResponseEndBlock{ValidatorUpdates: validatorUpdates}
-	return abci.ResponseEndBlock{}
+	return abci.ResponseEndBlock{}, nil
 }
 
 func (app *xrnApp) InitChain(req abci.RequestInitChain) (res abci.ResponseInitChain) {

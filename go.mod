@@ -22,7 +22,7 @@ require (
 	github.com/stretchr/testify v1.2.2
 	github.com/syndtr/goleveldb v0.0.0-20181128100959-b001fa50d6b2 // indirect
 	github.com/tendermint/go-amino v0.14.1
-	github.com/tendermint/tendermint v0.31.0-dev0
+	github.com/tendermint/tendermint v0.31.3
 	github.com/twpayne/go-geom v1.0.4
 	github.com/zondax/ledger-cosmos-go v0.9.9 // indirect
 	golang.org/x/crypto v0.0.0-20180904163835-0709b304e793
@@ -34,4 +34,4 @@ require (
 
 replace golang.org/x/crypto => github.com/tendermint/crypto v0.0.0-20180820045704-3764759f34a5
 
-replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-e7d1e85e4888
+replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-cbcec4953e053ffd136fa31c814e2ef0aeb39994

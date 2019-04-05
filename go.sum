@@ -215,6 +215,8 @@ github.com/regen-network/cosmos-sdk v0.0.0-0.20190328142727-7fc01b12c61a h1:YDmI
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190328142727-7fc01b12c61a/go.mod h1:oCcUKqg11Ie72fift+r96GQdVhOhe5gSpiF0OSltN4g=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190328142727-e7d1e85e48888622c72353de322755b250f3df79 h1:7ZiXKGove/krZdCz2FCssAudmnBKnzLx6QfdqNroYgI=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190328142727-e7d1e85e48888622c72353de322755b250f3df79/go.mod h1:oCcUKqg11Ie72fift+r96GQdVhOhe5gSpiF0OSltN4g=
+github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-cbcec4953e053ffd136fa31c814e2ef0aeb39994 h1:xP4JeWviD3p/zrtuZ0TClQHDFCUKa6NolReR3iATRe8=
+github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-cbcec4953e053ffd136fa31c814e2ef0aeb39994/go.mod h1:aLgIheIE6TNKv6nyUhMjLwS4QHntAcEzgZzJBINvTds=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-e7d1e85e4888 h1:MIDDEnXmqW0AV6TpqwJ8O/Q2RxAsINN495EfYRM2dH0=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-e7d1e85e4888/go.mod h1:oCcUKqg11Ie72fift+r96GQdVhOhe5gSpiF0OSltN4g=
 github.com/regen-network/cosmos-sdk v0.19.1-0.20190110184329-915ef12facc9 h1:6NJQfdwUI1AG6VdGIlUrxWA/J6CdodCj/Ym7n7Hnngw=
@@ -308,6 +310,8 @@ github.com/tendermint/tendermint v0.30.0 h1:zPqxUcpS9A9+VN0osyvMYqO3KFfLdP6j98nc
 github.com/tendermint/tendermint v0.30.0/go.mod h1:ymcPyWblXCplCPQjbOYbrF1fWnpslATMVqiGgWbZrlc=
 github.com/tendermint/tendermint v0.31.0-dev0 h1:SggTDR0UtPjqXaFmulEdUJ2X1y2fCXfTpc8utnJwb08=
 github.com/tendermint/tendermint v0.31.0-dev0/go.mod h1:ymcPyWblXCplCPQjbOYbrF1fWnpslATMVqiGgWbZrlc=
+github.com/tendermint/tendermint v0.31.3 h1:IlehDNREaGdt/VVZTjs978R/lhmnIf4NOH3j+ZhhbZA=
+github.com/tendermint/tendermint v0.31.3/go.mod h1:ymcPyWblXCplCPQjbOYbrF1fWnpslATMVqiGgWbZrlc=
 github.com/twpayne/go-geom v1.0.4 h1:kCCRCGlL0Bg2IihXDyZgs1mD+g05UCuTRknhfLLmIGc=
 github.com/twpayne/go-geom v1.0.4/go.mod h1:Xt2LAX0JiP94UWCnKKpDtx/d5g94AQNOCbmsa78dU0s=
 github.com/twpayne/go-kml v1.0.0/go.mod h1:LlvLIQSfMqYk2O7Nx8vYAbSLv4K9rjMvLlEdUKWdjq0=
