@@ -1,3 +1,11 @@
+
+Fixes #
+
+## Proposed Changes
+  -
+  -
+  -
+
 Feel free to submit a Draft Pull Request as soon as you start working on something. Before you mark your PR as Ready For Review, make sure you've checked off the following boxes or indicated N/A (not applicable):
 - [ ] linked to a relevant issue or have written a clear description of the issue in the PR
 - [ ] wrote or updated tests
@@ -6,10 +14,3 @@ Feel free to submit a Draft Pull Request as soon as you start working on somethi
 
 Thanks!
 
-Fixes #
-
-## Proposed Changes
-
-  -
-  -
-  -
