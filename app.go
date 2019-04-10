@@ -283,7 +283,9 @@ func (app *xrnApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseBegi
 }
 
 func (app *xrnApp) DeliverTx(txBytes []byte) (res abci.ResponseDeliverTx) {
-	app.pgIndexer.BeforeDeliverTx(txBytes)
+	if app.pgIndexer != nil {
+		app.pgIndexer.BeforeDeliverTx(txBytes)
+	}
 	res = app.BaseApp.DeliverTx(txBytes)
 	if app.pgIndexer != nil {
 		app.pgIndexer.AfterDeliverTx(txBytes, res)
