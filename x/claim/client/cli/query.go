@@ -9,6 +9,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/claim"
 	"github.com/spf13/cobra"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"strings"
 )
 
 // GetSignaturesQueryCmd creates a query sub-command for the claim module using cmdName as the name of the sub-command.
@@ -39,12 +40,12 @@ func GetSignaturesQueryCmd(storeName string, cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			var signature_str bytes.Buffer
-
+			var signatures strings.Builder
 			for _, sig := range sigs {
-				signature_str.WriteString(sig) // need to convert type []AccAddress to string
+				signatures.WriteString(sig.String())
 			}
-			return cliCtx.PrintOutput(signature_str.String())
+
+			return cliCtx.PrintOutput(signatures.String())
 		},
 	}
 }
@@ -80,7 +81,14 @@ func GetEvidenceQueryCmd(storeName string, cdc *codec.Codec) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			return cliCtx.PrintOutput(evidence)
+
+			var evidenceString strings.Builder
+
+			for _, data := range evidence {
+				evidenceString.WriteString(data.String())
+			}
+
+			return cliCtx.PrintOutput(evidenceString.String())
 		},
 	}
 }
