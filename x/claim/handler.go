@@ -19,11 +19,11 @@ func NewHandler(keeper Keeper) sdk.Handler {
 }
 
 func handleMsgSignClaim(ctx sdk.Context, keeper Keeper, msg MsgSignClaim) sdk.Result {
-	err := keeper.SignClaim(ctx, msg.Claim, msg.Evidence, msg.Signers)
+	err := keeper.SignClaim(ctx, msg.Content, msg.Evidence, msg.Signers)
 	if err != nil {
 		return err.Result()
 	}
 	res := sdk.Result{}
-	res.Tags = res.Tags.AppendTag("claim.id", msg.Claim.String())
+	res.Tags = res.Tags.AppendTag("claim.id", msg.Content.String())
 	return res
 }

@@ -20,20 +20,20 @@ func NewKeeper(storeKey sdk.StoreKey, dataKeeper data.Keeper, cdc *codec.Codec) 
 	return Keeper{storeKey: storeKey, dataKeeper: dataKeeper, cdc: cdc}
 }
 
-func KeySignatures(claim types.DataAddress) []byte {
-	return []byte(fmt.Sprintf("%x/sigs", claim))
+func KeySignatures(content types.DataAddress) []byte {
+	return []byte(fmt.Sprintf("%x/sigs", content))
 }
 
-func KeySignatureEvidence(claim types.DataAddress, signer sdk.AccAddress) []byte {
-	return []byte(fmt.Sprintf("%x/sig/%x", claim, signer))
+func KeySignatureEvidence(content types.DataAddress, signer sdk.AccAddress) []byte {
+	return []byte(fmt.Sprintf("%x/sig/%x", content, signer))
 }
 
 func (keeper Keeper) SignClaim(ctx sdk.Context, claim types.DataAddress, evidence []types.DataAddress, signers []sdk.AccAddress) sdk.Error {
 	if !keeper.dataKeeper.HasData(ctx, claim) {
-		return sdk.ErrUnknownRequest("Claim data can't be found")
+		return sdk.ErrUnknownRequest("Content data can't be found")
 	}
 	if !types.IsGraphDataAddress(claim) {
-		return sdk.ErrUnknownRequest("Claim isn't a graph")
+		return sdk.ErrUnknownRequest("Content isn't a graph")
 	}
 
 	store := ctx.KVStore(keeper.storeKey)
@@ -62,9 +62,9 @@ func (keeper Keeper) SignClaim(ctx sdk.Context, claim types.DataAddress, evidenc
 	return nil
 }
 
-func (keeper Keeper) GetSignatures(ctx sdk.Context, claim types.DataAddress) []sdk.AccAddress {
+func (keeper Keeper) GetSignatures(ctx sdk.Context, content types.DataAddress) []sdk.AccAddress {
 	store := ctx.KVStore(keeper.storeKey)
-	bz := store.Get(KeySignatures(claim))
+	bz := store.Get(KeySignatures(content))
 
 	if bz == nil {
 		return nil
@@ -75,9 +75,9 @@ func (keeper Keeper) GetSignatures(ctx sdk.Context, claim types.DataAddress) []s
 	return sigs
 }
 
-func (keeper Keeper) GetEvidence(ctx sdk.Context, claim types.DataAddress, signer sdk.AccAddress) []types.DataAddress {
+func (keeper Keeper) GetEvidence(ctx sdk.Context, content types.DataAddress, signer sdk.AccAddress) []types.DataAddress {
 	store := ctx.KVStore(keeper.storeKey)
-	bz := store.Get(KeySignatureEvidence(claim, signer))
+	bz := store.Get(KeySignatureEvidence(content, signer))
 
 	if bz == nil {
 		return nil

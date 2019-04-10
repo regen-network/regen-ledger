@@ -54,7 +54,7 @@ func (s *Suite) TestCreateClaim() {
 	c := s.randomData()
 	ev0 := s.randomData()
 	ev1 := s.randomData()
-	msg := claim.MsgSignClaim{Claim: c, Evidence: []types.DataAddress{ev0, ev1}, Signers: []sdk.AccAddress{s.Addr1}}
+	msg := claim.MsgSignClaim{Content: c, Evidence: []types.DataAddress{ev0, ev1}, Signers: []sdk.AccAddress{s.Addr1}}
 	res := s.Handler(s.Ctx, msg)
 	s.Require().Equal(sdk.CodeOK, res.Code)
 	s.Require().Equal(string(res.Tags[0].Value), c.String())

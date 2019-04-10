@@ -7,18 +7,20 @@ import (
 )
 
 // MsgSignClaim creates a transaction which indicates that the Signers of the
-// indicated Claim are willing to "sign" the being, to the best of their
-// knowledge true, optionally linking to some Evidence to support that
+// claim are stating that to the best of their knowledge, the Content of the
+// claim is true, optionally linking to some Evidence that supports their
 // assessment.
 type MsgSignClaim struct {
-	// Claim is the claim which is being signed. It must point to an on or
-	// off chain graph stored or tracked by the data module.
-	Claim types.DataAddress
+	// Content is the content of the claim which is being signed
+	// - the statement about what is being claimed as true. It must point
+	// to an on or off chain graph stored or tracked by the data module.
+	Content types.DataAddress
 	// Evidence is optional data which is being pointed to as evidence to the
-	// Claim's veracity by the Signers of the Claim. It can point to on or
+	// Content's veracity by the Signers of the Content. It can point to on or
 	// off chain graphs as well as raw data tracked by the data module.
 	Evidence []types.DataAddress
-	// Signers are the signers of this Claim
+	// Signers are the signers of this claim. By signing this claim they
+	// are asserting to the best of their knowledge the Content is true
 	Signers []sdk.AccAddress
 }
 
@@ -30,11 +32,11 @@ func (msg MsgSignClaim) Type() string { return "claim.sign" }
 
 // Implements Msg.
 func (msg MsgSignClaim) ValidateBasic() sdk.Error {
-	if len(msg.Claim) == 0 {
-		return sdk.ErrUnknownRequest("Claim cannot be empty")
+	if len(msg.Content) == 0 {
+		return sdk.ErrUnknownRequest("Content cannot be empty")
 	}
-	if !types.IsGraphDataAddress(msg.Claim) {
-		return sdk.ErrUnknownRequest("Claim must point to graph data")
+	if !types.IsGraphDataAddress(msg.Content) {
+		return sdk.ErrUnknownRequest("Content must point to graph data")
 	}
 	return nil
 }
