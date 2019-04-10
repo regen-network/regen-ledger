@@ -23,6 +23,7 @@ import (
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 	"github.com/regen-network/regen-ledger"
+	claimcli "github.com/regen-network/regen-ledger/x/claim/client/cli"
 	consortiumclient "github.com/regen-network/regen-ledger/x/consortium/client"
 	dataclient "github.com/regen-network/regen-ledger/x/data/client"
 	datarest "github.com/regen-network/regen-ledger/x/data/client/rest"
@@ -37,6 +38,7 @@ import (
 
 const (
 	storeAcc      = "acc"
+	storeClaim     = "claim"
 	storeData     = "data"
 	storeAgent    = "group"
 	storeProposal = "proposal"
@@ -202,6 +204,8 @@ func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
 	}
 
 	queryCmd.AddCommand(upgradecli.GetQueryCmd("upgrade-plan", storeUpgrade, cdc))
+	queryCmd.AddCommand(claimcli.GetSignaturesQueryCmd(storeClaim, cdc))
+	queryCmd.AddCommand(claimcli.GetEvidenceQueryCmd(storeClaim, cdc))
 
 	addNodeFlags(queryCmd)
 

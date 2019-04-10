@@ -16,6 +16,11 @@ type Keeper struct {
 	cdc        *codec.Codec
 }
 
+const (
+	// ClaimKey specifies the key under which a claim is stored in the store
+	ClaimKey = "claim"
+)
+
 func NewKeeper(storeKey sdk.StoreKey, dataKeeper data.Keeper, cdc *codec.Codec) Keeper {
 	return Keeper{storeKey: storeKey, dataKeeper: dataKeeper, cdc: cdc}
 }
