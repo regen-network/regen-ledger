@@ -87,7 +87,7 @@ in
           description = "Regen Ledger Daemon";
           wantedBy = [ "multi-user.target" ];
           after = [ "network.target" ];
-          path = [ xrnd pkgs.jq ];
+          path = [ xrnd pkgs.jq pkgs.git ];
           preStart = ''
             chown -R xrnd:xrn ${xrndCfg.home}
             if [ -e ${xrndCfg.home}/data/upgrade-info ]; then
