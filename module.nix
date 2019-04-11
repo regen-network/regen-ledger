@@ -103,6 +103,7 @@ in
               export UPGRADE_COMMIT=$(jq '.commit' < ${xrndCfg.home}/data/upgrade-info.bak)
               if  [ $UPGRADE_COMMIT != "null" ]; then
                 cd /root/regen-ledger
+                git fetch
                 git clean -f
                 git checkout -f $UPGRADE_COMMIT
                 nixos-rebuild --upgrade switch
