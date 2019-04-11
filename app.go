@@ -149,7 +149,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 
 	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc)
 	app.upgradeKeeper.SetDoShutdowner(app.shutdownOnUpgrade)
-	app.upgradeKeeper.SetUpgradeHandler("test2", func(ctx sdk.Context, plan upgrade.Plan) {
+	app.upgradeKeeper.SetUpgradeHandler("test3", func(ctx sdk.Context, plan upgrade.Plan) {
 		if app.pgIndexer != nil {
 			app.pgIndexer.ApplyMigrations()
 		}
