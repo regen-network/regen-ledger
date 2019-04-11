@@ -1,8 +1,9 @@
 {
-  "genesis_time": "2018-12-19T20:40:06.463846Z",
+  "genesis_time": "2019-04-11T15:07:00Z",
   "chain_id": "xrn-test-3",
   "consensus_params": {
-    "block_size": {
+    "block": {
+      "time_iota_ms": "1000",
       "max_bytes": "22020096",
       "max_gas": "-1"
     },
