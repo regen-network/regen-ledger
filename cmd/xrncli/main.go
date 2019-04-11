@@ -23,13 +23,13 @@ import (
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
 	"github.com/regen-network/regen-ledger"
-	claimcli "github.com/regen-network/regen-ledger/x/claim/client/cli"
 	consortiumclient "github.com/regen-network/regen-ledger/x/consortium/client"
 	dataclient "github.com/regen-network/regen-ledger/x/data/client"
 	datarest "github.com/regen-network/regen-ledger/x/data/client/rest"
 	espclient "github.com/regen-network/regen-ledger/x/esp/client"
 	geoclient "github.com/regen-network/regen-ledger/x/geo/client"
 	agentclient "github.com/regen-network/regen-ledger/x/group/client"
+	claimclient "github.com/regen-network/regen-ledger/x/claim/client"
 	proposalclient "github.com/regen-network/regen-ledger/x/proposal/client"
 	upgradecli "github.com/regen-network/regen-ledger/x/upgrade/client/cli"
 	upgraderest "github.com/regen-network/regen-ledger/x/upgrade/client/rest"
@@ -63,6 +63,7 @@ func main() {
 		dataclient.NewModuleClient(storeData, cdc),
 		agentclient.NewModuleClient(storeAgent, cdc),
 		consortiumclient.NewModuleClient(cdc),
+		claimclient.NewModuleClient(storeClaim, cdc),
 	}
 
 	rootCmd := &cobra.Command{
@@ -204,8 +205,6 @@ func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
 	}
 
 	queryCmd.AddCommand(upgradecli.GetQueryCmd("upgrade-plan", storeUpgrade, cdc))
-	queryCmd.AddCommand(claimcli.GetSignaturesQueryCmd(storeClaim, cdc))
-	queryCmd.AddCommand(claimcli.GetEvidenceQueryCmd(storeClaim, cdc))
 
 	addNodeFlags(queryCmd)
 

@@ -1,14 +1,13 @@
 package cli
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/claim"
 	"github.com/spf13/cobra"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"strings"
 )
 
@@ -43,9 +42,11 @@ func GetSignaturesQueryCmd(storeName string, cdc *codec.Codec) *cobra.Command {
 			var signatures strings.Builder
 			for _, sig := range sigs {
 				signatures.WriteString(sig.String())
+				signatures.WriteString(" ")
 			}
 
-			return cliCtx.PrintOutput(signatures.String())
+			fmt.Println(signatures)
+			return nil
 		},
 	}
 }
@@ -86,9 +87,11 @@ func GetEvidenceQueryCmd(storeName string, cdc *codec.Codec) *cobra.Command {
 
 			for _, data := range evidence {
 				evidenceString.WriteString(data.String())
+				evidenceString.WriteString(" ")
 			}
 
-			return cliCtx.PrintOutput(evidenceString.String())
+			fmt.Println(evidenceString)
+			return nil
 		},
 	}
 }
