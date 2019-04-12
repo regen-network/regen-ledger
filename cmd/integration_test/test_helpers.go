@@ -38,8 +38,9 @@ const (
 )
 
 var (
-	startCoins = sdk.Coins{
-		sdk.NewCoin(denom, sdk.NewInt(1000000000)),
+	startTokens = sdk.TokensFromTendermintPower(50)
+	startCoins  = sdk.Coins{
+		sdk.NewCoin(denom, startTokens),
 	}
 )
 

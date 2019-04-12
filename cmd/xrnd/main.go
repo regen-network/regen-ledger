@@ -45,7 +45,7 @@ func main() {
 	ctx := server.NewDefaultContext()
 
 	rootCmd := &cobra.Command{
-		Use:               "xrn",
+		Use:               "xrnd",
 		Short:             "Regen Ledger App Daemon (server)",
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}

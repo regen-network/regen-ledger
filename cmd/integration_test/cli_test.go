@@ -51,16 +51,16 @@ func TestXrnCLIKeysAddRecoverHDPath(t *testing.T) {
 	f := InitFixtures(t)
 
 	f.KeysAddRecoverHDPath("test-recoverHD1", "dentist task convince chimney quality leave banana trade firm crawl eternal easily", 0, 0)
-	require.Equal(t, "cosmos1qcfdf69js922qrdr4yaww3ax7gjml6pdds46f4", f.KeyAddress("test-recoverHD1").String())
+	require.Equal(t, "xrn:1qcfdf69js922qrdr4yaww3ax7gjml6pdtkqwj2", f.KeyAddress("test-recoverHD1").String())
 
 	f.KeysAddRecoverHDPath("test-recoverH2", "dentist task convince chimney quality leave banana trade firm crawl eternal easily", 1, 5)
-	require.Equal(t, "cosmos1pdfav2cjhry9k79nu6r8kgknnjtq6a7rykmafy", f.KeyAddress("test-recoverH2").String())
+	require.Equal(t, "xrn:1pdfav2cjhry9k79nu6r8kgknnjtq6a7rzswfjm", f.KeyAddress("test-recoverH2").String())
 
 	f.KeysAddRecoverHDPath("test-recoverH3", "dentist task convince chimney quality leave banana trade firm crawl eternal easily", 1, 17)
-	require.Equal(t, "cosmos1909k354n6wl8ujzu6kmh49w4d02ax7qvlkv4sn", f.KeyAddress("test-recoverH3").String())
+	require.Equal(t, "xrn:1909k354n6wl8ujzu6kmh49w4d02ax7qveseptv", f.KeyAddress("test-recoverH3").String())
 
 	f.KeysAddRecoverHDPath("test-recoverH4", "dentist task convince chimney quality leave banana trade firm crawl eternal easily", 2, 17)
-	require.Equal(t, "cosmos1v9plmhvyhgxk3th9ydacm7j4z357s3nhtwsjat", f.KeyAddress("test-recoverH4").String())
+	require.Equal(t, "xrn:1v9plmhvyhgxk3th9ydacm7j4z357s3nhdg9xx5", f.KeyAddress("test-recoverH4").String())
 }
 
 func TestXrnCLIMinimumFees(t *testing.T) {
@@ -197,7 +197,6 @@ func TestXrnCLISend(t *testing.T) {
 	barAddr := f.KeyAddress(keyBar)
 
 	fooAcc := f.QueryAccount(fooAddr)
-	startTokens := sdk.TokensFromTendermintPower(50)
 	require.Equal(t, startTokens, fooAcc.GetCoins().AmountOf(denom))
 
 	// Send some tokens from one account to the other
@@ -539,6 +538,7 @@ func TestXrnCLIMultisignInsufficientCosigners(t *testing.T) {
 	require.False(t, success)
 }
 
+// TODO either remove this or add the encode cmd
 func TestXrnCLIEncode(t *testing.T) {
 	t.Parallel()
 	f := InitFixtures(t)
