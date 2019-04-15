@@ -17,7 +17,6 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	//"os"
 
@@ -149,7 +148,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 
 	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc)
 	app.upgradeKeeper.SetDoShutdowner(app.shutdownOnUpgrade)
-	app.upgradeKeeper.SetUpgradeHandler("test3", func(ctx sdk.Context, plan upgrade.Plan) {
+	app.upgradeKeeper.SetUpgradeHandler("test4", func(ctx sdk.Context, plan upgrade.Plan) {
 		if app.pgIndexer != nil {
 			app.pgIndexer.ApplyMigrations()
 		}
@@ -252,7 +251,7 @@ func (app *xrnApp) shutdownOnUpgrade(ctx sdk.Context, plan upgrade.Plan) {
 		_ = ioutil.WriteFile(filepath.Join(home, "data", "upgrade-info"), []byte(plan.Info), 0644)
 	}
 	ctx.Logger().Error(fmt.Sprintf("UPGRADE \"%s\" NEEDED needed at height %d: %s", plan.Name, ctx.BlockHeight(), plan.Info))
-	os.Exit(1)
+	panic("UPGRADE NEEDED")
 }
 
 func (app *xrnApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) (abci.ResponseBeginBlock, error) {
