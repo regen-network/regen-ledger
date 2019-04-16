@@ -7,4 +7,5 @@ if  [ $UPGRADE_COMMIT != "null" ]; then
     git fetch
     git clean -f
     git checkout -f $UPGRADE_COMMIT
+    nixos-rebuild build
 fi
