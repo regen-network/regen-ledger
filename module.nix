@@ -34,7 +34,15 @@ in
           type = types.path;
           default = "/var/xrnd";
           description = ''
-            Path to xrnd home folder. Must be created before the service is started.
+            Path to xrnd home folder. Must be created and populated with config files before the service is started.
+          '';
+        };
+      repoPath = 
+        mkOption {
+          type = types.path;
+          default = "/root/regen-ledger";
+          description = ''
+            Path to Regen Ledger repository. Must be created before the service is started the first time and will be used for performing upgrades.
           '';
         };
       moniker =
@@ -87,30 +95,12 @@ in
           description = "Regen Ledger Daemon";
           wantedBy = [ "multi-user.target" ];
           after = [ "network.target" ];
-          path = [ xrnd pkgs.jq pkgs.git ];
-          preStart = ''
-            chown -R xrnd:xrn ${xrndCfg.home}
-            if [ -e ${xrndCfg.home}/data/upgrade-info ]; then
-              mv ${xrndCfg.home}/data/upgrade-info ${xrndCfg.home}/data/upgrade-info.bak
-            fi
-          '';
+          path = [ xrnd pkgs.git ];
           script = ''
             xrnd start --moniker ${xrndCfg.moniker} --home ${xrndCfg.home}
           '';
-          postStop = ''
-            if [ -e ${xrndCfg.home}/data/upgrade-info ]; then
-              mv ${xrndCfg.home}/data/upgrade-info ${xrndCfg.home}/data/upgrade-info.bak
-              export UPGRADE_COMMIT=$(jq '.commit' < ${xrndCfg.home}/data/upgrade-info.bak)
-              if  [ $UPGRADE_COMMIT != "null" ]; then
-                cd /root/regen-ledger
-                git fetch
-                git clean -f
-                git checkout -f $UPGRADE_COMMIT
-                nixos-rebuild --upgrade switch
-              fi
-            fi
-          '';
           environment = {
+            REGEN_LEDGER_REPO = xrndCfg.repoPath; 
             POSTGRES_INDEX_URL = if xrndCfg.enablePostgres then "host=/tmp user=xrnd dbname=xrn sslmode=disable" else xrndCfg.postgresUrl;
           };
           serviceConfig = {
