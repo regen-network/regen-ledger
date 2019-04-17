@@ -2,4 +2,4 @@
 set -x
 cd $REGEN_LEDGER_REPO
 ./scripts/prepare-upgrade.sh
-nixos-rebuild --upgrade switch
+nixos-rebuild switch
