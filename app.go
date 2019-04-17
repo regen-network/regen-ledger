@@ -2,7 +2,6 @@ package app
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	"github.com/regen-network/regen-ledger/index/postgresql"
@@ -16,8 +15,10 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
-	"io/ioutil"
+	"os"
+	"os/exec"
 	"path/filepath"
+
 	//"os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -147,7 +148,8 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 	app.espKeeper = esp.NewKeeper(app.espStoreKey, app.agentKeeper, app.geoKeeper, cdc)
 
 	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc)
-	app.upgradeKeeper.SetDoShutdowner(app.shutdownOnUpgrade)
+	app.upgradeKeeper.SetWillUpgrader(app.willUpgrade)
+	app.upgradeKeeper.SetOnUpgrader(app.onUpgrade)
 	app.upgradeKeeper.SetUpgradeHandler("test4", func(ctx sdk.Context, plan upgrade.Plan) {
 		if app.pgIndexer != nil {
 			app.pgIndexer.ApplyMigrations()
@@ -245,13 +247,28 @@ func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.
 	return abci.ResponseInitChain{}
 }
 
-func (app *xrnApp) shutdownOnUpgrade(ctx sdk.Context, plan upgrade.Plan) {
-	if len(plan.Info) != 0 {
-		home := viper.GetString(cli.HomeFlag)
-		_ = ioutil.WriteFile(filepath.Join(home, "data", "upgrade-info"), []byte(plan.Info), 0644)
-	}
-	ctx.Logger().Error(fmt.Sprintf("UPGRADE \"%s\" NEEDED needed at height %d: %s", plan.Name, ctx.BlockHeight(), plan.Info))
-	panic("UPGRADE NEEDED")
+func (app *xrnApp) willUpgrade(ctx sdk.Context, plan upgrade.Plan) {
+	home := viper.GetString(cli.HomeFlag)
+	prepareUpgrade := filepath.Join(home, "config", "prepare-upgrade")
+	app.callUpgradeScript(ctx, plan, prepareUpgrade)
+}
+
+func (app *xrnApp) onUpgrade(ctx sdk.Context, plan upgrade.Plan) {
+	home := viper.GetString(cli.HomeFlag)
+	doUpgrade := filepath.Join(home, "config", "do-upgrade")
+	app.callUpgradeScript(ctx, plan, doUpgrade)
+}
+
+func (app *xrnApp) callUpgradeScript(ctx sdk.Context, plan upgrade.Plan, script string) {
+	go func() {
+		if len(plan.Info) != 0 {
+			if _, err := os.Stat(script); err == nil {
+				os.Setenv("UPGRADE_INFO", plan.Info)
+				cmd := exec.Command(script)
+				cmd.Start()
+			}
+		}
+	}()
 }
 
 func (app *xrnApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) (abci.ResponseBeginBlock, error) {
