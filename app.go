@@ -149,7 +149,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 	app.espKeeper = esp.NewKeeper(app.espStoreKey, app.agentKeeper, app.geoKeeper, cdc)
 
 	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc)
-	app.upgradeKeeper.SetWillUpgrader(app.willUpgrade)
+	//app.upgradeKeeper.SetWillUpgrader(app.willUpgrade)
 	app.upgradeKeeper.SetOnUpgrader(app.onUpgrade)
 	app.upgradeKeeper.SetUpgradeHandler("test7", func(ctx sdk.Context, plan upgrade.Plan) {
 		if app.pgIndexer != nil {
@@ -260,6 +260,7 @@ func (app *xrnApp) callUpgradeScript(ctx sdk.Context, plan upgrade.Plan, script 
 	go func() {
 		home := viper.GetString(cli.HomeFlag)
 		file := filepath.Join(home, "config", script)
+		ctx.Logger().Info(fmt.Sprintf("Looking for upgrade script %s", file))
 		if _, err := os.Stat(file); err == nil {
 			ctx.Logger().Info(fmt.Sprintf("Applying upgrade script %s", file))
 			err = os.Setenv("COSMOS_HOME", home)
