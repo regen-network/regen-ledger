@@ -300,7 +300,6 @@ func (w logWriter) Write(p []byte) (n int, err error) {
 }
 
 func (app *xrnApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) (abci.ResponseBeginBlock, error) {
-	app.callUpgradeScript(ctx, upgrade.Plan{Info: "TEST"}, "test")
 	app.upgradeKeeper.BeginBlocker(ctx, req)
 	return abci.ResponseBeginBlock{}, nil
 }

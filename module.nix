@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib,... }:
 
 with lib;
 
@@ -95,7 +95,7 @@ in
           description = "Regen Ledger Daemon";
           wantedBy = [ "multi-user.target" ];
           after = [ "network.target" ];
-          path = [ xrnd pkgs.git ];
+          path = [ xrnd pkgs.git pkgs.bash pkgs.jq config.system.build.nixos-rebuild ];
           script = ''
             xrnd start --moniker ${xrndCfg.moniker} --home ${xrndCfg.home}
           '';
