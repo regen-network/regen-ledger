@@ -7,7 +7,7 @@ require (
 	github.com/gogo/protobuf v1.2.1 // indirect
 	github.com/gorilla/mux v1.7.0
 	github.com/leanovate/gopter v0.2.4
-	github.com/lib/pq v1.0.0
+	github.com/lib/pq v1.1.0
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
