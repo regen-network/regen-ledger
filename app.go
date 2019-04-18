@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	"github.com/regen-network/regen-ledger/index/postgresql"
@@ -261,17 +262,45 @@ func (app *xrnApp) callUpgradeScript(ctx sdk.Context, plan upgrade.Plan, script 
 		file := filepath.Join(home, "config", script)
 		if _, err := os.Stat(file); err == nil {
 			ctx.Logger().Info(fmt.Sprintf("Applying upgrade script %s", file))
+			err = os.Setenv("COSMOS_HOME", home)
+			if err != nil {
+				ctx.Logger().Error("Error setting env var COSMOS_HOME", err)
+			}
 			if len(plan.Info) != 0 {
-				os.Setenv("UPGRADE_INFO", plan.Info)
+				err = os.Setenv("UPGRADE_INFO", plan.Info)
+				if err != nil {
+					ctx.Logger().Error("Error setting env var UPGRADE_INFO", err)
+				}
 			}
 			cmd := exec.Command(file)
-			cmd.Start()
+			cmd.Stdout = logWriter{ctx, script, false}
+			cmd.Stderr = logWriter{ctx, script, false}
+			err = cmd.Start()
+			if err != nil {
+				ctx.Logger().Info(fmt.Sprintf("Error starting script %s", file), err)
+			}
 		}
 	}()
 }
 
+type logWriter struct {
+	sdk.Context
+	script string
+	err    bool
+}
+
+func (w logWriter) Write(p []byte) (n int, err error) {
+	s := fmt.Sprintf("script %s: %s", w.script, p)
+	if w.err {
+		w.Logger().Error(s)
+	} else {
+		w.Logger().Info(s)
+	}
+	return len(p), nil
+}
+
 func (app *xrnApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) (abci.ResponseBeginBlock, error) {
-	app.callUpgradeScript(ctx, upgrade.Plan{}, "test")
+	app.callUpgradeScript(ctx, upgrade.Plan{Info: "TEST"}, "test")
 	app.upgradeKeeper.BeginBlocker(ctx, req)
 	return abci.ResponseBeginBlock{}, nil
 }
