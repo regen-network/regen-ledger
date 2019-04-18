@@ -248,30 +248,30 @@ func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.
 }
 
 func (app *xrnApp) willUpgrade(ctx sdk.Context, plan upgrade.Plan) {
-	home := viper.GetString(cli.HomeFlag)
-	prepareUpgrade := filepath.Join(home, "config", "prepare-upgrade")
-	app.callUpgradeScript(ctx, plan, prepareUpgrade)
+	app.callUpgradeScript(ctx, plan, "prepare-upgrade")
 }
 
 func (app *xrnApp) onUpgrade(ctx sdk.Context, plan upgrade.Plan) {
-	home := viper.GetString(cli.HomeFlag)
-	doUpgrade := filepath.Join(home, "config", "do-upgrade")
-	app.callUpgradeScript(ctx, plan, doUpgrade)
+	app.callUpgradeScript(ctx, plan, "do-upgrade")
 }
 
 func (app *xrnApp) callUpgradeScript(ctx sdk.Context, plan upgrade.Plan, script string) {
 	go func() {
-		if len(plan.Info) != 0 {
-			if _, err := os.Stat(script); err == nil {
+		home := viper.GetString(cli.HomeFlag)
+		file := filepath.Join(home, "config", script)
+		if _, err := os.Stat(file); err == nil {
+			ctx.Logger().Info(fmt.Sprintf("Applying upgrade script %s", file))
+			if len(plan.Info) != 0 {
 				os.Setenv("UPGRADE_INFO", plan.Info)
-				cmd := exec.Command(script)
-				cmd.Start()
 			}
+			cmd := exec.Command(file)
+			cmd.Start()
 		}
 	}()
 }
 
 func (app *xrnApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) (abci.ResponseBeginBlock, error) {
+	app.callUpgradeScript(ctx, upgrade.Plan{}, "test")
 	app.upgradeKeeper.BeginBlocker(ctx, req)
 	return abci.ResponseBeginBlock{}, nil
 }
