@@ -22,7 +22,7 @@ import (
 	auth "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
-	upgradecli "github.com/cosmos/cosmos-sdk/x/upgrade/client/cli"
+	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgraderest "github.com/cosmos/cosmos-sdk/x/upgrade/client/rest"
 	"github.com/regen-network/regen-ledger"
 	consortiumclient "github.com/regen-network/regen-ledger/x/consortium/client"
@@ -61,6 +61,7 @@ func main() {
 		dataclient.NewModuleClient(storeData, cdc),
 		agentclient.NewModuleClient(storeAgent, cdc),
 		consortiumclient.NewModuleClient(cdc),
+		upgradeclient.NewModuleClient(storeUpgrade, cdc),
 	}
 
 	rootCmd := &cobra.Command{
@@ -199,8 +200,6 @@ func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
 	for _, m := range mc {
 		queryCmd.AddCommand(m.GetQueryCmd())
 	}
-
-	queryCmd.AddCommand(upgradecli.GetQueryCmd("upgrade-plan", storeUpgrade, cdc))
 
 	addNodeFlags(queryCmd)
 
