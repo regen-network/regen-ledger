@@ -117,7 +117,7 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 
-			if err = gaiaInit.ExportGenesisFile(genFile, chainID, []tmtypes.GenesisValidator{validator}, appState); err != nil {
+			if err = gaiaInit.ExportGenesisFile(&tmtypes.GenesisDoc{ChainID: chainID, Validators: []tmtypes.GenesisValidator{validator}, AppState: appState}, genFile); err != nil {
 				return err
 			}
 
@@ -190,7 +190,7 @@ $ xrnd add-genesis-account cosmos1tse7r2fadvlrrgau3pa0ss7cqh55wrv6y9alwh 1000STA
 				return err
 			}
 
-			return gaiaInit.ExportGenesisFile(genFile, genDoc.ChainID, genDoc.Validators, appStateJSON)
+			return gaiaInit.ExportGenesisFile(&tmtypes.GenesisDoc{ChainID: genDoc.ChainID, Validators: genDoc.Validators, AppState: appStateJSON}, genFile)
 		},
 	}
 	return cmd

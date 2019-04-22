@@ -159,7 +159,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 	app.proposalKeeper = proposal.NewKeeper(app.proposalStoreKey, proposalRouter, cdc)
 
 	// The AnteHandler handles signature verification and transaction pre-processing
-	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper))
+	app.SetAnteHandler(auth.NewAnteHandler(app.accountKeeper, app.feeCollectionKeeper, auth.DefaultSigVerificationGasConsumer))
 
 	// The app.Router is the main transaction router where each module registers its routes
 	// Register the bank and data routes here
@@ -173,6 +173,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 
 	// The app.QueryRouter is the main query router where each module registers its routes
 	app.QueryRouter().
+		AddRoute("acc", auth.NewQuerier(app.accountKeeper)).
 		AddRoute("data", data.NewQuerier(app.dataKeeper)).
 		AddRoute("group", group.NewQuerier(app.agentKeeper)).
 		AddRoute("proposal", proposal.NewQuerier(app.proposalKeeper))
