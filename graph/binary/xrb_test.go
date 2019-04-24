@@ -33,7 +33,7 @@ func (s *TestSuite) TestGenGraph() {
 	if ok {
 		for _, g := range gs.([]graph.Graph) {
 			s.T().Logf("Graph %s:\n %s",
-				util.MustEncodeBech32(types.Bech32DataAddressPrefix, graph.Hash(g)),
+				util.MustEncodeBech32(types.Bech32GraphDataAddressPrefix, graph.Hash(g)),
 				g.String(),
 			)
 		}
