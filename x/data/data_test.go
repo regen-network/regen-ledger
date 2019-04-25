@@ -2,6 +2,7 @@ package data_test
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/leanovate/gopter"
@@ -46,7 +47,7 @@ func (s *Suite) TestStoreDataGraph() {
 			hash := graph.Hash(g1)
 
 			// check if we have existing data (because the generator repeats values)
-			addr := types.GetDataAddressOnChainGraph(hash)
+			addr := types.GetDataAddressGraph(hash)
 			bz, err := s.Keeper.GetData(s.Ctx, addr)
 			if bz == nil {
 				res := s.Handler(s.Ctx, data.MsgStoreGraph{Hash: hash, Data: buf.Bytes(), Signer: s.Addr1})
@@ -99,6 +100,27 @@ func (s *Suite) TestStoreDataGraph() {
 			return true, nil
 		}, gen.Graph(s.Resolver)))
 	properties.TestingRun(s.T())
+}
+
+func (s *Suite) TestTrackRawData() {
+	someData := "sdlkghsdg2368uysdgiuskdhfg23t69sdgkj2"
+	hasher := sha256.New()
+	hasher.Write([]byte(someData))
+	hash := hasher.Sum(nil)
+	res := s.Handler(s.Ctx, data.MsgTrackRawData{Sha256Hash: hash, Url: "", Signer: s.AnAddr})
+	s.Require().Equal(sdk.CodeOK, res.Code)
+	s.Require().Equal(types.GetDataAddressRawData(hash).String(), res.Tags[0].Value)
+	urls, err := s.Keeper.GetRawDataURLs(s.Ctx, hash)
+	s.Require().Nil(err)
+	s.Require().Empty(urls)
+	someUrl := "http://example.com/nowhere"
+	res = s.Handler(s.Ctx, data.MsgTrackRawData{Sha256Hash: hash, Url: someUrl, Signer: s.AnAddr})
+	s.Require().Equal(sdk.CodeOK, res.Code)
+	s.Require().Equal(types.GetDataAddressRawData(hash).String(), res.Tags[0].Value)
+	urls, err = s.Keeper.GetRawDataURLs(s.Ctx, hash)
+	s.Require().Nil(err)
+	s.Require().Len(urls, 1)
+	s.Require().Equal(someUrl, urls[0])
 }
 
 func TestSuite(t *testing.T) {

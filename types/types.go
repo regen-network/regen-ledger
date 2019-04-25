@@ -14,8 +14,9 @@ type HasURI interface {
 }
 
 const (
-	Bech32GeoAddressPrefix  = "xrn:geo/"
-	Bech32DataAddressPrefix = "xrn:g/"
+	Bech32GeoAddressPrefix       = "xrn:geo/"
+	Bech32GraphDataAddressPrefix = "xrn:g/"
+	Bech32RawDataAddressPrefix   = "xrn:d/"
 )
 
 type GeoAddress []byte
@@ -23,7 +24,8 @@ type GeoAddress []byte
 type DataAddress []byte
 
 const (
-	DataAddressPrefixOnChainGraph byte = iota
+	DataAddressPrefixGraph byte = iota
+	DataAddressPrefixRawData
 )
 
 // String returns the string URI representation mof the GeoAddress
@@ -42,8 +44,10 @@ func (addr GeoAddress) URI() *url.URL {
 
 func (addr DataAddress) String() string {
 	switch addr[0] {
-	case DataAddressPrefixOnChainGraph:
-		return util.MustEncodeBech32(Bech32DataAddressPrefix, addr[1:])
+	case DataAddressPrefixGraph:
+		return util.MustEncodeBech32(Bech32GraphDataAddressPrefix, addr[1:])
+	case DataAddressPrefixRawData:
+		return util.MustEncodeBech32(Bech32RawDataAddressPrefix, addr[1:])
 	default:
 		panic(fmt.Errorf("unknown address prefix %d", addr[0]))
 
@@ -58,8 +62,12 @@ func (addr DataAddress) URI() *url.URL {
 	return uri
 }
 
-func GetDataAddressOnChainGraph(hash []byte) DataAddress {
-	return append([]byte{DataAddressPrefixOnChainGraph}, hash...)
+func GetDataAddressGraph(hash []byte) DataAddress {
+	return append([]byte{DataAddressPrefixGraph}, hash...)
+}
+
+func GetDataAddressRawData(sha256hash []byte) DataAddress {
+	return append([]byte{DataAddressPrefixRawData}, sha256hash...)
 }
 
 func MustDecodeBech32DataAddress(url string) DataAddress {
@@ -75,8 +83,11 @@ func DecodeBech32DataAddress(url string) (DataAddress, error) {
 	if err != nil {
 		return nil, err
 	}
-	if hrp == Bech32DataAddressPrefix {
-		return GetDataAddressOnChainGraph(bz), nil
+	if hrp == Bech32GraphDataAddressPrefix {
+		return GetDataAddressGraph(bz), nil
+	}
+	if hrp == Bech32RawDataAddressPrefix {
+		return GetDataAddressRawData(bz), nil
 	}
 	return nil, fmt.Errorf("can't decode data URL")
 }

@@ -36,7 +36,7 @@ func (k Keeper) GetData(ctx sdk.Context, addr types.DataAddress) ([]byte, sdk.Er
 		return nil, sdk.ErrUnknownRequest("not found")
 	}
 	switch addr[0] {
-	case types.DataAddressPrefixOnChainGraph:
+	case types.DataAddressPrefixGraph:
 		return bz, nil
 	default:
 		return nil, sdk.ErrUnknownRequest("bad address")
@@ -66,7 +66,7 @@ func (k Keeper) StoreGraph(ctx sdk.Context, hash []byte, data []byte) (types.Dat
 		return nil, sdk.ErrUnknownRequest("incorrect graph hash")
 	}
 	store := ctx.KVStore(k.dataStoreKey)
-	addr := types.GetDataAddressOnChainGraph(hash)
+	addr := types.GetDataAddressGraph(hash)
 	existing, err := k.GetData(ctx, addr)
 	if err == nil && existing != nil {
 		return nil, sdk.ErrUnknownRequest("already exists")
@@ -75,4 +75,37 @@ func (k Keeper) StoreGraph(ctx sdk.Context, hash []byte, data []byte) (types.Dat
 	ctx.GasMeter().ConsumeGas(gasPerByteStorage*uint64(bytes), "store data")
 	store.Set(addr, data)
 	return addr, nil
+}
+
+func KeyRawDataUrls(hash []byte) []byte {
+	return []byte(fmt.Sprintf("%x/raw-urls", hash))
+}
+
+// TrackRawData tracks raw data with the provided hash and optional URL.
+func (k Keeper) TrackRawData(ctx sdk.Context, hash []byte, url string) (types.DataAddress, sdk.Error) {
+	var urlsToStore []string
+	existing, err := k.GetRawDataURLs(ctx, hash)
+	if err != nil {
+		if len(url) == 0 {
+			return nil, sdk.ErrUnknownRequest("nothing to do")
+		}
+		urlsToStore = append(existing, url)
+	} else {
+		if len(url) != 0 {
+			urlsToStore = []string{url}
+		}
+	}
+	store := ctx.KVStore(k.dataStoreKey)
+	store.Set(KeyRawDataUrls(hash), k.cdc.MustMarshalBinaryBare(urlsToStore))
+	return types.GetDataAddressRawData(hash), nil
+}
+
+func (k Keeper) GetRawDataURLs(ctx sdk.Context, hash []byte) (urls []string, err sdk.Error) {
+	store := ctx.KVStore(k.dataStoreKey)
+	bz := store.Get(KeyRawDataUrls(hash))
+	if bz == nil {
+		return nil, sdk.ErrUnknownRequest("not found")
+	}
+	k.cdc.MustUnmarshalBinaryBare(bz, &urls)
+	return urls, nil
 }

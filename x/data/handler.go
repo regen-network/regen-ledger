@@ -12,6 +12,8 @@ func NewHandler(keeper Keeper) sdk.Handler {
 		switch msg := msg.(type) {
 		case MsgStoreGraph:
 			return handleMsgStoreData(ctx, keeper, msg)
+		case MsgTrackRawData:
+			return handleMsgTrackRawData(ctx, keeper, msg)
 		default:
 			errMsg := fmt.Sprintf("Unrecognized data Msg type: %v", msg.Type())
 			return sdk.ErrUnknownRequest(errMsg).Result()
@@ -21,6 +23,16 @@ func NewHandler(keeper Keeper) sdk.Handler {
 
 func handleMsgStoreData(ctx sdk.Context, keeper Keeper, msg MsgStoreGraph) sdk.Result {
 	addr, err := keeper.StoreGraph(ctx, msg.Hash, msg.Data)
+	if err != nil {
+		return err.Result()
+	}
+	res := sdk.Result{Data: addr}
+	res.Tags = res.Tags.AppendTag("data.address", addr.String())
+	return res
+}
+
+func handleMsgTrackRawData(ctx sdk.Context, keeper Keeper, msg MsgTrackRawData) sdk.Result {
+	addr, err := keeper.TrackRawData(ctx, msg.Sha256Hash, msg.Url)
 	if err != nil {
 		return err.Result()
 	}
