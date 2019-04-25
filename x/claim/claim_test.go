@@ -24,6 +24,7 @@ type Suite struct {
 func (s *Suite) SetupTest() {
 	s.Setup()
 	data.RegisterCodec(s.Cdc)
+	claim.RegisterCodec(s.Cdc)
 	dataKey := sdk.NewKVStoreKey("data")
 	s.dataKeeper = data.NewKeeper(dataKey, s.Harness.Keeper, s.Cdc)
 	claimKey := sdk.NewKVStoreKey("claim")
@@ -60,7 +61,7 @@ func (s *Suite) TestCreateClaim() {
 	s.Require().Equal(string(res.Tags[0].Value), c.String())
 
 	s.T().Logf("retrieve the signatures")
-	sigs := s.Keeper.GetSignatures(s.Ctx, c)
+	sigs := s.Keeper.GetSigners(s.Ctx, c)
 	s.Require().True(bytes.Equal(s.Addr1, sigs[0]))
 
 	s.T().Logf("retrieve the evidence")
@@ -74,7 +75,7 @@ func (s *Suite) TestCreateClaim() {
 	s.Require().Nil(err)
 
 	s.T().Logf("retrieve the signatures")
-	sigs = s.Keeper.GetSignatures(s.Ctx, c)
+	sigs = s.Keeper.GetSigners(s.Ctx, c)
 	s.requireContainsAddr(sigs, s.Addr1)
 	s.requireContainsAddr(sigs, s.Addr2)
 
@@ -86,6 +87,20 @@ func (s *Suite) TestCreateClaim() {
 
 	ev = s.Keeper.GetEvidence(s.Ctx, c, s.Addr2)
 	s.requireContainsData(ev, ev2)
+}
+
+func (s *Suite) TestCreateBadClaim() {
+	msg := claim.MsgSignClaim{Signers: []sdk.AccAddress{s.Addr1}}
+	err := msg.ValidateBasic()
+	s.Require().NotNil(err)
+
+	msg = claim.MsgSignClaim{Content: types.GetDataAddressOnChainGraph([]byte{}), Signers: []sdk.AccAddress{s.Addr1}}
+	res := s.Handler(s.Ctx, msg)
+	s.Require().Equal(sdk.CodeUnknownRequest, res.Code)
+
+	msg = claim.MsgSignClaim{Content: types.DataAddress([]byte{10, 2, 3, 4}), Signers: []sdk.AccAddress{s.Addr1}}
+	res = s.Handler(s.Ctx, msg)
+	s.Require().Equal(sdk.CodeUnknownRequest, res.Code)
 }
 
 func (s *Suite) requireContainsAddr(xs []sdk.AccAddress, x sdk.AccAddress) {

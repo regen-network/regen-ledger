@@ -24,13 +24,13 @@ type MsgSignClaim struct {
 	Signers []sdk.AccAddress
 }
 
-// Implements Msg.
+// Route implements Msg.
 func (msg MsgSignClaim) Route() string { return "claim" }
 
-// Implements Msg.
+// Type implements Msg.
 func (msg MsgSignClaim) Type() string { return "claim.sign" }
 
-// Implements Msg.
+// ValidateBasic implements Msg.
 func (msg MsgSignClaim) ValidateBasic() sdk.Error {
 	if len(msg.Content) == 0 {
 		return sdk.ErrUnknownRequest("Content cannot be empty")
@@ -41,7 +41,7 @@ func (msg MsgSignClaim) ValidateBasic() sdk.Error {
 	return nil
 }
 
-// Implements Msg.
+// GetSignBytes implements Msg.
 func (msg MsgSignClaim) GetSignBytes() []byte {
 	b, err := json.Marshal(msg)
 	if err != nil {
@@ -50,7 +50,7 @@ func (msg MsgSignClaim) GetSignBytes() []byte {
 	return sdk.MustSortJSON(b)
 }
 
-// Implements Msg.
+// GetSigners implements Msg.
 func (msg MsgSignClaim) GetSigners() []sdk.AccAddress {
 	return msg.Signers
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// GetCmdSignClaim returns the tx claim sign command.
 func GetCmdSignClaim(cdc *codec.Codec) *cobra.Command {
 	var evidence []string
 	cmd := &cobra.Command{

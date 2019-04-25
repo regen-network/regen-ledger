@@ -13,6 +13,7 @@ type ModuleClient struct {
 	cdc      *amino.Codec
 }
 
+// NewModuleClient returns a new claim client module
 func NewModuleClient(storeKey string, cdc *amino.Codec) ModuleClient {
 	return ModuleClient{storeKey, cdc}
 }
@@ -45,4 +46,3 @@ func (mc ModuleClient) GetTxCmd() *cobra.Command {
 
 	return txCmd
 }
-

@@ -89,7 +89,7 @@ func IsGraphDataAddress(addr DataAddress) bool {
 	case DataAddressPrefixOnChainGraph:
 		return true
 	default:
-		panic(fmt.Errorf("unknown address prefix %d", addr[0]))
+		return false
 	}
 }
 
@@ -100,6 +100,6 @@ func IsRawDataAddress(addr DataAddress) bool {
 	case DataAddressPrefixOnChainGraph:
 		return false
 	default:
-		panic(fmt.Errorf("unknown address prefix %d", addr[0]))
+		return false
 	}
 }
