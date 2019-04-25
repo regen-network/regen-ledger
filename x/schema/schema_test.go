@@ -31,7 +31,7 @@ func (s *TestSuite) TestCreatorCantBeEmpty() {
 func (s *TestSuite) TestNameCantBeEmpty() {
 	s.T().Log("define property")
 	prop1 := schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+		Creator:      s.Addr1,
 		PropertyType: graph.TyBool,
 	}
 	_, _, err := s.Keeper.DefineProperty(s.Ctx, prop1)
@@ -41,7 +41,7 @@ func (s *TestSuite) TestNameCantBeEmpty() {
 func (s *TestSuite) TestPropertyCanOnlyBeDefinedOnce() {
 	s.T().Log("define property")
 	prop1 := schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+		Creator:      s.Addr1,
 		Name:         "test1",
 		PropertyType: graph.TyBool,
 	}
@@ -50,7 +50,7 @@ func (s *TestSuite) TestPropertyCanOnlyBeDefinedOnce() {
 
 	s.T().Log("try to define property with same name")
 	prop2 := schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+		Creator:      s.Addr1,
 		Name:         "test1",
 		PropertyType: graph.TyInteger,
 	}
@@ -61,7 +61,7 @@ func (s *TestSuite) TestPropertyCanOnlyBeDefinedOnce() {
 func (s *TestSuite) TestCheckPropertyType() {
 	s.T().Log("invalid property type should be rejected")
 	prop1 := schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+		Creator:      s.Addr1,
 		Name:         "test1",
 		PropertyType: graph.PropertyType(12345678),
 	}
@@ -74,7 +74,7 @@ func (s *TestSuite) TestCheckPropertyType() {
 func (s *TestSuite) TestCheckArity() {
 	s.T().Log("invalid arity should be rejected")
 	prop1 := schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+		Creator:      s.Addr1,
 		Name:         "test1",
 		PropertyType: graph.TyObject,
 		Arity:        graph.Arity(513848),
@@ -88,7 +88,7 @@ func (s *TestSuite) TestCheckArity() {
 func (s *TestSuite) TestCanRetrieveProperty() {
 	s.T().Log("define property")
 	prop := schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+		Creator:      s.Addr1,
 		Name:         "test1",
 		PropertyType: graph.TyBool,
 	}
@@ -111,7 +111,7 @@ func (s *TestSuite) TestCanRetrieveProperty() {
 func (s *TestSuite) TestIncrementPropertyID() {
 	s.T().Log("create one property")
 	prop1 := schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+		Creator:      s.Addr1,
 		Name:         "test1",
 		PropertyType: graph.TyBool,
 	}
@@ -121,7 +121,7 @@ func (s *TestSuite) TestIncrementPropertyID() {
 
 	s.T().Log("create another property")
 	prop2 := schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+		Creator:      s.Addr1,
 		Name:         "test2",
 		PropertyType: graph.TyString,
 		Arity:        graph.UnorderedSet,
@@ -142,7 +142,7 @@ func (s *TestSuite) TestPropertyNotFound() {
 
 func (s *TestSuite) TestPropertyNameRegex() {
 	prop1 := schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+		Creator:      s.Addr1,
 		Name:         "TestCamelCase",
 		PropertyType: graph.TyString,
 		Arity:        graph.OrderedSet,
@@ -154,7 +154,7 @@ func (s *TestSuite) TestPropertyNameRegex() {
 func (s *TestSuite) TestDefinePropertyHandler() {
 	s.T().Log("create one property")
 	prop1 := schema.PropertyDefinition{
-		Creator:      s.AnAddr,
+		Creator:      s.Addr1,
 		Name:         "test1",
 		PropertyType: graph.TyBool,
 	}
