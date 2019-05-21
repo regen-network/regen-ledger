@@ -37,6 +37,19 @@ const (
 	appName = "xrn"
 )
 
+var (
+	// default home directories for xrncli
+	DefaultCLIHome = os.ExpandEnv("$HOME/.xrncli")
+
+	// default home directories for xrnd
+	DefaultNodeHome = os.ExpandEnv("$HOME/.xrnd")
+
+	// The ModuleBasicManager is in charge of setting up basic,
+	// non-dependant module elements, such as codec registration
+	// and genesis verification.
+	ModuleBasics sdk.ModuleBasicManager
+)
+
 type xrnApp struct {
 	*bam.BaseApp
 	cdc *codec.Codec
@@ -118,7 +131,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, postgresUrl string) *xrnApp {
 		}
 	}
 
-	app.paramsKeeper = params.NewKeeper(app.cdc, app.keyParams, app.tkeyParams)
+	app.paramsKeeper = params.NewKeeper(app.cdc, app.keyParams, app.tkeyParams, params.DefaultCodespace)
 
 	// The AccountKeeper handles address -> account lookups
 	app.accountKeeper = auth.NewAccountKeeper(
@@ -238,7 +251,7 @@ func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.
 	auth.InitGenesis(ctx, app.accountKeeper, app.feeCollectionKeeper, genesisState.AuthData)
 	bank.InitGenesis(ctx, app.bankKeeper, genesisState.BankData)
 
-	return abci.ResponseInitChain{}
+	return abci.ResponseInitChain{ConsensusParams: req.ConsensusParams, Validators: req.Validators}
 }
 
 func (app *xrnApp) shutdownOnUpgrade(ctx sdk.Context, plan upgrade.Plan) {

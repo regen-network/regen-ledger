@@ -18,7 +18,7 @@ type Keeper struct {
 }
 
 var (
-	consortiumGroupId = group.GroupAddrFromUint64(0)
+	consortiumGroupId = group.AddrFromUint64(0)
 	keyValidators     = []byte("validators")
 )
 

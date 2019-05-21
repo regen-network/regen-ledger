@@ -57,7 +57,7 @@ func (keeper Keeper) GetGroupInfo(ctx sdk.Context, id sdk.AccAddress) (info Grou
 	return info, nil
 }
 
-func GroupAddrFromUint64(id uint64) sdk.AccAddress {
+func AddrFromUint64(id uint64) sdk.AccAddress {
 	addr := make([]byte, binary.MaxVarintLen64+1)
 	addr[0] = 'G'
 	n := binary.PutUvarint(addr[1:], id)
@@ -73,7 +73,7 @@ func (keeper Keeper) getNewGroupId(ctx sdk.Context) sdk.AccAddress {
 	}
 	bz = keeper.cdc.MustMarshalBinaryBare(groupId + 1)
 	store.Set(keyNewGroupID, bz)
-	return GroupAddrFromUint64(groupId)
+	return AddrFromUint64(groupId)
 }
 
 func (keeper Keeper) CreateGroup(ctx sdk.Context, info Group) (sdk.AccAddress, error) {

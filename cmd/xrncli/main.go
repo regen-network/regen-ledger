@@ -54,7 +54,7 @@ func main() {
 	config := sdk.GetConfig()
 	config.Seal()
 
-	mc := []sdk.ModuleClients{
+	mc := []sdk.ModuleClient{
 		espclient.NewModuleClient(cdc),
 		proposalclient.NewModuleClient(storeProposal, cdc),
 		geoclient.NewModuleClient(cdc),
@@ -80,7 +80,7 @@ func main() {
 		client.LineBreak,
 		keys.Commands(),
 		client.LineBreak,
-		version.VersionCmd,
+		version.Cmd,
 	)
 
 	executor := cli.PrepareMainCmd(rootCmd, "XRN", defaultCLIHome)
@@ -180,7 +180,7 @@ func registerRoutes(rs *lcd.RestServer) {
 	upgraderest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, "upgrade-plan", storeUpgrade)
 }
 
-func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
+func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClient) *cobra.Command {
 	queryCmd := &cobra.Command{
 		Use:     "query",
 		Aliases: []string{"q"},
@@ -207,7 +207,7 @@ func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
 	return queryCmd
 }
 
-func txCmd(cdc *amino.Codec, mc []sdk.ModuleClients) *cobra.Command {
+func txCmd(cdc *amino.Codec, mc []sdk.ModuleClient) *cobra.Command {
 	txCmd := &cobra.Command{
 		Use:   "tx",
 		Short: "Transactions subcommands",
