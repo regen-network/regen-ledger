@@ -28,7 +28,7 @@ func NewKeeper(storeKey cosmos.StoreKey, cdc *codec.Codec) Keeper {
 }
 
 func ActorCapabilityKey(capability Capability, actor cosmos.AccAddress) []byte {
-	return []byte(fmt.Sprintf("c/%s/%x", capability.CapabilityID(), actor))
+	return []byte(fmt.Sprintf("c/%s/%x", capability.CapabilityKey(), actor))
 }
 
 func (k keeper) GrantRootCapability(ctx cosmos.Context, actor cosmos.AccAddress, capability Capability) {
