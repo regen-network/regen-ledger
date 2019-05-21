@@ -11,5 +11,6 @@ func NewDispatcher(k Keeper) Dispatcher {
 }
 
 func (dispatcher dispatcher) DispatchAction(ctx cosmos.Context, actor cosmos.AccAddress, action Action) cosmos.Result {
+	//caps := action.RequiredCapabilities()
 	panic("TODO")
 }
