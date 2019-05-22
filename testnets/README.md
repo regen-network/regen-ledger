@@ -34,7 +34,7 @@ Node configurations for [NixOS](https://nixos.org) are provided in this reposito
 The steps for setting this up on a running NixOS machine are roughly as follows:
 1. Clone the git repository into a local folder on the machine
 2. Import `module.nix` in `/etc/nixos/configuration`:
-```nix
+```
   imports =
     [
       ./hardware-configuration.nix
@@ -42,13 +42,13 @@ The steps for setting this up on a running NixOS machine are roughly as follows:
     ];
 ```
 3. Enable the `xrn` programs in `/etc/nixos/configuration` and run `nixos-rebuild switch):
-```nix
+```
   programs.xrn.enable = true;
 ```
 4. Run `xrncli init --home /var/xrnd`
 5. Configure node configuration in `/var/xrnd/config` (`genesis.json`, `config.toml`, etc.)
 6. Enable the xrnd service in `/etc/nixos/configuration` and run `nixos-rebuild switch`
-```nix
+```
   services.xrnd.enable = true;
   services.xrnd.moniker = "my-node-moniker";
 ```
