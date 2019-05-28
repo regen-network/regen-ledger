@@ -1,28 +1,46 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"os"
-	"path/filepath"
-	"text/template"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/lcd"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/version"
+	"github.com/cosmos/cosmos-sdk/x/mint"
+	"github.com/regen-network/regen-ledger/app"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/tendermint/go-amino"
 	"github.com/tendermint/tendermint/libs/cli"
+	"os"
+	"path"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	at "github.com/cosmos/cosmos-sdk/x/auth"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	auth "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	bankcmd "github.com/cosmos/cosmos-sdk/x/bank/client/cli"
 	bank "github.com/cosmos/cosmos-sdk/x/bank/client/rest"
-	"github.com/regen-network/regen-ledger"
+	crisisclient "github.com/cosmos/cosmos-sdk/x/crisis/client"
+	distcmd "github.com/cosmos/cosmos-sdk/x/distribution"
+	distClient "github.com/cosmos/cosmos-sdk/x/distribution/client"
+	distrcli "github.com/cosmos/cosmos-sdk/x/distribution/client/cli"
+	dist "github.com/cosmos/cosmos-sdk/x/distribution/client/rest"
+	gv "github.com/cosmos/cosmos-sdk/x/gov"
+	govClient "github.com/cosmos/cosmos-sdk/x/gov/client"
+	gov "github.com/cosmos/cosmos-sdk/x/gov/client/rest"
+	mintclient "github.com/cosmos/cosmos-sdk/x/mint/client"
+	mintrest "github.com/cosmos/cosmos-sdk/x/mint/client/rest"
+	paramcli "github.com/cosmos/cosmos-sdk/x/params/client/cli"
+	paramsrest "github.com/cosmos/cosmos-sdk/x/params/client/rest"
+	sl "github.com/cosmos/cosmos-sdk/x/slashing"
+	slashingclient "github.com/cosmos/cosmos-sdk/x/slashing/client"
+	slashing "github.com/cosmos/cosmos-sdk/x/slashing/client/rest"
+	st "github.com/cosmos/cosmos-sdk/x/staking"
+	stakingclient "github.com/cosmos/cosmos-sdk/x/staking/client"
+	staking "github.com/cosmos/cosmos-sdk/x/staking/client/rest"
 	consortiumclient "github.com/regen-network/regen-ledger/x/consortium/client"
 	dataclient "github.com/regen-network/regen-ledger/x/data/client"
 	datarest "github.com/regen-network/regen-ledger/x/data/client/rest"
@@ -30,24 +48,21 @@ import (
 	geoclient "github.com/regen-network/regen-ledger/x/geo/client"
 	agentclient "github.com/regen-network/regen-ledger/x/group/client"
 	proposalclient "github.com/regen-network/regen-ledger/x/proposal/client"
-	upgradecli "github.com/regen-network/regen-ledger/x/upgrade/client/cli"
 	upgraderest "github.com/regen-network/regen-ledger/x/upgrade/client/rest"
-	cmn "github.com/tendermint/tendermint/libs/common"
 )
 
 const (
-	storeAcc      = "acc"
 	storeData     = "data"
 	storeAgent    = "group"
 	storeProposal = "proposal"
 	storeUpgrade  = "upgrade"
 )
 
-var defaultCLIHome = os.ExpandEnv("$HOME/.xrncli")
-
 func main() {
+	// Configure cobra to sort commands
 	cobra.EnableCommandSorting = false
 
+	// Instantiate the codec for the command line application
 	cdc := app.MakeCodec()
 
 	// Read in the configuration file for the sdk
@@ -55,6 +70,12 @@ func main() {
 	config.Seal()
 
 	mc := []sdk.ModuleClient{
+		govClient.NewModuleClient(gv.StoreKey, cdc, paramcli.GetCmdSubmitProposal(cdc), distrcli.GetCmdSubmitProposal(cdc)),
+		distClient.NewModuleClient(distcmd.StoreKey, cdc),
+		stakingclient.NewModuleClient(st.StoreKey, cdc),
+		mintclient.NewModuleClient(mint.StoreKey, cdc),
+		slashingclient.NewModuleClient(sl.StoreKey, cdc),
+		crisisclient.NewModuleClient(sl.StoreKey, cdc),
 		espclient.NewModuleClient(cdc),
 		proposalclient.NewModuleClient(storeProposal, cdc),
 		geoclient.NewModuleClient(cdc),
@@ -65,14 +86,19 @@ func main() {
 
 	rootCmd := &cobra.Command{
 		Use:   "xrncli",
-		Short: "Regen Ledger Client",
+		Short: "Command line interface for interacting with xrnd",
+	}
+
+	// Add --chain-id to persistent flags and mark it required
+	rootCmd.PersistentFlags().String(client.FlagChainID, "", "Chain ID of tendermint node")
+	rootCmd.PersistentPreRunE = func(_ *cobra.Command, _ []string) error {
+		return initConfig(rootCmd)
 	}
 
 	// Construct Root Command
 	rootCmd.AddCommand(
-		initClientCommand(),
 		rpc.StatusCommand(),
-		client.ConfigCmd(defaultCLIHome),
+		client.ConfigCmd(app.DefaultCLIHome),
 		queryCmd(cdc, mc),
 		txCmd(cdc, mc),
 		client.LineBreak,
@@ -81,103 +107,17 @@ func main() {
 		keys.Commands(),
 		client.LineBreak,
 		version.Cmd,
+		client.NewCompletionCmd(rootCmd, true),
 	)
 
-	executor := cli.PrepareMainCmd(rootCmd, "XRN", defaultCLIHome)
+	// Add flags and prefix all env exposed with GA
+	executor := cli.PrepareMainCmd(rootCmd, "GA", app.DefaultCLIHome)
+
 	err := executor.Execute()
 	if err != nil {
-		panic(err)
+		fmt.Printf("Failed executing CLI command: %s, exiting...\n", err)
+		os.Exit(1)
 	}
-}
-
-const (
-	// one of the following should be provided to verify the connection
-	flagGenesis = "genesis"
-	flagCommit  = "commit"
-	flagValHash = "validator-set"
-)
-
-const defaultConfigTemplate = `# This is a TOML config file.
-# For more information, see https://github.com/toml-lang/toml
-
-##### main base config options #####
-
-# The node to connect to
-node = "{{ .Node }}"
-
-# The chain ID
-chain-id = "{{ .ChainId }}"
-`
-
-type cliConfig struct {
-	Node    string
-	ChainId string
-}
-
-// not implemented in "github.com/cosmos/cosmos-sdk/client/rpc"
-// so implementing here
-func initClientCommand() *cobra.Command {
-	var home, node, chainId string
-
-	cmd := &cobra.Command{
-		Use:   "init",
-		Short: "Initialize light client",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			configTemplate, err := template.New("configFileTemplate").Parse(defaultConfigTemplate)
-
-			if err != nil {
-				panic(err)
-			}
-
-			home = os.ExpandEnv(home)
-
-			if err := cmn.EnsureDir(home, 0700); err != nil {
-				cmn.PanicSanity(err.Error())
-			}
-
-			if err := cmn.EnsureDir(filepath.Join(home, "config"), 0700); err != nil {
-				cmn.PanicSanity(err.Error())
-			}
-
-			configFilePath := filepath.Join(home, "config/config.toml")
-
-			if !cmn.FileExists(configFilePath) {
-				var buffer bytes.Buffer
-
-				if err := configTemplate.Execute(&buffer, cliConfig{
-					Node:    node,
-					ChainId: chainId,
-				}); err != nil {
-					panic(err)
-				}
-
-				cmn.MustWriteFile(configFilePath, buffer.Bytes(), 0644)
-			} else {
-				fmt.Printf("%s already exists\n", configFilePath)
-			}
-
-			return nil
-		},
-	}
-	cmd.Flags().StringVar(&home, cli.HomeFlag, "$HOME/.xrncli", "directory for config and data")
-	cmd.Flags().StringVar(&chainId, client.FlagChainID, "", "ID of chain we connect to")
-	cmd.Flags().StringVar(&node, client.FlagNode, "tcp://localhost:26657", "Node to connect to")
-	//cmd.Flags().String(flagGenesis, "", "Genesis file to verify header validity")
-	//cmd.Flags().String(flagCommit, "", "File with trusted and signed header")
-	//cmd.Flags().String(flagValHash, "", "Hash of trusted validator set (hex-encoded)")
-	//viper.BindPFlag(client.FlagChainID, cmd.Flags().Lookup(client.FlagChainID))
-	//viper.BindPFlag(client.FlagNode, cmd.Flags().Lookup(client.FlagNode))
-
-	return cmd
-}
-
-func registerRoutes(rs *lcd.RestServer) {
-	rpc.RegisterRPCRoutes(rs.CliCtx, rs.Mux)
-	tx.RegisterTxRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
-	auth.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeAcc)
-	bank.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
-	datarest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeData)
-	upgraderest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, "upgrade-plan", storeUpgrade)
 }
 
 func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClient) *cobra.Command {
@@ -193,16 +133,15 @@ func queryCmd(cdc *amino.Codec, mc []sdk.ModuleClient) *cobra.Command {
 		tx.SearchTxCmd(cdc),
 		tx.QueryTxCmd(cdc),
 		client.LineBreak,
-		authcmd.GetAccountCmd(storeAcc, cdc),
+		authcmd.GetAccountCmd(at.StoreKey, cdc),
 	)
 
 	for _, m := range mc {
-		queryCmd.AddCommand(m.GetQueryCmd())
+		mQueryCmd := m.GetQueryCmd()
+		if mQueryCmd != nil {
+			queryCmd.AddCommand(mQueryCmd)
+		}
 	}
-
-	queryCmd.AddCommand(upgradecli.GetQueryCmd("upgrade-plan", storeUpgrade, cdc))
-
-	addNodeFlags(queryCmd)
 
 	return queryCmd
 }
@@ -217,6 +156,9 @@ func txCmd(cdc *amino.Codec, mc []sdk.ModuleClient) *cobra.Command {
 		bankcmd.SendTxCmd(cdc),
 		client.LineBreak,
 		authcmd.GetSignCommand(cdc),
+		authcmd.GetMultiSignCommand(cdc),
+		tx.GetBroadcastCommand(cdc),
+		tx.GetEncodeCommand(cdc),
 		client.LineBreak,
 	)
 
@@ -224,13 +166,45 @@ func txCmd(cdc *amino.Codec, mc []sdk.ModuleClient) *cobra.Command {
 		txCmd.AddCommand(m.GetTxCmd())
 	}
 
-	addNodeFlags(txCmd)
-
 	return txCmd
 }
 
-func addNodeFlags(cmd *cobra.Command) {
-	cmd.Flags().String(client.FlagNode, "tcp://localhost:26657", "Node to connect to")
-	cmd.Flags().Bool(client.FlagTrustNode, false, "Trust connected full node (don't verify proofs for responses)")
-	cmd.Flags().Bool(client.FlagChainID, false, "Chain ID of Tendermint node")
+// registerRoutes registers the routes from the different modules for the LCD.
+// NOTE: details on the routes added for each module are in the module documentation
+// NOTE: If making updates here you also need to update the test helper in client/lcd/test_helper.go
+func registerRoutes(rs *lcd.RestServer) {
+	rpc.RegisterRPCRoutes(rs.CliCtx, rs.Mux)
+	tx.RegisterTxRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	auth.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, at.StoreKey)
+	bank.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
+	dist.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, distcmd.StoreKey)
+	staking.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
+	slashing.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
+	gov.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, paramsrest.ProposalRESTHandler(rs.CliCtx, rs.Cdc), dist.ProposalRESTHandler(rs.CliCtx, rs.Cdc))
+	mintrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	datarest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeData)
+	upgraderest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, "upgrade-plan", storeUpgrade)
+}
+
+func initConfig(cmd *cobra.Command) error {
+	home, err := cmd.PersistentFlags().GetString(cli.HomeFlag)
+	if err != nil {
+		return err
+	}
+
+	cfgFile := path.Join(home, "config", "config.toml")
+	if _, err := os.Stat(cfgFile); err == nil {
+		viper.SetConfigFile(cfgFile)
+
+		if err := viper.ReadInConfig(); err != nil {
+			return err
+		}
+	}
+	if err := viper.BindPFlag(client.FlagChainID, cmd.PersistentFlags().Lookup(client.FlagChainID)); err != nil {
+		return err
+	}
+	if err := viper.BindPFlag(cli.EncodingFlag, cmd.PersistentFlags().Lookup(cli.EncodingFlag)); err != nil {
+		return err
+	}
+	return viper.BindPFlag(cli.OutputFlag, cmd.PersistentFlags().Lookup(cli.OutputFlag))
 }

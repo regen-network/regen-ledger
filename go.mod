@@ -20,7 +20,7 @@ require (
 	github.com/mattn/go-isatty v0.0.7 // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
-	github.com/otiai10/copy v0.0.0-20180813032824-7e9a647135a1 // indirect
+	github.com/otiai10/copy v0.0.0-20180813032824-7e9a647135a1
 	github.com/otiai10/curr v0.0.0-20150429015615-9b4961190c95 // indirect
 	github.com/otiai10/mint v1.2.3 // indirect
 	github.com/pelletier/go-toml v1.4.0 // indirect
