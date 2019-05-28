@@ -3,7 +3,15 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/x/auth/genaccounts"
+	"github.com/cosmos/cosmos-sdk/x/crisis"
+	distr "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/genutil"
+	"github.com/cosmos/cosmos-sdk/x/gov"
+	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
+	"github.com/cosmos/cosmos-sdk/x/slashing"
+	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/regen-network/regen-ledger/index/postgresql"
 	"github.com/regen-network/regen-ledger/x/consortium"
 	"github.com/regen-network/regen-ledger/x/data"
@@ -49,6 +57,38 @@ var (
 	// and genesis verification.
 	ModuleBasics sdk.ModuleBasicManager
 )
+
+func init() {
+	ModuleBasics = sdk.NewModuleBasicManager(
+		genaccounts.AppModuleBasic{},
+		genutil.AppModuleBasic{},
+		auth.AppModuleBasic{},
+		bank.AppModuleBasic{},
+		staking.AppModuleBasic{},
+		mint.AppModuleBasic{},
+		distr.AppModuleBasic{},
+		gov.AppModuleBasic{},
+		params.AppModuleBasic{},
+		crisis.AppModuleBasic{},
+		slashing.AppModuleBasic{},
+	)
+}
+
+// custom tx codec
+func MakeCodec() *codec.Codec {
+	var cdc = codec.New()
+	ModuleBasics.RegisterCodec(cdc)
+	sdk.RegisterCodec(cdc)
+	codec.RegisterCrypto(cdc)
+	data.RegisterCodec(cdc)
+	esp.RegisterCodec(cdc)
+	geo.RegisterCodec(cdc)
+	group.RegisterCodec(cdc)
+	proposal.RegisterCodec(cdc)
+	consortium.RegisterCodec(cdc)
+	upgrade.RegisterCodec(cdc)
+	return cdc
+}
 
 type xrnApp struct {
 	*bam.BaseApp
@@ -246,8 +286,6 @@ func (app *xrnApp) initChainer(ctx sdk.Context, req abci.RequestInitChain) abci.
 		app.agentKeeper.CreateGroup(ctx, g)
 	}
 
-	app.consortiumKeeper.SetValidators(ctx, req.Validators)
-
 	auth.InitGenesis(ctx, app.accountKeeper, app.feeCollectionKeeper, genesisState.AuthData)
 	bank.InitGenesis(ctx, app.bankKeeper, genesisState.BankData)
 
@@ -339,21 +377,4 @@ func (app *xrnApp) ExportAppStateAndValidators() (appState json.RawMessage, vali
 	}
 
 	return appState, validators, err
-}
-
-// MakeCodec generates the necessary codecs for Amino
-func MakeCodec() *codec.Codec {
-	var cdc = codec.New()
-	auth.RegisterCodec(cdc)
-	bank.RegisterCodec(cdc)
-	data.RegisterCodec(cdc)
-	esp.RegisterCodec(cdc)
-	geo.RegisterCodec(cdc)
-	group.RegisterCodec(cdc)
-	proposal.RegisterCodec(cdc)
-	consortium.RegisterCodec(cdc)
-	upgrade.RegisterCodec(cdc)
-	sdk.RegisterCodec(cdc)
-	codec.RegisterCrypto(cdc)
-	return cdc
 }

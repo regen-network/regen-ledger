@@ -172,8 +172,8 @@ func initClientCommand() *cobra.Command {
 }
 
 func registerRoutes(rs *lcd.RestServer) {
-	rpc.RegisterRoutes(rs.CliCtx, rs.Mux)
-	tx.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
+	rpc.RegisterRPCRoutes(rs.CliCtx, rs.Mux)
+	tx.RegisterTxRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	auth.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeAcc)
 	bank.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	datarest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeData)
