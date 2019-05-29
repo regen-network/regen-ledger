@@ -43,6 +43,12 @@ func (k Keeper) GetData(ctx sdk.Context, addr types.DataAddress) ([]byte, sdk.Er
 	}
 }
 
+// GetData indicates whether data at the specified address is stored or tracked
+func (k Keeper) HasData(ctx sdk.Context, addr types.DataAddress) bool {
+	store := ctx.KVStore(k.dataStoreKey)
+	return store.Has(addr)
+}
+
 const (
 	gasForHashAndLookup = 100
 	gasPerByteStorage   = 100

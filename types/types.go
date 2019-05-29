@@ -80,3 +80,26 @@ func DecodeBech32DataAddress(url string) (DataAddress, error) {
 	}
 	return nil, fmt.Errorf("can't decode data URL")
 }
+
+// IsGraphDataAddress indicates whether the provided DataAddress points to graph
+// data - which has a well-known structure conformant with the schema module -
+// as opposed to "raw" data which can have any format
+func IsGraphDataAddress(addr DataAddress) bool {
+	switch addr[0] {
+	case DataAddressPrefixOnChainGraph:
+		return true
+	default:
+		return false
+	}
+}
+
+// IsRawDataAddress indicates whether the provided DataAddress points to raw
+// data - i.e. data in any format - as opposed to well-structured graph data
+func IsRawDataAddress(addr DataAddress) bool {
+	switch addr[0] {
+	case DataAddressPrefixOnChainGraph:
+		return false
+	default:
+		return false
+	}
+}

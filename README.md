@@ -8,6 +8,8 @@
 [![GoDoc](https://godoc.org/github.com/regen-network/regen-ledger?status.svg)](http://godoc.org/github.com/regen-network/regen-ledger)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Go Report Card](https://goreportcard.com/badge/github.com/regen-network/regen-ledger)](https://goreportcard.com/report/github.com/regen-network/regen-ledger)
+[![Gitter chat](https://badges.gitter.im/regen-network/regen-ledger.png)](https://gitter.im/regen-network/regen-ledger "Gitter chat")
+
 
 A distributed ledger for ecology built on top of the 
 [cosmos-sdk](http://github.com/cosmos/cosmos-sdk).
@@ -20,7 +22,7 @@ See [Getting Started](docs/getting_started.md).
 
 Regen Ledger aims to provides the following core features:
 * a database of ecological state and change of state claims that spans both
-on an off-chain data sources ([Ecological State Database](#ecological-state-database))
+on and off-chain data sources ([Ecological State Database](#ecological-state-database))
 * mechanisms for automating the assessment of ecological state, making payments,
 and the issuance of tokens and credits ([Compute Functions and Ecological Contracts](#compute-functions-and-ecological-contracts))
 * infrastructure for issuing ecologically-backed asset tokens and credits ([Tokens and Credits](#tokens-and-credits))

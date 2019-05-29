@@ -47,11 +47,14 @@ import (
 	espclient "github.com/regen-network/regen-ledger/x/esp/client"
 	geoclient "github.com/regen-network/regen-ledger/x/geo/client"
 	agentclient "github.com/regen-network/regen-ledger/x/group/client"
+	claimclient "github.com/regen-network/regen-ledger/x/claim/client"
 	proposalclient "github.com/regen-network/regen-ledger/x/proposal/client"
 	upgraderest "github.com/regen-network/regen-ledger/x/upgrade/client/rest"
 )
 
 const (
+	storeAcc      = "acc"
+	storeClaim     = "claim"
 	storeData     = "data"
 	storeAgent    = "group"
 	storeProposal = "proposal"
@@ -82,6 +85,7 @@ func main() {
 		dataclient.NewModuleClient(storeData, cdc),
 		agentclient.NewModuleClient(storeAgent, cdc),
 		consortiumclient.NewModuleClient(cdc),
+		claimclient.NewModuleClient(storeClaim, cdc),
 	}
 
 	rootCmd := &cobra.Command{
