@@ -42,7 +42,7 @@ func setupTestInput() {
 	ms.MountStoreWithDB(groupKey, sdk.StoreTypeIAVL, db)
 	_ = ms.LoadLatestVersion()
 
-	paramsKeeper := params.NewKeeper(cdc, paramsKey, tparamsKey)
+	paramsKeeper := params.NewKeeper(cdc, paramsKey, tparamsKey, params.DefaultCodespace)
 	accKeeper := auth.NewAccountKeeper(cdc, accKey, paramsKeeper.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)
 	keeper = NewKeeper(groupKey, cdc, accKeeper)
 	ctx = sdk.NewContext(ms, abci.Header{ChainID: "test-chain-id"}, false, log.NewNopLogger())
