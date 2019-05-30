@@ -7,3 +7,13 @@ func RegisterCodec(cdc *codec.Codec) {
 	cdc.RegisterConcrete(MsgStoreGeometry{}, "geo/MsgStoreGeometry", nil)
 	cdc.RegisterConcrete(Geometry{}, "geo/Geometry", nil)
 }
+
+// generic sealed codec to be used throughout module
+var moduleCdc *codec.Codec
+
+func init() {
+	cdc := codec.New()
+	RegisterCodec(cdc)
+	codec.RegisterCrypto(cdc)
+	moduleCdc = cdc.Seal()
+}

@@ -36,32 +36,35 @@ func GetFeatureType(g geom.T) (FeatureType, error) {
 }
 
 func (msg MsgStoreGeometry) ValidateBasic() sdk.Error {
-	if len(msg.Data.EWKB) <= 0 {
-		return sdk.ErrUnknownRequest("GeometryEWKB cannot be empty")
-	}
-
-	g, err := ewkb.Unmarshal(msg.Data.EWKB)
-
-	if err != nil {
-		return sdk.ErrUnknownRequest(fmt.Sprintf("Geometry is not in EWKB format: %+v", err))
-	}
-
-	if g.SRID() != WGS84_SRID {
-		return sdk.ErrUnknownRequest(fmt.Sprintf("Geometry does not use WGS84 SRID, got %d", g.SRID()))
-	}
-
-	featureType := msg.Data.Type
-	actual, err := GetFeatureType(g)
-
+	_, err := ValidateGeometry(msg.Data)
 	if err != nil {
 		return sdk.ErrUnknownRequest(err.Error())
 	}
+	return nil
+}
 
-	if actual != featureType {
-		return sdk.ErrUnknownRequest(fmt.Sprintf("Wrong FeatureType %d, expected %d", featureType, actual))
+func ValidateGeometry(geom Geometry) (geom.T, error) {
+	if len(geom.EWKB) <= 0 {
+		return nil, fmt.Errorf("EWKB bytes cannot be empty")
 	}
 
-	return nil
+	g, err := ewkb.Unmarshal(geom.EWKB)
+
+	if err != nil {
+		return nil, fmt.Errorf("geometry is not in EWKB format: %+v", err)
+	}
+
+	if g.SRID() != WGS84_SRID {
+		return nil, fmt.Errorf("geometry does not use WGS84 SRID, got %d", g.SRID())
+	}
+
+	featureType := geom.Type
+	actual, err := GetFeatureType(g)
+	if actual != featureType {
+		return nil, fmt.Errorf("wrong FeatureType %d, expected %d", featureType, actual)
+	}
+
+	return g, nil
 }
 
 func (msg MsgStoreGeometry) GetSignBytes() []byte {
