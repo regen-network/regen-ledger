@@ -41,20 +41,19 @@ import (
 	st "github.com/cosmos/cosmos-sdk/x/staking"
 	stakingclient "github.com/cosmos/cosmos-sdk/x/staking/client"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/client/rest"
-	consortiumclient "github.com/regen-network/regen-ledger/x/consortium/client"
-	dataclient "github.com/regen-network/regen-ledger/x/data/client"
-	datarest "github.com/regen-network/regen-ledger/x/data/client/rest"
-	espclient "github.com/regen-network/regen-ledger/x/esp/client"
+	//dataclient "github.com/regen-network/regen-ledger/x/data/client"
+	//datarest "github.com/regen-network/regen-ledger/x/data/client/rest"
+	//espclient "github.com/regen-network/regen-ledger/x/esp/client"
 	geoclient "github.com/regen-network/regen-ledger/x/geo/client"
-	agentclient "github.com/regen-network/regen-ledger/x/group/client"
-	claimclient "github.com/regen-network/regen-ledger/x/claim/client"
-	proposalclient "github.com/regen-network/regen-ledger/x/proposal/client"
-	upgraderest "github.com/regen-network/regen-ledger/x/upgrade/client/rest"
+	//agentclient "github.com/regen-network/regen-ledger/x/group/client"
+	//claimclient "github.com/regen-network/regen-ledger/x/claim/client"
+	//proposalclient "github.com/regen-network/regen-ledger/x/proposal/client"
+	//upgraderest "github.com/regen-network/regen-ledger/x/upgrade/client/rest"
 )
 
 const (
 	storeAcc      = "acc"
-	storeClaim     = "claim"
+	storeClaim    = "claim"
 	storeData     = "data"
 	storeAgent    = "group"
 	storeProposal = "proposal"
@@ -79,13 +78,11 @@ func main() {
 		mintclient.NewModuleClient(mint.StoreKey, cdc),
 		slashingclient.NewModuleClient(sl.StoreKey, cdc),
 		crisisclient.NewModuleClient(sl.StoreKey, cdc),
-		espclient.NewModuleClient(cdc),
-		proposalclient.NewModuleClient(storeProposal, cdc),
+		//proposalclient.NewModuleClient(storeProposal, cdc),
 		geoclient.NewModuleClient(cdc),
-		dataclient.NewModuleClient(storeData, cdc),
-		agentclient.NewModuleClient(storeAgent, cdc),
-		consortiumclient.NewModuleClient(cdc),
-		claimclient.NewModuleClient(storeClaim, cdc),
+		//dataclient.NewModuleClient(storeData, cdc),
+		//agentclient.NewModuleClient(storeAgent, cdc),
+		//claimclient.NewModuleClient(storeClaim, cdc),
 	}
 
 	rootCmd := &cobra.Command{
@@ -186,8 +183,8 @@ func registerRoutes(rs *lcd.RestServer) {
 	slashing.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	gov.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, paramsrest.ProposalRESTHandler(rs.CliCtx, rs.Cdc), dist.ProposalRESTHandler(rs.CliCtx, rs.Cdc))
 	mintrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
-	datarest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeData)
-	upgraderest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, "upgrade-plan", storeUpgrade)
+	//datarest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeData)
+	//upgraderest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, "upgrade-plan", storeUpgrade)
 }
 
 func initConfig(cmd *cobra.Command) error {

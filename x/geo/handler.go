@@ -6,6 +6,8 @@ import (
 	"github.com/twpayne/go-geom/encoding/wkbcommon"
 )
 
+const RouterKey = ModuleName
+
 // NewHandler returns a handler for "data" type messages.
 func NewHandler(keeper Keeper) sdk.Handler {
 	// TODO set wkbcommon.MaxGeometryElements to a reasonable

@@ -13,13 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/regen-network/regen-ledger/index/postgresql"
-	"github.com/regen-network/regen-ledger/x/consortium"
-	"github.com/regen-network/regen-ledger/x/data"
-	"github.com/regen-network/regen-ledger/x/esp"
 	"github.com/regen-network/regen-ledger/x/geo"
-	"github.com/regen-network/regen-ledger/x/group"
-	"github.com/regen-network/regen-ledger/x/proposal"
-	"github.com/regen-network/regen-ledger/x/schema"
 	"github.com/regen-network/regen-ledger/x/upgrade"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/cli"
@@ -71,6 +65,7 @@ func init() {
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
+		geo.AppModuleBasic{},
 	)
 }
 
@@ -80,13 +75,6 @@ func MakeCodec() *codec.Codec {
 	ModuleBasics.RegisterCodec(cdc)
 	sdk.RegisterCodec(cdc)
 	codec.RegisterCrypto(cdc)
-	data.RegisterCodec(cdc)
-	esp.RegisterCodec(cdc)
-	geo.RegisterCodec(cdc)
-	group.RegisterCodec(cdc)
-	proposal.RegisterCodec(cdc)
-	consortium.RegisterCodec(cdc)
-	upgrade.RegisterCodec(cdc)
 	return cdc
 }
 
@@ -108,17 +96,16 @@ type XrnApp struct {
 	tkeyDistr        *sdk.TransientStoreKey
 	keyGov           *sdk.KVStoreKey
 	keyFeeCollection *sdk.KVStoreKey
-	//schemaStoreKey  *sdk.KVStoreKey
-	dataStoreKey       *sdk.KVStoreKey
-	schemaStoreKey     *sdk.KVStoreKey
-	espStoreKey        *sdk.KVStoreKey
-	geoStoreKey        *sdk.KVStoreKey
-	agentStoreKey      *sdk.KVStoreKey
-	proposalStoreKey   *sdk.KVStoreKey
-	upgradeStoreKey    *sdk.KVStoreKey
-	consortiumStoreKey *sdk.KVStoreKey
-	keyParams          *sdk.KVStoreKey
-	tkeyParams         *sdk.TransientStoreKey
+	keyParams        *sdk.KVStoreKey
+	tkeyParams       *sdk.TransientStoreKey
+	//dataStoreKey       *sdk.KVStoreKey
+	//schemaStoreKey     *sdk.KVStoreKey
+	//espStoreKey        *sdk.KVStoreKey
+	geoStoreKey *sdk.KVStoreKey
+	//agentStoreKey      *sdk.KVStoreKey
+	//proposalStoreKey   *sdk.KVStoreKey
+	//upgradeStoreKey    *sdk.KVStoreKey
+	//consortiumStoreKey *sdk.KVStoreKey
 
 	// keepers
 	accountKeeper       auth.AccountKeeper
@@ -131,14 +118,14 @@ type XrnApp struct {
 	govKeeper           gov.Keeper
 	crisisKeeper        crisis.Keeper
 	paramsKeeper        params.Keeper
-	dataKeeper          data.Keeper
-	schemaKeeper        schema.Keeper
-	espKeeper           esp.Keeper
-	geoKeeper           geo.Keeper
-	agentKeeper         group.Keeper
-	proposalKeeper      proposal.Keeper
-	upgradeKeeper       upgrade.Keeper
-	consortiumKeeper    consortium.Keeper
+	//dataKeeper          data.Keeper
+	//schemaKeeper        schema.Keeper
+	//espKeeper           esp.Keeper
+	geoKeeper geo.Keeper
+	//agentKeeper         group.Keeper
+	//proposalKeeper      proposal.Keeper
+	//upgradeKeeper       upgrade.Keeper
+	//consortiumKeeper    consortium.Keeper
 
 	// the module manager
 	mm *sdk.ModuleManager
@@ -160,30 +147,29 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	bApp.SetAppVersion(version.Version)
 
 	var app = &XrnApp{
-		BaseApp:            bApp,
-		cdc:                cdc,
-		invCheckPeriod:     invCheckPeriod,
-		keyMain:            sdk.NewKVStoreKey("main"),
-		keyAccount:         sdk.NewKVStoreKey("acc"),
-		keyStaking:         sdk.NewKVStoreKey(staking.StoreKey),
-		tkeyStaking:        sdk.NewTransientStoreKey(staking.TStoreKey),
-		keyMint:            sdk.NewKVStoreKey(mint.StoreKey),
-		keyDistr:           sdk.NewKVStoreKey(distr.StoreKey),
-		tkeyDistr:          sdk.NewTransientStoreKey(distr.TStoreKey),
-		keySlashing:        sdk.NewKVStoreKey(slashing.StoreKey),
-		keyGov:             sdk.NewKVStoreKey(gov.StoreKey),
-		keyFeeCollection:   sdk.NewKVStoreKey(auth.FeeStoreKey),
-		keyParams:          sdk.NewKVStoreKey(params.StoreKey),
-		tkeyParams:         sdk.NewTransientStoreKey(params.TStoreKey),
-		dataStoreKey:       sdk.NewKVStoreKey("data"),
-		schemaStoreKey:     sdk.NewKVStoreKey("schema"),
-		espStoreKey:        sdk.NewKVStoreKey("esp"),
-		geoStoreKey:        sdk.NewKVStoreKey("geo"),
-		agentStoreKey:      sdk.NewKVStoreKey("group"),
-		proposalStoreKey:   sdk.NewKVStoreKey("proposal"),
-		upgradeStoreKey:    sdk.NewKVStoreKey("upgrade"),
-		consortiumStoreKey: sdk.NewKVStoreKey("consortium"),
-		txDecoder:          txDecoder,
+		BaseApp:          bApp,
+		cdc:              cdc,
+		invCheckPeriod:   invCheckPeriod,
+		keyMain:          sdk.NewKVStoreKey("main"),
+		keyAccount:       sdk.NewKVStoreKey("acc"),
+		keyStaking:       sdk.NewKVStoreKey(staking.StoreKey),
+		tkeyStaking:      sdk.NewTransientStoreKey(staking.TStoreKey),
+		keyMint:          sdk.NewKVStoreKey(mint.StoreKey),
+		keyDistr:         sdk.NewKVStoreKey(distr.StoreKey),
+		tkeyDistr:        sdk.NewTransientStoreKey(distr.TStoreKey),
+		keySlashing:      sdk.NewKVStoreKey(slashing.StoreKey),
+		keyGov:           sdk.NewKVStoreKey(gov.StoreKey),
+		keyFeeCollection: sdk.NewKVStoreKey(auth.FeeStoreKey),
+		keyParams:        sdk.NewKVStoreKey(params.StoreKey),
+		tkeyParams:       sdk.NewTransientStoreKey(params.TStoreKey),
+		//dataStoreKey:       sdk.NewKVStoreKey("data"),
+		//schemaStoreKey:     sdk.NewKVStoreKey("schema"),
+		//espStoreKey:        sdk.NewKVStoreKey("esp"),
+		geoStoreKey: sdk.NewKVStoreKey("geo"),
+		//agentStoreKey:      sdk.NewKVStoreKey("group"),
+		//proposalStoreKey:   sdk.NewKVStoreKey("proposal"),
+		//upgradeStoreKey:    sdk.NewKVStoreKey("upgrade"),
+		txDecoder: txDecoder,
 	}
 
 	// init params keeper and subspaces
@@ -224,26 +210,22 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	app.stakingKeeper = *stakingKeeper.SetHooks(
 		staking.NewMultiStakingHooks(app.distrKeeper.Hooks(), app.slashingKeeper.Hooks()))
 
-	app.schemaKeeper = schema.NewKeeper(app.schemaStoreKey, cdc)
-
-	app.dataKeeper = data.NewKeeper(app.dataStoreKey, app.schemaKeeper, cdc)
-
-	app.agentKeeper = group.NewKeeper(app.agentStoreKey, cdc, app.accountKeeper)
+	//app.schemaKeeper = schema.NewKeeper(app.schemaStoreKey, cdc)
+	//
+	//app.dataKeeper = data.NewKeeper(app.dataStoreKey, app.schemaKeeper, cdc)
+	//
+	//app.agentKeeper = group.NewKeeper(app.agentStoreKey, cdc, app.accountKeeper)
 
 	app.geoKeeper = geo.NewKeeper(app.geoStoreKey, cdc, app.pgIndexer)
 
-	app.espKeeper = esp.NewKeeper(app.espStoreKey, app.agentKeeper, app.geoKeeper, cdc)
+	//app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc)
+	//app.upgradeKeeper.SetDoShutdowner(app.shutdownOnUpgrade)
 
-	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc)
-	app.upgradeKeeper.SetDoShutdowner(app.shutdownOnUpgrade)
-
-	app.consortiumKeeper = consortium.NewKeeper(app.consortiumStoreKey, cdc, app.agentKeeper, app.upgradeKeeper)
-
-	proposalRouter := proposal.NewRouter().
-		AddRoute("esp", app.espKeeper).
-		AddRoute("consortium", app.consortiumKeeper)
-
-	app.proposalKeeper = proposal.NewKeeper(app.proposalStoreKey, proposalRouter, cdc)
+	//proposalRouter := proposal.NewRouter().
+	//	AddRoute("esp", app.espKeeper).
+	//	AddRoute("consortium", app.consortiumKeeper)
+	//
+	//app.proposalKeeper = proposal.NewKeeper(app.proposalStoreKey, proposalRouter, cdc)
 
 	app.mm = sdk.NewModuleManager(
 		genaccounts.NewAppModule(app.accountKeeper),
@@ -256,6 +238,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		mint.NewAppModule(app.mintKeeper),
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.feeCollectionKeeper, app.distrKeeper, app.accountKeeper),
+		geo.NewAppModule(app.geoKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -269,7 +252,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	// initialized with tokens from genesis accounts.
 	app.mm.SetOrderInitGenesis(genaccounts.ModuleName, distr.ModuleName,
 		staking.ModuleName, auth.ModuleName, bank.ModuleName, slashing.ModuleName,
-		gov.ModuleName, mint.ModuleName, crisis.ModuleName, genutil.ModuleName)
+		gov.ModuleName, mint.ModuleName, crisis.ModuleName, genutil.ModuleName, geo.ModuleName)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter())
@@ -277,10 +260,11 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	app.MountStores(app.keyMain, app.keyAccount, app.keyStaking, app.keyMint,
 		app.keyDistr, app.keySlashing, app.keyGov, app.keyFeeCollection,
 		app.keyParams, app.tkeyParams, app.tkeyStaking, app.tkeyDistr,
-		app.schemaStoreKey, app.dataStoreKey,
-		app.espStoreKey, app.geoStoreKey, app.agentStoreKey,
-		app.proposalStoreKey, app.upgradeStoreKey,
-		app.consortiumStoreKey)
+		app.geoStoreKey,
+		//app.schemaStoreKey, app.dataStoreKey,
+		//app.espStoreKey, app.geoStoreKey, app.agentStoreKey,
+		//app.proposalStoreKey, app.upgradeStoreKey,
+	)
 
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
@@ -356,7 +340,9 @@ func (app *XrnApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseBegi
 }
 
 func (app *XrnApp) DeliverTx(txBytes []byte) (res abci.ResponseDeliverTx) {
-	app.pgIndexer.BeforeDeliverTx(txBytes)
+	if app.pgIndexer != nil {
+		app.pgIndexer.BeforeDeliverTx(txBytes)
+	}
 	res = app.BaseApp.DeliverTx(txBytes)
 	if app.pgIndexer != nil {
 		app.pgIndexer.AfterDeliverTx(txBytes, res)
