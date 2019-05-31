@@ -73,4 +73,6 @@ By default AWS allows 1024 open files. This needs to be increased to 4096.
 $ ulimit -n 4096
 ```
 
+Link to AWS-specific notes from Cosmos:
+https://forum.cosmos.network/t/using-an-aws-ec2-as-a-cosmos-node/845
 Stub for [this story](https://www.pivotaltracker.com/n/projects/2318873/stories/166162869)
