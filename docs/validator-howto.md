@@ -43,7 +43,7 @@ Be careful not to add a newline separator as this will break the parser. Everyth
 
 Add your external (public) IP address here:
 ```bash
-external_address = "2e4dds4894afd85f1ea5c7256bdfe6386e994af4@54.83.123.33:26657"
+external_address = "tcp://54.83.123.33:26657"
 ```
 Notice that the port number is 26657.
 
