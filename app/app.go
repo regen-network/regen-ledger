@@ -12,9 +12,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	"github.com/regen-network/regen-ledger/index/postgresql"
 	"github.com/regen-network/regen-ledger/x/geo"
-	"github.com/regen-network/regen-ledger/x/upgrade"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/cli"
 	"github.com/tendermint/tendermint/libs/log"
@@ -98,13 +98,13 @@ type XrnApp struct {
 	keyFeeCollection *sdk.KVStoreKey
 	keyParams        *sdk.KVStoreKey
 	tkeyParams       *sdk.TransientStoreKey
+	upgradeStoreKey    *sdk.KVStoreKey
 	//dataStoreKey       *sdk.KVStoreKey
 	//schemaStoreKey     *sdk.KVStoreKey
 	//espStoreKey        *sdk.KVStoreKey
 	geoStoreKey *sdk.KVStoreKey
 	//agentStoreKey      *sdk.KVStoreKey
 	//proposalStoreKey   *sdk.KVStoreKey
-	//upgradeStoreKey    *sdk.KVStoreKey
 	//consortiumStoreKey *sdk.KVStoreKey
 
 	// keepers
@@ -118,13 +118,13 @@ type XrnApp struct {
 	govKeeper           gov.Keeper
 	crisisKeeper        crisis.Keeper
 	paramsKeeper        params.Keeper
+	upgradeKeeper       upgrade.Keeper
 	//dataKeeper          data.Keeper
 	//schemaKeeper        schema.Keeper
 	//espKeeper           esp.Keeper
 	geoKeeper geo.Keeper
 	//agentKeeper         group.Keeper
 	//proposalKeeper      proposal.Keeper
-	//upgradeKeeper       upgrade.Keeper
 	//consortiumKeeper    consortium.Keeper
 
 	// the module manager
@@ -162,13 +162,13 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		keyFeeCollection: sdk.NewKVStoreKey(auth.FeeStoreKey),
 		keyParams:        sdk.NewKVStoreKey(params.StoreKey),
 		tkeyParams:       sdk.NewTransientStoreKey(params.TStoreKey),
+		upgradeStoreKey:    sdk.NewKVStoreKey(upgrade.StoreKey),
 		//dataStoreKey:       sdk.NewKVStoreKey("data"),
 		//schemaStoreKey:     sdk.NewKVStoreKey("schema"),
 		//espStoreKey:        sdk.NewKVStoreKey("esp"),
 		geoStoreKey: sdk.NewKVStoreKey("geo"),
 		//agentStoreKey:      sdk.NewKVStoreKey("group"),
 		//proposalStoreKey:   sdk.NewKVStoreKey("proposal"),
-		//upgradeStoreKey:    sdk.NewKVStoreKey("upgrade"),
 		txDecoder: txDecoder,
 	}
 
@@ -196,6 +196,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		slashingSubspace, slashing.DefaultCodespace)
 	app.crisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.distrKeeper,
 		app.bankKeeper, app.feeCollectionKeeper)
+	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, app.cdc)
 
 	// register the proposal types
 	govRouter := gov.NewRouter()
@@ -239,12 +240,13 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		slashing.NewAppModule(app.slashingKeeper, app.stakingKeeper),
 		staking.NewAppModule(app.stakingKeeper, app.feeCollectionKeeper, app.distrKeeper, app.accountKeeper),
 		geo.NewAppModule(app.geoKeeper),
+		upgrade.NewAppModule(app.upgradeKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
-	app.mm.SetOrderBeginBlockers(mint.ModuleName, distr.ModuleName, slashing.ModuleName)
+	app.mm.SetOrderBeginBlockers(upgrade.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName)
 
 	app.mm.SetOrderEndBlockers(gov.ModuleName, staking.ModuleName)
 
@@ -260,10 +262,11 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	app.MountStores(app.keyMain, app.keyAccount, app.keyStaking, app.keyMint,
 		app.keyDistr, app.keySlashing, app.keyGov, app.keyFeeCollection,
 		app.keyParams, app.tkeyParams, app.tkeyStaking, app.tkeyDistr,
+		app.upgradeStoreKey,
 		app.geoStoreKey,
 		//app.schemaStoreKey, app.dataStoreKey,
 		//app.espStoreKey, app.geoStoreKey, app.agentStoreKey,
-		//app.proposalStoreKey, app.upgradeStoreKey,
+		//app.proposalStoreKey,
 	)
 
 	// initialize BaseApp

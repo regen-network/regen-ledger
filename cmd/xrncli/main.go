@@ -48,7 +48,9 @@ import (
 	//agentclient "github.com/regen-network/regen-ledger/x/group/client"
 	//claimclient "github.com/regen-network/regen-ledger/x/claim/client"
 	//proposalclient "github.com/regen-network/regen-ledger/x/proposal/client"
-	//upgraderest "github.com/regen-network/regen-ledger/x/upgrade/client/rest"
+	"github.com/cosmos/cosmos-sdk/x/upgrade"
+	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
+	upgraderest "github.com/cosmos/cosmos-sdk/x/upgrade/client/rest"
 )
 
 const (
@@ -57,7 +59,6 @@ const (
 	storeData     = "data"
 	storeAgent    = "group"
 	storeProposal = "proposal"
-	storeUpgrade  = "upgrade"
 )
 
 func main() {
@@ -78,6 +79,7 @@ func main() {
 		mintclient.NewModuleClient(mint.StoreKey, cdc),
 		slashingclient.NewModuleClient(sl.StoreKey, cdc),
 		crisisclient.NewModuleClient(sl.StoreKey, cdc),
+		upgradeclient.NewModuleClient(upgrade.StoreKey, cdc),
 		//proposalclient.NewModuleClient(storeProposal, cdc),
 		geoclient.NewModuleClient(cdc),
 		//dataclient.NewModuleClient(storeData, cdc),
@@ -182,9 +184,9 @@ func registerRoutes(rs *lcd.RestServer) {
 	staking.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	slashing.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, rs.KeyBase)
 	gov.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, paramsrest.ProposalRESTHandler(rs.CliCtx, rs.Cdc), dist.ProposalRESTHandler(rs.CliCtx, rs.Cdc))
+	upgraderest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, "upgrade-plan", upgrade.StoreKey)
 	mintrest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc)
 	//datarest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, storeData)
-	//upgraderest.RegisterRoutes(rs.CliCtx, rs.Mux, rs.Cdc, "upgrade-plan", storeUpgrade)
 }
 
 func initConfig(cmd *cobra.Command) error {
