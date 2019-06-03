@@ -69,7 +69,6 @@ func GetCmdCreateGroup(cdc *codec.Codec) *cobra.Command {
 			}
 
 			msg := group.NewMsgCreateGroup(info, account)
-			fmt.Printf("%+v\n", msg)
 			err := msg.ValidateBasic()
 			if err != nil {
 				return err

@@ -8,6 +8,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/regen-network/regen-ledger/util"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto"
@@ -25,14 +27,24 @@ func setupTestInput() {
 	db := dbm.NewMemDB()
 
 	cdc = codec.New()
+	auth.RegisterCodec(cdc)
+	codec.RegisterCrypto(cdc)
+	RegisterCodec(cdc)
 
+	paramsKey := sdk.NewKVStoreKey("params")
+	tparamsKey := sdk.NewTransientStoreKey("tparams")
+	accKey := sdk.NewKVStoreKey("acc")
 	groupKey := sdk.NewKVStoreKey("groupKey")
 
 	ms := store.NewCommitMultiStore(db)
+	ms.MountStoreWithDB(accKey, sdk.StoreTypeIAVL, db)
+	ms.MountStoreWithDB(paramsKey, sdk.StoreTypeIAVL, db)
 	ms.MountStoreWithDB(groupKey, sdk.StoreTypeIAVL, db)
 	_ = ms.LoadLatestVersion()
 
-	keeper = NewKeeper(groupKey, cdc)
+	paramsKeeper := params.NewKeeper(cdc, paramsKey, tparamsKey, params.DefaultCodespace)
+	accKeeper := auth.NewAccountKeeper(cdc, accKey, paramsKeeper.Subspace(auth.DefaultParamspace), auth.ProtoBaseAccount)
+	keeper = NewKeeper(groupKey, cdc, accKeeper)
 	ctx = sdk.NewContext(ms, abci.Header{ChainID: "test-chain-id"}, false, log.NewNopLogger())
 }
 
@@ -62,8 +74,9 @@ func aUserCreatesAGroupWithThatAddressAndADecisionThresholdOfOne() error {
 		Members:           []Member{mem},
 		DecisionThreshold: sdk.NewInt(1),
 	}
-	groupId = keeper.CreateGroup(ctx, group)
-	return nil
+	var err error
+	groupId, err = keeper.CreateGroup(ctx, group)
+	return err
 }
 
 func theyShouldGetANewGroupAddressBack() error {

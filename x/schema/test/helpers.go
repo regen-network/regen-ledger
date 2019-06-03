@@ -1,44 +1,33 @@
 package test
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/graph"
+	"github.com/regen-network/regen-ledger/util"
 	"github.com/regen-network/regen-ledger/x/schema"
 	"github.com/stretchr/testify/suite"
-	abci "github.com/tendermint/tendermint/abci/types"
-	dbm "github.com/tendermint/tendermint/libs/db"
-	"github.com/tendermint/tendermint/libs/log"
 )
 
 type Harness struct {
-	suite.Suite
+	util.TestHarness
 	Keeper   schema.Keeper
 	Handler  sdk.Handler
-	Ctx      sdk.Context
-	Cms      store.CommitMultiStore
-	AnAddr   sdk.AccAddress
 	Resolver graph.SchemaResolver
 }
 
 func (s *Harness) Setup() {
-	db := dbm.NewMemDB()
-	s.Cms = store.NewCommitMultiStore(db)
+	s.TestHarness.Setup()
 	key := sdk.NewKVStoreKey("schema")
-	cdc := codec.New()
-	schema.RegisterCodec(cdc)
-	s.Keeper = schema.NewKeeper(key, cdc)
-	s.Cms.MountStoreWithDB(key, sdk.StoreTypeIAVL, db)
+	schema.RegisterCodec(s.Cdc)
+	s.Keeper = schema.NewKeeper(key, s.Cdc)
+	s.Cms.MountStoreWithDB(key, sdk.StoreTypeIAVL, s.Db)
 	_ = s.Cms.LoadLatestVersion()
-	s.Ctx = sdk.NewContext(s.Cms, abci.Header{}, false, log.NewNopLogger())
-	s.AnAddr = sdk.AccAddress{0, 1, 2, 3, 4, 5, 6, 7, 8}
 	s.Handler = schema.NewHandler(s.Keeper)
 	s.Resolver = schema.NewOnChainSchemaResolver(s.Keeper, s.Ctx)
 }
 
 func (s *Harness) CreateSampleSchema() {
-	CreateSampleSchema(s.Suite, s.Keeper, s.Ctx, s.AnAddr)
+	CreateSampleSchema(s.Suite, s.Keeper, s.Ctx, s.Addr1)
 }
 
 func CreateSampleSchema(s suite.Suite, keeper schema.Keeper, ctx sdk.Context, anAddr sdk.AccAddress) {

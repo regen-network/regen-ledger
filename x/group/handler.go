@@ -20,7 +20,13 @@ func NewHandler(keeper Keeper) sdk.Handler {
 }
 
 func handleMsgCreateGroup(ctx sdk.Context, keeper Keeper, msg MsgCreateGroup) sdk.Result {
-	id := keeper.CreateGroup(ctx, msg.Data)
+	id, err := keeper.CreateGroup(ctx, msg.Data)
+	if err != nil {
+		return sdk.Result{
+			Code: sdk.CodeUnknownAddress,
+			Log:  err.Error(),
+		}
+	}
 	return sdk.Result{
 		Tags: sdk.NewTags("group.id", []byte(id.String())),
 	}

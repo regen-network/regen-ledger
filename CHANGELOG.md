@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [\#164380651](https://www.pivotaltracker.com/story/show/164380651) Implement Postgres indexing for geo module
 - [\#17](https://github.com/regen-network/regen-ledger/issues/17) Add define property schema support
 - [\#18](https://github.com/regen-network/regen-ledger/issues/18) Graph package and binary serialization format
+- [\#27](https://github.com/regen-network/regen-ledger/issues/27) Create claim module
     
 ## [0.3.0] - 2018-01-09
 
