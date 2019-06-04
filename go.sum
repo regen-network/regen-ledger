@@ -44,9 +44,11 @@ github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d h1:49RLWk1j44Xu4fj
 github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
 github.com/cosmos/ledger-cosmos-go v0.9.11 h1:bkcIKqaM6evicjkSP+Le8HDLXt9P+MqGRnGiMUC20m4=
 github.com/cosmos/ledger-cosmos-go v0.9.11/go.mod h1:RWldjvUf4Hfi46ti/8etBH3eQ2rOqqz2hstdzROQSHo=
+github.com/cosmos/ledger-cosmos-go v0.10.3 h1:Qhi5yTR5Pg1CaTpd00pxlGwNl4sFRdtK1J96OTjeFFc=
 github.com/cosmos/ledger-cosmos-go v0.10.3/go.mod h1:J8//BsAGTo3OC/vDLjMRFLW6q0WAaXvHnVc7ZmE8iUY=
 github.com/cosmos/ledger-go v0.9.1 h1:bRIamtlWShVk1THw52NdCPHxtBxKnauglSB23mH1/w8=
 github.com/cosmos/ledger-go v0.9.1/go.mod h1:oZJ2hHAZROdlHiwTg4t7kP+GKIIkBT+o6c9QWFanOyI=
+github.com/cosmos/ledger-go v0.9.2 h1:Nnao/dLwaVTk1Q5U9THldpUMMXU94BOTWPddSmVB6pI=
 github.com/cosmos/ledger-go v0.9.2/go.mod h1:oZJ2hHAZROdlHiwTg4t7kP+GKIIkBT+o6c9QWFanOyI=
 github.com/d4l3k/messagediff v1.2.1 h1:ZcAIMYsUg0EAp9X+tt8/enBE/Q8Yd5kzPynLyKptt9U=
 github.com/d4l3k/messagediff v1.2.1/go.mod h1:Oozbb1TVXFac9FtSIxHBMnBCq2qeH/2KkEQxENCrlLo=
@@ -191,6 +193,7 @@ github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-13fdf0c499fa0ef8ff9f
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-13fdf0c499fa0ef8ff9f303999f43fa8eb582211/go.mod h1:aLgIheIE6TNKv6nyUhMjLwS4QHntAcEzgZzJBINvTds=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-2aca2a23f319f7415479009b57b6d27c9113c422 h1:geHDeOMbcg8jZetkR7k0yW6FvTKmY0qFo38W/ImmRMk=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-2aca2a23f319f7415479009b57b6d27c9113c422/go.mod h1:BvyNPEYewihHQa092/+OEX5dgLZsV7H2boKkkj1H2wI=
+github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-40bbfbc157c4086e61ee284716d9da0b8b361458 h1:M4dUjBPotvaPFbnas69qMYBfIkffejaRcqmJKhy2dX4=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-40bbfbc157c4086e61ee284716d9da0b8b361458/go.mod h1:BvyNPEYewihHQa092/+OEX5dgLZsV7H2boKkkj1H2wI=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-5e9eb1094d2bbcacc3b06d339a6e25e882de25fd h1:xHlyPX4UbBfzBsrZjY3SfeizUx7gf+LNCw9aJXc0lMA=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-5e9eb1094d2bbcacc3b06d339a6e25e882de25fd/go.mod h1:BvyNPEYewihHQa092/+OEX5dgLZsV7H2boKkkj1H2wI=
