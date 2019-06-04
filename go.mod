@@ -8,10 +8,11 @@ require (
 	github.com/btcsuite/btcd v0.0.0-20190427004231-96897255fd17 // indirect
 	github.com/btcsuite/btcutil v0.0.0-20190425235716-9e5f4b9a998d
 	github.com/campoy/unique v0.0.0-20180121183637-88950e537e7e
-	github.com/cosmos/cosmos-sdk v0.28.2-0.20190528143729-61d0f888b7c6
+	github.com/cosmos/cosmos-sdk v0.0.0-00010101000000-000000000000
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d // indirect
 	github.com/ethereum/go-ethereum v1.8.22 // indirect
 	github.com/gogo/protobuf v1.2.1 // indirect
+	github.com/golang/lint v0.0.0-20180702182130-06c8688daad7 // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.7.0
 	github.com/leanovate/gopter v0.0.0-20190000000000-6e7780f59df75750618bf30eeafcb1a88e457fcb
@@ -43,3 +44,5 @@ require (
 )
 
 replace golang.org/x/crypto => github.com/tendermint/crypto v0.0.0-20180820045704-3764759f34a5
+
+replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-1b7a69be1993054a17a71d905d2b4df15ffec3f8

@@ -7,10 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- [\#166185199](https://www.pivotaltracker.com/story/show/166185199) Temporarily disable all custom modules beside `geo` because they need to be integrated with the new app module setup and this can be a good test case for a coordinated tesnet upgrade
 - [\#163156528](https://www.pivotaltracker.com/story/show/163156528) Use stored geo shape for ESP results
 - [\#164056249](https://www.pivotaltracker.com/story/show/164056249) Rename `agent` -> `group` module, align structure of groups with specification document
 - [\#16](https://github.com/regen-network/regen-ledger/issues/16) The on-chain store data command now only works with graphs defined by the graph package
-- [\#166185199](https://www.pivotaltracker.com/story/show/166185199) Integrate Cosmos staking modules, temporarily disable all custom modules beside `geo` because they need to be integrated with the new app module setup and this can be a good test case for a coordinated tesnet upgrade
+- [\#15](https://github.com/regen-network/regen-ledger/issues/15) Test and debug upgrade module in Cosmos PR [\#4233](https://github.com/cosmos/cosmos-sdk/pull/4233) against an
+internal testnet
 
 ### Added
 
@@ -33,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [\#17](https://github.com/regen-network/regen-ledger/issues/17) Add define property schema support
 - [\#18](https://github.com/regen-network/regen-ledger/issues/18) Graph package and binary serialization format
 - [\#27](https://github.com/regen-network/regen-ledger/issues/27) Create claim module
+- [\#166185199](https://www.pivotaltracker.com/story/show/166185199) Integrate Cosmos staking modules
     
 ## [0.3.0] - 2018-01-09
 
