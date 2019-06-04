@@ -11,7 +11,7 @@ The steps for setting this up on a running NixOS machine are roughly as follows:
   imports =
     [
       ./hardware-configuration.nix
-      /path-to-regen-ledger-git-repo/module.nix
+      /path-to-regen-ledger-git-repo/nixos/module.nix
     ];
 ```
 3. Enable the `xrn` programs in `/etc/nixos/configuration` and run `nixos-rebuild switch):

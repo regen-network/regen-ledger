@@ -95,7 +95,7 @@ in
           description = "Regen Ledger Daemon";
           wantedBy = [ "multi-user.target" ];
           after = [ "network.target" ];
-          path = [ xrnd pkgs.bash pkgs.jq config.system.build.nixos-rebuild pkgs.git.minimal pkgs.gnutar pkgs.xz.bin config.nix.package.out ];
+          path = [ xrnd pkgs.bash pkgs.jq config.system.build.nixos-rebuild pkgs.git pkgs.gnutar pkgs.xz.bin config.nix.package.out ];
           script = ''
             xrnd start --moniker ${xrndCfg.moniker} --home ${xrndCfg.home}
           '';
