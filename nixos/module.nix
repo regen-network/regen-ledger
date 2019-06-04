@@ -4,7 +4,7 @@ with lib;
 
 let
   xrndCfg = config.services.xrnd;
-  xrn_build = (import ./default.nix);
+  xrn_build = (import ../default.nix);
   xrnd = xrn_build.xrnd;
   xrncli = xrn_build.xrncli;
 in
