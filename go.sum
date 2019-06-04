@@ -203,6 +203,7 @@ github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-a09fe42180af8cc47eaa
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-a09fe42180af8cc47eaa0bf00f0bf3c84e0c8150/go.mod h1:BvyNPEYewihHQa092/+OEX5dgLZsV7H2boKkkj1H2wI=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-c62cf95ab73cf93d0b67070a7d22e5986e9fcdf5 h1:UTQNcXY4W3xxkib9rKOggQB5a8y4lro49SMHcM8t/nQ=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-c62cf95ab73cf93d0b67070a7d22e5986e9fcdf5/go.mod h1:BvyNPEYewihHQa092/+OEX5dgLZsV7H2boKkkj1H2wI=
+github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-e8e254379023c187ade7b5387b34c4f65c182164/go.mod h1:BvyNPEYewihHQa092/+OEX5dgLZsV7H2boKkkj1H2wI=
 github.com/rs/cors v1.6.0 h1:G9tHG9lebljV9mfp9SNPDL36nCDxmo3zTlAf1YgvzmI=
 github.com/rs/cors v1.6.0/go.mod h1:gFx+x8UowdsKA9AchylcLynDq+nNFfI8FkUZdN/jGCU=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
