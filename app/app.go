@@ -198,9 +198,6 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	app.crisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.distrKeeper,
 		app.bankKeeper, app.feeCollectionKeeper)
 	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, app.cdc)
-	app.upgradeKeeper.SetUpgradeHandler("U1", func(ctx sdk.Context, plan upgrade.Plan) {
-		// upgrade app state
-	})
 
 	// register the proposal types
 	govRouter := gov.NewRouter()
