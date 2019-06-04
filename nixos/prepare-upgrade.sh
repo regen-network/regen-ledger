@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -x
-if [ $UPGRADE_INFO != "null" ]; then
-  export UPGRADE_COMMIT=$(echo $UPGRADE_INFO | jq -r '.commit')
+if [ $1 != "null" ]; then
+  export UPGRADE_COMMIT=$(echo $1 | jq -r '.info.commit')
   if  [ $UPGRADE_COMMIT != "null" ]; then
       echo "Doing upgrade to $UPGRADE_COMMIT"
       cd $REGEN_LEDGER_REPO

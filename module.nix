@@ -95,14 +95,15 @@ in
           description = "Regen Ledger Daemon";
           wantedBy = [ "multi-user.target" ];
           after = [ "network.target" ];
-          path = [ xrnd pkgs.git pkgs.bash pkgs.jq config.system.build.nixos-rebuild ];
+          path = [ xrnd pkgs.bash pkgs.jq config.system.build.nixos-rebuild pkgs.git.minimal pkgs.gnutar pkgs.xz.bin config.nix.package.out ];
           script = ''
             xrnd start --moniker ${xrndCfg.moniker} --home ${xrndCfg.home}
           '';
-          environment = {
+          environment = config.nix.envVars // {
+	    inherit (config.environment.sessionVariables) NIX_PATH;
             REGEN_LEDGER_REPO = xrndCfg.repoPath; 
             POSTGRES_INDEX_URL = if xrndCfg.enablePostgres then "host=/tmp user=xrnd dbname=xrn sslmode=disable" else xrndCfg.postgresUrl;
-          };
+          } // config.networking.proxy.envVars ;
           serviceConfig = {
             User = "root";
           };
