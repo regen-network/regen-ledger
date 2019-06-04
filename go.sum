@@ -189,8 +189,17 @@ github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-0889aa61731dd237c46b
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-0889aa61731dd237c46b903964359e9f416fea8a/go.mod h1:BvyNPEYewihHQa092/+OEX5dgLZsV7H2boKkkj1H2wI=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-13fdf0c499fa0ef8ff9f303999f43fa8eb582211 h1:Nc/Y4I2LSSWym/uKF0cbvnla+gBQEO+XD+l+PdPzM5Y=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-13fdf0c499fa0ef8ff9f303999f43fa8eb582211/go.mod h1:aLgIheIE6TNKv6nyUhMjLwS4QHntAcEzgZzJBINvTds=
+github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-2aca2a23f319f7415479009b57b6d27c9113c422 h1:geHDeOMbcg8jZetkR7k0yW6FvTKmY0qFo38W/ImmRMk=
+github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-2aca2a23f319f7415479009b57b6d27c9113c422/go.mod h1:BvyNPEYewihHQa092/+OEX5dgLZsV7H2boKkkj1H2wI=
+github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-40bbfbc157c4086e61ee284716d9da0b8b361458/go.mod h1:BvyNPEYewihHQa092/+OEX5dgLZsV7H2boKkkj1H2wI=
+github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-5e9eb1094d2bbcacc3b06d339a6e25e882de25fd h1:xHlyPX4UbBfzBsrZjY3SfeizUx7gf+LNCw9aJXc0lMA=
+github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-5e9eb1094d2bbcacc3b06d339a6e25e882de25fd/go.mod h1:BvyNPEYewihHQa092/+OEX5dgLZsV7H2boKkkj1H2wI=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-66807ed532adbc1721e5d0b3aea02f82d1239629 h1:/bwPajzxlUU/uZk3tv+7e7eu2hDNehwILhPeJ+niFcU=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-66807ed532adbc1721e5d0b3aea02f82d1239629/go.mod h1:No7UW0JgQnogs4W0jPetEH8s0gZHvqAr3sRmzyuf0i0=
+github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-a09fe42180af8cc47eaa0bf00f0bf3c84e0c8150 h1:ddeRx+cw13BG8ko2ZntKgbqgAPvVXqI1FgCUIDrjT+M=
+github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-a09fe42180af8cc47eaa0bf00f0bf3c84e0c8150/go.mod h1:BvyNPEYewihHQa092/+OEX5dgLZsV7H2boKkkj1H2wI=
+github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-c62cf95ab73cf93d0b67070a7d22e5986e9fcdf5 h1:UTQNcXY4W3xxkib9rKOggQB5a8y4lro49SMHcM8t/nQ=
+github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-c62cf95ab73cf93d0b67070a7d22e5986e9fcdf5/go.mod h1:BvyNPEYewihHQa092/+OEX5dgLZsV7H2boKkkj1H2wI=
 github.com/rs/cors v1.6.0 h1:G9tHG9lebljV9mfp9SNPDL36nCDxmo3zTlAf1YgvzmI=
 github.com/rs/cors v1.6.0/go.mod h1:gFx+x8UowdsKA9AchylcLynDq+nNFfI8FkUZdN/jGCU=
 github.com/sirupsen/logrus v1.2.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=

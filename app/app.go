@@ -66,6 +66,7 @@ func init() {
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
 		geo.AppModuleBasic{},
+		upgrade.AppModuleBasic{},
 	)
 }
 
@@ -202,7 +203,8 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	govRouter := gov.NewRouter()
 	govRouter.AddRoute(gov.RouterKey, gov.ProposalHandler).
 		AddRoute(params.RouterKey, params.NewParamChangeProposalHandler(app.paramsKeeper)).
-		AddRoute(distr.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.distrKeeper))
+		AddRoute(distr.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.distrKeeper)).
+		AddRoute(upgrade.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.upgradeKeeper))
 	app.govKeeper = gov.NewKeeper(app.cdc, app.keyGov, app.paramsKeeper, govSubspace,
 		app.bankKeeper, &stakingKeeper, gov.DefaultCodespace, govRouter)
 

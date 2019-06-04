@@ -45,4 +45,5 @@ require (
 
 replace golang.org/x/crypto => github.com/tendermint/crypto v0.0.0-20180820045704-3764759f34a5
 
-replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-0889aa61731dd237c46b903964359e9f416fea8a
+//replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-40bbfbc157c4086e61ee284716d9da0b8b361458
+replace github.com/cosmos/cosmos-sdk => /Users/arc/go/src/github.com/cosmos/cosmos-sdk

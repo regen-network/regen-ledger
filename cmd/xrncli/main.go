@@ -50,6 +50,7 @@ import (
 	//proposalclient "github.com/regen-network/regen-ledger/x/proposal/client"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
+	upgradecli "github.com/cosmos/cosmos-sdk/x/upgrade/client/cli"
 	upgraderest "github.com/cosmos/cosmos-sdk/x/upgrade/client/rest"
 )
 
@@ -73,7 +74,9 @@ func main() {
 	config.Seal()
 
 	mc := []sdk.ModuleClient{
-		govClient.NewModuleClient(gv.StoreKey, cdc, paramcli.GetCmdSubmitProposal(cdc), distrcli.GetCmdSubmitProposal(cdc)),
+		geoclient.NewModuleClient(cdc),
+		govClient.NewModuleClient(gv.StoreKey, cdc,
+			paramcli.GetCmdSubmitProposal(cdc), distrcli.GetCmdSubmitProposal(cdc), upgradecli.GetCmdSubmitProposal(cdc)),
 		distClient.NewModuleClient(distcmd.StoreKey, cdc),
 		stakingclient.NewModuleClient(st.StoreKey, cdc),
 		mintclient.NewModuleClient(mint.StoreKey, cdc),
@@ -81,7 +84,6 @@ func main() {
 		crisisclient.NewModuleClient(sl.StoreKey, cdc),
 		upgradeclient.NewModuleClient(upgrade.StoreKey, cdc),
 		//proposalclient.NewModuleClient(storeProposal, cdc),
-		geoclient.NewModuleClient(cdc),
 		//dataclient.NewModuleClient(storeData, cdc),
 		//agentclient.NewModuleClient(storeAgent, cdc),
 		//claimclient.NewModuleClient(storeClaim, cdc),
