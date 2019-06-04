@@ -76,7 +76,11 @@ func main() {
 	mc := []sdk.ModuleClient{
 		geoclient.NewModuleClient(cdc),
 		govClient.NewModuleClient(gv.StoreKey, cdc,
-			paramcli.GetCmdSubmitProposal(cdc), distrcli.GetCmdSubmitProposal(cdc), upgradecli.GetCmdSubmitProposal(cdc)),
+			paramcli.GetCmdSubmitProposal(cdc),
+			distrcli.GetCmdSubmitProposal(cdc),
+			upgradecli.GetCmdSubmitUpgradeProposal(cdc),
+			upgradecli.GetCmdSubmitCancelUpgradeProposal(cdc),
+		),
 		distClient.NewModuleClient(distcmd.StoreKey, cdc),
 		stakingclient.NewModuleClient(st.StoreKey, cdc),
 		mintclient.NewModuleClient(mint.StoreKey, cdc),
