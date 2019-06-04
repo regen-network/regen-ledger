@@ -199,6 +199,8 @@ github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-5e9eb1094d2bbcacc3b0
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-5e9eb1094d2bbcacc3b06d339a6e25e882de25fd/go.mod h1:BvyNPEYewihHQa092/+OEX5dgLZsV7H2boKkkj1H2wI=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-66807ed532adbc1721e5d0b3aea02f82d1239629 h1:/bwPajzxlUU/uZk3tv+7e7eu2hDNehwILhPeJ+niFcU=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-66807ed532adbc1721e5d0b3aea02f82d1239629/go.mod h1:No7UW0JgQnogs4W0jPetEH8s0gZHvqAr3sRmzyuf0i0=
+github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-7eaff40deb8d50ba3ccf1fa11e90a8b62698b28f h1:Q8a0maLuBQ9phQoSAPllg/BAnkzIRH9+s2b8tFVdFbw=
+github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-7eaff40deb8d50ba3ccf1fa11e90a8b62698b28f/go.mod h1:BvyNPEYewihHQa092/+OEX5dgLZsV7H2boKkkj1H2wI=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-a09fe42180af8cc47eaa0bf00f0bf3c84e0c8150 h1:ddeRx+cw13BG8ko2ZntKgbqgAPvVXqI1FgCUIDrjT+M=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-a09fe42180af8cc47eaa0bf00f0bf3c84e0c8150/go.mod h1:BvyNPEYewihHQa092/+OEX5dgLZsV7H2boKkkj1H2wI=
 github.com/regen-network/cosmos-sdk v0.0.0-0.20190329021654-c62cf95ab73cf93d0b67070a7d22e5986e9fcdf5 h1:UTQNcXY4W3xxkib9rKOggQB5a8y4lro49SMHcM8t/nQ=
