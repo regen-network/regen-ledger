@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [\#163156528](https://www.pivotaltracker.com/story/show/163156528) Use stored geo shape for ESP results
 - [\#164056249](https://www.pivotaltracker.com/story/show/164056249) Rename `agent` -> `group` module, align structure of groups with specification document
 - [\#16](https://github.com/regen-network/regen-ledger/issues/16) The on-chain store data command now only works with graphs defined by the graph package
+- [\#166185199](https://www.pivotaltracker.com/story/show/166185199) Integrate Cosmos staking modules, temporarily disable all custom modules beside `geo` because they need to be integrated with the new app module setup and this can be a good test case for a coordinated tesnet upgrade
 
 ### Added
 
