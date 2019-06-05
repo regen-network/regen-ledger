@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2019-06-04
+
 ### Changed
 - [\#166185199](https://www.pivotaltracker.com/story/show/166185199) Temporarily disable all custom modules beside `geo` because they need to be integrated with the new app module setup and this can be a good test case for a coordinated tesnet upgrade
 - [\#163156528](https://www.pivotaltracker.com/story/show/163156528) Use stored geo shape for ESP results
@@ -37,14 +39,14 @@ internal testnet
 - [\#27](https://github.com/regen-network/regen-ledger/issues/27) Create claim module
 - [\#166185199](https://www.pivotaltracker.com/story/show/166185199) Integrate Cosmos staking modules
     
-## [0.3.0] - 2018-01-09
+## [0.3.0] - 2019-01-09
 
 - Updated `xrn-test-2` testnet at height `1000`
 
 ### Fixed
 - Storage of ESP results bug
 
-## [0.2.0] - 2018-01-09
+## [0.2.0] - 2019-01-09
 
 - Launched `xrn-test-2` testnet
 
