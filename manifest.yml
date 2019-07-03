@@ -1,0 +1,13 @@
+applications:
+  - name: regen-ledger
+    disk_quota: 1G
+    instances: 1
+    memory: 128MB
+    stack: cflinuxfs3
+    command: make install
+    route: regen-validator.genblue.io
+    buildpacks:
+      - go_buildpack
+    env:
+      GO111MODULE: "on"
+    

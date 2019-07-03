@@ -1,4 +1,4 @@
-# Regen Ledger
+# Regen Ledger.
 ![banner](docs/regen-network-image.jpg)
 
 [![pipeline status](https://gitlab.com/regen-network/regen-ledger/badges/master/pipeline.svg)](https://gitlab.com/regen-network/regen-ledger/commits/master)
