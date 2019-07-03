@@ -1,0 +1,43 @@
+=============== Jun 3, 2019 (PDT) ===============
+08:09:24.951063 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+08:09:24.963173 db@open opening
+08:09:24.964985 version@stat F·[] S·0B[] Sc·[]
+08:09:24.970590 db@janitor F·2 G·0
+08:09:24.971762 db@open done T·8.077384ms
+08:09:25.272590 db@close closing
+08:09:25.273458 db@close done T·864.721µs
+=============== Jun 3, 2019 (PDT) ===============
+08:09:25.274782 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+08:09:25.275098 version@stat F·[] S·0B[] Sc·[]
+08:09:25.275131 db@open opening
+08:09:25.275242 journal@recovery F·1
+08:09:25.275371 journal@recovery recovering @1
+08:09:25.280142 memdb@flush created L0@2 N·2 S·462B "nod..nfo,v1":"xrn..ess,v2"
+08:09:25.281744 version@stat F·[1] S·462B[462B] Sc·[0.25]
+08:09:25.303178 db@janitor F·3 G·0
+08:09:25.303264 db@open done T·28.114366ms
+08:09:25.583233 db@close closing
+08:09:25.583530 db@close done T·294.192µs
+=============== Jun 3, 2019 (PDT) ===============
+08:10:40.374857 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+08:10:40.375750 version@stat F·[1] S·462B[462B] Sc·[0.25]
+08:10:40.375826 db@open opening
+08:10:40.376058 journal@recovery F·1
+08:10:40.376829 journal@recovery recovering @3
+08:10:40.378612 version@stat F·[1] S·462B[462B] Sc·[0.25]
+08:10:40.400188 db@janitor F·3 G·0
+08:10:40.400359 db@open done T·24.478648ms
+08:10:40.699566 db@close closing
+08:10:40.701046 db@close done T·1.424521ms
+=============== Jun 3, 2019 (PDT) ===============
+08:10:40.704065 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+08:10:40.704512 version@stat F·[1] S·462B[462B] Sc·[0.25]
+08:10:40.704556 db@open opening
+08:10:40.704717 journal@recovery F·1
+08:10:40.704885 journal@recovery recovering @5
+08:10:40.709544 memdb@flush created L0@7 N·2 S·462B "nod..nfo,v4":"xrn..ess,v5"
+08:10:40.711989 version@stat F·[2] S·924B[924B] Sc·[0.50]
+08:10:40.732824 db@janitor F·4 G·0
+08:10:40.732923 db@open done T·28.340977ms
+08:10:41.015101 db@close closing
+08:10:41.015358 db@close done T·250.892µs

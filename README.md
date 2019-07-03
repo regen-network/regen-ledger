@@ -1,4 +1,4 @@
-# Regen Ledger
+# Regen Ledger.
 ![banner](docs/regen-network-image.jpg)
 
 [![pipeline status](https://gitlab.com/regen-network/regen-ledger/badges/master/pipeline.svg)](https://gitlab.com/regen-network/regen-ledger/commits/master)
@@ -99,7 +99,7 @@ can be controlled directly by ecological contracts.
 
 ## Testnet Status
 
-See [testnets/](./testnets)
+See https://github.com/regen-network/testnets.
 <br />
 <br />
 <br />
