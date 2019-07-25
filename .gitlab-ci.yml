@@ -11,6 +11,7 @@ build:
   script:
     - make install
   artifacts:
+    name: $CI_COMMIT_REF_SLUG
     paths:
       - "$GOPATH/bin/xrnd"
       - "$GOPATH/bin/xrncli"
