@@ -20,6 +20,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	"io"
 	"io/ioutil"
+	"math/big"
 	"os"
 	"path/filepath"
 	//"os"
@@ -68,6 +69,8 @@ func init() {
 		geo.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 	)
+
+	sdk.PowerReduction = sdk.NewIntFromBigInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(2), nil))
 }
 
 // custom tx codec
