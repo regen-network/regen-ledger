@@ -10,6 +10,10 @@ build:
   image: golang:1.11.5
   script:
     - make install
+  artifacts:
+    paths:
+      - "$GOPATH/bin/xrnd"
+      - "$GOPATH/bin/xrncli"
 
 test:
   image: golang:1.11.5
