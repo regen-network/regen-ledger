@@ -201,6 +201,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	app.crisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.distrKeeper,
 		app.bankKeeper, app.feeCollectionKeeper)
 	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, app.cdc)
+	app.upgradeKeeper.SetUpgradeHandler("regen-test-1000-upgrade-1", func(ctx sdk.Context, plan upgrade.Plan) { })
 
 	// register the proposal types
 	govRouter := gov.NewRouter()
@@ -223,9 +224,6 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	//app.agentKeeper = group.NewKeeper(app.agentStoreKey, cdc, app.accountKeeper)
 
 	app.geoKeeper = geo.NewKeeper(app.geoStoreKey, cdc, app.pgIndexer)
-
-	//app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, cdc)
-	//app.upgradeKeeper.SetDoShutdowner(app.shutdownOnUpgrade)
 
 	//proposalRouter := proposal.NewRouter().
 	//	AddRoute("esp", app.espKeeper).
