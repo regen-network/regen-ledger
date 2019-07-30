@@ -70,6 +70,8 @@ func init() {
 		upgrade.AppModuleBasic{},
 	)
 
+	// this changes the power reduction from 10e6 to 10e2 for the regen-test-1001 testnet which will give
+	// every validator 10,000 times more voting power than they currently have
 	sdk.PowerReduction = sdk.NewIntFromBigInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(2), nil))
 }
 
@@ -201,7 +203,8 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	app.crisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.distrKeeper,
 		app.bankKeeper, app.feeCollectionKeeper)
 	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, app.cdc)
-	app.upgradeKeeper.SetUpgradeHandler("regen-test-1000-upgrade-1", func(ctx sdk.Context, plan upgrade.Plan) { })
+	// this configures a no-op upgrade handler for the "el-choco" upgrade
+	app.upgradeKeeper.SetUpgradeHandler("el-choco", func(ctx sdk.Context, plan upgrade.Plan) { })
 
 	// register the proposal types
 	govRouter := gov.NewRouter()
