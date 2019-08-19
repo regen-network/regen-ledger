@@ -72,4 +72,16 @@ type MsgManageCreditSellOffer struct {
 type MsgManageCreditBuyOffer struct {
   ManageCreditOffer
 }
+
+// MsgManageCreditClassBuyOffer can be used to generically buy credits of a
+// given class irregardless of the specific credit being purchased
+type MsgManageCreditClassBuyOffer struct {
+  CreditClass CreditClassID
+  Account sdk.AccAddress
+  // Units should be set to 0 to delete an offer
+  Units sdk.Dec
+  CoinsPerUnit sdk.Coins
+  // Offer should be set to nil to create a new offer
+  Offer OfferID
+}
 ```
