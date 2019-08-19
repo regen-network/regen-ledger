@@ -12,6 +12,8 @@ type []byte CreditClassID
 type MsgIssueCredit struct {
   CreditClass CreditClassID 
   Polygon geo.Polygon
+  StartDate time.Time
+  EndDate time.Time
   Issuer sdk.AccAddress
   Vendor sdk.AccAddress
 }
