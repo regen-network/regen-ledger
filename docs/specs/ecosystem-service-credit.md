@@ -56,7 +56,7 @@ type MsgConsumeCredit struct {
 type []byte OfferID
 
 type ManageCreditOffer struct {
-  Credit CreditID
+  Credits []CreditID
   Account sdk.AccAddress
   // Units should be set to 0 to delete an offer
   Units sdk.Dec
@@ -81,6 +81,17 @@ type MsgManageCreditClassBuyOffer struct {
   // Units should be set to 0 to delete an offer
   Units sdk.Dec
   CoinsPerUnit sdk.Coins
+  // Offer should be set to nil to create a new offer
+  Offer OfferID
+}
+
+type MsgManageCreditClassExchangeOffer struct {
+  SellCredits []CreditID
+  BuyCreditClass CreditClassID
+  Account sdk.AccAddress
+  // Units should be set to 0 to delete an offer
+  SellUnits sdk.Dec
+  BuyUnits sdk.Dec
   // Offer should be set to nil to create a new offer
   Offer OfferID
 }
