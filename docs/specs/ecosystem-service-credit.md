@@ -52,6 +52,8 @@ type MsgConsumeCredit struct {
 
 ## Credit Exchange
 
+### Buying and Selling Credits with Coins
+
 ```go
 type []byte OfferID
 
@@ -84,6 +86,14 @@ type MsgManageCreditClassBuyOffer struct {
   // Offer should be set to nil to create a new offer
   Offer OfferID
 }
+```
+
+### Exchanging Credits of Different Classes
+
+This would effectively allow credits of a single class to be treated as an 
+effectively fungible asset and allow trading pairs between two credit classes.
+
+```go
 
 type MsgManageCreditClassExchangeOffer struct {
   SellCredits []CreditID
