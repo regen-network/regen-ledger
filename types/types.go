@@ -97,7 +97,7 @@ func DecodeBech32DataAddress(url string) (DataAddress, error) {
 // as opposed to "raw" data which can have any format
 func IsGraphDataAddress(addr DataAddress) bool {
 	switch addr[0] {
-	case DataAddressPrefixOnChainGraph:
+	case DataAddressPrefixGraph:
 		return true
 	default:
 		return false
@@ -108,7 +108,7 @@ func IsGraphDataAddress(addr DataAddress) bool {
 // data - i.e. data in any format - as opposed to well-structured graph data
 func IsRawDataAddress(addr DataAddress) bool {
 	switch addr[0] {
-	case DataAddressPrefixOnChainGraph:
+	case DataAddressPrefixGraph:
 		return false
 	default:
 		return false

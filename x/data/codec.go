@@ -6,5 +6,5 @@ import (
 
 // RegisterCodec registers concrete types on the Amino codec
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgStoreGraph{}, "data/MsgStoreGraph", nil)
+	cdc.RegisterConcrete(MsgTrackRawData{}, "data/MsgTrackRawData", nil)
 }
