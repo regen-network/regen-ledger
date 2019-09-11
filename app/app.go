@@ -104,7 +104,7 @@ type XrnApp struct {
 	keyFeeCollection *sdk.KVStoreKey
 	keyParams        *sdk.KVStoreKey
 	tkeyParams       *sdk.TransientStoreKey
-	upgradeStoreKey    *sdk.KVStoreKey
+	upgradeStoreKey  *sdk.KVStoreKey
 	//dataStoreKey       *sdk.KVStoreKey
 	//schemaStoreKey     *sdk.KVStoreKey
 	//espStoreKey        *sdk.KVStoreKey
@@ -168,7 +168,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		keyFeeCollection: sdk.NewKVStoreKey(auth.FeeStoreKey),
 		keyParams:        sdk.NewKVStoreKey(params.StoreKey),
 		tkeyParams:       sdk.NewTransientStoreKey(params.TStoreKey),
-		upgradeStoreKey:    sdk.NewKVStoreKey(upgrade.StoreKey),
+		upgradeStoreKey:  sdk.NewKVStoreKey(upgrade.StoreKey),
 		//dataStoreKey:       sdk.NewKVStoreKey("data"),
 		//schemaStoreKey:     sdk.NewKVStoreKey("schema"),
 		//espStoreKey:        sdk.NewKVStoreKey("esp"),
@@ -204,7 +204,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		app.bankKeeper, app.feeCollectionKeeper)
 	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, app.cdc)
 	// this configures a no-op upgrade handler for the "el-choco" upgrade
-	app.upgradeKeeper.SetUpgradeHandler("el-choco", func(ctx sdk.Context, plan upgrade.Plan) { })
+	app.upgradeKeeper.SetUpgradeHandler("amazonas", func(ctx sdk.Context, plan upgrade.Plan) {})
 
 	// register the proposal types
 	govRouter := gov.NewRouter()
