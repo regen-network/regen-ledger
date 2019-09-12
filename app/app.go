@@ -204,7 +204,13 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		app.bankKeeper, app.feeCollectionKeeper)
 	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, app.cdc)
 	// this configures a no-op upgrade handler for the "el-choco" upgrade
-	app.upgradeKeeper.SetUpgradeHandler("amazonas", func(ctx sdk.Context, plan upgrade.Plan) {})
+	app.upgradeKeeper.SetUpgradeHandler("amazonas", func(ctx sdk.Context, plan upgrade.Plan) {
+		// Add some more coins to the faucet account
+		addr, err := sdk.AccAddressFromBech32("xrn:1xrsmkqh305m09tc5x73v4t3wtcuqmf6cgy2taw")
+		if err == nil {
+			_, _ = app.bankKeeper.AddCoins(ctx, addr, sdk.Coins{sdk.Coin{Denom: "tree", Amount: sdk.NewInt(10000000)}})
+		}
+	})
 
 	// register the proposal types
 	govRouter := gov.NewRouter()
