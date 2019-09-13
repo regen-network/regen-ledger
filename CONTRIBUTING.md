@@ -18,3 +18,36 @@ You'll find test files in each module. Please make sure to add test coverage for
 ## Say Hello
 
 Questions? Ideas? Reach out and say hi on our [Gitter channel](https://gitter.im/regen-network/regen-ledger). We look forward to collaborating!
+
+<br>
+And for some inspiration...
+
+## The Words of Maya Angelou
+
+
+> We, unaccustomed to courage<br>
+exiles from delight<br>
+live coiled in shells of loneliness<br>
+until love leaves its high holy temple<br>
+and comes into our sight<br>
+to liberate us into life.<br>
+
+> Love arrives<br>
+and in its train come ecstasies<br>
+old memories of pleasure<br>
+ancient histories of pain.<br>
+Yet if we are bold,<br>
+love strikes away the chains of fear<br>
+from our souls.<br>
+
+> We are weaned from our timidity<br>
+In the flush of love's light<br>
+we dare be brave<br>
+And suddenly we see<br>
+that love costs all we are<br>
+and will ever be.<br>
+Yet it is only love<br>
+which sets us free.<br>
+
+> ― Maya Angelou<br>
+
