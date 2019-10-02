@@ -5,8 +5,13 @@
 ```go
 // MsgCreateCreditClass creates a class of credits and returns a new CreditClassID
 type MsgCreateCreditClass struct {
-  Curator sdk.AccAddress
+  // Designer is the entity which designs a credit class at the top-level and
+  // certifies issuers
+  Designer sdk.AccAddress
+  // Name is the name the Designer gives to the credit, internally credits
+  // are identified by their CreditClassID
   Name string
+  // Issuers are those entities authorized to issue credits via MsgIssueCredit
   Issuers []sdk.AccAddress
 }
 
@@ -21,8 +26,11 @@ type MsgIssueCredit struct {
   Polygon geo.Polygon
   StartDate time.Time
   EndDate time.Time
+  // Units specifies how many total units of this credit are issued for this polygon
   Units sdk.Dec
   Issuer sdk.AccAddress
+  // Holder receives the credit from the issuer and can send it to other holders
+  // or consume it
   Holder sdk.AccAddress
 }
 
