@@ -23,7 +23,7 @@ type []byte CreditClassID
 // overlaps with those of an existing credit of the same class 
 type MsgIssueCredit struct {
   CreditClass CreditClassID 
-  Polygon geo.Polygon
+  Polygon geo.GeoAddress
   StartDate time.Time
   EndDate time.Time
   // Units specifies how many total units of this credit are issued for this polygon
@@ -54,63 +54,5 @@ type MsgConsumeCredit struct {
   Credit CreditID
   Holder sdk.AccAddress
   Units sdk.Dec
-}
-```
-
-
-## Credit Exchange
-
-### Buying and Selling Credits with Coins
-
-```go
-type []byte OfferID
-
-type ManageCreditOffer struct {
-  Credits []CreditID
-  Account sdk.AccAddress
-  // Units should be set to 0 to delete an offer
-  Units sdk.Dec
-  CoinsPerUnit sdk.Coins
-  // Offer should be set to nil to create a new offer
-  Offer OfferID
-}
-
-type MsgManageCreditSellOffer struct {
-  ManageCreditOffer
-}
-
-type MsgManageCreditBuyOffer struct {
-  ManageCreditOffer
-}
-
-// MsgManageCreditClassBuyOffer can be used to generically buy credits of a
-// given class irregardless of the specific credit being purchased
-type MsgManageCreditClassBuyOffer struct {
-  CreditClass CreditClassID
-  Account sdk.AccAddress
-  // Units should be set to 0 to delete an offer
-  Units sdk.Dec
-  CoinsPerUnit sdk.Coins
-  // Offer should be set to nil to create a new offer
-  Offer OfferID
-}
-```
-
-### Exchanging Credits of Different Classes
-
-This would effectively allow credits of a single class to be treated as an 
-effectively fungible asset and allow trading pairs between two credit classes.
-
-```go
-
-type MsgManageCreditClassExchangeOffer struct {
-  SellCredits []CreditID
-  BuyCreditClass CreditClassID
-  Account sdk.AccAddress
-  // Units should be set to 0 to delete an offer
-  SellUnits sdk.Dec
-  BuyUnits sdk.Dec
-  // Offer should be set to nil to create a new offer
-  Offer OfferID
 }
 ```
