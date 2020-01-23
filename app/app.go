@@ -205,7 +205,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, app.cdc)
 
 	// this configures a no-op upgrade handler for the "patagonia" upgrade
-	app.upgradeKeeper.SetUpgradeHandler("patagonia1", func(ctx sdk.Context, plan upgrade.Plan) {
+	app.upgradeKeeper.SetUpgradeHandler("patagonia2", func(ctx sdk.Context, plan upgrade.Plan) {
 		// Add some more coins to the faucet account
 		addr, err := sdk.AccAddressFromBech32("xrn:1xrsmkqh305m09tc5x73v4t3wtcuqmf6cgy2taw")
 		if err == nil {
