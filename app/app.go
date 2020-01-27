@@ -209,7 +209,7 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		// Add some more coins to the faucet account
 		addr, err := sdk.AccAddressFromBech32("xrn:1vkxgpw4xtyeljzvqnxxy84kpa6udqaqw8leqjg")
 		if err == nil {
-			_, _ = app.bankKeeper.AddCoins(ctx, addr, sdk.Coins{sdk.Coin{Denom: "utree", Amount: sdk.NewInt(10000000)}})
+			_, _ = app.bankKeeper.AddCoins(ctx, addr, sdk.Coins{sdk.Coin{Denom: "utree", Amount: sdk.NewInt(100000000)}})
 		}
 	})
 
