@@ -221,10 +221,13 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		delegation := stakingTypes.Delegation{
 			DelegatorAddress: addr,
 			ValidatorAddress: valAddr,
-			Shares: sdk.NewDec(100000000),
+			Shares:           sdk.NewDec(100000000),
 		}
 
 		app.stakingKeeper.SetDelegation(ctx, delegation)
+
+		votingParams := gov.NewVotingParams(21600000000000)
+		govSubspace.Set(ctx, gov.ParamStoreKeyVotingParams, &votingParams)
 	})
 
 	// register the proposal types
