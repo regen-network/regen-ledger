@@ -12,6 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	stakingTypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	"github.com/regen-network/regen-ledger/index/postgresql"
 	"github.com/regen-network/regen-ledger/x/geo"
@@ -205,12 +206,25 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	app.upgradeKeeper = upgrade.NewKeeper(app.upgradeStoreKey, app.cdc)
 
 	// this configures a no-op upgrade handler for the "patagonia" upgrade
-	app.upgradeKeeper.SetUpgradeHandler("papua", func(ctx sdk.Context, plan upgrade.Plan) {
-		// Add some more coins to the faucet account
-		addr, err := sdk.AccAddressFromBech32("xrn:1vkxgpw4xtyeljzvqnxxy84kpa6udqaqw8leqjg")
-		if err == nil {
-			_, _ = app.bankKeeper.AddCoins(ctx, addr, sdk.Coins{sdk.Coin{Denom: "utree", Amount: sdk.NewInt(100000000)}})
+	app.upgradeKeeper.SetUpgradeHandler("darien-gap", func(ctx sdk.Context, plan upgrade.Plan) {
+		addr, _ := sdk.AccAddressFromBech32("xrn:1vkxgpw4xtyeljzvqnxxy84kpa6udqaqw8leqjg")
+		personalAcc1, _ := sdk.AccAddressFromBech32("xrn:1cnc3nwujeknn6yanjm9m0pfcw02u0c3wuldv6w")
+		personalAcc2, _ := sdk.AccAddressFromBech32("xrn:1trppuyhpgaa634usnppnpu9p54syyexztwu3mw")
+		personalAcc3, _ := sdk.AccAddressFromBech32("xrn:188pnchffs8k45h8j8hcyzu400ap0unp3jechy9")
+		valAddr, _ := sdk.ValAddressFromBech32("xrn:valoper140y8m6r7s40mvmz6g5dqrsrfvfkq5m8c267452")
+
+		_, _ = app.bankKeeper.AddCoins(ctx, addr, sdk.Coins{sdk.Coin{Denom: "utree", Amount: sdk.NewInt(100000000)}})
+		_, _ = app.bankKeeper.AddCoins(ctx, personalAcc1, sdk.Coins{sdk.Coin{Denom: "utree", Amount: sdk.NewInt(100000000)}})
+		_, _ = app.bankKeeper.AddCoins(ctx, personalAcc2, sdk.Coins{sdk.Coin{Denom: "utree", Amount: sdk.NewInt(100000000)}})
+		_, _ = app.bankKeeper.AddCoins(ctx, personalAcc3, sdk.Coins{sdk.Coin{Denom: "utree", Amount: sdk.NewInt(100000000)}})
+
+		delegation := stakingTypes.Delegation{
+			DelegatorAddress: addr,
+			ValidatorAddress: valAddr,
+			Shares: sdk.NewDec(100000000),
 		}
+
+		app.stakingKeeper.SetDelegation(ctx, delegation)
 	})
 
 	// register the proposal types
