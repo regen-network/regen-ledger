@@ -49,6 +49,7 @@ message CreditClassMetadata {
     bytes credit_class = 1;
     bytes designer = 2;
     repeated bytes issuers = 3;
+    bytes metadata = 4;
     //    CreditType type = 4;
 }
 
@@ -56,6 +57,7 @@ message CreditMetadata {
     bytes asset_id = 1;
     bytes credit_class = 2;
     bytes issuer = 3;
+    bytes metadata = 4;
 }
 
 message AssetSupply {
