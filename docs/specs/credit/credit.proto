@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package regen_network.credit;
+
+import "third_party/mapbox/geobuf.proto";
+import "google/protobuf/timestamp.proto";
+
+message MsgCreateCreditClass {
+    bytes designer = 1;
+    repeated bytes issuers = 2;
+//    CreditType type = 3;
+}
+
+//enum CreditType {
+//    CARBON = 0; // tons is unit
+//    BIODIVERSITY_AREA = 1; // hectares is unit
+//    BIODIVERSITY_SCORE = 2;
+//}
+
+message MsgIssueCredit {
+    bytes credit_class = 1;
+    string units = 2; // decimal
+    bytes issuer = 3;
+    bytes issuee = 4;
+    geobuf.Data.Geometry polygon = 5;
+    google.protobuf.Timestamp start_date = 6;
+    google.protobuf.Timestamp end_date = 7;
+}
+
+message MsgSend {
+    bytes from = 1;
+    bytes to = 2;
+    repeated Asset assets = 3;
+}
+
+message MsgBurn {
+    bytes account = 1;
+    repeated Asset assets = 2;
+}
+
+message Asset {
+    bytes asset_id = 1;
+    string amount = 2;
+}
+
+message CreditClassMetadata {
+    bytes credit_class = 1;
+    bytes designer = 2;
+    repeated bytes issuers = 3;
+    //    CreditType type = 4;
+}
+
+message CreditMetadata {
+    bytes asset_id = 1;
+    bytes credit_class = 2;
+    bytes issuer = 3;
+}
+
+message AssetSupply {
+    bytes asset_id = 1;
+    string liquid_supply = 2;
+    string burned_supply = 3;
+}
+
+message AssetBalance {
+    bytes account = 1;
+    bytes asset_id = 2;
+    string liquid_balance = 3;
+    string burned_balance = 4;
+}
