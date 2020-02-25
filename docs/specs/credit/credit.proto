@@ -8,6 +8,7 @@ import "google/protobuf/timestamp.proto";
 message MsgCreateCreditClass {
     bytes designer = 1;
     repeated bytes issuers = 2;
+    bytes metadata = 3;
 //    CreditType type = 3;
 }
 
@@ -22,9 +23,10 @@ message MsgIssueCredit {
     string units = 2; // decimal
     bytes issuer = 3;
     bytes issuee = 4;
-    geobuf.Data.Geometry polygon = 5;
-    google.protobuf.Timestamp start_date = 6;
-    google.protobuf.Timestamp end_date = 7;
+    bytes metadata = 5;
+    geobuf.Data.Geometry polygon = 6;
+    google.protobuf.Timestamp start_date = 7;
+    google.protobuf.Timestamp end_date = 8;
 }
 
 message MsgSend {
