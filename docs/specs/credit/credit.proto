@@ -5,18 +5,15 @@ package regen_network.credit;
 import "third_party/mapbox/geobuf.proto";
 import "google/protobuf/timestamp.proto";
 
+//
+// Msg's
+//
+
 message MsgCreateCreditClass {
     bytes designer = 1;
     repeated bytes issuers = 2;
     bytes metadata = 3;
-//    CreditType type = 3;
 }
-
-//enum CreditType {
-//    CARBON = 0; // tons is unit
-//    BIODIVERSITY_AREA = 1; // hectares is unit
-//    BIODIVERSITY_SCORE = 2;
-//}
 
 message MsgIssueCredit {
     bytes credit_class = 1;
@@ -39,6 +36,10 @@ message MsgBurn {
     bytes account = 1;
     repeated Asset assets = 2;
 }
+
+//
+// State
+//
 
 message Asset {
     bytes asset_id = 1;
@@ -72,3 +73,43 @@ message AssetBalance {
     string liquid_balance = 3;
     string burned_balance = 4;
 }
+
+//
+// Queries
+//
+message GetBalancesRequest {
+    // Specify the list of accounts to query balances for or leave empty
+    // to query all accounts
+    repeated bytes accounts = 1;
+    // Specify the list of asset ID's to query balances for or leave empty
+    // to query all assets
+    repeated bytes asset_ids = 2;
+    // Leave empty to specify no limit
+    int64 limit = 3;
+    int64 offset = 4;
+}
+
+message GetBalancesResponse {
+    repeated AssetBalance balances = 1;
+}
+
+message GetSupplyRequest {
+    bytes asset_id = 1;
+}
+
+message GetCreditClassMetadataRequest {
+    bytes credit_class = 1;
+}
+
+message GetCreditMetadataRequest {
+    bytes asset_id = 1;
+}
+
+service Query {
+    rpc GetBalance(GetBalancesRequest) returns (AssetBalance);
+    rpc GetSupply(GetSupplyRequest) returns (AssetSupply);
+    rpc GetCreditClassMetadata(GetCreditClassMetadataRequest) returns (CreditClassMetadata);
+    rpc GetCreditMetadata(GetCreditMetadataRequest) returns (CreditMetadata);
+}
+
+
