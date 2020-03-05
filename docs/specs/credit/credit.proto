@@ -4,6 +4,7 @@ package regen_network.credit;
 
 import "third_party/mapbox/geobuf.proto";
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/descriptor.proto";
 
 //
 // Msg's
@@ -15,13 +16,13 @@ message MsgCreateCreditClass {
     bytes metadata = 3;
 }
 
-message MsgIssueCredit {
+message MsgIssueCreditVintage {
     bytes credit_class = 1;
     string units = 2; // decimal
     bytes issuer = 3;
     bytes issuee = 4;
     bytes metadata = 5;
-    geobuf.Data.Geometry polygon = 6;
+    geobuf.Data.Geometry geography = 6;
     google.protobuf.Timestamp start_date = 7;
     google.protobuf.Timestamp end_date = 8;
 }
@@ -54,7 +55,7 @@ message CreditClassMetadata {
     //    CreditType type = 4;
 }
 
-message CreditMetadata {
+message CreditVintageMetadata {
     bytes asset_id = 1;
     bytes credit_class = 2;
     bytes issuer = 3;
@@ -101,7 +102,7 @@ message GetCreditClassMetadataRequest {
     bytes credit_class = 1;
 }
 
-message GetCreditMetadataRequest {
+message GetCreditVintageMetadataRequest {
     bytes asset_id = 1;
 }
 
@@ -109,7 +110,7 @@ service Query {
     rpc GetBalance(GetBalancesRequest) returns (AssetBalance);
     rpc GetSupply(GetSupplyRequest) returns (AssetSupply);
     rpc GetCreditClassMetadata(GetCreditClassMetadataRequest) returns (CreditClassMetadata);
-    rpc GetCreditMetadata(GetCreditMetadataRequest) returns (CreditMetadata);
+    rpc GetCreditMetadata(GetCreditVintageMetadataRequest) returns (CreditVintageMetadata);
 }
 
 
