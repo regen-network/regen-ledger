@@ -28,13 +28,13 @@ Although the needs illustrated above are meant to primarily address our own inte
 
 # Approach
 
-### Previous Work
+#### Previous Work
 
-Prior to this RFC, initial specifications have been worked on in 2019 in the form of an initial Go specification on github.
+Prior to this RFC, initial specifications have been worked on in 2019 in the form of [an initial Go specification on github](https://github.com/regen-network/regen-ledger/pull/67/files#diff-68348df3fa3097a94a14436af03aab22).
 
-### Protobuf Definitions
+#### Protobuf Definitions
 
-The corresponding protocol buffer definitions for the approach outlined in this RFC can be found here.
+The corresponding protocol buffer definitions for the approach outlined in this RFC can be found [here](https://github.com/regen-network/regen-ledger/pull/102/files#diff-6fd37b2fd19e0fae88459fdc5025921f).
 
 ## Definitions
 
