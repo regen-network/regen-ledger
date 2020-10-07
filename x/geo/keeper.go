@@ -2,6 +2,7 @@ package geo
 
 import (
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/index/postgresql"
@@ -13,7 +14,7 @@ import (
 type Keeper struct {
 	storeKey sdk.StoreKey
 
-	cdc *codec.Codec
+	cdc codec.BinaryMarshaler
 
 	pgIndexer postgresql.Indexer
 }
@@ -22,7 +23,7 @@ const (
 	WGS84_SRID = 4326
 )
 
-func NewKeeper(storeKey sdk.StoreKey, cdc *codec.Codec, pgIndexer postgresql.Indexer) Keeper {
+func NewKeeper(storeKey sdk.StoreKey, cdc codec.BinaryMarshaler, pgIndexer postgresql.Indexer) Keeper {
 	return Keeper{storeKey, cdc, pgIndexer}
 }
 
@@ -35,19 +36,19 @@ func (keeper Keeper) GetGeometry(ctx sdk.Context, addr types.GeoAddress) []byte 
 	return bz
 }
 
-func (keeper Keeper) StoreGeometry(ctx sdk.Context, geometry Geometry) (addr types.GeoAddress, err sdk.Error) {
+func (keeper Keeper) StoreGeometry(ctx sdk.Context, geometry Geometry) (addr types.GeoAddress, err error) {
 	// TODO consume gas
 	store := ctx.KVStore(keeper.storeKey)
 	hash, e := blake2b.New256(nil)
 	if e != nil {
-		return nil, sdk.ErrUnknownRequest(e.Error())
+		return nil, fmt.Errorf("%v", e)
 	}
 	ewkb := geometry.EWKB
 	hash.Write(ewkb)
 	hashBz := hash.Sum(nil)
 	existing := store.Get(hashBz)
 	if existing != nil {
-		return nil, sdk.ErrUnknownRequest("already exists")
+		return nil, fmt.Errorf("already exists")
 	}
 	store.Set(hashBz, ewkb)
 
@@ -64,7 +65,10 @@ func (keeper Keeper) StoreGeometry(ctx sdk.Context, geometry Geometry) (addr typ
 }
 
 func MustDecodeBech32GeoID(bech string) []byte {
-	hrp, bz := util.MustDecodeBech32(bech)
+	hrp, bz, err := util.DecodeAndConvert(bech)
+	if err != nil {
+		panic(err)
+	}
 	if hrp != types.Bech32GeoAddressPrefix {
 		panic(fmt.Sprintf("Bech32 GeoID must start with %s", types.Bech32GeoAddressPrefix))
 	}

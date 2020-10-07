@@ -69,8 +69,8 @@ ifeq ($(OS),Windows_NT)
 	go build -mod=readonly $(BUILD_FLAGS) -o build/xrnd.exe ./cmd/xrnd
 	go build -mod=readonly $(BUILD_FLAGS) -o build/xrncli.exe ./cmd/xrncli
 else
-	go build -mod=readonly $(BUILD_FLAGS) -o build/xrnd ./cmd/xrnd
-	go build -mod=readonly $(BUILD_FLAGS) -o build/xrncli ./cmd/xrncli
+	go build $(BUILD_FLAGS) -o build/xrnd ./cmd/xrnd
+	go build $(BUILD_FLAGS) -o build/xrncli ./cmd/xrncli
 endif
 
 build-linux: go.sum

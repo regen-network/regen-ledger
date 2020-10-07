@@ -2,9 +2,9 @@ package types
 
 import (
 	"fmt"
-	"github.com/regen-network/regen-ledger/util"
-	"github.com/tendermint/tendermint/libs/bech32"
 	"net/url"
+
+	"github.com/regen-network/regen-ledger/util"
 )
 
 type HasURI interface {
@@ -71,7 +71,7 @@ func MustDecodeBech32DataAddress(url string) DataAddress {
 }
 
 func DecodeBech32DataAddress(url string) (DataAddress, error) {
-	hrp, bz, err := bech32.DecodeAndConvert(url)
+	hrp, bz, err := util.DecodeAndConvert(url) /* bech32.DecodeAndConvert(url)  */
 	if err != nil {
 		return nil, err
 	}
