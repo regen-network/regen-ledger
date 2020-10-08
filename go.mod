@@ -16,15 +16,18 @@ require (
 	github.com/golang/lint v0.0.0-20180702182130-06c8688daad7 // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.8.0
+	github.com/grpc-ecosystem/grpc-gateway v1.15.0
 	github.com/leanovate/gopter v0.2.5-0.20190326081808-6e7780f59df7
 	github.com/lib/pq v1.0.0
 	github.com/otiai10/copy v1.2.0
+	github.com/rakyll/statik v0.1.7
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
 	github.com/tendermint/go-amino v0.16.0
 	github.com/tendermint/tendermint v0.34.0-rc4.0.20201005104435-7e27e9b85222
+	github.com/tendermint/tm-db v0.6.2
 	github.com/twpayne/go-geom v1.0.4
 	github.com/zondax/ledger-cosmos-go v0.9.2 // indirect
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
