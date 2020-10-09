@@ -61,9 +61,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
-	"github.com/regen-network/regen-ledger/index/postgresql"
-	"github.com/regen-network/regen-ledger/x/geo"
-	geotypes "github.com/regen-network/regen-ledger/x/geo/types"
 	"github.com/tendermint/tendermint/libs/log"
 
 	// types
@@ -125,8 +122,6 @@ var (
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
-
-		geo.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -197,23 +192,11 @@ type XrnApp struct {
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 	ScopedIBCMockKeeper  capabilitykeeper.ScopedKeeper
 
-	// TODO: add all modules' keepers
-	//dataKeeper          data.Keeper
-	//schemaKeeper        schema.Keeper
-	//espKeeper           esp.Keeper
-	GeoKeeper geo.Keeper
-	//agentKeeper         group.Keeper
-	//proposalKeeper      proposal.Keeper
-	//consortiumKeeper    consortium.Keeper
-
 	// the module manager
 	mm *module.Manager
 
 	// simulation manager
 	sm *module.SimulationManager
-
-	txDecoder sdk.TxDecoder
-	pgIndexer postgresql.Indexer
 }
 
 // NewXrnApp returns a reference to an initialized XrnApp.
@@ -238,7 +221,6 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		geotypes.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -362,8 +344,6 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	//
 	//app.agentKeeper = group.NewKeeper(app.agentStoreKey, cdc, app.accountKeeper)
 
-	app.GeoKeeper = geo.NewKeeper(keys[geotypes.StoreKey], appCodec, app.pgIndexer)
-
 	//proposalRouter := proposal.NewRouter().
 	//	AddRoute("esp", app.espKeeper).
 	//	AddRoute("consortium", app.consortiumKeeper)
@@ -390,8 +370,6 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
-
-		geo.NewAppModule(appCodec, app.GeoKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -413,7 +391,6 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, stakingtypes.ModuleName,
 		slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
 		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, ibctransfertypes.ModuleName,
-		geo.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)

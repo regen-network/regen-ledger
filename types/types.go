@@ -28,7 +28,11 @@ const (
 
 // String returns the string URI representation mof the GeoAddress
 func (addr GeoAddress) String() string {
-	return util.MustEncodeBech32(Bech32GeoAddressPrefix, addr)
+	encoded, err := util.ConvertAndEncode(Bech32GeoAddressPrefix, addr)
+	if err != nil {
+		panic(err)
+	}
+	return encoded
 }
 
 // URI returns the URI representation mof the GeoAddress
@@ -43,7 +47,11 @@ func (addr GeoAddress) URI() *url.URL {
 func (addr DataAddress) String() string {
 	switch addr[0] {
 	case DataAddressPrefixOnChainGraph:
-		return util.MustEncodeBech32(Bech32DataAddressPrefix, addr[1:])
+		encoded, err := util.ConvertAndEncode(Bech32GeoAddressPrefix, addr[1:])
+		if err != nil {
+			panic(err)
+		}
+		return encoded
 	default:
 		panic(fmt.Errorf("unknown address prefix %d", addr[0]))
 

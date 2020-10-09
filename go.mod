@@ -22,6 +22,7 @@ require (
 	github.com/otiai10/copy v1.2.0
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/afero v1.2.2 // indirect
+	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
@@ -31,8 +32,11 @@ require (
 	github.com/twpayne/go-geom v1.0.4
 	github.com/zondax/ledger-cosmos-go v0.9.2 // indirect
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
+	github.com/gogo/protobuf v1.3.1
 )
 
-replace golang.org/x/crypto => github.com/tendermint/crypto v0.0.0-20180820045704-3764759f34a5
+// replace golang.org/x/crypto => github.com/tendermint/crypto v0.0.0-20180820045704-3764759f34a5
+
+replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
 
 replace github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.34.4-0.20201005082218-6c1c2cce0461
