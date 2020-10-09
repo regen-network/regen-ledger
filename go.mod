@@ -35,8 +35,6 @@ require (
 	github.com/gogo/protobuf v1.3.1
 )
 
-// replace golang.org/x/crypto => github.com/tendermint/crypto v0.0.0-20180820045704-3764759f34a5
-
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
 
 replace github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.34.4-0.20201005082218-6c1c2cce0461
