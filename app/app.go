@@ -215,7 +215,6 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	bApp.GRPCQueryRouter().SetInterfaceRegistry(interfaceRegistry)
 	bApp.GRPCQueryRouter().RegisterSimulateService(bApp.Simulate, interfaceRegistry)
 
-	// TODO: add all modules
 	keys := sdk.NewKVStoreKeys(
 		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
@@ -235,24 +234,10 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 		keys:              keys,
 		tkeys:             tkeys,
 		memKeys:           memKeys,
-		//dataStoreKey:       sdk.NewKVStoreKey("data"),
-		//schemaStoreKey:     sdk.NewKVStoreKey("schema"),
-		//espStoreKey:        sdk.NewKVStoreKey("esp"),
-		// geoStoreKey: sdk.NewKVStoreKey("geo"),
-		//agentStoreKey:      sdk.NewKVStoreKey("group"),
-		//proposalStoreKey:   sdk.NewKVStoreKey("proposal"),
 	}
 
 	// init params keeper and subspaces
 	app.ParamsKeeper = initParamsKeeper(appCodec, cdc, keys[paramstypes.StoreKey], tkeys[paramstypes.TStoreKey])
-	// authSubspace := app.paramsKeeper.Subspace(auth.DefaultParamspace)
-	// bankSubspace := app.paramsKeeper.Subspace(bank.DefaultParamspace)
-	// stakingSubspace := app.paramsKeeper.Subspace(staking.DefaultParamspace)
-	// mintSubspace := app.paramsKeeper.Subspace(mint.DefaultParamspace)
-	// distrSubspace := app.paramsKeeper.Subspace(distr.DefaultParamspace)
-	// slashingSubspace := app.paramsKeeper.Subspace(slashing.DefaultParamspace)
-	// govSubspace := app.paramsKeeper.Subspace(gov.DefaultParamspace)
-	// crisisSubspace := app.paramsKeeper.Subspace(crisis.DefaultParamspace)
 
 	// add capability keeper and ScopeToModule for ibc module
 	app.CapabilityKeeper = capabilitykeeper.NewKeeper(appCodec, keys[capabilitytypes.StoreKey], memKeys[capabilitytypes.MemStoreKey])
@@ -336,19 +321,6 @@ func NewXrnApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bo
 	)
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
-
-	//TODO
-	//app.schemaKeeper = schema.NewKeeper(app.schemaStoreKey, cdc)
-	//
-	//app.dataKeeper = data.NewKeeper(app.dataStoreKey, app.schemaKeeper, cdc)
-	//
-	//app.agentKeeper = group.NewKeeper(app.agentStoreKey, cdc, app.accountKeeper)
-
-	//proposalRouter := proposal.NewRouter().
-	//	AddRoute("esp", app.espKeeper).
-	//	AddRoute("consortium", app.consortiumKeeper)
-	//
-	//app.proposalKeeper = proposal.NewKeeper(app.proposalStoreKey, proposalRouter, cdc)
 
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
@@ -606,91 +578,6 @@ func GetMaccPerms() map[string][]string {
 	}
 	return dupMaccPerms
 }
-
-// // application updates every begin block
-// func (app *XrnApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-// 	return app.mm.BeginBlock(ctx, req)
-// }
-
-// // application updates every end block
-// func (app *XrnApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-// 	return app.mm.EndBlock(ctx, req)
-// }
-
-// // application update at chain initialization
-// func (app *XrnApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
-// 	var genesisState GenesisState
-// 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
-// 	return app.mm.InitGenesis(ctx, genesisState)
-// }
-
-// // load a particular height
-// func (app *XrnApp) LoadHeight(height int64) error {
-// 	return app.LoadVersion(height, app.keyMain)
-// }
-
-// func (app *XrnApp) ConfigurePostgreSQLIndexer(postgresUrl string) {
-// 	pgIndexer, err := postgresql.NewIndexer(postgresUrl, app.txDecoder)
-// 	if err == nil {
-// 		pgIndexer.AddMigrations("geo", geo.PostgresMigrations)
-// 		app.pgIndexer = pgIndexer
-// 		app.Logger().Info("Started PostgreSQL Indexer")
-// 	} else {
-// 		app.Logger().Error("Error Starting PostgreSQL Indexer", err)
-// 	}
-// }
-
-// func (app *XrnApp) shutdownOnUpgrade(ctx sdk.Context, plan upgrade.Plan) {
-// 	if len(plan.Info) != 0 {
-// 		home := viper.GetString(cli.HomeFlag)
-// 		_ = ioutil.WriteFile(filepath.Join(home, "data", "upgrade-info"), []byte(plan.Info), 0644)
-// 	}
-// 	ctx.Logger().Error(fmt.Sprintf("UPGRADE \"%s\" NEEDED needed at height %d: %s", plan.Name, ctx.BlockHeight(), plan.Info))
-// 	os.Exit(1)
-// }
-
-// func (app *XrnApp) InitChain(req abci.RequestInitChain) (res abci.ResponseInitChain) {
-// 	res = app.BaseApp.InitChain(req)
-// 	if app.pgIndexer != nil {
-// 		app.pgIndexer.OnInitChain(req, res)
-// 	}
-// 	return res
-// }
-
-// func (app *XrnApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseBeginBlock) {
-// 	res = app.BaseApp.BeginBlock(req)
-// 	if app.pgIndexer != nil {
-// 		app.pgIndexer.OnBeginBlock(req, res)
-// 	}
-// 	return res
-// }
-
-// func (app *XrnApp) DeliverTx(txBytes []byte) (res abci.ResponseDeliverTx) {
-// 	if app.pgIndexer != nil {
-// 		app.pgIndexer.BeforeDeliverTx(txBytes)
-// 	}
-// 	res = app.BaseApp.DeliverTx(txBytes)
-// 	if app.pgIndexer != nil {
-// 		app.pgIndexer.AfterDeliverTx(txBytes, res)
-// 	}
-// 	return res
-// }
-
-// func (app *XrnApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBlock) {
-// 	res = app.BaseApp.EndBlock(req)
-// 	if app.pgIndexer != nil {
-// 		app.pgIndexer.OnEndBlock(req, res)
-// 	}
-// 	return res
-// }
-
-// func (app *XrnApp) Commit() (res abci.ResponseCommit) {
-// 	res = app.BaseApp.Commit()
-// 	if app.pgIndexer != nil {
-// 		app.pgIndexer.OnCommit(res)
-// 	}
-// 	return res
-// }
 
 // initParamsKeeper init params keeper and its subspaces
 func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyAmino, key, tkey sdk.StoreKey) paramskeeper.Keeper {
