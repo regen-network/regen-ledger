@@ -38,4 +38,4 @@ if [[ $STAGED_GO_FILES != "" ]]; then
 fi
 
 # Run go mod tidy
-go mod tidy && git add go.mod go.sum
+git add go.mod go.sum

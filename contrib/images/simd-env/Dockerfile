@@ -11,8 +11,8 @@ USER ${UID}:${GID}
 VOLUME [ /simd ]
 WORKDIR /simd
 EXPOSE 26656 26657
-ENTRYPOINT ["/usr/bin/wrapper.sh"]
+ENTRYPOINT ["/usr/bin/run.sh"]
 CMD ["start"]
 STOPSIGNAL SIGTERM
 
-COPY wrapper.sh /usr/bin/wrapper.sh
+COPY run.sh /usr/bin/run.sh
