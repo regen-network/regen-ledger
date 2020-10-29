@@ -1,4 +1,4 @@
-name: Tests
+name: Tests/ Build
 
 on:
   pull_request:
@@ -6,6 +6,20 @@ on:
     branches:
       - master
 jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2.1.3
+        with:
+          go-version: 1.15
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Display go version
+        run: go version
+      - run: make build
+
   tests:
     name: Unit tests
     runs-on: ubuntu-latest
