@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package regen.data.v1alpha1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/data";
+
+service Msg {
+    rpc AnchorData(MsgAnchorDataRequest) returns (MsgAnchorDataResponse);
+    rpc SignData(MsgSignDataRequest) returns (MsgSignDataResponse);
+    rpc StoreData(MsgStoreDataRequest) returns (MsgStoreDataResponse);
+}
+
+message MsgAnchorDataRequest {
+    string sender = 1;
+    bytes cid = 2;
+}
+
+message MsgAnchorDataResponse { }
+
+message MsgSignDataRequest {
+    repeated string signers = 1;
+    bytes cid = 2;
+}
+
+message MsgSignDataResponse { }
+
+message MsgStoreDataRequest {
+    string sender = 1;
+    bytes cid = 2;
+    bytes content = 3;
+}
+
+message MsgStoreDataResponse { }
