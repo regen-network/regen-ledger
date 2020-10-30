@@ -176,3 +176,5 @@ tags
 
 # vscode
 .vscode
+
+build/
