@@ -19,6 +19,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
+//nolint:golint
 // AppStateFn returns the initial application state using a genesis or the simulation parameters.
 // It panics if the user provides files for both of them.
 // If a file is not given for the genesis or the sim params, it creates a randomized one.
@@ -72,6 +73,7 @@ func AppStateFn(cdc codec.JSONMarshaler, simManager *module.SimulationManager) s
 	}
 }
 
+//nolint:golint
 // AppStateRandomizedFn creates calls each module's GenesisState generator function
 // and creates the simulation params
 func AppStateRandomizedFn(
@@ -127,6 +129,7 @@ func AppStateRandomizedFn(
 	return appState, accs
 }
 
+//nolint:golint
 // AppStateFromGenesisFileFn util function to generate the genesis AppState
 // from a genesis.json file.
 func AppStateFromGenesisFileFn(r io.Reader, cdc codec.JSONMarshaler, genesisFile string) (tmtypes.GenesisDoc, []simtypes.Account) {
