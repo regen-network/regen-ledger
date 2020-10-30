@@ -3,7 +3,7 @@ module github.com/regen-network/regen-ledger
 go 1.14
 
 require (
-	github.com/cosmos/cosmos-sdk v0.34.4-0.20201005082218-6c1c2cce0461
+	github.com/cosmos/cosmos-sdk v0.40.0-rc1
 	github.com/enigmampc/btcutil v1.0.3-0.20200723161021-e2fb6adb2a25
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
@@ -16,5 +16,3 @@ require (
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
-
-replace github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.40.0-rc1
