@@ -1,0 +1,29 @@
+version: v1beta1
+build:
+  roots:
+    - proto
+    - cosmos-sdk/proto
+    - cosmos-sdk/third_party/proto
+  excludes:
+    - cosmos-sdk/third_party/proto/google/protobuf
+lint:
+  use:
+    - DEFAULT
+    - COMMENTS
+  except:
+    - SERVICE_SUFFIX
+  ignore:
+    - tendermint
+    - gogoproto
+    - cosmos_proto
+    - google
+    - confio
+breaking:
+  use:
+    - FILE
+  ignore:
+    - tendermint
+    - gogoproto
+    - cosmos_proto
+    - google
+    - confio
