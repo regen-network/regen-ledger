@@ -79,7 +79,7 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	//"os"
+	// "os"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -94,10 +94,10 @@ const (
 )
 
 var (
-	// default home directories for xrncli
+	// DefaultCLIHome default home directories for xrncli
 	DefaultCLIHome = os.ExpandEnv("$HOME/.xrncli")
 
-	// default home directories for xrnd
+	// DefaultNodeHome default home directories for xrnd
 	DefaultNodeHome = os.ExpandEnv("$HOME/.xrnd")
 
 	// The ModuleBasicManager is in charge of setting up basic,
