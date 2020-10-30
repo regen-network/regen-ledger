@@ -1,8 +1,10 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"github.com/multiformats/go-multihash"
 
 	gocid "github.com/ipfs/go-cid"
 
@@ -73,6 +75,32 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignDataReq
 		return nil, err
 	}
 
+	var signers data.Signers
+	if s.signersTable.Has(ctx, cidBytes) {
+		err = s.signersTable.GetOne(ctx, cidBytes, &signers)
+		if err != nil {
+			return nil, err
+		}
+
+		// merge signers
+		seen := map[string]bool{}
+		for _, signer := range signers.Signers {
+			seen[signer] = true
+		}
+
+		for _, signer := range request.Signers {
+			_, found := seen[signer]
+			if !found {
+				signers.Signers = append(signers.Signers, signer)
+			}
+		}
+	}
+
+	err = s.signersTable.Save(ctx, cidBytes, &signers)
+	if err != nil {
+		return nil, err
+	}
+
 	return &data.MsgSignDataResponse{}, nil
 }
 
@@ -84,5 +112,35 @@ func (s serverImpl) StoreData(goCtx context.Context, request *data.MsgStoreDataR
 		return nil, err
 	}
 
-	return &data.MsgStoreDataResponse{}
+	store := ctx.KVStore(s.storeKey)
+	if store.Has(cidBytes) {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("CID %s already has stored data", request.Cid))
+	}
+
+	mh := cid.Hash()
+
+	decodedMultihash, err := multihash.Decode(mh)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "can't retrieve multihash")
+	}
+
+	switch decodedMultihash.Name {
+	case "sha2-256":
+	case "blake2b-256":
+	default:
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("unsupported hash function %s", decodedMultihash.Name))
+	}
+
+	reqMh, err := multihash.Sum(request.Content, decodedMultihash.Code, -1)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, fmt.Sprintf("unable to perform multihash"))
+	}
+
+	if !bytes.Equal(mh, reqMh) {
+		return nil, sdkerrors.Wrap(err, fmt.Sprintf("unable to perform multihash"))
+	}
+
+	store.Set(cidBytes, request.Content)
+
+	return &data.MsgStoreDataResponse{}, nil
 }
