@@ -109,7 +109,7 @@ $(BUILD_TARGETS): go.sum $(BUILDDIR)/
 $(BUILDDIR)/:
 	mkdir -p $(BUILDDIR)/
 
-build-xrnd-all: go.sum
+build-simd-all: go.sum
 	$(if $(shell docker inspect -f '{{ .Id }}' cosmossdk/rbuilder 2>/dev/null),$(info found image cosmossdk/rbuilder),docker pull cosmossdk/rbuilder:latest)
 	docker rm latest-build || true
 	docker run --volume=$(CURDIR):/sources:ro \
@@ -121,7 +121,7 @@ build-xrnd-all: go.sum
         --name latest-build cosmossdk/rbuilder:latest
 	docker cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
 
-build-xrnd-linux: go.sum $(BUILDDIR)/
+build-simd-linux: go.sum $(BUILDDIR)/
 	$(if $(shell docker inspect -f '{{ .Id }}' cosmossdk/rbuilder 2>/dev/null),$(info found image cosmossdk/rbuilder),docker pull cosmossdk/rbuilder:latest)
 	docker rm latest-build || true
 	docker run --volume=$(CURDIR):/sources:ro \
@@ -134,7 +134,7 @@ build-xrnd-linux: go.sum $(BUILDDIR)/
 	docker cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
 	cp artifacts/simd-*-linux-amd64 $(BUILDDIR)/simd
 
-.PHONY: build build-linux build-xrnd-all build-xrnd-linux
+.PHONY: build build-linux build-simd-all build-simd-linux
 
 mocks: $(MOCKS_DIR)
 	mockgen -source=client/account_retriever.go -package mocks -destination tests/mocks/account_retriever.go
@@ -183,7 +183,6 @@ update-swagger-docs: statik
 .PHONY: update-swagger-docs
 
 godocs:
-	# TODO: Update godoc url
 	@echo "--> Wait a few seconds and visit http://localhost:6060/pkg/github.com/cosmos/cosmos-sdk/types"
 	godoc -http=:6060
 
