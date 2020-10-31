@@ -8,6 +8,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/modules/incubator/orm"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/math"
 )
 
 func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error) {
@@ -68,14 +69,14 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	store := ctx.KVStore(s.storeKey)
 
 	for _, issuance := range req.Issuance {
-		tradeable, _, err := apd.NewFromString(issuance.TradeableUnits)
+		tradeable, err := math.MustParsePositiveDecimal(issuance.TradeableUnits)
 		if err != nil {
-			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid integer", issuance.TradeableUnits))
+			return nil, err
 		}
 
-		retired, _, err := apd.NewFromString(issuance.RetiredUnits)
+		retired, err := math.MustParsePositiveDecimal(issuance.RetiredUnits)
 		if err != nil {
-			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid integer", issuance.RetiredUnits))
+			return nil, err
 		}
 
 		recipient := issuance.Recipient
@@ -151,22 +152,12 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 	store := ctx.KVStore(s.storeKey)
 
 	for _, credit := range req.Credits {
-		tradeable, _, err := apd.NewFromString(credit.TradeableUnits)
+		tradeable, err := math.MustParsePositiveDecimal(credit.TradeableUnits)
 		if err != nil {
 			return nil, err
 		}
 
-		err = requirePositive(tradeable)
-		if err != nil {
-			return nil, err
-		}
-
-		retired, _, err := apd.NewFromString(credit.RetiredUnits)
-		if err != nil {
-			return nil, err
-		}
-
-		err = requirePositive(retired)
+		retired, err := math.MustParsePositiveDecimal(credit.RetiredUnits)
 		if err != nil {
 			return nil, err
 		}
@@ -227,12 +218,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid credit denom", denom))
 		}
 
-		toRetire, _, err := apd.NewFromString(credit.Units)
-		if err != nil {
-			return nil, err
-		}
-
-		err = requirePositive(toRetire)
+		toRetire, err := math.MustParsePositiveDecimal(credit.Units)
 		if err != nil {
 			return nil, err
 		}
@@ -283,4 +269,50 @@ func (s serverImpl) retire(ctx sdk.Context, store sdk.KVStore, recipient string,
 		BatchDenom: batchDenom,
 		Units:      retired.String(),
 	})
+}
+
+func (s serverImpl) setDec(store sdk.KVStore, key []byte, value *apd.Decimal) {
+	store.Set(key, []byte(value.String()))
+}
+
+func (s serverImpl) addDec(store sdk.KVStore, key []byte, x *apd.Decimal) error {
+	value, err := s.getDec(store, key)
+	if err != nil {
+		return err
+	}
+
+	err = add(value, value, x)
+	if err != nil {
+		return err
+	}
+
+	s.setDec(store, key, value)
+	return nil
+}
+
+func (s serverImpl) safeSubDec(store sdk.KVStore, key []byte, x *apd.Decimal) error {
+	value, err := s.getDec(store, key)
+	if err != nil {
+		return err
+	}
+
+	_, err = math.StrictDecima128Context.Sub(value, value, x)
+	if err != nil {
+		return sdkerrors.Wrap(err, "decimal subtraction error")
+	}
+
+	if math.IsNegative(x) {
+		return sdkerrors.ErrInsufficientFunds
+	}
+
+	s.setDec(store, key, value)
+	return nil
+}
+
+func add(res, x, y *apd.Decimal) error {
+	_, err := math.StrictDecima128Context.Add(res, x, y)
+	if err != nil {
+		return sdkerrors.Wrap(err, "decimal addition error")
+	}
+	return nil
 }

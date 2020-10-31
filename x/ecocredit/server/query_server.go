@@ -2,9 +2,13 @@ package server
 
 import (
 	"context"
+	"fmt"
+	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/modules/incubator/orm"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/math"
 )
 
 func (s serverImpl) ClassInfo(ctx context.Context, request *ecocredit.QueryClassInfoRequest) (*ecocredit.QueryClassInfoResponse, error) {
@@ -81,4 +85,15 @@ func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupply
 		TradeableSupply: tradeable.String(),
 		RetiredSupply:   retired.String(),
 	}, nil
+}
+
+func (s serverImpl) getDec(store sdk.KVStore, key []byte) (*apd.Decimal, error) {
+	bz := store.Get(key)
+
+	value, _, err := math.StrictDecima128Context.NewFromString(string(bz))
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, fmt.Sprintf("can't unmarshal %s as decimal", bz))
+	}
+
+	return value, nil
 }
