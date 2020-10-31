@@ -111,8 +111,9 @@ func (s serverImpl) StoreData(goCtx context.Context, request *data.MsgStoreDataR
 		return nil, err
 	}
 
+	key := DataKey(cidBz)
 	store := ctx.KVStore(s.storeKey)
-	if store.Has(cidBz) {
+	if store.Has(key) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("CID %s already has stored data", cidBz))
 	}
 
@@ -146,7 +147,7 @@ func (s serverImpl) StoreData(goCtx context.Context, request *data.MsgStoreDataR
 		return nil, sdkerrors.Wrap(err, fmt.Sprintf("unable to perform multihash"))
 	}
 
-	store.Set(cidBz, request.Content)
+	store.Set(key, request.Content)
 
 	err = ctx.EventManager().EmitTypedEvent(&data.EventStoreData{Cid: cidBz})
 	if err != nil {

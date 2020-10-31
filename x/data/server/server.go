@@ -38,3 +38,7 @@ func NewServer(storeKey sdk.StoreKey) Server {
 
 	return s
 }
+
+func DataKey(cid []byte) []byte {
+	return append([]byte{DataTablePrefix}, cid...)
+}
