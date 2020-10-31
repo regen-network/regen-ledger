@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package regen.data.v1alpha1;
+
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+
+service Msg {
+    rpc CreateClass(MsgCreateClassRequest) returns (MsgCreateClassResponse);
+    rpc CreateBatch(MsgCreateBatchRequest) returns (MsgCreateBatchResponse);
+    rpc Retire(MsgRetireRequest) returns (MsgRetireResponse);
+}
+
+message MsgCreateClassRequest {
+    string designer = 1;
+    repeated string issuers = 2;
+    bytes metadata = 3;
+}
+
+message MsgCreateClassResponse {
+    string class_id = 1;
+}
+
+message MsgCreateBatchRequest {
+    string issuer = 1;
+    string class_id = 2;
+    repeated BatchIssuance issuance = 3;
+}
+
+message MsgCreateBatchResponse {
+    string batch_denom = 1;
+}
+
+message BatchIssuance {
+    string recipient = 1;
+    string tradeable_units = 2;
+    string retired_units = 3;
+}
+
+message MsgRetireRequest {
+    string holder = 1;
+    repeated cosmos.base.v1beta1.Coin credits = 2;
+}
+
+message MsgRetireResponse { }

@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package regen.data.v1alpha1;
+
+import "regen/ecocredit/v1alpha1/types.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+
+service Query {
+    rpc ClassInfo(QueryClassInfoRequest) returns (QueryClassInfoResponse);
+    rpc BatchInfo(QueryBatchInfoRequest) returns (QueryBatchInfoResponse);
+    rpc Balance(QueryBalanceRequest) returns (QueryBalanceResponse);
+}
+
+message QueryClassInfoRequest {
+    string class_id = 1;
+}
+
+message QueryClassInfoResponse {
+    ClassInfo info = 1;
+}
+
+message QueryBatchInfoRequest {
+    string batch_denom = 1;
+}
+
+message QueryBatchInfoResponse {
+    BatchInfo info = 1;
+    string retired_supply = 2;
+}
+
+message QueryBalanceRequest {
+    string account = 1;
+    string batch_denom = 2;
+}
+
+message QueryBalanceResponse {
+    string tradeable_units = 1;
+    string retired_units = 2;
+}
