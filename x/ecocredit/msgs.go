@@ -29,12 +29,12 @@ func (m *MsgCreateClassRequest) GetSigners() []sdk.AccAddress {
 
 func (m *MsgCreateBatchRequest) ValidateBasic() error {
 	for _, iss := range m.Issuance {
-		_, err := math.MustParsePositiveDecimal(iss.TradeableUnits)
+		_, err := math.MustParseNonNegativeDecimal(iss.TradeableUnits)
 		if err != nil {
 			return err
 		}
 
-		_, err = math.MustParsePositiveDecimal(iss.RetiredUnits)
+		_, err = math.MustParseNonNegativeDecimal(iss.RetiredUnits)
 		if err != nil {
 			return err
 		}
@@ -53,12 +53,12 @@ func (m *MsgCreateBatchRequest) GetSigners() []sdk.AccAddress {
 
 func (m *MsgSendRequest) ValidateBasic() error {
 	for _, iss := range m.Credits {
-		_, err := math.MustParsePositiveDecimal(iss.TradeableUnits)
+		_, err := math.MustParseNonNegativeDecimal(iss.TradeableUnits)
 		if err != nil {
 			return err
 		}
 
-		_, err = math.MustParsePositiveDecimal(iss.RetiredUnits)
+		_, err = math.MustParseNonNegativeDecimal(iss.RetiredUnits)
 		if err != nil {
 			return err
 		}

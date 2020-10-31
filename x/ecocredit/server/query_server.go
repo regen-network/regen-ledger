@@ -90,7 +90,7 @@ func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupply
 func (s serverImpl) getDec(store sdk.KVStore, key []byte) (*apd.Decimal, error) {
 	bz := store.Get(key)
 
-	value, _, err := math.StrictDecima128Context.NewFromString(string(bz))
+	value, _, err := math.StrictDecimal128Context.NewFromString(string(bz))
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, fmt.Sprintf("can't unmarshal %s as decimal", bz))
 	}

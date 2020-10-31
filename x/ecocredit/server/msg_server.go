@@ -69,12 +69,12 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	store := ctx.KVStore(s.storeKey)
 
 	for _, issuance := range req.Issuance {
-		tradeable, err := math.MustParsePositiveDecimal(issuance.TradeableUnits)
+		tradeable, err := math.MustParseNonNegativeDecimal(issuance.TradeableUnits)
 		if err != nil {
 			return nil, err
 		}
 
-		retired, err := math.MustParsePositiveDecimal(issuance.RetiredUnits)
+		retired, err := math.MustParseNonNegativeDecimal(issuance.RetiredUnits)
 		if err != nil {
 			return nil, err
 		}
@@ -152,12 +152,12 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 	store := ctx.KVStore(s.storeKey)
 
 	for _, credit := range req.Credits {
-		tradeable, err := math.MustParsePositiveDecimal(credit.TradeableUnits)
+		tradeable, err := math.MustParseNonNegativeDecimal(credit.TradeableUnits)
 		if err != nil {
 			return nil, err
 		}
 
-		retired, err := math.MustParsePositiveDecimal(credit.RetiredUnits)
+		retired, err := math.MustParseNonNegativeDecimal(credit.RetiredUnits)
 		if err != nil {
 			return nil, err
 		}
@@ -296,7 +296,7 @@ func (s serverImpl) safeSubDec(store sdk.KVStore, key []byte, x *apd.Decimal) er
 		return err
 	}
 
-	_, err = math.StrictDecima128Context.Sub(value, value, x)
+	_, err = math.StrictDecimal128Context.Sub(value, value, x)
 	if err != nil {
 		return sdkerrors.Wrap(err, "decimal subtraction error")
 	}
@@ -310,7 +310,7 @@ func (s serverImpl) safeSubDec(store sdk.KVStore, key []byte, x *apd.Decimal) er
 }
 
 func add(res, x, y *apd.Decimal) error {
-	_, err := math.StrictDecima128Context.Add(res, x, y)
+	_, err := math.StrictDecimal128Context.Add(res, x, y)
 	if err != nil {
 		return sdkerrors.Wrap(err, "decimal addition error")
 	}
