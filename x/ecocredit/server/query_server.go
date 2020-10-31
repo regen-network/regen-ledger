@@ -95,3 +95,20 @@ func (s serverImpl) getRetiredBalance(ctx sdk.Context, holder string, batchDenom
 
 	return intProto.Int, nil
 }
+
+func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupplyRequest) (*ecocredit.QuerySupplyResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	supply := s.bankKeeper.GetSupply(ctx)
+	tradeable := supply.GetTotal().AmountOf(request.BatchDenom)
+
+	retired, err := s.getRetiredSupply(ctx, request.BatchDenom)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.QuerySupplyResponse{
+		TradeableSupply: tradeable.String(),
+		RetiredSupply:   retired.String(),
+	}, nil
+}

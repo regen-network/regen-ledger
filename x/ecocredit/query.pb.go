@@ -160,8 +160,7 @@ func (m *QueryBatchInfoRequest) GetBatchDenom() string {
 }
 
 type QueryBatchInfoResponse struct {
-	Info          *BatchInfo `protobuf:"bytes,1,opt,name=info,proto3" json:"info,omitempty"`
-	RetiredSupply string     `protobuf:"bytes,2,opt,name=retired_supply,json=retiredSupply,proto3" json:"retired_supply,omitempty"`
+	Info *BatchInfo `protobuf:"bytes,1,opt,name=info,proto3" json:"info,omitempty"`
 }
 
 func (m *QueryBatchInfoResponse) Reset()         { *m = QueryBatchInfoResponse{} }
@@ -202,13 +201,6 @@ func (m *QueryBatchInfoResponse) GetInfo() *BatchInfo {
 		return m.Info
 	}
 	return nil
-}
-
-func (m *QueryBatchInfoResponse) GetRetiredSupply() string {
-	if m != nil {
-		return m.RetiredSupply
-	}
-	return ""
 }
 
 type QueryBalanceRequest struct {
@@ -315,6 +307,102 @@ func (m *QueryBalanceResponse) GetRetiredUnits() string {
 	return ""
 }
 
+type QuerySupplyRequest struct {
+	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+}
+
+func (m *QuerySupplyRequest) Reset()         { *m = QuerySupplyRequest{} }
+func (m *QuerySupplyRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySupplyRequest) ProtoMessage()    {}
+func (*QuerySupplyRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{6}
+}
+func (m *QuerySupplyRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySupplyRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySupplyRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySupplyRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySupplyRequest.Merge(m, src)
+}
+func (m *QuerySupplyRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySupplyRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySupplyRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySupplyRequest proto.InternalMessageInfo
+
+func (m *QuerySupplyRequest) GetBatchDenom() string {
+	if m != nil {
+		return m.BatchDenom
+	}
+	return ""
+}
+
+type QuerySupplyResponse struct {
+	TradeableSupply string `protobuf:"bytes,1,opt,name=tradeable_supply,json=tradeableSupply,proto3" json:"tradeable_supply,omitempty"`
+	RetiredSupply   string `protobuf:"bytes,2,opt,name=retired_supply,json=retiredSupply,proto3" json:"retired_supply,omitempty"`
+}
+
+func (m *QuerySupplyResponse) Reset()         { *m = QuerySupplyResponse{} }
+func (m *QuerySupplyResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySupplyResponse) ProtoMessage()    {}
+func (*QuerySupplyResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{7}
+}
+func (m *QuerySupplyResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySupplyResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySupplyResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySupplyResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySupplyResponse.Merge(m, src)
+}
+func (m *QuerySupplyResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySupplyResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySupplyResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySupplyResponse proto.InternalMessageInfo
+
+func (m *QuerySupplyResponse) GetTradeableSupply() string {
+	if m != nil {
+		return m.TradeableSupply
+	}
+	return ""
+}
+
+func (m *QuerySupplyResponse) GetRetiredSupply() string {
+	if m != nil {
+		return m.RetiredSupply
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*QueryClassInfoRequest)(nil), "regen.data.v1alpha1.QueryClassInfoRequest")
 	proto.RegisterType((*QueryClassInfoResponse)(nil), "regen.data.v1alpha1.QueryClassInfoResponse")
@@ -322,6 +410,8 @@ func init() {
 	proto.RegisterType((*QueryBatchInfoResponse)(nil), "regen.data.v1alpha1.QueryBatchInfoResponse")
 	proto.RegisterType((*QueryBalanceRequest)(nil), "regen.data.v1alpha1.QueryBalanceRequest")
 	proto.RegisterType((*QueryBalanceResponse)(nil), "regen.data.v1alpha1.QueryBalanceResponse")
+	proto.RegisterType((*QuerySupplyRequest)(nil), "regen.data.v1alpha1.QuerySupplyRequest")
+	proto.RegisterType((*QuerySupplyResponse)(nil), "regen.data.v1alpha1.QuerySupplyResponse")
 }
 
 func init() {
@@ -329,34 +419,37 @@ func init() {
 }
 
 var fileDescriptor_6a16cc4c1db940dc = []byte{
-	// 429 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x53, 0xc1, 0x8e, 0xd3, 0x30,
-	0x10, 0x6d, 0x2a, 0xa0, 0x74, 0x16, 0x16, 0xc9, 0x0b, 0xa8, 0xf4, 0x10, 0x50, 0x00, 0xb1, 0x80,
-	0x48, 0xd4, 0x70, 0xe1, 0xbc, 0x70, 0x59, 0xc1, 0x01, 0x16, 0x71, 0xe1, 0x40, 0xe4, 0xd8, 0xd3,
-	0x36, 0x22, 0xb5, 0x53, 0xdb, 0x01, 0xfa, 0x17, 0xfc, 0x0b, 0x3f, 0xc1, 0xb1, 0x47, 0x8e, 0xa8,
-	0xfd, 0x11, 0x14, 0xd7, 0x69, 0x4b, 0x5b, 0xaa, 0x72, 0x9c, 0xa7, 0xf7, 0xe6, 0xbd, 0x99, 0xb1,
-	0xe1, 0x81, 0xc2, 0x01, 0x8a, 0x08, 0x99, 0x64, 0x0a, 0x79, 0x66, 0xa2, 0x2f, 0x3d, 0x9a, 0x17,
-	0x43, 0xda, 0x8b, 0xc6, 0x25, 0xaa, 0x49, 0x58, 0x28, 0x69, 0x24, 0x39, 0xb1, 0xac, 0x90, 0x53,
-	0x43, 0xc3, 0x9a, 0xd0, 0xfd, 0xb7, 0xd4, 0x4c, 0x0a, 0xd4, 0x0b, 0x69, 0x10, 0xc3, 0xad, 0x77,
-	0x55, 0xa7, 0x97, 0x39, 0xd5, 0xfa, 0x5c, 0xf4, 0xe5, 0x05, 0x8e, 0x4b, 0xd4, 0x86, 0xdc, 0x81,
-	0xab, 0xac, 0xc2, 0x92, 0x8c, 0x77, 0xbc, 0x7b, 0xde, 0x69, 0xfb, 0xa2, 0x65, 0xeb, 0x73, 0x1e,
-	0xbc, 0x81, 0xdb, 0x9b, 0x1a, 0x5d, 0x48, 0xa1, 0x91, 0xc4, 0x70, 0x29, 0x13, 0x7d, 0x69, 0x05,
-	0x47, 0xb1, 0x1f, 0xee, 0xc8, 0x15, 0xae, 0x54, 0x96, 0x1b, 0xbc, 0x70, 0x09, 0xce, 0xa8, 0x61,
-	0xc3, 0xf5, 0x04, 0x77, 0xe1, 0x28, 0xad, 0xb0, 0x84, 0xa3, 0x90, 0x23, 0x17, 0x02, 0x2c, 0xf4,
-	0xaa, 0x42, 0x02, 0xed, 0x72, 0xac, 0x29, 0xff, 0x23, 0xc7, 0x4a, 0x65, 0xb9, 0xe4, 0x21, 0x1c,
-	0x2b, 0x34, 0x99, 0x42, 0x9e, 0xe8, 0xb2, 0x28, 0xf2, 0x49, 0xa7, 0x69, 0x1d, 0xaf, 0x3b, 0xf4,
-	0xbd, 0x05, 0x83, 0xb7, 0x70, 0xe2, 0x4c, 0x73, 0x2a, 0x18, 0xd6, 0x61, 0x3b, 0xd0, 0xa2, 0x8c,
-	0xc9, 0x52, 0x98, 0x7a, 0x5b, 0xae, 0xdc, 0x1c, 0xa3, 0xb9, 0x35, 0x06, 0x87, 0x9b, 0x7f, 0x77,
-	0x74, 0x43, 0x3c, 0x82, 0x1b, 0x46, 0x51, 0x8e, 0x34, 0xcd, 0x31, 0x29, 0x45, 0x66, 0xb4, 0x6b,
-	0x7d, 0xbc, 0x84, 0x3f, 0x54, 0x28, 0xb9, 0x0f, 0x75, 0x46, 0x47, 0x5b, 0x78, 0x5c, 0x73, 0xa0,
-	0x25, 0xc5, 0x3f, 0x9a, 0x70, 0xd9, 0xda, 0x10, 0x0e, 0xed, 0xe5, 0x0d, 0xc8, 0x93, 0x9d, 0xbb,
-	0xd9, 0xf9, 0x24, 0xba, 0x4f, 0x0f, 0xe2, 0xba, 0xf4, 0x1c, 0xda, 0xcb, 0x0d, 0xef, 0x73, 0xd9,
-	0x3c, 0xfb, 0x3e, 0x97, 0xed, 0x43, 0x7f, 0x82, 0x96, 0x5b, 0x1b, 0x39, 0xdd, 0xa7, 0x5b, 0xbf,
-	0x55, 0xf7, 0xf1, 0x01, 0xcc, 0x45, 0xff, 0xb3, 0xd7, 0x3f, 0x67, 0xbe, 0x37, 0x9d, 0xf9, 0xde,
-	0xef, 0x99, 0xef, 0x7d, 0x9f, 0xfb, 0x8d, 0xe9, 0xdc, 0x6f, 0xfc, 0x9a, 0xfb, 0x8d, 0x8f, 0xbd,
-	0x41, 0x66, 0x86, 0x65, 0x1a, 0x32, 0x39, 0x8a, 0x6c, 0xbb, 0x67, 0x02, 0xcd, 0x57, 0xa9, 0x3e,
-	0xbb, 0x2a, 0x47, 0x3e, 0x40, 0x15, 0x7d, 0x5b, 0x7d, 0xc0, 0xf4, 0x8a, 0xfd, 0x72, 0xcf, 0xff,
-	0x04, 0x00, 0x00, 0xff, 0xff, 0xe7, 0xf1, 0x36, 0x1f, 0xd5, 0x03, 0x00, 0x00,
+	// 471 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x94, 0xcf, 0x6e, 0xd3, 0x40,
+	0x10, 0xc6, 0x63, 0xfe, 0x34, 0x64, 0x0a, 0x05, 0x6d, 0x01, 0x95, 0x1c, 0x0c, 0x0a, 0xa0, 0xa6,
+	0x20, 0x6c, 0x25, 0x08, 0x89, 0x73, 0xe1, 0x52, 0xc1, 0x01, 0x8a, 0xb8, 0x80, 0x44, 0xb4, 0xf1,
+	0x4e, 0x13, 0x0b, 0x77, 0xd7, 0xdd, 0x5d, 0x03, 0x79, 0x8b, 0x3e, 0x16, 0xc7, 0x1e, 0x39, 0xa2,
+	0xe4, 0x45, 0x90, 0xd7, 0xe3, 0x38, 0x4d, 0x93, 0x90, 0x1e, 0x77, 0xfc, 0x7d, 0xdf, 0xfc, 0xbc,
+	0x33, 0x5a, 0x78, 0xa2, 0x71, 0x80, 0x32, 0xc4, 0x48, 0x45, 0x1a, 0x45, 0x6c, 0xc3, 0x1f, 0x1d,
+	0x9e, 0xa4, 0x43, 0xde, 0x09, 0x4f, 0x32, 0xd4, 0xa3, 0x20, 0xd5, 0xca, 0x2a, 0xb6, 0xed, 0x54,
+	0x81, 0xe0, 0x96, 0x07, 0xa5, 0xa0, 0xb9, 0xdc, 0x6a, 0x47, 0x29, 0x9a, 0xc2, 0xda, 0xea, 0xc2,
+	0xbd, 0x8f, 0x79, 0xd2, 0x9b, 0x84, 0x1b, 0x73, 0x20, 0x8f, 0xd4, 0x21, 0x9e, 0x64, 0x68, 0x2c,
+	0x7b, 0x00, 0x37, 0xa2, 0xbc, 0xd6, 0x8b, 0xc5, 0x8e, 0xf7, 0xc8, 0x6b, 0x37, 0x0e, 0xeb, 0xee,
+	0x7c, 0x20, 0x5a, 0xef, 0xe1, 0xfe, 0xbc, 0xc7, 0xa4, 0x4a, 0x1a, 0x64, 0x5d, 0xb8, 0x16, 0xcb,
+	0x23, 0xe5, 0x0c, 0x9b, 0x5d, 0x3f, 0x58, 0xc0, 0x15, 0x54, 0x2e, 0xa7, 0x6d, 0xbd, 0x26, 0x82,
+	0x7d, 0x6e, 0xa3, 0xe1, 0x2c, 0xc1, 0x43, 0xd8, 0xec, 0xe7, 0xb5, 0x9e, 0x40, 0xa9, 0x8e, 0x09,
+	0x02, 0x5c, 0xe9, 0x6d, 0x5e, 0x99, 0x72, 0xcc, 0x38, 0x2f, 0xc1, 0x51, 0xb9, 0x0a, 0x8e, 0x0f,
+	0xb0, 0x4d, 0x69, 0x09, 0x97, 0x11, 0x96, 0x14, 0x3b, 0x50, 0xe7, 0x51, 0xa4, 0x32, 0x69, 0xcb,
+	0x6b, 0xa0, 0xe3, 0x3c, 0xdf, 0x95, 0x0b, 0x7c, 0x02, 0xee, 0x9e, 0x4f, 0x24, 0xba, 0x5d, 0xb8,
+	0x6d, 0x35, 0x17, 0xc8, 0xfb, 0x09, 0xf6, 0x32, 0x19, 0x5b, 0x43, 0xd1, 0x5b, 0xd3, 0xf2, 0xe7,
+	0xbc, 0xca, 0x1e, 0xc3, 0x2d, 0x8d, 0x36, 0xd6, 0x28, 0x48, 0x56, 0xf4, 0xb8, 0x49, 0x45, 0x27,
+	0x6a, 0xbd, 0x02, 0xe6, 0xba, 0x7c, 0xca, 0xd2, 0x34, 0x19, 0xad, 0x7d, 0x79, 0x03, 0xfa, 0xdd,
+	0xd2, 0x46, 0x6c, 0x7b, 0x70, 0xa7, 0x62, 0x33, 0xee, 0x1b, 0x99, 0x2b, 0xe6, 0xc2, 0xc2, 0x9e,
+	0xc2, 0x56, 0x49, 0x47, 0xc2, 0x02, 0xaf, 0x64, 0x2e, 0x64, 0xdd, 0xd3, 0xab, 0x70, 0xdd, 0x75,
+	0x62, 0x02, 0x1a, 0xd3, 0xe1, 0xb3, 0x67, 0x0b, 0x87, 0xb2, 0x70, 0x17, 0x9b, 0xcf, 0xd7, 0xd2,
+	0xd2, 0x1f, 0x08, 0x68, 0x4c, 0x47, 0xbb, 0xaa, 0xcb, 0xfc, 0xbe, 0xad, 0xea, 0x72, 0x71, 0xc3,
+	0xbe, 0x41, 0x9d, 0xc6, 0xca, 0xda, 0xab, 0x7c, 0xb3, 0xbb, 0xd4, 0xdc, 0x5b, 0x43, 0x49, 0xf9,
+	0x5f, 0x61, 0x83, 0xae, 0x79, 0x77, 0xb9, 0xe9, 0xdc, 0xc8, 0x9b, 0xed, 0xff, 0x0b, 0x8b, 0xf0,
+	0xfd, 0x77, 0xbf, 0xc7, 0xbe, 0x77, 0x36, 0xf6, 0xbd, 0xbf, 0x63, 0xdf, 0x3b, 0x9d, 0xf8, 0xb5,
+	0xb3, 0x89, 0x5f, 0xfb, 0x33, 0xf1, 0x6b, 0x5f, 0x3a, 0x83, 0xd8, 0x0e, 0xb3, 0x7e, 0x10, 0xa9,
+	0xe3, 0xd0, 0xa5, 0xbd, 0x90, 0x68, 0x7f, 0x2a, 0xfd, 0x9d, 0x4e, 0x09, 0x8a, 0x01, 0xea, 0xf0,
+	0x57, 0xf5, 0xac, 0xf4, 0x37, 0xdc, 0x43, 0xf2, 0xf2, 0x5f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x63,
+	0xfc, 0xdd, 0xcf, 0xab, 0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -374,6 +467,7 @@ type QueryClient interface {
 	ClassInfo(ctx context.Context, in *QueryClassInfoRequest, opts ...grpc.CallOption) (*QueryClassInfoResponse, error)
 	BatchInfo(ctx context.Context, in *QueryBatchInfoRequest, opts ...grpc.CallOption) (*QueryBatchInfoResponse, error)
 	Balance(ctx context.Context, in *QueryBalanceRequest, opts ...grpc.CallOption) (*QueryBalanceResponse, error)
+	Supply(ctx context.Context, in *QuerySupplyRequest, opts ...grpc.CallOption) (*QuerySupplyResponse, error)
 }
 
 type queryClient struct {
@@ -411,11 +505,21 @@ func (c *queryClient) Balance(ctx context.Context, in *QueryBalanceRequest, opts
 	return out, nil
 }
 
+func (c *queryClient) Supply(ctx context.Context, in *QuerySupplyRequest, opts ...grpc.CallOption) (*QuerySupplyResponse, error) {
+	out := new(QuerySupplyResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Query/Supply", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	ClassInfo(context.Context, *QueryClassInfoRequest) (*QueryClassInfoResponse, error)
 	BatchInfo(context.Context, *QueryBatchInfoRequest) (*QueryBatchInfoResponse, error)
 	Balance(context.Context, *QueryBalanceRequest) (*QueryBalanceResponse, error)
+	Supply(context.Context, *QuerySupplyRequest) (*QuerySupplyResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -430,6 +534,9 @@ func (*UnimplementedQueryServer) BatchInfo(ctx context.Context, req *QueryBatchI
 }
 func (*UnimplementedQueryServer) Balance(ctx context.Context, req *QueryBalanceRequest) (*QueryBalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Balance not implemented")
+}
+func (*UnimplementedQueryServer) Supply(ctx context.Context, req *QuerySupplyRequest) (*QuerySupplyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Supply not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -490,6 +597,24 @@ func _Query_Balance_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_Supply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySupplyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Supply(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.data.v1alpha1.Query/Supply",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Supply(ctx, req.(*QuerySupplyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "regen.data.v1alpha1.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -505,6 +630,10 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Balance",
 			Handler:    _Query_Balance_Handler,
+		},
+		{
+			MethodName: "Supply",
+			Handler:    _Query_Supply_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -626,13 +755,6 @@ func (m *QueryBatchInfoResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	_ = i
 	var l int
 	_ = l
-	if len(m.RetiredSupply) > 0 {
-		i -= len(m.RetiredSupply)
-		copy(dAtA[i:], m.RetiredSupply)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.RetiredSupply)))
-		i--
-		dAtA[i] = 0x12
-	}
 	if m.Info != nil {
 		{
 			size, err := m.Info.MarshalToSizedBuffer(dAtA[:i])
@@ -722,6 +844,73 @@ func (m *QueryBalanceResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *QuerySupplyRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySupplyRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySupplyRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.BatchDenom) > 0 {
+		i -= len(m.BatchDenom)
+		copy(dAtA[i:], m.BatchDenom)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.BatchDenom)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySupplyResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySupplyResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySupplyResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.RetiredSupply) > 0 {
+		i -= len(m.RetiredSupply)
+		copy(dAtA[i:], m.RetiredSupply)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.RetiredSupply)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.TradeableSupply) > 0 {
+		i -= len(m.TradeableSupply)
+		copy(dAtA[i:], m.TradeableSupply)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.TradeableSupply)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -782,10 +971,6 @@ func (m *QueryBatchInfoResponse) Size() (n int) {
 		l = m.Info.Size()
 		n += 1 + l + sovQuery(uint64(l))
 	}
-	l = len(m.RetiredSupply)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
-	}
 	return n
 }
 
@@ -817,6 +1002,36 @@ func (m *QueryBalanceResponse) Size() (n int) {
 		n += 1 + l + sovQuery(uint64(l))
 	}
 	l = len(m.RetiredUnits)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QuerySupplyRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.BatchDenom)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QuerySupplyResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.TradeableSupply)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.RetiredSupply)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
@@ -1153,38 +1368,6 @@ func (m *QueryBatchInfoResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RetiredSupply", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RetiredSupply = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])
@@ -1418,6 +1601,208 @@ func (m *QueryBalanceResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.RetiredUnits = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySupplyRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySupplyRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySupplyRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySupplyResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySupplyResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySupplyResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TradeableSupply", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TradeableSupply = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RetiredSupply", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RetiredSupply = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
