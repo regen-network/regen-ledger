@@ -28,6 +28,11 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 		return nil, err
 	}
 
+	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateClass{
+		ClassId:  classIdStr,
+		Designer: req.Designer,
+	})
+
 	return &ecocredit.MsgCreateClassResponse{ClassId: classIdStr}, nil
 }
 
@@ -55,16 +60,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 
 	batchId := s.batchInfoSeq.NextVal(ctx)
 
-	batchDenom := fmt.Sprintf("%s/%s/%x", s.denomPrefix, classId, batchId)
-
-	err = s.batchInfoTable.Create(ctx, &ecocredit.BatchInfo{
-		ClassId:    classId,
-		BatchDenom: batchDenom,
-		Issuer:     issuer,
-	})
-	if err != nil {
-		return nil, err
-	}
+	batchDenom := fmt.Sprintf("%s/%x", classId, batchId)
 
 	tradeableSupply := apd.New(0, 0)
 	retiredSupply := apd.New(0, 0)
@@ -85,39 +81,65 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		recipient := issuance.Recipient
 
 		if !tradeable.IsZero() {
-			s.setDec(store, TradeableBalanceKey(recipient, batchDenom), tradeable)
 			err = add(tradeableSupply, tradeableSupply, tradeable)
+			if err != nil {
+				return nil, err
+			}
+
+			err = s.receiveTradeable(ctx, store, recipient, batchDenom, tradeable)
 			if err != nil {
 				return nil, err
 			}
 		}
 
 		if !retired.IsZero() {
-			s.setDec(store, RetiredBalanceKey(recipient, batchDenom), retired)
 			err = add(retiredSupply, retiredSupply, retired)
+			if err != nil {
+				return nil, err
+			}
+
+			err = s.retire(ctx, store, recipient, batchDenom, retired)
 			if err != nil {
 				return nil, err
 			}
 		}
 	}
 
+	if !tradeableSupply.IsZero() {
+		s.setDec(store, TradeableSupplyKey(batchDenom), tradeableSupply)
+	}
+
 	if !retiredSupply.IsZero() {
 		s.setDec(store, RetiredSupplyKey(batchDenom), retiredSupply)
 	}
 
-	return &ecocredit.MsgCreateBatchResponse{BatchDenom: batchDenom}, nil
-}
-
-func (s serverImpl) setRetiredBalance(ctx sdk.Context, holder string, batchDenom string, retiredBalance sdk.Int) error {
-	intProto := sdk.IntProto{Int: retiredBalance}
-	bz, err := intProto.Marshal()
+	var totalSupply apd.Decimal
+	err = add(&totalSupply, tradeableSupply, retiredSupply)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	store := ctx.KVStore(s.storeKey)
-	store.Set(RetiredBalanceKey(holder, batchDenom), bz)
-	return nil
+	err = s.batchInfoTable.Create(ctx, &ecocredit.BatchInfo{
+		ClassId:    classId,
+		BatchDenom: batchDenom,
+		Issuer:     issuer,
+		TotalUnits: totalSupply.String(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateBatch{
+		ClassId:    classId,
+		BatchDenom: batchDenom,
+		Issuer:     issuer,
+		TotalUnits: totalSupply.String(),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.MsgCreateBatchResponse{BatchDenom: batchDenom}, nil
 }
 
 func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (*ecocredit.MsgSendResponse, error) {
@@ -170,13 +192,13 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 		}
 
 		// add tradeable balance
-		err = s.addDec(store, TradeableBalanceKey(recipient, denom), tradeable)
+		err = s.receiveTradeable(ctx, store, recipient, denom, tradeable)
 		if err != nil {
 			return nil, err
 		}
 
 		// add retired balance
-		err = s.addDec(store, RetiredBalanceKey(recipient, denom), retired)
+		err = s.retire(ctx, store, recipient, denom, retired)
 		if err != nil {
 			return nil, err
 		}
@@ -228,7 +250,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 		}
 
 		//  add retired balance
-		err = s.addDec(store, RetiredBalanceKey(holder, denom), toRetire)
+		err = s.retire(ctx, store, holder, denom, toRetire)
 		if err != nil {
 			return nil, err
 		}
@@ -241,4 +263,24 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 	}
 
 	return &ecocredit.MsgRetireResponse{}, nil
+}
+
+func (s serverImpl) receiveTradeable(ctx sdk.Context, store sdk.KVStore, recipient string, batchDenom string, tradeable *apd.Decimal) error {
+	s.setDec(store, TradeableBalanceKey(recipient, batchDenom), tradeable)
+
+	return ctx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
+		Recipient:  recipient,
+		BatchDenom: batchDenom,
+		Units:      tradeable.String(),
+	})
+}
+
+func (s serverImpl) retire(ctx sdk.Context, store sdk.KVStore, recipient string, batchDenom string, retired *apd.Decimal) error {
+	s.setDec(store, RetiredBalanceKey(recipient, batchDenom), retired)
+
+	return ctx.EventManager().EmitTypedEvent(&ecocredit.EventRetire{
+		Retirer:    recipient,
+		BatchDenom: batchDenom,
+		Units:      retired.String(),
+	})
 }

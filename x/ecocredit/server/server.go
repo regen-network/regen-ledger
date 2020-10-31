@@ -3,7 +3,6 @@ package server
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	"github.com/cosmos/modules/incubator/orm"
 	_ "github.com/cosmos/modules/incubator/orm"
 
@@ -18,11 +17,7 @@ const (
 )
 
 type serverImpl struct {
-	denomPrefix string
-
 	storeKey sdk.StoreKey
-
-	bankKeeper bankkeeper.Keeper
 
 	classInfoSeq   orm.Sequence
 	classInfoTable orm.NaturalKeyTable
@@ -36,8 +31,8 @@ type Server interface {
 	ecocredit.QueryServer
 }
 
-func NewServer(denomPrefix string, storeKey sdk.StoreKey, bankKeeper bankkeeper.Keeper) Server {
-	s := serverImpl{denomPrefix: denomPrefix, storeKey: storeKey, bankKeeper: bankKeeper}
+func NewServer(storeKey sdk.StoreKey) Server {
+	s := serverImpl{storeKey: storeKey}
 
 	return s
 }

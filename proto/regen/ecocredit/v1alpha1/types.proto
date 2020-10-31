@@ -15,4 +15,5 @@ message BatchInfo {
     string class_id = 1;
     string batch_denom = 2;
     string issuer = 3;
+    string total_units = 4;
 }
