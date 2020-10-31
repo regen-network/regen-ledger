@@ -9,7 +9,7 @@ BINDIR ?= $(GOPATH)/bin
 BUILDDIR ?= $(CURDIR)/build
 SIMAPP = ./simapp
 MOCKS_DIR = $(CURDIR)/tests/mocks
-HTTPS_GIT := https://github.com/cosmos/cosmos-sdk.git
+HTTPS_GIT := https://github.com/regen-network/regen-ledger.git
 DOCKER_BUF := docker run -v $(shell pwd):/workspace --workdir /workspace bufbuild/buf
 
 export GO111MODULE = on
@@ -109,7 +109,7 @@ $(BUILD_TARGETS): go.sum $(BUILDDIR)/
 $(BUILDDIR)/:
 	mkdir -p $(BUILDDIR)/
 
-build-simd-all: go.sum
+build-xrnd-all: go.sum
 	$(if $(shell docker inspect -f '{{ .Id }}' cosmossdk/rbuilder 2>/dev/null),$(info found image cosmossdk/rbuilder),docker pull cosmossdk/rbuilder:latest)
 	docker rm latest-build || true
 	docker run --volume=$(CURDIR):/sources:ro \
@@ -121,7 +121,7 @@ build-simd-all: go.sum
         --name latest-build cosmossdk/rbuilder:latest
 	docker cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
 
-build-simd-linux: go.sum $(BUILDDIR)/
+build-xrnd-linux: go.sum $(BUILDDIR)/
 	$(if $(shell docker inspect -f '{{ .Id }}' cosmossdk/rbuilder 2>/dev/null),$(info found image cosmossdk/rbuilder),docker pull cosmossdk/rbuilder:latest)
 	docker rm latest-build || true
 	docker run --volume=$(CURDIR):/sources:ro \
@@ -134,10 +134,7 @@ build-simd-linux: go.sum $(BUILDDIR)/
 	docker cp -a latest-build:/home/builder/artifacts/ $(CURDIR)/
 	cp artifacts/simd-*-linux-amd64 $(BUILDDIR)/simd
 
-cosmovisor:
-	$(MAKE) -C cosmovisor cosmovisor
-
-.PHONY: build build-linux build-simd-all build-simd-linux cosmovisor
+.PHONY: build build-linux build-xrnd-all build-xrnd-linux
 
 mocks: $(MOCKS_DIR)
 	mockgen -source=client/account_retriever.go -package mocks -destination tests/mocks/account_retriever.go
@@ -186,6 +183,7 @@ update-swagger-docs: statik
 .PHONY: update-swagger-docs
 
 godocs:
+	# TODO: Update godoc url
 	@echo "--> Wait a few seconds and visit http://localhost:6060/pkg/github.com/cosmos/cosmos-sdk/types"
 	godoc -http=:6060
 
@@ -275,12 +273,6 @@ test-sim-multi-seed-short: runsim
 	@echo "Running short multi-seed application simulation. This may take awhile!"
 	@$(BINDIR)/runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 50 10 TestFullAppSimulation
 
-test-sim-benchmark-invariants:
-	@echo "Running simulation invariant benchmarks..."
-	@go test -mod=readonly $(SIMAPP) -benchmem -bench=BenchmarkInvariants -run=^$ \
-	-Enabled=true -NumBlocks=1000 -BlockSize=200 \
-	-Period=1 -Commit=true -Seed=57 -v -timeout 24h
-
 .PHONY: \
 test-sim-nondeterminism \
 test-sim-custom-genesis-fast \
@@ -288,8 +280,7 @@ test-sim-import-export \
 test-sim-after-import \
 test-sim-custom-genesis-multi-seed \
 test-sim-multi-seed-short \
-test-sim-multi-seed-long \
-test-sim-benchmark-invariants
+test-sim-multi-seed-long
 
 SIM_NUM_BLOCKS ?= 500
 SIM_BLOCK_SIZE ?= 200
@@ -396,11 +387,11 @@ GOGO_PROTO_URL   = https://raw.githubusercontent.com/regen-network/protobuf/cosm
 COSMOS_PROTO_URL = https://raw.githubusercontent.com/regen-network/cosmos-proto/master
 CONFIO_URL 		 = https://raw.githubusercontent.com/confio/ics23/v0.6.2
 
-TM_CRYPTO_TYPES     = third_party/proto/tendermint/crypto
-TM_ABCI_TYPES       = third_party/proto/tendermint/abci
-TM_TYPES     			  = third_party/proto/tendermint/types
-TM_VERSION 					= third_party/proto/tendermint/version
-TM_LIBS							= third_party/proto/tendermint/libs/bits
+TM_CRYPTO_TYPES  = third_party/proto/tendermint/crypto
+TM_ABCI_TYPES    = third_party/proto/tendermint/abci
+TM_TYPES     	 = third_party/proto/tendermint/types
+TM_VERSION 		 = third_party/proto/tendermint/version
+TM_LIBS			 = third_party/proto/tendermint/libs/bits
 
 GOGO_PROTO_TYPES    = third_party/proto/gogoproto
 COSMOS_PROTO_TYPES  = third_party/proto/cosmos_proto
