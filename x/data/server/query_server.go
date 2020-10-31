@@ -25,7 +25,7 @@ func (s serverImpl) Data(goCtx context.Context, request *data.QueryDataRequest) 
 	_ = s.signersTable.GetOne(ctx, cid, &signers)
 
 	store := ctx.KVStore(s.storeKey)
-	content := store.Get(cid)
+	content := store.Get(DataKey(cid))
 
 	return &data.QueryDataResponse{
 		Timestamp: &timestamp,
