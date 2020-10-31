@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/modules/incubator/orm"
@@ -65,45 +66,35 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		return nil, err
 	}
 
-	retiredSupply := sdk.ZeroInt()
+	tradeableSupply := apd.New(0, 0)
+	retiredSupply := apd.New(0, 0)
+
+	store := ctx.KVStore(s.storeKey)
 
 	for _, issuance := range req.Issuance {
-		tradeable, ok := sdk.NewIntFromString(issuance.TradeableUnits)
-		if !ok {
+		tradeable, _, err := apd.NewFromString(issuance.TradeableUnits)
+		if err != nil {
 			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid integer", issuance.TradeableUnits))
 		}
 
-		retired, ok := sdk.NewIntFromString(issuance.RetiredUnits)
-		if !ok {
+		retired, _, err := apd.NewFromString(issuance.RetiredUnits)
+		if err != nil {
 			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid integer", issuance.RetiredUnits))
 		}
 
 		recipient := issuance.Recipient
 
 		if !tradeable.IsZero() {
-			coins := []sdk.Coin{
-				sdk.NewCoin(batchDenom, tradeable),
-			}
-			err = s.bankKeeper.MintCoins(ctx, ecocredit.ModuleName, coins)
-			if err != nil {
-				return nil, err
-			}
-
-			addr, err := sdk.AccAddressFromBech32(recipient)
-			if err != nil {
-				return nil, err
-			}
-
-			err = s.bankKeeper.SendCoinsFromModuleToAccount(ctx, ecocredit.ModuleName, addr, coins)
+			s.setDec(store, TradeableBalanceKey(recipient, batchDenom), tradeable)
+			err = add(tradeableSupply, tradeableSupply, tradeable)
 			if err != nil {
 				return nil, err
 			}
 		}
 
 		if !retired.IsZero() {
-			retiredSupply = retiredSupply.Add(retired)
-
-			err = s.setRetiredBalance(ctx, recipient, batchDenom, retired)
+			s.setDec(store, RetiredBalanceKey(recipient, batchDenom), retired)
+			err = add(retiredSupply, retiredSupply, retired)
 			if err != nil {
 				return nil, err
 			}
@@ -111,10 +102,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	}
 
 	if !retiredSupply.IsZero() {
-		err = s.setRetiredSupply(ctx, batchDenom, retiredSupply)
-		if err != nil {
-			return nil, err
-		}
+		s.setDec(store, RetiredSupplyKey(batchDenom), retiredSupply)
 	}
 
 	return &ecocredit.MsgCreateBatchResponse{BatchDenom: batchDenom}, nil
@@ -132,74 +120,125 @@ func (s serverImpl) setRetiredBalance(ctx sdk.Context, holder string, batchDenom
 	return nil
 }
 
+func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (*ecocredit.MsgSendResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	sender := req.Sender
+	recipient := req.Recipient
+
+	store := ctx.KVStore(s.storeKey)
+
+	for _, credit := range req.Credits {
+		tradeable, _, err := apd.NewFromString(credit.TradeableUnits)
+		if err != nil {
+			return nil, err
+		}
+
+		err = requirePositive(tradeable)
+		if err != nil {
+			return nil, err
+		}
+
+		retired, _, err := apd.NewFromString(credit.RetiredUnits)
+		if err != nil {
+			return nil, err
+		}
+
+		err = requirePositive(retired)
+		if err != nil {
+			return nil, err
+		}
+
+		var sum apd.Decimal
+		err = add(&sum, tradeable, retired)
+		if err != nil {
+			return nil, err
+		}
+
+		denom := credit.BatchDenom
+
+		// subtract balance
+		err = s.safeSubDec(store, TradeableBalanceKey(sender, denom), &sum)
+		if err != nil {
+			return nil, err
+		}
+
+		// subtract retired from tradeable supply
+		err = s.safeSubDec(store, TradeableSupplyKey(denom), retired)
+		if err != nil {
+			return nil, err
+		}
+
+		// add tradeable balance
+		err = s.addDec(store, TradeableBalanceKey(recipient, denom), tradeable)
+		if err != nil {
+			return nil, err
+		}
+
+		// add retired balance
+		err = s.addDec(store, RetiredBalanceKey(recipient, denom), retired)
+		if err != nil {
+			return nil, err
+		}
+
+		// add retired supply
+		err = s.addDec(store, RetiredSupplyKey(denom), retired)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &ecocredit.MsgSendResponse{}, nil
+}
+
 func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireRequest) (*ecocredit.MsgRetireResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	holder := req.Holder
-	addr, err := sdk.AccAddressFromBech32(holder)
-	if err != nil {
-		return nil, err
-	}
 
-	var coins sdk.Coins
+	store := ctx.KVStore(s.storeKey)
 
 	for _, credit := range req.Credits {
-		denom := credit.Denom
+		denom := credit.BatchDenom
 
 		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
 			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid credit denom", denom))
 		}
 
-		coins = append(coins, *credit)
-
-		// Handle Balance
-		retiredBalance, err := s.getRetiredBalance(ctx, holder, denom)
+		toRetire, _, err := apd.NewFromString(credit.Units)
 		if err != nil {
 			return nil, err
 		}
 
-		amount := credit.Amount
-		retiredBalance = retiredBalance.Add(amount)
-
-		err = s.setRetiredBalance(ctx, holder, denom, retiredBalance)
+		err = requirePositive(toRetire)
 		if err != nil {
 			return nil, err
 		}
 
-		// Handle Supply
-		retiredSupply, err := s.getRetiredSupply(ctx, denom)
+		// subtract tradeable balance
+		err = s.safeSubDec(store, TradeableBalanceKey(holder, denom), toRetire)
 		if err != nil {
 			return nil, err
 		}
 
-		retiredSupply = retiredSupply.Add(amount)
+		// subtract tradeable supply
+		err = s.safeSubDec(store, TradeableSupplyKey(denom), toRetire)
+		if err != nil {
+			return nil, err
+		}
 
-		err = s.setRetiredSupply(ctx, denom, retiredSupply)
-	}
+		//  add retired balance
+		err = s.addDec(store, RetiredBalanceKey(holder, denom), toRetire)
+		if err != nil {
+			return nil, err
+		}
 
-	err = s.bankKeeper.SendCoinsFromAccountToModule(ctx, addr, ecocredit.ModuleName, coins)
-	if err != nil {
-		return nil, err
-	}
-
-	err = s.bankKeeper.BurnCoins(ctx, ecocredit.ModuleName, coins)
-	if err != nil {
-		return nil, err
+		//  add retired supply
+		err = s.addDec(store, RetiredSupplyKey(holder), toRetire)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &ecocredit.MsgRetireResponse{}, nil
-}
-
-func (s serverImpl) setRetiredSupply(ctx sdk.Context, batchDenom string, supply sdk.Int) error {
-	intProto := sdk.IntProto{Int: supply}
-
-	bz, err := intProto.Marshal()
-	if err != nil {
-		return err
-	}
-
-	store := ctx.KVStore(s.storeKey)
-	store.Set(RetiredSupplyKey(batchDenom), bz)
-
-	return nil
 }

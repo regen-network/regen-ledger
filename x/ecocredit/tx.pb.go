@@ -6,7 +6,6 @@ package ecocredit
 import (
 	context "context"
 	fmt "fmt"
-	types "github.com/cosmos/cosmos-sdk/types"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	grpc "google.golang.org/grpc"
@@ -133,9 +132,9 @@ func (m *MsgCreateClassResponse) GetClassId() string {
 }
 
 type MsgCreateBatchRequest struct {
-	Issuer   string           `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	ClassId  string           `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	Issuance []*BatchIssuance `protobuf:"bytes,3,rep,name=issuance,proto3" json:"issuance,omitempty"`
+	Issuer   string                                 `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
+	ClassId  string                                 `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	Issuance []*MsgCreateBatchRequest_BatchIssuance `protobuf:"bytes,3,rep,name=issuance,proto3" json:"issuance,omitempty"`
 }
 
 func (m *MsgCreateBatchRequest) Reset()         { *m = MsgCreateBatchRequest{} }
@@ -185,11 +184,71 @@ func (m *MsgCreateBatchRequest) GetClassId() string {
 	return ""
 }
 
-func (m *MsgCreateBatchRequest) GetIssuance() []*BatchIssuance {
+func (m *MsgCreateBatchRequest) GetIssuance() []*MsgCreateBatchRequest_BatchIssuance {
 	if m != nil {
 		return m.Issuance
 	}
 	return nil
+}
+
+type MsgCreateBatchRequest_BatchIssuance struct {
+	Recipient      string `protobuf:"bytes,1,opt,name=recipient,proto3" json:"recipient,omitempty"`
+	TradeableUnits string `protobuf:"bytes,2,opt,name=tradeable_units,json=tradeableUnits,proto3" json:"tradeable_units,omitempty"`
+	RetiredUnits   string `protobuf:"bytes,3,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty"`
+}
+
+func (m *MsgCreateBatchRequest_BatchIssuance) Reset()         { *m = MsgCreateBatchRequest_BatchIssuance{} }
+func (m *MsgCreateBatchRequest_BatchIssuance) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateBatchRequest_BatchIssuance) ProtoMessage()    {}
+func (*MsgCreateBatchRequest_BatchIssuance) Descriptor() ([]byte, []int) {
+	return fileDescriptor_96891bdd11ac56ed, []int{2, 0}
+}
+func (m *MsgCreateBatchRequest_BatchIssuance) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgCreateBatchRequest_BatchIssuance) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgCreateBatchRequest_BatchIssuance.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgCreateBatchRequest_BatchIssuance) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateBatchRequest_BatchIssuance.Merge(m, src)
+}
+func (m *MsgCreateBatchRequest_BatchIssuance) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgCreateBatchRequest_BatchIssuance) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateBatchRequest_BatchIssuance.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgCreateBatchRequest_BatchIssuance proto.InternalMessageInfo
+
+func (m *MsgCreateBatchRequest_BatchIssuance) GetRecipient() string {
+	if m != nil {
+		return m.Recipient
+	}
+	return ""
+}
+
+func (m *MsgCreateBatchRequest_BatchIssuance) GetTradeableUnits() string {
+	if m != nil {
+		return m.TradeableUnits
+	}
+	return ""
+}
+
+func (m *MsgCreateBatchRequest_BatchIssuance) GetRetiredUnits() string {
+	if m != nil {
+		return m.RetiredUnits
+	}
+	return ""
 }
 
 type MsgCreateBatchResponse struct {
@@ -236,24 +295,24 @@ func (m *MsgCreateBatchResponse) GetBatchDenom() string {
 	return ""
 }
 
-type BatchIssuance struct {
-	Recipient      string `protobuf:"bytes,1,opt,name=recipient,proto3" json:"recipient,omitempty"`
-	TradeableUnits string `protobuf:"bytes,2,opt,name=tradeable_units,json=tradeableUnits,proto3" json:"tradeable_units,omitempty"`
-	RetiredUnits   string `protobuf:"bytes,3,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty"`
+type MsgSendRequest struct {
+	Sender    string                      `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
+	Recipient string                      `protobuf:"bytes,2,opt,name=recipient,proto3" json:"recipient,omitempty"`
+	Credits   []*MsgSendRequest_SendUnits `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
 }
 
-func (m *BatchIssuance) Reset()         { *m = BatchIssuance{} }
-func (m *BatchIssuance) String() string { return proto.CompactTextString(m) }
-func (*BatchIssuance) ProtoMessage()    {}
-func (*BatchIssuance) Descriptor() ([]byte, []int) {
+func (m *MsgSendRequest) Reset()         { *m = MsgSendRequest{} }
+func (m *MsgSendRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgSendRequest) ProtoMessage()    {}
+func (*MsgSendRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_96891bdd11ac56ed, []int{4}
 }
-func (m *BatchIssuance) XXX_Unmarshal(b []byte) error {
+func (m *MsgSendRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *BatchIssuance) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgSendRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_BatchIssuance.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgSendRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -263,49 +322,145 @@ func (m *BatchIssuance) XXX_Marshal(b []byte, deterministic bool) ([]byte, error
 		return b[:n], nil
 	}
 }
-func (m *BatchIssuance) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_BatchIssuance.Merge(m, src)
+func (m *MsgSendRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSendRequest.Merge(m, src)
 }
-func (m *BatchIssuance) XXX_Size() int {
+func (m *MsgSendRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *BatchIssuance) XXX_DiscardUnknown() {
-	xxx_messageInfo_BatchIssuance.DiscardUnknown(m)
+func (m *MsgSendRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSendRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_BatchIssuance proto.InternalMessageInfo
+var xxx_messageInfo_MsgSendRequest proto.InternalMessageInfo
 
-func (m *BatchIssuance) GetRecipient() string {
+func (m *MsgSendRequest) GetSender() string {
+	if m != nil {
+		return m.Sender
+	}
+	return ""
+}
+
+func (m *MsgSendRequest) GetRecipient() string {
 	if m != nil {
 		return m.Recipient
 	}
 	return ""
 }
 
-func (m *BatchIssuance) GetTradeableUnits() string {
+func (m *MsgSendRequest) GetCredits() []*MsgSendRequest_SendUnits {
+	if m != nil {
+		return m.Credits
+	}
+	return nil
+}
+
+type MsgSendRequest_SendUnits struct {
+	BatchDenom     string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	TradeableUnits string `protobuf:"bytes,2,opt,name=tradeable_units,json=tradeableUnits,proto3" json:"tradeable_units,omitempty"`
+	RetiredUnits   string `protobuf:"bytes,3,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty"`
+}
+
+func (m *MsgSendRequest_SendUnits) Reset()         { *m = MsgSendRequest_SendUnits{} }
+func (m *MsgSendRequest_SendUnits) String() string { return proto.CompactTextString(m) }
+func (*MsgSendRequest_SendUnits) ProtoMessage()    {}
+func (*MsgSendRequest_SendUnits) Descriptor() ([]byte, []int) {
+	return fileDescriptor_96891bdd11ac56ed, []int{4, 0}
+}
+func (m *MsgSendRequest_SendUnits) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSendRequest_SendUnits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSendRequest_SendUnits.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSendRequest_SendUnits) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSendRequest_SendUnits.Merge(m, src)
+}
+func (m *MsgSendRequest_SendUnits) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSendRequest_SendUnits) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSendRequest_SendUnits.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSendRequest_SendUnits proto.InternalMessageInfo
+
+func (m *MsgSendRequest_SendUnits) GetBatchDenom() string {
+	if m != nil {
+		return m.BatchDenom
+	}
+	return ""
+}
+
+func (m *MsgSendRequest_SendUnits) GetTradeableUnits() string {
 	if m != nil {
 		return m.TradeableUnits
 	}
 	return ""
 }
 
-func (m *BatchIssuance) GetRetiredUnits() string {
+func (m *MsgSendRequest_SendUnits) GetRetiredUnits() string {
 	if m != nil {
 		return m.RetiredUnits
 	}
 	return ""
 }
 
+type MsgSendResponse struct {
+}
+
+func (m *MsgSendResponse) Reset()         { *m = MsgSendResponse{} }
+func (m *MsgSendResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgSendResponse) ProtoMessage()    {}
+func (*MsgSendResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_96891bdd11ac56ed, []int{5}
+}
+func (m *MsgSendResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSendResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSendResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSendResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSendResponse.Merge(m, src)
+}
+func (m *MsgSendResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSendResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSendResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSendResponse proto.InternalMessageInfo
+
 type MsgRetireRequest struct {
-	Holder  string        `protobuf:"bytes,1,opt,name=holder,proto3" json:"holder,omitempty"`
-	Credits []*types.Coin `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
+	Holder  string                          `protobuf:"bytes,1,opt,name=holder,proto3" json:"holder,omitempty"`
+	Credits []*MsgRetireRequest_RetireUnits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
 }
 
 func (m *MsgRetireRequest) Reset()         { *m = MsgRetireRequest{} }
 func (m *MsgRetireRequest) String() string { return proto.CompactTextString(m) }
 func (*MsgRetireRequest) ProtoMessage()    {}
 func (*MsgRetireRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_96891bdd11ac56ed, []int{5}
+	return fileDescriptor_96891bdd11ac56ed, []int{6}
 }
 func (m *MsgRetireRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -341,11 +496,63 @@ func (m *MsgRetireRequest) GetHolder() string {
 	return ""
 }
 
-func (m *MsgRetireRequest) GetCredits() []*types.Coin {
+func (m *MsgRetireRequest) GetCredits() []*MsgRetireRequest_RetireUnits {
 	if m != nil {
 		return m.Credits
 	}
 	return nil
+}
+
+type MsgRetireRequest_RetireUnits struct {
+	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	Units      string `protobuf:"bytes,2,opt,name=units,proto3" json:"units,omitempty"`
+}
+
+func (m *MsgRetireRequest_RetireUnits) Reset()         { *m = MsgRetireRequest_RetireUnits{} }
+func (m *MsgRetireRequest_RetireUnits) String() string { return proto.CompactTextString(m) }
+func (*MsgRetireRequest_RetireUnits) ProtoMessage()    {}
+func (*MsgRetireRequest_RetireUnits) Descriptor() ([]byte, []int) {
+	return fileDescriptor_96891bdd11ac56ed, []int{6, 0}
+}
+func (m *MsgRetireRequest_RetireUnits) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgRetireRequest_RetireUnits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgRetireRequest_RetireUnits.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgRetireRequest_RetireUnits) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRetireRequest_RetireUnits.Merge(m, src)
+}
+func (m *MsgRetireRequest_RetireUnits) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgRetireRequest_RetireUnits) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRetireRequest_RetireUnits.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgRetireRequest_RetireUnits proto.InternalMessageInfo
+
+func (m *MsgRetireRequest_RetireUnits) GetBatchDenom() string {
+	if m != nil {
+		return m.BatchDenom
+	}
+	return ""
+}
+
+func (m *MsgRetireRequest_RetireUnits) GetUnits() string {
+	if m != nil {
+		return m.Units
+	}
+	return ""
 }
 
 type MsgRetireResponse struct {
@@ -355,7 +562,7 @@ func (m *MsgRetireResponse) Reset()         { *m = MsgRetireResponse{} }
 func (m *MsgRetireResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgRetireResponse) ProtoMessage()    {}
 func (*MsgRetireResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_96891bdd11ac56ed, []int{6}
+	return fileDescriptor_96891bdd11ac56ed, []int{7}
 }
 func (m *MsgRetireResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -388,49 +595,57 @@ func init() {
 	proto.RegisterType((*MsgCreateClassRequest)(nil), "regen.data.v1alpha1.MsgCreateClassRequest")
 	proto.RegisterType((*MsgCreateClassResponse)(nil), "regen.data.v1alpha1.MsgCreateClassResponse")
 	proto.RegisterType((*MsgCreateBatchRequest)(nil), "regen.data.v1alpha1.MsgCreateBatchRequest")
+	proto.RegisterType((*MsgCreateBatchRequest_BatchIssuance)(nil), "regen.data.v1alpha1.MsgCreateBatchRequest.BatchIssuance")
 	proto.RegisterType((*MsgCreateBatchResponse)(nil), "regen.data.v1alpha1.MsgCreateBatchResponse")
-	proto.RegisterType((*BatchIssuance)(nil), "regen.data.v1alpha1.BatchIssuance")
+	proto.RegisterType((*MsgSendRequest)(nil), "regen.data.v1alpha1.MsgSendRequest")
+	proto.RegisterType((*MsgSendRequest_SendUnits)(nil), "regen.data.v1alpha1.MsgSendRequest.SendUnits")
+	proto.RegisterType((*MsgSendResponse)(nil), "regen.data.v1alpha1.MsgSendResponse")
 	proto.RegisterType((*MsgRetireRequest)(nil), "regen.data.v1alpha1.MsgRetireRequest")
+	proto.RegisterType((*MsgRetireRequest_RetireUnits)(nil), "regen.data.v1alpha1.MsgRetireRequest.RetireUnits")
 	proto.RegisterType((*MsgRetireResponse)(nil), "regen.data.v1alpha1.MsgRetireResponse")
 }
 
 func init() { proto.RegisterFile("regen/ecocredit/v1alpha1/tx.proto", fileDescriptor_96891bdd11ac56ed) }
 
 var fileDescriptor_96891bdd11ac56ed = []byte{
-	// 522 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0x4f, 0x8f, 0x12, 0x4f,
-	0x10, 0x65, 0x98, 0x84, 0x3f, 0xc5, 0xee, 0xef, 0xa7, 0xbd, 0x71, 0xc3, 0x12, 0x33, 0xe2, 0x18,
-	0x95, 0x68, 0x9c, 0x09, 0x70, 0xf2, 0xe2, 0x61, 0xf1, 0xb2, 0x31, 0x5c, 0x26, 0x31, 0x26, 0x5e,
-	0x48, 0xcf, 0x4c, 0x39, 0x74, 0x84, 0x6e, 0xec, 0x6e, 0xd6, 0x4d, 0xfc, 0x06, 0x9e, 0xfc, 0x24,
-	0x7e, 0x0e, 0x8f, 0x7b, 0xf4, 0x68, 0xe0, 0x8b, 0x98, 0xe9, 0x69, 0x60, 0x30, 0x18, 0x3c, 0xbe,
-	0xc7, 0xab, 0x7a, 0xd5, 0xaf, 0x8a, 0x81, 0x87, 0x12, 0x33, 0xe4, 0x21, 0x26, 0x22, 0x91, 0x98,
-	0x32, 0x1d, 0x5e, 0xf7, 0xe9, 0x6c, 0x31, 0xa5, 0xfd, 0x50, 0xdf, 0x04, 0x0b, 0x29, 0xb4, 0x20,
-	0x67, 0x46, 0x12, 0xa4, 0x54, 0xd3, 0x60, 0xf3, 0x6b, 0xc7, 0x4b, 0x84, 0x9a, 0x0b, 0x15, 0xc6,
-	0x54, 0x61, 0x78, 0xdd, 0x8f, 0x51, 0xd3, 0x7e, 0x98, 0x08, 0xc6, 0x8b, 0x22, 0x9f, 0xc1, 0xbd,
-	0xb1, 0xca, 0x46, 0x12, 0xa9, 0xc6, 0xd1, 0x8c, 0x2a, 0x15, 0xe1, 0xa7, 0x25, 0x2a, 0x4d, 0x3a,
-	0xd0, 0x48, 0x51, 0xb1, 0x8c, 0xa3, 0x6c, 0x3b, 0x5d, 0xa7, 0xd7, 0x8c, 0xb6, 0x98, 0xb4, 0xa1,
-	0xce, 0x94, 0x5a, 0xa2, 0x54, 0xed, 0x6a, 0xd7, 0xed, 0x35, 0xa3, 0x0d, 0xcc, 0xab, 0xe6, 0xa8,
-	0x69, 0x3e, 0x43, 0xdb, 0xed, 0x3a, 0xbd, 0x93, 0x68, 0x8b, 0xfd, 0x21, 0x9c, 0xff, 0x69, 0xa5,
-	0x16, 0x82, 0x2b, 0x24, 0x17, 0xd0, 0x48, 0x72, 0x62, 0xc2, 0x52, 0xeb, 0x55, 0x37, 0xf8, 0x2a,
-	0xf5, 0xbf, 0x3a, 0xa5, 0x01, 0x2f, 0xa9, 0x4e, 0xa6, 0x9b, 0x01, 0xcf, 0xa1, 0x56, 0xb8, 0xda,
-	0x12, 0x8b, 0xf6, 0x9a, 0x55, 0xf7, 0x9a, 0x91, 0x57, 0xd0, 0xc8, 0x45, 0x94, 0x27, 0xd8, 0x76,
-	0xbb, 0x6e, 0xaf, 0x35, 0xf0, 0x83, 0x03, 0xa1, 0x05, 0xc6, 0xe7, 0xca, 0x2a, 0xa3, 0x6d, 0x8d,
-	0xff, 0xb2, 0xf4, 0x02, 0x3b, 0x8b, 0x7d, 0xc1, 0x03, 0x68, 0xc5, 0x39, 0x31, 0x49, 0x91, 0x8b,
-	0xb9, 0x9d, 0x08, 0x0c, 0xf5, 0x3a, 0x67, 0xfc, 0x2f, 0x70, 0xba, 0xd7, 0x95, 0xdc, 0x87, 0xa6,
-	0xc4, 0x84, 0x2d, 0x18, 0x72, 0x6d, 0xf5, 0x3b, 0x82, 0x3c, 0x85, 0xff, 0xb5, 0xa4, 0x29, 0xd2,
-	0x78, 0x86, 0x93, 0x25, 0x67, 0x5a, 0xd9, 0xb7, 0xfc, 0xb7, 0xa5, 0xdf, 0xe6, 0x2c, 0x79, 0x04,
-	0xa7, 0x12, 0x35, 0x93, 0x98, 0x5a, 0x99, 0x6b, 0x64, 0x27, 0x96, 0x34, 0x22, 0x7f, 0x02, 0x77,
-	0xc6, 0x2a, 0x8b, 0x0c, 0x55, 0x8a, 0x6f, 0x2a, 0x66, 0xe9, 0x2e, 0xbe, 0x02, 0x91, 0x21, 0xd4,
-	0x8b, 0x0b, 0x2b, 0x76, 0xdb, 0x1a, 0x5c, 0x04, 0xc5, 0x09, 0x05, 0xf9, 0x09, 0x05, 0xf6, 0x84,
-	0x82, 0x91, 0x60, 0x3c, 0xda, 0x28, 0xfd, 0x33, 0xb8, 0x5b, 0x32, 0x28, 0x32, 0x19, 0x7c, 0xaf,
-	0x82, 0x3b, 0x56, 0x19, 0xf9, 0x00, 0xad, 0xd2, 0xd2, 0xc9, 0xb3, 0x83, 0x91, 0x1f, 0x3c, 0xc2,
-	0xce, 0xf3, 0x7f, 0xd2, 0xda, 0x1d, 0x6c, 0x7d, 0x4c, 0xd0, 0xc7, 0x7c, 0xca, 0xb7, 0x74, 0xcc,
-	0x67, 0x7f, 0xd7, 0xef, 0xa0, 0x56, 0xbc, 0x94, 0x3c, 0xfe, 0x5b, 0xd9, 0x5e, 0xd4, 0x9d, 0x27,
-	0xc7, 0x64, 0x45, 0xe3, 0xcb, 0x37, 0x3f, 0x56, 0x9e, 0x73, 0xbb, 0xf2, 0x9c, 0x5f, 0x2b, 0xcf,
-	0xf9, 0xb6, 0xf6, 0x2a, 0xb7, 0x6b, 0xaf, 0xf2, 0x73, 0xed, 0x55, 0xde, 0xf7, 0x33, 0xa6, 0xa7,
-	0xcb, 0x38, 0x48, 0xc4, 0x3c, 0x34, 0xbd, 0x5e, 0x70, 0xd4, 0x9f, 0x85, 0xfc, 0x68, 0xd1, 0x0c,
-	0xd3, 0x0c, 0x65, 0x78, 0xb3, 0xfb, 0x3e, 0xc4, 0x35, 0xf3, 0xff, 0x1e, 0xfe, 0x0e, 0x00, 0x00,
-	0xff, 0xff, 0x54, 0x24, 0x7a, 0x52, 0x39, 0x04, 0x00, 0x00,
+	// 589 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x54, 0xcd, 0x6e, 0xd3, 0x4c,
+	0x14, 0xad, 0xed, 0xef, 0xcb, 0xcf, 0x4d, 0x7f, 0xe8, 0x14, 0xaa, 0x60, 0x21, 0x13, 0x5c, 0x7e,
+	0x22, 0x50, 0x1d, 0xa5, 0xdd, 0xc0, 0xb6, 0xad, 0x84, 0xaa, 0x2a, 0x0b, 0x0c, 0x08, 0x89, 0x4d,
+	0xe4, 0xd8, 0x17, 0xc7, 0x22, 0xb1, 0xc3, 0xcc, 0x04, 0x2a, 0x58, 0xb1, 0x66, 0xc3, 0x0b, 0xf0,
+	0x28, 0xec, 0x59, 0x76, 0xc9, 0x12, 0x25, 0x2f, 0x82, 0x3c, 0x9e, 0x38, 0xe3, 0xa8, 0x6d, 0xb2,
+	0x60, 0xe7, 0x73, 0x7c, 0xe6, 0x9e, 0x3b, 0x67, 0xee, 0x0c, 0xdc, 0xa3, 0x18, 0x62, 0xdc, 0x42,
+	0x3f, 0xf1, 0x29, 0x06, 0x11, 0x6f, 0x7d, 0x6c, 0x7b, 0x83, 0x51, 0xdf, 0x6b, 0xb7, 0xf8, 0xb9,
+	0x33, 0xa2, 0x09, 0x4f, 0xc8, 0x8e, 0x90, 0x38, 0x81, 0xc7, 0x3d, 0x67, 0xf6, 0xd7, 0x8e, 0xe0,
+	0x56, 0x87, 0x85, 0xc7, 0x14, 0x3d, 0x8e, 0xc7, 0x03, 0x8f, 0x31, 0x17, 0x3f, 0x8c, 0x91, 0x71,
+	0x62, 0x42, 0x25, 0x40, 0x16, 0x85, 0x31, 0xd2, 0xba, 0xd6, 0xd0, 0x9a, 0x55, 0x37, 0xc7, 0xa4,
+	0x0e, 0xe5, 0x88, 0xb1, 0x31, 0x52, 0x56, 0xd7, 0x1b, 0x46, 0xb3, 0xea, 0xce, 0x60, 0xba, 0x6a,
+	0x88, 0xdc, 0x4b, 0x3d, 0xea, 0x46, 0x43, 0x6b, 0xae, 0xbb, 0x39, 0xb6, 0x0f, 0x61, 0x77, 0xd1,
+	0x8a, 0x8d, 0x92, 0x98, 0x21, 0xb9, 0x0d, 0x15, 0x3f, 0x25, 0xba, 0x51, 0x20, 0xbd, 0xca, 0x02,
+	0x9f, 0x06, 0xf6, 0x0f, 0x5d, 0x69, 0xf0, 0xc8, 0xe3, 0x7e, 0x7f, 0xd6, 0xe0, 0x2e, 0x94, 0x32,
+	0x57, 0xb9, 0x44, 0xa2, 0x42, 0x31, 0xbd, 0x50, 0x8c, 0xbc, 0x82, 0x4a, 0x2a, 0xf2, 0x62, 0x1f,
+	0xeb, 0x46, 0xc3, 0x68, 0xd6, 0x0e, 0x9e, 0x3a, 0x97, 0x84, 0xe2, 0x5c, 0x6a, 0xe8, 0x08, 0x70,
+	0x2a, 0xd7, 0xbb, 0x79, 0x25, 0xf3, 0x0b, 0x6c, 0x14, 0x7e, 0x91, 0x3b, 0x50, 0xa5, 0xe8, 0x47,
+	0xa3, 0x08, 0x63, 0x2e, 0x9b, 0x9b, 0x13, 0xe4, 0x11, 0x6c, 0x71, 0xea, 0x05, 0xe8, 0xf5, 0x06,
+	0xd8, 0x1d, 0xc7, 0x11, 0x67, 0xb2, 0xcd, 0xcd, 0x9c, 0x7e, 0x9d, 0xb2, 0x64, 0x0f, 0x36, 0x28,
+	0xf2, 0x88, 0x62, 0x20, 0x65, 0x86, 0x90, 0xad, 0x4b, 0x52, 0x88, 0xec, 0x67, 0x4a, 0xa8, 0xb2,
+	0x5b, 0x19, 0xea, 0x5d, 0xa8, 0xf5, 0x52, 0xa2, 0x1b, 0x60, 0x9c, 0x0c, 0x65, 0x1f, 0x20, 0xa8,
+	0x93, 0x94, 0xb1, 0xbf, 0xe9, 0xb0, 0xd9, 0x61, 0xe1, 0x4b, 0x8c, 0x03, 0x25, 0x53, 0x86, 0x71,
+	0x30, 0xcf, 0x34, 0x43, 0xc5, 0x1d, 0xe9, 0x8b, 0x3b, 0x7a, 0x0e, 0xe5, 0x6c, 0xe8, 0x98, 0x4c,
+	0x75, 0xff, 0xaa, 0x54, 0x15, 0x2f, 0x27, 0xfd, 0x16, 0x7b, 0x70, 0x67, 0xab, 0xcd, 0xcf, 0x50,
+	0xcd, 0xd9, 0xa5, 0xfd, 0xff, 0xe3, 0x20, 0xb7, 0x61, 0x2b, 0x6f, 0x30, 0x4b, 0xd0, 0xfe, 0xa9,
+	0xc1, 0x8d, 0x0e, 0x0b, 0x5d, 0x21, 0x53, 0x22, 0xea, 0x27, 0x03, 0x25, 0xa2, 0x0c, 0x91, 0xb3,
+	0x79, 0x08, 0xba, 0x08, 0xa1, 0x7d, 0x55, 0x08, 0x85, 0x7a, 0x4e, 0x86, 0x16, 0x82, 0x38, 0x81,
+	0x9a, 0xc2, 0x2f, 0x8f, 0xe2, 0x26, 0xfc, 0xaf, 0x06, 0x90, 0x01, 0x7b, 0x07, 0xb6, 0x15, 0xbb,
+	0x6c, 0x53, 0x07, 0x5f, 0x0d, 0x30, 0x3a, 0x2c, 0x24, 0xef, 0xa0, 0xa6, 0x5c, 0x45, 0xf2, 0xf8,
+	0xfa, 0x8b, 0xa0, 0x3e, 0x0d, 0xe6, 0x93, 0x95, 0xb4, 0x72, 0x0c, 0x73, 0x1f, 0x31, 0x9d, 0xcb,
+	0x7c, 0xd4, 0x0b, 0xb7, 0xcc, 0xa7, 0x38, 0xee, 0x2f, 0xe0, 0xbf, 0xf4, 0xf0, 0xc8, 0xde, 0x0a,
+	0xb3, 0x67, 0xde, 0xbf, 0x5e, 0x24, 0x4b, 0xbe, 0x81, 0x52, 0x16, 0x1e, 0x79, 0xb0, 0xd2, 0x59,
+	0x9a, 0x0f, 0x97, 0xc9, 0xb2, 0xc2, 0x47, 0x67, 0xbf, 0x26, 0x96, 0x76, 0x31, 0xb1, 0xb4, 0x3f,
+	0x13, 0x4b, 0xfb, 0x3e, 0xb5, 0xd6, 0x2e, 0xa6, 0xd6, 0xda, 0xef, 0xa9, 0xb5, 0xf6, 0xb6, 0x1d,
+	0x46, 0xbc, 0x3f, 0xee, 0x39, 0x7e, 0x32, 0x6c, 0x89, 0x5a, 0xfb, 0x31, 0xf2, 0x4f, 0x09, 0x7d,
+	0x2f, 0xd1, 0x00, 0x83, 0x10, 0x69, 0xeb, 0x7c, 0xfe, 0xd0, 0xf7, 0x4a, 0xe2, 0x75, 0x3f, 0xfc,
+	0x1b, 0x00, 0x00, 0xff, 0xff, 0x33, 0xd8, 0x1d, 0x83, 0x02, 0x06, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -447,6 +662,7 @@ const _ = grpc.SupportPackageIsVersion4
 type MsgClient interface {
 	CreateClass(ctx context.Context, in *MsgCreateClassRequest, opts ...grpc.CallOption) (*MsgCreateClassResponse, error)
 	CreateBatch(ctx context.Context, in *MsgCreateBatchRequest, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error)
+	Send(ctx context.Context, in *MsgSendRequest, opts ...grpc.CallOption) (*MsgSendResponse, error)
 	Retire(ctx context.Context, in *MsgRetireRequest, opts ...grpc.CallOption) (*MsgRetireResponse, error)
 }
 
@@ -476,6 +692,15 @@ func (c *msgClient) CreateBatch(ctx context.Context, in *MsgCreateBatchRequest, 
 	return out, nil
 }
 
+func (c *msgClient) Send(ctx context.Context, in *MsgSendRequest, opts ...grpc.CallOption) (*MsgSendResponse, error) {
+	out := new(MsgSendResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Msg/Send", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) Retire(ctx context.Context, in *MsgRetireRequest, opts ...grpc.CallOption) (*MsgRetireResponse, error) {
 	out := new(MsgRetireResponse)
 	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Msg/Retire", in, out, opts...)
@@ -489,6 +714,7 @@ func (c *msgClient) Retire(ctx context.Context, in *MsgRetireRequest, opts ...gr
 type MsgServer interface {
 	CreateClass(context.Context, *MsgCreateClassRequest) (*MsgCreateClassResponse, error)
 	CreateBatch(context.Context, *MsgCreateBatchRequest) (*MsgCreateBatchResponse, error)
+	Send(context.Context, *MsgSendRequest) (*MsgSendResponse, error)
 	Retire(context.Context, *MsgRetireRequest) (*MsgRetireResponse, error)
 }
 
@@ -501,6 +727,9 @@ func (*UnimplementedMsgServer) CreateClass(ctx context.Context, req *MsgCreateCl
 }
 func (*UnimplementedMsgServer) CreateBatch(ctx context.Context, req *MsgCreateBatchRequest) (*MsgCreateBatchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBatch not implemented")
+}
+func (*UnimplementedMsgServer) Send(ctx context.Context, req *MsgSendRequest) (*MsgSendResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
 }
 func (*UnimplementedMsgServer) Retire(ctx context.Context, req *MsgRetireRequest) (*MsgRetireResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Retire not implemented")
@@ -546,6 +775,24 @@ func _Msg_CreateBatch_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_Send_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgSendRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).Send(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.data.v1alpha1.Msg/Send",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).Send(ctx, req.(*MsgSendRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_Retire_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgRetireRequest)
 	if err := dec(in); err != nil {
@@ -575,6 +822,10 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateBatch",
 			Handler:    _Msg_CreateBatch_Handler,
+		},
+		{
+			MethodName: "Send",
+			Handler:    _Msg_Send_Handler,
 		},
 		{
 			MethodName: "Retire",
@@ -712,6 +963,50 @@ func (m *MsgCreateBatchRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgCreateBatchRequest_BatchIssuance) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgCreateBatchRequest_BatchIssuance) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgCreateBatchRequest_BatchIssuance) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.RetiredUnits) > 0 {
+		i -= len(m.RetiredUnits)
+		copy(dAtA[i:], m.RetiredUnits)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.RetiredUnits)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.TradeableUnits) > 0 {
+		i -= len(m.TradeableUnits)
+		copy(dAtA[i:], m.TradeableUnits)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.TradeableUnits)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Recipient) > 0 {
+		i -= len(m.Recipient)
+		copy(dAtA[i:], m.Recipient)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Recipient)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *MsgCreateBatchResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -742,7 +1037,7 @@ func (m *MsgCreateBatchResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *BatchIssuance) Marshal() (dAtA []byte, err error) {
+func (m *MsgSendRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -752,12 +1047,63 @@ func (m *BatchIssuance) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *BatchIssuance) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgSendRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *BatchIssuance) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgSendRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Credits) > 0 {
+		for iNdEx := len(m.Credits) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Credits[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTx(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.Recipient) > 0 {
+		i -= len(m.Recipient)
+		copy(dAtA[i:], m.Recipient)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Recipient)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Sender) > 0 {
+		i -= len(m.Sender)
+		copy(dAtA[i:], m.Sender)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Sender)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgSendRequest_SendUnits) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSendRequest_SendUnits) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSendRequest_SendUnits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -776,13 +1122,36 @@ func (m *BatchIssuance) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Recipient) > 0 {
-		i -= len(m.Recipient)
-		copy(dAtA[i:], m.Recipient)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Recipient)))
+	if len(m.BatchDenom) > 0 {
+		i -= len(m.BatchDenom)
+		copy(dAtA[i:], m.BatchDenom)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.BatchDenom)))
 		i--
 		dAtA[i] = 0xa
 	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgSendResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSendResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSendResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
 	return len(dAtA) - i, nil
 }
 
@@ -824,6 +1193,43 @@ func (m *MsgRetireRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i -= len(m.Holder)
 		copy(dAtA[i:], m.Holder)
 		i = encodeVarintTx(dAtA, i, uint64(len(m.Holder)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgRetireRequest_RetireUnits) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgRetireRequest_RetireUnits) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgRetireRequest_RetireUnits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Units) > 0 {
+		i -= len(m.Units)
+		copy(dAtA[i:], m.Units)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Units)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.BatchDenom) > 0 {
+		i -= len(m.BatchDenom)
+		copy(dAtA[i:], m.BatchDenom)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.BatchDenom)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -923,20 +1329,7 @@ func (m *MsgCreateBatchRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgCreateBatchResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.BatchDenom)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	return n
-}
-
-func (m *BatchIssuance) Size() (n int) {
+func (m *MsgCreateBatchRequest_BatchIssuance) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -957,6 +1350,72 @@ func (m *BatchIssuance) Size() (n int) {
 	return n
 }
 
+func (m *MsgCreateBatchResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.BatchDenom)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgSendRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Sender)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Recipient)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if len(m.Credits) > 0 {
+		for _, e := range m.Credits {
+			l = e.Size()
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *MsgSendRequest_SendUnits) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.BatchDenom)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.TradeableUnits)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.RetiredUnits)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgSendResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
 func (m *MsgRetireRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -972,6 +1431,23 @@ func (m *MsgRetireRequest) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovTx(uint64(l))
 		}
+	}
+	return n
+}
+
+func (m *MsgRetireRequest_RetireUnits) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.BatchDenom)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Units)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
@@ -1349,7 +1825,7 @@ func (m *MsgCreateBatchRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Issuance = append(m.Issuance, &BatchIssuance{})
+			m.Issuance = append(m.Issuance, &MsgCreateBatchRequest_BatchIssuance{})
 			if err := m.Issuance[len(m.Issuance)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -1378,92 +1854,7 @@ func (m *MsgCreateBatchRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgCreateBatchResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateBatchResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateBatchResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.BatchDenom = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *BatchIssuance) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateBatchRequest_BatchIssuance) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1612,6 +2003,444 @@ func (m *BatchIssuance) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *MsgCreateBatchResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgCreateBatchResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgCreateBatchResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSendRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSendRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSendRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Sender", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Sender = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Recipient", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Recipient = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Credits", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Credits = append(m.Credits, &MsgSendRequest_SendUnits{})
+			if err := m.Credits[len(m.Credits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSendRequest_SendUnits) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: SendUnits: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: SendUnits: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TradeableUnits", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TradeableUnits = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RetiredUnits", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RetiredUnits = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSendResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSendResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSendResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *MsgRetireRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -1702,10 +2531,127 @@ func (m *MsgRetireRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Credits = append(m.Credits, &types.Coin{})
+			m.Credits = append(m.Credits, &MsgRetireRequest_RetireUnits{})
 			if err := m.Credits[len(m.Credits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgRetireRequest_RetireUnits) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: RetireUnits: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: RetireUnits: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Units", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Units = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

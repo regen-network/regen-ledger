@@ -3,6 +3,7 @@ module github.com/regen-network/regen-ledger
 go 1.14
 
 require (
+	github.com/cockroachdb/apd/v2 v2.0.2
 	github.com/cosmos/cosmos-sdk v0.34.4-0.20201030152712-bd6c16b4628c
 	github.com/cosmos/modules/incubator/orm v0.0.0-20200415135015-07e843e32bbf
 	github.com/enigmampc/btcutil v1.0.3-0.20200723161021-e2fb6adb2a25
@@ -10,6 +11,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.15.2
 	github.com/ipfs/go-cid v0.0.7
+	github.com/lib/pq v1.8.0 // indirect
 	github.com/multiformats/go-multihash v0.0.13
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.3.1

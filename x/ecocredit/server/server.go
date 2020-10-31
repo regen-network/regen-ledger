@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -12,8 +11,10 @@ import (
 )
 
 const (
-	RetiredBalancePrefix = 0x4
-	RetiredSupplyPrefix  = 0x5
+	TradeableBalancePrefix = 0x0
+	TradeableSupplyPrefix  = 0x1
+	RetiredBalancePrefix   = 0x2
+	RetiredSupplyPrefix    = 0x3
 )
 
 type serverImpl struct {
@@ -41,13 +42,24 @@ func NewServer(denomPrefix string, storeKey sdk.StoreKey, bankKeeper bankkeeper.
 	return s
 }
 
+func TradeableBalanceKey(acc string, batchDenom string) []byte {
+	key := []byte{TradeableBalancePrefix}
+	str := fmt.Sprintf("%s|%s", acc, batchDenom)
+	return append(key, str...)
+}
+
+func TradeableSupplyKey(batchDenom string) []byte {
+	key := []byte{TradeableSupplyPrefix}
+	return append(key, batchDenom...)
+}
+
 func RetiredBalanceKey(acc string, batchDenom string) []byte {
 	key := []byte{RetiredBalancePrefix}
-	str := fmt.Sprintf("%s/%s", acc, batchDenom)
+	str := fmt.Sprintf("%s|%s", acc, batchDenom)
 	return append(key, str...)
 }
 
 func RetiredSupplyKey(batchDenom string) []byte {
-	key := []byte{RetiredBalancePrefix}
+	key := []byte{RetiredSupplyPrefix}
 	return append(key, batchDenom...)
 }
