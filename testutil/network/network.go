@@ -53,7 +53,7 @@ var lock = new(sync.Mutex)
 type AppConstructor = func(val Validator) servertypes.Application
 
 func NewSimApp(val Validator) servertypes.Application {
-	return app.NewXrnApp(
+	return app.NewRegenApp(
 		val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
 		app.MakeEncodingConfig(),
 		baseapp.SetPruning(storetypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
