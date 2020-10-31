@@ -1,5 +1,5 @@
 // Mostly copied from https://github.com/cosmos/gaia/tree/master/app
-package cmd
+package regen
 
 // DONTCOVER
 
