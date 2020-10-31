@@ -4,6 +4,8 @@ package regen.data.v1alpha1;
 
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
+import "gogoproto/gogo.proto";
+
 service Msg {
     rpc AnchorData(MsgAnchorDataRequest) returns (MsgAnchorDataResponse);
     rpc SignData(MsgSignDataRequest) returns (MsgSignDataResponse);
@@ -12,21 +14,23 @@ service Msg {
 
 message MsgAnchorDataRequest {
     string sender = 1;
-    string cid = 2;
+    bytes cid = 2;
 }
 
 message MsgAnchorDataResponse { }
 
 message MsgSignDataRequest {
+    option (gogoproto.goproto_getters) = false;
+
     repeated string signers = 1;
-    string cid = 2;
+    bytes cid = 2;
 }
 
 message MsgSignDataResponse { }
 
 message MsgStoreDataRequest {
     string sender = 1;
-    string cid = 2;
+    bytes cid = 2;
     bytes content = 3;
 }
 

@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package regen.data.v1alpha1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/data";
+
+message EventAnchorData {
+    bytes cid = 1;
+}
+
+message EventSignData {
+    bytes cid = 1;
+    repeated string signers = 2;
+}
+
+message EventStoreData {
+    bytes cid = 1;
+}

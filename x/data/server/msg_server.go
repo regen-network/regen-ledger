@@ -20,18 +20,12 @@ var _ data.MsgServer = serverImpl{}
 func (s serverImpl) AnchorData(goCtx context.Context, request *data.MsgAnchorDataRequest) (*data.MsgAnchorDataResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	cid, err := gocid.Decode(request.Cid)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("invalid CID %s", request.Cid))
+	cidBz := request.Cid
+	if s.anchorTable.Has(ctx, cidBz) {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("CID f%x is already anchored", cidBz))
 	}
 
-	cidBytes := cid.Bytes()
-
-	if s.anchorTable.Has(ctx, cidBytes) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("CID %s is already anchored", request.Cid))
-	}
-
-	err = s.anchorCid(ctx, cidBytes)
+	err := s.anchorCid(ctx, cidBz)
 	if err != nil {
 		return nil, err
 	}
@@ -39,18 +33,12 @@ func (s serverImpl) AnchorData(goCtx context.Context, request *data.MsgAnchorDat
 	return &data.MsgAnchorDataResponse{}, nil
 }
 
-func (s serverImpl) anchorCidIfNeeded(ctx sdk.Context, cidStr string) (gocid.Cid, []byte, error) {
-	cid, err := gocid.Decode(cidStr)
-	if err != nil {
-		return cid, nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("invalid CID %s", cidStr))
+func (s serverImpl) anchorCidIfNeeded(ctx sdk.Context, cid []byte) error {
+	if s.anchorTable.Has(ctx, cid) {
+		return nil
 	}
 
-	cidBytes := cid.Bytes()
-	if s.anchorTable.Has(ctx, cidBytes) {
-		return cid, cidBytes, nil
-	}
-
-	return cid, cidBytes, s.anchorCid(ctx, cidBytes)
+	return s.anchorCid(ctx, cid)
 }
 
 func (s serverImpl) anchorCid(ctx sdk.Context, cidBytes []byte) error {
@@ -64,20 +52,22 @@ func (s serverImpl) anchorCid(ctx sdk.Context, cidBytes []byte) error {
 		return sdkerrors.Wrap(err, "error anchoring data")
 	}
 
-	return nil
+	return ctx.EventManager().EmitTypedEvent(&data.EventAnchorData{Cid: cidBytes})
 }
 
 func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignDataRequest) (*data.MsgSignDataResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	_, cidBytes, err := s.anchorCidIfNeeded(ctx, request.Cid)
+	cidBz := request.Cid
+	err := s.anchorCidIfNeeded(ctx, cidBz)
 	if err != nil {
 		return nil, err
 	}
 
+	// TODO: index both cid and signer in key
 	var signers data.Signers
-	if s.signersTable.Has(ctx, cidBytes) {
-		err = s.signersTable.GetOne(ctx, cidBytes, &signers)
+	if s.signersTable.Has(ctx, cidBz) {
+		err = s.signersTable.GetOne(ctx, cidBz, &signers)
 		if err != nil {
 			return nil, err
 		}
@@ -96,7 +86,15 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignDataReq
 		}
 	}
 
-	err = s.signersTable.Save(ctx, cidBytes, &signers)
+	err = s.signersTable.Save(ctx, cidBz, &signers)
+	if err != nil {
+		return nil, err
+	}
+
+	err = ctx.EventManager().EmitTypedEvent(&data.EventSignData{
+		Cid:     cidBz,
+		Signers: request.Signers,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -107,14 +105,20 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignDataReq
 func (s serverImpl) StoreData(goCtx context.Context, request *data.MsgStoreDataRequest) (*data.MsgStoreDataResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	cid, cidBytes, err := s.anchorCidIfNeeded(ctx, request.Cid)
+	cidBz := request.Cid
+	err := s.anchorCidIfNeeded(ctx, cidBz)
 	if err != nil {
 		return nil, err
 	}
 
 	store := ctx.KVStore(s.storeKey)
-	if store.Has(cidBytes) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("CID %s already has stored data", request.Cid))
+	if store.Has(cidBz) {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("CID %s already has stored data", cidBz))
+	}
+
+	cid, err := gocid.Cast(cidBz)
+	if err != nil {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("bad CID f%x", cidBz))
 	}
 
 	mh := cid.Hash()
@@ -126,7 +130,9 @@ func (s serverImpl) StoreData(goCtx context.Context, request *data.MsgStoreDataR
 
 	switch decodedMultihash.Name {
 	case "sha2-256":
+		// TODO: gas
 	case "blake2b-256":
+		// TODO: gas
 	default:
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("unsupported hash function %s", decodedMultihash.Name))
 	}
@@ -140,7 +146,12 @@ func (s serverImpl) StoreData(goCtx context.Context, request *data.MsgStoreDataR
 		return nil, sdkerrors.Wrap(err, fmt.Sprintf("unable to perform multihash"))
 	}
 
-	store.Set(cidBytes, request.Content)
+	store.Set(cidBz, request.Content)
+
+	err = ctx.EventManager().EmitTypedEvent(&data.EventStoreData{Cid: cidBz})
+	if err != nil {
+		return nil, err
+	}
 
 	return &data.MsgStoreDataResponse{}, nil
 }

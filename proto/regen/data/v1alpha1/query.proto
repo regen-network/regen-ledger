@@ -11,12 +11,11 @@ service Query {
 }
 
 message QueryDataRequest {
-    string cid = 1;
+    bytes cid = 1;
 }
 
 message QueryDataResponse {
-    uint64 anchor_block_height = 1;
-    google.protobuf.Timestamp anchor_timestamp = 2;
-    repeated string signers = 3;
-    bytes content = 4;
+    google.protobuf.Timestamp timestamp = 1;
+    repeated string signers = 2;
+    bytes content = 3;
 }
