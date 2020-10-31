@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/regen-network/regen-ledger/app/regen/cmd"
+	cmd "github.com/regen-network/regen-ledger/app/cmd/regen"
 )
 
 // In main we call the rootCmd
