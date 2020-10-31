@@ -7,8 +7,8 @@ require (
 	github.com/cosmos/modules/incubator/orm v0.0.0-20200415135015-07e843e32bbf
 	github.com/enigmampc/btcutil v1.0.3-0.20200723161021-e2fb6adb2a25
 	github.com/gogo/protobuf v1.3.1
-	github.com/golang/protobuf v1.4.3
 	github.com/gorilla/mux v1.8.0
+	github.com/grpc-ecosystem/grpc-gateway v1.15.2
 	github.com/ipfs/go-cid v0.0.7
 	github.com/multiformats/go-multihash v0.0.13
 	github.com/rakyll/statik v0.1.7
