@@ -46,7 +46,7 @@ func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalan
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	acc := request.Account
-	denom := request.BatchDenom
+	denom := batchDenomT(request.BatchDenom)
 
 	store := ctx.KVStore(s.storeKey)
 
@@ -69,7 +69,7 @@ func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalan
 func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupplyRequest) (*ecocredit.QuerySupplyResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
-	denom := request.BatchDenom
+	denom := batchDenomT(request.BatchDenom)
 
 	tradeable, err := s.getDec(store, TradeableSupplyKey(denom))
 	if err != nil {
@@ -89,6 +89,9 @@ func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupply
 
 func (s serverImpl) getDec(store sdk.KVStore, key []byte) (*apd.Decimal, error) {
 	bz := store.Get(key)
+	if bz == nil {
+		return apd.New(0, 0), nil
+	}
 
 	value, _, err := math.StrictDecimal128Context.NewFromString(string(bz))
 	if err != nil {

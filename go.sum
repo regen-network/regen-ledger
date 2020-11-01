@@ -521,6 +521,8 @@ github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0 h1:MkV+77GLUNo
 github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
 github.com/regen-network/cosmos-modules/incubator/orm v0.0.0-20200415135015-07e843e32bbf h1:ncKpnfqi7Xf96aV259Exe2PJuH8n6XiT1PsXzFMrOVE=
 github.com/regen-network/cosmos-modules/incubator/orm v0.0.0-20200415135015-07e843e32bbf/go.mod h1:rSyZn5RlSYrtt7YVYQlXc2vj/FOfvLp737X9NVDoJSs=
+github.com/regen-network/cosmos-modules/incubator/orm v0.0.0-20201031214026-6c636b035af8 h1:4ojUYbDV4DiENBjcHf1QwE9MW4ajMowuCjx8LNDY+1I=
+github.com/regen-network/cosmos-modules/incubator/orm v0.0.0-20201031214026-6c636b035af8/go.mod h1:Wd62EPm9OLHnYrklk82hfOAsf34BcTOyQSBC0iYYfTY=
 github.com/regen-network/cosmos-proto v0.3.0 h1:24dVpPrPi0GDoPVLesf2Ug98iK5QgVscPl0ga4Eoub0=
 github.com/regen-network/cosmos-proto v0.3.0/go.mod h1:zuP2jVPHab6+IIyOx3nXHFN+euFNeS3W8XQkcdd4s7A=
 github.com/regen-network/protobuf v1.3.2-alpha.regen.4 h1:c9jEnU+xm6vqyrQe3M94UFWqiXxRIKKnqBOh2EACmBE=

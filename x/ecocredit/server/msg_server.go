@@ -61,7 +61,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 
 	batchId := s.batchInfoSeq.NextVal(ctx)
 
-	batchDenom := fmt.Sprintf("%s/%x", classId, batchId)
+	batchDenom := batchDenomT(fmt.Sprintf("%s/%x", classId, batchId))
 
 	tradeableSupply := apd.New(0, 0)
 	retiredSupply := apd.New(0, 0)
@@ -106,13 +106,8 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		}
 	}
 
-	if !tradeableSupply.IsZero() {
-		s.setDec(store, TradeableSupplyKey(batchDenom), tradeableSupply)
-	}
-
-	if !retiredSupply.IsZero() {
-		s.setDec(store, RetiredSupplyKey(batchDenom), retiredSupply)
-	}
+	s.setDec(store, TradeableSupplyKey(batchDenom), tradeableSupply)
+	s.setDec(store, RetiredSupplyKey(batchDenom), retiredSupply)
 
 	var totalSupply apd.Decimal
 	err = add(&totalSupply, tradeableSupply, retiredSupply)
@@ -122,7 +117,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 
 	err = s.batchInfoTable.Create(ctx, &ecocredit.BatchInfo{
 		ClassId:    classId,
-		BatchDenom: batchDenom,
+		BatchDenom: string(batchDenom),
 		Issuer:     issuer,
 		TotalUnits: totalSupply.String(),
 	})
@@ -132,7 +127,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 
 	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateBatch{
 		ClassId:    classId,
-		BatchDenom: batchDenom,
+		BatchDenom: string(batchDenom),
 		Issuer:     issuer,
 		TotalUnits: totalSupply.String(),
 	})
@@ -140,7 +135,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		return nil, err
 	}
 
-	return &ecocredit.MsgCreateBatchResponse{BatchDenom: batchDenom}, nil
+	return &ecocredit.MsgCreateBatchResponse{BatchDenom: string(batchDenom)}, nil
 }
 
 func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (*ecocredit.MsgSendResponse, error) {
@@ -168,7 +163,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 			return nil, err
 		}
 
-		denom := credit.BatchDenom
+		denom := batchDenomT(credit.BatchDenom)
 
 		// subtract balance
 		err = s.safeSubDec(store, TradeableBalanceKey(sender, denom), &sum)
@@ -212,7 +207,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 	store := ctx.KVStore(s.storeKey)
 
 	for _, credit := range req.Credits {
-		denom := credit.BatchDenom
+		denom := batchDenomT(credit.BatchDenom)
 
 		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
 			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid credit denom", denom))
@@ -242,7 +237,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 		}
 
 		//  add retired supply
-		err = s.addDec(store, RetiredSupplyKey(holder), toRetire)
+		err = s.addDec(store, RetiredSupplyKey(denom), toRetire)
 		if err != nil {
 			return nil, err
 		}
@@ -251,28 +246,33 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 	return &ecocredit.MsgRetireResponse{}, nil
 }
 
-func (s serverImpl) receiveTradeable(ctx sdk.Context, store sdk.KVStore, recipient string, batchDenom string, tradeable *apd.Decimal) error {
+func (s serverImpl) receiveTradeable(ctx sdk.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, tradeable *apd.Decimal) error {
 	s.setDec(store, TradeableBalanceKey(recipient, batchDenom), tradeable)
 
 	return ctx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
 		Recipient:  recipient,
-		BatchDenom: batchDenom,
+		BatchDenom: string(batchDenom),
 		Units:      tradeable.String(),
 	})
 }
 
-func (s serverImpl) retire(ctx sdk.Context, store sdk.KVStore, recipient string, batchDenom string, retired *apd.Decimal) error {
-	s.setDec(store, RetiredBalanceKey(recipient, batchDenom), retired)
+func (s serverImpl) retire(ctx sdk.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired *apd.Decimal) error {
+	err := s.addDec(store, RetiredBalanceKey(recipient, batchDenom), retired)
+	if err != nil {
+		return err
+	}
 
 	return ctx.EventManager().EmitTypedEvent(&ecocredit.EventRetire{
 		Retirer:    recipient,
-		BatchDenom: batchDenom,
+		BatchDenom: string(batchDenom),
 		Units:      retired.String(),
 	})
 }
 
 func (s serverImpl) setDec(store sdk.KVStore, key []byte, value *apd.Decimal) {
-	store.Set(key, []byte(value.String()))
+	value, _ = value.Reduce(value)
+	str := value.String()
+	store.Set(key, []byte(str))
 }
 
 func (s serverImpl) addDec(store sdk.KVStore, key []byte, x *apd.Decimal) error {
@@ -301,7 +301,7 @@ func (s serverImpl) safeSubDec(store sdk.KVStore, key []byte, x *apd.Decimal) er
 		return sdkerrors.Wrap(err, "decimal subtraction error")
 	}
 
-	if math.IsNegative(x) {
+	if math.IsNegative(value) {
 		return sdkerrors.ErrInsufficientFunds
 	}
 

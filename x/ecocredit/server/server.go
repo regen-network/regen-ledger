@@ -44,29 +44,33 @@ func NewServer(storeKey sdk.StoreKey) Server {
 
 	s.batchInfoSeq = orm.NewSequence(storeKey, BatchInfoSeqPrefix)
 	batchInfoTableBuilder := orm.NewNaturalKeyTableBuilder(BatchInfoTablePrefix, storeKey, &ecocredit.BatchInfo{}, orm.Max255DynamicLengthIndexKeyCodec{})
-	s.classInfoTable = batchInfoTableBuilder.Build()
+	s.batchInfoTable = batchInfoTableBuilder.Build()
 
 	return s
 }
 
-func TradeableBalanceKey(acc string, batchDenom string) []byte {
+// batchDenomT is used to prevent errors when forming keys as accounts and denoms are
+// both represented as strings
+type batchDenomT string
+
+func TradeableBalanceKey(acc string, denom batchDenomT) []byte {
 	key := []byte{TradeableBalancePrefix}
-	str := fmt.Sprintf("%s|%s", acc, batchDenom)
+	str := fmt.Sprintf("%s|%s", acc, denom)
 	return append(key, str...)
 }
 
-func TradeableSupplyKey(batchDenom string) []byte {
+func TradeableSupplyKey(batchDenom batchDenomT) []byte {
 	key := []byte{TradeableSupplyPrefix}
 	return append(key, batchDenom...)
 }
 
-func RetiredBalanceKey(acc string, batchDenom string) []byte {
+func RetiredBalanceKey(acc string, batchDenom batchDenomT) []byte {
 	key := []byte{RetiredBalancePrefix}
 	str := fmt.Sprintf("%s|%s", acc, batchDenom)
 	return append(key, str...)
 }
 
-func RetiredSupplyKey(batchDenom string) []byte {
+func RetiredSupplyKey(batchDenom batchDenomT) []byte {
 	key := []byte{RetiredSupplyPrefix}
 	return append(key, batchDenom...)
 }
