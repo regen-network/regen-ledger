@@ -115,11 +115,13 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		return nil, err
 	}
 
+	totalSupplyStr := math.DecString(&totalSupply)
+
 	err = s.batchInfoTable.Create(ctx, &ecocredit.BatchInfo{
 		ClassId:    classId,
 		BatchDenom: string(batchDenom),
 		Issuer:     issuer,
-		TotalUnits: totalSupply.String(),
+		TotalUnits: totalSupplyStr,
 	})
 	if err != nil {
 		return nil, err
@@ -129,7 +131,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		ClassId:    classId,
 		BatchDenom: string(batchDenom),
 		Issuer:     issuer,
-		TotalUnits: totalSupply.String(),
+		TotalUnits: totalSupplyStr,
 	})
 	if err != nil {
 		return nil, err
@@ -247,12 +249,15 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 }
 
 func (s serverImpl) receiveTradeable(ctx sdk.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, tradeable *apd.Decimal) error {
-	s.setDec(store, TradeableBalanceKey(recipient, batchDenom), tradeable)
+	err := s.addDec(store, TradeableBalanceKey(recipient, batchDenom), tradeable)
+	if err != nil {
+		return err
+	}
 
 	return ctx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
 		Recipient:  recipient,
 		BatchDenom: string(batchDenom),
-		Units:      tradeable.String(),
+		Units:      math.DecString(tradeable),
 	})
 }
 
@@ -265,13 +270,15 @@ func (s serverImpl) retire(ctx sdk.Context, store sdk.KVStore, recipient string,
 	return ctx.EventManager().EmitTypedEvent(&ecocredit.EventRetire{
 		Retirer:    recipient,
 		BatchDenom: string(batchDenom),
-		Units:      retired.String(),
+		Units:      math.DecString(retired),
 	})
 }
 
 func (s serverImpl) setDec(store sdk.KVStore, key []byte, value *apd.Decimal) {
+	// always remove all trailing zeros for canonical representation
 	value, _ = value.Reduce(value)
-	str := value.String()
+	// use scientific notation here always for canonical representation
+	str := value.Text('e')
 	store.Set(key, []byte(str))
 }
 

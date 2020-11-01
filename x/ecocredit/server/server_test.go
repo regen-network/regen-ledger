@@ -41,7 +41,7 @@ func (s *TestSuite) TestScenario() {
 	_, _, issuer2 := testdata.KeyTestPubAddr()
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	_, _, addr2 := testdata.KeyTestPubAddr()
-	//_, _, addr3 := testdata.KeyTestPubAddr()
+	_, _, addr3 := testdata.KeyTestPubAddr()
 
 	// create class
 	createClsRes, err := s.server.CreateClass(s.goCtx, &ecocredit.MsgCreateClassRequest{
@@ -110,7 +110,7 @@ func (s *TestSuite) TestScenario() {
 	s.Require().Equal(rSupply0, querySupplyRes.RetiredSupply)
 
 	// retire credits
-	cases := map[string]struct {
+	retireCases := map[string]struct {
 		toRetire           string
 		expectErr          bool
 		expTradeable       string
@@ -146,9 +146,13 @@ func (s *TestSuite) TestScenario() {
 			expTradeableSupply: "1007.3869",
 			expRetiredSupply:   "10015.1149902",
 		},
+		"can't retire any more credits": {
+			toRetire:  "1",
+			expectErr: true,
+		},
 	}
 
-	for name, tc := range cases {
+	for name, tc := range retireCases {
 		s.Run(name, func() {
 			ms := s.ms.CacheMultiStore()
 			ctx := sdk.WrapSDKContext(sdk.NewContext(ms, tmproto.Header{}, false, log.NewNopLogger()))
@@ -168,6 +172,7 @@ func (s *TestSuite) TestScenario() {
 				s.Require().NoError(err)
 				ms.Write()
 
+				// query balance
 				queryBalanceRes, err = s.server.Balance(s.goCtx, &ecocredit.QueryBalanceRequest{
 					Account:    addr1.String(),
 					BatchDenom: batchDenom,
@@ -187,6 +192,107 @@ func (s *TestSuite) TestScenario() {
 		})
 	}
 
+	sendCases := map[string]struct {
+		sendTradeable         string
+		sendRetired           string
+		expectErr             bool
+		expTradeableSender    string
+		expRetiredSender      string
+		expTradeableRecipient string
+		expRetiredRecipient   string
+		expTradeableSupply    string
+		expRetiredSupply      string
+	}{
+		"can't send more tradeable than is tradeable": {
+			sendTradeable: "2000",
+			sendRetired:   "10",
+			expectErr:     true,
+		},
+		"can't send more retired than is tradeable": {
+			sendTradeable: "10",
+			sendRetired:   "2000",
+			expectErr:     true,
+		},
+		"can send some": {
+			sendTradeable:         "10",
+			sendRetired:           "20",
+			expectErr:             false,
+			expTradeableSender:    "977.3869",
+			expRetiredSender:      "10000.4589902",
+			expTradeableRecipient: "10",
+			expRetiredRecipient:   "20",
+			expTradeableSupply:    "987.3869",
+			expRetiredSupply:      "10035.1149902",
+		},
+		"can send all tradeable": {
+			sendTradeable:         "77.3869",
+			sendRetired:           "900",
+			expectErr:             false,
+			expTradeableSender:    "0",
+			expRetiredSender:      "10000.4589902",
+			expTradeableRecipient: "87.3869",
+			expRetiredRecipient:   "920",
+			expTradeableSupply:    "87.3869",
+			expRetiredSupply:      "10935.1149902",
+		},
+		"can't send any more": {
+			sendTradeable: "1",
+			sendRetired:   "1",
+			expectErr:     true,
+		},
+	}
+
+	for name, tc := range sendCases {
+		s.Run(name, func() {
+			ms := s.ms.CacheMultiStore()
+			ctx := sdk.WrapSDKContext(sdk.NewContext(ms, tmproto.Header{}, false, log.NewNopLogger()))
+			_, err := s.server.Send(ctx, &ecocredit.MsgSendRequest{
+				Sender:    addr2.String(),
+				Recipient: addr3.String(),
+				Credits: []*ecocredit.MsgSendRequest_SendUnits{
+					{
+						BatchDenom:     batchDenom,
+						TradeableUnits: tc.sendTradeable,
+						RetiredUnits:   tc.sendRetired,
+					},
+				},
+			})
+
+			if tc.expectErr {
+				s.Require().Error(err)
+			} else {
+				s.Require().NoError(err)
+				ms.Write()
+
+				// query sender balance
+				queryBalanceRes, err = s.server.Balance(s.goCtx, &ecocredit.QueryBalanceRequest{
+					Account:    addr2.String(),
+					BatchDenom: batchDenom,
+				})
+				s.Require().NoError(err)
+				s.Require().NotNil(queryBalanceRes)
+				s.Require().Equal(tc.expTradeableSender, queryBalanceRes.TradeableUnits)
+				s.Require().Equal(tc.expRetiredSender, queryBalanceRes.RetiredUnits)
+
+				// query recipient balance
+				queryBalanceRes, err = s.server.Balance(s.goCtx, &ecocredit.QueryBalanceRequest{
+					Account:    addr3.String(),
+					BatchDenom: batchDenom,
+				})
+				s.Require().NoError(err)
+				s.Require().NotNil(queryBalanceRes)
+				s.Require().Equal(tc.expTradeableRecipient, queryBalanceRes.TradeableUnits)
+				s.Require().Equal(tc.expRetiredRecipient, queryBalanceRes.RetiredUnits)
+
+				// query supply
+				querySupplyRes, err = s.server.Supply(s.goCtx, &ecocredit.QuerySupplyRequest{BatchDenom: batchDenom})
+				s.Require().NoError(err)
+				s.Require().NotNil(querySupplyRes)
+				s.Require().Equal(tc.expTradeableSupply, querySupplyRes.TradeableSupply)
+				s.Require().Equal(tc.expRetiredSupply, querySupplyRes.RetiredSupply)
+			}
+		})
+	}
 }
 
 func TestRunSuite(t *testing.T) {

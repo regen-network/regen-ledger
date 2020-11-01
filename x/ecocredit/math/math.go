@@ -48,3 +48,7 @@ func MustParsePositiveDecimal(x string) (*apd.Decimal, error) {
 
 	return res, nil
 }
+
+func DecString(x *apd.Decimal) string {
+	return x.Text('f')
+}

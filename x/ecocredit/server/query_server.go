@@ -61,8 +61,8 @@ func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalan
 	}
 
 	return &ecocredit.QueryBalanceResponse{
-		TradeableUnits: tradeable.String(),
-		RetiredUnits:   retired.String(),
+		TradeableUnits: math.DecString(tradeable),
+		RetiredUnits:   math.DecString(retired),
 	}, nil
 }
 
@@ -82,8 +82,8 @@ func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupply
 	}
 
 	return &ecocredit.QuerySupplyResponse{
-		TradeableSupply: tradeable.String(),
-		RetiredSupply:   retired.String(),
+		TradeableSupply: math.DecString(tradeable),
+		RetiredSupply:   math.DecString(retired),
 	}, nil
 }
 
