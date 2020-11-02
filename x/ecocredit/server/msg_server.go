@@ -299,3 +299,24 @@ func (s serverImpl) retire(ctx sdk.Context, store sdk.KVStore, recipient string,
 		Units:      math.DecString(retired),
 	})
 }
+
+func (s serverImpl) SetPrecision(goCtx context.Context, request *ecocredit.MsgSetPrecisionRequest) (*ecocredit.MsgSetPrecisionResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	store := ctx.KVStore(s.storeKey)
+	key := MaxDecimalPlacesKey(batchDenomT(request.BatchDenom))
+	x, err := storeGetUInt32(store, key)
+	if err != nil {
+		return nil, err
+	}
+
+	if request.MaxDecimalPlaces <= x {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("Maximum decimal can only be increased, it is currently %d, and %d was requested", x, request.MaxDecimalPlaces))
+	}
+
+	err = storeSetUInt32(store, key, x)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.MsgSetPrecisionResponse{}, nil
+}

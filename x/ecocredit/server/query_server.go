@@ -83,3 +83,14 @@ func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupply
 		RetiredSupply:   math.DecString(retired),
 	}, nil
 }
+
+func (s serverImpl) Precision(goCtx context.Context, request *ecocredit.QueryPrecisionRequest) (*ecocredit.QueryPrecisionResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	store := ctx.KVStore(s.storeKey)
+	x, err := storeGetUInt32(store, MaxDecimalPlacesKey(batchDenomT(request.BatchDenom)))
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.QueryPrecisionResponse{MaxDecimalPlaces: x}, nil
+}

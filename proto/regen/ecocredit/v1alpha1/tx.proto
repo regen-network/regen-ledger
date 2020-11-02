@@ -9,6 +9,7 @@ service Msg {
     rpc CreateBatch(MsgCreateBatchRequest) returns (MsgCreateBatchResponse);
     rpc Send(MsgSendRequest) returns (MsgSendResponse);
     rpc Retire(MsgRetireRequest) returns (MsgRetireResponse);
+    rpc SetPrecision(MsgSetPrecisionRequest) returns (MsgSetPrecisionResponse);
 }
 
 message MsgCreateClassRequest {
@@ -64,3 +65,11 @@ message MsgRetireRequest {
 }
 
 message MsgRetireResponse { }
+
+message MsgSetPrecisionRequest {
+    string issuer = 1;
+    string batch_denom = 2;
+    uint32 max_decimal_places = 3;
+}
+
+message MsgSetPrecisionResponse { }
