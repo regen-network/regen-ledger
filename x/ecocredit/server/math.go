@@ -7,6 +7,7 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/x/ecocredit/math"
 )
 
 func storeGetDec(store sdk.KVStore, key []byte) (*apd.Decimal, error) {
@@ -37,7 +38,7 @@ func storeAddDec(store sdk.KVStore, key []byte, x *apd.Decimal) error {
 		return err
 	}
 
-	err = add(value, value, x)
+	err = math.Add(value, value, x)
 	if err != nil {
 		return err
 	}
@@ -52,40 +53,12 @@ func storeSafeSubDec(store sdk.KVStore, key []byte, x *apd.Decimal) error {
 		return err
 	}
 
-	err = safeSub(value, value, x)
+	err = math.SafeSub(value, value, x)
 	if err != nil {
 		return err
 	}
 
 	storeSetDec(store, key, value)
-	return nil
-}
-
-var exactContext = apd.Context{
-	Precision:   0,
-	MaxExponent: apd.MaxExponent,
-	MinExponent: apd.MinExponent,
-	Traps:       apd.DefaultTraps | apd.Inexact | apd.Rounded,
-}
-
-func add(res, x, y *apd.Decimal) error {
-	_, err := exactContext.Add(res, x, y)
-	if err != nil {
-		return sdkerrors.Wrap(err, "decimal addition error")
-	}
-	return nil
-}
-
-func safeSub(res, x, y *apd.Decimal) error {
-	_, err := exactContext.Sub(res, x, y)
-	if err != nil {
-		return sdkerrors.Wrap(err, "decimal subtraction error")
-	}
-
-	if res.Sign() < 0 {
-		return sdkerrors.ErrInsufficientFunds
-	}
-
 	return nil
 }
 

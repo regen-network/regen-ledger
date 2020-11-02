@@ -70,7 +70,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	store := ctx.KVStore(s.storeKey)
 
 	for _, issuance := range req.Issuance {
-		tradeable, err := math.MustParseNonNegativeDecimal(issuance.TradeableUnits)
+		tradeable, err := math.ParseNonNegativeDecimal(issuance.TradeableUnits)
 		if err != nil {
 			return nil, err
 		}
@@ -80,7 +80,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 			maxDecimalPlaces = decPlaces
 		}
 
-		retired, err := math.MustParseNonNegativeDecimal(issuance.RetiredUnits)
+		retired, err := math.ParseNonNegativeDecimal(issuance.RetiredUnits)
 		if err != nil {
 			return nil, err
 		}
@@ -93,7 +93,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		recipient := issuance.Recipient
 
 		if !tradeable.IsZero() {
-			err = add(tradeableSupply, tradeableSupply, tradeable)
+			err = math.Add(tradeableSupply, tradeableSupply, tradeable)
 			if err != nil {
 				return nil, err
 			}
@@ -105,7 +105,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		}
 
 		if !retired.IsZero() {
-			err = add(retiredSupply, retiredSupply, retired)
+			err = math.Add(retiredSupply, retiredSupply, retired)
 			if err != nil {
 				return nil, err
 			}
@@ -121,7 +121,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	storeSetDec(store, RetiredSupplyKey(batchDenom), retiredSupply)
 
 	var totalSupply apd.Decimal
-	err = add(&totalSupply, tradeableSupply, retiredSupply)
+	err = math.Add(&totalSupply, tradeableSupply, retiredSupply)
 	if err != nil {
 		return nil, err
 	}
@@ -172,18 +172,18 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 			return nil, err
 		}
 
-		tradeable, err := math.MustParseNonNegativeFixedWidthDecimal(credit.TradeableUnits, maxDecimalPlaces)
+		tradeable, err := math.ParseNonNegativeFixedDecimal(credit.TradeableUnits, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
 		}
 
-		retired, err := math.MustParseNonNegativeFixedWidthDecimal(credit.RetiredUnits, maxDecimalPlaces)
+		retired, err := math.ParseNonNegativeFixedDecimal(credit.RetiredUnits, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
 		}
 
 		var sum apd.Decimal
-		err = add(&sum, tradeable, retired)
+		err = math.Add(&sum, tradeable, retired)
 		if err != nil {
 			return nil, err
 		}
@@ -200,19 +200,19 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 			return nil, err
 		}
 
-		// add tradeable balance
+		// Add tradeable balance
 		err = s.receiveTradeable(ctx, store, recipient, denom, tradeable)
 		if err != nil {
 			return nil, err
 		}
 
-		// add retired balance
+		// Add retired balance
 		err = s.retire(ctx, store, recipient, denom, retired)
 		if err != nil {
 			return nil, err
 		}
 
-		// add retired supply
+		// Add retired supply
 		err = storeAddDec(store, RetiredSupplyKey(denom), retired)
 		if err != nil {
 			return nil, err
@@ -241,7 +241,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 			return nil, err
 		}
 
-		toRetire, err := math.MustParsePositiveFixedWidthDecimal(credit.Units, maxDecimalPlaces)
+		toRetire, err := math.ParsePositiveFixedDecimal(credit.Units, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
 		}
@@ -258,13 +258,13 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 			return nil, err
 		}
 
-		//  add retired balance
+		//  Add retired balance
 		err = s.retire(ctx, store, holder, denom, toRetire)
 		if err != nil {
 			return nil, err
 		}
 
-		//  add retired supply
+		//  Add retired supply
 		err = storeAddDec(store, RetiredSupplyKey(denom), toRetire)
 		if err != nil {
 			return nil, err

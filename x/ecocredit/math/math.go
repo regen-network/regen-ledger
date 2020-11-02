@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func MustParseNonNegativeDecimal(x string) (*apd.Decimal, error) {
+func ParseNonNegativeDecimal(x string) (*apd.Decimal, error) {
 	res, _, err := apd.NewFromString(x)
 	if err != nil {
 		return nil, errors.Wrap(errors.ErrInvalidRequest, fmt.Sprintf("expected a non-negative decimal, got %s", x))
@@ -19,7 +19,7 @@ func MustParseNonNegativeDecimal(x string) (*apd.Decimal, error) {
 	return res, nil
 }
 
-func MustParsePositiveDecimal(x string) (*apd.Decimal, error) {
+func ParsePositiveDecimal(x string) (*apd.Decimal, error) {
 	res, _, err := apd.NewFromString(x)
 	if err != nil {
 		return nil, errors.Wrap(errors.ErrInvalidRequest, fmt.Sprintf("expected a positive decimal, got %s", x))
@@ -43,8 +43,8 @@ func NumDecimalPlaces(x *apd.Decimal) uint32 {
 	return uint32(-x.Exponent)
 }
 
-func MustParseNonNegativeFixedWidthDecimal(x string, maxDecimalPlaces uint32) (*apd.Decimal, error) {
-	res, err := MustParseNonNegativeDecimal(x)
+func ParseNonNegativeFixedDecimal(x string, maxDecimalPlaces uint32) (*apd.Decimal, error) {
+	res, err := ParseNonNegativeDecimal(x)
 	if err != nil {
 		return nil, err
 	}
@@ -57,8 +57,8 @@ func MustParseNonNegativeFixedWidthDecimal(x string, maxDecimalPlaces uint32) (*
 	return res, nil
 }
 
-func MustParsePositiveFixedWidthDecimal(x string, maxDecimalPlaces uint32) (*apd.Decimal, error) {
-	res, err := MustParsePositiveDecimal(x)
+func ParsePositiveFixedDecimal(x string, maxDecimalPlaces uint32) (*apd.Decimal, error) {
+	res, err := ParsePositiveDecimal(x)
 	if err != nil {
 		return nil, err
 	}
@@ -76,5 +76,33 @@ func requireMaxDecimals(x *apd.Decimal, maxDecimalPlaces uint32) error {
 	if n > maxDecimalPlaces {
 		return errors.Wrap(errors.ErrInvalidRequest, fmt.Sprintf("expected no more than %d decimal places in %s, got %d", maxDecimalPlaces, x, n))
 	}
+	return nil
+}
+
+var exactContext = apd.Context{
+	Precision:   0,
+	MaxExponent: apd.MaxExponent,
+	MinExponent: apd.MinExponent,
+	Traps:       apd.DefaultTraps | apd.Inexact | apd.Rounded,
+}
+
+func Add(res, x, y *apd.Decimal) error {
+	_, err := exactContext.Add(res, x, y)
+	if err != nil {
+		return errors.Wrap(err, "decimal addition error")
+	}
+	return nil
+}
+
+func SafeSub(res, x, y *apd.Decimal) error {
+	_, err := exactContext.Sub(res, x, y)
+	if err != nil {
+		return errors.Wrap(err, "decimal subtraction error")
+	}
+
+	if res.Sign() < 0 {
+		return errors.ErrInsufficientFunds
+	}
+
 	return nil
 }
