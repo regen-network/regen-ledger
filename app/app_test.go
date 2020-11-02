@@ -2,44 +2,51 @@
 package app
 
 import (
+	"encoding/json"
 	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/db"
 	"github.com/tendermint/tendermint/libs/log"
-
-	"github.com/cosmos/cosmos-sdk/codec"
+	db "github.com/tendermint/tm-db"
 
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-func TestGaiadExport(t *testing.T) {
+func TestRegenExport(t *testing.T) {
 	db := db.NewMemDB()
-	gapp := NewXrnApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, 0)
-	setGenesis(gapp)
 
-	// Making a new app object with the db, so that initchain hasn't been called
-	newGapp := NewXrnApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, 0)
-	_, _, err := newGapp.ExportAppStateAndValidators(false, []string{})
-	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
-}
-
-func setGenesis(gapp *XrnApp) error {
-
+	regenApp := NewRegenApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, MakeEncodingConfig())
 	genesisState := NewDefaultGenesisState()
-	stateBytes, err := codec.MarshalJSONIndent(gapp.cdc, genesisState)
-	if err != nil {
-		return err
-	}
+	stateBytes, err := json.MarshalIndent(genesisState, "", "  ")
+	require.NoError(t, err)
 
 	// Initialize the chain
-	gapp.InitChain(
+	regenApp.InitChain(
 		abci.RequestInitChain{
 			Validators:    []abci.ValidatorUpdate{},
 			AppStateBytes: stateBytes,
 		},
 	)
-	gapp.Commit()
-	return nil
+	regenApp.Commit()
+
+	// Making a new app object with the db, so that initchain hasn't been called
+	newRegenApp := NewRegenApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, MakeEncodingConfig())
+	_, err = newRegenApp.ExportAppStateAndValidators(false, []string{})
+	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
+}
+
+// ensure that blocked addresses are properly set in bank keeper
+func TestBlockedAddrs(t *testing.T) {
+	db := db.NewMemDB()
+	app := NewRegenApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, MakeEncodingConfig())
+
+	for acc := range maccPerms {
+		require.Equal(t, !allowedReceivingModAcc[acc], app.BankKeeper.BlockedAddr(app.AccountKeeper.GetModuleAddress(acc)))
+	}
+}
+
+func TestGetMaccPerms(t *testing.T) {
+	dup := GetMaccPerms()
+	require.Equal(t, maccPerms, dup, "duplicated module account permissions differed from actual module account permissions")
 }

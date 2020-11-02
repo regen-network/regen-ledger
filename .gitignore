@@ -172,3 +172,9 @@ tags
 
 # End of https://www.gitignore.io/api/go,vim,emacs,intellij
 /.xrnd
+
+
+# vscode
+.vscode
+
+build/

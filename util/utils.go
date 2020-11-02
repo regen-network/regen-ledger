@@ -1,21 +1,49 @@
 package util
 
 import (
-	"github.com/tendermint/tendermint/libs/bech32"
+	"fmt"
+
+	"github.com/enigmampc/btcutil/bech32"
+	// "github.com/tendermint/tendermint/libs/bech32"
 )
 
-func MustEncodeBech32(hrp string, data []byte) string {
-	str, err := bech32.ConvertAndEncode(hrp, data)
+// func MustEncodeBech32(hrp string, data []byte) string {
+// 	str, err := bech32.ConvertAndEncode(hrp, data)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	return str
+// }
+
+// func MustDecodeBech32(bech string) (hrp string, data []byte) {
+// 	hrp, data, err := bech32.DecodeAndConvert(bech)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	return hrp, data
+// }
+
+// ConvertAndEncode converts from a base64 encoded byte string to base32 encoded byte string and then to bech32.
+func ConvertAndEncode(hrp string, data []byte) (string, error) {
+	converted, err := bech32.ConvertBits(data, 8, 5, true)
 	if err != nil {
-		panic(err)
+		return "", fmt.Errorf("encoding bech32 failed: %w", err)
 	}
-	return str
+
+	return bech32.Encode(hrp, converted)
 }
 
-func MustDecodeBech32(bech string) (hrp string, data []byte) {
-	hrp, data, err := bech32.DecodeAndConvert(bech)
+// DecodeAndConvert decodes a bech32 encoded string and converts to base64 encoded bytes.
+func DecodeAndConvert(bech string) (string, []byte, error) {
+	hrp, data, err := bech32.Decode(bech, 1023)
 	if err != nil {
-		panic(err)
+		return "", nil, fmt.Errorf("decoding bech32 failed: %w", err)
 	}
-	return hrp, data
+
+	converted, err := bech32.ConvertBits(data, 5, 8, false)
+	if err != nil {
+		return "", nil, fmt.Errorf("decoding bech32 failed: %w", err)
+	}
+
+	return hrp, converted, nil
 }

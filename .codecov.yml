@@ -23,3 +23,6 @@ ignore:
   - "docs"
   - "*.md"
   - "*.org"
+  - "build"
+  - "tests/*"
+  - "contrib"
