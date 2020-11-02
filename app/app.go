@@ -90,15 +90,12 @@ import (
 )
 
 const (
-	appName = "xrn"
+	appName = "regen"
 )
 
 var (
-	// DefaultCLIHome default home directories for xrncli
-	DefaultCLIHome = os.ExpandEnv("$HOME/.xrncli")
-
-	// DefaultNodeHome default home directories for xrnd
-	DefaultNodeHome = os.ExpandEnv("$HOME/.xrnd")
+	// DefaultNodeHome default home directories for regen
+	DefaultNodeHome = os.ExpandEnv("$HOME/.regen")
 
 	// The ModuleBasicManager is in charge of setting up basic,
 	// non-dependant module elements, such as codec registration
@@ -435,8 +432,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 }
 
 // MakeCodecs constructs the *std.Codec and *codec.LegacyAmino instances used by
-// Xrnapp. It is useful for tests and clients who do not want to construct the
-// full Xrnapp
+// Regenapp. It is useful for tests and clients who do not want to construct the
+// full Regenapp
 func MakeCodecs() (codec.Marshaler, *codec.LegacyAmino) {
 	config := MakeEncodingConfig()
 	return config.Marshaler, config.Amino

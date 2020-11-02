@@ -10,8 +10,8 @@ sim-regen-nondeterminism:
 
 sim-regen-custom-genesis-fast:
 	@echo "Running custom genesis simulation..."
-	@echo "By default, ${HOME}/.regenapp/config/genesis.json will be used."
-	@go test -mod=readonly $(APP_DIR) -run TestFullAppSimulation -Genesis=${HOME}/.regenapp/config/genesis.json \
+	@echo "By default, ${HOME}/.regen/config/genesis.json will be used."
+	@go test -mod=readonly $(APP_DIR) -run TestFullAppSimulation -Genesis=${HOME}/.regen/config/genesis.json \
 		-Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h
 
 sim-regen-fast:
@@ -28,8 +28,8 @@ sim-regen-simulation-after-import: runsim
 
 sim-regen-custom-genesis-multi-seed: runsim
 	@echo "Running multi-seed custom genesis simulation..."
-	@echo "By default, ${HOME}/.regenapp/config/genesis.json will be used."
-	$(GOPATH)/bin/runsim -Genesis=${HOME}/.regenapp/config/genesis.json -SimAppPkg=$(APP_DIR) -ExitOnFail 400 5 TestFullAppSimulation
+	@echo "By default, ${HOME}/.regen/config/genesis.json will be used."
+	$(GOPATH)/bin/runsim -Genesis=${HOME}/.regen/config/genesis.json -SimAppPkg=$(APP_DIR) -ExitOnFail 400 5 TestFullAppSimulation
 
 sim-regen-multi-seed: runsim
 	@echo "Running multi-seed application simulation. This may take awhile!"

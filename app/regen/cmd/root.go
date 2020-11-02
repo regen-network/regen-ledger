@@ -50,7 +50,7 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 		WithHomeDir(app.DefaultNodeHome)
 
 	rootCmd := &cobra.Command{
-		Use:   "xrn",
+		Use:   "regen",
 		Short: "regen app",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			if err := client.SetCmdClientContextHandler(initClientCtx, cmd); err != nil {
@@ -79,7 +79,7 @@ func Execute(rootCmd *cobra.Command) error {
 	ctx = context.WithValue(ctx, client.ClientContextKey, &client.Context{})
 	ctx = context.WithValue(ctx, server.ServerContextKey, server.NewDefaultContext())
 
-	executor := tmcli.PrepareBaseCmd(rootCmd, "XRN", app.DefaultNodeHome)
+	executor := tmcli.PrepareBaseCmd(rootCmd, "REGEN", app.DefaultNodeHome)
 	return executor.ExecuteContext(ctx)
 }
 
@@ -98,7 +98,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		debug.Cmd(),
 	)
 
-	server.AddCommands(rootCmd, app.DefaultNodeHome, newApp, createSimappAndExport)
+	server.AddCommands(rootCmd, app.DefaultNodeHome, newApp, createRegenappAndExport)
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
@@ -207,23 +207,23 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts serverty
 	)
 }
 
-// createSimappAndExport creates a new app (optionally at a given height)
+// createRegenappAndExport creates a new app (optionally at a given height)
 // and exports state.
-func createSimappAndExport(
+func createRegenappAndExport(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailAllowedAddrs []string,
 ) (servertypes.ExportedApp, error) {
 	encCfg := app.MakeEncodingConfig() // Ideally, we would reuse the one created by NewRootCmd.
 	encCfg.Marshaler = codec.NewProtoCodec(encCfg.InterfaceRegistry)
-	var simApp *app.RegenApp
+	var regenApp *app.RegenApp
 	if height != -1 {
-		simApp = app.NewRegenApp(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), encCfg)
+		regenApp = app.NewRegenApp(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), encCfg)
 
-		if err := simApp.LoadHeight(height); err != nil {
+		if err := regenApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		simApp = app.NewRegenApp(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), encCfg)
+		regenApp = app.NewRegenApp(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), encCfg)
 	}
 
-	return simApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
+	return regenApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
 }
