@@ -107,6 +107,8 @@ github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f/go.mod h1:E3G3o1h8I7cfc
 github.com/cosmos/cosmos-sdk v0.34.4-0.20191013030331-92ea174ea6e6/go.mod h1:IGBhkbOK1ebLqMWjtgo99zUxWHsA5IOb6N9CI8nHs0Y=
 github.com/cosmos/cosmos-sdk v0.34.4-0.20201030152712-bd6c16b4628c h1:mPh6S9MVQ2s9tQuY05H7tI0uFUyq8ZsS/thKIpsRSyU=
 github.com/cosmos/cosmos-sdk v0.34.4-0.20201030152712-bd6c16b4628c/go.mod h1:KvZzKUEc7KrMiiIeU0zKPMMwuxxn+R0Leo8vBSDgOeQ=
+github.com/cosmos/cosmos-sdk v0.34.4-0.20201031120216-cdc73ac6057f h1:+n6JpzouYvfGiCvnJWeAFHprnMNf2bz6+VBKw3I6IsY=
+github.com/cosmos/cosmos-sdk v0.34.4-0.20201031120216-cdc73ac6057f/go.mod h1:KvZzKUEc7KrMiiIeU0zKPMMwuxxn+R0Leo8vBSDgOeQ=
 github.com/cosmos/cosmos-sdk v0.40.0-rc1 h1:DbM2vbmx9soER38YkdLB5g9d+YhaDlKAl2Pne5RLcEQ=
 github.com/cosmos/cosmos-sdk v0.40.0-rc1/go.mod h1:4wGruNUDrenXKRl/F7ujW29lTv3C+6/TDWs3QfZZN2Y=
 github.com/cosmos/go-bip39 v0.0.0-20180618194314-52158e4697b8/go.mod h1:tSxLoYXyBmiFeKpvmq4dzayMdCjCnu8uqmCysIGBT2Y=
@@ -519,6 +521,8 @@ github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0 h1:MkV+77GLUNo
 github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0/go.mod h1:bCqnVzQkZxMG4s8nGwiZ5l3QUCyqpo9Y+/ZMZ9VjZe4=
 github.com/regen-network/cosmos-modules/incubator/orm v0.0.0-20200415135015-07e843e32bbf h1:ncKpnfqi7Xf96aV259Exe2PJuH8n6XiT1PsXzFMrOVE=
 github.com/regen-network/cosmos-modules/incubator/orm v0.0.0-20200415135015-07e843e32bbf/go.mod h1:rSyZn5RlSYrtt7YVYQlXc2vj/FOfvLp737X9NVDoJSs=
+github.com/regen-network/cosmos-modules/incubator/orm v0.0.0-20201031214026-6c636b035af8 h1:4ojUYbDV4DiENBjcHf1QwE9MW4ajMowuCjx8LNDY+1I=
+github.com/regen-network/cosmos-modules/incubator/orm v0.0.0-20201031214026-6c636b035af8/go.mod h1:Wd62EPm9OLHnYrklk82hfOAsf34BcTOyQSBC0iYYfTY=
 github.com/regen-network/cosmos-proto v0.3.0 h1:24dVpPrPi0GDoPVLesf2Ug98iK5QgVscPl0ga4Eoub0=
 github.com/regen-network/cosmos-proto v0.3.0/go.mod h1:zuP2jVPHab6+IIyOx3nXHFN+euFNeS3W8XQkcdd4s7A=
 github.com/regen-network/protobuf v1.3.2-alpha.regen.4 h1:c9jEnU+xm6vqyrQe3M94UFWqiXxRIKKnqBOh2EACmBE=

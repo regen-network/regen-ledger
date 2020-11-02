@@ -16,7 +16,9 @@ func TxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand()
+	cmd.AddCommand(
+	// TODO
+	)
 
 	return cmd
 }
