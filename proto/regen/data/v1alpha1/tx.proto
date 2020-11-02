@@ -5,6 +5,7 @@ package regen.data.v1alpha1;
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
 
 service Msg {
     rpc AnchorData(MsgAnchorDataRequest) returns (MsgAnchorDataResponse);
@@ -17,7 +18,9 @@ message MsgAnchorDataRequest {
     bytes cid = 2;
 }
 
-message MsgAnchorDataResponse { }
+message MsgAnchorDataResponse {
+    google.protobuf.Timestamp timestamp = 1;
+}
 
 message MsgSignDataRequest {
     option (gogoproto.goproto_getters) = false;

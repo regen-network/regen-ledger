@@ -25,12 +25,17 @@ func (s serverImpl) AnchorData(goCtx context.Context, request *data.MsgAnchorDat
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("CID f%x is already anchored", cidBz))
 	}
 
-	err := s.anchorCid(ctx, cidBz)
+	timestamp, err := gogotypes.TimestampProto(ctx.BlockTime())
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "invalid block time")
+	}
+
+	err = s.anchorCid(ctx, timestamp, cidBz)
 	if err != nil {
 		return nil, err
 	}
 
-	return &data.MsgAnchorDataResponse{}, nil
+	return &data.MsgAnchorDataResponse{Timestamp: timestamp}, nil
 }
 
 func (s serverImpl) anchorCidIfNeeded(ctx sdk.Context, cid []byte) error {
@@ -38,16 +43,11 @@ func (s serverImpl) anchorCidIfNeeded(ctx sdk.Context, cid []byte) error {
 		return nil
 	}
 
-	return s.anchorCid(ctx, cid)
+	return s.anchorCid(ctx, nil, cid)
 }
 
-func (s serverImpl) anchorCid(ctx sdk.Context, cidBytes []byte) error {
-	timestamp, err := gogotypes.TimestampProto(ctx.BlockTime())
-	if err != nil {
-		return sdkerrors.Wrap(err, "invalid block time")
-	}
-
-	err = s.anchorTable.Create(ctx, cidBytes, timestamp)
+func (s serverImpl) anchorCid(ctx sdk.Context, timestamp *gogotypes.Timestamp, cidBytes []byte) error {
+	err := s.anchorTable.Create(ctx, cidBytes, timestamp)
 	if err != nil {
 		return sdkerrors.Wrap(err, "error anchoring data")
 	}
