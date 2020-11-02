@@ -110,7 +110,8 @@ func (s *TestSuite) TestScenario() {
 	s.Require().Equal(rSupply0, querySupplyRes.RetiredSupply)
 
 	// retire credits
-	retireCases := map[string]struct {
+	retireCases := []struct {
+		name               string
 		toRetire           string
 		expectErr          bool
 		expTradeable       string
@@ -118,11 +119,18 @@ func (s *TestSuite) TestScenario() {
 		expTradeableSupply string
 		expRetiredSupply   string
 	}{
-		"cannot retire more credits than are tradeable": {
+		{
+			name:      "cannot retire more credits than are tradeable",
 			toRetire:  "10.371",
 			expectErr: true,
 		},
-		"can retire a small amount of credits": {
+		{
+			name:      "can't use more than 7 decimal places",
+			toRetire:  "10.00000001",
+			expectErr: true,
+		},
+		{
+			name:               "can retire a small amount of credits",
 			toRetire:           "0.0001",
 			expectErr:          false,
 			expTradeable:       "10.3699",
@@ -130,7 +138,8 @@ func (s *TestSuite) TestScenario() {
 			expTradeableSupply: "1017.7568",
 			expRetiredSupply:   "10004.7450902",
 		},
-		"can retire more credits": {
+		{
+			name:               "can retire more credits",
 			toRetire:           "10",
 			expectErr:          false,
 			expTradeable:       "0.3699",
@@ -138,7 +147,8 @@ func (s *TestSuite) TestScenario() {
 			expTradeableSupply: "1007.7568",
 			expRetiredSupply:   "10014.7450902",
 		},
-		"can retire all credits": {
+		{
+			name:               "can retire all credits",
 			toRetire:           "0.3699",
 			expectErr:          false,
 			expTradeable:       "0",
@@ -146,14 +156,15 @@ func (s *TestSuite) TestScenario() {
 			expTradeableSupply: "1007.3869",
 			expRetiredSupply:   "10015.1149902",
 		},
-		"can't retire any more credits": {
+		{
+			name:      "can't retire any more credits",
 			toRetire:  "1",
 			expectErr: true,
 		},
 	}
 
-	for name, tc := range retireCases {
-		s.Run(name, func() {
+	for _, tc := range retireCases {
+		s.Run(tc.name, func() {
 			ms := s.ms.CacheMultiStore()
 			ctx := sdk.WrapSDKContext(sdk.NewContext(ms, tmproto.Header{}, false, log.NewNopLogger()))
 			_, err := s.server.Retire(ctx, &ecocredit.MsgRetireRequest{
@@ -192,7 +203,8 @@ func (s *TestSuite) TestScenario() {
 		})
 	}
 
-	sendCases := map[string]struct {
+	sendCases := []struct {
+		name                  string
 		sendTradeable         string
 		sendRetired           string
 		expectErr             bool
@@ -203,17 +215,20 @@ func (s *TestSuite) TestScenario() {
 		expTradeableSupply    string
 		expRetiredSupply      string
 	}{
-		"can't send more tradeable than is tradeable": {
+		{
+			name:          "can't send more tradeable than is tradeable",
 			sendTradeable: "2000",
 			sendRetired:   "10",
 			expectErr:     true,
 		},
-		"can't send more retired than is tradeable": {
+		{
+			name:          "can't send more retired than is tradeable",
 			sendTradeable: "10",
 			sendRetired:   "2000",
 			expectErr:     true,
 		},
-		"can send some": {
+		{
+			name:                  "can send some",
 			sendTradeable:         "10",
 			sendRetired:           "20",
 			expectErr:             false,
@@ -224,7 +239,8 @@ func (s *TestSuite) TestScenario() {
 			expTradeableSupply:    "987.3869",
 			expRetiredSupply:      "10035.1149902",
 		},
-		"can send all tradeable": {
+		{
+			name:                  "can send all tradeable",
 			sendTradeable:         "77.3869",
 			sendRetired:           "900",
 			expectErr:             false,
@@ -235,15 +251,16 @@ func (s *TestSuite) TestScenario() {
 			expTradeableSupply:    "87.3869",
 			expRetiredSupply:      "10935.1149902",
 		},
-		"can't send any more": {
+		{
+			name:          "can't send any more",
 			sendTradeable: "1",
 			sendRetired:   "1",
 			expectErr:     true,
 		},
 	}
 
-	for name, tc := range sendCases {
-		s.Run(name, func() {
+	for _, tc := range sendCases {
+		s.Run(tc.name, func() {
 			ms := s.ms.CacheMultiStore()
 			ctx := sdk.WrapSDKContext(sdk.NewContext(ms, tmproto.Header{}, false, log.NewNopLogger()))
 			_, err := s.server.Send(ctx, &ecocredit.MsgSendRequest{

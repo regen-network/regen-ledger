@@ -2,10 +2,7 @@ package server
 
 import (
 	"context"
-	"fmt"
-	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/modules/incubator/orm"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/math"
@@ -50,12 +47,12 @@ func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalan
 
 	store := ctx.KVStore(s.storeKey)
 
-	tradeable, err := s.getDec(store, TradeableBalanceKey(acc, denom))
+	tradeable, err := storeGetDec(store, TradeableBalanceKey(acc, denom))
 	if err != nil {
 		return nil, err
 	}
 
-	retired, err := s.getDec(store, RetiredBalanceKey(acc, denom))
+	retired, err := storeGetDec(store, RetiredBalanceKey(acc, denom))
 	if err != nil {
 		return nil, err
 	}
@@ -71,12 +68,12 @@ func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupply
 	store := ctx.KVStore(s.storeKey)
 	denom := batchDenomT(request.BatchDenom)
 
-	tradeable, err := s.getDec(store, TradeableSupplyKey(denom))
+	tradeable, err := storeGetDec(store, TradeableSupplyKey(denom))
 	if err != nil {
 		return nil, err
 	}
 
-	retired, err := s.getDec(store, RetiredSupplyKey(denom))
+	retired, err := storeGetDec(store, RetiredSupplyKey(denom))
 	if err != nil {
 		return nil, err
 	}
@@ -85,18 +82,4 @@ func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupply
 		TradeableSupply: math.DecString(tradeable),
 		RetiredSupply:   math.DecString(retired),
 	}, nil
-}
-
-func (s serverImpl) getDec(store sdk.KVStore, key []byte) (*apd.Decimal, error) {
-	bz := store.Get(key)
-	if bz == nil {
-		return apd.New(0, 0), nil
-	}
-
-	value, _, err := math.StrictDecimal128Context.NewFromString(string(bz))
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, fmt.Sprintf("can't unmarshal %s as decimal", bz))
-	}
-
-	return value, nil
 }

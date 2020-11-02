@@ -65,6 +65,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 
 	tradeableSupply := apd.New(0, 0)
 	retiredSupply := apd.New(0, 0)
+	var maxDecimalPlaces uint32 = 0
 
 	store := ctx.KVStore(s.storeKey)
 
@@ -74,9 +75,19 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 			return nil, err
 		}
 
+		decPlaces := math.NumDecimalPlaces(tradeable)
+		if decPlaces > maxDecimalPlaces {
+			maxDecimalPlaces = decPlaces
+		}
+
 		retired, err := math.MustParseNonNegativeDecimal(issuance.RetiredUnits)
 		if err != nil {
 			return nil, err
+		}
+
+		decPlaces = math.NumDecimalPlaces(retired)
+		if decPlaces > maxDecimalPlaces {
+			maxDecimalPlaces = decPlaces
 		}
 
 		recipient := issuance.Recipient
@@ -106,8 +117,8 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		}
 	}
 
-	s.setDec(store, TradeableSupplyKey(batchDenom), tradeableSupply)
-	s.setDec(store, RetiredSupplyKey(batchDenom), retiredSupply)
+	storeSetDec(store, TradeableSupplyKey(batchDenom), tradeableSupply)
+	storeSetDec(store, RetiredSupplyKey(batchDenom), retiredSupply)
 
 	var totalSupply apd.Decimal
 	err = add(&totalSupply, tradeableSupply, retiredSupply)
@@ -123,6 +134,11 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		Issuer:     issuer,
 		TotalUnits: totalSupplyStr,
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	err = storeSetUInt32(store, MaxDecimalPlacesKey(batchDenom), maxDecimalPlaces)
 	if err != nil {
 		return nil, err
 	}
@@ -149,12 +165,19 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 	store := ctx.KVStore(s.storeKey)
 
 	for _, credit := range req.Credits {
-		tradeable, err := math.MustParseNonNegativeDecimal(credit.TradeableUnits)
+		denom := batchDenomT(credit.BatchDenom)
+
+		maxDecimalPlaces, err := storeGetUInt32(store, MaxDecimalPlacesKey(denom))
 		if err != nil {
 			return nil, err
 		}
 
-		retired, err := math.MustParseNonNegativeDecimal(credit.RetiredUnits)
+		tradeable, err := math.MustParseNonNegativeFixedWidthDecimal(credit.TradeableUnits, maxDecimalPlaces)
+		if err != nil {
+			return nil, err
+		}
+
+		retired, err := math.MustParseNonNegativeFixedWidthDecimal(credit.RetiredUnits, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
 		}
@@ -165,16 +188,14 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 			return nil, err
 		}
 
-		denom := batchDenomT(credit.BatchDenom)
-
 		// subtract balance
-		err = s.safeSubDec(store, TradeableBalanceKey(sender, denom), &sum)
+		err = storeSafeSubDec(store, TradeableBalanceKey(sender, denom), &sum)
 		if err != nil {
 			return nil, err
 		}
 
 		// subtract retired from tradeable supply
-		err = s.safeSubDec(store, TradeableSupplyKey(denom), retired)
+		err = storeSafeSubDec(store, TradeableSupplyKey(denom), retired)
 		if err != nil {
 			return nil, err
 		}
@@ -192,7 +213,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 		}
 
 		// add retired supply
-		err = s.addDec(store, RetiredSupplyKey(denom), retired)
+		err = storeAddDec(store, RetiredSupplyKey(denom), retired)
 		if err != nil {
 			return nil, err
 		}
@@ -215,19 +236,24 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid credit denom", denom))
 		}
 
-		toRetire, err := math.MustParsePositiveDecimal(credit.Units)
+		maxDecimalPlaces, err := storeGetUInt32(store, MaxDecimalPlacesKey(denom))
+		if err != nil {
+			return nil, err
+		}
+
+		toRetire, err := math.MustParsePositiveFixedWidthDecimal(credit.Units, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
 		}
 
 		// subtract tradeable balance
-		err = s.safeSubDec(store, TradeableBalanceKey(holder, denom), toRetire)
+		err = storeSafeSubDec(store, TradeableBalanceKey(holder, denom), toRetire)
 		if err != nil {
 			return nil, err
 		}
 
 		// subtract tradeable supply
-		err = s.safeSubDec(store, TradeableSupplyKey(denom), toRetire)
+		err = storeSafeSubDec(store, TradeableSupplyKey(denom), toRetire)
 		if err != nil {
 			return nil, err
 		}
@@ -239,7 +265,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 		}
 
 		//  add retired supply
-		err = s.addDec(store, RetiredSupplyKey(denom), toRetire)
+		err = storeAddDec(store, RetiredSupplyKey(denom), toRetire)
 		if err != nil {
 			return nil, err
 		}
@@ -249,7 +275,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 }
 
 func (s serverImpl) receiveTradeable(ctx sdk.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, tradeable *apd.Decimal) error {
-	err := s.addDec(store, TradeableBalanceKey(recipient, batchDenom), tradeable)
+	err := storeAddDec(store, TradeableBalanceKey(recipient, batchDenom), tradeable)
 	if err != nil {
 		return err
 	}
@@ -262,7 +288,7 @@ func (s serverImpl) receiveTradeable(ctx sdk.Context, store sdk.KVStore, recipie
 }
 
 func (s serverImpl) retire(ctx sdk.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired *apd.Decimal) error {
-	err := s.addDec(store, RetiredBalanceKey(recipient, batchDenom), retired)
+	err := storeAddDec(store, RetiredBalanceKey(recipient, batchDenom), retired)
 	if err != nil {
 		return err
 	}
@@ -272,54 +298,4 @@ func (s serverImpl) retire(ctx sdk.Context, store sdk.KVStore, recipient string,
 		BatchDenom: string(batchDenom),
 		Units:      math.DecString(retired),
 	})
-}
-
-func (s serverImpl) setDec(store sdk.KVStore, key []byte, value *apd.Decimal) {
-	// always remove all trailing zeros for canonical representation
-	value, _ = value.Reduce(value)
-	// use scientific notation here always for canonical representation
-	str := value.Text('e')
-	store.Set(key, []byte(str))
-}
-
-func (s serverImpl) addDec(store sdk.KVStore, key []byte, x *apd.Decimal) error {
-	value, err := s.getDec(store, key)
-	if err != nil {
-		return err
-	}
-
-	err = add(value, value, x)
-	if err != nil {
-		return err
-	}
-
-	s.setDec(store, key, value)
-	return nil
-}
-
-func (s serverImpl) safeSubDec(store sdk.KVStore, key []byte, x *apd.Decimal) error {
-	value, err := s.getDec(store, key)
-	if err != nil {
-		return err
-	}
-
-	_, err = math.StrictDecimal128Context.Sub(value, value, x)
-	if err != nil {
-		return sdkerrors.Wrap(err, "decimal subtraction error")
-	}
-
-	if math.IsNegative(value) {
-		return sdkerrors.ErrInsufficientFunds
-	}
-
-	s.setDec(store, key, value)
-	return nil
-}
-
-func add(res, x, y *apd.Decimal) error {
-	_, err := math.StrictDecimal128Context.Add(res, x, y)
-	if err != nil {
-		return sdkerrors.Wrap(err, "decimal addition error")
-	}
-	return nil
 }

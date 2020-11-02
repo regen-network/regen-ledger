@@ -18,6 +18,7 @@ const (
 	ClassInfoTablePrefix   byte = 0x5
 	BatchInfoSeqPrefix     byte = 0x6
 	BatchInfoTablePrefix   byte = 0x7
+	MaxDecimalPlacesPrefix byte = 0x8
 )
 
 type serverImpl struct {
@@ -72,5 +73,10 @@ func RetiredBalanceKey(acc string, batchDenom batchDenomT) []byte {
 
 func RetiredSupplyKey(batchDenom batchDenomT) []byte {
 	key := []byte{RetiredSupplyPrefix}
+	return append(key, batchDenom...)
+}
+
+func MaxDecimalPlacesKey(batchDenom batchDenomT) []byte {
+	key := []byte{MaxDecimalPlacesPrefix}
 	return append(key, batchDenom...)
 }
