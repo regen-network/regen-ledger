@@ -5,6 +5,7 @@ go 1.14
 require (
 	github.com/cosmos/cosmos-sdk v0.40.0-rc1
 	github.com/enigmampc/btcutil v1.0.3-0.20200723161021-e2fb6adb2a25
+	github.com/gogo/protobuf v1.3.1
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.3.1
