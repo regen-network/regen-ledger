@@ -1,5 +1,5 @@
 let
-  xrn_build = pkg:
+  regen_build = pkg:
     with import <nixpkgs>{};
     buildGoModule rec {
       name = "regen-ledger";
@@ -18,6 +18,5 @@ let
       };
     };
 in {
-  xrnd = (xrn_build "cmd/xrnd");
-  xrncli = (xrn_build "cmd/xrncli");
+  regen = (regen_build "app/regen");
 }
