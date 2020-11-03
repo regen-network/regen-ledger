@@ -308,7 +308,7 @@ proto-lint:
 	@buf check lint --error-format=json
 
 proto-check-breaking:
-	@buf check breaking --against-input '.git#branch=master'
+	@buf check breaking --against '.git#branch=master'
 
 proto-lint-docker:
 	@$(DOCKER_BUF) check lint --error-format=json
