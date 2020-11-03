@@ -7,34 +7,86 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
+// Msg is the regen.data.v1alpha1 Msg service
 service Msg {
+
+    // AnchorData "anchors" a piece of data to the blockchain based on its secure hash,
+    // effectively providing a tamper resistant timestamp.
     rpc AnchorData(MsgAnchorDataRequest) returns (MsgAnchorDataResponse);
+
+    // SignData allows for signing of an arbitrary piece of data on the blockchain.
+    //
+    // On-chain signatures have the following benefits:
+    // - on-chain identities can be managed using different cryptographic keys
+    //   that change over time through key rotation practices
+    // - an on-chain identity may represent an organization and through delegation
+    //   individual members may sign on behalf of the group
+    // - the blockchain transaction envelope provides built-in replay protection
+    //   and timestamping
+    //
+    // SignData implicitly calls AnchorData if the data was not already anchored.
+    //
+    // SignData can be called multiple times for the same CID with different signers
+    // and those signers will be appended to the list of signers.
     rpc SignData(MsgSignDataRequest) returns (MsgSignDataResponse);
+
+    // StoreData stores a piece of data corresponding to a CID on the blockchain.
+    //
+    // Currently only data for CID's using sha2-256 and blake2b-256 hash algorithms
+    // can be stored on-chain.
+    //
+    // StoreData implicitly calls AnchorData if the data was not already anchored.
     rpc StoreData(MsgStoreDataRequest) returns (MsgStoreDataResponse);
 }
 
+// MsgAnchorDataRequest is the Msg/AnchorData request type.
 message MsgAnchorDataRequest {
+
+    // sender is the address of the sender of the transaction.
     string sender = 1;
+
+    // cid is a Content Identifier for the data corresponding to the IPFS CID
+    // specification: https://github.com/multiformats/cid.
     bytes cid = 2;
 }
 
+// MsgAnchorDataRequest is the Msg/AnchorData response type.
 message MsgAnchorDataResponse {
+
+    // timestamp is the timestamp of the block at which the data was anchored.
     google.protobuf.Timestamp timestamp = 1;
 }
 
+// MsgSignDataRequest is the Msg/SignData request type.
 message MsgSignDataRequest {
     option (gogoproto.goproto_getters) = false;
 
+    // signers are the addresses of the accounts signing the data.
     repeated string signers = 1;
+
+    // cid is a Content Identifier for the data corresponding to the IPFS CID
+    // specification: https://github.com/multiformats/cid.
     bytes cid = 2;
 }
 
+// MsgSignDataResponse is the Msg/SignData response type.
 message MsgSignDataResponse { }
 
+// MsgStoreDataRequest is the Msg/StoreData request type.
 message MsgStoreDataRequest {
+    // sender is the address of the sender of the transaction.
     string sender = 1;
+
+    // cid is a Content Identifier for the data corresponding to the IPFS CID
+    // specification: https://github.com/multiformats/cid.
     bytes cid = 2;
+
+    // content is the content of the data corresponding to the provided CID.
+    //
+    // Currently only data for CID's using sha2-256 and blake2b-256 hash algorithms
+    // can be stored on-chain.
     bytes content = 3;
 }
 
+// MsgStoreDataRequest is the Msg/StoreData response type.
 message MsgStoreDataResponse { }

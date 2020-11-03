@@ -28,7 +28,10 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// QueryDataRequest is the Query/Data request type.
 type QueryDataRequest struct {
+	// cid is a Content Identifier for the data corresponding to the IPFS CID
+	// specification: https://github.com/multiformats/cid.
 	Cid []byte `protobuf:"bytes,1,opt,name=cid,proto3" json:"cid,omitempty"`
 }
 
@@ -72,10 +75,14 @@ func (m *QueryDataRequest) GetCid() []byte {
 	return nil
 }
 
+// QueryDataRequest is the Query/Data response type.
 type QueryDataResponse struct {
+	// timestamp is the timestamp of the block at which the data was anchored.
 	Timestamp *types.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	Signers   []string         `protobuf:"bytes,2,rep,name=signers,proto3" json:"signers,omitempty"`
-	Content   []byte           `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
+	// signers are the addresses of the accounts which have signed the data.
+	Signers []string `protobuf:"bytes,2,rep,name=signers,proto3" json:"signers,omitempty"`
+	// content is the content of the data, if it was stored on-chain.
+	Content []byte `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
 }
 
 func (m *QueryDataResponse) Reset()         { *m = QueryDataResponse{} }
@@ -174,6 +181,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
+	// Data queries data based on its CID.
 	Data(ctx context.Context, in *QueryDataRequest, opts ...grpc.CallOption) (*QueryDataResponse, error)
 }
 
@@ -196,6 +204,7 @@ func (c *queryClient) Data(ctx context.Context, in *QueryDataRequest, opts ...gr
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
+	// Data queries data based on its CID.
 	Data(context.Context, *QueryDataRequest) (*QueryDataResponse, error)
 }
 

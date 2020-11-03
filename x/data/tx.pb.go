@@ -29,9 +29,13 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// MsgAnchorDataRequest is the Msg/AnchorData request type.
 type MsgAnchorDataRequest struct {
+	// sender is the address of the sender of the transaction.
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
-	Cid    []byte `protobuf:"bytes,2,opt,name=cid,proto3" json:"cid,omitempty"`
+	// cid is a Content Identifier for the data corresponding to the IPFS CID
+	// specification: https://github.com/multiformats/cid.
+	Cid []byte `protobuf:"bytes,2,opt,name=cid,proto3" json:"cid,omitempty"`
 }
 
 func (m *MsgAnchorDataRequest) Reset()         { *m = MsgAnchorDataRequest{} }
@@ -81,7 +85,9 @@ func (m *MsgAnchorDataRequest) GetCid() []byte {
 	return nil
 }
 
+// MsgAnchorDataRequest is the Msg/AnchorData response type.
 type MsgAnchorDataResponse struct {
+	// timestamp is the timestamp of the block at which the data was anchored.
 	Timestamp *types.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 }
 
@@ -125,9 +131,13 @@ func (m *MsgAnchorDataResponse) GetTimestamp() *types.Timestamp {
 	return nil
 }
 
+// MsgSignDataRequest is the Msg/SignData request type.
 type MsgSignDataRequest struct {
+	// signers are the addresses of the accounts signing the data.
 	Signers []string `protobuf:"bytes,1,rep,name=signers,proto3" json:"signers,omitempty"`
-	Cid     []byte   `protobuf:"bytes,2,opt,name=cid,proto3" json:"cid,omitempty"`
+	// cid is a Content Identifier for the data corresponding to the IPFS CID
+	// specification: https://github.com/multiformats/cid.
+	Cid []byte `protobuf:"bytes,2,opt,name=cid,proto3" json:"cid,omitempty"`
 }
 
 func (m *MsgSignDataRequest) Reset()         { *m = MsgSignDataRequest{} }
@@ -163,6 +173,7 @@ func (m *MsgSignDataRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgSignDataRequest proto.InternalMessageInfo
 
+// MsgSignDataResponse is the Msg/SignData response type.
 type MsgSignDataResponse struct {
 }
 
@@ -199,9 +210,17 @@ func (m *MsgSignDataResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgSignDataResponse proto.InternalMessageInfo
 
+// MsgStoreDataRequest is the Msg/StoreData request type.
 type MsgStoreDataRequest struct {
-	Sender  string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
-	Cid     []byte `protobuf:"bytes,2,opt,name=cid,proto3" json:"cid,omitempty"`
+	// sender is the address of the sender of the transaction.
+	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
+	// cid is a Content Identifier for the data corresponding to the IPFS CID
+	// specification: https://github.com/multiformats/cid.
+	Cid []byte `protobuf:"bytes,2,opt,name=cid,proto3" json:"cid,omitempty"`
+	// content is the content of the data corresponding to the provided CID.
+	//
+	// Currently only data for CID's using sha2-256 and blake2b-256 hash algorithms
+	// can be stored on-chain.
 	Content []byte `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
 }
 
@@ -259,6 +278,7 @@ func (m *MsgStoreDataRequest) GetContent() []byte {
 	return nil
 }
 
+// MsgStoreDataRequest is the Msg/StoreData response type.
 type MsgStoreDataResponse struct {
 }
 
@@ -348,8 +368,30 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
+	// AnchorData "anchors" a piece of data to the blockchain based on its secure hash,
+	// effectively providing a tamper resistant timestamp.
 	AnchorData(ctx context.Context, in *MsgAnchorDataRequest, opts ...grpc.CallOption) (*MsgAnchorDataResponse, error)
+	// SignData allows for signing of an arbitrary piece of data on the blockchain.
+	//
+	// On-chain signatures have the following benefits:
+	// - on-chain identities can be managed using different cryptographic keys
+	//   that change over time through key rotation practices
+	// - an on-chain identity may represent an organization and through delegation
+	//   individual members may sign on behalf of the group
+	// - the blockchain transaction envelope provides built-in replay protection
+	//   and timestamping
+	//
+	// SignData implicitly calls AnchorData if the data was not already anchored.
+	//
+	// SignData can be called multiple times for the same CID with different signers
+	// and those signers will be appended to the list of signers.
 	SignData(ctx context.Context, in *MsgSignDataRequest, opts ...grpc.CallOption) (*MsgSignDataResponse, error)
+	// StoreData stores a piece of data corresponding to a CID on the blockchain.
+	//
+	// Currently only data for CID's using sha2-256 and blake2b-256 hash algorithms
+	// can be stored on-chain.
+	//
+	// StoreData implicitly calls AnchorData if the data was not already anchored.
 	StoreData(ctx context.Context, in *MsgStoreDataRequest, opts ...grpc.CallOption) (*MsgStoreDataResponse, error)
 }
 
@@ -390,8 +432,30 @@ func (c *msgClient) StoreData(ctx context.Context, in *MsgStoreDataRequest, opts
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
+	// AnchorData "anchors" a piece of data to the blockchain based on its secure hash,
+	// effectively providing a tamper resistant timestamp.
 	AnchorData(context.Context, *MsgAnchorDataRequest) (*MsgAnchorDataResponse, error)
+	// SignData allows for signing of an arbitrary piece of data on the blockchain.
+	//
+	// On-chain signatures have the following benefits:
+	// - on-chain identities can be managed using different cryptographic keys
+	//   that change over time through key rotation practices
+	// - an on-chain identity may represent an organization and through delegation
+	//   individual members may sign on behalf of the group
+	// - the blockchain transaction envelope provides built-in replay protection
+	//   and timestamping
+	//
+	// SignData implicitly calls AnchorData if the data was not already anchored.
+	//
+	// SignData can be called multiple times for the same CID with different signers
+	// and those signers will be appended to the list of signers.
 	SignData(context.Context, *MsgSignDataRequest) (*MsgSignDataResponse, error)
+	// StoreData stores a piece of data corresponding to a CID on the blockchain.
+	//
+	// Currently only data for CID's using sha2-256 and blake2b-256 hash algorithms
+	// can be stored on-chain.
+	//
+	// StoreData implicitly calls AnchorData if the data was not already anchored.
 	StoreData(context.Context, *MsgStoreDataRequest) (*MsgStoreDataResponse, error)
 }
 

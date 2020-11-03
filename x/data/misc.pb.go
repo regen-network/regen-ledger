@@ -22,7 +22,9 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Signers is an internal type for storing a list of signers in state.
 type Signers struct {
+	// signers are the addresses of the accounts which have signed the data.
 	Signers []string `protobuf:"bytes,1,rep,name=signers,proto3" json:"signers,omitempty"`
 }
 

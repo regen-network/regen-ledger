@@ -22,7 +22,10 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// EventAnchorData is an event emitted when data is anchored on-chain.
 type EventAnchorData struct {
+	// cid is a Content Identifier for the data corresponding to the IPFS CID
+	// specification: https://github.com/multiformats/cid.
 	Cid []byte `protobuf:"bytes,1,opt,name=cid,proto3" json:"cid,omitempty"`
 }
 
@@ -66,8 +69,12 @@ func (m *EventAnchorData) GetCid() []byte {
 	return nil
 }
 
+// EventAnchorData is an event emitted when data is signed on-chain.
 type EventSignData struct {
-	Cid     []byte   `protobuf:"bytes,1,opt,name=cid,proto3" json:"cid,omitempty"`
+	// cid is a Content Identifier for the data corresponding to the IPFS CID
+	// specification: https://github.com/multiformats/cid.
+	Cid []byte `protobuf:"bytes,1,opt,name=cid,proto3" json:"cid,omitempty"`
+	// signers are the addresses of the accounts which have signed the data.
 	Signers []string `protobuf:"bytes,2,rep,name=signers,proto3" json:"signers,omitempty"`
 }
 
@@ -118,7 +125,10 @@ func (m *EventSignData) GetSigners() []string {
 	return nil
 }
 
+// EventAnchorData is an event emitted when data is stored on-chain.
 type EventStoreData struct {
+	// cid is a Content Identifier for the data corresponding to the IPFS CID
+	// specification: https://github.com/multiformats/cid.
 	Cid []byte `protobuf:"bytes,1,opt,name=cid,proto3" json:"cid,omitempty"`
 }
 
