@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
-	clientflags "github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	clienttx "github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/server/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/gogo/protobuf/proto"
 	gocid "github.com/ipfs/go-cid"
 	"github.com/multiformats/go-multihash"
 	"github.com/regen-network/regen-ledger/app"
@@ -32,6 +34,7 @@ type IntegrationTestSuite struct {
 	msgClient   data.MsgClient
 	queryClient data.QueryClient
 	ctx         context.Context
+	txFactory   clienttx.Factory
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
@@ -64,11 +67,17 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	val := s.network.Validators[0]
 	s.from = val.Address
 	s.queryClient = data.NewQueryClient(val.ClientCtx)
-	flags := pflag.NewFlagSet("test", pflag.ContinueOnError)
-	flags.Set(clientflags.FlagFrom, val.Address.String())
+	s.txFactory = clienttx.NewFactoryCLI(val.ClientCtx, pflag.NewFlagSet("test", pflag.ContinueOnError))
+	clientCtx := val.ClientCtx
+	clientCtx = clientCtx.WithFrom(val.Address.String())
+	fromAddr, fromName, err := client.GetFromFields(clientCtx.Keyring, clientCtx.From, false)
+	clientCtx = clientCtx.
+		WithFromAddress(fromAddr).
+		WithFromName(fromName)
+	s.txFactory = s.txFactory.WithFees(sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String())
 	txConn := ClientTxConn{
-		ClientContext: val.ClientCtx,
-		FlagSet:       nil,
+		ClientContext: clientCtx,
+		Factory:       s.txFactory,
 	}
 	s.msgClient = data.NewMsgClient(txConn)
 }
@@ -80,7 +89,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 type ClientTxConn struct {
 	ClientContext client.Context
-	FlagSet       *pflag.FlagSet
+	Factory       clienttx.Factory
 }
 
 func (c ClientTxConn) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
@@ -99,7 +108,54 @@ func (c ClientTxConn) Invoke(ctx context.Context, method string, args interface{
 		Request:    req,
 	}
 
-	return clienttx.GenerateOrBroadcastTxCLI(c.ClientContext, c.FlagSet, msg)
+	clientCtx := c.ClientContext
+	txf := c.Factory
+
+	txf, err = clienttx.PrepareFactory(clientCtx, txf)
+	if err != nil {
+		return err
+	}
+
+	_, adjusted, err := clienttx.CalculateGas(clientCtx.QueryWithData, txf, msg)
+	if err != nil {
+		return err
+	}
+
+	txf = txf.WithGas(adjusted)
+
+	tx, err := clienttx.BuildUnsignedTx(txf, msg)
+	if err != nil {
+		return err
+	}
+
+	err = clienttx.Sign(txf, clientCtx.GetFromName(), tx)
+	if err != nil {
+		return err
+	}
+
+	txBytes, err := clientCtx.TxConfig.TxEncoder()(tx.GetTx())
+	if err != nil {
+		return err
+	}
+
+	clientCtx = clientCtx.WithBroadcastMode(flags.BroadcastBlock)
+
+	// broadcast to a Tendermint node
+	txRes, err := clientCtx.BroadcastTx(txBytes)
+	if err != nil {
+		return err
+	}
+
+	protoRes, ok := reply.(proto.Message)
+	if !ok {
+		return fmt.Errorf("expected proto.Message, got %T", reply)
+	}
+
+	if txRes.Code != 0 {
+		return sdkerrors.ABCIError(txRes.Codespace, txRes.Code, txRes.RawLog)
+	}
+
+	return proto.Unmarshal([]byte(txRes.Data), protoRes)
 }
 
 func (c ClientTxConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
