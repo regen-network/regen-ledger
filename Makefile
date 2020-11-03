@@ -241,7 +241,7 @@ endif
 .PHONY: run-tests test test-all $(TEST_TARGETS)
 
 test-cover:
-	@export VERSION=$(VERSION); bash -x contrib/test_cover.sh
+	@export VERSION=$(VERSION); bash -x scripts/test_cover.sh
 .PHONY: test-cover
 
 benchmark:
