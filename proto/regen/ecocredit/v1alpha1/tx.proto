@@ -45,7 +45,7 @@ message MsgCreateClassRequest {
     // issuers are the addresses of the approved issuers.
     repeated string issuers = 2;
 
-    // metadata is any arbitrary metadata to attach to the credit class.
+    // metadata is any arbitrary metadata to attached to the credit class.
     bytes metadata = 3;
 }
 
@@ -67,6 +67,9 @@ message MsgCreateBatchRequest {
 
     // issuance are the credits issued in the batch.
     repeated BatchIssuance issuance = 3;
+
+    // metadata is any arbitrary metadata to attached to the credit batch.
+    bytes metadata = 4;
 
     // BatchIssuance represents the issuance of some credits in a batch to a single recipient.
     message BatchIssuance {

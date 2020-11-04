@@ -20,6 +20,8 @@ message EventReceive {
     string sender = 1;
     string recipient = 2;
     string batch_denom = 3;
+
+    // units includes both the tradable and retired credits received.
     string units = 4;
 }
 
