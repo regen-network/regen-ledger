@@ -6,8 +6,7 @@ proto_dirs=$(find ./proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1
 for dir in $proto_dirs; do
   protoc \
   -I "proto" \
-  -I "cosmos-sdk/proto" \
-  -I "cosmos-sdk/third_party/proto" \
+  -I "third_party/proto" \
   --gocosmos_out=plugins=grpc,\
 Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,\
 Mgoogle/protobuf/struct.proto=github.com/gogo/protobuf/types,\

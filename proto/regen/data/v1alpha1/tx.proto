@@ -12,9 +12,18 @@ service Msg {
 
     // AnchorData "anchors" a piece of data to the blockchain based on its secure hash,
     // effectively providing a tamper resistant timestamp.
+    //
+    // The sender in AnchorData is not attesting to the veracity of the underlying data.
+    // They can simply be a intermediary providing timestamp services.
+    // SignData should be used to create a digital signature attesting to the veracity of some piece of data.
     rpc AnchorData(MsgAnchorDataRequest) returns (MsgAnchorDataResponse);
 
     // SignData allows for signing of an arbitrary piece of data on the blockchain.
+    // By "signing" data the signers are making a statement about the veracity of the
+    // data itself. It is like signing a legal document, meaning that I agree to all
+    // conditions and to the best of my knowledge everything is true. When anchoring
+    // data, the sender is not attesting to the veracity of the data, they are simply
+    // communicating that it exists.
     //
     // On-chain signatures have the following benefits:
     // - on-chain identities can be managed using different cryptographic keys
@@ -36,6 +45,10 @@ service Msg {
     // can be stored on-chain.
     //
     // StoreData implicitly calls AnchorData if the data was not already anchored.
+    //
+    // The sender in StoreData is not attesting to the veracity of the underlying data.
+    // They can simply be a intermediary providing storage services.
+    // SignData should be used to create a digital signature attesting to the veracity of some piece of data.
     rpc StoreData(MsgStoreDataRequest) returns (MsgStoreDataResponse);
 }
 
@@ -43,6 +56,8 @@ service Msg {
 message MsgAnchorDataRequest {
 
     // sender is the address of the sender of the transaction.
+    // The sender in StoreData is not attesting to the veracity of the underlying data.
+    // They can simply be a intermediary providing services.
     string sender = 1;
 
     // cid is a Content Identifier for the data corresponding to the IPFS CID
@@ -62,6 +77,9 @@ message MsgSignDataRequest {
     option (gogoproto.goproto_getters) = false;
 
     // signers are the addresses of the accounts signing the data.
+    // By making a SignData request, the signers are attesting to the veracity
+    // of the data referenced by the cid. The precise meaning of this may vary
+    // depending on the underlying data.
     repeated string signers = 1;
 
     // cid is a Content Identifier for the data corresponding to the IPFS CID
@@ -75,6 +93,8 @@ message MsgSignDataResponse { }
 // MsgStoreDataRequest is the Msg/StoreData request type.
 message MsgStoreDataRequest {
     // sender is the address of the sender of the transaction.
+    // The sender in StoreData is not attesting to the veracity of the underlying data.
+    // They can simply be a intermediary providing services.
     string sender = 1;
 
     // cid is a Content Identifier for the data corresponding to the IPFS CID

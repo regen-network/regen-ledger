@@ -308,13 +308,22 @@ proto-lint:
 	@buf check lint --error-format=json
 
 proto-check-breaking:
-	@buf check breaking --against-input '.git#branch=master'
+	@buf check breaking --against '.git#branch=master'
 
 proto-lint-docker:
 	@$(DOCKER_BUF) check lint --error-format=json
 
 proto-check-breaking-docker:
 	@$(DOCKER_BUF) check breaking --against-input $(HTTPS_GIT)#branch=master
+
+GOGO_PROTO_URL   = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
+
+GOGO_PROTO_TYPES    = third_party/proto/gogoproto
+
+proto-update-deps:
+	@mkdir -p $(GOGO_PROTO_TYPES)
+	@curl -sSL $(GOGO_PROTO_URL)/gogoproto/gogo.proto > $(GOGO_PROTO_TYPES)/gogo.proto
+
 
 ###############################################################################
 ###                                Localnet                                 ###
