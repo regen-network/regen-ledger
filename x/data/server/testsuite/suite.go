@@ -16,7 +16,8 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	fixture server.Fixture
+	fixtureFactory server.FixtureFactory
+	fixture        server.Fixture
 
 	ctx         context.Context
 	msgClient   data.MsgClient
@@ -24,12 +25,12 @@ type IntegrationTestSuite struct {
 	from        sdk.AccAddress
 }
 
-func NewIntegrationTestSuite(fixture server.Fixture) *IntegrationTestSuite {
-	return &IntegrationTestSuite{fixture: fixture}
+func NewIntegrationTestSuite(fixtureFactory server.FixtureFactory) *IntegrationTestSuite {
+	return &IntegrationTestSuite{fixtureFactory: fixtureFactory}
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
-	s.fixture.Setup()
+	s.fixture = s.fixtureFactory.Setup()
 	s.ctx = s.fixture.Context()
 	s.msgClient = data.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = data.NewQueryClient(s.fixture.QueryConn())
