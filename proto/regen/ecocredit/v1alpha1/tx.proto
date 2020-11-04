@@ -42,7 +42,7 @@ message MsgCreateClassRequest {
     // to change the list of issuers and perform other administrative operations.
     string designer = 1;
 
-    // issuers are the addresses of the approved issuers.
+    // issuers are the account addresses of the approved issuers.
     repeated string issuers = 2;
 
     // metadata is any arbitrary metadata to attached to the credit class.
