@@ -1,40 +1,78 @@
 syntax = "proto3";
 
-package regen.data.v1alpha1;
+package regen.ecocredit.v1alpha1;
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 
+// Msg is the regen.ecocredit.v1alpha1 Msg service.
 service Msg {
+
+    // CreateClass creates a new credit class with an approved list of issuers and optional metadata.
     rpc CreateClass(MsgCreateClassRequest) returns (MsgCreateClassResponse);
+
+    // CreateBatch creates a new batch of credits for an existing credit class. This will create a new batch denom
+    // with a fixed supply. Issued credits can be distributed to recipients in either tradable or retired form.
     rpc CreateBatch(MsgCreateBatchRequest) returns (MsgCreateBatchResponse);
+
+    // Send
     rpc Send(MsgSendRequest) returns (MsgSendResponse);
     rpc Retire(MsgRetireRequest) returns (MsgRetireResponse);
     rpc SetPrecision(MsgSetPrecisionRequest) returns (MsgSetPrecisionResponse);
 }
 
+// MsgCreateClassRequest is the Msg/CreateClass request type.
 message MsgCreateClassRequest {
+
+    // designer is the address of the account which designed the credit class. The designer has special permissions
+    // to change the list of issuers and perform other administrative operations.
     string designer = 1;
+
+    // issuers are the addresses of the approved issuers.
     repeated string issuers = 2;
+
+    // metadata is any arbitrary metadata to attach to the credit class.
     bytes metadata = 3;
 }
 
+// MsgCreateClassResponse is the Msg/CreateClass response type.
 message MsgCreateClassResponse {
+
+    // class_id is the unique ID of the newly created credit class.
     string class_id = 1;
 }
 
+// MsgCreateBatchRequest is the Msg/CreateBatch request type.
 message MsgCreateBatchRequest {
+
+    // issuer is the address of the batch issuer.
     string issuer = 1;
+
+    // class_id is the unique ID of the class.
     string class_id = 2;
+
+    // issuance are the credits issued in the batch.
     repeated BatchIssuance issuance = 3;
 
+    // BatchIssuance represents the issuance of some credits in a batch to a single recipient.
     message BatchIssuance {
+
+        // recipient is the account of the recipient.
         string recipient = 1;
-        string tradeable_units = 2;
+
+        // tradable_units are the units of credits in this issuance that can be traded by this recipient.
+        // Decimal values are acceptable.
+        string tradable_units = 2;
+
+        // retired_units are the units of credits in this issuance that are effectively retired by the issuer on receipt.
+        // Decimal values are acceptable.
         string retired_units = 3;
     }
 }
 
+// MsgCreateBatchRequest is the Msg/CreateBatch response type.
 message MsgCreateBatchResponse {
+
+    // batch_denom is the unique ID of the newly created batch.
     string batch_denom = 1;
 }
 
@@ -50,9 +88,7 @@ message MsgSendRequest {
     }
 }
 
-message MsgSendResponse {
-
-}
+message MsgSendResponse { }
 
 message MsgRetireRequest {
     string holder = 1;

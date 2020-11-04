@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package regen.data.v1alpha1;
+package regen.ecocredit.v1alpha1;
 
 import "regen/ecocredit/v1alpha1/types.proto";
 
@@ -36,7 +36,7 @@ message QueryBalanceRequest {
 }
 
 message QueryBalanceResponse {
-    string tradeable_units = 1;
+    string tradable_units = 1;
     string retired_units = 2;
 }
 
@@ -45,7 +45,7 @@ message QuerySupplyRequest {
 }
 
 message QuerySupplyResponse {
-    string tradeable_supply = 1;
+    string tradable_supply = 1;
     string retired_supply = 2;
 }
 
