@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package regen.data.v1alpha1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/data";
+
+// Signers is an internal type for storing a list of signers in state.
+message Signers {
+
+    // signers are the addresses of the accounts which have signed the data.
+    repeated string signers = 1;
+}
