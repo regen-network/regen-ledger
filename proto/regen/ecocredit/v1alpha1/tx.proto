@@ -21,7 +21,17 @@ service Msg {
     rpc Retire(MsgRetireRequest) returns (MsgRetireResponse);
 
     // SetPrecision allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature
-    // to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113.
+    // to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
+    // places allowed for a credit batch is determined by the original number of decimal places used with calling CreatBatch.
+    // SetPrecision allows the number of allowed decimal places to be increased, effectively making the supply more
+    // granular without actually changing any balances. It allows asset issuers to be able to issue an asset without needing
+    // to think about how many subdivisions are needed upfront. While it may not be relevant for credits which likely have
+    // a fairly stable market value, I wanted to experiment a bit and this serves as a proof of concept for a broader
+    // bank redesign where say for instance a coin like the ATOM or XRN could be issued in its own units rather than
+    // micro or nano-units. Instead an operation like SetPrecision would allow trading in micro, nano or pico in the future
+    // based on market demand. Arbitrary, unbounded precision is not desirable because this can lead to spam attacks (like
+    // sending 0.000000000000000000000000000001 coins). This is effectively fixed precision so under the hood it is still
+    // basically an integer, but the fixed precision can be increased so its more adaptable long term than just an integer.
     rpc SetPrecision(MsgSetPrecisionRequest) returns (MsgSetPrecisionResponse);
 }
 
