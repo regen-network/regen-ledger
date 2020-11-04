@@ -3,6 +3,7 @@ package module
 import (
 	"encoding/json"
 	"github.com/cosmos/cosmos-sdk/x/evidence/types"
+	"github.com/regen-network/regen-ledger/x/data/server"
 
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -18,7 +19,6 @@ import (
 
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/client"
-	"github.com/regen-network/regen-ledger/x/data/server"
 )
 
 const (
@@ -86,9 +86,7 @@ func (a AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier {
 }
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {
-	impl := server.NewServer(a.storeKey)
-	data.RegisterMsgServer(configurator.MsgServer(), impl)
-	data.RegisterQueryServer(configurator.QueryServer(), impl)
+	server.RegisterServices(a.storeKey, configurator)
 }
 
 func (a AppModule) BeginBlock(sdk.Context, abci.RequestBeginBlock) {

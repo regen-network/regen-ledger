@@ -1,10 +1,12 @@
 package server
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/modules/incubator/orm"
-	_ "github.com/cosmos/modules/incubator/orm"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/gogo/protobuf/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -22,12 +24,7 @@ type serverImpl struct {
 	signersTable orm.Table
 }
 
-type Server interface {
-	data.MsgServer
-	data.QueryServer
-}
-
-func NewServer(storeKey sdk.StoreKey) Server {
+func newServer(storeKey sdk.StoreKey) serverImpl {
 	s := serverImpl{storeKey: storeKey}
 
 	anchorTable := orm.NewTableBuilder(AnchorTablePrefix, storeKey, &types.Timestamp{}, orm.Max255DynamicLengthIndexKeyCodec{})
@@ -41,4 +38,10 @@ func NewServer(storeKey sdk.StoreKey) Server {
 
 func DataKey(cid []byte) []byte {
 	return append([]byte{DataTablePrefix}, cid...)
+}
+
+func RegisterServices(storeKey sdk.StoreKey, configurator module.Configurator) {
+	impl := newServer(storeKey)
+	data.RegisterMsgServer(configurator.MsgServer(), impl)
+	data.RegisterQueryServer(configurator.QueryServer(), impl)
 }

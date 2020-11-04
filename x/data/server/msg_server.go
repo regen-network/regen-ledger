@@ -84,11 +84,16 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignDataReq
 				signers.Signers = append(signers.Signers, signer)
 			}
 		}
-	}
 
-	err = s.signersTable.Save(ctx, cidBz, &signers)
-	if err != nil {
-		return nil, err
+		err = s.signersTable.Save(ctx, cidBz, &signers)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		err = s.signersTable.Create(ctx, cidBz, &signers)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	err = ctx.EventManager().EmitTypedEvent(&data.EventSignData{
