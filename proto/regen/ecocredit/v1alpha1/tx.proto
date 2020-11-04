@@ -14,7 +14,7 @@ service Msg {
     // with a fixed supply. Issued credits can be distributed to recipients in either tradable or retired form.
     rpc CreateBatch(MsgCreateBatchRequest) returns (MsgCreateBatchResponse);
 
-    // Send sends tradeable credits from one account to another account. Sent credits can either be or retired on receipt.
+    // Send sends tradeable credits from one account to another account. Sent credits can either be tradable or retired on receipt.
     rpc Send(MsgSendRequest) returns (MsgSendResponse);
 
     // Retire retires a specified number of credits in the holder's account.
