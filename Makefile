@@ -316,6 +316,15 @@ proto-lint-docker:
 proto-check-breaking-docker:
 	@$(DOCKER_BUF) check breaking --against-input $(HTTPS_GIT)#branch=master
 
+GOGO_PROTO_URL   = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
+
+GOGO_PROTO_TYPES    = third_party/proto/gogoproto
+
+proto-update-deps:
+	@mkdir -p $(GOGO_PROTO_TYPES)
+	@curl -sSL $(GOGO_PROTO_URL)/gogoproto/gogo.proto > $(GOGO_PROTO_TYPES)/gogo.proto
+
+
 ###############################################################################
 ###                                Localnet                                 ###
 ###############################################################################
