@@ -106,7 +106,9 @@ message MsgSendRequest {
     // credits are the credits being sent.
     repeated SendUnits credits = 3;
 
+    // SendUnits are the tradable and retired units of a credit batch to send.
     message SendUnits {
+
         // batch_denom is the unique ID of the credit batch.
         string batch_denom = 1;
 
