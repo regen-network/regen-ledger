@@ -17,9 +17,10 @@ message EventCreateBatch {
 }
 
 message EventReceive {
-    string recipient = 1;
-    string batch_denom = 2;
-    string units = 3;
+    string sender = 1;
+    string recipient = 2;
+    string batch_denom = 3;
+    string units = 4;
 }
 
 message EventRetire {
