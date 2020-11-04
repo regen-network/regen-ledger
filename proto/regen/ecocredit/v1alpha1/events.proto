@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package regen.ecocredit.v1alpha1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+
+message EventCreateClass {
+    string designer = 1;
+    string class_id = 2;
+}
+
+message EventCreateBatch {
+    string class_id = 1;
+    string batch_denom = 2;
+    string issuer = 3;
+    string total_units = 4;
+}
+
+message EventReceive {
+    string sender = 1;
+    string recipient = 2;
+    string batch_denom = 3;
+    string units = 4;
+}
+
+message EventRetire {
+    string retirer = 1;
+    string batch_denom = 2;
+    string units = 3;
+}

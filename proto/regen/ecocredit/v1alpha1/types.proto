@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package regen.ecocredit.v1alpha1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+
+message ClassInfo {
+    string class_id = 1;
+    string designer = 2;
+    repeated string issuers = 3;
+    bytes metadata = 4;
+}
+
+message BatchInfo {
+    string class_id = 1;
+    string batch_denom = 2;
+    string issuer = 3;
+    string total_units = 4;
+}
