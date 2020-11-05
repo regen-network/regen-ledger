@@ -3,17 +3,15 @@ package module
 import (
 	"encoding/json"
 
-	"github.com/gorilla/mux"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/spf13/cobra"
-
-	abci "github.com/tendermint/tendermint/abci/types"
-
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/gorilla/mux"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/spf13/cobra"
+	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
@@ -22,6 +20,8 @@ import (
 type AppModule struct {
 	Key sdk.StoreKey
 }
+
+var _ module.AppModule = AppModule{}
 
 func (a AppModule) Name() string { return ecocredit.ModuleName }
 
@@ -59,7 +59,9 @@ func (a AppModule) ExportGenesis(sdk.Context, codec.JSONMarshaler) json.RawMessa
 
 func (a AppModule) RegisterInvariants(sdk.InvariantRegistry) {}
 
-func (a AppModule) Route() sdk.Route { return sdk.Route{} }
+func (a AppModule) Route() sdk.Route {
+	return sdk.Route{}
+}
 
 func (a AppModule) QuerierRoute() string { return "" }
 

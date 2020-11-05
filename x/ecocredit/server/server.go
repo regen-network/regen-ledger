@@ -1,7 +1,7 @@
 package server
 
 import (
-	"fmt"
+	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -25,14 +25,23 @@ type serverImpl struct {
 	storeKey sdk.StoreKey
 
 	// we use a single sequence to avoid having the same string/ID identifying a class and batch denom
-	idSeq orm.Sequence
-
+	idSeq          orm.Sequence
 	classInfoTable orm.NaturalKeyTable
-
 	batchInfoTable orm.NaturalKeyTable
 }
 
-func newServer(storeKey sdk.StoreKey) serverImpl {
+// Server is the the ecocredits implementation of ADR 031 Msg Service
+type Server interface {
+	CreateClass(goCtx context.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error)
+	CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatchRequest) (*ecocredit.MsgCreateBatchResponse, error)
+	Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (*ecocredit.MsgSendResponse, error)
+
+	Retire(goCtx context.Context, req *ecocredit.MsgRetireRequest) (*ecocredit.MsgRetireResponse, error)
+	SetPrecision(goCtx context.Context, request *ecocredit.MsgSetPrecisionRequest) (*ecocredit.MsgSetPrecisionResponse, error)
+}
+
+// NewServer implements the
+func NewServer(storeKey sdk.StoreKey) serverImpl {
 	s := serverImpl{storeKey: storeKey}
 
 	s.idSeq = orm.NewSequence(storeKey, IDSeqPrefix)
@@ -47,38 +56,7 @@ func newServer(storeKey sdk.StoreKey) serverImpl {
 }
 
 func RegisterServices(storeKey sdk.StoreKey, cfg module.Configurator) {
-	impl := newServer(storeKey)
+	impl := NewServer(storeKey)
 	ecocredit.RegisterMsgServer(cfg.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(cfg.QueryServer(), impl)
-}
-
-// batchDenomT is used to prevent errors when forming keys as accounts and denoms are
-// both represented as strings
-type batchDenomT string
-
-func TradableBalanceKey(acc string, denom batchDenomT) []byte {
-	key := []byte{TradableBalancePrefix}
-	str := fmt.Sprintf("%s|%s", acc, denom)
-	return append(key, str...)
-}
-
-func TradableSupplyKey(batchDenom batchDenomT) []byte {
-	key := []byte{TradableSupplyPrefix}
-	return append(key, batchDenom...)
-}
-
-func RetiredBalanceKey(acc string, batchDenom batchDenomT) []byte {
-	key := []byte{RetiredBalancePrefix}
-	str := fmt.Sprintf("%s|%s", acc, batchDenom)
-	return append(key, str...)
-}
-
-func RetiredSupplyKey(batchDenom batchDenomT) []byte {
-	key := []byte{RetiredSupplyPrefix}
-	return append(key, batchDenom...)
-}
-
-func MaxDecimalPlacesKey(batchDenom batchDenomT) []byte {
-	key := []byte{MaxDecimalPlacesPrefix}
-	return append(key, batchDenom...)
 }
