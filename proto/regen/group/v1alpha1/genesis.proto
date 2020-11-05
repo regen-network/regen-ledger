@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package regen.group.v1alpha1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/group";
+
+import "gogoproto/gogo.proto";
+
+// Params defines the set of configurable parameters.
+message Params {
+    option (gogoproto.equal) = true;
+    option (gogoproto.goproto_stringer) = false;
+    uint32 max_comment_length = 1 [(gogoproto.moretags) = "yaml:\"max_comment_length\""];
+}
+
+message GenesisState {
+    option (gogoproto.equal) = true;
+    option (gogoproto.goproto_stringer) = false;
+    Params Params = 1 [(gogoproto.nullable)=false];
+}

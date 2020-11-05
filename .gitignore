@@ -181,3 +181,6 @@ tags
 .idea
 
 build/
+
+# OS
+.DS_Store

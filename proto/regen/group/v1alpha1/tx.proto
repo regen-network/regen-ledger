@@ -1,0 +1,103 @@
+syntax = "proto3";
+
+package regen.group.v1alpha1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/group";
+
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "google/protobuf/any.proto";
+import "regen/group/v1alpha1/types.proto";
+
+//
+// Groups
+//
+
+message MsgCreateGroup {
+    bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    repeated Member members = 2 [(gogoproto.nullable) = false];
+    string comment = 3;
+}
+
+message MsgUpdateGroupMembers {
+    bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
+    repeated Member member_updates = 3 [(gogoproto.nullable) = false]; // set power to 0 to remove
+}
+
+message MsgUpdateGroupAdmin {
+    bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
+    bytes new_admin = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+}
+
+message MsgUpdateGroupComment {
+    bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
+    string comment = 3;
+}
+
+//
+// Group Accounts
+//
+
+// MsgCreateGroupAccount creates a group account using one of the members of DecisionPolicy. 
+message MsgCreateGroupAccount {
+    option (gogoproto.goproto_getters) = false;
+    bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
+    string comment = 3;
+    google.protobuf.Any decision_policy = 4 [(cosmos_proto.accepts_interface) = "DecisionPolicy"];
+}
+
+message MsgUpdateGroupAccountAdmin {
+    bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    bytes group_account = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    bytes new_admin = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+}
+
+// MsgCreateGroupAccount allows a group account decision policy to be updated to a member of DecisionPolicy.
+message MsgUpdateGroupAccountDecisionPolicy {
+    bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
+    google.protobuf.Any decision_policy = 3 [(cosmos_proto.accepts_interface) = "DecisionPolicy"];
+}
+
+message MsgUpdateGroupAccountComment {
+    bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    bytes group_account = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string comment = 3;
+}
+
+//
+// Proposals and Voting
+//
+
+// MsgProposeBase is the base propose msg that app should use to implement a MsgPropose type based
+// on their app Msg type.
+//
+// Ex:
+// message MsgPropose {
+//   MsgProposeBase base = 1;
+//   repeated MyAppMsg msgs = 2;
+// }
+message MsgProposeBase {
+    bytes group_account = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    // Proposers signatures will be counted as yes votes
+    repeated bytes proposers = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string comment = 3;
+}
+
+message MsgVote {
+    uint64 proposal = 1 [(gogoproto.casttype) = "ProposalID"];
+    repeated bytes voters = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    Choice choice = 3;
+    string comment = 4;
+}
+
+message MsgExec {
+    uint64 proposal = 1 [(gogoproto.casttype) = "ProposalID"];
+    bytes signer = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+}
+
+
