@@ -1,0 +1,107 @@
+syntax = "proto3";
+
+package regen.ecocredit.v1alpha1;
+
+import "regen/ecocredit/v1alpha1/types.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+
+// Msg is the regen.ecocredit.v1alpha1 Query service.
+service Query {
+    // ClassInfo queries for information on a credit class.
+    rpc ClassInfo(QueryClassInfoRequest) returns (QueryClassInfoResponse);
+
+    // BatchInfo queries for information on a credit batch.
+    rpc BatchInfo(QueryBatchInfoRequest) returns (QueryBatchInfoResponse);
+
+    // Balance queries the balance (both tradable and retired) of a given credit batch for a given account.
+    rpc Balance(QueryBalanceRequest) returns (QueryBalanceResponse);
+
+    // Supply queries the tradable and retired supply of a credit batch.
+    rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse);
+
+    // Precision queries the number of decimal places that can be used to represent credit batch units.
+    // See Tx/SetPrecision for more details.
+    rpc Precision(QueryPrecisionRequest) returns (QueryPrecisionResponse);
+}
+
+// QueryClassInfoRequest is the Query/ClassInfo request type.
+message QueryClassInfoRequest {
+
+    // class_id is the unique ID of credit class to query.
+    string class_id = 1;
+}
+
+// QueryClassInfoResponse is the Query/ClassInfo request type.
+message QueryClassInfoResponse {
+
+    // info is the ClassInfo for the credit class.
+    ClassInfo info = 1;
+}
+
+// QueryBatchInfoRequest is the Query/BatchInfo request type.
+message QueryBatchInfoRequest {
+
+    // batch_denom is the unique ID of credit batch to query.
+    string batch_denom = 1;
+}
+
+// QueryBatchInfoResponse is the Query/BatchInfo response type.
+message QueryBatchInfoResponse {
+
+    // info is the BatchInfo for the credit batch.
+    BatchInfo info = 1;
+}
+
+// QueryBalanceRequest is the Query/Balance request type.
+message QueryBalanceRequest {
+
+    // account is the address of the account whose balance is being queried.
+    string account = 1;
+
+    // batch_denom is the unique ID of credit batch balance to query.
+    string batch_denom = 2;
+}
+
+// QueryBalanceResponse is the Query/Balance response type.
+message QueryBalanceResponse {
+
+    // tradable_units is the decimal number of tradable units.
+    string tradable_units = 1;
+
+    // retired_units is the decimal number of retired units.
+    string retired_units = 2;
+}
+
+// QuerySupplyRequest is the Query/Supply request type.
+message QuerySupplyRequest {
+
+    // batch_denom is the unique ID of credit batch to query.
+    string batch_denom = 1;
+}
+
+// QuerySupplyResponse is the Query/Supply response type.
+message QuerySupplyResponse {
+
+    // tradable_units is the decimal number of tradable units in the batch supply.
+    string tradable_supply = 1;
+
+    // retired_supply is the decimal number of retired units in the batch supply.
+    string retired_supply = 2;
+}
+
+
+// QueryPrecisionRequest is the Query/Precision request type.
+message QueryPrecisionRequest {
+
+    // batch_denom is the unique ID of credit batch to query.
+    string batch_denom = 1;
+}
+
+// QueryPrecisionResponse is the Query/Precision response type.
+message QueryPrecisionResponse {
+
+    // max_decimal_places is the maximum number of decimal places that can be used to represent some quantity of credit units.
+    // It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113.
+    uint32 max_decimal_places = 1;
+}

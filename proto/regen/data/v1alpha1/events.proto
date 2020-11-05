@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package regen.data.v1alpha1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/data";
+
+// EventAnchorData is an event emitted when data is anchored on-chain.
+message EventAnchorData {
+
+    // cid is a Content Identifier for the data corresponding to the IPFS CID
+    // specification: https://github.com/multiformats/cid.
+    bytes cid = 1;
+}
+
+// EventAnchorData is an event emitted when data is signed on-chain.
+message EventSignData {
+
+    // cid is a Content Identifier for the data corresponding to the IPFS CID
+    // specification: https://github.com/multiformats/cid.
+    bytes cid = 1;
+
+    // signers are the addresses of the accounts which have signed the data.
+    repeated string signers = 2;
+}
+
+// EventAnchorData is an event emitted when data is stored on-chain.
+message EventStoreData {
+
+    // cid is a Content Identifier for the data corresponding to the IPFS CID
+    // specification: https://github.com/multiformats/cid.
+    bytes cid = 1;
+}

@@ -98,7 +98,7 @@ func initRootCmd(rootCmd *cobra.Command, encodingConfig params.EncodingConfig) {
 		debug.Cmd(),
 	)
 
-	server.AddCommands(rootCmd, app.DefaultNodeHome, newApp, createRegenappAndExport)
+	server.AddCommands(rootCmd, app.DefaultNodeHome, newApp, createRegenappAndExport, func(startCmd *cobra.Command) {})
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
@@ -211,6 +211,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts serverty
 // and exports state.
 func createRegenappAndExport(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailAllowedAddrs []string,
+	_ servertypes.AppOptions,
 ) (servertypes.ExportedApp, error) {
 	encCfg := app.MakeEncodingConfig() // Ideally, we would reuse the one created by NewRootCmd.
 	encCfg.Marshaler = codec.NewProtoCodec(encCfg.InterfaceRegistry)

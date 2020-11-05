@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package regen.ecocredit.v1alpha1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+
+// ClassInfo represents the high-level on-chain information for a credit class.
+message ClassInfo {
+
+    // class_id is the unique ID of credit class.
+    string class_id = 1;
+
+    // designer is the designer of the credit class.
+    string designer = 2;
+
+    // issuers are the approved issuers of the credit class.
+    repeated string issuers = 3;
+
+    // metadata is any arbitrary metadata to attached to the credit class.
+    bytes metadata = 4;
+}
+
+// BatchInfo represents the high-level on-chain information for a credit batch.
+message BatchInfo {
+
+    // class_id is the unique ID of credit class.
+    string class_id = 1;
+
+    // batch_denom is the unique ID of credit batch.
+    string batch_denom = 2;
+
+    // issuer is the issuer of the credit batch.
+    string issuer = 3;
+
+    // total_units is the total number of units in the credit batch and is immutable.
+    string total_units = 4;
+
+    // metadata is any arbitrary metadata to attached to the credit batch.
+    bytes metadata = 5;
+}

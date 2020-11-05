@@ -289,7 +289,7 @@ func New(t *testing.T, cfg Config) *Network {
 		commission, err := sdk.NewDecFromStr("0.5")
 		require.NoError(t, err)
 
-		createValMsg := stakingtypes.NewMsgCreateValidator(
+		createValMsg, err := stakingtypes.NewMsgCreateValidator(
 			sdk.ValAddress(addr),
 			valPubKeys[i],
 			sdk.NewCoin(sdk.DefaultBondDenom, cfg.BondedTokens),
@@ -297,6 +297,9 @@ func New(t *testing.T, cfg Config) *Network {
 			stakingtypes.NewCommissionRates(commission, sdk.OneDec(), sdk.OneDec()),
 			sdk.OneInt(),
 		)
+		if err != nil {
+			panic(err)
+		}
 
 		p2pURL, err := url.Parse(p2pAddr)
 		require.NoError(t, err)
