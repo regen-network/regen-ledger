@@ -3,7 +3,6 @@ package client
 import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/gogo/protobuf/proto"
 	"github.com/spf13/cobra"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -31,26 +30,13 @@ func QueryCmd() *cobra.Command {
 	return cmd
 }
 
-func print(ctx client.Context, res proto.Message, err error) error {
-	if err != nil {
-		return err
-	}
-	return ctx.PrintOutput(res)
-}
-
-func createClient(cmd *cobra.Command) (ecocredit.QueryClient, client.Context, error) {
-	ctx := client.GetClientContextFromCmd(cmd)
-	ctx, err := client.ReadQueryCommandFlags(ctx, cmd.Flags())
-	return ecocredit.NewQueryClient(ctx), ctx, err
-}
-
 func queryClassInfo() *cobra.Command {
 	return &cobra.Command{
 		Use:   "class_info [class_id]",
 		Short: "Select a class info",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := createClient(cmd)
+			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
 			}
@@ -69,7 +55,7 @@ func queryBatchInfo() *cobra.Command {
 		Long:  "Select the credit issuance batch info based on the bach_denom (ID)",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := createClient(cmd)
+			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
 			}
@@ -88,7 +74,7 @@ func queryBalance() *cobra.Command {
 		Long:  "Select the credit tradable and retired balance of the credit batch denom (ID) and account address",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := createClient(cmd)
+			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
 			}
@@ -107,7 +93,7 @@ func querySupply() *cobra.Command {
 		Long:  "Select the tradable and retired supply of the credit batch batch denom (ID)",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := createClient(cmd)
+			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
 			}
@@ -126,7 +112,7 @@ func queryPrecision() *cobra.Command {
 		Long:  "Select the maximum length of the fractional part of credits in the given batch. The precision tells what is the minimum unit of a credit.\nExample: a decimal number 12.345 has fractional part length equal 3. A precision=5 means that the minimum unit we can trade is 0.00001",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := createClient(cmd)
+			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
 			}
