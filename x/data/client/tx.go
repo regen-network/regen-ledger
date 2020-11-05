@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// TxCmd returns a root CLI command handler for all x/bank transaction commands.
+// TxCmd returns a root CLI command handler for all x/data transaction commands.
 func TxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        data.ModuleName,
