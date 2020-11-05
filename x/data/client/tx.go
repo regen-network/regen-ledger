@@ -111,7 +111,7 @@ func MsgSignDataCmd() *cobra.Command {
 // MsgStoreDataCmd creates a CLI command for Msg/StoreData.
 func MsgStoreDataCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "store [cid] [data-as-base64]",
+		Use:   "store [cid] [content-as-base64]",
 		Short: `Store a piece of data corresponding to a CID on the blockchain.`,
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
