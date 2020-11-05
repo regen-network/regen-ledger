@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package regen.data.v1alpha1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/data";
+
+// Query is the regen.data.v1alpha1 Query service
+service Query {
+
+    // Data queries data based on its CID.
+    rpc Data(QueryDataRequest) returns (QueryDataResponse);
+}
+
+// QueryDataRequest is the Query/Data request type.
+message QueryDataRequest {
+
+    // cid is a Content Identifier for the data corresponding to the IPFS CID
+    // specification: https://github.com/multiformats/cid.
+    bytes cid = 1;
+}
+
+// QueryDataRequest is the Query/Data response type.
+message QueryDataResponse {
+
+    // timestamp is the timestamp of the block at which the data was anchored.
+    google.protobuf.Timestamp timestamp = 1;
+
+    // signers are the addresses of the accounts which have signed the data.
+    repeated string signers = 2;
+
+    // content is the content of the data, if it was stored on-chain.
+    bytes content = 3;
+}

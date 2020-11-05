@@ -246,6 +246,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		simapp.SimulationOperations(newApp, newApp.AppCodec(), config),
 		app.ModuleAccountAddrs(),
 		config,
+		app.appCodec,
 	)
 	require.NoError(t, err)
 }

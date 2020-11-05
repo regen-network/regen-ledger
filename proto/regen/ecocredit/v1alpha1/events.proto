@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package regen.ecocredit.v1alpha1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+
+// EventCreateClass is an event emitted when a credit class is created.
+message EventCreateClass {
+
+    // class_id is the unique ID of credit class.
+    string class_id = 1;
+
+    // designer is the designer of the credit class.
+    string designer = 2;
+}
+
+// EventCreateBatch is an event emitted when a credit batch is created.
+message EventCreateBatch {
+
+    // class_id is the unique ID of credit class.
+    string class_id = 1;
+
+    // batch_denom is the unique ID of credit batch.
+    string batch_denom = 2;
+
+    // issuer_address is the account address of the issuer of the credit batch.
+    string issuer_address = 3;
+
+    // total_units is the total number of units in the credit batch.
+    string total_units = 4;
+}
+
+// EventReceive is an event emitted when credits are received either upon
+// creation of a new batch or upon transfer. Each batch_denom created or
+// transferred will result in a separate EventReceive for easy indexing.
+message EventReceive {
+
+    // from indicates the originator of the credits - either an issuer (in the case of Msg/CreateBatch) or a
+    // sender (in the case of Msg/Send).
+    oneof from {
+        // issuer is the issuer of the credit batch in the case that this event is the result of a new batch being created.
+        // It will not be set if credits were transferred.
+        string issuer = 1;
+
+        // sender is the sender of the credits in the case that this event is the result of a transfer.
+        // It will not be set if credits were issued.
+        string sender = 2;
+    }
+
+    // recipient is the recipient of the credits
+    string recipient = 3;
+
+    // batch_denom is the unique ID of credit batch.
+    string batch_denom = 4;
+
+    // units is the decimal number of both tradable and retired credits received.
+    string units = 5;
+}
+
+// EventRetire is an event emitted when credits are retired. An separate event is emitted
+// for each batch_denom in the case where credits from multiple batches have been retired at once
+// for easy indexing.
+message EventRetire {
+
+    // retirer is the account which has done the "retiring". This will be the account receiving credits in
+    // the case that credits were retired upon issuance using Msg/CreateBatch or retired upon transfer
+    // using Msg/Send.
+    string retirer = 1;
+
+    // batch_denom is the unique ID of credit batch.
+    string batch_denom = 2;
+
+    // units is the decimal number of credits that have been retired.
+    string units = 3;
+}

@@ -177,4 +177,7 @@ tags
 # vscode
 .vscode
 
+# goland
+.idea
+
 build/
