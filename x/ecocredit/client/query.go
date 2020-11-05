@@ -11,12 +11,13 @@ import (
 // QueryCmd returns the parent command for all x/data CLI query commands
 func QueryCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Args:                       cobra.ExactArgs(1),
-		Use:                        ecocredit.ModuleName,
-		Short:                      "Querying commands for the ecocredit module",
-		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
-		RunE:                       client.ValidateCmd,
+		DisableFlagParsing:         true,
+
+		Args:  cobra.ExactArgs(1),
+		Use:   ecocredit.ModuleName,
+		Short: "Querying commands for the ecocredit module",
+		RunE:  client.ValidateCmd,
 	}
 	cmd.AddCommand(
 		queryClassInfo(),
