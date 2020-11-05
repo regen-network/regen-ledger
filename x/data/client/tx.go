@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"encoding/base64"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -94,6 +95,50 @@ func MsgSignDataCmd() *cobra.Command {
 			svcMsgClientConn := &util.ServiceMsgClientConn{}
 			msgClient := data.NewMsgClient(svcMsgClientConn)
 			_, err = msgClient.SignData(context.Background(), &msg)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), svcMsgClientConn.Msgs...)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// MsgStoreDataCmd creates a CLI command for Msg/StoreData.
+func MsgStoreDataCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "store [cid] [data-as-base64]",
+		Short: `Store a piece of data corresponding to a CID on the blockchain.`,
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx, err := client.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			cid, err := gocid.Decode(args[0])
+			if err != nil {
+				return err
+			}
+
+			content, err := base64.StdEncoding.DecodeString(args[1])
+			if err != nil {
+				return err
+			}
+
+			msg := data.MsgStoreDataRequest{
+				Sender:  clientCtx.GetFromAddress().String(),
+				Cid:     cid.Bytes(),
+				Content: content,
+			}
+			svcMsgClientConn := &util.ServiceMsgClientConn{}
+			msgClient := data.NewMsgClient(svcMsgClientConn)
+			_, err = msgClient.StoreData(context.Background(), &msg)
 			if err != nil {
 				return err
 			}
