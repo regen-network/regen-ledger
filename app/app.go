@@ -79,8 +79,6 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	// "os"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
@@ -145,15 +143,6 @@ func init() {
 	sdk.PowerReduction = sdk.NewIntFromBigInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(2), nil))
 }
 
-// custom tx codec
-// func MakeCodec() *codec.Codec {
-// 	var cdc = codec.New()
-// 	ModuleBasics.RegisterCodec(cdc)
-// 	sdk.RegisterCodec(cdc)
-// 	codec.RegisterCrypto(cdc)
-// 	return cdc
-// }
-
 // Extended ABCI application
 type RegenApp struct {
 	*baseapp.BaseApp
@@ -168,8 +157,7 @@ type RegenApp struct {
 	memKeys map[string]*sdk.MemoryStoreKey
 
 	// keepers
-	AccountKeeper authkeeper.AccountKeeper
-	// feeCollectionKeeper auth.FeeCollectionKeeper
+	AccountKeeper    authkeeper.AccountKeeper
 	BankKeeper       bankkeeper.Keeper
 	CapabilityKeeper *capabilitykeeper.Keeper
 	StakingKeeper    stakingkeeper.Keeper
@@ -205,7 +193,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 
-	// txDecoder := auth.DefaultTxDecoder(cdc)
 	bApp := baseapp.NewBaseApp(appName, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetAppVersion(version.Version)
