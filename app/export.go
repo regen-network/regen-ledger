@@ -36,7 +36,12 @@ func (app *RegenApp) ExportAppStateAndValidators(
 	if err != nil {
 		return servertypes.ExportedApp{}, err
 	}
-	validators := staking.WriteValidators(ctx, app.StakingKeeper)
+
+	validators, err := staking.WriteValidators(ctx, app.StakingKeeper)
+	if err != nil {
+		return servertypes.ExportedApp{}, err
+	}
+
 	return servertypes.ExportedApp{
 		AppState:        appState,
 		Validators:      validators,
@@ -175,7 +180,10 @@ func (app *RegenApp) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs 
 
 	iter.Close()
 
-	_ = app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
+	_, err := app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
+	if err != nil {
+		panic(err)
+	}
 
 	/* Handle slashing state. */
 
