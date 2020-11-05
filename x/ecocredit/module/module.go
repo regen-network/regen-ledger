@@ -14,6 +14,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	client "github.com/regen-network/regen-ledger/x/ecocredit/client"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
@@ -50,9 +51,7 @@ func (a AppModule) GetTxCmd() *cobra.Command {
 	return nil
 }
 
-func (a AppModule) GetQueryCmd() *cobra.Command {
-	return nil
-}
+func (a AppModule) GetQueryCmd() *cobra.Command { return client.QueryCmd() }
 
 func (a AppModule) RegisterGRPCGatewayRoutes(sdkclient.Context, *runtime.ServeMux) {}
 
