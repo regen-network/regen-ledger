@@ -10,19 +10,19 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 service Query {
 
     // Data queries data based on its CID.
-    rpc Data(QueryDataRequest) returns (QueryDataResponse);
+    rpc ByCid(QueryByCidRequest) returns (QueryByCidResponse);
 }
 
-// QueryDataRequest is the Query/Data request type.
-message QueryDataRequest {
+// QueryByCidRequest is the Query/ByCid request type.
+message QueryByCidRequest {
 
     // cid is a Content Identifier for the data corresponding to the IPFS CID
     // specification: https://github.com/multiformats/cid.
     bytes cid = 1;
 }
 
-// QueryDataRequest is the Query/Data response type.
-message QueryDataResponse {
+// QueryByCidRequest is the Query/ByCid response type.
+message QueryByCidResponse {
 
     // timestamp is the timestamp of the block at which the data was anchored.
     google.protobuf.Timestamp timestamp = 1;

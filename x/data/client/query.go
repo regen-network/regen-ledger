@@ -28,7 +28,7 @@ func QueryCmd() *cobra.Command {
 // QueryDataCmd creates a CLI command for Query/Data.
 func QueryDataCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "data [cid]",
+		Use:   "by-cid [cid]",
 		Short: "Query for CID timestamp, signers and content (if available)",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -45,7 +45,7 @@ func QueryDataCmd() *cobra.Command {
 
 			queryClient := data.NewQueryClient(clientCtx)
 
-			res, err := queryClient.Data(cmd.Context(), &data.QueryDataRequest{Cid: cid.Bytes()})
+			res, err := queryClient.ByCid(cmd.Context(), &data.QueryByCidRequest{Cid: cid.Bytes()})
 			if err != nil {
 				return err
 			}
