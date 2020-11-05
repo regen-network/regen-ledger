@@ -1,16 +1,14 @@
-package group
+package testutil
 
 import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/regen-network/regen-ledger/app"
 	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 )
 
@@ -25,21 +23,15 @@ func NewContext(keys ...sdk.StoreKey) sdk.Context {
 		cms.MountStoreWithDB(v, storeType, db)
 		cms.LoadLatestVersion()
 	}
-	return sdk.NewContext(cms, abci.Header{}, false, log.NewNopLogger())
+	return sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
 }
 
-func NewCodec() *std.Codec {
-	amino := codec.New()
-	interfaceRegistry := types.NewInterfaceRegistry()
-	std.RegisterInterfaces(interfaceRegistry)
-	RegisterInterfaces(interfaceRegistry)
-	return std.NewAppCodec(amino, interfaceRegistry)
-}
-func createGroupKeeper() (Keeper, sdk.Context) {
+func CreateGroupKeeper() (Keeper, sdk.Context) {
+	encodingConfig := app.MakeEncodingConfig()
 	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
-	paramSpace := paramtypes.NewSubspace(NewCodec(), pKey, pTKey, DefaultParamspace)
+	paramSpace := paramtypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.amino, pKey, pTKey, DefaultParamspace)
 
-	groupKey := sdk.NewKVStoreKey(StoreKeyName)
+	groupKey := sdk.NewKVStoreKey(StoreKey)
 	k := NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &MockProposalI{})
 	ctx := NewContext(pKey, pTKey, groupKey)
 	k.setParams(ctx, DefaultParams())

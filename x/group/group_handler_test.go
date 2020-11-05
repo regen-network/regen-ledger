@@ -1,4 +1,4 @@
-package group
+package group_test
 
 import (
 	"testing"
@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/orm"
+	testutil "github.com/regen-network/regen-ledger/x/group/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -52,7 +53,7 @@ func TestMsgCreateGroup(t *testing.T) {
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
-			k, ctx := createGroupKeeper()
+			k, ctx := testutil.CreateGroupKeeper()
 			res, err := NewHandler(k)(ctx, spec.src)
 			require.True(t, spec.expErr.Is(err), err)
 			if spec.expErr != nil {
@@ -76,7 +77,7 @@ func TestMsgCreateGroup(t *testing.T) {
 }
 
 func TestMsgUpdateGroupAdmin(t *testing.T) {
-	k, pCtx := createGroupKeeper()
+	k, pCtx := testutil.CreateGroupKeeper()
 
 	members := []Member{{
 		Address: sdk.AccAddress([]byte("valid-member-address")),
@@ -151,7 +152,7 @@ func TestMsgUpdateGroupAdmin(t *testing.T) {
 }
 
 func TestMsgUpdateGroupComment(t *testing.T) {
-	k, pCtx := createGroupKeeper()
+	k, pCtx := testutil.CreateGroupKeeper()
 
 	oldComment := "first"
 	members := []Member{{
@@ -228,7 +229,7 @@ func TestMsgUpdateGroupComment(t *testing.T) {
 }
 
 func TestMsgUpdateGroupMembers(t *testing.T) {
-	k, pCtx := createGroupKeeper()
+	k, pCtx := testutil.CreateGroupKeeper()
 
 	members := []Member{{
 		Address: sdk.AccAddress([]byte("valid-member-address")),

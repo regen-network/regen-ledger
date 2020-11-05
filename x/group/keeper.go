@@ -6,9 +6,9 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/params"
-	"github.com/regen-network/regen-ledger/orm"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/gogo/protobuf/types"
+	"github.com/regen-network/regen-ledger/orm"
 )
 
 const (
@@ -78,14 +78,14 @@ type Keeper struct {
 	voteByProposalBaseIndex orm.UInt64Index
 	voteByVoterIndex        orm.Index
 
-	paramSpace params.Subspace
+	paramSpace paramtypes.Subspace
 	router     sdk.Router
 }
 
-func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace params.Subspace, router sdk.Router, proposalModel ProposalI) Keeper {
+func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace, router sdk.Router, proposalModel ProposalI) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
-		paramSpace = paramSpace.WithKeyTable(params.NewKeyTable().RegisterParamSet(&Params{}))
+		paramSpace = paramSpace.WithKeyTable(paramtypes.NewKeyTable().RegisterParamSet(&Params{}))
 	}
 	if storeKey == nil {
 		panic("storeKey must not be nil")

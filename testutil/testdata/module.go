@@ -27,9 +27,9 @@ func (a AppModule) Name() string {
 	return ModuleName
 }
 
-func (a AppModule) RegisterCodec(cdc *codec.Codec) {
-	RegisterCodec(cdc)
-}
+// func (a AppModule) RegisterCodec(cdc *codec.Codec) {
+// 	RegisterCodec(cdc)
+// }
 
 func (a AppModule) DefaultGenesis(cdc codec.JSONMarshaler) json.RawMessage {
 	return nil
@@ -43,11 +43,11 @@ func (a AppModule) RegisterRESTRoutes(clientCtx client.Context, r *mux.Router) {
 	panic("implement me")
 }
 
-func (a AppModule) GetTxCmd(clientCtx client.Context) *cobra.Command {
+func (a AppModule) GetTxCmd() *cobra.Command {
 	panic("implement me")
 }
 
-func (a AppModule) GetQueryCmd(*codec.Codec) *cobra.Command {
+func (a AppModule) GetQueryCmd() *cobra.Command {
 	panic("implement me")
 }
 

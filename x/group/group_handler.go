@@ -8,7 +8,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm"
 )
 
-func handleMsgCreateGroup(ctx sdk.Context, k Keeper, msg MsgCreateGroup) (*sdk.Result, error) {
+func handleMsgCreateGroup(ctx sdk.Context, k Keeper, msg *MsgCreateGroup) (*sdk.Result, error) {
 	id, err := k.CreateGroup(ctx, msg.Admin, msg.Members, msg.Comment)
 	if err != nil {
 		return nil, errors.Wrap(err, "create group")
@@ -16,23 +16,23 @@ func handleMsgCreateGroup(ctx sdk.Context, k Keeper, msg MsgCreateGroup) (*sdk.R
 	return buildGroupResult(ctx, msg.Admin, id, "created")
 }
 
-func handleMsgUpdateGroupAdmin(ctx sdk.Context, k Keeper, msg MsgUpdateGroupAdmin) (*sdk.Result, error) {
+func handleMsgUpdateGroupAdmin(ctx sdk.Context, k Keeper, msg *MsgUpdateGroupAdmin) (*sdk.Result, error) {
 	action := func(m *GroupMetadata) error {
 		m.Admin = msg.NewAdmin
 		return k.UpdateGroup(ctx, m)
 	}
-	return doAuthenticated(k, ctx, &msg, action, "admin updated")
+	return doAuthenticated(k, ctx, msg, action, "admin updated")
 }
 
-func handleMsgUpdateGroupComment(ctx sdk.Context, k Keeper, msg MsgUpdateGroupComment) (*sdk.Result, error) {
+func handleMsgUpdateGroupComment(ctx sdk.Context, k Keeper, msg *MsgUpdateGroupComment) (*sdk.Result, error) {
 	action := func(m *GroupMetadata) error {
 		m.Comment = msg.Comment
 		return k.UpdateGroup(ctx, m)
 	}
-	return doAuthenticated(k, ctx, &msg, action, "comment updated")
+	return doAuthenticated(k, ctx, msg, action, "comment updated")
 }
 
-func handleMsgUpdateGroupMembers(ctx sdk.Context, k Keeper, msg MsgUpdateGroupMembers) (*sdk.Result, error) {
+func handleMsgUpdateGroupMembers(ctx sdk.Context, k Keeper, msg *MsgUpdateGroupMembers) (*sdk.Result, error) {
 	action := func(m *GroupMetadata) error {
 
 		for i := range msg.MemberUpdates {
@@ -78,7 +78,7 @@ func handleMsgUpdateGroupMembers(ctx sdk.Context, k Keeper, msg MsgUpdateGroupMe
 		}
 		return k.UpdateGroup(ctx, m)
 	}
-	return doAuthenticated(k, ctx, &msg, action, "members updated")
+	return doAuthenticated(k, ctx, msg, action, "members updated")
 }
 
 type authNGroupMsg interface {

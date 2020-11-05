@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/modules/incubator/group"
+	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/stretchr/testify/assert"
 )
 

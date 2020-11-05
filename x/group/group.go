@@ -19,7 +19,7 @@ const (
 	ModuleName = "group"
 
 	// StoreKey defines the primary module store key
-	StoreKeyName = ModuleName
+	StoreKey = ModuleName
 
 	// RouterKey defines the module's message routing key
 	RouterKey = ModuleName
@@ -42,8 +42,8 @@ func (a AppModuleBasic) Name() string {
 	return ModuleName
 }
 
-func (a AppModuleBasic) RegisterCodec(cdc *codec.Codec) {
-	RegisterCodec(cdc) // can not be removed until sdk.StdTx support protobuf
+func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	RegisterLegacyAminoCodec(cdc)
 }
 
 func (a AppModuleBasic) DefaultGenesis(marshaler codec.JSONMarshaler) json.RawMessage {
@@ -64,11 +64,11 @@ func (a AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, r *mux.Rout
 	return
 }
 
-func (a AppModuleBasic) GetTxCmd(clientCtx client.Context) *cobra.Command {
+func (a AppModuleBasic) GetTxCmd() *cobra.Command {
 	return nil
 }
 
-func (a AppModuleBasic) GetQueryCmd(*codec.Codec) *cobra.Command {
+func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 	//return cli.GetQueryCmd(StoreKey, cdc)
 	return nil
 }

@@ -9,12 +9,12 @@ import (
 )
 
 const (
-	msgTypeMyMsgA         = "always_succeed"
-	msgTypeMyMsgB         = "always_fail"
-	msgTypeMyMsgC         = "set_value"
-	msgTypeMyMsgD         = "inc_counter"
-	msgTypeMyMsgE         = "conditional"
-	msgTypeMyMsgF         = "authenticate"
+	msgTypeMyMsgA = "always_succeed"
+	msgTypeMyMsgB = "always_fail"
+	msgTypeMyMsgC = "set_value"
+	msgTypeMyMsgD = "inc_counter"
+	msgTypeMyMsgE = "conditional"
+	msgTypeMyMsgF = "authenticate"
 )
 
 var _ sdk.Msg = &MsgPropose{}
@@ -43,12 +43,29 @@ func (m MsgPropose) ValidateBasic() error {
 	if err := m.Base.ValidateBasic(); err != nil {
 		return err
 	}
-	for i, v := range m.Msgs {
-		if err := v.GetMsg().ValidateBasic(); err != nil {
+	for i, any := range m.Msgs {
+		msg, ok := any.GetCachedValue().(sdk.Msg)
+		if !ok {
+			return errors.Wrapf(errors.ErrUnpackAny, "cannot unpack Any into sdk.Msg %T", any)
+		}
+		if err := msg.ValidateBasic(); err != nil {
 			return errors.Wrapf(err, "msg %d", i)
 		}
 	}
 	return nil
+}
+
+// GetMsgs unpacks m.Msgs Any's into sdk.Msg's
+func (m MsgPropose) GetMsgs() []sdk.Msg {
+	msgs := make([]sdk.Msg, len(m.Msgs))
+	for i, any := range m.Msgs {
+		msg, ok := any.GetCachedValue().(sdk.Msg)
+		if !ok {
+			return nil
+		}
+		msgs[i] = msg
+	}
+	return msgs
 }
 
 var _ sdk.Msg = &MsgAlwaysSucceed{}

@@ -91,6 +91,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	data "github.com/regen-network/regen-ledger/x/data/module"
+	group "github.com/regen-network/regen-ledger/x/group"
 )
 
 const (
@@ -125,6 +126,7 @@ var (
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		data.AppModuleBasic{},
+		group.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -222,7 +224,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		data.StoreKey,
+		data.StoreKey, group.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -328,6 +330,10 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
+	// groupKeeper := group.NewGroupKeeper(
+	// 	keys[group.StoreKey]
+	// )
+
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
 			app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx,
@@ -349,6 +355,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		data.NewAppModule(keys[data.StoreKey]),
+		// group.NewAppModule(app.),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that

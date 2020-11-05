@@ -13,19 +13,19 @@ func NewHandler(k Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 		switch msg := msg.(type) {
-		case MsgCreateGroup:
+		case *MsgCreateGroup:
 			return handleMsgCreateGroup(ctx, k, msg)
-		case MsgUpdateGroupAdmin:
+		case *MsgUpdateGroupAdmin:
 			return handleMsgUpdateGroupAdmin(ctx, k, msg)
-		case MsgUpdateGroupComment:
+		case *MsgUpdateGroupComment:
 			return handleMsgUpdateGroupComment(ctx, k, msg)
-		case MsgUpdateGroupMembers:
+		case *MsgUpdateGroupMembers:
 			return handleMsgUpdateGroupMembers(ctx, k, msg)
-		case MsgCreateGroupAccount:
+		case *MsgCreateGroupAccount:
 			return handleMsgCreateGroupAccount(ctx, k, msg)
-		case MsgVote:
+		case *MsgVote:
 			return handleMsgVote(ctx, k, msg)
-		case MsgExec:
+		case *MsgExec:
 			return handleMsgExec(ctx, k, msg)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized group message type: %T", msg)
@@ -35,7 +35,7 @@ func NewHandler(k Keeper) sdk.Handler {
 
 // TODO: Do we want to introduce any new event types?
 
-func handleMsgVote(ctx sdk.Context, k Keeper, msg MsgVote) (*sdk.Result, error) {
+func handleMsgVote(ctx sdk.Context, k Keeper, msg *MsgVote) (*sdk.Result, error) {
 	if err := k.Vote(ctx, msg.Proposal, msg.Voters, msg.Choice, msg.Comment); err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func handleMsgVote(ctx sdk.Context, k Keeper, msg MsgVote) (*sdk.Result, error) 
 	}, nil
 }
 
-func handleMsgExec(ctx sdk.Context, k Keeper, msg MsgExec) (*sdk.Result, error) {
+func handleMsgExec(ctx sdk.Context, k Keeper, msg *MsgExec) (*sdk.Result, error) {
 	if err := k.ExecProposal(ctx, msg.Proposal); err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func handleMsgExec(ctx sdk.Context, k Keeper, msg MsgExec) (*sdk.Result, error) 
 	}, nil
 }
 
-func handleMsgCreateGroupAccount(ctx sdk.Context, k Keeper, msg MsgCreateGroupAccount) (*sdk.Result, error) {
+func handleMsgCreateGroupAccount(ctx sdk.Context, k Keeper, msg *MsgCreateGroupAccount) (*sdk.Result, error) {
 	decisionPolicy := msg.GetDecisionPolicy()
 	acc, err := k.CreateGroupAccount(ctx, msg.GetAdmin(), msg.GetGroup(), decisionPolicy, msg.GetComment())
 	if err != nil {

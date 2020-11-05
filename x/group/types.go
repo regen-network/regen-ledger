@@ -6,12 +6,11 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/params"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/regen-network/regen-ledger/orm"
 	proto "github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
+	"github.com/regen-network/regen-ledger/orm"
 	"gopkg.in/yaml.v2"
 
 	"time"
@@ -247,9 +246,9 @@ func (p Params) String() string {
 }
 
 // ParamSetPairs returns the parameter set pairs.
-func (p *Params) ParamSetPairs() params.ParamSetPairs {
-	return params.ParamSetPairs{
-		params.NewParamSetPair(ParamMaxCommentLength, &p.MaxCommentLength, noopValidator()),
+func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
+	return paramtypes.ParamSetPairs{
+		paramtypes.NewParamSetPair(ParamMaxCommentLength, &p.MaxCommentLength, noopValidator()),
 	}
 }
 func (p Params) Validate() error {

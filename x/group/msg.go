@@ -227,7 +227,7 @@ func (m MsgCreateGroupAccount) GetSigners() []sdk.AccAddress {
 
 // GetSignBytes returns the bytes for the message signer to sign on
 func (m MsgCreateGroupAccount) GetSignBytes() []byte {
-	bz := moduleCdc.MustMarshalJSON(m)
+	bz := moduleCdc.MustMarshalJSON(&m)
 	return sdk.MustSortJSON(bz)
 }
 

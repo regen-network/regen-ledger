@@ -3,12 +3,13 @@ package group
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-// RegisterCodec registers all the necessary crisis module concrete types and
-// interfaces with the provided codec reference.
-func RegisterCodec(cdc *codec.Codec) {
+// RegisterLegacyAminoCodec registers all the necessary group module concrete types and
+// interfaces with the provided LegacyAmino codec reference.
+func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterInterface((*DecisionPolicy)(nil), nil)
 	cdc.RegisterConcrete(MsgCreateGroup{}, "cosmos-sdk/MsgCreateGroup", nil)
 	cdc.RegisterConcrete(MsgUpdateGroupMembers{}, "cosmos-sdk/MsgUpdateGroupMembers", nil)
@@ -35,14 +36,14 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgExec{},
 	)
 	registry.RegisterInterface(
-		"cosmos_modules.incubator.group.v1_alpha.DecisionPolicy",
+		"regen.group.v1alpha1.DecisionPolicy",
 		(*DecisionPolicy)(nil),
 		&ThresholdDecisionPolicy{},
 	)
 }
 
 var (
-	amino = codec.New()
+	amino = codec.NewLegacyAmino()
 
 	// moduleCdc references the global group module codec. Note, the codec
 	// should ONLY be used in certain instances of tests and for JSON encoding as Amino
@@ -50,11 +51,11 @@ var (
 	//
 	// The actual codec used for serialization should be provided to group and
 	// defined at the application level.
-	moduleCdc = codec.NewHybridCodec(amino, cdctypes.NewInterfaceRegistry())
+	moduleCdc = codec.NewAminoCodec(amino)
 )
 
 func init() {
-	RegisterCodec(amino)
-	codec.RegisterCrypto(amino)
+	RegisterLegacyAminoCodec(amino)
+	cryptocodec.RegisterCrypto(amino)
 	amino.Seal()
 }

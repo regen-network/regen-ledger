@@ -2,8 +2,8 @@ package testdata
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/modules/incubator/group"
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/x/group"
 )
 
 type Keeper struct {
@@ -20,8 +20,9 @@ func NewKeeper(storeKey sdk.StoreKey, groupKeeper group.Keeper) Keeper {
 	return k
 }
 
-func (k Keeper) CreateProposal(ctx sdk.Context, accountAddress sdk.AccAddress, proposers []sdk.AccAddress, comment string, msgs MyAppMsgs) (group.ProposalID, error) {
-	return k.groupKeeper.CreateProposal(ctx, accountAddress, comment, proposers, msgs.AsSDKMsgs())
+func (k Keeper) CreateProposal(ctx sdk.Context, accountAddress sdk.AccAddress,
+	proposers []sdk.AccAddress, comment string, msgs []sdk.Msg) (group.ProposalID, error) {
+	return k.groupKeeper.CreateProposal(ctx, accountAddress, comment, proposers, msgs)
 }
 
 var (

@@ -1,10 +1,11 @@
-package group
+package group_test
 
 import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	testutil "github.com/regen-network/regen-ledger/x/group/testutil"
 	"github.com/stretchr/testify/require"
 )
 
@@ -17,7 +18,7 @@ func TestDoExecuteMsgs(t *testing.T) {
 	}{
 		"all good": {
 			srcAccount: []byte("my-group-acct-addrss"),
-			srcMsgs:    []sdk.Msg{MyMsg{[]sdk.AccAddress{[]byte("my-group-acct-addrss")}}},
+			srcMsgs:    []sdk.Msg{&MyMsg{[]sdk.AccAddress{[]byte("my-group-acct-addrss")}}},
 			srcHandler: mockHandler(&sdk.Result{}, nil),
 		},
 		"not authz by group account": {
@@ -50,7 +51,7 @@ func TestDoExecuteMsgs(t *testing.T) {
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
 			router := baseapp.NewRouter().AddRoute("myRoute", spec.srcHandler)
-			_, err := doExecuteMsgs(NewContext(), router, spec.srcAccount, spec.srcMsgs)
+			_, err := doExecuteMsgs(testutil.NewContext(), router, spec.srcAccount, spec.srcMsgs)
 			if spec.expErr {
 				require.Error(t, err)
 				return

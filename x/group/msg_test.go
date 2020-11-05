@@ -3,17 +3,17 @@ package group
 import (
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	"github.com/cosmos/cosmos-sdk/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	auth "github.com/cosmos/cosmos-sdk/x/auth/types"
 	proto "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestMsgCreateGroupValidation(t *testing.T) {
-	_, _, myAddr := auth.KeyTestPubAddr()
-	_, _, myOtherAddr := auth.KeyTestPubAddr()
+	_, _, myAddr := testdata.KeyTestPubAddr()
+	_, _, myOtherAddr := testdata.KeyTestPubAddr()
 
 	specs := map[string]struct {
 		src    MsgCreateGroup
@@ -114,12 +114,12 @@ func TestMsgCreateGroupValidation(t *testing.T) {
 }
 
 func TestMsgCreateGroupSigner(t *testing.T) {
-	_, _, myAddr := auth.KeyTestPubAddr()
+	_, _, myAddr := testdata.KeyTestPubAddr()
 	assert.Equal(t, []sdk.AccAddress{myAddr}, MsgCreateGroup{Admin: myAddr}.GetSigners())
 }
 
 func TestMsgCreateGroupAccount(t *testing.T) {
-	_, _, myAddr := auth.KeyTestPubAddr()
+	_, _, myAddr := testdata.KeyTestPubAddr()
 
 	specs := map[string]struct {
 		admin     sdk.AccAddress
@@ -200,7 +200,7 @@ func TestMsgCreateGroupAccount(t *testing.T) {
 				"any comment",
 				&ThresholdDecisionPolicy{
 					Threshold: spec.threshold,
-					Timeout:    spec.timeout,
+					Timeout:   spec.timeout,
 				},
 			)
 			require.NoError(t, err)

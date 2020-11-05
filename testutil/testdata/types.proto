@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package testdata;
+
+option go_package = "github.com/regen-network/regen-ledger/testutil/testdata";
+
+import "gogoproto/gogo.proto";
+import "regen/group/v1alpha1/types.proto";
+import "regen/group/v1alpha1/tx.proto";
+import "google/protobuf/any.proto";
+
+message MyAppProposal {
+    option (gogoproto.goproto_getters) = false;
+    regen.group.v1alpha1.ProposalBase base = 1 [(gogoproto.nullable) = false];
+    repeated google.protobuf.Any msgs = 2;
+}
+
+// MsgAlwaysSucceed is handled without errors
+message MsgAlwaysSucceed {
+}
+
+// MsgAlwaysFail returns an error by the handler
+message MsgAlwaysFail {
+}
+
+// MsgSetValue stores a value in the store
+message MsgSetValue {
+    string value = 1;
+}
+
+// MsgIncCounter increments a counter value
+message MsgIncCounter {
+}
+
+// MsgConditional execution depends on persistent counter value. When not equal then execution fails.
+message MsgConditional {
+    uint64 expectedCounter = 1;
+}
+
+// MsgAuthenticated contains a signer
+message MsgAuthenticate {
+    repeated bytes signers = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+}
+
+message MsgPropose {
+    option (gogoproto.goproto_getters)  = false;
+    regen.group.v1alpha1.MsgProposeBase base = 1 [(gogoproto.nullable) = false];
+    repeated google.protobuf.Any msgs = 2;
+}

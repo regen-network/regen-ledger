@@ -2,12 +2,12 @@ package testdata
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 )
 
-// RegisterCodec registers all the necessary crisis module concrete types and
+// RegisterLegacyAminoCodec registers all the necessary module concrete types and
 // interfaces with the provided codec reference.
-func RegisterCodec(cdc *codec.Codec) {
+func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(MsgPropose{}, "testdata/MsgPropose", nil)
 	// oh man... amino
 	cdc.RegisterInterface((*isMyAppMsg_Sum)(nil), nil)
@@ -18,7 +18,7 @@ func RegisterCodec(cdc *codec.Codec) {
 }
 
 var (
-	amino = codec.New()
+	amino = codec.NewLegacyAmino()
 
 	// moduleCdc references the global x/transfer module codec. Note, the codec
 	// should ONLY be used in certain instances of tests and for JSON encoding as Amino
@@ -26,11 +26,11 @@ var (
 	//
 	// The actual codec used for serialization should be provided to x/transfer and
 	// defined at the application level.
-	moduleCdc = codec.NewHybridCodec(amino, cdctypes.NewInterfaceRegistry())
+	moduleCdc = codec.NewAminoCodec(amino)
 )
 
 func init() {
-	RegisterCodec(amino)
-	codec.RegisterCrypto(amino)
+	RegisterLegacyAminoCodec(amino)
+	cryptocodec.RegisterCrypto(amino)
 	amino.Seal()
 }

@@ -10,21 +10,26 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/cosmos/modules/incubator/group"
-	"github.com/cosmos/modules/incubator/group/testdata"
-	"github.com/regen-network/regen-ledger/orm"
 	"github.com/gogo/protobuf/types"
+	"github.com/regen-network/regen-ledger/app"
+	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/x/group"
+	"github.com/regen-network/regen-ledger/x/group/testdata"
+	"github.com/regen-network/regen-ledger/x/group/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
+// TODO: Setup test suite
 func TestCreateGroup(t *testing.T) {
-	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
-	paramSpace := paramtypes.NewSubspace(group.NewCodec(), pKey, pTKey, group.DefaultParamspace)
+	encodingConfig := app.MakeEncodingConfig()
 
-	groupKey := sdk.NewKVStoreKey(group.StoreKeyName)
+	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
+	paramSpace := paramtypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.Amino, pKey, pTKey, group.DefaultParamspace)
+
+	groupKey := sdk.NewKVStoreKey(group.StoreKey)
 	k := group.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &group.MockProposalI{})
-	ctx := group.NewContext(pKey, pTKey, groupKey)
+	ctx := testutil.NewContext(pKey, pTKey, groupKey)
 	defaultParams := group.DefaultParams()
 	paramSpace.SetParamSet(ctx, &defaultParams)
 
@@ -105,10 +110,12 @@ func TestCreateGroup(t *testing.T) {
 }
 
 func TestCreateGroupAccount(t *testing.T) {
-	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
-	paramSpace := paramtypes.NewSubspace(group.NewCodec(), pKey, pTKey, group.DefaultParamspace)
+	encodingConfig := app.MakeEncodingConfig()
 
-	groupKey := sdk.NewKVStoreKey(group.StoreKeyName)
+	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
+	paramSpace := paramtypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.amino, pKey, pTKey, group.DefaultParamspace)
+
+	groupKey := sdk.NewKVStoreKey(group.StoreKey)
 	k := group.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &group.MockProposalI{})
 	ctx := group.NewContext(pKey, pTKey, groupKey)
 	defaultParams := group.DefaultParams()
@@ -196,10 +203,12 @@ func TestCreateGroupAccount(t *testing.T) {
 }
 
 func TestCreateProposal(t *testing.T) {
-	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
-	paramSpace := paramtypes.NewSubspace(group.NewCodec(), pKey, pTKey, group.DefaultParamspace)
+	encodingConfig := app.MakeEncodingConfig()
 
-	groupKey := sdk.NewKVStoreKey(group.StoreKeyName)
+	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
+	paramSpace := paramtypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.amino, pKey, pTKey, group.DefaultParamspace)
+
+	groupKey := sdk.NewKVStoreKey(group.StoreKey)
 	k := group.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &testdata.MyAppProposal{})
 	blockTime := time.Now()
 	ctx := group.NewContext(pKey, pTKey, groupKey).WithBlockTime(blockTime)
@@ -347,10 +356,12 @@ func TestCreateProposal(t *testing.T) {
 }
 
 func TestVote(t *testing.T) {
-	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
-	paramSpace := paramtypes.NewSubspace(group.NewCodec(), pKey, pTKey, group.DefaultParamspace)
+	encodingConfig := app.MakeEncodingConfig()
 
-	groupKey := sdk.NewKVStoreKey(group.StoreKeyName)
+	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
+	paramSpace := paramtypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.amino, pKey, pTKey, group.DefaultParamspace)
+
+	groupKey := sdk.NewKVStoreKey(group.StoreKey)
 	k := group.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &testdata.MyAppProposal{})
 	blockTime := time.Now().UTC()
 	parentCtx := group.NewContext(pKey, pTKey, groupKey).WithBlockTime(blockTime)
@@ -607,11 +618,13 @@ func TestVote(t *testing.T) {
 }
 
 func TestExecProposal(t *testing.T) {
+	encodingConfig := app.MakeEncodingConfig()
+
 	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
-	paramSpace := paramtypes.NewSubspace(group.NewCodec(), pKey, pTKey, group.DefaultParamspace)
+	paramSpace := paramtypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.amino, pKey, pTKey, group.DefaultParamspace)
 
 	router := baseapp.NewRouter()
-	groupKey := sdk.NewKVStoreKey(group.StoreKeyName)
+	groupKey := sdk.NewKVStoreKey(group.StoreKey)
 	k := group.NewGroupKeeper(groupKey, paramSpace, router, &testdata.MyAppProposal{})
 	testdataKey := sdk.NewKVStoreKey(testdata.ModuleName)
 	testdataKeeper := testdata.NewKeeper(testdataKey, k)
@@ -895,10 +908,12 @@ func TestExecProposal(t *testing.T) {
 }
 
 func TestLoadParam(t *testing.T) {
-	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
-	paramSpace := paramtypes.NewSubspace(group.NewCodec(), pKey, pTKey, group.DefaultParamspace)
+	encodingConfig := app.MakeEncodingConfig()
 
-	groupKey := sdk.NewKVStoreKey(group.StoreKeyName)
+	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
+	paramSpace := paramtypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.amino, pKey, pTKey, group.DefaultParamspace)
+
+	groupKey := sdk.NewKVStoreKey(group.StoreKey)
 	k := group.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &group.MockProposalI{})
 
 	ctx := group.NewContext(pKey, pTKey, groupKey)

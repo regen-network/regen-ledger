@@ -14,7 +14,7 @@ func NewHandler(k Keeper) sdk.Handler {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 		logger := ctx.Logger().With("module", fmt.Sprintf("x/%s", ModuleName))
 		switch msg := msg.(type) {
-		case MsgPropose:
+		case *MsgPropose:
 			return handleMsgPropose(ctx, k, msg)
 		case *MsgAlwaysSucceed:
 			logger.Info("executed MsgAlwaysSucceed msg")
@@ -64,8 +64,8 @@ func NewHandler(k Keeper) sdk.Handler {
 	}
 }
 
-func handleMsgPropose(ctx sdk.Context, k Keeper, msg MsgPropose) (*sdk.Result, error) {
-	id, err := k.CreateProposal(ctx, msg.Base.GroupAccount, msg.Base.Proposers, msg.Base.Comment, msg.Msgs)
+func handleMsgPropose(ctx sdk.Context, k Keeper, msg *MsgPropose) (*sdk.Result, error) {
+	id, err := k.CreateProposal(ctx, msg.Base.GroupAccount, msg.Base.Proposers, msg.Base.Comment, msg.GetMsgs())
 	if err != nil {
 		return nil, err
 	}
