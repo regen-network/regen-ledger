@@ -1,7 +1,6 @@
 package testsuite
 
 import (
-	"github.com/regen-network/regen-ledger/testutil/server/configurator"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -9,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/regen-network/regen-ledger/testutil/server/configurator"
 	dataserver "github.com/regen-network/regen-ledger/x/data/server"
 )
 
