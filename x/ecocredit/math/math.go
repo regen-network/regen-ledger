@@ -12,11 +12,7 @@ import (
 // ParseNonNegativeDecimal parses a non-negative decimal or returns an error.
 func ParseNonNegativeDecimal(x string) (*apd.Decimal, error) {
 	res, _, err := apd.NewFromString(x)
-	if err != nil {
-		return nil, errors.Wrap(errors.ErrInvalidRequest, fmt.Sprintf("expected a non-negative decimal, got %s", x))
-	}
-
-	if res.Sign() < 0 {
+	if err != nil || res.Sign() < 0 {
 		return nil, errors.Wrap(errors.ErrInvalidRequest, fmt.Sprintf("expected a non-negative decimal, got %s", x))
 	}
 
@@ -26,11 +22,7 @@ func ParseNonNegativeDecimal(x string) (*apd.Decimal, error) {
 // ParsePositiveDecimal parses a positive decimal or returns an error.
 func ParsePositiveDecimal(x string) (*apd.Decimal, error) {
 	res, _, err := apd.NewFromString(x)
-	if err != nil {
-		return nil, errors.Wrap(errors.ErrInvalidRequest, fmt.Sprintf("expected a positive decimal, got %s", x))
-	}
-
-	if res.Sign() <= 0 {
+	if err != nil || res.Sign() <= 0 {
 		return nil, errors.Wrap(errors.ErrInvalidRequest, fmt.Sprintf("expected a positive decimal, got %s", x))
 	}
 
