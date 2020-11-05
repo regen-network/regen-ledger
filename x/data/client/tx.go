@@ -36,18 +36,20 @@ func TxCmd() *cobra.Command {
 // MsgAnchorDataCmd creates a CLI command for Msg/AnchorData.
 func MsgAnchorDataCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "anchor [cid]",
+		Use: "anchor [sender] [cid]",
 		Short: "Anchors a piece of data to the blockchain based on its secure " +
 			"hash, effectively providing a tamper resistant timestamp.",
-		Args: cobra.ExactArgs(1),
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			cmd.Flags().Set(flags.FlagFrom, args[0])
+
 			clientCtx := client.GetClientContextFromCmd(cmd)
 			clientCtx, err := client.ReadTxCommandFlags(clientCtx, cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			cid, err := gocid.Decode(args[0])
+			cid, err := gocid.Decode(args[1])
 			if err != nil {
 				return err
 			}
@@ -75,17 +77,19 @@ func MsgAnchorDataCmd() *cobra.Command {
 // MsgSignDataCmd creates a CLI command for Msg/SignData.
 func MsgSignDataCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "sign [cid]",
+		Use:   "sign [signer] [cid]",
 		Short: `Sign an arbitrary piece of data on the blockchain.`,
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			cmd.Flags().Set(flags.FlagFrom, args[0])
+
 			clientCtx := client.GetClientContextFromCmd(cmd)
 			clientCtx, err := client.ReadTxCommandFlags(clientCtx, cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			cid, err := gocid.Decode(args[0])
+			cid, err := gocid.Decode(args[1])
 			if err != nil {
 				return err
 			}
@@ -113,22 +117,24 @@ func MsgSignDataCmd() *cobra.Command {
 // MsgStoreDataCmd creates a CLI command for Msg/StoreData.
 func MsgStoreDataCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "store [cid] [content-as-base64]",
+		Use:   "store [sender] [cid] [content-as-base64]",
 		Short: `Store a piece of data corresponding to a CID on the blockchain.`,
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			cmd.Flags().Set(flags.FlagFrom, args[0])
+
 			clientCtx := client.GetClientContextFromCmd(cmd)
 			clientCtx, err := client.ReadTxCommandFlags(clientCtx, cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			cid, err := gocid.Decode(args[0])
+			cid, err := gocid.Decode(args[1])
 			if err != nil {
 				return err
 			}
 
-			content, err := base64.StdEncoding.DecodeString(args[1])
+			content, err := base64.StdEncoding.DecodeString(args[2])
 			if err != nil {
 				return err
 			}
