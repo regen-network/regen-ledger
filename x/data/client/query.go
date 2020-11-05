@@ -19,14 +19,14 @@ func QueryCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		QueryDataCmd(),
+		QueryByCidCmd(),
 	)
 
 	return cmd
 }
 
-// QueryDataCmd creates a CLI command for Query/Data.
-func QueryDataCmd() *cobra.Command {
+// QueryByCidCmd creates a CLI command for Query/Data.
+func QueryByCidCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "by-cid [cid]",
 		Short: "Query for CID timestamp, signers and content (if available)",
