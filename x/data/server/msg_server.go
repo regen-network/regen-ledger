@@ -149,7 +149,7 @@ func (s serverImpl) StoreData(goCtx context.Context, request *data.MsgStoreDataR
 	}
 
 	if !bytes.Equal(mh, reqMh) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "multihash doesn't match")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "multihash verification failed, please check that cid and content are correct")
 	}
 
 	store.Set(key, request.Content)
