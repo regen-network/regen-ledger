@@ -24,7 +24,7 @@ func (m *MsgSignDataRequest) ValidateBasic() error {
 }
 
 func (m *MsgSignDataRequest) GetSigners() []sdk.AccAddress {
-	var addrs []sdk.AccAddress
+	addrs := make([]sdk.AccAddress, len(m.Signers))
 
 	for _, signer := range m.Signers {
 		addr, err := sdk.AccAddressFromBech32(signer)

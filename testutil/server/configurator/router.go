@@ -3,10 +3,11 @@ package configurator
 import (
 	"context"
 	"fmt"
+	"reflect"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	gogogrpc "github.com/gogo/protobuf/grpc"
 	"google.golang.org/grpc"
-	"reflect"
 )
 
 type testRouter struct {

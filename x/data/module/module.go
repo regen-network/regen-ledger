@@ -2,7 +2,6 @@ package module
 
 import (
 	"encoding/json"
-	"github.com/regen-network/regen-ledger/x/data/server"
 
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -18,10 +17,11 @@ import (
 
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/client"
+	"github.com/regen-network/regen-ledger/x/data/server"
 )
 
 const (
-	StoreKey = types.ModuleName
+	StoreKey = data.ModuleName
 )
 
 type AppModuleBasic struct{}

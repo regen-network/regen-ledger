@@ -15,8 +15,9 @@ import (
 func TestSuite(t *testing.T) {
 	key := sdk.NewKVStoreKey("ecocredit")
 	_, _, addr := testdata.KeyTestPubAddr()
+	_, _, addr2 := testdata.KeyTestPubAddr()
 
-	configuratorFixture := configurator.NewFixture(t, []sdk.StoreKey{key}, []sdk.AccAddress{addr})
+	configuratorFixture := configurator.NewFixture(t, []sdk.StoreKey{key}, []sdk.AccAddress{addr, addr2})
 	dataserver.RegisterServices(key, configuratorFixture)
 	s := NewIntegrationTestSuite(configuratorFixture)
 

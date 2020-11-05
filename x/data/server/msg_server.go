@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/multiformats/go-multihash"
 
+	gogotypes "github.com/gogo/protobuf/types"
 	gocid "github.com/ipfs/go-cid"
+	"github.com/multiformats/go-multihash"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	gogotypes "github.com/gogo/protobuf/types"
 
 	"github.com/regen-network/regen-ledger/x/data"
 )
@@ -145,11 +145,11 @@ func (s serverImpl) StoreData(goCtx context.Context, request *data.MsgStoreDataR
 
 	reqMh, err := multihash.Sum(request.Content, decodedMultihash.Code, -1)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, fmt.Sprintf("unable to perform multihash"))
+		return nil, sdkerrors.Wrap(err, "unable to perform multihash")
 	}
 
 	if !bytes.Equal(mh, reqMh) {
-		return nil, sdkerrors.Wrap(err, fmt.Sprintf("unable to perform multihash"))
+		return nil, sdkerrors.Wrap(err, "unable to perform multihash")
 	}
 
 	store.Set(key, request.Content)

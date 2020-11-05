@@ -1,11 +1,12 @@
 package app
 
 import (
-	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	"io"
 	"math/big"
 	"net/http"
 	"os"
+
+	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"

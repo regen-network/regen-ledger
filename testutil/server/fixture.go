@@ -1,4 +1,4 @@
-/* Package server defines fixture interfaces and implementations for testing
+/*Package server defines fixture interfaces and implementations for testing
 server implementations with multiple backends.
 
 Currently one backend - an in-memory store with no ABCI application is supported
@@ -11,6 +11,7 @@ package server
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc"
 )

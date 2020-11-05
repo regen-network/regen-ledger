@@ -13,8 +13,8 @@ import (
 
 // Model defines the IO structure for table imports and exports
 type Model struct {
-	Key   []byte          `json:"key", yaml:"key"`
-	Value json.RawMessage `json:"value", yaml:"value"`
+	Key   []byte          `json:"key" yaml:"key"`
+	Value json.RawMessage `json:"value" yaml:"value"`
 }
 
 // TableExportable
@@ -35,7 +35,7 @@ type SequenceExportable interface {
 func ExportTableData(ctx HasKVStore, t TableExportable) (json.RawMessage, uint64, error) {
 	enc := jsonpb.Marshaler{}
 	var r []Model
-	forEachInTable(ctx, t.Table(), func(rowID RowID, obj Persistent) error {
+	err := forEachInTable(ctx, t.Table(), func(rowID RowID, obj Persistent) error {
 		pbObj, ok := obj.(proto.Message)
 		if !ok {
 			return errors.Wrapf(ErrType, "not a proto message type: %T", pbObj)
@@ -48,6 +48,10 @@ func ExportTableData(ctx HasKVStore, t TableExportable) (json.RawMessage, uint64
 		r = append(r, Model{Key: rowID, Value: buf.Bytes()})
 		return nil
 	})
+	if err != nil {
+		return nil, 0, err
+	}
+
 	var seqValue uint64
 	if st, ok := t.(SequenceExportable); ok {
 		seqValue = st.Sequence().CurVal(ctx)
@@ -108,7 +112,6 @@ func forEachInTable(ctx HasKVStore, table Table, f func(RowID, Persistent) error
 			}
 		}
 	}
-	return nil
 }
 
 // clearAllInTable deletes all entries in a table with delete interceptors called

@@ -2,8 +2,11 @@ package server
 
 import (
 	"context"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/gogo/protobuf/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
