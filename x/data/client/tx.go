@@ -2,11 +2,11 @@ package client
 
 import (
 	"context"
-	"encoding/base64"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	gocid "github.com/ipfs/go-cid"
 	"github.com/spf13/cobra"
 
 	"github.com/regen-network/regen-ledger/util"
@@ -44,14 +44,14 @@ func MsgAnchorDataCmd() *cobra.Command {
 				return err
 			}
 
-			cidBz, err := base64.StdEncoding.DecodeString(args[0])
+			cid, err := gocid.Decode(args[0])
 			if err != nil {
 				return err
 			}
 
 			msg := data.MsgAnchorDataRequest{
 				Sender: clientCtx.GetFromAddress().String(),
-				Cid:    cidBz,
+				Cid:    cid.Bytes(),
 			}
 			svcMsgClientConn := &util.ServiceMsgClientConn{}
 			msgClient := data.NewMsgClient(svcMsgClientConn)
