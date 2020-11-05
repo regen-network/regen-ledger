@@ -25,7 +25,7 @@ func QueryCmd() *cobra.Command {
 	return cmd
 }
 
-// QueryDataCmd creates a CLI command for Query/DATA.
+// QueryDataCmd creates a CLI command for Query/Data.
 func QueryDataCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "data [cid]",
