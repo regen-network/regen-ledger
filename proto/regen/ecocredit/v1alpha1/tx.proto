@@ -90,7 +90,7 @@ message MsgCreateBatchRequest {
 // MsgCreateBatchResponse is the Msg/CreateBatch response type.
 message MsgCreateBatchResponse {
 
-    // batch_denom is the unique ID of the newly created batch.
+    // batch_denom is the unique denomination ID of the newly created batch.
     string batch_denom = 1;
 }
 
@@ -128,7 +128,7 @@ message MsgSendResponse { }
 // MsgRetireRequest is the Msg/Retire request type.
 message MsgRetireRequest {
 
-    // holder is the credits holder address.
+    // holder is the credit holder address.
     string holder = 1;
 
     // credits are the credits being retired.
