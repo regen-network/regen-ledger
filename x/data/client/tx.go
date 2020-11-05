@@ -26,6 +26,8 @@ func TxCmd() *cobra.Command {
 
 	cmd.AddCommand(
 		MsgAnchorDataCmd(),
+		MsgSignDataCmd(),
+		MsgStoreDataCmd(),
 	)
 
 	return cmd
