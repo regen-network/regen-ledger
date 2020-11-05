@@ -28,13 +28,13 @@ $ regen query data by-cid bafzbeigai3eoy2ccc7ybwjfz5r3rdxqrinwi4rwytly24tdbh6yk7
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// If 1st arg is a CID, then we call QueryByCidCmd.
+			// If 1st arg is NOT a CID, parse subcommands as usual.
 			_, err := gocid.Decode(args[0])
 			if err != nil {
 				return client.ValidateCmd(cmd, args)
 			}
 
-			// Or else, parse subcommands as usual.
+			// Or else, we call QueryByCidCmd.
 			return queryByCidCmd.RunE(cmd, args)
 		},
 	}
