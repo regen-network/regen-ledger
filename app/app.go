@@ -330,6 +330,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
+	// TODO
 	// groupKeeper := group.NewGroupKeeper(
 	// 	keys[group.StoreKey]
 	// )
@@ -355,7 +356,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		data.NewAppModule(keys[data.StoreKey]),
-		// group.NewAppModule(app.),
+		// group.NewAppModule(), TODO
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
