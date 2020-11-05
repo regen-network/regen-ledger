@@ -13,7 +13,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/math"
 )
 
-func storeGetDec(store sdk.KVStore, key []byte) (*apd.Decimal, error) {
+func getDecimal(store sdk.KVStore, key []byte) (*apd.Decimal, error) {
 	bz := store.Get(key)
 	if bz == nil {
 		return apd.New(0, 0), nil
@@ -27,7 +27,7 @@ func storeGetDec(store sdk.KVStore, key []byte) (*apd.Decimal, error) {
 	return value, nil
 }
 
-func storeSetDec(store sdk.KVStore, key []byte, value *apd.Decimal) {
+func setDecimal(store sdk.KVStore, key []byte, value *apd.Decimal) {
 	// always remove all trailing zeros for canonical representation
 	value, _ = value.Reduce(value)
 	// use floating notation here always for canonical representation
@@ -35,8 +35,8 @@ func storeSetDec(store sdk.KVStore, key []byte, value *apd.Decimal) {
 	store.Set(key, []byte(str))
 }
 
-func storeAddDec(store sdk.KVStore, key []byte, x *apd.Decimal) error {
-	value, err := storeGetDec(store, key)
+func getAddAndSetDecimal(store sdk.KVStore, key []byte, x *apd.Decimal) error {
+	value, err := getDecimal(store, key)
 	if err != nil {
 		return err
 	}
@@ -46,12 +46,12 @@ func storeAddDec(store sdk.KVStore, key []byte, x *apd.Decimal) error {
 		return err
 	}
 
-	storeSetDec(store, key, value)
+	setDecimal(store, key, value)
 	return nil
 }
 
-func storeSafeSubDec(store sdk.KVStore, key []byte, x *apd.Decimal) error {
-	value, err := storeGetDec(store, key)
+func getSubAndSetDecimal(store sdk.KVStore, key []byte, x *apd.Decimal) error {
+	value, err := getDecimal(store, key)
 	if err != nil {
 		return err
 	}
@@ -61,11 +61,11 @@ func storeSafeSubDec(store sdk.KVStore, key []byte, x *apd.Decimal) error {
 		return err
 	}
 
-	storeSetDec(store, key, value)
+	setDecimal(store, key, value)
 	return nil
 }
 
-func storeSetUInt32(store sdk.KVStore, key []byte, value uint32) error {
+func setUInt32(store sdk.KVStore, key []byte, value uint32) error {
 	bz := make([]byte, 0, 4)
 	buf := bytes.NewBuffer(bz)
 	err := binary.Write(buf, binary.LittleEndian, value)
@@ -77,7 +77,7 @@ func storeSetUInt32(store sdk.KVStore, key []byte, value uint32) error {
 	return nil
 }
 
-func storeGetUInt32(store sdk.KVStore, key []byte) (uint32, error) {
+func getUint32(store sdk.KVStore, key []byte) (uint32, error) {
 	bz := store.Get(key)
 	if bz == nil {
 		return 0, nil

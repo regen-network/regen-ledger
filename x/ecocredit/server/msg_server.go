@@ -106,7 +106,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 				return nil, err
 			}
 
-			err := storeAddDec(store, TradableBalanceKey(recipient, batchDenom), tradable)
+			err := getAddAndSetDecimal(store, TradableBalanceKey(recipient, batchDenom), tradable)
 			if err != nil {
 				return nil, err
 			}
@@ -140,8 +140,8 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		}
 	}
 
-	storeSetDec(store, TradableSupplyKey(batchDenom), tradableSupply)
-	storeSetDec(store, RetiredSupplyKey(batchDenom), retiredSupply)
+	setDecimal(store, TradableSupplyKey(batchDenom), tradableSupply)
+	setDecimal(store, RetiredSupplyKey(batchDenom), retiredSupply)
 
 	var totalSupply apd.Decimal
 	err = math.Add(&totalSupply, tradableSupply, retiredSupply)
@@ -161,7 +161,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		return nil, err
 	}
 
-	err = storeSetUInt32(store, MaxDecimalPlacesKey(batchDenom), maxDecimalPlaces)
+	err = setUInt32(store, MaxDecimalPlacesKey(batchDenom), maxDecimalPlaces)
 	if err != nil {
 		return nil, err
 	}
@@ -190,7 +190,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 	for _, credit := range req.Credits {
 		denom := batchDenomT(credit.BatchDenom)
 
-		maxDecimalPlaces, err := storeGetUInt32(store, MaxDecimalPlacesKey(denom))
+		maxDecimalPlaces, err := getUint32(store, MaxDecimalPlacesKey(denom))
 		if err != nil {
 			return nil, err
 		}
@@ -212,19 +212,19 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 		}
 
 		// subtract balance
-		err = storeSafeSubDec(store, TradableBalanceKey(sender, denom), &sum)
+		err = getSubAndSetDecimal(store, TradableBalanceKey(sender, denom), &sum)
 		if err != nil {
 			return nil, err
 		}
 
 		// subtract retired from tradable supply
-		err = storeSafeSubDec(store, TradableSupplyKey(denom), retired)
+		err = getSubAndSetDecimal(store, TradableSupplyKey(denom), retired)
 		if err != nil {
 			return nil, err
 		}
 
 		// Add tradable balance
-		err = storeAddDec(store, TradableBalanceKey(recipient, denom), tradable)
+		err = getAddAndSetDecimal(store, TradableBalanceKey(recipient, denom), tradable)
 		if err != nil {
 			return nil, err
 		}
@@ -236,7 +236,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 		}
 
 		// Add retired supply
-		err = storeAddDec(store, RetiredSupplyKey(denom), retired)
+		err = getAddAndSetDecimal(store, RetiredSupplyKey(denom), retired)
 		if err != nil {
 			return nil, err
 		}
@@ -269,7 +269,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid credit denom", denom))
 		}
 
-		maxDecimalPlaces, err := storeGetUInt32(store, MaxDecimalPlacesKey(denom))
+		maxDecimalPlaces, err := getUint32(store, MaxDecimalPlacesKey(denom))
 		if err != nil {
 			return nil, err
 		}
@@ -280,13 +280,13 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 		}
 
 		// subtract tradable balance
-		err = storeSafeSubDec(store, TradableBalanceKey(holder, denom), toRetire)
+		err = getSubAndSetDecimal(store, TradableBalanceKey(holder, denom), toRetire)
 		if err != nil {
 			return nil, err
 		}
 
 		// subtract tradable supply
-		err = storeSafeSubDec(store, TradableSupplyKey(denom), toRetire)
+		err = getSubAndSetDecimal(store, TradableSupplyKey(denom), toRetire)
 		if err != nil {
 			return nil, err
 		}
@@ -298,7 +298,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 		}
 
 		//  Add retired supply
-		err = storeAddDec(store, RetiredSupplyKey(denom), toRetire)
+		err = getAddAndSetDecimal(store, RetiredSupplyKey(denom), toRetire)
 		if err != nil {
 			return nil, err
 		}
@@ -308,7 +308,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 }
 
 func (s serverImpl) retire(ctx sdk.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired *apd.Decimal) error {
-	err := storeAddDec(store, RetiredBalanceKey(recipient, batchDenom), retired)
+	err := getAddAndSetDecimal(store, RetiredBalanceKey(recipient, batchDenom), retired)
 	if err != nil {
 		return err
 	}
@@ -324,7 +324,7 @@ func (s serverImpl) SetPrecision(goCtx context.Context, request *ecocredit.MsgSe
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
 	key := MaxDecimalPlacesKey(batchDenomT(request.BatchDenom))
-	x, err := storeGetUInt32(store, key)
+	x, err := getUint32(store, key)
 	if err != nil {
 		return nil, err
 	}
@@ -333,7 +333,7 @@ func (s serverImpl) SetPrecision(goCtx context.Context, request *ecocredit.MsgSe
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("Maximum decimal can only be increased, it is currently %d, and %d was requested", x, request.MaxDecimalPlaces))
 	}
 
-	err = storeSetUInt32(store, key, x)
+	err = setUInt32(store, key, x)
 	if err != nil {
 		return nil, err
 	}

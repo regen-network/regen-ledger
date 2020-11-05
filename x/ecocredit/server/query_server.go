@@ -49,12 +49,12 @@ func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalan
 
 	store := ctx.KVStore(s.storeKey)
 
-	tradable, err := storeGetDec(store, TradableBalanceKey(acc, denom))
+	tradable, err := getDecimal(store, TradableBalanceKey(acc, denom))
 	if err != nil {
 		return nil, err
 	}
 
-	retired, err := storeGetDec(store, RetiredBalanceKey(acc, denom))
+	retired, err := getDecimal(store, RetiredBalanceKey(acc, denom))
 	if err != nil {
 		return nil, err
 	}
@@ -70,12 +70,12 @@ func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupply
 	store := ctx.KVStore(s.storeKey)
 	denom := batchDenomT(request.BatchDenom)
 
-	tradable, err := storeGetDec(store, TradableSupplyKey(denom))
+	tradable, err := getDecimal(store, TradableSupplyKey(denom))
 	if err != nil {
 		return nil, err
 	}
 
-	retired, err := storeGetDec(store, RetiredSupplyKey(denom))
+	retired, err := getDecimal(store, RetiredSupplyKey(denom))
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupply
 func (s serverImpl) Precision(goCtx context.Context, request *ecocredit.QueryPrecisionRequest) (*ecocredit.QueryPrecisionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
-	x, err := storeGetUInt32(store, MaxDecimalPlacesKey(batchDenomT(request.BatchDenom)))
+	x, err := getUint32(store, MaxDecimalPlacesKey(batchDenomT(request.BatchDenom)))
 	if err != nil {
 		return nil, err
 	}
