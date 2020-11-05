@@ -53,7 +53,7 @@ func (m *MsgCreateBatchRequest) GetSigners() []sdk.AccAddress {
 
 func (m *MsgSendRequest) ValidateBasic() error {
 	for _, iss := range m.Credits {
-		_, err := math.ParseNonNegativeDecimal(iss.TradeableUnits)
+		_, err := math.ParseNonNegativeDecimal(iss.TradableUnits)
 		if err != nil {
 			return err
 		}

@@ -114,7 +114,7 @@ message MsgSendRequest {
 
         // tradable_units are the units of credits in this issuance that can be traded by this recipient.
         // Decimal values are acceptable within the precision returned by Query/Precision.
-        string tradeable_units = 2;
+        string tradable_units = 2;
 
         // retired_units are the units of credits in this issuance that are effectively retired by the issuer on receipt.
         // Decimal values are acceptable within the precision returned by Query/Precision.

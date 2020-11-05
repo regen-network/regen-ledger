@@ -268,9 +268,9 @@ func (s *IntegrationTestSuite) TestScenario() {
 				Recipient: addr3.String(),
 				Credits: []*ecocredit.MsgSendRequest_SendUnits{
 					{
-						BatchDenom:     batchDenom,
-						TradeableUnits: tc.sendTradeable,
-						RetiredUnits:   tc.sendRetired,
+						BatchDenom:    batchDenom,
+						TradableUnits: tc.sendTradeable,
+						RetiredUnits:  tc.sendRetired,
 					},
 				},
 			})
