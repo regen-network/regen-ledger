@@ -37,8 +37,8 @@ func TxCmd() *cobra.Command {
 func MsgAnchorDataCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "anchor [cid]",
-		Short: `Anchors a piece of data to the blockchain based on its secure
-		hash, effectively providing a tamper resistant timestamp.`,
+		Short: "Anchors a piece of data to the blockchain based on its secure " +
+			"hash, effectively providing a tamper resistant timestamp.",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
