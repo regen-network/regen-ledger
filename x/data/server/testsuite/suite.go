@@ -122,11 +122,14 @@ func (s *IntegrationTestSuite) TestScenario() {
 		Cid:     cidBz,
 	})
 	s.Require().NoError(err)
+
+	// query all data and both signatures
 	queryRes, err = s.queryClient.Data(s.ctx, &data.QueryDataRequest{Cid: cidBz})
 	s.Require().NoError(err)
 	s.Require().NotNil(queryRes)
 	s.Require().Equal(anchorRes.Timestamp, queryRes.Timestamp)
-	s.Require().Contains(s.addr1, queryRes.Signers)
-	s.Require().Contains(s.addr2, queryRes.Signers)
+	s.Require().Len(queryRes.Signers, 2)
+	s.Require().Contains(queryRes.Signers, s.addr1.String())
+	s.Require().Contains(queryRes.Signers, s.addr2.String())
 	s.Require().Equal(testContent, queryRes.Content)
 }

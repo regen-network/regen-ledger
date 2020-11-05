@@ -65,8 +65,8 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignDataReq
 	}
 
 	// TODO: index both cid and signer in key
-	var signers data.Signers
 	if s.signersTable.Has(ctx, cidBz) {
+		var signers data.Signers
 		err = s.signersTable.GetOne(ctx, cidBz, &signers)
 		if err != nil {
 			return nil, err
@@ -90,7 +90,7 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignDataReq
 			return nil, err
 		}
 	} else {
-		err = s.signersTable.Create(ctx, cidBz, &signers)
+		err = s.signersTable.Create(ctx, cidBz, &data.Signers{Signers: request.Signers})
 		if err != nil {
 			return nil, err
 		}
@@ -149,7 +149,7 @@ func (s serverImpl) StoreData(goCtx context.Context, request *data.MsgStoreDataR
 	}
 
 	if !bytes.Equal(mh, reqMh) {
-		return nil, sdkerrors.Wrap(err, "unable to perform multihash")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "multihash doesn't match")
 	}
 
 	store.Set(key, request.Content)

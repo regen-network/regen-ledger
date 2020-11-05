@@ -37,7 +37,11 @@ func (t testRouter) RegisterService(sd *grpc.ServiceDesc, ss interface{}) {
 			if err != nil {
 				return err
 			}
-			reflect.ValueOf(reply).Elem().Set(reflect.ValueOf(res).Elem())
+
+			resValue := reflect.ValueOf(res)
+			if !resValue.IsZero() {
+				reflect.ValueOf(reply).Elem().Set(resValue.Elem())
+			}
 			return nil
 		}
 	}
