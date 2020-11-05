@@ -4,6 +4,8 @@ go 1.14
 
 require (
 	github.com/CosmWasm/wasmd v0.12.0-alpha1.0.20201105090402-41cf73dae976
+	github.com/btcsuite/btcutil v1.0.2
+	github.com/cockroachdb/apd/v2 v2.0.2
 	github.com/cosmos/cosmos-sdk v0.40.0-rc2
 	github.com/enigmampc/btcutil v1.0.3-0.20200723161021-e2fb6adb2a25
 	github.com/gogo/protobuf v1.3.1
