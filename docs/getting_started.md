@@ -10,10 +10,8 @@ on your system `PATH`.
 
 Run `make build` to build the code.`regen` is the blockchain daemon and command line blockchain client. and it can provide help messages when run.
 
-#### requires 1.15.x or higher
-
-If you are running Go version lesser than 1.15.x, there are a few minor errors that you will face in testing with `TempDir`.
-
+#### Requirements
+Go - `1.15.x`
 
 ## Configuring the command line client
 

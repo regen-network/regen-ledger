@@ -34,7 +34,7 @@ prerequisite reading:
 * [RDF 1.1 Concepts and Abstract Syntax](https://www.w3.org/TR/rdf11-concepts/)
 * [Sparql 1.1 Query Language](https://www.w3.org/TR/sparql11-query/)
 
-## regen URI Scheme
+## Regen URI Scheme
 
 Regen Ledger defines its own URI scheme with the `regen` prefix for usage
 in various modules. The semantics of this URI scheme will be defined
