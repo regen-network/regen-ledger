@@ -32,7 +32,7 @@ type MsgCreateClassRequest struct {
 	// designer is the address of the account which designed the credit class. The designer has special permissions
 	// to change the list of issuers and perform other administrative operations.
 	Designer string `protobuf:"bytes,1,opt,name=designer,proto3" json:"designer,omitempty"`
-	// issuers are the addresses of the approved issuers.
+	// issuers are the account addresses of the approved issuers.
 	Issuers []string `protobuf:"bytes,2,rep,name=issuers,proto3" json:"issuers,omitempty"`
 	// metadata is any arbitrary metadata to attached to the credit class.
 	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
@@ -279,7 +279,7 @@ func (m *MsgCreateBatchRequest_BatchIssuance) GetRetiredUnits() string {
 
 // MsgCreateBatchResponse is the Msg/CreateBatch response type.
 type MsgCreateBatchResponse struct {
-	// batch_denom is the unique ID of the newly created batch.
+	// batch_denom is the unique denomination ID of the newly created batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 }
 
@@ -387,6 +387,7 @@ func (m *MsgSendRequest) GetCredits() []*MsgSendRequest_SendUnits {
 	return nil
 }
 
+// SendUnits are the tradable and retired units of a credit batch to send.
 type MsgSendRequest_SendUnits struct {
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
@@ -491,7 +492,7 @@ var xxx_messageInfo_MsgSendResponse proto.InternalMessageInfo
 
 // MsgRetireRequest is the Msg/Retire request type.
 type MsgRetireRequest struct {
-	// holder is the address of the holder of the credits.
+	// holder is the credit holder address.
 	Holder string `protobuf:"bytes,1,opt,name=holder,proto3" json:"holder,omitempty"`
 	// credits are the credits being retired.
 	Credits []*MsgRetireRequest_RetireUnits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`

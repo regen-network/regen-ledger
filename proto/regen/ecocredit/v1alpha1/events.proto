@@ -23,8 +23,8 @@ message EventCreateBatch {
     // batch_denom is the unique ID of credit batch.
     string batch_denom = 2;
 
-    // issuer_address is the account address of the issuer of the credit batch.
-    string issuer_address = 3;
+    // issuer is the account address of the issuer of the credit batch.
+    string issuer = 3;
 
     // total_units is the total number of units in the credit batch.
     string total_units = 4;
