@@ -24,10 +24,10 @@ func Test_CountDecPlaces(t *testing.T) {
 			x, _, err := apd.NewFromString(tt.x)
 			require.NoError(t, err)
 			got := NumDecimalPlaces(x)
-			require.Equal(t, tt.want, got)
+			require.Equal(t, uint32(tt.want), got)
 			x, _ = x.Reduce(x)
 			got = NumDecimalPlaces(x)
-			require.Equal(t, tt.reduced, got)
+			require.Equal(t, uint32(tt.reduced), got)
 		})
 	}
 }
