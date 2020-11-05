@@ -2,7 +2,6 @@ package module
 
 import (
 	"encoding/json"
-	"github.com/cosmos/cosmos-sdk/x/evidence/types"
 	"github.com/regen-network/regen-ledger/x/data/server"
 
 	"github.com/gorilla/mux"
