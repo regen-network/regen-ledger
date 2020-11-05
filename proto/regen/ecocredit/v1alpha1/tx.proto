@@ -128,7 +128,7 @@ message MsgSendResponse { }
 // MsgRetireRequest is the Msg/Retire request type.
 message MsgRetireRequest {
 
-    // holder is the address of the holder of the credits.
+    // holder is the credits holder address.
     string holder = 1;
 
     // credits are the credits being retired.
