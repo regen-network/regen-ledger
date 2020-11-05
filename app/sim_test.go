@@ -93,6 +93,7 @@ func simulateFromSeed(t *testing.T, app *RegenApp, config simtypes.Config) (bool
 		simapp.SimulationOperations(app, app.AppCodec(), config),
 		app.ModuleAccountAddrs(),
 		config,
+		app.AppCodec(),
 	)
 }
 
