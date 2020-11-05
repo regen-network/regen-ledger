@@ -30,7 +30,7 @@ func TxCmd() *cobra.Command {
 	return cmd
 }
 
-// MsgAnchorDataCmd created a CLI tx command for MsgAnchorData.
+// MsgAnchorDataCmd creates a CLI command for Msg/AnchorData.
 func MsgAnchorDataCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "anchor [cid]",
@@ -56,6 +56,44 @@ func MsgAnchorDataCmd() *cobra.Command {
 			svcMsgClientConn := &util.ServiceMsgClientConn{}
 			msgClient := data.NewMsgClient(svcMsgClientConn)
 			_, err = msgClient.AnchorData(context.Background(), &msg)
+			if err != nil {
+				return err
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), svcMsgClientConn.Msgs...)
+		},
+	}
+
+	flags.AddTxFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// MsgSignDataCmd creates a CLI command for Msg/SignData.
+func MsgSignDataCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "sign [cid]",
+		Short: `Sign an arbitrary piece of data on the blockchain.`,
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx, err := client.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			cid, err := gocid.Decode(args[0])
+			if err != nil {
+				return err
+			}
+
+			msg := data.MsgSignDataRequest{
+				Signers: []string{clientCtx.GetFromAddress().String()},
+				Cid:     cid.Bytes(),
+			}
+			svcMsgClientConn := &util.ServiceMsgClientConn{}
+			msgClient := data.NewMsgClient(svcMsgClientConn)
+			_, err = msgClient.SignData(context.Background(), &msg)
 			if err != nil {
 				return err
 			}
