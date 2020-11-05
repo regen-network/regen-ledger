@@ -55,8 +55,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().NoError(err)
 	s.Require().NotNil(createClsRes)
 
-	clsId := createClsRes.ClassId
-	s.Require().NotEmpty(clsId)
+	clsID := createClsRes.ClassId
+	s.Require().NotEmpty(clsID)
 
 	// create batch
 	t0, t1 := "10.37", "1007.3869"
@@ -66,7 +66,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatchRequest{
 		Issuer:  issuer1.String(),
-		ClassId: clsId,
+		ClassId: clsID,
 		Issuance: []*ecocredit.MsgCreateBatchRequest_BatchIssuance{
 			{
 				Recipient:     addr1.String(),
@@ -167,6 +167,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	}
 
 	for _, tc := range retireCases {
+		tc := tc
 		s.Run(tc.name, func() {
 			_, err := s.msgClient.Retire(s.ctx, &ecocredit.MsgRetireRequest{
 				Holder: addr1.String(),
@@ -260,6 +261,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	}
 
 	for _, tc := range sendCases {
+		tc := tc
 		s.Run(tc.name, func() {
 			_, err := s.msgClient.Send(s.ctx, &ecocredit.MsgSendRequest{
 				Sender:    addr2.String(),

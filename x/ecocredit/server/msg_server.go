@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
+
 	"github.com/btcsuite/btcutil/base58"
 	"github.com/regen-network/regen-ledger/orm"
 
@@ -19,12 +20,12 @@ import (
 func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	classId := s.idSeq.NextVal(ctx)
+	classID := s.idSeq.NextVal(ctx)
 
-	classIdStr := uint64ToBase58Check(classId)
+	classIDStr := uint64ToBase58Check(classID)
 
 	err := s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
-		ClassId:  classIdStr,
+		ClassId:  classIDStr,
 		Designer: req.Designer,
 		Issuers:  req.Issuers,
 		Metadata: req.Metadata,
@@ -35,26 +36,28 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 	}
 
 	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateClass{
-		ClassId:  classIdStr,
+		ClassId:  classIDStr,
 		Designer: req.Designer,
 	})
+	if err != nil {
+		return nil, err
+	}
 
-	return &ecocredit.MsgCreateClassResponse{ClassId: classIdStr}, nil
+	return &ecocredit.MsgCreateClassResponse{ClassId: classIDStr}, nil
 }
 
 func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatchRequest) (*ecocredit.MsgCreateBatchResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	classId := req.ClassId
-	classInfo, err := s.getClassInfo(ctx, classId)
+	classID := req.ClassId
+	classInfo, err := s.getClassInfo(ctx, classID)
 	if err != nil {
 		return nil, err
 	}
 
 	var found bool
-	issuer := req.Issuer
 	for _, issuer := range classInfo.Issuers {
-		if issuer == issuer {
+		if issuer == req.Issuer {
 			found = true
 			break
 		}
@@ -64,9 +67,9 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		return nil, sdkerrors.ErrUnauthorized
 	}
 
-	batchId := s.idSeq.NextVal(ctx)
+	batchID := s.idSeq.NextVal(ctx)
 
-	batchDenom := batchDenomT(fmt.Sprintf("%s/%s", classId, uint64ToBase58Check(batchId)))
+	batchDenom := batchDenomT(fmt.Sprintf("%s/%s", classID, uint64ToBase58Check(batchID)))
 
 	tradableSupply := apd.New(0, 0)
 	retiredSupply := apd.New(0, 0)
@@ -134,9 +137,9 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	totalSupplyStr := math.DecimalString(&totalSupply)
 
 	err = s.batchInfoTable.Create(ctx, &ecocredit.BatchInfo{
-		ClassId:    classId,
+		ClassId:    classID,
 		BatchDenom: string(batchDenom),
-		Issuer:     issuer,
+		Issuer:     req.Issuer,
 		TotalUnits: totalSupplyStr,
 	})
 	if err != nil {
@@ -149,9 +152,9 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	}
 
 	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateBatch{
-		ClassId:    classId,
+		ClassId:    classID,
 		BatchDenom: string(batchDenom),
-		Issuer:     issuer,
+		Issuer:     req.Issuer,
 		TotalUnits: totalSupplyStr,
 	})
 	if err != nil {

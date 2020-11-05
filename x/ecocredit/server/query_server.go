@@ -19,9 +19,9 @@ func (s serverImpl) ClassInfo(ctx context.Context, request *ecocredit.QueryClass
 	return &ecocredit.QueryClassInfoResponse{Info: classInfo}, nil
 }
 
-func (s serverImpl) getClassInfo(ctx sdk.Context, classId string) (*ecocredit.ClassInfo, error) {
+func (s serverImpl) getClassInfo(ctx sdk.Context, classID string) (*ecocredit.ClassInfo, error) {
 	var classInfo ecocredit.ClassInfo
-	err := s.classInfoTable.GetOne(ctx, orm.RowID(classId), &classInfo)
+	err := s.classInfoTable.GetOne(ctx, orm.RowID(classID), &classInfo)
 	if err != nil {
 		return nil, err
 	}

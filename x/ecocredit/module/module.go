@@ -2,7 +2,6 @@ package module
 
 import (
 	"encoding/json"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -17,6 +16,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
 type AppModule struct {
