@@ -19,11 +19,17 @@ import (
 
 type AppModule struct {
 	Key sdk.StoreKey
+	Srv server.Server
 }
 
 var _ module.AppModule = AppModule{}
 
-func (a AppModule) Name() string { return ecocredit.ModuleName }
+func NewAppModule() AppModule {
+	key := sdk.NewKVStoreKey(ecocredit.ModuleName)
+	return AppModule{key, server.NewServer(key)}
+}
+
+func (a AppModule) Name() string { return a.Key.Name() }
 
 func (a AppModule) RegisterLegacyAminoCodec(*codec.LegacyAmino) {}
 
@@ -63,14 +69,15 @@ func (a AppModule) Route() sdk.Route {
 	return sdk.Route{}
 }
 
-func (a AppModule) QuerierRoute() string { return "" }
+func (a AppModule) QuerierRoute() string { return a.Name() }
 
 func (a AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier {
 	return nil
 }
 
-func (a AppModule) RegisterServices(configurator module.Configurator) {
-	server.RegisterServices(a.Key, configurator)
+func (a AppModule) RegisterServices(cfg module.Configurator) {
+	ecocredit.RegisterMsgServer(cfg.MsgServer(), a.Srv)
+	ecocredit.RegisterQueryServer(cfg.QueryServer(), a.Srv)
 }
 
 func (a AppModule) BeginBlock(sdk.Context, abci.RequestBeginBlock) {}

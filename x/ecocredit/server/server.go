@@ -2,7 +2,6 @@ package server
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -47,10 +46,4 @@ func NewServer(storeKey sdk.StoreKey) Server {
 	s.batchInfoTable = batchInfoTableBuilder.Build()
 
 	return s
-}
-
-func RegisterServices(storeKey sdk.StoreKey, cfg module.Configurator) {
-	impl := NewServer(storeKey)
-	ecocredit.RegisterMsgServer(cfg.MsgServer(), impl)
-	ecocredit.RegisterQueryServer(cfg.QueryServer(), impl)
 }
