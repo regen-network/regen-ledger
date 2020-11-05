@@ -9,7 +9,7 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 // Query is the regen.data.v1alpha1 Query service
 service Query {
 
-    // Data queries data based on its CID.
+    // ByCid queries data based on its CID.
     rpc ByCid(QueryByCidRequest) returns (QueryByCidResponse);
 }
 

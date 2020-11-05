@@ -28,7 +28,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// QueryByCidRequest is the Query/Data request type.
+// QueryByCidRequest is the Query/ByCid request type.
 type QueryByCidRequest struct {
 	// cid is a Content Identifier for the data corresponding to the IPFS CID
 	// specification: https://github.com/multiformats/cid.
@@ -75,7 +75,7 @@ func (m *QueryByCidRequest) GetCid() []byte {
 	return nil
 }
 
-// QueryByCidRequest is the Query/Data response type.
+// QueryByCidRequest is the Query/ByCid response type.
 type QueryByCidResponse struct {
 	// timestamp is the timestamp of the block at which the data was anchored.
 	Timestamp *types.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
@@ -181,7 +181,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// Data queries data based on its CID.
+	// ByCid queries data based on its CID.
 	ByCid(ctx context.Context, in *QueryByCidRequest, opts ...grpc.CallOption) (*QueryByCidResponse, error)
 }
 
@@ -204,7 +204,7 @@ func (c *queryClient) ByCid(ctx context.Context, in *QueryByCidRequest, opts ...
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// Data queries data based on its CID.
+	// ByCid queries data based on its CID.
 	ByCid(context.Context, *QueryByCidRequest) (*QueryByCidResponse, error)
 }
 
