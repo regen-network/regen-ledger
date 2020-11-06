@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"encoding/base64"
+	client2 "github.com/regen-network/regen-ledger/client"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -10,7 +11,6 @@ import (
 	gocid "github.com/ipfs/go-cid"
 	"github.com/spf13/cobra"
 
-	"github.com/regen-network/regen-ledger/util"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -61,7 +61,7 @@ func MsgAnchorDataCmd() *cobra.Command {
 				Sender: clientCtx.GetFromAddress().String(),
 				Cid:    cid.Bytes(),
 			}
-			svcMsgClientConn := &util.ServiceMsgClientConn{}
+			svcMsgClientConn := &client2.ServiceMsgClientConn{}
 			msgClient := data.NewMsgClient(svcMsgClientConn)
 			_, err = msgClient.AnchorData(context.Background(), &msg)
 			if err != nil {
@@ -104,7 +104,7 @@ func MsgSignDataCmd() *cobra.Command {
 				Signers: []string{clientCtx.GetFromAddress().String()},
 				Cid:     cid.Bytes(),
 			}
-			svcMsgClientConn := &util.ServiceMsgClientConn{}
+			svcMsgClientConn := &client2.ServiceMsgClientConn{}
 			msgClient := data.NewMsgClient(svcMsgClientConn)
 			_, err = msgClient.SignData(context.Background(), &msg)
 			if err != nil {
@@ -153,7 +153,7 @@ func MsgStoreDataCmd() *cobra.Command {
 				Cid:     cid.Bytes(),
 				Content: content,
 			}
-			svcMsgClientConn := &util.ServiceMsgClientConn{}
+			svcMsgClientConn := &client2.ServiceMsgClientConn{}
 			msgClient := data.NewMsgClient(svcMsgClientConn)
 			_, err = msgClient.StoreData(context.Background(), &msg)
 			if err != nil {
