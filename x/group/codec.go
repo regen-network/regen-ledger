@@ -20,10 +20,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(MsgExec{}, "cosmos-sdk/group/MsgExec", nil)
 
 	// oh man... amino
-	// cdc.RegisterConcrete(StdDecisionPolicy{}, "cosmos-sdk/StdDecisionPolicy", nil)
-	// cdc.RegisterConcrete(&StdDecisionPolicy_Threshold{}, "cosmos-sdk/StdDecisionPolicy_Threshold", nil)
 	cdc.RegisterConcrete(&ThresholdDecisionPolicy{}, "cosmos-sdk/ThresholdDecisionPolicy", nil)
-	// cdc.RegisterInterface((*isStdDecisionPolicy_Sum)(nil), nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {

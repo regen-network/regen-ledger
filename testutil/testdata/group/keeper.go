@@ -1,4 +1,4 @@
-package testdata
+package group
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -48,4 +48,8 @@ func (k Keeper) IncCounter(ctx sdk.Context) []byte {
 
 func (k Keeper) GetCounter(ctx sdk.Context) uint64 {
 	return orm.DecodeSequence(ctx.KVStore(k.key).Get(counterKey))
+}
+
+func EncodeSequence(expectedCounter uint64) []byte {
+	return orm.EncodeSequence(expectedCounter)
 }

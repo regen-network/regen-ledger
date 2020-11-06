@@ -1,10 +1,9 @@
-package testdata
+package group
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
@@ -42,8 +41,6 @@ func (m *MyAppProposal) SetMsgs(new []sdk.Msg) error {
 	}
 	return nil
 }
-
-var _ orm.Validateable = MyAppProposal{}
 
 func (m MyAppProposal) ValidateBasic() error {
 	if err := m.Base.ValidateBasic(); err != nil {

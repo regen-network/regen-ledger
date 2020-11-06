@@ -20,6 +20,9 @@ done
 protoc -I "proto" -I "third_party/proto" -I "testutil/testdata" --gocosmos_out=plugins=interfacetype+grpc,\
 Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. ./testutil/testdata/*.proto
 
+protoc -I "proto" -I "third_party/proto" -I "testutil/testdata/group" --gocosmos_out=plugins=interfacetype+grpc,\
+Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. ./testutil/testdata/group/*.proto
+
 # move proto files to the right places
 cp -r github.com/regen-network/regen-ledger/* ./
 rm -rf github.com

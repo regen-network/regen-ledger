@@ -5,6 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	testdatagroup "github.com/regen-network/regen-ledger/testutil/testdata/group"
+	"github.com/regen-network/regen-ledger/x/group"
 	testutil "github.com/regen-network/regen-ledger/x/group/testutil"
 	"github.com/stretchr/testify/require"
 )
@@ -18,20 +20,20 @@ func TestDoExecuteMsgs(t *testing.T) {
 	}{
 		"all good": {
 			srcAccount: []byte("my-group-acct-addrss"),
-			srcMsgs:    []sdk.Msg{&MyMsg{[]sdk.AccAddress{[]byte("my-group-acct-addrss")}}},
+			srcMsgs:    []sdk.Msg{&testdatagroup.MsgAuthenticate{Signers: []sdk.AccAddress{[]byte("my-group-acct-addrss")}}},
 			srcHandler: mockHandler(&sdk.Result{}, nil),
 		},
 		"not authz by group account": {
 			srcAccount: []byte("my-group-acct-addrss"),
-			srcMsgs:    []sdk.Msg{MyMsg{[]sdk.AccAddress{[]byte("any--other---address")}}},
+			srcMsgs:    []sdk.Msg{&testdatagroup.MsgAuthenticate{Signers: []sdk.AccAddress{[]byte("any--other---address")}}},
 			srcHandler: alwaysPanicHandler(),
 			expErr:     true,
 		},
 		"mixed group account msgs": {
 			srcAccount: []byte("my-group-acct-addrss"),
 			srcMsgs: []sdk.Msg{
-				MyMsg{[]sdk.AccAddress{[]byte("my-group-acct-addrss")}},
-				MyMsg{[]sdk.AccAddress{[]byte("any--other---address")}},
+				&testdatagroup.MsgAuthenticate{Signers: []sdk.AccAddress{[]byte("my-group-acct-addrss")}},
+				&testdatagroup.MsgAuthenticate{Signers: []sdk.AccAddress{[]byte("any--other---address")}},
 			},
 			srcHandler: alwaysPanicHandler(),
 			expErr:     true,
@@ -44,14 +46,14 @@ func TestDoExecuteMsgs(t *testing.T) {
 		},
 		"not panic on nil result": {
 			srcAccount: []byte("my-group-acct-addrss"),
-			srcMsgs:    []sdk.Msg{MyMsg{[]sdk.AccAddress{[]byte("my-group-acct-addrss")}}},
+			srcMsgs:    []sdk.Msg{&testdatagroup.MsgAuthenticate{Signers: []sdk.AccAddress{[]byte("my-group-acct-addrss")}}},
 			srcHandler: mockHandler(nil, nil),
 		},
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
-			router := baseapp.NewRouter().AddRoute("myRoute", spec.srcHandler)
-			_, err := doExecuteMsgs(testutil.NewContext(), router, spec.srcAccount, spec.srcMsgs)
+			router := baseapp.NewRouter().AddRoute(sdk.NewRoute(testdatagroup.ModuleName, spec.srcHandler))
+			_, err := group.DoExecuteMsgs(testutil.NewContext(), router, spec.srcAccount, spec.srcMsgs)
 			if spec.expErr {
 				require.Error(t, err)
 				return
@@ -71,30 +73,6 @@ func alwaysPanicHandler() sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) (result *sdk.Result, err error) {
 		panic("not supposed to be called")
 	}
-}
-
-type MyMsg struct {
-	s []sdk.AccAddress
-}
-
-func (m MyMsg) Route() string {
-	return "myRoute"
-}
-
-func (m MyMsg) GetSigners() []sdk.AccAddress {
-	return m.s
-}
-
-func (m MyMsg) Type() string {
-	return "my test message type"
-}
-
-func (m MyMsg) ValidateBasic() error {
-	return nil
-}
-
-func (m MyMsg) GetSignBytes() []byte {
-	panic("implement me")
 }
 
 type NonRoutableMsg struct {

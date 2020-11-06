@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/x/group"
 	testutil "github.com/regen-network/regen-ledger/x/group/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -15,29 +16,29 @@ func TestMsgCreateGroup(t *testing.T) {
 	myAdmin := []byte("valid--admin-address")
 
 	specs := map[string]struct {
-		src        MsgCreateGroup
+		src        *group.MsgCreateGroup
 		expErr     *errors.Error
-		expGroup   GroupMetadata
-		expMembers []GroupMember
+		expGroup   group.GroupMetadata
+		expMembers []group.GroupMember
 	}{
 		"happy path": {
-			src: MsgCreateGroup{
+			src: &group.MsgCreateGroup{
 				Admin:   myAdmin,
 				Comment: "test",
-				Members: []Member{{
+				Members: []group.Member{{
 					Address: sdk.AccAddress([]byte("valid-member-address")),
 					Power:   sdk.NewDec(1),
 					Comment: "first",
 				}},
 			},
-			expGroup: GroupMetadata{
+			expGroup: group.GroupMetadata{
 				Group:       1,
 				Admin:       myAdmin,
 				Comment:     "test",
 				Version:     1,
 				TotalWeight: sdk.OneDec(),
 			},
-			expMembers: []GroupMember{
+			expMembers: []group.GroupMember{
 				{
 					Member:  sdk.AccAddress([]byte("valid-member-address")),
 					Group:   1,
@@ -47,28 +48,28 @@ func TestMsgCreateGroup(t *testing.T) {
 			},
 		},
 		"invalid message": {
-			src:    MsgCreateGroup{},
-			expErr: ErrEmpty,
+			src:    &group.MsgCreateGroup{},
+			expErr: group.ErrEmpty,
 		},
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
 			k, ctx := testutil.CreateGroupKeeper()
-			res, err := NewHandler(k)(ctx, spec.src)
+			res, err := group.NewHandler(k)(ctx, spec.src)
 			require.True(t, spec.expErr.Is(err), err)
 			if spec.expErr != nil {
 				return
 			}
 			// then
 			groupID := orm.DecodeSequence(res.Data)
-			loaded, err := k.GetGroup(ctx, GroupID(groupID))
+			loaded, err := k.GetGroup(ctx, group.GroupID(groupID))
 			require.NoError(t, err)
 			assert.Equal(t, spec.expGroup, loaded)
 
 			// and members persisted
-			it, err := k.groupMemberByGroupIndex.Get(ctx, groupID)
+			it, err := k.GetGroupMembersByGroup(ctx, group.GroupID(groupID))
 			require.NoError(t, err)
-			var loadedMembers []GroupMember
+			var loadedMembers []group.GroupMember
 			_, err = orm.ReadAll(it, &loadedMembers)
 			require.NoError(t, err)
 			assert.Equal(t, spec.expMembers, loadedMembers)
@@ -79,7 +80,7 @@ func TestMsgCreateGroup(t *testing.T) {
 func TestMsgUpdateGroupAdmin(t *testing.T) {
 	k, pCtx := testutil.CreateGroupKeeper()
 
-	members := []Member{{
+	members := []group.Member{{
 		Address: sdk.AccAddress([]byte("valid-member-address")),
 		Power:   sdk.NewDec(1),
 		Comment: "first member",
@@ -89,17 +90,17 @@ func TestMsgUpdateGroupAdmin(t *testing.T) {
 	require.NoError(t, err)
 
 	specs := map[string]struct {
-		src       MsgUpdateGroupAdmin
-		expStored GroupMetadata
+		src       *group.MsgUpdateGroupAdmin
+		expStored group.GroupMetadata
 		expErr    *errors.Error
 	}{
 		"with correct admin": {
-			src: MsgUpdateGroupAdmin{
+			src: &group.MsgUpdateGroupAdmin{
 				Group:    groupID,
 				Admin:    oldAdmin,
 				NewAdmin: []byte("my-new-admin-address"),
 			},
-			expStored: GroupMetadata{
+			expStored: group.GroupMetadata{
 				Group:       groupID,
 				Admin:       []byte("my-new-admin-address"),
 				Comment:     "test",
@@ -108,13 +109,13 @@ func TestMsgUpdateGroupAdmin(t *testing.T) {
 			},
 		},
 		"with wrong admin": {
-			src: MsgUpdateGroupAdmin{
+			src: &group.MsgUpdateGroupAdmin{
 				Group:    groupID,
 				Admin:    []byte("unknown-address"),
 				NewAdmin: []byte("my-new-admin-address"),
 			},
-			expErr: ErrUnauthorized,
-			expStored: GroupMetadata{
+			expErr: group.ErrUnauthorized,
+			expStored: group.GroupMetadata{
 				Group:       groupID,
 				Admin:       oldAdmin,
 				Comment:     "test",
@@ -123,13 +124,13 @@ func TestMsgUpdateGroupAdmin(t *testing.T) {
 			},
 		},
 		"with unknown groupID": {
-			src: MsgUpdateGroupAdmin{
+			src: &group.MsgUpdateGroupAdmin{
 				Group:    999,
 				Admin:    oldAdmin,
 				NewAdmin: []byte("my-new-admin-address"),
 			},
 			expErr: orm.ErrNotFound,
-			expStored: GroupMetadata{
+			expStored: group.GroupMetadata{
 				Group:       groupID,
 				Admin:       oldAdmin,
 				Comment:     "test",
@@ -141,7 +142,7 @@ func TestMsgUpdateGroupAdmin(t *testing.T) {
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
 			ctx, _ := pCtx.CacheContext()
-			_, err := NewHandler(k)(ctx, spec.src)
+			_, err := group.NewHandler(k)(ctx, spec.src)
 			require.True(t, spec.expErr.Is(err), err)
 			// then
 			loaded, err := k.GetGroup(ctx, groupID)
@@ -155,7 +156,7 @@ func TestMsgUpdateGroupComment(t *testing.T) {
 	k, pCtx := testutil.CreateGroupKeeper()
 
 	oldComment := "first"
-	members := []Member{{
+	members := []group.Member{{
 		Address: sdk.AccAddress([]byte("valid-member-address")),
 		Power:   sdk.NewDec(1),
 		Comment: oldComment,
@@ -166,17 +167,17 @@ func TestMsgUpdateGroupComment(t *testing.T) {
 	require.NoError(t, err)
 
 	specs := map[string]struct {
-		src       MsgUpdateGroupComment
+		src       *group.MsgUpdateGroupComment
 		expErr    *errors.Error
-		expStored GroupMetadata
+		expStored group.GroupMetadata
 	}{
 		"with correct admin": {
-			src: MsgUpdateGroupComment{
+			src: &group.MsgUpdateGroupComment{
 				Group:   groupID,
 				Admin:   oldAdmin,
 				Comment: "new comment",
 			},
-			expStored: GroupMetadata{
+			expStored: group.GroupMetadata{
 				Group:       groupID,
 				Admin:       oldAdmin,
 				Comment:     "new comment",
@@ -185,13 +186,13 @@ func TestMsgUpdateGroupComment(t *testing.T) {
 			},
 		},
 		"with wrong admin": {
-			src: MsgUpdateGroupComment{
+			src: &group.MsgUpdateGroupComment{
 				Group:   groupID,
 				Admin:   []byte("unknown-address"),
 				Comment: "new comment",
 			},
-			expErr: ErrUnauthorized,
-			expStored: GroupMetadata{
+			expErr: group.ErrUnauthorized,
+			expStored: group.GroupMetadata{
 				Group:       groupID,
 				Admin:       oldAdmin,
 				Comment:     "test",
@@ -200,13 +201,13 @@ func TestMsgUpdateGroupComment(t *testing.T) {
 			},
 		},
 		"with unknown groupid": {
-			src: MsgUpdateGroupComment{
+			src: &group.MsgUpdateGroupComment{
 				Group:   999,
 				Admin:   []byte("unknown-address"),
 				Comment: "new comment",
 			},
 			expErr: orm.ErrNotFound,
-			expStored: GroupMetadata{
+			expStored: group.GroupMetadata{
 				Group:       groupID,
 				Admin:       oldAdmin,
 				Comment:     "test",
@@ -218,7 +219,7 @@ func TestMsgUpdateGroupComment(t *testing.T) {
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
 			ctx, _ := pCtx.CacheContext()
-			_, err := NewHandler(k)(ctx, spec.src)
+			_, err := group.NewHandler(k)(ctx, spec.src)
 			require.True(t, spec.expErr.Is(err), err)
 			// then
 			loaded, err := k.GetGroup(ctx, groupID)
@@ -231,7 +232,7 @@ func TestMsgUpdateGroupComment(t *testing.T) {
 func TestMsgUpdateGroupMembers(t *testing.T) {
 	k, pCtx := testutil.CreateGroupKeeper()
 
-	members := []Member{{
+	members := []group.Member{{
 		Address: sdk.AccAddress([]byte("valid-member-address")),
 		Power:   sdk.NewDec(1),
 		Comment: "first",
@@ -242,29 +243,29 @@ func TestMsgUpdateGroupMembers(t *testing.T) {
 	require.NoError(t, err)
 
 	specs := map[string]struct {
-		src        MsgUpdateGroupMembers
+		src        *group.MsgUpdateGroupMembers
 		expErr     *errors.Error
-		expGroup   GroupMetadata
-		expMembers []GroupMember
+		expGroup   group.GroupMetadata
+		expMembers []group.GroupMember
 	}{
 		"add new member": {
-			src: MsgUpdateGroupMembers{
+			src: &group.MsgUpdateGroupMembers{
 				Group: groupID,
 				Admin: myAdmin,
-				MemberUpdates: []Member{{
+				MemberUpdates: []group.Member{{
 					Address: sdk.AccAddress([]byte("other-member-address")),
 					Power:   sdk.NewDec(2),
 					Comment: "second",
 				}},
 			},
-			expGroup: GroupMetadata{
+			expGroup: group.GroupMetadata{
 				Group:       groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(3),
 				Version:     2,
 			},
-			expMembers: []GroupMember{
+			expMembers: []group.GroupMember{
 				{
 					Member:  sdk.AccAddress([]byte("other-member-address")),
 					Group:   groupID,
@@ -280,23 +281,23 @@ func TestMsgUpdateGroupMembers(t *testing.T) {
 			},
 		},
 		"update member": {
-			src: MsgUpdateGroupMembers{
+			src: &group.MsgUpdateGroupMembers{
 				Group: groupID,
 				Admin: myAdmin,
-				MemberUpdates: []Member{{
+				MemberUpdates: []group.Member{{
 					Address: sdk.AccAddress([]byte("valid-member-address")),
 					Power:   sdk.NewDec(2),
 					Comment: "updated",
 				}},
 			},
-			expGroup: GroupMetadata{
+			expGroup: group.GroupMetadata{
 				Group:       groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(2),
 				Version:     2,
 			},
-			expMembers: []GroupMember{
+			expMembers: []group.GroupMember{
 				{
 					Member:  sdk.AccAddress([]byte("valid-member-address")),
 					Group:   groupID,
@@ -306,23 +307,23 @@ func TestMsgUpdateGroupMembers(t *testing.T) {
 			},
 		},
 		"update member with same data": {
-			src: MsgUpdateGroupMembers{
+			src: &group.MsgUpdateGroupMembers{
 				Group: groupID,
 				Admin: myAdmin,
-				MemberUpdates: []Member{{
+				MemberUpdates: []group.Member{{
 					Address: sdk.AccAddress([]byte("valid-member-address")),
 					Power:   sdk.NewDec(1),
 					Comment: "first",
 				}},
 			},
-			expGroup: GroupMetadata{
+			expGroup: group.GroupMetadata{
 				Group:       groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(1),
 				Version:     2,
 			},
-			expMembers: []GroupMember{
+			expMembers: []group.GroupMember{
 				{
 					Member:  sdk.AccAddress([]byte("valid-member-address")),
 					Group:   groupID,
@@ -332,10 +333,10 @@ func TestMsgUpdateGroupMembers(t *testing.T) {
 			},
 		},
 		"replace member": {
-			src: MsgUpdateGroupMembers{
+			src: &group.MsgUpdateGroupMembers{
 				Group: groupID,
 				Admin: myAdmin,
-				MemberUpdates: []Member{{
+				MemberUpdates: []group.Member{{
 					Address: sdk.AccAddress([]byte("valid-member-address")),
 					Power:   sdk.NewDec(0),
 					Comment: "good bye",
@@ -346,14 +347,14 @@ func TestMsgUpdateGroupMembers(t *testing.T) {
 						Comment: "welcome",
 					}},
 			},
-			expGroup: GroupMetadata{
+			expGroup: group.GroupMetadata{
 				Group:       groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(1),
 				Version:     2,
 			},
-			expMembers: []GroupMember{{
+			expMembers: []group.GroupMember{{
 				Member:  sdk.AccAddress([]byte("my-new-member-addres")),
 				Group:   groupID,
 				Weight:  sdk.NewDec(1),
@@ -361,43 +362,43 @@ func TestMsgUpdateGroupMembers(t *testing.T) {
 			}},
 		},
 		"remove existing member": {
-			src: MsgUpdateGroupMembers{
+			src: &group.MsgUpdateGroupMembers{
 				Group: groupID,
 				Admin: myAdmin,
-				MemberUpdates: []Member{{
+				MemberUpdates: []group.Member{{
 					Address: sdk.AccAddress([]byte("valid-member-address")),
 					Power:   sdk.NewDec(0),
 					Comment: "good bye",
 				}},
 			},
-			expGroup: GroupMetadata{
+			expGroup: group.GroupMetadata{
 				Group:       groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(0),
 				Version:     2,
 			},
-			expMembers: []GroupMember{},
+			expMembers: []group.GroupMember{},
 		},
 		"remove unknown member": {
-			src: MsgUpdateGroupMembers{
+			src: &group.MsgUpdateGroupMembers{
 				Group: groupID,
 				Admin: myAdmin,
-				MemberUpdates: []Member{{
+				MemberUpdates: []group.Member{{
 					Address: sdk.AccAddress([]byte("unknown-member-addrs")),
 					Power:   sdk.NewDec(0),
 					Comment: "good bye",
 				}},
 			},
 			expErr: orm.ErrNotFound,
-			expGroup: GroupMetadata{
+			expGroup: group.GroupMetadata{
 				Group:       groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(1),
 				Version:     1,
 			},
-			expMembers: []GroupMember{{
+			expMembers: []group.GroupMember{{
 				Member:  sdk.AccAddress([]byte("valid-member-address")),
 				Group:   groupID,
 				Weight:  sdk.NewDec(1),
@@ -405,24 +406,24 @@ func TestMsgUpdateGroupMembers(t *testing.T) {
 			}},
 		},
 		"with wrong admin": {
-			src: MsgUpdateGroupMembers{
+			src: &group.MsgUpdateGroupMembers{
 				Group: groupID,
 				Admin: []byte("unknown-address"),
-				MemberUpdates: []Member{{
+				MemberUpdates: []group.Member{{
 					Address: sdk.AccAddress([]byte("other-member-address")),
 					Power:   sdk.NewDec(2),
 					Comment: "second",
 				}},
 			},
-			expErr: ErrUnauthorized,
-			expGroup: GroupMetadata{
+			expErr: group.ErrUnauthorized,
+			expGroup: group.GroupMetadata{
 				Group:       groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(1),
 				Version:     1,
 			},
-			expMembers: []GroupMember{{
+			expMembers: []group.GroupMember{{
 				Member:  sdk.AccAddress([]byte("valid-member-address")),
 				Group:   groupID,
 				Weight:  sdk.NewDec(1),
@@ -430,24 +431,24 @@ func TestMsgUpdateGroupMembers(t *testing.T) {
 			}},
 		},
 		"with unknown groupID": {
-			src: MsgUpdateGroupMembers{
+			src: &group.MsgUpdateGroupMembers{
 				Group: 999,
 				Admin: myAdmin,
-				MemberUpdates: []Member{{
+				MemberUpdates: []group.Member{{
 					Address: sdk.AccAddress([]byte("other-member-address")),
 					Power:   sdk.NewDec(2),
 					Comment: "second",
 				}},
 			},
 			expErr: orm.ErrNotFound,
-			expGroup: GroupMetadata{
+			expGroup: group.GroupMetadata{
 				Group:       groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(1),
 				Version:     1,
 			},
-			expMembers: []GroupMember{{
+			expMembers: []group.GroupMember{{
 				Member:  sdk.AccAddress([]byte("valid-member-address")),
 				Group:   groupID,
 				Weight:  sdk.NewDec(1),
@@ -458,7 +459,7 @@ func TestMsgUpdateGroupMembers(t *testing.T) {
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
 			ctx, _ := pCtx.CacheContext()
-			_, err := NewHandler(k)(ctx, spec.src)
+			_, err := group.NewHandler(k)(ctx, spec.src)
 			require.True(t, spec.expErr.Is(err), err)
 			// then
 			loaded, err := k.GetGroup(ctx, groupID)
@@ -466,9 +467,9 @@ func TestMsgUpdateGroupMembers(t *testing.T) {
 			assert.Equal(t, spec.expGroup, loaded)
 
 			// and members persisted
-			it, err := k.groupMemberByGroupIndex.Get(ctx, uint64(groupID))
+			it, err := k.GetGroupMembersByGroup(ctx, groupID)
 			require.NoError(t, err)
-			var loadedMembers []GroupMember
+			var loadedMembers []group.GroupMember
 			_, err = orm.ReadAll(it, &loadedMembers)
 			require.NoError(t, err)
 			assert.Equal(t, spec.expMembers, loadedMembers)

@@ -1,4 +1,4 @@
-package testdata
+package group
 
 import (
 	"encoding/json"

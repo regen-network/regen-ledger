@@ -8,13 +8,12 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/params"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/gogo/protobuf/types"
 	"github.com/regen-network/regen-ledger/app"
 	"github.com/regen-network/regen-ledger/orm"
+	testdatagroup "github.com/regen-network/regen-ledger/testutil/testdata/group"
 	"github.com/regen-network/regen-ledger/x/group"
-	"github.com/regen-network/regen-ledger/x/group/testdata"
 	"github.com/regen-network/regen-ledger/x/group/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,11 +23,11 @@ import (
 func TestCreateGroup(t *testing.T) {
 	encodingConfig := app.MakeEncodingConfig()
 
-	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
-	paramSpace := paramtypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.Amino, pKey, pTKey, group.DefaultParamspace)
+	pKey, pTKey := sdk.NewKVStoreKey(paramstypes.StoreKey), sdk.NewTransientStoreKey(paramstypes.TStoreKey)
+	paramSpace := paramstypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.Amino, pKey, pTKey, group.DefaultParamspace)
 
 	groupKey := sdk.NewKVStoreKey(group.StoreKey)
-	k := group.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &group.MockProposalI{})
+	k := group.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &testutil.MockProposalI{})
 	ctx := testutil.NewContext(pKey, pTKey, groupKey)
 	defaultParams := group.DefaultParams()
 	paramSpace.SetParamSet(ctx, &defaultParams)
@@ -112,12 +111,12 @@ func TestCreateGroup(t *testing.T) {
 func TestCreateGroupAccount(t *testing.T) {
 	encodingConfig := app.MakeEncodingConfig()
 
-	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
-	paramSpace := paramtypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.amino, pKey, pTKey, group.DefaultParamspace)
+	pKey, pTKey := sdk.NewKVStoreKey(paramstypes.StoreKey), sdk.NewTransientStoreKey(paramstypes.TStoreKey)
+	paramSpace := paramstypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.Amino, pKey, pTKey, group.DefaultParamspace)
 
 	groupKey := sdk.NewKVStoreKey(group.StoreKey)
-	k := group.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &group.MockProposalI{})
-	ctx := group.NewContext(pKey, pTKey, groupKey)
+	k := group.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &testutil.MockProposalI{})
+	ctx := testutil.NewContext(pKey, pTKey, groupKey)
 	defaultParams := group.DefaultParams()
 	paramSpace.SetParamSet(ctx, &defaultParams)
 
@@ -205,13 +204,13 @@ func TestCreateGroupAccount(t *testing.T) {
 func TestCreateProposal(t *testing.T) {
 	encodingConfig := app.MakeEncodingConfig()
 
-	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
-	paramSpace := paramtypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.amino, pKey, pTKey, group.DefaultParamspace)
+	pKey, pTKey := sdk.NewKVStoreKey(paramstypes.StoreKey), sdk.NewTransientStoreKey(paramstypes.TStoreKey)
+	paramSpace := paramstypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.Amino, pKey, pTKey, group.DefaultParamspace)
 
 	groupKey := sdk.NewKVStoreKey(group.StoreKey)
-	k := group.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &testdata.MyAppProposal{})
+	k := group.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &testdatagroup.MyAppProposal{})
 	blockTime := time.Now()
-	ctx := group.NewContext(pKey, pTKey, groupKey).WithBlockTime(blockTime)
+	ctx := testutil.NewContext(pKey, pTKey, groupKey).WithBlockTime(blockTime)
 	defaultParams := group.DefaultParams()
 	paramSpace.SetParamSet(ctx, &defaultParams)
 
@@ -250,12 +249,12 @@ func TestCreateProposal(t *testing.T) {
 		"all good with good msg payload": {
 			srcAccount:   accountAddr,
 			srcProposers: []sdk.AccAddress{[]byte("valid-member-address")},
-			srcMsgs:      []sdk.Msg{&testdata.MsgAlwaysSucceed{}, &testdata.MsgAlwaysFail{}},
+			srcMsgs:      []sdk.Msg{&testdatagroup.MsgAlwaysSucceed{}, &testdatagroup.MsgAlwaysFail{}},
 		},
 		"invalid payload should be rejected": {
 			srcAccount:   accountAddr,
 			srcProposers: []sdk.AccAddress{[]byte("valid-member-address")},
-			srcMsgs:      []sdk.Msg{testdata.MsgAlwaysSucceed{}},
+			srcMsgs:      []sdk.Msg{&testdatagroup.MsgAlwaysSucceed{}},
 			srcComment:   "payload not a pointer",
 			expErr:       true,
 		},
@@ -304,7 +303,7 @@ func TestCreateProposal(t *testing.T) {
 		"reject msgs that are not authz by group account": {
 			srcAccount:   accountAddr,
 			srcComment:   "test",
-			srcMsgs:      []sdk.Msg{&testdata.MsgAuthenticate{Signers: []sdk.AccAddress{[]byte("not-group-acct-addrs")}}},
+			srcMsgs:      []sdk.Msg{&testdatagroup.MsgAuthenticate{Signers: []sdk.AccAddress{[]byte("not-group-acct-addrs")}}},
 			srcProposers: []sdk.AccAddress{[]byte("valid-member-address")},
 			expErr:       true,
 		},
@@ -358,13 +357,13 @@ func TestCreateProposal(t *testing.T) {
 func TestVote(t *testing.T) {
 	encodingConfig := app.MakeEncodingConfig()
 
-	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
-	paramSpace := paramtypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.amino, pKey, pTKey, group.DefaultParamspace)
+	pKey, pTKey := sdk.NewKVStoreKey(paramstypes.StoreKey), sdk.NewTransientStoreKey(paramstypes.TStoreKey)
+	paramSpace := paramstypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.Amino, pKey, pTKey, group.DefaultParamspace)
 
 	groupKey := sdk.NewKVStoreKey(group.StoreKey)
-	k := group.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &testdata.MyAppProposal{})
+	k := group.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &testdatagroup.MyAppProposal{})
 	blockTime := time.Now().UTC()
-	parentCtx := group.NewContext(pKey, pTKey, groupKey).WithBlockTime(blockTime)
+	parentCtx := testutil.NewContext(pKey, pTKey, groupKey).WithBlockTime(blockTime)
 	defaultParams := group.DefaultParams()
 	paramSpace.SetParamSet(parentCtx, &defaultParams)
 
@@ -620,18 +619,18 @@ func TestVote(t *testing.T) {
 func TestExecProposal(t *testing.T) {
 	encodingConfig := app.MakeEncodingConfig()
 
-	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
-	paramSpace := paramtypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.amino, pKey, pTKey, group.DefaultParamspace)
+	pKey, pTKey := sdk.NewKVStoreKey(paramstypes.StoreKey), sdk.NewTransientStoreKey(paramstypes.TStoreKey)
+	paramSpace := paramstypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.Amino, pKey, pTKey, group.DefaultParamspace)
 
 	router := baseapp.NewRouter()
 	groupKey := sdk.NewKVStoreKey(group.StoreKey)
-	k := group.NewGroupKeeper(groupKey, paramSpace, router, &testdata.MyAppProposal{})
-	testdataKey := sdk.NewKVStoreKey(testdata.ModuleName)
-	testdataKeeper := testdata.NewKeeper(testdataKey, k)
-	router.AddRoute(testdata.ModuleName, testdata.NewHandler(testdataKeeper))
+	k := group.NewGroupKeeper(groupKey, paramSpace, router, &testdatagroup.MyAppProposal{})
+	testdataKey := sdk.NewKVStoreKey(testdatagroup.ModuleName)
+	testdataKeeper := testdatagroup.NewKeeper(testdataKey, k)
+	router.AddRoute(sdk.NewRoute(testdatagroup.ModuleName, testdatagroup.NewHandler(testdataKeeper)))
 
 	blockTime := time.Now().UTC()
-	parentCtx := group.NewContext(pKey, pTKey, groupKey, testdataKey).WithBlockTime(blockTime)
+	parentCtx := testutil.NewContext(pKey, pTKey, groupKey, testdataKey).WithBlockTime(blockTime)
 	defaultParams := group.DefaultParams()
 	paramSpace.SetParamSet(parentCtx, &defaultParams)
 
@@ -661,7 +660,7 @@ func TestExecProposal(t *testing.T) {
 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalID {
 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
-					&testdata.MsgIncCounter{},
+					&testdatagroup.MsgIncCounter{},
 				})
 				require.NoError(t, err)
 				require.NoError(t, k.Vote(ctx, myProposalID, member, group.Choice_YES, ""))
@@ -676,7 +675,7 @@ func TestExecProposal(t *testing.T) {
 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalID {
 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
-					&testdata.MsgIncCounter{}, &testdata.MsgIncCounter{},
+					&testdatagroup.MsgIncCounter{}, &testdatagroup.MsgIncCounter{},
 				})
 				require.NoError(t, err)
 				require.NoError(t, k.Vote(ctx, myProposalID, member, group.Choice_YES, ""))
@@ -691,7 +690,7 @@ func TestExecProposal(t *testing.T) {
 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalID {
 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
-					&testdata.MsgAlwaysFail{},
+					&testdatagroup.MsgAlwaysFail{},
 				})
 				require.NoError(t, err)
 				require.NoError(t, k.Vote(ctx, myProposalID, member, group.Choice_NO, ""))
@@ -705,7 +704,7 @@ func TestExecProposal(t *testing.T) {
 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalID {
 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
-					&testdata.MsgAlwaysFail{},
+					&testdatagroup.MsgAlwaysFail{},
 				})
 				require.NoError(t, err)
 				return myProposalID
@@ -724,7 +723,7 @@ func TestExecProposal(t *testing.T) {
 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalID {
 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
-					&testdata.MsgAlwaysFail{},
+					&testdatagroup.MsgAlwaysFail{},
 				})
 				require.NoError(t, err)
 				require.NoError(t, k.Vote(ctx, myProposalID, member, group.Choice_NO, ""))
@@ -739,7 +738,7 @@ func TestExecProposal(t *testing.T) {
 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalID {
 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
-					&testdata.MsgAlwaysFail{},
+					&testdatagroup.MsgAlwaysFail{},
 				})
 				require.NoError(t, err)
 				require.NoError(t, k.Vote(ctx, myProposalID, member, group.Choice_NO, ""))
@@ -754,7 +753,7 @@ func TestExecProposal(t *testing.T) {
 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalID {
 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
-					&testdata.MsgAlwaysFail{},
+					&testdatagroup.MsgAlwaysFail{},
 				})
 				require.NoError(t, err)
 				// then modify group
@@ -772,7 +771,7 @@ func TestExecProposal(t *testing.T) {
 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalID {
 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
-					&testdata.MsgAlwaysFail{},
+					&testdatagroup.MsgAlwaysFail{},
 				})
 				require.NoError(t, err)
 				// then modify group account
@@ -790,7 +789,7 @@ func TestExecProposal(t *testing.T) {
 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalID {
 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
-					&testdata.MsgAlwaysFail{},
+					&testdatagroup.MsgAlwaysFail{},
 				})
 				require.NoError(t, err)
 				require.NoError(t, k.Vote(ctx, myProposalID, member, group.Choice_YES, ""))
@@ -809,7 +808,7 @@ func TestExecProposal(t *testing.T) {
 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalID {
 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
-					&testdata.MsgAlwaysFail{},
+					&testdatagroup.MsgAlwaysFail{},
 				})
 				require.NoError(t, err)
 				// then modify group account
@@ -827,7 +826,7 @@ func TestExecProposal(t *testing.T) {
 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalID {
 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
-					&testdata.MsgIncCounter{},
+					&testdatagroup.MsgIncCounter{},
 				})
 				require.NoError(t, err)
 				require.NoError(t, k.Vote(ctx, myProposalID, member, group.Choice_YES, ""))
@@ -843,7 +842,7 @@ func TestExecProposal(t *testing.T) {
 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalID {
 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
-					&testdata.MsgIncCounter{}, &testdata.MsgAlwaysFail{},
+					&testdatagroup.MsgIncCounter{}, &testdatagroup.MsgAlwaysFail{},
 				})
 				require.NoError(t, err)
 				require.NoError(t, k.Vote(ctx, myProposalID, member, group.Choice_YES, ""))
@@ -857,7 +856,7 @@ func TestExecProposal(t *testing.T) {
 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalID {
 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
-					&testdata.MsgConditional{ExpectedCounter: 1}, &testdata.MsgIncCounter{},
+					&testdatagroup.MsgConditional{ExpectedCounter: 1}, &testdatagroup.MsgIncCounter{},
 				})
 				require.NoError(t, err)
 				require.NoError(t, k.Vote(ctx, myProposalID, member, group.Choice_YES, ""))
@@ -910,13 +909,13 @@ func TestExecProposal(t *testing.T) {
 func TestLoadParam(t *testing.T) {
 	encodingConfig := app.MakeEncodingConfig()
 
-	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
-	paramSpace := paramtypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.amino, pKey, pTKey, group.DefaultParamspace)
+	pKey, pTKey := sdk.NewKVStoreKey(paramstypes.StoreKey), sdk.NewTransientStoreKey(paramstypes.TStoreKey)
+	paramSpace := paramstypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.Amino, pKey, pTKey, group.DefaultParamspace)
 
 	groupKey := sdk.NewKVStoreKey(group.StoreKey)
-	k := group.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &group.MockProposalI{})
+	k := group.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &testutil.MockProposalI{})
 
-	ctx := group.NewContext(pKey, pTKey, groupKey)
+	ctx := testutil.NewContext(pKey, pTKey, groupKey)
 
 	myParams := group.Params{MaxCommentLength: 1}
 	paramSpace.SetParamSet(ctx, &myParams)

@@ -4,9 +4,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/params"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/regen-network/regen-ledger/app"
+	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
@@ -26,15 +26,15 @@ func NewContext(keys ...sdk.StoreKey) sdk.Context {
 	return sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
 }
 
-func CreateGroupKeeper() (Keeper, sdk.Context) {
+func CreateGroupKeeper() (group.Keeper, sdk.Context) {
 	encodingConfig := app.MakeEncodingConfig()
-	pKey, pTKey := sdk.NewKVStoreKey(params.StoreKey), sdk.NewTransientStoreKey(params.TStoreKey)
-	paramSpace := paramtypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.amino, pKey, pTKey, DefaultParamspace)
+	pKey, pTKey := sdk.NewKVStoreKey(paramstypes.StoreKey), sdk.NewTransientStoreKey(paramstypes.TStoreKey)
+	paramSpace := paramstypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.Amino, pKey, pTKey, group.DefaultParamspace)
 
-	groupKey := sdk.NewKVStoreKey(StoreKey)
-	k := NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &MockProposalI{})
+	groupKey := sdk.NewKVStoreKey(group.StoreKey)
+	k := group.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &MockProposalI{})
 	ctx := NewContext(pKey, pTKey, groupKey)
-	k.setParams(ctx, DefaultParams())
+	k.SetParams(ctx, group.DefaultParams())
 	return k, ctx
 }
 
@@ -49,11 +49,11 @@ func (m MockProposalI) Unmarshal([]byte) error {
 	panic("implement me")
 }
 
-func (m MockProposalI) GetBase() ProposalBase {
+func (m MockProposalI) GetBase() group.ProposalBase {
 	panic("implement me")
 }
 
-func (m MockProposalI) SetBase(ProposalBase) {
+func (m MockProposalI) SetBase(group.ProposalBase) {
 	panic("implement me")
 }
 

@@ -1,4 +1,4 @@
-package testdata
+package group
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -9,12 +9,8 @@ import (
 // interfaces with the provided codec reference.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(MsgPropose{}, "testdata/MsgPropose", nil)
-	// oh man... amino
-	cdc.RegisterInterface((*isMyAppMsg_Sum)(nil), nil)
 	cdc.RegisterConcrete(&MsgAlwaysSucceed{}, "testdata/MsgAlwaysSucceed", nil)
 	cdc.RegisterConcrete(&MsgAlwaysFail{}, "testdata/MsgAlwaysFail", nil)
-	cdc.RegisterConcrete(&MyAppMsg_A{}, "testdata/MyAppMsg_A", nil)
-	cdc.RegisterConcrete(&MyAppMsg_B{}, "testdata/MyAppMsg_B", nil)
 }
 
 var (

@@ -6,7 +6,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	proto "github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
@@ -246,16 +246,16 @@ func (p Params) String() string {
 }
 
 // ParamSetPairs returns the parameter set pairs.
-func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
-	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(ParamMaxCommentLength, &p.MaxCommentLength, noopValidator()),
+func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
+	return paramstypes.ParamSetPairs{
+		paramstypes.NewParamSetPair(ParamMaxCommentLength, &p.MaxCommentLength, noopValidator()),
 	}
 }
 func (p Params) Validate() error {
 	return nil
 }
 
-func noopValidator() paramtypes.ValueValidatorFn {
+func noopValidator() paramstypes.ValueValidatorFn {
 	return func(value interface{}) error { return nil }
 }
 

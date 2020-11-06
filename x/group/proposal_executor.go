@@ -17,9 +17,9 @@ func ensureMsgAuthZ(msgs []sdk.Msg, groupAccount sdk.AccAddress) error {
 	return nil
 }
 
-// doExecuteMsgs routes the messages to the registered handlers. Messages are limited to those that require no authZ or
+// DoExecuteMsgs routes the messages to the registered handlers. Messages are limited to those that require no authZ or
 // by the group account only. Otherwise this gives access to other peoples accounts as the sdk ant handler is bypassed
-func doExecuteMsgs(ctx sdk.Context, router sdk.Router, groupAccount sdk.AccAddress, msgs []sdk.Msg) ([]sdk.Result, error) {
+func DoExecuteMsgs(ctx sdk.Context, router sdk.Router, groupAccount sdk.AccAddress, msgs []sdk.Msg) ([]sdk.Result, error) {
 	results := make([]sdk.Result, len(msgs))
 	if err := ensureMsgAuthZ(msgs, groupAccount); err != nil {
 		return nil, err

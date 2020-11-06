@@ -6,7 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/gogo/protobuf/types"
 	"github.com/regen-network/regen-ledger/orm"
 )
@@ -78,14 +78,14 @@ type Keeper struct {
 	voteByProposalBaseIndex orm.UInt64Index
 	voteByVoterIndex        orm.Index
 
-	paramSpace paramtypes.Subspace
+	paramSpace paramstypes.Subspace
 	router     sdk.Router
 }
 
-func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace, router sdk.Router, proposalModel ProposalI) Keeper {
+func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, router sdk.Router, proposalModel ProposalI) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
-		paramSpace = paramSpace.WithKeyTable(paramtypes.NewKeyTable().RegisterParamSet(&Params{}))
+		paramSpace = paramSpace.WithKeyTable(paramstypes.NewKeyTable().RegisterParamSet(&Params{}))
 	}
 	if storeKey == nil {
 		panic("storeKey must not be nil")
@@ -248,7 +248,7 @@ func (k Keeper) GetParams(ctx sdk.Context) Params {
 	return p
 }
 
-func (k Keeper) setParams(ctx sdk.Context, params Params) {
+func (k Keeper) SetParams(ctx sdk.Context, params Params) {
 	k.paramSpace.SetParamSet(ctx, &params)
 }
 
@@ -457,7 +457,7 @@ func (k Keeper) ExecProposal(ctx sdk.Context, id ProposalID) error {
 	if base.Status == ProposalStatusClosed && base.Result == ProposalResultAccepted && base.ExecutorResult != ProposalExecutorResultSuccess {
 		logger := ctx.Logger().With("module", fmt.Sprintf("x/%s", ModuleName))
 		ctx, flush := ctx.CacheContext()
-		_, err := doExecuteMsgs(ctx, k.router, accountMetadata.GroupAccount, proposal.GetMsgs())
+		_, err := DoExecuteMsgs(ctx, k.router, accountMetadata.GroupAccount, proposal.GetMsgs())
 		if err != nil {
 			base.ExecutorResult = ProposalExecutorResultFailure
 			proposalType := reflect.TypeOf(proposal).String()
