@@ -2,6 +2,7 @@ package server
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -27,14 +28,7 @@ type serverImpl struct {
 	batchInfoTable orm.NaturalKeyTable
 }
 
-// Server is the the ecocredits implementation of ADR 031 Msg Service
-type Server interface {
-	ecocredit.MsgServer
-	ecocredit.QueryServer
-}
-
-// NewServer implements the interface for ADR-031
-func NewServer(storeKey sdk.StoreKey) Server {
+func newServer(storeKey sdk.StoreKey) serverImpl {
 	s := serverImpl{storeKey: storeKey}
 
 	s.idSeq = orm.NewSequence(storeKey, IDSeqPrefix)
@@ -46,4 +40,10 @@ func NewServer(storeKey sdk.StoreKey) Server {
 	s.batchInfoTable = batchInfoTableBuilder.Build()
 
 	return s
+}
+
+func RegisterServices(storeKey sdk.StoreKey, configurator module.Configurator) {
+	impl := newServer(storeKey)
+	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
+	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 }

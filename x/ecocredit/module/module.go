@@ -14,23 +14,19 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	client "github.com/regen-network/regen-ledger/x/ecocredit/client"
+	"github.com/regen-network/regen-ledger/x/ecocredit/client"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
-type AppModule struct {
-	Key sdk.StoreKey
-	Srv server.Server
-}
+type AppModule struct{}
 
 var _ module.AppModule = AppModule{}
 
-func NewAppModule() AppModule {
-	key := sdk.NewKVStoreKey(ecocredit.ModuleName)
-	return AppModule{key, server.NewServer(key)}
+func NewAppModule() module.AppModule {
+	return AppModule{}
 }
 
-func (a AppModule) Name() string { return a.Key.Name() }
+func (a AppModule) Name() string { return ecocredit.ModuleName }
 
 func (a AppModule) DefaultGenesis(codec.JSONMarshaler) json.RawMessage {
 	return nil
@@ -48,18 +44,24 @@ func (a AppModule) ExportGenesis(sdk.Context, codec.JSONMarshaler) json.RawMessa
 }
 
 func (a AppModule) GetTxCmd() *cobra.Command {
-	return nil
+	return client.TxCmd()
 }
 
-func (a AppModule) GetQueryCmd() *cobra.Command { return client.QueryCmd() }
+func (a AppModule) GetQueryCmd() *cobra.Command {
+	return client.QueryCmd()
+}
 
 func (a AppModule) RegisterGRPCGatewayRoutes(sdkclient.Context, *runtime.ServeMux) {}
 
 func (a AppModule) RegisterInvariants(sdk.InvariantRegistry) {}
 
 func (a AppModule) RegisterServices(cfg module.Configurator) {
-	ecocredit.RegisterMsgServer(cfg.MsgServer(), a.Srv)
-	ecocredit.RegisterQueryServer(cfg.QueryServer(), a.Srv)
+	key := sdk.NewKVStoreKey(ecocredit.ModuleName)
+	server.RegisterServices(key, cfg)
+}
+
+func (a AppModule) RegisterInterfaces(r codectypes.InterfaceRegistry) {
+	ecocredit.RegisterTypes(r)
 }
 
 func (a AppModule) BeginBlock(sdk.Context, abci.RequestBeginBlock) {}
@@ -70,18 +72,11 @@ func (a AppModule) EndBlock(sdk.Context, abci.RequestEndBlock) []abci.ValidatorU
 
 /**** DEPRECATED ****/
 
-// Should we deprecate it? RegisterServices already registers everything for the module.
-func (a AppModule) RegisterInterfaces(codectypes.InterfaceRegistry) {}
-
-func (a AppModule) Route() sdk.Route {
-	return sdk.Route{}
-}
+func (a AppModule) Route() sdk.Route { return sdk.Route{} }
 
 func (a AppModule) QuerierRoute() string { return a.Name() }
 
-func (a AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier {
-	return nil
-}
+func (a AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier { return nil }
 
 func (a AppModule) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
 
