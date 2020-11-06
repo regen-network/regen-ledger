@@ -1,16 +1,15 @@
 package client
 
 import (
-	"context"
 	"encoding/base64"
-	client2 "github.com/regen-network/regen-ledger/client"
 
-	"github.com/cosmos/cosmos-sdk/client"
+	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	gocid "github.com/ipfs/go-cid"
 	"github.com/spf13/cobra"
 
+	"github.com/regen-network/regen-ledger/client"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -21,7 +20,7 @@ func TxCmd() *cobra.Command {
 		Short:                      "Data transaction subcommands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
-		RunE:                       client.ValidateCmd,
+		RunE:                       sdkclient.ValidateCmd,
 	}
 
 	cmd.AddCommand(
@@ -46,8 +45,8 @@ func MsgAnchorDataCmd() *cobra.Command {
 				return err
 			}
 
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err = client.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			clientCtx := sdkclient.GetClientContextFromCmd(cmd)
+			clientCtx, err = sdkclient.ReadTxCommandFlags(clientCtx, cmd.Flags())
 			if err != nil {
 				return err
 			}
@@ -61,9 +60,9 @@ func MsgAnchorDataCmd() *cobra.Command {
 				Sender: clientCtx.GetFromAddress().String(),
 				Cid:    cid.Bytes(),
 			}
-			svcMsgClientConn := &client2.ServiceMsgClientConn{}
+			svcMsgClientConn := &client.ServiceMsgClientConn{}
 			msgClient := data.NewMsgClient(svcMsgClientConn)
-			_, err = msgClient.AnchorData(context.Background(), &msg)
+			_, err = msgClient.AnchorData(cmd.Context(), &msg)
 			if err != nil {
 				return err
 			}
@@ -89,8 +88,8 @@ func MsgSignDataCmd() *cobra.Command {
 				return err
 			}
 
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err = client.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			clientCtx := sdkclient.GetClientContextFromCmd(cmd)
+			clientCtx, err = sdkclient.ReadTxCommandFlags(clientCtx, cmd.Flags())
 			if err != nil {
 				return err
 			}
@@ -104,9 +103,9 @@ func MsgSignDataCmd() *cobra.Command {
 				Signers: []string{clientCtx.GetFromAddress().String()},
 				Cid:     cid.Bytes(),
 			}
-			svcMsgClientConn := &client2.ServiceMsgClientConn{}
+			svcMsgClientConn := &client.ServiceMsgClientConn{}
 			msgClient := data.NewMsgClient(svcMsgClientConn)
-			_, err = msgClient.SignData(context.Background(), &msg)
+			_, err = msgClient.SignData(cmd.Context(), &msg)
 			if err != nil {
 				return err
 			}
@@ -132,8 +131,8 @@ func MsgStoreDataCmd() *cobra.Command {
 				return err
 			}
 
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err = client.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			clientCtx := sdkclient.GetClientContextFromCmd(cmd)
+			clientCtx, err = sdkclient.ReadTxCommandFlags(clientCtx, cmd.Flags())
 			if err != nil {
 				return err
 			}
@@ -153,9 +152,9 @@ func MsgStoreDataCmd() *cobra.Command {
 				Cid:     cid.Bytes(),
 				Content: content,
 			}
-			svcMsgClientConn := &client2.ServiceMsgClientConn{}
+			svcMsgClientConn := &client.ServiceMsgClientConn{}
 			msgClient := data.NewMsgClient(svcMsgClientConn)
-			_, err = msgClient.StoreData(context.Background(), &msg)
+			_, err = msgClient.StoreData(cmd.Context(), &msg)
 			if err != nil {
 				return err
 			}
