@@ -257,7 +257,7 @@ func (m MsgCreateGroupAccount) ValidateBasic() error {
 var _ types.UnpackInterfacesMessage = MsgCreateGroupAccount{}
 
 // NewMsgCreateGroupAccount creates a new MsgCreateGroupAccount.
-func NewMsgCreateGroupAccount(admin sdk.AccAddress, group GroupID, comment string, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccount, error) {
+func NewMsgCreateGroupAccount(admin sdk.AccAddress, group ID, comment string, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccount, error) {
 	m := &MsgCreateGroupAccount{
 		Admin:   admin,
 		Group:   group,
@@ -274,7 +274,7 @@ func (m *MsgCreateGroupAccount) GetAdmin() sdk.AccAddress {
 	return m.Admin
 }
 
-func (m *MsgCreateGroupAccount) GetGroup() GroupID {
+func (m *MsgCreateGroupAccount) GetGroup() ID {
 	return m.Group
 }
 

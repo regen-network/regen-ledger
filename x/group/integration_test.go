@@ -130,7 +130,7 @@ package group_test
 // 	fee := types.NewTestStdFee()
 // 	specs := map[string]struct {
 // 		admin     sdk.AccAddress
-// 		group     group.GroupID
+// 		group     group.ID
 // 		comment   string
 // 		threshold sdk.Dec
 // 		timeout   proto.Duration

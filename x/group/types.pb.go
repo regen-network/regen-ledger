@@ -270,7 +270,7 @@ func (m *ThresholdDecisionPolicy) GetTimeout() types.Duration {
 }
 
 type GroupMetadata struct {
-	Group   GroupID                                       `protobuf:"varint,1,opt,name=group,proto3,casttype=GroupID" json:"group,omitempty"`
+	Group   ID                                       `protobuf:"varint,1,opt,name=group,proto3,casttype=ID" json:"group,omitempty"`
 	Admin   github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
 	Comment string                                        `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
 	// version is used to track changes to a group's membership structure that
@@ -314,7 +314,7 @@ func (m *GroupMetadata) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GroupMetadata proto.InternalMessageInfo
 
-func (m *GroupMetadata) GetGroup() GroupID {
+func (m *GroupMetadata) GetGroup() ID {
 	if m != nil {
 		return m.Group
 	}
@@ -343,7 +343,7 @@ func (m *GroupMetadata) GetVersion() uint64 {
 }
 
 type GroupMember struct {
-	Group GroupID `protobuf:"varint,1,opt,name=group,proto3,casttype=GroupID" json:"group,omitempty"`
+	Group ID `protobuf:"varint,1,opt,name=group,proto3,casttype=ID" json:"group,omitempty"`
 	// todo: @aaronc field has different name in `Member.address`. Can we unify this?
 	Member github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=member,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"member,omitempty"`
 	// todo: @aaronc it is `Member.power`. Can we unify this?
@@ -384,7 +384,7 @@ func (m *GroupMember) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GroupMember proto.InternalMessageInfo
 
-func (m *GroupMember) GetGroup() GroupID {
+func (m *GroupMember) GetGroup() ID {
 	if m != nil {
 		return m.Group
 	}
@@ -408,7 +408,7 @@ func (m *GroupMember) GetComment() string {
 // GroupAccountMetadata specifies group account metadata
 type GroupAccountMetadata struct {
 	GroupAccount github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=group_account,json=groupAccount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"group_account,omitempty"`
-	Group        GroupID                                       `protobuf:"varint,2,opt,name=group,proto3,casttype=GroupID" json:"group,omitempty"`
+	Group        ID                                       `protobuf:"varint,2,opt,name=group,proto3,casttype=ID" json:"group,omitempty"`
 	Admin        github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,3,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
 	Comment      string                                        `protobuf:"bytes,4,opt,name=comment,proto3" json:"comment,omitempty"`
 	// version is used to track changes to a group's GroupAccountMetadata structure that
@@ -1867,7 +1867,7 @@ func (m *GroupMetadata) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Group |= GroupID(b&0x7F) << shift
+				m.Group |= ID(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2058,7 +2058,7 @@ func (m *GroupMember) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Group |= GroupID(b&0x7F) << shift
+				m.Group |= ID(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2264,7 +2264,7 @@ func (m *GroupAccountMetadata) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Group |= GroupID(b&0x7F) << shift
+				m.Group |= ID(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}

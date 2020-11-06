@@ -182,7 +182,7 @@ func (k Keeper) MaxCommentSize(ctx sdk.Context) int {
 	return int(result)
 }
 
-func (k Keeper) CreateGroup(ctx sdk.Context, admin sdk.AccAddress, members Members, comment string) (GroupID, error) {
+func (k Keeper) CreateGroup(ctx sdk.Context, admin sdk.AccAddress, members Members, comment string) (ID, error) {
 	if err := members.ValidateBasic(); err != nil {
 		return 0, err
 	}
@@ -201,7 +201,7 @@ func (k Keeper) CreateGroup(ctx sdk.Context, admin sdk.AccAddress, members Membe
 		totalWeight = totalWeight.Add(m.Power)
 	}
 
-	groupID := GroupID(k.groupSeq.NextVal(ctx))
+	groupID := ID(k.groupSeq.NextVal(ctx))
 	err := k.groupTable.Create(ctx, groupID.Bytes(), &GroupMetadata{
 		Group:       groupID,
 		Admin:       admin,
@@ -228,7 +228,7 @@ func (k Keeper) CreateGroup(ctx sdk.Context, admin sdk.AccAddress, members Membe
 	return groupID, nil
 }
 
-func (k Keeper) GetGroup(ctx sdk.Context, id GroupID) (GroupMetadata, error) {
+func (k Keeper) GetGroup(ctx sdk.Context, id ID) (GroupMetadata, error) {
 	var obj GroupMetadata
 	return obj, k.groupTable.GetOne(ctx, id.Bytes(), &obj)
 }
@@ -253,7 +253,7 @@ func (k Keeper) SetParams(ctx sdk.Context, params Params) {
 }
 
 // CreateGroupAccount creates and persists a `GroupAccountMetadata`
-func (k Keeper) CreateGroupAccount(ctx sdk.Context, admin sdk.AccAddress, groupID GroupID, policy DecisionPolicy, comment string) (sdk.AccAddress, error) {
+func (k Keeper) CreateGroupAccount(ctx sdk.Context, admin sdk.AccAddress, groupID ID, policy DecisionPolicy, comment string) (sdk.AccAddress, error) {
 	maxCommentSize := k.MaxCommentSize(ctx)
 	if len(comment) > maxCommentSize {
 		return nil, errors.Wrap(ErrMaxLimit,
@@ -308,7 +308,7 @@ func (k Keeper) GetGroupByGroupAccount(ctx sdk.Context, accountAddress sdk.AccAd
 	return k.GetGroup(ctx, obj.Group)
 }
 
-func (k Keeper) GetGroupMembersByGroup(ctx sdk.Context, id GroupID) (orm.Iterator, error) {
+func (k Keeper) GetGroupMembersByGroup(ctx sdk.Context, id ID) (orm.Iterator, error) {
 	return k.groupMemberByGroupIndex.Get(ctx, id.Uint64())
 }
 

@@ -88,7 +88,7 @@ func (m *MsgCreateGroup) GetComment() string {
 
 type MsgUpdateGroupMembers struct {
 	Admin         github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
-	Group         GroupID                                       `protobuf:"varint,2,opt,name=group,proto3,casttype=GroupID" json:"group,omitempty"`
+	Group         ID                                       `protobuf:"varint,2,opt,name=group,proto3,casttype=ID" json:"group,omitempty"`
 	MemberUpdates []Member                                      `protobuf:"bytes,3,rep,name=member_updates,json=memberUpdates,proto3" json:"member_updates"`
 }
 
@@ -132,7 +132,7 @@ func (m *MsgUpdateGroupMembers) GetAdmin() github_com_cosmos_cosmos_sdk_types.Ac
 	return nil
 }
 
-func (m *MsgUpdateGroupMembers) GetGroup() GroupID {
+func (m *MsgUpdateGroupMembers) GetGroup() ID {
 	if m != nil {
 		return m.Group
 	}
@@ -148,7 +148,7 @@ func (m *MsgUpdateGroupMembers) GetMemberUpdates() []Member {
 
 type MsgUpdateGroupAdmin struct {
 	Admin    github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
-	Group    GroupID                                       `protobuf:"varint,2,opt,name=group,proto3,casttype=GroupID" json:"group,omitempty"`
+	Group    ID                                       `protobuf:"varint,2,opt,name=group,proto3,casttype=ID" json:"group,omitempty"`
 	NewAdmin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,3,opt,name=new_admin,json=newAdmin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"new_admin,omitempty"`
 }
 
@@ -192,7 +192,7 @@ func (m *MsgUpdateGroupAdmin) GetAdmin() github_com_cosmos_cosmos_sdk_types.AccA
 	return nil
 }
 
-func (m *MsgUpdateGroupAdmin) GetGroup() GroupID {
+func (m *MsgUpdateGroupAdmin) GetGroup() ID {
 	if m != nil {
 		return m.Group
 	}
@@ -208,7 +208,7 @@ func (m *MsgUpdateGroupAdmin) GetNewAdmin() github_com_cosmos_cosmos_sdk_types.A
 
 type MsgUpdateGroupComment struct {
 	Admin   github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
-	Group   GroupID                                       `protobuf:"varint,2,opt,name=group,proto3,casttype=GroupID" json:"group,omitempty"`
+	Group   ID                                       `protobuf:"varint,2,opt,name=group,proto3,casttype=ID" json:"group,omitempty"`
 	Comment string                                        `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
 }
 
@@ -252,7 +252,7 @@ func (m *MsgUpdateGroupComment) GetAdmin() github_com_cosmos_cosmos_sdk_types.Ac
 	return nil
 }
 
-func (m *MsgUpdateGroupComment) GetGroup() GroupID {
+func (m *MsgUpdateGroupComment) GetGroup() ID {
 	if m != nil {
 		return m.Group
 	}
@@ -269,7 +269,7 @@ func (m *MsgUpdateGroupComment) GetComment() string {
 // MsgCreateGroupAccount creates a group account using one of the members of DecisionPolicy.
 type MsgCreateGroupAccount struct {
 	Admin          github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
-	Group          GroupID                                       `protobuf:"varint,2,opt,name=group,proto3,casttype=GroupID" json:"group,omitempty"`
+	Group          ID                                       `protobuf:"varint,2,opt,name=group,proto3,casttype=ID" json:"group,omitempty"`
 	Comment        string                                        `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
 	DecisionPolicy *types.Any                                    `protobuf:"bytes,4,opt,name=decision_policy,json=decisionPolicy,proto3" json:"decision_policy,omitempty"`
 }
@@ -370,7 +370,7 @@ func (m *MsgUpdateGroupAccountAdmin) GetNewAdmin() github_com_cosmos_cosmos_sdk_
 // MsgCreateGroupAccount allows a group account decision policy to be updated to a member of DecisionPolicy.
 type MsgUpdateGroupAccountDecisionPolicy struct {
 	Admin          github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
-	Group          GroupID                                       `protobuf:"varint,2,opt,name=group,proto3,casttype=GroupID" json:"group,omitempty"`
+	Group          ID                                       `protobuf:"varint,2,opt,name=group,proto3,casttype=ID" json:"group,omitempty"`
 	DecisionPolicy *types.Any                                    `protobuf:"bytes,3,opt,name=decision_policy,json=decisionPolicy,proto3" json:"decision_policy,omitempty"`
 }
 
@@ -414,7 +414,7 @@ func (m *MsgUpdateGroupAccountDecisionPolicy) GetAdmin() github_com_cosmos_cosmo
 	return nil
 }
 
-func (m *MsgUpdateGroupAccountDecisionPolicy) GetGroup() GroupID {
+func (m *MsgUpdateGroupAccountDecisionPolicy) GetGroup() ID {
 	if m != nil {
 		return m.Group
 	}
@@ -1724,7 +1724,7 @@ func (m *MsgUpdateGroupMembers) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Group |= GroupID(b&0x7F) << shift
+				m.Group |= ID(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1864,7 +1864,7 @@ func (m *MsgUpdateGroupAdmin) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Group |= GroupID(b&0x7F) << shift
+				m.Group |= ID(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2004,7 +2004,7 @@ func (m *MsgUpdateGroupComment) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Group |= GroupID(b&0x7F) << shift
+				m.Group |= ID(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2142,7 +2142,7 @@ func (m *MsgCreateGroupAccount) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Group |= GroupID(b&0x7F) << shift
+				m.Group |= ID(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2471,7 +2471,7 @@ func (m *MsgUpdateGroupAccountDecisionPolicy) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Group |= GroupID(b&0x7F) << shift
+				m.Group |= ID(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}

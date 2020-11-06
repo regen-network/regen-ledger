@@ -75,13 +75,13 @@ func TestCreateGroup(t *testing.T) {
 			id, err := k.CreateGroup(ctx, spec.srcAdmin, spec.srcMembers, spec.srcComment)
 			if spec.expErr {
 				require.Error(t, err)
-				require.False(t, k.HasGroup(ctx, group.GroupID(seq+1).Bytes()))
+				require.False(t, k.HasGroup(ctx, group.ID(seq+1).Bytes()))
 				return
 			}
 			require.NoError(t, err)
 
 			seq++
-			assert.Equal(t, group.GroupID(seq), id)
+			assert.Equal(t, group.ID(seq), id)
 
 			// then all data persisted
 			loadedGroup, err := k.GetGroup(ctx, id)
@@ -125,7 +125,7 @@ func TestCreateGroupAccount(t *testing.T) {
 
 	specs := map[string]struct {
 		srcAdmin   sdk.AccAddress
-		srcGroupID group.GroupID
+		srcGroupID group.ID
 		srcPolicy  group.DecisionPolicy
 		srcComment string
 		expErr     bool

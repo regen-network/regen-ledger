@@ -80,7 +80,7 @@ func handleMsgUpdateGroupMembers(ctx sdk.Context, k Keeper, msg *MsgUpdateGroupM
 }
 
 type authNGroupMsg interface {
-	GetGroup() GroupID
+	GetGroup() ID
 	GetAdmin() sdk.AccAddress // equal GetSigners()
 }
 
@@ -98,7 +98,7 @@ func doAuthenticated(k Keeper, ctx sdk.Context, msg authNGroupMsg, action func(*
 	return buildGroupResult(ctx, msg.GetAdmin(), msg.GetGroup(), note)
 }
 
-func buildGroupResult(ctx sdk.Context, admin sdk.AccAddress, group GroupID, note string) (*sdk.Result, error) {
+func buildGroupResult(ctx sdk.Context, admin sdk.AccAddress, group ID, note string) (*sdk.Result, error) {
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
 			sdk.EventTypeMessage,

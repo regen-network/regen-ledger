@@ -62,12 +62,12 @@ func TestMsgCreateGroup(t *testing.T) {
 			}
 			// then
 			groupID := orm.DecodeSequence(res.Data)
-			loaded, err := k.GetGroup(ctx, group.GroupID(groupID))
+			loaded, err := k.GetGroup(ctx, group.ID(groupID))
 			require.NoError(t, err)
 			assert.Equal(t, spec.expGroup, loaded)
 
 			// and members persisted
-			it, err := k.GetGroupMembersByGroup(ctx, group.GroupID(groupID))
+			it, err := k.GetGroupMembersByGroup(ctx, group.ID(groupID))
 			require.NoError(t, err)
 			var loadedMembers []group.GroupMember
 			_, err = orm.ReadAll(it, &loadedMembers)

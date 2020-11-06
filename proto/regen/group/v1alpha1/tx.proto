@@ -21,19 +21,19 @@ message MsgCreateGroup {
 
 message MsgUpdateGroupMembers {
     bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
-    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
+    uint64 group = 2 [(gogoproto.casttype) = "ID"];
     repeated Member member_updates = 3 [(gogoproto.nullable) = false]; // set power to 0 to remove
 }
 
 message MsgUpdateGroupAdmin {
     bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
-    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
+    uint64 group = 2 [(gogoproto.casttype) = "ID"];
     bytes new_admin = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
 }
 
 message MsgUpdateGroupComment {
     bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
-    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
+    uint64 group = 2 [(gogoproto.casttype) = "ID"];
     string comment = 3;
 }
 
@@ -45,7 +45,7 @@ message MsgUpdateGroupComment {
 message MsgCreateGroupAccount {
     option (gogoproto.goproto_getters) = false;
     bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
-    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
+    uint64 group = 2 [(gogoproto.casttype) = "ID"];
     string comment = 3;
     google.protobuf.Any decision_policy = 4 [(cosmos_proto.accepts_interface) = "DecisionPolicy"];
 }
@@ -59,7 +59,7 @@ message MsgUpdateGroupAccountAdmin {
 // MsgCreateGroupAccount allows a group account decision policy to be updated to a member of DecisionPolicy.
 message MsgUpdateGroupAccountDecisionPolicy {
     bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
-    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
+    uint64 group = 2 [(gogoproto.casttype) = "ID"];
     google.protobuf.Any decision_policy = 3 [(cosmos_proto.accepts_interface) = "DecisionPolicy"];
 }
 

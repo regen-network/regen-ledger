@@ -16,17 +16,17 @@ import (
 	"time"
 )
 
-type GroupID uint64
+type ID uint64
 
-func (g GroupID) Uint64() uint64 {
+func (g ID) Uint64() uint64 {
 	return uint64(g)
 }
 
-func (g GroupID) Empty() bool {
+func (g ID) Empty() bool {
 	return g == 0
 }
 
-func (g GroupID) Bytes() []byte {
+func (g ID) Bytes() []byte {
 	return orm.EncodeSequence(uint64(g))
 }
 
@@ -129,7 +129,7 @@ func (g GroupAccountMetadata) NaturalKey() []byte {
 var _ orm.Validateable = GroupAccountMetadata{}
 
 // NewGroupAccountMetadata creates a new GroupAccountMetadata instance
-func NewGroupAccountMetadata(groupAccount sdk.AccAddress, group GroupID, admin sdk.AccAddress, comment string, version uint64, decisionPolicy DecisionPolicy) (GroupAccountMetadata, error) {
+func NewGroupAccountMetadata(groupAccount sdk.AccAddress, group ID, admin sdk.AccAddress, comment string, version uint64, decisionPolicy DecisionPolicy) (GroupAccountMetadata, error) {
 	p := GroupAccountMetadata{
 		GroupAccount: groupAccount,
 		Group:        group,

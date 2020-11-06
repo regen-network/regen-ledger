@@ -325,7 +325,7 @@ func TestGroupMemberValidation(t *testing.T) {
 func TestGroupAccountMetadata(t *testing.T) {
 	specs := map[string]struct {
 		groupAccount sdk.AccAddress
-		group        GroupID
+		group        ID
 		admin        sdk.AccAddress
 		comment      string
 		version      uint64
