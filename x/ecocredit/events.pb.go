@@ -5,11 +5,10 @@ package ecocredit
 
 import (
 	fmt "fmt"
+	proto "github.com/gogo/protobuf/proto"
 	io "io"
 	math "math"
 	math_bits "math/bits"
-
-	proto "github.com/gogo/protobuf/proto"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -137,9 +136,9 @@ func (m *EventCreateBatch) GetBatchDenom() string {
 	return ""
 }
 
-func (m *EventCreateBatch) GetIssuerAddress() string {
+func (m *EventCreateBatch) GetIssuer() string {
 	if m != nil {
-		return m.IssuerAddress
+		return m.Issuer
 	}
 	return ""
 }
@@ -396,10 +395,10 @@ func (m *EventCreateBatch) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x22
 	}
-	if len(m.IssuerAddress) > 0 {
-		i -= len(m.IssuerAddress)
-		copy(dAtA[i:], m.IssuerAddress)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.IssuerAddress)))
+	if len(m.Issuer) > 0 {
+		i -= len(m.Issuer)
+		copy(dAtA[i:], m.Issuer)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Issuer)))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -557,7 +556,7 @@ func (m *EventCreateBatch) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
-	l = len(m.IssuerAddress)
+	l = len(m.Issuer)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
@@ -832,7 +831,7 @@ func (m *EventCreateBatch) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field IssuerAddress", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Issuer", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -860,7 +859,7 @@ func (m *EventCreateBatch) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.IssuerAddress = string(dAtA[iNdEx:postIndex])
+			m.Issuer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
