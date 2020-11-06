@@ -191,6 +191,12 @@ func (g GroupAccountMetadata) ValidateBasic() error {
 	return nil
 }
 
+// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+func (g GroupAccountMetadata) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+	var decisionPolicy DecisionPolicy
+	return unpacker.UnpackAny(g.DecisionPolicy, &decisionPolicy)
+}
+
 func (v Vote) NaturalKey() []byte {
 	result := make([]byte, 8, 8+len(v.Voter))
 	copy(result[0:8], v.Proposal.Bytes())
@@ -251,6 +257,7 @@ func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
 		paramstypes.NewParamSetPair(ParamMaxCommentLength, &p.MaxCommentLength, noopValidator()),
 	}
 }
+
 func (p Params) Validate() error {
 	return nil
 }

@@ -309,6 +309,12 @@ func (m MsgCreateGroupAccount) UnpackInterfaces(unpacker types.AnyUnpacker) erro
 	return unpacker.UnpackAny(m.DecisionPolicy, &decisionPolicy)
 }
 
+// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+func (m MsgUpdateGroupAccountDecisionPolicy) UnpackInterfaces(unpacker types.AnyUnpacker) error {
+	var decisionPolicy DecisionPolicy
+	return unpacker.UnpackAny(m.DecisionPolicy, &decisionPolicy)
+}
+
 var _ sdk.Msg = &MsgVote{}
 
 func (m MsgVote) Route() string { return ModuleName }
