@@ -4,10 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/gorilla/mux"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/spf13/cobra"
@@ -35,8 +38,10 @@ func AccountCondition(id uint64) Condition {
 	return NewCondition("group", "account", orm.EncodeSequence(id))
 }
 
-type AppModuleBasic struct {
-}
+type AppModuleBasic struct{}
+
+var _ module.AppModule = AppModule{}
+var _ module.AppModuleBasic = AppModuleBasic{}
 
 func (a AppModuleBasic) Name() string {
 	return ModuleName
@@ -50,7 +55,7 @@ func (a AppModuleBasic) DefaultGenesis(marshaler codec.JSONMarshaler) json.RawMe
 	return marshaler.MustMarshalJSON(NewGenesisState())
 }
 
-func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, bz json.RawMessage) error {
+func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, config client.TxEncodingConfig, bz json.RawMessage) error {
 	var data GenesisState
 	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ModuleName, err)
@@ -64,6 +69,8 @@ func (a AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, r *mux.Rout
 	return
 }
 
+func (a AppModuleBasic) RegisterGRPCGatewayRoutes(client.Context, *runtime.ServeMux) {}
+
 func (a AppModuleBasic) GetTxCmd() *cobra.Command {
 	return nil
 }
@@ -73,8 +80,8 @@ func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 	return nil
 }
 
-// RegisterInterfaceTypes registers module concrete types into protobuf Any.
-func (AppModuleBasic) RegisterInterfaceTypes(registry cdctypes.InterfaceRegistry) {
+// RegisterInterfaces registers module concrete types into protobuf Any.
+func (AppModuleBasic) RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	RegisterInterfaces(registry)
 }
 
@@ -109,8 +116,9 @@ func (a AppModule) RegisterInvariants(sdk.InvariantRegistry) {
 	// todo: check that tally sums must never have less than block before ?
 }
 
-func (a AppModule) Route() string {
-	return RouterKey
+// Route returns the message routing key for the group module.
+func (a AppModule) Route() sdk.Route {
+	return sdk.NewRoute(RouterKey, NewHandler(a.keeper))
 }
 
 func (a AppModule) NewHandler() sdk.Handler {
@@ -121,8 +129,11 @@ func (a AppModule) QuerierRoute() string {
 	return QuerierRoute
 }
 
-func (a AppModule) NewQuerierHandler() sdk.Querier {
+func (a AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier {
 	return NewQuerier(a.keeper)
+}
+
+func (a AppModule) RegisterServices(configurator module.Configurator) {
 }
 
 func (a AppModule) BeginBlock(sdk.Context, abci.RequestBeginBlock) {}
