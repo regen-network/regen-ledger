@@ -14,7 +14,7 @@ import (
 // object provided to it during init.
 type GenesisState map[string]json.RawMessage
 
-// NewDefaultGenesisState generates the default state for gaia.
+// NewDefaultGenesisState generates the default state for regen.
 func NewDefaultGenesisState() GenesisState {
 	encCfg := MakeEncodingConfig()
 	return ModuleBasics.DefaultGenesis(encCfg.Marshaler)
