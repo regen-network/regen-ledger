@@ -21,7 +21,9 @@ func NewContext(keys ...sdk.StoreKey) sdk.Context {
 			storeType = sdk.StoreTypeTransient
 		}
 		cms.MountStoreWithDB(v, storeType, db)
-		cms.LoadLatestVersion()
+		if err := cms.LoadLatestVersion(); err != nil {
+			panic(err)
+		}
 	}
 	return sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
 }

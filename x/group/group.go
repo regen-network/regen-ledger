@@ -64,9 +64,6 @@ func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, config client.T
 }
 
 func (a AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, r *mux.Router) {
-	//rest.RegisterRoutes(ctx, r, moduleCdc, RouterKey)
-	// todo: what client functions do we want to support?
-	return
 }
 
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(client.Context, *runtime.ServeMux) {}
@@ -130,7 +127,7 @@ func (a AppModule) QuerierRoute() string {
 }
 
 func (a AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier {
-	return NewQuerier(a.keeper)
+	return nil
 }
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {

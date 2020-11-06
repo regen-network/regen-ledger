@@ -53,8 +53,8 @@ func (c Condition) Address() sdk.AccAddress {
 }
 
 // Equals checks if two permissions are the same
-func (a Condition) Equals(b Condition) bool {
-	return bytes.Equal(a, b)
+func (c Condition) Equals(b Condition) bool {
+	return bytes.Equal(c, b)
 }
 
 // String returns a human readable string.

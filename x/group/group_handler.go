@@ -69,10 +69,8 @@ func handleMsgUpdateGroupMembers(ctx sdk.Context, k Keeper, msg *MsgUpdateGroupM
 				if err := k.groupMemberTable.Save(ctx, &member); err != nil {
 					return errors.Wrap(err, "add member")
 				}
-			} else {
-				if err := k.groupMemberTable.Create(ctx, &member); err != nil {
-					return errors.Wrap(err, "add member")
-				}
+			} else if err := k.groupMemberTable.Create(ctx, &member); err != nil {
+				return errors.Wrap(err, "add member")
 			}
 			m.TotalWeight = m.TotalWeight.Add(member.Weight)
 		}
