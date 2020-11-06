@@ -19,7 +19,7 @@ func MakeEncodingConfig() params.EncodingConfig {
 		InterfaceRegistry: interfaceRegistry,
 		Marshaler:         marshaler,
 		TxConfig:          txCfg,
-		Amino:             amino, //may be nil?
+		Amino:             amino,
 	}
 	std.RegisterLegacyAminoCodec(encodingConfig.Amino)
 	std.RegisterInterfaces(encodingConfig.InterfaceRegistry)
