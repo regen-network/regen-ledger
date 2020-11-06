@@ -69,7 +69,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Error(err)
 
 	// can query data and get timestamp
-	queryRes, err := s.queryClient.Data(s.ctx, &data.QueryDataRequest{Cid: cidBz})
+	queryRes, err := s.queryClient.ByCid(s.ctx, &data.QueryByCidRequest{Cid: cidBz})
 	s.Require().NoError(err)
 	s.Require().NotNil(queryRes)
 	s.Require().Equal(anchorRes.Timestamp, queryRes.Timestamp)
@@ -85,7 +85,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	// can retrieve signature, same timestamp
 	// can query data and get timestamp
-	queryRes, err = s.queryClient.Data(s.ctx, &data.QueryDataRequest{Cid: cidBz})
+	queryRes, err = s.queryClient.ByCid(s.ctx, &data.QueryByCidRequest{Cid: cidBz})
 	s.Require().NoError(err)
 	s.Require().NotNil(queryRes)
 	s.Require().Equal(anchorRes.Timestamp, queryRes.Timestamp)
@@ -109,7 +109,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().NoError(err)
 
 	// can retrieve signature, same timestamp, and data
-	queryRes, err = s.queryClient.Data(s.ctx, &data.QueryDataRequest{Cid: cidBz})
+	queryRes, err = s.queryClient.ByCid(s.ctx, &data.QueryByCidRequest{Cid: cidBz})
 	s.Require().NoError(err)
 	s.Require().NotNil(queryRes)
 	s.Require().Equal(anchorRes.Timestamp, queryRes.Timestamp)
@@ -124,7 +124,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().NoError(err)
 
 	// query all data and both signatures
-	queryRes, err = s.queryClient.Data(s.ctx, &data.QueryDataRequest{Cid: cidBz})
+	queryRes, err = s.queryClient.ByCid(s.ctx, &data.QueryByCidRequest{Cid: cidBz})
 	s.Require().NoError(err)
 	s.Require().NotNil(queryRes)
 	s.Require().Equal(anchorRes.Timestamp, queryRes.Timestamp)
