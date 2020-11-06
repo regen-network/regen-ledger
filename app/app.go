@@ -121,6 +121,7 @@ var (
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		data.AppModuleBasic{},
+		ecocredit.AppModuleBasic{},
 	)
 
 	// module account permissions
