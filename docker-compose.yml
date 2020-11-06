@@ -3,7 +3,7 @@ services:
   postgres:
     image: mdillon/postgis:11
     environment:
-      - POSTGRES_DB=xrn
+      - POSTGRES_DB=regen
     ports:
       - "5433:5432"
     volumes:
