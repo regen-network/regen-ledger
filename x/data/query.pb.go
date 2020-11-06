@@ -28,25 +28,25 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// QueryDataRequest is the Query/Data request type.
-type QueryDataRequest struct {
+// QueryByCidRequest is the Query/ByCid request type.
+type QueryByCidRequest struct {
 	// cid is a Content Identifier for the data corresponding to the IPFS CID
 	// specification: https://github.com/multiformats/cid.
 	Cid []byte `protobuf:"bytes,1,opt,name=cid,proto3" json:"cid,omitempty"`
 }
 
-func (m *QueryDataRequest) Reset()         { *m = QueryDataRequest{} }
-func (m *QueryDataRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryDataRequest) ProtoMessage()    {}
-func (*QueryDataRequest) Descriptor() ([]byte, []int) {
+func (m *QueryByCidRequest) Reset()         { *m = QueryByCidRequest{} }
+func (m *QueryByCidRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryByCidRequest) ProtoMessage()    {}
+func (*QueryByCidRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_22891d65265dd29b, []int{0}
 }
-func (m *QueryDataRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryByCidRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryDataRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryByCidRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryDataRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryByCidRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -56,27 +56,27 @@ func (m *QueryDataRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return b[:n], nil
 	}
 }
-func (m *QueryDataRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryDataRequest.Merge(m, src)
+func (m *QueryByCidRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryByCidRequest.Merge(m, src)
 }
-func (m *QueryDataRequest) XXX_Size() int {
+func (m *QueryByCidRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryDataRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryDataRequest.DiscardUnknown(m)
+func (m *QueryByCidRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryByCidRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryDataRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryByCidRequest proto.InternalMessageInfo
 
-func (m *QueryDataRequest) GetCid() []byte {
+func (m *QueryByCidRequest) GetCid() []byte {
 	if m != nil {
 		return m.Cid
 	}
 	return nil
 }
 
-// QueryDataRequest is the Query/Data response type.
-type QueryDataResponse struct {
+// QueryByCidRequest is the Query/ByCid response type.
+type QueryByCidResponse struct {
 	// timestamp is the timestamp of the block at which the data was anchored.
 	Timestamp *types.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	// signers are the addresses of the accounts which have signed the data.
@@ -85,18 +85,18 @@ type QueryDataResponse struct {
 	Content []byte `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
 }
 
-func (m *QueryDataResponse) Reset()         { *m = QueryDataResponse{} }
-func (m *QueryDataResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryDataResponse) ProtoMessage()    {}
-func (*QueryDataResponse) Descriptor() ([]byte, []int) {
+func (m *QueryByCidResponse) Reset()         { *m = QueryByCidResponse{} }
+func (m *QueryByCidResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryByCidResponse) ProtoMessage()    {}
+func (*QueryByCidResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_22891d65265dd29b, []int{1}
 }
-func (m *QueryDataResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryByCidResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryDataResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryByCidResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryDataResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryByCidResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -106,33 +106,33 @@ func (m *QueryDataResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, e
 		return b[:n], nil
 	}
 }
-func (m *QueryDataResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryDataResponse.Merge(m, src)
+func (m *QueryByCidResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryByCidResponse.Merge(m, src)
 }
-func (m *QueryDataResponse) XXX_Size() int {
+func (m *QueryByCidResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryDataResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryDataResponse.DiscardUnknown(m)
+func (m *QueryByCidResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryByCidResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryDataResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryByCidResponse proto.InternalMessageInfo
 
-func (m *QueryDataResponse) GetTimestamp() *types.Timestamp {
+func (m *QueryByCidResponse) GetTimestamp() *types.Timestamp {
 	if m != nil {
 		return m.Timestamp
 	}
 	return nil
 }
 
-func (m *QueryDataResponse) GetSigners() []string {
+func (m *QueryByCidResponse) GetSigners() []string {
 	if m != nil {
 		return m.Signers
 	}
 	return nil
 }
 
-func (m *QueryDataResponse) GetContent() []byte {
+func (m *QueryByCidResponse) GetContent() []byte {
 	if m != nil {
 		return m.Content
 	}
@@ -140,33 +140,33 @@ func (m *QueryDataResponse) GetContent() []byte {
 }
 
 func init() {
-	proto.RegisterType((*QueryDataRequest)(nil), "regen.data.v1alpha1.QueryDataRequest")
-	proto.RegisterType((*QueryDataResponse)(nil), "regen.data.v1alpha1.QueryDataResponse")
+	proto.RegisterType((*QueryByCidRequest)(nil), "regen.data.v1alpha1.QueryByCidRequest")
+	proto.RegisterType((*QueryByCidResponse)(nil), "regen.data.v1alpha1.QueryByCidResponse")
 }
 
 func init() { proto.RegisterFile("regen/data/v1alpha1/query.proto", fileDescriptor_22891d65265dd29b) }
 
 var fileDescriptor_22891d65265dd29b = []byte{
 	// 293 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x91, 0xbb, 0x4e, 0xeb, 0x30,
-	0x1c, 0xc6, 0xeb, 0xd3, 0x03, 0xa8, 0x86, 0xa1, 0x98, 0x25, 0xea, 0xe0, 0x56, 0x15, 0xa0, 0x0e,
-	0x60, 0xab, 0x65, 0x61, 0x46, 0x88, 0x9d, 0x08, 0x16, 0x06, 0x24, 0x37, 0xf9, 0xe3, 0x46, 0x24,
-	0x76, 0x6a, 0x3b, 0x5c, 0x46, 0xde, 0x80, 0xc7, 0x62, 0xec, 0xc8, 0x88, 0x92, 0x17, 0x41, 0x71,
-	0x08, 0x20, 0x84, 0xc4, 0xe6, 0x4f, 0xfe, 0xf9, 0xbb, 0xc8, 0x78, 0x68, 0x40, 0x82, 0xe2, 0xb1,
-	0x70, 0x82, 0xdf, 0x4d, 0x45, 0x9a, 0x2f, 0xc4, 0x94, 0x2f, 0x0b, 0x30, 0x8f, 0x2c, 0x37, 0xda,
-	0x69, 0xb2, 0xe3, 0x01, 0x56, 0x03, 0xac, 0x05, 0x06, 0x43, 0xa9, 0xb5, 0x4c, 0x81, 0x7b, 0x64,
-	0x5e, 0xdc, 0x70, 0x97, 0x64, 0x60, 0x9d, 0xc8, 0xf2, 0xe6, 0xd5, 0x78, 0x17, 0xf7, 0xcf, 0x6b,
-	0x93, 0x53, 0xe1, 0x44, 0x08, 0xcb, 0x02, 0xac, 0x23, 0x7d, 0xdc, 0x8d, 0x92, 0x38, 0x40, 0x23,
-	0x34, 0xd9, 0x0a, 0xeb, 0xe3, 0xf8, 0x09, 0xe1, 0xed, 0x6f, 0x98, 0xcd, 0xb5, 0xb2, 0x40, 0x8e,
-	0x71, 0xef, 0xd3, 0xce, 0xd3, 0x9b, 0xb3, 0x01, 0x6b, 0x02, 0x59, 0x1b, 0xc8, 0x2e, 0x5a, 0x22,
-	0xfc, 0x82, 0x49, 0x80, 0x37, 0x6c, 0x22, 0x15, 0x18, 0x1b, 0xfc, 0x1b, 0x75, 0x27, 0xbd, 0xb0,
-	0x95, 0xf5, 0x4d, 0xa4, 0x95, 0x03, 0xe5, 0x82, 0xae, 0xcf, 0x6f, 0xe5, 0xec, 0x1a, 0xaf, 0xf9,
-	0x0a, 0xe4, 0x12, 0xff, 0xaf, 0x6b, 0x90, 0x3d, 0xf6, 0xcb, 0x62, 0xf6, 0x73, 0xcd, 0x60, 0xff,
-	0x2f, 0xac, 0x59, 0x73, 0x72, 0xf6, 0x52, 0x52, 0xb4, 0x2a, 0x29, 0x7a, 0x2b, 0x29, 0x7a, 0xae,
-	0x68, 0x67, 0x55, 0xd1, 0xce, 0x6b, 0x45, 0x3b, 0x57, 0x07, 0x32, 0x71, 0x8b, 0x62, 0xce, 0x22,
-	0x9d, 0x71, 0xef, 0x75, 0xa8, 0xc0, 0xdd, 0x6b, 0x73, 0xfb, 0xa1, 0x52, 0x88, 0x25, 0x18, 0xfe,
-	0xe0, 0x3f, 0x67, 0xbe, 0xee, 0xa7, 0x1f, 0xbd, 0x07, 0x00, 0x00, 0xff, 0xff, 0x67, 0x98, 0x2b,
-	0xdf, 0xb1, 0x01, 0x00, 0x00,
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x84, 0x91, 0xbd, 0x4e, 0xeb, 0x30,
+	0x1c, 0xc5, 0xeb, 0x5b, 0xf5, 0xa2, 0x1a, 0x06, 0x30, 0x4b, 0xd4, 0xc1, 0xad, 0x2a, 0x01, 0x1d,
+	0xc0, 0x56, 0xcb, 0xc2, 0x5c, 0x24, 0x76, 0x22, 0x06, 0xc4, 0xe6, 0x26, 0x7f, 0xdc, 0x88, 0xc4,
+	0x4e, 0x6d, 0x07, 0xe8, 0xca, 0x13, 0xf0, 0x58, 0x8c, 0x1d, 0x19, 0x51, 0xf2, 0x22, 0x28, 0x0e,
+	0x01, 0x24, 0x90, 0xd8, 0x7c, 0xe4, 0x9f, 0xcf, 0x87, 0x8c, 0x87, 0x06, 0x24, 0x28, 0x1e, 0x0b,
+	0x27, 0xf8, 0xfd, 0x54, 0xa4, 0xf9, 0x52, 0x4c, 0xf9, 0xaa, 0x00, 0xb3, 0x66, 0xb9, 0xd1, 0x4e,
+	0x93, 0x7d, 0x0f, 0xb0, 0x1a, 0x60, 0x2d, 0x30, 0x18, 0x4a, 0xad, 0x65, 0x0a, 0xdc, 0x23, 0x8b,
+	0xe2, 0x96, 0xbb, 0x24, 0x03, 0xeb, 0x44, 0x96, 0x37, 0xaf, 0xc6, 0x07, 0x78, 0xef, 0xb2, 0x36,
+	0x99, 0xaf, 0xcf, 0x93, 0x38, 0x84, 0x55, 0x01, 0xd6, 0x91, 0x5d, 0xdc, 0x8d, 0x92, 0x38, 0x40,
+	0x23, 0x34, 0xd9, 0x09, 0xeb, 0xe3, 0xf8, 0x09, 0x61, 0xf2, 0x9d, 0xb3, 0xb9, 0x56, 0x16, 0xc8,
+	0x19, 0xee, 0x7f, 0x1a, 0x7a, 0x7c, 0x7b, 0x36, 0x60, 0x4d, 0x24, 0x6b, 0x23, 0xd9, 0x55, 0x4b,
+	0x84, 0x5f, 0x30, 0x09, 0xf0, 0x96, 0x4d, 0xa4, 0x02, 0x63, 0x83, 0x7f, 0xa3, 0xee, 0xa4, 0x1f,
+	0xb6, 0xb2, 0xbe, 0x89, 0xb4, 0x72, 0xa0, 0x5c, 0xd0, 0xf5, 0x05, 0x5a, 0x39, 0x13, 0xb8, 0xe7,
+	0x3b, 0x90, 0x6b, 0xdc, 0xf3, 0x3d, 0xc8, 0x21, 0xfb, 0x65, 0x34, 0xfb, 0x31, 0x68, 0x70, 0xf4,
+	0x27, 0xd7, 0x0c, 0x9a, 0x5f, 0xbc, 0x94, 0x14, 0x6d, 0x4a, 0x8a, 0xde, 0x4a, 0x8a, 0x9e, 0x2b,
+	0xda, 0xd9, 0x54, 0xb4, 0xf3, 0x5a, 0xd1, 0xce, 0xcd, 0xb1, 0x4c, 0xdc, 0xb2, 0x58, 0xb0, 0x48,
+	0x67, 0xdc, 0x9b, 0x9d, 0x28, 0x70, 0x0f, 0xda, 0xdc, 0x7d, 0xa8, 0x14, 0x62, 0x09, 0x86, 0x3f,
+	0xfa, 0x1f, 0x5a, 0xfc, 0xf7, 0xeb, 0x4f, 0xdf, 0x03, 0x00, 0x00, 0xff, 0xff, 0x96, 0x22, 0x07,
+	0x07, 0xb6, 0x01, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -181,8 +181,8 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// Data queries data based on its CID.
-	Data(ctx context.Context, in *QueryDataRequest, opts ...grpc.CallOption) (*QueryDataResponse, error)
+	// ByCid queries data based on its CID.
+	ByCid(ctx context.Context, in *QueryByCidRequest, opts ...grpc.CallOption) (*QueryByCidResponse, error)
 }
 
 type queryClient struct {
@@ -193,9 +193,9 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 	return &queryClient{cc}
 }
 
-func (c *queryClient) Data(ctx context.Context, in *QueryDataRequest, opts ...grpc.CallOption) (*QueryDataResponse, error) {
-	out := new(QueryDataResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Query/Data", in, out, opts...)
+func (c *queryClient) ByCid(ctx context.Context, in *QueryByCidRequest, opts ...grpc.CallOption) (*QueryByCidResponse, error) {
+	out := new(QueryByCidResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Query/ByCid", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -204,36 +204,36 @@ func (c *queryClient) Data(ctx context.Context, in *QueryDataRequest, opts ...gr
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// Data queries data based on its CID.
-	Data(context.Context, *QueryDataRequest) (*QueryDataResponse, error)
+	// ByCid queries data based on its CID.
+	ByCid(context.Context, *QueryByCidRequest) (*QueryByCidResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
 type UnimplementedQueryServer struct {
 }
 
-func (*UnimplementedQueryServer) Data(ctx context.Context, req *QueryDataRequest) (*QueryDataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Data not implemented")
+func (*UnimplementedQueryServer) ByCid(ctx context.Context, req *QueryByCidRequest) (*QueryByCidResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ByCid not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
 	s.RegisterService(&_Query_serviceDesc, srv)
 }
 
-func _Query_Data_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryDataRequest)
+func _Query_ByCid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryByCidRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).Data(ctx, in)
+		return srv.(QueryServer).ByCid(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1alpha1.Query/Data",
+		FullMethod: "/regen.data.v1alpha1.Query/ByCid",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Data(ctx, req.(*QueryDataRequest))
+		return srv.(QueryServer).ByCid(ctx, req.(*QueryByCidRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -243,15 +243,15 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Data",
-			Handler:    _Query_Data_Handler,
+			MethodName: "ByCid",
+			Handler:    _Query_ByCid_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "regen/data/v1alpha1/query.proto",
 }
 
-func (m *QueryDataRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryByCidRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -261,12 +261,12 @@ func (m *QueryDataRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryDataRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryByCidRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryDataRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryByCidRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -281,7 +281,7 @@ func (m *QueryDataRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryDataResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryByCidResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -291,12 +291,12 @@ func (m *QueryDataResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryDataResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryByCidResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryDataResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryByCidResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -343,7 +343,7 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *QueryDataRequest) Size() (n int) {
+func (m *QueryByCidRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -356,7 +356,7 @@ func (m *QueryDataRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryDataResponse) Size() (n int) {
+func (m *QueryByCidResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -385,7 +385,7 @@ func sovQuery(x uint64) (n int) {
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *QueryDataRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryByCidRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -408,10 +408,10 @@ func (m *QueryDataRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryDataRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryByCidRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryDataRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryByCidRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -472,7 +472,7 @@ func (m *QueryDataRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryDataResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryByCidResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -495,10 +495,10 @@ func (m *QueryDataResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryDataResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryByCidResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryDataResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryByCidResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

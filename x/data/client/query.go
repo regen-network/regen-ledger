@@ -1,6 +1,9 @@
 package client
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	gocid "github.com/ipfs/go-cid"
@@ -10,24 +13,45 @@ import (
 
 // QueryCmd returns the parent command for all x/data CLI query commands
 func QueryCmd() *cobra.Command {
+	queryByCidCmd := QueryByCidCmd()
+
 	cmd := &cobra.Command{
-		Use:                        data.ModuleName,
-		Short:                      "Querying commands for the data module",
+		Args:  cobra.ExactArgs(1),
+		Use:   fmt.Sprintf("%s [cid]", data.ModuleName),
+		Short: "Querying commands for the data module",
+		Long: strings.TrimSpace(`Querying commands for the data module.
+If a CID is passed as first argument, then this command will query timestamp, signers and content (if available) for the given CID. Otherwise, this command will run the given subcommand.
+
+Example (the two following commands are equivalent):
+$ regen query data bafzbeigai3eoy2ccc7ybwjfz5r3rdxqrinwi4rwytly24tdbh6yk7zslrm
+$ regen query data by-cid bafzbeigai3eoy2ccc7ybwjfz5r3rdxqrinwi4rwytly24tdbh6yk7zslrm`),
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
-		RunE:                       client.ValidateCmd,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			// If 1st arg is NOT a CID, parse subcommands as usual.
+			_, err := gocid.Decode(args[0])
+			if err != nil {
+				return client.ValidateCmd(cmd, args)
+			}
+
+			// Or else, we call QueryByCidCmd.
+			return queryByCidCmd.RunE(cmd, args)
+		},
 	}
 
 	cmd.AddCommand(
-		QueryDataCmd(),
+		queryByCidCmd,
 	)
+
+	flags.AddQueryFlagsToCmd(cmd)
 
 	return cmd
 }
 
-func QueryDataCmd() *cobra.Command {
+// QueryByCidCmd creates a CLI command for Query/Data.
+func QueryByCidCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "data [cid]",
+		Use:   "by-cid [cid]",
 		Short: "Query for CID timestamp, signers and content (if available)",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -44,7 +68,7 @@ func QueryDataCmd() *cobra.Command {
 
 			queryClient := data.NewQueryClient(clientCtx)
 
-			res, err := queryClient.Data(cmd.Context(), &data.QueryDataRequest{Cid: cid.Bytes()})
+			res, err := queryClient.ByCid(cmd.Context(), &data.QueryByCidRequest{Cid: cid.Bytes()})
 			if err != nil {
 				return err
 			}

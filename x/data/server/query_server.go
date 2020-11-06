@@ -12,7 +12,7 @@ import (
 
 var _ data.QueryServer = serverImpl{}
 
-func (s serverImpl) Data(goCtx context.Context, request *data.QueryDataRequest) (*data.QueryDataResponse, error) {
+func (s serverImpl) ByCid(goCtx context.Context, request *data.QueryByCidRequest) (*data.QueryByCidResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	cid := request.Cid
@@ -30,7 +30,7 @@ func (s serverImpl) Data(goCtx context.Context, request *data.QueryDataRequest) 
 	store := ctx.KVStore(s.storeKey)
 	content := store.Get(DataKey(cid))
 
-	return &data.QueryDataResponse{
+	return &data.QueryByCidResponse{
 		Timestamp: &timestamp,
 		Signers:   signers.Signers,
 		Content:   content,
