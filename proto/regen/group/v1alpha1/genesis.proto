@@ -10,11 +10,14 @@ import "gogoproto/gogo.proto";
 message Params {
     option (gogoproto.equal) = true;
     option (gogoproto.goproto_stringer) = false;
+
+    // max_comment_length defines the maximum comment length of the group module genesis params.
     uint32 max_comment_length = 1 [(gogoproto.moretags) = "yaml:\"max_comment_length\""];
 }
 
+// GenesisState defines the group module's genesis state.
 message GenesisState {
     option (gogoproto.equal) = true;
     option (gogoproto.goproto_stringer) = false;
-    Params Params = 1 [(gogoproto.nullable)=false];
+    Params params = 1 [(gogoproto.nullable)=false];
 }

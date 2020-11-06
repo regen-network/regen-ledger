@@ -18,12 +18,12 @@ import (
 
 type GroupID uint64
 
-func (p GroupID) Uint64() uint64 {
-	return uint64(p)
+func (g GroupID) Uint64() uint64 {
+	return uint64(g)
 }
 
-func (p GroupID) Empty() bool {
-	return p == 0
+func (g GroupID) Empty() bool {
+	return g == 0
 }
 
 func (g GroupID) Bytes() []byte {
@@ -282,17 +282,17 @@ func (m GroupMetadata) ValidateBasic() error {
 
 var _ orm.Validateable = GroupMember{}
 
-func (m GroupMember) ValidateBasic() error {
-	if m.Group.Empty() {
+func (g GroupMember) ValidateBasic() error {
+	if g.Group.Empty() {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
-	if m.Member.Empty() {
+	if g.Member.Empty() {
 		return sdkerrors.Wrap(ErrEmpty, "address")
 	}
-	if m.Weight.IsNil() || m.Weight.LTE(sdk.ZeroDec()) {
+	if g.Weight.IsNil() || g.Weight.LTE(sdk.ZeroDec()) {
 		return sdkerrors.Wrap(ErrInvalid, "member power")
 	}
-	if err := sdk.VerifyAddressFormat(m.Member); err != nil {
+	if err := sdk.VerifyAddressFormat(g.Member); err != nil {
 		return sdkerrors.Wrap(err, "address")
 	}
 	return nil
