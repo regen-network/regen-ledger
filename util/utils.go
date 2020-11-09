@@ -4,24 +4,7 @@ import (
 	"fmt"
 
 	"github.com/enigmampc/btcutil/bech32"
-	// "github.com/tendermint/tendermint/libs/bech32"
 )
-
-// func MustEncodeBech32(hrp string, data []byte) string {
-// 	str, err := bech32.ConvertAndEncode(hrp, data)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	return str
-// }
-
-// func MustDecodeBech32(bech string) (hrp string, data []byte) {
-// 	hrp, data, err := bech32.DecodeAndConvert(bech)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	return hrp, data
-// }
 
 // ConvertAndEncode converts from a base64 encoded byte string to base32 encoded byte string and then to bech32.
 func ConvertAndEncode(hrp string, data []byte) (string, error) {
