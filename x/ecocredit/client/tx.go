@@ -23,7 +23,10 @@ func TxCmd() *cobra.Command {
 		Short: "Ecocredit module transactions",
 		RunE:  client.ValidateCmd,
 	}
-	cmd.AddCommand()
+
+	cmd.AddCommand(
+		txCreateClass(),
+	)
 
 	return cmd
 }
@@ -53,11 +56,10 @@ func txCreateClass() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := c.CreateClass(cmd.Context(), &ecocredit.MsgCreateClassRequest{
+			_, err = c.CreateClass(cmd.Context(), &ecocredit.MsgCreateClassRequest{
 				Designer: args[0], Issuers: issuers, Metadata: b,
 			})
-			return print(ctx, res, err)
-			// TODO: return mkTx(ctx, cmd, err)
+			return mkTx(ctx, cmd, err)
 		},
 	}
 	flags.AddTxFlagsToCmd(cmd)
