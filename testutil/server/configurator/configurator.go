@@ -81,7 +81,7 @@ func (c Fixture) Setup() server.Fixture {
 var _ server.Fixture = Fixture{}
 
 // TxConn implements the Fixture.TxConn method
-func (c Fixture) TxConn() grpc.ClientConnInterface {
+func (c Fixture) TxConn(sdk.AccAddress) grpc.ClientConnInterface {
 	return c.msgRouter
 }
 

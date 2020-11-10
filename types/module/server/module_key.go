@@ -18,4 +18,6 @@ type CallInfo struct {
 	Caller module.ModuleID
 }
 
-type Invoker func(callInfo CallInfo) func(ctx context.Context, request, response interface{}, opts ...interface{}) error
+type InvokerFactory func(callInfo CallInfo) (Invoker, error)
+
+type Invoker func(ctx context.Context, request, response interface{}, opts ...interface{}) error

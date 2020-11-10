@@ -6,12 +6,10 @@ import (
 	"fmt"
 
 	"github.com/btcsuite/btcutil/base58"
-	"github.com/regen-network/regen-ledger/orm"
-
 	"github.com/cockroachdb/apd/v2"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/orm"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/math"
@@ -19,9 +17,7 @@ import (
 
 func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
 	classID := s.idSeq.NextVal(ctx)
-
 	classIDStr := uint64ToBase58Check(classID)
 
 	err := s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
@@ -30,7 +26,6 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 		Issuers:  req.Issuers,
 		Metadata: req.Metadata,
 	})
-
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +43,6 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 
 func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatchRequest) (*ecocredit.MsgCreateBatchResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
 	classID := req.ClassId
 	classInfo, err := s.getClassInfo(ctx, classID)
 	if err != nil {
@@ -68,9 +62,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	}
 
 	batchID := s.idSeq.NextVal(ctx)
-
 	batchDenom := batchDenomT(fmt.Sprintf("%s/%s", classID, uint64ToBase58Check(batchID)))
-
 	tradableSupply := apd.New(0, 0)
 	retiredSupply := apd.New(0, 0)
 	var maxDecimalPlaces uint32 = 0
@@ -181,11 +173,9 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 
 func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (*ecocredit.MsgSendResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
+	store := ctx.KVStore(s.storeKey)
 	sender := req.Sender
 	recipient := req.Recipient
-
-	store := ctx.KVStore(s.storeKey)
 
 	for _, credit := range req.Credits {
 		denom := batchDenomT(credit.BatchDenom)
@@ -257,10 +247,8 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 
 func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireRequest) (*ecocredit.MsgRetireResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	holder := req.Holder
-
 	store := ctx.KVStore(s.storeKey)
+	holder := req.Holder
 
 	for _, credit := range req.Credits {
 		denom := batchDenomT(credit.BatchDenom)

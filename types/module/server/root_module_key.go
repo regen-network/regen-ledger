@@ -9,8 +9,8 @@ import (
 )
 
 type RootModuleKey struct {
-	moduleName string
-	invoker    Invoker
+	moduleName     string
+	invokerFactory InvokerFactory
 }
 
 var _ ModuleKey = RootModuleKey{}
@@ -25,10 +25,15 @@ func (r RootModuleKey) String() string {
 }
 
 func (r RootModuleKey) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	return r.invoker(CallInfo{
+	invoker, err := r.invokerFactory(CallInfo{
 		Method: method,
 		Caller: r.ModuleID(),
-	})(ctx, args, reply)
+	})
+	if err != nil {
+		return err
+	}
+
+	return invoker(ctx, args, reply)
 }
 
 func (r RootModuleKey) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
@@ -45,8 +50,8 @@ func (r RootModuleKey) Address() []byte {
 
 func (r RootModuleKey) Derive(path []byte) DerivedModuleKey {
 	return DerivedModuleKey{
-		moduleName: r.moduleName,
-		path:       path,
-		invoker:    r.invoker,
+		moduleName:     r.moduleName,
+		path:           path,
+		invokerFactory: r.invokerFactory,
 	}
 }

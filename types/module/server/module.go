@@ -16,5 +16,5 @@ type Configurator interface {
 	sdkmodule.Configurator
 
 	ModuleKey() ModuleKey
-	Marshaler() codec.Marshaler
+	BinaryMarshaler() codec.BinaryMarshaler
 }

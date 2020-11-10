@@ -8,18 +8,24 @@ import (
 )
 
 type DerivedModuleKey struct {
-	moduleName string
-	path       []byte
-	invoker    Invoker
+	moduleName     string
+	path           []byte
+	invokerFactory InvokerFactory
 }
 
 var _ ModuleKey = DerivedModuleKey{}
 
 func (d DerivedModuleKey) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, V ...grpc.CallOption) error {
-	return d.invoker(CallInfo{
+	invoker, err := d.invokerFactory(CallInfo{
 		Method: method,
 		Caller: d.ModuleID(),
-	})(ctx, args, reply)
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return invoker(ctx, args, reply)
 }
 
 func (d DerivedModuleKey) NewStream(context.Context, *grpc.StreamDesc, string, ...grpc.CallOption) (grpc.ClientStream, error) {
