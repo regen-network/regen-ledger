@@ -17,7 +17,7 @@ A distributed ledger for ecology built on top of the
 
 ## Getting Started
 
-See [Getting Started](docs/getting_started.md).
+See [Getting Started](https://github.com/regen-network/regen-ledger/tree/master/docs/src/getting-started).
 
 ## Core Features
 
