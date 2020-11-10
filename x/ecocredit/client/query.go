@@ -16,7 +16,7 @@ func QueryCmd() *cobra.Command {
 
 		Args:  cobra.ExactArgs(1),
 		Use:   ecocredit.ModuleName,
-		Short: "Querying commands for the ecocredit module",
+		Short: "Query commands for the ecocredit module",
 		RunE:  client.ValidateCmd,
 	}
 	cmd.AddCommand(
@@ -34,7 +34,7 @@ func QueryCmd() *cobra.Command {
 func queryClassInfo() *cobra.Command {
 	return &cobra.Command{
 		Use:   "class_info [class_id]",
-		Short: "Select a class info",
+		Short: "Retrieve credit class info",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
@@ -52,8 +52,8 @@ func queryClassInfo() *cobra.Command {
 func queryBatchInfo() *cobra.Command {
 	return &cobra.Command{
 		Use:   "batch_info [batch_denom]",
-		Short: "Select the credit issuance batch info",
-		Long:  "Select the credit issuance batch info based on the bach_denom (ID)",
+		Short: "Retrieve the credit issuance batch info",
+		Long:  "Retrieve the credit issuance batch info based on the bach_denom (ID)",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
@@ -71,8 +71,8 @@ func queryBatchInfo() *cobra.Command {
 func queryBalance() *cobra.Command {
 	return &cobra.Command{
 		Use:   "balance [batch_denom] [account]",
-		Short: "Select the tradable and retired balance of the credit batch",
-		Long:  "Select the credit tradable and retired balance of the credit batch denom (ID) and account address",
+		Short: "Retrieve the tradable and retired balances of the credit batch",
+		Long:  "Retrieve the tradable and retired balances of the credit batch for a given account address",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
@@ -90,8 +90,8 @@ func queryBalance() *cobra.Command {
 func querySupply() *cobra.Command {
 	return &cobra.Command{
 		Use:   "supply [batch_denom]",
-		Short: "Select the tradable and retired supply of the credit batch",
-		Long:  "Select the tradable and retired supply of the credit batch batch denom (ID)",
+		Short: "Retrieve the tradable and retired supply of the credit batch",
+		Long:  "Retrieve the tradable and retired supply of the credit batch",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
@@ -109,8 +109,8 @@ func querySupply() *cobra.Command {
 func queryPrecision() *cobra.Command {
 	return &cobra.Command{
 		Use:   "precision [batch_denom]",
-		Short: "Select the maximum length of the fractional part of credits in the given batch",
-		Long:  "Select the maximum length of the fractional part of credits in the given batch. The precision tells what is the minimum unit of a credit.\nExample: a decimal number 12.345 has fractional part length equal 3. A precision=5 means that the minimum unit we can trade is 0.00001",
+		Short: "Retrieve the maximum length of the fractional part of credits in the given batch",
+		Long:  "Retrieve the maximum length of the fractional part of credits in the given batch. The precision tells what is the minimum unit of a credit.\nExample: a decimal number 12.345 has fractional part length equal 3. A precision=5 means that the minimum unit we can trade is 0.00001",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
