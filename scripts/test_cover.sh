@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-PKGS=$(go list ./... | grep -v '/simapp')
+PKGS=$(go list ./...)
 
 set -e
 echo "mode: atomic" > coverage.txt

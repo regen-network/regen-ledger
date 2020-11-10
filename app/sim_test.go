@@ -14,6 +14,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -35,7 +36,7 @@ import (
 
 // Get flags every time the simulator is run
 func init() {
-	GetSimulatorFlags()
+	simapp.GetSimulatorFlags()
 }
 
 type StoreKeysPrefixes struct {
@@ -57,7 +58,7 @@ func interBlockCacheOpt() func(*baseapp.BaseApp) {
 }
 
 func TestFullAppSimulation(t *testing.T) {
-	config, db, dir, logger, skip, err := SetupSimulation("leveldb-app-sim", "Simulation")
+	config, db, dir, logger, skip, err := simapp.SetupSimulation("leveldb-app-sim", "Simulation")
 	if skip {
 		t.Skip("skipping application simulation")
 	}
@@ -68,34 +69,36 @@ func TestFullAppSimulation(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
-	app := NewRegenApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, FlagPeriodValue, MakeEncodingConfig(), fauxMerkleModeOpt)
-	require.Equal(t, "regen", app.Name())
+	app := NewRegenApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), fauxMerkleModeOpt)
+	require.Equal(t, appName, app.Name())
 
 	// run randomized simulation
-	_, simParams, simErr := simulation.SimulateFromSeed(
-		t,
-		os.Stdout,
-		app.BaseApp,
-		AppStateFn(app.AppCodec(), app.SimulationManager()),
-		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-		SimulationOperations(app, app.AppCodec(), config),
-		app.ModuleAccountAddrs(),
-		config,
-		app.appCodec,
-	)
+	_, simParams, simErr := simulateFromSeed(t, app, config)
 
 	// export state and simParams before the simulation error is checked
-	err = CheckExportSimulation(app, config, simParams)
+	err = simapp.CheckExportSimulation(app, config, simParams)
 	require.NoError(t, err)
 	require.NoError(t, simErr)
 
 	if config.Commit {
-		PrintStats(db)
+		simapp.PrintStats(db)
 	}
 }
 
+func simulateFromSeed(t *testing.T, app *RegenApp, config simtypes.Config) (bool, simulation.Params, error) {
+	return simulation.SimulateFromSeed(
+		t, os.Stdout, app.BaseApp,
+		simapp.AppStateFn(app.AppCodec(), app.SimulationManager()),
+		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
+		simapp.SimulationOperations(app, app.AppCodec(), config),
+		app.ModuleAccountAddrs(),
+		config,
+		app.AppCodec(),
+	)
+}
+
 func TestAppImportExport(t *testing.T) {
-	config, db, dir, logger, skip, err := SetupSimulation("leveldb-app-sim", "Simulation")
+	config, db, dir, logger, skip, err := simapp.SetupSimulation("leveldb-app-sim", "Simulation")
 	if skip {
 		t.Skip("skipping application import/export simulation")
 	}
@@ -106,29 +109,19 @@ func TestAppImportExport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
-	app := NewRegenApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, FlagPeriodValue, MakeEncodingConfig(), fauxMerkleModeOpt)
-	require.Equal(t, "regen", app.Name())
+	app := NewRegenApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), fauxMerkleModeOpt)
+	require.Equal(t, appName, app.Name())
 
 	// Run randomized simulation
-	_, simParams, simErr := simulation.SimulateFromSeed(
-		t,
-		os.Stdout,
-		app.BaseApp,
-		AppStateFn(app.AppCodec(), app.SimulationManager()),
-		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-		SimulationOperations(app, app.AppCodec(), config),
-		app.ModuleAccountAddrs(),
-		config,
-		app.appCodec,
-	)
+	_, simParams, simErr := simulateFromSeed(t, app, config)
 
 	// export state and simParams before the simulation error is checked
-	err = CheckExportSimulation(app, config, simParams)
+	err = simapp.CheckExportSimulation(app, config, simParams)
 	require.NoError(t, err)
 	require.NoError(t, simErr)
 
 	if config.Commit {
-		PrintStats(db)
+		simapp.PrintStats(db)
 	}
 
 	fmt.Printf("exporting genesis...\n")
@@ -138,7 +131,7 @@ func TestAppImportExport(t *testing.T) {
 
 	fmt.Printf("importing genesis...\n")
 
-	_, newDB, newDir, _, _, err := SetupSimulation("leveldb-app-sim-2", "Simulation-2")
+	_, newDB, newDir, _, _, err := simapp.SetupSimulation("leveldb-app-sim-2", "Simulation-2")
 	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {
@@ -146,8 +139,8 @@ func TestAppImportExport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
 
-	newApp := NewRegenApp(log.NewNopLogger(), newDB, nil, true, map[int64]bool{}, DefaultNodeHome, FlagPeriodValue, MakeEncodingConfig(), fauxMerkleModeOpt)
-	require.Equal(t, "regen", newApp.Name())
+	newApp := NewRegenApp(log.NewNopLogger(), newDB, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), fauxMerkleModeOpt)
+	require.Equal(t, appName, newApp.Name())
 
 	var genesisState GenesisState
 	err = json.Unmarshal(exported.AppState, &genesisState)
@@ -187,12 +180,12 @@ func TestAppImportExport(t *testing.T) {
 		require.Equal(t, len(failedKVAs), len(failedKVBs), "unequal sets of key-values to compare")
 
 		fmt.Printf("compared %d different key/value pairs between %s and %s\n", len(failedKVAs), skp.A, skp.B)
-		require.Equal(t, len(failedKVAs), 0, GetSimulationLog(skp.A.Name(), app.SimulationManager().StoreDecoders, failedKVAs, failedKVBs))
+		require.Equal(t, len(failedKVAs), 0, simapp.GetSimulationLog(skp.A.Name(), app.SimulationManager().StoreDecoders, failedKVAs, failedKVBs))
 	}
 }
 
 func TestAppSimulationAfterImport(t *testing.T) {
-	config, db, dir, logger, skip, err := SetupSimulation("leveldb-app-sim", "Simulation")
+	config, db, dir, logger, skip, err := simapp.SetupSimulation("leveldb-app-sim", "Simulation")
 	if skip {
 		t.Skip("skipping application simulation after import")
 	}
@@ -203,29 +196,19 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
-	app := NewRegenApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, FlagPeriodValue, MakeEncodingConfig(), fauxMerkleModeOpt)
+	app := NewRegenApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), fauxMerkleModeOpt)
 	require.Equal(t, "regen", app.Name())
 
 	// Run randomized simulation
-	stopEarly, simParams, simErr := simulation.SimulateFromSeed(
-		t,
-		os.Stdout,
-		app.BaseApp,
-		AppStateFn(app.AppCodec(), app.SimulationManager()),
-		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-		SimulationOperations(app, app.AppCodec(), config),
-		app.ModuleAccountAddrs(),
-		config,
-		app.appCodec,
-	)
+	stopEarly, simParams, simErr := simulateFromSeed(t, app, config)
 
 	// export state and simParams before the simulation error is checked
-	err = CheckExportSimulation(app, config, simParams)
+	err = simapp.CheckExportSimulation(app, config, simParams)
 	require.NoError(t, err)
 	require.NoError(t, simErr)
 
 	if config.Commit {
-		PrintStats(db)
+		simapp.PrintStats(db)
 	}
 
 	if stopEarly {
@@ -240,7 +223,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 
 	fmt.Printf("importing genesis...\n")
 
-	_, newDB, newDir, _, _, err := SetupSimulation("leveldb-app-sim-2", "Simulation-2")
+	_, newDB, newDir, _, _, err := simapp.SetupSimulation("leveldb-app-sim-2", "Simulation-2")
 	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {
@@ -248,7 +231,7 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
 
-	newApp := NewRegenApp(log.NewNopLogger(), newDB, nil, true, map[int64]bool{}, DefaultNodeHome, FlagPeriodValue, MakeEncodingConfig(), fauxMerkleModeOpt)
+	newApp := NewRegenApp(log.NewNopLogger(), newDB, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), fauxMerkleModeOpt)
 	require.Equal(t, "regen", newApp.Name())
 
 	newApp.InitChain(abci.RequestInitChain{
@@ -259,9 +242,9 @@ func TestAppSimulationAfterImport(t *testing.T) {
 		t,
 		os.Stdout,
 		newApp.BaseApp,
-		AppStateFn(app.AppCodec(), app.SimulationManager()),
+		simapp.AppStateFn(app.AppCodec(), app.SimulationManager()),
 		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-		SimulationOperations(newApp, newApp.AppCodec(), config),
+		simapp.SimulationOperations(newApp, newApp.AppCodec(), config),
 		app.ModuleAccountAddrs(),
 		config,
 		app.appCodec,
@@ -272,11 +255,11 @@ func TestAppSimulationAfterImport(t *testing.T) {
 // TODO: Make another test for the fuzzer itself, which just has noOp txs
 // and doesn't depend on the application.
 func TestAppStateDeterminism(t *testing.T) {
-	if !FlagEnabledValue {
+	if !simapp.FlagEnabledValue {
 		t.Skip("skipping application simulation")
 	}
 
-	config := NewConfigFromFlags()
+	config := simapp.NewConfigFromFlags()
 	config.InitialBlockHeight = 1
 	config.ExportParamsPath = ""
 	config.OnOperation = false
@@ -292,35 +275,26 @@ func TestAppStateDeterminism(t *testing.T) {
 
 		for j := 0; j < numTimesToRunPerSeed; j++ {
 			var logger log.Logger
-			if FlagVerboseValue {
+			if simapp.FlagVerboseValue {
 				logger = log.TestingLogger()
 			} else {
 				logger = log.NewNopLogger()
 			}
 
 			db := dbm.NewMemDB()
-			app := NewRegenApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, FlagPeriodValue, MakeEncodingConfig(), interBlockCacheOpt())
+			app := NewRegenApp(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(), interBlockCacheOpt())
 
 			fmt.Printf(
 				"running non-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",
 				config.Seed, i+1, numSeeds, j+1, numTimesToRunPerSeed,
 			)
 
-			_, _, err := simulation.SimulateFromSeed(
-				t,
-				os.Stdout,
-				app.BaseApp,
-				AppStateFn(app.AppCodec(), app.SimulationManager()),
-				simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-				SimulationOperations(app, app.AppCodec(), config),
-				app.ModuleAccountAddrs(),
-				config,
-				app.appCodec,
-			)
+			_, _, err := simulateFromSeed(t, app, config)
+
 			require.NoError(t, err)
 
 			if config.Commit {
-				PrintStats(db)
+				simapp.PrintStats(db)
 			}
 
 			appHash := app.LastCommitID().Hash

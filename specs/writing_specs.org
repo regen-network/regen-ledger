@@ -32,11 +32,11 @@ With these three purposes in mind, specification documents are designed to be us
 * Component Specifications
   Each component (defined as an independent build artifact or separate running process) should have its own ~README.org~ file. We expect have the following components so far:
   * Server
-    * ~xrnd~ blockchain node
+    * ~regen~ blockchain node
     * Postgis index of blockchain data
     * Jena index of blockchain data
   * Client
-    * ~xrncli~ blockchain client. (Documentation shouldn't duplicate what is available in CLI help)
+    * ~regen~ blockchain client. (Documentation shouldn't duplicate what is available in CLI help)
     * Mobile client SDK's - javascript, android, iOS
   
 * Regen Ledger Module Specifications
@@ -79,7 +79,7 @@ With these three purposes in mind, specification documents are designed to be us
    The rationale for why the implementation described above was chosen should be documented in this section. Where necessary a *Rationale:* paragraph should be included inline in other sections to provide clarity on more specific behavioral choices.
 
 ** CLI Tutorial (optional)
-   A tutorial walk-through of using the module using the ~xrncli~ command line tool.
+   A tutorial walk-through of using the module using the ~regen~ command line tool.
 
 * Tests Specifications (experimental)
   Test specifications can be written in the [[https://docs.cucumber.io/gherkin/][Gherkin]] syntax in ~.feature~ files or as Org Babel in ~README.org~, but ~.feature~ files are preferred for the long term as Gherkin isn't so pretty in documentation. A suitable BDD testing framework such as [[https://cucumber.io][Cucumber]] or [[https://github.com/DATA-DOG/godog][godog]] should be used to execute the specifications. Gherkin specs SHOULD ALWAYS be written by developers and reviewed by the product team and NEVER by developers in isolation. Gherkin-based tests should not be a replacement for other more comprehensive tests that ensure program correctness. Their primary purpose is to serve as a communication tool for aligning product and design. Please read this comment by the creator of Cucumber: https://news.ycombinator.com/item?id=10194242. This is also helpful to give context: http://blog.jonasbandi.net/2010/03/classifying-bdd-tools-unit-test-driven.html.

@@ -34,9 +34,9 @@ prerequisite reading:
 * [RDF 1.1 Concepts and Abstract Syntax](https://www.w3.org/TR/rdf11-concepts/)
 * [Sparql 1.1 Query Language](https://www.w3.org/TR/sparql11-query/)
 
-## XRN URI Scheme
+## Regen URI Scheme
 
-Regen Ledger defines its own URI scheme with the `xrn` prefix for usage
+Regen Ledger defines its own URI scheme with the `regen` prefix for usage
 in various modules. The semantics of this URI scheme will be defined
 in each module as they arise. In the future, this information may be
 consolidated into a single reference section.
@@ -140,9 +140,9 @@ graphs and datasets although the procedure for storing them is similar.
 
 To store data on-chain, a valid RDF dataset can be submitted in a
 supported format (JSON-LD currently). The URI for a graph will be of the
-format `xrn://<block-height>/graph/<hash>` where `block-height` is the
+format `regen://<block-height>/graph/<hash>` where `block-height` is the
 hex-encoded block height at which the data was committed `<hash>` is the [URDNA2015](https://json-ld.github.io/normalization/spec/)
-hash of the data. Likewise, datasets get the URI `xrn://<block-height>/dataset/<hash>`.
+hash of the data. Likewise, datasets get the URI `regen://<block-height>/dataset/<hash>`.
 Note that all simple graphs will be accessible from the dataset URI's
 as well as they are also valid datasets.
 
@@ -176,13 +176,13 @@ later section.
 #### Named graphs
 
 Each graph that is stored on-chain should be available
-as the named graph `xrn://<block-height>/graph/<hash>` in the RDF data set.
+as the named graph `regen://<block-height>/graph/<hash>` in the RDF data set.
 
 #### `SERVICE` endpoints
 
 Each dataset that is stored on or off-chain should be accessible as the
 dataset at the [Sparql 1.1. Federation](https://www.w3.org/TR/2013/REC-sparql11-federated-query-20130321/)
-`SERVICE` endpoint `xrn://<block-height>/dataset/<hash>`. Compliant index databases should
+`SERVICE` endpoint `regen://<block-height>/dataset/<hash>`. Compliant index databases should
 overload the handling of service endpoint queries to either pull the dataset from the chain
 if the dataset is stored on-chain or retrieve the dataset from the URL provided
 on-chain which is supposed to permanently reference this data. In either case,
