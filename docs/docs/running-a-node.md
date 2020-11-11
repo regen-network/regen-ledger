@@ -6,9 +6,8 @@
 
 ## Interacting with a node
 
-### GRPC
+### gRPC
 
 ### REST API
 
 ### CLI
-
