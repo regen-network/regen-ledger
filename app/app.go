@@ -86,6 +86,9 @@ import (
 
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
+
+	// unnamed import of statik for swagger UI support
+	_ "github.com/regen-network/regen-ledger/client/docs/statik"
 )
 
 const (
