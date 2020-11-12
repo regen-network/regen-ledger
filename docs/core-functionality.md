@@ -8,7 +8,7 @@ For more information on Cosmos's work, and what it means to build an "applicatio
 
 ## Regen Ledger Overview
 
-Regen Ledger is as a single application binary that:
+Regen Ledger is a single application binary that:
 - Runs a fully functioning node in the public proof-of-stake Regen Network
 - Stores application state locally, using an [IAVL Tree](https://github.com/cosmos/iavl)
 - Exposes an API server with both gRPC and REST interfaces for querying blockchain state and sending transactions
