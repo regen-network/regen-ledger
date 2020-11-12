@@ -7,8 +7,8 @@ option go_package = "github.com/regen-network/regen-ledger/x/group/types";
 // EventCreateGroup is an event emitted when a group is created.
 message EventCreateGroup {
 
-  // group_id is the unique ID of the group.
-  string group_id = 1;
+  // group is the unique ID of the group.
+  string group = 1;
 
   // admin is the admin address of the group.
   string admin = 2;
@@ -17,8 +17,8 @@ message EventCreateGroup {
 // EventUpdateGroup is an event emitted when a group is updated.
 message EventUpdateGroup {
 
-  // group_id is the unique ID of the group.
-  string group_id = 1;
+  // group is the unique ID of the group.
+  string group = 1;
 
   // admin is the admin address of the group.
   string admin = 2;

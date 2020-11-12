@@ -56,14 +56,14 @@ message MsgCreateGroupRequest {
 // MsgCreateGroupResponse is the Msg/CreateGroup response type.
 message MsgCreateGroupResponse {
 
-    // group_id is the unique ID of the newly created group.
-    uint64 group_id = 1 [(gogoproto.casttype) = "ID"];
+    // group is the unique ID of the newly created group.
+    uint64 group = 1 [(gogoproto.casttype) = "GroupID"];
 }
 
 // MsgUpdateGroupMembersRequest is the Msg/UpdateGroupMembers request type.
 message MsgUpdateGroupMembersRequest {
     bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
-    uint64 group_id = 2 [(gogoproto.casttype) = "ID"];
+    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
     repeated Member member_updates = 3 [(gogoproto.nullable) = false]; // set power to 0 to remove
 }
 
@@ -73,7 +73,7 @@ message MsgUpdateGroupMembersResponse { }
 // MsgUpdateGroupAdminRequest is the Msg/UpdateGroupAdmin request type.
 message MsgUpdateGroupAdminRequest {
     bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
-    uint64 group_id = 2 [(gogoproto.casttype) = "ID"];
+    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
     bytes new_admin = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
 }
 
@@ -83,7 +83,7 @@ message MsgUpdateGroupAdminResponse { }
 // MsgUpdateGroupCommentRequest is the Msg/UpdateGroupComment request type.
 message MsgUpdateGroupCommentRequest {
     bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
-    uint64 group_id = 2 [(gogoproto.casttype) = "ID"];
+    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
     string comment = 3;
 }
 
@@ -98,7 +98,7 @@ message MsgUpdateGroupCommentResponse { }
 message MsgCreateGroupAccountRequest {
     option (gogoproto.goproto_getters) = false;
     bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
-    uint64 group_id = 2 [(gogoproto.casttype) = "ID"];
+    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
     string comment = 3;
     google.protobuf.Any decision_policy = 4 [(cosmos_proto.accepts_interface) = "DecisionPolicy"];
 }
@@ -123,7 +123,7 @@ message MsgUpdateGroupAccountAdminResponse { }
 // MsgUpdateGroupAccountDecisionPolicyRequest is the Msg/UpdateGroupAccountDecisionPolicy request type.
 message MsgUpdateGroupAccountDecisionPolicyRequest {
     bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
-    uint64 group_id = 2 [(gogoproto.casttype) = "ID"];
+    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
     google.protobuf.Any decision_policy = 3 [(cosmos_proto.accepts_interface) = "DecisionPolicy"];
 }
 
@@ -162,7 +162,7 @@ message MsgProposeBaseRequest {
 
 // MsgVoteRequest is the Msg/Vote request type.
 message MsgVoteRequest {
-    uint64 proposal_id = 1 [(gogoproto.casttype) = "ProposalId"];
+    uint64 proposal = 1 [(gogoproto.casttype) = "ProposalID"];
     repeated bytes voters = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
     Choice choice = 3;
     string comment = 4;
@@ -173,7 +173,7 @@ message MsgVoteResponse { }
 
 // MsgExecRequest is the Msg/Exec request type.
 message MsgExecRequest {
-    uint64 proposal_id = 1 [(gogoproto.casttype) = "ProposalId"];
+    uint64 proposal = 1 [(gogoproto.casttype) = "ProposalID"];
     bytes signer = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
 }
 

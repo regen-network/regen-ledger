@@ -19,12 +19,12 @@ func (s serverImpl) CreateGroup(goCtx context.Context, req *types.MsgCreateGroup
 	}
 
 	groupIDStr := util.Uint64ToBase58Check(groupID.Uint64())
-	err = ctx.EventManager().EmitTypedEvent(&types.EventCreateGroup{GroupId: groupIDStr, Admin: req.Admin.String()})
+	err = ctx.EventManager().EmitTypedEvent(&types.EventCreateGroup{Group: groupIDStr, Admin: req.Admin.String()})
 	if err != nil {
 		return nil, err
 	}
 
-	return &types.MsgCreateGroupResponse{GroupId: groupID}, nil
+	return &types.MsgCreateGroupResponse{Group: groupID}, nil
 }
 
 func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *types.MsgUpdateGroupMembersRequest) (*types.MsgUpdateGroupMembersResponse, error) {
@@ -32,7 +32,7 @@ func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *types.MsgUpda
 
 	action := func(m *types.GroupMetadata) error {
 		for i := range req.MemberUpdates {
-			member := types.GroupMember{GroupId: req.GroupId,
+			member := types.GroupMember{Group: req.Group,
 				Member:  req.MemberUpdates[i].Address,
 				Weight:  req.MemberUpdates[i].Power,
 				Comment: req.MemberUpdates[i].Comment,
@@ -117,7 +117,7 @@ func (s serverImpl) CreateGroupAccount(goCtx context.Context, req *types.MsgCrea
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	decisionPolicy := req.GetDecisionPolicy()
-	acc, err := s.Keeper.CreateGroupAccount(ctx, req.GetAdmin(), req.GetGroupId(), decisionPolicy, req.GetComment())
+	acc, err := s.Keeper.CreateGroupAccount(ctx, req.GetAdmin(), req.GetGroup(), decisionPolicy, req.GetComment())
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "create group account")
 	}
@@ -148,7 +148,7 @@ func (s serverImpl) UpdateGroupAccountComment(goCtx context.Context, req *types.
 func (s serverImpl) Vote(goCtx context.Context, req *types.MsgVoteRequest) (*types.MsgVoteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := s.Keeper.Vote(ctx, req.ProposalId, req.Voters, req.Choice, req.Comment); err != nil {
+	if err := s.Keeper.Vote(ctx, req.Proposal, req.Voters, req.Choice, req.Comment); err != nil {
 		return nil, err
 	}
 
@@ -160,7 +160,7 @@ func (s serverImpl) Vote(goCtx context.Context, req *types.MsgVoteRequest) (*typ
 func (s serverImpl) Exec(goCtx context.Context, req *types.MsgExecRequest) (*types.MsgExecResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := s.Keeper.ExecProposal(ctx, req.ProposalId); err != nil {
+	if err := s.Keeper.ExecProposal(ctx, req.Proposal); err != nil {
 		return nil, err
 	}
 
@@ -170,7 +170,7 @@ func (s serverImpl) Exec(goCtx context.Context, req *types.MsgExecRequest) (*typ
 }
 
 type authNGroupReq interface {
-	GetGroupId() types.ID
+	GetGroup() types.GroupID
 	GetAdmin() sdk.AccAddress // equal GetSigners()
 }
 
@@ -182,8 +182,8 @@ func (s serverImpl) doUpdateGroup(ctx sdk.Context, req authNGroupReq, action act
 		return err
 	}
 
-	groupIDStr := util.Uint64ToBase58Check(req.GetGroupId().Uint64())
-	err = ctx.EventManager().EmitTypedEvent(&types.EventCreateGroup{GroupId: groupIDStr, Admin: req.GetAdmin().String()})
+	groupIDStr := util.Uint64ToBase58Check(req.GetGroup().Uint64())
+	err = ctx.EventManager().EmitTypedEvent(&types.EventCreateGroup{Group: groupIDStr, Admin: req.GetAdmin().String()})
 	if err != nil {
 		return err
 	}
@@ -192,7 +192,7 @@ func (s serverImpl) doUpdateGroup(ctx sdk.Context, req authNGroupReq, action act
 }
 
 func (s serverImpl) doAuthenticated(ctx sdk.Context, req authNGroupReq, action actionFn, note string) error {
-	group, err := s.Keeper.GetGroup(ctx, req.GetGroupId())
+	group, err := s.Keeper.GetGroup(ctx, req.GetGroup())
 	if err != nil {
 		return err
 	}

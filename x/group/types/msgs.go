@@ -10,16 +10,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-const (
-	msgTypeCreateGroup        = "create_group"
-	msgTypeUpdateGroupAdmin   = "update_group_admin"
-	msgTypeUpdateGroupComment = "update_group_comment"
-	msgTypeUpdateGroupMembers = "update_group_members"
-	msgTypeCreateGroupAccount = "create_group_account"
-	msgTypeVote               = "vote"
-	msgTypeExecProposal       = "exec_proposal"
-)
-
 var _ sdk.MsgRequest = &MsgCreateGroupRequest{}
 
 // GetSigners returns the addresses that must sign over msg.GetSignBytes()
@@ -69,7 +59,7 @@ func (m MsgUpdateGroupAdminRequest) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic does a sanity check on the provided data
 func (m MsgUpdateGroupAdminRequest) ValidateBasic() error {
-	if m.GroupId == 0 {
+	if m.Group == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
 
@@ -102,7 +92,7 @@ func (m MsgUpdateGroupCommentRequest) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic does a sanity check on the provided data
 func (m MsgUpdateGroupCommentRequest) ValidateBasic() error {
-	if m.GroupId == 0 {
+	if m.Group == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 
 	}
@@ -124,7 +114,7 @@ func (m MsgUpdateGroupMembersRequest) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic does a sanity check on the provided data
 func (m MsgUpdateGroupMembersRequest) ValidateBasic() error {
-	if m.GroupId == 0 {
+	if m.Group == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 
 	}
@@ -175,7 +165,7 @@ func (m MsgCreateGroupAccountRequest) ValidateBasic() error {
 	if err := sdk.VerifyAddressFormat(m.Admin); err != nil {
 		return sdkerrors.Wrap(err, "admin")
 	}
-	if m.GroupId == 0 {
+	if m.Group == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
 
@@ -193,10 +183,10 @@ func (m MsgCreateGroupAccountRequest) ValidateBasic() error {
 var _ types.UnpackInterfacesMessage = MsgCreateGroupAccountRequest{}
 
 // NewMsgCreateGroupAccount creates a new MsgCreateGroupAccountRequest.
-func NewMsgCreateGroupAccount(admin sdk.AccAddress, group ID, comment string, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccountRequest, error) {
+func NewMsgCreateGroupAccount(admin sdk.AccAddress, group GroupID, comment string, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccountRequest, error) {
 	m := &MsgCreateGroupAccountRequest{
 		Admin:   admin,
-		GroupId: group,
+		Group:   group,
 		Comment: comment,
 	}
 	err := m.SetDecisionPolicy(decisionPolicy)
@@ -210,8 +200,8 @@ func (m *MsgCreateGroupAccountRequest) GetAdmin() sdk.AccAddress {
 	return m.Admin
 }
 
-func (m *MsgCreateGroupAccountRequest) GetGroupId() ID {
-	return m.GroupId
+func (m *MsgCreateGroupAccountRequest) GetGroup() GroupID {
+	return m.Group
 }
 
 func (m *MsgCreateGroupAccountRequest) GetComment() string {
@@ -266,7 +256,7 @@ func (m MsgVoteRequest) ValidateBasic() error {
 	if err := AccAddresses(m.Voters).ValidateBasic(); err != nil {
 		return sdkerrors.Wrap(err, "voters")
 	}
-	if m.ProposalId == 0 {
+	if m.Proposal == 0 {
 		return errors.Wrap(ErrEmpty, "proposal")
 	}
 	if m.Choice == Choice_UNKNOWN {
@@ -293,7 +283,7 @@ func (m MsgExecRequest) ValidateBasic() error {
 	if err := sdk.VerifyAddressFormat(m.Signer); err != nil {
 		return errors.Wrap(ErrInvalid, "signer")
 	}
-	if m.ProposalId == 0 {
+	if m.Proposal == 0 {
 		return errors.Wrap(ErrEmpty, "proposal")
 	}
 	return nil

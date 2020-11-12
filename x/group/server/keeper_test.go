@@ -75,20 +75,20 @@ package server
 // 			id, err := k.CreateGroup(ctx, spec.srcAdmin, spec.srcMembers, spec.srcComment)
 // 			if spec.expErr {
 // 				require.Error(t, err)
-// 				require.False(t, k.HasGroup(ctx, group.ID(seq+1).Bytes()))
+// 				require.False(t, k.HasGroup(ctx, group.Group(seq+1).Bytes()))
 // 				return
 // 			}
 // 			require.NoError(t, err)
 
 // 			seq++
-// 			assert.Equal(t, group.ID(seq), id)
+// 			assert.Equal(t, group.Group(seq), id)
 
 // 			// then all data persisted
 // 			loadedGroup, err := k.GetGroup(ctx, id)
 // 			require.NoError(t, err)
 // 			assert.Equal(t, sdk.AccAddress([]byte(spec.srcAdmin)), loadedGroup.Admin)
 // 			assert.Equal(t, spec.srcComment, loadedGroup.Comment)
-// 			assert.Equal(t, id, loadedGroup.GroupId)
+// 			assert.Equal(t, id, loadedGroup.Group)
 // 			assert.Equal(t, uint64(1), loadedGroup.Version)
 
 // 			// and members are stored as well
@@ -102,7 +102,7 @@ package server
 // 				assert.Equal(t, members[i].Comment, loadedMembers[i].Comment)
 // 				assert.Equal(t, members[i].Address, loadedMembers[i].Member)
 // 				assert.Equal(t, members[i].Power, loadedMembers[i].Weight)
-// 				assert.Equal(t, id, loadedMembers[i].GroupId)
+// 				assert.Equal(t, id, loadedMembers[i].Group)
 // 			}
 // 		})
 // 	}
@@ -125,7 +125,7 @@ package server
 
 // 	specs := map[string]struct {
 // 		srcAdmin   sdk.AccAddress
-// 		srcGroupID group.ID
+// 		srcGroupID group.Group
 // 		srcPolicy  group.DecisionPolicy
 // 		srcComment string
 // 		expErr     bool
@@ -192,7 +192,7 @@ package server
 // 			groupAccount, err := k.GetGroupAccount(ctx, addr)
 // 			require.NoError(t, err)
 // 			assert.Equal(t, addr, groupAccount.GroupAccount)
-// 			assert.Equal(t, myGroupID, groupAccount.GroupId)
+// 			assert.Equal(t, myGroupID, groupAccount.Group)
 // 			assert.Equal(t, sdk.AccAddress([]byte(spec.srcAdmin)), groupAccount.Admin)
 // 			assert.Equal(t, spec.srcComment, groupAccount.Comment)
 // 			assert.Equal(t, uint64(1), groupAccount.Version)
@@ -384,7 +384,7 @@ package server
 // 	require.NoError(t, err)
 
 // 	specs := map[string]struct {
-// 		srcProposalID     group.ProposalId
+// 		srcProposalID     group.Proposal
 // 		srcVoters         []sdk.AccAddress
 // 		srcChoice         group.Choice
 // 		srcComment        string
@@ -597,7 +597,7 @@ package server
 // 				// then all data persisted
 // 				loaded, err := k.GetVote(ctx, spec.srcProposalID, voter)
 // 				require.NoError(t, err)
-// 				assert.Equal(t, spec.srcProposalID, loaded.ProposalId)
+// 				assert.Equal(t, spec.srcProposalID, loaded.Proposal)
 // 				assert.Equal(t, voter, loaded.Voter)
 // 				assert.Equal(t, spec.srcChoice, loaded.Choice)
 // 				assert.Equal(t, spec.srcComment, loaded.Comment)
@@ -649,7 +649,7 @@ package server
 
 // 	specs := map[string]struct {
 // 		srcBlockTime      time.Time
-// 		setupProposal     func(t *testing.T, ctx sdk.Context) group.ProposalId
+// 		setupProposal     func(t *testing.T, ctx sdk.Context) group.Proposal
 // 		expErr            bool
 // 		expProposalStatus group.ProposalBase_Status
 // 		expProposalResult group.ProposalBase_Result
@@ -657,7 +657,7 @@ package server
 // 		expPayloadCounter uint64
 // 	}{
 // 		"proposal executed when accepted": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalId {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.Proposal {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatagroup.MsgIncCounter{},
@@ -672,7 +672,7 @@ package server
 // 			expPayloadCounter: 1,
 // 		},
 // 		"proposal with multiple messages executed when accepted": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalId {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.Proposal {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatagroup.MsgIncCounter{}, &testdatagroup.MsgIncCounter{},
@@ -687,7 +687,7 @@ package server
 // 			expPayloadCounter: 2,
 // 		},
 // 		"proposal not executed when rejected": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalId {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.Proposal {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatagroup.MsgAlwaysFail{},
@@ -701,7 +701,7 @@ package server
 // 			expExecutorResult: group.ProposalExecutorResultNotRun,
 // 		},
 // 		"open proposal must not fail": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalId {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.Proposal {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatagroup.MsgAlwaysFail{},
@@ -714,13 +714,13 @@ package server
 // 			expExecutorResult: group.ProposalExecutorResultNotRun,
 // 		},
 // 		"existing proposal required": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalId {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.Proposal {
 // 				return 9999
 // 			},
 // 			expErr: true,
 // 		},
 // 		"Decision policy also applied on timeout": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalId {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.Proposal {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatagroup.MsgAlwaysFail{},
@@ -735,7 +735,7 @@ package server
 // 			expExecutorResult: group.ProposalExecutorResultNotRun,
 // 		},
 // 		"Decision policy also applied after timeout": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalId {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.Proposal {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatagroup.MsgAlwaysFail{},
@@ -750,7 +750,7 @@ package server
 // 			expExecutorResult: group.ProposalExecutorResultNotRun,
 // 		},
 // 		"with group modified before tally": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalId {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.Proposal {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatagroup.MsgAlwaysFail{},
@@ -768,7 +768,7 @@ package server
 // 			expExecutorResult: group.ProposalExecutorResultNotRun,
 // 		},
 // 		"with group account modified before tally": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalId {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.Proposal {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatagroup.MsgAlwaysFail{},
@@ -786,7 +786,7 @@ package server
 // 			expExecutorResult: group.ProposalExecutorResultNotRun,
 // 		},
 // 		"with group modified after tally": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalId {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.Proposal {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatagroup.MsgAlwaysFail{},
@@ -805,7 +805,7 @@ package server
 // 			expExecutorResult: group.ProposalExecutorResultFailure,
 // 		},
 // 		"with group account modified after tally": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalId {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.Proposal {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatagroup.MsgAlwaysFail{},
@@ -823,7 +823,7 @@ package server
 // 			expExecutorResult: group.ProposalExecutorResultNotRun,
 // 		},
 // 		"prevent double execution when successful": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalId {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.Proposal {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatagroup.MsgIncCounter{},
@@ -839,7 +839,7 @@ package server
 // 			expExecutorResult: group.ProposalExecutorResultSuccess,
 // 		},
 // 		"rollback all msg updates on failure": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalId {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.Proposal {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatagroup.MsgIncCounter{}, &testdatagroup.MsgAlwaysFail{},
@@ -853,7 +853,7 @@ package server
 // 			expExecutorResult: group.ProposalExecutorResultFailure,
 // 		},
 // 		"executable when failed before": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.ProposalId {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) group.Proposal {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatagroup.MsgConditional{ExpectedCounter: 1}, &testdatagroup.MsgIncCounter{},

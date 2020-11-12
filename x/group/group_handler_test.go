@@ -34,7 +34,7 @@ package group_test
 // 				}},
 // 			},
 // 			expGroup: group.GroupMetadata{
-// 				GroupId:     1,
+// 				Group:     1,
 // 				Admin:       myAdmin,
 // 				Comment:     "test",
 // 				Version:     1,
@@ -43,7 +43,7 @@ package group_test
 // 			expMembers: []group.GroupMember{
 // 				{
 // 					Member:  sdk.AccAddress([]byte("valid-member-address")),
-// 					GroupId: 1,
+// 					Group: 1,
 // 					Weight:  sdk.NewDec(1),
 // 					Comment: "first",
 // 				},
@@ -64,12 +64,12 @@ package group_test
 // 			}
 // 			// then
 // 			groupID := orm.DecodeSequence(res.Data)
-// 			loaded, err := k.GetGroup(ctx, group.ID(groupID))
+// 			loaded, err := k.GetGroup(ctx, group.Group(groupID))
 // 			require.NoError(t, err)
 // 			assert.Equal(t, spec.expGroup, loaded)
 
 // 			// and members persisted
-// 			it, err := k.GetGroupMembersByGroup(ctx, group.ID(groupID))
+// 			it, err := k.GetGroupMembersByGroup(ctx, group.Group(groupID))
 // 			require.NoError(t, err)
 // 			var loadedMembers []group.GroupMember
 // 			_, err = orm.ReadAll(it, &loadedMembers)
@@ -98,12 +98,12 @@ package group_test
 // 	}{
 // 		"with correct admin": {
 // 			src: &group.MsgUpdateGroupAdminRequest{
-// 				GroupId:  groupID,
+// 				Group:  groupID,
 // 				Admin:    oldAdmin,
 // 				NewAdmin: []byte("my-new-admin-address"),
 // 			},
 // 			expStored: group.GroupMetadata{
-// 				GroupId:     groupID,
+// 				Group:     groupID,
 // 				Admin:       []byte("my-new-admin-address"),
 // 				Comment:     "test",
 // 				TotalWeight: sdk.NewDec(1),
@@ -112,13 +112,13 @@ package group_test
 // 		},
 // 		"with wrong admin": {
 // 			src: &group.MsgUpdateGroupAdminRequest{
-// 				GroupId:  groupID,
+// 				Group:  groupID,
 // 				Admin:    []byte("unknown-address"),
 // 				NewAdmin: []byte("my-new-admin-address"),
 // 			},
 // 			expErr: group.ErrUnauthorized,
 // 			expStored: group.GroupMetadata{
-// 				GroupId:     groupID,
+// 				Group:     groupID,
 // 				Admin:       oldAdmin,
 // 				Comment:     "test",
 // 				TotalWeight: sdk.NewDec(1),
@@ -127,13 +127,13 @@ package group_test
 // 		},
 // 		"with unknown groupID": {
 // 			src: &group.MsgUpdateGroupAdminRequest{
-// 				GroupId:  999,
+// 				Group:  999,
 // 				Admin:    oldAdmin,
 // 				NewAdmin: []byte("my-new-admin-address"),
 // 			},
 // 			expErr: orm.ErrNotFound,
 // 			expStored: group.GroupMetadata{
-// 				GroupId:     groupID,
+// 				Group:     groupID,
 // 				Admin:       oldAdmin,
 // 				Comment:     "test",
 // 				TotalWeight: sdk.NewDec(1),
@@ -175,12 +175,12 @@ package group_test
 // 	}{
 // 		"with correct admin": {
 // 			src: &group.MsgUpdateGroupCommentRequest{
-// 				GroupId: groupID,
+// 				Group: groupID,
 // 				Admin:   oldAdmin,
 // 				Comment: "new comment",
 // 			},
 // 			expStored: group.GroupMetadata{
-// 				GroupId:     groupID,
+// 				Group:     groupID,
 // 				Admin:       oldAdmin,
 // 				Comment:     "new comment",
 // 				TotalWeight: sdk.NewDec(1),
@@ -189,13 +189,13 @@ package group_test
 // 		},
 // 		"with wrong admin": {
 // 			src: &group.MsgUpdateGroupCommentRequest{
-// 				GroupId: groupID,
+// 				Group: groupID,
 // 				Admin:   []byte("unknown-address"),
 // 				Comment: "new comment",
 // 			},
 // 			expErr: group.ErrUnauthorized,
 // 			expStored: group.GroupMetadata{
-// 				GroupId:     groupID,
+// 				Group:     groupID,
 // 				Admin:       oldAdmin,
 // 				Comment:     "test",
 // 				TotalWeight: sdk.NewDec(1),
@@ -204,13 +204,13 @@ package group_test
 // 		},
 // 		"with unknown groupid": {
 // 			src: &group.MsgUpdateGroupCommentRequest{
-// 				GroupId: 999,
+// 				Group: 999,
 // 				Admin:   []byte("unknown-address"),
 // 				Comment: "new comment",
 // 			},
 // 			expErr: orm.ErrNotFound,
 // 			expStored: group.GroupMetadata{
-// 				GroupId:     groupID,
+// 				Group:     groupID,
 // 				Admin:       oldAdmin,
 // 				Comment:     "test",
 // 				TotalWeight: sdk.NewDec(1),
@@ -252,7 +252,7 @@ package group_test
 // 	}{
 // 		"add new member": {
 // 			src: &group.MsgUpdateGroupMembersRequest{
-// 				GroupId: groupID,
+// 				Group: groupID,
 // 				Admin:   myAdmin,
 // 				MemberUpdates: []group.Member{{
 // 					Address: sdk.AccAddress([]byte("other-member-address")),
@@ -261,7 +261,7 @@ package group_test
 // 				}},
 // 			},
 // 			expGroup: group.GroupMetadata{
-// 				GroupId:     groupID,
+// 				Group:     groupID,
 // 				Admin:       myAdmin,
 // 				Comment:     "test",
 // 				TotalWeight: sdk.NewDec(3),
@@ -270,13 +270,13 @@ package group_test
 // 			expMembers: []group.GroupMember{
 // 				{
 // 					Member:  sdk.AccAddress([]byte("other-member-address")),
-// 					GroupId: groupID,
+// 					Group: groupID,
 // 					Weight:  sdk.NewDec(2),
 // 					Comment: "second",
 // 				},
 // 				{
 // 					Member:  sdk.AccAddress([]byte("valid-member-address")),
-// 					GroupId: groupID,
+// 					Group: groupID,
 // 					Weight:  sdk.NewDec(1),
 // 					Comment: "first",
 // 				},
@@ -284,7 +284,7 @@ package group_test
 // 		},
 // 		"update member": {
 // 			src: &group.MsgUpdateGroupMembersRequest{
-// 				GroupId: groupID,
+// 				Group: groupID,
 // 				Admin:   myAdmin,
 // 				MemberUpdates: []group.Member{{
 // 					Address: sdk.AccAddress([]byte("valid-member-address")),
@@ -293,7 +293,7 @@ package group_test
 // 				}},
 // 			},
 // 			expGroup: group.GroupMetadata{
-// 				GroupId:     groupID,
+// 				Group:     groupID,
 // 				Admin:       myAdmin,
 // 				Comment:     "test",
 // 				TotalWeight: sdk.NewDec(2),
@@ -302,7 +302,7 @@ package group_test
 // 			expMembers: []group.GroupMember{
 // 				{
 // 					Member:  sdk.AccAddress([]byte("valid-member-address")),
-// 					GroupId: groupID,
+// 					Group: groupID,
 // 					Weight:  sdk.NewDec(2),
 // 					Comment: "updated",
 // 				},
@@ -310,7 +310,7 @@ package group_test
 // 		},
 // 		"update member with same data": {
 // 			src: &group.MsgUpdateGroupMembersRequest{
-// 				GroupId: groupID,
+// 				Group: groupID,
 // 				Admin:   myAdmin,
 // 				MemberUpdates: []group.Member{{
 // 					Address: sdk.AccAddress([]byte("valid-member-address")),
@@ -319,7 +319,7 @@ package group_test
 // 				}},
 // 			},
 // 			expGroup: group.GroupMetadata{
-// 				GroupId:     groupID,
+// 				Group:     groupID,
 // 				Admin:       myAdmin,
 // 				Comment:     "test",
 // 				TotalWeight: sdk.NewDec(1),
@@ -328,7 +328,7 @@ package group_test
 // 			expMembers: []group.GroupMember{
 // 				{
 // 					Member:  sdk.AccAddress([]byte("valid-member-address")),
-// 					GroupId: groupID,
+// 					Group: groupID,
 // 					Weight:  sdk.NewDec(1),
 // 					Comment: "first",
 // 				},
@@ -336,7 +336,7 @@ package group_test
 // 		},
 // 		"replace member": {
 // 			src: &group.MsgUpdateGroupMembersRequest{
-// 				GroupId: groupID,
+// 				Group: groupID,
 // 				Admin:   myAdmin,
 // 				MemberUpdates: []group.Member{{
 // 					Address: sdk.AccAddress([]byte("valid-member-address")),
@@ -350,7 +350,7 @@ package group_test
 // 					}},
 // 			},
 // 			expGroup: group.GroupMetadata{
-// 				GroupId:     groupID,
+// 				Group:     groupID,
 // 				Admin:       myAdmin,
 // 				Comment:     "test",
 // 				TotalWeight: sdk.NewDec(1),
@@ -358,14 +358,14 @@ package group_test
 // 			},
 // 			expMembers: []group.GroupMember{{
 // 				Member:  sdk.AccAddress([]byte("my-new-member-addres")),
-// 				GroupId: groupID,
+// 				Group: groupID,
 // 				Weight:  sdk.NewDec(1),
 // 				Comment: "welcome",
 // 			}},
 // 		},
 // 		"remove existing member": {
 // 			src: &group.MsgUpdateGroupMembersRequest{
-// 				GroupId: groupID,
+// 				Group: groupID,
 // 				Admin:   myAdmin,
 // 				MemberUpdates: []group.Member{{
 // 					Address: sdk.AccAddress([]byte("valid-member-address")),
@@ -374,7 +374,7 @@ package group_test
 // 				}},
 // 			},
 // 			expGroup: group.GroupMetadata{
-// 				GroupId:     groupID,
+// 				Group:     groupID,
 // 				Admin:       myAdmin,
 // 				Comment:     "test",
 // 				TotalWeight: sdk.NewDec(0),
@@ -384,7 +384,7 @@ package group_test
 // 		},
 // 		"remove unknown member": {
 // 			src: &group.MsgUpdateGroupMembersRequest{
-// 				GroupId: groupID,
+// 				Group: groupID,
 // 				Admin:   myAdmin,
 // 				MemberUpdates: []group.Member{{
 // 					Address: sdk.AccAddress([]byte("unknown-member-addrs")),
@@ -394,7 +394,7 @@ package group_test
 // 			},
 // 			expErr: orm.ErrNotFound,
 // 			expGroup: group.GroupMetadata{
-// 				GroupId:     groupID,
+// 				Group:     groupID,
 // 				Admin:       myAdmin,
 // 				Comment:     "test",
 // 				TotalWeight: sdk.NewDec(1),
@@ -402,14 +402,14 @@ package group_test
 // 			},
 // 			expMembers: []group.GroupMember{{
 // 				Member:  sdk.AccAddress([]byte("valid-member-address")),
-// 				GroupId: groupID,
+// 				Group: groupID,
 // 				Weight:  sdk.NewDec(1),
 // 				Comment: "first",
 // 			}},
 // 		},
 // 		"with wrong admin": {
 // 			src: &group.MsgUpdateGroupMembersRequest{
-// 				GroupId: groupID,
+// 				Group: groupID,
 // 				Admin:   []byte("unknown-address"),
 // 				MemberUpdates: []group.Member{{
 // 					Address: sdk.AccAddress([]byte("other-member-address")),
@@ -419,7 +419,7 @@ package group_test
 // 			},
 // 			expErr: group.ErrUnauthorized,
 // 			expGroup: group.GroupMetadata{
-// 				GroupId:     groupID,
+// 				Group:     groupID,
 // 				Admin:       myAdmin,
 // 				Comment:     "test",
 // 				TotalWeight: sdk.NewDec(1),
@@ -427,14 +427,14 @@ package group_test
 // 			},
 // 			expMembers: []group.GroupMember{{
 // 				Member:  sdk.AccAddress([]byte("valid-member-address")),
-// 				GroupId: groupID,
+// 				Group: groupID,
 // 				Weight:  sdk.NewDec(1),
 // 				Comment: "first",
 // 			}},
 // 		},
 // 		"with unknown groupID": {
 // 			src: &group.MsgUpdateGroupMembersRequest{
-// 				GroupId: 999,
+// 				Group: 999,
 // 				Admin:   myAdmin,
 // 				MemberUpdates: []group.Member{{
 // 					Address: sdk.AccAddress([]byte("other-member-address")),
@@ -444,7 +444,7 @@ package group_test
 // 			},
 // 			expErr: orm.ErrNotFound,
 // 			expGroup: group.GroupMetadata{
-// 				GroupId:     groupID,
+// 				Group:     groupID,
 // 				Admin:       myAdmin,
 // 				Comment:     "test",
 // 				TotalWeight: sdk.NewDec(1),
@@ -452,7 +452,7 @@ package group_test
 // 			},
 // 			expMembers: []group.GroupMember{{
 // 				Member:  sdk.AccAddress([]byte("valid-member-address")),
-// 				GroupId: groupID,
+// 				Group: groupID,
 // 				Weight:  sdk.NewDec(1),
 // 				Comment: "first",
 // 			}},

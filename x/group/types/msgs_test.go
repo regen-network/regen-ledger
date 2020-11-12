@@ -123,7 +123,7 @@ func TestMsgCreateGroupAccount(t *testing.T) {
 
 	specs := map[string]struct {
 		admin     sdk.AccAddress
-		group     ID
+		group     GroupID
 		threshold sdk.Dec
 		timeout   proto.Duration
 		expErr    bool
@@ -278,7 +278,7 @@ func TestMsgVote(t *testing.T) {
 	}{
 		"all good with minimum fields set": {
 			src: MsgVoteRequest{
-				ProposalId: 1,
+				Proposal: 1,
 				Choice:     Choice_YES,
 				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
 			},
@@ -292,14 +292,14 @@ func TestMsgVote(t *testing.T) {
 		},
 		"choice required": {
 			src: MsgVoteRequest{
-				ProposalId: 1,
+				Proposal: 1,
 				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
 			},
 			expErr: true,
 		},
 		"valid choice required": {
 			src: MsgVoteRequest{
-				ProposalId: 1,
+				Proposal: 1,
 				Choice:     5,
 				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
 			},
@@ -307,14 +307,14 @@ func TestMsgVote(t *testing.T) {
 		},
 		"voter required": {
 			src: MsgVoteRequest{
-				ProposalId: 1,
+				Proposal: 1,
 				Choice:     Choice_YES,
 			},
 			expErr: true,
 		},
 		"valid voter address required": {
 			src: MsgVoteRequest{
-				ProposalId: 1,
+				Proposal: 1,
 				Choice:     Choice_YES,
 				Voters:     []sdk.AccAddress{[]byte("invalid-member-address")},
 			},
@@ -322,7 +322,7 @@ func TestMsgVote(t *testing.T) {
 		},
 		"duplicate voters": {
 			src: MsgVoteRequest{
-				ProposalId: 1,
+				Proposal: 1,
 				Choice:     Choice_YES,
 				Voters:     []sdk.AccAddress{[]byte("valid-member-address"), []byte("valid-member-address")},
 			},
@@ -330,7 +330,7 @@ func TestMsgVote(t *testing.T) {
 		},
 		"empty voters address not allowed": {
 			src: MsgVoteRequest{
-				ProposalId: 1,
+				Proposal: 1,
 				Choice:     Choice_YES,
 				Voters:     []sdk.AccAddress{[]byte("valid-member-address"), nil, []byte("other-member-address")},
 			},
