@@ -4,14 +4,12 @@
 
 ### Building from source
 
-Prerequisites: The [Go](https://golang.org/doc/install) compiler **version 1.15.x** (we use
+Prerequisites: The [Go](https://golang.org/doc/install) compiler **version 1.14** (we use
 go modules) or later and GNU make. The go bin path (usually `$HOME/go/bin`) should be
 on your system `PATH`.
 
-Run `make build` to build the code.`regen` is the blockchain daemon and command line blockchain client. and it can provide help messages when run.
-
-#### Requirements
-Go - `1.15.x`
+Run `make install` to build the code. The `regen` binary serves as both the blockchain daemon, as well as
+the command line blockchain client.
 
 ## Configuring the command line client
 

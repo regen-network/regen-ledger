@@ -1,4 +1,3 @@
-// Mostly copied from https://github.com/cosmos/gaia/tree/master/app
 package app
 
 import (
