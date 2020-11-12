@@ -13,7 +13,7 @@
             "url": "./tmp-swagger-gen/regen/ecocredit/v1alpha1/query.swagger.json"
         },
         {
-            "url": "./client/docs/swagger-ui/swagger.yaml",
+            "url": "./client/docs/swagger.yaml",
             "dereference": {
                 "circular": "ignore"
             }
