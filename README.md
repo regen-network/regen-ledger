@@ -12,12 +12,12 @@
 [![Gitter chat](https://badges.gitter.im/regen-network/regen-ledger.png)](https://gitter.im/regen-network/regen-ledger "Gitter chat")
 
 
-A distributed ledger for ecology built on top of the 
+A distributed ledger for ecology built on top of the
 [cosmos-sdk](http://github.com/cosmos/cosmos-sdk).
 
 ## Getting Started
 
-See [Getting Started](docs/getting_started.md).
+See [Getting Started](docs/getting_started.md) for instructions how to install and run the blockchain.
 
 ## Core Features
 
@@ -40,13 +40,13 @@ made up of a few very basic pieces of information:
 - what is being claimed about this geographical region,
 - who is making the claim, and
 - any supporting evidence the claimant would like to associate with their claim
- 
-The actual data for claims can be stored on or off the Regen Ledger blockchain. 
+
+The actual data for claims can be stored on or off the Regen Ledger blockchain.
 In order to make claim data publicly available to the whole world, it can
 be stored directly on the blockchain. In order to keep some or all of the
 data private, it can be stored off-chain but "tracked" on-chain by
 providing a cryptographic hash and URL, as well as possibly some metadata about
-the claim. 
+the claim.
 
 The facilities for storing data on-chain and tracking data off-chain
 are managed by Regen Leder's [data](https://godoc.org/github.com/regen-network/regen-ledger/x/data)
@@ -74,7 +74,7 @@ will define:
 given appropriate permissions
 - how compute functions should be written and executed to ensure that results
 are reproducible
-- how computers that are executing compute functions (called oracles) should 
+- how computers that are executing compute functions (called oracles) should
 interact with Regen Ledger in order to have results stored back into the
 ecological state database
 
