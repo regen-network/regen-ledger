@@ -1,17 +1,17 @@
 package group
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/regen-network/regen-ledger/x/group"
+	"github.com/regen-network/regen-ledger/x/group/types"
 )
 
-func (m *MyAppProposal) GetBase() group.ProposalBase {
+func (m *MyAppProposal) GetBase() types.ProposalBase {
 	return m.Base
 }
 
-func (m *MyAppProposal) SetBase(b group.ProposalBase) {
+func (m *MyAppProposal) SetBase(b types.ProposalBase) {
 	m.Base = b
 }
 
@@ -28,12 +28,12 @@ func (m *MyAppProposal) GetMsgs() []sdk.Msg {
 }
 
 func (m *MyAppProposal) SetMsgs(new []sdk.Msg) error {
-	m.Msgs = make([]*types.Any, len(new))
+	m.Msgs = make([]*codectypes.Any, len(new))
 	for i := range new {
 		if new[i] == nil {
-			return errors.Wrap(group.ErrInvalid, "msg must not be nil")
+			return errors.Wrap(types.ErrInvalid, "msg must not be nil")
 		}
-		any, err := types.NewAnyWithValue(new[i])
+		any, err := codectypes.NewAnyWithValue(new[i])
 		if err != nil {
 			return err
 		}
