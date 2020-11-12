@@ -8,7 +8,7 @@ import (
 
 // ExportGenesis returns a GenesisState for a given context and Keeper.
 func ExportGenesis(ctx sdk.Context, k server.Keeper) *types.GenesisState {
-	return &GenesisState{
+	return &types.GenesisState{
 		Params: k.GetParams(ctx),
 	}
 }

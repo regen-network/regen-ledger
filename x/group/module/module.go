@@ -1,11 +1,13 @@
-package group
+package module
 
 import (
 	"encoding/json"
 	"fmt"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/server"
+	"github.com/regen-network/regen-ledger/x/group/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -23,21 +25,19 @@ var _ module.AppModule = AppModule{}
 var _ module.AppModuleBasic = AppModuleBasic{}
 
 func (a AppModuleBasic) Name() string {
-	return ModuleName
+	return types.ModuleName
 }
 
-func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	RegisterLegacyAminoCodec(cdc)
-}
+func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {}
 
 func (a AppModuleBasic) DefaultGenesis(marshaler codec.JSONMarshaler) json.RawMessage {
-	return marshaler.MustMarshalJSON(NewGenesisState())
+	return marshaler.MustMarshalJSON(types.NewGenesisState())
 }
 
 func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, config client.TxEncodingConfig, bz json.RawMessage) error {
-	var data GenesisState
+	var data types.GenesisState
 	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
-		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ModuleName, err)
+		return fmt.Errorf("failed to unmarshal %s genesis state: %w", types.ModuleName, err)
 	}
 	return data.Validate()
 }
@@ -58,7 +58,7 @@ func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
 
 // RegisterInterfaces registers module concrete types into protobuf Any.
 func (AppModuleBasic) RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
-	RegisterInterfaces(registry)
+	types.RegisterTypes(registry)
 }
 
 type AppModule struct {
@@ -74,17 +74,17 @@ func NewAppModule(keeper server.Keeper) AppModule {
 }
 
 func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, data json.RawMessage) []abci.ValidatorUpdate {
-	var genesisState GenesisState
+	var genesisState types.GenesisState
 	cdc.MustUnmarshalJSON(data, &genesisState)
 	if err := genesisState.Validate(); err != nil {
-		panic(fmt.Sprintf("failed to validate %s genesis state: %s", ModuleName, err))
+		panic(fmt.Sprintf("failed to validate %s genesis state: %s", types.ModuleName, err))
 	}
 	a.keeper.SetParams(ctx, genesisState.Params) // TODO: revisit if this makes sense
 	return []abci.ValidatorUpdate{}
 }
 
 func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage {
-	return cdc.MustMarshalJSON(ExportGenesis(ctx, a.keeper))
+	return cdc.MustMarshalJSON(group.ExportGenesis(ctx, a.keeper))
 }
 
 func (a AppModule) RegisterInvariants(sdk.InvariantRegistry) {
@@ -94,15 +94,11 @@ func (a AppModule) RegisterInvariants(sdk.InvariantRegistry) {
 
 // Route returns the message routing key for the group module.
 func (a AppModule) Route() sdk.Route {
-	return sdk.NewRoute(RouterKey, NewHandler(a.keeper))
-}
-
-func (a AppModule) NewHandler() sdk.Handler {
-	return NewHandler(a.keeper)
+	return sdk.Route{}
 }
 
 func (a AppModule) QuerierRoute() string {
-	return QuerierRoute
+	return ""
 }
 
 func (a AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier {
@@ -110,7 +106,7 @@ func (a AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier {
 }
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {
-	server.RegisterServices(configurator, a.keeper)
+	server.RegisterServices(a.keeper, configurator)
 }
 
 func (a AppModule) BeginBlock(sdk.Context, abci.RequestBeginBlock) {}

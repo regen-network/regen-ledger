@@ -86,7 +86,8 @@ import (
 
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
-	group "github.com/regen-network/regen-ledger/x/group"
+	group "github.com/regen-network/regen-ledger/x/group/module"
+	grouptypes "github.com/regen-network/regen-ledger/x/group/types"
 )
 
 const (
@@ -209,7 +210,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		data.StoreKey, group.StoreKey,
+		data.StoreKey, grouptypes.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
