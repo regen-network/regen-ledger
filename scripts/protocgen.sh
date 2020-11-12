@@ -46,7 +46,7 @@ Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
   -I "proto" \
   -I "third_party/proto" \
   --doc_out=./docs/modules/${module} \
-  --doc_opt=markdown,${module}.md \
+  --doc_opt=markdown,protobuf.md \
   $(find "${dir}" -maxdepth 1 -name '*.proto')
 
 done
