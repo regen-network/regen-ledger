@@ -35,6 +35,12 @@ regen init [moniker]
 
 Running a node consists of first generating a valid genesis file, and then running the `regen start` command to start the node.
 
+::: tip
+
+Starting a node is not necessary if you're only wanting to interact with a live blockchain. In that case, you can use the `regen` binary purely as a CLI for interacting with a live network. Just make sure you always provide a `--node` flag with a valid peer address. See [the API documentation](./api.md) for more info.
+
+:::
+
 ### Connecting to an Existing Network
 
 If you're wanting to connect to our devnet that launched during the [Open Climate Collabathon](https://www.collabathon.openclimate.earth/), you can fetch the genesis file here: http://18.220.101.192:26657/genesis. Save it in the `$HOME/.regen/config/` folder:
@@ -72,7 +78,7 @@ Once you [configured your CLI client](#configuring-the-command-line-client), you
 As a validator who signs blocks, your node must have a public/private keypair. Regen Ledger keys can be managed with the `regen keys` subcommand. A new key pair can be generated using:
 
 ```sh
-$KEY_NAME=my_validator # Or choose your own key name.
+KEY_NAME=my_validator # Or choose your own key name.
 regen keys add $KEY_NAME
 
 # We will also save the generated address in a variable for later use.
@@ -107,12 +113,6 @@ regen start
 and your node should start producing blocks.
 
 ### Check the Node's Status
-
-::: tip
-
-Starting a node is not necessary if you're only wanting to interact with a live blockchain. In that case, you can use the `regen` binary purely as a CLI for interacting with a live network. Just make sure you always provide a `--node` flag with a valid peer address.
-
-:::
 
 Regardless of whether you're running a local node (as above), or connecting directly to a live network, you can run `regen status` to verify that the CLI is able to connect to the blockchain node. If connecting to a live network, make sure you provide a `--node` flag with the correct address of a live peer. For connecting to `regen-devnet-1`, use the following:
 
