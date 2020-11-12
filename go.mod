@@ -21,7 +21,7 @@ require (
 	github.com/tendermint/tendermint v0.34.0-rc5
 	github.com/tendermint/tm-db v0.6.2
 	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897 // indirect
-	google.golang.org/genproto v0.0.0-20201111145450-ac7456db90a6 // indirect
+	google.golang.org/genproto v0.0.0-20201112120144-2985b7af83de // indirect
 	google.golang.org/grpc v1.33.0
 )
 
