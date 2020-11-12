@@ -2,14 +2,13 @@ package server
 
 import (
 	"context"
-	"encoding/binary"
 	"fmt"
 
-	"github.com/btcsuite/btcutil/base58"
 	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/util"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/math"
@@ -18,7 +17,7 @@ import (
 func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	classID := s.idSeq.NextVal(ctx)
-	classIDStr := uint64ToBase58Check(classID)
+	classIDStr := util.Uint64ToBase58Check(classID)
 
 	err := s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
 		ClassId:  classIDStr,
@@ -62,7 +61,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	}
 
 	batchID := s.idSeq.NextVal(ctx)
-	batchDenom := batchDenomT(fmt.Sprintf("%s/%s", classID, uint64ToBase58Check(batchID)))
+	batchDenom := batchDenomT(fmt.Sprintf("%s/%s", classID, util.Uint64ToBase58Check(batchID)))
 	tradableSupply := apd.New(0, 0)
 	retiredSupply := apd.New(0, 0)
 	var maxDecimalPlaces uint32 = 0
@@ -327,10 +326,4 @@ func (s serverImpl) SetPrecision(goCtx context.Context, request *ecocredit.MsgSe
 	}
 
 	return &ecocredit.MsgSetPrecisionResponse{}, nil
-}
-
-func uint64ToBase58Check(x uint64) string {
-	buf := make([]byte, binary.MaxVarintLen64)
-	n := binary.PutUvarint(buf, x)
-	return base58.CheckEncode(buf[:n], 0)
 }

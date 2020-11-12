@@ -1,14 +1,16 @@
-package group
+package server
 
 import (
 	"fmt"
 	"reflect"
 
+	gogotypes "github.com/gogo/protobuf/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/gogo/protobuf/types"
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/x/group/types"
 )
 
 const (
@@ -40,16 +42,8 @@ const (
 	VoteByVoterIndexPrefix        byte = 0x42
 )
 
-type ProposalI interface {
-	orm.Persistent
-	GetBase() ProposalBase
-	SetBase(ProposalBase)
-	GetMsgs() []sdk.Msg
-	SetMsgs([]sdk.Msg) error
-}
-
 type Keeper struct {
-	key               sdk.StoreKey
+	storeKey          sdk.StoreKey
 	proposalModelType reflect.Type
 
 	// Group Table
@@ -82,10 +76,10 @@ type Keeper struct {
 	router     sdk.Router
 }
 
-func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, router sdk.Router, proposalModel ProposalI) Keeper {
+func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, router sdk.Router, proposalModel types.ProposalI) Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
-		paramSpace = paramSpace.WithKeyTable(paramstypes.NewKeyTable().RegisterParamSet(&Params{}))
+		paramSpace = paramSpace.WithKeyTable(paramstypes.NewKeyTable().RegisterParamSet(&types.Params{}))
 	}
 	if storeKey == nil {
 		panic("storeKey must not be nil")
@@ -102,43 +96,37 @@ func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, rout
 		tp = tp.Elem()
 	}
 
-	k := Keeper{key: storeKey, paramSpace: paramSpace, proposalModelType: tp, router: router}
+	k := Keeper{storeKey: storeKey, paramSpace: paramSpace, proposalModelType: tp, router: router}
 
-	//
 	// Group Table
-	//
-	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, storeKey, &GroupMetadata{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength))
+	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, storeKey, &types.GroupMetadata{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength))
 	k.groupSeq = orm.NewSequence(storeKey, GroupTableSeqPrefix)
 	k.groupByAdminIndex = orm.NewIndex(groupTableBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
-		return []orm.RowID{val.(*GroupMetadata).Admin.Bytes()}, nil
+		return []orm.RowID{val.(*types.GroupMetadata).Admin.Bytes()}, nil
 	})
 	k.groupTable = groupTableBuilder.Build()
 
-	//
 	// Group Member Table
-	//
-	groupMemberTableBuilder := orm.NewNaturalKeyTableBuilder(GroupMemberTablePrefix, storeKey, &GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{})
+	groupMemberTableBuilder := orm.NewNaturalKeyTableBuilder(GroupMemberTablePrefix, storeKey, &types.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{})
 	k.groupMemberByGroupIndex = orm.NewUInt64Index(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]uint64, error) {
-		group := val.(*GroupMember).Group
+		group := val.(*types.GroupMember).GroupId
 		return []uint64{uint64(group)}, nil
 	})
 	k.groupMemberByMemberIndex = orm.NewIndex(groupMemberTableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
-		member := val.(*GroupMember).Member
+		member := val.(*types.GroupMember).Member
 		return []orm.RowID{member.Bytes()}, nil
 	})
 	k.groupMemberTable = groupMemberTableBuilder.Build()
 
-	//
 	// Group Account Table
-	//
 	k.groupAccountSeq = orm.NewSequence(storeKey, GroupAccountTableSeqPrefix)
-	groupAccountTableBuilder := orm.NewNaturalKeyTableBuilder(GroupAccountTablePrefix, storeKey, &GroupAccountMetadata{}, orm.Max255DynamicLengthIndexKeyCodec{})
+	groupAccountTableBuilder := orm.NewNaturalKeyTableBuilder(GroupAccountTablePrefix, storeKey, &types.GroupAccountMetadata{}, orm.Max255DynamicLengthIndexKeyCodec{})
 	k.groupAccountByGroupIndex = orm.NewUInt64Index(groupAccountTableBuilder, GroupAccountByGroupIndexPrefix, func(value interface{}) ([]uint64, error) {
-		group := value.(*GroupAccountMetadata).Group
+		group := value.(*types.GroupAccountMetadata).GroupId
 		return []uint64{uint64(group)}, nil
 	})
 	k.groupAccountByAdminIndex = orm.NewIndex(groupAccountTableBuilder, GroupAccountByAdminIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
-		admin := value.(*GroupAccountMetadata).Admin
+		admin := value.(*types.GroupAccountMetadata).Admin
 		return []orm.RowID{admin.Bytes()}, nil
 	})
 	k.groupAccountTable = groupAccountTableBuilder.Build()
@@ -146,12 +134,12 @@ func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, rout
 	// Proposal Table
 	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalBaseTablePrefix, ProposalBaseTableSeqPrefix, storeKey, proposalModel)
 	k.ProposalGroupAccountIndex = orm.NewIndex(proposalTableBuilder, ProposalBaseByGroupAccountIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
-		account := value.(ProposalI).GetBase().GroupAccount
+		account := value.(types.ProposalI).GetBase().GroupAccount
 		return []orm.RowID{account.Bytes()}, nil
 
 	})
 	k.ProposalByProposerIndex = orm.NewIndex(proposalTableBuilder, ProposalBaseByProposerIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
-		proposers := value.(ProposalI).GetBase().Proposers
+		proposers := value.(types.ProposalI).GetBase().Proposers
 		r := make([]orm.RowID, len(proposers))
 		for i := range proposers {
 			r[i] = proposers[i].Bytes()
@@ -160,15 +148,13 @@ func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, rout
 	})
 	k.proposalTable = proposalTableBuilder.Build()
 
-	//
 	// Vote Table
-	//
-	voteTableBuilder := orm.NewNaturalKeyTableBuilder(VoteTablePrefix, storeKey, &Vote{}, orm.Max255DynamicLengthIndexKeyCodec{})
+	voteTableBuilder := orm.NewNaturalKeyTableBuilder(VoteTablePrefix, storeKey, &types.Vote{}, orm.Max255DynamicLengthIndexKeyCodec{})
 	k.voteByProposalBaseIndex = orm.NewUInt64Index(voteTableBuilder, VoteByProposalBaseIndexPrefix, func(value interface{}) ([]uint64, error) {
-		return []uint64{uint64(value.(*Vote).Proposal)}, nil
+		return []uint64{uint64(value.(*types.Vote).ProposalId)}, nil
 	})
 	k.voteByVoterIndex = orm.NewIndex(voteTableBuilder, VoteByVoterIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
-		return []orm.RowID{value.(*Vote).Voter.Bytes()}, nil
+		return []orm.RowID{value.(*types.Vote).Voter.Bytes()}, nil
 	})
 	k.voteTable = voteTableBuilder.Build()
 
@@ -178,58 +164,58 @@ func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, rout
 // MaxCommentSize returns the maximum length of a comment
 func (k Keeper) MaxCommentSize(ctx sdk.Context) int {
 	var result uint32
-	k.paramSpace.Get(ctx, ParamMaxCommentLength, &result)
+	k.paramSpace.Get(ctx, types.ParamMaxCommentLength, &result)
 	return int(result)
 }
 
-func (k Keeper) CreateGroup(ctx sdk.Context, admin sdk.AccAddress, members Members, comment string) (ID, error) {
+func (k Keeper) CreateGroup(ctx sdk.Context, admin sdk.AccAddress, members types.Members, comment string) (types.ID, error) {
 	if err := members.ValidateBasic(); err != nil {
 		return 0, err
 	}
 
 	maxCommentSize := k.MaxCommentSize(ctx)
 	if len(comment) > maxCommentSize {
-		return 0, errors.Wrap(ErrMaxLimit, "group comment")
+		return 0, sdkerrors.Wrap(types.ErrMaxLimit, "group comment")
 	}
 
 	totalWeight := sdk.ZeroDec()
 	for i := range members {
 		m := members[i]
 		if len(m.Comment) > maxCommentSize {
-			return 0, errors.Wrap(ErrMaxLimit, "member comment")
+			return 0, sdkerrors.Wrap(types.ErrMaxLimit, "member comment")
 		}
 		totalWeight = totalWeight.Add(m.Power)
 	}
 
-	groupID := ID(k.groupSeq.NextVal(ctx))
-	err := k.groupTable.Create(ctx, groupID.Bytes(), &GroupMetadata{
-		Group:       groupID,
+	groupID := types.ID(k.groupSeq.NextVal(ctx))
+	err := k.groupTable.Create(ctx, groupID.Bytes(), &types.GroupMetadata{
+		GroupId:     groupID,
 		Admin:       admin,
 		Comment:     comment,
 		Version:     1,
 		TotalWeight: totalWeight,
 	})
 	if err != nil {
-		return 0, errors.Wrap(err, "could not create group")
+		return 0, sdkerrors.Wrap(err, "could not create group")
 	}
 
 	for i := range members {
 		m := members[i]
-		err := k.groupMemberTable.Create(ctx, &GroupMember{
-			Group:   groupID,
+		err := k.groupMemberTable.Create(ctx, &types.GroupMember{
+			GroupId: groupID,
 			Member:  m.Address,
 			Weight:  m.Power,
 			Comment: m.Comment,
 		})
 		if err != nil {
-			return 0, errors.Wrapf(err, "could not store member %d", i)
+			return 0, sdkerrors.Wrapf(err, "could not store member %d", i)
 		}
 	}
 	return groupID, nil
 }
 
-func (k Keeper) GetGroup(ctx sdk.Context, id ID) (GroupMetadata, error) {
-	var obj GroupMetadata
+func (k Keeper) GetGroup(ctx sdk.Context, id types.ID) (types.GroupMetadata, error) {
+	var obj types.GroupMetadata
 	return obj, k.groupTable.GetOne(ctx, id.Bytes(), &obj)
 }
 
@@ -237,26 +223,26 @@ func (k Keeper) HasGroup(ctx sdk.Context, rowID orm.RowID) bool {
 	return k.groupTable.Has(ctx, rowID)
 }
 
-func (k Keeper) UpdateGroup(ctx sdk.Context, g *GroupMetadata) error {
+func (k Keeper) UpdateGroup(ctx sdk.Context, g *types.GroupMetadata) error {
 	g.Version++
-	return k.groupTable.Save(ctx, g.Group.Bytes(), g)
+	return k.groupTable.Save(ctx, g.GroupId.Bytes(), g)
 }
 
-func (k Keeper) GetParams(ctx sdk.Context) Params {
-	var p Params
+func (k Keeper) GetParams(ctx sdk.Context) types.Params {
+	var p types.Params
 	k.paramSpace.GetParamSet(ctx, &p)
 	return p
 }
 
-func (k Keeper) SetParams(ctx sdk.Context, params Params) {
+func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramSpace.SetParamSet(ctx, &params)
 }
 
 // CreateGroupAccount creates and persists a `GroupAccountMetadata`
-func (k Keeper) CreateGroupAccount(ctx sdk.Context, admin sdk.AccAddress, groupID ID, policy DecisionPolicy, comment string) (sdk.AccAddress, error) {
+func (k Keeper) CreateGroupAccount(ctx sdk.Context, admin sdk.AccAddress, groupID types.ID, policy types.DecisionPolicy, comment string) (sdk.AccAddress, error) {
 	maxCommentSize := k.MaxCommentSize(ctx)
 	if len(comment) > maxCommentSize {
-		return nil, errors.Wrap(ErrMaxLimit,
+		return nil, sdkerrors.Wrap(types.ErrMaxLimit,
 			"group account comment")
 	}
 
@@ -265,10 +251,10 @@ func (k Keeper) CreateGroupAccount(ctx sdk.Context, admin sdk.AccAddress, groupI
 		return nil, err
 	}
 	if !g.Admin.Equals(admin) {
-		return nil, errors.Wrap(errors.ErrUnauthorized, "not group admin")
+		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not group admin")
 	}
-	accountAddr := AccountCondition(k.groupAccountSeq.NextVal(ctx)).Address()
-	groupAccount, err := NewGroupAccountMetadata(
+	accountAddr := types.AccountCondition(k.groupAccountSeq.NextVal(ctx)).Address()
+	groupAccount, err := types.NewGroupAccountMetadata(
 		accountAddr,
 		groupID,
 		admin,
@@ -281,7 +267,7 @@ func (k Keeper) CreateGroupAccount(ctx sdk.Context, admin sdk.AccAddress, groupI
 	}
 
 	if err := k.groupAccountTable.Create(ctx, &groupAccount); err != nil {
-		return nil, errors.Wrap(err, "could not create group account")
+		return nil, sdkerrors.Wrap(err, "could not create group account")
 	}
 	return accountAddr, nil
 }
@@ -290,38 +276,38 @@ func (k Keeper) HasGroupAccount(ctx sdk.Context, address sdk.AccAddress) bool {
 	return k.groupAccountTable.Has(ctx, address.Bytes())
 }
 
-func (k Keeper) GetGroupAccount(ctx sdk.Context, accountAddress sdk.AccAddress) (GroupAccountMetadata, error) {
-	var obj GroupAccountMetadata
+func (k Keeper) GetGroupAccount(ctx sdk.Context, accountAddress sdk.AccAddress) (types.GroupAccountMetadata, error) {
+	var obj types.GroupAccountMetadata
 	return obj, k.groupAccountTable.GetOne(ctx, accountAddress.Bytes(), &obj)
 }
 
-func (k Keeper) UpdateGroupAccount(ctx sdk.Context, obj *GroupAccountMetadata) error {
+func (k Keeper) UpdateGroupAccount(ctx sdk.Context, obj *types.GroupAccountMetadata) error {
 	obj.Version++
 	return k.groupAccountTable.Save(ctx, obj)
 }
 
-func (k Keeper) GetGroupByGroupAccount(ctx sdk.Context, accountAddress sdk.AccAddress) (GroupMetadata, error) {
+func (k Keeper) GetGroupByGroupAccount(ctx sdk.Context, accountAddress sdk.AccAddress) (types.GroupMetadata, error) {
 	obj, err := k.GetGroupAccount(ctx, accountAddress)
 	if err != nil {
-		return GroupMetadata{}, errors.Wrap(err, "load group account")
+		return types.GroupMetadata{}, sdkerrors.Wrap(err, "load group account")
 	}
-	return k.GetGroup(ctx, obj.Group)
+	return k.GetGroup(ctx, obj.GroupId)
 }
 
-func (k Keeper) GetGroupMembersByGroup(ctx sdk.Context, id ID) (orm.Iterator, error) {
+func (k Keeper) GetGroupMembersByGroup(ctx sdk.Context, id types.ID) (orm.Iterator, error) {
 	return k.groupMemberByGroupIndex.Get(ctx, id.Uint64())
 }
 
-func (k Keeper) Vote(ctx sdk.Context, id ProposalID, voters []sdk.AccAddress, choice Choice, comment string) error {
+func (k Keeper) Vote(ctx sdk.Context, id types.ProposalId, voters []sdk.AccAddress, choice types.Choice, comment string) error {
 	maxCommentSize := k.MaxCommentSize(ctx)
 	if len(comment) > maxCommentSize {
-		return errors.Wrap(ErrMaxLimit, "comment")
+		return sdkerrors.Wrap(types.ErrMaxLimit, "comment")
 	}
 	if len(voters) == 0 {
-		return errors.Wrap(ErrEmpty, "voters")
+		return sdkerrors.Wrap(types.ErrEmpty, "voters")
 	}
 
-	blockTime, err := types.TimestampProto(ctx.BlockTime())
+	blockTime, err := gogotypes.TimestampProto(ctx.BlockTime())
 	if err != nil {
 		return err
 	}
@@ -330,51 +316,51 @@ func (k Keeper) Vote(ctx sdk.Context, id ProposalID, voters []sdk.AccAddress, ch
 		return err
 	}
 	base := proposal.GetBase()
-	if base.Status != ProposalStatusSubmitted {
-		return errors.Wrap(ErrInvalid, "proposal not open")
+	if base.Status != types.ProposalStatusSubmitted {
+		return sdkerrors.Wrap(types.ErrInvalid, "proposal not open")
 	}
-	votingPeriodEnd, err := types.TimestampFromProto(&base.Timeout)
+	votingPeriodEnd, err := gogotypes.TimestampFromProto(&base.Timeout)
 	if err != nil {
 		return err
 	}
 	if votingPeriodEnd.Before(ctx.BlockTime()) || votingPeriodEnd.Equal(ctx.BlockTime()) {
-		return errors.Wrap(ErrExpired, "voting period has ended already")
+		return sdkerrors.Wrap(types.ErrExpired, "voting period has ended already")
 	}
-	var accountMetadata GroupAccountMetadata
+	var accountMetadata types.GroupAccountMetadata
 	if err := k.groupAccountTable.GetOne(ctx, base.GroupAccount.Bytes(), &accountMetadata); err != nil {
-		return errors.Wrap(err, "load group account")
+		return sdkerrors.Wrap(err, "load group account")
 	}
 	if base.GroupAccountVersion != accountMetadata.Version {
-		return errors.Wrap(ErrModified, "group account was modified")
+		return sdkerrors.Wrap(types.ErrModified, "group account was modified")
 	}
 
-	electorate, err := k.GetGroup(ctx, accountMetadata.Group)
+	electorate, err := k.GetGroup(ctx, accountMetadata.GroupId)
 	if err != nil {
 		return err
 	}
 	if electorate.Version != base.GroupVersion {
-		return errors.Wrap(ErrModified, "group was modified")
+		return sdkerrors.Wrap(types.ErrModified, "group was modified")
 	}
 
 	// count and store votes
 	for _, voterAddr := range voters {
-		voter := GroupMember{Group: electorate.Group, Member: voterAddr}
+		voter := types.GroupMember{GroupId: electorate.GroupId, Member: voterAddr}
 		if err := k.groupMemberTable.GetOne(ctx, voter.NaturalKey(), &voter); err != nil {
-			return errors.Wrapf(err, "address: %s", voterAddr)
+			return sdkerrors.Wrapf(err, "address: %s", voterAddr)
 		}
-		newVote := Vote{
-			Proposal:    id,
+		newVote := types.Vote{
+			ProposalId:  id,
 			Voter:       voterAddr,
 			Choice:      choice,
 			Comment:     comment,
 			SubmittedAt: *blockTime,
 		}
 		if err := base.VoteState.Add(newVote, voter.Weight); err != nil {
-			return errors.Wrap(err, "add new vote")
+			return sdkerrors.Wrap(err, "add new vote")
 		}
 
 		if err := k.voteTable.Create(ctx, &newVote); err != nil {
-			return errors.Wrap(err, "store vote")
+			return sdkerrors.Wrap(err, "store vote")
 		}
 	}
 
@@ -387,21 +373,21 @@ func (k Keeper) Vote(ctx sdk.Context, id ProposalID, voters []sdk.AccAddress, ch
 	return k.proposalTable.Save(ctx, id.Uint64(), proposal)
 }
 
-func doTally(ctx sdk.Context, base *ProposalBase, electorate GroupMetadata, accountMetadata GroupAccountMetadata) error {
+func doTally(ctx sdk.Context, base *types.ProposalBase, electorate types.GroupMetadata, accountMetadata types.GroupAccountMetadata) error {
 	policy := accountMetadata.GetDecisionPolicy()
-	submittedAt, err := types.TimestampFromProto(&base.SubmittedAt)
+	submittedAt, err := gogotypes.TimestampFromProto(&base.SubmittedAt)
 	if err != nil {
 		return err
 	}
 	switch result, err := policy.Allow(base.VoteState, electorate.TotalWeight, ctx.BlockTime().Sub(submittedAt)); {
 	case err != nil:
-		return errors.Wrap(err, "policy execution")
-	case result == DecisionPolicyResult{Allow: true, Final: true}:
-		base.Result = ProposalResultAccepted
-		base.Status = ProposalStatusClosed
-	case result == DecisionPolicyResult{Allow: false, Final: true}:
-		base.Result = ProposalResultRejected
-		base.Status = ProposalStatusClosed
+		return sdkerrors.Wrap(err, "policy execution")
+	case result == types.DecisionPolicyResult{Allow: true, Final: true}:
+		base.Result = types.ProposalResultAccepted
+		base.Status = types.ProposalStatusClosed
+	case result == types.DecisionPolicyResult{Allow: false, Final: true}:
+		base.Result = types.ProposalResultRejected
+		base.Status = types.ProposalStatusClosed
 	}
 	return nil
 }
@@ -409,7 +395,7 @@ func doTally(ctx sdk.Context, base *ProposalBase, electorate GroupMetadata, acco
 // ExecProposal can be executed n times before the timeout. It will update the proposal status and executes the msg payload.
 // There are no separate transactions for the payload messages so that it is a full atomic operation that
 // would either succeed or fail.
-func (k Keeper) ExecProposal(ctx sdk.Context, id ProposalID) error {
+func (k Keeper) ExecProposal(ctx sdk.Context, id types.ProposalId) error {
 	proposal, err := k.GetProposal(ctx, id)
 	if err != nil {
 		return err
@@ -417,13 +403,13 @@ func (k Keeper) ExecProposal(ctx sdk.Context, id ProposalID) error {
 	// check constraints
 	base := proposal.GetBase()
 
-	if base.Status != ProposalStatusSubmitted && base.Status != ProposalStatusClosed {
-		return errors.Wrapf(ErrInvalid, "not possible with proposal status %s", base.Status.String())
+	if base.Status != types.ProposalStatusSubmitted && base.Status != types.ProposalStatusClosed {
+		return sdkerrors.Wrapf(types.ErrInvalid, "not possible with proposal status %s", base.Status.String())
 	}
 
-	var accountMetadata GroupAccountMetadata
+	var accountMetadata types.GroupAccountMetadata
 	if err := k.groupAccountTable.GetOne(ctx, base.GroupAccount.Bytes(), &accountMetadata); err != nil {
-		return errors.Wrap(err, "load group account")
+		return sdkerrors.Wrap(err, "load group account")
 	}
 
 	storeUpdates := func() error {
@@ -431,21 +417,21 @@ func (k Keeper) ExecProposal(ctx sdk.Context, id ProposalID) error {
 		return k.proposalTable.Save(ctx, id.Uint64(), proposal)
 	}
 
-	if base.Status == ProposalStatusSubmitted {
+	if base.Status == types.ProposalStatusSubmitted {
 		if base.GroupAccountVersion != accountMetadata.Version {
-			base.Result = ProposalResultUndefined
-			base.Status = ProposalStatusAborted
+			base.Result = types.ProposalResultUndefined
+			base.Status = types.ProposalStatusAborted
 			return storeUpdates()
 		}
 
-		electorate, err := k.GetGroup(ctx, accountMetadata.Group)
+		electorate, err := k.GetGroup(ctx, accountMetadata.GroupId)
 		if err != nil {
-			return errors.Wrap(err, "load group")
+			return sdkerrors.Wrap(err, "load group")
 		}
 
 		if electorate.Version != base.GroupVersion {
-			base.Result = ProposalResultUndefined
-			base.Status = ProposalStatusAborted
+			base.Result = types.ProposalResultUndefined
+			base.Status = types.ProposalStatusAborted
 			return storeUpdates()
 		}
 		if err := doTally(ctx, &base, electorate, accountMetadata); err != nil {
@@ -454,51 +440,51 @@ func (k Keeper) ExecProposal(ctx sdk.Context, id ProposalID) error {
 	}
 
 	// execute proposal payload
-	if base.Status == ProposalStatusClosed && base.Result == ProposalResultAccepted && base.ExecutorResult != ProposalExecutorResultSuccess {
-		logger := ctx.Logger().With("module", fmt.Sprintf("x/%s", ModuleName))
+	if base.Status == types.ProposalStatusClosed && base.Result == types.ProposalResultAccepted && base.ExecutorResult != types.ProposalExecutorResultSuccess {
+		logger := ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 		ctx, flush := ctx.CacheContext()
 		_, err := DoExecuteMsgs(ctx, k.router, accountMetadata.GroupAccount, proposal.GetMsgs())
 		if err != nil {
-			base.ExecutorResult = ProposalExecutorResultFailure
+			base.ExecutorResult = types.ProposalExecutorResultFailure
 			proposalType := reflect.TypeOf(proposal).String()
 			logger.Info("proposal execution failed", "cause", err, "type", proposalType, "proposalID", id)
 		} else {
-			base.ExecutorResult = ProposalExecutorResultSuccess
+			base.ExecutorResult = types.ProposalExecutorResultSuccess
 			flush()
 		}
 	}
 	return storeUpdates()
 }
 
-func (k Keeper) GetProposal(ctx sdk.Context, id ProposalID) (ProposalI, error) {
-	loaded := reflect.New(k.proposalModelType).Interface().(ProposalI)
+func (k Keeper) GetProposal(ctx sdk.Context, id types.ProposalId) (types.ProposalI, error) {
+	loaded := reflect.New(k.proposalModelType).Interface().(types.ProposalI)
 	if _, err := k.proposalTable.GetOne(ctx, id.Uint64(), loaded); err != nil {
-		return nil, errors.Wrap(err, "load proposal")
+		return nil, sdkerrors.Wrap(err, "load proposal")
 	}
 	return loaded, nil
 }
 
-func (k Keeper) CreateProposal(ctx sdk.Context, accountAddress sdk.AccAddress, comment string, proposers []sdk.AccAddress, msgs []sdk.Msg) (ProposalID, error) {
+func (k Keeper) CreateProposal(ctx sdk.Context, accountAddress sdk.AccAddress, comment string, proposers []sdk.AccAddress, msgs []sdk.Msg) (types.ProposalId, error) {
 	maxCommentSize := k.MaxCommentSize(ctx)
 	if len(comment) > maxCommentSize {
-		return 0, errors.Wrap(ErrMaxLimit, "comment")
+		return 0, sdkerrors.Wrap(types.ErrMaxLimit, "comment")
 	}
 
 	account, err := k.GetGroupAccount(ctx, accountAddress.Bytes())
 
 	if err != nil {
-		return 0, errors.Wrap(err, "load group account")
+		return 0, sdkerrors.Wrap(err, "load group account")
 	}
 
-	g, err := k.GetGroup(ctx, account.Group)
+	g, err := k.GetGroup(ctx, account.GroupId)
 	if err != nil {
-		return 0, errors.Wrap(err, "get group by account")
+		return 0, sdkerrors.Wrap(err, "get group by account")
 	}
 
 	// only members can propose
 	for i := range proposers {
-		if !k.groupMemberTable.Has(ctx, GroupMember{Group: g.Group, Member: proposers[i]}.NaturalKey()) {
-			return 0, errors.Wrapf(ErrUnauthorized, "not in group: %s", proposers[i])
+		if !k.groupMemberTable.Has(ctx, types.GroupMember{GroupId: g.GroupId, Member: proposers[i]}.NaturalKey()) {
+			return 0, sdkerrors.Wrapf(types.ErrUnauthorized, "not in group: %s", proposers[i])
 		}
 	}
 
@@ -506,15 +492,15 @@ func (k Keeper) CreateProposal(ctx sdk.Context, accountAddress sdk.AccAddress, c
 		return 0, err
 	}
 
-	blockTime, err := types.TimestampProto(ctx.BlockTime())
+	blockTime, err := gogotypes.TimestampProto(ctx.BlockTime())
 	if err != nil {
-		return 0, errors.Wrap(err, "block time conversion")
+		return 0, sdkerrors.Wrap(err, "block time conversion")
 	}
 
 	policy := account.GetDecisionPolicy()
 
 	if policy == nil {
-		return 0, errors.Wrap(ErrEmpty, "nil policy")
+		return 0, sdkerrors.Wrap(types.ErrEmpty, "nil policy")
 	}
 
 	// prevent proposal that can not succeed
@@ -524,28 +510,28 @@ func (k Keeper) CreateProposal(ctx sdk.Context, accountAddress sdk.AccAddress, c
 	}
 
 	timeout := policy.GetTimeout()
-	window, err := types.DurationFromProto(&timeout)
+	window, err := gogotypes.DurationFromProto(&timeout)
 	if err != nil {
-		return 0, errors.Wrap(err, "maxVotingWindow time conversion")
+		return 0, sdkerrors.Wrap(err, "maxVotingWindow time conversion")
 	}
-	endTime, err := types.TimestampProto(ctx.BlockTime().Add(window))
+	endTime, err := gogotypes.TimestampProto(ctx.BlockTime().Add(window))
 	if err != nil {
-		return 0, errors.Wrap(err, "end time conversion")
+		return 0, sdkerrors.Wrap(err, "end time conversion")
 	}
 
-	m := reflect.New(k.proposalModelType).Interface().(ProposalI)
-	m.SetBase(ProposalBase{
+	m := reflect.New(k.proposalModelType).Interface().(types.ProposalI)
+	m.SetBase(types.ProposalBase{
 		GroupAccount:        accountAddress,
 		Comment:             comment,
 		Proposers:           proposers,
 		SubmittedAt:         *blockTime,
 		GroupVersion:        g.Version,
 		GroupAccountVersion: account.Version,
-		Result:              ProposalResultUndefined,
-		Status:              ProposalStatusSubmitted,
-		ExecutorResult:      ProposalExecutorResultNotRun,
+		Result:              types.ProposalResultUndefined,
+		Status:              types.ProposalStatusSubmitted,
+		ExecutorResult:      types.ProposalExecutorResultNotRun,
 		Timeout:             *endTime,
-		VoteState: Tally{
+		VoteState: types.Tally{
 			YesCount:     sdk.ZeroDec(),
 			NoCount:      sdk.ZeroDec(),
 			AbstainCount: sdk.ZeroDec(),
@@ -553,17 +539,17 @@ func (k Keeper) CreateProposal(ctx sdk.Context, accountAddress sdk.AccAddress, c
 		},
 	})
 	if err := m.SetMsgs(msgs); err != nil {
-		return 0, errors.Wrap(err, "create proposal")
+		return 0, sdkerrors.Wrap(err, "create proposal")
 	}
 
 	id, err := k.proposalTable.Create(ctx, m)
 	if err != nil {
-		return 0, errors.Wrap(err, "create proposal")
+		return 0, sdkerrors.Wrap(err, "create proposal")
 	}
-	return ProposalID(id), nil
+	return types.ProposalId(id), nil
 }
 
-func (k Keeper) GetVote(ctx sdk.Context, id ProposalID, voter sdk.AccAddress) (Vote, error) {
-	var v Vote
-	return v, k.voteTable.GetOne(ctx, Vote{Proposal: id, Voter: voter}.NaturalKey(), &v)
+func (k Keeper) GetVote(ctx sdk.Context, id types.ProposalId, voter sdk.AccAddress) (types.Vote, error) {
+	var v types.Vote
+	return v, k.voteTable.GetOne(ctx, types.Vote{ProposalId: id, Voter: voter}.NaturalKey(), &v)
 }

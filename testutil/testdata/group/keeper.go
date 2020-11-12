@@ -21,7 +21,7 @@ func NewKeeper(storeKey sdk.StoreKey, groupKeeper group.Keeper) Keeper {
 }
 
 func (k Keeper) CreateProposal(ctx sdk.Context, accountAddress sdk.AccAddress,
-	proposers []sdk.AccAddress, comment string, msgs []sdk.Msg) (group.ProposalID, error) {
+	proposers []sdk.AccAddress, comment string, msgs []sdk.Msg) (group.ProposalId, error) {
 	return k.groupKeeper.CreateProposal(ctx, accountAddress, comment, proposers, msgs)
 }
 

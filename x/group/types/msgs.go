@@ -1,13 +1,11 @@
-package group
+package types
 
 import (
-	"bytes"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/gogo/protobuf/jsonpb"
 	proto "github.com/gogo/protobuf/proto"
 	"github.com/pkg/errors"
 )
@@ -22,28 +20,15 @@ const (
 	msgTypeExecProposal       = "exec_proposal"
 )
 
-var _ sdk.Msg = &MsgCreateGroup{}
-
-func (m MsgCreateGroup) Route() string { return ModuleName }
-func (m MsgCreateGroup) Type() string  { return msgTypeCreateGroup }
+var _ sdk.MsgRequest = &MsgCreateGroupRequest{}
 
 // GetSigners returns the addresses that must sign over msg.GetSignBytes()
-func (m MsgCreateGroup) GetSigners() []sdk.AccAddress {
+func (m MsgCreateGroupRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.Admin}
 }
 
-// GetSignBytes returns the bytes for the message signer to sign on
-func (m MsgCreateGroup) GetSignBytes() []byte {
-	var buf bytes.Buffer
-	enc := jsonpb.Marshaler{}
-	if err := enc.Marshal(&buf, &m); err != nil {
-		panic(errors.Wrap(err, "get sign bytes"))
-	}
-	return sdk.MustSortJSON(buf.Bytes())
-}
-
 // ValidateBasic does a sanity check on the provided data
-func (m MsgCreateGroup) ValidateBasic() error {
+func (m MsgCreateGroupRequest) ValidateBasic() error {
 	if m.Admin.Empty() {
 		return sdkerrors.Wrap(ErrEmpty, "admin")
 	}
@@ -75,31 +60,17 @@ func (m Member) ValidateBasic() error {
 	return nil
 }
 
-var _ sdk.Msg = &MsgUpdateGroupAdmin{}
-
-func (m MsgUpdateGroupAdmin) Route() string { return ModuleName }
-func (m MsgUpdateGroupAdmin) Type() string  { return msgTypeUpdateGroupAdmin }
+var _ sdk.MsgRequest = &MsgUpdateGroupAdminRequest{}
 
 // GetSigners returns the addresses that must sign over msg.GetSignBytes()
-func (m MsgUpdateGroupAdmin) GetSigners() []sdk.AccAddress {
+func (m MsgUpdateGroupAdminRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.Admin}
 }
 
-// GetSignBytes returns the bytes for the message signer to sign on
-func (m MsgUpdateGroupAdmin) GetSignBytes() []byte {
-	var buf bytes.Buffer
-	enc := jsonpb.Marshaler{}
-	if err := enc.Marshal(&buf, &m); err != nil {
-		panic(errors.Wrap(err, "get sign bytes"))
-	}
-	return sdk.MustSortJSON(buf.Bytes())
-}
-
 // ValidateBasic does a sanity check on the provided data
-func (m MsgUpdateGroupAdmin) ValidateBasic() error {
-	if m.Group == 0 {
+func (m MsgUpdateGroupAdminRequest) ValidateBasic() error {
+	if m.GroupId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "group")
-
 	}
 
 	if m.Admin.Empty() {
@@ -122,29 +93,16 @@ func (m MsgUpdateGroupAdmin) ValidateBasic() error {
 	return nil
 }
 
-var _ sdk.Msg = &MsgUpdateGroupComment{}
-
-func (m MsgUpdateGroupComment) Route() string { return ModuleName }
-func (m MsgUpdateGroupComment) Type() string  { return msgTypeUpdateGroupComment }
+var _ sdk.MsgRequest = &MsgUpdateGroupCommentRequest{}
 
 // GetSigners returns the addresses that must sign over msg.GetSignBytes()
-func (m MsgUpdateGroupComment) GetSigners() []sdk.AccAddress {
+func (m MsgUpdateGroupCommentRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.Admin}
 }
 
-// GetSignBytes returns the bytes for the message signer to sign on
-func (m MsgUpdateGroupComment) GetSignBytes() []byte {
-	var buf bytes.Buffer
-	enc := jsonpb.Marshaler{}
-	if err := enc.Marshal(&buf, &m); err != nil {
-		panic(errors.Wrap(err, "get sign bytes"))
-	}
-	return sdk.MustSortJSON(buf.Bytes())
-}
-
 // ValidateBasic does a sanity check on the provided data
-func (m MsgUpdateGroupComment) ValidateBasic() error {
-	if m.Group == 0 {
+func (m MsgUpdateGroupCommentRequest) ValidateBasic() error {
+	if m.GroupId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 
 	}
@@ -157,29 +115,16 @@ func (m MsgUpdateGroupComment) ValidateBasic() error {
 	return nil
 }
 
-var _ sdk.Msg = &MsgUpdateGroupMembers{}
-
-func (m MsgUpdateGroupMembers) Route() string { return ModuleName }
-func (m MsgUpdateGroupMembers) Type() string  { return msgTypeUpdateGroupMembers }
+var _ sdk.MsgRequest = &MsgUpdateGroupMembersRequest{}
 
 // GetSigners returns the addresses that must sign over msg.GetSignBytes()
-func (m MsgUpdateGroupMembers) GetSigners() []sdk.AccAddress {
+func (m MsgUpdateGroupMembersRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.Admin}
 }
 
-// GetSignBytes returns the bytes for the message signer to sign on
-func (m MsgUpdateGroupMembers) GetSignBytes() []byte {
-	var buf bytes.Buffer
-	enc := jsonpb.Marshaler{}
-	if err := enc.Marshal(&buf, &m); err != nil {
-		panic(errors.Wrap(err, "get sign bytes"))
-	}
-	return sdk.MustSortJSON(buf.Bytes())
-}
-
 // ValidateBasic does a sanity check on the provided data
-func (m MsgUpdateGroupMembers) ValidateBasic() error {
-	if m.Group == 0 {
+func (m MsgUpdateGroupMembersRequest) ValidateBasic() error {
+	if m.GroupId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 
 	}
@@ -199,7 +144,7 @@ func (m MsgUpdateGroupMembers) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgProposeBase) ValidateBasic() error {
+func (m *MsgProposeBaseRequest) ValidateBasic() error {
 	if m.GroupAccount.Empty() {
 		return sdkerrors.Wrap(ErrEmpty, "group account")
 	}
@@ -215,31 +160,22 @@ func (m *MsgProposeBase) ValidateBasic() error {
 	return nil
 }
 
-var _ sdk.Msg = &MsgCreateGroupAccount{}
-
-func (m MsgCreateGroupAccount) Route() string { return ModuleName }
-func (m MsgCreateGroupAccount) Type() string  { return msgTypeCreateGroupAccount }
+var _ sdk.MsgRequest = &MsgCreateGroupAccountRequest{}
 
 // GetSigners returns the addresses that must sign over msg.GetSignBytes()
-func (m MsgCreateGroupAccount) GetSigners() []sdk.AccAddress {
+func (m MsgCreateGroupAccountRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.Admin}
 }
 
-// GetSignBytes returns the bytes for the message signer to sign on
-func (m MsgCreateGroupAccount) GetSignBytes() []byte {
-	bz := moduleCdc.MustMarshalJSON(&m)
-	return sdk.MustSortJSON(bz)
-}
-
 // ValidateBasic does a sanity check on the provided data
-func (m MsgCreateGroupAccount) ValidateBasic() error {
+func (m MsgCreateGroupAccountRequest) ValidateBasic() error {
 	if m.Admin.Empty() {
 		return sdkerrors.Wrap(ErrEmpty, "admin")
 	}
 	if err := sdk.VerifyAddressFormat(m.Admin); err != nil {
 		return sdkerrors.Wrap(err, "admin")
 	}
-	if m.Group == 0 {
+	if m.GroupId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
 
@@ -254,13 +190,13 @@ func (m MsgCreateGroupAccount) ValidateBasic() error {
 	return nil
 }
 
-var _ types.UnpackInterfacesMessage = MsgCreateGroupAccount{}
+var _ types.UnpackInterfacesMessage = MsgCreateGroupAccountRequest{}
 
-// NewMsgCreateGroupAccount creates a new MsgCreateGroupAccount.
-func NewMsgCreateGroupAccount(admin sdk.AccAddress, group ID, comment string, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccount, error) {
-	m := &MsgCreateGroupAccount{
+// NewMsgCreateGroupAccount creates a new MsgCreateGroupAccountRequest.
+func NewMsgCreateGroupAccount(admin sdk.AccAddress, group ID, comment string, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccountRequest, error) {
+	m := &MsgCreateGroupAccountRequest{
 		Admin:   admin,
-		Group:   group,
+		GroupId: group,
 		Comment: comment,
 	}
 	err := m.SetDecisionPolicy(decisionPolicy)
@@ -270,19 +206,19 @@ func NewMsgCreateGroupAccount(admin sdk.AccAddress, group ID, comment string, de
 	return m, nil
 }
 
-func (m *MsgCreateGroupAccount) GetAdmin() sdk.AccAddress {
+func (m *MsgCreateGroupAccountRequest) GetAdmin() sdk.AccAddress {
 	return m.Admin
 }
 
-func (m *MsgCreateGroupAccount) GetGroup() ID {
-	return m.Group
+func (m *MsgCreateGroupAccountRequest) GetGroupId() ID {
+	return m.GroupId
 }
 
-func (m *MsgCreateGroupAccount) GetComment() string {
+func (m *MsgCreateGroupAccountRequest) GetComment() string {
 	return m.Comment
 }
 
-func (m *MsgCreateGroupAccount) GetDecisionPolicy() DecisionPolicy {
+func (m *MsgCreateGroupAccountRequest) GetDecisionPolicy() DecisionPolicy {
 	decisionPolicy, ok := m.DecisionPolicy.GetCachedValue().(DecisionPolicy)
 	if !ok {
 		return nil
@@ -290,7 +226,7 @@ func (m *MsgCreateGroupAccount) GetDecisionPolicy() DecisionPolicy {
 	return decisionPolicy
 }
 
-func (m *MsgCreateGroupAccount) SetDecisionPolicy(decisionPolicy DecisionPolicy) error {
+func (m *MsgCreateGroupAccountRequest) SetDecisionPolicy(decisionPolicy DecisionPolicy) error {
 	msg, ok := decisionPolicy.(proto.Message)
 	if !ok {
 		return fmt.Errorf("can't proto marshal %T", msg)
@@ -304,46 +240,33 @@ func (m *MsgCreateGroupAccount) SetDecisionPolicy(decisionPolicy DecisionPolicy)
 }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
-func (m MsgCreateGroupAccount) UnpackInterfaces(unpacker types.AnyUnpacker) error {
+func (m MsgCreateGroupAccountRequest) UnpackInterfaces(unpacker types.AnyUnpacker) error {
 	var decisionPolicy DecisionPolicy
 	return unpacker.UnpackAny(m.DecisionPolicy, &decisionPolicy)
 }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
-func (m MsgUpdateGroupAccountDecisionPolicy) UnpackInterfaces(unpacker types.AnyUnpacker) error {
+func (m MsgUpdateGroupAccountDecisionPolicyRequest) UnpackInterfaces(unpacker types.AnyUnpacker) error {
 	var decisionPolicy DecisionPolicy
 	return unpacker.UnpackAny(m.DecisionPolicy, &decisionPolicy)
 }
 
-var _ sdk.Msg = &MsgVote{}
-
-func (m MsgVote) Route() string { return ModuleName }
-func (m MsgVote) Type() string  { return msgTypeVote }
+var _ sdk.MsgRequest = &MsgVoteRequest{}
 
 // GetSigners returns the addresses that must sign over msg.GetSignBytes()
-func (m MsgVote) GetSigners() []sdk.AccAddress {
+func (m MsgVoteRequest) GetSigners() []sdk.AccAddress {
 	return m.Voters
 }
 
-// GetSignBytes returns the bytes for the message signer to sign on
-func (m MsgVote) GetSignBytes() []byte {
-	var buf bytes.Buffer
-	enc := jsonpb.Marshaler{}
-	if err := enc.Marshal(&buf, &m); err != nil {
-		panic(errors.Wrap(err, "get sign bytes"))
-	}
-	return sdk.MustSortJSON(buf.Bytes())
-}
-
 // ValidateBasic does a sanity check on the provided data
-func (m MsgVote) ValidateBasic() error {
+func (m MsgVoteRequest) ValidateBasic() error {
 	if len(m.Voters) == 0 {
 		return errors.Wrap(ErrEmpty, "voters")
 	}
 	if err := AccAddresses(m.Voters).ValidateBasic(); err != nil {
 		return sdkerrors.Wrap(err, "voters")
 	}
-	if m.Proposal == 0 {
+	if m.ProposalId == 0 {
 		return errors.Wrap(ErrEmpty, "proposal")
 	}
 	if m.Choice == Choice_UNKNOWN {
@@ -355,35 +278,22 @@ func (m MsgVote) ValidateBasic() error {
 	return nil
 }
 
-var _ sdk.Msg = &MsgExec{}
-
-func (m MsgExec) Route() string { return ModuleName }
-func (m MsgExec) Type() string  { return msgTypeExecProposal }
+var _ sdk.MsgRequest = &MsgExecRequest{}
 
 // GetSigners returns the addresses that must sign over msg.GetSignBytes()
-func (m MsgExec) GetSigners() []sdk.AccAddress {
+func (m MsgExecRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.Signer}
 }
 
-// GetSignBytes returns the bytes for the message signer to sign on
-func (m MsgExec) GetSignBytes() []byte {
-	var buf bytes.Buffer
-	enc := jsonpb.Marshaler{}
-	if err := enc.Marshal(&buf, &m); err != nil {
-		panic(errors.Wrap(err, "get sign bytes"))
-	}
-	return sdk.MustSortJSON(buf.Bytes())
-}
-
 // ValidateBasic does a sanity check on the provided data
-func (m MsgExec) ValidateBasic() error {
+func (m MsgExecRequest) ValidateBasic() error {
 	if m.Signer.Empty() {
 		return errors.Wrap(ErrEmpty, "signer")
 	}
 	if err := sdk.VerifyAddressFormat(m.Signer); err != nil {
 		return errors.Wrap(ErrInvalid, "signer")
 	}
-	if m.Proposal == 0 {
+	if m.ProposalId == 0 {
 		return errors.Wrap(ErrEmpty, "proposal")
 	}
 	return nil

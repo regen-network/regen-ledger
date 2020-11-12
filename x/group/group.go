@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/regen-network/regen-ledger/x/group/server"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -12,31 +13,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/gorilla/mux"
-	"github.com/regen-network/regen-ledger/orm"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
 )
-
-const (
-	// ModuleName is the module name constant used in many places
-	ModuleName = "group"
-
-	// StoreKey defines the primary module store key
-	StoreKey = ModuleName
-
-	// RouterKey defines the module's message routing key
-	RouterKey = ModuleName
-
-	// QuerierRoute defines the module's query routing key
-	QuerierRoute = ModuleName
-
-	DefaultParamspace = ModuleName
-)
-
-// AccountCondition returns a condition to build a group account address.
-func AccountCondition(id uint64) Condition {
-	return NewCondition("group", "account", orm.EncodeSequence(id))
-}
 
 type AppModuleBasic struct{}
 
@@ -84,10 +63,10 @@ func (AppModuleBasic) RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 
 type AppModule struct {
 	AppModuleBasic
-	keeper Keeper
+	keeper server.Keeper
 }
 
-func NewAppModule(keeper Keeper) AppModule {
+func NewAppModule(keeper server.Keeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         keeper,
@@ -131,6 +110,7 @@ func (a AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier {
 }
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {
+	server.RegisterServices(configurator, a.keeper)
 }
 
 func (a AppModule) BeginBlock(sdk.Context, abci.RequestBeginBlock) {}

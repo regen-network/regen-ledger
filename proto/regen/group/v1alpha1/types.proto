@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package regen.group.v1alpha1;
 
-option go_package = "github.com/regen-network/regen-ledger/x/group";
+option go_package = "github.com/regen-network/regen-ledger/x/group/types";
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/duration.proto";
@@ -40,7 +40,7 @@ enum Choice {
 //
 
 message GroupMetadata {
-    uint64 group = 1 [(gogoproto.casttype) = "ID"];
+    uint64 group_id = 1 [(gogoproto.casttype) = "ID"];
     bytes admin = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
     string comment = 3;
     // version is used to track changes to a group's membership structure that
@@ -52,7 +52,7 @@ message GroupMetadata {
 }
 
 message GroupMember {
-    uint64 group = 1 [(gogoproto.casttype) = "ID"];
+    uint64 group_id = 1 [(gogoproto.casttype) = "ID"];
     // todo: @aaronc field has different name in `Member.address`. Can we unify this?
     bytes member = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
     // todo: @aaronc it is `Member.power`. Can we unify this?
@@ -66,7 +66,7 @@ message GroupAccountMetadata {
     option (gogoproto.goproto_getters) = false;
 
     bytes group_account = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
-    uint64 group = 2 [(gogoproto.casttype) = "ID"];
+    uint64 group_id = 2 [(gogoproto.casttype) = "ID"];
     bytes admin = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
     string comment = 4;
     // version is used to track changes to a group's GroupAccountMetadata structure that
@@ -159,7 +159,7 @@ message Tally {
 }
 
 message Vote {
-    uint64 proposal = 1 [(gogoproto.casttype) = "ProposalID"];
+    uint64 proposal_id = 1 [(gogoproto.casttype) = "ProposalId"];
     bytes voter = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
     Choice choice = 3;
     string comment = 4;

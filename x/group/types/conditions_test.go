@@ -1,11 +1,10 @@
-package group_test
+package types
 
 import (
 	"encoding/json"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,19 +12,19 @@ func TestConditionUnmarshalJSON(t *testing.T) {
 	cases := map[string]struct {
 		json          string
 		wantErr       *errors.Error
-		wantCondition group.Condition
+		wantCondition Condition
 	}{
 		"default decoding": {
 			json:          `"foo/bar/636f6e646974696f6e64617461"`,
-			wantCondition: group.NewCondition("foo", "bar", []byte("conditiondata")),
+			wantCondition: NewCondition("foo", "bar", []byte("conditiondata")),
 		},
 		"invalid condition format": {
 			json:    `"foo/636f6e646974696f6e64617461"`,
-			wantErr: group.ErrInvalid,
+			wantErr: ErrInvalid,
 		},
 		"invalid condition data": {
 			json:    `"foo/bar/zzzzz"`,
-			wantErr: group.ErrInvalid,
+			wantErr: ErrInvalid,
 		},
 		"zero address": {
 			json:          `""`,
@@ -35,7 +34,7 @@ func TestConditionUnmarshalJSON(t *testing.T) {
 
 	for testName, tc := range cases {
 		t.Run(testName, func(t *testing.T) {
-			var got group.Condition
+			var got Condition
 			err := json.Unmarshal([]byte(tc.json), &got)
 			if !tc.wantErr.Is(err) {
 				t.Fatalf("got error: %+v", err)
@@ -49,11 +48,11 @@ func TestConditionUnmarshalJSON(t *testing.T) {
 
 func TestConditionMarshalJSON(t *testing.T) {
 	cases := map[string]struct {
-		source   group.Condition
+		source   Condition
 		wantJson string
 	}{
 		"cond encoding": {
-			source:   group.NewCondition("foo", "bar", []byte("conditiondata")),
+			source:   NewCondition("foo", "bar", []byte("conditiondata")),
 			wantJson: `"foo/bar/636F6E646974696F6E64617461"`,
 		},
 		"nil encoding": {

@@ -11,13 +11,13 @@ import (
 // interfaces with the provided LegacyAmino codec reference.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterInterface((*DecisionPolicy)(nil), nil)
-	cdc.RegisterConcrete(MsgCreateGroup{}, "cosmos-sdk/MsgCreateGroup", nil)
-	cdc.RegisterConcrete(MsgUpdateGroupMembers{}, "cosmos-sdk/MsgUpdateGroupMembers", nil)
-	cdc.RegisterConcrete(MsgUpdateGroupAdmin{}, "cosmos-sdk/MsgUpdateGroupAdmin", nil)
-	cdc.RegisterConcrete(MsgUpdateGroupComment{}, "cosmos-sdk/MsgUpdateGroupComment", nil)
-	cdc.RegisterConcrete(MsgCreateGroupAccount{}, "cosmos-sdk/MsgCreateGroupAccount", nil)
-	cdc.RegisterConcrete(MsgVote{}, "cosmos-sdk/group/MsgVote", nil)
-	cdc.RegisterConcrete(MsgExec{}, "cosmos-sdk/group/MsgExec", nil)
+	cdc.RegisterConcrete(MsgCreateGroupRequest{}, "cosmos-sdk/MsgCreateGroupRequest", nil)
+	cdc.RegisterConcrete(MsgUpdateGroupMembersRequest{}, "cosmos-sdk/MsgUpdateGroupMembersRequest", nil)
+	cdc.RegisterConcrete(MsgUpdateGroupAdminRequest{}, "cosmos-sdk/MsgUpdateGroupAdminRequest", nil)
+	cdc.RegisterConcrete(MsgUpdateGroupCommentRequest{}, "cosmos-sdk/MsgUpdateGroupCommentRequest", nil)
+	cdc.RegisterConcrete(MsgCreateGroupAccountRequest{}, "cosmos-sdk/MsgCreateGroupAccountRequest", nil)
+	cdc.RegisterConcrete(MsgVoteRequest{}, "cosmos-sdk/group/MsgVoteRequest", nil)
+	cdc.RegisterConcrete(MsgExecRequest{}, "cosmos-sdk/group/MsgExecRequest", nil)
 
 	// oh man... amino
 	cdc.RegisterConcrete(&ThresholdDecisionPolicy{}, "cosmos-sdk/ThresholdDecisionPolicy", nil)
@@ -25,12 +25,12 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgCreateGroup{},
-		&MsgUpdateGroupMembers{},
-		&MsgUpdateGroupComment{},
-		&MsgCreateGroupAccount{},
-		&MsgVote{},
-		&MsgExec{},
+		&MsgCreateGroupRequest{},
+		&MsgUpdateGroupMembersRequest{},
+		&MsgUpdateGroupCommentRequest{},
+		&MsgCreateGroupAccountRequest{},
+		&MsgVoteRequest{},
+		&MsgExecRequest{},
 	)
 	registry.RegisterInterface(
 		"regen.group.v1alpha1.DecisionPolicy",

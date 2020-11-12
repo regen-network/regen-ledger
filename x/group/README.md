@@ -55,7 +55,7 @@ is submitted.
 ## Executing Proposals
 
 Proposals will not be automatically executed by the chain in this current design,
-but rather a user must submit a `MsgExec` transaction to attempt to execute the
+but rather a user must submit a `MsgExecRequest` transaction to attempt to execute the
 proposal based on the current votes and decision policy. A future upgrade could
 automate this propose and have the group account (or a fee granter) pay.
 
@@ -63,5 +63,5 @@ automate this propose and have the group account (or a fee granter) pay.
 
 In the current implementation, changing a group's membership (adding or removing members or changing their power)
 will cause all existing proposals for group accounts linked to this group
-to be invalidated. They will simply fail if someone calls `MsgExec` and will
+to be invalidated. They will simply fail if someone calls `MsgExecRequest` and will
 eventually be garbage collected.

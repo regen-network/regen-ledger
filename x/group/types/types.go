@@ -1,4 +1,4 @@
-package group
+package types
 
 import (
 	"fmt"
@@ -16,6 +16,14 @@ import (
 	"time"
 )
 
+type ProposalI interface {
+	orm.Persistent
+	GetBase() ProposalBase
+	SetBase(ProposalBase)
+	GetMsgs() []sdk.Msg
+	SetMsgs([]sdk.Msg) error
+}
+
 type ID uint64
 
 func (g ID) Uint64() uint64 {
@@ -30,16 +38,16 @@ func (g ID) Bytes() []byte {
 	return orm.EncodeSequence(uint64(g))
 }
 
-type ProposalID uint64
+type ProposalId uint64
 
-func (p ProposalID) Bytes() []byte {
+func (p ProposalId) Bytes() []byte {
 	return orm.EncodeSequence(uint64(p))
 }
 
-func (p ProposalID) Uint64() uint64 {
+func (p ProposalId) Uint64() uint64 {
 	return uint64(p)
 }
-func (p ProposalID) Empty() bool {
+func (p ProposalId) Empty() bool {
 	return p == 0
 }
 
@@ -117,7 +125,7 @@ func (p ThresholdDecisionPolicy) ValidateBasic() error {
 
 func (g GroupMember) NaturalKey() []byte {
 	result := make([]byte, 8, 8+len(g.Member))
-	copy(result[0:8], g.Group.Bytes())
+	copy(result[0:8], g.GroupId.Bytes())
 	result = append(result, g.Member...)
 	return result
 }
@@ -132,7 +140,7 @@ var _ orm.Validateable = GroupAccountMetadata{}
 func NewGroupAccountMetadata(groupAccount sdk.AccAddress, group ID, admin sdk.AccAddress, comment string, version uint64, decisionPolicy DecisionPolicy) (GroupAccountMetadata, error) {
 	p := GroupAccountMetadata{
 		GroupAccount: groupAccount,
-		Group:        group,
+		GroupId:      group,
 		Admin:        admin,
 		Comment:      comment,
 		Version:      version,
@@ -174,7 +182,7 @@ func (g GroupAccountMetadata) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "group account")
 	}
 
-	if g.Group == 0 {
+	if g.GroupId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
 	if g.Version == 0 {
@@ -199,7 +207,7 @@ func (g GroupAccountMetadata) UnpackInterfaces(unpacker codectypes.AnyUnpacker) 
 
 func (v Vote) NaturalKey() []byte {
 	result := make([]byte, 8, 8+len(v.Voter))
-	copy(result[0:8], v.Proposal.Bytes())
+	copy(result[0:8], v.ProposalId.Bytes())
 	result = append(result, v.Voter...)
 	return result
 }
@@ -213,7 +221,7 @@ func (v Vote) ValidateBasic() error {
 	if err := sdk.VerifyAddressFormat(v.Voter); err != nil {
 		return sdkerrors.Wrap(err, "voter")
 	}
-	if v.Proposal == 0 {
+	if v.ProposalId == 0 {
 		return errors.Wrap(ErrEmpty, "proposal")
 	}
 	if v.Choice == Choice_UNKNOWN {
@@ -269,7 +277,7 @@ func noopValidator() paramstypes.ValueValidatorFn {
 var _ orm.Validateable = GroupMetadata{}
 
 func (m GroupMetadata) ValidateBasic() error {
-	if m.Group.Empty() {
+	if m.GroupId.Empty() {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
 	if m.Admin.Empty() {
@@ -290,7 +298,7 @@ func (m GroupMetadata) ValidateBasic() error {
 var _ orm.Validateable = GroupMember{}
 
 func (g GroupMember) ValidateBasic() error {
-	if g.Group.Empty() {
+	if g.GroupId.Empty() {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
 	if g.Member.Empty() {

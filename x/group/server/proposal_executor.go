@@ -1,8 +1,9 @@
-package group
+package server
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/x/group/types"
 )
 
 // ensureMsgAuthZ checks that if a message requires signers that all of them are equal to the given group account.
@@ -27,7 +28,7 @@ func DoExecuteMsgs(ctx sdk.Context, router sdk.Router, groupAccount sdk.AccAddre
 	for i, msg := range msgs {
 		handler := router.Route(ctx, msg.Route())
 		if handler == nil {
-			return nil, errors.Wrapf(ErrInvalid, "no message handler found for %q", msg.Route())
+			return nil, errors.Wrapf(types.ErrInvalid, "no message handler found for %q", msg.Route())
 		}
 		r, err := handler(ctx, msg)
 		if err != nil {

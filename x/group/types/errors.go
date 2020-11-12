@@ -1,6 +1,8 @@
-package group
+package types
 
-import sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+import (
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+)
 
 var (
 	ErrEmpty        = sdkerrors.Register(ModuleName, 202, "value is empty")

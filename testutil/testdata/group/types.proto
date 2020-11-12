@@ -44,6 +44,6 @@ message MsgAuthenticate {
 
 message MsgPropose {
     option (gogoproto.goproto_getters)  = false;
-    regen.group.v1alpha1.MsgProposeBase base = 1 [(gogoproto.nullable) = false];
+    regen.group.v1alpha1.MsgProposeBaseRequest base = 1 [(gogoproto.nullable) = false];
     repeated google.protobuf.Any msgs = 2;
 }

@@ -1,5 +1,7 @@
 package group_test
 
+// TODO
+
 // import (
 // 	"os"
 // 	"testing"
@@ -59,11 +61,11 @@ package group_test
 
 // 	fee := types.NewTestStdFee()
 // 	specs := map[string]struct {
-// 		src     group.MsgCreateGroup
+// 		src     group.MsgCreateGroupRequest
 // 		expCode uint32
 // 	}{
 // 		"happy path": {
-// 			src: group.MsgCreateGroup{
+// 			src: group.MsgCreateGroupRequest{
 // 				Admin: myAddr,
 // 				Members: []group.Member{{
 // 					Address: myAddr,
@@ -74,7 +76,7 @@ package group_test
 // 			},
 // 		},
 // 		"invalid message": {
-// 			src: group.MsgCreateGroup{
+// 			src: group.MsgCreateGroupRequest{
 // 				Admin: myAddr,
 // 				Members: []group.Member{{
 // 					Address: myAddr,
@@ -86,7 +88,7 @@ package group_test
 // 			expCode: group.ErrEmpty.ABCICode(),
 // 		},
 // 		"invalid signer": {
-// 			src: group.MsgCreateGroup{
+// 			src: group.MsgCreateGroupRequest{
 // 				Admin:   otherAddr,
 // 				Comment: "admin and signer do not match",
 // 			},
@@ -236,7 +238,7 @@ package group_test
 
 // 	// setup group
 // 	msgs := []sdk.Msg{
-// 		group.MsgCreateGroup{
+// 		group.MsgCreateGroupRequest{
 // 			Admin: myAddr,
 // 			Members: []group.Member{{
 // 				Address: myAddr,
@@ -251,7 +253,7 @@ package group_test
 // 		msgSecondAccount,
 // 		// submit proposals
 // 		testdata.MsgPropose{
-// 			Base: group.MsgProposeBase{
+// 			Base: group.MsgProposeBaseRequest{
 // 				GroupAccount: group.AccountCondition(1).Address(), // first account
 // 				Proposers:    []sdk.AccAddress{myAddr},
 // 				Comment:      "ok",
@@ -259,20 +261,20 @@ package group_test
 // 			Msgs: []testdata.MyAppMsg{{Sum: &testdata.MyAppMsg_A{A: &testdata.MsgAlwaysSucceed{}}}},
 // 		},
 // 		testdata.MsgPropose{
-// 			Base: group.MsgProposeBase{
+// 			Base: group.MsgProposeBaseRequest{
 // 				GroupAccount: group.AccountCondition(2).Address(), // second account, same group
 // 				Proposers:    []sdk.AccAddress{myAddr},
 // 				Comment:      "other proposal",
 // 			},
 // 		},
 // 		// vote
-// 		group.MsgVote{
+// 		group.MsgVoteRequest{
 // 			Proposal: 1,
 // 			Voters:   []sdk.AccAddress{myAddr},
 // 			Choice:   group.Choice_YES,
 // 			Comment:  "makes sense",
 // 		},
-// 		group.MsgVote{
+// 		group.MsgVoteRequest{
 // 			Proposal: 2,
 // 			Voters:   []sdk.AccAddress{myAddr},
 // 			Choice:   group.Choice_VETO,
@@ -292,7 +294,7 @@ package group_test
 
 // 	// execute first proposal
 // 	msgs = []sdk.Msg{
-// 		group.MsgExec{
+// 		group.MsgExecRequest{
 // 			Proposal: 1,
 // 			Signer:   myAddr,
 // 		},
@@ -314,7 +316,7 @@ package group_test
 
 // 	// execute second proposal
 // 	msgs = []sdk.Msg{
-// 		group.MsgExec{
+// 		group.MsgExecRequest{
 // 			Proposal: 2,
 // 			Signer:   myAddr,
 // 		},

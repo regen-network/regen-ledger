@@ -1,4 +1,4 @@
-package group_test
+package server_test
 
 import (
 	"testing"
@@ -6,7 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	testdatagroup "github.com/regen-network/regen-ledger/testutil/testdata/group"
-	"github.com/regen-network/regen-ledger/x/group"
 	testutil "github.com/regen-network/regen-ledger/x/group/testutil"
 	"github.com/stretchr/testify/require"
 )
@@ -53,7 +52,7 @@ func TestDoExecuteMsgs(t *testing.T) {
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
 			router := baseapp.NewRouter().AddRoute(sdk.NewRoute(testdatagroup.ModuleName, spec.srcHandler))
-			_, err := group.DoExecuteMsgs(testutil.NewContext(), router, spec.srcAccount, spec.srcMsgs)
+			_, err := DoExecuteMsgs(testutil.NewContext(), router, spec.srcAccount, spec.srcMsgs)
 			if spec.expErr {
 				require.Error(t, err)
 				return

@@ -1,4 +1,4 @@
-package group
+package types
 
 import (
 	"bytes"
@@ -11,6 +11,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/orm"
 )
 
 var (
@@ -123,4 +124,9 @@ func newAddress(data []byte) sdk.AccAddress {
 	// h := blake2b.Sum256(data)
 	h := sha256.Sum256(data)
 	return h[:sdk.AddrLen]
+}
+
+// AccountCondition returns a condition to build a group account address.
+func AccountCondition(id uint64) Condition {
+	return NewCondition("group", "account", orm.EncodeSequence(id))
 }
