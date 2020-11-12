@@ -1,4 +1,0 @@
-# Regen Ledger Documentation
-
-## Overview
-
