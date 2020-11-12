@@ -305,10 +305,6 @@ proto-gen-docker:
 	@echo "Generating Protobuf files"
 	docker run -v $(shell pwd):/workspace --workdir /workspace tendermintdev/sdk-proto-gen sh ./scripts/protocgen.sh
 
-proto-gen-doc-docker:
-	@echo "Generating Protobuf docs"
-	@./scripts/protocgendoc.sh
-
 proto-format:
 	find ./ -not -path "./third_party/*" -name *.proto -exec clang-format -i {} \;
 
