@@ -181,3 +181,6 @@ tags
 .idea
 
 build/
+
+# swagger-gen
+/tmp-swagger-gen
