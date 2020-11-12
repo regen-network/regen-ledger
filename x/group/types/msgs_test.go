@@ -278,9 +278,9 @@ func TestMsgVote(t *testing.T) {
 	}{
 		"all good with minimum fields set": {
 			src: MsgVoteRequest{
-				Proposal: 1,
-				Choice:   Choice_YES,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+				ProposalId: 1,
+				Choice:     Choice_YES,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
 			},
 		},
 		"proposal required": {
@@ -292,47 +292,47 @@ func TestMsgVote(t *testing.T) {
 		},
 		"choice required": {
 			src: MsgVoteRequest{
-				Proposal: 1,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+				ProposalId: 1,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
 			},
 			expErr: true,
 		},
 		"valid choice required": {
 			src: MsgVoteRequest{
-				Proposal: 1,
-				Choice:   5,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+				ProposalId: 1,
+				Choice:     5,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
 			},
 			expErr: true,
 		},
 		"voter required": {
 			src: MsgVoteRequest{
-				Proposal: 1,
-				Choice:   Choice_YES,
+				ProposalId: 1,
+				Choice:     Choice_YES,
 			},
 			expErr: true,
 		},
 		"valid voter address required": {
 			src: MsgVoteRequest{
-				Proposal: 1,
-				Choice:   Choice_YES,
-				Voters:   []sdk.AccAddress{[]byte("invalid-member-address")},
+				ProposalId: 1,
+				Choice:     Choice_YES,
+				Voters:     []sdk.AccAddress{[]byte("invalid-member-address")},
 			},
 			expErr: true,
 		},
 		"duplicate voters": {
 			src: MsgVoteRequest{
-				Proposal: 1,
-				Choice:   Choice_YES,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address"), []byte("valid-member-address")},
+				ProposalId: 1,
+				Choice:     Choice_YES,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address"), []byte("valid-member-address")},
 			},
 			expErr: true,
 		},
 		"empty voters address not allowed": {
 			src: MsgVoteRequest{
-				Proposal: 1,
-				Choice:   Choice_YES,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address"), nil, []byte("other-member-address")},
+				ProposalId: 1,
+				Choice:     Choice_YES,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address"), nil, []byte("other-member-address")},
 			},
 			expErr: true,
 		},

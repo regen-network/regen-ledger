@@ -3,7 +3,7 @@ package testutil
 import (
 	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/x/group"
+	"github.com/regen-network/regen-ledger/x/group/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
@@ -25,15 +25,15 @@ func NewContext(keys ...sdk.StoreKey) sdk.Context {
 	return sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
 }
 
-// func CreateGroupKeeper() (group.Keeper, sdk.Context) {
+// func CreateGroupKeeper() (types.Keeper, sdk.Context) {
 // 	encodingConfig := app.MakeEncodingConfig()
 // 	pKey, pTKey := sdk.NewKVStoreKey(paramstypes.StoreKey), sdk.NewTransientStoreKey(paramstypes.TStoreKey)
-// 	paramSpace := paramstypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.Amino, pKey, pTKey, group.DefaultParamspace)
+// 	paramSpace := paramstypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.Amino, pKey, pTKey, types.DefaultParamspace)
 
-// 	groupKey := sdk.NewKVStoreKey(group.StoreKey)
-// 	k := group.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &MockProposalI{})
+// 	groupKey := sdk.NewKVStoreKey(types.StoreKey)
+// 	k := types.NewGroupKeeper(groupKey, paramSpace, baseapp.NewRouter(), &MockProposalI{})
 // 	ctx := NewContext(pKey, pTKey, groupKey)
-// 	k.SetParams(ctx, group.DefaultParams())
+// 	k.SetParams(ctx, types.DefaultParams())
 // 	return k, ctx
 // }
 
@@ -48,11 +48,11 @@ func (m MockProposalI) Unmarshal([]byte) error {
 	panic("implement me")
 }
 
-func (m MockProposalI) GetBase() group.ProposalBase {
+func (m MockProposalI) GetBase() types.ProposalBase {
 	panic("implement me")
 }
 
-func (m MockProposalI) SetBase(group.ProposalBase) {
+func (m MockProposalI) SetBase(types.ProposalBase) {
 	panic("implement me")
 }
 
