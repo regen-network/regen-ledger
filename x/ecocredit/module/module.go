@@ -2,6 +2,7 @@ package module
 
 import (
 	"encoding/json"
+
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
