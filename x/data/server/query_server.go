@@ -2,6 +2,9 @@ package server
 
 import (
 	"context"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/gogo/protobuf/types"
 
@@ -18,21 +21,32 @@ func (s serverImpl) ByCid(goCtx context.Context, request *data.QueryByCidRequest
 	cid := request.Cid
 
 	var timestamp types.Timestamp
-	err := s.anchorTable.GetOne(ctx, cid, &timestamp)
+	store := ctx.KVStore(s.storeKey)
+	bz := store.Get(AnchorKey(cid))
+	if len(bz) == 0 {
+		return nil, status.Error(codes.NotFound, "CID not found")
+	}
+	err := timestamp.Unmarshal(bz)
 	if err != nil {
 		return nil, err
 	}
 
-	var signers data.Signers
-	// ignore error because we at least have the timestamp
-	_ = s.signersTable.GetOne(ctx, cid, &signers)
+	var signers []string
+	cidSignerPrefixKey := CIDSignerIndexPrefix(CIDBase64String(cid))
+	prefixStore := prefix.NewStore(store, cidSignerPrefixKey)
+	iterator := prefixStore.Iterator(nil, nil)
 
-	store := ctx.KVStore(s.storeKey)
+	for iterator.Valid() {
+		signer := string(iterator.Key())
+		signers = append(signers, signer)
+		iterator.Next()
+	}
+
 	content := store.Get(DataKey(cid))
 
 	return &data.QueryByCidResponse{
 		Timestamp: &timestamp,
-		Signers:   signers.Signers,
+		Signers:   signers,
 		Content:   content,
 	}, err
 }
