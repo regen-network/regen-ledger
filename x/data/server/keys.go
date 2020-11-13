@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/base64"
-	"fmt"
 )
 
 const (
@@ -21,19 +20,29 @@ func CIDBase64String(cid []byte) string {
 }
 
 func CIDSignerKey(cidStr string, signer string) []byte {
-	return append([]byte{CIDSignerPrefix}, []byte(fmt.Sprintf("%s/%s", cidStr, signer))...)
+	key := CIDSignerIndexPrefix(cidStr)
+	key = append(key, signer...)
+	return key
 }
 
 func CIDSignerIndexPrefix(cidStr string) []byte {
-	return append([]byte{CIDSignerPrefix}, []byte(fmt.Sprintf("%s/", cidStr))...)
+	key := []byte{CIDSignerPrefix}
+	key = append(key, cidStr...)
+	key = append(key, 0)
+	return key
 }
 
-func SignerCIDKey(signer string, cidStr string) []byte {
-	return append([]byte{SignerCIDPrefix}, []byte(fmt.Sprintf("%s/%s", signer, cidStr))...)
+func SignerCIDKey(signer string, cid []byte) []byte {
+	key := SignerCIDIndexPrefix(signer)
+	key = append(key, cid...)
+	return key
 }
 
 func SignerCIDIndexPrefix(signer string) []byte {
-	return append([]byte{SignerCIDPrefix}, []byte(fmt.Sprintf("%s/", signer))...)
+	key := []byte{SignerCIDPrefix}
+	key = append(key, signer...)
+	key = append(key, 0)
+	return key
 }
 
 func DataKey(cid []byte) []byte {

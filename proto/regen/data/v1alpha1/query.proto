@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.data.v1alpha1;
 
 import "google/protobuf/timestamp.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
@@ -11,6 +12,9 @@ service Query {
 
     // ByCid queries data based on its CID.
     rpc ByCid(QueryByCidRequest) returns (QueryByCidResponse);
+
+    // BySigner queries data based on signers.
+    rpc BySigner(QueryBySignerRequest) returns (QueryBySignerResponse);
 }
 
 // QueryByCidRequest is the Query/ByCid request type.
@@ -32,4 +36,14 @@ message QueryByCidResponse {
 
     // content is the content of the data, if it was stored on-chain.
     bytes content = 3;
+}
+
+message QueryBySignerRequest {
+    string signer = 1;
+    cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryBySignerResponse {
+    repeated bytes cids = 1;
+    cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
