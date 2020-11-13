@@ -71,8 +71,7 @@ func (a AppModule) ExportGenesis(sdk.Context, codec.JSONMarshaler) json.RawMessa
 func (a AppModule) RegisterInvariants(sdk.InvariantRegistry) {}
 
 func (a AppModule) RegisterServices(cfg module.Configurator) {
-	key := sdk.NewKVStoreKey(ecocredit.ModuleName)
-	server.RegisterServices(key, cfg)
+	server.RegisterServices(a.storeKey, cfg)
 }
 
 func (a AppModule) BeginBlock(sdk.Context, abci.RequestBeginBlock) {}

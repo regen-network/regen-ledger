@@ -1,6 +1,6 @@
 module github.com/regen-network/regen-ledger
 
-go 1.14
+go 1.15
 
 require (
 	github.com/btcsuite/btcutil v1.0.2
