@@ -16,7 +16,7 @@ func BatchID2ClassID(id string) (string, error) {
 	ids := strings.Split(id, "/")
 	if len(ids) != 2 || !reDigits.MatchString(ids[0]) || !reDigits.MatchString(ids[1]) {
 		return "", sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest,
-			"Invalid batch_denom (%s). Valid format: '<number>/<number>'", id)
+			"Invalid batch_denom (%q). Valid format: '<number>/<number>'", id)
 	}
 	return ids[0], nil
 }
