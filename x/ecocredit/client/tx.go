@@ -157,6 +157,7 @@ must be an authorized issuer.
 				return err
 			}
 			msg := ecocredit.MsgRetireRequest{
+				Issuer: c.Cctx.GetFromAddress().String(),
 				Holder: args[0], Credits: credits,
 			}
 			_, err = c.client.Retire(cmd.Context(), &msg)

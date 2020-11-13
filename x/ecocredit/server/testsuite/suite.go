@@ -39,17 +39,17 @@ func (s *IntegrationTestSuite) SetupSuite() {
 }
 
 func (s *IntegrationTestSuite) TestScenario() {
-	designer := s.signers[0]
-	issuer1 := s.signers[1]
-	issuer2 := s.signers[2]
-	addr1 := s.signers[3]
-	addr2 := s.signers[4]
-	addr3 := s.signers[5]
+	designer := s.signers[0].String()
+	issuer1 := s.signers[1].String()
+	issuer2 := s.signers[2].String()
+	addr1 := s.signers[3].String()
+	addr2 := s.signers[4].String()
+	addr3 := s.signers[5].String()
 
 	// create class
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClassRequest{
-		Designer: designer.String(),
-		Issuers:  []string{issuer1.String(), issuer2.String()},
+		Designer: designer,
+		Issuers:  []string{issuer1, issuer2},
 		Metadata: nil,
 	})
 	s.Require().NoError(err)
@@ -65,16 +65,16 @@ func (s *IntegrationTestSuite) TestScenario() {
 	rSupply0 := "10004.7449902"
 
 	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatchRequest{
-		Issuer:  issuer1.String(),
+		Issuer:  issuer1,
 		ClassId: clsID,
 		Issuance: []*ecocredit.MsgCreateBatchRequest_BatchIssuance{
 			{
-				Recipient:     addr1.String(),
+				Recipient:     addr1,
 				TradableUnits: t0,
 				RetiredUnits:  r0,
 			},
 			{
-				Recipient:     addr2.String(),
+				Recipient:     addr2,
 				TradableUnits: t1,
 				RetiredUnits:  r1,
 			},
@@ -88,7 +88,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	// query balances
 	queryBalanceRes, err := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
-		Account:    addr1.String(),
+		Account:    addr1,
 		BatchDenom: batchDenom,
 	})
 	s.Require().NoError(err)
@@ -97,7 +97,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Equal(r0, queryBalanceRes.RetiredUnits)
 
 	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
-		Account:    addr2.String(),
+		Account:    addr2,
 		BatchDenom: batchDenom,
 	})
 	s.Require().NoError(err)
@@ -115,6 +115,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	// retire credits
 	retireCases := []struct {
 		name               string
+		issuer             string
 		toRetire           string
 		expectErr          bool
 		expTradeable       string
@@ -124,16 +125,19 @@ func (s *IntegrationTestSuite) TestScenario() {
 	}{
 		{
 			name:      "cannot retire more credits than are tradeable",
+			issuer:    issuer1,
 			toRetire:  "10.371",
 			expectErr: true,
 		},
 		{
 			name:      "can't use more than 7 decimal places",
+			issuer:    issuer1,
 			toRetire:  "10.00000001",
 			expectErr: true,
 		},
 		{
 			name:               "can retire a small amount of credits",
+			issuer:             issuer1,
 			toRetire:           "0.0001",
 			expectErr:          false,
 			expTradeable:       "10.3699",
@@ -142,7 +146,18 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expRetiredSupply:   "10004.7450902",
 		},
 		{
+			name:               "only issuer can retire credits",
+			issuer:             addr2,
+			toRetire:           "0.0001",
+			expectErr:          true,
+			expTradeable:       "10.3699",
+			expRetired:         "4.2861",
+			expTradeableSupply: "1017.7568",
+			expRetiredSupply:   "10004.7450902",
+		},
+		{
 			name:               "can retire more credits",
+			issuer:             issuer1,
 			toRetire:           "10",
 			expectErr:          false,
 			expTradeable:       "0.3699",
@@ -152,6 +167,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		},
 		{
 			name:               "can retire all credits",
+			issuer:             issuer1,
 			toRetire:           "0.3699",
 			expectErr:          false,
 			expTradeable:       "0",
@@ -161,6 +177,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		},
 		{
 			name:      "can't retire any more credits",
+			issuer:    issuer1,
 			toRetire:  "1",
 			expectErr: true,
 		},
@@ -170,7 +187,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 		tc := tc
 		s.Run(tc.name, func() {
 			_, err := s.msgClient.Retire(s.ctx, &ecocredit.MsgRetireRequest{
-				Holder: addr1.String(),
+				Issuer: tc.issuer,
+				Holder: addr1,
 				Credits: []*ecocredit.MsgRetireRequest_RetireUnits{
 					{
 						BatchDenom: batchDenom,
@@ -186,7 +204,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 				// query balance
 				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
-					Account:    addr1.String(),
+					Account:    addr1,
 					BatchDenom: batchDenom,
 				})
 				s.Require().NoError(err)
@@ -264,8 +282,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 		tc := tc
 		s.Run(tc.name, func() {
 			_, err := s.msgClient.Send(s.ctx, &ecocredit.MsgSendRequest{
-				Sender:    addr2.String(),
-				Recipient: addr3.String(),
+				Sender:    addr2,
+				Recipient: addr3,
 				Credits: []*ecocredit.MsgSendRequest_SendUnits{
 					{
 						BatchDenom:    batchDenom,
@@ -282,7 +300,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 				// query sender balance
 				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
-					Account:    addr2.String(),
+					Account:    addr2,
 					BatchDenom: batchDenom,
 				})
 				s.Require().NoError(err)
@@ -292,7 +310,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 				// query recipient balance
 				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
-					Account:    addr3.String(),
+					Account:    addr3,
 					BatchDenom: batchDenom,
 				})
 				s.Require().NoError(err)

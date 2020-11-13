@@ -232,15 +232,18 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 }
 
 func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireRequest) (*ecocredit.MsgRetireResponse, error) {
-	// if err := s.assertIssuer(req.Hol, req.Isser); err != nil {
-	// 	return nil, err
-	// }
-
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
 	holder := req.Holder
 	for _, credit := range req.Credits {
 		denom := batchDenomT(credit.BatchDenom)
+		classID, err := ecocredit.BatchID2ClassID(credit.BatchDenom)
+		if err != nil {
+			return nil, err
+		}
+		if err = s.assertIssuer(ctx, classID, req.Issuer); err != nil {
+			return nil, err
+		}
 
 		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
 			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid credit denom", denom))

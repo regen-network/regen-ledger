@@ -20,6 +20,7 @@ func (s ModelSuite) TestBatchID2ClassID() {
 		{"/1", ""},
 		{"a/1", ""},
 		{"1/a", ""},
+
 		{"12/0", "12"},
 		{"01/01", "01"},
 		{"123213123213213124123123199/1", "123213123213213124123123199"},
@@ -27,10 +28,10 @@ func (s ModelSuite) TestBatchID2ClassID() {
 	for _, tc := range testCases {
 		id, err := BatchID2ClassID(tc.denom)
 		if tc.expected == "" {
-			require.Error(err)
+			require.Error(err, tc.denom)
 		} else {
-			require.NoError(err)
-			require.Equal(id, tc.expected)
+			require.NoError(err, tc.denom)
+			require.Equal(id, tc.expected, tc.denom)
 		}
 	}
 }

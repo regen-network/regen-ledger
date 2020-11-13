@@ -128,11 +128,14 @@ message MsgSendResponse { }
 // MsgRetireRequest is the Msg/Retire request type.
 message MsgRetireRequest {
 
+    // issuer is the address of the batch issuer.
+    string issuer = 1;
+
     // holder is the credit holder address.
-    string holder = 1;
+    string holder = 2;
 
     // credits are the credits being retired.
-    repeated RetireUnits credits = 2;
+    repeated RetireUnits credits = 3;
 
     // RetireUnits are the units of the batch being retired.
     message RetireUnits {
