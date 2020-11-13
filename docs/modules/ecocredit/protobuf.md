@@ -1,4 +1,5 @@
-# Protocol Documentation
+ <!-- This file is auto-generated. Please do not modify it yourself. -->
+# Protobuf Documentation
 <a name="top"></a>
 
 ## Table of Contents
@@ -119,7 +120,7 @@ for easy indexing.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| retirer | [string](#string) |  | retirer is the account which has done the &#34;retiring&#34;. This will be the account receiving credits in the case that credits were retired upon issuance using Msg/CreateBatch or retired upon transfer using Msg/Send. |
+| retirer | [string](#string) |  | retirer is the account which has done the "retiring". This will be the account receiving credits in the case that credits were retired upon issuance using Msg/CreateBatch or retired upon transfer using Msg/Send. |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
 | units | [string](#string) |  | units is the decimal number of credits that have been retired. |
 
@@ -127,13 +128,13 @@ for easy indexing.
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -180,13 +181,13 @@ ClassInfo represents the high-level on-chain information for a credit class.
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -349,11 +350,11 @@ QuerySupplyResponse is the Query/Supply response type.
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
 
 <a name="regen.ecocredit.v1alpha1.Query"></a>
@@ -369,7 +370,7 @@ Msg is the regen.ecocredit.v1alpha1 Query service.
 | Supply | [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest) | [QuerySupplyResponse](#regen.ecocredit.v1alpha1.QuerySupplyResponse) | Supply queries the tradable and retired supply of a credit batch. |
 | Precision | [QueryPrecisionRequest](#regen.ecocredit.v1alpha1.QueryPrecisionRequest) | [QueryPrecisionResponse](#regen.ecocredit.v1alpha1.QueryPrecisionResponse) | Precision queries the number of decimal places that can be used to represent credit batch units. See Tx/SetPrecision for more details. |
 
- 
+ <!-- end services -->
 
 
 
@@ -574,11 +575,11 @@ MsgRetireRequest is the Msg/SetPrecision response type.
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
 
 <a name="regen.ecocredit.v1alpha1.Msg"></a>
@@ -591,10 +592,10 @@ Msg is the regen.ecocredit.v1alpha1 Msg service.
 | CreateClass | [MsgCreateClassRequest](#regen.ecocredit.v1alpha1.MsgCreateClassRequest) | [MsgCreateClassResponse](#regen.ecocredit.v1alpha1.MsgCreateClassResponse) | CreateClass creates a new credit class with an approved list of issuers and optional metadata. |
 | CreateBatch | [MsgCreateBatchRequest](#regen.ecocredit.v1alpha1.MsgCreateBatchRequest) | [MsgCreateBatchResponse](#regen.ecocredit.v1alpha1.MsgCreateBatchResponse) | CreateBatch creates a new batch of credits for an existing credit class. This will create a new batch denom with a fixed supply. Issued credits can be distributed to recipients in either tradable or retired form. |
 | Send | [MsgSendRequest](#regen.ecocredit.v1alpha1.MsgSendRequest) | [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse) | Send sends tradeable credits from one account to another account. Sent credits can either be tradable or retired on receipt. |
-| Retire | [MsgRetireRequest](#regen.ecocredit.v1alpha1.MsgRetireRequest) | [MsgRetireResponse](#regen.ecocredit.v1alpha1.MsgRetireResponse) | Retire retires a specified number of credits in the holder&#39;s account. |
+| Retire | [MsgRetireRequest](#regen.ecocredit.v1alpha1.MsgRetireRequest) | [MsgRetireResponse](#regen.ecocredit.v1alpha1.MsgRetireResponse) | Retire retires a specified number of credits in the holder's account. |
 | SetPrecision | [MsgSetPrecisionRequest](#regen.ecocredit.v1alpha1.MsgSetPrecisionRequest) | [MsgSetPrecisionResponse](#regen.ecocredit.v1alpha1.MsgSetPrecisionResponse) | SetPrecision allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal places allowed for a credit batch is determined by the original number of decimal places used with calling CreatBatch. SetPrecision allows the number of allowed decimal places to be increased, effectively making the supply more granular without actually changing any balances. It allows asset issuers to be able to issue an asset without needing to think about how many subdivisions are needed upfront. While it may not be relevant for credits which likely have a fairly stable market value, I wanted to experiment a bit and this serves as a proof of concept for a broader bank redesign where say for instance a coin like the ATOM or XRN could be issued in its own units rather than micro or nano-units. Instead an operation like SetPrecision would allow trading in micro, nano or pico in the future based on market demand. Arbitrary, unbounded precision is not desirable because this can lead to spam attacks (like sending 0.000000000000000000000000000001 coins). This is effectively fixed precision so under the hood it is still basically an integer, but the fixed precision can be increased so its more adaptable long term than just an integer. |
 
- 
+ <!-- end services -->
 
 
 

@@ -1,4 +1,5 @@
-# Protocol Documentation
+ <!-- This file is auto-generated. Please do not modify it yourself. -->
+# Protobuf Documentation
 <a name="top"></a>
 
 ## Table of Contents
@@ -86,13 +87,13 @@ EventAnchorData is an event emitted when data is stored on-chain.
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -112,13 +113,13 @@ TODO
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -143,13 +144,13 @@ Signers is an internal type for storing a list of signers in state.
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
- 
+ <!-- end services -->
 
 
 
@@ -191,11 +192,11 @@ QueryByCidRequest is the Query/ByCid response type.
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
 
 <a name="regen.data.v1alpha1.Query"></a>
@@ -207,7 +208,7 @@ Query is the regen.data.v1alpha1 Query service
 | ----------- | ------------ | ------------- | ------------|
 | ByCid | [QueryByCidRequest](#regen.data.v1alpha1.QueryByCidRequest) | [QueryByCidResponse](#regen.data.v1alpha1.QueryByCidResponse) | ByCid queries data based on its CID. |
 
- 
+ <!-- end services -->
 
 
 
@@ -287,7 +288,7 @@ MsgStoreDataRequest is the Msg/StoreData request type.
 | cid | [bytes](#bytes) |  | cid is a Content Identifier for the data corresponding to the IPFS CID specification: https://github.com/multiformats/cid. |
 | content | [bytes](#bytes) |  | content is the content of the data corresponding to the provided CID.
 
-Currently only data for CID&#39;s using sha2-256 and blake2b-256 hash algorithms can be stored on-chain. |
+Currently only data for CID's using sha2-256 and blake2b-256 hash algorithms can be stored on-chain. |
 
 
 
@@ -303,11 +304,11 @@ MsgStoreDataRequest is the Msg/StoreData response type.
 
 
 
- 
+ <!-- end messages -->
 
- 
+ <!-- end enums -->
 
- 
+ <!-- end HasExtensions -->
 
 
 <a name="regen.data.v1alpha1.Msg"></a>
@@ -317,10 +318,10 @@ Msg is the regen.data.v1alpha1 Msg service
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| AnchorData | [MsgAnchorDataRequest](#regen.data.v1alpha1.MsgAnchorDataRequest) | [MsgAnchorDataResponse](#regen.data.v1alpha1.MsgAnchorDataResponse) | AnchorData &#34;anchors&#34; a piece of data to the blockchain based on its secure hash, effectively providing a tamper resistant timestamp.
+| AnchorData | [MsgAnchorDataRequest](#regen.data.v1alpha1.MsgAnchorDataRequest) | [MsgAnchorDataResponse](#regen.data.v1alpha1.MsgAnchorDataResponse) | AnchorData "anchors" a piece of data to the blockchain based on its secure hash, effectively providing a tamper resistant timestamp.
 
 The sender in AnchorData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing timestamp services. SignData should be used to create a digital signature attesting to the veracity of some piece of data. |
-| SignData | [MsgSignDataRequest](#regen.data.v1alpha1.MsgSignDataRequest) | [MsgSignDataResponse](#regen.data.v1alpha1.MsgSignDataResponse) | SignData allows for signing of an arbitrary piece of data on the blockchain. By &#34;signing&#34; data the signers are making a statement about the veracity of the data itself. It is like signing a legal document, meaning that I agree to all conditions and to the best of my knowledge everything is true. When anchoring data, the sender is not attesting to the veracity of the data, they are simply communicating that it exists.
+| SignData | [MsgSignDataRequest](#regen.data.v1alpha1.MsgSignDataRequest) | [MsgSignDataResponse](#regen.data.v1alpha1.MsgSignDataResponse) | SignData allows for signing of an arbitrary piece of data on the blockchain. By "signing" data the signers are making a statement about the veracity of the data itself. It is like signing a legal document, meaning that I agree to all conditions and to the best of my knowledge everything is true. When anchoring data, the sender is not attesting to the veracity of the data, they are simply communicating that it exists.
 
 On-chain signatures have the following benefits: - on-chain identities can be managed using different cryptographic keys that change over time through key rotation practices - an on-chain identity may represent an organization and through delegation individual members may sign on behalf of the group - the blockchain transaction envelope provides built-in replay protection and timestamping
 
@@ -329,13 +330,13 @@ SignData implicitly calls AnchorData if the data was not already anchored.
 SignData can be called multiple times for the same CID with different signers and those signers will be appended to the list of signers. |
 | StoreData | [MsgStoreDataRequest](#regen.data.v1alpha1.MsgStoreDataRequest) | [MsgStoreDataResponse](#regen.data.v1alpha1.MsgStoreDataResponse) | StoreData stores a piece of data corresponding to a CID on the blockchain.
 
-Currently only data for CID&#39;s using sha2-256 and blake2b-256 hash algorithms can be stored on-chain.
+Currently only data for CID's using sha2-256 and blake2b-256 hash algorithms can be stored on-chain.
 
 StoreData implicitly calls AnchorData if the data was not already anchored.
 
 The sender in StoreData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing storage services. SignData should be used to create a digital signature attesting to the veracity of some piece of data. |
 
- 
+ <!-- end services -->
 
 
 
