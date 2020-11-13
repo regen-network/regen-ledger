@@ -115,7 +115,6 @@ func (s *IntegrationTestSuite) TestScenario() {
 	// retire credits
 	retireCases := []struct {
 		name               string
-		issuer             string
 		toRetire           string
 		expectErr          bool
 		expTradeable       string
@@ -125,19 +124,16 @@ func (s *IntegrationTestSuite) TestScenario() {
 	}{
 		{
 			name:      "cannot retire more credits than are tradeable",
-			issuer:    issuer1,
 			toRetire:  "10.371",
 			expectErr: true,
 		},
 		{
 			name:      "can't use more than 7 decimal places",
-			issuer:    issuer1,
 			toRetire:  "10.00000001",
 			expectErr: true,
 		},
 		{
 			name:               "can retire a small amount of credits",
-			issuer:             issuer1,
 			toRetire:           "0.0001",
 			expectErr:          false,
 			expTradeable:       "10.3699",
@@ -146,18 +142,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expRetiredSupply:   "10004.7450902",
 		},
 		{
-			name:               "only issuer can retire credits",
-			issuer:             addr2,
-			toRetire:           "0.0001",
-			expectErr:          true,
-			expTradeable:       "10.3699",
-			expRetired:         "4.2861",
-			expTradeableSupply: "1017.7568",
-			expRetiredSupply:   "10004.7450902",
-		},
-		{
 			name:               "can retire more credits",
-			issuer:             issuer1,
 			toRetire:           "10",
 			expectErr:          false,
 			expTradeable:       "0.3699",
@@ -167,7 +152,6 @@ func (s *IntegrationTestSuite) TestScenario() {
 		},
 		{
 			name:               "can retire all credits",
-			issuer:             issuer1,
 			toRetire:           "0.3699",
 			expectErr:          false,
 			expTradeable:       "0",
@@ -177,7 +161,6 @@ func (s *IntegrationTestSuite) TestScenario() {
 		},
 		{
 			name:      "can't retire any more credits",
-			issuer:    issuer1,
 			toRetire:  "1",
 			expectErr: true,
 		},
@@ -187,7 +170,6 @@ func (s *IntegrationTestSuite) TestScenario() {
 		tc := tc
 		s.Run(tc.name, func() {
 			_, err := s.msgClient.Retire(s.ctx, &ecocredit.MsgRetireRequest{
-				Issuer: tc.issuer,
 				Holder: addr1,
 				Credits: []*ecocredit.MsgRetireRequest_RetireUnits{
 					{
@@ -327,4 +309,16 @@ func (s *IntegrationTestSuite) TestScenario() {
 			}
 		})
 	}
+
+	// TEST CHANGE PRECISION
+	// retire credits
+	// precisionCases := []struct {
+	// 	name               string
+	// 	msg ecocredit.MsgSetPrecisionRequest
+	// }{
+	// 	{"can change precision of a valid denom",
+	// 		ecocredit.MsgSetPrecisionRequest{Issuer: issuer1, BatchDenom:batchDenom, MaxDecimalPlacesKey: }
+	// 	},
+	// }
+
 }

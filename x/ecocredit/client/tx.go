@@ -140,16 +140,16 @@ Parameters:
 
 func txRetire() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "retire [holder] [credits]",
+		Use: "retire [credits]",
 		Short: `Retires specified amount of a holder credits. Transaction author (--from) must
 must be an authorized issuer.
   recipient: recipient address
-  credits:   JSON encoded credit list
-             eg: '[{"batchDenom": "100/2", "units": "5"}]'`,
-		Args: cobra.ExactArgs(2),
+  credits:  JSON encoded credit list
+            eg: '[{"batchDenom": "100/2", "units": "5"}]'`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var credits = []*ecocredit.MsgRetireRequest_RetireUnits{}
-			if err := json.Unmarshal([]byte(args[1]), &credits); err != nil {
+			if err := json.Unmarshal([]byte(args[0]), &credits); err != nil {
 				return err
 			}
 			c, err := newMsgSrvClient(cmd)
@@ -157,8 +157,8 @@ must be an authorized issuer.
 				return err
 			}
 			msg := ecocredit.MsgRetireRequest{
-				Issuer: c.Cctx.GetFromAddress().String(),
-				Holder: args[0], Credits: credits,
+				Holder:  c.Cctx.GetFromAddress().String(),
+				Credits: credits,
 			}
 			_, err = c.client.Retire(cmd.Context(), &msg)
 			return c.send(err)
