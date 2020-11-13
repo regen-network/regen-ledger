@@ -37,7 +37,7 @@ func TxCmd() *cobra.Command {
 
 func txCreateClass() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "create_class [designer] [issuer[,issuer]*] [base64_metadata]",
+		Use: "create_class [designer] [issuer[,issuer]*] [metadata]",
 		Short: `Creates a new credit class.
 Parameters:
   designer:  address of the account which designed the credit class
