@@ -18,7 +18,7 @@ import (
 func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	classID := s.idSeq.NextVal(ctx)
-	classIDStr := uint64ToBase58Check(classID)
+	classIDStr := uint64ToBase58Checked(classID)
 
 	err := s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
 		ClassId:  classIDStr,
@@ -44,25 +44,12 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatchRequest) (*ecocredit.MsgCreateBatchResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	classID := req.ClassId
-	classInfo, err := s.getClassInfo(ctx, classID)
-	if err != nil {
+	if err := s.assertIssuer(ctx, classID, req.Issuer); err != nil {
 		return nil, err
 	}
 
-	var found bool
-	for _, issuer := range classInfo.Issuers {
-		if issuer == req.Issuer {
-			found = true
-			break
-		}
-	}
-
-	if !found {
-		return nil, sdkerrors.ErrUnauthorized
-	}
-
 	batchID := s.idSeq.NextVal(ctx)
-	batchDenom := batchDenomT(fmt.Sprintf("%s/%s", classID, uint64ToBase58Check(batchID)))
+	batchDenom := batchDenomT(fmt.Sprintf("%s/%s", classID, uint64ToBase58Checked(batchID)))
 	tradableSupply := apd.New(0, 0)
 	retiredSupply := apd.New(0, 0)
 	var maxDecimalPlaces uint32 = 0
@@ -110,7 +97,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 				return nil, err
 			}
 
-			err = s.retire(ctx, store, recipient, batchDenom, retired)
+			err = retire(ctx, store, recipient, batchDenom, retired)
 			if err != nil {
 				return nil, err
 			}
@@ -136,13 +123,12 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	setDecimal(store, RetiredSupplyKey(batchDenom), retiredSupply)
 
 	var totalSupply apd.Decimal
-	err = math.Add(&totalSupply, tradableSupply, retiredSupply)
+	err := math.Add(&totalSupply, tradableSupply, retiredSupply)
 	if err != nil {
 		return nil, err
 	}
 
 	totalSupplyStr := math.DecimalString(&totalSupply)
-
 	err = s.batchInfoTable.Create(ctx, &ecocredit.BatchInfo{
 		ClassId:    classID,
 		BatchDenom: string(batchDenom),
@@ -220,7 +206,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 		}
 
 		// Add retired balance
-		err = s.retire(ctx, store, recipient, denom, retired)
+		err = retire(ctx, store, recipient, denom, retired)
 		if err != nil {
 			return nil, err
 		}
@@ -246,10 +232,13 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 }
 
 func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireRequest) (*ecocredit.MsgRetireResponse, error) {
+	// if err := s.assertIssuer(req.Hol, req.Isser); err != nil {
+	// 	return nil, err
+	// }
+
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
 	holder := req.Holder
-
 	for _, credit := range req.Credits {
 		denom := batchDenomT(credit.BatchDenom)
 
@@ -280,7 +269,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 		}
 
 		//  Add retired balance
-		err = s.retire(ctx, store, holder, denom, toRetire)
+		err = retire(ctx, store, holder, denom, toRetire)
 		if err != nil {
 			return nil, err
 		}
@@ -295,30 +284,25 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 	return &ecocredit.MsgRetireResponse{}, nil
 }
 
-func (s serverImpl) retire(ctx sdk.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired *apd.Decimal) error {
-	err := getAddAndSetDecimal(store, RetiredBalanceKey(recipient, batchDenom), retired)
+func (s serverImpl) SetPrecision(goCtx context.Context, req *ecocredit.MsgSetPrecisionRequest) (*ecocredit.MsgSetPrecisionResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	classID, err := ecocredit.BatchID2ClassID(req.BatchDenom)
 	if err != nil {
-		return err
+		return nil, err
+	}
+	if err = s.assertIssuer(ctx, classID, req.Issuer); err != nil {
+		return nil, err
 	}
 
-	return ctx.EventManager().EmitTypedEvent(&ecocredit.EventRetire{
-		Retirer:    recipient,
-		BatchDenom: string(batchDenom),
-		Units:      math.DecimalString(retired),
-	})
-}
-
-func (s serverImpl) SetPrecision(goCtx context.Context, request *ecocredit.MsgSetPrecisionRequest) (*ecocredit.MsgSetPrecisionResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
-	key := MaxDecimalPlacesKey(batchDenomT(request.BatchDenom))
+	key := MaxDecimalPlacesKey(batchDenomT(req.BatchDenom))
 	x, err := getUint32(store, key)
 	if err != nil {
 		return nil, err
 	}
 
-	if request.MaxDecimalPlaces <= x {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("Maximum decimal can only be increased, it is currently %d, and %d was requested", x, request.MaxDecimalPlaces))
+	if req.MaxDecimalPlaces <= x {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("Maximum decimal can only be increased, it is currently %d, and %d was requested", x, req.MaxDecimalPlaces))
 	}
 
 	err = setUInt32(store, key, x)
@@ -329,8 +313,36 @@ func (s serverImpl) SetPrecision(goCtx context.Context, request *ecocredit.MsgSe
 	return &ecocredit.MsgSetPrecisionResponse{}, nil
 }
 
-func uint64ToBase58Check(x uint64) string {
+// assertIssuer makes sure that the issuer is part of issuers of given classID.
+// Returns ErrUnauthorized otherwise.
+func (s serverImpl) assertIssuer(ctx sdk.Context, classID, issuer string) error {
+	classInfo, err := s.getClassInfo(ctx, classID)
+	if err != nil {
+		return err
+	}
+	for _, i := range classInfo.Issuers {
+		if issuer == i {
+			return nil
+		}
+	}
+	return sdkerrors.ErrUnauthorized
+}
+
+func uint64ToBase58Checked(x uint64) string {
 	buf := make([]byte, binary.MaxVarintLen64)
 	n := binary.PutUvarint(buf, x)
 	return base58.CheckEncode(buf[:n], 0)
+}
+
+func retire(ctx sdk.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired *apd.Decimal) error {
+	err := getAddAndSetDecimal(store, RetiredBalanceKey(recipient, batchDenom), retired)
+	if err != nil {
+		return err
+	}
+
+	return ctx.EventManager().EmitTypedEvent(&ecocredit.EventRetire{
+		Retirer:    recipient,
+		BatchDenom: string(batchDenom),
+		Units:      math.DecimalString(retired),
+	})
 }
