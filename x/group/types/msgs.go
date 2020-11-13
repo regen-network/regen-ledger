@@ -7,7 +7,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	proto "github.com/gogo/protobuf/proto"
-	"github.com/pkg/errors"
 )
 
 var _ sdk.MsgRequest = &MsgCreateGroupRequest{}
@@ -26,7 +25,7 @@ func (m MsgCreateGroupRequest) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "admin")
 	}
 	if err := Members(m.Members).ValidateBasic(); err != nil {
-		return errors.Wrap(err, "members")
+		return sdkerrors.Wrap(err, "members")
 	}
 	for i := range m.Members {
 		member := m.Members[i]
@@ -129,23 +128,7 @@ func (m MsgUpdateGroupMembersRequest) ValidateBasic() error {
 		return sdkerrors.Wrap(ErrEmpty, "member updates")
 	}
 	if err := Members(m.MemberUpdates).ValidateBasic(); err != nil {
-		return errors.Wrap(err, "members")
-	}
-	return nil
-}
-
-func (m *MsgProposeBaseRequest) ValidateBasic() error {
-	if m.GroupAccount.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "group account")
-	}
-	if err := sdk.VerifyAddressFormat(m.GroupAccount); err != nil {
-		return sdkerrors.Wrap(err, "group account")
-	}
-	if len(m.Proposers) == 0 {
-		return sdkerrors.Wrap(ErrEmpty, "proposers")
-	}
-	if err := AccAddresses(m.Proposers).ValidateBasic(); err != nil {
-		return sdkerrors.Wrap(err, "proposers")
+		return sdkerrors.Wrap(err, "members")
 	}
 	return nil
 }
@@ -171,15 +154,128 @@ func (m MsgCreateGroupAccountRequest) ValidateBasic() error {
 
 	policy := m.GetDecisionPolicy()
 	if policy == nil {
-		return errors.Wrap(ErrEmpty, "decision policy")
+		return sdkerrors.Wrap(ErrEmpty, "decision policy")
 	}
 
 	if err := policy.ValidateBasic(); err != nil {
-		return errors.Wrap(err, "decision policy")
+		return sdkerrors.Wrap(err, "decision policy")
 	}
 	return nil
 }
 
+var _ sdk.MsgRequest = &MsgUpdateGroupAccountAdminRequest{}
+
+// GetSigners returns the addresses that must sign over msg.GetSignBytes()
+func (m MsgUpdateGroupAccountAdminRequest) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.Admin}
+}
+
+// ValidateBasic does a sanity check on the provided data
+func (m MsgUpdateGroupAccountAdminRequest) ValidateBasic() error {
+	if m.Admin.Empty() {
+		return sdkerrors.Wrap(ErrEmpty, "admin")
+	}
+	if err := sdk.VerifyAddressFormat(m.Admin); err != nil {
+		return sdkerrors.Wrap(err, "admin")
+	}
+
+	if m.NewAdmin.Empty() {
+		return sdkerrors.Wrap(ErrEmpty, "new admin")
+	}
+	if err := sdk.VerifyAddressFormat(m.NewAdmin); err != nil {
+		return sdkerrors.Wrap(err, "new admin")
+	}
+
+	if m.GroupAccount.Empty() {
+		return sdkerrors.Wrap(ErrEmpty, "group account")
+	}
+	if err := sdk.VerifyAddressFormat(m.GroupAccount); err != nil {
+		return sdkerrors.Wrap(err, "group account")
+	}
+
+	if m.Admin.Equals(m.NewAdmin) {
+		return sdkerrors.Wrap(ErrInvalid, "new and old admin are the same")
+	}
+	return nil
+}
+
+var _ sdk.MsgRequest = &MsgUpdateGroupAccountDecisionPolicyRequest{}
+var _ types.UnpackInterfacesMessage = MsgUpdateGroupAccountDecisionPolicyRequest{}
+
+// GetSigners returns the addresses that must sign over msg.GetSignBytes()
+func (m MsgUpdateGroupAccountDecisionPolicyRequest) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.Admin}
+}
+
+// ValidateBasic does a sanity check on the provided data
+func (m MsgUpdateGroupAccountDecisionPolicyRequest) ValidateBasic() error {
+	if m.Admin.Empty() {
+		return sdkerrors.Wrap(ErrEmpty, "admin")
+	}
+	if err := sdk.VerifyAddressFormat(m.Admin); err != nil {
+		return sdkerrors.Wrap(err, "admin")
+	}
+
+	if m.GroupAccount.Empty() {
+		return sdkerrors.Wrap(ErrEmpty, "group account")
+	}
+	if err := sdk.VerifyAddressFormat(m.GroupAccount); err != nil {
+		return sdkerrors.Wrap(err, "group account")
+	}
+
+	policy := m.GetDecisionPolicy()
+	if policy == nil {
+		return sdkerrors.Wrap(ErrEmpty, "decision policy")
+	}
+
+	if err := policy.ValidateBasic(); err != nil {
+		return sdkerrors.Wrap(err, "decision policy")
+	}
+
+	return nil
+}
+
+func (m *MsgUpdateGroupAccountDecisionPolicyRequest) GetDecisionPolicy() DecisionPolicy {
+	decisionPolicy, ok := m.DecisionPolicy.GetCachedValue().(DecisionPolicy)
+	if !ok {
+		return nil
+	}
+	return decisionPolicy
+}
+
+// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+func (m MsgUpdateGroupAccountDecisionPolicyRequest) UnpackInterfaces(unpacker types.AnyUnpacker) error {
+	var decisionPolicy DecisionPolicy
+	return unpacker.UnpackAny(m.DecisionPolicy, &decisionPolicy)
+}
+
+var _ sdk.MsgRequest = &MsgUpdateGroupAccountCommentRequest{}
+
+// GetSigners returns the addresses that must sign over msg.GetSignBytes()
+func (m MsgUpdateGroupAccountCommentRequest) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{m.Admin}
+}
+
+// ValidateBasic does a sanity check on the provided data
+func (m MsgUpdateGroupAccountCommentRequest) ValidateBasic() error {
+	if m.Admin.Empty() {
+		return sdkerrors.Wrap(ErrEmpty, "admin")
+	}
+	if err := sdk.VerifyAddressFormat(m.Admin); err != nil {
+		return sdkerrors.Wrap(err, "admin")
+	}
+
+	if m.GroupAccount.Empty() {
+		return sdkerrors.Wrap(ErrEmpty, "group account")
+	}
+	if err := sdk.VerifyAddressFormat(m.GroupAccount); err != nil {
+		return sdkerrors.Wrap(err, "group account")
+	}
+
+	return nil
+}
+
+var _ sdk.MsgRequest = &MsgCreateGroupAccountRequest{}
 var _ types.UnpackInterfacesMessage = MsgCreateGroupAccountRequest{}
 
 // NewMsgCreateGroupAccount creates a new MsgCreateGroupAccountRequest.
@@ -235,10 +331,62 @@ func (m MsgCreateGroupAccountRequest) UnpackInterfaces(unpacker types.AnyUnpacke
 	return unpacker.UnpackAny(m.DecisionPolicy, &decisionPolicy)
 }
 
+var _ sdk.MsgRequest = &MsgCreateProposalRequest{}
+
+// GetSigners returns the addresses that must sign over msg.GetSignBytes()
+func (m MsgCreateProposalRequest) GetSigners() []sdk.AccAddress {
+	return m.Proposers
+}
+
+// ValidateBasic does a sanity check on the provided data
+func (m MsgCreateProposalRequest) ValidateBasic() error {
+	if m.GroupAccount.Empty() {
+		return sdkerrors.Wrap(ErrEmpty, "group account")
+	}
+	if err := sdk.VerifyAddressFormat(m.GroupAccount); err != nil {
+		return sdkerrors.Wrap(err, "group account")
+	}
+	if len(m.Proposers) == 0 {
+		return sdkerrors.Wrap(ErrEmpty, "proposers")
+	}
+	if err := AccAddresses(m.Proposers).ValidateBasic(); err != nil {
+		return sdkerrors.Wrap(err, "proposers")
+	}
+	for i, any := range m.Msgs {
+		msg, ok := any.GetCachedValue().(sdk.Msg)
+		if !ok {
+			return sdkerrors.Wrapf(sdkerrors.ErrUnpackAny, "cannot unpack Any into sdk.Msg %T", any)
+		}
+		if err := msg.ValidateBasic(); err != nil {
+			return sdkerrors.Wrapf(err, "msg %d", i)
+		}
+	}
+	return nil
+}
+
+// GetMsgs unpacks m.Msgs Any's into sdk.Msg's
+func (m MsgCreateProposalRequest) GetMsgs() []sdk.Msg {
+	msgs := make([]sdk.Msg, len(m.Msgs))
+	for i, any := range m.Msgs {
+		msg, ok := any.GetCachedValue().(sdk.Msg)
+		if !ok {
+			return nil
+		}
+		msgs[i] = msg
+	}
+	return msgs
+}
+
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
-func (m MsgUpdateGroupAccountDecisionPolicyRequest) UnpackInterfaces(unpacker types.AnyUnpacker) error {
-	var decisionPolicy DecisionPolicy
-	return unpacker.UnpackAny(m.DecisionPolicy, &decisionPolicy)
+func (m MsgCreateProposalRequest) UnpackInterfaces(unpacker types.AnyUnpacker) error {
+	for _, m := range m.Msgs {
+		err := types.UnpackInterfaces(m, unpacker)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 var _ sdk.MsgRequest = &MsgVoteRequest{}
@@ -251,19 +399,19 @@ func (m MsgVoteRequest) GetSigners() []sdk.AccAddress {
 // ValidateBasic does a sanity check on the provided data
 func (m MsgVoteRequest) ValidateBasic() error {
 	if len(m.Voters) == 0 {
-		return errors.Wrap(ErrEmpty, "voters")
+		return sdkerrors.Wrap(ErrEmpty, "voters")
 	}
 	if err := AccAddresses(m.Voters).ValidateBasic(); err != nil {
 		return sdkerrors.Wrap(err, "voters")
 	}
 	if m.Proposal == 0 {
-		return errors.Wrap(ErrEmpty, "proposal")
+		return sdkerrors.Wrap(ErrEmpty, "proposal")
 	}
 	if m.Choice == Choice_UNKNOWN {
-		return errors.Wrap(ErrEmpty, "choice")
+		return sdkerrors.Wrap(ErrEmpty, "choice")
 	}
 	if _, ok := Choice_name[int32(m.Choice)]; !ok {
-		return errors.Wrap(ErrInvalid, "choice")
+		return sdkerrors.Wrap(ErrInvalid, "choice")
 	}
 	return nil
 }
@@ -278,13 +426,13 @@ func (m MsgExecRequest) GetSigners() []sdk.AccAddress {
 // ValidateBasic does a sanity check on the provided data
 func (m MsgExecRequest) ValidateBasic() error {
 	if m.Signer.Empty() {
-		return errors.Wrap(ErrEmpty, "signer")
+		return sdkerrors.Wrap(ErrEmpty, "signer")
 	}
 	if err := sdk.VerifyAddressFormat(m.Signer); err != nil {
-		return errors.Wrap(ErrInvalid, "signer")
+		return sdkerrors.Wrap(ErrInvalid, "signer")
 	}
 	if m.Proposal == 0 {
-		return errors.Wrap(ErrEmpty, "proposal")
+		return sdkerrors.Wrap(ErrEmpty, "proposal")
 	}
 	return nil
 }

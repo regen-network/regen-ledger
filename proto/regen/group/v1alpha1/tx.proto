@@ -36,12 +36,16 @@ service Msg {
     // UpdateGroupAccountComment updates a group account comment.
     rpc UpdateGroupAccountComment(MsgUpdateGroupAccountCommentRequest) returns (MsgUpdateGroupAccountCommentResponse);
 
+    // CreateProposal submits a new proposal.
+    rpc CreateProposal(MsgCreateProposalRequest) returns (MsgCreateProposalResponse);
+
     // Vote allows voters to vote on a proposal.
     rpc Vote(MsgVoteRequest) returns (MsgVoteResponse);
 
     // Exec executes a proposal.
     rpc Exec(MsgExecRequest) returns (MsgExecResponse);
 }
+
 //
 // Groups
 //
@@ -122,8 +126,10 @@ message MsgUpdateGroupAccountAdminResponse { }
 
 // MsgUpdateGroupAccountDecisionPolicyRequest is the Msg/UpdateGroupAccountDecisionPolicy request type.
 message MsgUpdateGroupAccountDecisionPolicyRequest {
+    option (gogoproto.goproto_getters) = false;
+
     bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
-    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
+    bytes group_account = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
     google.protobuf.Any decision_policy = 3 [(cosmos_proto.accepts_interface) = "DecisionPolicy"];
 }
 
@@ -144,20 +150,20 @@ message MsgUpdateGroupAccountCommentResponse { }
 // Proposals and Voting
 //
 
-// MsgProposeBaseRequest is the base propose msg request
-// that app should use to implement a MsgProposeRequest type based
-// on their app Msg request type.
-//
-// Ex:
-// message MsgProposeRequest {
-//   MsgProposeBaseRequest base = 1;
-//   repeated MyAppMsgRequest msgs = 2;
-// }
-message MsgProposeBaseRequest {
+// MsgCreateProposalRequest is the Msg/CreateProposal request type.
+message MsgCreateProposalRequest {
+    option (gogoproto.goproto_getters) = false;
+
     bytes group_account = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
     // Proposers signatures will be counted as yes votes
     repeated bytes proposers = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
     string comment = 3;
+    repeated google.protobuf.Any msgs = 4;
+}
+
+// MsgCreateProposalResponse is the Msg/CreateProposal response type.
+message MsgCreateProposalResponse {
+    uint64 proposal = 1 [(gogoproto.casttype) = "ProposalID"];
 }
 
 // MsgVoteRequest is the Msg/Vote request type.

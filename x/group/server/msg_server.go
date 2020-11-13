@@ -145,6 +145,19 @@ func (s serverImpl) UpdateGroupAccountComment(goCtx context.Context, req *types.
 	return &types.MsgUpdateGroupAccountCommentResponse{}, nil
 }
 
+func (s serverImpl) CreateProposal(goCtx context.Context, req *types.MsgCreateProposalRequest) (*types.MsgCreateProposalResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	proposalID, err := s.Keeper.CreateProposal(ctx, req.GroupAccount, req.Comment, req.Proposers, req.GetMsgs())
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: add event?
+
+	return &types.MsgCreateProposalResponse{Proposal: proposalID}, nil
+}
+
 func (s serverImpl) Vote(goCtx context.Context, req *types.MsgVoteRequest) (*types.MsgVoteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 

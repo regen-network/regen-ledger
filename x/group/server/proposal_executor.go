@@ -1,9 +1,9 @@
 package server
 
 import (
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/regen-network/regen-ledger/x/group/types"
 )
 
 // ensureMsgAuthZ checks that if a message requires signers that all of them are equal to the given group account.
@@ -20,22 +20,27 @@ func ensureMsgAuthZ(msgs []sdk.Msg, groupAccount sdk.AccAddress) error {
 
 // DoExecuteMsgs routes the messages to the registered handlers. Messages are limited to those that require no authZ or
 // by the group account only. Otherwise this gives access to other peoples accounts as the sdk ant handler is bypassed
-func DoExecuteMsgs(ctx sdk.Context, router sdk.Router, groupAccount sdk.AccAddress, msgs []sdk.Msg) ([]sdk.Result, error) {
+func DoExecuteMsgs(ctx sdk.Context, msgServiceRouter *baseapp.MsgServiceRouter, groupAccount sdk.AccAddress, msgs []sdk.Msg) ([]sdk.Result, error) {
 	results := make([]sdk.Result, len(msgs))
 	if err := ensureMsgAuthZ(msgs, groupAccount); err != nil {
 		return nil, err
 	}
+
 	for i, msg := range msgs {
-		handler := router.Route(ctx, msg.Route())
-		if handler == nil {
-			return nil, errors.Wrapf(types.ErrInvalid, "no message handler found for %q", msg.Route())
-		}
-		r, err := handler(ctx, msg)
-		if err != nil {
-			return nil, errors.Wrapf(err, "message %q at position %d", msg.Type(), i)
-		}
-		if r != nil {
-			results[i] = *r
+		if svcMsg, ok := msg.(sdk.ServiceMsg); ok {
+			msgFqName := svcMsg.MethodName
+			handler := msgServiceRouter.Handler(msgFqName)
+			if handler == nil {
+				return nil, errors.Wrapf(errors.ErrUnknownRequest, "unrecognized message service method: %s; message index: %d", msgFqName, i)
+			}
+			msgResult, err := handler(ctx, svcMsg.Request)
+			if err != nil {
+				return nil, errors.Wrapf(err, "failed to execute message; message index: %d", i)
+			}
+			results[i] = *msgResult
+		} else {
+			// Should we support legacy sdk.Msg routing?
+			return nil, errors.Wrapf(errors.ErrUnknownRequest, "non ServiceMsg not supported: %s; message index: %d", msg, i)
 		}
 	}
 	return results, nil

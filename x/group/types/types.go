@@ -16,14 +16,6 @@ import (
 	"time"
 )
 
-type ProposalI interface {
-	orm.Persistent
-	GetBase() ProposalBase
-	SetBase(ProposalBase)
-	GetMsgs() []sdk.Msg
-	SetMsgs([]sdk.Msg) error
-}
-
 type GroupID uint64
 
 func (g GroupID) Uint64() uint64 {
@@ -309,57 +301,6 @@ func (g GroupMember) ValidateBasic() error {
 	}
 	if err := sdk.VerifyAddressFormat(g.Member); err != nil {
 		return sdkerrors.Wrap(err, "address")
-	}
-	return nil
-}
-
-var _ orm.Validateable = ProposalBase{}
-
-func (p ProposalBase) ValidateBasic() error {
-	if p.GroupAccount.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "group account")
-	}
-	if err := sdk.VerifyAddressFormat(p.GroupAccount); err != nil {
-		return sdkerrors.Wrap(err, "group account")
-	}
-	if len(p.Proposers) == 0 {
-		return sdkerrors.Wrap(ErrEmpty, "proposers")
-	}
-	if err := AccAddresses(p.Proposers).ValidateBasic(); err != nil {
-		return sdkerrors.Wrap(err, "proposers")
-	}
-	if p.SubmittedAt.Seconds == 0 && p.SubmittedAt.Nanos == 0 {
-		return sdkerrors.Wrap(ErrEmpty, "submitted at")
-	}
-	if p.GroupVersion == 0 {
-		return sdkerrors.Wrap(ErrEmpty, "group version")
-	}
-	if p.GroupAccountVersion == 0 {
-		return sdkerrors.Wrap(ErrEmpty, "group account version")
-	}
-	if p.Status == ProposalStatusInvalid {
-		return sdkerrors.Wrap(ErrEmpty, "status")
-	}
-	if _, ok := ProposalBase_Status_name[int32(p.Status)]; !ok {
-		return sdkerrors.Wrap(ErrInvalid, "status")
-	}
-	if p.Result == ProposalResultInvalid {
-		return sdkerrors.Wrap(ErrEmpty, "result")
-	}
-	if _, ok := ProposalBase_Result_name[int32(p.Result)]; !ok {
-		return sdkerrors.Wrap(ErrInvalid, "result")
-	}
-	if p.ExecutorResult == ProposalExecutorResultInvalid {
-		return sdkerrors.Wrap(ErrEmpty, "executor result")
-	}
-	if _, ok := ProposalBase_ExecutorResult_name[int32(p.ExecutorResult)]; !ok {
-		return sdkerrors.Wrap(ErrInvalid, "executor result")
-	}
-	if err := p.VoteState.ValidateBasic(); err != nil {
-		return errors.Wrap(err, "vote state")
-	}
-	if p.Timeout.Seconds == 0 && p.Timeout.Nanos == 0 {
-		return sdkerrors.Wrap(ErrEmpty, "timeout")
 	}
 	return nil
 }

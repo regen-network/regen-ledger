@@ -214,45 +214,45 @@ func TestMsgCreateGroupAccount(t *testing.T) {
 	}
 }
 
-func TestMsgProposeBase(t *testing.T) {
+func TestMsgCreateProposalRequest(t *testing.T) {
 	specs := map[string]struct {
-		src    MsgProposeBaseRequest
+		src    MsgCreateProposalRequest
 		expErr bool
 	}{
 		"all good with minimum fields set": {
-			src: MsgProposeBaseRequest{
+			src: MsgCreateProposalRequest{
 				GroupAccount: []byte("valid--group-address"),
 				Proposers:    []sdk.AccAddress{[]byte("valid-member-address")},
 			},
 		},
 		"group account required": {
-			src: MsgProposeBaseRequest{
+			src: MsgCreateProposalRequest{
 				Proposers: []sdk.AccAddress{[]byte("valid-member-address")},
 			},
 			expErr: true,
 		},
 		"proposers required": {
-			src: MsgProposeBaseRequest{
+			src: MsgCreateProposalRequest{
 				GroupAccount: []byte("valid--group-address"),
 			},
 			expErr: true,
 		},
 		"valid proposer address required": {
-			src: MsgProposeBaseRequest{
+			src: MsgCreateProposalRequest{
 				GroupAccount: []byte("valid--group-address"),
 				Proposers:    []sdk.AccAddress{[]byte("invalid-member-address")},
 			},
 			expErr: true,
 		},
 		"no duplicate proposers": {
-			src: MsgProposeBaseRequest{
+			src: MsgCreateProposalRequest{
 				GroupAccount: []byte("valid--group-address"),
 				Proposers:    []sdk.AccAddress{[]byte("valid-member-address"), []byte("valid-member-address")},
 			},
 			expErr: true,
 		},
 		"empty proposer address not allowed": {
-			src: MsgProposeBaseRequest{
+			src: MsgCreateProposalRequest{
 				GroupAccount: []byte("valid--group-address"),
 				Proposers:    []sdk.AccAddress{[]byte("valid-member-address"), nil, []byte("other-member-address")},
 			},
@@ -279,8 +279,8 @@ func TestMsgVote(t *testing.T) {
 		"all good with minimum fields set": {
 			src: MsgVoteRequest{
 				Proposal: 1,
-				Choice:     Choice_YES,
-				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:   Choice_YES,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
 			},
 		},
 		"proposal required": {
@@ -293,46 +293,46 @@ func TestMsgVote(t *testing.T) {
 		"choice required": {
 			src: MsgVoteRequest{
 				Proposal: 1,
-				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
 			},
 			expErr: true,
 		},
 		"valid choice required": {
 			src: MsgVoteRequest{
 				Proposal: 1,
-				Choice:     5,
-				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:   5,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
 			},
 			expErr: true,
 		},
 		"voter required": {
 			src: MsgVoteRequest{
 				Proposal: 1,
-				Choice:     Choice_YES,
+				Choice:   Choice_YES,
 			},
 			expErr: true,
 		},
 		"valid voter address required": {
 			src: MsgVoteRequest{
 				Proposal: 1,
-				Choice:     Choice_YES,
-				Voters:     []sdk.AccAddress{[]byte("invalid-member-address")},
+				Choice:   Choice_YES,
+				Voters:   []sdk.AccAddress{[]byte("invalid-member-address")},
 			},
 			expErr: true,
 		},
 		"duplicate voters": {
 			src: MsgVoteRequest{
 				Proposal: 1,
-				Choice:     Choice_YES,
-				Voters:     []sdk.AccAddress{[]byte("valid-member-address"), []byte("valid-member-address")},
+				Choice:   Choice_YES,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address"), []byte("valid-member-address")},
 			},
 			expErr: true,
 		},
 		"empty voters address not allowed": {
 			src: MsgVoteRequest{
 				Proposal: 1,
-				Choice:     Choice_YES,
-				Voters:     []sdk.AccAddress{[]byte("valid-member-address"), nil, []byte("other-member-address")},
+				Choice:   Choice_YES,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address"), nil, []byte("other-member-address")},
 			},
 			expErr: true,
 		},

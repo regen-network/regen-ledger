@@ -3,7 +3,6 @@ package testutil
 import (
 	"github.com/cosmos/cosmos-sdk/store/rootmulti"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/x/group/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
@@ -37,33 +36,33 @@ func NewContext(keys ...sdk.StoreKey) sdk.Context {
 // 	return k, ctx
 // }
 
-type MockProposalI struct {
-}
+// type MockProposalI struct {
+// }
 
-func (m MockProposalI) Marshal() ([]byte, error) {
-	panic("implement me")
-}
+// func (m MockProposalI) Marshal() ([]byte, error) {
+// 	panic("implement me")
+// }
 
-func (m MockProposalI) Unmarshal([]byte) error {
-	panic("implement me")
-}
+// func (m MockProposalI) Unmarshal([]byte) error {
+// 	panic("implement me")
+// }
 
-func (m MockProposalI) GetBase() types.ProposalBase {
-	panic("implement me")
-}
+// func (m MockProposalI) GetBase() types.Proposal {
+// 	panic("implement me")
+// }
 
-func (m MockProposalI) SetBase(types.ProposalBase) {
-	panic("implement me")
-}
+// func (m MockProposalI) SetBase(types.Proposal) {
+// 	panic("implement me")
+// }
 
-func (m MockProposalI) GetMsgs() []sdk.Msg {
-	panic("implement me")
-}
+// func (m MockProposalI) GetMsgs() []sdk.Msg {
+// 	panic("implement me")
+// }
 
-func (m MockProposalI) SetMsgs([]sdk.Msg) error {
-	panic("implement me")
-}
+// func (m MockProposalI) SetMsgs([]sdk.Msg) error {
+// 	panic("implement me")
+// }
 
-func (m MockProposalI) ValidateBasic() error {
-	panic("implement me")
-}
+// func (m MockProposalI) ValidateBasic() error {
+// 	panic("implement me")
+// }

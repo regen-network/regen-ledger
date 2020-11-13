@@ -75,15 +75,10 @@ message GroupAccountMetadata {
     google.protobuf.Any decision_policy = 6 [(cosmos_proto.accepts_interface) = "DecisionPolicy"];
 }
 
-// ProposalBase is the base proposal type that app should use to implement a Proposal type based
-// on their app Msg type.
-//
-// Ex:
-// message MyAppProposal {
-//   ProposalBase base = 1;
-//   repeated MyAppMsg msgs = 2;
-// }
-message ProposalBase {
+// Proposal defines the core field members of a group proposal.
+message Proposal {
+    option (gogoproto.goproto_getters) = false;
+
     bytes group_account = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
     string comment = 2;
     repeated bytes proposers = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
@@ -149,6 +144,7 @@ message ProposalBase {
     }
     // Result is the final result based on the votes and election rule. Initial value is NotRun.
     ExecutorResult executor_result = 11;
+    repeated google.protobuf.Any msgs = 12;
 }
 
 message Tally {

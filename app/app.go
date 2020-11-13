@@ -86,6 +86,9 @@ import (
 
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
+	group "github.com/regen-network/regen-ledger/x/group/module"
+	groupserver "github.com/regen-network/regen-ledger/x/group/server"
+	grouptypes "github.com/regen-network/regen-ledger/x/group/types"
 )
 
 const (
@@ -121,7 +124,7 @@ var (
 		vesting.AppModuleBasic{},
 		data.AppModuleBasic{},
 		ecocredit.AppModuleBasic{},
-		// group.AppModuleBasic{},
+		group.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -176,6 +179,7 @@ type RegenApp struct {
 	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
+	GroupKeeper      *groupserver.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -315,10 +319,10 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
-	// TODO
-	// groupKeeper := group.NewGroupKeeper(
-	// 	keys[group.StoreKey]
-	// )
+	groupKeeper := groupserver.NewGroupKeeper(
+		keys[grouptypes.StoreKey], app.GetSubspace(grouptypes.ModuleName), app.MsgServiceRouter(),
+	)
+	app.GroupKeeper = groupKeeper
 
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
@@ -342,7 +346,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		transferModule,
 		data.NewAppModule(keys[data.StoreKey]),
 		ecocredit.NewAppModule(),
-		// group.NewAppModule(), TODO
+		group.NewAppModule(app.GroupKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that

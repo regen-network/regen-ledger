@@ -392,8 +392,8 @@ package server
 // 		doBefore          func(t *testing.T, ctx sdk.Context)
 // 		expErr            bool
 // 		expVoteState      group.Tally
-// 		expProposalStatus group.ProposalBase_Status
-// 		expResult         group.ProposalBase_Result
+// 		expProposalStatus group.Proposal_Status
+// 		expResult         group.Proposal_Result
 // 	}{
 // 		"vote yes": {
 // 			srcProposalID: myProposalID,
@@ -651,9 +651,9 @@ package server
 // 		srcBlockTime      time.Time
 // 		setupProposal     func(t *testing.T, ctx sdk.Context) group.Proposal
 // 		expErr            bool
-// 		expProposalStatus group.ProposalBase_Status
-// 		expProposalResult group.ProposalBase_Result
-// 		expExecutorResult group.ProposalBase_ExecutorResult
+// 		expProposalStatus group.Proposal_Status
+// 		expProposalResult group.Proposal_Result
+// 		expExecutorResult group.Proposal_ExecutorResult
 // 		expPayloadCounter uint64
 // 	}{
 // 		"proposal executed when accepted": {
@@ -888,16 +888,16 @@ package server
 // 			// and proposal is updated
 // 			proposal, err := k.GetProposal(ctx, proposalID)
 // 			require.NoError(t, err)
-// 			exp := group.ProposalBase_Result_name[int32(spec.expProposalResult)]
-// 			got := group.ProposalBase_Result_name[int32(proposal.GetBase().Result)]
+// 			exp := group.Proposal_Result_name[int32(spec.expProposalResult)]
+// 			got := group.Proposal_Result_name[int32(proposal.GetBase().Result)]
 // 			assert.Equal(t, exp, got)
 
-// 			exp = group.ProposalBase_Status_name[int32(spec.expProposalStatus)]
-// 			got = group.ProposalBase_Status_name[int32(proposal.GetBase().Status)]
+// 			exp = group.Proposal_Status_name[int32(spec.expProposalStatus)]
+// 			got = group.Proposal_Status_name[int32(proposal.GetBase().Status)]
 // 			assert.Equal(t, exp, got)
 
-// 			exp = group.ProposalBase_ExecutorResult_name[int32(spec.expExecutorResult)]
-// 			got = group.ProposalBase_ExecutorResult_name[int32(proposal.GetBase().ExecutorResult)]
+// 			exp = group.Proposal_ExecutorResult_name[int32(spec.expExecutorResult)]
+// 			got = group.Proposal_ExecutorResult_name[int32(proposal.GetBase().ExecutorResult)]
 // 			assert.Equal(t, exp, got)
 
 // 			// and proposal messages executed

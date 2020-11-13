@@ -63,10 +63,10 @@ func (AppModuleBasic) RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 
 type AppModule struct {
 	AppModuleBasic
-	keeper server.Keeper
+	keeper *server.Keeper
 }
 
-func NewAppModule(keeper server.Keeper) AppModule {
+func NewAppModule(keeper *server.Keeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
 		keeper:         keeper,
