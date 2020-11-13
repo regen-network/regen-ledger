@@ -25,7 +25,7 @@ message QueryByCidRequest {
     bytes cid = 1;
 }
 
-// QueryByCidRequest is the Query/ByCid response type.
+// QueryByCidResponse is the Query/ByCid response type.
 message QueryByCidResponse {
 
     // timestamp is the timestamp of the block at which the data was anchored.
@@ -38,12 +38,23 @@ message QueryByCidResponse {
     bytes content = 3;
 }
 
+
+// QueryBySignerRequest is the Query/BySigner request type.
 message QueryBySignerRequest {
+
+    // signer is the address of the signer to query by.
     string signer = 1;
+
+    // pagination is the PageRequest to use for pagination.
     cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+// QueryBySignerResponse is the Query/BySigner response type.
 message QueryBySignerResponse {
+
+    // cids are in the CIDs returned in this page of the query.
     repeated bytes cids = 1;
+
+    // pagination is the pagination PageResponse.
     cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
