@@ -111,7 +111,7 @@ Parameters:
 func txSend() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "send [recipient] [credits]",
-		Short: `Sends given credits to from the transaction author (--from) to the recipient.
+		Short: `Sends credits from the transaction author (--from) to the recipient.
 Parameters:
   recipient: recipient address
   credits:   JSON encoded credit list
