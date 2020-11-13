@@ -6,8 +6,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// var _ orm.NaturalKeyed = Proposal{}
-
 func (p *Proposal) GetMsgs() []sdk.Msg {
 	msgs := make([]sdk.Msg, len(p.Msgs))
 	for i, any := range p.Msgs {
@@ -101,7 +99,3 @@ func (p Proposal) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 
 	return nil
 }
-
-// func (p Proposal) NaturalKey() []byte {
-// 	return []byte(m.ClassId)
-// }
