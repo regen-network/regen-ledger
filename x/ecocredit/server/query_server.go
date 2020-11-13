@@ -22,11 +22,7 @@ func (s serverImpl) ClassInfo(ctx context.Context, request *ecocredit.QueryClass
 func (s serverImpl) getClassInfo(ctx sdk.Context, classID string) (*ecocredit.ClassInfo, error) {
 	var classInfo ecocredit.ClassInfo
 	err := s.classInfoTable.GetOne(ctx, orm.RowID(classID), &classInfo)
-	if err != nil {
-		return nil, err
-	}
-
-	return &classInfo, nil
+	return &classInfo, err
 }
 
 func (s serverImpl) BatchInfo(goCtx context.Context, request *ecocredit.QueryBatchInfoRequest) (*ecocredit.QueryBatchInfoResponse, error) {
@@ -34,11 +30,7 @@ func (s serverImpl) BatchInfo(goCtx context.Context, request *ecocredit.QueryBat
 
 	var batchInfo ecocredit.BatchInfo
 	err := s.batchInfoTable.GetOne(ctx, orm.RowID(request.BatchDenom), &batchInfo)
-	if err != nil {
-		return nil, err
-	}
-
-	return &ecocredit.QueryBatchInfoResponse{Info: &batchInfo}, nil
+	return &ecocredit.QueryBatchInfoResponse{Info: &batchInfo}, err
 }
 
 func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalanceRequest) (*ecocredit.QueryBalanceResponse, error) {
@@ -46,7 +38,6 @@ func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalan
 
 	acc := request.Account
 	denom := batchDenomT(request.BatchDenom)
-
 	store := ctx.KVStore(s.storeKey)
 
 	tradable, err := getDecimal(store, TradableBalanceKey(acc, denom))
