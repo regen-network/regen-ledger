@@ -300,7 +300,7 @@ func (s serverImpl) SetPrecision(goCtx context.Context, req *ecocredit.MsgSetPre
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("Maximum decimal can only be increased, it is currently %d, and %d was requested", x, req.MaxDecimalPlaces))
 	}
 
-	err = setUInt32(store, key, x)
+	err = setUInt32(store, key, req.MaxDecimalPlaces)
 	if err != nil {
 		return nil, err
 	}
