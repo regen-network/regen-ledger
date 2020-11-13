@@ -54,7 +54,7 @@ Parameters:
 			}
 			b, err := base64.StdEncoding.DecodeString(args[2])
 			if err != nil {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "base64_metadata is malformed, proper base64 string is required")
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 
 			c, err := newMsgSrvClient(cmd)
