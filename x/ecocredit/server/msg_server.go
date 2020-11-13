@@ -44,7 +44,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatchRequest) (*ecocredit.MsgCreateBatchResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	classID := req.ClassId
-	if err := s.assertIssuer(ctx, classID, req.Issuer); err != nil {
+	if err := s.assertClassIssuer(ctx, classID, req.Issuer); err != nil {
 		return nil, err
 	}
 
@@ -281,14 +281,14 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 
 func (s serverImpl) SetPrecision(goCtx context.Context, req *ecocredit.MsgSetPrecisionRequest) (*ecocredit.MsgSetPrecisionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	classID, err := ecocredit.BatchID2ClassID(req.BatchDenom)
+	var batchInfo ecocredit.BatchInfo
+	err := s.batchInfoTable.GetOne(ctx, orm.RowID(req.BatchDenom), &batchInfo)
 	if err != nil {
 		return nil, err
 	}
-	if err = s.assertIssuer(ctx, classID, req.Issuer); err != nil {
-		return nil, err
+	if req.Issuer != batchInfo.Issuer {
+		return nil, sdkerrors.ErrUnauthorized
 	}
-
 	store := ctx.KVStore(s.storeKey)
 	key := MaxDecimalPlacesKey(batchDenomT(req.BatchDenom))
 	x, err := getUint32(store, key)
@@ -308,9 +308,9 @@ func (s serverImpl) SetPrecision(goCtx context.Context, req *ecocredit.MsgSetPre
 	return &ecocredit.MsgSetPrecisionResponse{}, nil
 }
 
-// assertIssuer makes sure that the issuer is part of issuers of given classID.
+// assertClassIssuer makes sure that the issuer is part of issuers of given classID.
 // Returns ErrUnauthorized otherwise.
-func (s serverImpl) assertIssuer(ctx sdk.Context, classID, issuer string) error {
+func (s serverImpl) assertClassIssuer(ctx sdk.Context, classID, issuer string) error {
 	classInfo, err := s.getClassInfo(ctx, classID)
 	if err != nil {
 		return err
