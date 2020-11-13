@@ -18,17 +18,22 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
+const (
+	StoreKey = ecocredit.ModuleName
+)
+
 type AppModuleBasic struct{}
 
 type AppModule struct {
 	AppModuleBasic
+	storeKey sdk.StoreKey
 }
 
 var _ module.AppModule = AppModule{}
 var _ module.AppModuleBasic = AppModuleBasic{}
 
-func NewAppModule() module.AppModule {
-	return AppModule{}
+func NewAppModule(key sdk.StoreKey) module.AppModule {
+	return AppModule{storeKey: key}
 }
 
 func (a AppModuleBasic) Name() string { return ecocredit.ModuleName }
