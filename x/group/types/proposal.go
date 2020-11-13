@@ -1,10 +1,8 @@
 package types
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec/types"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -26,7 +24,7 @@ func (p *Proposal) SetMsgs(new []sdk.Msg) error {
 	p.Msgs = make([]*codectypes.Any, len(new))
 	for i := range new {
 		if new[i] == nil {
-			return errors.Wrap(ErrInvalid, "msg must not be nil")
+			return sdkerrors.Wrap(ErrInvalid, "msg must not be nil")
 		}
 		any, err := codectypes.NewAnyWithValue(new[i])
 		if err != nil {
@@ -78,7 +76,7 @@ func (p Proposal) ValidateBasic() error {
 		return sdkerrors.Wrap(ErrInvalid, "executor result")
 	}
 	if err := p.VoteState.ValidateBasic(); err != nil {
-		return errors.Wrap(err, "vote state")
+		return sdkerrors.Wrap(err, "vote state")
 	}
 	if p.Timeout.Seconds == 0 && p.Timeout.Nanos == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "timeout")
@@ -86,16 +84,16 @@ func (p Proposal) ValidateBasic() error {
 	msgs := p.GetMsgs()
 	for i, msg := range msgs {
 		if err := msg.ValidateBasic(); err != nil {
-			return errors.Wrapf(err, "message %d", i)
+			return sdkerrors.Wrapf(err, "message %d", i)
 		}
 	}
 	return nil
 }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
-func (p Proposal) UnpackInterfaces(unpacker types.AnyUnpacker) error {
+func (p Proposal) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 	for _, m := range p.Msgs {
-		err := types.UnpackInterfaces(m, unpacker)
+		err := codectypes.UnpackInterfaces(m, unpacker)
 		if err != nil {
 			return err
 		}
