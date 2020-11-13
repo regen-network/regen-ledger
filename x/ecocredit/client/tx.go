@@ -86,7 +86,7 @@ Parameters:
 		RunE: func(cmd *cobra.Command, args []string) error {
 			b, err := base64.StdEncoding.DecodeString(args[2])
 			if err != nil {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "base64_metadata is malformed, proper base64 string is required")
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 			var issuance = []*ecocredit.MsgCreateBatchRequest_BatchIssuance{}
 			if err = json.Unmarshal([]byte(args[3]), &issuance); err != nil {
