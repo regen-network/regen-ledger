@@ -43,6 +43,25 @@ module.exports = {
         'getting-started',
         'core-functionality',
         'api',
+        {
+          title: 'Modules',
+          children: [
+            {
+              title: 'Data Module',
+              children: [
+                '/modules/data/',
+                '/modules/data/protobuf',
+              ]
+            },
+            {
+              title: 'Ecocredit Module',
+              children: [
+                '/modules/ecocredit/',
+                '/modules/ecocredit/protobuf',
+              ]
+            },
+          ]
+        }
       ],
     }
   },
