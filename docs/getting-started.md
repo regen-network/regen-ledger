@@ -89,14 +89,18 @@ If you'd like to use a custom keyring backend, you can find more information on 
 
 Make sure you save the seed mnemonic in a safe place!
 
-Afterwards, run the following commands to add this newly generated validator to the genesis file:
+Afterwards, run the following commands to add this newly generated validator to the
+genesis file:
 
 ```sh
-# Populate the validator account with some funds. The token here is called "tree".
-regen add-genesis-account $MY_VALIDATOR_ADDRESS 100000000tree
+# Populate the validator account with some funds.
+# The default bonding token in local networks is called "stake",
+# but if you're connecting one of our devnets or testnet, you may
+# need to use the denom "tree" instead.
+regen add-genesis-account $MY_VALIDATOR_ADDRESS 100000000stake
 
 # Create a gentx.
-regen gentx $KEY_NAME --amount 100000tree --chain-id [chain-id]
+regen gentx $KEY_NAME --amount 100000stake --chain-id [chain-id]
 
 # Add the gentx to the genesis file.
 regen collect-gentxs
