@@ -37,7 +37,7 @@ func TxCmd() *cobra.Command {
 
 func txCreateClass() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "create_class [designer] [issuer[,issuer]*] [metadata]",
+		Use:   "create_class [designer] [issuer[,issuer]*] [metadata]",
 		Short: "Creates a new credit class",
 		Long: `Creates a new credit class.
 
@@ -76,7 +76,7 @@ Parameters:
 
 func txCreateBatch() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "create_batch [issuer] [class_id] [metadata] [issuance]",
+		Use:   "create_batch [issuer] [class_id] [metadata] [issuance]",
 		Short: "Issues a new credit batch",
 		Long: `Issues a new credit batch.
 
@@ -114,7 +114,7 @@ Parameters:
 
 func txSend() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "send [recipient] [credits]",
+		Use:   "send [recipient] [credits]",
 		Short: "Sends credits from the transaction author (--from) to the recipient",
 		Long: `Sends credits from the transaction author (--from) to the recipient.
 
@@ -146,7 +146,7 @@ Parameters:
 
 func txRetire() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "retire [credits]",
+		Use:   "retire [credits]",
 		Short: "Retires a specified amounts of credits from the account of the transaction author (--from)",
 		Long: `Retires a specified amounts of credits from the account of the transaction author (--from)
 
@@ -178,7 +178,7 @@ Parameters:
 
 func txSetPrecision() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "set_precision [batch_denom] [decimals]",
+		Use:   "set_precision [batch_denom] [decimals]",
 		Short: "Allows an issuer to increase the decimal precision of a credit batch",
 		Long: `Allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature.
 
