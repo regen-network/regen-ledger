@@ -38,7 +38,9 @@ func TxCmd() *cobra.Command {
 func txCreateClass() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "create_class [designer] [issuer[,issuer]*] [metadata]",
-		Short: `Creates a new credit class.
+		Short: "Creates a new credit class",
+		Long: `Creates a new credit class.
+
 Parameters:
   designer:  address of the account which designed the credit class
   issuer:    comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
@@ -75,7 +77,9 @@ Parameters:
 func txCreateBatch() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "create_batch [issuer] [class_id] [metadata] [issuance]",
-		Short: `Issues new credit batach.
+		Short: "Issues a new credit batch",
+		Long: `Issues a new credit batch.
+
 Parameters:
   issuer:    issuer address
   class_id:  credit class
@@ -111,7 +115,9 @@ Parameters:
 func txSend() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "send [recipient] [credits]",
-		Short: `Sends credits from the transaction author (--from) to the recipient.
+		Short: "Sends credits from the transaction author (--from) to the recipient",
+		Long: `Sends credits from the transaction author (--from) to the recipient.
+
 Parameters:
   recipient: recipient address
   credits:   JSON encoded credit list
@@ -141,8 +147,10 @@ Parameters:
 func txRetire() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "retire [credits]",
-		Short: `Retires specified amount of a holder credits. Transaction author (--from) must
-must be an authorized issuer.
+		Short: "Retires a specified amounts of credits from the account of the transaction author (--from)",
+		Long: `Retires a specified amounts of credits from the account of the transaction author (--from)
+
+Parameters:
   recipient: recipient address
   credits:  JSON encoded credit list
             eg: '[{"batchDenom": "100/2", "units": "5"}]'`,
@@ -171,7 +179,9 @@ must be an authorized issuer.
 func txSetPrecision() *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "set_precision [batch_denom] [decimals]",
-		Short: `SetPrecision allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature. The number of decimal places allowed for a credit batch is determined by the original number of decimal places used with calling CreatBatch. SetPrecision allows the number of allowed decimal places to be increased, effectively making the supply more granular without actually changing any balances. It allows asset issuers to be able to issue an asset without needing to think about how many subdivisions are needed upfront. While it may not be relevant for credits which likely have a fairly stable market value, I wanted to experiment a bit and this serves as a proof of concept for a broader bank redesign where say for instance a coin like the ATOM or XRN could be issued in its own units rather than micro or nano-units. Instead an operation like SetPrecision would allow trading in micro, nano or pico in the future based on market demand. Arbitrary, unbounded precision is not desirable because this can lead to spam attacks (like sending 0.000000000000000000000000000001 coins). This is effectively fixed precision so under the hood it is still basically an integer, but the fixed precision can be increased so its more adaptable long term than just an integer.
+		Short: "Allows an issuer to increase the decimal precision of a credit batch",
+		Long: `Allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature.
+
 Parameters:
   batch_denom: credit batch ID
   decimals:    maximum number of decimals of precision`,
