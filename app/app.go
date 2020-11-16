@@ -210,7 +210,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		data.StoreKey,
+		data.StoreKey, ecocredit.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -337,7 +337,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		data.NewAppModule(keys[data.StoreKey]),
-		ecocredit.NewAppModule(),
+		ecocredit.NewAppModule(keys[ecocredit.StoreKey]),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that

@@ -14,25 +14,35 @@ Regen Ledger is a single application binary that:
 - Exposes an API server with both gRPC and REST interfaces for querying blockchain state and sending transactions
 - Exposes a command line interface for account creation and key management as well as for querying blockchain state and sending transactions
 
-The initial implementation of Regen Ledger has two modules that support our desired functionality for ecological data, claims and credits:
-- An **Ecocredit Module** for managing the issuance, trading, and retiring of credits pertaining to verifiable changes in ecosystem health
-- A **Data Module** for storing, timestamping, and digitally signing data on Regen Ledger
+The initial implementation of Regen Ledger has two modules that support 
+our desired functionality for ecological data, claims and credits.
+
 
 ### Ecocredit Module
 
-::: warning TODO
+The **Ecocredit Module** is our module for managing the issuance, trading, and retiring
+of credits pertaining to verifiable changes in ecosystem health. Initially,
+this module will be used for Regen Network's own
+[CarbonPlus Grasslands](https://regen-registry.s3.amazonaws.com/GHG+and+Co-Benefits+in+Grazing+Systems+Credit+Class.pdf)
+credit, but we've designed this module first and foremost to be an open platform
+for all credit designers, something like an ERC20 token standard for ecosystem
+service credits.
 
-This section not yet written.
-
-:::
+Checkout the [Ecocredit Module Overview](./modules/ecocredit/) for a deeper
+look into how the ecocredit module works in action.
 
 ### Data Module
 
-::: warning TODO
+High quality and verifiable ecological data is an essential component in any modern
+ecosystem service marketplace. The Data Module is intended to sit alongside the Ecocredit
+Module, serving as a generic repository for more complex metadata pertaining a credit batch
+or ecosystem service project.
 
-This section not yet written.
+The basic functionality of the data module includes storing, timestamping,
+and digitally signing data on Regen Ledger.
 
-:::
+Checkout the [Data Module Overview](./modules/data/) for a deeper
+look into how the data module works in action.
 
 ## Additional Functionality
 
@@ -42,16 +52,18 @@ Supplemental to the core featureset described, Regen Ledger has out-of-the-box s
 
 ### Groups Module
 
-::: warning TODO
+::: tip COMING SOON
 
-This section not yet written.
+We'll be updating this section soon, when we have the groups module live on Regen
+Ledger!
 
 :::
 
 ### CosmWasm
 
-::: warning TODO
+::: tip COMING SOON
 
-This section not yet written.
+We'll be updating this section soon, when we have CosmWasm live on Regen
+Ledger!
 
 :::
