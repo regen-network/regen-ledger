@@ -15,7 +15,7 @@ sim-regen-custom-genesis-fast:
 		-Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h
 
 sim-regen-fast:
-	@echo "Running quick Gaia simulation. This may take several minutes..."
+	@echo "Running quick Regen simulation. This may take several minutes..."
 	@go test -mod=readonly $(APP_DIR) -run TestFullAppSimulation -Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h
 
 sim-regen-import-export: runsim
