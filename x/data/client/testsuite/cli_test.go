@@ -206,7 +206,7 @@ func (s *IntegrationTestSuite) TestGetAnchorDataByCID() {
 		{
 			"with non existed cid",
 			func() {
-				cid = s.getCid([]byte("xyzabc123"))
+				cid = s.getCid([]byte("xyzabc"))
 			},
 			[]string{
 				cid.String(),
@@ -236,10 +236,7 @@ func (s *IntegrationTestSuite) TestGetAnchorDataByCID() {
 			tc.malleate()
 			cmd := dataclient.QueryByCidCmd()
 
-			fmt.Println("cid", s.storedCid)
-
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			fmt.Println("out, err", out, err)
 			if tc.expectErr {
 				s.Require().Error(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 
