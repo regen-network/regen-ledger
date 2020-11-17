@@ -18,17 +18,22 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
+const (
+	StoreKey = ecocredit.ModuleName
+)
+
 type AppModuleBasic struct{}
 
 type AppModule struct {
 	AppModuleBasic
+	key sdk.StoreKey
 }
 
 var _ module.AppModule = AppModule{}
 var _ module.AppModuleBasic = AppModuleBasic{}
 
-func NewAppModule() module.AppModule {
-	return AppModule{}
+func NewAppModule(key sdk.StoreKey) module.AppModule {
+	return AppModule{key: key}
 }
 
 func (a AppModuleBasic) Name() string { return ecocredit.ModuleName }
@@ -66,8 +71,7 @@ func (a AppModule) ExportGenesis(sdk.Context, codec.JSONMarshaler) json.RawMessa
 func (a AppModule) RegisterInvariants(sdk.InvariantRegistry) {}
 
 func (a AppModule) RegisterServices(cfg module.Configurator) {
-	key := sdk.NewKVStoreKey(ecocredit.ModuleName)
-	server.RegisterServices(key, cfg)
+	server.RegisterServices(a.key, cfg)
 }
 
 func (a AppModule) BeginBlock(sdk.Context, abci.RequestBeginBlock) {}

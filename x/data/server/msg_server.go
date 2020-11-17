@@ -21,13 +21,15 @@ func (s serverImpl) AnchorData(goCtx context.Context, request *data.MsgAnchorDat
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	cidBz := request.Cid
-	if s.anchorTable.Has(ctx, cidBz) {
+	key := AnchorKey(cidBz)
+	store := ctx.KVStore(s.storeKey)
+	if store.Has(key) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("CID f%x is already anchored", cidBz))
 	}
 
-	timestamp, err := gogotypes.TimestampProto(ctx.BlockTime())
+	timestamp, err := blockTimestamp(ctx)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "invalid block time")
+		return nil, err
 	}
 
 	err = s.anchorCid(ctx, timestamp, cidBz)
@@ -38,62 +40,67 @@ func (s serverImpl) AnchorData(goCtx context.Context, request *data.MsgAnchorDat
 	return &data.MsgAnchorDataResponse{Timestamp: timestamp}, nil
 }
 
-func (s serverImpl) anchorCidIfNeeded(ctx sdk.Context, cid []byte) error {
-	if s.anchorTable.Has(ctx, cid) {
+func blockTimestamp(ctx sdk.Context) (*gogotypes.Timestamp, error) {
+	timestamp, err := gogotypes.TimestampProto(ctx.BlockTime())
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "invalid block time")
+	}
+
+	return timestamp, err
+}
+
+func (s serverImpl) anchorCidIfNeeded(ctx sdk.Context, timestamp *gogotypes.Timestamp, cid []byte) error {
+	store := ctx.KVStore(s.storeKey)
+	key := AnchorKey(cid)
+	if store.Has(key) {
 		return nil
 	}
 
-	return s.anchorCid(ctx, nil, cid)
+	return s.anchorCid(ctx, timestamp, cid)
 }
 
 func (s serverImpl) anchorCid(ctx sdk.Context, timestamp *gogotypes.Timestamp, cidBytes []byte) error {
-	err := s.anchorTable.Create(ctx, cidBytes, timestamp)
+	bz, err := timestamp.Marshal()
 	if err != nil {
-		return sdkerrors.Wrap(err, "error anchoring data")
+		return err
 	}
+
+	store := ctx.KVStore(s.storeKey)
+	key := AnchorKey(cidBytes)
+	store.Set(key, bz)
 
 	return ctx.EventManager().EmitTypedEvent(&data.EventAnchorData{Cid: cidBytes})
 }
+
+var emptyBz = []byte{0}
 
 func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignDataRequest) (*data.MsgSignDataResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	cidBz := request.Cid
-	err := s.anchorCidIfNeeded(ctx, cidBz)
+
+	timestamp, err := blockTimestamp(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	// TODO: index both cid and signer in key
-	if s.signersTable.Has(ctx, cidBz) {
-		var signers data.Signers
-		err = s.signersTable.GetOne(ctx, cidBz, &signers)
-		if err != nil {
-			return nil, err
+	err = s.anchorCidIfNeeded(ctx, timestamp, cidBz)
+	if err != nil {
+		return nil, err
+	}
+
+	cidStr := CIDBase64String(cidBz)
+	store := ctx.KVStore(s.storeKey)
+
+	for _, signer := range request.Signers {
+		key := CIDSignerKey(cidStr, signer)
+		if store.Has(key) {
+			continue
 		}
 
-		// merge signers
-		seen := map[string]bool{}
-		for _, signer := range signers.Signers {
-			seen[signer] = true
-		}
-
-		for _, signer := range request.Signers {
-			_, found := seen[signer]
-			if !found {
-				signers.Signers = append(signers.Signers, signer)
-			}
-		}
-
-		err = s.signersTable.Save(ctx, cidBz, &signers)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		err = s.signersTable.Create(ctx, cidBz, &data.Signers{Signers: request.Signers})
-		if err != nil {
-			return nil, err
-		}
+		store.Set(key, emptyBz)
+		// set reverse lookup key
+		store.Set(SignerCIDKey(signer, cidStr), emptyBz)
 	}
 
 	err = ctx.EventManager().EmitTypedEvent(&data.EventSignData{
@@ -111,7 +118,13 @@ func (s serverImpl) StoreData(goCtx context.Context, request *data.MsgStoreDataR
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	cidBz := request.Cid
-	err := s.anchorCidIfNeeded(ctx, cidBz)
+
+	timestamp, err := blockTimestamp(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.anchorCidIfNeeded(ctx, timestamp, cidBz)
 	if err != nil {
 		return nil, err
 	}
