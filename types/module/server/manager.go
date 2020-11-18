@@ -6,16 +6,17 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	gogogrpc "github.com/gogo/protobuf/grpc"
+	"github.com/regen-network/regen-ledger/types/module"
 )
 
 type Manager struct {
-	baseApp baseapp.BaseApp
+	baseApp *baseapp.BaseApp
 	cdc     *codec.ProtoCodec
 	keys    map[string]ModuleKey
 	router  *router
 }
 
-func NewManager(baseApp baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
+func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 	return &Manager{
 		baseApp: baseApp,
 		cdc:     cdc,
@@ -24,12 +25,18 @@ func NewManager(baseApp baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 	}
 }
 
-func (mm *Manager) RegisterModules(modules map[string]Module) error {
+func (mm *Manager) RegisterModules(modules module.ModuleMap) error {
 	for _, mod := range modules {
 		mod.RegisterTypes(mm.cdc.InterfaceRegistry())
 	}
 
 	for name, mod := range modules {
+		// check if we actually have a server module, otherwise skip
+		serverMod, ok := mod.(Module)
+		if !ok {
+			continue
+		}
+
 		invokerFactory := mm.router.invokerFactory(name)
 
 		key := RootModuleKey{
@@ -63,7 +70,7 @@ func (mm *Manager) RegisterModules(modules map[string]Module) error {
 			cdc:         mm.cdc,
 		}
 
-		mod.RegisterServices(cfg)
+		serverMod.RegisterServices(cfg)
 	}
 
 	return nil
@@ -72,7 +79,7 @@ func (mm *Manager) RegisterModules(modules map[string]Module) error {
 type configurator struct {
 	msgServer   gogogrpc.Server
 	queryServer gogogrpc.Server
-	key         ModuleKey
+	key         RootModuleKey
 	cdc         codec.BinaryMarshaler
 }
 
@@ -86,7 +93,7 @@ func (c configurator) QueryServer() gogogrpc.Server {
 	return c.queryServer
 }
 
-func (c configurator) ModuleKey() ModuleKey {
+func (c configurator) ModuleKey() RootModuleKey {
 	return c.key
 }
 

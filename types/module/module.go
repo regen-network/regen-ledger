@@ -9,6 +9,8 @@ type ModuleBase interface {
 	RegisterTypes(registry types.InterfaceRegistry)
 }
 
+type ModuleMap map[string]ModuleBase
+
 type ModuleID struct {
 	ModuleName string
 	Path       []byte

@@ -16,3 +16,29 @@ type Module interface {
 	GetTxCmd() *cobra.Command
 	GetQueryCmd() *cobra.Command
 }
+
+func AddQueryCommands(rootQueryCmd *cobra.Command, moduleMap module.ModuleMap) {
+	for _, m := range moduleMap {
+		cliMod, ok := m.(Module)
+		if !ok {
+			continue
+		}
+
+		if cmd := cliMod.GetQueryCmd(); cmd != nil {
+			rootQueryCmd.AddCommand(cmd)
+		}
+	}
+}
+
+func AddTxCommands(rootTxCmd *cobra.Command, moduleMap module.ModuleMap) {
+	for _, m := range moduleMap {
+		cliMod, ok := m.(Module)
+		if !ok {
+			continue
+		}
+
+		if cmd := cliMod.GetTxCmd(); cmd != nil {
+			rootTxCmd.AddCommand(cmd)
+		}
+	}
+}

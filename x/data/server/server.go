@@ -3,6 +3,7 @@ package server
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 
 	"github.com/regen-network/regen-ledger/x/data"
 )
@@ -15,7 +16,7 @@ func newServer(storeKey sdk.StoreKey) serverImpl {
 	return serverImpl{storeKey: storeKey}
 }
 
-func RegisterServices(storeKey sdk.StoreKey, configurator module.Configurator) {
+func RegisterServices(storeKey servermodule.RootModuleKey, configurator module.Configurator) {
 	impl := newServer(storeKey)
 	data.RegisterMsgServer(configurator.MsgServer(), impl)
 	data.RegisterQueryServer(configurator.QueryServer(), impl)

@@ -1,6 +1,7 @@
 package app
 
 import (
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"io"
 	"math/big"
 	"net/http"
@@ -87,6 +88,7 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
+	newmodule "github.com/regen-network/regen-ledger/types/module"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 )
@@ -123,10 +125,13 @@ var (
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		data.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 		ecocredit.AppModuleBasic{},
 	)
+
+	NewModules = map[string]newmodule.ModuleBase{
+		data.DefaultModuleName: data.Module{},
+	}
 
 	// module account permissions
 	maccPerms = map[string][]string{
@@ -213,7 +218,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		data.StoreKey, ecocredit.StoreKey, wasm.StoreKey,
+		ecocredit.StoreKey, wasm.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -345,6 +350,12 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		&stakingKeeper, govRouter,
 	)
 
+	newModuleManager := servermodule.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
+	err := newModuleManager.RegisterModules(NewModules)
+	if err != nil {
+		panic(err)
+	}
+
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
 			app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx,
@@ -365,7 +376,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
-		data.NewAppModule(keys[data.StoreKey]),
 		wasm.NewAppModule(app.wasmKeeper),
 		ecocredit.NewAppModule(keys[ecocredit.StoreKey]),
 	)

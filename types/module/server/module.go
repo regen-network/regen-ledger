@@ -15,6 +15,6 @@ type Module interface {
 type Configurator interface {
 	sdkmodule.Configurator
 
-	ModuleKey() ModuleKey
+	ModuleKey() RootModuleKey
 	BinaryMarshaler() codec.BinaryMarshaler
 }
