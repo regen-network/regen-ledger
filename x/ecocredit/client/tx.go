@@ -85,7 +85,7 @@ Parameters:
   class_id:  credit class
   metadata:  base64 encoded issuance metadata
   issuance:  YAML encode issuance list. Note: numerical values must be written in strings.
-             eg: '[{recipient: "a1", tradableUnits: "10", retiredUnits: "2"}]'
+             eg: '[{recipient: "xrn:sdgkjhs2345u79ghisodg", tradableUnits: "10", retiredUnits: "2"}]'
              Note: "tradableUnits" and "retiredUnits" default to 0.`,
 		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -152,7 +152,6 @@ func txRetire() *cobra.Command {
 		Long: `Retires a specified amounts of credits from the account of the transaction author (--from)
 
 Parameters:
-  recipient: recipient address
   credits:  YAML encoded credit list. Note: numerical values must be written in strings.
             eg: '[{batchDenom: "100/2", units: "5"}]'`,
 		Args: cobra.ExactArgs(1),

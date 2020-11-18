@@ -309,7 +309,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		})
 	}
 
-	/****   TEST SEST PRECISION   ****/
+	/****   TEST SET PRECISION   ****/
 	precisionCases := []struct {
 		name string
 		msg  ecocredit.MsgSetPrecisionRequest
