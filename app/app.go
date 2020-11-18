@@ -86,9 +86,9 @@ import (
 
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
-	group "github.com/regen-network/regen-ledger/x/group/module"
-	groupserver "github.com/regen-network/regen-ledger/x/group/server"
-	grouptypes "github.com/regen-network/regen-ledger/x/group/types"
+	// group "github.com/regen-network/regen-ledger/x/group/module"
+	// groupserver "github.com/regen-network/regen-ledger/x/group/server"
+	// grouptypes "github.com/regen-network/regen-ledger/x/group/types"
 )
 
 const (
@@ -124,7 +124,7 @@ var (
 		vesting.AppModuleBasic{},
 		data.AppModuleBasic{},
 		ecocredit.AppModuleBasic{},
-		group.AppModuleBasic{},
+		// group.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -179,7 +179,7 @@ type RegenApp struct {
 	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
-	GroupKeeper      *groupserver.Keeper
+	// GroupKeeper      *groupserver.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
@@ -212,7 +212,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		data.StoreKey, ecocredit.StoreKey, grouptypes.StoreKey,
+		data.StoreKey, ecocredit.StoreKey,
+		// grouptypes.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -318,10 +319,10 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
-	groupKeeper := groupserver.NewGroupKeeper(
-		keys[grouptypes.StoreKey], app.GetSubspace(grouptypes.ModuleName), app.MsgServiceRouter(),
-	)
-	app.GroupKeeper = groupKeeper
+	// groupKeeper := groupserver.NewGroupKeeper(
+	// 	keys[grouptypes.StoreKey], app.GetSubspace(grouptypes.ModuleName), app.MsgServiceRouter(),
+	// )
+	// app.GroupKeeper = groupKeeper
 
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
@@ -345,7 +346,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		transferModule,
 		data.NewAppModule(keys[data.StoreKey]),
 		ecocredit.NewAppModule(keys[ecocredit.StoreKey]),
-		group.NewAppModule(app.GroupKeeper),
+		// group.NewAppModule(app.GroupKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -599,7 +600,7 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable())
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
-	paramsKeeper.Subspace(grouptypes.ModuleName)
+	// paramsKeeper.Subspace(grouptypes.ModuleName)
 
 	return paramsKeeper
 }
