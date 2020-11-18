@@ -20,14 +20,12 @@ func QueryCmd() *cobra.Command {
 		RunE:  client.ValidateCmd,
 	}
 	cmd.AddCommand(
-		queryClassInfo(),
-		queryBatchInfo(),
-		queryBalance(),
-		querySupply(),
-		queryPrecision(),
+		qflags(queryClassInfo()),
+		qflags(queryBatchInfo()),
+		qflags(queryBalance()),
+		qflags(querySupply()),
+		qflags(queryPrecision()),
 	)
-	flags.AddQueryFlagsToCmd(cmd)
-
 	return cmd
 }
 
