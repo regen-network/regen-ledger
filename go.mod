@@ -24,6 +24,7 @@ require (
 	golang.org/x/crypto v0.0.0-20201112155050-0c6587e931a9 // indirect
 	google.golang.org/genproto v0.0.0-20201112120144-2985b7af83de // indirect
 	google.golang.org/grpc v1.33.0
+	gopkg.in/yaml.v2 v2.3.0
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4

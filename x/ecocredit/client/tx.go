@@ -2,7 +2,6 @@ package client
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"strconv"
 	"strings"
@@ -11,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -84,8 +84,8 @@ Parameters:
   issuer:    issuer address
   class_id:  credit class
   metadata:  base64 encoded issuance metadata
-  issuance:  JSON encode issuance list,
-             eg: '[{"recipient": "a1", "tradableUnits": "10", "retiredUnits": "2"}]'
+  issuance:  YAML encode issuance list. Note: numerical values must be written in strings.
+             eg: '[{recipient: "a1", tradableUnits: "10", retiredUnits: "2"}]'
              Note: "tradableUnits" and "retiredUnits" default to 0.`,
 		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -94,7 +94,7 @@ Parameters:
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 			var issuance = []*ecocredit.MsgCreateBatchRequest_BatchIssuance{}
-			if err = json.Unmarshal([]byte(args[3]), &issuance); err != nil {
+			if err = yaml.Unmarshal([]byte(args[3]), &issuance); err != nil {
 				return err
 			}
 
@@ -121,12 +121,12 @@ func txSend() *cobra.Command {
 
 Parameters:
   recipient: recipient address
-  credits:   JSON encoded credit list
-             eg: '[{"batchDenom": "100/2", "tradableUnits": "5", "retiredUnits": "0"}]'`,
+  credits:   YAML encoded credit list. Note: numerical values must be written in strings.
+             eg: '[{batchDenom: "100/2", tradableUnits: "5", retiredUnits: "0"}]'`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var credits = []*ecocredit.MsgSendRequest_SendUnits{}
-			if err := json.Unmarshal([]byte(args[1]), &credits); err != nil {
+			if err := yaml.Unmarshal([]byte(args[1]), &credits); err != nil {
 				return err
 			}
 			c, err := newMsgSrvClient(cmd)
@@ -153,12 +153,12 @@ func txRetire() *cobra.Command {
 
 Parameters:
   recipient: recipient address
-  credits:  JSON encoded credit list
-            eg: '[{"batchDenom": "100/2", "units": "5"}]'`,
+  credits:  YAML encoded credit list. Note: numerical values must be written in strings.
+            eg: '[{batchDenom: "100/2", units: "5"}]'`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var credits = []*ecocredit.MsgRetireRequest_RetireUnits{}
-			if err := json.Unmarshal([]byte(args[0]), &credits); err != nil {
+			if err := yaml.Unmarshal([]byte(args[0]), &credits); err != nil {
 				return err
 			}
 			c, err := newMsgSrvClient(cmd)
