@@ -2,6 +2,7 @@ package app
 
 import (
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/x/data/server"
 	"io"
 	"math/big"
 	"net/http"
@@ -89,7 +90,6 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	newmodule "github.com/regen-network/regen-ledger/types/module"
-	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 )
 
@@ -129,8 +129,8 @@ var (
 		ecocredit.AppModuleBasic{},
 	)
 
-	NewModules = map[string]newmodule.ModuleBase{
-		data.DefaultModuleName: data.Module{},
+	NewModules = newmodule.ModuleMap{
+		server.DefaultModuleName: server.Module{},
 	}
 
 	// module account permissions

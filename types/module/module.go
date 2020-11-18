@@ -19,3 +19,9 @@ type ModuleID struct {
 func (m ModuleID) Address() []byte {
 	return regentypes.AddressHash(m.ModuleName, m.Path)
 }
+
+func (mm ModuleMap) RegisterTypes(registry types.InterfaceRegistry) {
+	for _, m := range mm {
+		m.RegisterTypes(registry)
+	}
+}

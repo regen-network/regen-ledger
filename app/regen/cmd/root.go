@@ -2,6 +2,8 @@ package regen
 
 import (
 	"context"
+	datacli "github.com/regen-network/regen-ledger/x/data/client"
+	dataserver "github.com/regen-network/regen-ledger/x/data/server"
 	"io"
 	"os"
 	"path/filepath"
@@ -124,6 +126,7 @@ func queryCommand() *cobra.Command {
 		rpc.BlockCommand(),
 		authcmd.QueryTxsByEventsCmd(),
 		authcmd.QueryTxCmd(),
+		datacli.QueryCmd(dataserver.DefaultModuleName),
 	)
 
 	app.ModuleBasics.AddQueryCommands(cmd)
@@ -151,6 +154,7 @@ func txCommand() *cobra.Command {
 		authcmd.GetEncodeCommand(),
 		authcmd.GetDecodeCommand(),
 		flags.LineBreak,
+		datacli.TxCmd(dataserver.DefaultModuleName),
 		vestingcli.GetTxCmd(),
 	)
 
