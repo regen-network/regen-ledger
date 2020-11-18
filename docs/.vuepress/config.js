@@ -1,4 +1,4 @@
-const { description } = require('../../package')
+const { description } = require('../package')
 
 module.exports = {
   /**
@@ -27,27 +27,43 @@ module.exports = {
    * ref：https://v1.vuepress.vuejs.org/theme/default-theme-config.html
    */
   themeConfig: {
-    repo: '',
+    repo: 'regen/regen-ledger',
     editLinks: false,
-    docsDir: '',
-    editLinkText: '',
+    docsDir: 'docs',
     lastUpdated: false,
     nav: [
       {
         text: 'Getting Started',
         link: '/getting-started/',
-      },
-      {
-        text: 'Docs',
-        link: '/docs/',
       }
     ],
     sidebar: {
-      '/docs/': [
-        '',
+      '/': [
+        'getting-started',
         'core-functionality',
-        'running-a-node',
-      ]
+        'api',
+        {
+          title: 'Modules',
+          children: [
+            {
+              title: 'Data Module',
+              collapsable: false,
+              children: [
+                '/modules/data/',
+                {title: 'Protobuf Documentation', path: '/modules/data/protobuf', collapsable: true}
+              ]
+            },
+            {
+              title: 'Ecocredit Module',
+              collapsable: false,
+              children: [
+                '/modules/ecocredit/',
+                {title: 'Protobuf Documentation', path: '/modules/ecocredit/protobuf', collapsable: true}
+              ]
+            },
+          ]
+        }
+      ],
     }
   },
 
