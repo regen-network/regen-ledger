@@ -85,7 +85,8 @@ Parameters:
   class_id:  credit class
   metadata:  base64 encoded issuance metadata
   issuance:  JSON encode issuance list,
-             eg: '[{"recipient": "a1", "tradeableUnits": "10", "retiredUnits": "2"}]'`,
+             eg: '[{"recipient": "a1", "tradableUnits": "10", "retiredUnits": "2"}]'
+             Note: "tradableUnits" and "retiredUnits" default to 0.`,
 		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			b, err := base64.StdEncoding.DecodeString(args[2])
