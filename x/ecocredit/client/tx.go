@@ -37,7 +37,7 @@ func TxCmd() *cobra.Command {
 
 func txCreateClass() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create_class [designer] [issuer[,issuer]*] [metadata]",
+		Use:   "create-class [designer] [issuer[,issuer]*] [metadata]",
 		Short: "Creates a new credit class",
 		Long: `Creates a new credit class.
 
