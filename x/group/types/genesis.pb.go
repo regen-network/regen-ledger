@@ -70,6 +70,7 @@ func (m *Params) GetMaxCommentLength() uint32 {
 
 // GenesisState defines the group module's genesis state.
 type GenesisState struct {
+	// params are the genesis state Params.
 	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
 }
 

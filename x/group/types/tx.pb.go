@@ -33,9 +33,12 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgCreateGroupRequest is the Msg/CreateGroup request type.
 type MsgCreateGroupRequest struct {
-	Admin   github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
-	Members []Member                                      `protobuf:"bytes,2,rep,name=members,proto3" json:"members"`
-	Comment string                                        `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
+	// admin is the account address of the group admin.
+	Admin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	// members defines the group members.
+	Members []Member `protobuf:"bytes,2,rep,name=members,proto3" json:"members"`
+	// group is the group's comment.
+	Comment string `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
 }
 
 func (m *MsgCreateGroupRequest) Reset()         { *m = MsgCreateGroupRequest{} }
@@ -140,9 +143,13 @@ func (m *MsgCreateGroupResponse) GetGroup() GroupID {
 
 // MsgUpdateGroupMembersRequest is the Msg/UpdateGroupMembers request type.
 type MsgUpdateGroupMembersRequest struct {
-	Admin         github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
-	Group         GroupID                                       `protobuf:"varint,2,opt,name=group,proto3,casttype=GroupID" json:"group,omitempty"`
-	MemberUpdates []Member                                      `protobuf:"bytes,3,rep,name=member_updates,json=memberUpdates,proto3" json:"member_updates"`
+	// admin is the account address of the group admin.
+	Admin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	// group is the unique ID of the group.
+	Group GroupID `protobuf:"varint,2,opt,name=group,proto3,casttype=GroupID" json:"group,omitempty"`
+	// member_updates is the list of members to update,
+	// set power to 0 to remove a member.
+	MemberUpdates []Member `protobuf:"bytes,3,rep,name=member_updates,json=memberUpdates,proto3" json:"member_updates"`
 }
 
 func (m *MsgUpdateGroupMembersRequest) Reset()         { *m = MsgUpdateGroupMembersRequest{} }
@@ -238,8 +245,11 @@ var xxx_messageInfo_MsgUpdateGroupMembersResponse proto.InternalMessageInfo
 
 // MsgUpdateGroupAdminRequest is the Msg/UpdateGroupAdmin request type.
 type MsgUpdateGroupAdminRequest struct {
-	Admin    github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
-	Group    GroupID                                       `protobuf:"varint,2,opt,name=group,proto3,casttype=GroupID" json:"group,omitempty"`
+	// admin is the current account address of the group admin.
+	Admin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	// group is the unique ID of the group.
+	Group GroupID `protobuf:"varint,2,opt,name=group,proto3,casttype=GroupID" json:"group,omitempty"`
+	// new_admin is the group new admin account address.
 	NewAdmin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,3,opt,name=new_admin,json=newAdmin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"new_admin,omitempty"`
 }
 
@@ -336,9 +346,12 @@ var xxx_messageInfo_MsgUpdateGroupAdminResponse proto.InternalMessageInfo
 
 // MsgUpdateGroupCommentRequest is the Msg/UpdateGroupComment request type.
 type MsgUpdateGroupCommentRequest struct {
-	Admin   github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
-	Group   GroupID                                       `protobuf:"varint,2,opt,name=group,proto3,casttype=GroupID" json:"group,omitempty"`
-	Comment string                                        `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
+	// admin is the account address of the group admin.
+	Admin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	// group is the unique ID of the group.
+	Group GroupID `protobuf:"varint,2,opt,name=group,proto3,casttype=GroupID" json:"group,omitempty"`
+	// comment is the updated group's comment.
+	Comment string `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
 }
 
 func (m *MsgUpdateGroupCommentRequest) Reset()         { *m = MsgUpdateGroupCommentRequest{} }
@@ -434,10 +447,14 @@ var xxx_messageInfo_MsgUpdateGroupCommentResponse proto.InternalMessageInfo
 
 // MsgCreateGroupAccountRequest is the Msg/CreateGroupAccount request type.
 type MsgCreateGroupAccountRequest struct {
-	Admin          github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
-	Group          GroupID                                       `protobuf:"varint,2,opt,name=group,proto3,casttype=GroupID" json:"group,omitempty"`
-	Comment        string                                        `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
-	DecisionPolicy *types.Any                                    `protobuf:"bytes,4,opt,name=decision_policy,json=decisionPolicy,proto3" json:"decision_policy,omitempty"`
+	// admin is the account address of the group admin.
+	Admin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	// group is the unique ID of the group.
+	Group GroupID `protobuf:"varint,2,opt,name=group,proto3,casttype=GroupID" json:"group,omitempty"`
+	// comment is the group account's comment.
+	Comment string `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
+	// decision_policy specifies the group account's decision policy.
+	DecisionPolicy *types.Any `protobuf:"bytes,4,opt,name=decision_policy,json=decisionPolicy,proto3" json:"decision_policy,omitempty"`
 }
 
 func (m *MsgCreateGroupAccountRequest) Reset()         { *m = MsgCreateGroupAccountRequest{} }
@@ -521,9 +538,12 @@ func (m *MsgCreateGroupAccountResponse) GetGroupAccount() github_com_cosmos_cosm
 
 // MsgUpdateGroupAccountAdminRequest is the Msg/UpdateGroupAccountAdmin request type.
 type MsgUpdateGroupAccountAdminRequest struct {
-	Admin        github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	// admin is the account address of the group admin.
+	Admin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	// group_account is the group account address.
 	GroupAccount github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=group_account,json=groupAccount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"group_account,omitempty"`
-	NewAdmin     github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,3,opt,name=new_admin,json=newAdmin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"new_admin,omitempty"`
+	// new_admin is the new group account admin.
+	NewAdmin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,3,opt,name=new_admin,json=newAdmin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"new_admin,omitempty"`
 }
 
 func (m *MsgUpdateGroupAccountAdminRequest) Reset()         { *m = MsgUpdateGroupAccountAdminRequest{} }
@@ -619,9 +639,12 @@ var xxx_messageInfo_MsgUpdateGroupAccountAdminResponse proto.InternalMessageInfo
 
 // MsgUpdateGroupAccountDecisionPolicyRequest is the Msg/UpdateGroupAccountDecisionPolicy request type.
 type MsgUpdateGroupAccountDecisionPolicyRequest struct {
-	Admin          github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
-	GroupAccount   github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=group_account,json=groupAccount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"group_account,omitempty"`
-	DecisionPolicy *types.Any                                    `protobuf:"bytes,3,opt,name=decision_policy,json=decisionPolicy,proto3" json:"decision_policy,omitempty"`
+	// admin is the account address of the group admin.
+	Admin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	// group_account is the group account address.
+	GroupAccount github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=group_account,json=groupAccount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"group_account,omitempty"`
+	// decision_policy is the updated group account decision policy.
+	DecisionPolicy *types.Any `protobuf:"bytes,3,opt,name=decision_policy,json=decisionPolicy,proto3" json:"decision_policy,omitempty"`
 }
 
 func (m *MsgUpdateGroupAccountDecisionPolicyRequest) Reset() {
@@ -704,9 +727,12 @@ var xxx_messageInfo_MsgUpdateGroupAccountDecisionPolicyResponse proto.InternalMe
 
 // MsgUpdateGroupAccountCommentRequest is the Msg/UpdateGroupAccountComment request type.
 type MsgUpdateGroupAccountCommentRequest struct {
-	Admin        github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	// admin is the account address of the group admin.
+	Admin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	// group_account is the group account address.
 	GroupAccount github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=group_account,json=groupAccount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"group_account,omitempty"`
-	Comment      string                                        `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
+	// comment is the updated group account comment.
+	Comment string `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
 }
 
 func (m *MsgUpdateGroupAccountCommentRequest) Reset()         { *m = MsgUpdateGroupAccountCommentRequest{} }
@@ -802,11 +828,15 @@ var xxx_messageInfo_MsgUpdateGroupAccountCommentResponse proto.InternalMessageIn
 
 // MsgCreateProposalRequest is the Msg/CreateProposal request type.
 type MsgCreateProposalRequest struct {
+	// group_account is the group account address.
 	GroupAccount github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=group_account,json=groupAccount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"group_account,omitempty"`
-	// Proposers signatures will be counted as yes votes
+	// proposers are the account addresses of the proposers.
+	// Proposers signatures will be counted as yes votes.
 	Proposers []github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,rep,name=proposers,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"proposers,omitempty"`
-	Comment   string                                          `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
-	Msgs      []*types.Any                                    `protobuf:"bytes,4,rep,name=msgs,proto3" json:"msgs,omitempty"`
+	// comment is the proposal's comment.
+	Comment string `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
+	// msgs is a list of Msgs that will be executed if the proposal passes.
+	Msgs []*types.Any `protobuf:"bytes,4,rep,name=msgs,proto3" json:"msgs,omitempty"`
 }
 
 func (m *MsgCreateProposalRequest) Reset()         { *m = MsgCreateProposalRequest{} }
@@ -844,6 +874,7 @@ var xxx_messageInfo_MsgCreateProposalRequest proto.InternalMessageInfo
 
 // MsgCreateProposalResponse is the Msg/CreateProposal response type.
 type MsgCreateProposalResponse struct {
+	// proposal is the unique ID of the proposal.
 	Proposal ProposalID `protobuf:"varint,1,opt,name=proposal,proto3,casttype=ProposalID" json:"proposal,omitempty"`
 }
 
@@ -889,10 +920,14 @@ func (m *MsgCreateProposalResponse) GetProposal() ProposalID {
 
 // MsgVoteRequest is the Msg/Vote request type.
 type MsgVoteRequest struct {
-	Proposal ProposalID                                      `protobuf:"varint,1,opt,name=proposal,proto3,casttype=ProposalID" json:"proposal,omitempty"`
-	Voters   []github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,rep,name=voters,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"voters,omitempty"`
-	Choice   Choice                                          `protobuf:"varint,3,opt,name=choice,proto3,enum=regen.group.v1alpha1.Choice" json:"choice,omitempty"`
-	Comment  string                                          `protobuf:"bytes,4,opt,name=comment,proto3" json:"comment,omitempty"`
+	// proposal is the unique ID of the proposal.
+	Proposal ProposalID `protobuf:"varint,1,opt,name=proposal,proto3,casttype=ProposalID" json:"proposal,omitempty"`
+	// voters is the lists of voters' account addresses.
+	Voters []github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,rep,name=voters,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"voters,omitempty"`
+	// choice is the voters' choice on the proposal.
+	Choice Choice `protobuf:"varint,3,opt,name=choice,proto3,enum=regen.group.v1alpha1.Choice" json:"choice,omitempty"`
+	// comment's is the vote's comment.
+	Comment string `protobuf:"bytes,4,opt,name=comment,proto3" json:"comment,omitempty"`
 }
 
 func (m *MsgVoteRequest) Reset()         { *m = MsgVoteRequest{} }
@@ -995,8 +1030,10 @@ var xxx_messageInfo_MsgVoteResponse proto.InternalMessageInfo
 
 // MsgExecRequest is the Msg/Exec request type.
 type MsgExecRequest struct {
-	Proposal ProposalID                                    `protobuf:"varint,1,opt,name=proposal,proto3,casttype=ProposalID" json:"proposal,omitempty"`
-	Signer   github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=signer,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"signer,omitempty"`
+	// proposal is the unique ID of the proposal.
+	Proposal ProposalID `protobuf:"varint,1,opt,name=proposal,proto3,casttype=ProposalID" json:"proposal,omitempty"`
+	// signer is the account address used to execute the proposal.
+	Signer github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=signer,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"signer,omitempty"`
 }
 
 func (m *MsgExecRequest) Reset()         { *m = MsgExecRequest{} }
