@@ -26,17 +26,22 @@ func TxCmd() *cobra.Command {
 		RunE:  client.ValidateCmd,
 	}
 	cmd.AddCommand(
-		txCreateClass(),
-		txCreateBatch(),
-		txSend(),
-		txRetire(),
-		txSetPrecision(),
+		txflags(txCreateClass()),
+		txflags(txCreateBatch()),
+		txflags(txSend()),
+		txflags(txRetire()),
+		txflags(txSetPrecision()),
 	)
 	return cmd
 }
 
+func txflags(cmd *cobra.Command) *cobra.Command {
+	flags.AddTxFlagsToCmd(cmd)
+	return cmd
+}
+
 func txCreateClass() *cobra.Command {
-	cmd := &cobra.Command{
+	return &cobra.Command{
 		Use:   "create-class [designer] [issuer[,issuer]*] [metadata]",
 		Short: "Creates a new credit class",
 		Long: `Creates a new credit class.
@@ -70,12 +75,10 @@ Parameters:
 			return c.send(err)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
-	return cmd
 }
 
 func txCreateBatch() *cobra.Command {
-	cmd := &cobra.Command{
+	return &cobra.Command{
 		Use:   "create-batch [issuer] [class_id] [metadata] [issuance]",
 		Short: "Issues a new credit batch",
 		Long: `Issues a new credit batch.
@@ -109,12 +112,10 @@ Parameters:
 			return c.send(err)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
-	return cmd
 }
 
 func txSend() *cobra.Command {
-	cmd := &cobra.Command{
+	return &cobra.Command{
 		Use:   "send [recipient] [credits]",
 		Short: "Sends credits from the transaction author (--from) to the recipient",
 		Long: `Sends credits from the transaction author (--from) to the recipient.
@@ -141,12 +142,10 @@ Parameters:
 			return c.send(err)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
-	return cmd
 }
 
 func txRetire() *cobra.Command {
-	cmd := &cobra.Command{
+	return &cobra.Command{
 		Use:   "retire [credits]",
 		Short: "Retires a specified amounts of credits from the account of the transaction author (--from)",
 		Long: `Retires a specified amounts of credits from the account of the transaction author (--from)
@@ -172,12 +171,10 @@ Parameters:
 			return c.send(err)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
-	return cmd
 }
 
 func txSetPrecision() *cobra.Command {
-	cmd := &cobra.Command{
+	return &cobra.Command{
 		Use:   "set_precision [batch_denom] [decimals]",
 		Short: "Allows an issuer to increase the decimal precision of a credit batch",
 		Long: `Allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature.
@@ -203,6 +200,4 @@ Parameters:
 			return c.send(err)
 		},
 	}
-	flags.AddTxFlagsToCmd(cmd)
-	return cmd
 }
