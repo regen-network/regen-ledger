@@ -19,5 +19,7 @@ message Params {
 message GenesisState {
     option (gogoproto.equal) = true;
     option (gogoproto.goproto_stringer) = false;
+
+    // params are the genesis state Params.
     Params params = 1 [(gogoproto.nullable)=false];
 }
