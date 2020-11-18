@@ -39,10 +39,30 @@ module.exports = {
     ],
     sidebar: {
       '/': [
-        '',
         'getting-started',
         'core-functionality',
         'api',
+        {
+          title: 'Modules',
+          children: [
+            {
+              title: 'Data Module',
+              collapsable: false,
+              children: [
+                '/modules/data/',
+                {title: 'Protobuf Documentation', path: '/modules/data/protobuf', collapsable: true}
+              ]
+            },
+            {
+              title: 'Ecocredit Module',
+              collapsable: false,
+              children: [
+                '/modules/ecocredit/',
+                {title: 'Protobuf Documentation', path: '/modules/ecocredit/protobuf', collapsable: true}
+              ]
+            },
+          ]
+        }
       ],
     }
   },
