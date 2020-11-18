@@ -31,6 +31,11 @@ func QueryCmd() *cobra.Command {
 	return cmd
 }
 
+func qflags(cmd *cobra.Command) *cobra.Command {
+	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
+
 func queryClassInfo() *cobra.Command {
 	return &cobra.Command{
 		Use:   "class-info [class_id]",
