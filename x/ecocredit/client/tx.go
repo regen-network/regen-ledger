@@ -122,7 +122,7 @@ func txSend() *cobra.Command {
 Parameters:
   recipient: recipient address
   credits:   JSON encoded credit list
-             eg: '[{"batchDenom": "100/2", "tradeableUnits": "5", "retiredUnits": "0"}]'`,
+             eg: '[{"batchDenom": "100/2", "tradableUnits": "5", "retiredUnits": "0"}]'`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var credits = []*ecocredit.MsgSendRequest_SendUnits{}
