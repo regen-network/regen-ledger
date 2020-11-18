@@ -148,6 +148,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		BatchDenom: string(batchDenom),
 		Issuer:     req.Issuer,
 		TotalUnits: totalSupplyStr,
+		Metadata:   req.Metadata,
 	})
 	if err != nil {
 		return nil, err
