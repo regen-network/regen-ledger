@@ -76,7 +76,7 @@ Parameters:
 
 func txCreateBatch() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create_batch [issuer] [class_id] [metadata] [issuance]",
+		Use:   "create-batch [issuer] [class_id] [metadata] [issuance]",
 		Short: "Issues a new credit batch",
 		Long: `Issues a new credit batch.
 
