@@ -5,6 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/gogo/protobuf/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -48,4 +49,23 @@ func (s serverImpl) ByCid(goCtx context.Context, request *data.QueryByCidRequest
 		Signers:   signers,
 		Content:   content,
 	}, err
+}
+
+func (s serverImpl) BySigner(goCtx context.Context, request *data.QueryBySignerRequest) (*data.QueryBySignerResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	store := prefix.NewStore(ctx.KVStore(s.storeKey), SignerCIDIndexPrefix(request.Signer))
+
+	var cids [][]byte
+	pageRes, err := query.Paginate(store, request.Pagination, func(key []byte, value []byte) error {
+		cids = append(cids, key)
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &data.QueryBySignerResponse{
+		Cids:       cids,
+		Pagination: pageRes,
+	}, nil
 }
