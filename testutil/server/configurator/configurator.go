@@ -68,7 +68,11 @@ func (c Fixture) Setup() server.Fixture {
 
 	ms := store.NewCommitMultiStore(db)
 	for _, key := range c.keys {
-		ms.MountStoreWithDB(key, sdk.StoreTypeIAVL, db)
+		storeType := sdk.StoreTypeIAVL
+		if _, ok := key.(*sdk.TransientStoreKey); ok {
+			storeType = sdk.StoreTypeTransient
+		}
+		ms.MountStoreWithDB(key, storeType, db)
 	}
 	err := ms.LoadLatestVersion()
 	require.NoError(c.t, err)

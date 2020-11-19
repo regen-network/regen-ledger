@@ -5,6 +5,11 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/cosmos/cosmos-sdk/x/bank"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/stretchr/testify/suite"
 
@@ -17,17 +22,33 @@ import (
 
 func TestServer(t *testing.T) {
 	encodingConfig := app.MakeEncodingConfig()
+	cdc := encodingConfig.Marshaler
 
-	pKey, pTKey := sdk.NewKVStoreKey(paramstypes.StoreKey), sdk.NewTransientStoreKey(paramstypes.TStoreKey)
-	paramSpace := paramstypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.Amino, pKey, pTKey, types.DefaultParamspace)
+	paramsKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
+	groupKey := sdk.NewKVStoreKey(types.StoreKey)
+	authKey := sdk.NewKVStoreKey(authtypes.StoreKey)
+	bankKey := sdk.NewKVStoreKey(banktypes.StoreKey)
+	tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
 
-	key := sdk.NewKVStoreKey(types.ModuleName)
-	k := server.NewGroupKeeper(key, paramSpace, baseapp.NewRouter())
+	groupSubspace := paramstypes.NewSubspace(cdc, encodingConfig.Amino, paramsKey, tkey, types.DefaultParamspace)
+	authSubspace := paramstypes.NewSubspace(cdc, encodingConfig.Amino, paramsKey, tkey, authtypes.ModuleName)
+	bankSubspace := paramstypes.NewSubspace(cdc, encodingConfig.Amino, paramsKey, tkey, banktypes.ModuleName)
+
+	router := baseapp.NewRouter()
+	groupKeeper := server.NewGroupKeeper(groupKey, groupSubspace, router)
+	accountKeeper := authkeeper.NewAccountKeeper(
+		cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, map[string][]string{},
+	)
+	bankKeeper := bankkeeper.NewBaseKeeper(
+		cdc, bankKey, accountKeeper, bankSubspace, map[string]bool{},
+	)
+	router.AddRoute(sdk.NewRoute(types.ModuleName, bank.NewHandler(bankKeeper)))
 
 	addrs := configurator.MakeTestAddresses(2)
-	cfg := configurator.NewFixture(t, []sdk.StoreKey{key}, addrs)
-	server.RegisterServices(k, cfg)
-	s := testsuite.NewIntegrationTestSuite(cfg)
+	cfg := configurator.NewFixture(t, []sdk.StoreKey{paramsKey, tkey, groupKey, authKey, bankKey}, addrs)
+
+	server.RegisterServices(groupKeeper, cfg)
+	s := testsuite.NewIntegrationTestSuite(cfg, groupKeeper, bankKeeper)
 
 	suite.Run(t, s)
 }

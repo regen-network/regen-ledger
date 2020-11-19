@@ -7,13 +7,14 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	sdktestdata "github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/regen-network/regen-ledger/app"
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/testutil/testdata"
 
 	// "github.com/regen-network/regen-ledger/x/group/server"
 	"github.com/regen-network/regen-ledger/x/group/testutil"
@@ -272,7 +273,7 @@ func TestCreateProposal(t *testing.T) {
 		"all good with good msg payload": {
 			srcAccount:   accountAddr,
 			srcProposers: []sdk.AccAddress{[]byte("valid-member-address")},
-			srcMsgs:      []sdk.Msg{testdata.NewServiceMsgCreateDog(&testdata.MsgCreateDog{})},
+			srcMsgs:      []sdk.Msg{sdktestdata.NewServiceMsgCreateDog(&sdktestdata.MsgCreateDog{})},
 		},
 		"comment too long": {
 			srcAccount:   accountAddr,
@@ -316,13 +317,13 @@ func TestCreateProposal(t *testing.T) {
 			srcProposers: []sdk.AccAddress{[]byte("valid--admin-address")},
 			expErr:       true,
 		},
-		// "reject msgs that are not authz by group account": {
-		// 	srcAccount:   accountAddr,
-		// 	srcComment:   "test",
-		// 	srcMsgs:      []sdk.Msg{&banktypes.MsgSend{FromAddress: "regen1yq8lgssgxlx9smjhes6ryjasmqmd3ts2559g0t"}},
-		// 	srcProposers: []sdk.AccAddress{[]byte("valid-member-address")},
-		// 	expErr:       true,
-		// },
+		"reject msgs that are not authz by group account": {
+			srcAccount:   accountAddr,
+			srcComment:   "test",
+			srcMsgs:      []sdk.Msg{&testdata.MsgAuthenticated{Signers: []sdk.AccAddress{[]byte("not-group-acct-addrs")}}},
+			srcProposers: []sdk.AccAddress{[]byte("valid-member-address")},
+			expErr:       true,
+		},
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
@@ -633,21 +634,29 @@ func TestVote(t *testing.T) {
 
 // func TestExecProposal(t *testing.T) {
 // 	encodingConfig := app.MakeEncodingConfig()
+// 	cdc := encodingConfig.Marshaler
 
-// 	pKey, pTKey := sdk.NewKVStoreKey(paramstypes.StoreKey), sdk.NewTransientStoreKey(paramstypes.TStoreKey)
-// 	paramSpace := paramstypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.Amino, pKey, pTKey, types.DefaultParamspace)
+// 	keys := sdk.NewKVStoreKeys(authtypes.StoreKey, banktypes.StoreKey, types.StoreKey)
+// 	tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
+
+// 	groupSubspace := paramstypes.NewSubspace(cdc, encodingConfig.Amino, keys[types.StoreKey], tkey, types.DefaultParamspace)
+// 	authSubspace := paramstypes.NewSubspace(cdc, encodingConfig.Amino, keys[authtypes.StoreKey], tkey, authtypes.ModuleName)
+// 	bankSubspace := paramstypes.NewSubspace(cdc, encodingConfig.Amino, keys[authtypes.StoreKey], tkey, banktypes.ModuleName)
 
 // 	router := baseapp.NewRouter()
-// 	groupKey := sdk.NewKVStoreKey(types.StoreKey)
-// 	k := NewGroupKeeper(groupKey, paramSpace, router)
-// 	testdataKey := sdk.NewKVStoreKey(testdatatypes.ModuleName)
-// 	testdataKeeper := testdatatypes.NewKeeper(testdataKey, k)
-// 	router.AddRoute(sdk.NewRoute(testdatatypes.ModuleName, testdatatypes.NewHandler(testdataKeeper)))
+// 	k := NewGroupKeeper(keys[types.StoreKey], groupSubspace, router)
+// 	accountKeeper := authkeeper.NewAccountKeeper(
+// 		cdc, keys[authtypes.StoreKey], authSubspace, authtypes.ProtoBaseAccount, map[string][]string{},
+// 	)
+// 	bankKeeper := bankkeeper.NewBaseKeeper(
+// 		cdc, keys[banktypes.StoreKey], accountKeeper, bankSubspace, map[string]bool{},
+// 	)
+// 	router.AddRoute(sdk.NewRoute(types.ModuleName, banktypes.NewHandler(bankKeeper)))
 
 // 	blockTime := time.Now().UTC()
-// 	parentCtx := testutil.NewContext(pKey, pTKey, groupKey, testdataKey).WithBlockTime(blockTime)
+// 	parentCtx := testutil.NewContext(pKey, tkey, keys[types.StoreKey]).WithBlockTime(blockTime)
 // 	defaultParams := types.DefaultParams()
-// 	paramSpace.SetParamSet(parentCtx, &defaultParams)
+// 	groupSubspace.SetParamSet(parentCtx, &defaultParams)
 
 // 	members := []types.Member{
 // 		{Address: []byte("valid-member-address"), Power: sdk.OneDec()},
@@ -664,7 +673,7 @@ func TestVote(t *testing.T) {
 
 // 	specs := map[string]struct {
 // 		srcBlockTime      time.Time
-// 		setupProposal     func(t *testing.T, ctx sdk.Context) types.Proposal
+// 		setupProposal     func(t *testing.T, ctx sdk.Context) types.ProposalID
 // 		expErr            bool
 // 		expProposalStatus types.Proposal_Status
 // 		expProposalResult types.Proposal_Result
@@ -672,7 +681,7 @@ func TestVote(t *testing.T) {
 // 		expPayloadCounter uint64
 // 	}{
 // 		"proposal executed when accepted": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.Proposal {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.ProposalID {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatatypes.MsgIncCounter{},
@@ -687,7 +696,7 @@ func TestVote(t *testing.T) {
 // 			expPayloadCounter: 1,
 // 		},
 // 		"proposal with multiple messages executed when accepted": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.Proposal {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.ProposalID {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatatypes.MsgIncCounter{}, &testdatatypes.MsgIncCounter{},
@@ -702,7 +711,7 @@ func TestVote(t *testing.T) {
 // 			expPayloadCounter: 2,
 // 		},
 // 		"proposal not executed when rejected": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.Proposal {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.ProposalID {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatatypes.MsgAlwaysFail{},
@@ -716,7 +725,7 @@ func TestVote(t *testing.T) {
 // 			expExecutorResult: types.ProposalExecutorResultNotRun,
 // 		},
 // 		"open proposal must not fail": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.Proposal {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.ProposalID {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatatypes.MsgAlwaysFail{},
@@ -729,13 +738,13 @@ func TestVote(t *testing.T) {
 // 			expExecutorResult: types.ProposalExecutorResultNotRun,
 // 		},
 // 		"existing proposal required": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.Proposal {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.ProposalID {
 // 				return 9999
 // 			},
 // 			expErr: true,
 // 		},
 // 		"Decision policy also applied on timeout": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.Proposal {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.ProposalID {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatatypes.MsgAlwaysFail{},
@@ -750,7 +759,7 @@ func TestVote(t *testing.T) {
 // 			expExecutorResult: types.ProposalExecutorResultNotRun,
 // 		},
 // 		"Decision policy also applied after timeout": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.Proposal {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.ProposalID {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatatypes.MsgAlwaysFail{},
@@ -765,7 +774,7 @@ func TestVote(t *testing.T) {
 // 			expExecutorResult: types.ProposalExecutorResultNotRun,
 // 		},
 // 		"with group modified before tally": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.Proposal {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.ProposalID {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatatypes.MsgAlwaysFail{},
@@ -783,7 +792,7 @@ func TestVote(t *testing.T) {
 // 			expExecutorResult: types.ProposalExecutorResultNotRun,
 // 		},
 // 		"with group account modified before tally": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.Proposal {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.ProposalID {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatatypes.MsgAlwaysFail{},
@@ -801,7 +810,7 @@ func TestVote(t *testing.T) {
 // 			expExecutorResult: types.ProposalExecutorResultNotRun,
 // 		},
 // 		"with group modified after tally": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.Proposal {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.ProposalID {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatatypes.MsgAlwaysFail{},
@@ -820,7 +829,7 @@ func TestVote(t *testing.T) {
 // 			expExecutorResult: types.ProposalExecutorResultFailure,
 // 		},
 // 		"with group account modified after tally": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.Proposal {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.ProposalID {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatatypes.MsgAlwaysFail{},
@@ -838,7 +847,7 @@ func TestVote(t *testing.T) {
 // 			expExecutorResult: types.ProposalExecutorResultNotRun,
 // 		},
 // 		"prevent double execution when successful": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.Proposal {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.ProposalID {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatatypes.MsgIncCounter{},
@@ -854,7 +863,7 @@ func TestVote(t *testing.T) {
 // 			expExecutorResult: types.ProposalExecutorResultSuccess,
 // 		},
 // 		"rollback all msg updates on failure": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.Proposal {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.ProposalID {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatatypes.MsgIncCounter{}, &testdatatypes.MsgAlwaysFail{},
@@ -868,7 +877,7 @@ func TestVote(t *testing.T) {
 // 			expExecutorResult: types.ProposalExecutorResultFailure,
 // 		},
 // 		"executable when failed before": {
-// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.Proposal {
+// 			setupProposal: func(t *testing.T, ctx sdk.Context) types.ProposalID {
 // 				member := []sdk.AccAddress{[]byte("valid-member-address")}
 // 				myProposalID, err := k.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
 // 					&testdatatypes.MsgConditional{ExpectedCounter: 1}, &testdatatypes.MsgIncCounter{},
@@ -916,7 +925,7 @@ func TestVote(t *testing.T) {
 // 			assert.Equal(t, exp, got)
 
 // 			// and proposal messages executed
-// 			assert.Equal(t, spec.expPayloadCounter, testdataKeeper.GetCounter(ctx), "counter")
+// 			// assert.Equal(t, spec.expPayloadCounter, testdataKeeper.GetCounter(ctx), "counter")
 // 		})
 // 	}
 // }

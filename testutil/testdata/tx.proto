@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package testdata;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/testutil/testdata";
+
+message MsgAuthenticated {
+    repeated bytes signers = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+}
