@@ -92,6 +92,14 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Equal([]string{s.addr1.String()}, queryRes.Signers)
 	s.Require().Empty(queryRes.Content)
 
+	// query data by signer
+	bySignerRes, err := s.queryClient.BySigner(s.ctx, &data.QueryBySignerRequest{
+		Signer: s.addr1.String(),
+	})
+	s.Require().NoError(err)
+	s.Require().NotNil(bySignerRes)
+	s.Require().Contains(bySignerRes.Cids, cidBz)
+
 	// can't store bad data
 	_, err = s.msgClient.StoreData(s.ctx, &data.MsgStoreDataRequest{
 		Sender:  s.addr1.String(),
@@ -116,12 +124,20 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Equal([]string{s.addr1.String()}, queryRes.Signers)
 	s.Require().Equal(testContent, queryRes.Content)
 
-	// can sign again
+	// another signer can sign
 	_, err = s.msgClient.SignData(s.ctx, &data.MsgSignDataRequest{
 		Signers: []string{s.addr2.String()},
 		Cid:     cidBz,
 	})
 	s.Require().NoError(err)
+
+	// query data by signer
+	bySignerRes, err = s.queryClient.BySigner(s.ctx, &data.QueryBySignerRequest{
+		Signer: s.addr2.String(),
+	})
+	s.Require().NoError(err)
+	s.Require().NotNil(bySignerRes)
+	s.Require().Contains(bySignerRes.Cids, cidBz)
 
 	// query all data and both signatures
 	queryRes, err = s.queryClient.ByCid(s.ctx, &data.QueryByCidRequest{Cid: cidBz})

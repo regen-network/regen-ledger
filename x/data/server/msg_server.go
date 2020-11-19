@@ -100,7 +100,7 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignDataReq
 
 		store.Set(key, emptyBz)
 		// set reverse lookup key
-		store.Set(SignerCIDKey(signer, cidStr), emptyBz)
+		store.Set(SignerCIDKey(signer, cidBz), emptyBz)
 	}
 
 	err = ctx.EventManager().EmitTypedEvent(&data.EventSignData{
