@@ -10,28 +10,28 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 service Query {
     // ClassInfo queries for information on a credit class.
     rpc ClassInfo(QueryClassInfoRequest) returns (QueryClassInfoResponse) {
-        option (google.api.http).get = "/regen/ecocredit/v1alpha1/classinfo";
+        option (google.api.http).get = "/regen/ecocredit/v1alpha1/classinfo/{class_id}";
     }
 
     // BatchInfo queries for information on a credit batch.
     rpc BatchInfo(QueryBatchInfoRequest) returns (QueryBatchInfoResponse){
-        option (google.api.http).get = "/regen/ecocredit/v1alpha1/batchinfo";
+        option (google.api.http).get = "/regen/ecocredit/v1alpha1/batchinfo/{batch_denom}";
     }
 
     // Balance queries the balance (both tradable and retired) of a given credit batch for a given account.
     rpc Balance(QueryBalanceRequest) returns (QueryBalanceResponse) {
-        option (google.api.http).get = "/regen/ecocredit/v1alpha1/balances/{account}";
+        option (google.api.http).get = "/regen/ecocredit/v1alpha1/{batch_denom}/balances/{account}";
     }
 
     // Supply queries the tradable and retired supply of a credit batch.
     rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse) {
-        option (google.api.http).get = "/regen/ecocredit/v1alpha1/supply";
+        option (google.api.http).get = "/regen/ecocredit/v1alpha1/supply/{batch_denom}";
     }
 
     // Precision queries the number of decimal places that can be used to represent credit batch units.
     // See Tx/SetPrecision for more details.
     rpc Precision(QueryPrecisionRequest) returns (QueryPrecisionResponse) {
-        option (google.api.http).get = "/regen/ecocredit/v1alpha1/precision";
+        option (google.api.http).get = "/regen/ecocredit/v1alpha1/precision/{batch_denom}";
     }
 }
 
