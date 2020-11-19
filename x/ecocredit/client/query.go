@@ -20,20 +20,23 @@ func QueryCmd() *cobra.Command {
 		RunE:  client.ValidateCmd,
 	}
 	cmd.AddCommand(
-		queryClassInfo(),
-		queryBatchInfo(),
-		queryBalance(),
-		querySupply(),
-		queryPrecision(),
+		qflags(queryClassInfo()),
+		qflags(queryBatchInfo()),
+		qflags(queryBalance()),
+		qflags(querySupply()),
+		qflags(queryPrecision()),
 	)
-	flags.AddQueryFlagsToCmd(cmd)
+	return cmd
+}
 
+func qflags(cmd *cobra.Command) *cobra.Command {
+	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
 }
 
 func queryClassInfo() *cobra.Command {
 	return &cobra.Command{
-		Use:   "class_info [class_id]",
+		Use:   "class-info [class_id]",
 		Short: "Retrieve credit class info",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -51,7 +54,7 @@ func queryClassInfo() *cobra.Command {
 
 func queryBatchInfo() *cobra.Command {
 	return &cobra.Command{
-		Use:   "batch_info [batch_denom]",
+		Use:   "batch-info [batch_denom]",
 		Short: "Retrieve the credit issuance batch info",
 		Long:  "Retrieve the credit issuance batch info based on the bach_denom (ID)",
 		Args:  cobra.ExactArgs(1),
