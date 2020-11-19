@@ -9,12 +9,14 @@ import (
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 
+	sdktestdata "github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/testutil/server"
+	"github.com/regen-network/regen-ledger/testutil/testdata"
 	groupserver "github.com/regen-network/regen-ledger/x/group/server"
 	"github.com/regen-network/regen-ledger/x/group/types"
 )
