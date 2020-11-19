@@ -55,6 +55,7 @@ func (a AppModuleBasic) GetTxCmd() *cobra.Command {
 	return client.TxCmd()
 }
 
+//nolint:errcheck
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
 	ecocredit.RegisterQueryHandlerClient(context.Background(), mux, ecocredit.NewQueryClient(clientCtx))
 }

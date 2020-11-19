@@ -55,6 +55,7 @@ func (a AppModuleBasic) ValidateGenesis(codec.JSONMarshaler, sdkclient.TxEncodin
 
 func (a AppModuleBasic) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
 
+//nolint:errcheck
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
 	data.RegisterQueryHandlerClient(context.Background(), mux, data.NewQueryClient(clientCtx))
 }
