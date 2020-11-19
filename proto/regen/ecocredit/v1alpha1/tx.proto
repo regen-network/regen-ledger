@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package regen.ecocredit.v1alpha1;
 
+import "gogoproto/gogo.proto";
+
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 
 // Msg is the regen.ecocredit.v1alpha1 Msg service.
@@ -53,7 +55,7 @@ message MsgCreateClassRequest {
 message MsgCreateClassResponse {
 
     // class_id is the unique ID of the newly created credit class.
-    string class_id = 1;
+    string class_id = 1 [(gogoproto.moretags) = "yaml:\"class_id\""];
 }
 
 // MsgCreateBatchRequest is the Msg/CreateBatch request type.
@@ -63,7 +65,7 @@ message MsgCreateBatchRequest {
     string issuer = 1;
 
     // class_id is the unique ID of the class.
-    string class_id = 2;
+    string class_id = 2 [(gogoproto.moretags) = "yaml:\"class_id\""];
 
     // issuance are the credits issued in the batch.
     repeated BatchIssuance issuance = 3;
@@ -79,11 +81,11 @@ message MsgCreateBatchRequest {
 
         // tradable_units are the units of credits in this issuance that can be traded by this recipient.
         // Decimal values are acceptable.
-        string tradable_units = 2;
+        string tradable_units = 2 [(gogoproto.moretags) = "yaml:\"tradable_units\""];
 
         // retired_units are the units of credits in this issuance that are effectively retired by the issuer on receipt.
         // Decimal values are acceptable.
-        string retired_units = 3;
+        string retired_units = 3 [(gogoproto.moretags) = "yaml:\"retired_units\""];
     }
 }
 
@@ -91,7 +93,7 @@ message MsgCreateBatchRequest {
 message MsgCreateBatchResponse {
 
     // batch_denom is the unique denomination ID of the newly created batch.
-    string batch_denom = 1;
+    string batch_denom = 1 [(gogoproto.moretags) = "yaml:\"batch_denom\""];
 }
 
 // MsgSendRequest is the Msg/Send request type.
@@ -110,15 +112,15 @@ message MsgSendRequest {
     message SendUnits {
 
         // batch_denom is the unique ID of the credit batch.
-        string batch_denom = 1;
+        string batch_denom = 1 [(gogoproto.moretags) = "yaml:\"batch_denom\""];
 
         // tradable_units are the units of credits in this issuance that can be traded by this recipient.
         // Decimal values are acceptable within the precision returned by Query/Precision.
-        string tradable_units = 2;
+        string tradable_units = 2 [(gogoproto.moretags) = "yaml:\"tradable_units\""];
 
         // retired_units are the units of credits in this issuance that are effectively retired by the issuer on receipt.
         // Decimal values are acceptable within the precision returned by Query/Precision.
-        string retired_units = 3;
+        string retired_units = 3 [(gogoproto.moretags) = "yaml:\"retired_units\""];
     }
 }
 
@@ -138,7 +140,7 @@ message MsgRetireRequest {
     message RetireUnits {
 
         // batch_denom is the unique ID of the credit batch.
-        string batch_denom = 1;
+        string batch_denom = 1 [(gogoproto.moretags) = "yaml:\"batch_denom\""];
 
         // retired_units are the units of credits being retired.
         // Decimal values are acceptable within the precision returned by Query/Precision.
@@ -156,11 +158,11 @@ message MsgSetPrecisionRequest {
     string issuer = 1;
 
     // batch_denom is the unique ID of the credit batch.
-    string batch_denom = 2;
+    string batch_denom = 2 [(gogoproto.moretags) = "yaml:\"batch_denom\""];
 
     // max_decimal_places is the new maximum number of decimal places that can be used to represent some quantity of
     // credit units. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113.
-    uint32 max_decimal_places = 3;
+    uint32 max_decimal_places = 3 [(gogoproto.moretags) = "yaml:\"max_decimal_places\""];
 }
 
 // MsgRetireRequest is the Msg/SetPrecision response type.

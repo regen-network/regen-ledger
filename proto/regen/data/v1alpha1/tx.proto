@@ -2,10 +2,10 @@ syntax = "proto3";
 
 package regen.data.v1alpha1;
 
-option go_package = "github.com/regen-network/regen-ledger/x/data";
-
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // Msg is the regen.data.v1alpha1 Msg service
 service Msg {

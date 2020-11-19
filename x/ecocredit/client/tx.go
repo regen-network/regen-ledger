@@ -88,8 +88,8 @@ Parameters:
   class_id:  credit class
   metadata:  base64 encoded issuance metadata
   issuance:  YAML encode issuance list. Note: numerical values must be written in strings.
-             eg: '[{recipient: "xrn:sdgkjhs2345u79ghisodg", tradableunits: "10", retiredunits: "2"}]'
-             Note: "tradableUnits" and "retiredUnits" default to 0.`,
+             eg: '[{recipient: "xrn:sdgkjhs2345u79ghisodg", tradable_units: "10", retired_units: "2"}]'
+             Note: "tradable_units" and "retired_units" default to 0.`,
 		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			b, err := base64.StdEncoding.DecodeString(args[2])
@@ -123,7 +123,7 @@ func txSend() *cobra.Command {
 Parameters:
   recipient: recipient address
   credits:   YAML encoded credit list. Note: numerical values must be written in strings.
-             eg: '[{batchdenom: "100/2", tradableunits: "5", retiredunits: "0"}]'`,
+             eg: '[{batch_denom: "100/2", tradable_units: "5", retired_units: "0"}]'`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var credits = []*ecocredit.MsgSendRequest_SendUnits{}
@@ -152,7 +152,7 @@ func txRetire() *cobra.Command {
 
 Parameters:
   credits:  YAML encoded credit list. Note: numerical values must be written in strings.
-            eg: '[{batchdenom: "100/2", units: "5"}]'`,
+            eg: '[{batch_denom: "100/2", units: "5"}]'`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var credits = []*ecocredit.MsgRetireRequest_RetireUnits{}
