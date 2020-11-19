@@ -6,7 +6,6 @@ import (
 
 	gogotypes "github.com/gogo/protobuf/types"
 
-	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -72,11 +71,11 @@ type Keeper struct {
 	voteByProposalIndex orm.UInt64Index
 	voteByVoterIndex    orm.Index
 
-	paramSpace       paramstypes.Subspace
-	msgServiceRouter *baseapp.MsgServiceRouter
+	paramSpace paramstypes.Subspace
+	router     sdk.Router
 }
 
-func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, msgServiceRouter *baseapp.MsgServiceRouter) *Keeper {
+func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, router sdk.Router) *Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(paramstypes.NewKeyTable().RegisterParamSet(&types.Params{}))
@@ -84,11 +83,11 @@ func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, msgS
 	if storeKey == nil {
 		panic("storeKey must not be nil")
 	}
-	if msgServiceRouter == nil {
+	if router == nil {
 		panic("router must not be nil")
 	}
 
-	k := &Keeper{storeKey: storeKey, paramSpace: paramSpace, msgServiceRouter: msgServiceRouter}
+	k := &Keeper{storeKey: storeKey, paramSpace: paramSpace, router: router}
 
 	// Group Table
 	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, storeKey, &types.GroupMetadata{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength))
@@ -431,7 +430,7 @@ func (k Keeper) ExecProposal(ctx sdk.Context, id types.ProposalID) error {
 	if proposal.Status == types.ProposalStatusClosed && proposal.Result == types.ProposalResultAccepted && proposal.ExecutorResult != types.ProposalExecutorResultSuccess {
 		logger := ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 		ctx, flush := ctx.CacheContext()
-		_, err := DoExecuteMsgs(ctx, k.msgServiceRouter, accountMetadata.GroupAccount, proposal.GetMsgs())
+		_, err := DoExecuteMsgs(ctx, k.router, accountMetadata.GroupAccount, proposal.GetMsgs())
 		if err != nil {
 			proposal.ExecutorResult = types.ProposalExecutorResultFailure
 			proposalType := reflect.TypeOf(proposal).String()

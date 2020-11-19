@@ -22,7 +22,7 @@ func TestServer(t *testing.T) {
 	paramSpace := paramstypes.NewSubspace(encodingConfig.Marshaler, encodingConfig.Amino, pKey, pTKey, types.DefaultParamspace)
 
 	key := sdk.NewKVStoreKey(types.ModuleName)
-	k := server.NewGroupKeeper(key, paramSpace, baseapp.NewMsgServiceRouter())
+	k := server.NewGroupKeeper(key, paramSpace, baseapp.NewRouter())
 
 	addrs := configurator.MakeTestAddresses(2)
 	cfg := configurator.NewFixture(t, []sdk.StoreKey{key}, addrs)

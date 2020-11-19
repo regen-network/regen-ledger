@@ -320,7 +320,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	app.EvidenceKeeper = *evidenceKeeper
 
 	// groupKeeper := groupserver.NewGroupKeeper(
-	// 	keys[grouptypes.StoreKey], app.GetSubspace(grouptypes.ModuleName), app.MsgServiceRouter(),
+	// 	keys[grouptypes.StoreKey], app.GetSubspace(grouptypes.ModuleName), app.Router(),
 	// )
 	// app.GroupKeeper = groupKeeper
 

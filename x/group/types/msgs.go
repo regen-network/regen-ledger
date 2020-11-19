@@ -11,7 +11,7 @@ import (
 
 var _ sdk.MsgRequest = &MsgCreateGroupRequest{}
 
-// GetSigners returns the addresses that must sign over msg.GetSignBytes()
+// GetSigners returns the expected signers for a MsgCreateGroupRequest.
 func (m MsgCreateGroupRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.Admin}
 }
@@ -51,7 +51,7 @@ func (m Member) ValidateBasic() error {
 
 var _ sdk.MsgRequest = &MsgUpdateGroupAdminRequest{}
 
-// GetSigners returns the addresses that must sign over msg.GetSignBytes()
+// GetSigners returns the expected signers for a MsgUpdateGroupAdminRequest.
 func (m MsgUpdateGroupAdminRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.Admin}
 }
@@ -84,7 +84,7 @@ func (m MsgUpdateGroupAdminRequest) ValidateBasic() error {
 
 var _ sdk.MsgRequest = &MsgUpdateGroupCommentRequest{}
 
-// GetSigners returns the addresses that must sign over msg.GetSignBytes()
+// GetSigners returns the expected signers for a MsgUpdateGroupCommentRequest.
 func (m MsgUpdateGroupCommentRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.Admin}
 }
@@ -106,7 +106,7 @@ func (m MsgUpdateGroupCommentRequest) ValidateBasic() error {
 
 var _ sdk.MsgRequest = &MsgUpdateGroupMembersRequest{}
 
-// GetSigners returns the addresses that must sign over msg.GetSignBytes()
+// GetSigners returns the expected signers for a MsgUpdateGroupMembersRequest.
 func (m MsgUpdateGroupMembersRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.Admin}
 }
@@ -135,7 +135,7 @@ func (m MsgUpdateGroupMembersRequest) ValidateBasic() error {
 
 var _ sdk.MsgRequest = &MsgCreateGroupAccountRequest{}
 
-// GetSigners returns the addresses that must sign over msg.GetSignBytes()
+// GetSigners returns the expected signers for a MsgCreateGroupAccountRequest.
 func (m MsgCreateGroupAccountRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.Admin}
 }
@@ -165,7 +165,7 @@ func (m MsgCreateGroupAccountRequest) ValidateBasic() error {
 
 var _ sdk.MsgRequest = &MsgUpdateGroupAccountAdminRequest{}
 
-// GetSigners returns the addresses that must sign over msg.GetSignBytes()
+// GetSigners returns the expected signers for a MsgUpdateGroupAccountAdminRequest.
 func (m MsgUpdateGroupAccountAdminRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.Admin}
 }
@@ -202,7 +202,7 @@ func (m MsgUpdateGroupAccountAdminRequest) ValidateBasic() error {
 var _ sdk.MsgRequest = &MsgUpdateGroupAccountDecisionPolicyRequest{}
 var _ types.UnpackInterfacesMessage = MsgUpdateGroupAccountDecisionPolicyRequest{}
 
-// GetSigners returns the addresses that must sign over msg.GetSignBytes()
+// GetSigners returns the expected signers for a MsgUpdateGroupAccountDecisionPolicyRequest.
 func (m MsgUpdateGroupAccountDecisionPolicyRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.Admin}
 }
@@ -251,7 +251,7 @@ func (m MsgUpdateGroupAccountDecisionPolicyRequest) UnpackInterfaces(unpacker ty
 
 var _ sdk.MsgRequest = &MsgUpdateGroupAccountCommentRequest{}
 
-// GetSigners returns the addresses that must sign over msg.GetSignBytes()
+// GetSigners returns the expected signers for a MsgUpdateGroupAccountCommentRequest.
 func (m MsgUpdateGroupAccountCommentRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.Admin}
 }
@@ -333,7 +333,7 @@ func (m MsgCreateGroupAccountRequest) UnpackInterfaces(unpacker types.AnyUnpacke
 
 var _ sdk.MsgRequest = &MsgCreateProposalRequest{}
 
-// GetSigners returns the addresses that must sign over msg.GetSignBytes()
+// GetSigners returns the expected signers for a MsgCreateProposalRequest.
 func (m MsgCreateProposalRequest) GetSigners() []sdk.AccAddress {
 	return m.Proposers
 }
@@ -391,7 +391,7 @@ func (m MsgCreateProposalRequest) UnpackInterfaces(unpacker types.AnyUnpacker) e
 
 var _ sdk.MsgRequest = &MsgVoteRequest{}
 
-// GetSigners returns the addresses that must sign over msg.GetSignBytes()
+// GetSigners returns the expected signers for a MsgVoteRequest.
 func (m MsgVoteRequest) GetSigners() []sdk.AccAddress {
 	return m.Voters
 }
@@ -418,7 +418,7 @@ func (m MsgVoteRequest) ValidateBasic() error {
 
 var _ sdk.MsgRequest = &MsgExecRequest{}
 
-// GetSigners returns the addresses that must sign over msg.GetSignBytes()
+// GetSigners returns the expected signers for a MsgExecRequest.
 func (m MsgExecRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{m.Signer}
 }
