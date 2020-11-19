@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.v1alpha1;
 
 import "regen/ecocredit/v1alpha1/types.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 
@@ -29,7 +30,7 @@ service Query {
 message QueryClassInfoRequest {
 
     // class_id is the unique ID of credit class to query.
-    string class_id = 1;
+    string class_id = 1 [(gogoproto.moretags) = "yaml:\"class_id\""];
 }
 
 // QueryClassInfoResponse is the Query/ClassInfo request type.
@@ -43,7 +44,7 @@ message QueryClassInfoResponse {
 message QueryBatchInfoRequest {
 
     // batch_denom is the unique ID of credit batch to query.
-    string batch_denom = 1;
+    string batch_denom = 1 [(gogoproto.moretags) = "yaml:\"batch_denom\""];
 }
 
 // QueryBatchInfoResponse is the Query/BatchInfo response type.
@@ -60,34 +61,34 @@ message QueryBalanceRequest {
     string account = 1;
 
     // batch_denom is the unique ID of credit batch balance to query.
-    string batch_denom = 2;
+    string batch_denom = 2 [(gogoproto.moretags) = "yaml:\"batch_denom\""];
 }
 
 // QueryBalanceResponse is the Query/Balance response type.
 message QueryBalanceResponse {
 
     // tradable_units is the decimal number of tradable units.
-    string tradable_units = 1;
+    string tradable_units = 1 [(gogoproto.moretags) = "yaml:\"tradable_units\""];
 
     // retired_units is the decimal number of retired units.
-    string retired_units = 2;
+    string retired_units = 2 [(gogoproto.moretags) = "yaml:\"retired_units\""];
 }
 
 // QuerySupplyRequest is the Query/Supply request type.
 message QuerySupplyRequest {
 
     // batch_denom is the unique ID of credit batch to query.
-    string batch_denom = 1;
+    string batch_denom = 1 [(gogoproto.moretags) = "yaml:\"batch_denom\""];
 }
 
 // QuerySupplyResponse is the Query/Supply response type.
 message QuerySupplyResponse {
 
     // tradable_units is the decimal number of tradable units in the batch supply.
-    string tradable_supply = 1;
+    string tradable_supply = 1 [(gogoproto.moretags) = "yaml:\"tradable_supply\""];
 
     // retired_supply is the decimal number of retired units in the batch supply.
-    string retired_supply = 2;
+    string retired_supply = 2 [(gogoproto.moretags) = "yaml:\"retired_supply\""];
 }
 
 
@@ -95,7 +96,7 @@ message QuerySupplyResponse {
 message QueryPrecisionRequest {
 
     // batch_denom is the unique ID of credit batch to query.
-    string batch_denom = 1;
+    string batch_denom = 1 [(gogoproto.moretags) = "yaml:\"batch_denom\""];
 }
 
 // QueryPrecisionResponse is the Query/Precision response type.
@@ -103,5 +104,5 @@ message QueryPrecisionResponse {
 
     // max_decimal_places is the maximum number of decimal places that can be used to represent some quantity of credit units.
     // It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113.
-    uint32 max_decimal_places = 1;
+    uint32 max_decimal_places = 1 [(gogoproto.moretags) = "yaml:\"max_decimal_places\""];
 }
