@@ -3,6 +3,8 @@ build:
   roots:
     - proto
     - third_party/proto
+  excludes:
+    - third_party/proto/google/protobuf
 lint:
   use:
     - DEFAULT
@@ -18,3 +20,5 @@ breaking:
   ignore:
     - cosmos
     - gogoproto
+    - google
+
