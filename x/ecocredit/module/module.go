@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"encoding/json"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
@@ -54,7 +55,9 @@ func (a AppModuleBasic) GetTxCmd() *cobra.Command {
 	return client.TxCmd()
 }
 
-func (a AppModuleBasic) RegisterGRPCGatewayRoutes(sdkclient.Context, *runtime.ServeMux) {}
+func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
+	ecocredit.RegisterQueryHandlerClient(context.Background(), mux, ecocredit.NewQueryClient(clientCtx))
+}
 
 func (a AppModuleBasic) RegisterInterfaces(r codectypes.InterfaceRegistry) {
 	ecocredit.RegisterTypes(r)

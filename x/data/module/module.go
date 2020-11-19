@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"encoding/json"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
@@ -54,7 +55,9 @@ func (a AppModuleBasic) ValidateGenesis(codec.JSONMarshaler, sdkclient.TxEncodin
 
 func (a AppModuleBasic) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
 
-func (a AppModuleBasic) RegisterGRPCGatewayRoutes(sdkclient.Context, *runtime.ServeMux) {}
+func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
+	data.RegisterQueryHandlerClient(context.Background(), mux, data.NewQueryClient(clientCtx))
+}
 
 func (a AppModuleBasic) GetTxCmd() *cobra.Command {
 	return client.TxCmd()

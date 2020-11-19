@@ -9,6 +9,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.40.0-rc2
 	github.com/enigmampc/btcutil v1.0.3-0.20200723161021-e2fb6adb2a25
 	github.com/gogo/protobuf v1.3.1
+	github.com/golang/protobuf v1.4.3
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.15.2
 	github.com/ipfs/go-cid v0.0.7
@@ -23,8 +24,8 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/tendermint/tendermint v0.34.0-rc5
 	github.com/tendermint/tm-db v0.6.2
-	golang.org/x/crypto v0.0.0-20201112155050-0c6587e931a9 // indirect
-	google.golang.org/genproto v0.0.0-20201112120144-2985b7af83de // indirect
+	golang.org/x/crypto v0.0.0-20201117144127-c1f2f97bffc9 // indirect
+	google.golang.org/genproto v0.0.0-20201117123952-62d171c70ae1
 	google.golang.org/grpc v1.33.0
 	gopkg.in/yaml.v2 v2.3.0
 )
