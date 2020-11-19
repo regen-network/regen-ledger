@@ -13,12 +13,12 @@ service Query {
 
     // ByCid queries data based on its CID.
     rpc ByCid(QueryByCidRequest) returns (QueryByCidResponse) {
-        option (google.api.http).get = "/regen/data/v1alpha1/cids/{cid}";
+        option (google.api.http).get = "/regen/data/v1alpha1/{cid}";
     }
 
     // BySigner queries data based on signers.
     rpc BySigner(QueryBySignerRequest) returns (QueryBySignerResponse){
-        option (google.api.http).get = "/regen/data/v1alpha1/signers/{signer}";
+        option (google.api.http).get = "/regen/data/v1alpha1/by-signer/{signer}";
     }
 }
 

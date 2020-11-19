@@ -11,12 +11,12 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 service Query {
     // ClassInfo queries for information on a credit class.
     rpc ClassInfo(QueryClassInfoRequest) returns (QueryClassInfoResponse) {
-        option (google.api.http).get = "/regen/ecocredit/v1alpha1/classinfo/{class_id}";
+        option (google.api.http).get = "/regen/ecocredit/v1alpha1/class_info/{class_id}";
     }
 
     // BatchInfo queries for information on a credit batch.
     rpc BatchInfo(QueryBatchInfoRequest) returns (QueryBatchInfoResponse){
-        option (google.api.http).get = "/regen/ecocredit/v1alpha1/batchinfo/{batch_denom}";
+        option (google.api.http).get = "/regen/ecocredit/v1alpha1/batch_info/{batch_denom}";
     }
 
     // Balance queries the balance (both tradable and retired) of a given credit batch for a given account.
