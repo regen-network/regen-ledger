@@ -18,6 +18,7 @@ require (
 	github.com/spf13/afero v1.3.4 // indirect
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.1.1
+	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
 	github.com/tendermint/tendermint v0.34.0-rc5
@@ -25,6 +26,7 @@ require (
 	golang.org/x/crypto v0.0.0-20201112155050-0c6587e931a9 // indirect
 	google.golang.org/genproto v0.0.0-20201112120144-2985b7af83de // indirect
 	google.golang.org/grpc v1.33.0
+	gopkg.in/yaml.v2 v2.3.0
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
