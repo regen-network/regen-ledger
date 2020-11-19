@@ -94,19 +94,10 @@ func (s *IntegrationTestSuite) TestTxAnchorData() {
 		name         string
 		args         []string
 		expectErr    bool
+		expectErrMsg string
 		respType     proto.Message
 		expectedCode uint32
 	}{
-		{
-			"less number of args",
-			append(
-				[]string{val.Address.String()},
-				commonFlags...,
-			),
-			true,
-			nil,
-			0,
-		},
 		{
 			"wrong sender",
 			append(
@@ -117,6 +108,7 @@ func (s *IntegrationTestSuite) TestTxAnchorData() {
 				commonFlags...,
 			),
 			true,
+			"The specified item could not be found in the keyring",
 			nil,
 			0,
 		},
@@ -130,6 +122,7 @@ func (s *IntegrationTestSuite) TestTxAnchorData() {
 				commonFlags...,
 			),
 			true,
+			"selected encoding not supported",
 			nil,
 			0,
 		},
@@ -143,6 +136,7 @@ func (s *IntegrationTestSuite) TestTxAnchorData() {
 				commonFlags...,
 			),
 			false,
+			"",
 			&sdk.TxResponse{},
 			0,
 		},
@@ -156,6 +150,7 @@ func (s *IntegrationTestSuite) TestTxAnchorData() {
 				commonFlags...,
 			),
 			false,
+			"",
 			&sdk.TxResponse{},
 			18,
 		},
@@ -169,6 +164,7 @@ func (s *IntegrationTestSuite) TestTxAnchorData() {
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
+				s.Require().Contains(out.String(), tc.expectErrMsg)
 				s.Require().Error(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 			} else {
 				s.Require().NoError(err, out.String())
@@ -194,15 +190,6 @@ func (s *IntegrationTestSuite) TestGetAnchorDataByCID() {
 		expectErr bool
 		respType  proto.Message
 	}{
-		{
-			"with no args",
-			func() {},
-			[]string{
-				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
-			},
-			true,
-			nil,
-		},
 		{
 			"with non existed cid",
 			func() {
@@ -271,21 +258,10 @@ func (s *IntegrationTestSuite) TestTxSignData() {
 		name         string
 		args         []string
 		expectErr    bool
+		expectErrMsg string
 		respType     proto.Message
 		expectedCode uint32
 	}{
-		{
-			"less number of args",
-			append(
-				[]string{
-					cid.String(),
-				},
-				commonFlags...,
-			),
-			true,
-			nil,
-			0,
-		},
 		{
 			"wrong signer address",
 			append(
@@ -296,6 +272,7 @@ func (s *IntegrationTestSuite) TestTxSignData() {
 				commonFlags...,
 			),
 			true,
+			"The specified item could not be found in the keyring",
 			nil,
 			0,
 		},
@@ -309,6 +286,7 @@ func (s *IntegrationTestSuite) TestTxSignData() {
 				commonFlags...,
 			),
 			true,
+			"selected encoding not supported",
 			nil,
 			0,
 		},
@@ -322,6 +300,7 @@ func (s *IntegrationTestSuite) TestTxSignData() {
 				commonFlags...,
 			),
 			false,
+			"",
 			&sdk.TxResponse{},
 			0,
 		},
@@ -335,6 +314,7 @@ func (s *IntegrationTestSuite) TestTxSignData() {
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
+				s.Require().Contains(out.String(), tc.expectErrMsg)
 				s.Require().Error(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 			} else {
 				s.Require().NoError(err, out.String())
@@ -366,21 +346,10 @@ func (s *IntegrationTestSuite) TestTxStoreData() {
 		name         string
 		args         []string
 		expectErr    bool
+		expectErrMsg string
 		respType     proto.Message
 		expectedCode uint32
 	}{
-		{
-			"less number of args",
-			append(
-				[]string{
-					cid.String(),
-				},
-				commonFlags...,
-			),
-			true,
-			nil,
-			0,
-		},
 		{
 			"store bad data",
 			append(
@@ -392,6 +361,7 @@ func (s *IntegrationTestSuite) TestTxStoreData() {
 				commonFlags...,
 			),
 			true,
+			"illegal base64 data at input byte 8",
 			nil,
 			0,
 		},
@@ -406,6 +376,7 @@ func (s *IntegrationTestSuite) TestTxStoreData() {
 				commonFlags...,
 			),
 			true,
+			"The specified item could not be found in the keyring",
 			nil,
 			0,
 		},
@@ -420,6 +391,7 @@ func (s *IntegrationTestSuite) TestTxStoreData() {
 				commonFlags...,
 			),
 			false,
+			"",
 			&sdk.TxResponse{},
 			0,
 		},
