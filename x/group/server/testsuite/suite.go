@@ -9,7 +9,6 @@ import (
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 
-	sdktestdata "github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -82,43 +81,48 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 		Comment: "second",
 	}}
 	specs := map[string]struct {
-		srcAdmin   sdk.AccAddress
-		srcMembers []types.Member
-		srcComment string
-		expErr     bool
+		req    *types.MsgCreateGroupRequest
+		expErr bool
 	}{
 		"all good": {
-			srcAdmin:   []byte("valid--admin-address"),
-			srcMembers: members,
-			srcComment: "test",
+			req: &types.MsgCreateGroupRequest{
+				Admin:   []byte("valid--admin-address"),
+				Members: members,
+				Comment: "test",
+			},
 		},
 		"group comment too long": {
-			srcAdmin:   []byte("valid--admin-address"),
-			srcMembers: members,
-			srcComment: strings.Repeat("a", 256),
-			expErr:     true,
+			req: &types.MsgCreateGroupRequest{
+				Admin:   []byte("valid--admin-address"),
+				Members: members,
+				Comment: strings.Repeat("a", 256),
+			},
+			expErr: true,
 		},
 		"member comment too long": {
-			srcAdmin: []byte("valid--admin-address"),
-			srcMembers: []types.Member{{
-				Address: []byte("valid-member-address"),
-				Power:   sdk.OneDec(),
-				Comment: strings.Repeat("a", 256),
-			}},
-			srcComment: "test",
-			expErr:     true,
+			req: &types.MsgCreateGroupRequest{
+				Admin: []byte("valid--admin-address"),
+				Members: []types.Member{{
+					Address: []byte("valid-member-address"),
+					Power:   sdk.OneDec(),
+					Comment: strings.Repeat("a", 256),
+				}},
+				Comment: "test",
+			},
+			expErr: true,
 		},
 	}
 	var seq uint32
 	for msg, spec := range specs {
 		s.Run(msg, func() {
-			id, err := s.groupKeeper.CreateGroup(s.sdkCtx, spec.srcAdmin, spec.srcMembers, spec.srcComment)
+			res, err := s.msgClient.CreateGroup(s.ctx, spec.req)
 			if spec.expErr {
 				s.Require().Error(err)
 				s.Require().False(s.groupKeeper.HasGroup(s.sdkCtx, types.GroupID(seq+1).Bytes()))
 				return
 			}
 			s.Require().NoError(err)
+			id := res.Group
 
 			seq++
 			s.Assert().Equal(types.GroupID(seq), id)
@@ -126,8 +130,8 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			// then all data persisted
 			loadedGroup, err := s.groupKeeper.GetGroup(s.sdkCtx, id)
 			s.Require().NoError(err)
-			s.Assert().Equal(sdk.AccAddress([]byte(spec.srcAdmin)), loadedGroup.Admin)
-			s.Assert().Equal(spec.srcComment, loadedGroup.Comment)
+			s.Assert().Equal(sdk.AccAddress([]byte(spec.req.Admin)), loadedGroup.Admin)
+			s.Assert().Equal(spec.req.Comment, loadedGroup.Comment)
 			s.Assert().Equal(id, loadedGroup.Group)
 			s.Assert().Equal(uint64(1), loadedGroup.Version)
 
@@ -148,60 +152,474 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 	}
 }
 
+func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
+	members := []types.Member{{
+		Address: sdk.AccAddress([]byte("valid-member-address")),
+		Power:   sdk.NewDec(1),
+		Comment: "first member",
+	}}
+	oldAdmin := []byte("my-old-admin-address")
+	groupID, err := s.groupKeeper.CreateGroup(s.sdkCtx, oldAdmin, members, "test")
+	s.Require().NoError(err)
+
+	specs := map[string]struct {
+		req       *types.MsgUpdateGroupAdminRequest
+		expStored types.GroupMetadata
+		expErr    bool
+	}{
+		"with correct admin": {
+			req: &types.MsgUpdateGroupAdminRequest{
+				Group:    groupID,
+				Admin:    oldAdmin,
+				NewAdmin: []byte("my-new-admin-address"),
+			},
+			expStored: types.GroupMetadata{
+				Group:       groupID,
+				Admin:       []byte("my-new-admin-address"),
+				Comment:     "test",
+				TotalWeight: sdk.NewDec(1),
+				Version:     2,
+			},
+		},
+		"with wrong admin": {
+			req: &types.MsgUpdateGroupAdminRequest{
+				Group:    groupID,
+				Admin:    []byte("unknown-address"),
+				NewAdmin: []byte("my-new-admin-address"),
+			},
+			expErr: true,
+			expStored: types.GroupMetadata{
+				Group:       groupID,
+				Admin:       oldAdmin,
+				Comment:     "test",
+				TotalWeight: sdk.NewDec(1),
+				Version:     1,
+			},
+		},
+		"with unknown groupID": {
+			req: &types.MsgUpdateGroupAdminRequest{
+				Group:    999,
+				Admin:    oldAdmin,
+				NewAdmin: []byte("my-new-admin-address"),
+			},
+			expErr: true,
+			expStored: types.GroupMetadata{
+				Group:       groupID,
+				Admin:       oldAdmin,
+				Comment:     "test",
+				TotalWeight: sdk.NewDec(1),
+				Version:     1,
+			},
+		},
+	}
+	for msg, spec := range specs {
+		s.Run(msg, func() {
+			_, err := s.msgClient.UpdateGroupAdmin(s.ctx, spec.req)
+			if spec.expErr {
+				s.Require().Error(err)
+				return
+			}
+			s.Require().NoError(err)
+
+			// then
+			loaded, err := s.groupKeeper.GetGroup(s.sdkCtx, groupID)
+			s.Require().NoError(err)
+			s.Assert().Equal(spec.expStored, loaded)
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestUpdateGroupComment() {
+	oldComment := "first"
+	members := []types.Member{{
+		Address: sdk.AccAddress([]byte("valid-member-address")),
+		Power:   sdk.NewDec(1),
+		Comment: oldComment,
+	}}
+
+	oldAdmin := []byte("my-old-admin-address")
+	groupID, err := s.groupKeeper.CreateGroup(s.sdkCtx, oldAdmin, members, "test")
+	s.Require().NoError(err)
+
+	specs := map[string]struct {
+		req       *types.MsgUpdateGroupCommentRequest
+		expErr    bool
+		expStored types.GroupMetadata
+	}{
+		"with correct admin": {
+			req: &types.MsgUpdateGroupCommentRequest{
+				Group:   groupID,
+				Admin:   oldAdmin,
+				Comment: "new comment",
+			},
+			expStored: types.GroupMetadata{
+				Group:       groupID,
+				Admin:       oldAdmin,
+				Comment:     "new comment",
+				TotalWeight: sdk.NewDec(1),
+				Version:     2,
+			},
+		},
+		"with wrong admin": {
+			req: &types.MsgUpdateGroupCommentRequest{
+				Group:   groupID,
+				Admin:   []byte("unknown-address"),
+				Comment: "new comment",
+			},
+			expErr: true,
+			expStored: types.GroupMetadata{
+				Group:       groupID,
+				Admin:       oldAdmin,
+				Comment:     "test",
+				TotalWeight: sdk.NewDec(1),
+				Version:     1,
+			},
+		},
+		"with unknown groupid": {
+			req: &types.MsgUpdateGroupCommentRequest{
+				Group:   999,
+				Admin:   []byte("unknown-address"),
+				Comment: "new comment",
+			},
+			expErr: true,
+			expStored: types.GroupMetadata{
+				Group:       groupID,
+				Admin:       oldAdmin,
+				Comment:     "test",
+				TotalWeight: sdk.NewDec(1),
+				Version:     1,
+			},
+		},
+	}
+	for msg, spec := range specs {
+		s.Run(msg, func() {
+			_, err := s.msgClient.UpdateGroupComment(s.ctx, spec.req)
+			if spec.expErr {
+				s.Require().Error(err)
+				return
+			}
+			s.Require().NoError(err)
+
+			// then
+			loaded, err := s.groupKeeper.GetGroup(s.sdkCtx, groupID)
+			s.Require().NoError(err)
+			s.Assert().Equal(spec.expStored, loaded)
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
+	members := []types.Member{{
+		Address: sdk.AccAddress([]byte("valid-member-address")),
+		Power:   sdk.NewDec(1),
+		Comment: "first",
+	}}
+
+	myAdmin := []byte("valid--admin-address")
+	groupID, err := s.groupKeeper.CreateGroup(s.sdkCtx, myAdmin, members, "test")
+	s.Require().NoError(err)
+
+	specs := map[string]struct {
+		req        *types.MsgUpdateGroupMembersRequest
+		expErr     bool
+		expGroup   types.GroupMetadata
+		expMembers []types.GroupMember
+	}{
+		"add new member": {
+			req: &types.MsgUpdateGroupMembersRequest{
+				Group: groupID,
+				Admin: myAdmin,
+				MemberUpdates: []types.Member{{
+					Address: sdk.AccAddress([]byte("other-member-address")),
+					Power:   sdk.NewDec(2),
+					Comment: "second",
+				}},
+			},
+			expGroup: types.GroupMetadata{
+				Group:       groupID,
+				Admin:       myAdmin,
+				Comment:     "test",
+				TotalWeight: sdk.NewDec(3),
+				Version:     2,
+			},
+			expMembers: []types.GroupMember{
+				{
+					Member:  sdk.AccAddress([]byte("other-member-address")),
+					Group:   groupID,
+					Weight:  sdk.NewDec(2),
+					Comment: "second",
+				},
+				{
+					Member:  sdk.AccAddress([]byte("valid-member-address")),
+					Group:   groupID,
+					Weight:  sdk.NewDec(1),
+					Comment: "first",
+				},
+			},
+		},
+		"update member": {
+			req: &types.MsgUpdateGroupMembersRequest{
+				Group: groupID,
+				Admin: myAdmin,
+				MemberUpdates: []types.Member{{
+					Address: sdk.AccAddress([]byte("valid-member-address")),
+					Power:   sdk.NewDec(2),
+					Comment: "updated",
+				}},
+			},
+			expGroup: types.GroupMetadata{
+				Group:       groupID,
+				Admin:       myAdmin,
+				Comment:     "test",
+				TotalWeight: sdk.NewDec(2),
+				Version:     2,
+			},
+			expMembers: []types.GroupMember{
+				{
+					Member:  sdk.AccAddress([]byte("valid-member-address")),
+					Group:   groupID,
+					Weight:  sdk.NewDec(2),
+					Comment: "updated",
+				},
+			},
+		},
+		"update member with same data": {
+			req: &types.MsgUpdateGroupMembersRequest{
+				Group: groupID,
+				Admin: myAdmin,
+				MemberUpdates: []types.Member{{
+					Address: sdk.AccAddress([]byte("valid-member-address")),
+					Power:   sdk.NewDec(1),
+					Comment: "first",
+				}},
+			},
+			expGroup: types.GroupMetadata{
+				Group:       groupID,
+				Admin:       myAdmin,
+				Comment:     "test",
+				TotalWeight: sdk.NewDec(1),
+				Version:     2,
+			},
+			expMembers: []types.GroupMember{
+				{
+					Member:  sdk.AccAddress([]byte("valid-member-address")),
+					Group:   groupID,
+					Weight:  sdk.NewDec(1),
+					Comment: "first",
+				},
+			},
+		},
+		"replace member": {
+			req: &types.MsgUpdateGroupMembersRequest{
+				Group: groupID,
+				Admin: myAdmin,
+				MemberUpdates: []types.Member{{
+					Address: sdk.AccAddress([]byte("valid-member-address")),
+					Power:   sdk.NewDec(0),
+					Comment: "good bye",
+				},
+					{
+						Address: sdk.AccAddress([]byte("my-new-member-addres")),
+						Power:   sdk.NewDec(1),
+						Comment: "welcome",
+					}},
+			},
+			expGroup: types.GroupMetadata{
+				Group:       groupID,
+				Admin:       myAdmin,
+				Comment:     "test",
+				TotalWeight: sdk.NewDec(1),
+				Version:     2,
+			},
+			expMembers: []types.GroupMember{{
+				Member:  sdk.AccAddress([]byte("my-new-member-addres")),
+				Group:   groupID,
+				Weight:  sdk.NewDec(1),
+				Comment: "welcome",
+			}},
+		},
+		"remove existing member": {
+			req: &types.MsgUpdateGroupMembersRequest{
+				Group: groupID,
+				Admin: myAdmin,
+				MemberUpdates: []types.Member{{
+					Address: sdk.AccAddress([]byte("valid-member-address")),
+					Power:   sdk.NewDec(0),
+					Comment: "good bye",
+				}},
+			},
+			expGroup: types.GroupMetadata{
+				Group:       groupID,
+				Admin:       myAdmin,
+				Comment:     "test",
+				TotalWeight: sdk.NewDec(0),
+				Version:     2,
+			},
+			expMembers: []types.GroupMember{},
+		},
+		"remove unknown member": {
+			req: &types.MsgUpdateGroupMembersRequest{
+				Group: groupID,
+				Admin: myAdmin,
+				MemberUpdates: []types.Member{{
+					Address: sdk.AccAddress([]byte("unknown-member-addrs")),
+					Power:   sdk.NewDec(0),
+					Comment: "good bye",
+				}},
+			},
+			expErr: true,
+			expGroup: types.GroupMetadata{
+				Group:       groupID,
+				Admin:       myAdmin,
+				Comment:     "test",
+				TotalWeight: sdk.NewDec(1),
+				Version:     1,
+			},
+			expMembers: []types.GroupMember{{
+				Member:  sdk.AccAddress([]byte("valid-member-address")),
+				Group:   groupID,
+				Weight:  sdk.NewDec(1),
+				Comment: "first",
+			}},
+		},
+		"with wrong admin": {
+			req: &types.MsgUpdateGroupMembersRequest{
+				Group: groupID,
+				Admin: []byte("unknown-address"),
+				MemberUpdates: []types.Member{{
+					Address: sdk.AccAddress([]byte("other-member-address")),
+					Power:   sdk.NewDec(2),
+					Comment: "second",
+				}},
+			},
+			expErr: true,
+			expGroup: types.GroupMetadata{
+				Group:       groupID,
+				Admin:       myAdmin,
+				Comment:     "test",
+				TotalWeight: sdk.NewDec(1),
+				Version:     1,
+			},
+			expMembers: []types.GroupMember{{
+				Member:  sdk.AccAddress([]byte("valid-member-address")),
+				Group:   groupID,
+				Weight:  sdk.NewDec(1),
+				Comment: "first",
+			}},
+		},
+		"with unknown groupID": {
+			req: &types.MsgUpdateGroupMembersRequest{
+				Group: 999,
+				Admin: myAdmin,
+				MemberUpdates: []types.Member{{
+					Address: sdk.AccAddress([]byte("other-member-address")),
+					Power:   sdk.NewDec(2),
+					Comment: "second",
+				}},
+			},
+			expErr: true,
+			expGroup: types.GroupMetadata{
+				Group:       groupID,
+				Admin:       myAdmin,
+				Comment:     "test",
+				TotalWeight: sdk.NewDec(1),
+				Version:     1,
+			},
+			expMembers: []types.GroupMember{{
+				Member:  sdk.AccAddress([]byte("valid-member-address")),
+				Group:   groupID,
+				Weight:  sdk.NewDec(1),
+				Comment: "first",
+			}},
+		},
+	}
+	for msg, spec := range specs {
+		s.Run(msg, func() {
+			_, err := s.msgClient.UpdateGroupMembers(s.ctx, spec.req)
+			if spec.expErr {
+				s.Require().Error(err)
+				return
+			}
+			s.Require().NoError(err)
+
+			// then
+			loaded, err := s.groupKeeper.GetGroup(s.sdkCtx, groupID)
+			s.Require().NoError(err)
+			s.Assert().Equal(spec.expGroup, loaded)
+
+			// and members persisted
+			it, err := s.groupKeeper.GetGroupMembersByGroup(s.sdkCtx, groupID)
+			s.Require().NoError(err)
+			var loadedMembers []types.GroupMember
+			_, err = orm.ReadAll(it, &loadedMembers)
+			s.Require().NoError(err)
+			s.Assert().Equal(spec.expMembers, loadedMembers)
+		})
+	}
+}
+
 func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 	myGroupID, err := s.groupKeeper.CreateGroup(s.sdkCtx, []byte("valid--admin-address"), nil, "test")
 	s.Require().NoError(err)
 
 	specs := map[string]struct {
-		srcAdmin   sdk.AccAddress
-		srcGroupID types.GroupID
-		srcPolicy  types.DecisionPolicy
-		srcComment string
-		expErr     bool
+		req    *types.MsgCreateGroupAccountRequest
+		policy types.DecisionPolicy
+		expErr bool
 	}{
 		"all good": {
-			srcAdmin:   []byte("valid--admin-address"),
-			srcComment: "test",
-			srcGroupID: myGroupID,
-			srcPolicy: types.NewThresholdDecisionPolicy(
+			req: &types.MsgCreateGroupAccountRequest{
+				Admin:   []byte("valid--admin-address"),
+				Comment: "test",
+				Group:   myGroupID,
+			},
+			policy: types.NewThresholdDecisionPolicy(
 				sdk.OneDec(),
 				gogotypes.Duration{Seconds: 1},
 			),
 		},
 		"decision policy threshold > total group weight": {
-			srcAdmin:   []byte("valid--admin-address"),
-			srcComment: "test",
-			srcGroupID: myGroupID,
-			srcPolicy: types.NewThresholdDecisionPolicy(
+			req: &types.MsgCreateGroupAccountRequest{
+				Admin:   []byte("valid--admin-address"),
+				Comment: "test",
+				Group:   myGroupID,
+			},
+			policy: types.NewThresholdDecisionPolicy(
 				sdk.NewDec(math.MaxInt64),
 				gogotypes.Duration{Seconds: 1},
 			),
 		},
 		"group id does not exists": {
-			srcAdmin:   []byte("valid--admin-address"),
-			srcComment: "test",
-			srcGroupID: 9999,
-			srcPolicy: types.NewThresholdDecisionPolicy(
+			req: &types.MsgCreateGroupAccountRequest{
+				Admin:   []byte("valid--admin-address"),
+				Comment: "test",
+				Group:   9999,
+			},
+			policy: types.NewThresholdDecisionPolicy(
 				sdk.OneDec(),
 				gogotypes.Duration{Seconds: 1},
 			),
 			expErr: true,
 		},
 		"admin not group admin": {
-			srcAdmin:   []byte("other--admin-address"),
-			srcComment: "test",
-			srcGroupID: myGroupID,
-			srcPolicy: types.NewThresholdDecisionPolicy(
+			req: &types.MsgCreateGroupAccountRequest{
+				Admin:   []byte("other--admin-address"),
+				Comment: "test",
+				Group:   myGroupID,
+			},
+			policy: types.NewThresholdDecisionPolicy(
 				sdk.OneDec(),
 				gogotypes.Duration{Seconds: 1},
 			),
 			expErr: true,
 		},
 		"comment too long": {
-			srcAdmin:   []byte("valid--admin-address"),
-			srcComment: strings.Repeat("a", 256),
-			srcGroupID: myGroupID,
-			srcPolicy: types.NewThresholdDecisionPolicy(
+			req: &types.MsgCreateGroupAccountRequest{
+				Admin:   []byte("valid--admin-address"),
+				Comment: strings.Repeat("a", 256),
+				Group:   myGroupID,
+			},
+			policy: types.NewThresholdDecisionPolicy(
 				sdk.OneDec(),
 				gogotypes.Duration{Seconds: 1},
 			),
@@ -210,23 +628,27 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 	}
 	for msg, spec := range specs {
 		s.Run(msg, func() {
-			addr, err := s.groupKeeper.CreateGroupAccount(s.sdkCtx, spec.srcAdmin, spec.srcGroupID, spec.srcPolicy, spec.srcComment)
+			err := spec.req.SetDecisionPolicy(spec.policy)
+			s.Require().NoError(err)
+
+			res, err := s.msgClient.CreateGroupAccount(s.ctx, spec.req)
 			if spec.expErr {
 				s.Require().Error(err)
 				return
 			}
 			s.Require().NoError(err)
+			addr := res.GroupAccount
 
 			// then all data persisted
 			groupAccount, err := s.groupKeeper.GetGroupAccount(s.sdkCtx, addr)
 			s.Require().NoError(err)
 			s.Assert().Equal(addr, groupAccount.GroupAccount)
 			s.Assert().Equal(myGroupID, groupAccount.Group)
-			s.Assert().Equal(sdk.AccAddress([]byte(spec.srcAdmin)), groupAccount.Admin)
-			s.Assert().Equal(spec.srcComment, groupAccount.Comment)
+			s.Assert().Equal(sdk.AccAddress([]byte(spec.req.Admin)), groupAccount.Admin)
+			s.Assert().Equal(spec.req.Comment, groupAccount.Comment)
 			s.Assert().Equal(uint64(1), groupAccount.Version)
 			// TODO Fix (ORM should unpack Any's properly)
-			s.Assert().Equal(&spec.srcPolicy, groupAccount.GetDecisionPolicy())
+			// s.Assert().Equal(&spec.policy, groupAccount.GetDecisionPolicy())
 		})
 	}
 }
@@ -254,87 +676,115 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 	s.Require().NoError(err)
 
 	specs := map[string]struct {
-		srcAccount   sdk.AccAddress
-		srcProposers []sdk.AccAddress
-		srcMsgs      []sdk.Msg
-		srcComment   string
-		expErr       bool
+		req    *types.MsgCreateProposalRequest
+		msgs   []sdk.Msg
+		expErr bool
 	}{
 		"all good with minimal fields set": {
-			srcAccount:   accountAddr,
-			srcProposers: []sdk.AccAddress{[]byte("valid-member-address")},
+			req: &types.MsgCreateProposalRequest{
+				GroupAccount: accountAddr,
+				Proposers:    []sdk.AccAddress{[]byte("valid-member-address")},
+			},
 		},
 		"all good with good msg payload": {
-			srcAccount:   accountAddr,
-			srcProposers: []sdk.AccAddress{[]byte("valid-member-address")},
-			srcMsgs:      []sdk.Msg{sdktestdata.NewServiceMsgCreateDog(&sdktestdata.MsgCreateDog{})},
+			req: &types.MsgCreateProposalRequest{
+				GroupAccount: accountAddr,
+				Proposers:    []sdk.AccAddress{[]byte("valid-member-address")},
+			},
+			msgs: []sdk.Msg{&banktypes.MsgSend{
+				FromAddress: accountAddr.String(),
+				ToAddress:   s.addr2.String(),
+				Amount:      sdk.Coins{sdk.NewInt64Coin("token", 100)},
+			}},
 		},
 		"comment too long": {
-			srcAccount:   accountAddr,
-			srcComment:   strings.Repeat("a", 256),
-			srcProposers: []sdk.AccAddress{[]byte("valid-member-address")},
-			expErr:       true,
+			req: &types.MsgCreateProposalRequest{
+				GroupAccount: accountAddr,
+				Comment:      strings.Repeat("a", 256),
+				Proposers:    []sdk.AccAddress{[]byte("valid-member-address")},
+			},
+			expErr: true,
 		},
 		"group account required": {
-			srcComment:   "test",
-			srcProposers: []sdk.AccAddress{[]byte("valid-member-address")},
-			expErr:       true,
+			req: &types.MsgCreateProposalRequest{
+				Comment:   "test",
+				Proposers: []sdk.AccAddress{[]byte("valid-member-address")},
+			},
+			expErr: true,
 		},
 		"existing group account required": {
-			srcAccount:   []byte("non-existing-account"),
-			srcProposers: []sdk.AccAddress{[]byte("valid-member-address")},
-			expErr:       true,
+			req: &types.MsgCreateProposalRequest{
+				GroupAccount: []byte("non-existing-account"),
+				Proposers:    []sdk.AccAddress{[]byte("valid-member-address")},
+			},
+			expErr: true,
 		},
 		"impossible case: decision policy threshold > total group weight": {
-			srcAccount:   bigThresholdAddr,
-			srcProposers: []sdk.AccAddress{[]byte("valid-member-address")},
-			expErr:       true,
+			req: &types.MsgCreateProposalRequest{
+				GroupAccount: bigThresholdAddr,
+				Proposers:    []sdk.AccAddress{[]byte("valid-member-address")},
+			},
+			expErr: true,
 		},
 		"only group members can create a proposal": {
-			srcAccount:   accountAddr,
-			srcProposers: []sdk.AccAddress{[]byte("non--member-address")},
-			expErr:       true,
+			req: &types.MsgCreateProposalRequest{
+				GroupAccount: accountAddr,
+				Proposers:    []sdk.AccAddress{[]byte("non--member-address")},
+			},
+			expErr: true,
 		},
 		"all proposers must be in group": {
-			srcAccount:   accountAddr,
-			srcProposers: []sdk.AccAddress{[]byte("valid-member-address"), []byte("non--member-address")},
-			expErr:       true,
+			req: &types.MsgCreateProposalRequest{
+				GroupAccount: accountAddr,
+				Proposers:    []sdk.AccAddress{[]byte("valid-member-address"), []byte("non--member-address")},
+			},
+			expErr: true,
 		},
 		"proposers must not be nil": {
-			srcAccount:   accountAddr,
-			srcProposers: []sdk.AccAddress{[]byte("valid-member-address"), nil},
-			expErr:       true,
+			req: &types.MsgCreateProposalRequest{
+				GroupAccount: accountAddr,
+				Proposers:    []sdk.AccAddress{[]byte("valid-member-address"), nil},
+			},
+			expErr: true,
 		},
 		"admin that is not a group member can not create proposal": {
-			srcAccount:   accountAddr,
-			srcComment:   "test",
-			srcProposers: []sdk.AccAddress{[]byte("valid--admin-address")},
-			expErr:       true,
+			req: &types.MsgCreateProposalRequest{
+				GroupAccount: accountAddr,
+				Comment:      "test",
+				Proposers:    []sdk.AccAddress{[]byte("valid--admin-address")},
+			},
+			expErr: true,
 		},
 		"reject msgs that are not authz by group account": {
-			srcAccount:   accountAddr,
-			srcComment:   "test",
-			srcMsgs:      []sdk.Msg{&testdata.MsgAuthenticated{Signers: []sdk.AccAddress{[]byte("not-group-acct-addrs")}}},
-			srcProposers: []sdk.AccAddress{[]byte("valid-member-address")},
-			expErr:       true,
+			req: &types.MsgCreateProposalRequest{
+				GroupAccount: accountAddr,
+				Comment:      "test",
+				Proposers:    []sdk.AccAddress{[]byte("valid-member-address")},
+			},
+			msgs:   []sdk.Msg{&testdata.MsgAuthenticated{Signers: []sdk.AccAddress{[]byte("not-group-acct-addrs")}}},
+			expErr: true,
 		},
 	}
 	for msg, spec := range specs {
 		s.Run(msg, func() {
-			id, err := s.groupKeeper.CreateProposal(s.sdkCtx, spec.srcAccount, spec.srcComment, spec.srcProposers, spec.srcMsgs)
+			err := spec.req.SetMsgs(spec.msgs)
+			s.Require().NoError(err)
+
+			res, err := s.msgClient.CreateProposal(s.ctx, spec.req)
 			if spec.expErr {
 				s.Require().Error(err)
 				return
 			}
 			s.Require().NoError(err)
+			id := res.Proposal
 
 			// then all data persisted
 			proposal, err := s.groupKeeper.GetProposal(s.sdkCtx, id)
 			s.Require().NoError(err)
 
 			s.Assert().Equal(accountAddr, proposal.GroupAccount)
-			s.Assert().Equal(spec.srcComment, proposal.Comment)
-			s.Assert().Equal(spec.srcProposers, proposal.Proposers)
+			s.Assert().Equal(spec.req.Comment, proposal.Comment)
+			s.Assert().Equal(spec.req.Proposers, proposal.Proposers)
 
 			submittedAt, err := gogotypes.TimestampFromProto(&proposal.SubmittedAt)
 			s.Require().NoError(err)
@@ -355,10 +805,10 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 			s.Require().NoError(err)
 			s.Assert().Equal(s.blockTime.Add(time.Second), timeout)
 
-			if spec.srcMsgs == nil { // then empty list is ok
+			if spec.msgs == nil { // then empty list is ok
 				s.Assert().Len(proposal.GetMsgs(), 0)
 			} else {
-				s.Assert().Equal(spec.srcMsgs, proposal.GetMsgs())
+				s.Assert().Equal(spec.msgs, proposal.GetMsgs())
 			}
 		})
 	}
@@ -382,10 +832,7 @@ func (s *IntegrationTestSuite) TestVote() {
 	s.Require().NoError(err)
 
 	specs := map[string]struct {
-		srcProposalID     types.ProposalID
-		srcVoters         []sdk.AccAddress
-		srcChoice         types.Choice
-		srcComment        string
+		req               *types.MsgVoteRequest
 		srcCtx            sdk.Context
 		doBefore          func(ctx sdk.Context)
 		expErr            bool
@@ -394,9 +841,11 @@ func (s *IntegrationTestSuite) TestVote() {
 		expResult         types.Proposal_Result
 	}{
 		"vote yes": {
-			srcProposalID: myProposalID,
-			srcVoters:     []sdk.AccAddress{[]byte("valid-member-address")},
-			srcChoice:     types.Choice_YES,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:   types.Choice_YES,
+			},
 			expVoteState: types.Tally{
 				YesCount:     sdk.OneDec(),
 				NoCount:      sdk.ZeroDec(),
@@ -407,9 +856,11 @@ func (s *IntegrationTestSuite) TestVote() {
 			expResult:         types.ProposalResultUndefined,
 		},
 		"vote no": {
-			srcProposalID: myProposalID,
-			srcVoters:     []sdk.AccAddress{[]byte("valid-member-address")},
-			srcChoice:     types.Choice_NO,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:   types.Choice_NO,
+			},
 			expVoteState: types.Tally{
 				YesCount:     sdk.ZeroDec(),
 				NoCount:      sdk.OneDec(),
@@ -420,9 +871,11 @@ func (s *IntegrationTestSuite) TestVote() {
 			expResult:         types.ProposalResultUndefined,
 		},
 		"vote abstain": {
-			srcProposalID: myProposalID,
-			srcVoters:     []sdk.AccAddress{[]byte("valid-member-address")},
-			srcChoice:     types.Choice_ABSTAIN,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:   types.Choice_ABSTAIN,
+			},
 			expVoteState: types.Tally{
 				YesCount:     sdk.ZeroDec(),
 				NoCount:      sdk.ZeroDec(),
@@ -433,9 +886,11 @@ func (s *IntegrationTestSuite) TestVote() {
 			expResult:         types.ProposalResultUndefined,
 		},
 		"vote veto": {
-			srcProposalID: myProposalID,
-			srcVoters:     []sdk.AccAddress{[]byte("valid-member-address")},
-			srcChoice:     types.Choice_VETO,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:   types.Choice_VETO,
+			},
 			expVoteState: types.Tally{
 				YesCount:     sdk.ZeroDec(),
 				NoCount:      sdk.ZeroDec(),
@@ -446,9 +901,11 @@ func (s *IntegrationTestSuite) TestVote() {
 			expResult:         types.ProposalResultUndefined,
 		},
 		"apply decision policy early": {
-			srcProposalID: myProposalID,
-			srcVoters:     []sdk.AccAddress{[]byte("power-member-address")},
-			srcChoice:     types.Choice_YES,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Voters:   []sdk.AccAddress{[]byte("power-member-address")},
+				Choice:   types.Choice_YES,
+			},
 			expVoteState: types.Tally{
 				YesCount:     sdk.NewDec(2),
 				NoCount:      sdk.ZeroDec(),
@@ -459,78 +916,102 @@ func (s *IntegrationTestSuite) TestVote() {
 			expResult:         types.ProposalResultAccepted,
 		},
 		"reject new votes when final decision is made already": {
-			srcProposalID: myProposalID,
-			srcVoters:     []sdk.AccAddress{[]byte("valid-member-address")},
-			srcChoice:     types.Choice_YES,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:   types.Choice_YES,
+			},
 			doBefore: func(ctx sdk.Context) {
 				s.Require().NoError(s.groupKeeper.Vote(s.sdkCtx, myProposalID, []sdk.AccAddress{[]byte("power-member-address")}, types.Choice_VETO, ""))
 			},
 			expErr: true,
 		},
 		"comment too long": {
-			srcProposalID: myProposalID,
-			srcComment:    strings.Repeat("a", 256),
-			srcVoters:     []sdk.AccAddress{[]byte("valid-member-address")},
-			srcChoice:     types.Choice_NO,
-			expErr:        true,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Comment:  strings.Repeat("a", 256),
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:   types.Choice_NO,
+			},
+			expErr: true,
 		},
 		"existing proposal required": {
-			srcProposalID: 9999,
-			srcVoters:     []sdk.AccAddress{[]byte("valid-member-address")},
-			srcChoice:     types.Choice_NO,
-			expErr:        true,
+			req: &types.MsgVoteRequest{
+				Proposal: 999,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:   types.Choice_NO,
+			},
+			expErr: true,
 		},
 		"empty choice": {
-			srcProposalID: myProposalID,
-			srcVoters:     []sdk.AccAddress{[]byte("valid-member-address")},
-			expErr:        true,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+			},
+			expErr: true,
 		},
 		"invalid choice": {
-			srcProposalID: myProposalID,
-			srcVoters:     []sdk.AccAddress{[]byte("valid-member-address")},
-			srcChoice:     5,
-			expErr:        true,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:   5,
+			},
+			expErr: true,
 		},
 		"all voters must be in group": {
-			srcProposalID: myProposalID,
-			srcVoters:     []sdk.AccAddress{[]byte("valid-member-address"), []byte("non--member-address")},
-			srcChoice:     types.Choice_NO,
-			expErr:        true,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address"), []byte("non--member-address")},
+				Choice:   types.Choice_NO,
+			},
+			expErr: true,
 		},
 		"voters must not include nil": {
-			srcProposalID: myProposalID,
-			srcVoters:     []sdk.AccAddress{[]byte("valid-member-address"), nil},
-			srcChoice:     types.Choice_NO,
-			expErr:        true,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address"), nil},
+				Choice:   types.Choice_NO,
+			},
+			expErr: true,
 		},
 		"voters must not be nil": {
-			srcProposalID: myProposalID,
-			srcChoice:     types.Choice_NO,
-			expErr:        true,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Choice:   types.Choice_NO,
+			},
+			expErr: true,
 		},
 		"voters must not be empty": {
-			srcProposalID: myProposalID,
-			srcChoice:     types.Choice_NO,
-			srcVoters:     []sdk.AccAddress{},
-			expErr:        true,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Choice:   types.Choice_NO,
+				Voters:   []sdk.AccAddress{},
+			},
+			expErr: true,
 		},
 		"admin that is not a group member can not vote": {
-			srcProposalID: myProposalID,
-			srcVoters:     []sdk.AccAddress{[]byte("valid--admin-address")},
-			srcChoice:     types.Choice_NO,
-			expErr:        true,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Voters:   []sdk.AccAddress{[]byte("valid--admin-address")},
+				Choice:   types.Choice_NO,
+			},
+			expErr: true,
 		},
 		"on timeout": {
-			srcProposalID: myProposalID,
-			srcVoters:     []sdk.AccAddress{[]byte("valid-member-address")},
-			srcChoice:     types.Choice_NO,
-			srcCtx:        s.sdkCtx.WithBlockTime(s.blockTime.Add(time.Second)),
-			expErr:        true,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:   types.Choice_NO,
+			},
+			srcCtx: s.sdkCtx.WithBlockTime(s.blockTime.Add(time.Second)),
+			expErr: true,
 		},
 		"closed already": {
-			srcProposalID: myProposalID,
-			srcVoters:     []sdk.AccAddress{[]byte("valid-member-address")},
-			srcChoice:     types.Choice_NO,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:   types.Choice_NO,
+			},
 			doBefore: func(ctx sdk.Context) {
 				err := s.groupKeeper.Vote(s.sdkCtx, myProposalID, []sdk.AccAddress{[]byte("power-member-address")}, types.Choice_YES, "")
 				s.Require().NoError(err)
@@ -538,9 +1019,11 @@ func (s *IntegrationTestSuite) TestVote() {
 			expErr: true,
 		},
 		"voted already": {
-			srcProposalID: myProposalID,
-			srcVoters:     []sdk.AccAddress{[]byte("valid-member-address")},
-			srcChoice:     types.Choice_NO,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:   types.Choice_NO,
+			},
 			doBefore: func(ctx sdk.Context) {
 				err := s.groupKeeper.Vote(s.sdkCtx, myProposalID, []sdk.AccAddress{[]byte("valid-member-address")}, types.Choice_YES, "")
 				s.Require().NoError(err)
@@ -548,9 +1031,11 @@ func (s *IntegrationTestSuite) TestVote() {
 			expErr: true,
 		},
 		"with group modified": {
-			srcProposalID: myProposalID,
-			srcVoters:     []sdk.AccAddress{[]byte("valid-member-address")},
-			srcChoice:     types.Choice_NO,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:   types.Choice_NO,
+			},
 			doBefore: func(ctx sdk.Context) {
 				g, err := s.groupKeeper.GetGroup(s.sdkCtx, myGroupID)
 				s.Require().NoError(err)
@@ -560,9 +1045,11 @@ func (s *IntegrationTestSuite) TestVote() {
 			expErr: true,
 		},
 		"with policy modified": {
-			srcProposalID: myProposalID,
-			srcVoters:     []sdk.AccAddress{[]byte("valid-member-address")},
-			srcChoice:     types.Choice_NO,
+			req: &types.MsgVoteRequest{
+				Proposal: myProposalID,
+				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:   types.Choice_NO,
+			},
 			doBefore: func(ctx sdk.Context) {
 				a, err := s.groupKeeper.GetGroupAccount(s.sdkCtx, accountAddr)
 				s.Require().NoError(err)
@@ -583,7 +1070,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			if spec.doBefore != nil {
 				spec.doBefore(s.sdkCtx)
 			}
-			err := s.groupKeeper.Vote(s.sdkCtx, spec.srcProposalID, spec.srcVoters, spec.srcChoice, spec.srcComment)
+			_, err := s.msgClient.Vote(s.ctx, spec.req)
 			if spec.expErr {
 				s.Require().Error(err)
 				return
@@ -591,21 +1078,21 @@ func (s *IntegrationTestSuite) TestVote() {
 			s.Require().NoError(err)
 
 			// and all votes are stored
-			for _, voter := range spec.srcVoters {
+			for _, voter := range spec.req.Voters {
 				// then all data persisted
-				loaded, err := s.groupKeeper.GetVote(s.sdkCtx, spec.srcProposalID, voter)
+				loaded, err := s.groupKeeper.GetVote(s.sdkCtx, spec.req.Proposal, voter)
 				s.Require().NoError(err)
-				s.Assert().Equal(spec.srcProposalID, loaded.Proposal)
+				s.Assert().Equal(spec.req.Proposal, loaded.Proposal)
 				s.Assert().Equal(voter, loaded.Voter)
-				s.Assert().Equal(spec.srcChoice, loaded.Choice)
-				s.Assert().Equal(spec.srcComment, loaded.Comment)
+				s.Assert().Equal(spec.req.Choice, loaded.Choice)
+				s.Assert().Equal(spec.req.Comment, loaded.Comment)
 				submittedAt, err := gogotypes.TimestampFromProto(&loaded.SubmittedAt)
 				s.Require().NoError(err)
 				s.Assert().Equal(s.blockTime, submittedAt)
 			}
 
 			// and proposal is updated
-			proposal, err := s.groupKeeper.GetProposal(s.sdkCtx, spec.srcProposalID)
+			proposal, err := s.groupKeeper.GetProposal(s.sdkCtx, spec.req.Proposal)
 			s.Require().NoError(err)
 			s.Assert().Equal(spec.expVoteState, proposal.VoteState)
 			s.Assert().Equal(spec.expResult, proposal.Result)
@@ -818,7 +1305,10 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		"rollback all msg updates on failure": {
 			setupProposal: func(ctx sdk.Context) types.ProposalID {
 				myProposalID, err := s.groupKeeper.CreateProposal(ctx, accountAddr, "test", proposers, []sdk.Msg{
-					msgSend, &banktypes.MsgSend{},
+					msgSend, &banktypes.MsgSend{
+						FromAddress: accountAddr.String(),
+						ToAddress:   s.addr2.String(),
+						Amount:      sdk.Coins{sdk.NewInt64Coin("token", 100)}}, // TODO change amount to make the msg exec fail
 				})
 				s.Require().NoError(err)
 				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_YES, ""))
@@ -854,7 +1344,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			if !spec.srcBlockTime.IsZero() {
 				ctx = ctx.WithBlockTime(spec.srcBlockTime)
 			}
-			err := s.groupKeeper.ExecProposal(ctx, proposalID)
+			_, err := s.msgClient.Exec(sdk.WrapSDKContext(ctx), &types.MsgExecRequest{Proposal: proposalID})
 			if spec.expErr {
 				s.Require().Error(err)
 				return

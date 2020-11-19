@@ -364,6 +364,21 @@ func (m MsgCreateProposalRequest) ValidateBasic() error {
 	return nil
 }
 
+// SetMsgs packs msgs into Any's
+func (m *MsgCreateProposalRequest) SetMsgs(msgs []sdk.Msg) error {
+	anys := make([]*types.Any, len(msgs))
+
+	for i, msg := range msgs {
+		var err error
+		anys[i], err = types.NewAnyWithValue(msg)
+		if err != nil {
+			return err
+		}
+	}
+	m.Msgs = anys
+	return nil
+}
+
 // GetMsgs unpacks m.Msgs Any's into sdk.Msg's
 func (m MsgCreateProposalRequest) GetMsgs() []sdk.Msg {
 	msgs := make([]sdk.Msg, len(m.Msgs))
