@@ -2,6 +2,8 @@ package testsuite
 
 import (
 	"context"
+	"math"
+	"strings"
 	"time"
 
 	gogotypes "github.com/gogo/protobuf/types"
@@ -11,6 +13,7 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
+	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/testutil/server"
 	groupserver "github.com/regen-network/regen-ledger/x/group/server"
 	"github.com/regen-network/regen-ledger/x/group/types"
@@ -66,7 +69,6 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 	s.fixture.Teardown()
 }
 
-/*
 func (s *IntegrationTestSuite) TestCreateGroup() {
 	members := []types.Member{{
 		Address: sdk.AccAddress([]byte("one--member--address")),
@@ -608,7 +610,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			s.Assert().Equal(spec.expProposalStatus, proposal.Status)
 		})
 	}
-}*/
+}
 
 func (s *IntegrationTestSuite) TestExecProposal() {
 	members := []types.Member{
@@ -872,7 +874,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			got = types.Proposal_ExecutorResult_name[int32(proposal.ExecutorResult)]
 			s.Assert().Equal(exp, got)
 
-			// and proposal messages executed
+			// TODO verify proposal messages executed
 			// s.Assert().Equal(spec.expPayloadCounter, testdataKeeper.GetCounter(ctx), "counter")
 		})
 	}
