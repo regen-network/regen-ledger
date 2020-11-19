@@ -12,9 +12,6 @@
 - [regen/data/v1alpha1/genesis.proto](#regen/data/v1alpha1/genesis.proto)
     - [GenesisState](#regen.data.v1alpha1.GenesisState)
   
-- [regen/data/v1alpha1/misc.proto](#regen/data/v1alpha1/misc.proto)
-    - [Signers](#regen.data.v1alpha1.Signers)
-  
 - [regen/data/v1alpha1/query.proto](#regen/data/v1alpha1/query.proto)
     - [QueryByCidRequest](#regen.data.v1alpha1.QueryByCidRequest)
     - [QueryByCidResponse](#regen.data.v1alpha1.QueryByCidResponse)
@@ -108,37 +105,6 @@ EventAnchorData is an event emitted when data is stored on-chain.
 
 ### GenesisState
 TODO
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
- <!-- end services -->
-
-
-
-<a name="regen/data/v1alpha1/misc.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## regen/data/v1alpha1/misc.proto
-
-
-
-<a name="regen.data.v1alpha1.Signers"></a>
-
-### Signers
-Signers is an internal type for storing a list of signers in state.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| signers | [string](#string) | repeated | signers are the addresses of the accounts which have signed the data. |
 
 
 
