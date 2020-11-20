@@ -50,9 +50,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	clientCtx := val.ClientCtx
 
 	testContent := []byte("xyzabc12345")
-	mh, err := multihash.Sum(testContent, multihash.SHA2_256, -1)
-	s.Require().NoError(err)
-	cid := gocid.NewCidV1(gocid.Raw, mh)
+	cid := s.getCid(testContent)
 
 	commonFlags := []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -196,7 +194,6 @@ func (s *IntegrationTestSuite) TestTxAnchorData() {
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Contains(out.String(), tc.expectErrMsg)
-				s.Require().Error(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 			} else {
 				s.Require().NoError(err, out.String())
 				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
@@ -212,57 +209,48 @@ func (s *IntegrationTestSuite) TestGetAnchorDataByCID() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
-	cid := s.storedCid
-
 	testCases := []struct {
-		name      string
-		malleate  func()
-		args      []string
-		expectErr bool
-		respType  proto.Message
+		name         string
+		args         []string
+		expectErr    bool
+		expectErrMsg string
+		resp         datatypes.QueryByCidResponse
 	}{
 		{
 			"with non existed cid",
-			func() {
-				cid = s.getCid([]byte("xyzabc"))
-			},
 			[]string{
-				cid.String(),
+				s.getCid([]byte("xyzabc")).String(),
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			},
 			true,
-			nil,
+			"CID not found",
+			datatypes.QueryByCidResponse{},
 		},
 		{
 			"with correct data",
-			func() {
-				cid = s.storedCid
-			},
 			[]string{
-				cid.String(),
+				s.storedCid.String(),
 				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
 			},
 			false,
-			&datatypes.QueryByCidResponse{},
+			"",
+			datatypes.QueryByCidResponse{},
 		},
 	}
 
 	for _, tc := range testCases {
-		tc := tc
-
 		s.Run(tc.name, func() {
-			tc.malleate()
 			cmd := dataclient.QueryByCidCmd()
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
-				s.Require().Error(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+				s.Require().Contains(out.String(), tc.expectErrMsg)
 
 			} else {
 				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &tc.resp), out.String())
 
-				txResp := tc.respType.(*datatypes.QueryByCidResponse)
+				txResp := tc.resp
 				s.Require().NotNil(txResp)
 
 				s.Require().Equal([]string{s.signer.String()}, txResp.Signers)
@@ -345,7 +333,6 @@ func (s *IntegrationTestSuite) TestTxSignData() {
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Contains(out.String(), tc.expectErrMsg)
-				s.Require().Error(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 			} else {
 				s.Require().NoError(err, out.String())
 				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
@@ -390,7 +377,7 @@ func (s *IntegrationTestSuite) TestTxStoreData() {
 				commonFlags...,
 			),
 			true,
-			"illegal base64 data at input byte 8",
+			"illegal base64 data",
 			nil,
 			0,
 		},
@@ -434,7 +421,7 @@ func (s *IntegrationTestSuite) TestTxStoreData() {
 
 			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
-				s.Require().Error(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+				s.Require().Contains(out.String(), tc.expectErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
 				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
