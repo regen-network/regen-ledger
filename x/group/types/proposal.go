@@ -90,8 +90,9 @@ func (p Proposal) ValidateBasic() error {
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (p Proposal) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
-	for _, m := range p.Msgs {
-		err := codectypes.UnpackInterfaces(m, unpacker)
+	for _, any := range p.Msgs {
+		var msg sdk.Msg
+		err := unpacker.UnpackAny(any, &msg)
 		if err != nil {
 			return err
 		}

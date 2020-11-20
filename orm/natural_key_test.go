@@ -3,6 +3,8 @@ package orm
 import (
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/assert"
@@ -12,12 +14,15 @@ import (
 )
 
 func TestNaturalKeyTablePrefixScan(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
 	storeKey := sdk.NewKVStoreKey("test")
 	const (
 		testTablePrefix = iota
 	)
 
-	tb := NewNaturalKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, Max255DynamicLengthIndexKeyCodec{}).
+	tb := NewNaturalKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, Max255DynamicLengthIndexKeyCodec{}, cdc).
 		Build()
 
 	ctx := NewMockContext()
@@ -215,10 +220,13 @@ func TestNaturalKeyTablePrefixScan(t *testing.T) {
 }
 
 func TestContains(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
 	storeKey := sdk.NewKVStoreKey("test")
 	const testTablePrefix = iota
 
-	tb := NewNaturalKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, Max255DynamicLengthIndexKeyCodec{}).
+	tb := NewNaturalKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, Max255DynamicLengthIndexKeyCodec{}, cdc).
 		Build()
 
 	ctx := NewMockContext()

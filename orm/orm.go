@@ -7,6 +7,7 @@ import (
 	"io"
 	"reflect"
 
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
@@ -103,7 +104,7 @@ type Iterator interface {
 	// LoadNext loads the next value in the sequence into the pointer passed as dest and returns the key. If there
 	// are no more items the ErrIteratorDone error is returned
 	// The key is the rowID and not any MultiKeyIndex key.
-	LoadNext(dest Persistent) (RowID, error)
+	LoadNext(dest codec.ProtoMarshaler) (RowID, error)
 	// Close releases the iterator and should be called at the end of iteration
 	io.Closer
 }
@@ -135,11 +136,11 @@ type AfterDeleteInterceptor func(ctx HasKVStore, rowID RowID, value Persistent) 
 
 // RowGetter loads a persistent object by row ID into the destination object. The dest parameter must therefore be a pointer.
 // Any implementation must return `ErrNotFound` when no object for the rowID exists
-type RowGetter func(ctx HasKVStore, rowID RowID, dest Persistent) error
+type RowGetter func(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) error
 
 // NewTypeSafeRowGetter returns a `RowGetter` with type check on the dest parameter.
-func NewTypeSafeRowGetter(storeKey sdk.StoreKey, prefixKey byte, model reflect.Type) RowGetter {
-	return func(ctx HasKVStore, rowID RowID, dest Persistent) error {
+func NewTypeSafeRowGetter(storeKey sdk.StoreKey, prefixKey byte, model reflect.Type, cdc codec.BinaryMarshaler) RowGetter {
+	return func(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) error {
 		if len(rowID) == 0 {
 			return errors.Wrap(ErrArgument, "key must not be nil")
 		}
@@ -153,7 +154,8 @@ func NewTypeSafeRowGetter(storeKey sdk.StoreKey, prefixKey byte, model reflect.T
 		if !it.Valid() {
 			return ErrNotFound
 		}
-		return dest.Unmarshal(it.Value())
+		// return dest.Unmarshal(it.Value())
+		return cdc.UnmarshalBinaryBare(it.Value(), dest)
 	}
 }
 

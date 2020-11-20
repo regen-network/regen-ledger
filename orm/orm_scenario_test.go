@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -14,10 +16,13 @@ import (
 )
 
 func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
 	storeKey := sdk.NewKVStoreKey("test")
 	ctx := NewMockContext()
 
-	k := NewGroupKeeper(storeKey)
+	k := NewGroupKeeper(storeKey, cdc)
 
 	g := testdata.GroupMetadata{
 		Description: "my test",
@@ -79,10 +84,13 @@ func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
 }
 
 func TestKeeperEndToEndWithNaturalKeyTable(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
 	storeKey := sdk.NewKVStoreKey("test")
 	ctx := NewMockContext()
 
-	k := NewGroupKeeper(storeKey)
+	k := NewGroupKeeper(storeKey, cdc)
 
 	g := testdata.GroupMetadata{
 		Description: "my test",
@@ -165,10 +173,13 @@ func TestKeeperEndToEndWithNaturalKeyTable(t *testing.T) {
 }
 
 func TestGasCostsNaturalKeyTable(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
 	storeKey := sdk.NewKVStoreKey("test")
 	ctx := NewMockContext()
 
-	k := NewGroupKeeper(storeKey)
+	k := NewGroupKeeper(storeKey, cdc)
 
 	g := testdata.GroupMetadata{
 		Description: "my test",
@@ -258,10 +269,13 @@ func TestGasCostsNaturalKeyTable(t *testing.T) {
 }
 
 func TestExportImportStateAutoUInt64Table(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
 	storeKey := sdk.NewKVStoreKey("test")
 	ctx := NewMockContext()
 
-	k := NewGroupKeeper(storeKey)
+	k := NewGroupKeeper(storeKey, cdc)
 
 	testRecords := 10
 	for i := 1; i <= testRecords; i++ {
@@ -309,10 +323,13 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 }
 
 func TestExportImportStateNaturalKeyTable(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
 	storeKey := sdk.NewKVStoreKey("test")
 	ctx := NewMockContext()
 
-	k := NewGroupKeeper(storeKey)
+	k := NewGroupKeeper(storeKey, cdc)
 	myGroupAddr := sdk.AccAddress(bytes.Repeat([]byte{byte('a')}, sdk.AddrLen))
 	testRecordsNum := 10
 	testRecords := make([]testdata.GroupMember, testRecordsNum)

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/assert"
@@ -38,9 +40,12 @@ func TestCreate(t *testing.T) {
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
+			interfaceRegistry := types.NewInterfaceRegistry()
+			cdc := codec.NewProtoCodec(interfaceRegistry)
+
 			storeKey := sdk.NewKVStoreKey("test")
 			const anyPrefix = 0x10
-			tableBuilder := NewTableBuilder(anyPrefix, storeKey, &testdata.GroupMetadata{}, Max255DynamicLengthIndexKeyCodec{})
+			tableBuilder := NewTableBuilder(anyPrefix, storeKey, &testdata.GroupMetadata{}, Max255DynamicLengthIndexKeyCodec{}, cdc)
 			myTable := tableBuilder.Build()
 
 			ctx := NewMockContext()
@@ -89,9 +94,12 @@ func TestUpdate(t *testing.T) {
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
+			interfaceRegistry := types.NewInterfaceRegistry()
+			cdc := codec.NewProtoCodec(interfaceRegistry)
+
 			storeKey := sdk.NewKVStoreKey("test")
 			const anyPrefix = 0x10
-			tableBuilder := NewTableBuilder(anyPrefix, storeKey, &testdata.GroupMetadata{}, Max255DynamicLengthIndexKeyCodec{})
+			tableBuilder := NewTableBuilder(anyPrefix, storeKey, &testdata.GroupMetadata{}, Max255DynamicLengthIndexKeyCodec{}, cdc)
 			myTable := tableBuilder.Build()
 
 			initValue := testdata.GroupMetadata{

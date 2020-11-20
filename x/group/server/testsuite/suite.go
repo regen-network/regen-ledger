@@ -54,9 +54,10 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.blockTime = time.Now().UTC()
 
-	sdkContext := sdk.UnwrapSDKContext(s.ctx).WithBlockTime(s.blockTime)
-	s.groupKeeper.SetParams(sdkContext, types.DefaultParams())
-	s.sdkCtx = sdkContext
+	sdkCtx := sdk.UnwrapSDKContext(s.ctx).WithBlockTime(s.blockTime)
+	s.groupKeeper.SetParams(sdkCtx, types.DefaultParams())
+	s.sdkCtx = sdkCtx
+	s.ctx = sdk.WrapSDKContext(sdkCtx)
 
 	s.msgClient = types.NewMsgClient(s.fixture.TxConn())
 	if len(s.fixture.Signers()) < 2 {
@@ -647,8 +648,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 			s.Assert().Equal(sdk.AccAddress([]byte(spec.req.Admin)), groupAccount.Admin)
 			s.Assert().Equal(spec.req.Comment, groupAccount.Comment)
 			s.Assert().Equal(uint64(1), groupAccount.Version)
-			// TODO Fix (ORM should unpack Any's properly)
-			// s.Assert().Equal(&spec.policy, groupAccount.GetDecisionPolicy())
+			s.Assert().Equal(spec.policy.(*types.ThresholdDecisionPolicy), groupAccount.GetDecisionPolicy())
 		})
 	}
 }

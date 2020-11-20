@@ -4,6 +4,8 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -12,10 +14,13 @@ import (
 )
 
 func TestUInt64Index(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
 	storeKey := sdk.NewKVStoreKey("test")
 
 	const anyPrefix = 0x10
-	tableBuilder := NewNaturalKeyTableBuilder(anyPrefix, storeKey, &testdata.GroupMember{}, Max255DynamicLengthIndexKeyCodec{})
+	tableBuilder := NewNaturalKeyTableBuilder(anyPrefix, storeKey, &testdata.GroupMember{}, Max255DynamicLengthIndexKeyCodec{}, cdc)
 	myIndex := NewUInt64Index(tableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]uint64, error) {
 		return []uint64{uint64(val.(*testdata.GroupMember).Member[0])}, nil
 	})

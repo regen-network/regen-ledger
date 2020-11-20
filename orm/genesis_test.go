@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -13,9 +15,12 @@ import (
 )
 
 func TestExportTableData(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
 	storeKey := sdk.NewKVStoreKey("test")
 	const prefix = iota
-	table := NewTableBuilder(prefix, storeKey, &testdata.GroupMetadata{}, FixLengthIndexKeys(1)).Build()
+	table := NewTableBuilder(prefix, storeKey, &testdata.GroupMetadata{}, FixLengthIndexKeys(1), cdc).Build()
 
 	ctx := NewMockContext()
 	testRecordsNum := 2
@@ -47,9 +52,12 @@ func TestExportTableData(t *testing.T) {
 }
 
 func TestImportTableData(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
 	storeKey := sdk.NewKVStoreKey("test")
 	const prefix = iota
-	table := NewTableBuilder(prefix, storeKey, &testdata.GroupMetadata{}, FixLengthIndexKeys(1)).Build()
+	table := NewTableBuilder(prefix, storeKey, &testdata.GroupMetadata{}, FixLengthIndexKeys(1), cdc).Build()
 
 	ctx := NewMockContext()
 

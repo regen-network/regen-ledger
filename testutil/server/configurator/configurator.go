@@ -18,11 +18,12 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
 
 	"github.com/regen-network/regen-ledger/testutil/server"
+	"github.com/regen-network/regen-ledger/types/module"
 )
 
 // Fixture is an implementation of server.Fixture which uses an in-memory test data store
@@ -35,16 +36,18 @@ type Fixture struct {
 	t           *testing.T
 	signers     []sdk.AccAddress
 	ctx         context.Context
+	cdc         codec.BinaryMarshaler
 }
 
 // NewFixture returns a new Fixture instance.
-func NewFixture(t *testing.T, storeKeys []sdk.StoreKey, signers []sdk.AccAddress) Fixture {
+func NewFixture(t *testing.T, storeKeys []sdk.StoreKey, signers []sdk.AccAddress, cdc codec.BinaryMarshaler) Fixture {
 	return Fixture{
 		queryRouter: newTestRouter(false),
 		msgRouter:   newTestRouter(true),
 		keys:        storeKeys,
 		t:           t,
 		signers:     signers,
+		cdc:         cdc,
 	}
 }
 
@@ -58,6 +61,11 @@ func (c Fixture) MsgServer() gogogrpc.Server {
 // QueryServer implements the Configurator.QueryServer method
 func (c Fixture) QueryServer() gogogrpc.Server {
 	return c.queryRouter
+}
+
+// BinaryMarshaler implements the Configurator.BinaryMarshaler method
+func (c Fixture) BinaryMarshaler() codec.BinaryMarshaler {
+	return c.cdc
 }
 
 var _ server.FixtureFactory = Fixture{}

@@ -6,9 +6,11 @@ import (
 
 	gogotypes "github.com/gogo/protobuf/types"
 
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/group/types"
 )
@@ -75,7 +77,7 @@ type Keeper struct {
 	router     sdk.Router
 }
 
-func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, router sdk.Router) *Keeper {
+func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, router sdk.Router, cdc codec.BinaryMarshaler) *Keeper {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(paramstypes.NewKeyTable().RegisterParamSet(&types.Params{}))
@@ -90,7 +92,7 @@ func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, rout
 	k := &Keeper{storeKey: storeKey, paramSpace: paramSpace, router: router}
 
 	// Group Table
-	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, storeKey, &types.GroupMetadata{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength))
+	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, storeKey, &types.GroupMetadata{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
 	k.groupSeq = orm.NewSequence(storeKey, GroupTableSeqPrefix)
 	k.groupByAdminIndex = orm.NewIndex(groupTableBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
 		return []orm.RowID{val.(*types.GroupMetadata).Admin.Bytes()}, nil
@@ -98,7 +100,7 @@ func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, rout
 	k.groupTable = groupTableBuilder.Build()
 
 	// Group Member Table
-	groupMemberTableBuilder := orm.NewNaturalKeyTableBuilder(GroupMemberTablePrefix, storeKey, &types.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{})
+	groupMemberTableBuilder := orm.NewNaturalKeyTableBuilder(GroupMemberTablePrefix, storeKey, &types.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	k.groupMemberByGroupIndex = orm.NewUInt64Index(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]uint64, error) {
 		group := val.(*types.GroupMember).Group
 		return []uint64{uint64(group)}, nil
@@ -111,7 +113,7 @@ func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, rout
 
 	// Group Account Table
 	k.groupAccountSeq = orm.NewSequence(storeKey, GroupAccountTableSeqPrefix)
-	groupAccountTableBuilder := orm.NewNaturalKeyTableBuilder(GroupAccountTablePrefix, storeKey, &types.GroupAccountMetadata{}, orm.Max255DynamicLengthIndexKeyCodec{})
+	groupAccountTableBuilder := orm.NewNaturalKeyTableBuilder(GroupAccountTablePrefix, storeKey, &types.GroupAccountMetadata{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	k.groupAccountByGroupIndex = orm.NewUInt64Index(groupAccountTableBuilder, GroupAccountByGroupIndexPrefix, func(value interface{}) ([]uint64, error) {
 		group := value.(*types.GroupAccountMetadata).Group
 		return []uint64{uint64(group)}, nil
@@ -123,15 +125,14 @@ func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, rout
 	k.groupAccountTable = groupAccountTableBuilder.Build()
 
 	// Proposal Table
-	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, storeKey, &types.Proposal{})
+	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, storeKey, &types.Proposal{}, cdc)
 	// proposalTableBuilder := orm.NewNaturalKeyTableBuilder(ProposalTablePrefix, storeKey, &types.Proposal{}, orm.Max255DynamicLengthIndexKeyCodec{})
 	k.ProposalGroupAccountIndex = orm.NewIndex(proposalTableBuilder, ProposalByGroupAccountIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
-		account := value.(types.Proposal).GroupAccount
+		account := value.(*types.Proposal).GroupAccount
 		return []orm.RowID{account.Bytes()}, nil
-
 	})
 	k.ProposalByProposerIndex = orm.NewIndex(proposalTableBuilder, ProposalByProposerIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
-		proposers := value.(types.Proposal).Proposers
+		proposers := value.(*types.Proposal).Proposers
 		r := make([]orm.RowID, len(proposers))
 		for i := range proposers {
 			r[i] = proposers[i].Bytes()
@@ -141,7 +142,7 @@ func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, rout
 	k.proposalTable = proposalTableBuilder.Build()
 
 	// Vote Table
-	voteTableBuilder := orm.NewNaturalKeyTableBuilder(VoteTablePrefix, storeKey, &types.Vote{}, orm.Max255DynamicLengthIndexKeyCodec{})
+	voteTableBuilder := orm.NewNaturalKeyTableBuilder(VoteTablePrefix, storeKey, &types.Vote{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	k.voteByProposalIndex = orm.NewUInt64Index(voteTableBuilder, VoteByProposalIndexPrefix, func(value interface{}) ([]uint64, error) {
 		return []uint64{uint64(value.(*types.Vote).Proposal)}, nil
 	})

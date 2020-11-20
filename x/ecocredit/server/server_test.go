@@ -3,6 +3,8 @@ package server
 import (
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 
@@ -12,9 +14,11 @@ import (
 )
 
 func TestServer(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
 	key := sdk.NewKVStoreKey(ecocredit.ModuleName)
 	addrs := configurator.MakeTestAddresses(6)
-	cfg := configurator.NewFixture(t, []sdk.StoreKey{key}, addrs)
+	cfg := configurator.NewFixture(t, []sdk.StoreKey{key}, addrs, cdc)
 	RegisterServices(key, cfg)
 	s := testsuite.NewIntegrationTestSuite(cfg)
 

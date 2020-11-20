@@ -3,6 +3,7 @@ package orm
 import (
 	"bytes"
 
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -150,7 +151,7 @@ type indexIterator struct {
 // LoadNext loads the next value in the sequence into the pointer passed as dest and returns the key. If there
 // are no more items the ErrIteratorDone error is returned
 // The key is the rowID and not any MultiKeyIndex key.
-func (i indexIterator) LoadNext(dest Persistent) (RowID, error) {
+func (i indexIterator) LoadNext(dest codec.ProtoMarshaler) (RowID, error) {
 	if !i.it.Valid() {
 		return nil, ErrIteratorDone
 	}

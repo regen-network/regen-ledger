@@ -3,17 +3,18 @@ package orm
 import (
 	"reflect"
 
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // IteratorFunc is a function type that satisfies the Iterator interface
 // The passed function is called on LoadNext operations.
-type IteratorFunc func(dest Persistent) (RowID, error)
+type IteratorFunc func(dest codec.ProtoMarshaler) (RowID, error)
 
 // LoadNext loads the next value in the sequence into the pointer passed as dest and returns the key. If there
 // are no more items the ErrIteratorDone error is returned
 // The key is the rowID and not any MultiKeyIndex key.
-func (i IteratorFunc) LoadNext(dest Persistent) (RowID, error) {
+func (i IteratorFunc) LoadNext(dest codec.ProtoMarshaler) (RowID, error) {
 	return i(dest)
 }
 
@@ -24,7 +25,7 @@ func (i IteratorFunc) Close() error {
 
 func NewSingleValueIterator(rowID RowID, val []byte) Iterator {
 	var closed bool
-	return IteratorFunc(func(dest Persistent) (RowID, error) {
+	return IteratorFunc(func(dest codec.ProtoMarshaler) (RowID, error) {
 		if dest == nil {
 			return nil, errors.Wrap(ErrArgument, "destination object must not be nil")
 		}
@@ -38,7 +39,7 @@ func NewSingleValueIterator(rowID RowID, val []byte) Iterator {
 
 // Iterator that return ErrIteratorInvalid only.
 func NewInvalidIterator() Iterator {
-	return IteratorFunc(func(dest Persistent) (RowID, error) {
+	return IteratorFunc(func(dest codec.ProtoMarshaler) (RowID, error) {
 		return nil, ErrIteratorInvalid
 	})
 }
@@ -65,7 +66,7 @@ func LimitIterator(parent Iterator, max int) *LimitedIterator {
 // LoadNext loads the next value in the sequence into the pointer passed as dest and returns the key. If there
 // are no more items or the defined max number of elements was returned the `ErrIteratorDone` error is returned
 // The key is the rowID and not any MultiKeyIndex key.
-func (i *LimitedIterator) LoadNext(dest Persistent) (RowID, error) {
+func (i *LimitedIterator) LoadNext(dest codec.ProtoMarshaler) (RowID, error) {
 	if i.remainingCount == 0 {
 		return nil, ErrIteratorDone
 	}
@@ -80,7 +81,7 @@ func (i LimitedIterator) Close() error {
 
 // First loads the first element into the given destination type and closes the iterator.
 // When the iterator is closed or has no elements the according error is passed as return value.
-func First(it Iterator, dest Persistent) (RowID, error) {
+func First(it Iterator, dest codec.ProtoMarshaler) (RowID, error) {
 	if it == nil {
 		return nil, errors.Wrap(ErrArgument, "iterator must not be nil")
 	}
@@ -128,9 +129,9 @@ func ReadAll(it Iterator, dest ModelSlicePtr) ([]RowID, error) {
 
 	typ := reflect.TypeOf(dest).Elem().Elem()
 
-	persistence := reflect.TypeOf((*Persistent)(nil)).Elem()
-	if !typ.Implements(persistence) &&
-		!reflect.PtrTo(typ).Implements(persistence) {
+	protoMarshaler := reflect.TypeOf((*codec.ProtoMarshaler)(nil)).Elem()
+	if !typ.Implements(protoMarshaler) &&
+		!reflect.PtrTo(typ).Implements(protoMarshaler) {
 		return nil, errors.Wrapf(ErrArgument, "unsupported type :%s", typ)
 	}
 
@@ -145,7 +146,7 @@ func ReadAll(it Iterator, dest ModelSlicePtr) ([]RowID, error) {
 			model = val
 		}
 
-		binKey, err := it.LoadNext(model.Interface().(Persistent))
+		binKey, err := it.LoadNext(model.Interface().(codec.ProtoMarshaler))
 		switch {
 		case err == nil:
 			t = reflect.Append(t, val)

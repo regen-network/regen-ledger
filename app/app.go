@@ -84,9 +84,10 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
+	regenmodule "github.com/regen-network/regen-ledger/types/module"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
-	// group "github.com/regen-network/regen-ledger/x/group/module"
+	group "github.com/regen-network/regen-ledger/x/group/module"
 	// groupserver "github.com/regen-network/regen-ledger/x/group/server"
 	// grouptypes "github.com/regen-network/regen-ledger/x/group/types"
 )
@@ -124,7 +125,7 @@ var (
 		vesting.AppModuleBasic{},
 		data.AppModuleBasic{},
 		ecocredit.AppModuleBasic{},
-		// group.AppModuleBasic{},
+		group.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -372,7 +373,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
-	app.mm.RegisterServices(module.NewConfigurator(app.MsgServiceRouter(), app.GRPCQueryRouter()))
+	app.mm.RegisterServices(regenmodule.NewConfigurator(app.MsgServiceRouter(), app.GRPCQueryRouter(), codec.NewProtoCodec(interfaceRegistry)))
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	//
