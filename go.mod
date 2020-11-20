@@ -3,6 +3,7 @@ module github.com/regen-network/regen-ledger
 go 1.15
 
 require (
+	github.com/CosmWasm/wasmd v0.12.0-alpha1.0.20201105090402-41cf73dae976
 	github.com/btcsuite/btcutil v1.0.2
 	github.com/cockroachdb/apd/v2 v2.0.2
 	github.com/cosmos/cosmos-sdk v0.40.0-rc2
@@ -17,12 +18,15 @@ require (
 	github.com/spf13/afero v1.3.4 // indirect
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.1.1
+	github.com/spf13/pflag v1.0.5
+	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
 	github.com/tendermint/tendermint v0.34.0-rc5
 	github.com/tendermint/tm-db v0.6.2
-	golang.org/x/crypto v0.0.0-20201112155050-0c6587e931a9 // indirect
-	google.golang.org/genproto v0.0.0-20201112120144-2985b7af83de // indirect
+	golang.org/x/crypto v0.0.0-20201117144127-c1f2f97bffc9 // indirect
+	google.golang.org/genproto v0.0.0-20201117123952-62d171c70ae1 // indirect
 	google.golang.org/grpc v1.33.0
+	gopkg.in/yaml.v2 v2.3.0
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
