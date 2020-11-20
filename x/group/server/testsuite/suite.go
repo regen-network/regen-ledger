@@ -55,9 +55,14 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.blockTime = time.Now().UTC()
 
 	sdkCtx := sdk.UnwrapSDKContext(s.ctx).WithBlockTime(s.blockTime)
-	s.groupKeeper.SetParams(sdkCtx, types.DefaultParams())
 	s.sdkCtx = sdkCtx
 	s.ctx = sdk.WrapSDKContext(sdkCtx)
+
+	s.groupKeeper.SetParams(sdkCtx, types.DefaultParams())
+
+	totalSupply := banktypes.NewSupply(sdk.NewCoins(sdk.NewInt64Coin("test", 400000000)))
+	s.bankKeeper.SetSupply(sdkCtx, totalSupply)
+	s.bankKeeper.SetParams(sdkCtx, banktypes.DefaultParams())
 
 	s.msgClient = types.NewMsgClient(s.fixture.TxConn())
 	if len(s.fixture.Signers()) < 2 {
@@ -1115,10 +1120,12 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 	accountAddr, err := s.groupKeeper.CreateGroupAccount(s.sdkCtx, s.addr1, myGroupID, policy, "test")
 	s.Require().NoError(err)
 
+	s.Require().NoError(s.bankKeeper.SetBalances(s.sdkCtx, accountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+
 	msgSend := &banktypes.MsgSend{
 		FromAddress: accountAddr.String(),
 		ToAddress:   s.addr2.String(),
-		Amount:      sdk.Coins{sdk.NewInt64Coin("token", 100)},
+		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
 	}
 	proposers := []sdk.AccAddress{s.addr2}
 
@@ -1129,7 +1136,8 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		expProposalStatus types.Proposal_Status
 		expProposalResult types.Proposal_Result
 		expExecutorResult types.Proposal_ExecutorResult
-		expPayloadCounter uint64
+		expFromBalances   sdk.Coins
+		expToBalances     sdk.Coins
 	}{
 		"proposal executed when accepted": {
 			setupProposal: func(ctx sdk.Context) types.ProposalID {
@@ -1143,7 +1151,8 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expProposalStatus: types.ProposalStatusClosed,
 			expProposalResult: types.ProposalResultAccepted,
 			expExecutorResult: types.ProposalExecutorResultSuccess,
-			expPayloadCounter: 1,
+			expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9900)},
+			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 100)},
 		},
 		"proposal with multiple messages executed when accepted": {
 			setupProposal: func(ctx sdk.Context) types.ProposalID {
@@ -1157,7 +1166,8 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expProposalStatus: types.ProposalStatusClosed,
 			expProposalResult: types.ProposalResultAccepted,
 			expExecutorResult: types.ProposalExecutorResultSuccess,
-			expPayloadCounter: 2,
+			expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9800)},
+			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 200)},
 		},
 		"proposal not executed when rejected": {
 			setupProposal: func(ctx sdk.Context) types.ProposalID {
@@ -1252,41 +1262,6 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expProposalResult: types.ProposalResultUndefined,
 			expExecutorResult: types.ProposalExecutorResultNotRun,
 		},
-		"with group modified after tally": {
-			setupProposal: func(ctx sdk.Context) types.ProposalID {
-				myProposalID, err := s.groupKeeper.CreateProposal(ctx, accountAddr, "test", proposers, []sdk.Msg{
-					msgSend,
-				})
-				s.Require().NoError(err)
-				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_YES, ""))
-				// then modify group after tally on vote
-				g, err := s.groupKeeper.GetGroup(ctx, myGroupID)
-				s.Require().NoError(err)
-				g.Comment = "modified"
-				s.Require().NoError(s.groupKeeper.UpdateGroup(ctx, &g))
-				return myProposalID
-			},
-			expProposalStatus: types.ProposalStatusClosed,
-			expProposalResult: types.ProposalResultAccepted,
-			expExecutorResult: types.ProposalExecutorResultFailure,
-		},
-		"with group account modified after tally": {
-			setupProposal: func(ctx sdk.Context) types.ProposalID {
-				myProposalID, err := s.groupKeeper.CreateProposal(ctx, accountAddr, "test", proposers, []sdk.Msg{
-					msgSend,
-				})
-				s.Require().NoError(err)
-				// then modify group account
-				a, err := s.groupKeeper.GetGroupAccount(ctx, accountAddr)
-				s.Require().NoError(err)
-				a.Comment = "modified"
-				s.Require().NoError(s.groupKeeper.UpdateGroupAccount(ctx, &a))
-				return myProposalID
-			},
-			expProposalStatus: types.ProposalStatusAborted,
-			expProposalResult: types.ProposalResultUndefined,
-			expExecutorResult: types.ProposalExecutorResultNotRun,
-		},
 		"prevent double execution when successful": {
 			setupProposal: func(ctx sdk.Context) types.ProposalID {
 				myProposalID, err := s.groupKeeper.CreateProposal(ctx, accountAddr, "test", proposers, []sdk.Msg{
@@ -1297,10 +1272,11 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 				s.Require().NoError(s.groupKeeper.ExecProposal(ctx, myProposalID))
 				return myProposalID
 			},
-			expPayloadCounter: 1,
 			expProposalStatus: types.ProposalStatusClosed,
 			expProposalResult: types.ProposalResultAccepted,
 			expExecutorResult: types.ProposalExecutorResultSuccess,
+			expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9900)},
+			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 100)},
 		},
 		"rollback all msg updates on failure": {
 			setupProposal: func(ctx sdk.Context) types.ProposalID {
@@ -1308,7 +1284,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 					msgSend, &banktypes.MsgSend{
 						FromAddress: accountAddr.String(),
 						ToAddress:   s.addr2.String(),
-						Amount:      sdk.Coins{sdk.NewInt64Coin("token", 100)}}, // TODO change amount to make the msg exec fail
+						Amount:      sdk.Coins{sdk.NewInt64Coin("test", 10001)}},
 				})
 				s.Require().NoError(err)
 				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_YES, ""))
@@ -1318,6 +1294,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expProposalResult: types.ProposalResultAccepted,
 			expExecutorResult: types.ProposalExecutorResultFailure,
 		},
+		// TODO
 		// "executable when failed before": {
 		// 	setupProposal: func(ctx sdk.Context) types.ProposalID {
 		// 		member := []sdk.AccAddress{[]byte("valid-member-address")}
@@ -1366,8 +1343,14 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			got = types.Proposal_ExecutorResult_name[int32(proposal.ExecutorResult)]
 			s.Assert().Equal(exp, got)
 
-			// TODO verify proposal messages executed
-			// s.Assert().Equal(spec.expPayloadCounter, testdataKeeper.GetCounter(ctx), "counter")
+			if spec.expFromBalances != nil {
+				fromBalances := s.bankKeeper.GetAllBalances(ctx, accountAddr)
+				s.Require().Equal(spec.expFromBalances, fromBalances)
+			}
+			if spec.expToBalances != nil {
+				toBalances := s.bankKeeper.GetAllBalances(ctx, s.addr2)
+				s.Require().Equal(spec.expToBalances, toBalances)
+			}
 		})
 	}
 }
