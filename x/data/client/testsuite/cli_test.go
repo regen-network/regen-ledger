@@ -6,7 +6,10 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/crypto/hd"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/types"
 	gocid "github.com/ipfs/go-cid"
@@ -28,6 +31,7 @@ type IntegrationTestSuite struct {
 	testContent        []byte
 	storedCid          gocid.Cid
 	storedCidTimestamp *types.Timestamp
+	signer             sdk.AccAddress
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
@@ -50,25 +54,53 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 	cid := gocid.NewCidV1(gocid.Raw, mh)
 
-	args := []string{
-		val.Address.String(),
-		cid.String(),
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+	commonFlags := []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	out, err := clitestutil.ExecTestCLICmd(clientCtx, dataclient.MsgAnchorDataCmd(), args)
-	s.Require().NoError(err, out.String())
+	args := append(
+		[]string{
+			val.Address.String(),
+			cid.String(),
+		},
+		commonFlags...,
+	)
 
-	txRes := &sdk.TxResponse{}
-	s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), txRes), out.String())
-	s.Require().Equal(uint32(0), txRes.Code)
+	_, err = clitestutil.ExecTestCLICmd(clientCtx, dataclient.MsgAnchorDataCmd(), args)
 
 	s.Require().NoError(s.network.WaitForNextBlock())
 	s.testContent = testContent
 	s.storedCid = cid
+
+	// create a new account
+	info, _, err := val.ClientCtx.Keyring.NewMnemonic("NewValidator", keyring.English, sdk.FullFundraiserPath, hd.Secp256k1)
+	s.Require().NoError(err)
+
+	account := sdk.AccAddress(info.GetPubKey().Address())
+	_, err = banktestutil.MsgSendExec(
+		val.ClientCtx,
+		val.Address,
+		account,
+		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(200))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	)
+
+	s.Require().NoError(err)
+
+	// add a signer
+	args = append(
+		[]string{
+			account.String(),
+			cid.String(),
+		},
+		commonFlags...,
+	)
+	_, err = clitestutil.ExecTestCLICmd(clientCtx, dataclient.MsgSignDataCmd(), args)
+
+	s.signer = account
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -84,7 +116,6 @@ func (s *IntegrationTestSuite) TestTxAnchorData() {
 	cid := s.getCid(testContent)
 
 	var commonFlags = []string{
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
@@ -234,7 +265,7 @@ func (s *IntegrationTestSuite) TestGetAnchorDataByCID() {
 				txResp := tc.respType.(*datatypes.QueryByCidResponse)
 				s.Require().NotNil(txResp)
 
-				s.Require().Empty(txResp.Signers)
+				s.Require().Equal([]string{s.signer.String()}, txResp.Signers)
 				s.Require().Empty(txResp.Content)
 			}
 		})
@@ -248,7 +279,6 @@ func (s *IntegrationTestSuite) TestTxSignData() {
 	cid := s.storedCid
 
 	var commonFlags = []string{
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
@@ -336,7 +366,6 @@ func (s *IntegrationTestSuite) TestTxStoreData() {
 	base64Encoded := base64.StdEncoding.EncodeToString(s.testContent)
 
 	var commonFlags = []string{
-		fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
