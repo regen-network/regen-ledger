@@ -981,7 +981,7 @@ func (m *MsgVoteRequest) GetChoice() Choice {
 	if m != nil {
 		return m.Choice
 	}
-	return Choice_UNKNOWN
+	return Choice_CHOICE_UNSPECIFIED
 }
 
 func (m *MsgVoteRequest) GetComment() string {

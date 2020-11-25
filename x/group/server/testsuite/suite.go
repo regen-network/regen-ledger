@@ -881,7 +881,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			req: &types.MsgVoteRequest{
 				Proposal: myProposalID,
 				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_YES,
+				Choice:   types.Choice_CHOICE_YES,
 			},
 			expVoteState: types.Tally{
 				YesCount:     sdk.OneDec(),
@@ -896,7 +896,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			req: &types.MsgVoteRequest{
 				Proposal: myProposalID,
 				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_NO,
+				Choice:   types.Choice_CHOICE_NO,
 			},
 			expVoteState: types.Tally{
 				YesCount:     sdk.ZeroDec(),
@@ -911,7 +911,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			req: &types.MsgVoteRequest{
 				Proposal: myProposalID,
 				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_ABSTAIN,
+				Choice:   types.Choice_CHOICE_ABSTAIN,
 			},
 			expVoteState: types.Tally{
 				YesCount:     sdk.ZeroDec(),
@@ -926,7 +926,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			req: &types.MsgVoteRequest{
 				Proposal: myProposalID,
 				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_VETO,
+				Choice:   types.Choice_CHOICE_VETO,
 			},
 			expVoteState: types.Tally{
 				YesCount:     sdk.ZeroDec(),
@@ -941,7 +941,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			req: &types.MsgVoteRequest{
 				Proposal: myProposalID,
 				Voters:   []sdk.AccAddress{[]byte("power-member-address")},
-				Choice:   types.Choice_YES,
+				Choice:   types.Choice_CHOICE_YES,
 			},
 			expVoteState: types.Tally{
 				YesCount:     sdk.NewDec(2),
@@ -956,10 +956,10 @@ func (s *IntegrationTestSuite) TestVote() {
 			req: &types.MsgVoteRequest{
 				Proposal: myProposalID,
 				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_YES,
+				Choice:   types.Choice_CHOICE_YES,
 			},
 			doBefore: func(ctx sdk.Context) {
-				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, []sdk.AccAddress{[]byte("power-member-address")}, types.Choice_VETO, ""))
+				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, []sdk.AccAddress{[]byte("power-member-address")}, types.Choice_CHOICE_VETO, ""))
 			},
 			expErr: true,
 		},
@@ -968,7 +968,7 @@ func (s *IntegrationTestSuite) TestVote() {
 				Proposal: myProposalID,
 				Comment:  strings.Repeat("a", 256),
 				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_NO,
+				Choice:   types.Choice_CHOICE_NO,
 			},
 			expErr: true,
 		},
@@ -976,7 +976,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			req: &types.MsgVoteRequest{
 				Proposal: 999,
 				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_NO,
+				Choice:   types.Choice_CHOICE_NO,
 			},
 			expErr: true,
 		},
@@ -999,7 +999,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			req: &types.MsgVoteRequest{
 				Proposal: myProposalID,
 				Voters:   []sdk.AccAddress{[]byte("valid-member-address"), []byte("non--member-address")},
-				Choice:   types.Choice_NO,
+				Choice:   types.Choice_CHOICE_NO,
 			},
 			expErr: true,
 		},
@@ -1007,21 +1007,21 @@ func (s *IntegrationTestSuite) TestVote() {
 			req: &types.MsgVoteRequest{
 				Proposal: myProposalID,
 				Voters:   []sdk.AccAddress{[]byte("valid-member-address"), nil},
-				Choice:   types.Choice_NO,
+				Choice:   types.Choice_CHOICE_NO,
 			},
 			expErr: true,
 		},
 		"voters must not be nil": {
 			req: &types.MsgVoteRequest{
 				Proposal: myProposalID,
-				Choice:   types.Choice_NO,
+				Choice:   types.Choice_CHOICE_NO,
 			},
 			expErr: true,
 		},
 		"voters must not be empty": {
 			req: &types.MsgVoteRequest{
 				Proposal: myProposalID,
-				Choice:   types.Choice_NO,
+				Choice:   types.Choice_CHOICE_NO,
 				Voters:   []sdk.AccAddress{},
 			},
 			expErr: true,
@@ -1030,7 +1030,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			req: &types.MsgVoteRequest{
 				Proposal: myProposalID,
 				Voters:   []sdk.AccAddress{[]byte("valid--admin-address")},
-				Choice:   types.Choice_NO,
+				Choice:   types.Choice_CHOICE_NO,
 			},
 			expErr: true,
 		},
@@ -1038,7 +1038,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			req: &types.MsgVoteRequest{
 				Proposal: myProposalID,
 				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_NO,
+				Choice:   types.Choice_CHOICE_NO,
 			},
 			srcCtx: s.sdkCtx.WithBlockTime(s.blockTime.Add(time.Second)),
 			expErr: true,
@@ -1047,10 +1047,10 @@ func (s *IntegrationTestSuite) TestVote() {
 			req: &types.MsgVoteRequest{
 				Proposal: myProposalID,
 				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_NO,
+				Choice:   types.Choice_CHOICE_NO,
 			},
 			doBefore: func(ctx sdk.Context) {
-				err := s.groupKeeper.Vote(ctx, myProposalID, []sdk.AccAddress{[]byte("power-member-address")}, types.Choice_YES, "")
+				err := s.groupKeeper.Vote(ctx, myProposalID, []sdk.AccAddress{[]byte("power-member-address")}, types.Choice_CHOICE_YES, "")
 				s.Require().NoError(err)
 			},
 			expErr: true,
@@ -1059,10 +1059,10 @@ func (s *IntegrationTestSuite) TestVote() {
 			req: &types.MsgVoteRequest{
 				Proposal: myProposalID,
 				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_NO,
+				Choice:   types.Choice_CHOICE_NO,
 			},
 			doBefore: func(ctx sdk.Context) {
-				err := s.groupKeeper.Vote(ctx, myProposalID, []sdk.AccAddress{[]byte("valid-member-address")}, types.Choice_YES, "")
+				err := s.groupKeeper.Vote(ctx, myProposalID, []sdk.AccAddress{[]byte("valid-member-address")}, types.Choice_CHOICE_YES, "")
 				s.Require().NoError(err)
 			},
 			expErr: true,
@@ -1071,7 +1071,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			req: &types.MsgVoteRequest{
 				Proposal: myProposalID,
 				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_NO,
+				Choice:   types.Choice_CHOICE_NO,
 			},
 			doBefore: func(ctx sdk.Context) {
 				g, err := s.groupKeeper.GetGroup(ctx, myGroupID)
@@ -1085,7 +1085,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			req: &types.MsgVoteRequest{
 				Proposal: myProposalID,
 				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_NO,
+				Choice:   types.Choice_CHOICE_NO,
 			},
 			doBefore: func(ctx sdk.Context) {
 				a, err := s.groupKeeper.GetGroupAccount(ctx, accountAddr)
@@ -1227,7 +1227,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 					msgSend,
 				})
 				s.Require().NoError(err)
-				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_YES, ""))
+				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_CHOICE_YES, ""))
 				return myProposalID
 			},
 			expProposalStatus: types.ProposalStatusClosed,
@@ -1242,7 +1242,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 					msgSend, msgSend,
 				})
 				s.Require().NoError(err)
-				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_YES, ""))
+				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_CHOICE_YES, ""))
 				return myProposalID
 			},
 			expProposalStatus: types.ProposalStatusClosed,
@@ -1257,7 +1257,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 					msgSend,
 				})
 				s.Require().NoError(err)
-				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_NO, ""))
+				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_CHOICE_NO, ""))
 				return myProposalID
 			},
 			expProposalStatus: types.ProposalStatusClosed,
@@ -1288,7 +1288,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 					msgSend,
 				})
 				s.Require().NoError(err)
-				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_NO, ""))
+				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_CHOICE_NO, ""))
 				return myProposalID
 			},
 			srcBlockTime:      s.blockTime.Add(time.Second),
@@ -1302,7 +1302,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 					msgSend,
 				})
 				s.Require().NoError(err)
-				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_NO, ""))
+				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_CHOICE_NO, ""))
 				return myProposalID
 			},
 			srcBlockTime:      s.blockTime.Add(time.Second).Add(time.Millisecond),
@@ -1350,7 +1350,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 					msgSend,
 				})
 				s.Require().NoError(err)
-				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_YES, ""))
+				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_CHOICE_YES, ""))
 				s.Require().NoError(s.groupKeeper.ExecProposal(ctx, myProposalID))
 				return myProposalID
 			},
@@ -1369,7 +1369,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 						Amount:      sdk.Coins{sdk.NewInt64Coin("test", 10001)}},
 				})
 				s.Require().NoError(err)
-				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_YES, ""))
+				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_CHOICE_YES, ""))
 				return myProposalID
 			},
 			expProposalStatus: types.ProposalStatusClosed,
@@ -1385,7 +1385,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 						Amount:      sdk.Coins{sdk.NewInt64Coin("test", 10001)}},
 				})
 				s.Require().NoError(err)
-				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_YES, ""))
+				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_CHOICE_YES, ""))
 				s.Require().NoError(s.groupKeeper.ExecProposal(ctx, myProposalID))
 				s.Require().NoError(s.bankKeeper.SetBalances(ctx, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
 

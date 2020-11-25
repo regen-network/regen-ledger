@@ -216,7 +216,7 @@ func (v Vote) ValidateBasic() error {
 	if v.Proposal == 0 {
 		return errors.Wrap(ErrEmpty, "proposal")
 	}
-	if v.Choice == Choice_UNKNOWN {
+	if v.Choice == Choice_CHOICE_UNSPECIFIED {
 		return errors.Wrap(ErrEmpty, "choice")
 	}
 	if _, ok := Choice_name[int32(v.Choice)]; !ok {
@@ -310,13 +310,13 @@ func (t *Tally) Sub(vote Vote, weight sdk.Dec) error {
 		return errors.Wrap(ErrInvalid, "weight must be greater than 0")
 	}
 	switch vote.Choice {
-	case Choice_YES:
+	case Choice_CHOICE_YES:
 		t.YesCount = t.YesCount.Sub(weight)
-	case Choice_NO:
+	case Choice_CHOICE_NO:
 		t.NoCount = t.NoCount.Sub(weight)
-	case Choice_ABSTAIN:
+	case Choice_CHOICE_ABSTAIN:
 		t.AbstainCount = t.AbstainCount.Sub(weight)
-	case Choice_VETO:
+	case Choice_CHOICE_VETO:
 		t.VetoCount = t.VetoCount.Sub(weight)
 	default:
 		return errors.Wrapf(ErrInvalid, "unknown choice %s", vote.Choice.String())
@@ -329,13 +329,13 @@ func (t *Tally) Add(vote Vote, weight sdk.Dec) error {
 		return errors.Wrap(ErrInvalid, "weight must be greater than 0")
 	}
 	switch vote.Choice {
-	case Choice_YES:
+	case Choice_CHOICE_YES:
 		t.YesCount = t.YesCount.Add(weight)
-	case Choice_NO:
+	case Choice_CHOICE_NO:
 		t.NoCount = t.NoCount.Add(weight)
-	case Choice_ABSTAIN:
+	case Choice_CHOICE_ABSTAIN:
 		t.AbstainCount = t.AbstainCount.Add(weight)
-	case Choice_VETO:
+	case Choice_CHOICE_VETO:
 		t.VetoCount = t.VetoCount.Add(weight)
 	default:
 		return errors.Wrapf(ErrInvalid, "unknown choice %s", vote.Choice.String())

@@ -279,13 +279,13 @@ func TestMsgVote(t *testing.T) {
 		"all good with minimum fields set": {
 			src: MsgVoteRequest{
 				Proposal: 1,
-				Choice:   Choice_YES,
+				Choice:   Choice_CHOICE_YES,
 				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
 			},
 		},
 		"proposal required": {
 			src: MsgVoteRequest{
-				Choice: Choice_YES,
+				Choice: Choice_CHOICE_YES,
 				Voters: []sdk.AccAddress{[]byte("valid-member-address")},
 			},
 			expErr: true,
@@ -308,14 +308,14 @@ func TestMsgVote(t *testing.T) {
 		"voter required": {
 			src: MsgVoteRequest{
 				Proposal: 1,
-				Choice:   Choice_YES,
+				Choice:   Choice_CHOICE_YES,
 			},
 			expErr: true,
 		},
 		"valid voter address required": {
 			src: MsgVoteRequest{
 				Proposal: 1,
-				Choice:   Choice_YES,
+				Choice:   Choice_CHOICE_YES,
 				Voters:   []sdk.AccAddress{[]byte("invalid-member-address")},
 			},
 			expErr: true,
@@ -323,7 +323,7 @@ func TestMsgVote(t *testing.T) {
 		"duplicate voters": {
 			src: MsgVoteRequest{
 				Proposal: 1,
-				Choice:   Choice_YES,
+				Choice:   Choice_CHOICE_YES,
 				Voters:   []sdk.AccAddress{[]byte("valid-member-address"), []byte("valid-member-address")},
 			},
 			expErr: true,
@@ -331,7 +331,7 @@ func TestMsgVote(t *testing.T) {
 		"empty voters address not allowed": {
 			src: MsgVoteRequest{
 				Proposal: 1,
-				Choice:   Choice_YES,
+				Choice:   Choice_CHOICE_YES,
 				Voters:   []sdk.AccAddress{[]byte("valid-member-address"), nil, []byte("other-member-address")},
 			},
 			expErr: true,

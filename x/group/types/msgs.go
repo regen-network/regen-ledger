@@ -422,7 +422,7 @@ func (m MsgVoteRequest) ValidateBasic() error {
 	if m.Proposal == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "proposal")
 	}
-	if m.Choice == Choice_UNKNOWN {
+	if m.Choice == Choice_CHOICE_UNSPECIFIED {
 		return sdkerrors.Wrap(ErrEmpty, "choice")
 	}
 	if _, ok := Choice_name[int32(m.Choice)]; !ok {

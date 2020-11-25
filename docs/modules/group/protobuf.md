@@ -357,11 +357,11 @@ Choice defines available types of choices for voting.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| UNKNOWN | 0 |  |
-| NO | 1 |  |
-| YES | 2 |  |
-| ABSTAIN | 3 |  |
-| VETO | 4 |  |
+| CHOICE_UNSPECIFIED | 0 | CHOICE_UNSPECIFIED defines a no-op voting choice. |
+| CHOICE_NO | 1 | CHOICE_NO defines a no voting choice. |
+| CHOICE_YES | 2 | CHOICE_YES defines a yes voting choice. |
+| CHOICE_ABSTAIN | 3 | CHOICE_ABSTAIN defines an abstaining voting choice. |
+| CHOICE_VETO | 4 | CHOICE_VETO defines a voting choice with veto. |
 
 
 
@@ -372,10 +372,10 @@ ExecutorResult defines types of proposal executor results.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| PROPOSAL_EXECUTOR_RESULT_INVALID | 0 | An empty value is not allowed. |
-| PROPOSAL_EXECUTOR_RESULT_NOT_RUN | 1 | We have not yet run the executor. |
-| PROPOSAL_EXECUTOR_RESULT_SUCCESS | 2 | The executor was successful and proposed action updated state. |
-| PROPOSAL_EXECUTOR_RESULT_FAILURE | 3 | The executor returned an error and proposed action didn't update state. |
+| EXECUTOR_RESULT_UNSPECIFIED | 0 | An empty value is not allowed. |
+| EXECUTOR_RESULT_NOT_RUN | 1 | We have not yet run the executor. |
+| EXECUTOR_RESULT_SUCCESS | 2 | The executor was successful and proposed action updated state. |
+| EXECUTOR_RESULT_FAILURE | 3 | The executor returned an error and proposed action didn't update state. |
 
 
 
@@ -386,10 +386,10 @@ Result defines types of proposal results.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| PROPOSAL_RESULT_INVALID | 0 | An empty value is invalid and not allowed |
-| PROPOSAL_RESULT_UNDEFINED | 1 | Until a final tally has happened the status is undefined |
-| PROPOSAL_RESULT_ACCEPTED | 2 | Final result of the tally |
-| PROPOSAL_RESULT_REJECTED | 3 | Final result of the tally |
+| RESULT_UNSPECIFIED | 0 | An empty value is invalid and not allowed |
+| RESULT_UNDEFINED | 1 | Until a final tally has happened the status is undefined |
+| RESULT_ACCEPTED | 2 | Final result of the tally |
+| RESULT_REJECTED | 3 | Final result of the tally |
 
 
 
@@ -400,10 +400,10 @@ Status defines proposal statuses.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| PROPOSAL_STATUS_INVALID | 0 | An empty value is invalid and not allowed. |
-| PROPOSAL_STATUS_SUBMITTED | 1 | Initial status of a proposal when persisted. |
-| PROPOSAL_STATUS_CLOSED | 2 | Final status of a proposal when the final tally was executed. |
-| PROPOSAL_STATUS_ABORTED | 3 | Final status of a proposal when the group was modified before the final tally. |
+| STATUS_UNSPECIFIED | 0 | An empty value is invalid and not allowed. |
+| STATUS_SUBMITTED | 1 | Initial status of a proposal when persisted. |
+| STATUS_CLOSED | 2 | Final status of a proposal when the final tally was executed. |
+| STATUS_ABORTED | 3 | Final status of a proposal when the group was modified before the final tally. |
 
 
  <!-- end enums -->
