@@ -48,7 +48,7 @@ func TestServer(t *testing.T) {
 	cfg := configurator.NewFixture(t, []sdk.StoreKey{paramsKey, tkey, groupKey, authKey, bankKey}, addrs, cdc)
 
 	server.RegisterServices(groupKeeper, cfg)
-	s := testsuite.NewIntegrationTestSuite(cfg, groupKeeper, bankKeeper)
+	s := testsuite.NewIntegrationTestSuite(cfg, groupKeeper, bankKeeper, router)
 
 	suite.Run(t, s)
 }

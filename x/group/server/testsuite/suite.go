@@ -9,6 +9,7 @@ import (
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -26,25 +27,29 @@ type IntegrationTestSuite struct {
 	fixtureFactory server.FixtureFactory
 	fixture        server.Fixture
 
-	ctx       context.Context
-	sdkCtx    sdk.Context
-	msgClient types.MsgClient
-	addr1     sdk.AccAddress
-	addr2     sdk.AccAddress
+	ctx              context.Context
+	sdkCtx           sdk.Context
+	msgClient        types.MsgClient
+	addr1            sdk.AccAddress
+	addr2            sdk.AccAddress
+	groupAccountAddr sdk.AccAddress
+	groupID          types.GroupID
 
 	groupKeeper *groupserver.Keeper
 	bankKeeper  bankkeeper.Keeper
+	router      sdk.Router
 
 	blockTime time.Time
 }
 
 func NewIntegrationTestSuite(
 	fixtureFactory server.FixtureFactory, groupKeeper *groupserver.Keeper,
-	bankKeeper bankkeeper.Keeper) *IntegrationTestSuite {
+	bankKeeper bankkeeper.Keeper, router sdk.Router) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
 		groupKeeper:    groupKeeper,
 		bankKeeper:     bankKeeper,
+		router:         router,
 	}
 }
 
@@ -70,6 +75,23 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	}
 	s.addr1 = s.fixture.Signers()[0]
 	s.addr2 = s.fixture.Signers()[1]
+
+	members := []types.Member{
+		{Address: s.addr2, Power: sdk.OneDec()},
+	}
+	groupID, err := s.groupKeeper.CreateGroup(s.sdkCtx, s.addr1, members, "test")
+	s.Require().NoError(err)
+	s.groupID = groupID
+
+	policy := types.NewThresholdDecisionPolicy(
+		sdk.OneDec(),
+		gogotypes.Duration{Seconds: 1},
+	)
+	accountAddr, err := s.groupKeeper.CreateGroupAccount(s.sdkCtx, s.addr1, groupID, policy, "test")
+	s.Require().NoError(err)
+	s.groupAccountAddr = accountAddr
+
+	s.Require().NoError(s.bankKeeper.SetBalances(s.sdkCtx, accountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -86,6 +108,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 		Power:   sdk.NewDec(2),
 		Comment: "second",
 	}}
+
 	specs := map[string]struct {
 		req    *types.MsgCreateGroupRequest
 		expErr bool
@@ -118,7 +141,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			expErr: true,
 		},
 	}
-	var seq uint32
+	var seq uint32 = 1
 	for msg, spec := range specs {
 		s.Run(msg, func() {
 			res, err := s.msgClient.CreateGroup(s.ctx, spec.req)
@@ -1107,24 +1130,72 @@ func (s *IntegrationTestSuite) TestVote() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestExecProposal() {
-	members := []types.Member{
-		{Address: s.addr2, Power: sdk.OneDec()},
-	}
-	myGroupID, err := s.groupKeeper.CreateGroup(s.sdkCtx, s.addr1, members, "test")
-	s.Require().NoError(err)
-
-	policy := types.NewThresholdDecisionPolicy(
-		sdk.OneDec(),
-		gogotypes.Duration{Seconds: 1},
-	)
-	accountAddr, err := s.groupKeeper.CreateGroupAccount(s.sdkCtx, s.addr1, myGroupID, policy, "test")
-	s.Require().NoError(err)
-
-	s.Require().NoError(s.bankKeeper.SetBalances(s.sdkCtx, accountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
-
+func (s *IntegrationTestSuite) TestDoExecuteMsgs() {
 	msgSend := &banktypes.MsgSend{
-		FromAddress: accountAddr.String(),
+		FromAddress: s.groupAccountAddr.String(),
+		ToAddress:   s.addr2.String(),
+		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
+	}
+
+	unauthzMsgSend := &banktypes.MsgSend{
+		FromAddress: s.addr1.String(),
+		ToAddress:   s.addr2.String(),
+		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
+	}
+
+	specs := map[string]struct {
+		srcMsgs    []sdk.Msg
+		srcHandler sdk.Handler
+		expErr     bool
+	}{
+		"all good": {
+			srcMsgs: []sdk.Msg{msgSend},
+		},
+		"not authz by group account": {
+			srcMsgs: []sdk.Msg{unauthzMsgSend},
+			expErr:  true,
+		},
+		"mixed group account msgs": {
+			srcMsgs: []sdk.Msg{
+				msgSend,
+				unauthzMsgSend,
+			},
+			expErr: true,
+		},
+		"no handler": {
+			srcMsgs: []sdk.Msg{&testdata.MsgAuthenticated{Signers: []sdk.AccAddress{s.groupAccountAddr}}},
+			expErr:  true,
+		},
+		"not panic on nil result": {
+			srcMsgs: []sdk.Msg{&testdata.MsgAuthenticated{Signers: []sdk.AccAddress{s.groupAccountAddr}}},
+			srcHandler: func(ctx sdk.Context, msg sdk.Msg) (result *sdk.Result, err error) {
+				return nil, nil
+			},
+		},
+	}
+	for msg, spec := range specs {
+		s.Run(msg, func() {
+			ctx, _ := s.sdkCtx.CacheContext()
+
+			var router sdk.Router
+			if spec.srcHandler != nil {
+				router = baseapp.NewRouter().AddRoute(sdk.NewRoute("MsgAuthenticated", spec.srcHandler))
+			} else {
+				router = s.router
+			}
+			_, err := groupserver.DoExecuteMsgs(ctx, router, s.groupAccountAddr, spec.srcMsgs)
+			if spec.expErr {
+				s.Require().Error(err)
+				return
+			}
+			s.Require().NoError(err)
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestExecProposal() {
+	msgSend := &banktypes.MsgSend{
+		FromAddress: s.groupAccountAddr.String(),
 		ToAddress:   s.addr2.String(),
 		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
 	}
@@ -1142,7 +1213,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 	}{
 		"proposal executed when accepted": {
 			setupProposal: func(ctx sdk.Context) types.ProposalID {
-				myProposalID, err := s.groupKeeper.CreateProposal(ctx, accountAddr, "test", proposers, []sdk.Msg{
+				myProposalID, err := s.groupKeeper.CreateProposal(ctx, s.groupAccountAddr, "test", proposers, []sdk.Msg{
 					msgSend,
 				})
 				s.Require().NoError(err)
@@ -1157,7 +1228,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"proposal with multiple messages executed when accepted": {
 			setupProposal: func(ctx sdk.Context) types.ProposalID {
-				myProposalID, err := s.groupKeeper.CreateProposal(ctx, accountAddr, "test", proposers, []sdk.Msg{
+				myProposalID, err := s.groupKeeper.CreateProposal(ctx, s.groupAccountAddr, "test", proposers, []sdk.Msg{
 					msgSend, msgSend,
 				})
 				s.Require().NoError(err)
@@ -1172,7 +1243,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"proposal not executed when rejected": {
 			setupProposal: func(ctx sdk.Context) types.ProposalID {
-				myProposalID, err := s.groupKeeper.CreateProposal(ctx, accountAddr, "test", proposers, []sdk.Msg{
+				myProposalID, err := s.groupKeeper.CreateProposal(ctx, s.groupAccountAddr, "test", proposers, []sdk.Msg{
 					msgSend,
 				})
 				s.Require().NoError(err)
@@ -1185,7 +1256,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"open proposal must not fail": {
 			setupProposal: func(ctx sdk.Context) types.ProposalID {
-				myProposalID, err := s.groupKeeper.CreateProposal(ctx, accountAddr, "test", proposers, []sdk.Msg{
+				myProposalID, err := s.groupKeeper.CreateProposal(ctx, s.groupAccountAddr, "test", proposers, []sdk.Msg{
 					msgSend,
 				})
 				s.Require().NoError(err)
@@ -1203,7 +1274,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"Decision policy also applied on timeout": {
 			setupProposal: func(ctx sdk.Context) types.ProposalID {
-				myProposalID, err := s.groupKeeper.CreateProposal(ctx, accountAddr, "test", proposers, []sdk.Msg{
+				myProposalID, err := s.groupKeeper.CreateProposal(ctx, s.groupAccountAddr, "test", proposers, []sdk.Msg{
 					msgSend,
 				})
 				s.Require().NoError(err)
@@ -1217,7 +1288,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"Decision policy also applied after timeout": {
 			setupProposal: func(ctx sdk.Context) types.ProposalID {
-				myProposalID, err := s.groupKeeper.CreateProposal(ctx, accountAddr, "test", proposers, []sdk.Msg{
+				myProposalID, err := s.groupKeeper.CreateProposal(ctx, s.groupAccountAddr, "test", proposers, []sdk.Msg{
 					msgSend,
 				})
 				s.Require().NoError(err)
@@ -1231,12 +1302,12 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"with group modified before tally": {
 			setupProposal: func(ctx sdk.Context) types.ProposalID {
-				myProposalID, err := s.groupKeeper.CreateProposal(ctx, accountAddr, "test", proposers, []sdk.Msg{
+				myProposalID, err := s.groupKeeper.CreateProposal(ctx, s.groupAccountAddr, "test", proposers, []sdk.Msg{
 					msgSend,
 				})
 				s.Require().NoError(err)
 				// then modify group
-				g, err := s.groupKeeper.GetGroup(ctx, myGroupID)
+				g, err := s.groupKeeper.GetGroup(ctx, s.groupID)
 				s.Require().NoError(err)
 				g.Comment = "modified"
 				s.Require().NoError(s.groupKeeper.UpdateGroup(ctx, &g))
@@ -1248,12 +1319,12 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"with group account modified before tally": {
 			setupProposal: func(ctx sdk.Context) types.ProposalID {
-				myProposalID, err := s.groupKeeper.CreateProposal(ctx, accountAddr, "test", proposers, []sdk.Msg{
+				myProposalID, err := s.groupKeeper.CreateProposal(ctx, s.groupAccountAddr, "test", proposers, []sdk.Msg{
 					msgSend,
 				})
 				s.Require().NoError(err)
 				// then modify group account
-				a, err := s.groupKeeper.GetGroupAccount(ctx, accountAddr)
+				a, err := s.groupKeeper.GetGroupAccount(ctx, s.groupAccountAddr)
 				s.Require().NoError(err)
 				a.Comment = "modified"
 				s.Require().NoError(s.groupKeeper.UpdateGroupAccount(ctx, &a))
@@ -1265,7 +1336,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"prevent double execution when successful": {
 			setupProposal: func(ctx sdk.Context) types.ProposalID {
-				myProposalID, err := s.groupKeeper.CreateProposal(ctx, accountAddr, "test", proposers, []sdk.Msg{
+				myProposalID, err := s.groupKeeper.CreateProposal(ctx, s.groupAccountAddr, "test", proposers, []sdk.Msg{
 					msgSend,
 				})
 				s.Require().NoError(err)
@@ -1281,9 +1352,9 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"rollback all msg updates on failure": {
 			setupProposal: func(ctx sdk.Context) types.ProposalID {
-				myProposalID, err := s.groupKeeper.CreateProposal(ctx, accountAddr, "test", proposers, []sdk.Msg{
+				myProposalID, err := s.groupKeeper.CreateProposal(ctx, s.groupAccountAddr, "test", proposers, []sdk.Msg{
 					msgSend, &banktypes.MsgSend{
-						FromAddress: accountAddr.String(),
+						FromAddress: s.groupAccountAddr.String(),
 						ToAddress:   s.addr2.String(),
 						Amount:      sdk.Coins{sdk.NewInt64Coin("test", 10001)}},
 				})
@@ -1295,24 +1366,25 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expProposalResult: types.ProposalResultAccepted,
 			expExecutorResult: types.ProposalExecutorResultFailure,
 		},
-		// TODO
-		// "executable when failed before": {
-		// 	setupProposal: func(ctx sdk.Context) types.ProposalID {
-		// 		member := []sdk.AccAddress{[]byte("valid-member-address")}
-		// 		myProposalID, err := s.groupKeeper.CreateProposal(ctx, accountAddr, "test", member, []sdk.Msg{
-		// 			&testdatatypes.MsgConditional{ExpectedCounter: 1}, &testdatatypes.MsgIncCounter{},
-		// 		})
-		// 		s.Require().NoError(err)
-		// 		s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, member, types.Choice_YES, ""))
-		// 		s.Require().NoError(s.groupKeeper.ExecProposal(ctx, myProposalID))
-		// 		testdataKeeper.IncCounter(ctx)
-		// 		return myProposalID
-		// 	},
-		// 	expPayloadCounter: 2,
-		// 	expProposalStatus: types.ProposalStatusClosed,
-		// 	expProposalResult: types.ProposalResultAccepted,
-		// 	expExecutorResult: types.ProposalExecutorResultSuccess,
-		// },
+		"executable when failed before": {
+			setupProposal: func(ctx sdk.Context) types.ProposalID {
+				myProposalID, err := s.groupKeeper.CreateProposal(ctx, s.groupAccountAddr, "test", proposers, []sdk.Msg{
+					&banktypes.MsgSend{
+						FromAddress: s.groupAccountAddr.String(),
+						ToAddress:   s.addr2.String(),
+						Amount:      sdk.Coins{sdk.NewInt64Coin("test", 10001)}},
+				})
+				s.Require().NoError(err)
+				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, proposers, types.Choice_YES, ""))
+				s.Require().NoError(s.groupKeeper.ExecProposal(ctx, myProposalID))
+				s.Require().NoError(s.bankKeeper.SetBalances(ctx, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+
+				return myProposalID
+			},
+			expProposalStatus: types.ProposalStatusClosed,
+			expProposalResult: types.ProposalResultAccepted,
+			expExecutorResult: types.ProposalExecutorResultSuccess,
+		},
 	}
 	for msg, spec := range specs {
 		s.Run(msg, func() {
@@ -1345,7 +1417,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			s.Assert().Equal(exp, got)
 
 			if spec.expFromBalances != nil {
-				fromBalances := s.bankKeeper.GetAllBalances(ctx, accountAddr)
+				fromBalances := s.bankKeeper.GetAllBalances(ctx, s.groupAccountAddr)
 				s.Require().Equal(spec.expFromBalances, fromBalances)
 			}
 			if spec.expToBalances != nil {
