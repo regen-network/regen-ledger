@@ -1,4 +1,4 @@
-//Package math provides helper functions for doing mathematical calculations and parsing for the ecocredit module.
+// Package math provides helper functions for doing mathematical calculations and parsing for the ecocredit module.
 package math
 
 import (

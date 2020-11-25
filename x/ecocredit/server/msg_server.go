@@ -43,21 +43,8 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatchRequest) (*ecocredit.MsgCreateBatchResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	classID := req.ClassId
-	classInfo, err := s.getClassInfo(ctx, classID)
-	if err != nil {
+	if err := s.assertClassIssuer(ctx, classID, req.Issuer); err != nil {
 		return nil, err
-	}
-
-	var found bool
-	for _, issuer := range classInfo.Issuers {
-		if issuer == req.Issuer {
-			found = true
-			break
-		}
-	}
-
-	if !found {
-		return nil, sdkerrors.ErrUnauthorized
 	}
 
 	batchID := s.idSeq.NextVal(ctx)
@@ -109,7 +96,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 				return nil, err
 			}
 
-			err = s.retire(ctx, store, recipient, batchDenom, retired)
+			err = retire(ctx, store, recipient, batchDenom, retired)
 			if err != nil {
 				return nil, err
 			}
@@ -135,18 +122,18 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	setDecimal(store, RetiredSupplyKey(batchDenom), retiredSupply)
 
 	var totalSupply apd.Decimal
-	err = math.Add(&totalSupply, tradableSupply, retiredSupply)
+	err := math.Add(&totalSupply, tradableSupply, retiredSupply)
 	if err != nil {
 		return nil, err
 	}
 
 	totalSupplyStr := math.DecimalString(&totalSupply)
-
 	err = s.batchInfoTable.Create(ctx, &ecocredit.BatchInfo{
 		ClassId:    classID,
 		BatchDenom: string(batchDenom),
 		Issuer:     req.Issuer,
 		TotalUnits: totalSupplyStr,
+		Metadata:   req.Metadata,
 	})
 	if err != nil {
 		return nil, err
@@ -219,7 +206,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 		}
 
 		// Add retired balance
-		err = s.retire(ctx, store, recipient, denom, retired)
+		err = retire(ctx, store, recipient, denom, retired)
 		if err != nil {
 			return nil, err
 		}
@@ -248,10 +235,8 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
 	holder := req.Holder
-
 	for _, credit := range req.Credits {
 		denom := batchDenomT(credit.BatchDenom)
-
 		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
 			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid credit denom", denom))
 		}
@@ -279,7 +264,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 		}
 
 		//  Add retired balance
-		err = s.retire(ctx, store, holder, denom, toRetire)
+		err = retire(ctx, store, holder, denom, toRetire)
 		if err != nil {
 			return nil, err
 		}
@@ -294,7 +279,51 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 	return &ecocredit.MsgRetireResponse{}, nil
 }
 
-func (s serverImpl) retire(ctx sdk.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired *apd.Decimal) error {
+func (s serverImpl) SetPrecision(goCtx context.Context, req *ecocredit.MsgSetPrecisionRequest) (*ecocredit.MsgSetPrecisionResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	var batchInfo ecocredit.BatchInfo
+	err := s.batchInfoTable.GetOne(ctx, orm.RowID(req.BatchDenom), &batchInfo)
+	if err != nil {
+		return nil, err
+	}
+	if req.Issuer != batchInfo.Issuer {
+		return nil, sdkerrors.ErrUnauthorized
+	}
+	store := ctx.KVStore(s.storeKey)
+	key := MaxDecimalPlacesKey(batchDenomT(req.BatchDenom))
+	x, err := getUint32(store, key)
+	if err != nil {
+		return nil, err
+	}
+
+	if req.MaxDecimalPlaces <= x {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("Maximum decimal can only be increased, it is currently %d, and %d was requested", x, req.MaxDecimalPlaces))
+	}
+
+	err = setUInt32(store, key, req.MaxDecimalPlaces)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.MsgSetPrecisionResponse{}, nil
+}
+
+// assertClassIssuer makes sure that the issuer is part of issuers of given classID.
+// Returns ErrUnauthorized otherwise.
+func (s serverImpl) assertClassIssuer(ctx sdk.Context, classID, issuer string) error {
+	classInfo, err := s.getClassInfo(ctx, classID)
+	if err != nil {
+		return err
+	}
+	for _, i := range classInfo.Issuers {
+		if issuer == i {
+			return nil
+		}
+	}
+	return sdkerrors.ErrUnauthorized
+}
+
+func retire(ctx sdk.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired *apd.Decimal) error {
 	err := getAddAndSetDecimal(store, RetiredBalanceKey(recipient, batchDenom), retired)
 	if err != nil {
 		return err
@@ -305,25 +334,4 @@ func (s serverImpl) retire(ctx sdk.Context, store sdk.KVStore, recipient string,
 		BatchDenom: string(batchDenom),
 		Units:      math.DecimalString(retired),
 	})
-}
-
-func (s serverImpl) SetPrecision(goCtx context.Context, request *ecocredit.MsgSetPrecisionRequest) (*ecocredit.MsgSetPrecisionResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-	store := ctx.KVStore(s.storeKey)
-	key := MaxDecimalPlacesKey(batchDenomT(request.BatchDenom))
-	x, err := getUint32(store, key)
-	if err != nil {
-		return nil, err
-	}
-
-	if request.MaxDecimalPlaces <= x {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("Maximum decimal can only be increased, it is currently %d, and %d was requested", x, request.MaxDecimalPlaces))
-	}
-
-	err = setUInt32(store, key, x)
-	if err != nil {
-		return nil, err
-	}
-
-	return &ecocredit.MsgSetPrecisionResponse{}, nil
 }

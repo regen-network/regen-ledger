@@ -27,7 +27,7 @@ module.exports = {
    * ref：https://v1.vuepress.vuejs.org/theme/default-theme-config.html
    */
   themeConfig: {
-    repo: 'regen/regen-ledger',
+    repo: 'regen-network/regen-ledger',
     editLinks: false,
     docsDir: 'docs',
     lastUpdated: false,
