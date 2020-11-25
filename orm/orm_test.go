@@ -28,7 +28,6 @@ func TestTypeSafeRowGetter(t *testing.T) {
 	specs := map[string]struct {
 		srcRowID     RowID
 		srcModelType reflect.Type
-		mutateDest   func(*testdata.GroupMetadata) codec.ProtoMarshaler
 		expObj       interface{}
 		expErr       *errors.Error
 	}{
@@ -56,14 +55,6 @@ func TestTypeSafeRowGetter(t *testing.T) {
 			srcModelType: reflect.TypeOf(testdata.GroupMetadata{}),
 			expErr:       ErrArgument,
 		},
-		// "target not a pointer": {
-		// 	srcRowID:     EncodeSequence(1),
-		// 	srcModelType: reflect.TypeOf(alwaysPanicPersistenceTarget{}),
-		// 	mutateDest: func(m *testdata.GroupMetadata) Persistent {
-		// 		return alwaysPanicPersistenceTarget{}
-		// 	},
-		// 	expErr: ErrType,
-		// },
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
@@ -72,13 +63,8 @@ func TestTypeSafeRowGetter(t *testing.T) {
 
 			getter := NewTypeSafeRowGetter(storeKey, prefixKey, spec.srcModelType, cdc)
 			var loadedObj testdata.GroupMetadata
-			var dest codec.ProtoMarshaler
-			if spec.mutateDest != nil {
-				dest = spec.mutateDest(&loadedObj)
-			} else {
-				dest = &loadedObj
-			}
-			err := getter(ctx, spec.srcRowID, dest)
+
+			err := getter(ctx, spec.srcRowID, &loadedObj)
 			if spec.expErr != nil {
 				require.True(t, spec.expErr.Is(err), err)
 				return
@@ -87,18 +73,4 @@ func TestTypeSafeRowGetter(t *testing.T) {
 			assert.Equal(t, spec.expObj, loadedObj)
 		})
 	}
-}
-
-type alwaysPanicPersistenceTarget struct{}
-
-func (n alwaysPanicPersistenceTarget) Marshal() ([]byte, error) {
-	panic("implement me")
-}
-
-func (n alwaysPanicPersistenceTarget) Unmarshal([]byte) error {
-	panic("implement me")
-}
-
-func (n alwaysPanicPersistenceTarget) ValidateBasic() error {
-	panic("implement me")
 }

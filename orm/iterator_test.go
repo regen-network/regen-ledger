@@ -90,46 +90,33 @@ func TestReadAll(t *testing.T) {
 	}
 }
 
-// func TestLimitedIterator(t *testing.T) {
-// 	sliceIter := func(s ...string) Iterator {
-// 		var pos int
-// 		return IteratorFunc(func(dest codec.ProtoMarshaler) (RowID, error) {
-// 			if pos == len(s) {
-// 				return nil, ErrIteratorDone
-// 			}
-// 			v := s[pos]
-
-// 			*dest.(*persistentString) = persistentString(v)
-// 			pos++
-// 			return []byte(v), nil
-// 		})
-// 	}
-// 	specs := map[string]struct {
-// 		src Iterator
-// 		exp []persistentString
-// 	}{
-// 		"all from range with max > length": {
-// 			src: LimitIterator(sliceIter("a", "b", "c"), 4),
-// 			exp: []persistentString{"a", "b", "c"},
-// 		},
-// 		"up to max": {
-// 			src: LimitIterator(sliceIter("a", "b", "c"), 2),
-// 			exp: []persistentString{"a", "b"},
-// 		},
-// 		"none when max = 0": {
-// 			src: LimitIterator(sliceIter("a", "b", "c"), 0),
-// 			exp: []persistentString{},
-// 		},
-// 	}
-// 	for msg, spec := range specs {
-// 		t.Run(msg, func(t *testing.T) {
-// 			var loaded []persistentString
-// 			_, err := ReadAll(spec.src, &loaded)
-// 			require.NoError(t, err)
-// 			assert.EqualValues(t, spec.exp, loaded)
-// 		})
-// 	}
-// }
+func TestLimitedIterator(t *testing.T) {
+	specs := map[string]struct {
+		src Iterator
+		exp []testdata.GroupMetadata
+	}{
+		"all from range with max > length": {
+			src: LimitIterator(mockIter(EncodeSequence(1), &testdata.GroupMetadata{Description: "test"}), 2),
+			exp: []testdata.GroupMetadata{testdata.GroupMetadata{Description: "test"}},
+		},
+		"up to max": {
+			src: LimitIterator(mockIter(EncodeSequence(1), &testdata.GroupMetadata{Description: "test"}), 1),
+			exp: []testdata.GroupMetadata{testdata.GroupMetadata{Description: "test"}},
+		},
+		"none when max = 0": {
+			src: LimitIterator(mockIter(EncodeSequence(1), &testdata.GroupMetadata{Description: "test"}), 0),
+			exp: []testdata.GroupMetadata{},
+		},
+	}
+	for msg, spec := range specs {
+		t.Run(msg, func(t *testing.T) {
+			var loaded []testdata.GroupMetadata
+			_, err := ReadAll(spec.src, &loaded)
+			require.NoError(t, err)
+			assert.EqualValues(t, spec.exp, loaded)
+		})
+	}
+}
 
 // mockIter amino encodes + decodes value object.
 func mockIter(rowID RowID, val codec.ProtoMarshaler) Iterator {
