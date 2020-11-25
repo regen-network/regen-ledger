@@ -228,7 +228,7 @@ func TestGasCostsNaturalKeyTable(t *testing.T) {
 		gCtx.ResetGasMeter()
 		m := testdata.GroupMember{
 			Group:  sdk.AccAddress(EncodeSequence(1)),
-			Member: sdk.AccAddress([]byte(fmt.Sprintf("member-addres%d", i))),
+			Member: sdk.AccAddress([]byte(fmt.Sprintf("member-address%d", i))),
 			Weight: 10,
 		}
 		err = k.groupMemberTable.Create(gCtx, &m)
@@ -240,7 +240,7 @@ func TestGasCostsNaturalKeyTable(t *testing.T) {
 		gCtx.ResetGasMeter()
 		m := testdata.GroupMember{
 			Group:  sdk.AccAddress(EncodeSequence(1)),
-			Member: sdk.AccAddress([]byte(fmt.Sprintf("member-addres%d", i))),
+			Member: sdk.AccAddress([]byte(fmt.Sprintf("member-address%d", i))),
 			Weight: 10,
 		}
 		err = k.groupMemberTable.GetOne(gCtx, m.NaturalKey(), &loaded)

@@ -143,6 +143,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 	}
 	var seq uint32 = 1
 	for msg, spec := range specs {
+		spec := spec
 		s.Run(msg, func() {
 			res, err := s.msgClient.CreateGroup(s.ctx, spec.req)
 			if spec.expErr {
@@ -242,6 +243,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
 		},
 	}
 	for msg, spec := range specs {
+		spec := spec
 		s.Run(msg, func() {
 			_, err := s.msgClient.UpdateGroupAdmin(s.ctx, spec.req)
 			if spec.expErr {
@@ -321,6 +323,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupComment() {
 		},
 	}
 	for msg, spec := range specs {
+		spec := spec
 		s.Run(msg, func() {
 			_, err := s.msgClient.UpdateGroupComment(s.ctx, spec.req)
 			if spec.expErr {
@@ -442,16 +445,18 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 			req: &types.MsgUpdateGroupMembersRequest{
 				Group: groupID,
 				Admin: myAdmin,
-				MemberUpdates: []types.Member{{
-					Address: sdk.AccAddress([]byte("valid-member-address")),
-					Power:   sdk.NewDec(0),
-					Comment: "good bye",
-				},
+				MemberUpdates: []types.Member{
 					{
-						Address: sdk.AccAddress([]byte("my-new-member-addres")),
+						Address: sdk.AccAddress([]byte("valid-member-address")),
+						Power:   sdk.NewDec(0),
+						Comment: "good bye",
+					},
+					{
+						Address: s.addr1,
 						Power:   sdk.NewDec(1),
 						Comment: "welcome",
-					}},
+					},
+				},
 			},
 			expGroup: types.GroupMetadata{
 				Group:       groupID,
@@ -461,7 +466,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				Version:     2,
 			},
 			expMembers: []types.GroupMember{{
-				Member:  sdk.AccAddress([]byte("my-new-member-addres")),
+				Member:  s.addr1,
 				Group:   groupID,
 				Weight:  sdk.NewDec(1),
 				Comment: "welcome",
@@ -563,6 +568,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 		},
 	}
 	for msg, spec := range specs {
+		spec := spec
 		s.Run(msg, func() {
 			ctx, _ := s.sdkCtx.CacheContext()
 			_, err := s.msgClient.UpdateGroupMembers(sdk.WrapSDKContext(ctx), spec.req)
@@ -657,6 +663,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 		},
 	}
 	for msg, spec := range specs {
+		spec := spec
 		s.Run(msg, func() {
 			err := spec.req.SetDecisionPolicy(spec.policy)
 			s.Require().NoError(err)
@@ -795,6 +802,7 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 		},
 	}
 	for msg, spec := range specs {
+		spec := spec
 		s.Run(msg, func() {
 			err := spec.req.SetMsgs(spec.msgs)
 			s.Require().NoError(err)
@@ -1068,7 +1076,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			doBefore: func(ctx sdk.Context) {
 				g, err := s.groupKeeper.GetGroup(ctx, myGroupID)
 				s.Require().NoError(err)
-				g.Comment = "modified"
+				g.Comment = "group modified"
 				s.Require().NoError(s.groupKeeper.UpdateGroup(ctx, &g))
 			},
 			expErr: true,
@@ -1082,13 +1090,14 @@ func (s *IntegrationTestSuite) TestVote() {
 			doBefore: func(ctx sdk.Context) {
 				a, err := s.groupKeeper.GetGroupAccount(ctx, accountAddr)
 				s.Require().NoError(err)
-				a.Comment = "modified"
+				a.Comment = "policy modified"
 				s.Require().NoError(s.groupKeeper.UpdateGroupAccount(ctx, &a))
 			},
 			expErr: true,
 		},
 	}
 	for msg, spec := range specs {
+		spec := spec
 		s.Run(msg, func() {
 			ctx := s.sdkCtx
 			if !spec.srcCtx.IsZero() {
@@ -1174,6 +1183,7 @@ func (s *IntegrationTestSuite) TestDoExecuteMsgs() {
 		},
 	}
 	for msg, spec := range specs {
+		spec := spec
 		s.Run(msg, func() {
 			ctx, _ := s.sdkCtx.CacheContext()
 
@@ -1309,7 +1319,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 				// then modify group
 				g, err := s.groupKeeper.GetGroup(ctx, s.groupID)
 				s.Require().NoError(err)
-				g.Comment = "modified"
+				g.Comment = "group modified before tally"
 				s.Require().NoError(s.groupKeeper.UpdateGroup(ctx, &g))
 				return myProposalID
 			},
@@ -1326,7 +1336,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 				// then modify group account
 				a, err := s.groupKeeper.GetGroupAccount(ctx, s.groupAccountAddr)
 				s.Require().NoError(err)
-				a.Comment = "modified"
+				a.Comment = "group account modified before tally"
 				s.Require().NoError(s.groupKeeper.UpdateGroupAccount(ctx, &a))
 				return myProposalID
 			},
@@ -1387,6 +1397,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 	}
 	for msg, spec := range specs {
+		spec := spec
 		s.Run(msg, func() {
 			ctx, _ := s.sdkCtx.CacheContext()
 			proposalID := spec.setupProposal(ctx)
