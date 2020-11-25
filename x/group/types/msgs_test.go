@@ -194,7 +194,7 @@ func TestMsgCreateGroupAccount(t *testing.T) {
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
-			m, err := NewMsgCreateGroupAccount(
+			m, err := NewMsgCreateGroupAccountRequest(
 				spec.admin,
 				spec.group,
 				"any comment",

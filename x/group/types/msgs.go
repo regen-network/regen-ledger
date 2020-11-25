@@ -278,8 +278,8 @@ func (m MsgUpdateGroupAccountCommentRequest) ValidateBasic() error {
 var _ sdk.MsgRequest = &MsgCreateGroupAccountRequest{}
 var _ types.UnpackInterfacesMessage = MsgCreateGroupAccountRequest{}
 
-// NewMsgCreateGroupAccount creates a new MsgCreateGroupAccountRequest.
-func NewMsgCreateGroupAccount(admin sdk.AccAddress, group GroupID, comment string, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccountRequest, error) {
+// NewMsgCreateGroupAccountRequest creates a new MsgCreateGroupAccountRequest.
+func NewMsgCreateGroupAccountRequest(admin sdk.AccAddress, group GroupID, comment string, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccountRequest, error) {
 	m := &MsgCreateGroupAccountRequest{
 		Admin:   admin,
 		Group:   group,
