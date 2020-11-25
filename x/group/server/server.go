@@ -7,13 +7,13 @@ import (
 )
 
 type serverImpl struct {
-	*Keeper
+	Keeper
 }
 
-func newServer(keeper *Keeper) serverImpl {
+func newServer(keeper Keeper) serverImpl {
 	return serverImpl{Keeper: keeper}
 }
 
-func RegisterServices(keeper *Keeper, configurator module.Configurator) {
+func RegisterServices(keeper Keeper, configurator module.Configurator) {
 	types.RegisterMsgServer(configurator.MsgServer(), newServer(keeper))
 }

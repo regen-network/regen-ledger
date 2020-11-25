@@ -35,7 +35,7 @@ type IntegrationTestSuite struct {
 	groupAccountAddr sdk.AccAddress
 	groupID          types.GroupID
 
-	groupKeeper *groupserver.Keeper
+	groupKeeper groupserver.Keeper
 	bankKeeper  bankkeeper.Keeper
 	router      sdk.Router
 
@@ -43,7 +43,7 @@ type IntegrationTestSuite struct {
 }
 
 func NewIntegrationTestSuite(
-	fixtureFactory server.FixtureFactory, groupKeeper *groupserver.Keeper,
+	fixtureFactory server.FixtureFactory, groupKeeper groupserver.Keeper,
 	bankKeeper bankkeeper.Keeper, router sdk.Router) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
