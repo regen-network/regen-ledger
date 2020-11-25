@@ -541,7 +541,8 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 	}
 	for msg, spec := range specs {
 		s.Run(msg, func() {
-			_, err := s.msgClient.UpdateGroupMembers(s.ctx, spec.req)
+			ctx, _ := s.sdkCtx.CacheContext()
+			_, err := s.msgClient.UpdateGroupMembers(sdk.WrapSDKContext(ctx), spec.req)
 			if spec.expErr {
 				s.Require().Error(err)
 				return
@@ -549,12 +550,12 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 			s.Require().NoError(err)
 
 			// then
-			loaded, err := s.groupKeeper.GetGroup(s.sdkCtx, groupID)
+			loaded, err := s.groupKeeper.GetGroup(ctx, groupID)
 			s.Require().NoError(err)
 			s.Assert().Equal(spec.expGroup, loaded)
 
 			// and members persisted
-			it, err := s.groupKeeper.GetGroupMembersByGroup(s.sdkCtx, groupID)
+			it, err := s.groupKeeper.GetGroupMembersByGroup(ctx, groupID)
 			s.Require().NoError(err)
 			var loadedMembers []types.GroupMember
 			_, err = orm.ReadAll(it, &loadedMembers)
@@ -927,7 +928,7 @@ func (s *IntegrationTestSuite) TestVote() {
 				Choice:   types.Choice_YES,
 			},
 			doBefore: func(ctx sdk.Context) {
-				s.Require().NoError(s.groupKeeper.Vote(s.sdkCtx, myProposalID, []sdk.AccAddress{[]byte("power-member-address")}, types.Choice_VETO, ""))
+				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, []sdk.AccAddress{[]byte("power-member-address")}, types.Choice_VETO, ""))
 			},
 			expErr: true,
 		},
@@ -1018,7 +1019,7 @@ func (s *IntegrationTestSuite) TestVote() {
 				Choice:   types.Choice_NO,
 			},
 			doBefore: func(ctx sdk.Context) {
-				err := s.groupKeeper.Vote(s.sdkCtx, myProposalID, []sdk.AccAddress{[]byte("power-member-address")}, types.Choice_YES, "")
+				err := s.groupKeeper.Vote(ctx, myProposalID, []sdk.AccAddress{[]byte("power-member-address")}, types.Choice_YES, "")
 				s.Require().NoError(err)
 			},
 			expErr: true,
@@ -1030,7 +1031,7 @@ func (s *IntegrationTestSuite) TestVote() {
 				Choice:   types.Choice_NO,
 			},
 			doBefore: func(ctx sdk.Context) {
-				err := s.groupKeeper.Vote(s.sdkCtx, myProposalID, []sdk.AccAddress{[]byte("valid-member-address")}, types.Choice_YES, "")
+				err := s.groupKeeper.Vote(ctx, myProposalID, []sdk.AccAddress{[]byte("valid-member-address")}, types.Choice_YES, "")
 				s.Require().NoError(err)
 			},
 			expErr: true,
@@ -1042,10 +1043,10 @@ func (s *IntegrationTestSuite) TestVote() {
 				Choice:   types.Choice_NO,
 			},
 			doBefore: func(ctx sdk.Context) {
-				g, err := s.groupKeeper.GetGroup(s.sdkCtx, myGroupID)
+				g, err := s.groupKeeper.GetGroup(ctx, myGroupID)
 				s.Require().NoError(err)
 				g.Comment = "modified"
-				s.Require().NoError(s.groupKeeper.UpdateGroup(s.sdkCtx, &g))
+				s.Require().NoError(s.groupKeeper.UpdateGroup(ctx, &g))
 			},
 			expErr: true,
 		},
@@ -1056,10 +1057,10 @@ func (s *IntegrationTestSuite) TestVote() {
 				Choice:   types.Choice_NO,
 			},
 			doBefore: func(ctx sdk.Context) {
-				a, err := s.groupKeeper.GetGroupAccount(s.sdkCtx, accountAddr)
+				a, err := s.groupKeeper.GetGroupAccount(ctx, accountAddr)
 				s.Require().NoError(err)
 				a.Comment = "modified"
-				s.Require().NoError(s.groupKeeper.UpdateGroupAccount(s.sdkCtx, &a))
+				s.Require().NoError(s.groupKeeper.UpdateGroupAccount(ctx, &a))
 			},
 			expErr: true,
 		},
@@ -1073,9 +1074,9 @@ func (s *IntegrationTestSuite) TestVote() {
 			ctx, _ = ctx.CacheContext()
 
 			if spec.doBefore != nil {
-				spec.doBefore(s.sdkCtx)
+				spec.doBefore(ctx)
 			}
-			_, err := s.msgClient.Vote(s.ctx, spec.req)
+			_, err := s.msgClient.Vote(sdk.WrapSDKContext(ctx), spec.req)
 			if spec.expErr {
 				s.Require().Error(err)
 				return
@@ -1085,7 +1086,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			// and all votes are stored
 			for _, voter := range spec.req.Voters {
 				// then all data persisted
-				loaded, err := s.groupKeeper.GetVote(s.sdkCtx, spec.req.Proposal, voter)
+				loaded, err := s.groupKeeper.GetVote(ctx, spec.req.Proposal, voter)
 				s.Require().NoError(err)
 				s.Assert().Equal(spec.req.Proposal, loaded.Proposal)
 				s.Assert().Equal(voter, loaded.Voter)
@@ -1097,7 +1098,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			}
 
 			// and proposal is updated
-			proposal, err := s.groupKeeper.GetProposal(s.sdkCtx, spec.req.Proposal)
+			proposal, err := s.groupKeeper.GetProposal(ctx, spec.req.Proposal)
 			s.Require().NoError(err)
 			s.Assert().Equal(spec.expVoteState, proposal.VoteState)
 			s.Assert().Equal(spec.expResult, proposal.Result)
