@@ -373,7 +373,7 @@ func doTally(ctx sdk.Context, p *types.Proposal, electorate types.GroupMetadata,
 	case result.Allow && result.Final:
 		p.Result = types.ProposalResultAccepted
 		p.Status = types.ProposalStatusClosed
-	case result == types.DecisionPolicyResult{Allow: false, Final: true}:
+	case !result.Allow && result.Final:
 		p.Result = types.ProposalResultRejected
 		p.Status = types.ProposalStatusClosed
 	}
