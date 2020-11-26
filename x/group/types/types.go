@@ -6,7 +6,6 @@ import (
 
 	proto "github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/types"
-	"github.com/pkg/errors"
 	"github.com/regen-network/regen-ledger/orm"
 	"gopkg.in/yaml.v2"
 
@@ -94,25 +93,25 @@ func (p *ThresholdDecisionPolicy) GetThreshold() sdk.Dec {
 // Validate returns an error if policy threshold is greater than the total group weight
 func (p *ThresholdDecisionPolicy) Validate(g GroupMetadata) error {
 	if p.GetThreshold().GT(g.TotalWeight) {
-		return errors.Wrap(ErrInvalid, "policy threshold should not be greater than the total group weight")
+		return sdkerrors.Wrap(ErrInvalid, "policy threshold should not be greater than the total group weight")
 	}
 	return nil
 }
 
 func (p ThresholdDecisionPolicy) ValidateBasic() error {
 	if p.Threshold.IsNil() {
-		return errors.Wrap(ErrEmpty, "threshold")
+		return sdkerrors.Wrap(ErrEmpty, "threshold")
 	}
 	if p.Threshold.LT(sdk.OneDec()) {
-		return errors.Wrap(ErrInvalid, "threshold")
+		return sdkerrors.Wrap(ErrInvalid, "threshold")
 	}
 	timeout, err := types.DurationFromProto(&p.Timeout)
 	if err != nil {
-		return errors.Wrap(err, "timeout")
+		return sdkerrors.Wrap(err, "timeout")
 	}
 
 	if timeout <= time.Nanosecond {
-		return errors.Wrap(ErrInvalid, "timeout")
+		return sdkerrors.Wrap(ErrInvalid, "timeout")
 	}
 	return nil
 }
@@ -187,10 +186,10 @@ func (g GroupAccountMetadata) ValidateBasic() error {
 	policy := g.GetDecisionPolicy()
 
 	if policy == nil {
-		return errors.Wrap(ErrEmpty, "policy")
+		return sdkerrors.Wrap(ErrEmpty, "policy")
 	}
 	if err := policy.ValidateBasic(); err != nil {
-		return errors.Wrap(err, "policy")
+		return sdkerrors.Wrap(err, "policy")
 	}
 	return nil
 }
@@ -212,26 +211,26 @@ var _ orm.Validateable = Vote{}
 
 func (v Vote) ValidateBasic() error {
 	if len(v.Voter) == 0 {
-		return errors.Wrap(ErrEmpty, "voter")
+		return sdkerrors.Wrap(ErrEmpty, "voter")
 	}
 	if err := sdk.VerifyAddressFormat(v.Voter); err != nil {
 		return sdkerrors.Wrap(err, "voter")
 	}
 	if v.Proposal == 0 {
-		return errors.Wrap(ErrEmpty, "proposal")
+		return sdkerrors.Wrap(ErrEmpty, "proposal")
 	}
 	if v.Choice == Choice_CHOICE_UNSPECIFIED {
-		return errors.Wrap(ErrEmpty, "choice")
+		return sdkerrors.Wrap(ErrEmpty, "choice")
 	}
 	if _, ok := Choice_name[int32(v.Choice)]; !ok {
-		return errors.Wrap(ErrInvalid, "choice")
+		return sdkerrors.Wrap(ErrInvalid, "choice")
 	}
 	t, err := types.TimestampFromProto(&v.SubmittedAt)
 	if err != nil {
-		return errors.Wrap(err, "submitted at")
+		return sdkerrors.Wrap(err, "submitted at")
 	}
 	if t.IsZero() {
-		return errors.Wrap(ErrEmpty, "submitted at")
+		return sdkerrors.Wrap(ErrEmpty, "submitted at")
 	}
 	return nil
 }
@@ -311,7 +310,7 @@ func (g GroupMember) ValidateBasic() error {
 
 func (t *Tally) Sub(vote Vote, weight sdk.Dec) error {
 	if weight.LTE(sdk.ZeroDec()) {
-		return errors.Wrap(ErrInvalid, "weight must be greater than 0")
+		return sdkerrors.Wrap(ErrInvalid, "weight must be greater than 0")
 	}
 	switch vote.Choice {
 	case Choice_CHOICE_YES:
@@ -323,14 +322,14 @@ func (t *Tally) Sub(vote Vote, weight sdk.Dec) error {
 	case Choice_CHOICE_VETO:
 		t.VetoCount = t.VetoCount.Sub(weight)
 	default:
-		return errors.Wrapf(ErrInvalid, "unknown choice %s", vote.Choice.String())
+		return sdkerrors.Wrapf(ErrInvalid, "unknown choice %s", vote.Choice.String())
 	}
 	return nil
 }
 
 func (t *Tally) Add(vote Vote, weight sdk.Dec) error {
 	if weight.LTE(sdk.ZeroDec()) {
-		return errors.Wrap(ErrInvalid, "weight must be greater than 0")
+		return sdkerrors.Wrap(ErrInvalid, "weight must be greater than 0")
 	}
 	switch vote.Choice {
 	case Choice_CHOICE_YES:
@@ -342,7 +341,7 @@ func (t *Tally) Add(vote Vote, weight sdk.Dec) error {
 	case Choice_CHOICE_VETO:
 		t.VetoCount = t.VetoCount.Add(weight)
 	default:
-		return errors.Wrapf(ErrInvalid, "unknown choice %s", vote.Choice.String())
+		return sdkerrors.Wrapf(ErrInvalid, "unknown choice %s", vote.Choice.String())
 	}
 	return nil
 }
@@ -355,21 +354,21 @@ func (t Tally) TotalCounts() sdk.Dec {
 func (t Tally) ValidateBasic() error {
 	switch {
 	case t.YesCount.IsNil():
-		return errors.Wrap(ErrInvalid, "yes count nil")
+		return sdkerrors.Wrap(ErrInvalid, "yes count nil")
 	case t.YesCount.LT(sdk.ZeroDec()):
-		return errors.Wrap(ErrInvalid, "yes count negative")
+		return sdkerrors.Wrap(ErrInvalid, "yes count negative")
 	case t.NoCount.IsNil():
-		return errors.Wrap(ErrInvalid, "no count nil")
+		return sdkerrors.Wrap(ErrInvalid, "no count nil")
 	case t.NoCount.LT(sdk.ZeroDec()):
-		return errors.Wrap(ErrInvalid, "no count negative")
+		return sdkerrors.Wrap(ErrInvalid, "no count negative")
 	case t.AbstainCount.IsNil():
-		return errors.Wrap(ErrInvalid, "abstain count nil")
+		return sdkerrors.Wrap(ErrInvalid, "abstain count nil")
 	case t.AbstainCount.LT(sdk.ZeroDec()):
-		return errors.Wrap(ErrInvalid, "abstain count negative")
+		return sdkerrors.Wrap(ErrInvalid, "abstain count negative")
 	case t.VetoCount.IsNil():
-		return errors.Wrap(ErrInvalid, "veto count nil")
+		return sdkerrors.Wrap(ErrInvalid, "veto count nil")
 	case t.VetoCount.LT(sdk.ZeroDec()):
-		return errors.Wrap(ErrInvalid, "veto count negative")
+		return sdkerrors.Wrap(ErrInvalid, "veto count negative")
 	}
 	return nil
 }

@@ -3,7 +3,6 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/pkg/errors"
 )
 
 type Members []Member
@@ -17,7 +16,7 @@ func (ms Members) ValidateBasic() error {
 		}
 		addr := string(member.Address)
 		if _, exists := index[addr]; exists {
-			return errors.Wrapf(ErrDuplicate, "address: %s", member.Address)
+			return sdkerrors.Wrapf(ErrDuplicate, "address: %s", member.Address)
 		}
 		index[addr] = struct{}{}
 	}
@@ -38,7 +37,7 @@ func (a AccAddresses) ValidateBasic() error {
 		}
 		addr := string(accAddr)
 		if _, exists := index[addr]; exists {
-			return errors.Wrapf(ErrDuplicate, "address: %s", accAddr.String())
+			return sdkerrors.Wrapf(ErrDuplicate, "address: %s", accAddr.String())
 		}
 		index[addr] = struct{}{}
 	}
