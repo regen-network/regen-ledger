@@ -9,60 +9,61 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 // EventCreateClass is an event emitted when a credit class is created.
 message EventCreateClass {
 
-    // class_id is the unique ID of credit class.
-    string class_id = 1 [(gogoproto.moretags) = "yaml:\"class_id\""];
+  // class_id is the unique ID of credit class.
+  string class_id = 1 [ (gogoproto.moretags) = "yaml:\"class_id\"" ];
 
-    // designer is the designer of the credit class.
-    string designer = 2;
+  // designer is the designer of the credit class.
+  string designer = 2;
 }
 
 // EventCreateBatch is an event emitted when a credit batch is created.
 message EventCreateBatch {
 
-    // class_id is the unique ID of credit class.
-    string class_id = 1 [(gogoproto.moretags) = "yaml:\"class_id\""];
+  // class_id is the unique ID of credit class.
+  string class_id = 1 [ (gogoproto.moretags) = "yaml:\"class_id\"" ];
 
-    // batch_denom is the unique ID of credit batch.
-    string batch_denom = 2 [(gogoproto.moretags) = "yaml:\"batch_denom\""];
+  // batch_denom is the unique ID of credit batch.
+  string batch_denom = 2 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
 
-    // issuer is the account address of the issuer of the credit batch.
-    string issuer = 3;
+  // issuer is the account address of the issuer of the credit batch.
+  string issuer = 3;
 
-    // total_units is the total number of units in the credit batch.
-    string total_units = 4 [(gogoproto.moretags) = "yaml:\"total_units\""];
+  // total_units is the total number of units in the credit batch.
+  string total_units = 4 [ (gogoproto.moretags) = "yaml:\"total_units\"" ];
 }
 
 // EventReceive is an event emitted when credits are received either upon
 // creation of a new batch or upon transfer. Each batch_denom created or
 // transferred will result in a separate EventReceive for easy indexing.
 message EventReceive {
-    // sender is the sender of the credits in the case that this event is the result of a transfer.
-    // It will not be set when credits are received at initial issuance.
-    string sender = 1;
+  // sender is the sender of the credits in the case that this event is the
+  // result of a transfer. It will not be set when credits are received at
+  // initial issuance.
+  string sender = 1;
 
-    // recipient is the recipient of the credits
-    string recipient = 2;
+  // recipient is the recipient of the credits
+  string recipient = 2;
 
-    // batch_denom is the unique ID of credit batch.
-    string batch_denom = 3 [(gogoproto.moretags) = "yaml:\"batch_denom\""];
+  // batch_denom is the unique ID of credit batch.
+  string batch_denom = 3 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
 
-    // units is the decimal number of both tradable and retired credits received.
-    string units = 4;
+  // units is the decimal number of both tradable and retired credits received.
+  string units = 4;
 }
 
-// EventRetire is an event emitted when credits are retired. An separate event is emitted
-// for each batch_denom in the case where credits from multiple batches have been retired at once
-// for easy indexing.
+// EventRetire is an event emitted when credits are retired. An separate event
+// is emitted for each batch_denom in the case where credits from multiple
+// batches have been retired at once for easy indexing.
 message EventRetire {
 
-    // retirer is the account which has done the "retiring". This will be the account receiving credits in
-    // the case that credits were retired upon issuance using Msg/CreateBatch or retired upon transfer
-    // using Msg/Send.
-    string retirer = 1;
+  // retirer is the account which has done the "retiring". This will be the
+  // account receiving credits in the case that credits were retired upon
+  // issuance using Msg/CreateBatch or retired upon transfer using Msg/Send.
+  string retirer = 1;
 
-    // batch_denom is the unique ID of credit batch.
-    string batch_denom = 2 [(gogoproto.moretags) = "yaml:\"batch_denom\""];
+  // batch_denom is the unique ID of credit batch.
+  string batch_denom = 2 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
 
-    // units is the decimal number of credits that have been retired.
-    string units = 3;
+  // units is the decimal number of credits that have been retired.
+  string units = 3;
 }
