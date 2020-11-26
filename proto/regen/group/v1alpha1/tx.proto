@@ -66,8 +66,8 @@ message MsgCreateGroupRequest {
 // MsgCreateGroupResponse is the Msg/CreateGroup response type.
 message MsgCreateGroupResponse {
 
-    // group is the unique ID of the newly created group.
-    uint64 group = 1 [(gogoproto.casttype) = "GroupID"];
+    // group_id is the unique ID of the newly created group.
+    uint64 group_id = 1 [(gogoproto.casttype) = "GroupID"];
 }
 
 // MsgUpdateGroupMembersRequest is the Msg/UpdateGroupMembers request type.
@@ -76,8 +76,8 @@ message MsgUpdateGroupMembersRequest {
     // admin is the account address of the group admin.
     bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
     
-    // group is the unique ID of the group.
-    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
+    // group_id is the unique ID of the group.
+    uint64 group_id = 2 [(gogoproto.casttype) = "GroupID"];
     
     // member_updates is the list of members to update,
     // set power to 0 to remove a member.
@@ -93,8 +93,8 @@ message MsgUpdateGroupAdminRequest {
     // admin is the current account address of the group admin.
     bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
     
-    // group is the unique ID of the group.
-    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
+    // group_id is the unique ID of the group.
+    uint64 group_id = 2 [(gogoproto.casttype) = "GroupID"];
    
     // new_admin is the group new admin account address.
     bytes new_admin = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
@@ -109,8 +109,8 @@ message MsgUpdateGroupCommentRequest {
     // admin is the account address of the group admin.
     bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
     
-    // group is the unique ID of the group.
-    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
+    // group_id is the unique ID of the group.
+    uint64 group_id = 2 [(gogoproto.casttype) = "GroupID"];
     
     // comment is the updated group's comment.
     string comment = 3;
@@ -130,8 +130,8 @@ message MsgCreateGroupAccountRequest {
     // admin is the account address of the group admin.
     bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
     
-    // group is the unique ID of the group.
-    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
+    // group_id is the unique ID of the group.
+    uint64 group_id = 2 [(gogoproto.casttype) = "GroupID"];
     
     // comment is the group account's comment.
     string comment = 3;

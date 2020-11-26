@@ -74,7 +74,7 @@ EventCreateGroup is an event emitted when a group is created.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_id | [string](#string) |  | group is the unique ID of the group. |
+| group_id | [string](#string) |  | group_id is the unique ID of the group. |
 | admin | [string](#string) |  | admin is the admin address of the group. |
 
 
@@ -106,7 +106,7 @@ EventUpdateGroup is an event emitted when a group is updated.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_id | [string](#string) |  | group is the unique ID of the group. |
+| group_id | [string](#string) |  | group_id is the unique ID of the group. |
 | admin | [string](#string) |  | admin is the admin address of the group. |
 
 
@@ -201,7 +201,7 @@ GroupAccountMetadata specifies group account metadata.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | group_account | [bytes](#bytes) |  | group_account is the group account address. |
-| group | [uint64](#uint64) |  | group is the unique ID of the group. |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 | admin | [bytes](#bytes) |  | admin is the account address of the group admin. |
 | comment | [string](#string) |  | comment is the group account's comment. |
 | version | [uint64](#uint64) |  | version is used to track changes to a group's GroupAccountMetadata structure that would create a different result on a running proposal. |
@@ -220,7 +220,7 @@ GroupMember represents the relationship between a group and a member.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group | [uint64](#uint64) |  | group is the unique ID of the group. |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 | member | [bytes](#bytes) |  | member is the account address of the group member. todo: @aaronc field has different name in `Member.address`. Can we unify this? |
 | weight | [string](#string) |  | weight is the power of the group member. todo: @aaronc it is `Member.power`. Can we unify this? |
 | comment | [string](#string) |  | comment is the member's comment.
@@ -240,7 +240,7 @@ GroupMetadata represents a group's metadata
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group | [uint64](#uint64) |  | group is the unique ID of the group. |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 | admin | [bytes](#bytes) |  | admin is the account address of the group's admin. |
 | comment | [string](#string) |  | comment is the group's comment. |
 | version | [uint64](#uint64) |  | version is used to track changes to a group's membership structure that would break existing proposals. Whenever any members power is changed, or any member is added or removed this version is incremented and will cause proposals based on older versions of this group to fail |
@@ -433,7 +433,7 @@ MsgCreateGroupAccountRequest is the Msg/CreateGroupAccount request type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | admin | [bytes](#bytes) |  | admin is the account address of the group admin. |
-| group | [uint64](#uint64) |  | group is the unique ID of the group. |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 | comment | [string](#string) |  | comment is the group account's comment. |
 | decision_policy | [google.protobuf.Any](#google.protobuf.Any) |  | decision_policy specifies the group account's decision policy. |
 
@@ -482,7 +482,7 @@ MsgCreateGroupResponse is the Msg/CreateGroup response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group | [uint64](#uint64) |  | group is the unique ID of the newly created group. |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the newly created group. |
 
 
 
@@ -638,7 +638,7 @@ MsgUpdateGroupAdminRequest is the Msg/UpdateGroupAdmin request type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | admin | [bytes](#bytes) |  | admin is the current account address of the group admin. |
-| group | [uint64](#uint64) |  | group is the unique ID of the group. |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 | new_admin | [bytes](#bytes) |  | new_admin is the group new admin account address. |
 
 
@@ -665,7 +665,7 @@ MsgUpdateGroupCommentRequest is the Msg/UpdateGroupComment request type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | admin | [bytes](#bytes) |  | admin is the account address of the group admin. |
-| group | [uint64](#uint64) |  | group is the unique ID of the group. |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 | comment | [string](#string) |  | comment is the updated group's comment. |
 
 
@@ -692,7 +692,7 @@ MsgUpdateGroupMembersRequest is the Msg/UpdateGroupMembers request type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | admin | [bytes](#bytes) |  | admin is the account address of the group admin. |
-| group | [uint64](#uint64) |  | group is the unique ID of the group. |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 | member_updates | [Member](#regen.group.v1alpha1.Member) | repeated | member_updates is the list of members to update, set power to 0 to remove a member. |
 
 

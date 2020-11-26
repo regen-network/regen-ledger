@@ -24,7 +24,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // EventCreateGroup is an event emitted when a group is created.
 type EventCreateGroup struct {
-	// group is the unique ID of the group.
+	// group_id is the unique ID of the group.
 	GroupId string `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
 	// admin is the admin address of the group.
 	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
@@ -79,7 +79,7 @@ func (m *EventCreateGroup) GetAdmin() string {
 
 // EventUpdateGroup is an event emitted when a group is updated.
 type EventUpdateGroup struct {
-	// group is the unique ID of the group.
+	// group_id is the unique ID of the group.
 	GroupId string `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
 	// admin is the admin address of the group.
 	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`

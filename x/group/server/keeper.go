@@ -102,7 +102,7 @@ func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, rout
 	// Group Member Table
 	groupMemberTableBuilder := orm.NewNaturalKeyTableBuilder(GroupMemberTablePrefix, storeKey, &types.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	k.groupMemberByGroupIndex = orm.NewUInt64Index(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]uint64, error) {
-		group := val.(*types.GroupMember).Group
+		group := val.(*types.GroupMember).GroupId
 		return []uint64{uint64(group)}, nil
 	})
 	k.groupMemberByMemberIndex = orm.NewIndex(groupMemberTableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
@@ -115,7 +115,7 @@ func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, rout
 	k.groupAccountSeq = orm.NewSequence(storeKey, GroupAccountTableSeqPrefix)
 	groupAccountTableBuilder := orm.NewNaturalKeyTableBuilder(GroupAccountTablePrefix, storeKey, &types.GroupAccountMetadata{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	k.groupAccountByGroupIndex = orm.NewUInt64Index(groupAccountTableBuilder, GroupAccountByGroupIndexPrefix, func(value interface{}) ([]uint64, error) {
-		group := value.(*types.GroupAccountMetadata).Group
+		group := value.(*types.GroupAccountMetadata).GroupId
 		return []uint64{uint64(group)}, nil
 	})
 	k.groupAccountByAdminIndex = orm.NewIndex(groupAccountTableBuilder, GroupAccountByAdminIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
@@ -182,7 +182,7 @@ func (k Keeper) CreateGroup(ctx sdk.Context, admin sdk.AccAddress, members types
 
 	groupID := types.GroupID(k.groupSeq.NextVal(ctx))
 	err := k.groupTable.Create(ctx, groupID.Bytes(), &types.GroupMetadata{
-		Group:       groupID,
+		GroupId:     groupID,
 		Admin:       admin,
 		Comment:     comment,
 		Version:     1,
@@ -195,7 +195,7 @@ func (k Keeper) CreateGroup(ctx sdk.Context, admin sdk.AccAddress, members types
 	for i := range members {
 		m := members[i]
 		err := k.groupMemberTable.Create(ctx, &types.GroupMember{
-			Group:   groupID,
+			GroupId: groupID,
 			Member:  m.Address,
 			Weight:  m.Power,
 			Comment: m.Comment,
@@ -218,7 +218,7 @@ func (k Keeper) HasGroup(ctx sdk.Context, rowID orm.RowID) bool {
 
 func (k Keeper) UpdateGroup(ctx sdk.Context, g *types.GroupMetadata) error {
 	g.Version++
-	return k.groupTable.Save(ctx, g.Group.Bytes(), g)
+	return k.groupTable.Save(ctx, g.GroupId.Bytes(), g)
 }
 
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
@@ -284,7 +284,7 @@ func (k Keeper) GetGroupByGroupAccount(ctx sdk.Context, accountAddress sdk.AccAd
 	if err != nil {
 		return types.GroupMetadata{}, sdkerrors.Wrap(err, "load group account")
 	}
-	return k.GetGroup(ctx, obj.Group)
+	return k.GetGroup(ctx, obj.GroupId)
 }
 
 func (k Keeper) GetGroupMembersByGroup(ctx sdk.Context, id types.GroupID) (orm.Iterator, error) {
@@ -326,7 +326,7 @@ func (k Keeper) Vote(ctx sdk.Context, id types.ProposalID, voters []sdk.AccAddre
 		return sdkerrors.Wrap(types.ErrModified, "group account was modified")
 	}
 
-	electorate, err := k.GetGroup(ctx, accountMetadata.Group)
+	electorate, err := k.GetGroup(ctx, accountMetadata.GroupId)
 	if err != nil {
 		return err
 	}
@@ -336,7 +336,7 @@ func (k Keeper) Vote(ctx sdk.Context, id types.ProposalID, voters []sdk.AccAddre
 
 	// count and store votes
 	for _, voterAddr := range voters {
-		voter := types.GroupMember{Group: electorate.Group, Member: voterAddr}
+		voter := types.GroupMember{GroupId: electorate.GroupId, Member: voterAddr}
 		if err := k.groupMemberTable.GetOne(ctx, voter.NaturalKey(), &voter); err != nil {
 			return sdkerrors.Wrapf(err, "address: %s", voterAddr)
 		}
@@ -412,7 +412,7 @@ func (k Keeper) ExecProposal(ctx sdk.Context, id types.ProposalID) error {
 			return storeUpdates()
 		}
 
-		electorate, err := k.GetGroup(ctx, accountMetadata.Group)
+		electorate, err := k.GetGroup(ctx, accountMetadata.GroupId)
 		if err != nil {
 			return sdkerrors.Wrap(err, "load group")
 		}
@@ -464,14 +464,14 @@ func (k Keeper) CreateProposal(ctx sdk.Context, accountAddress sdk.AccAddress, c
 		return 0, sdkerrors.Wrap(err, "load group account")
 	}
 
-	g, err := k.GetGroup(ctx, account.Group)
+	g, err := k.GetGroup(ctx, account.GroupId)
 	if err != nil {
 		return 0, sdkerrors.Wrap(err, "get group by account")
 	}
 
 	// only members can propose
 	for i := range proposers {
-		if !k.groupMemberTable.Has(ctx, types.GroupMember{Group: g.Group, Member: proposers[i]}.NaturalKey()) {
+		if !k.groupMemberTable.Has(ctx, types.GroupMember{GroupId: g.GroupId, Member: proposers[i]}.NaturalKey()) {
 			return 0, sdkerrors.Wrapf(types.ErrUnauthorized, "not in group: %s", proposers[i])
 		}
 	}

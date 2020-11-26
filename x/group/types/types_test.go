@@ -174,7 +174,7 @@ func TestThresholdDecisionPolicyValidation(t *testing.T) {
 func TestVoteNaturalKey(t *testing.T) {
 	v := Vote{
 		Proposal: 1,
-		Voter:      []byte{0xff, 0xfe},
+		Voter:    []byte{0xff, 0xfe},
 	}
 	assert.Equal(t, []byte{0, 0, 0, 0, 0, 0, 0, 1, 0xff, 0xfe}, v.NaturalKey())
 }
@@ -186,7 +186,7 @@ func TestGroupMetadataValidation(t *testing.T) {
 	}{
 		"all good": {
 			src: GroupMetadata{
-				Group:     1,
+				GroupId:     1,
 				Admin:       []byte("valid--admin-address"),
 				Comment:     "any",
 				Version:     1,
@@ -204,7 +204,7 @@ func TestGroupMetadataValidation(t *testing.T) {
 		},
 		"invalid admin": {
 			src: GroupMetadata{
-				Group:     1,
+				GroupId:     1,
 				Admin:       []byte(""),
 				Comment:     "any",
 				Version:     1,
@@ -214,7 +214,7 @@ func TestGroupMetadataValidation(t *testing.T) {
 		},
 		"invalid version": {
 			src: GroupMetadata{
-				Group:     1,
+				GroupId:     1,
 				Admin:       []byte("valid--admin-address"),
 				Comment:     "any",
 				TotalWeight: sdk.ZeroDec(),
@@ -223,7 +223,7 @@ func TestGroupMetadataValidation(t *testing.T) {
 		},
 		"unset total weight": {
 			src: GroupMetadata{
-				Group: 1,
+				GroupId: 1,
 				Admin:   []byte("valid--admin-address"),
 				Comment: "any",
 				Version: 1,
@@ -232,7 +232,7 @@ func TestGroupMetadataValidation(t *testing.T) {
 		},
 		"negative total weight": {
 			src: GroupMetadata{
-				Group:     1,
+				GroupId:     1,
 				Admin:       []byte("valid--admin-address"),
 				Comment:     "any",
 				Version:     1,
@@ -260,7 +260,7 @@ func TestGroupMemberValidation(t *testing.T) {
 	}{
 		"all good": {
 			src: GroupMember{
-				Group: 1,
+				GroupId: 1,
 				Member:  []byte("valid-member-address"),
 				Weight:  sdk.OneDec(),
 				Comment: "any",
@@ -268,7 +268,7 @@ func TestGroupMemberValidation(t *testing.T) {
 		},
 		"invalid group": {
 			src: GroupMember{
-				Group: 0,
+				GroupId: 0,
 				Member:  []byte("valid-member-address"),
 				Weight:  sdk.OneDec(),
 				Comment: "any",
@@ -277,7 +277,7 @@ func TestGroupMemberValidation(t *testing.T) {
 		},
 		"invalid address": {
 			src: GroupMember{
-				Group: 1,
+				GroupId: 1,
 				Member:  []byte("invalid-member-address"),
 				Weight:  sdk.OneDec(),
 				Comment: "any",
@@ -286,7 +286,7 @@ func TestGroupMemberValidation(t *testing.T) {
 		},
 		"empy address": {
 			src: GroupMember{
-				Group: 1,
+				GroupId: 1,
 				Weight:  sdk.OneDec(),
 				Comment: "any",
 			},
@@ -294,7 +294,7 @@ func TestGroupMemberValidation(t *testing.T) {
 		},
 		"invalid weight": {
 			src: GroupMember{
-				Group: 1,
+				GroupId: 1,
 				Member:  []byte("valid-member-address"),
 				Weight:  sdk.ZeroDec(),
 				Comment: "any",
@@ -303,7 +303,7 @@ func TestGroupMemberValidation(t *testing.T) {
 		},
 		"nil weight": {
 			src: GroupMember{
-				Group: 1,
+				GroupId: 1,
 				Member:  []byte("valid-member-address"),
 				Comment: "any",
 			},

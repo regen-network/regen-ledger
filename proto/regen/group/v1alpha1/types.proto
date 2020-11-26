@@ -62,8 +62,8 @@ enum Choice {
 // GroupMetadata represents a group's metadata
 message GroupMetadata {
 
-    // group is the unique ID of the group.
-    uint64 group = 1 [(gogoproto.casttype) = "GroupID"];
+    // group_id is the unique ID of the group.
+    uint64 group_id = 1 [(gogoproto.casttype) = "GroupID"];
 
     // admin is the account address of the group's admin.
     bytes admin = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
@@ -84,8 +84,8 @@ message GroupMetadata {
 // GroupMember represents the relationship between a group and a member.
 message GroupMember {
 
-    // group is the unique ID of the group.
-    uint64 group = 1 [(gogoproto.casttype) = "GroupID"];
+    // group_id is the unique ID of the group.
+    uint64 group_id = 1 [(gogoproto.casttype) = "GroupID"];
 
     // member is the account address of the group member.
     // todo: @aaronc field has different name in `Member.address`. Can we unify this?
@@ -107,8 +107,8 @@ message GroupAccountMetadata {
     // group_account is the group account address.
     bytes group_account = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
     
-    // group is the unique ID of the group.
-    uint64 group = 2 [(gogoproto.casttype) = "GroupID"];
+    // group_id is the unique ID of the group.
+    uint64 group_id = 2 [(gogoproto.casttype) = "GroupID"];
 
     // admin is the account address of the group admin.
     bytes admin = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];

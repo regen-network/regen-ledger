@@ -152,7 +152,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 				return
 			}
 			s.Require().NoError(err)
-			id := res.Group
+			id := res.GroupId
 
 			seq++
 			s.Assert().Equal(types.GroupID(seq), id)
@@ -162,7 +162,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			s.Require().NoError(err)
 			s.Assert().Equal(sdk.AccAddress([]byte(spec.req.Admin)), loadedGroup.Admin)
 			s.Assert().Equal(spec.req.Comment, loadedGroup.Comment)
-			s.Assert().Equal(id, loadedGroup.Group)
+			s.Assert().Equal(id, loadedGroup.GroupId)
 			s.Assert().Equal(uint64(1), loadedGroup.Version)
 
 			// and members are stored as well
@@ -176,7 +176,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 				s.Assert().Equal(members[i].Comment, loadedMembers[i].Comment)
 				s.Assert().Equal(members[i].Address, loadedMembers[i].Member)
 				s.Assert().Equal(members[i].Power, loadedMembers[i].Weight)
-				s.Assert().Equal(id, loadedMembers[i].Group)
+				s.Assert().Equal(id, loadedMembers[i].GroupId)
 			}
 		})
 	}
@@ -199,12 +199,12 @@ func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
 	}{
 		"with correct admin": {
 			req: &types.MsgUpdateGroupAdminRequest{
-				Group:    groupID,
+				GroupId:  groupID,
 				Admin:    oldAdmin,
 				NewAdmin: []byte("my-new-admin-address"),
 			},
 			expStored: types.GroupMetadata{
-				Group:       groupID,
+				GroupId:     groupID,
 				Admin:       []byte("my-new-admin-address"),
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(1),
@@ -213,13 +213,13 @@ func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
 		},
 		"with wrong admin": {
 			req: &types.MsgUpdateGroupAdminRequest{
-				Group:    groupID,
+				GroupId:  groupID,
 				Admin:    []byte("unknown-address"),
 				NewAdmin: []byte("my-new-admin-address"),
 			},
 			expErr: true,
 			expStored: types.GroupMetadata{
-				Group:       groupID,
+				GroupId:     groupID,
 				Admin:       oldAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(1),
@@ -228,13 +228,13 @@ func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
 		},
 		"with unknown groupID": {
 			req: &types.MsgUpdateGroupAdminRequest{
-				Group:    999,
+				GroupId:  999,
 				Admin:    oldAdmin,
 				NewAdmin: []byte("my-new-admin-address"),
 			},
 			expErr: true,
 			expStored: types.GroupMetadata{
-				Group:       groupID,
+				GroupId:     groupID,
 				Admin:       oldAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(1),
@@ -279,12 +279,12 @@ func (s *IntegrationTestSuite) TestUpdateGroupComment() {
 	}{
 		"with correct admin": {
 			req: &types.MsgUpdateGroupCommentRequest{
-				Group:   groupID,
+				GroupId: groupID,
 				Admin:   oldAdmin,
 				Comment: "new comment",
 			},
 			expStored: types.GroupMetadata{
-				Group:       groupID,
+				GroupId:     groupID,
 				Admin:       oldAdmin,
 				Comment:     "new comment",
 				TotalWeight: sdk.NewDec(1),
@@ -293,13 +293,13 @@ func (s *IntegrationTestSuite) TestUpdateGroupComment() {
 		},
 		"with wrong admin": {
 			req: &types.MsgUpdateGroupCommentRequest{
-				Group:   groupID,
+				GroupId: groupID,
 				Admin:   []byte("unknown-address"),
 				Comment: "new comment",
 			},
 			expErr: true,
 			expStored: types.GroupMetadata{
-				Group:       groupID,
+				GroupId:     groupID,
 				Admin:       oldAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(1),
@@ -308,13 +308,13 @@ func (s *IntegrationTestSuite) TestUpdateGroupComment() {
 		},
 		"with unknown groupid": {
 			req: &types.MsgUpdateGroupCommentRequest{
-				Group:   999,
+				GroupId: 999,
 				Admin:   []byte("unknown-address"),
 				Comment: "new comment",
 			},
 			expErr: true,
 			expStored: types.GroupMetadata{
-				Group:       groupID,
+				GroupId:     groupID,
 				Admin:       oldAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(1),
@@ -359,8 +359,8 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 	}{
 		"add new member": {
 			req: &types.MsgUpdateGroupMembersRequest{
-				Group: groupID,
-				Admin: myAdmin,
+				GroupId: groupID,
+				Admin:   myAdmin,
 				MemberUpdates: []types.Member{{
 					Address: sdk.AccAddress([]byte("other-member-address")),
 					Power:   sdk.NewDec(2),
@@ -368,7 +368,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				}},
 			},
 			expGroup: types.GroupMetadata{
-				Group:       groupID,
+				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(3),
@@ -377,13 +377,13 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 			expMembers: []types.GroupMember{
 				{
 					Member:  sdk.AccAddress([]byte("other-member-address")),
-					Group:   groupID,
+					GroupId: groupID,
 					Weight:  sdk.NewDec(2),
 					Comment: "second",
 				},
 				{
 					Member:  sdk.AccAddress([]byte("valid-member-address")),
-					Group:   groupID,
+					GroupId: groupID,
 					Weight:  sdk.NewDec(1),
 					Comment: "first",
 				},
@@ -391,8 +391,8 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 		},
 		"update member": {
 			req: &types.MsgUpdateGroupMembersRequest{
-				Group: groupID,
-				Admin: myAdmin,
+				GroupId: groupID,
+				Admin:   myAdmin,
 				MemberUpdates: []types.Member{{
 					Address: sdk.AccAddress([]byte("valid-member-address")),
 					Power:   sdk.NewDec(2),
@@ -400,7 +400,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				}},
 			},
 			expGroup: types.GroupMetadata{
-				Group:       groupID,
+				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(2),
@@ -409,7 +409,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 			expMembers: []types.GroupMember{
 				{
 					Member:  sdk.AccAddress([]byte("valid-member-address")),
-					Group:   groupID,
+					GroupId: groupID,
 					Weight:  sdk.NewDec(2),
 					Comment: "updated",
 				},
@@ -417,8 +417,8 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 		},
 		"update member with same data": {
 			req: &types.MsgUpdateGroupMembersRequest{
-				Group: groupID,
-				Admin: myAdmin,
+				GroupId: groupID,
+				Admin:   myAdmin,
 				MemberUpdates: []types.Member{{
 					Address: sdk.AccAddress([]byte("valid-member-address")),
 					Power:   sdk.NewDec(1),
@@ -426,7 +426,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				}},
 			},
 			expGroup: types.GroupMetadata{
-				Group:       groupID,
+				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(1),
@@ -435,7 +435,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 			expMembers: []types.GroupMember{
 				{
 					Member:  sdk.AccAddress([]byte("valid-member-address")),
-					Group:   groupID,
+					GroupId: groupID,
 					Weight:  sdk.NewDec(1),
 					Comment: "first",
 				},
@@ -443,8 +443,8 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 		},
 		"replace member": {
 			req: &types.MsgUpdateGroupMembersRequest{
-				Group: groupID,
-				Admin: myAdmin,
+				GroupId: groupID,
+				Admin:   myAdmin,
 				MemberUpdates: []types.Member{
 					{
 						Address: sdk.AccAddress([]byte("valid-member-address")),
@@ -459,7 +459,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				},
 			},
 			expGroup: types.GroupMetadata{
-				Group:       groupID,
+				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(1),
@@ -467,15 +467,15 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 			},
 			expMembers: []types.GroupMember{{
 				Member:  s.addr1,
-				Group:   groupID,
+				GroupId: groupID,
 				Weight:  sdk.NewDec(1),
 				Comment: "welcome",
 			}},
 		},
 		"remove existing member": {
 			req: &types.MsgUpdateGroupMembersRequest{
-				Group: groupID,
-				Admin: myAdmin,
+				GroupId: groupID,
+				Admin:   myAdmin,
 				MemberUpdates: []types.Member{{
 					Address: sdk.AccAddress([]byte("valid-member-address")),
 					Power:   sdk.NewDec(0),
@@ -483,7 +483,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				}},
 			},
 			expGroup: types.GroupMetadata{
-				Group:       groupID,
+				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(0),
@@ -493,8 +493,8 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 		},
 		"remove unknown member": {
 			req: &types.MsgUpdateGroupMembersRequest{
-				Group: groupID,
-				Admin: myAdmin,
+				GroupId: groupID,
+				Admin:   myAdmin,
 				MemberUpdates: []types.Member{{
 					Address: sdk.AccAddress([]byte("unknown-member-addrs")),
 					Power:   sdk.NewDec(0),
@@ -503,7 +503,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 			},
 			expErr: true,
 			expGroup: types.GroupMetadata{
-				Group:       groupID,
+				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(1),
@@ -511,15 +511,15 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 			},
 			expMembers: []types.GroupMember{{
 				Member:  sdk.AccAddress([]byte("valid-member-address")),
-				Group:   groupID,
+				GroupId: groupID,
 				Weight:  sdk.NewDec(1),
 				Comment: "first",
 			}},
 		},
 		"with wrong admin": {
 			req: &types.MsgUpdateGroupMembersRequest{
-				Group: groupID,
-				Admin: []byte("unknown-address"),
+				GroupId: groupID,
+				Admin:   []byte("unknown-address"),
 				MemberUpdates: []types.Member{{
 					Address: sdk.AccAddress([]byte("other-member-address")),
 					Power:   sdk.NewDec(2),
@@ -528,7 +528,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 			},
 			expErr: true,
 			expGroup: types.GroupMetadata{
-				Group:       groupID,
+				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(1),
@@ -536,15 +536,15 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 			},
 			expMembers: []types.GroupMember{{
 				Member:  sdk.AccAddress([]byte("valid-member-address")),
-				Group:   groupID,
+				GroupId: groupID,
 				Weight:  sdk.NewDec(1),
 				Comment: "first",
 			}},
 		},
 		"with unknown groupID": {
 			req: &types.MsgUpdateGroupMembersRequest{
-				Group: 999,
-				Admin: myAdmin,
+				GroupId: 999,
+				Admin:   myAdmin,
 				MemberUpdates: []types.Member{{
 					Address: sdk.AccAddress([]byte("other-member-address")),
 					Power:   sdk.NewDec(2),
@@ -553,7 +553,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 			},
 			expErr: true,
 			expGroup: types.GroupMetadata{
-				Group:       groupID,
+				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
 				TotalWeight: sdk.NewDec(1),
@@ -561,7 +561,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 			},
 			expMembers: []types.GroupMember{{
 				Member:  sdk.AccAddress([]byte("valid-member-address")),
-				Group:   groupID,
+				GroupId: groupID,
 				Weight:  sdk.NewDec(1),
 				Comment: "first",
 			}},
@@ -607,7 +607,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 			req: &types.MsgCreateGroupAccountRequest{
 				Admin:   []byte("valid--admin-address"),
 				Comment: "test",
-				Group:   myGroupID,
+				GroupId: myGroupID,
 			},
 			policy: types.NewThresholdDecisionPolicy(
 				sdk.OneDec(),
@@ -618,7 +618,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 			req: &types.MsgCreateGroupAccountRequest{
 				Admin:   []byte("valid--admin-address"),
 				Comment: "test",
-				Group:   myGroupID,
+				GroupId: myGroupID,
 			},
 			policy: types.NewThresholdDecisionPolicy(
 				sdk.NewDec(math.MaxInt64),
@@ -629,7 +629,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 			req: &types.MsgCreateGroupAccountRequest{
 				Admin:   []byte("valid--admin-address"),
 				Comment: "test",
-				Group:   9999,
+				GroupId: 9999,
 			},
 			policy: types.NewThresholdDecisionPolicy(
 				sdk.OneDec(),
@@ -641,7 +641,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 			req: &types.MsgCreateGroupAccountRequest{
 				Admin:   []byte("other--admin-address"),
 				Comment: "test",
-				Group:   myGroupID,
+				GroupId: myGroupID,
 			},
 			policy: types.NewThresholdDecisionPolicy(
 				sdk.OneDec(),
@@ -653,7 +653,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 			req: &types.MsgCreateGroupAccountRequest{
 				Admin:   []byte("valid--admin-address"),
 				Comment: strings.Repeat("a", 256),
-				Group:   myGroupID,
+				GroupId: myGroupID,
 			},
 			policy: types.NewThresholdDecisionPolicy(
 				sdk.OneDec(),
@@ -680,7 +680,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 			groupAccount, err := s.groupKeeper.GetGroupAccount(s.sdkCtx, addr)
 			s.Require().NoError(err)
 			s.Assert().Equal(addr, groupAccount.GroupAccount)
-			s.Assert().Equal(myGroupID, groupAccount.Group)
+			s.Assert().Equal(myGroupID, groupAccount.GroupId)
 			s.Assert().Equal(sdk.AccAddress([]byte(spec.req.Admin)), groupAccount.Admin)
 			s.Assert().Equal(spec.req.Comment, groupAccount.Comment)
 			s.Assert().Equal(uint64(1), groupAccount.Version)

@@ -118,7 +118,7 @@ func (p ThresholdDecisionPolicy) ValidateBasic() error {
 
 func (g GroupMember) NaturalKey() []byte {
 	result := make([]byte, 8, 8+len(g.Member))
-	copy(result[0:8], g.Group.Bytes())
+	copy(result[0:8], g.GroupId.Bytes())
 	result = append(result, g.Member...)
 	return result
 }
@@ -133,7 +133,7 @@ var _ orm.Validateable = GroupAccountMetadata{}
 func NewGroupAccountMetadata(groupAccount sdk.AccAddress, group GroupID, admin sdk.AccAddress, comment string, version uint64, decisionPolicy DecisionPolicy) (GroupAccountMetadata, error) {
 	p := GroupAccountMetadata{
 		GroupAccount: groupAccount,
-		Group:        group,
+		GroupId:      group,
 		Admin:        admin,
 		Comment:      comment,
 		Version:      version,
@@ -175,7 +175,7 @@ func (g GroupAccountMetadata) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "group account")
 	}
 
-	if g.Group == 0 {
+	if g.GroupId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
 	if g.Version == 0 {
@@ -270,7 +270,7 @@ func noopValidator() paramstypes.ValueValidatorFn {
 var _ orm.Validateable = GroupMetadata{}
 
 func (m GroupMetadata) ValidateBasic() error {
-	if m.Group.Empty() {
+	if m.GroupId.Empty() {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
 	if m.Admin.Empty() {
@@ -291,7 +291,7 @@ func (m GroupMetadata) ValidateBasic() error {
 var _ orm.Validateable = GroupMember{}
 
 func (g GroupMember) ValidateBasic() error {
-	if g.Group.Empty() {
+	if g.GroupId.Empty() {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
 	if g.Member.Empty() {

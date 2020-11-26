@@ -24,7 +24,7 @@ func (s serverImpl) CreateGroup(goCtx context.Context, req *types.MsgCreateGroup
 		return nil, err
 	}
 
-	return &types.MsgCreateGroupResponse{Group: groupID}, nil
+	return &types.MsgCreateGroupResponse{GroupId: groupID}, nil
 }
 
 func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *types.MsgUpdateGroupMembersRequest) (*types.MsgUpdateGroupMembersResponse, error) {
@@ -32,7 +32,7 @@ func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *types.MsgUpda
 
 	action := func(m *types.GroupMetadata) error {
 		for i := range req.MemberUpdates {
-			member := types.GroupMember{Group: req.Group,
+			member := types.GroupMember{GroupId: req.GroupId,
 				Member:  req.MemberUpdates[i].Address,
 				Weight:  req.MemberUpdates[i].Power,
 				Comment: req.MemberUpdates[i].Comment,
@@ -117,7 +117,7 @@ func (s serverImpl) CreateGroupAccount(goCtx context.Context, req *types.MsgCrea
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	decisionPolicy := req.GetDecisionPolicy()
-	acc, err := s.Keeper.CreateGroupAccount(ctx, req.GetAdmin(), req.GetGroup(), decisionPolicy, req.GetComment())
+	acc, err := s.Keeper.CreateGroupAccount(ctx, req.GetAdmin(), req.GetGroupID(), decisionPolicy, req.GetComment())
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "create group account")
 	}
@@ -183,7 +183,7 @@ func (s serverImpl) Exec(goCtx context.Context, req *types.MsgExecRequest) (*typ
 }
 
 type authNGroupReq interface {
-	GetGroup() types.GroupID
+	GetGroupID() types.GroupID
 	GetAdmin() sdk.AccAddress // equal GetSigners()
 }
 
@@ -195,7 +195,7 @@ func (s serverImpl) doUpdateGroup(ctx sdk.Context, req authNGroupReq, action act
 		return err
 	}
 
-	groupIDStr := util.Uint64ToBase58Check(req.GetGroup().Uint64())
+	groupIDStr := util.Uint64ToBase58Check(req.GetGroupID().Uint64())
 	err = ctx.EventManager().EmitTypedEvent(&types.EventUpdateGroup{GroupId: groupIDStr, Admin: req.GetAdmin().String()})
 	if err != nil {
 		return err
@@ -205,7 +205,7 @@ func (s serverImpl) doUpdateGroup(ctx sdk.Context, req authNGroupReq, action act
 }
 
 func (s serverImpl) doAuthenticated(ctx sdk.Context, req authNGroupReq, action actionFn, note string) error {
-	group, err := s.Keeper.GetGroup(ctx, req.GetGroup())
+	group, err := s.Keeper.GetGroup(ctx, req.GetGroupID())
 	if err != nil {
 		return err
 	}
