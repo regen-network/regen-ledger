@@ -166,7 +166,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			s.Assert().Equal(uint64(1), loadedGroup.Version)
 
 			// and members are stored as well
-			it, err := s.groupKeeper.GetGroupMembersByGroup(s.sdkCtx, id)
+			it, err := s.groupKeeper.GetGroupMembers(s.sdkCtx, id)
 			s.Require().NoError(err)
 			var loadedMembers []types.GroupMember
 			_, err = orm.ReadAll(it, &loadedMembers)
@@ -584,7 +584,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 			s.Assert().Equal(spec.expGroup, loaded)
 
 			// and members persisted
-			it, err := s.groupKeeper.GetGroupMembersByGroup(ctx, groupID)
+			it, err := s.groupKeeper.GetGroupMembers(ctx, groupID)
 			s.Require().NoError(err)
 			var loadedMembers []types.GroupMember
 			_, err = orm.ReadAll(it, &loadedMembers)

@@ -287,7 +287,7 @@ func (k Keeper) GetGroupByGroupAccount(ctx sdk.Context, accountAddress sdk.AccAd
 	return k.GetGroup(ctx, obj.GroupId)
 }
 
-func (k Keeper) GetGroupMembersByGroup(ctx sdk.Context, id types.GroupID) (orm.Iterator, error) {
+func (k Keeper) GetGroupMembers(ctx sdk.Context, id types.GroupID) (orm.Iterator, error) {
 	return k.groupMemberByGroupIndex.Get(ctx, id.Uint64())
 }
 
