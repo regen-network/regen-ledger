@@ -20,11 +20,11 @@ type TableBuilder struct {
 	indexKeyCodec IndexKeyCodec
 	afterSave     []AfterSaveInterceptor
 	afterDelete   []AfterDeleteInterceptor
-	cdc           codec.BinaryMarshaler
+	cdc           codec.Marshaler
 }
 
 // NewTableBuilder creates a builder to setup a Table object.
-func NewTableBuilder(prefixData byte, storeKey sdk.StoreKey, model Persistent, idxKeyCodec IndexKeyCodec, cdc codec.BinaryMarshaler) *TableBuilder {
+func NewTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, idxKeyCodec IndexKeyCodec, cdc codec.Marshaler) *TableBuilder {
 	if model == nil {
 		panic("Model must not be nil")
 	}
@@ -94,7 +94,7 @@ type Table struct {
 	storeKey    sdk.StoreKey
 	afterSave   []AfterSaveInterceptor
 	afterDelete []AfterDeleteInterceptor
-	cdc         codec.BinaryMarshaler
+	cdc         codec.Marshaler
 }
 
 // Create persists the given object under the rowID key. It does not check if the
@@ -103,7 +103,7 @@ type Table struct {
 // by checking the state via `Has` function before.
 //
 // Create iterates though the registered callbacks and may add secondary index keys by them.
-func (a Table) Create(ctx HasKVStore, rowID RowID, obj Persistent) error {
+func (a Table) Create(ctx HasKVStore, rowID RowID, obj codec.ProtoMarshaler) error {
 	if err := assertCorrectType(a.model, obj); err != nil {
 		return err
 	}
@@ -111,7 +111,7 @@ func (a Table) Create(ctx HasKVStore, rowID RowID, obj Persistent) error {
 		return err
 	}
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
-	v, err := obj.Marshal()
+	v, err := a.cdc.MarshalBinaryBare(obj)
 	if err != nil {
 		return errors.Wrapf(err, "failed to serialize %T", obj)
 	}
@@ -129,7 +129,7 @@ func (a Table) Create(ctx HasKVStore, rowID RowID, obj Persistent) error {
 // is fulfilled. Parameters must not be nil.
 //
 // Save iterates though the registered callbacks and may add or remove secondary index keys by them.
-func (a Table) Save(ctx HasKVStore, rowID RowID, newValue Persistent) error {
+func (a Table) Save(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler) error {
 	if err := assertCorrectType(a.model, newValue); err != nil {
 		return err
 	}
@@ -143,7 +143,7 @@ func (a Table) Save(ctx HasKVStore, rowID RowID, newValue Persistent) error {
 	if err := a.GetOne(ctx, rowID, oldValue); err != nil {
 		return errors.Wrap(err, "load old value")
 	}
-	newValueEncoded, err := newValue.Marshal()
+	newValueEncoded, err := a.cdc.MarshalBinaryBare(newValue)
 	if err != nil {
 		return errors.Wrapf(err, "failed to serialize %T", newValue)
 	}
@@ -157,7 +157,7 @@ func (a Table) Save(ctx HasKVStore, rowID RowID, newValue Persistent) error {
 	return nil
 }
 
-func assertValid(obj Persistent) error {
+func assertValid(obj codec.ProtoMarshaler) error {
 	if v, ok := obj.(Validateable); ok {
 		if err := v.ValidateBasic(); err != nil {
 			return err

@@ -27,7 +27,7 @@ var (
 	GroupMemberByMemberIndexPrefix byte = 0x7
 )
 
-func NewGroupKeeper(storeKey sdk.StoreKey, cdc codec.BinaryMarshaler) GroupKeeper {
+func NewGroupKeeper(storeKey sdk.StoreKey, cdc codec.Marshaler) GroupKeeper {
 	k := GroupKeeper{key: storeKey}
 
 	groupTableBuilder := NewAutoUInt64TableBuilder(GroupTablePrefix, GroupTableSeqPrefix, storeKey, &testdata.GroupMetadata{}, cdc)

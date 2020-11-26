@@ -16,7 +16,7 @@ import (
 
 func TestCreate(t *testing.T) {
 	specs := map[string]struct {
-		src    Persistent
+		src    codec.ProtoMarshaler
 		expErr *errors.Error
 	}{
 		"happy path": {
@@ -70,7 +70,7 @@ func TestCreate(t *testing.T) {
 }
 func TestUpdate(t *testing.T) {
 	specs := map[string]struct {
-		src    Persistent
+		src    codec.ProtoMarshaler
 		expErr *errors.Error
 	}{
 		"happy path": {

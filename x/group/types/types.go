@@ -2,18 +2,19 @@ package types
 
 import (
 	"fmt"
+	"time"
 
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	proto "github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/types"
 	"github.com/pkg/errors"
 	"github.com/regen-network/regen-ledger/orm"
 	"gopkg.in/yaml.v2"
 
-	"time"
+	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 type GroupID uint64
@@ -50,7 +51,8 @@ type DecisionPolicyResult struct {
 
 // DecisionPolicy is the persistent set of rules to determine the result of election on a proposal.
 type DecisionPolicy interface {
-	orm.Persistent
+	codec.ProtoMarshaler
+
 	orm.Validateable
 	GetTimeout() types.Duration
 	Allow(tally Tally, totalPower sdk.Dec, votingDuration time.Duration) (DecisionPolicyResult, error)
@@ -153,7 +155,9 @@ func NewGroupAccountMetadata(groupAccount sdk.AccAddress, group GroupID, admin s
 }
 
 func (g GroupAccountMetadata) GetDecisionPolicy() DecisionPolicy {
-	decisionPolicy, ok := g.DecisionPolicy.GetCachedValue().(DecisionPolicy)
+	cached := g.DecisionPolicy.GetCachedValue()
+	decisionPolicy, ok := cached.(DecisionPolicy)
+	// decisionPolicy, ok := g.DecisionPolicy.GetCachedValue().(DecisionPolicy)
 	if !ok {
 		return nil
 	}

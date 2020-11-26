@@ -30,7 +30,7 @@ type serverImpl struct {
 	batchInfoTable orm.NaturalKeyTable
 }
 
-func newServer(storeKey sdk.StoreKey, cdc codec.BinaryMarshaler) serverImpl {
+func newServer(storeKey sdk.StoreKey, cdc codec.Marshaler) serverImpl {
 	s := serverImpl{storeKey: storeKey}
 
 	s.idSeq = orm.NewSequence(storeKey, IDSeqPrefix)
@@ -52,7 +52,7 @@ func RegisterServices(storeKey sdk.StoreKey, configurator module.Configurator) {
 	if !ok {
 		panic("configurator should implement regenmodule.Configurator")
 	}
-	impl := newServer(storeKey, cfg.BinaryMarshaler())
+	impl := newServer(storeKey, cfg.Marshaler())
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 }

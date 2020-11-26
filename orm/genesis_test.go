@@ -1,4 +1,4 @@
-package orm
+package orm_test
 
 import (
 	"bytes"
@@ -8,10 +8,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	proto "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/testutil/testdata"
+	grouptypes "github.com/regen-network/regen-ledger/x/group/types"
 )
 
 func TestExportTableData(t *testing.T) {
@@ -20,9 +23,9 @@ func TestExportTableData(t *testing.T) {
 
 	storeKey := sdk.NewKVStoreKey("test")
 	const prefix = iota
-	table := NewTableBuilder(prefix, storeKey, &testdata.GroupMetadata{}, FixLengthIndexKeys(1), cdc).Build()
+	table := orm.NewTableBuilder(prefix, storeKey, &testdata.GroupMetadata{}, orm.FixLengthIndexKeys(1), cdc).Build()
 
-	ctx := NewMockContext()
+	ctx := orm.NewMockContext()
 	testRecordsNum := 2
 	testRecords := make([]testdata.GroupMetadata, testRecordsNum)
 	for i := 1; i <= testRecordsNum; i++ {
@@ -36,7 +39,7 @@ func TestExportTableData(t *testing.T) {
 		testRecords[i-1] = g
 	}
 
-	jsonModels, _, err := ExportTableData(ctx, table)
+	jsonModels, _, err := orm.ExportTableData(ctx, table)
 	require.NoError(t, err)
 	exp := `[
 	{
@@ -57,9 +60,9 @@ func TestImportTableData(t *testing.T) {
 
 	storeKey := sdk.NewKVStoreKey("test")
 	const prefix = iota
-	table := NewTableBuilder(prefix, storeKey, &testdata.GroupMetadata{}, FixLengthIndexKeys(1), cdc).Build()
+	table := orm.NewTableBuilder(prefix, storeKey, &testdata.GroupMetadata{}, orm.FixLengthIndexKeys(1), cdc).Build()
 
-	ctx := NewMockContext()
+	ctx := orm.NewMockContext()
 
 	jsonModels := `[
 	{
@@ -72,7 +75,7 @@ func TestImportTableData(t *testing.T) {
 	}
 ]`
 	// when
-	err := ImportTableData(ctx, table, []byte(jsonModels), 0)
+	err := orm.ImportTableData(ctx, table, []byte(jsonModels), 0)
 	require.NoError(t, err)
 
 	// then
@@ -88,4 +91,99 @@ func TestImportTableData(t *testing.T) {
 		require.Equal(t, exp, loaded)
 	}
 
+}
+
+func TestImportTableDataAny(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	grouptypes.RegisterTypes(interfaceRegistry)
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
+	storeKey := sdk.NewKVStoreKey("test")
+	const prefix = iota
+	table := orm.NewTableBuilder(prefix, storeKey, &grouptypes.GroupAccountMetadata{}, orm.FixLengthIndexKeys(1), cdc).Build()
+
+	ctx := orm.NewMockContext()
+
+	jsonModels := `[
+	{
+	"key" : "AQ==",
+	"value": {"admin":"cosmos1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqnrql8a", "comment":"my test 1", "decisionPolicy":{"@type":"/regen.group.v1alpha1.ThresholdDecisionPolicy", "threshold":"1.000000000000000000", "timeout":"1s"}, "group":"1", "groupAccount":"cosmos1qyqszqgpqyqszqgpqyqszqgpqyqszqgpjnp7du", "version":"1"}
+	},
+	{
+	"key" : "Ag==",
+	"value": {"admin":"cosmos1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqnrql8a", "comment":"my test 2", "decisionPolicy":{"@type":"/regen.group.v1alpha1.ThresholdDecisionPolicy", "threshold":"1.000000000000000000", "timeout":"2s"}, "group":"2", "groupAccount":"cosmos1qgpqyqszqgpqyqszqgpqyqszqgpqyqszrh8mx2", "version":"2"}
+	}
+]`
+	// when
+	err := orm.ImportTableData(ctx, table, []byte(jsonModels), 0)
+	require.NoError(t, err)
+
+	// then
+	for i := 1; i < 3; i++ {
+		var loaded grouptypes.GroupAccountMetadata
+		err := table.GetOne(ctx, []byte{byte(i)}, &loaded)
+		require.NoError(t, err)
+
+		exp, err := grouptypes.NewGroupAccountMetadata(
+			sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, sdk.AddrLen)),
+			grouptypes.GroupID(i),
+			sdk.AccAddress(bytes.Repeat([]byte{byte(0)}, sdk.AddrLen)),
+			fmt.Sprintf("my test %d", i),
+			uint64(i),
+			&grouptypes.ThresholdDecisionPolicy{
+				Threshold: sdk.OneDec(),
+				Timeout:   proto.Duration{Seconds: int64(i)},
+			},
+		)
+		require.NoError(t, err)
+		require.Equal(t, exp, loaded)
+	}
+
+}
+
+func TestExportTableDataAny(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	grouptypes.RegisterTypes(interfaceRegistry)
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
+	storeKey := sdk.NewKVStoreKey("test")
+	const prefix = iota
+	table := orm.NewTableBuilder(prefix, storeKey, &grouptypes.GroupAccountMetadata{}, orm.FixLengthIndexKeys(1), cdc).Build()
+
+	ctx := orm.NewMockContext()
+	testRecordsNum := 2
+	testRecords := make([]grouptypes.GroupAccountMetadata, testRecordsNum)
+	adminAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(0)}, sdk.AddrLen))
+	for i := 1; i <= testRecordsNum; i++ {
+		g, err := grouptypes.NewGroupAccountMetadata(
+			sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, sdk.AddrLen)),
+			grouptypes.GroupID(i),
+			adminAddr,
+			fmt.Sprintf("my test %d", i),
+			uint64(i),
+			&grouptypes.ThresholdDecisionPolicy{
+				Threshold: sdk.OneDec(),
+				Timeout:   proto.Duration{Seconds: int64(i)},
+			},
+		)
+		require.NoError(t, err)
+
+		err = table.Create(ctx, []byte{byte(i)}, &g)
+		require.NoError(t, err)
+		testRecords[i-1] = g
+	}
+
+	jsonModels, _, err := orm.ExportTableData(ctx, table)
+	require.NoError(t, err)
+	exp := `[
+	{
+	"key" : "AQ==",
+	"value": {"admin":"cosmos1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqnrql8a", "comment":"my test 1", "decisionPolicy":{"@type":"/regen.group.v1alpha1.ThresholdDecisionPolicy", "threshold":"1.000000000000000000", "timeout":"1s"}, "group":"1", "groupAccount":"cosmos1qyqszqgpqyqszqgpqyqszqgpqyqszqgpjnp7du", "version":"1"}
+	},
+	{
+	"key" : "Ag==",
+	"value": {"admin":"cosmos1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqnrql8a", "comment":"my test 2", "decisionPolicy":{"@type":"/regen.group.v1alpha1.ThresholdDecisionPolicy", "threshold":"1.000000000000000000", "timeout":"2s"}, "group":"2", "groupAccount":"cosmos1qgpqyqszqgpqyqszqgpqyqszqgpqyqszrh8mx2", "version":"2"}
+	}
+]`
+	assert.JSONEq(t, exp, string(jsonModels))
 }

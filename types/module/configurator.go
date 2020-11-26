@@ -11,17 +11,17 @@ import (
 type Configurator interface {
 	sdkmodule.Configurator
 
-	BinaryMarshaler() codec.BinaryMarshaler
+	Marshaler() codec.Marshaler
 }
 
 type configurator struct {
 	msgServer   grpc.Server
 	queryServer grpc.Server
-	cdc         codec.BinaryMarshaler
+	cdc         codec.Marshaler
 }
 
 // NewConfigurator returns a new Configurator instance
-func NewConfigurator(msgServer grpc.Server, queryServer grpc.Server, cdc codec.BinaryMarshaler) Configurator {
+func NewConfigurator(msgServer grpc.Server, queryServer grpc.Server, cdc codec.Marshaler) Configurator {
 	return configurator{msgServer: msgServer, queryServer: queryServer, cdc: cdc}
 }
 
@@ -37,7 +37,7 @@ func (c configurator) QueryServer() grpc.Server {
 	return c.queryServer
 }
 
-// BinaryMarshaler implements the Configurator.BinaryMarshaler method
-func (c configurator) BinaryMarshaler() codec.BinaryMarshaler {
+// Marshaler implements the Configurator.Marshaler method
+func (c configurator) Marshaler() codec.Marshaler {
 	return c.cdc
 }

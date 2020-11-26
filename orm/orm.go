@@ -129,17 +129,17 @@ type Indexable interface {
 }
 
 // AfterSaveInterceptor defines a callback function to be called on Create + Update.
-type AfterSaveInterceptor func(ctx HasKVStore, rowID RowID, newValue, oldValue Persistent) error
+type AfterSaveInterceptor func(ctx HasKVStore, rowID RowID, newValue, oldValue codec.ProtoMarshaler) error
 
 // AfterDeleteInterceptor defines a callback function to be called on Delete operations.
-type AfterDeleteInterceptor func(ctx HasKVStore, rowID RowID, value Persistent) error
+type AfterDeleteInterceptor func(ctx HasKVStore, rowID RowID, value codec.ProtoMarshaler) error
 
 // RowGetter loads a persistent object by row ID into the destination object. The dest parameter must therefore be a pointer.
 // Any implementation must return `ErrNotFound` when no object for the rowID exists
 type RowGetter func(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) error
 
 // NewTypeSafeRowGetter returns a `RowGetter` with type check on the dest parameter.
-func NewTypeSafeRowGetter(storeKey sdk.StoreKey, prefixKey byte, model reflect.Type, cdc codec.BinaryMarshaler) RowGetter {
+func NewTypeSafeRowGetter(storeKey sdk.StoreKey, prefixKey byte, model reflect.Type, cdc codec.Marshaler) RowGetter {
 	return func(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) error {
 		if len(rowID) == 0 {
 			return errors.Wrap(ErrArgument, "key must not be nil")
@@ -154,12 +154,11 @@ func NewTypeSafeRowGetter(storeKey sdk.StoreKey, prefixKey byte, model reflect.T
 		if !it.Valid() {
 			return ErrNotFound
 		}
-		// return dest.Unmarshal(it.Value())
 		return cdc.UnmarshalBinaryBare(it.Value(), dest)
 	}
 }
 
-func assertCorrectType(model reflect.Type, obj Persistent) error {
+func assertCorrectType(model reflect.Type, obj codec.ProtoMarshaler) error {
 	tp := reflect.TypeOf(obj)
 	if tp.Kind() != reflect.Ptr {
 		return errors.Wrap(ErrType, "model destination must be a pointer")

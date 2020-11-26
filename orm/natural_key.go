@@ -8,7 +8,7 @@ import (
 var _ Indexable = &NaturalKeyTableBuilder{}
 
 // NewNaturalKeyTableBuilder creates a builder to setup a NaturalKeyTable object.
-func NewNaturalKeyTableBuilder(prefixData byte, storeKey sdk.StoreKey, model NaturalKeyed, codec IndexKeyCodec, cdc codec.BinaryMarshaler) *NaturalKeyTableBuilder {
+func NewNaturalKeyTableBuilder(prefixData byte, storeKey sdk.StoreKey, model NaturalKeyed, codec IndexKeyCodec, cdc codec.Marshaler) *NaturalKeyTableBuilder {
 	return &NaturalKeyTableBuilder{
 		TableBuilder: NewTableBuilder(prefixData, storeKey, model, codec, cdc),
 	}
@@ -31,7 +31,7 @@ type NaturalKeyed interface {
 	// The `IndexKeyCodec` used with the `NaturalKeyTable` may add certain constraints to the byte representation as
 	// max length = 255 in `Max255DynamicLengthIndexKeyCodec` or a fix length in `FixLengthIndexKeyCodec` for example.
 	NaturalKey() []byte
-	Persistent
+	codec.ProtoMarshaler
 }
 
 var _ TableExportable = &NaturalKeyTable{}

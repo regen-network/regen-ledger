@@ -8,7 +8,7 @@ import (
 var _ Indexable = &AutoUInt64TableBuilder{}
 
 // NewAutoUInt64TableBuilder creates a builder to setup a AutoUInt64Table object.
-func NewAutoUInt64TableBuilder(prefixData byte, prefixSeq byte, storeKey sdk.StoreKey, model Persistent, cdc codec.BinaryMarshaler) *AutoUInt64TableBuilder {
+func NewAutoUInt64TableBuilder(prefixData byte, prefixSeq byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, cdc codec.Marshaler) *AutoUInt64TableBuilder {
 	if prefixData == prefixSeq {
 		panic("prefixData and prefixSeq must be unique")
 	}
@@ -44,7 +44,7 @@ type AutoUInt64Table struct {
 
 // Create a new persistent object with an auto generated uint64 primary key. They key is returned.
 // Create iterates though the registered callbacks and may add secondary index keys by them.
-func (a AutoUInt64Table) Create(ctx HasKVStore, obj Persistent) (uint64, error) {
+func (a AutoUInt64Table) Create(ctx HasKVStore, obj codec.ProtoMarshaler) (uint64, error) {
 	autoIncID := a.seq.NextVal(ctx)
 	err := a.table.Create(ctx, EncodeSequence(autoIncID), obj)
 	if err != nil {
@@ -58,7 +58,7 @@ func (a AutoUInt64Table) Create(ctx HasKVStore, obj Persistent) (uint64, error) 
 // is fulfilled. Parameters must not be nil.
 //
 // Save iterates though the registered callbacks and may add or remove secondary index keys by them.
-func (a AutoUInt64Table) Save(ctx HasKVStore, rowID uint64, newValue Persistent) error {
+func (a AutoUInt64Table) Save(ctx HasKVStore, rowID uint64, newValue codec.ProtoMarshaler) error {
 	return a.table.Save(ctx, EncodeSequence(rowID), newValue)
 }
 

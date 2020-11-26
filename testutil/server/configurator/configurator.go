@@ -36,11 +36,11 @@ type Fixture struct {
 	t           *testing.T
 	signers     []sdk.AccAddress
 	ctx         context.Context
-	cdc         codec.BinaryMarshaler
+	cdc         codec.Marshaler
 }
 
 // NewFixture returns a new Fixture instance.
-func NewFixture(t *testing.T, storeKeys []sdk.StoreKey, signers []sdk.AccAddress, cdc codec.BinaryMarshaler) Fixture {
+func NewFixture(t *testing.T, storeKeys []sdk.StoreKey, signers []sdk.AccAddress, cdc codec.Marshaler) Fixture {
 	return Fixture{
 		queryRouter: newTestRouter(false),
 		msgRouter:   newTestRouter(true),
@@ -63,8 +63,8 @@ func (c Fixture) QueryServer() gogogrpc.Server {
 	return c.queryRouter
 }
 
-// BinaryMarshaler implements the Configurator.BinaryMarshaler method
-func (c Fixture) BinaryMarshaler() codec.BinaryMarshaler {
+// Marshaler implements the Configurator.Marshaler method
+func (c Fixture) Marshaler() codec.Marshaler {
 	return c.cdc
 }
 

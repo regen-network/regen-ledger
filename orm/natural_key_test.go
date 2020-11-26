@@ -261,8 +261,8 @@ func TestContains(t *testing.T) {
 			},
 			exp: false,
 		},
-		"different type same key": {
-			src: mockNaturalKeyed{myPersistentObj.NaturalKey()},
+		"different type, same key": {
+			src: mockNaturalKeyed{&myPersistentObj},
 			exp: false,
 		},
 	}
@@ -275,21 +275,5 @@ func TestContains(t *testing.T) {
 }
 
 type mockNaturalKeyed struct {
-	naturalKey []byte
-}
-
-func (m mockNaturalKeyed) NaturalKey() []byte {
-	return m.naturalKey
-}
-
-func (m mockNaturalKeyed) Marshal() ([]byte, error) {
-	panic("implement me")
-}
-
-func (m mockNaturalKeyed) Unmarshal([]byte) error {
-	panic("implement me")
-}
-
-func (m mockNaturalKeyed) ValidateBasic() error {
-	return nil
+	*testdata.GroupMember
 }

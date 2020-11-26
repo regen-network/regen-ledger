@@ -132,19 +132,3 @@ func noopIter() Iterator {
 		return nil, nil
 	})
 }
-
-type persistentString string
-
-func (p persistentString) Marshal() ([]byte, error) {
-	return []byte(p), nil
-}
-
-func (p *persistentString) Unmarshal(b []byte) error {
-	s := persistentString(string(b))
-	p = &s
-	return nil
-}
-
-func (p persistentString) ValidateBasic() error {
-	return nil
-}
