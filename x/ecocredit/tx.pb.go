@@ -30,8 +30,9 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgCreateClassRequest is the Msg/CreateClass request type.
 type MsgCreateClassRequest struct {
-	// designer is the address of the account which designed the credit class. The designer has special permissions
-	// to change the list of issuers and perform other administrative operations.
+	// designer is the address of the account which designed the credit class. The
+	// designer has special permissions to change the list of issuers and perform
+	// other administrative operations.
 	Designer string `protobuf:"bytes,1,opt,name=designer,proto3" json:"designer,omitempty"`
 	// issuers are the account addresses of the approved issuers.
 	Issuers []string `protobuf:"bytes,2,rep,name=issuers,proto3" json:"issuers,omitempty"`
@@ -212,15 +213,17 @@ func (m *MsgCreateBatchRequest) GetMetadata() []byte {
 	return nil
 }
 
-// BatchIssuance represents the issuance of some credits in a batch to a single recipient.
+// BatchIssuance represents the issuance of some credits in a batch to a
+// single recipient.
 type MsgCreateBatchRequest_BatchIssuance struct {
 	// recipient is the account of the recipient.
 	Recipient string `protobuf:"bytes,1,opt,name=recipient,proto3" json:"recipient,omitempty"`
-	// tradable_units are the units of credits in this issuance that can be traded by this recipient.
-	// Decimal values are acceptable.
+	// tradable_units are the units of credits in this issuance that can be
+	// traded by this recipient. Decimal values are acceptable.
 	TradableUnits string `protobuf:"bytes,2,opt,name=tradable_units,json=tradableUnits,proto3" json:"tradable_units,omitempty" yaml:"tradable_units"`
-	// retired_units are the units of credits in this issuance that are effectively retired by the issuer on receipt.
-	// Decimal values are acceptable.
+	// retired_units are the units of credits in this issuance that are
+	// effectively retired by the issuer on receipt. Decimal values are
+	// acceptable.
 	RetiredUnits string `protobuf:"bytes,3,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty" yaml:"retired_units"`
 }
 
@@ -392,11 +395,13 @@ func (m *MsgSendRequest) GetCredits() []*MsgSendRequest_SendUnits {
 type MsgSendRequest_SendUnits struct {
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
-	// tradable_units are the units of credits in this issuance that can be traded by this recipient.
-	// Decimal values are acceptable within the precision returned by Query/Precision.
+	// tradable_units are the units of credits in this issuance that can be
+	// traded by this recipient. Decimal values are acceptable within the
+	// precision returned by Query/Precision.
 	TradableUnits string `protobuf:"bytes,2,opt,name=tradable_units,json=tradableUnits,proto3" json:"tradable_units,omitempty" yaml:"tradable_units"`
-	// retired_units are the units of credits in this issuance that are effectively retired by the issuer on receipt.
-	// Decimal values are acceptable within the precision returned by Query/Precision.
+	// retired_units are the units of credits in this issuance that are
+	// effectively retired by the issuer on receipt. Decimal values are
+	// acceptable within the precision returned by Query/Precision.
 	RetiredUnits string `protobuf:"bytes,3,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty" yaml:"retired_units"`
 }
 
@@ -551,7 +556,8 @@ type MsgRetireRequest_RetireUnits struct {
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
 	// retired_units are the units of credits being retired.
-	// Decimal values are acceptable within the precision returned by Query/Precision.
+	// Decimal values are acceptable within the precision returned by
+	// Query/Precision.
 	Units string `protobuf:"bytes,2,opt,name=units,proto3" json:"units,omitempty"`
 }
 
@@ -645,8 +651,10 @@ type MsgSetPrecisionRequest struct {
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
-	// max_decimal_places is the new maximum number of decimal places that can be used to represent some quantity of
-	// credit units. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113.
+	// max_decimal_places is the new maximum number of decimal places that can be
+	// used to represent some quantity of credit units. It is an experimental
+	// feature to concretely explore an idea proposed in
+	// https://github.com/cosmos/cosmos-sdk/issues/7113.
 	MaxDecimalPlaces uint32 `protobuf:"varint,3,opt,name=max_decimal_places,json=maxDecimalPlaces,proto3" json:"max_decimal_places,omitempty" yaml:"max_decimal_places"`
 }
 
@@ -822,27 +830,38 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// CreateClass creates a new credit class with an approved list of issuers and optional metadata.
+	// CreateClass creates a new credit class with an approved list of issuers and
+	// optional metadata.
 	CreateClass(ctx context.Context, in *MsgCreateClassRequest, opts ...grpc.CallOption) (*MsgCreateClassResponse, error)
-	// CreateBatch creates a new batch of credits for an existing credit class. This will create a new batch denom
-	// with a fixed supply. Issued credits can be distributed to recipients in either tradable or retired form.
+	// CreateBatch creates a new batch of credits for an existing credit class.
+	// This will create a new batch denom with a fixed supply. Issued credits can
+	// be distributed to recipients in either tradable or retired form.
 	CreateBatch(ctx context.Context, in *MsgCreateBatchRequest, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error)
-	// Send sends tradeable credits from one account to another account. Sent credits can either be tradable or retired on receipt.
+	// Send sends tradeable credits from one account to another account. Sent
+	// credits can either be tradable or retired on receipt.
 	Send(ctx context.Context, in *MsgSendRequest, opts ...grpc.CallOption) (*MsgSendResponse, error)
 	// Retire retires a specified number of credits in the holder's account.
 	Retire(ctx context.Context, in *MsgRetireRequest, opts ...grpc.CallOption) (*MsgRetireResponse, error)
-	// SetPrecision allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature
-	// to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
-	// places allowed for a credit batch is determined by the original number of decimal places used with calling CreatBatch.
-	// SetPrecision allows the number of allowed decimal places to be increased, effectively making the supply more
-	// granular without actually changing any balances. It allows asset issuers to be able to issue an asset without needing
-	// to think about how many subdivisions are needed upfront. While it may not be relevant for credits which likely have
-	// a fairly stable market value, I wanted to experiment a bit and this serves as a proof of concept for a broader
-	// bank redesign where say for instance a coin like the ATOM or XRN could be issued in its own units rather than
-	// micro or nano-units. Instead an operation like SetPrecision would allow trading in micro, nano or pico in the future
-	// based on market demand. Arbitrary, unbounded precision is not desirable because this can lead to spam attacks (like
-	// sending 0.000000000000000000000000000001 coins). This is effectively fixed precision so under the hood it is still
-	// basically an integer, but the fixed precision can be increased so its more adaptable long term than just an integer.
+	// SetPrecision allows an issuer to increase the decimal precision of a credit
+	// batch. It is an experimental feature to concretely explore an idea proposed
+	// in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
+	// places allowed for a credit batch is determined by the original number of
+	// decimal places used with calling CreatBatch. SetPrecision allows the number
+	// of allowed decimal places to be increased, effectively making the supply
+	// more granular without actually changing any balances. It allows asset
+	// issuers to be able to issue an asset without needing to think about how
+	// many subdivisions are needed upfront. While it may not be relevant for
+	// credits which likely have a fairly stable market value, I wanted to
+	// experiment a bit and this serves as a proof of concept for a broader bank
+	// redesign where say for instance a coin like the ATOM or XRN could be issued
+	// in its own units rather than micro or nano-units. Instead an operation like
+	// SetPrecision would allow trading in micro, nano or pico in the future based
+	// on market demand. Arbitrary, unbounded precision is not desirable because
+	// this can lead to spam attacks (like sending
+	// 0.000000000000000000000000000001 coins). This is effectively fixed
+	// precision so under the hood it is still basically an integer, but the fixed
+	// precision can be increased so its more adaptable long term than just an
+	// integer.
 	SetPrecision(ctx context.Context, in *MsgSetPrecisionRequest, opts ...grpc.CallOption) (*MsgSetPrecisionResponse, error)
 }
 
@@ -901,27 +920,38 @@ func (c *msgClient) SetPrecision(ctx context.Context, in *MsgSetPrecisionRequest
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// CreateClass creates a new credit class with an approved list of issuers and optional metadata.
+	// CreateClass creates a new credit class with an approved list of issuers and
+	// optional metadata.
 	CreateClass(context.Context, *MsgCreateClassRequest) (*MsgCreateClassResponse, error)
-	// CreateBatch creates a new batch of credits for an existing credit class. This will create a new batch denom
-	// with a fixed supply. Issued credits can be distributed to recipients in either tradable or retired form.
+	// CreateBatch creates a new batch of credits for an existing credit class.
+	// This will create a new batch denom with a fixed supply. Issued credits can
+	// be distributed to recipients in either tradable or retired form.
 	CreateBatch(context.Context, *MsgCreateBatchRequest) (*MsgCreateBatchResponse, error)
-	// Send sends tradeable credits from one account to another account. Sent credits can either be tradable or retired on receipt.
+	// Send sends tradeable credits from one account to another account. Sent
+	// credits can either be tradable or retired on receipt.
 	Send(context.Context, *MsgSendRequest) (*MsgSendResponse, error)
 	// Retire retires a specified number of credits in the holder's account.
 	Retire(context.Context, *MsgRetireRequest) (*MsgRetireResponse, error)
-	// SetPrecision allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature
-	// to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
-	// places allowed for a credit batch is determined by the original number of decimal places used with calling CreatBatch.
-	// SetPrecision allows the number of allowed decimal places to be increased, effectively making the supply more
-	// granular without actually changing any balances. It allows asset issuers to be able to issue an asset without needing
-	// to think about how many subdivisions are needed upfront. While it may not be relevant for credits which likely have
-	// a fairly stable market value, I wanted to experiment a bit and this serves as a proof of concept for a broader
-	// bank redesign where say for instance a coin like the ATOM or XRN could be issued in its own units rather than
-	// micro or nano-units. Instead an operation like SetPrecision would allow trading in micro, nano or pico in the future
-	// based on market demand. Arbitrary, unbounded precision is not desirable because this can lead to spam attacks (like
-	// sending 0.000000000000000000000000000001 coins). This is effectively fixed precision so under the hood it is still
-	// basically an integer, but the fixed precision can be increased so its more adaptable long term than just an integer.
+	// SetPrecision allows an issuer to increase the decimal precision of a credit
+	// batch. It is an experimental feature to concretely explore an idea proposed
+	// in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
+	// places allowed for a credit batch is determined by the original number of
+	// decimal places used with calling CreatBatch. SetPrecision allows the number
+	// of allowed decimal places to be increased, effectively making the supply
+	// more granular without actually changing any balances. It allows asset
+	// issuers to be able to issue an asset without needing to think about how
+	// many subdivisions are needed upfront. While it may not be relevant for
+	// credits which likely have a fairly stable market value, I wanted to
+	// experiment a bit and this serves as a proof of concept for a broader bank
+	// redesign where say for instance a coin like the ATOM or XRN could be issued
+	// in its own units rather than micro or nano-units. Instead an operation like
+	// SetPrecision would allow trading in micro, nano or pico in the future based
+	// on market demand. Arbitrary, unbounded precision is not desirable because
+	// this can lead to spam attacks (like sending
+	// 0.000000000000000000000000000001 coins). This is effectively fixed
+	// precision so under the hood it is still basically an integer, but the fixed
+	// precision can be increased so its more adaptable long term than just an
+	// integer.
 	SetPrecision(context.Context, *MsgSetPrecisionRequest) (*MsgSetPrecisionResponse, error)
 }
 

@@ -480,6 +480,9 @@ func (m *GroupAccountMetadata) XXX_DiscardUnknown() {
 var xxx_messageInfo_GroupAccountMetadata proto.InternalMessageInfo
 
 // Proposal defines the core field members of a group proposal.
+// Any member of a group can submit a proposal for a group account to decide upon.
+// A proposal consists of a set of `sdk.Msg`s that will be executed if the proposal
+// passes as well as any comment associated with the proposal.
 type Proposal struct {
 	// group_account is the group account address.
 	GroupAccount github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=group_account,json=groupAccount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"group_account,omitempty"`

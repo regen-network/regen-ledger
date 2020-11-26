@@ -471,8 +471,10 @@ func (m *QueryPrecisionRequest) GetBatchDenom() string {
 
 // QueryPrecisionResponse is the Query/Precision response type.
 type QueryPrecisionResponse struct {
-	// max_decimal_places is the maximum number of decimal places that can be used to represent some quantity of credit units.
-	// It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113.
+	// max_decimal_places is the maximum number of decimal places that can be used
+	// to represent some quantity of credit units. It is an experimental feature
+	// to concretely explore an idea proposed in
+	// https://github.com/cosmos/cosmos-sdk/issues/7113.
 	MaxDecimalPlaces uint32 `protobuf:"varint,1,opt,name=max_decimal_places,json=maxDecimalPlaces,proto3" json:"max_decimal_places,omitempty" yaml:"max_decimal_places"`
 }
 
@@ -592,12 +594,13 @@ type QueryClient interface {
 	ClassInfo(ctx context.Context, in *QueryClassInfoRequest, opts ...grpc.CallOption) (*QueryClassInfoResponse, error)
 	// BatchInfo queries for information on a credit batch.
 	BatchInfo(ctx context.Context, in *QueryBatchInfoRequest, opts ...grpc.CallOption) (*QueryBatchInfoResponse, error)
-	// Balance queries the balance (both tradable and retired) of a given credit batch for a given account.
+	// Balance queries the balance (both tradable and retired) of a given credit
+	// batch for a given account.
 	Balance(ctx context.Context, in *QueryBalanceRequest, opts ...grpc.CallOption) (*QueryBalanceResponse, error)
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(ctx context.Context, in *QuerySupplyRequest, opts ...grpc.CallOption) (*QuerySupplyResponse, error)
-	// Precision queries the number of decimal places that can be used to represent credit batch units.
-	// See Tx/SetPrecision for more details.
+	// Precision queries the number of decimal places that can be used to
+	// represent credit batch units. See Tx/SetPrecision for more details.
 	Precision(ctx context.Context, in *QueryPrecisionRequest, opts ...grpc.CallOption) (*QueryPrecisionResponse, error)
 }
 
@@ -660,12 +663,13 @@ type QueryServer interface {
 	ClassInfo(context.Context, *QueryClassInfoRequest) (*QueryClassInfoResponse, error)
 	// BatchInfo queries for information on a credit batch.
 	BatchInfo(context.Context, *QueryBatchInfoRequest) (*QueryBatchInfoResponse, error)
-	// Balance queries the balance (both tradable and retired) of a given credit batch for a given account.
+	// Balance queries the balance (both tradable and retired) of a given credit
+	// batch for a given account.
 	Balance(context.Context, *QueryBalanceRequest) (*QueryBalanceResponse, error)
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(context.Context, *QuerySupplyRequest) (*QuerySupplyResponse, error)
-	// Precision queries the number of decimal places that can be used to represent credit batch units.
-	// See Tx/SetPrecision for more details.
+	// Precision queries the number of decimal places that can be used to
+	// represent credit batch units. See Tx/SetPrecision for more details.
 	Precision(context.Context, *QueryPrecisionRequest) (*QueryPrecisionResponse, error)
 }
 
