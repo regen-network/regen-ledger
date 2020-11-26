@@ -249,7 +249,7 @@ message Tally {
 message Vote {
 
     // proposal is the unique ID of the proposal.
-    uint64 proposal = 1 [(gogoproto.casttype) = "ProposalID"];
+    uint64 proposal_id = 1 [(gogoproto.casttype) = "ProposalID"];
     
     // voter is the account address of the voter.
     bytes voter = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];

@@ -222,14 +222,14 @@ message MsgCreateProposalRequest {
 message MsgCreateProposalResponse {
 
     // proposal is the unique ID of the proposal.
-    uint64 proposal = 1 [(gogoproto.casttype) = "ProposalID"];
+    uint64 proposal_id = 1 [(gogoproto.casttype) = "ProposalID"];
 }
 
 // MsgVoteRequest is the Msg/Vote request type.
 message MsgVoteRequest {
 
     // proposal is the unique ID of the proposal.
-    uint64 proposal = 1 [(gogoproto.casttype) = "ProposalID"];
+    uint64 proposal_id = 1 [(gogoproto.casttype) = "ProposalID"];
     
     // voters is the lists of voters' account addresses.
     repeated bytes voters = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
@@ -248,7 +248,7 @@ message MsgVoteResponse { }
 message MsgExecRequest {
 
     // proposal is the unique ID of the proposal.
-    uint64 proposal = 1 [(gogoproto.casttype) = "ProposalID"];
+    uint64 proposal_id = 1 [(gogoproto.casttype) = "ProposalID"];
     
     // signer is the account address used to execute the proposal.
     bytes signer = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];

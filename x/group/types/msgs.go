@@ -431,7 +431,7 @@ func (m MsgVoteRequest) ValidateBasic() error {
 	if err := AccAddresses(m.Voters).ValidateBasic(); err != nil {
 		return sdkerrors.Wrap(err, "voters")
 	}
-	if m.Proposal == 0 {
+	if m.ProposalId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "proposal")
 	}
 	if m.Choice == Choice_CHOICE_UNSPECIFIED {
@@ -458,7 +458,7 @@ func (m MsgExecRequest) ValidateBasic() error {
 	if err := sdk.VerifyAddressFormat(m.Signer); err != nil {
 		return sdkerrors.Wrap(ErrInvalid, "signer")
 	}
-	if m.Proposal == 0 {
+	if m.ProposalId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "proposal")
 	}
 	return nil

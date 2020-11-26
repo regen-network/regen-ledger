@@ -340,7 +340,7 @@ Vote represents a vote for a proposal.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| proposal | [uint64](#uint64) |  | proposal is the unique ID of the proposal. |
+| proposal_id | [uint64](#uint64) |  | proposal is the unique ID of the proposal. |
 | voter | [bytes](#bytes) |  | voter is the account address of the voter. |
 | choice | [Choice](#regen.group.v1alpha1.Choice) |  | choice is the voter's choice on the proposal. |
 | comment | [string](#string) |  | comment's is the vote's comment. |
@@ -515,7 +515,7 @@ MsgCreateProposalResponse is the Msg/CreateProposal response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| proposal | [uint64](#uint64) |  | proposal is the unique ID of the proposal. |
+| proposal_id | [uint64](#uint64) |  | proposal is the unique ID of the proposal. |
 
 
 
@@ -530,7 +530,7 @@ MsgExecRequest is the Msg/Exec request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| proposal | [uint64](#uint64) |  | proposal is the unique ID of the proposal. |
+| proposal_id | [uint64](#uint64) |  | proposal is the unique ID of the proposal. |
 | signer | [bytes](#bytes) |  | signer is the account address used to execute the proposal. |
 
 
@@ -718,7 +718,7 @@ MsgVoteRequest is the Msg/Vote request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| proposal | [uint64](#uint64) |  | proposal is the unique ID of the proposal. |
+| proposal_id | [uint64](#uint64) |  | proposal is the unique ID of the proposal. |
 | voters | [bytes](#bytes) | repeated | voters is the lists of voters' account addresses. |
 | choice | [Choice](#regen.group.v1alpha1.Choice) |  | choice is the voters' choice on the proposal. |
 | comment | [string](#string) |  | comment's is the vote's comment. |

@@ -813,7 +813,7 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 				return
 			}
 			s.Require().NoError(err)
-			id := res.Proposal
+			id := res.ProposalId
 
 			// then all data persisted
 			proposal, err := s.groupKeeper.GetProposal(s.sdkCtx, id)
@@ -879,9 +879,9 @@ func (s *IntegrationTestSuite) TestVote() {
 	}{
 		"vote yes": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_CHOICE_YES,
+				ProposalId: myProposalID,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:     types.Choice_CHOICE_YES,
 			},
 			expVoteState: types.Tally{
 				YesCount:     sdk.OneDec(),
@@ -894,9 +894,9 @@ func (s *IntegrationTestSuite) TestVote() {
 		},
 		"vote no": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_CHOICE_NO,
+				ProposalId: myProposalID,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:     types.Choice_CHOICE_NO,
 			},
 			expVoteState: types.Tally{
 				YesCount:     sdk.ZeroDec(),
@@ -909,9 +909,9 @@ func (s *IntegrationTestSuite) TestVote() {
 		},
 		"vote abstain": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_CHOICE_ABSTAIN,
+				ProposalId: myProposalID,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:     types.Choice_CHOICE_ABSTAIN,
 			},
 			expVoteState: types.Tally{
 				YesCount:     sdk.ZeroDec(),
@@ -924,9 +924,9 @@ func (s *IntegrationTestSuite) TestVote() {
 		},
 		"vote veto": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_CHOICE_VETO,
+				ProposalId: myProposalID,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:     types.Choice_CHOICE_VETO,
 			},
 			expVoteState: types.Tally{
 				YesCount:     sdk.ZeroDec(),
@@ -939,9 +939,9 @@ func (s *IntegrationTestSuite) TestVote() {
 		},
 		"apply decision policy early": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Voters:   []sdk.AccAddress{[]byte("power-member-address")},
-				Choice:   types.Choice_CHOICE_YES,
+				ProposalId: myProposalID,
+				Voters:     []sdk.AccAddress{[]byte("power-member-address")},
+				Choice:     types.Choice_CHOICE_YES,
 			},
 			expVoteState: types.Tally{
 				YesCount:     sdk.NewDec(2),
@@ -954,9 +954,9 @@ func (s *IntegrationTestSuite) TestVote() {
 		},
 		"reject new votes when final decision is made already": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_CHOICE_YES,
+				ProposalId: myProposalID,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:     types.Choice_CHOICE_YES,
 			},
 			doBefore: func(ctx sdk.Context) {
 				s.Require().NoError(s.groupKeeper.Vote(ctx, myProposalID, []sdk.AccAddress{[]byte("power-member-address")}, types.Choice_CHOICE_VETO, ""))
@@ -965,89 +965,89 @@ func (s *IntegrationTestSuite) TestVote() {
 		},
 		"comment too long": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Comment:  strings.Repeat("a", 256),
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_CHOICE_NO,
+				ProposalId: myProposalID,
+				Comment:    strings.Repeat("a", 256),
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:     types.Choice_CHOICE_NO,
 			},
 			expErr: true,
 		},
 		"existing proposal required": {
 			req: &types.MsgVoteRequest{
-				Proposal: 999,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_CHOICE_NO,
+				ProposalId: 999,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:     types.Choice_CHOICE_NO,
 			},
 			expErr: true,
 		},
 		"empty choice": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
+				ProposalId: myProposalID,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
 			},
 			expErr: true,
 		},
 		"invalid choice": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   5,
+				ProposalId: myProposalID,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:     5,
 			},
 			expErr: true,
 		},
 		"all voters must be in group": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address"), []byte("non--member-address")},
-				Choice:   types.Choice_CHOICE_NO,
+				ProposalId: myProposalID,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address"), []byte("non--member-address")},
+				Choice:     types.Choice_CHOICE_NO,
 			},
 			expErr: true,
 		},
 		"voters must not include nil": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address"), nil},
-				Choice:   types.Choice_CHOICE_NO,
+				ProposalId: myProposalID,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address"), nil},
+				Choice:     types.Choice_CHOICE_NO,
 			},
 			expErr: true,
 		},
 		"voters must not be nil": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Choice:   types.Choice_CHOICE_NO,
+				ProposalId: myProposalID,
+				Choice:     types.Choice_CHOICE_NO,
 			},
 			expErr: true,
 		},
 		"voters must not be empty": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Choice:   types.Choice_CHOICE_NO,
-				Voters:   []sdk.AccAddress{},
+				ProposalId: myProposalID,
+				Choice:     types.Choice_CHOICE_NO,
+				Voters:     []sdk.AccAddress{},
 			},
 			expErr: true,
 		},
 		"admin that is not a group member can not vote": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Voters:   []sdk.AccAddress{[]byte("valid--admin-address")},
-				Choice:   types.Choice_CHOICE_NO,
+				ProposalId: myProposalID,
+				Voters:     []sdk.AccAddress{[]byte("valid--admin-address")},
+				Choice:     types.Choice_CHOICE_NO,
 			},
 			expErr: true,
 		},
 		"on timeout": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_CHOICE_NO,
+				ProposalId: myProposalID,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:     types.Choice_CHOICE_NO,
 			},
 			srcCtx: s.sdkCtx.WithBlockTime(s.blockTime.Add(time.Second)),
 			expErr: true,
 		},
 		"closed already": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_CHOICE_NO,
+				ProposalId: myProposalID,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:     types.Choice_CHOICE_NO,
 			},
 			doBefore: func(ctx sdk.Context) {
 				err := s.groupKeeper.Vote(ctx, myProposalID, []sdk.AccAddress{[]byte("power-member-address")}, types.Choice_CHOICE_YES, "")
@@ -1057,9 +1057,9 @@ func (s *IntegrationTestSuite) TestVote() {
 		},
 		"voted already": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_CHOICE_NO,
+				ProposalId: myProposalID,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:     types.Choice_CHOICE_NO,
 			},
 			doBefore: func(ctx sdk.Context) {
 				err := s.groupKeeper.Vote(ctx, myProposalID, []sdk.AccAddress{[]byte("valid-member-address")}, types.Choice_CHOICE_YES, "")
@@ -1069,9 +1069,9 @@ func (s *IntegrationTestSuite) TestVote() {
 		},
 		"with group modified": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_CHOICE_NO,
+				ProposalId: myProposalID,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:     types.Choice_CHOICE_NO,
 			},
 			doBefore: func(ctx sdk.Context) {
 				g, err := s.groupKeeper.GetGroup(ctx, myGroupID)
@@ -1083,9 +1083,9 @@ func (s *IntegrationTestSuite) TestVote() {
 		},
 		"with policy modified": {
 			req: &types.MsgVoteRequest{
-				Proposal: myProposalID,
-				Voters:   []sdk.AccAddress{[]byte("valid-member-address")},
-				Choice:   types.Choice_CHOICE_NO,
+				ProposalId: myProposalID,
+				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Choice:     types.Choice_CHOICE_NO,
 			},
 			doBefore: func(ctx sdk.Context) {
 				a, err := s.groupKeeper.GetGroupAccount(ctx, accountAddr)
@@ -1118,9 +1118,9 @@ func (s *IntegrationTestSuite) TestVote() {
 			// and all votes are stored
 			for _, voter := range spec.req.Voters {
 				// then all data persisted
-				loaded, err := s.groupKeeper.GetVote(ctx, spec.req.Proposal, voter)
+				loaded, err := s.groupKeeper.GetVote(ctx, spec.req.ProposalId, voter)
 				s.Require().NoError(err)
-				s.Assert().Equal(spec.req.Proposal, loaded.Proposal)
+				s.Assert().Equal(spec.req.ProposalId, loaded.ProposalId)
 				s.Assert().Equal(voter, loaded.Voter)
 				s.Assert().Equal(spec.req.Choice, loaded.Choice)
 				s.Assert().Equal(spec.req.Comment, loaded.Comment)
@@ -1130,7 +1130,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			}
 
 			// and proposal is updated
-			proposal, err := s.groupKeeper.GetProposal(ctx, spec.req.Proposal)
+			proposal, err := s.groupKeeper.GetProposal(ctx, spec.req.ProposalId)
 			s.Require().NoError(err)
 			s.Assert().Equal(spec.expVoteState, proposal.VoteState)
 			s.Assert().Equal(spec.expResult, proposal.Result)
@@ -1405,7 +1405,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			if !spec.srcBlockTime.IsZero() {
 				ctx = ctx.WithBlockTime(spec.srcBlockTime)
 			}
-			_, err := s.msgClient.Exec(sdk.WrapSDKContext(ctx), &types.MsgExecRequest{Proposal: proposalID})
+			_, err := s.msgClient.Exec(sdk.WrapSDKContext(ctx), &types.MsgExecRequest{ProposalId: proposalID})
 			if spec.expErr {
 				s.Require().Error(err)
 				return

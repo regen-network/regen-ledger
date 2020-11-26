@@ -144,7 +144,7 @@ func NewGroupKeeper(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, rout
 	// Vote Table
 	voteTableBuilder := orm.NewNaturalKeyTableBuilder(VoteTablePrefix, storeKey, &types.Vote{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	k.voteByProposalIndex = orm.NewUInt64Index(voteTableBuilder, VoteByProposalIndexPrefix, func(value interface{}) ([]uint64, error) {
-		return []uint64{uint64(value.(*types.Vote).Proposal)}, nil
+		return []uint64{uint64(value.(*types.Vote).ProposalId)}, nil
 	})
 	k.voteByVoterIndex = orm.NewIndex(voteTableBuilder, VoteByVoterIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
 		return []orm.RowID{value.(*types.Vote).Voter.Bytes()}, nil
@@ -341,7 +341,7 @@ func (k Keeper) Vote(ctx sdk.Context, id types.ProposalID, voters []sdk.AccAddre
 			return sdkerrors.Wrapf(err, "address: %s", voterAddr)
 		}
 		newVote := types.Vote{
-			Proposal:    id,
+			ProposalId:  id,
 			Voter:       voterAddr,
 			Choice:      choice,
 			Comment:     comment,
@@ -538,5 +538,5 @@ func (k Keeper) CreateProposal(ctx sdk.Context, accountAddress sdk.AccAddress, c
 
 func (k Keeper) GetVote(ctx sdk.Context, id types.ProposalID, voter sdk.AccAddress) (types.Vote, error) {
 	var v types.Vote
-	return v, k.voteTable.GetOne(ctx, types.Vote{Proposal: id, Voter: voter}.NaturalKey(), &v)
+	return v, k.voteTable.GetOne(ctx, types.Vote{ProposalId: id, Voter: voter}.NaturalKey(), &v)
 }

@@ -155,13 +155,13 @@ func (s serverImpl) CreateProposal(goCtx context.Context, req *types.MsgCreatePr
 
 	// TODO: add event?
 
-	return &types.MsgCreateProposalResponse{Proposal: proposalID}, nil
+	return &types.MsgCreateProposalResponse{ProposalId: proposalID}, nil
 }
 
 func (s serverImpl) Vote(goCtx context.Context, req *types.MsgVoteRequest) (*types.MsgVoteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := s.Keeper.Vote(ctx, req.Proposal, req.Voters, req.Choice, req.Comment); err != nil {
+	if err := s.Keeper.Vote(ctx, req.ProposalId, req.Voters, req.Choice, req.Comment); err != nil {
 		return nil, err
 	}
 
@@ -173,7 +173,7 @@ func (s serverImpl) Vote(goCtx context.Context, req *types.MsgVoteRequest) (*typ
 func (s serverImpl) Exec(goCtx context.Context, req *types.MsgExecRequest) (*types.MsgExecResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if err := s.Keeper.ExecProposal(ctx, req.Proposal); err != nil {
+	if err := s.Keeper.ExecProposal(ctx, req.ProposalId); err != nil {
 		return nil, err
 	}
 

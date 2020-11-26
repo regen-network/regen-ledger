@@ -200,7 +200,7 @@ func (g GroupAccountMetadata) UnpackInterfaces(unpacker codectypes.AnyUnpacker) 
 
 func (v Vote) NaturalKey() []byte {
 	result := make([]byte, 8, 8+len(v.Voter))
-	copy(result[0:8], v.Proposal.Bytes())
+	copy(result[0:8], v.ProposalId.Bytes())
 	result = append(result, v.Voter...)
 	return result
 }
@@ -214,7 +214,7 @@ func (v Vote) ValidateBasic() error {
 	if err := sdk.VerifyAddressFormat(v.Voter); err != nil {
 		return sdkerrors.Wrap(err, "voter")
 	}
-	if v.Proposal == 0 {
+	if v.ProposalId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "proposal")
 	}
 	if v.Choice == Choice_CHOICE_UNSPECIFIED {
