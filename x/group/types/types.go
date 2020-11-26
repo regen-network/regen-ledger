@@ -154,9 +154,7 @@ func NewGroupAccountMetadata(groupAccount sdk.AccAddress, group GroupID, admin s
 }
 
 func (g GroupAccountMetadata) GetDecisionPolicy() DecisionPolicy {
-	cached := g.DecisionPolicy.GetCachedValue()
-	decisionPolicy, ok := cached.(DecisionPolicy)
-	// decisionPolicy, ok := g.DecisionPolicy.GetCachedValue().(DecisionPolicy)
+	decisionPolicy, ok := g.DecisionPolicy.GetCachedValue().(DecisionPolicy)
 	if !ok {
 		return nil
 	}
