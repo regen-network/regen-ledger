@@ -81,11 +81,10 @@ func (c Condition) Validate() error {
 }
 
 func (c Condition) MarshalJSON() ([]byte, error) {
-	var serialized string
-	if c != nil {
-		serialized = c.String()
+	if c == nil {
+		return []byte(`""`), nil
 	}
-	return json.Marshal(serialized)
+	return json.Marshal(c.String())
 }
 
 func (c *Condition) UnmarshalJSON(raw []byte) error {
