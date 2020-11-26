@@ -8,7 +8,7 @@ option go_package = "github.com/regen-network/regen-ledger/x/group/types";
 message EventCreateGroup {
 
   // group is the unique ID of the group.
-  string group = 1;
+  string group_id = 1;
 
   // admin is the admin address of the group.
   string admin = 2;
@@ -18,7 +18,7 @@ message EventCreateGroup {
 message EventUpdateGroup {
 
   // group is the unique ID of the group.
-  string group = 1;
+  string group_id = 1;
 
   // admin is the admin address of the group.
   string admin = 2;

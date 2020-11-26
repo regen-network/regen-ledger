@@ -479,8 +479,8 @@ func (m *GroupAccountMetadata) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GroupAccountMetadata proto.InternalMessageInfo
 
-// Proposal defines the core field members of a group proposal.
-// Any member of a group can submit a proposal for a group account to decide upon.
+// Proposal defines a group proposal. Any member of a group can submit a proposal
+// for a group account to decide upon.
 // A proposal consists of a set of `sdk.Msg`s that will be executed if the proposal
 // passes as well as any comment associated with the proposal.
 type Proposal struct {

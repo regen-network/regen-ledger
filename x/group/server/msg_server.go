@@ -19,7 +19,7 @@ func (s serverImpl) CreateGroup(goCtx context.Context, req *types.MsgCreateGroup
 	}
 
 	groupIDStr := util.Uint64ToBase58Check(groupID.Uint64())
-	err = ctx.EventManager().EmitTypedEvent(&types.EventCreateGroup{Group: groupIDStr, Admin: req.Admin.String()})
+	err = ctx.EventManager().EmitTypedEvent(&types.EventCreateGroup{GroupId: groupIDStr, Admin: req.Admin.String()})
 	if err != nil {
 		return nil, err
 	}
@@ -196,7 +196,7 @@ func (s serverImpl) doUpdateGroup(ctx sdk.Context, req authNGroupReq, action act
 	}
 
 	groupIDStr := util.Uint64ToBase58Check(req.GetGroup().Uint64())
-	err = ctx.EventManager().EmitTypedEvent(&types.EventCreateGroup{Group: groupIDStr, Admin: req.GetAdmin().String()})
+	err = ctx.EventManager().EmitTypedEvent(&types.EventUpdateGroup{GroupId: groupIDStr, Admin: req.GetAdmin().String()})
 	if err != nil {
 		return err
 	}

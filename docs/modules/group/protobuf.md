@@ -74,7 +74,7 @@ EventCreateGroup is an event emitted when a group is created.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group | [string](#string) |  | group is the unique ID of the group. |
+| group_id | [string](#string) |  | group is the unique ID of the group. |
 | admin | [string](#string) |  | admin is the admin address of the group. |
 
 
@@ -106,7 +106,7 @@ EventUpdateGroup is an event emitted when a group is updated.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group | [string](#string) |  | group is the unique ID of the group. |
+| group_id | [string](#string) |  | group is the unique ID of the group. |
 | admin | [string](#string) |  | admin is the admin address of the group. |
 
 
@@ -272,8 +272,8 @@ non-zero power and a comment.
 <a name="regen.group.v1alpha1.Proposal"></a>
 
 ### Proposal
-Proposal defines the core field members of a group proposal.
-Any member of a group can submit a proposal for a group account to decide upon.
+Proposal defines a group proposal. Any member of a group can submit a proposal
+for a group account to decide upon.
 A proposal consists of a set of `sdk.Msg`s that will be executed if the proposal
 passes as well as any comment associated with the proposal.
 
