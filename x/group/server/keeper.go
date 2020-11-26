@@ -167,15 +167,15 @@ func (k Keeper) CreateGroup(ctx sdk.Context, admin sdk.AccAddress, members types
 	}
 
 	maxCommentSize := k.MaxCommentSize(ctx)
-	if len(comment) > maxCommentSize {
-		return 0, sdkerrors.Wrap(types.ErrMaxLimit, "group comment")
+	if err := assertCommentSize(comment, maxCommentSize, "group comment"); err != nil {
+		return 0, err
 	}
 
 	totalWeight := sdk.ZeroDec()
 	for i := range members {
 		m := members[i]
-		if len(m.Comment) > maxCommentSize {
-			return 0, sdkerrors.Wrap(types.ErrMaxLimit, "member comment")
+		if err := assertCommentSize(m.Comment, maxCommentSize, "member comment"); err != nil {
+			return 0, err
 		}
 		totalWeight = totalWeight.Add(m.Power)
 	}
@@ -233,10 +233,8 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 
 // CreateGroupAccount creates and persists a `GroupAccountMetadata`
 func (k Keeper) CreateGroupAccount(ctx sdk.Context, admin sdk.AccAddress, groupID types.GroupID, policy types.DecisionPolicy, comment string) (sdk.AccAddress, error) {
-	maxCommentSize := k.MaxCommentSize(ctx)
-	if len(comment) > maxCommentSize {
-		return nil, sdkerrors.Wrap(types.ErrMaxLimit,
-			"group account comment")
+	if err := assertCommentSize(comment, k.MaxCommentSize(ctx), "group account comment"); err != nil {
+		return nil, err
 	}
 
 	g, err := k.GetGroup(ctx, groupID)
@@ -292,9 +290,8 @@ func (k Keeper) GetGroupMembers(ctx sdk.Context, id types.GroupID) (orm.Iterator
 }
 
 func (k Keeper) Vote(ctx sdk.Context, id types.ProposalID, voters []sdk.AccAddress, choice types.Choice, comment string) error {
-	maxCommentSize := k.MaxCommentSize(ctx)
-	if len(comment) > maxCommentSize {
-		return sdkerrors.Wrap(types.ErrMaxLimit, "comment")
+	if err := assertCommentSize(comment, k.MaxCommentSize(ctx), "comment"); err != nil {
+		return err
 	}
 	if len(voters) == 0 {
 		return sdkerrors.Wrap(types.ErrEmpty, "voters")
@@ -453,9 +450,8 @@ func (k Keeper) GetProposal(ctx sdk.Context, id types.ProposalID) (types.Proposa
 }
 
 func (k Keeper) CreateProposal(ctx sdk.Context, accountAddress sdk.AccAddress, comment string, proposers []sdk.AccAddress, msgs []sdk.Msg) (types.ProposalID, error) {
-	maxCommentSize := k.MaxCommentSize(ctx)
-	if len(comment) > maxCommentSize {
-		return 0, sdkerrors.Wrap(types.ErrMaxLimit, "comment")
+	if err := assertCommentSize(comment, k.MaxCommentSize(ctx), "comment"); err != nil {
+		return 0, err
 	}
 
 	account, err := k.GetGroupAccount(ctx, accountAddress.Bytes())
@@ -539,4 +535,11 @@ func (k Keeper) CreateProposal(ctx sdk.Context, accountAddress sdk.AccAddress, c
 func (k Keeper) GetVote(ctx sdk.Context, id types.ProposalID, voter sdk.AccAddress) (types.Vote, error) {
 	var v types.Vote
 	return v, k.voteTable.GetOne(ctx, types.Vote{ProposalId: id, Voter: voter}.NaturalKey(), &v)
+}
+
+func assertCommentSize(comment string, maxCommentSize int, description string) error {
+	if len(comment) > maxCommentSize {
+		return sdkerrors.Wrap(types.ErrMaxLimit, description)
+	}
+	return nil
 }
