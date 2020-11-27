@@ -370,10 +370,10 @@ func doTally(ctx sdk.Context, p *types.Proposal, electorate types.GroupMetadata,
 	switch result, err := policy.Allow(p.VoteState, electorate.TotalWeight, ctx.BlockTime().Sub(submittedAt)); {
 	case err != nil:
 		return sdkerrors.Wrap(err, "policy execution")
-	case result == types.DecisionPolicyResult{Allow: true, Final: true}:
+	case result.Allow && result.Final:
 		p.Result = types.ProposalResultAccepted
 		p.Status = types.ProposalStatusClosed
-	case result == types.DecisionPolicyResult{Allow: false, Final: true}:
+	case !result.Allow && result.Final:
 		p.Result = types.ProposalResultRejected
 		p.Status = types.ProposalStatusClosed
 	}
