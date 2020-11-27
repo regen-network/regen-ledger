@@ -20,6 +20,7 @@ var (
 	// but it must not change during the lifetime of the kvstore
 	AddressLength = 20
 
+	// perm stands for permission and defines the format that a Condition should have.
 	// it must have (?s) flags, otherwise it errors when last section contains 0x20 (newline)
 	perm = regexp.MustCompile(`(?s)^([a-zA-Z0-9_\-]{3,8})/([a-zA-Z0-9_\-]{3,8})/(.+)$`)
 )
