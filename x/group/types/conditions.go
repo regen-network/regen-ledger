@@ -37,7 +37,7 @@ func NewCondition(ext, typ string, data []byte) Condition {
 	return append([]byte(pre), data...)
 }
 
-// Parse will extract the sections from the Condition bytes
+// Parse will extract the permission sections from the Condition bytes
 // and verify it is properly formatted
 func (c Condition) Parse() (string, string, []byte, error) {
 	chunks := perm.FindSubmatch(c)
