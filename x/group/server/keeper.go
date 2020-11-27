@@ -404,7 +404,7 @@ func (k Keeper) ExecProposal(ctx sdk.Context, id types.ProposalID) error {
 
 	if proposal.Status == types.ProposalStatusSubmitted {
 		if proposal.GroupAccountVersion != accountMetadata.Version {
-			proposal.Result = types.ProposalResultUndefined
+			proposal.Result = types.ProposalResultUnfinalized
 			proposal.Status = types.ProposalStatusAborted
 			return storeUpdates()
 		}
@@ -415,7 +415,7 @@ func (k Keeper) ExecProposal(ctx sdk.Context, id types.ProposalID) error {
 		}
 
 		if electorate.Version != proposal.GroupVersion {
-			proposal.Result = types.ProposalResultUndefined
+			proposal.Result = types.ProposalResultUnfinalized
 			proposal.Status = types.ProposalStatusAborted
 			return storeUpdates()
 		}
@@ -510,7 +510,7 @@ func (k Keeper) CreateProposal(ctx sdk.Context, accountAddress sdk.AccAddress, c
 		SubmittedAt:         *blockTime,
 		GroupVersion:        g.Version,
 		GroupAccountVersion: account.Version,
-		Result:              types.ProposalResultUndefined,
+		Result:              types.ProposalResultUnfinalized,
 		Status:              types.ProposalStatusSubmitted,
 		ExecutorResult:      types.ProposalExecutorResultNotRun,
 		Timeout:             *endTime,

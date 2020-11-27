@@ -830,7 +830,7 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 			s.Assert().Equal(uint64(1), proposal.GroupVersion)
 			s.Assert().Equal(uint64(1), proposal.GroupAccountVersion)
 			s.Assert().Equal(types.ProposalStatusSubmitted, proposal.Status)
-			s.Assert().Equal(types.ProposalResultUndefined, proposal.Result)
+			s.Assert().Equal(types.ProposalResultUnfinalized, proposal.Result)
 			s.Assert().Equal(types.Tally{
 				YesCount:     sdk.ZeroDec(),
 				NoCount:      sdk.ZeroDec(),
@@ -890,7 +890,7 @@ func (s *IntegrationTestSuite) TestVote() {
 				VetoCount:    sdk.ZeroDec(),
 			},
 			expProposalStatus: types.ProposalStatusSubmitted,
-			expResult:         types.ProposalResultUndefined,
+			expResult:         types.ProposalResultUnfinalized,
 		},
 		"vote no": {
 			req: &types.MsgVoteRequest{
@@ -905,7 +905,7 @@ func (s *IntegrationTestSuite) TestVote() {
 				VetoCount:    sdk.ZeroDec(),
 			},
 			expProposalStatus: types.ProposalStatusSubmitted,
-			expResult:         types.ProposalResultUndefined,
+			expResult:         types.ProposalResultUnfinalized,
 		},
 		"vote abstain": {
 			req: &types.MsgVoteRequest{
@@ -920,7 +920,7 @@ func (s *IntegrationTestSuite) TestVote() {
 				VetoCount:    sdk.ZeroDec(),
 			},
 			expProposalStatus: types.ProposalStatusSubmitted,
-			expResult:         types.ProposalResultUndefined,
+			expResult:         types.ProposalResultUnfinalized,
 		},
 		"vote veto": {
 			req: &types.MsgVoteRequest{
@@ -935,7 +935,7 @@ func (s *IntegrationTestSuite) TestVote() {
 				VetoCount:    sdk.OneDec(),
 			},
 			expProposalStatus: types.ProposalStatusSubmitted,
-			expResult:         types.ProposalResultUndefined,
+			expResult:         types.ProposalResultUnfinalized,
 		},
 		"apply decision policy early": {
 			req: &types.MsgVoteRequest{
@@ -1273,7 +1273,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 				return myProposalID
 			},
 			expProposalStatus: types.ProposalStatusSubmitted,
-			expProposalResult: types.ProposalResultUndefined,
+			expProposalResult: types.ProposalResultUnfinalized,
 			expExecutorResult: types.ProposalExecutorResultNotRun,
 		},
 		"existing proposal required": {
@@ -1324,7 +1324,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 				return myProposalID
 			},
 			expProposalStatus: types.ProposalStatusAborted,
-			expProposalResult: types.ProposalResultUndefined,
+			expProposalResult: types.ProposalResultUnfinalized,
 			expExecutorResult: types.ProposalExecutorResultNotRun,
 		},
 		"with group account modified before tally": {
@@ -1341,7 +1341,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 				return myProposalID
 			},
 			expProposalStatus: types.ProposalStatusAborted,
-			expProposalResult: types.ProposalResultUndefined,
+			expProposalResult: types.ProposalResultUnfinalized,
 			expExecutorResult: types.ProposalExecutorResultNotRun,
 		},
 		"prevent double execution when successful": {

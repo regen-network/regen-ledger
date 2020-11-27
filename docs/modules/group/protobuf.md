@@ -390,7 +390,7 @@ Result defines types of proposal results.
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | RESULT_UNSPECIFIED | 0 | An empty value is invalid and not allowed |
-| RESULT_UNDEFINED | 1 | Until a final tally has happened the status is undefined |
+| RESULT_UNFINALIZED | 1 | Until a final tally has happened the status is unfinalized |
 | RESULT_ACCEPTED | 2 | Final result of the tally |
 | RESULT_REJECTED | 3 | Final result of the tally |
 

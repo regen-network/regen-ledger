@@ -183,8 +183,8 @@ message Proposal {
         // An empty value is invalid and not allowed
         RESULT_UNSPECIFIED = 0 [(gogoproto.enumvalue_customname) = "ProposalResultInvalid"];
         
-        // Until a final tally has happened the status is undefined
-        RESULT_UNDEFINED = 1 [(gogoproto.enumvalue_customname) = "ProposalResultUndefined"];
+        // Until a final tally has happened the status is unfinalized
+        RESULT_UNFINALIZED = 1 [(gogoproto.enumvalue_customname) = "ProposalResultUnfinalized"];
        
         // Final result of the tally
         RESULT_ACCEPTED = 2 [(gogoproto.enumvalue_customname) = "ProposalResultAccepted"];
