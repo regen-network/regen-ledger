@@ -5,6 +5,4 @@ package regen.data.v1alpha1;
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // TODO
-message GenesisState {
-
-}
+message GenesisState {}

@@ -25,41 +25,40 @@ service Query {
 // QueryByCidRequest is the Query/ByCid request type.
 message QueryByCidRequest {
 
-    // cid is a Content Identifier for the data corresponding to the IPFS CID
-    // specification: https://github.com/multiformats/cid.
-    bytes cid = 1;
+  // cid is a Content Identifier for the data corresponding to the IPFS CID
+  // specification: https://github.com/multiformats/cid.
+  bytes cid = 1;
 }
 
 // QueryByCidResponse is the Query/ByCid response type.
 message QueryByCidResponse {
 
-    // timestamp is the timestamp of the block at which the data was anchored.
-    google.protobuf.Timestamp timestamp = 1;
+  // timestamp is the timestamp of the block at which the data was anchored.
+  google.protobuf.Timestamp timestamp = 1;
 
-    // signers are the addresses of the accounts which have signed the data.
-    repeated string signers = 2;
+  // signers are the addresses of the accounts which have signed the data.
+  repeated string signers = 2;
 
-    // content is the content of the data, if it was stored on-chain.
-    bytes content = 3;
+  // content is the content of the data, if it was stored on-chain.
+  bytes content = 3;
 }
-
 
 // QueryBySignerRequest is the Query/BySigner request type.
 message QueryBySignerRequest {
 
-    // signer is the address of the signer to query by.
-    string signer = 1;
+  // signer is the address of the signer to query by.
+  string signer = 1;
 
-    // pagination is the PageRequest to use for pagination.
-    cosmos.base.query.v1beta1.PageRequest pagination = 2;
+  // pagination is the PageRequest to use for pagination.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 // QueryBySignerResponse is the Query/BySigner response type.
 message QueryBySignerResponse {
 
-    // cids are in the CIDs returned in this page of the query.
-    repeated bytes cids = 1;
+  // cids are in the CIDs returned in this page of the query.
+  repeated bytes cids = 1;
 
-    // pagination is the pagination PageResponse.
-    cosmos.base.query.v1beta1.PageResponse pagination = 2;
+  // pagination is the pagination PageResponse.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
