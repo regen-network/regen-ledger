@@ -17,5 +17,5 @@ type GenesisState map[string]json.RawMessage
 // NewDefaultGenesisState generates the default state for regen.
 func NewDefaultGenesisState() GenesisState {
 	encCfg := MakeEncodingConfig()
-	return Modules.DefaultGenesis(encCfg.Marshaler)
+	return ModuleBasics.DefaultGenesis(encCfg.Marshaler)
 }

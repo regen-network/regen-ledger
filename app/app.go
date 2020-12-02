@@ -104,7 +104,7 @@ var (
 	// The ModuleBasicManager is in charge of setting up basic,
 	// non-dependant module elements, such as codec registration
 	// and genesis verification.
-	Modules = module.NewBasicManager(
+	ModuleBasics = module.NewBasicManager(
 		auth.AppModuleBasic{},
 		// genaccounts.AppModuleBasic{},
 		genutil.AppModuleBasic{},
@@ -350,7 +350,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	/* New Module Wiring START */
 	newModuleManager := servermodule.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
 
-	err := newModuleManager.RegisterModules(Modules)
+	err := newModuleManager.RegisterModules(ModuleBasics)
 	if err != nil {
 		panic(err)
 	}
@@ -590,8 +590,8 @@ func (app *RegenApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIC
 	rpc.RegisterRoutes(clientCtx, apiSvr.Router)
 	authrest.RegisterTxRoutes(clientCtx, apiSvr.Router)
 
-	Modules.RegisterRESTRoutes(clientCtx, apiSvr.Router)
-	Modules.RegisterGRPCGatewayRoutes(apiSvr.ClientCtx, apiSvr.GRPCRouter)
+	ModuleBasics.RegisterRESTRoutes(clientCtx, apiSvr.Router)
+	ModuleBasics.RegisterGRPCGatewayRoutes(apiSvr.ClientCtx, apiSvr.GRPCRouter)
 
 	// register swagger API from root so that other applications can override easily
 	if apiConfig.Swagger {
