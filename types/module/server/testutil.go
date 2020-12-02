@@ -2,52 +2,109 @@ package server
 
 import (
 	"context"
+	"fmt"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/cosmos/cosmos-sdk/store"
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	module2 "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/regen-network/regen-ledger/testutil/server"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
+	"google.golang.org/grpc"
 	"testing"
 )
 
 type fixtureFactory struct {
-	modules map[string]Module
+	t       *testing.T
+	modules module2.BasicManager
 	signers []sdk.AccAddress
 }
 
 var _ server.FixtureFactory = fixtureFactory{}
 
-func (mm fixtureFactory) Setup() server.Fixture {
-	db := dbm.NewMemDB()
+func NewFixtureFactory(t *testing.T, numSigners int, modules module2.BasicManager) server.FixtureFactory {
+	signers := makeTestAddresses(numSigners)
+	return fixtureFactory{
+		t:       t,
+		modules: modules,
+		signers: signers,
+	}
+}
 
-	ms := store.NewCommitMultiStore(db)
-	err := ms.LoadLatestVersion()
-	require.NoError(mm.t, err)
+func makeTestAddresses(count int) []sdk.AccAddress {
+	addrs := make([]sdk.AccAddress, count)
+	for i := 0; i < count; i++ {
+		_, _, addrs[i] = testdata.KeyTestPubAddr()
+	}
+	return addrs
+}
 
-	ctx := sdk.WrapSDKContext(sdk.NewContext(ms, tmproto.Header{}, false, log.NewNopLogger()))
-
-	ir := types.NewInterfaceRegistry()
-	cdc := codec.NewProtoCodec(ir)
-
-	router := &router{handlers: map[string]handler{}}
+func (ff fixtureFactory) Setup() server.Fixture {
+	registry := types.NewInterfaceRegistry()
+	baseApp := baseapp.NewBaseApp("test", log.NewNopLogger(), dbm.NewMemDB(), nil)
+	baseApp.MsgServiceRouter().SetInterfaceRegistry(registry)
+	baseApp.GRPCQueryRouter().SetInterfaceRegistry(registry)
+	cdc := codec.NewProtoCodec(registry)
+	mm := NewManager(baseApp, cdc)
+	err := mm.RegisterModules(ff.modules)
+	require.NoError(ff.t, err)
+	err = mm.CompleteInitialization()
+	require.NoError(ff.t, err)
+	err = baseApp.LoadLatestVersion()
+	require.NoError(ff.t, err)
 
 	return fixture{
-		router:  router,
-		t:       nil,
-		signers: nil,
-		ctx:     nil,
+		baseApp: baseApp,
+		router:  mm.router,
+		t:       ff.t,
+		signers: ff.signers,
 	}
 }
 
 type fixture struct {
+	baseApp *baseapp.BaseApp
 	router  *router
 	t       *testing.T
 	signers []sdk.AccAddress
-	ctx     context.Context
 }
 
-var _
+func (f fixture) Context() context.Context {
+	return sdk.WrapSDKContext(f.baseApp.NewUncachedContext(false, tmproto.Header{}))
+}
+
+func (f fixture) TxConn() grpc.ClientConnInterface {
+	return testKey{invokerFactory: f.router.testTxFactory(f.signers)}
+}
+
+func (f fixture) QueryConn() grpc.ClientConnInterface {
+	return testKey{invokerFactory: f.router.testQueryFactory()}
+}
+
+func (f fixture) Signers() []sdk.AccAddress {
+	return f.signers
+}
+
+func (f fixture) Teardown() {}
+
+type testKey struct {
+	invokerFactory InvokerFactory
+}
+
+var _ grpc.ClientConnInterface = testKey{}
+
+func (t testKey) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, _ ...grpc.CallOption) error {
+	invoker, err := t.invokerFactory(CallInfo{Method: method})
+	if err != nil {
+		return err
+	}
+
+	return invoker(ctx, args, reply)
+}
+
+func (t testKey) NewStream(context.Context, *grpc.StreamDesc, string, ...grpc.CallOption) (grpc.ClientStream, error) {
+	return nil, fmt.Errorf("unsupported")
+}

@@ -2,6 +2,7 @@ package module
 
 import (
 	"encoding/json"
+	"github.com/regen-network/regen-ledger/x/data/client"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -13,9 +14,8 @@ import (
 
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/client"
-	"github.com/regen-network/regen-ledger/x/ecocredit/server"
+	"github.com/regen-network/regen-ledger/x/data"
+	"github.com/regen-network/regen-ledger/x/data/server"
 )
 
 type Module struct{}
@@ -25,11 +25,11 @@ var _ servermodule.Module = Module{}
 var _ climodule.Module = Module{}
 
 func (a Module) Name() string {
-	return "ecocredit"
+	return "data"
 }
 
 func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
-	ecocredit.RegisterTypes(registry)
+	data.RegisterTypes(registry)
 }
 
 func (a Module) RegisterServices(configurator servermodule.Configurator) {

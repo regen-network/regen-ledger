@@ -6,10 +6,17 @@ import (
 )
 
 type ModuleBase interface {
-	RegisterTypes(registry types.InterfaceRegistry)
+	Name() string
+	RegisterInterfaces(types.InterfaceRegistry)
 }
 
-type ModuleMap map[string]ModuleBase
+type Modules []ModuleBase
+
+func (mm Modules) RegisterInterfaces(registry types.InterfaceRegistry) {
+	for _, m := range mm {
+		m.RegisterInterfaces(registry)
+	}
+}
 
 type ModuleID struct {
 	ModuleName string
@@ -18,10 +25,4 @@ type ModuleID struct {
 
 func (m ModuleID) Address() []byte {
 	return regentypes.AddressHash(m.ModuleName, m.Path)
-}
-
-func (mm ModuleMap) RegisterTypes(registry types.InterfaceRegistry) {
-	for _, m := range mm {
-		m.RegisterTypes(registry)
-	}
 }

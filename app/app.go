@@ -2,7 +2,6 @@ package app
 
 import (
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
-	"github.com/regen-network/regen-ledger/x/data/server"
 	"io"
 	"math/big"
 	"net/http"
@@ -89,7 +88,8 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
-	newmodule "github.com/regen-network/regen-ledger/types/module"
+
+	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 )
 
@@ -104,7 +104,7 @@ var (
 	// The ModuleBasicManager is in charge of setting up basic,
 	// non-dependant module elements, such as codec registration
 	// and genesis verification.
-	ModuleBasics = module.NewBasicManager(
+	Modules = module.NewBasicManager(
 		auth.AppModuleBasic{},
 		// genaccounts.AppModuleBasic{},
 		genutil.AppModuleBasic{},
@@ -126,12 +126,9 @@ var (
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		wasm.AppModuleBasic{},
-		ecocredit.AppModuleBasic{},
+		ecocredit.Module{},
+		data.Module{},
 	)
-
-	NewModules = newmodule.ModuleMap{
-		server.DefaultModuleName: server.Module{},
-	}
 
 	// module account permissions
 	maccPerms = map[string][]string{
@@ -218,7 +215,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		ecocredit.StoreKey, wasm.StoreKey,
+		wasm.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -350,11 +347,19 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		&stakingKeeper, govRouter,
 	)
 
+	/* New Module Wiring START */
 	newModuleManager := servermodule.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
-	err := newModuleManager.RegisterModules(NewModules)
+
+	err := newModuleManager.RegisterModules(Modules)
 	if err != nil {
 		panic(err)
 	}
+
+	err = newModuleManager.CompleteInitialization()
+	if err != nil {
+		panic(err)
+	}
+	/* New Module Wiring END */
 
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
@@ -377,7 +382,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		wasm.NewAppModule(app.wasmKeeper),
-		ecocredit.NewAppModule(keys[ecocredit.StoreKey]),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -586,8 +590,8 @@ func (app *RegenApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIC
 	rpc.RegisterRoutes(clientCtx, apiSvr.Router)
 	authrest.RegisterTxRoutes(clientCtx, apiSvr.Router)
 
-	ModuleBasics.RegisterRESTRoutes(clientCtx, apiSvr.Router)
-	ModuleBasics.RegisterGRPCGatewayRoutes(apiSvr.ClientCtx, apiSvr.GRPCRouter)
+	Modules.RegisterRESTRoutes(clientCtx, apiSvr.Router)
+	Modules.RegisterGRPCGatewayRoutes(apiSvr.ClientCtx, apiSvr.GRPCRouter)
 
 	// register swagger API from root so that other applications can override easily
 	if apiConfig.Swagger {

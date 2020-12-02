@@ -31,7 +31,7 @@ type Fixture interface {
 	Context() context.Context
 
 	// TxConn is the grpc.ClientConnInterface to be used when constructing Msg service clients.
-	TxConn(address sdk.AccAddress) grpc.ClientConnInterface
+	TxConn() grpc.ClientConnInterface
 
 	// QueryConn is the grpc.ClientConnInterface to be used when constructing Query service clients.
 	QueryConn() grpc.ClientConnInterface

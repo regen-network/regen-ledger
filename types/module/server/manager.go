@@ -5,15 +5,18 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	gogogrpc "github.com/gogo/protobuf/grpc"
-	"github.com/regen-network/regen-ledger/types/module"
+	"reflect"
 )
 
 type Manager struct {
-	baseApp *baseapp.BaseApp
-	cdc     *codec.ProtoCodec
-	keys    map[string]ModuleKey
-	router  *router
+	sdkmodule.Manager
+	baseApp          *baseapp.BaseApp
+	cdc              *codec.ProtoCodec
+	keys             map[string]ModuleKey
+	router           *router
+	requiredServices map[reflect.Type]bool
 }
 
 func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
@@ -21,25 +24,36 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 		baseApp: baseApp,
 		cdc:     cdc,
 		keys:    map[string]ModuleKey{},
-		router:  &router{handlers: map[string]handler{}},
+		router: &router{
+			handlers:         map[string]handler{},
+			providedServices: map[reflect.Type]bool{},
+		},
 	}
 }
 
-func (mm *Manager) RegisterModules(modules module.ModuleMap) error {
+func (mm *Manager) RegisterModules(modules sdkmodule.BasicManager) error {
 	for _, mod := range modules {
-		mod.RegisterTypes(mm.cdc.InterfaceRegistry())
-	}
-
-	for name, mod := range modules {
 		// check if we actually have a server module, otherwise skip
 		serverMod, ok := mod.(Module)
 		if !ok {
 			continue
 		}
 
+		serverMod.RegisterInterfaces(mm.cdc.InterfaceRegistry())
+	}
+
+	for _, mod := range modules {
+		// check if we actually have a server module, otherwise skip
+		serverMod, ok := mod.(Module)
+		if !ok {
+			continue
+		}
+
+		name := serverMod.Name()
+
 		invokerFactory := mm.router.invokerFactory(name)
 
-		key := RootModuleKey{
+		key := &rootModuleKey{
 			moduleName:     name,
 			invokerFactory: invokerFactory,
 		}
@@ -63,40 +77,61 @@ func (mm *Manager) RegisterModules(modules module.ModuleMap) error {
 			commitWrites: true,
 		}
 
-		cfg := configurator{
-			msgServer:   msgRegistrar,
-			queryServer: queryRegistrar,
-			key:         key,
-			cdc:         mm.cdc,
+		cfg := &configurator{
+			msgServer:        msgRegistrar,
+			queryServer:      queryRegistrar,
+			key:              key,
+			cdc:              mm.cdc,
+			requiredServices: map[reflect.Type]bool{},
 		}
 
 		serverMod.RegisterServices(cfg)
+
+		for typ := range cfg.requiredServices {
+			mm.requiredServices[typ] = true
+		}
+	}
+
+	return nil
+}
+
+func (mm *Manager) CompleteInitialization() error {
+	for typ := range mm.requiredServices {
+		if _, found := mm.router.providedServices[typ]; !found {
+			return fmt.Errorf("initialization error, service %s was required, but not provided", typ)
+		}
+
 	}
 
 	return nil
 }
 
 type configurator struct {
-	msgServer   gogogrpc.Server
-	queryServer gogogrpc.Server
-	key         RootModuleKey
-	cdc         codec.BinaryMarshaler
+	msgServer        gogogrpc.Server
+	queryServer      gogogrpc.Server
+	key              *rootModuleKey
+	cdc              codec.BinaryMarshaler
+	requiredServices map[reflect.Type]bool
 }
 
-var _ Configurator = configurator{}
+var _ Configurator = &configurator{}
 
-func (c configurator) MsgServer() gogogrpc.Server {
+func (c *configurator) MsgServer() gogogrpc.Server {
 	return c.msgServer
 }
 
-func (c configurator) QueryServer() gogogrpc.Server {
+func (c *configurator) QueryServer() gogogrpc.Server {
 	return c.queryServer
 }
 
-func (c configurator) ModuleKey() RootModuleKey {
+func (c *configurator) ModuleKey() RootModuleKey {
 	return c.key
 }
 
-func (c configurator) BinaryMarshaler() codec.BinaryMarshaler {
+func (c *configurator) BinaryMarshaler() codec.BinaryMarshaler {
 	return c.cdc
+}
+
+func (c *configurator) RequireServer(serverInterface interface{}) {
+	c.requiredServices[reflect.TypeOf(serverInterface)] = true
 }

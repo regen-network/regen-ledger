@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/regen-network/regen-ledger/types/module"
 )
@@ -9,6 +10,7 @@ import (
 type Module interface {
 	module.ModuleBase
 
+	RegisterInterfaces(registry types.InterfaceRegistry)
 	RegisterServices(Configurator)
 }
 
@@ -17,4 +19,5 @@ type Configurator interface {
 
 	ModuleKey() RootModuleKey
 	BinaryMarshaler() codec.BinaryMarshaler
+	RequireServer(interface{})
 }
