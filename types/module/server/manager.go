@@ -27,6 +27,7 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 		router: &router{
 			handlers:         map[string]handler{},
 			providedServices: map[reflect.Type]bool{},
+			antiReentryMap:   map[string]bool{},
 		},
 	}
 }
@@ -69,12 +70,14 @@ func (mm *Manager) RegisterModules(modules sdkmodule.BasicManager) error {
 			router:       mm.router,
 			baseServer:   mm.baseApp.MsgServiceRouter(),
 			commitWrites: true,
+			moduleName:   name,
 		}
 
 		queryRegistrar := registrar{
 			router:       mm.router,
 			baseServer:   mm.baseApp.GRPCQueryRouter(),
 			commitWrites: true,
+			moduleName:   name,
 		}
 
 		cfg := &configurator{

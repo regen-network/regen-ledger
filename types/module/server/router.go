@@ -14,25 +14,28 @@ import (
 type handler struct {
 	f            func(ctx context.Context, args, reply interface{}) error
 	commitWrites bool
+	moduleName   string
 }
 
 type router struct {
 	handlers         map[string]handler
 	providedServices map[reflect.Type]bool
+	antiReentryMap   map[string]bool
 }
 
 type registrar struct {
 	*router
 	baseServer   gogogrpc.Server
 	commitWrites bool
+	moduleName   string
 }
 
 var _ gogogrpc.Server = registrar{}
 
-func (t registrar) RegisterService(sd *grpc.ServiceDesc, ss interface{}) {
-	t.providedServices[reflect.TypeOf(sd.HandlerType)] = true
+func (r registrar) RegisterService(sd *grpc.ServiceDesc, ss interface{}) {
+	r.providedServices[reflect.TypeOf(sd.HandlerType)] = true
 
-	t.baseServer.RegisterService(sd, ss)
+	r.baseServer.RegisterService(sd, ss)
 
 	for _, method := range sd.Methods {
 		fqName := fmt.Sprintf("/%s/%s", sd.ServiceName, method.MethodName)
@@ -52,22 +55,32 @@ func (t registrar) RegisterService(sd *grpc.ServiceDesc, ss interface{}) {
 			}
 			return nil
 		}
-		t.handlers[fqName] = handler{
+		r.handlers[fqName] = handler{
 			f:            f,
-			commitWrites: t.commitWrites,
+			commitWrites: r.commitWrites,
+			moduleName:   r.moduleName,
 		}
 	}
 }
 
-func (t router) invoker(methodName string, writeCondition func(sdk.MsgRequest) error) (Invoker, error) {
-	handler, found := t.handlers[methodName]
+func (rtr *router) invoker(methodName string, writeCondition func(sdk.MsgRequest) error) (Invoker, error) {
+	handler, found := rtr.handlers[methodName]
 	if !found {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("cannot find method named %s", methodName))
 	}
 
+	moduleName := handler.moduleName
+
 	if writeCondition != nil && handler.commitWrites {
 		// msg handler
 		return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
+			if _, alreadyOnCallStack := rtr.antiReentryMap[moduleName]; alreadyOnCallStack {
+				return fmt.Errorf("re-entrant module calls not allowed for security reasons! module %s is already on the call stack", moduleName)
+			}
+
+			rtr.antiReentryMap[moduleName] = true
+			defer delete(rtr.antiReentryMap, moduleName)
+
 			msgReq, ok := request.(sdk.MsgRequest)
 			if !ok {
 				return fmt.Errorf("expected %T, got %T", (*sdk.MsgRequest)(nil), request)
@@ -121,7 +134,7 @@ func (t router) invoker(methodName string, writeCondition func(sdk.MsgRequest) e
 	}
 }
 
-func (t router) invokerFactory(moduleName string) InvokerFactory {
+func (rtr *router) invokerFactory(moduleName string) InvokerFactory {
 	return func(callInfo CallInfo) (Invoker, error) {
 		moduleId := callInfo.Caller
 		if moduleName != moduleId.ModuleName {
@@ -145,18 +158,18 @@ func (t router) invokerFactory(moduleName string) InvokerFactory {
 			return nil
 		}
 
-		return t.invoker(callInfo.Method, writeCondition)
+		return rtr.invoker(callInfo.Method, writeCondition)
 	}
 }
 
-func (t router) testTxFactory(signers []sdk.AccAddress) InvokerFactory {
+func (rtr *router) testTxFactory(signers []sdk.AccAddress) InvokerFactory {
 	signerMap := map[string]bool{}
 	for _, signer := range signers {
 		signerMap[signer.String()] = true
 	}
 
 	return func(callInfo CallInfo) (Invoker, error) {
-		return t.invoker(callInfo.Method, func(req sdk.MsgRequest) error {
+		return rtr.invoker(callInfo.Method, func(req sdk.MsgRequest) error {
 			for _, signer := range req.GetSigners() {
 				if _, found := signerMap[signer.String()]; !found {
 					return sdkerrors.ErrUnauthorized
@@ -167,8 +180,8 @@ func (t router) testTxFactory(signers []sdk.AccAddress) InvokerFactory {
 	}
 }
 
-func (t router) testQueryFactory() InvokerFactory {
+func (rtr *router) testQueryFactory() InvokerFactory {
 	return func(callInfo CallInfo) (Invoker, error) {
-		return t.invoker(callInfo.Method, nil)
+		return rtr.invoker(callInfo.Method, nil)
 	}
 }
