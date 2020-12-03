@@ -17,8 +17,7 @@ func (s serverImpl) CreateDenom(goCtx context.Context, req *bank.MsgCreateDenomR
 	namespace := req.DenomNamespace
 	denom := fmt.Sprintf("%s/%s", namespace, req.DenomName)
 	store := ctx.KVStore(s.key)
-	minterKey := DenomAdminKey(denom)
-	if store.Has(minterKey) {
+	if store.Has(SupplyKey(denom)) {
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "denom %s already exists", denom)
 	}
 
@@ -27,21 +26,21 @@ func (s serverImpl) CreateDenom(goCtx context.Context, req *bank.MsgCreateDenomR
 		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "denom namespace %s has no authorized admin", namespace)
 	}
 
-	admin, err := sdk.AccAddressFromBech32(req.AdminAddress)
+	reqNamespaceAdmin, err := sdk.AccAddressFromBech32(req.NamespaceAdmin)
 	if err != nil {
 		return nil, err
 	}
 
-	if !bytes.Equal(admin, namespaceAdmin.Address()) {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not admin for denom namespace %s", admin, namespace)
+	if !bytes.Equal(reqNamespaceAdmin, namespaceAdmin.Address()) {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not admin for denom namespace %s", reqNamespaceAdmin, namespace)
 	}
 
-	minter, err := sdk.AccAddressFromBech32(req.MinterAddress)
+	admin, err := sdk.AccAddressFromBech32(req.DenomAdmin)
 	if err != nil {
 		return nil, err
 	}
 
-	store.Set(minterKey, minter)
+	store.Set(DenomAdminKey(denom), admin)
 
 	return &bank.MsgCreateDenomResponse{Denom: denom}, nil
 }
@@ -191,15 +190,15 @@ func (s serverImpl) SetPrecision(goCtx context.Context, req *bank.MsgSetPrecisio
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.key)
 
-	minter, err := sdk.AccAddressFromBech32(req.Minter)
+	denomAdmin, err := sdk.AccAddressFromBech32(req.DenomAdmin)
 	if err != nil {
 		return nil, err
 	}
 
 	denom := req.Denom
-	allowedMinter := store.Get(DenomAdminKey(denom))
-	if !bytes.Equal(minter, allowedMinter) {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to mint coins for denom %s", minter, denom)
+	allowedAdmin := store.Get(DenomAdminKey(denom))
+	if !bytes.Equal(denomAdmin, allowedAdmin) {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to mint coins for denom %s", denomAdmin, denom)
 	}
 
 	key := MaxDecimalPlacesKey(denom)

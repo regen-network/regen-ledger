@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/regen-network/regen-ledger/util/storehelpers"
 	"github.com/regen-network/regen-ledger/x/bank"
 
@@ -55,11 +56,26 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	retiredSupply := apd.New(0, 0)
 	var maxDecimalPlaces uint32 = 0
 
+	aclRule, err := types.NewAnyWithValue(&bank.ACLRule{AllowedAddresses: []string{s.moduleAddr.String()}})
+	if err != nil {
+		return nil, err
+	}
+
+	sendRule, err := types.NewAnyWithValue(&bank.BooleanRule{Enabled: true})
+	if err != nil {
+		return nil, err
+	}
+
 	res, err := s.bankMsgClient.CreateDenom(goCtx, &bank.MsgCreateDenomRequest{
-		AdminAddress:   s.moduleAddr.String(),
-		DenomNamespace: "eco",
-		DenomName:      fmt.Sprintf("%s/%s", classID, uint64ToBase58Checked(batchID)),
-		MinterAddress:  s.moduleAddr.String(),
+		NamespaceAdmin:   s.moduleAddr.String(),
+		DenomNamespace:   "eco",
+		DenomName:        fmt.Sprintf("%s/%s", classID, uint64ToBase58Checked(batchID)),
+		DenomAdmin:       s.moduleAddr.String(),
+		MintRule:         aclRule,
+		SendRule:         sendRule,
+		MoveRule:         aclRule,
+		BurnRule:         aclRule,
+		MaxDecimalPlaces: 0,
 	})
 	if err != nil {
 		return nil, err
@@ -143,7 +159,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 
 	if maxDecimalPlaces > mintRes.MaxDecimalPlaces {
 		_, err := s.bankMsgClient.SetPrecision(goCtx, &bank.MsgSetPrecisionRequest{
-			Minter:           s.moduleAddr.String(),
+			DenomAdmin:       s.moduleAddr.String(),
 			Denom:            batchDenom,
 			MaxDecimalPlaces: maxDecimalPlaces,
 		})

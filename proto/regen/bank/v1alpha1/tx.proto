@@ -4,6 +4,7 @@ package regen.bank.v1alpha1;
 
 import "regen/bank/v1alpha1/types.proto";
 import "gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/bank";
 
@@ -11,18 +12,25 @@ option go_package = "github.com/regen-network/regen-ledger/x/bank";
 service Msg {
     rpc CreateDenom (MsgCreateDenomRequest) returns (MsgCreateDenomResponse);
 
+    // Mint is a method for minting new coins. It is subject to each denom's send rule.
     rpc Mint (MsgMintRequest) returns (MsgMintResponse);
 
-    // Send defines a method for sending coins from one account to another account.
+    // Move is a method for a module, contract, or other trusted third party
+    // to move coins from one account to another account. It is subject to each denom's move rule.
+    rpc Move (MsgMoveRequest) returns (MsgMoveResponse);
+
+    // Send is a method for sending coins from one account to another account.
+    // It is subject to each denom's send rule.
     rpc Send (MsgSendRequest) returns (MsgSendResponse);
 
+    // Burn is method for burning coins. It is subject to each denom's burn rule.
     rpc Burn (MsgBurnRequest) returns (MsgBurnResponse);
 
-    // SetPrecision allows an issuer to increase the decimal precision of a credit
-    // batch. It is an experimental feature to concretely explore an idea proposed
+    // SetPrecision allows an issuer to increase the decimal precision of a denom.
+    // It is an experimental feature to concretely explore an idea proposed
     // in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
     // places allowed for a credit batch is determined by the original number of
-    // decimal places used with calling CreatBatch. SetPrecision allows the number
+    // decimal places used with calling CreateDenom. SetPrecision allows the number
     // of allowed decimal places to be increased, effectively making the supply
     // more granular without actually changing any balances. It allows asset
     // issuers to be able to issue an asset without needing to think about how
@@ -42,10 +50,20 @@ service Msg {
 }
 
 message MsgCreateDenomRequest {
-    string admin_address = 1;
+    string namespace_admin = 1;
     string denom_namespace = 2;
     string denom_name = 3;
-    string minter_address = 4;
+
+    // denom_admin specifies an address that has administrative access over the denom
+    // and can change important parameters and rules. If left empty, the denom's rules
+    // can only be changed by governance.
+    string denom_admin = 4;
+
+    google.protobuf.Any mint_rule = 5;
+    google.protobuf.Any send_rule = 6;
+    google.protobuf.Any move_rule = 7;
+    google.protobuf.Any burn_rule = 8;
+    uint32 max_decimal_places = 9;
 }
 
 message MsgCreateDenomResponse {
@@ -77,6 +95,16 @@ message MsgSendRequest {
 message MsgSendResponse {
 }
 
+message MsgMoveRequest {
+    string mover_address = 1;
+    string from_address = 2;
+    string to_address = 3;
+    repeated Coin amount = 4;
+}
+
+message MsgMoveResponse {
+}
+
 message MsgBurnRequest {
     string burner_address = 1;
     repeated Coin coins = 2;
@@ -88,8 +116,8 @@ message MsgBurnResponse {
 // MsgRetireRequest is the Msg/SetPrecision request type.
 message MsgSetPrecisionRequest {
 
-    // minter is the address of the denom minter.
-    string minter = 1;
+    // denom_admin is the address of the denom admin.
+    string denom_admin = 1;
 
     // denom is the unique ID of the credit batch.
     string denom = 2 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];

@@ -17,6 +17,10 @@
   
     - [Query](#regen.bank.v1alpha1.Query)
   
+- [regen/bank/v1alpha1/rules.proto](#regen/bank/v1alpha1/rules.proto)
+    - [ACLRule](#regen.bank.v1alpha1.ACLRule)
+    - [BooleanRule](#regen.bank.v1alpha1.BooleanRule)
+  
 - [regen/bank/v1alpha1/tx.proto](#regen/bank/v1alpha1/tx.proto)
     - [MsgBurnRequest](#regen.bank.v1alpha1.MsgBurnRequest)
     - [MsgBurnResponse](#regen.bank.v1alpha1.MsgBurnResponse)
@@ -25,6 +29,8 @@
     - [MsgMintRequest](#regen.bank.v1alpha1.MsgMintRequest)
     - [MsgMintRequest.Issuance](#regen.bank.v1alpha1.MsgMintRequest.Issuance)
     - [MsgMintResponse](#regen.bank.v1alpha1.MsgMintResponse)
+    - [MsgMoveRequest](#regen.bank.v1alpha1.MsgMoveRequest)
+    - [MsgMoveResponse](#regen.bank.v1alpha1.MsgMoveResponse)
     - [MsgSendRequest](#regen.bank.v1alpha1.MsgSendRequest)
     - [MsgSendResponse](#regen.bank.v1alpha1.MsgSendResponse)
     - [MsgSetPrecisionRequest](#regen.bank.v1alpha1.MsgSetPrecisionRequest)
@@ -187,6 +193,52 @@ Query defines the gRPC querier service.
 
 
 
+<a name="regen/bank/v1alpha1/rules.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## regen/bank/v1alpha1/rules.proto
+
+
+
+<a name="regen.bank.v1alpha1.ACLRule"></a>
+
+### ACLRule
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| allowed_addresses | [string](#string) | repeated |  |
+
+
+
+
+
+
+<a name="regen.bank.v1alpha1.BooleanRule"></a>
+
+### BooleanRule
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| enabled | [bool](#bool) |  |  |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
 <a name="regen/bank/v1alpha1/tx.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -228,10 +280,15 @@ Query defines the gRPC querier service.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| admin_address | [string](#string) |  |  |
+| namespace_admin | [string](#string) |  |  |
 | denom_namespace | [string](#string) |  |  |
 | denom_name | [string](#string) |  |  |
-| minter_address | [string](#string) |  |  |
+| denom_admin | [string](#string) |  | denom_admin specifies an address that has administrative access over the denom and can change important parameters and rules. If left empty, the denom's rules can only be changed by governance. |
+| mint_rule | [google.protobuf.Any](#google.protobuf.Any) |  |  |
+| send_rule | [google.protobuf.Any](#google.protobuf.Any) |  |  |
+| move_rule | [google.protobuf.Any](#google.protobuf.Any) |  |  |
+| burn_rule | [google.protobuf.Any](#google.protobuf.Any) |  |  |
+| max_decimal_places | [uint32](#uint32) |  |  |
 
 
 
@@ -300,6 +357,34 @@ Query defines the gRPC querier service.
 
 
 
+<a name="regen.bank.v1alpha1.MsgMoveRequest"></a>
+
+### MsgMoveRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| mover_address | [string](#string) |  |  |
+| from_address | [string](#string) |  |  |
+| to_address | [string](#string) |  |  |
+| amount | [Coin](#regen.bank.v1alpha1.Coin) | repeated |  |
+
+
+
+
+
+
+<a name="regen.bank.v1alpha1.MsgMoveResponse"></a>
+
+### MsgMoveResponse
+
+
+
+
+
+
+
 <a name="regen.bank.v1alpha1.MsgSendRequest"></a>
 
 ### MsgSendRequest
@@ -335,7 +420,7 @@ MsgRetireRequest is the Msg/SetPrecision request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| minter | [string](#string) |  | minter is the address of the denom minter. |
+| denom_admin | [string](#string) |  | denom_admin is the address of the denom admin. |
 | denom | [string](#string) |  | denom is the unique ID of the credit batch. |
 | max_decimal_places | [uint32](#uint32) |  | max_decimal_places is the new maximum number of decimal places that can be used to represent some quantity of credit units. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. |
 
@@ -368,10 +453,11 @@ MsgSetPrecisionResponse is the Msg/SetPrecision response type.
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | CreateDenom | [MsgCreateDenomRequest](#regen.bank.v1alpha1.MsgCreateDenomRequest) | [MsgCreateDenomResponse](#regen.bank.v1alpha1.MsgCreateDenomResponse) |  |
-| Mint | [MsgMintRequest](#regen.bank.v1alpha1.MsgMintRequest) | [MsgMintResponse](#regen.bank.v1alpha1.MsgMintResponse) |  |
-| Send | [MsgSendRequest](#regen.bank.v1alpha1.MsgSendRequest) | [MsgSendResponse](#regen.bank.v1alpha1.MsgSendResponse) | Send defines a method for sending coins from one account to another account. |
-| Burn | [MsgBurnRequest](#regen.bank.v1alpha1.MsgBurnRequest) | [MsgBurnResponse](#regen.bank.v1alpha1.MsgBurnResponse) |  |
-| SetPrecision | [MsgSetPrecisionRequest](#regen.bank.v1alpha1.MsgSetPrecisionRequest) | [MsgSetPrecisionResponse](#regen.bank.v1alpha1.MsgSetPrecisionResponse) | SetPrecision allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal places allowed for a credit batch is determined by the original number of decimal places used with calling CreatBatch. SetPrecision allows the number of allowed decimal places to be increased, effectively making the supply more granular without actually changing any balances. It allows asset issuers to be able to issue an asset without needing to think about how many subdivisions are needed upfront. While it may not be relevant for credits which likely have a fairly stable market value, I wanted to experiment a bit and this serves as a proof of concept for a broader bank redesign where say for instance a coin like the ATOM or XRN could be issued in its own units rather than micro or nano-units. Instead an operation like SetPrecision would allow trading in micro, nano or pico in the future based on market demand. Arbitrary, unbounded precision is not desirable because this can lead to spam attacks (like sending 0.000000000000000000000000000001 coins). This is effectively fixed precision so under the hood it is still basically an integer, but the fixed precision can be increased so its more adaptable long term than just an integer. |
+| Mint | [MsgMintRequest](#regen.bank.v1alpha1.MsgMintRequest) | [MsgMintResponse](#regen.bank.v1alpha1.MsgMintResponse) | Mint is a method for minting new coins. It is subject to each denom's send rule. |
+| Move | [MsgMoveRequest](#regen.bank.v1alpha1.MsgMoveRequest) | [MsgMoveResponse](#regen.bank.v1alpha1.MsgMoveResponse) | Move is a method for a module, contract, or other trusted third party to move coins from one account to another account. It is subject to each denom's move rule. |
+| Send | [MsgSendRequest](#regen.bank.v1alpha1.MsgSendRequest) | [MsgSendResponse](#regen.bank.v1alpha1.MsgSendResponse) | Send is a method for sending coins from one account to another account. It is subject to each denom's send rule. |
+| Burn | [MsgBurnRequest](#regen.bank.v1alpha1.MsgBurnRequest) | [MsgBurnResponse](#regen.bank.v1alpha1.MsgBurnResponse) | Burn is method for burning coins. It is subject to each denom's burn rule. |
+| SetPrecision | [MsgSetPrecisionRequest](#regen.bank.v1alpha1.MsgSetPrecisionRequest) | [MsgSetPrecisionResponse](#regen.bank.v1alpha1.MsgSetPrecisionResponse) | SetPrecision allows an issuer to increase the decimal precision of a denom. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal places allowed for a credit batch is determined by the original number of decimal places used with calling CreateDenom. SetPrecision allows the number of allowed decimal places to be increased, effectively making the supply more granular without actually changing any balances. It allows asset issuers to be able to issue an asset without needing to think about how many subdivisions are needed upfront. While it may not be relevant for credits which likely have a fairly stable market value, I wanted to experiment a bit and this serves as a proof of concept for a broader bank redesign where say for instance a coin like the ATOM or XRN could be issued in its own units rather than micro or nano-units. Instead an operation like SetPrecision would allow trading in micro, nano or pico in the future based on market demand. Arbitrary, unbounded precision is not desirable because this can lead to spam attacks (like sending 0.000000000000000000000000000001 coins). This is effectively fixed precision so under the hood it is still basically an integer, but the fixed precision can be increased so its more adaptable long term than just an integer. |
 
  <!-- end services -->
 
