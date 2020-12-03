@@ -4,9 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 )
 
-type ModuleBase interface {
+type Module interface {
 	Name() string
 	RegisterInterfaces(types.InterfaceRegistry)
 }
-
-type Modules []ModuleBase

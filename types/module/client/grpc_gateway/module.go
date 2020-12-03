@@ -7,7 +7,7 @@ import (
 )
 
 type Module interface {
-	module.ModuleBase
+	module.Module
 
 	RegisterGRPCGatewayRoutes(client.Context, *runtime.ServeMux)
 }

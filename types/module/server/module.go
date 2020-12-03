@@ -8,7 +8,7 @@ import (
 )
 
 type Module interface {
-	module.ModuleBase
+	module.Module
 
 	RegisterInterfaces(registry types.InterfaceRegistry)
 	RegisterServices(Configurator)

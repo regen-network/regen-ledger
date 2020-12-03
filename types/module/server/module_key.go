@@ -2,20 +2,22 @@ package server
 
 import (
 	"context"
-	"github.com/regen-network/regen-ledger/types/module"
+
+	"github.com/regen-network/regen-ledger/types"
+
 	"google.golang.org/grpc"
 )
 
 type ModuleKey interface {
 	grpc.ClientConnInterface
 
-	ModuleID() module.ModuleID
+	ModuleID() types.ModuleID
 	Address() []byte
 }
 
 type CallInfo struct {
 	Method string
-	Caller module.ModuleID
+	Caller types.ModuleID
 }
 
 type InvokerFactory func(callInfo CallInfo) (Invoker, error)

@@ -3,8 +3,10 @@ package server
 import (
 	"context"
 	"fmt"
+
+	"github.com/regen-network/regen-ledger/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/types/module"
 	"google.golang.org/grpc"
 )
 
@@ -44,8 +46,8 @@ func (r *rootModuleKey) NewStream(ctx context.Context, desc *grpc.StreamDesc, me
 	return nil, fmt.Errorf("unsupported")
 }
 
-func (r *rootModuleKey) ModuleID() module.ModuleID {
-	return module.ModuleID{ModuleName: r.moduleName}
+func (r *rootModuleKey) ModuleID() types.ModuleID {
+	return types.ModuleID{ModuleName: r.moduleName}
 }
 
 func (r *rootModuleKey) Address() []byte {

@@ -3,7 +3,9 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/regen-network/regen-ledger/types/module"
+
+	"github.com/regen-network/regen-ledger/types"
+
 	"google.golang.org/grpc"
 )
 
@@ -15,7 +17,7 @@ type DerivedModuleKey struct {
 
 var _ ModuleKey = DerivedModuleKey{}
 
-func (d DerivedModuleKey) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, V ...grpc.CallOption) error {
+func (d DerivedModuleKey) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, _ ...grpc.CallOption) error {
 	invoker, err := d.invokerFactory(CallInfo{
 		Method: method,
 		Caller: d.ModuleID(),
@@ -32,8 +34,8 @@ func (d DerivedModuleKey) NewStream(context.Context, *grpc.StreamDesc, string, .
 	return nil, fmt.Errorf("unsupported")
 }
 
-func (d DerivedModuleKey) ModuleID() module.ModuleID {
-	return module.ModuleID{
+func (d DerivedModuleKey) ModuleID() types.ModuleID {
+	return types.ModuleID{
 		ModuleName: d.moduleName,
 		Path:       d.path,
 	}

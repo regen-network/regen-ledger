@@ -1,8 +1,6 @@
 package app
 
 import (
-	newmodule "github.com/regen-network/regen-ledger/types/module"
-	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"io"
 	"math/big"
 	"net/http"
@@ -90,6 +88,8 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 
+	newmodule "github.com/regen-network/regen-ledger/types/module"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 )
@@ -131,7 +131,7 @@ var (
 		data.Module{},
 	)
 
-	NewModules = newmodule.Modules{
+	NewModules = []newmodule.Module{
 		ecocredit.Module{},
 		data.Module{},
 	}
