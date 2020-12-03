@@ -48,7 +48,7 @@ func (r *rootModuleKey) ModuleID() module.ModuleID {
 	return module.ModuleID{ModuleName: r.moduleName}
 }
 
-func (r *rootModuleKey) Address() []byte {
+func (r *rootModuleKey) Address() sdk.AccAddress {
 	return r.ModuleID().Address()
 }
 

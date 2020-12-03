@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/types/module"
 	"google.golang.org/grpc"
 )
@@ -10,7 +11,7 @@ type ModuleKey interface {
 	grpc.ClientConnInterface
 
 	ModuleID() module.ModuleID
-	Address() []byte
+	Address() sdk.AccAddress
 }
 
 type CallInfo struct {

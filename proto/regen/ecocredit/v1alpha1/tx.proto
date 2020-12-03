@@ -25,27 +25,6 @@ service Msg {
   // Retire retires a specified number of credits in the holder's account.
   rpc Retire(MsgRetireRequest) returns (MsgRetireResponse);
 
-  // SetPrecision allows an issuer to increase the decimal precision of a credit
-  // batch. It is an experimental feature to concretely explore an idea proposed
-  // in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
-  // places allowed for a credit batch is determined by the original number of
-  // decimal places used with calling CreatBatch. SetPrecision allows the number
-  // of allowed decimal places to be increased, effectively making the supply
-  // more granular without actually changing any balances. It allows asset
-  // issuers to be able to issue an asset without needing to think about how
-  // many subdivisions are needed upfront. While it may not be relevant for
-  // credits which likely have a fairly stable market value, I wanted to
-  // experiment a bit and this serves as a proof of concept for a broader bank
-  // redesign where say for instance a coin like the ATOM or XRN could be issued
-  // in its own units rather than micro or nano-units. Instead an operation like
-  // SetPrecision would allow trading in micro, nano or pico in the future based
-  // on market demand. Arbitrary, unbounded precision is not desirable because
-  // this can lead to spam attacks (like sending
-  // 0.000000000000000000000000000001 coins). This is effectively fixed
-  // precision so under the hood it is still basically an integer, but the fixed
-  // precision can be increased so its more adaptable long term than just an
-  // integer.
-  rpc SetPrecision(MsgSetPrecisionRequest) returns (MsgSetPrecisionResponse);
 }
 
 // MsgCreateClassRequest is the Msg/CreateClass request type.
@@ -171,23 +150,3 @@ message MsgRetireRequest {
 
 // MsgRetireRequest is the Msg/Retire response type.
 message MsgRetireResponse {}
-
-// MsgRetireRequest is the Msg/SetPrecision request type.
-message MsgSetPrecisionRequest {
-
-  // issuer is the address of the batch issuer.
-  string issuer = 1;
-
-  // batch_denom is the unique ID of the credit batch.
-  string batch_denom = 2 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
-
-  // max_decimal_places is the new maximum number of decimal places that can be
-  // used to represent some quantity of credit units. It is an experimental
-  // feature to concretely explore an idea proposed in
-  // https://github.com/cosmos/cosmos-sdk/issues/7113.
-  uint32 max_decimal_places = 3
-      [ (gogoproto.moretags) = "yaml:\"max_decimal_places\"" ];
-}
-
-// MsgRetireRequest is the Msg/SetPrecision response type.
-message MsgSetPrecisionResponse {}

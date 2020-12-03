@@ -41,6 +41,9 @@ Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
 
   # get the module name, e.g. from "./proto/regen/data/v1alpha1", extract "data"
   module=$(basename $(dirname $dir))
+
+  mkdir -p ./docs/modules/${module}
+
   # command to generate docs using protoc-gen-doc
   buf protoc \
   -I "proto" \

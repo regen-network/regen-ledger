@@ -76,7 +76,7 @@ func (m *QueryByCidRequest) GetCid() []byte {
 	return nil
 }
 
-// QueryByCidRequest is the Query/ByCid response type.
+// QueryByCidResponse is the Query/ByCid response type.
 type QueryByCidResponse struct {
 	// timestamp is the timestamp of the block at which the data was anchored.
 	Timestamp *types.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
@@ -140,8 +140,11 @@ func (m *QueryByCidResponse) GetContent() []byte {
 	return nil
 }
 
+// QueryBySignerRequest is the Query/BySigner request type.
 type QueryBySignerRequest struct {
-	Signer     string             `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
+	// signer is the address of the signer to query by.
+	Signer string `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
+	// pagination is the PageRequest to use for pagination.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -192,8 +195,11 @@ func (m *QueryBySignerRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
+// QueryBySignerResponse is the Query/BySigner response type.
 type QueryBySignerResponse struct {
-	Cids       [][]byte            `protobuf:"bytes,1,rep,name=cids,proto3" json:"cids,omitempty"`
+	// cids are in the CIDs returned in this page of the query.
+	Cids [][]byte `protobuf:"bytes,1,rep,name=cids,proto3" json:"cids,omitempty"`
+	// pagination is the pagination PageResponse.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 

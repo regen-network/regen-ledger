@@ -30,8 +30,9 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgCreateClassRequest is the Msg/CreateClass request type.
 type MsgCreateClassRequest struct {
-	// designer is the address of the account which designed the credit class. The designer has special permissions
-	// to change the list of issuers and perform other administrative operations.
+	// designer is the address of the account which designed the credit class. The
+	// designer has special permissions to change the list of issuers and perform
+	// other administrative operations.
 	Designer string `protobuf:"bytes,1,opt,name=designer,proto3" json:"designer,omitempty"`
 	// issuers are the account addresses of the approved issuers.
 	Issuers []string `protobuf:"bytes,2,rep,name=issuers,proto3" json:"issuers,omitempty"`
@@ -212,15 +213,17 @@ func (m *MsgCreateBatchRequest) GetMetadata() []byte {
 	return nil
 }
 
-// BatchIssuance represents the issuance of some credits in a batch to a single recipient.
+// BatchIssuance represents the issuance of some credits in a batch to a
+// single recipient.
 type MsgCreateBatchRequest_BatchIssuance struct {
 	// recipient is the account of the recipient.
 	Recipient string `protobuf:"bytes,1,opt,name=recipient,proto3" json:"recipient,omitempty"`
-	// tradable_units are the units of credits in this issuance that can be traded by this recipient.
-	// Decimal values are acceptable.
+	// tradable_units are the units of credits in this issuance that can be
+	// traded by this recipient. Decimal values are acceptable.
 	TradableUnits string `protobuf:"bytes,2,opt,name=tradable_units,json=tradableUnits,proto3" json:"tradable_units,omitempty" yaml:"tradable_units"`
-	// retired_units are the units of credits in this issuance that are effectively retired by the issuer on receipt.
-	// Decimal values are acceptable.
+	// retired_units are the units of credits in this issuance that are
+	// effectively retired by the issuer on receipt. Decimal values are
+	// acceptable.
 	RetiredUnits string `protobuf:"bytes,3,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty" yaml:"retired_units"`
 }
 
@@ -392,11 +395,13 @@ func (m *MsgSendRequest) GetCredits() []*MsgSendRequest_SendUnits {
 type MsgSendRequest_SendUnits struct {
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
-	// tradable_units are the units of credits in this issuance that can be traded by this recipient.
-	// Decimal values are acceptable within the precision returned by Query/Precision.
+	// tradable_units are the units of credits in this issuance that can be
+	// traded by this recipient. Decimal values are acceptable within the
+	// precision returned by Query/Precision.
 	TradableUnits string `protobuf:"bytes,2,opt,name=tradable_units,json=tradableUnits,proto3" json:"tradable_units,omitempty" yaml:"tradable_units"`
-	// retired_units are the units of credits in this issuance that are effectively retired by the issuer on receipt.
-	// Decimal values are acceptable within the precision returned by Query/Precision.
+	// retired_units are the units of credits in this issuance that are
+	// effectively retired by the issuer on receipt. Decimal values are
+	// acceptable within the precision returned by Query/Precision.
 	RetiredUnits string `protobuf:"bytes,3,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty" yaml:"retired_units"`
 }
 
@@ -551,7 +556,8 @@ type MsgRetireRequest_RetireUnits struct {
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
 	// retired_units are the units of credits being retired.
-	// Decimal values are acceptable within the precision returned by Query/Precision.
+	// Decimal values are acceptable within the precision returned by
+	// Query/Precision.
 	Units string `protobuf:"bytes,2,opt,name=units,proto3" json:"units,omitempty"`
 }
 
@@ -639,108 +645,6 @@ func (m *MsgRetireResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRetireResponse proto.InternalMessageInfo
 
-// MsgRetireRequest is the Msg/SetPrecision request type.
-type MsgSetPrecisionRequest struct {
-	// issuer is the address of the batch issuer.
-	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	// batch_denom is the unique ID of the credit batch.
-	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
-	// max_decimal_places is the new maximum number of decimal places that can be used to represent some quantity of
-	// credit units. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113.
-	MaxDecimalPlaces uint32 `protobuf:"varint,3,opt,name=max_decimal_places,json=maxDecimalPlaces,proto3" json:"max_decimal_places,omitempty" yaml:"max_decimal_places"`
-}
-
-func (m *MsgSetPrecisionRequest) Reset()         { *m = MsgSetPrecisionRequest{} }
-func (m *MsgSetPrecisionRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgSetPrecisionRequest) ProtoMessage()    {}
-func (*MsgSetPrecisionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_96891bdd11ac56ed, []int{8}
-}
-func (m *MsgSetPrecisionRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgSetPrecisionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgSetPrecisionRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgSetPrecisionRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSetPrecisionRequest.Merge(m, src)
-}
-func (m *MsgSetPrecisionRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgSetPrecisionRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSetPrecisionRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgSetPrecisionRequest proto.InternalMessageInfo
-
-func (m *MsgSetPrecisionRequest) GetIssuer() string {
-	if m != nil {
-		return m.Issuer
-	}
-	return ""
-}
-
-func (m *MsgSetPrecisionRequest) GetBatchDenom() string {
-	if m != nil {
-		return m.BatchDenom
-	}
-	return ""
-}
-
-func (m *MsgSetPrecisionRequest) GetMaxDecimalPlaces() uint32 {
-	if m != nil {
-		return m.MaxDecimalPlaces
-	}
-	return 0
-}
-
-// MsgRetireRequest is the Msg/SetPrecision response type.
-type MsgSetPrecisionResponse struct {
-}
-
-func (m *MsgSetPrecisionResponse) Reset()         { *m = MsgSetPrecisionResponse{} }
-func (m *MsgSetPrecisionResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgSetPrecisionResponse) ProtoMessage()    {}
-func (*MsgSetPrecisionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_96891bdd11ac56ed, []int{9}
-}
-func (m *MsgSetPrecisionResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgSetPrecisionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgSetPrecisionResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgSetPrecisionResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSetPrecisionResponse.Merge(m, src)
-}
-func (m *MsgSetPrecisionResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgSetPrecisionResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSetPrecisionResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgSetPrecisionResponse proto.InternalMessageInfo
-
 func init() {
 	proto.RegisterType((*MsgCreateClassRequest)(nil), "regen.ecocredit.v1alpha1.MsgCreateClassRequest")
 	proto.RegisterType((*MsgCreateClassResponse)(nil), "regen.ecocredit.v1alpha1.MsgCreateClassResponse")
@@ -753,61 +657,54 @@ func init() {
 	proto.RegisterType((*MsgRetireRequest)(nil), "regen.ecocredit.v1alpha1.MsgRetireRequest")
 	proto.RegisterType((*MsgRetireRequest_RetireUnits)(nil), "regen.ecocredit.v1alpha1.MsgRetireRequest.RetireUnits")
 	proto.RegisterType((*MsgRetireResponse)(nil), "regen.ecocredit.v1alpha1.MsgRetireResponse")
-	proto.RegisterType((*MsgSetPrecisionRequest)(nil), "regen.ecocredit.v1alpha1.MsgSetPrecisionRequest")
-	proto.RegisterType((*MsgSetPrecisionResponse)(nil), "regen.ecocredit.v1alpha1.MsgSetPrecisionResponse")
 }
 
 func init() { proto.RegisterFile("regen/ecocredit/v1alpha1/tx.proto", fileDescriptor_96891bdd11ac56ed) }
 
 var fileDescriptor_96891bdd11ac56ed = []byte{
-	// 747 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x56, 0xcb, 0x6e, 0xd3, 0x4c,
-	0x14, 0xae, 0x93, 0xfe, 0x6d, 0x73, 0xd2, 0xf4, 0x32, 0xbd, 0xfc, 0xa9, 0x05, 0x49, 0xf0, 0x2a,
-	0x80, 0x70, 0x9a, 0x22, 0x81, 0x84, 0x54, 0x09, 0xa5, 0x5d, 0x50, 0x95, 0x48, 0xc5, 0x15, 0x0b,
-	0x2e, 0x52, 0x34, 0xb1, 0x47, 0x8e, 0x85, 0x63, 0x07, 0xcf, 0x04, 0xc2, 0x13, 0xb0, 0xe5, 0x09,
-	0x78, 0x04, 0x96, 0xbc, 0x01, 0x12, 0xcb, 0x2e, 0x11, 0x42, 0x11, 0x6a, 0xdf, 0x20, 0x4f, 0x80,
-	0x3c, 0x33, 0x71, 0xec, 0x14, 0x5a, 0xd3, 0x0d, 0xbb, 0xf9, 0xce, 0x9c, 0xeb, 0xf7, 0x8d, 0x8f,
-	0x0c, 0x37, 0x02, 0x62, 0x13, 0xaf, 0x46, 0x4c, 0xdf, 0x0c, 0x88, 0xe5, 0xb0, 0xda, 0x9b, 0x3a,
-	0x76, 0x7b, 0x1d, 0x5c, 0xaf, 0xb1, 0x81, 0xde, 0x0b, 0x7c, 0xe6, 0xa3, 0x22, 0x77, 0xd1, 0x23,
-	0x17, 0x7d, 0xec, 0xa2, 0xae, 0xdb, 0xbe, 0xed, 0x73, 0xa7, 0x5a, 0x78, 0x12, 0xfe, 0x9a, 0x03,
-	0x1b, 0x4d, 0x6a, 0xef, 0x05, 0x04, 0x33, 0xb2, 0xe7, 0x62, 0x4a, 0x0d, 0xf2, 0xba, 0x4f, 0x28,
-	0x43, 0x2a, 0x2c, 0x58, 0x84, 0x3a, 0xb6, 0x47, 0x82, 0xa2, 0x52, 0x51, 0xaa, 0x39, 0x23, 0xc2,
-	0xa8, 0x08, 0xf3, 0x0e, 0xa5, 0x7d, 0x12, 0xd0, 0x62, 0xa6, 0x92, 0xad, 0xe6, 0x8c, 0x31, 0x0c,
-	0xa3, 0xba, 0x84, 0x61, 0x0b, 0x33, 0x5c, 0xcc, 0x56, 0x94, 0xea, 0xa2, 0x11, 0x61, 0xed, 0x11,
-	0x6c, 0x4e, 0x97, 0xa2, 0x3d, 0xdf, 0xa3, 0x04, 0xe9, 0xb0, 0x60, 0x86, 0x86, 0x96, 0x63, 0x89,
-	0x5a, 0x8d, 0xb5, 0xd1, 0xb0, 0xbc, 0xfc, 0x0e, 0x77, 0xdd, 0x07, 0xda, 0xf8, 0x46, 0x33, 0xe6,
-	0xf9, 0xf1, 0xc0, 0xd2, 0xde, 0x67, 0x63, 0x5d, 0x37, 0x30, 0x33, 0x3b, 0xe3, 0xae, 0x37, 0x61,
-	0x4e, 0xb4, 0x22, 0x7b, 0x96, 0x28, 0x51, 0x21, 0x73, 0x79, 0x05, 0xf4, 0x0c, 0x16, 0xc2, 0x48,
-	0xec, 0x99, 0xa4, 0x98, 0xad, 0x64, 0xab, 0xf9, 0x9d, 0x5d, 0xfd, 0x4f, 0xcc, 0xea, 0xbf, 0x6d,
-	0x45, 0xe7, 0xe0, 0x40, 0x26, 0x31, 0xa2, 0x74, 0x09, 0x8a, 0x66, 0x93, 0x14, 0xa9, 0x9f, 0x14,
-	0x28, 0x24, 0xe2, 0xd0, 0x35, 0xc8, 0x05, 0xc4, 0x74, 0x7a, 0x0e, 0xf1, 0x98, 0x9c, 0x69, 0x62,
-	0x40, 0x0f, 0x61, 0x89, 0x05, 0xd8, 0xc2, 0x6d, 0x97, 0xb4, 0xfa, 0x9e, 0xc3, 0xa8, 0x1c, 0x6e,
-	0x6b, 0x34, 0x2c, 0x6f, 0x88, 0xe1, 0x92, 0xf7, 0x9a, 0x51, 0x18, 0x1b, 0x9e, 0x86, 0x18, 0xed,
-	0x42, 0x21, 0x20, 0xcc, 0x09, 0x88, 0x25, 0x13, 0x64, 0x79, 0x82, 0xe2, 0x68, 0x58, 0x5e, 0x17,
-	0x09, 0x12, 0xd7, 0x9a, 0xb1, 0x28, 0x31, 0x0f, 0xd7, 0x9e, 0xc4, 0x34, 0x95, 0xd3, 0x4b, 0x4d,
-	0xef, 0x43, 0xbe, 0x1d, 0x1a, 0x5a, 0x16, 0xf1, 0xfc, 0xae, 0x94, 0x75, 0x73, 0x34, 0x2c, 0x23,
-	0x91, 0x36, 0x76, 0xa9, 0x19, 0xc0, 0xd1, 0x3e, 0x07, 0x3f, 0x32, 0xb0, 0xd4, 0xa4, 0xf6, 0x31,
-	0xf1, 0xac, 0x98, 0xaa, 0x94, 0x78, 0xd6, 0x44, 0x55, 0x81, 0x92, 0xe4, 0x64, 0xa6, 0xc9, 0x79,
-	0x0c, 0xf3, 0x42, 0x29, 0x2a, 0x25, 0xdc, 0xb9, 0x50, 0xc2, 0x58, 0x41, 0x3d, 0x3c, 0xf3, 0x01,
-	0x8d, 0x71, 0x0a, 0xf5, 0x8b, 0x02, 0xb9, 0xc8, 0x7c, 0xe5, 0xe9, 0xfe, 0xbd, 0x62, 0xab, 0xb0,
-	0x1c, 0x0d, 0x2b, 0xa4, 0xd2, 0xbe, 0x2b, 0xb0, 0xd2, 0xa4, 0xb6, 0xc1, 0xdd, 0x62, 0x9c, 0x77,
-	0x7c, 0x37, 0xc6, 0xb9, 0x40, 0xe8, 0x68, 0xc2, 0x6a, 0x86, 0xb3, 0x7a, 0xef, 0x42, 0x56, 0x13,
-	0x49, 0x75, 0x81, 0xa6, 0x98, 0x7d, 0x09, 0xf9, 0x98, 0xfd, 0xea, 0xd4, 0xae, 0xc3, 0x7f, 0x31,
-	0x46, 0x0d, 0x01, 0xb4, 0x35, 0x58, 0x8d, 0xb5, 0x21, 0x27, 0xfe, 0xac, 0xf0, 0x77, 0x7b, 0x4c,
-	0xd8, 0x51, 0xf8, 0x5e, 0xa8, 0xe3, 0x7b, 0x97, 0x6d, 0x90, 0xa9, 0xb6, 0x32, 0xa9, 0xdb, 0x3a,
-	0x04, 0xd4, 0xc5, 0x83, 0x96, 0x45, 0x4c, 0xa7, 0x8b, 0xdd, 0x56, 0xcf, 0xc5, 0x26, 0x11, 0xa2,
-	0x15, 0x1a, 0xd7, 0x47, 0xc3, 0xf2, 0x96, 0x88, 0x3f, 0xef, 0xa3, 0x19, 0x2b, 0x5d, 0x3c, 0xd8,
-	0x17, 0xb6, 0x23, 0x61, 0xda, 0x82, 0xff, 0xcf, 0xf5, 0x2d, 0x66, 0xda, 0xf9, 0x38, 0x0b, 0xd9,
-	0x26, 0xb5, 0x51, 0x0f, 0xf2, 0xb1, 0x1d, 0x8b, 0x6a, 0x29, 0xf6, 0x56, 0x7c, 0xf1, 0xab, 0xdb,
-	0xe9, 0x03, 0xe4, 0xa7, 0x1e, 0x55, 0xe4, 0x1b, 0x20, 0x55, 0xc5, 0xf8, 0xa6, 0x4c, 0x55, 0x31,
-	0xb9, 0x5c, 0x5e, 0xc0, 0x6c, 0xf8, 0x82, 0x51, 0x35, 0xed, 0x17, 0xad, 0xde, 0x4c, 0xe1, 0x29,
-	0x93, 0x63, 0x98, 0x13, 0xcf, 0x05, 0xdd, 0x4a, 0xff, 0xb4, 0xd5, 0xdb, 0xa9, 0x7c, 0x65, 0x09,
-	0x0a, 0x8b, 0x71, 0x0d, 0xd1, 0xf6, 0x25, 0xdd, 0x9d, 0x7b, 0xa6, 0x6a, 0xfd, 0x2f, 0x22, 0x44,
-	0xd1, 0xc6, 0xe1, 0xd7, 0xd3, 0x92, 0x72, 0x72, 0x5a, 0x52, 0x7e, 0x9e, 0x96, 0x94, 0x0f, 0x67,
-	0xa5, 0x99, 0x93, 0xb3, 0xd2, 0xcc, 0xb7, 0xb3, 0xd2, 0xcc, 0xf3, 0xba, 0xed, 0xb0, 0x4e, 0xbf,
-	0xad, 0x9b, 0x7e, 0xb7, 0xc6, 0xd3, 0xde, 0xf1, 0x08, 0x7b, 0xeb, 0x07, 0xaf, 0x24, 0x72, 0x89,
-	0x65, 0x93, 0xa0, 0x36, 0x98, 0xfc, 0x79, 0xb4, 0xe7, 0xf8, 0xef, 0xc3, 0xdd, 0x5f, 0x01, 0x00,
-	0x00, 0xff, 0xff, 0x3b, 0x0d, 0x5f, 0xb4, 0x93, 0x08, 0x00, 0x00,
+	// 661 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x55, 0xcd, 0x6e, 0xd3, 0x4c,
+	0x14, 0xad, 0xe3, 0x7e, 0x6d, 0x73, 0xd3, 0x9f, 0xaf, 0xd3, 0x1f, 0x19, 0x0b, 0x25, 0xc1, 0xab,
+	0x00, 0xc2, 0xa6, 0x45, 0x02, 0x09, 0xa9, 0x12, 0x6a, 0x59, 0x50, 0x41, 0x24, 0x30, 0x62, 0xc1,
+	0x8f, 0x54, 0x39, 0xf6, 0x95, 0x63, 0x91, 0xd8, 0xc1, 0x33, 0x81, 0xf2, 0x04, 0x6c, 0x79, 0x0d,
+	0x36, 0xbc, 0x05, 0x12, 0xcb, 0x2e, 0x11, 0x42, 0x11, 0x6a, 0xdf, 0x20, 0x4f, 0x80, 0x3c, 0x33,
+	0x71, 0xc6, 0x11, 0x14, 0xab, 0x1b, 0x76, 0x73, 0xee, 0xdc, 0x39, 0xf7, 0xde, 0x73, 0x3c, 0x63,
+	0xb8, 0x92, 0x62, 0x88, 0xb1, 0x83, 0x7e, 0xe2, 0xa7, 0x18, 0x44, 0xcc, 0x79, 0xbb, 0xe3, 0xf5,
+	0x06, 0x5d, 0x6f, 0xc7, 0x61, 0xc7, 0xf6, 0x20, 0x4d, 0x58, 0x42, 0x0c, 0x9e, 0x62, 0xe7, 0x29,
+	0xf6, 0x24, 0xc5, 0xdc, 0x0c, 0x93, 0x30, 0xe1, 0x49, 0x4e, 0xb6, 0x12, 0xf9, 0x56, 0x04, 0x5b,
+	0x6d, 0x1a, 0x1e, 0xa4, 0xe8, 0x31, 0x3c, 0xe8, 0x79, 0x94, 0xba, 0xf8, 0x66, 0x88, 0x94, 0x11,
+	0x13, 0x96, 0x02, 0xa4, 0x51, 0x18, 0x63, 0x6a, 0x68, 0x4d, 0xad, 0x55, 0x75, 0x73, 0x4c, 0x0c,
+	0x58, 0x8c, 0x28, 0x1d, 0x62, 0x4a, 0x8d, 0x4a, 0x53, 0x6f, 0x55, 0xdd, 0x09, 0xcc, 0x4e, 0xf5,
+	0x91, 0x79, 0x81, 0xc7, 0x3c, 0x43, 0x6f, 0x6a, 0xad, 0x65, 0x37, 0xc7, 0xd6, 0x03, 0xd8, 0x9e,
+	0x2d, 0x45, 0x07, 0x49, 0x4c, 0x91, 0xd8, 0xb0, 0xe4, 0x67, 0x81, 0xa3, 0x28, 0x10, 0xb5, 0xf6,
+	0x37, 0xc6, 0xa3, 0xc6, 0xda, 0x7b, 0xaf, 0xdf, 0xbb, 0x6b, 0x4d, 0x76, 0x2c, 0x77, 0x91, 0x2f,
+	0x0f, 0x03, 0xeb, 0x83, 0xae, 0x74, 0xbd, 0xef, 0x31, 0xbf, 0x3b, 0xe9, 0x7a, 0x1b, 0x16, 0x44,
+	0x2b, 0xb2, 0x67, 0x89, 0x0a, 0x15, 0x2a, 0x7f, 0xaf, 0x40, 0x9e, 0xc3, 0x52, 0x76, 0xd2, 0x8b,
+	0x7d, 0x34, 0xf4, 0xa6, 0xde, 0xaa, 0xed, 0xee, 0xd9, 0x7f, 0x52, 0xd6, 0xfe, 0x6d, 0x2b, 0x36,
+	0x07, 0x87, 0x92, 0xc4, 0xcd, 0xe9, 0x0a, 0x12, 0xcd, 0x17, 0x25, 0x32, 0x3f, 0x6b, 0xb0, 0x52,
+	0x38, 0x47, 0x2e, 0x43, 0x35, 0x45, 0x3f, 0x1a, 0x44, 0x18, 0x33, 0x39, 0xd3, 0x34, 0x40, 0xee,
+	0xc1, 0x2a, 0x4b, 0xbd, 0xc0, 0xeb, 0xf4, 0xf0, 0x68, 0x18, 0x47, 0x8c, 0xca, 0xe1, 0x2e, 0x8d,
+	0x47, 0x8d, 0x2d, 0x31, 0x5c, 0x71, 0xdf, 0x72, 0x57, 0x26, 0x81, 0x67, 0x19, 0x26, 0x7b, 0xb0,
+	0x92, 0x22, 0x8b, 0x52, 0x0c, 0x24, 0x81, 0xce, 0x09, 0x8c, 0xf1, 0xa8, 0xb1, 0x29, 0x08, 0x0a,
+	0xdb, 0x96, 0xbb, 0x2c, 0x31, 0x3f, 0x6e, 0x3d, 0x51, 0x3c, 0x95, 0xd3, 0x4b, 0x4f, 0xef, 0x40,
+	0xad, 0x93, 0x05, 0x8e, 0x02, 0x8c, 0x93, 0xbe, 0xb4, 0x75, 0x7b, 0x3c, 0x6a, 0x10, 0x41, 0xab,
+	0x6c, 0x5a, 0x2e, 0x70, 0x74, 0x9f, 0x83, 0x1f, 0x15, 0x58, 0x6d, 0xd3, 0xf0, 0x29, 0xc6, 0x81,
+	0xe2, 0x2a, 0xc5, 0x38, 0x98, 0xba, 0x2a, 0x50, 0x51, 0x9c, 0xca, 0xac, 0x38, 0x8f, 0x60, 0x51,
+	0x38, 0x45, 0xa5, 0x85, 0xbb, 0xe7, 0x5a, 0xa8, 0x14, 0xb4, 0xb3, 0x35, 0x1f, 0xd0, 0x9d, 0x50,
+	0x98, 0x5f, 0x34, 0xa8, 0xe6, 0xe1, 0x0b, 0x4f, 0xf7, 0xef, 0x1d, 0x5b, 0x87, 0xb5, 0x7c, 0x58,
+	0x61, 0x95, 0xf5, 0x5d, 0x83, 0xff, 0xdb, 0x34, 0x74, 0x79, 0x9a, 0xa2, 0x79, 0x37, 0xe9, 0x29,
+	0x9a, 0x0b, 0x44, 0x1e, 0x4f, 0x55, 0xad, 0x70, 0x55, 0x6f, 0x9f, 0xab, 0x6a, 0x81, 0xd4, 0x16,
+	0x68, 0x46, 0xd9, 0x57, 0x50, 0x53, 0xe2, 0x17, 0x97, 0x76, 0x13, 0xfe, 0x53, 0x14, 0x75, 0x05,
+	0xb0, 0x36, 0x60, 0x5d, 0x69, 0x43, 0x4c, 0xbc, 0xfb, 0x49, 0x07, 0xbd, 0x4d, 0x43, 0x32, 0x80,
+	0x9a, 0xf2, 0x1e, 0x11, 0xa7, 0xc4, 0x1d, 0x57, 0x1f, 0x49, 0xf3, 0x66, 0xf9, 0x03, 0xf2, 0x5a,
+	0xe4, 0x15, 0xf9, 0x6d, 0x29, 0x55, 0x51, 0x7d, 0x55, 0x4a, 0x55, 0x2c, 0x5e, 0xc4, 0x97, 0x30,
+	0x9f, 0xb9, 0x4d, 0x5a, 0x65, 0xbf, 0x7e, 0xf3, 0x6a, 0x89, 0x4c, 0x49, 0xee, 0xc1, 0x82, 0x90,
+	0x96, 0x5c, 0x2b, 0xff, 0x19, 0x98, 0xd7, 0x4b, 0xe5, 0x8a, 0x12, 0xfb, 0x0f, 0xbf, 0x9e, 0xd6,
+	0xb5, 0x93, 0xd3, 0xba, 0xf6, 0xf3, 0xb4, 0xae, 0x7d, 0x3c, 0xab, 0xcf, 0x9d, 0x9c, 0xd5, 0xe7,
+	0xbe, 0x9d, 0xd5, 0xe7, 0x5e, 0xec, 0x84, 0x11, 0xeb, 0x0e, 0x3b, 0xb6, 0x9f, 0xf4, 0x1d, 0x4e,
+	0x78, 0x23, 0x46, 0xf6, 0x2e, 0x49, 0x5f, 0x4b, 0xd4, 0xc3, 0x20, 0xc4, 0xd4, 0x39, 0x9e, 0xfe,
+	0x30, 0x3b, 0x0b, 0xfc, 0xaf, 0x77, 0xeb, 0x57, 0x00, 0x00, 0x00, 0xff, 0xff, 0xf1, 0x2f, 0x84,
+	0x01, 0x4a, 0x07, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -822,28 +719,18 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	// CreateClass creates a new credit class with an approved list of issuers and optional metadata.
+	// CreateClass creates a new credit class with an approved list of issuers and
+	// optional metadata.
 	CreateClass(ctx context.Context, in *MsgCreateClassRequest, opts ...grpc.CallOption) (*MsgCreateClassResponse, error)
-	// CreateBatch creates a new batch of credits for an existing credit class. This will create a new batch denom
-	// with a fixed supply. Issued credits can be distributed to recipients in either tradable or retired form.
+	// CreateBatch creates a new batch of credits for an existing credit class.
+	// This will create a new batch denom with a fixed supply. Issued credits can
+	// be distributed to recipients in either tradable or retired form.
 	CreateBatch(ctx context.Context, in *MsgCreateBatchRequest, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error)
-	// Send sends tradeable credits from one account to another account. Sent credits can either be tradable or retired on receipt.
+	// Send sends tradeable credits from one account to another account. Sent
+	// credits can either be tradable or retired on receipt.
 	Send(ctx context.Context, in *MsgSendRequest, opts ...grpc.CallOption) (*MsgSendResponse, error)
 	// Retire retires a specified number of credits in the holder's account.
 	Retire(ctx context.Context, in *MsgRetireRequest, opts ...grpc.CallOption) (*MsgRetireResponse, error)
-	// SetPrecision allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature
-	// to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
-	// places allowed for a credit batch is determined by the original number of decimal places used with calling CreatBatch.
-	// SetPrecision allows the number of allowed decimal places to be increased, effectively making the supply more
-	// granular without actually changing any balances. It allows asset issuers to be able to issue an asset without needing
-	// to think about how many subdivisions are needed upfront. While it may not be relevant for credits which likely have
-	// a fairly stable market value, I wanted to experiment a bit and this serves as a proof of concept for a broader
-	// bank redesign where say for instance a coin like the ATOM or XRN could be issued in its own units rather than
-	// micro or nano-units. Instead an operation like SetPrecision would allow trading in micro, nano or pico in the future
-	// based on market demand. Arbitrary, unbounded precision is not desirable because this can lead to spam attacks (like
-	// sending 0.000000000000000000000000000001 coins). This is effectively fixed precision so under the hood it is still
-	// basically an integer, but the fixed precision can be increased so its more adaptable long term than just an integer.
-	SetPrecision(ctx context.Context, in *MsgSetPrecisionRequest, opts ...grpc.CallOption) (*MsgSetPrecisionResponse, error)
 }
 
 type msgClient struct {
@@ -890,39 +777,20 @@ func (c *msgClient) Retire(ctx context.Context, in *MsgRetireRequest, opts ...gr
 	return out, nil
 }
 
-func (c *msgClient) SetPrecision(ctx context.Context, in *MsgSetPrecisionRequest, opts ...grpc.CallOption) (*MsgSetPrecisionResponse, error) {
-	out := new(MsgSetPrecisionResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/SetPrecision", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// CreateClass creates a new credit class with an approved list of issuers and optional metadata.
+	// CreateClass creates a new credit class with an approved list of issuers and
+	// optional metadata.
 	CreateClass(context.Context, *MsgCreateClassRequest) (*MsgCreateClassResponse, error)
-	// CreateBatch creates a new batch of credits for an existing credit class. This will create a new batch denom
-	// with a fixed supply. Issued credits can be distributed to recipients in either tradable or retired form.
+	// CreateBatch creates a new batch of credits for an existing credit class.
+	// This will create a new batch denom with a fixed supply. Issued credits can
+	// be distributed to recipients in either tradable or retired form.
 	CreateBatch(context.Context, *MsgCreateBatchRequest) (*MsgCreateBatchResponse, error)
-	// Send sends tradeable credits from one account to another account. Sent credits can either be tradable or retired on receipt.
+	// Send sends tradeable credits from one account to another account. Sent
+	// credits can either be tradable or retired on receipt.
 	Send(context.Context, *MsgSendRequest) (*MsgSendResponse, error)
 	// Retire retires a specified number of credits in the holder's account.
 	Retire(context.Context, *MsgRetireRequest) (*MsgRetireResponse, error)
-	// SetPrecision allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature
-	// to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
-	// places allowed for a credit batch is determined by the original number of decimal places used with calling CreatBatch.
-	// SetPrecision allows the number of allowed decimal places to be increased, effectively making the supply more
-	// granular without actually changing any balances. It allows asset issuers to be able to issue an asset without needing
-	// to think about how many subdivisions are needed upfront. While it may not be relevant for credits which likely have
-	// a fairly stable market value, I wanted to experiment a bit and this serves as a proof of concept for a broader
-	// bank redesign where say for instance a coin like the ATOM or XRN could be issued in its own units rather than
-	// micro or nano-units. Instead an operation like SetPrecision would allow trading in micro, nano or pico in the future
-	// based on market demand. Arbitrary, unbounded precision is not desirable because this can lead to spam attacks (like
-	// sending 0.000000000000000000000000000001 coins). This is effectively fixed precision so under the hood it is still
-	// basically an integer, but the fixed precision can be increased so its more adaptable long term than just an integer.
-	SetPrecision(context.Context, *MsgSetPrecisionRequest) (*MsgSetPrecisionResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -940,9 +808,6 @@ func (*UnimplementedMsgServer) Send(ctx context.Context, req *MsgSendRequest) (*
 }
 func (*UnimplementedMsgServer) Retire(ctx context.Context, req *MsgRetireRequest) (*MsgRetireResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Retire not implemented")
-}
-func (*UnimplementedMsgServer) SetPrecision(ctx context.Context, req *MsgSetPrecisionRequest) (*MsgSetPrecisionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetPrecision not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -1021,24 +886,6 @@ func _Msg_Retire_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_SetPrecision_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSetPrecisionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).SetPrecision(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1alpha1.Msg/SetPrecision",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SetPrecision(ctx, req.(*MsgSetPrecisionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "regen.ecocredit.v1alpha1.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -1058,10 +905,6 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Retire",
 			Handler:    _Msg_Retire_Handler,
-		},
-		{
-			MethodName: "SetPrecision",
-			Handler:    _Msg_SetPrecision_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1498,71 +1341,6 @@ func (m *MsgRetireResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgSetPrecisionRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgSetPrecisionRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgSetPrecisionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.MaxDecimalPlaces != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.MaxDecimalPlaces))
-		i--
-		dAtA[i] = 0x18
-	}
-	if len(m.BatchDenom) > 0 {
-		i -= len(m.BatchDenom)
-		copy(dAtA[i:], m.BatchDenom)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.BatchDenom)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Issuer) > 0 {
-		i -= len(m.Issuer)
-		copy(dAtA[i:], m.Issuer)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Issuer)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgSetPrecisionResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgSetPrecisionResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgSetPrecisionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
 func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTx(v)
 	base := offset
@@ -1761,35 +1539,6 @@ func (m *MsgRetireRequest_RetireUnits) Size() (n int) {
 }
 
 func (m *MsgRetireResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgSetPrecisionRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Issuer)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.BatchDenom)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	if m.MaxDecimalPlaces != 0 {
-		n += 1 + sovTx(uint64(m.MaxDecimalPlaces))
-	}
-	return n
-}
-
-func (m *MsgSetPrecisionResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -3075,195 +2824,6 @@ func (m *MsgRetireResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgRetireResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgSetPrecisionRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSetPrecisionRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSetPrecisionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Issuer", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Issuer = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.BatchDenom = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MaxDecimalPlaces", wireType)
-			}
-			m.MaxDecimalPlaces = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.MaxDecimalPlaces |= uint32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgSetPrecisionResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSetPrecisionResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSetPrecisionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

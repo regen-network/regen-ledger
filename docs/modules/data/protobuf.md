@@ -15,6 +15,8 @@
 - [regen/data/v1alpha1/query.proto](#regen/data/v1alpha1/query.proto)
     - [QueryByCidRequest](#regen.data.v1alpha1.QueryByCidRequest)
     - [QueryByCidResponse](#regen.data.v1alpha1.QueryByCidResponse)
+    - [QueryBySignerRequest](#regen.data.v1alpha1.QueryBySignerRequest)
+    - [QueryBySignerResponse](#regen.data.v1alpha1.QueryBySignerResponse)
   
     - [Query](#regen.data.v1alpha1.Query)
   
@@ -145,7 +147,7 @@ QueryByCidRequest is the Query/ByCid request type.
 <a name="regen.data.v1alpha1.QueryByCidResponse"></a>
 
 ### QueryByCidResponse
-QueryByCidRequest is the Query/ByCid response type.
+QueryByCidResponse is the Query/ByCid response type.
 
 
 | Field | Type | Label | Description |
@@ -153,6 +155,38 @@ QueryByCidRequest is the Query/ByCid response type.
 | timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the timestamp of the block at which the data was anchored. |
 | signers | [string](#string) | repeated | signers are the addresses of the accounts which have signed the data. |
 | content | [bytes](#bytes) |  | content is the content of the data, if it was stored on-chain. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha1.QueryBySignerRequest"></a>
+
+### QueryBySignerRequest
+QueryBySignerRequest is the Query/BySigner request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| signer | [string](#string) |  | signer is the address of the signer to query by. |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination is the PageRequest to use for pagination. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha1.QueryBySignerResponse"></a>
+
+### QueryBySignerResponse
+QueryBySignerResponse is the Query/BySigner response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| cids | [bytes](#bytes) | repeated | cids are in the CIDs returned in this page of the query. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination is the pagination PageResponse. |
 
 
 
@@ -173,6 +207,7 @@ Query is the regen.data.v1alpha1 Query service
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | ByCid | [QueryByCidRequest](#regen.data.v1alpha1.QueryByCidRequest) | [QueryByCidResponse](#regen.data.v1alpha1.QueryByCidResponse) | ByCid queries data based on its CID. |
+| BySigner | [QueryBySignerRequest](#regen.data.v1alpha1.QueryBySignerRequest) | [QueryBySignerResponse](#regen.data.v1alpha1.QueryBySignerResponse) | BySigner queries data based on signers. |
 
  <!-- end services -->
 
