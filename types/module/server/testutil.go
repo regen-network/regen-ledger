@@ -8,8 +8,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	module2 "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/regen-network/regen-ledger/testutil/server"
+	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -20,13 +20,13 @@ import (
 
 type fixtureFactory struct {
 	t       *testing.T
-	modules module2.BasicManager
+	modules []module.ModuleBase
 	signers []sdk.AccAddress
 }
 
 var _ server.FixtureFactory = fixtureFactory{}
 
-func NewFixtureFactory(t *testing.T, numSigners int, modules module2.BasicManager) server.FixtureFactory {
+func NewFixtureFactory(t *testing.T, numSigners int, modules []module.ModuleBase) server.FixtureFactory {
 	signers := makeTestAddresses(numSigners)
 	return fixtureFactory{
 		t:       t,

@@ -1,6 +1,7 @@
 package app
 
 import (
+	newmodule "github.com/regen-network/regen-ledger/types/module"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"io"
 	"math/big"
@@ -129,6 +130,11 @@ var (
 		ecocredit.Module{},
 		data.Module{},
 	)
+
+	NewModules = newmodule.Modules{
+		ecocredit.Module{},
+		data.Module{},
+	}
 
 	// module account permissions
 	maccPerms = map[string][]string{
@@ -350,7 +356,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	/* New Module Wiring START */
 	newModuleManager := servermodule.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
 
-	err := newModuleManager.RegisterModules(ModuleBasics)
+	err := newModuleManager.RegisterModules(NewModules)
 	if err != nil {
 		panic(err)
 	}

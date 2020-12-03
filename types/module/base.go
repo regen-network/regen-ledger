@@ -8,3 +8,5 @@ type ModuleBase interface {
 	Name() string
 	RegisterInterfaces(types.InterfaceRegistry)
 }
+
+type Modules []ModuleBase

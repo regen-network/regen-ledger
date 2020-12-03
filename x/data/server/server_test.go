@@ -1,7 +1,7 @@
 package server_test
 
 import (
-	module2 "github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/regen-network/regen-ledger/types/module"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -12,9 +12,9 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	ff := server.NewFixtureFactory(t, 2, module2.NewBasicManager(
+	ff := server.NewFixtureFactory(t, 2, module.Modules{
 		datamodule.Module{},
-	))
+	})
 
 	s := testsuite.NewIntegrationTestSuite(ff)
 
