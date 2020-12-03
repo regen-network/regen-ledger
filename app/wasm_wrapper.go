@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/CosmWasm/wasmd/x/wasm"
-	"github.com/spf13/viper"
+	"github.com/cosmos/cosmos-sdk/server"
 )
 
 // WasmWrapper allows us to use namespacing in the config file
@@ -13,7 +13,8 @@ type WasmWrapper struct {
 
 func getWasmConfig() wasm.Config {
 	wasmWrap := WasmWrapper{Wasm: wasm.DefaultWasmConfig()}
-	err := viper.Unmarshal(&wasmWrap)
+	ctx := server.NewDefaultContext()
+	err := ctx.Viper.Unmarshal(&wasmWrap)
 	if err != nil {
 		panic("error while reading wasm config: " + err.Error())
 	}
