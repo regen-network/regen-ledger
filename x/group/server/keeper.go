@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/cockroachdb/apd/v2"
 	gogotypes "github.com/gogo/protobuf/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -11,6 +12,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
+	"github.com/regen-network/regen-ledger/math"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/group/types"
 )
@@ -171,13 +173,24 @@ func (k Keeper) CreateGroup(ctx sdk.Context, admin sdk.AccAddress, members types
 		return 0, err
 	}
 
-	totalWeight := sdk.ZeroDec()
+	totalWeight := apd.New(0, 0)
 	for i := range members {
 		m := members[i]
 		if err := assertCommentSize(m.Comment, maxCommentSize, "member comment"); err != nil {
 			return 0, err
 		}
-		totalWeight = totalWeight.Add(m.Power)
+
+		power, err := math.ParseNonNegativeDecimal(m.Power)
+		if err != nil {
+			return 0, err
+		}
+
+		if !power.IsZero() {
+			err = math.Add(totalWeight, totalWeight, power)
+			if err != nil {
+				return 0, err
+			}
+		}
 	}
 
 	groupID := types.GroupID(k.groupSeq.NextVal(ctx))
@@ -186,7 +199,7 @@ func (k Keeper) CreateGroup(ctx sdk.Context, admin sdk.AccAddress, members types
 		Admin:       admin,
 		Comment:     comment,
 		Version:     1,
-		TotalWeight: totalWeight,
+		TotalWeight: math.DecimalString(totalWeight),
 	})
 	if err != nil {
 		return 0, sdkerrors.Wrap(err, "could not create group")
@@ -515,10 +528,10 @@ func (k Keeper) CreateProposal(ctx sdk.Context, accountAddress sdk.AccAddress, c
 		ExecutorResult:      types.ProposalExecutorResultNotRun,
 		Timeout:             *endTime,
 		VoteState: types.Tally{
-			YesCount:     sdk.ZeroDec(),
-			NoCount:      sdk.ZeroDec(),
-			AbstainCount: sdk.ZeroDec(),
-			VetoCount:    sdk.ZeroDec(),
+			YesCount:     "0",
+			NoCount:      "0",
+			AbstainCount: "0",
+			VetoCount:    "0",
 		},
 	}
 	if err := m.SetMsgs(msgs); err != nil {

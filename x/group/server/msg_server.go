@@ -3,8 +3,10 @@ package server
 import (
 	"context"
 
+	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/math"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/util"
 	"github.com/regen-network/regen-ledger/x/group/types"
@@ -48,12 +50,32 @@ func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *types.MsgUpda
 				return sdkerrors.Wrap(err, "get group member")
 			}
 
+			totalWeight, err := math.ParseNonNegativeDecimal(m.TotalWeight)
+			if err != nil {
+				return err
+			}
+			weight, err := math.ParseNonNegativeDecimal(member.Weight)
+			if err != nil {
+				return err
+			}
+
 			// handle delete
-			if member.Weight.Equal(sdk.ZeroDec()) {
+			if weight.Cmp(apd.New(0, 0)) == 0 {
 				if !found {
 					return sdkerrors.Wrap(orm.ErrNotFound, "unknown member")
 				}
-				m.TotalWeight = m.TotalWeight.Sub(previousMemberStatus.Weight)
+
+				previousWeight, err := math.ParseNonNegativeDecimal(previousMemberStatus.Weight)
+				if err != nil {
+					return err
+				}
+
+				err = math.SafeSub(totalWeight, totalWeight, previousWeight)
+				if err != nil {
+					return err
+				}
+
+				m.TotalWeight = math.DecimalString(totalWeight)
 				if err := s.groupMemberTable.Delete(ctx, &member); err != nil {
 					return sdkerrors.Wrap(err, "delete member")
 				}
@@ -61,14 +83,25 @@ func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *types.MsgUpda
 			}
 			// handle add + update
 			if found {
-				m.TotalWeight = m.TotalWeight.Sub(previousMemberStatus.Weight)
+				previousWeight, err := math.ParseNonNegativeDecimal(previousMemberStatus.Weight)
+				if err != nil {
+					return err
+				}
+				err = math.SafeSub(totalWeight, totalWeight, previousWeight)
+				if err != nil {
+					return err
+				}
 				if err := s.groupMemberTable.Save(ctx, &member); err != nil {
 					return sdkerrors.Wrap(err, "add member")
 				}
 			} else if err := s.groupMemberTable.Create(ctx, &member); err != nil {
 				return sdkerrors.Wrap(err, "add member")
 			}
-			m.TotalWeight = m.TotalWeight.Add(member.Weight)
+			err = math.Add(totalWeight, totalWeight, weight)
+			if err != nil {
+				return err
+			}
+			m.TotalWeight = math.DecimalString(totalWeight)
 		}
 		return s.UpdateGroup(ctx, m)
 	}

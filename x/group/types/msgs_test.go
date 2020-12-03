@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	"github.com/cosmos/cosmos-sdk/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	proto "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/assert"
@@ -26,7 +25,7 @@ func TestMsgCreateGroupValidation(t *testing.T) {
 			src: MsgCreateGroupRequest{
 				Admin: myAddr,
 				Members: []Member{
-					{Address: myAddr, Power: types.NewDec(1)},
+					{Address: myAddr, Power: "1"},
 				},
 			},
 		},
@@ -34,8 +33,8 @@ func TestMsgCreateGroupValidation(t *testing.T) {
 			src: MsgCreateGroupRequest{
 				Admin: myAddr,
 				Members: []Member{
-					{Address: myAddr, Power: types.NewDec(1)},
-					{Address: myOtherAddr, Power: types.NewDec(2)},
+					{Address: myAddr, Power: "1"},
+					{Address: myOtherAddr, Power: "2"},
 				},
 			},
 		},
@@ -53,8 +52,8 @@ func TestMsgCreateGroupValidation(t *testing.T) {
 			src: MsgCreateGroupRequest{
 				Admin: myAddr,
 				Members: []Member{
-					{Address: myAddr, Power: types.NewDec(1)},
-					{Address: myAddr, Power: types.NewDec(2)},
+					{Address: myAddr, Power: "1"},
+					{Address: myAddr, Power: "2"},
 				},
 			},
 			expErr: true,
@@ -63,7 +62,7 @@ func TestMsgCreateGroupValidation(t *testing.T) {
 			src: MsgCreateGroupRequest{
 				Admin: myAddr,
 				Members: []Member{
-					{Address: myAddr, Power: types.NewDec(-1)},
+					{Address: myAddr, Power: "-1"},
 				},
 			},
 			expErr: true,
@@ -78,7 +77,7 @@ func TestMsgCreateGroupValidation(t *testing.T) {
 		"zero member's power not allowed": {
 			src: MsgCreateGroupRequest{
 				Admin:   myAddr,
-				Members: []Member{{Address: myAddr, Power: sdk.ZeroDec()}},
+				Members: []Member{{Address: myAddr, Power: "0"}},
 			},
 			expErr: true,
 		},
@@ -86,7 +85,7 @@ func TestMsgCreateGroupValidation(t *testing.T) {
 			src: MsgCreateGroupRequest{
 				Admin: myAddr,
 				Members: []Member{
-					{Power: types.NewDec(1)},
+					{Power: "1"},
 				},
 			},
 			expErr: true,
@@ -95,7 +94,7 @@ func TestMsgCreateGroupValidation(t *testing.T) {
 			src: MsgCreateGroupRequest{
 				Admin: myAddr,
 				Members: []Member{
-					{Address: []byte("invalid-address"), Power: types.NewDec(1)},
+					{Address: []byte("invalid-address"), Power: "1"},
 				},
 			},
 			expErr: true,
@@ -124,39 +123,39 @@ func TestMsgCreateGroupAccount(t *testing.T) {
 	specs := map[string]struct {
 		admin     sdk.AccAddress
 		group     GroupID
-		threshold sdk.Dec
+		threshold string
 		timeout   proto.Duration
 		expErr    bool
 	}{
 		"all good with minimum fields set": {
 			admin:     myAddr,
 			group:     1,
-			threshold: sdk.OneDec(),
+			threshold: "1",
 			timeout:   proto.Duration{Seconds: 1},
 		},
 		"zero threshold not allowed": {
 			admin:     myAddr,
 			group:     1,
-			threshold: sdk.ZeroDec(),
+			threshold: "0",
 			timeout:   proto.Duration{Seconds: 1},
 			expErr:    true,
 		},
 		"admin required": {
 			group:     1,
-			threshold: sdk.ZeroDec(),
+			threshold: "1",
 			timeout:   proto.Duration{Seconds: 1},
 			expErr:    true,
 		},
 		"valid admin required": {
 			admin:     []byte("invalid-address"),
 			group:     1,
-			threshold: sdk.ZeroDec(),
+			threshold: "1",
 			timeout:   proto.Duration{Seconds: 1},
 			expErr:    true,
 		},
 		"group required": {
 			admin:     myAddr,
-			threshold: sdk.ZeroDec(),
+			threshold: "1",
 			timeout:   proto.Duration{Seconds: 1},
 			expErr:    true,
 		},
@@ -168,13 +167,13 @@ func TestMsgCreateGroupAccount(t *testing.T) {
 		"decision policy without timeout": {
 			admin:     myAddr,
 			group:     1,
-			threshold: sdk.ZeroDec(),
+			threshold: "1",
 			expErr:    true,
 		},
 		"decision policy with invalid timeout": {
 			admin:     myAddr,
 			group:     1,
-			threshold: sdk.ZeroDec(),
+			threshold: "1",
 			timeout:   proto.Duration{Seconds: -1},
 			expErr:    true,
 		},
@@ -187,7 +186,7 @@ func TestMsgCreateGroupAccount(t *testing.T) {
 		"decision policy with negative threshold": {
 			admin:     myAddr,
 			group:     1,
-			threshold: sdk.NewDec(-1),
+			threshold: "-1",
 			timeout:   proto.Duration{Seconds: 1},
 			expErr:    true,
 		},

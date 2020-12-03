@@ -2,7 +2,6 @@ package testsuite
 
 import (
 	"context"
-	"math"
 	"strings"
 	"time"
 
@@ -77,14 +76,14 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.addr2 = s.fixture.Signers()[1]
 
 	members := []types.Member{
-		{Address: s.addr2, Power: sdk.OneDec()},
+		{Address: s.addr2, Power: "1"},
 	}
 	groupID, err := s.groupKeeper.CreateGroup(s.sdkCtx, s.addr1, members, "test")
 	s.Require().NoError(err)
 	s.groupID = groupID
 
 	policy := types.NewThresholdDecisionPolicy(
-		sdk.OneDec(),
+		"1",
 		gogotypes.Duration{Seconds: 1},
 	)
 	accountAddr, err := s.groupKeeper.CreateGroupAccount(s.sdkCtx, s.addr1, groupID, policy, "test")
@@ -101,11 +100,11 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 func (s *IntegrationTestSuite) TestCreateGroup() {
 	members := []types.Member{{
 		Address: sdk.AccAddress([]byte("one--member--address")),
-		Power:   sdk.NewDec(1),
+		Power:   "1",
 		Comment: "first",
 	}, {
 		Address: sdk.AccAddress([]byte("other-member-address")),
-		Power:   sdk.NewDec(2),
+		Power:   "2",
 		Comment: "second",
 	}}
 
@@ -133,7 +132,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 				Admin: []byte("valid--admin-address"),
 				Members: []types.Member{{
 					Address: []byte("valid-member-address"),
-					Power:   sdk.OneDec(),
+					Power:   "1",
 					Comment: strings.Repeat("a", 256),
 				}},
 				Comment: "test",
@@ -185,7 +184,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
 	members := []types.Member{{
 		Address: sdk.AccAddress([]byte("valid-member-address")),
-		Power:   sdk.NewDec(1),
+		Power:   "1",
 		Comment: "first member",
 	}}
 	oldAdmin := []byte("my-old-admin-address")
@@ -207,7 +206,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
 				GroupId:     groupID,
 				Admin:       []byte("my-new-admin-address"),
 				Comment:     "test",
-				TotalWeight: sdk.NewDec(1),
+				TotalWeight: "1",
 				Version:     2,
 			},
 		},
@@ -222,7 +221,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
 				GroupId:     groupID,
 				Admin:       oldAdmin,
 				Comment:     "test",
-				TotalWeight: sdk.NewDec(1),
+				TotalWeight: "1",
 				Version:     1,
 			},
 		},
@@ -237,7 +236,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
 				GroupId:     groupID,
 				Admin:       oldAdmin,
 				Comment:     "test",
-				TotalWeight: sdk.NewDec(1),
+				TotalWeight: "1",
 				Version:     1,
 			},
 		},
@@ -264,7 +263,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupComment() {
 	oldComment := "first"
 	members := []types.Member{{
 		Address: sdk.AccAddress([]byte("valid-member-address")),
-		Power:   sdk.NewDec(1),
+		Power:   "1",
 		Comment: oldComment,
 	}}
 
@@ -287,7 +286,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupComment() {
 				GroupId:     groupID,
 				Admin:       oldAdmin,
 				Comment:     "new comment",
-				TotalWeight: sdk.NewDec(1),
+				TotalWeight: "1",
 				Version:     2,
 			},
 		},
@@ -302,7 +301,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupComment() {
 				GroupId:     groupID,
 				Admin:       oldAdmin,
 				Comment:     "test",
-				TotalWeight: sdk.NewDec(1),
+				TotalWeight: "1",
 				Version:     1,
 			},
 		},
@@ -317,7 +316,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupComment() {
 				GroupId:     groupID,
 				Admin:       oldAdmin,
 				Comment:     "test",
-				TotalWeight: sdk.NewDec(1),
+				TotalWeight: "1",
 				Version:     1,
 			},
 		},
@@ -343,7 +342,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupComment() {
 func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 	members := []types.Member{{
 		Address: sdk.AccAddress([]byte("valid-member-address")),
-		Power:   sdk.NewDec(1),
+		Power:   "1",
 		Comment: "first",
 	}}
 
@@ -363,7 +362,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				Admin:   myAdmin,
 				MemberUpdates: []types.Member{{
 					Address: sdk.AccAddress([]byte("other-member-address")),
-					Power:   sdk.NewDec(2),
+					Power:   "2",
 					Comment: "second",
 				}},
 			},
@@ -371,20 +370,20 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
-				TotalWeight: sdk.NewDec(3),
+				TotalWeight: "3",
 				Version:     2,
 			},
 			expMembers: []types.GroupMember{
 				{
 					Member:  sdk.AccAddress([]byte("other-member-address")),
 					GroupId: groupID,
-					Weight:  sdk.NewDec(2),
+					Weight:  "2",
 					Comment: "second",
 				},
 				{
 					Member:  sdk.AccAddress([]byte("valid-member-address")),
 					GroupId: groupID,
-					Weight:  sdk.NewDec(1),
+					Weight:  "1",
 					Comment: "first",
 				},
 			},
@@ -395,7 +394,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				Admin:   myAdmin,
 				MemberUpdates: []types.Member{{
 					Address: sdk.AccAddress([]byte("valid-member-address")),
-					Power:   sdk.NewDec(2),
+					Power:   "2",
 					Comment: "updated",
 				}},
 			},
@@ -403,14 +402,14 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
-				TotalWeight: sdk.NewDec(2),
+				TotalWeight: "2",
 				Version:     2,
 			},
 			expMembers: []types.GroupMember{
 				{
 					Member:  sdk.AccAddress([]byte("valid-member-address")),
 					GroupId: groupID,
-					Weight:  sdk.NewDec(2),
+					Weight:  "2",
 					Comment: "updated",
 				},
 			},
@@ -421,7 +420,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				Admin:   myAdmin,
 				MemberUpdates: []types.Member{{
 					Address: sdk.AccAddress([]byte("valid-member-address")),
-					Power:   sdk.NewDec(1),
+					Power:   "1",
 					Comment: "first",
 				}},
 			},
@@ -429,14 +428,14 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
-				TotalWeight: sdk.NewDec(1),
+				TotalWeight: "1",
 				Version:     2,
 			},
 			expMembers: []types.GroupMember{
 				{
 					Member:  sdk.AccAddress([]byte("valid-member-address")),
 					GroupId: groupID,
-					Weight:  sdk.NewDec(1),
+					Weight:  "1",
 					Comment: "first",
 				},
 			},
@@ -448,12 +447,12 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				MemberUpdates: []types.Member{
 					{
 						Address: sdk.AccAddress([]byte("valid-member-address")),
-						Power:   sdk.NewDec(0),
+						Power:   "0",
 						Comment: "good bye",
 					},
 					{
 						Address: s.addr1,
-						Power:   sdk.NewDec(1),
+						Power:   "1",
 						Comment: "welcome",
 					},
 				},
@@ -462,13 +461,13 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
-				TotalWeight: sdk.NewDec(1),
+				TotalWeight: "1",
 				Version:     2,
 			},
 			expMembers: []types.GroupMember{{
 				Member:  s.addr1,
 				GroupId: groupID,
-				Weight:  sdk.NewDec(1),
+				Weight:  "1",
 				Comment: "welcome",
 			}},
 		},
@@ -478,7 +477,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				Admin:   myAdmin,
 				MemberUpdates: []types.Member{{
 					Address: sdk.AccAddress([]byte("valid-member-address")),
-					Power:   sdk.NewDec(0),
+					Power:   "0",
 					Comment: "good bye",
 				}},
 			},
@@ -486,7 +485,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
-				TotalWeight: sdk.NewDec(0),
+				TotalWeight: "0",
 				Version:     2,
 			},
 			expMembers: []types.GroupMember{},
@@ -497,7 +496,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				Admin:   myAdmin,
 				MemberUpdates: []types.Member{{
 					Address: sdk.AccAddress([]byte("unknown-member-addrs")),
-					Power:   sdk.NewDec(0),
+					Power:   "0",
 					Comment: "good bye",
 				}},
 			},
@@ -506,13 +505,13 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
-				TotalWeight: sdk.NewDec(1),
+				TotalWeight: "1",
 				Version:     1,
 			},
 			expMembers: []types.GroupMember{{
 				Member:  sdk.AccAddress([]byte("valid-member-address")),
 				GroupId: groupID,
-				Weight:  sdk.NewDec(1),
+				Weight:  "1",
 				Comment: "first",
 			}},
 		},
@@ -522,7 +521,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				Admin:   []byte("unknown-address"),
 				MemberUpdates: []types.Member{{
 					Address: sdk.AccAddress([]byte("other-member-address")),
-					Power:   sdk.NewDec(2),
+					Power:   "2",
 					Comment: "second",
 				}},
 			},
@@ -531,13 +530,13 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
-				TotalWeight: sdk.NewDec(1),
+				TotalWeight: "1",
 				Version:     1,
 			},
 			expMembers: []types.GroupMember{{
 				Member:  sdk.AccAddress([]byte("valid-member-address")),
 				GroupId: groupID,
-				Weight:  sdk.NewDec(1),
+				Weight:  "1",
 				Comment: "first",
 			}},
 		},
@@ -547,7 +546,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				Admin:   myAdmin,
 				MemberUpdates: []types.Member{{
 					Address: sdk.AccAddress([]byte("other-member-address")),
-					Power:   sdk.NewDec(2),
+					Power:   "2",
 					Comment: "second",
 				}},
 			},
@@ -556,13 +555,13 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
-				TotalWeight: sdk.NewDec(1),
+				TotalWeight: "1",
 				Version:     1,
 			},
 			expMembers: []types.GroupMember{{
 				Member:  sdk.AccAddress([]byte("valid-member-address")),
 				GroupId: groupID,
-				Weight:  sdk.NewDec(1),
+				Weight:  "1",
 				Comment: "first",
 			}},
 		},
@@ -610,7 +609,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 				GroupId: myGroupID,
 			},
 			policy: types.NewThresholdDecisionPolicy(
-				sdk.OneDec(),
+				"1",
 				gogotypes.Duration{Seconds: 1},
 			),
 		},
@@ -621,7 +620,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 				GroupId: myGroupID,
 			},
 			policy: types.NewThresholdDecisionPolicy(
-				sdk.NewDec(math.MaxInt64),
+				"10",
 				gogotypes.Duration{Seconds: 1},
 			),
 		},
@@ -632,7 +631,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 				GroupId: 9999,
 			},
 			policy: types.NewThresholdDecisionPolicy(
-				sdk.OneDec(),
+				"1",
 				gogotypes.Duration{Seconds: 1},
 			),
 			expErr: true,
@@ -644,7 +643,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 				GroupId: myGroupID,
 			},
 			policy: types.NewThresholdDecisionPolicy(
-				sdk.OneDec(),
+				"1",
 				gogotypes.Duration{Seconds: 1},
 			),
 			expErr: true,
@@ -656,7 +655,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 				GroupId: myGroupID,
 			},
 			policy: types.NewThresholdDecisionPolicy(
-				sdk.OneDec(),
+				"1",
 				gogotypes.Duration{Seconds: 1},
 			),
 			expErr: true,
@@ -692,20 +691,20 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 func (s *IntegrationTestSuite) TestCreateProposal() {
 	members := []types.Member{{
 		Address: []byte("valid-member-address"),
-		Power:   sdk.OneDec(),
+		Power:   "1",
 	}}
 	myGroupID, err := s.groupKeeper.CreateGroup(s.sdkCtx, []byte("valid--admin-address"), members, "test")
 	s.Require().NoError(err)
 
 	policy := types.NewThresholdDecisionPolicy(
-		sdk.OneDec(),
+		"1",
 		gogotypes.Duration{Seconds: 1},
 	)
 	accountAddr, err := s.groupKeeper.CreateGroupAccount(s.sdkCtx, []byte("valid--admin-address"), myGroupID, policy, "test")
 	s.Require().NoError(err)
 
 	policy = types.NewThresholdDecisionPolicy(
-		sdk.NewDec(math.MaxInt64),
+		"100",
 		gogotypes.Duration{Seconds: 1},
 	)
 	bigThresholdAddr, err := s.groupKeeper.CreateGroupAccount(s.sdkCtx, []byte("valid--admin-address"), myGroupID, policy, "test")
@@ -832,10 +831,10 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 			s.Assert().Equal(types.ProposalStatusSubmitted, proposal.Status)
 			s.Assert().Equal(types.ProposalResultUnfinalized, proposal.Result)
 			s.Assert().Equal(types.Tally{
-				YesCount:     sdk.ZeroDec(),
-				NoCount:      sdk.ZeroDec(),
-				AbstainCount: sdk.ZeroDec(),
-				VetoCount:    sdk.ZeroDec(),
+				YesCount:     "0",
+				NoCount:      "0",
+				AbstainCount: "0",
+				VetoCount:    "0",
 			}, proposal.VoteState)
 
 			timeout, err := gogotypes.TimestampFromProto(&proposal.Timeout)
@@ -853,14 +852,14 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 
 func (s *IntegrationTestSuite) TestVote() {
 	members := []types.Member{
-		{Address: []byte("valid-member-address"), Power: sdk.OneDec()},
-		{Address: []byte("power-member-address"), Power: sdk.NewDec(2)},
+		{Address: []byte("valid-member-address"), Power: "1"},
+		{Address: []byte("power-member-address"), Power: "2"},
 	}
 	myGroupID, err := s.groupKeeper.CreateGroup(s.sdkCtx, []byte("valid--admin-address"), members, "test")
 	s.Require().NoError(err)
 
 	policy := types.NewThresholdDecisionPolicy(
-		sdk.NewDec(2),
+		"2",
 		gogotypes.Duration{Seconds: 1},
 	)
 	accountAddr, err := s.groupKeeper.CreateGroupAccount(s.sdkCtx, []byte("valid--admin-address"), myGroupID, policy, "test")
@@ -884,10 +883,10 @@ func (s *IntegrationTestSuite) TestVote() {
 				Choice:     types.Choice_CHOICE_YES,
 			},
 			expVoteState: types.Tally{
-				YesCount:     sdk.OneDec(),
-				NoCount:      sdk.ZeroDec(),
-				AbstainCount: sdk.ZeroDec(),
-				VetoCount:    sdk.ZeroDec(),
+				YesCount:     "1",
+				NoCount:      "0",
+				AbstainCount: "0",
+				VetoCount:    "0",
 			},
 			expProposalStatus: types.ProposalStatusSubmitted,
 			expResult:         types.ProposalResultUnfinalized,
@@ -899,10 +898,10 @@ func (s *IntegrationTestSuite) TestVote() {
 				Choice:     types.Choice_CHOICE_NO,
 			},
 			expVoteState: types.Tally{
-				YesCount:     sdk.ZeroDec(),
-				NoCount:      sdk.OneDec(),
-				AbstainCount: sdk.ZeroDec(),
-				VetoCount:    sdk.ZeroDec(),
+				YesCount:     "0",
+				NoCount:      "1",
+				AbstainCount: "0",
+				VetoCount:    "0",
 			},
 			expProposalStatus: types.ProposalStatusSubmitted,
 			expResult:         types.ProposalResultUnfinalized,
@@ -914,10 +913,10 @@ func (s *IntegrationTestSuite) TestVote() {
 				Choice:     types.Choice_CHOICE_ABSTAIN,
 			},
 			expVoteState: types.Tally{
-				YesCount:     sdk.ZeroDec(),
-				NoCount:      sdk.ZeroDec(),
-				AbstainCount: sdk.OneDec(),
-				VetoCount:    sdk.ZeroDec(),
+				YesCount:     "0",
+				NoCount:      "0",
+				AbstainCount: "1",
+				VetoCount:    "0",
 			},
 			expProposalStatus: types.ProposalStatusSubmitted,
 			expResult:         types.ProposalResultUnfinalized,
@@ -929,10 +928,10 @@ func (s *IntegrationTestSuite) TestVote() {
 				Choice:     types.Choice_CHOICE_VETO,
 			},
 			expVoteState: types.Tally{
-				YesCount:     sdk.ZeroDec(),
-				NoCount:      sdk.ZeroDec(),
-				AbstainCount: sdk.ZeroDec(),
-				VetoCount:    sdk.OneDec(),
+				YesCount:     "0",
+				NoCount:      "0",
+				AbstainCount: "0",
+				VetoCount:    "1",
 			},
 			expProposalStatus: types.ProposalStatusSubmitted,
 			expResult:         types.ProposalResultUnfinalized,
@@ -944,10 +943,10 @@ func (s *IntegrationTestSuite) TestVote() {
 				Choice:     types.Choice_CHOICE_YES,
 			},
 			expVoteState: types.Tally{
-				YesCount:     sdk.NewDec(2),
-				NoCount:      sdk.ZeroDec(),
-				AbstainCount: sdk.ZeroDec(),
-				VetoCount:    sdk.ZeroDec(),
+				YesCount:     "2",
+				NoCount:      "0",
+				AbstainCount: "0",
+				VetoCount:    "0",
 			},
 			expProposalStatus: types.ProposalStatusClosed,
 			expResult:         types.ProposalResultAccepted,

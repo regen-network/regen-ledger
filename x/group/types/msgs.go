@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	proto "github.com/gogo/protobuf/proto"
+	"github.com/regen-network/regen-ledger/math"
 )
 
 var _ sdk.MsgRequest = &MsgCreateGroupRequest{}
@@ -29,8 +30,8 @@ func (m MsgCreateGroupRequest) ValidateBasic() error {
 	}
 	for i := range m.Members {
 		member := m.Members[i]
-		if member.Power.Equal(sdk.ZeroDec()) {
-			return sdkerrors.Wrap(ErrEmpty, "member power")
+		if _, err := math.ParseNonNegativeDecimal(member.Power); err != nil {
+			return sdkerrors.Wrap(err, "member power")
 		}
 	}
 	return nil
@@ -40,8 +41,8 @@ func (m Member) ValidateBasic() error {
 	if m.Address.Empty() {
 		return sdkerrors.Wrap(ErrEmpty, "address")
 	}
-	if m.Power.IsNil() || m.Power.LT(sdk.ZeroDec()) {
-		return sdkerrors.Wrap(ErrInvalid, "power")
+	if _, err := math.ParsePositiveDecimal(m.Power); err != nil {
+		return sdkerrors.Wrap(err, "power")
 	}
 	if err := sdk.VerifyAddressFormat(m.Address); err != nil {
 		return sdkerrors.Wrap(err, "address")

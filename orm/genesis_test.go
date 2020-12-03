@@ -107,11 +107,11 @@ func TestImportTableDataAny(t *testing.T) {
 	jsonModels := `[
 	{
 	"key" : "AQ==",
-	"value": {"admin":"cosmos1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqnrql8a", "comment":"my test 1", "decisionPolicy":{"@type":"/regen.group.v1alpha1.ThresholdDecisionPolicy", "threshold":"1.000000000000000000", "timeout":"1s"}, "groupId":"1", "groupAccount":"cosmos1qyqszqgpqyqszqgpqyqszqgpqyqszqgpjnp7du", "version":"1"}
+	"value": {"admin":"cosmos1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqnrql8a", "comment":"my test 1", "decisionPolicy":{"@type":"/regen.group.v1alpha1.ThresholdDecisionPolicy", "threshold":"1", "timeout":"1s"}, "groupId":"1", "groupAccount":"cosmos1qyqszqgpqyqszqgpqyqszqgpqyqszqgpjnp7du", "version":"1"}
 	},
 	{
 	"key" : "Ag==",
-	"value": {"admin":"cosmos1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqnrql8a", "comment":"my test 2", "decisionPolicy":{"@type":"/regen.group.v1alpha1.ThresholdDecisionPolicy", "threshold":"1.000000000000000000", "timeout":"2s"}, "groupId":"2", "groupAccount":"cosmos1qgpqyqszqgpqyqszqgpqyqszqgpqyqszrh8mx2", "version":"2"}
+	"value": {"admin":"cosmos1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqnrql8a", "comment":"my test 2", "decisionPolicy":{"@type":"/regen.group.v1alpha1.ThresholdDecisionPolicy", "threshold":"1", "timeout":"2s"}, "groupId":"2", "groupAccount":"cosmos1qgpqyqszqgpqyqszqgpqyqszqgpqyqszrh8mx2", "version":"2"}
 	}
 ]`
 	// when
@@ -131,7 +131,7 @@ func TestImportTableDataAny(t *testing.T) {
 			fmt.Sprintf("my test %d", i),
 			uint64(i),
 			&grouptypes.ThresholdDecisionPolicy{
-				Threshold: sdk.OneDec(),
+				Threshold: "1",
 				Timeout:   proto.Duration{Seconds: int64(i)},
 			},
 		)
@@ -162,7 +162,7 @@ func TestExportTableDataAny(t *testing.T) {
 			fmt.Sprintf("my test %d", i),
 			uint64(i),
 			&grouptypes.ThresholdDecisionPolicy{
-				Threshold: sdk.OneDec(),
+				Threshold: "1",
 				Timeout:   proto.Duration{Seconds: int64(i)},
 			},
 		)
@@ -178,11 +178,11 @@ func TestExportTableDataAny(t *testing.T) {
 	exp := `[
 	{
 	"key" : "AQ==",
-	"value": {"admin":"cosmos1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqnrql8a", "comment":"my test 1", "decisionPolicy":{"@type":"/regen.group.v1alpha1.ThresholdDecisionPolicy", "threshold":"1.000000000000000000", "timeout":"1s"}, "groupId":"1", "groupAccount":"cosmos1qyqszqgpqyqszqgpqyqszqgpqyqszqgpjnp7du", "version":"1"}
+	"value": {"admin":"cosmos1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqnrql8a", "comment":"my test 1", "decisionPolicy":{"@type":"/regen.group.v1alpha1.ThresholdDecisionPolicy", "threshold":"1", "timeout":"1s"}, "groupId":"1", "groupAccount":"cosmos1qyqszqgpqyqszqgpqyqszqgpqyqszqgpjnp7du", "version":"1"}
 	},
 	{
 	"key" : "Ag==",
-	"value": {"admin":"cosmos1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqnrql8a", "comment":"my test 2", "decisionPolicy":{"@type":"/regen.group.v1alpha1.ThresholdDecisionPolicy", "threshold":"1.000000000000000000", "timeout":"2s"}, "groupId":"2", "groupAccount":"cosmos1qgpqyqszqgpqyqszqgpqyqszqgpqyqszrh8mx2", "version":"2"}
+	"value": {"admin":"cosmos1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqnrql8a", "comment":"my test 2", "decisionPolicy":{"@type":"/regen.group.v1alpha1.ThresholdDecisionPolicy", "threshold":"1", "timeout":"2s"}, "groupId":"2", "groupAccount":"cosmos1qgpqyqszqgpqyqszqgpqyqszqgpqyqszrh8mx2", "version":"2"}
 	}
 ]`
 	assert.JSONEq(t, exp, string(jsonModels))

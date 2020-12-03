@@ -6,6 +6,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	proto "github.com/gogo/protobuf/types"
+	"github.com/regen-network/regen-ledger/math"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -14,88 +15,88 @@ func TestThresholdDecisionPolicy(t *testing.T) {
 	specs := map[string]struct {
 		srcPolicy         ThresholdDecisionPolicy
 		srcTally          Tally
-		srcTotalPower     sdk.Dec
+		srcTotalPower     string
 		srcVotingDuration time.Duration
 		expResult         DecisionPolicyResult
 		expErr            error
 	}{
 		"accept when yes count greater than threshold": {
 			srcPolicy: ThresholdDecisionPolicy{
-				Threshold: sdk.OneDec(),
+				Threshold: "1",
 				Timeout:   proto.Duration{Seconds: 1},
 			},
-			srcTally:          Tally{YesCount: sdk.NewDec(2)},
-			srcTotalPower:     sdk.NewDec(3),
+			srcTally:          Tally{YesCount: "2"},
+			srcTotalPower:     "3",
 			srcVotingDuration: time.Millisecond,
 			expResult:         DecisionPolicyResult{Allow: true, Final: true},
 		},
 		"accept when yes count equal to threshold": {
 			srcPolicy: ThresholdDecisionPolicy{
-				Threshold: sdk.OneDec(),
+				Threshold: "1",
 				Timeout:   proto.Duration{Seconds: 1},
 			},
-			srcTally:          Tally{YesCount: sdk.OneDec(), NoCount: sdk.ZeroDec(), AbstainCount: sdk.ZeroDec(), VetoCount: sdk.ZeroDec()},
-			srcTotalPower:     sdk.NewDec(3),
+			srcTally:          Tally{YesCount: "1", NoCount: "0", AbstainCount: "0", VetoCount: "0"},
+			srcTotalPower:     "3",
 			srcVotingDuration: time.Millisecond,
 			expResult:         DecisionPolicyResult{Allow: true, Final: true},
 		},
 		"reject when yes count lower to threshold": {
 			srcPolicy: ThresholdDecisionPolicy{
-				Threshold: sdk.OneDec(),
+				Threshold: "1",
 				Timeout:   proto.Duration{Seconds: 1},
 			},
-			srcTally:          Tally{YesCount: sdk.ZeroDec(), NoCount: sdk.ZeroDec(), AbstainCount: sdk.ZeroDec(), VetoCount: sdk.ZeroDec()},
-			srcTotalPower:     sdk.NewDec(3),
+			srcTally:          Tally{YesCount: "0", NoCount: "0", AbstainCount: "0", VetoCount: "0"},
+			srcTotalPower:     "3",
 			srcVotingDuration: time.Millisecond,
 			expResult:         DecisionPolicyResult{Allow: false, Final: false},
 		},
 		"reject as final when remaining votes can't cross threshold": {
 			srcPolicy: ThresholdDecisionPolicy{
-				Threshold: sdk.NewDec(2),
+				Threshold: "2",
 				Timeout:   proto.Duration{Seconds: 1},
 			},
-			srcTally:          Tally{YesCount: sdk.ZeroDec(), NoCount: sdk.NewDec(2), AbstainCount: sdk.ZeroDec(), VetoCount: sdk.ZeroDec()},
-			srcTotalPower:     sdk.NewDec(3),
+			srcTally:          Tally{YesCount: "0", NoCount: "2", AbstainCount: "0", VetoCount: "0"},
+			srcTotalPower:     "3",
 			srcVotingDuration: time.Millisecond,
 			expResult:         DecisionPolicyResult{Allow: false, Final: true},
 		},
 		"expired when on timeout": {
 			srcPolicy: ThresholdDecisionPolicy{
-				Threshold: sdk.OneDec(),
+				Threshold: "1",
 				Timeout:   proto.Duration{Seconds: 1},
 			},
-			srcTally:          Tally{YesCount: sdk.NewDec(2)},
-			srcTotalPower:     sdk.NewDec(3),
+			srcTally:          Tally{YesCount: "2"},
+			srcTotalPower:     "3",
 			srcVotingDuration: time.Second,
 			expResult:         DecisionPolicyResult{Allow: false, Final: true},
 		},
 		"expired when after timeout": {
 			srcPolicy: ThresholdDecisionPolicy{
-				Threshold: sdk.OneDec(),
+				Threshold: "1",
 				Timeout:   proto.Duration{Seconds: 1},
 			},
-			srcTally:          Tally{YesCount: sdk.NewDec(2)},
-			srcTotalPower:     sdk.NewDec(3),
+			srcTally:          Tally{YesCount: "2"},
+			srcTotalPower:     "3",
 			srcVotingDuration: time.Second + time.Nanosecond,
 			expResult:         DecisionPolicyResult{Allow: false, Final: true},
 		},
 		"abstain has no impact": {
 			srcPolicy: ThresholdDecisionPolicy{
-				Threshold: sdk.OneDec(),
+				Threshold: "1",
 				Timeout:   proto.Duration{Seconds: 1},
 			},
-			srcTally:          Tally{YesCount: sdk.ZeroDec(), NoCount: sdk.ZeroDec(), AbstainCount: sdk.OneDec(), VetoCount: sdk.ZeroDec()},
-			srcTotalPower:     sdk.NewDec(3),
+			srcTally:          Tally{YesCount: "0", NoCount: "0", AbstainCount: "1", VetoCount: "0"},
+			srcTotalPower:     "3",
 			srcVotingDuration: time.Millisecond,
 			expResult:         DecisionPolicyResult{Allow: false, Final: false},
 		},
 		"veto same as no": {
 			srcPolicy: ThresholdDecisionPolicy{
-				Threshold: sdk.OneDec(),
+				Threshold: "1",
 				Timeout:   proto.Duration{Seconds: 1},
 			},
-			srcTally:          Tally{YesCount: sdk.ZeroDec(), NoCount: sdk.ZeroDec(), AbstainCount: sdk.ZeroDec(), VetoCount: sdk.NewDec(2)},
-			srcTotalPower:     sdk.NewDec(3),
+			srcTally:          Tally{YesCount: "0", NoCount: "0", AbstainCount: "0", VetoCount: "2"},
+			srcTotalPower:     "3",
 			srcVotingDuration: time.Millisecond,
 			expResult:         DecisionPolicyResult{Allow: false, Final: false},
 		},
@@ -113,14 +114,39 @@ func TestThresholdDecisionPolicy(t *testing.T) {
 	}
 }
 
-func TestThresholdDecisionPolicyValidation(t *testing.T) {
+func TestThresholdDecisionPolicyValidate(t *testing.T) {
+	specs := map[string]struct {
+		src    ThresholdDecisionPolicy
+		expErr bool
+	}{
+		"all good": {src: ThresholdDecisionPolicy{
+			Threshold: "1",
+			Timeout:   proto.Duration{Seconds: 1},
+		}},
+		"greater than group total weight": {
+			src: ThresholdDecisionPolicy{
+				Threshold: "2",
+				Timeout:   proto.Duration{Seconds: 1},
+			},
+			expErr: true,
+		},
+	}
+	for msg, spec := range specs {
+		t.Run(msg, func(t *testing.T) {
+			err := spec.src.Validate(GroupMetadata{TotalWeight: "1"})
+			assert.Equal(t, spec.expErr, err != nil, err)
+		})
+	}
+}
+
+func TestThresholdDecisionPolicyValidateBasic(t *testing.T) {
 	maxSeconds := int64(10000 * 365.25 * 24 * 60 * 60)
 	specs := map[string]struct {
 		src    ThresholdDecisionPolicy
 		expErr bool
 	}{
 		"all good": {src: ThresholdDecisionPolicy{
-			Threshold: sdk.OneDec(),
+			Threshold: "1",
 			Timeout:   proto.Duration{Seconds: 1},
 		}},
 		"threshold missing": {src: ThresholdDecisionPolicy{
@@ -129,18 +155,18 @@ func TestThresholdDecisionPolicyValidation(t *testing.T) {
 			expErr: true,
 		},
 		"timeout missing": {src: ThresholdDecisionPolicy{
-			Threshold: sdk.OneDec(),
+			Threshold: "1",
 		},
 			expErr: true,
 		},
 		"duration out of limit": {src: ThresholdDecisionPolicy{
-			Threshold: sdk.OneDec(),
+			Threshold: "1",
 			Timeout:   proto.Duration{Seconds: maxSeconds + 1},
 		},
 			expErr: true,
 		},
 		"no negative thresholds": {src: ThresholdDecisionPolicy{
-			Threshold: sdk.NewDec(-1),
+			Threshold: "-1",
 			Timeout:   proto.Duration{Seconds: 1},
 		},
 			expErr: true,
@@ -152,12 +178,12 @@ func TestThresholdDecisionPolicyValidation(t *testing.T) {
 		},
 		"no zero thresholds": {src: ThresholdDecisionPolicy{
 			Timeout:   proto.Duration{Seconds: 1},
-			Threshold: sdk.ZeroDec(),
+			Threshold: "0",
 		},
 			expErr: true,
 		},
 		"no negative timeouts": {src: ThresholdDecisionPolicy{
-			Threshold: sdk.OneDec(),
+			Threshold: "1",
 			Timeout:   proto.Duration{Seconds: -1},
 		},
 			expErr: true,
@@ -190,7 +216,7 @@ func TestGroupMetadataValidation(t *testing.T) {
 				Admin:       []byte("valid--admin-address"),
 				Comment:     "any",
 				Version:     1,
-				TotalWeight: sdk.ZeroDec(),
+				TotalWeight: "0",
 			},
 		},
 		"invalid group": {
@@ -198,7 +224,7 @@ func TestGroupMetadataValidation(t *testing.T) {
 				Admin:       []byte("valid--admin-address"),
 				Comment:     "any",
 				Version:     1,
-				TotalWeight: sdk.ZeroDec(),
+				TotalWeight: "0",
 			},
 			expErr: true,
 		},
@@ -208,7 +234,7 @@ func TestGroupMetadataValidation(t *testing.T) {
 				Admin:       []byte(""),
 				Comment:     "any",
 				Version:     1,
-				TotalWeight: sdk.ZeroDec(),
+				TotalWeight: "0",
 			},
 			expErr: true,
 		},
@@ -217,7 +243,7 @@ func TestGroupMetadataValidation(t *testing.T) {
 				GroupId:     1,
 				Admin:       []byte("valid--admin-address"),
 				Comment:     "any",
-				TotalWeight: sdk.ZeroDec(),
+				TotalWeight: "0",
 			},
 			expErr: true,
 		},
@@ -236,7 +262,7 @@ func TestGroupMetadataValidation(t *testing.T) {
 				Admin:       []byte("valid--admin-address"),
 				Comment:     "any",
 				Version:     1,
-				TotalWeight: sdk.NewDec(-1),
+				TotalWeight: "-1",
 			},
 			expErr: true,
 		},
@@ -262,7 +288,7 @@ func TestGroupMemberValidation(t *testing.T) {
 			src: GroupMember{
 				GroupId: 1,
 				Member:  []byte("valid-member-address"),
-				Weight:  sdk.OneDec(),
+				Weight:  "1",
 				Comment: "any",
 			},
 		},
@@ -270,7 +296,7 @@ func TestGroupMemberValidation(t *testing.T) {
 			src: GroupMember{
 				GroupId: 0,
 				Member:  []byte("valid-member-address"),
-				Weight:  sdk.OneDec(),
+				Weight:  "1",
 				Comment: "any",
 			},
 			expErr: true,
@@ -279,7 +305,7 @@ func TestGroupMemberValidation(t *testing.T) {
 			src: GroupMember{
 				GroupId: 1,
 				Member:  []byte("invalid-member-address"),
-				Weight:  sdk.OneDec(),
+				Weight:  "1",
 				Comment: "any",
 			},
 			expErr: true,
@@ -287,7 +313,7 @@ func TestGroupMemberValidation(t *testing.T) {
 		"empy address": {
 			src: GroupMember{
 				GroupId: 1,
-				Weight:  sdk.OneDec(),
+				Weight:  "1",
 				Comment: "any",
 			},
 			expErr: true,
@@ -296,7 +322,7 @@ func TestGroupMemberValidation(t *testing.T) {
 			src: GroupMember{
 				GroupId: 1,
 				Member:  []byte("valid-member-address"),
-				Weight:  sdk.ZeroDec(),
+				Weight:  "0",
 				Comment: "any",
 			},
 			expErr: true,
@@ -329,7 +355,7 @@ func TestGroupAccountMetadata(t *testing.T) {
 		admin        sdk.AccAddress
 		comment      string
 		version      uint64
-		threshold    sdk.Dec
+		threshold    string
 		timeout      proto.Duration
 		expErr       bool
 	}{
@@ -339,7 +365,7 @@ func TestGroupAccountMetadata(t *testing.T) {
 			admin:        []byte("valid--admin-address"),
 			comment:      "any",
 			version:      1,
-			threshold:    sdk.OneDec(),
+			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
 		},
 		"invalid group": {
@@ -348,7 +374,7 @@ func TestGroupAccountMetadata(t *testing.T) {
 			admin:        []byte("valid--admin-address"),
 			comment:      "any",
 			version:      1,
-			threshold:    sdk.OneDec(),
+			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
 			expErr:       true,
 		},
@@ -358,7 +384,7 @@ func TestGroupAccountMetadata(t *testing.T) {
 			admin:        []byte("valid--admin-address"),
 			comment:      "any",
 			version:      1,
-			threshold:    sdk.OneDec(),
+			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
 			expErr:       true,
 		},
@@ -367,7 +393,7 @@ func TestGroupAccountMetadata(t *testing.T) {
 			admin:     []byte("valid--admin-address"),
 			comment:   "any",
 			version:   1,
-			threshold: sdk.OneDec(),
+			threshold: "1",
 			timeout:   proto.Duration{Seconds: 1},
 			expErr:    true,
 		},
@@ -376,7 +402,7 @@ func TestGroupAccountMetadata(t *testing.T) {
 			groupAccount: []byte("valid--group-address"),
 			comment:      "any",
 			version:      1,
-			threshold:    sdk.OneDec(),
+			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
 			expErr:       true,
 		},
@@ -386,7 +412,7 @@ func TestGroupAccountMetadata(t *testing.T) {
 			admin:        []byte("any-invalid-admin-address"),
 			comment:      "any",
 			version:      1,
-			threshold:    sdk.OneDec(),
+			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
 			expErr:       true,
 		},
@@ -395,7 +421,7 @@ func TestGroupAccountMetadata(t *testing.T) {
 			groupAccount: []byte("valid--group-address"),
 			admin:        []byte("valid--admin-address"),
 			comment:      "any",
-			threshold:    sdk.OneDec(),
+			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
 			expErr:       true,
 		},
@@ -413,7 +439,7 @@ func TestGroupAccountMetadata(t *testing.T) {
 			admin:        []byte("valid--admin-address"),
 			comment:      "any",
 			version:      1,
-			threshold:    sdk.OneDec(),
+			threshold:    "1",
 			expErr:       true,
 		},
 		"decision policy with invalid timeout": {
@@ -422,7 +448,7 @@ func TestGroupAccountMetadata(t *testing.T) {
 			admin:        []byte("valid--admin-address"),
 			comment:      "any",
 			version:      1,
-			threshold:    sdk.OneDec(),
+			threshold:    "1",
 			timeout:      proto.Duration{Seconds: -1},
 			expErr:       true,
 		},
@@ -441,7 +467,7 @@ func TestGroupAccountMetadata(t *testing.T) {
 			admin:        []byte("valid--admin-address"),
 			comment:      "any",
 			version:      1,
-			threshold:    sdk.NewDec(-1),
+			threshold:    "-1",
 			timeout:      proto.Duration{Seconds: 1},
 			expErr:       true,
 		},
@@ -451,7 +477,7 @@ func TestGroupAccountMetadata(t *testing.T) {
 			admin:        []byte("valid--admin-address"),
 			comment:      "any",
 			version:      1,
-			threshold:    sdk.ZeroDec(),
+			threshold:    "0",
 			timeout:      proto.Duration{Seconds: 1},
 			expErr:       true,
 		},
@@ -475,6 +501,406 @@ func TestGroupAccountMetadata(t *testing.T) {
 				require.Error(t, m.ValidateBasic())
 			} else {
 				require.NoError(t, m.ValidateBasic())
+			}
+		})
+	}
+}
+
+func TestTallyValidateBasic(t *testing.T) {
+	specs := map[string]struct {
+		src    Tally
+		expErr bool
+	}{
+		"all good": {
+			src: Tally{
+				YesCount:     "1",
+				NoCount:      "0",
+				AbstainCount: "0",
+				VetoCount:    "0",
+			},
+		},
+		"negative yes count": {
+			src: Tally{
+				YesCount:     "-1",
+				NoCount:      "0",
+				AbstainCount: "0",
+				VetoCount:    "0",
+			},
+			expErr: true,
+		},
+		"negative no count": {
+			src: Tally{
+				YesCount:     "0",
+				NoCount:      "-1",
+				AbstainCount: "0",
+				VetoCount:    "0",
+			},
+			expErr: true,
+		},
+		"negative abstain count": {
+			src: Tally{
+				YesCount:     "0",
+				NoCount:      "0",
+				AbstainCount: "-1",
+				VetoCount:    "0",
+			},
+			expErr: true,
+		},
+		"negative veto count": {
+			src: Tally{
+				YesCount:     "0",
+				NoCount:      "0",
+				AbstainCount: "0",
+				VetoCount:    "-1",
+			},
+			expErr: true,
+		},
+	}
+	for msg, spec := range specs {
+		t.Run(msg, func(t *testing.T) {
+			err := spec.src.ValidateBasic()
+			if spec.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestTallyTotalCounts(t *testing.T) {
+	specs := map[string]struct {
+		src    Tally
+		expErr bool
+		res    string
+	}{
+		"all good": {
+			src: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			res: "4",
+		},
+		"negative yes count": {
+			src: Tally{
+				YesCount:     "-1",
+				NoCount:      "0",
+				AbstainCount: "0",
+				VetoCount:    "0",
+			},
+			expErr: true,
+		},
+		"negative no count": {
+			src: Tally{
+				YesCount:     "0",
+				NoCount:      "-1",
+				AbstainCount: "0",
+				VetoCount:    "0",
+			},
+			expErr: true,
+		},
+		"negative abstain count": {
+			src: Tally{
+				YesCount:     "0",
+				NoCount:      "0",
+				AbstainCount: "-1",
+				VetoCount:    "0",
+			},
+			expErr: true,
+		},
+		"negative veto count": {
+			src: Tally{
+				YesCount:     "0",
+				NoCount:      "0",
+				AbstainCount: "0",
+				VetoCount:    "-1",
+			},
+			expErr: true,
+		},
+	}
+	for msg, spec := range specs {
+		t.Run(msg, func(t *testing.T) {
+			res, err := spec.src.TotalCounts()
+			if spec.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, spec.res, math.DecimalString(res))
+			}
+		})
+	}
+}
+
+func TestTallyAdd(t *testing.T) {
+	specs := map[string]struct {
+		src      Tally
+		expTally Tally
+		vote     Vote
+		expErr   bool
+		weight   string
+	}{
+		"add yes": {
+			src: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			expTally: Tally{
+				YesCount:     "5",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			vote:   Vote{Choice: Choice_CHOICE_YES},
+			weight: "4",
+		},
+		"add no": {
+			src: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			expTally: Tally{
+				YesCount:     "1",
+				NoCount:      "2.5",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			vote:   Vote{Choice: Choice_CHOICE_NO},
+			weight: "1.5",
+		},
+		"add abstain": {
+			src: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			expTally: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "2.5",
+				VetoCount:    "1",
+			},
+			vote:   Vote{Choice: Choice_CHOICE_ABSTAIN},
+			weight: "1.5",
+		},
+		"add veto": {
+			src: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			expTally: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "2.5",
+			},
+			vote:   Vote{Choice: Choice_CHOICE_VETO},
+			weight: "1.5",
+		},
+		"negative yes count": {
+			src: Tally{
+				YesCount:     "-1",
+				NoCount:      "0",
+				AbstainCount: "0",
+				VetoCount:    "0",
+			},
+			expErr: true,
+			weight: "4",
+		},
+		"negative no count": {
+			src: Tally{
+				YesCount:     "0",
+				NoCount:      "-1",
+				AbstainCount: "0",
+				VetoCount:    "0",
+			},
+			expErr: true,
+			weight: "4",
+		},
+		"negative abstain count": {
+			src: Tally{
+				YesCount:     "0",
+				NoCount:      "0",
+				AbstainCount: "-1",
+				VetoCount:    "0",
+			},
+			expErr: true,
+			weight: "4",
+		},
+		"negative veto count": {
+			src: Tally{
+				YesCount:     "0",
+				NoCount:      "0",
+				AbstainCount: "0",
+				VetoCount:    "-1",
+			},
+			expErr: true,
+			weight: "4",
+		},
+	}
+	for msg, spec := range specs {
+		t.Run(msg, func(t *testing.T) {
+			err := spec.src.Add(spec.vote, spec.weight)
+			if spec.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, spec.expTally.YesCount, spec.src.YesCount)
+				require.Equal(t, spec.expTally.NoCount, spec.src.NoCount)
+				require.Equal(t, spec.expTally.AbstainCount, spec.src.AbstainCount)
+				require.Equal(t, spec.expTally.VetoCount, spec.src.VetoCount)
+			}
+		})
+	}
+}
+
+func TestTallySub(t *testing.T) {
+	specs := map[string]struct {
+		src      Tally
+		expTally Tally
+		vote     Vote
+		expErr   bool
+		weight   string
+	}{
+		"sub yes": {
+			src: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			expTally: Tally{
+				YesCount:     "0.5",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			vote:   Vote{Choice: Choice_CHOICE_YES},
+			weight: "0.5",
+		},
+		"sub no": {
+			src: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			expTally: Tally{
+				YesCount:     "1",
+				NoCount:      "0.5",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			vote:   Vote{Choice: Choice_CHOICE_NO},
+			weight: "0.5",
+		},
+		"sub abstain": {
+			src: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			expTally: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "0.5",
+				VetoCount:    "1",
+			},
+			vote:   Vote{Choice: Choice_CHOICE_ABSTAIN},
+			weight: "0.5",
+		},
+		"sub veto": {
+			src: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			expTally: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "0.5",
+			},
+			vote:   Vote{Choice: Choice_CHOICE_VETO},
+			weight: "0.5",
+		},
+		"negative yes count": {
+			src: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			expErr: true,
+			vote:   Vote{Choice: Choice_CHOICE_YES},
+			weight: "2",
+		},
+		"negative no count": {
+			src: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			expErr: true,
+			vote:   Vote{Choice: Choice_CHOICE_NO},
+			weight: "2",
+		},
+		"negative abstain count": {
+			src: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			expErr: true,
+			vote:   Vote{Choice: Choice_CHOICE_ABSTAIN},
+			weight: "2",
+		},
+		"negative veto count": {
+			src: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			expErr: true,
+			vote:   Vote{Choice: Choice_CHOICE_VETO},
+			weight: "2",
+		},
+		"unknown choice": {
+			src: Tally{
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "1",
+				VetoCount:    "1",
+			},
+			expErr: true,
+			vote:   Vote{Choice: Choice_CHOICE_UNSPECIFIED},
+			weight: "2",
+		},
+	}
+	for msg, spec := range specs {
+		t.Run(msg, func(t *testing.T) {
+			err := spec.src.Sub(spec.vote, spec.weight)
+			if spec.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, spec.expTally.YesCount, spec.src.YesCount)
+				require.Equal(t, spec.expTally.NoCount, spec.src.NoCount)
+				require.Equal(t, spec.expTally.AbstainCount, spec.src.AbstainCount)
+				require.Equal(t, spec.expTally.VetoCount, spec.src.VetoCount)
 			}
 		})
 	}

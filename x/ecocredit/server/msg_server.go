@@ -11,7 +11,7 @@ import (
 	"github.com/regen-network/regen-ledger/util"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/math"
+	"github.com/regen-network/regen-ledger/math"
 )
 
 func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error) {

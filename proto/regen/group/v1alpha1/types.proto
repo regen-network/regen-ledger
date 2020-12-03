@@ -18,7 +18,7 @@ message Member {
     bytes address = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
     
     // power is the member's power that should be greater than 0.
-    string power = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+    string power = 2;
     
     // comment is the member's comment.
     string comment = 3;
@@ -29,7 +29,7 @@ message ThresholdDecisionPolicy {
     option (cosmos_proto.implements_interface) = "DecisionPolicy";
 
     // threshold is a fix weight value that must be met or exceeded for a proposal to succeed.
-    string threshold = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+    string threshold = 1;
     
     // timeout is the duration from submission of a proposal to the end of voting period
     // Within this times votes and exec messages can be submitted.
@@ -78,7 +78,7 @@ message GroupMetadata {
     uint64 version = 4;
 
     // total_weight is the sum of the group members' powers.
-    string total_weight = 5 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+    string total_weight = 5;
 }
 
 // GroupMember represents the relationship between a group and a member.
@@ -93,7 +93,7 @@ message GroupMember {
     
     // weight is the power of the group member.
     // todo: @aaronc it is `Member.power`. Can we unify this?
-    string weight = 3 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+    string weight = 3;
     
     // comment is the member's comment. 
     string comment = 4; // TODO: @aaronc was comment missing by intention?
@@ -231,18 +231,19 @@ message Proposal {
 
 // Tally represents the sum of weighted votes.
 message Tally {
+    option (gogoproto.goproto_getters) = false;
 
     // yes_count is the weighted sum of yes votes.
-    string yes_count = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+    string yes_count = 1;
     
     // no_count is the weighted sum of no votes.
-    string no_count = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+    string no_count = 2;
     
     // abstain_count is the weighted sum of abstainers
-    string abstain_count = 3 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+    string abstain_count = 3;
     
     // veto_count is the weighted sum of vetoes.
-    string veto_count = 4 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+    string veto_count = 4;
 }
 
 // Vote represents a vote for a proposal.

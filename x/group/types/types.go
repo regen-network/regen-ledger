@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/cockroachdb/apd/v2"
 	proto "github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/types"
+	"github.com/regen-network/regen-ledger/math"
 	"github.com/regen-network/regen-ledger/orm"
 	"gopkg.in/yaml.v2"
 
@@ -54,7 +56,7 @@ type DecisionPolicy interface {
 
 	orm.Validateable
 	GetTimeout() types.Duration
-	Allow(tally Tally, totalPower sdk.Dec, votingDuration time.Duration) (DecisionPolicyResult, error)
+	Allow(tally Tally, totalPower string, votingDuration time.Duration) (DecisionPolicyResult, error)
 	Validate(g GroupMetadata) error
 }
 
@@ -62,12 +64,12 @@ type DecisionPolicy interface {
 var _ DecisionPolicy = &ThresholdDecisionPolicy{}
 
 // NewThresholdDecisionPolicy creates a threshold DecisionPolicy
-func NewThresholdDecisionPolicy(threshold sdk.Dec, timeout types.Duration) DecisionPolicy {
+func NewThresholdDecisionPolicy(threshold string, timeout types.Duration) DecisionPolicy {
 	return &ThresholdDecisionPolicy{threshold, timeout}
 }
 
 // Allow allows a proposal to pass when the tally of yes votes equals or exceeds the threshold before the timeout.
-func (p ThresholdDecisionPolicy) Allow(tally Tally, totalPower sdk.Dec, votingDuration time.Duration) (DecisionPolicyResult, error) {
+func (p ThresholdDecisionPolicy) Allow(tally Tally, totalPower string, votingDuration time.Duration) (DecisionPolicyResult, error) {
 	timeout, err := types.DurationFromProto(&p.Timeout)
 	if err != nil {
 		return DecisionPolicyResult{}, err
@@ -75,36 +77,64 @@ func (p ThresholdDecisionPolicy) Allow(tally Tally, totalPower sdk.Dec, votingDu
 	if timeout <= votingDuration {
 		return DecisionPolicyResult{Allow: false, Final: true}, nil
 	}
-	if tally.YesCount.GTE(p.Threshold) {
+
+	threshold, err := math.ParsePositiveDecimal(p.Threshold)
+	if err != nil {
+		return DecisionPolicyResult{}, err
+	}
+	yesCount, err := math.ParseNonNegativeDecimal(tally.YesCount)
+	if err != nil {
+		return DecisionPolicyResult{}, err
+	}
+	if yesCount.Cmp(threshold) >= 0 {
 		return DecisionPolicyResult{Allow: true, Final: true}, nil
 	}
-	undecided := totalPower.Sub(tally.TotalCounts())
-	if tally.YesCount.Add(undecided).LT(p.Threshold) {
+
+	totalPowerDec, err := math.ParseNonNegativeDecimal(totalPower)
+	if err != nil {
+		return DecisionPolicyResult{}, err
+	}
+	totalCounts, err := tally.TotalCounts()
+	if err != nil {
+		return DecisionPolicyResult{}, err
+	}
+	var undecided apd.Decimal
+	err = math.SafeSub(&undecided, totalPowerDec, totalCounts)
+	if err != nil {
+		return DecisionPolicyResult{}, err
+	}
+	var sum apd.Decimal
+	err = math.Add(&sum, yesCount, &undecided)
+	if err != nil {
+		return DecisionPolicyResult{}, err
+	}
+	if sum.Cmp(threshold) < 0 {
 		return DecisionPolicyResult{Allow: false, Final: true}, nil
 	}
 	return DecisionPolicyResult{Allow: false, Final: false}, nil
 }
 
-// GetThreshold returns the policy threshold
-func (p *ThresholdDecisionPolicy) GetThreshold() sdk.Dec {
-	return p.Threshold
-}
-
 // Validate returns an error if policy threshold is greater than the total group weight
 func (p *ThresholdDecisionPolicy) Validate(g GroupMetadata) error {
-	if p.GetThreshold().GT(g.TotalWeight) {
+	threshold, err := math.ParsePositiveDecimal(p.Threshold)
+	if err != nil {
+		return sdkerrors.Wrap(err, "threshold")
+	}
+	totalWeight, err := math.ParseNonNegativeDecimal(g.TotalWeight)
+	if err != nil {
+		return sdkerrors.Wrap(err, "group total weight")
+	}
+	if threshold.Cmp(totalWeight) > 0 {
 		return sdkerrors.Wrap(ErrInvalid, "policy threshold should not be greater than the total group weight")
 	}
 	return nil
 }
 
 func (p ThresholdDecisionPolicy) ValidateBasic() error {
-	if p.Threshold.IsNil() {
-		return sdkerrors.Wrap(ErrEmpty, "threshold")
+	if _, err := math.ParsePositiveDecimal(p.Threshold); err != nil {
+		return sdkerrors.Wrap(err, "threshold")
 	}
-	if p.Threshold.LT(sdk.OneDec()) {
-		return sdkerrors.Wrap(ErrInvalid, "threshold")
-	}
+
 	timeout, err := types.DurationFromProto(&p.Timeout)
 	if err != nil {
 		return sdkerrors.Wrap(err, "timeout")
@@ -279,8 +309,8 @@ func (m GroupMetadata) ValidateBasic() error {
 	if err := sdk.VerifyAddressFormat(m.Admin); err != nil {
 		return sdkerrors.Wrap(err, "admin")
 	}
-	if m.TotalWeight.IsNil() || m.TotalWeight.LT(sdk.ZeroDec()) {
-		return sdkerrors.Wrap(ErrInvalid, "total weight")
+	if _, err := math.ParseNonNegativeDecimal(m.TotalWeight); err != nil {
+		return sdkerrors.Wrap(err, "total weight")
 	}
 	if m.Version == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "version")
@@ -297,8 +327,8 @@ func (g GroupMember) ValidateBasic() error {
 	if g.Member.Empty() {
 		return sdkerrors.Wrap(ErrEmpty, "address")
 	}
-	if g.Weight.IsNil() || g.Weight.LTE(sdk.ZeroDec()) {
-		return sdkerrors.Wrap(ErrInvalid, "member power")
+	if _, err := math.ParsePositiveDecimal(g.Weight); err != nil {
+		return sdkerrors.Wrap(err, "power")
 	}
 	if err := sdk.VerifyAddressFormat(g.Member); err != nil {
 		return sdkerrors.Wrap(err, "address")
@@ -306,38 +336,70 @@ func (g GroupMember) ValidateBasic() error {
 	return nil
 }
 
-func (t *Tally) Sub(vote Vote, weight sdk.Dec) error {
-	if weight.LTE(sdk.ZeroDec()) {
-		return sdkerrors.Wrap(ErrInvalid, "weight must be greater than 0")
-	}
-	switch vote.Choice {
-	case Choice_CHOICE_YES:
-		t.YesCount = t.YesCount.Sub(weight)
-	case Choice_CHOICE_NO:
-		t.NoCount = t.NoCount.Sub(weight)
-	case Choice_CHOICE_ABSTAIN:
-		t.AbstainCount = t.AbstainCount.Sub(weight)
-	case Choice_CHOICE_VETO:
-		t.VetoCount = t.VetoCount.Sub(weight)
-	default:
-		return sdkerrors.Wrapf(ErrInvalid, "unknown choice %s", vote.Choice.String())
+func (t *Tally) Sub(vote Vote, weight string) error {
+	if err := t.operation(vote, weight, math.SafeSub); err != nil {
+		return err
 	}
 	return nil
 }
 
-func (t *Tally) Add(vote Vote, weight sdk.Dec) error {
-	if weight.LTE(sdk.ZeroDec()) {
-		return sdkerrors.Wrap(ErrInvalid, "weight must be greater than 0")
+func (t *Tally) Add(vote Vote, weight string) error {
+	if err := t.operation(vote, weight, math.Add); err != nil {
+		return err
 	}
+	return nil
+}
+
+type operation func(res, x, y *apd.Decimal) error
+
+func (t *Tally) operation(vote Vote, weight string, op operation) error {
+	weightDec, err := math.ParsePositiveDecimal(weight)
+	if err != nil {
+		return err
+	}
+
+	yesCount, err := t.GetYesCount()
+	if err != nil {
+		return sdkerrors.Wrap(err, "yes count")
+	}
+	noCount, err := t.GetNoCount()
+	if err != nil {
+		return sdkerrors.Wrap(err, "no count")
+	}
+	abstainCount, err := t.GetAbstainCount()
+	if err != nil {
+		return sdkerrors.Wrap(err, "abstain count")
+	}
+	vetoCount, err := t.GetVetoCount()
+	if err != nil {
+		return sdkerrors.Wrap(err, "veto count")
+	}
+
 	switch vote.Choice {
 	case Choice_CHOICE_YES:
-		t.YesCount = t.YesCount.Add(weight)
+		err := op(yesCount, yesCount, weightDec)
+		if err != nil {
+			return sdkerrors.Wrap(err, "yes count")
+		}
+		t.YesCount = math.DecimalString(yesCount)
 	case Choice_CHOICE_NO:
-		t.NoCount = t.NoCount.Add(weight)
+		err := op(noCount, noCount, weightDec)
+		if err != nil {
+			return sdkerrors.Wrap(err, "no count")
+		}
+		t.NoCount = math.DecimalString(noCount)
 	case Choice_CHOICE_ABSTAIN:
-		t.AbstainCount = t.AbstainCount.Add(weight)
+		err := op(abstainCount, abstainCount, weightDec)
+		if err != nil {
+			return sdkerrors.Wrap(err, "abstain count")
+		}
+		t.AbstainCount = math.DecimalString(abstainCount)
 	case Choice_CHOICE_VETO:
-		t.VetoCount = t.VetoCount.Add(weight)
+		err := op(vetoCount, vetoCount, weightDec)
+		if err != nil {
+			return sdkerrors.Wrap(err, "veto count")
+		}
+		t.VetoCount = math.DecimalString(vetoCount)
 	default:
 		return sdkerrors.Wrapf(ErrInvalid, "unknown choice %s", vote.Choice.String())
 	}
@@ -345,28 +407,88 @@ func (t *Tally) Add(vote Vote, weight sdk.Dec) error {
 }
 
 // TotalCounts is the sum of all weights.
-func (t Tally) TotalCounts() sdk.Dec {
-	return t.YesCount.Add(t.NoCount).Add(t.AbstainCount).Add(t.VetoCount)
+func (t Tally) TotalCounts() (*apd.Decimal, error) {
+	yesCount, err := t.GetYesCount()
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "yes count")
+	}
+	noCount, err := t.GetNoCount()
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "no count")
+	}
+	abstainCount, err := t.GetAbstainCount()
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "abstain count")
+	}
+	vetoCount, err := t.GetVetoCount()
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "veto count")
+	}
+
+	totalCounts := apd.New(0, 0)
+	err = math.Add(totalCounts, totalCounts, yesCount)
+	if err != nil {
+		return nil, err
+	}
+	err = math.Add(totalCounts, totalCounts, noCount)
+	if err != nil {
+		return nil, err
+	}
+	err = math.Add(totalCounts, totalCounts, abstainCount)
+	if err != nil {
+		return nil, err
+	}
+	err = math.Add(totalCounts, totalCounts, vetoCount)
+	if err != nil {
+		return nil, err
+	}
+	return totalCounts, nil
+}
+
+func (t Tally) GetYesCount() (*apd.Decimal, error) {
+	yesCount, err := math.ParseNonNegativeDecimal(t.YesCount)
+	if err != nil {
+		return nil, err
+	}
+	return yesCount, nil
+}
+
+func (t Tally) GetNoCount() (*apd.Decimal, error) {
+	noCount, err := math.ParseNonNegativeDecimal(t.NoCount)
+	if err != nil {
+		return nil, err
+	}
+	return noCount, nil
+}
+
+func (t Tally) GetAbstainCount() (*apd.Decimal, error) {
+	abstainCount, err := math.ParseNonNegativeDecimal(t.AbstainCount)
+	if err != nil {
+		return nil, err
+	}
+	return abstainCount, nil
+}
+
+func (t Tally) GetVetoCount() (*apd.Decimal, error) {
+	vetoCount, err := math.ParseNonNegativeDecimal(t.VetoCount)
+	if err != nil {
+		return nil, err
+	}
+	return vetoCount, nil
 }
 
 func (t Tally) ValidateBasic() error {
-	switch {
-	case t.YesCount.IsNil():
-		return sdkerrors.Wrap(ErrInvalid, "yes count nil")
-	case t.YesCount.LT(sdk.ZeroDec()):
-		return sdkerrors.Wrap(ErrInvalid, "yes count negative")
-	case t.NoCount.IsNil():
-		return sdkerrors.Wrap(ErrInvalid, "no count nil")
-	case t.NoCount.LT(sdk.ZeroDec()):
-		return sdkerrors.Wrap(ErrInvalid, "no count negative")
-	case t.AbstainCount.IsNil():
-		return sdkerrors.Wrap(ErrInvalid, "abstain count nil")
-	case t.AbstainCount.LT(sdk.ZeroDec()):
-		return sdkerrors.Wrap(ErrInvalid, "abstain count negative")
-	case t.VetoCount.IsNil():
-		return sdkerrors.Wrap(ErrInvalid, "veto count nil")
-	case t.VetoCount.LT(sdk.ZeroDec()):
-		return sdkerrors.Wrap(ErrInvalid, "veto count negative")
+	if _, err := t.GetYesCount(); err != nil {
+		return sdkerrors.Wrap(err, "yes count")
+	}
+	if _, err := t.GetNoCount(); err != nil {
+		return sdkerrors.Wrap(err, "no count")
+	}
+	if _, err := t.GetAbstainCount(); err != nil {
+		return sdkerrors.Wrap(err, "abstain count")
+	}
+	if _, err := t.GetVetoCount(); err != nil {
+		return sdkerrors.Wrap(err, "veto count")
 	}
 	return nil
 }
