@@ -75,7 +75,7 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 	if writeCondition != nil && handler.commitWrites {
 		// msg handler
 		return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
-			if _, alreadyOnCallStack := rtr.antiReentryMap[moduleName]; alreadyOnCallStack {
+			if rtr.antiReentryMap[moduleName] {
 				return fmt.Errorf("re-entrant module calls not allowed for security reasons! module %s is already on the call stack", moduleName)
 			}
 
