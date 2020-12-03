@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/util/storehelpers"
@@ -217,4 +218,8 @@ func (s serverImpl) SetPrecision(goCtx context.Context, req *bank.MsgSetPrecisio
 	}
 
 	return &bank.MsgSetPrecisionResponse{}, nil
+}
+
+func (s serverImpl) Move(ctx context.Context, request *bank.MsgMoveRequest) (*bank.MsgMoveResponse, error) {
+	panic("implement me")
 }

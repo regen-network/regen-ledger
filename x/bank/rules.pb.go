@@ -5,8 +5,6 @@ package bank
 
 import (
 	fmt "fmt"
-	"github.com/cockroachdb/apd/v2"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	proto "github.com/gogo/protobuf/proto"
 	io "io"
 	math "math"
