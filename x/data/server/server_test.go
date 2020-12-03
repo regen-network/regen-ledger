@@ -1,8 +1,9 @@
 package server_test
 
 import (
-	"github.com/regen-network/regen-ledger/types/module"
 	"testing"
+
+	"github.com/regen-network/regen-ledger/types/module"
 
 	"github.com/stretchr/testify/suite"
 
@@ -12,7 +13,7 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	ff := server.NewFixtureFactory(t, 2, module.Modules{
+	ff := server.NewFixtureFactory(t, 2, []module.Module{
 		datamodule.Module{},
 	})
 

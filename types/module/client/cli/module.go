@@ -9,8 +9,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// Module is an interface that modules should implement to integrate with the CLI framework.
 type Module interface {
-	module.Module
+	module.TypeModule
 
 	DefaultGenesis(codec.JSONMarshaler) json.RawMessage
 	ValidateGenesis(codec.JSONMarshaler, client.TxEncodingConfig, json.RawMessage) error
