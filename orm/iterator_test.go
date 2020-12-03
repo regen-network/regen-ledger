@@ -20,42 +20,42 @@ func TestReadAll(t *testing.T) {
 		expResult ModelSlicePtr
 	}{
 		"all good with object slice": {
-			srcIT: mockIter(EncodeSequence(1), &testdata.GroupMetadata{Description: "test"}),
+			srcIT: mockIter(EncodeSequence(1), &testdata.GroupInfo{Description: "test"}),
 			destSlice: func() ModelSlicePtr {
-				x := make([]testdata.GroupMetadata, 1)
+				x := make([]testdata.GroupInfo, 1)
 				return &x
 			},
 			expIDs:    []RowID{EncodeSequence(1)},
-			expResult: &[]testdata.GroupMetadata{{Description: "test"}},
+			expResult: &[]testdata.GroupInfo{{Description: "test"}},
 		},
 		"all good with pointer slice": {
-			srcIT: mockIter(EncodeSequence(1), &testdata.GroupMetadata{Description: "test"}),
+			srcIT: mockIter(EncodeSequence(1), &testdata.GroupInfo{Description: "test"}),
 			destSlice: func() ModelSlicePtr {
-				x := make([]*testdata.GroupMetadata, 1)
+				x := make([]*testdata.GroupInfo, 1)
 				return &x
 			},
 			expIDs:    []RowID{EncodeSequence(1)},
-			expResult: &[]*testdata.GroupMetadata{{Description: "test"}},
+			expResult: &[]*testdata.GroupInfo{{Description: "test"}},
 		},
 		"dest slice empty": {
-			srcIT: mockIter(EncodeSequence(1), &testdata.GroupMetadata{}),
+			srcIT: mockIter(EncodeSequence(1), &testdata.GroupInfo{}),
 			destSlice: func() ModelSlicePtr {
-				x := make([]testdata.GroupMetadata, 0)
+				x := make([]testdata.GroupInfo, 0)
 				return &x
 			},
 			expIDs:    []RowID{EncodeSequence(1)},
-			expResult: &[]testdata.GroupMetadata{{}},
+			expResult: &[]testdata.GroupInfo{{}},
 		},
 		"dest pointer with nil value": {
-			srcIT: mockIter(EncodeSequence(1), &testdata.GroupMetadata{}),
+			srcIT: mockIter(EncodeSequence(1), &testdata.GroupInfo{}),
 			destSlice: func() ModelSlicePtr {
-				return (*[]testdata.GroupMetadata)(nil)
+				return (*[]testdata.GroupInfo)(nil)
 			},
 			expErr: ErrArgument,
 		},
 		"iterator is nil": {
 			srcIT:     nil,
-			destSlice: func() ModelSlicePtr { return new([]testdata.GroupMetadata) },
+			destSlice: func() ModelSlicePtr { return new([]testdata.GroupInfo) },
 			expErr:    ErrArgument,
 		},
 		"dest slice is nil": {
@@ -65,13 +65,13 @@ func TestReadAll(t *testing.T) {
 		},
 		"dest slice is not a pointer": {
 			srcIT:     IteratorFunc(nil),
-			destSlice: func() ModelSlicePtr { return make([]testdata.GroupMetadata, 1) },
+			destSlice: func() ModelSlicePtr { return make([]testdata.GroupInfo, 1) },
 			expErr:    ErrArgument,
 		},
 		"error on loadNext is returned": {
 			srcIT: NewInvalidIterator(),
 			destSlice: func() ModelSlicePtr {
-				x := make([]testdata.GroupMetadata, 1)
+				x := make([]testdata.GroupInfo, 1)
 				return &x
 			},
 			expErr: ErrIteratorInvalid,
@@ -93,24 +93,24 @@ func TestReadAll(t *testing.T) {
 func TestLimitedIterator(t *testing.T) {
 	specs := map[string]struct {
 		src Iterator
-		exp []testdata.GroupMetadata
+		exp []testdata.GroupInfo
 	}{
 		"all from range with max > length": {
-			src: LimitIterator(mockIter(EncodeSequence(1), &testdata.GroupMetadata{Description: "test"}), 2),
-			exp: []testdata.GroupMetadata{testdata.GroupMetadata{Description: "test"}},
+			src: LimitIterator(mockIter(EncodeSequence(1), &testdata.GroupInfo{Description: "test"}), 2),
+			exp: []testdata.GroupInfo{testdata.GroupInfo{Description: "test"}},
 		},
 		"up to max": {
-			src: LimitIterator(mockIter(EncodeSequence(1), &testdata.GroupMetadata{Description: "test"}), 1),
-			exp: []testdata.GroupMetadata{testdata.GroupMetadata{Description: "test"}},
+			src: LimitIterator(mockIter(EncodeSequence(1), &testdata.GroupInfo{Description: "test"}), 1),
+			exp: []testdata.GroupInfo{testdata.GroupInfo{Description: "test"}},
 		},
 		"none when max = 0": {
-			src: LimitIterator(mockIter(EncodeSequence(1), &testdata.GroupMetadata{Description: "test"}), 0),
-			exp: []testdata.GroupMetadata{},
+			src: LimitIterator(mockIter(EncodeSequence(1), &testdata.GroupInfo{Description: "test"}), 0),
+			exp: []testdata.GroupInfo{},
 		},
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
-			var loaded []testdata.GroupMetadata
+			var loaded []testdata.GroupInfo
 			_, err := ReadAll(spec.src, &loaded)
 			require.NoError(t, err)
 			assert.EqualValues(t, spec.exp, loaded)

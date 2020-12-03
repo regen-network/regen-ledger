@@ -15,9 +15,9 @@
     - [Params](#regen.group.v1alpha1.Params)
   
 - [regen/group/v1alpha1/types.proto](#regen/group/v1alpha1/types.proto)
-    - [GroupAccountMetadata](#regen.group.v1alpha1.GroupAccountMetadata)
+    - [GroupAccountInfo](#regen.group.v1alpha1.GroupAccountInfo)
+    - [GroupInfo](#regen.group.v1alpha1.GroupInfo)
     - [GroupMember](#regen.group.v1alpha1.GroupMember)
-    - [GroupMetadata](#regen.group.v1alpha1.GroupMetadata)
     - [Member](#regen.group.v1alpha1.Member)
     - [Proposal](#regen.group.v1alpha1.Proposal)
     - [Tally](#regen.group.v1alpha1.Tally)
@@ -192,10 +192,10 @@ Params defines the set of configurable parameters.
 
 
 
-<a name="regen.group.v1alpha1.GroupAccountMetadata"></a>
+<a name="regen.group.v1alpha1.GroupAccountInfo"></a>
 
-### GroupAccountMetadata
-GroupAccountMetadata specifies group account metadata.
+### GroupAccountInfo
+GroupAccountInfo represents the high-level on-chain information for a group account.
 
 
 | Field | Type | Label | Description |
@@ -204,8 +204,27 @@ GroupAccountMetadata specifies group account metadata.
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 | admin | [bytes](#bytes) |  | admin is the account address of the group admin. |
 | comment | [string](#string) |  | comment is the group account's comment. |
-| version | [uint64](#uint64) |  | version is used to track changes to a group's GroupAccountMetadata structure that would create a different result on a running proposal. |
+| version | [uint64](#uint64) |  | version is used to track changes to a group's GroupAccountInfo structure that would create a different result on a running proposal. |
 | decision_policy | [google.protobuf.Any](#google.protobuf.Any) |  | decision_policy specifies the group account's decision policy. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.GroupInfo"></a>
+
+### GroupInfo
+GroupInfo represents the high-level on-chain information for a group.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
+| admin | [bytes](#bytes) |  | admin is the account address of the group's admin. |
+| comment | [string](#string) |  | comment is the group's comment. |
+| version | [uint64](#uint64) |  | version is used to track changes to a group's membership structure that would break existing proposals. Whenever any members power is changed, or any member is added or removed this version is incremented and will cause proposals based on older versions of this group to fail |
+| total_weight | [string](#string) |  | total_weight is the sum of the group members' powers. |
 
 
 
@@ -226,25 +245,6 @@ GroupMember represents the relationship between a group and a member.
 | comment | [string](#string) |  | comment is the member's comment.
 
 TODO: @aaronc was comment missing by intention? |
-
-
-
-
-
-
-<a name="regen.group.v1alpha1.GroupMetadata"></a>
-
-### GroupMetadata
-GroupMetadata represents a group's metadata
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
-| admin | [bytes](#bytes) |  | admin is the account address of the group's admin. |
-| comment | [string](#string) |  | comment is the group's comment. |
-| version | [uint64](#uint64) |  | version is used to track changes to a group's membership structure that would break existing proposals. Whenever any members power is changed, or any member is added or removed this version is incremented and will cause proposals based on older versions of this group to fail |
-| total_weight | [string](#string) |  | total_weight is the sum of the group members' powers. |
 
 
 

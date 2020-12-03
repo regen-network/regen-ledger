@@ -193,7 +193,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
 
 	specs := map[string]struct {
 		req       *types.MsgUpdateGroupAdminRequest
-		expStored types.GroupMetadata
+		expStored types.GroupInfo
 		expErr    bool
 	}{
 		"with correct admin": {
@@ -202,7 +202,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
 				Admin:    oldAdmin,
 				NewAdmin: []byte("my-new-admin-address"),
 			},
-			expStored: types.GroupMetadata{
+			expStored: types.GroupInfo{
 				GroupId:     groupID,
 				Admin:       []byte("my-new-admin-address"),
 				Comment:     "test",
@@ -217,7 +217,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
 				NewAdmin: []byte("my-new-admin-address"),
 			},
 			expErr: true,
-			expStored: types.GroupMetadata{
+			expStored: types.GroupInfo{
 				GroupId:     groupID,
 				Admin:       oldAdmin,
 				Comment:     "test",
@@ -232,7 +232,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
 				NewAdmin: []byte("my-new-admin-address"),
 			},
 			expErr: true,
-			expStored: types.GroupMetadata{
+			expStored: types.GroupInfo{
 				GroupId:     groupID,
 				Admin:       oldAdmin,
 				Comment:     "test",
@@ -274,7 +274,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupComment() {
 	specs := map[string]struct {
 		req       *types.MsgUpdateGroupCommentRequest
 		expErr    bool
-		expStored types.GroupMetadata
+		expStored types.GroupInfo
 	}{
 		"with correct admin": {
 			req: &types.MsgUpdateGroupCommentRequest{
@@ -282,7 +282,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupComment() {
 				Admin:   oldAdmin,
 				Comment: "new comment",
 			},
-			expStored: types.GroupMetadata{
+			expStored: types.GroupInfo{
 				GroupId:     groupID,
 				Admin:       oldAdmin,
 				Comment:     "new comment",
@@ -297,7 +297,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupComment() {
 				Comment: "new comment",
 			},
 			expErr: true,
-			expStored: types.GroupMetadata{
+			expStored: types.GroupInfo{
 				GroupId:     groupID,
 				Admin:       oldAdmin,
 				Comment:     "test",
@@ -312,7 +312,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupComment() {
 				Comment: "new comment",
 			},
 			expErr: true,
-			expStored: types.GroupMetadata{
+			expStored: types.GroupInfo{
 				GroupId:     groupID,
 				Admin:       oldAdmin,
 				Comment:     "test",
@@ -353,7 +353,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 	specs := map[string]struct {
 		req        *types.MsgUpdateGroupMembersRequest
 		expErr     bool
-		expGroup   types.GroupMetadata
+		expGroup   types.GroupInfo
 		expMembers []types.GroupMember
 	}{
 		"add new member": {
@@ -366,7 +366,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 					Comment: "second",
 				}},
 			},
-			expGroup: types.GroupMetadata{
+			expGroup: types.GroupInfo{
 				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
@@ -398,7 +398,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 					Comment: "updated",
 				}},
 			},
-			expGroup: types.GroupMetadata{
+			expGroup: types.GroupInfo{
 				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
@@ -424,7 +424,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 					Comment: "first",
 				}},
 			},
-			expGroup: types.GroupMetadata{
+			expGroup: types.GroupInfo{
 				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
@@ -457,7 +457,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 					},
 				},
 			},
-			expGroup: types.GroupMetadata{
+			expGroup: types.GroupInfo{
 				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
@@ -481,7 +481,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 					Comment: "good bye",
 				}},
 			},
-			expGroup: types.GroupMetadata{
+			expGroup: types.GroupInfo{
 				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
@@ -501,7 +501,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				}},
 			},
 			expErr: true,
-			expGroup: types.GroupMetadata{
+			expGroup: types.GroupInfo{
 				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
@@ -526,7 +526,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				}},
 			},
 			expErr: true,
-			expGroup: types.GroupMetadata{
+			expGroup: types.GroupInfo{
 				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",
@@ -551,7 +551,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				}},
 			},
 			expErr: true,
-			expGroup: types.GroupMetadata{
+			expGroup: types.GroupInfo{
 				GroupId:     groupID,
 				Admin:       myAdmin,
 				Comment:     "test",

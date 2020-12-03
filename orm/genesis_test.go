@@ -23,14 +23,14 @@ func TestExportTableData(t *testing.T) {
 
 	storeKey := sdk.NewKVStoreKey("test")
 	const prefix = iota
-	table := orm.NewTableBuilder(prefix, storeKey, &testdata.GroupMetadata{}, orm.FixLengthIndexKeys(1), cdc).Build()
+	table := orm.NewTableBuilder(prefix, storeKey, &testdata.GroupInfo{}, orm.FixLengthIndexKeys(1), cdc).Build()
 
 	ctx := orm.NewMockContext()
 	testRecordsNum := 2
-	testRecords := make([]testdata.GroupMetadata, testRecordsNum)
+	testRecords := make([]testdata.GroupInfo, testRecordsNum)
 	for i := 1; i <= testRecordsNum; i++ {
 		myAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, sdk.AddrLen))
-		g := testdata.GroupMetadata{
+		g := testdata.GroupInfo{
 			Description: fmt.Sprintf("my test %d", i),
 			Admin:       myAddr,
 		}
@@ -60,7 +60,7 @@ func TestImportTableData(t *testing.T) {
 
 	storeKey := sdk.NewKVStoreKey("test")
 	const prefix = iota
-	table := orm.NewTableBuilder(prefix, storeKey, &testdata.GroupMetadata{}, orm.FixLengthIndexKeys(1), cdc).Build()
+	table := orm.NewTableBuilder(prefix, storeKey, &testdata.GroupInfo{}, orm.FixLengthIndexKeys(1), cdc).Build()
 
 	ctx := orm.NewMockContext()
 
@@ -80,11 +80,11 @@ func TestImportTableData(t *testing.T) {
 
 	// then
 	for i := 1; i < 3; i++ {
-		var loaded testdata.GroupMetadata
+		var loaded testdata.GroupInfo
 		err := table.GetOne(ctx, []byte{byte(i)}, &loaded)
 		require.NoError(t, err)
 
-		exp := testdata.GroupMetadata{
+		exp := testdata.GroupInfo{
 			Description: fmt.Sprintf("my test %d", i),
 			Admin:       sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, sdk.AddrLen)),
 		}
@@ -100,7 +100,7 @@ func TestImportTableDataAny(t *testing.T) {
 
 	storeKey := sdk.NewKVStoreKey("test")
 	const prefix = iota
-	table := orm.NewTableBuilder(prefix, storeKey, &grouptypes.GroupAccountMetadata{}, orm.FixLengthIndexKeys(1), cdc).Build()
+	table := orm.NewTableBuilder(prefix, storeKey, &grouptypes.GroupAccountInfo{}, orm.FixLengthIndexKeys(1), cdc).Build()
 
 	ctx := orm.NewMockContext()
 
@@ -120,11 +120,11 @@ func TestImportTableDataAny(t *testing.T) {
 
 	// then
 	for i := 1; i < 3; i++ {
-		var loaded grouptypes.GroupAccountMetadata
+		var loaded grouptypes.GroupAccountInfo
 		err := table.GetOne(ctx, []byte{byte(i)}, &loaded)
 		require.NoError(t, err)
 
-		exp, err := grouptypes.NewGroupAccountMetadata(
+		exp, err := grouptypes.NewGroupAccountInfo(
 			sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, sdk.AddrLen)),
 			grouptypes.GroupID(i),
 			sdk.AccAddress(bytes.Repeat([]byte{byte(0)}, sdk.AddrLen)),
@@ -148,14 +148,14 @@ func TestExportTableDataAny(t *testing.T) {
 
 	storeKey := sdk.NewKVStoreKey("test")
 	const prefix = iota
-	table := orm.NewTableBuilder(prefix, storeKey, &grouptypes.GroupAccountMetadata{}, orm.FixLengthIndexKeys(1), cdc).Build()
+	table := orm.NewTableBuilder(prefix, storeKey, &grouptypes.GroupAccountInfo{}, orm.FixLengthIndexKeys(1), cdc).Build()
 
 	ctx := orm.NewMockContext()
 	testRecordsNum := 2
-	testRecords := make([]grouptypes.GroupAccountMetadata, testRecordsNum)
+	testRecords := make([]grouptypes.GroupAccountInfo, testRecordsNum)
 	adminAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(0)}, sdk.AddrLen))
 	for i := 1; i <= testRecordsNum; i++ {
-		g, err := grouptypes.NewGroupAccountMetadata(
+		g, err := grouptypes.NewGroupAccountInfo(
 			sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, sdk.AddrLen)),
 			grouptypes.GroupID(i),
 			adminAddr,

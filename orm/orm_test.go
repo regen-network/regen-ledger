@@ -20,7 +20,7 @@ func TestTypeSafeRowGetter(t *testing.T) {
 	ctx := NewMockContext()
 	const prefixKey = 0x2
 	store := prefix.NewStore(ctx.KVStore(storeKey), []byte{prefixKey})
-	md := testdata.GroupMetadata{Description: "foo"}
+	md := testdata.GroupInfo{Description: "foo"}
 	bz, err := md.Marshal()
 	require.NoError(t, err)
 	store.Set(EncodeSequence(1), bz)
@@ -33,12 +33,12 @@ func TestTypeSafeRowGetter(t *testing.T) {
 	}{
 		"happy path": {
 			srcRowID:     EncodeSequence(1),
-			srcModelType: reflect.TypeOf(testdata.GroupMetadata{}),
-			expObj:       testdata.GroupMetadata{Description: "foo"},
+			srcModelType: reflect.TypeOf(testdata.GroupInfo{}),
+			expObj:       testdata.GroupInfo{Description: "foo"},
 		},
 		"unknown rowID should return ErrNotFound": {
 			srcRowID:     EncodeSequence(999),
-			srcModelType: reflect.TypeOf(testdata.GroupMetadata{}),
+			srcModelType: reflect.TypeOf(testdata.GroupInfo{}),
 			expErr:       ErrNotFound,
 		},
 		"wrong type should cause ErrType": {
@@ -48,11 +48,11 @@ func TestTypeSafeRowGetter(t *testing.T) {
 		},
 		"empty rowID not allowed": {
 			srcRowID:     []byte{},
-			srcModelType: reflect.TypeOf(testdata.GroupMetadata{}),
+			srcModelType: reflect.TypeOf(testdata.GroupInfo{}),
 			expErr:       ErrArgument,
 		},
 		"nil rowID not allowed": {
-			srcModelType: reflect.TypeOf(testdata.GroupMetadata{}),
+			srcModelType: reflect.TypeOf(testdata.GroupInfo{}),
 			expErr:       ErrArgument,
 		},
 	}
@@ -62,7 +62,7 @@ func TestTypeSafeRowGetter(t *testing.T) {
 			cdc := codec.NewProtoCodec(interfaceRegistry)
 
 			getter := NewTypeSafeRowGetter(storeKey, prefixKey, spec.srcModelType, cdc)
-			var loadedObj testdata.GroupMetadata
+			var loadedObj testdata.GroupInfo
 
 			err := getter(ctx, spec.srcRowID, &loadedObj)
 			if spec.expErr != nil {

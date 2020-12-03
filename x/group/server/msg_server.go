@@ -32,7 +32,7 @@ func (s serverImpl) CreateGroup(goCtx context.Context, req *types.MsgCreateGroup
 func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *types.MsgUpdateGroupMembersRequest) (*types.MsgUpdateGroupMembersResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	action := func(m *types.GroupMetadata) error {
+	action := func(m *types.GroupInfo) error {
 		for i := range req.MemberUpdates {
 			member := types.GroupMember{GroupId: req.GroupId,
 				Member:  req.MemberUpdates[i].Address,
@@ -117,7 +117,7 @@ func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *types.MsgUpda
 func (s serverImpl) UpdateGroupAdmin(goCtx context.Context, req *types.MsgUpdateGroupAdminRequest) (*types.MsgUpdateGroupAdminResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	action := func(m *types.GroupMetadata) error {
+	action := func(m *types.GroupInfo) error {
 		m.Admin = req.NewAdmin
 		return s.UpdateGroup(ctx, m)
 	}
@@ -133,7 +133,7 @@ func (s serverImpl) UpdateGroupAdmin(goCtx context.Context, req *types.MsgUpdate
 func (s serverImpl) UpdateGroupComment(goCtx context.Context, req *types.MsgUpdateGroupCommentRequest) (*types.MsgUpdateGroupCommentResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	action := func(m *types.GroupMetadata) error {
+	action := func(m *types.GroupInfo) error {
 		m.Comment = req.Comment
 		return s.UpdateGroup(ctx, m)
 	}
@@ -220,7 +220,7 @@ type authNGroupReq interface {
 	GetAdmin() sdk.AccAddress // equal GetSigners()
 }
 
-type actionFn func(m *types.GroupMetadata) error
+type actionFn func(m *types.GroupInfo) error
 
 func (s serverImpl) doUpdateGroup(ctx sdk.Context, req authNGroupReq, action actionFn, note string) error {
 	err := s.doAuthenticated(ctx, req, action, note)

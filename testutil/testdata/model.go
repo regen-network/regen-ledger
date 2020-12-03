@@ -15,7 +15,7 @@ func (g GroupMember) NaturalKey() []byte {
 	return result
 }
 
-func (g GroupMetadata) ValidateBasic() error {
+func (g GroupInfo) ValidateBasic() error {
 	if g.Description == "invalid" {
 		return errors.Wrap(ErrTest, "description")
 	}

@@ -133,7 +133,7 @@ func TestThresholdDecisionPolicyValidate(t *testing.T) {
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
-			err := spec.src.Validate(GroupMetadata{TotalWeight: "1"})
+			err := spec.src.Validate(GroupInfo{TotalWeight: "1"})
 			assert.Equal(t, spec.expErr, err != nil, err)
 		})
 	}
@@ -205,13 +205,13 @@ func TestVoteNaturalKey(t *testing.T) {
 	assert.Equal(t, []byte{0, 0, 0, 0, 0, 0, 0, 1, 0xff, 0xfe}, v.NaturalKey())
 }
 
-func TestGroupMetadataValidation(t *testing.T) {
+func TestGroupInfoValidation(t *testing.T) {
 	specs := map[string]struct {
-		src    GroupMetadata
+		src    GroupInfo
 		expErr bool
 	}{
 		"all good": {
-			src: GroupMetadata{
+			src: GroupInfo{
 				GroupId:     1,
 				Admin:       []byte("valid--admin-address"),
 				Comment:     "any",
@@ -220,7 +220,7 @@ func TestGroupMetadataValidation(t *testing.T) {
 			},
 		},
 		"invalid group": {
-			src: GroupMetadata{
+			src: GroupInfo{
 				Admin:       []byte("valid--admin-address"),
 				Comment:     "any",
 				Version:     1,
@@ -229,7 +229,7 @@ func TestGroupMetadataValidation(t *testing.T) {
 			expErr: true,
 		},
 		"invalid admin": {
-			src: GroupMetadata{
+			src: GroupInfo{
 				GroupId:     1,
 				Admin:       []byte(""),
 				Comment:     "any",
@@ -239,7 +239,7 @@ func TestGroupMetadataValidation(t *testing.T) {
 			expErr: true,
 		},
 		"invalid version": {
-			src: GroupMetadata{
+			src: GroupInfo{
 				GroupId:     1,
 				Admin:       []byte("valid--admin-address"),
 				Comment:     "any",
@@ -248,7 +248,7 @@ func TestGroupMetadataValidation(t *testing.T) {
 			expErr: true,
 		},
 		"unset total weight": {
-			src: GroupMetadata{
+			src: GroupInfo{
 				GroupId: 1,
 				Admin:   []byte("valid--admin-address"),
 				Comment: "any",
@@ -257,7 +257,7 @@ func TestGroupMetadataValidation(t *testing.T) {
 			expErr: true,
 		},
 		"negative total weight": {
-			src: GroupMetadata{
+			src: GroupInfo{
 				GroupId:     1,
 				Admin:       []byte("valid--admin-address"),
 				Comment:     "any",
@@ -348,7 +348,7 @@ func TestGroupMemberValidation(t *testing.T) {
 	}
 }
 
-func TestGroupAccountMetadata(t *testing.T) {
+func TestGroupAccountInfo(t *testing.T) {
 	specs := map[string]struct {
 		groupAccount sdk.AccAddress
 		group        GroupID
@@ -484,7 +484,7 @@ func TestGroupAccountMetadata(t *testing.T) {
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
-			m, err := NewGroupAccountMetadata(
+			m, err := NewGroupAccountInfo(
 				spec.groupAccount,
 				spec.group,
 				spec.admin,

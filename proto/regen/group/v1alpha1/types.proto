@@ -59,8 +59,8 @@ enum Choice {
 // State
 //
 
-// GroupMetadata represents a group's metadata
-message GroupMetadata {
+// GroupInfo represents the high-level on-chain information for a group.
+message GroupInfo {
 
     // group_id is the unique ID of the group.
     uint64 group_id = 1 [(gogoproto.casttype) = "GroupID"];
@@ -99,8 +99,8 @@ message GroupMember {
     string comment = 4; // TODO: @aaronc was comment missing by intention?
 }
 
-// GroupAccountMetadata specifies group account metadata.
-message GroupAccountMetadata {
+// GroupAccountInfo represents the high-level on-chain information for a group account.
+message GroupAccountInfo {
     option (gogoproto.equal)            = true;
     option (gogoproto.goproto_getters) = false;
 
@@ -116,7 +116,7 @@ message GroupAccountMetadata {
     // comment is the group account's comment.
     string comment = 4;
 
-    // version is used to track changes to a group's GroupAccountMetadata structure that
+    // version is used to track changes to a group's GroupAccountInfo structure that
     // would create a different result on a running proposal.
     uint64 version = 5;
 

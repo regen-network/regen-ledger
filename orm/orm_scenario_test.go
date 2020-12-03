@@ -24,7 +24,7 @@ func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
 
 	k := NewGroupKeeper(storeKey, cdc)
 
-	g := testdata.GroupMetadata{
+	g := testdata.GroupInfo{
 		Description: "my test",
 		Admin:       sdk.AccAddress([]byte("admin-address")),
 	}
@@ -36,7 +36,7 @@ func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
 	require.True(t, exists)
 
 	// and load it
-	var loaded testdata.GroupMetadata
+	var loaded testdata.GroupInfo
 
 	binKey, err := k.groupTable.GetOne(ctx, rowID, &loaded)
 	require.NoError(t, err)
@@ -92,7 +92,7 @@ func TestKeeperEndToEndWithNaturalKeyTable(t *testing.T) {
 
 	k := NewGroupKeeper(storeKey, cdc)
 
-	g := testdata.GroupMetadata{
+	g := testdata.GroupInfo{
 		Description: "my test",
 		Admin:       sdk.AccAddress([]byte("admin-address")),
 	}
@@ -181,7 +181,7 @@ func TestGasCostsNaturalKeyTable(t *testing.T) {
 
 	k := NewGroupKeeper(storeKey, cdc)
 
-	g := testdata.GroupMetadata{
+	g := testdata.GroupInfo{
 		Description: "my test",
 		Admin:       sdk.AccAddress([]byte("admin-address")),
 	}
@@ -280,7 +280,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 	testRecords := 10
 	for i := 1; i <= testRecords; i++ {
 		myAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, sdk.AddrLen))
-		g := testdata.GroupMetadata{
+		g := testdata.GroupInfo{
 			Description: fmt.Sprintf("my test %d", i),
 			Admin:       myAddr,
 		}
@@ -301,7 +301,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 
 	for i := 1; i <= testRecords; i++ {
 		require.True(t, k.groupTable.Has(ctx, uint64(i)))
-		var loaded testdata.GroupMetadata
+		var loaded testdata.GroupInfo
 		groupRowID, err := k.groupTable.GetOne(ctx, uint64(i), &loaded)
 		require.NoError(t, err)
 
@@ -314,7 +314,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 		require.True(t, k.groupByAdminIndex.Has(ctx, exp))
 		it, err := k.groupByAdminIndex.Get(ctx, exp)
 		require.NoError(t, err)
-		var all []testdata.GroupMetadata
+		var all []testdata.GroupInfo
 		ReadAll(it, &all)
 		require.Len(t, all, 1)
 		assert.Equal(t, loaded, all[0])
@@ -387,8 +387,8 @@ func TestExportImportStateNaturalKeyTable(t *testing.T) {
 	}
 }
 
-func first(t *testing.T, it Iterator) ([]byte, testdata.GroupMetadata) {
-	var loaded testdata.GroupMetadata
+func first(t *testing.T, it Iterator) ([]byte, testdata.GroupInfo) {
+	var loaded testdata.GroupInfo
 	key, err := First(it, &loaded)
 	require.NoError(t, err)
 	return key, loaded

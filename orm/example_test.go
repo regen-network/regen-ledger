@@ -30,10 +30,10 @@ var (
 func NewGroupKeeper(storeKey sdk.StoreKey, cdc codec.Marshaler) GroupKeeper {
 	k := GroupKeeper{key: storeKey}
 
-	groupTableBuilder := NewAutoUInt64TableBuilder(GroupTablePrefix, GroupTableSeqPrefix, storeKey, &testdata.GroupMetadata{}, cdc)
+	groupTableBuilder := NewAutoUInt64TableBuilder(GroupTablePrefix, GroupTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
 	// note: quite easy to mess with Index prefixes when managed outside. no fail fast on duplicates
 	k.groupByAdminIndex = NewIndex(groupTableBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]RowID, error) {
-		return []RowID{[]byte(val.(*testdata.GroupMetadata).Admin)}, nil
+		return []RowID{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
 	})
 	k.groupTable = groupTableBuilder.Build()
 

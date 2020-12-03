@@ -103,7 +103,7 @@ type ModelSlicePtr interface{}
 // The slice can be empty when the iterator does not return any values but not nil. The iterator
 // is closed afterwards.
 // Example:
-// 			var loaded []testdata.GroupMetadata
+// 			var loaded []testdata.GroupInfo
 //			rowIDs, err := ReadAll(it, &loaded)
 //			require.NoError(t, err)
 //

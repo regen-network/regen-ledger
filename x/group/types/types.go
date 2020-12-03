@@ -57,7 +57,7 @@ type DecisionPolicy interface {
 	orm.Validateable
 	GetTimeout() types.Duration
 	Allow(tally Tally, totalPower string, votingDuration time.Duration) (DecisionPolicyResult, error)
-	Validate(g GroupMetadata) error
+	Validate(g GroupInfo) error
 }
 
 // Implements DecisionPolicy Interface
@@ -115,7 +115,7 @@ func (p ThresholdDecisionPolicy) Allow(tally Tally, totalPower string, votingDur
 }
 
 // Validate returns an error if policy threshold is greater than the total group weight
-func (p *ThresholdDecisionPolicy) Validate(g GroupMetadata) error {
+func (p *ThresholdDecisionPolicy) Validate(g GroupInfo) error {
 	threshold, err := math.ParsePositiveDecimal(p.Threshold)
 	if err != nil {
 		return sdkerrors.Wrap(err, "threshold")
@@ -153,15 +153,15 @@ func (g GroupMember) NaturalKey() []byte {
 	return result
 }
 
-func (g GroupAccountMetadata) NaturalKey() []byte {
+func (g GroupAccountInfo) NaturalKey() []byte {
 	return g.GroupAccount
 }
 
-var _ orm.Validateable = GroupAccountMetadata{}
+var _ orm.Validateable = GroupAccountInfo{}
 
-// NewGroupAccountMetadata creates a new GroupAccountMetadata instance
-func NewGroupAccountMetadata(groupAccount sdk.AccAddress, group GroupID, admin sdk.AccAddress, comment string, version uint64, decisionPolicy DecisionPolicy) (GroupAccountMetadata, error) {
-	p := GroupAccountMetadata{
+// NewGroupAccountInfo creates a new GroupAccountInfo instance
+func NewGroupAccountInfo(groupAccount sdk.AccAddress, group GroupID, admin sdk.AccAddress, comment string, version uint64, decisionPolicy DecisionPolicy) (GroupAccountInfo, error) {
+	p := GroupAccountInfo{
 		GroupAccount: groupAccount,
 		GroupId:      group,
 		Admin:        admin,
@@ -171,19 +171,19 @@ func NewGroupAccountMetadata(groupAccount sdk.AccAddress, group GroupID, admin s
 
 	msg, ok := decisionPolicy.(proto.Message)
 	if !ok {
-		return GroupAccountMetadata{}, fmt.Errorf("%T does not implement proto.Message", decisionPolicy)
+		return GroupAccountInfo{}, fmt.Errorf("%T does not implement proto.Message", decisionPolicy)
 	}
 
 	any, err := codectypes.NewAnyWithValue(msg)
 	if err != nil {
-		return GroupAccountMetadata{}, err
+		return GroupAccountInfo{}, err
 	}
 
 	p.DecisionPolicy = any
 	return p, nil
 }
 
-func (g GroupAccountMetadata) GetDecisionPolicy() DecisionPolicy {
+func (g GroupAccountInfo) GetDecisionPolicy() DecisionPolicy {
 	decisionPolicy, ok := g.DecisionPolicy.GetCachedValue().(DecisionPolicy)
 	if !ok {
 		return nil
@@ -191,7 +191,7 @@ func (g GroupAccountMetadata) GetDecisionPolicy() DecisionPolicy {
 	return decisionPolicy
 }
 
-func (g GroupAccountMetadata) ValidateBasic() error {
+func (g GroupAccountInfo) ValidateBasic() error {
 	if g.Admin.Empty() {
 		return sdkerrors.Wrap(ErrEmpty, "admin")
 	}
@@ -223,7 +223,7 @@ func (g GroupAccountMetadata) ValidateBasic() error {
 }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
-func (g GroupAccountMetadata) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+func (g GroupAccountInfo) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 	var decisionPolicy DecisionPolicy
 	return unpacker.UnpackAny(g.DecisionPolicy, &decisionPolicy)
 }
@@ -297,9 +297,9 @@ func noopValidator() paramstypes.ValueValidatorFn {
 	return func(value interface{}) error { return nil }
 }
 
-var _ orm.Validateable = GroupMetadata{}
+var _ orm.Validateable = GroupInfo{}
 
-func (m GroupMetadata) ValidateBasic() error {
+func (m GroupInfo) ValidateBasic() error {
 	if m.GroupId.Empty() {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
