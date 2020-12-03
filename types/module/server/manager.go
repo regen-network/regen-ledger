@@ -98,6 +98,12 @@ func (mm *Manager) RegisterModules(modules sdkmodule.BasicManager) error {
 	return nil
 }
 
+type AuthorizationMiddleware func(ctx sdk.Context, methodName string, req sdk.MsgRequest, signer sdk.AccAddress) bool
+
+func (mm *Manager) SetAuthorizationMiddleware(authzFunc AuthorizationMiddleware) {
+	mm.router.authzMiddleware = authzFunc
+}
+
 func (mm *Manager) CompleteInitialization() error {
 	for typ := range mm.requiredServices {
 		if _, found := mm.router.providedServices[typ]; !found {

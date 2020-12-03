@@ -21,6 +21,7 @@ type router struct {
 	handlers         map[string]handler
 	providedServices map[reflect.Type]bool
 	antiReentryMap   map[string]bool
+	authzMiddleware  AuthorizationMiddleware
 }
 
 type registrar struct {
@@ -63,7 +64,7 @@ func (r registrar) RegisterService(sd *grpc.ServiceDesc, ss interface{}) {
 	}
 }
 
-func (rtr *router) invoker(methodName string, writeCondition func(sdk.MsgRequest) error) (Invoker, error) {
+func (rtr *router) invoker(methodName string, writeCondition func(context.Context, string, sdk.MsgRequest) error) (Invoker, error) {
 	handler, found := rtr.handlers[methodName]
 	if !found {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("cannot find method named %s", methodName))
@@ -91,7 +92,7 @@ func (rtr *router) invoker(methodName string, writeCondition func(sdk.MsgRequest
 				return err
 			}
 
-			err = writeCondition(msgReq)
+			err = writeCondition(ctx, methodName, msgReq)
 			if err != nil {
 				return err
 			}
@@ -142,20 +143,26 @@ func (rtr *router) invokerFactory(moduleName string) InvokerFactory {
 				fmt.Sprintf("expected a call from module %s, but module %s is calling", moduleName, moduleId.ModuleName))
 		}
 
-		addr := moduleId.Address()
+		moduleAddr := moduleId.Address()
 
-		writeCondition := func(msgReq sdk.MsgRequest) error {
+		writeCondition := func(ctx context.Context, methodName string, msgReq sdk.MsgRequest) error {
 			signers := msgReq.GetSigners()
 			if len(signers) != 1 {
-				return fmt.Errorf("expected a signle signer %s, got %+v", addr, signers)
+				return fmt.Errorf("expected a signle signer %s, got %+v", moduleAddr, signers)
 			}
 
-			if !bytes.Equal(addr, signers[0]) {
-				return sdkerrors.Wrap(sdkerrors.ErrUnauthorized,
-					fmt.Sprintf("expected %s, got %s", signers[0], addr))
+			signer := signers[0]
+
+			if bytes.Equal(moduleAddr, signer) {
+				return nil
 			}
 
-			return nil
+			if rtr.authzMiddleware != nil && rtr.authzMiddleware(sdk.UnwrapSDKContext(ctx), methodName, msgReq, moduleAddr) {
+				return nil
+			}
+
+			return sdkerrors.Wrap(sdkerrors.ErrUnauthorized,
+				fmt.Sprintf("expected %s, got %s", signers[0], moduleAddr))
 		}
 
 		return rtr.invoker(callInfo.Method, writeCondition)
@@ -169,7 +176,7 @@ func (rtr *router) testTxFactory(signers []sdk.AccAddress) InvokerFactory {
 	}
 
 	return func(callInfo CallInfo) (Invoker, error) {
-		return rtr.invoker(callInfo.Method, func(req sdk.MsgRequest) error {
+		return rtr.invoker(callInfo.Method, func(_ context.Context, _ string, req sdk.MsgRequest) error {
 			for _, signer := range req.GetSigners() {
 				if _, found := signerMap[signer.String()]; !found {
 					return sdkerrors.ErrUnauthorized
