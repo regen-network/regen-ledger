@@ -12,7 +12,7 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	ff := server.NewFixtureFactory(t, 6, module.Modules{
+	ff := server.NewFixtureFactory(t, 6, []module.Module{
 		ecocreditmodule.Module{},
 	})
 

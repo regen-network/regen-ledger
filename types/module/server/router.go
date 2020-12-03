@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"reflect"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	gogogrpc "github.com/gogo/protobuf/grpc"
 	"google.golang.org/grpc"
-	"reflect"
 )
 
 type handler struct {
@@ -113,37 +114,37 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 
 			return nil
 		}, nil
-	} else {
-		// query handler
-		return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
-			// cache wrap the multistore so that writes are batched
-			sdkCtx := sdk.UnwrapSDKContext(ctx)
-			ms := sdkCtx.MultiStore()
-			cacheMs := ms.CacheMultiStore()
-			sdkCtx = sdkCtx.WithMultiStore(cacheMs)
-			ctx = sdk.WrapSDKContext(sdkCtx)
-
-			err := handler.f(ctx, request, response)
-			if err != nil {
-				return err
-			}
-
-			cacheMs.Write()
-
-			return nil
-		}, nil
 	}
+
+	// query handler
+	return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
+		// cache wrap the multistore so that writes are batched
+		sdkCtx := sdk.UnwrapSDKContext(ctx)
+		ms := sdkCtx.MultiStore()
+		cacheMs := ms.CacheMultiStore()
+		sdkCtx = sdkCtx.WithMultiStore(cacheMs)
+		ctx = sdk.WrapSDKContext(sdkCtx)
+
+		err := handler.f(ctx, request, response)
+		if err != nil {
+			return err
+		}
+
+		cacheMs.Write()
+
+		return nil
+	}, nil
 }
 
 func (rtr *router) invokerFactory(moduleName string) InvokerFactory {
 	return func(callInfo CallInfo) (Invoker, error) {
-		moduleId := callInfo.Caller
-		if moduleName != moduleId.ModuleName {
+		moduleID := callInfo.Caller
+		if moduleName != moduleID.ModuleName {
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized,
-				fmt.Sprintf("expected a call from module %s, but module %s is calling", moduleName, moduleId.ModuleName))
+				fmt.Sprintf("expected a call from module %s, but module %s is calling", moduleName, moduleID.ModuleName))
 		}
 
-		moduleAddr := moduleId.Address()
+		moduleAddr := moduleID.Address()
 
 		writeCondition := func(ctx context.Context, methodName string, msgReq sdk.MsgRequest) error {
 			signers := msgReq.GetSigners()

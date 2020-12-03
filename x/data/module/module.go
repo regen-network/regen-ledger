@@ -2,7 +2,6 @@ package module
 
 import (
 	"encoding/json"
-	"github.com/regen-network/regen-ledger/x/data/client"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -15,6 +14,7 @@ import (
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/data"
+	"github.com/regen-network/regen-ledger/x/data/client"
 	"github.com/regen-network/regen-ledger/x/data/server"
 )
 

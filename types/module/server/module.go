@@ -2,15 +2,14 @@ package server
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/regen-network/regen-ledger/types/module"
 )
 
+// Module is the module type that all server modules must satisfy
 type Module interface {
-	module.ModuleBase
+	module.TypeModule
 
-	RegisterInterfaces(registry types.InterfaceRegistry)
 	RegisterServices(Configurator)
 }
 

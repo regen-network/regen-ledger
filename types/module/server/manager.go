@@ -2,13 +2,15 @@ package server
 
 import (
 	"fmt"
+	"reflect"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	gogogrpc "github.com/gogo/protobuf/grpc"
+
 	"github.com/regen-network/regen-ledger/types/module"
-	"reflect"
 )
 
 type Manager struct {
@@ -33,7 +35,7 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 	}
 }
 
-func (mm *Manager) RegisterModules(modules []module.ModuleBase) error {
+func (mm *Manager) RegisterModules(modules []module.Module) error {
 	for _, mod := range modules {
 		// check if we actually have a server module, otherwise skip
 		serverMod, ok := mod.(Module)

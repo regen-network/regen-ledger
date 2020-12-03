@@ -3,30 +3,32 @@ package server
 import (
 	"context"
 	"fmt"
+	"testing"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/testutil/server"
-	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/grpc"
-	"testing"
+
+	"github.com/regen-network/regen-ledger/testutil/server"
+	"github.com/regen-network/regen-ledger/types/module"
 )
 
 type fixtureFactory struct {
 	t       *testing.T
-	modules []module.ModuleBase
+	modules []module.Module
 	signers []sdk.AccAddress
 }
 
 var _ server.FixtureFactory = fixtureFactory{}
 
-func NewFixtureFactory(t *testing.T, numSigners int, modules []module.ModuleBase) server.FixtureFactory {
+func NewFixtureFactory(t *testing.T, numSigners int, modules []module.Module) server.FixtureFactory {
 	signers := makeTestAddresses(numSigners)
 	return fixtureFactory{
 		t:       t,

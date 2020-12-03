@@ -6,8 +6,9 @@ import (
 	"github.com/regen-network/regen-ledger/types/module"
 )
 
+// Module is an interface that modules should implement to register grpc-gateway routes.
 type Module interface {
-	module.ModuleBase
+	module.Module
 
 	RegisterGRPCGatewayRoutes(client.Context, *runtime.ServeMux)
 }
