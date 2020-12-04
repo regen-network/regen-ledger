@@ -13,6 +13,7 @@ import (
 type RootModuleKey interface {
 	ModuleKey
 	sdk.StoreKey
+	Derive(path []byte) DerivedModuleKey
 }
 
 type rootModuleKey struct {

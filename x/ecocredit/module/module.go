@@ -3,6 +3,8 @@ package module
 import (
 	"encoding/json"
 
+	moduletypes "github.com/regen-network/regen-ledger/types"
+
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -24,8 +26,12 @@ var _ module.AppModuleBasic = Module{}
 var _ servermodule.Module = Module{}
 var _ climodule.Module = Module{}
 
+const ModuleName = "ecocredit"
+
+var ModuleID = moduletypes.RootModuleID("ecocredit")
+
 func (a Module) Name() string {
-	return "ecocredit"
+	return ModuleName
 }
 
 func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {

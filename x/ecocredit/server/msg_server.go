@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/regen-network/regen-ledger/util/storehelpers"
 	"github.com/regen-network/regen-ledger/x/bank"
@@ -18,7 +19,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error) {
+func (s keeper) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	classID := s.idSeq.NextVal(ctx)
 	classIDStr := uint64ToBase58Checked(classID)
@@ -44,7 +45,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 	return &ecocredit.MsgCreateClassResponse{ClassId: classIDStr}, nil
 }
 
-func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatchRequest) (*ecocredit.MsgCreateBatchResponse, error) {
+func (s keeper) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatchRequest) (*ecocredit.MsgCreateBatchResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	classID := req.ClassId
 	if err := s.assertClassIssuer(ctx, classID, req.Issuer); err != nil {
@@ -201,7 +202,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	return &ecocredit.MsgCreateBatchResponse{BatchDenom: batchDenom}, nil
 }
 
-func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (*ecocredit.MsgSendResponse, error) {
+func (s keeper) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (*ecocredit.MsgSendResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.key)
 	sender := req.Sender
@@ -276,7 +277,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 	return &ecocredit.MsgSendResponse{}, nil
 }
 
-func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireRequest) (*ecocredit.MsgRetireResponse, error) {
+func (s keeper) Retire(goCtx context.Context, req *ecocredit.MsgRetireRequest) (*ecocredit.MsgRetireResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.key)
 	holder := req.Holder
@@ -322,7 +323,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 
 // assertClassIssuer makes sure that the issuer is part of issuers of given classID.
 // Returns ErrUnauthorized otherwise.
-func (s serverImpl) assertClassIssuer(ctx sdk.Context, classID, issuer string) error {
+func (s keeper) assertClassIssuer(ctx sdk.Context, classID, issuer string) error {
 	classInfo, err := s.getClassInfo(ctx, classID)
 	if err != nil {
 		return err

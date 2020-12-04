@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
+	moduletypes "github.com/regen-network/regen-ledger/types"
+
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -90,6 +92,7 @@ import (
 
 	newmodule "github.com/regen-network/regen-ledger/types/module"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
+	bankv2 "github.com/regen-network/regen-ledger/x/bank/module"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 )
@@ -132,6 +135,11 @@ var (
 	)
 
 	NewModules = []newmodule.Module{
+		bankv2.Module{
+			DenomNamespaceAdmins: map[string]moduletypes.ModuleID{
+				"eco/": ecocredit.ModuleID,
+			},
+		},
 		ecocredit.Module{},
 		data.Module{},
 	}

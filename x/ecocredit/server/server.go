@@ -9,7 +9,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-type serverImpl struct {
+type keeper struct {
 	key        server.RootModuleKey
 	moduleAddr sdk.AccAddress
 
@@ -22,8 +22,8 @@ type serverImpl struct {
 	bankQueryClient bank.QueryClient
 }
 
-func newServer(key server.RootModuleKey) serverImpl {
-	s := serverImpl{key: key}
+func newKeeper(key server.RootModuleKey) keeper {
+	s := keeper{key: key}
 	s.moduleAddr = key.Address()
 
 	s.idSeq = orm.NewSequence(key, IDSeqPrefix)
@@ -41,7 +41,7 @@ func newServer(key server.RootModuleKey) serverImpl {
 }
 
 func RegisterServices(configurator server.Configurator) {
-	impl := newServer(configurator.ModuleKey())
+	impl := newKeeper(configurator.ModuleKey())
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RequireServer((*bank.MsgServer)(nil))
