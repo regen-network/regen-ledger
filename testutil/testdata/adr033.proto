@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package testdata;
+
+option go_package = "github.com/regen-network/regen-ledger/testutil/testdata";
+
+service FooMsg {
+    rpc X(FooMsgXRequest) returns (FooMsgXResponse);
+}
+
+message FooMsgXRequest {
+    string signer = 1;
+    uint64 x = 2;
+    uint64 y = 3;
+}
+
+message FooMsgXResponse {
+    uint64 z = 1;
+}
+
+service FooQuery {
+    rpc X(FooQueryXRequest) returns (FooQueryXResponse);
+}
+
+message FooQueryXRequest {
+    uint64 x = 1;
+}
+
+message FooQueryXResponse {
+    uint64 y = 1;
+    uint64 z = 2;
+}
+
