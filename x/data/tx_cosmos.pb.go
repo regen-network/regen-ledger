@@ -59,14 +59,31 @@ type MsgClient interface {
 }
 
 type msgClient struct {
-	cc grpc.ClientConnInterface
+	cc          grpc.ClientConnInterface
+	_AnchorData types.Invoker
+	_SignData   types.Invoker
+	_StoreData  types.Invoker
 }
 
 func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
-	return &msgClient{cc}
+	return &msgClient{cc: cc}
 }
 
 func (c *msgClient) AnchorData(ctx context.Context, in *MsgAnchorDataRequest, opts ...grpc.CallOption) (*MsgAnchorDataResponse, error) {
+	if invoker := c._AnchorData; invoker != nil {
+		var out MsgAnchorDataResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._AnchorData, err = invokerConn.Invoker("/regen.data.v1alpha1.Msg/AnchorData")
+		if err != nil {
+			var out MsgAnchorDataResponse
+			err = c._AnchorData(ctx, in, &out)
+			return &out, err
+		}
+	}
 	out := new(MsgAnchorDataResponse)
 	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Msg/AnchorData", in, out, opts...)
 	if err != nil {
@@ -76,6 +93,20 @@ func (c *msgClient) AnchorData(ctx context.Context, in *MsgAnchorDataRequest, op
 }
 
 func (c *msgClient) SignData(ctx context.Context, in *MsgSignDataRequest, opts ...grpc.CallOption) (*MsgSignDataResponse, error) {
+	if invoker := c._SignData; invoker != nil {
+		var out MsgSignDataResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._SignData, err = invokerConn.Invoker("/regen.data.v1alpha1.Msg/SignData")
+		if err != nil {
+			var out MsgSignDataResponse
+			err = c._SignData(ctx, in, &out)
+			return &out, err
+		}
+	}
 	out := new(MsgSignDataResponse)
 	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Msg/SignData", in, out, opts...)
 	if err != nil {
@@ -85,6 +116,20 @@ func (c *msgClient) SignData(ctx context.Context, in *MsgSignDataRequest, opts .
 }
 
 func (c *msgClient) StoreData(ctx context.Context, in *MsgStoreDataRequest, opts ...grpc.CallOption) (*MsgStoreDataResponse, error) {
+	if invoker := c._StoreData; invoker != nil {
+		var out MsgStoreDataResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._StoreData, err = invokerConn.Invoker("/regen.data.v1alpha1.Msg/StoreData")
+		if err != nil {
+			var out MsgStoreDataResponse
+			err = c._StoreData(ctx, in, &out)
+			return &out, err
+		}
+	}
 	out := new(MsgStoreDataResponse)
 	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Msg/StoreData", in, out, opts...)
 	if err != nil {
@@ -217,3 +262,9 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 	},
 	Metadata: "regen/data/v1alpha1/tx.proto",
 }
+
+const (
+	MsgAnchorDataMethod = "/regen.data.v1alpha1.Msg/AnchorData"
+	MsgSignDataMethod   = "/regen.data.v1alpha1.Msg/SignData"
+	MsgStoreDataMethod  = "/regen.data.v1alpha1.Msg/StoreData"
+)

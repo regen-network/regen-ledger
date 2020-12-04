@@ -52,14 +52,33 @@ type MsgClient interface {
 }
 
 type msgClient struct {
-	cc grpc.ClientConnInterface
+	cc            grpc.ClientConnInterface
+	_CreateClass  types.Invoker
+	_CreateBatch  types.Invoker
+	_Send         types.Invoker
+	_Retire       types.Invoker
+	_SetPrecision types.Invoker
 }
 
 func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
-	return &msgClient{cc}
+	return &msgClient{cc: cc}
 }
 
 func (c *msgClient) CreateClass(ctx context.Context, in *MsgCreateClassRequest, opts ...grpc.CallOption) (*MsgCreateClassResponse, error) {
+	if invoker := c._CreateClass; invoker != nil {
+		var out MsgCreateClassResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._CreateClass, err = invokerConn.Invoker("/regen.ecocredit.v1alpha1.Msg/CreateClass")
+		if err != nil {
+			var out MsgCreateClassResponse
+			err = c._CreateClass(ctx, in, &out)
+			return &out, err
+		}
+	}
 	out := new(MsgCreateClassResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/CreateClass", in, out, opts...)
 	if err != nil {
@@ -69,6 +88,20 @@ func (c *msgClient) CreateClass(ctx context.Context, in *MsgCreateClassRequest, 
 }
 
 func (c *msgClient) CreateBatch(ctx context.Context, in *MsgCreateBatchRequest, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error) {
+	if invoker := c._CreateBatch; invoker != nil {
+		var out MsgCreateBatchResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._CreateBatch, err = invokerConn.Invoker("/regen.ecocredit.v1alpha1.Msg/CreateBatch")
+		if err != nil {
+			var out MsgCreateBatchResponse
+			err = c._CreateBatch(ctx, in, &out)
+			return &out, err
+		}
+	}
 	out := new(MsgCreateBatchResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/CreateBatch", in, out, opts...)
 	if err != nil {
@@ -78,6 +111,20 @@ func (c *msgClient) CreateBatch(ctx context.Context, in *MsgCreateBatchRequest, 
 }
 
 func (c *msgClient) Send(ctx context.Context, in *MsgSendRequest, opts ...grpc.CallOption) (*MsgSendResponse, error) {
+	if invoker := c._Send; invoker != nil {
+		var out MsgSendResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._Send, err = invokerConn.Invoker("/regen.ecocredit.v1alpha1.Msg/Send")
+		if err != nil {
+			var out MsgSendResponse
+			err = c._Send(ctx, in, &out)
+			return &out, err
+		}
+	}
 	out := new(MsgSendResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/Send", in, out, opts...)
 	if err != nil {
@@ -87,6 +134,20 @@ func (c *msgClient) Send(ctx context.Context, in *MsgSendRequest, opts ...grpc.C
 }
 
 func (c *msgClient) Retire(ctx context.Context, in *MsgRetireRequest, opts ...grpc.CallOption) (*MsgRetireResponse, error) {
+	if invoker := c._Retire; invoker != nil {
+		var out MsgRetireResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._Retire, err = invokerConn.Invoker("/regen.ecocredit.v1alpha1.Msg/Retire")
+		if err != nil {
+			var out MsgRetireResponse
+			err = c._Retire(ctx, in, &out)
+			return &out, err
+		}
+	}
 	out := new(MsgRetireResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/Retire", in, out, opts...)
 	if err != nil {
@@ -96,6 +157,20 @@ func (c *msgClient) Retire(ctx context.Context, in *MsgRetireRequest, opts ...gr
 }
 
 func (c *msgClient) SetPrecision(ctx context.Context, in *MsgSetPrecisionRequest, opts ...grpc.CallOption) (*MsgSetPrecisionResponse, error) {
+	if invoker := c._SetPrecision; invoker != nil {
+		var out MsgSetPrecisionResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._SetPrecision, err = invokerConn.Invoker("/regen.ecocredit.v1alpha1.Msg/SetPrecision")
+		if err != nil {
+			var out MsgSetPrecisionResponse
+			err = c._SetPrecision(ctx, in, &out)
+			return &out, err
+		}
+	}
 	out := new(MsgSetPrecisionResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/SetPrecision", in, out, opts...)
 	if err != nil {
@@ -265,3 +340,11 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 	},
 	Metadata: "regen/ecocredit/v1alpha1/tx.proto",
 }
+
+const (
+	MsgCreateClassMethod  = "/regen.ecocredit.v1alpha1.Msg/CreateClass"
+	MsgCreateBatchMethod  = "/regen.ecocredit.v1alpha1.Msg/CreateBatch"
+	MsgSendMethod         = "/regen.ecocredit.v1alpha1.Msg/Send"
+	MsgRetireMethod       = "/regen.ecocredit.v1alpha1.Msg/Retire"
+	MsgSetPrecisionMethod = "/regen.ecocredit.v1alpha1.Msg/SetPrecision"
+)

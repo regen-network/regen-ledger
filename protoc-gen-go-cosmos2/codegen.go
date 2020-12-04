@@ -92,6 +92,9 @@ func genService(file *protogen.File, g *protogen.GeneratedFile, service *protoge
 	// Client structure.
 	g.P("type ", unexport(clientName), " struct {")
 	g.P("cc ", grpcPackage.Ident("ClientConnInterface"))
+	for _, method := range service.Methods {
+		g.P("_", method.GoName, " ", regenTypesPackage.Ident("Invoker"))
+	}
 	g.P("}")
 	g.P()
 
@@ -100,7 +103,7 @@ func genService(file *protogen.File, g *protogen.GeneratedFile, service *protoge
 		g.P(deprecationComment)
 	}
 	g.P("func New", clientName, " (cc ", grpcPackage.Ident("ClientConnInterface"), ") ", clientName, " {")
-	g.P("return &", unexport(clientName), "{cc}")
+	g.P("return &", unexport(clientName), "{cc:cc}")
 	g.P("}")
 	g.P()
 
@@ -170,6 +173,16 @@ func genService(file *protogen.File, g *protogen.GeneratedFile, service *protoge
 	g.P("Metadata: \"", file.Desc.Path(), "\",")
 	g.P("}")
 	g.P()
+
+	g.P("const (")
+	for _, method := range service.Methods {
+		if method.Desc.IsStreamingClient() || method.Desc.IsStreamingServer() {
+			continue
+		}
+		g.P(service.GoName, method.GoName, "Method = ", strconv.Quote(fmt.Sprintf("/%s/%s", service.Desc.FullName(), method.Desc.Name())))
+	}
+	g.P(")")
+	g.P()
 }
 
 func clientSignature(g *protogen.GeneratedFile, method *protogen.Method) string {
@@ -193,6 +206,20 @@ func genClientMethod(g *protogen.GeneratedFile, method *protogen.Method) {
 		g.P(deprecationComment)
 	}
 	g.P("func (c *", unexport(service.GoName), "Client) ", clientSignature(g, method), "{")
+	g.P("if invoker := c._", method.GoName, "; invoker != nil {")
+	g.P("var out ", method.Output.GoIdent)
+	g.P("err := invoker(ctx, in, &out)")
+	g.P("return &out, err")
+	g.P("}")
+	g.P("if invokerConn, ok := c.cc.(", regenTypesPackage.Ident("InvokerConn"), "); ok {")
+	g.P("var err error")
+	g.P("c._", method.GoName, `, err = invokerConn.Invoker("`, sname, `")`)
+	g.P("if err != nil {")
+	g.P("var out ", method.Output.GoIdent)
+	g.P("err = c._", method.GoName, "(ctx, in, &out)")
+	g.P("return &out, err")
+	g.P("}")
+	g.P("}")
 	g.P("out := new(", method.Output.GoIdent, ")")
 	g.P(`err := c.cc.Invoke(ctx, "`, sname, `", in, out, opts...)`)
 	g.P("if err != nil { return nil, err }")
@@ -236,8 +263,8 @@ func genServerMethod(g *protogen.GeneratedFile, method *protogen.Method) string 
 	g.P("return interceptor(ctx, in, info, handler)")
 	g.P("}")
 	g.P()
-	return hname
 
+	return hname
 }
 
 const deprecationComment = "// Deprecated: Do not use."

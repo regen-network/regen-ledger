@@ -31,14 +31,33 @@ type QueryClient interface {
 }
 
 type queryClient struct {
-	cc grpc.ClientConnInterface
+	cc         grpc.ClientConnInterface
+	_ClassInfo types.Invoker
+	_BatchInfo types.Invoker
+	_Balance   types.Invoker
+	_Supply    types.Invoker
+	_Precision types.Invoker
 }
 
 func NewQueryClient(cc grpc.ClientConnInterface) QueryClient {
-	return &queryClient{cc}
+	return &queryClient{cc: cc}
 }
 
 func (c *queryClient) ClassInfo(ctx context.Context, in *QueryClassInfoRequest, opts ...grpc.CallOption) (*QueryClassInfoResponse, error) {
+	if invoker := c._ClassInfo; invoker != nil {
+		var out QueryClassInfoResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._ClassInfo, err = invokerConn.Invoker("/regen.ecocredit.v1alpha1.Query/ClassInfo")
+		if err != nil {
+			var out QueryClassInfoResponse
+			err = c._ClassInfo(ctx, in, &out)
+			return &out, err
+		}
+	}
 	out := new(QueryClassInfoResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/ClassInfo", in, out, opts...)
 	if err != nil {
@@ -48,6 +67,20 @@ func (c *queryClient) ClassInfo(ctx context.Context, in *QueryClassInfoRequest, 
 }
 
 func (c *queryClient) BatchInfo(ctx context.Context, in *QueryBatchInfoRequest, opts ...grpc.CallOption) (*QueryBatchInfoResponse, error) {
+	if invoker := c._BatchInfo; invoker != nil {
+		var out QueryBatchInfoResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._BatchInfo, err = invokerConn.Invoker("/regen.ecocredit.v1alpha1.Query/BatchInfo")
+		if err != nil {
+			var out QueryBatchInfoResponse
+			err = c._BatchInfo(ctx, in, &out)
+			return &out, err
+		}
+	}
 	out := new(QueryBatchInfoResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/BatchInfo", in, out, opts...)
 	if err != nil {
@@ -57,6 +90,20 @@ func (c *queryClient) BatchInfo(ctx context.Context, in *QueryBatchInfoRequest, 
 }
 
 func (c *queryClient) Balance(ctx context.Context, in *QueryBalanceRequest, opts ...grpc.CallOption) (*QueryBalanceResponse, error) {
+	if invoker := c._Balance; invoker != nil {
+		var out QueryBalanceResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._Balance, err = invokerConn.Invoker("/regen.ecocredit.v1alpha1.Query/Balance")
+		if err != nil {
+			var out QueryBalanceResponse
+			err = c._Balance(ctx, in, &out)
+			return &out, err
+		}
+	}
 	out := new(QueryBalanceResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/Balance", in, out, opts...)
 	if err != nil {
@@ -66,6 +113,20 @@ func (c *queryClient) Balance(ctx context.Context, in *QueryBalanceRequest, opts
 }
 
 func (c *queryClient) Supply(ctx context.Context, in *QuerySupplyRequest, opts ...grpc.CallOption) (*QuerySupplyResponse, error) {
+	if invoker := c._Supply; invoker != nil {
+		var out QuerySupplyResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._Supply, err = invokerConn.Invoker("/regen.ecocredit.v1alpha1.Query/Supply")
+		if err != nil {
+			var out QuerySupplyResponse
+			err = c._Supply(ctx, in, &out)
+			return &out, err
+		}
+	}
 	out := new(QuerySupplyResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/Supply", in, out, opts...)
 	if err != nil {
@@ -75,6 +136,20 @@ func (c *queryClient) Supply(ctx context.Context, in *QuerySupplyRequest, opts .
 }
 
 func (c *queryClient) Precision(ctx context.Context, in *QueryPrecisionRequest, opts ...grpc.CallOption) (*QueryPrecisionResponse, error) {
+	if invoker := c._Precision; invoker != nil {
+		var out QueryPrecisionResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._Precision, err = invokerConn.Invoker("/regen.ecocredit.v1alpha1.Query/Precision")
+		if err != nil {
+			var out QueryPrecisionResponse
+			err = c._Precision(ctx, in, &out)
+			return &out, err
+		}
+	}
 	out := new(QueryPrecisionResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/Precision", in, out, opts...)
 	if err != nil {
@@ -223,3 +298,11 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 	},
 	Metadata: "regen/ecocredit/v1alpha1/query.proto",
 }
+
+const (
+	QueryClassInfoMethod = "/regen.ecocredit.v1alpha1.Query/ClassInfo"
+	QueryBatchInfoMethod = "/regen.ecocredit.v1alpha1.Query/BatchInfo"
+	QueryBalanceMethod   = "/regen.ecocredit.v1alpha1.Query/Balance"
+	QuerySupplyMethod    = "/regen.ecocredit.v1alpha1.Query/Supply"
+	QueryPrecisionMethod = "/regen.ecocredit.v1alpha1.Query/Precision"
+)

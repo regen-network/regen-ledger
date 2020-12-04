@@ -23,14 +23,30 @@ type QueryClient interface {
 }
 
 type queryClient struct {
-	cc grpc.ClientConnInterface
+	cc        grpc.ClientConnInterface
+	_ByCid    types.Invoker
+	_BySigner types.Invoker
 }
 
 func NewQueryClient(cc grpc.ClientConnInterface) QueryClient {
-	return &queryClient{cc}
+	return &queryClient{cc: cc}
 }
 
 func (c *queryClient) ByCid(ctx context.Context, in *QueryByCidRequest, opts ...grpc.CallOption) (*QueryByCidResponse, error) {
+	if invoker := c._ByCid; invoker != nil {
+		var out QueryByCidResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._ByCid, err = invokerConn.Invoker("/regen.data.v1alpha1.Query/ByCid")
+		if err != nil {
+			var out QueryByCidResponse
+			err = c._ByCid(ctx, in, &out)
+			return &out, err
+		}
+	}
 	out := new(QueryByCidResponse)
 	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Query/ByCid", in, out, opts...)
 	if err != nil {
@@ -40,6 +56,20 @@ func (c *queryClient) ByCid(ctx context.Context, in *QueryByCidRequest, opts ...
 }
 
 func (c *queryClient) BySigner(ctx context.Context, in *QueryBySignerRequest, opts ...grpc.CallOption) (*QueryBySignerResponse, error) {
+	if invoker := c._BySigner; invoker != nil {
+		var out QueryBySignerResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._BySigner, err = invokerConn.Invoker("/regen.data.v1alpha1.Query/BySigner")
+		if err != nil {
+			var out QueryBySignerResponse
+			err = c._BySigner(ctx, in, &out)
+			return &out, err
+		}
+	}
 	out := new(QueryBySignerResponse)
 	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Query/BySigner", in, out, opts...)
 	if err != nil {
@@ -114,3 +144,8 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 	},
 	Metadata: "regen/data/v1alpha1/query.proto",
 }
+
+const (
+	QueryByCidMethod    = "/regen.data.v1alpha1.Query/ByCid"
+	QueryBySignerMethod = "/regen.data.v1alpha1.Query/BySigner"
+)

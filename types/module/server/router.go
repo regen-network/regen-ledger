@@ -67,7 +67,7 @@ func (r registrar) RegisterService(sd *grpc.ServiceDesc, ss interface{}) {
 	}
 }
 
-func (rtr *router) invoker(methodName string, writeCondition func(context.Context, string, sdk.MsgRequest) error) (Invoker, error) {
+func (rtr *router) invoker(methodName string, writeCondition func(context.Context, string, sdk.MsgRequest) error) (types.Invoker, error) {
 	handler, found := rtr.handlers[methodName]
 	if !found {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("cannot find method named %s", methodName))
@@ -137,7 +137,7 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 }
 
 func (rtr *router) invokerFactory(moduleName string) InvokerFactory {
-	return func(callInfo CallInfo) (Invoker, error) {
+	return func(callInfo CallInfo) (types.Invoker, error) {
 		moduleID := callInfo.Caller
 		if moduleName != moduleID.ModuleName {
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized,
@@ -176,7 +176,7 @@ func (rtr *router) testTxFactory(signers []sdk.AccAddress) InvokerFactory {
 		signerMap[signer.String()] = true
 	}
 
-	return func(callInfo CallInfo) (Invoker, error) {
+	return func(callInfo CallInfo) (types.Invoker, error) {
 		return rtr.invoker(callInfo.Method, func(_ context.Context, _ string, req sdk.MsgRequest) error {
 			for _, signer := range req.GetSigners() {
 				if _, found := signerMap[signer.String()]; !found {
@@ -189,7 +189,7 @@ func (rtr *router) testTxFactory(signers []sdk.AccAddress) InvokerFactory {
 }
 
 func (rtr *router) testQueryFactory() InvokerFactory {
-	return func(callInfo CallInfo) (Invoker, error) {
+	return func(callInfo CallInfo) (types.Invoker, error) {
 		return rtr.invoker(callInfo.Method, nil)
 	}
 }
