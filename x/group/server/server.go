@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/regen-network/regen-ledger/x/group/types"
+	"github.com/regen-network/regen-ledger/x/group"
 
 	"github.com/cosmos/cosmos-sdk/types/module"
 )
@@ -15,5 +15,5 @@ func newServer(keeper Keeper) serverImpl {
 }
 
 func RegisterServices(keeper Keeper, configurator module.Configurator) {
-	types.RegisterMsgServer(configurator.MsgServer(), newServer(keeper))
+	group.RegisterMsgServer(configurator.MsgServer(), newServer(keeper))
 }

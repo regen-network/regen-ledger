@@ -1,4 +1,4 @@
-package types
+package group
 
 import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"

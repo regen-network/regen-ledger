@@ -15,9 +15,9 @@ import (
 
 	"github.com/regen-network/regen-ledger/app"
 	"github.com/regen-network/regen-ledger/testutil/server/configurator"
+	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/server"
 	"github.com/regen-network/regen-ledger/x/group/server/testsuite"
-	"github.com/regen-network/regen-ledger/x/group/types"
 )
 
 func TestServer(t *testing.T) {
@@ -25,12 +25,12 @@ func TestServer(t *testing.T) {
 	cdc := encodingConfig.Marshaler
 
 	paramsKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
-	groupKey := sdk.NewKVStoreKey(types.StoreKey)
+	groupKey := sdk.NewKVStoreKey(group.StoreKey)
 	authKey := sdk.NewKVStoreKey(authtypes.StoreKey)
 	bankKey := sdk.NewKVStoreKey(banktypes.StoreKey)
 	tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
 
-	groupSubspace := paramstypes.NewSubspace(cdc, encodingConfig.Amino, paramsKey, tkey, types.DefaultParamspace)
+	groupSubspace := paramstypes.NewSubspace(cdc, encodingConfig.Amino, paramsKey, tkey, group.DefaultParamspace)
 	authSubspace := paramstypes.NewSubspace(cdc, encodingConfig.Amino, paramsKey, tkey, authtypes.ModuleName)
 	bankSubspace := paramstypes.NewSubspace(cdc, encodingConfig.Amino, paramsKey, tkey, banktypes.ModuleName)
 

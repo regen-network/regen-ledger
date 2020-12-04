@@ -14,7 +14,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/testutil/testdata"
-	grouptypes "github.com/regen-network/regen-ledger/x/group/types"
+	grouptypes "github.com/regen-network/regen-ledger/x/group"
 )
 
 func TestExportTableData(t *testing.T) {

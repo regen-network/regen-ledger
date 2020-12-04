@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package regen.group.v1alpha1;
 
-option go_package = "github.com/regen-network/regen-ledger/x/group/types";
+option go_package = "github.com/regen-network/regen-ledger/x/group";
 
 // EventCreateGroup is an event emitted when a group is created.
 message EventCreateGroup {

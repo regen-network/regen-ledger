@@ -89,9 +89,9 @@ import (
 	regenmodule "github.com/regen-network/regen-ledger/types/module"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
-	group "github.com/regen-network/regen-ledger/x/group/module"
+	"github.com/regen-network/regen-ledger/x/group"
+	groupmodule "github.com/regen-network/regen-ledger/x/group/module"
 	groupserver "github.com/regen-network/regen-ledger/x/group/server"
-	grouptypes "github.com/regen-network/regen-ledger/x/group/types"
 )
 
 const (
@@ -129,7 +129,7 @@ var (
 		data.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 		ecocredit.AppModuleBasic{},
-		group.AppModuleBasic{},
+		groupmodule.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -218,7 +218,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		data.StoreKey, ecocredit.StoreKey, wasm.StoreKey, grouptypes.StoreKey,
+		data.StoreKey, ecocredit.StoreKey, wasm.StoreKey, group.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -321,7 +321,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	app.EvidenceKeeper = *evidenceKeeper
 
 	groupKeeper := groupserver.NewGroupKeeper(
-		keys[grouptypes.StoreKey], app.GetSubspace(grouptypes.ModuleName), app.Router(),
+		keys[group.StoreKey], app.GetSubspace(group.ModuleName), app.Router(),
 		codec.NewProtoCodec(interfaceRegistry),
 	)
 	app.GroupKeeper = groupKeeper
@@ -379,7 +379,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		data.NewAppModule(keys[data.StoreKey]),
 		wasm.NewAppModule(app.wasmKeeper),
 		ecocredit.NewAppModule(keys[ecocredit.StoreKey]),
-		group.NewAppModule(app.GroupKeeper),
+		groupmodule.NewAppModule(app.GroupKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -401,7 +401,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, stakingtypes.ModuleName,
 		slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
 		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, ibctransfertypes.ModuleName,
-		wasm.ModuleName, grouptypes.ModuleName,
+		wasm.ModuleName, group.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -635,7 +635,7 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable())
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
-	paramsKeeper.Subspace(grouptypes.ModuleName)
+	paramsKeeper.Subspace(group.ModuleName)
 	paramsKeeper.Subspace(wasm.ModuleName)
 
 	return paramsKeeper

@@ -1,0 +1,156 @@
+syntax = "proto3";
+
+package regen.group.v1alpha1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/group";
+
+// Query is the regen.group.v1alpha1 Query service.
+service Query {
+
+  // GroupInfo queries group metadata based on group id.
+  rpc GroupInfo(QueryGroupInfoRequest) returns (QueryGroupInfoResponse);
+
+  // GroupAccountInfo queries group account metadata based on group account address.
+  rpc GroupAccountInfo(QueryGroupAccountInfoRequest) returns (QueryGroupAccountInfoResponse);
+  
+  // GroupsByMember queries groups by member address.
+  rpc GroupsByMember(QueryGroupsByMemberRequest) returns (QueryGroupsByMemberResponse);
+
+  // GroupsByAdmin queries groups by admin address.
+  rpc GroupsByAdmin(QueryByGroupsByAdminRequest) returns (QueryGroupsByAdminResponse);
+
+  // GroupAccountsByGroup queries group accounts by group id.
+  rpc GroupAccountsByGroup(QueryGroupAccountsByGroupRequest) returns (QueryGroupAccountsByGroupResponse);
+  
+  // GroupsByAdmin queries group accounts by admin address.
+  rpc GroupAccountsByAdmin(QueryGroupAccountsByAdminRequest) returns (QueryGroupAccountsByAdminResponse);
+  
+  // Proposal queries proposal based on proposal id.
+  rpc Proposal(QueryProposalRequest) returns (QueryProposalResponse);
+  rpc ProposalsByGroupAccount(QueryByGroupAccountRequest) returns (QueryProposalList);
+  rpc Votes(QueryVotesRequest) returns (QueryVoteList);
+}
+
+// QueryGroupInfoRequest is the Query/GroupInfo request type.
+message QueryGroupInfoRequest {
+  
+  // group_id is the unique ID of the group.
+  uint64 group = 1 [(gogoproto.casttype) = "GroupID"];
+}
+
+// QueryGroupInfoResponse is the Query/GroupInfo response type.
+message QueryGroupInfoResponse {
+
+    // metadata is the GroupInfo for the group.
+    GroupInfo metadata = 1;
+}
+
+// GroupAccountInfoRequest is the Query/GroupAccountInfo request type.
+message GroupAccountInfoRequest {
+
+  // group_account is the account address of the group account.
+  bytes group_account = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+}
+
+// QueryGroupAccountInfoResponse is the Query/GroupAccountInfo response type.
+message QueryGroupAccountInfoResponse {
+
+    // metadata is the GroupAccountInfo for the group account.
+    GroupAccountInfo metadata = 1;
+}
+
+// QueryGroupsByMemberRequest is the Query/GroupsByMemberRequest request type.
+message QueryGroupsByMemberRequest {
+
+  // member is the account address of a group's member.
+  bytes member = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryGroupsByMemberResponse is the Query/GroupsByMemberResponse response type.
+message QueryGroupsByMemberResponse {
+
+  // groups are the IDs of the groups with the provided member.
+  repeated uint64 groups = 1 [(gogoproto.castrepeated) = "GroupID"];
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryGroupsByAdminRequest is the Query/GroupsByAdminRequest request type.
+message QueryGroupsByAdminRequest {
+
+  // admin is the account address of a group's admin.
+  bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryGroupsByAdminResponse is the Query/GroupsByAdminResponse response type.
+message QueryGroupsByAdminResponse {
+
+  // groups are the IDs of the groups with the provided admin.
+  repeated uint64 groups = 1 [(gogoproto.castrepeated) = "GroupID"];
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryGroupAccountsByGroupRequest is the Query/GroupAccountsByGroup request type.
+message QueryGroupAccountsByGroupRequest {
+  
+  // group_id is the unique ID of the group account's group.
+  uint64 group = 1 [(gogoproto.casttype) = "GroupID"];
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryGroupAccountsByGroupResponse is the Query/GroupAccountsByGroup response type.
+message QueryGroupAccountsByGroupResponse {
+
+  // group_accounts are the group accounts metadata associated with the provided group.
+  repeated GroupAccountInfo group_accounts = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryGroupAccountsByAdminRequest is the Query/GroupAccountsByAdmin request type.
+message QueryGroupAccountsByAdminRequest {
+  
+  // admin is the admin address of the group account.
+  bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryGroupAccountsByAdminResponse is the Query/GroupAccountsByAdmin response type.
+message QueryGroupAccountsByAdminResponse {
+
+  // group_accounts are the group accounts metadata with provided admin.
+  repeated GroupAccountInfo group_accounts = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryProposalRequest is the Query/Proposal request type.
+message QueryProposalRequest {
+
+  // proposal is the unique ID of the proposal.
+  uint64 proposal_id = 1 [(gogoproto.casttype) = "ProposalID"];
+}
+
+// QueryProposalResponse is the Query/Proposal response type.
+message QueryProposalResponse {
+
+  // proposal is the unique ID of the proposal.
+  Proposal proposal = 1;
+}
+
+
