@@ -71,7 +71,7 @@ Parameters:
 			msg := ecocredit.MsgCreateClassRequest{
 				Designer: args[0], Issuers: issuers, Metadata: b,
 			}
-			_, err = c.client.CreateClass(cmd.Context(), &msg)
+			_, err = c.client.CreateClass(cmd, &msg)
 			return c.send(err)
 		},
 	}
@@ -108,7 +108,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			_, err = c.client.CreateBatch(cmd.Context(), &msg)
+			_, err = c.client.CreateBatch(cmd, &msg)
 			return c.send(err)
 		},
 	}
@@ -138,7 +138,7 @@ Parameters:
 				Sender:    c.Cctx.GetFromAddress().String(),
 				Recipient: args[0], Credits: credits,
 			}
-			_, err = c.client.Send(cmd.Context(), &msg)
+			_, err = c.client.Send(cmd, &msg)
 			return c.send(err)
 		},
 	}
@@ -167,7 +167,7 @@ Parameters:
 				Holder:  c.Cctx.GetFromAddress().String(),
 				Credits: credits,
 			}
-			_, err = c.client.Retire(cmd.Context(), &msg)
+			_, err = c.client.Retire(cmd, &msg)
 			return c.send(err)
 		},
 	}
@@ -196,7 +196,7 @@ Parameters:
 				Issuer:     c.Cctx.GetFromAddress().String(),
 				BatchDenom: args[0], MaxDecimalPlaces: uint32(decimals),
 			}
-			_, err = c.client.SetPrecision(cmd.Context(), &msg)
+			_, err = c.client.SetPrecision(cmd, &msg)
 			return c.send(err)
 		},
 	}

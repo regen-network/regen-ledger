@@ -181,3 +181,4 @@ tags
 .idea
 
 build/
+/protoc-gen-go-cosmos2/protoc-gen-go-cosmos2

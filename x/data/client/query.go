@@ -68,7 +68,7 @@ func QueryByCidCmd() *cobra.Command {
 
 			queryClient := data.NewQueryClient(clientCtx)
 
-			res, err := queryClient.ByCid(cmd.Context(), &data.QueryByCidRequest{Cid: cid.Bytes()})
+			res, err := queryClient.ByCid(cmd, &data.QueryByCidRequest{Cid: cid.Bytes()})
 			if err != nil {
 				return err
 			}

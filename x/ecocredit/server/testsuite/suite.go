@@ -1,7 +1,7 @@
 package testsuite
 
 import (
-	"context"
+	"github.com/regen-network/regen-ledger/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
@@ -16,7 +16,7 @@ type IntegrationTestSuite struct {
 	fixtureFactory server.FixtureFactory
 	fixture        server.Fixture
 
-	ctx         context.Context
+	ctx         types.HasContext
 	msgClient   ecocredit.MsgClient
 	queryClient ecocredit.QueryClient
 	signers     []sdk.AccAddress
