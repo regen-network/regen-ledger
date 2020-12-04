@@ -1,9 +1,9 @@
 package server
 
 import (
-	"context"
 	"encoding/binary"
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/regen-network/regen-ledger/util/storehelpers"
 	"github.com/regen-network/regen-ledger/x/bank"
@@ -18,8 +18,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (s serverImpl) CreateClass(ctx sdk.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error) {
 	classID := s.idSeq.NextVal(ctx)
 	classIDStr := uint64ToBase58Checked(classID)
 
@@ -44,8 +43,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 	return &ecocredit.MsgCreateClassResponse{ClassId: classIDStr}, nil
 }
 
-func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatchRequest) (*ecocredit.MsgCreateBatchResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (s serverImpl) CreateBatch(ctx sdk.Context, req *ecocredit.MsgCreateBatchRequest) (*ecocredit.MsgCreateBatchResponse, error) {
 	classID := req.ClassId
 	if err := s.assertClassIssuer(ctx, classID, req.Issuer); err != nil {
 		return nil, err
@@ -66,7 +64,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		return nil, err
 	}
 
-	res, err := s.bankMsgClient.CreateDenom(goCtx, &bank.MsgCreateDenomRequest{
+	res, err := s.bankMsgClient.CreateDenom(ctx, &bank.MsgCreateDenomRequest{
 		NamespaceAdmin:   s.moduleAddr.String(),
 		DenomNamespace:   "eco",
 		DenomName:        fmt.Sprintf("%s/%s", classID, uint64ToBase58Checked(batchID)),
@@ -149,7 +147,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		}
 	}
 
-	mintRes, err := s.bankMsgClient.Mint(goCtx, &bank.MsgMintRequest{
+	mintRes, err := s.bankMsgClient.Mint(ctx, &bank.MsgMintRequest{
 		MinterAddress: s.moduleAddr.String(),
 		Issuance:      mintIssuance,
 	})
@@ -158,7 +156,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	}
 
 	if maxDecimalPlaces > mintRes.MaxDecimalPlaces {
-		_, err := s.bankMsgClient.SetPrecision(goCtx, &bank.MsgSetPrecisionRequest{
+		_, err := s.bankMsgClient.SetPrecision(ctx, &bank.MsgSetPrecisionRequest{
 			DenomAdmin:       s.moduleAddr.String(),
 			Denom:            batchDenom,
 			MaxDecimalPlaces: maxDecimalPlaces,
@@ -201,8 +199,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	return &ecocredit.MsgCreateBatchResponse{BatchDenom: batchDenom}, nil
 }
 
-func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (*ecocredit.MsgSendResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (s serverImpl) Send(ctx sdk.Context, req *ecocredit.MsgSendRequest) (*ecocredit.MsgSendResponse, error) {
 	store := ctx.KVStore(s.key)
 	sender := req.Sender
 	recipient := req.Recipient
@@ -226,7 +223,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 			return nil, err
 		}
 
-		_, err = s.bankMsgClient.Send(goCtx, &bank.MsgSendRequest{
+		_, err = s.bankMsgClient.Send(ctx, &bank.MsgSendRequest{
 			FromAddress: sender,
 			ToAddress:   recipient,
 			Amount: []*bank.Coin{
@@ -240,7 +237,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 			return nil, err
 		}
 
-		_, err = s.bankMsgClient.Burn(goCtx, &bank.MsgBurnRequest{
+		_, err = s.bankMsgClient.Burn(ctx, &bank.MsgBurnRequest{
 			BurnerAddress: sender,
 			Coins: []*bank.Coin{
 				{
@@ -265,7 +262,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
 			Sender:     sender,
 			Recipient:  recipient,
-			BatchDenom: string(denom),
+			BatchDenom: denom,
 			Units:      math.DecimalString(&sum),
 		})
 		if err != nil {
@@ -276,8 +273,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (
 	return &ecocredit.MsgSendResponse{}, nil
 }
 
-func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireRequest) (*ecocredit.MsgRetireResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (s serverImpl) Retire(ctx sdk.Context, req *ecocredit.MsgRetireRequest) (*ecocredit.MsgRetireResponse, error) {
 	store := ctx.KVStore(s.key)
 	holder := req.Holder
 	for _, credit := range req.Credits {
@@ -291,7 +287,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireReques
 			return nil, err
 		}
 
-		_, err = s.bankMsgClient.Burn(goCtx, &bank.MsgBurnRequest{
+		_, err = s.bankMsgClient.Burn(ctx, &bank.MsgBurnRequest{
 			BurnerAddress: holder,
 			Coins: []*bank.Coin{
 				{

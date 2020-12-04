@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+cd protoc-gen-go-cosmos2
+go install .
+cd ..
+
 set -eo pipefail
 
 protoc_gen_gocosmos() {
@@ -24,7 +28,18 @@ for dir in $proto_dirs; do
   buf protoc \
   -I "proto" \
   -I "third_party/proto" \
-  --gocosmos_out=plugins=grpc,\
+  --gocosmos_out=\
+Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/struct.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
+  $(find "${dir}" -maxdepth 1 -name '*.proto')
+
+  buf protoc \
+  -I "proto" \
+  -I "third_party/proto" \
+  --go-cosmos2_out=\
 Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,\
 Mgoogle/protobuf/struct.proto=github.com/gogo/protobuf/types,\
 Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,\

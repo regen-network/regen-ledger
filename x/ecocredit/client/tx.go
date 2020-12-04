@@ -3,7 +3,8 @@ package client
 import (
 	"encoding/base64"
 	"errors"
-	"strconv"
+
+	//"strconv"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -30,7 +31,7 @@ func TxCmd(name string) *cobra.Command {
 		txflags(txCreateBatch()),
 		txflags(txSend()),
 		txflags(txRetire()),
-		txflags(txSetPrecision()),
+		//txflags(txSetPrecision()),
 	)
 	return cmd
 }
@@ -71,7 +72,7 @@ Parameters:
 			msg := ecocredit.MsgCreateClassRequest{
 				Designer: args[0], Issuers: issuers, Metadata: b,
 			}
-			_, err = c.client.CreateClass(cmd.Context(), &msg)
+			_, err = c.client.CreateClass(cmd, &msg)
 			return c.send(err)
 		},
 	}
@@ -108,7 +109,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			_, err = c.client.CreateBatch(cmd.Context(), &msg)
+			_, err = c.client.CreateBatch(cmd, &msg)
 			return c.send(err)
 		},
 	}
@@ -138,7 +139,7 @@ Parameters:
 				Sender:    c.Cctx.GetFromAddress().String(),
 				Recipient: args[0], Credits: credits,
 			}
-			_, err = c.client.Send(cmd.Context(), &msg)
+			_, err = c.client.Send(cmd, &msg)
 			return c.send(err)
 		},
 	}
@@ -167,37 +168,37 @@ Parameters:
 				Holder:  c.Cctx.GetFromAddress().String(),
 				Credits: credits,
 			}
-			_, err = c.client.Retire(cmd.Context(), &msg)
+			_, err = c.client.Retire(cmd, &msg)
 			return c.send(err)
 		},
 	}
 }
 
-func txSetPrecision() *cobra.Command {
-	return &cobra.Command{
-		Use:   "set_precision [batch_denom] [decimals]",
-		Short: "Allows an issuer to increase the decimal precision of a credit batch",
-		Long: `Allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature.
-
-Parameters:
-  batch_denom: credit batch ID
-  decimals:    maximum number of decimals of precision`,
-		Args: cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			decimals, err := strconv.ParseUint(args[1], 10, 32)
-			if err == nil {
-				return err
-			}
-			c, err := newMsgSrvClient(cmd)
-			if err != nil {
-				return err
-			}
-			msg := ecocredit.MsgSetPrecisionRequest{
-				Issuer:     c.Cctx.GetFromAddress().String(),
-				BatchDenom: args[0], MaxDecimalPlaces: uint32(decimals),
-			}
-			_, err = c.client.SetPrecision(cmd.Context(), &msg)
-			return c.send(err)
-		},
-	}
-}
+//func txSetPrecision() *cobra.Command {
+//	return &cobra.Command{
+//		Use:   "set_precision [batch_denom] [decimals]",
+//		Short: "Allows an issuer to increase the decimal precision of a credit batch",
+//		Long: `Allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature.
+//
+//Parameters:
+//  batch_denom: credit batch ID
+//  decimals:    maximum number of decimals of precision`,
+//		Args: cobra.ExactArgs(2),
+//		RunE: func(cmd *cobra.Command, args []string) error {
+//			decimals, err := strconv.ParseUint(args[1], 10, 32)
+//			if err == nil {
+//				return err
+//			}
+//			c, err := newMsgSrvClient(cmd)
+//			if err != nil {
+//				return err
+//			}
+//			msg := ecocredit.MsgSetPrecisionRequest{
+//				Issuer:     c.Cctx.GetFromAddress().String(),
+//				BatchDenom: args[0], MaxDecimalPlaces: uint32(decimals),
+//			}
+//			_, err = c.client.SetPrecision(cmd.Context(), &msg)
+//			return c.send(err)
+//		},
+//	}
+//}

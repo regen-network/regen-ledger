@@ -1,7 +1,7 @@
 package testsuite
 
 import (
-	"context"
+	"github.com/regen-network/regen-ledger/types"
 
 	gocid "github.com/ipfs/go-cid"
 	"github.com/multiformats/go-multihash"
@@ -19,7 +19,7 @@ type IntegrationTestSuite struct {
 	fixtureFactory server.FixtureFactory
 	fixture        server.Fixture
 
-	ctx         context.Context
+	ctx         types.HasContext
 	msgClient   data.MsgClient
 	queryClient data.QueryClient
 	addr1       sdk.AccAddress

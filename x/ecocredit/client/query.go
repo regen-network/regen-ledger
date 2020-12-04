@@ -24,7 +24,7 @@ func QueryCmd(name string) *cobra.Command {
 		qflags(queryBatchInfo()),
 		qflags(queryBalance()),
 		qflags(querySupply()),
-		qflags(queryPrecision()),
+		//qflags(queryPrecision()),
 	)
 	return cmd
 }
@@ -44,7 +44,7 @@ func queryClassInfo() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := c.ClassInfo(cmd.Context(), &ecocredit.QueryClassInfoRequest{
+			res, err := c.ClassInfo(cmd, &ecocredit.QueryClassInfoRequest{
 				ClassId: args[0],
 			})
 			return print(ctx, res, err)
@@ -63,7 +63,7 @@ func queryBatchInfo() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := c.BatchInfo(cmd.Context(), &ecocredit.QueryBatchInfoRequest{
+			res, err := c.BatchInfo(cmd, &ecocredit.QueryBatchInfoRequest{
 				BatchDenom: args[0],
 			})
 			return print(ctx, res, err)
@@ -82,7 +82,7 @@ func queryBalance() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := c.Balance(cmd.Context(), &ecocredit.QueryBalanceRequest{
+			res, err := c.Balance(cmd, &ecocredit.QueryBalanceRequest{
 				BatchDenom: args[0], Account: args[1],
 			})
 			return print(ctx, res, err)
@@ -101,7 +101,7 @@ func querySupply() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := c.Supply(cmd.Context(), &ecocredit.QuerySupplyRequest{
+			res, err := c.Supply(cmd, &ecocredit.QuerySupplyRequest{
 				BatchDenom: args[0],
 			})
 			return print(ctx, res, err)
@@ -109,21 +109,21 @@ func querySupply() *cobra.Command {
 	}
 }
 
-func queryPrecision() *cobra.Command {
-	return &cobra.Command{
-		Use:   "precision [batch_denom]",
-		Short: "Retrieve the maximum length of the fractional part of credits in the given batch",
-		Long:  "Retrieve the maximum length of the fractional part of credits in the given batch. The precision tells what is the minimum unit of a credit.\nExample: a decimal number 12.345 has fractional part length equal 3. A precision=5 means that the minimum unit we can trade is 0.00001",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			c, ctx, err := mkQueryClient(cmd)
-			if err != nil {
-				return err
-			}
-			res, err := c.Precision(cmd.Context(), &ecocredit.QueryPrecisionRequest{
-				BatchDenom: args[0],
-			})
-			return print(ctx, res, err)
-		},
-	}
-}
+//func queryPrecision() *cobra.Command {
+//	return &cobra.Command{
+//		Use:   "precision [batch_denom]",
+//		Short: "Retrieve the maximum length of the fractional part of credits in the given batch",
+//		Long:  "Retrieve the maximum length of the fractional part of credits in the given batch. The precision tells what is the minimum unit of a credit.\nExample: a decimal number 12.345 has fractional part length equal 3. A precision=5 means that the minimum unit we can trade is 0.00001",
+//		Args:  cobra.ExactArgs(1),
+//		RunE: func(cmd *cobra.Command, args []string) error {
+//			c, ctx, err := mkQueryClient(cmd)
+//			if err != nil {
+//				return err
+//			}
+//			res, err := c.Precision(cmd.Context(), &ecocredit.QueryPrecisionRequest{
+//				BatchDenom: args[0],
+//			})
+//			return print(ctx, res, err)
+//		},
+//	}
+//}

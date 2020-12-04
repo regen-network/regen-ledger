@@ -2,7 +2,6 @@ package server
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,9 +11,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/bank/math"
 )
 
-func (s serverImpl) CreateDenom(goCtx context.Context, req *bank.MsgCreateDenomRequest) (*bank.MsgCreateDenomResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
+func (s serverImpl) CreateDenom(ctx sdk.Context, req *bank.MsgCreateDenomRequest) (*bank.MsgCreateDenomResponse, error) {
 	namespace := req.DenomNamespace
 	denom := fmt.Sprintf("%s/%s", namespace, req.DenomName)
 	store := ctx.KVStore(s.key)
@@ -51,8 +48,7 @@ func isAdmin(store sdk.KVStore, denom string, addr sdk.AccAddress) bool {
 	return bytes.Equal(addr, admin)
 }
 
-func (s serverImpl) Mint(goCtx context.Context, req *bank.MsgMintRequest) (*bank.MsgMintResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (s serverImpl) Mint(ctx sdk.Context, req *bank.MsgMintRequest) (*bank.MsgMintResponse, error) {
 	store := ctx.KVStore(s.key)
 	minter, err := sdk.AccAddressFromBech32(req.MinterAddress)
 	if err != nil {
@@ -108,8 +104,7 @@ func (s serverImpl) Mint(goCtx context.Context, req *bank.MsgMintRequest) (*bank
 	return &bank.MsgMintResponse{}, nil
 }
 
-func (s serverImpl) Send(goCtx context.Context, req *bank.MsgSendRequest) (*bank.MsgSendResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (s serverImpl) Send(ctx sdk.Context, req *bank.MsgSendRequest) (*bank.MsgSendResponse, error) {
 	store := ctx.KVStore(s.key)
 	from, err := sdk.AccAddressFromBech32(req.FromAddress)
 	if err != nil {
@@ -150,8 +145,7 @@ func (s serverImpl) Send(goCtx context.Context, req *bank.MsgSendRequest) (*bank
 	return &bank.MsgSendResponse{}, nil
 }
 
-func (s serverImpl) Burn(goCtx context.Context, req *bank.MsgBurnRequest) (*bank.MsgBurnResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (s serverImpl) Burn(ctx sdk.Context, req *bank.MsgBurnRequest) (*bank.MsgBurnResponse, error) {
 	store := ctx.KVStore(s.key)
 	burner, err := sdk.AccAddressFromBech32(req.BurnerAddress)
 	if err != nil {
@@ -187,8 +181,7 @@ func (s serverImpl) Burn(goCtx context.Context, req *bank.MsgBurnRequest) (*bank
 	return &bank.MsgBurnResponse{}, nil
 }
 
-func (s serverImpl) SetPrecision(goCtx context.Context, req *bank.MsgSetPrecisionRequest) (*bank.MsgSetPrecisionResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (s serverImpl) SetPrecision(ctx sdk.Context, req *bank.MsgSetPrecisionRequest) (*bank.MsgSetPrecisionResponse, error) {
 	store := ctx.KVStore(s.key)
 
 	denomAdmin, err := sdk.AccAddressFromBech32(req.DenomAdmin)
@@ -220,6 +213,6 @@ func (s serverImpl) SetPrecision(goCtx context.Context, req *bank.MsgSetPrecisio
 	return &bank.MsgSetPrecisionResponse{}, nil
 }
 
-func (s serverImpl) Move(ctx context.Context, request *bank.MsgMoveRequest) (*bank.MsgMoveResponse, error) {
+func (s serverImpl) Move(ctx sdk.Context, request *bank.MsgMoveRequest) (*bank.MsgMoveResponse, error) {
 	panic("implement me")
 }

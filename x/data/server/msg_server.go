@@ -2,7 +2,6 @@ package server
 
 import (
 	"bytes"
-	"context"
 	"fmt"
 
 	gogotypes "github.com/gogo/protobuf/types"
@@ -17,9 +16,7 @@ import (
 
 var _ data.MsgServer = serverImpl{}
 
-func (s serverImpl) AnchorData(goCtx context.Context, request *data.MsgAnchorDataRequest) (*data.MsgAnchorDataResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
+func (s serverImpl) AnchorData(ctx sdk.Context, request *data.MsgAnchorDataRequest) (*data.MsgAnchorDataResponse, error) {
 	cidBz := request.Cid
 	key := AnchorKey(cidBz)
 	store := ctx.KVStore(s.storeKey)
@@ -74,9 +71,7 @@ func (s serverImpl) anchorCid(ctx sdk.Context, timestamp *gogotypes.Timestamp, c
 
 var emptyBz = []byte{0}
 
-func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignDataRequest) (*data.MsgSignDataResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
+func (s serverImpl) SignData(ctx sdk.Context, request *data.MsgSignDataRequest) (*data.MsgSignDataResponse, error) {
 	cidBz := request.Cid
 
 	timestamp, err := blockTimestamp(ctx)
@@ -114,9 +109,7 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignDataReq
 	return &data.MsgSignDataResponse{}, nil
 }
 
-func (s serverImpl) StoreData(goCtx context.Context, request *data.MsgStoreDataRequest) (*data.MsgStoreDataResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
+func (s serverImpl) StoreData(ctx sdk.Context, request *data.MsgStoreDataRequest) (*data.MsgStoreDataResponse, error) {
 	cidBz := request.Cid
 
 	timestamp, err := blockTimestamp(ctx)

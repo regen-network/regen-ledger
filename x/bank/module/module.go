@@ -2,14 +2,14 @@ package module
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
-	"github.com/regen-network/regen-ledger/types/module"
+	types2 "github.com/regen-network/regen-ledger/types"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/bank"
 	"github.com/regen-network/regen-ledger/x/bank/server"
 )
 
 type Module struct {
-	DenomNamespaceAdmins map[string]module.ModuleID
+	DenomNamespaceAdmins map[string]types2.ModuleID
 }
 
 func (m Module) Name() string {

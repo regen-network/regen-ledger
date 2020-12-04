@@ -1,15 +1,13 @@
 package server
 
 import (
-	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/util/storehelpers"
 	"github.com/regen-network/regen-ledger/x/bank"
 	"github.com/regen-network/regen-ledger/x/bank/math"
 )
 
-func (s serverImpl) Balance(goCtx context.Context, req *bank.QueryBalanceRequest) (*bank.QueryBalanceResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (s serverImpl) Balance(ctx sdk.Context, req *bank.QueryBalanceRequest) (*bank.QueryBalanceResponse, error) {
 	store := ctx.KVStore(s.key)
 
 	addr, err := sdk.AccAddressFromBech32(req.Address)
@@ -30,8 +28,7 @@ func (s serverImpl) Balance(goCtx context.Context, req *bank.QueryBalanceRequest
 	}}, nil
 }
 
-func (s serverImpl) SupplyOf(goCtx context.Context, req *bank.QuerySupplyOfRequest) (*bank.QuerySupplyOfResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (s serverImpl) SupplyOf(ctx sdk.Context, req *bank.QuerySupplyOfRequest) (*bank.QuerySupplyOfResponse, error) {
 	store := ctx.KVStore(s.key)
 
 	denom := req.Denom
@@ -47,8 +44,7 @@ func (s serverImpl) SupplyOf(goCtx context.Context, req *bank.QuerySupplyOfReque
 	}}, nil
 }
 
-func (s serverImpl) Precision(goCtx context.Context, request *bank.QueryPrecisionRequest) (*bank.QueryPrecisionResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (s serverImpl) Precision(ctx sdk.Context, request *bank.QueryPrecisionRequest) (*bank.QueryPrecisionResponse, error) {
 	store := ctx.KVStore(s.key)
 	x, err := storehelpers.GetUint32(store, MaxDecimalPlacesKey(request.Denom))
 	if err != nil {
