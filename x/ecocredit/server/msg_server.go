@@ -4,6 +4,8 @@ import (
 	"encoding/binary"
 	"fmt"
 
+	"github.com/regen-network/regen-ledger/types"
+
 	"github.com/btcsuite/btcutil/base58"
 	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,7 +16,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/math"
 )
 
-func (s serverImpl) CreateClass(ctx sdk.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error) {
+func (s serverImpl) CreateClass(ctx types.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error) {
 	classID := s.idSeq.NextVal(ctx)
 	classIDStr := uint64ToBase58Checked(classID)
 
@@ -39,7 +41,7 @@ func (s serverImpl) CreateClass(ctx sdk.Context, req *ecocredit.MsgCreateClassRe
 	return &ecocredit.MsgCreateClassResponse{ClassId: classIDStr}, nil
 }
 
-func (s serverImpl) CreateBatch(ctx sdk.Context, req *ecocredit.MsgCreateBatchRequest) (*ecocredit.MsgCreateBatchResponse, error) {
+func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatchRequest) (*ecocredit.MsgCreateBatchResponse, error) {
 	classID := req.ClassId
 	if err := s.assertClassIssuer(ctx, classID, req.Issuer); err != nil {
 		return nil, err
@@ -155,7 +157,7 @@ func (s serverImpl) CreateBatch(ctx sdk.Context, req *ecocredit.MsgCreateBatchRe
 	return &ecocredit.MsgCreateBatchResponse{BatchDenom: string(batchDenom)}, nil
 }
 
-func (s serverImpl) Send(ctx sdk.Context, req *ecocredit.MsgSendRequest) (*ecocredit.MsgSendResponse, error) {
+func (s serverImpl) Send(ctx types.Context, req *ecocredit.MsgSendRequest) (*ecocredit.MsgSendResponse, error) {
 	store := ctx.KVStore(s.storeKey)
 	sender := req.Sender
 	recipient := req.Recipient
@@ -228,7 +230,7 @@ func (s serverImpl) Send(ctx sdk.Context, req *ecocredit.MsgSendRequest) (*ecocr
 	return &ecocredit.MsgSendResponse{}, nil
 }
 
-func (s serverImpl) Retire(ctx sdk.Context, req *ecocredit.MsgRetireRequest) (*ecocredit.MsgRetireResponse, error) {
+func (s serverImpl) Retire(ctx types.Context, req *ecocredit.MsgRetireRequest) (*ecocredit.MsgRetireResponse, error) {
 	store := ctx.KVStore(s.storeKey)
 	holder := req.Holder
 	for _, credit := range req.Credits {
@@ -275,7 +277,7 @@ func (s serverImpl) Retire(ctx sdk.Context, req *ecocredit.MsgRetireRequest) (*e
 	return &ecocredit.MsgRetireResponse{}, nil
 }
 
-func (s serverImpl) SetPrecision(ctx sdk.Context, req *ecocredit.MsgSetPrecisionRequest) (*ecocredit.MsgSetPrecisionResponse, error) {
+func (s serverImpl) SetPrecision(ctx types.Context, req *ecocredit.MsgSetPrecisionRequest) (*ecocredit.MsgSetPrecisionResponse, error) {
 	var batchInfo ecocredit.BatchInfo
 	err := s.batchInfoTable.GetOne(ctx, orm.RowID(req.BatchDenom), &batchInfo)
 	if err != nil {
@@ -305,7 +307,7 @@ func (s serverImpl) SetPrecision(ctx sdk.Context, req *ecocredit.MsgSetPrecision
 
 // assertClassIssuer makes sure that the issuer is part of issuers of given classID.
 // Returns ErrUnauthorized otherwise.
-func (s serverImpl) assertClassIssuer(ctx sdk.Context, classID, issuer string) error {
+func (s serverImpl) assertClassIssuer(ctx types.Context, classID, issuer string) error {
 	classInfo, err := s.getClassInfo(ctx, classID)
 	if err != nil {
 		return err
@@ -324,7 +326,7 @@ func uint64ToBase58Checked(x uint64) string {
 	return base58.CheckEncode(buf[:n], 0)
 }
 
-func retire(ctx sdk.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired *apd.Decimal) error {
+func retire(ctx types.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired *apd.Decimal) error {
 	err := getAddAndSetDecimal(store, RetiredBalanceKey(recipient, batchDenom), retired)
 	if err != nil {
 		return err

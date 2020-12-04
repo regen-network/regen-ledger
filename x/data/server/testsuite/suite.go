@@ -1,13 +1,14 @@
 package testsuite
 
 import (
+	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	gocid "github.com/ipfs/go-cid"
 	"github.com/multiformats/go-multihash"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/regen-network/regen-ledger/testutil/server"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -17,7 +18,7 @@ type IntegrationTestSuite struct {
 	fixtureFactory server.FixtureFactory
 	fixture        server.Fixture
 
-	ctx         types.HasContext
+	ctx         context.Context
 	msgClient   data.MsgClient
 	queryClient data.QueryClient
 	addr1       sdk.AccAddress

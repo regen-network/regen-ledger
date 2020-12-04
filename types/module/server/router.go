@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/regen-network/regen-ledger/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	gogogrpc "github.com/gogo/protobuf/grpc"
@@ -100,10 +102,9 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 
 			// cache wrap the multistore so that inter-module writes are atomic
 			// see https://github.com/cosmos/cosmos-sdk/issues/8030
-			sdkCtx := sdk.UnwrapSDKContext(ctx)
+			sdkCtx := types.UnwrapSDKContext(ctx)
 			cacheMs := sdkCtx.MultiStore().CacheMultiStore()
-			sdkCtx = sdkCtx.WithMultiStore(cacheMs)
-			ctx = sdk.WrapSDKContext(sdkCtx)
+			ctx = types.Context{Context: sdkCtx.WithMultiStore(cacheMs)}
 
 			err = handler.f(ctx, request, response)
 			if err != nil {
@@ -120,11 +121,9 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 	// query handler
 	return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
 		// cache wrap the multistore so that writes are batched
-		sdkCtx := sdk.UnwrapSDKContext(ctx)
-		ms := sdkCtx.MultiStore()
-		cacheMs := ms.CacheMultiStore()
-		sdkCtx = sdkCtx.WithMultiStore(cacheMs)
-		ctx = sdk.WrapSDKContext(sdkCtx)
+		sdkCtx := types.UnwrapSDKContext(ctx)
+		cacheMs := sdkCtx.MultiStore().CacheMultiStore()
+		ctx = types.Context{Context: sdkCtx.WithMultiStore(cacheMs)}
 
 		err := handler.f(ctx, request, response)
 		if err != nil {

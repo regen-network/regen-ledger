@@ -2,21 +2,21 @@ package server
 
 import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/gogo/protobuf/types"
+	gogotypes "github.com/gogo/protobuf/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
 var _ data.QueryServer = serverImpl{}
 
-func (s serverImpl) ByCid(ctx sdk.Context, request *data.QueryByCidRequest) (*data.QueryByCidResponse, error) {
+func (s serverImpl) ByCid(ctx types.Context, request *data.QueryByCidRequest) (*data.QueryByCidResponse, error) {
 	cid := request.Cid
 
-	var timestamp types.Timestamp
+	var timestamp gogotypes.Timestamp
 	store := ctx.KVStore(s.storeKey)
 	bz := store.Get(AnchorKey(cid))
 	if len(bz) == 0 {
@@ -47,7 +47,7 @@ func (s serverImpl) ByCid(ctx sdk.Context, request *data.QueryByCidRequest) (*da
 	}, err
 }
 
-func (s serverImpl) BySigner(ctx sdk.Context, request *data.QueryBySignerRequest) (*data.QueryBySignerResponse, error) {
+func (s serverImpl) BySigner(ctx types.Context, request *data.QueryBySignerRequest) (*data.QueryBySignerResponse, error) {
 	store := prefix.NewStore(ctx.KVStore(s.storeKey), SignerCIDIndexPrefix(request.Signer))
 
 	var cids [][]byte

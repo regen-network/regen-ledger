@@ -10,7 +10,7 @@ based on to the Cosmos SDK in-process integration test framework.
 package server
 
 import (
-	"github.com/regen-network/regen-ledger/types"
+	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc"
@@ -28,7 +28,7 @@ type FixtureFactory interface {
 type Fixture interface {
 
 	// Context is the HasContext to be used with generated service client code.
-	Context() types.HasContext
+	Context() context.Context
 
 	// TxConn is the grpc.ClientConnInterface to be used when constructing Msg service clients.
 	TxConn() grpc.ClientConnInterface

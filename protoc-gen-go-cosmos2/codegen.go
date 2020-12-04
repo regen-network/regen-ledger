@@ -29,10 +29,9 @@ import (
 )
 
 const (
-	contextPackage        = protogen.GoImportPath("context")
-	grpcPackage           = protogen.GoImportPath("google.golang.org/grpc")
-	cosmosSdkTypesPackage = protogen.GoImportPath("github.com/cosmos/cosmos-sdk/types")
-	regenTypesPackage     = protogen.GoImportPath("github.com/regen-network/regen-ledger/types")
+	contextPackage    = protogen.GoImportPath("context")
+	grpcPackage       = protogen.GoImportPath("google.golang.org/grpc")
+	regenTypesPackage = protogen.GoImportPath("github.com/regen-network/regen-ledger/types")
 )
 
 // generateFile generates a _grpc.pb.go file containing gRPC service definitions.
@@ -178,7 +177,7 @@ func clientSignature(g *protogen.GeneratedFile, method *protogen.Method) string 
 		return ""
 	}
 
-	s := method.GoName + "(ctx " + g.QualifiedGoIdent(regenTypesPackage.Ident("HasContext"))
+	s := method.GoName + "(ctx " + g.QualifiedGoIdent(contextPackage.Ident("Context"))
 	s += ", in *" + g.QualifiedGoIdent(method.Input.GoIdent)
 	s += ", opts ..." + g.QualifiedGoIdent(grpcPackage.Ident("CallOption")) + ") ("
 	s += "*" + g.QualifiedGoIdent(method.Output.GoIdent)
@@ -195,7 +194,7 @@ func genClientMethod(g *protogen.GeneratedFile, method *protogen.Method) {
 	}
 	g.P("func (c *", unexport(service.GoName), "Client) ", clientSignature(g, method), "{")
 	g.P("out := new(", method.Output.GoIdent, ")")
-	g.P(`err := c.cc.Invoke(ctx.Context(), "`, sname, `", in, out, opts...)`)
+	g.P(`err := c.cc.Invoke(ctx, "`, sname, `", in, out, opts...)`)
 	g.P("if err != nil { return nil, err }")
 	g.P("return out, nil")
 	g.P("}")
@@ -209,7 +208,7 @@ func serverSignature(g *protogen.GeneratedFile, method *protogen.Method) string 
 	}
 	var reqArgs []string
 	ret := "error"
-	reqArgs = append(reqArgs, g.QualifiedGoIdent(cosmosSdkTypesPackage.Ident("Context")))
+	reqArgs = append(reqArgs, g.QualifiedGoIdent(regenTypesPackage.Ident("Context")))
 	reqArgs = append(reqArgs, "*"+g.QualifiedGoIdent(method.Input.GoIdent))
 	ret = "(*" + g.QualifiedGoIdent(method.Output.GoIdent) + ", error)"
 	return method.GoName + "(" + strings.Join(reqArgs, ", ") + ") " + ret
@@ -226,13 +225,13 @@ func genServerMethod(g *protogen.GeneratedFile, method *protogen.Method) string 
 	g.P("func ", hname, "(srv interface{}, ctx ", contextPackage.Ident("Context"), ", dec func(interface{}) error, interceptor ", grpcPackage.Ident("UnaryServerInterceptor"), ") (interface{}, error) {")
 	g.P("in := new(", method.Input.GoIdent, ")")
 	g.P("if err := dec(in); err != nil { return nil, err }")
-	g.P("if interceptor == nil { return srv.(", service.GoName, "Server).", method.GoName, "(", cosmosSdkTypesPackage.Ident("UnwrapSDKContext"), "(ctx), in) }")
+	g.P("if interceptor == nil { return srv.(", service.GoName, "Server).", method.GoName, "(", regenTypesPackage.Ident("UnwrapSDKContext"), "(ctx), in) }")
 	g.P("info := &", grpcPackage.Ident("UnaryServerInfo"), "{")
 	g.P("Server: srv,")
 	g.P("FullMethod: ", strconv.Quote(fmt.Sprintf("/%s/%s", service.Desc.FullName(), method.Desc.Name())), ",")
 	g.P("}")
 	g.P("handler := func(ctx ", contextPackage.Ident("Context"), ", req interface{}) (interface{}, error) {")
-	g.P("return srv.(", service.GoName, "Server).", method.GoName, "(", cosmosSdkTypesPackage.Ident("UnwrapSDKContext"), "(ctx), req.(*", method.Input.GoIdent, "))")
+	g.P("return srv.(", service.GoName, "Server).", method.GoName, "(", regenTypesPackage.Ident("UnwrapSDKContext"), "(ctx), req.(*", method.Input.GoIdent, "))")
 	g.P("}")
 	g.P("return interceptor(ctx, in, info, handler)")
 	g.P("}")

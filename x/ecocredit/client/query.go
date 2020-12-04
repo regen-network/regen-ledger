@@ -44,7 +44,7 @@ func queryClassInfo() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := c.ClassInfo(cmd, &ecocredit.QueryClassInfoRequest{
+			res, err := c.ClassInfo(cmd.Context(), &ecocredit.QueryClassInfoRequest{
 				ClassId: args[0],
 			})
 			return print(ctx, res, err)
@@ -63,7 +63,7 @@ func queryBatchInfo() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := c.BatchInfo(cmd, &ecocredit.QueryBatchInfoRequest{
+			res, err := c.BatchInfo(cmd.Context(), &ecocredit.QueryBatchInfoRequest{
 				BatchDenom: args[0],
 			})
 			return print(ctx, res, err)
@@ -82,7 +82,7 @@ func queryBalance() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := c.Balance(cmd, &ecocredit.QueryBalanceRequest{
+			res, err := c.Balance(cmd.Context(), &ecocredit.QueryBalanceRequest{
 				BatchDenom: args[0], Account: args[1],
 			})
 			return print(ctx, res, err)
@@ -101,7 +101,7 @@ func querySupply() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := c.Supply(cmd, &ecocredit.QuerySupplyRequest{
+			res, err := c.Supply(cmd.Context(), &ecocredit.QuerySupplyRequest{
 				BatchDenom: args[0],
 			})
 			return print(ctx, res, err)
@@ -120,7 +120,7 @@ func queryPrecision() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			res, err := c.Precision(cmd, &ecocredit.QueryPrecisionRequest{
+			res, err := c.Precision(cmd.Context(), &ecocredit.QueryPrecisionRequest{
 				BatchDenom: args[0],
 			})
 			return print(ctx, res, err)

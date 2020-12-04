@@ -62,7 +62,7 @@ func MsgAnchorDataCmd() *cobra.Command {
 			}
 			svcMsgClientConn := &client.ServiceMsgClientConn{}
 			msgClient := data.NewMsgClient(svcMsgClientConn)
-			_, err = msgClient.AnchorData(cmd, &msg)
+			_, err = msgClient.AnchorData(cmd.Context(), &msg)
 			if err != nil {
 				return err
 			}
@@ -105,7 +105,7 @@ func MsgSignDataCmd() *cobra.Command {
 			}
 			svcMsgClientConn := &client.ServiceMsgClientConn{}
 			msgClient := data.NewMsgClient(svcMsgClientConn)
-			_, err = msgClient.SignData(cmd, &msg)
+			_, err = msgClient.SignData(cmd.Context(), &msg)
 			if err != nil {
 				return err
 			}
@@ -154,7 +154,7 @@ func MsgStoreDataCmd() *cobra.Command {
 			}
 			svcMsgClientConn := &client.ServiceMsgClientConn{}
 			msgClient := data.NewMsgClient(svcMsgClientConn)
-			_, err = msgClient.StoreData(cmd, &msg)
+			_, err = msgClient.StoreData(cmd.Context(), &msg)
 			if err != nil {
 				return err
 			}

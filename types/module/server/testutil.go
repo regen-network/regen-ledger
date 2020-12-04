@@ -75,8 +75,8 @@ type fixture struct {
 	signers []sdk.AccAddress
 }
 
-func (f fixture) Context() regentypes.HasContext {
-	return f.baseApp.NewUncachedContext(false, tmproto.Header{})
+func (f fixture) Context() context.Context {
+	return regentypes.Context{Context: f.baseApp.NewUncachedContext(false, tmproto.Header{})}
 }
 
 func (f fixture) TxConn() grpc.ClientConnInterface {
