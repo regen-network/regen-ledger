@@ -7,14 +7,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	gogogrpc "github.com/gogo/protobuf/grpc"
 
 	"github.com/regen-network/regen-ledger/types/module"
 )
 
+// Manager is the server module manager
 type Manager struct {
-	sdkmodule.Manager
 	baseApp          *baseapp.BaseApp
 	cdc              *codec.ProtoCodec
 	keys             map[string]ModuleKey
@@ -22,6 +21,7 @@ type Manager struct {
 	requiredServices map[reflect.Type]bool
 }
 
+// NewManager creates a new Manager
 func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 	return &Manager{
 		baseApp: baseApp,
@@ -35,7 +35,10 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 	}
 }
 
+// RegisterModules registers modules with the Manager and registers their services.
 func (mm *Manager) RegisterModules(modules []module.Module) error {
+	// First we register all interface types. This is done for all modules first before registering
+	// any services in case there are any weird dependencies that will cause service initialization to fail.
 	for _, mod := range modules {
 		// check if we actually have a server module, otherwise skip
 		serverMod, ok := mod.(Module)
@@ -46,6 +49,7 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		serverMod.RegisterInterfaces(mm.cdc.InterfaceRegistry())
 	}
 
+	// Next we register services
 	for _, mod := range modules {
 		// check if we actually have a server module, otherwise skip
 		serverMod, ok := mod.(Module)
@@ -79,7 +83,7 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		queryRegistrar := registrar{
 			router:       mm.router,
 			baseServer:   mm.baseApp.GRPCQueryRouter(),
-			commitWrites: true,
+			commitWrites: false,
 			moduleName:   name,
 		}
 
@@ -101,12 +105,17 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 	return nil
 }
 
+// AuthorizationMiddleware is a function that allows for more complex authorization than the default authorization scheme,
+// such as delegated permissions. It will be called only if the default authorization fails.
 type AuthorizationMiddleware func(ctx sdk.Context, methodName string, req sdk.MsgRequest, signer sdk.AccAddress) bool
 
+// SetAuthorizationMiddleware sets AuthorizationMiddleware for the Manager.
 func (mm *Manager) SetAuthorizationMiddleware(authzFunc AuthorizationMiddleware) {
 	mm.router.authzMiddleware = authzFunc
 }
 
+// CompleteInitialization should be the last function on the Manager called before the application starts to perform
+// any necessary validation and initialization.
 func (mm *Manager) CompleteInitialization() error {
 	for typ := range mm.requiredServices {
 		if _, found := mm.router.providedServices[typ]; !found {
