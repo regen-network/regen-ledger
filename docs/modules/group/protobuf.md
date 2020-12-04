@@ -29,6 +29,28 @@
     - [Proposal.Result](#regen.group.v1alpha1.Proposal.Result)
     - [Proposal.Status](#regen.group.v1alpha1.Proposal.Status)
   
+- [regen/group/v1alpha1/query.proto](#regen/group/v1alpha1/query.proto)
+    - [QueryGroupAccountInfoRequest](#regen.group.v1alpha1.QueryGroupAccountInfoRequest)
+    - [QueryGroupAccountInfoResponse](#regen.group.v1alpha1.QueryGroupAccountInfoResponse)
+    - [QueryGroupAccountsByAdminRequest](#regen.group.v1alpha1.QueryGroupAccountsByAdminRequest)
+    - [QueryGroupAccountsByAdminResponse](#regen.group.v1alpha1.QueryGroupAccountsByAdminResponse)
+    - [QueryGroupAccountsByGroupRequest](#regen.group.v1alpha1.QueryGroupAccountsByGroupRequest)
+    - [QueryGroupAccountsByGroupResponse](#regen.group.v1alpha1.QueryGroupAccountsByGroupResponse)
+    - [QueryGroupInfoRequest](#regen.group.v1alpha1.QueryGroupInfoRequest)
+    - [QueryGroupInfoResponse](#regen.group.v1alpha1.QueryGroupInfoResponse)
+    - [QueryGroupsByAdminRequest](#regen.group.v1alpha1.QueryGroupsByAdminRequest)
+    - [QueryGroupsByAdminResponse](#regen.group.v1alpha1.QueryGroupsByAdminResponse)
+    - [QueryGroupsByMemberRequest](#regen.group.v1alpha1.QueryGroupsByMemberRequest)
+    - [QueryGroupsByMemberResponse](#regen.group.v1alpha1.QueryGroupsByMemberResponse)
+    - [QueryProposalRequest](#regen.group.v1alpha1.QueryProposalRequest)
+    - [QueryProposalResponse](#regen.group.v1alpha1.QueryProposalResponse)
+    - [QueryProposalsByGroupAccountRequest](#regen.group.v1alpha1.QueryProposalsByGroupAccountRequest)
+    - [QueryProposalsByGroupAccountResponse](#regen.group.v1alpha1.QueryProposalsByGroupAccountResponse)
+    - [QueryVotesRequest](#regen.group.v1alpha1.QueryVotesRequest)
+    - [QueryVotesResponse](#regen.group.v1alpha1.QueryVotesResponse)
+  
+    - [Query](#regen.group.v1alpha1.Query)
+  
 - [regen/group/v1alpha1/tx.proto](#regen/group/v1alpha1/tx.proto)
     - [MsgCreateGroupAccountRequest](#regen.group.v1alpha1.MsgCreateGroupAccountRequest)
     - [MsgCreateGroupAccountResponse](#regen.group.v1alpha1.MsgCreateGroupAccountResponse)
@@ -412,6 +434,323 @@ Status defines proposal statuses.
  <!-- end enums -->
 
  <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="regen/group/v1alpha1/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## regen/group/v1alpha1/query.proto
+
+
+
+<a name="regen.group.v1alpha1.QueryGroupAccountInfoRequest"></a>
+
+### QueryGroupAccountInfoRequest
+QueryGroupAccountInfoRequest is the Query/GroupAccountInfo request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| group_account | [bytes](#bytes) |  | group_account is the account address of the group account. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryGroupAccountInfoResponse"></a>
+
+### QueryGroupAccountInfoResponse
+QueryGroupAccountInfoResponse is the Query/GroupAccountInfo response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| info | [GroupAccountInfo](#regen.group.v1alpha1.GroupAccountInfo) |  | info is the GroupAccountInfo for the group account. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryGroupAccountsByAdminRequest"></a>
+
+### QueryGroupAccountsByAdminRequest
+QueryGroupAccountsByAdminRequest is the Query/GroupAccountsByAdmin request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| admin | [bytes](#bytes) |  | admin is the admin address of the group account. |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryGroupAccountsByAdminResponse"></a>
+
+### QueryGroupAccountsByAdminResponse
+QueryGroupAccountsByAdminResponse is the Query/GroupAccountsByAdmin response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| group_accounts | [GroupAccountInfo](#regen.group.v1alpha1.GroupAccountInfo) | repeated | group_accounts are the group accounts info with provided admin. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryGroupAccountsByGroupRequest"></a>
+
+### QueryGroupAccountsByGroupRequest
+QueryGroupAccountsByGroupRequest is the Query/GroupAccountsByGroup request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group account's group. |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryGroupAccountsByGroupResponse"></a>
+
+### QueryGroupAccountsByGroupResponse
+QueryGroupAccountsByGroupResponse is the Query/GroupAccountsByGroup response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| group_accounts | [GroupAccountInfo](#regen.group.v1alpha1.GroupAccountInfo) | repeated | group_accounts are the group accounts info associated with the provided group. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryGroupInfoRequest"></a>
+
+### QueryGroupInfoRequest
+QueryGroupInfoRequest is the Query/GroupInfo request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryGroupInfoResponse"></a>
+
+### QueryGroupInfoResponse
+QueryGroupInfoResponse is the Query/GroupInfo response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| info | [GroupInfo](#regen.group.v1alpha1.GroupInfo) |  | info is the GroupInfo for the group. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryGroupsByAdminRequest"></a>
+
+### QueryGroupsByAdminRequest
+QueryGroupsByAdminRequest is the Query/GroupsByAdminRequest request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| admin | [bytes](#bytes) |  | admin is the account address of a group's admin. |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryGroupsByAdminResponse"></a>
+
+### QueryGroupsByAdminResponse
+QueryGroupsByAdminResponse is the Query/GroupsByAdminResponse response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| group_ids | [uint64](#uint64) | repeated | group_ids are the IDs of the groups with the provided admin. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryGroupsByMemberRequest"></a>
+
+### QueryGroupsByMemberRequest
+QueryGroupsByMemberRequest is the Query/GroupsByMemberRequest request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| member | [bytes](#bytes) |  | member is the account address of a group's member. |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryGroupsByMemberResponse"></a>
+
+### QueryGroupsByMemberResponse
+QueryGroupsByMemberResponse is the Query/GroupsByMemberResponse response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| group_ids | [uint64](#uint64) | repeated | group_ids are the IDs of the groups with the provided member. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryProposalRequest"></a>
+
+### QueryProposalRequest
+QueryProposalRequest is the Query/Proposal request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| proposal_id | [uint64](#uint64) |  | proposal_id is the unique ID of a proposal. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryProposalResponse"></a>
+
+### QueryProposalResponse
+QueryProposalResponse is the Query/Proposal response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| proposal | [Proposal](#regen.group.v1alpha1.Proposal) |  | proposal is the proposal info. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryProposalsByGroupAccountRequest"></a>
+
+### QueryProposalsByGroupAccountRequest
+QueryProposalsByGroupAccountRequest is the Query/ProposalByGroupAccount request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| group_account | [bytes](#bytes) |  | group_account is the group account address related to proposals. |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryProposalsByGroupAccountResponse"></a>
+
+### QueryProposalsByGroupAccountResponse
+QueryProposalsByGroupAccountResponse is the Query/ProposalByGroupAccount response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| proposals | [Proposal](#regen.group.v1alpha1.Proposal) | repeated | proposals are the proposals with given group account. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryVotesRequest"></a>
+
+### QueryVotesRequest
+QueryVotesResponse is the Query/Votes request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| proposal_id | [uint64](#uint64) |  | proposal_id is the unique ID of a proposal. |
+| voter | [bytes](#bytes) |  | voter is a proposal voter account address. |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryVotesResponse"></a>
+
+### QueryVotesResponse
+QueryVotesResponse is the Query/VotesResponse response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| votes | [Vote](#regen.group.v1alpha1.Vote) | repeated | votes are the list of votes with given proposal_id and/or voter. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="regen.group.v1alpha1.Query"></a>
+
+### Query
+Query is the regen.group.v1alpha1 Query service.
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| GroupInfo | [QueryGroupInfoRequest](#regen.group.v1alpha1.QueryGroupInfoRequest) | [QueryGroupInfoResponse](#regen.group.v1alpha1.QueryGroupInfoResponse) | GroupInfo queries group info based on group id. |
+| GroupAccountInfo | [QueryGroupAccountInfoRequest](#regen.group.v1alpha1.QueryGroupAccountInfoRequest) | [QueryGroupAccountInfoResponse](#regen.group.v1alpha1.QueryGroupAccountInfoResponse) | GroupAccountInfo queries group account info based on group account address. |
+| GroupsByMember | [QueryGroupsByMemberRequest](#regen.group.v1alpha1.QueryGroupsByMemberRequest) | [QueryGroupsByMemberResponse](#regen.group.v1alpha1.QueryGroupsByMemberResponse) | GroupsByMember queries groups by member address. |
+| GroupsByAdmin | [QueryGroupsByAdminRequest](#regen.group.v1alpha1.QueryGroupsByAdminRequest) | [QueryGroupsByAdminResponse](#regen.group.v1alpha1.QueryGroupsByAdminResponse) | GroupsByAdmin queries groups by admin address. |
+| GroupAccountsByGroup | [QueryGroupAccountsByGroupRequest](#regen.group.v1alpha1.QueryGroupAccountsByGroupRequest) | [QueryGroupAccountsByGroupResponse](#regen.group.v1alpha1.QueryGroupAccountsByGroupResponse) | GroupAccountsByGroup queries group accounts by group id. |
+| GroupAccountsByAdmin | [QueryGroupAccountsByAdminRequest](#regen.group.v1alpha1.QueryGroupAccountsByAdminRequest) | [QueryGroupAccountsByAdminResponse](#regen.group.v1alpha1.QueryGroupAccountsByAdminResponse) | GroupsByAdmin queries group accounts by admin address. |
+| Proposal | [QueryProposalRequest](#regen.group.v1alpha1.QueryProposalRequest) | [QueryProposalResponse](#regen.group.v1alpha1.QueryProposalResponse) | Proposal queries a proposal based on proposal id. |
+| ProposalsByGroupAccount | [QueryProposalsByGroupAccountRequest](#regen.group.v1alpha1.QueryProposalsByGroupAccountRequest) | [QueryProposalsByGroupAccountResponse](#regen.group.v1alpha1.QueryProposalsByGroupAccountResponse) | ProposalsByGroupAccount queries proposals based on group account address. |
+| Votes | [QueryVotesRequest](#regen.group.v1alpha1.QueryVotesRequest) | [QueryVotesResponse](#regen.group.v1alpha1.QueryVotesResponse) | Votes queries votes by proposal id and voter. |
 
  <!-- end services -->
 
