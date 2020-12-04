@@ -149,7 +149,7 @@ func (rtr *router) invokerFactory(moduleName string) InvokerFactory {
 		writeCondition := func(ctx context.Context, methodName string, msgReq sdk.MsgRequest) error {
 			signers := msgReq.GetSigners()
 			if len(signers) != 1 {
-				return fmt.Errorf("expected a signle signer %s, got %+v", moduleAddr, signers)
+				return fmt.Errorf("inter module Msg invocation requires a single expected signer (%s), but %s expects multiple signers (%+v),  ", moduleAddr, methodName, signers)
 			}
 
 			signer := signers[0]
