@@ -2,7 +2,7 @@ package server
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/regen-network/regen-ledger/types/module/server"
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -42,8 +42,8 @@ func newServer(storeKey sdk.StoreKey) serverImpl {
 	return s
 }
 
-func RegisterServices(storeKey sdk.StoreKey, configurator module.Configurator) {
-	impl := newServer(storeKey)
+func RegisterServices(configurator server.Configurator) {
+	impl := newServer(configurator.ModuleKey())
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 }

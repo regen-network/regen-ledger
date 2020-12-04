@@ -5,87 +5,53 @@ import (
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
-	abci "github.com/tendermint/tendermint/abci/types"
 
+	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
-const (
-	StoreKey = ecocredit.ModuleName
-)
+type Module struct{}
 
-type AppModuleBasic struct{}
+var _ module.AppModuleBasic = Module{}
+var _ servermodule.Module = Module{}
+var _ climodule.Module = Module{}
 
-type AppModule struct {
-	AppModuleBasic
-	storeKey sdk.StoreKey
+func (a Module) Name() string {
+	return "ecocredit"
 }
 
-var _ module.AppModule = AppModule{}
-var _ module.AppModuleBasic = AppModuleBasic{}
-
-func NewAppModule(key sdk.StoreKey) module.AppModule {
-	return AppModule{storeKey: key}
+func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
+	ecocredit.RegisterTypes(registry)
 }
 
-func (a AppModuleBasic) Name() string { return ecocredit.ModuleName }
+func (a Module) RegisterServices(configurator servermodule.Configurator) {
+	server.RegisterServices(configurator)
+}
 
-func (a AppModuleBasic) DefaultGenesis(codec.JSONMarshaler) json.RawMessage {
+func (a Module) DefaultGenesis(codec.JSONMarshaler) json.RawMessage { return nil }
+
+func (a Module) ValidateGenesis(codec.JSONMarshaler, sdkclient.TxEncodingConfig, json.RawMessage) error {
 	return nil
 }
 
-func (a AppModuleBasic) ValidateGenesis(codec.JSONMarshaler, sdkclient.TxEncodingConfig, json.RawMessage) error {
-	return nil
+func (a Module) GetQueryCmd() *cobra.Command {
+	return client.QueryCmd(a.Name())
 }
 
-func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
-	return client.QueryCmd()
+func (a Module) GetTxCmd() *cobra.Command {
+	return client.TxCmd(a.Name())
 }
 
-func (a AppModuleBasic) GetTxCmd() *cobra.Command {
-	return client.TxCmd()
-}
-
-func (a AppModuleBasic) RegisterGRPCGatewayRoutes(sdkclient.Context, *runtime.ServeMux) {}
-
-func (a AppModuleBasic) RegisterInterfaces(r codectypes.InterfaceRegistry) {
-	ecocredit.RegisterTypes(r)
-}
-
-func (a AppModule) InitGenesis(sdk.Context, codec.JSONMarshaler, json.RawMessage) []abci.ValidatorUpdate {
-	return nil
-}
-
-func (a AppModule) ExportGenesis(sdk.Context, codec.JSONMarshaler) json.RawMessage {
-	return nil
-}
-
-func (a AppModule) RegisterInvariants(sdk.InvariantRegistry) {}
-
-func (a AppModule) RegisterServices(cfg module.Configurator) {
-	server.RegisterServices(a.storeKey, cfg)
-}
-
-func (a AppModule) BeginBlock(sdk.Context, abci.RequestBeginBlock) {}
-
-func (a AppModule) EndBlock(sdk.Context, abci.RequestEndBlock) []abci.ValidatorUpdate {
-	return nil
-}
+func (a Module) RegisterGRPCGatewayRoutes(sdkclient.Context, *runtime.ServeMux) {}
 
 /**** DEPRECATED ****/
-
-func (a AppModuleBasic) RegisterLegacyAminoCodec(*codec.LegacyAmino)       {}
-func (a AppModuleBasic) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
-
-func (a AppModule) Route() sdk.Route     { return sdk.Route{} }
-func (a AppModule) QuerierRoute() string { return a.Name() }
-
-func (a AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier { return nil }
+func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
+func (a Module) RegisterLegacyAminoCodec(*codec.LegacyAmino)       {}
