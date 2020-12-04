@@ -46,7 +46,7 @@ func newServer(storeKey sdk.StoreKey, cdc codec.Marshaler) serverImpl {
 
 func RegisterServices(storeKey sdk.StoreKey, configurator module.Configurator) {
 	cfg, ok := configurator.(regenmodule.Configurator)
-	// We need regen configurator's BinaryMarshaler in order to
+	// We need regen configurator's Marshaler in order to
 	// instantiate new table builders so panicking if it's not the case
 	// until we use this upgraded configurator in the cosmos sdk
 	if !ok {

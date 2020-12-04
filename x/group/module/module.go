@@ -13,6 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -62,13 +63,21 @@ func (AppModuleBasic) RegisterInterfaces(registry types.InterfaceRegistry) {
 
 type AppModule struct {
 	AppModuleBasic
-	keeper server.Keeper
+	storeKey   sdk.StoreKey
+	paramSpace paramstypes.Subspace
+	router     sdk.Router
 }
 
-func NewAppModule(keeper server.Keeper) AppModule {
+func NewAppModule(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, router sdk.Router) AppModule {
+	// set KeyTable if it has not already been set
+	if !paramSpace.HasKeyTable() {
+		paramSpace = paramSpace.WithKeyTable(paramstypes.NewKeyTable().RegisterParamSet(&group.Params{}))
+	}
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
-		keeper:         keeper,
+		storeKey:       storeKey,
+		paramSpace:     paramSpace,
+		router:         router,
 	}
 }
 
@@ -78,13 +87,16 @@ func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, data js
 	if err := genesisState.Validate(); err != nil {
 		panic(fmt.Sprintf("failed to validate %s genesis state: %s", group.ModuleName, err))
 	}
-	a.keeper.SetParams(ctx, genesisState.Params) // TODO: revisit if this makes sense
+	// a.keeper.SetParams(ctx, genesisState.Params) // TODO: revisit if this makes sense
+	a.paramSpace.SetParamSet(ctx, &genesisState.Params)
 	return []abci.ValidatorUpdate{}
 }
 
 func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage {
+	var p group.Params
+	a.paramSpace.GetParamSet(ctx, &p)
 	return cdc.MustMarshalJSON(&group.GenesisState{
-		Params: a.keeper.GetParams(ctx),
+		Params: p,
 	})
 }
 
@@ -107,7 +119,7 @@ func (a AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier {
 }
 
 func (a AppModule) RegisterServices(configurator module.Configurator) {
-	server.RegisterServices(a.keeper, configurator)
+	server.RegisterServices(a.storeKey, a.paramSpace, a.router, configurator)
 }
 
 func (a AppModule) BeginBlock(sdk.Context, abci.RequestBeginBlock) {}

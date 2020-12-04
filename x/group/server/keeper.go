@@ -374,25 +374,6 @@ func (k Keeper) Vote(ctx sdk.Context, id group.ProposalID, voters []sdk.AccAddre
 	return k.proposalTable.Save(ctx, id.Uint64(), &proposal)
 }
 
-func doTally(ctx sdk.Context, p *group.Proposal, electorate group.GroupInfo, accountInfo group.GroupAccountInfo) error {
-	policy := accountInfo.GetDecisionPolicy()
-	submittedAt, err := gogotypes.TimestampFromProto(&p.SubmittedAt)
-	if err != nil {
-		return err
-	}
-	switch result, err := policy.Allow(p.VoteState, electorate.TotalWeight, ctx.BlockTime().Sub(submittedAt)); {
-	case err != nil:
-		return sdkerrors.Wrap(err, "policy execution")
-	case result.Allow && result.Final:
-		p.Result = group.ProposalResultAccepted
-		p.Status = group.ProposalStatusClosed
-	case !result.Allow && result.Final:
-		p.Result = group.ProposalResultRejected
-		p.Status = group.ProposalStatusClosed
-	}
-	return nil
-}
-
 // ExecProposal can be executed n times before the timeout. It will update the proposal status and executes the msg payload.
 // There are no separate transactions for the payload messages so that it is a full atomic operation that
 // would either succeed or fail.

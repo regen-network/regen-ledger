@@ -91,7 +91,6 @@ import (
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	"github.com/regen-network/regen-ledger/x/group"
 	groupmodule "github.com/regen-network/regen-ledger/x/group/module"
-	groupserver "github.com/regen-network/regen-ledger/x/group/server"
 )
 
 const (
@@ -184,7 +183,6 @@ type RegenApp struct {
 	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
-	GroupKeeper      groupserver.Keeper
 	wasmKeeper       wasm.Keeper
 
 	// make scoped keepers public for test purposes
@@ -320,12 +318,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// If evidence needs to be handled for the app, set routes in router here and seal
 	app.EvidenceKeeper = *evidenceKeeper
 
-	groupKeeper := groupserver.NewGroupKeeper(
-		keys[group.StoreKey], app.GetSubspace(group.ModuleName), app.Router(),
-		codec.NewProtoCodec(interfaceRegistry),
-	)
-	app.GroupKeeper = groupKeeper
-
 	// just re-use the full router - do we want to limit this more?
 	var wasmRouter = bApp.Router()
 	wasmDir := filepath.Join(homePath, "wasm")
@@ -379,7 +371,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		data.NewAppModule(keys[data.StoreKey]),
 		wasm.NewAppModule(app.wasmKeeper),
 		ecocredit.NewAppModule(keys[ecocredit.StoreKey]),
-		groupmodule.NewAppModule(app.GroupKeeper),
+		groupmodule.NewAppModule(keys[group.StoreKey], app.GetSubspace(group.ModuleName), app.Router()),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
