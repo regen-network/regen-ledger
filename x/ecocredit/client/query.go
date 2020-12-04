@@ -9,13 +9,13 @@ import (
 )
 
 // QueryCmd returns the parent command for all x/data CLI query commands
-func QueryCmd() *cobra.Command {
+func QueryCmd(name string) *cobra.Command {
 	cmd := &cobra.Command{
 		SuggestionsMinimumDistance: 2,
 		DisableFlagParsing:         true,
 
 		Args:  cobra.ExactArgs(1),
-		Use:   ecocredit.ModuleName,
+		Use:   name,
 		Short: "Query commands for the ecocredit module",
 		RunE:  client.ValidateCmd,
 	}

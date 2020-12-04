@@ -27,7 +27,7 @@ type FixtureFactory interface {
 // independent of the backend.
 type Fixture interface {
 
-	// Context is the context.Context to be used with gRPC generated cient code.
+	// Context is the context.Context to be used with gRPC generated client code.
 	Context() context.Context
 
 	// TxConn is the grpc.ClientConnInterface to be used when constructing Msg service clients.

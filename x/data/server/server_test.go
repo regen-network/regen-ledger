@@ -1,21 +1,23 @@
-package server
+package server_test
 
 import (
-	"github.com/regen-network/regen-ledger/testutil/server/configurator"
-	"github.com/regen-network/regen-ledger/x/data/server/testsuite"
 	"testing"
+
+	"github.com/regen-network/regen-ledger/types/module"
 
 	"github.com/stretchr/testify/suite"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/types/module/server"
+	datamodule "github.com/regen-network/regen-ledger/x/data/module"
+	"github.com/regen-network/regen-ledger/x/data/server/testsuite"
 )
 
 func TestServer(t *testing.T) {
-	key := sdk.NewKVStoreKey("data")
-	addrs := configurator.MakeTestAddresses(2)
-	configuratorFixture := configurator.NewFixture(t, []sdk.StoreKey{key}, addrs)
-	RegisterServices(key, configuratorFixture)
-	s := testsuite.NewIntegrationTestSuite(configuratorFixture)
+	ff := server.NewFixtureFactory(t, 2, []module.Module{
+		datamodule.Module{},
+	})
+
+	s := testsuite.NewIntegrationTestSuite(ff)
 
 	suite.Run(t, s)
 }

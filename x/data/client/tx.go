@@ -14,9 +14,9 @@ import (
 )
 
 // TxCmd returns a root CLI command handler for all x/data transaction commands.
-func TxCmd() *cobra.Command {
+func TxCmd(name string) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                        data.ModuleName,
+		Use:                        name,
 		Short:                      "Data transaction subcommands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,

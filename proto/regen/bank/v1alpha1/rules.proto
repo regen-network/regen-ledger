@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package regen.bank.v1alpha1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/bank";
+
+message ACLRule {
+    repeated string allowed_addresses = 1;
+}
+
+message BooleanRule {
+    bool enabled = 1;
+}
+

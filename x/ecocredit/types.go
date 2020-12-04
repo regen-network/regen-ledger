@@ -2,8 +2,6 @@ package ecocredit
 
 import "github.com/regen-network/regen-ledger/orm"
 
-const ModuleName = "ecocredit"
-
 var _, _ orm.NaturalKeyed = &ClassInfo{}, &BatchInfo{}
 
 func (m *ClassInfo) NaturalKey() []byte {

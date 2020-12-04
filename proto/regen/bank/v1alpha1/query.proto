@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package regen.bank.v1alpha1;
+
+import "regen/bank/v1alpha1/types.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/bank";
+
+// Query defines the gRPC querier service.
+service Query {
+    // Balance queries the balance of a single coin for a single account.
+    rpc Balance(QueryBalanceRequest) returns (QueryBalanceResponse) { }
+
+    // SupplyOf queries the supply of a single coin.
+    rpc SupplyOf(QuerySupplyOfRequest) returns (QuerySupplyOfResponse) { }
+
+    // Precision queries the number of decimal places that can be used to
+    // represent coins. See Tx/SetPrecision for more details.
+    rpc Precision(QueryPrecisionRequest) returns (QueryPrecisionResponse);
+}
+
+// QueryBalanceRequest is the request type for the Query/Balance RPC method.
+message QueryBalanceRequest {
+    // address is the address to query balances for.
+    string address = 1;
+
+    // denom is the coin denom to query balances for.
+    string denom = 2;
+}
+
+// QueryBalanceResponse is the response type for the Query/Balance RPC method.
+message QueryBalanceResponse {
+    // balance is the balance of the coin.
+    Coin balance = 1;
+}
+
+// QuerySupplyOfRequest is the request type for the Query/SupplyOf RPC method.
+message QuerySupplyOfRequest {
+    // denom is the coin denom to query balances for.
+    string denom = 1;
+}
+
+// QuerySupplyOfResponse is the response type for the Query/SupplyOf RPC method.
+message QuerySupplyOfResponse {
+    // amount is the supply of the coin.
+    Coin amount = 1;
+}
+
+// QueryPrecisionRequest is the Query/Precision request type.
+message QueryPrecisionRequest {
+
+    // denom is the unique ID of credit batch to query.
+    string denom = 1;
+}
+
+// QueryPrecisionResponse is the Query/Precision response type.
+message QueryPrecisionResponse {
+
+    // max_decimal_places is the maximum number of decimal places that can be used
+    // to represent some quantity of coins. It is an experimental feature
+    // to concretely explore an idea proposed in
+    // https://github.com/cosmos/cosmos-sdk/issues/7113.
+    uint32 max_decimal_places = 1
+    [ (gogoproto.moretags) = "yaml:\"max_decimal_places\"" ];
+}

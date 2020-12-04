@@ -21,10 +21,6 @@ service Query {
 
   // Supply queries the tradable and retired supply of a credit batch.
   rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse);
-
-  // Precision queries the number of decimal places that can be used to
-  // represent credit batch units. See Tx/SetPrecision for more details.
-  rpc Precision(QueryPrecisionRequest) returns (QueryPrecisionResponse);
 }
 
 // QueryClassInfoRequest is the Query/ClassInfo request type.
@@ -93,22 +89,4 @@ message QuerySupplyResponse {
   // retired_supply is the decimal number of retired units in the batch supply.
   string retired_supply = 2
       [ (gogoproto.moretags) = "yaml:\"retired_supply\"" ];
-}
-
-// QueryPrecisionRequest is the Query/Precision request type.
-message QueryPrecisionRequest {
-
-  // batch_denom is the unique ID of credit batch to query.
-  string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
-}
-
-// QueryPrecisionResponse is the Query/Precision response type.
-message QueryPrecisionResponse {
-
-  // max_decimal_places is the maximum number of decimal places that can be used
-  // to represent some quantity of credit units. It is an experimental feature
-  // to concretely explore an idea proposed in
-  // https://github.com/cosmos/cosmos-sdk/issues/7113.
-  uint32 max_decimal_places = 1
-      [ (gogoproto.moretags) = "yaml:\"max_decimal_places\"" ];
 }

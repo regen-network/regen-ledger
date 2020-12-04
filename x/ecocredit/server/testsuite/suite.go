@@ -29,12 +29,10 @@ func NewIntegrationTestSuite(fixtureFactory server.FixtureFactory) *IntegrationT
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.fixture = s.fixtureFactory.Setup()
 	s.ctx = s.fixture.Context()
+	s.signers = s.fixture.Signers()
+	s.Require().GreaterOrEqual(len(s.signers), 6)
 	s.msgClient = ecocredit.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = ecocredit.NewQueryClient(s.fixture.QueryConn())
-	s.signers = s.fixture.Signers()
-	if len(s.signers) < 6 {
-		s.FailNow("expected at least 6 signers, got %d", s.fixture.Signers())
-	}
 }
 
 func (s *IntegrationTestSuite) TestScenario() {

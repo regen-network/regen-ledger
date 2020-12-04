@@ -16,12 +16,12 @@ import (
 )
 
 // TxCmd returns a root CLI command handler for all x/data transaction commands.
-func TxCmd() *cobra.Command {
+func TxCmd(name string) *cobra.Command {
 	cmd := &cobra.Command{
 		SuggestionsMinimumDistance: 2,
 		DisableFlagParsing:         true,
 
-		Use:   ecocredit.ModuleName,
+		Use:   name,
 		Short: "Ecocredit module transactions",
 		RunE:  client.ValidateCmd,
 	}

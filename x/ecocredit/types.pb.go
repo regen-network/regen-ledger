@@ -104,7 +104,8 @@ type BatchInfo struct {
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
 	// issuer is the issuer of the credit batch.
 	Issuer string `protobuf:"bytes,3,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	// total_units is the total number of units in the credit batch and is immutable.
+	// total_units is the total number of units in the credit batch and is
+	// immutable.
 	TotalUnits string `protobuf:"bytes,4,opt,name=total_units,json=totalUnits,proto3" json:"total_units,omitempty" yaml:"total_units"`
 	// metadata is any arbitrary metadata to attached to the credit batch.
 	Metadata []byte `protobuf:"bytes,5,opt,name=metadata,proto3" json:"metadata,omitempty"`

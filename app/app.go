@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
+	moduletypes "github.com/regen-network/regen-ledger/types"
+
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -87,6 +89,10 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
+
+	newmodule "github.com/regen-network/regen-ledger/types/module"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
+	bankv2 "github.com/regen-network/regen-ledger/x/bank/module"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 )
@@ -123,10 +129,20 @@ var (
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		data.AppModuleBasic{},
 		wasm.AppModuleBasic{},
-		ecocredit.AppModuleBasic{},
+		ecocredit.Module{},
+		data.Module{},
 	)
+
+	NewModules = []newmodule.Module{
+		bankv2.Module{
+			DenomNamespaceAdmins: map[string]moduletypes.ModuleID{
+				"eco/": ecocredit.ModuleID,
+			},
+		},
+		ecocredit.Module{},
+		data.Module{},
+	}
 
 	// module account permissions
 	maccPerms = map[string][]string{
@@ -213,7 +229,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		data.StoreKey, ecocredit.StoreKey, wasm.StoreKey,
+		wasm.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -345,6 +361,20 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		&stakingKeeper, govRouter,
 	)
 
+	/* New Module Wiring START */
+	newModuleManager := servermodule.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
+
+	err := newModuleManager.RegisterModules(NewModules)
+	if err != nil {
+		panic(err)
+	}
+
+	err = newModuleManager.CompleteInitialization()
+	if err != nil {
+		panic(err)
+	}
+	/* New Module Wiring END */
+
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
 			app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx,
@@ -365,9 +395,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
-		data.NewAppModule(keys[data.StoreKey]),
 		wasm.NewAppModule(app.wasmKeeper),
-		ecocredit.NewAppModule(keys[ecocredit.StoreKey]),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that

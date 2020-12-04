@@ -3,14 +3,17 @@ package server
 import (
 	"context"
 
+	"github.com/regen-network/regen-ledger/util/storehelpers"
+	"github.com/regen-network/regen-ledger/x/bank"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/x/bank/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/math"
 )
 
-func (s serverImpl) ClassInfo(ctx context.Context, request *ecocredit.QueryClassInfoRequest) (*ecocredit.QueryClassInfoResponse, error) {
+func (s keeper) ClassInfo(ctx context.Context, request *ecocredit.QueryClassInfoRequest) (*ecocredit.QueryClassInfoResponse, error) {
 	classInfo, err := s.getClassInfo(sdk.UnwrapSDKContext(ctx), request.ClassId)
 	if err != nil {
 		return nil, err
@@ -19,13 +22,13 @@ func (s serverImpl) ClassInfo(ctx context.Context, request *ecocredit.QueryClass
 	return &ecocredit.QueryClassInfoResponse{Info: classInfo}, nil
 }
 
-func (s serverImpl) getClassInfo(ctx sdk.Context, classID string) (*ecocredit.ClassInfo, error) {
+func (s keeper) getClassInfo(ctx sdk.Context, classID string) (*ecocredit.ClassInfo, error) {
 	var classInfo ecocredit.ClassInfo
 	err := s.classInfoTable.GetOne(ctx, orm.RowID(classID), &classInfo)
 	return &classInfo, err
 }
 
-func (s serverImpl) BatchInfo(goCtx context.Context, request *ecocredit.QueryBatchInfoRequest) (*ecocredit.QueryBatchInfoResponse, error) {
+func (s keeper) BatchInfo(goCtx context.Context, request *ecocredit.QueryBatchInfoRequest) (*ecocredit.QueryBatchInfoResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	var batchInfo ecocredit.BatchInfo
@@ -33,40 +36,48 @@ func (s serverImpl) BatchInfo(goCtx context.Context, request *ecocredit.QueryBat
 	return &ecocredit.QueryBatchInfoResponse{Info: &batchInfo}, err
 }
 
-func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalanceRequest) (*ecocredit.QueryBalanceResponse, error) {
+func (s keeper) Balance(goCtx context.Context, request *ecocredit.QueryBalanceRequest) (*ecocredit.QueryBalanceResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	acc := request.Account
 	denom := batchDenomT(request.BatchDenom)
-	store := ctx.KVStore(s.storeKey)
+	store := ctx.KVStore(s.key)
 
-	tradable, err := getDecimal(store, TradableBalanceKey(acc, denom))
+	//tradable, err := storehelpers.GetDecimal(store, TradableBalanceKey(acc, denom))
+	//if err != nil {
+	//	return nil, err
+	//}
+
+	res, err := s.bankQueryClient.Balance(goCtx, &bank.QueryBalanceRequest{
+		Address: acc,
+		Denom:   request.BatchDenom,
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	retired, err := getDecimal(store, RetiredBalanceKey(acc, denom))
+	retired, err := storehelpers.GetDecimal(store, RetiredBalanceKey(acc, denom))
 	if err != nil {
 		return nil, err
 	}
 
 	return &ecocredit.QueryBalanceResponse{
-		TradableUnits: math.DecimalString(tradable),
+		TradableUnits: res.Balance.Amount,
 		RetiredUnits:  math.DecimalString(retired),
 	}, nil
 }
 
-func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupplyRequest) (*ecocredit.QuerySupplyResponse, error) {
+func (s keeper) Supply(goCtx context.Context, request *ecocredit.QuerySupplyRequest) (*ecocredit.QuerySupplyResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	store := ctx.KVStore(s.storeKey)
+	store := ctx.KVStore(s.key)
 	denom := batchDenomT(request.BatchDenom)
 
-	tradable, err := getDecimal(store, TradableSupplyKey(denom))
+	tradable, err := storehelpers.GetDecimal(store, TradableSupplyKey(denom))
 	if err != nil {
 		return nil, err
 	}
 
-	retired, err := getDecimal(store, RetiredSupplyKey(denom))
+	retired, err := storehelpers.GetDecimal(store, RetiredSupplyKey(denom))
 	if err != nil {
 		return nil, err
 	}
@@ -75,15 +86,4 @@ func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupply
 		TradableSupply: math.DecimalString(tradable),
 		RetiredSupply:  math.DecimalString(retired),
 	}, nil
-}
-
-func (s serverImpl) Precision(goCtx context.Context, request *ecocredit.QueryPrecisionRequest) (*ecocredit.QueryPrecisionResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-	store := ctx.KVStore(s.storeKey)
-	x, err := getUint32(store, MaxDecimalPlacesKey(batchDenomT(request.BatchDenom)))
-	if err != nil {
-		return nil, err
-	}
-
-	return &ecocredit.QueryPrecisionResponse{MaxDecimalPlaces: x}, nil
 }

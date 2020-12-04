@@ -2,20 +2,17 @@ package server
 
 import "fmt"
 
+const (
+	RetiredBalancePrefix byte = 0x2
+	RetiredSupplyPrefix  byte = 0x3
+	IDSeqPrefix          byte = 0x4
+	ClassInfoTablePrefix byte = 0x5
+	BatchInfoTablePrefix byte = 0x6
+)
+
 // batchDenomT is used to prevent errors when forming keys as accounts and denoms are
 // both represented as strings
 type batchDenomT string
-
-func TradableBalanceKey(acc string, denom batchDenomT) []byte {
-	key := []byte{TradableBalancePrefix}
-	str := fmt.Sprintf("%s|%s", acc, denom)
-	return append(key, str...)
-}
-
-func TradableSupplyKey(batchDenom batchDenomT) []byte {
-	key := []byte{TradableSupplyPrefix}
-	return append(key, batchDenom...)
-}
 
 func RetiredBalanceKey(acc string, batchDenom batchDenomT) []byte {
 	key := []byte{RetiredBalancePrefix}
@@ -25,10 +22,5 @@ func RetiredBalanceKey(acc string, batchDenom batchDenomT) []byte {
 
 func RetiredSupplyKey(batchDenom batchDenomT) []byte {
 	key := []byte{RetiredSupplyPrefix}
-	return append(key, batchDenom...)
-}
-
-func MaxDecimalPlacesKey(batchDenom batchDenomT) []byte {
-	key := []byte{MaxDecimalPlacesPrefix}
 	return append(key, batchDenom...)
 }

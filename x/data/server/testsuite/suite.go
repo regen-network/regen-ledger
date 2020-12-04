@@ -35,9 +35,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.ctx = s.fixture.Context()
 	s.msgClient = data.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = data.NewQueryClient(s.fixture.QueryConn())
-	if len(s.fixture.Signers()) < 2 {
-		s.FailNow("expected at least 2 signers, got %d", s.fixture.Signers())
-	}
+	s.Require().GreaterOrEqual(len(s.fixture.Signers()), 2)
 	s.addr1 = s.fixture.Signers()[0]
 	s.addr2 = s.fixture.Signers()[1]
 }

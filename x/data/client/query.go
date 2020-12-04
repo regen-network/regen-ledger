@@ -12,12 +12,12 @@ import (
 )
 
 // QueryCmd returns the parent command for all x/data CLI query commands
-func QueryCmd() *cobra.Command {
+func QueryCmd(name string) *cobra.Command {
 	queryByCidCmd := QueryByCidCmd()
 
 	cmd := &cobra.Command{
 		Args:  cobra.ExactArgs(1),
-		Use:   fmt.Sprintf("%s [cid]", data.ModuleName),
+		Use:   fmt.Sprintf("%s [cid]", name),
 		Short: "Querying commands for the data module",
 		Long: strings.TrimSpace(`Querying commands for the data module.
 If a CID is passed as first argument, then this command will query timestamp, signers and content (if available) for the given CID. Otherwise, this command will run the given subcommand.
