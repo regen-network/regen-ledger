@@ -3,8 +3,16 @@ syntax = "proto3";
 package regen.ecocredit.v1alpha1;
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+
+
+enum ClassType {
+    UNKNOWN = 0;
+    CARBON = 1;
+}
+
 
 // ClassInfo represents the high-level on-chain information for a credit class.
 message ClassInfo {

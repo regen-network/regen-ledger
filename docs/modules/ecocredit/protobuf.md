@@ -14,6 +14,8 @@
     - [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo)
     - [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo)
   
+    - [ClassType](#regen.ecocredit.v1alpha1.ClassType)
+  
 - [regen/ecocredit/v1alpha1/query.proto](#regen/ecocredit/v1alpha1/query.proto)
     - [QueryBalanceRequest](#regen.ecocredit.v1alpha1.QueryBalanceRequest)
     - [QueryBalanceResponse](#regen.ecocredit.v1alpha1.QueryBalanceResponse)
@@ -158,6 +160,9 @@ BatchInfo represents the high-level on-chain information for a credit batch.
 | issuer | [string](#string) |  | issuer is the issuer of the credit batch. |
 | total_units | [string](#string) |  | total_units is the total number of units in the credit batch and is immutable. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit batch. |
+| start_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | the start date for the credit drawdown |
+| end_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | the end date for the credit drawdown |
+| geojson | [string](#string) |  | location as defined in geojson.org |
 
 
 
@@ -176,12 +181,26 @@ ClassInfo represents the high-level on-chain information for a credit class.
 | designer | [string](#string) |  | designer is the designer of the credit class. |
 | issuers | [string](#string) | repeated | issuers are the approved issuers of the credit class. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit class. |
+| name | [string](#string) |  | class name |
+| type | [ClassType](#regen.ecocredit.v1alpha1.ClassType) |  |  |
 
 
 
 
 
  <!-- end messages -->
+
+
+<a name="regen.ecocredit.v1alpha1.ClassType"></a>
+
+### ClassType
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| UNKNOWN | 0 |  |
+| CARBON | 1 |  |
+
 
  <!-- end enums -->
 
