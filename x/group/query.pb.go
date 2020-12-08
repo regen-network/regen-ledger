@@ -214,26 +214,26 @@ func (m *QueryGroupAccountInfoResponse) GetInfo() *GroupAccountInfo {
 	return nil
 }
 
-// QueryGroupsByMemberRequest is the Query/GroupsByMemberRequest request type.
-type QueryGroupsByMemberRequest struct {
-	// member is the account address of a group's member.
-	Member github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=member,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"member,omitempty"`
+// QueryGroupMembersRequest is the Query/GroupMembersRequest request type.
+type QueryGroupMembersRequest struct {
+	// group_id is the unique ID of the group.
+	GroupId GroupID `protobuf:"varint,1,opt,name=group_id,json=groupId,proto3,casttype=GroupID" json:"group_id,omitempty"`
 	// pagination defines an optional pagination for the request.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryGroupsByMemberRequest) Reset()         { *m = QueryGroupsByMemberRequest{} }
-func (m *QueryGroupsByMemberRequest) String() string { return proto.CompactTextString(m) }
-func (*QueryGroupsByMemberRequest) ProtoMessage()    {}
-func (*QueryGroupsByMemberRequest) Descriptor() ([]byte, []int) {
+func (m *QueryGroupMembersRequest) Reset()         { *m = QueryGroupMembersRequest{} }
+func (m *QueryGroupMembersRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGroupMembersRequest) ProtoMessage()    {}
+func (*QueryGroupMembersRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_2523b81f3b315123, []int{4}
 }
-func (m *QueryGroupsByMemberRequest) XXX_Unmarshal(b []byte) error {
+func (m *QueryGroupMembersRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGroupsByMemberRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryGroupMembersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGroupsByMemberRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryGroupMembersRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -243,52 +243,52 @@ func (m *QueryGroupsByMemberRequest) XXX_Marshal(b []byte, deterministic bool) (
 		return b[:n], nil
 	}
 }
-func (m *QueryGroupsByMemberRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGroupsByMemberRequest.Merge(m, src)
+func (m *QueryGroupMembersRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGroupMembersRequest.Merge(m, src)
 }
-func (m *QueryGroupsByMemberRequest) XXX_Size() int {
+func (m *QueryGroupMembersRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGroupsByMemberRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGroupsByMemberRequest.DiscardUnknown(m)
+func (m *QueryGroupMembersRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGroupMembersRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGroupsByMemberRequest proto.InternalMessageInfo
+var xxx_messageInfo_QueryGroupMembersRequest proto.InternalMessageInfo
 
-func (m *QueryGroupsByMemberRequest) GetMember() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *QueryGroupMembersRequest) GetGroupId() GroupID {
 	if m != nil {
-		return m.Member
+		return m.GroupId
 	}
-	return nil
+	return 0
 }
 
-func (m *QueryGroupsByMemberRequest) GetPagination() *query.PageRequest {
+func (m *QueryGroupMembersRequest) GetPagination() *query.PageRequest {
 	if m != nil {
 		return m.Pagination
 	}
 	return nil
 }
 
-// QueryGroupsByMemberResponse is the Query/GroupsByMemberResponse response type.
-type QueryGroupsByMemberResponse struct {
-	// group_ids are the IDs of the groups with the provided member.
-	GroupIds GroupID `protobuf:"varint,1,rep,packed,name=group_ids,json=groupIds,proto3,castrepeated=GroupID" json:"group_ids,omitempty"`
+// QueryGroupMembersResponse is the Query/GroupMembersResponse response type.
+type QueryGroupMembersResponse struct {
+	// members are the members of the group with given group_id.
+	Members []*GroupMember `protobuf:"bytes,1,rep,name=members,proto3" json:"members,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
-func (m *QueryGroupsByMemberResponse) Reset()         { *m = QueryGroupsByMemberResponse{} }
-func (m *QueryGroupsByMemberResponse) String() string { return proto.CompactTextString(m) }
-func (*QueryGroupsByMemberResponse) ProtoMessage()    {}
-func (*QueryGroupsByMemberResponse) Descriptor() ([]byte, []int) {
+func (m *QueryGroupMembersResponse) Reset()         { *m = QueryGroupMembersResponse{} }
+func (m *QueryGroupMembersResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGroupMembersResponse) ProtoMessage()    {}
+func (*QueryGroupMembersResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_2523b81f3b315123, []int{5}
 }
-func (m *QueryGroupsByMemberResponse) XXX_Unmarshal(b []byte) error {
+func (m *QueryGroupMembersResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *QueryGroupsByMemberResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *QueryGroupMembersResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_QueryGroupsByMemberResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_QueryGroupMembersResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -298,26 +298,26 @@ func (m *QueryGroupsByMemberResponse) XXX_Marshal(b []byte, deterministic bool) 
 		return b[:n], nil
 	}
 }
-func (m *QueryGroupsByMemberResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_QueryGroupsByMemberResponse.Merge(m, src)
+func (m *QueryGroupMembersResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGroupMembersResponse.Merge(m, src)
 }
-func (m *QueryGroupsByMemberResponse) XXX_Size() int {
+func (m *QueryGroupMembersResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *QueryGroupsByMemberResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_QueryGroupsByMemberResponse.DiscardUnknown(m)
+func (m *QueryGroupMembersResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGroupMembersResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_QueryGroupsByMemberResponse proto.InternalMessageInfo
+var xxx_messageInfo_QueryGroupMembersResponse proto.InternalMessageInfo
 
-func (m *QueryGroupsByMemberResponse) GetGroupIds() GroupID {
+func (m *QueryGroupMembersResponse) GetMembers() []*GroupMember {
 	if m != nil {
-		return m.GroupIds
+		return m.Members
 	}
 	return nil
 }
 
-func (m *QueryGroupsByMemberResponse) GetPagination() *query.PageResponse {
+func (m *QueryGroupMembersResponse) GetPagination() *query.PageResponse {
 	if m != nil {
 		return m.Pagination
 	}
@@ -382,7 +382,7 @@ func (m *QueryGroupsByAdminRequest) GetPagination() *query.PageRequest {
 // QueryGroupsByAdminResponse is the Query/GroupsByAdminResponse response type.
 type QueryGroupsByAdminResponse struct {
 	// group_ids are the IDs of the groups with the provided admin.
-	GroupIds GroupID `protobuf:"varint,1,rep,packed,name=group_ids,json=groupIds,proto3,castrepeated=GroupID" json:"group_ids,omitempty"`
+	GroupIds []uint64 `protobuf:"varint,1,rep,packed,name=group_ids,json=groupIds,proto3" json:"group_ids,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
@@ -420,7 +420,7 @@ func (m *QueryGroupsByAdminResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryGroupsByAdminResponse proto.InternalMessageInfo
 
-func (m *QueryGroupsByAdminResponse) GetGroupIds() GroupID {
+func (m *QueryGroupsByAdminResponse) GetGroupIds() []uint64 {
 	if m != nil {
 		return m.GroupIds
 	}
@@ -922,7 +922,7 @@ func (m *QueryVotesRequest) GetPagination() *query.PageRequest {
 
 // QueryVotesResponse is the Query/VotesResponse response type.
 type QueryVotesResponse struct {
-	// votes are the list of votes with given proposal_id and/or voter.
+	// votes are the list of votes with given proposal_id and voter.
 	Votes []*Vote `protobuf:"bytes,1,rep,name=votes,proto3" json:"votes,omitempty"`
 	// pagination defines the pagination in the response.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -980,8 +980,8 @@ func init() {
 	proto.RegisterType((*QueryGroupInfoResponse)(nil), "regen.group.v1alpha1.QueryGroupInfoResponse")
 	proto.RegisterType((*QueryGroupAccountInfoRequest)(nil), "regen.group.v1alpha1.QueryGroupAccountInfoRequest")
 	proto.RegisterType((*QueryGroupAccountInfoResponse)(nil), "regen.group.v1alpha1.QueryGroupAccountInfoResponse")
-	proto.RegisterType((*QueryGroupsByMemberRequest)(nil), "regen.group.v1alpha1.QueryGroupsByMemberRequest")
-	proto.RegisterType((*QueryGroupsByMemberResponse)(nil), "regen.group.v1alpha1.QueryGroupsByMemberResponse")
+	proto.RegisterType((*QueryGroupMembersRequest)(nil), "regen.group.v1alpha1.QueryGroupMembersRequest")
+	proto.RegisterType((*QueryGroupMembersResponse)(nil), "regen.group.v1alpha1.QueryGroupMembersResponse")
 	proto.RegisterType((*QueryGroupsByAdminRequest)(nil), "regen.group.v1alpha1.QueryGroupsByAdminRequest")
 	proto.RegisterType((*QueryGroupsByAdminResponse)(nil), "regen.group.v1alpha1.QueryGroupsByAdminResponse")
 	proto.RegisterType((*QueryGroupAccountsByGroupRequest)(nil), "regen.group.v1alpha1.QueryGroupAccountsByGroupRequest")
@@ -999,62 +999,62 @@ func init() {
 func init() { proto.RegisterFile("regen/group/v1alpha1/query.proto", fileDescriptor_2523b81f3b315123) }
 
 var fileDescriptor_2523b81f3b315123 = []byte{
-	// 870 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x57, 0xcf, 0x4f, 0xdb, 0x48,
-	0x14, 0x66, 0x96, 0x5f, 0xe1, 0xf1, 0x43, 0xbb, 0x56, 0x76, 0x97, 0xf5, 0xee, 0x26, 0xd9, 0x6c,
-	0x05, 0x08, 0x8a, 0x4d, 0x40, 0x2a, 0x2a, 0xaa, 0x54, 0x25, 0x42, 0x8d, 0x72, 0x40, 0xa2, 0xa9,
-	0xc4, 0x81, 0x1e, 0x2a, 0x27, 0x1e, 0x4c, 0x04, 0xf1, 0x18, 0x8f, 0x93, 0x16, 0xf5, 0x0f, 0xe8,
-	0xb1, 0xa8, 0x7f, 0x46, 0xd5, 0xaa, 0x87, 0x1e, 0x7b, 0xe8, 0xa9, 0x52, 0x8f, 0x5c, 0x2a, 0xf5,
-	0x44, 0x2b, 0xf8, 0x2f, 0x38, 0x55, 0x9e, 0x19, 0xc7, 0x76, 0x70, 0x7e, 0x36, 0x55, 0x39, 0x25,
-	0xb6, 0xdf, 0xf7, 0xde, 0xf7, 0x3e, 0x7f, 0xf3, 0x66, 0x0c, 0x29, 0x1b, 0x1b, 0xd8, 0x54, 0x0d,
-	0x9b, 0xd4, 0x2c, 0xb5, 0x9e, 0xd1, 0x0e, 0xad, 0x7d, 0x2d, 0xa3, 0x1e, 0xd5, 0xb0, 0x7d, 0xac,
-	0x58, 0x36, 0x71, 0x88, 0x14, 0x67, 0x11, 0x0a, 0x8b, 0x50, 0xbc, 0x08, 0x39, 0x1a, 0xe7, 0x1c,
-	0x5b, 0x98, 0x72, 0x9c, 0x1c, 0x37, 0x88, 0x41, 0xd8, 0x5f, 0xd5, 0xfd, 0x27, 0xee, 0x2e, 0x96,
-	0x09, 0xad, 0x12, 0xaa, 0x96, 0x34, 0x8a, 0x79, 0x19, 0xb5, 0x9e, 0x29, 0x61, 0x47, 0xcb, 0xa8,
-	0x96, 0x66, 0x54, 0x4c, 0xcd, 0xa9, 0x10, 0x93, 0xc7, 0xa6, 0xef, 0xc2, 0xef, 0xf7, 0xdd, 0x88,
-	0xbc, 0x5b, 0xa4, 0x60, 0xee, 0x91, 0x22, 0x3e, 0xaa, 0x61, 0xea, 0x48, 0x73, 0x10, 0x63, 0x85,
-	0x1f, 0x55, 0xf4, 0x59, 0x94, 0x42, 0x0b, 0x23, 0xb9, 0xc9, 0xcb, 0xb3, 0xe4, 0x38, 0x8f, 0xdb,
-	0x2c, 0x8e, 0xb3, 0x87, 0x05, 0x3d, 0xbd, 0x05, 0x7f, 0x34, 0x27, 0xa0, 0x16, 0x31, 0x29, 0x96,
-	0xd6, 0x60, 0xa4, 0x62, 0xee, 0x11, 0x86, 0x9e, 0x5c, 0x4d, 0x2a, 0x51, 0x3d, 0x2a, 0x3e, 0x8c,
-	0x05, 0xa7, 0xeb, 0xf0, 0x8f, 0x9f, 0x2e, 0x5b, 0x2e, 0x93, 0x9a, 0xe9, 0x04, 0x69, 0xed, 0xc0,
-	0x34, 0xa7, 0xa5, 0xf1, 0x67, 0x2c, 0xfb, 0x54, 0x2e, 0x73, 0x79, 0x96, 0x5c, 0x36, 0x2a, 0xce,
-	0x7e, 0xad, 0xa4, 0x94, 0x49, 0x55, 0x15, 0x0a, 0xf0, 0x9f, 0x65, 0xaa, 0x1f, 0x08, 0xd9, 0xb2,
-	0xe5, 0x72, 0x56, 0xd7, 0x6d, 0x4c, 0x69, 0x71, 0xca, 0x08, 0x94, 0x48, 0x3f, 0x84, 0x7f, 0x5b,
-	0xd4, 0x15, 0xdd, 0x6c, 0x84, 0xba, 0x99, 0x6b, 0xd3, 0x4d, 0x10, 0xcd, 0x9b, 0x7a, 0x83, 0x40,
-	0xf6, 0xb3, 0xd3, 0xdc, 0xf1, 0x16, 0xae, 0x96, 0xb0, 0xed, 0xf5, 0x54, 0x80, 0xb1, 0x2a, 0xbb,
-	0xd1, 0x7f, 0x33, 0x22, 0x81, 0x74, 0x0f, 0xc0, 0x7f, 0xc5, 0xb3, 0xbf, 0x08, 0xae, 0x1c, 0xa9,
-	0xb8, 0x7e, 0x50, 0xb8, 0xed, 0x84, 0x1f, 0x94, 0x6d, 0xcd, 0xc0, 0x82, 0x46, 0x31, 0x80, 0x4c,
-	0x9f, 0x20, 0xf8, 0x3b, 0x92, 0xb1, 0x50, 0x63, 0x01, 0x26, 0x3c, 0x77, 0xd0, 0x59, 0x94, 0x1a,
-	0x76, 0xed, 0xf1, 0xf2, 0x8b, 0x6f, 0x8f, 0x98, 0xb0, 0x07, 0x95, 0xf2, 0x11, 0x8c, 0xe6, 0x3b,
-	0x32, 0xe2, 0x65, 0x42, 0x94, 0x5e, 0x21, 0xf8, 0x2b, 0x44, 0x29, 0xab, 0x57, 0x2b, 0xa6, 0xa7,
-	0x61, 0x1e, 0x46, 0x35, 0xf7, 0xba, 0x7f, 0x09, 0x39, 0x7e, 0x60, 0x0a, 0x3e, 0x6f, 0x7e, 0xe7,
-	0x82, 0xee, 0xcf, 0x13, 0xf0, 0x05, 0x82, 0xd4, 0x15, 0x8f, 0xd3, 0x1c, 0xbf, 0xec, 0x71, 0xd9,
-	0x0f, 0x4c, 0xa6, 0x77, 0x08, 0xfe, 0x6b, 0x43, 0x4a, 0xa8, 0xb5, 0x05, 0x33, 0xa1, 0x55, 0xcf,
-	0x25, 0xeb, 0x7e, 0x19, 0x4e, 0x07, 0xd7, 0xfa, 0x00, 0x25, 0x7d, 0xdb, 0x42, 0xd2, 0xeb, 0x6d,
-	0xcd, 0x56, 0x9a, 0x87, 0x1d, 0x7a, 0x5d, 0x35, 0xcf, 0x43, 0x9c, 0x91, 0xdf, 0xb6, 0x89, 0x45,
-	0xa8, 0x76, 0xe8, 0xc9, 0xac, 0xc2, 0xa4, 0x25, 0x6e, 0xf9, 0xe6, 0x9d, 0xb9, 0x3c, 0x4b, 0x82,
-	0x17, 0x59, 0xd8, 0x2c, 0x82, 0x17, 0x52, 0xd0, 0xd3, 0x0f, 0xc4, 0xd6, 0xe7, 0x27, 0x6a, 0x8c,
-	0xfa, 0x98, 0x17, 0x26, 0xc6, 0x7d, 0x22, 0xba, 0xe7, 0x06, 0xb2, 0x11, 0x9f, 0xfe, 0x80, 0xe0,
-	0xff, 0x50, 0x56, 0xcf, 0xcb, 0x42, 0x88, 0x1f, 0xbc, 0x8f, 0x0d, 0xcc, 0x23, 0xaf, 0x11, 0xdc,
-	0x68, 0xdf, 0x87, 0x10, 0xeb, 0x0e, 0x4c, 0x78, 0xcd, 0x7b, 0x0e, 0xe9, 0xa4, 0x96, 0x0f, 0x18,
-	0x9c, 0x2b, 0x3e, 0x21, 0xf8, 0x8d, 0xf1, 0xdd, 0x21, 0x0e, 0xa6, 0xfd, 0x7a, 0xc2, 0x5d, 0xab,
-	0x75, 0xe2, 0x60, 0x9b, 0x51, 0xe9, 0x6f, 0xad, 0x32, 0x7c, 0xd3, 0x7b, 0x18, 0xfe, 0x9e, 0x6d,
-	0x44, 0x0a, 0xf6, 0x25, 0x54, 0x5f, 0xe1, 0x3c, 0x3d, 0xc5, 0xe5, 0x68, 0xc5, 0x5d, 0x0c, 0x27,
-	0x34, 0x38, 0xa5, 0x57, 0xdf, 0xc7, 0x60, 0x94, 0x31, 0x92, 0xf6, 0x60, 0xa2, 0x71, 0x7c, 0x93,
-	0x96, 0xa2, 0x29, 0x44, 0x1e, 0x2e, 0xe5, 0x9b, 0xdd, 0x05, 0x8b, 0x66, 0x9f, 0xc2, 0xaf, 0xcd,
-	0xd3, 0x45, 0x5a, 0xed, 0x94, 0xe1, 0xea, 0xd9, 0x51, 0x5e, 0xeb, 0x09, 0x23, 0x8a, 0xd7, 0x60,
-	0x26, 0x7c, 0x06, 0x92, 0x56, 0x3a, 0xa5, 0x69, 0x3e, 0xe0, 0xc9, 0x99, 0x1e, 0x10, 0xa2, 0xac,
-	0x0d, 0xd3, 0xa1, 0x83, 0x83, 0xa4, 0x76, 0x91, 0x23, 0xb8, 0xed, 0xc8, 0x2b, 0xdd, 0x03, 0x44,
-	0xcd, 0x67, 0x08, 0xe2, 0x51, 0xdb, 0xb0, 0x74, 0xab, 0x4b, 0xe1, 0x9a, 0x0e, 0x13, 0xf2, 0x7a,
-	0xcf, 0xb8, 0xd6, 0x4c, 0xb8, 0x0a, 0x3d, 0x30, 0x09, 0x89, 0xb1, 0xde, 0x33, 0x4e, 0x30, 0x29,
-	0x43, 0xcc, 0x1b, 0x15, 0xd2, 0x62, 0x9b, 0x24, 0x4d, 0xbb, 0x91, 0xbc, 0xd4, 0x55, 0xac, 0x28,
-	0x72, 0x82, 0xe0, 0xcf, 0x16, 0x73, 0x56, 0xba, 0xdd, 0x45, 0xa2, 0xe8, 0x3d, 0x46, 0xde, 0xe8,
-	0x07, 0x2a, 0x28, 0xed, 0xc2, 0x28, 0x9b, 0x38, 0xd2, 0x7c, 0x9b, 0x24, 0xc1, 0x59, 0x2b, 0x2f,
-	0x74, 0x0e, 0xe4, 0xb9, 0x73, 0xf9, 0x8f, 0xe7, 0x09, 0x74, 0x7a, 0x9e, 0x40, 0x5f, 0xcf, 0x13,
-	0xe8, 0xe4, 0x22, 0x31, 0x74, 0x7a, 0x91, 0x18, 0xfa, 0x7c, 0x91, 0x18, 0xda, 0x0d, 0xce, 0x5a,
-	0x96, 0x6d, 0xd9, 0xc4, 0xce, 0x63, 0x62, 0x1f, 0x88, 0xab, 0x43, 0xac, 0x1b, 0xd8, 0x56, 0x9f,
-	0xf0, 0x6f, 0xe2, 0xd2, 0x18, 0xfb, 0x86, 0x5d, 0xfb, 0x16, 0x00, 0x00, 0xff, 0xff, 0x1a, 0xf3,
-	0x8c, 0x42, 0x61, 0x0f, 0x00, 0x00,
+	// 872 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x57, 0xcf, 0x4f, 0x13, 0x5b,
+	0x14, 0xe6, 0x3e, 0xe0, 0x51, 0x4e, 0x81, 0xbc, 0x37, 0xe9, 0x7b, 0xaf, 0x6f, 0xd4, 0xb6, 0x54,
+	0x03, 0x04, 0x64, 0x86, 0x96, 0x44, 0x22, 0x9a, 0x98, 0x36, 0xc4, 0xa6, 0x0b, 0x12, 0xac, 0x09,
+	0x0b, 0x5c, 0x98, 0x69, 0xe7, 0x32, 0x34, 0xd0, 0xb9, 0xc3, 0xdc, 0x69, 0x95, 0xb8, 0x73, 0x63,
+	0xe2, 0x46, 0xe2, 0x7f, 0xe0, 0x5e, 0x57, 0xae, 0x8c, 0x6b, 0x13, 0x97, 0x6c, 0x4c, 0x5c, 0x11,
+	0x03, 0xff, 0x05, 0x2b, 0xd3, 0x7b, 0xef, 0xb4, 0x33, 0x65, 0xfa, 0x33, 0x35, 0xb2, 0x6a, 0x67,
+	0xfa, 0x7d, 0xe7, 0x7c, 0xe7, 0xbb, 0xe7, 0x9e, 0x7b, 0x0b, 0x09, 0x1b, 0x1b, 0xd8, 0x54, 0x0d,
+	0x9b, 0x54, 0x2d, 0xb5, 0x96, 0xd2, 0x0e, 0xac, 0x3d, 0x2d, 0xa5, 0x1e, 0x56, 0xb1, 0x7d, 0xa4,
+	0x58, 0x36, 0x71, 0x88, 0x14, 0x61, 0x08, 0x85, 0x21, 0x14, 0x17, 0x21, 0x07, 0xf3, 0x9c, 0x23,
+	0x0b, 0x53, 0xce, 0x93, 0x23, 0x06, 0x31, 0x08, 0xfb, 0xaa, 0xd6, 0xbf, 0x89, 0xb7, 0x8b, 0x25,
+	0x42, 0x2b, 0x84, 0xaa, 0x45, 0x8d, 0x62, 0x9e, 0x46, 0xad, 0xa5, 0x8a, 0xd8, 0xd1, 0x52, 0xaa,
+	0xa5, 0x19, 0x65, 0x53, 0x73, 0xca, 0xc4, 0xe4, 0xd8, 0xe4, 0x03, 0xf8, 0xe7, 0x51, 0x1d, 0x91,
+	0xab, 0x27, 0xc9, 0x9b, 0xbb, 0xa4, 0x80, 0x0f, 0xab, 0x98, 0x3a, 0xd2, 0x1c, 0x84, 0x58, 0xe2,
+	0xa7, 0x65, 0x3d, 0x8a, 0x12, 0x68, 0x61, 0x2c, 0x1b, 0xbe, 0x38, 0x8d, 0x4f, 0x70, 0xdc, 0x46,
+	0x61, 0x82, 0xfd, 0x98, 0xd7, 0x93, 0x9b, 0xf0, 0x6f, 0x6b, 0x00, 0x6a, 0x11, 0x93, 0x62, 0x69,
+	0x15, 0xc6, 0xca, 0xe6, 0x2e, 0x61, 0xec, 0x70, 0x3a, 0xae, 0x04, 0xd5, 0xa8, 0x34, 0x69, 0x0c,
+	0x9c, 0xac, 0xc1, 0xf5, 0x66, 0xb8, 0x4c, 0xa9, 0x44, 0xaa, 0xa6, 0xe3, 0x95, 0xb5, 0x0d, 0xd3,
+	0x5c, 0x96, 0xc6, 0x7f, 0x63, 0xd1, 0xa7, 0xb2, 0xa9, 0x8b, 0xd3, 0xf8, 0xb2, 0x51, 0x76, 0xf6,
+	0xaa, 0x45, 0xa5, 0x44, 0x2a, 0xaa, 0x70, 0x80, 0x7f, 0x2c, 0x53, 0x7d, 0x5f, 0xd8, 0x96, 0x29,
+	0x95, 0x32, 0xba, 0x6e, 0x63, 0x4a, 0x0b, 0x53, 0x86, 0x27, 0x45, 0xf2, 0x09, 0xdc, 0x68, 0x93,
+	0x57, 0x54, 0xb3, 0xee, 0xab, 0x66, 0xae, 0x43, 0x35, 0x5e, 0x36, 0x2f, 0xea, 0x35, 0x82, 0x68,
+	0x33, 0xfa, 0x26, 0xae, 0x14, 0xb1, 0x4d, 0xfb, 0x34, 0x5a, 0x7a, 0x08, 0xd0, 0x5c, 0xbd, 0xe8,
+	0x1f, 0x42, 0x06, 0xaf, 0x50, 0xa9, 0x2f, 0xb5, 0xc2, 0x3b, 0x4a, 0x2c, 0xb5, 0xb2, 0xa5, 0x19,
+	0x58, 0xe4, 0x28, 0x78, 0x98, 0xc9, 0x77, 0x08, 0xfe, 0x0f, 0x10, 0x23, 0xca, 0xbc, 0x07, 0x13,
+	0x15, 0xfe, 0x2a, 0x8a, 0x12, 0xa3, 0x0b, 0xe1, 0xf4, 0x6c, 0x87, 0x4a, 0x39, 0xb9, 0xe0, 0x32,
+	0xa4, 0x5c, 0x80, 0xc4, 0xf9, 0xae, 0x12, 0x79, 0x66, 0x9f, 0xc6, 0xf7, 0x3e, 0x8d, 0x34, 0x7b,
+	0x94, 0xd1, 0x2b, 0x65, 0xd3, 0x75, 0x2c, 0x07, 0xe3, 0x5a, 0xfd, 0x79, 0xf0, 0xb5, 0xe7, 0xfc,
+	0xa1, 0x59, 0xfa, 0x12, 0x81, 0x1c, 0x24, 0x57, 0x78, 0x7a, 0x0d, 0x26, 0xdd, 0x15, 0xe6, 0xae,
+	0x8e, 0x15, 0x42, 0x62, 0x55, 0x87, 0xe8, 0xd9, 0x5b, 0x04, 0x89, 0x4b, 0x2d, 0x4c, 0xb3, 0xfc,
+	0xf1, 0x77, 0x35, 0xdb, 0x67, 0x04, 0xb3, 0x1d, 0x44, 0x09, 0x83, 0x36, 0x61, 0xc6, 0xb7, 0xa9,
+	0xdd, 0xde, 0xeb, 0x75, 0x97, 0x4d, 0x7b, 0xb7, 0xf2, 0x10, 0x2d, 0xfd, 0xd8, 0xc6, 0xd2, 0xab,
+	0xdd, 0x8d, 0xed, 0x3c, 0xf7, 0x37, 0xe5, 0x55, 0xf5, 0x3c, 0x07, 0x11, 0x26, 0x7e, 0xcb, 0x26,
+	0x16, 0xa1, 0xda, 0x81, 0x6b, 0xb3, 0x0a, 0x61, 0x4b, 0xbc, 0x6a, 0x36, 0xef, 0xcc, 0xc5, 0x69,
+	0x1c, 0x5c, 0x64, 0x7e, 0xa3, 0x00, 0x2e, 0x24, 0xaf, 0x27, 0x1f, 0x8b, 0x93, 0xad, 0x19, 0xa8,
+	0x31, 0xc9, 0x43, 0x2e, 0x4c, 0x4c, 0xf3, 0x58, 0x70, 0xcd, 0x0d, 0x66, 0x03, 0x9f, 0xfc, 0x82,
+	0xe0, 0xa6, 0x2f, 0xaa, 0xdb, 0xcb, 0xc2, 0x88, 0x5f, 0x7c, 0x4c, 0x0d, 0xad, 0x47, 0x3e, 0x20,
+	0xb8, 0xd5, 0xb9, 0x0e, 0x61, 0xd6, 0x7d, 0x98, 0x74, 0x8b, 0x77, 0x3b, 0xa4, 0x9b, 0x5b, 0x4d,
+	0xc2, 0xf0, 0xba, 0xe2, 0x1b, 0x82, 0xbf, 0x99, 0xde, 0x6d, 0xe2, 0x60, 0x3a, 0x68, 0x4f, 0xd4,
+	0xf7, 0x6a, 0x8d, 0x38, 0xd8, 0x66, 0x52, 0x06, 0xdb, 0xab, 0x8c, 0xdf, 0xb2, 0x0e, 0xa3, 0x03,
+	0xaf, 0xc3, 0x1b, 0x04, 0x92, 0xb7, 0x2e, 0xe1, 0xfa, 0x0a, 0xd7, 0xe9, 0x3a, 0x2e, 0x07, 0x3b,
+	0x5e, 0xe7, 0x70, 0x41, 0xc3, 0x73, 0x3a, 0xfd, 0x29, 0x04, 0xe3, 0x4c, 0x91, 0xb4, 0x0b, 0x93,
+	0x8d, 0xdb, 0x99, 0xb4, 0x14, 0x2c, 0x21, 0xf0, 0xee, 0x28, 0xdf, 0xee, 0x0d, 0x2c, 0x8a, 0x7d,
+	0x01, 0x7f, 0xb5, 0x4e, 0x17, 0x29, 0xdd, 0x2d, 0xc2, 0xe5, 0xab, 0xa1, 0xbc, 0xda, 0x17, 0x47,
+	0x24, 0x27, 0x30, 0xe5, 0xbd, 0x07, 0x49, 0x4a, 0xb7, 0x20, 0xfe, 0xdb, 0x9b, 0xac, 0xf6, 0x8c,
+	0x17, 0x09, 0x6d, 0x98, 0xf6, 0xdd, 0x12, 0xa4, 0xae, 0x11, 0x5a, 0x0e, 0x1c, 0x79, 0xa5, 0x77,
+	0x82, 0xc8, 0xf9, 0x0a, 0x41, 0x24, 0xe8, 0x00, 0x96, 0xee, 0xf4, 0x68, 0x59, 0xcb, 0x35, 0x42,
+	0x5e, 0xeb, 0x9b, 0xd7, 0x5e, 0x09, 0x77, 0xa1, 0x0f, 0x25, 0x3e, 0x33, 0xd6, 0xfa, 0xe6, 0x09,
+	0x25, 0x25, 0x08, 0xb9, 0x43, 0x42, 0x5a, 0xec, 0x10, 0xa4, 0xe5, 0x1c, 0x92, 0x97, 0x7a, 0xc2,
+	0x8a, 0x24, 0xc7, 0x08, 0xfe, 0x6b, 0x33, 0x61, 0xa5, 0xbb, 0x3d, 0x04, 0x0a, 0x3e, 0x5d, 0xe4,
+	0xf5, 0x41, 0xa8, 0x42, 0xd2, 0x0e, 0x8c, 0xb3, 0x59, 0x23, 0xcd, 0x77, 0x08, 0xe2, 0x9d, 0xb2,
+	0xf2, 0x42, 0x77, 0x20, 0x8f, 0x9d, 0xcd, 0x7d, 0x3d, 0x8b, 0xa1, 0x93, 0xb3, 0x18, 0xfa, 0x71,
+	0x16, 0x43, 0xc7, 0xe7, 0xb1, 0x91, 0x93, 0xf3, 0xd8, 0xc8, 0xf7, 0xf3, 0xd8, 0xc8, 0x8e, 0x77,
+	0xca, 0xb2, 0x68, 0xcb, 0x26, 0x76, 0x9e, 0x11, 0x7b, 0x5f, 0x3c, 0x1d, 0x60, 0xdd, 0xc0, 0xb6,
+	0xfa, 0x9c, 0xff, 0xd9, 0x2d, 0xfe, 0xc9, 0xfe, 0x9c, 0xae, 0xfe, 0x0c, 0x00, 0x00, 0xff, 0xff,
+	0xf1, 0xff, 0xe1, 0xcc, 0x3a, 0x0f, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1073,8 +1073,8 @@ type QueryClient interface {
 	GroupInfo(ctx context.Context, in *QueryGroupInfoRequest, opts ...grpc.CallOption) (*QueryGroupInfoResponse, error)
 	// GroupAccountInfo queries group account info based on group account address.
 	GroupAccountInfo(ctx context.Context, in *QueryGroupAccountInfoRequest, opts ...grpc.CallOption) (*QueryGroupAccountInfoResponse, error)
-	// GroupsByMember queries groups by member address.
-	GroupsByMember(ctx context.Context, in *QueryGroupsByMemberRequest, opts ...grpc.CallOption) (*QueryGroupsByMemberResponse, error)
+	// GroupMembers queries members for agroup
+	GroupMembers(ctx context.Context, in *QueryGroupMembersRequest, opts ...grpc.CallOption) (*QueryGroupMembersResponse, error)
 	// GroupsByAdmin queries groups by admin address.
 	GroupsByAdmin(ctx context.Context, in *QueryGroupsByAdminRequest, opts ...grpc.CallOption) (*QueryGroupsByAdminResponse, error)
 	// GroupAccountsByGroup queries group accounts by group id.
@@ -1115,9 +1115,9 @@ func (c *queryClient) GroupAccountInfo(ctx context.Context, in *QueryGroupAccoun
 	return out, nil
 }
 
-func (c *queryClient) GroupsByMember(ctx context.Context, in *QueryGroupsByMemberRequest, opts ...grpc.CallOption) (*QueryGroupsByMemberResponse, error) {
-	out := new(QueryGroupsByMemberResponse)
-	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Query/GroupsByMember", in, out, opts...)
+func (c *queryClient) GroupMembers(ctx context.Context, in *QueryGroupMembersRequest, opts ...grpc.CallOption) (*QueryGroupMembersResponse, error) {
+	out := new(QueryGroupMembersResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Query/GroupMembers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1184,8 +1184,8 @@ type QueryServer interface {
 	GroupInfo(context.Context, *QueryGroupInfoRequest) (*QueryGroupInfoResponse, error)
 	// GroupAccountInfo queries group account info based on group account address.
 	GroupAccountInfo(context.Context, *QueryGroupAccountInfoRequest) (*QueryGroupAccountInfoResponse, error)
-	// GroupsByMember queries groups by member address.
-	GroupsByMember(context.Context, *QueryGroupsByMemberRequest) (*QueryGroupsByMemberResponse, error)
+	// GroupMembers queries members for agroup
+	GroupMembers(context.Context, *QueryGroupMembersRequest) (*QueryGroupMembersResponse, error)
 	// GroupsByAdmin queries groups by admin address.
 	GroupsByAdmin(context.Context, *QueryGroupsByAdminRequest) (*QueryGroupsByAdminResponse, error)
 	// GroupAccountsByGroup queries group accounts by group id.
@@ -1210,8 +1210,8 @@ func (*UnimplementedQueryServer) GroupInfo(ctx context.Context, req *QueryGroupI
 func (*UnimplementedQueryServer) GroupAccountInfo(ctx context.Context, req *QueryGroupAccountInfoRequest) (*QueryGroupAccountInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GroupAccountInfo not implemented")
 }
-func (*UnimplementedQueryServer) GroupsByMember(ctx context.Context, req *QueryGroupsByMemberRequest) (*QueryGroupsByMemberResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GroupsByMember not implemented")
+func (*UnimplementedQueryServer) GroupMembers(ctx context.Context, req *QueryGroupMembersRequest) (*QueryGroupMembersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GroupMembers not implemented")
 }
 func (*UnimplementedQueryServer) GroupsByAdmin(ctx context.Context, req *QueryGroupsByAdminRequest) (*QueryGroupsByAdminResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GroupsByAdmin not implemented")
@@ -1272,20 +1272,20 @@ func _Query_GroupAccountInfo_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Query_GroupsByMember_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryGroupsByMemberRequest)
+func _Query_GroupMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGroupMembersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).GroupsByMember(ctx, in)
+		return srv.(QueryServer).GroupMembers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.group.v1alpha1.Query/GroupsByMember",
+		FullMethod: "/regen.group.v1alpha1.Query/GroupMembers",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).GroupsByMember(ctx, req.(*QueryGroupsByMemberRequest))
+		return srv.(QueryServer).GroupMembers(ctx, req.(*QueryGroupMembersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1411,8 +1411,8 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_GroupAccountInfo_Handler,
 		},
 		{
-			MethodName: "GroupsByMember",
-			Handler:    _Query_GroupsByMember_Handler,
+			MethodName: "GroupMembers",
+			Handler:    _Query_GroupMembers_Handler,
 		},
 		{
 			MethodName: "GroupsByAdmin",
@@ -1571,7 +1571,7 @@ func (m *QueryGroupAccountInfoResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryGroupsByMemberRequest) Marshal() (dAtA []byte, err error) {
+func (m *QueryGroupMembersRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1581,12 +1581,12 @@ func (m *QueryGroupsByMemberRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryGroupsByMemberRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryGroupMembersRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryGroupsByMemberRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryGroupMembersRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1603,17 +1603,15 @@ func (m *QueryGroupsByMemberRequest) MarshalToSizedBuffer(dAtA []byte) (int, err
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Member) > 0 {
-		i -= len(m.Member)
-		copy(dAtA[i:], m.Member)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.Member)))
+	if m.GroupId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.GroupId))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *QueryGroupsByMemberResponse) Marshal() (dAtA []byte, err error) {
+func (m *QueryGroupMembersResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1623,12 +1621,12 @@ func (m *QueryGroupsByMemberResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *QueryGroupsByMemberResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *QueryGroupMembersResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *QueryGroupsByMemberResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *QueryGroupMembersResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1645,23 +1643,19 @@ func (m *QueryGroupsByMemberResponse) MarshalToSizedBuffer(dAtA []byte) (int, er
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.GroupIds) > 0 {
-		dAtA6 := make([]byte, len(m.GroupIds)*10)
-		var j5 int
-		for _, num := range m.GroupIds {
-			for num >= 1<<7 {
-				dAtA6[j5] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j5++
+	if len(m.Members) > 0 {
+		for iNdEx := len(m.Members) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Members[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
 			}
-			dAtA6[j5] = uint8(num)
-			j5++
+			i--
+			dAtA[i] = 0xa
 		}
-		i -= j5
-		copy(dAtA[i:], dAtA6[:j5])
-		i = encodeVarintQuery(dAtA, i, uint64(j5))
-		i--
-		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -1741,20 +1735,20 @@ func (m *QueryGroupsByAdminResponse) MarshalToSizedBuffer(dAtA []byte) (int, err
 		dAtA[i] = 0x12
 	}
 	if len(m.GroupIds) > 0 {
-		dAtA10 := make([]byte, len(m.GroupIds)*10)
-		var j9 int
+		dAtA8 := make([]byte, len(m.GroupIds)*10)
+		var j7 int
 		for _, num := range m.GroupIds {
 			for num >= 1<<7 {
-				dAtA10[j9] = uint8(uint64(num)&0x7f | 0x80)
+				dAtA8[j7] = uint8(uint64(num)&0x7f | 0x80)
 				num >>= 7
-				j9++
+				j7++
 			}
-			dAtA10[j9] = uint8(num)
-			j9++
+			dAtA8[j7] = uint8(num)
+			j7++
 		}
-		i -= j9
-		copy(dAtA[i:], dAtA10[:j9])
-		i = encodeVarintQuery(dAtA, i, uint64(j9))
+		i -= j7
+		copy(dAtA[i:], dAtA8[:j7])
+		i = encodeVarintQuery(dAtA, i, uint64(j7))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -2253,15 +2247,14 @@ func (m *QueryGroupAccountInfoResponse) Size() (n int) {
 	return n
 }
 
-func (m *QueryGroupsByMemberRequest) Size() (n int) {
+func (m *QueryGroupMembersRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.Member)
-	if l > 0 {
-		n += 1 + l + sovQuery(uint64(l))
+	if m.GroupId != 0 {
+		n += 1 + sovQuery(uint64(m.GroupId))
 	}
 	if m.Pagination != nil {
 		l = m.Pagination.Size()
@@ -2270,18 +2263,17 @@ func (m *QueryGroupsByMemberRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryGroupsByMemberResponse) Size() (n int) {
+func (m *QueryGroupMembersResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if len(m.GroupIds) > 0 {
-		l = 0
-		for _, e := range m.GroupIds {
-			l += sovQuery(uint64(e))
+	if len(m.Members) > 0 {
+		for _, e := range m.Members {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
 		}
-		n += 1 + sovQuery(uint64(l)) + l
 	}
 	if m.Pagination != nil {
 		l = m.Pagination.Size()
@@ -2841,7 +2833,7 @@ func (m *QueryGroupAccountInfoResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryGroupsByMemberRequest) Unmarshal(dAtA []byte) error {
+func (m *QueryGroupMembersRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2864,17 +2856,17 @@ func (m *QueryGroupsByMemberRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGroupsByMemberRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryGroupMembersRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGroupsByMemberRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryGroupMembersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Member", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GroupId", wireType)
 			}
-			var byteLen int
+			m.GroupId = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowQuery
@@ -2884,26 +2876,11 @@ func (m *QueryGroupsByMemberRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				m.GroupId |= GroupID(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Member = append(m.Member[:0], dAtA[iNdEx:postIndex]...)
-			if m.Member == nil {
-				m.Member = []byte{}
-			}
-			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
@@ -2964,7 +2941,7 @@ func (m *QueryGroupsByMemberRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *QueryGroupsByMemberResponse) Unmarshal(dAtA []byte) error {
+func (m *QueryGroupMembersResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2987,88 +2964,46 @@ func (m *QueryGroupsByMemberResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: QueryGroupsByMemberResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: QueryGroupMembersResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: QueryGroupsByMemberResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: QueryGroupMembersResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
-			if wireType == 0 {
-				var v uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowQuery
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Members", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
 				}
-				m.GroupIds = append(m.GroupIds, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowQuery
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthQuery
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthQuery
-				}
-				if postIndex > l {
+				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				var elementCount int
-				var count int
-				for _, integer := range dAtA[iNdEx:postIndex] {
-					if integer < 128 {
-						count++
-					}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
 				}
-				elementCount = count
-				if elementCount != 0 && len(m.GroupIds) == 0 {
-					m.GroupIds = make([]uint64, 0, elementCount)
-				}
-				for iNdEx < postIndex {
-					var v uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowQuery
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						v |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					m.GroupIds = append(m.GroupIds, v)
-				}
-			} else {
-				return fmt.Errorf("proto: wrong wireType = %d for field GroupIds", wireType)
 			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Members = append(m.Members, &GroupMember{})
+			if err := m.Members[len(m.Members)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)

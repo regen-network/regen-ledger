@@ -35,7 +35,6 @@ func TestServer(t *testing.T) {
 	bankSubspace := paramstypes.NewSubspace(cdc, encodingConfig.Amino, paramsKey, tkey, banktypes.ModuleName)
 
 	router := baseapp.NewRouter()
-	groupKeeper := server.NewGroupKeeper(groupKey, groupSubspace, router, cdc)
 	accountKeeper := authkeeper.NewAccountKeeper(
 		cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, map[string][]string{},
 	)
@@ -47,8 +46,8 @@ func TestServer(t *testing.T) {
 	addrs := configurator.MakeTestAddresses(2)
 	cfg := configurator.NewFixture(t, []sdk.StoreKey{paramsKey, tkey, groupKey, authKey, bankKey}, addrs, cdc)
 
-	server.RegisterServices(groupKey, groupSubspace, router, groupKeeper, cfg)
-	s := testsuite.NewIntegrationTestSuite(cfg, groupKeeper, bankKeeper, router)
+	server.RegisterServices(groupKey, groupSubspace, router, cfg)
+	s := testsuite.NewIntegrationTestSuite(cfg, groupSubspace, bankKeeper, router)
 
 	suite.Run(t, s)
 }

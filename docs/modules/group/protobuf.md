@@ -38,10 +38,10 @@
     - [QueryGroupAccountsByGroupResponse](#regen.group.v1alpha1.QueryGroupAccountsByGroupResponse)
     - [QueryGroupInfoRequest](#regen.group.v1alpha1.QueryGroupInfoRequest)
     - [QueryGroupInfoResponse](#regen.group.v1alpha1.QueryGroupInfoResponse)
+    - [QueryGroupMembersRequest](#regen.group.v1alpha1.QueryGroupMembersRequest)
+    - [QueryGroupMembersResponse](#regen.group.v1alpha1.QueryGroupMembersResponse)
     - [QueryGroupsByAdminRequest](#regen.group.v1alpha1.QueryGroupsByAdminRequest)
     - [QueryGroupsByAdminResponse](#regen.group.v1alpha1.QueryGroupsByAdminResponse)
-    - [QueryGroupsByMemberRequest](#regen.group.v1alpha1.QueryGroupsByMemberRequest)
-    - [QueryGroupsByMemberResponse](#regen.group.v1alpha1.QueryGroupsByMemberResponse)
     - [QueryProposalRequest](#regen.group.v1alpha1.QueryProposalRequest)
     - [QueryProposalResponse](#regen.group.v1alpha1.QueryProposalResponse)
     - [QueryProposalsByGroupAccountRequest](#regen.group.v1alpha1.QueryProposalsByGroupAccountRequest)
@@ -570,6 +570,38 @@ QueryGroupInfoResponse is the Query/GroupInfo response type.
 
 
 
+<a name="regen.group.v1alpha1.QueryGroupMembersRequest"></a>
+
+### QueryGroupMembersRequest
+QueryGroupMembersRequest is the Query/GroupMembersRequest request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryGroupMembersResponse"></a>
+
+### QueryGroupMembersResponse
+QueryGroupMembersResponse is the Query/GroupMembersResponse response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| members | [GroupMember](#regen.group.v1alpha1.GroupMember) | repeated | members are the members of the group with given group_id. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
 <a name="regen.group.v1alpha1.QueryGroupsByAdminRequest"></a>
 
 ### QueryGroupsByAdminRequest
@@ -595,38 +627,6 @@ QueryGroupsByAdminResponse is the Query/GroupsByAdminResponse response type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | group_ids | [uint64](#uint64) | repeated | group_ids are the IDs of the groups with the provided admin. |
-| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
-
-
-
-
-
-
-<a name="regen.group.v1alpha1.QueryGroupsByMemberRequest"></a>
-
-### QueryGroupsByMemberRequest
-QueryGroupsByMemberRequest is the Query/GroupsByMemberRequest request type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| member | [bytes](#bytes) |  | member is the account address of a group's member. |
-| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
-
-
-
-
-
-
-<a name="regen.group.v1alpha1.QueryGroupsByMemberResponse"></a>
-
-### QueryGroupsByMemberResponse
-QueryGroupsByMemberResponse is the Query/GroupsByMemberResponse response type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| group_ids | [uint64](#uint64) | repeated | group_ids are the IDs of the groups with the provided member. |
 | pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
 
@@ -721,7 +721,7 @@ QueryVotesResponse is the Query/VotesResponse response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| votes | [Vote](#regen.group.v1alpha1.Vote) | repeated | votes are the list of votes with given proposal_id and/or voter. |
+| votes | [Vote](#regen.group.v1alpha1.Vote) | repeated | votes are the list of votes with given proposal_id and voter. |
 | pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
 
@@ -744,7 +744,7 @@ Query is the regen.group.v1alpha1 Query service.
 | ----------- | ------------ | ------------- | ------------|
 | GroupInfo | [QueryGroupInfoRequest](#regen.group.v1alpha1.QueryGroupInfoRequest) | [QueryGroupInfoResponse](#regen.group.v1alpha1.QueryGroupInfoResponse) | GroupInfo queries group info based on group id. |
 | GroupAccountInfo | [QueryGroupAccountInfoRequest](#regen.group.v1alpha1.QueryGroupAccountInfoRequest) | [QueryGroupAccountInfoResponse](#regen.group.v1alpha1.QueryGroupAccountInfoResponse) | GroupAccountInfo queries group account info based on group account address. |
-| GroupsByMember | [QueryGroupsByMemberRequest](#regen.group.v1alpha1.QueryGroupsByMemberRequest) | [QueryGroupsByMemberResponse](#regen.group.v1alpha1.QueryGroupsByMemberResponse) | GroupsByMember queries groups by member address. |
+| GroupMembers | [QueryGroupMembersRequest](#regen.group.v1alpha1.QueryGroupMembersRequest) | [QueryGroupMembersResponse](#regen.group.v1alpha1.QueryGroupMembersResponse) | GroupMembers queries members for agroup |
 | GroupsByAdmin | [QueryGroupsByAdminRequest](#regen.group.v1alpha1.QueryGroupsByAdminRequest) | [QueryGroupsByAdminResponse](#regen.group.v1alpha1.QueryGroupsByAdminResponse) | GroupsByAdmin queries groups by admin address. |
 | GroupAccountsByGroup | [QueryGroupAccountsByGroupRequest](#regen.group.v1alpha1.QueryGroupAccountsByGroupRequest) | [QueryGroupAccountsByGroupResponse](#regen.group.v1alpha1.QueryGroupAccountsByGroupResponse) | GroupAccountsByGroup queries group accounts by group id. |
 | GroupAccountsByAdmin | [QueryGroupAccountsByAdminRequest](#regen.group.v1alpha1.QueryGroupAccountsByAdminRequest) | [QueryGroupAccountsByAdminResponse](#regen.group.v1alpha1.QueryGroupAccountsByAdminResponse) | GroupsByAdmin queries group accounts by admin address. |

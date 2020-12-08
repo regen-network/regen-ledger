@@ -119,5 +119,7 @@ func RegisterServices(
 	if !ok {
 		panic("configurator should implement regenmodule.Configurator")
 	}
-	group.RegisterMsgServer(configurator.MsgServer(), newServer(storeKey, paramSpace, router, cfg.Marshaler()))
+	impl := newServer(storeKey, paramSpace, router, cfg.Marshaler())
+	group.RegisterMsgServer(configurator.MsgServer(), impl)
+	group.RegisterQueryServer(configurator.QueryServer(), impl)
 }

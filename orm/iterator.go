@@ -1,10 +1,12 @@
 package orm
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/query"
 )
 
 // IteratorFunc is a function type that satisfies the Iterator interface
@@ -93,6 +95,91 @@ func First(it Iterator, dest codec.ProtoMarshaler) (RowID, error) {
 	return binKey, nil
 }
 
+func Paginate(
+	it Iterator,
+	pageRequest *query.PageRequest,
+	dest ModelSlicePtr,
+) (*query.PageResponse, error) {
+	// if the PageRequest is nil, use default PageRequest
+	if pageRequest == nil {
+		pageRequest = &query.PageRequest{}
+	}
+
+	offset := pageRequest.Offset
+	key := pageRequest.Key
+	limit := pageRequest.Limit
+	countTotal := pageRequest.CountTotal
+
+	if offset > 0 && key != nil {
+		return nil, fmt.Errorf("invalid request, either offset or key is expected, got both")
+	}
+
+	if limit == 0 {
+		limit = 100
+
+		// count total results when the limit is zero/not supplied
+		countTotal = true
+	}
+
+	if it == nil {
+		return nil, errors.Wrap(ErrArgument, "iterator must not be nil")
+	}
+	defer it.Close()
+
+	var slice, t reflect.Value
+	typ, err := assertDest(dest, &slice, &t)
+	if err != nil {
+		return nil, err
+	}
+
+	end := offset + limit
+
+	var count uint64
+	var nextKey []byte
+	for {
+		obj := reflect.New(typ)
+		val := obj.Elem()
+		model := obj
+		if typ.Kind() == reflect.Ptr {
+			val.Set(reflect.New(typ.Elem()))
+			model = val
+		}
+
+		binKey, err := it.LoadNext(model.Interface().(codec.ProtoMarshaler))
+		if ErrIteratorDone.Is(err) {
+			slice.Set(t)
+			break
+		}
+
+		count++
+
+		if count <= offset {
+			continue
+		}
+
+		if err != nil {
+			return nil, err
+		}
+		if count <= end {
+			t = reflect.Append(t, val)
+		} else if count == end+1 {
+			nextKey = binKey
+			slice.Set(t)
+
+			if !countTotal {
+				break
+			}
+		}
+	}
+
+	res := &query.PageResponse{NextKey: nextKey}
+	if countTotal {
+		res.Total = count
+	}
+
+	return res, nil
+}
+
 // ModelSlicePtr represents a pointer to a slice of models. Think of it as
 // *[]Model Because of Go's type system, using []Model type would not work for us.
 // Instead we use a placeholder type and the validation is done during the
@@ -112,30 +199,13 @@ func ReadAll(it Iterator, dest ModelSlicePtr) ([]RowID, error) {
 		return nil, errors.Wrap(ErrArgument, "iterator must not be nil")
 	}
 	defer it.Close()
-	if dest == nil {
-		return nil, errors.Wrap(ErrArgument, "destination must not be nil")
-	}
-	tp := reflect.ValueOf(dest)
-	if tp.Kind() != reflect.Ptr {
-		return nil, errors.Wrap(ErrArgument, "destination must be a pointer to a slice")
-	}
-	if tp.Elem().Kind() != reflect.Slice {
-		return nil, errors.Wrap(ErrArgument, "destination must point to a slice")
-	}
-	slice := tp.Elem()
-	if !slice.CanSet() {
-		return nil, errors.Wrap(ErrArgument, "destination not assignable")
+
+	var slice, t reflect.Value
+	typ, err := assertDest(dest, &slice, &t)
+	if err != nil {
+		return nil, err
 	}
 
-	typ := reflect.TypeOf(dest).Elem().Elem()
-
-	protoMarshaler := reflect.TypeOf((*codec.ProtoMarshaler)(nil)).Elem()
-	if !typ.Implements(protoMarshaler) &&
-		!reflect.PtrTo(typ).Implements(protoMarshaler) {
-		return nil, errors.Wrapf(ErrArgument, "unsupported type :%s", typ)
-	}
-
-	t := reflect.MakeSlice(reflect.SliceOf(typ), 0, 0)
 	var rowIDs []RowID
 	for {
 		obj := reflect.New(typ)
@@ -158,4 +228,33 @@ func ReadAll(it Iterator, dest ModelSlicePtr) ([]RowID, error) {
 		}
 		rowIDs = append(rowIDs, binKey)
 	}
+}
+
+func assertDest(dest ModelSlicePtr, slice *reflect.Value, t *reflect.Value) (reflect.Type, error) {
+	if dest == nil {
+		return nil, errors.Wrap(ErrArgument, "destination must not be nil")
+	}
+	tp := reflect.ValueOf(dest)
+	if tp.Kind() != reflect.Ptr {
+		return nil, errors.Wrap(ErrArgument, "destination must be a pointer to a slice")
+	}
+	if tp.Elem().Kind() != reflect.Slice {
+		return nil, errors.Wrap(ErrArgument, "destination must point to a slice")
+	}
+	*slice = tp.Elem()
+	if !slice.CanSet() {
+		return nil, errors.Wrap(ErrArgument, "destination not assignable")
+	}
+
+	typ := reflect.TypeOf(dest).Elem().Elem()
+
+	protoMarshaler := reflect.TypeOf((*codec.ProtoMarshaler)(nil)).Elem()
+	if !typ.Implements(protoMarshaler) &&
+		!reflect.PtrTo(typ).Implements(protoMarshaler) {
+		return nil, errors.Wrapf(ErrArgument, "unsupported type :%s", typ)
+	}
+
+	*t = reflect.MakeSlice(reflect.SliceOf(typ), 0, 0)
+
+	return typ, nil
 }

@@ -205,11 +205,6 @@ func (s serverImpl) UpdateGroupComment(goCtx context.Context, req *group.MsgUpda
 	return &group.MsgUpdateGroupCommentResponse{}, nil
 }
 
-func (s serverImpl) getGroup(ctx sdk.Context, id group.GroupID) (group.GroupInfo, error) {
-	var obj group.GroupInfo
-	return obj, s.groupTable.GetOne(ctx, id.Bytes(), &obj)
-}
-
 func (s serverImpl) CreateGroupAccount(goCtx context.Context, req *group.MsgCreateGroupAccountRequest) (*group.MsgCreateGroupAccountResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -222,7 +217,7 @@ func (s serverImpl) CreateGroupAccount(goCtx context.Context, req *group.MsgCrea
 		return nil, err
 	}
 
-	g, err := s.getGroup(ctx, groupID)
+	g, err := s.getGroupInfo(ctx, groupID)
 	if err != nil {
 		return nil, err
 	}
@@ -269,11 +264,6 @@ func (s serverImpl) UpdateGroupAccountComment(goCtx context.Context, req *group.
 	return &group.MsgUpdateGroupAccountCommentResponse{}, nil
 }
 
-func (s serverImpl) getGroupAccount(ctx sdk.Context, accountAddress sdk.AccAddress) (group.GroupAccountInfo, error) {
-	var obj group.GroupAccountInfo
-	return obj, s.groupAccountTable.GetOne(ctx, accountAddress.Bytes(), &obj)
-}
-
 func (s serverImpl) CreateProposal(goCtx context.Context, req *group.MsgCreateProposalRequest) (*group.MsgCreateProposalResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -286,13 +276,13 @@ func (s serverImpl) CreateProposal(goCtx context.Context, req *group.MsgCreatePr
 		return nil, err
 	}
 
-	account, err := s.getGroupAccount(ctx, accountAddress.Bytes())
+	account, err := s.getGroupAccountInfo(ctx, accountAddress.Bytes())
 
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "load group account")
 	}
 
-	g, err := s.getGroup(ctx, account.GroupId)
+	g, err := s.getGroupInfo(ctx, account.GroupId)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "get group by account")
 	}
@@ -367,14 +357,6 @@ func (s serverImpl) CreateProposal(goCtx context.Context, req *group.MsgCreatePr
 	return &group.MsgCreateProposalResponse{ProposalId: group.ProposalID(id)}, nil
 }
 
-func (s serverImpl) getProposal(ctx sdk.Context, id group.ProposalID) (group.Proposal, error) {
-	var p group.Proposal
-	if _, err := s.proposalTable.GetOne(ctx, id.Uint64(), &p); err != nil {
-		return group.Proposal{}, sdkerrors.Wrap(err, "load proposal")
-	}
-	return p, nil
-}
-
 func (s serverImpl) Vote(goCtx context.Context, req *group.MsgVoteRequest) (*group.MsgVoteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -416,7 +398,7 @@ func (s serverImpl) Vote(goCtx context.Context, req *group.MsgVoteRequest) (*gro
 		return nil, sdkerrors.Wrap(group.ErrModified, "group account was modified")
 	}
 
-	electorate, err := s.getGroup(ctx, accountInfo.GroupId)
+	electorate, err := s.getGroupInfo(ctx, accountInfo.GroupId)
 	if err != nil {
 		return nil, err
 	}
@@ -511,7 +493,7 @@ func (s serverImpl) Exec(goCtx context.Context, req *group.MsgExecRequest) (*gro
 			return storeUpdates()
 		}
 
-		electorate, err := s.getGroup(ctx, accountInfo.GroupId)
+		electorate, err := s.getGroupInfo(ctx, accountInfo.GroupId)
 		if err != nil {
 			return nil, sdkerrors.Wrap(err, "load group")
 		}
@@ -550,11 +532,6 @@ func (s serverImpl) Exec(goCtx context.Context, req *group.MsgExecRequest) (*gro
 	return res, nil
 }
 
-func (s serverImpl) getVote(ctx sdk.Context, id group.ProposalID, voter sdk.AccAddress) (group.Vote, error) {
-	var v group.Vote
-	return v, s.voteTable.GetOne(ctx, group.Vote{ProposalId: id, Voter: voter}.NaturalKey(), &v)
-}
-
 type authNGroupReq interface {
 	GetGroupID() group.GroupID
 	GetAdmin() sdk.AccAddress // equal GetSigners()
@@ -578,7 +555,7 @@ func (s serverImpl) doUpdateGroup(ctx sdk.Context, req authNGroupReq, action act
 }
 
 func (s serverImpl) doAuthenticated(ctx sdk.Context, req authNGroupReq, action actionFn, note string) error {
-	group, err := s.getGroup(ctx, req.GetGroupID())
+	group, err := s.getGroupInfo(ctx, req.GetGroupID())
 	if err != nil {
 		return err
 	}

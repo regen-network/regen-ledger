@@ -17,8 +17,8 @@ service Query {
   // GroupAccountInfo queries group account info based on group account address.
   rpc GroupAccountInfo(QueryGroupAccountInfoRequest) returns (QueryGroupAccountInfoResponse);
   
-  // GroupsByMember queries groups by member address.
-  rpc GroupsByMember(QueryGroupsByMemberRequest) returns (QueryGroupsByMemberResponse);
+  // GroupMembers queries members for agroup
+  rpc GroupMembers(QueryGroupMembersRequest) returns (QueryGroupMembersResponse);
 
   // GroupsByAdmin queries groups by admin address.
   rpc GroupsByAdmin(QueryGroupsByAdminRequest) returns (QueryGroupsByAdminResponse);
@@ -67,21 +67,21 @@ message QueryGroupAccountInfoResponse {
     GroupAccountInfo info = 1;
 }
 
-// QueryGroupsByMemberRequest is the Query/GroupsByMemberRequest request type.
-message QueryGroupsByMemberRequest {
+// QueryGroupMembersRequest is the Query/GroupMembersRequest request type.
+message QueryGroupMembersRequest {
 
-  // member is the account address of a group's member.
-  bytes member = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  // group_id is the unique ID of the group.
+  uint64 group_id = 1 [(gogoproto.casttype) = "GroupID"];
 
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryGroupsByMemberResponse is the Query/GroupsByMemberResponse response type.
-message QueryGroupsByMemberResponse {
+// QueryGroupMembersResponse is the Query/GroupMembersResponse response type.
+message QueryGroupMembersResponse {
 
-  // group_ids are the IDs of the groups with the provided member.
-  repeated uint64 group_ids = 1 [(gogoproto.castrepeated) = "GroupID"];
+  // members are the members of the group with given group_id.
+  repeated GroupMember members = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -101,7 +101,7 @@ message QueryGroupsByAdminRequest {
 message QueryGroupsByAdminResponse {
 
   // group_ids are the IDs of the groups with the provided admin.
-  repeated uint64 group_ids = 1 [(gogoproto.castrepeated) = "GroupID"];
+  repeated uint64 group_ids = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -197,7 +197,7 @@ message QueryVotesRequest {
 // QueryVotesResponse is the Query/VotesResponse response type.
 message QueryVotesResponse {
 
-  // votes are the list of votes with given proposal_id and/or voter.
+  // votes are the list of votes with given proposal_id and voter.
   repeated Vote votes = 1;
 
   // pagination defines the pagination in the response.

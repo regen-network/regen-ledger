@@ -4,7 +4,10 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -114,6 +117,103 @@ func TestLimitedIterator(t *testing.T) {
 			_, err := ReadAll(spec.src, &loaded)
 			require.NoError(t, err)
 			assert.EqualValues(t, spec.exp, loaded)
+		})
+	}
+}
+
+func TestPaginate(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
+	storeKey := sdk.NewKVStoreKey("test")
+	const (
+		testTablePrefix = iota
+		testTableSeqPrefix
+	)
+	tBuilder := NewAutoUInt64TableBuilder(testTablePrefix, testTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
+	idx := NewIndex(tBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]RowID, error) {
+		return []RowID{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
+	})
+	tb := tBuilder.Build()
+	ctx := NewMockContext()
+
+	admin := sdk.AccAddress([]byte("admin-address"))
+	g1 := testdata.GroupInfo{
+		Description: "my test 1",
+		Admin:       admin,
+	}
+	g2 := testdata.GroupInfo{
+		Description: "my test 2",
+		Admin:       admin,
+	}
+	g3 := testdata.GroupInfo{
+		Description: "my test 3",
+		Admin:       sdk.AccAddress([]byte("other-admin-address")),
+	}
+	for _, g := range []testdata.GroupInfo{g1, g2, g3} {
+		_, err := tb.Create(ctx, &g)
+		require.NoError(t, err)
+	}
+
+	specs := map[string]struct {
+		pageReq    *query.PageRequest
+		expPageRes *query.PageResponse
+		exp        []testdata.GroupInfo
+		key        []byte
+		expErr     bool
+	}{
+		"one item": {
+			pageReq:    &query.PageRequest{Key: nil, Limit: 1},
+			exp:        []testdata.GroupInfo{g1},
+			expPageRes: &query.PageResponse{Total: 0, NextKey: []byte{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x2}},
+			key:        admin,
+		},
+		"with both key and offset": {
+			pageReq: &query.PageRequest{Key: EncodeSequence(2), Offset: 1},
+			expErr:  true,
+			key:     admin,
+		},
+		"up to max": {
+			pageReq:    &query.PageRequest{Key: nil, Limit: 2, CountTotal: true},
+			exp:        []testdata.GroupInfo{g1, g2},
+			expPageRes: &query.PageResponse{Total: 2, NextKey: nil},
+			key:        admin,
+		},
+		"no results": {
+			pageReq:    &query.PageRequest{Key: nil, Limit: 2, CountTotal: true},
+			exp:        []testdata.GroupInfo{},
+			expPageRes: &query.PageResponse{Total: 0, NextKey: nil},
+			key:        sdk.AccAddress([]byte("no-group-address")),
+		},
+		"with offset": {
+			pageReq:    &query.PageRequest{Key: nil, Offset: 1, Limit: 2, CountTotal: true},
+			exp:        []testdata.GroupInfo{g2},
+			expPageRes: &query.PageResponse{Total: 2, NextKey: nil},
+			key:        admin,
+		},
+		"nil page req (limit = 100 > number of items)": {
+			pageReq:    nil,
+			exp:        []testdata.GroupInfo{g1, g2},
+			expPageRes: &query.PageResponse{Total: 2, NextKey: nil},
+			key:        admin,
+		},
+	}
+	for msg, spec := range specs {
+		t.Run(msg, func(t *testing.T) {
+			var loaded []testdata.GroupInfo
+			it, err := idx.Get(ctx, spec.key)
+			require.NoError(t, err)
+
+			res, err := Paginate(it, spec.pageReq, &loaded)
+			if spec.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				assert.EqualValues(t, spec.exp, loaded)
+				assert.EqualValues(t, spec.expPageRes.Total, res.Total)
+				assert.EqualValues(t, spec.expPageRes.NextKey, res.NextKey)
+			}
+
 		})
 	}
 }
