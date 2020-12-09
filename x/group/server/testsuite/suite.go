@@ -138,14 +138,13 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 				Members: members,
 				Comment: "test",
 			},
-			expGroups: []*group.GroupInfo{
-				&group.GroupInfo{
-					GroupId:     s.groupID,
-					Version:     1,
-					Admin:       s.addr1,
-					TotalWeight: "1",
-					Comment:     "test",
-				},
+			expGroups: []*group.GroupInfo{&group.GroupInfo{
+				GroupId:     s.groupID,
+				Version:     1,
+				Admin:       s.addr1,
+				TotalWeight: "1",
+				Comment:     "test",
+			},
 				&group.GroupInfo{
 					GroupId:     2,
 					Version:     1,
@@ -1488,7 +1487,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		"proposal executed when accepted": {
 			setupProposal: func(ctx context.Context) group.ProposalID {
 				msgs := []sdk.Msg{msgSend}
-				return createProposalAndVote(s, ctx, msgs, proposers, group.Choice_CHOICE_YES)
+				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
 			},
 			expProposalStatus: group.ProposalStatusClosed,
 			expProposalResult: group.ProposalResultAccepted,
@@ -1499,7 +1498,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		"proposal with multiple messages executed when accepted": {
 			setupProposal: func(ctx context.Context) group.ProposalID {
 				msgs := []sdk.Msg{msgSend, msgSend}
-				return createProposalAndVote(s, ctx, msgs, proposers, group.Choice_CHOICE_YES)
+				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
 			},
 			expProposalStatus: group.ProposalStatusClosed,
 			expProposalResult: group.ProposalResultAccepted,
@@ -1510,7 +1509,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		"proposal not executed when rejected": {
 			setupProposal: func(ctx context.Context) group.ProposalID {
 				msgs := []sdk.Msg{msgSend}
-				return createProposalAndVote(s, ctx, msgs, proposers, group.Choice_CHOICE_NO)
+				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
 			},
 			expProposalStatus: group.ProposalStatusClosed,
 			expProposalResult: group.ProposalResultRejected,
@@ -1518,7 +1517,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"open proposal must not fail": {
 			setupProposal: func(ctx context.Context) group.ProposalID {
-				return createProposal(s, ctx, []sdk.Msg{msgSend}, proposers)
+				return createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
 			},
 			expProposalStatus: group.ProposalStatusSubmitted,
 			expProposalResult: group.ProposalResultUnfinalized,
@@ -1533,7 +1532,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		"Decision policy also applied on timeout": {
 			setupProposal: func(ctx context.Context) group.ProposalID {
 				msgs := []sdk.Msg{msgSend}
-				return createProposalAndVote(s, ctx, msgs, proposers, group.Choice_CHOICE_NO)
+				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
 			},
 			srcBlockTime:      s.blockTime.Add(time.Second),
 			expProposalStatus: group.ProposalStatusClosed,
@@ -1543,7 +1542,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		"Decision policy also applied after timeout": {
 			setupProposal: func(ctx context.Context) group.ProposalID {
 				msgs := []sdk.Msg{msgSend}
-				return createProposalAndVote(s, ctx, msgs, proposers, group.Choice_CHOICE_NO)
+				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
 			},
 			srcBlockTime:      s.blockTime.Add(time.Second).Add(time.Millisecond),
 			expProposalStatus: group.ProposalStatusClosed,
@@ -1552,7 +1551,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"with group modified before tally": {
 			setupProposal: func(ctx context.Context) group.ProposalID {
-				myProposalID := createProposal(s, ctx, []sdk.Msg{msgSend}, proposers)
+				myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
 
 				// then modify group
 				_, err := s.msgClient.UpdateGroupComment(ctx, &group.MsgUpdateGroupCommentRequest{
@@ -1570,7 +1569,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		// TODO Need to implement group account update
 		// "with group account modified before tally": {
 		// 	setupProposal: func(ctx context.Context) group.ProposalID {
-		// 		myProposalID := createProposal(s, ctx, []sdk.Msg{msgSend}, proposers)
+		// 		myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
 
 		// 		// then modify group account
 		// 		a, err := s.groupKeeper.GetGroupAccount(ctx, s.groupAccountAddr)
@@ -1585,7 +1584,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		// },
 		"prevent double execution when successful": {
 			setupProposal: func(ctx context.Context) group.ProposalID {
-				myProposalID := createProposalAndVote(s, ctx, []sdk.Msg{msgSend}, proposers, group.Choice_CHOICE_YES)
+				myProposalID := createProposalAndVote(ctx, s, []sdk.Msg{msgSend}, proposers, group.Choice_CHOICE_YES)
 
 				_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{ProposalId: myProposalID})
 				s.Require().NoError(err)
@@ -1605,7 +1604,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 						ToAddress:   s.addr2.String(),
 						Amount:      sdk.Coins{sdk.NewInt64Coin("test", 10001)}},
 				}
-				return createProposalAndVote(s, ctx, msgs, proposers, group.Choice_CHOICE_YES)
+				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
 			},
 			expProposalStatus: group.ProposalStatusClosed,
 			expProposalResult: group.ProposalResultAccepted,
@@ -1619,7 +1618,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 						ToAddress:   s.addr2.String(),
 						Amount:      sdk.Coins{sdk.NewInt64Coin("test", 10001)}},
 				}
-				myProposalID := createProposalAndVote(s, ctx, msgs, proposers, group.Choice_CHOICE_YES)
+				myProposalID := createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
 
 				_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{ProposalId: myProposalID})
 				s.Require().NoError(err)
@@ -1681,7 +1680,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 }
 
 func createProposal(
-	s *IntegrationTestSuite, ctx context.Context, msgs []sdk.Msg,
+	ctx context.Context, s *IntegrationTestSuite, msgs []sdk.Msg,
 	proposers []sdk.AccAddress) group.ProposalID {
 	proposalReq := &group.MsgCreateProposalRequest{
 		GroupAccount: s.groupAccountAddr,
@@ -1697,9 +1696,9 @@ func createProposal(
 }
 
 func createProposalAndVote(
-	s *IntegrationTestSuite, ctx context.Context, msgs []sdk.Msg,
+	ctx context.Context, s *IntegrationTestSuite, msgs []sdk.Msg,
 	proposers []sdk.AccAddress, choice group.Choice) group.ProposalID {
-	myProposalID := createProposal(s, ctx, msgs, proposers)
+	myProposalID := createProposal(ctx, s, msgs, proposers)
 
 	_, err := s.msgClient.Vote(ctx, &group.MsgVoteRequest{
 		ProposalId: myProposalID,

@@ -159,7 +159,7 @@ func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *group.MsgUpda
 			}
 			g.TotalWeight = math.DecimalString(totalWeight)
 		}
-		g.Version = g.Version + 1
+		g.Version++
 		return s.groupTable.Save(ctx, g.GroupId.Bytes(), g)
 	}
 
@@ -176,7 +176,7 @@ func (s serverImpl) UpdateGroupAdmin(goCtx context.Context, req *group.MsgUpdate
 
 	action := func(g *group.GroupInfo) error {
 		g.Admin = req.NewAdmin
-		g.Version = g.Version + 1
+		g.Version++
 		return s.groupTable.Save(ctx, g.GroupId.Bytes(), g)
 	}
 
@@ -193,7 +193,7 @@ func (s serverImpl) UpdateGroupComment(goCtx context.Context, req *group.MsgUpda
 
 	action := func(g *group.GroupInfo) error {
 		g.Comment = req.Comment
-		g.Version = g.Version + 1
+		g.Version++
 		return s.groupTable.Save(ctx, g.GroupId.Bytes(), g)
 	}
 
