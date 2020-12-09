@@ -165,7 +165,7 @@ func TestPaginate(t *testing.T) {
 		"one item": {
 			pageReq:    &query.PageRequest{Key: nil, Limit: 1},
 			exp:        []testdata.GroupInfo{g1},
-			expPageRes: &query.PageResponse{Total: 0, NextKey: []byte{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x2}},
+			expPageRes: &query.PageResponse{Total: 0, NextKey: EncodeSequence(2)},
 			key:        admin,
 		},
 		"with both key and offset": {
@@ -191,7 +191,7 @@ func TestPaginate(t *testing.T) {
 			expPageRes: &query.PageResponse{Total: 2, NextKey: nil},
 			key:        admin,
 		},
-		"nil page req (limit = 100 > number of items)": {
+		"nil/default page req (limit = 100 > number of items)": {
 			pageReq:    nil,
 			exp:        []testdata.GroupInfo{g1, g2},
 			expPageRes: &query.PageResponse{Total: 2, NextKey: nil},
@@ -201,6 +201,7 @@ func TestPaginate(t *testing.T) {
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
 			var loaded []testdata.GroupInfo
+
 			it, err := idx.Get(ctx, spec.key)
 			require.NoError(t, err)
 

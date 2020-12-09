@@ -11,6 +11,35 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
+const (
+	// Group Table
+	GroupTablePrefix        byte = 0x0
+	GroupTableSeqPrefix     byte = 0x1
+	GroupByAdminIndexPrefix byte = 0x2
+
+	// Group Member Table
+	GroupMemberTablePrefix         byte = 0x10
+	GroupMemberByGroupIndexPrefix  byte = 0x11
+	GroupMemberByMemberIndexPrefix byte = 0x12
+
+	// Group Account Table
+	GroupAccountTablePrefix        byte = 0x20
+	GroupAccountTableSeqPrefix     byte = 0x21
+	GroupAccountByGroupIndexPrefix byte = 0x22
+	GroupAccountByAdminIndexPrefix byte = 0x23
+
+	// Proposal Table
+	ProposalTablePrefix               byte = 0x30
+	ProposalTableSeqPrefix            byte = 0x31
+	ProposalByGroupAccountIndexPrefix byte = 0x32
+	ProposalByProposerIndexPrefix     byte = 0x33
+
+	// Vote Table
+	VoteTablePrefix           byte = 0x40
+	VoteByProposalIndexPrefix byte = 0x41
+	VoteByVoterIndexPrefix    byte = 0x42
+)
+
 type serverImpl struct {
 	storeKey   sdk.StoreKey
 	paramSpace paramstypes.Subspace
@@ -33,9 +62,9 @@ type serverImpl struct {
 	groupAccountByAdminIndex orm.Index
 
 	// Proposal Table
-	proposalTable             orm.AutoUInt64Table
-	ProposalGroupAccountIndex orm.Index
-	ProposalByProposerIndex   orm.Index
+	proposalTable               orm.AutoUInt64Table
+	proposalByGroupAccountIndex orm.Index
+	proposalByProposerIndex     orm.Index
 
 	// Vote Table
 	voteTable           orm.NaturalKeyTable
@@ -82,11 +111,11 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, router sd
 	// Proposal Table
 	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, storeKey, &group.Proposal{}, cdc)
 	// proposalTableBuilder := orm.NewNaturalKeyTableBuilder(ProposalTablePrefix, storeKey, &group.Proposal{}, orm.Max255DynamicLengthIndexKeyCodec{})
-	s.ProposalGroupAccountIndex = orm.NewIndex(proposalTableBuilder, ProposalByGroupAccountIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
+	s.proposalByGroupAccountIndex = orm.NewIndex(proposalTableBuilder, ProposalByGroupAccountIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
 		account := value.(*group.Proposal).GroupAccount
 		return []orm.RowID{account.Bytes()}, nil
 	})
-	s.ProposalByProposerIndex = orm.NewIndex(proposalTableBuilder, ProposalByProposerIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
+	s.proposalByProposerIndex = orm.NewIndex(proposalTableBuilder, ProposalByProposerIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
 		proposers := value.(*group.Proposal).Proposers
 		r := make([]orm.RowID, len(proposers))
 		for i := range proposers {

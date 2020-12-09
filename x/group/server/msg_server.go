@@ -574,3 +574,10 @@ func (s serverImpl) maxCommentSize(ctx sdk.Context) int {
 	s.paramSpace.Get(ctx, group.ParamMaxCommentLength, &result)
 	return int(result)
 }
+
+func assertCommentSize(comment string, maxCommentSize int, description string) error {
+	if len(comment) > maxCommentSize {
+		return sdkerrors.Wrap(group.ErrMaxLimit, description)
+	}
+	return nil
+}

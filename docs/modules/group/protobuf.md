@@ -46,8 +46,12 @@
     - [QueryProposalResponse](#regen.group.v1alpha1.QueryProposalResponse)
     - [QueryProposalsByGroupAccountRequest](#regen.group.v1alpha1.QueryProposalsByGroupAccountRequest)
     - [QueryProposalsByGroupAccountResponse](#regen.group.v1alpha1.QueryProposalsByGroupAccountResponse)
-    - [QueryVotesRequest](#regen.group.v1alpha1.QueryVotesRequest)
-    - [QueryVotesResponse](#regen.group.v1alpha1.QueryVotesResponse)
+    - [QueryVoteByProposalVoterRequest](#regen.group.v1alpha1.QueryVoteByProposalVoterRequest)
+    - [QueryVoteByProposalVoterResponse](#regen.group.v1alpha1.QueryVoteByProposalVoterResponse)
+    - [QueryVotesByProposalRequest](#regen.group.v1alpha1.QueryVotesByProposalRequest)
+    - [QueryVotesByProposalResponse](#regen.group.v1alpha1.QueryVotesByProposalResponse)
+    - [QueryVotesByVoterRequest](#regen.group.v1alpha1.QueryVotesByVoterRequest)
+    - [QueryVotesByVoterResponse](#regen.group.v1alpha1.QueryVotesByVoterResponse)
   
     - [Query](#regen.group.v1alpha1.Query)
   
@@ -626,7 +630,7 @@ QueryGroupsByAdminResponse is the Query/GroupsByAdminResponse response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_ids | [uint64](#uint64) | repeated | group_ids are the IDs of the groups with the provided admin. |
+| groups | [GroupInfo](#regen.group.v1alpha1.GroupInfo) | repeated | groups are the groups info with the provided admin. |
 | pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
 
@@ -696,15 +700,77 @@ QueryProposalsByGroupAccountResponse is the Query/ProposalByGroupAccount respons
 
 
 
-<a name="regen.group.v1alpha1.QueryVotesRequest"></a>
+<a name="regen.group.v1alpha1.QueryVoteByProposalVoterRequest"></a>
 
-### QueryVotesRequest
-QueryVotesResponse is the Query/Votes request type.
+### QueryVoteByProposalVoterRequest
+QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter request type.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | proposal_id | [uint64](#uint64) |  | proposal_id is the unique ID of a proposal. |
+| voter | [bytes](#bytes) |  | voter is a proposal voter account address. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryVoteByProposalVoterResponse"></a>
+
+### QueryVoteByProposalVoterResponse
+QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| vote | [Vote](#regen.group.v1alpha1.Vote) |  | vote is the vote with given proposal_id and voter. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryVotesByProposalRequest"></a>
+
+### QueryVotesByProposalRequest
+QueryVotesByProposalResponse is the Query/VotesByProposal request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| proposal_id | [uint64](#uint64) |  | proposal_id is the unique ID of a proposal. |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryVotesByProposalResponse"></a>
+
+### QueryVotesByProposalResponse
+QueryVotesByProposalResponse is the Query/VotesByProposal response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| votes | [Vote](#regen.group.v1alpha1.Vote) | repeated | votes are the list of votes for given proposal_id. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.QueryVotesByVoterRequest"></a>
+
+### QueryVotesByVoterRequest
+QueryVotesByVoterResponse is the Query/VotesByVoter request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
 | voter | [bytes](#bytes) |  | voter is a proposal voter account address. |
 | pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
 
@@ -713,15 +779,15 @@ QueryVotesResponse is the Query/Votes request type.
 
 
 
-<a name="regen.group.v1alpha1.QueryVotesResponse"></a>
+<a name="regen.group.v1alpha1.QueryVotesByVoterResponse"></a>
 
-### QueryVotesResponse
-QueryVotesResponse is the Query/VotesResponse response type.
+### QueryVotesByVoterResponse
+QueryVotesByVoterResponse is the Query/VotesByVoter response type.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| votes | [Vote](#regen.group.v1alpha1.Vote) | repeated | votes are the list of votes with given proposal_id and voter. |
+| votes | [Vote](#regen.group.v1alpha1.Vote) | repeated | votes are the list of votes by given voter. |
 | pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
 
@@ -750,7 +816,9 @@ Query is the regen.group.v1alpha1 Query service.
 | GroupAccountsByAdmin | [QueryGroupAccountsByAdminRequest](#regen.group.v1alpha1.QueryGroupAccountsByAdminRequest) | [QueryGroupAccountsByAdminResponse](#regen.group.v1alpha1.QueryGroupAccountsByAdminResponse) | GroupsByAdmin queries group accounts by admin address. |
 | Proposal | [QueryProposalRequest](#regen.group.v1alpha1.QueryProposalRequest) | [QueryProposalResponse](#regen.group.v1alpha1.QueryProposalResponse) | Proposal queries a proposal based on proposal id. |
 | ProposalsByGroupAccount | [QueryProposalsByGroupAccountRequest](#regen.group.v1alpha1.QueryProposalsByGroupAccountRequest) | [QueryProposalsByGroupAccountResponse](#regen.group.v1alpha1.QueryProposalsByGroupAccountResponse) | ProposalsByGroupAccount queries proposals based on group account address. |
-| Votes | [QueryVotesRequest](#regen.group.v1alpha1.QueryVotesRequest) | [QueryVotesResponse](#regen.group.v1alpha1.QueryVotesResponse) | Votes queries votes by proposal id and voter. |
+| VoteByProposalVoter | [QueryVoteByProposalVoterRequest](#regen.group.v1alpha1.QueryVoteByProposalVoterRequest) | [QueryVoteByProposalVoterResponse](#regen.group.v1alpha1.QueryVoteByProposalVoterResponse) | VoteByProposalVoter queries a vote by proposal id and voter. |
+| VotesByProposal | [QueryVotesByProposalRequest](#regen.group.v1alpha1.QueryVotesByProposalRequest) | [QueryVotesByProposalResponse](#regen.group.v1alpha1.QueryVotesByProposalResponse) | VotesByProposal queries a vote by proposal. |
+| VotesByVoter | [QueryVotesByVoterRequest](#regen.group.v1alpha1.QueryVotesByVoterRequest) | [QueryVotesByVoterResponse](#regen.group.v1alpha1.QueryVotesByVoterResponse) | VotesByVoter queries a vote by voter. |
 
  <!-- end services -->
 

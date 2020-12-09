@@ -87,8 +87,7 @@ func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, data js
 	if err := genesisState.Validate(); err != nil {
 		panic(fmt.Sprintf("failed to validate %s genesis state: %s", group.ModuleName, err))
 	}
-	// a.keeper.SetParams(ctx, genesisState.Params) // TODO: revisit if this makes sense
-	a.paramSpace.SetParamSet(ctx, &genesisState.Params)
+	a.paramSpace.SetParamSet(ctx, &genesisState.Params) // TODO: revisit if this makes sense
 	return []abci.ValidatorUpdate{}
 }
 

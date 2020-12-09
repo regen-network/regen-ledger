@@ -59,19 +59,70 @@ func (s serverImpl) getGroupMembers(ctx sdk.Context, id group.GroupID) (orm.Iter
 	return s.groupMemberByGroupIndex.Get(ctx, id.Uint64())
 }
 
-// TODO
 func (s serverImpl) GroupsByAdmin(ctx context.Context, request *group.QueryGroupsByAdminRequest) (*group.QueryGroupsByAdminResponse, error) {
-	return &group.QueryGroupsByAdminResponse{}, nil
+	it, err := s.getGroupsByAdmin(sdk.UnwrapSDKContext(ctx), request.Admin)
+	if err != nil {
+		return nil, err
+	}
+
+	var groups []*group.GroupInfo
+	pageRes, err := orm.Paginate(it, request.Pagination, &groups)
+	if err != nil {
+		return nil, err
+	}
+
+	return &group.QueryGroupsByAdminResponse{
+		Groups:     groups,
+		Pagination: pageRes,
+	}, nil
 }
 
-// TODO
+func (s serverImpl) getGroupsByAdmin(ctx sdk.Context, admin sdk.AccAddress) (orm.Iterator, error) {
+	return s.groupByAdminIndex.Get(ctx, admin.Bytes())
+}
+
 func (s serverImpl) GroupAccountsByGroup(ctx context.Context, request *group.QueryGroupAccountsByGroupRequest) (*group.QueryGroupAccountsByGroupResponse, error) {
-	return &group.QueryGroupAccountsByGroupResponse{}, nil
+	it, err := s.getGroupAccountsByGroup(sdk.UnwrapSDKContext(ctx), request.GroupId)
+	if err != nil {
+		return nil, err
+	}
+
+	var accounts []*group.GroupAccountInfo
+	pageRes, err := orm.Paginate(it, request.Pagination, &accounts)
+	if err != nil {
+		return nil, err
+	}
+
+	return &group.QueryGroupAccountsByGroupResponse{
+		GroupAccounts: accounts,
+		Pagination:    pageRes,
+	}, nil
 }
 
-// TODO
+func (s serverImpl) getGroupAccountsByGroup(ctx sdk.Context, id group.GroupID) (orm.Iterator, error) {
+	return s.groupAccountByGroupIndex.Get(ctx, id.Uint64())
+}
+
 func (s serverImpl) GroupAccountsByAdmin(ctx context.Context, request *group.QueryGroupAccountsByAdminRequest) (*group.QueryGroupAccountsByAdminResponse, error) {
-	return &group.QueryGroupAccountsByAdminResponse{}, nil
+	it, err := s.getGroupAccountsByAdmin(sdk.UnwrapSDKContext(ctx), request.Admin)
+	if err != nil {
+		return nil, err
+	}
+
+	var accounts []*group.GroupAccountInfo
+	pageRes, err := orm.Paginate(it, request.Pagination, &accounts)
+	if err != nil {
+		return nil, err
+	}
+
+	return &group.QueryGroupAccountsByAdminResponse{
+		GroupAccounts: accounts,
+		Pagination:    pageRes,
+	}, nil
+}
+
+func (s serverImpl) getGroupAccountsByAdmin(ctx sdk.Context, admin sdk.AccAddress) (orm.Iterator, error) {
+	return s.groupAccountByAdminIndex.Get(ctx, admin.Bytes())
 }
 
 func (s serverImpl) Proposal(ctx context.Context, request *group.QueryProposalRequest) (*group.QueryProposalResponse, error) {
@@ -83,9 +134,26 @@ func (s serverImpl) Proposal(ctx context.Context, request *group.QueryProposalRe
 	return &group.QueryProposalResponse{Proposal: &proposal}, nil
 }
 
-// TODO
 func (s serverImpl) ProposalsByGroupAccount(ctx context.Context, request *group.QueryProposalsByGroupAccountRequest) (*group.QueryProposalsByGroupAccountResponse, error) {
-	return &group.QueryProposalsByGroupAccountResponse{}, nil
+	it, err := s.getProposalsByGroupAccount(sdk.UnwrapSDKContext(ctx), request.GroupAccount)
+	if err != nil {
+		return nil, err
+	}
+
+	var proposals []*group.Proposal
+	pageRes, err := orm.Paginate(it, request.Pagination, &proposals)
+	if err != nil {
+		return nil, err
+	}
+
+	return &group.QueryProposalsByGroupAccountResponse{
+		Proposals:  proposals,
+		Pagination: pageRes,
+	}, nil
+}
+
+func (s serverImpl) getProposalsByGroupAccount(ctx sdk.Context, account sdk.AccAddress) (orm.Iterator, error) {
+	return s.proposalByGroupAccountIndex.Get(ctx, account.Bytes())
 }
 
 func (s serverImpl) getProposal(ctx sdk.Context, id group.ProposalID) (group.Proposal, error) {
@@ -96,12 +164,61 @@ func (s serverImpl) getProposal(ctx sdk.Context, id group.ProposalID) (group.Pro
 	return p, nil
 }
 
-// TODO
-func (s serverImpl) Votes(ctx context.Context, request *group.QueryVotesRequest) (*group.QueryVotesResponse, error) {
-	return &group.QueryVotesResponse{}, nil
+func (s serverImpl) VoteByProposalVoter(ctx context.Context, request *group.QueryVoteByProposalVoterRequest) (*group.QueryVoteByProposalVoterResponse, error) {
+	vote, err := s.getVote(sdk.UnwrapSDKContext(ctx), request.ProposalId, request.Voter)
+	if err != nil {
+		return nil, err
+	}
+	return &group.QueryVoteByProposalVoterResponse{
+		Vote: &vote,
+	}, nil
+}
+
+func (s serverImpl) VotesByProposal(ctx context.Context, request *group.QueryVotesByProposalRequest) (*group.QueryVotesByProposalResponse, error) {
+	it, err := s.getVotesByProposal(sdk.UnwrapSDKContext(ctx), request.ProposalId)
+	if err != nil {
+		return nil, err
+	}
+
+	var votes []*group.Vote
+	pageRes, err := orm.Paginate(it, request.Pagination, &votes)
+	if err != nil {
+		return nil, err
+	}
+
+	return &group.QueryVotesByProposalResponse{
+		Votes:      votes,
+		Pagination: pageRes,
+	}, nil
+}
+
+func (s serverImpl) VotesByVoter(ctx context.Context, request *group.QueryVotesByVoterRequest) (*group.QueryVotesByVoterResponse, error) {
+	it, err := s.getVotesByVoter(sdk.UnwrapSDKContext(ctx), request.Voter)
+	if err != nil {
+		return nil, err
+	}
+
+	var votes []*group.Vote
+	pageRes, err := orm.Paginate(it, request.Pagination, &votes)
+	if err != nil {
+		return nil, err
+	}
+
+	return &group.QueryVotesByVoterResponse{
+		Votes:      votes,
+		Pagination: pageRes,
+	}, nil
 }
 
 func (s serverImpl) getVote(ctx sdk.Context, id group.ProposalID, voter sdk.AccAddress) (group.Vote, error) {
 	var v group.Vote
 	return v, s.voteTable.GetOne(ctx, group.Vote{ProposalId: id, Voter: voter}.NaturalKey(), &v)
+}
+
+func (s serverImpl) getVotesByProposal(ctx sdk.Context, id group.ProposalID) (orm.Iterator, error) {
+	return s.voteByProposalIndex.Get(ctx, id.Uint64())
+}
+
+func (s serverImpl) getVotesByVoter(ctx sdk.Context, voter sdk.AccAddress) (orm.Iterator, error) {
+	return s.voteByVoterIndex.Get(ctx, voter.Bytes())
 }

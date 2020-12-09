@@ -35,8 +35,14 @@ service Query {
   // ProposalsByGroupAccount queries proposals based on group account address.
   rpc ProposalsByGroupAccount(QueryProposalsByGroupAccountRequest) returns (QueryProposalsByGroupAccountResponse);
   
-  // Votes queries votes by proposal id and voter.
-  rpc Votes(QueryVotesRequest) returns (QueryVotesResponse);
+  // VoteByProposalVoter queries a vote by proposal id and voter.
+  rpc VoteByProposalVoter(QueryVoteByProposalVoterRequest) returns (QueryVoteByProposalVoterResponse);
+
+  // VotesByProposal queries a vote by proposal.
+  rpc VotesByProposal(QueryVotesByProposalRequest) returns (QueryVotesByProposalResponse);
+
+  // VotesByVoter queries a vote by voter.
+  rpc VotesByVoter(QueryVotesByVoterRequest) returns (QueryVotesByVoterResponse);
 }
 
 // QueryGroupInfoRequest is the Query/GroupInfo request type.
@@ -100,8 +106,8 @@ message QueryGroupsByAdminRequest {
 // QueryGroupsByAdminResponse is the Query/GroupsByAdminResponse response type.
 message QueryGroupsByAdminResponse {
 
-  // group_ids are the IDs of the groups with the provided admin.
-  repeated uint64 group_ids = 1;
+  // groups are the groups info with the provided admin.
+  repeated GroupInfo groups = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -181,23 +187,56 @@ message QueryProposalsByGroupAccountResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryVotesResponse is the Query/Votes request type.
-message QueryVotesRequest {
+// QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter request type.
+message QueryVoteByProposalVoterRequest {
 
   // proposal_id is the unique ID of a proposal.
   uint64 proposal_id = 1 [(gogoproto.casttype) = "ProposalID"];
   
   // voter is a proposal voter account address.
   bytes voter = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
-
-  // pagination defines an optional pagination for the request.
-  cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
-// QueryVotesResponse is the Query/VotesResponse response type.
-message QueryVotesResponse {
+// QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter response type.
+message QueryVoteByProposalVoterResponse {
 
-  // votes are the list of votes with given proposal_id and voter.
+  // vote is the vote with given proposal_id and voter.
+  Vote vote = 1;
+}
+
+// QueryVotesByProposalResponse is the Query/VotesByProposal request type.
+message QueryVotesByProposalRequest {
+
+  // proposal_id is the unique ID of a proposal.
+  uint64 proposal_id = 1 [(gogoproto.casttype) = "ProposalID"];
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryVotesByProposalResponse is the Query/VotesByProposal response type.
+message QueryVotesByProposalResponse {
+
+  // votes are the list of votes for given proposal_id.
+  repeated Vote votes = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryVotesByVoterResponse is the Query/VotesByVoter request type.
+message QueryVotesByVoterRequest {
+  // voter is a proposal voter account address.
+  bytes voter = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryVotesByVoterResponse is the Query/VotesByVoter response type.
+message QueryVotesByVoterResponse {
+
+  // votes are the list of votes by given voter.
   repeated Vote votes = 1;
 
   // pagination defines the pagination in the response.

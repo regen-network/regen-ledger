@@ -2,6 +2,7 @@ package testsuite
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -127,19 +128,36 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 	}}
 
 	specs := map[string]struct {
-		req    *group.MsgCreateGroupRequest
-		expErr bool
+		req       *group.MsgCreateGroupRequest
+		expErr    bool
+		expGroups []*group.GroupInfo
 	}{
 		"all good": {
 			req: &group.MsgCreateGroupRequest{
-				Admin:   []byte("valid--admin-address"),
+				Admin:   s.addr1,
 				Members: members,
 				Comment: "test",
+			},
+			expGroups: []*group.GroupInfo{
+				&group.GroupInfo{
+					GroupId:     s.groupID,
+					Version:     1,
+					Admin:       s.addr1,
+					TotalWeight: "1",
+					Comment:     "test",
+				},
+				&group.GroupInfo{
+					GroupId:     2,
+					Version:     1,
+					Admin:       s.addr1,
+					TotalWeight: "3",
+					Comment:     "test",
+				},
 			},
 		},
 		"group comment too long": {
 			req: &group.MsgCreateGroupRequest{
-				Admin:   []byte("valid--admin-address"),
+				Admin:   s.addr1,
 				Members: members,
 				Comment: strings.Repeat("a", 256),
 			},
@@ -147,7 +165,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 		},
 		"member comment too long": {
 			req: &group.MsgCreateGroupRequest{
-				Admin: []byte("valid--admin-address"),
+				Admin: s.addr1,
 				Members: []group.Member{{
 					Address: []byte("valid-member-address"),
 					Power:   "1",
@@ -166,7 +184,6 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			if spec.expErr {
 				s.Require().Error(err)
 				_, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: group.GroupID(seq + 1)})
-				// s.Require().False(s.groupKeeper.HasGroup(s.sdkCtx, group.GroupID(seq+1).Bytes()))
 				s.Require().Error(err)
 				return
 			}
@@ -188,12 +205,25 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			membersRes, err := s.queryClient.GroupMembers(s.ctx, &group.QueryGroupMembersRequest{GroupId: id})
 			s.Require().NoError(err)
 			loadedMembers := membersRes.Members
-			s.Assert().Equal(len(members), len(loadedMembers))
+			s.Require().Equal(len(members), len(loadedMembers))
 			for i := range loadedMembers {
 				s.Assert().Equal(members[i].Comment, loadedMembers[i].Comment)
 				s.Assert().Equal(members[i].Address, loadedMembers[i].Member)
 				s.Assert().Equal(members[i].Power, loadedMembers[i].Weight)
 				s.Assert().Equal(id, loadedMembers[i].GroupId)
+			}
+
+			// query groups by admin
+			groupsRes, err := s.queryClient.GroupsByAdmin(s.ctx, &group.QueryGroupsByAdminRequest{Admin: s.addr1})
+			s.Require().NoError(err)
+			loadedGroups := groupsRes.Groups
+			s.Require().Equal(len(spec.expGroups), len(loadedGroups))
+			for i := range loadedGroups {
+				s.Assert().Equal(spec.expGroups[i].Comment, loadedGroups[i].Comment)
+				s.Assert().Equal(spec.expGroups[i].Admin, loadedGroups[i].Admin)
+				s.Assert().Equal(spec.expGroups[i].TotalWeight, loadedGroups[i].TotalWeight)
+				s.Assert().Equal(spec.expGroups[i].GroupId, loadedGroups[i].GroupId)
+				s.Assert().Equal(spec.expGroups[i].Version, loadedGroups[i].Version)
 			}
 		})
 	}
@@ -627,7 +657,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 
 func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
-		Admin:   []byte("valid--admin-address"),
+		Admin:   s.addr1,
 		Members: nil,
 		Comment: "test",
 	})
@@ -641,8 +671,8 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 	}{
 		"all good": {
 			req: &group.MsgCreateGroupAccountRequest{
-				Admin:   []byte("valid--admin-address"),
-				Comment: "test",
+				Admin:   s.addr1,
+				Comment: "test 1",
 				GroupId: myGroupID,
 			},
 			policy: group.NewThresholdDecisionPolicy(
@@ -652,8 +682,8 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 		},
 		"decision policy threshold > total group weight": {
 			req: &group.MsgCreateGroupAccountRequest{
-				Admin:   []byte("valid--admin-address"),
-				Comment: "test",
+				Admin:   s.addr1,
+				Comment: "test 2",
 				GroupId: myGroupID,
 			},
 			policy: group.NewThresholdDecisionPolicy(
@@ -663,7 +693,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 		},
 		"group id does not exists": {
 			req: &group.MsgCreateGroupAccountRequest{
-				Admin:   []byte("valid--admin-address"),
+				Admin:   s.addr1,
 				Comment: "test",
 				GroupId: 9999,
 			},
@@ -687,7 +717,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 		},
 		"comment too long": {
 			req: &group.MsgCreateGroupAccountRequest{
-				Admin:   []byte("valid--admin-address"),
+				Admin:   s.addr1,
 				Comment: strings.Repeat("a", 256),
 				GroupId: myGroupID,
 			},
@@ -698,6 +728,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 			expErr: true,
 		},
 	}
+
 	for msg, spec := range specs {
 		spec := spec
 		s.Run(msg, func() {
@@ -724,6 +755,77 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 			s.Assert().Equal(uint64(1), groupAccount.Version)
 			s.Assert().Equal(spec.policy.(*group.ThresholdDecisionPolicy), groupAccount.GetDecisionPolicy())
 		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
+	admin := s.addr2
+	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
+		Admin:   admin,
+		Members: nil,
+		Comment: "test",
+	})
+	s.Require().NoError(err)
+	myGroupID := groupRes.GroupId
+
+	policies := []group.DecisionPolicy{
+		group.NewThresholdDecisionPolicy(
+			"1",
+			gogotypes.Duration{Seconds: 1},
+		),
+		group.NewThresholdDecisionPolicy(
+			"10",
+			gogotypes.Duration{Seconds: 1},
+		),
+	}
+
+	count := 2
+	addrs := make([]sdk.AccAddress, count)
+	reqs := make([]*group.MsgCreateGroupAccountRequest, count)
+	for i := range addrs {
+		req := &group.MsgCreateGroupAccountRequest{
+			Admin:   admin,
+			Comment: fmt.Sprintf("test %d", i),
+			GroupId: myGroupID,
+		}
+		err := req.SetDecisionPolicy(policies[i])
+		s.Require().NoError(err)
+		reqs[i] = req
+		res, err := s.msgClient.CreateGroupAccount(s.ctx, req)
+		s.Require().NoError(err)
+		addrs[i] = res.GroupAccount
+	}
+
+	// query group account by group
+	accountsByGroupRes, err := s.queryClient.GroupAccountsByGroup(s.ctx, &group.QueryGroupAccountsByGroupRequest{
+		GroupId: myGroupID,
+	})
+	s.Require().NoError(err)
+	accounts := accountsByGroupRes.GroupAccounts
+	s.Require().Equal(len(accounts), count)
+	for i := range accounts {
+		s.Assert().Equal(addrs[i], accounts[i].GroupAccount)
+		s.Assert().Equal(myGroupID, accounts[i].GroupId)
+		s.Assert().Equal(admin, accounts[i].Admin)
+		s.Assert().Equal(reqs[i].Comment, accounts[i].Comment)
+		s.Assert().Equal(uint64(1), accounts[i].Version)
+		s.Assert().Equal(policies[i].(*group.ThresholdDecisionPolicy), accounts[i].GetDecisionPolicy())
+	}
+
+	// query group account by admin
+	accountsByAdminRes, err := s.queryClient.GroupAccountsByAdmin(s.ctx, &group.QueryGroupAccountsByAdminRequest{
+		Admin: admin,
+	})
+	s.Require().NoError(err)
+	accounts = accountsByAdminRes.GroupAccounts
+	s.Require().Equal(len(accounts), count)
+	for i := range accounts {
+		s.Assert().Equal(addrs[i], accounts[i].GroupAccount)
+		s.Assert().Equal(myGroupID, accounts[i].GroupId)
+		s.Assert().Equal(admin, accounts[i].Admin)
+		s.Assert().Equal(reqs[i].Comment, accounts[i].Comment)
+		s.Assert().Equal(uint64(1), accounts[i].Version)
+		s.Assert().Equal(policies[i].(*group.ThresholdDecisionPolicy), accounts[i].GetDecisionPolicy())
 	}
 }
 
@@ -933,14 +1035,42 @@ func (s *IntegrationTestSuite) TestVote() {
 	accountRes, err := s.msgClient.CreateGroupAccount(s.ctx, accountReq)
 	s.Require().NoError(err)
 	accountAddr := accountRes.GroupAccount
-	proposalRes, err := s.msgClient.CreateProposal(s.ctx, &group.MsgCreateProposalRequest{
+
+	req := &group.MsgCreateProposalRequest{
 		GroupAccount: accountAddr,
 		Comment:      "integration test",
 		Proposers:    []sdk.AccAddress{[]byte("valid-member-address")},
 		Msgs:         nil,
-	})
+	}
+	proposalRes, err := s.msgClient.CreateProposal(s.ctx, req)
 	s.Require().NoError(err)
 	myProposalID := proposalRes.ProposalId
+
+	// proposals by group account
+	proposalsRes, err := s.queryClient.ProposalsByGroupAccount(s.ctx, &group.QueryProposalsByGroupAccountRequest{
+		GroupAccount: accountAddr,
+	})
+	s.Require().NoError(err)
+	proposals := proposalsRes.Proposals
+	s.Require().Equal(len(proposals), 1)
+	s.Assert().Equal(req.GroupAccount, proposals[0].GroupAccount)
+	s.Assert().Equal(req.Comment, proposals[0].Comment)
+	s.Assert().Equal(req.Proposers, proposals[0].Proposers)
+
+	submittedAt, err := gogotypes.TimestampFromProto(&proposals[0].SubmittedAt)
+	s.Require().NoError(err)
+	s.Assert().Equal(s.blockTime, submittedAt)
+
+	s.Assert().Equal(uint64(1), proposals[0].GroupVersion)
+	s.Assert().Equal(uint64(1), proposals[0].GroupAccountVersion)
+	s.Assert().Equal(group.ProposalStatusSubmitted, proposals[0].Status)
+	s.Assert().Equal(group.ProposalResultUnfinalized, proposals[0].Result)
+	s.Assert().Equal(group.Tally{
+		YesCount:     "0",
+		NoCount:      "0",
+		AbstainCount: "0",
+		VetoCount:    "0",
+	}, proposals[0].VoteState)
 
 	specs := map[string]struct {
 		req               *group.MsgVoteRequest
@@ -1161,10 +1291,6 @@ func (s *IntegrationTestSuite) TestVote() {
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			doBefore: func(ctx context.Context) {
-				// res, err := s.queryClient.GroupInfo(ctx, &group.QueryGroupInfoRequest{GroupId: myGroupID})
-				// s.Require().NoError(err)
-				// g := res.Info
-				// g.Comment = "group modified"
 				_, err = s.msgClient.UpdateGroupComment(ctx, &group.MsgUpdateGroupCommentRequest{
 					GroupId: myGroupID,
 					Admin:   []byte("valid--admin-address"),
@@ -1174,7 +1300,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			},
 			expErr: true,
 		},
-		// TODO
+		// TODO Need to implement group account updates
 		// "with policy modified": {
 		// 	req: &group.MsgVoteRequest{
 		// 		ProposalId: myProposalID,
@@ -1193,38 +1319,79 @@ func (s *IntegrationTestSuite) TestVote() {
 	for msg, spec := range specs {
 		spec := spec
 		s.Run(msg, func() {
-			ctx := s.sdkCtx
+			sdkCtx := s.sdkCtx
 			if !spec.srcCtx.IsZero() {
-				ctx = spec.srcCtx
+				sdkCtx = spec.srcCtx
 			}
-			ctx, _ = ctx.CacheContext()
+			sdkCtx, _ = sdkCtx.CacheContext()
+			ctx := sdk.WrapSDKContext(sdkCtx)
 
 			if spec.doBefore != nil {
-				spec.doBefore(sdk.WrapSDKContext(ctx))
+				spec.doBefore(ctx)
 			}
-			_, err := s.msgClient.Vote(sdk.WrapSDKContext(ctx), spec.req)
+			_, err := s.msgClient.Vote(ctx, spec.req)
 			if spec.expErr {
 				s.Require().Error(err)
 				return
 			}
 			s.Require().NoError(err)
 
+			s.Require().NoError(err)
 			// and all votes are stored
-			// for _, voter := range spec.req.Voters {
-			// 	// then all data persisted
-			// 	loaded, err := s.queryClient.Vote(ctx, spec.req.ProposalId, voter)
-			// 	s.Require().NoError(err)
-			// 	s.Assert().Equal(spec.req.ProposalId, loaded.ProposalId)
-			// 	s.Assert().Equal(voter, loaded.Voter)
-			// 	s.Assert().Equal(spec.req.Choice, loaded.Choice)
-			// 	s.Assert().Equal(spec.req.Comment, loaded.Comment)
-			// 	submittedAt, err := gogotypes.TimestampFromProto(&loaded.SubmittedAt)
-			// 	s.Require().NoError(err)
-			// 	s.Assert().Equal(s.blockTime, submittedAt)
-			// }
+			for _, voter := range spec.req.Voters {
+				// then all data persisted
+				res, err := s.queryClient.VoteByProposalVoter(ctx, &group.QueryVoteByProposalVoterRequest{
+					ProposalId: spec.req.ProposalId,
+					Voter:      voter,
+				})
+				s.Require().NoError(err)
+				loaded := res.Vote
+				s.Assert().Equal(spec.req.ProposalId, loaded.ProposalId)
+				s.Assert().Equal(voter, loaded.Voter)
+				s.Assert().Equal(spec.req.Choice, loaded.Choice)
+				s.Assert().Equal(spec.req.Comment, loaded.Comment)
+				submittedAt, err := gogotypes.TimestampFromProto(&loaded.SubmittedAt)
+				s.Require().NoError(err)
+				s.Assert().Equal(s.blockTime, submittedAt)
+			}
+
+			// query votes by proposal
+			votesRes, err := s.queryClient.VotesByProposal(ctx, &group.QueryVotesByProposalRequest{
+				ProposalId: spec.req.ProposalId,
+			})
+			s.Require().NoError(err)
+			votes := votesRes.Votes
+			s.Require().Equal(len(spec.req.Voters), len(votes))
+			for i, vote := range votes {
+				s.Assert().Equal(spec.req.ProposalId, vote.ProposalId)
+				s.Assert().Equal(spec.req.Voters[i], vote.Voter)
+				s.Assert().Equal(spec.req.Choice, vote.Choice)
+				s.Assert().Equal(spec.req.Comment, vote.Comment)
+				submittedAt, err := gogotypes.TimestampFromProto(&vote.SubmittedAt)
+				s.Require().NoError(err)
+				s.Assert().Equal(s.blockTime, submittedAt)
+			}
+
+			// query votes by voter
+			for _, voter := range spec.req.Voters {
+				// then all data persisted
+				res, err := s.queryClient.VotesByVoter(ctx, &group.QueryVotesByVoterRequest{
+					Voter: voter,
+				})
+				s.Require().NoError(err)
+				votes := res.Votes
+				s.Require().Equal(1, len(votes))
+				s.Assert().Equal(spec.req.ProposalId, votes[0].ProposalId)
+				s.Assert().Equal(voter, votes[0].Voter)
+				s.Assert().Equal(spec.req.Choice, votes[0].Choice)
+				s.Assert().Equal(spec.req.Comment, votes[0].Comment)
+				submittedAt, err := gogotypes.TimestampFromProto(&votes[0].SubmittedAt)
+				s.Require().NoError(err)
+				s.Assert().Equal(s.blockTime, submittedAt)
+			}
 
 			// and proposal is updated
-			proposalRes, err := s.queryClient.Proposal(sdk.WrapSDKContext(ctx), &group.QueryProposalRequest{
+			proposalRes, err := s.queryClient.Proposal(ctx, &group.QueryProposalRequest{
 				ProposalId: spec.req.ProposalId,
 			})
 			s.Require().NoError(err)
@@ -1400,7 +1567,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expProposalResult: group.ProposalResultUnfinalized,
 			expExecutorResult: group.ProposalExecutorResultNotRun,
 		},
-		// TODO
+		// TODO Need to implement group account update
 		// "with group account modified before tally": {
 		// 	setupProposal: func(ctx context.Context) group.ProposalID {
 		// 		myProposalID := createProposal(s, ctx, []sdk.Msg{msgSend}, proposers)
