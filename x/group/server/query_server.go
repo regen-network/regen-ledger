@@ -18,7 +18,7 @@ func (s serverImpl) GroupInfo(ctx context.Context, request *group.QueryGroupInfo
 	return &group.QueryGroupInfoResponse{Info: &groupInfo}, nil
 }
 
-func (s serverImpl) getGroupInfo(ctx sdk.Context, id group.GroupID) (group.GroupInfo, error) {
+func (s serverImpl) getGroupInfo(ctx sdk.Context, id group.ID) (group.GroupInfo, error) {
 	var obj group.GroupInfo
 	return obj, s.groupTable.GetOne(ctx, id.Bytes(), &obj)
 }
@@ -55,7 +55,7 @@ func (s serverImpl) GroupMembers(ctx context.Context, request *group.QueryGroupM
 	}, nil
 }
 
-func (s serverImpl) getGroupMembers(ctx sdk.Context, id group.GroupID) (orm.Iterator, error) {
+func (s serverImpl) getGroupMembers(ctx sdk.Context, id group.ID) (orm.Iterator, error) {
 	return s.groupMemberByGroupIndex.Get(ctx, id.Uint64())
 }
 
@@ -99,7 +99,7 @@ func (s serverImpl) GroupAccountsByGroup(ctx context.Context, request *group.Que
 	}, nil
 }
 
-func (s serverImpl) getGroupAccountsByGroup(ctx sdk.Context, id group.GroupID) (orm.Iterator, error) {
+func (s serverImpl) getGroupAccountsByGroup(ctx sdk.Context, id group.ID) (orm.Iterator, error) {
 	return s.groupAccountByGroupIndex.Get(ctx, id.Uint64())
 }
 

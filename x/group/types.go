@@ -18,17 +18,17 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-type GroupID uint64
+type ID uint64
 
-func (g GroupID) Uint64() uint64 {
+func (g ID) Uint64() uint64 {
 	return uint64(g)
 }
 
-func (g GroupID) Empty() bool {
+func (g ID) Empty() bool {
 	return g == 0
 }
 
-func (g GroupID) Bytes() []byte {
+func (g ID) Bytes() []byte {
 	return orm.EncodeSequence(uint64(g))
 }
 
@@ -160,7 +160,7 @@ func (g GroupAccountInfo) NaturalKey() []byte {
 var _ orm.Validateable = GroupAccountInfo{}
 
 // NewGroupAccountInfo creates a new GroupAccountInfo instance
-func NewGroupAccountInfo(groupAccount sdk.AccAddress, group GroupID, admin sdk.AccAddress, comment string, version uint64, decisionPolicy DecisionPolicy) (GroupAccountInfo, error) {
+func NewGroupAccountInfo(groupAccount sdk.AccAddress, group ID, admin sdk.AccAddress, comment string, version uint64, decisionPolicy DecisionPolicy) (GroupAccountInfo, error) {
 	p := GroupAccountInfo{
 		GroupAccount: groupAccount,
 		GroupId:      group,

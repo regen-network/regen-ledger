@@ -51,7 +51,7 @@ func (s serverImpl) CreateGroup(goCtx context.Context, req *group.MsgCreateGroup
 		}
 	}
 
-	groupID := group.GroupID(s.groupSeq.NextVal(ctx))
+	groupID := group.ID(s.groupSeq.NextVal(ctx))
 	err := s.groupTable.Create(ctx, groupID.Bytes(), &group.GroupInfo{
 		GroupId:     groupID,
 		Admin:       admin,
@@ -533,7 +533,7 @@ func (s serverImpl) Exec(goCtx context.Context, req *group.MsgExecRequest) (*gro
 }
 
 type authNGroupReq interface {
-	GetGroupID() group.GroupID
+	GetGroupID() group.ID
 	GetAdmin() sdk.AccAddress // equal GetSigners()
 }
 

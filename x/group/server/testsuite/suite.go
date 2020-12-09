@@ -34,7 +34,7 @@ type IntegrationTestSuite struct {
 	addr1            sdk.AccAddress
 	addr2            sdk.AccAddress
 	groupAccountAddr sdk.AccAddress
-	groupID          group.GroupID
+	groupID          group.ID
 
 	groupSubspace paramstypes.Subspace
 	bankKeeper    bankkeeper.Keeper
@@ -127,6 +127,23 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 		Comment: "second",
 	}}
 
+	expGroups := []*group.GroupInfo{
+		&group.GroupInfo{
+			GroupId:     s.groupID,
+			Version:     1,
+			Admin:       s.addr1,
+			TotalWeight: "1",
+			Comment:     "test",
+		},
+		&group.GroupInfo{
+			GroupId:     2,
+			Version:     1,
+			Admin:       s.addr1,
+			TotalWeight: "3",
+			Comment:     "test",
+		},
+	}
+
 	specs := map[string]struct {
 		req       *group.MsgCreateGroupRequest
 		expErr    bool
@@ -138,21 +155,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 				Members: members,
 				Comment: "test",
 			},
-			expGroups: []*group.GroupInfo{&group.GroupInfo{
-				GroupId:     s.groupID,
-				Version:     1,
-				Admin:       s.addr1,
-				TotalWeight: "1",
-				Comment:     "test",
-			},
-				&group.GroupInfo{
-					GroupId:     2,
-					Version:     1,
-					Admin:       s.addr1,
-					TotalWeight: "3",
-					Comment:     "test",
-				},
-			},
+			expGroups: expGroups,
 		},
 		"group comment too long": {
 			req: &group.MsgCreateGroupRequest{
@@ -182,7 +185,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			res, err := s.msgClient.CreateGroup(s.ctx, spec.req)
 			if spec.expErr {
 				s.Require().Error(err)
-				_, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: group.GroupID(seq + 1)})
+				_, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: group.ID(seq + 1)})
 				s.Require().Error(err)
 				return
 			}
@@ -190,7 +193,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			id := res.GroupId
 
 			seq++
-			s.Assert().Equal(group.GroupID(seq), id)
+			s.Assert().Equal(group.ID(seq), id)
 
 			// then all data persisted
 			loadedGroupRes, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: id})
