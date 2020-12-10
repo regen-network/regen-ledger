@@ -18,16 +18,16 @@ const _ = grpc.SupportPackageIsVersion7
 type MsgClient interface {
 	// CreateClass creates a new credit class with an approved list of issuers and
 	// optional metadata.
-	CreateClass(ctx context.Context, in *MsgCreateClassRequest, opts ...grpc.CallOption) (*MsgCreateClassResponse, error)
+	CreateClass(ctx types.Context, in *MsgCreateClassRequest, opts ...grpc.CallOption) (*MsgCreateClassResponse, error)
 	// CreateBatch creates a new batch of credits for an existing credit class.
 	// This will create a new batch denom with a fixed supply. Issued credits can
 	// be distributed to recipients in either tradable or retired form.
-	CreateBatch(ctx context.Context, in *MsgCreateBatchRequest, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error)
+	CreateBatch(ctx types.Context, in *MsgCreateBatchRequest, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error)
 	// Send sends tradeable credits from one account to another account. Sent
 	// credits can either be tradable or retired on receipt.
-	Send(ctx context.Context, in *MsgSendRequest, opts ...grpc.CallOption) (*MsgSendResponse, error)
+	Send(ctx types.Context, in *MsgSendRequest, opts ...grpc.CallOption) (*MsgSendResponse, error)
 	// Retire retires a specified number of credits in the holder's account.
-	Retire(ctx context.Context, in *MsgRetireRequest, opts ...grpc.CallOption) (*MsgRetireResponse, error)
+	Retire(ctx types.Context, in *MsgRetireRequest, opts ...grpc.CallOption) (*MsgRetireResponse, error)
 	// SetPrecision allows an issuer to increase the decimal precision of a credit
 	// batch. It is an experimental feature to concretely explore an idea proposed
 	// in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
@@ -48,7 +48,7 @@ type MsgClient interface {
 	// precision so under the hood it is still basically an integer, but the fixed
 	// precision can be increased so its more adaptable long term than just an
 	// integer.
-	SetPrecision(ctx context.Context, in *MsgSetPrecisionRequest, opts ...grpc.CallOption) (*MsgSetPrecisionResponse, error)
+	SetPrecision(ctx types.Context, in *MsgSetPrecisionRequest, opts ...grpc.CallOption) (*MsgSetPrecisionResponse, error)
 }
 
 type msgClient struct {
@@ -64,7 +64,7 @@ func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
 	return &msgClient{cc: cc}
 }
 
-func (c *msgClient) CreateClass(ctx context.Context, in *MsgCreateClassRequest, opts ...grpc.CallOption) (*MsgCreateClassResponse, error) {
+func (c *msgClient) CreateClass(ctx types.Context, in *MsgCreateClassRequest, opts ...grpc.CallOption) (*MsgCreateClassResponse, error) {
 	if invoker := c._CreateClass; invoker != nil {
 		var out MsgCreateClassResponse
 		err := invoker(ctx, in, &out)
@@ -87,7 +87,7 @@ func (c *msgClient) CreateClass(ctx context.Context, in *MsgCreateClassRequest, 
 	return out, nil
 }
 
-func (c *msgClient) CreateBatch(ctx context.Context, in *MsgCreateBatchRequest, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error) {
+func (c *msgClient) CreateBatch(ctx types.Context, in *MsgCreateBatchRequest, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error) {
 	if invoker := c._CreateBatch; invoker != nil {
 		var out MsgCreateBatchResponse
 		err := invoker(ctx, in, &out)
@@ -110,7 +110,7 @@ func (c *msgClient) CreateBatch(ctx context.Context, in *MsgCreateBatchRequest, 
 	return out, nil
 }
 
-func (c *msgClient) Send(ctx context.Context, in *MsgSendRequest, opts ...grpc.CallOption) (*MsgSendResponse, error) {
+func (c *msgClient) Send(ctx types.Context, in *MsgSendRequest, opts ...grpc.CallOption) (*MsgSendResponse, error) {
 	if invoker := c._Send; invoker != nil {
 		var out MsgSendResponse
 		err := invoker(ctx, in, &out)
@@ -133,7 +133,7 @@ func (c *msgClient) Send(ctx context.Context, in *MsgSendRequest, opts ...grpc.C
 	return out, nil
 }
 
-func (c *msgClient) Retire(ctx context.Context, in *MsgRetireRequest, opts ...grpc.CallOption) (*MsgRetireResponse, error) {
+func (c *msgClient) Retire(ctx types.Context, in *MsgRetireRequest, opts ...grpc.CallOption) (*MsgRetireResponse, error) {
 	if invoker := c._Retire; invoker != nil {
 		var out MsgRetireResponse
 		err := invoker(ctx, in, &out)
@@ -156,7 +156,7 @@ func (c *msgClient) Retire(ctx context.Context, in *MsgRetireRequest, opts ...gr
 	return out, nil
 }
 
-func (c *msgClient) SetPrecision(ctx context.Context, in *MsgSetPrecisionRequest, opts ...grpc.CallOption) (*MsgSetPrecisionResponse, error) {
+func (c *msgClient) SetPrecision(ctx types.Context, in *MsgSetPrecisionRequest, opts ...grpc.CallOption) (*MsgSetPrecisionResponse, error) {
 	if invoker := c._SetPrecision; invoker != nil {
 		var out MsgSetPrecisionResponse
 		err := invoker(ctx, in, &out)

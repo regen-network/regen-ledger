@@ -21,6 +21,10 @@ protoc_gen_gocosmos2() {
   cd ..
 }
 
+# generate proto extensions
+go install google.golang.org/protobuf/cmd/protoc-gen-go
+buf protoc --proto_path=third_party/proto/cosmos_proto --go_out=. third_party/proto/cosmos_proto/extensions.proto
+
 protoc_gen_gocosmos
 protoc_gen_gocosmos2
 protoc_gen_doc
@@ -79,4 +83,3 @@ Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. ./testutil
 # move proto files to the right places
 cp -r github.com/regen-network/regen-ledger/* ./
 rm -rf github.com
-

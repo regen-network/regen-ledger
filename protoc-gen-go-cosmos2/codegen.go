@@ -24,14 +24,17 @@ import (
 	"strings"
 
 	"google.golang.org/protobuf/compiler/protogen"
-
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/descriptorpb"
+
+	cosmosproto "github.com/regen-network/regen-ledger/types/proto"
 )
 
 const (
-	contextPackage    = protogen.GoImportPath("context")
-	grpcPackage       = protogen.GoImportPath("google.golang.org/grpc")
-	regenTypesPackage = protogen.GoImportPath("github.com/regen-network/regen-ledger/types")
+	contextPackage      = protogen.GoImportPath("context")
+	grpcPackage         = protogen.GoImportPath("google.golang.org/grpc")
+	regenTypesPackage   = protogen.GoImportPath("github.com/regen-network/regen-ledger/types")
+	cosmosClientPackage = protogen.GoImportPath("github.com/cosmos/cosmos-sdk/client")
 )
 
 // generateFile generates a _grpc.pb.go file containing gRPC service definitions.
@@ -65,6 +68,8 @@ func generateFileContent(file *protogen.File, g *protogen.GeneratedFile) {
 }
 
 func genService(file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service) {
+	isMsgService := proto.GetExtension(service.Desc.Options(), cosmosproto.E_MsgService).(bool)
+
 	clientName := service.GoName + "Client"
 
 	g.P("// ", clientName, " is the client API for ", service.GoName, " service.")
@@ -84,7 +89,7 @@ func genService(file *protogen.File, g *protogen.GeneratedFile, service *protoge
 			g.P(deprecationComment)
 		}
 		g.P(method.Comments.Leading,
-			clientSignature(g, method))
+			clientSignature(g, method, isMsgService))
 	}
 	g.P("}")
 	g.P()
@@ -111,7 +116,7 @@ func genService(file *protogen.File, g *protogen.GeneratedFile, service *protoge
 	// Client method implementations.
 	for _, method := range service.Methods {
 		// Unary RPC method
-		genClientMethod(g, method)
+		genClientMethod(g, method, isMsgService)
 		methodIndex++
 	}
 
@@ -185,12 +190,19 @@ func genService(file *protogen.File, g *protogen.GeneratedFile, service *protoge
 	g.P()
 }
 
-func clientSignature(g *protogen.GeneratedFile, method *protogen.Method) string {
+func clientSignature(g *protogen.GeneratedFile, method *protogen.Method, isMsgService bool) string {
 	if method.Desc.IsStreamingClient() || method.Desc.IsStreamingServer() {
 		return ""
 	}
 
-	s := method.GoName + "(ctx " + g.QualifiedGoIdent(contextPackage.Ident("Context"))
+	var ctxType string
+	if !isMsgService {
+		ctxType = g.QualifiedGoIdent(contextPackage.Ident("Context"))
+	} else {
+		ctxType = g.QualifiedGoIdent(regenTypesPackage.Ident("Context"))
+	}
+
+	s := method.GoName + "(ctx " + ctxType
 	s += ", in *" + g.QualifiedGoIdent(method.Input.GoIdent)
 	s += ", opts ..." + g.QualifiedGoIdent(grpcPackage.Ident("CallOption")) + ") ("
 	s += "*" + g.QualifiedGoIdent(method.Output.GoIdent)
@@ -198,14 +210,14 @@ func clientSignature(g *protogen.GeneratedFile, method *protogen.Method) string 
 	return s
 }
 
-func genClientMethod(g *protogen.GeneratedFile, method *protogen.Method) {
+func genClientMethod(g *protogen.GeneratedFile, method *protogen.Method, isMsgService bool) {
 	service := method.Parent
 	sname := fmt.Sprintf("/%s/%s", service.Desc.FullName(), method.Desc.Name())
 
 	if method.Desc.Options().(*descriptorpb.MethodOptions).GetDeprecated() {
 		g.P(deprecationComment)
 	}
-	g.P("func (c *", unexport(service.GoName), "Client) ", clientSignature(g, method), "{")
+	g.P("func (c *", unexport(service.GoName), "Client) ", clientSignature(g, method, isMsgService), "{")
 	g.P("if invoker := c._", method.GoName, "; invoker != nil {")
 	g.P("var out ", method.Output.GoIdent)
 	g.P("err := invoker(ctx, in, &out)")

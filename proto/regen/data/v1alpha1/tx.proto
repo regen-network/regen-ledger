@@ -4,11 +4,13 @@ package regen.data.v1alpha1;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
+import "cosmos_proto/extensions.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // Msg is the regen.data.v1alpha1 Msg service
 service Msg {
+  option (cosmos_proto.msg_service) = true;
 
   // AnchorData "anchors" a piece of data to the blockchain based on its secure
   // hash, effectively providing a tamper resistant timestamp.

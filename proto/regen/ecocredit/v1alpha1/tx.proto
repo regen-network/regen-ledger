@@ -3,11 +3,13 @@ syntax = "proto3";
 package regen.ecocredit.v1alpha1;
 
 import "gogoproto/gogo.proto";
+import "cosmos_proto/extensions.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 
 // Msg is the regen.ecocredit.v1alpha1 Msg service.
 service Msg {
+  option (cosmos_proto.msg_service) = true;
 
   // CreateClass creates a new credit class with an approved list of issuers and
   // optional metadata.

@@ -23,7 +23,7 @@ type MsgClient interface {
 	// data. They can simply be a intermediary providing timestamp services.
 	// SignData should be used to create a digital signature attesting to the
 	// veracity of some piece of data.
-	AnchorData(ctx context.Context, in *MsgAnchorDataRequest, opts ...grpc.CallOption) (*MsgAnchorDataResponse, error)
+	AnchorData(ctx types.Context, in *MsgAnchorDataRequest, opts ...grpc.CallOption) (*MsgAnchorDataResponse, error)
 	// SignData allows for signing of an arbitrary piece of data on the
 	// blockchain. By "signing" data the signers are making a statement about the
 	// veracity of the data itself. It is like signing a legal document, meaning
@@ -43,7 +43,7 @@ type MsgClient interface {
 	//
 	// SignData can be called multiple times for the same CID with different
 	// signers and those signers will be appended to the list of signers.
-	SignData(ctx context.Context, in *MsgSignDataRequest, opts ...grpc.CallOption) (*MsgSignDataResponse, error)
+	SignData(ctx types.Context, in *MsgSignDataRequest, opts ...grpc.CallOption) (*MsgSignDataResponse, error)
 	// StoreData stores a piece of data corresponding to a CID on the blockchain.
 	//
 	// Currently only data for CID's using sha2-256 and blake2b-256 hash
@@ -55,7 +55,7 @@ type MsgClient interface {
 	// data. They can simply be a intermediary providing storage services.
 	// SignData should be used to create a digital signature attesting to the
 	// veracity of some piece of data.
-	StoreData(ctx context.Context, in *MsgStoreDataRequest, opts ...grpc.CallOption) (*MsgStoreDataResponse, error)
+	StoreData(ctx types.Context, in *MsgStoreDataRequest, opts ...grpc.CallOption) (*MsgStoreDataResponse, error)
 }
 
 type msgClient struct {
@@ -69,7 +69,7 @@ func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
 	return &msgClient{cc: cc}
 }
 
-func (c *msgClient) AnchorData(ctx context.Context, in *MsgAnchorDataRequest, opts ...grpc.CallOption) (*MsgAnchorDataResponse, error) {
+func (c *msgClient) AnchorData(ctx types.Context, in *MsgAnchorDataRequest, opts ...grpc.CallOption) (*MsgAnchorDataResponse, error) {
 	if invoker := c._AnchorData; invoker != nil {
 		var out MsgAnchorDataResponse
 		err := invoker(ctx, in, &out)
@@ -92,7 +92,7 @@ func (c *msgClient) AnchorData(ctx context.Context, in *MsgAnchorDataRequest, op
 	return out, nil
 }
 
-func (c *msgClient) SignData(ctx context.Context, in *MsgSignDataRequest, opts ...grpc.CallOption) (*MsgSignDataResponse, error) {
+func (c *msgClient) SignData(ctx types.Context, in *MsgSignDataRequest, opts ...grpc.CallOption) (*MsgSignDataResponse, error) {
 	if invoker := c._SignData; invoker != nil {
 		var out MsgSignDataResponse
 		err := invoker(ctx, in, &out)
@@ -115,7 +115,7 @@ func (c *msgClient) SignData(ctx context.Context, in *MsgSignDataRequest, opts .
 	return out, nil
 }
 
-func (c *msgClient) StoreData(ctx context.Context, in *MsgStoreDataRequest, opts ...grpc.CallOption) (*MsgStoreDataResponse, error) {
+func (c *msgClient) StoreData(ctx types.Context, in *MsgStoreDataRequest, opts ...grpc.CallOption) (*MsgStoreDataResponse, error) {
 	if invoker := c._StoreData; invoker != nil {
 		var out MsgStoreDataResponse
 		err := invoker(ctx, in, &out)
