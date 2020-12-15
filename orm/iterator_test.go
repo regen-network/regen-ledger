@@ -150,7 +150,16 @@ func TestPaginate(t *testing.T) {
 		Description: "my test 3",
 		Admin:       sdk.AccAddress([]byte("other-admin-address")),
 	}
-	for _, g := range []testdata.GroupInfo{g1, g2, g3} {
+	g4 := testdata.GroupInfo{
+		Description: "my test 4",
+		Admin:       admin,
+	}
+	g5 := testdata.GroupInfo{
+		Description: "my test 5",
+		Admin:       sdk.AccAddress([]byte("other-admin-address")),
+	}
+
+	for _, g := range []testdata.GroupInfo{g1, g2, g3, g4, g5} {
 		_, err := tb.Create(ctx, &g)
 		require.NoError(t, err)
 	}
@@ -174,9 +183,9 @@ func TestPaginate(t *testing.T) {
 			key:     admin,
 		},
 		"up to max": {
-			pageReq:    &query.PageRequest{Key: nil, Limit: 2, CountTotal: true},
-			exp:        []testdata.GroupInfo{g1, g2},
-			expPageRes: &query.PageResponse{Total: 2, NextKey: nil},
+			pageReq:    &query.PageRequest{Key: nil, Limit: 3, CountTotal: true},
+			exp:        []testdata.GroupInfo{g1, g2, g4},
+			expPageRes: &query.PageResponse{Total: 3, NextKey: nil},
 			key:        admin,
 		},
 		"no results": {
@@ -187,14 +196,20 @@ func TestPaginate(t *testing.T) {
 		},
 		"with offset": {
 			pageReq:    &query.PageRequest{Key: nil, Offset: 1, Limit: 2, CountTotal: true},
-			exp:        []testdata.GroupInfo{g2},
-			expPageRes: &query.PageResponse{Total: 2, NextKey: nil},
+			exp:        []testdata.GroupInfo{g2, g4},
+			expPageRes: &query.PageResponse{Total: 3, NextKey: nil},
 			key:        admin,
 		},
 		"nil/default page req (limit = 100 > number of items)": {
 			pageReq:    nil,
-			exp:        []testdata.GroupInfo{g1, g2},
-			expPageRes: &query.PageResponse{Total: 2, NextKey: nil},
+			exp:        []testdata.GroupInfo{g1, g2, g4},
+			expPageRes: &query.PageResponse{Total: 3, NextKey: nil},
+			key:        admin,
+		},
+		"with key": {
+			pageReq:    &query.PageRequest{Key: EncodeSequence(2), Limit: 10},
+			exp:        []testdata.GroupInfo{g2, g4},
+			expPageRes: &query.PageResponse{Total: 0, NextKey: nil},
 			key:        admin,
 		},
 	}
@@ -202,7 +217,7 @@ func TestPaginate(t *testing.T) {
 		t.Run(msg, func(t *testing.T) {
 			var loaded []testdata.GroupInfo
 
-			it, err := idx.Get(ctx, spec.key)
+			it, err := idx.Get(ctx, spec.key, spec.pageReq)
 			require.NoError(t, err)
 
 			res, err := Paginate(it, spec.pageReq, &loaded)

@@ -50,7 +50,7 @@ func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
 	require.True(t, exists)
 
 	// and when loaded
-	it, err := k.groupByAdminIndex.Get(ctx, []byte("admin-address"))
+	it, err := k.groupByAdminIndex.Get(ctx, []byte("admin-address"), nil)
 	require.NoError(t, err)
 
 	// then
@@ -126,7 +126,7 @@ func TestKeeperEndToEndWithNaturalKeyTable(t *testing.T) {
 	require.True(t, exists)
 
 	// and when loaded from MultiKeyIndex
-	it, err := k.groupMemberByGroupIndex.Get(ctx, EncodeSequence(groupRowID))
+	it, err := k.groupMemberByGroupIndex.Get(ctx, EncodeSequence(groupRowID), nil)
 	require.NoError(t, err)
 
 	// then values should match as before
@@ -209,7 +209,7 @@ func TestGasCostsNaturalKeyTable(t *testing.T) {
 	// get by secondary index
 	gCtx.ResetGasMeter()
 	// and when loaded from MultiKeyIndex
-	it, err := k.groupMemberByGroupIndex.Get(gCtx, EncodeSequence(groupRowID))
+	it, err := k.groupMemberByGroupIndex.Get(gCtx, EncodeSequence(groupRowID), nil)
 	require.NoError(t, err)
 	var loadedSlice []testdata.GroupMember
 	_, err = ReadAll(it, &loadedSlice)
@@ -251,7 +251,7 @@ func TestGasCostsNaturalKeyTable(t *testing.T) {
 	// get by secondary index
 	gCtx.ResetGasMeter()
 	// and when loaded from MultiKeyIndex
-	it, err = k.groupMemberByGroupIndex.Get(gCtx, EncodeSequence(groupRowID))
+	it, err = k.groupMemberByGroupIndex.Get(gCtx, EncodeSequence(groupRowID), nil)
 	require.NoError(t, err)
 	_, err = ReadAll(it, &loadedSlice)
 	require.NoError(t, err)
@@ -312,7 +312,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 
 		// and also the indexes
 		require.True(t, k.groupByAdminIndex.Has(ctx, exp))
-		it, err := k.groupByAdminIndex.Get(ctx, exp)
+		it, err := k.groupByAdminIndex.Get(ctx, exp, nil)
 		require.NoError(t, err)
 		var all []testdata.GroupInfo
 		ReadAll(it, &all)
@@ -365,7 +365,7 @@ func TestExportImportStateNaturalKeyTable(t *testing.T) {
 	assert.Equal(t, testRecords, loaded)
 
 	// and first index setup
-	it, err = k.groupMemberByGroupIndex.Get(ctx, myGroupAddr)
+	it, err = k.groupMemberByGroupIndex.Get(ctx, myGroupAddr, nil)
 	require.NoError(t, err)
 	loaded = nil
 	keys, err = ReadAll(it, &loaded)
@@ -377,7 +377,7 @@ func TestExportImportStateNaturalKeyTable(t *testing.T) {
 
 	// and second index setup
 	for _, v := range testRecords {
-		it, err = k.groupMemberByMemberIndex.Get(ctx, v.Member)
+		it, err = k.groupMemberByMemberIndex.Get(ctx, v.Member, nil)
 		require.NoError(t, err)
 		loaded = nil
 		keys, err = ReadAll(it, &loaded)

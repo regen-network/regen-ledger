@@ -11,6 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/query"
 )
 
 const ormCodespace = "orm"
@@ -66,8 +67,9 @@ type Index interface {
 	// Has checks if a key exists. Panics on nil key.
 	Has(ctx HasKVStore, key []byte) bool
 
-	// Get returns a result iterator for the searchKey. Parameters must not be nil.
-	Get(ctx HasKVStore, searchKey []byte) (Iterator, error)
+	// Get returns a result iterator for the searchKey and optional pageRequest.
+	// searchKey must not be nil.
+	Get(ctx HasKVStore, searchKey []byte, pageRequest *query.PageRequest) (Iterator, error)
 
 	// PrefixScan returns an Iterator over a domain of keys in ascending order. End is exclusive.
 	// Start is an MultiKeyIndex key or prefix. It must be less than end, or the Iterator is invalid and error is returned.

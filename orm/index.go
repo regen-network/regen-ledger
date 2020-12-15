@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/query"
 )
 
 // indexer creates and modifies the second MultiKeyIndex based on the operations and changes on the primary object.
@@ -67,9 +68,14 @@ func (i MultiKeyIndex) Has(ctx HasKVStore, key []byte) bool {
 }
 
 // Get returns a result iterator for the searchKey. Parameters must not be nil.
-func (i MultiKeyIndex) Get(ctx HasKVStore, searchKey []byte) (Iterator, error) {
+func (i MultiKeyIndex) Get(ctx HasKVStore, searchKey []byte, pageRequest *query.PageRequest) (Iterator, error) {
 	store := prefix.NewStore(ctx.KVStore(i.storeKey), []byte{i.prefix})
-	it := store.Iterator(prefixRange(searchKey))
+	start, end := prefixRange(searchKey)
+
+	if pageRequest != nil && len(pageRequest.Key) != 0 {
+		start = i.indexKeyCodec.BuildIndexKey(searchKey, RowID(pageRequest.Key))
+	}
+	it := store.Iterator(start, end)
 	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, keyCodec: i.indexKeyCodec}, nil
 }
 
