@@ -83,6 +83,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.addr1 = s.fixture.Signers()[0]
 	s.addr2 = s.fixture.Signers()[1]
 
+	// Initial group, group account and balance setup
 	members := []group.Member{
 		{Address: s.addr2, Power: "1"},
 	}

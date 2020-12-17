@@ -144,7 +144,7 @@ func RegisterServices(
 	cfg, ok := configurator.(regenmodule.Configurator)
 	// We need regen configurator's Marshaler in order to
 	// instantiate new table builders so panicking if it's not the case
-	// until we use this upgraded configurator in the cosmos sdk
+	// until ADR 033 approach is finalized
 	if !ok {
 		panic("configurator should implement regenmodule.Configurator")
 	}

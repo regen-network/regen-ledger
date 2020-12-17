@@ -3,10 +3,9 @@ package server
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/regen-network/regen-ledger/types/module/server"
 
 	"github.com/regen-network/regen-ledger/orm"
-	regenmodule "github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -44,15 +43,8 @@ func newServer(storeKey sdk.StoreKey, cdc codec.Marshaler) serverImpl {
 	return s
 }
 
-func RegisterServices(storeKey sdk.StoreKey, configurator module.Configurator) {
-	cfg, ok := configurator.(regenmodule.Configurator)
-	// We need regen configurator's Marshaler in order to
-	// instantiate new table builders so panicking if it's not the case
-	// until we use this upgraded configurator in the cosmos sdk
-	if !ok {
-		panic("configurator should implement regenmodule.Configurator")
-	}
-	impl := newServer(storeKey, cfg.Marshaler())
+func RegisterServices(configurator server.Configurator) {
+	impl := newServer(configurator.ModuleKey(), configurator.Marshaler())
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 }

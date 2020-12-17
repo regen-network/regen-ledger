@@ -7,7 +7,7 @@ import (
 )
 
 // Configurator extends the cosmos sdk Configurator interface
-// with BinaryMarshaler()
+// with Marshaler()
 type Configurator interface {
 	sdkmodule.Configurator
 

@@ -69,8 +69,6 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 
 	// types
-	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -86,7 +84,13 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+
+	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
+
+	newmodule "github.com/regen-network/regen-ledger/types/module"
 	regenmodule "github.com/regen-network/regen-ledger/types/module"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	"github.com/regen-network/regen-ledger/x/group"
@@ -125,11 +129,16 @@ var (
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		data.AppModuleBasic{},
 		wasm.AppModuleBasic{},
-		ecocredit.AppModuleBasic{},
 		groupmodule.AppModuleBasic{},
+		ecocredit.Module{},
+		data.Module{},
 	)
+
+	NewModules = []newmodule.Module{
+		ecocredit.Module{},
+		data.Module{},
+	}
 
 	// module account permissions
 	maccPerms = map[string][]string{
@@ -216,7 +225,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
-		data.StoreKey, ecocredit.StoreKey, wasm.StoreKey, group.StoreKey,
+		wasm.StoreKey, group.StoreKey,
 	)
 
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -348,6 +357,20 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		&stakingKeeper, govRouter,
 	)
 
+	/* New Module Wiring START */
+	newModuleManager := servermodule.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
+
+	err := newModuleManager.RegisterModules(NewModules)
+	if err != nil {
+		panic(err)
+	}
+
+	err = newModuleManager.CompleteInitialization()
+	if err != nil {
+		panic(err)
+	}
+	/* New Module Wiring END */
+
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
 			app.AccountKeeper, app.StakingKeeper, app.BaseApp.DeliverTx,
@@ -368,9 +391,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
-		data.NewAppModule(keys[data.StoreKey]),
 		wasm.NewAppModule(app.wasmKeeper),
-		ecocredit.NewAppModule(keys[ecocredit.StoreKey]),
 		groupmodule.NewAppModule(keys[group.StoreKey], app.GetSubspace(group.ModuleName), app.Router()),
 	)
 
