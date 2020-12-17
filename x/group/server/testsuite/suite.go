@@ -129,14 +129,14 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 	}}
 
 	expGroups := []*group.GroupInfo{
-		&group.GroupInfo{
+		{
 			GroupId:     s.groupID,
 			Version:     1,
 			Admin:       s.addr1,
 			TotalWeight: "1",
 			Comment:     "test",
 		},
-		&group.GroupInfo{
+		{
 			GroupId:     2,
 			Version:     1,
 			Admin:       s.addr1,
