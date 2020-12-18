@@ -19,22 +19,22 @@ func TestMsgCreateGroupValidation(t *testing.T) {
 		expErr bool
 	}{
 		"all good with minimum fields set": {
-			src: MsgCreateGroupRequest{Admin: myAddr},
+			src: MsgCreateGroupRequest{Admin: myAddr.String()},
 		},
 		"all good with a member": {
 			src: MsgCreateGroupRequest{
-				Admin: myAddr,
+				Admin: myAddr.String(),
 				Members: []Member{
-					{Address: myAddr, Power: "1"},
+					{Address: myAddr.String(), Power: "1"},
 				},
 			},
 		},
 		"all good with multiple members": {
 			src: MsgCreateGroupRequest{
-				Admin: myAddr,
+				Admin: myAddr.String(),
 				Members: []Member{
-					{Address: myAddr, Power: "1"},
-					{Address: myOtherAddr, Power: "2"},
+					{Address: myAddr.String(), Power: "1"},
+					{Address: myOtherAddr.String(), Power: "2"},
 				},
 			},
 		},
@@ -44,46 +44,46 @@ func TestMsgCreateGroupValidation(t *testing.T) {
 		},
 		"valid admin required": {
 			src: MsgCreateGroupRequest{
-				Admin: []byte("invalid-address"),
+				Admin: "invalid-address",
 			},
 			expErr: true,
 		},
 		"duplicate member addresses not allowed": {
 			src: MsgCreateGroupRequest{
-				Admin: myAddr,
+				Admin: myAddr.String(),
 				Members: []Member{
-					{Address: myAddr, Power: "1"},
-					{Address: myAddr, Power: "2"},
+					{Address: myAddr.String(), Power: "1"},
+					{Address: myAddr.String(), Power: "2"},
 				},
 			},
 			expErr: true,
 		},
 		"negative member's power not allowed": {
 			src: MsgCreateGroupRequest{
-				Admin: myAddr,
+				Admin: myAddr.String(),
 				Members: []Member{
-					{Address: myAddr, Power: "-1"},
+					{Address: myAddr.String(), Power: "-1"},
 				},
 			},
 			expErr: true,
 		},
 		"empty member's power not allowed": {
 			src: MsgCreateGroupRequest{
-				Admin:   myAddr,
-				Members: []Member{{Address: myAddr}},
+				Admin:   myAddr.String(),
+				Members: []Member{{Address: myAddr.String()}},
 			},
 			expErr: true,
 		},
 		"zero member's power not allowed": {
 			src: MsgCreateGroupRequest{
-				Admin:   myAddr,
-				Members: []Member{{Address: myAddr, Power: "0"}},
+				Admin:   myAddr.String(),
+				Members: []Member{{Address: myAddr.String(), Power: "0"}},
 			},
 			expErr: true,
 		},
 		"member address required": {
 			src: MsgCreateGroupRequest{
-				Admin: myAddr,
+				Admin: myAddr.String(),
 				Members: []Member{
 					{Power: "1"},
 				},
@@ -92,9 +92,9 @@ func TestMsgCreateGroupValidation(t *testing.T) {
 		},
 		"valid member address required": {
 			src: MsgCreateGroupRequest{
-				Admin: myAddr,
+				Admin: myAddr.String(),
 				Members: []Member{
-					{Address: []byte("invalid-address"), Power: "1"},
+					{Address: "invalid-address", Power: "1"},
 				},
 			},
 			expErr: true,
@@ -114,7 +114,7 @@ func TestMsgCreateGroupValidation(t *testing.T) {
 
 func TestMsgCreateGroupSigner(t *testing.T) {
 	_, _, myAddr := testdata.KeyTestPubAddr()
-	assert.Equal(t, []sdk.AccAddress{myAddr}, MsgCreateGroupRequest{Admin: myAddr}.GetSigners())
+	assert.Equal(t, []sdk.AccAddress{myAddr}, MsgCreateGroupRequest{Admin: myAddr.String()}.GetSigners())
 }
 
 func TestMsgCreateGroupAccount(t *testing.T) {
@@ -214,46 +214,52 @@ func TestMsgCreateGroupAccount(t *testing.T) {
 }
 
 func TestMsgCreateProposalRequest(t *testing.T) {
+	_, _, addr := testdata.KeyTestPubAddr()
+	groupAddr := addr.String()
+
+	_, _, addr = testdata.KeyTestPubAddr()
+	memberAddr := addr.String()
+
 	specs := map[string]struct {
 		src    MsgCreateProposalRequest
 		expErr bool
 	}{
 		"all good with minimum fields set": {
 			src: MsgCreateProposalRequest{
-				GroupAccount: []byte("valid--group-address"),
-				Proposers:    []sdk.AccAddress{[]byte("valid-member-address")},
+				GroupAccount: groupAddr,
+				Proposers:    []string{memberAddr},
 			},
 		},
 		"group account required": {
 			src: MsgCreateProposalRequest{
-				Proposers: []sdk.AccAddress{[]byte("valid-member-address")},
+				Proposers: []string{memberAddr},
 			},
 			expErr: true,
 		},
 		"proposers required": {
 			src: MsgCreateProposalRequest{
-				GroupAccount: []byte("valid--group-address"),
+				GroupAccount: groupAddr,
 			},
 			expErr: true,
 		},
 		"valid proposer address required": {
 			src: MsgCreateProposalRequest{
-				GroupAccount: []byte("valid--group-address"),
-				Proposers:    []sdk.AccAddress{[]byte("invalid-member-address")},
+				GroupAccount: groupAddr,
+				Proposers:    []string{"invalid-member-address"},
 			},
 			expErr: true,
 		},
 		"no duplicate proposers": {
 			src: MsgCreateProposalRequest{
-				GroupAccount: []byte("valid--group-address"),
-				Proposers:    []sdk.AccAddress{[]byte("valid-member-address"), []byte("valid-member-address")},
+				GroupAccount: groupAddr,
+				Proposers:    []string{memberAddr, memberAddr},
 			},
 			expErr: true,
 		},
 		"empty proposer address not allowed": {
 			src: MsgCreateProposalRequest{
-				GroupAccount: []byte("valid--group-address"),
-				Proposers:    []sdk.AccAddress{[]byte("valid-member-address"), nil, []byte("other-member-address")},
+				GroupAccount: groupAddr,
+				Proposers:    []string{memberAddr, ""},
 			},
 			expErr: true,
 		},
@@ -271,6 +277,9 @@ func TestMsgCreateProposalRequest(t *testing.T) {
 }
 
 func TestMsgVote(t *testing.T) {
+	_, _, addr := testdata.KeyTestPubAddr()
+	memberAddr := addr.String()
+
 	specs := map[string]struct {
 		src    MsgVoteRequest
 		expErr bool
@@ -279,20 +288,20 @@ func TestMsgVote(t *testing.T) {
 			src: MsgVoteRequest{
 				ProposalId: 1,
 				Choice:     Choice_CHOICE_YES,
-				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Voters:     []string{memberAddr},
 			},
 		},
 		"proposal required": {
 			src: MsgVoteRequest{
 				Choice: Choice_CHOICE_YES,
-				Voters: []sdk.AccAddress{[]byte("valid-member-address")},
+				Voters: []string{memberAddr},
 			},
 			expErr: true,
 		},
 		"choice required": {
 			src: MsgVoteRequest{
 				ProposalId: 1,
-				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Voters:     []string{memberAddr},
 			},
 			expErr: true,
 		},
@@ -300,7 +309,7 @@ func TestMsgVote(t *testing.T) {
 			src: MsgVoteRequest{
 				ProposalId: 1,
 				Choice:     5,
-				Voters:     []sdk.AccAddress{[]byte("valid-member-address")},
+				Voters:     []string{memberAddr},
 			},
 			expErr: true,
 		},
@@ -315,7 +324,7 @@ func TestMsgVote(t *testing.T) {
 			src: MsgVoteRequest{
 				ProposalId: 1,
 				Choice:     Choice_CHOICE_YES,
-				Voters:     []sdk.AccAddress{[]byte("invalid-member-address")},
+				Voters:     []string{"invalid-member-address"},
 			},
 			expErr: true,
 		},
@@ -323,7 +332,7 @@ func TestMsgVote(t *testing.T) {
 			src: MsgVoteRequest{
 				ProposalId: 1,
 				Choice:     Choice_CHOICE_YES,
-				Voters:     []sdk.AccAddress{[]byte("valid-member-address"), []byte("valid-member-address")},
+				Voters:     []string{memberAddr, memberAddr},
 			},
 			expErr: true,
 		},
@@ -331,7 +340,7 @@ func TestMsgVote(t *testing.T) {
 			src: MsgVoteRequest{
 				ProposalId: 1,
 				Choice:     Choice_CHOICE_YES,
-				Voters:     []sdk.AccAddress{[]byte("valid-member-address"), nil, []byte("other-member-address")},
+				Voters:     []string{memberAddr, ""},
 			},
 			expErr: true,
 		},

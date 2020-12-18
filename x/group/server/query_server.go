@@ -25,7 +25,11 @@ func (s serverImpl) getGroupInfo(ctx sdk.Context, id group.ID) (group.GroupInfo,
 }
 
 func (s serverImpl) GroupAccountInfo(ctx context.Context, request *group.QueryGroupAccountInfoRequest) (*group.QueryGroupAccountInfoResponse, error) {
-	groupAccountInfo, err := s.getGroupAccountInfo(sdk.UnwrapSDKContext(ctx), request.GroupAccount)
+	addr, err := sdk.AccAddressFromBech32(request.GroupAccount)
+	if err != nil {
+		return nil, err
+	}
+	groupAccountInfo, err := s.getGroupAccountInfo(sdk.UnwrapSDKContext(ctx), addr)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +65,11 @@ func (s serverImpl) getGroupMembers(ctx sdk.Context, id group.ID, pageRequest *q
 }
 
 func (s serverImpl) GroupsByAdmin(ctx context.Context, request *group.QueryGroupsByAdminRequest) (*group.QueryGroupsByAdminResponse, error) {
-	it, err := s.getGroupsByAdmin(sdk.UnwrapSDKContext(ctx), request.Admin, request.Pagination)
+	addr, err := sdk.AccAddressFromBech32(request.Admin)
+	if err != nil {
+		return nil, err
+	}
+	it, err := s.getGroupsByAdmin(sdk.UnwrapSDKContext(ctx), addr, request.Pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -105,7 +113,11 @@ func (s serverImpl) getGroupAccountsByGroup(ctx sdk.Context, id group.ID, pageRe
 }
 
 func (s serverImpl) GroupAccountsByAdmin(ctx context.Context, request *group.QueryGroupAccountsByAdminRequest) (*group.QueryGroupAccountsByAdminResponse, error) {
-	it, err := s.getGroupAccountsByAdmin(sdk.UnwrapSDKContext(ctx), request.Admin, request.Pagination)
+	addr, err := sdk.AccAddressFromBech32(request.Admin)
+	if err != nil {
+		return nil, err
+	}
+	it, err := s.getGroupAccountsByAdmin(sdk.UnwrapSDKContext(ctx), addr, request.Pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +148,11 @@ func (s serverImpl) Proposal(ctx context.Context, request *group.QueryProposalRe
 }
 
 func (s serverImpl) ProposalsByGroupAccount(ctx context.Context, request *group.QueryProposalsByGroupAccountRequest) (*group.QueryProposalsByGroupAccountResponse, error) {
-	it, err := s.getProposalsByGroupAccount(sdk.UnwrapSDKContext(ctx), request.GroupAccount, request.Pagination)
+	addr, err := sdk.AccAddressFromBech32(request.GroupAccount)
+	if err != nil {
+		return nil, err
+	}
+	it, err := s.getProposalsByGroupAccount(sdk.UnwrapSDKContext(ctx), addr, request.Pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +182,11 @@ func (s serverImpl) getProposal(ctx sdk.Context, id group.ProposalID) (group.Pro
 }
 
 func (s serverImpl) VoteByProposalVoter(ctx context.Context, request *group.QueryVoteByProposalVoterRequest) (*group.QueryVoteByProposalVoterResponse, error) {
-	vote, err := s.getVote(sdk.UnwrapSDKContext(ctx), request.ProposalId, request.Voter)
+	addr, err := sdk.AccAddressFromBech32(request.Voter)
+	if err != nil {
+		return nil, err
+	}
+	vote, err := s.getVote(sdk.UnwrapSDKContext(ctx), request.ProposalId, addr)
 	if err != nil {
 		return nil, err
 	}
@@ -194,7 +214,11 @@ func (s serverImpl) VotesByProposal(ctx context.Context, request *group.QueryVot
 }
 
 func (s serverImpl) VotesByVoter(ctx context.Context, request *group.QueryVotesByVoterRequest) (*group.QueryVotesByVoterResponse, error) {
-	it, err := s.getVotesByVoter(sdk.UnwrapSDKContext(ctx), request.Voter, request.Pagination)
+	addr, err := sdk.AccAddressFromBech32(request.Voter)
+	if err != nil {
+		return nil, err
+	}
+	it, err := s.getVotesByVoter(sdk.UnwrapSDKContext(ctx), addr, request.Pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -213,7 +237,7 @@ func (s serverImpl) VotesByVoter(ctx context.Context, request *group.QueryVotesB
 
 func (s serverImpl) getVote(ctx sdk.Context, id group.ProposalID, voter sdk.AccAddress) (group.Vote, error) {
 	var v group.Vote
-	return v, s.voteTable.GetOne(ctx, group.Vote{ProposalId: id, Voter: voter}.NaturalKey(), &v)
+	return v, s.voteTable.GetOne(ctx, group.Vote{ProposalId: id, Voter: voter.String()}.NaturalKey(), &v)
 }
 
 func (s serverImpl) getVotesByProposal(ctx sdk.Context, id group.ProposalID, pageRequest *query.PageRequest) (orm.Iterator, error) {

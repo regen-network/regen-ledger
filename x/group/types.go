@@ -154,7 +154,11 @@ func (g GroupMember) NaturalKey() []byte {
 }
 
 func (g GroupAccountInfo) NaturalKey() []byte {
-	return g.GroupAccount
+	addr, err := sdk.AccAddressFromBech32(g.GroupAccount)
+	if err != nil {
+		panic(err)
+	}
+	return addr
 }
 
 var _ orm.Validateable = GroupAccountInfo{}
@@ -162,9 +166,9 @@ var _ orm.Validateable = GroupAccountInfo{}
 // NewGroupAccountInfo creates a new GroupAccountInfo instance
 func NewGroupAccountInfo(groupAccount sdk.AccAddress, group ID, admin sdk.AccAddress, comment string, version uint64, decisionPolicy DecisionPolicy) (GroupAccountInfo, error) {
 	p := GroupAccountInfo{
-		GroupAccount: groupAccount,
+		GroupAccount: groupAccount.String(),
 		GroupId:      group,
-		Admin:        admin,
+		Admin:        admin.String(),
 		Comment:      comment,
 		Version:      version,
 	}
@@ -192,16 +196,13 @@ func (g GroupAccountInfo) GetDecisionPolicy() DecisionPolicy {
 }
 
 func (g GroupAccountInfo) ValidateBasic() error {
-	if g.Admin.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "admin")
-	}
-	if err := sdk.VerifyAddressFormat(g.Admin); err != nil {
+	_, err := sdk.AccAddressFromBech32(g.Admin)
+	if err != nil {
 		return sdkerrors.Wrap(err, "admin")
 	}
-	if g.GroupAccount.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "group account")
-	}
-	if err := sdk.VerifyAddressFormat(g.GroupAccount); err != nil {
+
+	_, err = sdk.AccAddressFromBech32(g.GroupAccount)
+	if err != nil {
 		return sdkerrors.Wrap(err, "group account")
 	}
 
@@ -238,12 +239,11 @@ func (v Vote) NaturalKey() []byte {
 var _ orm.Validateable = Vote{}
 
 func (v Vote) ValidateBasic() error {
-	if len(v.Voter) == 0 {
-		return sdkerrors.Wrap(ErrEmpty, "voter")
-	}
-	if err := sdk.VerifyAddressFormat(v.Voter); err != nil {
+	_, err := sdk.AccAddressFromBech32(v.Voter)
+	if err != nil {
 		return sdkerrors.Wrap(err, "voter")
 	}
+
 	if v.ProposalId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "proposal")
 	}
@@ -299,20 +299,20 @@ func noopValidator() paramstypes.ValueValidatorFn {
 
 var _ orm.Validateable = GroupInfo{}
 
-func (m GroupInfo) ValidateBasic() error {
-	if m.GroupId.Empty() {
+func (g GroupInfo) ValidateBasic() error {
+	if g.GroupId.Empty() {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
-	if m.Admin.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "admin")
-	}
-	if err := sdk.VerifyAddressFormat(m.Admin); err != nil {
+
+	_, err := sdk.AccAddressFromBech32(g.Admin)
+	if err != nil {
 		return sdkerrors.Wrap(err, "admin")
 	}
-	if _, err := math.ParseNonNegativeDecimal(m.TotalWeight); err != nil {
+
+	if _, err := math.ParseNonNegativeDecimal(g.TotalWeight); err != nil {
 		return sdkerrors.Wrap(err, "total weight")
 	}
-	if m.Version == 0 {
+	if g.Version == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "version")
 	}
 	return nil
@@ -324,14 +324,13 @@ func (g GroupMember) ValidateBasic() error {
 	if g.GroupId.Empty() {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
-	if g.Member.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "address")
+
+	_, err := sdk.AccAddressFromBech32(g.Member)
+	if err != nil {
+		return sdkerrors.Wrap(err, "address")
 	}
 	if _, err := math.ParsePositiveDecimal(g.Weight); err != nil {
 		return sdkerrors.Wrap(err, "power")
-	}
-	if err := sdk.VerifyAddressFormat(g.Member); err != nil {
-		return sdkerrors.Wrap(err, "address")
 	}
 	return nil
 }

@@ -15,7 +15,7 @@ import "google/protobuf/any.proto";
 message Member {
 
     // address is the member's account address.
-    bytes address = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string address = 1;
     
     // power is the member's power that should be greater than 0.
     string power = 2;
@@ -66,7 +66,7 @@ message GroupInfo {
     uint64 group_id = 1 [(gogoproto.casttype) = "ID"];
 
     // admin is the account address of the group's admin.
-    bytes admin = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string admin = 2;
     
     // comment is the group's comment.
     string comment = 3;
@@ -89,7 +89,7 @@ message GroupMember {
 
     // member is the account address of the group member.
     // todo: @aaronc field has different name in `Member.address`. Can we unify this?
-    bytes member = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string member = 2;
     
     // weight is the power of the group member.
     // todo: @aaronc it is `Member.power`. Can we unify this?
@@ -105,13 +105,13 @@ message GroupAccountInfo {
     option (gogoproto.goproto_getters) = false;
 
     // group_account is the group account address.
-    bytes group_account = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string group_account = 1;
     
     // group_id is the unique ID of the group.
     uint64 group_id = 2 [(gogoproto.casttype) = "ID"];
 
     // admin is the account address of the group admin.
-    bytes admin = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string admin = 3;
     
     // comment is the group account's comment.
     string comment = 4;
@@ -132,13 +132,13 @@ message Proposal {
     option (gogoproto.goproto_getters) = false;
 
     // group_account is the group account address.
-    bytes group_account = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string group_account = 1;
     
     // comment is the proposal's comment.
     string comment = 2;
 
     // proposers are the account addresses of the proposers.
-    repeated bytes proposers = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    repeated string proposers = 3;
     
     // submitted_at is a timestamp specifying when a proposal was submitted.
     google.protobuf.Timestamp submitted_at = 4 [(gogoproto.nullable) = false];
@@ -253,7 +253,7 @@ message Vote {
     uint64 proposal_id = 1 [(gogoproto.casttype) = "ProposalID"];
     
     // voter is the account address of the voter.
-    bytes voter = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string voter = 2;
     
     // choice is the voter's choice on the proposal.
     Choice choice = 3;

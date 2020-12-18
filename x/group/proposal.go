@@ -34,18 +34,26 @@ func (p *Proposal) SetMsgs(new []sdk.Msg) error {
 }
 
 func (p Proposal) ValidateBasic() error {
-	if p.GroupAccount.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "group account")
-	}
-	if err := sdk.VerifyAddressFormat(p.GroupAccount); err != nil {
+	_, err := sdk.AccAddressFromBech32(p.GroupAccount)
+	if err != nil {
 		return sdkerrors.Wrap(err, "group account")
 	}
+
 	if len(p.Proposers) == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "proposers")
 	}
-	if err := AccAddresses(p.Proposers).ValidateBasic(); err != nil {
+	addrs := make([]sdk.AccAddress, len(p.Proposers))
+	for i, proposer := range p.Proposers {
+		addr, err := sdk.AccAddressFromBech32(proposer)
+		if err != nil {
+			return sdkerrors.Wrap(err, "proposers")
+		}
+		addrs[i] = addr
+	}
+	if err := AccAddresses(addrs).ValidateBasic(); err != nil {
 		return sdkerrors.Wrap(err, "proposers")
 	}
+
 	if p.SubmittedAt.Seconds == 0 && p.SubmittedAt.Nanos == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "submitted at")
 	}

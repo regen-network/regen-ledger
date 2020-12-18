@@ -14,17 +14,20 @@ var _ sdk.MsgRequest = &MsgCreateGroupRequest{}
 
 // GetSigners returns the expected signers for a MsgCreateGroupRequest.
 func (m MsgCreateGroupRequest) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.Admin}
+	admin, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{admin}
 }
 
 // ValidateBasic does a sanity check on the provided data
 func (m MsgCreateGroupRequest) ValidateBasic() error {
-	if m.Admin.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "admin")
-	}
-	if err := sdk.VerifyAddressFormat(m.Admin); err != nil {
+	_, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
 		return sdkerrors.Wrap(err, "admin")
 	}
+
 	if err := Members(m.Members).ValidateBasic(); err != nil {
 		return sdkerrors.Wrap(err, "members")
 	}
@@ -38,15 +41,14 @@ func (m MsgCreateGroupRequest) ValidateBasic() error {
 }
 
 func (m Member) ValidateBasic() error {
-	if m.Address.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "address")
+	_, err := sdk.AccAddressFromBech32(m.Address)
+	if err != nil {
+		return sdkerrors.Wrap(err, "address")
 	}
 	if _, err := math.ParsePositiveDecimal(m.Power); err != nil {
 		return sdkerrors.Wrap(err, "power")
 	}
-	if err := sdk.VerifyAddressFormat(m.Address); err != nil {
-		return sdkerrors.Wrap(err, "address")
-	}
+
 	return nil
 }
 
@@ -54,7 +56,11 @@ var _ sdk.MsgRequest = &MsgUpdateGroupAdminRequest{}
 
 // GetSigners returns the expected signers for a MsgUpdateGroupAdminRequest.
 func (m MsgUpdateGroupAdminRequest) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.Admin}
+	admin, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{admin}
 }
 
 // ValidateBasic does a sanity check on the provided data
@@ -63,21 +69,17 @@ func (m MsgUpdateGroupAdminRequest) ValidateBasic() error {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
 
-	if m.Admin.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "admin")
-	}
-	if err := sdk.VerifyAddressFormat(m.Admin); err != nil {
+	admin, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
-	if m.NewAdmin.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "new admin")
-	}
-	if err := sdk.VerifyAddressFormat(m.NewAdmin); err != nil {
+	newAdmin, err := sdk.AccAddressFromBech32(m.NewAdmin)
+	if err != nil {
 		return sdkerrors.Wrap(err, "new admin")
 	}
 
-	if m.Admin.Equals(m.NewAdmin) {
+	if admin.Equals(newAdmin) {
 		return sdkerrors.Wrap(ErrInvalid, "new and old admin are the same")
 	}
 	return nil
@@ -91,7 +93,11 @@ var _ sdk.MsgRequest = &MsgUpdateGroupCommentRequest{}
 
 // GetSigners returns the expected signers for a MsgUpdateGroupCommentRequest.
 func (m MsgUpdateGroupCommentRequest) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.Admin}
+	admin, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{admin}
 }
 
 // ValidateBasic does a sanity check on the provided data
@@ -100,10 +106,8 @@ func (m MsgUpdateGroupCommentRequest) ValidateBasic() error {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 
 	}
-	if m.Admin.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "admin")
-	}
-	if err := sdk.VerifyAddressFormat(m.Admin); err != nil {
+	_, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
 		return sdkerrors.Wrap(err, "admin")
 	}
 	return nil
@@ -117,7 +121,11 @@ var _ sdk.MsgRequest = &MsgUpdateGroupMembersRequest{}
 
 // GetSigners returns the expected signers for a MsgUpdateGroupMembersRequest.
 func (m MsgUpdateGroupMembersRequest) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.Admin}
+	admin, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{admin}
 }
 
 // ValidateBasic does a sanity check on the provided data
@@ -126,10 +134,8 @@ func (m MsgUpdateGroupMembersRequest) ValidateBasic() error {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 
 	}
-	if m.Admin.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "admin")
-	}
-	if err := sdk.VerifyAddressFormat(m.Admin); err != nil {
+	_, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
@@ -150,15 +156,17 @@ var _ sdk.MsgRequest = &MsgCreateGroupAccountRequest{}
 
 // GetSigners returns the expected signers for a MsgCreateGroupAccountRequest.
 func (m MsgCreateGroupAccountRequest) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.Admin}
+	admin, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{admin}
 }
 
 // ValidateBasic does a sanity check on the provided data
 func (m MsgCreateGroupAccountRequest) ValidateBasic() error {
-	if m.Admin.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "admin")
-	}
-	if err := sdk.VerifyAddressFormat(m.Admin); err != nil {
+	_, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
 		return sdkerrors.Wrap(err, "admin")
 	}
 	if m.GroupId == 0 {
@@ -180,33 +188,31 @@ var _ sdk.MsgRequest = &MsgUpdateGroupAccountAdminRequest{}
 
 // GetSigners returns the expected signers for a MsgUpdateGroupAccountAdminRequest.
 func (m MsgUpdateGroupAccountAdminRequest) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.Admin}
+	admin, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{admin}
 }
 
 // ValidateBasic does a sanity check on the provided data
 func (m MsgUpdateGroupAccountAdminRequest) ValidateBasic() error {
-	if m.Admin.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "admin")
-	}
-	if err := sdk.VerifyAddressFormat(m.Admin); err != nil {
+	admin, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
-	if m.NewAdmin.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "new admin")
-	}
-	if err := sdk.VerifyAddressFormat(m.NewAdmin); err != nil {
+	newAdmin, err := sdk.AccAddressFromBech32(m.NewAdmin)
+	if err != nil {
 		return sdkerrors.Wrap(err, "new admin")
 	}
 
-	if m.GroupAccount.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "group account")
-	}
-	if err := sdk.VerifyAddressFormat(m.GroupAccount); err != nil {
+	_, err = sdk.AccAddressFromBech32(m.GroupAccount)
+	if err != nil {
 		return sdkerrors.Wrap(err, "group account")
 	}
 
-	if m.Admin.Equals(m.NewAdmin) {
+	if admin.Equals(newAdmin) {
 		return sdkerrors.Wrap(ErrInvalid, "new and old admin are the same")
 	}
 	return nil
@@ -217,22 +223,22 @@ var _ types.UnpackInterfacesMessage = MsgUpdateGroupAccountDecisionPolicyRequest
 
 // GetSigners returns the expected signers for a MsgUpdateGroupAccountDecisionPolicyRequest.
 func (m MsgUpdateGroupAccountDecisionPolicyRequest) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.Admin}
+	admin, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{admin}
 }
 
 // ValidateBasic does a sanity check on the provided data
 func (m MsgUpdateGroupAccountDecisionPolicyRequest) ValidateBasic() error {
-	if m.Admin.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "admin")
-	}
-	if err := sdk.VerifyAddressFormat(m.Admin); err != nil {
+	_, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
-	if m.GroupAccount.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "group account")
-	}
-	if err := sdk.VerifyAddressFormat(m.GroupAccount); err != nil {
+	_, err = sdk.AccAddressFromBech32(m.GroupAccount)
+	if err != nil {
 		return sdkerrors.Wrap(err, "group account")
 	}
 
@@ -266,22 +272,22 @@ var _ sdk.MsgRequest = &MsgUpdateGroupAccountCommentRequest{}
 
 // GetSigners returns the expected signers for a MsgUpdateGroupAccountCommentRequest.
 func (m MsgUpdateGroupAccountCommentRequest) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.Admin}
+	admin, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{admin}
 }
 
 // ValidateBasic does a sanity check on the provided data
 func (m MsgUpdateGroupAccountCommentRequest) ValidateBasic() error {
-	if m.Admin.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "admin")
-	}
-	if err := sdk.VerifyAddressFormat(m.Admin); err != nil {
+	_, err := sdk.AccAddressFromBech32(m.Admin)
+	if err != nil {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
-	if m.GroupAccount.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "group account")
-	}
-	if err := sdk.VerifyAddressFormat(m.GroupAccount); err != nil {
+	_, err = sdk.AccAddressFromBech32(m.GroupAccount)
+	if err != nil {
 		return sdkerrors.Wrap(err, "group account")
 	}
 
@@ -294,7 +300,7 @@ var _ types.UnpackInterfacesMessage = MsgCreateGroupAccountRequest{}
 // NewMsgCreateGroupAccountRequest creates a new MsgCreateGroupAccountRequest.
 func NewMsgCreateGroupAccountRequest(admin sdk.AccAddress, group ID, comment string, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccountRequest, error) {
 	m := &MsgCreateGroupAccountRequest{
-		Admin:   admin,
+		Admin:   admin.String(),
 		GroupId: group,
 		Comment: comment,
 	}
@@ -305,7 +311,7 @@ func NewMsgCreateGroupAccountRequest(admin sdk.AccAddress, group ID, comment str
 	return m, nil
 }
 
-func (m *MsgCreateGroupAccountRequest) GetAdmin() sdk.AccAddress {
+func (m *MsgCreateGroupAccountRequest) GetAdmin() string {
 	return m.Admin
 }
 
@@ -348,23 +354,39 @@ var _ sdk.MsgRequest = &MsgCreateProposalRequest{}
 
 // GetSigners returns the expected signers for a MsgCreateProposalRequest.
 func (m MsgCreateProposalRequest) GetSigners() []sdk.AccAddress {
-	return m.Proposers
+	addrs := make([]sdk.AccAddress, len(m.Proposers))
+	for i, proposer := range m.Proposers {
+		addr, err := sdk.AccAddressFromBech32(proposer)
+		if err != nil {
+			panic(err)
+		}
+		addrs[i] = addr
+	}
+	return addrs
 }
 
 // ValidateBasic does a sanity check on the provided data
 func (m MsgCreateProposalRequest) ValidateBasic() error {
-	if m.GroupAccount.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "group account")
-	}
-	if err := sdk.VerifyAddressFormat(m.GroupAccount); err != nil {
+	_, err := sdk.AccAddressFromBech32(m.GroupAccount)
+	if err != nil {
 		return sdkerrors.Wrap(err, "group account")
 	}
+
 	if len(m.Proposers) == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "proposers")
 	}
-	if err := AccAddresses(m.Proposers).ValidateBasic(); err != nil {
+	addrs := make([]sdk.AccAddress, len(m.Proposers))
+	for i, proposer := range m.Proposers {
+		addr, err := sdk.AccAddressFromBech32(proposer)
+		if err != nil {
+			return sdkerrors.Wrap(err, "proposers")
+		}
+		addrs[i] = addr
+	}
+	if err := AccAddresses(addrs).ValidateBasic(); err != nil {
 		return sdkerrors.Wrap(err, "proposers")
 	}
+
 	for i, any := range m.Msgs {
 		msg, ok := any.GetCachedValue().(sdk.Msg)
 		if !ok {
@@ -421,7 +443,15 @@ var _ sdk.MsgRequest = &MsgVoteRequest{}
 
 // GetSigners returns the expected signers for a MsgVoteRequest.
 func (m MsgVoteRequest) GetSigners() []sdk.AccAddress {
-	return m.Voters
+	addrs := make([]sdk.AccAddress, len(m.Voters))
+	for i, voter := range m.Voters {
+		addr, err := sdk.AccAddressFromBech32(voter)
+		if err != nil {
+			panic(err)
+		}
+		addrs[i] = addr
+	}
+	return addrs
 }
 
 // ValidateBasic does a sanity check on the provided data
@@ -429,7 +459,15 @@ func (m MsgVoteRequest) ValidateBasic() error {
 	if len(m.Voters) == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "voters")
 	}
-	if err := AccAddresses(m.Voters).ValidateBasic(); err != nil {
+	addrs := make([]sdk.AccAddress, len(m.Voters))
+	for i, in := range m.Voters {
+		addr, err := sdk.AccAddressFromBech32(in)
+		if err != nil {
+			return sdkerrors.Wrap(err, "voters")
+		}
+		addrs[i] = addr
+	}
+	if err := AccAddresses(addrs).ValidateBasic(); err != nil {
 		return sdkerrors.Wrap(err, "voters")
 	}
 	if m.ProposalId == 0 {
@@ -448,16 +486,18 @@ var _ sdk.MsgRequest = &MsgExecRequest{}
 
 // GetSigners returns the expected signers for a MsgExecRequest.
 func (m MsgExecRequest) GetSigners() []sdk.AccAddress {
-	return []sdk.AccAddress{m.Signer}
+	signer, err := sdk.AccAddressFromBech32(m.Signer)
+	if err != nil {
+		panic(err)
+	}
+	return []sdk.AccAddress{signer}
 }
 
 // ValidateBasic does a sanity check on the provided data
 func (m MsgExecRequest) ValidateBasic() error {
-	if m.Signer.Empty() {
-		return sdkerrors.Wrap(ErrEmpty, "signer")
-	}
-	if err := sdk.VerifyAddressFormat(m.Signer); err != nil {
-		return sdkerrors.Wrap(ErrInvalid, "signer")
+	_, err := sdk.AccAddressFromBech32(m.Signer)
+	if err != nil {
+		return sdkerrors.Wrap(err, "signer")
 	}
 	if m.ProposalId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "proposal")

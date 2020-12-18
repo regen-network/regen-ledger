@@ -226,9 +226,9 @@ GroupAccountInfo represents the high-level on-chain information for a group acco
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_account | [bytes](#bytes) |  | group_account is the group account address. |
+| group_account | [string](#string) |  | group_account is the group account address. |
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
-| admin | [bytes](#bytes) |  | admin is the account address of the group admin. |
+| admin | [string](#string) |  | admin is the account address of the group admin. |
 | comment | [string](#string) |  | comment is the group account's comment. |
 | version | [uint64](#uint64) |  | version is used to track changes to a group's GroupAccountInfo structure that would create a different result on a running proposal. |
 | decision_policy | [google.protobuf.Any](#google.protobuf.Any) |  | decision_policy specifies the group account's decision policy. |
@@ -247,7 +247,7 @@ GroupInfo represents the high-level on-chain information for a group.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
-| admin | [bytes](#bytes) |  | admin is the account address of the group's admin. |
+| admin | [string](#string) |  | admin is the account address of the group's admin. |
 | comment | [string](#string) |  | comment is the group's comment. |
 | version | [uint64](#uint64) |  | version is used to track changes to a group's membership structure that would break existing proposals. Whenever any members power is changed, or any member is added or removed this version is incremented and will cause proposals based on older versions of this group to fail |
 | total_weight | [string](#string) |  | total_weight is the sum of the group members' powers. |
@@ -266,7 +266,7 @@ GroupMember represents the relationship between a group and a member.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
-| member | [bytes](#bytes) |  | member is the account address of the group member. todo: @aaronc field has different name in `Member.address`. Can we unify this? |
+| member | [string](#string) |  | member is the account address of the group member. todo: @aaronc field has different name in `Member.address`. Can we unify this? |
 | weight | [string](#string) |  | weight is the power of the group member. todo: @aaronc it is `Member.power`. Can we unify this? |
 | comment | [string](#string) |  | comment is the member's comment.
 
@@ -286,7 +286,7 @@ non-zero power and a comment.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| address | [bytes](#bytes) |  | address is the member's account address. |
+| address | [string](#string) |  | address is the member's account address. |
 | power | [string](#string) |  | power is the member's power that should be greater than 0. |
 | comment | [string](#string) |  | comment is the member's comment. |
 
@@ -306,9 +306,9 @@ passes as well as any comment associated with the proposal.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_account | [bytes](#bytes) |  | group_account is the group account address. |
+| group_account | [string](#string) |  | group_account is the group account address. |
 | comment | [string](#string) |  | comment is the proposal's comment. |
-| proposers | [bytes](#bytes) | repeated | proposers are the account addresses of the proposers. |
+| proposers | [string](#string) | repeated | proposers are the account addresses of the proposers. |
 | submitted_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | submitted_at is a timestamp specifying when a proposal was submitted. |
 | group_version | [uint64](#uint64) |  | group_version tracks the version of the group that this proposal corresponds to. When group membership is changed, existing proposals for prior group versions will become invalid. |
 | group_account_version | [uint64](#uint64) |  | group_account_version tracks the version of the group account that this proposal corresponds to. When a decision policy is changed, an existing proposals for prior policy versions will become invalid. |
@@ -367,7 +367,7 @@ Vote represents a vote for a proposal.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | proposal_id | [uint64](#uint64) |  | proposal is the unique ID of the proposal. |
-| voter | [bytes](#bytes) |  | voter is the account address of the voter. |
+| voter | [string](#string) |  | voter is the account address of the voter. |
 | choice | [Choice](#regen.group.v1alpha1.Choice) |  | choice is the voter's choice on the proposal. |
 | comment | [string](#string) |  | comment's is the vote's comment. |
 | submitted_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | submitted_at is the timestamp when the vote was submitted. |
@@ -458,7 +458,7 @@ QueryGroupAccountInfoRequest is the Query/GroupAccountInfo request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_account | [bytes](#bytes) |  | group_account is the account address of the group account. |
+| group_account | [string](#string) |  | group_account is the account address of the group account. |
 
 
 
@@ -488,7 +488,7 @@ QueryGroupAccountsByAdminRequest is the Query/GroupAccountsByAdmin request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| admin | [bytes](#bytes) |  | admin is the admin address of the group account. |
+| admin | [string](#string) |  | admin is the admin address of the group account. |
 | pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
 
 
@@ -614,7 +614,7 @@ QueryGroupsByAdminRequest is the Query/GroupsByAdminRequest request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| admin | [bytes](#bytes) |  | admin is the account address of a group's admin. |
+| admin | [string](#string) |  | admin is the account address of a group's admin. |
 | pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
 
 
@@ -676,7 +676,7 @@ QueryProposalsByGroupAccountRequest is the Query/ProposalByGroupAccount request 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_account | [bytes](#bytes) |  | group_account is the group account address related to proposals. |
+| group_account | [string](#string) |  | group_account is the group account address related to proposals. |
 | pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
 
 
@@ -709,7 +709,7 @@ QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter request type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | proposal_id | [uint64](#uint64) |  | proposal_id is the unique ID of a proposal. |
-| voter | [bytes](#bytes) |  | voter is a proposal voter account address. |
+| voter | [string](#string) |  | voter is a proposal voter account address. |
 
 
 
@@ -771,7 +771,7 @@ QueryVotesByVoterResponse is the Query/VotesByVoter request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| voter | [bytes](#bytes) |  | voter is a proposal voter account address. |
+| voter | [string](#string) |  | voter is a proposal voter account address. |
 | pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
 
 
@@ -839,7 +839,7 @@ MsgCreateGroupAccountRequest is the Msg/CreateGroupAccount request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| admin | [bytes](#bytes) |  | admin is the account address of the group admin. |
+| admin | [string](#string) |  | admin is the account address of the group admin. |
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 | comment | [string](#string) |  | comment is the group account's comment. |
 | decision_policy | [google.protobuf.Any](#google.protobuf.Any) |  | decision_policy specifies the group account's decision policy. |
@@ -857,7 +857,7 @@ MsgCreateGroupAccountResponse is the Msg/CreateGroupAccount response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_account | [bytes](#bytes) |  | group_account is the account address of the newly created group account. |
+| group_account | [string](#string) |  | group_account is the account address of the newly created group account. |
 
 
 
@@ -872,7 +872,7 @@ MsgCreateGroupRequest is the Msg/CreateGroup request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| admin | [bytes](#bytes) |  | admin is the account address of the group admin. |
+| admin | [string](#string) |  | admin is the account address of the group admin. |
 | members | [Member](#regen.group.v1alpha1.Member) | repeated | members defines the group members. |
 | comment | [string](#string) |  | group is the group's comment. |
 
@@ -904,8 +904,8 @@ MsgCreateProposalRequest is the Msg/CreateProposal request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_account | [bytes](#bytes) |  | group_account is the group account address. |
-| proposers | [bytes](#bytes) | repeated | proposers are the account addresses of the proposers. Proposers signatures will be counted as yes votes. |
+| group_account | [string](#string) |  | group_account is the group account address. |
+| proposers | [string](#string) | repeated | proposers are the account addresses of the proposers. Proposers signatures will be counted as yes votes. |
 | comment | [string](#string) |  | comment is the proposal's comment. |
 | msgs | [google.protobuf.Any](#google.protobuf.Any) | repeated | msgs is a list of Msgs that will be executed if the proposal passes. |
 
@@ -938,7 +938,7 @@ MsgExecRequest is the Msg/Exec request type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | proposal_id | [uint64](#uint64) |  | proposal is the unique ID of the proposal. |
-| signer | [bytes](#bytes) |  | signer is the account address used to execute the proposal. |
+| signer | [string](#string) |  | signer is the account address used to execute the proposal. |
 
 
 
@@ -963,9 +963,9 @@ MsgUpdateGroupAccountAdminRequest is the Msg/UpdateGroupAccountAdmin request typ
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| admin | [bytes](#bytes) |  | admin is the account address of the group admin. |
-| group_account | [bytes](#bytes) |  | group_account is the group account address. |
-| new_admin | [bytes](#bytes) |  | new_admin is the new group account admin. |
+| admin | [string](#string) |  | admin is the account address of the group admin. |
+| group_account | [string](#string) |  | group_account is the group account address. |
+| new_admin | [string](#string) |  | new_admin is the new group account admin. |
 
 
 
@@ -990,8 +990,8 @@ MsgUpdateGroupAccountCommentRequest is the Msg/UpdateGroupAccountComment request
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| admin | [bytes](#bytes) |  | admin is the account address of the group admin. |
-| group_account | [bytes](#bytes) |  | group_account is the group account address. |
+| admin | [string](#string) |  | admin is the account address of the group admin. |
+| group_account | [string](#string) |  | group_account is the group account address. |
 | comment | [string](#string) |  | comment is the updated group account comment. |
 
 
@@ -1017,8 +1017,8 @@ MsgUpdateGroupAccountDecisionPolicyRequest is the Msg/UpdateGroupAccountDecision
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| admin | [bytes](#bytes) |  | admin is the account address of the group admin. |
-| group_account | [bytes](#bytes) |  | group_account is the group account address. |
+| admin | [string](#string) |  | admin is the account address of the group admin. |
+| group_account | [string](#string) |  | group_account is the group account address. |
 | decision_policy | [google.protobuf.Any](#google.protobuf.Any) |  | decision_policy is the updated group account decision policy. |
 
 
@@ -1044,9 +1044,9 @@ MsgUpdateGroupAdminRequest is the Msg/UpdateGroupAdmin request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| admin | [bytes](#bytes) |  | admin is the current account address of the group admin. |
+| admin | [string](#string) |  | admin is the current account address of the group admin. |
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
-| new_admin | [bytes](#bytes) |  | new_admin is the group new admin account address. |
+| new_admin | [string](#string) |  | new_admin is the group new admin account address. |
 
 
 
@@ -1071,7 +1071,7 @@ MsgUpdateGroupCommentRequest is the Msg/UpdateGroupComment request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| admin | [bytes](#bytes) |  | admin is the account address of the group admin. |
+| admin | [string](#string) |  | admin is the account address of the group admin. |
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 | comment | [string](#string) |  | comment is the updated group's comment. |
 
@@ -1098,7 +1098,7 @@ MsgUpdateGroupMembersRequest is the Msg/UpdateGroupMembers request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| admin | [bytes](#bytes) |  | admin is the account address of the group admin. |
+| admin | [string](#string) |  | admin is the account address of the group admin. |
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 | member_updates | [Member](#regen.group.v1alpha1.Member) | repeated | member_updates is the list of members to update, set power to 0 to remove a member. |
 
@@ -1126,7 +1126,7 @@ MsgVoteRequest is the Msg/Vote request type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | proposal_id | [uint64](#uint64) |  | proposal is the unique ID of the proposal. |
-| voters | [bytes](#bytes) | repeated | voters is the lists of voters' account addresses. |
+| voters | [string](#string) | repeated | voters is the lists of voters' account addresses. |
 | choice | [Choice](#regen.group.v1alpha1.Choice) |  | choice is the voters' choice on the proposal. |
 | comment | [string](#string) |  | comment's is the vote's comment. |
 

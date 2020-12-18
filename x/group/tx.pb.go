@@ -7,7 +7,6 @@ import (
 	context "context"
 	fmt "fmt"
 	types "github.com/cosmos/cosmos-sdk/codec/types"
-	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
@@ -34,7 +33,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 // MsgCreateGroupRequest is the Msg/CreateGroup request type.
 type MsgCreateGroupRequest struct {
 	// admin is the account address of the group admin.
-	Admin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// members defines the group members.
 	Members []Member `protobuf:"bytes,2,rep,name=members,proto3" json:"members"`
 	// group is the group's comment.
@@ -74,11 +73,11 @@ func (m *MsgCreateGroupRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgCreateGroupRequest proto.InternalMessageInfo
 
-func (m *MsgCreateGroupRequest) GetAdmin() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgCreateGroupRequest) GetAdmin() string {
 	if m != nil {
 		return m.Admin
 	}
-	return nil
+	return ""
 }
 
 func (m *MsgCreateGroupRequest) GetMembers() []Member {
@@ -144,7 +143,7 @@ func (m *MsgCreateGroupResponse) GetGroupId() ID {
 // MsgUpdateGroupMembersRequest is the Msg/UpdateGroupMembers request type.
 type MsgUpdateGroupMembersRequest struct {
 	// admin is the account address of the group admin.
-	Admin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// group_id is the unique ID of the group.
 	GroupId ID `protobuf:"varint,2,opt,name=group_id,json=groupId,proto3,casttype=ID" json:"group_id,omitempty"`
 	// member_updates is the list of members to update,
@@ -185,11 +184,11 @@ func (m *MsgUpdateGroupMembersRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGroupMembersRequest proto.InternalMessageInfo
 
-func (m *MsgUpdateGroupMembersRequest) GetAdmin() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgUpdateGroupMembersRequest) GetAdmin() string {
 	if m != nil {
 		return m.Admin
 	}
-	return nil
+	return ""
 }
 
 func (m *MsgUpdateGroupMembersRequest) GetGroupId() ID {
@@ -246,11 +245,11 @@ var xxx_messageInfo_MsgUpdateGroupMembersResponse proto.InternalMessageInfo
 // MsgUpdateGroupAdminRequest is the Msg/UpdateGroupAdmin request type.
 type MsgUpdateGroupAdminRequest struct {
 	// admin is the current account address of the group admin.
-	Admin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// group_id is the unique ID of the group.
 	GroupId ID `protobuf:"varint,2,opt,name=group_id,json=groupId,proto3,casttype=ID" json:"group_id,omitempty"`
 	// new_admin is the group new admin account address.
-	NewAdmin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,3,opt,name=new_admin,json=newAdmin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"new_admin,omitempty"`
+	NewAdmin string `protobuf:"bytes,3,opt,name=new_admin,json=newAdmin,proto3" json:"new_admin,omitempty"`
 }
 
 func (m *MsgUpdateGroupAdminRequest) Reset()         { *m = MsgUpdateGroupAdminRequest{} }
@@ -286,11 +285,11 @@ func (m *MsgUpdateGroupAdminRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGroupAdminRequest proto.InternalMessageInfo
 
-func (m *MsgUpdateGroupAdminRequest) GetAdmin() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgUpdateGroupAdminRequest) GetAdmin() string {
 	if m != nil {
 		return m.Admin
 	}
-	return nil
+	return ""
 }
 
 func (m *MsgUpdateGroupAdminRequest) GetGroupId() ID {
@@ -300,11 +299,11 @@ func (m *MsgUpdateGroupAdminRequest) GetGroupId() ID {
 	return 0
 }
 
-func (m *MsgUpdateGroupAdminRequest) GetNewAdmin() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgUpdateGroupAdminRequest) GetNewAdmin() string {
 	if m != nil {
 		return m.NewAdmin
 	}
-	return nil
+	return ""
 }
 
 // MsgUpdateGroupAdminResponse is the Msg/UpdateGroupAdmin response type.
@@ -347,7 +346,7 @@ var xxx_messageInfo_MsgUpdateGroupAdminResponse proto.InternalMessageInfo
 // MsgUpdateGroupCommentRequest is the Msg/UpdateGroupComment request type.
 type MsgUpdateGroupCommentRequest struct {
 	// admin is the account address of the group admin.
-	Admin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// group_id is the unique ID of the group.
 	GroupId ID `protobuf:"varint,2,opt,name=group_id,json=groupId,proto3,casttype=ID" json:"group_id,omitempty"`
 	// comment is the updated group's comment.
@@ -387,11 +386,11 @@ func (m *MsgUpdateGroupCommentRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGroupCommentRequest proto.InternalMessageInfo
 
-func (m *MsgUpdateGroupCommentRequest) GetAdmin() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgUpdateGroupCommentRequest) GetAdmin() string {
 	if m != nil {
 		return m.Admin
 	}
-	return nil
+	return ""
 }
 
 func (m *MsgUpdateGroupCommentRequest) GetGroupId() ID {
@@ -448,7 +447,7 @@ var xxx_messageInfo_MsgUpdateGroupCommentResponse proto.InternalMessageInfo
 // MsgCreateGroupAccountRequest is the Msg/CreateGroupAccount request type.
 type MsgCreateGroupAccountRequest struct {
 	// admin is the account address of the group admin.
-	Admin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// group_id is the unique ID of the group.
 	GroupId ID `protobuf:"varint,2,opt,name=group_id,json=groupId,proto3,casttype=ID" json:"group_id,omitempty"`
 	// comment is the group account's comment.
@@ -493,7 +492,7 @@ var xxx_messageInfo_MsgCreateGroupAccountRequest proto.InternalMessageInfo
 // MsgCreateGroupAccountResponse is the Msg/CreateGroupAccount response type.
 type MsgCreateGroupAccountResponse struct {
 	// group_account is the account address of the newly created group account.
-	GroupAccount github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=group_account,json=groupAccount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"group_account,omitempty"`
+	GroupAccount string `protobuf:"bytes,1,opt,name=group_account,json=groupAccount,proto3" json:"group_account,omitempty"`
 }
 
 func (m *MsgCreateGroupAccountResponse) Reset()         { *m = MsgCreateGroupAccountResponse{} }
@@ -529,21 +528,21 @@ func (m *MsgCreateGroupAccountResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgCreateGroupAccountResponse proto.InternalMessageInfo
 
-func (m *MsgCreateGroupAccountResponse) GetGroupAccount() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgCreateGroupAccountResponse) GetGroupAccount() string {
 	if m != nil {
 		return m.GroupAccount
 	}
-	return nil
+	return ""
 }
 
 // MsgUpdateGroupAccountAdminRequest is the Msg/UpdateGroupAccountAdmin request type.
 type MsgUpdateGroupAccountAdminRequest struct {
 	// admin is the account address of the group admin.
-	Admin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// group_account is the group account address.
-	GroupAccount github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=group_account,json=groupAccount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"group_account,omitempty"`
+	GroupAccount string `protobuf:"bytes,2,opt,name=group_account,json=groupAccount,proto3" json:"group_account,omitempty"`
 	// new_admin is the new group account admin.
-	NewAdmin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,3,opt,name=new_admin,json=newAdmin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"new_admin,omitempty"`
+	NewAdmin string `protobuf:"bytes,3,opt,name=new_admin,json=newAdmin,proto3" json:"new_admin,omitempty"`
 }
 
 func (m *MsgUpdateGroupAccountAdminRequest) Reset()         { *m = MsgUpdateGroupAccountAdminRequest{} }
@@ -579,25 +578,25 @@ func (m *MsgUpdateGroupAccountAdminRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGroupAccountAdminRequest proto.InternalMessageInfo
 
-func (m *MsgUpdateGroupAccountAdminRequest) GetAdmin() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgUpdateGroupAccountAdminRequest) GetAdmin() string {
 	if m != nil {
 		return m.Admin
 	}
-	return nil
+	return ""
 }
 
-func (m *MsgUpdateGroupAccountAdminRequest) GetGroupAccount() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgUpdateGroupAccountAdminRequest) GetGroupAccount() string {
 	if m != nil {
 		return m.GroupAccount
 	}
-	return nil
+	return ""
 }
 
-func (m *MsgUpdateGroupAccountAdminRequest) GetNewAdmin() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgUpdateGroupAccountAdminRequest) GetNewAdmin() string {
 	if m != nil {
 		return m.NewAdmin
 	}
-	return nil
+	return ""
 }
 
 // MsgUpdateGroupAccountAdminResponse is the Msg/UpdateGroupAccountAdmin response type.
@@ -640,9 +639,9 @@ var xxx_messageInfo_MsgUpdateGroupAccountAdminResponse proto.InternalMessageInfo
 // MsgUpdateGroupAccountDecisionPolicyRequest is the Msg/UpdateGroupAccountDecisionPolicy request type.
 type MsgUpdateGroupAccountDecisionPolicyRequest struct {
 	// admin is the account address of the group admin.
-	Admin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// group_account is the group account address.
-	GroupAccount github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=group_account,json=groupAccount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"group_account,omitempty"`
+	GroupAccount string `protobuf:"bytes,2,opt,name=group_account,json=groupAccount,proto3" json:"group_account,omitempty"`
 	// decision_policy is the updated group account decision policy.
 	DecisionPolicy *types.Any `protobuf:"bytes,3,opt,name=decision_policy,json=decisionPolicy,proto3" json:"decision_policy,omitempty"`
 }
@@ -728,9 +727,9 @@ var xxx_messageInfo_MsgUpdateGroupAccountDecisionPolicyResponse proto.InternalMe
 // MsgUpdateGroupAccountCommentRequest is the Msg/UpdateGroupAccountComment request type.
 type MsgUpdateGroupAccountCommentRequest struct {
 	// admin is the account address of the group admin.
-	Admin github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=admin,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"admin,omitempty"`
+	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// group_account is the group account address.
-	GroupAccount github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=group_account,json=groupAccount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"group_account,omitempty"`
+	GroupAccount string `protobuf:"bytes,2,opt,name=group_account,json=groupAccount,proto3" json:"group_account,omitempty"`
 	// comment is the updated group account comment.
 	Comment string `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
 }
@@ -768,18 +767,18 @@ func (m *MsgUpdateGroupAccountCommentRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGroupAccountCommentRequest proto.InternalMessageInfo
 
-func (m *MsgUpdateGroupAccountCommentRequest) GetAdmin() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgUpdateGroupAccountCommentRequest) GetAdmin() string {
 	if m != nil {
 		return m.Admin
 	}
-	return nil
+	return ""
 }
 
-func (m *MsgUpdateGroupAccountCommentRequest) GetGroupAccount() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgUpdateGroupAccountCommentRequest) GetGroupAccount() string {
 	if m != nil {
 		return m.GroupAccount
 	}
-	return nil
+	return ""
 }
 
 func (m *MsgUpdateGroupAccountCommentRequest) GetComment() string {
@@ -829,10 +828,10 @@ var xxx_messageInfo_MsgUpdateGroupAccountCommentResponse proto.InternalMessageIn
 // MsgCreateProposalRequest is the Msg/CreateProposal request type.
 type MsgCreateProposalRequest struct {
 	// group_account is the group account address.
-	GroupAccount github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=group_account,json=groupAccount,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"group_account,omitempty"`
+	GroupAccount string `protobuf:"bytes,1,opt,name=group_account,json=groupAccount,proto3" json:"group_account,omitempty"`
 	// proposers are the account addresses of the proposers.
 	// Proposers signatures will be counted as yes votes.
-	Proposers []github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,rep,name=proposers,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"proposers,omitempty"`
+	Proposers []string `protobuf:"bytes,2,rep,name=proposers,proto3" json:"proposers,omitempty"`
 	// comment is the proposal's comment.
 	Comment string `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
 	// msgs is a list of Msgs that will be executed if the proposal passes.
@@ -923,7 +922,7 @@ type MsgVoteRequest struct {
 	// proposal is the unique ID of the proposal.
 	ProposalId ProposalID `protobuf:"varint,1,opt,name=proposal_id,json=proposalId,proto3,casttype=ProposalID" json:"proposal_id,omitempty"`
 	// voters is the lists of voters' account addresses.
-	Voters []github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,rep,name=voters,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"voters,omitempty"`
+	Voters []string `protobuf:"bytes,2,rep,name=voters,proto3" json:"voters,omitempty"`
 	// choice is the voters' choice on the proposal.
 	Choice Choice `protobuf:"varint,3,opt,name=choice,proto3,enum=regen.group.v1alpha1.Choice" json:"choice,omitempty"`
 	// comment's is the vote's comment.
@@ -970,7 +969,7 @@ func (m *MsgVoteRequest) GetProposalId() ProposalID {
 	return 0
 }
 
-func (m *MsgVoteRequest) GetVoters() []github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgVoteRequest) GetVoters() []string {
 	if m != nil {
 		return m.Voters
 	}
@@ -1033,7 +1032,7 @@ type MsgExecRequest struct {
 	// proposal is the unique ID of the proposal.
 	ProposalId ProposalID `protobuf:"varint,1,opt,name=proposal_id,json=proposalId,proto3,casttype=ProposalID" json:"proposal_id,omitempty"`
 	// signer is the account address used to execute the proposal.
-	Signer github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=signer,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"signer,omitempty"`
+	Signer string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgExecRequest) Reset()         { *m = MsgExecRequest{} }
@@ -1076,11 +1075,11 @@ func (m *MsgExecRequest) GetProposalId() ProposalID {
 	return 0
 }
 
-func (m *MsgExecRequest) GetSigner() github_com_cosmos_cosmos_sdk_types.AccAddress {
+func (m *MsgExecRequest) GetSigner() string {
 	if m != nil {
 		return m.Signer
 	}
-	return nil
+	return ""
 }
 
 // MsgExecResponse is the Msg/Exec request type.
@@ -1148,70 +1147,67 @@ func init() {
 func init() { proto.RegisterFile("regen/group/v1alpha1/tx.proto", fileDescriptor_b4673626e7797578) }
 
 var fileDescriptor_b4673626e7797578 = []byte{
-	// 999 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x58, 0x4f, 0x6f, 0xe3, 0x44,
-	0x14, 0x8f, 0x93, 0xd0, 0x6e, 0x5f, 0x77, 0xb3, 0x30, 0x2a, 0x90, 0x9a, 0x6d, 0x92, 0x35, 0x05,
-	0x45, 0x2c, 0xb1, 0x69, 0x17, 0x09, 0x58, 0x38, 0x90, 0xb4, 0xa8, 0x8a, 0x44, 0x60, 0x31, 0x62,
-	0x0f, 0x5c, 0xa2, 0xd4, 0x1e, 0xdc, 0x68, 0x63, 0x8f, 0xd7, 0xe3, 0x6c, 0xda, 0x03, 0x77, 0x0e,
-	0x8b, 0x84, 0x10, 0x1f, 0x80, 0x03, 0x82, 0x2f, 0xc0, 0x81, 0x8f, 0xb0, 0xe2, 0xd4, 0x0b, 0xd2,
-	0x1e, 0x50, 0xb5, 0x6a, 0xbf, 0x45, 0x25, 0x24, 0x94, 0x99, 0x71, 0xeb, 0x24, 0xb6, 0xeb, 0xa4,
-	0xad, 0x0a, 0xa7, 0x76, 0x3c, 0xef, 0xdf, 0xef, 0xe7, 0xe7, 0xdf, 0x7b, 0x0a, 0xac, 0x78, 0xd8,
-	0xc2, 0x8e, 0x66, 0x79, 0xa4, 0xef, 0x6a, 0x8f, 0xd7, 0x3a, 0x3d, 0x77, 0xa7, 0xb3, 0xa6, 0xf9,
-	0xbb, 0xaa, 0xeb, 0x11, 0x9f, 0xa0, 0x25, 0x76, 0xad, 0xb2, 0x6b, 0x35, 0xb8, 0x96, 0x97, 0x2c,
-	0x62, 0x11, 0x66, 0xa0, 0x0d, 0xff, 0xe3, 0xb6, 0xf2, 0xb2, 0x41, 0xa8, 0x4d, 0x68, 0x9b, 0x5f,
-	0xf0, 0x43, 0x70, 0x65, 0x11, 0x62, 0xf5, 0xb0, 0xc6, 0x4e, 0xdb, 0xfd, 0x6f, 0xb4, 0x8e, 0xb3,
-	0x27, 0xae, 0x2a, 0xd1, 0x05, 0xec, 0xb9, 0x58, 0x38, 0x2b, 0x7f, 0x48, 0xf0, 0x72, 0x8b, 0x5a,
-	0x1b, 0x1e, 0xee, 0xf8, 0x78, 0x6b, 0x68, 0xa7, 0xe3, 0x47, 0x7d, 0x4c, 0x7d, 0xb4, 0x05, 0x2f,
-	0x74, 0x4c, 0xbb, 0xeb, 0x14, 0xa5, 0x8a, 0x54, 0xbd, 0xde, 0x58, 0x3b, 0x3e, 0x28, 0xd7, 0xac,
-	0xae, 0xbf, 0xd3, 0xdf, 0x56, 0x0d, 0x62, 0x8b, 0x12, 0xc4, 0x9f, 0x1a, 0x35, 0x1f, 0x8a, 0xb0,
-	0x75, 0xc3, 0xa8, 0x9b, 0xa6, 0x87, 0x29, 0xd5, 0xb9, 0x3f, 0xfa, 0x08, 0xe6, 0x6d, 0x6c, 0x6f,
-	0x63, 0x8f, 0x16, 0xb3, 0x95, 0x5c, 0x75, 0x71, 0xfd, 0x96, 0x1a, 0x05, 0x5c, 0x6d, 0x31, 0xa3,
-	0x46, 0xfe, 0xe9, 0x41, 0x39, 0xa3, 0x07, 0x2e, 0xa8, 0x08, 0xf3, 0x06, 0xb1, 0x6d, 0xec, 0xf8,
-	0xc5, 0x5c, 0x45, 0xaa, 0x2e, 0xe8, 0xc1, 0x51, 0xf9, 0x10, 0x5e, 0x19, 0xaf, 0x9c, 0xba, 0xc4,
-	0xa1, 0x18, 0xdd, 0x86, 0x6b, 0x2c, 0x76, 0xbb, 0x6b, 0xb2, 0xea, 0xf3, 0x8d, 0xb9, 0xe3, 0x83,
-	0x72, 0xb6, 0xb9, 0xa9, 0xcf, 0xb3, 0xe7, 0x4d, 0x53, 0xf9, 0x4b, 0x82, 0x5b, 0x2d, 0x6a, 0x7d,
-	0xe5, 0x9a, 0x81, 0x37, 0x4f, 0x4f, 0x2f, 0x1c, 0x7e, 0xb8, 0x98, 0x6c, 0x64, 0x31, 0xa8, 0x09,
-	0x05, 0x0e, 0xb7, 0xdd, 0x67, 0xf5, 0xd0, 0x62, 0x2e, 0x35, 0x51, 0x37, 0xb8, 0x27, 0x07, 0x42,
-	0x95, 0x32, 0xac, 0xc4, 0xc0, 0xe2, 0xdc, 0x28, 0xcf, 0x24, 0x90, 0x47, 0x2d, 0xea, 0xc3, 0x32,
-	0xaf, 0x02, 0xf6, 0x67, 0xb0, 0xe0, 0xe0, 0x41, 0x9b, 0xe7, 0xcb, 0xcd, 0x9a, 0xef, 0x9a, 0x83,
-	0x07, 0x0c, 0x82, 0xb2, 0x02, 0xaf, 0x45, 0x22, 0x13, 0xc8, 0x7f, 0x99, 0x78, 0xe5, 0x1b, 0xbc,
-	0x93, 0xae, 0x02, 0x7b, 0x7c, 0x5b, 0x4f, 0xbc, 0xc1, 0x93, 0x2a, 0x05, 0x8e, 0x7f, 0x38, 0x8e,
-	0x50, 0xe3, 0xd7, 0x0d, 0x83, 0xf4, 0xff, 0x63, 0x38, 0xd0, 0x17, 0x70, 0xd3, 0xc4, 0x46, 0x97,
-	0x76, 0x89, 0xd3, 0x76, 0x49, 0xaf, 0x6b, 0xec, 0x15, 0xf3, 0x15, 0xa9, 0xba, 0xb8, 0xbe, 0xa4,
-	0x72, 0xc1, 0x52, 0x03, 0xc1, 0x52, 0xeb, 0xce, 0x5e, 0x03, 0xfd, 0xf9, 0x7b, 0xad, 0xb0, 0x29,
-	0x1c, 0xee, 0x33, 0x7b, 0xbd, 0x60, 0x8e, 0x9c, 0xef, 0xe5, 0xbf, 0xfb, 0xb9, 0x9c, 0x51, 0x06,
-	0x8c, 0xa0, 0x28, 0xf8, 0xe2, 0xf3, 0x7f, 0x00, 0x37, 0x78, 0xd9, 0x1d, 0x7e, 0x31, 0x3b, 0x0f,
-	0xd7, 0xad, 0x50, 0x7c, 0xe5, 0xa7, 0x2c, 0xdc, 0x1e, 0x6b, 0x30, 0x7e, 0x73, 0x39, 0x5f, 0xd0,
-	0x04, 0x8c, 0xec, 0x85, 0xc0, 0xb8, 0xf0, 0xcf, 0x6e, 0x15, 0x94, 0x24, 0x56, 0x44, 0xd7, 0xfe,
-	0x9a, 0x85, 0xb7, 0x22, 0xcd, 0xc6, 0xde, 0xf9, 0xff, 0x85, 0xc5, 0x88, 0xf6, 0xce, 0x5d, 0x48,
-	0x7b, 0xd7, 0xe0, 0x4e, 0x2a, 0x9e, 0x04, 0xaf, 0xcf, 0x25, 0x78, 0x3d, 0xd2, 0xfe, 0xb2, 0xc4,
-	0xed, 0xb2, 0x08, 0x8d, 0x57, 0xc4, 0x37, 0x61, 0x35, 0x19, 0xa1, 0xa0, 0xe2, 0xfb, 0x2c, 0x14,
-	0x4f, 0x94, 0xe1, 0xbe, 0x47, 0x5c, 0x42, 0x3b, 0xbd, 0x00, 0xff, 0x25, 0x89, 0x02, 0xfa, 0x1c,
-	0x16, 0x5c, 0x96, 0x2a, 0xd8, 0x6f, 0x66, 0x8a, 0x79, 0x1a, 0x23, 0x41, 0x51, 0xab, 0x90, 0xb7,
-	0xa9, 0x45, 0x8b, 0x79, 0xb6, 0x1c, 0x44, 0xf6, 0x99, 0xce, 0x2c, 0x44, 0x27, 0x7d, 0x0a, 0xcb,
-	0x11, 0x74, 0x08, 0x91, 0xd4, 0x60, 0xd1, 0x15, 0xcf, 0x4e, 0xd7, 0xa4, 0xc2, 0xf1, 0x41, 0x19,
-	0x02, 0xd3, 0xe6, 0xa6, 0x0e, 0x81, 0x49, 0xd3, 0x54, 0xfe, 0x96, 0xa0, 0xd0, 0xa2, 0xd6, 0x03,
-	0xe2, 0xe3, 0x80, 0xd3, 0x69, 0x63, 0xa0, 0x26, 0xcc, 0x3d, 0x26, 0xfe, 0xb9, 0x98, 0x12, 0x01,
-	0xd0, 0xbb, 0x30, 0x67, 0xec, 0x90, 0xae, 0x81, 0x19, 0x4b, 0x85, 0xb8, 0x5d, 0x69, 0x83, 0xd9,
-	0xe8, 0xc2, 0x36, 0x4c, 0x6e, 0x7e, 0xb4, 0xc9, 0x5e, 0x82, 0x9b, 0x27, 0xe8, 0x44, 0x3f, 0x3d,
-	0xe1, 0x88, 0x3f, 0xd9, 0xc5, 0xc6, 0x79, 0x10, 0xd3, 0xae, 0xe5, 0x60, 0x6f, 0xf6, 0xcf, 0x44,
-	0x04, 0x10, 0x15, 0xf2, 0x6a, 0x78, 0x85, 0xeb, 0xfb, 0x00, 0xb9, 0x16, 0xb5, 0xd0, 0x0e, 0x2c,
-	0x86, 0xe6, 0x21, 0xba, 0x13, 0xb3, 0x37, 0x46, 0xed, 0xf9, 0xf2, 0xdb, 0xe9, 0x8c, 0x45, 0xdb,
-	0x7c, 0x0b, 0x68, 0x72, 0xb9, 0x44, 0xeb, 0xb1, 0x31, 0x62, 0x17, 0x6c, 0xf9, 0xee, 0x54, 0x3e,
-	0x22, 0xfd, 0x00, 0x5e, 0x1c, 0xdf, 0xef, 0xd0, 0x3b, 0x69, 0x02, 0x85, 0x47, 0xb4, 0xbc, 0x36,
-	0x85, 0x47, 0x24, 0x6e, 0xa1, 0x3c, 0xe9, 0x70, 0x8f, 0x0a, 0x71, 0x3a, 0xdc, 0x63, 0xd2, 0x36,
-	0x4c, 0x3f, 0xb9, 0xf0, 0x24, 0xa4, 0x8f, 0x5d, 0x0e, 0x13, 0xd2, 0x27, 0x6c, 0x54, 0x4f, 0x24,
-	0x78, 0x35, 0x66, 0xc0, 0xa3, 0xf7, 0x52, 0x91, 0x39, 0xb9, 0x28, 0xc9, 0xef, 0x4f, 0xef, 0x28,
-	0xca, 0xf9, 0x4d, 0x82, 0xca, 0x59, 0x03, 0x12, 0x7d, 0x3c, 0x45, 0xf8, 0xc8, 0x1d, 0x44, 0xae,
-	0x9f, 0x23, 0x82, 0xa8, 0xf4, 0x47, 0x09, 0x96, 0x63, 0x07, 0x17, 0xfa, 0x60, 0x8a, 0x04, 0x63,
-	0x5d, 0x74, 0x6f, 0x16, 0x57, 0x51, 0xd4, 0x23, 0x28, 0x8c, 0x0e, 0x05, 0xa4, 0x9e, 0xd1, 0x14,
-	0x63, 0xc3, 0x54, 0xd6, 0x52, 0xdb, 0x8b, 0x94, 0x5f, 0x42, 0x7e, 0x28, 0xad, 0x68, 0x35, 0xd6,
-	0x31, 0x34, 0x57, 0xe4, 0x37, 0xce, 0xb0, 0x3a, 0x0d, 0x3a, 0x54, 0xc3, 0x84, 0xa0, 0x21, 0xe9,
-	0x4e, 0x08, 0x1a, 0x96, 0xd4, 0xc6, 0xd6, 0xd3, 0xc3, 0x92, 0xb4, 0x7f, 0x58, 0x92, 0x9e, 0x1f,
-	0x96, 0xa4, 0x1f, 0x8e, 0x4a, 0x99, 0xfd, 0xa3, 0x52, 0xe6, 0xd9, 0x51, 0x29, 0xf3, 0x75, 0x58,
-	0xb6, 0x59, 0xa8, 0x9a, 0x83, 0xfd, 0x01, 0xf1, 0x1e, 0x8a, 0x53, 0x0f, 0x9b, 0x16, 0xf6, 0xb4,
-	0x5d, 0xfe, 0x73, 0xcb, 0xf6, 0x1c, 0x9b, 0xcb, 0x77, 0xff, 0x0d, 0x00, 0x00, 0xff, 0xff, 0xa4,
-	0x03, 0x16, 0x5d, 0x05, 0x12, 0x00, 0x00,
+	// 949 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x57, 0x4f, 0x6f, 0xe3, 0x44,
+	0x14, 0x8f, 0x1b, 0xd3, 0x6e, 0x5f, 0xd9, 0x2c, 0x8c, 0xca, 0xe2, 0x7a, 0xdb, 0x24, 0xeb, 0x2d,
+	0xa8, 0x62, 0xa9, 0x4d, 0xbb, 0x48, 0xc0, 0xc2, 0x81, 0xfe, 0x41, 0xab, 0x48, 0x44, 0x5a, 0x8c,
+	0x40, 0x82, 0x4b, 0x94, 0xda, 0x83, 0x6b, 0x11, 0x7b, 0x5c, 0x8f, 0xb3, 0x6d, 0x40, 0x1c, 0x91,
+	0x38, 0x70, 0x40, 0x7c, 0x02, 0xc4, 0x65, 0xc5, 0x9d, 0x0f, 0xc0, 0x71, 0xb5, 0xa7, 0x1e, 0x39,
+	0x55, 0xa8, 0xfd, 0x16, 0x3d, 0xa1, 0xcc, 0x8c, 0x1b, 0xc7, 0xb1, 0x5d, 0x87, 0xb0, 0xb7, 0x8e,
+	0xdf, 0x7b, 0xbf, 0xf7, 0xfb, 0xcd, 0x7b, 0xf3, 0x5e, 0x03, 0x6b, 0x21, 0x76, 0xb0, 0x6f, 0x38,
+	0x21, 0xe9, 0x07, 0xc6, 0x93, 0xad, 0x6e, 0x2f, 0x38, 0xec, 0x6e, 0x19, 0xd1, 0x89, 0x1e, 0x84,
+	0x24, 0x22, 0x68, 0x99, 0x99, 0x75, 0x66, 0xd6, 0x63, 0xb3, 0xba, 0xec, 0x10, 0x87, 0x30, 0x07,
+	0x63, 0xf8, 0x17, 0xf7, 0x55, 0x57, 0x2c, 0x42, 0x3d, 0x42, 0x3b, 0xdc, 0xc0, 0x0f, 0xb1, 0xc9,
+	0x21, 0xc4, 0xe9, 0x61, 0x83, 0x9d, 0x0e, 0xfa, 0xdf, 0x18, 0x5d, 0x7f, 0x20, 0x4c, 0xcd, 0x6c,
+	0x02, 0x83, 0x00, 0x8b, 0x60, 0xed, 0x47, 0x09, 0x5e, 0x6b, 0x53, 0x67, 0x2f, 0xc4, 0xdd, 0x08,
+	0x3f, 0x1a, 0xfa, 0x99, 0xf8, 0xa8, 0x8f, 0x69, 0x84, 0x96, 0xe1, 0xa5, 0xae, 0xed, 0xb9, 0xbe,
+	0x22, 0x35, 0xa5, 0x8d, 0x45, 0x93, 0x1f, 0xd0, 0x47, 0xb0, 0xe0, 0x61, 0xef, 0x00, 0x87, 0x54,
+	0x99, 0x6b, 0x56, 0x37, 0x96, 0xb6, 0x57, 0xf5, 0x2c, 0x15, 0x7a, 0x9b, 0x39, 0xed, 0xca, 0xcf,
+	0xce, 0x1a, 0x15, 0x33, 0x0e, 0x41, 0x0a, 0x2c, 0x58, 0xc4, 0xf3, 0xb0, 0x1f, 0x29, 0x55, 0x86,
+	0x1a, 0x1f, 0xb5, 0x0f, 0xe1, 0x76, 0x9a, 0x06, 0x0d, 0x88, 0x4f, 0x31, 0xba, 0x0b, 0x37, 0x18,
+	0x76, 0xc7, 0xb5, 0x19, 0x15, 0x79, 0x77, 0xfe, 0xf2, 0xac, 0x31, 0xd7, 0xda, 0x37, 0x17, 0xd8,
+	0xf7, 0x96, 0xad, 0xfd, 0x2e, 0xc1, 0x6a, 0x9b, 0x3a, 0x5f, 0x04, 0x76, 0x1c, 0xcd, 0xd3, 0xd3,
+	0x62, 0x2d, 0x49, 0xe4, 0xb9, 0x4c, 0x64, 0xd4, 0x82, 0x1a, 0xe7, 0xde, 0xe9, 0x33, 0x70, 0xaa,
+	0x54, 0x4b, 0xab, 0xbe, 0xc9, 0x23, 0x39, 0x2b, 0xaa, 0x35, 0x60, 0x2d, 0x87, 0x23, 0x17, 0xaa,
+	0x85, 0xa0, 0x8e, 0x3b, 0xec, 0x0c, 0x59, 0xce, 0x2c, 0xe1, 0x0e, 0x2c, 0xfa, 0xf8, 0xb8, 0xc3,
+	0x83, 0xf9, 0xad, 0xdf, 0xf0, 0xf1, 0x31, 0x03, 0xd7, 0xd6, 0xe0, 0x4e, 0x66, 0x4e, 0x41, 0xe9,
+	0x28, 0x7d, 0xaf, 0x7b, 0xbc, 0x5c, 0x33, 0x93, 0xca, 0x6f, 0x84, 0x89, 0x6b, 0xba, 0x4a, 0x29,
+	0x38, 0x3d, 0xe7, 0xc5, 0x4e, 0xb4, 0xca, 0x8e, 0x65, 0x91, 0xfe, 0x8b, 0x24, 0x85, 0x3e, 0x83,
+	0x5b, 0x36, 0xb6, 0x5c, 0xea, 0x12, 0xbf, 0x13, 0x90, 0x9e, 0x6b, 0x0d, 0x14, 0xb9, 0x29, 0x6d,
+	0x2c, 0x6d, 0x2f, 0xeb, 0xfc, 0xf1, 0xe9, 0xf1, 0xe3, 0xd3, 0x77, 0xfc, 0xc1, 0x2e, 0x7a, 0xfe,
+	0xe7, 0x66, 0x6d, 0x5f, 0x04, 0x3c, 0x66, 0xfe, 0x66, 0xcd, 0x1e, 0x3b, 0x3f, 0x94, 0x7f, 0xfa,
+	0xad, 0x51, 0xd1, 0xf6, 0x99, 0xda, 0x2c, 0x2d, 0xa2, 0xfb, 0xef, 0xc1, 0x4d, 0x4e, 0xbb, 0xcb,
+	0x0d, 0x42, 0xd4, 0xcb, 0x4e, 0xc2, 0x59, 0xfb, 0x1e, 0xee, 0xa6, 0xaa, 0xc8, 0x0d, 0x25, 0x1a,
+	0x68, 0x02, 0x7f, 0x6e, 0x12, 0xbf, 0xb8, 0x85, 0xd6, 0x41, 0x2b, 0x4a, 0x2e, 0xaa, 0xf6, 0x97,
+	0x04, 0x6f, 0x65, 0xba, 0xa5, 0xae, 0x69, 0x76, 0xb2, 0x19, 0xb5, 0xaa, 0xfe, 0x2f, 0xb5, 0xda,
+	0x84, 0xfb, 0xa5, 0x14, 0x08, 0xc5, 0xdf, 0xc1, 0xbd, 0x4c, 0xf7, 0x52, 0x4f, 0xa8, 0x94, 0xd2,
+	0xfc, 0x47, 0xf4, 0x26, 0xac, 0x17, 0xe7, 0x16, 0x1c, 0x9f, 0x4a, 0xa0, 0x5c, 0xf5, 0xdf, 0xe3,
+	0x90, 0x04, 0x84, 0x76, 0x7b, 0x31, 0xb3, 0x32, 0xad, 0x87, 0x56, 0x61, 0x31, 0x60, 0x71, 0xf1,
+	0x46, 0x58, 0x34, 0x47, 0x1f, 0x0a, 0x5e, 0xd4, 0x06, 0xc8, 0x1e, 0x75, 0xa8, 0x22, 0xb3, 0x71,
+	0x9a, 0x59, 0x1a, 0x93, 0x79, 0x88, 0xcb, 0xff, 0x14, 0x56, 0x32, 0x88, 0x8a, 0x47, 0x62, 0xc0,
+	0x52, 0x20, 0xbe, 0x8d, 0xb6, 0x44, 0xed, 0xf2, 0xac, 0x01, 0xb1, 0x6b, 0x6b, 0xdf, 0x84, 0xd8,
+	0xa5, 0x65, 0x6b, 0x7f, 0x48, 0x50, 0x6b, 0x53, 0xe7, 0x4b, 0x12, 0xe1, 0x58, 0xed, 0xb4, 0x18,
+	0xe8, 0x36, 0xcc, 0x3f, 0x21, 0xd1, 0x48, 0xb6, 0x38, 0xa1, 0x77, 0x61, 0xde, 0x3a, 0x24, 0xae,
+	0x85, 0x99, 0xe4, 0x5a, 0xde, 0xaa, 0xd8, 0x63, 0x3e, 0xa6, 0xf0, 0x4d, 0xde, 0x94, 0x3c, 0x5e,
+	0xcb, 0x57, 0xe1, 0xd6, 0x15, 0x55, 0x51, 0xb6, 0xaf, 0x18, 0xfb, 0x4f, 0x4e, 0xb0, 0x35, 0x0b,
+	0x7b, 0xea, 0x3a, 0x3e, 0x0e, 0x45, 0x67, 0x89, 0x93, 0xc8, 0xc6, 0xa1, 0x79, 0xb6, 0xed, 0x53,
+	0x80, 0x6a, 0x9b, 0x3a, 0xe8, 0x10, 0x96, 0x12, 0x83, 0x0a, 0xdd, 0xcf, 0x59, 0x81, 0x59, 0xff,
+	0x4c, 0xa8, 0x6f, 0x97, 0x73, 0x16, 0xf5, 0xfc, 0x01, 0xd0, 0xe4, 0x9e, 0x44, 0xdb, 0xb9, 0x18,
+	0xb9, 0x8b, 0x5f, 0x7d, 0x30, 0x55, 0x8c, 0x48, 0x7f, 0x0c, 0xaf, 0xa4, 0x37, 0x22, 0x7a, 0xa7,
+	0x0c, 0x50, 0x72, 0xde, 0xaa, 0x5b, 0x53, 0x44, 0x64, 0xea, 0x16, 0x8f, 0xb5, 0x9c, 0xee, 0xf1,
+	0xa9, 0x52, 0x4e, 0x77, 0x6a, 0x1a, 0x0c, 0xd3, 0x4f, 0x6e, 0xa2, 0x82, 0xf4, 0xb9, 0x2b, 0xb8,
+	0x20, 0x7d, 0xc1, 0xaa, 0xfb, 0x59, 0x82, 0xd7, 0x73, 0xd6, 0x08, 0x7a, 0xaf, 0xd4, 0x65, 0x4e,
+	0x6e, 0x3d, 0xf5, 0xfd, 0xe9, 0x03, 0x05, 0x9d, 0xa7, 0x12, 0x34, 0xaf, 0x1b, 0xf6, 0xe8, 0xe3,
+	0x29, 0xe0, 0x33, 0x37, 0x9d, 0xba, 0x33, 0x03, 0x82, 0x60, 0xfa, 0xab, 0x04, 0x2b, 0xb9, 0xb3,
+	0x1e, 0x7d, 0x30, 0x45, 0x82, 0x54, 0x17, 0x3d, 0xfc, 0x2f, 0xa1, 0x82, 0xd4, 0x11, 0xd4, 0xc6,
+	0xa7, 0x35, 0xd2, 0xaf, 0x69, 0x8a, 0xd4, 0xfe, 0x51, 0x8d, 0xd2, 0xfe, 0x22, 0xe5, 0xe7, 0x20,
+	0x0f, 0xc7, 0x24, 0x5a, 0xcf, 0x0d, 0x4c, 0x0c, 0x7c, 0xf5, 0x8d, 0x6b, 0xbc, 0x46, 0xa0, 0xc3,
+	0x69, 0x58, 0x00, 0x9a, 0x98, 0xc3, 0x05, 0xa0, 0xc9, 0x91, 0xba, 0xfb, 0xe8, 0xd9, 0x79, 0x5d,
+	0x3a, 0x3d, 0xaf, 0x4b, 0xff, 0x9c, 0xd7, 0xa5, 0x5f, 0x2e, 0xea, 0x95, 0xd3, 0x8b, 0x7a, 0xe5,
+	0xef, 0x8b, 0x7a, 0xe5, 0xeb, 0x4d, 0xc7, 0x8d, 0x0e, 0xfb, 0x07, 0xba, 0x45, 0x3c, 0x83, 0x41,
+	0x6d, 0xfa, 0x38, 0x3a, 0x26, 0xe1, 0xb7, 0xe2, 0xd4, 0xc3, 0xb6, 0x83, 0x43, 0xe3, 0x84, 0xff,
+	0xa6, 0x3b, 0x98, 0x67, 0x0b, 0xf3, 0xc1, 0xbf, 0x01, 0x00, 0x00, 0xff, 0xff, 0xc3, 0x3e, 0x12,
+	0x49, 0x6a, 0x0e, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -2738,8 +2734,8 @@ func (m *MsgCreateProposalRequest) Size() (n int) {
 		n += 1 + l + sovTx(uint64(l))
 	}
 	if len(m.Proposers) > 0 {
-		for _, b := range m.Proposers {
-			l = len(b)
+		for _, s := range m.Proposers {
+			l = len(s)
 			n += 1 + l + sovTx(uint64(l))
 		}
 	}
@@ -2778,8 +2774,8 @@ func (m *MsgVoteRequest) Size() (n int) {
 		n += 1 + sovTx(uint64(m.ProposalId))
 	}
 	if len(m.Voters) > 0 {
-		for _, b := range m.Voters {
-			l = len(b)
+		for _, s := range m.Voters {
+			l = len(s)
 			n += 1 + l + sovTx(uint64(l))
 		}
 	}
@@ -2866,7 +2862,7 @@ func (m *MsgCreateGroupRequest) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -2876,25 +2872,23 @@ func (m *MsgCreateGroupRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Admin = append(m.Admin[:0], dAtA[iNdEx:postIndex]...)
-			if m.Admin == nil {
-				m.Admin = []byte{}
-			}
+			m.Admin = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -3091,7 +3085,7 @@ func (m *MsgUpdateGroupMembersRequest) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3101,25 +3095,23 @@ func (m *MsgUpdateGroupMembersRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Admin = append(m.Admin[:0], dAtA[iNdEx:postIndex]...)
-			if m.Admin == nil {
-				m.Admin = []byte{}
-			}
+			m.Admin = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
@@ -3284,7 +3276,7 @@ func (m *MsgUpdateGroupAdminRequest) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3294,25 +3286,23 @@ func (m *MsgUpdateGroupAdminRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Admin = append(m.Admin[:0], dAtA[iNdEx:postIndex]...)
-			if m.Admin == nil {
-				m.Admin = []byte{}
-			}
+			m.Admin = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
@@ -3337,7 +3327,7 @@ func (m *MsgUpdateGroupAdminRequest) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field NewAdmin", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3347,25 +3337,23 @@ func (m *MsgUpdateGroupAdminRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.NewAdmin = append(m.NewAdmin[:0], dAtA[iNdEx:postIndex]...)
-			if m.NewAdmin == nil {
-				m.NewAdmin = []byte{}
-			}
+			m.NewAdmin = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -3477,7 +3465,7 @@ func (m *MsgUpdateGroupCommentRequest) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3487,25 +3475,23 @@ func (m *MsgUpdateGroupCommentRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Admin = append(m.Admin[:0], dAtA[iNdEx:postIndex]...)
-			if m.Admin == nil {
-				m.Admin = []byte{}
-			}
+			m.Admin = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
@@ -3668,7 +3654,7 @@ func (m *MsgCreateGroupAccountRequest) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3678,25 +3664,23 @@ func (m *MsgCreateGroupAccountRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Admin = append(m.Admin[:0], dAtA[iNdEx:postIndex]...)
-			if m.Admin == nil {
-				m.Admin = []byte{}
-			}
+			m.Admin = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
@@ -3842,7 +3826,7 @@ func (m *MsgCreateGroupAccountResponse) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GroupAccount", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3852,25 +3836,23 @@ func (m *MsgCreateGroupAccountResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.GroupAccount = append(m.GroupAccount[:0], dAtA[iNdEx:postIndex]...)
-			if m.GroupAccount == nil {
-				m.GroupAccount = []byte{}
-			}
+			m.GroupAccount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -3929,7 +3911,7 @@ func (m *MsgUpdateGroupAccountAdminRequest) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3939,31 +3921,29 @@ func (m *MsgUpdateGroupAccountAdminRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Admin = append(m.Admin[:0], dAtA[iNdEx:postIndex]...)
-			if m.Admin == nil {
-				m.Admin = []byte{}
-			}
+			m.Admin = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GroupAccount", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3973,31 +3953,29 @@ func (m *MsgUpdateGroupAccountAdminRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.GroupAccount = append(m.GroupAccount[:0], dAtA[iNdEx:postIndex]...)
-			if m.GroupAccount == nil {
-				m.GroupAccount = []byte{}
-			}
+			m.GroupAccount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field NewAdmin", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -4007,25 +3985,23 @@ func (m *MsgUpdateGroupAccountAdminRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.NewAdmin = append(m.NewAdmin[:0], dAtA[iNdEx:postIndex]...)
-			if m.NewAdmin == nil {
-				m.NewAdmin = []byte{}
-			}
+			m.NewAdmin = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -4137,7 +4113,7 @@ func (m *MsgUpdateGroupAccountDecisionPolicyRequest) Unmarshal(dAtA []byte) erro
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -4147,31 +4123,29 @@ func (m *MsgUpdateGroupAccountDecisionPolicyRequest) Unmarshal(dAtA []byte) erro
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Admin = append(m.Admin[:0], dAtA[iNdEx:postIndex]...)
-			if m.Admin == nil {
-				m.Admin = []byte{}
-			}
+			m.Admin = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GroupAccount", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -4181,25 +4155,23 @@ func (m *MsgUpdateGroupAccountDecisionPolicyRequest) Unmarshal(dAtA []byte) erro
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.GroupAccount = append(m.GroupAccount[:0], dAtA[iNdEx:postIndex]...)
-			if m.GroupAccount == nil {
-				m.GroupAccount = []byte{}
-			}
+			m.GroupAccount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -4347,7 +4319,7 @@ func (m *MsgUpdateGroupAccountCommentRequest) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -4357,31 +4329,29 @@ func (m *MsgUpdateGroupAccountCommentRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Admin = append(m.Admin[:0], dAtA[iNdEx:postIndex]...)
-			if m.Admin == nil {
-				m.Admin = []byte{}
-			}
+			m.Admin = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GroupAccount", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -4391,25 +4361,23 @@ func (m *MsgUpdateGroupAccountCommentRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.GroupAccount = append(m.GroupAccount[:0], dAtA[iNdEx:postIndex]...)
-			if m.GroupAccount == nil {
-				m.GroupAccount = []byte{}
-			}
+			m.GroupAccount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -4553,7 +4521,7 @@ func (m *MsgCreateProposalRequest) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GroupAccount", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -4563,31 +4531,29 @@ func (m *MsgCreateProposalRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.GroupAccount = append(m.GroupAccount[:0], dAtA[iNdEx:postIndex]...)
-			if m.GroupAccount == nil {
-				m.GroupAccount = []byte{}
-			}
+			m.GroupAccount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Proposers", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -4597,23 +4563,23 @@ func (m *MsgCreateProposalRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Proposers = append(m.Proposers, make([]byte, postIndex-iNdEx))
-			copy(m.Proposers[len(m.Proposers)-1], dAtA[iNdEx:postIndex])
+			m.Proposers = append(m.Proposers, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -4829,7 +4795,7 @@ func (m *MsgVoteRequest) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Voters", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -4839,23 +4805,23 @@ func (m *MsgVoteRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Voters = append(m.Voters, make([]byte, postIndex-iNdEx))
-			copy(m.Voters[len(m.Voters)-1], dAtA[iNdEx:postIndex])
+			m.Voters = append(m.Voters, string(dAtA[iNdEx:postIndex]))
 			iNdEx = postIndex
 		case 3:
 			if wireType != 0 {
@@ -5037,7 +5003,7 @@ func (m *MsgExecRequest) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Signer", wireType)
 			}
-			var byteLen int
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -5047,25 +5013,23 @@ func (m *MsgExecRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= int(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + intStringLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Signer = append(m.Signer[:0], dAtA[iNdEx:postIndex]...)
-			if m.Signer == nil {
-				m.Signer = []byte{}
-			}
+			m.Signer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

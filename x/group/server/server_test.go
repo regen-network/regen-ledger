@@ -43,7 +43,7 @@ func TestServer(t *testing.T) {
 	)
 	router.AddRoute(sdk.NewRoute(banktypes.ModuleName, bank.NewHandler(bankKeeper)))
 
-	addrs := configurator.MakeTestAddresses(2)
+	addrs := configurator.MakeTestAddresses(4)
 	cfg := configurator.NewFixture(t, []sdk.StoreKey{paramsKey, tkey, groupKey, authKey, bankKey}, addrs, cdc)
 
 	server.RegisterServices(groupKey, groupSubspace, router, cfg)

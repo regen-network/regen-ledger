@@ -77,7 +77,7 @@ func (s serverImpl) CreateGroup(goCtx context.Context, req *group.MsgCreateGroup
 	}
 
 	groupIDStr := util.Uint64ToBase58Check(groupID.Uint64())
-	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroup{GroupId: groupIDStr, Admin: req.Admin.String()})
+	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroup{GroupId: groupIDStr, Admin: req.Admin})
 	if err != nil {
 		return nil, err
 	}
@@ -208,8 +208,11 @@ func (s serverImpl) UpdateGroupComment(goCtx context.Context, req *group.MsgUpda
 func (s serverImpl) CreateGroupAccount(goCtx context.Context, req *group.MsgCreateGroupAccountRequest) (*group.MsgCreateGroupAccountResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	admin, err := sdk.AccAddressFromBech32(req.GetAdmin())
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "request admin")
+	}
 	policy := req.GetDecisionPolicy()
-	admin := req.GetAdmin()
 	groupID := req.GetGroupID()
 	comment := req.GetComment()
 
@@ -221,7 +224,11 @@ func (s serverImpl) CreateGroupAccount(goCtx context.Context, req *group.MsgCrea
 	if err != nil {
 		return nil, err
 	}
-	if !g.Admin.Equals(admin) {
+	groupAdmin, err := sdk.AccAddressFromBech32(g.Admin)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "group admin")
+	}
+	if !groupAdmin.Equals(admin) {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not group admin")
 	}
 	accountAddr := group.AccountCondition(s.groupAccountSeq.NextVal(ctx)).Address()
@@ -241,12 +248,12 @@ func (s serverImpl) CreateGroupAccount(goCtx context.Context, req *group.MsgCrea
 		return nil, sdkerrors.Wrap(err, "could not create group account")
 	}
 
-	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroupAccount{GroupAccount: accountAddr.String(), Admin: req.Admin.String()})
+	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroupAccount{GroupAccount: accountAddr.String(), Admin: req.Admin})
 	if err != nil {
 		return nil, err
 	}
 
-	return &group.MsgCreateGroupAccountResponse{GroupAccount: accountAddr}, nil
+	return &group.MsgCreateGroupAccountResponse{GroupAccount: accountAddr.String()}, nil
 }
 
 func (s serverImpl) UpdateGroupAccountAdmin(goCtx context.Context, req *group.MsgUpdateGroupAccountAdminRequest) (*group.MsgUpdateGroupAccountAdminResponse, error) {
@@ -267,7 +274,10 @@ func (s serverImpl) UpdateGroupAccountComment(goCtx context.Context, req *group.
 func (s serverImpl) CreateProposal(goCtx context.Context, req *group.MsgCreateProposalRequest) (*group.MsgCreateProposalResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	accountAddress := req.GroupAccount
+	accountAddress, err := sdk.AccAddressFromBech32(req.GroupAccount)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "request group account")
+	}
 	comment := req.Comment
 	proposers := req.Proposers
 	msgs := req.GetMsgs()
@@ -294,7 +304,12 @@ func (s serverImpl) CreateProposal(goCtx context.Context, req *group.MsgCreatePr
 		}
 	}
 
-	if err := ensureMsgAuthZ(msgs, account.GroupAccount); err != nil {
+	address, err := sdk.AccAddressFromBech32(account.GroupAccount)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "group account")
+	}
+
+	if err := ensureMsgAuthZ(msgs, address); err != nil {
 		return nil, err
 	}
 
@@ -326,7 +341,7 @@ func (s serverImpl) CreateProposal(goCtx context.Context, req *group.MsgCreatePr
 	}
 
 	m := &group.Proposal{
-		GroupAccount:        accountAddress,
+		GroupAccount:        req.GroupAccount,
 		Comment:             comment,
 		Proposers:           proposers,
 		SubmittedAt:         *blockTime,
@@ -391,7 +406,12 @@ func (s serverImpl) Vote(goCtx context.Context, req *group.MsgVoteRequest) (*gro
 		return nil, sdkerrors.Wrap(group.ErrExpired, "voting period has ended already")
 	}
 	var accountInfo group.GroupAccountInfo
-	if err := s.groupAccountTable.GetOne(ctx, proposal.GroupAccount.Bytes(), &accountInfo); err != nil {
+
+	address, err := sdk.AccAddressFromBech32(proposal.GroupAccount)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "group account")
+	}
+	if err := s.groupAccountTable.GetOne(ctx, address.Bytes(), &accountInfo); err != nil {
 		return nil, sdkerrors.Wrap(err, "load group account")
 	}
 	if proposal.GroupAccountVersion != accountInfo.Version {
@@ -475,7 +495,11 @@ func (s serverImpl) Exec(goCtx context.Context, req *group.MsgExecRequest) (*gro
 	}
 
 	var accountInfo group.GroupAccountInfo
-	if err := s.groupAccountTable.GetOne(ctx, proposal.GroupAccount.Bytes(), &accountInfo); err != nil {
+	address, err := sdk.AccAddressFromBech32(proposal.GroupAccount)
+	if err != nil {
+		return nil, sdkerrors.Wrap(err, "group account")
+	}
+	if err := s.groupAccountTable.GetOne(ctx, address.Bytes(), &accountInfo); err != nil {
 		return nil, sdkerrors.Wrap(err, "load group account")
 	}
 
@@ -512,7 +536,11 @@ func (s serverImpl) Exec(goCtx context.Context, req *group.MsgExecRequest) (*gro
 	if proposal.Status == group.ProposalStatusClosed && proposal.Result == group.ProposalResultAccepted && proposal.ExecutorResult != group.ProposalExecutorResultSuccess {
 		logger := ctx.Logger().With("module", fmt.Sprintf("x/%s", group.ModuleName))
 		ctx, flush := ctx.CacheContext()
-		_, err := DoExecuteMsgs(ctx, s.router, accountInfo.GroupAccount, proposal.GetMsgs())
+		address, err := sdk.AccAddressFromBech32(accountInfo.GroupAccount)
+		if err != nil {
+			return nil, sdkerrors.Wrap(err, "group account")
+		}
+		_, err = DoExecuteMsgs(ctx, s.router, address, proposal.GetMsgs())
 		if err != nil {
 			proposal.ExecutorResult = group.ProposalExecutorResultFailure
 			proposalType := reflect.TypeOf(proposal).String()
@@ -534,7 +562,7 @@ func (s serverImpl) Exec(goCtx context.Context, req *group.MsgExecRequest) (*gro
 
 type authNGroupReq interface {
 	GetGroupID() group.ID
-	GetAdmin() sdk.AccAddress // equal GetSigners()
+	GetAdmin() string
 }
 
 type actionFn func(m *group.GroupInfo) error
@@ -546,7 +574,7 @@ func (s serverImpl) doUpdateGroup(ctx sdk.Context, req authNGroupReq, action act
 	}
 
 	groupIDStr := util.Uint64ToBase58Check(req.GetGroupID().Uint64())
-	err = ctx.EventManager().EmitTypedEvent(&group.EventUpdateGroup{GroupId: groupIDStr, Admin: req.GetAdmin().String()})
+	err = ctx.EventManager().EmitTypedEvent(&group.EventUpdateGroup{GroupId: groupIDStr, Admin: req.GetAdmin()})
 	if err != nil {
 		return err
 	}
@@ -559,7 +587,15 @@ func (s serverImpl) doAuthenticated(ctx sdk.Context, req authNGroupReq, action a
 	if err != nil {
 		return err
 	}
-	if !group.Admin.Equals(req.GetAdmin()) {
+	admin, err := sdk.AccAddressFromBech32(group.Admin)
+	if err != nil {
+		return sdkerrors.Wrap(err, "group admin")
+	}
+	reqAdmin, err := sdk.AccAddressFromBech32(req.GetAdmin())
+	if err != nil {
+		return sdkerrors.Wrap(err, "request admin")
+	}
+	if !admin.Equals(reqAdmin) {
 		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not group admin")
 	}
 	if err := action(&group); err != nil {

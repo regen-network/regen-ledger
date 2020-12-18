@@ -63,7 +63,7 @@ message QueryGroupInfoResponse {
 message QueryGroupAccountInfoRequest {
 
   // group_account is the account address of the group account.
-  bytes group_account = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  string group_account = 1;
 }
 
 // QueryGroupAccountInfoResponse is the Query/GroupAccountInfo response type.
@@ -97,7 +97,7 @@ message QueryGroupMembersResponse {
 message QueryGroupsByAdminRequest {
 
   // admin is the account address of a group's admin.
-  bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  string admin = 1;
 
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
@@ -137,7 +137,7 @@ message QueryGroupAccountsByGroupResponse {
 message QueryGroupAccountsByAdminRequest {
   
   // admin is the admin address of the group account.
-  bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  string admin = 1;
 
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
@@ -171,7 +171,7 @@ message QueryProposalResponse {
 message QueryProposalsByGroupAccountRequest {
 
   // group_account is the group account address related to proposals.
-  bytes group_account = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  string group_account = 1;
 
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
@@ -194,7 +194,7 @@ message QueryVoteByProposalVoterRequest {
   uint64 proposal_id = 1 [(gogoproto.casttype) = "ProposalID"];
   
   // voter is a proposal voter account address.
-  bytes voter = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  string voter = 2;
 }
 
 // QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter response type.
@@ -227,7 +227,7 @@ message QueryVotesByProposalResponse {
 // QueryVotesByVoterResponse is the Query/VotesByVoter request type.
 message QueryVotesByVoterRequest {
   // voter is a proposal voter account address.
-  bytes voter = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  string voter = 1;
 
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;

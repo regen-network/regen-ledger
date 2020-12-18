@@ -54,7 +54,7 @@ service Msg {
 message MsgCreateGroupRequest {
 
     // admin is the account address of the group admin.
-    bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string admin = 1;
     
     // members defines the group members.
     repeated Member members = 2 [(gogoproto.nullable) = false];
@@ -74,7 +74,7 @@ message MsgCreateGroupResponse {
 message MsgUpdateGroupMembersRequest {
 
     // admin is the account address of the group admin.
-    bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string admin = 1;
     
     // group_id is the unique ID of the group.
     uint64 group_id = 2 [(gogoproto.casttype) = "ID"];
@@ -91,13 +91,13 @@ message MsgUpdateGroupMembersResponse { }
 message MsgUpdateGroupAdminRequest {
 
     // admin is the current account address of the group admin.
-    bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string admin = 1;
     
     // group_id is the unique ID of the group.
     uint64 group_id = 2 [(gogoproto.casttype) = "ID"];
    
     // new_admin is the group new admin account address.
-    bytes new_admin = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string new_admin = 3;
 }
 
 // MsgUpdateGroupAdminResponse is the Msg/UpdateGroupAdmin response type.
@@ -107,7 +107,7 @@ message MsgUpdateGroupAdminResponse { }
 message MsgUpdateGroupCommentRequest {
 
     // admin is the account address of the group admin.
-    bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string admin = 1;
     
     // group_id is the unique ID of the group.
     uint64 group_id = 2 [(gogoproto.casttype) = "ID"];
@@ -128,7 +128,7 @@ message MsgCreateGroupAccountRequest {
     option (gogoproto.goproto_getters) = false;
 
     // admin is the account address of the group admin.
-    bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string admin = 1;
     
     // group_id is the unique ID of the group.
     uint64 group_id = 2 [(gogoproto.casttype) = "ID"];
@@ -144,20 +144,20 @@ message MsgCreateGroupAccountRequest {
 message MsgCreateGroupAccountResponse {
 
     // group_account is the account address of the newly created group account.
-    bytes group_account = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string group_account = 1;
 }
 
 // MsgUpdateGroupAccountAdminRequest is the Msg/UpdateGroupAccountAdmin request type.
 message MsgUpdateGroupAccountAdminRequest {
 
     // admin is the account address of the group admin.
-    bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string admin = 1;
     
     // group_account is the group account address.
-    bytes group_account = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string group_account = 2;
     
     // new_admin is the new group account admin.
-    bytes new_admin = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string new_admin = 3;
 }
 
 // MsgUpdateGroupAccountAdminResponse is the Msg/UpdateGroupAccountAdmin response type.
@@ -168,10 +168,10 @@ message MsgUpdateGroupAccountDecisionPolicyRequest {
     option (gogoproto.goproto_getters) = false;
 
     // admin is the account address of the group admin.
-    bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string admin = 1;
     
     // group_account is the group account address.
-    bytes group_account = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string group_account = 2;
     
     // decision_policy is the updated group account decision policy.
     google.protobuf.Any decision_policy = 3 [(cosmos_proto.accepts_interface) = "DecisionPolicy"];
@@ -184,10 +184,10 @@ message MsgUpdateGroupAccountDecisionPolicyResponse { }
 message MsgUpdateGroupAccountCommentRequest {
 
     // admin is the account address of the group admin.
-    bytes admin = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string admin = 1;
     
     // group_account is the group account address.
-    bytes group_account = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string group_account = 2;
     
     // comment is the updated group account comment.
     string comment = 3;
@@ -205,11 +205,11 @@ message MsgCreateProposalRequest {
     option (gogoproto.goproto_getters) = false;
 
     // group_account is the group account address.
-    bytes group_account = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string group_account = 1;
     
     // proposers are the account addresses of the proposers.
     // Proposers signatures will be counted as yes votes.
-    repeated bytes proposers = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    repeated string proposers = 2;
     
     // comment is the proposal's comment.
     string comment = 3;
@@ -232,7 +232,7 @@ message MsgVoteRequest {
     uint64 proposal_id = 1 [(gogoproto.casttype) = "ProposalID"];
     
     // voters is the lists of voters' account addresses.
-    repeated bytes voters = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    repeated string voters = 2;
     
     // choice is the voters' choice on the proposal.
     Choice choice = 3;
@@ -251,7 +251,7 @@ message MsgExecRequest {
     uint64 proposal_id = 1 [(gogoproto.casttype) = "ProposalID"];
     
     // signer is the account address used to execute the proposal.
-    bytes signer = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+    string signer = 2;
 }
 
 // MsgExecResponse is the Msg/Exec request type.

@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	proto "github.com/gogo/protobuf/types"
 	"github.com/regen-network/regen-ledger/math"
@@ -198,14 +199,18 @@ func TestThresholdDecisionPolicyValidateBasic(t *testing.T) {
 }
 
 func TestVoteNaturalKey(t *testing.T) {
+	addr := []byte{0xff, 0xfe}
 	v := Vote{
 		ProposalId: 1,
-		Voter:      []byte{0xff, 0xfe},
+		Voter:      string(addr[:]),
 	}
 	assert.Equal(t, []byte{0, 0, 0, 0, 0, 0, 0, 1, 0xff, 0xfe}, v.NaturalKey())
 }
 
 func TestGroupInfoValidation(t *testing.T) {
+	_, _, addr := testdata.KeyTestPubAddr()
+	adminAddr := addr.String()
+
 	specs := map[string]struct {
 		src    GroupInfo
 		expErr bool
@@ -213,7 +218,7 @@ func TestGroupInfoValidation(t *testing.T) {
 		"all good": {
 			src: GroupInfo{
 				GroupId:     1,
-				Admin:       []byte("valid--admin-address"),
+				Admin:       adminAddr,
 				Comment:     "any",
 				Version:     1,
 				TotalWeight: "0",
@@ -221,7 +226,7 @@ func TestGroupInfoValidation(t *testing.T) {
 		},
 		"invalid group": {
 			src: GroupInfo{
-				Admin:       []byte("valid--admin-address"),
+				Admin:       adminAddr,
 				Comment:     "any",
 				Version:     1,
 				TotalWeight: "0",
@@ -231,7 +236,7 @@ func TestGroupInfoValidation(t *testing.T) {
 		"invalid admin": {
 			src: GroupInfo{
 				GroupId:     1,
-				Admin:       []byte(""),
+				Admin:       "",
 				Comment:     "any",
 				Version:     1,
 				TotalWeight: "0",
@@ -241,7 +246,7 @@ func TestGroupInfoValidation(t *testing.T) {
 		"invalid version": {
 			src: GroupInfo{
 				GroupId:     1,
-				Admin:       []byte("valid--admin-address"),
+				Admin:       adminAddr,
 				Comment:     "any",
 				TotalWeight: "0",
 			},
@@ -250,7 +255,7 @@ func TestGroupInfoValidation(t *testing.T) {
 		"unset total weight": {
 			src: GroupInfo{
 				GroupId: 1,
-				Admin:   []byte("valid--admin-address"),
+				Admin:   adminAddr,
 				Comment: "any",
 				Version: 1,
 			},
@@ -259,7 +264,7 @@ func TestGroupInfoValidation(t *testing.T) {
 		"negative total weight": {
 			src: GroupInfo{
 				GroupId:     1,
-				Admin:       []byte("valid--admin-address"),
+				Admin:       adminAddr,
 				Comment:     "any",
 				Version:     1,
 				TotalWeight: "-1",
@@ -280,6 +285,9 @@ func TestGroupInfoValidation(t *testing.T) {
 }
 
 func TestGroupMemberValidation(t *testing.T) {
+	_, _, addr := testdata.KeyTestPubAddr()
+	memberAddr := addr.String()
+
 	specs := map[string]struct {
 		src    GroupMember
 		expErr bool
@@ -287,7 +295,7 @@ func TestGroupMemberValidation(t *testing.T) {
 		"all good": {
 			src: GroupMember{
 				GroupId: 1,
-				Member:  []byte("valid-member-address"),
+				Member:  memberAddr,
 				Weight:  "1",
 				Comment: "any",
 			},
@@ -295,7 +303,7 @@ func TestGroupMemberValidation(t *testing.T) {
 		"invalid group": {
 			src: GroupMember{
 				GroupId: 0,
-				Member:  []byte("valid-member-address"),
+				Member:  memberAddr,
 				Weight:  "1",
 				Comment: "any",
 			},
@@ -304,7 +312,7 @@ func TestGroupMemberValidation(t *testing.T) {
 		"invalid address": {
 			src: GroupMember{
 				GroupId: 1,
-				Member:  []byte("invalid-member-address"),
+				Member:  "invalid-member-address",
 				Weight:  "1",
 				Comment: "any",
 			},
@@ -321,7 +329,7 @@ func TestGroupMemberValidation(t *testing.T) {
 		"invalid weight": {
 			src: GroupMember{
 				GroupId: 1,
-				Member:  []byte("valid-member-address"),
+				Member:  memberAddr,
 				Weight:  "0",
 				Comment: "any",
 			},
@@ -330,7 +338,7 @@ func TestGroupMemberValidation(t *testing.T) {
 		"nil weight": {
 			src: GroupMember{
 				GroupId: 1,
-				Member:  []byte("valid-member-address"),
+				Member:  memberAddr,
 				Comment: "any",
 			},
 			expErr: true,
