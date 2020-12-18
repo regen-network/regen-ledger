@@ -14,9 +14,9 @@ func (ms Members) ValidateBasic() error {
 		if err := member.ValidateBasic(); err != nil {
 			return err
 		}
-		addr := string(member.Address)
+		addr := member.Address
 		if _, exists := index[addr]; exists {
-			return sdkerrors.Wrapf(ErrDuplicate, "address: %s", member.Address)
+			return sdkerrors.Wrapf(ErrDuplicate, "address: %s", addr)
 		}
 		index[addr] = struct{}{}
 	}
