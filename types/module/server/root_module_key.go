@@ -30,11 +30,15 @@ func (r *rootModuleKey) String() string {
 	return fmt.Sprintf("rootModuleKey{%p, %s}", r, r.moduleName)
 }
 
-func (r *rootModuleKey) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	invoker, err := r.invokerFactory(CallInfo{
-		Method: method,
+func (r *rootModuleKey) Invoker(methodName string) (types.Invoker, error) {
+	return r.invokerFactory(CallInfo{
+		Method: methodName,
 		Caller: r.ModuleID(),
 	})
+}
+
+func (r *rootModuleKey) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
+	invoker, err := r.Invoker(method)
 	if err != nil {
 		return err
 	}

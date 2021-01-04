@@ -4,15 +4,11 @@
 package data
 
 import (
-	context "context"
 	fmt "fmt"
 	_ "github.com/gogo/protobuf/gogoproto"
-	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	types "github.com/gogo/protobuf/types"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
+	_ "github.com/regen-network/regen-ledger/types/proto"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -32,8 +28,8 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 // MsgAnchorDataRequest is the Msg/AnchorData request type.
 type MsgAnchorDataRequest struct {
 	// sender is the address of the sender of the transaction.
-	// The sender in StoreData is not attesting to the veracity of the underlying data.
-	// They can simply be a intermediary providing services.
+	// The sender in StoreData is not attesting to the veracity of the underlying
+	// data. They can simply be a intermediary providing services.
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
 	// cid is a Content Identifier for the data corresponding to the IPFS CID
 	// specification: https://github.com/multiformats/cid.
@@ -218,16 +214,16 @@ var xxx_messageInfo_MsgSignDataResponse proto.InternalMessageInfo
 // MsgStoreDataRequest is the Msg/StoreData request type.
 type MsgStoreDataRequest struct {
 	// sender is the address of the sender of the transaction.
-	// The sender in StoreData is not attesting to the veracity of the underlying data.
-	// They can simply be a intermediary providing services.
+	// The sender in StoreData is not attesting to the veracity of the underlying
+	// data. They can simply be a intermediary providing services.
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
 	// cid is a Content Identifier for the data corresponding to the IPFS CID
 	// specification: https://github.com/multiformats/cid.
 	Cid []byte `protobuf:"bytes,2,opt,name=cid,proto3" json:"cid,omitempty"`
 	// content is the content of the data corresponding to the provided CID.
 	//
-	// Currently only data for CID's using sha2-256 and blake2b-256 hash algorithms
-	// can be stored on-chain.
+	// Currently only data for CID's using sha2-256 and blake2b-256 hash
+	// algorithms can be stored on-chain.
 	Content []byte `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
 }
 
@@ -334,255 +330,35 @@ func init() {
 func init() { proto.RegisterFile("regen/data/v1alpha1/tx.proto", fileDescriptor_5051179b7de7ca1d) }
 
 var fileDescriptor_5051179b7de7ca1d = []byte{
-	// 410 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x53, 0xcd, 0x8e, 0xd3, 0x30,
-	0x18, 0x4c, 0x1a, 0x54, 0x88, 0xe1, 0x80, 0xdc, 0x1f, 0x45, 0x11, 0x4a, 0xab, 0x5c, 0x48, 0x11,
-	0xd8, 0x6a, 0xb9, 0x20, 0x4e, 0x80, 0x50, 0x6f, 0x3d, 0x10, 0xb8, 0x80, 0x84, 0x44, 0x9a, 0x18,
-	0x37, 0xa2, 0xb5, 0x83, 0xed, 0x42, 0x1f, 0x81, 0x23, 0x8f, 0xb0, 0xf7, 0x7d, 0x91, 0x3d, 0xf6,
-	0xb8, 0xc7, 0x55, 0xfb, 0x22, 0xab, 0x38, 0x49, 0xdb, 0xed, 0xb6, 0xda, 0x6a, 0x6f, 0x1e, 0x7f,
-	0xe3, 0xf9, 0xe6, 0x9b, 0x2f, 0x01, 0xcf, 0x04, 0xa1, 0x84, 0xe1, 0x24, 0x52, 0x11, 0xfe, 0xd3,
-	0x8f, 0xa6, 0xd9, 0x24, 0xea, 0x63, 0xb5, 0x40, 0x99, 0xe0, 0x8a, 0xc3, 0x86, 0xae, 0xa2, 0xbc,
-	0x8a, 0xaa, 0xaa, 0xdb, 0xa4, 0x9c, 0x72, 0x5d, 0xc7, 0xf9, 0xa9, 0xa0, 0xba, 0x1d, 0xca, 0x39,
-	0x9d, 0x12, 0xac, 0xd1, 0x78, 0xfe, 0x13, 0xab, 0x74, 0x46, 0xa4, 0x8a, 0x66, 0x59, 0x41, 0xf0,
-	0xdf, 0x81, 0xe6, 0x48, 0xd2, 0xf7, 0x2c, 0x9e, 0x70, 0xf1, 0x31, 0x52, 0x51, 0x48, 0x7e, 0xcf,
-	0x89, 0x54, 0xb0, 0x0d, 0xea, 0x92, 0xb0, 0x84, 0x08, 0xc7, 0xec, 0x9a, 0x81, 0x1d, 0x96, 0x08,
-	0x3e, 0x05, 0x56, 0x9c, 0x26, 0x4e, 0xad, 0x6b, 0x06, 0x4f, 0xc2, 0xfc, 0xe8, 0x7f, 0x02, 0xad,
-	0x3d, 0x05, 0x99, 0x71, 0x26, 0x09, 0x7c, 0x03, 0xec, 0x4d, 0x37, 0xad, 0xf2, 0x78, 0xe0, 0xa2,
-	0xc2, 0x0f, 0xaa, 0xfc, 0xa0, 0x2f, 0x15, 0x23, 0xdc, 0x92, 0xfd, 0x21, 0x80, 0x23, 0x49, 0x3f,
-	0xa7, 0x94, 0xed, 0x5a, 0x72, 0xc0, 0x43, 0x99, 0x52, 0x46, 0x84, 0x74, 0xcc, 0xae, 0x15, 0xd8,
-	0x61, 0x05, 0x6f, 0x9b, 0x7a, 0xfb, 0xe0, 0xdf, 0x59, 0xc7, 0xf0, 0x5b, 0xa0, 0x71, 0x43, 0xa7,
-	0x30, 0xe6, 0x7f, 0x2d, 0xae, 0x15, 0x17, 0xe4, 0x5e, 0x23, 0xe7, 0x4e, 0x62, 0xce, 0x14, 0x61,
-	0xca, 0xb1, 0xf4, 0x6d, 0x05, 0xfd, 0xb6, 0x8e, 0x73, 0x47, 0xba, 0x68, 0x39, 0x38, 0xaf, 0x01,
-	0x6b, 0x24, 0x29, 0x8c, 0x01, 0xd8, 0x26, 0x05, 0x7b, 0xe8, 0xc0, 0x26, 0xd1, 0xa1, 0x7d, 0xb8,
-	0x2f, 0x4e, 0xa1, 0x96, 0xc1, 0x7f, 0x07, 0x8f, 0xaa, 0x99, 0xe1, 0xf3, 0x63, 0xef, 0xf6, 0xd2,
-	0x75, 0x83, 0xbb, 0x89, 0xa5, 0xfc, 0x0f, 0x60, 0x6f, 0x06, 0x84, 0xc7, 0x9f, 0xed, 0xc5, 0xeb,
-	0xf6, 0x4e, 0x60, 0x16, 0x1d, 0x3e, 0x0c, 0x2f, 0x56, 0x9e, 0xb9, 0x5c, 0x79, 0xe6, 0xd5, 0xca,
-	0x33, 0xff, 0xaf, 0x3d, 0x63, 0xb9, 0xf6, 0x8c, 0xcb, 0xb5, 0x67, 0x7c, 0x7b, 0x49, 0x53, 0x35,
-	0x99, 0x8f, 0x51, 0xcc, 0x67, 0x58, 0xcb, 0xbd, 0x62, 0x44, 0xfd, 0xe5, 0xe2, 0x57, 0x89, 0xa6,
-	0x24, 0xa1, 0x44, 0xe0, 0x85, 0xfe, 0x75, 0xc6, 0x75, 0xfd, 0x99, 0xbd, 0xbe, 0x0e, 0x00, 0x00,
-	0xff, 0xff, 0xc5, 0xf3, 0xd6, 0xef, 0x4f, 0x03, 0x00, 0x00,
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
-
-// MsgClient is the client API for Msg service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type MsgClient interface {
-	// AnchorData "anchors" a piece of data to the blockchain based on its secure hash,
-	// effectively providing a tamper resistant timestamp.
-	//
-	// The sender in AnchorData is not attesting to the veracity of the underlying data.
-	// They can simply be a intermediary providing timestamp services.
-	// SignData should be used to create a digital signature attesting to the veracity of some piece of data.
-	AnchorData(ctx context.Context, in *MsgAnchorDataRequest, opts ...grpc.CallOption) (*MsgAnchorDataResponse, error)
-	// SignData allows for signing of an arbitrary piece of data on the blockchain.
-	// By "signing" data the signers are making a statement about the veracity of the
-	// data itself. It is like signing a legal document, meaning that I agree to all
-	// conditions and to the best of my knowledge everything is true. When anchoring
-	// data, the sender is not attesting to the veracity of the data, they are simply
-	// communicating that it exists.
-	//
-	// On-chain signatures have the following benefits:
-	// - on-chain identities can be managed using different cryptographic keys
-	//   that change over time through key rotation practices
-	// - an on-chain identity may represent an organization and through delegation
-	//   individual members may sign on behalf of the group
-	// - the blockchain transaction envelope provides built-in replay protection
-	//   and timestamping
-	//
-	// SignData implicitly calls AnchorData if the data was not already anchored.
-	//
-	// SignData can be called multiple times for the same CID with different signers
-	// and those signers will be appended to the list of signers.
-	SignData(ctx context.Context, in *MsgSignDataRequest, opts ...grpc.CallOption) (*MsgSignDataResponse, error)
-	// StoreData stores a piece of data corresponding to a CID on the blockchain.
-	//
-	// Currently only data for CID's using sha2-256 and blake2b-256 hash algorithms
-	// can be stored on-chain.
-	//
-	// StoreData implicitly calls AnchorData if the data was not already anchored.
-	//
-	// The sender in StoreData is not attesting to the veracity of the underlying data.
-	// They can simply be a intermediary providing storage services.
-	// SignData should be used to create a digital signature attesting to the veracity of some piece of data.
-	StoreData(ctx context.Context, in *MsgStoreDataRequest, opts ...grpc.CallOption) (*MsgStoreDataResponse, error)
-}
-
-type msgClient struct {
-	cc grpc1.ClientConn
-}
-
-func NewMsgClient(cc grpc1.ClientConn) MsgClient {
-	return &msgClient{cc}
-}
-
-func (c *msgClient) AnchorData(ctx context.Context, in *MsgAnchorDataRequest, opts ...grpc.CallOption) (*MsgAnchorDataResponse, error) {
-	out := new(MsgAnchorDataResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Msg/AnchorData", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) SignData(ctx context.Context, in *MsgSignDataRequest, opts ...grpc.CallOption) (*MsgSignDataResponse, error) {
-	out := new(MsgSignDataResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Msg/SignData", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) StoreData(ctx context.Context, in *MsgStoreDataRequest, opts ...grpc.CallOption) (*MsgStoreDataResponse, error) {
-	out := new(MsgStoreDataResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Msg/StoreData", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// MsgServer is the server API for Msg service.
-type MsgServer interface {
-	// AnchorData "anchors" a piece of data to the blockchain based on its secure hash,
-	// effectively providing a tamper resistant timestamp.
-	//
-	// The sender in AnchorData is not attesting to the veracity of the underlying data.
-	// They can simply be a intermediary providing timestamp services.
-	// SignData should be used to create a digital signature attesting to the veracity of some piece of data.
-	AnchorData(context.Context, *MsgAnchorDataRequest) (*MsgAnchorDataResponse, error)
-	// SignData allows for signing of an arbitrary piece of data on the blockchain.
-	// By "signing" data the signers are making a statement about the veracity of the
-	// data itself. It is like signing a legal document, meaning that I agree to all
-	// conditions and to the best of my knowledge everything is true. When anchoring
-	// data, the sender is not attesting to the veracity of the data, they are simply
-	// communicating that it exists.
-	//
-	// On-chain signatures have the following benefits:
-	// - on-chain identities can be managed using different cryptographic keys
-	//   that change over time through key rotation practices
-	// - an on-chain identity may represent an organization and through delegation
-	//   individual members may sign on behalf of the group
-	// - the blockchain transaction envelope provides built-in replay protection
-	//   and timestamping
-	//
-	// SignData implicitly calls AnchorData if the data was not already anchored.
-	//
-	// SignData can be called multiple times for the same CID with different signers
-	// and those signers will be appended to the list of signers.
-	SignData(context.Context, *MsgSignDataRequest) (*MsgSignDataResponse, error)
-	// StoreData stores a piece of data corresponding to a CID on the blockchain.
-	//
-	// Currently only data for CID's using sha2-256 and blake2b-256 hash algorithms
-	// can be stored on-chain.
-	//
-	// StoreData implicitly calls AnchorData if the data was not already anchored.
-	//
-	// The sender in StoreData is not attesting to the veracity of the underlying data.
-	// They can simply be a intermediary providing storage services.
-	// SignData should be used to create a digital signature attesting to the veracity of some piece of data.
-	StoreData(context.Context, *MsgStoreDataRequest) (*MsgStoreDataResponse, error)
-}
-
-// UnimplementedMsgServer can be embedded to have forward compatible implementations.
-type UnimplementedMsgServer struct {
-}
-
-func (*UnimplementedMsgServer) AnchorData(ctx context.Context, req *MsgAnchorDataRequest) (*MsgAnchorDataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AnchorData not implemented")
-}
-func (*UnimplementedMsgServer) SignData(ctx context.Context, req *MsgSignDataRequest) (*MsgSignDataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SignData not implemented")
-}
-func (*UnimplementedMsgServer) StoreData(ctx context.Context, req *MsgStoreDataRequest) (*MsgStoreDataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StoreData not implemented")
-}
-
-func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
-	s.RegisterService(&_Msg_serviceDesc, srv)
-}
-
-func _Msg_AnchorData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAnchorDataRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).AnchorData(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.data.v1alpha1.Msg/AnchorData",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).AnchorData(ctx, req.(*MsgAnchorDataRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_SignData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSignDataRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).SignData(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.data.v1alpha1.Msg/SignData",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SignData(ctx, req.(*MsgSignDataRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_StoreData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStoreDataRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).StoreData(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.data.v1alpha1.Msg/StoreData",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StoreData(ctx, req.(*MsgStoreDataRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Msg_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "regen.data.v1alpha1.Msg",
-	HandlerType: (*MsgServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "AnchorData",
-			Handler:    _Msg_AnchorData_Handler,
-		},
-		{
-			MethodName: "SignData",
-			Handler:    _Msg_SignData_Handler,
-		},
-		{
-			MethodName: "StoreData",
-			Handler:    _Msg_StoreData_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "regen/data/v1alpha1/tx.proto",
+	// 433 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x53, 0xcd, 0x6e, 0xd4, 0x30,
+	0x18, 0x8c, 0x9b, 0xaa, 0x10, 0xc3, 0x01, 0xb9, 0x3f, 0x8a, 0x22, 0x48, 0x57, 0xb9, 0x90, 0x22,
+	0x6a, 0xab, 0xe5, 0x82, 0x38, 0x01, 0x42, 0xbd, 0xed, 0x81, 0xc0, 0x05, 0x24, 0x04, 0xd9, 0xe4,
+	0xc3, 0x1b, 0xb1, 0xb1, 0x83, 0xed, 0x85, 0x7d, 0x04, 0x8e, 0x3c, 0x02, 0xaf, 0x80, 0xc4, 0x43,
+	0xf4, 0xd8, 0x23, 0x47, 0xb4, 0xfb, 0x22, 0x28, 0x76, 0xd2, 0x96, 0xa5, 0x2b, 0x56, 0xdc, 0x3c,
+	0x9e, 0xf1, 0x78, 0xbe, 0x71, 0x82, 0x6f, 0x2b, 0xe0, 0x20, 0x58, 0x99, 0x9b, 0x9c, 0x7d, 0x3a,
+	0xca, 0x27, 0xcd, 0x38, 0x3f, 0x62, 0x66, 0x46, 0x1b, 0x25, 0x8d, 0x24, 0xdb, 0x96, 0xa5, 0x2d,
+	0x4b, 0x7b, 0x36, 0xda, 0xe1, 0x92, 0x4b, 0xcb, 0xb3, 0x76, 0xe5, 0xa4, 0xd1, 0x3e, 0x97, 0x92,
+	0x4f, 0x80, 0x59, 0x34, 0x9a, 0xbe, 0x67, 0xa6, 0xaa, 0x41, 0x9b, 0xbc, 0x6e, 0x3a, 0xc1, 0x9d,
+	0x42, 0xea, 0x5a, 0xea, 0xb7, 0xee, 0x24, 0xcc, 0x0c, 0x08, 0x5d, 0x49, 0xa1, 0x1d, 0x9d, 0x3c,
+	0xc6, 0x3b, 0x43, 0xcd, 0x9f, 0x88, 0x62, 0x2c, 0xd5, 0xb3, 0xdc, 0xe4, 0x19, 0x7c, 0x9c, 0x82,
+	0x36, 0x64, 0x0f, 0x6f, 0x69, 0x10, 0x25, 0xa8, 0x10, 0x0d, 0x50, 0x1a, 0x64, 0x1d, 0x22, 0xb7,
+	0xb0, 0x5f, 0x54, 0x65, 0xb8, 0x31, 0x40, 0xe9, 0xcd, 0xac, 0x5d, 0x26, 0xcf, 0xf1, 0xee, 0x92,
+	0x83, 0x6e, 0xa4, 0xd0, 0x40, 0x1e, 0xe2, 0xe0, 0x3c, 0x8c, 0x75, 0xb9, 0x71, 0x1c, 0x51, 0x17,
+	0x97, 0xf6, 0x71, 0xe9, 0xcb, 0x5e, 0x91, 0x5d, 0x88, 0x93, 0x13, 0x4c, 0x86, 0x9a, 0xbf, 0xa8,
+	0xb8, 0xb8, 0x1c, 0x29, 0xc4, 0xd7, 0x74, 0xc5, 0x05, 0x28, 0x1d, 0xa2, 0x81, 0x9f, 0x06, 0x59,
+	0x0f, 0xff, 0x0e, 0xf5, 0x68, 0xf3, 0xcb, 0xb7, 0x7d, 0x2f, 0xd9, 0xc5, 0xdb, 0x7f, 0xf8, 0xb8,
+	0x60, 0xc9, 0x2b, 0xb7, 0x6d, 0xa4, 0x82, 0xff, 0x1a, 0xb9, 0x4d, 0x52, 0x48, 0x61, 0x40, 0x98,
+	0xd0, 0xb7, 0xbb, 0x3d, 0x4c, 0xf6, 0x6c, 0x9d, 0x97, 0xac, 0xdd, 0x95, 0xc7, 0xdf, 0x37, 0xb0,
+	0x3f, 0xd4, 0x9c, 0x14, 0x18, 0x5f, 0x34, 0x45, 0x0e, 0xe8, 0x15, 0x0f, 0x4d, 0xaf, 0x7a, 0x8f,
+	0xe8, 0xde, 0x3a, 0xd2, 0xae, 0xf8, 0x37, 0xf8, 0x7a, 0x3f, 0x33, 0xb9, 0xbb, 0xea, 0xdc, 0x52,
+	0xbb, 0x51, 0xfa, 0x6f, 0x61, 0x67, 0xff, 0x0e, 0x07, 0xe7, 0x03, 0x92, 0xd5, 0xc7, 0x96, 0xea,
+	0x8d, 0x0e, 0xd6, 0x50, 0xba, 0x1b, 0xa2, 0xcd, 0xd3, 0x1f, 0x87, 0xe8, 0xe9, 0xc9, 0xe9, 0x3c,
+	0x46, 0x67, 0xf3, 0x18, 0xfd, 0x9a, 0xc7, 0xe8, 0xeb, 0x22, 0xf6, 0xce, 0x16, 0xb1, 0xf7, 0x73,
+	0x11, 0x7b, 0xaf, 0xef, 0xf3, 0xca, 0x8c, 0xa7, 0x23, 0x5a, 0xc8, 0x9a, 0x59, 0xd3, 0x43, 0x01,
+	0xe6, 0xb3, 0x54, 0x1f, 0x3a, 0x34, 0x81, 0x92, 0x83, 0x62, 0x33, 0xfb, 0x7f, 0x8d, 0xb6, 0xec,
+	0xc7, 0xf6, 0xe0, 0x77, 0x00, 0x00, 0x00, 0xff, 0xff, 0xb7, 0x35, 0x93, 0x6c, 0x74, 0x03, 0x00,
+	0x00,
 }
 
 func (m *MsgAnchorDataRequest) Marshal() (dAtA []byte, err error) {

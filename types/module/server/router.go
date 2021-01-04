@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/regen-network/regen-ledger/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	gogogrpc "github.com/gogo/protobuf/grpc"
@@ -65,7 +67,7 @@ func (r registrar) RegisterService(sd *grpc.ServiceDesc, ss interface{}) {
 	}
 }
 
-func (rtr *router) invoker(methodName string, writeCondition func(context.Context, string, sdk.MsgRequest) error) (Invoker, error) {
+func (rtr *router) invoker(methodName string, writeCondition func(context.Context, string, sdk.MsgRequest) error) (types.Invoker, error) {
 	handler, found := rtr.handlers[methodName]
 	if !found {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("cannot find method named %s", methodName))
@@ -100,10 +102,9 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 
 			// cache wrap the multistore so that inter-module writes are atomic
 			// see https://github.com/cosmos/cosmos-sdk/issues/8030
-			sdkCtx := sdk.UnwrapSDKContext(ctx)
+			sdkCtx := types.UnwrapSDKContext(ctx)
 			cacheMs := sdkCtx.MultiStore().CacheMultiStore()
-			sdkCtx = sdkCtx.WithMultiStore(cacheMs)
-			ctx = sdk.WrapSDKContext(sdkCtx)
+			ctx = types.Context{Context: sdkCtx.WithMultiStore(cacheMs)}
 
 			err = handler.f(ctx, request, response)
 			if err != nil {
@@ -120,11 +121,9 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 	// query handler
 	return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
 		// cache wrap the multistore so that writes are batched
-		sdkCtx := sdk.UnwrapSDKContext(ctx)
-		ms := sdkCtx.MultiStore()
-		cacheMs := ms.CacheMultiStore()
-		sdkCtx = sdkCtx.WithMultiStore(cacheMs)
-		ctx = sdk.WrapSDKContext(sdkCtx)
+		sdkCtx := types.UnwrapSDKContext(ctx)
+		cacheMs := sdkCtx.MultiStore().CacheMultiStore()
+		ctx = types.Context{Context: sdkCtx.WithMultiStore(cacheMs)}
 
 		err := handler.f(ctx, request, response)
 		if err != nil {
@@ -138,7 +137,7 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 }
 
 func (rtr *router) invokerFactory(moduleName string) InvokerFactory {
-	return func(callInfo CallInfo) (Invoker, error) {
+	return func(callInfo CallInfo) (types.Invoker, error) {
 		moduleID := callInfo.Caller
 		if moduleName != moduleID.ModuleName {
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized,
@@ -177,7 +176,7 @@ func (rtr *router) testTxFactory(signers []sdk.AccAddress) InvokerFactory {
 		signerMap[signer.String()] = true
 	}
 
-	return func(callInfo CallInfo) (Invoker, error) {
+	return func(callInfo CallInfo) (types.Invoker, error) {
 		return rtr.invoker(callInfo.Method, func(_ context.Context, _ string, req sdk.MsgRequest) error {
 			for _, signer := range req.GetSigners() {
 				if _, found := signerMap[signer.String()]; !found {
@@ -190,7 +189,7 @@ func (rtr *router) testTxFactory(signers []sdk.AccAddress) InvokerFactory {
 }
 
 func (rtr *router) testQueryFactory() InvokerFactory {
-	return func(callInfo CallInfo) (Invoker, error) {
+	return func(callInfo CallInfo) (types.Invoker, error) {
 		return rtr.invoker(callInfo.Method, nil)
 	}
 }
