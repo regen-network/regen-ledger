@@ -17,10 +17,10 @@ type DerivedModuleKey struct {
 
 var _ ModuleKey = DerivedModuleKey{}
 
-func (r DerivedModuleKey) Invoker(methodName string) (types.Invoker, error) {
-	return r.invokerFactory(CallInfo{
+func (d DerivedModuleKey) Invoker(methodName string) (types.Invoker, error) {
+	return d.invokerFactory(CallInfo{
 		Method: methodName,
-		Caller: r.ModuleID(),
+		Caller: d.ModuleID(),
 	})
 }
 
