@@ -4,15 +4,10 @@
 package data
 
 import (
-	context "context"
 	fmt "fmt"
 	query "github.com/cosmos/cosmos-sdk/types/query"
-	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	types "github.com/gogo/protobuf/types"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -76,7 +71,7 @@ func (m *QueryByCidRequest) GetCid() []byte {
 	return nil
 }
 
-// QueryByCidRequest is the Query/ByCid response type.
+// QueryByCidResponse is the Query/ByCid response type.
 type QueryByCidResponse struct {
 	// timestamp is the timestamp of the block at which the data was anchored.
 	Timestamp *types.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
@@ -140,8 +135,11 @@ func (m *QueryByCidResponse) GetContent() []byte {
 	return nil
 }
 
+// QueryBySignerRequest is the Query/BySigner request type.
 type QueryBySignerRequest struct {
-	Signer     string             `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
+	// signer is the address of the signer to query by.
+	Signer string `protobuf:"bytes,1,opt,name=signer,proto3" json:"signer,omitempty"`
+	// pagination is the PageRequest to use for pagination.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -192,8 +190,11 @@ func (m *QueryBySignerRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
+// QueryBySignerResponse is the Query/BySigner response type.
 type QueryBySignerResponse struct {
-	Cids       [][]byte            `protobuf:"bytes,1,rep,name=cids,proto3" json:"cids,omitempty"`
+	// cids are in the CIDs returned in this page of the query.
+	Cids [][]byte `protobuf:"bytes,1,rep,name=cids,proto3" json:"cids,omitempty"`
+	// pagination is the pagination PageResponse.
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -282,126 +283,6 @@ var fileDescriptor_22891d65265dd29b = []byte{
 	0xdb, 0x9c, 0x16, 0xba, 0x62, 0x6e, 0xde, 0x53, 0x05, 0xf6, 0x93, 0x6e, 0x3e, 0xf6, 0xd5, 0x0c,
 	0x4a, 0x01, 0x0d, 0xfb, 0xec, 0xde, 0x47, 0xbe, 0xe7, 0xee, 0xd3, 0xb3, 0x5f, 0x01, 0x00, 0x00,
 	0xff, 0xff, 0x9d, 0x74, 0xd7, 0xb6, 0x34, 0x03, 0x00, 0x00,
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
-
-// QueryClient is the client API for Query service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type QueryClient interface {
-	// ByCid queries data based on its CID.
-	ByCid(ctx context.Context, in *QueryByCidRequest, opts ...grpc.CallOption) (*QueryByCidResponse, error)
-	// BySigner queries data based on signers.
-	BySigner(ctx context.Context, in *QueryBySignerRequest, opts ...grpc.CallOption) (*QueryBySignerResponse, error)
-}
-
-type queryClient struct {
-	cc grpc1.ClientConn
-}
-
-func NewQueryClient(cc grpc1.ClientConn) QueryClient {
-	return &queryClient{cc}
-}
-
-func (c *queryClient) ByCid(ctx context.Context, in *QueryByCidRequest, opts ...grpc.CallOption) (*QueryByCidResponse, error) {
-	out := new(QueryByCidResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Query/ByCid", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) BySigner(ctx context.Context, in *QueryBySignerRequest, opts ...grpc.CallOption) (*QueryBySignerResponse, error) {
-	out := new(QueryBySignerResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Query/BySigner", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// QueryServer is the server API for Query service.
-type QueryServer interface {
-	// ByCid queries data based on its CID.
-	ByCid(context.Context, *QueryByCidRequest) (*QueryByCidResponse, error)
-	// BySigner queries data based on signers.
-	BySigner(context.Context, *QueryBySignerRequest) (*QueryBySignerResponse, error)
-}
-
-// UnimplementedQueryServer can be embedded to have forward compatible implementations.
-type UnimplementedQueryServer struct {
-}
-
-func (*UnimplementedQueryServer) ByCid(ctx context.Context, req *QueryByCidRequest) (*QueryByCidResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ByCid not implemented")
-}
-func (*UnimplementedQueryServer) BySigner(ctx context.Context, req *QueryBySignerRequest) (*QueryBySignerResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BySigner not implemented")
-}
-
-func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
-	s.RegisterService(&_Query_serviceDesc, srv)
-}
-
-func _Query_ByCid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryByCidRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).ByCid(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.data.v1alpha1.Query/ByCid",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ByCid(ctx, req.(*QueryByCidRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_BySigner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryBySignerRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).BySigner(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.data.v1alpha1.Query/BySigner",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).BySigner(ctx, req.(*QueryBySignerRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Query_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "regen.data.v1alpha1.Query",
-	HandlerType: (*QueryServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "ByCid",
-			Handler:    _Query_ByCid_Handler,
-		},
-		{
-			MethodName: "BySigner",
-			Handler:    _Query_BySigner_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "regen/data/v1alpha1/query.proto",
 }
 
 func (m *QueryByCidRequest) Marshal() (dAtA []byte, err error) {

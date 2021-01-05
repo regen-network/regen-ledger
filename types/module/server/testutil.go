@@ -17,6 +17,7 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/regen-network/regen-ledger/testutil/server"
+	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/module"
 )
 
@@ -75,7 +76,7 @@ type fixture struct {
 }
 
 func (f fixture) Context() context.Context {
-	return sdk.WrapSDKContext(f.baseApp.NewUncachedContext(false, tmproto.Header{}))
+	return regentypes.Context{Context: f.baseApp.NewUncachedContext(false, tmproto.Header{})}
 }
 
 func (f fixture) TxConn() grpc.ClientConnInterface {
