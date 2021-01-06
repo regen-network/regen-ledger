@@ -3,11 +3,10 @@ package testsuite
 import (
 	"context"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	gocid "github.com/ipfs/go-cid"
 	"github.com/multiformats/go-multihash"
 	"github.com/stretchr/testify/suite"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/testutil/server"
 	"github.com/regen-network/regen-ledger/x/data"

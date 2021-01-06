@@ -17,12 +17,15 @@ type DerivedModuleKey struct {
 
 var _ ModuleKey = DerivedModuleKey{}
 
-func (d DerivedModuleKey) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, _ ...grpc.CallOption) error {
-	invoker, err := d.invokerFactory(CallInfo{
-		Method: method,
+func (d DerivedModuleKey) Invoker(methodName string) (types.Invoker, error) {
+	return d.invokerFactory(CallInfo{
+		Method: methodName,
 		Caller: d.ModuleID(),
 	})
+}
 
+func (d DerivedModuleKey) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, _ ...grpc.CallOption) error {
+	invoker, err := d.Invoker(method)
 	if err != nil {
 		return err
 	}

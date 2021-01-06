@@ -184,3 +184,5 @@ build/
 
 # OS
 .DS_Store
+
+/protoc-gen-go-cosmos2/protoc-gen-go-cosmos2
