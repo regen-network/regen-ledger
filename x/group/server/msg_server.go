@@ -77,7 +77,7 @@ func (s serverImpl) CreateGroup(goCtx context.Context, req *group.MsgCreateGroup
 	}
 
 	groupIDStr := util.Uint64ToBase58Check(groupID.Uint64())
-	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroup{GroupId: groupIDStr, Admin: req.Admin})
+	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroup{GroupId: groupIDStr})
 	if err != nil {
 		return nil, err
 	}
@@ -248,7 +248,7 @@ func (s serverImpl) CreateGroupAccount(goCtx context.Context, req *group.MsgCrea
 		return nil, sdkerrors.Wrap(err, "could not create group account")
 	}
 
-	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroupAccount{GroupAccount: accountAddr.String(), Admin: req.Admin})
+	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroupAccount{GroupAccount: accountAddr.String()})
 	if err != nil {
 		return nil, err
 	}
@@ -574,7 +574,7 @@ func (s serverImpl) doUpdateGroup(ctx sdk.Context, req authNGroupReq, action act
 	}
 
 	groupIDStr := util.Uint64ToBase58Check(req.GetGroupID().Uint64())
-	err = ctx.EventManager().EmitTypedEvent(&group.EventUpdateGroup{GroupId: groupIDStr, Admin: req.GetAdmin()})
+	err = ctx.EventManager().EmitTypedEvent(&group.EventUpdateGroup{GroupId: groupIDStr})
 	if err != nil {
 		return err
 	}

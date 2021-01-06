@@ -26,8 +26,6 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 type EventCreateGroup struct {
 	// group_id is the unique ID of the group.
 	GroupId string `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
-	// admin is the admin address of the group.
-	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
 }
 
 func (m *EventCreateGroup) Reset()         { *m = EventCreateGroup{} }
@@ -70,19 +68,10 @@ func (m *EventCreateGroup) GetGroupId() string {
 	return ""
 }
 
-func (m *EventCreateGroup) GetAdmin() string {
-	if m != nil {
-		return m.Admin
-	}
-	return ""
-}
-
 // EventUpdateGroup is an event emitted when a group is updated.
 type EventUpdateGroup struct {
 	// group_id is the unique ID of the group.
 	GroupId string `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
-	// admin is the admin address of the group.
-	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
 }
 
 func (m *EventUpdateGroup) Reset()         { *m = EventUpdateGroup{} }
@@ -125,19 +114,10 @@ func (m *EventUpdateGroup) GetGroupId() string {
 	return ""
 }
 
-func (m *EventUpdateGroup) GetAdmin() string {
-	if m != nil {
-		return m.Admin
-	}
-	return ""
-}
-
 // EventCreateGroupAccount is an event emitted when a group account is created.
 type EventCreateGroupAccount struct {
 	// group_account is the address of the group account.
 	GroupAccount string `protobuf:"bytes,1,opt,name=group_account,json=groupAccount,proto3" json:"group_account,omitempty"`
-	// admin is the admin address of the group.
-	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
 }
 
 func (m *EventCreateGroupAccount) Reset()         { *m = EventCreateGroupAccount{} }
@@ -180,19 +160,10 @@ func (m *EventCreateGroupAccount) GetGroupAccount() string {
 	return ""
 }
 
-func (m *EventCreateGroupAccount) GetAdmin() string {
-	if m != nil {
-		return m.Admin
-	}
-	return ""
-}
-
 // EventUpdateGroupAccount is an event emitted when a group account is updated.
 type EventUpdateGroupAccount struct {
 	// group_account is the address of the group account.
 	GroupAccount string `protobuf:"bytes,1,opt,name=group_account,json=groupAccount,proto3" json:"group_account,omitempty"`
-	// admin is the admin address of the group.
-	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
 }
 
 func (m *EventUpdateGroupAccount) Reset()         { *m = EventUpdateGroupAccount{} }
@@ -235,13 +206,6 @@ func (m *EventUpdateGroupAccount) GetGroupAccount() string {
 	return ""
 }
 
-func (m *EventUpdateGroupAccount) GetAdmin() string {
-	if m != nil {
-		return m.Admin
-	}
-	return ""
-}
-
 func init() {
 	proto.RegisterType((*EventCreateGroup)(nil), "regen.group.v1alpha1.EventCreateGroup")
 	proto.RegisterType((*EventUpdateGroup)(nil), "regen.group.v1alpha1.EventUpdateGroup")
@@ -252,22 +216,21 @@ func init() {
 func init() { proto.RegisterFile("regen/group/v1alpha1/events.proto", fileDescriptor_3545d78da3f76a06) }
 
 var fileDescriptor_3545d78da3f76a06 = []byte{
-	// 231 bytes of a gzipped FileDescriptorProto
+	// 215 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x2c, 0x4a, 0x4d, 0x4f,
 	0xcd, 0xd3, 0x4f, 0x2f, 0xca, 0x2f, 0x2d, 0xd0, 0x2f, 0x33, 0x4c, 0xcc, 0x29, 0xc8, 0x48, 0x34,
 	0xd4, 0x4f, 0x2d, 0x4b, 0xcd, 0x2b, 0x29, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12, 0x01,
-	0x2b, 0xd1, 0x03, 0x2b, 0xd1, 0x83, 0x29, 0x51, 0x72, 0xe6, 0x12, 0x70, 0x05, 0xa9, 0x72, 0x2e,
+	0x2b, 0xd1, 0x03, 0x2b, 0xd1, 0x83, 0x29, 0x51, 0xd2, 0xe5, 0x12, 0x70, 0x05, 0xa9, 0x72, 0x2e,
 	0x4a, 0x4d, 0x2c, 0x49, 0x75, 0x07, 0x49, 0x0a, 0x49, 0x72, 0x71, 0x80, 0x55, 0xc5, 0x67, 0xa6,
-	0x48, 0x30, 0x2a, 0x30, 0x6a, 0x70, 0x06, 0xb1, 0x83, 0xf9, 0x9e, 0x29, 0x42, 0x22, 0x5c, 0xac,
-	0x89, 0x29, 0xb9, 0x99, 0x79, 0x12, 0x4c, 0x60, 0x71, 0x08, 0x07, 0x6e, 0x48, 0x68, 0x41, 0x0a,
-	0xf9, 0x86, 0x84, 0x70, 0x89, 0xa3, 0xbb, 0xc4, 0x31, 0x39, 0x39, 0xbf, 0x34, 0xaf, 0x44, 0x48,
-	0x99, 0x8b, 0x17, 0x62, 0x56, 0x22, 0x44, 0x00, 0x6a, 0x20, 0x4f, 0x3a, 0xb2, 0x22, 0xfc, 0xa6,
-	0x22, 0x39, 0x8d, 0x72, 0x53, 0x9d, 0xdc, 0x4f, 0x3c, 0x92, 0x63, 0xbc, 0xf0, 0x48, 0x8e, 0xf1,
-	0xc1, 0x23, 0x39, 0xc6, 0x09, 0x8f, 0xe5, 0x18, 0x2e, 0x3c, 0x96, 0x63, 0xb8, 0xf1, 0x58, 0x8e,
-	0x21, 0x4a, 0x37, 0x3d, 0xb3, 0x24, 0xa3, 0x34, 0x49, 0x2f, 0x39, 0x3f, 0x57, 0x1f, 0x1c, 0xe0,
-	0xba, 0x79, 0xa9, 0x25, 0xe5, 0xf9, 0x45, 0xd9, 0x50, 0x5e, 0x4e, 0x6a, 0x4a, 0x7a, 0x6a, 0x91,
-	0x7e, 0x05, 0x24, 0xaa, 0x92, 0xd8, 0xc0, 0x71, 0x63, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0xeb,
-	0x29, 0x7e, 0x9b, 0xc0, 0x01, 0x00, 0x00,
+	0x48, 0x30, 0x2a, 0x30, 0x6a, 0x70, 0x06, 0xb1, 0x83, 0xf9, 0x9e, 0x29, 0x70, 0xe5, 0xa1, 0x05,
+	0x29, 0xc4, 0x28, 0xb7, 0xe3, 0x12, 0x47, 0x37, 0xdd, 0x31, 0x39, 0x39, 0xbf, 0x34, 0xaf, 0x44,
+	0x48, 0x99, 0x8b, 0x17, 0xa2, 0x2b, 0x11, 0x22, 0x00, 0xd5, 0xca, 0x93, 0x8e, 0xa4, 0x08, 0xae,
+	0x1f, 0xc9, 0x3a, 0x52, 0xf4, 0x3b, 0xb9, 0x9f, 0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c, 0xe3,
+	0x83, 0x47, 0x72, 0x8c, 0x13, 0x1e, 0xcb, 0x31, 0x5c, 0x78, 0x2c, 0xc7, 0x70, 0xe3, 0xb1, 0x1c,
+	0x43, 0x94, 0x6e, 0x7a, 0x66, 0x49, 0x46, 0x69, 0x92, 0x5e, 0x72, 0x7e, 0xae, 0x3e, 0x38, 0x60,
+	0x74, 0xf3, 0x52, 0x4b, 0xca, 0xf3, 0x8b, 0xb2, 0xa1, 0xbc, 0x9c, 0xd4, 0x94, 0xf4, 0xd4, 0x22,
+	0xfd, 0x0a, 0x48, 0x90, 0x26, 0xb1, 0x81, 0xc3, 0xd0, 0x18, 0x10, 0x00, 0x00, 0xff, 0xff, 0x77,
+	0x58, 0x55, 0x7e, 0x68, 0x01, 0x00, 0x00,
 }
 
 func (m *EventCreateGroup) Marshal() (dAtA []byte, err error) {
@@ -290,13 +253,6 @@ func (m *EventCreateGroup) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Admin) > 0 {
-		i -= len(m.Admin)
-		copy(dAtA[i:], m.Admin)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.Admin)))
-		i--
-		dAtA[i] = 0x12
-	}
 	if len(m.GroupId) > 0 {
 		i -= len(m.GroupId)
 		copy(dAtA[i:], m.GroupId)
@@ -327,13 +283,6 @@ func (m *EventUpdateGroup) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Admin) > 0 {
-		i -= len(m.Admin)
-		copy(dAtA[i:], m.Admin)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.Admin)))
-		i--
-		dAtA[i] = 0x12
-	}
 	if len(m.GroupId) > 0 {
 		i -= len(m.GroupId)
 		copy(dAtA[i:], m.GroupId)
@@ -364,13 +313,6 @@ func (m *EventCreateGroupAccount) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Admin) > 0 {
-		i -= len(m.Admin)
-		copy(dAtA[i:], m.Admin)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.Admin)))
-		i--
-		dAtA[i] = 0x12
-	}
 	if len(m.GroupAccount) > 0 {
 		i -= len(m.GroupAccount)
 		copy(dAtA[i:], m.GroupAccount)
@@ -401,13 +343,6 @@ func (m *EventUpdateGroupAccount) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Admin) > 0 {
-		i -= len(m.Admin)
-		copy(dAtA[i:], m.Admin)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.Admin)))
-		i--
-		dAtA[i] = 0x12
-	}
 	if len(m.GroupAccount) > 0 {
 		i -= len(m.GroupAccount)
 		copy(dAtA[i:], m.GroupAccount)
@@ -439,10 +374,6 @@ func (m *EventCreateGroup) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
-	l = len(m.Admin)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
 	return n
 }
 
@@ -453,10 +384,6 @@ func (m *EventUpdateGroup) Size() (n int) {
 	var l int
 	_ = l
 	l = len(m.GroupId)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	l = len(m.Admin)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
@@ -473,10 +400,6 @@ func (m *EventCreateGroupAccount) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
-	l = len(m.Admin)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
 	return n
 }
 
@@ -487,10 +410,6 @@ func (m *EventUpdateGroupAccount) Size() (n int) {
 	var l int
 	_ = l
 	l = len(m.GroupAccount)
-	if l > 0 {
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	l = len(m.Admin)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
@@ -563,38 +482,6 @@ func (m *EventCreateGroup) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.GroupId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Admin = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -681,38 +568,6 @@ func (m *EventUpdateGroup) Unmarshal(dAtA []byte) error {
 			}
 			m.GroupId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Admin = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvents(dAtA[iNdEx:])
@@ -798,38 +653,6 @@ func (m *EventCreateGroupAccount) Unmarshal(dAtA []byte) error {
 			}
 			m.GroupAccount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Admin = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvents(dAtA[iNdEx:])
@@ -914,38 +737,6 @@ func (m *EventUpdateGroupAccount) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.GroupAccount = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Admin", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Admin = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

@@ -101,7 +101,6 @@ EventCreateGroup is an event emitted when a group is created.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | group_id | [string](#string) |  | group_id is the unique ID of the group. |
-| admin | [string](#string) |  | admin is the admin address of the group. |
 
 
 
@@ -117,7 +116,6 @@ EventCreateGroupAccount is an event emitted when a group account is created.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | group_account | [string](#string) |  | group_account is the address of the group account. |
-| admin | [string](#string) |  | admin is the admin address of the group. |
 
 
 
@@ -133,7 +131,6 @@ EventUpdateGroup is an event emitted when a group is updated.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | group_id | [string](#string) |  | group_id is the unique ID of the group. |
-| admin | [string](#string) |  | admin is the admin address of the group. |
 
 
 
@@ -149,7 +146,6 @@ EventUpdateGroupAccount is an event emitted when a group account is updated.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | group_account | [string](#string) |  | group_account is the address of the group account. |
-| admin | [string](#string) |  | admin is the admin address of the group. |
 
 
 

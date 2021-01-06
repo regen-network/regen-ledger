@@ -9,9 +9,6 @@ message EventCreateGroup {
 
   // group_id is the unique ID of the group.
   string group_id = 1;
-
-  // admin is the admin address of the group.
-  string admin = 2;
 }
 
 // EventUpdateGroup is an event emitted when a group is updated.
@@ -19,9 +16,6 @@ message EventUpdateGroup {
 
   // group_id is the unique ID of the group.
   string group_id = 1;
-
-  // admin is the admin address of the group.
-  string admin = 2;
 }
 
 // EventCreateGroupAccount is an event emitted when a group account is created.
@@ -29,9 +23,6 @@ message EventCreateGroupAccount {
 
   // group_account is the address of the group account.
   string group_account = 1;
-
-  // admin is the admin address of the group.
-  string admin = 2;
 }
 
 // EventUpdateGroupAccount is an event emitted when a group account is updated.
@@ -39,7 +30,4 @@ message EventUpdateGroupAccount {
 
   // group_account is the address of the group account.
   string group_account = 1;
-
-  // admin is the admin address of the group.
-  string admin = 2;
 }
