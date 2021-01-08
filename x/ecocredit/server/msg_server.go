@@ -1,12 +1,10 @@
 package server
 
 import (
-	"encoding/binary"
 	"fmt"
 
 	"github.com/regen-network/regen-ledger/types"
 
-	"github.com/btcsuite/btcutil/base58"
 	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -319,12 +317,6 @@ func (s serverImpl) assertClassIssuer(ctx types.Context, classID, issuer string)
 		}
 	}
 	return sdkerrors.ErrUnauthorized
-}
-
-func uint64ToBase58Checked(x uint64) string {
-	buf := make([]byte, binary.MaxVarintLen64)
-	n := binary.PutUvarint(buf, x)
-	return base58.CheckEncode(buf[:n], 0)
 }
 
 func retire(ctx types.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired *apd.Decimal) error {
