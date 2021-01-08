@@ -17,6 +17,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/testutil/server"
 	"github.com/regen-network/regen-ledger/testutil/testdata"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/group"
 	groupserver "github.com/regen-network/regen-ledger/x/group/server"
 )
@@ -62,9 +63,10 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.blockTime = time.Now().UTC()
 
-	sdkCtx := sdk.UnwrapSDKContext(s.ctx).WithBlockTime(s.blockTime)
+	// TODO clean up once types.Context merged upstream into sdk.Context
+	sdkCtx := s.ctx.(types.Context).WithBlockTime(s.blockTime)
 	s.sdkCtx = sdkCtx
-	s.ctx = sdk.WrapSDKContext(sdkCtx)
+	s.ctx = types.Context{Context: sdkCtx}
 
 	groupParams := group.DefaultParams()
 	if !s.groupSubspace.HasKeyTable() {
@@ -380,7 +382,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupComment() {
 		spec := spec
 		s.Run(msg, func() {
 			sdkCtx, _ := s.sdkCtx.CacheContext()
-			ctx := sdk.WrapSDKContext(sdkCtx)
+			ctx := types.Context{Context: sdkCtx}
 			_, err := s.msgClient.UpdateGroupComment(ctx, spec.req)
 			if spec.expErr {
 				s.Require().Error(err)
@@ -629,7 +631,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 		spec := spec
 		s.Run(msg, func() {
 			sdkCtx, _ := s.sdkCtx.CacheContext()
-			ctx := sdk.WrapSDKContext(sdkCtx)
+			ctx := types.Context{Context: sdkCtx}
 			_, err := s.msgClient.UpdateGroupMembers(ctx, spec.req)
 			if spec.expErr {
 				s.Require().Error(err)
@@ -1308,7 +1310,7 @@ func (s *IntegrationTestSuite) TestVote() {
 				sdkCtx = spec.srcCtx
 			}
 			sdkCtx, _ = sdkCtx.CacheContext()
-			ctx := sdk.WrapSDKContext(sdkCtx)
+			ctx := types.Context{Context: sdkCtx}
 
 			if spec.doBefore != nil {
 				spec.doBefore(ctx)
@@ -1607,7 +1609,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 
 				_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{ProposalId: myProposalID})
 				s.Require().NoError(err)
-				s.Require().NoError(s.bankKeeper.SetBalances(sdk.UnwrapSDKContext(ctx), s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+				s.Require().NoError(s.bankKeeper.SetBalances(ctx.(types.Context).Context, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
 				return myProposalID
 			},
 			expProposalStatus: group.ProposalStatusClosed,
@@ -1619,13 +1621,13 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		spec := spec
 		s.Run(msg, func() {
 			sdkCtx, _ := s.sdkCtx.CacheContext()
-			ctx := sdk.WrapSDKContext(sdkCtx)
+			ctx := types.Context{Context: sdkCtx}
 
 			proposalID := spec.setupProposal(ctx)
 
 			if !spec.srcBlockTime.IsZero() {
 				sdkCtx = sdkCtx.WithBlockTime(spec.srcBlockTime)
-				ctx = sdk.WrapSDKContext(sdkCtx)
+				ctx = types.Context{Context: sdkCtx}
 			}
 
 			_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{ProposalId: proposalID})

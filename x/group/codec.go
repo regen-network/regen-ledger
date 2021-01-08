@@ -6,7 +6,7 @@ import (
 )
 
 func RegisterTypes(registry cdctypes.InterfaceRegistry) {
-	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
+	msgservice.RegisterMsgServiceDesc(registry, &Msg_ServiceDesc)
 
 	registry.RegisterInterface(
 		"regen.group.v1alpha1.DecisionPolicy",

@@ -23,6 +23,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/testutil/server"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/module"
 )
 
@@ -85,7 +86,7 @@ func (c Fixture) Setup() server.Fixture {
 	err := ms.LoadLatestVersion()
 	require.NoError(c.t, err)
 
-	c.ctx = sdk.WrapSDKContext(sdk.NewContext(ms, tmproto.Header{}, false, log.NewNopLogger()))
+	c.ctx = types.Context{Context: sdk.NewContext(ms, tmproto.Header{}, false, log.NewNopLogger())}
 
 	return c
 }

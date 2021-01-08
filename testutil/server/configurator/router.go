@@ -6,7 +6,9 @@ import (
 	"reflect"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	gogogrpc "github.com/gogo/protobuf/grpc"
+	"github.com/regen-network/regen-ledger/types"
 	"google.golang.org/grpc"
 )
 
@@ -54,10 +56,13 @@ func (t testRouter) Invoke(ctx context.Context, method string, args, reply inter
 	}
 
 	// cache wrap the multistore so that writes are batched
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-	ms := sdkCtx.MultiStore()
+	regenCtx, ok := ctx.(types.Context)
+	if !ok {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidType, "Expecting types.Context")
+	}
+	ms := regenCtx.MultiStore()
 	cacheMs := ms.CacheMultiStore()
-	sdkCtx = sdkCtx.WithMultiStore(cacheMs)
+	sdkCtx := regenCtx.WithMultiStore(cacheMs)
 	ctx = sdk.WrapSDKContext(sdkCtx)
 
 	err := handler(ctx, args, reply)

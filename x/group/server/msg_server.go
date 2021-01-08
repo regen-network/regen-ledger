@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"fmt"
 	"reflect"
 
@@ -11,13 +10,12 @@ import (
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/regen-network/regen-ledger/math"
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/util"
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
-func (s serverImpl) CreateGroup(goCtx context.Context, req *group.MsgCreateGroupRequest) (*group.MsgCreateGroupResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
+func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequest) (*group.MsgCreateGroupResponse, error) {
 	comment := req.Comment
 	members := group.Members(req.Members)
 	admin := req.Admin
@@ -85,9 +83,7 @@ func (s serverImpl) CreateGroup(goCtx context.Context, req *group.MsgCreateGroup
 	return &group.MsgCreateGroupResponse{GroupId: groupID}, nil
 }
 
-func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *group.MsgUpdateGroupMembersRequest) (*group.MsgUpdateGroupMembersResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
+func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGroupMembersRequest) (*group.MsgUpdateGroupMembersResponse, error) {
 	action := func(g *group.GroupInfo) error {
 		for i := range req.MemberUpdates {
 			member := group.GroupMember{GroupId: req.GroupId,
@@ -171,9 +167,7 @@ func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *group.MsgUpda
 	return &group.MsgUpdateGroupMembersResponse{}, nil
 }
 
-func (s serverImpl) UpdateGroupAdmin(goCtx context.Context, req *group.MsgUpdateGroupAdminRequest) (*group.MsgUpdateGroupAdminResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
+func (s serverImpl) UpdateGroupAdmin(ctx types.Context, req *group.MsgUpdateGroupAdminRequest) (*group.MsgUpdateGroupAdminResponse, error) {
 	action := func(g *group.GroupInfo) error {
 		g.Admin = req.NewAdmin
 		g.Version++
@@ -188,9 +182,7 @@ func (s serverImpl) UpdateGroupAdmin(goCtx context.Context, req *group.MsgUpdate
 	return &group.MsgUpdateGroupAdminResponse{}, nil
 }
 
-func (s serverImpl) UpdateGroupComment(goCtx context.Context, req *group.MsgUpdateGroupCommentRequest) (*group.MsgUpdateGroupCommentResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
+func (s serverImpl) UpdateGroupComment(ctx types.Context, req *group.MsgUpdateGroupCommentRequest) (*group.MsgUpdateGroupCommentResponse, error) {
 	action := func(g *group.GroupInfo) error {
 		g.Comment = req.Comment
 		g.Version++
@@ -205,9 +197,7 @@ func (s serverImpl) UpdateGroupComment(goCtx context.Context, req *group.MsgUpda
 	return &group.MsgUpdateGroupCommentResponse{}, nil
 }
 
-func (s serverImpl) CreateGroupAccount(goCtx context.Context, req *group.MsgCreateGroupAccountRequest) (*group.MsgCreateGroupAccountResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
+func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGroupAccountRequest) (*group.MsgCreateGroupAccountResponse, error) {
 	admin, err := sdk.AccAddressFromBech32(req.GetAdmin())
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "request admin")
@@ -256,24 +246,22 @@ func (s serverImpl) CreateGroupAccount(goCtx context.Context, req *group.MsgCrea
 	return &group.MsgCreateGroupAccountResponse{GroupAccount: accountAddr.String()}, nil
 }
 
-func (s serverImpl) UpdateGroupAccountAdmin(goCtx context.Context, req *group.MsgUpdateGroupAccountAdminRequest) (*group.MsgUpdateGroupAccountAdminResponse, error) {
+func (s serverImpl) UpdateGroupAccountAdmin(ctx types.Context, req *group.MsgUpdateGroupAccountAdminRequest) (*group.MsgUpdateGroupAccountAdminResponse, error) {
 	// TODO
 	return &group.MsgUpdateGroupAccountAdminResponse{}, nil
 }
 
-func (s serverImpl) UpdateGroupAccountDecisionPolicy(goCtx context.Context, req *group.MsgUpdateGroupAccountDecisionPolicyRequest) (*group.MsgUpdateGroupAccountDecisionPolicyResponse, error) {
+func (s serverImpl) UpdateGroupAccountDecisionPolicy(ctx types.Context, req *group.MsgUpdateGroupAccountDecisionPolicyRequest) (*group.MsgUpdateGroupAccountDecisionPolicyResponse, error) {
 	// TODO
 	return &group.MsgUpdateGroupAccountDecisionPolicyResponse{}, nil
 }
 
-func (s serverImpl) UpdateGroupAccountComment(goCtx context.Context, req *group.MsgUpdateGroupAccountCommentRequest) (*group.MsgUpdateGroupAccountCommentResponse, error) {
+func (s serverImpl) UpdateGroupAccountComment(ctx types.Context, req *group.MsgUpdateGroupAccountCommentRequest) (*group.MsgUpdateGroupAccountCommentResponse, error) {
 	// TODO
 	return &group.MsgUpdateGroupAccountCommentResponse{}, nil
 }
 
-func (s serverImpl) CreateProposal(goCtx context.Context, req *group.MsgCreateProposalRequest) (*group.MsgCreateProposalResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
+func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreateProposalRequest) (*group.MsgCreateProposalResponse, error) {
 	accountAddress, err := sdk.AccAddressFromBech32(req.GroupAccount)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "request group account")
@@ -372,9 +360,7 @@ func (s serverImpl) CreateProposal(goCtx context.Context, req *group.MsgCreatePr
 	return &group.MsgCreateProposalResponse{ProposalId: group.ProposalID(id)}, nil
 }
 
-func (s serverImpl) Vote(goCtx context.Context, req *group.MsgVoteRequest) (*group.MsgVoteResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
+func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.MsgVoteResponse, error) {
 	id := req.ProposalId
 	voters := req.Voters
 	choice := req.Choice
@@ -462,7 +448,7 @@ func (s serverImpl) Vote(goCtx context.Context, req *group.MsgVoteRequest) (*gro
 	return &group.MsgVoteResponse{}, nil
 }
 
-func doTally(ctx sdk.Context, p *group.Proposal, electorate group.GroupInfo, accountInfo group.GroupAccountInfo) error {
+func doTally(ctx types.Context, p *group.Proposal, electorate group.GroupInfo, accountInfo group.GroupAccountInfo) error {
 	policy := accountInfo.GetDecisionPolicy()
 	submittedAt, err := gogotypes.TimestampFromProto(&p.SubmittedAt)
 	if err != nil {
@@ -481,8 +467,7 @@ func doTally(ctx sdk.Context, p *group.Proposal, electorate group.GroupInfo, acc
 	return nil
 }
 
-func (s serverImpl) Exec(goCtx context.Context, req *group.MsgExecRequest) (*group.MsgExecResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (s serverImpl) Exec(ctx types.Context, req *group.MsgExecRequest) (*group.MsgExecResponse, error) {
 	id := req.ProposalId
 
 	proposal, err := s.getProposal(ctx, id)
@@ -567,7 +552,7 @@ type authNGroupReq interface {
 
 type actionFn func(m *group.GroupInfo) error
 
-func (s serverImpl) doUpdateGroup(ctx sdk.Context, req authNGroupReq, action actionFn, note string) error {
+func (s serverImpl) doUpdateGroup(ctx types.Context, req authNGroupReq, action actionFn, note string) error {
 	err := s.doAuthenticated(ctx, req, action, note)
 	if err != nil {
 		return err
@@ -582,7 +567,7 @@ func (s serverImpl) doUpdateGroup(ctx sdk.Context, req authNGroupReq, action act
 	return nil
 }
 
-func (s serverImpl) doAuthenticated(ctx sdk.Context, req authNGroupReq, action actionFn, note string) error {
+func (s serverImpl) doAuthenticated(ctx types.Context, req authNGroupReq, action actionFn, note string) error {
 	group, err := s.getGroupInfo(ctx, req.GetGroupID())
 	if err != nil {
 		return err
@@ -605,9 +590,9 @@ func (s serverImpl) doAuthenticated(ctx sdk.Context, req authNGroupReq, action a
 }
 
 // maxCommentSize returns the maximum length of a comment
-func (s serverImpl) maxCommentSize(ctx sdk.Context) int {
+func (s serverImpl) maxCommentSize(ctx types.Context) int {
 	var result uint32
-	s.paramSpace.Get(ctx, group.ParamMaxCommentLength, &result)
+	s.paramSpace.Get(ctx.Context, group.ParamMaxCommentLength, &result)
 	return int(result)
 }
 
