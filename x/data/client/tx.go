@@ -45,8 +45,7 @@ func MsgAnchorDataCmd() *cobra.Command {
 				return err
 			}
 
-			clientCtx := sdkclient.GetClientContextFromCmd(cmd)
-			clientCtx, err = sdkclient.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -88,8 +87,7 @@ func MsgSignDataCmd() *cobra.Command {
 				return err
 			}
 
-			clientCtx := sdkclient.GetClientContextFromCmd(cmd)
-			clientCtx, err = sdkclient.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -131,8 +129,7 @@ func MsgStoreDataCmd() *cobra.Command {
 				return err
 			}
 
-			clientCtx := sdkclient.GetClientContextFromCmd(cmd)
-			clientCtx, err = sdkclient.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}

@@ -17,6 +17,7 @@ import (
 
 	baseapp "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -287,7 +288,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 
 	// Create IBC Keeper
 	app.IBCKeeper = ibckeeper.NewKeeper(
-		appCodec, keys[ibchost.StoreKey], app.StakingKeeper, scopedIBCKeeper,
+		appCodec, keys[ibchost.StoreKey], app.GetSubspace(ibchost.ModuleName), app.StakingKeeper, scopedIBCKeeper,
 	)
 
 	// register the proposal types
@@ -387,7 +388,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
-		wasm.NewAppModule(app.wasmKeeper),
+		wasm.NewAppModule(&app.wasmKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -433,7 +434,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
-		wasm.NewAppModule(app.wasmKeeper),
+		wasm.NewAppModule(&app.wasmKeeper),
 	)
 
 	app.sm.RegisterStoreDecoders()
@@ -597,7 +598,7 @@ func (app *RegenApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIC
 	authrest.RegisterTxRoutes(clientCtx, apiSvr.Router)
 
 	ModuleBasics.RegisterRESTRoutes(clientCtx, apiSvr.Router)
-	ModuleBasics.RegisterGRPCGatewayRoutes(apiSvr.ClientCtx, apiSvr.GRPCRouter)
+	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// register swagger API from root so that other applications can override easily
 	if apiConfig.Swagger {
@@ -608,6 +609,11 @@ func (app *RegenApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIC
 // RegisterTxService implements the Application.RegisterTxService method.
 func (app *RegenApp) RegisterTxService(clientCtx client.Context) {
 	tx.RegisterTxService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.BaseApp.Simulate, app.interfaceRegistry)
+}
+
+// RegisterTendermintService implements the Application.RegisterTendermintService method.
+func (app *RegenApp) RegisterTendermintService(clientCtx client.Context) {
+	tmservice.RegisterTendermintService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.interfaceRegistry)
 }
 
 // RegisterSwaggerAPI registers swagger route with API Server

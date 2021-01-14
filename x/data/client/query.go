@@ -55,8 +55,7 @@ func QueryByCidCmd() *cobra.Command {
 		Short: "Query for CID timestamp, signers and content (if available)",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err := client.ReadQueryCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -73,7 +72,7 @@ func QueryByCidCmd() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintOutput(res)
+			return clientCtx.PrintProto(res)
 		},
 	}
 
