@@ -19,7 +19,9 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-type AppModuleBasic struct{}
+type AppModuleBasic struct {
+	cdc codec.Marshaler
+}
 
 var _ module.AppModule = AppModule{}
 var _ module.AppModuleBasic = AppModuleBasic{}
@@ -68,13 +70,13 @@ type AppModule struct {
 	router     sdk.Router
 }
 
-func NewAppModule(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, router sdk.Router) AppModule {
+func NewAppModule(cdc codec.Marshaler, storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, router sdk.Router) AppModule {
 	// set KeyTable if it has not already been set
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(paramstypes.NewKeyTable().RegisterParamSet(&group.Params{}))
 	}
 	return AppModule{
-		AppModuleBasic: AppModuleBasic{},
+		AppModuleBasic: AppModuleBasic{cdc: cdc},
 		storeKey:       storeKey,
 		paramSpace:     paramSpace,
 		router:         router,
@@ -106,7 +108,7 @@ func (a AppModule) RegisterInvariants(sdk.InvariantRegistry) {
 
 // Route returns the message routing key for the group module.
 func (a AppModule) Route() sdk.Route {
-	return sdk.Route{}
+	return sdk.NewRoute(group.RouterKey, server.NewHandler(a.storeKey, a.paramSpace, a.router, a.cdc))
 }
 
 func (a AppModule) QuerierRoute() string {

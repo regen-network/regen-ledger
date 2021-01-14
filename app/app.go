@@ -391,7 +391,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		wasm.NewAppModule(app.wasmKeeper),
-		groupmodule.NewAppModule(keys[group.StoreKey], app.GetSubspace(group.ModuleName), app.Router()),
+		groupmodule.NewAppModule(appCodec, keys[group.StoreKey], app.GetSubspace(group.ModuleName), app.Router()),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
