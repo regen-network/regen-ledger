@@ -83,8 +83,7 @@ Where members.json contains:
 				return err
 			}
 
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err = client.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -151,8 +150,7 @@ Set a member's weight to "0" to delete it.
 				return err
 			}
 
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err = client.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -198,8 +196,7 @@ func MsgUpdateGroupAdminCmd() *cobra.Command {
 				return err
 			}
 
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err = client.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -239,8 +236,7 @@ func MsgUpdateGroupCommentCmd() *cobra.Command {
 				return err
 			}
 
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err = client.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
@@ -297,8 +293,7 @@ Where decision-policy.json contains:
 				return err
 			}
 
-			clientCtx := client.GetClientContextFromCmd(cmd)
-			clientCtx, err = client.ReadTxCommandFlags(clientCtx, cmd.Flags())
+			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
