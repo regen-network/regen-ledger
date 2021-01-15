@@ -263,6 +263,16 @@ func (v Vote) ValidateBasic() error {
 	return nil
 }
 
+// ChoiceFromString returns a Choice from a string. It returns an error
+// if the string is invalid.
+func ChoiceFromString(str string) (Choice, error) {
+	choice, ok := Choice_value[str]
+	if !ok {
+		return Choice_CHOICE_UNSPECIFIED, fmt.Errorf("'%s' is not a valid vote choice", str)
+	}
+	return Choice(choice), nil
+}
+
 const defaultMaxCommentLength = 255
 
 // Parameter keys

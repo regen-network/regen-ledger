@@ -302,6 +302,32 @@ func (m MsgUpdateGroupAccountAdminRequest) ValidateBasic() error {
 var _ sdk.Msg = &MsgUpdateGroupAccountDecisionPolicyRequest{}
 var _ types.UnpackInterfacesMessage = MsgUpdateGroupAccountDecisionPolicyRequest{}
 
+// NewMsgUpdateGroupAccountDecisionPolicyRequest creates a new MsgUpdateGroupAccountDecisionPolicyRequest.
+func NewMsgUpdateGroupAccountDecisionPolicyRequest(admin sdk.AccAddress, acc string, decisionPolicy DecisionPolicy) (*MsgUpdateGroupAccountDecisionPolicyRequest, error) {
+	m := &MsgUpdateGroupAccountDecisionPolicyRequest{
+		Admin:        admin.String(),
+		GroupAccount: acc,
+	}
+	err := m.SetDecisionPolicy(decisionPolicy)
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (m *MsgUpdateGroupAccountDecisionPolicyRequest) SetDecisionPolicy(decisionPolicy DecisionPolicy) error {
+	msg, ok := decisionPolicy.(proto.Message)
+	if !ok {
+		return fmt.Errorf("can't proto marshal %T", msg)
+	}
+	any, err := types.NewAnyWithValue(msg)
+	if err != nil {
+		return err
+	}
+	m.DecisionPolicy = any
+	return nil
+}
+
 // Route Implements Msg.
 func (m MsgUpdateGroupAccountDecisionPolicyRequest) Route() string { return RouterKey }
 
@@ -456,6 +482,20 @@ func (m MsgCreateGroupAccountRequest) UnpackInterfaces(unpacker types.AnyUnpacke
 }
 
 var _ sdk.Msg = &MsgCreateProposalRequest{}
+
+// NewMsgCreateProposalRequest creates a new MsgCreateProposalRequest.
+func NewMsgCreateProposalRequest(acc string, proposers []string, msgs []sdk.Msg, comment string) (*MsgCreateProposalRequest, error) {
+	m := &MsgCreateProposalRequest{
+		GroupAccount: acc,
+		Proposers:    proposers,
+		Comment:      comment,
+	}
+	err := m.SetMsgs(msgs)
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
+}
 
 // Route Implements Msg.
 func (m MsgCreateProposalRequest) Route() string { return RouterKey }

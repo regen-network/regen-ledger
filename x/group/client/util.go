@@ -16,7 +16,7 @@ type member struct {
 
 func parseMembersFlag(fs *pflag.FlagSet) ([]group.Member, error) {
 	members := []group.Member{}
-	membersFile, _ := fs.GetString(FlagMembers)
+	membersFile, _ := fs.GetString(flagMembers)
 
 	if membersFile == "" {
 		return members, nil
