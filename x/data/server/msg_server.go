@@ -1,14 +1,14 @@
 package server
 
 import (
-	"bytes"
+	"encoding/binary"
 	"fmt"
+
+	"github.com/btcsuite/btcutil/base58"
 
 	"github.com/regen-network/regen-ledger/types"
 
 	gogotypes "github.com/gogo/protobuf/types"
-	gocid "github.com/ipfs/go-cid"
-	"github.com/multiformats/go-multihash"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -17,8 +17,54 @@ import (
 
 var _ data.MsgServer = serverImpl{}
 
+func idToIri(id data.ID) string {
+	hashStr := base58.Encode(id.Hash)
+
+	switch id.Type {
+	case data.IDType_ID_TYPE_RAW_UNSPECIFIED:
+		ext := mediaTypeToExt(id.MediaType)
+		if len(ext) > 0 {
+			ext = "." + ext
+		}
+		return fmt.Sprintf(
+			"regen:r/%s/%s%s",
+			base58EncodeEnum(int32(id.DigestAlgorithm)),
+			hashStr,
+			ext,
+		)
+	case data.IDType_ID_TYPE_GRAPH:
+		return fmt.Sprintf(
+			"regen:g/%s/%s/%s",
+			base58EncodeEnum(int32(id.GraphCanonicalizationAlgorithm)),
+			base58EncodeEnum(int32(id.DigestAlgorithm)),
+			hashStr,
+		)
+	case data.IDType_ID_TYPE_GEOGRAPHY:
+		return fmt.Sprintf(
+			"regen:geo/%s",
+			hashStr,
+		)
+	default:
+		panic(fmt.Errorf("unexpected IDType %d", id.Type))
+	}
+}
+
+func mediaTypeToExt(mediaType data.MediaType) string {
+	switch mediaType {
+	default:
+		return ""
+	}
+}
+
+func base58EncodeEnum(algorithm int32) string {
+	bz := make([]byte, 4)
+	binary.LittleEndian.PutUint32(bz, uint32(algorithm))
+	return base58.Encode(bz)
+}
+
 func (s serverImpl) AnchorData(ctx types.Context, request *data.MsgAnchorDataRequest) (*data.MsgAnchorDataResponse, error) {
-	cidBz := request.Cid
+	cidBz := request.Id
+	iri :=
 	key := AnchorKey(cidBz)
 	store := ctx.KVStore(s.storeKey)
 	if store.Has(key) {
@@ -110,61 +156,65 @@ func (s serverImpl) SignData(ctx types.Context, request *data.MsgSignDataRequest
 	return &data.MsgSignDataResponse{}, nil
 }
 
-func (s serverImpl) StoreData(ctx types.Context, request *data.MsgStoreDataRequest) (*data.MsgStoreDataResponse, error) {
-	cidBz := request.Cid
+//func (s serverImpl) StoreData(ctx types.Context, request *data.MsgStoreDataRequest) (*data.MsgStoreDataResponse, error) {
+//	cidBz := request.Cid
+//
+//	timestamp, err := blockTimestamp(ctx)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	err = s.anchorCidIfNeeded(ctx, timestamp, cidBz)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	key := DataKey(cidBz)
+//	store := ctx.KVStore(s.storeKey)
+//	if store.Has(key) {
+//		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("CID %s already has stored data", cidBz))
+//	}
+//
+//	cid, err := gocid.Cast(cidBz)
+//	if err != nil {
+//		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("bad CID f%x", cidBz))
+//	}
+//
+//	mh := cid.Hash()
+//
+//	decodedMultihash, err := multihash.Decode(mh)
+//	if err != nil {
+//		return nil, sdkerrors.Wrap(err, "can't retrieve multihash")
+//	}
+//
+//	switch decodedMultihash.Name {
+//	case "sha2-256":
+//		// TODO: gas
+//	case "blake2b-256":
+//		// TODO: gas
+//	default:
+//		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("unsupported hash function %s", decodedMultihash.Name))
+//	}
+//
+//	reqMh, err := multihash.Sum(request.Content, decodedMultihash.Code, -1)
+//	if err != nil {
+//		return nil, sdkerrors.Wrap(err, "unable to perform multihash")
+//	}
+//
+//	if !bytes.Equal(mh, reqMh) {
+//		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "multihash verification failed, please check that cid and content are correct")
+//	}
+//
+//	store.Set(key, request.Content)
+//
+//	err = ctx.EventManager().EmitTypedEvent(&data.EventStoreData{Cid: cidBz})
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	return &data.MsgStoreDataResponse{}, nil
+//}
 
-	timestamp, err := blockTimestamp(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	err = s.anchorCidIfNeeded(ctx, timestamp, cidBz)
-	if err != nil {
-		return nil, err
-	}
-
-	key := DataKey(cidBz)
-	store := ctx.KVStore(s.storeKey)
-	if store.Has(key) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("CID %s already has stored data", cidBz))
-	}
-
-	cid, err := gocid.Cast(cidBz)
-	if err != nil {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("bad CID f%x", cidBz))
-	}
-
-	mh := cid.Hash()
-
-	decodedMultihash, err := multihash.Decode(mh)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "can't retrieve multihash")
-	}
-
-	switch decodedMultihash.Name {
-	case "sha2-256":
-		// TODO: gas
-	case "blake2b-256":
-		// TODO: gas
-	default:
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("unsupported hash function %s", decodedMultihash.Name))
-	}
-
-	reqMh, err := multihash.Sum(request.Content, decodedMultihash.Code, -1)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "unable to perform multihash")
-	}
-
-	if !bytes.Equal(mh, reqMh) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "multihash verification failed, please check that cid and content are correct")
-	}
-
-	store.Set(key, request.Content)
-
-	err = ctx.EventManager().EmitTypedEvent(&data.EventStoreData{Cid: cidBz})
-	if err != nil {
-		return nil, err
-	}
-
-	return &data.MsgStoreDataResponse{}, nil
+func (s serverImpl) StoreRawData(context types.Context, request *data.MsgStoreRawDataRequest) (*data.MsgStoreRawDataResponse, error) {
+	panic("implement me")
 }

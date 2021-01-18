@@ -2,14 +2,31 @@ package server
 
 import (
 	"encoding/base64"
+	"encoding/binary"
 )
 
 const (
-	AnchorTablePrefix byte = 0x0
-	CIDSignerPrefix   byte = 0x1
-	SignerCIDPrefix   byte = 0x2
-	DataTablePrefix   byte = 0x3
+	IriIdTablePrefix   byte = 0x0
+	IdIriTablePrefix   byte = 0x1
+	AnchorTablePrefix  byte = 0x2
+	IDSignerPrefix     byte = 0x3
+	SignerIDPrefix     byte = 0x4
+	RawDataTablePrefix byte = 0x5
 )
+
+func IriIdKey(iri string) []byte {
+	key := make([]byte, len(iri)+1)
+	key[0] = IriIdTablePrefix
+	copy(key[1:], iri)
+	return key
+}
+
+func IdIriKey(id uint64) []byte {
+	key := make([]byte, 9)
+	key[0] = IriIdTablePrefix
+	binary.LittleEndian.PutUint64(key[1:], id)
+	return key
+}
 
 func AnchorKey(cid []byte) []byte {
 	return append([]byte{AnchorTablePrefix}, cid...)

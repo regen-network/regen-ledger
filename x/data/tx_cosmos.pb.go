@@ -41,28 +41,25 @@ type MsgClient interface {
 	//
 	// SignData implicitly calls AnchorData if the data was not already anchored.
 	//
-	// SignData can be called multiple times for the same CID with different
+	// SignData can be called multiple times for the same ID with different
 	// signers and those signers will be appended to the list of signers.
 	SignData(ctx context.Context, in *MsgSignDataRequest, opts ...grpc.CallOption) (*MsgSignDataResponse, error)
-	// StoreData stores a piece of data corresponding to a CID on the blockchain.
+	// StoreRawData stores a piece of raw data corresponding to an ID on the blockchain.
 	//
-	// Currently only data for CID's using sha2-256 and blake2b-256 hash
-	// algorithms can be stored on-chain.
+	// StoreRawData implicitly calls AnchorData if the data was not already anchored.
 	//
-	// StoreData implicitly calls AnchorData if the data was not already anchored.
-	//
-	// The sender in StoreData is not attesting to the veracity of the underlying
+	// The sender in StoreRawData is not attesting to the veracity of the underlying
 	// data. They can simply be a intermediary providing storage services.
 	// SignData should be used to create a digital signature attesting to the
 	// veracity of some piece of data.
-	StoreData(ctx context.Context, in *MsgStoreDataRequest, opts ...grpc.CallOption) (*MsgStoreDataResponse, error)
+	StoreRawData(ctx context.Context, in *MsgStoreRawDataRequest, opts ...grpc.CallOption) (*MsgStoreRawDataResponse, error)
 }
 
 type msgClient struct {
-	cc          grpc.ClientConnInterface
-	_AnchorData types.Invoker
-	_SignData   types.Invoker
-	_StoreData  types.Invoker
+	cc            grpc.ClientConnInterface
+	_AnchorData   types.Invoker
+	_SignData     types.Invoker
+	_StoreRawData types.Invoker
 }
 
 func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
@@ -77,7 +74,7 @@ func (c *msgClient) AnchorData(ctx context.Context, in *MsgAnchorDataRequest, op
 	}
 	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
 		var err error
-		c._AnchorData, err = invokerConn.Invoker("/regen.data.v1alpha1.Msg/AnchorData")
+		c._AnchorData, err = invokerConn.Invoker("/regen.data.v1alpha2.Msg/AnchorData")
 		if err != nil {
 			var out MsgAnchorDataResponse
 			err = c._AnchorData(ctx, in, &out)
@@ -85,7 +82,7 @@ func (c *msgClient) AnchorData(ctx context.Context, in *MsgAnchorDataRequest, op
 		}
 	}
 	out := new(MsgAnchorDataResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Msg/AnchorData", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Msg/AnchorData", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +97,7 @@ func (c *msgClient) SignData(ctx context.Context, in *MsgSignDataRequest, opts .
 	}
 	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
 		var err error
-		c._SignData, err = invokerConn.Invoker("/regen.data.v1alpha1.Msg/SignData")
+		c._SignData, err = invokerConn.Invoker("/regen.data.v1alpha2.Msg/SignData")
 		if err != nil {
 			var out MsgSignDataResponse
 			err = c._SignData(ctx, in, &out)
@@ -108,30 +105,30 @@ func (c *msgClient) SignData(ctx context.Context, in *MsgSignDataRequest, opts .
 		}
 	}
 	out := new(MsgSignDataResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Msg/SignData", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Msg/SignData", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) StoreData(ctx context.Context, in *MsgStoreDataRequest, opts ...grpc.CallOption) (*MsgStoreDataResponse, error) {
-	if invoker := c._StoreData; invoker != nil {
-		var out MsgStoreDataResponse
+func (c *msgClient) StoreRawData(ctx context.Context, in *MsgStoreRawDataRequest, opts ...grpc.CallOption) (*MsgStoreRawDataResponse, error) {
+	if invoker := c._StoreRawData; invoker != nil {
+		var out MsgStoreRawDataResponse
 		err := invoker(ctx, in, &out)
 		return &out, err
 	}
 	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
 		var err error
-		c._StoreData, err = invokerConn.Invoker("/regen.data.v1alpha1.Msg/StoreData")
+		c._StoreRawData, err = invokerConn.Invoker("/regen.data.v1alpha2.Msg/StoreRawData")
 		if err != nil {
-			var out MsgStoreDataResponse
-			err = c._StoreData(ctx, in, &out)
+			var out MsgStoreRawDataResponse
+			err = c._StoreRawData(ctx, in, &out)
 			return &out, err
 		}
 	}
-	out := new(MsgStoreDataResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Msg/StoreData", in, out, opts...)
+	out := new(MsgStoreRawDataResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Msg/StoreRawData", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -165,21 +162,18 @@ type MsgServer interface {
 	//
 	// SignData implicitly calls AnchorData if the data was not already anchored.
 	//
-	// SignData can be called multiple times for the same CID with different
+	// SignData can be called multiple times for the same ID with different
 	// signers and those signers will be appended to the list of signers.
 	SignData(types.Context, *MsgSignDataRequest) (*MsgSignDataResponse, error)
-	// StoreData stores a piece of data corresponding to a CID on the blockchain.
+	// StoreRawData stores a piece of raw data corresponding to an ID on the blockchain.
 	//
-	// Currently only data for CID's using sha2-256 and blake2b-256 hash
-	// algorithms can be stored on-chain.
+	// StoreRawData implicitly calls AnchorData if the data was not already anchored.
 	//
-	// StoreData implicitly calls AnchorData if the data was not already anchored.
-	//
-	// The sender in StoreData is not attesting to the veracity of the underlying
+	// The sender in StoreRawData is not attesting to the veracity of the underlying
 	// data. They can simply be a intermediary providing storage services.
 	// SignData should be used to create a digital signature attesting to the
 	// veracity of some piece of data.
-	StoreData(types.Context, *MsgStoreDataRequest) (*MsgStoreDataResponse, error)
+	StoreRawData(types.Context, *MsgStoreRawDataRequest) (*MsgStoreRawDataResponse, error)
 }
 
 func RegisterMsgServer(s grpc.ServiceRegistrar, srv MsgServer) {
@@ -196,7 +190,7 @@ func _Msg_AnchorData_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1alpha1.Msg/AnchorData",
+		FullMethod: "/regen.data.v1alpha2.Msg/AnchorData",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).AnchorData(types.UnwrapSDKContext(ctx), req.(*MsgAnchorDataRequest))
@@ -214,7 +208,7 @@ func _Msg_SignData_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1alpha1.Msg/SignData",
+		FullMethod: "/regen.data.v1alpha2.Msg/SignData",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).SignData(types.UnwrapSDKContext(ctx), req.(*MsgSignDataRequest))
@@ -222,20 +216,20 @@ func _Msg_SignData_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_StoreData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStoreDataRequest)
+func _Msg_StoreRawData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgStoreRawDataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).StoreData(types.UnwrapSDKContext(ctx), in)
+		return srv.(MsgServer).StoreRawData(types.UnwrapSDKContext(ctx), in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1alpha1.Msg/StoreData",
+		FullMethod: "/regen.data.v1alpha2.Msg/StoreRawData",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StoreData(types.UnwrapSDKContext(ctx), req.(*MsgStoreDataRequest))
+		return srv.(MsgServer).StoreRawData(types.UnwrapSDKContext(ctx), req.(*MsgStoreRawDataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -244,7 +238,7 @@ func _Msg_StoreData_Handler(srv interface{}, ctx context.Context, dec func(inter
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Msg_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "regen.data.v1alpha1.Msg",
+	ServiceName: "regen.data.v1alpha2.Msg",
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -256,15 +250,15 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_SignData_Handler,
 		},
 		{
-			MethodName: "StoreData",
-			Handler:    _Msg_StoreData_Handler,
+			MethodName: "StoreRawData",
+			Handler:    _Msg_StoreRawData_Handler,
 		},
 	},
-	Metadata: "regen/data/v1alpha1/tx.proto",
+	Metadata: "regen/data/v1alpha2/tx.proto",
 }
 
 const (
-	MsgAnchorDataMethod = "/regen.data.v1alpha1.Msg/AnchorData"
-	MsgSignDataMethod   = "/regen.data.v1alpha1.Msg/SignData"
-	MsgStoreDataMethod  = "/regen.data.v1alpha1.Msg/StoreData"
+	MsgAnchorDataMethod   = "/regen.data.v1alpha2.Msg/AnchorData"
+	MsgSignDataMethod     = "/regen.data.v1alpha2.Msg/SignData"
+	MsgStoreRawDataMethod = "/regen.data.v1alpha2.Msg/StoreRawData"
 )
