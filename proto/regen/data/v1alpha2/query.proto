@@ -22,7 +22,7 @@ service Query {
 message QueryByIdRequest {
 
   // id is the hash-based identifier for the anchored content.
-  ID id = 1;
+  ContentID id = 1;
 }
 
 // QueryByIdResponse is the Query/ById response type.
@@ -52,7 +52,7 @@ message QueryBySignerRequest {
 message QueryBySignerResponse {
 
   // ids are in the IDs returned in this page of the query.
-  repeated ID ids = 1;
+  repeated ContentID ids = 1;
 
   // pagination is the pagination PageResponse.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;

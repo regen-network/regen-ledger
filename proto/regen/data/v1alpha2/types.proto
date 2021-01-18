@@ -4,8 +4,8 @@ package regen.data.v1alpha2;
 
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
-// ID specifies a hash based content identifier for a piece of data
-message ID {
+// ContentID specifies a hash based content identifier for a piece of data
+message ContentID {
     // type specifies the IDType for the ID
     IDType type = 1;
 

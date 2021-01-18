@@ -60,7 +60,7 @@ message MsgAnchorDataRequest {
   string sender = 1;
 
   // id is the hash-based identifier for the anchored content.
-  ID id = 2;
+  ContentID id = 2;
 }
 
 // MsgAnchorDataRequest is the Msg/AnchorData response type.
@@ -81,7 +81,7 @@ message MsgSignDataRequest {
   repeated string signers = 1;
 
   // id is the hash-based identifier for the anchored content.
-  ID id = 2;
+  ContentID id = 2;
 }
 
 // MsgSignDataResponse is the Msg/SignData response type.
@@ -96,7 +96,7 @@ message MsgStoreRawDataRequest {
 
   // id is the hash-based identifier for the anchored content.
   // The id's type must equal ID_TYPE_RAW_UNSPECIFIED.
-  ID id = 2;
+  ContentID id = 2;
 
   // content is the content of the raw data corresponding to the provided ID.
   bytes content = 3;
