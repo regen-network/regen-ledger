@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package regen.data.v1alpha2;
+
+import "google/protobuf/timestamp.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "./types.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/data";
+
+// Query is the regen.data.v1alpha1 Query service
+service Query {
+
+  // ById queries data based on its ID.
+  rpc ById(QueryByIdRequest) returns (QueryByIdResponse);
+
+  // BySigner queries data based on signers.
+  rpc BySigner(QueryBySignerRequest) returns (QueryBySignerResponse);
+}
+
+// QueryByIdRequest is the Query/ById request type.
+message QueryByIdRequest {
+
+  // id is the hash-based identifier for the anchored content.
+  ID id = 1;
+}
+
+// QueryByIdResponse is the Query/ById response type.
+message QueryByIdResponse {
+
+  // timestamp is the timestamp of the block at which the data was anchored.
+  google.protobuf.Timestamp timestamp = 1;
+
+  // signers are the addresses of the accounts which have signed the data.
+  repeated string signers = 2;
+
+  // content is the content of the data, if it was stored on-chain.
+  bytes content = 3;
+}
+
+// QueryBySignerRequest is the Query/BySigner request type.
+message QueryBySignerRequest {
+
+  // signer is the address of the signer to query by.
+  string signer = 1;
+
+  // pagination is the PageRequest to use for pagination.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryBySignerResponse is the Query/BySigner response type.
+message QueryBySignerResponse {
+
+  // ids are in the IDs returned in this page of the query.
+  repeated ID ids = 1;
+
+  // pagination is the pagination PageResponse.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}

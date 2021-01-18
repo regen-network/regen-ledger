@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package regen.data.v1alpha2;
+
+option go_package = "github.com/regen-network/regen-ledger/x/data";
+
+message ID {
+    IDType type = 1;
+    bytes hash = 2;
+    MediaType media_type = 3;
+    GraphCanonicalizationAlgorithm canonicalization_algorithm = 4;
+    DigestAlgorithm digest_algorithm = 5;
+}
+
+enum IDType {
+    ID_TYPE_RAW_UNSPECIFIED = 0;
+    ID_TYPE_GRAPH = 1;
+    ID_TYPE_GEOGRAPHY = 2;
+}
+
+enum MediaType {
+    MEDIA_TYPE_UNSPECIFIED = 0;
+    MEDIA_TYPE_TEXT_PLAIN = 1;
+    MEDIA_TYPE_JSON = 2;
+    MEDIA_TYPE_CSV = 3;
+    MEDIA_TYPE_PROTOBUF_ANY = 4;
+    MEDIA_TYPE_XML = 5;
+    MEDIA_TYPE_TIFF = 6;
+    MEDIA_TYPE_JPG = 7;
+    MEDIA_TYPE_PNG = 8;
+    MEDIA_TYPE_SVG = 9;
+    MEDIA_TYPE_WEBP = 10;
+    MEDIA_TYPE_MAPBOX_VECTOR_TILES = 11;
+    MEDIA_TYPE_OSM_PBF = 12;
+    MEDIA_TYPE_OSM_XML = 13;
+}
+
+enum GraphCanonicalizationAlgorithm {
+    GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015_UNSPECIFIED = 0;
+    GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015_SMT = 1;
+    GRAPH_CANONICALIZATION_ALGORITHM_NO_BLANK_NODES_SMT = 2;
+}
+
+enum DigestAlgorithm {
+    DIGEST_ALGORITHM_SHA256_UNSPECIFIED = 0;
+    DIGEST_ALGORITHM_BLAKE2B_256 = 1;
+    DIGEST_ALGORITHM_BLAKE3 = 2;
+}
+
