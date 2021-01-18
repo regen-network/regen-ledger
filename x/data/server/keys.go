@@ -8,10 +8,11 @@ import (
 const (
 	IriIdTablePrefix   byte = 0x0
 	IdIriTablePrefix   byte = 0x1
-	AnchorTablePrefix  byte = 0x2
-	IDSignerPrefix     byte = 0x3
-	SignerIDPrefix     byte = 0x4
-	RawDataTablePrefix byte = 0x5
+	IdSeqPrefix        byte = 0x2
+	AnchorTablePrefix  byte = 0x3
+	IDSignerPrefix     byte = 0x4
+	SignerIDPrefix     byte = 0x5
+	RawDataTablePrefix byte = 0x6
 )
 
 func IriIdKey(iri string) []byte {
@@ -28,8 +29,11 @@ func IdIriKey(id uint64) []byte {
 	return key
 }
 
-func AnchorKey(cid []byte) []byte {
-	return append([]byte{AnchorTablePrefix}, cid...)
+func AnchorKey(id uint64) []byte {
+	key := make([]byte, 9)
+	key[0] = AnchorTablePrefix
+	binary.LittleEndian.PutUint64(key[1:], id)
+	return key
 }
 
 func CIDBase64String(cid []byte) string {

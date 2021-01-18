@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
 
@@ -17,7 +18,7 @@ import (
 
 var _ data.MsgServer = serverImpl{}
 
-func idToIri(id data.ID) string {
+func idToIri(id *data.ID) string {
 	hashStr := base58.Encode(id.Hash)
 
 	switch id.Type {
@@ -62,13 +63,35 @@ func base58EncodeEnum(algorithm int32) string {
 	return base58.Encode(bz)
 }
 
+func (s serverImpl) registerIRI(ctx types.Context, iri string) (uint64, error) {
+	store := ctx.KVStore(s.storeKey)
+	iriIdKey := IriIdKey(iri)
+	if store.Has(iriIdKey) {
+		bz := store.Get(iriIdKey)
+		return binary.ReadUvarint(bytes.NewBuffer(bz))
+	}
+
+	id := s.idSeq.NextVal(ctx)
+	bz := make([]byte, binary.MaxVarintLen64)
+	n := binary.PutUvarint(bz, id)
+	store.Set(iriIdKey, bz[:n])
+	idIriKey := IdIriKey(id)
+	store.Set(idIriKey, []byte(iri))
+	return id, nil
+}
+
 func (s serverImpl) AnchorData(ctx types.Context, request *data.MsgAnchorDataRequest) (*data.MsgAnchorDataResponse, error) {
-	cidBz := request.Id
-	iri :=
-	key := AnchorKey(cidBz)
+	contentId := request.Id
+	iri := idToIri(contentId)
+	id, err := s.registerIRI(ctx, iri)
+	if err != nil {
+		return nil, err
+	}
+
+	key := AnchorKey(id)
 	store := ctx.KVStore(s.storeKey)
 	if store.Has(key) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("CID f%x is already anchored", cidBz))
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("ID %s is already anchored", iri))
 	}
 
 	timestamp, err := blockTimestamp(ctx)
@@ -76,7 +99,7 @@ func (s serverImpl) AnchorData(ctx types.Context, request *data.MsgAnchorDataReq
 		return nil, err
 	}
 
-	err = s.anchorCid(ctx, timestamp, cidBz)
+	err = s.anchorId(ctx, timestamp, id)
 	if err != nil {
 		return nil, err
 	}
@@ -100,20 +123,20 @@ func (s serverImpl) anchorCidIfNeeded(ctx types.Context, timestamp *gogotypes.Ti
 		return nil
 	}
 
-	return s.anchorCid(ctx, timestamp, cid)
+	return s.anchorId(ctx, timestamp, cid)
 }
 
-func (s serverImpl) anchorCid(ctx types.Context, timestamp *gogotypes.Timestamp, cidBytes []byte) error {
+func (s serverImpl) anchorId(ctx types.Context, timestamp *gogotypes.Timestamp, id uint64) error {
 	bz, err := timestamp.Marshal()
 	if err != nil {
 		return err
 	}
 
 	store := ctx.KVStore(s.storeKey)
-	key := AnchorKey(cidBytes)
+	key := AnchorKey(id)
 	store.Set(key, bz)
 
-	return ctx.EventManager().EmitTypedEvent(&data.EventAnchorData{Cid: cidBytes})
+	return ctx.EventManager().EmitTypedEvent(&data.EventAnchorData{})
 }
 
 var emptyBz = []byte{0}
