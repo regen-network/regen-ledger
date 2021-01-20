@@ -88,7 +88,7 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 
-	newmodule "github.com/regen-network/regen-ledger/types/module"
+	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
@@ -134,7 +134,7 @@ var (
 		data.Module{},
 	)
 
-	NewModules = []newmodule.Module{
+	NewModules = []moduletypes.Module{
 		ecocredit.Module{},
 		data.Module{},
 	}
@@ -418,7 +418,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter(), encodingConfig.Amino)
-	app.mm.RegisterServices(newmodule.NewConfigurator(app.MsgServiceRouter(), app.GRPCQueryRouter(), codec.NewProtoCodec(interfaceRegistry)))
+	app.mm.RegisterServices(moduletypes.NewConfigurator(app.MsgServiceRouter(), app.GRPCQueryRouter(), codec.NewProtoCodec(interfaceRegistry)))
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	//
