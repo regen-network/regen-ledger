@@ -18,7 +18,7 @@ and keeps membership consistent across different policies. The pattern that
 is recommended is to have a single master group account for a given group,
 and then to create separate group accounts with different decision policies
 and delegate the desired permissions to from the master account to
-those "sub-accounts" using the `msg_authorization` module.
+those "sub-accounts" using the `x/authz` module.
 
 
 ## Decision Policy
