@@ -14,6 +14,7 @@ require (
 	github.com/ipfs/go-cid v0.0.7
 	github.com/lib/pq v1.8.0 // indirect
 	github.com/multiformats/go-multihash v0.0.14
+	github.com/piprate/json-gold v0.3.0
 	github.com/rakyll/statik v0.1.7
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.1.1
