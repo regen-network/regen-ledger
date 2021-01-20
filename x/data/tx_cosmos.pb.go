@@ -268,3 +268,91 @@ const (
 	MsgSignDataMethod   = "/regen.data.v1alpha1.Msg/SignData"
 	MsgStoreDataMethod  = "/regen.data.v1alpha1.Msg/StoreData"
 )
+
+// MsgClientConcurrent is the concurrent client API for Msg service.
+type MsgClientConcurrent interface {
+	// AnchorData "anchors" a piece of data to the blockchain based on its secure
+	// hash, effectively providing a tamper resistant timestamp.
+	//
+	// The sender in AnchorData is not attesting to the veracity of the underlying
+	// data. They can simply be a intermediary providing timestamp services.
+	// SignData should be used to create a digital signature attesting to the
+	// veracity of some piece of data.
+	AnchorData(ctx types.SyncContext, in *MsgAnchorDataRequest) (func(types.ExecContext) (*MsgAnchorDataResponse, error), error)
+	// SignData allows for signing of an arbitrary piece of data on the
+	// blockchain. By "signing" data the signers are making a statement about the
+	// veracity of the data itself. It is like signing a legal document, meaning
+	// that I agree to all conditions and to the best of my knowledge everything
+	// is true. When anchoring data, the sender is not attesting to the veracity
+	// of the data, they are simply communicating that it exists.
+	//
+	// On-chain signatures have the following benefits:
+	// - on-chain identities can be managed using different cryptographic keys
+	//   that change over time through key rotation practices
+	// - an on-chain identity may represent an organization and through delegation
+	//   individual members may sign on behalf of the group
+	// - the blockchain transaction envelope provides built-in replay protection
+	//   and timestamping
+	//
+	// SignData implicitly calls AnchorData if the data was not already anchored.
+	//
+	// SignData can be called multiple times for the same CID with different
+	// signers and those signers will be appended to the list of signers.
+	SignData(ctx types.SyncContext, in *MsgSignDataRequest) (func(types.ExecContext) (*MsgSignDataResponse, error), error)
+	// StoreData stores a piece of data corresponding to a CID on the blockchain.
+	//
+	// Currently only data for CID's using sha2-256 and blake2b-256 hash
+	// algorithms can be stored on-chain.
+	//
+	// StoreData implicitly calls AnchorData if the data was not already anchored.
+	//
+	// The sender in StoreData is not attesting to the veracity of the underlying
+	// data. They can simply be a intermediary providing storage services.
+	// SignData should be used to create a digital signature attesting to the
+	// veracity of some piece of data.
+	StoreData(ctx types.SyncContext, in *MsgStoreDataRequest) (func(types.ExecContext) (*MsgStoreDataResponse, error), error)
+}
+
+// MsgServerConcurrent is the concurrent server API for Msg service.
+type MsgServerConcurrent interface {
+	// AnchorData "anchors" a piece of data to the blockchain based on its secure
+	// hash, effectively providing a tamper resistant timestamp.
+	//
+	// The sender in AnchorData is not attesting to the veracity of the underlying
+	// data. They can simply be a intermediary providing timestamp services.
+	// SignData should be used to create a digital signature attesting to the
+	// veracity of some piece of data.
+	AnchorData(types.SyncContext, *MsgAnchorDataRequest, *MsgAnchorDataResponse) error
+	// SignData allows for signing of an arbitrary piece of data on the
+	// blockchain. By "signing" data the signers are making a statement about the
+	// veracity of the data itself. It is like signing a legal document, meaning
+	// that I agree to all conditions and to the best of my knowledge everything
+	// is true. When anchoring data, the sender is not attesting to the veracity
+	// of the data, they are simply communicating that it exists.
+	//
+	// On-chain signatures have the following benefits:
+	// - on-chain identities can be managed using different cryptographic keys
+	//   that change over time through key rotation practices
+	// - an on-chain identity may represent an organization and through delegation
+	//   individual members may sign on behalf of the group
+	// - the blockchain transaction envelope provides built-in replay protection
+	//   and timestamping
+	//
+	// SignData implicitly calls AnchorData if the data was not already anchored.
+	//
+	// SignData can be called multiple times for the same CID with different
+	// signers and those signers will be appended to the list of signers.
+	SignData(types.SyncContext, *MsgSignDataRequest, *MsgSignDataResponse) error
+	// StoreData stores a piece of data corresponding to a CID on the blockchain.
+	//
+	// Currently only data for CID's using sha2-256 and blake2b-256 hash
+	// algorithms can be stored on-chain.
+	//
+	// StoreData implicitly calls AnchorData if the data was not already anchored.
+	//
+	// The sender in StoreData is not attesting to the veracity of the underlying
+	// data. They can simply be a intermediary providing storage services.
+	// SignData should be used to create a digital signature attesting to the
+	// veracity of some piece of data.
+	StoreData(types.SyncContext, *MsgStoreDataRequest, *MsgStoreDataResponse) error
+}

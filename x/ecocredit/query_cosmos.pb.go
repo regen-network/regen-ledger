@@ -306,3 +306,35 @@ const (
 	QuerySupplyMethod    = "/regen.ecocredit.v1alpha1.Query/Supply"
 	QueryPrecisionMethod = "/regen.ecocredit.v1alpha1.Query/Precision"
 )
+
+// QueryClientConcurrent is the concurrent client API for Query service.
+type QueryClientConcurrent interface {
+	// ClassInfo queries for information on a credit class.
+	ClassInfo(ctx types.SyncContext, in *QueryClassInfoRequest) (func(types.ExecContext) (*QueryClassInfoResponse, error), error)
+	// BatchInfo queries for information on a credit batch.
+	BatchInfo(ctx types.SyncContext, in *QueryBatchInfoRequest) (func(types.ExecContext) (*QueryBatchInfoResponse, error), error)
+	// Balance queries the balance (both tradable and retired) of a given credit
+	// batch for a given account.
+	Balance(ctx types.SyncContext, in *QueryBalanceRequest) (func(types.ExecContext) (*QueryBalanceResponse, error), error)
+	// Supply queries the tradable and retired supply of a credit batch.
+	Supply(ctx types.SyncContext, in *QuerySupplyRequest) (func(types.ExecContext) (*QuerySupplyResponse, error), error)
+	// Precision queries the number of decimal places that can be used to
+	// represent credit batch units. See Tx/SetPrecision for more details.
+	Precision(ctx types.SyncContext, in *QueryPrecisionRequest) (func(types.ExecContext) (*QueryPrecisionResponse, error), error)
+}
+
+// QueryServerConcurrent is the concurrent server API for Query service.
+type QueryServerConcurrent interface {
+	// ClassInfo queries for information on a credit class.
+	ClassInfo(types.SyncContext, *QueryClassInfoRequest, *QueryClassInfoResponse) error
+	// BatchInfo queries for information on a credit batch.
+	BatchInfo(types.SyncContext, *QueryBatchInfoRequest, *QueryBatchInfoResponse) error
+	// Balance queries the balance (both tradable and retired) of a given credit
+	// batch for a given account.
+	Balance(types.SyncContext, *QueryBalanceRequest, *QueryBalanceResponse) error
+	// Supply queries the tradable and retired supply of a credit batch.
+	Supply(types.SyncContext, *QuerySupplyRequest, *QuerySupplyResponse) error
+	// Precision queries the number of decimal places that can be used to
+	// represent credit batch units. See Tx/SetPrecision for more details.
+	Precision(types.SyncContext, *QueryPrecisionRequest, *QueryPrecisionResponse) error
+}

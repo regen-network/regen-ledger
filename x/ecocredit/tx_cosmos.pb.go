@@ -348,3 +348,77 @@ const (
 	MsgRetireMethod       = "/regen.ecocredit.v1alpha1.Msg/Retire"
 	MsgSetPrecisionMethod = "/regen.ecocredit.v1alpha1.Msg/SetPrecision"
 )
+
+// MsgClientConcurrent is the concurrent client API for Msg service.
+type MsgClientConcurrent interface {
+	// CreateClass creates a new credit class with an approved list of issuers and
+	// optional metadata.
+	CreateClass(ctx types.SyncContext, in *MsgCreateClassRequest) (func(types.ExecContext) (*MsgCreateClassResponse, error), error)
+	// CreateBatch creates a new batch of credits for an existing credit class.
+	// This will create a new batch denom with a fixed supply. Issued credits can
+	// be distributed to recipients in either tradable or retired form.
+	CreateBatch(ctx types.SyncContext, in *MsgCreateBatchRequest) (func(types.ExecContext) (*MsgCreateBatchResponse, error), error)
+	// Send sends tradeable credits from one account to another account. Sent
+	// credits can either be tradable or retired on receipt.
+	Send(ctx types.SyncContext, in *MsgSendRequest) (func(types.ExecContext) (*MsgSendResponse, error), error)
+	// Retire retires a specified number of credits in the holder's account.
+	Retire(ctx types.SyncContext, in *MsgRetireRequest) (func(types.ExecContext) (*MsgRetireResponse, error), error)
+	// SetPrecision allows an issuer to increase the decimal precision of a credit
+	// batch. It is an experimental feature to concretely explore an idea proposed
+	// in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
+	// places allowed for a credit batch is determined by the original number of
+	// decimal places used with calling CreatBatch. SetPrecision allows the number
+	// of allowed decimal places to be increased, effectively making the supply
+	// more granular without actually changing any balances. It allows asset
+	// issuers to be able to issue an asset without needing to think about how
+	// many subdivisions are needed upfront. While it may not be relevant for
+	// credits which likely have a fairly stable market value, I wanted to
+	// experiment a bit and this serves as a proof of concept for a broader bank
+	// redesign where say for instance a coin like the ATOM or XRN could be issued
+	// in its own units rather than micro or nano-units. Instead an operation like
+	// SetPrecision would allow trading in micro, nano or pico in the future based
+	// on market demand. Arbitrary, unbounded precision is not desirable because
+	// this can lead to spam attacks (like sending
+	// 0.000000000000000000000000000001 coins). This is effectively fixed
+	// precision so under the hood it is still basically an integer, but the fixed
+	// precision can be increased so its more adaptable long term than just an
+	// integer.
+	SetPrecision(ctx types.SyncContext, in *MsgSetPrecisionRequest) (func(types.ExecContext) (*MsgSetPrecisionResponse, error), error)
+}
+
+// MsgServerConcurrent is the concurrent server API for Msg service.
+type MsgServerConcurrent interface {
+	// CreateClass creates a new credit class with an approved list of issuers and
+	// optional metadata.
+	CreateClass(types.SyncContext, *MsgCreateClassRequest, *MsgCreateClassResponse) error
+	// CreateBatch creates a new batch of credits for an existing credit class.
+	// This will create a new batch denom with a fixed supply. Issued credits can
+	// be distributed to recipients in either tradable or retired form.
+	CreateBatch(types.SyncContext, *MsgCreateBatchRequest, *MsgCreateBatchResponse) error
+	// Send sends tradeable credits from one account to another account. Sent
+	// credits can either be tradable or retired on receipt.
+	Send(types.SyncContext, *MsgSendRequest, *MsgSendResponse) error
+	// Retire retires a specified number of credits in the holder's account.
+	Retire(types.SyncContext, *MsgRetireRequest, *MsgRetireResponse) error
+	// SetPrecision allows an issuer to increase the decimal precision of a credit
+	// batch. It is an experimental feature to concretely explore an idea proposed
+	// in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
+	// places allowed for a credit batch is determined by the original number of
+	// decimal places used with calling CreatBatch. SetPrecision allows the number
+	// of allowed decimal places to be increased, effectively making the supply
+	// more granular without actually changing any balances. It allows asset
+	// issuers to be able to issue an asset without needing to think about how
+	// many subdivisions are needed upfront. While it may not be relevant for
+	// credits which likely have a fairly stable market value, I wanted to
+	// experiment a bit and this serves as a proof of concept for a broader bank
+	// redesign where say for instance a coin like the ATOM or XRN could be issued
+	// in its own units rather than micro or nano-units. Instead an operation like
+	// SetPrecision would allow trading in micro, nano or pico in the future based
+	// on market demand. Arbitrary, unbounded precision is not desirable because
+	// this can lead to spam attacks (like sending
+	// 0.000000000000000000000000000001 coins). This is effectively fixed
+	// precision so under the hood it is still basically an integer, but the fixed
+	// precision can be increased so its more adaptable long term than just an
+	// integer.
+	SetPrecision(types.SyncContext, *MsgSetPrecisionRequest, *MsgSetPrecisionResponse) error
+}

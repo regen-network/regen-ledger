@@ -183,6 +183,48 @@ func genService(file *protogen.File, g *protogen.GeneratedFile, service *protoge
 	}
 	g.P(")")
 	g.P()
+
+	// ClientConcurrent interface.
+	clientNameConcurrent := clientName + "Concurrent"
+	g.P("// ", clientNameConcurrent, " is the concurrent client API for ", service.GoName, " service.")
+	if service.Desc.Options().(*descriptorpb.ServiceOptions).GetDeprecated() {
+		g.P("//")
+		g.P(deprecationComment)
+	}
+
+	g.Annotate(clientNameConcurrent, service.Location)
+	g.P("type ", clientNameConcurrent, " interface {")
+	for _, method := range service.Methods {
+		g.Annotate(clientNameConcurrent+"."+method.GoName, method.Location)
+		if method.Desc.Options().(*descriptorpb.MethodOptions).GetDeprecated() {
+			g.P(deprecationComment)
+		}
+		g.P(method.Comments.Leading,
+			clientSignatureConcurrent(g, method))
+	}
+	g.P("}")
+	g.P()
+
+	// ServerConcurrent interface.
+	concurrentServerType := service.GoName + "ServerConcurrent"
+	g.P("// ", concurrentServerType, " is the concurrent server API for ", service.GoName, " service.")
+	if service.Desc.Options().(*descriptorpb.ServiceOptions).GetDeprecated() {
+		g.P("//")
+		g.P(deprecationComment)
+	}
+	g.Annotate(concurrentServerType, service.Location)
+	g.P("type ", concurrentServerType, " interface {")
+	for _, method := range service.Methods {
+		g.Annotate(concurrentServerType+"."+method.GoName, method.Location)
+		if method.Desc.Options().(*descriptorpb.MethodOptions).GetDeprecated() {
+			g.P(deprecationComment)
+		}
+		g.P(method.Comments.Leading,
+			serverSignatureConcurrent(g, method))
+	}
+	g.P("}")
+	g.P()
+
 }
 
 func clientSignature(g *protogen.GeneratedFile, method *protogen.Method) string {
@@ -195,6 +237,19 @@ func clientSignature(g *protogen.GeneratedFile, method *protogen.Method) string 
 	s += ", opts ..." + g.QualifiedGoIdent(grpcPackage.Ident("CallOption")) + ") ("
 	s += "*" + g.QualifiedGoIdent(method.Output.GoIdent)
 	s += ", error)"
+	return s
+}
+
+func clientSignatureConcurrent(g *protogen.GeneratedFile, method *protogen.Method) string {
+	if method.Desc.IsStreamingClient() || method.Desc.IsStreamingServer() {
+		return ""
+	}
+
+	s := method.GoName + "(ctx " + g.QualifiedGoIdent(regenTypesPackage.Ident("SyncContext"))
+	s += ", in *" + g.QualifiedGoIdent(method.Input.GoIdent)
+	s += ") (func(" + g.QualifiedGoIdent(regenTypesPackage.Ident("ExecContext"))
+	s += ") (*" + g.QualifiedGoIdent(method.Output.GoIdent)
+	s += ", error), error)"
 	return s
 }
 
@@ -239,6 +294,16 @@ func serverSignature(g *protogen.GeneratedFile, method *protogen.Method) string 
 	reqArgs = append(reqArgs, "*"+g.QualifiedGoIdent(method.Input.GoIdent))
 	ret = "(*" + g.QualifiedGoIdent(method.Output.GoIdent) + ", error)"
 	return method.GoName + "(" + strings.Join(reqArgs, ", ") + ") " + ret
+}
+
+func serverSignatureConcurrent(g *protogen.GeneratedFile, method *protogen.Method) string {
+	if method.Desc.IsStreamingClient() || method.Desc.IsStreamingServer() {
+		return ""
+	}
+	var reqArgs []string
+	reqArgs = append(reqArgs, g.QualifiedGoIdent(regenTypesPackage.Ident("SyncContext")))
+	reqArgs = append(reqArgs, "*"+g.QualifiedGoIdent(method.Input.GoIdent), "*"+g.QualifiedGoIdent(method.Output.GoIdent))
+	return method.GoName + "(" + strings.Join(reqArgs, ", ") + ") error"
 }
 
 func genServerMethod(g *protogen.GeneratedFile, method *protogen.Method) string {

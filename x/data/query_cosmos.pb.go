@@ -149,3 +149,19 @@ const (
 	QueryByCidMethod    = "/regen.data.v1alpha1.Query/ByCid"
 	QueryBySignerMethod = "/regen.data.v1alpha1.Query/BySigner"
 )
+
+// QueryClientConcurrent is the concurrent client API for Query service.
+type QueryClientConcurrent interface {
+	// ByCid queries data based on its CID.
+	ByCid(ctx types.SyncContext, in *QueryByCidRequest) (func(types.ExecContext) (*QueryByCidResponse, error), error)
+	// BySigner queries data based on signers.
+	BySigner(ctx types.SyncContext, in *QueryBySignerRequest) (func(types.ExecContext) (*QueryBySignerResponse, error), error)
+}
+
+// QueryServerConcurrent is the concurrent server API for Query service.
+type QueryServerConcurrent interface {
+	// ByCid queries data based on its CID.
+	ByCid(types.SyncContext, *QueryByCidRequest, *QueryByCidResponse) error
+	// BySigner queries data based on signers.
+	BySigner(types.SyncContext, *QueryBySignerRequest, *QueryBySignerResponse) error
+}
