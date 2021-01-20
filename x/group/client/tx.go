@@ -37,7 +37,7 @@ func NewTxCmd() *cobra.Command {
 		MsgUpdateGroupAccountCommentCmd(),
 		MsgCreateProposalCmd(),
 		MsgVoteCmd(),
-		// MsgExecCmd(),
+		MsgExecCmd(),
 	)
 
 	return txCmd
