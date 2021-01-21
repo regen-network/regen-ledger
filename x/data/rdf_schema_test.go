@@ -40,10 +40,32 @@ type nodeShape struct {
 type propertyShape struct {
 }
 
-func validate(shapesGraph shapesGraph, dataGraph indexedGraph) {
-	for _, ns := range shapesGraph.nodeShapes {
-		for _, tc := range ns.targetClass {
+type validationContext struct {
+	shapesGraph shapesGraph
+	dataGraph   indexedGraph
+}
 
+func (ctx *validationContext) validate() {
+	// can be run in parallel with a WaitGroup
+	for _, ns := range ctx.shapesGraph.nodeShapes {
+		// can be run in parallel with a WaitGroup
+		for _, tc := range ns.targetClass {
+			// can be run in parallel with a WaitGroup
+			for _, targetIRI := range ctx.dataGraph.classMap[tc] {
+				ctx.evalNodeShape(ns, targetIRI)
+			}
 		}
 	}
+}
+
+func (ctx *validationContext) evalNodeShape(ns nodeShape, targetIRI iri) {
+	np := ctx.dataGraph.nodeMap[targetIRI]
+	// can be run in parallel with a WaitGroup
+	for _, prop := range ns.properties {
+		ctx.evalPropertyShape(prop, np)
+	}
+}
+
+func (ctx *validationContext) evalPropertyShape(ps propertyShape, np nodeProps) {
+
 }
