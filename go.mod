@@ -12,6 +12,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/ipfs/go-cid v0.0.7
+	github.com/lazyledger/smt v0.1.1
 	github.com/lib/pq v1.8.0 // indirect
 	github.com/multiformats/go-multihash v0.0.14
 	github.com/piprate/json-gold v0.3.0
@@ -22,6 +23,8 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/tendermint/tendermint v0.34.1
 	github.com/tendermint/tm-db v0.6.3
+	github.com/zeebo/blake3 v0.1.0
+	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
 	google.golang.org/grpc v1.34.0
 	gopkg.in/yaml.v2 v2.4.0
 )

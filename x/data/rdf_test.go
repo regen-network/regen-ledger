@@ -1,10 +1,19 @@
 package data
 
 import (
-	"crypto/sha256"
+	"crypto"
+	_ "crypto/sha256"
+	"fmt"
+	"hash"
+	"strings"
 	"testing"
 
+	_ "golang.org/x/crypto/blake2b"
+	_ "golang.org/x/crypto/blake2s"
+
+	"github.com/lazyledger/smt"
 	"github.com/piprate/json-gold/ld"
+	"github.com/zeebo/blake3"
 )
 
 const testCase1 = `
@@ -72,15 +81,19 @@ _:b1 <http://schema.org/longitude> "73.98"^^<http://www.w3.org/2001/XMLSchema#fl
 `
 
 func BenchmarkNormalize1(b *testing.B) {
-	benchmarkNormalize(b, testCase1)
-}
-
-func BenchmarkNormalize2(b *testing.B) {
-	benchmarkNormalize(b, testCase2)
-}
-
-func BenchmarkNormalize3(b *testing.B) {
-	benchmarkNormalize(b, testCase3)
+	for i, tc := range []string{testCase1, testCase2, testCase3} {
+		b.Run("Normalize", func(b *testing.B) {
+			benchmarkNormalize(b, tc)
+		})
+		for _, h := range []crypto.Hash{crypto.SHA256, crypto.BLAKE2s_256, crypto.BLAKE2b_256} {
+			b.Run(fmt.Sprintf("SMT %s %d", h.String(), i+1), func(b *testing.B) {
+				benchmarkSMT(b, tc, func() hash.Hash { return h.New() })
+			})
+		}
+		b.Run(fmt.Sprintf("SMT Blake3 %d", i), func(b *testing.B) {
+			benchmarkSMT(b, tc, func() hash.Hash { return blake3.New() })
+		})
+	}
 }
 
 func benchmarkNormalize(b *testing.B, txt string) {
@@ -100,15 +113,29 @@ func benchmarkNormalize(b *testing.B, txt string) {
 	b.StartTimer()
 	for i := 0; i < b.N; i++ {
 		alg := ld.NewNormalisationAlgorithm("URDNA2015")
-		_, err := alg.Main(dataset, algOpts)
+		res, err = alg.Main(dataset, algOpts)
 		if err != nil {
 			panic(err)
 		}
 	}
+	b.StopTimer()
 }
 
-func BenchmarkHash(b *testing.B) {
+var tru = []byte{1}
+
+func benchmarkSMT(b *testing.B, txt string, newHash func() hash.Hash) {
+	lines := strings.Split(txt, "\n")
+	numLines := len(lines)
 	for i := 0; i < b.N; i++ {
-		_ = sha256.New().Sum([]byte(testCase1))
+		store := smt.NewSimpleMap()
+		tree := smt.NewSparseMerkleTree(store, newHash())
+		for j := 0; j < numLines; j++ {
+			lineHash := newHash().Sum([]byte(lines[j]))
+			_, err := tree.Update(lineHash[:], tru)
+			if err != nil {
+				panic(err)
+			}
+		}
+		_ = tree.Root()
 	}
 }
