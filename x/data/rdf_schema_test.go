@@ -69,3 +69,42 @@ func (ctx *validationContext) evalNodeShape(ns nodeShape, targetIRI iri) {
 func (ctx *validationContext) evalPropertyShape(ps propertyShape, np nodeProps) {
 
 }
+
+type IRI string
+
+type IndexedGraph interface {
+	PredicateObjectAccessor(subject IRI) PredicateObjectAccessor
+	SubectObjectAccessor(predicate IRI) SubjectObectAccessor
+}
+
+type PredicateObjectAccessor interface {
+	ObjectAccessor(predicate IRI) ObjectAccessor
+	Iterator() PredicateObjectIterator
+}
+
+type PredicateObjectIterator interface {
+	Predicate() IRI
+	Object() ObjectAccessor
+	Next() bool
+}
+
+type ObjectAccessor interface {
+	HasValue(interface{}) bool
+	Iterator() ValueIterator
+}
+
+type ValueIterator interface {
+	Current() interface{}
+	Next() bool
+}
+
+type SubjectObectAccessor interface {
+	ObjectAccesor(subject IRI) ObjectAccessor
+	Iterator() SubjectObectIterator
+}
+
+type SubjectObectIterator interface {
+	Subject() IRI
+	Object() interface{}
+	Next() bool
+}
