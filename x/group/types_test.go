@@ -219,7 +219,7 @@ func TestGroupInfoValidation(t *testing.T) {
 			src: GroupInfo{
 				GroupId:     1,
 				Admin:       adminAddr,
-				Comment:     "any",
+				Metadata:    nil,
 				Version:     1,
 				TotalWeight: "0",
 			},
@@ -227,7 +227,7 @@ func TestGroupInfoValidation(t *testing.T) {
 		"invalid group": {
 			src: GroupInfo{
 				Admin:       adminAddr,
-				Comment:     "any",
+				Metadata:    nil,
 				Version:     1,
 				TotalWeight: "0",
 			},
@@ -237,7 +237,7 @@ func TestGroupInfoValidation(t *testing.T) {
 			src: GroupInfo{
 				GroupId:     1,
 				Admin:       "",
-				Comment:     "any",
+				Metadata:    nil,
 				Version:     1,
 				TotalWeight: "0",
 			},
@@ -247,17 +247,17 @@ func TestGroupInfoValidation(t *testing.T) {
 			src: GroupInfo{
 				GroupId:     1,
 				Admin:       adminAddr,
-				Comment:     "any",
+				Metadata:    nil,
 				TotalWeight: "0",
 			},
 			expErr: true,
 		},
 		"unset total weight": {
 			src: GroupInfo{
-				GroupId: 1,
-				Admin:   adminAddr,
-				Comment: "any",
-				Version: 1,
+				GroupId:  1,
+				Admin:    adminAddr,
+				Metadata: nil,
+				Version:  1,
 			},
 			expErr: true,
 		},
@@ -265,7 +265,7 @@ func TestGroupInfoValidation(t *testing.T) {
 			src: GroupInfo{
 				GroupId:     1,
 				Admin:       adminAddr,
-				Comment:     "any",
+				Metadata:    nil,
 				Version:     1,
 				TotalWeight: "-1",
 			},
@@ -294,52 +294,52 @@ func TestGroupMemberValidation(t *testing.T) {
 	}{
 		"all good": {
 			src: GroupMember{
-				GroupId: 1,
-				Member:  memberAddr,
-				Weight:  "1",
-				Comment: "any",
+				GroupId:  1,
+				Member:   memberAddr,
+				Weight:   "1",
+				Metadata: nil,
 			},
 		},
 		"invalid group": {
 			src: GroupMember{
-				GroupId: 0,
-				Member:  memberAddr,
-				Weight:  "1",
-				Comment: "any",
+				GroupId:  0,
+				Member:   memberAddr,
+				Weight:   "1",
+				Metadata: nil,
 			},
 			expErr: true,
 		},
 		"invalid address": {
 			src: GroupMember{
-				GroupId: 1,
-				Member:  "invalid-member-address",
-				Weight:  "1",
-				Comment: "any",
+				GroupId:  1,
+				Member:   "invalid-member-address",
+				Weight:   "1",
+				Metadata: nil,
 			},
 			expErr: true,
 		},
 		"empy address": {
 			src: GroupMember{
-				GroupId: 1,
-				Weight:  "1",
-				Comment: "any",
+				GroupId:  1,
+				Weight:   "1",
+				Metadata: nil,
 			},
 			expErr: true,
 		},
 		"invalid weight": {
 			src: GroupMember{
-				GroupId: 1,
-				Member:  memberAddr,
-				Weight:  "0",
-				Comment: "any",
+				GroupId:  1,
+				Member:   memberAddr,
+				Weight:   "0",
+				Metadata: nil,
 			},
 			expErr: true,
 		},
 		"nil weight": {
 			src: GroupMember{
-				GroupId: 1,
-				Member:  memberAddr,
-				Comment: "any",
+				GroupId:  1,
+				Member:   memberAddr,
+				Metadata: nil,
 			},
 			expErr: true,
 		},
@@ -361,7 +361,6 @@ func TestGroupAccountInfo(t *testing.T) {
 		groupAccount sdk.AccAddress
 		group        ID
 		admin        sdk.AccAddress
-		comment      string
 		version      uint64
 		threshold    string
 		timeout      proto.Duration
@@ -371,7 +370,6 @@ func TestGroupAccountInfo(t *testing.T) {
 			group:        1,
 			groupAccount: []byte("valid--group-address"),
 			admin:        []byte("valid--admin-address"),
-			comment:      "any",
 			version:      1,
 			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
@@ -380,7 +378,6 @@ func TestGroupAccountInfo(t *testing.T) {
 			group:        0,
 			groupAccount: []byte("valid--group-address"),
 			admin:        []byte("valid--admin-address"),
-			comment:      "any",
 			version:      1,
 			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
@@ -390,7 +387,6 @@ func TestGroupAccountInfo(t *testing.T) {
 			group:        1,
 			groupAccount: []byte("any-invalid-group-address"),
 			admin:        []byte("valid--admin-address"),
-			comment:      "any",
 			version:      1,
 			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
@@ -399,7 +395,6 @@ func TestGroupAccountInfo(t *testing.T) {
 		"empty group account address": {
 			group:     1,
 			admin:     []byte("valid--admin-address"),
-			comment:   "any",
 			version:   1,
 			threshold: "1",
 			timeout:   proto.Duration{Seconds: 1},
@@ -408,7 +403,6 @@ func TestGroupAccountInfo(t *testing.T) {
 		"empty admin account address": {
 			group:        1,
 			groupAccount: []byte("valid--group-address"),
-			comment:      "any",
 			version:      1,
 			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
@@ -418,7 +412,6 @@ func TestGroupAccountInfo(t *testing.T) {
 			group:        1,
 			groupAccount: []byte("valid--group-address"),
 			admin:        []byte("any-invalid-admin-address"),
-			comment:      "any",
 			version:      1,
 			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
@@ -428,7 +421,6 @@ func TestGroupAccountInfo(t *testing.T) {
 			group:        1,
 			groupAccount: []byte("valid--group-address"),
 			admin:        []byte("valid--admin-address"),
-			comment:      "any",
 			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
 			expErr:       true,
@@ -437,7 +429,6 @@ func TestGroupAccountInfo(t *testing.T) {
 			group:        1,
 			groupAccount: []byte("valid--group-address"),
 			admin:        []byte("valid--admin-address"),
-			comment:      "any",
 			version:      1,
 			expErr:       true,
 		},
@@ -445,7 +436,6 @@ func TestGroupAccountInfo(t *testing.T) {
 			group:        1,
 			groupAccount: []byte("valid--group-address"),
 			admin:        []byte("valid--admin-address"),
-			comment:      "any",
 			version:      1,
 			threshold:    "1",
 			expErr:       true,
@@ -454,7 +444,6 @@ func TestGroupAccountInfo(t *testing.T) {
 			group:        1,
 			groupAccount: []byte("valid--group-address"),
 			admin:        []byte("valid--admin-address"),
-			comment:      "any",
 			version:      1,
 			threshold:    "1",
 			timeout:      proto.Duration{Seconds: -1},
@@ -464,7 +453,6 @@ func TestGroupAccountInfo(t *testing.T) {
 			group:        1,
 			groupAccount: []byte("valid--group-address"),
 			admin:        []byte("valid--admin-address"),
-			comment:      "any",
 			version:      1,
 			timeout:      proto.Duration{Seconds: 1},
 			expErr:       true,
@@ -473,7 +461,6 @@ func TestGroupAccountInfo(t *testing.T) {
 			group:        1,
 			groupAccount: []byte("valid--group-address"),
 			admin:        []byte("valid--admin-address"),
-			comment:      "any",
 			version:      1,
 			threshold:    "-1",
 			timeout:      proto.Duration{Seconds: 1},
@@ -483,7 +470,6 @@ func TestGroupAccountInfo(t *testing.T) {
 			group:        1,
 			groupAccount: []byte("valid--group-address"),
 			admin:        []byte("valid--admin-address"),
-			comment:      "any",
 			version:      1,
 			threshold:    "0",
 			timeout:      proto.Duration{Seconds: 1},
@@ -496,7 +482,7 @@ func TestGroupAccountInfo(t *testing.T) {
 				spec.groupAccount,
 				spec.group,
 				spec.admin,
-				spec.comment,
+				nil,
 				spec.version,
 				&ThresholdDecisionPolicy{
 					Threshold: spec.threshold,

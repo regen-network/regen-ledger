@@ -164,12 +164,12 @@ func (g GroupAccountInfo) NaturalKey() []byte {
 var _ orm.Validateable = GroupAccountInfo{}
 
 // NewGroupAccountInfo creates a new GroupAccountInfo instance
-func NewGroupAccountInfo(groupAccount sdk.AccAddress, group ID, admin sdk.AccAddress, comment string, version uint64, decisionPolicy DecisionPolicy) (GroupAccountInfo, error) {
+func NewGroupAccountInfo(groupAccount sdk.AccAddress, group ID, admin sdk.AccAddress, metadata []byte, version uint64, decisionPolicy DecisionPolicy) (GroupAccountInfo, error) {
 	p := GroupAccountInfo{
 		GroupAccount: groupAccount.String(),
 		GroupId:      group,
 		Admin:        admin.String(),
-		Comment:      comment,
+		Metadata:     metadata,
 		Version:      version,
 	}
 

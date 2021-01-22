@@ -31,8 +31,8 @@ type MsgCreateGroupRequest struct {
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// members defines the group members.
 	Members []Member `protobuf:"bytes,2,rep,name=members,proto3" json:"members"`
-	// group is the group's comment.
-	Comment string `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
+	// metadata is any arbitrary metadata to attached to the group.
+	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
 func (m *MsgCreateGroupRequest) Reset()         { *m = MsgCreateGroupRequest{} }
@@ -82,11 +82,11 @@ func (m *MsgCreateGroupRequest) GetMembers() []Member {
 	return nil
 }
 
-func (m *MsgCreateGroupRequest) GetComment() string {
+func (m *MsgCreateGroupRequest) GetMetadata() []byte {
 	if m != nil {
-		return m.Comment
+		return m.Metadata
 	}
-	return ""
+	return nil
 }
 
 // MsgCreateGroupResponse is the Msg/CreateGroup response type.
@@ -338,28 +338,28 @@ func (m *MsgUpdateGroupAdminResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGroupAdminResponse proto.InternalMessageInfo
 
-// MsgUpdateGroupCommentRequest is the Msg/UpdateGroupComment request type.
-type MsgUpdateGroupCommentRequest struct {
+// MsgUpdateGroupMetadataRequest is the Msg/UpdateGroupMetadata request type.
+type MsgUpdateGroupMetadataRequest struct {
 	// admin is the account address of the group admin.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// group_id is the unique ID of the group.
 	GroupId ID `protobuf:"varint,2,opt,name=group_id,json=groupId,proto3,casttype=ID" json:"group_id,omitempty"`
-	// comment is the updated group's comment.
-	Comment string `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
+	// metadata is the updated group's metadata.
+	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
-func (m *MsgUpdateGroupCommentRequest) Reset()         { *m = MsgUpdateGroupCommentRequest{} }
-func (m *MsgUpdateGroupCommentRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateGroupCommentRequest) ProtoMessage()    {}
-func (*MsgUpdateGroupCommentRequest) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateGroupMetadataRequest) Reset()         { *m = MsgUpdateGroupMetadataRequest{} }
+func (m *MsgUpdateGroupMetadataRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateGroupMetadataRequest) ProtoMessage()    {}
+func (*MsgUpdateGroupMetadataRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b4673626e7797578, []int{6}
 }
-func (m *MsgUpdateGroupCommentRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateGroupMetadataRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateGroupCommentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateGroupMetadataRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateGroupCommentRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateGroupMetadataRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -369,55 +369,55 @@ func (m *MsgUpdateGroupCommentRequest) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateGroupCommentRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateGroupCommentRequest.Merge(m, src)
+func (m *MsgUpdateGroupMetadataRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateGroupMetadataRequest.Merge(m, src)
 }
-func (m *MsgUpdateGroupCommentRequest) XXX_Size() int {
+func (m *MsgUpdateGroupMetadataRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateGroupCommentRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateGroupCommentRequest.DiscardUnknown(m)
+func (m *MsgUpdateGroupMetadataRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateGroupMetadataRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateGroupCommentRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateGroupMetadataRequest proto.InternalMessageInfo
 
-func (m *MsgUpdateGroupCommentRequest) GetAdmin() string {
+func (m *MsgUpdateGroupMetadataRequest) GetAdmin() string {
 	if m != nil {
 		return m.Admin
 	}
 	return ""
 }
 
-func (m *MsgUpdateGroupCommentRequest) GetGroupId() ID {
+func (m *MsgUpdateGroupMetadataRequest) GetGroupId() ID {
 	if m != nil {
 		return m.GroupId
 	}
 	return 0
 }
 
-func (m *MsgUpdateGroupCommentRequest) GetComment() string {
+func (m *MsgUpdateGroupMetadataRequest) GetMetadata() []byte {
 	if m != nil {
-		return m.Comment
+		return m.Metadata
 	}
-	return ""
+	return nil
 }
 
-// MsgUpdateGroupCommentResponse is the Msg/UpdateGroupComment response type.
-type MsgUpdateGroupCommentResponse struct {
+// MsgUpdateGroupMetadataResponse is the Msg/UpdateGroupMetadata response type.
+type MsgUpdateGroupMetadataResponse struct {
 }
 
-func (m *MsgUpdateGroupCommentResponse) Reset()         { *m = MsgUpdateGroupCommentResponse{} }
-func (m *MsgUpdateGroupCommentResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateGroupCommentResponse) ProtoMessage()    {}
-func (*MsgUpdateGroupCommentResponse) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateGroupMetadataResponse) Reset()         { *m = MsgUpdateGroupMetadataResponse{} }
+func (m *MsgUpdateGroupMetadataResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateGroupMetadataResponse) ProtoMessage()    {}
+func (*MsgUpdateGroupMetadataResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b4673626e7797578, []int{7}
 }
-func (m *MsgUpdateGroupCommentResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateGroupMetadataResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateGroupCommentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateGroupMetadataResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateGroupCommentResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateGroupMetadataResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -427,17 +427,17 @@ func (m *MsgUpdateGroupCommentResponse) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateGroupCommentResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateGroupCommentResponse.Merge(m, src)
+func (m *MsgUpdateGroupMetadataResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateGroupMetadataResponse.Merge(m, src)
 }
-func (m *MsgUpdateGroupCommentResponse) XXX_Size() int {
+func (m *MsgUpdateGroupMetadataResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateGroupCommentResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateGroupCommentResponse.DiscardUnknown(m)
+func (m *MsgUpdateGroupMetadataResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateGroupMetadataResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateGroupCommentResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateGroupMetadataResponse proto.InternalMessageInfo
 
 // MsgCreateGroupAccountRequest is the Msg/CreateGroupAccount request type.
 type MsgCreateGroupAccountRequest struct {
@@ -445,8 +445,8 @@ type MsgCreateGroupAccountRequest struct {
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// group_id is the unique ID of the group.
 	GroupId ID `protobuf:"varint,2,opt,name=group_id,json=groupId,proto3,casttype=ID" json:"group_id,omitempty"`
-	// comment is the group account's comment.
-	Comment string `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
+	// metadata is any arbitrary metadata to attached to the group account.
+	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// decision_policy specifies the group account's decision policy.
 	DecisionPolicy *types.Any `protobuf:"bytes,4,opt,name=decision_policy,json=decisionPolicy,proto3" json:"decision_policy,omitempty"`
 }
@@ -719,28 +719,28 @@ func (m *MsgUpdateGroupAccountDecisionPolicyResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGroupAccountDecisionPolicyResponse proto.InternalMessageInfo
 
-// MsgUpdateGroupAccountCommentRequest is the Msg/UpdateGroupAccountComment request type.
-type MsgUpdateGroupAccountCommentRequest struct {
+// MsgUpdateGroupAccountMetadataRequest is the Msg/UpdateGroupAccountMetadata request type.
+type MsgUpdateGroupAccountMetadataRequest struct {
 	// admin is the account address of the group admin.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// group_account is the group account address.
 	GroupAccount string `protobuf:"bytes,2,opt,name=group_account,json=groupAccount,proto3" json:"group_account,omitempty"`
-	// comment is the updated group account comment.
-	Comment string `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
+	// metadata is the updated group account metadata.
+	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
-func (m *MsgUpdateGroupAccountCommentRequest) Reset()         { *m = MsgUpdateGroupAccountCommentRequest{} }
-func (m *MsgUpdateGroupAccountCommentRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateGroupAccountCommentRequest) ProtoMessage()    {}
-func (*MsgUpdateGroupAccountCommentRequest) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateGroupAccountMetadataRequest) Reset()         { *m = MsgUpdateGroupAccountMetadataRequest{} }
+func (m *MsgUpdateGroupAccountMetadataRequest) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateGroupAccountMetadataRequest) ProtoMessage()    {}
+func (*MsgUpdateGroupAccountMetadataRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b4673626e7797578, []int{14}
 }
-func (m *MsgUpdateGroupAccountCommentRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateGroupAccountMetadataRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateGroupAccountCommentRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateGroupAccountMetadataRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateGroupAccountCommentRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateGroupAccountMetadataRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -750,55 +750,55 @@ func (m *MsgUpdateGroupAccountCommentRequest) XXX_Marshal(b []byte, deterministi
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateGroupAccountCommentRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateGroupAccountCommentRequest.Merge(m, src)
+func (m *MsgUpdateGroupAccountMetadataRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateGroupAccountMetadataRequest.Merge(m, src)
 }
-func (m *MsgUpdateGroupAccountCommentRequest) XXX_Size() int {
+func (m *MsgUpdateGroupAccountMetadataRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateGroupAccountCommentRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateGroupAccountCommentRequest.DiscardUnknown(m)
+func (m *MsgUpdateGroupAccountMetadataRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateGroupAccountMetadataRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateGroupAccountCommentRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateGroupAccountMetadataRequest proto.InternalMessageInfo
 
-func (m *MsgUpdateGroupAccountCommentRequest) GetAdmin() string {
+func (m *MsgUpdateGroupAccountMetadataRequest) GetAdmin() string {
 	if m != nil {
 		return m.Admin
 	}
 	return ""
 }
 
-func (m *MsgUpdateGroupAccountCommentRequest) GetGroupAccount() string {
+func (m *MsgUpdateGroupAccountMetadataRequest) GetGroupAccount() string {
 	if m != nil {
 		return m.GroupAccount
 	}
 	return ""
 }
 
-func (m *MsgUpdateGroupAccountCommentRequest) GetComment() string {
+func (m *MsgUpdateGroupAccountMetadataRequest) GetMetadata() []byte {
 	if m != nil {
-		return m.Comment
+		return m.Metadata
 	}
-	return ""
+	return nil
 }
 
-// MsgUpdateGroupAccountCommentResponse is the Msg/UpdateGroupAccountComment response type.
-type MsgUpdateGroupAccountCommentResponse struct {
+// MsgUpdateGroupAccountMetadataResponse is the Msg/UpdateGroupAccountMetadata response type.
+type MsgUpdateGroupAccountMetadataResponse struct {
 }
 
-func (m *MsgUpdateGroupAccountCommentResponse) Reset()         { *m = MsgUpdateGroupAccountCommentResponse{} }
-func (m *MsgUpdateGroupAccountCommentResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateGroupAccountCommentResponse) ProtoMessage()    {}
-func (*MsgUpdateGroupAccountCommentResponse) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateGroupAccountMetadataResponse) Reset()         { *m = MsgUpdateGroupAccountMetadataResponse{} }
+func (m *MsgUpdateGroupAccountMetadataResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateGroupAccountMetadataResponse) ProtoMessage()    {}
+func (*MsgUpdateGroupAccountMetadataResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b4673626e7797578, []int{15}
 }
-func (m *MsgUpdateGroupAccountCommentResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateGroupAccountMetadataResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateGroupAccountCommentResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateGroupAccountMetadataResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateGroupAccountCommentResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateGroupAccountMetadataResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -808,17 +808,17 @@ func (m *MsgUpdateGroupAccountCommentResponse) XXX_Marshal(b []byte, determinist
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateGroupAccountCommentResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateGroupAccountCommentResponse.Merge(m, src)
+func (m *MsgUpdateGroupAccountMetadataResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateGroupAccountMetadataResponse.Merge(m, src)
 }
-func (m *MsgUpdateGroupAccountCommentResponse) XXX_Size() int {
+func (m *MsgUpdateGroupAccountMetadataResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateGroupAccountCommentResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateGroupAccountCommentResponse.DiscardUnknown(m)
+func (m *MsgUpdateGroupAccountMetadataResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateGroupAccountMetadataResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateGroupAccountCommentResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateGroupAccountMetadataResponse proto.InternalMessageInfo
 
 // MsgCreateProposalRequest is the Msg/CreateProposal request type.
 type MsgCreateProposalRequest struct {
@@ -827,8 +827,8 @@ type MsgCreateProposalRequest struct {
 	// proposers are the account addresses of the proposers.
 	// Proposers signatures will be counted as yes votes.
 	Proposers []string `protobuf:"bytes,2,rep,name=proposers,proto3" json:"proposers,omitempty"`
-	// comment is the proposal's comment.
-	Comment string `protobuf:"bytes,3,opt,name=comment,proto3" json:"comment,omitempty"`
+	// metadata is any arbitrary metadata to attached to the proposal.
+	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// msgs is a list of Msgs that will be executed if the proposal passes.
 	Msgs []*types.Any `protobuf:"bytes,4,rep,name=msgs,proto3" json:"msgs,omitempty"`
 }
@@ -920,8 +920,8 @@ type MsgVoteRequest struct {
 	Voters []string `protobuf:"bytes,2,rep,name=voters,proto3" json:"voters,omitempty"`
 	// choice is the voters' choice on the proposal.
 	Choice Choice `protobuf:"varint,3,opt,name=choice,proto3,enum=regen.group.v1alpha1.Choice" json:"choice,omitempty"`
-	// comment's is the vote's comment.
-	Comment string `protobuf:"bytes,4,opt,name=comment,proto3" json:"comment,omitempty"`
+	// metadata is any arbitrary metadata to attached to the vote.
+	Metadata []byte `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
 func (m *MsgVoteRequest) Reset()         { *m = MsgVoteRequest{} }
@@ -978,11 +978,11 @@ func (m *MsgVoteRequest) GetChoice() Choice {
 	return Choice_CHOICE_UNSPECIFIED
 }
 
-func (m *MsgVoteRequest) GetComment() string {
+func (m *MsgVoteRequest) GetMetadata() []byte {
 	if m != nil {
-		return m.Comment
+		return m.Metadata
 	}
-	return ""
+	return nil
 }
 
 // MsgVoteResponse is the Msg/Vote response type.
@@ -1121,16 +1121,16 @@ func init() {
 	proto.RegisterType((*MsgUpdateGroupMembersResponse)(nil), "regen.group.v1alpha1.MsgUpdateGroupMembersResponse")
 	proto.RegisterType((*MsgUpdateGroupAdminRequest)(nil), "regen.group.v1alpha1.MsgUpdateGroupAdminRequest")
 	proto.RegisterType((*MsgUpdateGroupAdminResponse)(nil), "regen.group.v1alpha1.MsgUpdateGroupAdminResponse")
-	proto.RegisterType((*MsgUpdateGroupCommentRequest)(nil), "regen.group.v1alpha1.MsgUpdateGroupCommentRequest")
-	proto.RegisterType((*MsgUpdateGroupCommentResponse)(nil), "regen.group.v1alpha1.MsgUpdateGroupCommentResponse")
+	proto.RegisterType((*MsgUpdateGroupMetadataRequest)(nil), "regen.group.v1alpha1.MsgUpdateGroupMetadataRequest")
+	proto.RegisterType((*MsgUpdateGroupMetadataResponse)(nil), "regen.group.v1alpha1.MsgUpdateGroupMetadataResponse")
 	proto.RegisterType((*MsgCreateGroupAccountRequest)(nil), "regen.group.v1alpha1.MsgCreateGroupAccountRequest")
 	proto.RegisterType((*MsgCreateGroupAccountResponse)(nil), "regen.group.v1alpha1.MsgCreateGroupAccountResponse")
 	proto.RegisterType((*MsgUpdateGroupAccountAdminRequest)(nil), "regen.group.v1alpha1.MsgUpdateGroupAccountAdminRequest")
 	proto.RegisterType((*MsgUpdateGroupAccountAdminResponse)(nil), "regen.group.v1alpha1.MsgUpdateGroupAccountAdminResponse")
 	proto.RegisterType((*MsgUpdateGroupAccountDecisionPolicyRequest)(nil), "regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyRequest")
 	proto.RegisterType((*MsgUpdateGroupAccountDecisionPolicyResponse)(nil), "regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyResponse")
-	proto.RegisterType((*MsgUpdateGroupAccountCommentRequest)(nil), "regen.group.v1alpha1.MsgUpdateGroupAccountCommentRequest")
-	proto.RegisterType((*MsgUpdateGroupAccountCommentResponse)(nil), "regen.group.v1alpha1.MsgUpdateGroupAccountCommentResponse")
+	proto.RegisterType((*MsgUpdateGroupAccountMetadataRequest)(nil), "regen.group.v1alpha1.MsgUpdateGroupAccountMetadataRequest")
+	proto.RegisterType((*MsgUpdateGroupAccountMetadataResponse)(nil), "regen.group.v1alpha1.MsgUpdateGroupAccountMetadataResponse")
 	proto.RegisterType((*MsgCreateProposalRequest)(nil), "regen.group.v1alpha1.MsgCreateProposalRequest")
 	proto.RegisterType((*MsgCreateProposalResponse)(nil), "regen.group.v1alpha1.MsgCreateProposalResponse")
 	proto.RegisterType((*MsgVoteRequest)(nil), "regen.group.v1alpha1.MsgVoteRequest")
@@ -1142,67 +1142,68 @@ func init() {
 func init() { proto.RegisterFile("regen/group/v1alpha1/tx.proto", fileDescriptor_b4673626e7797578) }
 
 var fileDescriptor_b4673626e7797578 = []byte{
-	// 949 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x57, 0x4f, 0x6f, 0xe3, 0x44,
-	0x14, 0x8f, 0x1b, 0xd3, 0x6e, 0x5f, 0xd9, 0x2c, 0x8c, 0xca, 0xe2, 0x7a, 0xdb, 0x24, 0xeb, 0x2d,
-	0xa8, 0x62, 0xa9, 0x4d, 0xbb, 0x48, 0xc0, 0xc2, 0x81, 0xfe, 0x41, 0xab, 0x48, 0x44, 0x5a, 0x8c,
-	0x40, 0x82, 0x4b, 0x94, 0xda, 0x83, 0x6b, 0x11, 0x7b, 0x5c, 0x8f, 0xb3, 0x6d, 0x40, 0x1c, 0x91,
-	0x38, 0x70, 0x40, 0x7c, 0x02, 0xc4, 0x65, 0xc5, 0x9d, 0x0f, 0xc0, 0x71, 0xb5, 0xa7, 0x1e, 0x39,
-	0x55, 0xa8, 0xfd, 0x16, 0x3d, 0xa1, 0xcc, 0x8c, 0x1b, 0xc7, 0xb1, 0x5d, 0x87, 0xb0, 0xb7, 0x8e,
-	0xdf, 0x7b, 0xbf, 0xf7, 0xfb, 0xcd, 0x7b, 0xf3, 0x5e, 0x03, 0x6b, 0x21, 0x76, 0xb0, 0x6f, 0x38,
-	0x21, 0xe9, 0x07, 0xc6, 0x93, 0xad, 0x6e, 0x2f, 0x38, 0xec, 0x6e, 0x19, 0xd1, 0x89, 0x1e, 0x84,
-	0x24, 0x22, 0x68, 0x99, 0x99, 0x75, 0x66, 0xd6, 0x63, 0xb3, 0xba, 0xec, 0x10, 0x87, 0x30, 0x07,
-	0x63, 0xf8, 0x17, 0xf7, 0x55, 0x57, 0x2c, 0x42, 0x3d, 0x42, 0x3b, 0xdc, 0xc0, 0x0f, 0xb1, 0xc9,
-	0x21, 0xc4, 0xe9, 0x61, 0x83, 0x9d, 0x0e, 0xfa, 0xdf, 0x18, 0x5d, 0x7f, 0x20, 0x4c, 0xcd, 0x6c,
-	0x02, 0x83, 0x00, 0x8b, 0x60, 0xed, 0x47, 0x09, 0x5e, 0x6b, 0x53, 0x67, 0x2f, 0xc4, 0xdd, 0x08,
-	0x3f, 0x1a, 0xfa, 0x99, 0xf8, 0xa8, 0x8f, 0x69, 0x84, 0x96, 0xe1, 0xa5, 0xae, 0xed, 0xb9, 0xbe,
-	0x22, 0x35, 0xa5, 0x8d, 0x45, 0x93, 0x1f, 0xd0, 0x47, 0xb0, 0xe0, 0x61, 0xef, 0x00, 0x87, 0x54,
-	0x99, 0x6b, 0x56, 0x37, 0x96, 0xb6, 0x57, 0xf5, 0x2c, 0x15, 0x7a, 0x9b, 0x39, 0xed, 0xca, 0xcf,
-	0xce, 0x1a, 0x15, 0x33, 0x0e, 0x41, 0x0a, 0x2c, 0x58, 0xc4, 0xf3, 0xb0, 0x1f, 0x29, 0x55, 0x86,
-	0x1a, 0x1f, 0xb5, 0x0f, 0xe1, 0x76, 0x9a, 0x06, 0x0d, 0x88, 0x4f, 0x31, 0xba, 0x0b, 0x37, 0x18,
-	0x76, 0xc7, 0xb5, 0x19, 0x15, 0x79, 0x77, 0xfe, 0xf2, 0xac, 0x31, 0xd7, 0xda, 0x37, 0x17, 0xd8,
-	0xf7, 0x96, 0xad, 0xfd, 0x2e, 0xc1, 0x6a, 0x9b, 0x3a, 0x5f, 0x04, 0x76, 0x1c, 0xcd, 0xd3, 0xd3,
-	0x62, 0x2d, 0x49, 0xe4, 0xb9, 0x4c, 0x64, 0xd4, 0x82, 0x1a, 0xe7, 0xde, 0xe9, 0x33, 0x70, 0xaa,
-	0x54, 0x4b, 0xab, 0xbe, 0xc9, 0x23, 0x39, 0x2b, 0xaa, 0x35, 0x60, 0x2d, 0x87, 0x23, 0x17, 0xaa,
-	0x85, 0xa0, 0x8e, 0x3b, 0xec, 0x0c, 0x59, 0xce, 0x2c, 0xe1, 0x0e, 0x2c, 0xfa, 0xf8, 0xb8, 0xc3,
-	0x83, 0xf9, 0xad, 0xdf, 0xf0, 0xf1, 0x31, 0x03, 0xd7, 0xd6, 0xe0, 0x4e, 0x66, 0x4e, 0x41, 0xe9,
-	0x28, 0x7d, 0xaf, 0x7b, 0xbc, 0x5c, 0x33, 0x93, 0xca, 0x6f, 0x84, 0x89, 0x6b, 0xba, 0x4a, 0x29,
-	0x38, 0x3d, 0xe7, 0xc5, 0x4e, 0xb4, 0xca, 0x8e, 0x65, 0x91, 0xfe, 0x8b, 0x24, 0x85, 0x3e, 0x83,
-	0x5b, 0x36, 0xb6, 0x5c, 0xea, 0x12, 0xbf, 0x13, 0x90, 0x9e, 0x6b, 0x0d, 0x14, 0xb9, 0x29, 0x6d,
-	0x2c, 0x6d, 0x2f, 0xeb, 0xfc, 0xf1, 0xe9, 0xf1, 0xe3, 0xd3, 0x77, 0xfc, 0xc1, 0x2e, 0x7a, 0xfe,
-	0xe7, 0x66, 0x6d, 0x5f, 0x04, 0x3c, 0x66, 0xfe, 0x66, 0xcd, 0x1e, 0x3b, 0x3f, 0x94, 0x7f, 0xfa,
-	0xad, 0x51, 0xd1, 0xf6, 0x99, 0xda, 0x2c, 0x2d, 0xa2, 0xfb, 0xef, 0xc1, 0x4d, 0x4e, 0xbb, 0xcb,
-	0x0d, 0x42, 0xd4, 0xcb, 0x4e, 0xc2, 0x59, 0xfb, 0x1e, 0xee, 0xa6, 0xaa, 0xc8, 0x0d, 0x25, 0x1a,
-	0x68, 0x02, 0x7f, 0x6e, 0x12, 0xbf, 0xb8, 0x85, 0xd6, 0x41, 0x2b, 0x4a, 0x2e, 0xaa, 0xf6, 0x97,
-	0x04, 0x6f, 0x65, 0xba, 0xa5, 0xae, 0x69, 0x76, 0xb2, 0x19, 0xb5, 0xaa, 0xfe, 0x2f, 0xb5, 0xda,
-	0x84, 0xfb, 0xa5, 0x14, 0x08, 0xc5, 0xdf, 0xc1, 0xbd, 0x4c, 0xf7, 0x52, 0x4f, 0xa8, 0x94, 0xd2,
-	0xfc, 0x47, 0xf4, 0x26, 0xac, 0x17, 0xe7, 0x16, 0x1c, 0x9f, 0x4a, 0xa0, 0x5c, 0xf5, 0xdf, 0xe3,
-	0x90, 0x04, 0x84, 0x76, 0x7b, 0x31, 0xb3, 0x32, 0xad, 0x87, 0x56, 0x61, 0x31, 0x60, 0x71, 0xf1,
-	0x46, 0x58, 0x34, 0x47, 0x1f, 0x0a, 0x5e, 0xd4, 0x06, 0xc8, 0x1e, 0x75, 0xa8, 0x22, 0xb3, 0x71,
-	0x9a, 0x59, 0x1a, 0x93, 0x79, 0x88, 0xcb, 0xff, 0x14, 0x56, 0x32, 0x88, 0x8a, 0x47, 0x62, 0xc0,
-	0x52, 0x20, 0xbe, 0x8d, 0xb6, 0x44, 0xed, 0xf2, 0xac, 0x01, 0xb1, 0x6b, 0x6b, 0xdf, 0x84, 0xd8,
-	0xa5, 0x65, 0x6b, 0x7f, 0x48, 0x50, 0x6b, 0x53, 0xe7, 0x4b, 0x12, 0xe1, 0x58, 0xed, 0xb4, 0x18,
-	0xe8, 0x36, 0xcc, 0x3f, 0x21, 0xd1, 0x48, 0xb6, 0x38, 0xa1, 0x77, 0x61, 0xde, 0x3a, 0x24, 0xae,
-	0x85, 0x99, 0xe4, 0x5a, 0xde, 0xaa, 0xd8, 0x63, 0x3e, 0xa6, 0xf0, 0x4d, 0xde, 0x94, 0x3c, 0x5e,
-	0xcb, 0x57, 0xe1, 0xd6, 0x15, 0x55, 0x51, 0xb6, 0xaf, 0x18, 0xfb, 0x4f, 0x4e, 0xb0, 0x35, 0x0b,
-	0x7b, 0xea, 0x3a, 0x3e, 0x0e, 0x45, 0x67, 0x89, 0x93, 0xc8, 0xc6, 0xa1, 0x79, 0xb6, 0xed, 0x53,
-	0x80, 0x6a, 0x9b, 0x3a, 0xe8, 0x10, 0x96, 0x12, 0x83, 0x0a, 0xdd, 0xcf, 0x59, 0x81, 0x59, 0xff,
-	0x4c, 0xa8, 0x6f, 0x97, 0x73, 0x16, 0xf5, 0xfc, 0x01, 0xd0, 0xe4, 0x9e, 0x44, 0xdb, 0xb9, 0x18,
-	0xb9, 0x8b, 0x5f, 0x7d, 0x30, 0x55, 0x8c, 0x48, 0x7f, 0x0c, 0xaf, 0xa4, 0x37, 0x22, 0x7a, 0xa7,
-	0x0c, 0x50, 0x72, 0xde, 0xaa, 0x5b, 0x53, 0x44, 0x64, 0xea, 0x16, 0x8f, 0xb5, 0x9c, 0xee, 0xf1,
-	0xa9, 0x52, 0x4e, 0x77, 0x6a, 0x1a, 0x0c, 0xd3, 0x4f, 0x6e, 0xa2, 0x82, 0xf4, 0xb9, 0x2b, 0xb8,
-	0x20, 0x7d, 0xc1, 0xaa, 0xfb, 0x59, 0x82, 0xd7, 0x73, 0xd6, 0x08, 0x7a, 0xaf, 0xd4, 0x65, 0x4e,
-	0x6e, 0x3d, 0xf5, 0xfd, 0xe9, 0x03, 0x05, 0x9d, 0xa7, 0x12, 0x34, 0xaf, 0x1b, 0xf6, 0xe8, 0xe3,
-	0x29, 0xe0, 0x33, 0x37, 0x9d, 0xba, 0x33, 0x03, 0x82, 0x60, 0xfa, 0xab, 0x04, 0x2b, 0xb9, 0xb3,
-	0x1e, 0x7d, 0x30, 0x45, 0x82, 0x54, 0x17, 0x3d, 0xfc, 0x2f, 0xa1, 0x82, 0xd4, 0x11, 0xd4, 0xc6,
-	0xa7, 0x35, 0xd2, 0xaf, 0x69, 0x8a, 0xd4, 0xfe, 0x51, 0x8d, 0xd2, 0xfe, 0x22, 0xe5, 0xe7, 0x20,
-	0x0f, 0xc7, 0x24, 0x5a, 0xcf, 0x0d, 0x4c, 0x0c, 0x7c, 0xf5, 0x8d, 0x6b, 0xbc, 0x46, 0xa0, 0xc3,
-	0x69, 0x58, 0x00, 0x9a, 0x98, 0xc3, 0x05, 0xa0, 0xc9, 0x91, 0xba, 0xfb, 0xe8, 0xd9, 0x79, 0x5d,
-	0x3a, 0x3d, 0xaf, 0x4b, 0xff, 0x9c, 0xd7, 0xa5, 0x5f, 0x2e, 0xea, 0x95, 0xd3, 0x8b, 0x7a, 0xe5,
-	0xef, 0x8b, 0x7a, 0xe5, 0xeb, 0x4d, 0xc7, 0x8d, 0x0e, 0xfb, 0x07, 0xba, 0x45, 0x3c, 0x83, 0x41,
-	0x6d, 0xfa, 0x38, 0x3a, 0x26, 0xe1, 0xb7, 0xe2, 0xd4, 0xc3, 0xb6, 0x83, 0x43, 0xe3, 0x84, 0xff,
-	0xa6, 0x3b, 0x98, 0x67, 0x0b, 0xf3, 0xc1, 0xbf, 0x01, 0x00, 0x00, 0xff, 0xff, 0xc3, 0x3e, 0x12,
-	0x49, 0x6a, 0x0e, 0x00, 0x00,
+	// 961 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x57, 0x41, 0x6f, 0x1b, 0x45,
+	0x14, 0xf6, 0xc4, 0x4b, 0x9a, 0xbc, 0xb4, 0x2e, 0x0c, 0xa1, 0xb8, 0xdb, 0xc4, 0x76, 0x97, 0x54,
+	0x58, 0x94, 0xec, 0x92, 0xb4, 0x12, 0xa8, 0xe5, 0x40, 0xd2, 0xa0, 0xca, 0x12, 0x96, 0xca, 0x22,
+	0x90, 0xe0, 0x62, 0x6d, 0x76, 0x87, 0xcd, 0x0a, 0x7b, 0x67, 0xbb, 0xb3, 0x6e, 0x12, 0xa1, 0x4a,
+	0xdc, 0xe0, 0xc0, 0x81, 0x0b, 0x77, 0xc4, 0x05, 0x21, 0xae, 0xfc, 0x00, 0x8e, 0x15, 0xe2, 0xd0,
+	0x1b, 0x9c, 0x22, 0x94, 0xfc, 0x8b, 0x9c, 0x90, 0x67, 0x66, 0xe3, 0xb5, 0xbd, 0xbb, 0x5e, 0x63,
+	0xb8, 0x65, 0xf6, 0x7d, 0xef, 0x7b, 0xdf, 0x9b, 0xf7, 0xe6, 0x3d, 0x07, 0xd6, 0x43, 0xe2, 0x12,
+	0xdf, 0x70, 0x43, 0xda, 0x0f, 0x8c, 0x27, 0x5b, 0x56, 0x37, 0x38, 0xb0, 0xb6, 0x8c, 0xe8, 0x48,
+	0x0f, 0x42, 0x1a, 0x51, 0xbc, 0xca, 0xcd, 0x3a, 0x37, 0xeb, 0xb1, 0x59, 0x5d, 0x75, 0xa9, 0x4b,
+	0x39, 0xc0, 0x18, 0xfc, 0x25, 0xb0, 0xea, 0x75, 0x9b, 0xb2, 0x1e, 0x65, 0x1d, 0x61, 0x10, 0x87,
+	0xd8, 0xe4, 0x52, 0xea, 0x76, 0x89, 0xc1, 0x4f, 0xfb, 0xfd, 0xcf, 0x0d, 0xcb, 0x3f, 0x96, 0xa6,
+	0x46, 0xba, 0x80, 0xe3, 0x80, 0x48, 0x67, 0xed, 0x6b, 0x04, 0xaf, 0xb4, 0x99, 0xfb, 0x20, 0x24,
+	0x56, 0x44, 0x1e, 0x0e, 0x70, 0x26, 0x79, 0xdc, 0x27, 0x2c, 0xc2, 0xab, 0xf0, 0x82, 0xe5, 0xf4,
+	0x3c, 0xbf, 0x8a, 0x1a, 0xa8, 0xb9, 0x6c, 0x8a, 0x03, 0x7e, 0x17, 0x2e, 0xf5, 0x48, 0x6f, 0x9f,
+	0x84, 0xac, 0xba, 0xd0, 0x28, 0x37, 0x57, 0xb6, 0xd7, 0xf4, 0xb4, 0x2c, 0xf4, 0x36, 0x07, 0xed,
+	0x2a, 0xcf, 0x4e, 0xea, 0x25, 0x33, 0x76, 0xc1, 0x2a, 0x2c, 0xf5, 0x48, 0x64, 0x39, 0x56, 0x64,
+	0x55, 0xcb, 0x0d, 0xd4, 0xbc, 0x6c, 0x5e, 0x9c, 0xb5, 0xfb, 0x70, 0x6d, 0x5c, 0x08, 0x0b, 0xa8,
+	0xcf, 0x08, 0xbe, 0x09, 0x4b, 0x9c, 0xbd, 0xe3, 0x39, 0x5c, 0x8c, 0xb2, 0xbb, 0x78, 0x7e, 0x52,
+	0x5f, 0x68, 0xed, 0x99, 0x97, 0xf8, 0xf7, 0x96, 0xa3, 0xfd, 0x88, 0x60, 0xad, 0xcd, 0xdc, 0x8f,
+	0x03, 0x27, 0xf6, 0x16, 0x02, 0x58, 0x7e, 0x36, 0x49, 0xe6, 0x85, 0x54, 0x66, 0xdc, 0x82, 0x8a,
+	0x50, 0xdf, 0xe9, 0x73, 0x72, 0x56, 0x2d, 0x17, 0xce, 0xfb, 0x8a, 0xf0, 0x14, 0xaa, 0x98, 0x56,
+	0x87, 0xf5, 0x0c, 0x8d, 0x22, 0x51, 0x2d, 0x04, 0x75, 0x14, 0xb0, 0x33, 0x50, 0x39, 0x77, 0x0a,
+	0x37, 0x60, 0xd9, 0x27, 0x87, 0x1d, 0xe1, 0x5c, 0xe6, 0xce, 0x4b, 0x3e, 0x39, 0xe4, 0xe4, 0xda,
+	0x3a, 0xdc, 0x48, 0x8d, 0x29, 0x25, 0x45, 0x93, 0x9a, 0x45, 0xbd, 0xe6, 0x56, 0x95, 0xd7, 0x0b,
+	0x0d, 0xa8, 0x65, 0x45, 0x95, 0xba, 0xfe, 0x10, 0x05, 0x4f, 0xb4, 0xcb, 0x8e, 0x6d, 0xd3, 0xbe,
+	0x1f, 0xfd, 0x9f, 0xba, 0xf0, 0x87, 0x70, 0xd5, 0x21, 0xb6, 0xc7, 0x3c, 0xea, 0x77, 0x02, 0xda,
+	0xf5, 0xec, 0xe3, 0xaa, 0xd2, 0x40, 0xcd, 0x95, 0xed, 0x55, 0x5d, 0x3c, 0x42, 0x3d, 0x7e, 0x84,
+	0xfa, 0x8e, 0x7f, 0xbc, 0x8b, 0x7f, 0xff, 0x75, 0xb3, 0xb2, 0x27, 0x1d, 0x1e, 0x71, 0xbc, 0x59,
+	0x71, 0x46, 0xce, 0xf7, 0x94, 0x6f, 0x7e, 0xa8, 0x97, 0xb4, 0x3d, 0x7e, 0xcd, 0x69, 0xd9, 0xc8,
+	0x37, 0xf0, 0x1a, 0x5c, 0x11, 0xc2, 0x2d, 0x61, 0x90, 0x69, 0x5d, 0x76, 0x13, 0x60, 0xed, 0x4b,
+	0xb8, 0x39, 0x56, 0x4b, 0x61, 0x28, 0xd0, 0x46, 0x13, 0xfc, 0x0b, 0x93, 0xfc, 0xf9, 0x8d, 0xb4,
+	0x01, 0x5a, 0x5e, 0x70, 0x59, 0xb7, 0xdf, 0x10, 0xbc, 0x91, 0x0a, 0x1b, 0xbb, 0xa6, 0xf9, 0xc5,
+	0xa6, 0xd4, 0xaa, 0xfc, 0x9f, 0xd4, 0x6a, 0x13, 0x6e, 0x17, 0xca, 0x40, 0x66, 0xfc, 0x14, 0x36,
+	0x52, 0xe1, 0xc5, 0x1e, 0x52, 0xa1, 0x54, 0xf3, 0x9e, 0xd2, 0xeb, 0x70, 0x6b, 0x4a, 0x78, 0xa9,
+	0xf3, 0x67, 0x04, 0xd5, 0x8b, 0x1e, 0x7c, 0x14, 0xd2, 0x80, 0x32, 0xab, 0x1b, 0x8b, 0x2b, 0xd2,
+	0x7e, 0x78, 0x0d, 0x96, 0x03, 0xee, 0x17, 0x6f, 0x87, 0x65, 0x73, 0xf8, 0x21, 0xf7, 0x5d, 0x35,
+	0x41, 0xe9, 0x31, 0x97, 0x55, 0x15, 0x3e, 0x5a, 0x53, 0x0b, 0x64, 0x72, 0x84, 0x2c, 0xc1, 0x07,
+	0x70, 0x3d, 0x45, 0xaa, 0x7c, 0x2a, 0x06, 0xac, 0x04, 0xf2, 0xdb, 0x70, 0x63, 0x54, 0xce, 0x4f,
+	0xea, 0x10, 0x43, 0x5b, 0x7b, 0x26, 0xc4, 0x90, 0x96, 0xa3, 0xfd, 0x82, 0xa0, 0xd2, 0x66, 0xee,
+	0x27, 0x34, 0x22, 0x71, 0xbe, 0xb3, 0x72, 0xe0, 0x6b, 0xb0, 0xf8, 0x84, 0x46, 0xc3, 0xc4, 0xe5,
+	0x09, 0xdf, 0x85, 0x45, 0xfb, 0x80, 0x7a, 0x36, 0xe1, 0x39, 0x57, 0xb2, 0xd6, 0xc6, 0x03, 0x8e,
+	0x31, 0x25, 0x76, 0xe4, 0xae, 0x94, 0xb1, 0x82, 0xbe, 0x04, 0x57, 0x2f, 0xc4, 0xca, 0xd2, 0x7d,
+	0xca, 0xf5, 0xbf, 0x7f, 0x44, 0xec, 0x79, 0xf4, 0x33, 0xcf, 0xf5, 0x49, 0x28, 0x1b, 0x4c, 0x9e,
+	0x64, 0x34, 0x41, 0x2d, 0xa2, 0x6d, 0xff, 0x09, 0x50, 0x6e, 0x33, 0x17, 0x1f, 0xc0, 0x4a, 0x62,
+	0x60, 0xe1, 0xdb, 0x19, 0x0b, 0x31, 0xed, 0xc7, 0x85, 0xfa, 0x66, 0x31, 0xb0, 0xac, 0xe8, 0x53,
+	0xc0, 0x93, 0x5b, 0x13, 0x6f, 0x67, 0x72, 0x64, 0xfe, 0x0c, 0x50, 0xef, 0xcc, 0xe4, 0x23, 0xc3,
+	0x1f, 0xc2, 0x8b, 0xe3, 0xfb, 0x11, 0xbf, 0x55, 0x84, 0x28, 0x39, 0x77, 0xd5, 0xad, 0x19, 0x3c,
+	0x64, 0xe0, 0xaf, 0x10, 0xbc, 0x9c, 0xb2, 0x04, 0x71, 0xc1, 0x2c, 0x46, 0xe6, 0x8b, 0x7a, 0x77,
+	0x36, 0xa7, 0xe1, 0xd5, 0x4f, 0x6e, 0xa5, 0x9c, 0xab, 0xcf, 0x5c, 0xc8, 0x39, 0x57, 0x9f, 0xb3,
+	0xf6, 0xbe, 0x45, 0xf0, 0x6a, 0xc6, 0x4a, 0xc1, 0x6f, 0x17, 0xba, 0xd0, 0xc9, 0x0d, 0xa8, 0xbe,
+	0x33, 0xbb, 0xa3, 0x94, 0xf3, 0x13, 0x82, 0xc6, 0xb4, 0xc1, 0x8f, 0xdf, 0x9b, 0x81, 0x3e, 0x75,
+	0xeb, 0xa9, 0x3b, 0x73, 0x30, 0x48, 0xa5, 0xdf, 0x23, 0x50, 0xb3, 0x87, 0x3e, 0xbe, 0x37, 0x43,
+	0x84, 0xf1, 0x46, 0xba, 0xff, 0xaf, 0x7c, 0xa5, 0xae, 0xc7, 0x50, 0x19, 0x1d, 0xdb, 0x58, 0x9f,
+	0xd2, 0x17, 0x63, 0xab, 0x48, 0x35, 0x0a, 0xe3, 0x65, 0xc8, 0x8f, 0x40, 0x19, 0x4c, 0x4b, 0xbc,
+	0x91, 0xe9, 0x98, 0x98, 0xfc, 0xea, 0xad, 0x29, 0xa8, 0x21, 0xe9, 0x60, 0x28, 0xe6, 0x90, 0x26,
+	0xc6, 0x71, 0x0e, 0x69, 0x72, 0xb2, 0xee, 0x3e, 0x7c, 0x76, 0x5a, 0x43, 0xcf, 0x4f, 0x6b, 0xe8,
+	0xef, 0xd3, 0x1a, 0xfa, 0xee, 0xac, 0x56, 0x7a, 0x7e, 0x56, 0x2b, 0xfd, 0x75, 0x56, 0x2b, 0x7d,
+	0xb6, 0xe9, 0x7a, 0xd1, 0x41, 0x7f, 0x5f, 0xb7, 0x69, 0xcf, 0xe0, 0x54, 0x9b, 0x3e, 0x89, 0x0e,
+	0x69, 0xf8, 0x85, 0x3c, 0x75, 0x89, 0xe3, 0x92, 0xd0, 0x38, 0x12, 0xff, 0xea, 0xed, 0x2f, 0xf2,
+	0xcd, 0x79, 0xe7, 0x9f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x18, 0xd0, 0x99, 0x8c, 0x81, 0x0e, 0x00,
+	0x00,
 }
 
 func (m *MsgCreateGroupRequest) Marshal() (dAtA []byte, err error) {
@@ -1225,10 +1226,10 @@ func (m *MsgCreateGroupRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Comment) > 0 {
-		i -= len(m.Comment)
-		copy(dAtA[i:], m.Comment)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Comment)))
+	if len(m.Metadata) > 0 {
+		i -= len(m.Metadata)
+		copy(dAtA[i:], m.Metadata)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Metadata)))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -1421,7 +1422,7 @@ func (m *MsgUpdateGroupAdminResponse) MarshalToSizedBuffer(dAtA []byte) (int, er
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateGroupCommentRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateGroupMetadataRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1431,20 +1432,20 @@ func (m *MsgUpdateGroupCommentRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateGroupCommentRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupMetadataRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateGroupCommentRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupMetadataRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Comment) > 0 {
-		i -= len(m.Comment)
-		copy(dAtA[i:], m.Comment)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Comment)))
+	if len(m.Metadata) > 0 {
+		i -= len(m.Metadata)
+		copy(dAtA[i:], m.Metadata)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Metadata)))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -1463,7 +1464,7 @@ func (m *MsgUpdateGroupCommentRequest) MarshalToSizedBuffer(dAtA []byte) (int, e
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateGroupCommentResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateGroupMetadataResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1473,12 +1474,12 @@ func (m *MsgUpdateGroupCommentResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateGroupCommentResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupMetadataResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateGroupCommentResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupMetadataResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1518,10 +1519,10 @@ func (m *MsgCreateGroupAccountRequest) MarshalToSizedBuffer(dAtA []byte) (int, e
 		i--
 		dAtA[i] = 0x22
 	}
-	if len(m.Comment) > 0 {
-		i -= len(m.Comment)
-		copy(dAtA[i:], m.Comment)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Comment)))
+	if len(m.Metadata) > 0 {
+		i -= len(m.Metadata)
+		copy(dAtA[i:], m.Metadata)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Metadata)))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -1709,7 +1710,7 @@ func (m *MsgUpdateGroupAccountDecisionPolicyResponse) MarshalToSizedBuffer(dAtA 
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateGroupAccountCommentRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateGroupAccountMetadataRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1719,20 +1720,20 @@ func (m *MsgUpdateGroupAccountCommentRequest) Marshal() (dAtA []byte, err error)
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateGroupAccountCommentRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupAccountMetadataRequest) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateGroupAccountCommentRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupAccountMetadataRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Comment) > 0 {
-		i -= len(m.Comment)
-		copy(dAtA[i:], m.Comment)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Comment)))
+	if len(m.Metadata) > 0 {
+		i -= len(m.Metadata)
+		copy(dAtA[i:], m.Metadata)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Metadata)))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -1753,7 +1754,7 @@ func (m *MsgUpdateGroupAccountCommentRequest) MarshalToSizedBuffer(dAtA []byte) 
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateGroupAccountCommentResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateGroupAccountMetadataResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1763,12 +1764,12 @@ func (m *MsgUpdateGroupAccountCommentResponse) Marshal() (dAtA []byte, err error
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateGroupAccountCommentResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupAccountMetadataResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateGroupAccountCommentResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupAccountMetadataResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1810,10 +1811,10 @@ func (m *MsgCreateProposalRequest) MarshalToSizedBuffer(dAtA []byte) (int, error
 			dAtA[i] = 0x22
 		}
 	}
-	if len(m.Comment) > 0 {
-		i -= len(m.Comment)
-		copy(dAtA[i:], m.Comment)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Comment)))
+	if len(m.Metadata) > 0 {
+		i -= len(m.Metadata)
+		copy(dAtA[i:], m.Metadata)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Metadata)))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -1884,10 +1885,10 @@ func (m *MsgVoteRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Comment) > 0 {
-		i -= len(m.Comment)
-		copy(dAtA[i:], m.Comment)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Comment)))
+	if len(m.Metadata) > 0 {
+		i -= len(m.Metadata)
+		copy(dAtA[i:], m.Metadata)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Metadata)))
 		i--
 		dAtA[i] = 0x22
 	}
@@ -2021,7 +2022,7 @@ func (m *MsgCreateGroupRequest) Size() (n int) {
 			n += 1 + l + sovTx(uint64(l))
 		}
 	}
-	l = len(m.Comment)
+	l = len(m.Metadata)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -2100,7 +2101,7 @@ func (m *MsgUpdateGroupAdminResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateGroupCommentRequest) Size() (n int) {
+func (m *MsgUpdateGroupMetadataRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2113,14 +2114,14 @@ func (m *MsgUpdateGroupCommentRequest) Size() (n int) {
 	if m.GroupId != 0 {
 		n += 1 + sovTx(uint64(m.GroupId))
 	}
-	l = len(m.Comment)
+	l = len(m.Metadata)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
 
-func (m *MsgUpdateGroupCommentResponse) Size() (n int) {
+func (m *MsgUpdateGroupMetadataResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2142,7 +2143,7 @@ func (m *MsgCreateGroupAccountRequest) Size() (n int) {
 	if m.GroupId != 0 {
 		n += 1 + sovTx(uint64(m.GroupId))
 	}
-	l = len(m.Comment)
+	l = len(m.Metadata)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -2226,7 +2227,7 @@ func (m *MsgUpdateGroupAccountDecisionPolicyResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateGroupAccountCommentRequest) Size() (n int) {
+func (m *MsgUpdateGroupAccountMetadataRequest) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2240,14 +2241,14 @@ func (m *MsgUpdateGroupAccountCommentRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Comment)
+	l = len(m.Metadata)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
 
-func (m *MsgUpdateGroupAccountCommentResponse) Size() (n int) {
+func (m *MsgUpdateGroupAccountMetadataResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2272,7 +2273,7 @@ func (m *MsgCreateProposalRequest) Size() (n int) {
 			n += 1 + l + sovTx(uint64(l))
 		}
 	}
-	l = len(m.Comment)
+	l = len(m.Metadata)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -2315,7 +2316,7 @@ func (m *MsgVoteRequest) Size() (n int) {
 	if m.Choice != 0 {
 		n += 1 + sovTx(uint64(m.Choice))
 	}
-	l = len(m.Comment)
+	l = len(m.Metadata)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -2459,9 +2460,9 @@ func (m *MsgCreateGroupRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Comment", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
 			}
-			var stringLen uint64
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -2471,23 +2472,25 @@ func (m *MsgCreateGroupRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				byteLen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if byteLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + byteLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Comment = string(dAtA[iNdEx:postIndex])
+			m.Metadata = append(m.Metadata[:0], dAtA[iNdEx:postIndex]...)
+			if m.Metadata == nil {
+				m.Metadata = []byte{}
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -2965,7 +2968,7 @@ func (m *MsgUpdateGroupAdminResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateGroupCommentRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateGroupMetadataRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2988,10 +2991,10 @@ func (m *MsgUpdateGroupCommentRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateGroupCommentRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateGroupMetadataRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateGroupCommentRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateGroupMetadataRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3047,9 +3050,9 @@ func (m *MsgUpdateGroupCommentRequest) Unmarshal(dAtA []byte) error {
 			}
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Comment", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
 			}
-			var stringLen uint64
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3059,23 +3062,25 @@ func (m *MsgUpdateGroupCommentRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				byteLen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if byteLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + byteLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Comment = string(dAtA[iNdEx:postIndex])
+			m.Metadata = append(m.Metadata[:0], dAtA[iNdEx:postIndex]...)
+			if m.Metadata == nil {
+				m.Metadata = []byte{}
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -3101,7 +3106,7 @@ func (m *MsgUpdateGroupCommentRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateGroupCommentResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateGroupMetadataResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3124,10 +3129,10 @@ func (m *MsgUpdateGroupCommentResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateGroupCommentResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateGroupMetadataResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateGroupCommentResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateGroupMetadataResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -3236,9 +3241,9 @@ func (m *MsgCreateGroupAccountRequest) Unmarshal(dAtA []byte) error {
 			}
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Comment", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
 			}
-			var stringLen uint64
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3248,23 +3253,25 @@ func (m *MsgCreateGroupAccountRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				byteLen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if byteLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + byteLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Comment = string(dAtA[iNdEx:postIndex])
+			m.Metadata = append(m.Metadata[:0], dAtA[iNdEx:postIndex]...)
+			if m.Metadata == nil {
+				m.Metadata = []byte{}
+			}
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
@@ -3819,7 +3826,7 @@ func (m *MsgUpdateGroupAccountDecisionPolicyResponse) Unmarshal(dAtA []byte) err
 	}
 	return nil
 }
-func (m *MsgUpdateGroupAccountCommentRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateGroupAccountMetadataRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3842,10 +3849,10 @@ func (m *MsgUpdateGroupAccountCommentRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateGroupAccountCommentRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateGroupAccountMetadataRequest: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateGroupAccountCommentRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateGroupAccountMetadataRequest: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3914,9 +3921,9 @@ func (m *MsgUpdateGroupAccountCommentRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Comment", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
 			}
-			var stringLen uint64
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -3926,23 +3933,25 @@ func (m *MsgUpdateGroupAccountCommentRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				byteLen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if byteLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + byteLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Comment = string(dAtA[iNdEx:postIndex])
+			m.Metadata = append(m.Metadata[:0], dAtA[iNdEx:postIndex]...)
+			if m.Metadata == nil {
+				m.Metadata = []byte{}
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -3968,7 +3977,7 @@ func (m *MsgUpdateGroupAccountCommentRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateGroupAccountCommentResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateGroupAccountMetadataResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3991,10 +4000,10 @@ func (m *MsgUpdateGroupAccountCommentResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateGroupAccountCommentResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateGroupAccountMetadataResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateGroupAccountCommentResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateGroupAccountMetadataResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -4116,9 +4125,9 @@ func (m *MsgCreateProposalRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Comment", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
 			}
-			var stringLen uint64
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -4128,23 +4137,25 @@ func (m *MsgCreateProposalRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				byteLen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if byteLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + byteLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Comment = string(dAtA[iNdEx:postIndex])
+			m.Metadata = append(m.Metadata[:0], dAtA[iNdEx:postIndex]...)
+			if m.Metadata == nil {
+				m.Metadata = []byte{}
+			}
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
@@ -4377,9 +4388,9 @@ func (m *MsgVoteRequest) Unmarshal(dAtA []byte) error {
 			}
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Comment", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
 			}
-			var stringLen uint64
+			var byteLen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -4389,23 +4400,25 @@ func (m *MsgVoteRequest) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				byteLen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
+			if byteLen < 0 {
 				return ErrInvalidLengthTx
 			}
-			postIndex := iNdEx + intStringLen
+			postIndex := iNdEx + byteLen
 			if postIndex < 0 {
 				return ErrInvalidLengthTx
 			}
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Comment = string(dAtA[iNdEx:postIndex])
+			m.Metadata = append(m.Metadata[:0], dAtA[iNdEx:postIndex]...)
+			if m.Metadata == nil {
+				m.Metadata = []byte{}
+			}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

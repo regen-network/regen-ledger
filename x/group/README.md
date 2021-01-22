@@ -42,12 +42,12 @@ this decision policy, abstain and veto are simply treated as no's.
 
 Any member of a group can submit a proposal for a group account to decide upon.
 A proposal consists of a set of messages that will be executed if the proposal
-passes as well as any comment associated with the proposal.
+passes as well as any metadata associated with the proposal.
 
 ## Voting
 
 There are four choices to choose while voting - yes, no, abstain and veto. Not
-all decision policies will support them. Votes can contain an optional comment.
+all decision policies will support them. Votes can contain some optional metadata.
 During the voting window, accounts that have already voted may change their vote.
 In the current implementation, the voting window begins as soon as a proposal
 is submitted.
