@@ -88,15 +88,13 @@ message GroupMember {
     uint64 group_id = 1 [(gogoproto.casttype) = "ID"];
 
     // member is the account address of the group member.
-    // todo: @aaronc field has different name in `Member.address`. Can we unify this?
     string member = 2;
     
     // weight is the power of the group member.
-    // todo: @aaronc it is `Member.power`. Can we unify this?
     string weight = 3;
     
     // comment is the member's comment. 
-    string comment = 4; // TODO: @aaronc was comment missing by intention?
+    string comment = 4;
 }
 
 // GroupAccountInfo represents the high-level on-chain information for a group account.

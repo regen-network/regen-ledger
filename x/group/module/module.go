@@ -100,8 +100,8 @@ func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.
 }
 
 func (a AppModule) RegisterInvariants(sdk.InvariantRegistry) {
-	// todo: anything to check?
-	// todo: check that tally sums must never have less than block before ?
+	// todo: #223
+	// todo: check that tally sums must never have less than block before?
 }
 
 // Route returns the message routing key for the group module.

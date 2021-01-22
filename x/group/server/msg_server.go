@@ -247,17 +247,17 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 }
 
 func (s serverImpl) UpdateGroupAccountAdmin(ctx types.Context, req *group.MsgUpdateGroupAccountAdminRequest) (*group.MsgUpdateGroupAccountAdminResponse, error) {
-	// TODO
+	// TODO #224
 	return &group.MsgUpdateGroupAccountAdminResponse{}, nil
 }
 
 func (s serverImpl) UpdateGroupAccountDecisionPolicy(ctx types.Context, req *group.MsgUpdateGroupAccountDecisionPolicyRequest) (*group.MsgUpdateGroupAccountDecisionPolicyResponse, error) {
-	// TODO
+	// TODO #224
 	return &group.MsgUpdateGroupAccountDecisionPolicyResponse{}, nil
 }
 
 func (s serverImpl) UpdateGroupAccountComment(ctx types.Context, req *group.MsgUpdateGroupAccountCommentRequest) (*group.MsgUpdateGroupAccountCommentResponse, error) {
-	// TODO
+	// TODO #224
 	return &group.MsgUpdateGroupAccountCommentResponse{}, nil
 }
 

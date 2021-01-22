@@ -385,10 +385,8 @@ type GroupMember struct {
 	// group_id is the unique ID of the group.
 	GroupId ID `protobuf:"varint,1,opt,name=group_id,json=groupId,proto3,casttype=ID" json:"group_id,omitempty"`
 	// member is the account address of the group member.
-	// todo: @aaronc field has different name in `Member.address`. Can we unify this?
 	Member string `protobuf:"bytes,2,opt,name=member,proto3" json:"member,omitempty"`
 	// weight is the power of the group member.
-	// todo: @aaronc it is `Member.power`. Can we unify this?
 	Weight string `protobuf:"bytes,3,opt,name=weight,proto3" json:"weight,omitempty"`
 	// comment is the member's comment.
 	Comment string `protobuf:"bytes,4,opt,name=comment,proto3" json:"comment,omitempty"`

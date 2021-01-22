@@ -262,11 +262,9 @@ GroupMember represents the relationship between a group and a member.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
-| member | [string](#string) |  | member is the account address of the group member. todo: @aaronc field has different name in `Member.address`. Can we unify this? |
-| weight | [string](#string) |  | weight is the power of the group member. todo: @aaronc it is `Member.power`. Can we unify this? |
-| comment | [string](#string) |  | comment is the member's comment.
-
-TODO: @aaronc was comment missing by intention? |
+| member | [string](#string) |  | member is the account address of the group member. |
+| weight | [string](#string) |  | weight is the power of the group member. |
+| comment | [string](#string) |  | comment is the member's comment. |
 
 
 
@@ -806,7 +804,7 @@ Query is the regen.group.v1alpha1 Query service.
 | ----------- | ------------ | ------------- | ------------|
 | GroupInfo | [QueryGroupInfoRequest](#regen.group.v1alpha1.QueryGroupInfoRequest) | [QueryGroupInfoResponse](#regen.group.v1alpha1.QueryGroupInfoResponse) | GroupInfo queries group info based on group id. |
 | GroupAccountInfo | [QueryGroupAccountInfoRequest](#regen.group.v1alpha1.QueryGroupAccountInfoRequest) | [QueryGroupAccountInfoResponse](#regen.group.v1alpha1.QueryGroupAccountInfoResponse) | GroupAccountInfo queries group account info based on group account address. |
-| GroupMembers | [QueryGroupMembersRequest](#regen.group.v1alpha1.QueryGroupMembersRequest) | [QueryGroupMembersResponse](#regen.group.v1alpha1.QueryGroupMembersResponse) | GroupMembers queries members for agroup |
+| GroupMembers | [QueryGroupMembersRequest](#regen.group.v1alpha1.QueryGroupMembersRequest) | [QueryGroupMembersResponse](#regen.group.v1alpha1.QueryGroupMembersResponse) | GroupMembers queries members for a group |
 | GroupsByAdmin | [QueryGroupsByAdminRequest](#regen.group.v1alpha1.QueryGroupsByAdminRequest) | [QueryGroupsByAdminResponse](#regen.group.v1alpha1.QueryGroupsByAdminResponse) | GroupsByAdmin queries groups by admin address. |
 | GroupAccountsByGroup | [QueryGroupAccountsByGroupRequest](#regen.group.v1alpha1.QueryGroupAccountsByGroupRequest) | [QueryGroupAccountsByGroupResponse](#regen.group.v1alpha1.QueryGroupAccountsByGroupResponse) | GroupAccountsByGroup queries group accounts by group id. |
 | GroupAccountsByAdmin | [QueryGroupAccountsByAdminRequest](#regen.group.v1alpha1.QueryGroupAccountsByAdminRequest) | [QueryGroupAccountsByAdminResponse](#regen.group.v1alpha1.QueryGroupAccountsByAdminResponse) | GroupsByAdmin queries group accounts by admin address. |
