@@ -232,7 +232,7 @@ func TestUniqueIndex(t *testing.T) {
 	assert.True(t, uniqueIdx.Has(ctx, indexedKey))
 
 	// Get
-	it, err := uniqueIdx.Get(ctx, indexedKey, nil)
+	it, err := uniqueIdx.Get(ctx, indexedKey)
 	require.NoError(t, err)
 	var loaded testdata.GroupMember
 	rowID, err := it.LoadNext(&loaded)

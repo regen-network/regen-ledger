@@ -217,7 +217,7 @@ func TestPaginate(t *testing.T) {
 		t.Run(msg, func(t *testing.T) {
 			var loaded []testdata.GroupInfo
 
-			it, err := idx.Get(ctx, spec.key, spec.pageReq)
+			it, err := idx.GetPaginated(ctx, spec.key, spec.pageReq)
 			require.NoError(t, err)
 
 			res, err := Paginate(it, spec.pageReq, &loaded)

@@ -42,7 +42,7 @@ func TestUInt64Index(t *testing.T) {
 	assert.True(t, myIndex.Has(ctx, indexedKey))
 
 	// Get
-	it, err := myIndex.Get(ctx, indexedKey, nil)
+	it, err := myIndex.Get(ctx, indexedKey)
 	require.NoError(t, err)
 	var loaded testdata.GroupMember
 	rowID, err := it.LoadNext(&loaded)

@@ -67,9 +67,13 @@ type Index interface {
 	// Has checks if a key exists. Panics on nil key.
 	Has(ctx HasKVStore, key []byte) bool
 
-	// Get returns a result iterator for the searchKey and optional pageRequest.
+	// Get returns a result iterator for the searchKey.
 	// searchKey must not be nil.
-	Get(ctx HasKVStore, searchKey []byte, pageRequest *query.PageRequest) (Iterator, error)
+	Get(ctx HasKVStore, searchKey []byte) (Iterator, error)
+
+	// GetPaginated returns a result iterator for the searchKey and optional pageRequest.
+	// searchKey must not be nil.
+	GetPaginated(ctx HasKVStore, searchKey []byte, pageRequest *query.PageRequest) (Iterator, error)
 
 	// PrefixScan returns an Iterator over a domain of keys in ascending order. End is exclusive.
 	// Start is an MultiKeyIndex key or prefix. It must be less than end, or the Iterator is invalid and error is returned.

@@ -60,7 +60,7 @@ func (s serverImpl) GroupMembers(ctx types.Context, request *group.QueryGroupMem
 }
 
 func (s serverImpl) getGroupMembers(ctx types.Context, id group.ID, pageRequest *query.PageRequest) (orm.Iterator, error) {
-	return s.groupMemberByGroupIndex.Get(ctx, id.Uint64(), pageRequest)
+	return s.groupMemberByGroupIndex.GetPaginated(ctx, id.Uint64(), pageRequest)
 }
 
 func (s serverImpl) GroupsByAdmin(ctx types.Context, request *group.QueryGroupsByAdminRequest) (*group.QueryGroupsByAdminResponse, error) {
@@ -86,7 +86,7 @@ func (s serverImpl) GroupsByAdmin(ctx types.Context, request *group.QueryGroupsB
 }
 
 func (s serverImpl) getGroupsByAdmin(ctx types.Context, admin sdk.AccAddress, pageRequest *query.PageRequest) (orm.Iterator, error) {
-	return s.groupByAdminIndex.Get(ctx, admin.Bytes(), pageRequest)
+	return s.groupByAdminIndex.GetPaginated(ctx, admin.Bytes(), pageRequest)
 }
 
 func (s serverImpl) GroupAccountsByGroup(ctx types.Context, request *group.QueryGroupAccountsByGroupRequest) (*group.QueryGroupAccountsByGroupResponse, error) {
@@ -108,7 +108,7 @@ func (s serverImpl) GroupAccountsByGroup(ctx types.Context, request *group.Query
 }
 
 func (s serverImpl) getGroupAccountsByGroup(ctx types.Context, id group.ID, pageRequest *query.PageRequest) (orm.Iterator, error) {
-	return s.groupAccountByGroupIndex.Get(ctx, id.Uint64(), pageRequest)
+	return s.groupAccountByGroupIndex.GetPaginated(ctx, id.Uint64(), pageRequest)
 }
 
 func (s serverImpl) GroupAccountsByAdmin(ctx types.Context, request *group.QueryGroupAccountsByAdminRequest) (*group.QueryGroupAccountsByAdminResponse, error) {
@@ -134,7 +134,7 @@ func (s serverImpl) GroupAccountsByAdmin(ctx types.Context, request *group.Query
 }
 
 func (s serverImpl) getGroupAccountsByAdmin(ctx types.Context, admin sdk.AccAddress, pageRequest *query.PageRequest) (orm.Iterator, error) {
-	return s.groupAccountByAdminIndex.Get(ctx, admin.Bytes(), pageRequest)
+	return s.groupAccountByAdminIndex.GetPaginated(ctx, admin.Bytes(), pageRequest)
 }
 
 func (s serverImpl) Proposal(ctx types.Context, request *group.QueryProposalRequest) (*group.QueryProposalResponse, error) {
@@ -169,7 +169,7 @@ func (s serverImpl) ProposalsByGroupAccount(ctx types.Context, request *group.Qu
 }
 
 func (s serverImpl) getProposalsByGroupAccount(ctx types.Context, account sdk.AccAddress, pageRequest *query.PageRequest) (orm.Iterator, error) {
-	return s.proposalByGroupAccountIndex.Get(ctx, account.Bytes(), pageRequest)
+	return s.proposalByGroupAccountIndex.GetPaginated(ctx, account.Bytes(), pageRequest)
 }
 
 func (s serverImpl) getProposal(ctx types.Context, id group.ProposalID) (group.Proposal, error) {
@@ -240,9 +240,9 @@ func (s serverImpl) getVote(ctx types.Context, id group.ProposalID, voter sdk.Ac
 }
 
 func (s serverImpl) getVotesByProposal(ctx types.Context, id group.ProposalID, pageRequest *query.PageRequest) (orm.Iterator, error) {
-	return s.voteByProposalIndex.Get(ctx, id.Uint64(), pageRequest)
+	return s.voteByProposalIndex.GetPaginated(ctx, id.Uint64(), pageRequest)
 }
 
 func (s serverImpl) getVotesByVoter(ctx types.Context, voter sdk.AccAddress, pageRequest *query.PageRequest) (orm.Iterator, error) {
-	return s.voteByVoterIndex.Get(ctx, voter.Bytes(), pageRequest)
+	return s.voteByVoterIndex.GetPaginated(ctx, voter.Bytes(), pageRequest)
 }
