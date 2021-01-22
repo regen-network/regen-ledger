@@ -63,5 +63,5 @@ automate this propose and have the group account (or a fee granter) pay.
 
 In the current implementation, changing a group's membership (adding or removing members or changing their power)
 will cause all existing proposals for group accounts linked to this group
-to be invalidated. They will simply fail if someone calls `MsgExecRequest` and will
+to be invalidated. They will simply fail if someone calls `Msg/Exec` and will
 eventually be garbage collected.
