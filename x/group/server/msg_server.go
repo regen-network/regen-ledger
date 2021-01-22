@@ -350,7 +350,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 		return nil, sdkerrors.Wrap(err, "create proposal")
 	}
 
-	// TODO: add event?
+	// TODO: add event #215
 
 	return &group.MsgCreateProposalResponse{ProposalId: group.ProposalID(id)}, nil
 }
@@ -439,7 +439,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 		return nil, err
 	}
 
-	// TODO: add event?
+	// TODO: add event #215
 
 	return &group.MsgVoteResponse{}, nil
 }
@@ -536,7 +536,7 @@ func (s serverImpl) Exec(ctx types.Context, req *group.MsgExecRequest) (*group.M
 	if err != nil {
 		return nil, err
 	}
-	// TODO: add event?
+	// TODO: add event #215
 
 	return res, nil
 }
