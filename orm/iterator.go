@@ -127,7 +127,7 @@ func Paginate(
 	defer it.Close()
 
 	var destRef, tmpSlice reflect.Value
-	typ, err := assertDest(dest, &destRef, &tmpSlice)
+	elemType, err := assertDest(dest, &destRef, &tmpSlice)
 	if err != nil {
 		return nil, err
 	}
@@ -137,11 +137,11 @@ func Paginate(
 	var count uint64
 	var nextKey []byte
 	for {
-		obj := reflect.New(typ)
+		obj := reflect.New(elemType)
 		val := obj.Elem()
 		model := obj
-		if typ.Kind() == reflect.Ptr {
-			val.Set(reflect.New(typ.Elem()))
+		if elemType.Kind() == reflect.Ptr {
+			val.Set(reflect.New(elemType.Elem()))
 			model = val
 		}
 
@@ -201,18 +201,18 @@ func ReadAll(it Iterator, dest ModelSlicePtr) ([]RowID, error) {
 	defer it.Close()
 
 	var destRef, tmpSlice reflect.Value
-	typ, err := assertDest(dest, &destRef, &tmpSlice)
+	elemType, err := assertDest(dest, &destRef, &tmpSlice)
 	if err != nil {
 		return nil, err
 	}
 
 	var rowIDs []RowID
 	for {
-		obj := reflect.New(typ)
+		obj := reflect.New(elemType)
 		val := obj.Elem()
 		model := obj
-		if typ.Kind() == reflect.Ptr {
-			val.Set(reflect.New(typ.Elem()))
+		if elemType.Kind() == reflect.Ptr {
+			val.Set(reflect.New(elemType.Elem()))
 			model = val
 		}
 
@@ -246,15 +246,15 @@ func assertDest(dest ModelSlicePtr, destRef *reflect.Value, tmpSlice *reflect.Va
 		return nil, errors.Wrap(ErrArgument, "destination not assignable")
 	}
 
-	typ := reflect.TypeOf(dest).Elem().Elem()
+	elemType := reflect.TypeOf(dest).Elem().Elem()
 
 	protoMarshaler := reflect.TypeOf((*codec.ProtoMarshaler)(nil)).Elem()
-	if !typ.Implements(protoMarshaler) &&
-		!reflect.PtrTo(typ).Implements(protoMarshaler) {
-		return nil, errors.Wrapf(ErrArgument, "unsupported type :%s", typ)
+	if !elemType.Implements(protoMarshaler) &&
+		!reflect.PtrTo(elemType).Implements(protoMarshaler) {
+		return nil, errors.Wrapf(ErrArgument, "unsupported type :%s", elemType)
 	}
 
-	*tmpSlice = reflect.MakeSlice(reflect.SliceOf(typ), 0, 0)
+	*tmpSlice = reflect.MakeSlice(reflect.SliceOf(elemType), 0, 0)
 
-	return typ, nil
+	return elemType, nil
 }
