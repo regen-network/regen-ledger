@@ -126,8 +126,8 @@ func Paginate(
 	}
 	defer it.Close()
 
-	var slice, t reflect.Value
-	typ, err := assertDest(dest, &slice, &t)
+	var destRef, tmpSlice reflect.Value
+	typ, err := assertDest(dest, &destRef, &tmpSlice)
 	if err != nil {
 		return nil, err
 	}
@@ -147,7 +147,7 @@ func Paginate(
 
 		binKey, err := it.LoadNext(model.Interface().(codec.ProtoMarshaler))
 		if ErrIteratorDone.Is(err) {
-			slice.Set(t)
+			destRef.Set(tmpSlice)
 			break
 		}
 
@@ -161,10 +161,10 @@ func Paginate(
 			return nil, err
 		}
 		if count <= end {
-			t = reflect.Append(t, val)
+			tmpSlice = reflect.Append(tmpSlice, val)
 		} else if count == end+1 {
 			nextKey = binKey
-			slice.Set(t)
+			destRef.Set(tmpSlice)
 
 			if !countTotal {
 				break
@@ -200,8 +200,8 @@ func ReadAll(it Iterator, dest ModelSlicePtr) ([]RowID, error) {
 	}
 	defer it.Close()
 
-	var slice, t reflect.Value
-	typ, err := assertDest(dest, &slice, &t)
+	var destRef, tmpSlice reflect.Value
+	typ, err := assertDest(dest, &destRef, &tmpSlice)
 	if err != nil {
 		return nil, err
 	}
@@ -219,9 +219,9 @@ func ReadAll(it Iterator, dest ModelSlicePtr) ([]RowID, error) {
 		binKey, err := it.LoadNext(model.Interface().(codec.ProtoMarshaler))
 		switch {
 		case err == nil:
-			t = reflect.Append(t, val)
+			tmpSlice = reflect.Append(tmpSlice, val)
 		case ErrIteratorDone.Is(err):
-			slice.Set(t)
+			destRef.Set(tmpSlice)
 			return rowIDs, nil
 		default:
 			return nil, err
@@ -230,7 +230,7 @@ func ReadAll(it Iterator, dest ModelSlicePtr) ([]RowID, error) {
 	}
 }
 
-func assertDest(dest ModelSlicePtr, slice *reflect.Value, t *reflect.Value) (reflect.Type, error) {
+func assertDest(dest ModelSlicePtr, destRef *reflect.Value, tmpSlice *reflect.Value) (reflect.Type, error) {
 	if dest == nil {
 		return nil, errors.Wrap(ErrArgument, "destination must not be nil")
 	}
@@ -241,8 +241,8 @@ func assertDest(dest ModelSlicePtr, slice *reflect.Value, t *reflect.Value) (ref
 	if tp.Elem().Kind() != reflect.Slice {
 		return nil, errors.Wrap(ErrArgument, "destination must point to a slice")
 	}
-	*slice = tp.Elem()
-	if !slice.CanSet() {
+	*destRef = tp.Elem()
+	if !destRef.CanSet() {
 		return nil, errors.Wrap(ErrArgument, "destination not assignable")
 	}
 
@@ -254,7 +254,7 @@ func assertDest(dest ModelSlicePtr, slice *reflect.Value, t *reflect.Value) (ref
 		return nil, errors.Wrapf(ErrArgument, "unsupported type :%s", typ)
 	}
 
-	*t = reflect.MakeSlice(reflect.SliceOf(typ), 0, 0)
+	*tmpSlice = reflect.MakeSlice(reflect.SliceOf(typ), 0, 0)
 
 	return typ, nil
 }
