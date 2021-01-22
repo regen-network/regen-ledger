@@ -391,6 +391,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 	if votingPeriodEnd.Before(ctx.BlockTime()) || votingPeriodEnd.Equal(ctx.BlockTime()) {
 		return nil, sdkerrors.Wrap(group.ErrExpired, "voting period has ended already")
 	}
+
 	var accountInfo group.GroupAccountInfo
 
 	address, err := sdk.AccAddressFromBech32(proposal.GroupAccount)
