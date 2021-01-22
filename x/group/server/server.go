@@ -83,9 +83,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, router sd
 		if err != nil {
 			return nil, err
 		}
-		// admin := val.(*group.GroupInfo).Admin
 		return []orm.RowID{addr.Bytes()}, nil
-		// return []orm.RowID{[]byte(admin[:])}, nil
 	})
 	s.groupTable = groupTableBuilder.Build()
 
@@ -102,7 +100,6 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, router sd
 			return nil, err
 		}
 		return []orm.RowID{addr.Bytes()}, nil
-		// return []orm.RowID{[]byte(member[:])}, nil
 	})
 	s.groupMemberTable = groupMemberTableBuilder.Build()
 

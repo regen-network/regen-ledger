@@ -425,6 +425,8 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 			return nil, sdkerrors.Wrap(err, "add new vote")
 		}
 
+		// The ORM will return an error if the vote already exists,
+		// making sure than a voter hasn't already voted.
 		if err := s.voteTable.Create(ctx, &newVote); err != nil {
 			return nil, sdkerrors.Wrap(err, "store vote")
 		}
