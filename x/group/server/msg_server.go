@@ -292,12 +292,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 		}
 	}
 
-	address, err := sdk.AccAddressFromBech32(account.GroupAccount)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "group account")
-	}
-
-	if err := ensureMsgAuthZ(msgs, address); err != nil {
+	if err := ensureMsgAuthZ(msgs, accountAddress); err != nil {
 		return nil, err
 	}
 
