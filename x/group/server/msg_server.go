@@ -357,15 +357,11 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 
 func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.MsgVoteResponse, error) {
 	id := req.ProposalId
-	voters := req.Voters
 	choice := req.Choice
 	comment := req.Comment
 
 	if err := assertCommentSize(comment, s.maxCommentSize(ctx), "comment"); err != nil {
 		return nil, err
-	}
-	if len(voters) == 0 {
-		return nil, sdkerrors.Wrap(group.ErrEmpty, "voters")
 	}
 
 	blockTime, err := gogotypes.TimestampProto(ctx.BlockTime())
@@ -409,27 +405,26 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 	}
 
 	// count and store votes
-	for _, voterAddr := range voters {
-		voter := group.GroupMember{GroupId: electorate.GroupId, Member: voterAddr}
-		if err := s.groupMemberTable.GetOne(ctx, voter.NaturalKey(), &voter); err != nil {
-			return nil, sdkerrors.Wrapf(err, "address: %s", voterAddr)
-		}
-		newVote := group.Vote{
-			ProposalId:  id,
-			Voter:       voterAddr,
-			Choice:      choice,
-			Comment:     comment,
-			SubmittedAt: *blockTime,
-		}
-		if err := proposal.VoteState.Add(newVote, voter.Weight); err != nil {
-			return nil, sdkerrors.Wrap(err, "add new vote")
-		}
+	voterAddr := req.Voter
+	voter := group.GroupMember{GroupId: electorate.GroupId, Member: voterAddr}
+	if err := s.groupMemberTable.GetOne(ctx, voter.NaturalKey(), &voter); err != nil {
+		return nil, sdkerrors.Wrapf(err, "address: %s", voterAddr)
+	}
+	newVote := group.Vote{
+		ProposalId:  id,
+		Voter:       voterAddr,
+		Choice:      choice,
+		Comment:     comment,
+		SubmittedAt: *blockTime,
+	}
+	if err := proposal.VoteState.Add(newVote, voter.Weight); err != nil {
+		return nil, sdkerrors.Wrap(err, "add new vote")
+	}
 
-		// The ORM will return an error if the vote already exists,
-		// making sure than a voter hasn't already voted.
-		if err := s.voteTable.Create(ctx, &newVote); err != nil {
-			return nil, sdkerrors.Wrap(err, "store vote")
-		}
+	// The ORM will return an error if the vote already exists,
+	// making sure than a voter hasn't already voted.
+	if err := s.voteTable.Create(ctx, &newVote); err != nil {
+		return nil, sdkerrors.Wrap(err, "store vote")
 	}
 
 	// run tally with new votes to close early

@@ -34,7 +34,7 @@ type MsgClient interface {
 	UpdateGroupAccountComment(ctx context.Context, in *MsgUpdateGroupAccountCommentRequest, opts ...grpc.CallOption) (*MsgUpdateGroupAccountCommentResponse, error)
 	// CreateProposal submits a new proposal.
 	CreateProposal(ctx context.Context, in *MsgCreateProposalRequest, opts ...grpc.CallOption) (*MsgCreateProposalResponse, error)
-	// Vote allows voters to vote on a proposal.
+	// Vote allows a voter to vote on a proposal.
 	Vote(ctx context.Context, in *MsgVoteRequest, opts ...grpc.CallOption) (*MsgVoteResponse, error)
 	// Exec executes a proposal.
 	Exec(ctx context.Context, in *MsgExecRequest, opts ...grpc.CallOption) (*MsgExecResponse, error)
@@ -332,7 +332,7 @@ type MsgServer interface {
 	UpdateGroupAccountComment(types.Context, *MsgUpdateGroupAccountCommentRequest) (*MsgUpdateGroupAccountCommentResponse, error)
 	// CreateProposal submits a new proposal.
 	CreateProposal(types.Context, *MsgCreateProposalRequest) (*MsgCreateProposalResponse, error)
-	// Vote allows voters to vote on a proposal.
+	// Vote allows a voter to vote on a proposal.
 	Vote(types.Context, *MsgVoteRequest) (*MsgVoteResponse, error)
 	// Exec executes a proposal.
 	Exec(types.Context, *MsgExecRequest) (*MsgExecResponse, error)

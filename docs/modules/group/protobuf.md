@@ -1120,8 +1120,8 @@ MsgVoteRequest is the Msg/Vote request type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | proposal_id | [uint64](#uint64) |  | proposal is the unique ID of the proposal. |
-| voters | [string](#string) | repeated | voters is the lists of voters' account addresses. |
-| choice | [Choice](#regen.group.v1alpha1.Choice) |  | choice is the voters' choice on the proposal. |
+| voter | [string](#string) |  | voter is the voter account address. |
+| choice | [Choice](#regen.group.v1alpha1.Choice) |  | choice is the voter's choice on the proposal. |
 | comment | [string](#string) |  | comment's is the vote's comment. |
 
 
@@ -1161,7 +1161,7 @@ Msg is the regen.group.v1alpha1 Msg service.
 | UpdateGroupAccountDecisionPolicy | [MsgUpdateGroupAccountDecisionPolicyRequest](#regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyRequest) | [MsgUpdateGroupAccountDecisionPolicyResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyResponse) | UpdateGroupAccountDecisionPolicy allows a group account decision policy to be updated. |
 | UpdateGroupAccountComment | [MsgUpdateGroupAccountCommentRequest](#regen.group.v1alpha1.MsgUpdateGroupAccountCommentRequest) | [MsgUpdateGroupAccountCommentResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountCommentResponse) | UpdateGroupAccountComment updates a group account comment. |
 | CreateProposal | [MsgCreateProposalRequest](#regen.group.v1alpha1.MsgCreateProposalRequest) | [MsgCreateProposalResponse](#regen.group.v1alpha1.MsgCreateProposalResponse) | CreateProposal submits a new proposal. |
-| Vote | [MsgVoteRequest](#regen.group.v1alpha1.MsgVoteRequest) | [MsgVoteResponse](#regen.group.v1alpha1.MsgVoteResponse) | Vote allows voters to vote on a proposal. |
+| Vote | [MsgVoteRequest](#regen.group.v1alpha1.MsgVoteRequest) | [MsgVoteResponse](#regen.group.v1alpha1.MsgVoteResponse) | Vote allows a voter to vote on a proposal. |
 | Exec | [MsgExecRequest](#regen.group.v1alpha1.MsgExecRequest) | [MsgExecResponse](#regen.group.v1alpha1.MsgExecResponse) | Exec executes a proposal. |
 
  <!-- end services -->

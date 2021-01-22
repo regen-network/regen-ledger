@@ -288,20 +288,20 @@ func TestMsgVote(t *testing.T) {
 			src: MsgVoteRequest{
 				ProposalId: 1,
 				Choice:     Choice_CHOICE_YES,
-				Voters:     []string{memberAddr},
+				Voter:      memberAddr,
 			},
 		},
 		"proposal required": {
 			src: MsgVoteRequest{
 				Choice: Choice_CHOICE_YES,
-				Voters: []string{memberAddr},
+				Voter:  memberAddr,
 			},
 			expErr: true,
 		},
 		"choice required": {
 			src: MsgVoteRequest{
 				ProposalId: 1,
-				Voters:     []string{memberAddr},
+				Voter:      memberAddr,
 			},
 			expErr: true,
 		},
@@ -309,7 +309,7 @@ func TestMsgVote(t *testing.T) {
 			src: MsgVoteRequest{
 				ProposalId: 1,
 				Choice:     5,
-				Voters:     []string{memberAddr},
+				Voter:      memberAddr,
 			},
 			expErr: true,
 		},
@@ -324,15 +324,7 @@ func TestMsgVote(t *testing.T) {
 			src: MsgVoteRequest{
 				ProposalId: 1,
 				Choice:     Choice_CHOICE_YES,
-				Voters:     []string{"invalid-member-address"},
-			},
-			expErr: true,
-		},
-		"duplicate voters": {
-			src: MsgVoteRequest{
-				ProposalId: 1,
-				Choice:     Choice_CHOICE_YES,
-				Voters:     []string{memberAddr, memberAddr},
+				Voter:      "invalid-member-address",
 			},
 			expErr: true,
 		},
@@ -340,7 +332,7 @@ func TestMsgVote(t *testing.T) {
 			src: MsgVoteRequest{
 				ProposalId: 1,
 				Choice:     Choice_CHOICE_YES,
-				Voters:     []string{memberAddr, ""},
+				Voter:      "",
 			},
 			expErr: true,
 		},

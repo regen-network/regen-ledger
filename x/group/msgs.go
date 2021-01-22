@@ -443,32 +443,18 @@ var _ sdk.MsgRequest = &MsgVoteRequest{}
 
 // GetSigners returns the expected signers for a MsgVoteRequest.
 func (m MsgVoteRequest) GetSigners() []sdk.AccAddress {
-	addrs := make([]sdk.AccAddress, len(m.Voters))
-	for i, voter := range m.Voters {
-		addr, err := sdk.AccAddressFromBech32(voter)
-		if err != nil {
-			panic(err)
-		}
-		addrs[i] = addr
+	addr, err := sdk.AccAddressFromBech32(m.Voter)
+	if err != nil {
+		panic(err)
 	}
-	return addrs
+	return []sdk.AccAddress{addr}
 }
 
 // ValidateBasic does a sanity check on the provided data
 func (m MsgVoteRequest) ValidateBasic() error {
-	if len(m.Voters) == 0 {
-		return sdkerrors.Wrap(ErrEmpty, "voters")
-	}
-	addrs := make([]sdk.AccAddress, len(m.Voters))
-	for i, in := range m.Voters {
-		addr, err := sdk.AccAddressFromBech32(in)
-		if err != nil {
-			return sdkerrors.Wrap(err, "voters")
-		}
-		addrs[i] = addr
-	}
-	if err := AccAddresses(addrs).ValidateBasic(); err != nil {
-		return sdkerrors.Wrap(err, "voters")
+	_, err := sdk.AccAddressFromBech32(m.Voter)
+	if err != nil {
+		return sdkerrors.Wrap(err, "voter")
 	}
 	if m.ProposalId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "proposal")

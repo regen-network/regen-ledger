@@ -1070,7 +1070,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"vote yes": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voters:     []string{s.addr2.String()},
+				Voter:      s.addr2.String(),
 				Choice:     group.Choice_CHOICE_YES,
 			},
 			expVoteState: group.Tally{
@@ -1085,7 +1085,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"vote no": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voters:     []string{s.addr2.String()},
+				Voter:      s.addr2.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			expVoteState: group.Tally{
@@ -1100,7 +1100,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"vote abstain": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voters:     []string{s.addr2.String()},
+				Voter:      s.addr2.String(),
 				Choice:     group.Choice_CHOICE_ABSTAIN,
 			},
 			expVoteState: group.Tally{
@@ -1115,7 +1115,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"vote veto": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voters:     []string{s.addr2.String()},
+				Voter:      s.addr2.String(),
 				Choice:     group.Choice_CHOICE_VETO,
 			},
 			expVoteState: group.Tally{
@@ -1130,7 +1130,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"apply decision policy early": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voters:     []string{s.addr3.String()},
+				Voter:      s.addr3.String(),
 				Choice:     group.Choice_CHOICE_YES,
 			},
 			expVoteState: group.Tally{
@@ -1145,13 +1145,13 @@ func (s *IntegrationTestSuite) TestVote() {
 		"reject new votes when final decision is made already": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voters:     []string{s.addr2.String()},
+				Voter:      s.addr2.String(),
 				Choice:     group.Choice_CHOICE_YES,
 			},
 			doBefore: func(ctx context.Context) {
 				_, err := s.msgClient.Vote(ctx, &group.MsgVoteRequest{
 					ProposalId: myProposalID,
-					Voters:     []string{s.addr3.String()},
+					Voter:      s.addr3.String(),
 					Choice:     group.Choice_CHOICE_VETO,
 				})
 				s.Require().NoError(err)
@@ -1162,7 +1162,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
 				Comment:    strings.Repeat("a", 256),
-				Voters:     []string{s.addr2.String()},
+				Voter:      s.addr2.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			expErr: true,
@@ -1170,7 +1170,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"existing proposal required": {
 			req: &group.MsgVoteRequest{
 				ProposalId: 999,
-				Voters:     []string{s.addr2.String()},
+				Voter:      s.addr2.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			expErr: true,
@@ -1178,30 +1178,30 @@ func (s *IntegrationTestSuite) TestVote() {
 		"empty choice": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voters:     []string{s.addr2.String()},
+				Voter:      s.addr2.String(),
 			},
 			expErr: true,
 		},
 		"invalid choice": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voters:     []string{s.addr2.String()},
+				Voter:      s.addr2.String(),
 				Choice:     5,
 			},
 			expErr: true,
 		},
-		"all voters must be in group": {
+		"voter must be in group": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voters:     []string{s.addr2.String(), s.addr4.String()},
+				Voter:      s.addr4.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			expErr: true,
 		},
-		"voters must not include empty": {
+		"voter must not be empty": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voters:     []string{s.addr2.String(), ""},
+				Voter:      "",
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			expErr: true,
@@ -1213,18 +1213,10 @@ func (s *IntegrationTestSuite) TestVote() {
 			},
 			expErr: true,
 		},
-		"voters must not be empty": {
-			req: &group.MsgVoteRequest{
-				ProposalId: myProposalID,
-				Choice:     group.Choice_CHOICE_NO,
-				Voters:     []string{},
-			},
-			expErr: true,
-		},
 		"admin that is not a group member can not vote": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voters:     []string{s.addr1.String()},
+				Voter:      s.addr1.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			expErr: true,
@@ -1232,7 +1224,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"on timeout": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voters:     []string{s.addr2.String()},
+				Voter:      s.addr2.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			srcCtx: s.sdkCtx.WithBlockTime(s.blockTime.Add(time.Second)),
@@ -1241,13 +1233,13 @@ func (s *IntegrationTestSuite) TestVote() {
 		"closed already": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voters:     []string{s.addr2.String()},
+				Voter:      s.addr2.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			doBefore: func(ctx context.Context) {
 				_, err := s.msgClient.Vote(ctx, &group.MsgVoteRequest{
 					ProposalId: myProposalID,
-					Voters:     []string{s.addr3.String()},
+					Voter:      s.addr3.String(),
 					Choice:     group.Choice_CHOICE_YES,
 				})
 				s.Require().NoError(err)
@@ -1257,13 +1249,13 @@ func (s *IntegrationTestSuite) TestVote() {
 		"voted already": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voters:     []string{s.addr2.String()},
+				Voter:      s.addr2.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			doBefore: func(ctx context.Context) {
 				_, err := s.msgClient.Vote(ctx, &group.MsgVoteRequest{
 					ProposalId: myProposalID,
-					Voters:     []string{s.addr2.String()},
+					Voter:      s.addr2.String(),
 					Choice:     group.Choice_CHOICE_YES,
 				})
 				s.Require().NoError(err)
@@ -1273,7 +1265,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"with group modified": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voters:     []string{s.addr2.String()},
+				Voter:      s.addr2.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			doBefore: func(ctx context.Context) {
@@ -1290,7 +1282,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		// "with policy modified": {
 		// 	req: &group.MsgVoteRequest{
 		// 		ProposalId: myProposalID,
-		// 		Voters:     []string{s.addr2.String()},
+		// 		Voter: s.addr2.String(),
 		// 		Choice:     group.Choice_CHOICE_NO,
 		// 	},
 		// 	doBefore: func(ctx context.Context) {
@@ -1323,58 +1315,52 @@ func (s *IntegrationTestSuite) TestVote() {
 			s.Require().NoError(err)
 
 			s.Require().NoError(err)
-			// and all votes are stored
-			for _, voter := range spec.req.Voters {
-				// then all data persisted
-				res, err := s.queryClient.VoteByProposalVoter(ctx, &group.QueryVoteByProposalVoterRequest{
-					ProposalId: spec.req.ProposalId,
-					Voter:      voter,
-				})
-				s.Require().NoError(err)
-				loaded := res.Vote
-				s.Assert().Equal(spec.req.ProposalId, loaded.ProposalId)
-				s.Assert().Equal(voter, loaded.Voter)
-				s.Assert().Equal(spec.req.Choice, loaded.Choice)
-				s.Assert().Equal(spec.req.Comment, loaded.Comment)
-				submittedAt, err := gogotypes.TimestampFromProto(&loaded.SubmittedAt)
-				s.Require().NoError(err)
-				s.Assert().Equal(s.blockTime, submittedAt)
-			}
+			// vote is stored and all data persisted
+			res, err := s.queryClient.VoteByProposalVoter(ctx, &group.QueryVoteByProposalVoterRequest{
+				ProposalId: spec.req.ProposalId,
+				Voter:      spec.req.Voter,
+			})
+			s.Require().NoError(err)
+			loaded := res.Vote
+			s.Assert().Equal(spec.req.ProposalId, loaded.ProposalId)
+			s.Assert().Equal(spec.req.Voter, loaded.Voter)
+			s.Assert().Equal(spec.req.Choice, loaded.Choice)
+			s.Assert().Equal(spec.req.Comment, loaded.Comment)
+			submittedAt, err := gogotypes.TimestampFromProto(&loaded.SubmittedAt)
+			s.Require().NoError(err)
+			s.Assert().Equal(s.blockTime, submittedAt)
 
 			// query votes by proposal
-			votesRes, err := s.queryClient.VotesByProposal(ctx, &group.QueryVotesByProposalRequest{
+			votesByProposalRes, err := s.queryClient.VotesByProposal(ctx, &group.QueryVotesByProposalRequest{
 				ProposalId: spec.req.ProposalId,
 			})
 			s.Require().NoError(err)
-			votes := votesRes.Votes
-			s.Require().Equal(len(spec.req.Voters), len(votes))
-			for i, vote := range votes {
-				s.Assert().Equal(spec.req.ProposalId, vote.ProposalId)
-				s.Assert().Equal(spec.req.Voters[i], vote.Voter)
-				s.Assert().Equal(spec.req.Choice, vote.Choice)
-				s.Assert().Equal(spec.req.Comment, vote.Comment)
-				submittedAt, err := gogotypes.TimestampFromProto(&vote.SubmittedAt)
-				s.Require().NoError(err)
-				s.Assert().Equal(s.blockTime, submittedAt)
-			}
+			votesByProposal := votesByProposalRes.Votes
+			s.Require().Equal(1, len(votesByProposal))
+			vote := votesByProposal[0]
+			s.Assert().Equal(spec.req.ProposalId, vote.ProposalId)
+			s.Assert().Equal(spec.req.Voter, vote.Voter)
+			s.Assert().Equal(spec.req.Choice, vote.Choice)
+			s.Assert().Equal(spec.req.Comment, vote.Comment)
+			submittedAt, err = gogotypes.TimestampFromProto(&vote.SubmittedAt)
+			s.Require().NoError(err)
+			s.Assert().Equal(s.blockTime, submittedAt)
 
 			// query votes by voter
-			for _, voter := range spec.req.Voters {
-				// then all data persisted
-				res, err := s.queryClient.VotesByVoter(ctx, &group.QueryVotesByVoterRequest{
-					Voter: voter,
-				})
-				s.Require().NoError(err)
-				votes := res.Votes
-				s.Require().Equal(1, len(votes))
-				s.Assert().Equal(spec.req.ProposalId, votes[0].ProposalId)
-				s.Assert().Equal(voter, votes[0].Voter)
-				s.Assert().Equal(spec.req.Choice, votes[0].Choice)
-				s.Assert().Equal(spec.req.Comment, votes[0].Comment)
-				submittedAt, err := gogotypes.TimestampFromProto(&votes[0].SubmittedAt)
-				s.Require().NoError(err)
-				s.Assert().Equal(s.blockTime, submittedAt)
-			}
+			voter := spec.req.Voter
+			votesByVoterRes, err := s.queryClient.VotesByVoter(ctx, &group.QueryVotesByVoterRequest{
+				Voter: voter,
+			})
+			s.Require().NoError(err)
+			votesByVoter := votesByVoterRes.Votes
+			s.Require().Equal(1, len(votesByVoter))
+			s.Assert().Equal(spec.req.ProposalId, votesByVoter[0].ProposalId)
+			s.Assert().Equal(voter, votesByVoter[0].Voter)
+			s.Assert().Equal(spec.req.Choice, votesByVoter[0].Choice)
+			s.Assert().Equal(spec.req.Comment, votesByVoter[0].Comment)
+			submittedAt, err = gogotypes.TimestampFromProto(&votesByVoter[0].SubmittedAt)
+			s.Require().NoError(err)
+			s.Assert().Equal(s.blockTime, submittedAt)
 
 			// and proposal is updated
 			proposalRes, err := s.queryClient.Proposal(ctx, &group.QueryProposalRequest{
@@ -1685,11 +1671,12 @@ func createProposal(
 func createProposalAndVote(
 	ctx context.Context, s *IntegrationTestSuite, msgs []sdk.Msg,
 	proposers []string, choice group.Choice) group.ProposalID {
+	s.Require().Greater(len(proposers), 0)
 	myProposalID := createProposal(ctx, s, msgs, proposers)
 
 	_, err := s.msgClient.Vote(ctx, &group.MsgVoteRequest{
 		ProposalId: myProposalID,
-		Voters:     proposers,
+		Voter:      proposers[0],
 		Choice:     choice,
 	})
 	s.Require().NoError(err)

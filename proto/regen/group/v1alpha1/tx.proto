@@ -39,7 +39,7 @@ service Msg {
     // CreateProposal submits a new proposal.
     rpc CreateProposal(MsgCreateProposalRequest) returns (MsgCreateProposalResponse);
 
-    // Vote allows voters to vote on a proposal.
+    // Vote allows a voter to vote on a proposal.
     rpc Vote(MsgVoteRequest) returns (MsgVoteResponse);
 
     // Exec executes a proposal.
@@ -231,10 +231,10 @@ message MsgVoteRequest {
     // proposal is the unique ID of the proposal.
     uint64 proposal_id = 1 [(gogoproto.casttype) = "ProposalID"];
     
-    // voters is the lists of voters' account addresses.
-    repeated string voters = 2;
+    // voter is the voter account address.
+    string voter = 2;
     
-    // choice is the voters' choice on the proposal.
+    // choice is the voter's choice on the proposal.
     Choice choice = 3;
 
     // comment's is the vote's comment.
