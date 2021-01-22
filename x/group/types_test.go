@@ -913,3 +913,32 @@ func TestTallySub(t *testing.T) {
 		})
 	}
 }
+
+func TestAccAddressesValidateBasic(t *testing.T) {
+	_, _, addr1 := testdata.KeyTestPubAddr()
+	_, _, addr2 := testdata.KeyTestPubAddr()
+	specs := map[string]struct {
+		src    AccAddresses
+		expErr bool
+	}{
+		"valid": {
+			src:    AccAddresses{addr1, addr2},
+			expErr: false,
+		},
+		"same address twice": {
+			src:    AccAddresses{addr1, addr1},
+			expErr: true,
+		},
+	}
+
+	for msg, spec := range specs {
+		t.Run(msg, func(t *testing.T) {
+			err := spec.src.ValidateBasic()
+			if spec.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
