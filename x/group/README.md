@@ -55,7 +55,7 @@ is submitted.
 ## Executing Proposals
 
 Proposals will not be automatically executed by the chain in this current design,
-but rather a user must submit a `MsgExecRequest` transaction to attempt to execute the
+but rather a user must submit a `Msg/Exec` transaction to attempt to execute the
 proposal based on the current votes and decision policy. A future upgrade could
 automate this propose and have the group account (or a fee granter) pay.
 
