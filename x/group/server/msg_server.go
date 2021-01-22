@@ -92,8 +92,8 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 				Comment: req.MemberUpdates[i].Comment,
 			}
 			var found bool
-			var previousMemberStatus group.GroupMember
-			switch err := s.groupMemberTable.GetOne(ctx, member.NaturalKey(), &previousMemberStatus); {
+			var previousMember group.GroupMember
+			switch err := s.groupMemberTable.GetOne(ctx, member.NaturalKey(), &previousMember); {
 			case err == nil:
 				found = true
 			case orm.ErrNotFound.Is(err):
@@ -106,23 +106,23 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 			if err != nil {
 				return err
 			}
-			weight, err := math.ParseNonNegativeDecimal(member.Weight)
+			newMemberWeight, err := math.ParseNonNegativeDecimal(member.Weight)
 			if err != nil {
 				return err
 			}
 
 			// handle delete
-			if weight.Cmp(apd.New(0, 0)) == 0 {
+			if newMemberWeight.Cmp(apd.New(0, 0)) == 0 {
 				if !found {
 					return sdkerrors.Wrap(orm.ErrNotFound, "unknown member")
 				}
 
-				previousWeight, err := math.ParseNonNegativeDecimal(previousMemberStatus.Weight)
+				previousMemberWeight, err := math.ParseNonNegativeDecimal(previousMember.Weight)
 				if err != nil {
 					return err
 				}
 
-				err = math.SafeSub(totalWeight, totalWeight, previousWeight)
+				err = math.SafeSub(totalWeight, totalWeight, previousMemberWeight)
 				if err != nil {
 					return err
 				}
@@ -135,11 +135,11 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 			}
 			// handle add + update
 			if found {
-				previousWeight, err := math.ParseNonNegativeDecimal(previousMemberStatus.Weight)
+				previousMemberWeight, err := math.ParseNonNegativeDecimal(previousMember.Weight)
 				if err != nil {
 					return err
 				}
-				err = math.SafeSub(totalWeight, totalWeight, previousWeight)
+				err = math.SafeSub(totalWeight, totalWeight, previousMemberWeight)
 				if err != nil {
 					return err
 				}
@@ -149,7 +149,7 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 			} else if err := s.groupMemberTable.Create(ctx, &member); err != nil {
 				return sdkerrors.Wrap(err, "add member")
 			}
-			err = math.Add(totalWeight, totalWeight, weight)
+			err = math.Add(totalWeight, totalWeight, newMemberWeight)
 			if err != nil {
 				return err
 			}
