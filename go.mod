@@ -12,6 +12,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/ipfs/go-cid v0.0.7
+	github.com/leanovate/gopter v0.2.9
 	github.com/lib/pq v1.8.0 // indirect
 	github.com/multiformats/go-multihash v0.0.14
 	github.com/rakyll/statik v0.1.7
