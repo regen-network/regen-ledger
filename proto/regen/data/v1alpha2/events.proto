@@ -9,15 +9,14 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 // EventAnchorData is an event emitted when data is anchored on-chain.
 message EventAnchorData {
 
-  // id is the hash-based identifier for the anchored content.
-  ContentID id = 1;
+  // id is the on-chain identifier for the anchored content.
+  uint64 id = 1;
 }
 
 // EventAnchorData is an event emitted when data is signed on-chain.
 message EventSignData {
-
-  // id is the hash-based identifier for the anchored content.
-  ContentID id = 1;
+  // id is the on-chain identifier for the anchored content.
+  uint64 id = 1;
 
   // signers are the addresses of the accounts which have signed the data.
   repeated string signers = 2;
@@ -25,7 +24,6 @@ message EventSignData {
 
 // EventStoreData is an event emitted when data is stored on-chain.
 message EventStoreData {
-
-  // id is the hash-based identifier for the anchored content.
-  ContentID id = 1;
+  // id is the on-chain identifier for the anchored content.
+  uint64 id = 1;
 }

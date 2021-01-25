@@ -2,27 +2,52 @@ syntax = "proto3";
 
 package regen.data.v1alpha2;
 
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // ContentID specifies a hash based content identifier for a piece of data
-message ContentID {
-    // type specifies the IDType for the ID
-    IDType type = 1;
+message ContentHash {
+    oneof descriptor {
+        Raw raw = 1;
+        Graph graph = 2;
+        Geo geo = 3;
+    }
 
-    // hash represents the hash of the data based on the specified digest_algorithm and canonicalization algorithm
-    // for types other than ID_TYPE_RAW_UNSPECIFIED.
-    bytes hash = 2;
+    message Raw {
+        // hash represents the hash of the data based on the specified digest_algorithm
+        bytes hash = 1;
 
-    // digest_algorithm represents the hash digest algorithm.
-    DigestAlgorithm digest_algorithm = 3;
+        // digest_algorithm represents the hash digest algorithm.
+        DigestAlgorithm digest_algorithm = 2;
 
-    // media_type represents the MediaType for data with ID_TYPE_RAW_UNSPECIFIED. It should be left unset
-    // if type is not ID_TYPE_RAW_UNSPECIFIED.
-    MediaType media_type = 4;
+        // media_type represents the MediaType for raw data.
+        MediaType media_type = 3;
 
-    // graph_canonicalization_algorithm represents the RDF graph canonicalization algorithm. It should
-    // be left unset if type is not ID_TYPE_GRAPH.
-    GraphCanonicalizationAlgorithm graph_canonicalization_algorithm = 5;
+    }
+
+    message Graph {
+        // hash represents the hash of the data based on the specified digest_algorithm
+        bytes hash = 1;
+
+        // digest_algorithm represents the hash digest algorithm.
+        DigestAlgorithm digest_algorithm = 2;
+
+        // graph_canonicalization_algorithm represents the RDF graph canonicalization algorithm. It should
+        // be left unset if type is not ID_TYPE_GRAPH.
+        GraphCanonicalizationAlgorithm canonicalization_algorithm = 3;
+
+        GraphMerkleTree merkle_tree = 4;
+    }
+
+    message Geo {
+        // hash represents the hash of the data based on the specified digest_algorithm
+        bytes hash = 1;
+
+        // digest_algorithm represents the hash digest algorithm.
+        DigestAlgorithm digest_algorithm = 2;
+    }
 }
 
 enum IDType {
@@ -63,7 +88,6 @@ enum IDType {
     ID_TYPE_GEOGRAPHY = 2;
 }
 
-
 // MediaType defines MIME media types to be used with ID_TYPE_RAW_UNSPECIFIED.
 enum MediaType {
     MEDIA_TYPE_UNSPECIFIED = 0;
@@ -100,11 +124,86 @@ enum MediaType {
 }
 
 enum GraphCanonicalizationAlgorithm {
-    GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015_UNSPECIFIED = 0;
+    GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED = 0;
+    GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015 = 1;
+}
+
+enum GraphMerkleTree {
+    GRAPH_MERKLE_TREE_NONE_UNSPECIFIED = 0;
+    GRAPH_MERKLE_TREE_SMT = 1;
 }
 
 enum DigestAlgorithm {
-    DIGEST_ALGORITHM_SHA256_UNSPECIFIED = 0;
+    DIGEST_ALGORITHM_UNSPECIFIED = 0;
     DIGEST_ALGORITHM_BLAKE2B_256 = 1;
+}
+
+
+message Graph {
+    repeated Node nodes = 1;
+
+    message Node {
+        IRIOrBlankNode subject = 1;
+        repeated Property properties = 2;
+    }
+
+    message Property {
+        uint64 predicate_id = 1;
+        repeated Value values = 2;
+    }
+
+    message Value {
+        oneof sum {
+            uint64 iri_id = 1;
+            uint32 blank_node_id = 2;
+            Literal literal = 3;
+        }
+    }
+
+    message Literal {
+        Datatype datatype = 1;
+
+        oneof value {
+            string str_value = 3;
+            google.protobuf.Timestamp timestamp_value = 4;
+            google.protobuf.Duration duration_value = 5;
+            uint64 geo_id = 6;
+            sint64 sint64_value = 7;
+        }
+
+        string lang = 2;
+    }
+
+    enum Datatype {
+        DATATYPE_UNSPECIFIED = 0;
+        DATATYPE_BOOL_FALSE = 1;
+        DATATYPE_BOOL_TRUE = 2;
+        DATATYPE_DECIMAL = 3;
+        DATATYPE_INTEGER = 4;
+        DATATYPE_STRING = 5;
+        DATATYPE_ANY_URI = 6;
+        DATATYPE_DATE = 7;
+        DATATYPE_TIME = 8;
+        DATATYPE_DATE_TIME = 9;
+        DATATYPE_BASE64_STRING = 10;
+        DATATYPE_WKT_LITERAL = 11;
+    }
+
+    message IRIOrBlankNode {
+        oneof sum {
+            uint64 iri_id = 1;
+            uint32 blank_node_id = 2;
+        }
+    }
+
+    message Dataset {
+        Graph default_graph = 1;
+        repeated NamedGraph graphs = 2;
+
+        message NamedGraph {
+            Graph.IRIOrBlankNode name = 1;
+            Graph graph = 2;
+        }
+    }
 }
 
