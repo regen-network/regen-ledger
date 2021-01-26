@@ -142,7 +142,7 @@ type MsgUpdateGroupMembersRequest struct {
 	// group_id is the unique ID of the group.
 	GroupId ID `protobuf:"varint,2,opt,name=group_id,json=groupId,proto3,casttype=ID" json:"group_id,omitempty"`
 	// member_updates is the list of members to update,
-	// set power to 0 to remove a member.
+	// set weight to 0 to remove a member.
 	MemberUpdates []Member `protobuf:"bytes,3,rep,name=member_updates,json=memberUpdates,proto3" json:"member_updates"`
 }
 

@@ -4,8 +4,8 @@
 
 A group is simply an aggregation of accounts with associated weights. It is not
 an account and doesn't have a balance. It doesn't in and of itself have any
-sort of voting or decision power. It does have an "administrator" which has
-the power to add, remove and update members in the group. Note that a
+sort of voting or decision weight. It does have an "administrator" which has
+the weight to add, remove and update members in the group. Note that a
 group account could be an administrator of a group.
 
 ## Group Account
@@ -61,7 +61,7 @@ automate this propose and have the group account (or a fee granter) pay.
 
 ## Changing Group Membership
 
-In the current implementation, changing a group's membership (adding or removing members or changing their power)
+In the current implementation, changing a group's membership (adding or removing members or changing their weight)
 will cause all existing proposals for group accounts linked to this group
 to be invalidated. They will simply fail if someone calls `Msg/Exec` and will
 eventually be garbage collected.

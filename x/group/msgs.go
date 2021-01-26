@@ -33,8 +33,8 @@ func (m MsgCreateGroupRequest) ValidateBasic() error {
 	}
 	for i := range m.Members {
 		member := m.Members[i]
-		if _, err := math.ParseNonNegativeDecimal(member.Power); err != nil {
-			return sdkerrors.Wrap(err, "member power")
+		if _, err := math.ParsePositiveDecimal(member.Weight); err != nil {
+			return sdkerrors.Wrap(err, "member weight")
 		}
 	}
 	return nil
@@ -45,8 +45,8 @@ func (m Member) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrap(err, "address")
 	}
-	if _, err := math.ParsePositiveDecimal(m.Power); err != nil {
-		return sdkerrors.Wrap(err, "power")
+	if _, err := math.ParseNonNegativeDecimal(m.Weight); err != nil {
+		return sdkerrors.Wrap(err, "weight")
 	}
 
 	return nil

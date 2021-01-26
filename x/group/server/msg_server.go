@@ -36,13 +36,13 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 			return nil, err
 		}
 
-		power, err := math.ParseNonNegativeDecimal(m.Power)
+		weight, err := math.ParseNonNegativeDecimal(m.Weight)
 		if err != nil {
 			return nil, err
 		}
 
-		if !power.IsZero() {
-			err = math.Add(totalWeight, totalWeight, power)
+		if !weight.IsZero() {
+			err = math.Add(totalWeight, totalWeight, weight)
 			if err != nil {
 				return nil, err
 			}
@@ -64,10 +64,12 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 	for i := range members {
 		m := members[i]
 		err := s.groupMemberTable.Create(ctx, &group.GroupMember{
-			GroupId:  groupID,
-			Member:   m.Address,
-			Weight:   m.Power,
-			Metadata: m.Metadata,
+			GroupId: groupID,
+			Member: &group.Member{
+				Address:  m.Address,
+				Weight:   m.Weight,
+				Metadata: m.Metadata,
+			},
 		})
 		if err != nil {
 			return nil, sdkerrors.Wrapf(err, "could not store member %d", i)
@@ -86,14 +88,16 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGroupMembersRequest) (*group.MsgUpdateGroupMembersResponse, error) {
 	action := func(g *group.GroupInfo) error {
 		for i := range req.MemberUpdates {
-			member := group.GroupMember{GroupId: req.GroupId,
-				Member:   req.MemberUpdates[i].Address,
-				Weight:   req.MemberUpdates[i].Power,
-				Metadata: req.MemberUpdates[i].Metadata,
+			groupMember := group.GroupMember{GroupId: req.GroupId,
+				Member: &group.Member{
+					Address:  req.MemberUpdates[i].Address,
+					Weight:   req.MemberUpdates[i].Weight,
+					Metadata: req.MemberUpdates[i].Metadata,
+				},
 			}
 			var found bool
-			var previousMember group.GroupMember
-			switch err := s.groupMemberTable.GetOne(ctx, member.NaturalKey(), &previousMember); {
+			var prevGroupMember group.GroupMember
+			switch err := s.groupMemberTable.GetOne(ctx, groupMember.NaturalKey(), &prevGroupMember); {
 			case err == nil:
 				found = true
 			case orm.ErrNotFound.Is(err):
@@ -106,7 +110,7 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 			if err != nil {
 				return err
 			}
-			newMemberWeight, err := math.ParseNonNegativeDecimal(member.Weight)
+			newMemberWeight, err := math.ParseNonNegativeDecimal(groupMember.Member.Weight)
 			if err != nil {
 				return err
 			}
@@ -117,7 +121,7 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 					return sdkerrors.Wrap(orm.ErrNotFound, "unknown member")
 				}
 
-				previousMemberWeight, err := math.ParseNonNegativeDecimal(previousMember.Weight)
+				previousMemberWeight, err := math.ParseNonNegativeDecimal(prevGroupMember.Member.Weight)
 				if err != nil {
 					return err
 				}
@@ -128,14 +132,14 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 				}
 
 				g.TotalWeight = math.DecimalString(totalWeight)
-				if err := s.groupMemberTable.Delete(ctx, &member); err != nil {
+				if err := s.groupMemberTable.Delete(ctx, &groupMember); err != nil {
 					return sdkerrors.Wrap(err, "delete member")
 				}
 				continue
 			}
 			// handle add + update
 			if found {
-				previousMemberWeight, err := math.ParseNonNegativeDecimal(previousMember.Weight)
+				previousMemberWeight, err := math.ParseNonNegativeDecimal(prevGroupMember.Member.Weight)
 				if err != nil {
 					return err
 				}
@@ -143,10 +147,10 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 				if err != nil {
 					return err
 				}
-				if err := s.groupMemberTable.Save(ctx, &member); err != nil {
+				if err := s.groupMemberTable.Save(ctx, &groupMember); err != nil {
 					return sdkerrors.Wrap(err, "add member")
 				}
-			} else if err := s.groupMemberTable.Create(ctx, &member); err != nil {
+			} else if err := s.groupMemberTable.Create(ctx, &groupMember); err != nil {
 				return sdkerrors.Wrap(err, "add member")
 			}
 			err = math.Add(totalWeight, totalWeight, newMemberWeight)
@@ -287,7 +291,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 
 	// only members can propose
 	for i := range proposers {
-		if !s.groupMemberTable.Has(ctx, group.GroupMember{GroupId: g.GroupId, Member: proposers[i]}.NaturalKey()) {
+		if !s.groupMemberTable.Has(ctx, group.GroupMember{GroupId: g.GroupId, Member: &group.Member{Address: proposers[i]}}.NaturalKey()) {
 			return nil, sdkerrors.Wrapf(group.ErrUnauthorized, "not in group: %s", proposers[i])
 		}
 	}
@@ -406,7 +410,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 
 	// count and store votes
 	voterAddr := req.Voter
-	voter := group.GroupMember{GroupId: electorate.GroupId, Member: voterAddr}
+	voter := group.GroupMember{GroupId: electorate.GroupId, Member: &group.Member{Address: voterAddr}}
 	if err := s.groupMemberTable.GetOne(ctx, voter.NaturalKey(), &voter); err != nil {
 		return nil, sdkerrors.Wrapf(err, "address: %s", voterAddr)
 	}
@@ -417,7 +421,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 		Metadata:    metadata,
 		SubmittedAt: *blockTime,
 	}
-	if err := proposal.VoteState.Add(newVote, voter.Weight); err != nil {
+	if err := proposal.VoteState.Add(newVote, voter.Member.Weight); err != nil {
 		return nil, sdkerrors.Wrap(err, "add new vote")
 	}
 
@@ -587,7 +591,7 @@ func (s serverImpl) maxMetadataLength(ctx types.Context) int {
 	return group.MaxMetadataLength
 }
 
-func assertMetadataLength(metadata byte[], maxMetadataLength int, description string) error {
+func assertMetadataLength(metadata []byte, maxMetadataLength int, description string) error {
 	if len(metadata) > maxMetadataLength {
 		return sdkerrors.Wrap(group.ErrMaxLimit, description)
 	}

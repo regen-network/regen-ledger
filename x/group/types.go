@@ -9,7 +9,6 @@ import (
 	"github.com/gogo/protobuf/types"
 	"github.com/regen-network/regen-ledger/math"
 	"github.com/regen-network/regen-ledger/orm"
-	"gopkg.in/yaml.v2"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -147,9 +146,9 @@ func (p ThresholdDecisionPolicy) ValidateBasic() error {
 }
 
 func (g GroupMember) NaturalKey() []byte {
-	result := make([]byte, 8, 8+len(g.Member))
+	result := make([]byte, 8, 8+len(g.Member.Address))
 	copy(result[0:8], g.GroupId.Bytes())
-	result = append(result, g.Member...)
+	result = append(result, g.Member.Address...)
 	return result
 }
 
@@ -300,12 +299,9 @@ func (g GroupMember) ValidateBasic() error {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
 
-	_, err := sdk.AccAddressFromBech32(g.Member)
+	err := g.Member.ValidateBasic()
 	if err != nil {
-		return sdkerrors.Wrap(err, "address")
-	}
-	if _, err := math.ParsePositiveDecimal(g.Weight); err != nil {
-		return sdkerrors.Wrap(err, "power")
+		return sdkerrors.Wrap(err, "member")
 	}
 	return nil
 }
@@ -465,9 +461,4 @@ func (t Tally) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "veto count")
 	}
 	return nil
-}
-
-func (g GenesisState) String() string {
-	out, _ := yaml.Marshal(g)
-	return string(out)
 }

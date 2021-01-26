@@ -294,52 +294,64 @@ func TestGroupMemberValidation(t *testing.T) {
 	}{
 		"all good": {
 			src: GroupMember{
-				GroupId:  1,
-				Member:   memberAddr,
-				Weight:   "1",
-				Metadata: nil,
+				GroupId: 1,
+				Member: &Member{
+					Address:  memberAddr,
+					Weight:   "1",
+					Metadata: nil,
+				},
 			},
 		},
 		"invalid group": {
 			src: GroupMember{
-				GroupId:  0,
-				Member:   memberAddr,
-				Weight:   "1",
-				Metadata: nil,
+				GroupId: 0,
+				Member: &Member{
+					Address:  memberAddr,
+					Weight:   "1",
+					Metadata: nil,
+				},
 			},
 			expErr: true,
 		},
 		"invalid address": {
 			src: GroupMember{
-				GroupId:  1,
-				Member:   "invalid-member-address",
-				Weight:   "1",
-				Metadata: nil,
+				GroupId: 1,
+				Member: &Member{
+					Address:  "invalid-member-address",
+					Weight:   "1",
+					Metadata: nil,
+				},
 			},
 			expErr: true,
 		},
-		"empy address": {
+		"empty address": {
 			src: GroupMember{
-				GroupId:  1,
-				Weight:   "1",
-				Metadata: nil,
+				GroupId: 1,
+				Member: &Member{
+					Weight:   "1",
+					Metadata: nil,
+				},
 			},
 			expErr: true,
 		},
 		"invalid weight": {
 			src: GroupMember{
-				GroupId:  1,
-				Member:   memberAddr,
-				Weight:   "0",
-				Metadata: nil,
+				GroupId: 1,
+				Member: &Member{
+					Address:  memberAddr,
+					Weight:   "-1",
+					Metadata: nil,
+				},
 			},
 			expErr: true,
 		},
 		"nil weight": {
 			src: GroupMember{
-				GroupId:  1,
-				Member:   memberAddr,
-				Metadata: nil,
+				GroupId: 1,
+				Member: &Member{
+					Address:  memberAddr,
+					Metadata: nil,
+				},
 			},
 			expErr: true,
 		},

@@ -10,6 +10,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/cosmos/cosmos-sdk/x/bank"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -53,27 +59,58 @@ func (ff fixtureFactory) Setup() server.Fixture {
 	baseApp.GRPCQueryRouter().SetInterfaceRegistry(registry)
 
 	cdc := codec.NewProtoCodec(registry)
+
 	mm := NewManager(baseApp, cdc)
 	err := mm.RegisterModules(ff.modules)
 	require.NoError(ff.t, err)
 	err = mm.CompleteInitialization()
 	require.NoError(ff.t, err)
+
+	// Setting up bank keeper to use with group module tests
+	// TODO: remove once #225 addressed
+	banktypes.RegisterInterfaces(registry)
+	authtypes.RegisterInterfaces(registry)
+
+	paramsKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
+	authKey := sdk.NewKVStoreKey(authtypes.StoreKey)
+	bankKey := sdk.NewKVStoreKey(banktypes.StoreKey)
+	tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
+	amino := codec.NewLegacyAmino()
+
+	authSubspace := paramstypes.NewSubspace(mm.cdc, amino, paramsKey, tkey, authtypes.ModuleName)
+	bankSubspace := paramstypes.NewSubspace(mm.cdc, amino, paramsKey, tkey, banktypes.ModuleName)
+
+	accountKeeper := authkeeper.NewAccountKeeper(
+		mm.cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, map[string][]string{},
+	)
+	bankKeeper := bankkeeper.NewBaseKeeper(
+		mm.cdc, bankKey, accountKeeper, bankSubspace, map[string]bool{},
+	)
+
+	baseApp.Router().AddRoute(sdk.NewRoute(banktypes.ModuleName, bank.NewHandler(bankKeeper)))
+	baseApp.MountStore(tkey, sdk.StoreTypeTransient)
+	baseApp.MountStore(paramsKey, sdk.StoreTypeIAVL)
+	baseApp.MountStore(authKey, sdk.StoreTypeIAVL)
+	baseApp.MountStore(bankKey, sdk.StoreTypeIAVL)
+
 	err = baseApp.LoadLatestVersion()
 	require.NoError(ff.t, err)
 
 	return fixture{
-		baseApp: baseApp,
-		router:  mm.router,
-		t:       ff.t,
-		signers: ff.signers,
+		baseApp:    baseApp,
+		router:     mm.router,
+		t:          ff.t,
+		signers:    ff.signers,
+		bankKeeper: bankKeeper,
 	}
 }
 
 type fixture struct {
-	baseApp *baseapp.BaseApp
-	router  *router
-	t       *testing.T
-	signers []sdk.AccAddress
+	baseApp    *baseapp.BaseApp
+	router     *router
+	t          *testing.T
+	signers    []sdk.AccAddress
+	bankKeeper bankkeeper.BaseKeeper
 }
 
 func (f fixture) Context() context.Context {
@@ -90,6 +127,10 @@ func (f fixture) QueryConn() grpc.ClientConnInterface {
 
 func (f fixture) Signers() []sdk.AccAddress {
 	return f.signers
+}
+
+func (f fixture) BankKeeper() bankkeeper.BaseKeeper {
+	return f.bankKeeper
 }
 
 func (f fixture) Teardown() {}

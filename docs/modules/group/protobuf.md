@@ -225,8 +225,8 @@ GroupInfo represents the high-level on-chain information for a group.
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 | admin | [string](#string) |  | admin is the account address of the group's admin. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the group. |
-| version | [uint64](#uint64) |  | version is used to track changes to a group's membership structure that would break existing proposals. Whenever any members power is changed, or any member is added or removed this version is incremented and will cause proposals based on older versions of this group to fail |
-| total_weight | [string](#string) |  | total_weight is the sum of the group members' powers. |
+| version | [uint64](#uint64) |  | version is used to track changes to a group's membership structure that would break existing proposals. Whenever any members weight is changed, or any member is added or removed this version is incremented and will cause proposals based on older versions of this group to fail |
+| total_weight | [string](#string) |  | total_weight is the sum of the group members' weights. |
 
 
 
@@ -242,9 +242,7 @@ GroupMember represents the relationship between a group and a member.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
-| member | [string](#string) |  | member is the account address of the group member. |
-| weight | [string](#string) |  | weight is the power of the group member. |
-| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the member. |
+| member | [Member](#regen.group.v1alpha1.Member) |  | member is the member data. |
 
 
 
@@ -255,13 +253,13 @@ GroupMember represents the relationship between a group and a member.
 
 ### Member
 Member represents a group member with an account address,
-non-zero power and metadata.
+non-zero weight and metadata.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | address | [string](#string) |  | address is the member's account address. |
-| power | [string](#string) |  | power is the member's power that should be greater than 0. |
+| weight | [string](#string) |  | weight is the member's voting weight that should be greater than 0. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the member. |
 
 
@@ -1047,7 +1045,7 @@ MsgUpdateGroupMembersRequest is the Msg/UpdateGroupMembers request type.
 | ----- | ---- | ----- | ----------- |
 | admin | [string](#string) |  | admin is the account address of the group admin. |
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
-| member_updates | [Member](#regen.group.v1alpha1.Member) | repeated | member_updates is the list of members to update, set power to 0 to remove a member. |
+| member_updates | [Member](#regen.group.v1alpha1.Member) | repeated | member_updates is the list of members to update, set weight to 0 to remove a member. |
 
 
 

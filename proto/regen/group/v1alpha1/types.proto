@@ -11,14 +11,14 @@ import "cosmos_proto/cosmos.proto";
 import "google/protobuf/any.proto";
 
 // Member represents a group member with an account address,
-// non-zero power and metadata.
+// non-zero weight and metadata.
 message Member {
 
     // address is the member's account address.
     string address = 1;
     
-    // power is the member's power that should be greater than 0.
-    string power = 2;
+    // weight is the member's voting weight that should be greater than 0.
+    string weight = 2;
     
     // metadata is any arbitrary metadata to attached to the member.
     bytes metadata = 3;
@@ -72,12 +72,12 @@ message GroupInfo {
     bytes metadata = 3;
 
     // version is used to track changes to a group's membership structure that
-    // would break existing proposals. Whenever any members power is changed,
+    // would break existing proposals. Whenever any members weight is changed,
     // or any member is added or removed this version is incremented and will
     // cause proposals based on older versions of this group to fail
     uint64 version = 4;
 
-    // total_weight is the sum of the group members' powers.
+    // total_weight is the sum of the group members' weights.
     string total_weight = 5;
 }
 
@@ -87,14 +87,8 @@ message GroupMember {
     // group_id is the unique ID of the group.
     uint64 group_id = 1 [(gogoproto.casttype) = "ID"];
 
-    // member is the account address of the group member.
-    string member = 2;
-    
-    // weight is the power of the group member.
-    string weight = 3;
-    
-    // metadata is any arbitrary metadata to attached to the member.
-    bytes metadata = 4;
+    // member is the member data.
+    Member member = 2;
 }
 
 // GroupAccountInfo represents the high-level on-chain information for a group account.

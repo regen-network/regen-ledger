@@ -13,6 +13,8 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+
 	"google.golang.org/grpc"
 )
 
@@ -42,4 +44,6 @@ type Fixture interface {
 
 	// Teardown performs any teardown actions for the fixture.
 	Teardown()
+
+	BankKeeper() bankkeeper.BaseKeeper
 }
