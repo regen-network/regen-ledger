@@ -1,0 +1,51 @@
+package shacl
+
+import (
+	"fmt"
+
+	"github.com/regen-network/regen-ledger/x/data/rdf"
+)
+
+type ClassConstraintComponent struct{}
+
+var _ ConstraintComponent = ClassConstraintComponent{}
+
+func (c ClassConstraintComponent) IRI() rdf.IRI {
+	return ShClassConstraintComponent
+}
+
+func (c ClassConstraintComponent) Parse(_ rdf.Context, graph rdf.IndexedGraph, target rdf.Node) ([]ConstraintInstance, error) {
+	acc := graph.BySubject(target).ByPredicate(ShClass)
+	var res []ConstraintInstance
+	it := acc.Iterator()
+	for it.Next() {
+		obj := acc.Iterator().Object()
+		iri, ok := obj.(rdf.IRI)
+		if !ok {
+			return nil, fmt.Errorf("expected an IRI, got %+v", obj)
+		}
+		res = append(res, classConstraint{class: iri})
+	}
+	return res, nil
+}
+
+type classConstraint struct {
+	class rdf.IRI
+}
+
+func (c classConstraint) Validate(ctx rdf.ValidationContext, graph rdf.IndexedGraph, target rdf.Term) error {
+	node, ok := target.(rdf.IRIOrBNode)
+	if !ok {
+		panic("TODO")
+	}
+
+	acc := graph.BySubject(node).ByPredicate(rdf.RDFType)
+	if acc.HasValue(c.class) {
+		return nil
+	}
+	it := acc.Iterator()
+	for it.Next() {
+		panic("TODO")
+	}
+	return nil
+}
