@@ -22,7 +22,7 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/tendermint/tendermint v0.34.1
 	github.com/tendermint/tm-db v0.6.3
-	google.golang.org/genproto v0.0.0-20210121164019-fc48d45331c7 // indirect
+	google.golang.org/genproto v0.0.0-20210125195502-f46fe6c6624a // indirect
 	google.golang.org/grpc v1.34.0
 	gopkg.in/yaml.v2 v2.4.0
 )

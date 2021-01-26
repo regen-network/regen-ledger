@@ -135,6 +135,10 @@ type configurator struct {
 	requiredServices map[reflect.Type]bool
 }
 
+func NewConfigurator(msgServer gogogrpc.Server, queryServer gogogrpc.Server, cdc codec.Marshaler) Configurator {
+	return &configurator{msgServer: msgServer, queryServer: queryServer, cdc: cdc}
+}
+
 var _ Configurator = &configurator{}
 
 func (c *configurator) MsgServer() gogogrpc.Server {

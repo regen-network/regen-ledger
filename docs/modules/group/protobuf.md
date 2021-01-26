@@ -12,7 +12,6 @@
   
 - [regen/group/v1alpha1/genesis.proto](#regen/group/v1alpha1/genesis.proto)
     - [GenesisState](#regen.group.v1alpha1.GenesisState)
-    - [Params](#regen.group.v1alpha1.Params)
   
 - [regen/group/v1alpha1/types.proto](#regen/group/v1alpha1/types.proto)
     - [GroupAccountInfo](#regen.group.v1alpha1.GroupAccountInfo)
@@ -171,27 +170,8 @@ EventUpdateGroupAccount is an event emitted when a group account is updated.
 <a name="regen.group.v1alpha1.GenesisState"></a>
 
 ### GenesisState
+TODO: #214
 GenesisState defines the group module's genesis state.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| params | [Params](#regen.group.v1alpha1.Params) |  | params are the genesis state Params. |
-
-
-
-
-
-
-<a name="regen.group.v1alpha1.Params"></a>
-
-### Params
-Params defines the set of configurable parameters.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| max_comment_length | [uint32](#uint32) |  | max_comment_length defines the maximum comment length of the group module genesis params. |
 
 
 

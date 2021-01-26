@@ -263,35 +263,10 @@ func (v Vote) ValidateBasic() error {
 	return nil
 }
 
-const defaultMaxCommentLength = 255
-
-// Parameter keys
-var (
-	ParamMaxCommentLength = []byte("MaxCommentLength")
-)
-
-// DefaultParams returns the default parameters for the group module.
-func DefaultParams() Params {
-	return Params{
-		MaxCommentLength: defaultMaxCommentLength,
-	}
-}
-
-func (p Params) String() string {
-	out, _ := yaml.Marshal(p)
-	return string(out)
-}
-
-// ParamSetPairs returns the parameter set pairs.
-func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
-	return paramstypes.ParamSetPairs{
-		paramstypes.NewParamSetPair(ParamMaxCommentLength, &p.MaxCommentLength, noopValidator()),
-	}
-}
-
-func (p Params) Validate() error {
-	return nil
-}
+// MaxMetadataLength defines the max length of the metadata bytes field
+// for various entities within the group module
+// TODO: This could be used as params once x/params is upgraded to use protobuf
+const MaxMetadataLength = 255
 
 func noopValidator() paramstypes.ValueValidatorFn {
 	return func(value interface{}) error { return nil }

@@ -68,12 +68,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.sdkCtx = sdkCtx
 	s.ctx = types.Context{Context: sdkCtx}
 
-	groupParams := group.DefaultParams()
-	if !s.groupSubspace.HasKeyTable() {
-		s.groupSubspace = s.groupSubspace.WithKeyTable(paramstypes.NewKeyTable().RegisterParamSet(&group.Params{}))
-	}
-	s.groupSubspace.SetParamSet(sdkCtx, &groupParams)
-
 	totalSupply := banktypes.NewSupply(sdk.NewCoins(sdk.NewInt64Coin("test", 400000000)))
 	s.bankKeeper.SetSupply(sdkCtx, totalSupply)
 	s.bankKeeper.SetParams(sdkCtx, banktypes.DefaultParams())

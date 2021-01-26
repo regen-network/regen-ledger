@@ -24,15 +24,15 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 		return nil, err
 	}
 
-	maxCommentSize := s.maxCommentSize(ctx)
-	if err := assertCommentSize(comment, maxCommentSize, "group comment"); err != nil {
+	maxMetadataLength := s.maxMetadataLength(ctx)
+	if err := assertMetadataLength(comment, maxMetadataLength, "group comment"); err != nil {
 		return nil, err
 	}
 
 	totalWeight := apd.New(0, 0)
 	for i := range members {
 		m := members[i]
-		if err := assertCommentSize(m.Comment, maxCommentSize, "member comment"); err != nil {
+		if err := assertMetadataLength(m.Comment, maxMetadataLength, "member comment"); err != nil {
 			return nil, err
 		}
 
@@ -206,7 +206,7 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 	groupID := req.GetGroupID()
 	comment := req.GetComment()
 
-	if err := assertCommentSize(comment, s.maxCommentSize(ctx), "group account comment"); err != nil {
+	if err := assertMetadataLength(comment, s.maxMetadataLength(ctx), "group account comment"); err != nil {
 		return nil, err
 	}
 
@@ -270,7 +270,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 	proposers := req.Proposers
 	msgs := req.GetMsgs()
 
-	if err := assertCommentSize(comment, s.maxCommentSize(ctx), "comment"); err != nil {
+	if err := assertMetadataLength(comment, s.maxMetadataLength(ctx), "comment"); err != nil {
 		return nil, err
 	}
 
@@ -360,7 +360,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 	choice := req.Choice
 	comment := req.Comment
 
-	if err := assertCommentSize(comment, s.maxCommentSize(ctx), "comment"); err != nil {
+	if err := assertMetadataLength(comment, s.maxMetadataLength(ctx), "comment"); err != nil {
 		return nil, err
 	}
 
@@ -582,15 +582,13 @@ func (s serverImpl) doAuthenticated(ctx types.Context, req authNGroupReq, action
 	return nil
 }
 
-// maxCommentSize returns the maximum length of a comment
-func (s serverImpl) maxCommentSize(ctx types.Context) int {
-	var result uint32
-	s.paramSpace.Get(ctx.Context, group.ParamMaxCommentLength, &result)
-	return int(result)
+// maxMetadataLength returns the maximum length of a metadata field
+func (s serverImpl) maxMetadataLength(ctx types.Context) int {
+	return group.MaxMetadataLength
 }
 
-func assertCommentSize(comment string, maxCommentSize int, description string) error {
-	if len(comment) > maxCommentSize {
+func assertMetadataLength(metadata byte[], maxMetadataLength int, description string) error {
+	if len(metadata) > maxMetadataLength {
 		return sdkerrors.Wrap(group.ErrMaxLimit, description)
 	}
 	return nil

@@ -23,61 +23,16 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// Params defines the set of configurable parameters.
-type Params struct {
-	// max_comment_length defines the maximum comment length of the group module genesis params.
-	MaxCommentLength uint32 `protobuf:"varint,1,opt,name=max_comment_length,json=maxCommentLength,proto3" json:"max_comment_length,omitempty" yaml:"max_comment_length"`
-}
-
-func (m *Params) Reset()      { *m = Params{} }
-func (*Params) ProtoMessage() {}
-func (*Params) Descriptor() ([]byte, []int) {
-	return fileDescriptor_6ccc5d002e96a4ab, []int{0}
-}
-func (m *Params) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *Params) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_Params.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *Params) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Params.Merge(m, src)
-}
-func (m *Params) XXX_Size() int {
-	return m.Size()
-}
-func (m *Params) XXX_DiscardUnknown() {
-	xxx_messageInfo_Params.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Params proto.InternalMessageInfo
-
-func (m *Params) GetMaxCommentLength() uint32 {
-	if m != nil {
-		return m.MaxCommentLength
-	}
-	return 0
-}
-
+// TODO: #214
 // GenesisState defines the group module's genesis state.
 type GenesisState struct {
-	// params are the genesis state Params.
-	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
 }
 
-func (m *GenesisState) Reset()      { *m = GenesisState{} }
-func (*GenesisState) ProtoMessage() {}
+func (m *GenesisState) Reset()         { *m = GenesisState{} }
+func (m *GenesisState) String() string { return proto.CompactTextString(m) }
+func (*GenesisState) ProtoMessage()    {}
 func (*GenesisState) Descriptor() ([]byte, []int) {
-	return fileDescriptor_6ccc5d002e96a4ab, []int{1}
+	return fileDescriptor_6ccc5d002e96a4ab, []int{0}
 }
 func (m *GenesisState) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -106,15 +61,7 @@ func (m *GenesisState) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GenesisState proto.InternalMessageInfo
 
-func (m *GenesisState) GetParams() Params {
-	if m != nil {
-		return m.Params
-	}
-	return Params{}
-}
-
 func init() {
-	proto.RegisterType((*Params)(nil), "regen.group.v1alpha1.Params")
 	proto.RegisterType((*GenesisState)(nil), "regen.group.v1alpha1.GenesisState")
 }
 
@@ -123,100 +70,18 @@ func init() {
 }
 
 var fileDescriptor_6ccc5d002e96a4ab = []byte{
-	// 268 bytes of a gzipped FileDescriptorProto
+	// 163 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x2a, 0x4a, 0x4d, 0x4f,
 	0xcd, 0xd3, 0x4f, 0x2f, 0xca, 0x2f, 0x2d, 0xd0, 0x2f, 0x33, 0x4c, 0xcc, 0x29, 0xc8, 0x48, 0x34,
 	0xd4, 0x4f, 0x4f, 0xcd, 0x4b, 0x2d, 0xce, 0x2c, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12,
 	0x01, 0xab, 0xd1, 0x03, 0xab, 0xd1, 0x83, 0xa9, 0x91, 0x12, 0x49, 0xcf, 0x4f, 0xcf, 0x07, 0x2b,
-	0xd0, 0x07, 0xb1, 0x20, 0x6a, 0x95, 0xe2, 0xb9, 0xd8, 0x02, 0x12, 0x8b, 0x12, 0x73, 0x8b, 0x85,
-	0xbc, 0xb9, 0x84, 0x72, 0x13, 0x2b, 0xe2, 0x93, 0xf3, 0x73, 0x73, 0x53, 0xf3, 0x4a, 0xe2, 0x73,
-	0x52, 0xf3, 0xd2, 0x4b, 0x32, 0x24, 0x18, 0x15, 0x18, 0x35, 0x78, 0x9d, 0x64, 0x3f, 0xdd, 0x93,
-	0x97, 0xac, 0x4c, 0xcc, 0xcd, 0xb1, 0x52, 0xc2, 0x54, 0xa3, 0x14, 0x24, 0x90, 0x9b, 0x58, 0xe1,
-	0x0c, 0x11, 0xf3, 0x01, 0x0b, 0x59, 0x71, 0xcc, 0x58, 0x20, 0xcf, 0xf0, 0x62, 0x81, 0x3c, 0xa3,
-	0x52, 0x08, 0x17, 0x8f, 0x3b, 0xc4, 0x75, 0xc1, 0x25, 0x89, 0x25, 0xa9, 0x42, 0x56, 0x5c, 0x6c,
-	0x05, 0x60, 0x0b, 0xc1, 0x46, 0x73, 0x1b, 0xc9, 0xe8, 0x61, 0x73, 0xad, 0x1e, 0xc4, 0x51, 0x4e,
-	0x2c, 0x27, 0xee, 0xc9, 0x33, 0x04, 0x41, 0x75, 0x20, 0x4c, 0x75, 0x72, 0x3f, 0xf1, 0x48, 0x8e,
-	0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0xb8, 0xf0, 0x58,
-	0x8e, 0xe1, 0xc6, 0x63, 0x39, 0x86, 0x28, 0xdd, 0xf4, 0xcc, 0x92, 0x8c, 0xd2, 0x24, 0xbd, 0xe4,
-	0xfc, 0x5c, 0x7d, 0xb0, 0xc9, 0xba, 0x79, 0xa9, 0x25, 0xe5, 0xf9, 0x45, 0xd9, 0x50, 0x5e, 0x4e,
-	0x6a, 0x4a, 0x7a, 0x6a, 0x91, 0x7e, 0x05, 0x24, 0x08, 0x93, 0xd8, 0xc0, 0xc1, 0x60, 0x0c, 0x08,
-	0x00, 0x00, 0xff, 0xff, 0x9a, 0xda, 0xae, 0xe6, 0x58, 0x01, 0x00, 0x00,
-}
-
-func (this *Params) Equal(that interface{}) bool {
-	if that == nil {
-		return this == nil
-	}
-
-	that1, ok := that.(*Params)
-	if !ok {
-		that2, ok := that.(Params)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		return this == nil
-	} else if this == nil {
-		return false
-	}
-	if this.MaxCommentLength != that1.MaxCommentLength {
-		return false
-	}
-	return true
-}
-func (this *GenesisState) Equal(that interface{}) bool {
-	if that == nil {
-		return this == nil
-	}
-
-	that1, ok := that.(*GenesisState)
-	if !ok {
-		that2, ok := that.(GenesisState)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		return this == nil
-	} else if this == nil {
-		return false
-	}
-	if !this.Params.Equal(&that1.Params) {
-		return false
-	}
-	return true
-}
-func (m *Params) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *Params) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.MaxCommentLength != 0 {
-		i = encodeVarintGenesis(dAtA, i, uint64(m.MaxCommentLength))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
+	0xd0, 0x07, 0xb1, 0x20, 0x6a, 0x95, 0xf8, 0xb8, 0x78, 0xdc, 0x21, 0x9a, 0x83, 0x4b, 0x12, 0x4b,
+	0x52, 0x9d, 0xdc, 0x4f, 0x3c, 0x92, 0x63, 0xbc, 0xf0, 0x48, 0x8e, 0xf1, 0xc1, 0x23, 0x39, 0xc6,
+	0x09, 0x8f, 0xe5, 0x18, 0x2e, 0x3c, 0x96, 0x63, 0xb8, 0xf1, 0x58, 0x8e, 0x21, 0x4a, 0x37, 0x3d,
+	0xb3, 0x24, 0xa3, 0x34, 0x49, 0x2f, 0x39, 0x3f, 0x57, 0x1f, 0x6c, 0x81, 0x6e, 0x5e, 0x6a, 0x49,
+	0x79, 0x7e, 0x51, 0x36, 0x94, 0x97, 0x93, 0x9a, 0x92, 0x9e, 0x5a, 0xa4, 0x5f, 0x01, 0x71, 0x5b,
+	0x12, 0x1b, 0xd8, 0x7c, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0x70, 0xd0, 0x61, 0x97, 0xb1,
+	0x00, 0x00, 0x00,
 }
 
 func (m *GenesisState) Marshal() (dAtA []byte, err error) {
@@ -239,16 +104,6 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	{
-		size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
-		if err != nil {
-			return 0, err
-		}
-		i -= size
-		i = encodeVarintGenesis(dAtA, i, uint64(size))
-	}
-	i--
-	dAtA[i] = 0xa
 	return len(dAtA) - i, nil
 }
 
@@ -263,26 +118,12 @@ func encodeVarintGenesis(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *Params) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.MaxCommentLength != 0 {
-		n += 1 + sovGenesis(uint64(m.MaxCommentLength))
-	}
-	return n
-}
-
 func (m *GenesisState) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = m.Params.Size()
-	n += 1 + l + sovGenesis(uint64(l))
 	return n
 }
 
@@ -291,78 +132,6 @@ func sovGenesis(x uint64) (n int) {
 }
 func sozGenesis(x uint64) (n int) {
 	return sovGenesis(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
-func (m *Params) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowGenesis
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: Params: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Params: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MaxCommentLength", wireType)
-			}
-			m.MaxCommentLength = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGenesis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.MaxCommentLength |= uint32(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipGenesis(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
 }
 func (m *GenesisState) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -393,39 +162,6 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: GenesisState: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGenesis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipGenesis(dAtA[iNdEx:])
