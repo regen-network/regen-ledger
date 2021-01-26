@@ -207,6 +207,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			s.Require().NoError(err)
 			loadedMembers := membersRes.Members
 			s.Require().Equal(len(members), len(loadedMembers))
+			// TODO: reorder member by address to be able to compare them
 			// for i := range loadedMembers {
 			// 	s.Assert().Equal(members[i].Metadata, loadedMembers[i].Metadata)
 			// 	s.Assert().Equal(members[i].Address, loadedMembers[i].Member)
@@ -656,6 +657,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 			s.Require().NoError(err)
 			loadedMembers := membersRes.Members
 			s.Require().Equal(len(spec.expMembers), len(loadedMembers))
+			// TODO: reorder member by address to be able to compare them
 			// for i := range loadedMembers {
 			// 	s.Assert().Equal(spec.expMembers[i].Metadata, loadedMembers[i].Metadata)
 			// 	s.Assert().Equal(spec.expMembers[i].Member, loadedMembers[i].Member)

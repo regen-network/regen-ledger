@@ -14,7 +14,6 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 type ID uint64
@@ -266,10 +265,6 @@ func (v Vote) ValidateBasic() error {
 // for various entities within the group module
 // TODO: This could be used as params once x/params is upgraded to use protobuf
 const MaxMetadataLength = 255
-
-func noopValidator() paramstypes.ValueValidatorFn {
-	return func(value interface{}) error { return nil }
-}
 
 var _ orm.Validateable = GroupInfo{}
 
