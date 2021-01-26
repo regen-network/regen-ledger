@@ -8,5 +8,11 @@ type ConstraintComponent interface {
 }
 
 type ConstraintInstance interface {
-	Validate(ctx rdf.ValidationContext, graph rdf.IndexedGraph, target rdf.Term) error
+	Validate(ctx rdf.ValidationContext, graph rdf.IndexedGraph, value rdf.Term) error
+}
+
+type MultiValueConstraintInstance interface {
+	ConstraintInstance
+
+	ValidateMany(ctx rdf.ValidationContext, graph rdf.IndexedGraph, value rdf.ObjectIterator) error
 }

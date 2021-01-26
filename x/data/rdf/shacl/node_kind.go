@@ -6,16 +6,20 @@ import (
 	"github.com/regen-network/regen-ledger/x/data/rdf"
 )
 
-type NodeKindConstraintParser struct{}
+type NodeKindConstraintComponent struct{}
 
-var _ ConstraintComponent = NodeKindConstraintParser{}
+func (c NodeKindConstraintComponent) IRI() rdf.IRI {
+	return ShNodeKindConstraintComponent
+}
 
-func (c NodeKindConstraintParser) Parse(_ rdf.Context, graph rdf.IndexedGraph, target rdf.Node) ([]ConstraintInstance, error) {
-	it := graph.BySubject(target).ByPredicate(SHNodeKind).Iterator()
+var _ ConstraintComponent = NodeKindConstraintComponent{}
+
+func (c NodeKindConstraintComponent) Parse(_ rdf.Context, graph rdf.IndexedGraph, target rdf.Node) ([]ConstraintInstance, error) {
+	it := graph.BySubject(target).ByPredicate(ShNodeKind).Iterator()
 	if it.Next() {
 		nodeKind := it.Object()
 		if it.Next() {
-			return nil, fmt.Errorf("only 1 %s nodes expected, got at least 2", SHNodeKind)
+			return nil, fmt.Errorf("only 1 %s nodes expected, got at least 2", ShNodeKind)
 		}
 
 		switch nodeKind {

@@ -8,7 +8,10 @@ import (
 
 func NewGraph() rdf.GraphBuilder {
 	return &memoryGraph{
-		nodeMap: map[rdf.IRIOrBNode]*nodeProps{},
+		bnodeId:    0,
+		nodeMap:    map[rdf.IRIOrBNode]*nodeProps{},
+		predSubMap: map[rdf.IRIOrBNode]map[rdf.IRIOrBNode]*nodeProps{},
+		predObjMap: map[rdf.IRIOrBNode]map[rdf.IRIOrBNode]bool{},
 	}
 }
 
@@ -18,11 +21,9 @@ type memoryGraph struct {
 	// nodeMap maps node IRIs to nodeProps
 	nodeMap map[rdf.IRIOrBNode]*nodeProps
 
-	//// propMap maps properties to propTargets for quickly initiating sh:targetSubectsOf and sh:targetObjectsOf
-	//propMap map[rdf.IRIOrBNode][]*propTarget
+	predSubMap map[rdf.IRIOrBNode]map[rdf.IRIOrBNode]*nodeProps
 
-	//// classMap indexes nodes satisfying each rdfs:class for quickly initiating sh:targetClass
-	//classMap map[IRI][]IRIOrBNode
+	predObjMap map[rdf.IRIOrBNode]map[rdf.IRIOrBNode]bool
 }
 
 type nodeProps struct {
@@ -74,6 +75,20 @@ func (m *memoryGraph) AddTriple(triple rdf.Triple) {
 	}
 
 	objs[triple.Object] = true
+
+	// predSubMap index
+	if m.predSubMap[triple.Predicate] == nil {
+		m.predSubMap[triple.Predicate] = map[rdf.IRIOrBNode]*nodeProps{}
+	}
+	m.predSubMap[triple.Predicate][triple.Subject] = props
+
+	// predObjMap index
+	if iriOrBNode, ok := triple.Object.(rdf.IRIOrBNode); ok {
+		if m.predObjMap[triple.Predicate] == nil {
+			m.predObjMap[triple.Predicate] = map[rdf.IRIOrBNode]bool{}
+		}
+		m.predObjMap[triple.Predicate][iriOrBNode] = true
+	}
 }
 
 func (m *memoryGraph) RemoveTriple(triple rdf.Triple) {
@@ -88,6 +103,14 @@ func (m *memoryGraph) RemoveTriple(triple rdf.Triple) {
 	}
 
 	delete(objs, triple.Object)
+
+	// predSubMap index
+	delete(m.predSubMap[triple.Predicate], triple.Subject)
+
+	// predObjMap index
+	if iriOrBNode, ok := triple.Object.(rdf.IRIOrBNode); ok {
+		delete(m.predObjMap[triple.Predicate], iriOrBNode)
+	}
 }
 
 func (m *memoryGraph) Merge(graph rdf.IndexedGraph) {

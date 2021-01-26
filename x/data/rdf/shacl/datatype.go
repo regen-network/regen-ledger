@@ -34,14 +34,15 @@ type datatypeConstraint struct {
 
 var _ ConstraintInstance = datatypeConstraint{}
 
-func (d datatypeConstraint) Validate(ctx rdf.ValidationContext, graph rdf.IndexedGraph, target rdf.Term) error {
-	literal, ok := target.(rdf.Literal)
+func (d datatypeConstraint) Validate(ctx rdf.ValidationContext, graph rdf.IndexedGraph, value rdf.Term) error {
+	literal, ok := value.(rdf.Literal)
 	if !ok {
 		return fmt.Errorf("expected a literal, got %")
 	}
 
 	if !literal.Datatype().Equals(ctx, d.datatype) {
-
+		return fmt.Errorf("expected %s, got %s", d.datatype, literal.Datatype())
 	}
+
 	return nil
 }

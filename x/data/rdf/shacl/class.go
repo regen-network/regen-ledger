@@ -36,7 +36,7 @@ type classConstraint struct {
 func (c classConstraint) Validate(ctx rdf.ValidationContext, graph rdf.IndexedGraph, target rdf.Term) error {
 	node, ok := target.(rdf.IRIOrBNode)
 	if !ok {
-		panic("TODO")
+		return fmt.Errorf("expected an IRI or blank node")
 	}
 
 	acc := graph.BySubject(node).ByPredicate(rdf.RDFType)
