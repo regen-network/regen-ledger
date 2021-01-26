@@ -1,9 +1,8 @@
 package testsuite
 
 import (
+	"bytes"
 	"context"
-	"fmt"
-	"strings"
 	"time"
 
 	gogotypes "github.com/gogo/protobuf/types"
@@ -88,9 +87,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		{Address: s.addr2.String(), Power: "1"},
 	}
 	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
-		Admin:   s.addr1.String(),
-		Members: members,
-		Comment: "test",
+		Admin:    s.addr1.String(),
+		Members:  members,
+		Metadata: nil,
 	})
 	s.Require().NoError(err)
 	s.groupID = groupRes.GroupId
@@ -100,9 +99,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		gogotypes.Duration{Seconds: 1},
 	)
 	accountReq := &group.MsgCreateGroupAccountRequest{
-		Admin:   s.addr1.String(),
-		GroupId: s.groupID,
-		Comment: "test",
+		Admin:    s.addr1.String(),
+		GroupId:  s.groupID,
+		Metadata: nil,
 	}
 	err = accountReq.SetDecisionPolicy(policy)
 	s.Require().NoError(err)
@@ -121,13 +120,13 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 
 func (s *IntegrationTestSuite) TestCreateGroup() {
 	members := []group.Member{{
-		Address: "regen:1yh9rxjxgxcka75d6h029w8uftcjt6u680d2cl9",
-		Power:   "1",
-		Comment: "first",
+		Address:  "regen:1yh9rxjxgxcka75d6h029w8uftcjt6u680d2cl9",
+		Power:    "1",
+		Metadata: nil,
 	}, {
-		Address: "regen:1yhcyhcn7dp3kzur2mznzrvlr9n4xdpv8plq2dk",
-		Power:   "2",
-		Comment: "second",
+		Address:  "regen:1yhcyhcn7dp3kzur2mznzrvlr9n4xdpv8plq2dk",
+		Power:    "2",
+		Metadata: nil,
 	}}
 
 	expGroups := []*group.GroupInfo{
@@ -136,14 +135,14 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			Version:     1,
 			Admin:       s.addr1.String(),
 			TotalWeight: "1",
-			Comment:     "test",
+			Metadata:    nil,
 		},
 		{
 			GroupId:     2,
 			Version:     1,
 			Admin:       s.addr1.String(),
 			TotalWeight: "3",
-			Comment:     "test",
+			Metadata:    nil,
 		},
 	}
 
@@ -154,32 +153,32 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 	}{
 		"all good": {
 			req: &group.MsgCreateGroupRequest{
-				Admin:   s.addr1.String(),
-				Members: members,
-				Comment: "test",
+				Admin:    s.addr1.String(),
+				Members:  members,
+				Metadata: nil,
 			},
 			expGroups: expGroups,
 		},
-		"group comment too long": {
-			req: &group.MsgCreateGroupRequest{
-				Admin:   s.addr1.String(),
-				Members: members,
-				Comment: strings.Repeat("a", 256),
-			},
-			expErr: true,
-		},
-		"member comment too long": {
-			req: &group.MsgCreateGroupRequest{
-				Admin: s.addr1.String(),
-				Members: []group.Member{{
-					Address: s.addr3.String(),
-					Power:   "1",
-					Comment: strings.Repeat("a", 256),
-				}},
-				Comment: "test",
-			},
-			expErr: true,
-		},
+		// "group comment too long": {
+		// 	req: &group.MsgCreateGroupRequest{
+		// 		Admin:    s.addr1.String(),
+		// 		Members:  members,
+		// 		Metadata: nil,
+		// 	},
+		// 	expErr: true,
+		// },
+		// "member comment too long": {
+		// 	req: &group.MsgCreateGroupRequest{
+		// 		Admin: s.addr1.String(),
+		// 		Members: []group.Member{{
+		// 			Address:  s.addr3.String(),
+		// 			Power:    "1",
+		// 			Metadata: nil,
+		// 		}},
+		// 		Metadata: nil,
+		// 	},
+		// 	expErr: true,
+		// },
 	}
 	var seq uint32 = 1
 	for msg, spec := range specs {
@@ -202,7 +201,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			loadedGroupRes, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: id})
 			s.Require().NoError(err)
 			s.Assert().Equal(spec.req.Admin, loadedGroupRes.Info.Admin)
-			s.Assert().Equal(spec.req.Comment, loadedGroupRes.Info.Comment)
+			s.Assert().Equal(spec.req.Metadata, loadedGroupRes.Info.Metadata)
 			s.Assert().Equal(id, loadedGroupRes.Info.GroupId)
 			s.Assert().Equal(uint64(1), loadedGroupRes.Info.Version)
 
@@ -212,7 +211,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			loadedMembers := membersRes.Members
 			s.Require().Equal(len(members), len(loadedMembers))
 			for i := range loadedMembers {
-				s.Assert().Equal(members[i].Comment, loadedMembers[i].Comment)
+				s.Assert().Equal(members[i].Metadata, loadedMembers[i].Metadata)
 				s.Assert().Equal(members[i].Address, loadedMembers[i].Member)
 				s.Assert().Equal(members[i].Power, loadedMembers[i].Weight)
 				s.Assert().Equal(id, loadedMembers[i].GroupId)
@@ -224,7 +223,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			loadedGroups := groupsRes.Groups
 			s.Require().Equal(len(spec.expGroups), len(loadedGroups))
 			for i := range loadedGroups {
-				s.Assert().Equal(spec.expGroups[i].Comment, loadedGroups[i].Comment)
+				s.Assert().Equal(spec.expGroups[i].Metadata, loadedGroups[i].Metadata)
 				s.Assert().Equal(spec.expGroups[i].Admin, loadedGroups[i].Admin)
 				s.Assert().Equal(spec.expGroups[i].TotalWeight, loadedGroups[i].TotalWeight)
 				s.Assert().Equal(spec.expGroups[i].GroupId, loadedGroups[i].GroupId)
@@ -236,16 +235,16 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 
 func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
 	members := []group.Member{{
-		Address: s.addr1.String(),
-		Power:   "1",
-		Comment: "first member",
+		Address:  s.addr1.String(),
+		Power:    "1",
+		Metadata: nil,
 	}}
 	oldAdmin := s.addr2.String()
 	newAdmin := s.addr3.String()
 	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
-		Admin:   oldAdmin,
-		Members: members,
-		Comment: "test",
+		Admin:    oldAdmin,
+		Members:  members,
+		Metadata: nil,
 	})
 	s.Require().NoError(err)
 	groupID := groupRes.GroupId
@@ -264,7 +263,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
 			expStored: &group.GroupInfo{
 				GroupId:     groupID,
 				Admin:       newAdmin,
-				Comment:     "test",
+				Metadata:    nil,
 				TotalWeight: "1",
 				Version:     2,
 			},
@@ -279,7 +278,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
 			expStored: &group.GroupInfo{
 				GroupId:     groupID,
 				Admin:       oldAdmin,
-				Comment:     "test",
+				Metadata:    nil,
 				TotalWeight: "1",
 				Version:     1,
 			},
@@ -294,7 +293,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
 			expStored: &group.GroupInfo{
 				GroupId:     groupID,
 				Admin:       oldAdmin,
-				Comment:     "test",
+				Metadata:    nil,
 				TotalWeight: "1",
 				Version:     1,
 			},
@@ -318,55 +317,55 @@ func (s *IntegrationTestSuite) TestUpdateGroupAdmin() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestUpdateGroupComment() {
+func (s *IntegrationTestSuite) TestUpdateGroupMetadata() {
 	oldAdmin := s.addr1.String()
 	groupID := s.groupID
 
 	specs := map[string]struct {
-		req       *group.MsgUpdateGroupCommentRequest
+		req       *group.MsgUpdateGroupMetadataRequest
 		expErr    bool
 		expStored *group.GroupInfo
 	}{
 		"with correct admin": {
-			req: &group.MsgUpdateGroupCommentRequest{
-				GroupId: groupID,
-				Admin:   oldAdmin,
-				Comment: "new comment",
+			req: &group.MsgUpdateGroupMetadataRequest{
+				GroupId:  groupID,
+				Admin:    oldAdmin,
+				Metadata: []byte{1, 2, 3},
 			},
 			expStored: &group.GroupInfo{
 				GroupId:     groupID,
 				Admin:       oldAdmin,
-				Comment:     "new comment",
+				Metadata:    []byte{1, 2, 3},
 				TotalWeight: "1",
 				Version:     2,
 			},
 		},
 		"with wrong admin": {
-			req: &group.MsgUpdateGroupCommentRequest{
-				GroupId: groupID,
-				Admin:   s.addr3.String(),
-				Comment: "new comment",
+			req: &group.MsgUpdateGroupMetadataRequest{
+				GroupId:  groupID,
+				Admin:    s.addr3.String(),
+				Metadata: []byte{1, 2, 3},
 			},
 			expErr: true,
 			expStored: &group.GroupInfo{
 				GroupId:     groupID,
 				Admin:       oldAdmin,
-				Comment:     "test",
+				Metadata:    nil,
 				TotalWeight: "1",
 				Version:     1,
 			},
 		},
 		"with unknown groupid": {
-			req: &group.MsgUpdateGroupCommentRequest{
-				GroupId: 999,
-				Admin:   oldAdmin,
-				Comment: "new comment",
+			req: &group.MsgUpdateGroupMetadataRequest{
+				GroupId:  999,
+				Admin:    oldAdmin,
+				Metadata: []byte{1, 2, 3},
 			},
 			expErr: true,
 			expStored: &group.GroupInfo{
 				GroupId:     groupID,
 				Admin:       oldAdmin,
-				Comment:     "test",
+				Metadata:    nil,
 				TotalWeight: "1",
 				Version:     1,
 			},
@@ -377,7 +376,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupComment() {
 		s.Run(msg, func() {
 			sdkCtx, _ := s.sdkCtx.CacheContext()
 			ctx := types.Context{Context: sdkCtx}
-			_, err := s.msgClient.UpdateGroupComment(ctx, spec.req)
+			_, err := s.msgClient.UpdateGroupMetadata(ctx, spec.req)
 			if spec.expErr {
 				s.Require().Error(err)
 				return
@@ -396,16 +395,16 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 	member1 := "regen:1lu8jmm2yd7nz5u5mtadpcww4623fchx0majwe7"
 	member2 := "regen:185c67rvx7t4ps24vgnvumyaa7e468en8uwmanu"
 	members := []group.Member{{
-		Address: member1,
-		Power:   "1",
-		Comment: "first",
+		Address:  member1,
+		Power:    "1",
+		Metadata: nil,
 	}}
 
 	myAdmin := s.addr4.String()
 	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
-		Admin:   myAdmin,
-		Members: members,
-		Comment: "test",
+		Admin:    myAdmin,
+		Members:  members,
+		Metadata: nil,
 	})
 	s.Require().NoError(err)
 	groupID := groupRes.GroupId
@@ -421,30 +420,30 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				GroupId: groupID,
 				Admin:   myAdmin,
 				MemberUpdates: []group.Member{{
-					Address: member2,
-					Power:   "2",
-					Comment: "second",
+					Address:  member2,
+					Power:    "2",
+					Metadata: nil,
 				}},
 			},
 			expGroup: &group.GroupInfo{
 				GroupId:     groupID,
 				Admin:       myAdmin,
-				Comment:     "test",
+				Metadata:    nil,
 				TotalWeight: "3",
 				Version:     2,
 			},
 			expMembers: []*group.GroupMember{
 				{
-					Member:  member2,
-					GroupId: groupID,
-					Weight:  "2",
-					Comment: "second",
+					Member:   member2,
+					GroupId:  groupID,
+					Weight:   "2",
+					Metadata: nil,
 				},
 				{
-					Member:  member1,
-					GroupId: groupID,
-					Weight:  "1",
-					Comment: "first",
+					Member:   member1,
+					GroupId:  groupID,
+					Weight:   "1",
+					Metadata: nil,
 				},
 			},
 		},
@@ -453,24 +452,24 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				GroupId: groupID,
 				Admin:   myAdmin,
 				MemberUpdates: []group.Member{{
-					Address: member1,
-					Power:   "2",
-					Comment: "updated",
+					Address:  member1,
+					Power:    "2",
+					Metadata: []byte{1, 2, 3},
 				}},
 			},
 			expGroup: &group.GroupInfo{
 				GroupId:     groupID,
 				Admin:       myAdmin,
-				Comment:     "test",
+				Metadata:    nil,
 				TotalWeight: "2",
 				Version:     2,
 			},
 			expMembers: []*group.GroupMember{
 				{
-					Member:  member1,
-					GroupId: groupID,
-					Weight:  "2",
-					Comment: "updated",
+					Member:   member1,
+					GroupId:  groupID,
+					Weight:   "2",
+					Metadata: []byte{1, 2, 3},
 				},
 			},
 		},
@@ -486,7 +485,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 			expGroup: &group.GroupInfo{
 				GroupId:     groupID,
 				Admin:       myAdmin,
-				Comment:     "test",
+				Metadata:    nil,
 				TotalWeight: "1",
 				Version:     2,
 			},
@@ -504,29 +503,29 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				Admin:   myAdmin,
 				MemberUpdates: []group.Member{
 					{
-						Address: member1,
-						Power:   "0",
-						Comment: "good bye",
+						Address:  member1,
+						Power:    "0",
+						Metadata: nil,
 					},
 					{
-						Address: member2,
-						Power:   "1",
-						Comment: "welcome",
+						Address:  member2,
+						Power:    "1",
+						Metadata: nil,
 					},
 				},
 			},
 			expGroup: &group.GroupInfo{
 				GroupId:     groupID,
 				Admin:       myAdmin,
-				Comment:     "test",
+				Metadata:    nil,
 				TotalWeight: "1",
 				Version:     2,
 			},
 			expMembers: []*group.GroupMember{{
-				Member:  member2,
-				GroupId: groupID,
-				Weight:  "1",
-				Comment: "welcome",
+				Member:   member2,
+				GroupId:  groupID,
+				Weight:   "1",
+				Metadata: nil,
 			}},
 		},
 		"remove existing member": {
@@ -534,15 +533,15 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				GroupId: groupID,
 				Admin:   myAdmin,
 				MemberUpdates: []group.Member{{
-					Address: member1,
-					Power:   "0",
-					Comment: "good bye",
+					Address:  member1,
+					Power:    "0",
+					Metadata: nil,
 				}},
 			},
 			expGroup: &group.GroupInfo{
 				GroupId:     groupID,
 				Admin:       myAdmin,
-				Comment:     "test",
+				Metadata:    nil,
 				TotalWeight: "0",
 				Version:     2,
 			},
@@ -553,16 +552,16 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				GroupId: groupID,
 				Admin:   myAdmin,
 				MemberUpdates: []group.Member{{
-					Address: s.addr4.String(),
-					Power:   "0",
-					Comment: "good bye",
+					Address:  s.addr4.String(),
+					Power:    "0",
+					Metadata: nil,
 				}},
 			},
 			expErr: true,
 			expGroup: &group.GroupInfo{
 				GroupId:     groupID,
 				Admin:       myAdmin,
-				Comment:     "test",
+				Metadata:    nil,
 				TotalWeight: "1",
 				Version:     1,
 			},
@@ -577,16 +576,16 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				GroupId: groupID,
 				Admin:   s.addr3.String(),
 				MemberUpdates: []group.Member{{
-					Address: member1,
-					Power:   "2",
-					Comment: "second",
+					Address:  member1,
+					Power:    "2",
+					Metadata: nil,
 				}},
 			},
 			expErr: true,
 			expGroup: &group.GroupInfo{
 				GroupId:     groupID,
 				Admin:       myAdmin,
-				Comment:     "test",
+				Metadata:    nil,
 				TotalWeight: "1",
 				Version:     1,
 			},
@@ -601,16 +600,16 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 				GroupId: 999,
 				Admin:   myAdmin,
 				MemberUpdates: []group.Member{{
-					Address: member1,
-					Power:   "2",
-					Comment: "second",
+					Address:  member1,
+					Power:    "2",
+					Metadata: nil,
 				}},
 			},
 			expErr: true,
 			expGroup: &group.GroupInfo{
 				GroupId:     groupID,
 				Admin:       myAdmin,
-				Comment:     "test",
+				Metadata:    nil,
 				TotalWeight: "1",
 				Version:     1,
 			},
@@ -644,7 +643,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 			loadedMembers := membersRes.Members
 			s.Require().Equal(len(spec.expMembers), len(loadedMembers))
 			for i := range loadedMembers {
-				s.Assert().Equal(spec.expMembers[i].Comment, loadedMembers[i].Comment)
+				s.Assert().Equal(spec.expMembers[i].Metadata, loadedMembers[i].Metadata)
 				s.Assert().Equal(spec.expMembers[i].Member, loadedMembers[i].Member)
 				s.Assert().Equal(spec.expMembers[i].Weight, loadedMembers[i].Weight)
 				s.Assert().Equal(spec.expMembers[i].GroupId, loadedMembers[i].GroupId)
@@ -655,9 +654,9 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 
 func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
-		Admin:   s.addr1.String(),
-		Members: nil,
-		Comment: "test",
+		Admin:    s.addr1.String(),
+		Members:  nil,
+		Metadata: nil,
 	})
 	s.Require().NoError(err)
 	myGroupID := groupRes.GroupId
@@ -669,9 +668,9 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 	}{
 		"all good": {
 			req: &group.MsgCreateGroupAccountRequest{
-				Admin:   s.addr1.String(),
-				Comment: "test 1",
-				GroupId: myGroupID,
+				Admin:    s.addr1.String(),
+				Metadata: nil,
+				GroupId:  myGroupID,
 			},
 			policy: group.NewThresholdDecisionPolicy(
 				"1",
@@ -680,9 +679,9 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 		},
 		"decision policy threshold > total group weight": {
 			req: &group.MsgCreateGroupAccountRequest{
-				Admin:   s.addr1.String(),
-				Comment: "test 2",
-				GroupId: myGroupID,
+				Admin:    s.addr1.String(),
+				Metadata: nil,
+				GroupId:  myGroupID,
 			},
 			policy: group.NewThresholdDecisionPolicy(
 				"10",
@@ -691,9 +690,9 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 		},
 		"group id does not exists": {
 			req: &group.MsgCreateGroupAccountRequest{
-				Admin:   s.addr1.String(),
-				Comment: "test",
-				GroupId: 9999,
+				Admin:    s.addr1.String(),
+				Metadata: nil,
+				GroupId:  9999,
 			},
 			policy: group.NewThresholdDecisionPolicy(
 				"1",
@@ -703,9 +702,9 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 		},
 		"admin not group admin": {
 			req: &group.MsgCreateGroupAccountRequest{
-				Admin:   s.addr4.String(),
-				Comment: "test",
-				GroupId: myGroupID,
+				Admin:    s.addr4.String(),
+				Metadata: nil,
+				GroupId:  myGroupID,
 			},
 			policy: group.NewThresholdDecisionPolicy(
 				"1",
@@ -713,18 +712,18 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 			),
 			expErr: true,
 		},
-		"comment too long": {
-			req: &group.MsgCreateGroupAccountRequest{
-				Admin:   s.addr1.String(),
-				Comment: strings.Repeat("a", 256),
-				GroupId: myGroupID,
-			},
-			policy: group.NewThresholdDecisionPolicy(
-				"1",
-				gogotypes.Duration{Seconds: 1},
-			),
-			expErr: true,
-		},
+		// "comment too long": {
+		// 	req: &group.MsgCreateGroupAccountRequest{
+		// 		Admin:   s.addr1.String(),
+		// 		Metadata: strings.Repeat("a", 256),
+		// 		GroupId: myGroupID,
+		// 	},
+		// 	policy: group.NewThresholdDecisionPolicy(
+		// 		"1",
+		// 		gogotypes.Duration{Seconds: 1},
+		// 	),
+		// 	expErr: true,
+		// },
 	}
 
 	for msg, spec := range specs {
@@ -749,7 +748,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 			s.Assert().Equal(addr, groupAccount.GroupAccount)
 			s.Assert().Equal(myGroupID, groupAccount.GroupId)
 			s.Assert().Equal(spec.req.Admin, groupAccount.Admin)
-			s.Assert().Equal(spec.req.Comment, groupAccount.Comment)
+			s.Assert().Equal(spec.req.Metadata, groupAccount.Metadata)
 			s.Assert().Equal(uint64(1), groupAccount.Version)
 			s.Assert().Equal(spec.policy.(*group.ThresholdDecisionPolicy), groupAccount.GetDecisionPolicy())
 		})
@@ -759,9 +758,9 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 	admin := s.addr2
 	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
-		Admin:   admin.String(),
-		Members: nil,
-		Comment: "test",
+		Admin:    admin.String(),
+		Members:  nil,
+		Metadata: nil,
 	})
 	s.Require().NoError(err)
 	myGroupID := groupRes.GroupId
@@ -782,9 +781,9 @@ func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 	reqs := make([]*group.MsgCreateGroupAccountRequest, count)
 	for i := range addrs {
 		req := &group.MsgCreateGroupAccountRequest{
-			Admin:   admin.String(),
-			Comment: fmt.Sprintf("test %d", i),
-			GroupId: myGroupID,
+			Admin:    admin.String(),
+			Metadata: nil,
+			GroupId:  myGroupID,
 		}
 		err := req.SetDecisionPolicy(policies[i])
 		s.Require().NoError(err)
@@ -805,7 +804,7 @@ func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 		s.Assert().Equal(addrs[i], accounts[len(accounts)-i-1].GroupAccount)
 		s.Assert().Equal(myGroupID, accounts[len(accounts)-i-1].GroupId)
 		s.Assert().Equal(admin.String(), accounts[len(accounts)-i-1].Admin)
-		s.Assert().Equal(reqs[i].Comment, accounts[len(accounts)-i-1].Comment)
+		s.Assert().Equal(reqs[i].Metadata, accounts[len(accounts)-i-1].Metadata)
 		s.Assert().Equal(uint64(1), accounts[len(accounts)-i-1].Version)
 		s.Assert().Equal(policies[i].(*group.ThresholdDecisionPolicy), accounts[len(accounts)-i-1].GetDecisionPolicy())
 	}
@@ -822,7 +821,7 @@ func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 		s.Assert().Equal(myGroupID, accounts[i].GroupId)
 		s.Assert().Equal(admin.String(), accounts[i].Admin)
 		s.Assert().Equal(addrs[i], accounts[count-i-1].GroupAccount)
-		s.Assert().Equal(reqs[i].Comment, accounts[count-i-1].Comment)
+		s.Assert().Equal(reqs[i].Metadata, accounts[count-i-1].Metadata)
 		s.Assert().Equal(policies[i].(*group.ThresholdDecisionPolicy), accounts[count-i-1].GetDecisionPolicy())
 	}
 }
@@ -831,9 +830,9 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 	myGroupID := s.groupID
 
 	accountReq := &group.MsgCreateGroupAccountRequest{
-		Admin:   s.addr1.String(),
-		GroupId: myGroupID,
-		Comment: "test",
+		Admin:    s.addr1.String(),
+		GroupId:  myGroupID,
+		Metadata: nil,
 	}
 	accountAddr := s.groupAccountAddr
 
@@ -869,17 +868,17 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 				Amount:      sdk.Coins{sdk.NewInt64Coin("token", 100)},
 			}},
 		},
-		"comment too long": {
-			req: &group.MsgCreateProposalRequest{
-				GroupAccount: accountAddr.String(),
-				Comment:      strings.Repeat("a", 256),
-				Proposers:    []string{s.addr2.String()},
-			},
-			expErr: true,
-		},
+		// "comment too long": {
+		// 	req: &group.MsgCreateProposalRequest{
+		// 		GroupAccount: accountAddr.String(),
+		// 		Metadata:      strings.Repeat("a", 256),
+		// 		Proposers:    []string{s.addr2.String()},
+		// 	},
+		// 	expErr: true,
+		// },
 		"group account required": {
 			req: &group.MsgCreateProposalRequest{
-				Comment:   "test",
+				Metadata:  nil,
 				Proposers: []string{s.addr2.String()},
 			},
 			expErr: true,
@@ -922,7 +921,7 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 		"admin that is not a group member can not create proposal": {
 			req: &group.MsgCreateProposalRequest{
 				GroupAccount: accountAddr.String(),
-				Comment:      "test",
+				Metadata:     nil,
 				Proposers:    []string{s.addr1.String()},
 			},
 			expErr: true,
@@ -930,7 +929,7 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 		"reject msgs that are not authz by group account": {
 			req: &group.MsgCreateProposalRequest{
 				GroupAccount: accountAddr.String(),
-				Comment:      "test",
+				Metadata:     nil,
 				Proposers:    []string{s.addr2.String()},
 			},
 			msgs:   []sdk.Msg{&testdata.MsgAuthenticated{Signers: []sdk.AccAddress{s.addr1}}},
@@ -957,7 +956,7 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 			proposal := proposalRes.Proposal
 
 			s.Assert().Equal(accountAddr.String(), proposal.GroupAccount)
-			s.Assert().Equal(spec.req.Comment, proposal.Comment)
+			s.Assert().Equal(spec.req.Metadata, proposal.Metadata)
 			s.Assert().Equal(spec.req.Proposers, proposal.Proposers)
 
 			submittedAt, err := gogotypes.TimestampFromProto(&proposal.SubmittedAt)
@@ -994,9 +993,9 @@ func (s *IntegrationTestSuite) TestVote() {
 		{Address: s.addr3.String(), Power: "2"},
 	}
 	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
-		Admin:   s.addr1.String(),
-		Members: members,
-		Comment: "test",
+		Admin:    s.addr1.String(),
+		Members:  members,
+		Metadata: nil,
 	})
 	s.Require().NoError(err)
 	myGroupID := groupRes.GroupId
@@ -1006,9 +1005,9 @@ func (s *IntegrationTestSuite) TestVote() {
 		gogotypes.Duration{Seconds: 1},
 	)
 	accountReq := &group.MsgCreateGroupAccountRequest{
-		Admin:   s.addr1.String(),
-		GroupId: myGroupID,
-		Comment: "test",
+		Admin:    s.addr1.String(),
+		GroupId:  myGroupID,
+		Metadata: nil,
 	}
 	err = accountReq.SetDecisionPolicy(policy)
 	s.Require().NoError(err)
@@ -1018,7 +1017,7 @@ func (s *IntegrationTestSuite) TestVote() {
 
 	req := &group.MsgCreateProposalRequest{
 		GroupAccount: accountAddr,
-		Comment:      "integration test",
+		Metadata:     nil,
 		Proposers:    []string{s.addr2.String()},
 		Msgs:         nil,
 	}
@@ -1034,7 +1033,7 @@ func (s *IntegrationTestSuite) TestVote() {
 	proposals := proposalsRes.Proposals
 	s.Require().Equal(len(proposals), 1)
 	s.Assert().Equal(req.GroupAccount, proposals[0].GroupAccount)
-	s.Assert().Equal(req.Comment, proposals[0].Comment)
+	s.Assert().Equal(req.Metadata, proposals[0].Metadata)
 	s.Assert().Equal(req.Proposers, proposals[0].Proposers)
 
 	submittedAt, err := gogotypes.TimestampFromProto(&proposals[0].SubmittedAt)
@@ -1152,11 +1151,11 @@ func (s *IntegrationTestSuite) TestVote() {
 			},
 			expErr: true,
 		},
-		"comment too long": {
+		"metadata too long": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Comment:    strings.Repeat("a", 256),
 				Voter:      s.addr2.String(),
+				Metadata:   bytes.Repeat([]byte{1}, 256),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			expErr: true,
@@ -1263,10 +1262,10 @@ func (s *IntegrationTestSuite) TestVote() {
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			doBefore: func(ctx context.Context) {
-				_, err = s.msgClient.UpdateGroupComment(ctx, &group.MsgUpdateGroupCommentRequest{
-					GroupId: myGroupID,
-					Admin:   s.addr1.String(),
-					Comment: "group modified",
+				_, err = s.msgClient.UpdateGroupMetadata(ctx, &group.MsgUpdateGroupMetadataRequest{
+					GroupId:  myGroupID,
+					Admin:    s.addr1.String(),
+					Metadata: []byte{1, 2, 3},
 				})
 				s.Require().NoError(err)
 			},
@@ -1282,7 +1281,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		// 	doBefore: func(ctx context.Context) {
 		// 		a, err := s.groupKeeper.GetGroupAccount(ctx, accountAddr)
 		// 		s.Require().NoError(err)
-		// 		a.Comment = "policy modified"
+		// 		a.Metadata = "policy modified"
 		// 		s.Require().NoError(s.groupKeeper.UpdateGroupAccount(ctx, &a))
 		// 	},
 		// 	expErr: true,
@@ -1319,7 +1318,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			s.Assert().Equal(spec.req.ProposalId, loaded.ProposalId)
 			s.Assert().Equal(spec.req.Voter, loaded.Voter)
 			s.Assert().Equal(spec.req.Choice, loaded.Choice)
-			s.Assert().Equal(spec.req.Comment, loaded.Comment)
+			s.Assert().Equal(spec.req.Metadata, loaded.Metadata)
 			submittedAt, err := gogotypes.TimestampFromProto(&loaded.SubmittedAt)
 			s.Require().NoError(err)
 			s.Assert().Equal(s.blockTime, submittedAt)
@@ -1335,7 +1334,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			s.Assert().Equal(spec.req.ProposalId, vote.ProposalId)
 			s.Assert().Equal(spec.req.Voter, vote.Voter)
 			s.Assert().Equal(spec.req.Choice, vote.Choice)
-			s.Assert().Equal(spec.req.Comment, vote.Comment)
+			s.Assert().Equal(spec.req.Metadata, vote.Metadata)
 			submittedAt, err = gogotypes.TimestampFromProto(&vote.SubmittedAt)
 			s.Require().NoError(err)
 			s.Assert().Equal(s.blockTime, submittedAt)
@@ -1351,7 +1350,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			s.Assert().Equal(spec.req.ProposalId, votesByVoter[0].ProposalId)
 			s.Assert().Equal(voter, votesByVoter[0].Voter)
 			s.Assert().Equal(spec.req.Choice, votesByVoter[0].Choice)
-			s.Assert().Equal(spec.req.Comment, votesByVoter[0].Comment)
+			s.Assert().Equal(spec.req.Metadata, votesByVoter[0].Metadata)
 			submittedAt, err = gogotypes.TimestampFromProto(&votesByVoter[0].SubmittedAt)
 			s.Require().NoError(err)
 			s.Assert().Equal(s.blockTime, submittedAt)
@@ -1521,10 +1520,10 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 				myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
 
 				// then modify group
-				_, err := s.msgClient.UpdateGroupComment(ctx, &group.MsgUpdateGroupCommentRequest{
-					Admin:   s.addr1.String(),
-					GroupId: s.groupID,
-					Comment: "group modified before tally",
+				_, err := s.msgClient.UpdateGroupMetadata(ctx, &group.MsgUpdateGroupMetadataRequest{
+					Admin:    s.addr1.String(),
+					GroupId:  s.groupID,
+					Metadata: []byte{1, 2, 3},
 				})
 				s.Require().NoError(err)
 				return myProposalID
@@ -1541,7 +1540,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		// 		// then modify group account
 		// 		a, err := s.groupKeeper.GetGroupAccount(ctx, s.groupAccountAddr)
 		// 		s.Require().NoError(err)
-		// 		a.Comment = "group account modified before tally"
+		// 		a.Metadata = "group account modified before tally"
 		// 		s.Require().NoError(s.groupKeeper.UpdateGroupAccount(ctx, &a))
 		// 		return myProposalID
 		// 	},
@@ -1652,7 +1651,7 @@ func createProposal(
 	proposalReq := &group.MsgCreateProposalRequest{
 		GroupAccount: s.groupAccountAddr.String(),
 		Proposers:    proposers,
-		Comment:      "test",
+		Metadata:     nil,
 	}
 	err := proposalReq.SetMsgs(msgs)
 	s.Require().NoError(err)

@@ -12,7 +12,7 @@ import "regen/group/v1alpha1/types.proto";
 // Msg is the regen.group.v1alpha1 Msg service.
 service Msg {
 
-    // CreateGroup creates a new group with an admin account address, a list of members and an comment.
+    // CreateGroup creates a new group with an admin account address, a list of members and some optional metadata.
     rpc CreateGroup(MsgCreateGroupRequest) returns (MsgCreateGroupResponse);
 
     // UpdateGroupMembers updates the group members with given group id and admin address.
@@ -21,8 +21,8 @@ service Msg {
     // UpdateGroupAdmin updates the group admin with given group id and previous admin address.
     rpc UpdateGroupAdmin(MsgUpdateGroupAdminRequest) returns (MsgUpdateGroupAdminResponse);
 
-    // UpdateGroupComment updates the group comment with given group id and admin address.
-    rpc UpdateGroupComment(MsgUpdateGroupCommentRequest) returns (MsgUpdateGroupCommentResponse);
+    // UpdateGroupMetadata updates the group metadata with given group id and admin address.
+    rpc UpdateGroupMetadata(MsgUpdateGroupMetadataRequest) returns (MsgUpdateGroupMetadataResponse);
 
     // CreateGroupAccount creates a new group account using given DecisionPolicy. 
     rpc CreateGroupAccount(MsgCreateGroupAccountRequest) returns (MsgCreateGroupAccountResponse);
@@ -33,8 +33,8 @@ service Msg {
     // UpdateGroupAccountDecisionPolicy allows a group account decision policy to be updated.
     rpc UpdateGroupAccountDecisionPolicy(MsgUpdateGroupAccountDecisionPolicyRequest) returns (MsgUpdateGroupAccountDecisionPolicyResponse);
 
-    // UpdateGroupAccountComment updates a group account comment.
-    rpc UpdateGroupAccountComment(MsgUpdateGroupAccountCommentRequest) returns (MsgUpdateGroupAccountCommentResponse);
+    // UpdateGroupAccountMetadata updates a group account metadata.
+    rpc UpdateGroupAccountMetadata(MsgUpdateGroupAccountMetadataRequest) returns (MsgUpdateGroupAccountMetadataResponse);
 
     // CreateProposal submits a new proposal.
     rpc CreateProposal(MsgCreateProposalRequest) returns (MsgCreateProposalResponse);
@@ -59,8 +59,8 @@ message MsgCreateGroupRequest {
     // members defines the group members.
     repeated Member members = 2 [(gogoproto.nullable) = false];
     
-    // group is the group's comment.
-    string comment = 3;
+    // metadata is any arbitrary metadata to attached to the group.
+    bytes metadata = 3;
 }
 
 // MsgCreateGroupResponse is the Msg/CreateGroup response type.
@@ -103,8 +103,8 @@ message MsgUpdateGroupAdminRequest {
 // MsgUpdateGroupAdminResponse is the Msg/UpdateGroupAdmin response type.
 message MsgUpdateGroupAdminResponse { }
 
-// MsgUpdateGroupCommentRequest is the Msg/UpdateGroupComment request type.
-message MsgUpdateGroupCommentRequest {
+// MsgUpdateGroupMetadataRequest is the Msg/UpdateGroupMetadata request type.
+message MsgUpdateGroupMetadataRequest {
 
     // admin is the account address of the group admin.
     string admin = 1;
@@ -112,12 +112,12 @@ message MsgUpdateGroupCommentRequest {
     // group_id is the unique ID of the group.
     uint64 group_id = 2 [(gogoproto.casttype) = "ID"];
     
-    // comment is the updated group's comment.
-    string comment = 3;
+    // metadata is the updated group's metadata.
+    bytes metadata = 3;
 }
 
-// MsgUpdateGroupCommentResponse is the Msg/UpdateGroupComment response type.
-message MsgUpdateGroupCommentResponse { }
+// MsgUpdateGroupMetadataResponse is the Msg/UpdateGroupMetadata response type.
+message MsgUpdateGroupMetadataResponse { }
 
 //
 // Group Accounts
@@ -133,8 +133,8 @@ message MsgCreateGroupAccountRequest {
     // group_id is the unique ID of the group.
     uint64 group_id = 2 [(gogoproto.casttype) = "ID"];
     
-    // comment is the group account's comment.
-    string comment = 3;
+    // metadata is any arbitrary metadata to attached to the group account.
+    bytes metadata = 3;
 
     // decision_policy specifies the group account's decision policy.
     google.protobuf.Any decision_policy = 4 [(cosmos_proto.accepts_interface) = "DecisionPolicy"];
@@ -180,8 +180,8 @@ message MsgUpdateGroupAccountDecisionPolicyRequest {
 // MsgUpdateGroupAccountDecisionPolicyResponse is the Msg/UpdateGroupAccountDecisionPolicy response type.
 message MsgUpdateGroupAccountDecisionPolicyResponse { }
 
-// MsgUpdateGroupAccountCommentRequest is the Msg/UpdateGroupAccountComment request type.
-message MsgUpdateGroupAccountCommentRequest {
+// MsgUpdateGroupAccountMetadataRequest is the Msg/UpdateGroupAccountMetadata request type.
+message MsgUpdateGroupAccountMetadataRequest {
 
     // admin is the account address of the group admin.
     string admin = 1;
@@ -189,12 +189,12 @@ message MsgUpdateGroupAccountCommentRequest {
     // group_account is the group account address.
     string group_account = 2;
     
-    // comment is the updated group account comment.
-    string comment = 3;
+    // metadata is the updated group account metadata.
+    bytes metadata = 3;
 }
 
-// MsgUpdateGroupAccountCommentResponse is the Msg/UpdateGroupAccountComment response type.
-message MsgUpdateGroupAccountCommentResponse { }
+// MsgUpdateGroupAccountMetadataResponse is the Msg/UpdateGroupAccountMetadata response type.
+message MsgUpdateGroupAccountMetadataResponse { }
 
 //
 // Proposals and Voting
@@ -211,8 +211,8 @@ message MsgCreateProposalRequest {
     // Proposers signatures will be counted as yes votes.
     repeated string proposers = 2;
     
-    // comment is the proposal's comment.
-    string comment = 3;
+    // metadata is any arbitrary metadata to attached to the proposal.
+    bytes metadata = 3;
 
     // msgs is a list of Msgs that will be executed if the proposal passes.
     repeated google.protobuf.Any msgs = 4;
@@ -237,8 +237,8 @@ message MsgVoteRequest {
     // choice is the voter's choice on the proposal.
     Choice choice = 3;
 
-    // comment's is the vote's comment.
-    string comment = 4;
+    // metadata is any arbitrary metadata to attached to the vote.
+    bytes metadata = 4;
 }
 
 // MsgVoteResponse is the Msg/Vote response type.

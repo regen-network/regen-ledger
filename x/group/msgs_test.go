@@ -196,7 +196,7 @@ func TestMsgCreateGroupAccount(t *testing.T) {
 			m, err := NewMsgCreateGroupAccountRequest(
 				spec.admin,
 				spec.group,
-				"any comment",
+				nil,
 				&ThresholdDecisionPolicy{
 					Threshold: spec.threshold,
 					Timeout:   spec.timeout,

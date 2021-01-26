@@ -16,7 +16,7 @@ import (
 )
 
 func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequest) (*group.MsgCreateGroupResponse, error) {
-	comment := req.Comment
+	metadata := req.Metadata
 	members := group.Members(req.Members)
 	admin := req.Admin
 
@@ -25,14 +25,14 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 	}
 
 	maxMetadataLength := s.maxMetadataLength(ctx)
-	if err := assertMetadataLength(comment, maxMetadataLength, "group comment"); err != nil {
+	if err := assertMetadataLength(metadata, maxMetadataLength, "group metadata"); err != nil {
 		return nil, err
 	}
 
 	totalWeight := apd.New(0, 0)
 	for i := range members {
 		m := members[i]
-		if err := assertMetadataLength(m.Comment, maxMetadataLength, "member comment"); err != nil {
+		if err := assertMetadataLength(m.Metadata, maxMetadataLength, "member metadata"); err != nil {
 			return nil, err
 		}
 
@@ -53,7 +53,7 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 	err := s.groupTable.Create(ctx, groupID.Bytes(), &group.GroupInfo{
 		GroupId:     groupID,
 		Admin:       admin,
-		Comment:     comment,
+		Metadata:    metadata,
 		Version:     1,
 		TotalWeight: math.DecimalString(totalWeight),
 	})
@@ -64,10 +64,10 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 	for i := range members {
 		m := members[i]
 		err := s.groupMemberTable.Create(ctx, &group.GroupMember{
-			GroupId: groupID,
-			Member:  m.Address,
-			Weight:  m.Power,
-			Comment: m.Comment,
+			GroupId:  groupID,
+			Member:   m.Address,
+			Weight:   m.Power,
+			Metadata: m.Metadata,
 		})
 		if err != nil {
 			return nil, sdkerrors.Wrapf(err, "could not store member %d", i)
@@ -87,9 +87,9 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 	action := func(g *group.GroupInfo) error {
 		for i := range req.MemberUpdates {
 			member := group.GroupMember{GroupId: req.GroupId,
-				Member:  req.MemberUpdates[i].Address,
-				Weight:  req.MemberUpdates[i].Power,
-				Comment: req.MemberUpdates[i].Comment,
+				Member:   req.MemberUpdates[i].Address,
+				Weight:   req.MemberUpdates[i].Power,
+				Metadata: req.MemberUpdates[i].Metadata,
 			}
 			var found bool
 			var previousMember group.GroupMember
@@ -182,19 +182,19 @@ func (s serverImpl) UpdateGroupAdmin(ctx types.Context, req *group.MsgUpdateGrou
 	return &group.MsgUpdateGroupAdminResponse{}, nil
 }
 
-func (s serverImpl) UpdateGroupComment(ctx types.Context, req *group.MsgUpdateGroupCommentRequest) (*group.MsgUpdateGroupCommentResponse, error) {
+func (s serverImpl) UpdateGroupMetadata(ctx types.Context, req *group.MsgUpdateGroupMetadataRequest) (*group.MsgUpdateGroupMetadataResponse, error) {
 	action := func(g *group.GroupInfo) error {
-		g.Comment = req.Comment
+		g.Metadata = req.Metadata
 		g.Version++
 		return s.groupTable.Save(ctx, g.GroupId.Bytes(), g)
 	}
 
-	err := s.doUpdateGroup(ctx, req, action, "comment updated")
+	err := s.doUpdateGroup(ctx, req, action, "metadata updated")
 	if err != nil {
 		return nil, err
 	}
 
-	return &group.MsgUpdateGroupCommentResponse{}, nil
+	return &group.MsgUpdateGroupMetadataResponse{}, nil
 }
 
 func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGroupAccountRequest) (*group.MsgCreateGroupAccountResponse, error) {
@@ -204,9 +204,9 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 	}
 	policy := req.GetDecisionPolicy()
 	groupID := req.GetGroupID()
-	comment := req.GetComment()
+	metadata := req.GetMetadata()
 
-	if err := assertMetadataLength(comment, s.maxMetadataLength(ctx), "group account comment"); err != nil {
+	if err := assertMetadataLength(metadata, s.maxMetadataLength(ctx), "group account metadata"); err != nil {
 		return nil, err
 	}
 
@@ -226,7 +226,7 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 		accountAddr,
 		groupID,
 		admin,
-		comment,
+		metadata,
 		1,
 		policy,
 	)
@@ -256,9 +256,9 @@ func (s serverImpl) UpdateGroupAccountDecisionPolicy(ctx types.Context, req *gro
 	return &group.MsgUpdateGroupAccountDecisionPolicyResponse{}, nil
 }
 
-func (s serverImpl) UpdateGroupAccountComment(ctx types.Context, req *group.MsgUpdateGroupAccountCommentRequest) (*group.MsgUpdateGroupAccountCommentResponse, error) {
+func (s serverImpl) UpdateGroupAccountMetadata(ctx types.Context, req *group.MsgUpdateGroupAccountMetadataRequest) (*group.MsgUpdateGroupAccountMetadataResponse, error) {
 	// TODO #224
-	return &group.MsgUpdateGroupAccountCommentResponse{}, nil
+	return &group.MsgUpdateGroupAccountMetadataResponse{}, nil
 }
 
 func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreateProposalRequest) (*group.MsgCreateProposalResponse, error) {
@@ -266,11 +266,11 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "request group account")
 	}
-	comment := req.Comment
+	metadata := req.Metadata
 	proposers := req.Proposers
 	msgs := req.GetMsgs()
 
-	if err := assertMetadataLength(comment, s.maxMetadataLength(ctx), "comment"); err != nil {
+	if err := assertMetadataLength(metadata, s.maxMetadataLength(ctx), "metadata"); err != nil {
 		return nil, err
 	}
 
@@ -325,7 +325,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 
 	m := &group.Proposal{
 		GroupAccount:        req.GroupAccount,
-		Comment:             comment,
+		Metadata:            metadata,
 		Proposers:           proposers,
 		SubmittedAt:         *blockTime,
 		GroupVersion:        g.Version,
@@ -358,9 +358,9 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.MsgVoteResponse, error) {
 	id := req.ProposalId
 	choice := req.Choice
-	comment := req.Comment
+	metadata := req.Metadata
 
-	if err := assertMetadataLength(comment, s.maxMetadataLength(ctx), "comment"); err != nil {
+	if err := assertMetadataLength(metadata, s.maxMetadataLength(ctx), "metadata"); err != nil {
 		return nil, err
 	}
 
@@ -414,7 +414,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 		ProposalId:  id,
 		Voter:       voterAddr,
 		Choice:      choice,
-		Comment:     comment,
+		Metadata:    metadata,
 		SubmittedAt: *blockTime,
 	}
 	if err := proposal.VoteState.Add(newVote, voter.Weight); err != nil {

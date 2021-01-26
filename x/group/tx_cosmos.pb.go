@@ -16,22 +16,22 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MsgClient interface {
-	// CreateGroup creates a new group with an admin account address, a list of members and an comment.
+	// CreateGroup creates a new group with an admin account address, a list of members and some optional metadata.
 	CreateGroup(ctx context.Context, in *MsgCreateGroupRequest, opts ...grpc.CallOption) (*MsgCreateGroupResponse, error)
 	// UpdateGroupMembers updates the group members with given group id and admin address.
 	UpdateGroupMembers(ctx context.Context, in *MsgUpdateGroupMembersRequest, opts ...grpc.CallOption) (*MsgUpdateGroupMembersResponse, error)
 	// UpdateGroupAdmin updates the group admin with given group id and previous admin address.
 	UpdateGroupAdmin(ctx context.Context, in *MsgUpdateGroupAdminRequest, opts ...grpc.CallOption) (*MsgUpdateGroupAdminResponse, error)
-	// UpdateGroupComment updates the group comment with given group id and admin address.
-	UpdateGroupComment(ctx context.Context, in *MsgUpdateGroupCommentRequest, opts ...grpc.CallOption) (*MsgUpdateGroupCommentResponse, error)
+	// UpdateGroupMetadata updates the group metadata with given group id and admin address.
+	UpdateGroupMetadata(ctx context.Context, in *MsgUpdateGroupMetadataRequest, opts ...grpc.CallOption) (*MsgUpdateGroupMetadataResponse, error)
 	// CreateGroupAccount creates a new group account using given DecisionPolicy.
 	CreateGroupAccount(ctx context.Context, in *MsgCreateGroupAccountRequest, opts ...grpc.CallOption) (*MsgCreateGroupAccountResponse, error)
 	// UpdateGroupAccountAdmin updates a group account admin.
 	UpdateGroupAccountAdmin(ctx context.Context, in *MsgUpdateGroupAccountAdminRequest, opts ...grpc.CallOption) (*MsgUpdateGroupAccountAdminResponse, error)
 	// UpdateGroupAccountDecisionPolicy allows a group account decision policy to be updated.
 	UpdateGroupAccountDecisionPolicy(ctx context.Context, in *MsgUpdateGroupAccountDecisionPolicyRequest, opts ...grpc.CallOption) (*MsgUpdateGroupAccountDecisionPolicyResponse, error)
-	// UpdateGroupAccountComment updates a group account comment.
-	UpdateGroupAccountComment(ctx context.Context, in *MsgUpdateGroupAccountCommentRequest, opts ...grpc.CallOption) (*MsgUpdateGroupAccountCommentResponse, error)
+	// UpdateGroupAccountMetadata updates a group account metadata.
+	UpdateGroupAccountMetadata(ctx context.Context, in *MsgUpdateGroupAccountMetadataRequest, opts ...grpc.CallOption) (*MsgUpdateGroupAccountMetadataResponse, error)
 	// CreateProposal submits a new proposal.
 	CreateProposal(ctx context.Context, in *MsgCreateProposalRequest, opts ...grpc.CallOption) (*MsgCreateProposalResponse, error)
 	// Vote allows a voter to vote on a proposal.
@@ -45,11 +45,11 @@ type msgClient struct {
 	_CreateGroup                      types.Invoker
 	_UpdateGroupMembers               types.Invoker
 	_UpdateGroupAdmin                 types.Invoker
-	_UpdateGroupComment               types.Invoker
+	_UpdateGroupMetadata              types.Invoker
 	_CreateGroupAccount               types.Invoker
 	_UpdateGroupAccountAdmin          types.Invoker
 	_UpdateGroupAccountDecisionPolicy types.Invoker
-	_UpdateGroupAccountComment        types.Invoker
+	_UpdateGroupAccountMetadata       types.Invoker
 	_CreateProposal                   types.Invoker
 	_Vote                             types.Invoker
 	_Exec                             types.Invoker
@@ -128,23 +128,23 @@ func (c *msgClient) UpdateGroupAdmin(ctx context.Context, in *MsgUpdateGroupAdmi
 	return out, nil
 }
 
-func (c *msgClient) UpdateGroupComment(ctx context.Context, in *MsgUpdateGroupCommentRequest, opts ...grpc.CallOption) (*MsgUpdateGroupCommentResponse, error) {
-	if invoker := c._UpdateGroupComment; invoker != nil {
-		var out MsgUpdateGroupCommentResponse
+func (c *msgClient) UpdateGroupMetadata(ctx context.Context, in *MsgUpdateGroupMetadataRequest, opts ...grpc.CallOption) (*MsgUpdateGroupMetadataResponse, error) {
+	if invoker := c._UpdateGroupMetadata; invoker != nil {
+		var out MsgUpdateGroupMetadataResponse
 		err := invoker(ctx, in, &out)
 		return &out, err
 	}
 	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
 		var err error
-		c._UpdateGroupComment, err = invokerConn.Invoker("/regen.group.v1alpha1.Msg/UpdateGroupComment")
+		c._UpdateGroupMetadata, err = invokerConn.Invoker("/regen.group.v1alpha1.Msg/UpdateGroupMetadata")
 		if err != nil {
-			var out MsgUpdateGroupCommentResponse
-			err = c._UpdateGroupComment(ctx, in, &out)
+			var out MsgUpdateGroupMetadataResponse
+			err = c._UpdateGroupMetadata(ctx, in, &out)
 			return &out, err
 		}
 	}
-	out := new(MsgUpdateGroupCommentResponse)
-	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/UpdateGroupComment", in, out, opts...)
+	out := new(MsgUpdateGroupMetadataResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/UpdateGroupMetadata", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -220,23 +220,23 @@ func (c *msgClient) UpdateGroupAccountDecisionPolicy(ctx context.Context, in *Ms
 	return out, nil
 }
 
-func (c *msgClient) UpdateGroupAccountComment(ctx context.Context, in *MsgUpdateGroupAccountCommentRequest, opts ...grpc.CallOption) (*MsgUpdateGroupAccountCommentResponse, error) {
-	if invoker := c._UpdateGroupAccountComment; invoker != nil {
-		var out MsgUpdateGroupAccountCommentResponse
+func (c *msgClient) UpdateGroupAccountMetadata(ctx context.Context, in *MsgUpdateGroupAccountMetadataRequest, opts ...grpc.CallOption) (*MsgUpdateGroupAccountMetadataResponse, error) {
+	if invoker := c._UpdateGroupAccountMetadata; invoker != nil {
+		var out MsgUpdateGroupAccountMetadataResponse
 		err := invoker(ctx, in, &out)
 		return &out, err
 	}
 	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
 		var err error
-		c._UpdateGroupAccountComment, err = invokerConn.Invoker("/regen.group.v1alpha1.Msg/UpdateGroupAccountComment")
+		c._UpdateGroupAccountMetadata, err = invokerConn.Invoker("/regen.group.v1alpha1.Msg/UpdateGroupAccountMetadata")
 		if err != nil {
-			var out MsgUpdateGroupAccountCommentResponse
-			err = c._UpdateGroupAccountComment(ctx, in, &out)
+			var out MsgUpdateGroupAccountMetadataResponse
+			err = c._UpdateGroupAccountMetadata(ctx, in, &out)
 			return &out, err
 		}
 	}
-	out := new(MsgUpdateGroupAccountCommentResponse)
-	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/UpdateGroupAccountComment", in, out, opts...)
+	out := new(MsgUpdateGroupAccountMetadataResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/UpdateGroupAccountMetadata", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -314,22 +314,22 @@ func (c *msgClient) Exec(ctx context.Context, in *MsgExecRequest, opts ...grpc.C
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	// CreateGroup creates a new group with an admin account address, a list of members and an comment.
+	// CreateGroup creates a new group with an admin account address, a list of members and some optional metadata.
 	CreateGroup(types.Context, *MsgCreateGroupRequest) (*MsgCreateGroupResponse, error)
 	// UpdateGroupMembers updates the group members with given group id and admin address.
 	UpdateGroupMembers(types.Context, *MsgUpdateGroupMembersRequest) (*MsgUpdateGroupMembersResponse, error)
 	// UpdateGroupAdmin updates the group admin with given group id and previous admin address.
 	UpdateGroupAdmin(types.Context, *MsgUpdateGroupAdminRequest) (*MsgUpdateGroupAdminResponse, error)
-	// UpdateGroupComment updates the group comment with given group id and admin address.
-	UpdateGroupComment(types.Context, *MsgUpdateGroupCommentRequest) (*MsgUpdateGroupCommentResponse, error)
+	// UpdateGroupMetadata updates the group metadata with given group id and admin address.
+	UpdateGroupMetadata(types.Context, *MsgUpdateGroupMetadataRequest) (*MsgUpdateGroupMetadataResponse, error)
 	// CreateGroupAccount creates a new group account using given DecisionPolicy.
 	CreateGroupAccount(types.Context, *MsgCreateGroupAccountRequest) (*MsgCreateGroupAccountResponse, error)
 	// UpdateGroupAccountAdmin updates a group account admin.
 	UpdateGroupAccountAdmin(types.Context, *MsgUpdateGroupAccountAdminRequest) (*MsgUpdateGroupAccountAdminResponse, error)
 	// UpdateGroupAccountDecisionPolicy allows a group account decision policy to be updated.
 	UpdateGroupAccountDecisionPolicy(types.Context, *MsgUpdateGroupAccountDecisionPolicyRequest) (*MsgUpdateGroupAccountDecisionPolicyResponse, error)
-	// UpdateGroupAccountComment updates a group account comment.
-	UpdateGroupAccountComment(types.Context, *MsgUpdateGroupAccountCommentRequest) (*MsgUpdateGroupAccountCommentResponse, error)
+	// UpdateGroupAccountMetadata updates a group account metadata.
+	UpdateGroupAccountMetadata(types.Context, *MsgUpdateGroupAccountMetadataRequest) (*MsgUpdateGroupAccountMetadataResponse, error)
 	// CreateProposal submits a new proposal.
 	CreateProposal(types.Context, *MsgCreateProposalRequest) (*MsgCreateProposalResponse, error)
 	// Vote allows a voter to vote on a proposal.
@@ -396,20 +396,20 @@ func _Msg_UpdateGroupAdmin_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_UpdateGroupComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateGroupCommentRequest)
+func _Msg_UpdateGroupMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateGroupMetadataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateGroupComment(types.UnwrapSDKContext(ctx), in)
+		return srv.(MsgServer).UpdateGroupMetadata(types.UnwrapSDKContext(ctx), in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.group.v1alpha1.Msg/UpdateGroupComment",
+		FullMethod: "/regen.group.v1alpha1.Msg/UpdateGroupMetadata",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateGroupComment(types.UnwrapSDKContext(ctx), req.(*MsgUpdateGroupCommentRequest))
+		return srv.(MsgServer).UpdateGroupMetadata(types.UnwrapSDKContext(ctx), req.(*MsgUpdateGroupMetadataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -468,20 +468,20 @@ func _Msg_UpdateGroupAccountDecisionPolicy_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_UpdateGroupAccountComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgUpdateGroupAccountCommentRequest)
+func _Msg_UpdateGroupAccountMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateGroupAccountMetadataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).UpdateGroupAccountComment(types.UnwrapSDKContext(ctx), in)
+		return srv.(MsgServer).UpdateGroupAccountMetadata(types.UnwrapSDKContext(ctx), in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.group.v1alpha1.Msg/UpdateGroupAccountComment",
+		FullMethod: "/regen.group.v1alpha1.Msg/UpdateGroupAccountMetadata",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).UpdateGroupAccountComment(types.UnwrapSDKContext(ctx), req.(*MsgUpdateGroupAccountCommentRequest))
+		return srv.(MsgServer).UpdateGroupAccountMetadata(types.UnwrapSDKContext(ctx), req.(*MsgUpdateGroupAccountMetadataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -560,8 +560,8 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_UpdateGroupAdmin_Handler,
 		},
 		{
-			MethodName: "UpdateGroupComment",
-			Handler:    _Msg_UpdateGroupComment_Handler,
+			MethodName: "UpdateGroupMetadata",
+			Handler:    _Msg_UpdateGroupMetadata_Handler,
 		},
 		{
 			MethodName: "CreateGroupAccount",
@@ -576,8 +576,8 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_UpdateGroupAccountDecisionPolicy_Handler,
 		},
 		{
-			MethodName: "UpdateGroupAccountComment",
-			Handler:    _Msg_UpdateGroupAccountComment_Handler,
+			MethodName: "UpdateGroupAccountMetadata",
+			Handler:    _Msg_UpdateGroupAccountMetadata_Handler,
 		},
 		{
 			MethodName: "CreateProposal",
@@ -599,11 +599,11 @@ const (
 	MsgCreateGroupMethod                      = "/regen.group.v1alpha1.Msg/CreateGroup"
 	MsgUpdateGroupMembersMethod               = "/regen.group.v1alpha1.Msg/UpdateGroupMembers"
 	MsgUpdateGroupAdminMethod                 = "/regen.group.v1alpha1.Msg/UpdateGroupAdmin"
-	MsgUpdateGroupCommentMethod               = "/regen.group.v1alpha1.Msg/UpdateGroupComment"
+	MsgUpdateGroupMetadataMethod              = "/regen.group.v1alpha1.Msg/UpdateGroupMetadata"
 	MsgCreateGroupAccountMethod               = "/regen.group.v1alpha1.Msg/CreateGroupAccount"
 	MsgUpdateGroupAccountAdminMethod          = "/regen.group.v1alpha1.Msg/UpdateGroupAccountAdmin"
 	MsgUpdateGroupAccountDecisionPolicyMethod = "/regen.group.v1alpha1.Msg/UpdateGroupAccountDecisionPolicy"
-	MsgUpdateGroupAccountCommentMethod        = "/regen.group.v1alpha1.Msg/UpdateGroupAccountComment"
+	MsgUpdateGroupAccountMetadataMethod       = "/regen.group.v1alpha1.Msg/UpdateGroupAccountMetadata"
 	MsgCreateProposalMethod                   = "/regen.group.v1alpha1.Msg/CreateProposal"
 	MsgVoteMethod                             = "/regen.group.v1alpha1.Msg/Vote"
 	MsgExecMethod                             = "/regen.group.v1alpha1.Msg/Exec"

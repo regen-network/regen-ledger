@@ -89,10 +89,10 @@ func (m *MsgUpdateGroupAdminRequest) GetGroupID() ID {
 	return m.GroupId
 }
 
-var _ sdk.MsgRequest = &MsgUpdateGroupCommentRequest{}
+var _ sdk.MsgRequest = &MsgUpdateGroupMetadataRequest{}
 
-// GetSigners returns the expected signers for a MsgUpdateGroupCommentRequest.
-func (m MsgUpdateGroupCommentRequest) GetSigners() []sdk.AccAddress {
+// GetSigners returns the expected signers for a MsgUpdateGroupMetadataRequest.
+func (m MsgUpdateGroupMetadataRequest) GetSigners() []sdk.AccAddress {
 	admin, err := sdk.AccAddressFromBech32(m.Admin)
 	if err != nil {
 		panic(err)
@@ -101,7 +101,7 @@ func (m MsgUpdateGroupCommentRequest) GetSigners() []sdk.AccAddress {
 }
 
 // ValidateBasic does a sanity check on the provided data
-func (m MsgUpdateGroupCommentRequest) ValidateBasic() error {
+func (m MsgUpdateGroupMetadataRequest) ValidateBasic() error {
 	if m.GroupId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 
@@ -113,7 +113,7 @@ func (m MsgUpdateGroupCommentRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgUpdateGroupCommentRequest) GetGroupID() ID {
+func (m *MsgUpdateGroupMetadataRequest) GetGroupID() ID {
 	return m.GroupId
 }
 
@@ -268,10 +268,10 @@ func (m MsgUpdateGroupAccountDecisionPolicyRequest) UnpackInterfaces(unpacker ty
 	return unpacker.UnpackAny(m.DecisionPolicy, &decisionPolicy)
 }
 
-var _ sdk.MsgRequest = &MsgUpdateGroupAccountCommentRequest{}
+var _ sdk.MsgRequest = &MsgUpdateGroupAccountMetadataRequest{}
 
-// GetSigners returns the expected signers for a MsgUpdateGroupAccountCommentRequest.
-func (m MsgUpdateGroupAccountCommentRequest) GetSigners() []sdk.AccAddress {
+// GetSigners returns the expected signers for a MsgUpdateGroupAccountMetadataRequest.
+func (m MsgUpdateGroupAccountMetadataRequest) GetSigners() []sdk.AccAddress {
 	admin, err := sdk.AccAddressFromBech32(m.Admin)
 	if err != nil {
 		panic(err)
@@ -280,7 +280,7 @@ func (m MsgUpdateGroupAccountCommentRequest) GetSigners() []sdk.AccAddress {
 }
 
 // ValidateBasic does a sanity check on the provided data
-func (m MsgUpdateGroupAccountCommentRequest) ValidateBasic() error {
+func (m MsgUpdateGroupAccountMetadataRequest) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Admin)
 	if err != nil {
 		return sdkerrors.Wrap(err, "admin")
@@ -298,11 +298,11 @@ var _ sdk.MsgRequest = &MsgCreateGroupAccountRequest{}
 var _ types.UnpackInterfacesMessage = MsgCreateGroupAccountRequest{}
 
 // NewMsgCreateGroupAccountRequest creates a new MsgCreateGroupAccountRequest.
-func NewMsgCreateGroupAccountRequest(admin sdk.AccAddress, group ID, comment string, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccountRequest, error) {
+func NewMsgCreateGroupAccountRequest(admin sdk.AccAddress, group ID, metadata []byte, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccountRequest, error) {
 	m := &MsgCreateGroupAccountRequest{
-		Admin:   admin.String(),
-		GroupId: group,
-		Comment: comment,
+		Admin:    admin.String(),
+		GroupId:  group,
+		Metadata: metadata,
 	}
 	err := m.SetDecisionPolicy(decisionPolicy)
 	if err != nil {
@@ -319,8 +319,8 @@ func (m *MsgCreateGroupAccountRequest) GetGroupID() ID {
 	return m.GroupId
 }
 
-func (m *MsgCreateGroupAccountRequest) GetComment() string {
-	return m.Comment
+func (m *MsgCreateGroupAccountRequest) GetMetadata() []byte {
+	return m.Metadata
 }
 
 func (m *MsgCreateGroupAccountRequest) GetDecisionPolicy() DecisionPolicy {
