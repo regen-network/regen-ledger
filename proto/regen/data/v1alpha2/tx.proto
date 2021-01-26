@@ -51,9 +51,13 @@ service Msg {
   // veracity of some piece of data.
   rpc StoreRawData(MsgStoreRawDataRequest) returns (MsgStoreRawDataResponse);
 
-  rpc StoreGraphData(MsgStoreGraphDataRequest) returns (MsgStoreGraphDataResponse);
+  rpc StoreGraphData (MsgStoreGraphDataRequest) returns (MsgStoreGraphDataResponse);
 
-  rpc RegisterIRI(MsgRegisterIRIRequest) returns (MsgRegisterIRIResponse);
+  rpc StoreGeoData (MsgStoreGeoDataRequest) returns (MsgStoreGeoDataResponse);
+
+  rpc RegisterIRIs (MsgRegisterIRIsRequest) returns (MsgRegisterIRIsResponse);
+
+  rpc ValidateGraph (MsgValidateGraphRequest) returns (MsgValidateGraphResponse);
 }
 
 // MsgAnchorDataRequest is the Msg/AnchorData request type.
@@ -121,12 +125,40 @@ message MsgStoreGraphDataResponse {
   uint64 id = 1;
 }
 
-message MsgRegisterIRIRequest {
+message MsgRegisterIRIsRequest {
   string sender = 1;
 
   repeated string iris = 2;
 }
 
-message MsgRegisterIRIResponse {
+message MsgRegisterIRIsResponse {
     repeated uint64 ids = 1;
+}
+
+message GraphID {
+  uint64 dataset_iri_id = 1;
+
+  uint64 named_graph_id = 2;
+}
+
+message MsgValidateGraphRequest {
+  string sender = 1;
+
+  GraphID data_graph_id = 2;
+
+  GraphID shapes_graph_id = 2;
+}
+
+message MsgValidateGraphResponse { }
+
+message MsgStoreGeoDataRequest {
+  string sender = 1;
+
+  ContentHash.Geo hash = 2;
+
+  bytes wkb_bytes = 3;
+}
+
+message MsgStoreGeoDataResponse {
+  uint64 id = 1;
 }
