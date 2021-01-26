@@ -58,6 +58,9 @@ service Msg {
   rpc RegisterIRIs (MsgRegisterIRIsRequest) returns (MsgRegisterIRIsResponse);
 
   rpc ValidateGraph (MsgValidateGraphRequest) returns (MsgValidateGraphResponse);
+
+  rpc StoreGraphPartial(MsgStoreGraphPartialRequest)
+  rpc RegisterOffChainURL
 }
 
 // MsgAnchorDataRequest is the Msg/AnchorData request type.
@@ -146,7 +149,7 @@ message MsgValidateGraphRequest {
 
   GraphID data_graph_id = 2;
 
-  GraphID shapes_graph_id = 2;
+  GraphID shapes_graph_id = 3;
 }
 
 message MsgValidateGraphResponse { }
@@ -161,4 +164,9 @@ message MsgStoreGeoDataRequest {
 
 message MsgStoreGeoDataResponse {
   uint64 id = 1;
+}
+
+message MsgStoreGraphPartialRequest {
+  repeated Graph.Quad quads = 1;
+  repeated Proof proofs = 2;
 }
