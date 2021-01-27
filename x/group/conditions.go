@@ -25,11 +25,10 @@ var (
 	conditionFormat = regexp.MustCompile(`(?s)^([a-zA-Z0-9_\-]{3,8})/([a-zA-Z0-9_\-]{3,8})/(.+)$`)
 )
 
-// Condition is a specially formatted array, containing
-// information on who can authorize an action.
-// It is of the format:
-//
-//   sprintf("%s/%s/%s", extension, type, data)
+// Condition is a byte array specifying who can authorize an action.
+// It has the following format:
+//     {extension}/{type}/{data}
+// data is binary data that represents an encoded sequence value from the ORM.
 type Condition []byte
 
 func NewCondition(ext, typ string, data []byte) Condition {
