@@ -252,6 +252,9 @@ func ReadAll(it Iterator, dest ModelSlicePtr) ([]RowID, error) {
 	}
 }
 
+// assertDest checks that the provided dest is not nil and a pointer to a slice.
+// It also verifies that the slice elements implement *codec.ProtoMarshaler.
+// It overwrites destRef and tmpSlice using reflection.
 func assertDest(dest ModelSlicePtr, destRef *reflect.Value, tmpSlice *reflect.Value) (reflect.Type, error) {
 	if dest == nil {
 		return nil, errors.Wrap(ErrArgument, "destination must not be nil")
@@ -263,7 +266,11 @@ func assertDest(dest ModelSlicePtr, destRef *reflect.Value, tmpSlice *reflect.Va
 	if tp.Elem().Kind() != reflect.Slice {
 		return nil, errors.Wrap(ErrArgument, "destination must point to a slice")
 	}
+
+	// Since dest is just an interface{}, we overwrite destRef using reflection
+	// to have an assignable copy of it.
 	*destRef = tp.Elem()
+	// We need to verify that we can call Set() on destRef.
 	if !destRef.CanSet() {
 		return nil, errors.Wrap(ErrArgument, "destination not assignable")
 	}
@@ -276,6 +283,8 @@ func assertDest(dest ModelSlicePtr, destRef *reflect.Value, tmpSlice *reflect.Va
 		return nil, errors.Wrapf(ErrArgument, "unsupported type :%s", elemType)
 	}
 
+	// tmpSlice is a slice value for the specified type
+	// that we'll use for appending new elements.
 	*tmpSlice = reflect.MakeSlice(reflect.SliceOf(elemType), 0, 0)
 
 	return elemType, nil
