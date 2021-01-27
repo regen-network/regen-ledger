@@ -168,9 +168,12 @@ func Paginate(
 			return nil, errors.Wrapf(ErrArgument, "%s should implement codec.ProtoMarshaler", elemType)
 		}
 		binKey, err := it.LoadNext(modelProto)
-		if ErrIteratorDone.Is(err) {
-			destRef.Set(tmpSlice)
-			break
+		if err != nil {
+			if ErrIteratorDone.Is(err) {
+				destRef.Set(tmpSlice)
+				break
+			}
+			return nil, err
 		}
 
 		count++
@@ -179,9 +182,6 @@ func Paginate(
 			continue
 		}
 
-		if err != nil {
-			return nil, err
-		}
 		if count <= end {
 			tmpSlice = reflect.Append(tmpSlice, val)
 		} else if count == end+1 {
