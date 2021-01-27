@@ -148,8 +148,7 @@ func Paginate(
 		return nil, err
 	}
 
-	end := offset + limit
-
+	var end = offset + limit
 	var count uint64
 	var nextKey []byte
 	for {
