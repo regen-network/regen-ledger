@@ -145,6 +145,22 @@ type predObjAcc struct {
 	*nodeProps
 }
 
+func (p predObjAcc) Count() int {
+	if p.nodeProps == nil {
+		return 0
+	}
+
+	return len(p.nodeProps.props)
+}
+
+func (p predObjAcc) CountGTE(i int) bool {
+	return p.Count() >= i
+}
+
+func (p predObjAcc) CountLTE(i int) bool {
+	return p.Count() <= i
+}
+
 func (p predObjAcc) ByPredicate(predicate rdf.Node) rdf.ObjectAccessor {
 	if p.props == nil {
 		return objAcc{}
@@ -155,6 +171,22 @@ func (p predObjAcc) ByPredicate(predicate rdf.Node) rdf.ObjectAccessor {
 
 type objAcc struct {
 	objs map[rdf.Term]bool
+}
+
+func (o objAcc) Count() int {
+	if o.objs == nil {
+		return 0
+	}
+
+	return len(o.objs)
+}
+
+func (o objAcc) CountGTE(i int) bool {
+	return o.Count() >= i
+}
+
+func (o objAcc) CountLTE(i int) bool {
+	return o.Count() <= i
 }
 
 func (o objAcc) HasValue(term rdf.Term) bool {

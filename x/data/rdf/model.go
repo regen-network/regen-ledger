@@ -73,6 +73,12 @@ type IndexedGraph interface {
 	//ByPredicate(predicate Node) SubjectObectAccessor
 }
 
+type Countable interface {
+	Count() int
+	CountGTE(int) bool
+	CountLTE(int) bool
+}
+
 type GraphIterator interface {
 	Next() bool
 	Subject() Node
@@ -80,6 +86,8 @@ type GraphIterator interface {
 }
 
 type PredicateObjectAccessor interface {
+	Countable
+
 	ByPredicate(predicate Node) ObjectAccessor
 	Iterator() PredicateObjectIterator
 }
@@ -91,6 +99,8 @@ type PredicateObjectIterator interface {
 }
 
 type ObjectAccessor interface {
+	Countable
+
 	HasValue(Term) bool
 	Iterator() ObjectIterator
 }

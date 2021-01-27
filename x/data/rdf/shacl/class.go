@@ -14,9 +14,9 @@ func (c ClassConstraintComponent) IRI() rdf.IRI {
 	return ShClassConstraintComponent
 }
 
-func (c ClassConstraintComponent) Parse(_ rdf.Context, graph rdf.IndexedGraph, target rdf.Node) ([]ConstraintInstance, error) {
+func (c ClassConstraintComponent) Parse(_ rdf.Context, graph rdf.IndexedGraph, target rdf.Node) ([]Constraint, error) {
 	acc := graph.BySubject(target).ByPredicate(ShClass)
-	var res []ConstraintInstance
+	var res []Constraint
 	it := acc.Iterator()
 	for it.Next() {
 		obj := acc.Iterator().Object()
@@ -31,6 +31,10 @@ func (c ClassConstraintComponent) Parse(_ rdf.Context, graph rdf.IndexedGraph, t
 
 type classConstraint struct {
 	class rdf.IRI
+}
+
+func (c classConstraint) Cost() uint64 {
+	panic("implement me")
 }
 
 func (c classConstraint) Validate(ctx rdf.ValidationContext, graph rdf.IndexedGraph, target rdf.Term) error {

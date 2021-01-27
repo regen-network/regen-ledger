@@ -24,3 +24,8 @@ const (
 	ShBlankNodeOrLiteral          = ShPrefix + "BlankNodeOrLiteral"
 	ShLiteral                     = ShPrefix + "Literal"
 )
+
+const (
+	SimpleOperationCost uint64 = 1
+	ReadOperationCost   uint64 = 10
+)

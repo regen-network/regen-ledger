@@ -14,7 +14,7 @@ func (c NodeKindConstraintComponent) IRI() rdf.IRI {
 
 var _ ConstraintComponent = NodeKindConstraintComponent{}
 
-func (c NodeKindConstraintComponent) Parse(_ rdf.Context, graph rdf.IndexedGraph, target rdf.Node) ([]ConstraintInstance, error) {
+func (c NodeKindConstraintComponent) Parse(_ rdf.Context, graph rdf.IndexedGraph, target rdf.Node) ([]Constraint, error) {
 	it := graph.BySubject(target).ByPredicate(ShNodeKind).Iterator()
 	if it.Next() {
 		nodeKind := it.Object()
@@ -24,7 +24,7 @@ func (c NodeKindConstraintComponent) Parse(_ rdf.Context, graph rdf.IndexedGraph
 
 		switch nodeKind {
 		case ShIRI:
-			return []ConstraintInstance{iriConstraint{}}, nil
+			return []Constraint{iriConstraint{}}, nil
 		default:
 			panic("TODO")
 		}
@@ -34,9 +34,13 @@ func (c NodeKindConstraintComponent) Parse(_ rdf.Context, graph rdf.IndexedGraph
 
 type iriConstraint struct{}
 
-func (c iriConstraint) Validate(ctx rdf.ValidationContext, graph rdf.IndexedGraph, target rdf.Term) error {
-	if _, ok := target.(rdf.IRI); !ok {
-		return fmt.Errorf("expected IRI, got %+v", target)
+func (c iriConstraint) Cost() uint64 {
+	return SimpleOperationCost
+}
+
+func (c iriConstraint) Validate(ctx rdf.ValidationContext, graph rdf.IndexedGraph, value rdf.Term) error {
+	if _, ok := value.(rdf.IRI); !ok {
+		return fmt.Errorf("expected IRI, got %+v", value)
 	}
 	return nil
 }
