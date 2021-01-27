@@ -160,6 +160,12 @@ func Paginate(
 		model := obj
 		if elemType.Kind() == reflect.Ptr {
 			val.Set(reflect.New(elemType.Elem()))
+			// if elemType is already a pointer (e.g. dest being some pointer to a slice of pointers,
+			// like []*GroupMember), then obj is a pointer to a pointer which might cause issues
+			// if we try to do obj.Interface().(codec.ProtoMarshaler).
+			// For that reason, we copy obj into model if we have a simple pointer
+			// but in case elemType.Kind() == reflect.Ptr, we overwrite it with model = val
+			// so we can safely call model.Interface().(codec.ProtoMarshaler) afterwards.
 			model = val
 		}
 
@@ -178,6 +184,10 @@ func Paginate(
 
 		count++
 
+		// During the first loop, count value at this point will be 1,
+		// so if offset is >= 1, it will continue to load the next value until count > offset
+		// else (offset = 0, key might be set or not),
+		// it will start to append values to tmpSlice.
 		if count <= offset {
 			continue
 		}
