@@ -95,6 +95,22 @@ func First(it Iterator, dest codec.ProtoMarshaler) (RowID, error) {
 	return binKey, nil
 }
 
+// Paginate does pagination with a given Iterator based on the provided
+// PageRequest and unmarshals the results into the dest interface that must be
+// an non-nil pointer to a slice.
+//
+// If pageRequest is nil, then we will use these default values:
+//  - Offset: 0
+//  - Key: nil
+//  - Limit: 100
+//  - CountTotal: true
+//
+// If pageRequest.Key was provided, it got used beforehand to instantiate the Iterator,
+// using for instance UInt64Index.GetPaginated method. Only one of pageRequest.Offset or
+// pageRequest.Key should be set. Using pageRequest.Key is more efficient for querying
+// the next page.
+//
+// This function will call it.Close().
 func Paginate(
 	it Iterator,
 	pageRequest *query.PageRequest,
