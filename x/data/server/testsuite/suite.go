@@ -3,11 +3,10 @@ package testsuite
 import (
 	"context"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	gocid "github.com/ipfs/go-cid"
 	"github.com/multiformats/go-multihash"
 	"github.com/stretchr/testify/suite"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/testutil/server"
 	"github.com/regen-network/regen-ledger/x/data"
@@ -35,9 +34,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.ctx = s.fixture.Context()
 	s.msgClient = data.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = data.NewQueryClient(s.fixture.QueryConn())
-	if len(s.fixture.Signers()) < 2 {
-		s.FailNow("expected at least 2 signers, got %d", s.fixture.Signers())
-	}
+	s.Require().GreaterOrEqual(len(s.fixture.Signers()), 2)
 	s.addr1 = s.fixture.Signers()[0]
 	s.addr2 = s.fixture.Signers()[1]
 }

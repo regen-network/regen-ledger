@@ -2,14 +2,14 @@ package server
 
 import (
 	"bytes"
-	"context"
 	"fmt"
+
+	"github.com/regen-network/regen-ledger/types"
 
 	gogotypes "github.com/gogo/protobuf/types"
 	gocid "github.com/ipfs/go-cid"
 	"github.com/multiformats/go-multihash"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/x/data"
@@ -17,9 +17,7 @@ import (
 
 var _ data.MsgServer = serverImpl{}
 
-func (s serverImpl) AnchorData(goCtx context.Context, request *data.MsgAnchorDataRequest) (*data.MsgAnchorDataResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
+func (s serverImpl) AnchorData(ctx types.Context, request *data.MsgAnchorDataRequest) (*data.MsgAnchorDataResponse, error) {
 	cidBz := request.Cid
 	key := AnchorKey(cidBz)
 	store := ctx.KVStore(s.storeKey)
@@ -40,7 +38,7 @@ func (s serverImpl) AnchorData(goCtx context.Context, request *data.MsgAnchorDat
 	return &data.MsgAnchorDataResponse{Timestamp: timestamp}, nil
 }
 
-func blockTimestamp(ctx sdk.Context) (*gogotypes.Timestamp, error) {
+func blockTimestamp(ctx types.Context) (*gogotypes.Timestamp, error) {
 	timestamp, err := gogotypes.TimestampProto(ctx.BlockTime())
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "invalid block time")
@@ -49,7 +47,7 @@ func blockTimestamp(ctx sdk.Context) (*gogotypes.Timestamp, error) {
 	return timestamp, err
 }
 
-func (s serverImpl) anchorCidIfNeeded(ctx sdk.Context, timestamp *gogotypes.Timestamp, cid []byte) error {
+func (s serverImpl) anchorCidIfNeeded(ctx types.Context, timestamp *gogotypes.Timestamp, cid []byte) error {
 	store := ctx.KVStore(s.storeKey)
 	key := AnchorKey(cid)
 	if store.Has(key) {
@@ -59,7 +57,7 @@ func (s serverImpl) anchorCidIfNeeded(ctx sdk.Context, timestamp *gogotypes.Time
 	return s.anchorCid(ctx, timestamp, cid)
 }
 
-func (s serverImpl) anchorCid(ctx sdk.Context, timestamp *gogotypes.Timestamp, cidBytes []byte) error {
+func (s serverImpl) anchorCid(ctx types.Context, timestamp *gogotypes.Timestamp, cidBytes []byte) error {
 	bz, err := timestamp.Marshal()
 	if err != nil {
 		return err
@@ -74,9 +72,7 @@ func (s serverImpl) anchorCid(ctx sdk.Context, timestamp *gogotypes.Timestamp, c
 
 var emptyBz = []byte{0}
 
-func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignDataRequest) (*data.MsgSignDataResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
+func (s serverImpl) SignData(ctx types.Context, request *data.MsgSignDataRequest) (*data.MsgSignDataResponse, error) {
 	cidBz := request.Cid
 
 	timestamp, err := blockTimestamp(ctx)
@@ -114,9 +110,7 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignDataReq
 	return &data.MsgSignDataResponse{}, nil
 }
 
-func (s serverImpl) StoreData(goCtx context.Context, request *data.MsgStoreDataRequest) (*data.MsgStoreDataResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
+func (s serverImpl) StoreData(ctx types.Context, request *data.MsgStoreDataRequest) (*data.MsgStoreDataResponse, error) {
 	cidBz := request.Cid
 
 	timestamp, err := blockTimestamp(ctx)

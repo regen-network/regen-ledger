@@ -1,26 +1,22 @@
 package server
 
 import (
-	"context"
-
 	"github.com/cosmos/cosmos-sdk/store/prefix"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/gogo/protobuf/types"
+	gogotypes "github.com/gogo/protobuf/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
 var _ data.QueryServer = serverImpl{}
 
-func (s serverImpl) ByCid(goCtx context.Context, request *data.QueryByCidRequest) (*data.QueryByCidResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-
+func (s serverImpl) ByCid(ctx types.Context, request *data.QueryByCidRequest) (*data.QueryByCidResponse, error) {
 	cid := request.Cid
 
-	var timestamp types.Timestamp
+	var timestamp gogotypes.Timestamp
 	store := ctx.KVStore(s.storeKey)
 	bz := store.Get(AnchorKey(cid))
 	if len(bz) == 0 {
@@ -51,8 +47,7 @@ func (s serverImpl) ByCid(goCtx context.Context, request *data.QueryByCidRequest
 	}, err
 }
 
-func (s serverImpl) BySigner(goCtx context.Context, request *data.QueryBySignerRequest) (*data.QueryBySignerResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (s serverImpl) BySigner(ctx types.Context, request *data.QueryBySignerRequest) (*data.QueryBySignerResponse, error) {
 	store := prefix.NewStore(ctx.KVStore(s.storeKey), SignerCIDIndexPrefix(request.Signer))
 
 	var cids [][]byte

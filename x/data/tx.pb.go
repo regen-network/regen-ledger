@@ -4,15 +4,10 @@
 package data
 
 import (
-	context "context"
 	fmt "fmt"
 	_ "github.com/gogo/protobuf/gogoproto"
-	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	types "github.com/gogo/protobuf/types"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -32,8 +27,8 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 // MsgAnchorDataRequest is the Msg/AnchorData request type.
 type MsgAnchorDataRequest struct {
 	// sender is the address of the sender of the transaction.
-	// The sender in StoreData is not attesting to the veracity of the underlying data.
-	// They can simply be a intermediary providing services.
+	// The sender in StoreData is not attesting to the veracity of the underlying
+	// data. They can simply be a intermediary providing services.
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
 	// cid is a Content Identifier for the data corresponding to the IPFS CID
 	// specification: https://github.com/multiformats/cid.
@@ -218,16 +213,16 @@ var xxx_messageInfo_MsgSignDataResponse proto.InternalMessageInfo
 // MsgStoreDataRequest is the Msg/StoreData request type.
 type MsgStoreDataRequest struct {
 	// sender is the address of the sender of the transaction.
-	// The sender in StoreData is not attesting to the veracity of the underlying data.
-	// They can simply be a intermediary providing services.
+	// The sender in StoreData is not attesting to the veracity of the underlying
+	// data. They can simply be a intermediary providing services.
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
 	// cid is a Content Identifier for the data corresponding to the IPFS CID
 	// specification: https://github.com/multiformats/cid.
 	Cid []byte `protobuf:"bytes,2,opt,name=cid,proto3" json:"cid,omitempty"`
 	// content is the content of the data corresponding to the provided CID.
 	//
-	// Currently only data for CID's using sha2-256 and blake2b-256 hash algorithms
-	// can be stored on-chain.
+	// Currently only data for CID's using sha2-256 and blake2b-256 hash
+	// algorithms can be stored on-chain.
 	Content []byte `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
 }
 
@@ -361,228 +356,6 @@ var fileDescriptor_5051179b7de7ca1d = []byte{
 	0x99, 0x8f, 0x51, 0xcc, 0x67, 0x58, 0xcb, 0xbd, 0x62, 0x44, 0xfd, 0xe5, 0xe2, 0x57, 0x89, 0xa6,
 	0x24, 0xa1, 0x44, 0xe0, 0x85, 0xfe, 0x75, 0xc6, 0x75, 0xfd, 0x99, 0xbd, 0xbe, 0x0e, 0x00, 0x00,
 	0xff, 0xff, 0xc5, 0xf3, 0xd6, 0xef, 0x4f, 0x03, 0x00, 0x00,
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
-
-// MsgClient is the client API for Msg service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type MsgClient interface {
-	// AnchorData "anchors" a piece of data to the blockchain based on its secure hash,
-	// effectively providing a tamper resistant timestamp.
-	//
-	// The sender in AnchorData is not attesting to the veracity of the underlying data.
-	// They can simply be a intermediary providing timestamp services.
-	// SignData should be used to create a digital signature attesting to the veracity of some piece of data.
-	AnchorData(ctx context.Context, in *MsgAnchorDataRequest, opts ...grpc.CallOption) (*MsgAnchorDataResponse, error)
-	// SignData allows for signing of an arbitrary piece of data on the blockchain.
-	// By "signing" data the signers are making a statement about the veracity of the
-	// data itself. It is like signing a legal document, meaning that I agree to all
-	// conditions and to the best of my knowledge everything is true. When anchoring
-	// data, the sender is not attesting to the veracity of the data, they are simply
-	// communicating that it exists.
-	//
-	// On-chain signatures have the following benefits:
-	// - on-chain identities can be managed using different cryptographic keys
-	//   that change over time through key rotation practices
-	// - an on-chain identity may represent an organization and through delegation
-	//   individual members may sign on behalf of the group
-	// - the blockchain transaction envelope provides built-in replay protection
-	//   and timestamping
-	//
-	// SignData implicitly calls AnchorData if the data was not already anchored.
-	//
-	// SignData can be called multiple times for the same CID with different signers
-	// and those signers will be appended to the list of signers.
-	SignData(ctx context.Context, in *MsgSignDataRequest, opts ...grpc.CallOption) (*MsgSignDataResponse, error)
-	// StoreData stores a piece of data corresponding to a CID on the blockchain.
-	//
-	// Currently only data for CID's using sha2-256 and blake2b-256 hash algorithms
-	// can be stored on-chain.
-	//
-	// StoreData implicitly calls AnchorData if the data was not already anchored.
-	//
-	// The sender in StoreData is not attesting to the veracity of the underlying data.
-	// They can simply be a intermediary providing storage services.
-	// SignData should be used to create a digital signature attesting to the veracity of some piece of data.
-	StoreData(ctx context.Context, in *MsgStoreDataRequest, opts ...grpc.CallOption) (*MsgStoreDataResponse, error)
-}
-
-type msgClient struct {
-	cc grpc1.ClientConn
-}
-
-func NewMsgClient(cc grpc1.ClientConn) MsgClient {
-	return &msgClient{cc}
-}
-
-func (c *msgClient) AnchorData(ctx context.Context, in *MsgAnchorDataRequest, opts ...grpc.CallOption) (*MsgAnchorDataResponse, error) {
-	out := new(MsgAnchorDataResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Msg/AnchorData", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) SignData(ctx context.Context, in *MsgSignDataRequest, opts ...grpc.CallOption) (*MsgSignDataResponse, error) {
-	out := new(MsgSignDataResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Msg/SignData", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) StoreData(ctx context.Context, in *MsgStoreDataRequest, opts ...grpc.CallOption) (*MsgStoreDataResponse, error) {
-	out := new(MsgStoreDataResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Msg/StoreData", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// MsgServer is the server API for Msg service.
-type MsgServer interface {
-	// AnchorData "anchors" a piece of data to the blockchain based on its secure hash,
-	// effectively providing a tamper resistant timestamp.
-	//
-	// The sender in AnchorData is not attesting to the veracity of the underlying data.
-	// They can simply be a intermediary providing timestamp services.
-	// SignData should be used to create a digital signature attesting to the veracity of some piece of data.
-	AnchorData(context.Context, *MsgAnchorDataRequest) (*MsgAnchorDataResponse, error)
-	// SignData allows for signing of an arbitrary piece of data on the blockchain.
-	// By "signing" data the signers are making a statement about the veracity of the
-	// data itself. It is like signing a legal document, meaning that I agree to all
-	// conditions and to the best of my knowledge everything is true. When anchoring
-	// data, the sender is not attesting to the veracity of the data, they are simply
-	// communicating that it exists.
-	//
-	// On-chain signatures have the following benefits:
-	// - on-chain identities can be managed using different cryptographic keys
-	//   that change over time through key rotation practices
-	// - an on-chain identity may represent an organization and through delegation
-	//   individual members may sign on behalf of the group
-	// - the blockchain transaction envelope provides built-in replay protection
-	//   and timestamping
-	//
-	// SignData implicitly calls AnchorData if the data was not already anchored.
-	//
-	// SignData can be called multiple times for the same CID with different signers
-	// and those signers will be appended to the list of signers.
-	SignData(context.Context, *MsgSignDataRequest) (*MsgSignDataResponse, error)
-	// StoreData stores a piece of data corresponding to a CID on the blockchain.
-	//
-	// Currently only data for CID's using sha2-256 and blake2b-256 hash algorithms
-	// can be stored on-chain.
-	//
-	// StoreData implicitly calls AnchorData if the data was not already anchored.
-	//
-	// The sender in StoreData is not attesting to the veracity of the underlying data.
-	// They can simply be a intermediary providing storage services.
-	// SignData should be used to create a digital signature attesting to the veracity of some piece of data.
-	StoreData(context.Context, *MsgStoreDataRequest) (*MsgStoreDataResponse, error)
-}
-
-// UnimplementedMsgServer can be embedded to have forward compatible implementations.
-type UnimplementedMsgServer struct {
-}
-
-func (*UnimplementedMsgServer) AnchorData(ctx context.Context, req *MsgAnchorDataRequest) (*MsgAnchorDataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AnchorData not implemented")
-}
-func (*UnimplementedMsgServer) SignData(ctx context.Context, req *MsgSignDataRequest) (*MsgSignDataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SignData not implemented")
-}
-func (*UnimplementedMsgServer) StoreData(ctx context.Context, req *MsgStoreDataRequest) (*MsgStoreDataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StoreData not implemented")
-}
-
-func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
-	s.RegisterService(&_Msg_serviceDesc, srv)
-}
-
-func _Msg_AnchorData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAnchorDataRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).AnchorData(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.data.v1alpha1.Msg/AnchorData",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).AnchorData(ctx, req.(*MsgAnchorDataRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_SignData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSignDataRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).SignData(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.data.v1alpha1.Msg/SignData",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SignData(ctx, req.(*MsgSignDataRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_StoreData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStoreDataRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).StoreData(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.data.v1alpha1.Msg/StoreData",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StoreData(ctx, req.(*MsgStoreDataRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Msg_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "regen.data.v1alpha1.Msg",
-	HandlerType: (*MsgServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "AnchorData",
-			Handler:    _Msg_AnchorData_Handler,
-		},
-		{
-			MethodName: "SignData",
-			Handler:    _Msg_SignData_Handler,
-		},
-		{
-			MethodName: "StoreData",
-			Handler:    _Msg_StoreData_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "regen/data/v1alpha1/tx.proto",
 }
 
 func (m *MsgAnchorDataRequest) Marshal() (dAtA []byte, err error) {

@@ -13,9 +13,16 @@ protoc_gen_gocosmos() {
 
 protoc_gen_doc() {
   go get -u github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc 2>/dev/null
-} 
+}
+
+protoc_gen_gocosmos2() {
+  cd protoc-gen-go-cosmos2
+  go install .
+  cd ..
+}
 
 protoc_gen_gocosmos
+protoc_gen_gocosmos2
 protoc_gen_doc
 go mod tidy
 
@@ -24,7 +31,18 @@ for dir in $proto_dirs; do
   buf protoc \
   -I "proto" \
   -I "third_party/proto" \
-  --gocosmos_out=plugins=grpc,\
+  --gocosmos_out=\
+Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/struct.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
+  $(find "${dir}" -maxdepth 1 -name '*.proto')
+
+  buf protoc \
+  -I "proto" \
+  -I "third_party/proto" \
+  --go-cosmos2_out=\
 Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,\
 Mgoogle/protobuf/struct.proto=github.com/gogo/protobuf/types,\
 Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,\
@@ -41,6 +59,9 @@ Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
 
   # get the module name, e.g. from "./proto/regen/data/v1alpha1", extract "data"
   module=$(basename $(dirname $dir))
+
+  mkdir -p ./docs/modules/${module}
+
   # command to generate docs using protoc-gen-doc
   buf protoc \
   -I "proto" \

@@ -4,14 +4,9 @@
 package ecocredit
 
 import (
-	context "context"
 	fmt "fmt"
 	_ "github.com/gogo/protobuf/gogoproto"
-	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -30,8 +25,9 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgCreateClassRequest is the Msg/CreateClass request type.
 type MsgCreateClassRequest struct {
-	// designer is the address of the account which designed the credit class. The designer has special permissions
-	// to change the list of issuers and perform other administrative operations.
+	// designer is the address of the account which designed the credit class. The
+	// designer has special permissions to change the list of issuers and perform
+	// other administrative operations.
 	Designer string `protobuf:"bytes,1,opt,name=designer,proto3" json:"designer,omitempty"`
 	// issuers are the account addresses of the approved issuers.
 	Issuers []string `protobuf:"bytes,2,rep,name=issuers,proto3" json:"issuers,omitempty"`
@@ -212,15 +208,17 @@ func (m *MsgCreateBatchRequest) GetMetadata() []byte {
 	return nil
 }
 
-// BatchIssuance represents the issuance of some credits in a batch to a single recipient.
+// BatchIssuance represents the issuance of some credits in a batch to a
+// single recipient.
 type MsgCreateBatchRequest_BatchIssuance struct {
 	// recipient is the account of the recipient.
 	Recipient string `protobuf:"bytes,1,opt,name=recipient,proto3" json:"recipient,omitempty"`
-	// tradable_units are the units of credits in this issuance that can be traded by this recipient.
-	// Decimal values are acceptable.
+	// tradable_units are the units of credits in this issuance that can be
+	// traded by this recipient. Decimal values are acceptable.
 	TradableUnits string `protobuf:"bytes,2,opt,name=tradable_units,json=tradableUnits,proto3" json:"tradable_units,omitempty" yaml:"tradable_units"`
-	// retired_units are the units of credits in this issuance that are effectively retired by the issuer on receipt.
-	// Decimal values are acceptable.
+	// retired_units are the units of credits in this issuance that are
+	// effectively retired by the issuer on receipt. Decimal values are
+	// acceptable.
 	RetiredUnits string `protobuf:"bytes,3,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty" yaml:"retired_units"`
 }
 
@@ -392,11 +390,13 @@ func (m *MsgSendRequest) GetCredits() []*MsgSendRequest_SendUnits {
 type MsgSendRequest_SendUnits struct {
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
-	// tradable_units are the units of credits in this issuance that can be traded by this recipient.
-	// Decimal values are acceptable within the precision returned by Query/Precision.
+	// tradable_units are the units of credits in this issuance that can be
+	// traded by this recipient. Decimal values are acceptable within the
+	// precision returned by Query/Precision.
 	TradableUnits string `protobuf:"bytes,2,opt,name=tradable_units,json=tradableUnits,proto3" json:"tradable_units,omitempty" yaml:"tradable_units"`
-	// retired_units are the units of credits in this issuance that are effectively retired by the issuer on receipt.
-	// Decimal values are acceptable within the precision returned by Query/Precision.
+	// retired_units are the units of credits in this issuance that are
+	// effectively retired by the issuer on receipt. Decimal values are
+	// acceptable within the precision returned by Query/Precision.
 	RetiredUnits string `protobuf:"bytes,3,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty" yaml:"retired_units"`
 }
 
@@ -551,7 +551,8 @@ type MsgRetireRequest_RetireUnits struct {
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
 	// retired_units are the units of credits being retired.
-	// Decimal values are acceptable within the precision returned by Query/Precision.
+	// Decimal values are acceptable within the precision returned by
+	// Query/Precision.
 	Units string `protobuf:"bytes,2,opt,name=units,proto3" json:"units,omitempty"`
 }
 
@@ -645,8 +646,10 @@ type MsgSetPrecisionRequest struct {
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
-	// max_decimal_places is the new maximum number of decimal places that can be used to represent some quantity of
-	// credit units. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113.
+	// max_decimal_places is the new maximum number of decimal places that can be
+	// used to represent some quantity of credit units. It is an experimental
+	// feature to concretely explore an idea proposed in
+	// https://github.com/cosmos/cosmos-sdk/issues/7113.
 	MaxDecimalPlaces uint32 `protobuf:"varint,3,opt,name=max_decimal_places,json=maxDecimalPlaces,proto3" json:"max_decimal_places,omitempty" yaml:"max_decimal_places"`
 }
 
@@ -808,264 +811,6 @@ var fileDescriptor_96891bdd11ac56ed = []byte{
 	0xad, 0x9b, 0x7e, 0xb7, 0xc6, 0xd3, 0xde, 0xf1, 0x08, 0x7b, 0xeb, 0x07, 0xaf, 0x24, 0x72, 0x89,
 	0x65, 0x93, 0xa0, 0x36, 0x98, 0xfc, 0x79, 0xb4, 0xe7, 0xf8, 0xef, 0xc3, 0xdd, 0x5f, 0x01, 0x00,
 	0x00, 0xff, 0xff, 0x3b, 0x0d, 0x5f, 0xb4, 0x93, 0x08, 0x00, 0x00,
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
-
-// MsgClient is the client API for Msg service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type MsgClient interface {
-	// CreateClass creates a new credit class with an approved list of issuers and optional metadata.
-	CreateClass(ctx context.Context, in *MsgCreateClassRequest, opts ...grpc.CallOption) (*MsgCreateClassResponse, error)
-	// CreateBatch creates a new batch of credits for an existing credit class. This will create a new batch denom
-	// with a fixed supply. Issued credits can be distributed to recipients in either tradable or retired form.
-	CreateBatch(ctx context.Context, in *MsgCreateBatchRequest, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error)
-	// Send sends tradeable credits from one account to another account. Sent credits can either be tradable or retired on receipt.
-	Send(ctx context.Context, in *MsgSendRequest, opts ...grpc.CallOption) (*MsgSendResponse, error)
-	// Retire retires a specified number of credits in the holder's account.
-	Retire(ctx context.Context, in *MsgRetireRequest, opts ...grpc.CallOption) (*MsgRetireResponse, error)
-	// SetPrecision allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature
-	// to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
-	// places allowed for a credit batch is determined by the original number of decimal places used with calling CreatBatch.
-	// SetPrecision allows the number of allowed decimal places to be increased, effectively making the supply more
-	// granular without actually changing any balances. It allows asset issuers to be able to issue an asset without needing
-	// to think about how many subdivisions are needed upfront. While it may not be relevant for credits which likely have
-	// a fairly stable market value, I wanted to experiment a bit and this serves as a proof of concept for a broader
-	// bank redesign where say for instance a coin like the ATOM or XRN could be issued in its own units rather than
-	// micro or nano-units. Instead an operation like SetPrecision would allow trading in micro, nano or pico in the future
-	// based on market demand. Arbitrary, unbounded precision is not desirable because this can lead to spam attacks (like
-	// sending 0.000000000000000000000000000001 coins). This is effectively fixed precision so under the hood it is still
-	// basically an integer, but the fixed precision can be increased so its more adaptable long term than just an integer.
-	SetPrecision(ctx context.Context, in *MsgSetPrecisionRequest, opts ...grpc.CallOption) (*MsgSetPrecisionResponse, error)
-}
-
-type msgClient struct {
-	cc grpc1.ClientConn
-}
-
-func NewMsgClient(cc grpc1.ClientConn) MsgClient {
-	return &msgClient{cc}
-}
-
-func (c *msgClient) CreateClass(ctx context.Context, in *MsgCreateClassRequest, opts ...grpc.CallOption) (*MsgCreateClassResponse, error) {
-	out := new(MsgCreateClassResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/CreateClass", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) CreateBatch(ctx context.Context, in *MsgCreateBatchRequest, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error) {
-	out := new(MsgCreateBatchResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/CreateBatch", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) Send(ctx context.Context, in *MsgSendRequest, opts ...grpc.CallOption) (*MsgSendResponse, error) {
-	out := new(MsgSendResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/Send", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) Retire(ctx context.Context, in *MsgRetireRequest, opts ...grpc.CallOption) (*MsgRetireResponse, error) {
-	out := new(MsgRetireResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/Retire", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) SetPrecision(ctx context.Context, in *MsgSetPrecisionRequest, opts ...grpc.CallOption) (*MsgSetPrecisionResponse, error) {
-	out := new(MsgSetPrecisionResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/SetPrecision", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// MsgServer is the server API for Msg service.
-type MsgServer interface {
-	// CreateClass creates a new credit class with an approved list of issuers and optional metadata.
-	CreateClass(context.Context, *MsgCreateClassRequest) (*MsgCreateClassResponse, error)
-	// CreateBatch creates a new batch of credits for an existing credit class. This will create a new batch denom
-	// with a fixed supply. Issued credits can be distributed to recipients in either tradable or retired form.
-	CreateBatch(context.Context, *MsgCreateBatchRequest) (*MsgCreateBatchResponse, error)
-	// Send sends tradeable credits from one account to another account. Sent credits can either be tradable or retired on receipt.
-	Send(context.Context, *MsgSendRequest) (*MsgSendResponse, error)
-	// Retire retires a specified number of credits in the holder's account.
-	Retire(context.Context, *MsgRetireRequest) (*MsgRetireResponse, error)
-	// SetPrecision allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature
-	// to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
-	// places allowed for a credit batch is determined by the original number of decimal places used with calling CreatBatch.
-	// SetPrecision allows the number of allowed decimal places to be increased, effectively making the supply more
-	// granular without actually changing any balances. It allows asset issuers to be able to issue an asset without needing
-	// to think about how many subdivisions are needed upfront. While it may not be relevant for credits which likely have
-	// a fairly stable market value, I wanted to experiment a bit and this serves as a proof of concept for a broader
-	// bank redesign where say for instance a coin like the ATOM or XRN could be issued in its own units rather than
-	// micro or nano-units. Instead an operation like SetPrecision would allow trading in micro, nano or pico in the future
-	// based on market demand. Arbitrary, unbounded precision is not desirable because this can lead to spam attacks (like
-	// sending 0.000000000000000000000000000001 coins). This is effectively fixed precision so under the hood it is still
-	// basically an integer, but the fixed precision can be increased so its more adaptable long term than just an integer.
-	SetPrecision(context.Context, *MsgSetPrecisionRequest) (*MsgSetPrecisionResponse, error)
-}
-
-// UnimplementedMsgServer can be embedded to have forward compatible implementations.
-type UnimplementedMsgServer struct {
-}
-
-func (*UnimplementedMsgServer) CreateClass(ctx context.Context, req *MsgCreateClassRequest) (*MsgCreateClassResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateClass not implemented")
-}
-func (*UnimplementedMsgServer) CreateBatch(ctx context.Context, req *MsgCreateBatchRequest) (*MsgCreateBatchResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateBatch not implemented")
-}
-func (*UnimplementedMsgServer) Send(ctx context.Context, req *MsgSendRequest) (*MsgSendResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
-}
-func (*UnimplementedMsgServer) Retire(ctx context.Context, req *MsgRetireRequest) (*MsgRetireResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Retire not implemented")
-}
-func (*UnimplementedMsgServer) SetPrecision(ctx context.Context, req *MsgSetPrecisionRequest) (*MsgSetPrecisionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetPrecision not implemented")
-}
-
-func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
-	s.RegisterService(&_Msg_serviceDesc, srv)
-}
-
-func _Msg_CreateClass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCreateClassRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).CreateClass(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1alpha1.Msg/CreateClass",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateClass(ctx, req.(*MsgCreateClassRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_CreateBatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCreateBatchRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).CreateBatch(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1alpha1.Msg/CreateBatch",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateBatch(ctx, req.(*MsgCreateBatchRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_Send_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSendRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).Send(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1alpha1.Msg/Send",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Send(ctx, req.(*MsgSendRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_Retire_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRetireRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).Retire(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1alpha1.Msg/Retire",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Retire(ctx, req.(*MsgRetireRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_SetPrecision_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSetPrecisionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).SetPrecision(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1alpha1.Msg/SetPrecision",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SetPrecision(ctx, req.(*MsgSetPrecisionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Msg_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "regen.ecocredit.v1alpha1.Msg",
-	HandlerType: (*MsgServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "CreateClass",
-			Handler:    _Msg_CreateClass_Handler,
-		},
-		{
-			MethodName: "CreateBatch",
-			Handler:    _Msg_CreateBatch_Handler,
-		},
-		{
-			MethodName: "Send",
-			Handler:    _Msg_Send_Handler,
-		},
-		{
-			MethodName: "Retire",
-			Handler:    _Msg_Retire_Handler,
-		},
-		{
-			MethodName: "SetPrecision",
-			Handler:    _Msg_SetPrecision_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "regen/ecocredit/v1alpha1/tx.proto",
 }
 
 func (m *MsgCreateClassRequest) Marshal() (dAtA []byte, err error) {
