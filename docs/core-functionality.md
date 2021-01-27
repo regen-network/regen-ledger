@@ -2,7 +2,7 @@
 
 ## Cosmos SDK Background
 
-As Regen Ledger is built ontop of the Cosmos SDK, much of the language and usage patterns when interacting with Regen Ledger follow directly from usage patterns and architecture laid out in the Cosmos SDK.
+Regen Ledger is built ontop of the Cosmos SDK. Much of the language and usage patterns when interacting with Regen Ledger follow directly from usage patterns and architecture laid out in the Cosmos SDK.
 
 For more information on Cosmos's work, and what it means to build an "application specific blockchain", the [Cosmos SDK Docs](https://docs.cosmos.network/master/intro/overview.html#what-are-application-specific-blockchains) is a great place to start.
 
