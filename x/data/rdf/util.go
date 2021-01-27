@@ -75,3 +75,36 @@ func ObjectIterator(iterator TripleIterator) TermIterator {
 type objIterator struct{ TripleIterator }
 
 func (s objIterator) Term() Term { return s.Object() }
+
+func Filter(iterator TripleIterator, filterFn func(sub IRIOrBNode, pred IRIOrBNode, obj Term) bool) TripleIterator {
+	return filterIterator{TripleIterator: iterator, filterFn: filterFn}
+}
+
+type filterIterator struct {
+	TripleIterator
+	filterFn func(sub IRIOrBNode, pred IRIOrBNode, obj Term) bool
+}
+
+func (f filterIterator) Count() int {
+	panic("implement me")
+}
+
+func (f filterIterator) CountGTE(i int) bool {
+	panic("implement me")
+}
+
+func (f filterIterator) CountLTE(i int) bool {
+	panic("implement me")
+}
+
+func (f filterIterator) Next() bool {
+	for {
+		if !f.TripleIterator.Next() {
+			return false
+		}
+
+		if f.filterFn(f.Subject(), f.Predicate(), f.Object()) {
+			return true
+		}
+	}
+}
