@@ -9,7 +9,7 @@ type NodeShape struct {
 
 type NodeShapeTarget interface {
 	Cost() uint64
-	Resolve(graph rdf.IndexedGraph) rdf.ObjectAccessor
+	Resolve(graph rdf.Graph) rdf.TermIterator
 }
 
 type TargetNode struct {
@@ -24,10 +24,12 @@ func (ns NodeShape) Cost() uint64 {
 	return cost
 }
 
-func (ns NodeShape) Validate(graph rdf.IndexedGraph) {
-	targetIterator := ns.Target.Resolve(graph).Iterator()
-	for targetIterator.Next() {
-		if iri, ok := targetIterator.(rdf.IRIOrBNode); ok {
+func (ns NodeShape) Validate(graph rdf.Graph) {
+	it := ns.Target.Resolve(graph)
+	defer it.Close()
+
+	for it.Next() {
+		if iri, ok := it.Term().(rdf.IRIOrBNode); ok {
 			for _, ps := range ns.PropertyShapes {
 				ps.Validate(nil, graph, iri)
 			}

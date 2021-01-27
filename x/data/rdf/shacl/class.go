@@ -14,12 +14,14 @@ func (c ClassConstraintComponent) IRI() rdf.IRI {
 	return ShClassConstraintComponent
 }
 
-func (c ClassConstraintComponent) Parse(_ rdf.Context, graph rdf.IndexedGraph, target rdf.Node) ([]Constraint, error) {
-	acc := graph.BySubject(target).ByPredicate(ShClass)
+func (c ClassConstraintComponent) Parse(_ rdf.Context, graph rdf.Graph, target rdf.Node) ([]Constraint, error) {
 	var res []Constraint
-	it := acc.Iterator()
+
+	it := graph.FindBySubjectPredicate(target, ShClass)
+	defer it.Close()
+
 	for it.Next() {
-		obj := acc.Iterator().Object()
+		obj := it.Object()
 		iri, ok := obj.(rdf.IRI)
 		if !ok {
 			return nil, fmt.Errorf("expected an IRI, got %+v", obj)
@@ -37,19 +39,22 @@ func (c classConstraint) Cost() uint64 {
 	panic("implement me")
 }
 
-func (c classConstraint) Validate(ctx rdf.ValidationContext, graph rdf.IndexedGraph, target rdf.Term) error {
+func (c classConstraint) Validate(ctx ValidationContext, graph rdf.Graph, target rdf.Term) error {
 	node, ok := target.(rdf.IRIOrBNode)
 	if !ok {
 		return fmt.Errorf("expected an IRI or blank node")
 	}
 
-	acc := graph.BySubject(node).ByPredicate(rdf.RDFType)
-	if acc.HasValue(c.class) {
+	if graph.HasTriple(node, rdf.RDFType, c.class) {
 		return nil
 	}
-	it := acc.Iterator()
+
+	it := graph.FindBySubjectPredicate(node, rdf.RDFType)
+	defer it.Close()
+
 	for it.Next() {
 		panic("TODO")
 	}
+
 	return nil
 }

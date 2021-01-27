@@ -6,10 +6,6 @@ type Term interface {
 
 type Context interface{}
 
-type ValidationContext interface {
-	Context
-}
-
 type FullIRI string
 
 var _ IRI = FullIRI("")
@@ -66,11 +62,24 @@ type Triple struct {
 	Object    Term
 }
 
-type IndexedGraph interface {
-	HasTriple(Triple) bool
-	Iterator() GraphIterator
-	BySubject(subject Node) PredicateObjectAccessor
-	//ByPredicate(predicate Node) SubjectObectAccessor
+type Graph interface {
+	HasTriple(sub IRIOrBNode, pred IRIOrBNode, obj Term) bool
+	FindBySubject(sub IRIOrBNode) TripleIterator
+	FindByPredicate(pred IRIOrBNode) TripleIterator
+	FindByObject(obj Term) TripleIterator
+	FindBySubjectPredicate(sub IRIOrBNode, pred IRIOrBNode) TripleIterator
+	FindBySubjectObject(sub IRIOrBNode, obj Term) TripleIterator
+	FindByPredicateObject(pred IRIOrBNode, obj Term) TripleIterator
+	FindAll() TripleIterator
+}
+
+type TripleIterator interface {
+	Countable
+	Next() bool
+	Subject() IRIOrBNode
+	Predicate() IRIOrBNode
+	Object() Term
+	Close()
 }
 
 type Countable interface {
@@ -79,53 +88,18 @@ type Countable interface {
 	CountLTE(int) bool
 }
 
-type GraphIterator interface {
-	Next() bool
-	Subject() Node
-	Properties() PredicateObjectAccessor
-}
-
-type PredicateObjectAccessor interface {
-	Countable
-
-	ByPredicate(predicate Node) ObjectAccessor
-	Iterator() PredicateObjectIterator
-}
-
-type PredicateObjectIterator interface {
-	Next() bool
-	Predicate() Node
-	Object() ObjectAccessor
-}
-
-type ObjectAccessor interface {
-	Countable
-
-	HasValue(Term) bool
-	Iterator() ObjectIterator
-}
-
-type ObjectIterator interface {
-	Next() bool
-	Object() Term
-}
-
-//type SubjectObectAccessor interface {
-//	ObjectAccesor(subject Node) ObjectAccessor
-//	Iterator() SubjectObectIterator
-//}
-//
-//type SubjectObectIterator interface {
-//	Next() bool
-//	Subject() Node
-//	Object() Term
-//}
-
 type GraphBuilder interface {
-	IndexedGraph
+	Graph
 
 	AddTriple(triple Triple)
 	RemoveTriple(triple Triple)
-	Merge(graph IndexedGraph)
+	Merge(graph Graph)
 	NewBNode() BNode
+}
+
+type TermIterator interface {
+	Countable
+	Next() bool
+	Term() Term
+	Close()
 }

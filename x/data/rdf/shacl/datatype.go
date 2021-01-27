@@ -14,8 +14,8 @@ func (d DatatypeConstraintComponent) IRI() rdf.IRI {
 	return ShDatatypeConstraintComponent
 }
 
-func (d DatatypeConstraintComponent) Parse(ctx rdf.Context, graph rdf.IndexedGraph, target rdf.Node) ([]Constraint, error) {
-	val, err := rdf.GetOneObject(graph.BySubject(target).ByPredicate(ShDatatype))
+func (d DatatypeConstraintComponent) Parse(ctx rdf.Context, graph rdf.Graph, target rdf.Node) ([]Constraint, error) {
+	val, err := rdf.GetOneTerm(rdf.ObjectIterator(graph.FindBySubjectPredicate(target, ShDatatype)))
 	if err != nil {
 		return nil, fmt.Errorf("expected only one value for %s", ShDatatype)
 	}
@@ -38,7 +38,7 @@ func (d datatypeConstraint) Cost() uint64 {
 	return SimpleOperationCost
 }
 
-func (d datatypeConstraint) Validate(ctx rdf.ValidationContext, graph rdf.IndexedGraph, value rdf.Term) error {
+func (d datatypeConstraint) Validate(ctx ValidationContext, _ rdf.Graph, value rdf.Term) error {
 	literal, ok := value.(rdf.Literal)
 	if !ok {
 		return fmt.Errorf("expected a literal, got %")

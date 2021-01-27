@@ -6,7 +6,7 @@ type ConstraintComponent interface {
 	IRI() rdf.IRI
 	//MandatoryParameters() []rdf.IRI
 	//OptionalParameters() []rdf.IRI
-	Parse(ctx rdf.Context, graph rdf.IndexedGraph, target rdf.Node) ([]Constraint, error)
+	Parse(ctx rdf.Context, graph rdf.Graph, target rdf.Node) ([]Constraint, error)
 }
 
 type Constraint interface {
@@ -16,11 +16,11 @@ type Constraint interface {
 type SimpleConstraint interface {
 	Constraint
 
-	Validate(ctx rdf.ValidationContext, graph rdf.IndexedGraph, value rdf.Term) error
+	Validate(ctx ValidationContext, graph rdf.Graph, value rdf.Term) error
 }
 
 type MultiValueConstraint interface {
 	Constraint
 
-	ValidateMany(ctx rdf.ValidationContext, graph rdf.IndexedGraph, value rdf.ObjectIterator) error
+	ValidateMany(ctx ValidationContext, graph rdf.Graph, value rdf.TermIterator) error
 }

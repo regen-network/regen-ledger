@@ -2,13 +2,14 @@ package rdf
 
 import "fmt"
 
-func GetOneObject(accessor ObjectAccessor) (Term, error) {
-	it := accessor.Iterator()
+func GetOneTerm(it TermIterator) (Term, error) {
+	defer it.Close()
+
 	if !it.Next() {
 		return nil, nil
 	}
 
-	val := it.Object()
+	val := it.Term()
 
 	if it.Next() {
 		return nil, fmt.Errorf("expected only one value")
@@ -50,3 +51,27 @@ func (builder *NodeBuilder) AddProps(props map[IRIOrBNode][]Term) {
 		}
 	}
 }
+
+func SubjectIterator(iterator TripleIterator) TermIterator {
+	return subIterator{iterator}
+}
+
+type subIterator struct{ TripleIterator }
+
+func (s subIterator) Term() Term { return s.Subject() }
+
+func PredicateIterator(iterator TripleIterator) TermIterator {
+	return predIterator{iterator}
+}
+
+type predIterator struct{ TripleIterator }
+
+func (s predIterator) Term() Term { return s.Predicate() }
+
+func ObjectIterator(iterator TripleIterator) TermIterator {
+	return objIterator{iterator}
+}
+
+type objIterator struct{ TripleIterator }
+
+func (s objIterator) Term() Term { return s.Object() }

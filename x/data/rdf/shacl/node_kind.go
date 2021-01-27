@@ -14,8 +14,10 @@ func (c NodeKindConstraintComponent) IRI() rdf.IRI {
 
 var _ ConstraintComponent = NodeKindConstraintComponent{}
 
-func (c NodeKindConstraintComponent) Parse(_ rdf.Context, graph rdf.IndexedGraph, target rdf.Node) ([]Constraint, error) {
-	it := graph.BySubject(target).ByPredicate(ShNodeKind).Iterator()
+func (c NodeKindConstraintComponent) Parse(_ rdf.Context, graph rdf.Graph, target rdf.Node) ([]Constraint, error) {
+	it := graph.FindBySubjectPredicate(target, ShNodeKind)
+	defer it.Close()
+
 	if it.Next() {
 		nodeKind := it.Object()
 		if it.Next() {
@@ -38,7 +40,7 @@ func (c iriConstraint) Cost() uint64 {
 	return SimpleOperationCost
 }
 
-func (c iriConstraint) Validate(ctx rdf.ValidationContext, graph rdf.IndexedGraph, value rdf.Term) error {
+func (c iriConstraint) Validate(_ ValidationContext, _ rdf.Graph, value rdf.Term) error {
 	if _, ok := value.(rdf.IRI); !ok {
 		return fmt.Errorf("expected IRI, got %+v", value)
 	}

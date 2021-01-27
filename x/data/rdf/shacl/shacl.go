@@ -16,10 +16,14 @@ func (p *Parser) RegisterConstraintComponents(components ...ConstraintComponent)
 	}
 }
 
-func (p Parser) Parse(resolver ImportResolver, shapesGraph rdf.IndexedGraph) (ShapesGraph, error) {
+func (p Parser) Parse(resolver ImportResolver, shapesGraph rdf.Graph) (ShapesGraph, error) {
 	panic("TODO")
 }
 
 type ImportResolver interface {
-	ResolveImport(rdf.IRI) rdf.IndexedGraph
+	ResolveImport(rdf.IRI) rdf.Graph
+}
+
+type ValidationContext interface {
+	rdf.Context
 }
