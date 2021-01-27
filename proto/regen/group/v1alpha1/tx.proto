@@ -256,5 +256,3 @@ message MsgExecRequest {
 
 // MsgExecResponse is the Msg/Exec request type.
 message MsgExecResponse { }
-
-
