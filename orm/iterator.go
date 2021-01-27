@@ -163,7 +163,11 @@ func Paginate(
 			model = val
 		}
 
-		binKey, err := it.LoadNext(model.Interface().(codec.ProtoMarshaler))
+		modelProto, ok := model.Interface().(codec.ProtoMarshaler)
+		if !ok {
+			return nil, errors.Wrapf(ErrArgument, "%s should implement codec.ProtoMarshaler", elemType)
+		}
+		binKey, err := it.LoadNext(modelProto)
 		if ErrIteratorDone.Is(err) {
 			destRef.Set(tmpSlice)
 			break
