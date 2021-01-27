@@ -206,7 +206,7 @@ func TestPaginate(t *testing.T) {
 			expPageRes: &query.PageResponse{Total: 3, NextKey: nil},
 			key:        admin,
 		},
-		"with key and count total ignored": {
+		"with key (count total is ignored in this case)": {
 			pageReq:    &query.PageRequest{Key: EncodeSequence(2), Limit: 10, CountTotal: true},
 			exp:        []testdata.GroupInfo{g2, g4},
 			expPageRes: &query.PageResponse{Total: 0, NextKey: nil},

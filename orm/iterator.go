@@ -176,7 +176,6 @@ func Paginate(
 		binKey, err := it.LoadNext(modelProto)
 		if err != nil {
 			if ErrIteratorDone.Is(err) {
-				destRef.Set(tmpSlice)
 				break
 			}
 			return nil, err
@@ -196,7 +195,6 @@ func Paginate(
 			tmpSlice = reflect.Append(tmpSlice, val)
 		} else if count == end+1 {
 			nextKey = binKey
-			destRef.Set(tmpSlice)
 
 			// countTotal is set to true to indicate that the result set should include
 			// a count of the total number of items available for pagination in UIs.
@@ -207,6 +205,7 @@ func Paginate(
 			}
 		}
 	}
+	destRef.Set(tmpSlice)
 
 	res := &query.PageResponse{NextKey: nextKey}
 	if countTotal && len(key) == 0 {
