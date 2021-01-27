@@ -3,6 +3,7 @@ package testsuite
 import (
 	"bytes"
 	"context"
+	"sort"
 	"time"
 
 	gogotypes "github.com/gogo/protobuf/types"
@@ -207,13 +208,14 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			s.Require().NoError(err)
 			loadedMembers := membersRes.Members
 			s.Require().Equal(len(members), len(loadedMembers))
-			// TODO: reorder member by address to be able to compare them
-			// for i := range loadedMembers {
-			// 	s.Assert().Equal(members[i].Metadata, loadedMembers[i].Metadata)
-			// 	s.Assert().Equal(members[i].Address, loadedMembers[i].Member)
-			// 	s.Assert().Equal(members[i].Weight, loadedMembers[i].Weight)
-			// 	s.Assert().Equal(id, loadedMembers[i].GroupId)
-			// }
+			// we reorder members by address to be able to compare them
+			sort.Slice(members, func(i, j int) bool { return members[i].Address < members[j].Address })
+			for i := range loadedMembers {
+				s.Assert().Equal(members[i].Metadata, loadedMembers[i].Member.Metadata)
+				s.Assert().Equal(members[i].Address, loadedMembers[i].Member.Address)
+				s.Assert().Equal(members[i].Weight, loadedMembers[i].Member.Weight)
+				s.Assert().Equal(id, loadedMembers[i].GroupId)
+			}
 
 			// query groups by admin
 			groupsRes, err := s.queryClient.GroupsByAdmin(s.ctx, &group.QueryGroupsByAdminRequest{Admin: s.addr1.String()})
@@ -657,13 +659,16 @@ func (s *IntegrationTestSuite) TestUpdateGroupMembers() {
 			s.Require().NoError(err)
 			loadedMembers := membersRes.Members
 			s.Require().Equal(len(spec.expMembers), len(loadedMembers))
-			// TODO: reorder member by address to be able to compare them
-			// for i := range loadedMembers {
-			// 	s.Assert().Equal(spec.expMembers[i].Metadata, loadedMembers[i].Metadata)
-			// 	s.Assert().Equal(spec.expMembers[i].Member, loadedMembers[i].Member)
-			// 	s.Assert().Equal(spec.expMembers[i].Weight, loadedMembers[i].Weight)
-			// 	s.Assert().Equal(spec.expMembers[i].GroupId, loadedMembers[i].GroupId)
-			// }
+			// we reorder group members by address to be able to compare them
+			sort.Slice(spec.expMembers, func(i, j int) bool {
+				return spec.expMembers[i].Member.Address < spec.expMembers[j].Member.Address
+			})
+			for i := range loadedMembers {
+				s.Assert().Equal(spec.expMembers[i].Member.Metadata, loadedMembers[i].Member.Metadata)
+				s.Assert().Equal(spec.expMembers[i].Member.Address, loadedMembers[i].Member.Address)
+				s.Assert().Equal(spec.expMembers[i].Member.Weight, loadedMembers[i].Member.Weight)
+				s.Assert().Equal(spec.expMembers[i].GroupId, loadedMembers[i].GroupId)
+			}
 		})
 	}
 }
