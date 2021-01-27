@@ -110,6 +110,9 @@ func First(it Iterator, dest codec.ProtoMarshaler) (RowID, error) {
 // pageRequest.Key should be set. Using pageRequest.Key is more efficient for querying
 // the next page.
 //
+// If pageRequest.CountTotal is set, we'll visit all iterators elements.
+// pageRequest.CountTotal is only respected when offset is used.
+//
 // This function will call it.Close().
 func Paginate(
 	it Iterator,
@@ -181,14 +184,18 @@ func Paginate(
 			nextKey = binKey
 			destRef.Set(tmpSlice)
 
-			if !countTotal {
+			// countTotal is set to true to indicate that the result set should include
+			// a count of the total number of items available for pagination in UIs.
+			// countTotal is only respected when offset is used. It is ignored when key
+			// is set.
+			if !countTotal || len(key) != 0 {
 				break
 			}
 		}
 	}
 
 	res := &query.PageResponse{NextKey: nextKey}
-	if countTotal {
+	if countTotal && len(key) == 0 {
 		res.Total = count
 	}
 

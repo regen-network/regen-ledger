@@ -194,7 +194,7 @@ func TestPaginate(t *testing.T) {
 			expPageRes: &query.PageResponse{Total: 0, NextKey: nil},
 			key:        sdk.AccAddress([]byte("no-group-address")),
 		},
-		"with offset": {
+		"with offset and count total": {
 			pageReq:    &query.PageRequest{Key: nil, Offset: 1, Limit: 2, CountTotal: true},
 			exp:        []testdata.GroupInfo{g2, g4},
 			expPageRes: &query.PageResponse{Total: 3, NextKey: nil},
@@ -206,8 +206,8 @@ func TestPaginate(t *testing.T) {
 			expPageRes: &query.PageResponse{Total: 3, NextKey: nil},
 			key:        admin,
 		},
-		"with key": {
-			pageReq:    &query.PageRequest{Key: EncodeSequence(2), Limit: 10},
+		"with key and count total ignored": {
+			pageReq:    &query.PageRequest{Key: EncodeSequence(2), Limit: 10, CountTotal: true},
 			exp:        []testdata.GroupInfo{g2, g4},
 			expPageRes: &query.PageResponse{Total: 0, NextKey: nil},
 			key:        admin,
