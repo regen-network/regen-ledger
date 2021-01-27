@@ -20,5 +20,5 @@ func (ps PropertyShape) Cost() uint64 {
 	return cost
 }
 
-func (ps PropertyShape) Validate(ctx rdf.ValidationContext, graph rdf.IndexedGraph, target rdf.Term) {
+func (ps PropertyShape) Validate(ctx rdf.ValidationContext, graph rdf.IndexedGraph, target rdf.IRIOrBNode) {
 }
