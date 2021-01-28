@@ -94,10 +94,9 @@ message MsgStoreRawDataRequest {
   string sender = 1;
 
   // hash is the hash-based identifier for the anchored content.
-  // The id's type must equal ID_TYPE_RAW_UNSPECIFIED.
   ContentHash.Raw hash = 2;
 
-  // content is the content of the raw data corresponding to the provided ID.
+  // content is the content of the raw data corresponding to the provided content hash.
   bytes content = 3;
 }
 
