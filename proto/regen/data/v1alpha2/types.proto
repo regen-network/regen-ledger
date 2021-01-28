@@ -1,0 +1,207 @@
+syntax = "proto3";
+
+package regen.data.v1alpha2;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/data";
+
+// ContentID specifies a hash based content identifier for a piece of data
+message ContentHash {
+    oneof descriptor {
+        Raw raw = 1;
+        Graph graph = 2;
+        Geo geo = 3;
+    }
+
+    message Raw {
+        // hash represents the hash of the data based on the specified digest_algorithm
+        bytes hash = 1;
+
+        // digest_algorithm represents the hash digest algorithm.
+        DigestAlgorithm digest_algorithm = 2;
+
+        // media_type represents the MediaType for raw data.
+        MediaType media_type = 3;
+
+    }
+
+    message Graph {
+        // hash represents the hash of the data based on the specified digest_algorithm
+        bytes hash = 1;
+
+        // digest_algorithm represents the hash digest algorithm.
+        DigestAlgorithm digest_algorithm = 2;
+
+        // graph_canonicalization_algorithm represents the RDF graph canonicalization algorithm. It should
+        // be left unset if type is not ID_TYPE_GRAPH.
+        GraphCanonicalizationAlgorithm canonicalization_algorithm = 3;
+
+        GraphMerkleTree merkle_tree = 4;
+    }
+
+    message Geo {
+        // hash represents the hash of the data based on the specified digest_algorithm
+        bytes hash = 1;
+
+        // digest_algorithm represents the hash digest algorithm.
+        DigestAlgorithm digest_algorithm = 2;
+    }
+}
+
+enum IDType {
+    // ID_TYPE_RAW_UNSPECIFIED specifies "raw" data which does not specify a deterministic, canonical encoding.
+    // Users of these hashes MUST maintain a copy of the hashed data which is preserved bit by bit.
+    // All other encodings in IDType specify a deterministic, canonical encoding allowing implementations to
+    // choose from a variety of alternative formats for transport and encoding while maintaining the guarantee
+    // that the canonical hash will not change. The media type for "raw" data used with ID_TYPE_RAW_UNSPECIFIED
+    // is defined by the MediaType enum.
+    ID_TYPE_RAW_UNSPECIFIED = 0;
+
+    // ID_TYPE_GRAPH specifies graph data that conforms to the RDF data model.
+    // The canonicalization algorithm used for an RDF graph is specified by GraphCanonicalizationAlgorithm.
+    ID_TYPE_GRAPH = 1;
+
+    // ID_TYPE_GEOGRAPHY specifies geographic data conforming to this canonicalization algorithm:
+    //
+    // We define the canonical lexical representation of a geography as its  [WKT](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry) serialization with the following additional restrictions:
+    //
+    // ## **General Rules**
+    //
+    // - only the WGS 84 reference coordinate system is supported and all coordinates should be assumed to be in WGS 84
+    // - only 2D and 3D coordinates are supported, coordinates with linear referencing systems or an “M” component are unsupported
+    //
+    // ## **`POLYGON` Rules**
+    //
+    // - exterior linear rings must be defined in counterclockwise direction
+    // - interior linear rings must be defined in clockwise direction
+    // - where there is more than one ring, the first MUST be the exterior ring and other rings MUST be linear rings - this means that the area of a polygon MUST be continuous and unbroken. To represent multiple non-contiguous shapes, a `MULTIPOLYGON` should be used instead. Ex: in the case where inside of a hole in a polygon, there is an island that we want to include. Because the island is disjoint, this shape must be represented as a `MULTIPOLYGON` instead of a `POLYGON` with a hole and an island in the hole
+    // - the first and last point in a linear ring must be identical
+    // - *canonical coordinate ordering rule*: the first (and last) point in a linear ring must be the point with the minimum X value in the ring. In the event where there is more than one point in a ring with the minimum X value, the first point must be the one with the minimum Y value. For 3D geometries, if there is is more than one point with the minimum X and Y values, the one with the minimum Z value should be the first.
+    // - if there is more than one interior linear ring, those rings should be ordered using the above *canonical coordinate ordering rule*, i.e. the ring with the minimum X coordinate comes first, etc.
+    //
+    // ## `**MULTIPOLYGON` Rules**
+    //
+    // - each polygon should conform to the above `POLYGON` rules
+    // - if there is more than one polygon, those polygons should be ordered using the above *canonical coordinate ordering rule*, i.e. the polygon with the minimum X coordinate comes first, etc.
+    ID_TYPE_GEOGRAPHY = 2;
+}
+
+// MediaType defines MIME media types to be used with ID_TYPE_RAW_UNSPECIFIED.
+enum MediaType {
+    MEDIA_TYPE_UNSPECIFIED = 0;
+
+    // basic formats
+    MEDIA_TYPE_TEXT_PLAIN = 1;
+    MEDIA_TYPE_JSON = 2;
+    MEDIA_TYPE_CSV = 3;
+    MEDIA_TYPE_XML = 4;
+    MEDIA_TYPE_PROTOBUF_ANY = 5;
+    MEDIA_TYPE_PDF = 6;
+
+    // images
+    MEDIA_TYPE_TIFF = 16;
+    MEDIA_TYPE_JPG = 17;
+    MEDIA_TYPE_PNG = 18;
+    MEDIA_TYPE_SVG = 19;
+    MEDIA_TYPE_WEBP = 20;
+    MEDIA_TYPE_AVIF = 21;
+    MEDIA_TYPE_GIF = 22;
+    MEDIA_TYPE_APNG = 23;
+
+    // audio-visual media containers
+    MEDIA_TYPE_MPEG = 32;
+    MEDIA_TYPE_MP4 = 33;
+    MEDIA_TYPE_WEBM = 34;
+    MEDIA_TYPE_OGG = 35;
+
+    // geospatial raster formats
+    // TODO
+
+    // geospatial vector formats
+    // TODO
+}
+
+enum GraphCanonicalizationAlgorithm {
+    GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED = 0;
+    GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015 = 1;
+}
+
+enum GraphMerkleTree {
+    GRAPH_MERKLE_TREE_NONE_UNSPECIFIED = 0;
+    GRAPH_MERKLE_TREE_SMT = 1;
+}
+
+enum DigestAlgorithm {
+    DIGEST_ALGORITHM_UNSPECIFIED = 0;
+    DIGEST_ALGORITHM_BLAKE2B_256 = 1;
+}
+
+
+message CompactDataset {
+    repeated Node default_graph = 1;
+    repeated NamedGraph named_graphs = 2;
+    repeated string new_iris = 3;
+    repeated bytes new_geographies = 4;
+
+    message NamedGraph {
+        oneof name {
+            sint64 iri_id = 1;
+            uint32 blank_node_id = 2;
+        }
+        repeated Node graph = 3;
+    }
+
+    message Node {
+        oneof subject {
+            sint64 iri_id = 1;
+            uint32 blank_node_id = 2;
+        }
+        repeated Properties properties = 3;
+    }
+
+    message Properties {
+        sint64 iri_id = 1;
+        repeated Term objects = 2;
+    }
+
+    message Term {
+        oneof sum {
+            sint64 iri_id = 1;
+            uint32 blank_node_id = 2;
+            Datatype literal_datatype = 3;
+        }
+
+        oneof literal_value {
+            string str_value = 5;
+            google.protobuf.Timestamp timestamp_value = 6;
+            google.protobuf.Duration duration_value = 7;
+            sint64 geo_id = 8;
+        }
+
+        string lang = 4;
+    }
+
+    enum Datatype {
+        DATATYPE_UNSPECIFIED = 0;
+        DATATYPE_BOOL_FALSE = 1;
+        DATATYPE_BOOL_TRUE = 2;
+        DATATYPE_DECIMAL = 3;
+        DATATYPE_INTEGER = 4;
+        DATATYPE_STRING = 5;
+        DATATYPE_ANY_URI = 6;
+        DATATYPE_DATE = 7;
+        DATATYPE_TIME = 8;
+        DATATYPE_DATE_TIME = 9;
+        DATATYPE_BASE64_STRING = 10;
+        DATATYPE_WKT_LITERAL = 11;
+    }
+}
+
+message SparseMerkleCompactProof {
+    repeated bytes side_nodes = 1;
+    bytes non_membership_leaf_data = 2;
+    bytes bit_mask = 3;
+    int64 num_side_nodes = 4;
+}
