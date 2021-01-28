@@ -139,39 +139,48 @@ enum DigestAlgorithm {
 }
 
 
-message Graph {
-    repeated Node nodes = 1;
+message CompactDataset {
+    repeated Node default_graph = 1;
+    repeated NamedGraph named_graphs = 2;
+    repeated string new_iris = 3;
+    repeated bytes new_geographies = 4;
+
+    message NamedGraph {
+        oneof name {
+            sint64 iri_id = 1;
+            uint32 blank_node_id = 2;
+        }
+        repeated Node graph = 3;
+    }
 
     message Node {
-        IRIOrBlankNode subject = 1;
-        repeated Property properties = 2;
-    }
-
-    message Property {
-        uint64 predicate_id = 1;
-        repeated Value values = 2;
-    }
-
-    message Value {
-        oneof sum {
-            uint64 iri_id = 1;
+        oneof subject {
+            sint64 iri_id = 1;
             uint32 blank_node_id = 2;
-            Literal literal = 3;
         }
+        repeated Properties properties = 3;
     }
 
-    message Literal {
-        Datatype datatype = 1;
+    message Properties {
+        sint64 iri_id = 1;
+        repeated Term objects = 2;
+    }
 
-        oneof value {
-            string str_value = 3;
-            google.protobuf.Timestamp timestamp_value = 4;
-            google.protobuf.Duration duration_value = 5;
-            uint64 geo_id = 6;
-            sint64 sint64_value = 7;
+    message Term {
+        oneof sum {
+            sint64 iri_id = 1;
+            uint32 blank_node_id = 2;
+            Datatype literal_datatype = 3;
         }
 
-        string lang = 2;
+        oneof literal_value {
+            string str_value = 5;
+            google.protobuf.Timestamp timestamp_value = 6;
+            google.protobuf.Duration duration_value = 7;
+            sint64 geo_id = 8;
+        }
+
+        string lang = 4;
     }
 
     enum Datatype {
@@ -188,22 +197,11 @@ message Graph {
         DATATYPE_BASE64_STRING = 10;
         DATATYPE_WKT_LITERAL = 11;
     }
-
-    message IRIOrBlankNode {
-        oneof sum {
-            uint64 iri_id = 1;
-            uint32 blank_node_id = 2;
-        }
-    }
-
-    message Dataset {
-        Graph default_graph = 1;
-        repeated NamedGraph graphs = 2;
-
-        message NamedGraph {
-            Graph.IRIOrBlankNode name = 1;
-            Graph graph = 2;
-        }
-    }
 }
 
+message SparseMerkleCompactProof {
+    repeated bytes side_nodes = 1;
+    bytes non_membership_leaf_data = 2;
+    bytes bit_mask = 3;
+    int64 num_side_nodes = 4;
+}

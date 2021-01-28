@@ -90,7 +90,7 @@ message QueryIRIsByIDResponse {
 message Content {
   oneof sum {
     bytes raw_data = 1;
-    Graph.Dataset graph_dataset = 2;
+    CompactDataset.Dataset graph_dataset = 2;
     bytes wkb_bytes = 3;
   }
 }
@@ -136,11 +136,11 @@ message ConvertToCompactDatasetRequest {
 }
 
 message ConvertToCompactDatasetResponse {
-    Graph.Dataset dataset = 1;
+  CompactDataset.Dataset dataset = 1;
 }
 
 message ConvertFromCompactDatasetRequest {
-  Graph.Dataset dataset = 1;
+  CompactDataset.Dataset dataset = 1;
   string accept = 2;
 }
 

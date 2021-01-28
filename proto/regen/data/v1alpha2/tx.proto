@@ -55,12 +55,12 @@ service Msg {
 
   rpc StoreGeoData (MsgStoreGeoDataRequest) returns (MsgStoreGeoDataResponse);
 
-  rpc RegisterIRIs (MsgRegisterIRIsRequest) returns (MsgRegisterIRIsResponse);
-
   rpc ValidateGraph (MsgValidateGraphRequest) returns (MsgValidateGraphResponse);
 
-  rpc StoreGraphPartial(MsgStoreGraphPartialRequest)
-  rpc RegisterOffChainURL
+  rpc RegisterIRIs (MsgRegisterIRIsRequest) returns (MsgRegisterIRIsResponse);
+
+  rpc StoreGraphPartial(MsgStoreGraphPartialRequest) returns (MsgStoreGraphPartialResponse);
+//  TODO: rpc RegisterOffChainURL()
 }
 
 // MsgAnchorDataRequest is the Msg/AnchorData request type.
@@ -114,19 +114,17 @@ message MsgStoreRawDataRequest {
 }
 
 // MsgStoreRawDataRequest is the Msg/StoreRawData response type.
-message MsgStoreRawDataResponse {}
+message MsgStoreRawDataResponse { }
 
 message MsgStoreGraphDataRequest {
   string sender = 1;
 
   ContentHash.Graph hash = 2;
 
-  Graph.Dataset dataset = 3;
+  CompactDataset = 3;
 }
 
-message MsgStoreGraphDataResponse {
-  uint64 id = 1;
-}
+message MsgStoreGraphDataResponse { }
 
 message MsgRegisterIRIsRequest {
   string sender = 1;
@@ -135,21 +133,15 @@ message MsgRegisterIRIsRequest {
 }
 
 message MsgRegisterIRIsResponse {
-    repeated uint64 ids = 1;
-}
-
-message GraphID {
-  uint64 dataset_iri_id = 1;
-
-  uint64 named_graph_id = 2;
+    repeated sint64 ids = 1;
 }
 
 message MsgValidateGraphRequest {
   string sender = 1;
 
-  GraphID data_graph_id = 2;
+  string data_graph_iri = 2;
 
-  GraphID shapes_graph_id = 3;
+  string shapes_graph_iri = 3;
 }
 
 message MsgValidateGraphResponse { }
@@ -162,11 +154,11 @@ message MsgStoreGeoDataRequest {
   bytes wkb_bytes = 3;
 }
 
-message MsgStoreGeoDataResponse {
-  uint64 id = 1;
-}
+message MsgStoreGeoDataResponse { }
 
 message MsgStoreGraphPartialRequest {
-  repeated Graph.Quad quads = 1;
-  repeated Proof proofs = 2;
+  repeated CompactDataset partial_dataset = 1;
+  repeated SparseMerkleCompactProof proofs = 2;
 }
+
+message MsgStoreGraphPartialResponse { }
