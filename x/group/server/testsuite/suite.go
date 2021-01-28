@@ -6,6 +6,11 @@ import (
 	"sort"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/codec"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 
@@ -54,9 +59,35 @@ func NewIntegrationTestSuite(
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
-	s.fixture = s.fixtureFactory.Setup()
+	s.fixture = s.fixtureFactory.Setup(func(cdc *codec.ProtoCodec, baseApp *baseapp.BaseApp) {
+		// Setting up bank keeper
+		banktypes.RegisterInterfaces(cdc.InterfaceRegistry())
+		authtypes.RegisterInterfaces(cdc.InterfaceRegistry())
+
+		paramsKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
+		authKey := sdk.NewKVStoreKey(authtypes.StoreKey)
+		bankKey := sdk.NewKVStoreKey(banktypes.StoreKey)
+		tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
+		amino := codec.NewLegacyAmino()
+
+		authSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, authtypes.ModuleName)
+		bankSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, banktypes.ModuleName)
+
+		accountKeeper := authkeeper.NewAccountKeeper(
+			cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, map[string][]string{},
+		)
+		s.bankKeeper = bankkeeper.NewBaseKeeper(
+			cdc, bankKey, accountKeeper, bankSubspace, map[string]bool{},
+		)
+
+		baseApp.Router().AddRoute(sdk.NewRoute(banktypes.ModuleName, bank.NewHandler(s.bankKeeper)))
+		baseApp.MountStore(tkey, sdk.StoreTypeTransient)
+		baseApp.MountStore(paramsKey, sdk.StoreTypeIAVL)
+		baseApp.MountStore(authKey, sdk.StoreTypeIAVL)
+		baseApp.MountStore(bankKey, sdk.StoreTypeIAVL)
+	})
+
 	s.ctx = s.fixture.Context()
-	s.bankKeeper = s.fixture.BankKeeper()
 
 	s.blockTime = time.Now().UTC()
 
