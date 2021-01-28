@@ -112,3 +112,16 @@ func RemoveTriple(builder GraphBuilder, triple Triple) {
 func HasTriple(builder GraphBuilder, triple Triple) bool {
 	return builder.HasTriple(triple.Subject, triple.Predicate, triple.Object)
 }
+
+func Merge(builder GraphBuilder, graph Graph) {
+	bnodeRemapping := map[BNode]BNode{}
+	it := graph.FindAll()
+	defer it.Close()
+
+	for it.Next() {
+		sub := it.Subject()
+		if bnode, ok := sub.(BNode); ok {
+
+		}
+	}
+}

@@ -248,19 +248,6 @@ func (m *memoryGraph) RemoveTriple(sub rdf.IRIOrBNode, pred rdf.IRIOrBNode, obj 
 	delete(m.predSubMap[pred], sub)
 }
 
-func (m *memoryGraph) Merge(graph rdf.Graph) {
-	it := graph.FindAll()
-	defer it.Close()
-
-	for it.Next() {
-		m.AddTriple(
-			it.Subject(),
-			it.Predicate(),
-			it.Object(),
-		)
-	}
-}
-
 func (m *memoryGraph) NewBNode() rdf.BNode {
 	m.bnodeId = m.bnodeId + 1
 	return rdf.BNode(fmt.Sprintf("%d", m.bnodeId))
