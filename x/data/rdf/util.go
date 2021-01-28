@@ -27,11 +27,7 @@ func NewNodeBuilder(builder GraphBuilder, props map[IRIOrBNode][]Term) NodeBuild
 	bNode := builder.NewBNode()
 	for p, objs := range props {
 		for _, obj := range objs {
-			builder.AddTriple(Triple{
-				Subject:   bNode,
-				Predicate: p,
-				Object:    obj,
-			})
+			builder.AddTriple(bNode, p, obj)
 		}
 	}
 	return NodeBuilder{
@@ -43,11 +39,7 @@ func NewNodeBuilder(builder GraphBuilder, props map[IRIOrBNode][]Term) NodeBuild
 func (builder *NodeBuilder) AddProps(props map[IRIOrBNode][]Term) {
 	for p, objs := range props {
 		for _, obj := range objs {
-			builder.Builder.AddTriple(Triple{
-				Subject:   builder.Node,
-				Predicate: p,
-				Object:    obj,
-			})
+			builder.Builder.AddTriple(builder.Node, p, obj)
 		}
 	}
 }
@@ -107,4 +99,16 @@ func (f filterIterator) Next() bool {
 			return true
 		}
 	}
+}
+
+func AddTriple(builder GraphBuilder, triple Triple) {
+	builder.AddTriple(triple.Subject, triple.Predicate, triple.Object)
+}
+
+func RemoveTriple(builder GraphBuilder, triple Triple) {
+	builder.RemoveTriple(triple.Subject, triple.Predicate, triple.Object)
+}
+
+func HasTriple(builder GraphBuilder, triple Triple) bool {
+	return builder.HasTriple(triple.Subject, triple.Predicate, triple.Object)
 }

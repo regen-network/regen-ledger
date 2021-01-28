@@ -11,7 +11,6 @@ func NewGraph() rdf.GraphBuilder {
 		bnodeId:    0,
 		nodeMap:    map[rdf.IRIOrBNode]*nodeProps{},
 		predSubMap: map[rdf.IRIOrBNode]map[rdf.IRIOrBNode]*nodeProps{},
-		//predObjMap: map[rdf.IRIOrBNode]map[rdf.IRIOrBNode]bool{},
 	}
 }
 
@@ -24,8 +23,6 @@ type memoryGraph struct {
 	nodeMap map[rdf.IRIOrBNode]*nodeProps
 
 	predSubMap map[rdf.IRIOrBNode]map[rdf.IRIOrBNode]*nodeProps
-
-	//predObjMap map[rdf.IRIOrBNode]map[rdf.IRIOrBNode]bool
 }
 
 type nodeProps struct {
@@ -53,21 +50,21 @@ func (m memoryGraph) FindBySubject(sub rdf.IRIOrBNode) rdf.TripleIterator {
 		return &chIterator{}
 	}
 
-	triple := &rdf.Triple{Subject: sub}
-
-	ch := make(chan bool)
+	ch := make(chan rdf.Triple)
 	go func() {
 		for k, vs := range props.props {
-			triple.Predicate = k
 			for v := range vs {
-				triple.Object = v
-				ch <- true
+				ch <- rdf.Triple{
+					Subject:   sub,
+					Predicate: k,
+					Object:    v,
+				}
 			}
 		}
 		close(ch)
 	}()
 
-	return &chIterator{ch: ch, triple: triple}
+	return &chIterator{ch: ch}
 }
 
 func (m memoryGraph) FindByPredicate(pred rdf.IRIOrBNode) rdf.TripleIterator {
@@ -76,23 +73,23 @@ func (m memoryGraph) FindByPredicate(pred rdf.IRIOrBNode) rdf.TripleIterator {
 		return &chIterator{}
 	}
 
-	triple := &rdf.Triple{Predicate: pred}
-
-	ch := make(chan bool)
+	ch := make(chan rdf.Triple)
 	go func() {
 		for k, vs := range subMap {
-			triple.Subject = k
 			for _, vs := range vs.props {
 				for v := range vs {
-					triple.Object = v
-					ch <- true
+					ch <- rdf.Triple{
+						Subject:   k,
+						Predicate: pred,
+						Object:    v,
+					}
 				}
 			}
 		}
 		close(ch)
 	}()
 
-	return &chIterator{ch: ch, triple: triple}
+	return &chIterator{ch: ch}
 }
 
 func (m memoryGraph) FindByObject(obj rdf.Term) rdf.TripleIterator {
@@ -112,21 +109,19 @@ func (m memoryGraph) FindBySubjectPredicate(sub rdf.IRIOrBNode, pred rdf.IRIOrBN
 		return &chIterator{}
 	}
 
-	triple := &rdf.Triple{
-		Subject:   sub,
-		Predicate: pred,
-	}
-
-	ch := make(chan bool)
+	ch := make(chan rdf.Triple)
 	go func() {
 		for v := range vs {
-			triple.Object = v
-			ch <- true
+			ch <- rdf.Triple{
+				Subject:   sub,
+				Predicate: pred,
+				Object:    v,
+			}
 		}
 		close(ch)
 	}()
 
-	return &chIterator{ch: ch, triple: triple}
+	return &chIterator{ch: ch}
 }
 
 func (m memoryGraph) FindBySubjectObject(sub rdf.IRIOrBNode, obj rdf.Term) rdf.TripleIterator {
@@ -144,7 +139,7 @@ func (m memoryGraph) FindByPredicateObject(pred rdf.IRIOrBNode, obj rdf.Term) rd
 func (m memoryGraph) FindAll() rdf.TripleIterator {
 	triple := &rdf.Triple{}
 
-	ch := make(chan bool)
+	ch := make(chan rdf.Triple)
 	go func() {
 		for s, po := range m.nodeMap {
 			triple.Subject = s
@@ -152,25 +147,23 @@ func (m memoryGraph) FindAll() rdf.TripleIterator {
 				triple.Predicate = p
 				for o := range os {
 					triple.Object = o
-					ch <- true
+					ch <- rdf.Triple{
+						Subject:   s,
+						Predicate: p,
+						Object:    o,
+					}
 				}
 			}
 		}
 		close(ch)
 	}()
 
-	return &chIterator{ch: ch, triple: triple}
+	return &chIterator{ch: ch}
 }
 
-//type propTarget struct {
-//	sub rdf.IRIOrBNode
-//	// obj is the target IRI of the prop and empty if the property targets a literal
-//	obj rdf.IRIOrBNode
-//}
-
 type chIterator struct {
-	ch     chan bool
-	triple *rdf.Triple
+	ch     chan rdf.Triple
+	triple rdf.Triple
 }
 
 func (it chIterator) Count() int {
@@ -190,7 +183,8 @@ func (it *chIterator) Next() bool {
 		return false
 	}
 
-	_, ok := <-it.ch
+	var ok bool
+	it.triple, ok = <-it.ch
 
 	return ok
 }
@@ -213,58 +207,45 @@ var _ rdf.Graph = memoryGraph{}
 
 var _ rdf.GraphBuilder = &memoryGraph{}
 
-func (m *memoryGraph) AddTriple(triple rdf.Triple) {
-	props, ok := m.nodeMap[triple.Subject]
+func (m *memoryGraph) AddTriple(sub rdf.IRIOrBNode, pred rdf.IRIOrBNode, obj rdf.Term) {
+	props, ok := m.nodeMap[sub]
 	if !ok {
 		props = &nodeProps{
 			props: map[rdf.IRIOrBNode]map[rdf.Term]bool{},
 		}
-		m.nodeMap[triple.Subject] = props
+		m.nodeMap[sub] = props
 	}
 
-	objs, ok := props.props[triple.Predicate]
+	objs, ok := props.props[pred]
 	if !ok {
 		objs = map[rdf.Term]bool{}
-		props.props[triple.Predicate] = objs
+		props.props[pred] = objs
 	}
 
-	objs[triple.Object] = true
+	objs[obj] = true
 
 	// predSubMap index
-	if m.predSubMap[triple.Predicate] == nil {
-		m.predSubMap[triple.Predicate] = map[rdf.IRIOrBNode]*nodeProps{}
+	if m.predSubMap[pred] == nil {
+		m.predSubMap[pred] = map[rdf.IRIOrBNode]*nodeProps{}
 	}
-	m.predSubMap[triple.Predicate][triple.Subject] = props
-
-	//// predObjMap index
-	//if iriOrBNode, ok := triple.Object.(rdf.IRIOrBNode); ok {
-	//	if m.predObjMap[triple.Predicate] == nil {
-	//		m.predObjMap[triple.Predicate] = map[rdf.IRIOrBNode]bool{}
-	//	}
-	//	m.predObjMap[triple.Predicate][iriOrBNode] = true
-	//}
+	m.predSubMap[pred][sub] = props
 }
 
-func (m *memoryGraph) RemoveTriple(triple rdf.Triple) {
-	props, ok := m.nodeMap[triple.Subject]
+func (m *memoryGraph) RemoveTriple(sub rdf.IRIOrBNode, pred rdf.IRIOrBNode, obj rdf.Term) {
+	props, ok := m.nodeMap[sub]
 	if !ok {
 		return
 	}
 
-	objs, ok := props.props[triple.Predicate]
+	objs, ok := props.props[pred]
 	if !ok {
 		return
 	}
 
-	delete(objs, triple.Object)
+	delete(objs, obj)
 
 	// predSubMap index
-	delete(m.predSubMap[triple.Predicate], triple.Subject)
-
-	//// predObjMap index
-	//if iriOrBNode, ok := triple.Object.(rdf.IRIOrBNode); ok {
-	//	delete(m.predObjMap[triple.Predicate], iriOrBNode)
-	//}
+	delete(m.predSubMap[pred], sub)
 }
 
 func (m *memoryGraph) Merge(graph rdf.Graph) {
@@ -272,11 +253,11 @@ func (m *memoryGraph) Merge(graph rdf.Graph) {
 	defer it.Close()
 
 	for it.Next() {
-		m.AddTriple(rdf.Triple{
-			Subject:   it.Subject(),
-			Predicate: it.Predicate(),
-			Object:    it.Object(),
-		})
+		m.AddTriple(
+			it.Subject(),
+			it.Predicate(),
+			it.Object(),
+		)
 	}
 }
 

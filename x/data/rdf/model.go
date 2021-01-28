@@ -91,8 +91,8 @@ type Countable interface {
 type GraphBuilder interface {
 	Graph
 
-	AddTriple(triple Triple)
-	RemoveTriple(triple Triple)
+	AddTriple(sub IRIOrBNode, pred IRIOrBNode, obj Term)
+	RemoveTriple(sub IRIOrBNode, pred IRIOrBNode, obj Term)
 	Merge(graph Graph)
 	NewBNode() BNode
 }
