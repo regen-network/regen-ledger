@@ -139,9 +139,11 @@ message MsgRegisterIRIsResponse {
 message MsgValidateGraphRequest {
   string sender = 1;
 
-  string data_graph_iri = 2;
+  ContentHash.Graph data_graph_hash = 2;
+  string data_named_graph = 3;
 
-  string shapes_graph_iri = 3;
+  ContentHash.Graph shapes_graph_hash = 4;
+  string shapes_named_graph = 5;
 }
 
 message MsgValidateGraphResponse { }
