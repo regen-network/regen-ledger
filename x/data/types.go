@@ -19,7 +19,7 @@ func (chr ContentHash_Raw) Validate() error {
 		return err
 	}
 
-	return chr.DigestAlgorithm.Validate()
+	return chr.DigestAlgorithm.Validate(chr.Hash)
 }
 
 func (chg ContentHash_Graph) Validate() error {
@@ -33,7 +33,7 @@ func (chg ContentHash_Graph) Validate() error {
 		return err
 	}
 
-	return chg.DigestAlgorithm.Validate()
+	return chg.DigestAlgorithm.Validate(chg.Hash)
 }
 
 func (x MediaType) Validate() error {
@@ -44,16 +44,22 @@ func (x MediaType) Validate() error {
 	return nil
 }
 
-func (x DigestAlgorithm) Validate() error {
-	if _, ok := DigestAlgorithm_name[int32(x)]; !ok {
-		return fmt.Errorf("unknown %T %d", x, x)
-	}
-
-	if x == DigestAlgorithm_DIGEST_ALGORITHM_UNSPECIFIED {
+func (x DigestAlgorithm) Validate(hash []byte) error {
+	nBits, ok := DigestalgorithmLength[x]
+	if !ok {
 		return fmt.Errorf("%s is not a valid value for %T", x, x)
 	}
 
+	nBytes := nBits / 8
+	if len(hash) != nBytes {
+		return fmt.Errorf("expected %d bytes for %s, got %d", nBytes, x, len(hash))
+	}
+
 	return nil
+}
+
+var DigestalgorithmLength = map[DigestAlgorithm]int{
+	DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256: 256,
 }
 
 func (x GraphCanonicalizationAlgorithm) Validate() error {

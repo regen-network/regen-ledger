@@ -3,8 +3,15 @@ package data
 import (
 	"fmt"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/btcsuite/btcutil/base58"
 )
+
+func AccAddressToDID(address sdk.AccAddress, bech32AccPrefix string) string {
+	hash := base58.CheckEncode(address, DID_VERSION_0)
+	return fmt.Sprintf("did:%s:%s", bech32AccPrefix, hash)
+}
 
 func (ch ContentHash) ToIRI() (string, error) {
 	switch hash := ch.Sum.(type) {
@@ -62,29 +69,6 @@ func (chg ContentHash_Graph) ToIRI() (string, error) {
 
 	return fmt.Sprintf("regen:%s.rdf", hashStr), nil
 }
-
-//func AccAddressToDID(address sdk.AccAddress, bech32AccPrefix string) string {
-//	hash := base58.CheckEncode(address, DID_VERSION_0)
-//	return fmt.Sprintf("did:%s:%s", bech32AccPrefix, hash)
-//}
-//
-//func ParseIRI(iri string, bech32AccPrefix string) (IRIDescriptor, error) {
-//	if strings.HasPrefix(iri, "regen:") {
-//
-//	} else if strings.HasPrefix(iri, "did:") {
-//		subStr := iri[4:]
-//		if !strings.HasPrefix(subStr, bech32AccPrefix + ":") {
-//
-//		}
-//	}
-//	return IRIDescriptor{Other: iri}, nil
-//}
-//
-//type IRIDescriptor struct {
-//	ContentHash *ContentHash
-//	AccAddress  sdk.AccAddress
-//	Other       string
-//}
 
 func (mt MediaType) ToExtension() (string, error) {
 	ext, ok := mediaTypeExtensions[mt]
