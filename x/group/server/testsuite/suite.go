@@ -177,6 +177,18 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			},
 			expErr: true,
 		},
+		"zero member weight": {
+			req: &group.MsgCreateGroupRequest{
+				Admin: s.addr1.String(),
+				Members: []group.Member{{
+					Address:  s.addr3.String(),
+					Weight:   "0",
+					Metadata: nil,
+				}},
+				Metadata: nil,
+			},
+			expErr: true,
+		},
 	}
 	var seq uint32 = 1
 	for msg, spec := range specs {

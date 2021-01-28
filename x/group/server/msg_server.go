@@ -36,16 +36,14 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 			return nil, err
 		}
 
-		weight, err := math.ParseNonNegativeDecimal(m.Weight)
+		weight, err := math.ParsePositiveDecimal(m.Weight)
 		if err != nil {
 			return nil, err
 		}
 
-		if !weight.IsZero() {
-			err = math.Add(totalWeight, totalWeight, weight)
-			if err != nil {
-				return nil, err
-			}
+		err = math.Add(totalWeight, totalWeight, weight)
+		if err != nil {
+			return nil, err
 		}
 	}
 
@@ -87,6 +85,10 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 
 func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGroupMembersRequest) (*group.MsgUpdateGroupMembersResponse, error) {
 	action := func(g *group.GroupInfo) error {
+		totalWeight, err := math.ParseNonNegativeDecimal(g.TotalWeight)
+		if err != nil {
+			return err
+		}
 		for i := range req.MemberUpdates {
 			groupMember := group.GroupMember{GroupId: req.GroupId,
 				Member: &group.Member{
@@ -106,17 +108,13 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 				return sdkerrors.Wrap(err, "get group member")
 			}
 
-			totalWeight, err := math.ParseNonNegativeDecimal(g.TotalWeight)
-			if err != nil {
-				return err
-			}
 			newMemberWeight, err := math.ParseNonNegativeDecimal(groupMember.Member.Weight)
 			if err != nil {
 				return err
 			}
 
 			// handle delete
-			if newMemberWeight.Cmp(apd.New(0, 0)) == 0 {
+			if newMemberWeight.IsZero() {
 				if !found {
 					return sdkerrors.Wrap(orm.ErrNotFound, "unknown member")
 				}
