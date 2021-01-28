@@ -45,8 +45,10 @@ message QueryByContentHashResponse {
   // signers are the addresses of the accounts which have signed the data.
   repeated string signers = 2;
 
+  string iri = 3;
+
   // content is the content of the data, if it was stored on-chain.
-  Content content = 3;
+  Content content = 4;
 }
 
 // QueryBySignerRequest is the Query/BySigner request type.
@@ -90,7 +92,7 @@ message QueryIRIsByIDResponse {
 message Content {
   oneof sum {
     bytes raw_data = 1;
-    CompactDataset.Dataset graph_dataset = 2;
+    CompactDataset graph_dataset = 2;
     bytes wkb_bytes = 3;
   }
 }
