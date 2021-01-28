@@ -7,8 +7,9 @@ import "google/protobuf/duration.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
-// ContentID specifies a hash based content identifier for a piece of data
+// ContentHash specifies a hash based content identifier for a piece of data
 message ContentHash {
+    // descriptor selects the type of content hash descriptor
     oneof descriptor {
         // Raw specifies "raw" data which does not specify a deterministic, canonical encoding.
         // Users of these hashes MUST maintain a copy of the hashed data which is preserved bit by bit.
@@ -22,6 +23,7 @@ message ContentHash {
         Graph graph = 2;
     }
 
+    // Raw is the content hash type used for raw data
     message Raw {
         // hash represents the hash of the data based on the specified digest_algorithm
         bytes hash = 1;
@@ -34,6 +36,7 @@ message ContentHash {
 
     }
 
+    // Graph is the content hash type used for RDF graph data
     message Graph {
         // hash represents the hash of the data based on the specified digest_algorithm
         bytes hash = 1;

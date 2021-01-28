@@ -309,7 +309,7 @@ proto-format:
 	find ./ -not -path "./third_party/*" -name *.proto -exec clang-format -i {} \;
 
 proto-lint:
-	@buf check lint --error-format=json
+	@buf lint --error-format=json
 
 proto-check-breaking:
 	@buf breaking --against '.git#branch=master'
