@@ -12,9 +12,10 @@ package server
 import (
 	"context"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/codec"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc"
 )
 
@@ -22,7 +23,7 @@ import (
 type FixtureFactory interface {
 
 	// Setup runs necessary fixture setup and returns a fresh Fixture environment.
-	Setup() Fixture
+	Setup(setupHooks ...func(cdc *codec.ProtoCodec, app *baseapp.BaseApp)) Fixture
 }
 
 // Fixture defines an interface for interacting with app services in tests
@@ -44,6 +45,4 @@ type Fixture interface {
 
 	// Teardown performs any teardown actions for the fixture.
 	Teardown()
-
-	BankKeeper() bankkeeper.BaseKeeper
 }
