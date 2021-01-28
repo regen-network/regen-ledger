@@ -7,12 +7,13 @@ import "regen/data/v1alpha2/types.proto";
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 message GenesisState {
-    repeated ContentEntry content = 1;
+    repeated GenesisContentEntry content = 1;
 }
 
-message ContentEntry {
+message GenesisContentEntry {
     ContentHash hash = 1;
-    Content content = 2;
+    ContentEntry.Content content = 2;
     google.protobuf.Timestamp timestamp = 3;
-    repeated SignerEntry signers = 4;
+    repeated ContentEntry.SignerEntry signers = 4;
+
 }

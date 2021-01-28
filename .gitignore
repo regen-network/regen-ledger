@@ -182,3 +182,5 @@ tags
 
 build/
 /protoc-gen-go-cosmos2/protoc-gen-go-cosmos2
+/proto-tools-stamp
+/tools-stamp

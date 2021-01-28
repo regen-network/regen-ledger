@@ -98,13 +98,22 @@ enum DigestAlgorithm {
     DIGEST_ALGORITHM_BLAKE2B_256 = 1;
 }
 
-message Content {
-    oneof sum {
-        bytes raw_data = 1;
+message ContentEntry {
+    ContentHash hash = 1;
+    string iri = 2;
+    Content content = 3;
+    google.protobuf.Timestamp timestamp = 4;
+    repeated SignerEntry signers = 5;
+
+    message Content {
+        oneof sum {
+            bytes raw_data = 1;
+        }
+    }
+
+    message SignerEntry {
+        string signer = 1;
+        google.protobuf.Timestamp timestamp = 2;
     }
 }
 
-message SignerEntry {
-    string signer = 1;
-    google.protobuf.Timestamp timestamp = 2;
-}

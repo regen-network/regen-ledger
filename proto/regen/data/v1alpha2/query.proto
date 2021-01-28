@@ -19,23 +19,13 @@ service Query {
 
 // QueryByContentHashRequest is the Query/ByContentHash request type.
 message QueryByHashRequest {
-
   // hash is the hash-based identifier for the anchored content.
   ContentHash hash = 1;
 }
 
 // QueryByContentHashResponse is the Query/ByContentHash response type.
 message QueryByHashResponse {
-  // timestamp is the timestamp of the block at which the data was anchored.
-  google.protobuf.Timestamp timestamp = 1;
-
-  // signers are the addresses of the accounts which have signed the data.
-  repeated SignerEntry signers = 2;
-
-  string iri = 3;
-
-  // content is the content of the data, if it was stored on-chain.
-  Content content = 4;
+  ContentEntry entry = 1;
 }
 
 // QueryBySignerRequest is the Query/BySigner request type.
@@ -49,8 +39,7 @@ message QueryBySignerRequest {
 
 // QueryBySignerResponse is the Query/BySigner response type.
 message QueryBySignerResponse {
-  // hashes are in the ContentHashes returned in this page of the query.
-  repeated ContentHash hashes = 1;
+  repeated ContentEntry entries = 1;
 
   // pagination is the pagination PageResponse.
   cosmos.base.query.v1beta1.PageResponse pagination = 3;

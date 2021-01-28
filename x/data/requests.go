@@ -3,7 +3,7 @@ package data
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 var (
-	_, _, _ sdk.MsgRequest = &MsgAnchorDataRequest{}, &MsgSignDataRequest{}, &MsgStoreDataRequest{}
+	_, _, _ sdk.MsgRequest = &MsgAnchorDataRequest{}, &MsgSignDataRequest{}, &MsgStoreRawDataRequest{}
 )
 
 func (m *MsgAnchorDataRequest) ValidateBasic() error {
@@ -37,11 +37,11 @@ func (m *MsgSignDataRequest) GetSigners() []sdk.AccAddress {
 	return addrs
 }
 
-func (m *MsgStoreDataRequest) ValidateBasic() error {
+func (m *MsgStoreRawDataRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgStoreDataRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgStoreRawDataRequest) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Sender)
 	if err != nil {
 		panic(err)
