@@ -10,7 +10,6 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // Msg is the regen.data.v1alpha1 Msg service
 service Msg {
-
   // AnchorData "anchors" a piece of data to the blockchain based on its secure
   // hash, effectively providing a tamper resistant timestamp.
   //
@@ -50,17 +49,6 @@ service Msg {
   // SignData should be used to create a digital signature attesting to the
   // veracity of some piece of data.
   rpc StoreRawData(MsgStoreRawDataRequest) returns (MsgStoreRawDataResponse);
-
-  rpc StoreGraphData (MsgStoreGraphDataRequest) returns (MsgStoreGraphDataResponse);
-
-  rpc StoreGeoData (MsgStoreGeoDataRequest) returns (MsgStoreGeoDataResponse);
-
-  rpc ValidateGraph (MsgValidateGraphRequest) returns (MsgValidateGraphResponse);
-
-  rpc RegisterIRIs (MsgRegisterIRIsRequest) returns (MsgRegisterIRIsResponse);
-
-  rpc StoreGraphPartial(MsgStoreGraphPartialRequest) returns (MsgStoreGraphPartialResponse);
-//  TODO: rpc RegisterOffChainURL()
 }
 
 // MsgAnchorDataRequest is the Msg/AnchorData request type.
@@ -115,52 +103,3 @@ message MsgStoreRawDataRequest {
 
 // MsgStoreRawDataRequest is the Msg/StoreRawData response type.
 message MsgStoreRawDataResponse { }
-
-message MsgStoreGraphDataRequest {
-  string sender = 1;
-
-  ContentHash.Graph hash = 2;
-
-  CompactDataset = 3;
-}
-
-message MsgStoreGraphDataResponse { }
-
-message MsgRegisterIRIsRequest {
-  string sender = 1;
-
-  repeated string iris = 2;
-}
-
-message MsgRegisterIRIsResponse {
-    repeated sint64 ids = 1;
-}
-
-message MsgValidateGraphRequest {
-  string sender = 1;
-
-  ContentHash.Graph data_graph_hash = 2;
-  string data_named_graph = 3;
-
-  ContentHash.Graph shapes_graph_hash = 4;
-  string shapes_named_graph = 5;
-}
-
-message MsgValidateGraphResponse { }
-
-message MsgStoreGeoDataRequest {
-  string sender = 1;
-
-  ContentHash.Geo hash = 2;
-
-  bytes wkb_bytes = 3;
-}
-
-message MsgStoreGeoDataResponse { }
-
-message MsgStoreGraphPartialRequest {
-  repeated CompactDataset partial_dataset = 1;
-  repeated SparseMerkleCompactProof proofs = 2;
-}
-
-message MsgStoreGraphPartialResponse { }

@@ -2,7 +2,17 @@ syntax = "proto3";
 
 package regen.data.v1alpha2;
 
+import "regen/data/v1alpha2/types.proto";
+
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
-// TODO
-message GenesisState {}
+message GenesisState {
+    repeated ContentEntry content = 1;
+}
+
+message ContentEntry {
+    ContentHash hash = 1;
+    Content content = 2;
+    google.protobuf.Timestamp timestamp = 3;
+    repeated SignerEntry signers = 4;
+}
