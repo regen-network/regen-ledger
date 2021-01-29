@@ -466,7 +466,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 	return &group.MsgVoteResponse{}, nil
 }
 
-// doTally updates proposal if needed based on the group account's decision policy.
+// doTally updates the proposal status and tally if necessary based on the group account's decision policy.
 func doTally(ctx types.Context, p *group.Proposal, electorate group.GroupInfo, accountInfo group.GroupAccountInfo) error {
 	policy := accountInfo.GetDecisionPolicy()
 	submittedAt, err := gogotypes.TimestampFromProto(&p.SubmittedAt)
