@@ -5,9 +5,11 @@ import (
 	"hash/fnv"
 	"testing"
 
-	_ "golang.org/x/crypto/blake2b"
+	"github.com/stretchr/testify/require"
 
+	"github.com/cosmos/cosmos-sdk/store/mem"
 	"github.com/tendermint/tendermint/libs/rand"
+	_ "golang.org/x/crypto/blake2b"
 )
 
 func BenchmarkHash(b *testing.B) {
@@ -47,4 +49,25 @@ func BenchmarkHash(b *testing.B) {
 			res = h.Sum(nil)
 		}
 	})
+}
+
+func TestTable(t *testing.T) {
+	store := mem.NewStore()
+	n := 1000000
+	data := make([][]byte, n)
+	ids := map[int][]byte{}
+	for i := 0; i < n; i++ {
+		m := rand.Int31n(1000)
+		value := rand.Bytes(int(m))
+		data[i] = value
+		id := GetOrCreateIDForValue(store, value)
+		ids[i] = id
+	}
+	for i := 0; i < n; i++ {
+		id := ids[i]
+		value := data[i]
+		require.Equal(t, value, store.Get(id))
+		newId := GetOrCreateIDForValue(store, value)
+		require.Equal(t, id, newId)
+	}
 }
