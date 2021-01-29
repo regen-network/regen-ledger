@@ -151,6 +151,16 @@ func TestContentHash_Graph_Validate(t *testing.T) {
 			},
 			true,
 		},
+		{
+			"bad merkle tree",
+			fields{
+				Hash:                      make([]byte, 32),
+				DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+				CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+				MerkleTree:                -1,
+			},
+			true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

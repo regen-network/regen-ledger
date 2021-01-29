@@ -84,6 +84,9 @@ func TestMsgSignDataRequest_GetSigners(t *testing.T) {
 	require.Equal(t, []sdk.AccAddress{addr, addr2}, msg.GetSigners())
 
 	msg = &MsgSignDataRequest{Signers: nil}
+	require.Empty(t, msg.GetSigners())
+
+	msg = &MsgSignDataRequest{Signers: []string{"abcd"}}
 	require.Panics(t, func() {
 		msg.GetSigners()
 	})
@@ -99,7 +102,32 @@ func TestMsgSignDataRequest_ValidateBasic(t *testing.T) {
 		fields  fields
 		wantErr string
 	}{
-		{},
+		{
+			"good",
+			fields{
+				Signers: nil,
+				Hash: &ContentHash_Graph{
+					Hash:                      make([]byte, 32),
+					DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+					CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+					MerkleTree:                GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
+				},
+			},
+			"",
+		},
+		{
+			"bad",
+			fields{
+				Signers: nil,
+				Hash: &ContentHash_Graph{
+					Hash:                      make([]byte, 32),
+					DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+					CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED,
+					MerkleTree:                GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
+				},
+			},
+			"invalid data.GraphCanonicalizationAlgorithm GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED: unknown request",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -170,7 +198,7 @@ func TestMsgStoreRawDataRequest_ValidateBasic(t *testing.T) {
 				},
 				Content: data,
 			},
-			"",
+			"hash verification failed",
 		},
 	}
 

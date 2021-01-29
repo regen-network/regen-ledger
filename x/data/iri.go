@@ -8,9 +8,11 @@ import (
 	"github.com/btcsuite/btcutil/base58"
 )
 
-func AccAddressToDID(address sdk.AccAddress, bech32AccPrefix string) string {
+// AccAddressToDID converts an account address to a DID using a chain-specific method prefix,
+// which should generally be equivalent to the chain's bech32 account prefix.
+func AccAddressToDID(address sdk.AccAddress, methodPrefix string) string {
 	hash := base58.CheckEncode(address, DID_VERSION_0)
-	return fmt.Sprintf("did:%s:%s", bech32AccPrefix, hash)
+	return fmt.Sprintf("did:%s:%s", methodPrefix, hash)
 }
 
 func (ch ContentHash) ToIRI() (string, error) {
@@ -83,6 +85,7 @@ var mediaTypeExtensions = map[MediaType]string{
 	MediaType_MEDIA_TYPE_UNSPECIFIED: "bin",
 	MediaType_MEDIA_TYPE_TEXT_PLAIN:  "txt",
 	MediaType_MEDIA_TYPE_CSV:         "csv",
+	MediaType_MEDIA_TYPE_JSON:        "json",
 	MediaType_MEDIA_TYPE_XML:         "xml",
 	MediaType_MEDIA_TYPE_PDF:         "pdf",
 	MediaType_MEDIA_TYPE_TIFF:        "tiff",
