@@ -396,7 +396,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 	}
 	// Ensure that we can still accept votes for this proposal.
 	if proposal.Status != group.ProposalStatusSubmitted {
-		return nil, sdkerrors.Wrap(group.ErrInvalid, "proposal not opened")
+		return nil, sdkerrors.Wrap(group.ErrInvalid, "proposal not open for voting")
 	}
 	votingPeriodEnd, err := gogotypes.TimestampFromProto(&proposal.Timeout)
 	if err != nil {
