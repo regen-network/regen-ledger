@@ -40,7 +40,7 @@ message QueryBySignerRequest {
 
 // QueryBySignerResponse is the Query/BySigner response type.
 message QueryBySignerResponse {
-  // entries is the ContentEntry's
+  // entries is the ContentEntry's signed by the queried signer
   repeated ContentEntry entries = 1;
 
   // pagination is the pagination PageResponse.
