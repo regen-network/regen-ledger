@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"reflect"
 
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -19,10 +20,11 @@ type TableBuilder struct {
 	indexKeyCodec IndexKeyCodec
 	afterSave     []AfterSaveInterceptor
 	afterDelete   []AfterDeleteInterceptor
+	cdc           codec.Marshaler
 }
 
 // NewTableBuilder creates a builder to setup a Table object.
-func NewTableBuilder(prefixData byte, storeKey sdk.StoreKey, model Persistent, idxKeyCodec IndexKeyCodec) *TableBuilder {
+func NewTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, idxKeyCodec IndexKeyCodec, cdc codec.Marshaler) *TableBuilder {
 	if model == nil {
 		panic("Model must not be nil")
 	}
@@ -41,6 +43,7 @@ func NewTableBuilder(prefixData byte, storeKey sdk.StoreKey, model Persistent, i
 		storeKey:      storeKey,
 		model:         tp,
 		indexKeyCodec: idxKeyCodec,
+		cdc:           cdc,
 	}
 }
 
@@ -50,7 +53,7 @@ func (a TableBuilder) IndexKeyCodec() IndexKeyCodec {
 
 // RowGetter returns a type safe RowGetter.
 func (a TableBuilder) RowGetter() RowGetter {
-	return NewTypeSafeRowGetter(a.storeKey, a.prefixData, a.model)
+	return NewTypeSafeRowGetter(a.storeKey, a.prefixData, a.model, a.cdc)
 }
 
 func (a TableBuilder) StoreKey() sdk.StoreKey {
@@ -65,6 +68,7 @@ func (a TableBuilder) Build() Table {
 		storeKey:    a.storeKey,
 		afterSave:   a.afterSave,
 		afterDelete: a.afterDelete,
+		cdc:         a.cdc,
 	}
 }
 
@@ -90,6 +94,7 @@ type Table struct {
 	storeKey    sdk.StoreKey
 	afterSave   []AfterSaveInterceptor
 	afterDelete []AfterDeleteInterceptor
+	cdc         codec.Marshaler
 }
 
 // Create persists the given object under the rowID key. It does not check if the
@@ -98,7 +103,7 @@ type Table struct {
 // by checking the state via `Has` function before.
 //
 // Create iterates though the registered callbacks and may add secondary index keys by them.
-func (a Table) Create(ctx HasKVStore, rowID RowID, obj Persistent) error {
+func (a Table) Create(ctx HasKVStore, rowID RowID, obj codec.ProtoMarshaler) error {
 	if err := assertCorrectType(a.model, obj); err != nil {
 		return err
 	}
@@ -106,7 +111,7 @@ func (a Table) Create(ctx HasKVStore, rowID RowID, obj Persistent) error {
 		return err
 	}
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
-	v, err := obj.Marshal()
+	v, err := a.cdc.MarshalBinaryBare(obj)
 	if err != nil {
 		return errors.Wrapf(err, "failed to serialize %T", obj)
 	}
@@ -124,7 +129,7 @@ func (a Table) Create(ctx HasKVStore, rowID RowID, obj Persistent) error {
 // is fulfilled. Parameters must not be nil.
 //
 // Save iterates though the registered callbacks and may add or remove secondary index keys by them.
-func (a Table) Save(ctx HasKVStore, rowID RowID, newValue Persistent) error {
+func (a Table) Save(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler) error {
 	if err := assertCorrectType(a.model, newValue); err != nil {
 		return err
 	}
@@ -133,12 +138,12 @@ func (a Table) Save(ctx HasKVStore, rowID RowID, newValue Persistent) error {
 	}
 
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
-	var oldValue = reflect.New(a.model).Interface().(Persistent)
+	var oldValue = reflect.New(a.model).Interface().(codec.ProtoMarshaler)
 
 	if err := a.GetOne(ctx, rowID, oldValue); err != nil {
 		return errors.Wrap(err, "load old value")
 	}
-	newValueEncoded, err := newValue.Marshal()
+	newValueEncoded, err := a.cdc.MarshalBinaryBare(newValue)
 	if err != nil {
 		return errors.Wrapf(err, "failed to serialize %T", newValue)
 	}
@@ -152,7 +157,7 @@ func (a Table) Save(ctx HasKVStore, rowID RowID, newValue Persistent) error {
 	return nil
 }
 
-func assertValid(obj Persistent) error {
+func assertValid(obj codec.ProtoMarshaler) error {
 	if v, ok := obj.(Validateable); ok {
 		if err := v.ValidateBasic(); err != nil {
 			return err
@@ -169,7 +174,7 @@ func assertValid(obj Persistent) error {
 func (a Table) Delete(ctx HasKVStore, rowID RowID) error {
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
 
-	var oldValue = reflect.New(a.model).Interface().(Persistent)
+	var oldValue = reflect.New(a.model).Interface().(codec.ProtoMarshaler)
 	if err := a.GetOne(ctx, rowID, oldValue); err != nil {
 		return errors.Wrap(err, "load old value")
 	}
@@ -193,8 +198,8 @@ func (a Table) Has(ctx HasKVStore, rowID RowID) bool {
 
 // GetOne load the object persisted for the given RowID into the dest parameter.
 // If none exists `ErrNotFound` is returned instead. Parameters must not be nil.
-func (a Table) GetOne(ctx HasKVStore, rowID RowID, dest Persistent) error {
-	x := NewTypeSafeRowGetter(a.storeKey, a.prefix, a.model)
+func (a Table) GetOne(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) error {
+	x := NewTypeSafeRowGetter(a.storeKey, a.prefix, a.model, a.cdc)
 	return x(ctx, rowID, dest)
 }
 
@@ -221,7 +226,7 @@ func (a Table) PrefixScan(ctx HasKVStore, start, end RowID) (Iterator, error) {
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
 	return &typeSafeIterator{
 		ctx:       ctx,
-		rowGetter: NewTypeSafeRowGetter(a.storeKey, a.prefix, a.model),
+		rowGetter: NewTypeSafeRowGetter(a.storeKey, a.prefix, a.model, a.cdc),
 		it:        store.Iterator(start, end),
 	}, nil
 }
@@ -242,7 +247,7 @@ func (a Table) ReversePrefixScan(ctx HasKVStore, start, end RowID) (Iterator, er
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
 	return &typeSafeIterator{
 		ctx:       ctx,
-		rowGetter: NewTypeSafeRowGetter(a.storeKey, a.prefix, a.model),
+		rowGetter: NewTypeSafeRowGetter(a.storeKey, a.prefix, a.model, a.cdc),
 		it:        store.ReverseIterator(start, end),
 	}, nil
 }
@@ -258,7 +263,7 @@ type typeSafeIterator struct {
 	it        types.Iterator
 }
 
-func (i typeSafeIterator) LoadNext(dest Persistent) (RowID, error) {
+func (i typeSafeIterator) LoadNext(dest codec.ProtoMarshaler) (RowID, error) {
 	if !i.it.Valid() {
 		return nil, ErrIteratorDone
 	}

@@ -1,24 +1,23 @@
 package server
 
 import (
-	"encoding/binary"
 	"fmt"
 
 	"github.com/regen-network/regen-ledger/types"
 
-	"github.com/btcsuite/btcutil/base58"
 	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/regen-network/regen-ledger/orm"
 
+	"github.com/regen-network/regen-ledger/math"
+	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/util"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/math"
 )
 
 func (s serverImpl) CreateClass(ctx types.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error) {
 	classID := s.idSeq.NextVal(ctx)
-	classIDStr := uint64ToBase58Checked(classID)
+	classIDStr := util.Uint64ToBase58Check(classID)
 
 	err := s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
 		ClassId:  classIDStr,
@@ -48,7 +47,7 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 	}
 
 	batchID := s.idSeq.NextVal(ctx)
-	batchDenom := batchDenomT(fmt.Sprintf("%s/%s", classID, uint64ToBase58Checked(batchID)))
+	batchDenom := batchDenomT(fmt.Sprintf("%s/%s", classID, util.Uint64ToBase58Check(batchID)))
 	tradableSupply := apd.New(0, 0)
 	retiredSupply := apd.New(0, 0)
 	var maxDecimalPlaces uint32 = 0
@@ -318,12 +317,6 @@ func (s serverImpl) assertClassIssuer(ctx types.Context, classID, issuer string)
 		}
 	}
 	return sdkerrors.ErrUnauthorized
-}
-
-func uint64ToBase58Checked(x uint64) string {
-	buf := make([]byte, binary.MaxVarintLen64)
-	n := binary.PutUvarint(buf, x)
-	return base58.CheckEncode(buf[:n], 0)
 }
 
 func retire(ctx types.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired *apd.Decimal) error {

@@ -6,7 +6,7 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/testutil/testdata";
 
-message GroupMetadata {
+message GroupInfo {
   string description = 1;
   bytes admin = 2 [ (gogoproto.casttype) =
                         "github.com/cosmos/cosmos-sdk/types.AccAddress" ];

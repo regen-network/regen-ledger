@@ -1,5 +1,9 @@
 package orm
 
+import (
+	"github.com/cosmos/cosmos-sdk/types/query"
+)
+
 // UInt64IndexerFunc creates one or multiple multiKeyIndex keys of type uint64 for the source object.
 type UInt64IndexerFunc func(value interface{}) ([]uint64, error)
 
@@ -38,6 +42,13 @@ func (i UInt64Index) Has(ctx HasKVStore, key uint64) bool {
 // Get returns a result iterator for the searchKey. Parameters must not be nil.
 func (i UInt64Index) Get(ctx HasKVStore, searchKey uint64) (Iterator, error) {
 	return i.multiKeyIndex.Get(ctx, EncodeSequence(searchKey))
+}
+
+// GetPaginated creates an iterator for the searchKey
+// starting from pageRequest.Key if provided.
+// The pageRequest.Key is the rowID while searchKey is a MultiKeyIndex key.
+func (i UInt64Index) GetPaginated(ctx HasKVStore, searchKey uint64, pageRequest *query.PageRequest) (Iterator, error) {
+	return i.multiKeyIndex.GetPaginated(ctx, EncodeSequence(searchKey), pageRequest)
 }
 
 // PrefixScan returns an Iterator over a domain of keys in ascending order. End is exclusive.
