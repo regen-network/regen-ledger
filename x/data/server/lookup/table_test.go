@@ -3,6 +3,7 @@ package lookup
 import (
 	"crypto"
 	"hash/fnv"
+	"math"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -53,21 +54,33 @@ func BenchmarkHash(b *testing.B) {
 
 func TestTable(t *testing.T) {
 	store := mem.NewStore()
-	n := 1000000
+	n := int(math.Pow10(5))
 	data := make([][]byte, n)
 	ids := map[int][]byte{}
+	var totalCollisions uint64
+	var secondaryCollisions uint64
+
 	for i := 0; i < n; i++ {
-		m := rand.Int31n(1000)
+		m := rand.Int31n(256)
 		value := rand.Bytes(int(m))
 		data[i] = value
-		id := GetOrCreateIDForValue(store, value)
+		id, collisions := getOrCreateIDForValue(store, value)
+		totalCollisions += collisions
+		if collisions > 1 {
+			secondaryCollisions += collisions - 1
+		}
 		ids[i] = id
 	}
+
+	t.Logf("total collisions: %d / %.0e, secondary collisions: %d, collision rate: %.4f%%", totalCollisions, float64(n), secondaryCollisions, float64(totalCollisions)/float64(n)*100.0)
+
 	for i := 0; i < n; i++ {
 		id := ids[i]
 		value := data[i]
+		// make sure stored value at id is expected value
 		require.Equal(t, value, store.Get(id))
 		newId := GetOrCreateIDForValue(store, value)
+		// make sure getting an ID the second time returns the same ID
 		require.Equal(t, id, newId)
 	}
 }
