@@ -1,17 +1,40 @@
 package data
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
 
 func TestContentHash_Validate(t *testing.T) {
 	tests := []struct {
 		name    string
 		sum     isContentHash_Sum
-		wantErr bool
+		wantErr string
 	}{
 		{
 			"nil",
 			nil,
-			true,
+			"invalid data.ContentHash type <nil>: unknown request",
+		},
+		{
+			"good raw",
+			&ContentHash_Raw_{Raw: &ContentHash_Raw{
+				Hash:            make([]byte, 32),
+				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+				MediaType:       MediaType_MEDIA_TYPE_UNSPECIFIED,
+			}},
+			"",
+		},
+		{
+			"good graph",
+			&ContentHash_Graph_{Graph: &ContentHash_Graph{
+				Hash:                      make([]byte, 32),
+				DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+				CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+				MerkleTree:                GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
+			}},
+			"",
 		},
 	}
 	for _, tt := range tests {
@@ -19,8 +42,11 @@ func TestContentHash_Validate(t *testing.T) {
 			ch := ContentHash{
 				Sum: tt.sum,
 			}
-			if err := ch.Validate(); (err != nil) != tt.wantErr {
-				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+			err := ch.Validate()
+			if len(tt.wantErr) != 0 {
+				require.EqualError(t, err, tt.wantErr)
+			} else {
+				require.NoError(t, err)
 			}
 		})
 	}
@@ -37,7 +63,27 @@ func TestContentHash_Raw_Validate(t *testing.T) {
 		fields  fields
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			"good",
+			fields{
+				Hash:            make([]byte, 32),
+				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+				MediaType:       MediaType_MEDIA_TYPE_UNSPECIFIED,
+			},
+			false,
+		},
+		{
+			"bad",
+			fields{},
+			true,
+		},
+		{
+			"bad mediatype",
+			fields{
+				MediaType: -1,
+			},
+			true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -126,37 +172,40 @@ func TestDigestAlgorithm_Validate(t *testing.T) {
 		name      string
 		algorithm DigestAlgorithm
 		hash      []byte
-		wantErr   bool
+		wantErr   string
 	}{
 		{
 			"right len",
 			DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 			make([]byte, 32),
-			false,
+			"",
 		},
 		{
 			"wrong len",
 			DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 			make([]byte, 31),
-			true,
+			"expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 31: unknown request",
 		},
 		{
 			"unspecified",
 			DigestAlgorithm_DIGEST_ALGORITHM_UNSPECIFIED,
 			make([]byte, 32),
-			true,
+			"invalid or unknown data.DigestAlgorithm DIGEST_ALGORITHM_UNSPECIFIED: unknown request",
 		},
 		{
 			"bad algorithm",
 			-1,
 			make([]byte, 32),
-			true,
+			"invalid or unknown data.DigestAlgorithm -1: unknown request",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.algorithm.Validate(tt.hash); (err != nil) != tt.wantErr {
-				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+			err := tt.algorithm.Validate(tt.hash)
+			if len(tt.wantErr) != 0 {
+				require.EqualError(t, err, tt.wantErr)
+			} else {
+				require.NoError(t, err)
 			}
 		})
 	}
@@ -166,28 +215,31 @@ func TestGraphCanonicalizationAlgorithm_Validate(t *testing.T) {
 	tests := []struct {
 		name    string
 		x       GraphCanonicalizationAlgorithm
-		wantErr bool
+		wantErr string
 	}{
 		{
 			"urdna2015",
 			GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
-			false,
+			"",
 		},
 		{
 			"unspecified",
 			GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED,
-			true,
+			"invalid data.GraphCanonicalizationAlgorithm GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED: unknown request",
 		},
 		{
 			"bad",
 			-1,
-			true,
+			"unknown data.GraphCanonicalizationAlgorithm -1: unknown request",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.x.Validate(); (err != nil) != tt.wantErr {
-				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+			err := tt.x.Validate()
+			if len(tt.wantErr) != 0 {
+				require.EqualError(t, err, tt.wantErr)
+			} else {
+				require.NoError(t, err)
 			}
 		})
 	}
@@ -197,23 +249,26 @@ func TestGraphMerkleTree_Validate(t *testing.T) {
 	tests := []struct {
 		name    string
 		x       GraphMerkleTree
-		wantErr bool
+		wantErr string
 	}{
 		{
 			"unspecified",
 			GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
-			false,
+			"",
 		},
 		{
 			"bad",
 			-1,
-			true,
+			"unknown data.GraphMerkleTree -1: unknown request",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.x.Validate(); (err != nil) != tt.wantErr {
-				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+			err := tt.x.Validate()
+			if len(tt.wantErr) != 0 {
+				require.EqualError(t, err, tt.wantErr)
+			} else {
+				require.NoError(t, err)
 			}
 		})
 	}
@@ -223,28 +278,31 @@ func TestMediaType_Validate(t *testing.T) {
 	tests := []struct {
 		name    string
 		x       MediaType
-		wantErr bool
+		wantErr string
 	}{
 		{
 			"good",
 			MediaType_MEDIA_TYPE_PDF,
-			false,
+			"",
 		},
 		{
 			"unspecified",
 			MediaType_MEDIA_TYPE_UNSPECIFIED,
-			false,
+			"",
 		},
 		{
 			"bad",
 			-1,
-			true,
+			"unknown data.MediaType -1: unknown request",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.x.Validate(); (err != nil) != tt.wantErr {
-				t.Errorf("Validate() error = %v, wantErr %v", err, tt.wantErr)
+			err := tt.x.Validate()
+			if len(tt.wantErr) != 0 {
+				require.EqualError(t, err, tt.wantErr)
+			} else {
+				require.NoError(t, err)
 			}
 		})
 	}
