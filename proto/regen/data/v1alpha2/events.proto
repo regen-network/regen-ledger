@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package regen.data.v1alpha2;
+
+import "regen/data/v1alpha2/types.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/data";
+
+// EventAnchorData is an event emitted when data is anchored on-chain.
+message EventAnchorData {
+    // iri is the data IRI
+    string iri = 1;
+}
+
+// EventSignData is an event emitted when data is signed on-chain.
+message EventSignData {
+    // iri is the data IRI
+    string iri = 1;
+
+    // signers are the addresses of the accounts which have signed the data.
+    repeated string signers = 2;
+}
+
+// EventStoreRawData is an event emitted when data is stored on-chain.
+message EventStoreRawData {
+    // iri is the data IRI
+    string iri = 1;
+}

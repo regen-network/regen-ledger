@@ -7,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	gocid "github.com/ipfs/go-cid"
-	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/spf13/cobra"
 )
 
@@ -55,24 +54,25 @@ func QueryByCidCmd() *cobra.Command {
 		Short: "Query for CID timestamp, signers and content (if available)",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			cid, err := gocid.Decode(args[0])
-			if err != nil {
-				return err
-			}
-
-			queryClient := data.NewQueryClient(clientCtx)
-
-			res, err := queryClient.ByCid(cmd.Context(), &data.QueryByCidRequest{Cid: cid.Bytes()})
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(res)
+			return fmt.Errorf("not implemented")
+			//clientCtx, err := client.GetClientQueryContext(cmd)
+			//if err != nil {
+			//	return err
+			//}
+			//
+			//cid, err := gocid.Decode(args[0])
+			//if err != nil {
+			//	return err
+			//}
+			//
+			//queryClient := data.NewQueryClient(clientCtx)
+			//
+			//res, err := queryClient.ByCid(cmd.Context(), &data.QueryByCidRequest{Cid: cid.Bytes()})
+			//if err != nil {
+			//	return err
+			//}
+			//
+			//return clientCtx.PrintProto(res)
 		},
 	}
 

@@ -43,11 +43,11 @@ Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
   -I "proto" \
   -I "third_party/proto" \
   --go-cosmos2_out=\
-Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,\
-Mgoogle/protobuf/struct.proto=github.com/gogo/protobuf/types,\
-Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,\
-Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types,\
-Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
+google/protobuf/duration.proto=github.com/gogo/protobuf/types,\
+google/protobuf/struct.proto=github.com/gogo/protobuf/types,\
+google/protobuf/timestamp.proto=github.com/gogo/protobuf/types,\
+google/protobuf/wrappers.proto=github.com/gogo/protobuf/types,\
+google/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
   $(find "${dir}" -maxdepth 1 -name '*.proto')
 
   # command to generate gRPC gateway (*.pb.gw.go in respective modules) files
