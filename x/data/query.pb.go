@@ -72,7 +72,6 @@ func (m *QueryByHashRequest) GetHash() *ContentHash {
 
 // QueryByContentHashResponse is the Query/ByContentHash response type.
 type QueryByHashResponse struct {
-	// entry is the ContentEntry
 	Entry *ContentEntry `protobuf:"bytes,1,opt,name=entry,proto3" json:"entry,omitempty"`
 }
 
@@ -173,7 +172,6 @@ func (m *QueryBySignerRequest) GetPagination() *query.PageRequest {
 
 // QueryBySignerResponse is the Query/BySigner response type.
 type QueryBySignerResponse struct {
-	// entries is the ContentEntry's
 	Entries []*ContentEntry `protobuf:"bytes,1,rep,name=entries,proto3" json:"entries,omitempty"`
 	// pagination is the pagination PageResponse.
 	Pagination *query.PageResponse `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`

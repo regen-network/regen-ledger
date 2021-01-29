@@ -215,8 +215,9 @@ type MsgStoreRawDataRequest struct {
 	// data. They can simply be a intermediary providing services.
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
 	// hash is the hash-based identifier for the anchored content.
+	// The id's type must equal ID_TYPE_RAW_UNSPECIFIED.
 	Hash *ContentHash_Raw `protobuf:"bytes,2,opt,name=hash,proto3" json:"hash,omitempty"`
-	// content is the content of the raw data corresponding to the provided content hash.
+	// content is the content of the raw data corresponding to the provided ID.
 	Content []byte `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
 }
 
