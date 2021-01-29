@@ -11,7 +11,7 @@ import (
 // AccAddressToDID converts an account address to a DID using a chain-specific method prefix,
 // which should generally be equivalent to the chain's bech32 account prefix.
 func AccAddressToDID(address sdk.AccAddress, methodPrefix string) string {
-	hash := base58.CheckEncode(address, DID_VERSION_0)
+	hash := base58.CheckEncode(address, didVersion0)
 	return fmt.Sprintf("did:%s:%s", methodPrefix, hash)
 }
 
@@ -27,12 +27,12 @@ func (ch ContentHash) ToIRI() (string, error) {
 }
 
 const (
-	IRI_VERSION_0 byte = 0
+	iriVersion0 byte = 0
 
-	IRI_PREFIX_RAW   byte = 0
-	IRI_PREFIX_GRAPH byte = 1
+	IriPrefixRaw   byte = 0
+	IriPrefixGraph byte = 1
 
-	DID_VERSION_0 byte = 0
+	didVersion0 byte = 0
 )
 
 func (chr ContentHash_Raw) ToIRI() (string, error) {
@@ -42,10 +42,10 @@ func (chr ContentHash_Raw) ToIRI() (string, error) {
 	}
 
 	bz := make([]byte, len(chr.Hash)+2)
-	bz[0] = IRI_PREFIX_RAW
+	bz[0] = IriPrefixRaw
 	bz[1] = byte(chr.DigestAlgorithm)
 	copy(bz[2:], chr.Hash)
-	hashStr := base58.CheckEncode(bz, IRI_VERSION_0)
+	hashStr := base58.CheckEncode(bz, iriVersion0)
 
 	ext, err := chr.MediaType.ToExtension()
 	if err != nil {
@@ -62,12 +62,12 @@ func (chg ContentHash_Graph) ToIRI() (string, error) {
 	}
 
 	bz := make([]byte, len(chg.Hash)+4)
-	bz[0] = IRI_PREFIX_GRAPH
+	bz[0] = IriPrefixGraph
 	bz[1] = byte(chg.CanonicalizationAlgorithm)
 	bz[2] = byte(chg.MerkleTree)
 	bz[3] = byte(chg.DigestAlgorithm)
 	copy(bz[4:], chg.Hash)
-	hashStr := base58.CheckEncode(bz, IRI_VERSION_0)
+	hashStr := base58.CheckEncode(bz, iriVersion0)
 
 	return fmt.Sprintf("regen:%s.rdf", hashStr), nil
 }
