@@ -79,7 +79,8 @@ message MsgSignDataRequest {
   // depending on the underlying data.
   repeated string signers = 1;
 
-  // hash is the hash-based identifier for the anchored content.
+  // hash is the hash-based identifier for the anchored content. Only RDF graph
+  // data can be signed as its data model is intended to specifically convey semantic meaning.
   ContentHash.Graph hash = 2;
 }
 

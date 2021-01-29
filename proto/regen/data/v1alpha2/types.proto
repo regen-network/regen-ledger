@@ -124,7 +124,7 @@ enum MediaType {
 
 // GraphCanonicalizationAlgorithm is the graph canonicalization algorithm
 enum GraphCanonicalizationAlgorithm {
-    // unspecified
+    // unspecified and invalid
     GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED = 0;
 
     // URDNA2015 graph hashing
@@ -139,46 +139,27 @@ enum GraphMerkleTree {
 
 // DigestAlgorithm is the hash digest algorithm
 enum DigestAlgorithm {
-    // unspecified
+    // unspecified and invalid
     DIGEST_ALGORITHM_UNSPECIFIED = 0;
 
     // BLAKE2b-256
     DIGEST_ALGORITHM_BLAKE2B_256 = 1;
 }
 
-// ContentEntry describes data referenced and possibly stored on chain
-message ContentEntry {
-    // hash is the content hash
-    ContentHash hash = 1;
-
-    // iri is the content IRI
-    string iri = 2;
-
-    // timestamp is the anchor Timestamp
-    google.protobuf.Timestamp timestamp = 3;
-
-    // signers are the signers, if any
-    repeated SignerEntry signers = 4;
-
-    // content is the actual content if stored on-chain
-    Content content = 5;
-
-    // Content is a wrapper for content stored on-chain
-    message Content {
-        // sum selects the type of data
-        oneof sum {
-            // raw_data is the oneof field for raw data
-            bytes raw_data = 1;
-        }
-    }
-
-    // SignerEntry is a signer entry wrapping a signer address and timestamp
-    message SignerEntry {
-        // signer is the address of the signer
-        string signer = 1;
-
-        // timestamp is the time at which the data was signed
-        google.protobuf.Timestamp timestamp = 2;
+// Content is a wrapper for content stored on-chain
+message Content {
+    // sum selects the type of data
+    oneof sum {
+        // raw_data is the oneof field for raw data
+        bytes raw_data = 1;
     }
 }
 
+// SignerEntry is a signer entry wrapping a signer address and timestamp
+message SignerEntry {
+    // signer is the address of the signer
+    string signer = 1;
+
+    // timestamp is the time at which the data was signed
+    google.protobuf.Timestamp timestamp = 2;
+}
