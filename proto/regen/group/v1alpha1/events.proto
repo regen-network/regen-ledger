@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package regen.group.v1alpha1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/group";
+
+// EventCreateGroup is an event emitted when a group is created.
+message EventCreateGroup {
+
+  // group_id is the unique ID of the group.
+  string group_id = 1;
+}
+
+// EventUpdateGroup is an event emitted when a group is updated.
+message EventUpdateGroup {
+
+  // group_id is the unique ID of the group.
+  string group_id = 1;
+}
+
+// EventCreateGroupAccount is an event emitted when a group account is created.
+message EventCreateGroupAccount {
+
+  // group_account is the address of the group account.
+  string group_account = 1;
+}
+
+// EventUpdateGroupAccount is an event emitted when a group account is updated.
+message EventUpdateGroupAccount {
+
+  // group_account is the address of the group account.
+  string group_account = 1;
+}
