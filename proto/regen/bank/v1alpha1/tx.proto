@@ -49,6 +49,12 @@ service Msg {
     rpc SetPrecision(MsgSetPrecisionRequest) returns (MsgSetPrecisionResponse);
 }
 
+service Internal {
+    // Move is a method for a module, contract, or other trusted third party
+    // to move coins from one account to another account. It is subject to each denom's move rule.
+    rpc Move (MsgMoveRequest) returns (MsgMoveResponse);
+}
+
 message MsgCreateDenomRequest {
     string namespace_admin = 1;
     string denom_namespace = 2;
