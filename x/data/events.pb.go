@@ -24,6 +24,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // EventAnchorData is an event emitted when data is anchored on-chain.
 type EventAnchorData struct {
+	// iri is the data IRI
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 }
 
@@ -69,6 +70,7 @@ func (m *EventAnchorData) GetIri() string {
 
 // EventSignData is an event emitted when data is signed on-chain.
 type EventSignData struct {
+	// iri is the data IRI
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 	// signers are the addresses of the accounts which have signed the data.
 	Signers []string `protobuf:"bytes,2,rep,name=signers,proto3" json:"signers,omitempty"`
@@ -123,6 +125,7 @@ func (m *EventSignData) GetSigners() []string {
 
 // EventStoreRawData is an event emitted when data is stored on-chain.
 type EventStoreRawData struct {
+	// iri is the data IRI
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 }
 
