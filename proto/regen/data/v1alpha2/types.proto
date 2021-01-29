@@ -52,7 +52,7 @@ message ContentHash {
     }
 }
 
-// MediaType defines MIME media types to be used with ID_TYPE_RAW_UNSPECIFIED.
+// MediaType defines MIME media types to be used with a ContentHash.Raw hash.
 enum MediaType {
     // MEDIA_TYPE_UNSPECIFIED can be used for raw binary data
     MEDIA_TYPE_UNSPECIFIED = 0;
