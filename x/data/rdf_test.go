@@ -130,8 +130,7 @@ func benchmarkSMT(b *testing.B, txt string, newHash func() hash.Hash) {
 		store := smt.NewSimpleMap()
 		tree := smt.NewSparseMerkleTree(store, newHash())
 		for j := 0; j < numLines; j++ {
-			lineHash := newHash().Sum([]byte(lines[j]))
-			_, err := tree.Update(lineHash[:], tru)
+			_, err := tree.Update([]byte(lines[j]), tru)
 			if err != nil {
 				panic(err)
 			}
