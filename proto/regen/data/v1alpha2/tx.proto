@@ -58,8 +58,8 @@ message MsgAnchorDataRequest {
   // data. They can simply be a intermediary providing services.
   string sender = 1;
 
-  // id is the hash-based identifier for the anchored content.
-  ContentHash id = 2;
+  // hash is the hash-based identifier for the anchored content.
+  ContentHash hash = 2;
 }
 
 // MsgAnchorDataRequest is the Msg/AnchorData response type.
