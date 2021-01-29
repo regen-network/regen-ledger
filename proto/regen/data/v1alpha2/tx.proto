@@ -1,15 +1,15 @@
 syntax = "proto3";
 
-package regen.data.v1alpha1;
+package regen.data.v1alpha2;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
+import "regen/data/v1alpha2/types.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // Msg is the regen.data.v1alpha1 Msg service
 service Msg {
-
   // AnchorData "anchors" a piece of data to the blockchain based on its secure
   // hash, effectively providing a tamper resistant timestamp.
   //
@@ -36,35 +36,30 @@ service Msg {
   //
   // SignData implicitly calls AnchorData if the data was not already anchored.
   //
-  // SignData can be called multiple times for the same CID with different
+  // SignData can be called multiple times for the same content hash with different
   // signers and those signers will be appended to the list of signers.
   rpc SignData(MsgSignDataRequest) returns (MsgSignDataResponse);
 
-  // StoreData stores a piece of data corresponding to a CID on the blockchain.
+  // StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
   //
-  // Currently only data for CID's using sha2-256 and blake2b-256 hash
-  // algorithms can be stored on-chain.
+  // StoreRawData implicitly calls AnchorData if the data was not already anchored.
   //
-  // StoreData implicitly calls AnchorData if the data was not already anchored.
-  //
-  // The sender in StoreData is not attesting to the veracity of the underlying
+  // The sender in StoreRawData is not attesting to the veracity of the underlying
   // data. They can simply be a intermediary providing storage services.
   // SignData should be used to create a digital signature attesting to the
   // veracity of some piece of data.
-  rpc StoreData(MsgStoreDataRequest) returns (MsgStoreDataResponse);
+  rpc StoreRawData(MsgStoreRawDataRequest) returns (MsgStoreRawDataResponse);
 }
 
 // MsgAnchorDataRequest is the Msg/AnchorData request type.
 message MsgAnchorDataRequest {
-
   // sender is the address of the sender of the transaction.
   // The sender in StoreData is not attesting to the veracity of the underlying
   // data. They can simply be a intermediary providing services.
   string sender = 1;
 
-  // cid is a Content Identifier for the data corresponding to the IPFS CID
-  // specification: https://github.com/multiformats/cid.
-  bytes cid = 2;
+  // hash is the hash-based identifier for the anchored content.
+  ContentHash hash = 2;
 }
 
 // MsgAnchorDataRequest is the Msg/AnchorData response type.
@@ -84,31 +79,27 @@ message MsgSignDataRequest {
   // depending on the underlying data.
   repeated string signers = 1;
 
-  // cid is a Content Identifier for the data corresponding to the IPFS CID
-  // specification: https://github.com/multiformats/cid.
-  bytes cid = 2;
+  // hash is the hash-based identifier for the anchored content. Only RDF graph
+  // data can be signed as its data model is intended to specifically convey semantic meaning.
+  ContentHash.Graph hash = 2;
 }
 
 // MsgSignDataResponse is the Msg/SignData response type.
 message MsgSignDataResponse {}
 
-// MsgStoreDataRequest is the Msg/StoreData request type.
-message MsgStoreDataRequest {
+// MsgStoreRawDataRequest is the Msg/StoreRawData request type.
+message MsgStoreRawDataRequest {
   // sender is the address of the sender of the transaction.
   // The sender in StoreData is not attesting to the veracity of the underlying
   // data. They can simply be a intermediary providing services.
   string sender = 1;
 
-  // cid is a Content Identifier for the data corresponding to the IPFS CID
-  // specification: https://github.com/multiformats/cid.
-  bytes cid = 2;
+  // hash is the hash-based identifier for the anchored content.
+  ContentHash.Raw hash = 2;
 
-  // content is the content of the data corresponding to the provided CID.
-  //
-  // Currently only data for CID's using sha2-256 and blake2b-256 hash
-  // algorithms can be stored on-chain.
+  // content is the content of the raw data corresponding to the provided content hash.
   bytes content = 3;
 }
 
-// MsgStoreDataRequest is the Msg/StoreData response type.
-message MsgStoreDataResponse {}
+// MsgStoreRawDataRequest is the Msg/StoreRawData response type.
+message MsgStoreRawDataResponse { }
