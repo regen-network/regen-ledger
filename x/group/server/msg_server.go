@@ -253,8 +253,8 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 		return nil, err
 	}
 
-	// TODO Once we update to use ADR 028, we'll also need to make sure
-	// that there is a module account created in x/auth (#211).
+	// TODO Once we update to use ADR 028 (#211), we'll also need to
+	// ensure that a module account exists (that could be provided by ADR 033).
 	if err := s.groupAccountTable.Create(ctx, &groupAccount); err != nil {
 		return nil, sdkerrors.Wrap(err, "could not create group account")
 	}
