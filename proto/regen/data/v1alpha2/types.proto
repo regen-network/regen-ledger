@@ -44,8 +44,7 @@ message ContentHash {
         // digest_algorithm represents the hash digest algorithm.
         DigestAlgorithm digest_algorithm = 2;
 
-        // graph_canonicalization_algorithm represents the RDF graph canonicalization algorithm. It should
-        // be left unset if type is not ID_TYPE_GRAPH.
+        // graph_canonicalization_algorithm represents the RDF graph canonicalization algorithm.
         GraphCanonicalizationAlgorithm canonicalization_algorithm = 3;
 
         // merkle_tree is the merkle tree type used for the graph hash, if any
@@ -181,4 +180,3 @@ message ContentEntry {
         google.protobuf.Timestamp timestamp = 2;
     }
 }
-
