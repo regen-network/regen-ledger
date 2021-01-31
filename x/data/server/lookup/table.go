@@ -15,11 +15,11 @@ type KVStore interface {
 }
 
 func GetOrCreateIDForValue(store KVStore, value []byte) []byte {
-	id, _ := getOrCreateIDForValue(store, value)
+	id, _ := getOrCreateIDForValue(store, value, 4, 8)
 	return id
 }
 
-func getOrCreateIDForValue(store KVStore, value []byte) (id []byte, numCollisions uint64) {
+func getOrCreateIDForValue(store KVStore, value []byte, lo, hi int) (id []byte, numCollisions uint64) {
 	hasher := fnv.New64a()
 	_, err := hasher.Write(value)
 	if err != nil {
@@ -28,13 +28,13 @@ func getOrCreateIDForValue(store KVStore, value []byte) (id []byte, numCollision
 	hash := hasher.Sum(nil)
 
 	// try 32 bit hash
-	id = hash[:4]
+	id = hash[:lo]
 	if tryId(store, id, value) {
 		return id, 0
 	}
 
 	// try 64 bit hash
-	id = hash
+	id = hash[:hi]
 	if tryId(store, id, value) {
 		return id, 1
 	}
