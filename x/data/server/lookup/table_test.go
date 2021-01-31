@@ -2,18 +2,16 @@ package lookup
 
 import (
 	"crypto"
-	"fmt"
+	"hash"
 	"hash/fnv"
 	"math"
 	"testing"
 
-	"golang.org/x/crypto/blake2b"
-
-	"github.com/btcsuite/btcutil/base58"
-
+	"github.com/cosmos/cosmos-sdk/store/mem"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cosmos/cosmos-sdk/store/mem"
+	"golang.org/x/crypto/blake2b"
+
 	"github.com/tendermint/tendermint/libs/rand"
 	_ "golang.org/x/crypto/blake2b"
 )
@@ -68,18 +66,35 @@ func BenchmarkHash(b *testing.B) {
 }
 
 func TestTable(t *testing.T) {
+	// test default case
+	table, err := NewTable(nil)
+	require.NoError(t, err)
+	testTable(t, table, 5)
+
+	// test suboptimal case
+	table, err = NewTableWithOptions(TableOptions{
+		NewHash: func() hash.Hash {
+			return fnv.New32()
+		},
+	})
+	require.NoError(t, err)
+	testTable(t, table, 3)
+}
+
+func testTable(t *testing.T, tbl Table, k int) {
+	table := tbl.(table)
 	store := mem.NewStore()
-	n := int(math.Pow10(5))
+	n := int(math.Pow10(k))
 	data := make([][]byte, n)
 	ids := map[int][]byte{}
-	var totalCollisions uint64
-	var secondaryCollisions uint64
+	totalCollisions := 0
+	secondaryCollisions := 0
 
 	for i := 0; i < n; i++ {
 		m := rand.Int31n(256)
 		value := rand.Bytes(int(m))
 		data[i] = value
-		id, collisions := getOrCreateIDForValue(store, value, 4, 8)
+		id, collisions := table.getOrCreateID(store, value)
 		totalCollisions += collisions
 		if collisions > 1 {
 			secondaryCollisions += collisions - 1
@@ -93,49 +108,53 @@ func TestTable(t *testing.T) {
 		id := ids[i]
 		value := data[i]
 		// make sure stored value at id is expected value
-		require.Equal(t, value, store.Get(id))
-		newId := GetOrCreateIDForValue(store, value)
+		require.Equal(t, value, table.GetValue(store, id))
+		newId := table.GetOrCreateID(store, value)
 		// make sure getting an ID the second time returns the same ID
 		require.Equal(t, id, newId)
 	}
 }
 
-func TestTableParams(t *testing.T) {
-	n := int(math.Pow10(8))
-	t.Logf("n = %d", n)
-	data := make(map[string][]byte, n)
-	randCollisions := 0
-	for i := 0; i < n; i++ {
-		value := rand.Bytes(32)
-		iri := fmt.Sprintf("regen:%s.rdf", base58.CheckEncode(value, 0))
-		if _, ok := data[iri]; ok {
-			randCollisions++
-		}
-		data[iri] = nil
-	}
-
-	t.Logf("PRNG collisions: %d", randCollisions)
-
-	for lo := 3; lo <= 5; lo++ {
-		for hi := lo + 1; hi <= 6; hi++ {
-			store := mem.NewStore()
-			var totalCollisions uint64
-			var secondaryCollisions uint64
-			var totalBytes int
-
-			for iri := range data {
-				id, collisions := getOrCreateIDForValue(store, []byte(iri), lo, hi)
-				totalCollisions += collisions
-				if collisions > 1 {
-					secondaryCollisions += collisions - 1
-				}
-				totalBytes += len(id)
-			}
-
-			t.Logf("lo %d hi %d totalCollisions %d totalBytes %d secondaryCollisions %d collisionRate %.3f%%", lo, hi, totalCollisions, totalBytes, secondaryCollisions, float64(totalCollisions)/float64(n)*100.0)
-		}
-	}
-}
+//func TestTableParams(t *testing.T) {
+//	if !testing.Verbose() {
+//		return
+//	}
+//
+//	n := int(math.Pow10(8))
+//	t.Logf("n = %d", n)
+//	data := make(map[string][]byte, n)
+//	randCollisions := 0
+//	for i := 0; i < n; i++ {
+//		value := rand.Bytes(32)
+//		iri := fmt.Sprintf("regen:%s.rdf", base58.CheckEncode(value, 0))
+//		if _, ok := data[iri]; ok {
+//			randCollisions++
+//		}
+//		data[iri] = nil
+//	}
+//
+//	t.Logf("PRNG collisions: %d", randCollisions)
+//
+//	for lo := 3; lo <= 5; lo++ {
+//		for hi := lo + 1; hi <= 6; hi++ {
+//			store := mem.NewStore()
+//			var totalCollisions uint64
+//			var secondaryCollisions uint64
+//			var totalBytes int
+//
+//			for iri := range data {
+//				id, collisions := getOrCreateIDForValue(store, []byte(iri), lo, hi)
+//				totalCollisions += collisions
+//				if collisions > 1 {
+//					secondaryCollisions += collisions - 1
+//				}
+//				totalBytes += len(id)
+//			}
+//
+//			t.Logf("lo %d hi %d totalCollisions %d totalBytes %d secondaryCollisions %d collisionRate %.3f%%", lo, hi, totalCollisions, totalBytes, secondaryCollisions, float64(totalCollisions)/float64(n)*100.0)
+//		}
+//	}
+//}
 
 // n = 10^6
 // === RUN   TestTableParams
