@@ -38,7 +38,7 @@ func (a Module) RegisterServices(configurator servermodule.Configurator) {
 }
 
 //nolint:errcheck
-func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
+func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
 	ecocredit.RegisterQueryHandlerClient(context.Background(), mux, ecocredit.NewQueryClient(clientCtx))
 }
 func (a Module) DefaultGenesis(codec.JSONMarshaler) json.RawMessage { return nil }

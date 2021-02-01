@@ -578,11 +578,11 @@ var (
 
 	pattern_Query_BatchInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1alpha1", "batch_info", "batch_denom"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Balance_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"regen", "ecocredit", "v1alpha1", "batch_denom", "balances", "account"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Balance_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5, 1, 0, 4, 1, 5, 6}, []string{"regen", "ecocredit", "v1alpha1", "batches", "batch_denom", "balances", "account"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Supply_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1alpha1", "supply", "batch_denom"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Supply_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "ecocredit", "v1alpha1", "batch_info", "batch_denom", "supply"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Precision_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1alpha1", "precision", "batch_denom"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Precision_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "ecocredit", "v1alpha1", "batches", "batch_denom", "precision"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

@@ -21,18 +21,18 @@ service Query {
 
     // Balance queries the balance (both tradable and retired) of a given credit batch for a given account.
     rpc Balance(QueryBalanceRequest) returns (QueryBalanceResponse) {
-        option (google.api.http).get = "/regen/ecocredit/v1alpha1/{batch_denom}/balances/{account}";
+        option (google.api.http).get = "/regen/ecocredit/v1alpha1/batches/{batch_denom}/balances/{account}";
     }
 
     // Supply queries the tradable and retired supply of a credit batch.
     rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse) {
-        option (google.api.http).get = "/regen/ecocredit/v1alpha1/supply/{batch_denom}";
+        option (google.api.http).get = "/regen/ecocredit/v1alpha1/batch_info/{batch_denom}/supply";
     }
 
     // Precision queries the number of decimal places that can be used to represent credit batch units.
     // See Tx/SetPrecision for more details.
     rpc Precision(QueryPrecisionRequest) returns (QueryPrecisionResponse) {
-        option (google.api.http).get = "/regen/ecocredit/v1alpha1/precision/{batch_denom}";
+        option (google.api.http).get = "/regen/ecocredit/v1alpha1/batches/{batch_denom}/precision";
     }
 }
 

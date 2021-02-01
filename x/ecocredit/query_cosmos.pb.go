@@ -20,13 +20,12 @@ type QueryClient interface {
 	ClassInfo(ctx context.Context, in *QueryClassInfoRequest, opts ...grpc.CallOption) (*QueryClassInfoResponse, error)
 	// BatchInfo queries for information on a credit batch.
 	BatchInfo(ctx context.Context, in *QueryBatchInfoRequest, opts ...grpc.CallOption) (*QueryBatchInfoResponse, error)
-	// Balance queries the balance (both tradable and retired) of a given credit
-	// batch for a given account.
+	// Balance queries the balance (both tradable and retired) of a given credit batch for a given account.
 	Balance(ctx context.Context, in *QueryBalanceRequest, opts ...grpc.CallOption) (*QueryBalanceResponse, error)
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(ctx context.Context, in *QuerySupplyRequest, opts ...grpc.CallOption) (*QuerySupplyResponse, error)
-	// Precision queries the number of decimal places that can be used to
-	// represent credit batch units. See Tx/SetPrecision for more details.
+	// Precision queries the number of decimal places that can be used to represent credit batch units.
+	// See Tx/SetPrecision for more details.
 	Precision(ctx context.Context, in *QueryPrecisionRequest, opts ...grpc.CallOption) (*QueryPrecisionResponse, error)
 }
 
@@ -164,13 +163,12 @@ type QueryServer interface {
 	ClassInfo(types.Context, *QueryClassInfoRequest) (*QueryClassInfoResponse, error)
 	// BatchInfo queries for information on a credit batch.
 	BatchInfo(types.Context, *QueryBatchInfoRequest) (*QueryBatchInfoResponse, error)
-	// Balance queries the balance (both tradable and retired) of a given credit
-	// batch for a given account.
+	// Balance queries the balance (both tradable and retired) of a given credit batch for a given account.
 	Balance(types.Context, *QueryBalanceRequest) (*QueryBalanceResponse, error)
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(types.Context, *QuerySupplyRequest) (*QuerySupplyResponse, error)
-	// Precision queries the number of decimal places that can be used to
-	// represent credit batch units. See Tx/SetPrecision for more details.
+	// Precision queries the number of decimal places that can be used to represent credit batch units.
+	// See Tx/SetPrecision for more details.
 	Precision(types.Context, *QueryPrecisionRequest) (*QueryPrecisionResponse, error)
 }
 

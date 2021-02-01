@@ -28,7 +28,7 @@ go mod tidy
 
 proto_dirs=$(find ./proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
 for dir in $proto_dirs; do
-  buf protoc \
+  protoc \
   -I "proto" \
   -I "third_party/proto" \
   --gocosmos_out=\
@@ -39,7 +39,7 @@ Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types,\
 Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
   $(find "${dir}" -maxdepth 1 -name '*.proto')
 
-  buf protoc \
+  protoc \
   -I "proto" \
   -I "third_party/proto" \
   --go-cosmos2_out=\
@@ -51,7 +51,7 @@ google/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
   $(find "${dir}" -maxdepth 1 -name '*.proto')
 
   # command to generate gRPC gateway (*.pb.gw.go in respective modules) files
-  buf protoc \
+  protoc \
   -I "proto" \
   -I "third_party/proto" \
   --grpc-gateway_out=logtostderr=true:. \
@@ -63,7 +63,7 @@ google/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
   mkdir -p ./docs/modules/${module}
 
   # command to generate docs using protoc-gen-doc
-  buf protoc \
+  protoc \
   -I "proto" \
   -I "third_party/proto" \
   --doc_out=./docs/modules/${module} \
@@ -73,7 +73,7 @@ google/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
 done
 
 # generate codec/testdata proto code
-buf protoc -I "proto" -I "third_party/proto" -I "testutil/testdata" --gocosmos_out=plugins=interfacetype+grpc,\
+protoc -I "proto" -I "third_party/proto" -I "testutil/testdata" --gocosmos_out=plugins=interfacetype+grpc,\
 Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. ./testutil/testdata/*.proto
 
 # move proto files to the right places
