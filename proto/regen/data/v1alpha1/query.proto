@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package regen.data.v1alpha1;
 
+import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
@@ -14,7 +15,9 @@ service Query {
   rpc ByCid(QueryByCidRequest) returns (QueryByCidResponse);
 
   // BySigner queries data based on signers.
-  rpc BySigner(QueryBySignerRequest) returns (QueryBySignerResponse);
+  rpc BySigner(QueryBySignerRequest) returns (QueryBySignerResponse) {
+        option (google.api.http).get = "/regen/data/v1alpha1/by-signer/{signer}";
+  }
 }
 
 // QueryByCidRequest is the Query/ByCid request type.
