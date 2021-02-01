@@ -55,8 +55,6 @@ func (a Module) GetTxCmd() *cobra.Command {
 	return client.TxCmd(a.Name())
 }
 
-func (a Module) RegisterGRPCGatewayRoutes(sdkclient.Context, *runtime.ServeMux) {}
-
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
 func (a Module) RegisterLegacyAminoCodec(*codec.LegacyAmino)       {}
