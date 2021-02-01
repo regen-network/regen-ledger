@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/types/module/server"
 
@@ -28,22 +29,22 @@ type serverImpl struct {
 	batchInfoTable orm.NaturalKeyTable
 }
 
-func newServer(storeKey sdk.StoreKey) serverImpl {
+func newServer(storeKey sdk.StoreKey, cdc codec.Marshaler) serverImpl {
 	s := serverImpl{storeKey: storeKey}
 
 	s.idSeq = orm.NewSequence(storeKey, IDSeqPrefix)
 
-	classInfoTableBuilder := orm.NewNaturalKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ecocredit.ClassInfo{}, orm.Max255DynamicLengthIndexKeyCodec{})
+	classInfoTableBuilder := orm.NewNaturalKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ecocredit.ClassInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.classInfoTable = classInfoTableBuilder.Build()
 
-	batchInfoTableBuilder := orm.NewNaturalKeyTableBuilder(BatchInfoTablePrefix, storeKey, &ecocredit.BatchInfo{}, orm.Max255DynamicLengthIndexKeyCodec{})
+	batchInfoTableBuilder := orm.NewNaturalKeyTableBuilder(BatchInfoTablePrefix, storeKey, &ecocredit.BatchInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.batchInfoTable = batchInfoTableBuilder.Build()
 
 	return s
 }
 
 func RegisterServices(configurator server.Configurator) {
-	impl := newServer(configurator.ModuleKey())
+	impl := newServer(configurator.ModuleKey(), configurator.Marshaler())
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 }
