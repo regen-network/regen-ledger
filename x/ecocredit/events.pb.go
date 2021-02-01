@@ -155,8 +155,9 @@ func (m *EventCreateBatch) GetTotalUnits() string {
 // creation of a new batch or upon transfer. Each batch_denom created or
 // transferred will result in a separate EventReceive for easy indexing.
 type EventReceive struct {
-	// sender is the sender of the credits in the case that this event is the result of a transfer.
-	// It will not be set when credits are received at initial issuance.
+	// sender is the sender of the credits in the case that this event is the
+	// result of a transfer. It will not be set when credits are received at
+	// initial issuance.
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
 	// recipient is the recipient of the credits
 	Recipient string `protobuf:"bytes,2,opt,name=recipient,proto3" json:"recipient,omitempty"`
@@ -227,13 +228,13 @@ func (m *EventReceive) GetUnits() string {
 	return ""
 }
 
-// EventRetire is an event emitted when credits are retired. An separate event is emitted
-// for each batch_denom in the case where credits from multiple batches have been retired at once
-// for easy indexing.
+// EventRetire is an event emitted when credits are retired. An separate event
+// is emitted for each batch_denom in the case where credits from multiple
+// batches have been retired at once for easy indexing.
 type EventRetire struct {
-	// retirer is the account which has done the "retiring". This will be the account receiving credits in
-	// the case that credits were retired upon issuance using Msg/CreateBatch or retired upon transfer
-	// using Msg/Send.
+	// retirer is the account which has done the "retiring". This will be the
+	// account receiving credits in the case that credits were retired upon
+	// issuance using Msg/CreateBatch or retired upon transfer using Msg/Send.
 	Retirer string `protobuf:"bytes,1,opt,name=retirer,proto3" json:"retirer,omitempty"`
 	// batch_denom is the unique ID of credit batch.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`

@@ -4,15 +4,9 @@
 package ecocredit
 
 import (
-	context "context"
 	fmt "fmt"
 	_ "github.com/gogo/protobuf/gogoproto"
-	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
-	_ "google.golang.org/genproto/googleapis/api/annotations"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -472,8 +466,10 @@ func (m *QueryPrecisionRequest) GetBatchDenom() string {
 
 // QueryPrecisionResponse is the Query/Precision response type.
 type QueryPrecisionResponse struct {
-	// max_decimal_places is the maximum number of decimal places that can be used to represent some quantity of credit units.
-	// It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113.
+	// max_decimal_places is the maximum number of decimal places that can be used
+	// to represent some quantity of credit units. It is an experimental feature
+	// to concretely explore an idea proposed in
+	// https://github.com/cosmos/cosmos-sdk/issues/7113.
 	MaxDecimalPlaces uint32 `protobuf:"varint,1,opt,name=max_decimal_places,json=maxDecimalPlaces,proto3" json:"max_decimal_places,omitempty" yaml:"max_decimal_places"`
 }
 
@@ -583,242 +579,6 @@ var fileDescriptor_6a16cc4c1db940dc = []byte{
 	0xc4, 0xa8, 0x78, 0xc3, 0xc3, 0x57, 0x7a, 0xe5, 0x53, 0xc7, 0xa5, 0x21, 0x3e, 0x38, 0xbb, 0xad,
 	0x31, 0x21, 0xff, 0xcd, 0xab, 0x7f, 0x03, 0x00, 0x00, 0xff, 0xff, 0xe4, 0x5a, 0x96, 0x15, 0x37,
 	0x08, 0x00, 0x00,
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
-
-// QueryClient is the client API for Query service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type QueryClient interface {
-	// ClassInfo queries for information on a credit class.
-	ClassInfo(ctx context.Context, in *QueryClassInfoRequest, opts ...grpc.CallOption) (*QueryClassInfoResponse, error)
-	// BatchInfo queries for information on a credit batch.
-	BatchInfo(ctx context.Context, in *QueryBatchInfoRequest, opts ...grpc.CallOption) (*QueryBatchInfoResponse, error)
-	// Balance queries the balance (both tradable and retired) of a given credit batch for a given account.
-	Balance(ctx context.Context, in *QueryBalanceRequest, opts ...grpc.CallOption) (*QueryBalanceResponse, error)
-	// Supply queries the tradable and retired supply of a credit batch.
-	Supply(ctx context.Context, in *QuerySupplyRequest, opts ...grpc.CallOption) (*QuerySupplyResponse, error)
-	// Precision queries the number of decimal places that can be used to represent credit batch units.
-	// See Tx/SetPrecision for more details.
-	Precision(ctx context.Context, in *QueryPrecisionRequest, opts ...grpc.CallOption) (*QueryPrecisionResponse, error)
-}
-
-type queryClient struct {
-	cc grpc1.ClientConn
-}
-
-func NewQueryClient(cc grpc1.ClientConn) QueryClient {
-	return &queryClient{cc}
-}
-
-func (c *queryClient) ClassInfo(ctx context.Context, in *QueryClassInfoRequest, opts ...grpc.CallOption) (*QueryClassInfoResponse, error) {
-	out := new(QueryClassInfoResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/ClassInfo", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) BatchInfo(ctx context.Context, in *QueryBatchInfoRequest, opts ...grpc.CallOption) (*QueryBatchInfoResponse, error) {
-	out := new(QueryBatchInfoResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/BatchInfo", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) Balance(ctx context.Context, in *QueryBalanceRequest, opts ...grpc.CallOption) (*QueryBalanceResponse, error) {
-	out := new(QueryBalanceResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/Balance", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) Supply(ctx context.Context, in *QuerySupplyRequest, opts ...grpc.CallOption) (*QuerySupplyResponse, error) {
-	out := new(QuerySupplyResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/Supply", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) Precision(ctx context.Context, in *QueryPrecisionRequest, opts ...grpc.CallOption) (*QueryPrecisionResponse, error) {
-	out := new(QueryPrecisionResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/Precision", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// QueryServer is the server API for Query service.
-type QueryServer interface {
-	// ClassInfo queries for information on a credit class.
-	ClassInfo(context.Context, *QueryClassInfoRequest) (*QueryClassInfoResponse, error)
-	// BatchInfo queries for information on a credit batch.
-	BatchInfo(context.Context, *QueryBatchInfoRequest) (*QueryBatchInfoResponse, error)
-	// Balance queries the balance (both tradable and retired) of a given credit batch for a given account.
-	Balance(context.Context, *QueryBalanceRequest) (*QueryBalanceResponse, error)
-	// Supply queries the tradable and retired supply of a credit batch.
-	Supply(context.Context, *QuerySupplyRequest) (*QuerySupplyResponse, error)
-	// Precision queries the number of decimal places that can be used to represent credit batch units.
-	// See Tx/SetPrecision for more details.
-	Precision(context.Context, *QueryPrecisionRequest) (*QueryPrecisionResponse, error)
-}
-
-// UnimplementedQueryServer can be embedded to have forward compatible implementations.
-type UnimplementedQueryServer struct {
-}
-
-func (*UnimplementedQueryServer) ClassInfo(ctx context.Context, req *QueryClassInfoRequest) (*QueryClassInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ClassInfo not implemented")
-}
-func (*UnimplementedQueryServer) BatchInfo(ctx context.Context, req *QueryBatchInfoRequest) (*QueryBatchInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BatchInfo not implemented")
-}
-func (*UnimplementedQueryServer) Balance(ctx context.Context, req *QueryBalanceRequest) (*QueryBalanceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Balance not implemented")
-}
-func (*UnimplementedQueryServer) Supply(ctx context.Context, req *QuerySupplyRequest) (*QuerySupplyResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Supply not implemented")
-}
-func (*UnimplementedQueryServer) Precision(ctx context.Context, req *QueryPrecisionRequest) (*QueryPrecisionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Precision not implemented")
-}
-
-func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
-	s.RegisterService(&_Query_serviceDesc, srv)
-}
-
-func _Query_ClassInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryClassInfoRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).ClassInfo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1alpha1.Query/ClassInfo",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ClassInfo(ctx, req.(*QueryClassInfoRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_BatchInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryBatchInfoRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).BatchInfo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1alpha1.Query/BatchInfo",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).BatchInfo(ctx, req.(*QueryBatchInfoRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_Balance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryBalanceRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).Balance(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1alpha1.Query/Balance",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Balance(ctx, req.(*QueryBalanceRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_Supply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QuerySupplyRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).Supply(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1alpha1.Query/Supply",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Supply(ctx, req.(*QuerySupplyRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_Precision_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryPrecisionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).Precision(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1alpha1.Query/Precision",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).Precision(ctx, req.(*QueryPrecisionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Query_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "regen.ecocredit.v1alpha1.Query",
-	HandlerType: (*QueryServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "ClassInfo",
-			Handler:    _Query_ClassInfo_Handler,
-		},
-		{
-			MethodName: "BatchInfo",
-			Handler:    _Query_BatchInfo_Handler,
-		},
-		{
-			MethodName: "Balance",
-			Handler:    _Query_Balance_Handler,
-		},
-		{
-			MethodName: "Supply",
-			Handler:    _Query_Supply_Handler,
-		},
-		{
-			MethodName: "Precision",
-			Handler:    _Query_Precision_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "regen/ecocredit/v1alpha1/query.proto",
 }
 
 func (m *QueryClassInfoRequest) Marshal() (dAtA []byte, err error) {

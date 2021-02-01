@@ -16,12 +16,14 @@ func print(cctx sdkclient.Context, res proto.Message, err error) error {
 	if err != nil {
 		return err
 	}
-	return cctx.PrintOutput(res)
+	return cctx.PrintProto(res)
 }
 
 func mkQueryClient(cmd *cobra.Command) (ecocredit.QueryClient, sdkclient.Context, error) {
-	ctx := sdkclient.GetClientContextFromCmd(cmd)
-	ctx, err := sdkclient.ReadQueryCommandFlags(ctx, cmd.Flags())
+	ctx, err := sdkclient.GetClientQueryContext(cmd)
+	if err != nil {
+		return nil, sdkclient.Context{}, err
+	}
 	return ecocredit.NewQueryClient(ctx), ctx, err
 }
 
@@ -34,8 +36,7 @@ type msgSrvClient struct {
 
 func newMsgSrvClient(cmd *cobra.Command) (msgSrvClient, error) {
 	f := cmd.Flags()
-	clientCtx := sdkclient.GetClientContextFromCmd(cmd)
-	clientCtx, err := sdkclient.ReadTxCommandFlags(clientCtx, f)
+	clientCtx, err := sdkclient.GetClientTxContext(cmd)
 	if err != nil {
 		return msgSrvClient{}, err
 	}

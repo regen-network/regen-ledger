@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package regen.data.v1alpha2;
+
+import "regen/data/v1alpha2/types.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/data";
+
+// GenesisState is the genesis state
+message GenesisState {
+    // entries are the content entries
+    repeated GenesisContentEntry entries = 1;
+}
+
+// GenesisContentEntry is a genesis content entry
+message GenesisContentEntry {
+    // hash is the ContentHash
+    ContentHash hash = 1;
+
+    // timestamp is the anchor Timestamp
+    google.protobuf.Timestamp timestamp = 2;
+
+    // signers are the signers, if any
+    repeated SignerEntry signers = 3;
+
+    // content is the actual content if stored on-chain
+    Content content = 4;
+
+}

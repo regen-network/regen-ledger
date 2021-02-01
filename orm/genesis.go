@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"reflect"
 
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/gogo/protobuf/jsonpb"
-	"github.com/gogo/protobuf/proto"
 )
 
 // Model defines the IO structure for table imports and exports
@@ -35,13 +35,9 @@ type SequenceExportable interface {
 func ExportTableData(ctx HasKVStore, t TableExportable) (json.RawMessage, uint64, error) {
 	enc := jsonpb.Marshaler{}
 	var r []Model
-	err := forEachInTable(ctx, t.Table(), func(rowID RowID, obj Persistent) error {
-		pbObj, ok := obj.(proto.Message)
-		if !ok {
-			return errors.Wrapf(ErrType, "not a proto message type: %T", pbObj)
-		}
+	err := forEachInTable(ctx, t.Table(), func(rowID RowID, obj codec.ProtoMarshaler) error {
 		var buf bytes.Buffer
-		err := enc.Marshal(&buf, pbObj)
+		err := enc.Marshal(&buf, obj)
 		if err != nil {
 			return errors.Wrap(err, "json encoding")
 		}
@@ -93,14 +89,14 @@ func ImportTableData(ctx HasKVStore, t TableExportable, src json.RawMessage, seq
 
 // forEachInTable iterates through all entries in the given table and calls the callback function.
 // Aborts on first error.
-func forEachInTable(ctx HasKVStore, table Table, f func(RowID, Persistent) error) error {
+func forEachInTable(ctx HasKVStore, table Table, f func(RowID, codec.ProtoMarshaler) error) error {
 	it, err := table.PrefixScan(ctx, nil, nil)
 	if err != nil {
 		return errors.Wrap(err, "all rows prefix scan")
 	}
 	defer it.Close()
 	for {
-		obj := reflect.New(table.model).Interface().(Persistent)
+		obj := reflect.New(table.model).Interface().(codec.ProtoMarshaler)
 		switch rowID, err := it.LoadNext(obj); {
 		case ErrIteratorDone.Is(err):
 			return nil
@@ -129,15 +125,9 @@ func clearAllInTable(ctx HasKVStore, table Table) error {
 
 // putIntoTable inserts the model into the table with all save interceptors called
 func putIntoTable(ctx HasKVStore, table Table, m Model) error {
-	pbDec := jsonpb.Unmarshaler{}
+	obj := reflect.New(table.model).Interface().(codec.ProtoMarshaler)
 
-	obj := reflect.New(table.model).Interface().(Persistent)
-	pbObj, ok := obj.(proto.Message)
-	if !ok {
-		return errors.Wrapf(ErrType, "not a proto message type: %T", pbObj)
-	}
-
-	if err := pbDec.Unmarshal(bytes.NewReader(m.Value), pbObj); err != nil {
+	if err := table.cdc.UnmarshalJSON(m.Value, obj); err != nil {
 		return errors.Wrapf(err, "can not unmarshal %s into %T", string(m.Value), obj)
 	}
 	return table.Create(ctx, m.Key, obj)

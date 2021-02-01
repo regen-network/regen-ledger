@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package regen.group.v1alpha1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/group";
+
+import "gogoproto/gogo.proto";
+
+// TODO: #214
+// GenesisState defines the group module's genesis state.
+message GenesisState {
+}

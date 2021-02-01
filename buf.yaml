@@ -13,6 +13,7 @@ lint:
     - cosmos
     - gogoproto
     - google
+    - cosmos_proto
 breaking:
   use:
     - FILE
@@ -20,4 +21,4 @@ breaking:
     - cosmos
     - gogoproto
     - google
-
+    - cosmos_proto
