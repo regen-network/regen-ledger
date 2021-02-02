@@ -81,6 +81,7 @@ func (chg ContentHash_Graph) ToIRI() (string, error) {
 	return fmt.Sprintf("regen:%s.rdf", hashStr), nil
 }
 
+// ToExtension converts the media type to a file extension based on the mediaTypeExtensions map.
 func (mt MediaType) ToExtension() (string, error) {
 	ext, ok := mediaTypeExtensions[mt]
 	if !ok {
