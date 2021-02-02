@@ -14,12 +14,12 @@ import (
 )
 
 func TestTable(t *testing.T) {
-	// test default case
+	// test default case with good params
 	table, err := NewTable(nil)
 	require.NoError(t, err)
 	testTable(t, table, 5)
 
-	// test suboptimal case
+	// test suboptimal case to trigger varint fallback
 	table, err = NewTableWithOptions(TableOptions{
 		NewHash: func() hash.Hash {
 			return fnv.New32()
