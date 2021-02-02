@@ -15,6 +15,10 @@ func AccAddressToDID(address sdk.AccAddress, methodPrefix string) string {
 	return fmt.Sprintf("did:%s:%s", methodPrefix, hash)
 }
 
+// ToIRI converts the ContentHash to an IRI (internationalized URI) using the regen IRI scheme.
+// A ContentHash IRI will look something like regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf
+// which is some base58check encoded data followed by a file extension or pseudo-extension.
+// See ContentHash_Raw.ToIRI and ContentHash_Graph.ToIRI for more details on specific formatting.
 func (ch ContentHash) ToIRI() (string, error) {
 	switch hash := ch.Sum.(type) {
 	case *ContentHash_Raw_:
@@ -35,6 +39,8 @@ const (
 	didVersion0 byte = 0
 )
 
+// ToIRI converts the ContentHash_Raw to an IRI (internationalized URI) based on the following
+// pattern: regen:{base58check(concat( byte(0x0), byte(digest_algorithm), hash))}.{media_type extension}
 func (chr ContentHash_Raw) ToIRI() (string, error) {
 	err := chr.Validate()
 	if err != nil {
@@ -55,6 +61,9 @@ func (chr ContentHash_Raw) ToIRI() (string, error) {
 	return fmt.Sprintf("regen:%s.%s", hashStr, ext), nil
 }
 
+// ToIRI converts the ContentHash_Graph to an IRI (internationalized URI) based on the following
+// pattern: regen:{base58check(concat(byte(0x1), byte(canonicalization_algorithm),
+// byte(merkle_tree), byte(digest_algorithm), hash))}.rdf
 func (chg ContentHash_Graph) ToIRI() (string, error) {
 	err := chg.Validate()
 	if err != nil {
