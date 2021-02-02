@@ -78,7 +78,7 @@ func TestTable(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
-	testTable(t, table, 3)
+	testTable(t, table, 5)
 }
 
 func testTable(t *testing.T, tbl Table, k int) {
