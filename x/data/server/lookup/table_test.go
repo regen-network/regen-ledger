@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/tendermint/tendermint/libs/rand"
-	_ "golang.org/x/crypto/blake2b"
 )
 
 func TestTable(t *testing.T) {
