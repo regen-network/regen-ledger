@@ -18,6 +18,11 @@ for dir in $proto_dirs; do
   fi
 done
 
+
+# download Cosmos SDK swagger doc
+rm -f ./client/docs/swagger.yaml
+wget https://raw.githubusercontent.com/cosmos/cosmos-sdk/v0.40.0/client/docs/swagger-ui/swagger.yaml -P ./client/docs
+
 # combine swagger files
 # uses nodejs package `swagger-combine`.
 # all the individual swagger files need to be configured in `config.json` for merging
