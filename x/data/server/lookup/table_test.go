@@ -1,7 +1,6 @@
 package lookup
 
 import (
-	"crypto"
 	"hash"
 	"hash/fnv"
 	"math"
@@ -10,60 +9,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/mem"
 	"github.com/stretchr/testify/require"
 
-	"golang.org/x/crypto/blake2b"
-
 	"github.com/tendermint/tendermint/libs/rand"
 	_ "golang.org/x/crypto/blake2b"
 )
-
-func BenchmarkHash(b *testing.B) {
-	buf := rand.Bytes(128)
-	var res []byte
-	b.Run("32a", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			h := fnv.New32a()
-			_, _ = h.Write(buf)
-			res = h.Sum(nil)
-		}
-		b.StopTimer()
-		b.Logf("%x", res)
-	})
-	b.Run("64a", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			h := fnv.New64a()
-			_, _ = h.Write(buf)
-			res = h.Sum(nil)
-		}
-		b.StopTimer()
-		b.Logf("%x", res)
-	})
-	b.Run("128a", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			h := fnv.New128a()
-			_, _ = h.Write(buf)
-			res = h.Sum(nil)
-		}
-		b.StopTimer()
-		b.Logf("%x", res)
-	})
-	b.Run("blake2b-256", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			h := crypto.BLAKE2b_256.New()
-			_, _ = h.Write(buf)
-			res = h.Sum(nil)
-		}
-	})
-	b.Run("blake2b-64", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
-			h, err := blake2b.New(8, nil)
-			if err != nil {
-				panic(err)
-			}
-			_, _ = h.Write(buf)
-			res = h.Sum(nil)
-		}
-	})
-}
 
 func TestTable(t *testing.T) {
 	// test default case
@@ -114,6 +62,60 @@ func testTable(t *testing.T, tbl Table, k int) {
 		require.Equal(t, id, newId)
 	}
 }
+
+//
+// NOTE: The tests and benchmarks below were used to find optimal parameter values.
+// For now they are retained in source code in case parameters need to be revisisted
+// in the future.
+//
+//func BenchmarkHash(b *testing.B) {
+//	buf := rand.Bytes(128)
+//	var res []byte
+//	b.Run("32a", func(b *testing.B) {
+//		for i := 0; i < b.N; i++ {
+//			h := fnv.New32a()
+//			_, _ = h.Write(buf)
+//			res = h.Sum(nil)
+//		}
+//		b.StopTimer()
+//		b.Logf("%x", res)
+//	})
+//	b.Run("64a", func(b *testing.B) {
+//		for i := 0; i < b.N; i++ {
+//			h := fnv.New64a()
+//			_, _ = h.Write(buf)
+//			res = h.Sum(nil)
+//		}
+//		b.StopTimer()
+//		b.Logf("%x", res)
+//	})
+//	b.Run("128a", func(b *testing.B) {
+//		for i := 0; i < b.N; i++ {
+//			h := fnv.New128a()
+//			_, _ = h.Write(buf)
+//			res = h.Sum(nil)
+//		}
+//		b.StopTimer()
+//		b.Logf("%x", res)
+//	})
+//	b.Run("blake2b-256", func(b *testing.B) {
+//		for i := 0; i < b.N; i++ {
+//			h := crypto.BLAKE2b_256.New()
+//			_, _ = h.Write(buf)
+//			res = h.Sum(nil)
+//		}
+//	})
+//	b.Run("blake2b-64", func(b *testing.B) {
+//		for i := 0; i < b.N; i++ {
+//			h, err := blake2b.New(8, nil)
+//			if err != nil {
+//				panic(err)
+//			}
+//			_, _ = h.Write(buf)
+//			res = h.Sum(nil)
+//		}
+//	})
+//}
 
 //func TestTableParams(t *testing.T) {
 //	if !testing.Verbose() {
