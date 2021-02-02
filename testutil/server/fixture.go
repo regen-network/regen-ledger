@@ -12,6 +12,9 @@ package server
 import (
 	"context"
 
+	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/codec"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc"
 )
@@ -20,14 +23,14 @@ import (
 type FixtureFactory interface {
 
 	// Setup runs necessary fixture setup and returns a fresh Fixture environment.
-	Setup() Fixture
+	Setup(setupHooks ...func(cdc *codec.ProtoCodec, app *baseapp.BaseApp)) Fixture
 }
 
 // Fixture defines an interface for interacting with app services in tests
 // independent of the backend.
 type Fixture interface {
 
-	// Context is the context.Context to be used with gRPC generated cient code.
+	// Context is the context.Context to be used with gRPC generated client code.
 	Context() context.Context
 
 	// TxConn is the grpc.ClientConnInterface to be used when constructing Msg service clients.

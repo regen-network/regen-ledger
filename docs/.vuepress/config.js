@@ -27,7 +27,7 @@ module.exports = {
    * ref：https://v1.vuepress.vuejs.org/theme/default-theme-config.html
    */
   themeConfig: {
-    repo: 'regen/regen-ledger',
+    repo: 'regen-network/regen-ledger',
     editLinks: false,
     docsDir: 'docs',
     lastUpdated: false,
@@ -39,10 +39,30 @@ module.exports = {
     ],
     sidebar: {
       '/': [
-        '',
         'getting-started',
         'core-functionality',
         'api',
+        {
+          title: 'Modules',
+          children: [
+            {
+              title: 'Data Module',
+              collapsable: false,
+              children: [
+                '/modules/data/',
+                {title: 'Protobuf Documentation', path: '/modules/data/protobuf', collapsable: true}
+              ]
+            },
+            {
+              title: 'Ecocredit Module',
+              collapsable: false,
+              children: [
+                '/modules/ecocredit/',
+                {title: 'Protobuf Documentation', path: '/modules/ecocredit/protobuf', collapsable: true}
+              ]
+            },
+          ]
+        }
       ],
     }
   },

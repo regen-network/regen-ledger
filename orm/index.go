@@ -3,10 +3,12 @@ package orm
 import (
 	"bytes"
 
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/query"
 )
 
 // indexer creates and modifies the second MultiKeyIndex based on the operations and changes on the primary object.
@@ -72,6 +74,20 @@ func (i MultiKeyIndex) Get(ctx HasKVStore, searchKey []byte) (Iterator, error) {
 	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, keyCodec: i.indexKeyCodec}, nil
 }
 
+// GetPaginated creates an iterator for the searchKey
+// starting from pageRequest.Key if provided.
+// The pageRequest.Key is the rowID while searchKey is a MultiKeyIndex key.
+func (i MultiKeyIndex) GetPaginated(ctx HasKVStore, searchKey []byte, pageRequest *query.PageRequest) (Iterator, error) {
+	store := prefix.NewStore(ctx.KVStore(i.storeKey), []byte{i.prefix})
+	start, end := prefixRange(searchKey)
+
+	if pageRequest != nil && len(pageRequest.Key) != 0 {
+		start = i.indexKeyCodec.BuildIndexKey(searchKey, RowID(pageRequest.Key))
+	}
+	it := store.Iterator(start, end)
+	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, keyCodec: i.indexKeyCodec}, nil
+}
+
 // PrefixScan returns an Iterator over a domain of keys in ascending order. End is exclusive.
 // Start is an MultiKeyIndex key or prefix. It must be less than end, or the Iterator is invalid and error is returned.
 // Iterator must be closed by caller.
@@ -115,7 +131,7 @@ func (i MultiKeyIndex) ReversePrefixScan(ctx HasKVStore, start []byte, end []byt
 	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, keyCodec: i.indexKeyCodec}, nil
 }
 
-func (i MultiKeyIndex) onSave(ctx HasKVStore, rowID RowID, newValue, oldValue Persistent) error {
+func (i MultiKeyIndex) onSave(ctx HasKVStore, rowID RowID, newValue, oldValue codec.ProtoMarshaler) error {
 	store := prefix.NewStore(ctx.KVStore(i.storeKey), []byte{i.prefix})
 	if oldValue == nil {
 		return i.indexer.OnCreate(store, rowID, newValue)
@@ -123,7 +139,7 @@ func (i MultiKeyIndex) onSave(ctx HasKVStore, rowID RowID, newValue, oldValue Pe
 	return i.indexer.OnUpdate(store, rowID, newValue, oldValue)
 }
 
-func (i MultiKeyIndex) onDelete(ctx HasKVStore, rowID RowID, oldValue Persistent) error {
+func (i MultiKeyIndex) onDelete(ctx HasKVStore, rowID RowID, oldValue codec.ProtoMarshaler) error {
 	store := prefix.NewStore(ctx.KVStore(i.storeKey), []byte{i.prefix})
 	return i.indexer.OnDelete(store, rowID, oldValue)
 }
@@ -150,7 +166,7 @@ type indexIterator struct {
 // LoadNext loads the next value in the sequence into the pointer passed as dest and returns the key. If there
 // are no more items the ErrIteratorDone error is returned
 // The key is the rowID and not any MultiKeyIndex key.
-func (i indexIterator) LoadNext(dest Persistent) (RowID, error) {
+func (i indexIterator) LoadNext(dest codec.ProtoMarshaler) (RowID, error) {
 	if !i.it.Valid() {
 		return nil, ErrIteratorDone
 	}
