@@ -41,10 +41,10 @@ type MsgClient interface {
 	//
 	// SignData implicitly calls AnchorData if the data was not already anchored.
 	//
-	// SignData can be called multiple times for the same ID with different
+	// SignData can be called multiple times for the same content hash with different
 	// signers and those signers will be appended to the list of signers.
 	SignData(ctx context.Context, in *MsgSignDataRequest, opts ...grpc.CallOption) (*MsgSignDataResponse, error)
-	// StoreRawData stores a piece of raw data corresponding to an ID on the blockchain.
+	// StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
 	//
 	// StoreRawData implicitly calls AnchorData if the data was not already anchored.
 	//
@@ -162,10 +162,10 @@ type MsgServer interface {
 	//
 	// SignData implicitly calls AnchorData if the data was not already anchored.
 	//
-	// SignData can be called multiple times for the same ID with different
+	// SignData can be called multiple times for the same content hash with different
 	// signers and those signers will be appended to the list of signers.
 	SignData(types.Context, *MsgSignDataRequest) (*MsgSignDataResponse, error)
-	// StoreRawData stores a piece of raw data corresponding to an ID on the blockchain.
+	// StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
 	//
 	// StoreRawData implicitly calls AnchorData if the data was not already anchored.
 	//

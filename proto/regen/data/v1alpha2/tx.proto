@@ -94,8 +94,8 @@ message MsgStoreRawDataRequest {
   // data. They can simply be a intermediary providing services.
   string sender = 1;
 
-  // hash is the hash-based identifier for the anchored content.
-  ContentHash.Raw hash = 2;
+  // content_hash is the hash-based identifier for the anchored content.
+  ContentHash.Raw content_hash = 2;
 
   // content is the content of the raw data corresponding to the provided content hash.
   bytes content = 3;

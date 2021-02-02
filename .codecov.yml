@@ -26,3 +26,4 @@ ignore:
   - "build"
   - "tests/*"
   - "contrib"
+  - "**/*.pb.go"
