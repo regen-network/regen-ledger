@@ -46,12 +46,17 @@ func makeTestAddresses(count int) []sdk.AccAddress {
 	return addrs
 }
 
-func (ff fixtureFactory) Setup() server.Fixture {
+func (ff fixtureFactory) Setup(setupHooks ...func(cdc *codec.ProtoCodec, app *baseapp.BaseApp)) server.Fixture {
 	registry := types.NewInterfaceRegistry()
 	baseApp := baseapp.NewBaseApp("test", log.NewNopLogger(), dbm.NewMemDB(), nil)
 	baseApp.MsgServiceRouter().SetInterfaceRegistry(registry)
 	baseApp.GRPCQueryRouter().SetInterfaceRegistry(registry)
 	cdc := codec.NewProtoCodec(registry)
+
+	for _, hook := range setupHooks {
+		hook(cdc, baseApp)
+	}
+
 	mm := NewManager(baseApp, cdc)
 	err := mm.RegisterModules(ff.modules)
 	require.NoError(ff.t, err)

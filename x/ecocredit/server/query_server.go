@@ -3,9 +3,9 @@ package server
 import (
 	"github.com/regen-network/regen-ledger/types"
 
+	"github.com/regen-network/regen-ledger/math"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/math"
 )
 
 func (s serverImpl) ClassInfo(ctx types.Context, request *ecocredit.QueryClassInfoRequest) (*ecocredit.QueryClassInfoResponse, error) {

@@ -93,6 +93,7 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 			key:              key,
 			cdc:              mm.cdc,
 			requiredServices: map[reflect.Type]bool{},
+			router:           mm.baseApp.Router(), // TODO: remove once #225 addressed
 		}
 
 		serverMod.RegisterServices(cfg)
@@ -131,8 +132,9 @@ type configurator struct {
 	msgServer        gogogrpc.Server
 	queryServer      gogogrpc.Server
 	key              *rootModuleKey
-	cdc              codec.BinaryMarshaler
+	cdc              codec.Marshaler
 	requiredServices map[reflect.Type]bool
+	router           sdk.Router
 }
 
 var _ Configurator = &configurator{}
@@ -149,8 +151,14 @@ func (c *configurator) ModuleKey() RootModuleKey {
 	return c.key
 }
 
-func (c *configurator) BinaryMarshaler() codec.BinaryMarshaler {
+func (c *configurator) Marshaler() codec.Marshaler {
 	return c.cdc
+}
+
+// Router is temporarily added here to use in the group module.
+// TODO: remove once #225 addressed
+func (c *configurator) Router() sdk.Router {
+	return c.router
 }
 
 func (c *configurator) RequireServer(serverInterface interface{}) {
