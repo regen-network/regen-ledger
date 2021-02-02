@@ -1,4 +1,4 @@
-/* Package lookup provides a key-value store backed data structure which finds and stores
+/*Package lookup provides a key-value store backed data structure which finds and stores
 a short, unique binary identifier for a longer piece of binary data using an efficient,
 non-cryptographic hash function.
 

@@ -116,7 +116,7 @@ func (t table) getOrCreateID(store KVStore, value []byte) (id []byte, numCollisi
 
 	for i := t.minLen; i <= t.hashLen; i++ {
 		id = append(id[t.prefixLen:], hashBz[:i]...)
-		if tryId(store, id, value) {
+		if tryID(store, id, value) {
 			return id, i - t.minLen
 		}
 		id = id[:t.prefixLen]
@@ -129,7 +129,7 @@ func (t table) getOrCreateID(store KVStore, value []byte) (id []byte, numCollisi
 		id = id[:t.bufLen]
 		n := binary.PutUvarint(id[preLen:], i)
 		id = id[:preLen+n]
-		if tryId(store, id, value) {
+		if tryID(store, id, value) {
 			return id, t.hashLen + int(i) - t.minLen
 		}
 
@@ -137,7 +137,7 @@ func (t table) getOrCreateID(store KVStore, value []byte) (id []byte, numCollisi
 	}
 }
 
-func tryId(store KVStore, id []byte, value []byte) bool {
+func tryID(store KVStore, id []byte, value []byte) bool {
 	bz := store.Get(id)
 
 	// id doesn't exist yet
