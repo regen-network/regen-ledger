@@ -114,6 +114,8 @@ func (t table) getOrCreateID(store KVStore, value []byte) (id []byte, numCollisi
 	id = make([]byte, 0, t.bufLen)
 	id = append(id, t.prefix...)
 
+	// take the first i bytes of hashBz starting with t.minLen and increasing
+	// in cases where there are collisions
 	for i := t.minLen; i <= t.hashLen; i++ {
 		id = append(id[t.prefixLen:], hashBz[:i]...)
 		if tryID(store, id, value) {
@@ -122,7 +124,9 @@ func (t table) getOrCreateID(store KVStore, value []byte) (id []byte, numCollisi
 		id = id[:t.prefixLen]
 	}
 
-	// deal with collisions which are almost impossible with good settings, but can happen with a sub-optimal hash function
+	// Deal with collisions by appending a varint disambiguation value.
+	// Such collisions are almost impossible with good settings, but can
+	// happen with a sub-optimal hash function.
 	var i uint64 = 0
 	preLen := t.prefixLen + t.hashLen
 	for {
