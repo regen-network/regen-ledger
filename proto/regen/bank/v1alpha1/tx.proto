@@ -15,10 +15,6 @@ service Msg {
     // Mint is a method for minting new coins. It is subject to each denom's send rule.
     rpc Mint (MsgMintRequest) returns (MsgMintResponse);
 
-    // Move is a method for a module, contract, or other trusted third party
-    // to move coins from one account to another account. It is subject to each denom's move rule.
-    rpc Move (MsgMoveRequest) returns (MsgMoveResponse);
-
     // Send is a method for sending coins from one account to another account.
     // It is subject to each denom's send rule.
     rpc Send (MsgSendRequest) returns (MsgSendResponse);
@@ -47,6 +43,8 @@ service Msg {
     // precision can be increased so its more adaptable long term than just an
     // integer.
     rpc SetPrecision(MsgSetPrecisionRequest) returns (MsgSetPrecisionResponse);
+
+    rpc UpdateDenomRules(MsgUpdateDenomRulesRequest)
 }
 
 service Internal {
@@ -55,21 +53,28 @@ service Internal {
     rpc Move (MsgMoveRequest) returns (MsgMoveResponse);
 }
 
+// atom
+// ibc/*
+// cosmwasm/*
+// regen/*
+
 message MsgCreateDenomRequest {
-    string namespace_admin = 1;
-    string denom_namespace = 2;
-    string denom_name = 3;
+    string namespace_admin = 1; // Ex: ibc module account signer of transaction
+    string denom_namespace = 2; // ibc
+    string denom_name = 3; // sdbwguohsjknwuvhsdg-eth
 
     // denom_admin specifies an address that has administrative access over the denom
     // and can change important parameters and rules. If left empty, the denom's rules
     // can only be changed by governance.
-    string denom_admin = 4;
+    string denom_admin = 4; // Ex: cosmwasm contract
 
     google.protobuf.Any mint_rule = 5;
     google.protobuf.Any send_rule = 6;
     google.protobuf.Any move_rule = 7;
     google.protobuf.Any burn_rule = 8;
     uint32 max_decimal_places = 9;
+
+    Metadata denom_metadata = 10;
 }
 
 message MsgCreateDenomResponse {
