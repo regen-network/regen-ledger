@@ -8,17 +8,28 @@ import (
 	"hash/fnv"
 )
 
+// Table is the interface for interacting with a lookup table.
 type Table interface {
+	// GetOrCreateID is an idempotent method for creating or retrieving an unique
+	// shortened identifier for the provided binary value.
 	GetOrCreateID(store KVStore, value []byte) []byte
+
+	// GetValue returns the binary data (if any) corresponding to the provided shortened identifier.
 	GetValue(store KVStore, id []byte) []byte
 }
 
+// NewTable creates a new lookup table for the provided, optional KVStore prefix using default parameters.
+// Default parameters are currently set to use the first 4-bytes of the FNV-1a 64-bit, non-cryptographic hash.
+// In the case of a collision, more bytes of the hash will be used for disambiguation but this happens
+// in a minority of cases except for massively large data sets.
 func NewTable(prefix []byte) (Table, error) {
 	return NewTableWithOptions(TableOptions{
 		Prefix: prefix,
 	})
 }
 
+// NewTableWithOptions creates a Table with custom options. Most users should just use NewTable
+// with the default values.
 func NewTableWithOptions(options TableOptions) (Table, error) {
 	prefixLen := len(options.Prefix)
 	minLength := options.MinLength
@@ -50,10 +61,16 @@ func NewTableWithOptions(options TableOptions) (Table, error) {
 	}, nil
 }
 
+// TableOptions is used to specify custom table options and should only be used by advanced users.
 type TableOptions struct {
-	NewHash   func() hash.Hash
+	// NewHash is a function which returns a new hash.Hash instance.
+	NewHash func() hash.Hash
+
+	// MinLength is the minimum number of hash bytes that will be used to create a lookup identifier.
 	MinLength int
-	Prefix    []byte
+
+	// Prefix is an optional prefix to be pre-pended to all KVStore keys.
+	Prefix []byte
 }
 
 type table struct {
@@ -65,6 +82,7 @@ type table struct {
 	hashLen   int
 }
 
+// KVSTore is the interface for key-value stores that Tables operate on.
 type KVStore interface {
 	// Get returns nil iff key doesn't exist. Panics on nil key.
 	Get(key []byte) []byte
