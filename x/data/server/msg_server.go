@@ -17,9 +17,13 @@ import (
 var _ data.MsgServer = serverImpl{}
 
 func (s serverImpl) AnchorData(ctx types.Context, request *data.MsgAnchorDataRequest) (*data.MsgAnchorDataResponse, error) {
-	_, _, timestamp, err := s.getIRIAndAnchor(ctx, request.Hash)
+	alreadyAnchored, iri, _, timestamp, err := s.getIRIAndAnchor(ctx, request.Hash)
 	if err != nil {
 		return nil, err
+	}
+
+	if alreadyAnchored {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("IRI %s was already anchored", iri))
 	}
 
 	return &data.MsgAnchorDataResponse{Timestamp: timestamp}, nil
@@ -29,43 +33,42 @@ type ToIRI interface {
 	ToIRI() (string, error)
 }
 
-func (s serverImpl) getIRIAndAnchor(ctx types.Context, toIRI ToIRI) (iri string, id []byte, timestamp *gogotypes.Timestamp, err error) {
+func (s serverImpl) getIRIAndAnchor(ctx types.Context, toIRI ToIRI) (anchored bool, iri string, id []byte, timestamp *gogotypes.Timestamp, err error) {
 	iri, err = toIRI.ToIRI()
 	if err != nil {
-		return iri, nil, nil, err
+		return false, iri, nil, nil, err
 	}
 
 	store := ctx.KVStore(s.storeKey)
 	id = s.iriIdTable.GetOrCreateID(store, []byte(iri))
-	timestamp, err = s.anchor(ctx, id, iri)
+	anchored, timestamp, err = s.anchor(ctx, id, iri)
 	if err != nil {
-		return "", nil, nil, err
+		return false, "", nil, nil, err
 	}
 
-	return iri, id, timestamp, err
+	return anchored, iri, id, timestamp, err
 }
 
-func (s serverImpl) anchor(ctx types.Context, id []byte, iri string) (*gogotypes.Timestamp, error) {
+func (s serverImpl) anchor(ctx types.Context, id []byte, iri string) (bool, *gogotypes.Timestamp, error) {
 	timestamp, err := blockTimestamp(ctx)
 	if err != nil {
-		return nil, err
+		return false, nil, err
 	}
 
 	bz, err := timestamp.Marshal()
 	if err != nil {
-		return nil, err
+		return false, nil, err
 	}
 
 	store := ctx.KVStore(s.storeKey)
 	key := AnchorTimestampKey(id)
 	if store.Has(key) {
-		// don't return timestamp if already anchored
-		return nil, nil
+		return false, timestamp, nil
 	}
 
 	store.Set(key, bz)
 
-	return timestamp, ctx.EventManager().EmitTypedEvent(&data.EventAnchorData{Iri: iri})
+	return true, timestamp, ctx.EventManager().EmitTypedEvent(&data.EventAnchorData{Iri: iri})
 }
 
 func blockTimestamp(ctx types.Context) (*gogotypes.Timestamp, error) {
@@ -80,12 +83,16 @@ func blockTimestamp(ctx types.Context) (*gogotypes.Timestamp, error) {
 var trueBz = []byte{1}
 
 func (s serverImpl) SignData(ctx types.Context, request *data.MsgSignDataRequest) (*data.MsgSignDataResponse, error) {
-	iri, id, _, err := s.getIRIAndAnchor(ctx, request.Hash)
+	_, iri, id, timestamp, err := s.getIRIAndAnchor(ctx, request.Hash)
 	if err != nil {
 		return nil, err
 	}
 
 	store := ctx.KVStore(s.storeKey)
+	timestampBz, err := timestamp.Marshal()
+	if err != nil {
+		return nil, err
+	}
 
 	for _, signer := range request.Signers {
 		addr, err := types2.AccAddressFromBech32(signer)
@@ -93,12 +100,12 @@ func (s serverImpl) SignData(ctx types.Context, request *data.MsgSignDataRequest
 			return nil, err
 		}
 
-		key := IDSignerKey(id, addr)
+		key := IDSignerTimestampKey(id, addr)
 		if store.Has(key) {
 			continue
 		}
 
-		store.Set(key, trueBz)
+		store.Set(key, timestampBz)
 		// set reverse lookup key
 		store.Set(SignerIDKey(addr, id), trueBz)
 	}
@@ -118,7 +125,7 @@ func (s serverImpl) StoreRawData(ctx types.Context, request *data.MsgStoreRawDat
 	// NOTE: hash verification already has happened in MsgStoreRawDataRequest.ValidateBasic()
 	// TODO: add hash verification gas cost
 
-	iri, id, _, err := s.getIRIAndAnchor(ctx, request.Hash)
+	_, iri, id, _, err := s.getIRIAndAnchor(ctx, request.Hash)
 	if err != nil {
 		return nil, err
 	}

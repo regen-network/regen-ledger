@@ -1,7 +1,12 @@
 package server
 
 import (
-	"fmt"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
+	gogotypes "github.com/gogo/protobuf/types"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
@@ -10,55 +15,95 @@ import (
 var _ data.QueryServer = serverImpl{}
 
 func (s serverImpl) ByHash(ctx types.Context, request *data.QueryByHashRequest) (*data.QueryByHashResponse, error) {
-	return nil, fmt.Errorf("not implemented")
-	//cid := request.Cid
-	//
-	//var timestamp gogotypes.Timestamp
-	//store := ctx.KVStore(s.storeKey)
-	//bz := store.Get(AnchorKey(cid))
-	//if len(bz) == 0 {
-	//	return nil, status.Error(codes.NotFound, "CID not found")
-	//}
-	//err := timestamp.Unmarshal(bz)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//var signers []string
-	//cidSignerPrefixKey := CIDSignerIndexPrefix(CIDBase64String(cid))
-	//prefixStore := prefix.NewStore(store, cidSignerPrefixKey)
-	//iterator := prefixStore.Iterator(nil, nil)
-	//
-	//for iterator.Valid() {
-	//	signer := string(iterator.Key())
-	//	signers = append(signers, signer)
-	//	iterator.Next()
-	//}
-	//
-	//content := store.Get(DataKey(cid))
-	//
-	//return &data.QueryByCidResponse{
-	//	Timestamp: &timestamp,
-	//	Signers:   signers,
-	//	Content:   content,
-	//}, err
+	iri, err := request.Hash.ToIRI()
+	if err != nil {
+		return nil, err
+	}
+
+	store := ctx.KVStore(s.storeKey)
+	id := s.iriIdTable.GetOrCreateID(store, []byte(iri))
+
+	entry, err := s.getEntry(store, id)
+
+	return &data.QueryByHashResponse{
+		Entry: entry,
+	}, nil
+}
+
+func (s serverImpl) getEntry(store sdk.KVStore, id []byte) (*data.ContentEntry, error) {
+	bz := store.Get(AnchorTimestampKey(id))
+	if len(bz) == 0 {
+		return nil, status.Error(codes.NotFound, "not found")
+	}
+
+	var timestamp gogotypes.Timestamp
+	err := timestamp.Unmarshal(bz)
+	if err != nil {
+		return nil, err
+	}
+
+	var signerEntries []*data.SignerEntry
+	idSignerIndexPrefix := IDSignerIndexPrefix(id)
+	prefixStore := prefix.NewStore(store, idSignerIndexPrefix)
+	iterator := prefixStore.Iterator(nil, nil)
+
+	for iterator.Valid() {
+		signer := sdk.AccAddress(iterator.Key())
+		var timestamp gogotypes.Timestamp
+		err = timestamp.Unmarshal(iterator.Value())
+		if err != nil {
+			return nil, err
+		}
+
+		signerEntries = append(signerEntries, &data.SignerEntry{
+			Signer:    signer.String(),
+			Timestamp: &timestamp,
+		})
+
+		iterator.Next()
+	}
+
+	entry := &data.ContentEntry{
+		Timestamp: &timestamp,
+		Signers:   signerEntries,
+	}
+
+	rawData := store.Get(RawDataKey(id))
+	if rawData != nil {
+		entry.Content.Sum = &data.Content_RawData{
+			RawData: rawData,
+		}
+	}
+
+	return entry, nil
 }
 
 func (s serverImpl) BySigner(ctx types.Context, request *data.QueryBySignerRequest) (*data.QueryBySignerResponse, error) {
-	return nil, fmt.Errorf("not implemented")
-	//store := prefix.NewStore(ctx.KVStore(s.storeKey), SignerCIDIndexPrefix(request.Signer))
-	//
-	//var cids [][]byte
-	//pageRes, err := query.Paginate(store, request.Pagination, func(key []byte, value []byte) error {
-	//	cids = append(cids, key)
-	//	return nil
-	//})
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//return &data.QueryBySignerResponse{
-	//	Cids:       cids,
-	//	Pagination: pageRes,
-	//}, nil
+	store := ctx.KVStore(s.storeKey)
+
+	addr, err := sdk.AccAddressFromBech32(request.Signer)
+	if err != nil {
+		return nil, err
+	}
+
+	signerIdStore := prefix.NewStore(store, SignerIDIndexPrefix(addr))
+
+	var entries []*data.ContentEntry
+	pageRes, err := query.Paginate(signerIdStore, request.Pagination, func(key []byte, value []byte) error {
+		entry, err := s.getEntry(store, key)
+		if err != nil {
+			return err
+		}
+
+		entries = append(entries, entry)
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &data.QueryBySignerResponse{
+		Entries:    entries,
+		Pagination: pageRes,
+	}, nil
 }
