@@ -20,12 +20,25 @@ func TestTable(t *testing.T) {
 
 	// test suboptimal case to trigger varint fallback
 	table, err = NewTableWithOptions(TableOptions{
+		MinLength: 1,
 		NewHash: func() hash.Hash {
-			return fnv.New32()
+			return sixteenByteHash{
+				fnv.New32(),
+			}
 		},
 	})
 	require.NoError(t, err)
 	testTable(t, table, 5)
+}
+
+type sixteenByteHash struct {
+	hash.Hash
+}
+
+func (h sixteenByteHash) Sum(b []byte) []byte {
+	bz := h.Hash.Sum(b)
+	// just return two bytes
+	return bz[:len(b)+2]
 }
 
 func testTable(t *testing.T, tbl Table, k int) {

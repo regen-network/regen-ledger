@@ -145,7 +145,7 @@ func tryID(store KVStore, id []byte, value []byte) bool {
 	bz := store.Get(id)
 
 	// id doesn't exist yet
-	if len(bz) == 0 {
+	if bz == nil {
 		store.Set(id, value)
 		return true
 	}
