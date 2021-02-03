@@ -2,6 +2,7 @@ package testsuite
 
 import (
 	"context"
+	"crypto"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
@@ -42,31 +43,37 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 }
 
 func (s *IntegrationTestSuite) TestScenario() {
-	//testContent := []byte("xyzabc123")
-	//mh, err := multihash.Sum(testContent, multihash.SHA2_256, -1)
-	//s.Require().NoError(err)
-	//cid := gocid.NewCidV1(gocid.Raw, mh)
-	//
+	testContent := []byte("xyzabc123")
+	hash := crypto.BLAKE2b_256.New()
+	hash.Write(testContent)
+	digest := hash.Sum(nil)
+	contentHash := &data.ContentHash{Sum: &data.ContentHash_Raw_{Raw: &data.ContentHash_Raw{
+		Hash:            digest,
+		DigestAlgorithm: data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+		MediaType:       data.MediaType_MEDIA_TYPE_UNSPECIFIED,
+	}}}
+
 	//// anchor some data
-	//cidBz := cid.Bytes()
-	//anchorRes, err := s.msgClient.AnchorData(s.ctx, &data.MsgAnchorDataRequest{
-	//	Sender: s.addr1.String(),
-	//	Cid:    cidBz,
-	//})
-	//s.Require().NoError(err)
-	//s.Require().NotNil(anchorRes)
-	//
-	//// can't anchor same data twice
-	//_, err = s.msgClient.AnchorData(s.ctx, &data.MsgAnchorDataRequest{
-	//	Sender: s.addr1.String(),
-	//	Cid:    cidBz,
-	//})
-	//s.Require().Error(err)
-	//
-	//// can query data and get timestamp
-	//queryRes, err := s.queryClient.ByCid(s.ctx, &data.QueryByCidRequest{Cid: cidBz})
-	//s.Require().NoError(err)
-	//s.Require().NotNil(queryRes)
+	anchorRes, err := s.msgClient.AnchorData(s.ctx, &data.MsgAnchorDataRequest{
+		Sender: s.addr1.String(),
+		Hash:   contentHash,
+	})
+	s.Require().NoError(err)
+	s.Require().NotNil(anchorRes)
+
+	// can't anchor same data twice
+	_, err = s.msgClient.AnchorData(s.ctx, &data.MsgAnchorDataRequest{
+		Sender: s.addr1.String(),
+		Hash:   contentHash,
+	})
+	s.Require().Error(err)
+
+	// can query data and get timestamp
+	queryRes, err := s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{
+		Hash: contentHash,
+	})
+	s.Require().NoError(err)
+	s.Require().NotNil(queryRes)
 	//s.Require().Equal(anchorRes.Timestamp, queryRes.Timestamp)
 	//s.Require().Empty(queryRes.Signers)
 	//s.Require().Empty(queryRes.Content)
