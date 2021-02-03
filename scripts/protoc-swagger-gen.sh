@@ -21,7 +21,7 @@ done
 
 # download Cosmos SDK swagger doc
 rm -f ./client/docs/swagger.yaml
-wget https://raw.githubusercontent.com/cosmos/cosmos-sdk/v0.40.0/client/docs/swagger-ui/swagger.yaml -P ./client/docs
+wget https://raw.githubusercontent.com/cosmos/cosmos-sdk/v0.41.0/client/docs/swagger-ui/swagger.yaml -P ./client/docs
 
 # combine swagger files
 # uses nodejs package `swagger-combine`.
