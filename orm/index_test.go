@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -232,13 +233,43 @@ func TestUniqueIndex(t *testing.T) {
 	assert.True(t, uniqueIdx.Has(ctx, indexedKey))
 
 	// Get
-	it, err := uniqueIdx.Get(ctx, indexedKey, nil)
+	it, err := uniqueIdx.Get(ctx, indexedKey)
 	require.NoError(t, err)
 	var loaded testdata.GroupMember
 	rowID, err := it.LoadNext(&loaded)
 	require.NoError(t, err)
 	require.Equal(t, RowID(m.NaturalKey()), rowID)
 	require.Equal(t, m, loaded)
+
+	// GetPaginated
+	cases := map[string]struct {
+		pageReq *query.PageRequest
+		expErr  bool
+	}{
+		"nil key": {
+			pageReq: &query.PageRequest{Key: nil},
+			expErr:  false,
+		},
+		"after indexed key": {
+			pageReq: &query.PageRequest{Key: indexedKey},
+			expErr:  true,
+		},
+	}
+
+	for testName, tc := range cases {
+		t.Run(testName, func(t *testing.T) {
+			it, err := uniqueIdx.GetPaginated(ctx, indexedKey, tc.pageReq)
+			require.NoError(t, err)
+			rowID, err := it.LoadNext(&loaded)
+			if tc.expErr { // iterator done
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, RowID(m.NaturalKey()), rowID)
+				require.Equal(t, m, loaded)
+			}
+		})
+	}
 
 	// PrefixScan match
 	it, err = uniqueIdx.PrefixScan(ctx, []byte{byte('m')}, []byte{byte('n')})

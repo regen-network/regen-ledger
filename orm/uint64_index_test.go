@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -49,6 +50,36 @@ func TestUInt64Index(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, uint64(1), DecodeSequence(rowID))
 	require.Equal(t, m, loaded)
+
+	// GetPaginated
+	cases := map[string]struct {
+		pageReq *query.PageRequest
+		expErr  bool
+	}{
+		"nil key": {
+			pageReq: &query.PageRequest{Key: nil},
+			expErr:  false,
+		},
+		"after indexed key": {
+			pageReq: &query.PageRequest{Key: []byte{byte('m')}},
+			expErr:  true,
+		},
+	}
+
+	for testName, tc := range cases {
+		t.Run(testName, func(t *testing.T) {
+			it, err := myIndex.GetPaginated(ctx, indexedKey, tc.pageReq)
+			require.NoError(t, err)
+			rowID, err := it.LoadNext(&loaded)
+			if tc.expErr { // iterator done
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, RowID(m.NaturalKey()), rowID)
+				require.Equal(t, m, loaded)
+			}
+		})
+	}
 
 	// PrefixScan match
 	it, err = myIndex.PrefixScan(ctx, 0, 255)

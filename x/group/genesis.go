@@ -2,11 +2,9 @@ package group
 
 // NewGenesisState creates a new genesis state with default values.
 func NewGenesisState() *GenesisState {
-	return &GenesisState{
-		Params: DefaultParams(),
-	}
+	return &GenesisState{}
 }
 
 func (s GenesisState) Validate() error {
-	return s.Params.Validate()
+	return nil
 }

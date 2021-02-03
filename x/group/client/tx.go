@@ -1,6 +1,7 @@
 package client
 
 import (
+	"encoding/base64"
 	"fmt"
 	"strconv"
 	"strings"
@@ -8,8 +9,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
+
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/spf13/cobra"
 )
@@ -29,12 +32,12 @@ func NewTxCmd() *cobra.Command {
 	txCmd.AddCommand(
 		MsgCreateGroupCmd(),
 		MsgUpdateGroupAdminCmd(),
-		MsgUpdateGroupCommentCmd(),
+		MsgUpdateGroupMetadataCmd(),
 		MsgUpdateGroupMembersCmd(),
 		MsgCreateGroupAccountCmd(),
 		MsgUpdateGroupAccountAdminCmd(),
 		MsgUpdateGroupAccountDecisionPolicyCmd(),
-		MsgUpdateGroupAccountCommentCmd(),
+		MsgUpdateGroupAccountMetadataCmd(),
 		MsgCreateProposalCmd(),
 		MsgVoteCmd(),
 		MsgExecCmd(),
@@ -46,7 +49,7 @@ func NewTxCmd() *cobra.Command {
 // MsgCreateGroupCmd creates a CLI command for Msg/CreateGroup.
 func MsgCreateGroupCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "create-group [admin] [comment]",
+		Use: "create-group [admin] [metadata]",
 		Short: "Create a group which is an aggregation " +
 			"of member accounts with associated weights and " +
 			"an administrator account. Note, the '--from' flag is " +
@@ -57,7 +60,7 @@ an administrator account. Note, the '--from' flag is ignored as it is implied fr
 Members accounts can be given through a members JSON file that contains an array of members.
 
 Example:
-$ %s tx group create-group [admin] [comment] --members="path/to/members.json"
+$ %s tx group create-group [admin] [metadata] --members="path/to/members.json"
 
 Where members.json contains:
 
@@ -65,12 +68,12 @@ Where members.json contains:
 	{
 		"address": "addr1",
 		"power": "1",
-		"comment": "some comment"
+		"metadata": "some metadata"
 	},
 	{
 		"address": "addr2",
 		"power": "1",
-		"comment": "some comment"
+		"metadata": "some metadata"
 	}
 ]
 `,
@@ -94,10 +97,15 @@ Where members.json contains:
 				return err
 			}
 
+			b, err := base64.StdEncoding.DecodeString(args[1])
+			if err != nil {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
+			}
+
 			msg := &group.MsgCreateGroupRequest{
-				Admin:   clientCtx.GetFromAddress().String(),
-				Members: members,
-				Comment: args[1],
+				Admin:    clientCtx.GetFromAddress().String(),
+				Members:  members,
+				Metadata: b,
 			}
 			if err = msg.ValidateBasic(); err != nil {
 				return fmt.Errorf("message validation failed: %w", err)
@@ -130,12 +138,12 @@ Where members.json contains:
 	{
 		"address": "addr1",
 		"power": "1",
-		"comment": "some new comment"
+		"metadata": "some new metadata"
 	},
 	{
 		"address": "addr2",
 		"power": "0",
-		"comment": "some comment"
+		"metadata": "some metadata"
 	}
 ]
 
@@ -225,10 +233,10 @@ func MsgUpdateGroupAdminCmd() *cobra.Command {
 	return cmd
 }
 
-// MsgUpdateGroupCommentCmd creates a CLI command for Msg/UpdateGroupComment.
-func MsgUpdateGroupCommentCmd() *cobra.Command {
+// MsgUpdateGroupMetadataCmd creates a CLI command for Msg/UpdateGroupMetadata.
+func MsgUpdateGroupMetadataCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-group-admin [admin] [group-id] [comment]",
+		Use:   "update-group-admin [admin] [group-id] [metadata]",
 		Short: "Update a group's admin",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -247,10 +255,15 @@ func MsgUpdateGroupCommentCmd() *cobra.Command {
 				return err
 			}
 
-			msg := &group.MsgUpdateGroupCommentRequest{
-				Admin:   clientCtx.GetFromAddress().String(),
-				Comment: args[2],
-				GroupId: group.ID(groupID),
+			b, err := base64.StdEncoding.DecodeString(args[2])
+			if err != nil {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
+			}
+
+			msg := &group.MsgUpdateGroupMetadataRequest{
+				Admin:    clientCtx.GetFromAddress().String(),
+				Metadata: b,
+				GroupId:  group.ID(groupID),
 			}
 			if err = msg.ValidateBasic(); err != nil {
 				return fmt.Errorf("message validation failed: %w", err)
@@ -268,7 +281,7 @@ func MsgUpdateGroupCommentCmd() *cobra.Command {
 // MsgCreateGroupAccountCmd creates a CLI command for Msg/CreateGroupAccount.
 func MsgCreateGroupAccountCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "create-group-account [admin] [group-id] [comment] [decision-policy]",
+		Use: "create-group-account [admin] [group-id] [metadata] [decision-policy]",
 		Short: "Create a group account which is an account " +
 			"associated with a group and a decision policy. " +
 			"Note, the '--from' flag is " +
@@ -278,7 +291,7 @@ func MsgCreateGroupAccountCmd() *cobra.Command {
 Note, the '--from' flag is ignored as it is implied from [admin].
 
 Example:
-$ %s tx group create-group-account [admin] [group-id] [comment] \
+$ %s tx group create-group-account [admin] [group-id] [metadata] \
 '{"@type":"/regen.group.v1alpha1.ThresholdDecisionPolicy", "threshold":"1", "timeout":"1s"}'
 
 Where decision-policy.json contains:
@@ -310,10 +323,15 @@ Where decision-policy.json contains:
 				return err
 			}
 
+			b, err := base64.StdEncoding.DecodeString(args[2])
+			if err != nil {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
+			}
+
 			msg, err := group.NewMsgCreateGroupAccountRequest(
 				clientCtx.GetFromAddress(),
 				group.ID(groupID),
-				args[2],
+				b,
 				policy,
 			)
 			if err != nil {
@@ -411,11 +429,11 @@ func MsgUpdateGroupAccountDecisionPolicyCmd() *cobra.Command {
 	return cmd
 }
 
-// MsgUpdateGroupAccountCommentCmd creates a CLI command for Msg/MsgUpdateGroupAccountComment.
-func MsgUpdateGroupAccountCommentCmd() *cobra.Command {
+// MsgUpdateGroupAccountMetadataCmd creates a CLI command for Msg/MsgUpdateGroupAccountMetadata.
+func MsgUpdateGroupAccountMetadataCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-group-account-comment [admin] [group-account] [new-comment]",
-		Short: "Update a group account comment",
+		Use:   "update-group-account-metadata [admin] [group-account] [new-metadata]",
+		Short: "Update a group account metadata",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			err := cmd.Flags().Set(flags.FlagFrom, args[0])
@@ -428,10 +446,15 @@ func MsgUpdateGroupAccountCommentCmd() *cobra.Command {
 				return err
 			}
 
-			msg := &group.MsgUpdateGroupAccountCommentRequest{
+			b, err := base64.StdEncoding.DecodeString(args[2])
+			if err != nil {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
+			}
+
+			msg := &group.MsgUpdateGroupAccountMetadataRequest{
 				Admin:        clientCtx.GetFromAddress().String(),
 				GroupAccount: args[1],
-				Comment:      args[2],
+				Metadata:     b,
 			}
 			if err = msg.ValidateBasic(); err != nil {
 				return fmt.Errorf("message validation failed: %w", err)
@@ -449,14 +472,14 @@ func MsgUpdateGroupAccountCommentCmd() *cobra.Command {
 // MsgCreateProposalCmd creates a CLI command for Msg/CreateProposal.
 func MsgCreateProposalCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "create-proposal [group-account] [proposer[,proposer]*] [msg_tx_json_file] [comment]",
+		Use:   "create-proposal [group-account] [proposer[,proposer]*] [msg_tx_json_file] [metadata]",
 		Short: "Submit a new proposal",
 		Long: `Submit a new proposal.
 
 Parameters:
 			group-account: address of the group account
 			proposer: comma separated (no spaces) list of proposer account addresses. Example: "addr1,addr2" 
-			comment: comment for the proposal
+			Metadata: metadata for the proposal
 			msg_tx_json_file: path to json file with messages that will be executed if the proposal is accepted.
 `,
 		Args: cobra.ExactArgs(4),
@@ -477,11 +500,16 @@ Parameters:
 			}
 			msgs := theTx.GetMsgs()
 
+			b, err := base64.StdEncoding.DecodeString(args[3])
+			if err != nil {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
+			}
+
 			msg, err := group.NewMsgCreateProposalRequest(
 				args[0],
 				proposers,
 				msgs,
-				args[3],
+				b,
 			)
 			if err != nil {
 				return err
@@ -503,28 +531,23 @@ Parameters:
 // MsgVoteCmd creates a CLI command for Msg/Vote.
 func MsgVoteCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "vote [proposal-id] [voter[,voter]*] [choice] [comment]",
+		Use:   "vote [proposal-id] [voter] [choice] [metadata]",
 		Short: "Vote on a proposal",
 		Long: `Vote on a proposal.
 
 Parameters:
 			proposal-id: unique ID of the proposal
-			voter: comma separated (no spaces) list of voter account addresses. Example: "addr1,addr2" 
+			voter: voter account addresses.
 			choice: choice of the voter(s)
 				0: no-op
 				1: no
 				2: yes
 				3: abstain
 				4: veto
-			comment: comment for the vote
+			Metadata: metadata for the vote
 `,
 		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			voters := strings.Split(args[1], ",")
-			for i := range voters {
-				voters[i] = strings.TrimSpace(voters[i])
-			}
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -540,11 +563,16 @@ Parameters:
 				return err
 			}
 
+			b, err := base64.StdEncoding.DecodeString(args[3])
+			if err != nil {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
+			}
+
 			msg := &group.MsgVoteRequest{
 				ProposalId: group.ProposalID(proposalID),
-				Voters:     voters,
+				Voter:      args[1],
 				Choice:     choice,
-				Comment:    args[3],
+				Metadata:   b,
 			}
 			if err != nil {
 				return err
@@ -563,8 +591,8 @@ Parameters:
 	return cmd
 }
 
-// MsgMsgExecCmd creates a CLI command for Msg/MsgExec.
-func MsgMsgExecCmd() *cobra.Command {
+// MsgExecCmd creates a CLI command for Msg/MsgExec.
+func MsgExecCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "exec [proposal-id]",
 		Short: "Execute a proposal",

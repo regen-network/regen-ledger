@@ -9,13 +9,11 @@ import (
 	"github.com/gogo/protobuf/types"
 	"github.com/regen-network/regen-ledger/math"
 	"github.com/regen-network/regen-ledger/orm"
-	"gopkg.in/yaml.v2"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 type ID uint64
@@ -147,9 +145,9 @@ func (p ThresholdDecisionPolicy) ValidateBasic() error {
 }
 
 func (g GroupMember) NaturalKey() []byte {
-	result := make([]byte, 8, 8+len(g.Member))
+	result := make([]byte, 8, 8+len(g.Member.Address))
 	copy(result[0:8], g.GroupId.Bytes())
-	result = append(result, g.Member...)
+	result = append(result, g.Member.Address...)
 	return result
 }
 
@@ -164,12 +162,12 @@ func (g GroupAccountInfo) NaturalKey() []byte {
 var _ orm.Validateable = GroupAccountInfo{}
 
 // NewGroupAccountInfo creates a new GroupAccountInfo instance
-func NewGroupAccountInfo(groupAccount sdk.AccAddress, group ID, admin sdk.AccAddress, comment string, version uint64, decisionPolicy DecisionPolicy) (GroupAccountInfo, error) {
+func NewGroupAccountInfo(groupAccount sdk.AccAddress, group ID, admin sdk.AccAddress, metadata []byte, version uint64, decisionPolicy DecisionPolicy) (GroupAccountInfo, error) {
 	p := GroupAccountInfo{
 		GroupAccount: groupAccount.String(),
 		GroupId:      group,
 		Admin:        admin.String(),
-		Comment:      comment,
+		Metadata:     metadata,
 		Version:      version,
 	}
 
@@ -273,39 +271,10 @@ func ChoiceFromString(str string) (Choice, error) {
 	return Choice(choice), nil
 }
 
-const defaultMaxCommentLength = 255
-
-// Parameter keys
-var (
-	ParamMaxCommentLength = []byte("MaxCommentLength")
-)
-
-// DefaultParams returns the default parameters for the group module.
-func DefaultParams() Params {
-	return Params{
-		MaxCommentLength: defaultMaxCommentLength,
-	}
-}
-
-func (p Params) String() string {
-	out, _ := yaml.Marshal(p)
-	return string(out)
-}
-
-// ParamSetPairs returns the parameter set pairs.
-func (p *Params) ParamSetPairs() paramstypes.ParamSetPairs {
-	return paramstypes.ParamSetPairs{
-		paramstypes.NewParamSetPair(ParamMaxCommentLength, &p.MaxCommentLength, noopValidator()),
-	}
-}
-
-func (p Params) Validate() error {
-	return nil
-}
-
-func noopValidator() paramstypes.ValueValidatorFn {
-	return func(value interface{}) error { return nil }
-}
+// MaxMetadataLength defines the max length of the metadata bytes field
+// for various entities within the group module
+// TODO: This could be used as params once x/params is upgraded to use protobuf
+const MaxMetadataLength = 255
 
 var _ orm.Validateable = GroupInfo{}
 
@@ -335,12 +304,9 @@ func (g GroupMember) ValidateBasic() error {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
 
-	_, err := sdk.AccAddressFromBech32(g.Member)
+	err := g.Member.ValidateBasic()
 	if err != nil {
-		return sdkerrors.Wrap(err, "address")
-	}
-	if _, err := math.ParsePositiveDecimal(g.Weight); err != nil {
-		return sdkerrors.Wrap(err, "power")
+		return sdkerrors.Wrap(err, "member")
 	}
 	return nil
 }
@@ -500,9 +466,4 @@ func (t Tally) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "veto count")
 	}
 	return nil
-}
-
-func (g GenesisState) String() string {
-	out, _ := yaml.Marshal(g)
-	return string(out)
 }

@@ -4,15 +4,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
 // NewHandler creates an sdk.Handler for all the group type messages
-func NewHandler(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace,
+func NewHandler(storeKey sdk.StoreKey,
 	router sdk.Router, cdc codec.Marshaler) sdk.Handler {
-	impl := newServer(storeKey, paramSpace, router, cdc)
+	impl := newServer(storeKey, router, cdc)
 
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
@@ -31,8 +30,8 @@ func NewHandler(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace,
 			res, err := impl.UpdateGroupAdmin(regenCtx, msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *group.MsgUpdateGroupCommentRequest:
-			res, err := impl.UpdateGroupComment(regenCtx, msg)
+		case *group.MsgUpdateGroupMetadataRequest:
+			res, err := impl.UpdateGroupMetadata(regenCtx, msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
 		case *group.MsgCreateGroupAccountRequest:
@@ -47,8 +46,8 @@ func NewHandler(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace,
 			res, err := impl.UpdateGroupAccountDecisionPolicy(regenCtx, msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *group.MsgUpdateGroupAccountCommentRequest:
-			res, err := impl.UpdateGroupAccountComment(regenCtx, msg)
+		case *group.MsgUpdateGroupAccountMetadataRequest:
+			res, err := impl.UpdateGroupAccountMetadata(regenCtx, msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
 		case *group.MsgCreateProposalRequest:

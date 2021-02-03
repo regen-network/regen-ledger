@@ -4,8 +4,8 @@
 
 A group is simply an aggregation of accounts with associated weights. It is not
 an account and doesn't have a balance. It doesn't in and of itself have any
-sort of voting or decision power. It does have an "administrator" which has
-the power to add, remove and update members in the group. Note that a
+sort of voting or decision weight. It does have an "administrator" which has
+the weight to add, remove and update members in the group. Note that a
 group account could be an administrator of a group.
 
 ## Group Account
@@ -17,8 +17,8 @@ membership separately from decision policies results in the least overhead
 and keeps membership consistent across different policies. The pattern that
 is recommended is to have a single master group account for a given group,
 and then to create separate group accounts with different decision policies
-and delegate the desired permissions to from the master account to
-those "sub-accounts" using the `msg_authorization` module.
+and delegate the desired permissions from the master account to
+those "sub-accounts" using the `x/authz` module.
 
 
 ## Decision Policy
@@ -41,13 +41,13 @@ this decision policy, abstain and veto are simply treated as no's.
 ## Proposal
 
 Any member of a group can submit a proposal for a group account to decide upon.
-A proposal consists of a set of `sdk.Msg`s that will be executed if the proposal
-passes as well as any comment associated with the proposal.
+A proposal consists of a set of messages that will be executed if the proposal
+passes as well as any metadata associated with the proposal.
 
 ## Voting
 
 There are four choices to choose while voting - yes, no, abstain and veto. Not
-all decision policies will support them. Votes can contain an optional comment.
+all decision policies will support them. Votes can contain some optional metadata.
 During the voting window, accounts that have already voted may change their vote.
 In the current implementation, the voting window begins as soon as a proposal
 is submitted.
@@ -55,13 +55,13 @@ is submitted.
 ## Executing Proposals
 
 Proposals will not be automatically executed by the chain in this current design,
-but rather a user must submit a `MsgExecRequest` transaction to attempt to execute the
+but rather a user must submit a `Msg/Exec` transaction to attempt to execute the
 proposal based on the current votes and decision policy. A future upgrade could
 automate this propose and have the group account (or a fee granter) pay.
 
 ## Changing Group Membership
 
-In the current implementation, changing a group's membership (adding or removing members or changing their power)
+In the current implementation, changing a group's membership (adding or removing members or changing their weight)
 will cause all existing proposals for group accounts linked to this group
-to be invalidated. They will simply fail if someone calls `MsgExecRequest` and will
+to be invalidated. They will simply fail if someone calls `Msg/Exec` and will
 eventually be garbage collected.

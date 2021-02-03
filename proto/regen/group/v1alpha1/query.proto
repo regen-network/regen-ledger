@@ -17,7 +17,7 @@ service Query {
   // GroupAccountInfo queries group account info based on group account address.
   rpc GroupAccountInfo(QueryGroupAccountInfoRequest) returns (QueryGroupAccountInfoResponse);
   
-  // GroupMembers queries members for agroup
+  // GroupMembers queries members of a group
   rpc GroupMembers(QueryGroupMembersRequest) returns (QueryGroupMembersResponse);
 
   // GroupsByAdmin queries groups by admin address.
@@ -242,5 +242,3 @@ message QueryVotesByVoterResponse {
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
-
-

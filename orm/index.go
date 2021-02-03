@@ -68,7 +68,16 @@ func (i MultiKeyIndex) Has(ctx HasKVStore, key []byte) bool {
 }
 
 // Get returns a result iterator for the searchKey. Parameters must not be nil.
-func (i MultiKeyIndex) Get(ctx HasKVStore, searchKey []byte, pageRequest *query.PageRequest) (Iterator, error) {
+func (i MultiKeyIndex) Get(ctx HasKVStore, searchKey []byte) (Iterator, error) {
+	store := prefix.NewStore(ctx.KVStore(i.storeKey), []byte{i.prefix})
+	it := store.Iterator(prefixRange(searchKey))
+	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, keyCodec: i.indexKeyCodec}, nil
+}
+
+// GetPaginated creates an iterator for the searchKey
+// starting from pageRequest.Key if provided.
+// The pageRequest.Key is the rowID while searchKey is a MultiKeyIndex key.
+func (i MultiKeyIndex) GetPaginated(ctx HasKVStore, searchKey []byte, pageRequest *query.PageRequest) (Iterator, error) {
 	store := prefix.NewStore(ctx.KVStore(i.storeKey), []byte{i.prefix})
 	start, end := prefixRange(searchKey)
 

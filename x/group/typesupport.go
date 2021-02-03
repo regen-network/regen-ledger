@@ -25,16 +25,12 @@ func (ms Members) ValidateBasic() error {
 
 type AccAddresses []sdk.AccAddress
 
+// ValidateBasic verifies that there's no duplicate address.
+// Individual account address validation has to be done separately.
 func (a AccAddresses) ValidateBasic() error {
 	index := make(map[string]struct{}, len(a))
 	for i := range a {
 		accAddr := a[i]
-		if accAddr.Empty() {
-			return sdkerrors.Wrap(ErrEmpty, "address")
-		}
-		if err := sdk.VerifyAddressFormat(accAddr); err != nil {
-			return sdkerrors.Wrap(err, "address")
-		}
 		addr := string(accAddr)
 		if _, exists := index[addr]; exists {
 			return sdkerrors.Wrapf(ErrDuplicate, "address: %s", accAddr.String())

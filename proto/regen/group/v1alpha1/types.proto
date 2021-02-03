@@ -11,24 +11,24 @@ import "cosmos_proto/cosmos.proto";
 import "google/protobuf/any.proto";
 
 // Member represents a group member with an account address,
-// non-zero power and a comment.
+// non-zero weight and metadata.
 message Member {
 
     // address is the member's account address.
     string address = 1;
     
-    // power is the member's power that should be greater than 0.
-    string power = 2;
+    // weight is the member's voting weight that should be greater than 0.
+    string weight = 2;
     
-    // comment is the member's comment.
-    string comment = 3;
+    // metadata is any arbitrary metadata to attached to the member.
+    bytes metadata = 3;
 }
 
 // ThresholdDecisionPolicy implements the DecisionPolicy interface
 message ThresholdDecisionPolicy {
     option (cosmos_proto.implements_interface) = "DecisionPolicy";
 
-    // threshold is a fix weight value that must be met or exceeded for a proposal to succeed.
+    // threshold is the minimum weighted sum of yes votes that must be met or exceeded for a proposal to succeed.
     string threshold = 1;
     
     // timeout is the duration from submission of a proposal to the end of voting period
@@ -68,16 +68,16 @@ message GroupInfo {
     // admin is the account address of the group's admin.
     string admin = 2;
     
-    // comment is the group's comment.
-    string comment = 3;
+    // metadata is any arbitrary metadata to attached to the group.
+    bytes metadata = 3;
 
     // version is used to track changes to a group's membership structure that
-    // would break existing proposals. Whenever any members power is changed,
+    // would break existing proposals. Whenever any members weight is changed,
     // or any member is added or removed this version is incremented and will
     // cause proposals based on older versions of this group to fail
     uint64 version = 4;
 
-    // total_weight is the sum of the group members' powers.
+    // total_weight is the sum of the group members' weights.
     string total_weight = 5;
 }
 
@@ -87,14 +87,8 @@ message GroupMember {
     // group_id is the unique ID of the group.
     uint64 group_id = 1 [(gogoproto.casttype) = "ID"];
 
-    // member is the account address of the group member.
-    string member = 2;
-    
-    // weight is the power of the group member.
-    string weight = 3;
-    
-    // comment is the member's comment. 
-    string comment = 4;
+    // member is the member data.
+    Member member = 2;
 }
 
 // GroupAccountInfo represents the high-level on-chain information for a group account.
@@ -111,8 +105,8 @@ message GroupAccountInfo {
     // admin is the account address of the group admin.
     string admin = 3;
     
-    // comment is the group account's comment.
-    string comment = 4;
+    // metadata is any arbitrary metadata to attached to the group account.
+    bytes metadata = 4;
 
     // version is used to track changes to a group's GroupAccountInfo structure that
     // would create a different result on a running proposal.
@@ -125,15 +119,15 @@ message GroupAccountInfo {
 // Proposal defines a group proposal. Any member of a group can submit a proposal
 // for a group account to decide upon.
 // A proposal consists of a set of `sdk.Msg`s that will be executed if the proposal
-// passes as well as any comment associated with the proposal.
+// passes as well as some optional metadata associated with the proposal.
 message Proposal {
     option (gogoproto.goproto_getters) = false;
 
     // group_account is the group account address.
     string group_account = 1;
     
-    // comment is the proposal's comment.
-    string comment = 2;
+    // metadata is any arbitrary metadata to attached to the proposal.
+    bytes metadata = 2;
 
     // proposers are the account addresses of the proposers.
     repeated string proposers = 3;
@@ -256,8 +250,8 @@ message Vote {
     // choice is the voter's choice on the proposal.
     Choice choice = 3;
 
-    // comment's is the vote's comment.
-    string comment = 4;
+    // metadata is any arbitrary metadata to attached to the vote.
+    bytes metadata = 4;
 
     // submitted_at is the timestamp when the vote was submitted.
     google.protobuf.Timestamp submitted_at = 5 [(gogoproto.nullable) = false];

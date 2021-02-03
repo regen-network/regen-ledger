@@ -12,7 +12,6 @@
   
 - [regen/group/v1alpha1/genesis.proto](#regen/group/v1alpha1/genesis.proto)
     - [GenesisState](#regen.group.v1alpha1.GenesisState)
-    - [Params](#regen.group.v1alpha1.Params)
   
 - [regen/group/v1alpha1/types.proto](#regen/group/v1alpha1/types.proto)
     - [GroupAccountInfo](#regen.group.v1alpha1.GroupAccountInfo)
@@ -66,16 +65,16 @@
     - [MsgExecResponse](#regen.group.v1alpha1.MsgExecResponse)
     - [MsgUpdateGroupAccountAdminRequest](#regen.group.v1alpha1.MsgUpdateGroupAccountAdminRequest)
     - [MsgUpdateGroupAccountAdminResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountAdminResponse)
-    - [MsgUpdateGroupAccountCommentRequest](#regen.group.v1alpha1.MsgUpdateGroupAccountCommentRequest)
-    - [MsgUpdateGroupAccountCommentResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountCommentResponse)
     - [MsgUpdateGroupAccountDecisionPolicyRequest](#regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyRequest)
     - [MsgUpdateGroupAccountDecisionPolicyResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyResponse)
+    - [MsgUpdateGroupAccountMetadataRequest](#regen.group.v1alpha1.MsgUpdateGroupAccountMetadataRequest)
+    - [MsgUpdateGroupAccountMetadataResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountMetadataResponse)
     - [MsgUpdateGroupAdminRequest](#regen.group.v1alpha1.MsgUpdateGroupAdminRequest)
     - [MsgUpdateGroupAdminResponse](#regen.group.v1alpha1.MsgUpdateGroupAdminResponse)
-    - [MsgUpdateGroupCommentRequest](#regen.group.v1alpha1.MsgUpdateGroupCommentRequest)
-    - [MsgUpdateGroupCommentResponse](#regen.group.v1alpha1.MsgUpdateGroupCommentResponse)
     - [MsgUpdateGroupMembersRequest](#regen.group.v1alpha1.MsgUpdateGroupMembersRequest)
     - [MsgUpdateGroupMembersResponse](#regen.group.v1alpha1.MsgUpdateGroupMembersResponse)
+    - [MsgUpdateGroupMetadataRequest](#regen.group.v1alpha1.MsgUpdateGroupMetadataRequest)
+    - [MsgUpdateGroupMetadataResponse](#regen.group.v1alpha1.MsgUpdateGroupMetadataResponse)
     - [MsgVoteRequest](#regen.group.v1alpha1.MsgVoteRequest)
     - [MsgVoteResponse](#regen.group.v1alpha1.MsgVoteResponse)
   
@@ -171,27 +170,8 @@ EventUpdateGroupAccount is an event emitted when a group account is updated.
 <a name="regen.group.v1alpha1.GenesisState"></a>
 
 ### GenesisState
+TODO: #214
 GenesisState defines the group module's genesis state.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| params | [Params](#regen.group.v1alpha1.Params) |  | params are the genesis state Params. |
-
-
-
-
-
-
-<a name="regen.group.v1alpha1.Params"></a>
-
-### Params
-Params defines the set of configurable parameters.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| max_comment_length | [uint32](#uint32) |  | max_comment_length defines the maximum comment length of the group module genesis params. |
 
 
 
@@ -225,7 +205,7 @@ GroupAccountInfo represents the high-level on-chain information for a group acco
 | group_account | [string](#string) |  | group_account is the group account address. |
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 | admin | [string](#string) |  | admin is the account address of the group admin. |
-| comment | [string](#string) |  | comment is the group account's comment. |
+| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the group account. |
 | version | [uint64](#uint64) |  | version is used to track changes to a group's GroupAccountInfo structure that would create a different result on a running proposal. |
 | decision_policy | [google.protobuf.Any](#google.protobuf.Any) |  | decision_policy specifies the group account's decision policy. |
 
@@ -244,9 +224,9 @@ GroupInfo represents the high-level on-chain information for a group.
 | ----- | ---- | ----- | ----------- |
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 | admin | [string](#string) |  | admin is the account address of the group's admin. |
-| comment | [string](#string) |  | comment is the group's comment. |
-| version | [uint64](#uint64) |  | version is used to track changes to a group's membership structure that would break existing proposals. Whenever any members power is changed, or any member is added or removed this version is incremented and will cause proposals based on older versions of this group to fail |
-| total_weight | [string](#string) |  | total_weight is the sum of the group members' powers. |
+| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the group. |
+| version | [uint64](#uint64) |  | version is used to track changes to a group's membership structure that would break existing proposals. Whenever any members weight is changed, or any member is added or removed this version is incremented and will cause proposals based on older versions of this group to fail |
+| total_weight | [string](#string) |  | total_weight is the sum of the group members' weights. |
 
 
 
@@ -262,11 +242,7 @@ GroupMember represents the relationship between a group and a member.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
-| member | [string](#string) |  | member is the account address of the group member. todo: @aaronc field has different name in `Member.address`. Can we unify this? |
-| weight | [string](#string) |  | weight is the power of the group member. todo: @aaronc it is `Member.power`. Can we unify this? |
-| comment | [string](#string) |  | comment is the member's comment.
-
-TODO: @aaronc was comment missing by intention? |
+| member | [Member](#regen.group.v1alpha1.Member) |  | member is the member data. |
 
 
 
@@ -277,14 +253,14 @@ TODO: @aaronc was comment missing by intention? |
 
 ### Member
 Member represents a group member with an account address,
-non-zero power and a comment.
+non-zero weight and metadata.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | address | [string](#string) |  | address is the member's account address. |
-| power | [string](#string) |  | power is the member's power that should be greater than 0. |
-| comment | [string](#string) |  | comment is the member's comment. |
+| weight | [string](#string) |  | weight is the member's voting weight that should be greater than 0. |
+| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the member. |
 
 
 
@@ -297,13 +273,13 @@ non-zero power and a comment.
 Proposal defines a group proposal. Any member of a group can submit a proposal
 for a group account to decide upon.
 A proposal consists of a set of `sdk.Msg`s that will be executed if the proposal
-passes as well as any comment associated with the proposal.
+passes as well as some optional metadata associated with the proposal.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | group_account | [string](#string) |  | group_account is the group account address. |
-| comment | [string](#string) |  | comment is the proposal's comment. |
+| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the proposal. |
 | proposers | [string](#string) | repeated | proposers are the account addresses of the proposers. |
 | submitted_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | submitted_at is a timestamp specifying when a proposal was submitted. |
 | group_version | [uint64](#uint64) |  | group_version tracks the version of the group that this proposal corresponds to. When group membership is changed, existing proposals for prior group versions will become invalid. |
@@ -346,7 +322,7 @@ ThresholdDecisionPolicy implements the DecisionPolicy interface
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| threshold | [string](#string) |  | threshold is a fix weight value that must be met or exceeded for a proposal to succeed. |
+| threshold | [string](#string) |  | threshold is the minimum weighted sum of yes votes that must be met or exceeded for a proposal to succeed. |
 | timeout | [google.protobuf.Duration](#google.protobuf.Duration) |  | timeout is the duration from submission of a proposal to the end of voting period Within this times votes and exec messages can be submitted. |
 
 
@@ -365,7 +341,7 @@ Vote represents a vote for a proposal.
 | proposal_id | [uint64](#uint64) |  | proposal is the unique ID of the proposal. |
 | voter | [string](#string) |  | voter is the account address of the voter. |
 | choice | [Choice](#regen.group.v1alpha1.Choice) |  | choice is the voter's choice on the proposal. |
-| comment | [string](#string) |  | comment's is the vote's comment. |
+| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the vote. |
 | submitted_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | submitted_at is the timestamp when the vote was submitted. |
 
 
@@ -806,7 +782,7 @@ Query is the regen.group.v1alpha1 Query service.
 | ----------- | ------------ | ------------- | ------------|
 | GroupInfo | [QueryGroupInfoRequest](#regen.group.v1alpha1.QueryGroupInfoRequest) | [QueryGroupInfoResponse](#regen.group.v1alpha1.QueryGroupInfoResponse) | GroupInfo queries group info based on group id. |
 | GroupAccountInfo | [QueryGroupAccountInfoRequest](#regen.group.v1alpha1.QueryGroupAccountInfoRequest) | [QueryGroupAccountInfoResponse](#regen.group.v1alpha1.QueryGroupAccountInfoResponse) | GroupAccountInfo queries group account info based on group account address. |
-| GroupMembers | [QueryGroupMembersRequest](#regen.group.v1alpha1.QueryGroupMembersRequest) | [QueryGroupMembersResponse](#regen.group.v1alpha1.QueryGroupMembersResponse) | GroupMembers queries members for agroup |
+| GroupMembers | [QueryGroupMembersRequest](#regen.group.v1alpha1.QueryGroupMembersRequest) | [QueryGroupMembersResponse](#regen.group.v1alpha1.QueryGroupMembersResponse) | GroupMembers queries members of a group |
 | GroupsByAdmin | [QueryGroupsByAdminRequest](#regen.group.v1alpha1.QueryGroupsByAdminRequest) | [QueryGroupsByAdminResponse](#regen.group.v1alpha1.QueryGroupsByAdminResponse) | GroupsByAdmin queries groups by admin address. |
 | GroupAccountsByGroup | [QueryGroupAccountsByGroupRequest](#regen.group.v1alpha1.QueryGroupAccountsByGroupRequest) | [QueryGroupAccountsByGroupResponse](#regen.group.v1alpha1.QueryGroupAccountsByGroupResponse) | GroupAccountsByGroup queries group accounts by group id. |
 | GroupAccountsByAdmin | [QueryGroupAccountsByAdminRequest](#regen.group.v1alpha1.QueryGroupAccountsByAdminRequest) | [QueryGroupAccountsByAdminResponse](#regen.group.v1alpha1.QueryGroupAccountsByAdminResponse) | GroupsByAdmin queries group accounts by admin address. |
@@ -837,7 +813,7 @@ MsgCreateGroupAccountRequest is the Msg/CreateGroupAccount request type.
 | ----- | ---- | ----- | ----------- |
 | admin | [string](#string) |  | admin is the account address of the group admin. |
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
-| comment | [string](#string) |  | comment is the group account's comment. |
+| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the group account. |
 | decision_policy | [google.protobuf.Any](#google.protobuf.Any) |  | decision_policy specifies the group account's decision policy. |
 
 
@@ -870,7 +846,7 @@ MsgCreateGroupRequest is the Msg/CreateGroup request type.
 | ----- | ---- | ----- | ----------- |
 | admin | [string](#string) |  | admin is the account address of the group admin. |
 | members | [Member](#regen.group.v1alpha1.Member) | repeated | members defines the group members. |
-| comment | [string](#string) |  | group is the group's comment. |
+| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the group. |
 
 
 
@@ -902,7 +878,7 @@ MsgCreateProposalRequest is the Msg/CreateProposal request type.
 | ----- | ---- | ----- | ----------- |
 | group_account | [string](#string) |  | group_account is the group account address. |
 | proposers | [string](#string) | repeated | proposers are the account addresses of the proposers. Proposers signatures will be counted as yes votes. |
-| comment | [string](#string) |  | comment is the proposal's comment. |
+| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the proposal. |
 | msgs | [google.protobuf.Any](#google.protobuf.Any) | repeated | msgs is a list of Msgs that will be executed if the proposal passes. |
 
 
@@ -978,33 +954,6 @@ MsgUpdateGroupAccountAdminResponse is the Msg/UpdateGroupAccountAdmin response t
 
 
 
-<a name="regen.group.v1alpha1.MsgUpdateGroupAccountCommentRequest"></a>
-
-### MsgUpdateGroupAccountCommentRequest
-MsgUpdateGroupAccountCommentRequest is the Msg/UpdateGroupAccountComment request type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| admin | [string](#string) |  | admin is the account address of the group admin. |
-| group_account | [string](#string) |  | group_account is the group account address. |
-| comment | [string](#string) |  | comment is the updated group account comment. |
-
-
-
-
-
-
-<a name="regen.group.v1alpha1.MsgUpdateGroupAccountCommentResponse"></a>
-
-### MsgUpdateGroupAccountCommentResponse
-MsgUpdateGroupAccountCommentResponse is the Msg/UpdateGroupAccountComment response type.
-
-
-
-
-
-
 <a name="regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyRequest"></a>
 
 ### MsgUpdateGroupAccountDecisionPolicyRequest
@@ -1026,6 +975,33 @@ MsgUpdateGroupAccountDecisionPolicyRequest is the Msg/UpdateGroupAccountDecision
 
 ### MsgUpdateGroupAccountDecisionPolicyResponse
 MsgUpdateGroupAccountDecisionPolicyResponse is the Msg/UpdateGroupAccountDecisionPolicy response type.
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.MsgUpdateGroupAccountMetadataRequest"></a>
+
+### MsgUpdateGroupAccountMetadataRequest
+MsgUpdateGroupAccountMetadataRequest is the Msg/UpdateGroupAccountMetadata request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| admin | [string](#string) |  | admin is the account address of the group admin. |
+| group_account | [string](#string) |  | group_account is the group account address. |
+| metadata | [bytes](#bytes) |  | metadata is the updated group account metadata. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.MsgUpdateGroupAccountMetadataResponse"></a>
+
+### MsgUpdateGroupAccountMetadataResponse
+MsgUpdateGroupAccountMetadataResponse is the Msg/UpdateGroupAccountMetadata response type.
 
 
 
@@ -1059,33 +1035,6 @@ MsgUpdateGroupAdminResponse is the Msg/UpdateGroupAdmin response type.
 
 
 
-<a name="regen.group.v1alpha1.MsgUpdateGroupCommentRequest"></a>
-
-### MsgUpdateGroupCommentRequest
-MsgUpdateGroupCommentRequest is the Msg/UpdateGroupComment request type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| admin | [string](#string) |  | admin is the account address of the group admin. |
-| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
-| comment | [string](#string) |  | comment is the updated group's comment. |
-
-
-
-
-
-
-<a name="regen.group.v1alpha1.MsgUpdateGroupCommentResponse"></a>
-
-### MsgUpdateGroupCommentResponse
-MsgUpdateGroupCommentResponse is the Msg/UpdateGroupComment response type.
-
-
-
-
-
-
 <a name="regen.group.v1alpha1.MsgUpdateGroupMembersRequest"></a>
 
 ### MsgUpdateGroupMembersRequest
@@ -1096,7 +1045,7 @@ MsgUpdateGroupMembersRequest is the Msg/UpdateGroupMembers request type.
 | ----- | ---- | ----- | ----------- |
 | admin | [string](#string) |  | admin is the account address of the group admin. |
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
-| member_updates | [Member](#regen.group.v1alpha1.Member) | repeated | member_updates is the list of members to update, set power to 0 to remove a member. |
+| member_updates | [Member](#regen.group.v1alpha1.Member) | repeated | member_updates is the list of members to update, set weight to 0 to remove a member. |
 
 
 
@@ -1113,6 +1062,33 @@ MsgUpdateGroupMembersResponse is the Msg/UpdateGroupMembers response type.
 
 
 
+<a name="regen.group.v1alpha1.MsgUpdateGroupMetadataRequest"></a>
+
+### MsgUpdateGroupMetadataRequest
+MsgUpdateGroupMetadataRequest is the Msg/UpdateGroupMetadata request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| admin | [string](#string) |  | admin is the account address of the group admin. |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
+| metadata | [bytes](#bytes) |  | metadata is the updated group's metadata. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.MsgUpdateGroupMetadataResponse"></a>
+
+### MsgUpdateGroupMetadataResponse
+MsgUpdateGroupMetadataResponse is the Msg/UpdateGroupMetadata response type.
+
+
+
+
+
+
 <a name="regen.group.v1alpha1.MsgVoteRequest"></a>
 
 ### MsgVoteRequest
@@ -1122,9 +1098,9 @@ MsgVoteRequest is the Msg/Vote request type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | proposal_id | [uint64](#uint64) |  | proposal is the unique ID of the proposal. |
-| voters | [string](#string) | repeated | voters is the lists of voters' account addresses. |
-| choice | [Choice](#regen.group.v1alpha1.Choice) |  | choice is the voters' choice on the proposal. |
-| comment | [string](#string) |  | comment's is the vote's comment. |
+| voter | [string](#string) |  | voter is the voter account address. |
+| choice | [Choice](#regen.group.v1alpha1.Choice) |  | choice is the voter's choice on the proposal. |
+| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the vote. |
 
 
 
@@ -1154,16 +1130,16 @@ Msg is the regen.group.v1alpha1 Msg service.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| CreateGroup | [MsgCreateGroupRequest](#regen.group.v1alpha1.MsgCreateGroupRequest) | [MsgCreateGroupResponse](#regen.group.v1alpha1.MsgCreateGroupResponse) | CreateGroup creates a new group with an admin account address, a list of members and an comment. |
+| CreateGroup | [MsgCreateGroupRequest](#regen.group.v1alpha1.MsgCreateGroupRequest) | [MsgCreateGroupResponse](#regen.group.v1alpha1.MsgCreateGroupResponse) | CreateGroup creates a new group with an admin account address, a list of members and some optional metadata. |
 | UpdateGroupMembers | [MsgUpdateGroupMembersRequest](#regen.group.v1alpha1.MsgUpdateGroupMembersRequest) | [MsgUpdateGroupMembersResponse](#regen.group.v1alpha1.MsgUpdateGroupMembersResponse) | UpdateGroupMembers updates the group members with given group id and admin address. |
 | UpdateGroupAdmin | [MsgUpdateGroupAdminRequest](#regen.group.v1alpha1.MsgUpdateGroupAdminRequest) | [MsgUpdateGroupAdminResponse](#regen.group.v1alpha1.MsgUpdateGroupAdminResponse) | UpdateGroupAdmin updates the group admin with given group id and previous admin address. |
-| UpdateGroupComment | [MsgUpdateGroupCommentRequest](#regen.group.v1alpha1.MsgUpdateGroupCommentRequest) | [MsgUpdateGroupCommentResponse](#regen.group.v1alpha1.MsgUpdateGroupCommentResponse) | UpdateGroupComment updates the group comment with given group id and admin address. |
+| UpdateGroupMetadata | [MsgUpdateGroupMetadataRequest](#regen.group.v1alpha1.MsgUpdateGroupMetadataRequest) | [MsgUpdateGroupMetadataResponse](#regen.group.v1alpha1.MsgUpdateGroupMetadataResponse) | UpdateGroupMetadata updates the group metadata with given group id and admin address. |
 | CreateGroupAccount | [MsgCreateGroupAccountRequest](#regen.group.v1alpha1.MsgCreateGroupAccountRequest) | [MsgCreateGroupAccountResponse](#regen.group.v1alpha1.MsgCreateGroupAccountResponse) | CreateGroupAccount creates a new group account using given DecisionPolicy. |
 | UpdateGroupAccountAdmin | [MsgUpdateGroupAccountAdminRequest](#regen.group.v1alpha1.MsgUpdateGroupAccountAdminRequest) | [MsgUpdateGroupAccountAdminResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountAdminResponse) | UpdateGroupAccountAdmin updates a group account admin. |
 | UpdateGroupAccountDecisionPolicy | [MsgUpdateGroupAccountDecisionPolicyRequest](#regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyRequest) | [MsgUpdateGroupAccountDecisionPolicyResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyResponse) | UpdateGroupAccountDecisionPolicy allows a group account decision policy to be updated. |
-| UpdateGroupAccountComment | [MsgUpdateGroupAccountCommentRequest](#regen.group.v1alpha1.MsgUpdateGroupAccountCommentRequest) | [MsgUpdateGroupAccountCommentResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountCommentResponse) | UpdateGroupAccountComment updates a group account comment. |
+| UpdateGroupAccountMetadata | [MsgUpdateGroupAccountMetadataRequest](#regen.group.v1alpha1.MsgUpdateGroupAccountMetadataRequest) | [MsgUpdateGroupAccountMetadataResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountMetadataResponse) | UpdateGroupAccountMetadata updates a group account metadata. |
 | CreateProposal | [MsgCreateProposalRequest](#regen.group.v1alpha1.MsgCreateProposalRequest) | [MsgCreateProposalResponse](#regen.group.v1alpha1.MsgCreateProposalResponse) | CreateProposal submits a new proposal. |
-| Vote | [MsgVoteRequest](#regen.group.v1alpha1.MsgVoteRequest) | [MsgVoteResponse](#regen.group.v1alpha1.MsgVoteResponse) | Vote allows voters to vote on a proposal. |
+| Vote | [MsgVoteRequest](#regen.group.v1alpha1.MsgVoteRequest) | [MsgVoteResponse](#regen.group.v1alpha1.MsgVoteResponse) | Vote allows a voter to vote on a proposal. |
 | Exec | [MsgExecRequest](#regen.group.v1alpha1.MsgExecRequest) | [MsgExecResponse](#regen.group.v1alpha1.MsgExecResponse) | Exec executes a proposal. |
 
  <!-- end services -->

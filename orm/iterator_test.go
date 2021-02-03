@@ -194,7 +194,7 @@ func TestPaginate(t *testing.T) {
 			expPageRes: &query.PageResponse{Total: 0, NextKey: nil},
 			key:        sdk.AccAddress([]byte("no-group-address")),
 		},
-		"with offset": {
+		"with offset and count total": {
 			pageReq:    &query.PageRequest{Key: nil, Offset: 1, Limit: 2, CountTotal: true},
 			exp:        []testdata.GroupInfo{g2, g4},
 			expPageRes: &query.PageResponse{Total: 3, NextKey: nil},
@@ -206,9 +206,21 @@ func TestPaginate(t *testing.T) {
 			expPageRes: &query.PageResponse{Total: 3, NextKey: nil},
 			key:        admin,
 		},
-		"with key": {
-			pageReq:    &query.PageRequest{Key: EncodeSequence(2), Limit: 10},
+		"with key and limit < number of elem (count total is ignored in this case)": {
+			pageReq:    &query.PageRequest{Key: EncodeSequence(2), Limit: 1, CountTotal: true},
+			exp:        []testdata.GroupInfo{g2},
+			expPageRes: &query.PageResponse{Total: 0, NextKey: EncodeSequence(4)},
+			key:        admin,
+		},
+		"with key and limit >= number of elem": {
+			pageReq:    &query.PageRequest{Key: EncodeSequence(2), Limit: 2},
 			exp:        []testdata.GroupInfo{g2, g4},
+			expPageRes: &query.PageResponse{Total: 0, NextKey: nil},
+			key:        admin,
+		},
+		"with nothing left to iterate from key": {
+			pageReq:    &query.PageRequest{Key: EncodeSequence(5)},
+			exp:        []testdata.GroupInfo{},
 			expPageRes: &query.PageResponse{Total: 0, NextKey: nil},
 			key:        admin,
 		},
@@ -217,7 +229,7 @@ func TestPaginate(t *testing.T) {
 		t.Run(msg, func(t *testing.T) {
 			var loaded []testdata.GroupInfo
 
-			it, err := idx.Get(ctx, spec.key, spec.pageReq)
+			it, err := idx.GetPaginated(ctx, spec.key, spec.pageReq)
 			require.NoError(t, err)
 
 			res, err := Paginate(it, spec.pageReq, &loaded)

@@ -95,6 +95,25 @@ func First(it Iterator, dest codec.ProtoMarshaler) (RowID, error) {
 	return binKey, nil
 }
 
+// Paginate does pagination with a given Iterator based on the provided
+// PageRequest and unmarshals the results into the dest interface that must be
+// an non-nil pointer to a slice.
+//
+// If pageRequest is nil, then we will use these default values:
+//  - Offset: 0
+//  - Key: nil
+//  - Limit: 100
+//  - CountTotal: true
+//
+// If pageRequest.Key was provided, it got used beforehand to instantiate the Iterator,
+// using for instance UInt64Index.GetPaginated method. Only one of pageRequest.Offset or
+// pageRequest.Key should be set. Using pageRequest.Key is more efficient for querying
+// the next page.
+//
+// If pageRequest.CountTotal is set, we'll visit all iterators elements.
+// pageRequest.CountTotal is only respected when offset is used.
+//
+// This function will call it.Close().
 func Paginate(
 	it Iterator,
 	pageRequest *query.PageRequest,
@@ -126,54 +145,70 @@ func Paginate(
 	}
 	defer it.Close()
 
-	var slice, t reflect.Value
-	typ, err := assertDest(dest, &slice, &t)
+	var destRef, tmpSlice reflect.Value
+	elemType, err := assertDest(dest, &destRef, &tmpSlice)
 	if err != nil {
 		return nil, err
 	}
 
-	end := offset + limit
-
+	var end = offset + limit
 	var count uint64
 	var nextKey []byte
 	for {
-		obj := reflect.New(typ)
+		obj := reflect.New(elemType)
 		val := obj.Elem()
 		model := obj
-		if typ.Kind() == reflect.Ptr {
-			val.Set(reflect.New(typ.Elem()))
+		if elemType.Kind() == reflect.Ptr {
+			val.Set(reflect.New(elemType.Elem()))
+			// if elemType is already a pointer (e.g. dest being some pointer to a slice of pointers,
+			// like []*GroupMember), then obj is a pointer to a pointer which might cause issues
+			// if we try to do obj.Interface().(codec.ProtoMarshaler).
+			// For that reason, we copy obj into model if we have a simple pointer
+			// but in case elemType.Kind() == reflect.Ptr, we overwrite it with model = val
+			// so we can safely call model.Interface().(codec.ProtoMarshaler) afterwards.
 			model = val
 		}
 
-		binKey, err := it.LoadNext(model.Interface().(codec.ProtoMarshaler))
-		if ErrIteratorDone.Is(err) {
-			slice.Set(t)
-			break
+		modelProto, ok := model.Interface().(codec.ProtoMarshaler)
+		if !ok {
+			return nil, errors.Wrapf(ErrArgument, "%s should implement codec.ProtoMarshaler", elemType)
+		}
+		binKey, err := it.LoadNext(modelProto)
+		if err != nil {
+			if ErrIteratorDone.Is(err) {
+				break
+			}
+			return nil, err
 		}
 
 		count++
 
+		// During the first loop, count value at this point will be 1,
+		// so if offset is >= 1, it will continue to load the next value until count > offset
+		// else (offset = 0, key might be set or not),
+		// it will start to append values to tmpSlice.
 		if count <= offset {
 			continue
 		}
 
-		if err != nil {
-			return nil, err
-		}
 		if count <= end {
-			t = reflect.Append(t, val)
+			tmpSlice = reflect.Append(tmpSlice, val)
 		} else if count == end+1 {
 			nextKey = binKey
-			slice.Set(t)
 
-			if !countTotal {
+			// countTotal is set to true to indicate that the result set should include
+			// a count of the total number of items available for pagination in UIs.
+			// countTotal is only respected when offset is used. It is ignored when key
+			// is set.
+			if !countTotal || len(key) != 0 {
 				break
 			}
 		}
 	}
+	destRef.Set(tmpSlice)
 
 	res := &query.PageResponse{NextKey: nextKey}
-	if countTotal {
+	if countTotal && len(key) == 0 {
 		res.Total = count
 	}
 
@@ -200,28 +235,28 @@ func ReadAll(it Iterator, dest ModelSlicePtr) ([]RowID, error) {
 	}
 	defer it.Close()
 
-	var slice, t reflect.Value
-	typ, err := assertDest(dest, &slice, &t)
+	var destRef, tmpSlice reflect.Value
+	elemType, err := assertDest(dest, &destRef, &tmpSlice)
 	if err != nil {
 		return nil, err
 	}
 
 	var rowIDs []RowID
 	for {
-		obj := reflect.New(typ)
+		obj := reflect.New(elemType)
 		val := obj.Elem()
 		model := obj
-		if typ.Kind() == reflect.Ptr {
-			val.Set(reflect.New(typ.Elem()))
+		if elemType.Kind() == reflect.Ptr {
+			val.Set(reflect.New(elemType.Elem()))
 			model = val
 		}
 
 		binKey, err := it.LoadNext(model.Interface().(codec.ProtoMarshaler))
 		switch {
 		case err == nil:
-			t = reflect.Append(t, val)
+			tmpSlice = reflect.Append(tmpSlice, val)
 		case ErrIteratorDone.Is(err):
-			slice.Set(t)
+			destRef.Set(tmpSlice)
 			return rowIDs, nil
 		default:
 			return nil, err
@@ -230,7 +265,10 @@ func ReadAll(it Iterator, dest ModelSlicePtr) ([]RowID, error) {
 	}
 }
 
-func assertDest(dest ModelSlicePtr, slice *reflect.Value, t *reflect.Value) (reflect.Type, error) {
+// assertDest checks that the provided dest is not nil and a pointer to a slice.
+// It also verifies that the slice elements implement *codec.ProtoMarshaler.
+// It overwrites destRef and tmpSlice using reflection.
+func assertDest(dest ModelSlicePtr, destRef *reflect.Value, tmpSlice *reflect.Value) (reflect.Type, error) {
 	if dest == nil {
 		return nil, errors.Wrap(ErrArgument, "destination must not be nil")
 	}
@@ -241,20 +279,26 @@ func assertDest(dest ModelSlicePtr, slice *reflect.Value, t *reflect.Value) (ref
 	if tp.Elem().Kind() != reflect.Slice {
 		return nil, errors.Wrap(ErrArgument, "destination must point to a slice")
 	}
-	*slice = tp.Elem()
-	if !slice.CanSet() {
+
+	// Since dest is just an interface{}, we overwrite destRef using reflection
+	// to have an assignable copy of it.
+	*destRef = tp.Elem()
+	// We need to verify that we can call Set() on destRef.
+	if !destRef.CanSet() {
 		return nil, errors.Wrap(ErrArgument, "destination not assignable")
 	}
 
-	typ := reflect.TypeOf(dest).Elem().Elem()
+	elemType := reflect.TypeOf(dest).Elem().Elem()
 
 	protoMarshaler := reflect.TypeOf((*codec.ProtoMarshaler)(nil)).Elem()
-	if !typ.Implements(protoMarshaler) &&
-		!reflect.PtrTo(typ).Implements(protoMarshaler) {
-		return nil, errors.Wrapf(ErrArgument, "unsupported type :%s", typ)
+	if !elemType.Implements(protoMarshaler) &&
+		!reflect.PtrTo(elemType).Implements(protoMarshaler) {
+		return nil, errors.Wrapf(ErrArgument, "unsupported type :%s", elemType)
 	}
 
-	*t = reflect.MakeSlice(reflect.SliceOf(typ), 0, 0)
+	// tmpSlice is a slice value for the specified type
+	// that we'll use for appending new elements.
+	*tmpSlice = reflect.MakeSlice(reflect.SliceOf(elemType), 0, 0)
 
-	return typ, nil
+	return elemType, nil
 }

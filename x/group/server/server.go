@@ -2,13 +2,11 @@ package server
 
 import (
 	"github.com/regen-network/regen-ledger/orm"
-	regenmodule "github.com/regen-network/regen-ledger/types/module"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/group"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 const (
@@ -41,9 +39,8 @@ const (
 )
 
 type serverImpl struct {
-	storeKey   sdk.StoreKey
-	paramSpace paramstypes.Subspace
-	router     sdk.Router
+	storeKey sdk.StoreKey
+	router   sdk.Router
 
 	// Group Table
 	groupSeq          orm.Sequence
@@ -72,8 +69,8 @@ type serverImpl struct {
 	voteByVoterIndex    orm.Index
 }
 
-func newServer(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, router sdk.Router, cdc codec.Marshaler) serverImpl {
-	s := serverImpl{storeKey: storeKey, paramSpace: paramSpace, router: router}
+func newServer(storeKey sdk.StoreKey, router sdk.Router, cdc codec.Marshaler) serverImpl {
+	s := serverImpl{storeKey: storeKey, router: router}
 
 	// Group Table
 	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, storeKey, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
@@ -83,9 +80,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, router sd
 		if err != nil {
 			return nil, err
 		}
-		// admin := val.(*group.GroupInfo).Admin
 		return []orm.RowID{addr.Bytes()}, nil
-		// return []orm.RowID{[]byte(admin[:])}, nil
 	})
 	s.groupTable = groupTableBuilder.Build()
 
@@ -96,13 +91,12 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, router sd
 		return []uint64{uint64(group)}, nil
 	})
 	s.groupMemberByMemberIndex = orm.NewIndex(groupMemberTableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
-		member := val.(*group.GroupMember).Member
-		addr, err := sdk.AccAddressFromBech32(member)
+		memberAddr := val.(*group.GroupMember).Member.Address
+		addr, err := sdk.AccAddressFromBech32(memberAddr)
 		if err != nil {
 			return nil, err
 		}
 		return []orm.RowID{addr.Bytes()}, nil
-		// return []orm.RowID{[]byte(member[:])}, nil
 	})
 	s.groupMemberTable = groupMemberTableBuilder.Build()
 
@@ -165,17 +159,8 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, router sd
 	return s
 }
 
-func RegisterServices(
-	storeKey sdk.StoreKey, paramSpace paramstypes.Subspace,
-	router sdk.Router, configurator module.Configurator) {
-	cfg, ok := configurator.(regenmodule.Configurator)
-	// We need regen configurator's Marshaler in order to
-	// instantiate new table builders so panicking if it's not the case
-	// until ADR 033 approach is finalized
-	if !ok {
-		panic("configurator should implement regenmodule.Configurator")
-	}
-	impl := newServer(storeKey, paramSpace, router, cfg.Marshaler())
+func RegisterServices(configurator servermodule.Configurator) {
+	impl := newServer(configurator.ModuleKey(), configurator.Router(), configurator.Marshaler())
 	group.RegisterMsgServer(configurator.MsgServer(), impl)
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
 }

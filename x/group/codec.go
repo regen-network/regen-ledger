@@ -17,7 +17,7 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCreateGroupRequest{}, "cosmos-sdk/MsgCreateGroup", nil)
 	cdc.RegisterConcrete(&MsgUpdateGroupMembersRequest{}, "cosmos-sdk/MsgUpdateGroupMembers", nil)
 	cdc.RegisterConcrete(&MsgUpdateGroupAdminRequest{}, "cosmos-sdk/MsgUpdateGroupAdmin", nil)
-	cdc.RegisterConcrete(&MsgUpdateGroupCommentRequest{}, "cosmos-sdk/MsgUpdateGroupComment", nil)
+	cdc.RegisterConcrete(&MsgUpdateGroupMetadataRequest{}, "cosmos-sdk/MsgUpdateGroupMetadata", nil)
 	cdc.RegisterConcrete(&MsgCreateGroupAccountRequest{}, "cosmos-sdk/MsgCreateGroupAccount", nil)
 	cdc.RegisterConcrete(&MsgCreateProposalRequest{}, "cosmos-sdk/group/MsgCreateProposal", nil)
 	cdc.RegisterConcrete(&MsgVoteRequest{}, "cosmos-sdk/group/MsgVote", nil)

@@ -25,7 +25,7 @@ func TestMsgCreateGroupValidation(t *testing.T) {
 			src: MsgCreateGroupRequest{
 				Admin: myAddr.String(),
 				Members: []Member{
-					{Address: myAddr.String(), Power: "1"},
+					{Address: myAddr.String(), Weight: "1"},
 				},
 			},
 		},
@@ -33,8 +33,8 @@ func TestMsgCreateGroupValidation(t *testing.T) {
 			src: MsgCreateGroupRequest{
 				Admin: myAddr.String(),
 				Members: []Member{
-					{Address: myAddr.String(), Power: "1"},
-					{Address: myOtherAddr.String(), Power: "2"},
+					{Address: myAddr.String(), Weight: "1"},
+					{Address: myOtherAddr.String(), Weight: "2"},
 				},
 			},
 		},
@@ -52,32 +52,32 @@ func TestMsgCreateGroupValidation(t *testing.T) {
 			src: MsgCreateGroupRequest{
 				Admin: myAddr.String(),
 				Members: []Member{
-					{Address: myAddr.String(), Power: "1"},
-					{Address: myAddr.String(), Power: "2"},
+					{Address: myAddr.String(), Weight: "1"},
+					{Address: myAddr.String(), Weight: "2"},
 				},
 			},
 			expErr: true,
 		},
-		"negative member's power not allowed": {
+		"negative member's weight not allowed": {
 			src: MsgCreateGroupRequest{
 				Admin: myAddr.String(),
 				Members: []Member{
-					{Address: myAddr.String(), Power: "-1"},
+					{Address: myAddr.String(), Weight: "-1"},
 				},
 			},
 			expErr: true,
 		},
-		"empty member's power not allowed": {
+		"empty member's weight not allowed": {
 			src: MsgCreateGroupRequest{
 				Admin:   myAddr.String(),
 				Members: []Member{{Address: myAddr.String()}},
 			},
 			expErr: true,
 		},
-		"zero member's power not allowed": {
+		"zero member's weight not allowed": {
 			src: MsgCreateGroupRequest{
 				Admin:   myAddr.String(),
-				Members: []Member{{Address: myAddr.String(), Power: "0"}},
+				Members: []Member{{Address: myAddr.String(), Weight: "0"}},
 			},
 			expErr: true,
 		},
@@ -85,7 +85,7 @@ func TestMsgCreateGroupValidation(t *testing.T) {
 			src: MsgCreateGroupRequest{
 				Admin: myAddr.String(),
 				Members: []Member{
-					{Power: "1"},
+					{Weight: "1"},
 				},
 			},
 			expErr: true,
@@ -94,7 +94,7 @@ func TestMsgCreateGroupValidation(t *testing.T) {
 			src: MsgCreateGroupRequest{
 				Admin: myAddr.String(),
 				Members: []Member{
-					{Address: "invalid-address", Power: "1"},
+					{Address: "invalid-address", Weight: "1"},
 				},
 			},
 			expErr: true,
@@ -196,7 +196,7 @@ func TestMsgCreateGroupAccount(t *testing.T) {
 			m, err := NewMsgCreateGroupAccountRequest(
 				spec.admin,
 				spec.group,
-				"any comment",
+				nil,
 				&ThresholdDecisionPolicy{
 					Threshold: spec.threshold,
 					Timeout:   spec.timeout,
@@ -288,20 +288,20 @@ func TestMsgVote(t *testing.T) {
 			src: MsgVoteRequest{
 				ProposalId: 1,
 				Choice:     Choice_CHOICE_YES,
-				Voters:     []string{memberAddr},
+				Voter:      memberAddr,
 			},
 		},
 		"proposal required": {
 			src: MsgVoteRequest{
 				Choice: Choice_CHOICE_YES,
-				Voters: []string{memberAddr},
+				Voter:  memberAddr,
 			},
 			expErr: true,
 		},
 		"choice required": {
 			src: MsgVoteRequest{
 				ProposalId: 1,
-				Voters:     []string{memberAddr},
+				Voter:      memberAddr,
 			},
 			expErr: true,
 		},
@@ -309,7 +309,7 @@ func TestMsgVote(t *testing.T) {
 			src: MsgVoteRequest{
 				ProposalId: 1,
 				Choice:     5,
-				Voters:     []string{memberAddr},
+				Voter:      memberAddr,
 			},
 			expErr: true,
 		},
@@ -324,15 +324,7 @@ func TestMsgVote(t *testing.T) {
 			src: MsgVoteRequest{
 				ProposalId: 1,
 				Choice:     Choice_CHOICE_YES,
-				Voters:     []string{"invalid-member-address"},
-			},
-			expErr: true,
-		},
-		"duplicate voters": {
-			src: MsgVoteRequest{
-				ProposalId: 1,
-				Choice:     Choice_CHOICE_YES,
-				Voters:     []string{memberAddr, memberAddr},
+				Voter:      "invalid-member-address",
 			},
 			expErr: true,
 		},
@@ -340,7 +332,7 @@ func TestMsgVote(t *testing.T) {
 			src: MsgVoteRequest{
 				ProposalId: 1,
 				Choice:     Choice_CHOICE_YES,
-				Voters:     []string{memberAddr, ""},
+				Voter:      "",
 			},
 			expErr: true,
 		},

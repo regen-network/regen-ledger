@@ -20,16 +20,15 @@ var (
 	// but it must not change during the lifetime of the kvstore
 	AddressLength = 20
 
-	// perm stands for permission and defines the format that a Condition should have.
-	// it must have (?s) flags, otherwise it errors when last section contains 0x20 (newline)
-	perm = regexp.MustCompile(`(?s)^([a-zA-Z0-9_\-]{3,8})/([a-zA-Z0-9_\-]{3,8})/(.+)$`)
+	// conditionFormat defines the format that a Condition should have.
+	// It must have (?s) flags, otherwise it errors when last section contains 0x20 (newline)
+	conditionFormat = regexp.MustCompile(`(?s)^([a-zA-Z0-9_\-]{3,8})/([a-zA-Z0-9_\-]{3,8})/(.+)$`)
 )
 
-// Condition is a specially formatted array, containing
-// information on who can authorize an action.
-// It is of the format:
-//
-//   sprintf("%s/%s/%s", extension, type, data)
+// Condition is a byte array specifying who can authorize an action.
+// It has the following format:
+//     {extension}/{type}/{data}
+// data is binary data that represents an encoded sequence value from the ORM.
 type Condition []byte
 
 func NewCondition(ext, typ string, data []byte) Condition {
@@ -40,12 +39,11 @@ func NewCondition(ext, typ string, data []byte) Condition {
 // Parse will extract the permission sections from the Condition bytes
 // and verify it is properly formatted
 func (c Condition) Parse() (string, string, []byte, error) {
-	chunks := perm.FindSubmatch(c)
+	chunks := conditionFormat.FindSubmatch(c)
 	if len(chunks) == 0 {
 		return "", "", nil, errors.Wrapf(ErrInvalid, "condition: %X", []byte(c))
 
 	}
-	// returns [all, match1, match2, match3]
 	return string(chunks[1]), string(chunks[2]), chunks[3], nil
 }
 
@@ -75,7 +73,7 @@ func (c Condition) Validate() error {
 	if len(c) == 0 {
 		return ErrEmpty
 	}
-	if !perm.Match(c) {
+	if !conditionFormat.Match(c) {
 		return errors.Wrapf(ErrInvalid, "condition: %X", []byte(c))
 	}
 	return nil

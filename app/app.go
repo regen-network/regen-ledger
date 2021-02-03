@@ -89,12 +89,11 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 
-	newmodule "github.com/regen-network/regen-ledger/types/module"
+	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
-	"github.com/regen-network/regen-ledger/x/group"
-	groupmodule "github.com/regen-network/regen-ledger/x/group/module"
+	group "github.com/regen-network/regen-ledger/x/group/module"
 )
 
 const (
@@ -133,11 +132,13 @@ var (
 		groupmodule.AppModuleBasic{},
 		ecocredit.Module{},
 		data.Module{},
+		group.Module{},
 	)
 
-	NewModules = []newmodule.Module{
+	NewModules = []moduletypes.Module{
 		ecocredit.Module{},
 		data.Module{},
+		group.Module{},
 	}
 
 	// module account permissions

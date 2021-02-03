@@ -33,7 +33,7 @@ func GetQueryCmd() *cobra.Command {
 		// QueryVotesByVoterCmd(),
 	)
 
-	return govQueryCmd
+	return queryCmd
 }
 
 // QueryGroupInfoCmd creates a CLI command for Query/GroupInfo.

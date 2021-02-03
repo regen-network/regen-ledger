@@ -5,38 +5,43 @@ import (
 	"fmt"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/server"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
-	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-type AppModuleBasic struct {
-	cdc codec.Marshaler
-}
+type Module struct{}
 
-var _ module.AppModule = AppModule{}
-var _ module.AppModuleBasic = AppModuleBasic{}
+var _ module.AppModuleBasic = Module{}
+var _ servermodule.Module = Module{}
+var _ climodule.Module = Module{}
 
-func (a AppModuleBasic) Name() string {
+func (a Module) Name() string {
 	return group.ModuleName
 }
 
-func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {}
+// RegisterInterfaces registers module concrete types into protobuf Any.
+func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
+	group.RegisterTypes(registry)
+}
 
-func (a AppModuleBasic) DefaultGenesis(marshaler codec.JSONMarshaler) json.RawMessage {
+func (a Module) RegisterServices(configurator servermodule.Configurator) {
+	server.RegisterServices(configurator)
+}
+
+func (a Module) DefaultGenesis(marshaler codec.JSONMarshaler) json.RawMessage {
 	return marshaler.MustMarshalJSON(group.NewGenesisState())
 }
 
-func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, config client.TxEncodingConfig, bz json.RawMessage) error {
+func (a Module) ValidateGenesis(cdc codec.JSONMarshaler, config client.TxEncodingConfig, bz json.RawMessage) error {
 	var data group.GenesisState
 	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", group.ModuleName, err)
@@ -44,87 +49,23 @@ func (a AppModuleBasic) ValidateGenesis(cdc codec.JSONMarshaler, config client.T
 	return data.Validate()
 }
 
-func (a AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, r *mux.Router) {
-}
+func (a Module) RegisterGRPCGatewayRoutes(client.Context, *runtime.ServeMux) {}
 
-func (a AppModuleBasic) RegisterGRPCGatewayRoutes(client.Context, *runtime.ServeMux) {}
-
-func (a AppModuleBasic) GetTxCmd() *cobra.Command {
+func (a Module) GetTxCmd() *cobra.Command {
+	// TODO #209
 	return nil
 }
 
-func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
-	//return cli.GetQueryCmd(StoreKey, cdc)
+func (a Module) GetQueryCmd() *cobra.Command {
+	// TODO #209
 	return nil
 }
 
-// RegisterInterfaces registers module concrete types into protobuf Any.
-func (AppModuleBasic) RegisterInterfaces(registry types.InterfaceRegistry) {
-	group.RegisterTypes(registry)
-}
-
-type AppModule struct {
-	AppModuleBasic
-	storeKey   sdk.StoreKey
-	paramSpace paramstypes.Subspace
-	router     sdk.Router
-}
-
-func NewAppModule(cdc codec.Marshaler, storeKey sdk.StoreKey, paramSpace paramstypes.Subspace, router sdk.Router) AppModule {
-	// set KeyTable if it has not already been set
-	if !paramSpace.HasKeyTable() {
-		paramSpace = paramSpace.WithKeyTable(paramstypes.NewKeyTable().RegisterParamSet(&group.Params{}))
-	}
-	return AppModule{
-		AppModuleBasic: AppModuleBasic{cdc: cdc},
-		storeKey:       storeKey,
-		paramSpace:     paramSpace,
-		router:         router,
-	}
-}
-
-func (a AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, data json.RawMessage) []abci.ValidatorUpdate {
-	var genesisState group.GenesisState
-	cdc.MustUnmarshalJSON(data, &genesisState)
-	if err := genesisState.Validate(); err != nil {
-		panic(fmt.Sprintf("failed to validate %s genesis state: %s", group.ModuleName, err))
-	}
-	a.paramSpace.SetParamSet(ctx, &genesisState.Params) // TODO: revisit if this makes sense
-	return []abci.ValidatorUpdate{}
-}
-
-func (a AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage {
-	var p group.Params
-	a.paramSpace.GetParamSet(ctx, &p)
-	return cdc.MustMarshalJSON(&group.GenesisState{
-		Params: p,
-	})
-}
-
-func (a AppModule) RegisterInvariants(sdk.InvariantRegistry) {
-	// todo: anything to check?
-	// todo: check that tally sums must never have less than block before ?
-}
+/**** DEPRECATED ****/
+func (a Module) RegisterRESTRoutes(client.Context, *mux.Router) {}
+func (a Module) RegisterLegacyAminoCodec(*codec.LegacyAmino)    {}
 
 // Route returns the message routing key for the group module.
-func (a AppModule) Route() sdk.Route {
-	return sdk.NewRoute(group.RouterKey, server.NewHandler(a.storeKey, a.paramSpace, a.router, a.cdc))
-}
-
-func (a AppModule) QuerierRoute() string {
-	return ""
-}
-
-func (a AppModule) LegacyQuerierHandler(*codec.LegacyAmino) sdk.Querier {
-	return nil
-}
-
-func (a AppModule) RegisterServices(configurator module.Configurator) {
-	server.RegisterServices(a.storeKey, a.paramSpace, a.router, configurator)
-}
-
-func (a AppModule) BeginBlock(sdk.Context, abci.RequestBeginBlock) {}
-
-func (a AppModule) EndBlock(sdk.Context, abci.RequestEndBlock) []abci.ValidatorUpdate {
-	return []abci.ValidatorUpdate{}
-}
+// func (a AppModule) Route() sdk.Route {
+// 	return sdk.NewRoute(group.RouterKey, server.NewHandler(a.storeKey, a.paramSpace, a.router, a.cdc))
+// }
