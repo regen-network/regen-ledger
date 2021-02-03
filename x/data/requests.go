@@ -67,7 +67,7 @@ func (m *MsgStoreRawDataRequest) ValidateBasic() error {
 
 		return nil
 	default:
-		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, fmt.Sprintf("unsupported %T %s", digestAlgorithm, digestAlgorithm))
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("unsupported %T %s", digestAlgorithm, digestAlgorithm))
 	}
 }
 

@@ -4,14 +4,24 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/data"
+	"github.com/regen-network/regen-ledger/x/data/server/lookup"
 )
 
 type serverImpl struct {
-	storeKey sdk.StoreKey
+	storeKey   sdk.StoreKey
+	iriIdTable lookup.Table
 }
 
 func newServer(storeKey sdk.StoreKey) serverImpl {
-	return serverImpl{storeKey: storeKey}
+	tbl, err := lookup.NewTable([]byte{IriIdTablePrefix})
+	if err != nil {
+		panic(err)
+	}
+
+	return serverImpl{
+		storeKey:   storeKey,
+		iriIdTable: tbl,
+	}
 }
 
 func RegisterServices(configurator servermodule.Configurator) {

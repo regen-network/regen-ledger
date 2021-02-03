@@ -1,50 +1,40 @@
 package server
 
-import (
-	"encoding/base64"
-)
+import sdk "github.com/cosmos/cosmos-sdk/types"
 
 const (
-	AnchorTablePrefix byte = 0x0
-	CIDSignerPrefix   byte = 0x1
-	SignerCIDPrefix   byte = 0x2
-	DataTablePrefix   byte = 0x3
+	IriIdTablePrefix      byte = 0x0
+	AnchorTimestampPrefix byte = 0x1
+	IDSignerPrefix        byte = 0x2
+	SignerIDPrefix        byte = 0x2
+	RawDataPrefix         byte = 0x3
 )
 
-func AnchorKey(cid []byte) []byte {
-	return append([]byte{AnchorTablePrefix}, cid...)
+func AnchorTimestampKey(id []byte) []byte {
+	return append([]byte{AnchorTimestampPrefix}, id...)
 }
 
-func CIDBase64String(cid []byte) string {
-	return base64.StdEncoding.EncodeToString(cid)
-}
-
-func CIDSignerKey(cidStr string, signer string) []byte {
-	key := CIDSignerIndexPrefix(cidStr)
-	key = append(key, signer...)
+func IDSignerKey(id []byte, address sdk.AccAddress) []byte {
+	key := make([]byte, 0, len(id)+len(address)+2)
+	key = append(key, IDSignerPrefix)
+	key = append(key, byte(len(id)))
+	key = append(key, id...)
+	key = append(key, address...)
 	return key
 }
 
-func CIDSignerIndexPrefix(cidStr string) []byte {
-	key := []byte{CIDSignerPrefix}
-	key = append(key, cidStr...)
-	key = append(key, 0)
+func SignerIDKey(address sdk.AccAddress, id []byte) []byte {
+	key := make([]byte, 0, len(id)+len(address)+2)
+	key = append(key, SignerIDPrefix)
+	key = append(key, byte(len(address)))
+	key = append(key, address...)
+	key = append(key, id...)
 	return key
 }
 
-func SignerCIDKey(signer string, cid []byte) []byte {
-	key := SignerCIDIndexPrefix(signer)
-	key = append(key, cid...)
+func RawDataKey(id []byte) []byte {
+	key := make([]byte, 0, len(id)+1)
+	key = append(key, RawDataPrefix)
+	key = append(key, id...)
 	return key
-}
-
-func SignerCIDIndexPrefix(signer string) []byte {
-	key := []byte{SignerCIDPrefix}
-	key = append(key, signer...)
-	key = append(key, 0)
-	return key
-}
-
-func DataKey(cid []byte) []byte {
-	return append([]byte{DataTablePrefix}, cid...)
 }
