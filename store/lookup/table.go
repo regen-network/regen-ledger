@@ -135,17 +135,14 @@ func (t table) getOrCreateID(store KVStore, value []byte) (id []byte, numCollisi
 	// Deal with collisions by appending a varint disambiguation value.
 	// Such collisions are almost impossible with good settings, but can
 	// happen with a sub-optimal hash function.
-	var i uint64 = 0
 	preLen := t.prefixLen + t.hashLen
-	for {
+	for i:=0; ; i++{
 		id = id[:t.bufLen]
 		n := binary.PutUvarint(id[preLen:], i)
 		id = id[:preLen+n]
 		if tryID(store, id, value) {
 			return id, t.hashLen + int(i) - t.minLen
 		}
-
-		i++
 	}
 }
 
