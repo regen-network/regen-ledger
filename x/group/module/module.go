@@ -18,7 +18,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type Module struct{}
+type Module struct {
+	AccountKeeper server.AccountKeeper
+}
 
 var _ module.AppModuleBasic = Module{}
 var _ servermodule.Module = Module{}
@@ -34,7 +36,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func (a Module) RegisterServices(configurator servermodule.Configurator) {
-	server.RegisterServices(configurator)
+	server.RegisterServices(configurator, a.AccountKeeper)
 }
 
 func (a Module) DefaultGenesis(marshaler codec.JSONMarshaler) json.RawMessage {

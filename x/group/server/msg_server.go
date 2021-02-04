@@ -1,6 +1,8 @@
 package server
 
 import (
+	"bytes"
+	"encoding/binary"
 	"fmt"
 	"reflect"
 
@@ -239,8 +241,15 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 	}
 
 	// Generate group account address.
-	// TODO this will need to be revisited with ADR 028 (#211).
-	accountAddr := group.AccountCondition(s.groupAccountSeq.NextVal(ctx)).Address()
+	nextAccVal := s.groupAccountSeq.NextVal(ctx)
+	buf := bytes.NewBuffer(nil)
+	err = binary.Write(buf, binary.LittleEndian, nextAccVal)
+	if err != nil {
+		return nil, err
+	}
+
+	accountId := s.key.Derive(buf.Bytes())
+	accountAddr := accountId.Address()
 	groupAccount, err := group.NewGroupAccountInfo(
 		accountAddr,
 		groupID,
