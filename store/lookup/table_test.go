@@ -22,7 +22,7 @@ func TestTable(t *testing.T) {
 	table, err = NewTableWithOptions(TableOptions{
 		MinLength: 1,
 		NewHash: func() hash.Hash {
-			return sixteenByteHash{
+			return sixteenBitHash{
 				fnv.New32(),
 			}
 		},
@@ -35,7 +35,7 @@ type sixteenBitHash struct {
 	hash.Hash
 }
 
-func (h sixteenByteHash) Sum(b []byte) []byte {
+func (h sixteenBitHash) Sum(b []byte) []byte {
 	bz := h.Hash.Sum(b)
 	// just return b + the first two bytes
 	return bz[:len(b)+2]
