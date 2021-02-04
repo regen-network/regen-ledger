@@ -242,7 +242,7 @@ func (m *Member) GetMetadata() []byte {
 
 // ThresholdDecisionPolicy implements the DecisionPolicy interface
 type ThresholdDecisionPolicy struct {
-	// threshold is a fix weight value that must be met or exceeded for a proposal to succeed.
+	// threshold is the minimum weighted sum of yes votes that must be met or exceeded for a proposal to succeed.
 	Threshold string `protobuf:"bytes,1,opt,name=threshold,proto3" json:"threshold,omitempty"`
 	// timeout is the duration from submission of a proposal to the end of voting period
 	// Within this times votes and exec messages can be submitted.

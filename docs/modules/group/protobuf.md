@@ -322,7 +322,7 @@ ThresholdDecisionPolicy implements the DecisionPolicy interface
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| threshold | [string](#string) |  | threshold is a fix weight value that must be met or exceeded for a proposal to succeed. |
+| threshold | [string](#string) |  | threshold is the minimum weighted sum of yes votes that must be met or exceeded for a proposal to succeed. |
 | timeout | [google.protobuf.Duration](#google.protobuf.Duration) |  | timeout is the duration from submission of a proposal to the end of voting period Within this times votes and exec messages can be submitted. |
 
 
@@ -782,7 +782,7 @@ Query is the regen.group.v1alpha1 Query service.
 | ----------- | ------------ | ------------- | ------------|
 | GroupInfo | [QueryGroupInfoRequest](#regen.group.v1alpha1.QueryGroupInfoRequest) | [QueryGroupInfoResponse](#regen.group.v1alpha1.QueryGroupInfoResponse) | GroupInfo queries group info based on group id. |
 | GroupAccountInfo | [QueryGroupAccountInfoRequest](#regen.group.v1alpha1.QueryGroupAccountInfoRequest) | [QueryGroupAccountInfoResponse](#regen.group.v1alpha1.QueryGroupAccountInfoResponse) | GroupAccountInfo queries group account info based on group account address. |
-| GroupMembers | [QueryGroupMembersRequest](#regen.group.v1alpha1.QueryGroupMembersRequest) | [QueryGroupMembersResponse](#regen.group.v1alpha1.QueryGroupMembersResponse) | GroupMembers queries members for a group |
+| GroupMembers | [QueryGroupMembersRequest](#regen.group.v1alpha1.QueryGroupMembersRequest) | [QueryGroupMembersResponse](#regen.group.v1alpha1.QueryGroupMembersResponse) | GroupMembers queries members of a group |
 | GroupsByAdmin | [QueryGroupsByAdminRequest](#regen.group.v1alpha1.QueryGroupsByAdminRequest) | [QueryGroupsByAdminResponse](#regen.group.v1alpha1.QueryGroupsByAdminResponse) | GroupsByAdmin queries groups by admin address. |
 | GroupAccountsByGroup | [QueryGroupAccountsByGroupRequest](#regen.group.v1alpha1.QueryGroupAccountsByGroupRequest) | [QueryGroupAccountsByGroupResponse](#regen.group.v1alpha1.QueryGroupAccountsByGroupResponse) | GroupAccountsByGroup queries group accounts by group id. |
 | GroupAccountsByAdmin | [QueryGroupAccountsByAdminRequest](#regen.group.v1alpha1.QueryGroupAccountsByAdminRequest) | [QueryGroupAccountsByAdminResponse](#regen.group.v1alpha1.QueryGroupAccountsByAdminResponse) | GroupsByAdmin queries group accounts by admin address. |
