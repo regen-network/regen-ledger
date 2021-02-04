@@ -37,7 +37,7 @@ type sixteenByteHash struct {
 
 func (h sixteenByteHash) Sum(b []byte) []byte {
 	bz := h.Hash.Sum(b)
-	// just return two bytes
+	// just return b + the first two bytes
 	return bz[:len(b)+2]
 }
 

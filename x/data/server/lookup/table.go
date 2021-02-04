@@ -50,10 +50,12 @@ func NewTableWithOptions(options TableOptions) (Table, error) {
 	}
 
 	bufLen := prefixLen + hashLen + binary.MaxVarintLen64
+	initLen := prefixLen + minLength
 
 	return table{
 		minLen:    minLength,
 		bufLen:    bufLen,
+		initLen:   initLen,
 		newHash:   newHash,
 		prefix:    options.Prefix,
 		prefixLen: prefixLen,
@@ -80,6 +82,7 @@ type table struct {
 	prefix    []byte
 	prefixLen int
 	hashLen   int
+	initLen   int
 }
 
 // KVSTore is the interface for key-value stores that Tables operate on.
@@ -107,21 +110,26 @@ func (t table) getOrCreateID(store KVStore, value []byte) (id []byte, numCollisi
 	hasher := t.newHash()
 	_, err := hasher.Write(value)
 	if err != nil {
+		// we panic here because hash.Write returning an error shouldn't happen
 		panic(err)
 	}
 	hashBz := hasher.Sum(nil)
 
-	id = make([]byte, 0, t.bufLen)
-	id = append(id, t.prefix...)
-
+	id = make([]byte, t.initLen, t.bufLen)
+	copy(id, t.prefix)
+	copy(id[len(t.prefix):], hashBz[:t.minLen])
 	// take the first i bytes of hashBz starting with t.minLen and increasing
 	// in cases where there are collisions
-	for i := t.minLen; i <= t.hashLen; i++ {
-		id = append(id[t.prefixLen:], hashBz[:i]...)
+
+	for i := t.minLen; ; i++ {
 		if tryID(store, id, value) {
 			return id, i - t.minLen
 		}
-		id = id[:t.prefixLen]
+
+		if i >= t.hashLen {
+			break
+		}
+		id = append(id, hashBz[i])
 	}
 
 	// Deal with collisions by appending a varint disambiguation value.
