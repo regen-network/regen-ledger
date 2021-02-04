@@ -1,7 +1,11 @@
 package data
 
 import (
+	"bytes"
 	"fmt"
+	"strings"
+
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -11,8 +15,8 @@ import (
 // AccAddressToDID converts an account address to a DID using a chain-specific method prefix,
 // which should generally be equivalent to the chain's bech32 account prefix.
 func AccAddressToDID(address sdk.AccAddress, methodPrefix string) string {
-	hash := base58.CheckEncode(address, didVersion0)
-	return fmt.Sprintf("did:%s:%s", methodPrefix, hash)
+	b58str := base58.CheckEncode(address, didVersion0)
+	return fmt.Sprintf("did:%s:%s", methodPrefix, b58str)
 }
 
 // ToIRI converts the ContentHash to an IRI (internationalized URI) using the regen IRI scheme.
@@ -110,4 +114,125 @@ var mediaTypeExtensions = map[MediaType]string{
 	MediaType_MEDIA_TYPE_MP4:         "mp4",
 	MediaType_MEDIA_TYPE_WEBM:        "webm",
 	MediaType_MEDIA_TYPE_OGG:         "ogg",
+}
+
+var mediaTypeExtensionsReverse = map[string]MediaType{}
+
+func init() {
+	for mt, ext := range mediaTypeExtensions {
+		mediaTypeExtensionsReverse[ext] = mt
+	}
+}
+
+func ParseIRI(methodPrefix string, iri string) (*ContentHash, sdk.AccAddress, error) {
+	const regenPrefix = "regen:"
+	didPrefix := "did:" + methodPrefix + ":"
+
+	if strings.HasPrefix(iri, regenPrefix) {
+		hashExtPart := iri[len(regenPrefix):]
+		parts := strings.Split(hashExtPart, ".")
+		if len(parts) != 2 {
+			return nil, nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("error parsing IRI %s", iri))
+		}
+
+		hashPart := parts[0]
+		ext := parts[1]
+
+		mediaType, ok := mediaTypeExtensionsReverse[ext]
+		if !ok {
+			return nil, nil, fmt.Errorf("can't resolve MediaType for extension %s", ext)
+		}
+
+		res, version, err := base58.CheckDecode(hashPart)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		if version != iriVersion0 {
+			return nil, nil, fmt.Errorf("invalid version found when parsing IRI %s", iri)
+		}
+
+		rdr := bytes.NewBuffer(res)
+
+		typ, err := rdr.ReadByte()
+		if err != nil {
+			return nil, nil, err
+		}
+		switch typ {
+		case IriPrefixRaw:
+			b0, err := rdr.ReadByte()
+			if err != nil {
+				return nil, nil, err
+			}
+
+			digestAlg := DigestAlgorithm(b0)
+			hash := rdr.Bytes()
+			err = digestAlg.Validate(hash)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			return &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+				Hash:            hash,
+				DigestAlgorithm: digestAlg,
+				MediaType:       mediaType,
+			}}}, nil, nil
+
+		case IriPrefixGraph:
+			b0, err := rdr.ReadByte()
+			if err != nil {
+				return nil, nil, err
+			}
+
+			c14Alg := GraphCanonicalizationAlgorithm(b0)
+			err = c14Alg.Validate()
+			if err != nil {
+				return nil, nil, err
+			}
+
+			b0, err = rdr.ReadByte()
+			if err != nil {
+				return nil, nil, err
+			}
+
+			mtAlg := GraphMerkleTree(b0)
+			err = mtAlg.Validate()
+			if err != nil {
+				return nil, nil, err
+			}
+
+			b0, err = rdr.ReadByte()
+			if err != nil {
+				return nil, nil, err
+			}
+
+			digestAlg := DigestAlgorithm(b0)
+			hash := rdr.Bytes()
+			err = digestAlg.Validate(hash)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			return &ContentHash{Sum: &ContentHash_Graph_{Graph: &ContentHash_Graph{
+				Hash:                      hash,
+				DigestAlgorithm:           digestAlg,
+				CanonicalizationAlgorithm: c14Alg,
+				MerkleTree:                mtAlg,
+			}}}, nil, nil
+		}
+	} else if strings.HasPrefix(iri, didPrefix) {
+		addrPart := iri[len(didPrefix):]
+		res, version, err := base58.CheckDecode(addrPart)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		if version != didVersion0 {
+			return nil, nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("invalid version found when parsing IRI %s", iri))
+		}
+
+		return nil, res, nil
+	}
+
+	return nil, nil, fmt.Errorf("unable to parse IRI %s", iri)
 }

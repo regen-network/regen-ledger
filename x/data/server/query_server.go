@@ -63,16 +63,24 @@ func (s serverImpl) getEntry(store sdk.KVStore, id []byte) (*data.ContentEntry, 
 		iterator.Next()
 	}
 
+	iri := string(s.iriIdTable.GetValue(store, id))
+	contentHash, _, err := data.ParseIRI(sdk.GetConfig().GetBech32AccountAddrPrefix(), iri)
+	if err != nil {
+		return nil, err
+	}
+
 	entry := &data.ContentEntry{
 		Timestamp: &timestamp,
 		Signers:   signerEntries,
+		Iri:       iri,
+		Hash:      contentHash,
 	}
 
 	rawData := store.Get(RawDataKey(id))
 	if rawData != nil {
-		entry.Content.Sum = &data.Content_RawData{
+		entry.Content = &data.Content{Sum: &data.Content_RawData{
 			RawData: rawData,
-		}
+		}}
 	}
 
 	return entry, nil
