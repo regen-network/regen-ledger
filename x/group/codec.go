@@ -4,6 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
 
@@ -24,6 +25,17 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 }
 
 func RegisterTypes(registry cdctypes.InterfaceRegistry) {
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgCreateGroupRequest{},
+		&MsgUpdateGroupMembersRequest{},
+		&MsgUpdateGroupAdminRequest{},
+		&MsgUpdateGroupMetadataRequest{},
+		&MsgCreateGroupAccountRequest{},
+		&MsgCreateProposalRequest{},
+		&MsgVoteRequest{},
+		&MsgExecRequest{},
+	)
+
 	msgservice.RegisterMsgServiceDesc(registry, &Msg_ServiceDesc)
 
 	registry.RegisterInterface(

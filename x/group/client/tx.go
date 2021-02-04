@@ -67,12 +67,12 @@ Where members.json contains:
 [
 	{
 		"address": "addr1",
-		"power": "1",
+		"weight": "1",
 		"metadata": "some metadata"
 	},
 	{
 		"address": "addr2",
-		"power": "1",
+		"weight": "1",
 		"metadata": "some metadata"
 	}
 ]
@@ -137,12 +137,12 @@ Where members.json contains:
 [
 	{
 		"address": "addr1",
-		"power": "1",
+		"weight": "1",
 		"metadata": "some new metadata"
 	},
 	{
 		"address": "addr2",
-		"power": "0",
+		"weight": "0",
 		"metadata": "some metadata"
 	}
 ]
