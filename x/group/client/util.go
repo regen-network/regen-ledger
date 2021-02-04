@@ -8,12 +8,6 @@ import (
 	"github.com/spf13/pflag"
 )
 
-type member struct {
-	address string
-	power   string
-	comment string
-}
-
 func parseMembersFlag(fs *pflag.FlagSet) ([]group.Member, error) {
 	members := []group.Member{}
 	membersFile, _ := fs.GetString(flagMembers)
