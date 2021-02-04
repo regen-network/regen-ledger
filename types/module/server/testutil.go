@@ -35,6 +35,8 @@ func NewFixtureFactory(t *testing.T, numSigners int) *FixtureFactory {
 	return &FixtureFactory{
 		t:       t,
 		signers: signers,
+		// cdc and baseApp are initialized here just for compatibility with legacy modules which don't use ADR 033
+		// TODO: remove once all code using this uses ADR 033 module wiring
 		cdc:     codec.NewProtoCodec(types.NewInterfaceRegistry()),
 		baseApp: baseapp.NewBaseApp("test", log.NewNopLogger(), dbm.NewMemDB(), nil),
 	}
@@ -44,10 +46,14 @@ func (ff *FixtureFactory) SetModules(modules []module.Module) {
 	ff.modules = modules
 }
 
+// Codec is exposed just for compatibility of these test suites with legacy modules and can be removed when everything
+// has been migrated to ADR 033
 func (ff *FixtureFactory) Codec() *codec.ProtoCodec {
 	return ff.cdc
 }
 
+// BaseApp is exposed just for compatibility of these test suites with legacy modules and can be removed when everything
+// has been migrated to ADR 033
 func (ff *FixtureFactory) BaseApp() *baseapp.BaseApp {
 	return ff.baseApp
 }
