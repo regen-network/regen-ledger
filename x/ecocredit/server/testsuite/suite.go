@@ -35,6 +35,10 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.queryClient = ecocredit.NewQueryClient(s.fixture.QueryConn())
 }
 
+func (s *IntegrationTestSuite) TearDownSuite() {
+	s.fixture.Teardown()
+}
+
 func (s *IntegrationTestSuite) TestScenario() {
 	designer := s.signers[0].String()
 	issuer1 := s.signers[1].String()
