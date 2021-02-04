@@ -136,7 +136,7 @@ func (t table) getOrCreateID(store KVStore, value []byte) (id []byte, numCollisi
 	// Such collisions are almost impossible with good settings, but can
 	// happen with a sub-optimal hash function.
 	preLen := t.prefixLen + t.hashLen
-	for i:=0; ; i++{
+	for i := uint64(0); ; i++ {
 		id = id[:t.bufLen]
 		n := binary.PutUvarint(id[preLen:], i)
 		id = id[:preLen+n]
