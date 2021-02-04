@@ -22,26 +22,34 @@ import (
 	"github.com/regen-network/regen-ledger/types/module"
 )
 
-type fixtureFactory struct {
+type FixtureFactory struct {
 	t       *testing.T
 	modules []module.Module
 	signers []sdk.AccAddress
+	cdc     *codec.ProtoCodec
+	baseApp *baseapp.BaseApp
 }
 
-type ModuleManagerFixtureFactory interface {
-	testutil.FixtureFactory
-	LegacySetup(setupHooks ...func(cdc *codec.ProtoCodec, app *baseapp.BaseApp, modules []module.Module)) testutil.Fixture
-}
-
-var _ ModuleManagerFixtureFactory = fixtureFactory{}
-
-func NewFixtureFactory(t *testing.T, numSigners int, modules []module.Module) ModuleManagerFixtureFactory {
+func NewFixtureFactory(t *testing.T, numSigners int) *FixtureFactory {
 	signers := makeTestAddresses(numSigners)
-	return fixtureFactory{
+	return &FixtureFactory{
 		t:       t,
-		modules: modules,
 		signers: signers,
+		cdc:     codec.NewProtoCodec(types.NewInterfaceRegistry()),
+		baseApp: baseapp.NewBaseApp("test", log.NewNopLogger(), dbm.NewMemDB(), nil),
 	}
+}
+
+func (ff *FixtureFactory) SetModules(modules []module.Module) {
+	ff.modules = modules
+}
+
+func (ff *FixtureFactory) Codec() *codec.ProtoCodec {
+	return ff.cdc
+}
+
+func (ff *FixtureFactory) BaseApp() *baseapp.BaseApp {
+	return ff.baseApp
 }
 
 func makeTestAddresses(count int) []sdk.AccAddress {
@@ -52,21 +60,12 @@ func makeTestAddresses(count int) []sdk.AccAddress {
 	return addrs
 }
 
-func (ff fixtureFactory) Setup() testutil.Fixture {
-	return ff.LegacySetup()
-}
-
-func (ff fixtureFactory) LegacySetup(setupHooks ...func(cdc *codec.ProtoCodec, app *baseapp.BaseApp, modules []module.Module)) testutil.Fixture {
-	registry := types.NewInterfaceRegistry()
-	baseApp := baseapp.NewBaseApp("test", log.NewNopLogger(), dbm.NewMemDB(), nil)
+func (ff FixtureFactory) Setup() testutil.Fixture {
+	cdc := ff.cdc
+	registry := cdc.InterfaceRegistry()
+	baseApp := ff.baseApp
 	baseApp.MsgServiceRouter().SetInterfaceRegistry(registry)
 	baseApp.GRPCQueryRouter().SetInterfaceRegistry(registry)
-	cdc := codec.NewProtoCodec(registry)
-
-	for _, hook := range setupHooks {
-		hook(cdc, baseApp, ff.modules)
-	}
-
 	mm := NewManager(baseApp, cdc)
 	err := mm.RegisterModules(ff.modules)
 	require.NoError(ff.t, err)

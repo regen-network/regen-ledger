@@ -6,17 +6,10 @@ import (
 	"sort"
 	"time"
 
-	groupmodule "github.com/regen-network/regen-ledger/x/group/module"
-
-	"github.com/regen-network/regen-ledger/types/module"
-
 	"github.com/regen-network/regen-ledger/testutil"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
@@ -36,7 +29,7 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	fixtureFactory servermodule.ModuleManagerFixtureFactory
+	fixtureFactory *servermodule.FixtureFactory
 	fixture        testutil.Fixture
 
 	ctx              context.Context
@@ -58,46 +51,16 @@ type IntegrationTestSuite struct {
 	blockTime time.Time
 }
 
-func NewIntegrationTestSuite(fixtureFactory servermodule.ModuleManagerFixtureFactory) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory *servermodule.FixtureFactory, accountKeeper authkeeper.AccountKeeper, bankKeeper bankkeeper.BaseKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
+		accountKeeper:  accountKeeper,
+		bankKeeper:     bankKeeper,
 	}
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
-	s.fixture = s.fixtureFactory.LegacySetup(func(cdc *codec.ProtoCodec, baseApp *baseapp.BaseApp, modules []module.Module) {
-		// Setting up bank keeper
-		banktypes.RegisterInterfaces(cdc.InterfaceRegistry())
-		authtypes.RegisterInterfaces(cdc.InterfaceRegistry())
-
-		paramsKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
-		authKey := sdk.NewKVStoreKey(authtypes.StoreKey)
-		bankKey := sdk.NewKVStoreKey(banktypes.StoreKey)
-		tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
-		amino := codec.NewLegacyAmino()
-
-		authSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, authtypes.ModuleName)
-		bankSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, banktypes.ModuleName)
-
-		s.accountKeeper = authkeeper.NewAccountKeeper(
-			cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, map[string][]string{},
-		)
-
-		groupModule := modules[0].(groupmodule.Module)
-		groupModule.AccountKeeper = s.accountKeeper
-		modules[0] = groupModule
-
-		s.bankKeeper = bankkeeper.NewBaseKeeper(
-			cdc, bankKey, s.accountKeeper, bankSubspace, map[string]bool{},
-		)
-
-		baseApp.Router().AddRoute(sdk.NewRoute(banktypes.ModuleName, bank.NewHandler(s.bankKeeper)))
-		baseApp.MountStore(tkey, sdk.StoreTypeTransient)
-		baseApp.MountStore(paramsKey, sdk.StoreTypeIAVL)
-		baseApp.MountStore(authKey, sdk.StoreTypeIAVL)
-		baseApp.MountStore(bankKey, sdk.StoreTypeIAVL)
-	})
-
+	s.fixture = s.fixtureFactory.Setup()
 	s.ctx = s.fixture.Context()
 
 	s.blockTime = time.Now().UTC()
