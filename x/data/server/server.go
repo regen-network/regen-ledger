@@ -10,18 +10,18 @@ import (
 
 type serverImpl struct {
 	storeKey   sdk.StoreKey
-	iriIdTable lookup.Table
+	iriIDTable lookup.Table
 }
 
 func newServer(storeKey sdk.StoreKey) serverImpl {
-	tbl, err := lookup.NewTable([]byte{IriIdTablePrefix})
+	tbl, err := lookup.NewTable([]byte{IriIDTablePrefix})
 	if err != nil {
 		panic(err)
 	}
 
 	return serverImpl{
 		storeKey:   storeKey,
-		iriIdTable: tbl,
+		iriIDTable: tbl,
 	}
 }
 

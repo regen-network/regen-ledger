@@ -45,7 +45,8 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 func (s *IntegrationTestSuite) TestGraphScenario() {
 	testContent := []byte("xyzabc123")
 	hash := crypto.BLAKE2b_256.New()
-	hash.Write(testContent)
+	_, err := hash.Write(testContent)
+	s.Require().NoError(err)
 	digest := hash.Sum(nil)
 	graphHash := &data.ContentHash_Graph{
 		Hash:                      digest,
@@ -132,7 +133,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	s.Require().NotNil(queryRes)
 	s.Require().Equal(ts, queryRes.Entry.Timestamp)
 	s.Require().Len(queryRes.Entry.Signers, 2)
-	var signers []string
+	signers := make([]string, len(queryRes.Entry.Signers))
 	for _, signer := range queryRes.Entry.Signers {
 		signers = append(signers, signer.Signer)
 	}
@@ -144,7 +145,8 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 func (s *IntegrationTestSuite) TestRawDataScenario() {
 	testContent := []byte("19sdgh23t7sdghasf98sf")
 	hash := crypto.BLAKE2b_256.New()
-	hash.Write(testContent)
+	_, err := hash.Write(testContent)
+	s.Require().NoError(err)
 	digest := hash.Sum(nil)
 	rawHash := &data.ContentHash_Raw{
 		Hash:            digest,

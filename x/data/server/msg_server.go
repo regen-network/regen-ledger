@@ -36,7 +36,7 @@ func (s serverImpl) getIRIAndAnchor(ctx types.Context, toIRI ToIRI) (iri string,
 	}
 
 	store := ctx.KVStore(s.storeKey)
-	id = s.iriIdTable.GetOrCreateID(store, []byte(iri))
+	id = s.iriIDTable.GetOrCreateID(store, []byte(iri))
 	timestamp, err = s.anchor(ctx, id, iri)
 	if err != nil {
 		return "", nil, nil, err

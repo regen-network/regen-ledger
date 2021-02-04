@@ -21,7 +21,7 @@ func (s serverImpl) ByHash(ctx types.Context, request *data.QueryByHashRequest) 
 	}
 
 	store := ctx.KVStore(s.storeKey)
-	id := s.iriIdTable.GetOrCreateID(store, []byte(iri))
+	id := s.iriIDTable.GetOrCreateID(store, []byte(iri))
 
 	entry, err := s.getEntry(store, id)
 	if err != nil {
@@ -66,7 +66,7 @@ func (s serverImpl) getEntry(store sdk.KVStore, id []byte) (*data.ContentEntry, 
 		iterator.Next()
 	}
 
-	iri := string(s.iriIdTable.GetValue(store, id))
+	iri := string(s.iriIDTable.GetValue(store, id))
 	contentHash, _, err := data.ParseIRI(sdk.GetConfig().GetBech32AccountAddrPrefix(), iri)
 	if err != nil {
 		return nil, err
@@ -97,10 +97,10 @@ func (s serverImpl) BySigner(ctx types.Context, request *data.QueryBySignerReque
 		return nil, err
 	}
 
-	signerIdStore := prefix.NewStore(store, SignerIDIndexPrefix(addr))
+	signerIDStore := prefix.NewStore(store, SignerIDIndexPrefix(addr))
 
 	var entries []*data.ContentEntry
-	pageRes, err := query.Paginate(signerIdStore, request.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(signerIDStore, request.Pagination, func(key []byte, value []byte) error {
 		entry, err := s.getEntry(store, key)
 		if err != nil {
 			return err

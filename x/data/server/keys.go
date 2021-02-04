@@ -3,7 +3,7 @@ package server
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 const (
-	IriIdTablePrefix      byte = 0x0
+	IriIDTablePrefix      byte = 0x0
 	AnchorTimestampPrefix byte = 0x1
 	IDSignerPrefix        byte = 0x2
 	SignerIDPrefix        byte = 0x2
