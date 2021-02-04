@@ -10,8 +10,8 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 
 // Query is the regen.data.v1alpha1 Query service
 service Query {
-  // ByContentHash queries data based on its ContentHash.
-  rpc ByContentHash (QueryByContentHashRequest) returns (QueryByContentHashResponse);
+  // ByHash queries data based on its ContentHash.
+  rpc ByHash (QueryByHashRequest) returns (QueryByHashResponse);
 
   // BySigner queries data based on signers.
   rpc BySigner (QueryBySignerRequest) returns (QueryBySignerResponse);
@@ -31,29 +31,19 @@ service Query {
 }
 
 // QueryByContentHashRequest is the Query/ByContentHash request type.
-message QueryByContentHashRequest {
-
-  // id is the hash-based identifier for the anchored content.
-  ContentHash id = 1;
+message QueryByHashRequest {
+  // hash is the hash-based identifier for the anchored content.
+  ContentHash hash = 1;
 }
 
 // QueryByContentHashResponse is the Query/ByContentHash response type.
-message QueryByContentHashResponse {
-  // timestamp is the timestamp of the block at which the data was anchored.
-  google.protobuf.Timestamp timestamp = 1;
-
-  // signers are the addresses of the accounts which have signed the data.
-  repeated string signers = 2;
-
-  string iri = 3;
-
-  // content is the content of the data, if it was stored on-chain.
-  Content content = 4;
+message QueryByHashResponse {
+  // entry is the ContentEntry
+  ContentEntry entry = 1;
 }
 
 // QueryBySignerRequest is the Query/BySigner request type.
 message QueryBySignerRequest {
-
   // signer is the address of the signer to query by.
   string signer = 1;
 
@@ -63,22 +53,29 @@ message QueryBySignerRequest {
 
 // QueryBySignerResponse is the Query/BySigner response type.
 message QueryBySignerResponse {
-
-  // ids are in the IDs returned in this page of the query.
-  repeated ContentHash ids = 1;
+  // entries is the ContentEntry's signed by the queried signer
+  repeated ContentEntry entries = 1;
 
   // pagination is the pagination PageResponse.
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+  cosmos.base.query.v1beta1.PageResponse pagination = 3;
 }
 
-message QueryIDsByIRIRequest {
-  repeated string iris = 1;
-}
+// ContentEntry describes data referenced and possibly stored on chain
+message ContentEntry {
+  // hash is the content hash
+  ContentHash hash = 1;
 
-message QueryIDsByIRIResponse {
-  // id's with the value 0 indicate that the IRI does not have an ID yet and that
-  // one must be registered with Msg/RegisterIRIs
-  repeated uint64 ids = 1;
+  // iri is the content IRI
+  string iri = 2;
+
+  // timestamp is the anchor Timestamp
+  google.protobuf.Timestamp timestamp = 3;
+
+  // signers are the signers, if any
+  repeated SignerEntry signers = 4;
+
+  // content is the actual content if stored on-chain
+  Content content = 5;
 }
 
 message QueryIRIsByIDRequest {
@@ -87,14 +84,6 @@ message QueryIRIsByIDRequest {
 
 message QueryIRIsByIDResponse {
   repeated string iris = 1;
-}
-
-message Content {
-  oneof sum {
-    bytes raw_data = 1;
-    CompactDataset graph_dataset = 2;
-    bytes wkb_bytes = 3;
-  }
 }
 
 message QueryByIRIRequest {
@@ -133,8 +122,8 @@ message ValidateShapesGraphResponse {
 }
 
 message ConvertToCompactDatasetRequest {
-    bytes content = 1;
-    string content_type = 2;
+  bytes content = 1;
+  string content_type = 2;
 }
 
 message ConvertToCompactDatasetResponse {

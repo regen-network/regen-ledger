@@ -37,11 +37,11 @@ service Msg {
   //
   // SignData implicitly calls AnchorData if the data was not already anchored.
   //
-  // SignData can be called multiple times for the same ID with different
+  // SignData can be called multiple times for the same content hash with different
   // signers and those signers will be appended to the list of signers.
   rpc SignData(MsgSignDataRequest) returns (MsgSignDataResponse);
 
-  // StoreRawData stores a piece of raw data corresponding to an ID on the blockchain.
+  // StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
   //
   // StoreRawData implicitly calls AnchorData if the data was not already anchored.
   //
@@ -70,8 +70,8 @@ message MsgAnchorDataRequest {
   // data. They can simply be a intermediary providing services.
   string sender = 1;
 
-  // id is the hash-based identifier for the anchored content.
-  ContentHash id = 2;
+  // hash is the hash-based identifier for the anchored content.
+  ContentHash hash = 2;
 }
 
 // MsgAnchorDataRequest is the Msg/AnchorData response type.
@@ -91,7 +91,8 @@ message MsgSignDataRequest {
   // depending on the underlying data.
   repeated string signers = 1;
 
-  // hash is the hash-based identifier for the anchored content.
+  // hash is the hash-based identifier for the anchored content. Only RDF graph
+  // data can be signed as its data model is intended to specifically convey semantic meaning.
   ContentHash.Graph hash = 2;
 }
 
@@ -105,11 +106,10 @@ message MsgStoreRawDataRequest {
   // data. They can simply be a intermediary providing services.
   string sender = 1;
 
-  // hash is the hash-based identifier for the anchored content.
-  // The id's type must equal ID_TYPE_RAW_UNSPECIFIED.
-  ContentHash.Raw hash = 2;
+  // content_hash is the hash-based identifier for the anchored content.
+  ContentHash.Raw content_hash = 2;
 
-  // content is the content of the raw data corresponding to the provided ID.
+  // content is the content of the raw data corresponding to the provided content hash.
   bytes content = 3;
 }
 

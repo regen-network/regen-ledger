@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -14,12 +16,15 @@ import (
 )
 
 func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
 	storeKey := sdk.NewKVStoreKey("test")
 	ctx := NewMockContext()
 
-	k := NewGroupKeeper(storeKey)
+	k := NewGroupKeeper(storeKey, cdc)
 
-	g := testdata.GroupMetadata{
+	g := testdata.GroupInfo{
 		Description: "my test",
 		Admin:       sdk.AccAddress([]byte("admin-address")),
 	}
@@ -31,7 +36,7 @@ func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
 	require.True(t, exists)
 
 	// and load it
-	var loaded testdata.GroupMetadata
+	var loaded testdata.GroupInfo
 
 	binKey, err := k.groupTable.GetOne(ctx, rowID, &loaded)
 	require.NoError(t, err)
@@ -79,12 +84,15 @@ func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
 }
 
 func TestKeeperEndToEndWithNaturalKeyTable(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
 	storeKey := sdk.NewKVStoreKey("test")
 	ctx := NewMockContext()
 
-	k := NewGroupKeeper(storeKey)
+	k := NewGroupKeeper(storeKey, cdc)
 
-	g := testdata.GroupMetadata{
+	g := testdata.GroupInfo{
 		Description: "my test",
 		Admin:       sdk.AccAddress([]byte("admin-address")),
 	}
@@ -165,12 +173,15 @@ func TestKeeperEndToEndWithNaturalKeyTable(t *testing.T) {
 }
 
 func TestGasCostsNaturalKeyTable(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
 	storeKey := sdk.NewKVStoreKey("test")
 	ctx := NewMockContext()
 
-	k := NewGroupKeeper(storeKey)
+	k := NewGroupKeeper(storeKey, cdc)
 
-	g := testdata.GroupMetadata{
+	g := testdata.GroupInfo{
 		Description: "my test",
 		Admin:       sdk.AccAddress([]byte("admin-address")),
 	}
@@ -217,7 +228,7 @@ func TestGasCostsNaturalKeyTable(t *testing.T) {
 		gCtx.ResetGasMeter()
 		m := testdata.GroupMember{
 			Group:  sdk.AccAddress(EncodeSequence(1)),
-			Member: sdk.AccAddress([]byte(fmt.Sprintf("member-addres%d", i))),
+			Member: sdk.AccAddress([]byte(fmt.Sprintf("member-address%d", i))),
 			Weight: 10,
 		}
 		err = k.groupMemberTable.Create(gCtx, &m)
@@ -229,7 +240,7 @@ func TestGasCostsNaturalKeyTable(t *testing.T) {
 		gCtx.ResetGasMeter()
 		m := testdata.GroupMember{
 			Group:  sdk.AccAddress(EncodeSequence(1)),
-			Member: sdk.AccAddress([]byte(fmt.Sprintf("member-addres%d", i))),
+			Member: sdk.AccAddress([]byte(fmt.Sprintf("member-address%d", i))),
 			Weight: 10,
 		}
 		err = k.groupMemberTable.GetOne(gCtx, m.NaturalKey(), &loaded)
@@ -258,15 +269,18 @@ func TestGasCostsNaturalKeyTable(t *testing.T) {
 }
 
 func TestExportImportStateAutoUInt64Table(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
 	storeKey := sdk.NewKVStoreKey("test")
 	ctx := NewMockContext()
 
-	k := NewGroupKeeper(storeKey)
+	k := NewGroupKeeper(storeKey, cdc)
 
 	testRecords := 10
 	for i := 1; i <= testRecords; i++ {
 		myAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, sdk.AddrLen))
-		g := testdata.GroupMetadata{
+		g := testdata.GroupInfo{
 			Description: fmt.Sprintf("my test %d", i),
 			Admin:       myAddr,
 		}
@@ -287,7 +301,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 
 	for i := 1; i <= testRecords; i++ {
 		require.True(t, k.groupTable.Has(ctx, uint64(i)))
-		var loaded testdata.GroupMetadata
+		var loaded testdata.GroupInfo
 		groupRowID, err := k.groupTable.GetOne(ctx, uint64(i), &loaded)
 		require.NoError(t, err)
 
@@ -300,7 +314,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 		require.True(t, k.groupByAdminIndex.Has(ctx, exp))
 		it, err := k.groupByAdminIndex.Get(ctx, exp)
 		require.NoError(t, err)
-		var all []testdata.GroupMetadata
+		var all []testdata.GroupInfo
 		ReadAll(it, &all)
 		require.Len(t, all, 1)
 		assert.Equal(t, loaded, all[0])
@@ -309,10 +323,13 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 }
 
 func TestExportImportStateNaturalKeyTable(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+
 	storeKey := sdk.NewKVStoreKey("test")
 	ctx := NewMockContext()
 
-	k := NewGroupKeeper(storeKey)
+	k := NewGroupKeeper(storeKey, cdc)
 	myGroupAddr := sdk.AccAddress(bytes.Repeat([]byte{byte('a')}, sdk.AddrLen))
 	testRecordsNum := 10
 	testRecords := make([]testdata.GroupMember, testRecordsNum)
@@ -370,8 +387,8 @@ func TestExportImportStateNaturalKeyTable(t *testing.T) {
 	}
 }
 
-func first(t *testing.T, it Iterator) ([]byte, testdata.GroupMetadata) {
-	var loaded testdata.GroupMetadata
+func first(t *testing.T, it Iterator) ([]byte, testdata.GroupInfo) {
+	var loaded testdata.GroupInfo
 	key, err := First(it, &loaded)
 	require.NoError(t, err)
 	return key, loaded

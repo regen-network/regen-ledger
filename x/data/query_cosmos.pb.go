@@ -16,15 +16,15 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QueryClient interface {
-	// ByCid queries data based on its CID.
-	ByCid(ctx context.Context, in *QueryByCidRequest, opts ...grpc.CallOption) (*QueryByCidResponse, error)
+	// ByHash queries data based on its ContentHash.
+	ByHash(ctx context.Context, in *QueryByHashRequest, opts ...grpc.CallOption) (*QueryByHashResponse, error)
 	// BySigner queries data based on signers.
 	BySigner(ctx context.Context, in *QueryBySignerRequest, opts ...grpc.CallOption) (*QueryBySignerResponse, error)
 }
 
 type queryClient struct {
 	cc        grpc.ClientConnInterface
-	_ByCid    types.Invoker
+	_ByHash   types.Invoker
 	_BySigner types.Invoker
 }
 
@@ -32,23 +32,23 @@ func NewQueryClient(cc grpc.ClientConnInterface) QueryClient {
 	return &queryClient{cc: cc}
 }
 
-func (c *queryClient) ByCid(ctx context.Context, in *QueryByCidRequest, opts ...grpc.CallOption) (*QueryByCidResponse, error) {
-	if invoker := c._ByCid; invoker != nil {
-		var out QueryByCidResponse
+func (c *queryClient) ByHash(ctx context.Context, in *QueryByHashRequest, opts ...grpc.CallOption) (*QueryByHashResponse, error) {
+	if invoker := c._ByHash; invoker != nil {
+		var out QueryByHashResponse
 		err := invoker(ctx, in, &out)
 		return &out, err
 	}
 	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
 		var err error
-		c._ByCid, err = invokerConn.Invoker("/regen.data.v1alpha1.Query/ByCid")
+		c._ByHash, err = invokerConn.Invoker("/regen.data.v1alpha2.Query/ByHash")
 		if err != nil {
-			var out QueryByCidResponse
-			err = c._ByCid(ctx, in, &out)
+			var out QueryByHashResponse
+			err = c._ByHash(ctx, in, &out)
 			return &out, err
 		}
 	}
-	out := new(QueryByCidResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Query/ByCid", in, out, opts...)
+	out := new(QueryByHashResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Query/ByHash", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (c *queryClient) BySigner(ctx context.Context, in *QueryBySignerRequest, op
 	}
 	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
 		var err error
-		c._BySigner, err = invokerConn.Invoker("/regen.data.v1alpha1.Query/BySigner")
+		c._BySigner, err = invokerConn.Invoker("/regen.data.v1alpha2.Query/BySigner")
 		if err != nil {
 			var out QueryBySignerResponse
 			err = c._BySigner(ctx, in, &out)
@@ -71,7 +71,7 @@ func (c *queryClient) BySigner(ctx context.Context, in *QueryBySignerRequest, op
 		}
 	}
 	out := new(QueryBySignerResponse)
-	err := c.cc.Invoke(ctx, "/regen.data.v1alpha1.Query/BySigner", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Query/BySigner", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -80,8 +80,8 @@ func (c *queryClient) BySigner(ctx context.Context, in *QueryBySignerRequest, op
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// ByCid queries data based on its CID.
-	ByCid(types.Context, *QueryByCidRequest) (*QueryByCidResponse, error)
+	// ByHash queries data based on its ContentHash.
+	ByHash(types.Context, *QueryByHashRequest) (*QueryByHashResponse, error)
 	// BySigner queries data based on signers.
 	BySigner(types.Context, *QueryBySignerRequest) (*QueryBySignerResponse, error)
 }
@@ -90,20 +90,20 @@ func RegisterQueryServer(s grpc.ServiceRegistrar, srv QueryServer) {
 	s.RegisterService(&Query_ServiceDesc, srv)
 }
 
-func _Query_ByCid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryByCidRequest)
+func _Query_ByHash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryByHashRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryServer).ByCid(types.UnwrapSDKContext(ctx), in)
+		return srv.(QueryServer).ByHash(types.UnwrapSDKContext(ctx), in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1alpha1.Query/ByCid",
+		FullMethod: "/regen.data.v1alpha2.Query/ByHash",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ByCid(types.UnwrapSDKContext(ctx), req.(*QueryByCidRequest))
+		return srv.(QueryServer).ByHash(types.UnwrapSDKContext(ctx), req.(*QueryByHashRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -118,7 +118,7 @@ func _Query_BySigner_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/regen.data.v1alpha1.Query/BySigner",
+		FullMethod: "/regen.data.v1alpha2.Query/BySigner",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).BySigner(types.UnwrapSDKContext(ctx), req.(*QueryBySignerRequest))
@@ -130,22 +130,22 @@ func _Query_BySigner_Handler(srv interface{}, ctx context.Context, dec func(inte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Query_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "regen.data.v1alpha1.Query",
+	ServiceName: "regen.data.v1alpha2.Query",
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ByCid",
-			Handler:    _Query_ByCid_Handler,
+			MethodName: "ByHash",
+			Handler:    _Query_ByHash_Handler,
 		},
 		{
 			MethodName: "BySigner",
 			Handler:    _Query_BySigner_Handler,
 		},
 	},
-	Metadata: "regen/data/v1alpha1/query.proto",
+	Metadata: "regen/data/v1alpha2/query.proto",
 }
 
 const (
-	QueryByCidMethod    = "/regen.data.v1alpha1.Query/ByCid"
-	QueryBySignerMethod = "/regen.data.v1alpha1.Query/BySigner"
+	QueryByHashMethod   = "/regen.data.v1alpha2.Query/ByHash"
+	QueryBySignerMethod = "/regen.data.v1alpha2.Query/BySigner"
 )
