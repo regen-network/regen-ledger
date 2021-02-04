@@ -63,6 +63,6 @@ func (r *rootModuleKey) Derive(path []byte) DerivedModuleKey {
 	return DerivedModuleKey{
 		moduleName:     r.moduleName,
 		path:           path,
-		privateInvoker: r.invokerFactory,
+		invokerFactory: r.invokerFactory,
 	}
 }

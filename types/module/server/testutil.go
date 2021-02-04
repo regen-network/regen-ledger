@@ -99,7 +99,7 @@ func (f fixture) Signers() []sdk.AccAddress {
 func (f fixture) Teardown() {}
 
 type testKey struct {
-	invokerFactory PrivateContext
+	invokerFactory InvokerFactory
 }
 
 var _ grpc.ClientConnInterface = testKey{}

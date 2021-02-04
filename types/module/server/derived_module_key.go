@@ -14,13 +14,13 @@ import (
 type DerivedModuleKey struct {
 	moduleName     string
 	path           []byte
-	privateInvoker InvokerFactory
+	invokerFactory InvokerFactory
 }
 
 var _ ModuleKey = DerivedModuleKey{}
 
 func (d DerivedModuleKey) Invoker(methodName string) (types.Invoker, error) {
-	return d.privateInvoker(CallInfo{
+	return d.invokerFactory(CallInfo{
 		Method: methodName,
 		Caller: d.ModuleID(),
 	})
@@ -48,16 +48,4 @@ func (d DerivedModuleKey) ModuleID() types.ModuleID {
 
 func (d DerivedModuleKey) Address() sdk.AccAddress {
 	return d.ModuleID().Address()
-}
-
-func (d DerivedModuleKey) CreateNewAccount(ctx types.Context) error {
-	panic("implement me")
-}
-
-func (d DerivedModuleKey) EnsureAccountExists(ctx types.Context) error {
-	panic("implement me")
-}
-
-func (d DerivedModuleKey) AccountExists(ctx types.Context) bool {
-	panic("implement me")
 }
