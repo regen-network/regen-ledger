@@ -23,14 +23,14 @@ func QueryCmd(name string) *cobra.Command {
 		QueryGroupInfoCmd(),
 		QueryGroupAccountInfoCmd(),
 		QueryGroupMembersCmd(),
-		// QueryGroupsByAdminCmd(),
-		// QueryGroupAccountsByGroupCmd(),
-		// QueryGroupAccountsByAdminCmd(),
-		// QueryProposalCmd(),
-		// QueryProposalsByGroupAccountCmd(),
-		// QueryVoteByProposalVoterCmd(),
-		// QueryVotesByProposalCmd(),
-		// QueryVotesByVoterCmd(),
+		QueryGroupsByAdminCmd(),
+		QueryGroupAccountsByGroupCmd(),
+		QueryGroupAccountsByAdminCmd(),
+		QueryProposalCmd(),
+		QueryProposalsByGroupAccountCmd(),
+		QueryVoteByProposalVoterCmd(),
+		QueryVotesByProposalCmd(),
+		QueryVotesByVoterCmd(),
 	)
 
 	return queryCmd
@@ -154,15 +154,276 @@ func QueryGroupsByAdminCmd() *cobra.Command {
 				return err
 			}
 
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
 			queryClient := group.NewQueryClient(clientCtx)
+
+			res, err := queryClient.GroupsByAdmin(cmd.Context(), &group.QueryGroupsByAdminRequest{
+				Admin:      args[0],
+				Pagination: pageReq,
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// QueryGroupAccountsByGroupCmd creates a CLI command for Query/GroupAccountsByGroup.
+func QueryGroupAccountsByGroupCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "group-accounts-by-group [group-id]",
+		Short: "Query for group accounts by group id with pagination flags",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			groupID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
 
 			pageReq, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {
 				return err
 			}
 
-			res, err := queryClient.GroupsByAdmin(cmd.Context(), &group.QueryGroupsByAdminRequest{
+			queryClient := group.NewQueryClient(clientCtx)
+
+			res, err := queryClient.GroupAccountsByGroup(cmd.Context(), &group.QueryGroupAccountsByGroupRequest{
+				GroupId:    group.ID(groupID),
+				Pagination: pageReq,
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// QueryGroupAccountsByAdminCmd creates a CLI command for Query/GroupAccountsByAdmin.
+func QueryGroupAccountsByAdminCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "group-accounts-by-admin [admin]",
+		Short: "Query for group accounts by admin account address with pagination flags",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			queryClient := group.NewQueryClient(clientCtx)
+
+			res, err := queryClient.GroupAccountsByAdmin(cmd.Context(), &group.QueryGroupAccountsByAdminRequest{
 				Admin:      args[0],
+				Pagination: pageReq,
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// QueryProposalCmd creates a CLI command for Query/Proposal.
+func QueryProposalCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "proposal [id]",
+		Short: "Query for proposal by id",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			proposalID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := group.NewQueryClient(clientCtx)
+
+			res, err := queryClient.Proposal(cmd.Context(), &group.QueryProposalRequest{
+				ProposalId: group.ProposalID(proposalID),
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// QueryProposalsByGroupAccountCmd creates a CLI command for Query/ProposalsByGroupAccount.
+func QueryProposalsByGroupAccountCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "proposals-by-group-account [group-account]",
+		Short: "Query for proposals by group account address with pagination flags",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			queryClient := group.NewQueryClient(clientCtx)
+
+			res, err := queryClient.ProposalsByGroupAccount(cmd.Context(), &group.QueryProposalsByGroupAccountRequest{
+				GroupAccount: args[0],
+				Pagination:   pageReq,
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// QueryVoteByProposalVoterCmd creates a CLI command for Query/VoteByProposalVoter.
+func QueryVoteByProposalVoterCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "vote [proposal-id] [voter]",
+		Short: "Query for vote by proposal id and voter account address",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			proposalID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			queryClient := group.NewQueryClient(clientCtx)
+
+			res, err := queryClient.VoteByProposalVoter(cmd.Context(), &group.QueryVoteByProposalVoterRequest{
+				ProposalId: group.ProposalID(proposalID),
+				Voter:      args[1],
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// QueryVotesByProposalCmd creates a CLI command for Query/VotesByProposal.
+func QueryVotesByProposalCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "votes-by-proposal [proposal-id]",
+		Short: "Query for votes by proposal id with pagination flags",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			proposalID, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return err
+			}
+
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			queryClient := group.NewQueryClient(clientCtx)
+
+			res, err := queryClient.VotesByProposal(cmd.Context(), &group.QueryVotesByProposalRequest{
+				ProposalId: group.ProposalID(proposalID),
+				Pagination: pageReq,
+			})
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// QueryVotesByVoterCmd creates a CLI command for Query/VotesByVoter.
+func QueryVotesByVoterCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "votes-by-voter [voter]",
+		Short: "Query for votes by voter account address with pagination flags",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			pageReq, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			queryClient := group.NewQueryClient(clientCtx)
+
+			res, err := queryClient.VotesByVoter(cmd.Context(), &group.QueryVotesByVoterRequest{
+				Voter:      args[0],
 				Pagination: pageReq,
 			})
 			if err != nil {

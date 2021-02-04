@@ -5,7 +5,6 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 )
 
 // RegisterLegacyAminoCodec registers all the necessary group module concrete
@@ -22,8 +21,6 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgCreateProposalRequest{}, "cosmos-sdk/group/MsgCreateProposal", nil)
 	cdc.RegisterConcrete(&MsgVoteRequest{}, "cosmos-sdk/group/MsgVote", nil)
 	cdc.RegisterConcrete(&MsgExecRequest{}, "cosmos-sdk/group/MsgExec", nil)
-
-	legacytx.RegisterLegacyAminoCodec(cdc)
 }
 
 func RegisterTypes(registry cdctypes.InterfaceRegistry) {
