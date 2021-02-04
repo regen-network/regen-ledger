@@ -31,7 +31,7 @@ func TestTable(t *testing.T) {
 	testTable(t, table, 5)
 }
 
-type sixteenByteHash struct {
+type sixteenBitHash struct {
 	hash.Hash
 }
 

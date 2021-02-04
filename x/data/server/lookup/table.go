@@ -157,11 +157,5 @@ func tryID(store KVStore, id []byte, value []byte) bool {
 		store.Set(id, value)
 		return true
 	}
-
-	// id exists, check if equal
-	if bytes.Equal(value, bz) {
-		return true
-	}
-
-	return false
+	return bytes.Equal(value, bz)
 }
