@@ -45,7 +45,15 @@ func (m *MsgSignDataRequest) GetSigners() []sdk.AccAddress {
 	return addrs
 }
 
+const (
+	MaxRawDataLength = 1024
+)
+
 func (m *MsgStoreRawDataRequest) ValidateBasic() error {
+	if len(m.Content) > MaxRawDataLength {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("content is too long, got %d and limit is %d", len(m.Content), MaxRawDataLength))
+	}
+
 	err := m.ContentHash.Validate()
 	if err != nil {
 		return err

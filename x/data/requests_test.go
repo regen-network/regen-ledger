@@ -200,6 +200,13 @@ func TestMsgStoreRawDataRequest_ValidateBasic(t *testing.T) {
 			},
 			"hash verification failed",
 		},
+		{
+			"too long",
+			fields{
+				Content: make([]byte, 1025),
+			},
+			"content is too long, got 1025 and limit is 1024: invalid request",
+		},
 	}
 
 	for _, tt := range tests {
