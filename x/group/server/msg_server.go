@@ -245,7 +245,7 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 	// Generate group account address.
 	var accountAddr sdk.AccAddress
 	// loop here in the rare case of a collision
-	for true {
+	for {
 		nextAccVal := s.groupAccountSeq.NextVal(ctx)
 		buf := bytes.NewBuffer(nil)
 		err = binary.Write(buf, binary.LittleEndian, nextAccVal)
@@ -253,8 +253,8 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 			return nil, err
 		}
 
-		accountId := s.key.Derive(buf.Bytes())
-		accountAddr = accountId.Address()
+		accountID := s.key.Derive(buf.Bytes())
+		accountAddr = accountID.Address()
 
 		if s.accKeeper.GetAccount(ctx.Context, accountAddr) != nil {
 			// handle a rare collision
