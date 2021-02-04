@@ -49,7 +49,7 @@ func TxCmd(name string) *cobra.Command {
 // MsgCreateGroupCmd creates a CLI command for Msg/CreateGroup.
 func MsgCreateGroupCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "create-group [admin] [metadata]",
+		Use: "create-group [admin] [metadata] [members-json-file]",
 		Short: "Create a group which is an aggregation " +
 			"of member accounts with associated weights and " +
 			"an administrator account. Note, the '--from' flag is " +
@@ -60,7 +60,7 @@ an administrator account. Note, the '--from' flag is ignored as it is implied fr
 Members accounts can be given through a members JSON file that contains an array of members.
 
 Example:
-$ %s tx group create-group [admin] [metadata] --members="path/to/members.json"
+$ %s tx group create-group [admin] [metadata] [members-json-file]
 
 Where members.json contains:
 
@@ -80,7 +80,7 @@ Where members.json contains:
 				version.AppName,
 			),
 		),
-		Args: cobra.ExactArgs(2),
+		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			err := cmd.Flags().Set(flags.FlagFrom, args[0])
 			if err != nil {
@@ -92,7 +92,7 @@ Where members.json contains:
 				return err
 			}
 
-			members, err := parseMembersFlag(cmd.Flags())
+			members, err := parseMembers(args[2])
 			if err != nil {
 				return err
 			}
@@ -124,13 +124,13 @@ Where members.json contains:
 // MsgUpdateGroupMembersCmd creates a CLI command for Msg/UpdateGroupMembers.
 func MsgUpdateGroupMembersCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-group-members [admin] [group-id]",
+		Use:   "update-group-members [admin] [group-id] [members-json-file]",
 		Short: "Update a group's members. Set a member's weight to \"0\" to delete it.",
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Update a group's members
 
 Example:
-$ %s tx group update-group-members [admin] [group-id] --members="path/to/members.json"
+$ %s tx group update-group-members [admin] [group-id] [members-json-file]
 
 Where members.json contains:
 
@@ -152,7 +152,7 @@ Set a member's weight to "0" to delete it.
 				version.AppName,
 			),
 		),
-		Args: cobra.ExactArgs(2),
+		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			err := cmd.Flags().Set(flags.FlagFrom, args[0])
 			if err != nil {
@@ -164,7 +164,7 @@ Set a member's weight to "0" to delete it.
 				return err
 			}
 
-			members, err := parseMembersFlag(cmd.Flags())
+			members, err := parseMembers(args[2])
 			if err != nil {
 				return err
 			}

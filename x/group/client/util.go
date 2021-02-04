@@ -5,12 +5,10 @@ import (
 	"io/ioutil"
 
 	"github.com/regen-network/regen-ledger/x/group"
-	"github.com/spf13/pflag"
 )
 
-func parseMembersFlag(fs *pflag.FlagSet) ([]group.Member, error) {
+func parseMembers(membersFile string) ([]group.Member, error) {
 	members := []group.Member{}
-	membersFile, _ := fs.GetString(flagMembers)
 
 	if membersFile == "" {
 		return members, nil
