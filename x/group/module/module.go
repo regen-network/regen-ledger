@@ -8,9 +8,10 @@ import (
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/group"
+	"github.com/regen-network/regen-ledger/x/group/client"
 	"github.com/regen-network/regen-ledger/x/group/server"
 
-	"github.com/cosmos/cosmos-sdk/client"
+	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -41,7 +42,7 @@ func (a Module) DefaultGenesis(marshaler codec.JSONMarshaler) json.RawMessage {
 	return marshaler.MustMarshalJSON(group.NewGenesisState())
 }
 
-func (a Module) ValidateGenesis(cdc codec.JSONMarshaler, config client.TxEncodingConfig, bz json.RawMessage) error {
+func (a Module) ValidateGenesis(cdc codec.JSONMarshaler, config sdkclient.TxEncodingConfig, bz json.RawMessage) error {
 	var data group.GenesisState
 	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", group.ModuleName, err)
@@ -49,21 +50,21 @@ func (a Module) ValidateGenesis(cdc codec.JSONMarshaler, config client.TxEncodin
 	return data.Validate()
 }
 
-func (a Module) RegisterGRPCGatewayRoutes(client.Context, *runtime.ServeMux) {}
+func (a Module) RegisterGRPCGatewayRoutes(sdkclient.Context, *runtime.ServeMux) {}
 
 func (a Module) GetTxCmd() *cobra.Command {
-	// TODO #209
-	return nil
+	return client.TxCmd(a.Name())
 }
 
 func (a Module) GetQueryCmd() *cobra.Command {
-	// TODO #209
-	return nil
+	return client.QueryCmd(a.Name())
 }
 
 /**** DEPRECATED ****/
-func (a Module) RegisterRESTRoutes(client.Context, *mux.Router) {}
-func (a Module) RegisterLegacyAminoCodec(*codec.LegacyAmino)    {}
+func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
+func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	group.RegisterLegacyAminoCodec(cdc)
+}
 
 // Route returns the message routing key for the group module.
 // func (a AppModule) Route() sdk.Route {

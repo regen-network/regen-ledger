@@ -9,10 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// GetQueryCmd returns the cli query commands for this module
-func GetQueryCmd() *cobra.Command {
+// QueryCmd returns the cli query commands for the group module.
+func QueryCmd(name string) *cobra.Command {
 	queryCmd := &cobra.Command{
-		Use:                        group.ModuleName,
+		Use:                        name,
 		Short:                      "Querying commands for the group module",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,

@@ -19,10 +19,10 @@ import (
 
 const flagMembers = "members"
 
-// NewTxCmd returns a root CLI command handler for all x/bank transaction commands.
-func NewTxCmd() *cobra.Command {
+// TxCmd returns a root CLI command handler for all x/group transaction commands.
+func TxCmd(name string) *cobra.Command {
 	txCmd := &cobra.Command{
-		Use:                        group.ModuleName,
+		Use:                        name,
 		Short:                      "Group transaction subcommands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
@@ -293,10 +293,6 @@ Note, the '--from' flag is ignored as it is implied from [admin].
 Example:
 $ %s tx group create-group-account [admin] [group-id] [metadata] \
 '{"@type":"/regen.group.v1alpha1.ThresholdDecisionPolicy", "threshold":"1", "timeout":"1s"}'
-
-Where decision-policy.json contains:
-
-{}
 `,
 				version.AppName,
 			),
