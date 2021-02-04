@@ -181,43 +181,48 @@ message CompactDataset {
 
     message NamedGraph {
         oneof name {
-            sint64 iri_id = 1;
-            uint32 blank_node_id = 2;
+            bytes internal_id = 1;
+            sint32 local_ref = 2;
         }
         repeated Node graph = 3;
     }
 
     message Node {
         oneof subject {
-            sint64 iri_id = 1;
-            uint32 blank_node_id = 2;
+            bytes internal_id = 1;
+            sint32 local_ref = 2;
         }
         repeated Properties properties = 3;
     }
 
     message Properties {
-        sint64 iri_id = 1;
-        repeated Term objects = 2;
+        oneof predicate {
+            bytes internal_id = 1;
+            sint32 local_ref = 2;
+        }
+        repeated Term objects = 3;
     }
 
     message Term {
         oneof sum {
-            sint64 iri_id = 1;
-            uint32 blank_node_id = 2;
-            Datatype literal_datatype = 3;
+            bytes object_internal_id = 1;
+            sint32 object_local_ref = 2;
+            WellknownDatatype well_known_datatype = 3;
+            bytes data_type_internal_id = 4;
+            sint32 data_type_local_ref = 5;
         }
+
+        string lang = 6;
 
         oneof literal_value {
-            string str_value = 5;
-            google.protobuf.Timestamp timestamp_value = 6;
-            google.protobuf.Duration duration_value = 7;
-            sint64 geo_id = 8;
+            string str_value = 7;
+            google.protobuf.Timestamp timestamp_value = 8;
+            google.protobuf.Duration duration_value = 9;
+            sint64 geo_id = 10;
         }
-
-        string lang = 4;
     }
 
-    enum Datatype {
+    enum WellknownDatatype {
         DATATYPE_UNSPECIFIED = 0;
         DATATYPE_BOOL_FALSE = 1;
         DATATYPE_BOOL_TRUE = 2;
