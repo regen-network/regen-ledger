@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/spf13/pflag"
+
+	"github.com/stretchr/testify/require"
+
 	"github.com/cosmos/cosmos-sdk/client/tx"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -16,8 +20,12 @@ import (
 )
 
 type fixtureFactory struct {
-	config Config
 	t      *testing.T
+	config Config
+}
+
+func NewFixtureFactory(t *testing.T, config Config) *fixtureFactory {
+	return &fixtureFactory{t: t, config: config}
 }
 
 var _ server.FixtureFactory = fixtureFactory{}
@@ -28,6 +36,8 @@ func (f fixtureFactory) Setup(setupHooks ...func(cdc *codec.ProtoCodec, app *bas
 	}
 
 	network := New(f.t, f.config)
+	_, err := network.WaitForHeight(1)
+	require.NoError(f.t, err)
 	return fixture{network: network}
 }
 
@@ -75,6 +85,37 @@ func (c txConn) NewStream(ctx context.Context, desc *grpc.StreamDesc, method str
 var _ grpc.ClientConnInterface = txConn{}
 
 func (c txConn) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
-	clientCtx := c.network.Validators[0].ClientCtx
-	return tx.GenerateOrBroadcastTxCLI(clientCtx, nil)
+	req, ok := args.(sdk.MsgRequest)
+	if !ok {
+		return fmt.Errorf("expected %T, got %T", (*sdk.MsgRequest)(nil), args)
+	}
+
+	signers := req.GetSigners()
+	if len(signers) != 1 {
+		return fmt.Errorf("execpted exactly 1 signer, got %+v", signers)
+	}
+
+	signer := signers[0]
+	for _, val := range c.network.Validators {
+		if val.Address.Equals(signer) {
+			clientCtx := val.ClientCtx
+			msg := &sdk.ServiceMsg{
+				MethodName: method,
+				Request:    req,
+			}
+
+			clientCtx = clientCtx.
+				WithFromAddress(signer).
+				WithFromName(val.Moniker).
+				WithSkipConfirmation(true).
+				WithBroadcastMode("block")
+
+			txf := tx.NewFactoryCLI(clientCtx, &pflag.FlagSet{})
+			err := tx.BroadcastTx(clientCtx, txf, msg)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return fmt.Errorf("do not know how to sign transactions with address %s", signer)
 }
