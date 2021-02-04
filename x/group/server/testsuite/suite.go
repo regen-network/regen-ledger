@@ -6,6 +6,13 @@ import (
 	"sort"
 	"time"
 
+	groupmodule "github.com/regen-network/regen-ledger/x/group/module"
+
+	"github.com/regen-network/regen-ledger/types/module"
+
+	"github.com/regen-network/regen-ledger/testutil"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -20,7 +27,6 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	"github.com/regen-network/regen-ledger/testutil/server"
 	"github.com/regen-network/regen-ledger/testutil/testdata"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/group"
@@ -30,8 +36,8 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	fixtureFactory server.FixtureFactory
-	fixture        server.Fixture
+	fixtureFactory servermodule.ModuleManagerFixtureFactory
+	fixture        testutil.Fixture
 
 	ctx              context.Context
 	sdkCtx           sdk.Context
@@ -46,20 +52,20 @@ type IntegrationTestSuite struct {
 	groupAccountAddr sdk.AccAddress
 	groupID          group.ID
 
-	bankKeeper bankkeeper.Keeper
+	accountKeeper authkeeper.AccountKeeper
+	bankKeeper    bankkeeper.Keeper
 
 	blockTime time.Time
 }
 
-func NewIntegrationTestSuite(
-	fixtureFactory server.FixtureFactory) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory servermodule.ModuleManagerFixtureFactory) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
 	}
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
-	s.fixture = s.fixtureFactory.Setup(func(cdc *codec.ProtoCodec, baseApp *baseapp.BaseApp) {
+	s.fixture = s.fixtureFactory.LegacySetup(func(cdc *codec.ProtoCodec, baseApp *baseapp.BaseApp, modules []module.Module) {
 		// Setting up bank keeper
 		banktypes.RegisterInterfaces(cdc.InterfaceRegistry())
 		authtypes.RegisterInterfaces(cdc.InterfaceRegistry())
@@ -73,11 +79,16 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		authSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, authtypes.ModuleName)
 		bankSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, banktypes.ModuleName)
 
-		accountKeeper := authkeeper.NewAccountKeeper(
+		s.accountKeeper = authkeeper.NewAccountKeeper(
 			cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, map[string][]string{},
 		)
+
+		groupModule := modules[0].(groupmodule.Module)
+		groupModule.AccountKeeper = s.accountKeeper
+		modules[0] = groupModule
+
 		s.bankKeeper = bankkeeper.NewBaseKeeper(
-			cdc, bankKey, accountKeeper, bankSubspace, map[string]bool{},
+			cdc, bankKey, s.accountKeeper, bankSubspace, map[string]bool{},
 		)
 
 		baseApp.Router().AddRoute(sdk.NewRoute(banktypes.ModuleName, bank.NewHandler(s.bankKeeper)))

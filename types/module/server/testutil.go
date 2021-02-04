@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/regen-network/regen-ledger/testutil"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -16,7 +18,6 @@ import (
 	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/grpc"
 
-	"github.com/regen-network/regen-ledger/testutil/server"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/module"
 )
@@ -27,9 +28,14 @@ type fixtureFactory struct {
 	signers []sdk.AccAddress
 }
 
-var _ server.FixtureFactory = fixtureFactory{}
+type ModuleManagerFixtureFactory interface {
+	testutil.FixtureFactory
+	LegacySetup(setupHooks ...func(cdc *codec.ProtoCodec, app *baseapp.BaseApp, modules []module.Module)) testutil.Fixture
+}
 
-func NewFixtureFactory(t *testing.T, numSigners int, modules []module.Module) server.FixtureFactory {
+var _ ModuleManagerFixtureFactory = fixtureFactory{}
+
+func NewFixtureFactory(t *testing.T, numSigners int, modules []module.Module) ModuleManagerFixtureFactory {
 	signers := makeTestAddresses(numSigners)
 	return fixtureFactory{
 		t:       t,
@@ -46,7 +52,11 @@ func makeTestAddresses(count int) []sdk.AccAddress {
 	return addrs
 }
 
-func (ff fixtureFactory) Setup(setupHooks ...func(cdc *codec.ProtoCodec, app *baseapp.BaseApp)) server.Fixture {
+func (ff fixtureFactory) Setup() testutil.Fixture {
+	return ff.LegacySetup()
+}
+
+func (ff fixtureFactory) LegacySetup(setupHooks ...func(cdc *codec.ProtoCodec, app *baseapp.BaseApp, modules []module.Module)) testutil.Fixture {
 	registry := types.NewInterfaceRegistry()
 	baseApp := baseapp.NewBaseApp("test", log.NewNopLogger(), dbm.NewMemDB(), nil)
 	baseApp.MsgServiceRouter().SetInterfaceRegistry(registry)
@@ -54,7 +64,7 @@ func (ff fixtureFactory) Setup(setupHooks ...func(cdc *codec.ProtoCodec, app *ba
 	cdc := codec.NewProtoCodec(registry)
 
 	for _, hook := range setupHooks {
-		hook(cdc, baseApp)
+		hook(cdc, baseApp, ff.modules)
 	}
 
 	mm := NewManager(baseApp, cdc)
