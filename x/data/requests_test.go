@@ -57,7 +57,7 @@ func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
 				},
 				}},
 			},
-			wantErr: "expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 31: unknown request",
+			wantErr: "expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 31: invalid request",
 		},
 	}
 	for _, tt := range tests {
@@ -126,7 +126,7 @@ func TestMsgSignDataRequest_ValidateBasic(t *testing.T) {
 					MerkleTree:                GraphMerkleTree_GRAPH_MERKLE_TREE_NONE_UNSPECIFIED,
 				},
 			},
-			"invalid data.GraphCanonicalizationAlgorithm GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED: unknown request",
+			"invalid data.GraphCanonicalizationAlgorithm GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED: invalid request",
 		},
 	}
 	for _, tt := range tests {
