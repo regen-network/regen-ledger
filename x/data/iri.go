@@ -138,11 +138,6 @@ func ParseIRI(methodPrefix string, iri string) (*ContentHash, sdk.AccAddress, er
 		hashPart := parts[0]
 		ext := parts[1]
 
-		mediaType, ok := mediaTypeExtensionsReverse[ext]
-		if !ok {
-			return nil, nil, fmt.Errorf("can't resolve MediaType for extension %s", ext)
-		}
-
 		res, version, err := base58.CheckDecode(hashPart)
 		if err != nil {
 			return nil, nil, err
@@ -165,6 +160,11 @@ func ParseIRI(methodPrefix string, iri string) (*ContentHash, sdk.AccAddress, er
 				return nil, nil, err
 			}
 
+			mediaType, ok := mediaTypeExtensionsReverse[ext]
+			if !ok {
+				return nil, nil, fmt.Errorf("can't resolve MediaType for extension %s", ext)
+			}
+
 			digestAlg := DigestAlgorithm(b0)
 			hash := rdr.Bytes()
 			err = digestAlg.Validate(hash)
@@ -179,6 +179,10 @@ func ParseIRI(methodPrefix string, iri string) (*ContentHash, sdk.AccAddress, er
 			}}}, nil, nil
 
 		case IriPrefixGraph:
+			if ext != "rdf" {
+				return nil, nil, fmt.Errorf("expected extension .rdf for graph data, got .%s", ext)
+			}
+
 			b0, err := rdr.ReadByte()
 			if err != nil {
 				return nil, nil, err

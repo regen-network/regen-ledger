@@ -196,3 +196,7 @@ func TestMediaType_ToExtension(t *testing.T) {
 	_, err := MediaType(-1).ToExtension()
 	require.Error(t, err)
 }
+
+func TestParseIRI(t *testing.T) {
+
+}

@@ -24,6 +24,9 @@ func (s serverImpl) ByHash(ctx types.Context, request *data.QueryByHashRequest) 
 	id := s.iriIdTable.GetOrCreateID(store, []byte(iri))
 
 	entry, err := s.getEntry(store, id)
+	if err != nil {
+		return nil, err
+	}
 
 	return &data.QueryByHashResponse{
 		Entry: entry,
