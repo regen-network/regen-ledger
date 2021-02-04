@@ -14,6 +14,7 @@ import (
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
@@ -24,6 +25,7 @@ type Module struct{}
 var _ module.AppModuleBasic = Module{}
 var _ servermodule.Module = Module{}
 var _ climodule.Module = Module{}
+var _ servermodule.LegacyRouteModule = Module{}
 
 func (a Module) Name() string {
 	return group.ModuleName
@@ -70,3 +72,7 @@ func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 // func (a AppModule) Route() sdk.Route {
 // 	return sdk.NewRoute(group.RouterKey, server.NewHandler(a.storeKey, a.paramSpace, a.router, a.cdc))
 // }
+
+func (a Module) Route(configurator servermodule.Configurator) sdk.Route {
+	return sdk.NewRoute(group.RouterKey, server.NewHandler(configurator))
+}

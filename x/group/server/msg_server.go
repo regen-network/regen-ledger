@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 
 	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,7 +12,6 @@ import (
 	"github.com/regen-network/regen-ledger/math"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/util"
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
@@ -78,8 +78,7 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 		}
 	}
 
-	groupIDStr := util.Uint64ToBase58Check(groupID.Uint64())
-	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroup{GroupId: groupIDStr})
+	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroup{GroupId: strconv.FormatUint(groupID.Uint64(), 10)})
 	if err != nil {
 		return nil, err
 	}
@@ -584,8 +583,7 @@ func (s serverImpl) doUpdateGroup(ctx types.Context, req authNGroupReq, action a
 		return err
 	}
 
-	groupIDStr := util.Uint64ToBase58Check(req.GetGroupID().Uint64())
-	err = ctx.EventManager().EmitTypedEvent(&group.EventUpdateGroup{GroupId: groupIDStr})
+	err = ctx.EventManager().EmitTypedEvent(&group.EventUpdateGroup{GroupId: strconv.FormatUint(req.GetGroupID().Uint64(), 10)})
 	if err != nil {
 		return err
 	}

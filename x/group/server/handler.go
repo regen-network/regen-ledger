@@ -1,17 +1,16 @@
 package server
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/types"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
 // NewHandler creates an sdk.Handler for all the group type messages
-func NewHandler(storeKey sdk.StoreKey,
-	router sdk.Router, cdc codec.Marshaler) sdk.Handler {
-	impl := newServer(storeKey, router, cdc)
+func NewHandler(configurator servermodule.Configurator) sdk.Handler {
+	impl := newServer(configurator.ModuleKey(), configurator.Router(), configurator.Marshaler())
 
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
