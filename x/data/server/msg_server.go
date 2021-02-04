@@ -117,9 +117,21 @@ func (s serverImpl) SignData(ctx types.Context, request *data.MsgSignDataRequest
 	return &data.MsgSignDataResponse{}, nil
 }
 
+const (
+	Blake2bVerificationCostPerByte uint64 = 10
+)
+
 func (s serverImpl) StoreRawData(ctx types.Context, request *data.MsgStoreRawDataRequest) (*data.MsgStoreRawDataResponse, error) {
 	// NOTE: hash verification already has happened in MsgStoreRawDataRequest.ValidateBasic()
-	// TODO: add hash verification gas cost
+
+	contentLen := len(request.Content)
+	digestAlgorithm := request.ContentHash.DigestAlgorithm
+	switch digestAlgorithm {
+	case data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256:
+		ctx.GasMeter().ConsumeGas(uint64(contentLen)*Blake2bVerificationCostPerByte, "hash verification")
+	default:
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("unsupported %T %s", digestAlgorithm, digestAlgorithm))
+	}
 
 	iri, id, _, err := s.getIRIAndAnchor(ctx, request.ContentHash)
 	if err != nil {
