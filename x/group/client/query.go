@@ -62,7 +62,7 @@ func QueryGroupInfoCmd() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintProto(res)
+			return clientCtx.PrintProto(res.Info)
 		},
 	}
 
@@ -92,7 +92,7 @@ func QueryGroupAccountInfoCmd() *cobra.Command {
 				return err
 			}
 
-			return clientCtx.PrintProto(res)
+			return clientCtx.PrintProto(res.Info)
 		},
 	}
 

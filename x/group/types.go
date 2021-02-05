@@ -467,3 +467,15 @@ func (t Tally) ValidateBasic() error {
 	}
 	return nil
 }
+
+// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+func (q QueryGroupAccountsByGroupResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+	for _, g := range q.GroupAccounts {
+		err := codectypes.UnpackInterfaces(g, unpacker)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
