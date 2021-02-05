@@ -28,7 +28,6 @@ type Module struct {
 	registry      types.InterfaceRegistry
 	accountKeeper group.AccountKeeper
 	bankKeeper    group.BankKeeper
-	cdc           codec.Marshaler
 }
 
 var _ module.AppModuleBasic = Module{}
