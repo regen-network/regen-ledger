@@ -5,8 +5,10 @@ import (
 	"reflect"
 
 	"github.com/cockroachdb/apd/v2"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	proto "github.com/gogo/protobuf/proto"
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/regen-network/regen-ledger/math"
 	"github.com/regen-network/regen-ledger/orm"
@@ -268,17 +270,65 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 }
 
 func (s serverImpl) UpdateGroupAccountAdmin(ctx types.Context, req *group.MsgUpdateGroupAccountAdminRequest) (*group.MsgUpdateGroupAccountAdminResponse, error) {
-	// TODO #224
+	action := func(groupAccount *group.GroupAccountInfo) error {
+		groupAccount.Admin = req.NewAdmin
+		groupAccount.Version++
+		return s.groupAccountTable.Save(ctx, groupAccount)
+	}
+
+	err := s.doUpdateGroupAccount(ctx, req.GroupAccount, req.Admin, action, "group account")
+	if err != nil {
+		return nil, err
+	}
+
 	return &group.MsgUpdateGroupAccountAdminResponse{}, nil
 }
 
 func (s serverImpl) UpdateGroupAccountDecisionPolicy(ctx types.Context, req *group.MsgUpdateGroupAccountDecisionPolicyRequest) (*group.MsgUpdateGroupAccountDecisionPolicyResponse, error) {
-	// TODO #224
+	policy := req.GetDecisionPolicy()
+
+	action := func(groupAccount *group.GroupAccountInfo) error {
+		msg, ok := policy.(proto.Message)
+		if !ok {
+			return fmt.Errorf("%T does not implement proto.Message", policy)
+		}
+
+		any, err := codectypes.NewAnyWithValue(msg)
+		if err != nil {
+			return err
+		}
+
+		groupAccount.DecisionPolicy = any
+		groupAccount.Version++
+		return s.groupAccountTable.Save(ctx, groupAccount)
+	}
+
+	err := s.doUpdateGroupAccount(ctx, req.GroupAccount, req.Admin, action, "group account")
+	if err != nil {
+		return nil, err
+	}
+
 	return &group.MsgUpdateGroupAccountDecisionPolicyResponse{}, nil
 }
 
 func (s serverImpl) UpdateGroupAccountMetadata(ctx types.Context, req *group.MsgUpdateGroupAccountMetadataRequest) (*group.MsgUpdateGroupAccountMetadataResponse, error) {
-	// TODO #224
+	metadata := req.GetMetadata()
+
+	action := func(groupAccount *group.GroupAccountInfo) error {
+		groupAccount.Metadata = metadata
+		groupAccount.Version++
+		return s.groupAccountTable.Save(ctx, groupAccount)
+	}
+
+	if err := assertMetadataLength(metadata, s.maxMetadataLength(ctx), "group account metadata"); err != nil {
+		return nil, err
+	}
+
+	err := s.doUpdateGroupAccount(ctx, req.GroupAccount, req.Admin, action, "group account")
+	if err != nil {
+		return nil, err
+	}
+
 	return &group.MsgUpdateGroupAccountMetadataResponse{}, nil
 }
 
@@ -575,6 +625,43 @@ type authNGroupReq interface {
 }
 
 type actionFn func(m *group.GroupInfo) error
+type groupAccountActionFn func(m *group.GroupAccountInfo) error
+
+// doUpdateGroupAccount first makes sure that the group admin initiated the group account update,
+// before performing the group account update and emitting an event.
+func (s serverImpl) doUpdateGroupAccount(ctx types.Context, groupAccount string, admin string, action groupAccountActionFn, note string) error {
+	groupAccountAddress, err := sdk.AccAddressFromBech32(groupAccount)
+	if err != nil {
+		return sdkerrors.Wrap(err, "group admin")
+	}
+
+	var groupAccountInfo group.GroupAccountInfo
+	err = s.groupAccountTable.GetOne(ctx, groupAccountAddress.Bytes(), &groupAccountInfo)
+	if err != nil {
+		return sdkerrors.Wrap(err, "load group account")
+	}
+
+	groupAdmin, err := sdk.AccAddressFromBech32(admin)
+	if err != nil {
+		return sdkerrors.Wrap(err, "group admin")
+	}
+
+	// Only current group admin is authorized to create a group account for this group.
+	if !groupAdmin.Equals(sdk.AccAddress(groupAccountInfo.Admin)) {
+		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not group admin")
+	}
+
+	if err := action(&groupAccountInfo); err != nil {
+		sdkerrors.Wrap(err, "group account admin updated")
+	}
+
+	err = ctx.EventManager().EmitTypedEvent(&group.EventUpdateGroupAccount{GroupAccount: admin})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 // doUpdateGroup first makes sure that the group admin initiated the group update,
 // before performing the group update and emitting an event.
