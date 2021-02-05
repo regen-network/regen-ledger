@@ -43,6 +43,7 @@ type Literal interface {
 
 	LexicalForm() string
 	Datatype() IRI
+	Lang() string
 }
 
 type Triple struct {

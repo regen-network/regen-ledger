@@ -118,14 +118,31 @@ func (ctx *compactCtx) compactObject(object rdf.Term) error {
 		}
 
 		if len(resolved.internalId) != 0 {
-			ctx.curProperties.Predicate = &data.CompactDataset_Properties_InternalId{InternalId: resolved.internalId}
+			ctx.curObjectGraph.Sum = &data.CompactDataset_ObjectGraph_ObjectInternalId{ObjectInternalId: resolved.internalId}
 		} else {
-			ctx.curProperties.Predicate = &data.CompactDataset_Properties_LocalRef{LocalRef: resolved.localRef}
+			ctx.curObjectGraph.Sum = &data.CompactDataset_ObjectGraph_ObjectLocalRef{ObjectLocalRef: resolved.localRef}
 		}
 
 		return nil
 	case rdf.Literal:
-		return fmt.Errorf("not implemented")
+		datatypeIRI := object.Datatype()
+		resolved, err := ctx.resolveIRIOrBNode(datatypeIRI)
+		if err != nil {
+			return err
+		}
+
+		if len(resolved.internalId) != 0 {
+			ctx.curObjectGraph.Sum = &data.CompactDataset_ObjectGraph_DataTypeInternalId{DataTypeInternalId: resolved.internalId}
+		} else {
+			ctx.curObjectGraph.Sum = &data.CompactDataset_ObjectGraph_DataTypeLocalRef{DataTypeLocalRef: resolved.localRef}
+		}
+
+		value := object.LexicalForm()
+		ctx.curObjectGraph.LiteralValue = &data.CompactDataset_ObjectGraph_StrValue{StrValue: value}
+
+		// TODO: language tag
+		// TODO: well known data types + canonical lexical form (maybe Literal.LexicalForm() always returns canonical and this was dealt with in parsing??)
+		return nil
 	default:
 		return fmt.Errorf("unexpected case %T", object)
 	}
