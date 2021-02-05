@@ -365,6 +365,140 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountInfo() {
 	}
 }
 
+func (s *IntegrationTestSuite) TestQueryGroupAccountsByGroup() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+
+	testCases := []struct {
+		name                string
+		args                []string
+		expectErr           bool
+		expectErrMsg        string
+		expectedCode        uint32
+		expectGroupAccounts []*group.GroupAccountInfo
+	}{
+		{
+			"invalid group id",
+			[]string{""},
+			true,
+			"strconv.ParseUint: parsing \"\": invalid syntax",
+			0,
+			[]*group.GroupAccountInfo{},
+		},
+		{
+			"no group account",
+			[]string{"12345", fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			false,
+			"",
+			0,
+			[]*group.GroupAccountInfo{},
+		},
+		{
+			"found group accounts",
+			[]string{strconv.FormatUint(s.group.GroupId.Uint64(), 10), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			false,
+			"",
+			0,
+			[]*group.GroupAccountInfo{
+				s.groupAccount,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		s.Run(tc.name, func() {
+			cmd := client.QueryGroupAccountsByGroupCmd()
+
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expectErr {
+				s.Require().Contains(out.String(), tc.expectErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res group.QueryGroupAccountsByGroupResponse
+				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(len(res.GroupAccounts), len(tc.expectGroupAccounts))
+				for i := range res.GroupAccounts {
+					s.Require().Equal(res.GroupAccounts[i].GroupId, tc.expectGroupAccounts[i].GroupId)
+					s.Require().Equal(res.GroupAccounts[i].Metadata, tc.expectGroupAccounts[i].Metadata)
+					s.Require().Equal(res.GroupAccounts[i].Version, tc.expectGroupAccounts[i].Version)
+					s.Require().Equal(res.GroupAccounts[i].Admin, tc.expectGroupAccounts[i].Admin)
+					s.Require().Equal(res.GroupAccounts[i].GetDecisionPolicy(), tc.expectGroupAccounts[i].GetDecisionPolicy())
+				}
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryGroupAccountsByAdmin() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+
+	testCases := []struct {
+		name                string
+		args                []string
+		expectErr           bool
+		expectErrMsg        string
+		expectedCode        uint32
+		expectGroupAccounts []*group.GroupAccountInfo
+	}{
+		{
+			"invalid admin address",
+			[]string{"invalid"},
+			true,
+			"decoding bech32 failed: invalid bech32 string",
+			0,
+			[]*group.GroupAccountInfo{},
+		},
+		{
+			"no group account",
+			[]string{s.network.Validators[1].Address.String(), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			false,
+			"",
+			0,
+			[]*group.GroupAccountInfo{},
+		},
+		{
+			"found group accounts",
+			[]string{val.Address.String(), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			false,
+			"",
+			0,
+			[]*group.GroupAccountInfo{
+				s.groupAccount,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		s.Run(tc.name, func() {
+			cmd := client.QueryGroupAccountsByAdminCmd()
+
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expectErr {
+				s.Require().Contains(out.String(), tc.expectErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res group.QueryGroupAccountsByAdminResponse
+				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(len(res.GroupAccounts), len(tc.expectGroupAccounts))
+				for i := range res.GroupAccounts {
+					s.Require().Equal(res.GroupAccounts[i].GroupId, tc.expectGroupAccounts[i].GroupId)
+					s.Require().Equal(res.GroupAccounts[i].Metadata, tc.expectGroupAccounts[i].Metadata)
+					s.Require().Equal(res.GroupAccounts[i].Version, tc.expectGroupAccounts[i].Version)
+					s.Require().Equal(res.GroupAccounts[i].Admin, tc.expectGroupAccounts[i].Admin)
+					s.Require().Equal(res.GroupAccounts[i].GetDecisionPolicy(), tc.expectGroupAccounts[i].GetDecisionPolicy())
+				}
+			}
+		})
+	}
+}
+
 func (s *IntegrationTestSuite) TestTxCreateGroup() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
@@ -497,6 +631,18 @@ func (s *IntegrationTestSuite) TestTxCreateGroup() {
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestTxUpdateGroupAccountAdmin() {
+	// TODO #224
+}
+
+func (s *IntegrationTestSuite) TestTxUpdateGroupAccountDecisionPolicy() {
+	// TODO #224
+}
+
+func (s *IntegrationTestSuite) TestTxUpdateGroupAccountMetadata() {
+	// TODO #224
 }
 
 func TestIntegrationTestSuite(t *testing.T) {
