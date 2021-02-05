@@ -15,18 +15,18 @@ type InternalIDResolver interface {
 
 type compactCtx struct {
 	resolver       InternalIDResolver
-	resolvedIRIs   map[rdf.IRIOrBNode]resolvedIRIOrBlankNode
+	resolvedIRIs   map[rdf.IRIOrBNode]iriOrBlankNodeRef
 	dataset        *CompactDataset
-	curNode        *CompactDataset_Node
-	curProperties  *CompactDataset_Properties
-	curObjectGraph *CompactDataset_ObjectGraph
+	curNode        *Node
+	curProperties  *Properties
+	curObjectGraph *ObjectGraph
 	curSubject     rdf.IRIOrBNode
 	curPredicate   rdf.IRIOrBNode
 	curObject      rdf.Term
 	curGraph       rdf.IRIOrBNode
 }
 
-type resolvedIRIOrBlankNode struct {
+type iriOrBlankNodeRef struct {
 	internalId []byte
 	localRef   int32
 }
@@ -73,13 +73,13 @@ func (ctx *compactCtx) compactSubject(subject rdf.IRIOrBNode) error {
 	ctx.curPredicate = nil
 	ctx.curObject = nil
 	ctx.curGraph = nil
-	ctx.curNode = &CompactDataset_Node{}
+	ctx.curNode = &Node{}
 	ctx.dataset.Nodes = append(ctx.dataset.Nodes, ctx.curNode)
 
 	if len(resolved.internalId) != 0 {
-		ctx.curNode.Subject = &CompactDataset_Node_InternalId{InternalId: resolved.internalId}
+		ctx.curNode.Subject = &Node_InternalId{InternalId: resolved.internalId}
 	} else {
-		ctx.curNode.Subject = &CompactDataset_Node_LocalRef{LocalRef: resolved.localRef}
+		ctx.curNode.Subject = &Node_LocalRef{LocalRef: resolved.localRef}
 	}
 
 	return nil
@@ -92,12 +92,12 @@ func (ctx *compactCtx) compactPredicate(predicate rdf.IRIOrBNode) error {
 	}
 
 	ctx.curPredicate = predicate
-	ctx.curProperties = &CompactDataset_Properties{}
+	ctx.curProperties = &Properties{}
 
 	if len(resolved.internalId) != 0 {
-		ctx.curProperties.Predicate = &CompactDataset_Properties_InternalId{InternalId: resolved.internalId}
+		ctx.curProperties.Predicate = &Properties_InternalId{InternalId: resolved.internalId}
 	} else {
-		ctx.curProperties.Predicate = &CompactDataset_Properties_LocalRef{LocalRef: resolved.localRef}
+		ctx.curProperties.Predicate = &Properties_LocalRef{LocalRef: resolved.localRef}
 	}
 
 	ctx.curNode.Properties = append(ctx.curNode.Properties, ctx.curProperties)
@@ -107,7 +107,7 @@ func (ctx *compactCtx) compactPredicate(predicate rdf.IRIOrBNode) error {
 
 func (ctx *compactCtx) compactObject(object rdf.Term) error {
 	ctx.curObject = object
-	ctx.curObjectGraph = &CompactDataset_ObjectGraph{}
+	ctx.curObjectGraph = &ObjectGraph{}
 	ctx.curProperties.Objects = append(ctx.curProperties.Objects, ctx.curObjectGraph)
 
 	switch object := object.(type) {
@@ -118,9 +118,9 @@ func (ctx *compactCtx) compactObject(object rdf.Term) error {
 		}
 
 		if len(resolved.internalId) != 0 {
-			ctx.curObjectGraph.Sum = &CompactDataset_ObjectGraph_ObjectInternalId{ObjectInternalId: resolved.internalId}
+			ctx.curObjectGraph.Sum = &ObjectGraph_ObjectInternalId{ObjectInternalId: resolved.internalId}
 		} else {
-			ctx.curObjectGraph.Sum = &CompactDataset_ObjectGraph_ObjectLocalRef{ObjectLocalRef: resolved.localRef}
+			ctx.curObjectGraph.Sum = &ObjectGraph_ObjectLocalRef{ObjectLocalRef: resolved.localRef}
 		}
 
 		return nil
@@ -132,13 +132,13 @@ func (ctx *compactCtx) compactObject(object rdf.Term) error {
 		}
 
 		if len(resolved.internalId) != 0 {
-			ctx.curObjectGraph.Sum = &CompactDataset_ObjectGraph_DataTypeInternalId{DataTypeInternalId: resolved.internalId}
+			ctx.curObjectGraph.Sum = &ObjectGraph_DataTypeInternalId{DataTypeInternalId: resolved.internalId}
 		} else {
-			ctx.curObjectGraph.Sum = &CompactDataset_ObjectGraph_DataTypeLocalRef{DataTypeLocalRef: resolved.localRef}
+			ctx.curObjectGraph.Sum = &ObjectGraph_DataTypeLocalRef{DataTypeLocalRef: resolved.localRef}
 		}
 
 		value := object.LexicalForm()
-		ctx.curObjectGraph.LiteralValue = &CompactDataset_ObjectGraph_StrValue{StrValue: value}
+		ctx.curObjectGraph.LiteralValue = &ObjectGraph_StrValue{StrValue: value}
 
 		// TODO: language tag
 		// TODO: well known data types + canonical lexical form (maybe Literal.LexicalForm() always returns canonical and this was dealt with in parsing??)
@@ -149,7 +149,7 @@ func (ctx *compactCtx) compactObject(object rdf.Term) error {
 }
 
 func (ctx *compactCtx) compactGraph(graph rdf.IRIOrBNode) error {
-	graphID := &CompactDataset_ObjectGraph_GraphID{}
+	graphID := &GraphID{}
 
 	// if not default graph
 	if graph != nil {
@@ -160,9 +160,9 @@ func (ctx *compactCtx) compactGraph(graph rdf.IRIOrBNode) error {
 		}
 
 		if len(resolved.internalId) != 0 {
-			graphID.Graph = &CompactDataset_ObjectGraph_GraphID_InternalId{InternalId: resolved.internalId}
+			graphID.Graph = &GraphID_InternalId{InternalId: resolved.internalId}
 		} else {
-			graphID.Graph = &CompactDataset_ObjectGraph_GraphID_LocalRef{LocalRef: resolved.localRef}
+			graphID.Graph = &GraphID_LocalRef{LocalRef: resolved.localRef}
 		}
 	}
 
@@ -171,24 +171,24 @@ func (ctx *compactCtx) compactGraph(graph rdf.IRIOrBNode) error {
 	return nil
 }
 
-func (ctx *compactCtx) resolveIRIOrBNode(node rdf.IRIOrBNode) (resolvedIRIOrBlankNode, error) {
+func (ctx *compactCtx) resolveIRIOrBNode(node rdf.IRIOrBNode) (iriOrBlankNodeRef, error) {
 	if resolved, ok := ctx.resolvedIRIs[node]; ok {
 		return resolved, nil
 	}
 
 	switch node := node.(type) {
 	case rdf.IRI:
-		var resolved resolvedIRIOrBlankNode
+		var resolved iriOrBlankNodeRef
 		id := ctx.resolver.GetIDForIRI(node)
 		if len(id) != 0 {
-			resolved = resolvedIRIOrBlankNode{
+			resolved = iriOrBlankNodeRef{
 				internalId: id,
 			}
 		} else {
 			i := len(ctx.dataset.NewIris)
 			ctx.dataset.NewIris = append(ctx.dataset.NewIris, string(node))
-			resolved = resolvedIRIOrBlankNode{
-				localRef: -int32(i),
+			resolved = iriOrBlankNodeRef{
+				localRef: -int32(i) - 1,
 			}
 		}
 		ctx.resolvedIRIs[node] = resolved
@@ -196,16 +196,16 @@ func (ctx *compactCtx) resolveIRIOrBNode(node rdf.IRIOrBNode) (resolvedIRIOrBlan
 	case rdf.BNode:
 		bnode := string(node)
 		if !strings.HasPrefix("c14n", bnode) {
-			return resolvedIRIOrBlankNode{}, fmt.Errorf("blank node %s is not canonicalized", bnode)
+			return iriOrBlankNodeRef{}, fmt.Errorf("blank node %s is not canonicalized", bnode)
 		}
 		bnode = strings.TrimPrefix(bnode, "c14n")
 		i, err := strconv.Atoi(bnode)
 		if err != nil {
-			return resolvedIRIOrBlankNode{}, err
+			return iriOrBlankNodeRef{}, err
 		}
 
-		return resolvedIRIOrBlankNode{localRef: int32(i)}, nil
+		return iriOrBlankNodeRef{localRef: int32(i) + 1}, nil
 	default:
-		return resolvedIRIOrBlankNode{}, fmt.Errorf("unexpected case %T", node)
+		return iriOrBlankNodeRef{}, fmt.Errorf("unexpected case %T", node)
 	}
 }

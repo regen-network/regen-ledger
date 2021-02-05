@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package regen.data.internal.v1alpha2;
 
-option go_package = "github.com/regen-network/regen-ledger/x/data/compact";
+option go_package = "github.com/regen-network/regen-ledger/x/data/rdf/compact";
 
 message CompactDataset {
     repeated Node nodes = 1;
