@@ -815,9 +815,8 @@ func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 	}
 
 	count := 2
-	addrs := make([]string, count)
-	reqs := make([]*group.MsgCreateGroupAccountRequest, count)
-	for i := range addrs {
+	expectAccs := make([]*group.GroupAccountInfo, count)
+	for i := range expectAccs {
 		req := &group.MsgCreateGroupAccountRequest{
 			Admin:    admin.String(),
 			Metadata: nil,
@@ -825,11 +824,21 @@ func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 		}
 		err := req.SetDecisionPolicy(policies[i])
 		s.Require().NoError(err)
-		reqs[i] = req
 		res, err := s.msgClient.CreateGroupAccount(s.ctx, req)
 		s.Require().NoError(err)
-		addrs[i] = res.GroupAccount
+
+		expectAcc := &group.GroupAccountInfo{
+			GroupAccount: res.GroupAccount,
+			Admin:        admin.String(),
+			Metadata:     nil,
+			GroupId:      myGroupID,
+			Version:      uint64(1),
+		}
+		err = expectAcc.SetDecisionPolicy(policies[i])
+		s.Require().NoError(err)
+		expectAccs[i] = expectAcc
 	}
+	sort.Slice(expectAccs, func(i, j int) bool { return expectAccs[i].GroupAccount < expectAccs[j].GroupAccount })
 
 	// query group account by group
 	accountsByGroupRes, err := s.queryClient.GroupAccountsByGroup(s.ctx, &group.QueryGroupAccountsByGroupRequest{
@@ -838,13 +847,15 @@ func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 	s.Require().NoError(err)
 	accounts := accountsByGroupRes.GroupAccounts
 	s.Require().Equal(len(accounts), count)
+	// we reorder accounts by address to be able to compare them
+	sort.Slice(accounts, func(i, j int) bool { return accounts[i].GroupAccount < accounts[j].GroupAccount })
 	for i := range accounts {
-		s.Assert().Equal(addrs[i], accounts[len(accounts)-i-1].GroupAccount)
-		s.Assert().Equal(myGroupID, accounts[len(accounts)-i-1].GroupId)
-		s.Assert().Equal(admin.String(), accounts[len(accounts)-i-1].Admin)
-		s.Assert().Equal(reqs[i].Metadata, accounts[len(accounts)-i-1].Metadata)
-		s.Assert().Equal(uint64(1), accounts[len(accounts)-i-1].Version)
-		s.Assert().Equal(policies[i].(*group.ThresholdDecisionPolicy), accounts[len(accounts)-i-1].GetDecisionPolicy())
+		s.Assert().Equal(accounts[i].GroupAccount, expectAccs[i].GroupAccount)
+		s.Assert().Equal(accounts[i].GroupId, expectAccs[i].GroupId)
+		s.Assert().Equal(accounts[i].Admin, expectAccs[i].Admin)
+		s.Assert().Equal(accounts[i].Metadata, expectAccs[i].Metadata)
+		s.Assert().Equal(accounts[i].Version, expectAccs[i].Version)
+		s.Assert().Equal(accounts[i].GetDecisionPolicy(), expectAccs[i].GetDecisionPolicy())
 	}
 
 	// query group account by admin
@@ -854,13 +865,15 @@ func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 	s.Require().NoError(err)
 	accounts = accountsByAdminRes.GroupAccounts
 	s.Require().Equal(len(accounts), count)
+	// we reorder accounts by address to be able to compare them
+	sort.Slice(accounts, func(i, j int) bool { return accounts[i].GroupAccount < accounts[j].GroupAccount })
 	for i := range accounts {
-		s.Assert().Equal(uint64(1), accounts[i].Version)
-		s.Assert().Equal(myGroupID, accounts[i].GroupId)
-		s.Assert().Equal(admin.String(), accounts[i].Admin)
-		s.Assert().Equal(addrs[i], accounts[count-i-1].GroupAccount)
-		s.Assert().Equal(reqs[i].Metadata, accounts[count-i-1].Metadata)
-		s.Assert().Equal(policies[i].(*group.ThresholdDecisionPolicy), accounts[count-i-1].GetDecisionPolicy())
+		s.Assert().Equal(accounts[i].GroupAccount, expectAccs[i].GroupAccount)
+		s.Assert().Equal(accounts[i].GroupId, expectAccs[i].GroupId)
+		s.Assert().Equal(accounts[i].Admin, expectAccs[i].Admin)
+		s.Assert().Equal(accounts[i].Metadata, expectAccs[i].Metadata)
+		s.Assert().Equal(accounts[i].Version, expectAccs[i].Version)
+		s.Assert().Equal(accounts[i].GetDecisionPolicy(), expectAccs[i].GetDecisionPolicy())
 	}
 }
 
