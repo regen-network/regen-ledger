@@ -205,9 +205,9 @@ func TestMsgStoreRawDataRequest_ValidateBasic(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &MsgStoreRawDataRequest{
-				Sender:  tt.fields.Sender,
-				Hash:    tt.fields.Hash,
-				Content: tt.fields.Content,
+				Sender:      tt.fields.Sender,
+				ContentHash: tt.fields.Hash,
+				Content:     tt.fields.Content,
 			}
 			err := m.ValidateBasic()
 			if len(tt.wantErr) != 0 {
