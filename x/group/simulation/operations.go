@@ -48,7 +48,7 @@ func WeightedOperations(
 	}
 }
 
-// nolint: interface
+
 func SimulateMsgCreateGroup(ak group.AccountKeeper, bk group.BankKeeper, protoCdc *codec.ProtoCodec) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
