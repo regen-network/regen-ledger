@@ -5,34 +5,21 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/rdf"
 )
 
-func Compact(content []byte, contentType string, resolver InternalIDResolver) (*data.CompactDataset, error) {
-	switch contentType {
-	case "application/ld+json":
-		return nil, fmt.Errorf("unsupported content type %s", contentType)
-	case "application/n-quads":
-		return nil, fmt.Errorf("unsupported content type %s", contentType)
-	case "application/n-triples":
-		return nil, fmt.Errorf("unsupported content type %s", contentType)
-	default:
-		return nil, fmt.Errorf("unsupported content type %s", contentType)
-	}
-}
-
 type InternalIDResolver interface {
-	ResolveID(iri rdf.IRI) []byte
+	GetIDForIRI(iri rdf.IRI) []byte
+	GetIRIForID(id []byte) rdf.IRI
 }
 
 type compactCtx struct {
 	resolver       InternalIDResolver
 	resolvedIRIs   map[rdf.IRIOrBNode]resolvedIRIOrBlankNode
-	dataset        *data.CompactDataset
-	curNode        *data.CompactDataset_Node
-	curProperties  *data.CompactDataset_Properties
-	curObjectGraph *data.CompactDataset_ObjectGraph
+	dataset        *CompactDataset
+	curNode        *CompactDataset_Node
+	curProperties  *CompactDataset_Properties
+	curObjectGraph *CompactDataset_ObjectGraph
 	curSubject     rdf.IRIOrBNode
 	curPredicate   rdf.IRIOrBNode
 	curObject      rdf.Term
@@ -86,13 +73,13 @@ func (ctx *compactCtx) compactSubject(subject rdf.IRIOrBNode) error {
 	ctx.curPredicate = nil
 	ctx.curObject = nil
 	ctx.curGraph = nil
-	ctx.curNode = &data.CompactDataset_Node{}
+	ctx.curNode = &CompactDataset_Node{}
 	ctx.dataset.Nodes = append(ctx.dataset.Nodes, ctx.curNode)
 
 	if len(resolved.internalId) != 0 {
-		ctx.curNode.Subject = &data.CompactDataset_Node_InternalId{InternalId: resolved.internalId}
+		ctx.curNode.Subject = &CompactDataset_Node_InternalId{InternalId: resolved.internalId}
 	} else {
-		ctx.curNode.Subject = &data.CompactDataset_Node_LocalRef{LocalRef: resolved.localRef}
+		ctx.curNode.Subject = &CompactDataset_Node_LocalRef{LocalRef: resolved.localRef}
 	}
 
 	return nil
@@ -105,12 +92,12 @@ func (ctx *compactCtx) compactPredicate(predicate rdf.IRIOrBNode) error {
 	}
 
 	ctx.curPredicate = predicate
-	ctx.curProperties = &data.CompactDataset_Properties{}
+	ctx.curProperties = &CompactDataset_Properties{}
 
 	if len(resolved.internalId) != 0 {
-		ctx.curProperties.Predicate = &data.CompactDataset_Properties_InternalId{InternalId: resolved.internalId}
+		ctx.curProperties.Predicate = &CompactDataset_Properties_InternalId{InternalId: resolved.internalId}
 	} else {
-		ctx.curProperties.Predicate = &data.CompactDataset_Properties_LocalRef{LocalRef: resolved.localRef}
+		ctx.curProperties.Predicate = &CompactDataset_Properties_LocalRef{LocalRef: resolved.localRef}
 	}
 
 	ctx.curNode.Properties = append(ctx.curNode.Properties, ctx.curProperties)
@@ -120,7 +107,7 @@ func (ctx *compactCtx) compactPredicate(predicate rdf.IRIOrBNode) error {
 
 func (ctx *compactCtx) compactObject(object rdf.Term) error {
 	ctx.curObject = object
-	ctx.curObjectGraph = &data.CompactDataset_ObjectGraph{}
+	ctx.curObjectGraph = &CompactDataset_ObjectGraph{}
 	ctx.curProperties.Objects = append(ctx.curProperties.Objects, ctx.curObjectGraph)
 
 	switch object := object.(type) {
@@ -131,9 +118,9 @@ func (ctx *compactCtx) compactObject(object rdf.Term) error {
 		}
 
 		if len(resolved.internalId) != 0 {
-			ctx.curObjectGraph.Sum = &data.CompactDataset_ObjectGraph_ObjectInternalId{ObjectInternalId: resolved.internalId}
+			ctx.curObjectGraph.Sum = &CompactDataset_ObjectGraph_ObjectInternalId{ObjectInternalId: resolved.internalId}
 		} else {
-			ctx.curObjectGraph.Sum = &data.CompactDataset_ObjectGraph_ObjectLocalRef{ObjectLocalRef: resolved.localRef}
+			ctx.curObjectGraph.Sum = &CompactDataset_ObjectGraph_ObjectLocalRef{ObjectLocalRef: resolved.localRef}
 		}
 
 		return nil
@@ -145,13 +132,13 @@ func (ctx *compactCtx) compactObject(object rdf.Term) error {
 		}
 
 		if len(resolved.internalId) != 0 {
-			ctx.curObjectGraph.Sum = &data.CompactDataset_ObjectGraph_DataTypeInternalId{DataTypeInternalId: resolved.internalId}
+			ctx.curObjectGraph.Sum = &CompactDataset_ObjectGraph_DataTypeInternalId{DataTypeInternalId: resolved.internalId}
 		} else {
-			ctx.curObjectGraph.Sum = &data.CompactDataset_ObjectGraph_DataTypeLocalRef{DataTypeLocalRef: resolved.localRef}
+			ctx.curObjectGraph.Sum = &CompactDataset_ObjectGraph_DataTypeLocalRef{DataTypeLocalRef: resolved.localRef}
 		}
 
 		value := object.LexicalForm()
-		ctx.curObjectGraph.LiteralValue = &data.CompactDataset_ObjectGraph_StrValue{StrValue: value}
+		ctx.curObjectGraph.LiteralValue = &CompactDataset_ObjectGraph_StrValue{StrValue: value}
 
 		// TODO: language tag
 		// TODO: well known data types + canonical lexical form (maybe Literal.LexicalForm() always returns canonical and this was dealt with in parsing??)
@@ -162,7 +149,7 @@ func (ctx *compactCtx) compactObject(object rdf.Term) error {
 }
 
 func (ctx *compactCtx) compactGraph(graph rdf.IRIOrBNode) error {
-	graphID := &data.CompactDataset_ObjectGraph_GraphID{}
+	graphID := &CompactDataset_ObjectGraph_GraphID{}
 
 	// if not default graph
 	if graph != nil {
@@ -173,9 +160,9 @@ func (ctx *compactCtx) compactGraph(graph rdf.IRIOrBNode) error {
 		}
 
 		if len(resolved.internalId) != 0 {
-			graphID.Graph = &data.CompactDataset_ObjectGraph_GraphID_InternalId{InternalId: resolved.internalId}
+			graphID.Graph = &CompactDataset_ObjectGraph_GraphID_InternalId{InternalId: resolved.internalId}
 		} else {
-			graphID.Graph = &data.CompactDataset_ObjectGraph_GraphID_LocalRef{LocalRef: resolved.localRef}
+			graphID.Graph = &CompactDataset_ObjectGraph_GraphID_LocalRef{LocalRef: resolved.localRef}
 		}
 	}
 
@@ -192,7 +179,7 @@ func (ctx *compactCtx) resolveIRIOrBNode(node rdf.IRIOrBNode) (resolvedIRIOrBlan
 	switch node := node.(type) {
 	case rdf.IRI:
 		var resolved resolvedIRIOrBlankNode
-		id := ctx.resolver.ResolveID(node)
+		id := ctx.resolver.GetIDForIRI(node)
 		if len(id) != 0 {
 			resolved = resolvedIRIOrBlankNode{
 				internalId: id,

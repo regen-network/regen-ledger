@@ -3,9 +3,11 @@ package server
 import (
 	"fmt"
 
+	"github.com/gogo/protobuf/proto"
+
 	"github.com/regen-network/regen-ledger/x/data/rdf"
 
-	"github.com/regen-network/regen-ledger/x/data/compact"
+	"github.com/regen-network/regen-ledger/x/data/rdf/compact"
 
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
@@ -76,7 +78,12 @@ func (s serverImpl) ConvertToCompactDataset(ctx types.Context, request *data.Con
 		return nil, err
 	}
 
-	return &data.ConvertToCompactDatasetResponse{Dataset: dataset}, nil
+	bz, err := proto.Marshal(dataset)
+	if err != nil {
+		return nil, err
+	}
+
+	return &data.ConvertToCompactDatasetResponse{CompactDataset: bz}, nil
 }
 
 type serverIRIResolver struct {
@@ -84,6 +91,6 @@ type serverIRIResolver struct {
 	context types.Context
 }
 
-func (s serverIRIResolver) ResolveID(iri rdf.IRI) []byte {
+func (s serverIRIResolver) GetIDForIRI(iri rdf.IRI) []byte {
 	panic("TODO")
 }

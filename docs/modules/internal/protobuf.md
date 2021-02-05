@@ -6,12 +6,12 @@
 
 - [regen/data/internal/v1alpha2/types.proto](#regen/data/internal/v1alpha2/types.proto)
     - [CompactDataset](#regen.data.internal.v1alpha2.CompactDataset)
-    - [CompactDataset.Node](#regen.data.internal.v1alpha2.CompactDataset.Node)
-    - [CompactDataset.ObjectGraph](#regen.data.internal.v1alpha2.CompactDataset.ObjectGraph)
-    - [CompactDataset.ObjectGraph.GraphID](#regen.data.internal.v1alpha2.CompactDataset.ObjectGraph.GraphID)
-    - [CompactDataset.Properties](#regen.data.internal.v1alpha2.CompactDataset.Properties)
+    - [GraphID](#regen.data.internal.v1alpha2.GraphID)
+    - [Node](#regen.data.internal.v1alpha2.Node)
+    - [ObjectGraph](#regen.data.internal.v1alpha2.ObjectGraph)
+    - [Properties](#regen.data.internal.v1alpha2.Properties)
   
-    - [CompactDataset.WellknownDatatype](#regen.data.internal.v1alpha2.CompactDataset.WellknownDatatype)
+    - [WellknownDatatype](#regen.data.internal.v1alpha2.WellknownDatatype)
   
 - [Scalar Value Types](#scalar-value-types)
 
@@ -32,7 +32,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| nodes | [CompactDataset.Node](#regen.data.internal.v1alpha2.CompactDataset.Node) | repeated |  |
+| nodes | [Node](#regen.data.internal.v1alpha2.Node) | repeated |  |
 | new_iris | [string](#string) | repeated |  |
 
 
@@ -40,9 +40,9 @@
 
 
 
-<a name="regen.data.internal.v1alpha2.CompactDataset.Node"></a>
+<a name="regen.data.internal.v1alpha2.GraphID"></a>
 
-### CompactDataset.Node
+### GraphID
 
 
 
@@ -50,16 +50,32 @@
 | ----- | ---- | ----- | ----------- |
 | internal_id | [bytes](#bytes) |  |  |
 | local_ref | [sint32](#sint32) |  |  |
-| properties | [CompactDataset.Properties](#regen.data.internal.v1alpha2.CompactDataset.Properties) | repeated |  |
 
 
 
 
 
 
-<a name="regen.data.internal.v1alpha2.CompactDataset.ObjectGraph"></a>
+<a name="regen.data.internal.v1alpha2.Node"></a>
 
-### CompactDataset.ObjectGraph
+### Node
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| internal_id | [bytes](#bytes) |  |  |
+| local_ref | [sint32](#sint32) |  |  |
+| properties | [Properties](#regen.data.internal.v1alpha2.Properties) | repeated |  |
+
+
+
+
+
+
+<a name="regen.data.internal.v1alpha2.ObjectGraph"></a>
+
+### ObjectGraph
 
 
 
@@ -67,11 +83,11 @@
 | ----- | ---- | ----- | ----------- |
 | object_internal_id | [bytes](#bytes) |  |  |
 | object_local_ref | [sint32](#sint32) |  |  |
-| well_known_datatype | [CompactDataset.WellknownDatatype](#regen.data.internal.v1alpha2.CompactDataset.WellknownDatatype) |  |  |
+| well_known_datatype | [WellknownDatatype](#regen.data.internal.v1alpha2.WellknownDatatype) |  |  |
 | data_type_internal_id | [bytes](#bytes) |  |  |
 | data_type_local_ref | [sint32](#sint32) |  |  |
-| lang | [string](#string) |  |  |
-| graphs | [CompactDataset.ObjectGraph.GraphID](#regen.data.internal.v1alpha2.CompactDataset.ObjectGraph.GraphID) | repeated |  |
+| lang_tag | [string](#string) |  |  |
+| graphs | [GraphID](#regen.data.internal.v1alpha2.GraphID) | repeated |  |
 | str_value | [string](#string) |  |  |
 
 
@@ -79,25 +95,9 @@
 
 
 
-<a name="regen.data.internal.v1alpha2.CompactDataset.ObjectGraph.GraphID"></a>
+<a name="regen.data.internal.v1alpha2.Properties"></a>
 
-### CompactDataset.ObjectGraph.GraphID
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| internal_id | [bytes](#bytes) |  |  |
-| local_ref | [sint32](#sint32) |  |  |
-
-
-
-
-
-
-<a name="regen.data.internal.v1alpha2.CompactDataset.Properties"></a>
-
-### CompactDataset.Properties
+### Properties
 
 
 
@@ -105,7 +105,7 @@
 | ----- | ---- | ----- | ----------- |
 | internal_id | [bytes](#bytes) |  |  |
 | local_ref | [sint32](#sint32) |  |  |
-| objects | [CompactDataset.ObjectGraph](#regen.data.internal.v1alpha2.CompactDataset.ObjectGraph) | repeated |  |
+| objects | [ObjectGraph](#regen.data.internal.v1alpha2.ObjectGraph) | repeated |  |
 
 
 
@@ -114,9 +114,9 @@
  <!-- end messages -->
 
 
-<a name="regen.data.internal.v1alpha2.CompactDataset.WellknownDatatype"></a>
+<a name="regen.data.internal.v1alpha2.WellknownDatatype"></a>
 
-### CompactDataset.WellknownDatatype
+### WellknownDatatype
 
 
 | Name | Number | Description |
