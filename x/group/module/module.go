@@ -3,24 +3,59 @@ package module
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 
+	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
-	servermodule "github.com/regen-network/regen-ledger/types/module/server"
-	"github.com/regen-network/regen-ledger/x/group"
-	"github.com/regen-network/regen-ledger/x/group/server"
+	"github.com/spf13/cobra"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/gorilla/mux"
-	"github.com/spf13/cobra"
+
+	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/x/group"
+	"github.com/regen-network/regen-ledger/x/group/server"
+	"github.com/regen-network/regen-ledger/x/group/simulation"
 )
 
-type Module struct{}
+type Module struct{
+	registry      cdctypes.InterfaceRegistry
+	accountKeeper group.AccountKeeper
+	bankKeeper    group.BankKeeper
+	cdc codec.Marshaler
+}
+
+func (a Module) GenerateGenesisState(input *module.SimulationState) {
+}
+
+func (a Module) ProposalContents(simState module.SimulationState) []simtypes.WeightedProposalContent {
+	return nil
+}
+
+func (a Module) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
+	return nil
+}
+
+func (a Module) RegisterStoreDecoder(registry sdk.StoreDecoderRegistry) {
+}
+
+func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
+	protoCdc := codec.NewProtoCodec(a.registry)
+	return simulation.WeightedOperations(
+		simState.AppParams, simState.Cdc,
+		a.accountKeeper, a.bankKeeper, protoCdc,
+	)
+}
 
 var _ module.AppModuleBasic = Module{}
+var _ module.AppModuleSimulation = Module{}
 var _ servermodule.Module = Module{}
 var _ climodule.Module = Module{}
 
