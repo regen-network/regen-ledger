@@ -22,7 +22,7 @@ sim-regen-import-export: runsim
 	@echo "Running Regen import/export simulation. This may take several minutes..."
 	$(GOPATH)/bin/runsim -Jobs=4 -SimAppPkg=$(APP_DIR) -ExitOnFail 25 5 TestImportExport
 
-sim-regen-simulation-after-import: runsim
+sim-regen-after-import: runsim
 	@echo "Running application simulation-after-import. This may take several minutes..."
 	$(GOPATH)/bin/runsim -Jobs=4 -SimAppPkg=$(APP_DIR) -ExitOnFail 50 5 TestAppSimulationAfterImport
 
@@ -31,8 +31,12 @@ sim-regen-custom-genesis-multi-seed: runsim
 	@echo "By default, ${HOME}/.regen/config/genesis.json will be used."
 	$(GOPATH)/bin/runsim -Genesis=${HOME}/.regen/config/genesis.json -SimAppPkg=$(APP_DIR) -ExitOnFail 400 5 TestFullAppSimulation
 
-sim-regen-multi-seed: runsim
-	@echo "Running multi-seed application simulation. This may take awhile!"
+sim-regen-multi-seed-short: runsim
+	@echo "Running short multi-seed application simulation. This may take awhile!"
+	$(GOPATH)/bin/runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 50 10 TestFullAppSimulation
+
+sim-regen-multi-seed-long: runsim
+	@echo "Running long multi-seed application simulation. This may take awhile!"
 	$(GOPATH)/bin/runsim -Jobs=4 -SimAppPkg=$(SIMAPP) -ExitOnFail 500 50 TestFullAppSimulation
 
 sim-benchmark-invariants:
@@ -57,5 +61,5 @@ sim-regen-profile:
 
 
 .PHONY: runsim sim-regen-nondeterminism sim-regen-custom-genesis-fast sim-regen-fast sim-regen-import-export \
-	sim-regen-simulation-after-import sim-regen-custom-genesis-multi-seed sim-regen-multi-seed \
+	sim-regen-after-import sim-regen-custom-genesis-multi-seed sim-regen-multi-seed \
 	sim-benchmark-invariants sim-regen-benchmark sim-regen-profile
