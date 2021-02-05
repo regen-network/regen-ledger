@@ -203,6 +203,10 @@ func (s serverImpl) UpdateGroupMetadata(ctx types.Context, req *group.MsgUpdateG
 		return s.groupTable.Save(ctx, g.GroupId.Bytes(), g)
 	}
 
+	if err := assertMetadataLength(req.Metadata, s.maxMetadataLength(ctx), "group metadata"); err != nil {
+		return nil, err
+	}
+
 	err := s.doUpdateGroup(ctx, req, action, "metadata updated")
 	if err != nil {
 		return nil, err
