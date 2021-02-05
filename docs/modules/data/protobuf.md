@@ -33,6 +33,8 @@
   
 - [regen/data/v1alpha2/query.proto](#regen/data/v1alpha2/query.proto)
     - [ContentEntry](#regen.data.v1alpha2.ContentEntry)
+    - [ConvertToCompactDatasetRequest](#regen.data.v1alpha2.ConvertToCompactDatasetRequest)
+    - [ConvertToCompactDatasetResponse](#regen.data.v1alpha2.ConvertToCompactDatasetResponse)
     - [QueryByHashRequest](#regen.data.v1alpha2.QueryByHashRequest)
     - [QueryByHashResponse](#regen.data.v1alpha2.QueryByHashResponse)
     - [QueryBySignerRequest](#regen.data.v1alpha2.QueryBySignerRequest)
@@ -462,6 +464,37 @@ ContentEntry describes data referenced and possibly stored on chain
 
 
 
+<a name="regen.data.v1alpha2.ConvertToCompactDatasetRequest"></a>
+
+### ConvertToCompactDatasetRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [bytes](#bytes) |  |  |
+| content_type | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.ConvertToCompactDatasetResponse"></a>
+
+### ConvertToCompactDatasetResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| dataset | [CompactDataset](#regen.data.v1alpha2.CompactDataset) |  |  |
+
+
+
+
+
+
 <a name="regen.data.v1alpha2.QueryByHashRequest"></a>
 
 ### QueryByHashRequest
@@ -539,6 +572,7 @@ Query is the regen.data.v1alpha1 Query service
 | ----------- | ------------ | ------------- | ------------|
 | ByHash | [QueryByHashRequest](#regen.data.v1alpha2.QueryByHashRequest) | [QueryByHashResponse](#regen.data.v1alpha2.QueryByHashResponse) | ByHash queries data based on its ContentHash. |
 | BySigner | [QueryBySignerRequest](#regen.data.v1alpha2.QueryBySignerRequest) | [QueryBySignerResponse](#regen.data.v1alpha2.QueryBySignerResponse) | BySigner queries data based on signers. |
+| ConvertToCompactDataset | [ConvertToCompactDatasetRequest](#regen.data.v1alpha2.ConvertToCompactDatasetRequest) | [ConvertToCompactDatasetResponse](#regen.data.v1alpha2.ConvertToCompactDatasetResponse) |  |
 
  <!-- end services -->
 

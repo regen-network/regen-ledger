@@ -9,6 +9,19 @@ import (
 	"github.com/regen-network/regen-ledger/x/data/rdf"
 )
 
+func Compact(content []byte, contentType string, resolver InternalIDResolver) (*data.CompactDataset, error) {
+	switch contentType {
+	case "application/ld+json":
+		return nil, fmt.Errorf("unsupported content type %s", contentType)
+	case "application/n-quads":
+		return nil, fmt.Errorf("unsupported content type %s", contentType)
+	case "application/n-triples":
+		return nil, fmt.Errorf("unsupported content type %s", contentType)
+	default:
+		return nil, fmt.Errorf("unsupported content type %s", contentType)
+	}
+}
+
 type InternalIDResolver interface {
 	ResolveID(iri rdf.IRI) []byte
 }

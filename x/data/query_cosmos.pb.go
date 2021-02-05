@@ -20,12 +20,14 @@ type QueryClient interface {
 	ByHash(ctx context.Context, in *QueryByHashRequest, opts ...grpc.CallOption) (*QueryByHashResponse, error)
 	// BySigner queries data based on signers.
 	BySigner(ctx context.Context, in *QueryBySignerRequest, opts ...grpc.CallOption) (*QueryBySignerResponse, error)
+	ConvertToCompactDataset(ctx context.Context, in *ConvertToCompactDatasetRequest, opts ...grpc.CallOption) (*ConvertToCompactDatasetResponse, error)
 }
 
 type queryClient struct {
-	cc        grpc.ClientConnInterface
-	_ByHash   types.Invoker
-	_BySigner types.Invoker
+	cc                       grpc.ClientConnInterface
+	_ByHash                  types.Invoker
+	_BySigner                types.Invoker
+	_ConvertToCompactDataset types.Invoker
 }
 
 func NewQueryClient(cc grpc.ClientConnInterface) QueryClient {
@@ -78,12 +80,36 @@ func (c *queryClient) BySigner(ctx context.Context, in *QueryBySignerRequest, op
 	return out, nil
 }
 
+func (c *queryClient) ConvertToCompactDataset(ctx context.Context, in *ConvertToCompactDatasetRequest, opts ...grpc.CallOption) (*ConvertToCompactDatasetResponse, error) {
+	if invoker := c._ConvertToCompactDataset; invoker != nil {
+		var out ConvertToCompactDatasetResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._ConvertToCompactDataset, err = invokerConn.Invoker("/regen.data.v1alpha2.Query/ConvertToCompactDataset")
+		if err != nil {
+			var out ConvertToCompactDatasetResponse
+			err = c._ConvertToCompactDataset(ctx, in, &out)
+			return &out, err
+		}
+	}
+	out := new(ConvertToCompactDatasetResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Query/ConvertToCompactDataset", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// ByHash queries data based on its ContentHash.
 	ByHash(types.Context, *QueryByHashRequest) (*QueryByHashResponse, error)
 	// BySigner queries data based on signers.
 	BySigner(types.Context, *QueryBySignerRequest) (*QueryBySignerResponse, error)
+	ConvertToCompactDataset(types.Context, *ConvertToCompactDatasetRequest) (*ConvertToCompactDatasetResponse, error)
 }
 
 func RegisterQueryServer(s grpc.ServiceRegistrar, srv QueryServer) {
@@ -126,6 +152,24 @@ func _Query_BySigner_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_ConvertToCompactDataset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConvertToCompactDatasetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ConvertToCompactDataset(types.UnwrapSDKContext(ctx), in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.data.v1alpha2.Query/ConvertToCompactDataset",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ConvertToCompactDataset(types.UnwrapSDKContext(ctx), req.(*ConvertToCompactDatasetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -141,11 +185,16 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "BySigner",
 			Handler:    _Query_BySigner_Handler,
 		},
+		{
+			MethodName: "ConvertToCompactDataset",
+			Handler:    _Query_ConvertToCompactDataset_Handler,
+		},
 	},
 	Metadata: "regen/data/v1alpha2/query.proto",
 }
 
 const (
-	QueryByHashMethod   = "/regen.data.v1alpha2.Query/ByHash"
-	QueryBySignerMethod = "/regen.data.v1alpha2.Query/BySigner"
+	QueryByHashMethod                  = "/regen.data.v1alpha2.Query/ByHash"
+	QueryBySignerMethod                = "/regen.data.v1alpha2.Query/BySigner"
+	QueryConvertToCompactDatasetMethod = "/regen.data.v1alpha2.Query/ConvertToCompactDataset"
 )

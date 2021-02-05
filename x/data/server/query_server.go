@@ -3,6 +3,10 @@ package server
 import (
 	"fmt"
 
+	"github.com/regen-network/regen-ledger/x/data/rdf"
+
+	"github.com/regen-network/regen-ledger/x/data/compact"
+
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
@@ -61,4 +65,25 @@ func (s serverImpl) BySigner(ctx types.Context, request *data.QueryBySignerReque
 	//	Cids:       cids,
 	//	Pagination: pageRes,
 	//}, nil
+}
+
+func (s serverImpl) ConvertToCompactDataset(ctx types.Context, request *data.ConvertToCompactDatasetRequest) (*data.ConvertToCompactDatasetResponse, error) {
+	dataset, err := compact.Compact(request.Content, request.ContentType, serverIRIResolver{
+		serverImpl: s,
+		context:    ctx,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &data.ConvertToCompactDatasetResponse{Dataset: dataset}, nil
+}
+
+type serverIRIResolver struct {
+	serverImpl
+	context types.Context
+}
+
+func (s serverIRIResolver) ResolveID(iri rdf.IRI) []byte {
+	panic("TODO")
 }

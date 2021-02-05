@@ -15,6 +15,8 @@ service Query {
 
   // BySigner queries data based on signers.
   rpc BySigner (QueryBySignerRequest) returns (QueryBySignerResponse);
+
+  rpc ConvertToCompactDataset (ConvertToCompactDatasetRequest) returns (ConvertToCompactDatasetResponse);
 }
 
 // QueryByContentHashRequest is the Query/ByContentHash request type.
@@ -63,4 +65,13 @@ message ContentEntry {
 
   // content is the actual content if stored on-chain
   Content content = 5;
+}
+
+message ConvertToCompactDatasetRequest {
+  bytes content = 1;
+  string content_type = 2;
+}
+
+message ConvertToCompactDatasetResponse {
+  CompactDataset dataset = 1;
 }
