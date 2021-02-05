@@ -15,7 +15,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
-	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
@@ -25,33 +24,11 @@ import (
 	"github.com/regen-network/regen-ledger/x/group/simulation"
 )
 
-type Module struct{
-	registry      cdctypes.InterfaceRegistry
+type Module struct {
+	registry      types.InterfaceRegistry
 	accountKeeper group.AccountKeeper
 	bankKeeper    group.BankKeeper
-	cdc codec.Marshaler
-}
-
-func (a Module) GenerateGenesisState(input *module.SimulationState) {
-}
-
-func (a Module) ProposalContents(simState module.SimulationState) []simtypes.WeightedProposalContent {
-	return nil
-}
-
-func (a Module) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
-	return nil
-}
-
-func (a Module) RegisterStoreDecoder(registry sdk.StoreDecoderRegistry) {
-}
-
-func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	protoCdc := codec.NewProtoCodec(a.registry)
-	return simulation.WeightedOperations(
-		simState.AppParams, simState.Cdc,
-		a.accountKeeper, a.bankKeeper, protoCdc,
-	)
+	cdc           codec.Marshaler
 }
 
 var _ module.AppModuleBasic = Module{}
@@ -94,6 +71,28 @@ func (a Module) GetTxCmd() *cobra.Command {
 func (a Module) GetQueryCmd() *cobra.Command {
 	// TODO #209
 	return nil
+}
+
+func (a Module) GenerateGenesisState(input *module.SimulationState) {
+}
+
+func (a Module) ProposalContents(simState module.SimulationState) []simtypes.WeightedProposalContent {
+	return nil
+}
+
+func (a Module) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
+	return nil
+}
+
+func (a Module) RegisterStoreDecoder(registry sdk.StoreDecoderRegistry) {
+}
+
+func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
+	protoCdc := codec.NewProtoCodec(a.registry)
+	return simulation.WeightedOperations(
+		simState.AppParams, simState.Cdc,
+		a.accountKeeper, a.bankKeeper, protoCdc,
+	)
 }
 
 /**** DEPRECATED ****/
