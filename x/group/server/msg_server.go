@@ -1,8 +1,12 @@
 package server
 
 import (
+	"bytes"
+	"encoding/binary"
 	"fmt"
 	"reflect"
+
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -239,8 +243,35 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 	}
 
 	// Generate group account address.
-	// TODO this will need to be revisited with ADR 028 (#211).
-	accountAddr := group.AccountCondition(s.groupAccountSeq.NextVal(ctx)).Address()
+	var accountAddr sdk.AccAddress
+	// loop here in the rare case of a collision
+	for {
+		nextAccVal := s.groupAccountSeq.NextVal(ctx)
+		buf := bytes.NewBuffer(nil)
+		err = binary.Write(buf, binary.LittleEndian, nextAccVal)
+		if err != nil {
+			return nil, err
+		}
+
+		accountID := s.key.Derive(buf.Bytes())
+		accountAddr = accountID.Address()
+
+		if s.accKeeper.GetAccount(ctx.Context, accountAddr) != nil {
+			// handle a rare collision
+			continue
+		}
+
+		acc := s.accKeeper.NewAccount(ctx.Context, &authtypes.ModuleAccount{
+			BaseAccount: &authtypes.BaseAccount{
+				Address: accountAddr.String(),
+			},
+			Name: accountAddr.String(),
+		})
+		s.accKeeper.SetAccount(ctx.Context, acc)
+
+		break
+	}
+
 	groupAccount, err := group.NewGroupAccountInfo(
 		accountAddr,
 		groupID,
@@ -253,8 +284,6 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 		return nil, err
 	}
 
-	// TODO Once we update to use ADR 028 (#211), we'll also need to
-	// ensure that a module account exists (that could be provided by ADR 033).
 	if err := s.groupAccountTable.Create(ctx, &groupAccount); err != nil {
 		return nil, sdkerrors.Wrap(err, "could not create group account")
 	}

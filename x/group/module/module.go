@@ -26,8 +26,8 @@ import (
 
 type Module struct {
 	registry      types.InterfaceRegistry
-	accountKeeper group.AccountKeeper
 	bankKeeper    group.BankKeeper
+	AccountKeeper server.AccountKeeper
 }
 
 var _ module.AppModuleBasic = Module{}
@@ -45,7 +45,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func (a Module) RegisterServices(configurator servermodule.Configurator) {
-	server.RegisterServices(configurator)
+	server.RegisterServices(configurator, a.AccountKeeper)
 }
 
 func (a Module) DefaultGenesis(marshaler codec.JSONMarshaler) json.RawMessage {
@@ -90,7 +90,7 @@ func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.W
 	protoCdc := codec.NewProtoCodec(a.registry)
 	return simulation.WeightedOperations(
 		simState.AppParams, simState.Cdc,
-		a.accountKeeper, a.bankKeeper, protoCdc,
+		a.AccountKeeper, a.bankKeeper, protoCdc,
 	)
 }
 
