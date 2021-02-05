@@ -49,6 +49,8 @@ service Msg {
   // SignData should be used to create a digital signature attesting to the
   // veracity of some piece of data.
   rpc StoreRawData(MsgStoreRawDataRequest) returns (MsgStoreRawDataResponse);
+
+  rpc StoreGraphData(MsgStoreGraphDataRequest) returns (MsgStoreGraphDataResponse);
 }
 
 // MsgAnchorDataRequest is the Msg/AnchorData request type.
@@ -103,3 +105,17 @@ message MsgStoreRawDataRequest {
 
 // MsgStoreRawDataRequest is the Msg/StoreRawData response type.
 message MsgStoreRawDataResponse { }
+
+message MsgStoreGraphDataRequest {
+  string sender = 1;
+  ContentHash.Graph content_hash = 2;
+
+  // compact_dataset are compact dataset bytes returned by Query/ConvertToCompactDataset.
+  // Internally it is regen.data.internal.v1alpha2.CompactDataset, but this type should
+  // only be manipulated directly by "advanced" users. The bytes returned by Query/ConvertToCompactDataset
+  // can be trusted for use in transactions because the network will perform hash verification of the client
+  // provided hash.
+  bytes compact_dataset = 3;
+}
+
+message MsgStoreGraphDataResponse { }

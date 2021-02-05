@@ -5,18 +5,12 @@
 ## Table of Contents
 
 - [regen/data/v1alpha2/types.proto](#regen/data/v1alpha2/types.proto)
-    - [CompactDataset](#regen.data.v1alpha2.CompactDataset)
-    - [CompactDataset.Node](#regen.data.v1alpha2.CompactDataset.Node)
-    - [CompactDataset.ObjectGraph](#regen.data.v1alpha2.CompactDataset.ObjectGraph)
-    - [CompactDataset.ObjectGraph.GraphID](#regen.data.v1alpha2.CompactDataset.ObjectGraph.GraphID)
-    - [CompactDataset.Properties](#regen.data.v1alpha2.CompactDataset.Properties)
     - [Content](#regen.data.v1alpha2.Content)
     - [ContentHash](#regen.data.v1alpha2.ContentHash)
     - [ContentHash.Graph](#regen.data.v1alpha2.ContentHash.Graph)
     - [ContentHash.Raw](#regen.data.v1alpha2.ContentHash.Raw)
     - [SignerEntry](#regen.data.v1alpha2.SignerEntry)
   
-    - [CompactDataset.WellknownDatatype](#regen.data.v1alpha2.CompactDataset.WellknownDatatype)
     - [DigestAlgorithm](#regen.data.v1alpha2.DigestAlgorithm)
     - [GraphCanonicalizationAlgorithm](#regen.data.v1alpha2.GraphCanonicalizationAlgorithm)
     - [GraphMerkleTree](#regen.data.v1alpha2.GraphMerkleTree)
@@ -47,6 +41,8 @@
     - [MsgAnchorDataResponse](#regen.data.v1alpha2.MsgAnchorDataResponse)
     - [MsgSignDataRequest](#regen.data.v1alpha2.MsgSignDataRequest)
     - [MsgSignDataResponse](#regen.data.v1alpha2.MsgSignDataResponse)
+    - [MsgStoreGraphDataRequest](#regen.data.v1alpha2.MsgStoreGraphDataRequest)
+    - [MsgStoreGraphDataResponse](#regen.data.v1alpha2.MsgStoreGraphDataResponse)
     - [MsgStoreRawDataRequest](#regen.data.v1alpha2.MsgStoreRawDataRequest)
     - [MsgStoreRawDataResponse](#regen.data.v1alpha2.MsgStoreRawDataResponse)
   
@@ -60,94 +56,6 @@
 <p align="right"><a href="#top">Top</a></p>
 
 ## regen/data/v1alpha2/types.proto
-
-
-
-<a name="regen.data.v1alpha2.CompactDataset"></a>
-
-### CompactDataset
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| nodes | [CompactDataset.Node](#regen.data.v1alpha2.CompactDataset.Node) | repeated |  |
-| new_iris | [string](#string) | repeated |  |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.CompactDataset.Node"></a>
-
-### CompactDataset.Node
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| internal_id | [bytes](#bytes) |  |  |
-| local_ref | [sint32](#sint32) |  |  |
-| properties | [CompactDataset.Properties](#regen.data.v1alpha2.CompactDataset.Properties) | repeated |  |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.CompactDataset.ObjectGraph"></a>
-
-### CompactDataset.ObjectGraph
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| object_internal_id | [bytes](#bytes) |  |  |
-| object_local_ref | [sint32](#sint32) |  |  |
-| well_known_datatype | [CompactDataset.WellknownDatatype](#regen.data.v1alpha2.CompactDataset.WellknownDatatype) |  |  |
-| data_type_internal_id | [bytes](#bytes) |  |  |
-| data_type_local_ref | [sint32](#sint32) |  |  |
-| lang | [string](#string) |  |  |
-| graphs | [CompactDataset.ObjectGraph.GraphID](#regen.data.v1alpha2.CompactDataset.ObjectGraph.GraphID) | repeated |  |
-| str_value | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.CompactDataset.ObjectGraph.GraphID"></a>
-
-### CompactDataset.ObjectGraph.GraphID
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| internal_id | [bytes](#bytes) |  |  |
-| local_ref | [sint32](#sint32) |  |  |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.CompactDataset.Properties"></a>
-
-### CompactDataset.Properties
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| internal_id | [bytes](#bytes) |  |  |
-| local_ref | [sint32](#sint32) |  |  |
-| objects | [CompactDataset.ObjectGraph](#regen.data.v1alpha2.CompactDataset.ObjectGraph) | repeated |  |
-
-
-
 
 
 
@@ -233,28 +141,6 @@ SignerEntry is a signer entry wrapping a signer address and timestamp
 
 
  <!-- end messages -->
-
-
-<a name="regen.data.v1alpha2.CompactDataset.WellknownDatatype"></a>
-
-### CompactDataset.WellknownDatatype
-
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| DATATYPE_UNSPECIFIED | 0 |  |
-| DATATYPE_BOOL_FALSE | 1 |  |
-| DATATYPE_BOOL_TRUE | 2 |  |
-| DATATYPE_DECIMAL | 3 |  |
-| DATATYPE_INTEGER | 4 |  |
-| DATATYPE_STRING | 5 |  |
-| DATATYPE_ANY_URI | 6 |  |
-| DATATYPE_DATE | 7 |  |
-| DATATYPE_TIME | 8 |  |
-| DATATYPE_DATE_TIME | 9 |  |
-| DATATYPE_BASE64_STRING | 10 |  |
-| DATATYPE_WKT_LITERAL | 11 |  |
-
 
 
 <a name="regen.data.v1alpha2.DigestAlgorithm"></a>
@@ -474,6 +360,7 @@ ContentEntry describes data referenced and possibly stored on chain
 | ----- | ---- | ----- | ----------- |
 | content | [bytes](#bytes) |  |  |
 | content_type | [string](#string) |  |  |
+| content_hash | [ContentHash.Graph](#regen.data.v1alpha2.ContentHash.Graph) |  | content_hash provides an optional ContentHash.Graph to be verified when converting the RDF data to the compact dataset format. If content_hash is provided and the node does not produce the expected hash, an error will be returned which includes the hash the node calculated using the same hash method as the client. This method is intended to be used to confirm that a client's hash implementation matches a node's. Generally, however, clients which conform to specifications should trust their own hashes and not those returned by nodes as that would expose clients to attacks by malicious nodes. |
 
 
 
@@ -488,7 +375,7 @@ ContentEntry describes data referenced and possibly stored on chain
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| dataset | [CompactDataset](#regen.data.v1alpha2.CompactDataset) |  |  |
+| compact_dataset | [bytes](#bytes) |  | compact_dataset is regen.data.internal.v1alpha2.CompactDataset under the hood, but because this type is not generally needed for clients and should only be manipulated by "advanced" users, it is left out of the API and most users should just treat this as opaque bytes to be passed to Msg/StoreGraphData. |
 
 
 
@@ -642,6 +529,33 @@ MsgSignDataResponse is the Msg/SignData response type.
 
 
 
+<a name="regen.data.v1alpha2.MsgStoreGraphDataRequest"></a>
+
+### MsgStoreGraphDataRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sender | [string](#string) |  |  |
+| content_hash | [ContentHash.Graph](#regen.data.v1alpha2.ContentHash.Graph) |  |  |
+| compact_dataset | [bytes](#bytes) |  | compact_dataset are compact dataset bytes returned by Query/ConvertToCompactDataset. Internally it is regen.data.internal.v1alpha2.CompactDataset, but this type should only be manipulated directly by "advanced" users. The bytes returned by Query/ConvertToCompactDataset can be trusted for use in transactions because the network will perform hash verification of the client provided hash. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.MsgStoreGraphDataResponse"></a>
+
+### MsgStoreGraphDataResponse
+
+
+
+
+
+
+
 <a name="regen.data.v1alpha2.MsgStoreRawDataRequest"></a>
 
 ### MsgStoreRawDataRequest
@@ -697,6 +611,7 @@ SignData can be called multiple times for the same content hash with different s
 StoreRawData implicitly calls AnchorData if the data was not already anchored.
 
 The sender in StoreRawData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing storage services. SignData should be used to create a digital signature attesting to the veracity of some piece of data. |
+| StoreGraphData | [MsgStoreGraphDataRequest](#regen.data.v1alpha2.MsgStoreGraphDataRequest) | [MsgStoreGraphDataResponse](#regen.data.v1alpha2.MsgStoreGraphDataResponse) |  |
 
  <!-- end services -->
 

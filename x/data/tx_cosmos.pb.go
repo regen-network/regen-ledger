@@ -53,13 +53,15 @@ type MsgClient interface {
 	// SignData should be used to create a digital signature attesting to the
 	// veracity of some piece of data.
 	StoreRawData(ctx context.Context, in *MsgStoreRawDataRequest, opts ...grpc.CallOption) (*MsgStoreRawDataResponse, error)
+	StoreGraphData(ctx context.Context, in *MsgStoreGraphDataRequest, opts ...grpc.CallOption) (*MsgStoreGraphDataResponse, error)
 }
 
 type msgClient struct {
-	cc            grpc.ClientConnInterface
-	_AnchorData   types.Invoker
-	_SignData     types.Invoker
-	_StoreRawData types.Invoker
+	cc              grpc.ClientConnInterface
+	_AnchorData     types.Invoker
+	_SignData       types.Invoker
+	_StoreRawData   types.Invoker
+	_StoreGraphData types.Invoker
 }
 
 func NewMsgClient(cc grpc.ClientConnInterface) MsgClient {
@@ -135,6 +137,29 @@ func (c *msgClient) StoreRawData(ctx context.Context, in *MsgStoreRawDataRequest
 	return out, nil
 }
 
+func (c *msgClient) StoreGraphData(ctx context.Context, in *MsgStoreGraphDataRequest, opts ...grpc.CallOption) (*MsgStoreGraphDataResponse, error) {
+	if invoker := c._StoreGraphData; invoker != nil {
+		var out MsgStoreGraphDataResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._StoreGraphData, err = invokerConn.Invoker("/regen.data.v1alpha2.Msg/StoreGraphData")
+		if err != nil {
+			var out MsgStoreGraphDataResponse
+			err = c._StoreGraphData(ctx, in, &out)
+			return &out, err
+		}
+	}
+	out := new(MsgStoreGraphDataResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Msg/StoreGraphData", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	// AnchorData "anchors" a piece of data to the blockchain based on its secure
@@ -174,6 +199,7 @@ type MsgServer interface {
 	// SignData should be used to create a digital signature attesting to the
 	// veracity of some piece of data.
 	StoreRawData(types.Context, *MsgStoreRawDataRequest) (*MsgStoreRawDataResponse, error)
+	StoreGraphData(types.Context, *MsgStoreGraphDataRequest) (*MsgStoreGraphDataResponse, error)
 }
 
 func RegisterMsgServer(s grpc.ServiceRegistrar, srv MsgServer) {
@@ -234,6 +260,24 @@ func _Msg_StoreRawData_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_StoreGraphData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgStoreGraphDataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).StoreGraphData(types.UnwrapSDKContext(ctx), in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.data.v1alpha2.Msg/StoreGraphData",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).StoreGraphData(types.UnwrapSDKContext(ctx), req.(*MsgStoreGraphDataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -253,12 +297,17 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "StoreRawData",
 			Handler:    _Msg_StoreRawData_Handler,
 		},
+		{
+			MethodName: "StoreGraphData",
+			Handler:    _Msg_StoreGraphData_Handler,
+		},
 	},
 	Metadata: "regen/data/v1alpha2/tx.proto",
 }
 
 const (
-	MsgAnchorDataMethod   = "/regen.data.v1alpha2.Msg/AnchorData"
-	MsgSignDataMethod     = "/regen.data.v1alpha2.Msg/SignData"
-	MsgStoreRawDataMethod = "/regen.data.v1alpha2.Msg/StoreRawData"
+	MsgAnchorDataMethod     = "/regen.data.v1alpha2.Msg/AnchorData"
+	MsgSignDataMethod       = "/regen.data.v1alpha2.Msg/SignData"
+	MsgStoreRawDataMethod   = "/regen.data.v1alpha2.Msg/StoreRawData"
+	MsgStoreGraphDataMethod = "/regen.data.v1alpha2.Msg/StoreGraphData"
 )

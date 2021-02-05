@@ -70,8 +70,21 @@ message ContentEntry {
 message ConvertToCompactDatasetRequest {
   bytes content = 1;
   string content_type = 2;
+
+  // content_hash provides an optional ContentHash.Graph to be verified when converting
+  // the RDF data to the compact dataset format. If content_hash is provided and the node
+  // does not produce the expected hash, an error will be returned which includes the hash
+  // the node calculated using the same hash method as the client. This method is intended
+  // to be used to confirm that a client's hash implementation matches a node's.
+  // Generally, however, clients which conform to specifications should trust their own hashes
+  // and not those returned by nodes as that would expose clients to attacks by malicious nodes.
+  ContentHash.Graph content_hash = 3;
 }
 
 message ConvertToCompactDatasetResponse {
-  CompactDataset dataset = 1;
+  // compact_dataset is regen.data.internal.v1alpha2.CompactDataset under the hood,
+  // but because this type is not generally needed for clients and should only
+  // be manipulated by "advanced" users, it is left out of the API and most users
+  // should just treat this as opaque bytes to be passed to Msg/StoreGraphData.
+  bytes compact_dataset = 1;
 }
