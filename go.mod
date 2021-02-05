@@ -14,6 +14,7 @@ require (
 	github.com/ipfs/go-cid v0.0.7
 	github.com/lib/pq v1.8.0 // indirect
 	github.com/multiformats/go-multihash v0.0.14 // indirect
+	github.com/piprate/json-gold v0.3.0
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/cosmos-proto v0.3.1
 	github.com/rs/zerolog v1.20.0
@@ -23,7 +24,7 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.3
 	github.com/tendermint/tm-db v0.6.3
-	google.golang.org/genproto v0.0.0-20210126160654-44e461bb6506 // indirect
+	google.golang.org/genproto v0.0.0-20210204154452-deb828366460 // indirect
 	google.golang.org/grpc v1.35.0
 	gopkg.in/yaml.v2 v2.4.0
 )

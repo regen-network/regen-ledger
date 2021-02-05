@@ -5,12 +5,18 @@
 ## Table of Contents
 
 - [regen/data/v1alpha2/types.proto](#regen/data/v1alpha2/types.proto)
+    - [CompactDataset](#regen.data.v1alpha2.CompactDataset)
+    - [CompactDataset.Node](#regen.data.v1alpha2.CompactDataset.Node)
+    - [CompactDataset.ObjectGraph](#regen.data.v1alpha2.CompactDataset.ObjectGraph)
+    - [CompactDataset.ObjectGraph.GraphID](#regen.data.v1alpha2.CompactDataset.ObjectGraph.GraphID)
+    - [CompactDataset.Properties](#regen.data.v1alpha2.CompactDataset.Properties)
     - [Content](#regen.data.v1alpha2.Content)
     - [ContentHash](#regen.data.v1alpha2.ContentHash)
     - [ContentHash.Graph](#regen.data.v1alpha2.ContentHash.Graph)
     - [ContentHash.Raw](#regen.data.v1alpha2.ContentHash.Raw)
     - [SignerEntry](#regen.data.v1alpha2.SignerEntry)
   
+    - [CompactDataset.WellknownDatatype](#regen.data.v1alpha2.CompactDataset.WellknownDatatype)
     - [DigestAlgorithm](#regen.data.v1alpha2.DigestAlgorithm)
     - [GraphCanonicalizationAlgorithm](#regen.data.v1alpha2.GraphCanonicalizationAlgorithm)
     - [GraphMerkleTree](#regen.data.v1alpha2.GraphMerkleTree)
@@ -52,6 +58,94 @@
 <p align="right"><a href="#top">Top</a></p>
 
 ## regen/data/v1alpha2/types.proto
+
+
+
+<a name="regen.data.v1alpha2.CompactDataset"></a>
+
+### CompactDataset
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| nodes | [CompactDataset.Node](#regen.data.v1alpha2.CompactDataset.Node) | repeated |  |
+| new_iris | [string](#string) | repeated |  |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.CompactDataset.Node"></a>
+
+### CompactDataset.Node
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| internal_id | [bytes](#bytes) |  |  |
+| local_ref | [sint32](#sint32) |  |  |
+| properties | [CompactDataset.Properties](#regen.data.v1alpha2.CompactDataset.Properties) | repeated |  |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.CompactDataset.ObjectGraph"></a>
+
+### CompactDataset.ObjectGraph
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| object_internal_id | [bytes](#bytes) |  |  |
+| object_local_ref | [sint32](#sint32) |  |  |
+| well_known_datatype | [CompactDataset.WellknownDatatype](#regen.data.v1alpha2.CompactDataset.WellknownDatatype) |  |  |
+| data_type_internal_id | [bytes](#bytes) |  |  |
+| data_type_local_ref | [sint32](#sint32) |  |  |
+| lang | [string](#string) |  |  |
+| graphs | [CompactDataset.ObjectGraph.GraphID](#regen.data.v1alpha2.CompactDataset.ObjectGraph.GraphID) | repeated |  |
+| str_value | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.CompactDataset.ObjectGraph.GraphID"></a>
+
+### CompactDataset.ObjectGraph.GraphID
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| internal_id | [bytes](#bytes) |  |  |
+| local_ref | [sint32](#sint32) |  |  |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.CompactDataset.Properties"></a>
+
+### CompactDataset.Properties
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| internal_id | [bytes](#bytes) |  |  |
+| local_ref | [sint32](#sint32) |  |  |
+| objects | [CompactDataset.ObjectGraph](#regen.data.v1alpha2.CompactDataset.ObjectGraph) | repeated |  |
+
+
+
 
 
 
@@ -137,6 +231,28 @@ SignerEntry is a signer entry wrapping a signer address and timestamp
 
 
  <!-- end messages -->
+
+
+<a name="regen.data.v1alpha2.CompactDataset.WellknownDatatype"></a>
+
+### CompactDataset.WellknownDatatype
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| DATATYPE_UNSPECIFIED | 0 |  |
+| DATATYPE_BOOL_FALSE | 1 |  |
+| DATATYPE_BOOL_TRUE | 2 |  |
+| DATATYPE_DECIMAL | 3 |  |
+| DATATYPE_INTEGER | 4 |  |
+| DATATYPE_STRING | 5 |  |
+| DATATYPE_ANY_URI | 6 |  |
+| DATATYPE_DATE | 7 |  |
+| DATATYPE_TIME | 8 |  |
+| DATATYPE_DATE_TIME | 9 |  |
+| DATATYPE_BASE64_STRING | 10 |  |
+| DATATYPE_WKT_LITERAL | 11 |  |
+
 
 
 <a name="regen.data.v1alpha2.DigestAlgorithm"></a>
@@ -501,7 +617,7 @@ MsgStoreRawDataRequest is the Msg/StoreRawData request type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | sender | [string](#string) |  | sender is the address of the sender of the transaction. The sender in StoreData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing services. |
-| hash | [ContentHash.Raw](#regen.data.v1alpha2.ContentHash.Raw) |  | hash is the hash-based identifier for the anchored content. |
+| content_hash | [ContentHash.Raw](#regen.data.v1alpha2.ContentHash.Raw) |  | content_hash is the hash-based identifier for the anchored content. |
 | content | [bytes](#bytes) |  | content is the content of the raw data corresponding to the provided content hash. |
 
 
