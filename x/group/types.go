@@ -171,17 +171,11 @@ func NewGroupAccountInfo(groupAccount sdk.AccAddress, group ID, admin sdk.AccAdd
 		Version:      version,
 	}
 
-	msg, ok := decisionPolicy.(proto.Message)
-	if !ok {
-		return GroupAccountInfo{}, fmt.Errorf("%T does not implement proto.Message", decisionPolicy)
-	}
-
-	any, err := codectypes.NewAnyWithValue(msg)
+	err := p.SetDeciosionPolicy(decisionPolicy)
 	if err != nil {
 		return GroupAccountInfo{}, err
 	}
 
-	p.DecisionPolicy = any
 	return p, nil
 }
 
@@ -191,6 +185,21 @@ func (g GroupAccountInfo) GetDecisionPolicy() DecisionPolicy {
 		return nil
 	}
 	return decisionPolicy
+}
+
+func (g GroupAccountInfo) SetDeciosionPolicy(policy DecisionPolicy) error {
+	msg, ok := policy.(proto.Message)
+	if !ok {
+		return fmt.Errorf("%T does not implement proto.Message", policy)
+	}
+
+	any, err := codectypes.NewAnyWithValue(msg)
+	if err != nil {
+		return err
+	}
+
+	g.DecisionPolicy = any
+	return nil
 }
 
 func (g GroupAccountInfo) ValidateBasic() error {

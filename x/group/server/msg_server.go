@@ -5,10 +5,8 @@ import (
 	"reflect"
 
 	"github.com/cockroachdb/apd/v2"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	proto "github.com/gogo/protobuf/proto"
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/regen-network/regen-ledger/math"
 	"github.com/regen-network/regen-ledger/orm"
@@ -288,17 +286,11 @@ func (s serverImpl) UpdateGroupAccountDecisionPolicy(ctx types.Context, req *gro
 	policy := req.GetDecisionPolicy()
 
 	action := func(groupAccount *group.GroupAccountInfo) error {
-		msg, ok := policy.(proto.Message)
-		if !ok {
-			return fmt.Errorf("%T does not implement proto.Message", policy)
-		}
-
-		any, err := codectypes.NewAnyWithValue(msg)
+		err := groupAccount.SetDeciosionPolicy(policy)
 		if err != nil {
 			return err
 		}
 
-		groupAccount.DecisionPolicy = any
 		groupAccount.Version++
 		return s.groupAccountTable.Save(ctx, groupAccount)
 	}
@@ -646,7 +638,7 @@ func (s serverImpl) doUpdateGroupAccount(ctx types.Context, groupAccount string,
 		return sdkerrors.Wrap(err, "group admin")
 	}
 
-	// Only current group admin is authorized to create a group account for this group.
+	// Only current group account admin is authorized to update a group account.
 	if !groupAdmin.Equals(sdk.AccAddress(groupAccountInfo.Admin)) {
 		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not group admin")
 	}
