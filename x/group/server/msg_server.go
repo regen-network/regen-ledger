@@ -276,7 +276,7 @@ func (s serverImpl) UpdateGroupAccountAdmin(ctx types.Context, req *group.MsgUpd
 		return s.groupAccountTable.Save(ctx, groupAccount)
 	}
 
-	err := s.doUpdateGroupAccount(ctx, req.GroupAccount, req.Admin, action, "group account")
+	err := s.doUpdateGroupAccount(ctx, req.GroupAccount, req.Admin, action, "group account admin updated")
 	if err != nil {
 		return nil, err
 	}
@@ -303,7 +303,7 @@ func (s serverImpl) UpdateGroupAccountDecisionPolicy(ctx types.Context, req *gro
 		return s.groupAccountTable.Save(ctx, groupAccount)
 	}
 
-	err := s.doUpdateGroupAccount(ctx, req.GroupAccount, req.Admin, action, "group account")
+	err := s.doUpdateGroupAccount(ctx, req.GroupAccount, req.Admin, action, "group account decision policy updated")
 	if err != nil {
 		return nil, err
 	}
@@ -324,7 +324,7 @@ func (s serverImpl) UpdateGroupAccountMetadata(ctx types.Context, req *group.Msg
 		return nil, err
 	}
 
-	err := s.doUpdateGroupAccount(ctx, req.GroupAccount, req.Admin, action, "group account")
+	err := s.doUpdateGroupAccount(ctx, req.GroupAccount, req.Admin, action, "group account metadata updated")
 	if err != nil {
 		return nil, err
 	}
@@ -652,7 +652,7 @@ func (s serverImpl) doUpdateGroupAccount(ctx types.Context, groupAccount string,
 	}
 
 	if err := action(&groupAccountInfo); err != nil {
-		sdkerrors.Wrap(err, "group account admin updated")
+		return sdkerrors.Wrap(err, note)
 	}
 
 	err = ctx.EventManager().EmitTypedEvent(&group.EventUpdateGroupAccount{GroupAccount: admin})
