@@ -3,6 +3,8 @@ package compact
 import (
 	"fmt"
 
+	"github.com/regen-network/regen-ledger/x/data/rdf/internal"
+
 	"github.com/regen-network/regen-ledger/x/data/rdf"
 )
 
@@ -11,47 +13,45 @@ type decompactCtx struct {
 	dataset  *CompactDataset
 }
 
-func Decompact(resolver InternalIDResolver, dataset *CompactDataset) ([]*rdf.Quad, error) {
-	var quads []*rdf.Quad
-	ctx := decompactCtx{
-		resolver: resolver,
-		dataset:  dataset,
-	}
+func Decompact(resolver InternalIDResolver, dataset *CompactDataset) rdf.QuadIterator {
+	ch := make(chan internal.QuadOrErr)
 
-	for _, node := range dataset.Nodes {
-		subject, err := ctx.decompactSubject(node)
-		if err != nil {
-			return nil, err
+	go func() {
+		ctx := decompactCtx{
+			resolver: resolver,
+			dataset:  dataset,
 		}
 
-		for _, properties := range node.Properties {
-			predicate, err := ctx.decompactPredicate(properties)
+		for _, node := range dataset.Nodes {
+			subject, err := ctx.decompactSubject(node)
 			if err != nil {
-				return nil, err
+				ch <- internal.QuadOrErr{Err: err}
 			}
 
-			for _, objectGraphs := range properties.Objects {
+			for _, properties := range node.Properties {
+				predicate, err := ctx.decompactPredicate(properties)
+				if err != nil {
+					ch <- internal.QuadOrErr{Err: err}
+				}
 
-				for _, graphID := range objectGraphs.Graphs {
-					graph, err := ctx.decompactGraphID(graphID)
-					if err != nil {
-						return nil, err
+				for _, objectGraphs := range properties.Objects {
+
+					for _, graphID := range objectGraphs.Graphs {
+						graph, err := ctx.decompactGraphID(graphID)
+						if err != nil {
+							ch <- internal.QuadOrErr{Err: err}
+						}
+
+						quad := rdf.NewQuad(subject, predicate, nil, graph)
+						ch <- internal.QuadOrErr{Quad: quad}
 					}
-
-					quad := &rdf.Quad{
-						Subject:   subject,
-						Predicate: predicate,
-						Object:    nil,
-						Graph:     graph,
-					}
-
-					quads = append(quads, quad)
 				}
 			}
 		}
-	}
 
-	return quads, nil
+	}()
+
+	return internal.QuadIterator{Chan: ch}
 }
 
 func (ctx decompactCtx) decompactSubject(subject *Node) (rdf.IRIOrBNode, error) {

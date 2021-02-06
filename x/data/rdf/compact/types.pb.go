@@ -22,24 +22,24 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type CompactDataset_WellknownDatatype int32
+type WellknownDatatype int32
 
 const (
-	CompactDataset_DATATYPE_UNSPECIFIED   CompactDataset_WellknownDatatype = 0
-	CompactDataset_DATATYPE_BOOL_FALSE    CompactDataset_WellknownDatatype = 1
-	CompactDataset_DATATYPE_BOOL_TRUE     CompactDataset_WellknownDatatype = 2
-	CompactDataset_DATATYPE_DECIMAL       CompactDataset_WellknownDatatype = 3
-	CompactDataset_DATATYPE_INTEGER       CompactDataset_WellknownDatatype = 4
-	CompactDataset_DATATYPE_STRING        CompactDataset_WellknownDatatype = 5
-	CompactDataset_DATATYPE_ANY_URI       CompactDataset_WellknownDatatype = 6
-	CompactDataset_DATATYPE_DATE          CompactDataset_WellknownDatatype = 7
-	CompactDataset_DATATYPE_TIME          CompactDataset_WellknownDatatype = 8
-	CompactDataset_DATATYPE_DATE_TIME     CompactDataset_WellknownDatatype = 9
-	CompactDataset_DATATYPE_BASE64_STRING CompactDataset_WellknownDatatype = 10
-	CompactDataset_DATATYPE_WKT_LITERAL   CompactDataset_WellknownDatatype = 11
+	WellknownDatatype_DATATYPE_UNSPECIFIED   WellknownDatatype = 0
+	WellknownDatatype_DATATYPE_BOOL_FALSE    WellknownDatatype = 1
+	WellknownDatatype_DATATYPE_BOOL_TRUE     WellknownDatatype = 2
+	WellknownDatatype_DATATYPE_DECIMAL       WellknownDatatype = 3
+	WellknownDatatype_DATATYPE_INTEGER       WellknownDatatype = 4
+	WellknownDatatype_DATATYPE_STRING        WellknownDatatype = 5
+	WellknownDatatype_DATATYPE_ANY_URI       WellknownDatatype = 6
+	WellknownDatatype_DATATYPE_DATE          WellknownDatatype = 7
+	WellknownDatatype_DATATYPE_TIME          WellknownDatatype = 8
+	WellknownDatatype_DATATYPE_DATE_TIME     WellknownDatatype = 9
+	WellknownDatatype_DATATYPE_BASE64_STRING WellknownDatatype = 10
+	WellknownDatatype_DATATYPE_WKT_LITERAL   WellknownDatatype = 11
 )
 
-var CompactDataset_WellknownDatatype_name = map[int32]string{
+var WellknownDatatype_name = map[int32]string{
 	0:  "DATATYPE_UNSPECIFIED",
 	1:  "DATATYPE_BOOL_FALSE",
 	2:  "DATATYPE_BOOL_TRUE",
@@ -54,7 +54,7 @@ var CompactDataset_WellknownDatatype_name = map[int32]string{
 	11: "DATATYPE_WKT_LITERAL",
 }
 
-var CompactDataset_WellknownDatatype_value = map[string]int32{
+var WellknownDatatype_value = map[string]int32{
 	"DATATYPE_UNSPECIFIED":   0,
 	"DATATYPE_BOOL_FALSE":    1,
 	"DATATYPE_BOOL_TRUE":     2,
@@ -69,17 +69,17 @@ var CompactDataset_WellknownDatatype_value = map[string]int32{
 	"DATATYPE_WKT_LITERAL":   11,
 }
 
-func (x CompactDataset_WellknownDatatype) String() string {
-	return proto.EnumName(CompactDataset_WellknownDatatype_name, int32(x))
+func (x WellknownDatatype) String() string {
+	return proto.EnumName(WellknownDatatype_name, int32(x))
 }
 
-func (CompactDataset_WellknownDatatype) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_d03575205ba2e5ad, []int{0, 0}
+func (WellknownDatatype) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_d03575205ba2e5ad, []int{0}
 }
 
 type CompactDataset struct {
-	Nodes   []*CompactDataset_Node `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
-	NewIris []string               `protobuf:"bytes,2,rep,name=new_iris,json=newIris,proto3" json:"new_iris,omitempty"`
+	Nodes   []*Node  `protobuf:"bytes,1,rep,name=nodes,proto3" json:"nodes,omitempty"`
+	NewIris []string `protobuf:"bytes,2,rep,name=new_iris,json=newIris,proto3" json:"new_iris,omitempty"`
 }
 
 func (m *CompactDataset) Reset()         { *m = CompactDataset{} }
@@ -115,7 +115,7 @@ func (m *CompactDataset) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_CompactDataset proto.InternalMessageInfo
 
-func (m *CompactDataset) GetNodes() []*CompactDataset_Node {
+func (m *CompactDataset) GetNodes() []*Node {
 	if m != nil {
 		return m.Nodes
 	}
@@ -129,26 +129,26 @@ func (m *CompactDataset) GetNewIris() []string {
 	return nil
 }
 
-type CompactDataset_Node struct {
+type Node struct {
 	// Types that are valid to be assigned to Subject:
-	//	*CompactDataset_Node_InternalId
-	//	*CompactDataset_Node_LocalRef
-	Subject    isCompactDataset_Node_Subject `protobuf_oneof:"subject"`
-	Properties []*CompactDataset_Properties  `protobuf:"bytes,3,rep,name=properties,proto3" json:"properties,omitempty"`
+	//	*Node_InternalId
+	//	*Node_LocalRef
+	Subject    isNode_Subject `protobuf_oneof:"subject"`
+	Properties []*Properties  `protobuf:"bytes,3,rep,name=properties,proto3" json:"properties,omitempty"`
 }
 
-func (m *CompactDataset_Node) Reset()         { *m = CompactDataset_Node{} }
-func (m *CompactDataset_Node) String() string { return proto.CompactTextString(m) }
-func (*CompactDataset_Node) ProtoMessage()    {}
-func (*CompactDataset_Node) Descriptor() ([]byte, []int) {
-	return fileDescriptor_d03575205ba2e5ad, []int{0, 0}
+func (m *Node) Reset()         { *m = Node{} }
+func (m *Node) String() string { return proto.CompactTextString(m) }
+func (*Node) ProtoMessage()    {}
+func (*Node) Descriptor() ([]byte, []int) {
+	return fileDescriptor_d03575205ba2e5ad, []int{1}
 }
-func (m *CompactDataset_Node) XXX_Unmarshal(b []byte) error {
+func (m *Node) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *CompactDataset_Node) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *Node) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_CompactDataset_Node.Marshal(b, m, deterministic)
+		return xxx_messageInfo_Node.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -158,56 +158,56 @@ func (m *CompactDataset_Node) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *CompactDataset_Node) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CompactDataset_Node.Merge(m, src)
+func (m *Node) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Node.Merge(m, src)
 }
-func (m *CompactDataset_Node) XXX_Size() int {
+func (m *Node) XXX_Size() int {
 	return m.Size()
 }
-func (m *CompactDataset_Node) XXX_DiscardUnknown() {
-	xxx_messageInfo_CompactDataset_Node.DiscardUnknown(m)
+func (m *Node) XXX_DiscardUnknown() {
+	xxx_messageInfo_Node.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CompactDataset_Node proto.InternalMessageInfo
+var xxx_messageInfo_Node proto.InternalMessageInfo
 
-type isCompactDataset_Node_Subject interface {
-	isCompactDataset_Node_Subject()
+type isNode_Subject interface {
+	isNode_Subject()
 	MarshalTo([]byte) (int, error)
 	Size() int
 }
 
-type CompactDataset_Node_InternalId struct {
+type Node_InternalId struct {
 	InternalId []byte `protobuf:"bytes,1,opt,name=internal_id,json=internalId,proto3,oneof" json:"internal_id,omitempty"`
 }
-type CompactDataset_Node_LocalRef struct {
+type Node_LocalRef struct {
 	LocalRef int32 `protobuf:"zigzag32,2,opt,name=local_ref,json=localRef,proto3,oneof" json:"local_ref,omitempty"`
 }
 
-func (*CompactDataset_Node_InternalId) isCompactDataset_Node_Subject() {}
-func (*CompactDataset_Node_LocalRef) isCompactDataset_Node_Subject()   {}
+func (*Node_InternalId) isNode_Subject() {}
+func (*Node_LocalRef) isNode_Subject()   {}
 
-func (m *CompactDataset_Node) GetSubject() isCompactDataset_Node_Subject {
+func (m *Node) GetSubject() isNode_Subject {
 	if m != nil {
 		return m.Subject
 	}
 	return nil
 }
 
-func (m *CompactDataset_Node) GetInternalId() []byte {
-	if x, ok := m.GetSubject().(*CompactDataset_Node_InternalId); ok {
+func (m *Node) GetInternalId() []byte {
+	if x, ok := m.GetSubject().(*Node_InternalId); ok {
 		return x.InternalId
 	}
 	return nil
 }
 
-func (m *CompactDataset_Node) GetLocalRef() int32 {
-	if x, ok := m.GetSubject().(*CompactDataset_Node_LocalRef); ok {
+func (m *Node) GetLocalRef() int32 {
+	if x, ok := m.GetSubject().(*Node_LocalRef); ok {
 		return x.LocalRef
 	}
 	return 0
 }
 
-func (m *CompactDataset_Node) GetProperties() []*CompactDataset_Properties {
+func (m *Node) GetProperties() []*Properties {
 	if m != nil {
 		return m.Properties
 	}
@@ -215,33 +215,33 @@ func (m *CompactDataset_Node) GetProperties() []*CompactDataset_Properties {
 }
 
 // XXX_OneofWrappers is for the internal use of the proto package.
-func (*CompactDataset_Node) XXX_OneofWrappers() []interface{} {
+func (*Node) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*CompactDataset_Node_InternalId)(nil),
-		(*CompactDataset_Node_LocalRef)(nil),
+		(*Node_InternalId)(nil),
+		(*Node_LocalRef)(nil),
 	}
 }
 
-type CompactDataset_Properties struct {
+type Properties struct {
 	// Types that are valid to be assigned to Predicate:
-	//	*CompactDataset_Properties_InternalId
-	//	*CompactDataset_Properties_LocalRef
-	Predicate isCompactDataset_Properties_Predicate `protobuf_oneof:"predicate"`
-	Objects   []*CompactDataset_ObjectGraph         `protobuf:"bytes,3,rep,name=objects,proto3" json:"objects,omitempty"`
+	//	*Properties_InternalId
+	//	*Properties_LocalRef
+	Predicate isProperties_Predicate `protobuf_oneof:"predicate"`
+	Objects   []*ObjectGraph         `protobuf:"bytes,3,rep,name=objects,proto3" json:"objects,omitempty"`
 }
 
-func (m *CompactDataset_Properties) Reset()         { *m = CompactDataset_Properties{} }
-func (m *CompactDataset_Properties) String() string { return proto.CompactTextString(m) }
-func (*CompactDataset_Properties) ProtoMessage()    {}
-func (*CompactDataset_Properties) Descriptor() ([]byte, []int) {
-	return fileDescriptor_d03575205ba2e5ad, []int{0, 1}
+func (m *Properties) Reset()         { *m = Properties{} }
+func (m *Properties) String() string { return proto.CompactTextString(m) }
+func (*Properties) ProtoMessage()    {}
+func (*Properties) Descriptor() ([]byte, []int) {
+	return fileDescriptor_d03575205ba2e5ad, []int{2}
 }
-func (m *CompactDataset_Properties) XXX_Unmarshal(b []byte) error {
+func (m *Properties) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *CompactDataset_Properties) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *Properties) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_CompactDataset_Properties.Marshal(b, m, deterministic)
+		return xxx_messageInfo_Properties.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -251,56 +251,56 @@ func (m *CompactDataset_Properties) XXX_Marshal(b []byte, deterministic bool) ([
 		return b[:n], nil
 	}
 }
-func (m *CompactDataset_Properties) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CompactDataset_Properties.Merge(m, src)
+func (m *Properties) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Properties.Merge(m, src)
 }
-func (m *CompactDataset_Properties) XXX_Size() int {
+func (m *Properties) XXX_Size() int {
 	return m.Size()
 }
-func (m *CompactDataset_Properties) XXX_DiscardUnknown() {
-	xxx_messageInfo_CompactDataset_Properties.DiscardUnknown(m)
+func (m *Properties) XXX_DiscardUnknown() {
+	xxx_messageInfo_Properties.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CompactDataset_Properties proto.InternalMessageInfo
+var xxx_messageInfo_Properties proto.InternalMessageInfo
 
-type isCompactDataset_Properties_Predicate interface {
-	isCompactDataset_Properties_Predicate()
+type isProperties_Predicate interface {
+	isProperties_Predicate()
 	MarshalTo([]byte) (int, error)
 	Size() int
 }
 
-type CompactDataset_Properties_InternalId struct {
+type Properties_InternalId struct {
 	InternalId []byte `protobuf:"bytes,1,opt,name=internal_id,json=internalId,proto3,oneof" json:"internal_id,omitempty"`
 }
-type CompactDataset_Properties_LocalRef struct {
+type Properties_LocalRef struct {
 	LocalRef int32 `protobuf:"zigzag32,2,opt,name=local_ref,json=localRef,proto3,oneof" json:"local_ref,omitempty"`
 }
 
-func (*CompactDataset_Properties_InternalId) isCompactDataset_Properties_Predicate() {}
-func (*CompactDataset_Properties_LocalRef) isCompactDataset_Properties_Predicate()   {}
+func (*Properties_InternalId) isProperties_Predicate() {}
+func (*Properties_LocalRef) isProperties_Predicate()   {}
 
-func (m *CompactDataset_Properties) GetPredicate() isCompactDataset_Properties_Predicate {
+func (m *Properties) GetPredicate() isProperties_Predicate {
 	if m != nil {
 		return m.Predicate
 	}
 	return nil
 }
 
-func (m *CompactDataset_Properties) GetInternalId() []byte {
-	if x, ok := m.GetPredicate().(*CompactDataset_Properties_InternalId); ok {
+func (m *Properties) GetInternalId() []byte {
+	if x, ok := m.GetPredicate().(*Properties_InternalId); ok {
 		return x.InternalId
 	}
 	return nil
 }
 
-func (m *CompactDataset_Properties) GetLocalRef() int32 {
-	if x, ok := m.GetPredicate().(*CompactDataset_Properties_LocalRef); ok {
+func (m *Properties) GetLocalRef() int32 {
+	if x, ok := m.GetPredicate().(*Properties_LocalRef); ok {
 		return x.LocalRef
 	}
 	return 0
 }
 
-func (m *CompactDataset_Properties) GetObjects() []*CompactDataset_ObjectGraph {
+func (m *Properties) GetObjects() []*ObjectGraph {
 	if m != nil {
 		return m.Objects
 	}
@@ -308,40 +308,40 @@ func (m *CompactDataset_Properties) GetObjects() []*CompactDataset_ObjectGraph {
 }
 
 // XXX_OneofWrappers is for the internal use of the proto package.
-func (*CompactDataset_Properties) XXX_OneofWrappers() []interface{} {
+func (*Properties) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*CompactDataset_Properties_InternalId)(nil),
-		(*CompactDataset_Properties_LocalRef)(nil),
+		(*Properties_InternalId)(nil),
+		(*Properties_LocalRef)(nil),
 	}
 }
 
-type CompactDataset_ObjectGraph struct {
+type ObjectGraph struct {
 	// Types that are valid to be assigned to Sum:
-	//	*CompactDataset_ObjectGraph_ObjectInternalId
-	//	*CompactDataset_ObjectGraph_ObjectLocalRef
-	//	*CompactDataset_ObjectGraph_WellKnownDatatype
-	//	*CompactDataset_ObjectGraph_DataTypeInternalId
-	//	*CompactDataset_ObjectGraph_DataTypeLocalRef
-	Sum    isCompactDataset_ObjectGraph_Sum      `protobuf_oneof:"sum"`
-	Lang   string                                `protobuf:"bytes,6,opt,name=lang,proto3" json:"lang,omitempty"`
-	Graphs []*CompactDataset_ObjectGraph_GraphID `protobuf:"bytes,7,rep,name=graphs,proto3" json:"graphs,omitempty"`
+	//	*ObjectGraph_ObjectInternalId
+	//	*ObjectGraph_ObjectLocalRef
+	//	*ObjectGraph_WellKnownDatatype
+	//	*ObjectGraph_DataTypeInternalId
+	//	*ObjectGraph_DataTypeLocalRef
+	//	*ObjectGraph_LangTag
+	Sum    isObjectGraph_Sum `protobuf_oneof:"sum"`
+	Graphs []*GraphID        `protobuf:"bytes,7,rep,name=graphs,proto3" json:"graphs,omitempty"`
 	// Types that are valid to be assigned to LiteralValue:
-	//	*CompactDataset_ObjectGraph_StrValue
-	LiteralValue isCompactDataset_ObjectGraph_LiteralValue `protobuf_oneof:"literal_value"`
+	//	*ObjectGraph_StrValue
+	LiteralValue isObjectGraph_LiteralValue `protobuf_oneof:"literal_value"`
 }
 
-func (m *CompactDataset_ObjectGraph) Reset()         { *m = CompactDataset_ObjectGraph{} }
-func (m *CompactDataset_ObjectGraph) String() string { return proto.CompactTextString(m) }
-func (*CompactDataset_ObjectGraph) ProtoMessage()    {}
-func (*CompactDataset_ObjectGraph) Descriptor() ([]byte, []int) {
-	return fileDescriptor_d03575205ba2e5ad, []int{0, 2}
+func (m *ObjectGraph) Reset()         { *m = ObjectGraph{} }
+func (m *ObjectGraph) String() string { return proto.CompactTextString(m) }
+func (*ObjectGraph) ProtoMessage()    {}
+func (*ObjectGraph) Descriptor() ([]byte, []int) {
+	return fileDescriptor_d03575205ba2e5ad, []int{3}
 }
-func (m *CompactDataset_ObjectGraph) XXX_Unmarshal(b []byte) error {
+func (m *ObjectGraph) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *CompactDataset_ObjectGraph) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *ObjectGraph) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_CompactDataset_ObjectGraph.Marshal(b, m, deterministic)
+		return xxx_messageInfo_ObjectGraph.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -351,155 +351,160 @@ func (m *CompactDataset_ObjectGraph) XXX_Marshal(b []byte, deterministic bool) (
 		return b[:n], nil
 	}
 }
-func (m *CompactDataset_ObjectGraph) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CompactDataset_ObjectGraph.Merge(m, src)
+func (m *ObjectGraph) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ObjectGraph.Merge(m, src)
 }
-func (m *CompactDataset_ObjectGraph) XXX_Size() int {
+func (m *ObjectGraph) XXX_Size() int {
 	return m.Size()
 }
-func (m *CompactDataset_ObjectGraph) XXX_DiscardUnknown() {
-	xxx_messageInfo_CompactDataset_ObjectGraph.DiscardUnknown(m)
+func (m *ObjectGraph) XXX_DiscardUnknown() {
+	xxx_messageInfo_ObjectGraph.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CompactDataset_ObjectGraph proto.InternalMessageInfo
+var xxx_messageInfo_ObjectGraph proto.InternalMessageInfo
 
-type isCompactDataset_ObjectGraph_Sum interface {
-	isCompactDataset_ObjectGraph_Sum()
+type isObjectGraph_Sum interface {
+	isObjectGraph_Sum()
 	MarshalTo([]byte) (int, error)
 	Size() int
 }
-type isCompactDataset_ObjectGraph_LiteralValue interface {
-	isCompactDataset_ObjectGraph_LiteralValue()
+type isObjectGraph_LiteralValue interface {
+	isObjectGraph_LiteralValue()
 	MarshalTo([]byte) (int, error)
 	Size() int
 }
 
-type CompactDataset_ObjectGraph_ObjectInternalId struct {
+type ObjectGraph_ObjectInternalId struct {
 	ObjectInternalId []byte `protobuf:"bytes,1,opt,name=object_internal_id,json=objectInternalId,proto3,oneof" json:"object_internal_id,omitempty"`
 }
-type CompactDataset_ObjectGraph_ObjectLocalRef struct {
+type ObjectGraph_ObjectLocalRef struct {
 	ObjectLocalRef int32 `protobuf:"zigzag32,2,opt,name=object_local_ref,json=objectLocalRef,proto3,oneof" json:"object_local_ref,omitempty"`
 }
-type CompactDataset_ObjectGraph_WellKnownDatatype struct {
-	WellKnownDatatype CompactDataset_WellknownDatatype `protobuf:"varint,3,opt,name=well_known_datatype,json=wellKnownDatatype,proto3,enum=regen.data.internal.v1alpha2.CompactDataset_WellknownDatatype,oneof" json:"well_known_datatype,omitempty"`
+type ObjectGraph_WellKnownDatatype struct {
+	WellKnownDatatype WellknownDatatype `protobuf:"varint,3,opt,name=well_known_datatype,json=wellKnownDatatype,proto3,enum=regen.data.internal.v1alpha2.WellknownDatatype,oneof" json:"well_known_datatype,omitempty"`
 }
-type CompactDataset_ObjectGraph_DataTypeInternalId struct {
+type ObjectGraph_DataTypeInternalId struct {
 	DataTypeInternalId []byte `protobuf:"bytes,4,opt,name=data_type_internal_id,json=dataTypeInternalId,proto3,oneof" json:"data_type_internal_id,omitempty"`
 }
-type CompactDataset_ObjectGraph_DataTypeLocalRef struct {
+type ObjectGraph_DataTypeLocalRef struct {
 	DataTypeLocalRef int32 `protobuf:"zigzag32,5,opt,name=data_type_local_ref,json=dataTypeLocalRef,proto3,oneof" json:"data_type_local_ref,omitempty"`
 }
-type CompactDataset_ObjectGraph_StrValue struct {
+type ObjectGraph_LangTag struct {
+	LangTag string `protobuf:"bytes,6,opt,name=lang_tag,json=langTag,proto3,oneof" json:"lang_tag,omitempty"`
+}
+type ObjectGraph_StrValue struct {
 	StrValue string `protobuf:"bytes,8,opt,name=str_value,json=strValue,proto3,oneof" json:"str_value,omitempty"`
 }
 
-func (*CompactDataset_ObjectGraph_ObjectInternalId) isCompactDataset_ObjectGraph_Sum()   {}
-func (*CompactDataset_ObjectGraph_ObjectLocalRef) isCompactDataset_ObjectGraph_Sum()     {}
-func (*CompactDataset_ObjectGraph_WellKnownDatatype) isCompactDataset_ObjectGraph_Sum()  {}
-func (*CompactDataset_ObjectGraph_DataTypeInternalId) isCompactDataset_ObjectGraph_Sum() {}
-func (*CompactDataset_ObjectGraph_DataTypeLocalRef) isCompactDataset_ObjectGraph_Sum()   {}
-func (*CompactDataset_ObjectGraph_StrValue) isCompactDataset_ObjectGraph_LiteralValue()  {}
+func (*ObjectGraph_ObjectInternalId) isObjectGraph_Sum()   {}
+func (*ObjectGraph_ObjectLocalRef) isObjectGraph_Sum()     {}
+func (*ObjectGraph_WellKnownDatatype) isObjectGraph_Sum()  {}
+func (*ObjectGraph_DataTypeInternalId) isObjectGraph_Sum() {}
+func (*ObjectGraph_DataTypeLocalRef) isObjectGraph_Sum()   {}
+func (*ObjectGraph_LangTag) isObjectGraph_Sum()            {}
+func (*ObjectGraph_StrValue) isObjectGraph_LiteralValue()  {}
 
-func (m *CompactDataset_ObjectGraph) GetSum() isCompactDataset_ObjectGraph_Sum {
+func (m *ObjectGraph) GetSum() isObjectGraph_Sum {
 	if m != nil {
 		return m.Sum
 	}
 	return nil
 }
-func (m *CompactDataset_ObjectGraph) GetLiteralValue() isCompactDataset_ObjectGraph_LiteralValue {
+func (m *ObjectGraph) GetLiteralValue() isObjectGraph_LiteralValue {
 	if m != nil {
 		return m.LiteralValue
 	}
 	return nil
 }
 
-func (m *CompactDataset_ObjectGraph) GetObjectInternalId() []byte {
-	if x, ok := m.GetSum().(*CompactDataset_ObjectGraph_ObjectInternalId); ok {
+func (m *ObjectGraph) GetObjectInternalId() []byte {
+	if x, ok := m.GetSum().(*ObjectGraph_ObjectInternalId); ok {
 		return x.ObjectInternalId
 	}
 	return nil
 }
 
-func (m *CompactDataset_ObjectGraph) GetObjectLocalRef() int32 {
-	if x, ok := m.GetSum().(*CompactDataset_ObjectGraph_ObjectLocalRef); ok {
+func (m *ObjectGraph) GetObjectLocalRef() int32 {
+	if x, ok := m.GetSum().(*ObjectGraph_ObjectLocalRef); ok {
 		return x.ObjectLocalRef
 	}
 	return 0
 }
 
-func (m *CompactDataset_ObjectGraph) GetWellKnownDatatype() CompactDataset_WellknownDatatype {
-	if x, ok := m.GetSum().(*CompactDataset_ObjectGraph_WellKnownDatatype); ok {
+func (m *ObjectGraph) GetWellKnownDatatype() WellknownDatatype {
+	if x, ok := m.GetSum().(*ObjectGraph_WellKnownDatatype); ok {
 		return x.WellKnownDatatype
 	}
-	return CompactDataset_DATATYPE_UNSPECIFIED
+	return WellknownDatatype_DATATYPE_UNSPECIFIED
 }
 
-func (m *CompactDataset_ObjectGraph) GetDataTypeInternalId() []byte {
-	if x, ok := m.GetSum().(*CompactDataset_ObjectGraph_DataTypeInternalId); ok {
+func (m *ObjectGraph) GetDataTypeInternalId() []byte {
+	if x, ok := m.GetSum().(*ObjectGraph_DataTypeInternalId); ok {
 		return x.DataTypeInternalId
 	}
 	return nil
 }
 
-func (m *CompactDataset_ObjectGraph) GetDataTypeLocalRef() int32 {
-	if x, ok := m.GetSum().(*CompactDataset_ObjectGraph_DataTypeLocalRef); ok {
+func (m *ObjectGraph) GetDataTypeLocalRef() int32 {
+	if x, ok := m.GetSum().(*ObjectGraph_DataTypeLocalRef); ok {
 		return x.DataTypeLocalRef
 	}
 	return 0
 }
 
-func (m *CompactDataset_ObjectGraph) GetLang() string {
-	if m != nil {
-		return m.Lang
+func (m *ObjectGraph) GetLangTag() string {
+	if x, ok := m.GetSum().(*ObjectGraph_LangTag); ok {
+		return x.LangTag
 	}
 	return ""
 }
 
-func (m *CompactDataset_ObjectGraph) GetGraphs() []*CompactDataset_ObjectGraph_GraphID {
+func (m *ObjectGraph) GetGraphs() []*GraphID {
 	if m != nil {
 		return m.Graphs
 	}
 	return nil
 }
 
-func (m *CompactDataset_ObjectGraph) GetStrValue() string {
-	if x, ok := m.GetLiteralValue().(*CompactDataset_ObjectGraph_StrValue); ok {
+func (m *ObjectGraph) GetStrValue() string {
+	if x, ok := m.GetLiteralValue().(*ObjectGraph_StrValue); ok {
 		return x.StrValue
 	}
 	return ""
 }
 
 // XXX_OneofWrappers is for the internal use of the proto package.
-func (*CompactDataset_ObjectGraph) XXX_OneofWrappers() []interface{} {
+func (*ObjectGraph) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*CompactDataset_ObjectGraph_ObjectInternalId)(nil),
-		(*CompactDataset_ObjectGraph_ObjectLocalRef)(nil),
-		(*CompactDataset_ObjectGraph_WellKnownDatatype)(nil),
-		(*CompactDataset_ObjectGraph_DataTypeInternalId)(nil),
-		(*CompactDataset_ObjectGraph_DataTypeLocalRef)(nil),
-		(*CompactDataset_ObjectGraph_StrValue)(nil),
+		(*ObjectGraph_ObjectInternalId)(nil),
+		(*ObjectGraph_ObjectLocalRef)(nil),
+		(*ObjectGraph_WellKnownDatatype)(nil),
+		(*ObjectGraph_DataTypeInternalId)(nil),
+		(*ObjectGraph_DataTypeLocalRef)(nil),
+		(*ObjectGraph_LangTag)(nil),
+		(*ObjectGraph_StrValue)(nil),
 	}
 }
 
-type CompactDataset_ObjectGraph_GraphID struct {
+type GraphID struct {
 	// Types that are valid to be assigned to Graph:
-	//	*CompactDataset_ObjectGraph_GraphID_InternalId
-	//	*CompactDataset_ObjectGraph_GraphID_LocalRef
-	Graph isCompactDataset_ObjectGraph_GraphID_Graph `protobuf_oneof:"graph"`
+	//	*GraphID_InternalId
+	//	*GraphID_LocalRef
+	Graph isGraphID_Graph `protobuf_oneof:"graph"`
 }
 
-func (m *CompactDataset_ObjectGraph_GraphID) Reset()         { *m = CompactDataset_ObjectGraph_GraphID{} }
-func (m *CompactDataset_ObjectGraph_GraphID) String() string { return proto.CompactTextString(m) }
-func (*CompactDataset_ObjectGraph_GraphID) ProtoMessage()    {}
-func (*CompactDataset_ObjectGraph_GraphID) Descriptor() ([]byte, []int) {
-	return fileDescriptor_d03575205ba2e5ad, []int{0, 2, 0}
+func (m *GraphID) Reset()         { *m = GraphID{} }
+func (m *GraphID) String() string { return proto.CompactTextString(m) }
+func (*GraphID) ProtoMessage()    {}
+func (*GraphID) Descriptor() ([]byte, []int) {
+	return fileDescriptor_d03575205ba2e5ad, []int{4}
 }
-func (m *CompactDataset_ObjectGraph_GraphID) XXX_Unmarshal(b []byte) error {
+func (m *GraphID) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *CompactDataset_ObjectGraph_GraphID) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *GraphID) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_CompactDataset_ObjectGraph_GraphID.Marshal(b, m, deterministic)
+		return xxx_messageInfo_GraphID.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -509,70 +514,70 @@ func (m *CompactDataset_ObjectGraph_GraphID) XXX_Marshal(b []byte, deterministic
 		return b[:n], nil
 	}
 }
-func (m *CompactDataset_ObjectGraph_GraphID) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CompactDataset_ObjectGraph_GraphID.Merge(m, src)
+func (m *GraphID) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GraphID.Merge(m, src)
 }
-func (m *CompactDataset_ObjectGraph_GraphID) XXX_Size() int {
+func (m *GraphID) XXX_Size() int {
 	return m.Size()
 }
-func (m *CompactDataset_ObjectGraph_GraphID) XXX_DiscardUnknown() {
-	xxx_messageInfo_CompactDataset_ObjectGraph_GraphID.DiscardUnknown(m)
+func (m *GraphID) XXX_DiscardUnknown() {
+	xxx_messageInfo_GraphID.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_CompactDataset_ObjectGraph_GraphID proto.InternalMessageInfo
+var xxx_messageInfo_GraphID proto.InternalMessageInfo
 
-type isCompactDataset_ObjectGraph_GraphID_Graph interface {
-	isCompactDataset_ObjectGraph_GraphID_Graph()
+type isGraphID_Graph interface {
+	isGraphID_Graph()
 	MarshalTo([]byte) (int, error)
 	Size() int
 }
 
-type CompactDataset_ObjectGraph_GraphID_InternalId struct {
+type GraphID_InternalId struct {
 	InternalId []byte `protobuf:"bytes,1,opt,name=internal_id,json=internalId,proto3,oneof" json:"internal_id,omitempty"`
 }
-type CompactDataset_ObjectGraph_GraphID_LocalRef struct {
+type GraphID_LocalRef struct {
 	LocalRef int32 `protobuf:"zigzag32,2,opt,name=local_ref,json=localRef,proto3,oneof" json:"local_ref,omitempty"`
 }
 
-func (*CompactDataset_ObjectGraph_GraphID_InternalId) isCompactDataset_ObjectGraph_GraphID_Graph() {}
-func (*CompactDataset_ObjectGraph_GraphID_LocalRef) isCompactDataset_ObjectGraph_GraphID_Graph()   {}
+func (*GraphID_InternalId) isGraphID_Graph() {}
+func (*GraphID_LocalRef) isGraphID_Graph()   {}
 
-func (m *CompactDataset_ObjectGraph_GraphID) GetGraph() isCompactDataset_ObjectGraph_GraphID_Graph {
+func (m *GraphID) GetGraph() isGraphID_Graph {
 	if m != nil {
 		return m.Graph
 	}
 	return nil
 }
 
-func (m *CompactDataset_ObjectGraph_GraphID) GetInternalId() []byte {
-	if x, ok := m.GetGraph().(*CompactDataset_ObjectGraph_GraphID_InternalId); ok {
+func (m *GraphID) GetInternalId() []byte {
+	if x, ok := m.GetGraph().(*GraphID_InternalId); ok {
 		return x.InternalId
 	}
 	return nil
 }
 
-func (m *CompactDataset_ObjectGraph_GraphID) GetLocalRef() int32 {
-	if x, ok := m.GetGraph().(*CompactDataset_ObjectGraph_GraphID_LocalRef); ok {
+func (m *GraphID) GetLocalRef() int32 {
+	if x, ok := m.GetGraph().(*GraphID_LocalRef); ok {
 		return x.LocalRef
 	}
 	return 0
 }
 
 // XXX_OneofWrappers is for the internal use of the proto package.
-func (*CompactDataset_ObjectGraph_GraphID) XXX_OneofWrappers() []interface{} {
+func (*GraphID) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*CompactDataset_ObjectGraph_GraphID_InternalId)(nil),
-		(*CompactDataset_ObjectGraph_GraphID_LocalRef)(nil),
+		(*GraphID_InternalId)(nil),
+		(*GraphID_LocalRef)(nil),
 	}
 }
 
 func init() {
-	proto.RegisterEnum("regen.data.internal.v1alpha2.CompactDataset_WellknownDatatype", CompactDataset_WellknownDatatype_name, CompactDataset_WellknownDatatype_value)
+	proto.RegisterEnum("regen.data.internal.v1alpha2.WellknownDatatype", WellknownDatatype_name, WellknownDatatype_value)
 	proto.RegisterType((*CompactDataset)(nil), "regen.data.internal.v1alpha2.CompactDataset")
-	proto.RegisterType((*CompactDataset_Node)(nil), "regen.data.internal.v1alpha2.CompactDataset.Node")
-	proto.RegisterType((*CompactDataset_Properties)(nil), "regen.data.internal.v1alpha2.CompactDataset.Properties")
-	proto.RegisterType((*CompactDataset_ObjectGraph)(nil), "regen.data.internal.v1alpha2.CompactDataset.ObjectGraph")
-	proto.RegisterType((*CompactDataset_ObjectGraph_GraphID)(nil), "regen.data.internal.v1alpha2.CompactDataset.ObjectGraph.GraphID")
+	proto.RegisterType((*Node)(nil), "regen.data.internal.v1alpha2.Node")
+	proto.RegisterType((*Properties)(nil), "regen.data.internal.v1alpha2.Properties")
+	proto.RegisterType((*ObjectGraph)(nil), "regen.data.internal.v1alpha2.ObjectGraph")
+	proto.RegisterType((*GraphID)(nil), "regen.data.internal.v1alpha2.GraphID")
 }
 
 func init() {
@@ -580,52 +585,52 @@ func init() {
 }
 
 var fileDescriptor_d03575205ba2e5ad = []byte{
-	// 711 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x54, 0xcb, 0x6e, 0xd3, 0x40,
-	0x14, 0x8d, 0xf3, 0xce, 0x0d, 0x6d, 0x9d, 0x49, 0x29, 0x26, 0x82, 0x28, 0x74, 0x15, 0x21, 0xe1,
-	0xa8, 0x0f, 0x01, 0x2b, 0x84, 0xd3, 0xb8, 0x89, 0xd5, 0x34, 0xad, 0x26, 0x2e, 0xa5, 0x6c, 0x2c,
-	0x37, 0x99, 0xa6, 0xa6, 0xae, 0x6d, 0x8d, 0x27, 0x0d, 0xfd, 0x0b, 0x7e, 0x03, 0x09, 0x89, 0x1f,
-	0x60, 0xc1, 0x92, 0x65, 0x97, 0x2c, 0x51, 0xfb, 0x23, 0xc8, 0xaf, 0x24, 0x56, 0x11, 0x52, 0x81,
-	0x4d, 0x94, 0x39, 0xf7, 0xdc, 0x73, 0xcf, 0xf1, 0x5c, 0x0d, 0xd4, 0x29, 0x19, 0x11, 0xab, 0x31,
-	0xd4, 0x99, 0xde, 0x30, 0x2c, 0x46, 0xa8, 0xa5, 0x9b, 0x8d, 0x8b, 0x35, 0xdd, 0x74, 0x4e, 0xf5,
-	0xf5, 0x06, 0xbb, 0x74, 0x88, 0x2b, 0x3a, 0xd4, 0x66, 0x36, 0x7a, 0xe4, 0x33, 0x45, 0x8f, 0x29,
-	0x46, 0x4c, 0x31, 0x62, 0xae, 0x7e, 0x03, 0x58, 0xdc, 0xb2, 0xcf, 0x1d, 0x7d, 0xc0, 0x5a, 0x3a,
-	0xd3, 0x5d, 0xc2, 0x50, 0x1b, 0x32, 0x96, 0x3d, 0x24, 0xae, 0xc0, 0xd5, 0x52, 0xf5, 0xe2, 0xfa,
-	0x9a, 0xf8, 0x27, 0x01, 0x31, 0xde, 0x2c, 0xf6, 0xec, 0x21, 0xc1, 0x41, 0x3f, 0x7a, 0x08, 0x79,
-	0x8b, 0x4c, 0x34, 0x83, 0x1a, 0xae, 0x90, 0xac, 0xa5, 0xea, 0x05, 0x9c, 0xb3, 0xc8, 0x44, 0xa1,
-	0x86, 0x5b, 0xf9, 0xcc, 0x41, 0xda, 0xa3, 0xa2, 0x27, 0x50, 0x8c, 0x34, 0x35, 0x63, 0x28, 0x70,
-	0x35, 0xae, 0x7e, 0xaf, 0x93, 0xc0, 0x10, 0x81, 0xca, 0x10, 0x3d, 0x86, 0x82, 0x69, 0x0f, 0x74,
-	0x53, 0xa3, 0xe4, 0x44, 0x48, 0xd6, 0xb8, 0x7a, 0xa9, 0x93, 0xc0, 0x79, 0x1f, 0xc2, 0xe4, 0x04,
-	0x1d, 0x02, 0x38, 0xd4, 0x76, 0x08, 0x65, 0x06, 0x71, 0x85, 0x94, 0xef, 0xf9, 0xc5, 0x9d, 0x3c,
-	0xef, 0x4f, 0xdb, 0xf1, 0x9c, 0x54, 0xb3, 0x00, 0x39, 0x77, 0x7c, 0xfc, 0x9e, 0x0c, 0x58, 0xe5,
-	0x0b, 0x07, 0x30, 0x63, 0xfd, 0x07, 0xd3, 0x18, 0x72, 0xb6, 0x2f, 0x1d, 0x39, 0x7e, 0x79, 0x27,
-	0xc7, 0x7b, 0x7e, 0x6f, 0x9b, 0xea, 0xce, 0x29, 0x8e, 0x84, 0x9a, 0x45, 0x28, 0x38, 0x94, 0x0c,
-	0x8d, 0x81, 0xce, 0x48, 0xe5, 0x6b, 0x1a, 0x8a, 0x73, 0x2c, 0x24, 0x02, 0x0a, 0x78, 0xda, 0xef,
-	0x9c, 0xf3, 0x41, 0x4d, 0x99, 0xf9, 0x7f, 0x0a, 0x21, 0xa6, 0xdd, 0x8e, 0xb1, 0x18, 0x54, 0xba,
-	0x51, 0x18, 0x07, 0xca, 0x13, 0x62, 0x9a, 0xda, 0x99, 0x65, 0x4f, 0x2c, 0xcd, 0x4b, 0xe0, 0xed,
-	0x9f, 0x90, 0xaa, 0x71, 0xf5, 0xc5, 0xf5, 0x57, 0x77, 0x0a, 0x76, 0x48, 0x4c, 0xd3, 0x97, 0x69,
-	0x85, 0x2a, 0x9d, 0x04, 0x2e, 0x79, 0xe2, 0x3b, 0xf3, 0x20, 0xda, 0x80, 0xfb, 0x9e, 0x9e, 0xe6,
-	0x1d, 0x62, 0x81, 0xd2, 0x61, 0x20, 0xe4, 0x95, 0xd5, 0x4b, 0x87, 0xcc, 0x45, 0x6a, 0x40, 0x79,
-	0xd6, 0x34, 0x4b, 0x95, 0x09, 0x53, 0xf1, 0x51, 0xcb, 0x34, 0x17, 0x82, 0xb4, 0xa9, 0x5b, 0x23,
-	0x21, 0x5b, 0xe3, 0xea, 0x05, 0xec, 0xff, 0x47, 0x6f, 0x21, 0x3b, 0xf2, 0x3e, 0xa8, 0x2b, 0xe4,
-	0xfc, 0x7b, 0x7b, 0xfd, 0xb7, 0xf7, 0x26, 0xfa, 0xbf, 0x4a, 0x0b, 0x87, 0x7a, 0xde, 0xc6, 0xb8,
-	0x8c, 0x6a, 0x17, 0xba, 0x39, 0x26, 0x42, 0xde, 0x1b, 0xd9, 0xe1, 0x70, 0xde, 0x65, 0xf4, 0x8d,
-	0x87, 0x54, 0x54, 0xc8, 0x85, 0x1d, 0xff, 0xbe, 0x7e, 0xcd, 0x1c, 0x64, 0xfc, 0xa9, 0xcd, 0x0c,
-	0xa4, 0xdc, 0xf1, 0x79, 0x73, 0x09, 0x16, 0x4c, 0x83, 0x11, 0xaa, 0x9b, 0xc1, 0xfc, 0xd5, 0x4f,
-	0x49, 0x28, 0xdd, 0xba, 0x0b, 0x24, 0xc0, 0x72, 0x4b, 0x52, 0x25, 0xf5, 0x68, 0x5f, 0xd6, 0x0e,
-	0x7a, 0xfd, 0x7d, 0x79, 0x4b, 0xd9, 0x56, 0xe4, 0x16, 0x9f, 0x40, 0x0f, 0xa0, 0x3c, 0xad, 0x34,
-	0xf7, 0xf6, 0xba, 0xda, 0xb6, 0xd4, 0xed, 0xcb, 0x3c, 0x87, 0x56, 0x00, 0xc5, 0x0b, 0x2a, 0x3e,
-	0x90, 0xf9, 0x24, 0x5a, 0x06, 0x7e, 0x8a, 0xb7, 0xe4, 0x2d, 0x65, 0x57, 0xea, 0xf2, 0xa9, 0x18,
-	0xaa, 0xf4, 0x54, 0xb9, 0x2d, 0x63, 0x3e, 0x8d, 0xca, 0xb0, 0x34, 0x45, 0xfb, 0x2a, 0x56, 0x7a,
-	0x6d, 0x3e, 0x13, 0xa3, 0x4a, 0xbd, 0x23, 0xed, 0x00, 0x2b, 0x7c, 0x16, 0x95, 0x60, 0x61, 0x26,
-	0x2b, 0xa9, 0x32, 0x9f, 0x8b, 0x41, 0xaa, 0xb2, 0x2b, 0xf3, 0xf9, 0x98, 0x29, 0x8f, 0x15, 0xe0,
-	0x05, 0x54, 0x81, 0x95, 0x99, 0x59, 0xa9, 0x2f, 0x3f, 0xdf, 0x8c, 0xe6, 0x41, 0x2c, 0xfb, 0xe1,
-	0x8e, 0xaa, 0x75, 0x15, 0x55, 0xc6, 0x52, 0x97, 0x2f, 0x36, 0x7b, 0xdf, 0xaf, 0xab, 0xdc, 0xd5,
-	0x75, 0x95, 0xfb, 0x79, 0x5d, 0xe5, 0x3e, 0xde, 0x54, 0x13, 0x57, 0x37, 0xd5, 0xc4, 0x8f, 0x9b,
-	0x6a, 0xe2, 0xdd, 0xe6, 0xc8, 0x60, 0xa7, 0xe3, 0x63, 0x71, 0x60, 0x9f, 0x37, 0xfc, 0x35, 0x79,
-	0x66, 0x11, 0x36, 0xb1, 0xe9, 0x59, 0x78, 0x32, 0xc9, 0x70, 0x44, 0x68, 0xe3, 0x43, 0xf0, 0x8c,
-	0x0f, 0x82, 0x5d, 0x39, 0xce, 0xfa, 0xef, 0xf6, 0xc6, 0xaf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x38,
-	0xf7, 0x11, 0xf6, 0xe3, 0x05, 0x00, 0x00,
+	// 713 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x54, 0xcd, 0x4e, 0xc3, 0x46,
+	0x18, 0xb4, 0x13, 0x12, 0x27, 0x5f, 0x0a, 0x38, 0x1b, 0x4a, 0xdd, 0xbf, 0x28, 0x8d, 0x54, 0xc9,
+	0x45, 0xaa, 0xad, 0x42, 0x55, 0x71, 0xe9, 0xc1, 0x49, 0x0c, 0xb1, 0x08, 0x01, 0x6d, 0x4c, 0x11,
+	0xbd, 0x58, 0x4b, 0xbc, 0x04, 0x17, 0x63, 0x5b, 0xeb, 0x0d, 0x29, 0x6f, 0xd1, 0x17, 0xa8, 0xd4,
+	0x6b, 0x1f, 0xa4, 0x52, 0x8f, 0x1c, 0x7b, 0xac, 0xe0, 0x45, 0x2a, 0xdb, 0x71, 0x7e, 0x44, 0x95,
+	0x4b, 0x7b, 0xdc, 0xf9, 0x66, 0xc6, 0x33, 0xeb, 0x4f, 0x0b, 0x2a, 0xa3, 0x13, 0x1a, 0xe8, 0x2e,
+	0xe1, 0x44, 0xf7, 0x02, 0x4e, 0x59, 0x40, 0x7c, 0xfd, 0xe9, 0x1b, 0xe2, 0x47, 0xf7, 0xe4, 0x50,
+	0xe7, 0xcf, 0x11, 0x8d, 0xb5, 0x88, 0x85, 0x3c, 0x44, 0x9f, 0xa5, 0x4c, 0x2d, 0x61, 0x6a, 0x39,
+	0x53, 0xcb, 0x99, 0x6d, 0x0a, 0x3b, 0xdd, 0xf0, 0x31, 0x22, 0x63, 0xde, 0x23, 0x9c, 0xc4, 0x94,
+	0xa3, 0x63, 0x28, 0x05, 0xa1, 0x4b, 0x63, 0x45, 0x6c, 0x15, 0xd5, 0xda, 0x61, 0x5b, 0xdb, 0xa4,
+	0xd7, 0x86, 0xa1, 0x4b, 0x71, 0x26, 0x40, 0x1f, 0x43, 0x25, 0xa0, 0x33, 0xc7, 0x63, 0x5e, 0xac,
+	0x14, 0x5a, 0x45, 0xb5, 0x8a, 0xa5, 0x80, 0xce, 0x2c, 0xe6, 0xc5, 0xed, 0x5f, 0x45, 0xd8, 0x4a,
+	0xa8, 0xe8, 0x0b, 0xa8, 0xe5, 0x26, 0x8e, 0xe7, 0x2a, 0x62, 0x4b, 0x54, 0x3f, 0xe8, 0x0b, 0x18,
+	0x72, 0xd0, 0x72, 0xd1, 0xe7, 0x50, 0xf5, 0xc3, 0x31, 0xf1, 0x1d, 0x46, 0xef, 0x94, 0x42, 0x4b,
+	0x54, 0xeb, 0x7d, 0x01, 0x57, 0x52, 0x08, 0xd3, 0x3b, 0xd4, 0x07, 0x88, 0x58, 0x18, 0x51, 0xc6,
+	0x3d, 0x1a, 0x2b, 0xc5, 0x34, 0xa4, 0xba, 0x39, 0xe4, 0xe5, 0x82, 0x8f, 0x57, 0xb4, 0x9d, 0x2a,
+	0x48, 0xf1, 0xf4, 0xf6, 0x27, 0x3a, 0xe6, 0xed, 0xdf, 0x44, 0x80, 0x25, 0xeb, 0x7f, 0x48, 0xd9,
+	0x05, 0x29, 0x4c, 0xad, 0xf3, 0x88, 0x5f, 0x6d, 0x8e, 0x78, 0x91, 0x92, 0x4f, 0x19, 0x89, 0xee,
+	0x71, 0xae, 0xec, 0xd4, 0xa0, 0x1a, 0x31, 0xea, 0x7a, 0x63, 0xc2, 0x69, 0xfb, 0x8f, 0x22, 0xd4,
+	0x56, 0x58, 0x48, 0x03, 0x94, 0xf1, 0x9c, 0x7f, 0x8b, 0x2a, 0x67, 0x33, 0x6b, 0x19, 0xf8, 0x00,
+	0xe6, 0x98, 0xf3, 0x3e, 0xf7, 0x4e, 0x36, 0x19, 0xe4, 0xe9, 0x09, 0x34, 0x66, 0xd4, 0xf7, 0x9d,
+	0x87, 0x20, 0x9c, 0x05, 0x4e, 0x12, 0x39, 0xd9, 0x28, 0xa5, 0xd8, 0x12, 0xd5, 0x9d, 0x43, 0x7d,
+	0x73, 0x93, 0x6b, 0xea, 0xfb, 0xa9, 0xae, 0x37, 0x97, 0xf5, 0x05, 0x5c, 0x4f, 0xdc, 0xce, 0x56,
+	0x41, 0x74, 0x04, 0x1f, 0x26, 0x06, 0x4e, 0x72, 0x58, 0x6b, 0xb0, 0x35, 0x6f, 0x80, 0x92, 0xb1,
+	0xfd, 0x1c, 0xd1, 0x95, 0x0e, 0x3a, 0x34, 0x96, 0xa2, 0x65, 0x8d, 0xd2, 0xbc, 0x86, 0x9c, 0x4b,
+	0x16, 0x45, 0x3e, 0x85, 0x8a, 0x4f, 0x82, 0x89, 0xc3, 0xc9, 0x44, 0x29, 0xb7, 0x44, 0xb5, 0xda,
+	0x17, 0xb0, 0x94, 0x20, 0x36, 0x99, 0xa0, 0xef, 0xa1, 0x3c, 0x49, 0xae, 0x32, 0x56, 0xa4, 0xf4,
+	0x17, 0x7d, 0xb9, 0xb9, 0x58, 0x7a, 0xed, 0x56, 0x0f, 0xcf, 0x45, 0xc9, 0x06, 0xc4, 0x9c, 0x39,
+	0x4f, 0xc4, 0x9f, 0x52, 0xa5, 0x92, 0x9a, 0x8b, 0xb8, 0x12, 0x73, 0xf6, 0x43, 0x82, 0x74, 0x4a,
+	0x50, 0x8c, 0xa7, 0x8f, 0x9d, 0x5d, 0xd8, 0xf6, 0x3d, 0x4e, 0x19, 0xf1, 0x33, 0x66, 0xdb, 0x06,
+	0x69, 0xee, 0xf4, 0xdf, 0xd7, 0xac, 0x23, 0x41, 0x29, 0x4d, 0x73, 0xf0, 0x7b, 0x01, 0xea, 0xef,
+	0x6e, 0x1e, 0x29, 0xb0, 0xd7, 0x33, 0x6c, 0xc3, 0xbe, 0xb9, 0x34, 0x9d, 0xab, 0xe1, 0xe8, 0xd2,
+	0xec, 0x5a, 0x27, 0x96, 0xd9, 0x93, 0x05, 0xf4, 0x11, 0x34, 0x16, 0x93, 0xce, 0xc5, 0xc5, 0xc0,
+	0x39, 0x31, 0x06, 0x23, 0x53, 0x16, 0xd1, 0x3e, 0xa0, 0xf5, 0x81, 0x8d, 0xaf, 0x4c, 0xb9, 0x80,
+	0xf6, 0x40, 0x5e, 0xe0, 0x3d, 0xb3, 0x6b, 0x9d, 0x1b, 0x03, 0xb9, 0xb8, 0x86, 0x5a, 0x43, 0xdb,
+	0x3c, 0x35, 0xb1, 0xbc, 0x85, 0x1a, 0xb0, 0xbb, 0x40, 0x47, 0x36, 0xb6, 0x86, 0xa7, 0x72, 0x69,
+	0x8d, 0x6a, 0x0c, 0x6f, 0x9c, 0x2b, 0x6c, 0xc9, 0x65, 0x54, 0x87, 0xed, 0xa5, 0xad, 0x61, 0x9b,
+	0xb2, 0xb4, 0x06, 0xd9, 0xd6, 0xb9, 0x29, 0x57, 0xd6, 0x42, 0x25, 0xac, 0x0c, 0xaf, 0xa2, 0x4f,
+	0x60, 0x7f, 0x19, 0xd6, 0x18, 0x99, 0xdf, 0x7d, 0x9b, 0x7f, 0x0f, 0xd6, 0xba, 0x5f, 0x9f, 0xd9,
+	0xce, 0xc0, 0xb2, 0x4d, 0x6c, 0x0c, 0xe4, 0x5a, 0x07, 0xff, 0xf9, 0xda, 0x14, 0x5f, 0x5e, 0x9b,
+	0xe2, 0xdf, 0xaf, 0x4d, 0xf1, 0x97, 0xb7, 0xa6, 0xf0, 0xf2, 0xd6, 0x14, 0xfe, 0x7a, 0x6b, 0x0a,
+	0x3f, 0x1e, 0x4f, 0x3c, 0x7e, 0x3f, 0xbd, 0xd5, 0xc6, 0xe1, 0xa3, 0x9e, 0xee, 0xc2, 0xd7, 0x01,
+	0xe5, 0xb3, 0x90, 0x3d, 0xcc, 0x4f, 0x3e, 0x75, 0x27, 0x94, 0xe9, 0x3f, 0x67, 0xef, 0x2e, 0x73,
+	0xef, 0xf4, 0x71, 0xf6, 0x78, 0xde, 0x96, 0xd3, 0xc7, 0xf6, 0xe8, 0x9f, 0x00, 0x00, 0x00, 0xff,
+	0xff, 0x28, 0xa2, 0x4d, 0xab, 0x98, 0x05, 0x00, 0x00,
 }
 
 func (m *CompactDataset) Marshal() (dAtA []byte, err error) {
@@ -674,7 +679,7 @@ func (m *CompactDataset) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *CompactDataset_Node) Marshal() (dAtA []byte, err error) {
+func (m *Node) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -684,12 +689,12 @@ func (m *CompactDataset_Node) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *CompactDataset_Node) MarshalTo(dAtA []byte) (int, error) {
+func (m *Node) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompactDataset_Node) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *Node) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -720,12 +725,12 @@ func (m *CompactDataset_Node) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *CompactDataset_Node_InternalId) MarshalTo(dAtA []byte) (int, error) {
+func (m *Node_InternalId) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompactDataset_Node_InternalId) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *Node_InternalId) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	if m.InternalId != nil {
 		i -= len(m.InternalId)
@@ -736,19 +741,19 @@ func (m *CompactDataset_Node_InternalId) MarshalToSizedBuffer(dAtA []byte) (int,
 	}
 	return len(dAtA) - i, nil
 }
-func (m *CompactDataset_Node_LocalRef) MarshalTo(dAtA []byte) (int, error) {
+func (m *Node_LocalRef) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompactDataset_Node_LocalRef) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *Node_LocalRef) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	i = encodeVarintTypes(dAtA, i, uint64((uint32(m.LocalRef)<<1)^uint32((m.LocalRef>>31))))
 	i--
 	dAtA[i] = 0x10
 	return len(dAtA) - i, nil
 }
-func (m *CompactDataset_Properties) Marshal() (dAtA []byte, err error) {
+func (m *Properties) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -758,12 +763,12 @@ func (m *CompactDataset_Properties) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *CompactDataset_Properties) MarshalTo(dAtA []byte) (int, error) {
+func (m *Properties) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompactDataset_Properties) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *Properties) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -794,12 +799,12 @@ func (m *CompactDataset_Properties) MarshalToSizedBuffer(dAtA []byte) (int, erro
 	return len(dAtA) - i, nil
 }
 
-func (m *CompactDataset_Properties_InternalId) MarshalTo(dAtA []byte) (int, error) {
+func (m *Properties_InternalId) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompactDataset_Properties_InternalId) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *Properties_InternalId) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	if m.InternalId != nil {
 		i -= len(m.InternalId)
@@ -810,19 +815,19 @@ func (m *CompactDataset_Properties_InternalId) MarshalToSizedBuffer(dAtA []byte)
 	}
 	return len(dAtA) - i, nil
 }
-func (m *CompactDataset_Properties_LocalRef) MarshalTo(dAtA []byte) (int, error) {
+func (m *Properties_LocalRef) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompactDataset_Properties_LocalRef) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *Properties_LocalRef) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	i = encodeVarintTypes(dAtA, i, uint64((uint32(m.LocalRef)<<1)^uint32((m.LocalRef>>31))))
 	i--
 	dAtA[i] = 0x10
 	return len(dAtA) - i, nil
 }
-func (m *CompactDataset_ObjectGraph) Marshal() (dAtA []byte, err error) {
+func (m *ObjectGraph) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -832,12 +837,12 @@ func (m *CompactDataset_ObjectGraph) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *CompactDataset_ObjectGraph) MarshalTo(dAtA []byte) (int, error) {
+func (m *ObjectGraph) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompactDataset_ObjectGraph) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *ObjectGraph) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -865,13 +870,6 @@ func (m *CompactDataset_ObjectGraph) MarshalToSizedBuffer(dAtA []byte) (int, err
 			dAtA[i] = 0x3a
 		}
 	}
-	if len(m.Lang) > 0 {
-		i -= len(m.Lang)
-		copy(dAtA[i:], m.Lang)
-		i = encodeVarintTypes(dAtA, i, uint64(len(m.Lang)))
-		i--
-		dAtA[i] = 0x32
-	}
 	if m.Sum != nil {
 		{
 			size := m.Sum.Size()
@@ -884,12 +882,12 @@ func (m *CompactDataset_ObjectGraph) MarshalToSizedBuffer(dAtA []byte) (int, err
 	return len(dAtA) - i, nil
 }
 
-func (m *CompactDataset_ObjectGraph_ObjectInternalId) MarshalTo(dAtA []byte) (int, error) {
+func (m *ObjectGraph_ObjectInternalId) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompactDataset_ObjectGraph_ObjectInternalId) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *ObjectGraph_ObjectInternalId) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	if m.ObjectInternalId != nil {
 		i -= len(m.ObjectInternalId)
@@ -900,36 +898,36 @@ func (m *CompactDataset_ObjectGraph_ObjectInternalId) MarshalToSizedBuffer(dAtA 
 	}
 	return len(dAtA) - i, nil
 }
-func (m *CompactDataset_ObjectGraph_ObjectLocalRef) MarshalTo(dAtA []byte) (int, error) {
+func (m *ObjectGraph_ObjectLocalRef) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompactDataset_ObjectGraph_ObjectLocalRef) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *ObjectGraph_ObjectLocalRef) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	i = encodeVarintTypes(dAtA, i, uint64((uint32(m.ObjectLocalRef)<<1)^uint32((m.ObjectLocalRef>>31))))
 	i--
 	dAtA[i] = 0x10
 	return len(dAtA) - i, nil
 }
-func (m *CompactDataset_ObjectGraph_WellKnownDatatype) MarshalTo(dAtA []byte) (int, error) {
+func (m *ObjectGraph_WellKnownDatatype) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompactDataset_ObjectGraph_WellKnownDatatype) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *ObjectGraph_WellKnownDatatype) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	i = encodeVarintTypes(dAtA, i, uint64(m.WellKnownDatatype))
 	i--
 	dAtA[i] = 0x18
 	return len(dAtA) - i, nil
 }
-func (m *CompactDataset_ObjectGraph_DataTypeInternalId) MarshalTo(dAtA []byte) (int, error) {
+func (m *ObjectGraph_DataTypeInternalId) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompactDataset_ObjectGraph_DataTypeInternalId) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *ObjectGraph_DataTypeInternalId) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	if m.DataTypeInternalId != nil {
 		i -= len(m.DataTypeInternalId)
@@ -940,24 +938,38 @@ func (m *CompactDataset_ObjectGraph_DataTypeInternalId) MarshalToSizedBuffer(dAt
 	}
 	return len(dAtA) - i, nil
 }
-func (m *CompactDataset_ObjectGraph_DataTypeLocalRef) MarshalTo(dAtA []byte) (int, error) {
+func (m *ObjectGraph_DataTypeLocalRef) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompactDataset_ObjectGraph_DataTypeLocalRef) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *ObjectGraph_DataTypeLocalRef) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	i = encodeVarintTypes(dAtA, i, uint64((uint32(m.DataTypeLocalRef)<<1)^uint32((m.DataTypeLocalRef>>31))))
 	i--
 	dAtA[i] = 0x28
 	return len(dAtA) - i, nil
 }
-func (m *CompactDataset_ObjectGraph_StrValue) MarshalTo(dAtA []byte) (int, error) {
+func (m *ObjectGraph_LangTag) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompactDataset_ObjectGraph_StrValue) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *ObjectGraph_LangTag) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	i -= len(m.LangTag)
+	copy(dAtA[i:], m.LangTag)
+	i = encodeVarintTypes(dAtA, i, uint64(len(m.LangTag)))
+	i--
+	dAtA[i] = 0x32
+	return len(dAtA) - i, nil
+}
+func (m *ObjectGraph_StrValue) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ObjectGraph_StrValue) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	i -= len(m.StrValue)
 	copy(dAtA[i:], m.StrValue)
@@ -966,7 +978,7 @@ func (m *CompactDataset_ObjectGraph_StrValue) MarshalToSizedBuffer(dAtA []byte) 
 	dAtA[i] = 0x42
 	return len(dAtA) - i, nil
 }
-func (m *CompactDataset_ObjectGraph_GraphID) Marshal() (dAtA []byte, err error) {
+func (m *GraphID) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -976,12 +988,12 @@ func (m *CompactDataset_ObjectGraph_GraphID) Marshal() (dAtA []byte, err error) 
 	return dAtA[:n], nil
 }
 
-func (m *CompactDataset_ObjectGraph_GraphID) MarshalTo(dAtA []byte) (int, error) {
+func (m *GraphID) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompactDataset_ObjectGraph_GraphID) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *GraphID) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -998,12 +1010,12 @@ func (m *CompactDataset_ObjectGraph_GraphID) MarshalToSizedBuffer(dAtA []byte) (
 	return len(dAtA) - i, nil
 }
 
-func (m *CompactDataset_ObjectGraph_GraphID_InternalId) MarshalTo(dAtA []byte) (int, error) {
+func (m *GraphID_InternalId) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompactDataset_ObjectGraph_GraphID_InternalId) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *GraphID_InternalId) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	if m.InternalId != nil {
 		i -= len(m.InternalId)
@@ -1014,12 +1026,12 @@ func (m *CompactDataset_ObjectGraph_GraphID_InternalId) MarshalToSizedBuffer(dAt
 	}
 	return len(dAtA) - i, nil
 }
-func (m *CompactDataset_ObjectGraph_GraphID_LocalRef) MarshalTo(dAtA []byte) (int, error) {
+func (m *GraphID_LocalRef) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *CompactDataset_ObjectGraph_GraphID_LocalRef) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *GraphID_LocalRef) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	i = encodeVarintTypes(dAtA, i, uint64((uint32(m.LocalRef)<<1)^uint32((m.LocalRef>>31))))
 	i--
@@ -1058,7 +1070,7 @@ func (m *CompactDataset) Size() (n int) {
 	return n
 }
 
-func (m *CompactDataset_Node) Size() (n int) {
+func (m *Node) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1076,7 +1088,7 @@ func (m *CompactDataset_Node) Size() (n int) {
 	return n
 }
 
-func (m *CompactDataset_Node_InternalId) Size() (n int) {
+func (m *Node_InternalId) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1088,7 +1100,7 @@ func (m *CompactDataset_Node_InternalId) Size() (n int) {
 	}
 	return n
 }
-func (m *CompactDataset_Node_LocalRef) Size() (n int) {
+func (m *Node_LocalRef) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1097,7 +1109,7 @@ func (m *CompactDataset_Node_LocalRef) Size() (n int) {
 	n += 1 + sozTypes(uint64(m.LocalRef))
 	return n
 }
-func (m *CompactDataset_Properties) Size() (n int) {
+func (m *Properties) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1115,7 +1127,7 @@ func (m *CompactDataset_Properties) Size() (n int) {
 	return n
 }
 
-func (m *CompactDataset_Properties_InternalId) Size() (n int) {
+func (m *Properties_InternalId) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1127,7 +1139,7 @@ func (m *CompactDataset_Properties_InternalId) Size() (n int) {
 	}
 	return n
 }
-func (m *CompactDataset_Properties_LocalRef) Size() (n int) {
+func (m *Properties_LocalRef) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1136,7 +1148,7 @@ func (m *CompactDataset_Properties_LocalRef) Size() (n int) {
 	n += 1 + sozTypes(uint64(m.LocalRef))
 	return n
 }
-func (m *CompactDataset_ObjectGraph) Size() (n int) {
+func (m *ObjectGraph) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1144,10 +1156,6 @@ func (m *CompactDataset_ObjectGraph) Size() (n int) {
 	_ = l
 	if m.Sum != nil {
 		n += m.Sum.Size()
-	}
-	l = len(m.Lang)
-	if l > 0 {
-		n += 1 + l + sovTypes(uint64(l))
 	}
 	if len(m.Graphs) > 0 {
 		for _, e := range m.Graphs {
@@ -1161,7 +1169,7 @@ func (m *CompactDataset_ObjectGraph) Size() (n int) {
 	return n
 }
 
-func (m *CompactDataset_ObjectGraph_ObjectInternalId) Size() (n int) {
+func (m *ObjectGraph_ObjectInternalId) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1173,7 +1181,7 @@ func (m *CompactDataset_ObjectGraph_ObjectInternalId) Size() (n int) {
 	}
 	return n
 }
-func (m *CompactDataset_ObjectGraph_ObjectLocalRef) Size() (n int) {
+func (m *ObjectGraph_ObjectLocalRef) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1182,7 +1190,7 @@ func (m *CompactDataset_ObjectGraph_ObjectLocalRef) Size() (n int) {
 	n += 1 + sozTypes(uint64(m.ObjectLocalRef))
 	return n
 }
-func (m *CompactDataset_ObjectGraph_WellKnownDatatype) Size() (n int) {
+func (m *ObjectGraph_WellKnownDatatype) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1191,7 +1199,7 @@ func (m *CompactDataset_ObjectGraph_WellKnownDatatype) Size() (n int) {
 	n += 1 + sovTypes(uint64(m.WellKnownDatatype))
 	return n
 }
-func (m *CompactDataset_ObjectGraph_DataTypeInternalId) Size() (n int) {
+func (m *ObjectGraph_DataTypeInternalId) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1203,7 +1211,7 @@ func (m *CompactDataset_ObjectGraph_DataTypeInternalId) Size() (n int) {
 	}
 	return n
 }
-func (m *CompactDataset_ObjectGraph_DataTypeLocalRef) Size() (n int) {
+func (m *ObjectGraph_DataTypeLocalRef) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1212,7 +1220,17 @@ func (m *CompactDataset_ObjectGraph_DataTypeLocalRef) Size() (n int) {
 	n += 1 + sozTypes(uint64(m.DataTypeLocalRef))
 	return n
 }
-func (m *CompactDataset_ObjectGraph_StrValue) Size() (n int) {
+func (m *ObjectGraph_LangTag) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.LangTag)
+	n += 1 + l + sovTypes(uint64(l))
+	return n
+}
+func (m *ObjectGraph_StrValue) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1222,7 +1240,7 @@ func (m *CompactDataset_ObjectGraph_StrValue) Size() (n int) {
 	n += 1 + l + sovTypes(uint64(l))
 	return n
 }
-func (m *CompactDataset_ObjectGraph_GraphID) Size() (n int) {
+func (m *GraphID) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1234,7 +1252,7 @@ func (m *CompactDataset_ObjectGraph_GraphID) Size() (n int) {
 	return n
 }
 
-func (m *CompactDataset_ObjectGraph_GraphID_InternalId) Size() (n int) {
+func (m *GraphID_InternalId) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1246,7 +1264,7 @@ func (m *CompactDataset_ObjectGraph_GraphID_InternalId) Size() (n int) {
 	}
 	return n
 }
-func (m *CompactDataset_ObjectGraph_GraphID_LocalRef) Size() (n int) {
+func (m *GraphID_LocalRef) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1320,7 +1338,7 @@ func (m *CompactDataset) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Nodes = append(m.Nodes, &CompactDataset_Node{})
+			m.Nodes = append(m.Nodes, &Node{})
 			if err := m.Nodes[len(m.Nodes)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -1381,7 +1399,7 @@ func (m *CompactDataset) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *CompactDataset_Node) Unmarshal(dAtA []byte) error {
+func (m *Node) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1441,7 +1459,7 @@ func (m *CompactDataset_Node) Unmarshal(dAtA []byte) error {
 			}
 			v := make([]byte, postIndex-iNdEx)
 			copy(v, dAtA[iNdEx:postIndex])
-			m.Subject = &CompactDataset_Node_InternalId{v}
+			m.Subject = &Node_InternalId{v}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
@@ -1463,7 +1481,7 @@ func (m *CompactDataset_Node) Unmarshal(dAtA []byte) error {
 				}
 			}
 			v = int32((uint32(v) >> 1) ^ uint32(((v&1)<<31)>>31))
-			m.Subject = &CompactDataset_Node_LocalRef{v}
+			m.Subject = &Node_LocalRef{v}
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Properties", wireType)
@@ -1493,7 +1511,7 @@ func (m *CompactDataset_Node) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Properties = append(m.Properties, &CompactDataset_Properties{})
+			m.Properties = append(m.Properties, &Properties{})
 			if err := m.Properties[len(m.Properties)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -1522,7 +1540,7 @@ func (m *CompactDataset_Node) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *CompactDataset_Properties) Unmarshal(dAtA []byte) error {
+func (m *Properties) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1582,7 +1600,7 @@ func (m *CompactDataset_Properties) Unmarshal(dAtA []byte) error {
 			}
 			v := make([]byte, postIndex-iNdEx)
 			copy(v, dAtA[iNdEx:postIndex])
-			m.Predicate = &CompactDataset_Properties_InternalId{v}
+			m.Predicate = &Properties_InternalId{v}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
@@ -1604,7 +1622,7 @@ func (m *CompactDataset_Properties) Unmarshal(dAtA []byte) error {
 				}
 			}
 			v = int32((uint32(v) >> 1) ^ uint32(((v&1)<<31)>>31))
-			m.Predicate = &CompactDataset_Properties_LocalRef{v}
+			m.Predicate = &Properties_LocalRef{v}
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Objects", wireType)
@@ -1634,7 +1652,7 @@ func (m *CompactDataset_Properties) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Objects = append(m.Objects, &CompactDataset_ObjectGraph{})
+			m.Objects = append(m.Objects, &ObjectGraph{})
 			if err := m.Objects[len(m.Objects)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -1663,7 +1681,7 @@ func (m *CompactDataset_Properties) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *CompactDataset_ObjectGraph) Unmarshal(dAtA []byte) error {
+func (m *ObjectGraph) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1723,7 +1741,7 @@ func (m *CompactDataset_ObjectGraph) Unmarshal(dAtA []byte) error {
 			}
 			v := make([]byte, postIndex-iNdEx)
 			copy(v, dAtA[iNdEx:postIndex])
-			m.Sum = &CompactDataset_ObjectGraph_ObjectInternalId{v}
+			m.Sum = &ObjectGraph_ObjectInternalId{v}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
@@ -1745,12 +1763,12 @@ func (m *CompactDataset_ObjectGraph) Unmarshal(dAtA []byte) error {
 				}
 			}
 			v = int32((uint32(v) >> 1) ^ uint32(((v&1)<<31)>>31))
-			m.Sum = &CompactDataset_ObjectGraph_ObjectLocalRef{v}
+			m.Sum = &ObjectGraph_ObjectLocalRef{v}
 		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field WellKnownDatatype", wireType)
 			}
-			var v CompactDataset_WellknownDatatype
+			var v WellknownDatatype
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTypes
@@ -1760,12 +1778,12 @@ func (m *CompactDataset_ObjectGraph) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				v |= CompactDataset_WellknownDatatype(b&0x7F) << shift
+				v |= WellknownDatatype(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			m.Sum = &CompactDataset_ObjectGraph_WellKnownDatatype{v}
+			m.Sum = &ObjectGraph_WellKnownDatatype{v}
 		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DataTypeInternalId", wireType)
@@ -1797,7 +1815,7 @@ func (m *CompactDataset_ObjectGraph) Unmarshal(dAtA []byte) error {
 			}
 			v := make([]byte, postIndex-iNdEx)
 			copy(v, dAtA[iNdEx:postIndex])
-			m.Sum = &CompactDataset_ObjectGraph_DataTypeInternalId{v}
+			m.Sum = &ObjectGraph_DataTypeInternalId{v}
 			iNdEx = postIndex
 		case 5:
 			if wireType != 0 {
@@ -1819,10 +1837,10 @@ func (m *CompactDataset_ObjectGraph) Unmarshal(dAtA []byte) error {
 				}
 			}
 			v = int32((uint32(v) >> 1) ^ uint32(((v&1)<<31)>>31))
-			m.Sum = &CompactDataset_ObjectGraph_DataTypeLocalRef{v}
+			m.Sum = &ObjectGraph_DataTypeLocalRef{v}
 		case 6:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Lang", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field LangTag", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1850,7 +1868,7 @@ func (m *CompactDataset_ObjectGraph) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Lang = string(dAtA[iNdEx:postIndex])
+			m.Sum = &ObjectGraph_LangTag{string(dAtA[iNdEx:postIndex])}
 			iNdEx = postIndex
 		case 7:
 			if wireType != 2 {
@@ -1881,7 +1899,7 @@ func (m *CompactDataset_ObjectGraph) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Graphs = append(m.Graphs, &CompactDataset_ObjectGraph_GraphID{})
+			m.Graphs = append(m.Graphs, &GraphID{})
 			if err := m.Graphs[len(m.Graphs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -1916,7 +1934,7 @@ func (m *CompactDataset_ObjectGraph) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.LiteralValue = &CompactDataset_ObjectGraph_StrValue{string(dAtA[iNdEx:postIndex])}
+			m.LiteralValue = &ObjectGraph_StrValue{string(dAtA[iNdEx:postIndex])}
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1942,7 +1960,7 @@ func (m *CompactDataset_ObjectGraph) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *CompactDataset_ObjectGraph_GraphID) Unmarshal(dAtA []byte) error {
+func (m *GraphID) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2002,7 +2020,7 @@ func (m *CompactDataset_ObjectGraph_GraphID) Unmarshal(dAtA []byte) error {
 			}
 			v := make([]byte, postIndex-iNdEx)
 			copy(v, dAtA[iNdEx:postIndex])
-			m.Graph = &CompactDataset_ObjectGraph_GraphID_InternalId{v}
+			m.Graph = &GraphID_InternalId{v}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
@@ -2024,7 +2042,7 @@ func (m *CompactDataset_ObjectGraph_GraphID) Unmarshal(dAtA []byte) error {
 				}
 			}
 			v = int32((uint32(v) >> 1) ^ uint32(((v&1)<<31)>>31))
-			m.Graph = &CompactDataset_ObjectGraph_GraphID_LocalRef{v}
+			m.Graph = &GraphID_LocalRef{v}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTypes(dAtA[iNdEx:])

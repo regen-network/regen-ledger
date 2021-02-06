@@ -13,6 +13,30 @@ type InternalIDResolver interface {
 	GetIRIForID(id []byte) rdf.IRI
 }
 
+func CompactQuads(resolver InternalIDResolver, iterator rdf.QuadIterator) (*CompactDataset, error) {
+	ctx := &compactCtx{
+		resolver:     resolver,
+		resolvedIRIs: map[rdf.IRIOrBNode]iriOrBlankNodeRef{},
+		dataset:      &CompactDataset{},
+	}
+
+	for {
+		quad, err := iterator.Next()
+		if err != nil {
+			return nil, err
+		}
+
+		if quad == nil {
+			return ctx.dataset, nil
+		}
+
+		err = ctx.compactQuad(quad)
+		if err != nil {
+			return nil, err
+		}
+	}
+}
+
 type compactCtx struct {
 	resolver       InternalIDResolver
 	resolvedIRIs   map[rdf.IRIOrBNode]iriOrBlankNodeRef
@@ -31,30 +55,34 @@ type iriOrBlankNodeRef struct {
 	localRef   int32
 }
 
-func (ctx *compactCtx) compactQuad(quad *rdf.Quad) error {
-	if !quad.Subject.Equal(ctx.curSubject) {
-		err := ctx.compactSubject(quad.Subject)
+func (ctx *compactCtx) compactQuad(quad rdf.Quad) error {
+	sub := quad.Subject()
+	if !quad.Subject().Equal(ctx.curSubject) {
+		err := ctx.compactSubject(sub)
 		if err != nil {
 			return err
 		}
 	}
 
-	if !quad.Predicate.Equal(ctx.curPredicate) {
-		err := ctx.compactPredicate(quad.Predicate)
+	pred := quad.Predicate()
+	if !pred.Equal(ctx.curPredicate) {
+		err := ctx.compactPredicate(pred)
 		if err != nil {
 			return err
 		}
 	}
 
-	if !quad.Object.Equal(ctx.curObject) {
-		err := ctx.compactObject(quad.Object)
+	obj := quad.Object()
+	if !obj.Equal(ctx.curObject) {
+		err := ctx.compactObject(obj)
 		if err != nil {
 			return err
 		}
 	}
 
-	if !quad.Graph.Equal(ctx.curGraph) {
-		err := ctx.compactGraph(quad.Graph)
+	graph := quad.Graph()
+	if !graph.Equal(ctx.curGraph) {
+		err := ctx.compactGraph(graph)
 		if err != nil {
 			return err
 		}
