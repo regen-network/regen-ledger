@@ -11,8 +11,6 @@ type Literal interface {
 type WellknownDatatype interface {
 	IRI() IRI
 	CanonicalLexicalForm(value interface{}) (string, error)
-	ValidateLexicalForm(lexicalForm string) error
-	ValidateValue(value interface{}) error
 	Parse(lexicalForm string) (interface{}, error)
 }
 

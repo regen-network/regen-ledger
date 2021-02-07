@@ -24,27 +24,6 @@ func (b Bool) CanonicalLexicalForm(value interface{}) (string, error) {
 		return "false", nil
 	}
 }
-
-func (b Bool) ValidateLexicalForm(s string) error {
-	switch s {
-	case "true":
-	case "false":
-	case "1":
-	case "0":
-	default:
-		return fmt.Errorf("expected true, false, 1 or 0, got %s", s)
-	}
-	return nil
-}
-
-func (b Bool) ValidateValue(value interface{}) error {
-	_, ok := value.(bool)
-	if !ok {
-		return fmt.Errorf("got %T, expected %T", value, true)
-	}
-	return nil
-}
-
 func (b Bool) Parse(s string) (interface{}, error) {
 	switch s {
 	case "true":
