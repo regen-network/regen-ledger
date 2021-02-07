@@ -51,7 +51,7 @@ func Decompact(resolver InternalIDResolver, dataset *CompactDataset) rdf.QuadIte
 
 	}()
 
-	return internal.QuadIterator{Chan: ch}
+	return internal.ChanIterator{Chan: ch}
 }
 
 func (ctx decompactCtx) decompactSubject(subject *Node) (rdf.IRIOrBNode, error) {

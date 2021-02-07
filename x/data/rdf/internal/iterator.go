@@ -2,7 +2,7 @@ package internal
 
 import "github.com/regen-network/regen-ledger/x/data/rdf"
 
-type QuadIterator struct {
+type ChanIterator struct {
 	Chan chan QuadOrErr
 }
 
@@ -11,7 +11,11 @@ type QuadOrErr struct {
 	Err  error
 }
 
-func (q QuadIterator) Next() (rdf.Quad, error) {
+func (q ChanIterator) NextTriple() (rdf.Triple, error) {
+	return q.NextQuad()
+}
+
+func (q ChanIterator) NextQuad() (rdf.Quad, error) {
 	if q.Chan == nil {
 		return nil, nil
 	}
@@ -24,4 +28,4 @@ func (q QuadIterator) Next() (rdf.Quad, error) {
 	return quadOrErr.Quad, quadOrErr.Err
 }
 
-var _ rdf.QuadIterator = QuadIterator{}
+var _ rdf.QuadIterator = ChanIterator{}

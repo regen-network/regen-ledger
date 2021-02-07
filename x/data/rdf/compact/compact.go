@@ -21,7 +21,7 @@ func CompactQuads(resolver InternalIDResolver, iterator rdf.QuadIterator) (*Comp
 	}
 
 	for {
-		quad, err := iterator.Next()
+		quad, err := iterator.NextQuad()
 		if err != nil {
 			return nil, err
 		}
