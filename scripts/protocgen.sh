@@ -63,7 +63,7 @@ google/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
   mkdir -p ./docs/modules/${module}
 
   # command to generate docs using protoc-gen-doc
-  protoc \
+  buf protoc \
   -I "proto" \
   -I "third_party/proto" \
   --doc_out=./docs/modules/${module} \
