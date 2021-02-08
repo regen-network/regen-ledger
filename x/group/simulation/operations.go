@@ -10,9 +10,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/msgservice"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"github.com/cosmos/cosmos-sdk/types/msgservice"
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
@@ -47,7 +47,6 @@ func WeightedOperations(
 		),
 	}
 }
-
 
 func SimulateMsgCreateGroup(ak group.AccountKeeper, bk group.BankKeeper, protoCdc *codec.ProtoCodec) simtypes.Operation {
 	return func(
