@@ -15,6 +15,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	regen "github.com/regen-network/regen-ledger/app"
 	"github.com/regen-network/regen-ledger/x/group"
+
 	"github.com/regen-network/regen-ledger/x/group/simulation"
 )
 
@@ -43,7 +44,7 @@ func (suite *SimTestSuite) TestWeightedOperations() {
 
 	s := rand.NewSource(1)
 	r := rand.New(s)
-	accs := suite.getTestingAccounts(r, 1)
+	accs := suite.getTestingAccounts(r, 3)
 
 	expected := []struct {
 		weight     int
@@ -51,6 +52,8 @@ func (suite *SimTestSuite) TestWeightedOperations() {
 		opMsgName  string
 	}{
 		{simappparams.DefaultWeightMsgCreateValidator, group.ModuleName, simulation.TypeMsgCreateGroup},
+		{simappparams.DefaultWeightMsgCreateValidator, group.ModuleName, simulation.TypeMsgCreateGroupAccount},
+		{simappparams.DefaultWeightMsgCreateValidator, group.ModuleName, simulation.TypeMsgCreateProposal},
 	}
 
 	for i, w := range weightedOps {
