@@ -446,6 +446,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		wasm.NewAppModule(&app.wasmKeeper),
+		group.Module{Registry: app.interfaceRegistry, BankKeeper: app.BankKeeper, AccountKeeper: app.AccountKeeper},
 	)
 
 	app.sm.RegisterStoreDecoders()

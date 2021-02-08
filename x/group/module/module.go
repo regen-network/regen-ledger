@@ -25,8 +25,8 @@ import (
 )
 
 type Module struct {
-	registry      types.InterfaceRegistry
-	bankKeeper    group.BankKeeper
+	Registry      types.InterfaceRegistry
+	BankKeeper    group.BankKeeper
 	AccountKeeper server.AccountKeeper
 }
 
@@ -87,10 +87,11 @@ func (a Module) RegisterStoreDecoder(registry sdk.StoreDecoderRegistry) {
 }
 
 func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	protoCdc := codec.NewProtoCodec(a.registry)
+	protoCdc := codec.NewProtoCodec(a.Registry)
+	// TODO: WeightedOperations requires group module query-server
 	return simulation.WeightedOperations(
 		simState.AppParams, simState.Cdc,
-		a.AccountKeeper, a.bankKeeper, protoCdc,
+		a.AccountKeeper, a.BankKeeper, protoCdc,
 	)
 }
 
