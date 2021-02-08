@@ -315,7 +315,7 @@ func (s serverImpl) UpdateGroupAccountDecisionPolicy(ctx types.Context, req *gro
 	policy := req.GetDecisionPolicy()
 
 	action := func(groupAccount *group.GroupAccountInfo) error {
-		err := groupAccount.SetDeciosionPolicy(policy)
+		err := groupAccount.SetDecisionPolicy(policy)
 		if err != nil {
 			return err
 		}

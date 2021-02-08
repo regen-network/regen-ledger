@@ -200,21 +200,6 @@ func (g GroupAccountInfo) GetDecisionPolicy() DecisionPolicy {
 	return decisionPolicy
 }
 
-func (g GroupAccountInfo) SetDeciosionPolicy(policy DecisionPolicy) error {
-	msg, ok := policy.(proto.Message)
-	if !ok {
-		return fmt.Errorf("%T does not implement proto.Message", policy)
-	}
-
-	any, err := codectypes.NewAnyWithValue(msg)
-	if err != nil {
-		return err
-	}
-
-	g.DecisionPolicy = any
-	return nil
-}
-
 func (g GroupAccountInfo) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(g.Admin)
 	if err != nil {
