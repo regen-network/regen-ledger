@@ -1078,6 +1078,9 @@ func (s *IntegrationTestSuite) TestVote() {
 	accountRes, err := s.msgClient.CreateGroupAccount(s.ctx, accountReq)
 	s.Require().NoError(err)
 	accountAddr := accountRes.GroupAccount
+	groupAccount, err := sdk.AccAddressFromBech32(accountAddr)
+	s.Require().NoError(err)
+	s.Require().NotNil(groupAccount)
 
 	req := &group.MsgCreateProposalRequest{
 		GroupAccount: accountAddr,
@@ -1335,21 +1338,28 @@ func (s *IntegrationTestSuite) TestVote() {
 			},
 			expErr: true,
 		},
-		// TODO Need to implement group account updates
-		// "with policy modified": {
-		// 	req: &group.MsgVoteRequest{
-		// 		ProposalId: myProposalID,
-		// 		Voter: s.addr2.String(),
-		// 		Choice:     group.Choice_CHOICE_NO,
-		// 	},
-		// 	doBefore: func(ctx context.Context) {
-		// 		a, err := s.groupKeeper.GetGroupAccount(ctx, accountAddr)
-		// 		s.Require().NoError(err)
-		// 		a.Metadata = "policy modified"
-		// 		s.Require().NoError(s.groupKeeper.UpdateGroupAccount(ctx, &a))
-		// 	},
-		// 	expErr: true,
-		// },
+		"with policy modified": {
+			req: &group.MsgVoteRequest{
+				ProposalId: myProposalID,
+				Voter:      s.addr2.String(),
+				Choice:     group.Choice_CHOICE_NO,
+			},
+			doBefore: func(ctx context.Context) {
+				m, err := group.NewMsgUpdateGroupAccountDecisionPolicyRequest(
+					s.addr1,
+					groupAccount,
+					&group.ThresholdDecisionPolicy{
+						Threshold: "1",
+						Timeout:   gogotypes.Duration{Seconds: 1},
+					},
+				)
+				s.Require().NoError(err)
+
+				_, err = s.msgClient.UpdateGroupAccountDecisionPolicy(ctx, m)
+				s.Require().NoError(err)
+			},
+			expErr: true,
+		},
 	}
 	for msg, spec := range specs {
 		spec := spec
@@ -1596,22 +1606,21 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expProposalResult: group.ProposalResultUnfinalized,
 			expExecutorResult: group.ProposalExecutorResultNotRun,
 		},
-		// TODO Need to implement group account update
-		// "with group account modified before tally": {
-		// 	setupProposal: func(ctx context.Context) group.ProposalID {
-		// 		myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
-
-		// 		// then modify group account
-		// 		a, err := s.groupKeeper.GetGroupAccount(ctx, s.groupAccountAddr)
-		// 		s.Require().NoError(err)
-		// 		a.Metadata = "group account modified before tally"
-		// 		s.Require().NoError(s.groupKeeper.UpdateGroupAccount(ctx, &a))
-		// 		return myProposalID
-		// 	},
-		// 	expProposalStatus: group.ProposalStatusAborted,
-		// 	expProposalResult: group.ProposalResultUnfinalized,
-		// 	expExecutorResult: group.ProposalExecutorResultNotRun,
-		// },
+		"with group account modified before tally": {
+			setupProposal: func(ctx context.Context) group.ProposalID {
+				myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
+				_, err := s.msgClient.UpdateGroupAccountMetadata(ctx, &group.MsgUpdateGroupAccountMetadataRequest{
+					Admin:        s.addr1.String(),
+					GroupAccount: s.groupAccountAddr.String(),
+					Metadata:     []byte("group account modified before tally"),
+				})
+				s.Require().NoError(err)
+				return myProposalID
+			},
+			expProposalStatus: group.ProposalStatusAborted,
+			expProposalResult: group.ProposalResultUnfinalized,
+			expExecutorResult: group.ProposalExecutorResultNotRun,
+		},
 		"prevent double execution when successful": {
 			setupProposal: func(ctx context.Context) group.ProposalID {
 				myProposalID := createProposalAndVote(ctx, s, []sdk.Msg{msgSend}, proposers, group.Choice_CHOICE_YES)

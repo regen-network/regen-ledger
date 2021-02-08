@@ -639,7 +639,7 @@ func (s serverImpl) doUpdateGroupAccount(ctx types.Context, groupAccount string,
 	}
 
 	// Only current group account admin is authorized to update a group account.
-	if !groupAdmin.Equals(sdk.AccAddress(groupAccountInfo.Admin)) {
+	if groupAdmin.String() != groupAccountInfo.Admin {
 		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not group admin")
 	}
 
