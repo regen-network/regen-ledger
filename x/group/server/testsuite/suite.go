@@ -793,6 +793,323 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 	}
 }
 
+func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
+	admin, newAdmin := s.addr1, s.addr2
+	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
+		Admin:    s.addr1.String(),
+		Members:  nil,
+		Metadata: nil,
+	})
+
+	s.Require().NoError(err)
+	myGroupID := groupRes.GroupId
+	groupAccount := &group.MsgCreateGroupAccountRequest{
+		Admin:    admin.String(),
+		Metadata: nil,
+		GroupId:  myGroupID,
+	}
+
+	err = groupAccount.SetDecisionPolicy(group.NewThresholdDecisionPolicy(
+		"1",
+		gogotypes.Duration{Seconds: 1},
+	))
+	s.Require().NoError(err)
+
+	groupAccountRes, err := s.msgClient.CreateGroupAccount(s.ctx, groupAccount)
+	s.Require().NoError(err)
+	groupAccountAddress := groupAccountRes.GroupAccount
+
+	specs := map[string]struct {
+		req             *group.MsgUpdateGroupAccountAdminRequest
+		policy          group.DecisionPolicy
+		expGroupAccount *group.GroupAccountInfo
+		expErr          bool
+	}{
+		"with wrong admin": {
+			req: &group.MsgUpdateGroupAccountAdminRequest{
+				Admin:        s.addr5.String(),
+				GroupAccount: groupAccountAddress,
+				NewAdmin:     newAdmin.String(),
+			},
+			policy: group.NewThresholdDecisionPolicy(
+				"1",
+				gogotypes.Duration{Seconds: 1},
+			),
+			expGroupAccount: &group.GroupAccountInfo{
+				Admin:          admin.String(),
+				GroupAccount:   groupAccountAddress,
+				GroupId:        myGroupID,
+				Metadata:       nil,
+				Version:        2,
+				DecisionPolicy: nil,
+			},
+			expErr: true,
+		},
+		"with wrong group account": {
+			req: &group.MsgUpdateGroupAccountAdminRequest{
+				Admin:        admin.String(),
+				GroupAccount: s.addr5.String(),
+				NewAdmin:     newAdmin.String(),
+			},
+			policy: group.NewThresholdDecisionPolicy(
+				"1",
+				gogotypes.Duration{Seconds: 1},
+			),
+			expGroupAccount: &group.GroupAccountInfo{
+				Admin:          admin.String(),
+				GroupAccount:   groupAccountAddress,
+				GroupId:        myGroupID,
+				Metadata:       nil,
+				Version:        2,
+				DecisionPolicy: nil,
+			},
+			expErr: true,
+		},
+		"correct data": {
+			req: &group.MsgUpdateGroupAccountAdminRequest{
+				Admin:        admin.String(),
+				GroupAccount: groupAccountAddress,
+				NewAdmin:     newAdmin.String(),
+			},
+			policy: group.NewThresholdDecisionPolicy(
+				"1",
+				gogotypes.Duration{Seconds: 1},
+			),
+			expGroupAccount: &group.GroupAccountInfo{
+				Admin:          newAdmin.String(),
+				GroupAccount:   groupAccountAddress,
+				GroupId:        myGroupID,
+				Metadata:       nil,
+				Version:        2,
+				DecisionPolicy: nil,
+			},
+			expErr: false,
+		},
+	}
+
+	for msg, spec := range specs {
+		spec := spec
+		err := spec.expGroupAccount.SetDecisionPolicy(spec.policy)
+		s.Require().NoError(err)
+
+		s.Run(msg, func() {
+			_, err := s.msgClient.UpdateGroupAccountAdmin(s.ctx, spec.req)
+			if spec.expErr {
+				s.Require().Error(err)
+				return
+			}
+			s.Require().NoError(err)
+			res, err := s.queryClient.GroupAccountInfo(s.ctx, &group.QueryGroupAccountInfoRequest{
+				GroupAccount: groupAccountAddress,
+			})
+			s.Require().NoError(err)
+			s.Assert().Equal(spec.expGroupAccount, res.Info)
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestUpdateGroupAccountMetadata() {
+	admin := s.addr1
+	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
+		Admin:    s.addr1.String(),
+		Members:  nil,
+		Metadata: nil,
+	})
+
+	s.Require().NoError(err)
+	myGroupID := groupRes.GroupId
+	groupAccount := &group.MsgCreateGroupAccountRequest{
+		Admin:    admin.String(),
+		GroupId:  myGroupID,
+		Metadata: nil,
+	}
+
+	err = groupAccount.SetDecisionPolicy(group.NewThresholdDecisionPolicy(
+		"1",
+		gogotypes.Duration{Seconds: 1},
+	))
+	s.Require().NoError(err)
+
+	groupAccountRes, err := s.msgClient.CreateGroupAccount(s.ctx, groupAccount)
+	s.Require().NoError(err)
+	groupAccountAddress := groupAccountRes.GroupAccount
+
+	specs := map[string]struct {
+		req             *group.MsgUpdateGroupAccountMetadataRequest
+		policy          group.DecisionPolicy
+		expGroupAccount *group.GroupAccountInfo
+		expErr          bool
+	}{
+		"with wrong admin": {
+			req: &group.MsgUpdateGroupAccountMetadataRequest{
+				Admin:        s.addr5.String(),
+				GroupAccount: groupAccountAddress,
+				Metadata:     []byte("hello"),
+			},
+			policy: group.NewThresholdDecisionPolicy(
+				"1",
+				gogotypes.Duration{Seconds: 1},
+			),
+			expGroupAccount: &group.GroupAccountInfo{},
+			expErr:          true,
+		},
+		"with wrong group account": {
+			req: &group.MsgUpdateGroupAccountMetadataRequest{
+				Admin:        admin.String(),
+				GroupAccount: s.addr5.String(),
+				Metadata:     []byte("hello"),
+			},
+			policy: group.NewThresholdDecisionPolicy(
+				"1",
+				gogotypes.Duration{Seconds: 1},
+			),
+			expGroupAccount: &group.GroupAccountInfo{},
+			expErr:          true,
+		},
+		"correct data": {
+			req: &group.MsgUpdateGroupAccountMetadataRequest{
+				Admin:        admin.String(),
+				GroupAccount: groupAccountAddress,
+				Metadata:     []byte("hello"),
+			},
+			policy: group.NewThresholdDecisionPolicy(
+				"1",
+				gogotypes.Duration{Seconds: 1},
+			),
+			expGroupAccount: &group.GroupAccountInfo{
+				Admin:          admin.String(),
+				GroupAccount:   groupAccountAddress,
+				GroupId:        myGroupID,
+				Metadata:       []byte("hello"),
+				Version:        2,
+				DecisionPolicy: nil,
+			},
+			expErr: false,
+		},
+	}
+
+	for msg, spec := range specs {
+		spec := spec
+		err := spec.expGroupAccount.SetDecisionPolicy(spec.policy)
+		s.Require().NoError(err)
+
+		s.Run(msg, func() {
+			_, err := s.msgClient.UpdateGroupAccountMetadata(s.ctx, spec.req)
+			if spec.expErr {
+				s.Require().Error(err)
+				return
+			}
+			s.Require().NoError(err)
+			res, err := s.queryClient.GroupAccountInfo(s.ctx, &group.QueryGroupAccountInfoRequest{
+				GroupAccount: groupAccountAddress,
+			})
+			s.Require().NoError(err)
+			s.Assert().Equal(spec.expGroupAccount, res.Info)
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestUpdateGroupAccountDecisionPolicy() {
+	admin := s.addr1
+	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
+		Admin:    s.addr1.String(),
+		Members:  nil,
+		Metadata: nil,
+	})
+
+	s.Require().NoError(err)
+	myGroupID := groupRes.GroupId
+	groupAccount := &group.MsgCreateGroupAccountRequest{
+		Admin:    admin.String(),
+		GroupId:  myGroupID,
+		Metadata: nil,
+	}
+
+	err = groupAccount.SetDecisionPolicy(group.NewThresholdDecisionPolicy(
+		"1",
+		gogotypes.Duration{Seconds: 1},
+	))
+	s.Require().NoError(err)
+
+	groupAccountRes, err := s.msgClient.CreateGroupAccount(s.ctx, groupAccount)
+	s.Require().NoError(err)
+	groupAccountAddress := groupAccountRes.GroupAccount
+
+	specs := map[string]struct {
+		req             *group.MsgUpdateGroupAccountDecisionPolicyRequest
+		policy          group.DecisionPolicy
+		expGroupAccount *group.GroupAccountInfo
+		expErr          bool
+	}{
+		"with wrong admin": {
+			req: &group.MsgUpdateGroupAccountDecisionPolicyRequest{
+				Admin:        s.addr5.String(),
+				GroupAccount: groupAccountAddress,
+			},
+			policy: group.NewThresholdDecisionPolicy(
+				"1",
+				gogotypes.Duration{Seconds: 1},
+			),
+			expGroupAccount: &group.GroupAccountInfo{},
+			expErr:          true,
+		},
+		"with wrong group account": {
+			req: &group.MsgUpdateGroupAccountDecisionPolicyRequest{
+				Admin:        admin.String(),
+				GroupAccount: s.addr5.String(),
+			},
+			policy: group.NewThresholdDecisionPolicy(
+				"1",
+				gogotypes.Duration{Seconds: 1},
+			),
+			expGroupAccount: &group.GroupAccountInfo{},
+			expErr:          true,
+		},
+		"correct data": {
+			req: &group.MsgUpdateGroupAccountDecisionPolicyRequest{
+				Admin:        admin.String(),
+				GroupAccount: groupAccountAddress,
+			},
+			policy: group.NewThresholdDecisionPolicy(
+				"2",
+				gogotypes.Duration{Seconds: 2},
+			),
+			expGroupAccount: &group.GroupAccountInfo{
+				Admin:          admin.String(),
+				GroupAccount:   groupAccountAddress,
+				GroupId:        myGroupID,
+				Metadata:       nil,
+				Version:        2,
+				DecisionPolicy: nil,
+			},
+			expErr: false,
+		},
+	}
+
+	for msg, spec := range specs {
+		spec := spec
+		err := spec.expGroupAccount.SetDecisionPolicy(spec.policy)
+		s.Require().NoError(err)
+
+		err = spec.req.SetDecisionPolicy(spec.policy)
+		s.Require().NoError(err)
+
+		s.Run(msg, func() {
+			_, err := s.msgClient.UpdateGroupAccountDecisionPolicy(s.ctx, spec.req)
+			if spec.expErr {
+				s.Require().Error(err)
+				return
+			}
+			s.Require().NoError(err)
+			res, err := s.queryClient.GroupAccountInfo(s.ctx, &group.QueryGroupAccountInfoRequest{
+				GroupAccount: groupAccountAddress,
+			})
+			s.Require().NoError(err)
+			s.Assert().Equal(spec.expGroupAccount, res.Info)
+		})
+	}
+}
+
 func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 	admin := s.addr2
 	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{

@@ -662,13 +662,13 @@ func (s serverImpl) doUpdateGroupAccount(ctx types.Context, groupAccount string,
 		return sdkerrors.Wrap(err, "load group account")
 	}
 
-	groupAdmin, err := sdk.AccAddressFromBech32(admin)
+	groupAccountAdmin, err := sdk.AccAddressFromBech32(admin)
 	if err != nil {
-		return sdkerrors.Wrap(err, "group admin")
+		return sdkerrors.Wrap(err, "group account admin")
 	}
 
 	// Only current group account admin is authorized to update a group account.
-	if groupAdmin.String() != groupAccountInfo.Admin {
+	if groupAccountAdmin.String() != groupAccountInfo.Admin {
 		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not group admin")
 	}
 
