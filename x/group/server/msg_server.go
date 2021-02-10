@@ -297,17 +297,59 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 }
 
 func (s serverImpl) UpdateGroupAccountAdmin(ctx types.Context, req *group.MsgUpdateGroupAccountAdminRequest) (*group.MsgUpdateGroupAccountAdminResponse, error) {
-	// TODO #224
+	action := func(groupAccount *group.GroupAccountInfo) error {
+		groupAccount.Admin = req.NewAdmin
+		groupAccount.Version++
+		return s.groupAccountTable.Save(ctx, groupAccount)
+	}
+
+	err := s.doUpdateGroupAccount(ctx, req.GroupAccount, req.Admin, action, "group account admin updated")
+	if err != nil {
+		return nil, err
+	}
+
 	return &group.MsgUpdateGroupAccountAdminResponse{}, nil
 }
 
 func (s serverImpl) UpdateGroupAccountDecisionPolicy(ctx types.Context, req *group.MsgUpdateGroupAccountDecisionPolicyRequest) (*group.MsgUpdateGroupAccountDecisionPolicyResponse, error) {
-	// TODO #224
+	policy := req.GetDecisionPolicy()
+
+	action := func(groupAccount *group.GroupAccountInfo) error {
+		err := groupAccount.SetDecisionPolicy(policy)
+		if err != nil {
+			return err
+		}
+
+		groupAccount.Version++
+		return s.groupAccountTable.Save(ctx, groupAccount)
+	}
+
+	err := s.doUpdateGroupAccount(ctx, req.GroupAccount, req.Admin, action, "group account decision policy updated")
+	if err != nil {
+		return nil, err
+	}
+
 	return &group.MsgUpdateGroupAccountDecisionPolicyResponse{}, nil
 }
 
 func (s serverImpl) UpdateGroupAccountMetadata(ctx types.Context, req *group.MsgUpdateGroupAccountMetadataRequest) (*group.MsgUpdateGroupAccountMetadataResponse, error) {
-	// TODO #224
+	metadata := req.GetMetadata()
+
+	action := func(groupAccount *group.GroupAccountInfo) error {
+		groupAccount.Metadata = metadata
+		groupAccount.Version++
+		return s.groupAccountTable.Save(ctx, groupAccount)
+	}
+
+	if err := assertMetadataLength(metadata, s.maxMetadataLength(ctx), "group account metadata"); err != nil {
+		return nil, err
+	}
+
+	err := s.doUpdateGroupAccount(ctx, req.GroupAccount, req.Admin, action, "group account metadata updated")
+	if err != nil {
+		return nil, err
+	}
+
 	return &group.MsgUpdateGroupAccountMetadataResponse{}, nil
 }
 
@@ -604,6 +646,43 @@ type authNGroupReq interface {
 }
 
 type actionFn func(m *group.GroupInfo) error
+type groupAccountActionFn func(m *group.GroupAccountInfo) error
+
+// doUpdateGroupAccount first makes sure that the group account admin initiated the group account update,
+// before performing the group account update and emitting an event.
+func (s serverImpl) doUpdateGroupAccount(ctx types.Context, groupAccount string, admin string, action groupAccountActionFn, note string) error {
+	groupAccountAddress, err := sdk.AccAddressFromBech32(groupAccount)
+	if err != nil {
+		return sdkerrors.Wrap(err, "group admin")
+	}
+
+	var groupAccountInfo group.GroupAccountInfo
+	err = s.groupAccountTable.GetOne(ctx, groupAccountAddress.Bytes(), &groupAccountInfo)
+	if err != nil {
+		return sdkerrors.Wrap(err, "load group account")
+	}
+
+	groupAccountAdmin, err := sdk.AccAddressFromBech32(admin)
+	if err != nil {
+		return sdkerrors.Wrap(err, "group account admin")
+	}
+
+	// Only current group account admin is authorized to update a group account.
+	if groupAccountAdmin.String() != groupAccountInfo.Admin {
+		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not group admin")
+	}
+
+	if err := action(&groupAccountInfo); err != nil {
+		return sdkerrors.Wrap(err, note)
+	}
+
+	err = ctx.EventManager().EmitTypedEvent(&group.EventUpdateGroupAccount{GroupAccount: admin})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 // doUpdateGroup first makes sure that the group admin initiated the group update,
 // before performing the group update and emitting an event.
