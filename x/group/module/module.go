@@ -91,7 +91,7 @@ func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.W
 	// TODO: WeightedOperations requires group module query-server
 	return simulation.WeightedOperations(
 		simState.AppParams, simState.Cdc,
-		a.AccountKeeper, a.BankKeeper, protoCdc,
+		a.AccountKeeper, a.BankKeeper, protoCdc, nil,
 	)
 }
 

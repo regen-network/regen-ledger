@@ -1,20 +1,22 @@
 package simulation
 
 import (
-	"context"
-	"fmt"
 	"math/rand"
 
-	proto "github.com/gogo/protobuf/types"
+	"context"
+	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	proto "github.com/gogo/protobuf/types"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
@@ -35,7 +37,7 @@ const (
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONMarshaler, ak group.AccountKeeper,
-	bk group.BankKeeper, protoCdc *codec.ProtoCodec) simulation.WeightedOperations {
+	bk group.BankKeeper, protoCdc *codec.ProtoCodec, qryClient group.QueryClient) simulation.WeightedOperations {
 	var (
 		weightMsgCreateGroup        int
 		weightMsgCreateGroupAccount int
@@ -65,11 +67,11 @@ func WeightedOperations(
 		),
 		simulation.NewWeightedOperation(
 			weightMsgCreateGroupAccount,
-			SimulateMsgCreateGroupAccount(ak, bk, protoCdc),
+			SimulateMsgCreateGroupAccount(ak, bk, protoCdc, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgCreateProposal,
-			SimulateMsgCreateProposal(ak, bk, protoCdc),
+			SimulateMsgCreateProposal(ak, bk, protoCdc, qryClient),
 		),
 	}
 }
@@ -94,12 +96,12 @@ func SimulateMsgCreateGroup(ak group.AccountKeeper, bk group.BankKeeper, protoCd
 				Metadata: []byte(simtypes.RandStringOfLength(r, 10)),
 			},
 		}
-		msg := group.MsgCreateGroupRequest{Admin: acc.Address.String(), Members: members, Metadata: []byte("aleem")}
+		srvMsg := &group.MsgCreateGroupRequest{Admin: acc.Address.String(), Members: members, Metadata: []byte(simtypes.RandStringOfLength(r, 10))}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		svcMsgClientConn := &msgservice.ServiceMsgClientConn{}
 		msgClient := group.NewMsgClient(svcMsgClientConn)
-		_, err = msgClient.CreateGroup(context.Background(), &msg)
+		_, err = msgClient.CreateGroup(context.Background(), srvMsg)
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroup, err.Error()), nil, err
 		}
@@ -126,7 +128,7 @@ func SimulateMsgCreateGroup(ak group.AccountKeeper, bk group.BankKeeper, protoCd
 	}
 }
 
-func SimulateMsgCreateGroupAccount(ak group.AccountKeeper, bk group.BankKeeper, protoCdc *codec.ProtoCodec) simtypes.Operation {
+func SimulateMsgCreateGroupAccount(ak group.AccountKeeper, bk group.BankKeeper, protoCdc *codec.ProtoCodec, qryClient group.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc := accounts[0]
@@ -139,10 +141,23 @@ func SimulateMsgCreateGroupAccount(ak group.AccountKeeper, bk group.BankKeeper, 
 			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroupAccount, "fee error"), nil, err
 		}
 
-		// TODO: query group info from state
+		ctx1 := regentypes.Context{Context: ctx}
+		result, err := qryClient.GroupAccountInfo(ctx1, &group.QueryGroupAccountInfoRequest{GroupAccount: acc.Address.String()})
+		if err != nil {
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroupAccount, "fail to query group info"), nil, err
+		}
+
+		if result.Info == nil {
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroupAccount, "no group account found"), nil, nil
+		}
+
+		addr, err := sdk.AccAddressFromBech32(result.Info.Admin)
+		if err != nil {
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroupAccount, "fail to decode acc address"), nil, err
+		}
 
 		msg, err := group.NewMsgCreateGroupAccountRequest(
-			acc.Address,
+			addr,
 			group.ID(simtypes.RandIntBetween(r, 1, 10)), // TODO: replace with existed group-id
 			[]byte(simtypes.RandStringOfLength(r, 10)),
 			&group.ThresholdDecisionPolicy{
@@ -183,7 +198,7 @@ func SimulateMsgCreateGroupAccount(ak group.AccountKeeper, bk group.BankKeeper, 
 	}
 }
 
-func SimulateMsgCreateProposal(ak group.AccountKeeper, bk group.BankKeeper, protoCdc *codec.ProtoCodec) simtypes.Operation {
+func SimulateMsgCreateProposal(ak group.AccountKeeper, bk group.BankKeeper, protoCdc *codec.ProtoCodec, queryClient group.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc := accounts[0]
@@ -196,10 +211,18 @@ func SimulateMsgCreateProposal(ak group.AccountKeeper, bk group.BankKeeper, prot
 			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateProposal, "fee error"), nil, err
 		}
 
-		// TODO: query group account details from state.
+		ctx1 := regentypes.Context{Context: ctx}
+		result, err := queryClient.GroupAccountInfo(ctx1, &group.QueryGroupAccountInfoRequest{GroupAccount: acc.Address.String()})
+		if err != nil {
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroupAccount, "fail to query group info"), nil, err
+		}
+
+		if result.Info == nil {
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroupAccount, "no group account found"), nil, nil
+		}
 
 		msg := group.MsgCreateProposalRequest{
-			GroupAccount: acc.Address.String(), // TODO: replace with queried group-account
+			GroupAccount: result.Info.GroupAccount,
 			Proposers:    []string{acc.Address.String()},
 			Metadata:     []byte(simtypes.RandStringOfLength(r, 10)),
 		}

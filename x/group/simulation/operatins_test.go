@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/regen-network/regen-ledger/x/group/simulation"
 	"github.com/stretchr/testify/suite"
 
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -15,8 +16,6 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	regen "github.com/regen-network/regen-ledger/app"
 	"github.com/regen-network/regen-ledger/x/group"
-
-	"github.com/regen-network/regen-ledger/x/group/simulation"
 )
 
 type SimTestSuite struct {
@@ -39,7 +38,7 @@ func (suite *SimTestSuite) TestWeightedOperations() {
 	appParams := make(simtypes.AppParams)
 
 	weightedOps := simulation.WeightedOperations(appParams, cdc, suite.app.AccountKeeper,
-		suite.app.BankKeeper, suite.protoCdc,
+		suite.app.BankKeeper, suite.protoCdc, nil,
 	)
 
 	s := rand.NewSource(1)
@@ -102,6 +101,36 @@ func (suite *SimTestSuite) TestSimulateCreateGroup() {
 
 	// execute operation
 	op := simulation.SimulateMsgCreateGroup(suite.app.AccountKeeper, suite.app.BankKeeper, suite.protoCdc)
+	operationMsg, futureOperations, err := op(r, suite.app.BaseApp, suite.ctx, accounts, "")
+	suite.Require().NoError(err)
+
+	var msg group.MsgCreateGroupRequest
+	err = suite.app.AppCodec().UnmarshalJSON(operationMsg.Msg, &msg)
+	suite.Require().NoError(err)
+	suite.Require().True(operationMsg.OK)
+	suite.Require().Equal(acc.Address.String(), msg.Admin)
+	suite.Require().Len(futureOperations, 0)
+
+}
+
+func (suite *SimTestSuite) TestSimulateCreateGroupAccount() {
+	// setup 1 account
+	s := rand.NewSource(1)
+	r := rand.New(s)
+	accounts := suite.getTestingAccounts(r, 1)
+
+	// begin a new block
+	suite.app.BeginBlock(abci.RequestBeginBlock{
+		Header: tmproto.Header{
+			Height:  suite.app.LastBlockHeight() + 1,
+			AppHash: suite.app.LastCommitID().Hash,
+		},
+	})
+
+	acc := accounts[0]
+
+	// execute operation
+	op := simulation.SimulateMsgCreateGroupAccount(suite.app.AccountKeeper, suite.app.BankKeeper, suite.protoCdc, nil)
 	operationMsg, futureOperations, err := op(r, suite.app.BaseApp, suite.ctx, accounts, "")
 	suite.Require().NoError(err)
 
