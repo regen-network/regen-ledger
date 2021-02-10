@@ -648,7 +648,7 @@ type authNGroupReq interface {
 type actionFn func(m *group.GroupInfo) error
 type groupAccountActionFn func(m *group.GroupAccountInfo) error
 
-// doUpdateGroupAccount first makes sure that the group admin initiated the group account update,
+// doUpdateGroupAccount first makes sure that the group account admin initiated the group account update,
 // before performing the group account update and emitting an event.
 func (s serverImpl) doUpdateGroupAccount(ctx types.Context, groupAccount string, admin string, action groupAccountActionFn, note string) error {
 	groupAccountAddress, err := sdk.AccAddressFromBech32(groupAccount)
