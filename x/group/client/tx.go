@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
@@ -403,9 +404,14 @@ func MsgUpdateGroupAccountDecisionPolicyCmd() *cobra.Command {
 				return err
 			}
 
+			accountAddress, err := sdk.AccAddressFromBech32(args[1])
+			if err != nil {
+				return err
+			}
+
 			msg, err := group.NewMsgUpdateGroupAccountDecisionPolicyRequest(
 				clientCtx.GetFromAddress(),
-				args[1],
+				accountAddress,
 				policy,
 			)
 			if err != nil {

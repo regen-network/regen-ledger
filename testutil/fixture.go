@@ -7,13 +7,10 @@ in configuration.Fixture.
 A multi-node in-process ABCI-based backend for full integration tests is planned
 based on to the Cosmos SDK in-process integration test framework.
 */
-package server
+package testutil
 
 import (
 	"context"
-
-	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/codec"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc"
@@ -23,7 +20,7 @@ import (
 type FixtureFactory interface {
 
 	// Setup runs necessary fixture setup and returns a fresh Fixture environment.
-	Setup(setupHooks ...func(cdc *codec.ProtoCodec, app *baseapp.BaseApp)) Fixture
+	Setup() Fixture
 }
 
 // Fixture defines an interface for interacting with app services in tests

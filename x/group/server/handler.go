@@ -8,9 +8,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
-// NewHandler creates an sdk.Handler for all the group type messages
-func NewHandler(configurator servermodule.Configurator) sdk.Handler {
-	impl := newServer(configurator.ModuleKey(), configurator.Router(), configurator.Marshaler())
+// NewHandler creates an sdk.Handler for all the group type messages.
+// This is needed for supporting amino-json signing.
+func NewHandler(configurator servermodule.Configurator, accountKeeper AccountKeeper) sdk.Handler {
+	impl := newServer(configurator.ModuleKey(), configurator.Router(), accountKeeper, configurator.Marshaler())
 
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())

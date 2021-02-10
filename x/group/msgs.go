@@ -304,11 +304,10 @@ func (m MsgUpdateGroupAccountAdminRequest) ValidateBasic() error {
 var _ sdk.Msg = &MsgUpdateGroupAccountDecisionPolicyRequest{}
 var _ types.UnpackInterfacesMessage = MsgUpdateGroupAccountDecisionPolicyRequest{}
 
-// NewMsgUpdateGroupAccountDecisionPolicyRequest creates a new MsgUpdateGroupAccountDecisionPolicyRequest.
-func NewMsgUpdateGroupAccountDecisionPolicyRequest(admin sdk.AccAddress, acc string, decisionPolicy DecisionPolicy) (*MsgUpdateGroupAccountDecisionPolicyRequest, error) {
+func NewMsgUpdateGroupAccountDecisionPolicyRequest(admin sdk.AccAddress, groupAccount sdk.AccAddress, decisionPolicy DecisionPolicy) (*MsgUpdateGroupAccountDecisionPolicyRequest, error) {
 	m := &MsgUpdateGroupAccountDecisionPolicyRequest{
 		Admin:        admin.String(),
-		GroupAccount: acc,
+		GroupAccount: groupAccount.String(),
 	}
 	err := m.SetDecisionPolicy(decisionPolicy)
 	if err != nil {
