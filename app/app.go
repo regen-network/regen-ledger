@@ -359,10 +359,19 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	/* New Module Wiring START */
 	newModuleManager := servermodule.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
 
-	err := newModuleManager.RegisterModules(NewModules)
+	// BEGIN HACK: this is a total, ugly hack until x/auth supports ADR 033 or we have a suitable alternative
+	groupModule := group.Module{AccountKeeper: authkeeper.AccountKeeper{}}
+	// use a separate newModules from the global NewModules here because we need to pass state into the group module
+	newModules := []moduletypes.Module{
+		ecocredit.Module{},
+		data.Module{},
+		groupModule,
+	}
+	err := newModuleManager.RegisterModules(newModules)
 	if err != nil {
 		panic(err)
 	}
+	// END HACK
 
 	err = newModuleManager.CompleteInitialization()
 	if err != nil {
