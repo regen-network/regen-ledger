@@ -17,6 +17,11 @@ export GO111MODULE = on
 # process build tags
 
 build_tags = netgo
+
+ifeq ($(STABLE),true)
+	build_tags += stable
+endif
+
 ifeq ($(LEDGER_ENABLED),true)
   ifeq ($(OS),Windows_NT)
     GCCEXE = $(shell where gcc.exe 2> NUL)
