@@ -33,6 +33,7 @@ type IntegrationTestSuite struct {
 	group         *group.GroupInfo
 	groupAccount  *group.GroupAccountInfo
 	groupAccount2 *group.GroupAccountInfo
+	groupAccount3 *group.GroupAccountInfo
 	proposal      *group.Proposal
 	vote          *group.Vote
 }
@@ -97,15 +98,15 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.group = &group.GroupInfo{GroupId: group.ID(1), Admin: val.Address.String(), Metadata: []byte{1}, TotalWeight: "1", Version: 1}
 
-	// create 2 group accounts
-	for i := 0; i < 2; i++ {
+	// create 3 group accounts
+	for i := 0; i < 3; i++ {
 		out, err = cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateGroupAccountCmd(),
 			append(
 				[]string{
 					val.Address.String(),
 					"1",
 					"AQ==",
-					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"1s\"}",
+					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"30000s\"}",
 				},
 				commonFlags...,
 			),
@@ -120,9 +121,10 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	var res group.QueryGroupAccountsByGroupResponse
 	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &res))
-	s.Require().Equal(len(res.GroupAccounts), 2)
+	s.Require().Equal(len(res.GroupAccounts), 3)
 	s.groupAccount = res.GroupAccounts[0]
 	s.groupAccount2 = res.GroupAccounts[1]
+	s.groupAccount3 = res.GroupAccounts[2]
 
 	// create a proposal
 	validTxFileName := getTxSendFileName(s, s.groupAccount.GroupAccount, val.Address.String())
@@ -464,6 +466,7 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountsByGroup() {
 			[]*group.GroupAccountInfo{
 				s.groupAccount,
 				s.groupAccount2,
+				s.groupAccount3,
 			},
 		},
 	}
@@ -532,6 +535,7 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountsByAdmin() {
 			[]*group.GroupAccountInfo{
 				s.groupAccount,
 				s.groupAccount2,
+				s.groupAccount3,
 			},
 		},
 	}
@@ -1266,29 +1270,7 @@ func (s *IntegrationTestSuite) TestTxCreateGroupAccount() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	validMembers := fmt.Sprintf(`[{
-	  "address": "%s",
-		"weight": "1",
-		"metadata": "AQ=="
-	}]`, val.Address.String())
-	validMembersFile := testutil.WriteToNewTempFile(s.T(), validMembers)
-	out, err := cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateGroupCmd(),
-		append(
-			[]string{
-				val.Address.String(),
-				"AQ==",
-				validMembersFile.Name(),
-			},
-			commonFlags...,
-		),
-	)
-
-	s.Require().NoError(err, out.String())
-	var txResp = sdk.TxResponse{}
-	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &txResp), out.String())
-	s.Require().Equal(uint32(0), txResp.Code, out.String())
-
-	groupID := group.ID(2)
+	groupID := s.group.GroupId
 
 	testCases := []struct {
 		name         string
@@ -1475,7 +1457,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountDecisionPolicy() {
 	val := s.network.Validators[0]
 	newAdmin := s.network.Validators[1].Address
 	clientCtx := val.ClientCtx
-	groupAccount := s.groupAccount
+	groupAccount := s.groupAccount3
 
 	var commonFlags = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -1562,7 +1544,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountMetadata() {
 	val := s.network.Validators[0]
 	newAdmin := s.network.Validators[1].Address
 	clientCtx := val.ClientCtx
-	groupAccount := s.groupAccount
+	groupAccount := s.groupAccount3
 
 	var commonFlags = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
