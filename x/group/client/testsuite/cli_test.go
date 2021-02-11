@@ -1385,7 +1385,6 @@ func (s *IntegrationTestSuite) TestTxCreateGroupAccount() {
 }
 
 func (s *IntegrationTestSuite) TestTxUpdateGroupAccountAdmin() {
-	// TODO #224
 	val := s.network.Validators[0]
 	newAdmin := s.network.Validators[1].Address
 	clientCtx := val.ClientCtx
@@ -1473,7 +1472,6 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountAdmin() {
 }
 
 func (s *IntegrationTestSuite) TestTxUpdateGroupAccountDecisionPolicy() {
-	// TODO #224
 	val := s.network.Validators[0]
 	newAdmin := s.network.Validators[1].Address
 	clientCtx := val.ClientCtx
@@ -1561,7 +1559,6 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountDecisionPolicy() {
 }
 
 func (s *IntegrationTestSuite) TestTxUpdateGroupAccountMetadata() {
-	// TODO #224
 	val := s.network.Validators[0]
 	newAdmin := s.network.Validators[1].Address
 	clientCtx := val.ClientCtx
