@@ -400,7 +400,7 @@ func MsgUpdateGroupAccountDecisionPolicyCmd() *cobra.Command {
 			}
 
 			var policy group.DecisionPolicy
-			if err := clientCtx.JSONMarshaler.UnmarshalInterfaceJSON([]byte(args[3]), &policy); err != nil {
+			if err := clientCtx.JSONMarshaler.UnmarshalInterfaceJSON([]byte(args[2]), &policy); err != nil {
 				return err
 			}
 
