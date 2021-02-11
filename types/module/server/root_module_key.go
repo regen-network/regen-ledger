@@ -13,6 +13,7 @@ import (
 type RootModuleKey interface {
 	ModuleKey
 	sdk.StoreKey
+	Derive(path []byte) DerivedModuleKey
 }
 
 type rootModuleKey struct {
@@ -37,7 +38,7 @@ func (r *rootModuleKey) Invoker(methodName string) (types.Invoker, error) {
 	})
 }
 
-func (r *rootModuleKey) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, opts ...grpc.CallOption) error {
+func (r *rootModuleKey) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, _ ...grpc.CallOption) error {
 	invoker, err := r.Invoker(method)
 	if err != nil {
 		return err
@@ -46,7 +47,7 @@ func (r *rootModuleKey) Invoke(ctx context.Context, method string, args interfac
 	return invoker(ctx, args, reply)
 }
 
-func (r *rootModuleKey) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+func (r *rootModuleKey) NewStream(context.Context, *grpc.StreamDesc, string, ...grpc.CallOption) (grpc.ClientStream, error) {
 	return nil, fmt.Errorf("unsupported")
 }
 
@@ -54,7 +55,7 @@ func (r *rootModuleKey) ModuleID() types.ModuleID {
 	return types.ModuleID{ModuleName: r.moduleName}
 }
 
-func (r *rootModuleKey) Address() []byte {
+func (r *rootModuleKey) Address() sdk.AccAddress {
 	return r.ModuleID().Address()
 }
 

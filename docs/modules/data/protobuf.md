@@ -501,7 +501,7 @@ MsgStoreRawDataRequest is the Msg/StoreRawData request type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | sender | [string](#string) |  | sender is the address of the sender of the transaction. The sender in StoreData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing services. |
-| hash | [ContentHash.Raw](#regen.data.v1alpha2.ContentHash.Raw) |  | hash is the hash-based identifier for the anchored content. |
+| content_hash | [ContentHash.Raw](#regen.data.v1alpha2.ContentHash.Raw) |  | content_hash is the hash-based identifier for the anchored content. |
 | content | [bytes](#bytes) |  | content is the content of the raw data corresponding to the provided content hash. |
 
 
