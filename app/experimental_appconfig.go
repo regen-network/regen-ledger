@@ -3,55 +3,39 @@
 package app
 
 import (
+	"github.com/CosmWasm/wasmd/x/wasm"
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	"github.com/regen-network/regen-ledger/x/data"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/group"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
+	data "github.com/regen-network/regen-ledger/x/data/module"
+	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
+	group "github.com/regen-network/regen-ledger/x/group/module"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
 	return []module.AppModuleBasic{
-		data.AppModuleBasic{},
-		ecocredit.AppModuleBasic{},
-		group.AppModuleBasic{},
+		wasm.AppModuleBasic{},
+		data.Module{},
+		ecocredit.Module{},
+		group.Module{},
 	}
 }
 
-func setCustomKVStoreKeys() []string {
-	return []string{
-		data.StoreKey,
-		ecocredit.StoreKey,
-		group.StoreKey,
-	}
-}
+func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) {
 
-func (app *RegenApp) setCustomKeepers() {
-	// TODO Register regen module keepers here
-}
+	/* New Module Wiring START */
+	newModuleManager := servermodule.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
 
-func (app *RegenApp) setCustomAppModules() []module.AppModule {
-	return []module.AppModule{
-		// TODO register regen app modules here
+	err := newModuleManager.RegisterModules(NewModules)
+	if err != nil {
+		panic(err)
 	}
-}
 
-func (app *RegenApp) setCustomEndBlockModules() []string {
-	return []string{
-		// TODO add endblock modules
+	err = newModuleManager.CompleteInitialization()
+	if err != nil {
+		panic(err)
 	}
-}
-
-func (app *RegenApp) setCustomInitGenesisOrder() []string {
-	return []string{
-		// TODO
-	}
-}
-
-func (app *RegenApp) setCustomSimModules() []module.AppModuleSimulation {
-	return []module.AppModuleSimulation{
-		data.NewAppModuleSimulation(
-			// ...
-		),
-	}
+	/* New Module Wiring END */
 }

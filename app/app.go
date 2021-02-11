@@ -90,7 +90,6 @@ import (
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
-	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	group "github.com/regen-network/regen-ledger/x/group/module"
@@ -108,6 +107,7 @@ var (
 	// non-dependant module elements, such as codec registration
 	// and genesis verification.
 	ModuleBasics = module.NewBasicManager(
+		append([]module.AppModuleBasic{
 		auth.AppModuleBasic{},
 		// genaccounts.AppModuleBasic{},
 		genutil.AppModuleBasic{},
@@ -128,10 +128,7 @@ var (
 		evidence.AppModuleBasic{},
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
-		wasm.AppModuleBasic{},
-		ecocredit.Module{},
-		data.Module{},
-		group.Module{},
+		}, setCustomModuleBasics()...)...,
 	)
 
 	NewModules = []moduletypes.Module{
@@ -356,19 +353,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		&stakingKeeper, govRouter,
 	)
 
-	/* New Module Wiring START */
-	newModuleManager := servermodule.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
-
-	err := newModuleManager.RegisterModules(NewModules)
-	if err != nil {
-		panic(err)
-	}
-
-	err = newModuleManager.CompleteInitialization()
-	if err != nil {
-		panic(err)
-	}
-	/* New Module Wiring END */
+	// register experimental modules here
+	setCustomModules(app, interfaceRegistry)
 
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
@@ -409,14 +395,10 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
 	// can do so safely.
 	app.mm.SetOrderInitGenesis(
-		append([]string{
-			capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, stakingtypes.ModuleName,
-			slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
-			ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, ibctransfertypes.ModuleName,
-			wasm.ModuleName,
-		},
-			app.setCustomInitGenesisOrder()...,
-		)...,
+		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, stakingtypes.ModuleName,
+		slashingtypes.ModuleName, govtypes.ModuleName, minttypes.ModuleName, crisistypes.ModuleName,
+		ibchost.ModuleName, genutiltypes.ModuleName, evidencetypes.ModuleName, ibctransfertypes.ModuleName,
+		wasm.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -428,23 +410,19 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
 	// transactions
 	app.sm = module.NewSimulationManager(
-		append([]module.AppModuleSimulation{
-			auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
-			bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
-			capability.NewAppModule(appCodec, *app.CapabilityKeeper),
-			gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
-			mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper),
-			staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
-			distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-			slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-			params.NewAppModule(app.ParamsKeeper),
-			evidence.NewAppModule(app.EvidenceKeeper),
-			ibc.NewAppModule(app.IBCKeeper),
-			transferModule,
-			wasm.NewAppModule(&app.wasmKeeper),
-		},
-			app.setCustomAppModules()...,
-		)...,
+		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
+		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
+		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
+		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
+		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper),
+		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
+		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		params.NewAppModule(app.ParamsKeeper),
+		evidence.NewAppModule(app.EvidenceKeeper),
+		ibc.NewAppModule(app.IBCKeeper),
+		transferModule,
+		wasm.NewAppModule(&app.wasmKeeper),
 	)
 
 	app.sm.RegisterStoreDecoders()
