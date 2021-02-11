@@ -97,6 +97,9 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 			return err
 		}
 		for i := range req.MemberUpdates {
+			if err := assertMetadataLength(req.MemberUpdates[i].Metadata, s.maxMetadataLength(ctx), "group member metadata"); err != nil {
+				return err
+			}
 			groupMember := group.GroupMember{GroupId: req.GroupId,
 				Member: &group.Member{
 					Address:  req.MemberUpdates[i].Address,

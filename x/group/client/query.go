@@ -331,7 +331,7 @@ func QueryVoteByProposalVoterCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "vote [proposal-id] [voter]",
 		Short: "Query for vote by proposal id and voter account address",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
