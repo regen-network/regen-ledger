@@ -172,6 +172,9 @@ go.sum: go.mod
 ###                              Documentation                              ###
 ###############################################################################
 
+proto-swagger-gen:
+	@./scripts/protoc-swagger-gen.sh
+	
 update-swagger-docs: statik
 	$(BINDIR)/statik -src=client/docs/swagger-ui -dest=client/docs -f -m
 	@if [ -n "$(git status --porcelain)" ]; then \
