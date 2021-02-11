@@ -40,7 +40,7 @@ func (i UInt64Index) Has(ctx HasKVStore, key uint64) bool {
 }
 
 // Get returns a result iterator for the searchKey. Parameters must not be nil.
-func (i UInt64Index) Get(ctx HasKVStore, searchKey uint64, pageRequest *query.PageRequest) (Iterator, error) {
+func (i UInt64Index) Get(ctx HasKVStore, searchKey uint64) (Iterator, error) {
 	return i.multiKeyIndex.Get(ctx, EncodeSequence(searchKey))
 }
 

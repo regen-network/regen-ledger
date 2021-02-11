@@ -544,11 +544,8 @@ func (m MsgCreateProposalRequest) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "proposers")
 	}
 
-	for i, any := range m.Msgs {
-		msg, ok := any.GetCachedValue().(sdk.Msg)
-		if !ok {
-			return sdkerrors.Wrapf(sdkerrors.ErrUnpackAny, "cannot unpack Any into sdk.Msg %T", any)
-		}
+	msgs := m.GetMsgs()
+	for i, msg := range msgs {
 		if err := msg.ValidateBasic(); err != nil {
 			return sdkerrors.Wrapf(err, "msg %d", i)
 		}
@@ -586,8 +583,15 @@ func (m MsgCreateProposalRequest) GetMsgs() []sdk.Msg {
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (m MsgCreateProposalRequest) UnpackInterfaces(unpacker types.AnyUnpacker) error {
-	for _, m := range m.Msgs {
-		err := types.UnpackInterfaces(m, unpacker)
+	// for _, m := range m.Msgs {
+	// 	err := types.UnpackInterfaces(m, unpacker)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// }
+	for _, any := range m.Msgs {
+		var msg sdk.Msg
+		err := unpacker.UnpackAny(any, &msg)
 		if err != nil {
 			return err
 		}

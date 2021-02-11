@@ -496,7 +496,7 @@ Parameters:
 				return err
 			}
 
-			theTx, err := authclient.ReadTxFromFile(clientCtx, args[0])
+			theTx, err := authclient.ReadTxFromFile(clientCtx, args[2])
 			if err != nil {
 				return err
 			}
@@ -541,15 +541,20 @@ Parameters:
 			proposal-id: unique ID of the proposal
 			voter: voter account addresses.
 			choice: choice of the voter(s)
-				0: no-op
-				1: no
-				2: yes
-				3: abstain
-				4: veto
+				CHOICE_UNSPECIFIED: no-op
+				CHOICE_NO: no
+				CHOICE_YES: yes
+				CHOICE_ABSTAIN: abstain
+				CHOICE_VETO: veto
 			Metadata: metadata for the vote
 `,
 		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			err := cmd.Flags().Set(flags.FlagFrom, args[1])
+			if err != nil {
+				return err
+			}
+
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -598,13 +603,8 @@ func MsgExecCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "exec [proposal-id]",
 		Short: "Execute a proposal",
-		Args:  cobra.ExactArgs(4),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			voters := strings.Split(args[1], ",")
-			for i := range voters {
-				voters[i] = strings.TrimSpace(voters[i])
-			}
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
