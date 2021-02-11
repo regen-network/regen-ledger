@@ -39,8 +39,10 @@ const (
 )
 
 type serverImpl struct {
-	storeKey sdk.StoreKey
-	router   sdk.Router
+	key    servermodule.RootModuleKey
+	router sdk.Router
+
+	accKeeper AccountKeeper
 
 	// Group Table
 	groupSeq          orm.Sequence
@@ -69,8 +71,8 @@ type serverImpl struct {
 	voteByVoterIndex    orm.Index
 }
 
-func newServer(storeKey sdk.StoreKey, router sdk.Router, cdc codec.Marshaler) serverImpl {
-	s := serverImpl{storeKey: storeKey, router: router}
+func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper AccountKeeper, cdc codec.Marshaler) serverImpl {
+	s := serverImpl{key: storeKey, router: router, accKeeper: accKeeper}
 
 	// Group Table
 	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, storeKey, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
@@ -119,7 +121,7 @@ func newServer(storeKey sdk.StoreKey, router sdk.Router, cdc codec.Marshaler) se
 
 	// Proposal Table
 	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, storeKey, &group.Proposal{}, cdc)
-	// proposalTableBuilder := orm.NewNaturalKeyTableBuilder(ProposalTablePrefix, storeKey, &group.Proposal{}, orm.Max255DynamicLengthIndexKeyCodec{})
+	// proposalTableBuilder := orm.NewNaturalKeyTableBuilder(ProposalTablePrefix, key, &group.Proposal{}, orm.Max255DynamicLengthIndexKeyCodec{})
 	s.proposalByGroupAccountIndex = orm.NewIndex(proposalTableBuilder, ProposalByGroupAccountIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
 		account := value.(*group.Proposal).GroupAccount
 		addr, err := sdk.AccAddressFromBech32(account)
@@ -159,8 +161,8 @@ func newServer(storeKey sdk.StoreKey, router sdk.Router, cdc codec.Marshaler) se
 	return s
 }
 
-func RegisterServices(configurator servermodule.Configurator) {
-	impl := newServer(configurator.ModuleKey(), configurator.Router(), configurator.Marshaler())
+func RegisterServices(configurator servermodule.Configurator, accountKeeper AccountKeeper) {
+	impl := newServer(configurator.ModuleKey(), configurator.Router(), accountKeeper, configurator.Marshaler())
 	group.RegisterMsgServer(configurator.MsgServer(), impl)
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
 }
