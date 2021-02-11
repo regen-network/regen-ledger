@@ -751,7 +751,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 			),
 			expErr: true,
 		},
-		"comment too long": {
+		"metadata too long": {
 			req: &group.MsgCreateGroupAccountRequest{
 				Admin:    s.addr1.String(),
 				Metadata: []byte(strings.Repeat("a", 256)),

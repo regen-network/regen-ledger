@@ -76,5 +76,5 @@ func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 // }
 
 func (a Module) Route(configurator servermodule.Configurator) sdk.Route {
-	return sdk.NewRoute(group.RouterKey, server.NewHandler(configurator))
+	return sdk.NewRoute(group.RouterKey, server.NewHandler(configurator, a.AccountKeeper))
 }

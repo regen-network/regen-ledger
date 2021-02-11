@@ -72,13 +72,6 @@ func (ff FixtureFactory) Setup() testutil.Fixture {
 	baseApp := ff.baseApp
 	baseApp.MsgServiceRouter().SetInterfaceRegistry(registry)
 	baseApp.GRPCQueryRouter().SetInterfaceRegistry(registry)
-
-	cdc := codec.NewProtoCodec(registry)
-
-	for _, hook := range setupHooks {
-		hook(cdc, baseApp)
-	}
-
 	mm := NewManager(baseApp, cdc)
 	err := mm.RegisterModules(ff.modules)
 	require.NoError(ff.t, err)
