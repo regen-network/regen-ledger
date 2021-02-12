@@ -19,6 +19,9 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgUpdateGroupAdminRequest{}, "cosmos-sdk/MsgUpdateGroupAdmin", nil)
 	cdc.RegisterConcrete(&MsgUpdateGroupMetadataRequest{}, "cosmos-sdk/MsgUpdateGroupMetadata", nil)
 	cdc.RegisterConcrete(&MsgCreateGroupAccountRequest{}, "cosmos-sdk/MsgCreateGroupAccount", nil)
+	cdc.RegisterConcrete(&MsgUpdateGroupAccountAdminRequest{}, "cosmos-sdk/MsgUpdateGroupAccountAdmin", nil)
+	cdc.RegisterConcrete(&MsgUpdateGroupAccountDecisionPolicyRequest{}, "cosmos-sdk/MsgUpdateGroupAccountDecisionPolicy", nil)
+	cdc.RegisterConcrete(&MsgUpdateGroupAccountMetadataRequest{}, "cosmos-sdk/MsgUpdateGroupAccountMetadata", nil)
 	cdc.RegisterConcrete(&MsgCreateProposalRequest{}, "cosmos-sdk/group/MsgCreateProposal", nil)
 	cdc.RegisterConcrete(&MsgVoteRequest{}, "cosmos-sdk/group/MsgVote", nil)
 	cdc.RegisterConcrete(&MsgExecRequest{}, "cosmos-sdk/group/MsgExec", nil)
@@ -31,6 +34,9 @@ func RegisterTypes(registry cdctypes.InterfaceRegistry) {
 		&MsgUpdateGroupAdminRequest{},
 		&MsgUpdateGroupMetadataRequest{},
 		&MsgCreateGroupAccountRequest{},
+		&MsgUpdateGroupAccountAdminRequest{},
+		&MsgUpdateGroupAccountDecisionPolicyRequest{},
+		&MsgUpdateGroupAccountMetadataRequest{},
 		&MsgCreateProposalRequest{},
 		&MsgVoteRequest{},
 		&MsgExecRequest{},

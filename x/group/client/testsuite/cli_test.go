@@ -3,6 +3,7 @@ package testsuite
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"testing"
 
 	tmcli "github.com/tendermint/tendermint/libs/cli"
@@ -29,10 +30,12 @@ type IntegrationTestSuite struct {
 	cfg     network.Config
 	network *network.Network
 
-	group        *group.GroupInfo
-	groupAccount *group.GroupAccountInfo
-	proposal     *group.Proposal
-	vote         *group.Vote
+	group         *group.GroupInfo
+	groupAccount  *group.GroupAccountInfo
+	groupAccount2 *group.GroupAccountInfo
+	groupAccount3 *group.GroupAccountInfo
+	proposal      *group.Proposal
+	vote          *group.Vote
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
@@ -95,29 +98,33 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.group = &group.GroupInfo{GroupId: group.ID(1), Admin: val.Address.String(), Metadata: []byte{1}, TotalWeight: "1", Version: 1}
 
-	// create a group account
-	out, err = cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateGroupAccountCmd(),
-		append(
-			[]string{
-				val.Address.String(),
-				"1",
-				"AQ==",
-				"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"30000s\"}",
-			},
-			commonFlags...,
-		),
-	)
-	s.Require().NoError(err, out.String())
-	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &txResp), out.String())
-	s.Require().Equal(uint32(0), txResp.Code, out.String())
+	// create 3 group accounts
+	for i := 0; i < 3; i++ {
+		out, err = cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateGroupAccountCmd(),
+			append(
+				[]string{
+					val.Address.String(),
+					"1",
+					"AQ==",
+					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"30000s\"}",
+				},
+				commonFlags...,
+			),
+		)
+		s.Require().NoError(err, out.String())
+		s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &txResp), out.String())
+		s.Require().Equal(uint32(0), txResp.Code, out.String())
 
-	out, err = cli.ExecTestCLICmd(val.ClientCtx, client.QueryGroupAccountsByGroupCmd(), []string{"1", fmt.Sprintf("--%s=json", tmcli.OutputFlag)})
-	s.Require().NoError(err, out.String())
+		out, err = cli.ExecTestCLICmd(val.ClientCtx, client.QueryGroupAccountsByGroupCmd(), []string{"1", fmt.Sprintf("--%s=json", tmcli.OutputFlag)})
+		s.Require().NoError(err, out.String())
+	}
 
 	var res group.QueryGroupAccountsByGroupResponse
 	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &res))
-	s.Require().Equal(len(res.GroupAccounts), 1)
+	s.Require().Equal(len(res.GroupAccounts), 3)
 	s.groupAccount = res.GroupAccounts[0]
+	s.groupAccount2 = res.GroupAccounts[1]
+	s.groupAccount3 = res.GroupAccounts[2]
 
 	// create a proposal
 	validTxFileName := getTxSendFileName(s, s.groupAccount.GroupAccount, val.Address.String())
@@ -458,6 +465,8 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountsByGroup() {
 			0,
 			[]*group.GroupAccountInfo{
 				s.groupAccount,
+				s.groupAccount2,
+				s.groupAccount3,
 			},
 		},
 	}
@@ -525,6 +534,8 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountsByAdmin() {
 			0,
 			[]*group.GroupAccountInfo{
 				s.groupAccount,
+				s.groupAccount2,
+				s.groupAccount3,
 			},
 		},
 	}
@@ -1248,16 +1259,387 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupMembers() {
 	}
 }
 
+func (s *IntegrationTestSuite) TestTxCreateGroupAccount() {
+	val := s.network.Validators[0]
+	wrongAdmin := s.network.Validators[1].Address
+	clientCtx := val.ClientCtx
+
+	var commonFlags = []string{
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
+
+	groupID := s.group.GroupId
+
+	testCases := []struct {
+		name         string
+		args         []string
+		expectErr    bool
+		expectErrMsg string
+		respType     proto.Message
+		expectedCode uint32
+	}{
+		{
+			"correct data",
+			append(
+				[]string{
+					val.Address.String(),
+					fmt.Sprintf("%v", groupID),
+					"AQ==",
+					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"1s\"}",
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"wrong admin",
+			append(
+				[]string{
+					wrongAdmin.String(),
+					fmt.Sprintf("%v", groupID),
+					"AQ==",
+					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"1s\"}",
+				},
+				commonFlags...,
+			),
+			true,
+			"The specified item could not be found in the keyring",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"metadata too long",
+			append(
+				[]string{
+					val.Address.String(),
+					fmt.Sprintf("%v", groupID),
+					strings.Repeat("a", 500),
+					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"1s\"}",
+				},
+				commonFlags...,
+			),
+			true,
+			"group account metadata: limit exceeded",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"wrong group id",
+			append(
+				[]string{
+					val.Address.String(),
+					"10",
+					"AQ==",
+					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"1s\"}",
+				},
+				commonFlags...,
+			),
+			true,
+			"not found",
+			&sdk.TxResponse{},
+			0,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		s.Run(tc.name, func() {
+			cmd := client.MsgCreateGroupAccountCmd()
+
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expectErr {
+				s.Require().Contains(out.String(), tc.expectErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+
+				txResp := tc.respType.(*sdk.TxResponse)
+				s.Require().Equal(tc.expectedCode, txResp.Code, out.String())
+			}
+		})
+	}
+}
+
 func (s *IntegrationTestSuite) TestTxUpdateGroupAccountAdmin() {
-	// TODO #224
+	val := s.network.Validators[0]
+	newAdmin := s.network.Validators[1].Address
+	clientCtx := val.ClientCtx
+	groupAccount := s.groupAccount2
+
+	var commonFlags = []string{
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
+
+	testCases := []struct {
+		name         string
+		args         []string
+		expectErr    bool
+		expectErrMsg string
+		respType     proto.Message
+		expectedCode uint32
+	}{
+		{
+			"correct data",
+			append(
+				[]string{
+					groupAccount.Admin,
+					groupAccount.GroupAccount,
+					newAdmin.String(),
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"wrong admin",
+			append(
+				[]string{
+					newAdmin.String(),
+					groupAccount.GroupAccount,
+					newAdmin.String(),
+				},
+				commonFlags...,
+			),
+			true,
+			"The specified item could not be found in the keyring",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"wrong group account",
+			append(
+				[]string{
+					groupAccount.Admin,
+					newAdmin.String(),
+					newAdmin.String(),
+				},
+				commonFlags...,
+			),
+			true,
+			"load group account: not found",
+			&sdk.TxResponse{},
+			0,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		s.Run(tc.name, func() {
+			cmd := client.MsgUpdateGroupAccountAdminCmd()
+
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expectErr {
+				s.Require().Contains(out.String(), tc.expectErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+
+				txResp := tc.respType.(*sdk.TxResponse)
+				s.Require().Equal(tc.expectedCode, txResp.Code, out.String())
+			}
+		})
+	}
 }
 
 func (s *IntegrationTestSuite) TestTxUpdateGroupAccountDecisionPolicy() {
-	// TODO #224
+	val := s.network.Validators[0]
+	newAdmin := s.network.Validators[1].Address
+	clientCtx := val.ClientCtx
+	groupAccount := s.groupAccount3
+
+	var commonFlags = []string{
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
+
+	testCases := []struct {
+		name         string
+		args         []string
+		expectErr    bool
+		expectErrMsg string
+		respType     proto.Message
+		expectedCode uint32
+	}{
+		{
+			"correct data",
+			append(
+				[]string{
+					groupAccount.Admin,
+					groupAccount.GroupAccount,
+					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"2\", \"timeout\":\"2s\"}",
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"wrong admin",
+			append(
+				[]string{
+					newAdmin.String(),
+					groupAccount.GroupAccount,
+					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"1s\"}",
+				},
+				commonFlags...,
+			),
+			true,
+			"The specified item could not be found in the keyring",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"wrong group account",
+			append(
+				[]string{
+					groupAccount.Admin,
+					newAdmin.String(),
+					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"1s\"}",
+				},
+				commonFlags...,
+			),
+			true,
+			"load group account: not found",
+			&sdk.TxResponse{},
+			0,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		s.Run(tc.name, func() {
+			cmd := client.MsgUpdateGroupAccountDecisionPolicyCmd()
+
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expectErr {
+				s.Require().Contains(out.String(), tc.expectErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+
+				txResp := tc.respType.(*sdk.TxResponse)
+				s.Require().Equal(tc.expectedCode, txResp.Code, out.String())
+			}
+		})
+	}
 }
 
 func (s *IntegrationTestSuite) TestTxUpdateGroupAccountMetadata() {
-	// TODO #224
+	val := s.network.Validators[0]
+	newAdmin := s.network.Validators[1].Address
+	clientCtx := val.ClientCtx
+	groupAccount := s.groupAccount3
+
+	var commonFlags = []string{
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
+
+	testCases := []struct {
+		name         string
+		args         []string
+		expectErr    bool
+		expectErrMsg string
+		respType     proto.Message
+		expectedCode uint32
+	}{
+		{
+			"correct data",
+			append(
+				[]string{
+					groupAccount.Admin,
+					groupAccount.GroupAccount,
+					"AQ==",
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"long metadata",
+			append(
+				[]string{
+					groupAccount.Admin,
+					groupAccount.GroupAccount,
+					strings.Repeat("a", 500),
+				},
+				commonFlags...,
+			),
+			true,
+			"group account metadata: limit exceeded",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"wrong admin",
+			append(
+				[]string{
+					newAdmin.String(),
+					groupAccount.GroupAccount,
+					"AQ==",
+				},
+				commonFlags...,
+			),
+			true,
+			"The specified item could not be found in the keyring",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"wrong group account",
+			append(
+				[]string{
+					groupAccount.Admin,
+					newAdmin.String(),
+					"AQ==",
+				},
+				commonFlags...,
+			),
+			true,
+			"load group account: not found",
+			&sdk.TxResponse{},
+			0,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		s.Run(tc.name, func() {
+			cmd := client.MsgUpdateGroupAccountMetadataCmd()
+
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expectErr {
+				s.Require().Contains(out.String(), tc.expectErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+
+				txResp := tc.respType.(*sdk.TxResponse)
+				s.Require().Equal(tc.expectedCode, txResp.Code, out.String())
+			}
+		})
+	}
 }
 
 func (s *IntegrationTestSuite) TestTxCreateProposal() {
