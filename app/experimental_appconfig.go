@@ -1,18 +1,12 @@
-// +build !stable
+// +build !experimental
 
 package app
 
 import (
-	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
-	"github.com/cosmos/cosmos-sdk/x/gov"
-	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
-	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
@@ -23,11 +17,6 @@ import (
 
 func setCustomModuleBasics() []module.AppModuleBasic {
 	return []module.AppModuleBasic{
-		gov.NewAppModuleBasic(
-			append(wasmclient.ProposalHandlers, paramsclient.ProposalHandler, distrclient.ProposalHandler,
-				upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler)...,
-		),
-		wasm.AppModuleBasic{},
 		data.Module{},
 		ecocredit.Module{},
 		group.Module{},

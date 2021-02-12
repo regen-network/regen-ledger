@@ -7,14 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/gorilla/mux"
-	"github.com/rakyll/statik/fs"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
-
+	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -40,6 +33,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
+	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
@@ -57,6 +51,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	"github.com/cosmos/cosmos-sdk/x/params"
+	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
@@ -64,7 +59,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
+	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
+	"github.com/gorilla/mux"
+	"github.com/rakyll/statik/fs"
+	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/log"
+	tmos "github.com/tendermint/tendermint/libs/os"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
 
 	// types
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -107,6 +110,10 @@ var (
 			staking.AppModuleBasic{},
 			mint.AppModuleBasic{},
 			distr.AppModuleBasic{},
+			gov.NewAppModuleBasic(
+				append(wasmclient.ProposalHandlers, paramsclient.ProposalHandler, distrclient.ProposalHandler,
+					upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler)...,
+			),
 			params.AppModuleBasic{},
 			crisis.AppModuleBasic{},
 			slashing.AppModuleBasic{},
@@ -115,6 +122,7 @@ var (
 			evidence.AppModuleBasic{},
 			transfer.AppModuleBasic{},
 			vesting.AppModuleBasic{},
+			wasm.AppModuleBasic{},
 		}, setCustomModuleBasics()...)...,
 	)
 
