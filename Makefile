@@ -18,7 +18,7 @@ export GO111MODULE = on
 
 build_tags = netgo
 
-ifeq ($(STABLE),true)
+ifeq ($(EXPERIMENTAL),true)
 	build_tags += stable
 endif
 
