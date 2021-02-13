@@ -4,26 +4,192 @@
 
 ### Building from source
 
-Prerequisites: The [Go](https://golang.org/doc/install) compiler **version 1.15** (we use
-go modules) or later and GNU make. The go bin path (usually `$HOME/go/bin`) should be
-in your system `$PATH`.
+#### Prerequisites
 
-Run `make install` to build the code. The `regen` binary serves as both the blockchain daemon, as well as
+**Minimum Hardware Requirements**
+
+- 8GB RAM
+- 4vCPUs
+- 200GB Disk space
+
+**Software Requirements** 
+
+Before beginning make sure you have the [Go](https://golang.org/doc/install) compiler **version 1.15** (we use
+go modules) or later and GNU make installed and add the go bin path (usually `$HOME/go/bin`) should be in your system `$PATH`. To learn more about adding commands to your path please visit [linuxize.com](https://linuxize.com/post/how-to-add-directory-to-path-in-linux/). We recommend using Ubuntu 18.04 or higher, the official images can be found at [Ubuntu.com](https://ubuntu.com/tutorials/install-ubuntu-desktop#1-overview)
+
+---
+
+#### Download and Install Regen Ledger
+
+Install git and build-essentials for ubuntu
+```sh
+sudo apt update
+```
+```sh
+sudo apt install git build-essential jq -y
+```
+
+Download go and extract tarball
+```sh
+wget https://dl.google.com/go/go1.15.2.linux-amd64.tar.gz
+```
+```sh
+tar -xvf go1.15.2.linux-amd64.tar.gz
+```
+```sh
+sudo mv go /usr/local
+```
+
+Add go to local path
+```sh
+echo "" >> ~/.profile
+```
+```sh
+echo 'export GOPATH=$HOME/go' >> ~/.profile
+```
+```sh
+echo 'export GOROOT=/usr/local/go' >> ~/.profile
+```
+```sh
+echo 'export GOBIN=$GOPATH/bin' >> ~/.profile
+```
+```sh
+echo 'export PATH=$PATH:/usr/local/go/bin:$GOBIN' >> ~/.profile
+```
+
+```sh
+. ~/.profile
+```
+
+Check to make sure you have the correct version of installed **version 1.15** or higher
+```sh
+go version
+```
+
+Next, we download the official Regen ledger github repository
+```sh
+cd $HOME
+```
+```sh
+git clone https://github.com/regen-network/regen-ledger $GOPATH/src/github.com/regen-network/regen-ledger
+```
+```sh
+cd $GOPATH/src/github.com/regen-network/regen-ledger
+```
+
+Run `make install` to build the code.
+```sh
+make install
+```
+
+Once installed the `regen` binary serves as both the blockchain daemon, as well as
 the command line blockchain client.
+
+## Creating Keys
+
+Run this command replacing `[moniker]` with the name of your key(you get to choose this). 
+
+::: **IMPORTANT!**
+
+**Save the information including the mnemonic after running the following command. Without this you will not be able to recover your account!**
+
+:::
+
+```sh
+regen keys add [moniker]
+```
+
+During this process you will need to create a password to secure your private keys. **DO NOT LOSE PASSWORD**
+
+## Setting up Cosmovisor
+
+According to the [Cosmos-SDK](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor) `cosmovisor` is a small process manager around Cosmos SDK binaries that monitors the governance module via stdout to see if there's a chain upgrade proposal coming in. If it sees a proposal that gets approved it can be run manually or automatically to download the new code, stop the node, run the migration script, replace the node binary, and start with the new genesis file.
+
+**The following steps help you get `cosmovisor` set up on your machine.**
+
+Remove cosmos-sdk if there is an existing one
+```sh
+rm -rf $GOPATH/src/github.com/cosmos/cosmos-sdk
+```
+
+Clone the cosmos-sdk repository
+```sh
+git clone https://github.com/cosmos/cosmos-sdk $GOPATH/src/github.com/cosmos/cosmos-sdk
+```
+
+Enter cosmos-sdk and use correct version
+```sh
+cd $GOPATH/src/github.com/cosmos/cosmos-sdk
+```
+```sh
+git checkout v0.40.0    
+```
+
+Build `cosmovisor` and copy binary to go bin
+```sh
+cd cosmovisor
+```
+```sh
+make cosmovisor
+```
+```sh
+cp cosmovisor $GOBIN/cosmovisor
+```
+
+Set up `cosmovisor`directories
+```sh
+mkdir -p ~/.regen/cosmovisor
+```
+```sh
+mkdir -p ~/.regen/cosmovisor/genesis/bin
+```
+```sh
+cp $GOBIN/regen ~/.regen/cosmovisor/genesis/bin
+```
+
+In the `cosmovisor` directory create the system files. Copy the entire code block below and paste in your shell and hit enter
+```sh
+echo "[Unit]
+Description=Cosmovisor daemon
+After=network-online.target
+[Service]
+Environment="DAEMON_NAME=regen"
+Environment="DAEMON_HOME=${HOME}/.${DAEMON}"
+Environment="DAEMON_RESTART_AFTER_UPGRADE=on"
+User=${USER}
+ExecStart=${GOBIN}/cosmovisor start
+Restart=always
+RestartSec=3
+LimitNOFILE=4096
+[Install]
+WantedBy=multi-user.target
+" >cosmovisor.service
+```
+
+Move the newly create file to the systemd directory reload systemctl and start `cosmovisor`
+```sh
+sudo mv cosmovisor.service /lib/systemd/system/cosmovisor.service
+```
+```sh
+sudo -S systemctl daemon-reload
+```
+```sh
+sudo -S systemctl start cosmovisor
+```
 
 ## Configuring the command line client
 
 By default the command line client will connect to a [local node](#running-a-node).
-To connect to a testnet or devnet, you must know the network's chain ID and the address of a public node. More information on the current testnets and devnet can be found in the [testnets repository](https://github.com/regen-network/testnets).
+To connect to a testnet or devnet, you must know the network's chain ID and the address of a public node. More information on the current testnet and/or devnet can be found in the [Regen testnet repository](https://github.com/regen-network/testnets).
 
-`regen` can be configured to connect to a testnet node automatically by setting these
-parameters in `$HOME/.regen/config/config.toml`, under the `rpc.laddr` field. If this file doesn't exist yet, it can be generated automatically by running:
+The `regen` client can be configured to connect to a testnet node automatically by setting the correct `rpc.laddr`
+parameters in `$HOME/.regen/config/config.toml`. If this file doesn't exist yet, it can be generated by running:
 
 ```sh
 regen init [moniker] --chain-id [chain ID]
 ```
 
-If you're wanting to connect to our devnet that launched during the [Open Climate Collabathon](https://www.collabathon.openclimate.earth/), the chain-id is `regen-devnet-1`.
+If you're wanting to connect to our latest devnet use the chain-id `regen-devnet-3`.
 
 If not connecting to a live testnet or devnet, initialize the node config for local development:
 
@@ -44,26 +210,21 @@ Starting a node is not necessary if you're only wanting to interact with a live 
 ### Connecting to an Existing Network
 
 If you're wanting to connect to our devnet that launched during the [Open Climate Collabathon](https://www.collabathon.openclimate.earth/), you can fetch the genesis file here: http://18.220.101.192:26657/genesis. Save it in the `$HOME/.regen/config/` folder:
-
 ```sh
 curl http://18.220.101.192:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
 
 Be sure to also add well-known seed nodes for your local node's initial peer discovery:
-
 ```sh
 PERSISTENT_PEERS="a621e6bf1f5981b3e72e059f86cbfc9dc5577fcb@18.220.101.192:26656"
 sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:26657#g' ~/.regen/config/config.toml
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
-Finally, run the node with
-
+Finally, run the node to start syncing the chain.
 ```sh
 regen start
 ```
-
-and you should start syncing the chain.
 
 ### Running a Localnet
 
@@ -87,7 +248,7 @@ MY_VALIDATOR_ADDRESS=$(regen keys show $KEY_NAME -a)
 
 If you'd like to use a custom keyring backend, you can find more information on the [Cosmos SDK keyring docs](https://docs.cosmos.network/master/run-node/keyring.html).
 
-Make sure you save the seed mnemonic in a safe place!
+**Make sure you save the seed mnemonic in a safe place!**
 
 Afterwards, run the following commands to add this newly generated validator to the
 genesis file:
@@ -118,7 +279,7 @@ and your node should start producing blocks.
 
 ### Check the Node's Status
 
-Regardless of whether you're running a local node (as above), or connecting directly to a live network, you can run `regen status` to verify that the CLI is able to connect to the blockchain node. If connecting to a live network, make sure you provide a `--node` flag with the correct address of a live peer. For connecting to `regen-devnet-1`, use the following:
+Regardless of whether you're running a local node (as above), or connecting directly to a live network, you can run `regen status` to verify that the CLI is able to connect to the blockchain node. If connecting to a live network, make sure you provide a `--node` flag with the correct address of a live peer. For example if you are connecting to `regen-devnet-1`, use the following:
 
 ```sh
 regen status --node http://18.220.101.192:26657
