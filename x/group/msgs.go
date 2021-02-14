@@ -221,6 +221,31 @@ func (m MsgUpdateGroupAccountAdminRequest) ValidateBasic() error {
 var _ sdk.MsgRequest = &MsgUpdateGroupAccountDecisionPolicyRequest{}
 var _ types.UnpackInterfacesMessage = MsgUpdateGroupAccountDecisionPolicyRequest{}
 
+func NewMsgUpdateGroupAccountDecisionPolicyRequest(admin sdk.AccAddress, groupAccount sdk.AccAddress, decisionPolicy DecisionPolicy) (*MsgUpdateGroupAccountDecisionPolicyRequest, error) {
+	m := &MsgUpdateGroupAccountDecisionPolicyRequest{
+		Admin:        admin.String(),
+		GroupAccount: groupAccount.String(),
+	}
+	err := m.SetDecisionPolicy(decisionPolicy)
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+func (m *MsgUpdateGroupAccountDecisionPolicyRequest) SetDecisionPolicy(decisionPolicy DecisionPolicy) error {
+	msg, ok := decisionPolicy.(proto.Message)
+	if !ok {
+		return fmt.Errorf("can't proto marshal %T", msg)
+	}
+	any, err := types.NewAnyWithValue(msg)
+	if err != nil {
+		return err
+	}
+	m.DecisionPolicy = any
+	return nil
+}
+
 // GetSigners returns the expected signers for a MsgUpdateGroupAccountDecisionPolicyRequest.
 func (m MsgUpdateGroupAccountDecisionPolicyRequest) GetSigners() []sdk.AccAddress {
 	admin, err := sdk.AccAddressFromBech32(m.Admin)
