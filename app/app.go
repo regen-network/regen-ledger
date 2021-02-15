@@ -7,16 +7,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/gorilla/mux"
-	"github.com/rakyll/statik/fs"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
-
-	baseapp "github.com/cosmos/cosmos-sdk/baseapp"
+	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -46,7 +40,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
-	transfer "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer"
+	"github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer"
 	ibctransferkeeper "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer/keeper"
 	ibc "github.com/cosmos/cosmos-sdk/x/ibc/core"
 	ibcclient "github.com/cosmos/cosmos-sdk/x/ibc/core/02-client"
@@ -67,6 +61,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
+	"github.com/gorilla/mux"
+	"github.com/rakyll/statik/fs"
+	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/log"
+	tmos "github.com/tendermint/tendermint/libs/os"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
 
 	// types
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -86,12 +87,6 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
-
-	newmodule "github.com/regen-network/regen-ledger/types/module"
-	servermodule "github.com/regen-network/regen-ledger/types/module/server"
-	data "github.com/regen-network/regen-ledger/x/data/module"
-	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 )
 
 const (
@@ -106,35 +101,30 @@ var (
 	// non-dependant module elements, such as codec registration
 	// and genesis verification.
 	ModuleBasics = module.NewBasicManager(
-		auth.AppModuleBasic{},
-		// genaccounts.AppModuleBasic{},
-		genutil.AppModuleBasic{},
-		bank.AppModuleBasic{},
-		capability.AppModuleBasic{},
-		staking.AppModuleBasic{},
-		mint.AppModuleBasic{},
-		distr.AppModuleBasic{},
-		gov.NewAppModuleBasic(
-			append(wasmclient.ProposalHandlers, paramsclient.ProposalHandler, distrclient.ProposalHandler,
-				upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler)...,
-		),
-		params.AppModuleBasic{},
-		crisis.AppModuleBasic{},
-		slashing.AppModuleBasic{},
-		ibc.AppModuleBasic{},
-		upgrade.AppModuleBasic{},
-		evidence.AppModuleBasic{},
-		transfer.AppModuleBasic{},
-		vesting.AppModuleBasic{},
-		wasm.AppModuleBasic{},
-		ecocredit.Module{},
-		data.Module{},
+		append([]module.AppModuleBasic{
+			auth.AppModuleBasic{},
+			// genaccounts.AppModuleBasic{},
+			genutil.AppModuleBasic{},
+			bank.AppModuleBasic{},
+			capability.AppModuleBasic{},
+			staking.AppModuleBasic{},
+			mint.AppModuleBasic{},
+			distr.AppModuleBasic{},
+			gov.NewAppModuleBasic(
+				append(wasmclient.ProposalHandlers, paramsclient.ProposalHandler, distrclient.ProposalHandler,
+					upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler)...,
+			),
+			params.AppModuleBasic{},
+			crisis.AppModuleBasic{},
+			slashing.AppModuleBasic{},
+			ibc.AppModuleBasic{},
+			upgrade.AppModuleBasic{},
+			evidence.AppModuleBasic{},
+			transfer.AppModuleBasic{},
+			vesting.AppModuleBasic{},
+			wasm.AppModuleBasic{},
+		}, setCustomModuleBasics()...)...,
 	)
-
-	NewModules = []newmodule.Module{
-		ecocredit.Module{},
-		data.Module{},
-	}
 
 	// module account permissions
 	maccPerms = map[string][]string{
@@ -206,9 +196,9 @@ type RegenApp struct {
 func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool, skipUpgradeHeights map[int64]bool,
 	homePath string, invCheckPeriod uint, encodingConfig simappparams.EncodingConfig, baseAppOptions ...func(*baseapp.BaseApp)) *RegenApp {
 
-	// TODO: Remove cdc in favor of appCodec once all modules are migrated.
+	// TODO: Remove cdc legacyAmino in favor of appCodec once all modules are migrated.
 	appCodec := encodingConfig.Marshaler
-	cdc := encodingConfig.Amino
+	legacyAmino := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 
 	bApp := baseapp.NewBaseApp(appName, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
@@ -229,7 +219,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 
 	var app = &RegenApp{
 		BaseApp:           bApp,
-		cdc:               cdc,
+		cdc:               legacyAmino,
 		appCodec:          appCodec,
 		interfaceRegistry: interfaceRegistry,
 		invCheckPeriod:    invCheckPeriod,
@@ -238,8 +228,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		memKeys:           memKeys,
 	}
 
-	// init params keeper and subspaces
-	app.ParamsKeeper = initParamsKeeper(appCodec, cdc, keys[paramstypes.StoreKey], tkeys[paramstypes.TStoreKey])
+	app.ParamsKeeper = initParamsKeeper(appCodec, legacyAmino, keys[paramstypes.StoreKey], tkeys[paramstypes.TStoreKey])
 
 	// set the BaseApp's parameter store
 	bApp.SetParamStore(app.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramskeeper.ConsensusParamsKeyTable()))
@@ -287,7 +276,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 
 	// Create IBC Keeper
 	app.IBCKeeper = ibckeeper.NewKeeper(
-		appCodec, keys[ibchost.StoreKey], app.StakingKeeper, scopedIBCKeeper,
+		appCodec, keys[ibchost.StoreKey], app.GetSubspace(ibchost.ModuleName), app.StakingKeeper, scopedIBCKeeper,
 	)
 
 	// register the proposal types
@@ -353,19 +342,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		&stakingKeeper, govRouter,
 	)
 
-	/* New Module Wiring START */
-	newModuleManager := servermodule.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
-
-	err := newModuleManager.RegisterModules(NewModules)
-	if err != nil {
-		panic(err)
-	}
-
-	err = newModuleManager.CompleteInitialization()
-	if err != nil {
-		panic(err)
-	}
-	/* New Module Wiring END */
+	// register experimental modules here
+	setCustomModules(app, interfaceRegistry)
 
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
@@ -387,7 +365,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
-		wasm.NewAppModule(app.wasmKeeper),
+		wasm.NewAppModule(&app.wasmKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -433,7 +411,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		evidence.NewAppModule(app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
-		wasm.NewAppModule(app.wasmKeeper),
+		wasm.NewAppModule(&app.wasmKeeper),
 	)
 
 	app.sm.RegisterStoreDecoders()
@@ -597,7 +575,7 @@ func (app *RegenApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIC
 	authrest.RegisterTxRoutes(clientCtx, apiSvr.Router)
 
 	ModuleBasics.RegisterRESTRoutes(clientCtx, apiSvr.Router)
-	ModuleBasics.RegisterGRPCGatewayRoutes(apiSvr.ClientCtx, apiSvr.GRPCRouter)
+	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// register swagger API from root so that other applications can override easily
 	if apiConfig.Swagger {
@@ -608,6 +586,11 @@ func (app *RegenApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIC
 // RegisterTxService implements the Application.RegisterTxService method.
 func (app *RegenApp) RegisterTxService(clientCtx client.Context) {
 	tx.RegisterTxService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.BaseApp.Simulate, app.interfaceRegistry)
+}
+
+// RegisterTendermintService implements the Application.RegisterTendermintService method.
+func (app *RegenApp) RegisterTendermintService(clientCtx client.Context) {
+	tmservice.RegisterTendermintService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.interfaceRegistry)
 }
 
 // RegisterSwaggerAPI registers swagger route with API Server
@@ -643,6 +626,7 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable())
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
+	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(wasm.ModuleName)
 
 	return paramsKeeper

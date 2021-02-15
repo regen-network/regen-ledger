@@ -1,8 +1,10 @@
 package util
 
 import (
+	"encoding/binary"
 	"fmt"
 
+	"github.com/btcsuite/btcutil/base58"
 	"github.com/enigmampc/btcutil/bech32"
 )
 
@@ -29,4 +31,10 @@ func DecodeAndConvert(bech string) (string, []byte, error) {
 	}
 
 	return hrp, converted, nil
+}
+
+func Uint64ToBase58Check(x uint64) string {
+	buf := make([]byte, binary.MaxVarintLen64)
+	n := binary.PutUvarint(buf, x)
+	return base58.CheckEncode(buf[:n], 0)
 }

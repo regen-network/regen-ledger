@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/types"
 
 	"google.golang.org/grpc"
@@ -17,12 +19,15 @@ type DerivedModuleKey struct {
 
 var _ ModuleKey = DerivedModuleKey{}
 
-func (d DerivedModuleKey) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, _ ...grpc.CallOption) error {
-	invoker, err := d.invokerFactory(CallInfo{
-		Method: method,
+func (d DerivedModuleKey) Invoker(methodName string) (types.Invoker, error) {
+	return d.invokerFactory(CallInfo{
+		Method: methodName,
 		Caller: d.ModuleID(),
 	})
+}
 
+func (d DerivedModuleKey) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, _ ...grpc.CallOption) error {
+	invoker, err := d.Invoker(method)
 	if err != nil {
 		return err
 	}
@@ -41,6 +46,6 @@ func (d DerivedModuleKey) ModuleID() types.ModuleID {
 	}
 }
 
-func (d DerivedModuleKey) Address() []byte {
+func (d DerivedModuleKey) Address() sdk.AccAddress {
 	return d.ModuleID().Address()
 }

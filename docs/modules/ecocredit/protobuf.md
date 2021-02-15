@@ -113,9 +113,9 @@ transferred will result in a separate EventReceive for easy indexing.
 <a name="regen.ecocredit.v1alpha1.EventRetire"></a>
 
 ### EventRetire
-EventRetire is an event emitted when credits are retired. An separate event is emitted
-for each batch_denom in the case where credits from multiple batches have been retired at once
-for easy indexing.
+EventRetire is an event emitted when credits are retired. An separate event
+is emitted for each batch_denom in the case where credits from multiple
+batches have been retired at once for easy indexing.
 
 
 | Field | Type | Label | Description |
@@ -402,7 +402,8 @@ MsgCreateBatchRequest is the Msg/CreateBatch request type.
 <a name="regen.ecocredit.v1alpha1.MsgCreateBatchRequest.BatchIssuance"></a>
 
 ### MsgCreateBatchRequest.BatchIssuance
-BatchIssuance represents the issuance of some credits in a batch to a single recipient.
+BatchIssuance represents the issuance of some credits in a batch to a
+single recipient.
 
 
 | Field | Type | Label | Description |

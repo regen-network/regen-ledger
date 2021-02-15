@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/regen-network/regen-ledger/testutil"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -16,25 +18,44 @@ import (
 	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/grpc"
 
-	"github.com/regen-network/regen-ledger/testutil/server"
+	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/module"
 )
 
-type fixtureFactory struct {
+type FixtureFactory struct {
 	t       *testing.T
 	modules []module.Module
 	signers []sdk.AccAddress
+	cdc     *codec.ProtoCodec
+	baseApp *baseapp.BaseApp
 }
 
-var _ server.FixtureFactory = fixtureFactory{}
-
-func NewFixtureFactory(t *testing.T, numSigners int, modules []module.Module) server.FixtureFactory {
+func NewFixtureFactory(t *testing.T, numSigners int) *FixtureFactory {
 	signers := makeTestAddresses(numSigners)
-	return fixtureFactory{
+	return &FixtureFactory{
 		t:       t,
-		modules: modules,
 		signers: signers,
+		// cdc and baseApp are initialized here just for compatibility with legacy modules which don't use ADR 033
+		// TODO: remove once all code using this uses ADR 033 module wiring
+		cdc:     codec.NewProtoCodec(types.NewInterfaceRegistry()),
+		baseApp: baseapp.NewBaseApp("test", log.NewNopLogger(), dbm.NewMemDB(), nil),
 	}
+}
+
+func (ff *FixtureFactory) SetModules(modules []module.Module) {
+	ff.modules = modules
+}
+
+// Codec is exposed just for compatibility of these test suites with legacy modules and can be removed when everything
+// has been migrated to ADR 033
+func (ff *FixtureFactory) Codec() *codec.ProtoCodec {
+	return ff.cdc
+}
+
+// BaseApp is exposed just for compatibility of these test suites with legacy modules and can be removed when everything
+// has been migrated to ADR 033
+func (ff *FixtureFactory) BaseApp() *baseapp.BaseApp {
+	return ff.baseApp
 }
 
 func makeTestAddresses(count int) []sdk.AccAddress {
@@ -45,12 +66,12 @@ func makeTestAddresses(count int) []sdk.AccAddress {
 	return addrs
 }
 
-func (ff fixtureFactory) Setup() server.Fixture {
-	registry := types.NewInterfaceRegistry()
-	baseApp := baseapp.NewBaseApp("test", log.NewNopLogger(), dbm.NewMemDB(), nil)
+func (ff FixtureFactory) Setup() testutil.Fixture {
+	cdc := ff.cdc
+	registry := cdc.InterfaceRegistry()
+	baseApp := ff.baseApp
 	baseApp.MsgServiceRouter().SetInterfaceRegistry(registry)
 	baseApp.GRPCQueryRouter().SetInterfaceRegistry(registry)
-	cdc := codec.NewProtoCodec(registry)
 	mm := NewManager(baseApp, cdc)
 	err := mm.RegisterModules(ff.modules)
 	require.NoError(ff.t, err)
@@ -75,7 +96,7 @@ type fixture struct {
 }
 
 func (f fixture) Context() context.Context {
-	return sdk.WrapSDKContext(f.baseApp.NewUncachedContext(false, tmproto.Header{}))
+	return regentypes.Context{Context: f.baseApp.NewUncachedContext(false, tmproto.Header{})}
 }
 
 func (f fixture) TxConn() grpc.ClientConnInterface {

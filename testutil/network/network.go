@@ -14,9 +14,9 @@ import (
 	"testing"
 	"time"
 
+	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/stretchr/testify/require"
 	tmcfg "github.com/tendermint/tendermint/config"
-	"github.com/tendermint/tendermint/crypto"
 	tmflags "github.com/tendermint/tendermint/libs/cli/flags"
 	"github.com/tendermint/tendermint/libs/log"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
@@ -143,7 +143,7 @@ type (
 		Ctx        *server.Context
 		Dir        string
 		NodeID     string
-		PubKey     crypto.PubKey
+		PubKey     cryptotypes.PubKey
 		Moniker    string
 		APIAddress string
 		RPCAddress string
@@ -178,7 +178,7 @@ func New(t *testing.T, cfg Config) *Network {
 
 	monikers := make([]string, cfg.NumValidators)
 	nodeIDs := make([]string, cfg.NumValidators)
-	valPubKeys := make([]crypto.PubKey, cfg.NumValidators)
+	valPubKeys := make([]cryptotypes.PubKey, cfg.NumValidators)
 
 	var (
 		genAccounts []authtypes.GenesisAccount
@@ -319,7 +319,7 @@ func New(t *testing.T, cfg Config) *Network {
 			WithKeybase(kb).
 			WithTxConfig(cfg.TxConfig)
 
-		err = tx.Sign(txFactory, nodeDirName, txBuilder)
+		err = tx.Sign(txFactory, nodeDirName, txBuilder, true)
 		require.NoError(t, err)
 
 		txBz, err := cfg.TxConfig.TxJSONEncoder()(txBuilder.GetTx())

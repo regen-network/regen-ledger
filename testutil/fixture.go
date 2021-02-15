@@ -7,7 +7,7 @@ in configuration.Fixture.
 A multi-node in-process ABCI-based backend for full integration tests is planned
 based on to the Cosmos SDK in-process integration test framework.
 */
-package server
+package testutil
 
 import (
 	"context"

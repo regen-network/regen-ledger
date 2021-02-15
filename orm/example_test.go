@@ -1,6 +1,7 @@
 package orm
 
 import (
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/testutil/testdata"
@@ -26,17 +27,17 @@ var (
 	GroupMemberByMemberIndexPrefix byte = 0x7
 )
 
-func NewGroupKeeper(storeKey sdk.StoreKey) GroupKeeper {
+func NewGroupKeeper(storeKey sdk.StoreKey, cdc codec.Marshaler) GroupKeeper {
 	k := GroupKeeper{key: storeKey}
 
-	groupTableBuilder := NewAutoUInt64TableBuilder(GroupTablePrefix, GroupTableSeqPrefix, storeKey, &testdata.GroupMetadata{})
+	groupTableBuilder := NewAutoUInt64TableBuilder(GroupTablePrefix, GroupTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
 	// note: quite easy to mess with Index prefixes when managed outside. no fail fast on duplicates
 	k.groupByAdminIndex = NewIndex(groupTableBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]RowID, error) {
-		return []RowID{[]byte(val.(*testdata.GroupMetadata).Admin)}, nil
+		return []RowID{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
 	})
 	k.groupTable = groupTableBuilder.Build()
 
-	groupMemberTableBuilder := NewNaturalKeyTableBuilder(GroupMemberTablePrefix, storeKey, &testdata.GroupMember{}, Max255DynamicLengthIndexKeyCodec{})
+	groupMemberTableBuilder := NewNaturalKeyTableBuilder(GroupMemberTablePrefix, storeKey, &testdata.GroupMember{}, Max255DynamicLengthIndexKeyCodec{}, cdc)
 
 	k.groupMemberByGroupIndex = NewIndex(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]RowID, error) {
 		group := val.(*testdata.GroupMember).Group
