@@ -457,11 +457,6 @@ MsgAnchorDataRequest is the Msg/AnchorData request type.
 MsgAnchorDataRequest is the Msg/AnchorData response type.
 
 
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the timestamp of the block at which the data was anchored. |
-
-
 
 
 

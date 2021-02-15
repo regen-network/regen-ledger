@@ -15,7 +15,7 @@ func TestContentHash_Validate(t *testing.T) {
 		{
 			"nil",
 			nil,
-			"invalid data.ContentHash type <nil>: unknown request",
+			"invalid data.ContentHash type <nil>: invalid request",
 		},
 		{
 			"good raw",
@@ -194,19 +194,19 @@ func TestDigestAlgorithm_Validate(t *testing.T) {
 			"wrong len",
 			DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
 			make([]byte, 31),
-			"expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 31: unknown request",
+			"expected 32 bytes for DIGEST_ALGORITHM_BLAKE2B_256, got 31: invalid request",
 		},
 		{
 			"unspecified",
 			DigestAlgorithm_DIGEST_ALGORITHM_UNSPECIFIED,
 			make([]byte, 32),
-			"invalid or unknown data.DigestAlgorithm DIGEST_ALGORITHM_UNSPECIFIED: unknown request",
+			"invalid or unknown data.DigestAlgorithm DIGEST_ALGORITHM_UNSPECIFIED: invalid request",
 		},
 		{
 			"bad algorithm",
 			-1,
 			make([]byte, 32),
-			"invalid or unknown data.DigestAlgorithm -1: unknown request",
+			"invalid or unknown data.DigestAlgorithm -1: invalid request",
 		},
 	}
 	for _, tt := range tests {
@@ -235,12 +235,12 @@ func TestGraphCanonicalizationAlgorithm_Validate(t *testing.T) {
 		{
 			"unspecified",
 			GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED,
-			"invalid data.GraphCanonicalizationAlgorithm GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED: unknown request",
+			"invalid data.GraphCanonicalizationAlgorithm GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED: invalid request",
 		},
 		{
 			"bad",
 			-1,
-			"unknown data.GraphCanonicalizationAlgorithm -1: unknown request",
+			"unknown data.GraphCanonicalizationAlgorithm -1: invalid request",
 		},
 	}
 	for _, tt := range tests {
@@ -269,7 +269,7 @@ func TestGraphMerkleTree_Validate(t *testing.T) {
 		{
 			"bad",
 			-1,
-			"unknown data.GraphMerkleTree -1: unknown request",
+			"unknown data.GraphMerkleTree -1: invalid request",
 		},
 	}
 	for _, tt := range tests {
@@ -303,7 +303,7 @@ func TestMediaType_Validate(t *testing.T) {
 		{
 			"bad",
 			-1,
-			"unknown data.MediaType -1: unknown request",
+			"unknown data.MediaType -1: invalid request",
 		},
 	}
 	for _, tt := range tests {

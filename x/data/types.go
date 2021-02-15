@@ -13,7 +13,7 @@ func (ch ContentHash) Validate() error {
 	case *ContentHash_Graph_:
 		return hash.Graph.Validate()
 	default:
-		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, fmt.Sprintf("invalid %T type %T", ch, hash))
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("invalid %T type %T", ch, hash))
 	}
 }
 
@@ -42,7 +42,7 @@ func (chg ContentHash_Graph) Validate() error {
 
 func (x MediaType) Validate() error {
 	if _, ok := MediaType_name[int32(x)]; !ok {
-		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, fmt.Sprintf("unknown %T %d", x, x))
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("unknown %T %d", x, x))
 	}
 
 	return nil
@@ -51,12 +51,12 @@ func (x MediaType) Validate() error {
 func (x DigestAlgorithm) Validate(hash []byte) error {
 	nBits, ok := DigestalgorithmLength[x]
 	if !ok {
-		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, fmt.Sprintf("invalid or unknown %T %s", x, x))
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("invalid or unknown %T %s", x, x))
 	}
 
 	nBytes := nBits / 8
 	if len(hash) != nBytes {
-		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, fmt.Sprintf("expected %d bytes for %s, got %d", nBytes, x, len(hash)))
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("expected %d bytes for %s, got %d", nBytes, x, len(hash)))
 	}
 
 	return nil
@@ -68,11 +68,11 @@ var DigestalgorithmLength = map[DigestAlgorithm]int{
 
 func (x GraphCanonicalizationAlgorithm) Validate() error {
 	if _, ok := GraphCanonicalizationAlgorithm_name[int32(x)]; !ok {
-		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, fmt.Sprintf("unknown %T %d", x, x))
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("unknown %T %d", x, x))
 	}
 
 	if x == GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED {
-		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, fmt.Sprintf("invalid %T %s", x, x))
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("invalid %T %s", x, x))
 	}
 
 	return nil
@@ -80,7 +80,7 @@ func (x GraphCanonicalizationAlgorithm) Validate() error {
 
 func (x GraphMerkleTree) Validate() error {
 	if _, ok := GraphMerkleTree_name[int32(x)]; !ok {
-		return sdkerrors.Wrap(sdkerrors.ErrUnknownRequest, fmt.Sprintf("unknown %T %d", x, x))
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("unknown %T %d", x, x))
 	}
 
 	return nil

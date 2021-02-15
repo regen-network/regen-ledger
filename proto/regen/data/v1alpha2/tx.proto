@@ -63,11 +63,7 @@ message MsgAnchorDataRequest {
 }
 
 // MsgAnchorDataRequest is the Msg/AnchorData response type.
-message MsgAnchorDataResponse {
-
-  // timestamp is the timestamp of the block at which the data was anchored.
-  google.protobuf.Timestamp timestamp = 1;
-}
+message MsgAnchorDataResponse {}
 
 // MsgSignDataRequest is the Msg/SignData request type.
 message MsgSignDataRequest {
