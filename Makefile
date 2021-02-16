@@ -70,6 +70,7 @@ ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))
 endif
 ifeq (badgerdb,$(findstring badgerdb,$(COSMOS_BUILD_OPTIONS)))
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=badgerdb
+  BUILD_TAGS += badgerdb
 endif
 # handle rocksdb
 ifeq (rocksdb,$(findstring rocksdb,$(TENDERMINT_BUILD_OPTIONS)))
