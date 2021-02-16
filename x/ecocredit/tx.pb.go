@@ -4,13 +4,9 @@
 package ecocredit
 
 import (
-	context "context"
 	fmt "fmt"
-	grpc1 "github.com/gogo/protobuf/grpc"
+	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -29,8 +25,9 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgCreateClassRequest is the Msg/CreateClass request type.
 type MsgCreateClassRequest struct {
-	// designer is the address of the account which designed the credit class. The designer has special permissions
-	// to change the list of issuers and perform other administrative operations.
+	// designer is the address of the account which designed the credit class. The
+	// designer has special permissions to change the list of issuers and perform
+	// other administrative operations.
 	Designer string `protobuf:"bytes,1,opt,name=designer,proto3" json:"designer,omitempty"`
 	// issuers are the account addresses of the approved issuers.
 	Issuers []string `protobuf:"bytes,2,rep,name=issuers,proto3" json:"issuers,omitempty"`
@@ -95,7 +92,7 @@ func (m *MsgCreateClassRequest) GetMetadata() []byte {
 // MsgCreateClassResponse is the Msg/CreateClass response type.
 type MsgCreateClassResponse struct {
 	// class_id is the unique ID of the newly created credit class.
-	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty" yaml:"class_id"`
 }
 
 func (m *MsgCreateClassResponse) Reset()         { *m = MsgCreateClassResponse{} }
@@ -143,7 +140,7 @@ type MsgCreateBatchRequest struct {
 	// issuer is the address of the batch issuer.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
 	// class_id is the unique ID of the class.
-	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty" yaml:"class_id"`
 	// issuance are the credits issued in the batch.
 	Issuance []*MsgCreateBatchRequest_BatchIssuance `protobuf:"bytes,3,rep,name=issuance,proto3" json:"issuance,omitempty"`
 	// metadata is any arbitrary metadata to attached to the credit batch.
@@ -211,16 +208,18 @@ func (m *MsgCreateBatchRequest) GetMetadata() []byte {
 	return nil
 }
 
-// BatchIssuance represents the issuance of some credits in a batch to a single recipient.
+// BatchIssuance represents the issuance of some credits in a batch to a
+// single recipient.
 type MsgCreateBatchRequest_BatchIssuance struct {
 	// recipient is the account of the recipient.
 	Recipient string `protobuf:"bytes,1,opt,name=recipient,proto3" json:"recipient,omitempty"`
-	// tradable_units are the units of credits in this issuance that can be traded by this recipient.
-	// Decimal values are acceptable.
-	TradableUnits string `protobuf:"bytes,2,opt,name=tradable_units,json=tradableUnits,proto3" json:"tradable_units,omitempty"`
-	// retired_units are the units of credits in this issuance that are effectively retired by the issuer on receipt.
-	// Decimal values are acceptable.
-	RetiredUnits string `protobuf:"bytes,3,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty"`
+	// tradable_units are the units of credits in this issuance that can be
+	// traded by this recipient. Decimal values are acceptable.
+	TradableUnits string `protobuf:"bytes,2,opt,name=tradable_units,json=tradableUnits,proto3" json:"tradable_units,omitempty" yaml:"tradable_units"`
+	// retired_units are the units of credits in this issuance that are
+	// effectively retired by the issuer on receipt. Decimal values are
+	// acceptable.
+	RetiredUnits string `protobuf:"bytes,3,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty" yaml:"retired_units"`
 }
 
 func (m *MsgCreateBatchRequest_BatchIssuance) Reset()         { *m = MsgCreateBatchRequest_BatchIssuance{} }
@@ -280,7 +279,7 @@ func (m *MsgCreateBatchRequest_BatchIssuance) GetRetiredUnits() string {
 // MsgCreateBatchResponse is the Msg/CreateBatch response type.
 type MsgCreateBatchResponse struct {
 	// batch_denom is the unique denomination ID of the newly created batch.
-	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
 }
 
 func (m *MsgCreateBatchResponse) Reset()         { *m = MsgCreateBatchResponse{} }
@@ -390,13 +389,15 @@ func (m *MsgSendRequest) GetCredits() []*MsgSendRequest_SendUnits {
 // SendUnits are the tradable and retired units of a credit batch to send.
 type MsgSendRequest_SendUnits struct {
 	// batch_denom is the unique ID of the credit batch.
-	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
-	// tradable_units are the units of credits in this issuance that can be traded by this recipient.
-	// Decimal values are acceptable within the precision returned by Query/Precision.
-	TradableUnits string `protobuf:"bytes,2,opt,name=tradable_units,json=tradableUnits,proto3" json:"tradable_units,omitempty"`
-	// retired_units are the units of credits in this issuance that are effectively retired by the issuer on receipt.
-	// Decimal values are acceptable within the precision returned by Query/Precision.
-	RetiredUnits string `protobuf:"bytes,3,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty"`
+	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
+	// tradable_units are the units of credits in this issuance that can be
+	// traded by this recipient. Decimal values are acceptable within the
+	// precision returned by Query/Precision.
+	TradableUnits string `protobuf:"bytes,2,opt,name=tradable_units,json=tradableUnits,proto3" json:"tradable_units,omitempty" yaml:"tradable_units"`
+	// retired_units are the units of credits in this issuance that are
+	// effectively retired by the issuer on receipt. Decimal values are
+	// acceptable within the precision returned by Query/Precision.
+	RetiredUnits string `protobuf:"bytes,3,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty" yaml:"retired_units"`
 }
 
 func (m *MsgSendRequest_SendUnits) Reset()         { *m = MsgSendRequest_SendUnits{} }
@@ -548,9 +549,10 @@ func (m *MsgRetireRequest) GetCredits() []*MsgRetireRequest_RetireUnits {
 // RetireUnits are the units of the batch being retired.
 type MsgRetireRequest_RetireUnits struct {
 	// batch_denom is the unique ID of the credit batch.
-	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
 	// retired_units are the units of credits being retired.
-	// Decimal values are acceptable within the precision returned by Query/Precision.
+	// Decimal values are acceptable within the precision returned by
+	// Query/Precision.
 	Units string `protobuf:"bytes,2,opt,name=units,proto3" json:"units,omitempty"`
 }
 
@@ -643,10 +645,12 @@ type MsgSetPrecisionRequest struct {
 	// issuer is the address of the batch issuer.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
 	// batch_denom is the unique ID of the credit batch.
-	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
-	// max_decimal_places is the new maximum number of decimal places that can be used to represent some quantity of
-	// credit units. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113.
-	MaxDecimalPlaces uint32 `protobuf:"varint,3,opt,name=max_decimal_places,json=maxDecimalPlaces,proto3" json:"max_decimal_places,omitempty"`
+	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
+	// max_decimal_places is the new maximum number of decimal places that can be
+	// used to represent some quantity of credit units. It is an experimental
+	// feature to concretely explore an idea proposed in
+	// https://github.com/cosmos/cosmos-sdk/issues/7113.
+	MaxDecimalPlaces uint32 `protobuf:"varint,3,opt,name=max_decimal_places,json=maxDecimalPlaces,proto3" json:"max_decimal_places,omitempty" yaml:"max_decimal_places"`
 }
 
 func (m *MsgSetPrecisionRequest) Reset()         { *m = MsgSetPrecisionRequest{} }
@@ -759,307 +763,54 @@ func init() {
 func init() { proto.RegisterFile("regen/ecocredit/v1alpha1/tx.proto", fileDescriptor_96891bdd11ac56ed) }
 
 var fileDescriptor_96891bdd11ac56ed = []byte{
-	// 667 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x55, 0xcd, 0x6e, 0xd3, 0x40,
-	0x10, 0xae, 0x9d, 0xd2, 0x36, 0x93, 0xa6, 0xb4, 0x0b, 0x94, 0xd4, 0x42, 0x21, 0x18, 0x21, 0x85,
-	0x3f, 0xa7, 0x69, 0x25, 0x24, 0x0e, 0x5c, 0xda, 0x5e, 0x2a, 0x88, 0x54, 0xb9, 0xe2, 0x00, 0x1c,
-	0xa2, 0x8d, 0x3d, 0x72, 0x2c, 0x1c, 0x3b, 0x78, 0x37, 0x10, 0x4e, 0xbc, 0x01, 0xe2, 0x09, 0x78,
-	0x12, 0x4e, 0x9c, 0x38, 0xf6, 0xc8, 0x11, 0xb5, 0x2f, 0x82, 0xbc, 0xde, 0x38, 0xeb, 0x04, 0x1a,
-	0x23, 0x71, 0xcb, 0xf7, 0x65, 0x66, 0xbe, 0x99, 0x6f, 0x77, 0xd6, 0x70, 0x27, 0x46, 0x0f, 0xc3,
-	0x16, 0x3a, 0x91, 0x13, 0xa3, 0xeb, 0xf3, 0xd6, 0xfb, 0x36, 0x0d, 0x86, 0x7d, 0xda, 0x6e, 0xf1,
-	0xb1, 0x35, 0x8c, 0x23, 0x1e, 0x91, 0x9a, 0x08, 0xb1, 0xb2, 0x10, 0x6b, 0x12, 0x62, 0xfa, 0x70,
-	0xa3, 0xc3, 0xbc, 0xc3, 0x18, 0x29, 0xc7, 0xc3, 0x80, 0x32, 0x66, 0xe3, 0xbb, 0x11, 0x32, 0x4e,
-	0x0c, 0x58, 0x73, 0x91, 0xf9, 0x5e, 0x88, 0x71, 0x4d, 0x6b, 0x68, 0xcd, 0xb2, 0x9d, 0x61, 0x52,
-	0x83, 0x55, 0x9f, 0xb1, 0x11, 0xc6, 0xac, 0xa6, 0x37, 0x4a, 0xcd, 0xb2, 0x3d, 0x81, 0x49, 0xd6,
-	0x00, 0x39, 0x75, 0x29, 0xa7, 0xb5, 0x52, 0x43, 0x6b, 0xae, 0xdb, 0x19, 0x36, 0xf7, 0x61, 0x7b,
-	0x56, 0x8a, 0x0d, 0xa3, 0x90, 0x21, 0xd9, 0x81, 0x35, 0x27, 0x21, 0xba, 0xbe, 0x2b, 0xb5, 0x56,
-	0x05, 0x3e, 0x76, 0xcd, 0x6f, 0xba, 0xd2, 0xe0, 0x01, 0xe5, 0x4e, 0x7f, 0xd2, 0xe0, 0x36, 0xac,
-	0xa4, 0xaa, 0x32, 0x45, 0xa2, 0x5c, 0x31, 0x3d, 0x57, 0x8c, 0xbc, 0x82, 0xb5, 0x24, 0x88, 0x86,
-	0x0e, 0xd6, 0x4a, 0x8d, 0x52, 0xb3, 0xb2, 0xf7, 0xcc, 0xfa, 0x9b, 0x33, 0xd6, 0x1f, 0x55, 0x2d,
-	0x01, 0x8e, 0x65, 0x11, 0x3b, 0x2b, 0x97, 0x1b, 0x7c, 0x39, 0x3f, 0xb8, 0xf1, 0x11, 0xaa, 0xb9,
-	0x34, 0x72, 0x0b, 0xca, 0x31, 0x3a, 0xfe, 0xd0, 0xc7, 0x90, 0xcb, 0xee, 0xa7, 0x04, 0xb9, 0x07,
-	0x1b, 0x3c, 0xa6, 0x2e, 0xed, 0x05, 0xd8, 0x1d, 0x85, 0x3e, 0x67, 0x72, 0x8c, 0xea, 0x84, 0x7d,
-	0x99, 0x90, 0xe4, 0x2e, 0x54, 0x63, 0xe4, 0x7e, 0x8c, 0xae, 0x8c, 0x2a, 0x89, 0xa8, 0x75, 0x49,
-	0x8a, 0x20, 0xf3, 0xa9, 0xe2, 0xb9, 0x9c, 0x43, 0x7a, 0x7e, 0x1b, 0x2a, 0xbd, 0x84, 0xe8, 0xba,
-	0x18, 0x46, 0x03, 0xd9, 0x05, 0x08, 0xea, 0x28, 0x61, 0xcc, 0xcf, 0x3a, 0x6c, 0x74, 0x98, 0x77,
-	0x8a, 0xa1, 0xab, 0x58, 0xce, 0x30, 0x74, 0xa7, 0x96, 0xa7, 0x28, 0x3f, 0x8f, 0x3e, 0x3b, 0xcf,
-	0x0b, 0x58, 0x4d, 0xbd, 0x65, 0xd2, 0xf4, 0xbd, 0x4b, 0x4d, 0x57, 0x04, 0xad, 0xe4, 0xb7, 0x18,
-	0xc4, 0x9e, 0x94, 0x30, 0xc6, 0x50, 0xce, 0xd8, 0x85, 0x43, 0xfc, 0x57, 0x2f, 0xb7, 0xe0, 0x6a,
-	0xd6, 0x5e, 0x6a, 0xa2, 0xf9, 0x5d, 0x83, 0xcd, 0x0e, 0xf3, 0x6c, 0x11, 0xa6, 0xb8, 0xd4, 0x8f,
-	0x02, 0xc5, 0xa5, 0x14, 0x91, 0x93, 0xa9, 0x0f, 0xba, 0xf0, 0xe1, 0xc9, 0xa5, 0x3e, 0xe4, 0x8a,
-	0x5a, 0x29, 0x9a, 0xf1, 0xe2, 0x08, 0x2a, 0x0a, 0xbf, 0xd8, 0x8d, 0xeb, 0x70, 0x45, 0x35, 0x21,
-	0x05, 0xe6, 0x35, 0xd8, 0x52, 0xe4, 0xe4, 0x64, 0x9f, 0xc4, 0xc5, 0x39, 0x45, 0x7e, 0x92, 0x1c,
-	0x24, 0xf3, 0xa3, 0x70, 0xd1, 0xde, 0xcd, 0xa8, 0xeb, 0x73, 0xea, 0x8f, 0x80, 0x0c, 0xe8, 0xb8,
-	0xeb, 0xa2, 0xe3, 0x0f, 0x68, 0xd0, 0x1d, 0x06, 0xd4, 0xc1, 0xd4, 0xe9, 0xaa, 0xbd, 0x39, 0xa0,
-	0xe3, 0xa3, 0xf4, 0x8f, 0x13, 0xc1, 0x9b, 0x3b, 0x70, 0x73, 0xae, 0x81, 0xb4, 0xb7, 0xbd, 0xaf,
-	0xcb, 0x50, 0xea, 0x30, 0x8f, 0x0c, 0xa1, 0xa2, 0xbc, 0x26, 0xa4, 0x55, 0x60, 0x97, 0xd5, 0x27,
-	0xce, 0xd8, 0x2d, 0x9e, 0x20, 0x97, 0x26, 0x53, 0x14, 0xbb, 0x54, 0x48, 0x51, 0x7d, 0x3d, 0x0a,
-	0x29, 0xe6, 0xd7, 0xf4, 0x0d, 0x2c, 0x27, 0x37, 0x8e, 0x34, 0x8b, 0xee, 0x8c, 0x71, 0xbf, 0x40,
-	0xa4, 0x2c, 0x4e, 0x61, 0x25, 0x3d, 0x76, 0xf2, 0xa0, 0xf8, 0x55, 0x34, 0x1e, 0x16, 0x8a, 0x95,
-	0x12, 0x0c, 0xd6, 0xd5, 0x33, 0x24, 0xbb, 0x0b, 0xba, 0x9b, 0xbb, 0x6f, 0x46, 0xfb, 0x1f, 0x32,
-	0x52, 0xd1, 0x83, 0xe7, 0x3f, 0xce, 0xeb, 0xda, 0xd9, 0x79, 0x5d, 0xfb, 0x75, 0x5e, 0xd7, 0xbe,
-	0x5c, 0xd4, 0x97, 0xce, 0x2e, 0xea, 0x4b, 0x3f, 0x2f, 0xea, 0x4b, 0xaf, 0xdb, 0x9e, 0xcf, 0xfb,
-	0xa3, 0x9e, 0xe5, 0x44, 0x83, 0x96, 0x28, 0xfb, 0x38, 0x44, 0xfe, 0x21, 0x8a, 0xdf, 0x4a, 0x14,
-	0xa0, 0xeb, 0x61, 0xdc, 0x1a, 0x4f, 0xbf, 0xa6, 0xbd, 0x15, 0xf1, 0x09, 0xdd, 0xff, 0x1d, 0x00,
-	0x00, 0xff, 0xff, 0x7f, 0x37, 0x55, 0x42, 0x67, 0x07, 0x00, 0x00,
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
-
-// MsgClient is the client API for Msg service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type MsgClient interface {
-	// CreateClass creates a new credit class with an approved list of issuers and optional metadata.
-	CreateClass(ctx context.Context, in *MsgCreateClassRequest, opts ...grpc.CallOption) (*MsgCreateClassResponse, error)
-	// CreateBatch creates a new batch of credits for an existing credit class. This will create a new batch denom
-	// with a fixed supply. Issued credits can be distributed to recipients in either tradable or retired form.
-	CreateBatch(ctx context.Context, in *MsgCreateBatchRequest, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error)
-	// Send sends tradeable credits from one account to another account. Sent credits can either be tradable or retired on receipt.
-	Send(ctx context.Context, in *MsgSendRequest, opts ...grpc.CallOption) (*MsgSendResponse, error)
-	// Retire retires a specified number of credits in the holder's account.
-	Retire(ctx context.Context, in *MsgRetireRequest, opts ...grpc.CallOption) (*MsgRetireResponse, error)
-	// SetPrecision allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature
-	// to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
-	// places allowed for a credit batch is determined by the original number of decimal places used with calling CreatBatch.
-	// SetPrecision allows the number of allowed decimal places to be increased, effectively making the supply more
-	// granular without actually changing any balances. It allows asset issuers to be able to issue an asset without needing
-	// to think about how many subdivisions are needed upfront. While it may not be relevant for credits which likely have
-	// a fairly stable market value, I wanted to experiment a bit and this serves as a proof of concept for a broader
-	// bank redesign where say for instance a coin like the ATOM or XRN could be issued in its own units rather than
-	// micro or nano-units. Instead an operation like SetPrecision would allow trading in micro, nano or pico in the future
-	// based on market demand. Arbitrary, unbounded precision is not desirable because this can lead to spam attacks (like
-	// sending 0.000000000000000000000000000001 coins). This is effectively fixed precision so under the hood it is still
-	// basically an integer, but the fixed precision can be increased so its more adaptable long term than just an integer.
-	SetPrecision(ctx context.Context, in *MsgSetPrecisionRequest, opts ...grpc.CallOption) (*MsgSetPrecisionResponse, error)
-}
-
-type msgClient struct {
-	cc grpc1.ClientConn
-}
-
-func NewMsgClient(cc grpc1.ClientConn) MsgClient {
-	return &msgClient{cc}
-}
-
-func (c *msgClient) CreateClass(ctx context.Context, in *MsgCreateClassRequest, opts ...grpc.CallOption) (*MsgCreateClassResponse, error) {
-	out := new(MsgCreateClassResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/CreateClass", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) CreateBatch(ctx context.Context, in *MsgCreateBatchRequest, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error) {
-	out := new(MsgCreateBatchResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/CreateBatch", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) Send(ctx context.Context, in *MsgSendRequest, opts ...grpc.CallOption) (*MsgSendResponse, error) {
-	out := new(MsgSendResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/Send", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) Retire(ctx context.Context, in *MsgRetireRequest, opts ...grpc.CallOption) (*MsgRetireResponse, error) {
-	out := new(MsgRetireResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/Retire", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) SetPrecision(ctx context.Context, in *MsgSetPrecisionRequest, opts ...grpc.CallOption) (*MsgSetPrecisionResponse, error) {
-	out := new(MsgSetPrecisionResponse)
-	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/SetPrecision", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// MsgServer is the server API for Msg service.
-type MsgServer interface {
-	// CreateClass creates a new credit class with an approved list of issuers and optional metadata.
-	CreateClass(context.Context, *MsgCreateClassRequest) (*MsgCreateClassResponse, error)
-	// CreateBatch creates a new batch of credits for an existing credit class. This will create a new batch denom
-	// with a fixed supply. Issued credits can be distributed to recipients in either tradable or retired form.
-	CreateBatch(context.Context, *MsgCreateBatchRequest) (*MsgCreateBatchResponse, error)
-	// Send sends tradeable credits from one account to another account. Sent credits can either be tradable or retired on receipt.
-	Send(context.Context, *MsgSendRequest) (*MsgSendResponse, error)
-	// Retire retires a specified number of credits in the holder's account.
-	Retire(context.Context, *MsgRetireRequest) (*MsgRetireResponse, error)
-	// SetPrecision allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature
-	// to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
-	// places allowed for a credit batch is determined by the original number of decimal places used with calling CreatBatch.
-	// SetPrecision allows the number of allowed decimal places to be increased, effectively making the supply more
-	// granular without actually changing any balances. It allows asset issuers to be able to issue an asset without needing
-	// to think about how many subdivisions are needed upfront. While it may not be relevant for credits which likely have
-	// a fairly stable market value, I wanted to experiment a bit and this serves as a proof of concept for a broader
-	// bank redesign where say for instance a coin like the ATOM or XRN could be issued in its own units rather than
-	// micro or nano-units. Instead an operation like SetPrecision would allow trading in micro, nano or pico in the future
-	// based on market demand. Arbitrary, unbounded precision is not desirable because this can lead to spam attacks (like
-	// sending 0.000000000000000000000000000001 coins). This is effectively fixed precision so under the hood it is still
-	// basically an integer, but the fixed precision can be increased so its more adaptable long term than just an integer.
-	SetPrecision(context.Context, *MsgSetPrecisionRequest) (*MsgSetPrecisionResponse, error)
-}
-
-// UnimplementedMsgServer can be embedded to have forward compatible implementations.
-type UnimplementedMsgServer struct {
-}
-
-func (*UnimplementedMsgServer) CreateClass(ctx context.Context, req *MsgCreateClassRequest) (*MsgCreateClassResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateClass not implemented")
-}
-func (*UnimplementedMsgServer) CreateBatch(ctx context.Context, req *MsgCreateBatchRequest) (*MsgCreateBatchResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateBatch not implemented")
-}
-func (*UnimplementedMsgServer) Send(ctx context.Context, req *MsgSendRequest) (*MsgSendResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
-}
-func (*UnimplementedMsgServer) Retire(ctx context.Context, req *MsgRetireRequest) (*MsgRetireResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Retire not implemented")
-}
-func (*UnimplementedMsgServer) SetPrecision(ctx context.Context, req *MsgSetPrecisionRequest) (*MsgSetPrecisionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetPrecision not implemented")
-}
-
-func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
-	s.RegisterService(&_Msg_serviceDesc, srv)
-}
-
-func _Msg_CreateClass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCreateClassRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).CreateClass(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1alpha1.Msg/CreateClass",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateClass(ctx, req.(*MsgCreateClassRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_CreateBatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCreateBatchRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).CreateBatch(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1alpha1.Msg/CreateBatch",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateBatch(ctx, req.(*MsgCreateBatchRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_Send_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSendRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).Send(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1alpha1.Msg/Send",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Send(ctx, req.(*MsgSendRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_Retire_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRetireRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).Retire(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1alpha1.Msg/Retire",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Retire(ctx, req.(*MsgRetireRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_SetPrecision_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSetPrecisionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).SetPrecision(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/regen.ecocredit.v1alpha1.Msg/SetPrecision",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SetPrecision(ctx, req.(*MsgSetPrecisionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Msg_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "regen.ecocredit.v1alpha1.Msg",
-	HandlerType: (*MsgServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "CreateClass",
-			Handler:    _Msg_CreateClass_Handler,
-		},
-		{
-			MethodName: "CreateBatch",
-			Handler:    _Msg_CreateBatch_Handler,
-		},
-		{
-			MethodName: "Send",
-			Handler:    _Msg_Send_Handler,
-		},
-		{
-			MethodName: "Retire",
-			Handler:    _Msg_Retire_Handler,
-		},
-		{
-			MethodName: "SetPrecision",
-			Handler:    _Msg_SetPrecision_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "regen/ecocredit/v1alpha1/tx.proto",
+	// 747 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x56, 0xcb, 0x6e, 0xd3, 0x4c,
+	0x14, 0xae, 0x93, 0xfe, 0x6d, 0x73, 0xd2, 0xf4, 0x32, 0xbd, 0xfc, 0xa9, 0x05, 0x49, 0xf0, 0x2a,
+	0x80, 0x70, 0x9a, 0x22, 0x81, 0x84, 0x54, 0x09, 0xa5, 0x5d, 0x50, 0x95, 0x48, 0xc5, 0x15, 0x0b,
+	0x2e, 0x52, 0x34, 0xb1, 0x47, 0x8e, 0x85, 0x63, 0x07, 0xcf, 0x04, 0xc2, 0x13, 0xb0, 0xe5, 0x09,
+	0x78, 0x04, 0x96, 0xbc, 0x01, 0x12, 0xcb, 0x2e, 0x11, 0x42, 0x11, 0x6a, 0xdf, 0x20, 0x4f, 0x80,
+	0x3c, 0x33, 0x71, 0xec, 0x14, 0x5a, 0xd3, 0x0d, 0xbb, 0xf9, 0xce, 0x9c, 0xeb, 0xf7, 0x8d, 0x8f,
+	0x0c, 0x37, 0x02, 0x62, 0x13, 0xaf, 0x46, 0x4c, 0xdf, 0x0c, 0x88, 0xe5, 0xb0, 0xda, 0x9b, 0x3a,
+	0x76, 0x7b, 0x1d, 0x5c, 0xaf, 0xb1, 0x81, 0xde, 0x0b, 0x7c, 0xe6, 0xa3, 0x22, 0x77, 0xd1, 0x23,
+	0x17, 0x7d, 0xec, 0xa2, 0xae, 0xdb, 0xbe, 0xed, 0x73, 0xa7, 0x5a, 0x78, 0x12, 0xfe, 0x9a, 0x03,
+	0x1b, 0x4d, 0x6a, 0xef, 0x05, 0x04, 0x33, 0xb2, 0xe7, 0x62, 0x4a, 0x0d, 0xf2, 0xba, 0x4f, 0x28,
+	0x43, 0x2a, 0x2c, 0x58, 0x84, 0x3a, 0xb6, 0x47, 0x82, 0xa2, 0x52, 0x51, 0xaa, 0x39, 0x23, 0xc2,
+	0xa8, 0x08, 0xf3, 0x0e, 0xa5, 0x7d, 0x12, 0xd0, 0x62, 0xa6, 0x92, 0xad, 0xe6, 0x8c, 0x31, 0x0c,
+	0xa3, 0xba, 0x84, 0x61, 0x0b, 0x33, 0x5c, 0xcc, 0x56, 0x94, 0xea, 0xa2, 0x11, 0x61, 0xed, 0x11,
+	0x6c, 0x4e, 0x97, 0xa2, 0x3d, 0xdf, 0xa3, 0x04, 0xe9, 0xb0, 0x60, 0x86, 0x86, 0x96, 0x63, 0x89,
+	0x5a, 0x8d, 0xb5, 0xd1, 0xb0, 0xbc, 0xfc, 0x0e, 0x77, 0xdd, 0x07, 0xda, 0xf8, 0x46, 0x33, 0xe6,
+	0xf9, 0xf1, 0xc0, 0xd2, 0xde, 0x67, 0x63, 0x5d, 0x37, 0x30, 0x33, 0x3b, 0xe3, 0xae, 0x37, 0x61,
+	0x4e, 0xb4, 0x22, 0x7b, 0x96, 0x28, 0x51, 0x21, 0x73, 0x79, 0x05, 0xf4, 0x0c, 0x16, 0xc2, 0x48,
+	0xec, 0x99, 0xa4, 0x98, 0xad, 0x64, 0xab, 0xf9, 0x9d, 0x5d, 0xfd, 0x4f, 0xcc, 0xea, 0xbf, 0x6d,
+	0x45, 0xe7, 0xe0, 0x40, 0x26, 0x31, 0xa2, 0x74, 0x09, 0x8a, 0x66, 0x93, 0x14, 0xa9, 0x9f, 0x14,
+	0x28, 0x24, 0xe2, 0xd0, 0x35, 0xc8, 0x05, 0xc4, 0x74, 0x7a, 0x0e, 0xf1, 0x98, 0x9c, 0x69, 0x62,
+	0x40, 0x0f, 0x61, 0x89, 0x05, 0xd8, 0xc2, 0x6d, 0x97, 0xb4, 0xfa, 0x9e, 0xc3, 0xa8, 0x1c, 0x6e,
+	0x6b, 0x34, 0x2c, 0x6f, 0x88, 0xe1, 0x92, 0xf7, 0x9a, 0x51, 0x18, 0x1b, 0x9e, 0x86, 0x18, 0xed,
+	0x42, 0x21, 0x20, 0xcc, 0x09, 0x88, 0x25, 0x13, 0x64, 0x79, 0x82, 0xe2, 0x68, 0x58, 0x5e, 0x17,
+	0x09, 0x12, 0xd7, 0x9a, 0xb1, 0x28, 0x31, 0x0f, 0xd7, 0x9e, 0xc4, 0x34, 0x95, 0xd3, 0x4b, 0x4d,
+	0xef, 0x43, 0xbe, 0x1d, 0x1a, 0x5a, 0x16, 0xf1, 0xfc, 0xae, 0x94, 0x75, 0x73, 0x34, 0x2c, 0x23,
+	0x91, 0x36, 0x76, 0xa9, 0x19, 0xc0, 0xd1, 0x3e, 0x07, 0x3f, 0x32, 0xb0, 0xd4, 0xa4, 0xf6, 0x31,
+	0xf1, 0xac, 0x98, 0xaa, 0x94, 0x78, 0xd6, 0x44, 0x55, 0x81, 0x92, 0xe4, 0x64, 0xa6, 0xc9, 0x79,
+	0x0c, 0xf3, 0x42, 0x29, 0x2a, 0x25, 0xdc, 0xb9, 0x50, 0xc2, 0x58, 0x41, 0x3d, 0x3c, 0xf3, 0x01,
+	0x8d, 0x71, 0x0a, 0xf5, 0x8b, 0x02, 0xb9, 0xc8, 0x7c, 0xe5, 0xe9, 0xfe, 0xbd, 0x62, 0xab, 0xb0,
+	0x1c, 0x0d, 0x2b, 0xa4, 0xd2, 0xbe, 0x2b, 0xb0, 0xd2, 0xa4, 0xb6, 0xc1, 0xdd, 0x62, 0x9c, 0x77,
+	0x7c, 0x37, 0xc6, 0xb9, 0x40, 0xe8, 0x68, 0xc2, 0x6a, 0x86, 0xb3, 0x7a, 0xef, 0x42, 0x56, 0x13,
+	0x49, 0x75, 0x81, 0xa6, 0x98, 0x7d, 0x09, 0xf9, 0x98, 0xfd, 0xea, 0xd4, 0xae, 0xc3, 0x7f, 0x31,
+	0x46, 0x0d, 0x01, 0xb4, 0x35, 0x58, 0x8d, 0xb5, 0x21, 0x27, 0xfe, 0xac, 0xf0, 0x77, 0x7b, 0x4c,
+	0xd8, 0x51, 0xf8, 0x5e, 0xa8, 0xe3, 0x7b, 0x97, 0x6d, 0x90, 0xa9, 0xb6, 0x32, 0xa9, 0xdb, 0x3a,
+	0x04, 0xd4, 0xc5, 0x83, 0x96, 0x45, 0x4c, 0xa7, 0x8b, 0xdd, 0x56, 0xcf, 0xc5, 0x26, 0x11, 0xa2,
+	0x15, 0x1a, 0xd7, 0x47, 0xc3, 0xf2, 0x96, 0x88, 0x3f, 0xef, 0xa3, 0x19, 0x2b, 0x5d, 0x3c, 0xd8,
+	0x17, 0xb6, 0x23, 0x61, 0xda, 0x82, 0xff, 0xcf, 0xf5, 0x2d, 0x66, 0xda, 0xf9, 0x38, 0x0b, 0xd9,
+	0x26, 0xb5, 0x51, 0x0f, 0xf2, 0xb1, 0x1d, 0x8b, 0x6a, 0x29, 0xf6, 0x56, 0x7c, 0xf1, 0xab, 0xdb,
+	0xe9, 0x03, 0xe4, 0xa7, 0x1e, 0x55, 0xe4, 0x1b, 0x20, 0x55, 0xc5, 0xf8, 0xa6, 0x4c, 0x55, 0x31,
+	0xb9, 0x5c, 0x5e, 0xc0, 0x6c, 0xf8, 0x82, 0x51, 0x35, 0xed, 0x17, 0xad, 0xde, 0x4c, 0xe1, 0x29,
+	0x93, 0x63, 0x98, 0x13, 0xcf, 0x05, 0xdd, 0x4a, 0xff, 0xb4, 0xd5, 0xdb, 0xa9, 0x7c, 0x65, 0x09,
+	0x0a, 0x8b, 0x71, 0x0d, 0xd1, 0xf6, 0x25, 0xdd, 0x9d, 0x7b, 0xa6, 0x6a, 0xfd, 0x2f, 0x22, 0x44,
+	0xd1, 0xc6, 0xe1, 0xd7, 0xd3, 0x92, 0x72, 0x72, 0x5a, 0x52, 0x7e, 0x9e, 0x96, 0x94, 0x0f, 0x67,
+	0xa5, 0x99, 0x93, 0xb3, 0xd2, 0xcc, 0xb7, 0xb3, 0xd2, 0xcc, 0xf3, 0xba, 0xed, 0xb0, 0x4e, 0xbf,
+	0xad, 0x9b, 0x7e, 0xb7, 0xc6, 0xd3, 0xde, 0xf1, 0x08, 0x7b, 0xeb, 0x07, 0xaf, 0x24, 0x72, 0x89,
+	0x65, 0x93, 0xa0, 0x36, 0x98, 0xfc, 0x79, 0xb4, 0xe7, 0xf8, 0xef, 0xc3, 0xdd, 0x5f, 0x01, 0x00,
+	0x00, 0xff, 0xff, 0x3b, 0x0d, 0x5f, 0xb4, 0x93, 0x08, 0x00, 0x00,
 }
 
 func (m *MsgCreateClassRequest) Marshal() (dAtA []byte, err error) {

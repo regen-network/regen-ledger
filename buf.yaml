@@ -12,9 +12,11 @@ lint:
   ignore:
     - cosmos
     - gogoproto
+    - cosmos_proto
 breaking:
   use:
     - FILE
   ignore:
     - cosmos
     - gogoproto
+    - cosmos_proto

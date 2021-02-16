@@ -3,11 +3,12 @@ package ecocredit
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/regen-network/regen-ledger/x/ecocredit/math"
+	"github.com/regen-network/regen-ledger/math"
 )
 
 var (
-	_, _, _, _ sdk.MsgRequest = &MsgCreateClassRequest{}, &MsgCreateBatchRequest{}, &MsgSendRequest{}, &MsgRetireRequest{}
+	_, _, _, _, _ sdk.MsgRequest = &MsgCreateClassRequest{}, &MsgCreateBatchRequest{}, &MsgSendRequest{},
+		&MsgRetireRequest{}, &MsgSetPrecisionRequest{}
 )
 
 func (m *MsgCreateClassRequest) ValidateBasic() error {
@@ -87,6 +88,22 @@ func (m *MsgRetireRequest) ValidateBasic() error {
 
 func (m *MsgRetireRequest) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Holder)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{addr}
+}
+
+func (m *MsgSetPrecisionRequest) ValidateBasic() error {
+	if len(m.BatchDenom) == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "missing batch_denom")
+	}
+	return nil
+}
+
+func (m *MsgSetPrecisionRequest) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(m.Issuer)
 	if err != nil {
 		panic(err)
 	}

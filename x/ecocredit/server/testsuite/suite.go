@@ -3,19 +3,19 @@ package testsuite
 import (
 	"context"
 
-	"github.com/stretchr/testify/suite"
+	"github.com/regen-network/regen-ledger/testutil"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/suite"
 
-	"github.com/regen-network/regen-ledger/testutil/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	fixtureFactory server.FixtureFactory
-	fixture        server.Fixture
+	fixtureFactory testutil.FixtureFactory
+	fixture        testutil.Fixture
 
 	ctx         context.Context
 	msgClient   ecocredit.MsgClient
@@ -23,33 +23,31 @@ type IntegrationTestSuite struct {
 	signers     []sdk.AccAddress
 }
 
-func NewIntegrationTestSuite(fixtureFactory server.FixtureFactory) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory) *IntegrationTestSuite {
 	return &IntegrationTestSuite{fixtureFactory: fixtureFactory}
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.fixture = s.fixtureFactory.Setup()
 	s.ctx = s.fixture.Context()
+	s.signers = s.fixture.Signers()
+	s.Require().GreaterOrEqual(len(s.signers), 6)
 	s.msgClient = ecocredit.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = ecocredit.NewQueryClient(s.fixture.QueryConn())
-	s.signers = s.fixture.Signers()
-	if len(s.signers) < 6 {
-		s.FailNow("expected at least 6 signers, got %d", s.fixture.Signers())
-	}
 }
 
 func (s *IntegrationTestSuite) TestScenario() {
-	designer := s.signers[0]
-	issuer1 := s.signers[1]
-	issuer2 := s.signers[2]
-	addr1 := s.signers[3]
-	addr2 := s.signers[4]
-	addr3 := s.signers[5]
+	designer := s.signers[0].String()
+	issuer1 := s.signers[1].String()
+	issuer2 := s.signers[2].String()
+	addr1 := s.signers[3].String()
+	addr2 := s.signers[4].String()
+	addr3 := s.signers[5].String()
 
 	// create class
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClassRequest{
-		Designer: designer.String(),
-		Issuers:  []string{issuer1.String(), issuer2.String()},
+		Designer: designer,
+		Issuers:  []string{issuer1, issuer2},
 		Metadata: nil,
 	})
 	s.Require().NoError(err)
@@ -65,16 +63,16 @@ func (s *IntegrationTestSuite) TestScenario() {
 	rSupply0 := "10004.7449902"
 
 	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatchRequest{
-		Issuer:  issuer1.String(),
+		Issuer:  issuer1,
 		ClassId: clsID,
 		Issuance: []*ecocredit.MsgCreateBatchRequest_BatchIssuance{
 			{
-				Recipient:     addr1.String(),
+				Recipient:     addr1,
 				TradableUnits: t0,
 				RetiredUnits:  r0,
 			},
 			{
-				Recipient:     addr2.String(),
+				Recipient:     addr2,
 				TradableUnits: t1,
 				RetiredUnits:  r1,
 			},
@@ -88,7 +86,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	// query balances
 	queryBalanceRes, err := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
-		Account:    addr1.String(),
+		Account:    addr1,
 		BatchDenom: batchDenom,
 	})
 	s.Require().NoError(err)
@@ -97,7 +95,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Equal(r0, queryBalanceRes.RetiredUnits)
 
 	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
-		Account:    addr2.String(),
+		Account:    addr2,
 		BatchDenom: batchDenom,
 	})
 	s.Require().NoError(err)
@@ -170,7 +168,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		tc := tc
 		s.Run(tc.name, func() {
 			_, err := s.msgClient.Retire(s.ctx, &ecocredit.MsgRetireRequest{
-				Holder: addr1.String(),
+				Holder: addr1,
 				Credits: []*ecocredit.MsgRetireRequest_RetireUnits{
 					{
 						BatchDenom: batchDenom,
@@ -186,7 +184,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 				// query balance
 				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
-					Account:    addr1.String(),
+					Account:    addr1,
 					BatchDenom: batchDenom,
 				})
 				s.Require().NoError(err)
@@ -264,8 +262,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 		tc := tc
 		s.Run(tc.name, func() {
 			_, err := s.msgClient.Send(s.ctx, &ecocredit.MsgSendRequest{
-				Sender:    addr2.String(),
-				Recipient: addr3.String(),
+				Sender:    addr2,
+				Recipient: addr3,
 				Credits: []*ecocredit.MsgSendRequest_SendUnits{
 					{
 						BatchDenom:    batchDenom,
@@ -282,7 +280,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 				// query sender balance
 				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
-					Account:    addr2.String(),
+					Account:    addr2,
 					BatchDenom: batchDenom,
 				})
 				s.Require().NoError(err)
@@ -292,7 +290,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 				// query recipient balance
 				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
-					Account:    addr3.String(),
+					Account:    addr3,
 					BatchDenom: batchDenom,
 				})
 				s.Require().NoError(err)
@@ -306,6 +304,49 @@ func (s *IntegrationTestSuite) TestScenario() {
 				s.Require().NotNil(querySupplyRes)
 				s.Require().Equal(tc.expTradeableSupply, querySupplyRes.TradableSupply)
 				s.Require().Equal(tc.expRetiredSupply, querySupplyRes.RetiredSupply)
+			}
+		})
+	}
+
+	/****   TEST SET PRECISION   ****/
+	precisionCases := []struct {
+		name string
+		msg  ecocredit.MsgSetPrecisionRequest
+		ok   bool
+	}{
+		{
+			"can NOT decrease the decimals", ecocredit.MsgSetPrecisionRequest{
+				Issuer: issuer1, BatchDenom: batchDenom, MaxDecimalPlaces: 2},
+			false,
+		}, {
+			"can NOT set to the same value", ecocredit.MsgSetPrecisionRequest{
+				Issuer: issuer1, BatchDenom: batchDenom, MaxDecimalPlaces: 7},
+			false,
+		}, {
+			"can increase", ecocredit.MsgSetPrecisionRequest{
+				Issuer: issuer1, BatchDenom: batchDenom, MaxDecimalPlaces: 8},
+			true,
+		}, {
+			"can NOT change precision of not existing denom", ecocredit.MsgSetPrecisionRequest{
+				Issuer: issuer1, BatchDenom: "not/existing", MaxDecimalPlaces: 1},
+			false,
+		},
+	}
+	require := s.Require()
+	for _, tc := range precisionCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			_, err := s.msgClient.SetPrecision(s.ctx, &tc.msg)
+
+			if !tc.ok {
+				require.Error(err)
+			} else {
+				require.NoError(err)
+				res, err := s.queryClient.Precision(s.ctx,
+					&ecocredit.QueryPrecisionRequest{
+						BatchDenom: tc.msg.BatchDenom})
+				require.NoError(err)
+				require.Equal(tc.msg.MaxDecimalPlaces, res.MaxDecimalPlaces)
 			}
 		})
 	}

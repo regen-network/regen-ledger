@@ -2,7 +2,7 @@
 
 PACKAGES_NOSIMULATION=$(shell go list ./... | grep -v '/simulation')
 PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
-VERSION := $(shell echo $(shell git describe --always) | sed 's/^v//')
+VERSION := $(shell echo $(shell git describe --tags))
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
 BINDIR ?= $(GOPATH)/bin
@@ -17,6 +17,11 @@ export GO111MODULE = on
 # process build tags
 
 build_tags = netgo
+
+ifeq ($(EXPERIMENTAL),true)
+	build_tags += experimental
+endif
+
 ifeq ($(LEDGER_ENABLED),true)
   ifeq ($(OS),Windows_NT)
     GCCEXE = $(shell where gcc.exe 2> NUL)
@@ -221,12 +226,24 @@ TEST_TARGETS := test-unit test-unit-amino test-unit-proto test-ledger-mock test-
 # Test runs-specific rules. To add a new test target, just add
 # a new rule, customise ARGS or TEST_PACKAGES ad libitum, and
 # append the new rule to the TEST_TARGETS list.
+UNIT_TEST_ARGS		= cgo ledger test_ledger_mock norace
+AMINO_TEST_ARGS		= ledger test_ledger_mock test_amino norace
+LEDGER_TEST_ARGS	= cgo ledger norace
+LEDGER_MOCK_ARGS	= ledger test_ledger_mock norace
+TEST_RACE_ARGS		= cgo ledger test_ledger_mock
+ifeq ($(EXPERIMENTAL),true)
+	UNIT_TEST_ARGS		+= experimental
+	AMINO_TEST_ARGS		+= expermental
+	LEDGER_TEST_ARGS	+= experimental
+	LEDGER_MOCK_ARGS	+= experimental
+	TEST_RACE_ARGS		+= experimental
+endif
 
-test-unit: ARGS=-tags='cgo ledger test_ledger_mock norace'
-test-unit-amino: ARGS=-tags='ledger test_ledger_mock test_amino norace'
-test-ledger: ARGS=-tags='cgo ledger norace'
-test-ledger-mock: ARGS=-tags='ledger test_ledger_mock norace'
-test-race: ARGS=-race -tags='cgo ledger test_ledger_mock'
+test-unit: ARGS=-tags='$(UNIT_TEST_ARGS)'
+test-unit-amino: ARGS=-tags='${AMINO_TEST_ARGS}'
+test-ledger: ARGS=-tags='${LEDGER_TEST_ARGS}'
+test-ledger-mock: ARGS=-tags='${LEDGER_MOCK_ARGS}'
+test-race: ARGS=-race -tags='${TEST_RACE_ARGS}'
 test-race: TEST_PACKAGES=$(PACKAGES_NOSIMULATION)
 
 $(TEST_TARGETS): run-tests
@@ -296,33 +313,47 @@ devdoc-update:
 ###############################################################################
 
 proto-all: proto-gen proto-lint proto-check-breaking proto-format
-.PHONY: proto-all proto-gen proto-lint proto-check-breaking proto-format
+.PHONY: proto-all proto-gen proto-gen-docker proto-lint proto-check-breaking proto-format
 
 proto-gen:
 	@./scripts/protocgen.sh
+
+proto-gen-docker:
+	@echo "Generating Protobuf files"
+	docker run -v $(shell pwd):/workspace --workdir /workspace tendermintdev/sdk-proto-gen sh ./scripts/protocgen.sh
 
 proto-format:
 	find ./ -not -path "./third_party/*" -name *.proto -exec clang-format -i {} \;
 
 proto-lint:
-	@buf check lint --error-format=json
+	@buf lint --error-format=json
 
 proto-check-breaking:
-	@buf check breaking --against '.git#branch=master'
+	@buf breaking --against '.git#branch=master'
 
 proto-lint-docker:
-	@$(DOCKER_BUF) check lint --error-format=json
+	@$(DOCKER_BUF) lint --error-format=json
 
 proto-check-breaking-docker:
-	@$(DOCKER_BUF) check breaking --against-input $(HTTPS_GIT)#branch=master
+	@$(DOCKER_BUF) breaking --against-input $(HTTPS_GIT)#branch=master
 
 GOGO_PROTO_URL   = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
+REGEN_COSMOS_PROTO_URL = https://raw.githubusercontent.com/regen-network/cosmos-proto/master
+COSMOS_PROTO_URL   = https://raw.githubusercontent.com/cosmos/cosmos-sdk/master/proto/cosmos
 
 GOGO_PROTO_TYPES    = third_party/proto/gogoproto
+REGEN_COSMOS_PROTO_TYPES  = third_party/proto/cosmos_proto
+COSMOS_PROTO_TYPES    = third_party/proto/cosmos
 
 proto-update-deps:
 	@mkdir -p $(GOGO_PROTO_TYPES)
 	@curl -sSL $(GOGO_PROTO_URL)/gogoproto/gogo.proto > $(GOGO_PROTO_TYPES)/gogo.proto
+
+	@mkdir -p $(REGEN_COSMOS_PROTO_TYPES)
+	@curl -sSL $(REGEN_COSMOS_PROTO_URL)/cosmos.proto > $(REGEN_COSMOS_PROTO_TYPES)/cosmos.proto
+
+	@mkdir -p $(COSMOS_PROTO_TYPES)/base/query/v1beta1/
+	@curl -sSL $(COSMOS_PROTO_URL)/base/query/v1beta1/pagination.proto > $(COSMOS_PROTO_TYPES)/base/query/v1beta1/pagination.proto
 
 
 ###############################################################################
