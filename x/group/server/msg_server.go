@@ -175,8 +175,8 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 		// Update group in the groupTable.
 		g.TotalWeight = math.DecimalString(totalWeight)
 		g.Version++
-		groupId := group.ID(g.GroupId).Bytes()
-		return s.groupTable.Save(ctx, groupId, g)
+		groupID := group.ID(g.GroupId).Bytes()
+		return s.groupTable.Save(ctx, groupID, g)
 	}
 
 	err := s.doUpdateGroup(ctx, req, action, "members updated")
@@ -192,9 +192,8 @@ func (s serverImpl) UpdateGroupAdmin(ctx types.Context, req *group.MsgUpdateGrou
 		g.Admin = req.NewAdmin
 		g.Version++
 
-		groupId := group.ID(g.GroupId).Bytes()
-		//groupId := make([]byte, 8, uint64(g.GroupId))
-		return s.groupTable.Save(ctx, groupId, g)
+		groupID := group.ID(g.GroupId).Bytes()
+		return s.groupTable.Save(ctx, groupID, g)
 	}
 
 	err := s.doUpdateGroup(ctx, req, action, "admin updated")
@@ -209,8 +208,8 @@ func (s serverImpl) UpdateGroupMetadata(ctx types.Context, req *group.MsgUpdateG
 	action := func(g *group.GroupInfo) error {
 		g.Metadata = req.Metadata
 		g.Version++
-		groupId := group.ID(g.GroupId).Bytes()
-		return s.groupTable.Save(ctx, groupId, g)
+		groupID := group.ID(g.GroupId).Bytes()
+		return s.groupTable.Save(ctx, groupID, g)
 	}
 
 	err := s.doUpdateGroup(ctx, req, action, "metadata updated")

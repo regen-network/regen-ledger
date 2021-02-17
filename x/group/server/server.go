@@ -90,7 +90,7 @@ func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper
 	groupMemberTableBuilder := orm.NewNaturalKeyTableBuilder(GroupMemberTablePrefix, storeKey, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.groupMemberByGroupIndex = orm.NewUInt64Index(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]uint64, error) {
 		group := val.(*group.GroupMember).GroupId
-		return []uint64{uint64(group)}, nil
+		return []uint64{group}, nil
 	})
 	s.groupMemberByMemberIndex = orm.NewIndex(groupMemberTableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
 		memberAddr := val.(*group.GroupMember).Member.Address

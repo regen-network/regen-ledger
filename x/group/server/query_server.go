@@ -10,8 +10,8 @@ import (
 )
 
 func (s serverImpl) GroupInfo(ctx types.Context, request *group.QueryGroupInfoRequest) (*group.QueryGroupInfoResponse, error) {
-	groupId := group.ID(request.GroupId)
-	groupInfo, err := s.getGroupInfo(ctx, groupId)
+	groupID := group.ID(request.GroupId)
+	groupInfo, err := s.getGroupInfo(ctx, groupID)
 	if err != nil {
 		return nil, err
 	}
@@ -43,8 +43,8 @@ func (s serverImpl) getGroupAccountInfo(ctx types.Context, accountAddress sdk.Ac
 }
 
 func (s serverImpl) GroupMembers(ctx types.Context, request *group.QueryGroupMembersRequest) (*group.QueryGroupMembersResponse, error) {
-	groupId := group.ID(request.GroupId)
-	it, err := s.getGroupMembers(ctx, groupId, request.Pagination)
+	groupID := group.ID(request.GroupId)
+	it, err := s.getGroupMembers(ctx, groupID, request.Pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -92,8 +92,8 @@ func (s serverImpl) getGroupsByAdmin(ctx types.Context, admin sdk.AccAddress, pa
 }
 
 func (s serverImpl) GroupAccountsByGroup(ctx types.Context, request *group.QueryGroupAccountsByGroupRequest) (*group.QueryGroupAccountsByGroupResponse, error) {
-	groupId := group.ID(request.GroupId)
-	it, err := s.getGroupAccountsByGroup(ctx, groupId, request.Pagination)
+	groupID := group.ID(request.GroupId)
+	it, err := s.getGroupAccountsByGroup(ctx, groupID, request.Pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -141,8 +141,8 @@ func (s serverImpl) getGroupAccountsByAdmin(ctx types.Context, admin sdk.AccAddr
 }
 
 func (s serverImpl) Proposal(ctx types.Context, request *group.QueryProposalRequest) (*group.QueryProposalResponse, error) {
-	proposalId := group.ProposalID(request.ProposalId)
-	proposal, err := s.getProposal(ctx, proposalId)
+	proposalID := group.ProposalID(request.ProposalId)
+	proposal, err := s.getProposal(ctx, proposalID)
 	if err != nil {
 		return nil, err
 	}
@@ -189,8 +189,8 @@ func (s serverImpl) VoteByProposalVoter(ctx types.Context, request *group.QueryV
 	if err != nil {
 		return nil, err
 	}
-	proposalId := group.ProposalID(request.ProposalId)
-	vote, err := s.getVote(ctx, proposalId, addr)
+	proposalID := group.ProposalID(request.ProposalId)
+	vote, err := s.getVote(ctx, proposalID, addr)
 	if err != nil {
 		return nil, err
 	}
@@ -200,8 +200,8 @@ func (s serverImpl) VoteByProposalVoter(ctx types.Context, request *group.QueryV
 }
 
 func (s serverImpl) VotesByProposal(ctx types.Context, request *group.QueryVotesByProposalRequest) (*group.QueryVotesByProposalResponse, error) {
-	proposalId := group.ProposalID(request.ProposalId)
-	it, err := s.getVotesByProposal(ctx, proposalId, request.Pagination)
+	proposalID := group.ProposalID(request.ProposalId)
+	it, err := s.getVotesByProposal(ctx, proposalID, request.Pagination)
 	if err != nil {
 		return nil, err
 	}
