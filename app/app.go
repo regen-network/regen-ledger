@@ -7,15 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/gorilla/mux"
-	"github.com/rakyll/statik/fs"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmos "github.com/tendermint/tendermint/libs/os"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
-
-	baseapp "github.com/cosmos/cosmos-sdk/baseapp"
+	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
@@ -31,7 +24,6 @@ import (
 	authrest "github.com/cosmos/cosmos-sdk/x/auth/client/rest"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
-	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
@@ -47,7 +39,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
-	transfer "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer"
+	"github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer"
 	ibctransferkeeper "github.com/cosmos/cosmos-sdk/x/ibc/applications/transfer/keeper"
 	ibc "github.com/cosmos/cosmos-sdk/x/ibc/core"
 	ibcclient "github.com/cosmos/cosmos-sdk/x/ibc/core/02-client"
@@ -68,9 +60,17 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
+	"github.com/gorilla/mux"
+	"github.com/rakyll/statik/fs"
+	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/log"
+	tmos "github.com/tendermint/tendermint/libs/os"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
 
 	// types
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
@@ -87,13 +87,6 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
-
-	moduletypes "github.com/regen-network/regen-ledger/types/module"
-	servermodule "github.com/regen-network/regen-ledger/types/module/server"
-	data "github.com/regen-network/regen-ledger/x/data/module"
-	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
-	group "github.com/regen-network/regen-ledger/x/group/module"
 )
 
 const (
@@ -108,37 +101,30 @@ var (
 	// non-dependant module elements, such as codec registration
 	// and genesis verification.
 	ModuleBasics = module.NewBasicManager(
-		auth.AppModuleBasic{},
-		// genaccounts.AppModuleBasic{},
-		genutil.AppModuleBasic{},
-		bank.AppModuleBasic{},
-		capability.AppModuleBasic{},
-		staking.AppModuleBasic{},
-		mint.AppModuleBasic{},
-		distr.AppModuleBasic{},
-		gov.NewAppModuleBasic(
-			append(wasmclient.ProposalHandlers, paramsclient.ProposalHandler, distrclient.ProposalHandler,
-				upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler)...,
-		),
-		params.AppModuleBasic{},
-		crisis.AppModuleBasic{},
-		slashing.AppModuleBasic{},
-		ibc.AppModuleBasic{},
-		upgrade.AppModuleBasic{},
-		evidence.AppModuleBasic{},
-		transfer.AppModuleBasic{},
-		vesting.AppModuleBasic{},
-		wasm.AppModuleBasic{},
-		ecocredit.Module{},
-		data.Module{},
-		group.Module{},
+		append([]module.AppModuleBasic{
+			auth.AppModuleBasic{},
+			// genaccounts.AppModuleBasic{},
+			genutil.AppModuleBasic{},
+			bank.AppModuleBasic{},
+			capability.AppModuleBasic{},
+			staking.AppModuleBasic{},
+			mint.AppModuleBasic{},
+			distr.AppModuleBasic{},
+			gov.NewAppModuleBasic(
+				append(wasmclient.ProposalHandlers, paramsclient.ProposalHandler, distrclient.ProposalHandler,
+					upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler)...,
+			),
+			params.AppModuleBasic{},
+			crisis.AppModuleBasic{},
+			slashing.AppModuleBasic{},
+			ibc.AppModuleBasic{},
+			upgrade.AppModuleBasic{},
+			evidence.AppModuleBasic{},
+			transfer.AppModuleBasic{},
+			vesting.AppModuleBasic{},
+			wasm.AppModuleBasic{},
+		}, setCustomModuleBasics()...)...,
 	)
-
-	NewModules = []moduletypes.Module{
-		ecocredit.Module{},
-		data.Module{},
-		group.Module{},
-	}
 
 	// module account permissions
 	maccPerms = map[string][]string{
@@ -356,28 +342,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		&stakingKeeper, govRouter,
 	)
 
-	/* New Module Wiring START */
-	newModuleManager := servermodule.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
-
-	// BEGIN HACK: this is a total, ugly hack until x/auth supports ADR 033 or we have a suitable alternative
-	groupModule := group.Module{AccountKeeper: app.AccountKeeper}
-	// use a separate newModules from the global NewModules here because we need to pass state into the group module
-	newModules := []moduletypes.Module{
-		ecocredit.Module{},
-		data.Module{},
-		groupModule,
-	}
-	err := newModuleManager.RegisterModules(newModules)
-	if err != nil {
-		panic(err)
-	}
-	// END HACK
-
-	err = newModuleManager.CompleteInitialization()
-	if err != nil {
-		panic(err)
-	}
-	/* New Module Wiring END */
+	// register experimental modules here
+	setCustomModules(app, interfaceRegistry)
 
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
@@ -607,6 +573,10 @@ func (app *RegenApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIC
 	clientCtx := apiSvr.ClientCtx
 	rpc.RegisterRoutes(clientCtx, apiSvr.Router)
 	authrest.RegisterTxRoutes(clientCtx, apiSvr.Router)
+	// Register new tx routes from grpc-gateway.
+	authtx.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
+	// Register new tendermint queries routes from grpc-gateway.
+	tmservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	ModuleBasics.RegisterRESTRoutes(clientCtx, apiSvr.Router)
 	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
@@ -619,7 +589,7 @@ func (app *RegenApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIC
 
 // RegisterTxService implements the Application.RegisterTxService method.
 func (app *RegenApp) RegisterTxService(clientCtx client.Context) {
-	tx.RegisterTxService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.BaseApp.Simulate, app.interfaceRegistry)
+	authtx.RegisterTxService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.BaseApp.Simulate, app.interfaceRegistry)
 }
 
 // RegisterTendermintService implements the Application.RegisterTendermintService method.
