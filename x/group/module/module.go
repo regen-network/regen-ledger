@@ -70,11 +70,6 @@ func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	group.RegisterLegacyAminoCodec(cdc)
 }
 
-// Route returns the message routing key for the group module.
-// func (a AppModule) Route() sdk.Route {
-// 	return sdk.NewRoute(group.RouterKey, server.NewHandler(a.storeKey, a.paramSpace, a.router, a.cdc))
-// }
-
 func (a Module) Route(configurator servermodule.Configurator) sdk.Route {
 	return sdk.NewRoute(group.RouterKey, server.NewHandler(configurator, a.AccountKeeper))
 }

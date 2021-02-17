@@ -38,6 +38,8 @@ type IntegrationTestSuite struct {
 	vote          *group.Vote
 }
 
+const validMetadata = "AQ=="
+
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
@@ -77,14 +79,14 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	validMembers := fmt.Sprintf(`[{
 	  "address": "%s",
 		"weight": "1",
-		"metadata": "AQ=="
-	}]`, val.Address.String())
+		"metadata": "%s"
+	}]`, val.Address.String(), validMetadata)
 	validMembersFile := testutil.WriteToNewTempFile(s.T(), validMembers)
 	out, err := cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateGroupCmd(),
 		append(
 			[]string{
 				val.Address.String(),
-				"AQ==",
+				validMetadata,
 				validMembersFile.Name(),
 			},
 			commonFlags...,
@@ -105,7 +107,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 				[]string{
 					val.Address.String(),
 					"1",
-					"AQ==",
+					validMetadata,
 					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"30000s\"}",
 				},
 				commonFlags...,
@@ -855,8 +857,8 @@ func (s *IntegrationTestSuite) TestTxCreateGroup() {
 	validMembers := fmt.Sprintf(`[{
 	  "address": "%s",
 		"weight": "1",
-		"metadata": "AQ=="
-	}]`, val.Address.String())
+		"metadata": "%s"
+	}]`, val.Address.String(), validMetadata)
 	validMembersFile := testutil.WriteToNewTempFile(s.T(), validMembers)
 
 	invalidMembersAddress := `[{
@@ -996,14 +998,14 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAdmin() {
 	validMembers := fmt.Sprintf(`[{
 	  "address": "%s",
 		"weight": "1",
-		"metadata": "AQ=="
-	}]`, val.Address.String())
+		"metadata": "%s"
+	}]`, val.Address.String(), validMetadata)
 	validMembersFile := testutil.WriteToNewTempFile(s.T(), validMembers)
 	out, err := cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateGroupCmd(),
 		append(
 			[]string{
 				val.Address.String(),
-				"AQ==",
+				validMetadata,
 				validMembersFile.Name(),
 			},
 			commonFlags...,
@@ -1111,7 +1113,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupMetadata() {
 				[]string{
 					val.Address.String(),
 					"2",
-					"AQ==",
+					validMetadata,
 				},
 				commonFlags...,
 			),
@@ -1170,12 +1172,12 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupMembers() {
 	validUpdatedMembersFileName := testutil.WriteToNewTempFile(s.T(), fmt.Sprintf(`[{
 		"address": "%s",
 		"weight": "0",
-		"metadata": "AQ=="
+		"metadata": "%s"
 	}, {
 		"address": "%s",
 		"weight": "1",
-		"metadata": "AQ=="
-	}]`, val.Address.String(), s.groupAccount.GroupAccount)).Name()
+		"metadata": "%s"
+	}]`, val.Address.String(), validMetadata, s.groupAccount.GroupAccount, validMetadata)).Name()
 
 	invalidMembersMetadata := fmt.Sprintf(`[{
 	  "address": "%s",
@@ -1286,7 +1288,7 @@ func (s *IntegrationTestSuite) TestTxCreateGroupAccount() {
 				[]string{
 					val.Address.String(),
 					fmt.Sprintf("%v", groupID),
-					"AQ==",
+					validMetadata,
 					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"1s\"}",
 				},
 				commonFlags...,
@@ -1302,7 +1304,7 @@ func (s *IntegrationTestSuite) TestTxCreateGroupAccount() {
 				[]string{
 					wrongAdmin.String(),
 					fmt.Sprintf("%v", groupID),
-					"AQ==",
+					validMetadata,
 					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"1s\"}",
 				},
 				commonFlags...,
@@ -1334,7 +1336,7 @@ func (s *IntegrationTestSuite) TestTxCreateGroupAccount() {
 				[]string{
 					val.Address.String(),
 					"10",
-					"AQ==",
+					validMetadata,
 					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"1s\"}",
 				},
 				commonFlags...,
@@ -1566,7 +1568,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountMetadata() {
 				[]string{
 					groupAccount.Admin,
 					groupAccount.GroupAccount,
-					"AQ==",
+					validMetadata,
 				},
 				commonFlags...,
 			),
@@ -1596,7 +1598,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountMetadata() {
 				[]string{
 					newAdmin.String(),
 					groupAccount.GroupAccount,
-					"AQ==",
+					validMetadata,
 				},
 				commonFlags...,
 			),
@@ -1611,7 +1613,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountMetadata() {
 				[]string{
 					groupAccount.Admin,
 					newAdmin.String(),
-					"AQ==",
+					validMetadata,
 				},
 				commonFlags...,
 			),
