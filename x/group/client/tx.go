@@ -65,18 +65,20 @@ $ %s tx group create-group [admin] [metadata] [members-json-file]
 
 Where members.json contains:
 
-[
-	{
-		"address": "addr1",
-		"weight": "1",
-		"metadata": "some metadata"
-	},
-	{
-		"address": "addr2",
-		"weight": "1",
-		"metadata": "some metadata"
-	}
-]
+{
+	"members": [
+		{
+			"address": "addr1",
+			"weight": "1",
+			"metadata": "some metadata"
+		},
+		{
+			"address": "addr2",
+			"weight": "1",
+			"metadata": "some metadata"
+		}
+	]
+}
 `,
 				version.AppName,
 			),
@@ -93,7 +95,7 @@ Where members.json contains:
 				return err
 			}
 
-			members, err := parseMembers(args[2])
+			members, err := parseMembers(clientCtx, args[2])
 			if err != nil {
 				return err
 			}
@@ -135,18 +137,20 @@ $ %s tx group update-group-members [admin] [group-id] [members-json-file]
 
 Where members.json contains:
 
-[
-	{
-		"address": "addr1",
-		"weight": "1",
-		"metadata": "some new metadata"
-	},
-	{
-		"address": "addr2",
-		"weight": "0",
-		"metadata": "some metadata"
-	}
-]
+{
+	"members": [
+		{
+			"address": "addr1",
+			"weight": "1",
+			"metadata": "some new metadata"
+		},
+		{
+			"address": "addr2",
+			"weight": "0",
+			"metadata": "some metadata"
+		}
+	]
+}
 
 Set a member's weight to "0" to delete it.
 `,
@@ -165,7 +169,7 @@ Set a member's weight to "0" to delete it.
 				return err
 			}
 
-			members, err := parseMembers(args[2])
+			members, err := parseMembers(clientCtx, args[2])
 			if err != nil {
 				return err
 			}

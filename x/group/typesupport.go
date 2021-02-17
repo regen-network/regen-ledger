@@ -5,12 +5,10 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-type Members []Member
-
 func (ms Members) ValidateBasic() error {
-	index := make(map[string]struct{}, len(ms))
-	for i := range ms {
-		member := ms[i]
+	index := make(map[string]struct{}, len(ms.Members))
+	for i := range ms.Members {
+		member := ms.Members[i]
 		if err := member.ValidateBasic(); err != nil {
 			return err
 		}

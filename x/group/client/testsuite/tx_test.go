@@ -76,11 +76,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	}
 
 	// create a group
-	validMembers := fmt.Sprintf(`[{
+	validMembers := fmt.Sprintf(`{"members": [{
 	  "address": "%s",
 		"weight": "1",
 		"metadata": "%s"
-	}]`, val.Address.String(), validMetadata)
+	}]}`, val.Address.String(), validMetadata)
 	validMembersFile := testutil.WriteToNewTempFile(s.T(), validMembers)
 	out, err := cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateGroupCmd(),
 		append(
@@ -190,30 +190,30 @@ func (s *IntegrationTestSuite) TestTxCreateGroup() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	validMembers := fmt.Sprintf(`[{
+	validMembers := fmt.Sprintf(`{"members": [{
 	  "address": "%s",
 		"weight": "1",
 		"metadata": "%s"
-	}]`, val.Address.String(), validMetadata)
+	}]}`, val.Address.String(), validMetadata)
 	validMembersFile := testutil.WriteToNewTempFile(s.T(), validMembers)
 
-	invalidMembersAddress := `[{
+	invalidMembersAddress := `{"members": [{
 	"address": "",
 	"weight": "1"
-}]`
+}]}`
 	invalidMembersAddressFile := testutil.WriteToNewTempFile(s.T(), invalidMembersAddress)
 
-	invalidMembersWeight := fmt.Sprintf(`[{
+	invalidMembersWeight := fmt.Sprintf(`{"members": [{
 	  "address": "%s",
 		"weight": "0"
-	}]`, val.Address.String())
+	}]}`, val.Address.String())
 	invalidMembersWeightFile := testutil.WriteToNewTempFile(s.T(), invalidMembersWeight)
 
-	invalidMembersMetadata := fmt.Sprintf(`[{
+	invalidMembersMetadata := fmt.Sprintf(`{"members": [{
 	  "address": "%s",
 		"weight": "1",
 		"metadata": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ=="
-	}]`, val.Address.String())
+	}]}`, val.Address.String())
 	invalidMembersMetadataFile := testutil.WriteToNewTempFile(s.T(), invalidMembersMetadata)
 
 	testCases := []struct {
@@ -347,11 +347,11 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAdmin() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	validMembers := fmt.Sprintf(`[{
+	validMembers := fmt.Sprintf(`{"members": [{
 	  "address": "%s",
 		"weight": "1",
 		"metadata": "%s"
-	}]`, val.Address.String(), validMetadata)
+	}]}`, val.Address.String(), validMetadata)
 	validMembersFile := testutil.WriteToNewTempFile(s.T(), validMembers)
 	out, err := cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateGroupCmd(),
 		append(
@@ -553,7 +553,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupMembers() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	validUpdatedMembersFileName := testutil.WriteToNewTempFile(s.T(), fmt.Sprintf(`[{
+	validUpdatedMembersFileName := testutil.WriteToNewTempFile(s.T(), fmt.Sprintf(`{"members": [{
 		"address": "%s",
 		"weight": "0",
 		"metadata": "%s"
@@ -561,13 +561,13 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupMembers() {
 		"address": "%s",
 		"weight": "1",
 		"metadata": "%s"
-	}]`, val.Address.String(), validMetadata, s.groupAccounts[0].GroupAccount, validMetadata)).Name()
+	}]}`, val.Address.String(), validMetadata, s.groupAccounts[0].GroupAccount, validMetadata)).Name()
 
-	invalidMembersMetadata := fmt.Sprintf(`[{
+	invalidMembersMetadata := fmt.Sprintf(`{"members": [{
 	  "address": "%s",
 		"weight": "1",
 		"metadata": "AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ=="
-	}]`, val.Address.String())
+	}]}`, val.Address.String())
 	invalidMembersMetadataFileName := testutil.WriteToNewTempFile(s.T(), invalidMembersMetadata).Name()
 
 	testCases := []struct {
@@ -599,11 +599,11 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupMembers() {
 				[]string{
 					val.Address.String(),
 					"2",
-					testutil.WriteToNewTempFile(s.T(), fmt.Sprintf(`[{
+					testutil.WriteToNewTempFile(s.T(), fmt.Sprintf(`{"members": [{
 		"address": "%s",
 		"weight": "2",
 		"metadata": "%s"
-	}]`, s.groupAccounts[0].GroupAccount, validMetadata)).Name(),
+	}]}`, s.groupAccounts[0].GroupAccount, validMetadata)).Name(),
 					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 				},
 				commonFlags...,

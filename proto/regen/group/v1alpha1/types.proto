@@ -28,7 +28,7 @@ message Member {
 message Members {
 
     // members is the list of members.
-    repeated Member members = 1;
+    repeated Member members = 1 [(gogoproto.nullable) = false];
 }
 
 // ThresholdDecisionPolicy implements the DecisionPolicy interface

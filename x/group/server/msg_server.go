@@ -21,7 +21,7 @@ import (
 
 func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequest) (*group.MsgCreateGroupResponse, error) {
 	metadata := req.Metadata
-	members := group.Members(req.Members)
+	members := group.Members{Members: req.Members}
 	admin := req.Admin
 
 	if err := members.ValidateBasic(); err != nil {
@@ -33,8 +33,8 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 	}
 
 	totalWeight := apd.New(0, 0)
-	for i := range members {
-		m := members[i]
+	for i := range members.Members {
+		m := members.Members[i]
 		if err := assertMetadataLength(m.Metadata, "member metadata"); err != nil {
 			return nil, err
 		}
@@ -66,8 +66,8 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 	}
 
 	// Create new group members in the groupMemberTable.
-	for i := range members {
-		m := members[i]
+	for i := range members.Members {
+		m := members.Members[i]
 		err := s.groupMemberTable.Create(ctx, &group.GroupMember{
 			GroupId: groupID,
 			Member: &group.Member{
