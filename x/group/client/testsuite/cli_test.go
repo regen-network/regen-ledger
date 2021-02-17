@@ -33,9 +33,7 @@ type IntegrationTestSuite struct {
 	network *network.Network
 
 	group         *group.GroupInfo
-	groupAccount  *group.GroupAccountInfo
-	groupAccount2 *group.GroupAccountInfo
-	groupAccount3 *group.GroupAccountInfo
+	groupAccounts []*group.GroupAccountInfo
 	proposal      *group.Proposal
 	vote          *group.Vote
 }
@@ -102,8 +100,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.group = &group.GroupInfo{GroupId: group.ID(1), Admin: val.Address.String(), Metadata: []byte{1}, TotalWeight: "1", Version: 1}
 
-	// create 3 group accounts
-	for i := 0; i < 3; i++ {
+	// create 4 group accounts
+	for i := 0; i < 4; i++ {
 		out, err = cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateGroupAccountCmd(),
 			append(
 				[]string{
@@ -125,17 +123,15 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	var res group.QueryGroupAccountsByGroupResponse
 	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &res))
-	s.Require().Equal(len(res.GroupAccounts), 3)
-	s.groupAccount = res.GroupAccounts[0]
-	s.groupAccount2 = res.GroupAccounts[1]
-	s.groupAccount3 = res.GroupAccounts[2]
+	s.Require().Equal(len(res.GroupAccounts), 4)
+	s.groupAccounts = res.GroupAccounts
 
 	// create a proposal
-	validTxFileName := getTxSendFileName(s, s.groupAccount.GroupAccount, val.Address.String())
+	validTxFileName := getTxSendFileName(s, s.groupAccounts[0].GroupAccount, val.Address.String())
 	out, err = cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateProposalCmd(),
 		append(
 			[]string{
-				s.groupAccount.GroupAccount,
+				s.groupAccounts[0].GroupAccount,
 				val.Address.String(),
 				validTxFileName,
 				"",
@@ -401,7 +397,7 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountInfo() {
 		},
 		{
 			"group account found",
-			[]string{s.groupAccount.GroupAccount, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			[]string{s.groupAccounts[0].GroupAccount, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			false,
 			"",
 			0,
@@ -422,12 +418,12 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountInfo() {
 
 				var g group.GroupAccountInfo
 				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &g))
-				s.Require().Equal(s.groupAccount.GroupId, g.GroupId)
-				s.Require().Equal(s.groupAccount.GroupAccount, g.GroupAccount)
-				s.Require().Equal(s.groupAccount.Admin, g.Admin)
-				s.Require().Equal(s.groupAccount.Metadata, g.Metadata)
-				s.Require().Equal(s.groupAccount.Version, g.Version)
-				s.Require().Equal(s.groupAccount.GetDecisionPolicy(), g.GetDecisionPolicy())
+				s.Require().Equal(s.groupAccounts[0].GroupId, g.GroupId)
+				s.Require().Equal(s.groupAccounts[0].GroupAccount, g.GroupAccount)
+				s.Require().Equal(s.groupAccounts[0].Admin, g.Admin)
+				s.Require().Equal(s.groupAccounts[0].Metadata, g.Metadata)
+				s.Require().Equal(s.groupAccounts[0].Version, g.Version)
+				s.Require().Equal(s.groupAccounts[0].GetDecisionPolicy(), g.GetDecisionPolicy())
 			}
 		})
 	}
@@ -468,9 +464,10 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountsByGroup() {
 			"",
 			0,
 			[]*group.GroupAccountInfo{
-				s.groupAccount,
-				s.groupAccount2,
-				s.groupAccount3,
+				s.groupAccounts[0],
+				s.groupAccounts[1],
+				s.groupAccounts[2],
+				s.groupAccounts[3],
 			},
 		},
 	}
@@ -537,9 +534,10 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountsByAdmin() {
 			"",
 			0,
 			[]*group.GroupAccountInfo{
-				s.groupAccount,
-				s.groupAccount2,
-				s.groupAccount3,
+				s.groupAccounts[0],
+				s.groupAccounts[1],
+				s.groupAccounts[2],
+				s.groupAccounts[3],
 			},
 		},
 	}
@@ -644,7 +642,7 @@ func (s *IntegrationTestSuite) TestQueryProposalsByGroupAccount() {
 		},
 		{
 			"found proposals",
-			[]string{s.groupAccount.GroupAccount, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			[]string{s.groupAccounts[0].GroupAccount, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			false,
 			"",
 			0,
@@ -805,7 +803,7 @@ func (s *IntegrationTestSuite) TestQueryVotesByVoter() {
 		},
 		{
 			"no votes",
-			[]string{s.groupAccount.GroupAccount, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			[]string{s.groupAccounts[0].GroupAccount, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			true,
 			"",
 			0,
@@ -897,6 +895,22 @@ func (s *IntegrationTestSuite) TestTxCreateGroup() {
 					val.Address.String(),
 					"",
 					validMembersFile.Name(),
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"with amino-json",
+			append(
+				[]string{
+					val.Address.String(),
+					"",
+					validMembersFile.Name(),
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 				},
 				commonFlags...,
 			),
@@ -1040,6 +1054,22 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAdmin() {
 			0,
 		},
 		{
+			"with amino-json",
+			append(
+				[]string{
+					val.Address.String(),
+					"4",
+					s.network.Validators[1].Address.String(),
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
 			"group id invalid",
 			append(
 				[]string{
@@ -1125,6 +1155,22 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupMetadata() {
 			0,
 		},
 		{
+			"with amino-json",
+			append(
+				[]string{
+					val.Address.String(),
+					"2",
+					validMetadata,
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
 			"group metadata too long",
 			append(
 				[]string{
@@ -1179,7 +1225,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupMembers() {
 		"address": "%s",
 		"weight": "1",
 		"metadata": "%s"
-	}]`, val.Address.String(), validMetadata, s.groupAccount.GroupAccount, validMetadata)).Name()
+	}]`, val.Address.String(), validMetadata, s.groupAccounts[0].GroupAccount, validMetadata)).Name()
 
 	invalidMembersMetadata := fmt.Sprintf(`[{
 	  "address": "%s",
@@ -1203,6 +1249,26 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupMembers() {
 					val.Address.String(),
 					"2",
 					validUpdatedMembersFileName,
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"with amino-json",
+			append(
+				[]string{
+					val.Address.String(),
+					"2",
+					testutil.WriteToNewTempFile(s.T(), fmt.Sprintf(`[{
+		"address": "%s",
+		"weight": "2",
+		"metadata": "%s"
+	}]`, s.groupAccounts[0].GroupAccount, validMetadata)).Name(),
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 				},
 				commonFlags...,
 			),
@@ -1301,6 +1367,23 @@ func (s *IntegrationTestSuite) TestTxCreateGroupAccount() {
 			0,
 		},
 		{
+			"with amino-json",
+			append(
+				[]string{
+					val.Address.String(),
+					fmt.Sprintf("%v", groupID),
+					validMetadata,
+					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"1s\"}",
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
 			"wrong admin",
 			append(
 				[]string{
@@ -1374,7 +1457,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountAdmin() {
 	val := s.network.Validators[0]
 	newAdmin := s.network.Validators[1].Address
 	clientCtx := val.ClientCtx
-	groupAccount := s.groupAccount2
+	groupAccount := s.groupAccounts[1]
 
 	var commonFlags = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -1397,6 +1480,22 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountAdmin() {
 					groupAccount.Admin,
 					groupAccount.GroupAccount,
 					newAdmin.String(),
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"with amino-json",
+			append(
+				[]string{
+					groupAccount.Admin,
+					s.groupAccounts[2].GroupAccount,
+					newAdmin.String(),
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 				},
 				commonFlags...,
 			),
@@ -1461,7 +1560,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountDecisionPolicy() {
 	val := s.network.Validators[0]
 	newAdmin := s.network.Validators[1].Address
 	clientCtx := val.ClientCtx
-	groupAccount := s.groupAccount3
+	groupAccount := s.groupAccounts[3]
 
 	var commonFlags = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -1484,6 +1583,22 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountDecisionPolicy() {
 					groupAccount.Admin,
 					groupAccount.GroupAccount,
 					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"2\", \"timeout\":\"2s\"}",
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"with amino-json",
+			append(
+				[]string{
+					groupAccount.Admin,
+					groupAccount.GroupAccount,
+					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"2\", \"timeout\":\"2s\"}",
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 				},
 				commonFlags...,
 			),
@@ -1548,7 +1663,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountMetadata() {
 	val := s.network.Validators[0]
 	newAdmin := s.network.Validators[1].Address
 	clientCtx := val.ClientCtx
-	groupAccount := s.groupAccount3
+	groupAccount := s.groupAccounts[3]
 
 	var commonFlags = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -1571,6 +1686,22 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountMetadata() {
 					groupAccount.Admin,
 					groupAccount.GroupAccount,
 					validMetadata,
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"with amino-json",
+			append(
+				[]string{
+					groupAccount.Admin,
+					groupAccount.GroupAccount,
+					validMetadata,
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 				},
 				commonFlags...,
 			),
@@ -1656,8 +1787,8 @@ func (s *IntegrationTestSuite) TestTxCreateProposal() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	validTxFileName := getTxSendFileName(s, s.groupAccount.GroupAccount, val.Address.String())
-	unauthzTxFileName := getTxSendFileName(s, val.Address.String(), s.groupAccount.GroupAccount)
+	validTxFileName := getTxSendFileName(s, s.groupAccounts[0].GroupAccount, val.Address.String())
+	unauthzTxFileName := getTxSendFileName(s, val.Address.String(), s.groupAccounts[0].GroupAccount)
 
 	testCases := []struct {
 		name         string
@@ -1671,7 +1802,7 @@ func (s *IntegrationTestSuite) TestTxCreateProposal() {
 			"correct data",
 			append(
 				[]string{
-					s.groupAccount.GroupAccount,
+					s.groupAccounts[0].GroupAccount,
 					val.Address.String(),
 					validTxFileName,
 					"",
@@ -1685,10 +1816,28 @@ func (s *IntegrationTestSuite) TestTxCreateProposal() {
 			0,
 		},
 		{
+			"with amino-json",
+			append(
+				[]string{
+					s.groupAccounts[0].GroupAccount,
+					val.Address.String(),
+					validTxFileName,
+					"",
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
 			"metadata too long",
 			append(
 				[]string{
-					s.groupAccount.GroupAccount,
+					s.groupAccounts[0].GroupAccount,
 					val.Address.String(),
 					validTxFileName,
 					"AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ==",
@@ -1705,7 +1854,7 @@ func (s *IntegrationTestSuite) TestTxCreateProposal() {
 			"unauthorized msg",
 			append(
 				[]string{
-					s.groupAccount.GroupAccount,
+					s.groupAccounts[0].GroupAccount,
 					val.Address.String(),
 					unauthzTxFileName,
 					"",
@@ -1722,7 +1871,7 @@ func (s *IntegrationTestSuite) TestTxCreateProposal() {
 			"invalid proposers",
 			append(
 				[]string{
-					s.groupAccount.GroupAccount,
+					s.groupAccounts[0].GroupAccount,
 					"invalid",
 					validTxFileName,
 					"",
@@ -1801,20 +1950,22 @@ func (s *IntegrationTestSuite) TestTxVote() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	validTxFileName := getTxSendFileName(s, s.groupAccount.GroupAccount, val.Address.String())
-	out, err := cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateProposalCmd(),
-		append(
-			[]string{
-				s.groupAccount.GroupAccount,
-				val.Address.String(),
-				validTxFileName,
-				"",
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
-			},
-			commonFlags...,
-		),
-	)
-	s.Require().NoError(err, out.String())
+	validTxFileName := getTxSendFileName(s, s.groupAccounts[3].GroupAccount, val.Address.String())
+	for i := 0; i < 2; i++ {
+		out, err := cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateProposalCmd(),
+			append(
+				[]string{
+					s.groupAccounts[3].GroupAccount,
+					val.Address.String(),
+					validTxFileName,
+					"",
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				},
+				commonFlags...,
+			),
+		)
+		s.Require().NoError(err, out.String())
+	}
 
 	testCases := []struct {
 		name         string
@@ -1832,6 +1983,23 @@ func (s *IntegrationTestSuite) TestTxVote() {
 					val.Address.String(),
 					"CHOICE_YES",
 					"",
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"with amino-json",
+			append(
+				[]string{
+					"5",
+					val.Address.String(),
+					"CHOICE_YES",
+					"",
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 				},
 				commonFlags...,
 			),
@@ -1936,35 +2104,36 @@ func (s *IntegrationTestSuite) TestTxExec() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	// create proposal
-	validTxFileName := getTxSendFileName(s, s.groupAccount.GroupAccount, val.Address.String())
-	out, err := cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateProposalCmd(),
-		append(
-			[]string{
-				s.groupAccount.GroupAccount,
-				val.Address.String(),
-				validTxFileName,
-				"",
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
-			},
-			commonFlags...,
-		),
-	)
-	s.Require().NoError(err, out.String())
+	// create proposals and vote
+	for i := 3; i <= 4; i++ {
+		validTxFileName := getTxSendFileName(s, s.groupAccounts[0].GroupAccount, val.Address.String())
+		out, err := cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateProposalCmd(),
+			append(
+				[]string{
+					s.groupAccounts[0].GroupAccount,
+					val.Address.String(),
+					validTxFileName,
+					"",
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				},
+				commonFlags...,
+			),
+		)
+		s.Require().NoError(err, out.String())
 
-	// vote
-	out, err = cli.ExecTestCLICmd(val.ClientCtx, client.MsgVoteCmd(),
-		append(
-			[]string{
-				"3",
-				val.Address.String(),
-				"CHOICE_YES",
-				"",
-			},
-			commonFlags...,
-		),
-	)
-	s.Require().NoError(err, out.String())
+		out, err = cli.ExecTestCLICmd(val.ClientCtx, client.MsgVoteCmd(),
+			append(
+				[]string{
+					fmt.Sprintf("%d", i),
+					val.Address.String(),
+					"CHOICE_YES",
+					"",
+				},
+				commonFlags...,
+			),
+		)
+		s.Require().NoError(err, out.String())
+	}
 
 	testCases := []struct {
 		name         string
@@ -1980,6 +2149,21 @@ func (s *IntegrationTestSuite) TestTxExec() {
 				[]string{
 					"3",
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"with amino-json",
+			append(
+				[]string{
+					"4",
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 				},
 				commonFlags...,
 			),
