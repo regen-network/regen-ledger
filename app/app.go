@@ -268,7 +268,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 
 	app.UpgradeKeeper = upgradekeeper.NewKeeper(skipUpgradeHeights, keys[upgradetypes.StoreKey], appCodec, homePath)
         
-        app.registerUpgradePlans()
+        app.registerUpgradeHandlers()
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
@@ -638,8 +638,8 @@ func initParamsKeeper(appCodec codec.BinaryMarshaler, legacyAmino *codec.LegacyA
 	return paramsKeeper
 }
 
-func (app *RegenApp) registerUpgradePlans() {
+func (app *RegenApp) registerUpgradeHandlers() {
 	app.UpgradeKeeper.SetUpgradeHandler("Gir", func(ctx sdk.Context, plan upgradetypes.Plan) {
-		// do nothing
+		// no-op handler, does nothing
 	})
 }
