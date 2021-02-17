@@ -85,8 +85,8 @@ func (m MsgUpdateGroupAdminRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgUpdateGroupAdminRequest) GetGroupID() ID {
-	return ID(m.GroupId)
+func (m *MsgUpdateGroupAdminRequest) GetGroupID() uint64 {
+	return m.GroupId
 }
 
 var _ sdk.MsgRequest = &MsgUpdateGroupMetadataRequest{}
@@ -113,8 +113,8 @@ func (m MsgUpdateGroupMetadataRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgUpdateGroupMetadataRequest) GetGroupID() ID {
-	return ID(m.GroupId)
+func (m *MsgUpdateGroupMetadataRequest) GetGroupID() uint64 {
+	return m.GroupId
 }
 
 var _ sdk.MsgRequest = &MsgUpdateGroupMembersRequest{}
@@ -148,8 +148,8 @@ func (m MsgUpdateGroupMembersRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgUpdateGroupMembersRequest) GetGroupID() ID {
-	return ID(m.GroupId)
+func (m *MsgUpdateGroupMembersRequest) GetGroupID() uint64 {
+	return m.GroupId
 }
 
 var _ sdk.MsgRequest = &MsgCreateGroupAccountRequest{}
@@ -340,8 +340,8 @@ func (m *MsgCreateGroupAccountRequest) GetAdmin() string {
 	return m.Admin
 }
 
-func (m *MsgCreateGroupAccountRequest) GetGroupID() ID {
-	return ID(m.GroupId)
+func (m *MsgCreateGroupAccountRequest) GetGroupID() uint64 {
+	return m.GroupId
 }
 
 func (m *MsgCreateGroupAccountRequest) GetMetadata() []byte {
