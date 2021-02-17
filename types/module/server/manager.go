@@ -98,7 +98,7 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 
 		serverMod.RegisterServices(cfg)
 
-		// If mod implements LegacyRouteModule, registry module route.
+		// If mod implements LegacyRouteModule, register module route.
 		// This is currently used for the group module as part of #218.
 		routeMod, ok := mod.(LegacyRouteModule)
 		if ok {
