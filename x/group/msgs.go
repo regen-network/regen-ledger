@@ -430,10 +430,10 @@ var _ sdk.Msg = &MsgCreateGroupAccountRequest{}
 var _ types.UnpackInterfacesMessage = MsgCreateGroupAccountRequest{}
 
 // NewMsgCreateGroupAccountRequest creates a new MsgCreateGroupAccountRequest.
-func NewMsgCreateGroupAccountRequest(admin sdk.AccAddress, group ID, metadata []byte, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccountRequest, error) {
+func NewMsgCreateGroupAccountRequest(admin sdk.AccAddress, group uint64, metadata []byte, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccountRequest, error) {
 	m := &MsgCreateGroupAccountRequest{
 		Admin:    admin.String(),
-		GroupId:  group.Uint64(),
+		GroupId:  group,
 		Metadata: metadata,
 	}
 	err := m.SetDecisionPolicy(decisionPolicy)

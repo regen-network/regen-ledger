@@ -327,7 +327,7 @@ $ %s tx group create-group-account [admin] [group-id] [metadata] \
 
 			msg, err := group.NewMsgCreateGroupAccountRequest(
 				clientCtx.GetFromAddress(),
-				group.ID(groupID),
+				groupID,
 				b,
 				policy,
 			)

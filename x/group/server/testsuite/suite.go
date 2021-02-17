@@ -203,7 +203,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			res, err := s.msgClient.CreateGroup(s.ctx, spec.req)
 			if spec.expErr {
 				s.Require().Error(err)
-				_, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: group.ID(seq + 1).Uint64()})
+				_, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: uint64(seq + 1)})
 				s.Require().Error(err)
 				return
 			}
@@ -211,7 +211,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			id := res.GroupId
 
 			seq++
-			s.Assert().Equal(group.ID(seq), group.ID(id))
+			s.Assert().Equal(uint64(seq), id)
 
 			// then all data persisted
 			loadedGroupRes, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: id})
