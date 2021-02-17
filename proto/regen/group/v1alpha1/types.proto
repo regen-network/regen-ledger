@@ -24,6 +24,13 @@ message Member {
     bytes metadata = 3;
 }
 
+// Members defines a repeated slice of Member objects.
+message Members {
+
+    // members is the list of members.
+    repeated Member members = 1 [(gogoproto.nullable) = false];
+}
+
 // ThresholdDecisionPolicy implements the DecisionPolicy interface
 message ThresholdDecisionPolicy {
     option (cosmos_proto.implements_interface) = "DecisionPolicy";

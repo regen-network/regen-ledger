@@ -54,7 +54,8 @@ func (m MsgCreateGroupRequest) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
-	if err := Members(m.Members).ValidateBasic(); err != nil {
+	members := Members{Members: m.Members}
+	if err := members.ValidateBasic(); err != nil {
 		return sdkerrors.Wrap(err, "members")
 	}
 	for i := range m.Members {
@@ -203,7 +204,8 @@ func (m MsgUpdateGroupMembersRequest) ValidateBasic() error {
 	if len(m.MemberUpdates) == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "member updates")
 	}
-	if err := Members(m.MemberUpdates).ValidateBasic(); err != nil {
+	members := Members{Members: m.MemberUpdates}
+	if err := members.ValidateBasic(); err != nil {
 		return sdkerrors.Wrap(err, "members")
 	}
 	return nil

@@ -43,7 +43,7 @@ func (s serverImpl) getGroupAccountInfo(ctx types.Context, accountAddress sdk.Ac
 }
 
 func (s serverImpl) GroupMembers(ctx types.Context, request *group.QueryGroupMembersRequest) (*group.QueryGroupMembersResponse, error) {
-	groupID := group.ID(request.GroupId)
+	groupID := request.GroupId
 	it, err := s.getGroupMembers(ctx, groupID, request.Pagination)
 	if err != nil {
 		return nil, err
@@ -61,8 +61,8 @@ func (s serverImpl) GroupMembers(ctx types.Context, request *group.QueryGroupMem
 	}, nil
 }
 
-func (s serverImpl) getGroupMembers(ctx types.Context, id group.ID, pageRequest *query.PageRequest) (orm.Iterator, error) {
-	return s.groupMemberByGroupIndex.GetPaginated(ctx, id.Uint64(), pageRequest)
+func (s serverImpl) getGroupMembers(ctx types.Context, id uint64, pageRequest *query.PageRequest) (orm.Iterator, error) {
+	return s.groupMemberByGroupIndex.GetPaginated(ctx, id, pageRequest)
 }
 
 func (s serverImpl) GroupsByAdmin(ctx types.Context, request *group.QueryGroupsByAdminRequest) (*group.QueryGroupsByAdminResponse, error) {
@@ -92,7 +92,7 @@ func (s serverImpl) getGroupsByAdmin(ctx types.Context, admin sdk.AccAddress, pa
 }
 
 func (s serverImpl) GroupAccountsByGroup(ctx types.Context, request *group.QueryGroupAccountsByGroupRequest) (*group.QueryGroupAccountsByGroupResponse, error) {
-	groupID := group.ID(request.GroupId)
+	groupID := request.GroupId
 	it, err := s.getGroupAccountsByGroup(ctx, groupID, request.Pagination)
 	if err != nil {
 		return nil, err
@@ -110,8 +110,8 @@ func (s serverImpl) GroupAccountsByGroup(ctx types.Context, request *group.Query
 	}, nil
 }
 
-func (s serverImpl) getGroupAccountsByGroup(ctx types.Context, id group.ID, pageRequest *query.PageRequest) (orm.Iterator, error) {
-	return s.groupAccountByGroupIndex.GetPaginated(ctx, id.Uint64(), pageRequest)
+func (s serverImpl) getGroupAccountsByGroup(ctx types.Context, id uint64, pageRequest *query.PageRequest) (orm.Iterator, error) {
+	return s.groupAccountByGroupIndex.GetPaginated(ctx, id, pageRequest)
 }
 
 func (s serverImpl) GroupAccountsByAdmin(ctx types.Context, request *group.QueryGroupAccountsByAdminRequest) (*group.QueryGroupAccountsByAdminResponse, error) {

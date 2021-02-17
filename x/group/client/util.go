@@ -1,17 +1,17 @@
 package client
 
 import (
-	"encoding/json"
 	"io/ioutil"
 
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
-func parseMembers(membersFile string) ([]group.Member, error) {
-	members := []group.Member{}
+func parseMembers(clientCtx client.Context, membersFile string) ([]group.Member, error) {
+	members := group.Members{}
 
 	if membersFile == "" {
-		return members, nil
+		return members.Members, nil
 	}
 
 	contents, err := ioutil.ReadFile(membersFile)
@@ -19,10 +19,10 @@ func parseMembers(membersFile string) ([]group.Member, error) {
 		return nil, err
 	}
 
-	err = json.Unmarshal(contents, &members)
+	err = clientCtx.JSONMarshaler.UnmarshalJSON(contents, &members)
 	if err != nil {
 		return nil, err
 	}
 
-	return members, nil
+	return members.Members, nil
 }

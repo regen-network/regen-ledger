@@ -289,11 +289,6 @@ func (g GroupInfo) ValidateBasic() error {
 	if g.GroupId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
-	/*
-		if g.GroupId.Empty() {
-			return sdkerrors.Wrap(ErrEmpty, "group")
-		}
-	*/
 
 	_, err := sdk.AccAddressFromBech32(g.Admin)
 	if err != nil {
@@ -315,11 +310,6 @@ func (g GroupMember) ValidateBasic() error {
 	if g.GroupId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
-	/*
-		if g.GroupId.Empty() {
-			return sdkerrors.Wrap(ErrEmpty, "group")
-		}
-	*/
 
 	err := g.Member.ValidateBasic()
 	if err != nil {
