@@ -146,7 +146,10 @@ func (p ThresholdDecisionPolicy) ValidateBasic() error {
 
 func (g GroupMember) NaturalKey() []byte {
 	result := make([]byte, 8, 8+len(g.Member.Address))
-	copy(result[0:8], g.GroupId.Bytes())
+	//groupId := make([]byte, 8, uint64(g.GroupId))
+	//binary.LittleEndian.PutUint64(groupId, uint64(g.GroupId))
+	copy(result[0:8], ID(g.GroupId).Bytes())
+	// copy(result[0:8], g.GroupId.Bytes())
 	result = append(result, g.Member.Address...)
 	return result
 }
@@ -165,7 +168,7 @@ var _ orm.Validateable = GroupAccountInfo{}
 func NewGroupAccountInfo(groupAccount sdk.AccAddress, group ID, admin sdk.AccAddress, metadata []byte, version uint64, decisionPolicy DecisionPolicy) (GroupAccountInfo, error) {
 	p := GroupAccountInfo{
 		GroupAccount: groupAccount.String(),
-		GroupId:      group,
+		GroupId:      group.Uint64(),
 		Admin:        admin.String(),
 		Metadata:     metadata,
 		Version:      version,
@@ -236,7 +239,7 @@ func (g GroupAccountInfo) UnpackInterfaces(unpacker codectypes.AnyUnpacker) erro
 
 func (v Vote) NaturalKey() []byte {
 	result := make([]byte, 8, 8+len(v.Voter))
-	copy(result[0:8], v.ProposalId.Bytes())
+	copy(result[0:8], ProposalID(v.ProposalId).Bytes())
 	result = append(result, v.Voter...)
 	return result
 }
@@ -276,9 +279,14 @@ const MaxMetadataLength = 255
 var _ orm.Validateable = GroupInfo{}
 
 func (g GroupInfo) ValidateBasic() error {
-	if g.GroupId.Empty() {
+	if g.GroupId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
+	/*
+		if g.GroupId.Empty() {
+			return sdkerrors.Wrap(ErrEmpty, "group")
+		}
+	*/
 
 	_, err := sdk.AccAddressFromBech32(g.Admin)
 	if err != nil {
@@ -297,9 +305,14 @@ func (g GroupInfo) ValidateBasic() error {
 var _ orm.Validateable = GroupMember{}
 
 func (g GroupMember) ValidateBasic() error {
-	if g.GroupId.Empty() {
+	if g.GroupId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
+	/*
+		if g.GroupId.Empty() {
+			return sdkerrors.Wrap(ErrEmpty, "group")
+		}
+	*/
 
 	err := g.Member.ValidateBasic()
 	if err != nil {

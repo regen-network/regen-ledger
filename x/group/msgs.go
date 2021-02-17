@@ -86,7 +86,7 @@ func (m MsgUpdateGroupAdminRequest) ValidateBasic() error {
 }
 
 func (m *MsgUpdateGroupAdminRequest) GetGroupID() ID {
-	return m.GroupId
+	return ID(m.GroupId)
 }
 
 var _ sdk.MsgRequest = &MsgUpdateGroupMetadataRequest{}
@@ -114,7 +114,7 @@ func (m MsgUpdateGroupMetadataRequest) ValidateBasic() error {
 }
 
 func (m *MsgUpdateGroupMetadataRequest) GetGroupID() ID {
-	return m.GroupId
+	return ID(m.GroupId)
 }
 
 var _ sdk.MsgRequest = &MsgUpdateGroupMembersRequest{}
@@ -149,7 +149,7 @@ func (m MsgUpdateGroupMembersRequest) ValidateBasic() error {
 }
 
 func (m *MsgUpdateGroupMembersRequest) GetGroupID() ID {
-	return m.GroupId
+	return ID(m.GroupId)
 }
 
 var _ sdk.MsgRequest = &MsgCreateGroupAccountRequest{}
@@ -326,7 +326,7 @@ var _ types.UnpackInterfacesMessage = MsgCreateGroupAccountRequest{}
 func NewMsgCreateGroupAccountRequest(admin sdk.AccAddress, group ID, metadata []byte, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccountRequest, error) {
 	m := &MsgCreateGroupAccountRequest{
 		Admin:    admin.String(),
-		GroupId:  group,
+		GroupId:  group.Uint64(),
 		Metadata: metadata,
 	}
 	err := m.SetDecisionPolicy(decisionPolicy)
@@ -341,7 +341,7 @@ func (m *MsgCreateGroupAccountRequest) GetAdmin() string {
 }
 
 func (m *MsgCreateGroupAccountRequest) GetGroupID() ID {
-	return m.GroupId
+	return ID(m.GroupId)
 }
 
 func (m *MsgCreateGroupAccountRequest) GetMetadata() []byte {

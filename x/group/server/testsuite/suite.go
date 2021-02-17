@@ -96,7 +96,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		Metadata: nil,
 	})
 	s.Require().NoError(err)
-	s.groupID = groupRes.GroupId
+	s.groupID = group.ID(groupRes.GroupId)
 
 	policy := group.NewThresholdDecisionPolicy(
 		"1",
@@ -104,7 +104,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	)
 	accountReq := &group.MsgCreateGroupAccountRequest{
 		Admin:    s.addr1.String(),
-		GroupId:  s.groupID,
+		GroupId:  s.groupID.Uint64(),
 		Metadata: nil,
 	}
 	err = accountReq.SetDecisionPolicy(policy)
@@ -135,7 +135,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 
 	expGroups := []*group.GroupInfo{
 		{
-			GroupId:     s.groupID,
+			GroupId:     s.groupID.Uint64(),
 			Version:     1,
 			Admin:       s.addr1.String(),
 			TotalWeight: "1",
@@ -203,26 +203,27 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			res, err := s.msgClient.CreateGroup(s.ctx, spec.req)
 			if spec.expErr {
 				s.Require().Error(err)
-				_, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: group.ID(seq + 1)})
+				_, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: group.ID(seq + 1).Uint64()})
 				s.Require().Error(err)
 				return
 			}
 			s.Require().NoError(err)
-			id := res.GroupId
+			// id := group.ID(res.GroupId)
+			id := group.ID(res.GroupId)
 
 			seq++
-			s.Assert().Equal(group.ID(seq), id)
+			s.Assert().Equal(group.ID(seq), (id))
 
 			// then all data persisted
-			loadedGroupRes, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: id})
+			loadedGroupRes, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: uint64(id)})
 			s.Require().NoError(err)
 			s.Assert().Equal(spec.req.Admin, loadedGroupRes.Info.Admin)
 			s.Assert().Equal(spec.req.Metadata, loadedGroupRes.Info.Metadata)
-			s.Assert().Equal(id, loadedGroupRes.Info.GroupId)
+			s.Assert().Equal(id, group.ID(loadedGroupRes.Info.GroupId))
 			s.Assert().Equal(uint64(1), loadedGroupRes.Info.Version)
 
 			// and members are stored as well
-			membersRes, err := s.queryClient.GroupMembers(s.ctx, &group.QueryGroupMembersRequest{GroupId: id})
+			membersRes, err := s.queryClient.GroupMembers(s.ctx, &group.QueryGroupMembersRequest{GroupId: uint64(id)})
 			s.Require().NoError(err)
 			loadedMembers := membersRes.Members
 			s.Require().Equal(len(members), len(loadedMembers))
@@ -232,7 +233,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 				s.Assert().Equal(members[i].Metadata, loadedMembers[i].Member.Metadata)
 				s.Assert().Equal(members[i].Address, loadedMembers[i].Member.Address)
 				s.Assert().Equal(members[i].Weight, loadedMembers[i].Member.Weight)
-				s.Assert().Equal(id, loadedMembers[i].GroupId)
+				s.Assert().Equal(id, group.ID(loadedMembers[i].GroupId))
 			}
 
 			// query groups by admin
@@ -346,12 +347,12 @@ func (s *IntegrationTestSuite) TestUpdateGroupMetadata() {
 	}{
 		"with correct admin": {
 			req: &group.MsgUpdateGroupMetadataRequest{
-				GroupId:  groupID,
+				GroupId:  groupID.Uint64(),
 				Admin:    oldAdmin,
 				Metadata: []byte{1, 2, 3},
 			},
 			expStored: &group.GroupInfo{
-				GroupId:     groupID,
+				GroupId:     groupID.Uint64(),
 				Admin:       oldAdmin,
 				Metadata:    []byte{1, 2, 3},
 				TotalWeight: "1",
@@ -360,13 +361,13 @@ func (s *IntegrationTestSuite) TestUpdateGroupMetadata() {
 		},
 		"with wrong admin": {
 			req: &group.MsgUpdateGroupMetadataRequest{
-				GroupId:  groupID,
+				GroupId:  groupID.Uint64(),
 				Admin:    s.addr3.String(),
 				Metadata: []byte{1, 2, 3},
 			},
 			expErr: true,
 			expStored: &group.GroupInfo{
-				GroupId:     groupID,
+				GroupId:     groupID.Uint64(),
 				Admin:       oldAdmin,
 				Metadata:    nil,
 				TotalWeight: "1",
@@ -381,7 +382,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMetadata() {
 			},
 			expErr: true,
 			expStored: &group.GroupInfo{
-				GroupId:     groupID,
+				GroupId:     groupID.Uint64(),
 				Admin:       oldAdmin,
 				Metadata:    nil,
 				TotalWeight: "1",
@@ -402,7 +403,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMetadata() {
 			s.Require().NoError(err)
 
 			// then
-			res, err := s.queryClient.GroupInfo(ctx, &group.QueryGroupInfoRequest{GroupId: groupID})
+			res, err := s.queryClient.GroupInfo(ctx, &group.QueryGroupInfoRequest{GroupId: groupID.Uint64()})
 			s.Require().NoError(err)
 			s.Assert().Equal(spec.expStored, res.Info)
 		})
@@ -812,7 +813,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
 			expGroupAccount: &group.GroupAccountInfo{
 				Admin:          admin.String(),
 				GroupAccount:   groupAccountAddr,
-				GroupId:        myGroupID,
+				GroupId:        myGroupID.Uint64(),
 				Metadata:       nil,
 				Version:        2,
 				DecisionPolicy: nil,
@@ -828,7 +829,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
 			expGroupAccount: &group.GroupAccountInfo{
 				Admin:          admin.String(),
 				GroupAccount:   groupAccountAddr,
-				GroupId:        myGroupID,
+				GroupId:        myGroupID.Uint64(),
 				Metadata:       nil,
 				Version:        2,
 				DecisionPolicy: nil,
@@ -844,7 +845,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
 			expGroupAccount: &group.GroupAccountInfo{
 				Admin:          newAdmin.String(),
 				GroupAccount:   groupAccountAddr,
-				GroupId:        myGroupID,
+				GroupId:        myGroupID.Uint64(),
 				Metadata:       nil,
 				Version:        2,
 				DecisionPolicy: nil,
@@ -919,7 +920,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountMetadata() {
 			expGroupAccount: &group.GroupAccountInfo{
 				Admin:          admin.String(),
 				GroupAccount:   groupAccountAddr,
-				GroupId:        myGroupID,
+				GroupId:        myGroupID.Uint64(),
 				Metadata:       []byte("hello"),
 				Version:        2,
 				DecisionPolicy: nil,
@@ -989,7 +990,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountDecisionPolicy() {
 			expGroupAccount: &group.GroupAccountInfo{
 				Admin:          admin.String(),
 				GroupAccount:   groupAccountAddr,
-				GroupId:        myGroupID,
+				GroupId:        myGroupID.Uint64(),
 				Metadata:       nil,
 				Version:        2,
 				DecisionPolicy: nil,
@@ -1111,7 +1112,7 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 
 	accountReq := &group.MsgCreateGroupAccountRequest{
 		Admin:    s.addr1.String(),
-		GroupId:  myGroupID,
+		GroupId:  myGroupID.Uint64(),
 		Metadata: nil,
 	}
 	accountAddr := s.groupAccountAddr
@@ -1812,7 +1813,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 				// then modify group
 				_, err := s.msgClient.UpdateGroupMetadata(ctx, &group.MsgUpdateGroupMetadataRequest{
 					Admin:    s.addr1.String(),
-					GroupId:  s.groupID,
+					GroupId:  s.groupID.Uint64(),
 					Metadata: []byte{1, 2, 3},
 				})
 				s.Require().NoError(err)
@@ -1841,7 +1842,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			setupProposal: func(ctx context.Context) group.ProposalID {
 				myProposalID := createProposalAndVote(ctx, s, []sdk.Msg{msgSend}, proposers, group.Choice_CHOICE_YES)
 
-				_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{Signer: s.addr1.String(), ProposalId: myProposalID})
+				_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{Signer: s.addr1.String(), ProposalId: myProposalID.Uint64()})
 				s.Require().NoError(err)
 				return myProposalID
 			},
@@ -1875,7 +1876,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 				}
 				myProposalID := createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
 
-				_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{Signer: s.addr1.String(), ProposalId: myProposalID})
+				_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{Signer: s.addr1.String(), ProposalId: myProposalID.Uint64()})
 				s.Require().NoError(err)
 				s.Require().NoError(s.bankKeeper.SetBalances(ctx.(types.Context).Context, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
 				return myProposalID
@@ -1898,7 +1899,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 				ctx = types.Context{Context: sdkCtx}
 			}
 
-			_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{Signer: s.addr1.String(), ProposalId: proposalID})
+			_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{Signer: s.addr1.String(), ProposalId: proposalID.Uint64()})
 			if spec.expErr {
 				s.Require().Error(err)
 				return
@@ -1906,7 +1907,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			s.Require().NoError(err)
 
 			// and proposal is updated
-			res, err := s.queryClient.Proposal(ctx, &group.QueryProposalRequest{ProposalId: proposalID})
+			res, err := s.queryClient.Proposal(ctx, &group.QueryProposalRequest{ProposalId: proposalID.Uint64()})
 			s.Require().NoError(err)
 			proposal := res.Proposal
 
@@ -1947,7 +1948,7 @@ func createProposal(
 
 	proposalRes, err := s.msgClient.CreateProposal(ctx, proposalReq)
 	s.Require().NoError(err)
-	return proposalRes.ProposalId
+	return group.ProposalID(proposalRes.ProposalId)
 }
 
 func createProposalAndVote(
@@ -1957,7 +1958,7 @@ func createProposalAndVote(
 	myProposalID := createProposal(ctx, s, msgs, proposers)
 
 	_, err := s.msgClient.Vote(ctx, &group.MsgVoteRequest{
-		ProposalId: myProposalID,
+		ProposalId: myProposalID.Uint64(),
 		Voter:      proposers[0],
 		Choice:     choice,
 	})
@@ -1993,5 +1994,5 @@ func createGroupAndGroupAccount(
 	groupAccountRes, err := s.msgClient.CreateGroupAccount(s.ctx, groupAccount)
 	s.Require().NoError(err)
 
-	return groupAccountRes.GroupAccount, myGroupID, policy
+	return groupAccountRes.GroupAccount, group.ID(myGroupID), policy
 }
