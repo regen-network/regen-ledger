@@ -6,11 +6,26 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/stretchr/testify/suite"
+
 	"github.com/regen-network/regen-ledger/testutil/cli"
+	"github.com/regen-network/regen-ledger/testutil/network"
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/client"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 )
+
+type IntegrationTestSuite struct {
+	suite.Suite
+
+	cfg     network.Config
+	network *network.Network
+
+	group         *group.GroupInfo
+	groupAccounts []*group.GroupAccountInfo
+	proposal      *group.Proposal
+	vote          *group.Vote
+}
 
 func (s *IntegrationTestSuite) TestQueryGroupInfo() {
 	val := s.network.Validators[0]
@@ -39,7 +54,7 @@ func (s *IntegrationTestSuite) TestQueryGroupInfo() {
 		},
 		{
 			"group found",
-			[]string{strconv.FormatUint(s.group.GroupId.Uint64(), 10), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			[]string{strconv.FormatUint(s.group.GroupId, 10), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			false,
 			"",
 			0,
@@ -92,7 +107,7 @@ func (s *IntegrationTestSuite) TestQueryGroupMembers() {
 		},
 		{
 			"members found",
-			[]string{strconv.FormatUint(s.group.GroupId.Uint64(), 10), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			[]string{strconv.FormatUint(s.group.GroupId, 10), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			false,
 			"",
 			0,
@@ -291,7 +306,7 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountsByGroup() {
 		},
 		{
 			"found group accounts",
-			[]string{strconv.FormatUint(s.group.GroupId.Uint64(), 10), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			[]string{strconv.FormatUint(s.group.GroupId, 10), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			false,
 			"",
 			0,
