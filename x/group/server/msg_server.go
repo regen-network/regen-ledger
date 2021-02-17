@@ -28,7 +28,7 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 		return nil, err
 	}
 
-	maxMetadataLength := s.maxMetadataLength(ctx)
+	maxMetadataLength := group.MaxMetadataLength
 	if err := assertMetadataLength(metadata, maxMetadataLength, "group metadata"); err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 			return err
 		}
 		for i := range req.MemberUpdates {
-			if err := assertMetadataLength(req.MemberUpdates[i].Metadata, s.maxMetadataLength(ctx), "group member metadata"); err != nil {
+			if err := assertMetadataLength(req.MemberUpdates[i].Metadata, group.MaxMetadataLength, "group member metadata"); err != nil {
 				return err
 			}
 			groupMember := group.GroupMember{GroupId: req.GroupId,
@@ -210,7 +210,7 @@ func (s serverImpl) UpdateGroupMetadata(ctx types.Context, req *group.MsgUpdateG
 		return s.groupTable.Save(ctx, g.GroupId.Bytes(), g)
 	}
 
-	if err := assertMetadataLength(req.Metadata, s.maxMetadataLength(ctx), "group metadata"); err != nil {
+	if err := assertMetadataLength(req.Metadata, group.MaxMetadataLength, "group metadata"); err != nil {
 		return nil, err
 	}
 
@@ -231,7 +231,7 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 	groupID := req.GetGroupID()
 	metadata := req.GetMetadata()
 
-	if err := assertMetadataLength(metadata, s.maxMetadataLength(ctx), "group account metadata"); err != nil {
+	if err := assertMetadataLength(metadata, group.MaxMetadataLength, "group account metadata"); err != nil {
 		return nil, err
 	}
 
@@ -347,7 +347,7 @@ func (s serverImpl) UpdateGroupAccountMetadata(ctx types.Context, req *group.Msg
 		return s.groupAccountTable.Save(ctx, groupAccount)
 	}
 
-	if err := assertMetadataLength(metadata, s.maxMetadataLength(ctx), "group account metadata"); err != nil {
+	if err := assertMetadataLength(metadata, group.MaxMetadataLength, "group account metadata"); err != nil {
 		return nil, err
 	}
 
@@ -368,7 +368,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 	proposers := req.Proposers
 	msgs := req.GetMsgs()
 
-	if err := assertMetadataLength(metadata, s.maxMetadataLength(ctx), "metadata"); err != nil {
+	if err := assertMetadataLength(metadata, group.MaxMetadataLength, "metadata"); err != nil {
 		return nil, err
 	}
 
@@ -459,7 +459,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 	choice := req.Choice
 	metadata := req.Metadata
 
-	if err := assertMetadataLength(metadata, s.maxMetadataLength(ctx), "metadata"); err != nil {
+	if err := assertMetadataLength(metadata, group.MaxMetadataLength, "metadata"); err != nil {
 		return nil, err
 	}
 
@@ -728,11 +728,6 @@ func (s serverImpl) doAuthenticated(ctx types.Context, req authNGroupReq, action
 		return sdkerrors.Wrap(err, note)
 	}
 	return nil
-}
-
-// maxMetadataLength returns the maximum length of a metadata field.
-func (s serverImpl) maxMetadataLength(ctx types.Context) int {
-	return group.MaxMetadataLength
 }
 
 // assertMetadataLength returns an error if given metadata length
