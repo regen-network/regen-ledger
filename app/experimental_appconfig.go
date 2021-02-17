@@ -5,7 +5,9 @@ package app
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
@@ -46,4 +48,10 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 		panic(err)
 	}
 	/* New Module Wiring END */
+}
+
+func (app *RegenApp) registerUpgradeHandlers() {
+	app.UpgradeKeeper.SetUpgradeHandler("Gir", func(ctx sdk.Context, plan upgradetypes.Plan) {
+		// no-op handler, does nothing
+	})
 }
