@@ -56,7 +56,7 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 	// Create a new group in the groupTable.
 	groupID := group.ID(s.groupSeq.NextVal(ctx))
 	err := s.groupTable.Create(ctx, groupID.Bytes(), &group.GroupInfo{
-		GroupId:     groupID,
+		GroupId:     uint64(groupID),
 		Admin:       admin,
 		Metadata:    metadata,
 		Version:     1,
@@ -70,7 +70,7 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 	for i := range members {
 		m := members[i]
 		err := s.groupMemberTable.Create(ctx, &group.GroupMember{
-			GroupId: groupID,
+			GroupId: uint64(groupID),
 			Member: &group.Member{
 				Address:  m.Address,
 				Weight:   m.Weight,
@@ -88,7 +88,7 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 		return nil, err
 	}
 
-	return &group.MsgCreateGroupResponse{GroupId: groupID}, nil
+	return &group.MsgCreateGroupResponse{GroupId: groupID.Uint64()}, nil
 }
 
 func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGroupMembersRequest) (*group.MsgUpdateGroupMembersResponse, error) {
@@ -98,7 +98,7 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 			return err
 		}
 		for i := range req.MemberUpdates {
-			groupMember := group.GroupMember{GroupId: req.GroupId,
+			groupMember := group.GroupMember{GroupId: uint64(group.ID(req.GroupId)),
 				Member: &group.Member{
 					Address:  req.MemberUpdates[i].Address,
 					Weight:   req.MemberUpdates[i].Weight,
@@ -175,7 +175,8 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 		// Update group in the groupTable.
 		g.TotalWeight = math.DecimalString(totalWeight)
 		g.Version++
-		return s.groupTable.Save(ctx, g.GroupId.Bytes(), g)
+		groupID := group.ID(g.GroupId).Bytes()
+		return s.groupTable.Save(ctx, groupID, g)
 	}
 
 	err := s.doUpdateGroup(ctx, req, action, "members updated")
@@ -190,7 +191,9 @@ func (s serverImpl) UpdateGroupAdmin(ctx types.Context, req *group.MsgUpdateGrou
 	action := func(g *group.GroupInfo) error {
 		g.Admin = req.NewAdmin
 		g.Version++
-		return s.groupTable.Save(ctx, g.GroupId.Bytes(), g)
+
+		groupID := group.ID(g.GroupId).Bytes()
+		return s.groupTable.Save(ctx, groupID, g)
 	}
 
 	err := s.doUpdateGroup(ctx, req, action, "admin updated")
@@ -205,7 +208,8 @@ func (s serverImpl) UpdateGroupMetadata(ctx types.Context, req *group.MsgUpdateG
 	action := func(g *group.GroupInfo) error {
 		g.Metadata = req.Metadata
 		g.Version++
-		return s.groupTable.Save(ctx, g.GroupId.Bytes(), g)
+		groupID := group.ID(g.GroupId).Bytes()
+		return s.groupTable.Save(ctx, groupID, g)
 	}
 
 	err := s.doUpdateGroup(ctx, req, action, "metadata updated")
@@ -371,7 +375,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 		return nil, sdkerrors.Wrap(err, "load group account")
 	}
 
-	g, err := s.getGroupInfo(ctx, account.GroupId)
+	g, err := s.getGroupInfo(ctx, group.ID(account.GroupId))
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "get group by account")
 	}
@@ -445,7 +449,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 
 	// TODO: add event #215
 
-	return &group.MsgCreateProposalResponse{ProposalId: group.ProposalID(id)}, nil
+	return &group.MsgCreateProposalResponse{ProposalId: id}, nil
 }
 
 func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.MsgVoteResponse, error) {
@@ -461,7 +465,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 	if err != nil {
 		return nil, err
 	}
-	proposal, err := s.getProposal(ctx, id)
+	proposal, err := s.getProposal(ctx, group.ProposalID(id))
 	if err != nil {
 		return nil, err
 	}
@@ -492,7 +496,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 	}
 
 	// Ensure that group hasn't been modified since the proposal submission.
-	electorate, err := s.getGroupInfo(ctx, accountInfo.GroupId)
+	electorate, err := s.getGroupInfo(ctx, group.ID(accountInfo.GroupId))
 	if err != nil {
 		return nil, err
 	}
@@ -528,7 +532,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 		return nil, err
 	}
 
-	if err = s.proposalTable.Save(ctx, id.Uint64(), &proposal); err != nil {
+	if err = s.proposalTable.Save(ctx, id, &proposal); err != nil {
 		return nil, err
 	}
 
@@ -561,7 +565,7 @@ func doTally(ctx types.Context, p *group.Proposal, electorate group.GroupInfo, a
 func (s serverImpl) Exec(ctx types.Context, req *group.MsgExecRequest) (*group.MsgExecResponse, error) {
 	id := req.ProposalId
 
-	proposal, err := s.getProposal(ctx, id)
+	proposal, err := s.getProposal(ctx, group.ProposalID(id))
 	if err != nil {
 		return nil, err
 	}
@@ -580,7 +584,7 @@ func (s serverImpl) Exec(ctx types.Context, req *group.MsgExecRequest) (*group.M
 	}
 
 	storeUpdates := func() (*group.MsgExecResponse, error) {
-		if err := s.proposalTable.Save(ctx, id.Uint64(), &proposal); err != nil {
+		if err := s.proposalTable.Save(ctx, id, &proposal); err != nil {
 			return nil, err
 		}
 		return &group.MsgExecResponse{}, nil
@@ -594,7 +598,7 @@ func (s serverImpl) Exec(ctx types.Context, req *group.MsgExecRequest) (*group.M
 			return storeUpdates()
 		}
 
-		electorate, err := s.getGroupInfo(ctx, accountInfo.GroupId)
+		electorate, err := s.getGroupInfo(ctx, group.ID(accountInfo.GroupId))
 		if err != nil {
 			return nil, sdkerrors.Wrap(err, "load group")
 		}
