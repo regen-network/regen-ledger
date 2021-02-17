@@ -178,7 +178,7 @@ Set a member's weight to "0" to delete it.
 			msg := &group.MsgUpdateGroupMembersRequest{
 				Admin:         clientCtx.GetFromAddress().String(),
 				MemberUpdates: members,
-				GroupId:       group.ID(groupID),
+				GroupId:       groupID,
 			}
 			if err = msg.ValidateBasic(); err != nil {
 				return fmt.Errorf("message validation failed: %w", err)
@@ -219,7 +219,7 @@ func MsgUpdateGroupAdminCmd() *cobra.Command {
 			msg := &group.MsgUpdateGroupAdminRequest{
 				Admin:    clientCtx.GetFromAddress().String(),
 				NewAdmin: args[2],
-				GroupId:  group.ID(groupID),
+				GroupId:  groupID,
 			}
 			if err = msg.ValidateBasic(); err != nil {
 				return fmt.Errorf("message validation failed: %w", err)
@@ -264,7 +264,7 @@ func MsgUpdateGroupMetadataCmd() *cobra.Command {
 			msg := &group.MsgUpdateGroupMetadataRequest{
 				Admin:    clientCtx.GetFromAddress().String(),
 				Metadata: b,
-				GroupId:  group.ID(groupID),
+				GroupId:  groupID,
 			}
 			if err = msg.ValidateBasic(); err != nil {
 				return fmt.Errorf("message validation failed: %w", err)
@@ -576,7 +576,7 @@ Parameters:
 			}
 
 			msg := &group.MsgVoteRequest{
-				ProposalId: group.ProposalID(proposalID),
+				ProposalId: proposalID,
 				Voter:      args[1],
 				Choice:     choice,
 				Metadata:   b,
@@ -616,7 +616,7 @@ func MsgExecCmd() *cobra.Command {
 			}
 
 			msg := &group.MsgExecRequest{
-				ProposalId: group.ProposalID(proposalID),
+				ProposalId: proposalID,
 				Signer:     clientCtx.GetFromAddress().String(),
 			}
 			if err != nil {

@@ -56,7 +56,7 @@ func QueryGroupInfoCmd() *cobra.Command {
 			queryClient := group.NewQueryClient(clientCtx)
 
 			res, err := queryClient.GroupInfo(cmd.Context(), &group.QueryGroupInfoRequest{
-				GroupId: group.ID(groupID),
+				GroupId: groupID,
 			})
 			if err != nil {
 				return err
@@ -126,7 +126,7 @@ func QueryGroupMembersCmd() *cobra.Command {
 			queryClient := group.NewQueryClient(clientCtx)
 
 			res, err := queryClient.GroupMembers(cmd.Context(), &group.QueryGroupMembersRequest{
-				GroupId:    group.ID(groupID),
+				GroupId:    groupID,
 				Pagination: pageReq,
 			})
 			if err != nil {
@@ -203,7 +203,7 @@ func QueryGroupAccountsByGroupCmd() *cobra.Command {
 			queryClient := group.NewQueryClient(clientCtx)
 
 			res, err := queryClient.GroupAccountsByGroup(cmd.Context(), &group.QueryGroupAccountsByGroupRequest{
-				GroupId:    group.ID(groupID),
+				GroupId:    groupID,
 				Pagination: pageReq,
 			})
 			if err != nil {
@@ -275,7 +275,7 @@ func QueryProposalCmd() *cobra.Command {
 			queryClient := group.NewQueryClient(clientCtx)
 
 			res, err := queryClient.Proposal(cmd.Context(), &group.QueryProposalRequest{
-				ProposalId: group.ProposalID(proposalID),
+				ProposalId: proposalID,
 			})
 			if err != nil {
 				return err
@@ -346,7 +346,7 @@ func QueryVoteByProposalVoterCmd() *cobra.Command {
 			queryClient := group.NewQueryClient(clientCtx)
 
 			res, err := queryClient.VoteByProposalVoter(cmd.Context(), &group.QueryVoteByProposalVoterRequest{
-				ProposalId: group.ProposalID(proposalID),
+				ProposalId: proposalID,
 				Voter:      args[1],
 			})
 			if err != nil {
@@ -387,7 +387,7 @@ func QueryVotesByProposalCmd() *cobra.Command {
 			queryClient := group.NewQueryClient(clientCtx)
 
 			res, err := queryClient.VotesByProposal(cmd.Context(), &group.QueryVotesByProposalRequest{
-				ProposalId: group.ProposalID(proposalID),
+				ProposalId: proposalID,
 				Pagination: pageReq,
 			})
 			if err != nil {
