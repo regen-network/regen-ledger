@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"reflect"
+	"strconv"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
@@ -15,7 +16,6 @@ import (
 	"github.com/regen-network/regen-ledger/math"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/util"
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
@@ -28,15 +28,14 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 		return nil, err
 	}
 
-	maxMetadataLength := s.maxMetadataLength(ctx)
-	if err := assertMetadataLength(metadata, maxMetadataLength, "group metadata"); err != nil {
+	if err := assertMetadataLength(metadata, "group metadata"); err != nil {
 		return nil, err
 	}
 
 	totalWeight := apd.New(0, 0)
 	for i := range members {
 		m := members[i]
-		if err := assertMetadataLength(m.Metadata, maxMetadataLength, "member metadata"); err != nil {
+		if err := assertMetadataLength(m.Metadata, "member metadata"); err != nil {
 			return nil, err
 		}
 
@@ -82,8 +81,7 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 		}
 	}
 
-	groupIDStr := util.Uint64ToBase58Check(groupID.Uint64())
-	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroup{GroupId: groupIDStr})
+	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroup{GroupId: strconv.FormatUint(groupID.Uint64(), 10)})
 	if err != nil {
 		return nil, err
 	}
@@ -98,6 +96,9 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 			return err
 		}
 		for i := range req.MemberUpdates {
+			if err := assertMetadataLength(req.MemberUpdates[i].Metadata, "group member metadata"); err != nil {
+				return err
+			}
 			groupMember := group.GroupMember{GroupId: req.GroupId,
 				Member: &group.Member{
 					Address:  req.MemberUpdates[i].Address,
@@ -208,6 +209,10 @@ func (s serverImpl) UpdateGroupMetadata(ctx types.Context, req *group.MsgUpdateG
 		return s.groupTable.Save(ctx, g.GroupId.Bytes(), g)
 	}
 
+	if err := assertMetadataLength(req.Metadata, "group metadata"); err != nil {
+		return nil, err
+	}
+
 	err := s.doUpdateGroup(ctx, req, action, "metadata updated")
 	if err != nil {
 		return nil, err
@@ -225,7 +230,7 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 	groupID := req.GetGroupID()
 	metadata := req.GetMetadata()
 
-	if err := assertMetadataLength(metadata, s.maxMetadataLength(ctx), "group account metadata"); err != nil {
+	if err := assertMetadataLength(metadata, "group account metadata"); err != nil {
 		return nil, err
 	}
 
@@ -341,7 +346,7 @@ func (s serverImpl) UpdateGroupAccountMetadata(ctx types.Context, req *group.Msg
 		return s.groupAccountTable.Save(ctx, groupAccount)
 	}
 
-	if err := assertMetadataLength(metadata, s.maxMetadataLength(ctx), "group account metadata"); err != nil {
+	if err := assertMetadataLength(metadata, "group account metadata"); err != nil {
 		return nil, err
 	}
 
@@ -362,7 +367,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 	proposers := req.Proposers
 	msgs := req.GetMsgs()
 
-	if err := assertMetadataLength(metadata, s.maxMetadataLength(ctx), "metadata"); err != nil {
+	if err := assertMetadataLength(metadata, "metadata"); err != nil {
 		return nil, err
 	}
 
@@ -453,7 +458,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 	choice := req.Choice
 	metadata := req.Metadata
 
-	if err := assertMetadataLength(metadata, s.maxMetadataLength(ctx), "metadata"); err != nil {
+	if err := assertMetadataLength(metadata, "metadata"); err != nil {
 		return nil, err
 	}
 
@@ -692,8 +697,7 @@ func (s serverImpl) doUpdateGroup(ctx types.Context, req authNGroupReq, action a
 		return err
 	}
 
-	groupIDStr := util.Uint64ToBase58Check(req.GetGroupID().Uint64())
-	err = ctx.EventManager().EmitTypedEvent(&group.EventUpdateGroup{GroupId: groupIDStr})
+	err = ctx.EventManager().EmitTypedEvent(&group.EventUpdateGroup{GroupId: strconv.FormatUint(req.GetGroupID().Uint64(), 10)})
 	if err != nil {
 		return err
 	}
@@ -725,15 +729,10 @@ func (s serverImpl) doAuthenticated(ctx types.Context, req authNGroupReq, action
 	return nil
 }
 
-// maxMetadataLength returns the maximum length of a metadata field.
-func (s serverImpl) maxMetadataLength(ctx types.Context) int {
-	return group.MaxMetadataLength
-}
-
 // assertMetadataLength returns an error if given metadata length
 // is greater than a fixed maxMetadataLength.
-func assertMetadataLength(metadata []byte, maxMetadataLength int, description string) error {
-	if len(metadata) > maxMetadataLength {
+func assertMetadataLength(metadata []byte, description string) error {
+	if len(metadata) > group.MaxMetadataLength {
 		return sdkerrors.Wrap(group.ErrMaxLimit, description)
 	}
 	return nil

@@ -268,6 +268,16 @@ func (v Vote) ValidateBasic() error {
 	return nil
 }
 
+// ChoiceFromString returns a Choice from a string. It returns an error
+// if the string is invalid.
+func ChoiceFromString(str string) (Choice, error) {
+	choice, ok := Choice_value[str]
+	if !ok {
+		return Choice_CHOICE_UNSPECIFIED, fmt.Errorf("'%s' is not a valid vote choice", str)
+	}
+	return Choice(choice), nil
+}
+
 // MaxMetadataLength defines the max length of the metadata bytes field
 // for various entities within the group module
 // TODO: This could be used as params once x/params is upgraded to use protobuf
@@ -462,5 +472,29 @@ func (t Tally) ValidateBasic() error {
 	if _, err := t.GetVetoCount(); err != nil {
 		return sdkerrors.Wrap(err, "veto count")
 	}
+	return nil
+}
+
+// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+func (q QueryGroupAccountsByGroupResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+	for _, g := range q.GroupAccounts {
+		err := g.UnpackInterfaces(unpacker)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+func (q QueryGroupAccountsByAdminResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+	for _, g := range q.GroupAccounts {
+		err := g.UnpackInterfaces(unpacker)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
