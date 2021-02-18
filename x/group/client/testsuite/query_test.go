@@ -39,7 +39,7 @@ func (s *IntegrationTestSuite) TestQueryGroupInfo() {
 		},
 		{
 			"group found",
-			[]string{strconv.FormatUint(s.group.GroupId.Uint64(), 10), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			[]string{strconv.FormatUint(s.group.GroupId, 10), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			false,
 			"",
 			0,
@@ -92,7 +92,7 @@ func (s *IntegrationTestSuite) TestQueryGroupMembers() {
 		},
 		{
 			"members found",
-			[]string{strconv.FormatUint(s.group.GroupId.Uint64(), 10), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			[]string{strconv.FormatUint(s.group.GroupId, 10), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			false,
 			"",
 			0,
@@ -291,7 +291,7 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountsByGroup() {
 		},
 		{
 			"found group accounts",
-			[]string{strconv.FormatUint(s.group.GroupId.Uint64(), 10), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			[]string{strconv.FormatUint(s.group.GroupId, 10), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			false,
 			"",
 			0,

@@ -98,7 +98,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &txResp), out.String())
 	s.Require().Equal(uint32(0), txResp.Code, out.String())
 
-	s.group = &group.GroupInfo{GroupId: group.ID(1), Admin: val.Address.String(), Metadata: []byte{1}, TotalWeight: "1", Version: 1}
+	s.group = &group.GroupInfo{GroupId: 1, Admin: val.Address.String(), Metadata: []byte{1}, TotalWeight: "1", Version: 1}
 
 	// create 4 group accounts
 	for i := 0; i < 4; i++ {
@@ -511,7 +511,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupMetadata() {
 			append(
 				[]string{
 					val.Address.String(),
-					strconv.FormatUint(s.group.GroupId.Uint64(), 10),
+					strconv.FormatUint(s.group.GroupId, 10),
 					"AQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ==",
 				},
 				commonFlags...,
@@ -618,7 +618,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupMembers() {
 			append(
 				[]string{
 					val.Address.String(),
-					strconv.FormatUint(s.group.GroupId.Uint64(), 10),
+					strconv.FormatUint(s.group.GroupId, 10),
 					invalidMembersMetadataFileName,
 				},
 				commonFlags...,

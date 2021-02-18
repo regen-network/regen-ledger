@@ -70,7 +70,7 @@ enum Choice {
 message GroupInfo {
 
     // group_id is the unique ID of the group.
-    uint64 group_id = 1 [(gogoproto.casttype) = "ID"];
+    uint64 group_id = 1;
 
     // admin is the account address of the group's admin.
     string admin = 2;
@@ -92,7 +92,7 @@ message GroupInfo {
 message GroupMember {
 
     // group_id is the unique ID of the group.
-    uint64 group_id = 1 [(gogoproto.casttype) = "ID"];
+    uint64 group_id = 1;
 
     // member is the member data.
     Member member = 2;
@@ -107,7 +107,7 @@ message GroupAccountInfo {
     string group_account = 1;
     
     // group_id is the unique ID of the group.
-    uint64 group_id = 2 [(gogoproto.casttype) = "ID"];
+    uint64 group_id = 2;
 
     // admin is the account address of the group admin.
     string admin = 3;
@@ -249,7 +249,7 @@ message Tally {
 message Vote {
 
     // proposal is the unique ID of the proposal.
-    uint64 proposal_id = 1 [(gogoproto.casttype) = "ProposalID"];
+    uint64 proposal_id = 1;
     
     // voter is the account address of the voter.
     string voter = 2;

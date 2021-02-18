@@ -345,7 +345,7 @@ func (m *ThresholdDecisionPolicy) GetTimeout() types.Duration {
 // GroupInfo represents the high-level on-chain information for a group.
 type GroupInfo struct {
 	// group_id is the unique ID of the group.
-	GroupId ID `protobuf:"varint,1,opt,name=group_id,json=groupId,proto3,casttype=ID" json:"group_id,omitempty"`
+	GroupId uint64 `protobuf:"varint,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
 	// admin is the account address of the group's admin.
 	Admin string `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
 	// metadata is any arbitrary metadata to attached to the group.
@@ -392,7 +392,7 @@ func (m *GroupInfo) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GroupInfo proto.InternalMessageInfo
 
-func (m *GroupInfo) GetGroupId() ID {
+func (m *GroupInfo) GetGroupId() uint64 {
 	if m != nil {
 		return m.GroupId
 	}
@@ -430,7 +430,7 @@ func (m *GroupInfo) GetTotalWeight() string {
 // GroupMember represents the relationship between a group and a member.
 type GroupMember struct {
 	// group_id is the unique ID of the group.
-	GroupId ID `protobuf:"varint,1,opt,name=group_id,json=groupId,proto3,casttype=ID" json:"group_id,omitempty"`
+	GroupId uint64 `protobuf:"varint,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
 	// member is the member data.
 	Member *Member `protobuf:"bytes,2,opt,name=member,proto3" json:"member,omitempty"`
 }
@@ -468,7 +468,7 @@ func (m *GroupMember) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GroupMember proto.InternalMessageInfo
 
-func (m *GroupMember) GetGroupId() ID {
+func (m *GroupMember) GetGroupId() uint64 {
 	if m != nil {
 		return m.GroupId
 	}
@@ -487,7 +487,7 @@ type GroupAccountInfo struct {
 	// group_account is the group account address.
 	GroupAccount string `protobuf:"bytes,1,opt,name=group_account,json=groupAccount,proto3" json:"group_account,omitempty"`
 	// group_id is the unique ID of the group.
-	GroupId ID `protobuf:"varint,2,opt,name=group_id,json=groupId,proto3,casttype=ID" json:"group_id,omitempty"`
+	GroupId uint64 `protobuf:"varint,2,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
 	// admin is the account address of the group admin.
 	Admin string `protobuf:"bytes,3,opt,name=admin,proto3" json:"admin,omitempty"`
 	// metadata is any arbitrary metadata to attached to the group account.
@@ -649,7 +649,7 @@ var xxx_messageInfo_Tally proto.InternalMessageInfo
 // Vote represents a vote for a proposal.
 type Vote struct {
 	// proposal is the unique ID of the proposal.
-	ProposalId ProposalID `protobuf:"varint,1,opt,name=proposal_id,json=proposalId,proto3,casttype=ProposalID" json:"proposal_id,omitempty"`
+	ProposalId uint64 `protobuf:"varint,1,opt,name=proposal_id,json=proposalId,proto3" json:"proposal_id,omitempty"`
 	// voter is the account address of the voter.
 	Voter string `protobuf:"bytes,2,opt,name=voter,proto3" json:"voter,omitempty"`
 	// choice is the voter's choice on the proposal.
@@ -693,7 +693,7 @@ func (m *Vote) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Vote proto.InternalMessageInfo
 
-func (m *Vote) GetProposalId() ProposalID {
+func (m *Vote) GetProposalId() uint64 {
 	if m != nil {
 		return m.ProposalId
 	}
@@ -2014,7 +2014,7 @@ func (m *GroupInfo) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.GroupId |= ID(b&0x7F) << shift
+				m.GroupId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2203,7 +2203,7 @@ func (m *GroupMember) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.GroupId |= ID(b&0x7F) << shift
+				m.GroupId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2343,7 +2343,7 @@ func (m *GroupAccountInfo) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.GroupId |= ID(b&0x7F) << shift
+				m.GroupId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3096,7 +3096,7 @@ func (m *Vote) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ProposalId |= ProposalID(b&0x7F) << shift
+				m.ProposalId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}

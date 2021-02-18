@@ -44,7 +44,7 @@ type IntegrationTestSuite struct {
 	addr5            sdk.AccAddress
 	addr6            sdk.AccAddress
 	groupAccountAddr sdk.AccAddress
-	groupID          group.ID
+	groupID          uint64
 
 	accountKeeper authkeeper.AccountKeeper
 	bankKeeper    bankkeeper.Keeper
@@ -203,7 +203,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			res, err := s.msgClient.CreateGroup(s.ctx, spec.req)
 			if spec.expErr {
 				s.Require().Error(err)
-				_, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: group.ID(seq + 1)})
+				_, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: uint64(seq + 1)})
 				s.Require().Error(err)
 				return
 			}
@@ -211,7 +211,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			id := res.GroupId
 
 			seq++
-			s.Assert().Equal(group.ID(seq), id)
+			s.Assert().Equal(uint64(seq), id)
 
 			// then all data persisted
 			loadedGroupRes, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: id})
@@ -1732,7 +1732,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 
 	specs := map[string]struct {
 		srcBlockTime      time.Time
-		setupProposal     func(ctx context.Context) group.ProposalID
+		setupProposal     func(ctx context.Context) uint64
 		expErr            bool
 		expProposalStatus group.Proposal_Status
 		expProposalResult group.Proposal_Result
@@ -1741,7 +1741,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		expToBalances     sdk.Coins
 	}{
 		"proposal executed when accepted": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				msgs := []sdk.Msg{msgSend}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
 			},
@@ -1752,7 +1752,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 100)},
 		},
 		"proposal with multiple messages executed when accepted": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				msgs := []sdk.Msg{msgSend, msgSend}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
 			},
@@ -1763,7 +1763,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 200)},
 		},
 		"proposal not executed when rejected": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				msgs := []sdk.Msg{msgSend}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
 			},
@@ -1772,7 +1772,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expExecutorResult: group.ProposalExecutorResultNotRun,
 		},
 		"open proposal must not fail": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				return createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
 			},
 			expProposalStatus: group.ProposalStatusSubmitted,
@@ -1780,13 +1780,13 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expExecutorResult: group.ProposalExecutorResultNotRun,
 		},
 		"existing proposal required": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				return 9999
 			},
 			expErr: true,
 		},
 		"Decision policy also applied on timeout": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				msgs := []sdk.Msg{msgSend}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
 			},
@@ -1796,7 +1796,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expExecutorResult: group.ProposalExecutorResultNotRun,
 		},
 		"Decision policy also applied after timeout": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				msgs := []sdk.Msg{msgSend}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
 			},
@@ -1806,7 +1806,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expExecutorResult: group.ProposalExecutorResultNotRun,
 		},
 		"with group modified before tally": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
 
 				// then modify group
@@ -1823,7 +1823,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expExecutorResult: group.ProposalExecutorResultNotRun,
 		},
 		"with group account modified before tally": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
 				_, err := s.msgClient.UpdateGroupAccountMetadata(ctx, &group.MsgUpdateGroupAccountMetadataRequest{
 					Admin:        s.addr1.String(),
@@ -1838,7 +1838,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expExecutorResult: group.ProposalExecutorResultNotRun,
 		},
 		"prevent double execution when successful": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				myProposalID := createProposalAndVote(ctx, s, []sdk.Msg{msgSend}, proposers, group.Choice_CHOICE_YES)
 
 				_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{Signer: s.addr1.String(), ProposalId: myProposalID})
@@ -1852,7 +1852,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 100)},
 		},
 		"rollback all msg updates on failure": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				msgs := []sdk.Msg{
 					msgSend, &banktypes.MsgSend{
 						FromAddress: s.groupAccountAddr.String(),
@@ -1866,7 +1866,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expExecutorResult: group.ProposalExecutorResultFailure,
 		},
 		"executable when failed before": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				msgs := []sdk.Msg{
 					&banktypes.MsgSend{
 						FromAddress: s.groupAccountAddr.String(),
@@ -1936,7 +1936,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 
 func createProposal(
 	ctx context.Context, s *IntegrationTestSuite, msgs []sdk.Msg,
-	proposers []string) group.ProposalID {
+	proposers []string) uint64 {
 	proposalReq := &group.MsgCreateProposalRequest{
 		GroupAccount: s.groupAccountAddr.String(),
 		Proposers:    proposers,
@@ -1952,7 +1952,7 @@ func createProposal(
 
 func createProposalAndVote(
 	ctx context.Context, s *IntegrationTestSuite, msgs []sdk.Msg,
-	proposers []string, choice group.Choice) group.ProposalID {
+	proposers []string, choice group.Choice) uint64 {
 	s.Require().Greater(len(proposers), 0)
 	myProposalID := createProposal(ctx, s, msgs, proposers)
 
@@ -1968,7 +1968,7 @@ func createProposalAndVote(
 func createGroupAndGroupAccount(
 	admin sdk.AccAddress,
 	s *IntegrationTestSuite,
-) (string, group.ID, group.DecisionPolicy) {
+) (string, uint64, group.DecisionPolicy) {
 	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
 		Admin:    admin.String(),
 		Members:  nil,
