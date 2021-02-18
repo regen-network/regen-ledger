@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
@@ -24,6 +25,7 @@ type Configurator interface {
 	// Router() is temporarily added here to use in the group module.
 	// TODO: remove once #225 addressed
 	Router() sdk.Router
+	MsgServiceRouter() *baseapp.MsgServiceRouter
 }
 
 // LegacyRouteModule is the module type that a module must implement

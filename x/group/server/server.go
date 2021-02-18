@@ -5,6 +5,7 @@ import (
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/group"
 
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -39,8 +40,9 @@ const (
 )
 
 type serverImpl struct {
-	key    servermodule.RootModuleKey
-	router sdk.Router
+	key              servermodule.RootModuleKey
+	router           sdk.Router
+	msgServiceRouter *baseapp.MsgServiceRouter
 
 	accKeeper AccountKeeper
 
@@ -71,8 +73,8 @@ type serverImpl struct {
 	voteByVoterIndex    orm.Index
 }
 
-func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper AccountKeeper, cdc codec.Marshaler) serverImpl {
-	s := serverImpl{key: storeKey, router: router, accKeeper: accKeeper}
+func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, msgServiceRouter *baseapp.MsgServiceRouter, accKeeper AccountKeeper, cdc codec.Marshaler) serverImpl {
+	s := serverImpl{key: storeKey, router: router, accKeeper: accKeeper, msgServiceRouter: msgServiceRouter}
 
 	// Group Table
 	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, storeKey, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
@@ -162,7 +164,7 @@ func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper
 }
 
 func RegisterServices(configurator servermodule.Configurator, accountKeeper AccountKeeper) {
-	impl := newServer(configurator.ModuleKey(), configurator.Router(), accountKeeper, configurator.Marshaler())
+	impl := newServer(configurator.ModuleKey(), configurator.Router(), configurator.MsgServiceRouter(), accountKeeper, configurator.Marshaler())
 	group.RegisterMsgServer(configurator.MsgServer(), impl)
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
 }

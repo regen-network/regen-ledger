@@ -1712,7 +1712,7 @@ func (s *IntegrationTestSuite) TestDoExecuteMsgs() {
 			} else {
 				router = baseapp.NewRouter().AddRoute(sdk.NewRoute(banktypes.ModuleName, bank.NewHandler(s.bankKeeper)))
 			}
-			_, err := groupserver.DoExecuteMsgs(ctx, router, s.groupAccountAddr, spec.srcMsgs)
+			_, err := groupserver.DoExecuteMsgs(ctx, s.fixtureFactory.BaseApp().MsgServiceRouter(), router, s.groupAccountAddr, spec.srcMsgs)
 			if spec.expErr {
 				s.Require().Error(err)
 				return

@@ -624,7 +624,7 @@ func (s serverImpl) Exec(ctx types.Context, req *group.MsgExecRequest) (*group.M
 		if err != nil {
 			return nil, sdkerrors.Wrap(err, "group account")
 		}
-		_, err = DoExecuteMsgs(ctx, s.router, address, proposal.GetMsgs())
+		_, err = DoExecuteMsgs(ctx, s.msgServiceRouter, s.router, address, proposal.GetMsgs())
 		if err != nil {
 			proposal.ExecutorResult = group.ProposalExecutorResultFailure
 			proposalType := reflect.TypeOf(proposal).String()
