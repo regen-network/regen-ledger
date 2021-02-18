@@ -92,7 +92,7 @@ func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, msgServic
 	groupMemberTableBuilder := orm.NewNaturalKeyTableBuilder(GroupMemberTablePrefix, storeKey, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.groupMemberByGroupIndex = orm.NewUInt64Index(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]uint64, error) {
 		group := val.(*group.GroupMember).GroupId
-		return []uint64{uint64(group)}, nil
+		return []uint64{group}, nil
 	})
 	s.groupMemberByMemberIndex = orm.NewIndex(groupMemberTableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
 		memberAddr := val.(*group.GroupMember).Member.Address
@@ -109,7 +109,7 @@ func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, msgServic
 	groupAccountTableBuilder := orm.NewNaturalKeyTableBuilder(GroupAccountTablePrefix, storeKey, &group.GroupAccountInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.groupAccountByGroupIndex = orm.NewUInt64Index(groupAccountTableBuilder, GroupAccountByGroupIndexPrefix, func(value interface{}) ([]uint64, error) {
 		group := value.(*group.GroupAccountInfo).GroupId
-		return []uint64{uint64(group)}, nil
+		return []uint64{group}, nil
 	})
 	s.groupAccountByAdminIndex = orm.NewIndex(groupAccountTableBuilder, GroupAccountByAdminIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
 		admin := value.(*group.GroupAccountInfo).Admin
@@ -149,7 +149,7 @@ func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, msgServic
 	// Vote Table
 	voteTableBuilder := orm.NewNaturalKeyTableBuilder(VoteTablePrefix, storeKey, &group.Vote{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.voteByProposalIndex = orm.NewUInt64Index(voteTableBuilder, VoteByProposalIndexPrefix, func(value interface{}) ([]uint64, error) {
-		return []uint64{uint64(value.(*group.Vote).ProposalId)}, nil
+		return []uint64{value.(*group.Vote).ProposalId}, nil
 	})
 	s.voteByVoterIndex = orm.NewIndex(voteTableBuilder, VoteByVoterIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
 		addr, err := sdk.AccAddressFromBech32(value.(*group.Vote).Voter)
