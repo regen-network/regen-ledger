@@ -23,9 +23,22 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// TODO: #214
 // GenesisState defines the group module's genesis state.
 type GenesisState struct {
+	// group_seq is the group table orm.Sequence.
+	GroupSeq uint64 `protobuf:"varint,1,opt,name=group_seq,json=groupSeq,proto3" json:"group_seq,omitempty"`
+	// groups is the list of groups info.
+	Groups []*GroupInfo `protobuf:"bytes,2,rep,name=groups,proto3" json:"groups,omitempty"`
+	// group_members is the list of groups members.
+	GroupMembers []*GroupMember `protobuf:"bytes,3,rep,name=group_members,json=groupMembers,proto3" json:"group_members,omitempty"`
+	// group_account_seq is the group account table orm.Sequence.
+	GroupAccountSeq uint64 `protobuf:"varint,4,opt,name=group_account_seq,json=groupAccountSeq,proto3" json:"group_account_seq,omitempty"`
+	// group_accounts is the list of group accounts info.
+	GroupAccounts []*GroupAccountInfo `protobuf:"bytes,5,rep,name=group_accounts,json=groupAccounts,proto3" json:"group_accounts,omitempty"`
+	// proposals is the list of proposals.
+	Proposals []*Proposal `protobuf:"bytes,6,rep,name=proposals,proto3" json:"proposals,omitempty"`
+	// votes is the list of votes.
+	Votes []*Vote `protobuf:"bytes,7,rep,name=votes,proto3" json:"votes,omitempty"`
 }
 
 func (m *GenesisState) Reset()         { *m = GenesisState{} }
@@ -61,6 +74,55 @@ func (m *GenesisState) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_GenesisState proto.InternalMessageInfo
 
+func (m *GenesisState) GetGroupSeq() uint64 {
+	if m != nil {
+		return m.GroupSeq
+	}
+	return 0
+}
+
+func (m *GenesisState) GetGroups() []*GroupInfo {
+	if m != nil {
+		return m.Groups
+	}
+	return nil
+}
+
+func (m *GenesisState) GetGroupMembers() []*GroupMember {
+	if m != nil {
+		return m.GroupMembers
+	}
+	return nil
+}
+
+func (m *GenesisState) GetGroupAccountSeq() uint64 {
+	if m != nil {
+		return m.GroupAccountSeq
+	}
+	return 0
+}
+
+func (m *GenesisState) GetGroupAccounts() []*GroupAccountInfo {
+	if m != nil {
+		return m.GroupAccounts
+	}
+	return nil
+}
+
+func (m *GenesisState) GetProposals() []*Proposal {
+	if m != nil {
+		return m.Proposals
+	}
+	return nil
+}
+
+func (m *GenesisState) GetVotes() []*Vote {
+	if m != nil {
+		return m.Votes
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*GenesisState)(nil), "regen.group.v1alpha1.GenesisState")
 }
@@ -70,18 +132,29 @@ func init() {
 }
 
 var fileDescriptor_6ccc5d002e96a4ab = []byte{
-	// 163 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x2a, 0x4a, 0x4d, 0x4f,
-	0xcd, 0xd3, 0x4f, 0x2f, 0xca, 0x2f, 0x2d, 0xd0, 0x2f, 0x33, 0x4c, 0xcc, 0x29, 0xc8, 0x48, 0x34,
-	0xd4, 0x4f, 0x4f, 0xcd, 0x4b, 0x2d, 0xce, 0x2c, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x12,
-	0x01, 0xab, 0xd1, 0x03, 0xab, 0xd1, 0x83, 0xa9, 0x91, 0x12, 0x49, 0xcf, 0x4f, 0xcf, 0x07, 0x2b,
-	0xd0, 0x07, 0xb1, 0x20, 0x6a, 0x95, 0xf8, 0xb8, 0x78, 0xdc, 0x21, 0x9a, 0x83, 0x4b, 0x12, 0x4b,
-	0x52, 0x9d, 0xdc, 0x4f, 0x3c, 0x92, 0x63, 0xbc, 0xf0, 0x48, 0x8e, 0xf1, 0xc1, 0x23, 0x39, 0xc6,
-	0x09, 0x8f, 0xe5, 0x18, 0x2e, 0x3c, 0x96, 0x63, 0xb8, 0xf1, 0x58, 0x8e, 0x21, 0x4a, 0x37, 0x3d,
-	0xb3, 0x24, 0xa3, 0x34, 0x49, 0x2f, 0x39, 0x3f, 0x57, 0x1f, 0x6c, 0x81, 0x6e, 0x5e, 0x6a, 0x49,
-	0x79, 0x7e, 0x51, 0x36, 0x94, 0x97, 0x93, 0x9a, 0x92, 0x9e, 0x5a, 0xa4, 0x5f, 0x01, 0x71, 0x5b,
-	0x12, 0x1b, 0xd8, 0x7c, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0x70, 0xd0, 0x61, 0x97, 0xb1,
-	0x00, 0x00, 0x00,
+	// 347 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x91, 0xbf, 0x4e, 0x2a, 0x41,
+	0x14, 0xc6, 0xd9, 0xcb, 0x9f, 0x7b, 0x99, 0x0b, 0x1a, 0x27, 0x14, 0x1b, 0x4c, 0x46, 0xa4, 0x30,
+	0xc4, 0x84, 0x5d, 0xd1, 0xc2, 0xc6, 0x46, 0x0b, 0x89, 0x05, 0x89, 0x59, 0x12, 0x0b, 0x1b, 0xb3,
+	0xe0, 0x71, 0x20, 0xc2, 0x9e, 0x65, 0x66, 0x40, 0x7d, 0x0b, 0x3b, 0x5f, 0xc9, 0x92, 0xd2, 0xd2,
+	0xc0, 0x8b, 0x18, 0xce, 0xac, 0x41, 0x93, 0x0d, 0xdd, 0x9c, 0x99, 0xdf, 0xf7, 0x9b, 0x2f, 0x39,
+	0xac, 0xae, 0x40, 0x42, 0xe4, 0x4b, 0x85, 0xd3, 0xd8, 0x9f, 0xb5, 0xc2, 0x51, 0x3c, 0x08, 0x5b,
+	0xbe, 0x84, 0x08, 0xf4, 0x50, 0x7b, 0xb1, 0x42, 0x83, 0xbc, 0x42, 0x8c, 0x47, 0x8c, 0xf7, 0xcd,
+	0x54, 0x2b, 0x12, 0x25, 0x12, 0xe0, 0xaf, 0x4e, 0x96, 0xad, 0xd6, 0x52, 0x7d, 0xe6, 0x25, 0x86,
+	0xc4, 0x56, 0x7f, 0xcb, 0xb2, 0x52, 0xdb, 0xfa, 0xbb, 0x26, 0x34, 0xc0, 0x77, 0x59, 0x91, 0xf0,
+	0x3b, 0x0d, 0x13, 0xd7, 0xa9, 0x39, 0x8d, 0x5c, 0xf0, 0x8f, 0x2e, 0xba, 0x30, 0xe1, 0xa7, 0xac,
+	0x40, 0x67, 0xed, 0xfe, 0xa9, 0x65, 0x1b, 0xff, 0x8f, 0xf7, 0xbc, 0xb4, 0x32, 0x5e, 0x7b, 0x35,
+	0x5e, 0x45, 0x0f, 0x18, 0x24, 0x38, 0xbf, 0x64, 0x65, 0x6b, 0x1d, 0xc3, 0xb8, 0x07, 0x4a, 0xbb,
+	0x59, 0xca, 0xef, 0x6f, 0xc8, 0x77, 0x88, 0x0c, 0x4a, 0x72, 0x3d, 0x68, 0x7e, 0xc8, 0x76, 0xac,
+	0x27, 0xec, 0xf7, 0x71, 0x1a, 0x19, 0x6a, 0x99, 0xa3, 0x96, 0xdb, 0xf4, 0x70, 0x6e, 0xef, 0x57,
+	0x65, 0x3b, 0x6c, 0xeb, 0x17, 0xab, 0xdd, 0x3c, 0x7d, 0x7a, 0xb0, 0xe1, 0xd3, 0x24, 0x4e, 0xdd,
+	0xcb, 0x3f, 0x85, 0x9a, 0x9f, 0xb1, 0x62, 0xac, 0x30, 0x46, 0x1d, 0x8e, 0xb4, 0x5b, 0x20, 0x93,
+	0x48, 0x37, 0x5d, 0x27, 0x58, 0xb0, 0x0e, 0xf0, 0x23, 0x96, 0x9f, 0xa1, 0x01, 0xed, 0xfe, 0xa5,
+	0x64, 0x35, 0x3d, 0x79, 0x83, 0x06, 0x02, 0x0b, 0x5e, 0xb4, 0xdf, 0x17, 0xc2, 0x99, 0x2f, 0x84,
+	0xf3, 0xb9, 0x10, 0xce, 0xeb, 0x52, 0x64, 0xe6, 0x4b, 0x91, 0xf9, 0x58, 0x8a, 0xcc, 0x6d, 0x53,
+	0x0e, 0xcd, 0x60, 0xda, 0xf3, 0xfa, 0x38, 0xf6, 0x49, 0xd3, 0x8c, 0xc0, 0x3c, 0xa1, 0x7a, 0x4c,
+	0xa6, 0x11, 0xdc, 0x4b, 0x50, 0xfe, 0xb3, 0xdd, 0x7b, 0xaf, 0x40, 0x9b, 0x3e, 0xf9, 0x0a, 0x00,
+	0x00, 0xff, 0xff, 0xce, 0x2b, 0x17, 0xf3, 0x5d, 0x02, 0x00, 0x00,
 }
 
 func (m *GenesisState) Marshal() (dAtA []byte, err error) {
@@ -104,6 +177,86 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Votes) > 0 {
+		for iNdEx := len(m.Votes) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Votes[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x3a
+		}
+	}
+	if len(m.Proposals) > 0 {
+		for iNdEx := len(m.Proposals) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Proposals[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x32
+		}
+	}
+	if len(m.GroupAccounts) > 0 {
+		for iNdEx := len(m.GroupAccounts) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.GroupAccounts[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x2a
+		}
+	}
+	if m.GroupAccountSeq != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.GroupAccountSeq))
+		i--
+		dAtA[i] = 0x20
+	}
+	if len(m.GroupMembers) > 0 {
+		for iNdEx := len(m.GroupMembers) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.GroupMembers[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.Groups) > 0 {
+		for iNdEx := len(m.Groups) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Groups[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if m.GroupSeq != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.GroupSeq))
+		i--
+		dAtA[i] = 0x8
+	}
 	return len(dAtA) - i, nil
 }
 
@@ -124,6 +277,42 @@ func (m *GenesisState) Size() (n int) {
 	}
 	var l int
 	_ = l
+	if m.GroupSeq != 0 {
+		n += 1 + sovGenesis(uint64(m.GroupSeq))
+	}
+	if len(m.Groups) > 0 {
+		for _, e := range m.Groups {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.GroupMembers) > 0 {
+		for _, e := range m.GroupMembers {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if m.GroupAccountSeq != 0 {
+		n += 1 + sovGenesis(uint64(m.GroupAccountSeq))
+	}
+	if len(m.GroupAccounts) > 0 {
+		for _, e := range m.GroupAccounts {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.Proposals) > 0 {
+		for _, e := range m.Proposals {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.Votes) > 0 {
+		for _, e := range m.Votes {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
 	return n
 }
 
@@ -162,6 +351,214 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: GenesisState: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GroupSeq", wireType)
+			}
+			m.GroupSeq = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GroupSeq |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Groups", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Groups = append(m.Groups, &GroupInfo{})
+			if err := m.Groups[len(m.Groups)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GroupMembers", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GroupMembers = append(m.GroupMembers, &GroupMember{})
+			if err := m.GroupMembers[len(m.GroupMembers)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GroupAccountSeq", wireType)
+			}
+			m.GroupAccountSeq = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GroupAccountSeq |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GroupAccounts", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GroupAccounts = append(m.GroupAccounts, &GroupAccountInfo{})
+			if err := m.GroupAccounts[len(m.GroupAccounts)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Proposals", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Proposals = append(m.Proposals, &Proposal{})
+			if err := m.Proposals[len(m.Proposals)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Votes", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Votes = append(m.Votes, &Vote{})
+			if err := m.Votes[len(m.Votes)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipGenesis(dAtA[iNdEx:])

@@ -10,9 +10,6 @@
     - [EventUpdateGroup](#regen.group.v1alpha1.EventUpdateGroup)
     - [EventUpdateGroupAccount](#regen.group.v1alpha1.EventUpdateGroupAccount)
   
-- [regen/group/v1alpha1/genesis.proto](#regen/group/v1alpha1/genesis.proto)
-    - [GenesisState](#regen.group.v1alpha1.GenesisState)
-  
 - [regen/group/v1alpha1/types.proto](#regen/group/v1alpha1/types.proto)
     - [GroupAccountInfo](#regen.group.v1alpha1.GroupAccountInfo)
     - [GroupInfo](#regen.group.v1alpha1.GroupInfo)
@@ -28,6 +25,9 @@
     - [Proposal.ExecutorResult](#regen.group.v1alpha1.Proposal.ExecutorResult)
     - [Proposal.Result](#regen.group.v1alpha1.Proposal.Result)
     - [Proposal.Status](#regen.group.v1alpha1.Proposal.Status)
+  
+- [regen/group/v1alpha1/genesis.proto](#regen/group/v1alpha1/genesis.proto)
+    - [GenesisState](#regen.group.v1alpha1.GenesisState)
   
 - [regen/group/v1alpha1/query.proto](#regen/group/v1alpha1/query.proto)
     - [QueryGroupAccountInfoRequest](#regen.group.v1alpha1.QueryGroupAccountInfoRequest)
@@ -146,33 +146,6 @@ EventUpdateGroupAccount is an event emitted when a group account is updated.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | group_account | [string](#string) |  | group_account is the address of the group account. |
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
- <!-- end services -->
-
-
-
-<a name="regen/group/v1alpha1/genesis.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## regen/group/v1alpha1/genesis.proto
-
-
-
-<a name="regen.group.v1alpha1.GenesisState"></a>
-
-### GenesisState
-TODO: #214
-GenesisState defines the group module's genesis state.
 
 
 
@@ -422,6 +395,43 @@ Status defines proposal statuses.
 | STATUS_CLOSED | 2 | Final status of a proposal when the final tally was executed. |
 | STATUS_ABORTED | 3 | Final status of a proposal when the group was modified before the final tally. |
 
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="regen/group/v1alpha1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## regen/group/v1alpha1/genesis.proto
+
+
+
+<a name="regen.group.v1alpha1.GenesisState"></a>
+
+### GenesisState
+GenesisState defines the group module's genesis state.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| group_seq | [uint64](#uint64) |  | group_seq is the group table orm.Sequence. |
+| groups | [GroupInfo](#regen.group.v1alpha1.GroupInfo) | repeated | groups is the list of groups info. |
+| group_members | [GroupMember](#regen.group.v1alpha1.GroupMember) | repeated | group_members is the list of groups members. |
+| group_account_seq | [uint64](#uint64) |  | group_account_seq is the group account table orm.Sequence. |
+| group_accounts | [GroupAccountInfo](#regen.group.v1alpha1.GroupAccountInfo) | repeated | group_accounts is the list of group accounts info. |
+| proposals | [Proposal](#regen.group.v1alpha1.Proposal) | repeated | proposals is the list of proposals. |
+| votes | [Vote](#regen.group.v1alpha1.Vote) | repeated | votes is the list of votes. |
+
+
+
+
+
+ <!-- end messages -->
 
  <!-- end enums -->
 

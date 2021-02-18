@@ -1,4 +1,4 @@
-syntax = "proto3";
+esyntax = "proto3";
 
 package regen.group.v1alpha1;
 
