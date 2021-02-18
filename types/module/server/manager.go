@@ -94,6 +94,7 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 			cdc:              mm.cdc,
 			requiredServices: map[reflect.Type]bool{},
 			router:           mm.baseApp.Router(), // TODO: remove once #225 addressed
+			msgServiceRouter: mm.baseApp.MsgServiceRouter(),
 		}
 
 		serverMod.RegisterServices(cfg)
@@ -144,6 +145,7 @@ type configurator struct {
 	cdc              codec.Marshaler
 	requiredServices map[reflect.Type]bool
 	router           sdk.Router
+	msgServiceRouter *baseapp.MsgServiceRouter
 }
 
 var _ Configurator = &configurator{}
@@ -168,6 +170,10 @@ func (c *configurator) Marshaler() codec.Marshaler {
 // TODO: remove once #225 addressed
 func (c *configurator) Router() sdk.Router {
 	return c.router
+}
+
+func (c *configurator) MsgServiceRouter() *baseapp.MsgServiceRouter {
+	return c.msgServiceRouter
 }
 
 func (c *configurator) RequireServer(serverInterface interface{}) {
