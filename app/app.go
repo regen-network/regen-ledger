@@ -62,6 +62,7 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
+	group "github.com/regen-network/regen-ledger/x/group/module"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
@@ -412,7 +413,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		wasm.NewAppModule(&app.wasmKeeper),
-		group.Module{Registry: app.interfaceRegistry, BankKeeper: app.BankKeeper, AccountKeeper: app.AccountKeeper},
+		group.Module{Registry: app.interfaceRegistry, BankKeeper: app.BankKeeper, AccountKeeper: app.AccountKeeper, Configurator: nil},
 	)
 
 	app.sm.RegisterStoreDecoders()

@@ -18,6 +18,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/group"
+	"github.com/regen-network/regen-ledger/x/group/server"
 )
 
 // Simulation operation weights constants
@@ -36,8 +37,8 @@ const (
 
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
-	appParams simtypes.AppParams, cdc codec.JSONMarshaler, ak group.AccountKeeper,
-	bk group.BankKeeper, protoCdc *codec.ProtoCodec, qryClient group.QueryClient) simulation.WeightedOperations {
+	appParams simtypes.AppParams, cdc codec.JSONMarshaler, ak server.AccountKeeper,
+	bk server.BankKeeper, protoCdc *codec.ProtoCodec, qryClient group.QueryClient) simulation.WeightedOperations {
 	var (
 		weightMsgCreateGroup        int
 		weightMsgCreateGroupAccount int
@@ -76,7 +77,7 @@ func WeightedOperations(
 	}
 }
 
-func SimulateMsgCreateGroup(ak group.AccountKeeper, bk group.BankKeeper, protoCdc *codec.ProtoCodec) simtypes.Operation {
+func SimulateMsgCreateGroup(ak server.AccountKeeper, bk server.BankKeeper, protoCdc *codec.ProtoCodec) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc := accounts[0]
@@ -128,7 +129,7 @@ func SimulateMsgCreateGroup(ak group.AccountKeeper, bk group.BankKeeper, protoCd
 	}
 }
 
-func SimulateMsgCreateGroupAccount(ak group.AccountKeeper, bk group.BankKeeper, protoCdc *codec.ProtoCodec, qryClient group.QueryClient) simtypes.Operation {
+func SimulateMsgCreateGroupAccount(ak server.AccountKeeper, bk server.BankKeeper, protoCdc *codec.ProtoCodec, qryClient group.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc := accounts[0]
@@ -198,7 +199,7 @@ func SimulateMsgCreateGroupAccount(ak group.AccountKeeper, bk group.BankKeeper, 
 	}
 }
 
-func SimulateMsgCreateProposal(ak group.AccountKeeper, bk group.BankKeeper, protoCdc *codec.ProtoCodec, queryClient group.QueryClient) simtypes.Operation {
+func SimulateMsgCreateProposal(ak server.AccountKeeper, bk server.BankKeeper, protoCdc *codec.ProtoCodec, queryClient group.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc := accounts[0]

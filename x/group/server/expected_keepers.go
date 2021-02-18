@@ -15,3 +15,8 @@ type AccountKeeper interface {
 	// Set an account in the store.
 	SetAccount(sdk.Context, types.AccountI)
 }
+
+// BankKeeper defines the expected interface needed to retrieve account balances.
+type BankKeeper interface {
+	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
+}
