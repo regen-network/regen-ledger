@@ -163,7 +163,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			},
 			expGroups: expGroups,
 		},
-		"group comment too long": {
+		"group metadata too long": {
 			req: &group.MsgCreateGroupRequest{
 				Admin:    s.addr1.String(),
 				Members:  members,
@@ -171,7 +171,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			},
 			expErr: true,
 		},
-		"member comment too long": {
+		"member metadata too long": {
 			req: &group.MsgCreateGroupRequest{
 				Admin: s.addr1.String(),
 				Members: []group.Member{{
@@ -751,7 +751,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 			),
 			expErr: true,
 		},
-		"comment too long": {
+		"metadata too long": {
 			req: &group.MsgCreateGroupAccountRequest{
 				Admin:    s.addr1.String(),
 				Metadata: []byte(strings.Repeat("a", 256)),
@@ -1148,14 +1148,14 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 				Amount:      sdk.Coins{sdk.NewInt64Coin("token", 100)},
 			}},
 		},
-		// "comment too long": {
-		// 	req: &group.MsgCreateProposalRequest{
-		// 		GroupAccount: accountAddr.String(),
-		// 		Metadata:      strings.Repeat("a", 256),
-		// 		Proposers:    []string{s.addr2.String()},
-		// 	},
-		// 	expErr: true,
-		// },
+		"metadata too long": {
+			req: &group.MsgCreateProposalRequest{
+				GroupAccount: accountAddr.String(),
+				Metadata:     bytes.Repeat([]byte{1}, 256),
+				Proposers:    []string{s.addr2.String()},
+			},
+			expErr: true,
+		},
 		"group account required": {
 			req: &group.MsgCreateProposalRequest{
 				Metadata:  nil,
