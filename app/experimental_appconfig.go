@@ -47,6 +47,7 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 	if err != nil {
 		panic(err)
 	}
+
 	/* New Module Wiring END */
 }
 

@@ -1,7 +1,10 @@
 package server
 
 import (
+	"encoding/json"
+
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/types"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/group"
 
@@ -165,4 +168,14 @@ func RegisterServices(configurator servermodule.Configurator, accountKeeper Acco
 	impl := newServer(configurator.ModuleKey(), configurator.Router(), accountKeeper, configurator.Marshaler())
 	group.RegisterMsgServer(configurator.MsgServer(), impl)
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
+	configurator.RegisterGenesis(impl.InitGenesis, impl.ExportGenesis)
+}
+
+func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.JSONMarshaler, data json.RawMessage) {
+	// TODO
+}
+
+func (s serverImpl) ExportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage {
+	// TODO
+	return nil
 }

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 
@@ -8,25 +9,31 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	gogogrpc "github.com/gogo/protobuf/grpc"
+	abci "github.com/tendermint/tendermint/abci/types"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/module"
 )
 
 // Manager is the server module manager
 type Manager struct {
-	baseApp          *baseapp.BaseApp
-	cdc              *codec.ProtoCodec
-	keys             map[string]ModuleKey
-	router           *router
-	requiredServices map[reflect.Type]bool
+	baseApp               *baseapp.BaseApp
+	cdc                   *codec.ProtoCodec
+	keys                  map[string]ModuleKey
+	router                *router
+	requiredServices      map[reflect.Type]bool
+	initGenesisHandlers   []InitGenesisHandler
+	exportGenesisHandlers []ExportGenesisHandler
 }
 
 // NewManager creates a new Manager
 func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 	return &Manager{
-		baseApp: baseApp,
-		cdc:     cdc,
-		keys:    map[string]ModuleKey{},
+		baseApp:               baseApp,
+		cdc:                   cdc,
+		keys:                  map[string]ModuleKey{},
+		initGenesisHandlers:   []InitGenesisHandler{},
+		exportGenesisHandlers: []ExportGenesisHandler{},
 		router: &router{
 			handlers:         map[string]handler{},
 			providedServices: map[reflect.Type]bool{},
@@ -39,6 +46,8 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 func (mm *Manager) RegisterModules(modules []module.Module) error {
 	// First we register all interface types. This is done for all modules first before registering
 	// any services in case there are any weird dependencies that will cause service initialization to fail.
+	var initGenesisHandlers []InitGenesisHandler
+	var exportGenesisHandlers []ExportGenesisHandler
 	for _, mod := range modules {
 		// check if we actually have a server module, otherwise skip
 		serverMod, ok := mod.(Module)
@@ -98,6 +107,9 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 
 		serverMod.RegisterServices(cfg)
 
+		initGenesisHandlers = append(initGenesisHandlers, cfg.initGenesisHandler)
+		exportGenesisHandlers = append(exportGenesisHandlers, cfg.exportGenesisHandler)
+
 		// If mod implements LegacyRouteModule, register module route.
 		// This is currently used for the group module as part of #218.
 		routeMod, ok := mod.(LegacyRouteModule)
@@ -110,7 +122,11 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		for typ := range cfg.requiredServices {
 			mm.requiredServices[typ] = true
 		}
+
 	}
+
+	mm.initGenesisHandlers = initGenesisHandlers
+	mm.exportGenesisHandlers = exportGenesisHandlers
 
 	return nil
 }
@@ -137,13 +153,28 @@ func (mm *Manager) CompleteInitialization() error {
 	return nil
 }
 
+func (mm *Manager) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) abci.ResponseInitChain {
+	// TODO
+	return abci.ResponseInitChain{}
+}
+
+func (mm *Manager) ExportGenesis(ctx sdk.Context) map[string]json.RawMessage {
+	// TODO
+	return nil
+}
+
+type InitGenesisHandler func(ctx types.Context, cdc codec.JSONMarshaler, data json.RawMessage)
+type ExportGenesisHandler func(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage
+
 type configurator struct {
-	msgServer        gogogrpc.Server
-	queryServer      gogogrpc.Server
-	key              *rootModuleKey
-	cdc              codec.Marshaler
-	requiredServices map[reflect.Type]bool
-	router           sdk.Router
+	msgServer            gogogrpc.Server
+	queryServer          gogogrpc.Server
+	key                  *rootModuleKey
+	cdc                  codec.Marshaler
+	requiredServices     map[reflect.Type]bool
+	router               sdk.Router
+	initGenesisHandler   InitGenesisHandler
+	exportGenesisHandler ExportGenesisHandler
 }
 
 var _ Configurator = &configurator{}
@@ -154,6 +185,11 @@ func (c *configurator) MsgServer() gogogrpc.Server {
 
 func (c *configurator) QueryServer() gogogrpc.Server {
 	return c.queryServer
+}
+
+func (c *configurator) RegisterGenesis(initGenesisHandler InitGenesisHandler, exportGenesisHandler ExportGenesisHandler) {
+	c.initGenesisHandler = initGenesisHandler
+	c.exportGenesisHandler = exportGenesisHandler
 }
 
 func (c *configurator) ModuleKey() RootModuleKey {

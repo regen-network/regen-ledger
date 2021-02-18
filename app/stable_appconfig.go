@@ -11,6 +11,7 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 	return []module.AppModuleBasic{}
 }
 
-func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) {}
+func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) {
+}
 
 func (app *RegenApp) registerUpgradeHandlers() {}
