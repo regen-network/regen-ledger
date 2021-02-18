@@ -53,8 +53,8 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 	}
 
 	// Create a new group in the groupTable.
-	groupID := group.ID(s.groupSeq.NextVal(ctx))
-	err := s.groupTable.Create(ctx, groupID.Bytes(), &group.GroupInfo{
+	groupID := s.groupSeq.NextVal(ctx)
+	err := s.groupTable.Create(ctx, group.ID(groupID).Bytes(), &group.GroupInfo{
 		GroupId:     groupID,
 		Admin:       admin,
 		Metadata:    metadata,
@@ -81,7 +81,7 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 		}
 	}
 
-	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroup{GroupId: strconv.FormatUint(groupID.Uint64(), 10)})
+	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroup{GroupId: strconv.FormatUint(groupID, 10)})
 	if err != nil {
 		return nil, err
 	}
@@ -176,7 +176,8 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 		// Update group in the groupTable.
 		g.TotalWeight = math.DecimalString(totalWeight)
 		g.Version++
-		return s.groupTable.Save(ctx, g.GroupId.Bytes(), g)
+		groupID := group.ID(g.GroupId).Bytes()
+		return s.groupTable.Save(ctx, groupID, g)
 	}
 
 	err := s.doUpdateGroup(ctx, req, action, "members updated")
@@ -191,7 +192,9 @@ func (s serverImpl) UpdateGroupAdmin(ctx types.Context, req *group.MsgUpdateGrou
 	action := func(g *group.GroupInfo) error {
 		g.Admin = req.NewAdmin
 		g.Version++
-		return s.groupTable.Save(ctx, g.GroupId.Bytes(), g)
+
+		groupID := group.ID(g.GroupId).Bytes()
+		return s.groupTable.Save(ctx, groupID, g)
 	}
 
 	err := s.doUpdateGroup(ctx, req, action, "admin updated")
@@ -206,7 +209,8 @@ func (s serverImpl) UpdateGroupMetadata(ctx types.Context, req *group.MsgUpdateG
 	action := func(g *group.GroupInfo) error {
 		g.Metadata = req.Metadata
 		g.Version++
-		return s.groupTable.Save(ctx, g.GroupId.Bytes(), g)
+		groupID := group.ID(g.GroupId).Bytes()
+		return s.groupTable.Save(ctx, groupID, g)
 	}
 
 	if err := assertMetadataLength(req.Metadata, "group metadata"); err != nil {
@@ -450,7 +454,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 
 	// TODO: add event #215
 
-	return &group.MsgCreateProposalResponse{ProposalId: group.ProposalID(id)}, nil
+	return &group.MsgCreateProposalResponse{ProposalId: id}, nil
 }
 
 func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.MsgVoteResponse, error) {
@@ -533,7 +537,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 		return nil, err
 	}
 
-	if err = s.proposalTable.Save(ctx, id.Uint64(), &proposal); err != nil {
+	if err = s.proposalTable.Save(ctx, id, &proposal); err != nil {
 		return nil, err
 	}
 
@@ -585,7 +589,7 @@ func (s serverImpl) Exec(ctx types.Context, req *group.MsgExecRequest) (*group.M
 	}
 
 	storeUpdates := func() (*group.MsgExecResponse, error) {
-		if err := s.proposalTable.Save(ctx, id.Uint64(), &proposal); err != nil {
+		if err := s.proposalTable.Save(ctx, id, &proposal); err != nil {
 			return nil, err
 		}
 		return &group.MsgExecResponse{}, nil
@@ -646,7 +650,7 @@ func (s serverImpl) Exec(ctx types.Context, req *group.MsgExecRequest) (*group.M
 }
 
 type authNGroupReq interface {
-	GetGroupID() group.ID
+	GetGroupID() uint64
 	GetAdmin() string
 }
 
@@ -697,7 +701,7 @@ func (s serverImpl) doUpdateGroup(ctx types.Context, req authNGroupReq, action a
 		return err
 	}
 
-	err = ctx.EventManager().EmitTypedEvent(&group.EventUpdateGroup{GroupId: strconv.FormatUint(req.GetGroupID().Uint64(), 10)})
+	err = ctx.EventManager().EmitTypedEvent(&group.EventUpdateGroup{GroupId: strconv.FormatUint(req.GetGroupID(), 10)})
 	if err != nil {
 		return err
 	}

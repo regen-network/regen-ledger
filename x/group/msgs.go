@@ -123,7 +123,7 @@ func (m MsgUpdateGroupAdminRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgUpdateGroupAdminRequest) GetGroupID() ID {
+func (m *MsgUpdateGroupAdminRequest) GetGroupID() uint64 {
 	return m.GroupId
 }
 
@@ -162,7 +162,7 @@ func (m MsgUpdateGroupMetadataRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgUpdateGroupMetadataRequest) GetGroupID() ID {
+func (m *MsgUpdateGroupMetadataRequest) GetGroupID() uint64 {
 	return m.GroupId
 }
 
@@ -211,7 +211,7 @@ func (m MsgUpdateGroupMembersRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgUpdateGroupMembersRequest) GetGroupID() ID {
+func (m *MsgUpdateGroupMembersRequest) GetGroupID() uint64 {
 	return m.GroupId
 }
 
@@ -432,7 +432,7 @@ var _ sdk.Msg = &MsgCreateGroupAccountRequest{}
 var _ types.UnpackInterfacesMessage = MsgCreateGroupAccountRequest{}
 
 // NewMsgCreateGroupAccountRequest creates a new MsgCreateGroupAccountRequest.
-func NewMsgCreateGroupAccountRequest(admin sdk.AccAddress, group ID, metadata []byte, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccountRequest, error) {
+func NewMsgCreateGroupAccountRequest(admin sdk.AccAddress, group uint64, metadata []byte, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccountRequest, error) {
 	m := &MsgCreateGroupAccountRequest{
 		Admin:    admin.String(),
 		GroupId:  group,
@@ -449,7 +449,7 @@ func (m *MsgCreateGroupAccountRequest) GetAdmin() string {
 	return m.Admin
 }
 
-func (m *MsgCreateGroupAccountRequest) GetGroupID() ID {
+func (m *MsgCreateGroupAccountRequest) GetGroupID() uint64 {
 	return m.GroupId
 }
 
