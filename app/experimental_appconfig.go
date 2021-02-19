@@ -24,7 +24,7 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 	}
 }
 
-func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) {
+func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *servermodule.Manager {
 
 	/* New Module Wiring START */
 	newModuleManager := servermodule.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
@@ -47,6 +47,8 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 	if err != nil {
 		panic(err)
 	}
+
+	return newModuleManager
 	/* New Module Wiring END */
 }
 

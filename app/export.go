@@ -31,7 +31,14 @@ func (app *RegenApp) ExportAppStateAndValidators(
 		app.prepForZeroHeightGenesis(ctx, jailAllowedAddrs)
 	}
 
-	genState := app.mm.ExportGenesis(ctx, app.appCodec)
+	genState := map[string]json.RawMessage{}
+	for name, v := range app.mm.ExportGenesis(ctx, app.appCodec) {
+		genState[name] = v
+	}
+	// Export genesis state from new modules (that use ADR 33 approach)
+	for name, v := range app.nm.ExportGenesis(ctx) {
+		genState[name] = v
+	}
 	appState, err := json.MarshalIndent(genState, "", "  ")
 	if err != nil {
 		return servertypes.ExportedApp{}, err

@@ -147,18 +147,45 @@ func (mm *Manager) CompleteInitialization() error {
 	return nil
 }
 
-func (mm *Manager) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) abci.ResponseInitChain {
-	// TODO
-	return abci.ResponseInitChain{}
+// InitGenesis performs init genesis functionality for modules.
+// We pass in existing validatorUpdates from the sdk module Manager.InitGenesis.
+func (mm *Manager) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage, validatorUpdates []abci.ValidatorUpdate) abci.ResponseInitChain {
+	for name, initGenesisHandler := range mm.initGenesisHandlers {
+		if genesisData[name] == nil || initGenesisHandler == nil {
+			continue
+		}
+		moduleValUpdates := initGenesisHandler(types.Context{Context: ctx}, mm.cdc, genesisData[name])
+
+		// use these validator updates if provided, the module manager assumes
+		// only one module will update the validator set
+		if len(moduleValUpdates) > 0 {
+			if len(validatorUpdates) > 0 {
+				panic("validator InitGenesis updates already set by a previous module")
+			}
+			validatorUpdates = moduleValUpdates
+		}
+	}
+
+	return abci.ResponseInitChain{
+		Validators: validatorUpdates,
+	}
 }
 
+// ExportGenesis performs export genesis functionality for modules.
 func (mm *Manager) ExportGenesis(ctx sdk.Context) map[string]json.RawMessage {
-	// TODO
-	return nil
+	genesisData := make(map[string]json.RawMessage)
+	for name, exportGenesisHandler := range mm.exportGenesisHandlers {
+		if exportGenesisHandler == nil {
+			continue
+		}
+		genesisData[name] = exportGenesisHandler(types.Context{Context: ctx}, mm.cdc)
+	}
+
+	return genesisData
 }
 
 type InitGenesisHandler func(ctx types.Context, cdc codec.JSONMarshaler, data json.RawMessage) []abci.ValidatorUpdate
-type ExportGenesisHandler func(ctx sdk.Context, cdc codec.JSONMarshaler) json.RawMessage
+type ExportGenesisHandler func(ctx types.Context, cdc codec.JSONMarshaler) json.RawMessage
 
 type configurator struct {
 	msgServer            gogogrpc.Server
