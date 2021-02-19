@@ -22,8 +22,8 @@ type Manager struct {
 	keys                  map[string]ModuleKey
 	router                *router
 	requiredServices      map[reflect.Type]bool
-	initGenesisHandlers   []InitGenesisHandler
-	exportGenesisHandlers []ExportGenesisHandler
+	initGenesisHandlers   map[string]InitGenesisHandler
+	exportGenesisHandlers map[string]ExportGenesisHandler
 }
 
 // NewManager creates a new Manager
@@ -32,8 +32,8 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 		baseApp:               baseApp,
 		cdc:                   cdc,
 		keys:                  map[string]ModuleKey{},
-		initGenesisHandlers:   []InitGenesisHandler{},
-		exportGenesisHandlers: []ExportGenesisHandler{},
+		initGenesisHandlers:   map[string]InitGenesisHandler{},
+		exportGenesisHandlers: map[string]ExportGenesisHandler{},
 		router: &router{
 			handlers:         map[string]handler{},
 			providedServices: map[reflect.Type]bool{},
@@ -46,8 +46,6 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 func (mm *Manager) RegisterModules(modules []module.Module) error {
 	// First we register all interface types. This is done for all modules first before registering
 	// any services in case there are any weird dependencies that will cause service initialization to fail.
-	var initGenesisHandlers []InitGenesisHandler
-	var exportGenesisHandlers []ExportGenesisHandler
 	for _, mod := range modules {
 		// check if we actually have a server module, otherwise skip
 		serverMod, ok := mod.(Module)
@@ -106,9 +104,8 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		}
 
 		serverMod.RegisterServices(cfg)
-
-		initGenesisHandlers = append(initGenesisHandlers, cfg.initGenesisHandler)
-		exportGenesisHandlers = append(exportGenesisHandlers, cfg.exportGenesisHandler)
+		mm.initGenesisHandlers[name] = cfg.initGenesisHandler
+		mm.exportGenesisHandlers[name] = cfg.exportGenesisHandler
 
 		// If mod implements LegacyRouteModule, register module route.
 		// This is currently used for the group module as part of #218.
@@ -124,9 +121,6 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		}
 
 	}
-
-	mm.initGenesisHandlers = initGenesisHandlers
-	mm.exportGenesisHandlers = exportGenesisHandlers
 
 	return nil
 }
