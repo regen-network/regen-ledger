@@ -20,18 +20,16 @@ import (
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/client"
 	"github.com/regen-network/regen-ledger/x/group/server"
+	"github.com/regen-network/regen-ledger/x/group/simulation"
 
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
-	"github.com/regen-network/regen-ledger/x/group"
-	"github.com/regen-network/regen-ledger/x/group/server"
-	"github.com/regen-network/regen-ledger/x/group/simulation"
 )
 
 type Module struct {
 	Registry      types.InterfaceRegistry
 	BankKeeper    server.BankKeeper
 	AccountKeeper server.AccountKeeper
-	Configurator  servermodule.Configurator
+	GovKeeper     server.GovKeeper
 }
 
 var _ module.AppModuleBasic = Module{}
@@ -90,11 +88,9 @@ func (a Module) RegisterStoreDecoder(registry sdk.StoreDecoderRegistry) {
 }
 
 func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	protoCdc := codec.NewProtoCodec(a.Registry)
-	querySrvr := group.NewQueryClient(a.Configurator.ModuleKey())
 	return simulation.WeightedOperations(
 		simState.AppParams, simState.Cdc,
-		a.AccountKeeper, a.BankKeeper, protoCdc, querySrvr,
+		a.AccountKeeper, a.BankKeeper, a.GovKeeper, nil,
 	)
 }
 
