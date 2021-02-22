@@ -28,9 +28,10 @@ type FixtureFactory struct {
 	signers []sdk.AccAddress
 	cdc     *codec.ProtoCodec
 	baseApp *baseapp.BaseApp
+	invar   *sdk.InvariantRegistry
 }
 
-func NewFixtureFactory(t *testing.T, numSigners int) *FixtureFactory {
+func NewFixtureFactory(t *testing.T, numSigners int, invariant sdk.InvariantRegistry) *FixtureFactory {
 	signers := makeTestAddresses(numSigners)
 	return &FixtureFactory{
 		t:       t,
@@ -39,6 +40,7 @@ func NewFixtureFactory(t *testing.T, numSigners int) *FixtureFactory {
 		// TODO: remove once all code using this uses ADR 033 module wiring
 		cdc:     codec.NewProtoCodec(types.NewInterfaceRegistry()),
 		baseApp: baseapp.NewBaseApp("test", log.NewNopLogger(), dbm.NewMemDB(), nil),
+		invar:   &invariant,
 	}
 }
 
@@ -70,9 +72,10 @@ func (ff FixtureFactory) Setup() testutil.Fixture {
 	cdc := ff.cdc
 	registry := cdc.InterfaceRegistry()
 	baseApp := ff.baseApp
+	invar := ff.invar
 	baseApp.MsgServiceRouter().SetInterfaceRegistry(registry)
 	baseApp.GRPCQueryRouter().SetInterfaceRegistry(registry)
-	mm := NewManager(baseApp, cdc)
+	mm := NewManager(baseApp, cdc, *invar)
 	err := mm.RegisterModules(ff.modules)
 	require.NoError(ff.t, err)
 	err = mm.CompleteInitialization()

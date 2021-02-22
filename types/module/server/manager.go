@@ -14,19 +14,21 @@ import (
 
 // Manager is the server module manager
 type Manager struct {
-	baseApp          *baseapp.BaseApp
-	cdc              *codec.ProtoCodec
-	keys             map[string]ModuleKey
-	router           *router
-	requiredServices map[reflect.Type]bool
+	baseApp            *baseapp.BaseApp
+	cdc                *codec.ProtoCodec
+	keys               map[string]ModuleKey
+	router             *router
+	requiredServices   map[reflect.Type]bool
+	registerInvariants *sdk.InvariantRegistry
 }
 
 // NewManager creates a new Manager
-func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
+func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec, invariant sdk.InvariantRegistry) *Manager {
 	return &Manager{
-		baseApp: baseApp,
-		cdc:     cdc,
-		keys:    map[string]ModuleKey{},
+		baseApp:            baseApp,
+		cdc:                cdc,
+		keys:               map[string]ModuleKey{},
+		registerInvariants: &invariant,
 		router: &router{
 			handlers:         map[string]handler{},
 			providedServices: map[reflect.Type]bool{},
@@ -88,12 +90,13 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		}
 
 		cfg := &configurator{
-			msgServer:        msgRegistrar,
-			queryServer:      queryRegistrar,
-			key:              key,
-			cdc:              mm.cdc,
-			requiredServices: map[reflect.Type]bool{},
-			router:           mm.baseApp.Router(), // TODO: remove once #225 addressed
+			msgServer:          msgRegistrar,
+			queryServer:        queryRegistrar,
+			key:                key,
+			cdc:                mm.cdc,
+			requiredServices:   map[reflect.Type]bool{},
+			router:             mm.baseApp.Router(), // TODO: remove once #225 addressed
+			registerInvariants: *mm.registerInvariants,
 		}
 
 		serverMod.RegisterServices(cfg)
@@ -138,12 +141,13 @@ func (mm *Manager) CompleteInitialization() error {
 }
 
 type configurator struct {
-	msgServer        gogogrpc.Server
-	queryServer      gogogrpc.Server
-	key              *rootModuleKey
-	cdc              codec.Marshaler
-	requiredServices map[reflect.Type]bool
-	router           sdk.Router
+	msgServer          gogogrpc.Server
+	queryServer        gogogrpc.Server
+	key                *rootModuleKey
+	cdc                codec.Marshaler
+	requiredServices   map[reflect.Type]bool
+	router             sdk.Router
+	registerInvariants sdk.InvariantRegistry
 }
 
 var _ Configurator = &configurator{}
@@ -154,6 +158,10 @@ func (c *configurator) MsgServer() gogogrpc.Server {
 
 func (c *configurator) QueryServer() gogogrpc.Server {
 	return c.queryServer
+}
+
+func (c *configurator) RegisterInvariants() sdk.InvariantRegistry {
+	return c.registerInvariants
 }
 
 func (c *configurator) ModuleKey() RootModuleKey {

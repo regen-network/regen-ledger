@@ -13,7 +13,7 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	ff := server.NewFixtureFactory(t, 2)
+	ff := server.NewFixtureFactory(t, 2, nil)
 	ff.SetModules([]module.Module{datamodule.Module{}})
 	s := testsuite.NewIntegrationTestSuite(ff)
 	suite.Run(t, s)

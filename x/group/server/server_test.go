@@ -21,7 +21,7 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	ff := server.NewFixtureFactory(t, 6)
+	ff := server.NewFixtureFactory(t, 6, nil)
 	cdc := ff.Codec()
 	// Setting up bank keeper
 	banktypes.RegisterInterfaces(cdc.InterfaceRegistry())
