@@ -27,7 +27,7 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) {
 
 	/* New Module Wiring START */
-	newModuleManager := servermodule.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
+	newModuleManager := servermodule.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry), sdk.InvariantRegistry)
 
 	// BEGIN HACK: this is a total, ugly hack until x/auth supports ADR 033 or we have a suitable alternative
 	groupModule := group.Module{AccountKeeper: app.AccountKeeper}
