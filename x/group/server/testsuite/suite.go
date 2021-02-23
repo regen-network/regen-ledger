@@ -3,6 +3,7 @@ package testsuite
 import (
 	"bytes"
 	"context"
+	"github.com/regen-network/regen-ledger/testutil/testdata"
 	"sort"
 	"strings"
 	"time"
@@ -21,7 +22,6 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	"github.com/regen-network/regen-ledger/testutil/testdata"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/group"
 	groupserver "github.com/regen-network/regen-ledger/x/group/server"
