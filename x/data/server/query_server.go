@@ -46,7 +46,7 @@ func (s serverImpl) ByHash(ctx types.Context, request *data.QueryByHashRequest) 
 
 func (s serverImpl) BySigner(ctx types.Context, request *data.QueryBySignerRequest) (*data.QueryBySignerResponse, error) {
 	return nil, fmt.Errorf("not implemented")
-	//store := prefix.NewStore(ctx.KVStore(s.storeKey), SignerCIDIndexPrefix(request.Signer))
+	// store := prefix.NewStore(ctx.KVStore(s.storeKey), SignerCIDIndexPrefix(request.Signer))
 	//
 	//var cids [][]byte
 	//pageRes, err := query.Paginate(store, request.Pagination, func(key []byte, value []byte) error {
