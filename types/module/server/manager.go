@@ -6,7 +6,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/regen-network/regen-ledger/types/module/simulation"
+	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/cosmos/cosmos-sdk/types/simulation"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	gogogrpc "github.com/gogo/protobuf/grpc"
@@ -106,6 +107,10 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 
 		serverMod.RegisterServices(cfg)
 
+		fmt.Println("=================================")
+		fmt.Println(name)
+		fmt.Println("=================================")
+
 		mm.weightedOperationsHandlers[name] = cfg.weightedOperationHandler
 
 		// If mod implements LegacyRouteModule, register module route.
@@ -125,9 +130,13 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 	return nil
 }
 
-func (mm *Manager) WeightedOperations(state simulation.SimulationState) []simulation.WeightedOperation {
-	// TODO: handle weighted operations
-	return nil
+func (mm *Manager) WeightedOperations(state sdkmodule.SimulationState) []simulation.WeightedOperation {
+	var result []simulation.WeightedOperation
+	for name, weightedOperationHandler := range mm.weightedOperationsHandlers {
+		fmt.Println(name)
+		result = append(result,weightedOperationHandler(state)...)
+	}
+	return result
 }
 
 // AuthorizationMiddleware is a function that allows for more complex authorization than the default authorization scheme,
@@ -194,4 +203,4 @@ func (c *configurator) RequireServer(serverInterface interface{}) {
 	c.requiredServices[reflect.TypeOf(serverInterface)] = true
 }
 
-type WeightedOperationsHandler func(simstate simulation.SimulationState) []simulation.WeightedOperation
+type WeightedOperationsHandler func(simstate sdkmodule.SimulationState) []simulation.WeightedOperation

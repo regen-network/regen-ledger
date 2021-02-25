@@ -1,24 +1,22 @@
 package simulation
 
 import (
-	"encoding/json"
-
 	"math/rand"
-	"time"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/app"
+	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/regen-network/regen-ledger/types/module/server"
 )
 
 // AppModuleSimulation defines the standard functions that every module should expose
 // for the SDK blockchain simulator
 type AppModuleSimulation interface {
 	// randomized genesis states
-	GenerateGenesisState(input *SimulationState)
+	GenerateGenesisState(input *module.SimulationState)
 
 	// content functions used to simulate governance proposals
-	ProposalContents(simState SimulationState) []WeightedProposalContent
+	ProposalContents(simState module.SimulationState) []WeightedProposalContent
 
 	// randomized module parameters for param change proposals
 	RandomizedParams(r *rand.Rand) []ParamChange
@@ -27,32 +25,32 @@ type AppModuleSimulation interface {
 	RegisterStoreDecoder(sdk.StoreDecoderRegistry)
 
 	// simulation operations (i.e msgs) with their respective weight
-	WeightedOperations(simState SimulationState) []WeightedOperation
+	WeightedOperations(simState module.SimulationState) []WeightedOperation
 }
 
 // SimulationManager defines a simulation manager that provides the high level utility
 // for managing and executing simulation functionalities for a group of modules
 type SimulationManager struct {
-	Modules       []AppModuleSimulation    // array of app modules; we use an array for deterministic simulation tests
-	StoreDecoders sdk.StoreDecoderRegistry // functions to decode the key-value pairs from each module's store
-	App           *app.RegenApp
+	Modules       []module.AppModuleSimulation // array of app modules; we use an array for deterministic simulation tests
+	StoreDecoders sdk.StoreDecoderRegistry     // functions to decode the key-value pairs from each module's store
+	manager       *server.Manager
 }
 
 // NewSimulationManager creates a new SimulationManager object
 //
 // CONTRACT: All the modules provided must be also registered on the module Manager
-func NewSimulationManager(app *app.RegenApp, modules ...AppModuleSimulation) *SimulationManager {
+func NewSimulationManager(serverManager *server.Manager, modules ...module.AppModuleSimulation) *SimulationManager {
 	return &SimulationManager{
 		Modules:       modules,
 		StoreDecoders: make(sdk.StoreDecoderRegistry),
-		App:           app,
+		manager:       serverManager,
 	}
 }
 
 // GetProposalContents returns each module's proposal content generator function
 // with their default operation weight and key.
-func (sm *SimulationManager) GetProposalContents(simState SimulationState) []WeightedProposalContent {
-	wContents := make([]WeightedProposalContent, 0, len(sm.Modules))
+func (sm *SimulationManager) GetProposalContents(simState module.SimulationState) []simulation.WeightedProposalContent {
+	wContents := make([]simulation.WeightedProposalContent, 0, len(sm.Modules))
 	for _, module := range sm.Modules {
 		wContents = append(wContents, module.ProposalContents(simState)...)
 	}
@@ -70,7 +68,7 @@ func (sm *SimulationManager) RegisterStoreDecoders() {
 
 // GenerateGenesisStates generates a randomized GenesisState for each of the
 // registered modules
-func (sm *SimulationManager) GenerateGenesisStates(simState *SimulationState) {
+func (sm *SimulationManager) GenerateGenesisStates(simState *module.SimulationState) {
 	for _, module := range sm.Modules {
 		module.GenerateGenesisState(simState)
 	}
@@ -78,7 +76,7 @@ func (sm *SimulationManager) GenerateGenesisStates(simState *SimulationState) {
 
 // GenerateParamChanges generates randomized contents for creating params change
 // proposal transactions
-func (sm *SimulationManager) GenerateParamChanges(seed int64) (paramChanges []ParamChange) {
+func (sm *SimulationManager) GenerateParamChanges(seed int64) (paramChanges []simulation.ParamChange) {
 	r := rand.New(rand.NewSource(seed))
 	for _, module := range sm.Modules {
 		paramChanges = append(paramChanges, module.RandomizedParams(r)...)
@@ -88,29 +86,13 @@ func (sm *SimulationManager) GenerateParamChanges(seed int64) (paramChanges []Pa
 }
 
 // WeightedOperations returns all the modules' weighted operations of an application
-func (sm *SimulationManager) WeightedOperations(simState SimulationState) []WeightedOperation {
+func (sm *SimulationManager) WeightedOperations(simState module.SimulationState) []simulation.WeightedOperation {
 	// TODO: change it to use New module manager
-	wOps := make([]WeightedOperation, 0, len(sm.Modules))
-	modules := sm.App.NewManager().GetWeightedOperationsHandlers()
+	wOps := make([]simulation.WeightedOperation, 0, len(sm.Modules))
+	modules := sm.manager.GetWeightedOperationsHandlers()
 	for _, module := range modules {
 		wOps = append(wOps, module(simState)...)
 	}
 
 	return wOps
-}
-
-// SimulationState is the input parameters used on each of the module's randomized
-// GenesisState generator function
-type SimulationState struct {
-	AppParams    AppParams
-	Cdc          codec.JSONMarshaler        // application codec
-	Rand         *rand.Rand                 // random number
-	GenState     map[string]json.RawMessage // genesis state
-	Accounts     []Account                  // simulation accounts
-	InitialStake int64                      // initial coins per account
-	NumBonded    int64                      // number of initially bonded accounts
-	GenTimestamp time.Time                  // genesis timestamp
-	UnbondTime   time.Duration              // staking unbond time stored to use it as the slashing maximum evidence duration
-	ParamChanges []ParamChange              // simulated parameter changes from modules
-	Contents     []WeightedProposalContent  // proposal content generator functions with their default weight and app sim key
 }
