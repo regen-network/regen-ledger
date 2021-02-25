@@ -88,6 +88,7 @@ func (a Module) RegisterStoreDecoder(registry sdk.StoreDecoderRegistry) {
 }
 
 func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
+        // TODO: simulation.WeightedOperations requires group module's `QueryServer` here.
 	return simulation.WeightedOperations(
 		simState.AppParams, simState.Cdc,
 		a.AccountKeeper, a.BankKeeper, a.GovKeeper, nil,
