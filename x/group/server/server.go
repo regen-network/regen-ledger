@@ -4,6 +4,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/group"
+	"github.com/regen-network/regen-ledger/x/group/exported"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -42,7 +43,9 @@ type serverImpl struct {
 	key    servermodule.RootModuleKey
 	router sdk.Router
 
-	accKeeper AccountKeeper
+	accKeeper  exported.AccountKeeper
+	bankKeeper exported.BankKeeper
+	govKeeper  exported.GovKeeper
 
 	// Group Table
 	groupSeq          orm.Sequence
@@ -71,8 +74,8 @@ type serverImpl struct {
 	voteByVoterIndex    orm.Index
 }
 
-func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper AccountKeeper, cdc codec.Marshaler) serverImpl {
-	s := serverImpl{key: storeKey, router: router, accKeeper: accKeeper}
+func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper, govKeeper exported.GovKeeper, cdc codec.Marshaler) serverImpl {
+	s := serverImpl{key: storeKey, router: router, accKeeper: accKeeper, bankKeeper: bankKeeper, govKeeper: govKeeper}
 
 	// Group Table
 	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, storeKey, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
@@ -161,8 +164,9 @@ func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper
 	return s
 }
 
-func RegisterServices(configurator servermodule.Configurator, accountKeeper AccountKeeper) {
-	impl := newServer(configurator.ModuleKey(), configurator.Router(), accountKeeper, configurator.Marshaler())
+func RegisterServices(configurator servermodule.Configurator, accountKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper, govKeeper exported.GovKeeper) {
+	impl := newServer(configurator.ModuleKey(), configurator.Router(), accountKeeper, bankKeeper, govKeeper, configurator.Marshaler())
 	group.RegisterMsgServer(configurator.MsgServer(), impl)
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
+	configurator.RegisterWeightedOperations(impl.WeightedOperations)
 }

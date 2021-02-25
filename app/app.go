@@ -18,6 +18,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/config"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	regensimulation "github.com/regen-network/regen-ledger/types/module/simulation"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
@@ -86,6 +87,7 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 )
@@ -190,7 +192,14 @@ type RegenApp struct {
 	mm *module.Manager
 
 	// simulation manager
-	sm *module.SimulationManager
+	sm *regensimulation.SimulationManager
+
+	// new module manager
+	// XXX We will likely want to make this new manager compatible
+	// with module.Manager so that we can have existing cosmos-sdk modules
+	// use ADR 33 approach without the need for removing their keepers
+	// and a larger refactoring.
+	nm *servermodule.Manager
 }
 
 // NewRegenApp returns a reference to an initialized RegenApp.
@@ -345,7 +354,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	)
 
 	// register experimental modules here
-	setCustomModules(app, interfaceRegistry)
+	app.nm = setCustomModules(app, interfaceRegistry)
 
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
@@ -400,7 +409,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	//
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
 	// transactions
-	app.sm = module.NewSimulationManager(
+	app.sm = regensimulation.NewSimulationManager(
 		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
@@ -566,8 +575,13 @@ func (app *RegenApp) GetSubspace(moduleName string) paramstypes.Subspace {
 }
 
 // SimulationManager implements the SimulationApp interface
-func (app *RegenApp) SimulationManager() *module.SimulationManager {
+func (app *RegenApp) SimulationManager() *regensimulation.SimulationManager {
 	return app.sm
+}
+
+// NewManager implements the SimulationApp interface
+func (app *RegenApp) NewManager() *servermodule.Manager {
+	return app.nm
 }
 
 // RegisterAPIRoutes registers all application module routes with the provided

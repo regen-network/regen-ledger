@@ -1,4 +1,4 @@
-package server
+package exported
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -24,6 +24,5 @@ type BankKeeper interface {
 
 // GovKeeper defines the expected interface needed to retrieve proposals.
 type GovKeeper interface {
-
 	SubmitProposal(ctx sdk.Context, content govtypes.Content) (govtypes.Proposal, error)
 }

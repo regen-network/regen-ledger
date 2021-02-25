@@ -6,6 +6,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/regen-network/regen-ledger/types/module/simulation"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	gogogrpc "github.com/gogo/protobuf/grpc"
 
@@ -14,11 +16,12 @@ import (
 
 // Manager is the server module manager
 type Manager struct {
-	baseApp          *baseapp.BaseApp
-	cdc              *codec.ProtoCodec
-	keys             map[string]ModuleKey
-	router           *router
-	requiredServices map[reflect.Type]bool
+	baseApp                    *baseapp.BaseApp
+	cdc                        *codec.ProtoCodec
+	keys                       map[string]ModuleKey
+	router                     *router
+	requiredServices           map[reflect.Type]bool
+	weightedOperationsHandlers map[string]WeightedOperationsHandler
 }
 
 // NewManager creates a new Manager
@@ -32,7 +35,12 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 			providedServices: map[reflect.Type]bool{},
 			antiReentryMap:   map[string]bool{},
 		},
+		weightedOperationsHandlers: map[string]WeightedOperationsHandler{},
 	}
+}
+
+func (mm *Manager) GetWeightedOperationsHandlers() map[string]WeightedOperationsHandler {
+	return mm.weightedOperationsHandlers
 }
 
 // RegisterModules registers modules with the Manager and registers their services.
@@ -98,6 +106,8 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 
 		serverMod.RegisterServices(cfg)
 
+		mm.weightedOperationsHandlers[name] = cfg.weightedOperationHandler
+
 		// If mod implements LegacyRouteModule, register module route.
 		// This is currently used for the group module as part of #218.
 		routeMod, ok := mod.(LegacyRouteModule)
@@ -112,6 +122,11 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		}
 	}
 
+	return nil
+}
+
+func (mm *Manager) WeightedOperations(state simulation.SimulationState) []simulation.WeightedOperation {
+	// TODO: handle weighted operations
 	return nil
 }
 
@@ -138,12 +153,17 @@ func (mm *Manager) CompleteInitialization() error {
 }
 
 type configurator struct {
-	msgServer        gogogrpc.Server
-	queryServer      gogogrpc.Server
-	key              *rootModuleKey
-	cdc              codec.Marshaler
-	requiredServices map[reflect.Type]bool
-	router           sdk.Router
+	msgServer                gogogrpc.Server
+	queryServer              gogogrpc.Server
+	key                      *rootModuleKey
+	cdc                      codec.Marshaler
+	requiredServices         map[reflect.Type]bool
+	router                   sdk.Router
+	weightedOperationHandler WeightedOperationsHandler
+}
+
+func (c *configurator) RegisterWeightedOperations(operationsHandler WeightedOperationsHandler) {
+	c.weightedOperationHandler = operationsHandler
 }
 
 var _ Configurator = &configurator{}
@@ -173,3 +193,5 @@ func (c *configurator) Router() sdk.Router {
 func (c *configurator) RequireServer(serverInterface interface{}) {
 	c.requiredServices[reflect.TypeOf(serverInterface)] = true
 }
+
+type WeightedOperationsHandler func(simstate simulation.SimulationState) []simulation.WeightedOperation

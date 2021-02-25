@@ -17,7 +17,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/group"
-	"github.com/regen-network/regen-ledger/x/group/server"
+	"github.com/regen-network/regen-ledger/x/group/exported"
 )
 
 // Simulation operation weights constants
@@ -36,8 +36,8 @@ const (
 
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
-	appParams simtypes.AppParams, cdc codec.JSONMarshaler, ak server.AccountKeeper,
-	bk server.BankKeeper, govk server.GovKeeper, qryClient group.QueryClient) simulation.WeightedOperations {
+	appParams simtypes.AppParams, cdc codec.JSONMarshaler, ak exported.AccountKeeper,
+	bk exported.BankKeeper, govk exported.GovKeeper, qryClient group.QueryClient) simulation.WeightedOperations {
 	var (
 		weightMsgCreateGroup                      int
 		weightMsgUpdateGroupAdmin                 int
@@ -150,7 +150,7 @@ func WeightedOperations(
 	}
 }
 
-func SimulateMsgCreateGroup(ak server.AccountKeeper, bk server.BankKeeper) simtypes.Operation {
+func SimulateMsgCreateGroup(ak exported.AccountKeeper, bk exported.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc := accounts[0]
@@ -198,7 +198,7 @@ func SimulateMsgCreateGroup(ak server.AccountKeeper, bk server.BankKeeper) simty
 	}
 }
 
-func SimulateMsgCreateGroupAccount(ak server.AccountKeeper, bk server.BankKeeper, qryClient group.QueryClient) simtypes.Operation {
+func SimulateMsgCreateGroupAccount(ak exported.AccountKeeper, bk exported.BankKeeper, qryClient group.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc := accounts[0]
@@ -262,7 +262,7 @@ func SimulateMsgCreateGroupAccount(ak server.AccountKeeper, bk server.BankKeeper
 	}
 }
 
-func SimulateMsgCreateProposal(ak server.AccountKeeper, bk server.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+func SimulateMsgCreateProposal(ak exported.AccountKeeper, bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc := accounts[0]
@@ -315,7 +315,7 @@ func SimulateMsgCreateProposal(ak server.AccountKeeper, bk server.BankKeeper, qu
 	}
 }
 
-func SimulateMsgUpdateGroupAdmin(ak server.AccountKeeper, bk server.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+func SimulateMsgUpdateGroupAdmin(ak exported.AccountKeeper, bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc1 := accounts[0]
@@ -369,7 +369,7 @@ func SimulateMsgUpdateGroupAdmin(ak server.AccountKeeper, bk server.BankKeeper, 
 	}
 }
 
-func SimulateMsgUpdateGroupMetadata(ak server.AccountKeeper, bk server.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+func SimulateMsgUpdateGroupMetadata(ak exported.AccountKeeper, bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc := accounts[0]
@@ -422,7 +422,8 @@ func SimulateMsgUpdateGroupMetadata(ak server.AccountKeeper, bk server.BankKeepe
 	}
 }
 
-func SimulateMsgUpdateGroupMembers(ak server.AccountKeeper, bk server.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+func SimulateMsgUpdateGroupMembers(ak exported.AccountKeeper,
+	bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc1 := accounts[0]
@@ -490,7 +491,8 @@ func SimulateMsgUpdateGroupMembers(ak server.AccountKeeper, bk server.BankKeeper
 	}
 }
 
-func SimulateMsgUpdateGroupAccountAdmin(ak server.AccountKeeper, bk server.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+func SimulateMsgUpdateGroupAccountAdmin(ak exported.AccountKeeper,
+	bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc1 := accounts[0]
@@ -544,7 +546,8 @@ func SimulateMsgUpdateGroupAccountAdmin(ak server.AccountKeeper, bk server.BankK
 	}
 }
 
-func SimulateMsgUpdateGroupAccountDecisionPolicy(ak server.AccountKeeper, bk server.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+func SimulateMsgUpdateGroupAccountDecisionPolicy(ak exported.AccountKeeper,
+	bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc1 := accounts[0]
@@ -611,7 +614,8 @@ func SimulateMsgUpdateGroupAccountDecisionPolicy(ak server.AccountKeeper, bk ser
 	}
 }
 
-func SimulateMsgUpdateGroupAccountComment(ak server.AccountKeeper, bk server.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+func SimulateMsgUpdateGroupAccountComment(ak exported.AccountKeeper,
+	bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc1 := accounts[0]
@@ -664,7 +668,8 @@ func SimulateMsgUpdateGroupAccountComment(ak server.AccountKeeper, bk server.Ban
 	}
 }
 
-func SimulateMsgVote(ak server.AccountKeeper, bk server.BankKeeper, govk server.GovKeeper, queryClient group.QueryClient) simtypes.Operation {
+func SimulateMsgVote(ak exported.AccountKeeper,
+	bk exported.BankKeeper, govk exported.GovKeeper, queryClient group.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc1 := accounts[0]

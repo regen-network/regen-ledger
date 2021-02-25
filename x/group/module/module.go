@@ -19,6 +19,7 @@ import (
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/client"
+	"github.com/regen-network/regen-ledger/x/group/exported"
 	"github.com/regen-network/regen-ledger/x/group/server"
 	"github.com/regen-network/regen-ledger/x/group/simulation"
 
@@ -27,9 +28,9 @@ import (
 
 type Module struct {
 	Registry      types.InterfaceRegistry
-	BankKeeper    server.BankKeeper
-	AccountKeeper server.AccountKeeper
-	GovKeeper     server.GovKeeper
+	BankKeeper    exported.BankKeeper
+	AccountKeeper exported.AccountKeeper
+	GovKeeper     exported.GovKeeper
 }
 
 var _ module.AppModuleBasic = Module{}
@@ -48,7 +49,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func (a Module) RegisterServices(configurator servermodule.Configurator) {
-	server.RegisterServices(configurator, a.AccountKeeper)
+	server.RegisterServices(configurator, a.AccountKeeper, a.BankKeeper, a.GovKeeper)
 }
 
 func (a Module) DefaultGenesis(marshaler codec.JSONMarshaler) json.RawMessage {
@@ -101,5 +102,5 @@ func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 }
 
 func (a Module) Route(configurator servermodule.Configurator) sdk.Route {
-	return sdk.NewRoute(group.RouterKey, server.NewHandler(configurator, a.AccountKeeper))
+	return sdk.NewRoute(group.RouterKey, server.NewHandler(configurator, a.AccountKeeper, a.BankKeeper, a.GovKeeper))
 }
