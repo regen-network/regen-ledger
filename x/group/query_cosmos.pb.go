@@ -16,6 +16,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QueryClient interface {
+	// Groups returns all the groups.
+	Groups(ctx context.Context, in *QueryGroupsRequest, opts ...grpc.CallOption) (*QueryGroupsResponse, error)
 	// GroupInfo queries group info based on group id.
 	GroupInfo(ctx context.Context, in *QueryGroupInfoRequest, opts ...grpc.CallOption) (*QueryGroupInfoResponse, error)
 	// GroupAccountInfo queries group account info based on group account address.
@@ -42,6 +44,7 @@ type QueryClient interface {
 
 type queryClient struct {
 	cc                       grpc.ClientConnInterface
+	_Groups                  types.Invoker
 	_GroupInfo               types.Invoker
 	_GroupAccountInfo        types.Invoker
 	_GroupMembers            types.Invoker
@@ -57,6 +60,29 @@ type queryClient struct {
 
 func NewQueryClient(cc grpc.ClientConnInterface) QueryClient {
 	return &queryClient{cc: cc}
+}
+
+func (c *queryClient) Groups(ctx context.Context, in *QueryGroupsRequest, opts ...grpc.CallOption) (*QueryGroupsResponse, error) {
+	if invoker := c._Groups; invoker != nil {
+		var out QueryGroupsResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._Groups, err = invokerConn.Invoker("/regen.group.v1alpha1.Query/Groups")
+		if err != nil {
+			var out QueryGroupsResponse
+			err = c._Groups(ctx, in, &out)
+			return &out, err
+		}
+	}
+	out := new(QueryGroupsResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Query/Groups", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *queryClient) GroupInfo(ctx context.Context, in *QueryGroupInfoRequest, opts ...grpc.CallOption) (*QueryGroupInfoResponse, error) {
@@ -314,6 +340,8 @@ func (c *queryClient) VotesByVoter(ctx context.Context, in *QueryVotesByVoterReq
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
+	// Groups returns all the groups.
+	Groups(types.Context, *QueryGroupsRequest) (*QueryGroupsResponse, error)
 	// GroupInfo queries group info based on group id.
 	GroupInfo(types.Context, *QueryGroupInfoRequest) (*QueryGroupInfoResponse, error)
 	// GroupAccountInfo queries group account info based on group account address.
@@ -340,6 +368,24 @@ type QueryServer interface {
 
 func RegisterQueryServer(s grpc.ServiceRegistrar, srv QueryServer) {
 	s.RegisterService(&Query_ServiceDesc, srv)
+}
+
+func _Query_Groups_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGroupsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Groups(types.UnwrapSDKContext(ctx), in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Query/Groups",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Groups(types.UnwrapSDKContext(ctx), req.(*QueryGroupsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _Query_GroupInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -548,6 +594,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "Groups",
+			Handler:    _Query_Groups_Handler,
+		},
+		{
 			MethodName: "GroupInfo",
 			Handler:    _Query_GroupInfo_Handler,
 		},
@@ -596,6 +646,7 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
+	QueryGroupsMethod                  = "/regen.group.v1alpha1.Query/Groups"
 	QueryGroupInfoMethod               = "/regen.group.v1alpha1.Query/GroupInfo"
 	QueryGroupAccountInfoMethod        = "/regen.group.v1alpha1.Query/GroupAccountInfo"
 	QueryGroupMembersMethod            = "/regen.group.v1alpha1.Query/GroupMembers"

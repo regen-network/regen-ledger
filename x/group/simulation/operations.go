@@ -114,10 +114,10 @@ func WeightedOperations(
 		// 	weightMsgUpdateGroupMetadata,
 		// 	SimulateMsgUpdateGroupMetadata(ak, bk, qryClient),
 		// ),
-		// simulation.NewWeightedOperation(
-		// 	weightMsgCreateGroupAccount,
-		// 	SimulateMsgCreateGroupAccount(ak, bk, qryClient),
-		// ),
+		simulation.NewWeightedOperation(
+			weightMsgCreateGroupAccount,
+			SimulateMsgCreateGroupAccount(ak, bk, qryClient),
+		),
 		// simulation.NewWeightedOperation(
 		// 	weightMsgCreateProposal,
 		// 	SimulateMsgCreateProposal(ak, bk, qryClient),
@@ -211,23 +211,33 @@ func SimulateMsgCreateGroupAccount(ak exported.AccountKeeper, bk exported.BankKe
 		}
 
 		ctx1 := regentypes.Context{Context: ctx}
-		result, err := qryClient.GroupInfo(ctx1, &group.QueryGroupInfoRequest{GroupId: 1})
+		result, err := qryClient.Groups(ctx1, &group.QueryGroupsRequest{})
+
+		groupAdmin := ""
+		groupId := 0
+		for _, item := range result.Info {
+			if item.Admin == acc.Address.String() {
+				groupAdmin = acc.Address.String()
+				groupId = int(item.GroupId)
+			}
+		}
+
+		if groupAdmin == "" {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroupAccount, "no group account match"), nil, err
+		}
+
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroupAccount, "fail to query group info"), nil, err
 		}
 
-		if result.Info == nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroupAccount, "no group found"), nil, nil
-		}
-
-		addr, err := sdk.AccAddressFromBech32(result.Info.Admin)
+		addr, err := sdk.AccAddressFromBech32(groupAdmin)
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroupAccount, "fail to decode acc address"), nil, err
 		}
 
 		msg, err := group.NewMsgCreateGroupAccountRequest(
 			addr,
-			uint64(simtypes.RandIntBetween(r, 1, 10)),
+			uint64(groupId),
 			[]byte(simtypes.RandStringOfLength(r, 10)),
 			&group.ThresholdDecisionPolicy{
 				Threshold: fmt.Sprintf("%d", simtypes.RandIntBetween(r, 1, 100)),
