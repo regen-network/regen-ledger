@@ -16,16 +16,16 @@ type AppModuleSimulation interface {
 	GenerateGenesisState(input *module.SimulationState)
 
 	// content functions used to simulate governance proposals
-	ProposalContents(simState module.SimulationState) []WeightedProposalContent
+	ProposalContents(simState module.SimulationState) []simulation.WeightedProposalContent
 
 	// randomized module parameters for param change proposals
-	RandomizedParams(r *rand.Rand) []ParamChange
+	RandomizedParams(r *rand.Rand) []simulation.ParamChange
 
 	// register a func to decode the each module's defined types from their corresponding store key
 	RegisterStoreDecoder(sdk.StoreDecoderRegistry)
 
 	// simulation operations (i.e msgs) with their respective weight
-	WeightedOperations(simState module.SimulationState) []WeightedOperation
+	WeightedOperations(simState module.SimulationState) []simulation.WeightedOperation
 }
 
 // SimulationManager defines a simulation manager that provides the high level utility
