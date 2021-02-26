@@ -160,8 +160,8 @@ func (c *configurator) QueryServer() gogogrpc.Server {
 	return c.queryServer
 }
 
-func (c *configurator) RegisterInvariants() sdk.InvariantRegistry {
-	return c.registerInvariants
+func (c *configurator) RegisterInvariants(registry sdk.InvariantRegistry) {
+	c.registerInvariants = registry
 }
 
 func (c *configurator) ModuleKey() RootModuleKey {

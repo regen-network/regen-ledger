@@ -20,7 +20,7 @@ type Configurator interface {
 	ModuleKey() RootModuleKey
 	Marshaler() codec.Marshaler
 	RequireServer(interface{})
-	RegisterInvariants() sdk.InvariantRegistry
+	RegisterInvariants(registry sdk.InvariantRegistry)
 	// Router() is temporarily added here to use in the group module.
 	// TODO: remove once #225 addressed
 	Router() sdk.Router

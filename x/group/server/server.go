@@ -165,5 +165,4 @@ func RegisterServices(configurator servermodule.Configurator, accountKeeper Acco
 	impl := newServer(configurator.ModuleKey(), configurator.Router(), accountKeeper, configurator.Marshaler())
 	group.RegisterMsgServer(configurator.MsgServer(), impl)
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
-	configurator.RegisterInvariants()
 }
