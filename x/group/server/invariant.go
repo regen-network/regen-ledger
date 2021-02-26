@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
@@ -44,7 +43,7 @@ func (s serverImpl) AllInvariants() sdk.Invariant {
 		if stop {
 			return res, stop
 		}
-		return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", fmt.Sprintf("\tTallyVoteSums is failed")), false
+		return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", "\tTallyVoteSums is failed"), false
 	}
 }
 
@@ -83,10 +82,10 @@ func (s serverImpl) TallyVotesInvariant() sdk.Invariant {
 				var voteState1 = resultVoteState(Proposals[i].VoteState)
 				var voteState2 = resultVoteState(Proposals2[i].VoteState)
 				if (voteState2.YesCount >= voteState1.YesCount) && (voteState2.NoCount >= voteState1.NoCount) && (voteState2.AbstainCount >= voteState1.AbstainCount) && (voteState2.VetoCount >= voteState1.VetoCount) {
-					return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", fmt.Sprintf("\tTallyVoteSums is passed\n")), true
+					return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", "\tTallyVoteSums is passed"), true
 				}
 			}
 		}
-		return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", fmt.Sprintf("\tTallyVoteSums is failed")), false
+		return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", "\tTallyVoteSums is failed"), false
 	}
 }
