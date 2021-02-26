@@ -107,10 +107,6 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 
 		serverMod.RegisterServices(cfg)
 
-		fmt.Println("=================================")
-		fmt.Println(name)
-		fmt.Println("=================================")
-
 		mm.weightedOperationsHandlers[name] = cfg.weightedOperationHandler
 
 		// If mod implements LegacyRouteModule, register module route.
@@ -131,12 +127,15 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 }
 
 func (mm *Manager) WeightedOperations(state sdkmodule.SimulationState) []simulation.WeightedOperation {
-	var result []simulation.WeightedOperation
+	wOps := make([]simulation.WeightedOperation, 0, len(mm.weightedOperationsHandlers))
 	for name, weightedOperationHandler := range mm.weightedOperationsHandlers {
-		fmt.Println(name)
-		result = append(result,weightedOperationHandler(state)...)
+
+		// TODO: have to check for all modules
+		if name == "group" {
+			wOps = append(wOps, weightedOperationHandler(state)...)
+		}
 	}
-	return result
+	return wOps
 }
 
 // AuthorizationMiddleware is a function that allows for more complex authorization than the default authorization scheme,
