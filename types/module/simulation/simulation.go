@@ -28,19 +28,19 @@ type AppModuleSimulation interface {
 	WeightedOperations(simState module.SimulationState) []simulation.WeightedOperation
 }
 
-// SimulationManager defines a simulation manager that provides the high level utility
+// AppSimulationManager defines a simulation manager that provides the high level utility
 // for managing and executing simulation functionalities for a group of modules
-type SimulationManager struct {
+type AppSimulationManager struct {
 	Modules       []module.AppModuleSimulation // array of app modules; we use an array for deterministic simulation tests
 	StoreDecoders sdk.StoreDecoderRegistry     // functions to decode the key-value pairs from each module's store
 	manager       *server.Manager
 }
 
-// NewSimulationManager creates a new SimulationManager object
+// NewAppSimulationManager creates a new SimulationManager object
 //
 // CONTRACT: All the modules provided must be also registered on the module Manager
-func NewSimulationManager(serverManager *server.Manager, modules ...module.AppModuleSimulation) *SimulationManager {
-	return &SimulationManager{
+func NewAppSimulationManager(serverManager *server.Manager, modules ...module.AppModuleSimulation) *AppSimulationManager {
+	return &AppSimulationManager{
 		Modules:       modules,
 		StoreDecoders: make(sdk.StoreDecoderRegistry),
 		manager:       serverManager,
@@ -49,7 +49,7 @@ func NewSimulationManager(serverManager *server.Manager, modules ...module.AppMo
 
 // GetProposalContents returns each module's proposal content generator function
 // with their default operation weight and key.
-func (sm *SimulationManager) GetProposalContents(simState module.SimulationState) []simulation.WeightedProposalContent {
+func (sm *AppSimulationManager) GetProposalContents(simState module.SimulationState) []simulation.WeightedProposalContent {
 	wContents := make([]simulation.WeightedProposalContent, 0, len(sm.Modules))
 	for _, module := range sm.Modules {
 		wContents = append(wContents, module.ProposalContents(simState)...)
@@ -59,8 +59,7 @@ func (sm *SimulationManager) GetProposalContents(simState module.SimulationState
 }
 
 // RegisterStoreDecoders registers each of the modules' store decoders into a map
-func (sm *SimulationManager) RegisterStoreDecoders() {
-
+func (sm *AppSimulationManager) RegisterStoreDecoders() {
 	for _, module := range sm.Modules {
 		module.RegisterStoreDecoder(sm.StoreDecoders)
 	}
@@ -68,7 +67,7 @@ func (sm *SimulationManager) RegisterStoreDecoders() {
 
 // GenerateGenesisStates generates a randomized GenesisState for each of the
 // registered modules
-func (sm *SimulationManager) GenerateGenesisStates(simState *module.SimulationState) {
+func (sm *AppSimulationManager) GenerateGenesisStates(simState *module.SimulationState) {
 	for _, module := range sm.Modules {
 		module.GenerateGenesisState(simState)
 	}
@@ -76,7 +75,7 @@ func (sm *SimulationManager) GenerateGenesisStates(simState *module.SimulationSt
 
 // GenerateParamChanges generates randomized contents for creating params change
 // proposal transactions
-func (sm *SimulationManager) GenerateParamChanges(seed int64) (paramChanges []simulation.ParamChange) {
+func (sm *AppSimulationManager) GenerateParamChanges(seed int64) (paramChanges []simulation.ParamChange) {
 	r := rand.New(rand.NewSource(seed))
 	for _, module := range sm.Modules {
 		paramChanges = append(paramChanges, module.RandomizedParams(r)...)
@@ -86,7 +85,7 @@ func (sm *SimulationManager) GenerateParamChanges(seed int64) (paramChanges []si
 }
 
 // WeightedOperations returns all the modules' weighted operations of an application
-func (sm *SimulationManager) WeightedOperations(simState module.SimulationState) []simulation.WeightedOperation {
+func (sm *AppSimulationManager) WeightedOperations(simState module.SimulationState) []simulation.WeightedOperation {
 	// TODO: change it to use New module manager
 	wOps := make([]simulation.WeightedOperation, 0, len(sm.Modules))
 	modules := sm.manager.GetWeightedOperationsHandlers()

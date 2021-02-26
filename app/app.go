@@ -193,7 +193,7 @@ type RegenApp struct {
 	mm *module.Manager
 
 	// simulation manager
-	sm *regensimulation.SimulationManager
+	sm *regensimulation.AppSimulationManager
 
 	// new module manager
 	// XXX We will likely want to make this new manager compatible
@@ -411,7 +411,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	//
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
 	// transactions
-	app.sm = regensimulation.NewSimulationManager(
+	app.sm = regensimulation.NewAppSimulationManager(
 		app.nm,
 		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
@@ -578,7 +578,7 @@ func (app *RegenApp) GetSubspace(moduleName string) paramstypes.Subspace {
 }
 
 // SimulationManager implements the SimulationApp interface
-func (app *RegenApp) SimulationManager() *regensimulation.SimulationManager {
+func (app *RegenApp) SimulationManager() *regensimulation.AppSimulationManager {
 	return app.sm
 }
 
