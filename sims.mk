@@ -6,7 +6,7 @@
 sim-regen-nondeterminism:
 	@echo "Running nondeterminism test..."
 	@go test -mod=readonly $(APP_DIR) -run TestAppStateDeterminism -Enabled=true \
-		-NumBlocks=100 -BlockSize=200 -Commit=true -Period=0 -v -timeout 24h
+		-NumBlocks=50 -BlockSize=100 -Commit=true -Period=0 -v -timeout 24h
 
 sim-regen-custom-genesis-fast:
 	@echo "Running custom genesis simulation..."
@@ -16,7 +16,7 @@ sim-regen-custom-genesis-fast:
 
 sim-regen-fast:
 	@echo "Running quick Regen simulation. This may take several minutes..."
-	@go test -mod=readonly $(APP_DIR) -run TestFullAppSimulation -Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h
+	@go test -mod=readonly $(APP_DIR) -run TestFullAppSimulation -Enabled=true -NumBlocks=50 -BlockSize=100 -Commit=true -Seed=99 -Period=5 -v -timeout 24h
 
 sim-regen-import-export: runsim
 	@echo "Running Regen import/export simulation. This may take several minutes..."
