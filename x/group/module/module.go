@@ -21,7 +21,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/group/client"
 	"github.com/regen-network/regen-ledger/x/group/exported"
 	"github.com/regen-network/regen-ledger/x/group/server"
-	"github.com/regen-network/regen-ledger/x/group/simulation"
 
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 )
@@ -89,10 +88,7 @@ func (a Module) RegisterStoreDecoder(registry sdk.StoreDecoderRegistry) {
 }
 
 func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	return simulation.WeightedOperations(
-		simState.AppParams, simState.Cdc,
-		a.AccountKeeper, a.BankKeeper, a.GovKeeper, nil,
-	)
+	return nil
 }
 
 /**** DEPRECATED ****/
