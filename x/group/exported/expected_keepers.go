@@ -3,7 +3,6 @@ package exported
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
 type AccountKeeper interface {
@@ -20,9 +19,4 @@ type AccountKeeper interface {
 // BankKeeper defines the expected interface needed to retrieve account balances.
 type BankKeeper interface {
 	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
-}
-
-// GovKeeper defines the expected interface needed to retrieve proposals.
-type GovKeeper interface {
-	SubmitProposal(ctx sdk.Context, content govtypes.Content) (govtypes.Proposal, error)
 }

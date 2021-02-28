@@ -44,7 +44,7 @@ const (
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONMarshaler, ak exported.AccountKeeper,
-	bk exported.BankKeeper, govk exported.GovKeeper, qryClient group.QueryClient) simulation.WeightedOperations {
+	bk exported.BankKeeper, qryClient group.QueryClient) simulation.WeightedOperations {
 	var (
 		weightMsgCreateGroup                      int
 		weightMsgUpdateGroupAdmin                 int
@@ -355,8 +355,7 @@ func SimulateMsgCreateProposal(ak exported.AccountKeeper, bk exported.BankKeeper
 			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateProposal, "unable to generate mock tx"), nil, err
 		}
 
-		_, res, err := app.Deliver(txGen.TxEncoder(), tx)
-		fmt.Println(string(res.Data))
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}

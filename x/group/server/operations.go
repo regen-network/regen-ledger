@@ -12,6 +12,6 @@ func (s serverImpl) WeightedOperations(simState module.SimulationState) []simtyp
 	queryClient := group.NewQueryClient(s.key)
 	return simulation.WeightedOperations(
 		simState.AppParams, simState.Cdc,
-		s.accKeeper, s.bankKeeper, s.govKeeper, queryClient,
+		s.accKeeper, s.bankKeeper, queryClient,
 	)
 }

@@ -45,7 +45,6 @@ type serverImpl struct {
 
 	accKeeper  exported.AccountKeeper
 	bankKeeper exported.BankKeeper
-	govKeeper  exported.GovKeeper
 
 	// Group Table
 	groupSeq          orm.Sequence
@@ -74,8 +73,8 @@ type serverImpl struct {
 	voteByVoterIndex    orm.Index
 }
 
-func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper, govKeeper exported.GovKeeper, cdc codec.Marshaler) serverImpl {
-	s := serverImpl{key: storeKey, router: router, accKeeper: accKeeper, bankKeeper: bankKeeper, govKeeper: govKeeper}
+func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper, cdc codec.Marshaler) serverImpl {
+	s := serverImpl{key: storeKey, router: router, accKeeper: accKeeper, bankKeeper: bankKeeper}
 
 	// Group Table
 	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, storeKey, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
@@ -164,8 +163,8 @@ func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper
 	return s
 }
 
-func RegisterServices(configurator servermodule.Configurator, accountKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper, govKeeper exported.GovKeeper) {
-	impl := newServer(configurator.ModuleKey(), configurator.Router(), accountKeeper, bankKeeper, govKeeper, configurator.Marshaler())
+func RegisterServices(configurator servermodule.Configurator, accountKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper) {
+	impl := newServer(configurator.ModuleKey(), configurator.Router(), accountKeeper, bankKeeper, configurator.Marshaler())
 	group.RegisterMsgServer(configurator.MsgServer(), impl)
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterWeightedOperations(impl.WeightedOperations)

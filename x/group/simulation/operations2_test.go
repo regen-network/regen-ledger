@@ -40,7 +40,6 @@ package simulation_test
 
 // 	accountKeeper authkeeper.AccountKeeper
 // 	bankKeeper    bankkeeper.Keeper
-// 	govKeeper     govkeeper.Keeper
 // 	cdc           codec.Marshaler
 // 	blockTime     time.Time
 // }
@@ -87,7 +86,7 @@ package simulation_test
 // 	appParams := make(simtypes.AppParams)
 
 // 	weightedOps := simulation.WeightedOperations(appParams, suite.cdc, suite.accountKeeper,
-// 		suite.bankKeeper, suite.govKeeper, suite.queryClient,
+// 		suite.bankKeeper, suite.queryClient,
 // 	)
 
 // 	s := rand.NewSource(1)
@@ -124,7 +123,7 @@ package simulation_test
 // 	baseApp := baseapp.NewBaseApp("test", app.Logger(), dbm.NewMemDB(), nil)
 // 	ff.SetBaseApp(baseApp)
 
-// 	ff.SetModules([]module.Module{groupmodule.Module{AccountKeeper: app.AccountKeeper, BankKeeper: app.BankKeeper, GovKeeper: app.GovKeeper}})
+// 	ff.SetModules([]module.Module{groupmodule.Module{AccountKeeper: app.AccountKeeper, BankKeeper: app.BankKeeper}})
 
 // 	s := NewSim2TestSuite(ff, cdc, app.AccountKeeper, app.BankKeeper, app.GovKeeper)
 
@@ -136,7 +135,6 @@ package simulation_test
 // 		accountKeeper:  accKeeper,
 // 		fixtureFactory: ff,
 // 		bankKeeper:     bankKeeper,
-// 		govKeeper:      govKeeper,
 // 		cdc:            cdc,
 // 	}
 // }

@@ -11,8 +11,8 @@ import (
 
 // NewHandler creates an sdk.Handler for all the group type messages.
 // This is needed for supporting amino-json signing.
-func NewHandler(configurator servermodule.Configurator, accountKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper, govKeeper exported.GovKeeper) sdk.Handler {
-	impl := newServer(configurator.ModuleKey(), configurator.Router(), accountKeeper, bankKeeper, govKeeper, configurator.Marshaler())
+func NewHandler(configurator servermodule.Configurator, accountKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper) sdk.Handler {
+	impl := newServer(configurator.ModuleKey(), configurator.Router(), accountKeeper, bankKeeper, configurator.Marshaler())
 
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())

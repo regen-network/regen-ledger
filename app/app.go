@@ -64,7 +64,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
 	regensimulation "github.com/regen-network/regen-ledger/types/module/simulation"
-	group "github.com/regen-network/regen-ledger/x/group/module"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
@@ -426,7 +425,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		wasm.NewAppModule(&app.wasmKeeper),
-		group.Module{Registry: app.interfaceRegistry, BankKeeper: app.BankKeeper, AccountKeeper: app.AccountKeeper, GovKeeper: app.GovKeeper},
 	)
 
 	app.sm.RegisterStoreDecoders()
