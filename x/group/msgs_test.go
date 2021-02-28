@@ -122,7 +122,7 @@ func TestMsgCreateGroupAccount(t *testing.T) {
 
 	specs := map[string]struct {
 		admin     sdk.AccAddress
-		group     ID
+		group     uint64
 		threshold string
 		timeout   proto.Duration
 		expErr    bool

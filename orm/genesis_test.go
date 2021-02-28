@@ -126,7 +126,7 @@ func TestImportTableDataAny(t *testing.T) {
 
 		exp, err := grouptypes.NewGroupAccountInfo(
 			sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, sdk.AddrLen)),
-			grouptypes.ID(i),
+			uint64(i),
 			sdk.AccAddress(bytes.Repeat([]byte{byte(0)}, sdk.AddrLen)),
 			[]byte{1},
 			uint64(i),
@@ -157,7 +157,7 @@ func TestExportTableDataAny(t *testing.T) {
 	for i := 1; i <= testRecordsNum; i++ {
 		g, err := grouptypes.NewGroupAccountInfo(
 			sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, sdk.AddrLen)),
-			grouptypes.ID(i),
+			uint64(i),
 			adminAddr,
 			[]byte{1},
 			uint64(i),
