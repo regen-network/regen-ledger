@@ -51,7 +51,7 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 }
 
 func (app *RegenApp) registerUpgradeHandlers() {
-	app.UpgradeKeeper.SetUpgradeHandler("Gir", func(ctx sdk.Context, plan upgradetypes.Plan) {
+	app.UpgradeKeeper.SetUpgradeHandler("Mau", func(ctx sdk.Context, plan upgradetypes.Plan) {
 		// no-op handler, does nothing
 	})
 }
