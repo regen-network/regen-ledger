@@ -107,7 +107,9 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 
 		serverMod.RegisterServices(cfg)
 
-		mm.weightedOperationsHandlers[name] = cfg.weightedOperationHandler
+		if cfg.weightedOperationHandler != nil {
+			mm.weightedOperationsHandlers[name] = cfg.weightedOperationHandler
+		}
 
 		// If mod implements LegacyRouteModule, register module route.
 		// This is currently used for the group module as part of #218.
@@ -128,12 +130,8 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 
 func (mm *Manager) WeightedOperations(state sdkmodule.SimulationState) []simulation.WeightedOperation {
 	wOps := make([]simulation.WeightedOperation, 0, len(mm.weightedOperationsHandlers))
-	for name, weightedOperationHandler := range mm.weightedOperationsHandlers {
-
-		// TODO: have to check for all modules
-		if name == "group" {
-			wOps = append(wOps, weightedOperationHandler(state)...)
-		}
+	for _, weightedOperationHandler := range mm.weightedOperationsHandlers {
+		wOps = append(wOps, weightedOperationHandler(state)...)
 	}
 	return wOps
 }

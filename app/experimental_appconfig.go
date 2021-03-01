@@ -1,5 +1,4 @@
-// +build !experimental
-// TODO: build flags not working for simulations
+// +build experimental
 
 package app
 
