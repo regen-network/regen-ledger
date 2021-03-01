@@ -20,11 +20,11 @@ sim-regen-fast:
 
 sim-regen-import-export: runsim
 	@echo "Running Regen import/export simulation. This may take several minutes..."
-	$(GOPATH)/bin/runsim -Jobs=4 -ExitOnFail 25 5 TestImportExport -tags=experimental
+	$(GOPATH)/bin/runsim -Jobs=4 -ExitOnFail 25 5 TestImportExport
 
 sim-regen-after-import: runsim
 	@echo "Running application simulation-after-import. This may take several minutes..."
-	$(GOPATH)/bin/runsim -Jobs=4 -ExitOnFail 50 5 TestAppSimulationAfterImport -tags=experimental
+	$(GOPATH)/bin/runsim -Jobs=4 -ExitOnFail 50 5 TestAppSimulationAfterImport
 
 SIM_NUM_BLOCKS ?= 500
 SIM_BLOCK_SIZE ?= 200
@@ -33,12 +33,12 @@ SIM_COMMIT ?= true
 sim-regen-benchmark:
 	@echo "Running application benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
 	@go test -mod=readonly -benchmem -run=^$$ $(APP_DIR) -bench ^BenchmarkFullAppSimulation$$  \
-		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -tags=experimental
+		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h
 
 sim-regen-profile:
 	@echo "Running application benchmark for numBlocks=$(SIM_NUM_BLOCKS), blockSize=$(SIM_BLOCK_SIZE). This may take awhile!"
 	@go test -mod=readonly -benchmem -run=^$$ $(APP_DIR) -bench ^BenchmarkFullAppSimulation$$ \
-		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -cpuprofile cpu.out -memprofile mem.out -tags=experimental
+		-Enabled=true -NumBlocks=$(SIM_NUM_BLOCKS) -BlockSize=$(SIM_BLOCK_SIZE) -Commit=$(SIM_COMMIT) -timeout 24h -cpuprofile cpu.out -memprofile mem.out
 
 
 .PHONY: runsim sim-regen-nondeterminism sim-regen-custom-genesis-fast sim-regen-fast sim-regen-import-export \
