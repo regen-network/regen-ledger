@@ -1,6 +1,4 @@
-// +build experimental
-
-// TODO: flip build flag
+// +build !experimental
 
 package app
 
