@@ -3,7 +3,6 @@ package module
 import (
 	"encoding/json"
 	"fmt"
-	"math/rand"
 
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -14,26 +13,23 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/client"
+	"github.com/regen-network/regen-ledger/x/group/exported"
 	"github.com/regen-network/regen-ledger/x/group/server"
-	"github.com/regen-network/regen-ledger/x/group/simulation"
 
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 )
 
 type Module struct {
 	Registry      types.InterfaceRegistry
-	BankKeeper    server.BankKeeper
-	AccountKeeper server.AccountKeeper
-	GovKeeper     server.GovKeeper
+	BankKeeper    exported.BankKeeper
+	AccountKeeper exported.AccountKeeper
 }
 
 var _ module.AppModuleBasic = Module{}
-var _ module.AppModuleSimulation = Module{}
 var _ servermodule.Module = Module{}
 var _ climodule.Module = Module{}
 var _ servermodule.LegacyRouteModule = Module{}
@@ -48,7 +44,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func (a Module) RegisterServices(configurator servermodule.Configurator) {
-	server.RegisterServices(configurator, a.AccountKeeper)
+	server.RegisterServices(configurator, a.AccountKeeper, a.BankKeeper)
 }
 
 func (a Module) DefaultGenesis(marshaler codec.JSONMarshaler) json.RawMessage {
@@ -73,27 +69,6 @@ func (a Module) GetQueryCmd() *cobra.Command {
 	return client.QueryCmd(a.Name())
 }
 
-func (a Module) GenerateGenesisState(input *module.SimulationState) {
-}
-
-func (a Module) ProposalContents(simState module.SimulationState) []simtypes.WeightedProposalContent {
-	return nil
-}
-
-func (a Module) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
-	return nil
-}
-
-func (a Module) RegisterStoreDecoder(registry sdk.StoreDecoderRegistry) {
-}
-
-func (a Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
-	return simulation.WeightedOperations(
-		simState.AppParams, simState.Cdc,
-		a.AccountKeeper, a.BankKeeper, a.GovKeeper, nil,
-	)
-}
-
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
 func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
@@ -101,5 +76,5 @@ func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 }
 
 func (a Module) Route(configurator servermodule.Configurator) sdk.Route {
-	return sdk.NewRoute(group.RouterKey, server.NewHandler(configurator, a.AccountKeeper))
+	return sdk.NewRoute(group.RouterKey, server.NewHandler(configurator, a.AccountKeeper, a.BankKeeper))
 }

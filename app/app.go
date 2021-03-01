@@ -16,6 +16,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
+	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -62,7 +63,7 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
-	group "github.com/regen-network/regen-ledger/x/group/module"
+	regensimulation "github.com/regen-network/regen-ledger/types/module/simulation"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
@@ -86,6 +87,7 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 )
@@ -190,12 +192,20 @@ type RegenApp struct {
 	mm *module.Manager
 
 	// simulation manager
-	sm *module.SimulationManager
+	sm *regensimulation.AppSimulationManager
+
+	// new module manager
+	// XXX We will likely want to make this new manager compatible
+	// with module.Manager so that we can have existing cosmos-sdk modules
+	// use ADR 33 approach without the need for removing their keepers
+	// and a larger refactoring.
+	nm *servermodule.Manager
 }
 
 // NewRegenApp returns a reference to an initialized RegenApp.
-func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool, skipUpgradeHeights map[int64]bool,
-	homePath string, invCheckPeriod uint, encodingConfig simappparams.EncodingConfig, baseAppOptions ...func(*baseapp.BaseApp)) *RegenApp {
+func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
+	skipUpgradeHeights map[int64]bool,
+	homePath string, invCheckPeriod uint, encodingConfig simappparams.EncodingConfig, appOpts servertypes.AppOptions, baseAppOptions ...func(*baseapp.BaseApp)) *RegenApp {
 
 	// TODO: Remove cdc legacyAmino in favor of appCodec once all modules are migrated.
 	appCodec := encodingConfig.Marshaler
@@ -345,7 +355,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	)
 
 	// register experimental modules here
-	setCustomModules(app, interfaceRegistry)
+	app.nm = setCustomModules(app, interfaceRegistry)
 
 	app.mm = module.NewManager(
 		genutil.NewAppModule(
@@ -400,7 +410,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	//
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
 	// transactions
-	app.sm = module.NewSimulationManager(
+	app.sm = regensimulation.NewAppSimulationManager(
+		app.nm,
 		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
@@ -414,7 +425,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		ibc.NewAppModule(app.IBCKeeper),
 		transferModule,
 		wasm.NewAppModule(&app.wasmKeeper),
-		group.Module{Registry: app.interfaceRegistry, BankKeeper: app.BankKeeper, AccountKeeper: app.AccountKeeper, GovKeeper: app.GovKeeper},
 	)
 
 	app.sm.RegisterStoreDecoders()
@@ -566,8 +576,13 @@ func (app *RegenApp) GetSubspace(moduleName string) paramstypes.Subspace {
 }
 
 // SimulationManager implements the SimulationApp interface
-func (app *RegenApp) SimulationManager() *module.SimulationManager {
+func (app *RegenApp) SimulationManager() *regensimulation.AppSimulationManager {
 	return app.sm
+}
+
+// NewManager implements the SimulationApp interface
+func (app *RegenApp) NewManager() *servermodule.Manager {
+	return app.nm
 }
 
 // RegisterAPIRoutes registers all application module routes with the provided

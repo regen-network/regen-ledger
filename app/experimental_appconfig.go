@@ -1,5 +1,6 @@
-// +build experimental
+// +build !experimental
 
+// TODO: flip build flag
 package app
 
 import (
@@ -24,13 +25,13 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 	}
 }
 
-func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) {
+func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *servermodule.Manager {
 
 	/* New Module Wiring START */
 	newModuleManager := servermodule.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
 
 	// BEGIN HACK: this is a total, ugly hack until x/auth supports ADR 033 or we have a suitable alternative
-	groupModule := group.Module{AccountKeeper: app.AccountKeeper}
+	groupModule := group.Module{AccountKeeper: app.AccountKeeper, BankKeeper: app.BankKeeper}
 	// use a separate newModules from the global NewModules here because we need to pass state into the group module
 	newModules := []moduletypes.Module{
 		ecocredit.Module{},
@@ -48,6 +49,7 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 		panic(err)
 	}
 	/* New Module Wiring END */
+	return newModuleManager
 }
 
 func (app *RegenApp) registerUpgradeHandlers() {

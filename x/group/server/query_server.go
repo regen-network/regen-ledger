@@ -9,6 +9,27 @@ import (
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
+func (s serverImpl) Groups(ctx types.Context, request *group.QueryGroupsRequest) (*group.QueryGroupsResponse, error) {
+	it, err := s.groupTable.PrefixScan(ctx, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	var infos []*group.GroupInfo
+	var info group.GroupInfo
+	defer it.Close()
+	for {
+		_, err := it.LoadNext(&info)
+		if err != nil {
+			break
+		}
+		infos = append(infos, &info)
+	}
+
+	return &group.QueryGroupsResponse{
+		Info: infos,
+	}, nil
+}
+
 func (s serverImpl) GroupInfo(ctx types.Context, request *group.QueryGroupInfoRequest) (*group.QueryGroupInfoResponse, error) {
 	groupID := request.GroupId
 	groupInfo, err := s.getGroupInfo(ctx, groupID)
