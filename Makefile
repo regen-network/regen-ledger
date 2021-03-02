@@ -15,7 +15,7 @@ DOCKER_BUF := docker run -v $(shell pwd):/workspace --workdir /workspace bufbuil
 export GO111MODULE = on
 
 # process build tags
-
+EXPERIMENTAL=true
 build_tags = netgo
 
 ifeq ($(EXPERIMENTAL),true)

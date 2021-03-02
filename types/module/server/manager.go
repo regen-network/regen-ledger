@@ -19,16 +19,23 @@ type Manager struct {
 	keys               map[string]ModuleKey
 	router             *router
 	requiredServices   map[reflect.Type]bool
-	registerInvariants *sdk.InvariantRegistry
+	registerInvariants map[string]RegisterInvariantsHandler
+}
+
+// RegisterInvariants registers all module routes and module querier routes
+func (m *Manager) RegisterInvariants(ir sdk.InvariantRegistry) {
+	for _, module := range m.registerInvariants {
+		module(ir)
+	}
 }
 
 // NewManager creates a new Manager
-func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec, invariant sdk.InvariantRegistry) *Manager {
+func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 	return &Manager{
 		baseApp:            baseApp,
 		cdc:                cdc,
 		keys:               map[string]ModuleKey{},
-		registerInvariants: &invariant,
+		registerInvariants: map[string]RegisterInvariantsHandler{},
 		router: &router{
 			handlers:         map[string]handler{},
 			providedServices: map[reflect.Type]bool{},
@@ -90,16 +97,16 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		}
 
 		cfg := &configurator{
-			msgServer:          msgRegistrar,
-			queryServer:        queryRegistrar,
-			key:                key,
-			cdc:                mm.cdc,
-			requiredServices:   map[reflect.Type]bool{},
-			router:             mm.baseApp.Router(), // TODO: remove once #225 addressed
-			registerInvariants: *mm.registerInvariants,
+			msgServer:        msgRegistrar,
+			queryServer:      queryRegistrar,
+			key:              key,
+			cdc:              mm.cdc,
+			requiredServices: map[reflect.Type]bool{},
+			router:           mm.baseApp.Router(), // TODO: remove once #225 addressed
 		}
 
 		serverMod.RegisterServices(cfg)
+		mm.registerInvariants[name] = cfg.registerInvariants
 
 		// If mod implements LegacyRouteModule, register module route.
 		// This is currently used for the group module as part of #218.
@@ -140,6 +147,8 @@ func (mm *Manager) CompleteInitialization() error {
 	return nil
 }
 
+type RegisterInvariantsHandler func(ir sdk.InvariantRegistry)
+
 type configurator struct {
 	msgServer          gogogrpc.Server
 	queryServer        gogogrpc.Server
@@ -147,7 +156,7 @@ type configurator struct {
 	cdc                codec.Marshaler
 	requiredServices   map[reflect.Type]bool
 	router             sdk.Router
-	registerInvariants sdk.InvariantRegistry
+	registerInvariants RegisterInvariantsHandler
 }
 
 var _ Configurator = &configurator{}
@@ -160,7 +169,7 @@ func (c *configurator) QueryServer() gogogrpc.Server {
 	return c.queryServer
 }
 
-func (c *configurator) RegisterInvariants(registry sdk.InvariantRegistry) {
+func (c *configurator) RegisterInvariants(registry RegisterInvariantsHandler) {
 	c.registerInvariants = registry
 }
 
