@@ -23,10 +23,10 @@ type Manager struct {
 }
 
 // RegisterInvariants registers all module routes and module querier routes
-func (m *Manager) RegisterInvariants(ir sdk.InvariantRegistry) {
-	for _, module := range m.registerInvariants {
-		if module != nil { //TODO: Remove if condition
-			module(ir)
+func (mm *Manager) RegisterInvariants(ir sdk.InvariantRegistry) {
+	for _, moduleName := range mm.registerInvariants {
+		if moduleName != nil { //TODO: Remove if condition
+			moduleName(ir)
 		}
 	}
 }
