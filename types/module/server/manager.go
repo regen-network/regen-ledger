@@ -25,7 +25,9 @@ type Manager struct {
 // RegisterInvariants registers all module routes and module querier routes
 func (m *Manager) RegisterInvariants(ir sdk.InvariantRegistry) {
 	for _, module := range m.registerInvariants {
-		module(ir)
+		if module != nil { //TODO: Remove if condition
+			module(ir)
+		}
 	}
 }
 

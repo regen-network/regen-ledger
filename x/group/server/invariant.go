@@ -76,16 +76,16 @@ func (s serverImpl) TallyVotesInvariant() sdk.Invariant {
 		if err != nil {
 			return "", false
 		}
-
 		for i := 0; i < len(Proposals) && i < len(Proposals2); i++ {
 			if int32(Proposals[i].Status) == 1 && int32(Proposals2[i].Status) == 1 {
 				var voteState1 = resultVoteState(Proposals[i].VoteState)
 				var voteState2 = resultVoteState(Proposals2[i].VoteState)
-				if (voteState2.YesCount <= voteState1.YesCount) && (voteState2.NoCount <= voteState1.NoCount) && (voteState2.AbstainCount <= voteState1.AbstainCount) && (voteState2.VetoCount <= voteState1.VetoCount) {
-					return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", "\tTallyVoteSums is passed"), true
+				if (voteState1.YesCount > voteState2.YesCount) || (voteState1.NoCount > voteState2.NoCount) || (voteState1.AbstainCount > voteState2.AbstainCount) || (voteState1.VetoCount > voteState2.VetoCount) {
+					return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", "\tTallyVoteSums is failed"), true
 				}
 			}
 		}
-		return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", "\tTallyVoteSums is failed"), false
+		return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", "\tTallyVoteSums is passed"), false
+
 	}
 }
