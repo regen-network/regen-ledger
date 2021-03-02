@@ -10,7 +10,33 @@ import (
 	"github.com/regen-network/regen-ledger/math"
 )
 
-var _ sdk.MsgRequest = &MsgCreateGroupRequest{}
+// Group message types and routes
+const (
+	TypeMsgCreateGroup                      = "create_group"
+	TypeMsgUpdateGroupAdmin                 = "update_group_admin"
+	TypeMsgUpdateGroupComment               = "update_group_comment"
+	TypeMsgUpdateGroupMembers               = "update_group_members"
+	TypeMsgCreateGroupAccount               = "create_group_account"
+	TypeMsgUpdateGroupAccountAdmin          = "update_group_account_admin"
+	TypeMsgUpdateGroupAccountDecisionPolicy = "update_group_account_decision_policy"
+	TypeMsgUpdateGroupAccountComment        = "update_group_account_comment"
+	TypeMsgCreateProposal                   = "create_proposal"
+	TypeMsgVote                             = "vote"
+	TypeMsgExec                             = "exec"
+)
+
+var _ sdk.Msg = &MsgCreateGroupRequest{}
+
+// Route Implements Msg.
+func (m MsgCreateGroupRequest) Route() string { return RouterKey }
+
+// Type Implements Msg.
+func (m MsgCreateGroupRequest) Type() string { return TypeMsgCreateGroup }
+
+// GetSignBytes Implements Msg.
+func (m MsgCreateGroupRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
 
 // GetSigners returns the expected signers for a MsgCreateGroupRequest.
 func (m MsgCreateGroupRequest) GetSigners() []sdk.AccAddress {
@@ -28,7 +54,8 @@ func (m MsgCreateGroupRequest) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
-	if err := Members(m.Members).ValidateBasic(); err != nil {
+	members := Members{Members: m.Members}
+	if err := members.ValidateBasic(); err != nil {
 		return sdkerrors.Wrap(err, "members")
 	}
 	for i := range m.Members {
@@ -52,7 +79,18 @@ func (m Member) ValidateBasic() error {
 	return nil
 }
 
-var _ sdk.MsgRequest = &MsgUpdateGroupAdminRequest{}
+var _ sdk.Msg = &MsgUpdateGroupAdminRequest{}
+
+// Route Implements Msg.
+func (m MsgUpdateGroupAdminRequest) Route() string { return RouterKey }
+
+// Type Implements Msg.
+func (m MsgUpdateGroupAdminRequest) Type() string { return TypeMsgUpdateGroupAdmin }
+
+// GetSignBytes Implements Msg.
+func (m MsgUpdateGroupAdminRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
 
 // GetSigners returns the expected signers for a MsgUpdateGroupAdminRequest.
 func (m MsgUpdateGroupAdminRequest) GetSigners() []sdk.AccAddress {
@@ -85,11 +123,22 @@ func (m MsgUpdateGroupAdminRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgUpdateGroupAdminRequest) GetGroupID() ID {
+func (m *MsgUpdateGroupAdminRequest) GetGroupID() uint64 {
 	return m.GroupId
 }
 
-var _ sdk.MsgRequest = &MsgUpdateGroupMetadataRequest{}
+var _ sdk.Msg = &MsgUpdateGroupMetadataRequest{}
+
+// Route Implements Msg.
+func (m MsgUpdateGroupMetadataRequest) Route() string { return RouterKey }
+
+// Type Implements Msg.
+func (m MsgUpdateGroupMetadataRequest) Type() string { return TypeMsgUpdateGroupComment }
+
+// GetSignBytes Implements Msg.
+func (m MsgUpdateGroupMetadataRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
 
 // GetSigners returns the expected signers for a MsgUpdateGroupMetadataRequest.
 func (m MsgUpdateGroupMetadataRequest) GetSigners() []sdk.AccAddress {
@@ -113,8 +162,21 @@ func (m MsgUpdateGroupMetadataRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgUpdateGroupMetadataRequest) GetGroupID() ID {
+func (m *MsgUpdateGroupMetadataRequest) GetGroupID() uint64 {
 	return m.GroupId
+}
+
+var _ sdk.Msg = &MsgUpdateGroupMembersRequest{}
+
+// Route Implements Msg.
+func (m MsgUpdateGroupMembersRequest) Route() string { return RouterKey }
+
+// Type Implements Msg.
+func (m MsgUpdateGroupMembersRequest) Type() string { return TypeMsgUpdateGroupMembers }
+
+// GetSignBytes Implements Msg.
+func (m MsgUpdateGroupMembersRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 var _ sdk.MsgRequest = &MsgUpdateGroupMembersRequest{}
@@ -142,17 +204,29 @@ func (m MsgUpdateGroupMembersRequest) ValidateBasic() error {
 	if len(m.MemberUpdates) == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "member updates")
 	}
-	if err := Members(m.MemberUpdates).ValidateBasic(); err != nil {
+	members := Members{Members: m.MemberUpdates}
+	if err := members.ValidateBasic(); err != nil {
 		return sdkerrors.Wrap(err, "members")
 	}
 	return nil
 }
 
-func (m *MsgUpdateGroupMembersRequest) GetGroupID() ID {
+func (m *MsgUpdateGroupMembersRequest) GetGroupID() uint64 {
 	return m.GroupId
 }
 
-var _ sdk.MsgRequest = &MsgCreateGroupAccountRequest{}
+var _ sdk.Msg = &MsgCreateGroupAccountRequest{}
+
+// Route Implements Msg.
+func (m MsgCreateGroupAccountRequest) Route() string { return RouterKey }
+
+// Type Implements Msg.
+func (m MsgCreateGroupAccountRequest) Type() string { return TypeMsgCreateGroupAccount }
+
+// GetSignBytes Implements Msg.
+func (m MsgCreateGroupAccountRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
 
 // GetSigners returns the expected signers for a MsgCreateGroupAccountRequest.
 func (m MsgCreateGroupAccountRequest) GetSigners() []sdk.AccAddress {
@@ -184,7 +258,18 @@ func (m MsgCreateGroupAccountRequest) ValidateBasic() error {
 	return nil
 }
 
-var _ sdk.MsgRequest = &MsgUpdateGroupAccountAdminRequest{}
+var _ sdk.Msg = &MsgUpdateGroupAccountAdminRequest{}
+
+// Route Implements Msg.
+func (m MsgUpdateGroupAccountAdminRequest) Route() string { return RouterKey }
+
+// Type Implements Msg.
+func (m MsgUpdateGroupAccountAdminRequest) Type() string { return TypeMsgUpdateGroupAccountAdmin }
+
+// GetSignBytes Implements Msg.
+func (m MsgUpdateGroupAccountAdminRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
 
 // GetSigners returns the expected signers for a MsgUpdateGroupAccountAdminRequest.
 func (m MsgUpdateGroupAccountAdminRequest) GetSigners() []sdk.AccAddress {
@@ -218,7 +303,7 @@ func (m MsgUpdateGroupAccountAdminRequest) ValidateBasic() error {
 	return nil
 }
 
-var _ sdk.MsgRequest = &MsgUpdateGroupAccountDecisionPolicyRequest{}
+var _ sdk.Msg = &MsgUpdateGroupAccountDecisionPolicyRequest{}
 var _ types.UnpackInterfacesMessage = MsgUpdateGroupAccountDecisionPolicyRequest{}
 
 func NewMsgUpdateGroupAccountDecisionPolicyRequest(admin sdk.AccAddress, groupAccount sdk.AccAddress, decisionPolicy DecisionPolicy) (*MsgUpdateGroupAccountDecisionPolicyRequest, error) {
@@ -244,6 +329,19 @@ func (m *MsgUpdateGroupAccountDecisionPolicyRequest) SetDecisionPolicy(decisionP
 	}
 	m.DecisionPolicy = any
 	return nil
+}
+
+// Route Implements Msg.
+func (m MsgUpdateGroupAccountDecisionPolicyRequest) Route() string { return RouterKey }
+
+// Type Implements Msg.
+func (m MsgUpdateGroupAccountDecisionPolicyRequest) Type() string {
+	return TypeMsgUpdateGroupAccountDecisionPolicy
+}
+
+// GetSignBytes Implements Msg.
+func (m MsgUpdateGroupAccountDecisionPolicyRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 // GetSigners returns the expected signers for a MsgUpdateGroupAccountDecisionPolicyRequest.
@@ -293,7 +391,18 @@ func (m MsgUpdateGroupAccountDecisionPolicyRequest) UnpackInterfaces(unpacker ty
 	return unpacker.UnpackAny(m.DecisionPolicy, &decisionPolicy)
 }
 
-var _ sdk.MsgRequest = &MsgUpdateGroupAccountMetadataRequest{}
+var _ sdk.Msg = &MsgUpdateGroupAccountMetadataRequest{}
+
+// Route Implements Msg.
+func (m MsgUpdateGroupAccountMetadataRequest) Route() string { return RouterKey }
+
+// Type Implements Msg.
+func (m MsgUpdateGroupAccountMetadataRequest) Type() string { return TypeMsgUpdateGroupAccountComment }
+
+// GetSignBytes Implements Msg.
+func (m MsgUpdateGroupAccountMetadataRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
 
 // GetSigners returns the expected signers for a MsgUpdateGroupAccountMetadataRequest.
 func (m MsgUpdateGroupAccountMetadataRequest) GetSigners() []sdk.AccAddress {
@@ -319,11 +428,11 @@ func (m MsgUpdateGroupAccountMetadataRequest) ValidateBasic() error {
 	return nil
 }
 
-var _ sdk.MsgRequest = &MsgCreateGroupAccountRequest{}
+var _ sdk.Msg = &MsgCreateGroupAccountRequest{}
 var _ types.UnpackInterfacesMessage = MsgCreateGroupAccountRequest{}
 
 // NewMsgCreateGroupAccountRequest creates a new MsgCreateGroupAccountRequest.
-func NewMsgCreateGroupAccountRequest(admin sdk.AccAddress, group ID, metadata []byte, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccountRequest, error) {
+func NewMsgCreateGroupAccountRequest(admin sdk.AccAddress, group uint64, metadata []byte, decisionPolicy DecisionPolicy) (*MsgCreateGroupAccountRequest, error) {
 	m := &MsgCreateGroupAccountRequest{
 		Admin:    admin.String(),
 		GroupId:  group,
@@ -340,7 +449,7 @@ func (m *MsgCreateGroupAccountRequest) GetAdmin() string {
 	return m.Admin
 }
 
-func (m *MsgCreateGroupAccountRequest) GetGroupID() ID {
+func (m *MsgCreateGroupAccountRequest) GetGroupID() uint64 {
 	return m.GroupId
 }
 
@@ -375,7 +484,32 @@ func (m MsgCreateGroupAccountRequest) UnpackInterfaces(unpacker types.AnyUnpacke
 	return unpacker.UnpackAny(m.DecisionPolicy, &decisionPolicy)
 }
 
-var _ sdk.MsgRequest = &MsgCreateProposalRequest{}
+var _ sdk.Msg = &MsgCreateProposalRequest{}
+
+// NewMsgCreateProposalRequest creates a new MsgCreateProposalRequest.
+func NewMsgCreateProposalRequest(acc string, proposers []string, msgs []sdk.Msg, metadata []byte) (*MsgCreateProposalRequest, error) {
+	m := &MsgCreateProposalRequest{
+		GroupAccount: acc,
+		Proposers:    proposers,
+		Metadata:     metadata,
+	}
+	err := m.SetMsgs(msgs)
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+// Route Implements Msg.
+func (m MsgCreateProposalRequest) Route() string { return RouterKey }
+
+// Type Implements Msg.
+func (m MsgCreateProposalRequest) Type() string { return TypeMsgCreateProposal }
+
+// GetSignBytes Implements Msg.
+func (m MsgCreateProposalRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
 
 // GetSigners returns the expected signers for a MsgCreateProposalRequest.
 func (m MsgCreateProposalRequest) GetSigners() []sdk.AccAddress {
@@ -412,11 +546,8 @@ func (m MsgCreateProposalRequest) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "proposers")
 	}
 
-	for i, any := range m.Msgs {
-		msg, ok := any.GetCachedValue().(sdk.Msg)
-		if !ok {
-			return sdkerrors.Wrapf(sdkerrors.ErrUnpackAny, "cannot unpack Any into sdk.Msg %T", any)
-		}
+	msgs := m.GetMsgs()
+	for i, msg := range msgs {
 		if err := msg.ValidateBasic(); err != nil {
 			return sdkerrors.Wrapf(err, "msg %d", i)
 		}
@@ -454,8 +585,15 @@ func (m MsgCreateProposalRequest) GetMsgs() []sdk.Msg {
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (m MsgCreateProposalRequest) UnpackInterfaces(unpacker types.AnyUnpacker) error {
-	for _, m := range m.Msgs {
-		err := types.UnpackInterfaces(m, unpacker)
+	// for _, m := range m.Msgs {
+	// 	err := types.UnpackInterfaces(m, unpacker)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// }
+	for _, any := range m.Msgs {
+		var msg sdk.Msg
+		err := unpacker.UnpackAny(any, &msg)
 		if err != nil {
 			return err
 		}
@@ -464,7 +602,18 @@ func (m MsgCreateProposalRequest) UnpackInterfaces(unpacker types.AnyUnpacker) e
 	return nil
 }
 
-var _ sdk.MsgRequest = &MsgVoteRequest{}
+var _ sdk.Msg = &MsgVoteRequest{}
+
+// Route Implements Msg.
+func (m MsgVoteRequest) Route() string { return RouterKey }
+
+// Type Implements Msg.
+func (m MsgVoteRequest) Type() string { return TypeMsgVote }
+
+// GetSignBytes Implements Msg.
+func (m MsgVoteRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
 
 // GetSigners returns the expected signers for a MsgVoteRequest.
 func (m MsgVoteRequest) GetSigners() []sdk.AccAddress {
@@ -493,7 +642,18 @@ func (m MsgVoteRequest) ValidateBasic() error {
 	return nil
 }
 
-var _ sdk.MsgRequest = &MsgExecRequest{}
+var _ sdk.Msg = &MsgExecRequest{}
+
+// Route Implements Msg.
+func (m MsgExecRequest) Route() string { return RouterKey }
+
+// Type Implements Msg.
+func (m MsgExecRequest) Type() string { return TypeMsgExec }
+
+// GetSignBytes Implements Msg.
+func (m MsgExecRequest) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
 
 // GetSigners returns the expected signers for a MsgExecRequest.
 func (m MsgExecRequest) GetSigners() []sdk.AccAddress {
