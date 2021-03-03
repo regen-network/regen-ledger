@@ -88,6 +88,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 		membersRes, err := s.queryClient.GroupMembers(ctx, &group.QueryGroupMembersRequest{
 			GroupId: g.GroupId,
 		})
+		s.Require().NoError(err)
 		s.Require().Equal(len(membersRes.Members), 1)
 		s.Require().Equal(membersRes.Members[0], genesisState.GroupMembers[i])
 	}
@@ -110,6 +111,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 		votesRes, err := s.queryClient.VotesByProposal(ctx, &group.QueryVotesByProposalRequest{
 			ProposalId: g.ProposalId,
 		})
+		s.Require().NoError(err)
 		s.Require().Equal(len(votesRes.Votes), 1)
 		s.Require().Equal(votesRes.Votes[0], genesisState.Votes[0])
 	}
