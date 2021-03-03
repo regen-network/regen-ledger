@@ -14,19 +14,16 @@ func (s serverImpl) Groups(ctx types.Context, request *group.QueryGroupsRequest)
 	if err != nil {
 		return nil, err
 	}
+
 	var groups []*group.GroupInfo
-	var groupInfo group.GroupInfo
-	defer it.Close()
-	for {
-		_, err := it.LoadNext(&groupInfo)
-		if err != nil {
-			break
-		}
-		groups = append(groups, &groupInfo)
+	pageRes, err := orm.Paginate(it, request.Pagination, &groups)
+	if err != nil {
+		return nil, err
 	}
 
 	return &group.QueryGroupsResponse{
-		Groups: groups,
+		Groups:     groups,
+		Pagination: pageRes,
 	}, nil
 }
 

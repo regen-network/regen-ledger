@@ -425,6 +425,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 		return nil, sdkerrors.Wrap(err, "end time conversion")
 	}
 
+	proposalID := s.proposalTable.Sequence().NextVal(ctx)
 	m := &group.Proposal{
 		GroupAccount:        req.GroupAccount,
 		Metadata:            metadata,
@@ -442,19 +443,20 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 			AbstainCount: "0",
 			VetoCount:    "0",
 		},
+		ProposalId: proposalID,
 	}
 	if err := m.SetMsgs(msgs); err != nil {
 		return nil, sdkerrors.Wrap(err, "create proposal")
 	}
 
-	id, err := s.proposalTable.Create(ctx, m)
+	err = s.proposalTable.Table().Create(ctx, group.ID(proposalID).Bytes(), m)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "create proposal")
 	}
 
 	// TODO: add event #215
 
-	return &group.MsgCreateProposalResponse{ProposalId: id}, nil
+	return &group.MsgCreateProposalResponse{ProposalId: proposalID}, nil
 }
 
 func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.MsgVoteResponse, error) {

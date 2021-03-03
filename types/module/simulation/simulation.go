@@ -9,25 +9,6 @@ import (
 	"github.com/regen-network/regen-ledger/types/module/server"
 )
 
-// AppModuleSimulation defines the standard functions that every module should expose
-// for the SDK blockchain simulator
-type AppModuleSimulation interface {
-	// randomized genesis states
-	GenerateGenesisState(input *module.SimulationState)
-
-	// content functions used to simulate governance proposals
-	ProposalContents(simState module.SimulationState) []simulation.WeightedProposalContent
-
-	// randomized module parameters for param change proposals
-	RandomizedParams(r *rand.Rand) []simulation.ParamChange
-
-	// register a func to decode the each module's defined types from their corresponding store key
-	RegisterStoreDecoder(sdk.StoreDecoderRegistry)
-
-	// simulation operations (i.e msgs) with their respective weight
-	WeightedOperations(simState module.SimulationState) []simulation.WeightedOperation
-}
-
 // AppSimulationManager defines a simulation manager that provides the high level utility
 // for managing and executing simulation functionalities for a group of modules
 type AppSimulationManager struct {
@@ -37,7 +18,6 @@ type AppSimulationManager struct {
 }
 
 // NewAppSimulationManager creates a new SimulationManager object
-//
 // CONTRACT: All the modules provided must be also registered on the module Manager
 func NewAppSimulationManager(serverManager *server.Manager, modules ...module.AppModuleSimulation) *AppSimulationManager {
 	return &AppSimulationManager{
@@ -86,7 +66,6 @@ func (sm *AppSimulationManager) GenerateParamChanges(seed int64) (paramChanges [
 
 // WeightedOperations returns all the modules' weighted operations of an application
 func (sm *AppSimulationManager) WeightedOperations(simState module.SimulationState) []simulation.WeightedOperation {
-	// TODO: change it to use New module manager
 	wOps := make([]simulation.WeightedOperation, 0, len(sm.Modules))
 	modules := sm.manager.GetWeightedOperationsHandlers()
 	for _, module := range modules {

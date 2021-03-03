@@ -2,6 +2,7 @@ package simulation
 
 import (
 	"math/rand"
+	"strings"
 
 	"fmt"
 
@@ -10,9 +11,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	gogotypes "github.com/gogo/protobuf/types"
 	proto "github.com/gogo/protobuf/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/group"
@@ -35,10 +38,9 @@ const (
 )
 
 const (
-	WeightCreateGroup        = 100
-	WeightCreateProposal     = 100
-	WeightUpdateGroup        = 50
-	WeightUpdateGroupAccount = 30
+	WeightCreateGroup    = 150
+	WeightCreateProposal = 100
+	WeightUpdateGroup    = 5
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights
@@ -55,8 +57,8 @@ func WeightedOperations(
 		weightMsgUpdateGroupAccountDecisionPolicy int
 		weightMsgUpdateGroupAccountComment        int
 		weightMsgCreateProposal                   int
-		// weightMsgVote                             int
-		// weightMsgExec                             int
+		weightMsgVote                             int
+		weightMsgExec                             int
 	)
 
 	appParams.GetOrGenerate(cdc, OpMsgCreateGroupRequest, &weightMsgCreateGroup, nil,
@@ -69,52 +71,51 @@ func WeightedOperations(
 			weightMsgCreateGroupAccount = WeightCreateGroup
 		},
 	)
-	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupAdminRequest, &weightMsgUpdateGroupAdmin, nil,
-		func(_ *rand.Rand) {
-			weightMsgUpdateGroupAdmin = WeightUpdateGroup
-		},
-	)
-	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupMetadata, &weightMsgUpdateGroupMetadata, nil,
-		func(_ *rand.Rand) {
-			weightMsgUpdateGroupMetadata = WeightUpdateGroupAccount
-		},
-	)
 	appParams.GetOrGenerate(cdc, OpMsgCreateProposal, &weightMsgCreateProposal, nil,
 		func(_ *rand.Rand) {
 			weightMsgCreateProposal = WeightCreateProposal
 		},
 	)
+	appParams.GetOrGenerate(cdc, OpMsgVote, &weightMsgVote, nil,
+		func(_ *rand.Rand) {
+			weightMsgVote = WeightCreateProposal
+		},
+	)
+	appParams.GetOrGenerate(cdc, OpMsgExec, &weightMsgExec, nil,
+		func(_ *rand.Rand) {
+			weightMsgExec = weightMsgCreateProposal
+		},
+	)
+	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupMetadata, &weightMsgUpdateGroupMetadata, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateGroupMetadata = WeightUpdateGroup
+		},
+	)
+	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupAdminRequest, &weightMsgUpdateGroupAdmin, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateGroupAdmin = WeightUpdateGroup
+		},
+	)
 	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupMembers, &weightMsgUpdateGroupMembers, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateGroupMembers = WeightUpdateGroupAccount
+			weightMsgUpdateGroupMembers = WeightUpdateGroup
 		},
 	)
 	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupAccountAdmin, &weightMsgUpdateGroupAccountAdmin, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateGroupAccountAdmin = WeightUpdateGroupAccount
+			weightMsgUpdateGroupAccountAdmin = WeightUpdateGroup
 		},
 	)
 	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupAccountDecisionPolicy, &weightMsgUpdateGroupAccountDecisionPolicy, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateGroupAccountDecisionPolicy = WeightUpdateGroupAccount
+			weightMsgUpdateGroupAccountDecisionPolicy = WeightUpdateGroup
 		},
 	)
 	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupAccountComment, &weightMsgUpdateGroupAccountComment, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateGroupAccountComment = WeightUpdateGroupAccount
+			weightMsgUpdateGroupAccountComment = WeightUpdateGroup
 		},
 	)
-	// TODO: blocking on genesis PR #270
-	// appParams.GetOrGenerate(cdc, OpMsgVote, &weightMsgVote, nil,
-	// 	func(_ *rand.Rand) {
-	// 		weightMsgVote = WeightCreateProposal
-	// 	},
-	// )
-	// appParams.GetOrGenerate(cdc, OpMsgExec, &weightMsgExec, nil,
-	// 	func(_ *rand.Rand) {
-	// 		weightMsgExec = WeightCreateProposal
-	// 	},
-	// )
 
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
@@ -122,20 +123,28 @@ func WeightedOperations(
 			SimulateMsgCreateGroup(ak, bk),
 		),
 		simulation.NewWeightedOperation(
-			weightMsgUpdateGroupAdmin,
-			SimulateMsgUpdateGroupAdmin(ak, bk, qryClient),
-		),
-		simulation.NewWeightedOperation(
 			weightMsgCreateGroupAccount,
 			SimulateMsgCreateGroupAccount(ak, bk, qryClient),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgCreateProposal,
+			SimulateMsgCreateProposal(ak, bk, qryClient),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgVote,
+			SimulateMsgVote(ak, bk, qryClient),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgExec,
+			SimulateMsgExec(ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateGroupMetadata,
 			SimulateMsgUpdateGroupMetadata(ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
-			weightMsgCreateProposal,
-			SimulateMsgCreateProposal(ak, bk, qryClient),
+			weightMsgUpdateGroupAdmin,
+			SimulateMsgUpdateGroupAdmin(ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateGroupMembers,
@@ -265,16 +274,19 @@ func SimulateMsgCreateGroupAccount(ak exported.AccountKeeper, bk exported.BankKe
 	}
 }
 
-func getGroupDetails(sdkCtx sdk.Context, qryClient group.QueryClient, acc simtypes.Account) (string, uint64, simtypes.OperationMsg, error) {
+func getGroupDetails(sdkCtx sdk.Context, qryClient group.QueryClient, acc simtypes.Account) (groupAdmin string, groupID uint64, op simtypes.OperationMsg, err error) {
 	ctx := regentypes.Context{Context: sdkCtx}
 
-	result, err := qryClient.Groups(ctx, &group.QueryGroupsRequest{})
+	result, err := qryClient.Groups(ctx, &group.QueryGroupsRequest{Pagination: &query.PageRequest{
+		Key:        nil,
+		CountTotal: true,
+		Offset:     0,
+		Limit:      10,
+	}})
 	if err != nil {
 		return "", 0, simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroupAccount, "fail to query group info"), err
 	}
 
-	groupAdmin := ""
-	groupID := uint64(0)
 	for _, item := range result.Groups {
 		if item.Admin == acc.Address.String() {
 			groupAdmin = acc.Address.String()
@@ -745,4 +757,186 @@ func SimulateMsgUpdateGroupAccountComment(ak exported.AccountKeeper,
 	}
 }
 
-// TODO: Add WeightedOperations for MsgVote & MsgExec. Waiting on genesis PR
+// SimulateMsgVote generates a MsgVote with random values
+func SimulateMsgVote(ak exported.AccountKeeper,
+	bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		acc1 := accounts[0]
+
+		account := ak.GetAccount(sdkCtx, acc1.Address)
+
+		spendableCoins := bk.SpendableCoins(sdkCtx, account.GetAddress())
+		fees, err := simtypes.RandomFees(r, sdkCtx, spendableCoins)
+		if err != nil {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "fee error"), nil, err
+		}
+		ctx := regentypes.Context{Context: sdkCtx}
+		groupAdmin, _, op, err := getGroupDetails(sdkCtx, queryClient, acc1)
+		if err != nil {
+			return op, nil, err
+		}
+		if groupAdmin == "" {
+			return op, nil, nil
+		}
+
+		result, err := queryClient.GroupAccountsByAdmin(ctx, &group.QueryGroupAccountsByAdminRequest{Admin: groupAdmin})
+		if err != nil {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "fail to query group info"), nil, err
+		}
+
+		groupAccounts := result.GetGroupAccounts()
+		if len(groupAccounts) == 0 {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "no group account found"), nil, nil
+		}
+
+		proposalsResult, err := queryClient.ProposalsByGroupAccount(ctx, &group.QueryProposalsByGroupAccountRequest{GroupAccount: groupAccounts[0].GroupAccount})
+		if err != nil {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "fail to query group info"), nil, err
+		}
+		proposals := proposalsResult.GetProposals()
+		if len(proposals) == 0 {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "no proposals found"), nil, nil
+		}
+
+		proposalID := -1
+
+		for _, proposal := range proposals {
+			if proposal.Status == group.ProposalStatusSubmitted {
+				votingPeriodEnd, err := gogotypes.TimestampFromProto(&proposal.Timeout)
+				if err != nil {
+					return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "error: while converting to timestamp"), nil, err
+				}
+				proposalID = int(proposal.ProposalId)
+				if votingPeriodEnd.Before(ctx.BlockTime()) || votingPeriodEnd.Equal(ctx.BlockTime()) {
+					return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "voting period ended: skipping"), nil, nil
+				}
+				break
+			}
+		}
+
+		// return no-op if no proposal found
+		if proposalID == -1 {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "no proposals found"), nil, nil
+		}
+
+		msg := group.MsgVoteRequest{
+			ProposalId: uint64(proposalID),
+			Voter:      acc1.Address.String(),
+			Choice:     group.Choice_CHOICE_YES,
+			Metadata:   []byte(simtypes.RandStringOfLength(r, 10)),
+		}
+		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{&msg},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			acc1.PrivKey,
+		)
+		if err != nil {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountComment, "unable to generate mock tx"), nil, err
+		}
+
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+
+		if err != nil {
+			if strings.Contains(err.Error(), "group was modified") || strings.Contains(err.Error(), "group account was modified") {
+				return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "no-op:group/group-account was modified"), nil, nil
+			}
+			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
+		}
+
+		return simtypes.NewOperationMsg(&msg, true, ""), nil, err
+	}
+}
+
+// SimulateMsgExec generates a MsgExec with random values
+func SimulateMsgExec(ak exported.AccountKeeper,
+	bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		acc1 := accounts[0]
+
+		account := ak.GetAccount(sdkCtx, acc1.Address)
+
+		spendableCoins := bk.SpendableCoins(sdkCtx, account.GetAddress())
+		fees, err := simtypes.RandomFees(r, sdkCtx, spendableCoins)
+		if err != nil {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "fee error"), nil, err
+		}
+		ctx := regentypes.Context{Context: sdkCtx}
+		groupAdmin, _, op, err := getGroupDetails(sdkCtx, queryClient, acc1)
+		if err != nil {
+			return op, nil, err
+		}
+		if groupAdmin == "" {
+			return op, nil, nil
+		}
+
+		result, err := queryClient.GroupAccountsByAdmin(ctx, &group.QueryGroupAccountsByAdminRequest{Admin: groupAdmin})
+		if err != nil {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "fail to query group info"), nil, err
+		}
+
+		groupAccounts := result.GetGroupAccounts()
+		if len(groupAccounts) == 0 {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "no group account found"), nil, nil
+		}
+
+		proposalsResult, err := queryClient.ProposalsByGroupAccount(ctx, &group.QueryProposalsByGroupAccountRequest{GroupAccount: groupAccounts[0].GroupAccount})
+		if err != nil {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "fail to query group info"), nil, err
+		}
+		proposals := proposalsResult.GetProposals()
+		if len(proposals) == 0 {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "no proposals found"), nil, nil
+		}
+
+		proposalID := -1
+
+		for _, proposal := range proposals {
+			if proposal.Status == group.ProposalStatusSubmitted {
+				proposalID = int(proposal.ProposalId)
+				break
+			}
+		}
+
+		// return no-op if no proposal found
+		if proposalID == -1 {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "no proposals found"), nil, nil
+		}
+
+		msg := group.MsgExecRequest{
+			ProposalId: uint64(proposalID),
+			Signer:     acc1.Address.String(),
+		}
+		txGen := simappparams.MakeTestEncodingConfig().TxConfig
+		tx, err := helpers.GenTx(
+			txGen,
+			[]sdk.Msg{&msg},
+			fees,
+			helpers.DefaultGenTxGas,
+			chainID,
+			[]uint64{account.GetAccountNumber()},
+			[]uint64{account.GetSequence()},
+			acc1.PrivKey,
+		)
+		if err != nil {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountComment, "unable to generate mock tx"), nil, err
+		}
+
+		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
+		if err != nil {
+			if strings.Contains(err.Error(), "group was modified") || strings.Contains(err.Error(), "group account was modified") {
+				return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "no-op:group/group-account was modified"), nil, nil
+			}
+			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
+		}
+
+		return simtypes.NewOperationMsg(&msg, true, ""), nil, err
+	}
+}
