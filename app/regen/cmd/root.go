@@ -2,6 +2,7 @@ package regen
 
 import (
 	"context"
+	"errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -221,14 +222,19 @@ func createRegenappAndExport(
 	encCfg := app.MakeEncodingConfig() // Ideally, we would reuse the one created by NewRootCmd.
 	encCfg.Marshaler = codec.NewProtoCodec(encCfg.InterfaceRegistry)
 	var regenApp *app.RegenApp
+
+	appHomePath, ok := appOpts.Get(flags.FlagHome).(string)
+	if !ok || appHomePath == "" {
+		return servertypes.ExportedApp{}, errors.New("application home is not set")
+	}
 	if height != -1 {
-		regenApp = app.NewRegenApp(logger, db, traceStore, false, map[int64]bool{}, "", uint(1), encCfg, appOpts)
+		regenApp = app.NewRegenApp(logger, db, traceStore, false, map[int64]bool{}, appHomePath, uint(1), encCfg, appOpts)
 
 		if err := regenApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		regenApp = app.NewRegenApp(logger, db, traceStore, true, map[int64]bool{}, "", uint(1), encCfg, appOpts)
+		regenApp = app.NewRegenApp(logger, db, traceStore, true, map[int64]bool{}, appHomePath, uint(1), encCfg, appOpts)
 	}
 
 	return regenApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
