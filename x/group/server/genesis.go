@@ -49,12 +49,12 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.JSONMarshaler) js
 	genesisState := group.NewGenesisState()
 
 	var groups []*group.GroupInfo
-	groupSeq, err := orm.ExportTableData(ctx, s.groupTable, &groups)
+	_, err := orm.ExportTableData(ctx, s.groupTable, &groups)
 	if err != nil {
 		panic(errors.Wrap(err, "groups"))
 	}
 	genesisState.Groups = groups
-	genesisState.GroupSeq = groupSeq
+	genesisState.GroupSeq = s.groupSeq.CurVal(ctx)
 
 	var groupMembers []*group.GroupMember
 	_, err = orm.ExportTableData(ctx, s.groupMemberTable, &groupMembers)
@@ -69,6 +69,7 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.JSONMarshaler) js
 		panic(errors.Wrap(err, "group accounts"))
 	}
 	genesisState.GroupAccounts = groupAccounts
+	genesisState.GroupAccountSeq = s.groupAccountSeq.CurVal(ctx)
 
 	var proposals []*group.Proposal
 	proposalSeq, err := orm.ExportTableData(ctx, s.proposalTable, &proposals)

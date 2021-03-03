@@ -61,7 +61,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	s.Require().NoError(err)
 
 	genesisState := &group.GenesisState{
-		GroupSeq:        10,
+		GroupSeq:        2,
 		Groups:          []*group.GroupInfo{{GroupId: 1, Admin: s.addr1.String(), Metadata: []byte("1"), Version: 1, TotalWeight: "1"}, {GroupId: 2, Admin: s.addr2.String(), Metadata: []byte("2"), Version: 2, TotalWeight: "2"}},
 		GroupMembers:    []*group.GroupMember{{GroupId: 1, Member: &group.Member{Address: s.addr1.String(), Weight: "1", Metadata: []byte("member metadata")}}, {GroupId: 2, Member: &group.Member{Address: s.addr1.String(), Weight: "2", Metadata: []byte("member metadata")}}},
 		GroupAccountSeq: 1,
@@ -137,8 +137,11 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 			s.assertProposalsEqual(g, res)
 		}
 		s.Require().Equal(genesisState.Votes, exportedGenesisState.Votes)
-	})
 
+		s.Require().Equal(genesisState.GroupSeq, exportedGenesisState.GroupSeq)
+		s.Require().Equal(genesisState.GroupAccountSeq, exportedGenesisState.GroupAccountSeq)
+		s.Require().Equal(genesisState.ProposalSeq, exportedGenesisState.ProposalSeq)
+	})
 }
 
 func (s *IntegrationTestSuite) assertGroupAccountsEqual(g *group.GroupAccountInfo, other *group.GroupAccountInfo) {
