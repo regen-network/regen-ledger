@@ -50,13 +50,19 @@ service Query {
 
 // QueryGroupsRequest is the Query/Groups request type.
 message QueryGroupsRequest {
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 // QueryGroupsResponse is the Query/Groups response type.
 message QueryGroupsResponse {
 
-    // info is the list of GroupInfo for the group.
-    repeated GroupInfo info = 1;
+  // groups is the list of GroupInfo for the group.
+  repeated GroupInfo groups = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // QueryGroupInfoRequest is the Query/GroupInfo request type.

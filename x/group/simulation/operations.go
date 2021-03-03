@@ -275,7 +275,7 @@ func getGroupDetails(sdkCtx sdk.Context, qryClient group.QueryClient, acc simtyp
 
 	groupAdmin := ""
 	groupID := uint64(0)
-	for _, item := range result.Info {
+	for _, item := range result.Groups {
 		if item.Admin == acc.Address.String() {
 			groupAdmin = acc.Address.String()
 			groupID = item.GroupId

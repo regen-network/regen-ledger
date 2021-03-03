@@ -14,19 +14,19 @@ func (s serverImpl) Groups(ctx types.Context, request *group.QueryGroupsRequest)
 	if err != nil {
 		return nil, err
 	}
-	var infos []*group.GroupInfo
-	var info group.GroupInfo
+	var groups []*group.GroupInfo
+	var groupInfo group.GroupInfo
 	defer it.Close()
 	for {
-		_, err := it.LoadNext(&info)
+		_, err := it.LoadNext(&groupInfo)
 		if err != nil {
 			break
 		}
-		infos = append(infos, &info)
+		groups = append(groups, &groupInfo)
 	}
 
 	return &group.QueryGroupsResponse{
-		Info: infos,
+		Groups: groups,
 	}, nil
 }
 

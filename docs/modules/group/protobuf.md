@@ -957,6 +957,11 @@ QueryGroupsByAdminResponse is the Query/GroupsByAdminResponse response type.
 QueryGroupsRequest is the Query/Groups request type.
 
 
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
 
 
 
@@ -969,7 +974,8 @@ QueryGroupsResponse is the Query/Groups response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| info | [GroupInfo](#regen.group.v1alpha1.GroupInfo) | repeated | info is the list of GroupInfo for the group. |
+| groups | [GroupInfo](#regen.group.v1alpha1.GroupInfo) | repeated | groups is the list of GroupInfo for the group. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
 
 
