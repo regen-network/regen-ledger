@@ -23,6 +23,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/testutil/testdata"
 	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/x/group"
 	groupserver "github.com/regen-network/regen-ledger/x/group/server"
 )
@@ -35,6 +36,7 @@ type IntegrationTestSuite struct {
 
 	ctx              context.Context
 	sdkCtx           sdk.Context
+	genesisCtx       types.Context
 	msgClient        group.MsgClient
 	queryClient      group.QueryClient
 	addr1            sdk.AccAddress
@@ -49,6 +51,9 @@ type IntegrationTestSuite struct {
 	accountKeeper authkeeper.AccountKeeper
 	bankKeeper    bankkeeper.Keeper
 
+	initGenesisHandler   module.InitGenesisHandler
+	exportGenesisHandler module.ExportGenesisHandler
+
 	blockTime time.Time
 }
 
@@ -62,14 +67,14 @@ func NewIntegrationTestSuite(fixtureFactory *servermodule.FixtureFactory, accoun
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.fixture = s.fixtureFactory.Setup()
-	s.ctx = s.fixture.Context()
 
 	s.blockTime = time.Now().UTC()
 
 	// TODO clean up once types.Context merged upstream into sdk.Context
-	sdkCtx := s.ctx.(types.Context).WithBlockTime(s.blockTime)
-	s.sdkCtx = sdkCtx
-	s.ctx = types.Context{Context: sdkCtx}
+	sdkCtx := s.fixture.Context().(types.Context).WithBlockTime(s.blockTime)
+	s.sdkCtx, _ = sdkCtx.CacheContext()
+	s.ctx = types.Context{Context: s.sdkCtx}
+	s.genesisCtx = types.Context{Context: sdkCtx}
 
 	totalSupply := banktypes.NewSupply(sdk.NewCoins(sdk.NewInt64Coin("test", 400000000)))
 	s.bankKeeper.SetSupply(sdkCtx, totalSupply)
@@ -116,6 +121,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.groupAccountAddr = addr
 
 	s.Require().NoError(s.bankKeeper.SetBalances(s.sdkCtx, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+
+	s.initGenesisHandler = s.fixture.InitGenesisHandler(group.ModuleName)
+	s.exportGenesisHandler = s.fixture.ExportGenesisHandler(group.ModuleName)
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {

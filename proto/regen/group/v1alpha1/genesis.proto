@@ -25,9 +25,12 @@ message GenesisState {
   // group_accounts is the list of group accounts info.
   repeated GroupAccountInfo group_accounts = 5;
 
+  // proposal_seq is the proposal table orm.Sequence.
+  uint64 proposal_seq = 6;
+
   // proposals is the list of proposals.
-  repeated Proposal proposals = 6;
+  repeated Proposal proposals = 7;
 
   // votes is the list of votes.
-  repeated Vote votes = 7;
+  repeated Vote votes = 8;
 }

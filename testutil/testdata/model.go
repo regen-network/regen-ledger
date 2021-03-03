@@ -2,6 +2,7 @@ package testdata
 
 import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/orm"
 )
 
 var (
@@ -13,6 +14,10 @@ func (g GroupMember) NaturalKey() []byte {
 	result = append(result, g.Group...)
 	result = append(result, g.Member...)
 	return result
+}
+
+func (g GroupInfo) NaturalKey() []byte {
+	return orm.EncodeSequence(g.GroupId)
 }
 
 func (g GroupInfo) ValidateBasic() error {

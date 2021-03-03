@@ -12,8 +12,11 @@ package testutil
 import (
 	"context"
 
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"google.golang.org/grpc"
+
+	"github.com/regen-network/regen-ledger/types/module"
 )
 
 // FixtureFactory defines an interface for creating server test fixtures
@@ -39,6 +42,15 @@ type Fixture interface {
 	// Signers are a list of addresses which can be used to sign transactions. They may either be
 	// random or correspond to nodes in a test network which have keyrings.
 	Signers() []sdk.AccAddress
+
+	// InitGenesisHandler is a function to get a module InitGenesisHandler.
+	InitGenesisHandler(moduleName string) module.InitGenesisHandler
+
+	// ExportGenesisHandler is a function to get a module ExportGenesisHandler.
+	ExportGenesisHandler(moduleName string) module.ExportGenesisHandler
+
+	// Codec is the app ProtoCodec.
+	Codec() *codec.ProtoCodec
 
 	// Teardown performs any teardown actions for the fixture.
 	Teardown()

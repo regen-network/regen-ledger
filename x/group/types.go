@@ -304,6 +304,10 @@ func (g GroupInfo) ValidateBasic() error {
 	return nil
 }
 
+func (g GroupInfo) NaturalKey() []byte {
+	return orm.EncodeSequence(g.GroupId)
+}
+
 var _ orm.Validateable = GroupMember{}
 
 func (g GroupMember) ValidateBasic() error {

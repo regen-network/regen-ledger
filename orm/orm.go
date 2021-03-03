@@ -155,7 +155,7 @@ func NewTypeSafeRowGetter(storeKey sdk.StoreKey, prefixKey byte, model reflect.T
 		}
 
 		store := prefix.NewStore(ctx.KVStore(storeKey), []byte{prefixKey})
-		it := store.Iterator(prefixRange(rowID))
+		it := store.Iterator(PrefixRange(rowID))
 		defer it.Close()
 		if !it.Valid() {
 			return ErrNotFound

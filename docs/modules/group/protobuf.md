@@ -267,6 +267,7 @@ passes as well as some optional metadata associated with the proposal.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| proposal_id | [uint64](#uint64) |  | proposal_id is the unique id of the proposal. |
 | group_account | [string](#string) |  | group_account is the group account address. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the proposal. |
 | proposers | [string](#string) | repeated | proposers are the account addresses of the proposers. |
@@ -424,6 +425,7 @@ GenesisState defines the group module's genesis state.
 | group_members | [GroupMember](#regen.group.v1alpha1.GroupMember) | repeated | group_members is the list of groups members. |
 | group_account_seq | [uint64](#uint64) |  | group_account_seq is the group account table orm.Sequence. |
 | group_accounts | [GroupAccountInfo](#regen.group.v1alpha1.GroupAccountInfo) | repeated | group_accounts is the list of group accounts info. |
+| proposal_seq | [uint64](#uint64) |  | proposal_seq is the proposal table orm.Sequence. |
 | proposals | [Proposal](#regen.group.v1alpha1.Proposal) | repeated | proposals is the list of proposals. |
 | votes | [Vote](#regen.group.v1alpha1.Vote) | repeated | votes is the list of votes. |
 

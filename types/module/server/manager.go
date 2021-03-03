@@ -22,8 +22,8 @@ type Manager struct {
 	keys                  map[string]ModuleKey
 	router                *router
 	requiredServices      map[reflect.Type]bool
-	initGenesisHandlers   map[string]InitGenesisHandler
-	exportGenesisHandlers map[string]ExportGenesisHandler
+	initGenesisHandlers   map[string]module.InitGenesisHandler
+	exportGenesisHandlers map[string]module.ExportGenesisHandler
 }
 
 // NewManager creates a new Manager
@@ -32,8 +32,8 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 		baseApp:               baseApp,
 		cdc:                   cdc,
 		keys:                  map[string]ModuleKey{},
-		initGenesisHandlers:   map[string]InitGenesisHandler{},
-		exportGenesisHandlers: map[string]ExportGenesisHandler{},
+		initGenesisHandlers:   map[string]module.InitGenesisHandler{},
+		exportGenesisHandlers: map[string]module.ExportGenesisHandler{},
 		router: &router{
 			handlers:         map[string]handler{},
 			providedServices: map[reflect.Type]bool{},
@@ -184,9 +184,6 @@ func (mm *Manager) ExportGenesis(ctx sdk.Context) map[string]json.RawMessage {
 	return genesisData
 }
 
-type InitGenesisHandler func(ctx types.Context, cdc codec.JSONMarshaler, data json.RawMessage) []abci.ValidatorUpdate
-type ExportGenesisHandler func(ctx types.Context, cdc codec.JSONMarshaler) json.RawMessage
-
 type configurator struct {
 	msgServer            gogogrpc.Server
 	queryServer          gogogrpc.Server
@@ -194,8 +191,8 @@ type configurator struct {
 	cdc                  codec.Marshaler
 	requiredServices     map[reflect.Type]bool
 	router               sdk.Router
-	initGenesisHandler   InitGenesisHandler
-	exportGenesisHandler ExportGenesisHandler
+	initGenesisHandler   module.InitGenesisHandler
+	exportGenesisHandler module.ExportGenesisHandler
 }
 
 var _ Configurator = &configurator{}
@@ -208,7 +205,7 @@ func (c *configurator) QueryServer() gogogrpc.Server {
 	return c.queryServer
 }
 
-func (c *configurator) RegisterGenesis(initGenesisHandler InitGenesisHandler, exportGenesisHandler ExportGenesisHandler) {
+func (c *configurator) RegisterGenesis(initGenesisHandler module.InitGenesisHandler, exportGenesisHandler module.ExportGenesisHandler) {
 	c.initGenesisHandler = initGenesisHandler
 	c.exportGenesisHandler = exportGenesisHandler
 }

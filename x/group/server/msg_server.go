@@ -426,6 +426,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 	}
 
 	m := &group.Proposal{
+		ProposalId:          s.proposalTable.Sequence().PeekNextVal(ctx),
 		GroupAccount:        req.GroupAccount,
 		Metadata:            metadata,
 		Proposers:           proposers,
