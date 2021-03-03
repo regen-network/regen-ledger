@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/x/group"
+	"github.com/regen-network/regen-ledger/testutil/testdata"
 	"github.com/stretchr/testify/require"
 )
 
@@ -17,45 +17,38 @@ func TestImportExportTableData(t *testing.T) {
 
 	storeKey := sdk.NewKVStoreKey("test")
 	const prefix = iota
-	table := orm.NewTableBuilder(prefix, storeKey, &group.GroupInfo{}, orm.FixLengthIndexKeys(1), cdc).Build()
+	table := orm.NewAutoUInt64TableBuilder(prefix, 0x1, storeKey, &testdata.GroupInfo{}, cdc).Build()
 
 	ctx := orm.NewMockContext()
 
-	groups := []*group.GroupInfo{
+	groups := []*testdata.GroupInfo{
 		{
-			GroupId:     1,
-			Version:     1,
-			Admin:       "cosmos1qyqszqgpqyqszqgpqyqszqgpqyqszqgpjnp7du",
-			TotalWeight: "1",
-			Metadata:    []byte("1"),
+			GroupId: 1,
+			Admin:   sdk.AccAddress([]byte("admin1-address")),
 		},
 		{
-			GroupId:     2,
-			Version:     2,
-			Admin:       "cosmos1qgpqyqszqgpqyqszqgpqyqszqgpqyqszrh8mx2",
-			TotalWeight: "2",
-			Metadata:    []byte("2"),
+			GroupId: 2,
+			Admin:   sdk.AccAddress([]byte("admin2-address")),
 		},
 	}
 
-	err := orm.ImportTableData(ctx, table, groups, 0)
+	err := orm.ImportTableData(ctx, table, groups, 2)
 	require.NoError(t, err)
 
 	for _, g := range groups {
-		var loaded group.GroupInfo
-		err := table.GetOne(ctx, orm.EncodeSequence(g.GroupId), &loaded)
+		var loaded testdata.GroupInfo
+		_, err := table.GetOne(ctx, g.GroupId, &loaded)
 		require.NoError(t, err)
 
 		require.Equal(t, g, &loaded)
 	}
 
-	var exported []*group.GroupInfo
-	_, err = orm.ExportTableData(ctx, table, &exported)
+	var exported []*testdata.GroupInfo
+	seq, err := orm.ExportTableData(ctx, table, &exported)
 	require.NoError(t, err)
+	require.Equal(t, seq, uint64(2))
 
 	for i, g := range exported {
 		require.Equal(t, g, groups[i])
 	}
-
-	// require.Equal(t, seq, 0)
 }
