@@ -198,6 +198,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts serverty
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
 		app.MakeEncodingConfig(), // Ideally, we would reuse the one created by NewRootCmd.
+		appOpts,
 		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(cast.ToString(appOpts.Get(server.FlagMinGasPrices))),
 		baseapp.SetHaltHeight(cast.ToUint64(appOpts.Get(server.FlagHaltHeight))),
@@ -227,13 +228,13 @@ func createRegenappAndExport(
 		return servertypes.ExportedApp{}, errors.New("application home is not set")
 	}
 	if height != -1 {
-		regenApp = app.NewRegenApp(logger, db, traceStore, false, map[int64]bool{}, appHomePath, uint(1), encCfg)
+		regenApp = app.NewRegenApp(logger, db, traceStore, false, map[int64]bool{}, appHomePath, uint(1), encCfg, appOpts)
 
 		if err := regenApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		regenApp = app.NewRegenApp(logger, db, traceStore, true, map[int64]bool{}, appHomePath, uint(1), encCfg)
+		regenApp = app.NewRegenApp(logger, db, traceStore, true, map[int64]bool{}, appHomePath, uint(1), encCfg, appOpts)
 	}
 
 	return regenApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
