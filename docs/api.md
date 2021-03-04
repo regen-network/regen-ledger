@@ -64,7 +64,7 @@ This command will fetch the given CID on chain, as well as all its (potential) s
 ```sh
 content: null
 signers:
-- regen:1qx9tsl46vkgf9tf8pl3chm7mkmqa5s30ydjdzx
+- regen1qx9tsl46vkgf9tf8pl3chm7mkmqa5s30ydjdzx
 timestamp: "2020-11-14T03:45:50.924123Z"
 ```
 
@@ -144,7 +144,7 @@ The result should look something like this:
 {
   "timestamp": "2020-11-14T03:45:50.924123Z",
   "signers": [
-    "regen:1qx9tsl46vkgf9tf8pl3chm7mkmqa5s30ydjdzx"
+    "regen1qx9tsl46vkgf9tf8pl3chm7mkmqa5s30ydjdzx"
   ]
 }
 ```
