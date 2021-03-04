@@ -6,7 +6,7 @@ require (
 	github.com/CosmWasm/wasmd v0.14.0
 	github.com/btcsuite/btcutil v1.0.2
 	github.com/cockroachdb/apd/v2 v2.0.2
-	github.com/cosmos/cosmos-sdk v0.42.0-alpha1
+	github.com/cosmos/cosmos-sdk v0.42.0-rc0
 	github.com/enigmampc/btcutil v1.0.3-0.20200723161021-e2fb6adb2a25
 	github.com/gogo/protobuf v1.3.3
 	github.com/gorilla/mux v1.8.0
@@ -27,5 +27,7 @@ require (
 	google.golang.org/grpc v1.35.0
 	gopkg.in/yaml.v2 v2.4.0
 )
+
+replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
