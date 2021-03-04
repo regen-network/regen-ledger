@@ -176,10 +176,6 @@ func (s serverImpl) getProposalsByGroupAccount(ctx types.Context, account sdk.Ac
 	return s.proposalByGroupAccountIndex.GetPaginated(ctx, account.Bytes(), pageRequest)
 }
 
-func (s serverImpl) getAllProposals(ctx types.Context, pageRequest *query.PageRequest) (orm.Iterator, error) {
-	return s.proposalTable.PrefixScan(ctx, pageRequest.Offset, pageRequest.Limit)
-}
-
 func (s serverImpl) getProposal(ctx types.Context, proposalID uint64) (group.Proposal, error) {
 	var p group.Proposal
 	if _, err := s.proposalTable.GetOne(ctx, proposalID, &p); err != nil {
