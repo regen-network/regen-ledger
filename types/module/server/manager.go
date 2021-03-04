@@ -205,7 +205,7 @@ func (c *configurator) QueryServer() gogogrpc.Server {
 	return c.queryServer
 }
 
-func (c *configurator) RegisterGenesis(initGenesisHandler module.InitGenesisHandler, exportGenesisHandler module.ExportGenesisHandler) {
+func (c *configurator) RegisterGenesisHandlers(initGenesisHandler module.InitGenesisHandler, exportGenesisHandler module.ExportGenesisHandler) {
 	c.initGenesisHandler = initGenesisHandler
 	c.exportGenesisHandler = exportGenesisHandler
 }
