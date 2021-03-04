@@ -6,24 +6,21 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/regen-network/regen-ledger/types/module/server"
 )
 
 // AppSimulationManager defines a simulation manager that provides the high level utility
 // for managing and executing simulation functionalities for a group of modules
 type AppSimulationManager struct {
-	Modules       []module.AppModuleSimulation                // array of app modules; we use an array for deterministic simulation tests
-	StoreDecoders sdk.StoreDecoderRegistry                    // functions to decode the key-value pairs from each module's store
-	wOpsHandler   map[string]server.WeightedOperationsHandler // WeightedOperationHandler is a function to get a module WeightedOperations.
+	Modules       []module.AppModuleSimulation // array of app modules; we use an array for deterministic simulation tests
+	StoreDecoders sdk.StoreDecoderRegistry     // functions to decode the key-value pairs from each module's store
 }
 
 // NewAppSimulationManager creates a new SimulationManager object
 // CONTRACT: All the modules provided must be also registered on the module Manager
-func NewAppSimulationManager(wOpsHandler map[string]server.WeightedOperationsHandler, modules ...module.AppModuleSimulation) *AppSimulationManager {
+func NewAppSimulationManager(modules ...module.AppModuleSimulation) *AppSimulationManager {
 	return &AppSimulationManager{
 		Modules:       modules,
 		StoreDecoders: make(sdk.StoreDecoderRegistry),
-		wOpsHandler:   wOpsHandler,
 	}
 }
 
@@ -66,17 +63,5 @@ func (sm *AppSimulationManager) GenerateParamChanges(seed int64) (paramChanges [
 
 // WeightedOperations returns all the modules' weighted operations of an application
 func (sm *AppSimulationManager) WeightedOperations(simState module.SimulationState) []simulation.WeightedOperation {
-	var wOps []simulation.WeightedOperation
-
-	// adding non ADR-33 modules weighted-operations
-	for _, m := range sm.Modules {
-		wOps = append(wOps, m.WeightedOperations(simState)...)
-	}
-
-	// adding ADR-33 modules weigted-operations
-	for _, weightedOperationHandler := range sm.wOpsHandler {
-		wOps = append(wOps, weightedOperationHandler(simState)...)
-	}
-
-	return wOps
+	return nil
 }

@@ -17,6 +17,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	"github.com/cosmos/cosmos-sdk/simapp"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -96,6 +97,8 @@ import (
 const (
 	appName = "regen"
 )
+
+var _ simapp.App = &RegenApp{}
 
 var (
 	// DefaultNodeHome default home directories for regen
@@ -414,7 +417,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
 	// transactions
 	app.sm = regensimulation.NewAppSimulationManager(
-		app.nm.GetWeightedOperationsHandlers(),
 		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
@@ -578,9 +580,14 @@ func (app *RegenApp) GetSubspace(moduleName string) paramstypes.Subspace {
 	return subspace
 }
 
-// SimulationManager implements the SimulationApp interface
-func (app *RegenApp) SimulationManager() *regensimulation.AppSimulationManager {
+// AppSimulationManager implements the SimulationApp interface
+func (app *RegenApp) AppSimulationManager() *regensimulation.AppSimulationManager {
 	return app.sm
+}
+
+// AppSimulationManager implements the SimulationApp interface
+func (app *RegenApp) SimulationManager() *module.SimulationManager {
+	return nil
 }
 
 // NewManager implements the SimulationApp interface
