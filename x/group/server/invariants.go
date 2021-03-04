@@ -32,6 +32,9 @@ func (s serverImpl) TallyVotesInvariant() sdk.Invariant {
 			return "start value must be less than end value in iterator", false
 		}
 		curProposalRowID, err := orm.ReadAll(it2, &curProposal)
+		if err != nil {
+			return "cannot read all proposals in current block", false
+		}
 		_ = curProposalRowID
 		var prevProposal []*group.Proposal
 		if ctx.BlockHeight()-1 >= 0 {
@@ -44,6 +47,9 @@ func (s serverImpl) TallyVotesInvariant() sdk.Invariant {
 			return "start value must be less than end value in iterator", false
 		}
 		prevProposalRowID, err := orm.ReadAll(it1, &prevProposal)
+		if err != nil {
+			return "cannot read all proposals from previous block", false
+		}
 		_ = prevProposalRowID
 		for i := 0; i < len(prevProposal) && i < len(curProposal); i++ {
 			if int32(prevProposal[i].Status) == 1 && int32(curProposal[i].Status) == 1 {
@@ -81,7 +87,7 @@ func (s serverImpl) TallyVotesInvariant() sdk.Invariant {
 				}
 				if (curYesCount.Cmp(prevYesCount) == -1) || (curNoCount.Cmp(prevNoCount) == -1) || (curAbstainCount.Cmp(prevAbstainCount) == -1) || (curVetoCount.Cmp(prevVetoCount) == -1) {
 					broken = true
-					msg += fmt.Sprintf("vote tally sums must never have less than the block before\n")
+					msg += "vote tally sums must never have less than the block before\n"
 				}
 			}
 		}
