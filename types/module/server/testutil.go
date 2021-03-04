@@ -73,7 +73,7 @@ func (ff FixtureFactory) Setup() testutil.Fixture {
 	baseApp.MsgServiceRouter().SetInterfaceRegistry(registry)
 	baseApp.GRPCQueryRouter().SetInterfaceRegistry(registry)
 	mm := NewManager(baseApp, cdc)
-	err := mm.RegisterModules(ff.modules)
+	err := mm.RegisterModules(ff.modules, nil)
 	require.NoError(ff.t, err)
 	err = mm.CompleteInitialization()
 	require.NoError(ff.t, err)

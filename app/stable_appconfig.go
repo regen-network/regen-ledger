@@ -3,14 +3,16 @@
 package app
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	moduletypes "github.com/regen-network/regen-ledger/types/module"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
 	return []module.AppModuleBasic{}
 }
 
-func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) {}
+func setCustomModules(app *RegenApp) []moduletypes.Module {
+	return nil
+}
 
 func (app *RegenApp) registerUpgradeHandlers() {}
