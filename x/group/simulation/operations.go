@@ -12,7 +12,6 @@ import (
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	gogotypes "github.com/gogo/protobuf/types"
-	proto "github.com/gogo/protobuf/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
@@ -244,7 +243,7 @@ func SimulateMsgCreateGroupAccount(ak exported.AccountKeeper, bk exported.BankKe
 			[]byte(simtypes.RandStringOfLength(r, 10)),
 			&group.ThresholdDecisionPolicy{
 				Threshold: "50",
-				Timeout:   proto.Duration{Seconds: int64(30 * 24 * 60 * 60)},
+				Timeout:   gogotypes.Duration{Seconds: int64(30 * 24 * 60 * 60)},
 			},
 		)
 		if err != nil {
@@ -663,7 +662,7 @@ func SimulateMsgUpdateGroupAccountDecisionPolicy(ak exported.AccountKeeper,
 
 		msg, err := group.NewMsgUpdateGroupAccountDecisionPolicyRequest(adminBech32, groupAccountBech32, &group.ThresholdDecisionPolicy{
 			Threshold: fmt.Sprintf("%d", simtypes.RandIntBetween(r, 1, 100)),
-			Timeout:   proto.Duration{Seconds: int64(simtypes.RandIntBetween(r, 100, 1000))},
+			Timeout:   gogotypes.Duration{Seconds: int64(simtypes.RandIntBetween(r, 100, 1000))},
 		})
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountDecisionPolicy, err.Error()), nil, err

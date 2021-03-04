@@ -32,7 +32,7 @@ func SimulationOperations(app *RegenApp, cdc codec.JSONMarshaler, config simulat
 
 	simState.ParamChanges = app.SimulationManager().GenerateParamChanges(config.Seed)
 	simState.Contents = app.SimulationManager().GetProposalContents(simState)
-	return app.nm.WeightedOperations(simState)
+	return app.nm.WeightedOperations(simState, app.sm.Modules)
 }
 
 // CheckExportSimulation exports the app state and simulation parameters to JSON
