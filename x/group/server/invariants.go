@@ -27,11 +27,11 @@ func (s serverImpl) TallyVotesInvariant() sdk.Invariant {
 		var broken bool
 		var curProposal []*group.Proposal
 		ctx := types.Context{Context: sdkCtx}
-		curIterator, err := s.proposalTable.PrefixScan(ctx, 1, math.MaxUint64)
+		it1, err := s.proposalTable.PrefixScan(ctx, 1, math.MaxUint64)
 		if err != nil {
 			return "start value must be less than end value in iterator", false
 		}
-		curProposalRowID, err := orm.ReadAll(curIterator, &curProposal)
+		curProposalRowID, err := orm.ReadAll(it1, &curProposal)
 		if err != nil {
 			return "cannot read all proposals in current block", false
 		}
@@ -42,11 +42,11 @@ func (s serverImpl) TallyVotesInvariant() sdk.Invariant {
 		} else {
 			return "Not enough blocks to perform TallyVotesInvariant", false
 		}
-		prevIterator, err := s.proposalTable.PrefixScan(sdkCtx, 1, math.MaxUint64)
+		it2, err := s.proposalTable.PrefixScan(sdkCtx, 1, math.MaxUint64)
 		if err != nil {
 			return "start value must be less than end value in iterator", false
 		}
-		prevProposalRowID, err := orm.ReadAll(prevIterator, &prevProposal)
+		prevProposalRowID, err := orm.ReadAll(it2, &prevProposal)
 		if err != nil {
 			return "cannot read all proposals from previous block", false
 		}
