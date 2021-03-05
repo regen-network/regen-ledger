@@ -10,7 +10,11 @@ import (
 )
 
 func (s serverImpl) Groups(ctx types.Context, request *group.QueryGroupsRequest) (*group.QueryGroupsResponse, error) {
-	it, err := s.groupTable.PrefixScan(ctx, nil, nil)
+	var start []byte
+	if request.Pagination != nil {
+		start = request.Pagination.Key
+	}
+	it, err := s.groupTable.PrefixScan(ctx, start, nil)
 	if err != nil {
 		return nil, err
 	}
