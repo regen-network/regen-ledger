@@ -1,6 +1,9 @@
 package regen_test
 
 import (
+	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/regen-network/regen-ledger/app"
 	"io/ioutil"
 	"testing"
 
@@ -18,8 +21,9 @@ func TestInitCmd(t *testing.T) {
 	rootCmd.SetArgs([]string{
 		"init",          // Test the init cmd
 		"regenapp-test", // Moniker
+		fmt.Sprintf("--%s=%s", flags.FlagHome, nodeHome), // Set home flag
 	})
 
-	err = svrcmd.Execute(rootCmd, nodeHome)
+	err = svrcmd.Execute(rootCmd, app.DefaultNodeHome)
 	require.NoError(t, err)
 }
