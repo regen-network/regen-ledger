@@ -33,6 +33,7 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 			providedServices: map[reflect.Type]bool{},
 			antiReentryMap:   map[string]bool{},
 		},
+		requiredServices: map[reflect.Type]bool{},
 	}
 }
 

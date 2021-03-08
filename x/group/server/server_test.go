@@ -5,6 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
@@ -43,6 +44,7 @@ func TestServer(t *testing.T) {
 	bankKeeper := bankkeeper.NewBaseKeeper(
 		cdc, bankKey, accountKeeper, bankSubspace, map[string]bool{},
 	)
+	bankModule := bank.NewAppModule(cdc, bankKeeper, accountKeeper)
 
 	baseApp := ff.BaseApp()
 
@@ -52,7 +54,10 @@ func TestServer(t *testing.T) {
 	baseApp.MountStore(authKey, sdk.StoreTypeIAVL)
 	baseApp.MountStore(bankKey, sdk.StoreTypeIAVL)
 
-	ff.SetModules([]module.Module{groupmodule.Module{AccountKeeper: accountKeeper}})
+	ff.SetModules(
+		[]module.Module{groupmodule.Module{AccountKeeper: accountKeeper}},
+		map[string]sdkmodule.AppModule{banktypes.ModuleName: bankModule},
+	)
 
 	s := testsuite.NewIntegrationTestSuite(ff, accountKeeper, bankKeeper)
 

@@ -13,7 +13,7 @@ import (
 
 func TestServer(t *testing.T) {
 	ff := server.NewFixtureFactory(t, 6)
-	ff.SetModules([]module.Module{ecocreditmodule.Module{}})
+	ff.SetModules([]module.Module{ecocreditmodule.Module{}}, nil)
 	s := testsuite.NewIntegrationTestSuite(ff)
 	suite.Run(t, s)
 }

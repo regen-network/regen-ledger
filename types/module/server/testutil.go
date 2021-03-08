@@ -12,6 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -23,11 +24,12 @@ import (
 )
 
 type FixtureFactory struct {
-	t       *testing.T
-	modules []module.Module
-	signers []sdk.AccAddress
-	cdc     *codec.ProtoCodec
-	baseApp *baseapp.BaseApp
+	t          *testing.T
+	modules    []module.Module
+	appModules map[string]sdkmodule.AppModule
+	signers    []sdk.AccAddress
+	cdc        *codec.ProtoCodec
+	baseApp    *baseapp.BaseApp
 }
 
 func NewFixtureFactory(t *testing.T, numSigners int) *FixtureFactory {
@@ -42,8 +44,9 @@ func NewFixtureFactory(t *testing.T, numSigners int) *FixtureFactory {
 	}
 }
 
-func (ff *FixtureFactory) SetModules(modules []module.Module) {
+func (ff *FixtureFactory) SetModules(modules []module.Module, appModules map[string]sdkmodule.AppModule) {
 	ff.modules = modules
+	ff.appModules = appModules
 }
 
 // Codec is exposed just for compatibility of these test suites with legacy modules and can be removed when everything
@@ -73,7 +76,7 @@ func (ff FixtureFactory) Setup() testutil.Fixture {
 	baseApp.MsgServiceRouter().SetInterfaceRegistry(registry)
 	baseApp.GRPCQueryRouter().SetInterfaceRegistry(registry)
 	mm := NewManager(baseApp, cdc)
-	err := mm.RegisterModules(ff.modules, nil)
+	err := mm.RegisterModules(ff.modules, ff.appModules)
 	require.NoError(ff.t, err)
 	err = mm.CompleteInitialization()
 	require.NoError(ff.t, err)

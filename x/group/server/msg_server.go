@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"context"
 	"encoding/binary"
 	"fmt"
 	"reflect"
@@ -624,11 +625,12 @@ func (s serverImpl) Exec(ctx types.Context, req *group.MsgExecRequest) (*group.M
 		logger := ctx.Logger().With("module", fmt.Sprintf("x/%s", group.ModuleName))
 		// Cashing context so that we don't update the store in case of failure.
 		ctx, flush := ctx.CacheContext()
-		address, err := sdk.AccAddressFromBech32(accountInfo.GroupAccount)
-		if err != nil {
-			return nil, sdkerrors.Wrap(err, "group account")
-		}
-		_, err = DoExecuteMsgs(ctx, s.router, address, proposal.GetMsgs())
+		// address, err := sdk.AccAddressFromBech32(accountInfo.GroupAccount)
+		// if err != nil {
+		// 	return nil, sdkerrors.Wrap(err, "group account")
+		// }
+		err := s.execMsgs(sdk.WrapSDKContext(ctx), proposal)
+		// _, err = DoExecuteMsgs(ctx, s.router, address, proposal.GetMsgs())
 		if err != nil {
 			proposal.ExecutorResult = group.ProposalExecutorResultFailure
 			proposalType := reflect.TypeOf(proposal).String()
@@ -647,6 +649,22 @@ func (s serverImpl) Exec(ctx types.Context, req *group.MsgExecRequest) (*group.M
 	// TODO: add event #215
 
 	return res, nil
+}
+
+func (s serverImpl) execMsgs(ctx context.Context, proposal group.Proposal) error {
+	msgs := proposal.GetMsgs()
+	for _, msg := range msgs {
+		svcMsg, ok := msg.(sdk.ServiceMsg)
+		if !ok {
+			return fmt.Errorf("expected sdk.ServiceMsg, got %T", msg)
+		}
+		var reply interface{}
+		err := s.key.Invoke(ctx, svcMsg.Route(), svcMsg.Request, reply)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 type authNGroupReq interface {

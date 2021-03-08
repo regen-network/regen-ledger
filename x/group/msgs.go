@@ -558,10 +558,14 @@ func (m MsgCreateProposalRequest) ValidateBasic() error {
 // SetMsgs packs msgs into Any's
 func (m *MsgCreateProposalRequest) SetMsgs(msgs []sdk.Msg) error {
 	anys := make([]*types.Any, len(msgs))
-
 	for i, msg := range msgs {
 		var err error
-		anys[i], err = types.NewAnyWithValue(msg)
+		switch msg := msg.(type) {
+		case sdk.ServiceMsg:
+			anys[i], err = types.NewAnyWithCustomTypeURL(msg.Request, msg.MethodName)
+		default:
+			anys[i], err = types.NewAnyWithValue(msg)
+		}
 		if err != nil {
 			return err
 		}
@@ -574,9 +578,18 @@ func (m *MsgCreateProposalRequest) SetMsgs(msgs []sdk.Msg) error {
 func (m MsgCreateProposalRequest) GetMsgs() []sdk.Msg {
 	msgs := make([]sdk.Msg, len(m.Msgs))
 	for i, any := range m.Msgs {
-		msg, ok := any.GetCachedValue().(sdk.Msg)
-		if !ok {
-			return nil
+		var msg sdk.Msg
+		if isServiceMsg(any.TypeUrl) {
+			req := any.GetCachedValue()
+			if req == nil {
+				panic("Any cached value is nil. Transaction messages must be correctly packed Any values.")
+			}
+			msg = sdk.ServiceMsg{
+				MethodName: any.TypeUrl,
+				Request:    any.GetCachedValue().(sdk.MsgRequest),
+			}
+		} else {
+			msg = any.GetCachedValue().(sdk.Msg)
 		}
 		msgs[i] = msg
 	}
@@ -585,17 +598,21 @@ func (m MsgCreateProposalRequest) GetMsgs() []sdk.Msg {
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (m MsgCreateProposalRequest) UnpackInterfaces(unpacker types.AnyUnpacker) error {
-	// for _, m := range m.Msgs {
-	// 	err := types.UnpackInterfaces(m, unpacker)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// }
 	for _, any := range m.Msgs {
-		var msg sdk.Msg
-		err := unpacker.UnpackAny(any, &msg)
-		if err != nil {
-			return err
+		// If the any's typeUrl contains 2 slashes, then we unpack the any into
+		// a ServiceMsg struct as per ADR-031.
+		if isServiceMsg(any.TypeUrl) {
+			var req sdk.MsgRequest
+			err := unpacker.UnpackAny(any, &req)
+			if err != nil {
+				return err
+			}
+		} else {
+			var msg sdk.Msg
+			err := unpacker.UnpackAny(any, &msg)
+			if err != nil {
+				return err
+			}
 		}
 	}
 

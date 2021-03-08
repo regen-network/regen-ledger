@@ -54,7 +54,7 @@ func (r registrar) RegisterService(sd *grpc.ServiceDesc, ss interface{}) {
 			}
 
 			resValue := reflect.ValueOf(res)
-			if !resValue.IsZero() {
+			if !resValue.IsZero() && reply != nil {
 				reflect.ValueOf(reply).Elem().Set(resValue.Elem())
 			}
 			return nil
@@ -104,7 +104,7 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 			// see https://github.com/cosmos/cosmos-sdk/issues/8030
 			sdkCtx := types.UnwrapSDKContext(ctx)
 			cacheMs := sdkCtx.MultiStore().CacheMultiStore()
-			ctx = types.Context{Context: sdkCtx.WithMultiStore(cacheMs)}
+			ctx = sdk.WrapSDKContext(sdkCtx.WithMultiStore(cacheMs))
 
 			err = handler.f(ctx, request, response)
 			if err != nil {

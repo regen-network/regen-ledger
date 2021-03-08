@@ -14,7 +14,7 @@ import (
 
 func TestServer(t *testing.T) {
 	ff := server.NewFixtureFactory(t, 2)
-	ff.SetModules([]module.Module{datamodule.Module{}})
+	ff.SetModules([]module.Module{datamodule.Module{}}, nil)
 	s := testsuite.NewIntegrationTestSuite(ff)
 	suite.Run(t, s)
 }
