@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/codec/types"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -116,7 +115,7 @@ func isServiceMsg(typeURL string) bool {
 }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
-func (p Proposal) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+func (p Proposal) UnpackInterfaces(unpacker types.AnyUnpacker) error {
 	for _, any := range p.Msgs {
 		// If the any's typeUrl contains 2 slashes, then we unpack the any into
 		// a ServiceMsg struct as per ADR-031.
