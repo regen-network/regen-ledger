@@ -19,6 +19,9 @@ build_tags = netgo
 
 ifeq ($(EXPERIMENTAL),true)
 	build_tags += experimental
+	GORELEASER_BUILD_TAGS=build_tags
+else
+	build_tags
 endif
 
 ifeq ($(LEDGER_ENABLED),true)
