@@ -1,12 +1,6 @@
-# This is an example .goreleaser.yml file with some sane defaults.
-# Make sure to check the documentation at http://goreleaser.com
 env:
   - GO111MODULE=on
   - CGO_ENABLED=1
-before:
-  hooks:
-    # You may remove this if you don't use go modules.
-    - go mod tidy
 builds:
   - id: regen-ledger-darwin-amd64
     binary: regen
@@ -118,4 +112,3 @@ release:
     owner: regen-network
     name: regen
   prerelease: auto
-  draft: false
