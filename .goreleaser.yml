@@ -2,25 +2,25 @@ env:
   - GO111MODULE=on
   - CGO_ENABLED=1
 builds:
-  - id: regen-ledger-darwin-amd64
-    binary: regen
-    main: ./app/regen
-    goarch:
-      - amd64
-    goos:
-      - darwin
-    env:
-      - CC=o64-clang
-      - CXX=o64-clang++
-    flags:
-      - -trimpath
-      - -mod=readonly
-      - "netgo"
-      - "ledger"
-      - "gcc"
-      - "experimental=true"
-    ldflags:
-      - "{{ .LDFLAGS }}"
+  # - id: regen-ledger-darwin-amd64
+  #   binary: regen
+  #   main: ./app/regen
+  #   goarch:
+  #     - amd64
+  #   goos:
+  #     - darwin
+  #   env:
+  #     - CC=o64-clang
+  #     - CXX=o64-clang++
+  #   flags:
+  #     - -trimpath
+  #     - -mod=readonly
+  #     - "netgo"
+  #     - "ledger"
+  #     - "gcc"
+  #     - "experimental=true"
+  #   ldflags:
+  #     - "{{ .LDFLAGS }}"
   - id: regen-ledger-linux-amd64
     binary: regen
     main: ./app/regen
@@ -36,7 +36,10 @@ builds:
       - "gcc"
       - "experimental=true"
     ldflags:
-      - "{{ .LD_FLAGS }}"
+      - "github.com/cosmos/cosmos-sdk/version.Name=regen"
+      - "github.com/cosmos/cosmos-sdk/version.AppName=regen"
+      - "github.com/cosmos/cosmos-sdk/version.Version=0.6.3"
+      - "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo, experimental"
       - -extldflags "-lc -lrt -lpthread --static"
 #   - id: regen-ledger-linux-arm64
 #     binary: regen
@@ -118,4 +121,4 @@ release:
     owner: regen-network
     name: regen-ledger
   prerelease: auto
-  draft: false
+  draft: true
