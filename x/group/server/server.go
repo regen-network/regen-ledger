@@ -7,6 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	bank "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
 const (
@@ -166,5 +167,5 @@ func RegisterServices(configurator servermodule.Configurator, accountKeeper Acco
 	group.RegisterMsgServer(configurator.MsgServer(), impl)
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
 	// TODO add required services from other modules
-	// configurator.RequireServer((*bank.MsgServer)(nil))
+	configurator.RequireServer((*bank.MsgServer)(nil))
 }
