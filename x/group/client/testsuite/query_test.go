@@ -6,11 +6,61 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/regen-network/regen-ledger/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/client"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 )
+
+func (s *IntegrationTestSuite) TestQueryGroups() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+
+	testCases := []struct {
+		name         string
+		args         []string
+		expectErr    bool
+		expectErrMsg string
+		expectedCode uint32
+	}{
+		{
+			"valid query",
+			[]string{fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			false,
+			"",
+			0,
+		},
+		{
+			"valid query pagination",
+			[]string{
+				fmt.Sprintf("--%s=json", tmcli.OutputFlag),
+				fmt.Sprintf("--%s=1", flags.FlagPage),
+				fmt.Sprintf("--%s=1", flags.FlagLimit),
+			},
+			false,
+			"",
+			0,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		s.Run(tc.name, func() {
+			cmd := client.QueryGroupsCmd()
+
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expectErr {
+				s.Require().Contains(out.String(), tc.expectErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+				var g group.QueryGroupsResponse
+				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &g))
+			}
+		})
+	}
+}
 
 func (s *IntegrationTestSuite) TestQueryGroupInfo() {
 	val := s.network.Validators[0]

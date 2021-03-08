@@ -20,7 +20,7 @@ func QueryCmd(name string) *cobra.Command {
 	}
 
 	queryCmd.AddCommand(
-		QueryGroups(),
+		QueryGroupsCmd(),
 		QueryGroupInfoCmd(),
 		QueryGroupAccountInfoCmd(),
 		QueryGroupMembersCmd(),
@@ -37,8 +37,8 @@ func QueryCmd(name string) *cobra.Command {
 	return queryCmd
 }
 
-// QueryGroups creates a CLI command for Query/Groups.
-func QueryGroups() *cobra.Command {
+// QueryGroupsCmd creates a CLI command for Query/Groups.
+func QueryGroupsCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "groups",
 		Short: "Query for groups",
