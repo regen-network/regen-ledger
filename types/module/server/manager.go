@@ -14,17 +14,17 @@ import (
 
 // Manager is the server module manager
 type Manager struct {
-	baseApp                    *baseapp.BaseApp
-	cdc                        *codec.ProtoCodec
-	keys                       map[string]ModuleKey
-	router                     *router
-	requiredServices           map[reflect.Type]bool
-	registerInvariantsHandlers map[string]RegisterInvariantsHandler
+	baseApp                   *baseapp.BaseApp
+	cdc                       *codec.ProtoCodec
+	keys                      map[string]ModuleKey
+	router                    *router
+	requiredServices          map[reflect.Type]bool
+	registerInvariantsHandler map[string]RegisterInvariantsHandler
 }
 
 // RegisterInvariants registers all module routes and module querier routes
 func (mm *Manager) RegisterInvariants(ir sdk.InvariantRegistry) {
-	for _, moduleName := range mm.registerInvariantsHandlers {
+	for _, moduleName := range mm.registerInvariantsHandler {
 		moduleName(ir)
 	}
 }
@@ -32,10 +32,10 @@ func (mm *Manager) RegisterInvariants(ir sdk.InvariantRegistry) {
 // NewManager creates a new Manager
 func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 	return &Manager{
-		baseApp:                    baseApp,
-		cdc:                        cdc,
-		keys:                       map[string]ModuleKey{},
-		registerInvariantsHandlers: map[string]RegisterInvariantsHandler{},
+		baseApp:                   baseApp,
+		cdc:                       cdc,
+		keys:                      map[string]ModuleKey{},
+		registerInvariantsHandler: map[string]RegisterInvariantsHandler{},
 		router: &router{
 			handlers:         map[string]handler{},
 			providedServices: map[reflect.Type]bool{},
@@ -106,7 +106,7 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		}
 
 		serverMod.RegisterServices(cfg)
-		mm.registerInvariantsHandlers[name] = cfg.registerInvariantsHandler
+		mm.registerInvariantsHandler[name] = cfg.registerInvariantsHandler
 
 		// If mod implements LegacyRouteModule, register module route.
 		// This is currently used for the group module as part of #218.
