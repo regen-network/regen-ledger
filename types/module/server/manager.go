@@ -108,7 +108,7 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		}
 
 		serverMod.RegisterServices(cfg)
-		mm.registerInvariants[name] = cfg.registerInvariants
+		mm.registerInvariantsHandlers[name] = cfg.registerInvariants
 
 		// If mod implements LegacyRouteModule, register module route.
 		// This is currently used for the group module as part of #218.
