@@ -356,7 +356,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 
 	// register experimental modules here
 	app.nm = setCustomModules(app, interfaceRegistry)
-	app.nm.RegisterInvariantsHandler(&app.CrisisKeeper)
+	app.nm.RegisterInvariants(&app.CrisisKeeper)
 
 	var skipGenesisInvariants = cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
