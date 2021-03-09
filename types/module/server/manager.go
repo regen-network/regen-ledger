@@ -172,7 +172,7 @@ func (c *configurator) QueryServer() gogogrpc.Server {
 }
 
 func (c *configurator) RegisterInvariantsHandler(registry RegisterInvariantsHandler) {
-	c.registerInvariants = registry
+	c.registerInvariantsHandler = registry
 }
 
 func (c *configurator) ModuleKey() RootModuleKey {
