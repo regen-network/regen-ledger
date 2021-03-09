@@ -36,7 +36,7 @@ func (s serverImpl) TallyVotesInvariant() sdk.Invariant {
 			return "cannot read all proposals in current block", false
 		}
 		_ = curProposalRowID
-		var prevProposal []*group.Proposal
+		var prevProposals []*group.Proposal
 		if ctx.BlockHeight()-1 >= 0 {
 			sdkCtx = sdkCtx.WithBlockHeight(ctx.BlockHeight() - 1)
 		} else {
