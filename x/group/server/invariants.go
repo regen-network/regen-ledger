@@ -11,7 +11,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
-func (s serverImpl) RegisterInvariantsHandler(ir sdk.InvariantRegistry) {
+func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
 	ir.RegisterRoute(group.ModuleName, "Tally-Votes", s.TallyVotesInvariant())
 }
 
