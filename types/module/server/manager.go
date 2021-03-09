@@ -37,7 +37,7 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 		baseApp:            baseApp,
 		cdc:                cdc,
 		keys:               map[string]ModuleKey{},
-		registerInvariants: map[string]RegisterInvariantsHandler{},
+		registerInvariantsHandlers: map[string]RegisterInvariantsHandler{},
 		router: &router{
 			handlers:         map[string]handler{},
 			providedServices: map[reflect.Type]bool{},
