@@ -25,7 +25,7 @@ func (s serverImpl) TallyVotesInvariant() sdk.Invariant {
 	return func(sdkCtx sdk.Context) (string, bool) {
 		var msg string
 		var broken bool
-		var curProposal []*group.Proposal
+		var curProposals []*group.Proposal
 		ctx := types.Context{Context: sdkCtx}
 		it1, err := s.proposalTable.PrefixScan(ctx, 1, math.MaxUint64)
 		if err != nil {
