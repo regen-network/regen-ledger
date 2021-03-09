@@ -34,13 +34,9 @@ builds:
       - "netgo"
       - "ledger"
       - "gcc"
-      - "experimental=true"
-    ldflags:
-      - "github.com/cosmos/cosmos-sdk/version.Name=regen"
-      - "github.com/cosmos/cosmos-sdk/version.AppName=regen"
-      - "github.com/cosmos/cosmos-sdk/version.Version=0.6.3"
-      - "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo, experimental"
-      - -extldflags "-lc -lrt -lpthread --static"
+#      - "experimental=true"
+#    ldflags:
+#    - -extldflags "-lc -lrt -lpthread --static"
 #   - id: regen-ledger-linux-arm64
 #     binary: regen
 #     main: ./app/regen
