@@ -6,7 +6,7 @@
 sim-regen-nondeterminism:
 	@echo "Running nondeterminism test..."
 	@go test -mod=readonly $(APP_DIR) -run TestAppStateDeterminism -Enabled=true \
-		-NumBlocks=50 -BlockSize=100 -Commit=true -Period=0 -v -timeout 24h -tags=experimental
+		-NumBlocks=5 -BlockSize=10 -Commit=true -Period=0 -v -timeout 24h -tags=experimental
 
 sim-regen-custom-genesis-fast:
 	@echo "Running custom genesis simulation..."

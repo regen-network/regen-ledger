@@ -64,7 +64,6 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
-	regensimulation "github.com/regen-network/regen-ledger/types/module/simulation"
 	"github.com/spf13/cast"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -196,7 +195,7 @@ type RegenApp struct {
 	mm *module.Manager
 
 	// simulation manager
-	sm *regensimulation.AppSimulationManager
+	sm *module.SimulationManager
 
 	// new module manager
 	// XXX We will likely want to make this new manager compatible
@@ -416,7 +415,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	//
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
 	// transactions
-	app.sm = regensimulation.NewAppSimulationManager(
+	app.sm = module.NewSimulationManager(
 		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
@@ -580,14 +579,9 @@ func (app *RegenApp) GetSubspace(moduleName string) paramstypes.Subspace {
 	return subspace
 }
 
-// AppSimulationManager implements the SimulationApp interface
-func (app *RegenApp) AppSimulationManager() *regensimulation.AppSimulationManager {
-	return app.sm
-}
-
-// AppSimulationManager implements the SimulationApp interface
+// SimulationManager implements the SimulationApp interface
 func (app *RegenApp) SimulationManager() *module.SimulationManager {
-	return nil
+	return app.sm
 }
 
 // NewManager implements the SimulationApp interface

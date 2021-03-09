@@ -29,7 +29,7 @@ func SimulationOperations(app *RegenApp, cdc codec.JSONMarshaler, config simulat
 		}
 	}
 
-	simState.ParamChanges = app.AppSimulationManager().GenerateParamChanges(config.Seed)
-	simState.Contents = app.AppSimulationManager().GetProposalContents(simState)
+	simState.ParamChanges = app.SimulationManager().GenerateParamChanges(config.Seed)
+	simState.Contents = app.SimulationManager().GetProposalContents(simState)
 	return app.nm.WeightedOperations(simState, app.sm.Modules)
 }

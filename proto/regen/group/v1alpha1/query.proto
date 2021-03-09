@@ -52,7 +52,7 @@ service Query {
 message QueryGroupsRequest {
 
   // pagination defines an optional pagination for the request.
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
 // QueryGroupsResponse is the Query/Groups response type.

@@ -425,7 +425,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 		return nil, sdkerrors.Wrap(err, "end time conversion")
 	}
 
-	proposalID := s.proposalTable.Sequence().NextVal(ctx)
+	proposalID := s.proposalTable.Sequence().PeekNextVal(ctx)
 	m := &group.Proposal{
 		GroupAccount:        req.GroupAccount,
 		Metadata:            metadata,
@@ -449,7 +449,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 		return nil, sdkerrors.Wrap(err, "create proposal")
 	}
 
-	err = s.proposalTable.Table().Create(ctx, group.ID(proposalID).Bytes(), m)
+	_, err = s.proposalTable.Create(ctx, m)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "create proposal")
 	}

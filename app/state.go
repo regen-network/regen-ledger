@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/simapp"
-	regensimulation "github.com/regen-network/regen-ledger/types/module/simulation"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	tmtypes "github.com/tendermint/tendermint/types"
 
@@ -27,7 +26,7 @@ import (
 // StateFn returns the initial application state using a genesis or the simulation parameters.
 // It panics if the user provides files for both of them.
 // If a file is not given for the genesis or the sim params, it creates a randomized one.
-func StateFn(cdc codec.JSONMarshaler, simManager *regensimulation.AppSimulationManager) simtypes.AppStateFn {
+func StateFn(cdc codec.JSONMarshaler, simManager *module.SimulationManager) simtypes.AppStateFn {
 	return func(r *rand.Rand, accs []simtypes.Account, config simtypes.Config,
 	) (appState json.RawMessage, simAccs []simtypes.Account, chainID string, genesisTimestamp time.Time) {
 
@@ -131,7 +130,7 @@ func StateFn(cdc codec.JSONMarshaler, simManager *regensimulation.AppSimulationM
 // StateRandomizedFn creates calls each module's GenesisState generator function
 // and creates the simulation params
 func StateRandomizedFn(
-	simManager *regensimulation.AppSimulationManager, r *rand.Rand, cdc codec.JSONMarshaler,
+	simManager *module.SimulationManager, r *rand.Rand, cdc codec.JSONMarshaler,
 	accs []simtypes.Account, genesisTimestamp time.Time, appParams simtypes.AppParams,
 ) (json.RawMessage, []simtypes.Account) {
 	numAccs := int64(len(accs))
