@@ -19,7 +19,7 @@ type Manager struct {
 	keys               map[string]ModuleKey
 	router             *router
 	requiredServices   map[reflect.Type]bool
-	registerInvariants map[string]RegisterInvariantsHandler
+	registerInvariantsHandlers map[string]RegisterInvariantsHandler
 }
 
 // RegisterInvariants registers all module routes and module querier routes
