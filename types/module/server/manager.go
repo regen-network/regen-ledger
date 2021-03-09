@@ -158,7 +158,7 @@ type configurator struct {
 	cdc                codec.Marshaler
 	requiredServices   map[reflect.Type]bool
 	router             sdk.Router
-	registerInvariants RegisterInvariantsHandler
+	registerInvariantsHandler RegisterInvariantsHandler
 }
 
 var _ Configurator = &configurator{}
