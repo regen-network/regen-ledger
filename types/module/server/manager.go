@@ -171,7 +171,7 @@ func (c *configurator) QueryServer() gogogrpc.Server {
 	return c.queryServer
 }
 
-func (c *configurator) RegisterInvariants(registry RegisterInvariantsHandler) {
+func (c *configurator) RegisterInvariantsHandler(registry RegisterInvariantsHandler) {
 	c.registerInvariants = registry
 }
 
