@@ -8,8 +8,7 @@ on: [push]
 jobs:
   release:
     runs-on: ubuntu-latest
-    run: |
-      sudo apt-get install gcc-multilib g++-multilib
+    run: sudo apt-get install gcc-multilib g++-multilib
     steps:
       - uses: actions/checkout@v2
       - name: Install Go
