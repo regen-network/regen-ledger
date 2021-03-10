@@ -15,13 +15,13 @@ builds:
     flags:
       - -trimpath
       - -mod=readonly
-      - "{{ .Env.BUILD_FLAGS }}"
+      # - "{{ .Env.BUILD_FLAGS }}"
       # - "netgo"
       # - "ledger"
       # - "gcc"
       # - "experimental=true"
-    ldflags:
-      - "{{ .Env.LD_FLAGS }}"
+    # ldflags:
+    #   - "{{ .Env.LD_FLAGS }}"
   - id: regen-ledger-linux-amd64
     binary: regen
     main: ./app/regen
@@ -30,16 +30,16 @@ builds:
     goos:
       - linux
     flags:
-      - "{{ .Env.BUILD_FLAGS }}"
+      # - "{{ .Env.BUILD_FLAGS }}"
       - -trimpath
       - -mod=readonly
       # - "netgo"
       # - "ledger"
       # - "gcc"
       # - "experimental=true"
-    ldflags:
-      - "{{ .Env.LD_FLAGS }}"
-      - -extldflags "-lc -lrt -lpthread --static"
+    # ldflags:
+    #   - "{{ .Env.LD_FLAGS }}"
+    #   - -extldflags "-lc -lrt -lpthread --static"
     # ldflags:
     #   - -s -w -x "main.goversion={{.Env.GOVERSION}}"
     #   - -s -w -X "main.commit={{.Env.GITCOMMIT}}"
@@ -60,12 +60,12 @@ builds:
       - CC=aarch64-linux-gnu-gcc
       - CXX=aarch64-linux-gnu-g++
     flags:
-      - "{{ .Env.BUILD_FLAGS }}"
+      # - "{{ .Env.BUILD_FLAGS }}"
       - -trimpath
       - -mod=readonly
-    ldflags:
-      - "{{ .Env.LD_FLAGS }}"
-      - -extldflags "-lc -lrt -lpthread --static"
+    # ldflags:
+    #   - "{{ .Env.LD_FLAGS }}"
+    #   - -extldflags "-lc -lrt -lpthread --static"
   - id: regen-ledger-windows-amd64
     binary: regen
     main: ./app/regen
