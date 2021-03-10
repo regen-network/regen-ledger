@@ -12,14 +12,24 @@ MOCKS_DIR = $(CURDIR)/tests/mocks
 HTTPS_GIT := https://github.com/regen-network/regen-ledger.git
 DOCKER_BUF := docker run -v $(shell pwd):/workspace --workdir /workspace bufbuild/buf
 
+GORELEASER_CONFIG = .goreleaser.yml
+
 export GO111MODULE = on
 
 # process build tags
 
+# build_tags = netgo
 build_tags = netgo
 
+
 ifeq ($(EXPERIMENTAL),true)
+
 	build_tags += experimental
+	BUILD_TAGS=netgo
+	# GORELEASER_BUILD_TAGS=$(BUILD_TAGS),testnet
+	GORELEASER_BUILD_TAGS=$(BUILD_TAGS)
+	GORELEASER_HOMEBREW_NAME=regen
+	GORELEASER_HOMEBREW_CUSTOM=
 endif
 
 ifeq ($(LEDGER_ENABLED),true)
@@ -48,6 +58,15 @@ endif
 ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))
   build_tags += gcc
 endif
+
+GORELEASER_TAG     ?= $(shell git describe --tags --abbrev=0)
+
+GORELEASER_FLAGS = -tags="$(GORELEASER_BUILD_TAGS)"
+GORELEASER_LD_FLAGS = -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen \
+		  					-X github.com/cosmos/cosmos-sdk/version.AppName=regen \
+		  					-X github.com/cosmos/cosmos-sdk/version.Version=$(GORELEASER_TAG) \
+		  					-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
+		  					-X github.com/cosmos/cosmos-sdk/version.BuildTags="$(GORELEASER_BUILD_TAGS)"
 
 
 whitespace :=
@@ -91,6 +110,7 @@ build_tags += $(BUILD_TAGS)
 build_tags := $(strip $(build_tags))
 
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
+
 # check for nostrip option
 ifeq (,$(findstring nostrip,$(COSMOS_BUILD_OPTIONS)))
   BUILD_FLAGS += -trimpath
