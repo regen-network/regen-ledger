@@ -167,5 +167,5 @@ func RegisterServices(configurator servermodule.Configurator, accountKeeper expo
 	impl := newServer(configurator.ModuleKey(), configurator.Router(), accountKeeper, bankKeeper, configurator.Marshaler())
 	group.RegisterMsgServer(configurator.MsgServer(), impl)
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
-	configurator.RegisterWeightedOperations(impl.WeightedOperations)
+	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 }

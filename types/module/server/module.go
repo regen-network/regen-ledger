@@ -25,7 +25,7 @@ type Configurator interface {
 	// TODO: remove once #225 addressed
 	Router() sdk.Router
 
-	RegisterWeightedOperations(WeightedOperationsHandler)
+	RegisterWeightedOperationsHandler(WeightedOperationsHandler)
 }
 
 // LegacyRouteModule is the module type that a module must implement

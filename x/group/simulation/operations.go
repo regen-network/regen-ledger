@@ -14,7 +14,6 @@ import (
 	gogotypes "github.com/gogo/protobuf/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/query"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/group"
@@ -40,6 +39,7 @@ const (
 	WeightCreateGroup    = 150
 	WeightCreateProposal = 100
 	WeightUpdateGroup    = 5
+	WeightGroupMember    = 40
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights
@@ -180,7 +180,7 @@ func SimulateMsgCreateGroup(ak exported.AccountKeeper, bk exported.BankKeeper) s
 		members := []group.Member{
 			{
 				Address:  acc.Address.String(),
-				Weight:   fmt.Sprintf("%d", simappparams.DefaultWeightMsgCreateValidator),
+				Weight:   fmt.Sprintf("%d", WeightGroupMember),
 				Metadata: []byte(simtypes.RandStringOfLength(r, 10)),
 			},
 		}
@@ -242,7 +242,7 @@ func SimulateMsgCreateGroupAccount(ak exported.AccountKeeper, bk exported.BankKe
 			groupID,
 			[]byte(simtypes.RandStringOfLength(r, 10)),
 			&group.ThresholdDecisionPolicy{
-				Threshold: "50",
+				Threshold: "20",
 				Timeout:   gogotypes.Duration{Seconds: int64(30 * 24 * 60 * 60)},
 			},
 		)
@@ -276,23 +276,17 @@ func SimulateMsgCreateGroupAccount(ak exported.AccountKeeper, bk exported.BankKe
 func getGroupDetails(sdkCtx sdk.Context, qryClient group.QueryClient, acc simtypes.Account) (groupAdmin string, groupID uint64, op simtypes.OperationMsg, err error) {
 	ctx := regentypes.Context{Context: sdkCtx}
 
-	result, err := qryClient.Groups(ctx, &group.QueryGroupsRequest{Pagination: &query.PageRequest{
-		Key:        nil,
-		CountTotal: true,
-		Offset:     0,
-		Limit:      10,
-	}})
+	groups, err := qryClient.GroupsByAdmin(ctx, &group.QueryGroupsByAdminRequest{Admin: acc.Address.String()})
 	if err != nil {
-		return "", 0, simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroupAccount, "fail to query group info"), err
+		return "", 0, simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroupAccount, "fail to query groups"), err
 	}
 
-	for _, item := range result.Groups {
-		if item.Admin == acc.Address.String() {
-			groupAdmin = acc.Address.String()
-			groupID = item.GroupId
-			break
-		}
+	if len(groups.Groups) == 0 {
+		return "", 0, simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroupAccount, ""), nil
 	}
+
+	groupAdmin = groups.Groups[0].Admin
+	groupID = groups.Groups[0].GroupId
 
 	return groupAdmin, groupID, simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroupAccount, ""), nil
 }
@@ -512,12 +506,12 @@ func SimulateMsgUpdateGroupMembers(ak exported.AccountKeeper,
 		members := []group.Member{
 			{
 				Address:  acc2.Address.String(),
-				Weight:   fmt.Sprintf("%d", simappparams.DefaultWeightMsgCreateValidator),
+				Weight:   fmt.Sprintf("%d", WeightGroupMember),
 				Metadata: []byte(simtypes.RandStringOfLength(r, 10)),
 			},
 			{
 				Address:  acc3.Address.String(),
-				Weight:   fmt.Sprintf("%d", simappparams.DefaultWeightCommunitySpendProposal),
+				Weight:   fmt.Sprintf("%d", WeightGroupMember),
 				Metadata: []byte(simtypes.RandStringOfLength(r, 10)),
 			},
 		}
@@ -661,7 +655,7 @@ func SimulateMsgUpdateGroupAccountDecisionPolicy(ak exported.AccountKeeper,
 		}
 
 		msg, err := group.NewMsgUpdateGroupAccountDecisionPolicyRequest(adminBech32, groupAccountBech32, &group.ThresholdDecisionPolicy{
-			Threshold: fmt.Sprintf("%d", simtypes.RandIntBetween(r, 1, 100)),
+			Threshold: fmt.Sprintf("%d", simtypes.RandIntBetween(r, 1, 20)),
 			Timeout:   gogotypes.Duration{Seconds: int64(simtypes.RandIntBetween(r, 100, 1000))},
 		})
 		if err != nil {

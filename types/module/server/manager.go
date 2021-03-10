@@ -130,7 +130,7 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 
 // WeightedOperations returns all the modules' weighted operations of an application
 func (mm *Manager) WeightedOperations(state sdkmodule.SimulationState, modules []sdkmodule.AppModuleSimulation) []simulation.WeightedOperation {
-	wOps := make([]simulation.WeightedOperation, 0, len(modules))
+	var wOps []simulation.WeightedOperation
 	// adding non ADR-33 modules weighted operations
 	for _, m := range modules {
 		wOps = append(wOps, m.WeightedOperations(state)...)
@@ -176,7 +176,7 @@ type configurator struct {
 	weightedOperationHandler WeightedOperationsHandler
 }
 
-func (c *configurator) RegisterWeightedOperations(operationsHandler WeightedOperationsHandler) {
+func (c *configurator) RegisterWeightedOperationsHandler(operationsHandler WeightedOperationsHandler) {
 	c.weightedOperationHandler = operationsHandler
 }
 
