@@ -5,6 +5,7 @@ import (
 	"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types"
@@ -27,7 +28,7 @@ func (s serverImpl) TallyVotesInvariant() sdk.Invariant {
 		var broken bool
 		ctx := types.Context{Context: sdkCtx}
 		if ctx.BlockHeight()-1 < 0 {
-			return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", "Not enough blocks to perform TallyVotesInvariant"), true
+			return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", "Not enough blocks to perform TallyVotesInvariant"), false
 		}
 		sdkCtx = sdkCtx.WithBlockHeight(ctx.BlockHeight() - 1)
 		it1, err := s.proposalTable.PrefixScan(ctx, 1, math.MaxUint64)
@@ -38,19 +39,16 @@ func (s serverImpl) TallyVotesInvariant() sdk.Invariant {
 		if err != nil {
 			panic(err)
 		}
-
+		var t require.TestingT
 		var curProposals []*group.Proposal
 		curProposalRowID, err := orm.ReadAll(it1, &curProposals)
-		if err != nil {
-			panic(err)
-		}
-		_ = curProposalRowID
+		require.NoError(t, err, &curProposals)
 
+		_ = curProposalRowID
 		var prevProposals []*group.Proposal
 		prevProposalRowID, err := orm.ReadAll(it2, &prevProposals)
-		if err != nil {
-			panic(err)
-		}
+		require.NoError(t, err, &curProposals)
+
 		_ = prevProposalRowID
 
 		for i := 0; i < len(prevProposals) && i < len(curProposals); i++ {
