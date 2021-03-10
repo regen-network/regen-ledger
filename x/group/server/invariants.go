@@ -31,25 +31,22 @@ func (s serverImpl) TallyVotesInvariant() sdk.Invariant {
 			return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", "Not enough blocks to perform TallyVotesInvariant"), false
 		}
 		sdkCtx = sdkCtx.WithBlockHeight(ctx.BlockHeight() - 1)
-		it1, err := s.proposalTable.PrefixScan(ctx, 1, math.MaxUint64)
+		curIt, err := s.proposalTable.PrefixScan(ctx, 1, math.MaxUint64)
 		if err != nil {
 			panic(err)
 		}
-		it2, err := s.proposalTable.PrefixScan(sdkCtx, 1, math.MaxUint64)
+		prevIt, err := s.proposalTable.PrefixScan(sdkCtx, 1, math.MaxUint64)
 		if err != nil {
 			panic(err)
 		}
 		var t require.TestingT
 		var curProposals []*group.Proposal
-		curProposalRowID, err := orm.ReadAll(it1, &curProposals)
+		_, err = orm.ReadAll(curIt, &curProposals)
 		require.NoError(t, err, &curProposals)
 
-		_ = curProposalRowID
 		var prevProposals []*group.Proposal
-		prevProposalRowID, err := orm.ReadAll(it2, &prevProposals)
+		_, err = orm.ReadAll(prevIt, &prevProposals)
 		require.NoError(t, err, &curProposals)
-
-		_ = prevProposalRowID
 
 		for i := 0; i < len(prevProposals) && i < len(curProposals); i++ {
 			prevYesCount, err := prevProposals[i].VoteState.GetYesCount()
