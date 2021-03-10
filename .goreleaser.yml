@@ -2,19 +2,22 @@ env:
   - GO111MODULE=on
   - CGO_ENABLED=1
 builds:
-  - id: regen-ledger-darwin-amd64
-    binary: regen
-    main: ./app/regen
-    goarch:
-      - amd64
-    goos:
-      - darwin
-    env:
-      - CC=o64-clang
-      - CXX=o64-clang++
-    flags:
-      - -trimpath
-      - -mod=readonly
+  # - id: regen-ledger-darwin-amd64
+  #   binary: regen
+  #   main: ./app/regen
+  #   goarch:
+  #     - amd64
+  #   goos:
+  #     - darwin
+  #   env:
+  #     - CGO_ENABLED=1
+  #     - CC=o64-clang
+  #     - CXX=o64-clang++
+  #   flags:
+  #     - -trimpath
+  #     - -mod=readonly
+
+
       # - "{{ .Env.BUILD_FLAGS }}"
       # - "netgo"
       # - "ledger"
@@ -49,44 +52,51 @@ builds:
     #   - -s -w -X "main.date={{.Env.BUILDTIME}}"
 
     #   - -extldflags "-lc -lrt -lpthread --static"
-  - id: regen-ledger-linux-arm64
-    binary: regen
-    main: ./app/regen
-    goarch:
-      - arm64
-    goos:
-      - linux
-    env:
-      - CC=aarch64-linux-gnu-gcc
-      - CXX=aarch64-linux-gnu-g++
-    flags:
+
+
+  # - id: regen-ledger-linux-arm64
+  #   binary: regen
+  #   main: ./app/regen
+  #   goarch:
+  #     - arm64
+  #   goos:
+  #     - linux
+  #   env:
+  #     - CC=aarch64-linux-gnu-gcc
+  #     - CXX=aarch64-linux-gnu-g++
+  #   flags:
+
+
       # - "{{ .Env.BUILD_FLAGS }}"
-      - -trimpath
-      - -mod=readonly
+      # - -trimpath
+      # - -mod=readonly
     # ldflags:
     #   - "{{ .Env.LD_FLAGS }}"
     #   - -extldflags "-lc -lrt -lpthread --static"
-  - id: regen-ledger-windows-amd64
-    binary: regen
-    main: ./app/regen
-    goarch:
-      - amd64
-    goos:
-      - windows
-    env:
-      - CC=x86_64-w64-mingw32-gcc
-      - CXX=x86_64-w64-mingw32-g++
-    flags:
-      - -trimpath
-      - -mod=readonly
-      - -buildmode=exe
+
+
+  # - id: regen-ledger-windows-amd64
+  #   binary: regen
+  #   main: ./app/regen
+  #   goarch:
+  #     - amd64
+  #   goos:
+  #     - windows
+  #   env:
+  #     - PKG_CONFIG_SYSROOT_DIR=
+  #     - CC=x86_64-w64-mingw32-gcc
+  #     - CXX=x86_64-w64-mingw32-g++
+  #   flags:
+  #     - -trimpath
+  #     - -mod=readonly
+  #     - -buildmode=exe
 archives:
   - id: regen
     builds:
-      - regen-ledger-darwin-amd64
+      # - regen-ledger-darwin-amd64
       - regen-ledger-linux-amd64
-      - regen-ledger-linux-arm64
-      - regen-ledger-windows-amd64
+      # - regen-ledger-linux-arm64
+      # - regen-ledger-windows-amd64
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: true
     format: zip
