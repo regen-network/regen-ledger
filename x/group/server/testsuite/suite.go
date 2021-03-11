@@ -15,16 +15,13 @@ import (
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	bank "github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	"github.com/regen-network/regen-ledger/testutil/testdata"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/group"
-	groupserver "github.com/regen-network/regen-ledger/x/group/server"
 )
 
 type IntegrationTestSuite struct {
@@ -796,7 +793,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 
 func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
 	admin, newAdmin := s.addr1, s.addr2
-	groupAccountAddr, myGroupID, policy := createGroupAndGroupAccount(admin, s)
+	groupAccountAddr, myGroupID, policy, path := createGroupAndGroupAccount(admin, s)
 
 	specs := map[string]struct {
 		req             *group.MsgUpdateGroupAccountAdminRequest
@@ -816,6 +813,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
 				Metadata:       nil,
 				Version:        2,
 				DecisionPolicy: nil,
+				Path:           path,
 			},
 			expErr: true,
 		},
@@ -832,6 +830,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
 				Metadata:       nil,
 				Version:        2,
 				DecisionPolicy: nil,
+				Path:           path,
 			},
 			expErr: true,
 		},
@@ -848,6 +847,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
 				Metadata:       nil,
 				Version:        2,
 				DecisionPolicy: nil,
+				Path:           path,
 			},
 			expErr: false,
 		},
@@ -876,7 +876,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
 
 func (s *IntegrationTestSuite) TestUpdateGroupAccountMetadata() {
 	admin := s.addr1
-	groupAccountAddr, myGroupID, policy := createGroupAndGroupAccount(admin, s)
+	groupAccountAddr, myGroupID, policy, path := createGroupAndGroupAccount(admin, s)
 
 	specs := map[string]struct {
 		req             *group.MsgUpdateGroupAccountMetadataRequest
@@ -923,6 +923,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountMetadata() {
 				Metadata:       []byte("hello"),
 				Version:        2,
 				DecisionPolicy: nil,
+				Path:           path,
 			},
 			expErr: false,
 		},
@@ -951,7 +952,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountMetadata() {
 
 func (s *IntegrationTestSuite) TestUpdateGroupAccountDecisionPolicy() {
 	admin := s.addr1
-	groupAccountAddr, myGroupID, policy := createGroupAndGroupAccount(admin, s)
+	groupAccountAddr, myGroupID, policy, path := createGroupAndGroupAccount(admin, s)
 
 	specs := map[string]struct {
 		req             *group.MsgUpdateGroupAccountDecisionPolicyRequest
@@ -993,6 +994,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountDecisionPolicy() {
 				Metadata:       nil,
 				Version:        2,
 				DecisionPolicy: nil,
+				Path:           path,
 			},
 			expErr: false,
 		},
@@ -1658,75 +1660,22 @@ func (s *IntegrationTestSuite) TestVote() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestDoExecuteMsgs() {
-	msgSend := &banktypes.MsgSend{
-		FromAddress: s.groupAccountAddr.String(),
-		ToAddress:   s.addr2.String(),
-		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
-	}
-
-	unauthzMsgSend := &banktypes.MsgSend{
-		FromAddress: s.addr1.String(),
-		ToAddress:   s.addr2.String(),
-		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
-	}
-
-	specs := map[string]struct {
-		srcMsgs    []sdk.Msg
-		srcHandler sdk.Handler
-		expErr     bool
-	}{
-		"all good": {
-			srcMsgs: []sdk.Msg{msgSend},
-		},
-		"not authz by group account": {
-			srcMsgs: []sdk.Msg{unauthzMsgSend},
-			expErr:  true,
-		},
-		"mixed group account msgs": {
-			srcMsgs: []sdk.Msg{
-				msgSend,
-				unauthzMsgSend,
-			},
-			expErr: true,
-		},
-		"no handler": {
-			srcMsgs: []sdk.Msg{&testdata.MsgAuthenticated{Signers: []sdk.AccAddress{s.groupAccountAddr}}},
-			expErr:  true,
-		},
-		"not panic on nil result": {
-			srcMsgs: []sdk.Msg{&testdata.MsgAuthenticated{Signers: []sdk.AccAddress{s.groupAccountAddr}}},
-			srcHandler: func(ctx sdk.Context, msg sdk.Msg) (result *sdk.Result, err error) {
-				return nil, nil
-			},
-		},
-	}
-	for msg, spec := range specs {
-		spec := spec
-		s.Run(msg, func() {
-			ctx, _ := s.sdkCtx.CacheContext()
-
-			var router sdk.Router
-			if spec.srcHandler != nil {
-				router = baseapp.NewRouter().AddRoute(sdk.NewRoute("MsgAuthenticated", spec.srcHandler))
-			} else {
-				router = baseapp.NewRouter().AddRoute(sdk.NewRoute(banktypes.ModuleName, bank.NewHandler(s.bankKeeper)))
-			}
-			_, err := groupserver.DoExecuteMsgs(ctx, router, s.groupAccountAddr, spec.srcMsgs)
-			if spec.expErr {
-				s.Require().Error(err)
-				return
-			}
-			s.Require().NoError(err)
-		})
-	}
-}
-
 func (s *IntegrationTestSuite) TestExecProposal() {
-	msgSend := &banktypes.MsgSend{
-		FromAddress: s.groupAccountAddr.String(),
-		ToAddress:   s.addr2.String(),
-		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
+	msgSend1 := sdk.ServiceMsg{
+		MethodName: "/cosmos.bank.v1beta1.Msg/Send",
+		Request: &banktypes.MsgSend{
+			FromAddress: s.groupAccountAddr.String(),
+			ToAddress:   s.addr2.String(),
+			Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
+		},
+	}
+	msgSend2 := sdk.ServiceMsg{
+		MethodName: "/cosmos.bank.v1beta1.Msg/Send",
+		Request: &banktypes.MsgSend{
+			FromAddress: s.groupAccountAddr.String(),
+			ToAddress:   s.addr2.String(),
+			Amount:      sdk.Coins{sdk.NewInt64Coin("test", 10001)},
+		},
 	}
 	proposers := []string{s.addr2.String()}
 
@@ -1742,13 +1691,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 	}{
 		"proposal executed when accepted": {
 			setupProposal: func(ctx context.Context) uint64 {
-				msgs := []sdk.Msg{
-					sdk.ServiceMsg{
-						MethodName: "/cosmos.bank.v1beta1.Msg/Send",
-						Request:    msgSend,
-					},
-				}
-				// msgs := []sdk.Msg{msgSend}
+				msgs := []sdk.Msg{msgSend1}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
 			},
 			expProposalStatus: group.ProposalStatusClosed,
@@ -1757,139 +1700,129 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9900)},
 			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 100)},
 		},
-		// "proposal with multiple messages executed when accepted": {
-		// 	setupProposal: func(ctx context.Context) uint64 {
-		// 		msgs := []sdk.Msg{msgSend, msgSend}
-		// 		return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
-		// 	},
-		// 	expProposalStatus: group.ProposalStatusClosed,
-		// 	expProposalResult: group.ProposalResultAccepted,
-		// 	expExecutorResult: group.ProposalExecutorResultSuccess,
-		// 	expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9800)},
-		// 	expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 200)},
-		// },
-		// "proposal not executed when rejected": {
-		// 	setupProposal: func(ctx context.Context) uint64 {
-		// 		msgs := []sdk.Msg{msgSend}
-		// 		return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
-		// 	},
-		// 	expProposalStatus: group.ProposalStatusClosed,
-		// 	expProposalResult: group.ProposalResultRejected,
-		// 	expExecutorResult: group.ProposalExecutorResultNotRun,
-		// },
-		// "open proposal must not fail": {
-		// 	setupProposal: func(ctx context.Context) uint64 {
-		// 		return createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
-		// 	},
-		// 	expProposalStatus: group.ProposalStatusSubmitted,
-		// 	expProposalResult: group.ProposalResultUnfinalized,
-		// 	expExecutorResult: group.ProposalExecutorResultNotRun,
-		// },
-		// "existing proposal required": {
-		// 	setupProposal: func(ctx context.Context) uint64 {
-		// 		return 9999
-		// 	},
-		// 	expErr: true,
-		// },
-		// "Decision policy also applied on timeout": {
-		// 	setupProposal: func(ctx context.Context) uint64 {
-		// 		msgs := []sdk.Msg{msgSend}
-		// 		return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
-		// 	},
-		// 	srcBlockTime:      s.blockTime.Add(time.Second),
-		// 	expProposalStatus: group.ProposalStatusClosed,
-		// 	expProposalResult: group.ProposalResultRejected,
-		// 	expExecutorResult: group.ProposalExecutorResultNotRun,
-		// },
-		// "Decision policy also applied after timeout": {
-		// 	setupProposal: func(ctx context.Context) uint64 {
-		// 		msgs := []sdk.Msg{msgSend}
-		// 		return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
-		// 	},
-		// 	srcBlockTime:      s.blockTime.Add(time.Second).Add(time.Millisecond),
-		// 	expProposalStatus: group.ProposalStatusClosed,
-		// 	expProposalResult: group.ProposalResultRejected,
-		// 	expExecutorResult: group.ProposalExecutorResultNotRun,
-		// },
-		// "with group modified before tally": {
-		// 	setupProposal: func(ctx context.Context) uint64 {
-		// 		myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
+		"proposal with multiple messages executed when accepted": {
+			setupProposal: func(ctx context.Context) uint64 {
+				msgs := []sdk.Msg{msgSend1, msgSend1}
+				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
+			},
+			expProposalStatus: group.ProposalStatusClosed,
+			expProposalResult: group.ProposalResultAccepted,
+			expExecutorResult: group.ProposalExecutorResultSuccess,
+			expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9800)},
+			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 200)},
+		},
+		"proposal not executed when rejected": {
+			setupProposal: func(ctx context.Context) uint64 {
+				msgs := []sdk.Msg{msgSend1}
+				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
+			},
+			expProposalStatus: group.ProposalStatusClosed,
+			expProposalResult: group.ProposalResultRejected,
+			expExecutorResult: group.ProposalExecutorResultNotRun,
+		},
+		"open proposal must not fail": {
+			setupProposal: func(ctx context.Context) uint64 {
+				return createProposal(ctx, s, []sdk.Msg{msgSend1}, proposers)
+			},
+			expProposalStatus: group.ProposalStatusSubmitted,
+			expProposalResult: group.ProposalResultUnfinalized,
+			expExecutorResult: group.ProposalExecutorResultNotRun,
+		},
+		"existing proposal required": {
+			setupProposal: func(ctx context.Context) uint64 {
+				return 9999
+			},
+			expErr: true,
+		},
+		"Decision policy also applied on timeout": {
+			setupProposal: func(ctx context.Context) uint64 {
+				msgs := []sdk.Msg{msgSend1}
+				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
+			},
+			srcBlockTime:      s.blockTime.Add(time.Second),
+			expProposalStatus: group.ProposalStatusClosed,
+			expProposalResult: group.ProposalResultRejected,
+			expExecutorResult: group.ProposalExecutorResultNotRun,
+		},
+		"Decision policy also applied after timeout": {
+			setupProposal: func(ctx context.Context) uint64 {
+				msgs := []sdk.Msg{msgSend1}
+				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
+			},
+			srcBlockTime:      s.blockTime.Add(time.Second).Add(time.Millisecond),
+			expProposalStatus: group.ProposalStatusClosed,
+			expProposalResult: group.ProposalResultRejected,
+			expExecutorResult: group.ProposalExecutorResultNotRun,
+		},
+		"with group modified before tally": {
+			setupProposal: func(ctx context.Context) uint64 {
+				myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend1}, proposers)
 
-		// 		// then modify group
-		// 		_, err := s.msgClient.UpdateGroupMetadata(ctx, &group.MsgUpdateGroupMetadataRequest{
-		// 			Admin:    s.addr1.String(),
-		// 			GroupId:  s.groupID,
-		// 			Metadata: []byte{1, 2, 3},
-		// 		})
-		// 		s.Require().NoError(err)
-		// 		return myProposalID
-		// 	},
-		// 	expProposalStatus: group.ProposalStatusAborted,
-		// 	expProposalResult: group.ProposalResultUnfinalized,
-		// 	expExecutorResult: group.ProposalExecutorResultNotRun,
-		// },
-		// "with group account modified before tally": {
-		// 	setupProposal: func(ctx context.Context) uint64 {
-		// 		myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
-		// 		_, err := s.msgClient.UpdateGroupAccountMetadata(ctx, &group.MsgUpdateGroupAccountMetadataRequest{
-		// 			Admin:        s.addr1.String(),
-		// 			GroupAccount: s.groupAccountAddr.String(),
-		// 			Metadata:     []byte("group account modified before tally"),
-		// 		})
-		// 		s.Require().NoError(err)
-		// 		return myProposalID
-		// 	},
-		// 	expProposalStatus: group.ProposalStatusAborted,
-		// 	expProposalResult: group.ProposalResultUnfinalized,
-		// 	expExecutorResult: group.ProposalExecutorResultNotRun,
-		// },
-		// "prevent double execution when successful": {
-		// 	setupProposal: func(ctx context.Context) uint64 {
-		// 		myProposalID := createProposalAndVote(ctx, s, []sdk.Msg{msgSend}, proposers, group.Choice_CHOICE_YES)
+				// then modify group
+				_, err := s.msgClient.UpdateGroupMetadata(ctx, &group.MsgUpdateGroupMetadataRequest{
+					Admin:    s.addr1.String(),
+					GroupId:  s.groupID,
+					Metadata: []byte{1, 2, 3},
+				})
+				s.Require().NoError(err)
+				return myProposalID
+			},
+			expProposalStatus: group.ProposalStatusAborted,
+			expProposalResult: group.ProposalResultUnfinalized,
+			expExecutorResult: group.ProposalExecutorResultNotRun,
+		},
+		"with group account modified before tally": {
+			setupProposal: func(ctx context.Context) uint64 {
+				myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend1}, proposers)
+				_, err := s.msgClient.UpdateGroupAccountMetadata(ctx, &group.MsgUpdateGroupAccountMetadataRequest{
+					Admin:        s.addr1.String(),
+					GroupAccount: s.groupAccountAddr.String(),
+					Metadata:     []byte("group account modified before tally"),
+				})
+				s.Require().NoError(err)
+				return myProposalID
+			},
+			expProposalStatus: group.ProposalStatusAborted,
+			expProposalResult: group.ProposalResultUnfinalized,
+			expExecutorResult: group.ProposalExecutorResultNotRun,
+		},
+		"prevent double execution when successful": {
+			setupProposal: func(ctx context.Context) uint64 {
+				myProposalID := createProposalAndVote(ctx, s, []sdk.Msg{msgSend1}, proposers, group.Choice_CHOICE_YES)
 
-		// 		_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{Signer: s.addr1.String(), ProposalId: myProposalID})
-		// 		s.Require().NoError(err)
-		// 		return myProposalID
-		// 	},
-		// 	expProposalStatus: group.ProposalStatusClosed,
-		// 	expProposalResult: group.ProposalResultAccepted,
-		// 	expExecutorResult: group.ProposalExecutorResultSuccess,
-		// 	expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9900)},
-		// 	expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 100)},
-		// },
-		// "rollback all msg updates on failure": {
-		// 	setupProposal: func(ctx context.Context) uint64 {
-		// 		msgs := []sdk.Msg{
-		// 			msgSend, &banktypes.MsgSend{
-		// 				FromAddress: s.groupAccountAddr.String(),
-		// 				ToAddress:   s.addr2.String(),
-		// 				Amount:      sdk.Coins{sdk.NewInt64Coin("test", 10001)}},
-		// 		}
-		// 		return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
-		// 	},
-		// 	expProposalStatus: group.ProposalStatusClosed,
-		// 	expProposalResult: group.ProposalResultAccepted,
-		// 	expExecutorResult: group.ProposalExecutorResultFailure,
-		// },
-		// "executable when failed before": {
-		// 	setupProposal: func(ctx context.Context) uint64 {
-		// 		msgs := []sdk.Msg{
-		// 			&banktypes.MsgSend{
-		// 				FromAddress: s.groupAccountAddr.String(),
-		// 				ToAddress:   s.addr2.String(),
-		// 				Amount:      sdk.Coins{sdk.NewInt64Coin("test", 10001)}},
-		// 		}
-		// 		myProposalID := createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
+				_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{Signer: s.addr1.String(), ProposalId: myProposalID})
+				s.Require().NoError(err)
+				return myProposalID
+			},
+			expProposalStatus: group.ProposalStatusClosed,
+			expProposalResult: group.ProposalResultAccepted,
+			expExecutorResult: group.ProposalExecutorResultSuccess,
+			expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9900)},
+			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 100)},
+		},
+		"rollback all msg updates on failure": {
+			setupProposal: func(ctx context.Context) uint64 {
+				msgs := []sdk.Msg{msgSend1, msgSend2}
+				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
+			},
+			expProposalStatus: group.ProposalStatusClosed,
+			expProposalResult: group.ProposalResultAccepted,
+			expExecutorResult: group.ProposalExecutorResultFailure,
+		},
+		"executable when failed before": {
+			setupProposal: func(ctx context.Context) uint64 {
+				msgs := []sdk.Msg{msgSend2}
+				myProposalID := createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
 
-		// 		_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{Signer: s.addr1.String(), ProposalId: myProposalID})
-		// 		s.Require().NoError(err)
-		// 		s.Require().NoError(s.bankKeeper.SetBalances(ctx.(types.Context).Context, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
-		// 		return myProposalID
-		// 	},
-		// 	expProposalStatus: group.ProposalStatusClosed,
-		// 	expProposalResult: group.ProposalResultAccepted,
-		// 	expExecutorResult: group.ProposalExecutorResultSuccess,
-		// },
+				_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{Signer: s.addr1.String(), ProposalId: myProposalID})
+				s.Require().NoError(err)
+				s.Require().NoError(s.bankKeeper.SetBalances(ctx.(types.Context).Context, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+				return myProposalID
+			},
+			expProposalStatus: group.ProposalStatusClosed,
+			expProposalResult: group.ProposalResultAccepted,
+			expExecutorResult: group.ProposalExecutorResultSuccess,
+		},
 	}
 	for msg, spec := range specs {
 		spec := spec
@@ -1974,7 +1907,7 @@ func createProposalAndVote(
 func createGroupAndGroupAccount(
 	admin sdk.AccAddress,
 	s *IntegrationTestSuite,
-) (string, uint64, group.DecisionPolicy) {
+) (string, uint64, group.DecisionPolicy, []byte) {
 	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
 		Admin:    admin.String(),
 		Members:  nil,
@@ -1999,5 +1932,8 @@ func createGroupAndGroupAccount(
 	groupAccountRes, err := s.msgClient.CreateGroupAccount(s.ctx, groupAccount)
 	s.Require().NoError(err)
 
-	return groupAccountRes.GroupAccount, myGroupID, policy
+	res, err := s.queryClient.GroupAccountInfo(s.ctx, &group.QueryGroupAccountInfoRequest{GroupAccount: groupAccountRes.GroupAccount})
+	s.Require().NoError(err)
+
+	return groupAccountRes.GroupAccount, myGroupID, policy, res.Info.Path
 }

@@ -1,10 +1,32 @@
 package server
 
 import (
+	"context"
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/x/group"
 )
+
+func (s serverImpl) execMsgs(ctx context.Context, path []byte, proposal group.Proposal) error {
+	msgs := proposal.GetMsgs()
+	for _, msg := range msgs {
+		svcMsg, ok := msg.(sdk.ServiceMsg)
+		if !ok {
+			return fmt.Errorf("expected sdk.ServiceMsg, got %T", msg)
+		}
+		var reply interface{}
+		derivedKey := s.key.Derive(path)
+		// Execute the message using the derived key,
+		// this will verify that the message signer is the group account.
+		err := derivedKey.Invoke(ctx, svcMsg.Route(), svcMsg.Request, reply)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 // ensureMsgAuthZ checks that if a message requires signers that all of them are equal to the given group account.
 func ensureMsgAuthZ(msgs []sdk.Msg, groupAccount sdk.AccAddress) error {
@@ -16,27 +38,4 @@ func ensureMsgAuthZ(msgs []sdk.Msg, groupAccount sdk.AccAddress) error {
 		}
 	}
 	return nil
-}
-
-// DoExecuteMsgs routes the messages to the registered handlers. Messages are limited to those that require no authZ or
-// by the group account only. Otherwise this gives access to other peoples accounts as the sdk ant handler is bypassed
-func DoExecuteMsgs(ctx sdk.Context, router sdk.Router, groupAccount sdk.AccAddress, msgs []sdk.Msg) ([]sdk.Result, error) {
-	results := make([]sdk.Result, len(msgs))
-	if err := ensureMsgAuthZ(msgs, groupAccount); err != nil {
-		return nil, err
-	}
-	for i, msg := range msgs {
-		handler := router.Route(ctx, msg.Route())
-		if handler == nil {
-			return nil, errors.Wrapf(group.ErrInvalid, "no message handler found for %q", msg.Route())
-		}
-		r, err := handler(ctx, msg)
-		if err != nil {
-			return nil, errors.Wrapf(err, "message %q at position %d", msg.Type(), i)
-		}
-		if r != nil {
-			results[i] = *r
-		}
-	}
-	return results, nil
 }

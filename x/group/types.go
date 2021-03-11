@@ -162,13 +162,16 @@ func (g GroupAccountInfo) NaturalKey() []byte {
 var _ orm.Validateable = GroupAccountInfo{}
 
 // NewGroupAccountInfo creates a new GroupAccountInfo instance
-func NewGroupAccountInfo(groupAccount sdk.AccAddress, group uint64, admin sdk.AccAddress, metadata []byte, version uint64, decisionPolicy DecisionPolicy) (GroupAccountInfo, error) {
+func NewGroupAccountInfo(
+	groupAccount sdk.AccAddress, group uint64, admin sdk.AccAddress, metadata []byte,
+	version uint64, decisionPolicy DecisionPolicy, path []byte) (GroupAccountInfo, error) {
 	p := GroupAccountInfo{
 		GroupAccount: groupAccount.String(),
 		GroupId:      group,
 		Admin:        admin.String(),
 		Metadata:     metadata,
 		Version:      version,
+		Path:         path,
 	}
 
 	err := p.SetDecisionPolicy(decisionPolicy)
@@ -224,6 +227,10 @@ func (g GroupAccountInfo) ValidateBasic() error {
 	}
 	if err := policy.ValidateBasic(); err != nil {
 		return sdkerrors.Wrap(err, "policy")
+	}
+
+	if g.Path == nil {
+		return sdkerrors.Wrap(ErrEmpty, "path")
 	}
 	return nil
 }

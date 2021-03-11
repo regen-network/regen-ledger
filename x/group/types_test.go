@@ -376,6 +376,7 @@ func TestGroupAccountInfo(t *testing.T) {
 		version      uint64
 		threshold    string
 		timeout      proto.Duration
+		path         []byte
 		expErr       bool
 	}{
 		"all good": {
@@ -384,6 +385,7 @@ func TestGroupAccountInfo(t *testing.T) {
 			admin:        []byte("valid--admin-address"),
 			version:      1,
 			threshold:    "1",
+			path:         []byte("path"),
 			timeout:      proto.Duration{Seconds: 1},
 		},
 		"invalid group": {
@@ -393,6 +395,7 @@ func TestGroupAccountInfo(t *testing.T) {
 			version:      1,
 			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
+			path:         []byte("path"),
 			expErr:       true,
 		},
 		"invalid group account address": {
@@ -402,6 +405,7 @@ func TestGroupAccountInfo(t *testing.T) {
 			version:      1,
 			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
+			path:         []byte("path"),
 			expErr:       true,
 		},
 		"empty group account address": {
@@ -410,6 +414,7 @@ func TestGroupAccountInfo(t *testing.T) {
 			version:   1,
 			threshold: "1",
 			timeout:   proto.Duration{Seconds: 1},
+			path:      []byte("path"),
 			expErr:    true,
 		},
 		"empty admin account address": {
@@ -418,6 +423,7 @@ func TestGroupAccountInfo(t *testing.T) {
 			version:      1,
 			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
+			path:         []byte("path"),
 			expErr:       true,
 		},
 		"invalid admin account address": {
@@ -427,6 +433,7 @@ func TestGroupAccountInfo(t *testing.T) {
 			version:      1,
 			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
+			path:         []byte("path"),
 			expErr:       true,
 		},
 		"empty version number": {
@@ -435,6 +442,7 @@ func TestGroupAccountInfo(t *testing.T) {
 			admin:        []byte("valid--admin-address"),
 			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
+			path:         []byte("path"),
 			expErr:       true,
 		},
 		"missing decision policy": {
@@ -442,6 +450,7 @@ func TestGroupAccountInfo(t *testing.T) {
 			groupAccount: []byte("valid--group-address"),
 			admin:        []byte("valid--admin-address"),
 			version:      1,
+			path:         []byte("path"),
 			expErr:       true,
 		},
 		"missing decision policy timeout": {
@@ -450,6 +459,7 @@ func TestGroupAccountInfo(t *testing.T) {
 			admin:        []byte("valid--admin-address"),
 			version:      1,
 			threshold:    "1",
+			path:         []byte("path"),
 			expErr:       true,
 		},
 		"decision policy with invalid timeout": {
@@ -459,6 +469,7 @@ func TestGroupAccountInfo(t *testing.T) {
 			version:      1,
 			threshold:    "1",
 			timeout:      proto.Duration{Seconds: -1},
+			path:         []byte("path"),
 			expErr:       true,
 		},
 		"missing decision policy threshold": {
@@ -467,6 +478,7 @@ func TestGroupAccountInfo(t *testing.T) {
 			admin:        []byte("valid--admin-address"),
 			version:      1,
 			timeout:      proto.Duration{Seconds: 1},
+			path:         []byte("path"),
 			expErr:       true,
 		},
 		"decision policy with negative threshold": {
@@ -476,6 +488,7 @@ func TestGroupAccountInfo(t *testing.T) {
 			version:      1,
 			threshold:    "-1",
 			timeout:      proto.Duration{Seconds: 1},
+			path:         []byte("path"),
 			expErr:       true,
 		},
 		"decision policy with zero threshold": {
@@ -484,6 +497,16 @@ func TestGroupAccountInfo(t *testing.T) {
 			admin:        []byte("valid--admin-address"),
 			version:      1,
 			threshold:    "0",
+			timeout:      proto.Duration{Seconds: 1},
+			path:         []byte("path"),
+			expErr:       true,
+		},
+		"empty path": {
+			group:        1,
+			groupAccount: []byte("valid--group-address"),
+			admin:        []byte("valid--admin-address"),
+			version:      1,
+			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
 			expErr:       true,
 		},
@@ -500,6 +523,7 @@ func TestGroupAccountInfo(t *testing.T) {
 					Threshold: spec.threshold,
 					Timeout:   spec.timeout,
 				},
+				spec.path,
 			)
 			require.NoError(t, err)
 
