@@ -1493,49 +1493,49 @@ func (s *IntegrationTestSuite) TestTxExec() {
 			&sdk.TxResponse{},
 			0,
 		},
-		// {
-		// 	"with amino-json",
-		// 	append(
-		// 		[]string{
-		// 			"4",
-		// 			fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
-		// 			fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
-		// 		},
-		// 		commonFlags...,
-		// 	),
-		// 	false,
-		// 	"",
-		// 	&sdk.TxResponse{},
-		// 	0,
-		// },
-		// {
-		// 	"invalid proposal id",
-		// 	append(
-		// 		[]string{
-		// 			"abcd",
-		// 			fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
-		// 		},
-		// 		commonFlags...,
-		// 	),
-		// 	true,
-		// 	"invalid syntax",
-		// 	nil,
-		// 	0,
-		// },
-		// {
-		// 	"proposal not found",
-		// 	append(
-		// 		[]string{
-		// 			"1234",
-		// 			fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
-		// 		},
-		// 		commonFlags...,
-		// 	),
-		// 	true,
-		// 	"proposal: not found",
-		// 	nil,
-		// 	0,
-		// },
+		{
+			"with amino-json",
+			append(
+				[]string{
+					"4",
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"invalid proposal id",
+			append(
+				[]string{
+					"abcd",
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				},
+				commonFlags...,
+			),
+			true,
+			"invalid syntax",
+			nil,
+			0,
+		},
+		{
+			"proposal not found",
+			append(
+				[]string{
+					"1234",
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				},
+				commonFlags...,
+			),
+			true,
+			"proposal: not found",
+			nil,
+			0,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -1553,8 +1553,6 @@ func (s *IntegrationTestSuite) TestTxExec() {
 
 				txResp := tc.respType.(*sdk.TxResponse)
 				s.Require().Equal(tc.expectedCode, txResp.Code, out.String())
-
-				cmd := client.QueryProposalCmd()
 			}
 		})
 	}
@@ -1562,9 +1560,8 @@ func (s *IntegrationTestSuite) TestTxExec() {
 
 func getTxSendFileName(s *IntegrationTestSuite, from string, to string) string {
 	tx := fmt.Sprintf(
-		// `{"body":{"messages":[{"@type":"/cosmos.bank.v1beta1.MsgSend","from_address":"%s","to_address":"%s","amount":[{"denom":"%s","amount":"10"}]}],"memo":"","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":[]}`,
-		`{"body":{"messages":[{"@type":"/regen.ecocredit.v1alpha1.Msg/CreateClass","designer":"%s","issuers":["%s"],"metadata":"null"}],"memo":"","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":[]}`,
-		from, to, //s.cfg.BondDenom,
+		`{"body":{"messages":[{"@type":"/cosmos.bank.v1beta1.MsgSend","from_address":"%s","to_address":"%s","amount":[{"denom":"%s","amount":"10"}]}],"memo":"","timeout_height":"0","extension_options":[],"non_critical_extension_options":[]},"auth_info":{"signer_infos":[],"fee":{"amount":[],"gas_limit":"200000","payer":"","granter":""}},"signatures":[]}`,
+		from, to, s.cfg.BondDenom,
 	)
 	return testutil.WriteToNewTempFile(s.T(), tx).Name()
 }
