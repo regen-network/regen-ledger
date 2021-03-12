@@ -61,9 +61,9 @@ builds:
       - arm64
     goos:
       - linux
-  #   env:
-  #     - CC=aarch64-linux-gnu-gcc
-  #     - CXX=aarch64-linux-gnu-g++
+    env:
+      - CC=aarch64-linux-gnu-gcc
+      - CXX=aarch64-linux-gnu-g++
     flags:
 
 
