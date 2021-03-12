@@ -66,8 +66,9 @@ builds:
       - linux
     env:
       - CGO_ENABLED=1
-      - CC=aarch64-linux-gnu-gcc
-      - CXX=aarch64-linux-gnu-g++
+      - CXX=aarch64-linux-gnu-cpp
+      # - CC=aarch64-linux-gnu-gcc
+      # - CXX=aarch64-linux-gnu-g++
     flags:
 
 
