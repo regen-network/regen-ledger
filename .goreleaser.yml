@@ -36,6 +36,7 @@ builds:
       # - "{{ .Env.BUILD_FLAGS }}"
       - -trimpath
       - -mod=readonly
+      - -experimental=true
       # - "netgo"
       # - "ledger"
       # - "gcc"
