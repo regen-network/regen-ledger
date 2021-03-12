@@ -20,7 +20,6 @@ func QueryCmd(name string) *cobra.Command {
 	}
 
 	queryCmd.AddCommand(
-		QueryGroupsCmd(),
 		QueryGroupInfoCmd(),
 		QueryGroupAccountInfoCmd(),
 		QueryGroupMembersCmd(),
@@ -35,41 +34,6 @@ func QueryCmd(name string) *cobra.Command {
 	)
 
 	return queryCmd
-}
-
-// QueryGroupsCmd creates a CLI command for Query/Groups.
-func QueryGroupsCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "groups",
-		Short: "Query for groups",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientQueryContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			pageReq, err := client.ReadPageRequest(cmd.Flags())
-			if err != nil {
-				return err
-			}
-
-			queryClient := group.NewQueryClient(clientCtx)
-
-			res, err := queryClient.Groups(cmd.Context(), &group.QueryGroupsRequest{
-				Pagination: pageReq,
-			})
-			if err != nil {
-				return err
-			}
-
-			return clientCtx.PrintProto(res)
-		},
-	}
-
-	flags.AddQueryFlagsToCmd(cmd)
-	flags.AddPaginationFlagsToCmd(cmd, "group")
-
-	return cmd
 }
 
 // QueryGroupInfoCmd creates a CLI command for Query/GroupInfo.

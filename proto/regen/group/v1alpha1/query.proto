@@ -11,9 +11,6 @@ option go_package = "github.com/regen-network/regen-ledger/x/group";
 // Query is the regen.group.v1alpha1 Query service.
 service Query {
 
-  // Groups returns all the groups.
-  rpc Groups(QueryGroupsRequest) returns (QueryGroupsResponse);
-
   // GroupInfo queries group info based on group id.
   rpc GroupInfo(QueryGroupInfoRequest) returns (QueryGroupInfoResponse);
 
@@ -46,23 +43,6 @@ service Query {
 
   // VotesByVoter queries a vote by voter.
   rpc VotesByVoter(QueryVotesByVoterRequest) returns (QueryVotesByVoterResponse);
-}
-
-// QueryGroupsRequest is the Query/Groups request type.
-message QueryGroupsRequest {
-
-  // pagination defines an optional pagination for the request.
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-// QueryGroupsResponse is the Query/Groups response type.
-message QueryGroupsResponse {
-
-  // groups is the list of GroupInfo for the group.
-  repeated GroupInfo groups = 1;
-
-  // pagination defines the pagination in the response.
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // QueryGroupInfoRequest is the Query/GroupInfo request type.

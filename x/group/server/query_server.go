@@ -9,28 +9,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
-func (s serverImpl) Groups(ctx types.Context, request *group.QueryGroupsRequest) (*group.QueryGroupsResponse, error) {
-	var start []byte
-	if request.Pagination != nil {
-		start = request.Pagination.Key
-	}
-	it, err := s.groupTable.PrefixScan(ctx, start, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var groups []*group.GroupInfo
-	pageRes, err := orm.Paginate(it, request.Pagination, &groups)
-	if err != nil {
-		return nil, err
-	}
-
-	return &group.QueryGroupsResponse{
-		Groups:     groups,
-		Pagination: pageRes,
-	}, nil
-}
-
 func (s serverImpl) GroupInfo(ctx types.Context, request *group.QueryGroupInfoRequest) (*group.QueryGroupInfoResponse, error) {
 	groupID := request.GroupId
 	groupInfo, err := s.getGroupInfo(ctx, groupID)

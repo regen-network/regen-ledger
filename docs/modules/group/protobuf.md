@@ -65,8 +65,6 @@
     - [QueryGroupMembersResponse](#regen.group.v1alpha1.QueryGroupMembersResponse)
     - [QueryGroupsByAdminRequest](#regen.group.v1alpha1.QueryGroupsByAdminRequest)
     - [QueryGroupsByAdminResponse](#regen.group.v1alpha1.QueryGroupsByAdminResponse)
-    - [QueryGroupsRequest](#regen.group.v1alpha1.QueryGroupsRequest)
-    - [QueryGroupsResponse](#regen.group.v1alpha1.QueryGroupsResponse)
     - [QueryProposalRequest](#regen.group.v1alpha1.QueryProposalRequest)
     - [QueryProposalResponse](#regen.group.v1alpha1.QueryProposalResponse)
     - [QueryProposalsByGroupAccountRequest](#regen.group.v1alpha1.QueryProposalsByGroupAccountRequest)
@@ -952,37 +950,6 @@ QueryGroupsByAdminResponse is the Query/GroupsByAdminResponse response type.
 
 
 
-<a name="regen.group.v1alpha1.QueryGroupsRequest"></a>
-
-### QueryGroupsRequest
-QueryGroupsRequest is the Query/Groups request type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
-
-
-
-
-
-
-<a name="regen.group.v1alpha1.QueryGroupsResponse"></a>
-
-### QueryGroupsResponse
-QueryGroupsResponse is the Query/Groups response type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| groups | [GroupInfo](#regen.group.v1alpha1.GroupInfo) | repeated | groups is the list of GroupInfo for the group. |
-| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
-
-
-
-
-
-
 <a name="regen.group.v1alpha1.QueryProposalRequest"></a>
 
 ### QueryProposalRequest
@@ -1153,7 +1120,6 @@ Query is the regen.group.v1alpha1 Query service.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Groups | [QueryGroupsRequest](#regen.group.v1alpha1.QueryGroupsRequest) | [QueryGroupsResponse](#regen.group.v1alpha1.QueryGroupsResponse) | Groups returns all the groups. |
 | GroupInfo | [QueryGroupInfoRequest](#regen.group.v1alpha1.QueryGroupInfoRequest) | [QueryGroupInfoResponse](#regen.group.v1alpha1.QueryGroupInfoResponse) | GroupInfo queries group info based on group id. |
 | GroupAccountInfo | [QueryGroupAccountInfoRequest](#regen.group.v1alpha1.QueryGroupAccountInfoRequest) | [QueryGroupAccountInfoResponse](#regen.group.v1alpha1.QueryGroupAccountInfoResponse) | GroupAccountInfo queries group account info based on group account address. |
 | GroupMembers | [QueryGroupMembersRequest](#regen.group.v1alpha1.QueryGroupMembersRequest) | [QueryGroupMembersResponse](#regen.group.v1alpha1.QueryGroupMembersResponse) | GroupMembers queries members of a group |
