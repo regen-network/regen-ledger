@@ -54,22 +54,22 @@ builds:
     #   - -extldflags "-lc -lrt -lpthread --static"
 
 
-  # - id: regen-ledger-linux-arm64
-  #   binary: regen
-  #   main: ./app/regen
-  #   goarch:
-  #     - arm64
-  #   goos:
-  #     - linux
+  - id: regen-ledger-linux-arm64
+    binary: regen
+    main: ./app/regen
+    goarch:
+      - arm64
+    goos:
+      - linux
   #   env:
   #     - CC=aarch64-linux-gnu-gcc
   #     - CXX=aarch64-linux-gnu-g++
-  #   flags:
+    flags:
 
 
       # - "{{ .Env.BUILD_FLAGS }}"
-      # - -trimpath
-      # - -mod=readonly
+      - -trimpath
+      - -mod=readonly
     # ldflags:
     #   - "{{ .Env.LD_FLAGS }}"
     #   - -extldflags "-lc -lrt -lpthread --static"
