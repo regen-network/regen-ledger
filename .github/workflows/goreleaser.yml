@@ -1,11 +1,11 @@
 name: goreleaser
 
-on: [push]
-# on:
-#   pull_request:
-#   push:
-#     tags:
-#       - '*'
+# on: [push]
+on:
+  pull_request:
+  push:
+    tags:
+      - '*'
 
 jobs:
   goreleaser:
@@ -24,7 +24,7 @@ jobs:
       -
         name: GCC multilib
         run: |
-          sudo apt-get install gcc-multilib g++-multilib
+          sudo apt-get install gcc-multilib g++-multilib clang
           sudo apt-get install libcrypto++6 libssl1.1 libssl-dev --reinstall
       -
         name: OSXCross for CGO Support
