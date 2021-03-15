@@ -1,34 +1,26 @@
 env:
   - GO111MODULE=on
   - CGO_ENABLED=1
-  - CC=gcc
+  - LD_FLAGS= -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version=v1.0.3-1-g8bc6482 -X github.com/cosmos/cosmos-sdk/version.Commit=8bc6482b6f2eb1e5ce1b0dba1b45b992a134c919 -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger" -trimpath
+  - BUILD_FLAGS=-tags "netgo ledger" -ldflags '-X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version=v1.0.3-1-g8bc6482 -X github.com/cosmos/cosmos-sdk/version.Commit=8bc6482b6f2eb1e5ce1b0dba1b45b992a134c919 -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger" -w -s' -trimpath
 builds:
-  # - id: regen-ledger-darwin-amd64
-  #   binary: regen
-  #   main: ./app/regen
-  #   goarch:
-  #     - amd64
-  #   goos:
-  #     - darwin
-  #   env:
-  #     - CGO_ENABLED=1
-  #     - CC=/home/runner/work/osxcross/target/bin/o64-clang
-  #     - CXX=/home/runner/work/osxcross/target/bin/o64-clang++
-      # - CC=o64-clang
-      # - CXX=o64-clang++
-    # flags:
-    #   - -trimpath
-    #   - -mod=readonly
-
-
-      # - "{{ .Env.BUILD_FLAGS }}"
-      # - "netgo"
-      # - "ledger"
-      # - "gcc"
-      # - "experimental=true"
-    # ldflags:
-    #   - "{{ .Env.LD_FLAGS }}"
-  - id: regen-ledger-linux-amd64
+  - id: regen-darwin-amd64
+    binary: regen
+    main: ./app/regen
+    goarch:
+      - amd64
+    goos:
+      - darwin
+    env:
+      - CC=o64-clang
+      - CXX=o64-clang++
+    flags:
+      - -trimpath
+      - -mod=readonly
+      - "{{ .BUILD_FLAGS }}"
+    ldflags:
+      - "{{ .LD_FLAGS }}"
+  - id: regen-linux-amd64
     binary: regen
     main: ./app/regen
     goarch:
@@ -36,28 +28,13 @@ builds:
     goos:
       - linux
     flags:
-      # - "{{ .Env.BUILD_FLAGS }}"
+      - "{{ .Env.BUILD_FLAGS }}"
       - -trimpath
       - -mod=readonly
-      # - "netgo"
-      # - "ledger"
-      # - "gcc"
-      # - "experimental=true"
-    # ldflags:
-    #   - "{{ .Env.LD_FLAGS }}"
-    #   - -extldflags "-lc -lrt -lpthread --static"
-    # ldflags:
-    #   - -s -w -x "main.goversion={{.Env.GOVERSION}}"
-    #   - -s -w -X "main.commit={{.Env.GITCOMMIT}}"
-    #   - -s -w -X "main.os={{.Env.GOOS}}"
-    #   - -s -w -X "main.arch={{.Env.GOARCH}}"
-    #   - -s -w -X "main.commit={{.Env.GITCOMMIT}}"
-    #   - -s -w -X "main.date={{.Env.BUILDTIME}}"
-
-    #   - -extldflags "-lc -lrt -lpthread --static"
-
-
-  - id: regen-ledger-linux-arm64
+    ldflags:
+      - "{{ .Env.LD_FLAGS }}"
+      - -extldflags "-lc -lrt -lpthread --static"
+  - id: regen-linux-arm64
     binary: regen
     main: ./app/regen
     goarch:
@@ -65,86 +42,47 @@ builds:
     goos:
       - linux
     env:
-      - CGO_ENABLED=1
-      - CXX=aarch64-linux-gnu-gcc
-      # - CC=aarch64-linux-gnu-gcc
-      # - CXX=aarch64-linux-gnu-g++
+      - CC=aarch64-linux-gnu-gcc
+      - CXX=aarch64-linux-gnu-g++
     flags:
-
-
-      # - "{{ .Env.BUILD_FLAGS }}"
+      - "{{ .Env.BUILD_FLAGS }}"
       - -trimpath
       - -mod=readonly
-    # ldflags:
-    #   - "{{ .Env.LD_FLAGS }}"
-    #   - -extldflags "-lc -lrt -lpthread --static"
-
-
-  # - id: regen-ledger-windows-amd64
-  #   binary: regen
-  #   main: ./app/regen
-  #   goarch:
-  #     - amd64
-  #   goos:
-  #     - windows
-  #   env:
-  #     - PKG_CONFIG_SYSROOT_DIR=
-  #     - CC=x86_64-w64-mingw32-gcc
-  #     - CXX=x86_64-w64-mingw32-g++
-  #   flags:
-  #     - -trimpath
-  #     - -mod=readonly
-  #     - -buildmode=exe
+    ldflags:
+      - "{{ .Env.LD_FLAGS }}"
+      - -extldflags "-lc -lrt -lpthread --static"
+  - id: regen-windows-amd64
+    binary: regen
+    main: ./app/regen
+    goarch:
+      - amd64
+    goos:
+      - windows
+    env:
+      - CC=x86_64-w64-mingw32-gcc
+      - CXX=x86_64-w64-mingw32-g++
+    flags:
+      - "{{ .Env.BUILD_FLAGS }}"
+      - -trimpath
+      - -mod=readonly
+      - -buildmode=exe
+    ldflags:
+      - "{{ .Env.LD_FLAGS }}"
 archives:
   - id: regen
     builds:
-      # - regen-ledger-darwin-amd64
-      - regen-ledger-linux-amd64
-      # - regen-ledger-linux-arm64
-      # - regen-ledger-windows-amd64
+      - regen-darwin-amd64
+      - regen-linux-amd64
+      - regen-linux-arm64
+      - regen-windows-amd64
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: true
     format: zip
     files:
-      - none*  
-
-dockers:
-  - ids:
-      - regen-ledger-linux-amd64
-    dockerfile: _build/Dockerfile.regen
-    goos: linux
-    goarch: amd64
-    # image_templates:
-    #   - 'ghcr.io/regen-ledger/regen-network:{{if eq .Env.MAINNET "true"}}stable{{else}}latest{{end}}'
-    #   - 'ghcr.io/regen-ledger/regen-network:{{ .ShortCommit }}'
-    #   - 'ghcr.io/regen-ledger/regen-network:{{ .Version }}'
-# brews:
-#   - name: "{{ .Env.HOMEBREW_NAME }}"
-#     tap:
-#       owner: regen-ledger
-#       name: homebrew-tap
-#     homepage: "https://www.regen.network/"
-#     description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
-#     custom_block: |
-#       {{ .Env.HOMEBREW_CUSTOM }}
-#     install: |
-#       bin.install "regen"
-# signs:
-#   - artifacts: checksum
-#     args: ["--batch", "-u", "{{ .Env.GPG_FINGERPRINT }}", "--output", "${signature}", "--detach-sign", "${artifact}"]
-
-nfpms:
-  - vendor: "Regen Network Development Inc."
-    homepage: "https://www.regen.network/"
-    maintainer: "Regen Network <hello@regen.network>"
-    formats:
-      - deb
-      - rpm
-    license: Apache 2.0
-
+      - none*
 release:
   github:
     owner: regen-network
-    name: regen-ledger
+    name: regen
   prerelease: auto
-  draft: true
+  draft: false
