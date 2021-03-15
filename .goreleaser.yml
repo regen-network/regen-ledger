@@ -26,8 +26,11 @@ builds:
     goos:
       - darwin
     env:
-      - CC=o64-clang
-      - CXX=o64-clang++
+      - CGO_ENABLED=1
+      - CC=/home/runner/work/osxcross/target/bin/o64-clang
+      - CXX=/home/runner/work/osxcross/target/bin/o64-clang++
+      # - CC=o64-clang
+      # - CXX=o64-clang++
     flags:
       - -trimpath
       - -mod=readonly
