@@ -14,7 +14,7 @@ jobs:
           sudo apt-get install build-essential
       -
         name: Checkout
-        uses: actions/checkout@v2.1.3
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
       -
