@@ -50,3 +50,4 @@ release:
     name: regen
   prerelease: auto
   draft: false
+  
