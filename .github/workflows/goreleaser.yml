@@ -1,26 +1,16 @@
 name: goreleaser
 
 on: [push]
-  # push:
-  #   tags:
-  #     - '*'
+# on:
+#   pull_request:
+#   push:
+#     tags:
+#       - '*'
 
 jobs:
-  release:
+  goreleaser:
     runs-on: ubuntu-latest
     steps:
-      # - run: |
-      #     sudo apt-get update
-      #     sudo apt-get install build-essential
-      -
-        name: GCC multilib
-        run: |
-          sudo apt-get install gcc-multilib g++-multilib
-      -
-        name: OSXCross for CGO Support
-        run: |
-          mkdir ../../osxcross
-          git clone https://github.com/plentico/osxcross-target.git ../../osxcross/target
       -
         name: Checkout
         uses: actions/checkout@v2
@@ -30,9 +20,19 @@ jobs:
         name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.15
+          go-version: 1.16
       -
-        name: GoReleaser
+        name: GCC multilib
+        run: |
+          sudo apt-get install gcc-multilib g++-multilib clang
+          sudo apt-get install libcrypto++6 libssl1.1 libssl-dev --reinstall
+      -
+        name: OSXCross for CGO Support
+        run: |
+          mkdir ../../osxcross
+          git clone https://github.com/plentico/osxcross-target.git ../../osxcross/target
+      -
+        name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
