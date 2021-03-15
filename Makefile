@@ -12,19 +12,15 @@ MOCKS_DIR = $(CURDIR)/tests/mocks
 HTTPS_GIT := https://github.com/regen-network/regen-ledger.git
 DOCKER_BUF := docker run -v $(shell pwd):/workspace --workdir /workspace bufbuild/buf
 
-GORELEASER_CONFIG = .goreleaser.yml
-
 export GO111MODULE = on
+
+GORELEASER_CONFIG      = .goreleaser.yaml
 
 # process build tags
 
-# build_tags = netgo
 build_tags = netgo
-# BUILD_TAGS = netgo
-
 
 ifeq ($(EXPERIMENTAL),true)
-
 	build_tags += experimental
 	GORELEASER_BUILD_TAGS=$(build_tags)
 	GORELEASER_HOMEBREW_NAME="regen-edge"
@@ -71,6 +67,7 @@ endif
 ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))
   build_tags += gcc
 endif
+
 
 whitespace :=
 whitespace += $(whitespace)
