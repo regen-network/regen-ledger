@@ -1,8 +1,8 @@
 env:
   - GO111MODULE=on
   - CGO_ENABLED=1
-  # - LD_FLAGS= -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version=v1.0.3-1-g8bc6482 -X github.com/cosmos/cosmos-sdk/version.Commit=8bc6482b6f2eb1e5ce1b0dba1b45b992a134c919 -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger" -trimpath
-  # - BUILD_FLAGS=-tags "netgo ledger" -ldflags '-X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version=v1.0.3-1-g8bc6482 -X github.com/cosmos/cosmos-sdk/version.Commit=8bc6482b6f2eb1e5ce1b0dba1b45b992a134c919 -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger" -w -s' -trimpath
+  - LD_FLAGS= -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version=v1.0.3-1-g8bc6482 -X github.com/cosmos/cosmos-sdk/version.Commit=8bc6482b6f2eb1e5ce1b0dba1b45b992a134c919 -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger" -trimpath
+  - BUILD_FLAGS=-tags "netgo ledger" -ldflags '-X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version=v1.0.3-1-g8bc6482 -X github.com/cosmos/cosmos-sdk/version.Commit=8bc6482b6f2eb1e5ce1b0dba1b45b992a134c919 -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger" -w -s' -trimpath
 builds:
   - id: regen-linux-amd64
     binary: regen
@@ -12,12 +12,12 @@ builds:
     goos:
       - linux
     flags:
-      # - "{{ .Env.BUILD_FLAGS }}"
+      - "{{ .Env.BUILD_FLAGS }}"
       - -trimpath
       - -mod=readonly
-    # ldflags:
-    #   - "{{ .Env.LD_FLAGS }}"
-    #   - -extldflags "-lc -lrt -lpthread --static"
+    ldflags:
+      - "{{ .Env.LD_FLAGS }}"
+      - -extldflags "-lc -lrt -lpthread --static"
   - id: regen-darwin-amd64
     binary: regen
     main: ./app/regen
@@ -29,14 +29,14 @@ builds:
       - CGO_ENABLED=1
       - CC=/home/runner/work/osxcross/target/bin/o64-clang
       - CXX=/home/runner/work/osxcross/target/bin/o64-clang++
-      # - CC=o64-clang
-      # - CXX=o64-clang++
+      - CC=o64-clang
+      - CXX=o64-clang++
     flags:
       - -trimpath
       - -mod=readonly
-      # - "{{ .Env.BUILD_FLAGS }}"
-    # ldflags:
-    #   - "{{ .Env.LD_FLAGS }}"
+      - "{{ .Env.BUILD_FLAGS }}"
+    ldflags:
+      - "{{ .Env.LD_FLAGS }}"
   # - id: regen-linux-arm64
   #   binary: regen
   #   main: ./app/regen
