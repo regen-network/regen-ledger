@@ -9,9 +9,13 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          sudo apt-get update
-          sudo apt-get install build-essential
+      # - run: |
+      #     sudo apt-get update
+      #     sudo apt-get install build-essential
+      -
+        name: GCC multilib
+        run: |
+          sudo apt-get install gcc-multilib g++-multilib
       -
         name: Checkout
         uses: actions/checkout@v2
