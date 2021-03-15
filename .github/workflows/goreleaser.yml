@@ -1,9 +1,9 @@
 name: goreleaser
 
-on:
-  push:
-    tags:
-      - '*'
+on: [push]
+  # push:
+  #   tags:
+  #     - '*'
 
 jobs:
   release:
@@ -20,7 +20,7 @@ jobs:
         with:
           go-version: 1.15
       -
-        name: Create GoReleaser
+        name: GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest

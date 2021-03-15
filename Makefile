@@ -20,6 +20,7 @@ export GO111MODULE = on
 
 # build_tags = netgo
 build_tags = netgo
+# BUILD_TAGS = netgo
 
 
 ifeq ($(EXPERIMENTAL),true)
