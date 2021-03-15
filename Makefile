@@ -25,12 +25,24 @@ build_tags = netgo
 ifeq ($(EXPERIMENTAL),true)
 
 	build_tags += experimental
-	BUILD_TAGS=netgo
-	# GORELEASER_BUILD_TAGS=$(BUILD_TAGS),testnet
+	GORELEASER_BUILD_TAGS=$(build_tags)
+	GORELEASER_HOMEBREW_NAME="regen-edge"
+	GORELEASER_HOMEBREW_CUSTOM=keg_only :unneeded, \"This is an experimental release.\"
+else
 	GORELEASER_BUILD_TAGS=$(BUILD_TAGS)
 	GORELEASER_HOMEBREW_NAME=regen
 	GORELEASER_HOMEBREW_CUSTOM=
 endif
+
+GORELEASER_TAG     ?= $(shell git describe --tags --abbrev=0)
+
+GORELEASER_FLAGS    = -tags="$(GORELEASER_BUILD_TAGS)"
+GORELEASER_LD_FLAGS = -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen \
+-X github.com/cosmos/cosmos-sdk/version.AppName=regen \
+-X github.com/cosmos/cosmos-sdk/version.BuildTags="$(GORELEASER_BUILD_TAGS)" \
+-X github.com/cosmos/cosmos-sdk/version.Version=$(GORELEASER_TAG) \
+-X github.com/cosmos/cosmos-sdk/version.Commit=$(GIT_HEAD_COMMIT_LONG)
+
 
 ifeq ($(LEDGER_ENABLED),true)
   ifeq ($(OS),Windows_NT)
@@ -58,16 +70,6 @@ endif
 ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))
   build_tags += gcc
 endif
-
-GORELEASER_TAG     ?= $(shell git describe --tags --abbrev=0)
-
-GORELEASER_FLAGS = -tags="$(GORELEASER_BUILD_TAGS)"
-GORELEASER_LD_FLAGS = -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen \
-		  					-X github.com/cosmos/cosmos-sdk/version.AppName=regen \
-		  					-X github.com/cosmos/cosmos-sdk/version.Version=$(GORELEASER_TAG) \
-		  					-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
-		  					-X github.com/cosmos/cosmos-sdk/version.BuildTags="$(GORELEASER_BUILD_TAGS)"
-
 
 whitespace :=
 whitespace += $(whitespace)
