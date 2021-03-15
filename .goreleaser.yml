@@ -45,10 +45,8 @@ builds:
     goos:
       - linux
     env:
-      - CC=/home/runner/work/osxcross/target/bin/aarch64-linux-gnu-gcc
-      - CXX=/home/runner/work/osxcross/target/bin/aarch64-linux-gnu-g++
-      # - CC=aarch64-linux-gnu-gcc
-      # - CXX=aarch64-linux-gnu-g++
+      - CC=aarch64-linux-gnu-gcc
+      - CXX=aarch64-linux-gnu-g++
     flags:
       # - "{{ .Env.BUILD_FLAGS }}"
       - -trimpath
