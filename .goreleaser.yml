@@ -37,23 +37,25 @@ builds:
       # - "{{ .Env.BUILD_FLAGS }}"
     # ldflags:
     #   - "{{ .Env.LD_FLAGS }}"
-  # - id: regen-linux-arm64
-  #   binary: regen
-  #   main: ./app/regen
-  #   goarch:
-  #     - arm64
-  #   goos:
-  #     - linux
-  #   env:
-  #     - CC=aarch64-linux-gnu-gcc
-  #     - CXX=aarch64-linux-gnu-g++
-  #   flags:
-  #     # - "{{ .Env.BUILD_FLAGS }}"
-  #     - -trimpath
-  #     - -mod=readonly
-  #   # ldflags:
-  #   #   - "{{ .Env.LD_FLAGS }}"
-  #   #   - -extldflags "-lc -lrt -lpthread --static"
+  - id: regen-linux-arm64
+    binary: regen
+    main: ./app/regen
+    goarch:
+      - arm64
+    goos:
+      - linux
+    env:
+      - CC=/home/runner/work/osxcross/target/bin/aarch64-linux-gnu-gcc
+      - CXX=/home/runner/work/osxcross/target/bin/aarch64-linux-gnu-g++
+      # - CC=aarch64-linux-gnu-gcc
+      # - CXX=aarch64-linux-gnu-g++
+    flags:
+      # - "{{ .Env.BUILD_FLAGS }}"
+      - -trimpath
+      - -mod=readonly
+    # ldflags:
+    #   - "{{ .Env.LD_FLAGS }}"
+    #   - -extldflags "-lc -lrt -lpthread --static"
   # - id: regen-windows-amd64
   #   binary: regen
   #   main: ./app/regen
