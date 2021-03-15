@@ -1,9 +1,23 @@
 env:
   - GO111MODULE=on
   - CGO_ENABLED=1
-  - LD_FLAGS= -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version=v1.0.3-1-g8bc6482 -X github.com/cosmos/cosmos-sdk/version.Commit=8bc6482b6f2eb1e5ce1b0dba1b45b992a134c919 -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger" -trimpath
-  - BUILD_FLAGS=-tags "netgo ledger" -ldflags '-X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version=v1.0.3-1-g8bc6482 -X github.com/cosmos/cosmos-sdk/version.Commit=8bc6482b6f2eb1e5ce1b0dba1b45b992a134c919 -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger" -w -s' -trimpath
+  # - LD_FLAGS= -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version=v1.0.3-1-g8bc6482 -X github.com/cosmos/cosmos-sdk/version.Commit=8bc6482b6f2eb1e5ce1b0dba1b45b992a134c919 -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger" -trimpath
+  # - BUILD_FLAGS=-tags "netgo ledger" -ldflags '-X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version=v1.0.3-1-g8bc6482 -X github.com/cosmos/cosmos-sdk/version.Commit=8bc6482b6f2eb1e5ce1b0dba1b45b992a134c919 -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger" -w -s' -trimpath
 builds:
+  - id: regen-linux-amd64
+    binary: regen
+    main: ./app/regen
+    goarch:
+      - amd64
+    goos:
+      - linux
+    flags:
+      # - "{{ .Env.BUILD_FLAGS }}"
+      - -trimpath
+      - -mod=readonly
+    # ldflags:
+    #   - "{{ .Env.LD_FLAGS }}"
+    #   - -extldflags "-lc -lrt -lpthread --static"
   - id: regen-darwin-amd64
     binary: regen
     main: ./app/regen
@@ -17,23 +31,9 @@ builds:
     flags:
       - -trimpath
       - -mod=readonly
-      - "{{ .Env.BUILD_FLAGS }}"
-    ldflags:
-      - "{{ .Env.LD_FLAGS }}"
-  - id: regen-linux-amd64
-    binary: regen
-    main: ./app/regen
-    goarch:
-      - amd64
-    goos:
-      - linux
-    flags:
-      - "{{ .Env.BUILD_FLAGS }}"
-      - -trimpath
-      - -mod=readonly
-    ldflags:
-      - "{{ .Env.LD_FLAGS }}"
-      - -extldflags "-lc -lrt -lpthread --static"
+      # - "{{ .Env.BUILD_FLAGS }}"
+    # ldflags:
+    #   - "{{ .Env.LD_FLAGS }}"
   - id: regen-linux-arm64
     binary: regen
     main: ./app/regen
@@ -45,12 +45,12 @@ builds:
       - CC=aarch64-linux-gnu-gcc
       - CXX=aarch64-linux-gnu-g++
     flags:
-      - "{{ .Env.BUILD_FLAGS }}"
+      # - "{{ .Env.BUILD_FLAGS }}"
       - -trimpath
       - -mod=readonly
-    ldflags:
-      - "{{ .Env.LD_FLAGS }}"
-      - -extldflags "-lc -lrt -lpthread --static"
+    # ldflags:
+    #   - "{{ .Env.LD_FLAGS }}"
+    #   - -extldflags "-lc -lrt -lpthread --static"
   - id: regen-windows-amd64
     binary: regen
     main: ./app/regen
@@ -62,17 +62,17 @@ builds:
       - CC=x86_64-w64-mingw32-gcc
       - CXX=x86_64-w64-mingw32-g++
     flags:
-      - "{{ .Env.BUILD_FLAGS }}"
+      # - "{{ .Env.BUILD_FLAGS }}"
       - -trimpath
       - -mod=readonly
       - -buildmode=exe
-    ldflags:
-      - "{{ .Env.LD_FLAGS }}"
+    # ldflags:
+    #   - "{{ .Env.LD_FLAGS }}"
 archives:
   - id: regen
     builds:
-      - regen-darwin-amd64
       - regen-linux-amd64
+      - regen-darwin-amd64
       - regen-linux-arm64
       - regen-windows-amd64
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
@@ -85,4 +85,4 @@ release:
     owner: regen-network
     name: regen
   prerelease: auto
-  draft: false
+  draft: true
