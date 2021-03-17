@@ -1,6 +1,7 @@
 package testsuite
 
 import (
+	"encoding/json"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -116,34 +117,36 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 		s.Require().Equal(votesRes.Votes[0], genesisState.Votes[0])
 	}
 
+	var exported json.RawMessage
 	s.Require().NotPanics(func() {
-		exported := s.exportGenesisHandler(ctx, cdc)
-		var exportedGenesisState group.GenesisState
-		err := cdc.UnmarshalJSON(exported, &exportedGenesisState)
-		s.Require().NoError(err)
-
-		s.Require().Equal(genesisState.Groups, exportedGenesisState.Groups)
-		s.Require().Equal(genesisState.GroupMembers, exportedGenesisState.GroupMembers)
-
-		s.Require().Equal(len(genesisState.GroupAccounts), len(exportedGenesisState.GroupAccounts))
-		for i, g := range genesisState.GroupAccounts {
-			res := exportedGenesisState.GroupAccounts[i]
-			s.Require().NoError(err)
-			s.assertGroupAccountsEqual(g, res)
-		}
-
-		s.Require().Equal(len(genesisState.Proposals), len(exportedGenesisState.Proposals))
-		for i, g := range genesisState.Proposals {
-			res := exportedGenesisState.Proposals[i]
-			s.Require().NoError(err)
-			s.assertProposalsEqual(g, res)
-		}
-		s.Require().Equal(genesisState.Votes, exportedGenesisState.Votes)
-
-		s.Require().Equal(genesisState.GroupSeq, exportedGenesisState.GroupSeq)
-		s.Require().Equal(genesisState.GroupAccountSeq, exportedGenesisState.GroupAccountSeq)
-		s.Require().Equal(genesisState.ProposalSeq, exportedGenesisState.ProposalSeq)
+		exported = s.exportGenesisHandler(ctx, cdc)
 	})
+	var exportedGenesisState group.GenesisState
+	err = cdc.UnmarshalJSON(exported, &exportedGenesisState)
+	s.Require().NoError(err)
+
+	s.Require().Equal(genesisState.Groups, exportedGenesisState.Groups)
+	s.Require().Equal(genesisState.GroupMembers, exportedGenesisState.GroupMembers)
+
+	s.Require().Equal(len(genesisState.GroupAccounts), len(exportedGenesisState.GroupAccounts))
+	for i, g := range genesisState.GroupAccounts {
+		res := exportedGenesisState.GroupAccounts[i]
+		s.Require().NoError(err)
+		s.assertGroupAccountsEqual(g, res)
+	}
+
+	s.Require().Equal(len(genesisState.Proposals), len(exportedGenesisState.Proposals))
+	for i, g := range genesisState.Proposals {
+		res := exportedGenesisState.Proposals[i]
+		s.Require().NoError(err)
+		s.assertProposalsEqual(g, res)
+	}
+	s.Require().Equal(genesisState.Votes, exportedGenesisState.Votes)
+
+	s.Require().Equal(genesisState.GroupSeq, exportedGenesisState.GroupSeq)
+	s.Require().Equal(genesisState.GroupAccountSeq, exportedGenesisState.GroupAccountSeq)
+	s.Require().Equal(genesisState.ProposalSeq, exportedGenesisState.ProposalSeq)
+
 }
 
 func (s *IntegrationTestSuite) assertGroupAccountsEqual(g *group.GroupAccountInfo, other *group.GroupAccountInfo) {
