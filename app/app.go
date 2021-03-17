@@ -166,7 +166,7 @@ type RegenApp struct {
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
 	//nolint:structcheck
-	wasmKeeper       wasm.Keeper // only used in experimental builds
+	wasmKeeper wasm.Keeper // only used in experimental builds
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
