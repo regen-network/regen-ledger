@@ -20,12 +20,12 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 	return []module.AppModuleBasic{
 		gov.NewAppModuleBasic(
 			paramsclient.ProposalHandler, distrclient.ProposalHandler,
-				upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
+			upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
 		),
 	}
 }
 
-func setCustomKVStoreKeys () []string {
+func setCustomKVStoreKeys() []string {
 	return []string{}
 }
 
@@ -37,13 +37,14 @@ func (app *RegenApp) setCustomModuleManager() []module.AppModule {
 	return []module.AppModule{}
 }
 
-func (app *RegenApp) setCustomKeeprs(_ *baseapp.BaseApp, _ map[string]*sdk.KVStoreKey, _ codec.Marshaler, _ govtypes.Router, _ string) {}
+func (app *RegenApp) setCustomKeeprs(_ *baseapp.BaseApp, _ map[string]*sdk.KVStoreKey, _ codec.Marshaler, _ govtypes.Router, _ string) {
+}
 
-func setCustomOrderInitGenesis () []string {
+func setCustomOrderInitGenesis() []string {
 	return []string{}
 }
 
-func (app *RegenApp) setCustomSimulationManager () []module.AppModuleSimulation {
+func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
 	return []module.AppModuleSimulation{}
 }
 
