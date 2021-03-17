@@ -165,7 +165,7 @@ type RegenApp struct {
 	IBCKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	EvidenceKeeper   evidencekeeper.Keeper
 	TransferKeeper   ibctransferkeeper.Keeper
-	//nolint:structcheck
+	//nolint
 	wasmKeeper wasm.Keeper // only used in experimental builds
 
 	// make scoped keepers public for test purposes
