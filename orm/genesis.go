@@ -40,7 +40,6 @@ func ExportTableData(ctx HasKVStore, t TableExportable, dest ModelSlicePtr) (uin
 
 // ImportTableData initializes a table and attaches indexers from the given data interface{}.
 // The seqValue is optional and only used with tables that implement the `SequenceExportable` interface.
-// func ImportTableData(ctx HasKVStore, t TableExportable, seqValue uint64, createTableData func(HasKVStore, Table) error) error {
 func ImportTableData(ctx HasKVStore, t TableExportable, data interface{}, seqValue uint64) error {
 	table := t.Table()
 	if err := clearAllInTable(ctx, table); err != nil {
