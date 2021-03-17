@@ -32,6 +32,7 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 			handlers:         map[string]handler{},
 			providedServices: map[reflect.Type]bool{},
 			antiReentryMap:   map[string]bool{},
+			legacyRouter:     baseApp.Router(),
 		},
 		requiredServices: map[reflect.Type]bool{},
 	}

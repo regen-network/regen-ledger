@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
@@ -12,15 +11,20 @@ import (
 func (s serverImpl) execMsgs(ctx context.Context, path []byte, proposal group.Proposal) error {
 	msgs := proposal.GetMsgs()
 	for _, msg := range msgs {
-		svcMsg, ok := msg.(sdk.ServiceMsg)
-		if !ok {
-			return fmt.Errorf("expected sdk.ServiceMsg, got %T", msg)
+		var methodName string
+		var request sdk.MsgRequest
+		if svcMsg, ok := msg.(sdk.ServiceMsg); ok {
+			methodName = svcMsg.Route()
+			request = svcMsg.Request
+		} else {
+			methodName = msg.Route()
+			request = msg
 		}
 		var reply interface{}
 		derivedKey := s.key.Derive(path)
 		// Execute the message using the derived key,
 		// this will verify that the message signer is the group account.
-		err := derivedKey.Invoke(ctx, svcMsg.Route(), svcMsg.Request, reply)
+		err := derivedKey.Invoke(ctx, methodName, request, reply)
 		if err != nil {
 			return err
 		}

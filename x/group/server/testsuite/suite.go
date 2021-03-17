@@ -1669,6 +1669,11 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
 		},
 	}
+	// msgSend1 := &banktypes.MsgSend{
+	// 	FromAddress: s.groupAccountAddr.String(),
+	// 	ToAddress:   s.addr2.String(),
+	// 	Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
+	// }
 	msgSend2 := sdk.ServiceMsg{
 		MethodName: "/cosmos.bank.v1beta1.Msg/Send",
 		Request: &banktypes.MsgSend{

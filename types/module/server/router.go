@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/regen-network/regen-ledger/types"
 
@@ -25,6 +26,7 @@ type router struct {
 	providedServices map[reflect.Type]bool
 	antiReentryMap   map[string]bool
 	authzMiddleware  AuthorizationMiddleware
+	legacyRouter     sdk.Router
 }
 
 type registrar struct {
@@ -68,16 +70,21 @@ func (r registrar) RegisterService(sd *grpc.ServiceDesc, ss interface{}) {
 }
 
 func (rtr *router) invoker(methodName string, writeCondition func(context.Context, string, sdk.MsgRequest) error) (types.Invoker, error) {
-	handler, found := rtr.handlers[methodName]
-	if !found {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("cannot find method named %s", methodName))
+	var handler handler
+	if strings.Count(methodName, "/") >= 2 {
+		h, found := rtr.handlers[methodName]
+		handler = h
+		if !found {
+			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("cannot find method named %s", methodName))
+		}
 	}
 
 	moduleName := handler.moduleName
 
-	if writeCondition != nil && handler.commitWrites {
+	return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
+		msg, isMsg := request.(sdk.Msg)
 		// msg handler
-		return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
+		if writeCondition != nil && (handler.commitWrites || isMsg) {
 			if rtr.antiReentryMap[moduleName] {
 				return fmt.Errorf("re-entrant module calls not allowed for security reasons! module %s is already on the call stack", moduleName)
 			}
@@ -102,38 +109,51 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 
 			// cache wrap the multistore so that inter-module writes are atomic
 			// see https://github.com/cosmos/cosmos-sdk/issues/8030
-			sdkCtx := types.UnwrapSDKContext(ctx)
-			cacheMs := sdkCtx.MultiStore().CacheMultiStore()
-			ctx = sdk.WrapSDKContext(sdkCtx.WithMultiStore(cacheMs))
+			regenCtx := types.UnwrapSDKContext(ctx)
+			cacheMs := regenCtx.MultiStore().CacheMultiStore()
+			ctx = sdk.WrapSDKContext(regenCtx.WithMultiStore(cacheMs))
 
-			err = handler.f(ctx, request, response)
-			if err != nil {
-				return err
+			if strings.Count(methodName, "/") >= 2 {
+				err = handler.f(ctx, request, response)
+				if err != nil {
+					return err
+				}
+			} else {
+				// legacy sdk.Msg routing
+				msgRoute := msg.Route()
+				// msgFqName = msg.Type()
+				sdkCtx := sdk.UnwrapSDKContext(ctx)
+				handler := rtr.legacyRouter.Route(sdkCtx, msgRoute)
+				if handler == nil {
+					return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized message route: %s;", msgRoute)
+				}
+
+				_, err = handler(sdkCtx, msg)
+				if err != nil {
+					return err
+				}
 			}
 
 			// only commit writes if there is no error so that calls are atomic
 			cacheMs.Write()
+		} else {
+			// query handler
+			// cache wrap the multistore so that writes are batched
+			sdkCtx := types.UnwrapSDKContext(ctx)
+			cacheMs := sdkCtx.MultiStore().CacheMultiStore()
+			ctx = types.Context{Context: sdkCtx.WithMultiStore(cacheMs)}
 
-			return nil
-		}, nil
-	}
+			err := handler.f(ctx, request, response)
+			if err != nil {
+				return err
+			}
 
-	// query handler
-	return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
-		// cache wrap the multistore so that writes are batched
-		sdkCtx := types.UnwrapSDKContext(ctx)
-		cacheMs := sdkCtx.MultiStore().CacheMultiStore()
-		ctx = types.Context{Context: sdkCtx.WithMultiStore(cacheMs)}
-
-		err := handler.f(ctx, request, response)
-		if err != nil {
-			return err
+			cacheMs.Write()
 		}
-
-		cacheMs.Write()
-
 		return nil
+
 	}, nil
+
 }
 
 func (rtr *router) invokerFactory(moduleName string) InvokerFactory {
