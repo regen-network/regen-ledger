@@ -7,8 +7,6 @@ import (
 	"os"
 	"path/filepath"
 
-	// types
-
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	"github.com/cosmos/cosmos-sdk/baseapp"
