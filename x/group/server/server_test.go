@@ -16,7 +16,9 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
-	groupmodule "github.com/regen-network/regen-ledger/x/group/module"
+	data "github.com/regen-network/regen-ledger/x/data/module"
+	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
+	group "github.com/regen-network/regen-ledger/x/group/module"
 	"github.com/regen-network/regen-ledger/x/group/server/testsuite"
 )
 
@@ -43,7 +45,6 @@ func TestServer(t *testing.T) {
 	bankKeeper := bankkeeper.NewBaseKeeper(
 		cdc, bankKey, accountKeeper, bankSubspace, map[string]bool{},
 	)
-	// bankModule := bank.NewAppModule(cdc, bankKeeper, accountKeeper)
 
 	baseApp := ff.BaseApp()
 
@@ -53,7 +54,11 @@ func TestServer(t *testing.T) {
 	baseApp.MountStore(authKey, sdk.StoreTypeIAVL)
 	baseApp.MountStore(bankKey, sdk.StoreTypeIAVL)
 
-	ff.SetModules([]module.Module{groupmodule.Module{AccountKeeper: accountKeeper}})
+	ff.SetModules([]module.Module{
+		group.Module{AccountKeeper: accountKeeper},
+		ecocredit.Module{},
+		data.Module{},
+	})
 
 	s := testsuite.NewIntegrationTestSuite(ff, accountKeeper, bankKeeper)
 

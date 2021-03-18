@@ -3,6 +3,8 @@ package server
 import (
 	"github.com/regen-network/regen-ledger/orm"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/x/data"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/group"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -164,6 +166,8 @@ func RegisterServices(configurator servermodule.Configurator, accountKeeper Acco
 	impl := newServer(configurator.ModuleKey(), accountKeeper, configurator.Marshaler())
 	group.RegisterMsgServer(configurator.MsgServer(), impl)
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
-	// TODO add required services from other modules
-	// configurator.RequireServer((*bank.MsgServer)(nil))
+
+	// Require servers from external modules for ADR 033 message routing
+	configurator.RequireServer((*ecocredit.MsgServer)(nil))
+	configurator.RequireServer((*data.MsgServer)(nil))
 }

@@ -21,6 +21,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/testutil/testdata"
 	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
@@ -1661,27 +1662,11 @@ func (s *IntegrationTestSuite) TestVote() {
 }
 
 func (s *IntegrationTestSuite) TestExecProposal() {
-	// msgSend1 := sdk.ServiceMsg{
-	// 	MethodName: "/cosmos.bank.v1beta1.Msg/Send",
-	// 	Request: &banktypes.MsgSend{
-	// 		FromAddress: s.groupAccountAddr.String(),
-	// 		ToAddress:   s.addr2.String(),
-	// 		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
-	// 	},
-	// }
 	msgSend1 := &banktypes.MsgSend{
 		FromAddress: s.groupAccountAddr.String(),
 		ToAddress:   s.addr2.String(),
 		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
 	}
-	// msgSend2 := sdk.ServiceMsg{
-	// 	MethodName: "/cosmos.bank.v1beta1.Msg/Send",
-	// 	Request: &banktypes.MsgSend{
-	// 		FromAddress: s.groupAccountAddr.String(),
-	// 		ToAddress:   s.addr2.String(),
-	// 		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 10001)},
-	// 	},
-	// }
 	msgSend2 := &banktypes.MsgSend{
 		FromAddress: s.groupAccountAddr.String(),
 		ToAddress:   s.addr2.String(),
@@ -1709,6 +1694,21 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expExecutorResult: group.ProposalExecutorResultSuccess,
 			expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9900)},
 			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 100)},
+		},
+		"proposal with ServiceMsg executed when accepted": {
+			setupProposal: func(ctx context.Context) uint64 {
+				msgs := []sdk.Msg{sdk.ServiceMsg{
+					MethodName: "/regen.ecocredit.v1alpha1.Msg/CreateClass",
+					Request: &ecocredit.MsgCreateClassRequest{
+						Designer: s.groupAccountAddr.String(),
+						Issuers:  []string{s.groupAccountAddr.String()},
+					},
+				}}
+				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
+			},
+			expProposalStatus: group.ProposalStatusClosed,
+			expProposalResult: group.ProposalResultAccepted,
+			expExecutorResult: group.ProposalExecutorResultSuccess,
 		},
 		"proposal with multiple messages executed when accepted": {
 			setupProposal: func(ctx context.Context) uint64 {
