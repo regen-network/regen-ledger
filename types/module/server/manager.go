@@ -7,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	gogogrpc "github.com/gogo/protobuf/grpc"
 
 	"github.com/regen-network/regen-ledger/types/module"
@@ -39,7 +38,7 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 }
 
 // RegisterModules registers modules with the Manager and registers their services.
-func (mm *Manager) RegisterModules(modules []module.Module, appModules map[string]sdkmodule.AppModule) error {
+func (mm *Manager) RegisterModules(modules []module.Module) error {
 	// First we register all interface types. This is done for all modules first before registering
 	// any services in case there are any weird dependencies that will cause service initialization to fail.
 	for _, mod := range modules {
@@ -112,49 +111,6 @@ func (mm *Manager) RegisterModules(modules []module.Module, appModules map[strin
 		for typ := range cfg.requiredServices {
 			mm.requiredServices[typ] = true
 		}
-	}
-
-	for _, module := range appModules {
-		module.RegisterInterfaces(mm.cdc.InterfaceRegistry())
-	}
-
-	for name, module := range appModules {
-		invokerFactory := mm.router.invokerFactory(name)
-
-		key := &rootModuleKey{
-			moduleName:     name,
-			invokerFactory: invokerFactory,
-		}
-
-		if _, found := mm.keys[name]; found {
-			return fmt.Errorf("module named %s defined twice", name)
-		}
-
-		mm.keys[name] = key
-
-		msgRegistrar := registrar{
-			router:       mm.router,
-			baseServer:   mm.baseApp.MsgServiceRouter(),
-			commitWrites: true,
-			moduleName:   name,
-		}
-
-		queryRegistrar := registrar{
-			router:       mm.router,
-			baseServer:   mm.baseApp.GRPCQueryRouter(),
-			commitWrites: false,
-			moduleName:   name,
-		}
-
-		cfg := &configurator{
-			msgServer:        msgRegistrar,
-			queryServer:      queryRegistrar,
-			key:              key,
-			cdc:              mm.cdc,
-			requiredServices: map[reflect.Type]bool{},
-		}
-
-		module.RegisterServices(cfg)
 	}
 
 	return nil
