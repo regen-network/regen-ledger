@@ -1,7 +1,6 @@
 package testsuite
 
 import (
-	"encoding/json"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -75,9 +74,8 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	genesisBytes, err := cdc.MarshalJSON(genesisState)
 	s.Require().NoError(err)
 
-	s.Require().NotPanics(func() {
-		s.initGenesisHandler(ctx, cdc, genesisBytes)
-	})
+	_, err = s.initGenesisHandler(ctx, cdc, genesisBytes)
+	s.Require().NoError(err)
 
 	for i, g := range genesisState.Groups {
 		res, err := s.queryClient.GroupInfo(ctx, &group.QueryGroupInfoRequest{
@@ -117,10 +115,9 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 		s.Require().Equal(votesRes.Votes[0], genesisState.Votes[0])
 	}
 
-	var exported json.RawMessage
-	s.Require().NotPanics(func() {
-		exported = s.exportGenesisHandler(ctx, cdc)
-	})
+	exported, err := s.exportGenesisHandler(ctx, cdc)
+	s.Require().NoError(err)
+
 	var exportedGenesisState group.GenesisState
 	err = cdc.UnmarshalJSON(exported, &exportedGenesisState)
 	s.Require().NoError(err)

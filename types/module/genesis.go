@@ -8,5 +8,5 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 )
 
-type InitGenesisHandler func(ctx types.Context, cdc codec.JSONMarshaler, data json.RawMessage) []abci.ValidatorUpdate
-type ExportGenesisHandler func(ctx types.Context, cdc codec.JSONMarshaler) json.RawMessage
+type InitGenesisHandler func(ctx types.Context, cdc codec.JSONMarshaler, data json.RawMessage) ([]abci.ValidatorUpdate, error)
+type ExportGenesisHandler func(ctx types.Context, cdc codec.JSONMarshaler) (json.RawMessage, error)

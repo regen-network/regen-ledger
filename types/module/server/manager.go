@@ -154,7 +154,10 @@ func (mm *Manager) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawM
 		if genesisData[name] == nil || initGenesisHandler == nil {
 			continue
 		}
-		moduleValUpdates := initGenesisHandler(types.Context{Context: ctx}, mm.cdc, genesisData[name])
+		moduleValUpdates, err := initGenesisHandler(types.Context{Context: ctx}, mm.cdc, genesisData[name])
+		if err != nil {
+			panic(err)
+		}
 
 		// use these validator updates if provided, the module manager assumes
 		// only one module will update the validator set
@@ -173,12 +176,16 @@ func (mm *Manager) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawM
 
 // ExportGenesis performs export genesis functionality for modules.
 func (mm *Manager) ExportGenesis(ctx sdk.Context) map[string]json.RawMessage {
+	var err error
 	genesisData := make(map[string]json.RawMessage)
 	for name, exportGenesisHandler := range mm.exportGenesisHandlers {
 		if exportGenesisHandler == nil {
 			continue
 		}
-		genesisData[name] = exportGenesisHandler(types.Context{Context: ctx}, mm.cdc)
+		genesisData[name], err = exportGenesisHandler(types.Context{Context: ctx}, mm.cdc)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	return genesisData
