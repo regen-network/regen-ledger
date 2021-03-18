@@ -263,9 +263,9 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 			return nil, err
 		}
 
-		accountID := s.key.Derive(buf.Bytes())
-		accountAddr = accountID.Address()
 		accountPath = buf.Bytes()
+		accountID := s.key.Derive(accountPath)
+		accountAddr = accountID.Address()
 
 		if s.accKeeper.GetAccount(ctx.Context, accountAddr) != nil {
 			// handle a rare collision

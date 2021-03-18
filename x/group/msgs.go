@@ -8,6 +8,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	proto "github.com/gogo/protobuf/proto"
 	"github.com/regen-network/regen-ledger/math"
+	"github.com/regen-network/regen-ledger/types/module/server"
 )
 
 // Group message types and routes
@@ -557,18 +558,9 @@ func (m MsgCreateProposalRequest) ValidateBasic() error {
 
 // SetMsgs packs msgs into Any's
 func (m *MsgCreateProposalRequest) SetMsgs(msgs []sdk.Msg) error {
-	anys := make([]*types.Any, len(msgs))
-	for i, msg := range msgs {
-		var err error
-		switch msg := msg.(type) {
-		case sdk.ServiceMsg:
-			anys[i], err = types.NewAnyWithCustomTypeURL(msg.Request, msg.MethodName)
-		default:
-			anys[i], err = types.NewAnyWithValue(msg)
-		}
-		if err != nil {
-			return err
-		}
+	anys, err := server.SetMsgs(msgs)
+	if err != nil {
+		return err
 	}
 	m.Msgs = anys
 	return nil
@@ -576,24 +568,7 @@ func (m *MsgCreateProposalRequest) SetMsgs(msgs []sdk.Msg) error {
 
 // GetMsgs unpacks m.Msgs Any's into sdk.Msg's
 func (m MsgCreateProposalRequest) GetMsgs() []sdk.Msg {
-	msgs := make([]sdk.Msg, len(m.Msgs))
-	for i, any := range m.Msgs {
-		var msg sdk.Msg
-		if isServiceMsg(any.TypeUrl) {
-			req := any.GetCachedValue()
-			if req == nil {
-				panic("Any cached value is nil. Transaction messages must be correctly packed Any values.")
-			}
-			msg = sdk.ServiceMsg{
-				MethodName: any.TypeUrl,
-				Request:    any.GetCachedValue().(sdk.MsgRequest),
-			}
-		} else {
-			msg = any.GetCachedValue().(sdk.Msg)
-		}
-		msgs[i] = msg
-	}
-	return msgs
+	return server.GetMsgs(m.Msgs)
 }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces

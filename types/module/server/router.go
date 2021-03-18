@@ -5,7 +5,6 @@ import (
 	"context"
 	"fmt"
 	"reflect"
-	"strings"
 
 	"github.com/regen-network/regen-ledger/types"
 
@@ -71,7 +70,8 @@ func (r registrar) RegisterService(sd *grpc.ServiceDesc, ss interface{}) {
 
 func (rtr *router) invoker(methodName string, writeCondition func(context.Context, string, sdk.MsgRequest) error) (types.Invoker, error) {
 	var handler handler
-	if strings.Count(methodName, "/") >= 2 {
+	// In case of ServiceMsg, we can use ADR 033 router handler
+	if isServiceMsg(methodName) {
 		h, found := rtr.handlers[methodName]
 		handler = h
 		if !found {
@@ -113,22 +113,22 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 			cacheMs := regenCtx.MultiStore().CacheMultiStore()
 			ctx = sdk.WrapSDKContext(regenCtx.WithMultiStore(cacheMs))
 
-			if strings.Count(methodName, "/") >= 2 {
+			if isServiceMsg(methodName) {
 				err = handler.f(ctx, request, response)
 				if err != nil {
 					return err
 				}
 			} else {
-				// legacy sdk.Msg routing
+				// legacy sdk.Msg routing using sdk.Router
+				// for routing non ServiceMsg
 				msgRoute := msg.Route()
-				// msgFqName = msg.Type()
 				sdkCtx := sdk.UnwrapSDKContext(ctx)
 				handler := rtr.legacyRouter.Route(sdkCtx, msgRoute)
 				if handler == nil {
 					return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized message route: %s;", msgRoute)
 				}
 
-				_, err = handler(sdkCtx, msg)
+				response, err = handler(sdkCtx, msg)
 				if err != nil {
 					return err
 				}
@@ -138,6 +138,7 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 			cacheMs.Write()
 		} else {
 			// query handler
+
 			// cache wrap the multistore so that writes are batched
 			sdkCtx := types.UnwrapSDKContext(ctx)
 			cacheMs := sdkCtx.MultiStore().CacheMultiStore()

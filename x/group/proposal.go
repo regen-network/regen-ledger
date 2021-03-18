@@ -6,42 +6,17 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/types/module/server"
 )
 
 func (p *Proposal) GetMsgs() []sdk.Msg {
-	msgs := make([]sdk.Msg, len(p.Msgs))
-	for i, any := range p.Msgs {
-		var msg sdk.Msg
-		if isServiceMsg(any.TypeUrl) {
-			req := any.GetCachedValue()
-			if req == nil {
-				panic("Any cached value is nil. Transaction messages must be correctly packed Any values.")
-			}
-			msg = sdk.ServiceMsg{
-				MethodName: any.TypeUrl,
-				Request:    any.GetCachedValue().(sdk.MsgRequest),
-			}
-		} else {
-			msg = any.GetCachedValue().(sdk.Msg)
-		}
-		msgs[i] = msg
-	}
-	return msgs
+	return server.GetMsgs(p.Msgs)
 }
 
 func (p *Proposal) SetMsgs(msgs []sdk.Msg) error {
-	anys := make([]*types.Any, len(msgs))
-	for i, msg := range msgs {
-		var err error
-		switch msg := msg.(type) {
-		case sdk.ServiceMsg:
-			anys[i], err = types.NewAnyWithCustomTypeURL(msg.Request, msg.MethodName)
-		default:
-			anys[i], err = types.NewAnyWithValue(msg)
-		}
-		if err != nil {
-			return err
-		}
+	anys, err := server.SetMsgs(msgs)
+	if err != nil {
+		return err
 	}
 	p.Msgs = anys
 	return nil
