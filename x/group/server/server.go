@@ -40,8 +40,7 @@ const (
 )
 
 type serverImpl struct {
-	key    servermodule.RootModuleKey
-	router sdk.Router
+	key servermodule.RootModuleKey
 
 	accKeeper AccountKeeper
 
@@ -72,8 +71,8 @@ type serverImpl struct {
 	voteByVoterIndex    orm.Index
 }
 
-func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper AccountKeeper, cdc codec.Marshaler) serverImpl {
-	s := serverImpl{key: storeKey, router: router, accKeeper: accKeeper}
+func newServer(storeKey servermodule.RootModuleKey, accKeeper AccountKeeper, cdc codec.Marshaler) serverImpl {
+	s := serverImpl{key: storeKey, accKeeper: accKeeper}
 
 	// Group Table
 	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, storeKey, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
@@ -163,7 +162,7 @@ func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper
 }
 
 func RegisterServices(configurator servermodule.Configurator, accountKeeper AccountKeeper) {
-	impl := newServer(configurator.ModuleKey(), configurator.Router(), accountKeeper, configurator.Marshaler())
+	impl := newServer(configurator.ModuleKey(), accountKeeper, configurator.Marshaler())
 	group.RegisterMsgServer(configurator.MsgServer(), impl)
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
 	// TODO add required services from other modules
