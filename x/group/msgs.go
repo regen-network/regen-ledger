@@ -573,25 +573,7 @@ func (m MsgCreateProposalRequest) GetMsgs() []sdk.Msg {
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (m MsgCreateProposalRequest) UnpackInterfaces(unpacker types.AnyUnpacker) error {
-	for _, any := range m.Msgs {
-		// If the any's typeUrl contains 2 slashes, then we unpack the any into
-		// a ServiceMsg struct as per ADR-031.
-		if isServiceMsg(any.TypeUrl) {
-			var req sdk.MsgRequest
-			err := unpacker.UnpackAny(any, &req)
-			if err != nil {
-				return err
-			}
-		} else {
-			var msg sdk.Msg
-			err := unpacker.UnpackAny(any, &msg)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
+	return server.UnpackInterfaces(unpacker, m.Msgs)
 }
 
 var _ sdk.Msg = &MsgVoteRequest{}

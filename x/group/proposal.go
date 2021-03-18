@@ -1,8 +1,6 @@
 package group
 
 import (
-	"strings"
-
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -85,29 +83,7 @@ func (p Proposal) ValidateBasic() error {
 	return nil
 }
 
-func isServiceMsg(typeURL string) bool {
-	return strings.Count(typeURL, "/") >= 2
-}
-
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (p Proposal) UnpackInterfaces(unpacker types.AnyUnpacker) error {
-	for _, any := range p.Msgs {
-		// If the any's typeUrl contains 2 slashes, then we unpack the any into
-		// a ServiceMsg struct as per ADR-031.
-		if isServiceMsg(any.TypeUrl) {
-			var req sdk.MsgRequest
-			err := unpacker.UnpackAny(any, &req)
-			if err != nil {
-				return err
-			}
-		} else {
-			var msg sdk.Msg
-			err := unpacker.UnpackAny(any, &msg)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
+	return server.UnpackInterfaces(unpacker, p.Msgs)
 }
