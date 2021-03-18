@@ -27,7 +27,6 @@ type FixtureFactory struct {
 	signers []sdk.AccAddress
 	cdc     *codec.ProtoCodec
 	baseApp *baseapp.BaseApp
-	invar   *sdk.InvariantRegistry
 }
 
 func NewFixtureFactory(t *testing.T, numSigners int) *FixtureFactory {
