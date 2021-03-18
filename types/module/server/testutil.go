@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/regen-network/regen-ledger/testutil"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -18,6 +16,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/grpc"
 
+	"github.com/regen-network/regen-ledger/testutil"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/module"
 )
@@ -31,7 +30,7 @@ type FixtureFactory struct {
 	invar   *sdk.InvariantRegistry
 }
 
-func NewFixtureFactory(t *testing.T, numSigners int, invariant sdk.InvariantRegistry) *FixtureFactory {
+func NewFixtureFactory(t *testing.T, numSigners int) *FixtureFactory {
 	signers := makeTestAddresses(numSigners)
 	return &FixtureFactory{
 		t:       t,
@@ -40,7 +39,6 @@ func NewFixtureFactory(t *testing.T, numSigners int, invariant sdk.InvariantRegi
 		// TODO: remove once all code using this uses ADR 033 module wiring
 		cdc:     codec.NewProtoCodec(types.NewInterfaceRegistry()),
 		baseApp: baseapp.NewBaseApp("test", log.NewNopLogger(), dbm.NewMemDB(), nil),
-		invar:   &invariant,
 	}
 }
 

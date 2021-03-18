@@ -11,7 +11,6 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-
 	"github.com/stretchr/testify/suite"
 
 	"github.com/regen-network/regen-ledger/types/module"
@@ -21,7 +20,7 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	ff := server.NewFixtureFactory(t, 6, nil)
+	ff := server.NewFixtureFactory(t, 6)
 	cdc := ff.Codec()
 	// Setting up bank keeper
 	banktypes.RegisterInterfaces(cdc.InterfaceRegistry())
