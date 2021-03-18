@@ -128,7 +128,7 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 					return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized message route: %s;", msgRoute)
 				}
 
-				response, err = handler(sdkCtx, msg)
+				_, err = handler(sdkCtx, msg)
 				if err != nil {
 					return err
 				}
