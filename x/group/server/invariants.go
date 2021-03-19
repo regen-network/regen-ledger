@@ -8,34 +8,39 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
-func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
-	ir.RegisterRoute(group.ModuleName, "Tally-Votes", s.TallyVotesInvariant())
+type Invar struct {
+	sdkCtx        sdk.Context
+	proposalTable orm.AutoUInt64Table
 }
 
-func (s serverImpl) AllInvariants() sdk.Invariant {
+func RegisterInvariants(ir sdk.InvariantRegistry, invar Invar) {
+	ir.RegisterRoute(group.ModuleName, "Tally-Votes", tallyVotesInvariant(invar))
+}
+
+func (s serverImpl) AllInvariants(invar Invar) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		return s.TallyVotesInvariant()(ctx)
+		return tallyVotesInvariant(invar)(ctx)
 	}
 }
 
-func (s serverImpl) TallyVotesInvariant() sdk.Invariant {
-	return func(sdkCtx sdk.Context) (string, bool) {
+func tallyVotesInvariant(invar Invar) sdk.Invariant {
+	return func(ctx sdk.Context) (string, bool) {
 		var msg string
 		var broken bool
-		ctx := types.Context{Context: sdkCtx}
+		ctx = invar.sdkCtx
 		if ctx.BlockHeight()-1 < 0 {
-			return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", "Not enough blocks to perform TallyVotesInvariant"), false
+			broken = false
+			return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", "Not enough blocks to perform TallyVotesInvariant"), broken
 		}
-		sdkCtx = sdkCtx.WithBlockHeight(ctx.BlockHeight() - 1)
-		curIt, err := s.proposalTable.PrefixScan(ctx, 1, math.MaxUint64)
+		sdkCtx := ctx.WithBlockHeight(ctx.BlockHeight() - 1)
+		curIt, err := invar.proposalTable.PrefixScan(ctx, 1, math.MaxUint64)
 		if err != nil {
 			panic(err)
 		}
-		prevIt, err := s.proposalTable.PrefixScan(sdkCtx, 1, math.MaxUint64)
+		prevIt, err := invar.proposalTable.PrefixScan(sdkCtx, 1, math.MaxUint64)
 		if err != nil {
 			panic(err)
 		}
@@ -87,5 +92,6 @@ func (s serverImpl) TallyVotesInvariant() sdk.Invariant {
 			}
 		}
 		return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", msg), broken
+
 	}
 }
