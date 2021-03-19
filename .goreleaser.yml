@@ -19,8 +19,8 @@ builds:
   - id: regen-darwin-amd64
     binary: regen
     main: ./app/regen
-    # goarch:
-    #   - amd64
+    goarch:
+      - amd64
     goos:
       - darwin
     env:
@@ -32,10 +32,6 @@ builds:
       - -mod=readonly
     ldflags:
       - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}} -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
-    ignore:
-      - goos: darwin
-        goarch: 386
-
 archives:
   - id: regen
     builds:
