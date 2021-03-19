@@ -16,35 +16,22 @@ builds:
       - -mod=readonly
     ldflags:
       - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}} -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
-  # - id: regen-linux-amd64-experimental
-  #   binary: regen
-  #   main: ./app/regen
-  #   goarch:
-  #     - amd64
-  #   goos:
-  #     - linux
-  #   flags:
-  #     - -tags="netgo ledger experimental"
-  #     - -trimpath
-  #     - -mod=readonly
-  #   ldflags:
-  #     - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}} -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger, experimental"
-  # - id: regen-darwin-amd64
-  #   binary: regen
-  #   main: ./app/regen
-  #   goarch:
-  #     - amd64
-  #   goos:
-  #     - darwin
-  #   env:
-  #     - CC=/home/runner/work/osxcross/target/bin/o64-clang
-  #     - CXX=/home/runner/work/osxcross/target/bin/o64-clang++
-  #   flags:
-  #     - -tags="netgo ledger"
-  #     - -trimpath
-  #     - -mod=readonly
-  #   ldflags:
-  #     - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}} -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
+  - id: regen-darwin-amd64
+    binary: regen
+    main: ./app/regen
+    goarch:
+      - amd64
+    goos:
+      - darwin
+    env:
+      - CC=/home/runner/work/osxcross/target/bin/o64-clang
+      - CXX=/home/runner/work/osxcross/target/bin/o64-clang++
+    flags:
+      - -tags="netgo ledger"
+      - -trimpath
+      - -mod=readonly
+    ldflags:
+      - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}} -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
 archives:
   - id: regen
     builds:
