@@ -42,6 +42,19 @@ archives:
     format: zip
     files:
       - none*
+brews:
+  - name: regen-ledger
+    ids: 
+      - regen
+    tap:
+      owner: regen-network
+      name: homembrew-tap
+    homepage: "https://www.regen.network/"
+    description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
+    custom_block: |
+      head "https://github.com/regen-network/regen-ledger.git"
+    install: |
+      bin.install "regen"
 release:
   github:
     owner: regen-network
