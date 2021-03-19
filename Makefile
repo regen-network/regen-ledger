@@ -14,7 +14,7 @@ DOCKER_BUF := docker run -v $(shell pwd):/workspace --workdir /workspace bufbuil
 
 export GO111MODULE = on
 
-# GORELEASER_CONFIG      = .goreleaser.yaml
+GORELEASER_CONFIG      = .goreleaser.yaml
 
 # process build tags
 
