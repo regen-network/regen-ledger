@@ -13,6 +13,8 @@ jobs:
         name: GCC multilib
         run: |
           sudo apt-get install gcc-multilib g++-multilib clang 
+          sudo apt-get install apt-file
+          sudo apt-file update
           apt-file search libcrypto.so.1.0.0
 
       -
