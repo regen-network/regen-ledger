@@ -13,7 +13,7 @@ jobs:
         name: GCC multilib
         run: |
           sudo apt-get install gcc-multilib g++-multilib clang 
-          locate libcrypto.so.1.0.0
+          apt-file search libcrypto.so.1.0.0
 
       -
         name: OSXCross for CGO Support
