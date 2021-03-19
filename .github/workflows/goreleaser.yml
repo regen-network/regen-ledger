@@ -13,6 +13,8 @@ jobs:
         name: GCC multilib
         run: |
           sudo apt-get install gcc-multilib g++-multilib clang 
+          sudo apt-get install libssl1.0.0
+
       -
         name: OSXCross for CGO Support
         run: |
