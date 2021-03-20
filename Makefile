@@ -14,8 +14,6 @@ DOCKER_BUF := docker run -v $(shell pwd):/workspace --workdir /workspace bufbuil
 
 export GO111MODULE = on
 
-# GORELEASER_CONFIG      = .goreleaser.yaml
-
 # process build tags
 
 build_tags = netgo
