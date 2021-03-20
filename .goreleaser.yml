@@ -3,7 +3,7 @@ env:
   - CGO_ENABLED=1
 
 builds:
- - id: regen-linux-amd64
+  - id: regen-linux-amd64
     binary: regen
     main: ./app/regen
     goarch:
