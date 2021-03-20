@@ -3,6 +3,19 @@ env:
   - CGO_ENABLED=1
 
 builds:
+  - id: regen-linux-amd64
+    binary: regen
+    main: ./app/regen
+    goarch:
+      - amd64
+    goos:
+      - linux
+    flags:
+      - -tags="netgo ledger"
+      - -trimpath
+      - -mod=readonly
+    ldflags:
+      - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}} -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
   - id: regen-darwin-amd64
     binary: regen
     main: ./app/regen
@@ -19,31 +32,29 @@ builds:
       - -mod=readonly
     ldflags:
       - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}} -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
-  - id: regen-linux-amd64
-    binary: regen
-    main: ./app/regen
-    goarch:
-      - amd64
-    goos:
-      - linux
-    flags:
-      - -tags="netgo ledger"
-      - -trimpath
-      - -mod=readonly
-    ldflags:
-      - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}} -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
 archives:
   - id: regen
     builds:
       - regen-darwin-amd64
       - regen-linux-amd64
-      # - regen-linux-arm64
-      # - regen-windows-amd64
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: true
     format: zip
     files:
       - none*
+brews:
+  - name: regen-ledger
+    ids: 
+      - regen
+    tap:
+      owner: regen-network
+      name: homembrew-tap
+    homepage: "https://www.regen.network/"
+    description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
+    custom_block: |
+      head "https://github.com/regen-network/regen-ledger.git"
+    install: |
+      bin.install "regen"
 release:
   github:
     owner: regen-network
