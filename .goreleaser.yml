@@ -35,8 +35,8 @@ builds:
 archives:
   - id: regen
     builds:
-      - regen-darwin-amd64
       - regen-linux-amd64
+      - regen-darwin-amd64
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: true
     format: zip
