@@ -8,7 +8,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm"
 )
 
-func TesttallyVotesInvariant(t *testing.T) {
+func TestTallyVotesInvariant(t *testing.T) {
 	// ff := server.NewFixtureFactory(t, 6)
 	var ctx sdk.Context //ff.Setup().Context()
 	// c := ff.Setup().Context()
