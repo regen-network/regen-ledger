@@ -13,8 +13,6 @@ jobs:
         name: GCC multilib
         run: |
           sudo apt-get install gcc-multilib g++-multilib clang locate
-          sudo apt-get install libcrypto++6 libssl1.1 libssl-dev --reinstall
-          sudo locate libcrypto.so.1.0.0
       -
         name: OSXCross for CGO Support
         run: |
@@ -34,7 +32,13 @@ jobs:
           # go get github.com/tpoechtrager/osxcross@latest
         name: go keychain
         run: |
-          go get github.com/keybase/go-keychain@latest 
+          go get github.com/keybase/go-keychain@latest
+
+      -
+          # go get github.com/tpoechtrager/osxcross@latest
+        name: libcrypto
+        run: |
+          sudo locate libcrypto.so.1.0.0
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
