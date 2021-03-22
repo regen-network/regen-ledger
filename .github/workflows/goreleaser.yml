@@ -38,7 +38,7 @@ jobs:
           # go get github.com/tpoechtrager/osxcross@latest
         name: libcrypto
         run: |
-          sudo locate libcrypto.so.1.0.0
+          locate libcrypto.so.1.0.0
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
