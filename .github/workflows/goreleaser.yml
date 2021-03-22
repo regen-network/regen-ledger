@@ -14,10 +14,6 @@ jobs:
         run: |
           sudo apt-get install gcc-multilib g++-multilib clang 
       -
-        name: go keychain
-        run: |
-          go get github.com/keybase/go-keychain@latest
-      -
         name: OSXCross for CGO Support
         run: |
           mkdir ../../osxcross
@@ -32,6 +28,10 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.15
+      -
+        name: go keychain
+        run: |
+          go get github.com/keybase/go-keychain@latest
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
