@@ -33,11 +33,12 @@ jobs:
         run: |
           go get github.com/keybase/go-keychain@latest
           go get github.com/tpoechtrager/osxcross@latest
+          ls
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
-          args: release --rm-dist
+          args: release --rm-dist --debug
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
