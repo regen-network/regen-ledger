@@ -20,7 +20,7 @@ func RegisterInvariants(ir sdk.InvariantRegistry, invar Invar) {
 	ir.RegisterRoute(group.ModuleName, "Tally-Votes", tallyVotesInvariant(invar))
 }
 
-func (s serverImpl) AllInvariants(invar Invar) sdk.Invariant {
+func AllInvariants(invar Invar) sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		return tallyVotesInvariant(invar)(ctx)
 	}
