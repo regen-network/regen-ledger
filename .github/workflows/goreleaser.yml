@@ -13,11 +13,11 @@ jobs:
         name: GCC multilib
         run: |
           sudo apt-get install gcc-multilib g++-multilib clang 
-      -
-        name: OSXCross for CGO Support
-        run: |
-          mkdir ../../osxcross
-          git clone https://github.com/plentico/osxcross-target.git ../../osxcross/target
+      # -
+      #   name: OSXCross for CGO Support
+      #   run: |
+      #     mkdir ../../osxcross
+      #     git clone https://github.com/plentico/osxcross-target.git ../../osxcross/target
       -
         name: Checkout
         uses: actions/checkout@v2
@@ -32,11 +32,12 @@ jobs:
         name: go keychain
         run: |
           go get github.com/keybase/go-keychain@latest
+          go get github.com/plentico/osxcross-target
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
-          args: release --rm-dist -v
+          args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
