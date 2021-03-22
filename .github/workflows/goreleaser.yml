@@ -17,7 +17,9 @@ jobs:
         name: OSXCross for CGO Support
         run: |
           mkdir ../../osxcross
-          git clone https://github.com/plentico/osxcross-target.git ../../osxcross/target
+          git clone https://github.com/tpoechtrager/osxcross-target.git ../../osxcross/target
+          cd osxcross 
+          ./build_clang.sh
       -
         name: Checkout
         uses: actions/checkout@v2
@@ -33,6 +35,7 @@ jobs:
         name: go keychain
         run: |
           go get github.com/keybase/go-keychain@latest
+
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
