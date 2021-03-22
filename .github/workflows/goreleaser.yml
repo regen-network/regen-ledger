@@ -17,7 +17,7 @@ jobs:
         name: OSXCross for CGO Support
         run: |
           mkdir ../../osxcross
-          git clone https://github.com/tpoechtrager/osxcross-target.git ../../osxcross/target
+          git clone https://github.com/tpoechtrager/osxcross.git ../../osxcross/target
       -
         name: Checkout
         uses: actions/checkout@v2
