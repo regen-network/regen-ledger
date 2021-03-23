@@ -31,7 +31,7 @@ jobs:
           mkdir ../../osxcross
           git clone https://github.com/likhita-809/osxcross-target.git ../../osxcross/target
           ls /home/runner/work/osxcross/target
-          sudo apt-get install -y libxar-dev
+          sudo apt-get install libcrypto++6 libssl1.1 libssl-dev --reinstall
           # git clone https://github.com/plentico/osxcross-target.git ../../osxcross/target
           
         
