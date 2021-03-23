@@ -19,6 +19,10 @@ jobs:
           mkdir ../../osxcross
           git clone https://github.com/tpoechtrager/osxcross.git ../../osxcross/target
           ls -l /home/runner/work/osxcross/target
+          echo "-----------------------------------"
+          ls -l /home/runner/work/osxcross/target/oclang
+          echo "-------------------------------"
+          ls -l /home/runner/work/osxcross/target/tarballs
           # build_clang.sh
       -
         name: Checkout
