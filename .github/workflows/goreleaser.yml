@@ -18,7 +18,7 @@ jobs:
         run: |
           mkdir ../../osxcross
           git clone https://github.com/tpoechtrager/osxcross.git ../../osxcross/target
-          ls /home/runner/work/osxcross/target 
+          ls /home/runner/work/osxcross/target/bin
       -
         name: Checkout
         uses: actions/checkout@v2
@@ -40,6 +40,6 @@ jobs:
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
-          args: release --rm-dist --debug
+          args: release --rm-dist 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
