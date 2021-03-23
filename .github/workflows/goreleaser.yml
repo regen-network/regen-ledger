@@ -20,8 +20,11 @@ jobs:
           # git clone https://github.com/plentico/osxcross-target.git ../../osxcross/target
           
           git clone https://github.com/tpoechtrager/osxcross.git ../../osxcross/target
+          echo "----------------------------------------"
+          pwd
+          echo "----------------------------------------"
           cd /home/runner/work/osxcross/target/
-          ls -l
+          ./build_clang.sh
           # ls -l /home/runner/work/osxcross/target
           # echo "-----------------------------------"
           # ls -l /home/runner/work/osxcross/target/oclang
