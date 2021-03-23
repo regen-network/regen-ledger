@@ -31,6 +31,7 @@ jobs:
           mkdir ../../osxcross
           git clone https://github.com/likhita-809/osxcross-target.git ../../osxcross/target
           ls /home/runner/work/osxcross/target
+          sudo apt-get install libxar-dev
           # git clone https://github.com/plentico/osxcross-target.git ../../osxcross/target
           
         
