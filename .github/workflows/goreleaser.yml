@@ -12,17 +12,19 @@ jobs:
       -
         name: GCC multilib
         run: |
-          sudo apt-get install gcc-multilib g++-multilib clang locate
+          sudo apt-get install gcc-multilib g++-multilib clang 
       -
         name: OSXCross for CGO Support
         run: |
           mkdir ../../osxcross
-          git clone https://github.com/tpoechtrager/osxcross.git ../../osxcross/target
-          ls -l /home/runner/work/osxcross/target
-          echo "-----------------------------------"
-          ls -l /home/runner/work/osxcross/target/oclang
-          echo "-------------------------------"
-          ls -l /home/runner/work/osxcross/target/tarballs
+          git clone https://github.com/plentico/osxcross-target.git ../../osxcross/target
+          
+          # git clone https://github.com/tpoechtrager/osxcross.git ../../osxcross/target
+          # ls -l /home/runner/work/osxcross/target
+          # echo "-----------------------------------"
+          # ls -l /home/runner/work/osxcross/target/oclang
+          # echo "-------------------------------"
+          # ls -l /home/runner/work/osxcross/target/tarballs
           # build_clang.sh
       -
         name: Checkout
