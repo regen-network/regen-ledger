@@ -18,8 +18,7 @@ jobs:
         run: |
           mkdir ../../osxcross
           git clone https://github.com/tpoechtrager/osxcross.git ../../osxcross/target
-          cd /home/runner/work/osxcross/target 
-          ./build_clang.sh
+          ls /home/runner/work/osxcross/target 
       -
         name: Checkout
         uses: actions/checkout@v2
