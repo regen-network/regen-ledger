@@ -17,14 +17,15 @@ jobs:
         name: OSXCross for CGO Support
         run: |
           mkdir ../../osxcross
+          git clone https://github.com/likhita-809/osxcross-target.git ../../osxcross/target
           # git clone https://github.com/plentico/osxcross-target.git ../../osxcross/target
           
-          git clone https://github.com/tpoechtrager/osxcross.git ../../osxcross/target
-          echo "----------------------------------------"
-          pwd
-          echo "----------------------------------------"
-          cd /home/runner/work/osxcross/target/
-          ./build_clang.sh
+          # git clone https://github.com/tpoechtrager/osxcross.git ../../osxcross/target
+          # echo "----------------------------------------"
+          # pwd
+          # echo "----------------------------------------"
+          # cd /home/runner/work/osxcross/target/
+          # ./build_clang.sh
           # ls -l /home/runner/work/osxcross/target
           # echo "-----------------------------------"
           # ls -l /home/runner/work/osxcross/target/oclang
