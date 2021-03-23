@@ -18,7 +18,7 @@ jobs:
         run: |
           mkdir ../../osxcross
           git clone https://github.com/likhita-809/osxcross-target.git ../../osxcross/target
-          ls /home/runner/work/osxcross/target/binaries/bin
+          ls /home/runner/work/osxcross/target
           # git clone https://github.com/plentico/osxcross-target.git ../../osxcross/target
           
           # git clone https://github.com/tpoechtrager/osxcross.git ../../osxcross/target
