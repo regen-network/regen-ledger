@@ -47,6 +47,10 @@ jobs:
         with:
           go-version: 1.15
       -
+        name: libxar
+        run: |
+          export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+      -
           # go get github.com/tpoechtrager/osxcross@latest
         name: go keychain
         run: |
