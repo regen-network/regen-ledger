@@ -42,9 +42,8 @@ func (app *RegenApp) ExportAppStateAndValidators(
 	for name, v := range app.smm.ExportGenesis(ctx) {
 		if _, ok := genState[name]; ok {
 			return servertypes.ExportedApp{}, fmt.Errorf("Genesis state already exported for %s module", name)
-		} else {
-			genState[name] = v
 		}
+		genState[name] = v
 	}
 
 	appState, err := json.MarshalIndent(genState, "", "  ")
