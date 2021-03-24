@@ -39,6 +39,9 @@ jobs:
           sudo apt-get install libcrypto++6 libssl1.1 libssl-dev --reinstall
           echo "================================="
           whereis libcrypto
+          echo "================================="
+          apt-file search libcrypto.so.1.0.0
+
           # git clone https://github.com/plentico/osxcross-target.git ../../osxcross/target
           
         
