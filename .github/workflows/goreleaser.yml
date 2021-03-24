@@ -1,10 +1,11 @@
 name: goreleaser
 
 on: [push]
-  # push:
-  #   tags:
-  #     - '*'
-  
+# on:
+#   pull_request:
+#   push:
+#     tags:
+#       - '*'
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
@@ -12,41 +13,12 @@ jobs:
       -
         name: GCC multilib
         run: |
-          
-          sudo apt list libssl*
-          echo "================" 
-          sudo apt-get update
-          sudo apt-get install gcc-multilib g++-multilib clang apt-file
-          sudo apt-file update
-        # git clone https://github.com/tpoechtrager/osxcross.git ../../osxcross/target
-          # echo "----------------------------------------"
-          # pwd
-          # echo "----------------------------------------"
-          # cd /home/runner/work/osxcross/target/
-          # ./build_clang.sh
-          # ls -l /home/runner/work/osxcross/target
-          # echo "-----------------------------------"
-          # ls -l /home/runner/work/osxcross/target/oclang
-          # echo "-------------------------------"
-          # ls -l /home/runner/work/osxcross/target/tarballs
-          # build_clang.sh
-
-          # ls /usr/lib/x86_64-linux-gnu
-          # apt-file search libcrypto.so.1.0.0
-      -  
+          sudo apt-get install gcc-multilib g++-multilib clang 
+      -
         name: OSXCross for CGO Support
         run: |
           mkdir ../../osxcross
-          git clone https://github.com/likhita-809/osxcross-target.git ../../osxcross/target
-          sudo apt-get install libcrypto++6 libssl1.1 libssl-dev --reinstall
-          echo "================================="
-          whereis libcrypto
-          echo "================================="
-
-
-          # git clone https://github.com/plentico/osxcross-target.git ../../osxcross/target
-          
-        
+          git clone https://github.com/plentico/osxcross-target.git ../../osxcross/target
       -
         name: Checkout
         uses: actions/checkout@v2
@@ -57,25 +29,11 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.16
-          # export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-      # -
-        # name: libxar
-        # run: |
-        #   echo "======================================"
-        #   export LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib:$LD_LIBRARY_PATH
-        #   echo $LD_LIBRARY_PATH
-
-      -
-          # go get github.com/tpoechtrager/osxcross@latest
-        name: go keychain
-        run: |
-          go get github.com/keybase/go-keychain@latest
-
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
           version: latest
-          args: release --rm-dist 
+          args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
