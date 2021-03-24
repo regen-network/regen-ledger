@@ -16,16 +16,16 @@ builds:
       - -mod=readonly
     ldflags:
       - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}} -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
-  - id: regen-darwin-amd64
+  - id: regen-darwin-arm64
     binary: regen
     main: ./app/regen
     goarch:
-      - amd64
+      - arm64
     goos:
       - darwin
-    env:
-      - CC=/home/runner/work/osxcross/target/binaries/bin/o64-clang
-      - CXX=/home/runner/work/osxcross/target/binaries/bin/o64-clang++
+    # env:
+    #   - CC=/home/runner/work/osxcross/target/binaries/bin/oa64-clang
+    #   - CXX=/home/runner/work/osxcross/target/binaries/bin/o64-clang++
       # - CC=o64-clang
       # - CXX=o64-clang++
     flags:
@@ -38,7 +38,7 @@ archives:
   - id: regen
     builds:
       - regen-linux-amd64
-      - regen-darwin-amd64
+      - regen-darwin-arm64
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: true
     format: zip
