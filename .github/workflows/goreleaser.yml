@@ -18,7 +18,7 @@ jobs:
           echo "====================================="
           ls /usr/lib/x86_64-linux-gnu
           echo "====================================="
-          ln -s  libcrypto.so.1.1 libcrypto.so.1.0.0
+          ln -s  /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1 libcrypto.so.1.0.0
           echo "====================================="
       -
         name: OSXCross for CGO Support
