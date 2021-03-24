@@ -1,6 +1,7 @@
 env:
   - GO111MODULE=on
   - CGO_ENABLED=1
+  - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
 
 builds:
   - id: regen-linux-amd64
@@ -24,6 +25,7 @@ builds:
     goos:
       - darwin
     env:
+      - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
       - CC=/home/runner/work/osxcross/target/binaries/bin/o64-clang
       - CXX=/home/runner/work/osxcross/target/binaries/bin/o64-clang++
       # - CC=o64-clang
