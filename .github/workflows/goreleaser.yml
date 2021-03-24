@@ -50,10 +50,11 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.15
+          # export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
       -
         name: libxar
         run: |
-          export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+          export LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib:$LD_LIBRARY_PATH
       -
           # go get github.com/tpoechtrager/osxcross@latest
         name: go keychain
