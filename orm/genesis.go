@@ -25,7 +25,7 @@ type SequenceExportable interface {
 func ExportTableData(ctx HasKVStore, t TableExportable, dest ModelSlicePtr) (uint64, error) {
 	it, err := t.Table().PrefixScan(ctx, nil, nil)
 	if err != nil {
-		return 0, errors.Wrap(err, "all rows prefix scan")
+		return 0, errors.Wrap(err, "table PrefixScan failure when exporting table data")
 	}
 	_, err = ReadAll(it, dest)
 	if err != nil {
@@ -39,6 +39,7 @@ func ExportTableData(ctx HasKVStore, t TableExportable, dest ModelSlicePtr) (uin
 }
 
 // ImportTableData initializes a table and attaches indexers from the given data interface{}.
+// data should be a slice of structs that implement NaturalKeyed (eg []*GroupInfo).
 // The seqValue is optional and only used with tables that implement the `SequenceExportable` interface.
 func ImportTableData(ctx HasKVStore, t TableExportable, data interface{}, seqValue uint64) error {
 	table := t.Table()
