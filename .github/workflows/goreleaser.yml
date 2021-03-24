@@ -14,11 +14,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install gcc-multilib g++-multilib clang apt-file
-          ls /usr/local/bin
-          echo "============================================"
-          whereis libxar
-          echo "============================================"
-          ls /usr/lib
+          sudo apt-file update
         # git clone https://github.com/tpoechtrager/osxcross.git ../../osxcross/target
           # echo "----------------------------------------"
           # pwd
@@ -36,7 +32,6 @@ jobs:
         run: |
           mkdir ../../osxcross
           git clone https://github.com/likhita-809/osxcross-target.git ../../osxcross/target
-          # ls /home/runner/work/osxcross/target
           sudo apt-get install libcrypto++6 libssl1.1 libssl-dev --reinstall
           echo "================================="
           whereis libcrypto
