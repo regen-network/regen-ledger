@@ -14,6 +14,8 @@ jobs:
         run: |
           sudo apt-get install gcc-multilib g++-multilib clang locate
           ls /usr/local/bin
+          echo "============================================"
+          locate libssl
         # git clone https://github.com/tpoechtrager/osxcross.git ../../osxcross/target
           # echo "----------------------------------------"
           # pwd
