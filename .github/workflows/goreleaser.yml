@@ -15,7 +15,6 @@ jobs:
           
           sudo apt list libssl*
           echo "================" 
-          sudo apt-get update -y && sudo apt-get install -y --no-install-recommends libssl1.0.0
           sudo apt-get update
           sudo apt-get install gcc-multilib g++-multilib clang apt-file
           sudo apt-file update
@@ -36,10 +35,11 @@ jobs:
         run: |
           mkdir ../../osxcross
           git clone https://github.com/likhita-809/osxcross-target.git ../../osxcross/target
-          sudo apt-get install libcrypto++6 libssl1.0.0 libssl-dev --reinstall
+          sudo apt-get install libcrypto++6 libssl1.1 libssl-dev --reinstall
           echo "================================="
           whereis libcrypto
           echo "================================="
+          ls usr/lib/x86_64-linux-gnu
           apt-file search libcrypto.so.1.0.0
 
           # git clone https://github.com/plentico/osxcross-target.git ../../osxcross/target
