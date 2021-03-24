@@ -30,6 +30,9 @@ jobs:
           # echo "-------------------------------"
           # ls -l /home/runner/work/osxcross/target/tarballs
           # build_clang.sh
+
+          # ls /usr/lib/x86_64-linux-gnu
+          # apt-file search libcrypto.so.1.0.0
       -  
         name: OSXCross for CGO Support
         run: |
@@ -39,8 +42,7 @@ jobs:
           echo "================================="
           whereis libcrypto
           echo "================================="
-          ls /usr/lib/x86_64-linux-gnu
-          apt-file search libcrypto.so.1.0.0
+
 
           # git clone https://github.com/plentico/osxcross-target.git ../../osxcross/target
           
