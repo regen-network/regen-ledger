@@ -13,7 +13,7 @@ jobs:
         name: GCC multilib
         run: |
           sudo apt-get install gcc-multilib g++-multilib clang locate
-      -
+          ls /usr/local/bin
         # git clone https://github.com/tpoechtrager/osxcross.git ../../osxcross/target
           # echo "----------------------------------------"
           # pwd
