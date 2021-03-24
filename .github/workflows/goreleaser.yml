@@ -35,8 +35,10 @@ jobs:
         run: |
           mkdir ../../osxcross
           git clone https://github.com/likhita-809/osxcross-target.git ../../osxcross/target
-          ls /home/runner/work/osxcross/target
+          # ls /home/runner/work/osxcross/target
           sudo apt-get install libcrypto++6 libssl1.1 libssl-dev --reinstall
+          echo "================================="
+          whereis libcrypto
           # git clone https://github.com/plentico/osxcross-target.git ../../osxcross/target
           
         
@@ -52,12 +54,11 @@ jobs:
           go-version: 1.15
           # export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
       -
-        name: libxar
-        run: |
-          echo "======================================"
-          export LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib:$LD_LIBRARY_PATH
-          echo "======================================"
-          echo $LD_LIBRARY_PATH
+        # name: libxar
+        # run: |
+        #   echo "======================================"
+        #   export LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib:$LD_LIBRARY_PATH
+        #   echo $LD_LIBRARY_PATH
 
       -
           # go get github.com/tpoechtrager/osxcross@latest
