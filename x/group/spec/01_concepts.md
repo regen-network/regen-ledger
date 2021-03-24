@@ -1,4 +1,8 @@
-# Group Module
+<!--
+order: 1
+-->
+
+# Concepts
 
 ## Group
 
@@ -59,7 +63,7 @@ but rather a user must submit a `Msg/Exec` transaction to attempt to execute the
 proposal based on the current votes and decision policy. A future upgrade could
 automate this propose and have the group account (or a fee granter) pay.
 
-## Changing Group Membership
+### Changing Group Membership
 
 In the current implementation, changing a group's membership (adding or removing members or changing their weight)
 will cause all existing proposals for group accounts linked to this group
