@@ -25,17 +25,20 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // GenesisState defines the group module's genesis state.
 type GenesisState struct {
-	// group_seq is the group table orm.Sequence.
+	// group_seq is the group table orm.Sequence,
+	// it is used to get the next group ID.
 	GroupSeq uint64 `protobuf:"varint,1,opt,name=group_seq,json=groupSeq,proto3" json:"group_seq,omitempty"`
 	// groups is the list of groups info.
 	Groups []*GroupInfo `protobuf:"bytes,2,rep,name=groups,proto3" json:"groups,omitempty"`
 	// group_members is the list of groups members.
 	GroupMembers []*GroupMember `protobuf:"bytes,3,rep,name=group_members,json=groupMembers,proto3" json:"group_members,omitempty"`
-	// group_account_seq is the group account table orm.Sequence.
+	// group_account_seq is the group account table orm.Sequence,
+	// it is used to generate the next group account address.
 	GroupAccountSeq uint64 `protobuf:"varint,4,opt,name=group_account_seq,json=groupAccountSeq,proto3" json:"group_account_seq,omitempty"`
 	// group_accounts is the list of group accounts info.
 	GroupAccounts []*GroupAccountInfo `protobuf:"bytes,5,rep,name=group_accounts,json=groupAccounts,proto3" json:"group_accounts,omitempty"`
-	// proposal_seq is the proposal table orm.Sequence.
+	// proposal_seq is the proposal table orm.Sequence,
+	// it is used to get the next proposal ID.
 	ProposalSeq uint64 `protobuf:"varint,6,opt,name=proposal_seq,json=proposalSeq,proto3" json:"proposal_seq,omitempty"`
 	// proposals is the list of proposals.
 	Proposals []*Proposal `protobuf:"bytes,7,rep,name=proposals,proto3" json:"proposals,omitempty"`

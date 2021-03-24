@@ -420,12 +420,12 @@ GenesisState defines the group module's genesis state.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_seq | [uint64](#uint64) |  | group_seq is the group table orm.Sequence. |
+| group_seq | [uint64](#uint64) |  | group_seq is the group table orm.Sequence, it is used to get the next group ID. |
 | groups | [GroupInfo](#regen.group.v1alpha1.GroupInfo) | repeated | groups is the list of groups info. |
 | group_members | [GroupMember](#regen.group.v1alpha1.GroupMember) | repeated | group_members is the list of groups members. |
-| group_account_seq | [uint64](#uint64) |  | group_account_seq is the group account table orm.Sequence. |
+| group_account_seq | [uint64](#uint64) |  | group_account_seq is the group account table orm.Sequence, it is used to generate the next group account address. |
 | group_accounts | [GroupAccountInfo](#regen.group.v1alpha1.GroupAccountInfo) | repeated | group_accounts is the list of group accounts info. |
-| proposal_seq | [uint64](#uint64) |  | proposal_seq is the proposal table orm.Sequence. |
+| proposal_seq | [uint64](#uint64) |  | proposal_seq is the proposal table orm.Sequence, it is used to get the next proposal ID. |
 | proposals | [Proposal](#regen.group.v1alpha1.Proposal) | repeated | proposals is the list of proposals. |
 | votes | [Vote](#regen.group.v1alpha1.Vote) | repeated | votes is the list of votes. |
 
