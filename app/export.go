@@ -3,6 +3,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -35,10 +36,17 @@ func (app *RegenApp) ExportAppStateAndValidators(
 	for name, v := range app.mm.ExportGenesis(ctx, app.appCodec) {
 		genState[name] = v
 	}
+
 	// Export genesis state from new modules (that use ADR 33 approach)
-	for name, v := range app.nm.ExportGenesis(ctx) {
-		genState[name] = v
+	// if they are not already part of genState
+	for name, v := range app.smm.ExportGenesis(ctx) {
+		if _, ok := genState[name]; ok {
+			return servertypes.ExportedApp{}, fmt.Errorf("Genesis state already exported for %s module", name)
+		} else {
+			genState[name] = v
+		}
 	}
+
 	appState, err := json.MarshalIndent(genState, "", "  ")
 	if err != nil {
 		return servertypes.ExportedApp{}, err

@@ -548,10 +548,10 @@ type Proposal struct {
 	// submitted_at is a timestamp specifying when a proposal was submitted.
 	SubmittedAt types.Timestamp `protobuf:"bytes,5,opt,name=submitted_at,json=submittedAt,proto3" json:"submitted_at"`
 	// group_version tracks the version of the group that this proposal corresponds to.
-	// When group membership is changed, existing proposals for prior group versions will become invalid.
+	// When group membership is changed, existing proposals from previous group versions will become invalid.
 	GroupVersion uint64 `protobuf:"varint,6,opt,name=group_version,json=groupVersion,proto3" json:"group_version,omitempty"`
 	// group_account_version tracks the version of the group account that this proposal corresponds to.
-	// When a decision policy is changed, an existing proposals for prior policy versions will become invalid.
+	// When a decision policy is changed, existing proposals from previous policy versions will become invalid.
 	GroupAccountVersion uint64 `protobuf:"varint,7,opt,name=group_account_version,json=groupAccountVersion,proto3" json:"group_account_version,omitempty"`
 	// Status represents the high level position in the life cycle of the proposal. Initial value is Submitted.
 	Status Proposal_Status `protobuf:"varint,8,opt,name=status,proto3,enum=regen.group.v1alpha1.Proposal_Status" json:"status,omitempty"`

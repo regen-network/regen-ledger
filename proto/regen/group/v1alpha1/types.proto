@@ -146,11 +146,11 @@ message Proposal {
     google.protobuf.Timestamp submitted_at = 5 [(gogoproto.nullable) = false];
     
     // group_version tracks the version of the group that this proposal corresponds to.
-    // When group membership is changed, existing proposals for prior group versions will become invalid.
+    // When group membership is changed, existing proposals from previous group versions will become invalid.
     uint64 group_version = 6;
 
     // group_account_version tracks the version of the group account that this proposal corresponds to.
-    // When a decision policy is changed, an existing proposals for prior policy versions will become invalid.
+    // When a decision policy is changed, existing proposals from previous policy versions will become invalid.
     uint64 group_account_version = 7;
 
     // Status defines proposal statuses.
