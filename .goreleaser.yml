@@ -2,6 +2,7 @@ env:
   - GO111MODULE=on
   - CGO_ENABLED=1
   # - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
+
 builds:
   - id: regen-darwin-amd64
     binary: regen
@@ -19,27 +20,47 @@ builds:
       - -mod=readonly
     ldflags:
       - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}} -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
-  - id: regen-linux-amd64
-    binary: regen
-    main: ./app/regen
-    goarch:
-      - amd64
-    goos:
-      - linux
-    flags:
-      - -tags="netgo ledger"
-      - -trimpath
-      - -mod=readonly
-    ldflags:
-      - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}} -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
- archives:
+
+  # - id: regen-linux-amd64
+  #   binary: regen
+  #   main: ./app/regen
+  #   goarch:
+  #     - amd64
+  #   goos:
+  #     - linux
+  #   flags:
+  #     - -tags="netgo ledger"
+  #     - -trimpath
+  #     - -mod=readonly
+  #   ldflags:
+  #     - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}} -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
+  # - id: regen-darwin-amd64
+  #   binary: regen
+  #   main: ./app/regen
+  #   goarch:
+  #     - amd64
+  #   goos:
+  #     - darwin
+  #   env:
+  #     - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
+  #     - CC=/home/runner/work/osxcross/target/binaries/bin/o64-clang
+  #     - CXX=/home/runner/work/osxcross/target/binaries/bin/o64-clang++
+  #     # - CC=o64-clang
+  #     # - CXX=o64-clang++
+  #   flags:
+    #   - -tags="netgo ledger"
+    #   - -trimpath
+    #   - -mod=readonly
+    # ldflags:
+    #   - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}} -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
+archives:
   - id: regen
     builds:
       - regen-darwin-amd64
-      - regen-linux-amd64
-      # - regen-linux-arm64
-      # - regen-windows-amd64
+      # - regen-linux-amd64   
+      # - regen-darwin-amd64    
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    # name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: true
     format: zip
     files:
