@@ -20,11 +20,11 @@ builds:
     binary: regen
     main: ./app/regen
     goarch:
-      - arm64
+      - amd64
     goos:
       - darwin
     # env:
-    #   - CC=/home/runner/work/osxcross/target/binaries/bin/oa64-clang
+    #   - CC=/home/runner/work/osxcross/target/binaries/bin/o64-clang
     #   - CXX=/home/runner/work/osxcross/target/binaries/bin/o64-clang++
       # - CC=o64-clang
       # - CXX=o64-clang++
@@ -38,7 +38,7 @@ archives:
   - id: regen
     builds:
       - regen-linux-amd64
-      - regen-darwin-arm64
+      - regen-darwin-amd64
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: true
     format: zip
