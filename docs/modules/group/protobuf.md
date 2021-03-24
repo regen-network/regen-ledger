@@ -18,6 +18,7 @@
     - [GroupInfo](#regen.group.v1alpha1.GroupInfo)
     - [GroupMember](#regen.group.v1alpha1.GroupMember)
     - [Member](#regen.group.v1alpha1.Member)
+    - [Members](#regen.group.v1alpha1.Members)
     - [Proposal](#regen.group.v1alpha1.Proposal)
     - [Tally](#regen.group.v1alpha1.Tally)
     - [ThresholdDecisionPolicy](#regen.group.v1alpha1.ThresholdDecisionPolicy)
@@ -261,6 +262,21 @@ non-zero weight and metadata.
 | address | [string](#string) |  | address is the member's account address. |
 | weight | [string](#string) |  | weight is the member's voting weight that should be greater than 0. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the member. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.Members"></a>
+
+### Members
+Members defines a repeated slice of Member objects.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| members | [Member](#regen.group.v1alpha1.Member) | repeated | members is the list of members. |
 
 
 

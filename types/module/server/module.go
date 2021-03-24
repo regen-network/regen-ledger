@@ -25,3 +25,10 @@ type Configurator interface {
 	// TODO: remove once #225 addressed
 	Router() sdk.Router
 }
+
+// LegacyRouteModule is the module type that a module must implement
+// to support legacy sdk.Msg routing.
+// This is currently used for the group module as part of #218.
+type LegacyRouteModule interface {
+	Route(Configurator) sdk.Route
+}

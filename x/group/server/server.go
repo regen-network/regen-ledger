@@ -39,8 +39,10 @@ const (
 )
 
 type serverImpl struct {
-	storeKey sdk.StoreKey
-	router   sdk.Router
+	key    servermodule.RootModuleKey
+	router sdk.Router
+
+	accKeeper AccountKeeper
 
 	// Group Table
 	groupSeq          orm.Sequence
@@ -69,8 +71,8 @@ type serverImpl struct {
 	voteByVoterIndex    orm.Index
 }
 
-func newServer(storeKey sdk.StoreKey, router sdk.Router, cdc codec.Marshaler) serverImpl {
-	s := serverImpl{storeKey: storeKey, router: router}
+func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper AccountKeeper, cdc codec.Marshaler) serverImpl {
+	s := serverImpl{key: storeKey, router: router, accKeeper: accKeeper}
 
 	// Group Table
 	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, storeKey, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
@@ -88,7 +90,7 @@ func newServer(storeKey sdk.StoreKey, router sdk.Router, cdc codec.Marshaler) se
 	groupMemberTableBuilder := orm.NewNaturalKeyTableBuilder(GroupMemberTablePrefix, storeKey, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.groupMemberByGroupIndex = orm.NewUInt64Index(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]uint64, error) {
 		group := val.(*group.GroupMember).GroupId
-		return []uint64{uint64(group)}, nil
+		return []uint64{group}, nil
 	})
 	s.groupMemberByMemberIndex = orm.NewIndex(groupMemberTableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
 		memberAddr := val.(*group.GroupMember).Member.Address
@@ -105,7 +107,7 @@ func newServer(storeKey sdk.StoreKey, router sdk.Router, cdc codec.Marshaler) se
 	groupAccountTableBuilder := orm.NewNaturalKeyTableBuilder(GroupAccountTablePrefix, storeKey, &group.GroupAccountInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.groupAccountByGroupIndex = orm.NewUInt64Index(groupAccountTableBuilder, GroupAccountByGroupIndexPrefix, func(value interface{}) ([]uint64, error) {
 		group := value.(*group.GroupAccountInfo).GroupId
-		return []uint64{uint64(group)}, nil
+		return []uint64{group}, nil
 	})
 	s.groupAccountByAdminIndex = orm.NewIndex(groupAccountTableBuilder, GroupAccountByAdminIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
 		admin := value.(*group.GroupAccountInfo).Admin
@@ -119,7 +121,7 @@ func newServer(storeKey sdk.StoreKey, router sdk.Router, cdc codec.Marshaler) se
 
 	// Proposal Table
 	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, storeKey, &group.Proposal{}, cdc)
-	// proposalTableBuilder := orm.NewNaturalKeyTableBuilder(ProposalTablePrefix, storeKey, &group.Proposal{}, orm.Max255DynamicLengthIndexKeyCodec{})
+	// proposalTableBuilder := orm.NewNaturalKeyTableBuilder(ProposalTablePrefix, key, &group.Proposal{}, orm.Max255DynamicLengthIndexKeyCodec{})
 	s.proposalByGroupAccountIndex = orm.NewIndex(proposalTableBuilder, ProposalByGroupAccountIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
 		account := value.(*group.Proposal).GroupAccount
 		addr, err := sdk.AccAddressFromBech32(account)
@@ -145,7 +147,7 @@ func newServer(storeKey sdk.StoreKey, router sdk.Router, cdc codec.Marshaler) se
 	// Vote Table
 	voteTableBuilder := orm.NewNaturalKeyTableBuilder(VoteTablePrefix, storeKey, &group.Vote{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.voteByProposalIndex = orm.NewUInt64Index(voteTableBuilder, VoteByProposalIndexPrefix, func(value interface{}) ([]uint64, error) {
-		return []uint64{uint64(value.(*group.Vote).ProposalId)}, nil
+		return []uint64{value.(*group.Vote).ProposalId}, nil
 	})
 	s.voteByVoterIndex = orm.NewIndex(voteTableBuilder, VoteByVoterIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
 		addr, err := sdk.AccAddressFromBech32(value.(*group.Vote).Voter)
@@ -159,8 +161,8 @@ func newServer(storeKey sdk.StoreKey, router sdk.Router, cdc codec.Marshaler) se
 	return s
 }
 
-func RegisterServices(configurator servermodule.Configurator) {
-	impl := newServer(configurator.ModuleKey(), configurator.Router(), configurator.Marshaler())
+func RegisterServices(configurator servermodule.Configurator, accountKeeper AccountKeeper) {
+	impl := newServer(configurator.ModuleKey(), configurator.Router(), accountKeeper, configurator.Marshaler())
 	group.RegisterMsgServer(configurator.MsgServer(), impl)
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
 }

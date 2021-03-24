@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/types"
 
 	"google.golang.org/grpc"
@@ -44,6 +46,6 @@ func (d DerivedModuleKey) ModuleID() types.ModuleID {
 	}
 }
 
-func (d DerivedModuleKey) Address() []byte {
+func (d DerivedModuleKey) Address() sdk.AccAddress {
 	return d.ModuleID().Address()
 }

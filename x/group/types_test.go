@@ -371,7 +371,7 @@ func TestGroupMemberValidation(t *testing.T) {
 func TestGroupAccountInfo(t *testing.T) {
 	specs := map[string]struct {
 		groupAccount sdk.AccAddress
-		group        ID
+		group        uint64
 		admin        sdk.AccAddress
 		version      uint64
 		threshold    string

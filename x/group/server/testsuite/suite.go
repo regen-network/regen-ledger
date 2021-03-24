@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"context"
 	"sort"
+	"strings"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/regen-network/regen-ledger/testutil"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
+
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
@@ -20,7 +21,6 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	"github.com/regen-network/regen-ledger/testutil/server"
 	"github.com/regen-network/regen-ledger/testutil/testdata"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/group"
@@ -30,8 +30,8 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	fixtureFactory server.FixtureFactory
-	fixture        server.Fixture
+	fixtureFactory *servermodule.FixtureFactory
+	fixture        testutil.Fixture
 
 	ctx              context.Context
 	sdkCtx           sdk.Context
@@ -44,49 +44,24 @@ type IntegrationTestSuite struct {
 	addr5            sdk.AccAddress
 	addr6            sdk.AccAddress
 	groupAccountAddr sdk.AccAddress
-	groupID          group.ID
+	groupID          uint64
 
-	bankKeeper bankkeeper.Keeper
+	accountKeeper authkeeper.AccountKeeper
+	bankKeeper    bankkeeper.Keeper
 
 	blockTime time.Time
 }
 
-func NewIntegrationTestSuite(
-	fixtureFactory server.FixtureFactory) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory *servermodule.FixtureFactory, accountKeeper authkeeper.AccountKeeper, bankKeeper bankkeeper.BaseKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
+		accountKeeper:  accountKeeper,
+		bankKeeper:     bankKeeper,
 	}
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
-	s.fixture = s.fixtureFactory.Setup(func(cdc *codec.ProtoCodec, baseApp *baseapp.BaseApp) {
-		// Setting up bank keeper
-		banktypes.RegisterInterfaces(cdc.InterfaceRegistry())
-		authtypes.RegisterInterfaces(cdc.InterfaceRegistry())
-
-		paramsKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
-		authKey := sdk.NewKVStoreKey(authtypes.StoreKey)
-		bankKey := sdk.NewKVStoreKey(banktypes.StoreKey)
-		tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
-		amino := codec.NewLegacyAmino()
-
-		authSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, authtypes.ModuleName)
-		bankSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, banktypes.ModuleName)
-
-		accountKeeper := authkeeper.NewAccountKeeper(
-			cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, map[string][]string{},
-		)
-		s.bankKeeper = bankkeeper.NewBaseKeeper(
-			cdc, bankKey, accountKeeper, bankSubspace, map[string]bool{},
-		)
-
-		baseApp.Router().AddRoute(sdk.NewRoute(banktypes.ModuleName, bank.NewHandler(s.bankKeeper)))
-		baseApp.MountStore(tkey, sdk.StoreTypeTransient)
-		baseApp.MountStore(paramsKey, sdk.StoreTypeIAVL)
-		baseApp.MountStore(authKey, sdk.StoreTypeIAVL)
-		baseApp.MountStore(bankKey, sdk.StoreTypeIAVL)
-	})
-
+	s.fixture = s.fixtureFactory.Setup()
 	s.ctx = s.fixture.Context()
 
 	s.blockTime = time.Now().UTC()
@@ -188,7 +163,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			},
 			expGroups: expGroups,
 		},
-		"group comment too long": {
+		"group metadata too long": {
 			req: &group.MsgCreateGroupRequest{
 				Admin:    s.addr1.String(),
 				Members:  members,
@@ -196,7 +171,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			},
 			expErr: true,
 		},
-		"member comment too long": {
+		"member metadata too long": {
 			req: &group.MsgCreateGroupRequest{
 				Admin: s.addr1.String(),
 				Members: []group.Member{{
@@ -228,7 +203,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			res, err := s.msgClient.CreateGroup(s.ctx, spec.req)
 			if spec.expErr {
 				s.Require().Error(err)
-				_, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: group.ID(seq + 1)})
+				_, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: uint64(seq + 1)})
 				s.Require().Error(err)
 				return
 			}
@@ -236,7 +211,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			id := res.GroupId
 
 			seq++
-			s.Assert().Equal(group.ID(seq), id)
+			s.Assert().Equal(uint64(seq), id)
 
 			// then all data persisted
 			loadedGroupRes, err := s.queryClient.GroupInfo(s.ctx, &group.QueryGroupInfoRequest{GroupId: id})
@@ -776,18 +751,18 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 			),
 			expErr: true,
 		},
-		// "comment too long": {
-		// 	req: &group.MsgCreateGroupAccountRequest{
-		// 		Admin:   s.addr1.String(),
-		// 		Metadata: strings.Repeat("a", 256),
-		// 		GroupId: myGroupID,
-		// 	},
-		// 	policy: group.NewThresholdDecisionPolicy(
-		// 		"1",
-		// 		gogotypes.Duration{Seconds: 1},
-		// 	),
-		// 	expErr: true,
-		// },
+		"metadata too long": {
+			req: &group.MsgCreateGroupAccountRequest{
+				Admin:    s.addr1.String(),
+				Metadata: []byte(strings.Repeat("a", 256)),
+				GroupId:  myGroupID,
+			},
+			policy: group.NewThresholdDecisionPolicy(
+				"1",
+				gogotypes.Duration{Seconds: 1},
+			),
+			expErr: true,
+		},
 	}
 
 	for msg, spec := range specs {
@@ -819,6 +794,234 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 	}
 }
 
+func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
+	admin, newAdmin := s.addr1, s.addr2
+	groupAccountAddr, myGroupID, policy := createGroupAndGroupAccount(admin, s)
+
+	specs := map[string]struct {
+		req             *group.MsgUpdateGroupAccountAdminRequest
+		expGroupAccount *group.GroupAccountInfo
+		expErr          bool
+	}{
+		"with wrong admin": {
+			req: &group.MsgUpdateGroupAccountAdminRequest{
+				Admin:        s.addr5.String(),
+				GroupAccount: groupAccountAddr,
+				NewAdmin:     newAdmin.String(),
+			},
+			expGroupAccount: &group.GroupAccountInfo{
+				Admin:          admin.String(),
+				GroupAccount:   groupAccountAddr,
+				GroupId:        myGroupID,
+				Metadata:       nil,
+				Version:        2,
+				DecisionPolicy: nil,
+			},
+			expErr: true,
+		},
+		"with wrong group account": {
+			req: &group.MsgUpdateGroupAccountAdminRequest{
+				Admin:        admin.String(),
+				GroupAccount: s.addr5.String(),
+				NewAdmin:     newAdmin.String(),
+			},
+			expGroupAccount: &group.GroupAccountInfo{
+				Admin:          admin.String(),
+				GroupAccount:   groupAccountAddr,
+				GroupId:        myGroupID,
+				Metadata:       nil,
+				Version:        2,
+				DecisionPolicy: nil,
+			},
+			expErr: true,
+		},
+		"correct data": {
+			req: &group.MsgUpdateGroupAccountAdminRequest{
+				Admin:        admin.String(),
+				GroupAccount: groupAccountAddr,
+				NewAdmin:     newAdmin.String(),
+			},
+			expGroupAccount: &group.GroupAccountInfo{
+				Admin:          newAdmin.String(),
+				GroupAccount:   groupAccountAddr,
+				GroupId:        myGroupID,
+				Metadata:       nil,
+				Version:        2,
+				DecisionPolicy: nil,
+			},
+			expErr: false,
+		},
+	}
+
+	for msg, spec := range specs {
+		spec := spec
+		err := spec.expGroupAccount.SetDecisionPolicy(policy)
+		s.Require().NoError(err)
+
+		s.Run(msg, func() {
+			_, err := s.msgClient.UpdateGroupAccountAdmin(s.ctx, spec.req)
+			if spec.expErr {
+				s.Require().Error(err)
+				return
+			}
+			s.Require().NoError(err)
+			res, err := s.queryClient.GroupAccountInfo(s.ctx, &group.QueryGroupAccountInfoRequest{
+				GroupAccount: groupAccountAddr,
+			})
+			s.Require().NoError(err)
+			s.Assert().Equal(spec.expGroupAccount, res.Info)
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestUpdateGroupAccountMetadata() {
+	admin := s.addr1
+	groupAccountAddr, myGroupID, policy := createGroupAndGroupAccount(admin, s)
+
+	specs := map[string]struct {
+		req             *group.MsgUpdateGroupAccountMetadataRequest
+		expGroupAccount *group.GroupAccountInfo
+		expErr          bool
+	}{
+		"with wrong admin": {
+			req: &group.MsgUpdateGroupAccountMetadataRequest{
+				Admin:        s.addr5.String(),
+				GroupAccount: groupAccountAddr,
+				Metadata:     []byte("hello"),
+			},
+			expGroupAccount: &group.GroupAccountInfo{},
+			expErr:          true,
+		},
+		"with wrong group account": {
+			req: &group.MsgUpdateGroupAccountMetadataRequest{
+				Admin:        admin.String(),
+				GroupAccount: s.addr5.String(),
+				Metadata:     []byte("hello"),
+			},
+			expGroupAccount: &group.GroupAccountInfo{},
+			expErr:          true,
+		},
+		"with comment too long": {
+			req: &group.MsgUpdateGroupAccountMetadataRequest{
+				Admin:        admin.String(),
+				GroupAccount: s.addr5.String(),
+				Metadata:     []byte(strings.Repeat("a", 256)),
+			},
+			expGroupAccount: &group.GroupAccountInfo{},
+			expErr:          true,
+		},
+		"correct data": {
+			req: &group.MsgUpdateGroupAccountMetadataRequest{
+				Admin:        admin.String(),
+				GroupAccount: groupAccountAddr,
+				Metadata:     []byte("hello"),
+			},
+			expGroupAccount: &group.GroupAccountInfo{
+				Admin:          admin.String(),
+				GroupAccount:   groupAccountAddr,
+				GroupId:        myGroupID,
+				Metadata:       []byte("hello"),
+				Version:        2,
+				DecisionPolicy: nil,
+			},
+			expErr: false,
+		},
+	}
+
+	for msg, spec := range specs {
+		spec := spec
+		err := spec.expGroupAccount.SetDecisionPolicy(policy)
+		s.Require().NoError(err)
+
+		s.Run(msg, func() {
+			_, err := s.msgClient.UpdateGroupAccountMetadata(s.ctx, spec.req)
+			if spec.expErr {
+				s.Require().Error(err)
+				return
+			}
+			s.Require().NoError(err)
+			res, err := s.queryClient.GroupAccountInfo(s.ctx, &group.QueryGroupAccountInfoRequest{
+				GroupAccount: groupAccountAddr,
+			})
+			s.Require().NoError(err)
+			s.Assert().Equal(spec.expGroupAccount, res.Info)
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestUpdateGroupAccountDecisionPolicy() {
+	admin := s.addr1
+	groupAccountAddr, myGroupID, policy := createGroupAndGroupAccount(admin, s)
+
+	specs := map[string]struct {
+		req             *group.MsgUpdateGroupAccountDecisionPolicyRequest
+		policy          group.DecisionPolicy
+		expGroupAccount *group.GroupAccountInfo
+		expErr          bool
+	}{
+		"with wrong admin": {
+			req: &group.MsgUpdateGroupAccountDecisionPolicyRequest{
+				Admin:        s.addr5.String(),
+				GroupAccount: groupAccountAddr,
+			},
+			policy:          policy,
+			expGroupAccount: &group.GroupAccountInfo{},
+			expErr:          true,
+		},
+		"with wrong group account": {
+			req: &group.MsgUpdateGroupAccountDecisionPolicyRequest{
+				Admin:        admin.String(),
+				GroupAccount: s.addr5.String(),
+			},
+			policy:          policy,
+			expGroupAccount: &group.GroupAccountInfo{},
+			expErr:          true,
+		},
+		"correct data": {
+			req: &group.MsgUpdateGroupAccountDecisionPolicyRequest{
+				Admin:        admin.String(),
+				GroupAccount: groupAccountAddr,
+			},
+			policy: group.NewThresholdDecisionPolicy(
+				"2",
+				gogotypes.Duration{Seconds: 2},
+			),
+			expGroupAccount: &group.GroupAccountInfo{
+				Admin:          admin.String(),
+				GroupAccount:   groupAccountAddr,
+				GroupId:        myGroupID,
+				Metadata:       nil,
+				Version:        2,
+				DecisionPolicy: nil,
+			},
+			expErr: false,
+		},
+	}
+
+	for msg, spec := range specs {
+		spec := spec
+		err := spec.expGroupAccount.SetDecisionPolicy(spec.policy)
+		s.Require().NoError(err)
+
+		err = spec.req.SetDecisionPolicy(spec.policy)
+		s.Require().NoError(err)
+
+		s.Run(msg, func() {
+			_, err := s.msgClient.UpdateGroupAccountDecisionPolicy(s.ctx, spec.req)
+			if spec.expErr {
+				s.Require().Error(err)
+				return
+			}
+			s.Require().NoError(err)
+			res, err := s.queryClient.GroupAccountInfo(s.ctx, &group.QueryGroupAccountInfoRequest{
+				GroupAccount: groupAccountAddr,
+			})
+			s.Require().NoError(err)
+			s.Assert().Equal(spec.expGroupAccount, res.Info)
+		})
+	}
+}
+
 func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 	admin := s.addr2
 	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
@@ -841,9 +1044,8 @@ func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 	}
 
 	count := 2
-	addrs := make([]string, count)
-	reqs := make([]*group.MsgCreateGroupAccountRequest, count)
-	for i := range addrs {
+	expectAccs := make([]*group.GroupAccountInfo, count)
+	for i := range expectAccs {
 		req := &group.MsgCreateGroupAccountRequest{
 			Admin:    admin.String(),
 			Metadata: nil,
@@ -851,11 +1053,21 @@ func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 		}
 		err := req.SetDecisionPolicy(policies[i])
 		s.Require().NoError(err)
-		reqs[i] = req
 		res, err := s.msgClient.CreateGroupAccount(s.ctx, req)
 		s.Require().NoError(err)
-		addrs[i] = res.GroupAccount
+
+		expectAcc := &group.GroupAccountInfo{
+			GroupAccount: res.GroupAccount,
+			Admin:        admin.String(),
+			Metadata:     nil,
+			GroupId:      myGroupID,
+			Version:      uint64(1),
+		}
+		err = expectAcc.SetDecisionPolicy(policies[i])
+		s.Require().NoError(err)
+		expectAccs[i] = expectAcc
 	}
+	sort.Slice(expectAccs, func(i, j int) bool { return expectAccs[i].GroupAccount < expectAccs[j].GroupAccount })
 
 	// query group account by group
 	accountsByGroupRes, err := s.queryClient.GroupAccountsByGroup(s.ctx, &group.QueryGroupAccountsByGroupRequest{
@@ -864,13 +1076,15 @@ func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 	s.Require().NoError(err)
 	accounts := accountsByGroupRes.GroupAccounts
 	s.Require().Equal(len(accounts), count)
+	// we reorder accounts by address to be able to compare them
+	sort.Slice(accounts, func(i, j int) bool { return accounts[i].GroupAccount < accounts[j].GroupAccount })
 	for i := range accounts {
-		s.Assert().Equal(addrs[i], accounts[len(accounts)-i-1].GroupAccount)
-		s.Assert().Equal(myGroupID, accounts[len(accounts)-i-1].GroupId)
-		s.Assert().Equal(admin.String(), accounts[len(accounts)-i-1].Admin)
-		s.Assert().Equal(reqs[i].Metadata, accounts[len(accounts)-i-1].Metadata)
-		s.Assert().Equal(uint64(1), accounts[len(accounts)-i-1].Version)
-		s.Assert().Equal(policies[i].(*group.ThresholdDecisionPolicy), accounts[len(accounts)-i-1].GetDecisionPolicy())
+		s.Assert().Equal(accounts[i].GroupAccount, expectAccs[i].GroupAccount)
+		s.Assert().Equal(accounts[i].GroupId, expectAccs[i].GroupId)
+		s.Assert().Equal(accounts[i].Admin, expectAccs[i].Admin)
+		s.Assert().Equal(accounts[i].Metadata, expectAccs[i].Metadata)
+		s.Assert().Equal(accounts[i].Version, expectAccs[i].Version)
+		s.Assert().Equal(accounts[i].GetDecisionPolicy(), expectAccs[i].GetDecisionPolicy())
 	}
 
 	// query group account by admin
@@ -880,13 +1094,15 @@ func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 	s.Require().NoError(err)
 	accounts = accountsByAdminRes.GroupAccounts
 	s.Require().Equal(len(accounts), count)
+	// we reorder accounts by address to be able to compare them
+	sort.Slice(accounts, func(i, j int) bool { return accounts[i].GroupAccount < accounts[j].GroupAccount })
 	for i := range accounts {
-		s.Assert().Equal(uint64(1), accounts[i].Version)
-		s.Assert().Equal(myGroupID, accounts[i].GroupId)
-		s.Assert().Equal(admin.String(), accounts[i].Admin)
-		s.Assert().Equal(addrs[i], accounts[count-i-1].GroupAccount)
-		s.Assert().Equal(reqs[i].Metadata, accounts[count-i-1].Metadata)
-		s.Assert().Equal(policies[i].(*group.ThresholdDecisionPolicy), accounts[count-i-1].GetDecisionPolicy())
+		s.Assert().Equal(accounts[i].GroupAccount, expectAccs[i].GroupAccount)
+		s.Assert().Equal(accounts[i].GroupId, expectAccs[i].GroupId)
+		s.Assert().Equal(accounts[i].Admin, expectAccs[i].Admin)
+		s.Assert().Equal(accounts[i].Metadata, expectAccs[i].Metadata)
+		s.Assert().Equal(accounts[i].Version, expectAccs[i].Version)
+		s.Assert().Equal(accounts[i].GetDecisionPolicy(), expectAccs[i].GetDecisionPolicy())
 	}
 }
 
@@ -932,14 +1148,14 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 				Amount:      sdk.Coins{sdk.NewInt64Coin("token", 100)},
 			}},
 		},
-		// "comment too long": {
-		// 	req: &group.MsgCreateProposalRequest{
-		// 		GroupAccount: accountAddr.String(),
-		// 		Metadata:      strings.Repeat("a", 256),
-		// 		Proposers:    []string{s.addr2.String()},
-		// 	},
-		// 	expErr: true,
-		// },
+		"metadata too long": {
+			req: &group.MsgCreateProposalRequest{
+				GroupAccount: accountAddr.String(),
+				Metadata:     bytes.Repeat([]byte{1}, 256),
+				Proposers:    []string{s.addr2.String()},
+			},
+			expErr: true,
+		},
 		"group account required": {
 			req: &group.MsgCreateProposalRequest{
 				Metadata:  nil,
@@ -1078,6 +1294,9 @@ func (s *IntegrationTestSuite) TestVote() {
 	accountRes, err := s.msgClient.CreateGroupAccount(s.ctx, accountReq)
 	s.Require().NoError(err)
 	accountAddr := accountRes.GroupAccount
+	groupAccount, err := sdk.AccAddressFromBech32(accountAddr)
+	s.Require().NoError(err)
+	s.Require().NotNil(groupAccount)
 
 	req := &group.MsgCreateProposalRequest{
 		GroupAccount: accountAddr,
@@ -1335,21 +1554,28 @@ func (s *IntegrationTestSuite) TestVote() {
 			},
 			expErr: true,
 		},
-		// TODO Need to implement group account updates
-		// "with policy modified": {
-		// 	req: &group.MsgVoteRequest{
-		// 		ProposalId: myProposalID,
-		// 		Voter: s.addr2.String(),
-		// 		Choice:     group.Choice_CHOICE_NO,
-		// 	},
-		// 	doBefore: func(ctx context.Context) {
-		// 		a, err := s.groupKeeper.GetGroupAccount(ctx, accountAddr)
-		// 		s.Require().NoError(err)
-		// 		a.Metadata = "policy modified"
-		// 		s.Require().NoError(s.groupKeeper.UpdateGroupAccount(ctx, &a))
-		// 	},
-		// 	expErr: true,
-		// },
+		"with policy modified": {
+			req: &group.MsgVoteRequest{
+				ProposalId: myProposalID,
+				Voter:      s.addr2.String(),
+				Choice:     group.Choice_CHOICE_NO,
+			},
+			doBefore: func(ctx context.Context) {
+				m, err := group.NewMsgUpdateGroupAccountDecisionPolicyRequest(
+					s.addr1,
+					groupAccount,
+					&group.ThresholdDecisionPolicy{
+						Threshold: "1",
+						Timeout:   gogotypes.Duration{Seconds: 1},
+					},
+				)
+				s.Require().NoError(err)
+
+				_, err = s.msgClient.UpdateGroupAccountDecisionPolicy(ctx, m)
+				s.Require().NoError(err)
+			},
+			expErr: true,
+		},
 	}
 	for msg, spec := range specs {
 		spec := spec
@@ -1506,7 +1732,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 
 	specs := map[string]struct {
 		srcBlockTime      time.Time
-		setupProposal     func(ctx context.Context) group.ProposalID
+		setupProposal     func(ctx context.Context) uint64
 		expErr            bool
 		expProposalStatus group.Proposal_Status
 		expProposalResult group.Proposal_Result
@@ -1515,7 +1741,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		expToBalances     sdk.Coins
 	}{
 		"proposal executed when accepted": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				msgs := []sdk.Msg{msgSend}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
 			},
@@ -1526,7 +1752,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 100)},
 		},
 		"proposal with multiple messages executed when accepted": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				msgs := []sdk.Msg{msgSend, msgSend}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
 			},
@@ -1537,7 +1763,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 200)},
 		},
 		"proposal not executed when rejected": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				msgs := []sdk.Msg{msgSend}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
 			},
@@ -1546,7 +1772,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expExecutorResult: group.ProposalExecutorResultNotRun,
 		},
 		"open proposal must not fail": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				return createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
 			},
 			expProposalStatus: group.ProposalStatusSubmitted,
@@ -1554,13 +1780,13 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expExecutorResult: group.ProposalExecutorResultNotRun,
 		},
 		"existing proposal required": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				return 9999
 			},
 			expErr: true,
 		},
 		"Decision policy also applied on timeout": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				msgs := []sdk.Msg{msgSend}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
 			},
@@ -1570,7 +1796,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expExecutorResult: group.ProposalExecutorResultNotRun,
 		},
 		"Decision policy also applied after timeout": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				msgs := []sdk.Msg{msgSend}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
 			},
@@ -1580,7 +1806,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expExecutorResult: group.ProposalExecutorResultNotRun,
 		},
 		"with group modified before tally": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
 
 				// then modify group
@@ -1596,24 +1822,23 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expProposalResult: group.ProposalResultUnfinalized,
 			expExecutorResult: group.ProposalExecutorResultNotRun,
 		},
-		// TODO Need to implement group account update
-		// "with group account modified before tally": {
-		// 	setupProposal: func(ctx context.Context) group.ProposalID {
-		// 		myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
-
-		// 		// then modify group account
-		// 		a, err := s.groupKeeper.GetGroupAccount(ctx, s.groupAccountAddr)
-		// 		s.Require().NoError(err)
-		// 		a.Metadata = "group account modified before tally"
-		// 		s.Require().NoError(s.groupKeeper.UpdateGroupAccount(ctx, &a))
-		// 		return myProposalID
-		// 	},
-		// 	expProposalStatus: group.ProposalStatusAborted,
-		// 	expProposalResult: group.ProposalResultUnfinalized,
-		// 	expExecutorResult: group.ProposalExecutorResultNotRun,
-		// },
+		"with group account modified before tally": {
+			setupProposal: func(ctx context.Context) uint64 {
+				myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
+				_, err := s.msgClient.UpdateGroupAccountMetadata(ctx, &group.MsgUpdateGroupAccountMetadataRequest{
+					Admin:        s.addr1.String(),
+					GroupAccount: s.groupAccountAddr.String(),
+					Metadata:     []byte("group account modified before tally"),
+				})
+				s.Require().NoError(err)
+				return myProposalID
+			},
+			expProposalStatus: group.ProposalStatusAborted,
+			expProposalResult: group.ProposalResultUnfinalized,
+			expExecutorResult: group.ProposalExecutorResultNotRun,
+		},
 		"prevent double execution when successful": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				myProposalID := createProposalAndVote(ctx, s, []sdk.Msg{msgSend}, proposers, group.Choice_CHOICE_YES)
 
 				_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{Signer: s.addr1.String(), ProposalId: myProposalID})
@@ -1627,7 +1852,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 100)},
 		},
 		"rollback all msg updates on failure": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				msgs := []sdk.Msg{
 					msgSend, &banktypes.MsgSend{
 						FromAddress: s.groupAccountAddr.String(),
@@ -1641,7 +1866,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expExecutorResult: group.ProposalExecutorResultFailure,
 		},
 		"executable when failed before": {
-			setupProposal: func(ctx context.Context) group.ProposalID {
+			setupProposal: func(ctx context.Context) uint64 {
 				msgs := []sdk.Msg{
 					&banktypes.MsgSend{
 						FromAddress: s.groupAccountAddr.String(),
@@ -1711,7 +1936,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 
 func createProposal(
 	ctx context.Context, s *IntegrationTestSuite, msgs []sdk.Msg,
-	proposers []string) group.ProposalID {
+	proposers []string) uint64 {
 	proposalReq := &group.MsgCreateProposalRequest{
 		GroupAccount: s.groupAccountAddr.String(),
 		Proposers:    proposers,
@@ -1727,7 +1952,7 @@ func createProposal(
 
 func createProposalAndVote(
 	ctx context.Context, s *IntegrationTestSuite, msgs []sdk.Msg,
-	proposers []string, choice group.Choice) group.ProposalID {
+	proposers []string, choice group.Choice) uint64 {
 	s.Require().Greater(len(proposers), 0)
 	myProposalID := createProposal(ctx, s, msgs, proposers)
 
@@ -1738,4 +1963,35 @@ func createProposalAndVote(
 	})
 	s.Require().NoError(err)
 	return myProposalID
+}
+
+func createGroupAndGroupAccount(
+	admin sdk.AccAddress,
+	s *IntegrationTestSuite,
+) (string, uint64, group.DecisionPolicy) {
+	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
+		Admin:    admin.String(),
+		Members:  nil,
+		Metadata: nil,
+	})
+	s.Require().NoError(err)
+
+	myGroupID := groupRes.GroupId
+	groupAccount := &group.MsgCreateGroupAccountRequest{
+		Admin:    admin.String(),
+		GroupId:  myGroupID,
+		Metadata: nil,
+	}
+
+	policy := group.NewThresholdDecisionPolicy(
+		"1",
+		gogotypes.Duration{Seconds: 1},
+	)
+	err = groupAccount.SetDecisionPolicy(policy)
+	s.Require().NoError(err)
+
+	groupAccountRes, err := s.msgClient.CreateGroupAccount(s.ctx, groupAccount)
+	s.Require().NoError(err)
+
+	return groupAccountRes.GroupAccount, myGroupID, policy
 }
