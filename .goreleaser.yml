@@ -25,8 +25,8 @@ builds:
     goos:
       - darwin
     env:
-      - CC=/home/runner/work/osxcross/target/binaries/bin/o64-clang
-      - CXX=/home/runner/work/osxcross/target/binaries/bin/o64-clang++
+      - CC=/home/runner/work/osxcross/target/binaries/bin/o64h-clang
+      - CXX=/home/runner/work/osxcross/target/binaries/bin/o64h-clang++
     # env:
     #   - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
     #   - CC=/home/runner/work/osxcross/target/binaries/bin/o64-clang
