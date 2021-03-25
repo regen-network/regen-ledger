@@ -10,14 +10,15 @@ import (
 )
 
 func (s *IntegrationTestSuite) TestInitExportGenesis() {
+	require := s.Require()
 	ctx := s.genesisCtx
 	cdc := s.fixture.Codec()
 
 	now := time.Now()
 	submittedAt, err := proto.TimestampProto(now)
-	s.Require().NoError(err)
+	require.NoError(err)
 	timeout, err := proto.TimestampProto(now.Add(time.Second * 1))
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	groupAccount := &group.GroupAccountInfo{
 		Address:  s.groupAccountAddr.String(),
@@ -30,7 +31,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 		Threshold: "1",
 		Timeout:   proto.Duration{Seconds: 1},
 	})
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	proposal := &group.Proposal{
 		ProposalId:          1,
@@ -58,7 +59,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 		ToAddress:   s.addr2.String(),
 		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
 	}})
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	genesisState := &group.GenesisState{
 		GroupSeq:        2,
@@ -72,31 +73,31 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	}
 
 	genesisBytes, err := cdc.MarshalJSON(genesisState)
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	_, err = s.initGenesisHandler(ctx, cdc, genesisBytes)
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	for i, g := range genesisState.Groups {
 		res, err := s.queryClient.GroupInfo(ctx, &group.QueryGroupInfoRequest{
 			GroupId: g.GroupId,
 		})
-		s.Require().NoError(err)
-		s.Require().Equal(g, res.Info)
+		require.NoError(err)
+		require.Equal(g, res.Info)
 
 		membersRes, err := s.queryClient.GroupMembers(ctx, &group.QueryGroupMembersRequest{
 			GroupId: g.GroupId,
 		})
-		s.Require().NoError(err)
-		s.Require().Equal(len(membersRes.Members), 1)
-		s.Require().Equal(membersRes.Members[0], genesisState.GroupMembers[i])
+		require.NoError(err)
+		require.Equal(len(membersRes.Members), 1)
+		require.Equal(membersRes.Members[0], genesisState.GroupMembers[i])
 	}
 
 	for _, g := range genesisState.GroupAccounts {
 		res, err := s.queryClient.GroupAccountInfo(ctx, &group.QueryGroupAccountInfoRequest{
 			Address: g.Address,
 		})
-		s.Require().NoError(err)
+		require.NoError(err)
 		s.assertGroupAccountsEqual(g, res.Info)
 	}
 
@@ -104,69 +105,71 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 		res, err := s.queryClient.Proposal(ctx, &group.QueryProposalRequest{
 			ProposalId: g.ProposalId,
 		})
-		s.Require().NoError(err)
+		require.NoError(err)
 		s.assertProposalsEqual(g, res.Proposal)
 
 		votesRes, err := s.queryClient.VotesByProposal(ctx, &group.QueryVotesByProposalRequest{
 			ProposalId: g.ProposalId,
 		})
-		s.Require().NoError(err)
-		s.Require().Equal(len(votesRes.Votes), 1)
-		s.Require().Equal(votesRes.Votes[0], genesisState.Votes[0])
+		require.NoError(err)
+		require.Equal(len(votesRes.Votes), 1)
+		require.Equal(votesRes.Votes[0], genesisState.Votes[0])
 	}
 
 	exported, err := s.exportGenesisHandler(ctx, cdc)
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	var exportedGenesisState group.GenesisState
 	err = cdc.UnmarshalJSON(exported, &exportedGenesisState)
-	s.Require().NoError(err)
+	require.NoError(err)
 
-	s.Require().Equal(genesisState.Groups, exportedGenesisState.Groups)
-	s.Require().Equal(genesisState.GroupMembers, exportedGenesisState.GroupMembers)
+	require.Equal(genesisState.Groups, exportedGenesisState.Groups)
+	require.Equal(genesisState.GroupMembers, exportedGenesisState.GroupMembers)
 
-	s.Require().Equal(len(genesisState.GroupAccounts), len(exportedGenesisState.GroupAccounts))
+	require.Equal(len(genesisState.GroupAccounts), len(exportedGenesisState.GroupAccounts))
 	for i, g := range genesisState.GroupAccounts {
 		res := exportedGenesisState.GroupAccounts[i]
-		s.Require().NoError(err)
+		require.NoError(err)
 		s.assertGroupAccountsEqual(g, res)
 	}
 
-	s.Require().Equal(len(genesisState.Proposals), len(exportedGenesisState.Proposals))
+	require.Equal(len(genesisState.Proposals), len(exportedGenesisState.Proposals))
 	for i, g := range genesisState.Proposals {
 		res := exportedGenesisState.Proposals[i]
-		s.Require().NoError(err)
+		require.NoError(err)
 		s.assertProposalsEqual(g, res)
 	}
-	s.Require().Equal(genesisState.Votes, exportedGenesisState.Votes)
+	require.Equal(genesisState.Votes, exportedGenesisState.Votes)
 
-	s.Require().Equal(genesisState.GroupSeq, exportedGenesisState.GroupSeq)
-	s.Require().Equal(genesisState.GroupAccountSeq, exportedGenesisState.GroupAccountSeq)
-	s.Require().Equal(genesisState.ProposalSeq, exportedGenesisState.ProposalSeq)
+	require.Equal(genesisState.GroupSeq, exportedGenesisState.GroupSeq)
+	require.Equal(genesisState.GroupAccountSeq, exportedGenesisState.GroupAccountSeq)
+	require.Equal(genesisState.ProposalSeq, exportedGenesisState.ProposalSeq)
 
 }
 
 func (s *IntegrationTestSuite) assertGroupAccountsEqual(g *group.GroupAccountInfo, other *group.GroupAccountInfo) {
-	s.Require().Equal(g.Address, other.Address)
-	s.Require().Equal(g.GroupId, other.GroupId)
-	s.Require().Equal(g.Admin, other.Admin)
-	s.Require().Equal(g.Metadata, other.Metadata)
-	s.Require().Equal(g.Version, other.Version)
-	s.Require().Equal(g.GetDecisionPolicy(), other.GetDecisionPolicy())
+	require := s.Require()
+	require.Equal(g.Address, other.Address)
+	require.Equal(g.GroupId, other.GroupId)
+	require.Equal(g.Admin, other.Admin)
+	require.Equal(g.Metadata, other.Metadata)
+	require.Equal(g.Version, other.Version)
+	require.Equal(g.GetDecisionPolicy(), other.GetDecisionPolicy())
 }
 
 func (s *IntegrationTestSuite) assertProposalsEqual(g *group.Proposal, other *group.Proposal) {
-	s.Require().Equal(g.ProposalId, other.ProposalId)
-	s.Require().Equal(g.GroupAccount, other.GroupAccount)
-	s.Require().Equal(g.Metadata, other.Metadata)
-	s.Require().Equal(g.Proposers, other.Proposers)
-	s.Require().Equal(g.SubmittedAt, other.SubmittedAt)
-	s.Require().Equal(g.GroupVersion, other.GroupVersion)
-	s.Require().Equal(g.GroupAccountVersion, other.GroupAccountVersion)
-	s.Require().Equal(g.Status, other.Status)
-	s.Require().Equal(g.Result, other.Result)
-	s.Require().Equal(g.VoteState, other.VoteState)
-	s.Require().Equal(g.Timeout, other.Timeout)
-	s.Require().Equal(g.ExecutorResult, other.ExecutorResult)
-	s.Require().Equal(g.GetMsgs(), other.GetMsgs())
+	require := s.Require()
+	require.Equal(g.ProposalId, other.ProposalId)
+	require.Equal(g.GroupAccount, other.GroupAccount)
+	require.Equal(g.Metadata, other.Metadata)
+	require.Equal(g.Proposers, other.Proposers)
+	require.Equal(g.SubmittedAt, other.SubmittedAt)
+	require.Equal(g.GroupVersion, other.GroupVersion)
+	require.Equal(g.GroupAccountVersion, other.GroupAccountVersion)
+	require.Equal(g.Status, other.Status)
+	require.Equal(g.Result, other.Result)
+	require.Equal(g.VoteState, other.VoteState)
+	require.Equal(g.Timeout, other.Timeout)
+	require.Equal(g.ExecutorResult, other.ExecutorResult)
+	require.Equal(g.GetMsgs(), other.GetMsgs())
 }
