@@ -1,6 +1,7 @@
 package testsuite
 
 import (
+	"encoding/json"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -75,7 +76,8 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	genesisBytes, err := cdc.MarshalJSON(genesisState)
 	require.NoError(err)
 
-	_, err = s.initGenesisHandler(ctx, cdc, genesisBytes)
+	genesisData := map[string]json.RawMessage{group.ModuleName: genesisBytes}
+	_, err = s.fixture.InitGenesis(ctx.Context, genesisData)
 	require.NoError(err)
 
 	for i, g := range genesisState.Groups {
@@ -116,11 +118,11 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 		require.Equal(votesRes.Votes[0], genesisState.Votes[0])
 	}
 
-	exported, err := s.exportGenesisHandler(ctx, cdc)
+	exported, err := s.fixture.ExportGenesis(ctx.Context)
 	require.NoError(err)
 
 	var exportedGenesisState group.GenesisState
-	err = cdc.UnmarshalJSON(exported, &exportedGenesisState)
+	err = cdc.UnmarshalJSON(exported[group.ModuleName], &exportedGenesisState)
 	require.NoError(err)
 
 	require.Equal(genesisState.Groups, exportedGenesisState.Groups)

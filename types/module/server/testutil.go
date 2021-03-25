@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -13,6 +14,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
@@ -117,12 +119,12 @@ func (f fixture) Signers() []sdk.AccAddress {
 	return f.signers
 }
 
-func (f fixture) InitGenesisHandler(moduleName string) module.InitGenesisHandler {
-	return f.initGenesisHandlers[moduleName]
+func (f fixture) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (abci.ResponseInitChain, error) {
+	return initGenesis(ctx, f.cdc, genesisData, []abci.ValidatorUpdate{}, f.initGenesisHandlers)
 }
 
-func (f fixture) ExportGenesisHandler(moduleName string) module.ExportGenesisHandler {
-	return f.exportGenesisHandlers[moduleName]
+func (f fixture) ExportGenesis(ctx sdk.Context) (map[string]json.RawMessage, error) {
+	return exportGenesis(ctx, f.cdc, f.exportGenesisHandlers)
 }
 
 func (f fixture) Codec() *codec.ProtoCodec {

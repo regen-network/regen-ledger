@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 
@@ -150,20 +151,30 @@ func (mm *Manager) CompleteInitialization() error {
 // InitGenesis performs init genesis functionality for modules.
 // We pass in existing validatorUpdates from the sdk module Manager.InitGenesis.
 func (mm *Manager) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage, validatorUpdates []abci.ValidatorUpdate) abci.ResponseInitChain {
-	for name, initGenesisHandler := range mm.initGenesisHandlers {
+	res, err := initGenesis(ctx, mm.cdc, genesisData, validatorUpdates, mm.initGenesisHandlers)
+	if err != nil {
+		panic(err)
+	}
+	return res
+}
+
+func initGenesis(ctx sdk.Context, cdc codec.JSONMarshaler,
+	genesisData map[string]json.RawMessage, validatorUpdates []abci.ValidatorUpdate,
+	initGenesisHandlers map[string]module.InitGenesisHandler) (abci.ResponseInitChain, error) {
+	for name, initGenesisHandler := range initGenesisHandlers {
 		if genesisData[name] == nil || initGenesisHandler == nil {
 			continue
 		}
-		moduleValUpdates, err := initGenesisHandler(types.Context{Context: ctx}, mm.cdc, genesisData[name])
+		moduleValUpdates, err := initGenesisHandler(types.Context{Context: ctx}, cdc, genesisData[name])
 		if err != nil {
-			panic(err)
+			return abci.ResponseInitChain{}, err
 		}
 
 		// use these validator updates if provided, the module manager assumes
 		// only one module will update the validator set
 		if len(moduleValUpdates) > 0 {
 			if len(validatorUpdates) > 0 {
-				panic("validator InitGenesis updates already set by a previous module")
+				return abci.ResponseInitChain{}, errors.New("validator InitGenesis updates already set by a previous module")
 			}
 			validatorUpdates = moduleValUpdates
 		}
@@ -171,24 +182,33 @@ func (mm *Manager) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawM
 
 	return abci.ResponseInitChain{
 		Validators: validatorUpdates,
-	}
+	}, nil
 }
 
 // ExportGenesis performs export genesis functionality for modules.
 func (mm *Manager) ExportGenesis(ctx sdk.Context) map[string]json.RawMessage {
-	var err error
-	genesisData := make(map[string]json.RawMessage)
-	for name, exportGenesisHandler := range mm.exportGenesisHandlers {
-		if exportGenesisHandler == nil {
-			continue
-		}
-		genesisData[name], err = exportGenesisHandler(types.Context{Context: ctx}, mm.cdc)
-		if err != nil {
-			panic(err)
-		}
+	genesisData, err := exportGenesis(ctx, mm.cdc, mm.exportGenesisHandlers)
+	if err != nil {
+		panic(err)
 	}
 
 	return genesisData
+}
+
+func exportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, exportGenesisHandlers map[string]module.ExportGenesisHandler) (map[string]json.RawMessage, error) {
+	var err error
+	genesisData := make(map[string]json.RawMessage)
+	for name, exportGenesisHandler := range exportGenesisHandlers {
+		if exportGenesisHandler == nil {
+			continue
+		}
+		genesisData[name], err = exportGenesisHandler(types.Context{Context: ctx}, cdc)
+		if err != nil {
+			return genesisData, err
+		}
+	}
+
+	return genesisData, nil
 }
 
 type configurator struct {

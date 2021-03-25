@@ -23,7 +23,6 @@ import (
 
 	"github.com/regen-network/regen-ledger/testutil/testdata"
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/x/group"
 	groupserver "github.com/regen-network/regen-ledger/x/group/server"
 )
@@ -50,9 +49,6 @@ type IntegrationTestSuite struct {
 
 	accountKeeper authkeeper.AccountKeeper
 	bankKeeper    bankkeeper.Keeper
-
-	initGenesisHandler   module.InitGenesisHandler
-	exportGenesisHandler module.ExportGenesisHandler
 
 	blockTime time.Time
 }
@@ -121,9 +117,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.groupAccountAddr = addr
 
 	s.Require().NoError(s.bankKeeper.SetBalances(s.sdkCtx, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
-
-	s.initGenesisHandler = s.fixture.InitGenesisHandler(group.ModuleName)
-	s.exportGenesisHandler = s.fixture.ExportGenesisHandler(group.ModuleName)
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {

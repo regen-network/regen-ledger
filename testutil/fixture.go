@@ -11,12 +11,12 @@ package testutil
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 	"google.golang.org/grpc"
-
-	"github.com/regen-network/regen-ledger/types/module"
 )
 
 // FixtureFactory defines an interface for creating server test fixtures
@@ -43,11 +43,11 @@ type Fixture interface {
 	// random or correspond to nodes in a test network which have keyrings.
 	Signers() []sdk.AccAddress
 
-	// InitGenesisHandler is a function to get a module InitGenesisHandler.
-	InitGenesisHandler(moduleName string) module.InitGenesisHandler
+	// InitGenesis initializes genesis for all modules with provided genesisData.
+	InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (abci.ResponseInitChain, error)
 
-	// ExportGenesisHandler is a function to get a module ExportGenesisHandler.
-	ExportGenesisHandler(moduleName string) module.ExportGenesisHandler
+	// ExportGenesis returns raw encoded JSON genesis state for all modules.
+	ExportGenesis(ctx sdk.Context) (map[string]json.RawMessage, error)
 
 	// Codec is the app ProtoCodec.
 	Codec() *codec.ProtoCodec
