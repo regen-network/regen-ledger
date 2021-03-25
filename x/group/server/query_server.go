@@ -242,7 +242,7 @@ func (s serverImpl) VotesByVoter(ctx types.Context, request *group.QueryVotesByV
 
 func (s serverImpl) getVote(ctx types.Context, proposalID uint64, voter sdk.AccAddress) (group.Vote, error) {
 	var v group.Vote
-	return v, s.voteTable.GetOne(ctx, group.Vote{ProposalId: proposalID, Voter: voter.String()}.NaturalKey(), &v)
+	return v, s.voteTable.GetOne(ctx, group.Vote{ProposalId: proposalID, Voter: voter.String()}.PrimaryKey(), &v)
 }
 
 func (s serverImpl) getVotesByProposal(ctx types.Context, proposalID uint64, pageRequest *query.PageRequest) (orm.Iterator, error) {

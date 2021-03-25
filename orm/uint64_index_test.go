@@ -22,7 +22,7 @@ func TestUInt64Index(t *testing.T) {
 	storeKey := sdk.NewKVStoreKey("test")
 
 	const anyPrefix = 0x10
-	tableBuilder := orm.NewNaturalKeyTableBuilder(anyPrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	tableBuilder := orm.NewPrimaryKeyTableBuilder(anyPrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	myIndex := orm.NewUInt64Index(tableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]uint64, error) {
 		return []uint64{uint64(val.(*testdata.GroupMember).Member[0])}, nil
 	})
@@ -76,7 +76,7 @@ func TestUInt64Index(t *testing.T) {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
-				require.Equal(t, orm.RowID(m.NaturalKey()), rowID)
+				require.Equal(t, orm.RowID(m.PrimaryKey()), rowID)
 				require.Equal(t, m, loaded)
 			}
 		})

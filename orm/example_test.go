@@ -12,7 +12,7 @@ type GroupKeeper struct {
 	key                      sdk.StoreKey
 	groupTable               orm.AutoUInt64Table
 	groupByAdminIndex        orm.Index
-	groupMemberTable         orm.NaturalKeyTable
+	groupMemberTable         orm.PrimaryKeyTable
 	groupMemberByGroupIndex  orm.Index
 	groupMemberByMemberIndex orm.Index
 }
@@ -38,7 +38,7 @@ func NewGroupKeeper(storeKey sdk.StoreKey, cdc codec.Marshaler) GroupKeeper {
 	})
 	k.groupTable = groupTableBuilder.Build()
 
-	groupMemberTableBuilder := orm.NewNaturalKeyTableBuilder(GroupMemberTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	groupMemberTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 
 	k.groupMemberByGroupIndex = orm.NewIndex(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
 		group := val.(*testdata.GroupMember).Group

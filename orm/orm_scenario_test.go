@@ -85,7 +85,7 @@ func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
 	require.False(t, exists)
 }
 
-func TestKeeperEndToEndWithNaturalKeyTable(t *testing.T) {
+func TestKeeperEndToEndWithPrimaryKeyTable(t *testing.T) {
 	interfaceRegistry := types.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
 
@@ -112,13 +112,13 @@ func TestKeeperEndToEndWithNaturalKeyTable(t *testing.T) {
 	err = k.groupMemberTable.Create(ctx, &m)
 	require.NoError(t, err)
 
-	// then we should find it by natural key
-	naturalKey := m.NaturalKey()
-	exists := k.groupMemberTable.Has(ctx, naturalKey)
+	// then we should find it by primary key
+	primaryKey := m.PrimaryKey()
+	exists := k.groupMemberTable.Has(ctx, primaryKey)
 	require.True(t, exists)
-	// and load it by natural key
+	// and load it by primary key
 	var loaded testdata.GroupMember
-	err = k.groupMemberTable.GetOne(ctx, naturalKey, &loaded)
+	err = k.groupMemberTable.GetOne(ctx, primaryKey, &loaded)
 	require.NoError(t, err)
 
 	// then values should match expectations
@@ -137,22 +137,22 @@ func TestKeeperEndToEndWithNaturalKeyTable(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, m, loaded)
-	// and when we create another entry with the same natural key
+	// and when we create another entry with the same primary key
 	err = k.groupMemberTable.Create(ctx, &m)
-	// then it should fail as the natural key must be unique
+	// then it should fail as the primary key must be unique
 	require.True(t, orm.ErrUniqueConstraint.Is(err), err)
 
-	// and when entity updated with new natural key
+	// and when entity updated with new primary key
 	updatedMember := &testdata.GroupMember{
 		Group:  m.Group,
 		Member: []byte("new-member-address"),
 		Weight: m.Weight,
 	}
-	// then it should fail as the natural key is immutable
+	// then it should fail as the primary key is immutable
 	err = k.groupMemberTable.Save(ctx, updatedMember)
 	require.Error(t, err)
 
-	// and when entity updated with non natural key attribute modified
+	// and when entity updated with non primary key attribute modified
 	updatedMember = &testdata.GroupMember{
 		Group:  m.Group,
 		Member: m.Member,
@@ -166,8 +166,8 @@ func TestKeeperEndToEndWithNaturalKeyTable(t *testing.T) {
 	err = k.groupMemberTable.Delete(ctx, &m)
 	require.NoError(t, err)
 
-	// then it is removed from natural key MultiKeyIndex
-	exists = k.groupMemberTable.Has(ctx, naturalKey)
+	// then it is removed from primary key MultiKeyIndex
+	exists = k.groupMemberTable.Has(ctx, primaryKey)
 	require.False(t, exists)
 
 	// and removed from secondary MultiKeyIndex
@@ -175,7 +175,7 @@ func TestKeeperEndToEndWithNaturalKeyTable(t *testing.T) {
 	require.False(t, exists)
 }
 
-func TestGasCostsNaturalKeyTable(t *testing.T) {
+func TestGasCostsPrimaryKeyTable(t *testing.T) {
 	interfaceRegistry := types.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
 
@@ -203,12 +203,12 @@ func TestGasCostsNaturalKeyTable(t *testing.T) {
 	require.NoError(t, err)
 	t.Logf("gas consumed on create: %d", gCtx.GasConsumed())
 
-	// get by natural key
+	// get by primary key
 	gCtx.ResetGasMeter()
 	var loaded testdata.GroupMember
-	err = k.groupMemberTable.GetOne(gCtx, m.NaturalKey(), &loaded)
+	err = k.groupMemberTable.GetOne(gCtx, m.PrimaryKey(), &loaded)
 	require.NoError(t, err)
-	t.Logf("gas consumed on get by natural key: %d", gCtx.GasConsumed())
+	t.Logf("gas consumed on get by primary key: %d", gCtx.GasConsumed())
 
 	// get by secondary index
 	gCtx.ResetGasMeter()
@@ -225,7 +225,7 @@ func TestGasCostsNaturalKeyTable(t *testing.T) {
 	gCtx.ResetGasMeter()
 	err = k.groupMemberTable.Delete(gCtx, &m)
 	require.NoError(t, err)
-	t.Logf("gas consumed on delete by natural key: %d", gCtx.GasConsumed())
+	t.Logf("gas consumed on delete by primary key: %d", gCtx.GasConsumed())
 
 	// with 3 elements
 	for i := 1; i < 4; i++ {
@@ -247,9 +247,9 @@ func TestGasCostsNaturalKeyTable(t *testing.T) {
 			Member: sdk.AccAddress([]byte(fmt.Sprintf("member-address%d", i))),
 			Weight: 10,
 		}
-		err = k.groupMemberTable.GetOne(gCtx, m.NaturalKey(), &loaded)
+		err = k.groupMemberTable.GetOne(gCtx, m.PrimaryKey(), &loaded)
 		require.NoError(t, err)
-		t.Logf("%d: gas consumed on get by natural key: %d", i, gCtx.GasConsumed())
+		t.Logf("%d: gas consumed on get by primary key: %d", i, gCtx.GasConsumed())
 	}
 
 	// get by secondary index
@@ -328,7 +328,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 	require.Equal(t, uint64(testRecords), k.groupTable.Sequence().CurVal(ctx))
 }
 
-func TestExportImportStateNaturalKeyTable(t *testing.T) {
+func TestExportImportStatePrimaryKeyTable(t *testing.T) {
 	interfaceRegistry := types.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
 
@@ -367,7 +367,7 @@ func TestExportImportStateNaturalKeyTable(t *testing.T) {
 	keys, err := orm.ReadAll(it, &loaded)
 	require.NoError(t, err)
 	for i := range keys {
-		assert.Equal(t, testRecords[i].NaturalKey(), keys[i].Bytes())
+		assert.Equal(t, testRecords[i].PrimaryKey(), keys[i].Bytes())
 	}
 	assert.Equal(t, testRecords, loaded)
 
@@ -378,7 +378,7 @@ func TestExportImportStateNaturalKeyTable(t *testing.T) {
 	keys, err = orm.ReadAll(it, &loaded)
 	require.NoError(t, err)
 	for i := range keys {
-		assert.Equal(t, testRecords[i].NaturalKey(), keys[i].Bytes())
+		assert.Equal(t, testRecords[i].PrimaryKey(), keys[i].Bytes())
 	}
 	assert.Equal(t, testRecords, loaded)
 
@@ -389,7 +389,7 @@ func TestExportImportStateNaturalKeyTable(t *testing.T) {
 		loaded = nil
 		keys, err = orm.ReadAll(it, &loaded)
 		require.NoError(t, err)
-		assert.Equal(t, []orm.RowID{v.NaturalKey()}, keys)
+		assert.Equal(t, []orm.RowID{v.PrimaryKey()}, keys)
 		assert.Equal(t, []testdata.GroupMember{v}, loaded)
 	}
 }

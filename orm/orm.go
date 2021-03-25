@@ -61,7 +61,7 @@ type Persistent interface {
 }
 
 // Index allows efficient prefix scans is stored as key = concat(indexKeyBytes, rowIDUint64) with value empty
-// so that the row NaturalKey is allows a fixed with 8 byte integer. This allows the MultiKeyIndex key bytes to be
+// so that the row PrimaryKey is allows a fixed with 8 byte integer. This allows the MultiKeyIndex key bytes to be
 // variable length and scanned iteratively. The
 type Index interface {
 	// Has checks if a key exists. Panics on nil key.

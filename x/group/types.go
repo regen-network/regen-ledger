@@ -144,14 +144,14 @@ func (p ThresholdDecisionPolicy) ValidateBasic() error {
 	return nil
 }
 
-func (g GroupMember) NaturalKey() []byte {
+func (g GroupMember) PrimaryKey() []byte {
 	result := make([]byte, 8, 8+len(g.Member.Address))
 	copy(result[0:8], ID(g.GroupId).Bytes())
 	result = append(result, g.Member.Address...)
 	return result
 }
 
-func (g GroupAccountInfo) NaturalKey() []byte {
+func (g GroupAccountInfo) PrimaryKey() []byte {
 	addr, err := sdk.AccAddressFromBech32(g.Address)
 	if err != nil {
 		panic(err)
@@ -234,7 +234,7 @@ func (g GroupAccountInfo) UnpackInterfaces(unpacker codectypes.AnyUnpacker) erro
 	return unpacker.UnpackAny(g.DecisionPolicy, &decisionPolicy)
 }
 
-func (v Vote) NaturalKey() []byte {
+func (v Vote) PrimaryKey() []byte {
 	result := make([]byte, 8, 8+len(v.Voter))
 	copy(result[0:8], ProposalID(v.ProposalId).Bytes())
 	result = append(result, v.Voter...)
@@ -304,7 +304,7 @@ func (g GroupInfo) ValidateBasic() error {
 	return nil
 }
 
-func (g GroupInfo) NaturalKey() []byte {
+func (g GroupInfo) PrimaryKey() []byte {
 	return orm.EncodeSequence(g.GroupId)
 }
 

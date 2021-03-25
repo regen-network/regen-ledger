@@ -39,7 +39,7 @@ func ExportTableData(ctx HasKVStore, t TableExportable, dest ModelSlicePtr) (uin
 }
 
 // ImportTableData initializes a table and attaches indexers from the given data interface{}.
-// data should be a slice of structs that implement NaturalKeyed (eg []*GroupInfo).
+// data should be a slice of structs that implement PrimaryKeyed (eg []*GroupInfo).
 // The seqValue is optional and only used with tables that implement the `SequenceExportable` interface.
 func ImportTableData(ctx HasKVStore, t TableExportable, data interface{}, seqValue uint64) error {
 	table := t.Table()
@@ -61,11 +61,11 @@ func ImportTableData(ctx HasKVStore, t TableExportable, data interface{}, seqVal
 
 	// Create table entries
 	for i := 0; i < modelSlice.Len(); i++ {
-		obj, ok := modelSlice.Index(i).Interface().(NaturalKeyed)
+		obj, ok := modelSlice.Index(i).Interface().(PrimaryKeyed)
 		if !ok {
 			return errors.Wrapf(ErrArgument, "unsupported type :%s", reflect.TypeOf(data).Elem().Elem())
 		}
-		err := table.Create(ctx, obj.NaturalKey(), obj)
+		err := table.Create(ctx, obj.PrimaryKey(), obj)
 		if err != nil {
 			return err
 		}

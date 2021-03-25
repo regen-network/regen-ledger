@@ -110,6 +110,6 @@ func (p Proposal) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 	return nil
 }
 
-func (p Proposal) NaturalKey() []byte {
+func (p Proposal) PrimaryKey() []byte {
 	return orm.EncodeSequence(p.ProposalId)
 }
