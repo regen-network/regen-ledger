@@ -133,8 +133,8 @@ message Proposal {
     // proposal_id is the unique id of the proposal.
     uint64 proposal_id = 1;
 
-    // group_account is the group account address.
-    string group_account = 2;
+    // address is the group account address.
+    string address = 2;
     
     // metadata is any arbitrary metadata to attached to the proposal.
     bytes metadata = 3;

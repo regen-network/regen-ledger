@@ -204,8 +204,8 @@ message MsgUpdateGroupAccountMetadataResponse { }
 message MsgCreateProposalRequest {
     option (gogoproto.goproto_getters) = false;
 
-    // group_account is the group account address.
-    string group_account = 1;
+    // address is the group account address.
+    string address = 1;
     
     // proposers are the account addresses of the proposers.
     // Proposers signatures will be counted as yes votes.

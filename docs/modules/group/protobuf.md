@@ -268,7 +268,7 @@ passes as well as some optional metadata associated with the proposal.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | proposal_id | [uint64](#uint64) |  | proposal_id is the unique id of the proposal. |
-| group_account | [string](#string) |  | group_account is the group account address. |
+| address | [string](#string) |  | address is the group account address. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the proposal. |
 | proposers | [string](#string) | repeated | proposers are the account addresses of the proposers. |
 | submitted_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | submitted_at is a timestamp specifying when a proposal was submitted. |
@@ -904,7 +904,7 @@ MsgCreateProposalRequest is the Msg/CreateProposal request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_account | [string](#string) |  | group_account is the group account address. |
+| address | [string](#string) |  | address is the group account address. |
 | proposers | [string](#string) | repeated | proposers are the account addresses of the proposers. Proposers signatures will be counted as yes votes. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the proposal. |
 | msgs | [google.protobuf.Any](#google.protobuf.Any) | repeated | msgs is a list of Msgs that will be executed if the proposal passes. |

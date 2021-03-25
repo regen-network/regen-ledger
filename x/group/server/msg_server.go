@@ -363,7 +363,7 @@ func (s serverImpl) UpdateGroupAccountMetadata(ctx types.Context, req *group.Msg
 }
 
 func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreateProposalRequest) (*group.MsgCreateProposalResponse, error) {
-	accountAddress, err := sdk.AccAddressFromBech32(req.GroupAccount)
+	accountAddress, err := sdk.AccAddressFromBech32(req.Address)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "request group account")
 	}
@@ -427,7 +427,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 
 	m := &group.Proposal{
 		ProposalId:          s.proposalTable.Sequence().PeekNextVal(ctx),
-		GroupAccount:        req.GroupAccount,
+		Address:             req.Address,
 		Metadata:            metadata,
 		Proposers:           proposers,
 		SubmittedAt:         *blockTime,
@@ -490,7 +490,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 	var accountInfo group.GroupAccountInfo
 
 	// Ensure that group account hasn't been modified since the proposal submission.
-	address, err := sdk.AccAddressFromBech32(proposal.GroupAccount)
+	address, err := sdk.AccAddressFromBech32(proposal.Address)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "group account")
 	}
@@ -581,7 +581,7 @@ func (s serverImpl) Exec(ctx types.Context, req *group.MsgExecRequest) (*group.M
 	}
 
 	var accountInfo group.GroupAccountInfo
-	address, err := sdk.AccAddressFromBech32(proposal.GroupAccount)
+	address, err := sdk.AccAddressFromBech32(proposal.Address)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "group account")
 	}

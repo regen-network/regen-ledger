@@ -1134,14 +1134,14 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 	}{
 		"all good with minimal fields set": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: accountAddr.String(),
-				Proposers:    []string{s.addr2.String()},
+				Address:   accountAddr.String(),
+				Proposers: []string{s.addr2.String()},
 			},
 		},
 		"all good with good msg payload": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: accountAddr.String(),
-				Proposers:    []string{s.addr2.String()},
+				Address:   accountAddr.String(),
+				Proposers: []string{s.addr2.String()},
 			},
 			msgs: []sdk.Msg{&banktypes.MsgSend{
 				FromAddress: accountAddr.String(),
@@ -1151,9 +1151,9 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 		},
 		"metadata too long": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: accountAddr.String(),
-				Metadata:     bytes.Repeat([]byte{1}, 256),
-				Proposers:    []string{s.addr2.String()},
+				Address:   accountAddr.String(),
+				Metadata:  bytes.Repeat([]byte{1}, 256),
+				Proposers: []string{s.addr2.String()},
 			},
 			expErr: true,
 		},
@@ -1166,52 +1166,52 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 		},
 		"existing group account required": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: s.addr1.String(),
-				Proposers:    []string{s.addr2.String()},
+				Address:   s.addr1.String(),
+				Proposers: []string{s.addr2.String()},
 			},
 			expErr: true,
 		},
 		"impossible case: decision policy threshold > total group weight": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: bigThresholdAddr,
-				Proposers:    []string{s.addr2.String()},
+				Address:   bigThresholdAddr,
+				Proposers: []string{s.addr2.String()},
 			},
 			expErr: true,
 		},
 		"only group members can create a proposal": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: accountAddr.String(),
-				Proposers:    []string{s.addr3.String()},
+				Address:   accountAddr.String(),
+				Proposers: []string{s.addr3.String()},
 			},
 			expErr: true,
 		},
 		"all proposers must be in group": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: accountAddr.String(),
-				Proposers:    []string{s.addr2.String(), s.addr4.String()},
+				Address:   accountAddr.String(),
+				Proposers: []string{s.addr2.String(), s.addr4.String()},
 			},
 			expErr: true,
 		},
 		"proposers must not be empty": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: accountAddr.String(),
-				Proposers:    []string{s.addr2.String(), ""},
+				Address:   accountAddr.String(),
+				Proposers: []string{s.addr2.String(), ""},
 			},
 			expErr: true,
 		},
 		"admin that is not a group member can not create proposal": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: accountAddr.String(),
-				Metadata:     nil,
-				Proposers:    []string{s.addr1.String()},
+				Address:   accountAddr.String(),
+				Metadata:  nil,
+				Proposers: []string{s.addr1.String()},
 			},
 			expErr: true,
 		},
 		"reject msgs that are not authz by group account": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: accountAddr.String(),
-				Metadata:     nil,
-				Proposers:    []string{s.addr2.String()},
+				Address:   accountAddr.String(),
+				Metadata:  nil,
+				Proposers: []string{s.addr2.String()},
 			},
 			msgs:   []sdk.Msg{&testdata.MsgAuthenticated{Signers: []sdk.AccAddress{s.addr1}}},
 			expErr: true,
@@ -1236,7 +1236,7 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 			s.Require().NoError(err)
 			proposal := proposalRes.Proposal
 
-			s.Assert().Equal(accountAddr.String(), proposal.GroupAccount)
+			s.Assert().Equal(accountAddr.String(), proposal.Address)
 			s.Assert().Equal(spec.req.Metadata, proposal.Metadata)
 			s.Assert().Equal(spec.req.Proposers, proposal.Proposers)
 
@@ -1300,10 +1300,10 @@ func (s *IntegrationTestSuite) TestVote() {
 	s.Require().NotNil(groupAccount)
 
 	req := &group.MsgCreateProposalRequest{
-		GroupAccount: accountAddr,
-		Metadata:     nil,
-		Proposers:    []string{s.addr2.String()},
-		Msgs:         nil,
+		Address:   accountAddr,
+		Metadata:  nil,
+		Proposers: []string{s.addr2.String()},
+		Msgs:      nil,
 	}
 	proposalRes, err := s.msgClient.CreateProposal(s.ctx, req)
 	s.Require().NoError(err)
@@ -1316,7 +1316,7 @@ func (s *IntegrationTestSuite) TestVote() {
 	s.Require().NoError(err)
 	proposals := proposalsRes.Proposals
 	s.Require().Equal(len(proposals), 1)
-	s.Assert().Equal(req.GroupAccount, proposals[0].GroupAccount)
+	s.Assert().Equal(req.Address, proposals[0].Address)
 	s.Assert().Equal(req.Metadata, proposals[0].Metadata)
 	s.Assert().Equal(req.Proposers, proposals[0].Proposers)
 
@@ -1939,9 +1939,9 @@ func createProposal(
 	ctx context.Context, s *IntegrationTestSuite, msgs []sdk.Msg,
 	proposers []string) uint64 {
 	proposalReq := &group.MsgCreateProposalRequest{
-		GroupAccount: s.groupAccountAddr.String(),
-		Proposers:    proposers,
-		Metadata:     nil,
+		Address:   s.groupAccountAddr.String(),
+		Proposers: proposers,
+		Metadata:  nil,
 	}
 	err := proposalReq.SetMsgs(msgs)
 	s.Require().NoError(err)

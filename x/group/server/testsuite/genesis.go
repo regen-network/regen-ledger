@@ -36,7 +36,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 
 	proposal := &group.Proposal{
 		ProposalId:          1,
-		GroupAccount:        s.groupAccountAddr.String(),
+		Address:             s.groupAccountAddr.String(),
 		Metadata:            []byte("proposal metadata"),
 		GroupVersion:        1,
 		GroupAccountVersion: 1,
@@ -162,7 +162,7 @@ func (s *IntegrationTestSuite) assertGroupAccountsEqual(g *group.GroupAccountInf
 func (s *IntegrationTestSuite) assertProposalsEqual(g *group.Proposal, other *group.Proposal) {
 	require := s.Require()
 	require.Equal(g.ProposalId, other.ProposalId)
-	require.Equal(g.GroupAccount, other.GroupAccount)
+	require.Equal(g.Address, other.Address)
 	require.Equal(g.Metadata, other.Metadata)
 	require.Equal(g.Proposers, other.Proposers)
 	require.Equal(g.SubmittedAt, other.SubmittedAt)

@@ -35,7 +35,7 @@ func (p *Proposal) SetMsgs(new []sdk.Msg) error {
 }
 
 func (p Proposal) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(p.GroupAccount)
+	_, err := sdk.AccAddressFromBech32(p.Address)
 	if err != nil {
 		return sdkerrors.Wrap(err, "group account")
 	}
