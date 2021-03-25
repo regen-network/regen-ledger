@@ -24,6 +24,7 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 	}
 }
 
+// setCustomModules registers new modules with the server module manager.
 func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *servermodule.Manager {
 
 	/* New Module Wiring START */
