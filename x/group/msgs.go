@@ -292,7 +292,7 @@ func (m MsgUpdateGroupAccountAdminRequest) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "new admin")
 	}
 
-	_, err = sdk.AccAddressFromBech32(m.GroupAccount)
+	_, err = sdk.AccAddressFromBech32(m.Address)
 	if err != nil {
 		return sdkerrors.Wrap(err, "group account")
 	}
@@ -306,10 +306,10 @@ func (m MsgUpdateGroupAccountAdminRequest) ValidateBasic() error {
 var _ sdk.Msg = &MsgUpdateGroupAccountDecisionPolicyRequest{}
 var _ types.UnpackInterfacesMessage = MsgUpdateGroupAccountDecisionPolicyRequest{}
 
-func NewMsgUpdateGroupAccountDecisionPolicyRequest(admin sdk.AccAddress, groupAccount sdk.AccAddress, decisionPolicy DecisionPolicy) (*MsgUpdateGroupAccountDecisionPolicyRequest, error) {
+func NewMsgUpdateGroupAccountDecisionPolicyRequest(admin sdk.AccAddress, address sdk.AccAddress, decisionPolicy DecisionPolicy) (*MsgUpdateGroupAccountDecisionPolicyRequest, error) {
 	m := &MsgUpdateGroupAccountDecisionPolicyRequest{
-		Admin:        admin.String(),
-		GroupAccount: groupAccount.String(),
+		Admin:   admin.String(),
+		Address: address.String(),
 	}
 	err := m.SetDecisionPolicy(decisionPolicy)
 	if err != nil {
@@ -360,7 +360,7 @@ func (m MsgUpdateGroupAccountDecisionPolicyRequest) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
-	_, err = sdk.AccAddressFromBech32(m.GroupAccount)
+	_, err = sdk.AccAddressFromBech32(m.Address)
 	if err != nil {
 		return sdkerrors.Wrap(err, "group account")
 	}
@@ -420,7 +420,7 @@ func (m MsgUpdateGroupAccountMetadataRequest) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
-	_, err = sdk.AccAddressFromBech32(m.GroupAccount)
+	_, err = sdk.AccAddressFromBech32(m.Address)
 	if err != nil {
 		return sdkerrors.Wrap(err, "group account")
 	}

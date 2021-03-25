@@ -152,7 +152,7 @@ func (g GroupMember) NaturalKey() []byte {
 }
 
 func (g GroupAccountInfo) NaturalKey() []byte {
-	addr, err := sdk.AccAddressFromBech32(g.GroupAccount)
+	addr, err := sdk.AccAddressFromBech32(g.Address)
 	if err != nil {
 		panic(err)
 	}
@@ -162,13 +162,13 @@ func (g GroupAccountInfo) NaturalKey() []byte {
 var _ orm.Validateable = GroupAccountInfo{}
 
 // NewGroupAccountInfo creates a new GroupAccountInfo instance
-func NewGroupAccountInfo(groupAccount sdk.AccAddress, group uint64, admin sdk.AccAddress, metadata []byte, version uint64, decisionPolicy DecisionPolicy) (GroupAccountInfo, error) {
+func NewGroupAccountInfo(address sdk.AccAddress, group uint64, admin sdk.AccAddress, metadata []byte, version uint64, decisionPolicy DecisionPolicy) (GroupAccountInfo, error) {
 	p := GroupAccountInfo{
-		GroupAccount: groupAccount.String(),
-		GroupId:      group,
-		Admin:        admin.String(),
-		Metadata:     metadata,
-		Version:      version,
+		Address:  address.String(),
+		GroupId:  group,
+		Admin:    admin.String(),
+		Metadata: metadata,
+		Version:  version,
 	}
 
 	err := p.SetDecisionPolicy(decisionPolicy)
@@ -206,7 +206,7 @@ func (g GroupAccountInfo) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
-	_, err = sdk.AccAddressFromBech32(g.GroupAccount)
+	_, err = sdk.AccAddressFromBech32(g.Address)
 	if err != nil {
 		return sdkerrors.Wrap(err, "group account")
 	}

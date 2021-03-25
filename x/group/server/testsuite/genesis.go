@@ -20,11 +20,11 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	s.Require().NoError(err)
 
 	groupAccount := &group.GroupAccountInfo{
-		GroupAccount: s.groupAccountAddr.String(),
-		GroupId:      1,
-		Admin:        s.addr1.String(),
-		Version:      1,
-		Metadata:     []byte("account metadata"),
+		Address:  s.groupAccountAddr.String(),
+		GroupId:  1,
+		Admin:    s.addr1.String(),
+		Version:  1,
+		Metadata: []byte("account metadata"),
 	}
 	err = groupAccount.SetDecisionPolicy(&group.ThresholdDecisionPolicy{
 		Threshold: "1",
@@ -94,7 +94,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 
 	for _, g := range genesisState.GroupAccounts {
 		res, err := s.queryClient.GroupAccountInfo(ctx, &group.QueryGroupAccountInfoRequest{
-			GroupAccount: g.GroupAccount,
+			Address: g.Address,
 		})
 		s.Require().NoError(err)
 		s.assertGroupAccountsEqual(g, res.Info)
@@ -147,7 +147,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 }
 
 func (s *IntegrationTestSuite) assertGroupAccountsEqual(g *group.GroupAccountInfo, other *group.GroupAccountInfo) {
-	s.Require().Equal(g.GroupAccount, other.GroupAccount)
+	s.Require().Equal(g.Address, other.Address)
 	s.Require().Equal(g.GroupId, other.GroupId)
 	s.Require().Equal(g.Admin, other.Admin)
 	s.Require().Equal(g.Metadata, other.Metadata)

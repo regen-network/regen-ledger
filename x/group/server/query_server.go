@@ -25,7 +25,7 @@ func (s serverImpl) getGroupInfo(ctx types.Context, id uint64) (group.GroupInfo,
 }
 
 func (s serverImpl) GroupAccountInfo(ctx types.Context, request *group.QueryGroupAccountInfoRequest) (*group.QueryGroupAccountInfoResponse, error) {
-	addr, err := sdk.AccAddressFromBech32(request.GroupAccount)
+	addr, err := sdk.AccAddressFromBech32(request.Address)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +151,7 @@ func (s serverImpl) Proposal(ctx types.Context, request *group.QueryProposalRequ
 }
 
 func (s serverImpl) ProposalsByGroupAccount(ctx types.Context, request *group.QueryProposalsByGroupAccountRequest) (*group.QueryProposalsByGroupAccountResponse, error) {
-	addr, err := sdk.AccAddressFromBech32(request.GroupAccount)
+	addr, err := sdk.AccAddressFromBech32(request.Address)
 	if err != nil {
 		return nil, err
 	}

@@ -103,8 +103,8 @@ message GroupAccountInfo {
     option (gogoproto.equal)            = true;
     option (gogoproto.goproto_getters) = false;
 
-    // group_account is the group account address.
-    string group_account = 1;
+    // address is the group account address.
+    string address = 1;
     
     // group_id is the unique ID of the group.
     uint64 group_id = 2;
