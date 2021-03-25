@@ -41,7 +41,7 @@ func (app *RegenApp) ExportAppStateAndValidators(
 	// if they are not already part of genState
 	for name, v := range app.smm.ExportGenesis(ctx) {
 		if _, ok := genState[name]; ok {
-			return servertypes.ExportedApp{}, fmt.Errorf("Genesis state already exported for %s module", name)
+			return servertypes.ExportedApp{}, fmt.Errorf("genesis state already exported for %s module", name)
 		}
 		genState[name] = v
 	}
