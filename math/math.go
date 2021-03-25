@@ -20,6 +20,13 @@ var dec128Context = apd.Context{
 	Traps:       apd.DefaultTraps,
 }
 
+var exactContext = apd.Context{
+	Precision:   0,
+	MaxExponent: apd.MaxExponent,
+	MinExponent: apd.MinExponent,
+	Traps:       apd.DefaultTraps | apd.Inexact | apd.Rounded,
+}
+
 func NewDecFromString(s string) (Dec, error) {
 	d, _, err := apd.NewFromString(s)
 	if err != nil {
@@ -37,13 +44,29 @@ func NewDecFromInt64(x int64) Dec {
 func (x Dec) Add(y Dec) (Dec, error) {
 	var z Dec
 	_, err := apd.BaseContext.Add(&z.dec, &x.dec, &y.dec)
-	return z, err
+	return z, errors.Wrap(err, "decimal addition error")
 }
 
 func (x Dec) Sub(y Dec) (Dec, error) {
 	var z Dec
 	_, err := apd.BaseContext.Sub(&z.dec, &x.dec, &y.dec)
 	return z, err
+}
+
+// SafeSub subtracts the value of y from x and stores the result in res with arbitrary precision only
+// if the result will be non-negative. An insufficient funds error is returned if the result would be negative.
+func (x Dec) SafeSub(y Dec) error {
+	var z Dec
+	_, err := exactContext.Sub(&z.dec, &x.dec, &y.dec)
+	if err != nil {
+		return errors.Wrap(err, "decimal subtraction error")
+	}
+
+	if z.IsNegative() {
+		return errors.ErrInsufficientFunds
+	}
+
+	return nil
 }
 
 func (x Dec) Quo(y Dec) (Dec, error) {
@@ -76,6 +99,10 @@ func (x Dec) Int64() (int64, error) {
 
 func (x Dec) String() string {
 	return x.dec.Text('f')
+}
+
+func (x Dec) Cmp(y Dec) int {
+	return x.dec.Cmp(&y.dec)
 }
 
 func (x Dec) IsEqual(y Dec) bool {
@@ -164,36 +191,5 @@ func requireMaxDecimals(x Dec, maxDecimalPlaces uint32) error {
 	if n > maxDecimalPlaces {
 		return errors.Wrap(errors.ErrInvalidRequest, fmt.Sprintf("expected no more than %d decimal places in %s, got %d", maxDecimalPlaces, x, n))
 	}
-	return nil
-}
-
-var exactContext = apd.Context{
-	Precision:   0,
-	MaxExponent: apd.MaxExponent,
-	MinExponent: apd.MinExponent,
-	Traps:       apd.DefaultTraps | apd.Inexact | apd.Rounded,
-}
-
-// Add adds x and y and stores the result in res with arbitrary precision or returns an error.
-func Add(res, x, y *apd.Decimal) error {
-	_, err := exactContext.Add(res, x, y)
-	if err != nil {
-		return errors.Wrap(err, "decimal addition error")
-	}
-	return nil
-}
-
-// SafeSub subtracts the value of x from y and stores the result in res with arbitrary precision only
-// if the result will be non-negative. An insufficient funds error is returned if the result would be negative.
-func SafeSub(res, x, y *apd.Decimal) error {
-	_, err := exactContext.Sub(res, x, y)
-	if err != nil {
-		return errors.Wrap(err, "decimal subtraction error")
-	}
-
-	if res.Sign() < 0 {
-		return errors.ErrInsufficientFunds
-	}
-
 	return nil
 }
