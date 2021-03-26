@@ -1,181 +1,99 @@
 package server
 
 import (
-	"math"
+	"fmt"
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-	"github.com/stretchr/testify/require"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	gogotypes "github.com/gogo/protobuf/types"
+	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	dbm "github.com/tendermint/tm-db"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/group"
-	// "github.com/regen-network/regen-ledger/types"
 )
 
-func TestTallyVotesInvariant(t *testing.T) {
-	ff := server.NewFixtureFactory(t, 6)
+type invar struct {
+	s   serverImpl
+	cdc codec.Marshaler
+}
 
-	sdkCtx, _ := ff.Setup().Context().(types.Context)
-	sdkCtx1, _ := sdkCtx.CacheContext()
-	sdkCtx1 = sdkCtx1.WithBlockHeight(10)
-	// var ctx sdk.Context
-	// ctx := ff.Setup().Context()
-	// blockHeight := ctx.BlockHeight()
-	var proposalTable orm.AutoUInt64Table
-	// ctx1 := types.Context{Context: sdkCtx1}
-	proposalIterator, err := proposalTable.PrefixScan(sdkCtx1, 1, math.MaxUint64)
+func TestTallyVotesInvariant(t *testing.T) {
+	var in invar
+	key := sdk.NewKVStoreKey(group.ModuleName)
+	db := dbm.NewMemDB()
+	cms := store.NewCommitMultiStore(db)
+	cms.MountStoreWithDB(key, sdk.StoreTypeIAVL, db)
+	err := cms.LoadLatestVersion()
 	if err != nil {
 		panic(err)
 	}
-	var test require.TestingT
-	var curProposals *group.Proposal
-	_, err = orm.ReadAll(proposalIterator, &curProposals)
-	require.NoError(test, err, &curProposals)
-	// invar := Invar{
-	// 	sdkCtx:        ctx, // types.Context{Context: ctx},
-	// 	proposalTable: proposalTable,
-	// }
-	// curYesCount, err := curProposals.VoteState.GetYesCount()
-	// curNoCount, err := curProposals.VoteState.GetNoCount()
-	// curAbstainCount, err := curProposals.VoteState.GetAbstainCount()
-	// curVetoCount, err := curProposals.VoteState.GetVetoCount()
+	ctx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
+	ctx = ctx.WithBlockHeight(10)
 
-	_, _, addr := testdata.KeyTestPubAddr()
-	groupAddr := addr.String()
-
-	_, _, addr = testdata.KeyTestPubAddr()
-	memberAddr := addr.String()
-
-	specs := map[string]struct {
-		src    *group.MsgCreateProposalRequest
-		expErr bool
-	}{
-		"all good with minimum fields set": {
-			src: &group.MsgCreateProposalRequest{
-				GroupAccount: groupAddr,
-				Proposers:    []string{memberAddr},
-			},
-		},
-		"group account required": {
-			src: &group.MsgCreateProposalRequest{
-				Proposers: []string{memberAddr},
-			},
-			expErr: true,
-		},
-		"proposers required": {
-			src: &group.MsgCreateProposalRequest{
-				GroupAccount: groupAddr,
-			},
-			expErr: true,
-		},
-		"valid proposer address required": {
-			src: &group.MsgCreateProposalRequest{
-				GroupAccount: groupAddr,
-				Proposers:    []string{"invalid-member-address"},
-			},
-			expErr: true,
-		},
-		"no duplicate proposers": {
-			src: &group.MsgCreateProposalRequest{
-				GroupAccount: groupAddr,
-				Proposers:    []string{memberAddr, memberAddr},
-			},
-			expErr: true,
-		},
-		"empty proposer address not allowed": {
-			src: &group.MsgCreateProposalRequest{
-				GroupAccount: groupAddr,
-				Proposers:    []string{memberAddr, ""},
-			},
-			expErr: true,
-		},
-	}
-	for msg, spec := range specs {
-		t.Run(msg, func(t *testing.T) {
-			err := spec.src.ValidateBasic()
-			if spec.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
+	// Proposal Table
+	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, key, &group.Proposal{}, in.cdc)
+	in.s.proposalByGroupAccountIndex = orm.NewIndex(proposalTableBuilder, ProposalByGroupAccountIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
+		account := value.(*group.Proposal).GroupAccount
+		addr, err := sdk.AccAddressFromBech32(account)
+		if err != nil {
+			return nil, err
+		}
+		return []orm.RowID{addr.Bytes()}, nil
+	})
+	in.s.proposalByProposerIndex = orm.NewIndex(proposalTableBuilder, ProposalByProposerIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
+		proposers := value.(*group.Proposal).Proposers
+		r := make([]orm.RowID, len(proposers))
+		for i := range proposers {
+			addr, err := sdk.AccAddressFromBech32(proposers[i])
+			if err != nil {
+				return nil, err
 			}
-		})
+			r[i] = addr.Bytes()
+		}
+		return r, nil
+	})
+	in.s.proposalTable = proposalTableBuilder.Build()
+
+	_, _, addr1 := testdata.KeyTestPubAddr()
+	// addr1 := sdk.AccAddress("foo_________________")
+
+	blockTime, err := gogotypes.TimestampProto(ctx.BlockTime())
+	if err != nil {
+		fmt.Println("block time conversion")
+		panic(err)
 	}
 
-	specs2 := map[string]struct {
-		src    *group.MsgVoteRequest
-		expErr bool
-	}{
-		"all good with minimum fields set": {
-			src: &group.MsgVoteRequest{
-				ProposalId: 1,
-				Choice:     group.Choice_CHOICE_YES,
-				Voter:      memberAddr,
-			},
+	m1 := &group.Proposal{
+		GroupAccount:        addr1.String(),
+		Proposers:           []string{addr1.String()},
+		SubmittedAt:         *blockTime,
+		GroupVersion:        1,
+		GroupAccountVersion: 1,
+		Result:              group.ProposalResultUnfinalized,
+		Status:              group.ProposalStatusSubmitted,
+		ExecutorResult:      group.ProposalExecutorResultNotRun,
+		Timeout: gogotypes.Timestamp{
+			Seconds: 600,
 		},
-		"proposal required": {
-			src: &group.MsgVoteRequest{
-				Choice: group.Choice_CHOICE_YES,
-				Voter:  memberAddr,
-			},
-			expErr: true,
-		},
-		"choice required": {
-			src: &group.MsgVoteRequest{
-				ProposalId: 1,
-				Voter:      memberAddr,
-			},
-			expErr: true,
-		},
-		"valid choice required": {
-			src: &group.MsgVoteRequest{
-				ProposalId: 1,
-				Choice:     5,
-				Voter:      memberAddr,
-			},
-			expErr: true,
-		},
-		"voter required": {
-			src: &group.MsgVoteRequest{
-				ProposalId: 1,
-				Choice:     group.Choice_CHOICE_YES,
-			},
-			expErr: true,
-		},
-		"valid voter address required": {
-			src: &group.MsgVoteRequest{
-				ProposalId: 1,
-				Choice:     group.Choice_CHOICE_YES,
-				Voter:      "invalid-member-address",
-			},
-			expErr: true,
-		},
-		"empty voters address not allowed": {
-			src: &group.MsgVoteRequest{
-				ProposalId: 1,
-				Choice:     group.Choice_CHOICE_YES,
-				Voter:      "",
-			},
-			expErr: true,
+		VoteState: group.Tally{
+			YesCount:     "2",
+			NoCount:      "0",
+			AbstainCount: "0",
+			VetoCount:    "0",
 		},
 	}
-	for msg, spec := range specs2 {
-		t.Run(msg, func(t *testing.T) {
-			err := spec.src.ValidateBasic()
-			if spec.expErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-			// ch := spec.src.Choice
-			// a := group.Choice_value
-			//group.Choice_value(spec.src.Choice)
 
-			// vote := spec.src.GetChoice().String()
-
-		})
+	_, err = in.s.proposalTable.Create(ctx, m1)
+	if err != nil {
+		fmt.Println(err)
+		panic("create proposal")
 	}
-	// tallyVotesInvariant(invar)
 
+	fmt.Println("It worked")
+	panic("")
 }

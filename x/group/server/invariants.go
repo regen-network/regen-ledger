@@ -8,14 +8,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/group"
 )
-
-// type Invar struct {
-// 	sdkCtx        sdk.Context
-// 	proposalTable orm.AutoUInt64Table
-// }
 
 func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
 	ir.RegisterRoute(group.ModuleName, "Tally-Votes", s.tallyVotesInvariant())
@@ -28,19 +22,23 @@ func (s serverImpl) AllInvariants() sdk.Invariant {
 }
 
 func (s serverImpl) tallyVotesInvariant() sdk.Invariant {
-	return func(sdkCtx sdk.Context) (string, bool) {
+	var sdkCtx sdk.Context
+	return tallyVotesInvariant(sdkCtx, s.proposalTable)
+}
+
+func tallyVotesInvariant(ctx sdk.Context, ProposalTable orm.AutoUInt64Table) sdk.Invariant {
+	return func(ctx sdk.Context) (string, bool) {
 		var msg string
 		var broken bool
-		ctx := types.Context{Context: sdkCtx}
 		if ctx.BlockHeight()-1 < 0 {
 			return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", "Not enough blocks to perform TallyVotesInvariant"), false
 		}
-		sdkCtx = sdkCtx.WithBlockHeight(ctx.BlockHeight() - 1)
-		curIt, err := s.proposalTable.PrefixScan(ctx, 1, math.MaxUint64)
+		prevCtx := ctx.WithBlockHeight(ctx.BlockHeight() - 1)
+		prevIt, err := ProposalTable.PrefixScan(ctx, 1, math.MaxUint64)
 		if err != nil {
 			panic(err)
 		}
-		prevIt, err := s.proposalTable.PrefixScan(sdkCtx, 1, math.MaxUint64)
+		curIt, err := ProposalTable.PrefixScan(prevCtx, 1, math.MaxUint64)
 		if err != nil {
 			panic(err)
 		}
