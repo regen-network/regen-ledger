@@ -21,7 +21,11 @@ This module allows
     - [Voting](01_concepts.md#voting)
     - [Executing Proposals](01_concepts.md#executing-proposals)
 2. **[State](02_state.md)**
-    - [FeeAllowance](02_state.md#feeallowance)
+    - [Group Table](02_state.md#group-table)
+    - [Group Member Table](02_state.md#group-member-table)
+    - [Group Account Table](02_state.md#group-account-table)
+    - [Proposal](02_state.md#proposal-table)
+    - [Vote Table](02_state.md#vote-table)
 3. **[Messages](03_messages.md)**
     - [Msg/GrantFeeAllowance](03_messages.md#msggrantfeeallowance)
     - [Msg/RevokeFeeAllowance](03_messages.md#msgrevokefeeallowance)
