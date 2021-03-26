@@ -14,8 +14,6 @@ import (
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
-
-	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
@@ -27,9 +25,11 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 	}
 }
 
-func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *servermodule.Manager {
-	return &servermodule.Manager{}
-}
+func setCustomModules(_ *RegenApp, interfaceRegistry types.InterfaceRegistry) {}
+
+// func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *servermodule.Manager {
+// 	return &servermodule.Manager{}
+// }
 
 func setCustomKVStoreKeys() []string {
 	return []string{}
