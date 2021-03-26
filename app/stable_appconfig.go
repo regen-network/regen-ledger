@@ -27,8 +27,6 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 	}
 }
 
-// func setCustomModules(_ *RegenApp, _ types.InterfaceRegistry) {}
-
 func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *servermodule.Manager {
 	return &servermodule.Manager{}
 }
