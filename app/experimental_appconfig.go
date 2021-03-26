@@ -72,7 +72,7 @@ func (app *RegenApp) setCustomKeeprs(bApp *baseapp.BaseApp, keys map[string]*sdk
 	govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.wasmKeeper, wasm.EnableAllProposals))
 }
 
-func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) {
+func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *servermodule.NewManager {
 
 	/* New Module Wiring START */
 	newModuleManager := servermodule.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
