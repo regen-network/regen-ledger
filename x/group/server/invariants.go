@@ -34,11 +34,11 @@ func tallyVotesInvariant(ctx sdk.Context, ProposalTable orm.AutoUInt64Table) sdk
 			return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", "Not enough blocks to perform TallyVotesInvariant"), false
 		}
 		prevCtx := ctx.WithBlockHeight(ctx.BlockHeight() - 1)
-		prevIt, err := ProposalTable.PrefixScan(ctx, 1, math.MaxUint64)
+		prevIt, err := ProposalTable.PrefixScan(prevCtx, 1, math.MaxUint64)
 		if err != nil {
 			panic(err)
 		}
-		curIt, err := ProposalTable.PrefixScan(prevCtx, 1, math.MaxUint64)
+		curIt, err := ProposalTable.PrefixScan(ctx, 1, math.MaxUint64)
 		if err != nil {
 			panic(err)
 		}
