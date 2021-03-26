@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,13 +18,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
-type invar struct {
-	s   serverImpl
-	cdc codec.Marshaler
-}
-
 func TestTallyVotesInvariant(t *testing.T) {
-	var in invar
+	var s serverImpl
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
 	key := sdk.NewKVStoreKey(group.ModuleName)
 	db := dbm.NewMemDB()
 	cms := store.NewCommitMultiStore(db)
@@ -32,46 +30,52 @@ func TestTallyVotesInvariant(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	ctx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
-	ctx = ctx.WithBlockHeight(10)
+	curCtx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
+	curCtx = curCtx.WithBlockHeight(10)
+	prevCtx := curCtx.WithBlockHeight(curCtx.BlockHeight() - 1)
 
 	// Proposal Table
-	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, key, &group.Proposal{}, in.cdc)
-	in.s.proposalByGroupAccountIndex = orm.NewIndex(proposalTableBuilder, ProposalByGroupAccountIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
-		account := value.(*group.Proposal).GroupAccount
-		addr, err := sdk.AccAddressFromBech32(account)
-		if err != nil {
-			return nil, err
-		}
-		return []orm.RowID{addr.Bytes()}, nil
-	})
-	in.s.proposalByProposerIndex = orm.NewIndex(proposalTableBuilder, ProposalByProposerIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
-		proposers := value.(*group.Proposal).Proposers
-		r := make([]orm.RowID, len(proposers))
-		for i := range proposers {
-			addr, err := sdk.AccAddressFromBech32(proposers[i])
-			if err != nil {
-				return nil, err
-			}
-			r[i] = addr.Bytes()
-		}
-		return r, nil
-	})
-	in.s.proposalTable = proposalTableBuilder.Build()
+	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, key, &group.Proposal{}, cdc)
+	s.proposalTable = proposalTableBuilder.Build()
 
 	_, _, addr1 := testdata.KeyTestPubAddr()
-	// addr1 := sdk.AccAddress("foo_________________")
+	_, _, addr2 := testdata.KeyTestPubAddr()
 
-	blockTime, err := gogotypes.TimestampProto(ctx.BlockTime())
+	curBlockTime, err := gogotypes.TimestampProto(curCtx.BlockTime())
+	if err != nil {
+		fmt.Println("block time conversion")
+		panic(err)
+	}
+	prevBlockTime, err := gogotypes.TimestampProto(prevCtx.BlockTime())
 	if err != nil {
 		fmt.Println("block time conversion")
 		panic(err)
 	}
 
-	m1 := &group.Proposal{
+	prevProposal := &group.Proposal{
 		GroupAccount:        addr1.String(),
 		Proposers:           []string{addr1.String()},
-		SubmittedAt:         *blockTime,
+		SubmittedAt:         *prevBlockTime,
+		GroupVersion:        1,
+		GroupAccountVersion: 1,
+		Result:              group.ProposalResultUnfinalized,
+		Status:              group.ProposalStatusSubmitted,
+		ExecutorResult:      group.ProposalExecutorResultNotRun,
+		Timeout: gogotypes.Timestamp{
+			Seconds: 600,
+		},
+		VoteState: group.Tally{
+			YesCount:     "1",
+			NoCount:      "0",
+			AbstainCount: "0",
+			VetoCount:    "0",
+		},
+	}
+
+	curProposal := &group.Proposal{
+		GroupAccount:        addr2.String(),
+		Proposers:           []string{addr2.String()},
+		SubmittedAt:         *curBlockTime,
 		GroupVersion:        1,
 		GroupAccountVersion: 1,
 		Result:              group.ProposalResultUnfinalized,
@@ -88,12 +92,21 @@ func TestTallyVotesInvariant(t *testing.T) {
 		},
 	}
 
-	_, err = in.s.proposalTable.Create(ctx, m1)
+	_, err = s.proposalTable.Create(prevCtx, prevProposal)
 	if err != nil {
 		fmt.Println(err)
 		panic("create proposal")
 	}
 
-	fmt.Println("It worked")
-	panic("")
+	_, err = s.proposalTable.Create(curCtx, curProposal)
+	if err != nil {
+		fmt.Println(err)
+		panic("create proposal")
+	}
+
+	msg, broken := tallyVotesInvariant(prevProposal, curProposal)
+	fmt.Println(msg, broken)
+	if broken == true {
+		panic("Invariant broken")
+	}
 }
