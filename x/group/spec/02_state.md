@@ -4,76 +4,77 @@ order: 2
 
 # State
 
-The `group` module uses the `orm` package to 
+The `group` module uses the `orm` package which provides table storage with support for
+primary keys and secondary indexes. `orm` also defines `Sequence` which is a persistent unique key generator based on a counter that can be used along with `Table`s.
+
+Here's the list of tables and associated sequences and indexes stored as part of the `group` module.
 
 ## Group Table
 
-`0x0 | ->`
+The `groupTable` stores `GroupInfo`: `0x0 | []byte(group_id) -> ProtocolBuffer(GroupInfo)`
 
 ### groupSeq
 
-`0x1 -> ProtocolBuffer(uint64)`
+The value of `groupSeq` is incremented when creating a new group and corresponds to the new `GroupId`: `0x1 | 0x1 -> BigEndian`
 
 ### groupByAdminIndex
 
-`0x2 | ->`
+`groupByAdminIndex` allows to retrieve groups by admin address using prefix `0x2`.
 
 ## Group Member Table
 
-`0x10 | ->`
+The `groupMemberTable` stores `GroupMember`s: `0x10 | []byte(GroupId) | []byte(member.Address) -> ProtocolBuffer(GroupMember)`
 
 ### groupMemberByGroupIndex
 
-`0x11 | ->`
+`groupMemberByGroupIndex` allows to retrieve group members by group id using prefix `0x11`.
 
 ### groupMemberByMemberIndex
 
-`0x12 | ->`
-
+`groupMemberByMemberIndex` allows to retrieve group members by member address using prefix `0x12`.
 
 ## Group Account Table
 
-`0x20 | ->`
+The `groupAccountTable` stores `GroupAccountInfo`: `0x20 | []byte(Address) -> ProtocolBuffer(GroupAccountInfo)`
 
 ### groupAccountSeq
 
-`0x21 ->`
+The value of `groupAccountSeq` is incremented when creating a new group account and is used to generate the new group account `Address`:
+`0x21 | 0x1 -> BigEndian`
 
 ### groupAccountByGroupIndex
 
+`groupAccountByGroupIndex` allows to retrieve group accounts by group id using prefix `0x22`.
 `0x22 | ->`
 
 ### groupAccountByAdminIndex
 
-`0x22 | ->`
-
+`groupAccountByAdminIndex` allows to retrieve group accounts by admin address using prefix `0x23`.
 
 ## Proposal Table
 
-`0x30 | ->`
+The `proposalTable` stores `Proposal`s: `0x30 | []byte(ProposalId) -> ProtocolBuffer(Proposal)`
 
 ### proposalSeq
 
-`0x31 ->`
+The value of `proposalSeq` is incremented when creating a new proposal and corresponds to the new `ProposalId`: `0x31 | 0x1 -> BigEndian`
 
 ### proposalByGroupAccountIndex
 
-`0x32 | ->`
+`proposalByGroupAccountIndex` allows to retrieve proposals by group account address using prefix `0x32`.
 
 ### proposalByProposerIndex
 
-`0x33 | ->`
-
+`proposalByProposerIndex` allows to retrieve proposals by proposer address using prefix `0x33`.
 
 ## Vote Table
 
-`0x40 | ->`
+The `voteTable` stores `Vote`s: `0x40 | []byte(ProposalId) | []byte(voter.Address) -> ProtocolBuffer(Vote)`
 
 ### voteByProposalIndex
 
-`0x41 | ->`
+`voteByProposalIndex` allows to retrieve votes by proposal id using prefix `0x41`.
 
 ### voteByVoterIndex
 
-`0x42 | ->`
-
+`voteByVoterIndex` allows to retrieve votes by voter address using prefix `0x42`.

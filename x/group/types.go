@@ -147,7 +147,7 @@ func (p ThresholdDecisionPolicy) ValidateBasic() error {
 func (g GroupMember) NaturalKey() []byte {
 	result := make([]byte, 8, 8+len(g.Member.Address))
 	copy(result[0:8], ID(g.GroupId).Bytes())
-	result = append(result, g.Member.Address...)
+
 	return result
 }
 
