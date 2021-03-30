@@ -10,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	gogotypes "github.com/gogo/protobuf/types"
+	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
@@ -51,61 +52,112 @@ func TestTallyVotesInvariant(t *testing.T) {
 		panic(err)
 	}
 
-	prevProposal := &group.Proposal{
-		GroupAccount:        addr1.String(),
-		Proposers:           []string{addr1.String()},
-		SubmittedAt:         *prevBlockTime,
-		GroupVersion:        1,
-		GroupAccountVersion: 1,
-		Result:              group.ProposalResultUnfinalized,
-		Status:              group.ProposalStatusSubmitted,
-		ExecutorResult:      group.ProposalExecutorResultNotRun,
-		Timeout: gogotypes.Timestamp{
-			Seconds: 600,
+	specs := map[string]struct {
+		prevReq *group.Proposal
+		curReq  *group.Proposal
+		expErr  bool
+	}{
+		"invariant not broken": {
+			prevReq: &group.Proposal{
+				GroupAccount:        addr1.String(),
+				Proposers:           []string{addr1.String()},
+				SubmittedAt:         *prevBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Result:              group.ProposalResultUnfinalized,
+				Status:              group.ProposalStatusSubmitted,
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
+				Timeout: gogotypes.Timestamp{
+					Seconds: 600,
+				},
+				VoteState: group.Tally{
+					YesCount:     "1",
+					NoCount:      "0",
+					AbstainCount: "0",
+					VetoCount:    "0",
+				},
+			},
+			curReq: &group.Proposal{
+				GroupAccount:        addr2.String(),
+				Proposers:           []string{addr2.String()},
+				SubmittedAt:         *curBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Result:              group.ProposalResultUnfinalized,
+				Status:              group.ProposalStatusSubmitted,
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
+				Timeout: gogotypes.Timestamp{
+					Seconds: 600,
+				},
+				VoteState: group.Tally{
+					YesCount:     "2",
+					NoCount:      "0",
+					AbstainCount: "0",
+					VetoCount:    "0",
+				},
+			},
 		},
-		VoteState: group.Tally{
-			YesCount:     "1",
-			NoCount:      "0",
-			AbstainCount: "0",
-			VetoCount:    "0",
+		"VoteState of current block must be greater than previous block": {
+			prevReq: &group.Proposal{
+				GroupAccount:        addr1.String(),
+				Proposers:           []string{addr1.String()},
+				SubmittedAt:         *prevBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Result:              group.ProposalResultUnfinalized,
+				Status:              group.ProposalStatusSubmitted,
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
+				Timeout: gogotypes.Timestamp{
+					Seconds: 600,
+				},
+				VoteState: group.Tally{
+					YesCount:     "2",
+					NoCount:      "0",
+					AbstainCount: "0",
+					VetoCount:    "0",
+				},
+			},
+			curReq: &group.Proposal{
+				GroupAccount:        addr2.String(),
+				Proposers:           []string{addr2.String()},
+				SubmittedAt:         *curBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Result:              group.ProposalResultUnfinalized,
+				Status:              group.ProposalStatusSubmitted,
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
+				Timeout: gogotypes.Timestamp{
+					Seconds: 600,
+				},
+				VoteState: group.Tally{
+					YesCount:     "1",
+					NoCount:      "0",
+					AbstainCount: "0",
+					VetoCount:    "0",
+				},
+			},
+			expErr: true,
 		},
 	}
+	for _, spec := range specs {
+		spec := spec
+		prevProposal := spec.prevReq
+		curProposal := spec.curReq
 
-	curProposal := &group.Proposal{
-		GroupAccount:        addr2.String(),
-		Proposers:           []string{addr2.String()},
-		SubmittedAt:         *curBlockTime,
-		GroupVersion:        1,
-		GroupAccountVersion: 1,
-		Result:              group.ProposalResultUnfinalized,
-		Status:              group.ProposalStatusSubmitted,
-		ExecutorResult:      group.ProposalExecutorResultNotRun,
-		Timeout: gogotypes.Timestamp{
-			Seconds: 600,
-		},
-		VoteState: group.Tally{
-			YesCount:     "2",
-			NoCount:      "0",
-			AbstainCount: "0",
-			VetoCount:    "0",
-		},
-	}
+		_, err = proposalTable.Create(prevCtx, prevProposal)
+		if err != nil {
+			fmt.Println(err)
+			panic("create proposal")
+		}
 
-	_, err = proposalTable.Create(prevCtx, prevProposal)
-	if err != nil {
-		fmt.Println(err)
-		panic("create proposal")
-	}
+		_, err = proposalTable.Create(curCtx, curProposal)
+		if err != nil {
+			fmt.Println(err)
+			panic("create proposal")
+		}
 
-	_, err = proposalTable.Create(curCtx, curProposal)
-	if err != nil {
-		fmt.Println(err)
-		panic("create proposal")
-	}
-
-	msg, broken := tallyVotesInvariant(prevProposal, curProposal)
-	fmt.Println(msg, broken)
-	if broken == true {
-		panic("Invariant broken")
+		var test require.TestingT
+		_, broken := tallyVotesInvariant(prevProposal, curProposal)
+		require.Equal(test, spec.expErr, broken)
 	}
 }
