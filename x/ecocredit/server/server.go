@@ -25,8 +25,8 @@ type serverImpl struct {
 
 	// we use a single sequence to avoid having the same string/ID identifying a class and batch denom
 	idSeq          orm.Sequence
-	classInfoTable orm.NaturalKeyTable
-	batchInfoTable orm.NaturalKeyTable
+	classInfoTable orm.PrimaryKeyTable
+	batchInfoTable orm.PrimaryKeyTable
 }
 
 func newServer(storeKey sdk.StoreKey, cdc codec.Marshaler) serverImpl {
@@ -34,10 +34,10 @@ func newServer(storeKey sdk.StoreKey, cdc codec.Marshaler) serverImpl {
 
 	s.idSeq = orm.NewSequence(storeKey, IDSeqPrefix)
 
-	classInfoTableBuilder := orm.NewNaturalKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ecocredit.ClassInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	classInfoTableBuilder := orm.NewPrimaryKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ecocredit.ClassInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.classInfoTable = classInfoTableBuilder.Build()
 
-	batchInfoTableBuilder := orm.NewNaturalKeyTableBuilder(BatchInfoTablePrefix, storeKey, &ecocredit.BatchInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	batchInfoTableBuilder := orm.NewPrimaryKeyTableBuilder(BatchInfoTablePrefix, storeKey, &ecocredit.BatchInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.batchInfoTable = batchInfoTableBuilder.Build()
 
 	return s

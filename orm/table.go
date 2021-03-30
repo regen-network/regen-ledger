@@ -191,7 +191,7 @@ func (a Table) Delete(ctx HasKVStore, rowID RowID) error {
 // Has checks if a key exists. Panics on nil key.
 func (a Table) Has(ctx HasKVStore, rowID RowID) bool {
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
-	it := store.Iterator(prefixRange(rowID))
+	it := store.Iterator(PrefixRange(rowID))
 	defer it.Close()
 	return it.Valid()
 }

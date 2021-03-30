@@ -20,6 +20,7 @@ type Configurator interface {
 	ModuleKey() RootModuleKey
 	Marshaler() codec.Marshaler
 	RequireServer(interface{})
+	RegisterGenesisHandlers(module.InitGenesisHandler, module.ExportGenesisHandler)
 
 	// Router() is temporarily added here to use in the group module.
 	// TODO: remove once #225 addressed

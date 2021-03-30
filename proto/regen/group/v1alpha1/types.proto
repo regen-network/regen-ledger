@@ -103,8 +103,8 @@ message GroupAccountInfo {
     option (gogoproto.equal)            = true;
     option (gogoproto.goproto_getters) = false;
 
-    // group_account is the group account address.
-    string group_account = 1;
+    // address is the group account address.
+    string address = 1;
     
     // group_id is the unique ID of the group.
     uint64 group_id = 2;
@@ -130,11 +130,11 @@ message GroupAccountInfo {
 message Proposal {
     option (gogoproto.goproto_getters) = false;
 
-    // proposal is the unique ID of the proposal.
+    // proposal_id is the unique id of the proposal.
     uint64 proposal_id = 1;
 
-    // group_account is the group account address.
-    string group_account = 2;
+    // address is the group account address.
+    string address = 2;
     
     // metadata is any arbitrary metadata to attached to the proposal.
     bytes metadata = 3;
@@ -146,11 +146,11 @@ message Proposal {
     google.protobuf.Timestamp submitted_at = 5 [(gogoproto.nullable) = false];
     
     // group_version tracks the version of the group that this proposal corresponds to.
-    // When group membership is changed, existing proposals for prior group versions will become invalid.
+    // When group membership is changed, existing proposals from previous group versions will become invalid.
     uint64 group_version = 6;
 
     // group_account_version tracks the version of the group account that this proposal corresponds to.
-    // When a decision policy is changed, an existing proposals for prior policy versions will become invalid.
+    // When a decision policy is changed, existing proposals from previous policy versions will become invalid.
     uint64 group_account_version = 7;
 
     // Status defines proposal statuses.
@@ -229,7 +229,6 @@ message Proposal {
 
     // msgs is a list of Msgs that will be executed if the proposal passes.
     repeated google.protobuf.Any msgs = 13;
-    
 }
 
 // Tally represents the sum of weighted votes.

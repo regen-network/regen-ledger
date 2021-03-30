@@ -21,13 +21,13 @@ message EventUpdateGroup {
 // EventCreateGroupAccount is an event emitted when a group account is created.
 message EventCreateGroupAccount {
 
-  // group_account is the address of the group account.
-  string group_account = 1;
+  // address is the address of the group account.
+  string address = 1;
 }
 
 // EventUpdateGroupAccount is an event emitted when a group account is updated.
 message EventUpdateGroupAccount {
 
-  // group_account is the address of the group account.
-  string group_account = 1;
+  // address is the address of the group account.
+  string address = 1;
 }

@@ -35,6 +35,7 @@ type IntegrationTestSuite struct {
 
 	ctx              context.Context
 	sdkCtx           sdk.Context
+	genesisCtx       types.Context
 	msgClient        group.MsgClient
 	queryClient      group.QueryClient
 	addr1            sdk.AccAddress
@@ -62,14 +63,14 @@ func NewIntegrationTestSuite(fixtureFactory *servermodule.FixtureFactory, accoun
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.fixture = s.fixtureFactory.Setup()
-	s.ctx = s.fixture.Context()
 
 	s.blockTime = time.Now().UTC()
 
 	// TODO clean up once types.Context merged upstream into sdk.Context
-	sdkCtx := s.ctx.(types.Context).WithBlockTime(s.blockTime)
-	s.sdkCtx = sdkCtx
-	s.ctx = types.Context{Context: sdkCtx}
+	sdkCtx := s.fixture.Context().(types.Context).WithBlockTime(s.blockTime)
+	s.sdkCtx, _ = sdkCtx.CacheContext()
+	s.ctx = types.Context{Context: s.sdkCtx}
+	s.genesisCtx = types.Context{Context: sdkCtx}
 
 	totalSupply := banktypes.NewSupply(sdk.NewCoins(sdk.NewInt64Coin("test", 400000000)))
 	s.bankKeeper.SetSupply(sdkCtx, totalSupply)
@@ -111,7 +112,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 	accountRes, err := s.msgClient.CreateGroupAccount(s.ctx, accountReq)
 	s.Require().NoError(err)
-	addr, err := sdk.AccAddressFromBech32(accountRes.GroupAccount)
+	addr, err := sdk.AccAddressFromBech32(accountRes.Address)
 	s.Require().NoError(err)
 	s.groupAccountAddr = addr
 
@@ -777,14 +778,14 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 				return
 			}
 			s.Require().NoError(err)
-			addr := res.GroupAccount
+			addr := res.Address
 
 			// then all data persisted
-			groupAccountRes, err := s.queryClient.GroupAccountInfo(s.ctx, &group.QueryGroupAccountInfoRequest{GroupAccount: addr})
+			groupAccountRes, err := s.queryClient.GroupAccountInfo(s.ctx, &group.QueryGroupAccountInfoRequest{Address: addr})
 			s.Require().NoError(err)
 
 			groupAccount := groupAccountRes.Info
-			s.Assert().Equal(addr, groupAccount.GroupAccount)
+			s.Assert().Equal(addr, groupAccount.Address)
 			s.Assert().Equal(myGroupID, groupAccount.GroupId)
 			s.Assert().Equal(spec.req.Admin, groupAccount.Admin)
 			s.Assert().Equal(spec.req.Metadata, groupAccount.Metadata)
@@ -805,13 +806,13 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
 	}{
 		"with wrong admin": {
 			req: &group.MsgUpdateGroupAccountAdminRequest{
-				Admin:        s.addr5.String(),
-				GroupAccount: groupAccountAddr,
-				NewAdmin:     newAdmin.String(),
+				Admin:    s.addr5.String(),
+				Address:  groupAccountAddr,
+				NewAdmin: newAdmin.String(),
 			},
 			expGroupAccount: &group.GroupAccountInfo{
 				Admin:          admin.String(),
-				GroupAccount:   groupAccountAddr,
+				Address:        groupAccountAddr,
 				GroupId:        myGroupID,
 				Metadata:       nil,
 				Version:        2,
@@ -821,13 +822,13 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
 		},
 		"with wrong group account": {
 			req: &group.MsgUpdateGroupAccountAdminRequest{
-				Admin:        admin.String(),
-				GroupAccount: s.addr5.String(),
-				NewAdmin:     newAdmin.String(),
+				Admin:    admin.String(),
+				Address:  s.addr5.String(),
+				NewAdmin: newAdmin.String(),
 			},
 			expGroupAccount: &group.GroupAccountInfo{
 				Admin:          admin.String(),
-				GroupAccount:   groupAccountAddr,
+				Address:        groupAccountAddr,
 				GroupId:        myGroupID,
 				Metadata:       nil,
 				Version:        2,
@@ -837,13 +838,13 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
 		},
 		"correct data": {
 			req: &group.MsgUpdateGroupAccountAdminRequest{
-				Admin:        admin.String(),
-				GroupAccount: groupAccountAddr,
-				NewAdmin:     newAdmin.String(),
+				Admin:    admin.String(),
+				Address:  groupAccountAddr,
+				NewAdmin: newAdmin.String(),
 			},
 			expGroupAccount: &group.GroupAccountInfo{
 				Admin:          newAdmin.String(),
-				GroupAccount:   groupAccountAddr,
+				Address:        groupAccountAddr,
 				GroupId:        myGroupID,
 				Metadata:       nil,
 				Version:        2,
@@ -866,7 +867,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
 			}
 			s.Require().NoError(err)
 			res, err := s.queryClient.GroupAccountInfo(s.ctx, &group.QueryGroupAccountInfoRequest{
-				GroupAccount: groupAccountAddr,
+				Address: groupAccountAddr,
 			})
 			s.Require().NoError(err)
 			s.Assert().Equal(spec.expGroupAccount, res.Info)
@@ -885,40 +886,40 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountMetadata() {
 	}{
 		"with wrong admin": {
 			req: &group.MsgUpdateGroupAccountMetadataRequest{
-				Admin:        s.addr5.String(),
-				GroupAccount: groupAccountAddr,
-				Metadata:     []byte("hello"),
+				Admin:    s.addr5.String(),
+				Address:  groupAccountAddr,
+				Metadata: []byte("hello"),
 			},
 			expGroupAccount: &group.GroupAccountInfo{},
 			expErr:          true,
 		},
 		"with wrong group account": {
 			req: &group.MsgUpdateGroupAccountMetadataRequest{
-				Admin:        admin.String(),
-				GroupAccount: s.addr5.String(),
-				Metadata:     []byte("hello"),
+				Admin:    admin.String(),
+				Address:  s.addr5.String(),
+				Metadata: []byte("hello"),
 			},
 			expGroupAccount: &group.GroupAccountInfo{},
 			expErr:          true,
 		},
 		"with comment too long": {
 			req: &group.MsgUpdateGroupAccountMetadataRequest{
-				Admin:        admin.String(),
-				GroupAccount: s.addr5.String(),
-				Metadata:     []byte(strings.Repeat("a", 256)),
+				Admin:    admin.String(),
+				Address:  s.addr5.String(),
+				Metadata: []byte(strings.Repeat("a", 256)),
 			},
 			expGroupAccount: &group.GroupAccountInfo{},
 			expErr:          true,
 		},
 		"correct data": {
 			req: &group.MsgUpdateGroupAccountMetadataRequest{
-				Admin:        admin.String(),
-				GroupAccount: groupAccountAddr,
-				Metadata:     []byte("hello"),
+				Admin:    admin.String(),
+				Address:  groupAccountAddr,
+				Metadata: []byte("hello"),
 			},
 			expGroupAccount: &group.GroupAccountInfo{
 				Admin:          admin.String(),
-				GroupAccount:   groupAccountAddr,
+				Address:        groupAccountAddr,
 				GroupId:        myGroupID,
 				Metadata:       []byte("hello"),
 				Version:        2,
@@ -941,7 +942,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountMetadata() {
 			}
 			s.Require().NoError(err)
 			res, err := s.queryClient.GroupAccountInfo(s.ctx, &group.QueryGroupAccountInfoRequest{
-				GroupAccount: groupAccountAddr,
+				Address: groupAccountAddr,
 			})
 			s.Require().NoError(err)
 			s.Assert().Equal(spec.expGroupAccount, res.Info)
@@ -961,8 +962,8 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountDecisionPolicy() {
 	}{
 		"with wrong admin": {
 			req: &group.MsgUpdateGroupAccountDecisionPolicyRequest{
-				Admin:        s.addr5.String(),
-				GroupAccount: groupAccountAddr,
+				Admin:   s.addr5.String(),
+				Address: groupAccountAddr,
 			},
 			policy:          policy,
 			expGroupAccount: &group.GroupAccountInfo{},
@@ -970,8 +971,8 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountDecisionPolicy() {
 		},
 		"with wrong group account": {
 			req: &group.MsgUpdateGroupAccountDecisionPolicyRequest{
-				Admin:        admin.String(),
-				GroupAccount: s.addr5.String(),
+				Admin:   admin.String(),
+				Address: s.addr5.String(),
 			},
 			policy:          policy,
 			expGroupAccount: &group.GroupAccountInfo{},
@@ -979,8 +980,8 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountDecisionPolicy() {
 		},
 		"correct data": {
 			req: &group.MsgUpdateGroupAccountDecisionPolicyRequest{
-				Admin:        admin.String(),
-				GroupAccount: groupAccountAddr,
+				Admin:   admin.String(),
+				Address: groupAccountAddr,
 			},
 			policy: group.NewThresholdDecisionPolicy(
 				"2",
@@ -988,7 +989,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountDecisionPolicy() {
 			),
 			expGroupAccount: &group.GroupAccountInfo{
 				Admin:          admin.String(),
-				GroupAccount:   groupAccountAddr,
+				Address:        groupAccountAddr,
 				GroupId:        myGroupID,
 				Metadata:       nil,
 				Version:        2,
@@ -1014,7 +1015,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountDecisionPolicy() {
 			}
 			s.Require().NoError(err)
 			res, err := s.queryClient.GroupAccountInfo(s.ctx, &group.QueryGroupAccountInfoRequest{
-				GroupAccount: groupAccountAddr,
+				Address: groupAccountAddr,
 			})
 			s.Require().NoError(err)
 			s.Assert().Equal(spec.expGroupAccount, res.Info)
@@ -1057,17 +1058,17 @@ func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 		s.Require().NoError(err)
 
 		expectAcc := &group.GroupAccountInfo{
-			GroupAccount: res.GroupAccount,
-			Admin:        admin.String(),
-			Metadata:     nil,
-			GroupId:      myGroupID,
-			Version:      uint64(1),
+			Address:  res.Address,
+			Admin:    admin.String(),
+			Metadata: nil,
+			GroupId:  myGroupID,
+			Version:  uint64(1),
 		}
 		err = expectAcc.SetDecisionPolicy(policies[i])
 		s.Require().NoError(err)
 		expectAccs[i] = expectAcc
 	}
-	sort.Slice(expectAccs, func(i, j int) bool { return expectAccs[i].GroupAccount < expectAccs[j].GroupAccount })
+	sort.Slice(expectAccs, func(i, j int) bool { return expectAccs[i].Address < expectAccs[j].Address })
 
 	// query group account by group
 	accountsByGroupRes, err := s.queryClient.GroupAccountsByGroup(s.ctx, &group.QueryGroupAccountsByGroupRequest{
@@ -1077,9 +1078,9 @@ func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 	accounts := accountsByGroupRes.GroupAccounts
 	s.Require().Equal(len(accounts), count)
 	// we reorder accounts by address to be able to compare them
-	sort.Slice(accounts, func(i, j int) bool { return accounts[i].GroupAccount < accounts[j].GroupAccount })
+	sort.Slice(accounts, func(i, j int) bool { return accounts[i].Address < accounts[j].Address })
 	for i := range accounts {
-		s.Assert().Equal(accounts[i].GroupAccount, expectAccs[i].GroupAccount)
+		s.Assert().Equal(accounts[i].Address, expectAccs[i].Address)
 		s.Assert().Equal(accounts[i].GroupId, expectAccs[i].GroupId)
 		s.Assert().Equal(accounts[i].Admin, expectAccs[i].Admin)
 		s.Assert().Equal(accounts[i].Metadata, expectAccs[i].Metadata)
@@ -1095,9 +1096,9 @@ func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 	accounts = accountsByAdminRes.GroupAccounts
 	s.Require().Equal(len(accounts), count)
 	// we reorder accounts by address to be able to compare them
-	sort.Slice(accounts, func(i, j int) bool { return accounts[i].GroupAccount < accounts[j].GroupAccount })
+	sort.Slice(accounts, func(i, j int) bool { return accounts[i].Address < accounts[j].Address })
 	for i := range accounts {
-		s.Assert().Equal(accounts[i].GroupAccount, expectAccs[i].GroupAccount)
+		s.Assert().Equal(accounts[i].Address, expectAccs[i].Address)
 		s.Assert().Equal(accounts[i].GroupId, expectAccs[i].GroupId)
 		s.Assert().Equal(accounts[i].Admin, expectAccs[i].Admin)
 		s.Assert().Equal(accounts[i].Metadata, expectAccs[i].Metadata)
@@ -1124,7 +1125,7 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 	s.Require().NoError(err)
 	bigThresholdRes, err := s.msgClient.CreateGroupAccount(s.ctx, accountReq)
 	s.Require().NoError(err)
-	bigThresholdAddr := bigThresholdRes.GroupAccount
+	bigThresholdAddr := bigThresholdRes.Address
 
 	specs := map[string]struct {
 		req    *group.MsgCreateProposalRequest
@@ -1133,14 +1134,14 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 	}{
 		"all good with minimal fields set": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: accountAddr.String(),
-				Proposers:    []string{s.addr2.String()},
+				Address:   accountAddr.String(),
+				Proposers: []string{s.addr2.String()},
 			},
 		},
 		"all good with good msg payload": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: accountAddr.String(),
-				Proposers:    []string{s.addr2.String()},
+				Address:   accountAddr.String(),
+				Proposers: []string{s.addr2.String()},
 			},
 			msgs: []sdk.Msg{&banktypes.MsgSend{
 				FromAddress: accountAddr.String(),
@@ -1150,9 +1151,9 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 		},
 		"metadata too long": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: accountAddr.String(),
-				Metadata:     bytes.Repeat([]byte{1}, 256),
-				Proposers:    []string{s.addr2.String()},
+				Address:   accountAddr.String(),
+				Metadata:  bytes.Repeat([]byte{1}, 256),
+				Proposers: []string{s.addr2.String()},
 			},
 			expErr: true,
 		},
@@ -1165,52 +1166,52 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 		},
 		"existing group account required": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: s.addr1.String(),
-				Proposers:    []string{s.addr2.String()},
+				Address:   s.addr1.String(),
+				Proposers: []string{s.addr2.String()},
 			},
 			expErr: true,
 		},
 		"impossible case: decision policy threshold > total group weight": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: bigThresholdAddr,
-				Proposers:    []string{s.addr2.String()},
+				Address:   bigThresholdAddr,
+				Proposers: []string{s.addr2.String()},
 			},
 			expErr: true,
 		},
 		"only group members can create a proposal": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: accountAddr.String(),
-				Proposers:    []string{s.addr3.String()},
+				Address:   accountAddr.String(),
+				Proposers: []string{s.addr3.String()},
 			},
 			expErr: true,
 		},
 		"all proposers must be in group": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: accountAddr.String(),
-				Proposers:    []string{s.addr2.String(), s.addr4.String()},
+				Address:   accountAddr.String(),
+				Proposers: []string{s.addr2.String(), s.addr4.String()},
 			},
 			expErr: true,
 		},
 		"proposers must not be empty": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: accountAddr.String(),
-				Proposers:    []string{s.addr2.String(), ""},
+				Address:   accountAddr.String(),
+				Proposers: []string{s.addr2.String(), ""},
 			},
 			expErr: true,
 		},
 		"admin that is not a group member can not create proposal": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: accountAddr.String(),
-				Metadata:     nil,
-				Proposers:    []string{s.addr1.String()},
+				Address:   accountAddr.String(),
+				Metadata:  nil,
+				Proposers: []string{s.addr1.String()},
 			},
 			expErr: true,
 		},
 		"reject msgs that are not authz by group account": {
 			req: &group.MsgCreateProposalRequest{
-				GroupAccount: accountAddr.String(),
-				Metadata:     nil,
-				Proposers:    []string{s.addr2.String()},
+				Address:   accountAddr.String(),
+				Metadata:  nil,
+				Proposers: []string{s.addr2.String()},
 			},
 			msgs:   []sdk.Msg{&testdata.MsgAuthenticated{Signers: []sdk.AccAddress{s.addr1}}},
 			expErr: true,
@@ -1235,7 +1236,7 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 			s.Require().NoError(err)
 			proposal := proposalRes.Proposal
 
-			s.Assert().Equal(accountAddr.String(), proposal.GroupAccount)
+			s.Assert().Equal(accountAddr.String(), proposal.Address)
 			s.Assert().Equal(spec.req.Metadata, proposal.Metadata)
 			s.Assert().Equal(spec.req.Proposers, proposal.Proposers)
 
@@ -1293,16 +1294,16 @@ func (s *IntegrationTestSuite) TestVote() {
 	s.Require().NoError(err)
 	accountRes, err := s.msgClient.CreateGroupAccount(s.ctx, accountReq)
 	s.Require().NoError(err)
-	accountAddr := accountRes.GroupAccount
+	accountAddr := accountRes.Address
 	groupAccount, err := sdk.AccAddressFromBech32(accountAddr)
 	s.Require().NoError(err)
 	s.Require().NotNil(groupAccount)
 
 	req := &group.MsgCreateProposalRequest{
-		GroupAccount: accountAddr,
-		Metadata:     nil,
-		Proposers:    []string{s.addr2.String()},
-		Msgs:         nil,
+		Address:   accountAddr,
+		Metadata:  nil,
+		Proposers: []string{s.addr2.String()},
+		Msgs:      nil,
 	}
 	proposalRes, err := s.msgClient.CreateProposal(s.ctx, req)
 	s.Require().NoError(err)
@@ -1310,12 +1311,12 @@ func (s *IntegrationTestSuite) TestVote() {
 
 	// proposals by group account
 	proposalsRes, err := s.queryClient.ProposalsByGroupAccount(s.ctx, &group.QueryProposalsByGroupAccountRequest{
-		GroupAccount: accountAddr,
+		Address: accountAddr,
 	})
 	s.Require().NoError(err)
 	proposals := proposalsRes.Proposals
 	s.Require().Equal(len(proposals), 1)
-	s.Assert().Equal(req.GroupAccount, proposals[0].GroupAccount)
+	s.Assert().Equal(req.Address, proposals[0].Address)
 	s.Assert().Equal(req.Metadata, proposals[0].Metadata)
 	s.Assert().Equal(req.Proposers, proposals[0].Proposers)
 
@@ -1826,9 +1827,9 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			setupProposal: func(ctx context.Context) uint64 {
 				myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
 				_, err := s.msgClient.UpdateGroupAccountMetadata(ctx, &group.MsgUpdateGroupAccountMetadataRequest{
-					Admin:        s.addr1.String(),
-					GroupAccount: s.groupAccountAddr.String(),
-					Metadata:     []byte("group account modified before tally"),
+					Admin:    s.addr1.String(),
+					Address:  s.groupAccountAddr.String(),
+					Metadata: []byte("group account modified before tally"),
 				})
 				s.Require().NoError(err)
 				return myProposalID
@@ -1938,9 +1939,9 @@ func createProposal(
 	ctx context.Context, s *IntegrationTestSuite, msgs []sdk.Msg,
 	proposers []string) uint64 {
 	proposalReq := &group.MsgCreateProposalRequest{
-		GroupAccount: s.groupAccountAddr.String(),
-		Proposers:    proposers,
-		Metadata:     nil,
+		Address:   s.groupAccountAddr.String(),
+		Proposers: proposers,
+		Metadata:  nil,
 	}
 	err := proposalReq.SetMsgs(msgs)
 	s.Require().NoError(err)
@@ -1993,5 +1994,5 @@ func createGroupAndGroupAccount(
 	groupAccountRes, err := s.msgClient.CreateGroupAccount(s.ctx, groupAccount)
 	s.Require().NoError(err)
 
-	return groupAccountRes.GroupAccount, myGroupID, policy
+	return groupAccountRes.Address, myGroupID, policy
 }
