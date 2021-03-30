@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -27,9 +26,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 	cms := store.NewCommitMultiStore(db)
 	cms.MountStoreWithDB(key, sdk.StoreTypeIAVL, db)
 	err := cms.LoadLatestVersion()
-	if err != nil {
-		panic(err)
-	}
+	require.NoError(t, err)
 	curCtx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
 	curCtx = curCtx.WithBlockHeight(10)
 	prevCtx, _ := curCtx.CacheContext()
@@ -43,15 +40,9 @@ func TestTallyVotesInvariant(t *testing.T) {
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
 	curBlockTime, err := gogotypes.TimestampProto(curCtx.BlockTime())
-	if err != nil {
-		fmt.Println("block time conversion")
-		panic(err)
-	}
+	require.NoError(t, err)
 	prevBlockTime, err := gogotypes.TimestampProto(prevCtx.BlockTime())
-	if err != nil {
-		fmt.Println("block time conversion")
-		panic(err)
-	}
+	require.NoError(t, err)
 
 	specs := map[string]struct {
 		prevReq []*group.Proposal

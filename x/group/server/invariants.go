@@ -4,7 +4,6 @@ import (
 	"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/group"
@@ -39,62 +38,57 @@ func tallyVotesInvariant(ctx sdk.Context, prevCtx sdk.Context, proposalTable orm
 
 	prevIt, err := proposalTable.PrefixScan(prevCtx, 1, math.MaxUint64)
 	if err != nil {
-		panic(err)
+		return err.Error(), true
 	}
 	curIt, err := proposalTable.PrefixScan(ctx, 1, math.MaxUint64)
 	if err != nil {
-		panic(err)
+		return err.Error(), true
 	}
 
-	var t require.TestingT
 	var curProposals []*group.Proposal
 	_, err = orm.ReadAll(curIt, &curProposals)
-	require.NoError(t, err, &curProposals)
+	if err != nil {
+		return err.Error(), true
+	}
 
 	var prevProposals []*group.Proposal
 	_, err = orm.ReadAll(prevIt, &prevProposals)
-	require.NoError(t, err, &curProposals)
+	if err != nil {
+		return err.Error(), true
+	}
 
 	for i := 0; i < len(prevProposals) && i < len(curProposals); i++ {
 		prevYesCount, err := prevProposals[i].VoteState.GetYesCount()
 		if err != nil {
-			broken = true
-			msg = err.Error()
+			return err.Error(), true
 		}
 		curYesCount, err := curProposals[i].VoteState.GetYesCount()
 		if err != nil {
-			broken = true
-			msg = err.Error()
+			return err.Error(), true
 		}
 		prevNoCount, err := prevProposals[i].VoteState.GetNoCount()
 		if err != nil {
-			broken = true
-			msg = err.Error()
+			return err.Error(), true
 		}
 		curNoCount, err := curProposals[i].VoteState.GetNoCount()
 		if err != nil {
-			broken = true
-			msg = err.Error()
+			return err.Error(), true
 		}
 		prevAbstainCount, err := prevProposals[i].VoteState.GetAbstainCount()
 		if err != nil {
-			broken = true
-			msg = err.Error()
+			return err.Error(), true
 		}
 		curAbstainCount, err := curProposals[i].VoteState.GetAbstainCount()
 		if err != nil {
-			broken = true
-			msg = err.Error()
+			return err.Error(), true
 		}
 		prevVetoCount, err := prevProposals[i].VoteState.GetVetoCount()
 		if err != nil {
-			broken = true
-			msg = err.Error()
+			return err.Error(), true
 		}
 		curVetoCount, err := curProposals[i].VoteState.GetVetoCount()
 		if err != nil {
-			broken = true
-			msg = err.Error()
+			return err.Error(), true
 		}
 		if (curYesCount.Cmp(prevYesCount) == -1) || (curNoCount.Cmp(prevNoCount) == -1) || (curAbstainCount.Cmp(prevAbstainCount) == -1) || (curVetoCount.Cmp(prevVetoCount) == -1) {
 			broken = true
