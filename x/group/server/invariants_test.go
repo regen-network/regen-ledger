@@ -97,7 +97,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 				},
 			},
 		},
-		"VoteState of current block must be greater than previous block": {
+		"invariant broken": {
 			prevReq: &group.Proposal{
 				GroupAccount:        addr1.String(),
 				Proposers:           []string{addr1.String()},
