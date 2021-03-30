@@ -53,230 +53,253 @@ func TestTallyVotesInvariant(t *testing.T) {
 	}
 
 	specs := map[string]struct {
-		prevReq *group.Proposal
-		curReq  *group.Proposal
+		prevReq []*group.Proposal
+		curReq  []*group.Proposal
 		expErr  bool
 	}{
 		"invariant not broken": {
-			prevReq: &group.Proposal{
-				GroupAccount:        addr1.String(),
-				Proposers:           []string{addr1.String()},
-				SubmittedAt:         *prevBlockTime,
-				GroupVersion:        1,
-				GroupAccountVersion: 1,
-				Result:              group.ProposalResultUnfinalized,
-				Status:              group.ProposalStatusSubmitted,
-				ExecutorResult:      group.ProposalExecutorResultNotRun,
-				Timeout: gogotypes.Timestamp{
-					Seconds: 600,
-				},
-				VoteState: group.Tally{
-					YesCount:     "1",
-					NoCount:      "0",
-					AbstainCount: "0",
-					VetoCount:    "0",
+			prevReq: []*group.Proposal{
+				{
+					GroupAccount:        addr1.String(),
+					Proposers:           []string{addr1.String()},
+					SubmittedAt:         *prevBlockTime,
+					GroupVersion:        1,
+					GroupAccountVersion: 1,
+					Result:              group.ProposalResultUnfinalized,
+					Status:              group.ProposalStatusSubmitted,
+					ExecutorResult:      group.ProposalExecutorResultNotRun,
+					Timeout: gogotypes.Timestamp{
+						Seconds: 600,
+					},
+					VoteState: group.Tally{
+						YesCount:     "1",
+						NoCount:      "0",
+						AbstainCount: "0",
+						VetoCount:    "0",
+					},
 				},
 			},
-			curReq: &group.Proposal{
-				GroupAccount:        addr2.String(),
-				Proposers:           []string{addr2.String()},
-				SubmittedAt:         *curBlockTime,
-				GroupVersion:        1,
-				GroupAccountVersion: 1,
-				Result:              group.ProposalResultUnfinalized,
-				Status:              group.ProposalStatusSubmitted,
-				ExecutorResult:      group.ProposalExecutorResultNotRun,
-				Timeout: gogotypes.Timestamp{
-					Seconds: 600,
-				},
-				VoteState: group.Tally{
-					YesCount:     "2",
-					NoCount:      "0",
-					AbstainCount: "0",
-					VetoCount:    "0",
+
+			curReq: []*group.Proposal{
+				{
+					GroupAccount:        addr2.String(),
+					Proposers:           []string{addr2.String()},
+					SubmittedAt:         *curBlockTime,
+					GroupVersion:        1,
+					GroupAccountVersion: 1,
+					Result:              group.ProposalResultUnfinalized,
+					Status:              group.ProposalStatusSubmitted,
+					ExecutorResult:      group.ProposalExecutorResultNotRun,
+					Timeout: gogotypes.Timestamp{
+						Seconds: 600,
+					},
+					VoteState: group.Tally{
+						YesCount:     "2",
+						NoCount:      "0",
+						AbstainCount: "0",
+						VetoCount:    "0",
+					},
 				},
 			},
 		},
 		"current block yes vote count must be greater than previous block yes vote count": {
-			prevReq: &group.Proposal{
-				GroupAccount:        addr1.String(),
-				Proposers:           []string{addr1.String()},
-				SubmittedAt:         *prevBlockTime,
-				GroupVersion:        1,
-				GroupAccountVersion: 1,
-				Result:              group.ProposalResultUnfinalized,
-				Status:              group.ProposalStatusSubmitted,
-				ExecutorResult:      group.ProposalExecutorResultNotRun,
-				Timeout: gogotypes.Timestamp{
-					Seconds: 600,
-				},
-				VoteState: group.Tally{
-					YesCount:     "2",
-					NoCount:      "0",
-					AbstainCount: "0",
-					VetoCount:    "0",
+			prevReq: []*group.Proposal{
+				{
+					GroupAccount:        addr1.String(),
+					Proposers:           []string{addr1.String()},
+					SubmittedAt:         *prevBlockTime,
+					GroupVersion:        1,
+					GroupAccountVersion: 1,
+					Result:              group.ProposalResultUnfinalized,
+					Status:              group.ProposalStatusSubmitted,
+					ExecutorResult:      group.ProposalExecutorResultNotRun,
+					Timeout: gogotypes.Timestamp{
+						Seconds: 600,
+					},
+					VoteState: group.Tally{
+						YesCount:     "2",
+						NoCount:      "0",
+						AbstainCount: "0",
+						VetoCount:    "0",
+					},
 				},
 			},
-			curReq: &group.Proposal{
-				GroupAccount:        addr2.String(),
-				Proposers:           []string{addr2.String()},
-				SubmittedAt:         *curBlockTime,
-				GroupVersion:        1,
-				GroupAccountVersion: 1,
-				Result:              group.ProposalResultUnfinalized,
-				Status:              group.ProposalStatusSubmitted,
-				ExecutorResult:      group.ProposalExecutorResultNotRun,
-				Timeout: gogotypes.Timestamp{
-					Seconds: 600,
-				},
-				VoteState: group.Tally{
-					YesCount:     "1",
-					NoCount:      "0",
-					AbstainCount: "0",
-					VetoCount:    "0",
+			curReq: []*group.Proposal{
+				{
+					GroupAccount:        addr2.String(),
+					Proposers:           []string{addr2.String()},
+					SubmittedAt:         *curBlockTime,
+					GroupVersion:        1,
+					GroupAccountVersion: 1,
+					Result:              group.ProposalResultUnfinalized,
+					Status:              group.ProposalStatusSubmitted,
+					ExecutorResult:      group.ProposalExecutorResultNotRun,
+					Timeout: gogotypes.Timestamp{
+						Seconds: 600,
+					},
+					VoteState: group.Tally{
+						YesCount:     "1",
+						NoCount:      "0",
+						AbstainCount: "0",
+						VetoCount:    "0",
+					},
 				},
 			},
 			expErr: true,
 		},
 		"current block no vote count must be greater than previous block no vote count": {
-			prevReq: &group.Proposal{
-				GroupAccount:        addr1.String(),
-				Proposers:           []string{addr1.String()},
-				SubmittedAt:         *prevBlockTime,
-				GroupVersion:        1,
-				GroupAccountVersion: 1,
-				Result:              group.ProposalResultUnfinalized,
-				Status:              group.ProposalStatusSubmitted,
-				ExecutorResult:      group.ProposalExecutorResultNotRun,
-				Timeout: gogotypes.Timestamp{
-					Seconds: 600,
-				},
-				VoteState: group.Tally{
-					YesCount:     "0",
-					NoCount:      "2",
-					AbstainCount: "0",
-					VetoCount:    "0",
+			prevReq: []*group.Proposal{
+				{
+					GroupAccount:        addr1.String(),
+					Proposers:           []string{addr1.String()},
+					SubmittedAt:         *prevBlockTime,
+					GroupVersion:        1,
+					GroupAccountVersion: 1,
+					Result:              group.ProposalResultUnfinalized,
+					Status:              group.ProposalStatusSubmitted,
+					ExecutorResult:      group.ProposalExecutorResultNotRun,
+					Timeout: gogotypes.Timestamp{
+						Seconds: 600,
+					},
+					VoteState: group.Tally{
+						YesCount:     "0",
+						NoCount:      "2",
+						AbstainCount: "0",
+						VetoCount:    "0",
+					},
 				},
 			},
-			curReq: &group.Proposal{
-				GroupAccount:        addr2.String(),
-				Proposers:           []string{addr2.String()},
-				SubmittedAt:         *curBlockTime,
-				GroupVersion:        1,
-				GroupAccountVersion: 1,
-				Result:              group.ProposalResultUnfinalized,
-				Status:              group.ProposalStatusSubmitted,
-				ExecutorResult:      group.ProposalExecutorResultNotRun,
-				Timeout: gogotypes.Timestamp{
-					Seconds: 600,
-				},
-				VoteState: group.Tally{
-					YesCount:     "0",
-					NoCount:      "1",
-					AbstainCount: "0",
-					VetoCount:    "0",
+			curReq: []*group.Proposal{
+				{
+					GroupAccount:        addr2.String(),
+					Proposers:           []string{addr2.String()},
+					SubmittedAt:         *curBlockTime,
+					GroupVersion:        1,
+					GroupAccountVersion: 1,
+					Result:              group.ProposalResultUnfinalized,
+					Status:              group.ProposalStatusSubmitted,
+					ExecutorResult:      group.ProposalExecutorResultNotRun,
+					Timeout: gogotypes.Timestamp{
+						Seconds: 600,
+					},
+					VoteState: group.Tally{
+						YesCount:     "0",
+						NoCount:      "1",
+						AbstainCount: "0",
+						VetoCount:    "0",
+					},
 				},
 			},
 			expErr: true,
 		},
 		"current block abstain vote count must be greater than previous block abstain vote count": {
-			prevReq: &group.Proposal{
-				GroupAccount:        addr1.String(),
-				Proposers:           []string{addr1.String()},
-				SubmittedAt:         *prevBlockTime,
-				GroupVersion:        1,
-				GroupAccountVersion: 1,
-				Result:              group.ProposalResultUnfinalized,
-				Status:              group.ProposalStatusSubmitted,
-				ExecutorResult:      group.ProposalExecutorResultNotRun,
-				Timeout: gogotypes.Timestamp{
-					Seconds: 600,
-				},
-				VoteState: group.Tally{
-					YesCount:     "0",
-					NoCount:      "0",
-					AbstainCount: "2",
-					VetoCount:    "0",
+			prevReq: []*group.Proposal{
+				{
+					GroupAccount:        addr1.String(),
+					Proposers:           []string{addr1.String()},
+					SubmittedAt:         *prevBlockTime,
+					GroupVersion:        1,
+					GroupAccountVersion: 1,
+					Result:              group.ProposalResultUnfinalized,
+					Status:              group.ProposalStatusSubmitted,
+					ExecutorResult:      group.ProposalExecutorResultNotRun,
+					Timeout: gogotypes.Timestamp{
+						Seconds: 600,
+					},
+					VoteState: group.Tally{
+						YesCount:     "0",
+						NoCount:      "0",
+						AbstainCount: "2",
+						VetoCount:    "0",
+					},
 				},
 			},
-			curReq: &group.Proposal{
-				GroupAccount:        addr2.String(),
-				Proposers:           []string{addr2.String()},
-				SubmittedAt:         *curBlockTime,
-				GroupVersion:        1,
-				GroupAccountVersion: 1,
-				Result:              group.ProposalResultUnfinalized,
-				Status:              group.ProposalStatusSubmitted,
-				ExecutorResult:      group.ProposalExecutorResultNotRun,
-				Timeout: gogotypes.Timestamp{
-					Seconds: 600,
-				},
-				VoteState: group.Tally{
-					YesCount:     "0",
-					NoCount:      "0",
-					AbstainCount: "1",
-					VetoCount:    "0",
+			curReq: []*group.Proposal{
+				{
+					GroupAccount:        addr2.String(),
+					Proposers:           []string{addr2.String()},
+					SubmittedAt:         *curBlockTime,
+					GroupVersion:        1,
+					GroupAccountVersion: 1,
+					Result:              group.ProposalResultUnfinalized,
+					Status:              group.ProposalStatusSubmitted,
+					ExecutorResult:      group.ProposalExecutorResultNotRun,
+					Timeout: gogotypes.Timestamp{
+						Seconds: 600,
+					},
+					VoteState: group.Tally{
+						YesCount:     "0",
+						NoCount:      "0",
+						AbstainCount: "1",
+						VetoCount:    "0",
+					},
 				},
 			},
 			expErr: true,
 		},
 		"current block veto vote count must be greater than previous block veto vote count": {
-			prevReq: &group.Proposal{
-				GroupAccount:        addr1.String(),
-				Proposers:           []string{addr1.String()},
-				SubmittedAt:         *prevBlockTime,
-				GroupVersion:        1,
-				GroupAccountVersion: 1,
-				Result:              group.ProposalResultUnfinalized,
-				Status:              group.ProposalStatusSubmitted,
-				ExecutorResult:      group.ProposalExecutorResultNotRun,
-				Timeout: gogotypes.Timestamp{
-					Seconds: 600,
-				},
-				VoteState: group.Tally{
-					YesCount:     "0",
-					NoCount:      "0",
-					AbstainCount: "0",
-					VetoCount:    "2",
+			prevReq: []*group.Proposal{
+				{
+					GroupAccount:        addr1.String(),
+					Proposers:           []string{addr1.String()},
+					SubmittedAt:         *prevBlockTime,
+					GroupVersion:        1,
+					GroupAccountVersion: 1,
+					Result:              group.ProposalResultUnfinalized,
+					Status:              group.ProposalStatusSubmitted,
+					ExecutorResult:      group.ProposalExecutorResultNotRun,
+					Timeout: gogotypes.Timestamp{
+						Seconds: 600,
+					},
+					VoteState: group.Tally{
+						YesCount:     "0",
+						NoCount:      "0",
+						AbstainCount: "0",
+						VetoCount:    "2",
+					},
 				},
 			},
-			curReq: &group.Proposal{
-				GroupAccount:        addr2.String(),
-				Proposers:           []string{addr2.String()},
-				SubmittedAt:         *curBlockTime,
-				GroupVersion:        1,
-				GroupAccountVersion: 1,
-				Result:              group.ProposalResultUnfinalized,
-				Status:              group.ProposalStatusSubmitted,
-				ExecutorResult:      group.ProposalExecutorResultNotRun,
-				Timeout: gogotypes.Timestamp{
-					Seconds: 600,
-				},
-				VoteState: group.Tally{
-					YesCount:     "0",
-					NoCount:      "0",
-					AbstainCount: "0",
-					VetoCount:    "1",
+			curReq: []*group.Proposal{
+				{
+					GroupAccount:        addr2.String(),
+					Proposers:           []string{addr2.String()},
+					SubmittedAt:         *curBlockTime,
+					GroupVersion:        1,
+					GroupAccountVersion: 1,
+					Result:              group.ProposalResultUnfinalized,
+					Status:              group.ProposalStatusSubmitted,
+					ExecutorResult:      group.ProposalExecutorResultNotRun,
+					Timeout: gogotypes.Timestamp{
+						Seconds: 600,
+					},
+					VoteState: group.Tally{
+						YesCount:     "0",
+						NoCount:      "0",
+						AbstainCount: "0",
+						VetoCount:    "1",
+					},
 				},
 			},
 			expErr: true,
 		},
 	}
+
 	for _, spec := range specs {
-		spec := spec
-		prevProposal := spec.prevReq
-		curProposal := spec.curReq
 
-		_, err = proposalTable.Create(prevCtx, prevProposal)
-		if err != nil {
-			fmt.Println(err)
-			panic("create proposal")
-		}
+		prevProposals := spec.prevReq
+		curProposals := spec.curReq
 
-		_, err = proposalTable.Create(curCtx, curProposal)
-		if err != nil {
-			fmt.Println(err)
-			panic("create proposal")
+		for i := 0; i < len(prevProposals) && i < len(curProposals); i++ {
+			_, err = proposalTable.Create(prevCtx, prevProposals[i])
+			if err != nil {
+				fmt.Println(err)
+				panic("create proposal")
+			}
+			_, err = proposalTable.Create(curCtx, curProposals[i])
+			if err != nil {
+				fmt.Println(err)
+				panic("create proposal")
+			}
 		}
 
 		var test require.TestingT
