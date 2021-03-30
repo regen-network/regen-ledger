@@ -47,5 +47,6 @@ func (d DerivedModuleKey) ModuleID() types.ModuleID {
 }
 
 func (d DerivedModuleKey) Address() sdk.AccAddress {
+	// TODO: here we should use Composed address,  but ModuleID dosesn't know if it's composed or not.
 	return d.ModuleID().Address()
 }
