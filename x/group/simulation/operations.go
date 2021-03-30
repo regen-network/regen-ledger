@@ -324,9 +324,9 @@ func SimulateMsgCreateProposal(ak exported.AccountKeeper, bk exported.BankKeeper
 		}
 
 		msg := group.MsgCreateProposalRequest{
-			GroupAccount: groupAccounts[0].GroupAccount,
-			Proposers:    []string{acc.Address.String()},
-			Metadata:     []byte(simtypes.RandStringOfLength(r, 10)),
+			Address:   groupAccounts[0].Address,
+			Proposers: []string{acc.Address.String()},
+			Metadata:  []byte(simtypes.RandStringOfLength(r, 10)),
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
@@ -582,9 +582,9 @@ func SimulateMsgUpdateGroupAccountAdmin(ak exported.AccountKeeper, bk exported.B
 		}
 
 		msg := group.MsgUpdateGroupAccountAdminRequest{
-			Admin:        groupAccounts[0].Admin,
-			GroupAccount: groupAccounts[0].GroupAccount,
-			NewAdmin:     acc2.Address.String(),
+			Admin:    groupAccounts[0].Admin,
+			Address:  groupAccounts[0].Address,
+			NewAdmin: acc2.Address.String(),
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
@@ -649,7 +649,7 @@ func SimulateMsgUpdateGroupAccountDecisionPolicy(ak exported.AccountKeeper,
 			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountDecisionPolicy, fmt.Sprintf("fail to decide bech32 address: %s", err.Error())), nil, nil
 		}
 
-		groupAccountBech32, err := sdk.AccAddressFromBech32(groupAccounts[0].GroupAccount)
+		groupAccountBech32, err := sdk.AccAddressFromBech32(groupAccounts[0].Address)
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountDecisionPolicy, fmt.Sprintf("fail to decide bech32 address: %s", err.Error())), nil, nil
 		}
@@ -721,9 +721,9 @@ func SimulateMsgUpdateGroupAccountComment(ak exported.AccountKeeper,
 		}
 
 		msg := group.MsgUpdateGroupAccountMetadataRequest{
-			Admin:        groupAccounts[0].Admin,
-			GroupAccount: groupAccounts[0].GroupAccount,
-			Metadata:     []byte(simtypes.RandStringOfLength(r, 10)),
+			Admin:    groupAccounts[0].Admin,
+			Address:  groupAccounts[0].Address,
+			Metadata: []byte(simtypes.RandStringOfLength(r, 10)),
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
@@ -783,7 +783,7 @@ func SimulateMsgVote(ak exported.AccountKeeper,
 			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "no group account found"), nil, nil
 		}
 
-		proposalsResult, err := queryClient.ProposalsByGroupAccount(ctx, &group.QueryProposalsByGroupAccountRequest{GroupAccount: groupAccounts[0].GroupAccount})
+		proposalsResult, err := queryClient.ProposalsByGroupAccount(ctx, &group.QueryProposalsByGroupAccountRequest{Address: groupAccounts[0].Address})
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "fail to query group info"), nil, err
 		}
@@ -880,7 +880,7 @@ func SimulateMsgExec(ak exported.AccountKeeper,
 			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "no group account found"), nil, nil
 		}
 
-		proposalsResult, err := queryClient.ProposalsByGroupAccount(ctx, &group.QueryProposalsByGroupAccountRequest{GroupAccount: groupAccounts[0].GroupAccount})
+		proposalsResult, err := queryClient.ProposalsByGroupAccount(ctx, &group.QueryProposalsByGroupAccountRequest{Address: groupAccounts[0].Address})
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "fail to query group info"), nil, err
 		}
