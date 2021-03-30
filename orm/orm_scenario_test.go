@@ -1,4 +1,4 @@
-package orm
+package orm_test
 
 import (
 	"bytes"
@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/testutil/testdata"
 )
 
@@ -20,11 +21,12 @@ func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
 	cdc := codec.NewProtoCodec(interfaceRegistry)
 
 	storeKey := sdk.NewKVStoreKey("test")
-	ctx := NewMockContext()
+	ctx := orm.NewMockContext()
 
 	k := NewGroupKeeper(storeKey, cdc)
 
 	g := testdata.GroupInfo{
+		GroupId:     1,
 		Description: "my test",
 		Admin:       sdk.AccAddress([]byte("admin-address")),
 	}
@@ -83,22 +85,23 @@ func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
 	require.False(t, exists)
 }
 
-func TestKeeperEndToEndWithNaturalKeyTable(t *testing.T) {
+func TestKeeperEndToEndWithPrimaryKeyTable(t *testing.T) {
 	interfaceRegistry := types.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
 
 	storeKey := sdk.NewKVStoreKey("test")
-	ctx := NewMockContext()
+	ctx := orm.NewMockContext()
 
 	k := NewGroupKeeper(storeKey, cdc)
 
 	g := testdata.GroupInfo{
+		GroupId:     1,
 		Description: "my test",
 		Admin:       sdk.AccAddress([]byte("admin-address")),
 	}
 
 	m := testdata.GroupMember{
-		Group:  sdk.AccAddress(EncodeSequence(1)),
+		Group:  sdk.AccAddress(orm.EncodeSequence(1)),
 		Member: sdk.AccAddress([]byte("member-address")),
 		Weight: 10,
 	}
@@ -109,47 +112,47 @@ func TestKeeperEndToEndWithNaturalKeyTable(t *testing.T) {
 	err = k.groupMemberTable.Create(ctx, &m)
 	require.NoError(t, err)
 
-	// then we should find it by natural key
-	naturalKey := m.NaturalKey()
-	exists := k.groupMemberTable.Has(ctx, naturalKey)
+	// then we should find it by primary key
+	primaryKey := m.PrimaryKey()
+	exists := k.groupMemberTable.Has(ctx, primaryKey)
 	require.True(t, exists)
-	// and load it by natural key
+	// and load it by primary key
 	var loaded testdata.GroupMember
-	err = k.groupMemberTable.GetOne(ctx, naturalKey, &loaded)
+	err = k.groupMemberTable.GetOne(ctx, primaryKey, &loaded)
 	require.NoError(t, err)
 
 	// then values should match expectations
 	require.Equal(t, m, loaded)
 
 	// and then the data should exists in MultiKeyIndex
-	exists = k.groupMemberByGroupIndex.Has(ctx, EncodeSequence(groupRowID))
+	exists = k.groupMemberByGroupIndex.Has(ctx, orm.EncodeSequence(groupRowID))
 	require.True(t, exists)
 
 	// and when loaded from MultiKeyIndex
-	it, err := k.groupMemberByGroupIndex.Get(ctx, EncodeSequence(groupRowID))
+	it, err := k.groupMemberByGroupIndex.Get(ctx, orm.EncodeSequence(groupRowID))
 	require.NoError(t, err)
 
 	// then values should match as before
-	_, err = First(it, &loaded)
+	_, err = orm.First(it, &loaded)
 	require.NoError(t, err)
 
 	assert.Equal(t, m, loaded)
-	// and when we create another entry with the same natural key
+	// and when we create another entry with the same primary key
 	err = k.groupMemberTable.Create(ctx, &m)
-	// then it should fail as the natural key must be unique
-	require.True(t, ErrUniqueConstraint.Is(err), err)
+	// then it should fail as the primary key must be unique
+	require.True(t, orm.ErrUniqueConstraint.Is(err), err)
 
-	// and when entity updated with new natural key
+	// and when entity updated with new primary key
 	updatedMember := &testdata.GroupMember{
 		Group:  m.Group,
 		Member: []byte("new-member-address"),
 		Weight: m.Weight,
 	}
-	// then it should fail as the natural key is immutable
+	// then it should fail as the primary key is immutable
 	err = k.groupMemberTable.Save(ctx, updatedMember)
 	require.Error(t, err)
 
-	// and when entity updated with non natural key attribute modified
+	// and when entity updated with non primary key attribute modified
 	updatedMember = &testdata.GroupMember{
 		Group:  m.Group,
 		Member: m.Member,
@@ -163,56 +166,57 @@ func TestKeeperEndToEndWithNaturalKeyTable(t *testing.T) {
 	err = k.groupMemberTable.Delete(ctx, &m)
 	require.NoError(t, err)
 
-	// then it is removed from natural key MultiKeyIndex
-	exists = k.groupMemberTable.Has(ctx, naturalKey)
+	// then it is removed from primary key MultiKeyIndex
+	exists = k.groupMemberTable.Has(ctx, primaryKey)
 	require.False(t, exists)
 
 	// and removed from secondary MultiKeyIndex
-	exists = k.groupMemberByGroupIndex.Has(ctx, EncodeSequence(groupRowID))
+	exists = k.groupMemberByGroupIndex.Has(ctx, orm.EncodeSequence(groupRowID))
 	require.False(t, exists)
 }
 
-func TestGasCostsNaturalKeyTable(t *testing.T) {
+func TestGasCostsPrimaryKeyTable(t *testing.T) {
 	interfaceRegistry := types.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
 
 	storeKey := sdk.NewKVStoreKey("test")
-	ctx := NewMockContext()
+	ctx := orm.NewMockContext()
 
 	k := NewGroupKeeper(storeKey, cdc)
 
 	g := testdata.GroupInfo{
+		GroupId:     1,
 		Description: "my test",
 		Admin:       sdk.AccAddress([]byte("admin-address")),
 	}
 
 	m := testdata.GroupMember{
-		Group:  sdk.AccAddress(EncodeSequence(1)),
+		Group:  sdk.AccAddress(orm.EncodeSequence(1)),
 		Member: sdk.AccAddress([]byte("member-address")),
 		Weight: 10,
 	}
 	groupRowID, err := k.groupTable.Create(ctx, &g)
 	require.NoError(t, err)
 	require.Equal(t, uint64(1), groupRowID)
-	gCtx := NewGasCountingMockContext(ctx)
+	gCtx := orm.NewGasCountingMockContext(ctx)
 	err = k.groupMemberTable.Create(gCtx, &m)
 	require.NoError(t, err)
 	t.Logf("gas consumed on create: %d", gCtx.GasConsumed())
 
-	// get by natural key
+	// get by primary key
 	gCtx.ResetGasMeter()
 	var loaded testdata.GroupMember
-	err = k.groupMemberTable.GetOne(gCtx, m.NaturalKey(), &loaded)
+	err = k.groupMemberTable.GetOne(gCtx, m.PrimaryKey(), &loaded)
 	require.NoError(t, err)
-	t.Logf("gas consumed on get by natural key: %d", gCtx.GasConsumed())
+	t.Logf("gas consumed on get by primary key: %d", gCtx.GasConsumed())
 
 	// get by secondary index
 	gCtx.ResetGasMeter()
 	// and when loaded from MultiKeyIndex
-	it, err := k.groupMemberByGroupIndex.Get(gCtx, EncodeSequence(groupRowID))
+	it, err := k.groupMemberByGroupIndex.Get(gCtx, orm.EncodeSequence(groupRowID))
 	require.NoError(t, err)
 	var loadedSlice []testdata.GroupMember
-	_, err = ReadAll(it, &loadedSlice)
+	_, err = orm.ReadAll(it, &loadedSlice)
 	require.NoError(t, err)
 
 	t.Logf("gas consumed on get by multi index key: %d", gCtx.GasConsumed())
@@ -221,13 +225,13 @@ func TestGasCostsNaturalKeyTable(t *testing.T) {
 	gCtx.ResetGasMeter()
 	err = k.groupMemberTable.Delete(gCtx, &m)
 	require.NoError(t, err)
-	t.Logf("gas consumed on delete by natural key: %d", gCtx.GasConsumed())
+	t.Logf("gas consumed on delete by primary key: %d", gCtx.GasConsumed())
 
 	// with 3 elements
 	for i := 1; i < 4; i++ {
 		gCtx.ResetGasMeter()
 		m := testdata.GroupMember{
-			Group:  sdk.AccAddress(EncodeSequence(1)),
+			Group:  sdk.AccAddress(orm.EncodeSequence(1)),
 			Member: sdk.AccAddress([]byte(fmt.Sprintf("member-address%d", i))),
 			Weight: 10,
 		}
@@ -239,21 +243,21 @@ func TestGasCostsNaturalKeyTable(t *testing.T) {
 	for i := 1; i < 4; i++ {
 		gCtx.ResetGasMeter()
 		m := testdata.GroupMember{
-			Group:  sdk.AccAddress(EncodeSequence(1)),
+			Group:  sdk.AccAddress(orm.EncodeSequence(1)),
 			Member: sdk.AccAddress([]byte(fmt.Sprintf("member-address%d", i))),
 			Weight: 10,
 		}
-		err = k.groupMemberTable.GetOne(gCtx, m.NaturalKey(), &loaded)
+		err = k.groupMemberTable.GetOne(gCtx, m.PrimaryKey(), &loaded)
 		require.NoError(t, err)
-		t.Logf("%d: gas consumed on get by natural key: %d", i, gCtx.GasConsumed())
+		t.Logf("%d: gas consumed on get by primary key: %d", i, gCtx.GasConsumed())
 	}
 
 	// get by secondary index
 	gCtx.ResetGasMeter()
 	// and when loaded from MultiKeyIndex
-	it, err = k.groupMemberByGroupIndex.Get(gCtx, EncodeSequence(groupRowID))
+	it, err = k.groupMemberByGroupIndex.Get(gCtx, orm.EncodeSequence(groupRowID))
 	require.NoError(t, err)
-	_, err = ReadAll(it, &loadedSlice)
+	_, err = orm.ReadAll(it, &loadedSlice)
 	require.NoError(t, err)
 	require.Len(t, loadedSlice, 3)
 	t.Logf("gas consumed on get by multi index key: %d", gCtx.GasConsumed())
@@ -273,7 +277,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 	cdc := codec.NewProtoCodec(interfaceRegistry)
 
 	storeKey := sdk.NewKVStoreKey("test")
-	ctx := NewMockContext()
+	ctx := orm.NewMockContext()
 
 	k := NewGroupKeeper(storeKey, cdc)
 
@@ -281,6 +285,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 	for i := 1; i <= testRecords; i++ {
 		myAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, sdk.AddrLen))
 		g := testdata.GroupInfo{
+			GroupId:     uint64(i),
 			Description: fmt.Sprintf("my test %d", i),
 			Admin:       myAddr,
 		}
@@ -289,13 +294,14 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, uint64(i), groupRowID)
 	}
-	jsonModels, seqVal, err := ExportTableData(ctx, k.groupTable)
+	var groups []*testdata.GroupInfo
+	seqVal, err := orm.ExportTableData(ctx, k.groupTable, &groups)
 	require.NoError(t, err)
 
 	// when a new db seeded
-	ctx = NewMockContext()
+	ctx = orm.NewMockContext()
 
-	err = ImportTableData(ctx, k.groupTable, jsonModels, seqVal)
+	err = orm.ImportTableData(ctx, k.groupTable, groups, seqVal)
 	require.NoError(t, err)
 	// then all data is set again
 
@@ -305,7 +311,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 		groupRowID, err := k.groupTable.GetOne(ctx, uint64(i), &loaded)
 		require.NoError(t, err)
 
-		require.Equal(t, RowID(EncodeSequence(uint64(i))), groupRowID)
+		require.Equal(t, orm.RowID(orm.EncodeSequence(uint64(i))), groupRowID)
 		assert.Equal(t, fmt.Sprintf("my test %d", i), loaded.Description)
 		exp := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, sdk.AddrLen))
 		assert.Equal(t, exp, loaded.Admin)
@@ -315,19 +321,19 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 		it, err := k.groupByAdminIndex.Get(ctx, exp)
 		require.NoError(t, err)
 		var all []testdata.GroupInfo
-		ReadAll(it, &all)
+		orm.ReadAll(it, &all)
 		require.Len(t, all, 1)
 		assert.Equal(t, loaded, all[0])
 	}
-	require.Equal(t, uint64(testRecords), k.groupTable.seq.CurVal(ctx))
+	require.Equal(t, uint64(testRecords), k.groupTable.Sequence().CurVal(ctx))
 }
 
-func TestExportImportStateNaturalKeyTable(t *testing.T) {
+func TestExportImportStatePrimaryKeyTable(t *testing.T) {
 	interfaceRegistry := types.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
 
 	storeKey := sdk.NewKVStoreKey("test")
-	ctx := NewMockContext()
+	ctx := orm.NewMockContext()
 
 	k := NewGroupKeeper(storeKey, cdc)
 	myGroupAddr := sdk.AccAddress(bytes.Repeat([]byte{byte('a')}, sdk.AddrLen))
@@ -344,23 +350,24 @@ func TestExportImportStateNaturalKeyTable(t *testing.T) {
 		require.NoError(t, err)
 		testRecords[i-1] = g
 	}
-	jsonModels, _, err := ExportTableData(ctx, k.groupMemberTable)
+	var groupMembers []*testdata.GroupMember
+	_, err := orm.ExportTableData(ctx, k.groupMemberTable, &groupMembers)
 	require.NoError(t, err)
 
 	// when a new db seeded
-	ctx = NewMockContext()
+	ctx = orm.NewMockContext()
 
-	err = ImportTableData(ctx, k.groupMemberTable, jsonModels, 0)
+	err = orm.ImportTableData(ctx, k.groupMemberTable, groupMembers, 0)
 	require.NoError(t, err)
 
 	// then all data is set again
 	it, err := k.groupMemberTable.PrefixScan(ctx, nil, nil)
 	require.NoError(t, err)
 	var loaded []testdata.GroupMember
-	keys, err := ReadAll(it, &loaded)
+	keys, err := orm.ReadAll(it, &loaded)
 	require.NoError(t, err)
 	for i := range keys {
-		assert.Equal(t, testRecords[i].NaturalKey(), keys[i].Bytes())
+		assert.Equal(t, testRecords[i].PrimaryKey(), keys[i].Bytes())
 	}
 	assert.Equal(t, testRecords, loaded)
 
@@ -368,10 +375,10 @@ func TestExportImportStateNaturalKeyTable(t *testing.T) {
 	it, err = k.groupMemberByGroupIndex.Get(ctx, myGroupAddr)
 	require.NoError(t, err)
 	loaded = nil
-	keys, err = ReadAll(it, &loaded)
+	keys, err = orm.ReadAll(it, &loaded)
 	require.NoError(t, err)
 	for i := range keys {
-		assert.Equal(t, testRecords[i].NaturalKey(), keys[i].Bytes())
+		assert.Equal(t, testRecords[i].PrimaryKey(), keys[i].Bytes())
 	}
 	assert.Equal(t, testRecords, loaded)
 
@@ -380,16 +387,16 @@ func TestExportImportStateNaturalKeyTable(t *testing.T) {
 		it, err = k.groupMemberByMemberIndex.Get(ctx, v.Member)
 		require.NoError(t, err)
 		loaded = nil
-		keys, err = ReadAll(it, &loaded)
+		keys, err = orm.ReadAll(it, &loaded)
 		require.NoError(t, err)
-		assert.Equal(t, []RowID{v.NaturalKey()}, keys)
+		assert.Equal(t, []orm.RowID{v.PrimaryKey()}, keys)
 		assert.Equal(t, []testdata.GroupMember{v}, loaded)
 	}
 }
 
-func first(t *testing.T, it Iterator) ([]byte, testdata.GroupInfo) {
+func first(t *testing.T, it orm.Iterator) ([]byte, testdata.GroupInfo) {
 	var loaded testdata.GroupInfo
-	key, err := First(it, &loaded)
+	key, err := orm.First(it, &loaded)
 	require.NoError(t, err)
 	return key, loaded
 }

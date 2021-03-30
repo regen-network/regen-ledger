@@ -3,6 +3,10 @@
 package app
 
 import (
+<<<<<<< HEAD
+=======
+>>>>>>> a38ebdb2463e1f76953727deb5c38ec44adf6660
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -16,6 +20,7 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/types/module/server"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
@@ -27,10 +32,15 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 	}
 }
 
-func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *servermodule.Manager {
-	return &servermodule.Manager{}
-}
+// func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *servermodule.Manager {
+// 	return &servermodule.Manager{}
+// }
 
+// setCustomModules registers new modules with the server module manager.
+// It does nothing here and returns an empty manager since we're not using experimental mode.
+func setCustomModules(_ *RegenApp, _ types.InterfaceRegistry) *server.Manager {
+	return &server.Manager{}
+}
 func setCustomKVStoreKeys() []string {
 	return []string{}
 }

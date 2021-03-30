@@ -2,7 +2,7 @@ package orm
 
 // Max255DynamicLengthIndexKeyCodec works with up to 255 byte dynamic size RowIDs.
 // They are encoded as `concat(searchableKey, rowID, len(rowID)[0])` and can be used
-// with NaturalKey or external Key tables for example.
+// with PrimaryKey or external Key tables for example.
 type Max255DynamicLengthIndexKeyCodec struct{}
 
 // BuildIndexKey builds the index key by appending searchableKey with rowID and length int.

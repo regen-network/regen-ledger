@@ -25,7 +25,7 @@ func (s serverImpl) getGroupInfo(ctx types.Context, id uint64) (group.GroupInfo,
 }
 
 func (s serverImpl) GroupAccountInfo(ctx types.Context, request *group.QueryGroupAccountInfoRequest) (*group.QueryGroupAccountInfoResponse, error) {
-	addr, err := sdk.AccAddressFromBech32(request.GroupAccount)
+	addr, err := sdk.AccAddressFromBech32(request.Address)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +151,7 @@ func (s serverImpl) Proposal(ctx types.Context, request *group.QueryProposalRequ
 }
 
 func (s serverImpl) ProposalsByGroupAccount(ctx types.Context, request *group.QueryProposalsByGroupAccountRequest) (*group.QueryProposalsByGroupAccountResponse, error) {
-	addr, err := sdk.AccAddressFromBech32(request.GroupAccount)
+	addr, err := sdk.AccAddressFromBech32(request.Address)
 	if err != nil {
 		return nil, err
 	}
@@ -242,7 +242,7 @@ func (s serverImpl) VotesByVoter(ctx types.Context, request *group.QueryVotesByV
 
 func (s serverImpl) getVote(ctx types.Context, proposalID uint64, voter sdk.AccAddress) (group.Vote, error) {
 	var v group.Vote
-	return v, s.voteTable.GetOne(ctx, group.Vote{ProposalId: proposalID, Voter: voter.String()}.NaturalKey(), &v)
+	return v, s.voteTable.GetOne(ctx, group.Vote{ProposalId: proposalID, Voter: voter.String()}.PrimaryKey(), &v)
 }
 
 func (s serverImpl) getVotesByProposal(ctx types.Context, proposalID uint64, pageRequest *query.PageRequest) (orm.Iterator, error) {

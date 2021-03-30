@@ -1,4 +1,4 @@
-package orm
+package orm_test
 
 import (
 	"reflect"
@@ -12,48 +12,49 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/testutil/testdata"
 )
 
 func TestTypeSafeRowGetter(t *testing.T) {
 	storeKey := sdk.NewKVStoreKey("test")
-	ctx := NewMockContext()
+	ctx := orm.NewMockContext()
 	const prefixKey = 0x2
 	store := prefix.NewStore(ctx.KVStore(storeKey), []byte{prefixKey})
 	md := testdata.GroupInfo{Description: "foo"}
 	bz, err := md.Marshal()
 	require.NoError(t, err)
-	store.Set(EncodeSequence(1), bz)
+	store.Set(orm.EncodeSequence(1), bz)
 
 	specs := map[string]struct {
-		srcRowID     RowID
+		srcRowID     orm.RowID
 		srcModelType reflect.Type
 		expObj       interface{}
 		expErr       *errors.Error
 	}{
 		"happy path": {
-			srcRowID:     EncodeSequence(1),
+			srcRowID:     orm.EncodeSequence(1),
 			srcModelType: reflect.TypeOf(testdata.GroupInfo{}),
 			expObj:       testdata.GroupInfo{Description: "foo"},
 		},
 		"unknown rowID should return ErrNotFound": {
-			srcRowID:     EncodeSequence(999),
+			srcRowID:     orm.EncodeSequence(999),
 			srcModelType: reflect.TypeOf(testdata.GroupInfo{}),
-			expErr:       ErrNotFound,
+			expErr:       orm.ErrNotFound,
 		},
 		"wrong type should cause ErrType": {
-			srcRowID:     EncodeSequence(1),
+			srcRowID:     orm.EncodeSequence(1),
 			srcModelType: reflect.TypeOf(testdata.GroupMember{}),
-			expErr:       ErrType,
+			expErr:       orm.ErrType,
 		},
 		"empty rowID not allowed": {
 			srcRowID:     []byte{},
 			srcModelType: reflect.TypeOf(testdata.GroupInfo{}),
-			expErr:       ErrArgument,
+			expErr:       orm.ErrArgument,
 		},
 		"nil rowID not allowed": {
 			srcModelType: reflect.TypeOf(testdata.GroupInfo{}),
-			expErr:       ErrArgument,
+			expErr:       orm.ErrArgument,
 		},
 	}
 	for msg, spec := range specs {
@@ -61,7 +62,7 @@ func TestTypeSafeRowGetter(t *testing.T) {
 			interfaceRegistry := types.NewInterfaceRegistry()
 			cdc := codec.NewProtoCodec(interfaceRegistry)
 
-			getter := NewTypeSafeRowGetter(storeKey, prefixKey, spec.srcModelType, cdc)
+			getter := orm.NewTypeSafeRowGetter(storeKey, prefixKey, spec.srcModelType, cdc)
 			var loadedObj testdata.GroupInfo
 
 			err := getter(ctx, spec.srcRowID, &loadedObj)

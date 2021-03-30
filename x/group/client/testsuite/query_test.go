@@ -230,7 +230,7 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountInfo() {
 		},
 		{
 			"group account found",
-			[]string{s.groupAccounts[0].GroupAccount, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			[]string{s.groupAccounts[0].Address, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			false,
 			"",
 			0,
@@ -252,7 +252,7 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountInfo() {
 				var g group.GroupAccountInfo
 				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &g))
 				s.Require().Equal(s.groupAccounts[0].GroupId, g.GroupId)
-				s.Require().Equal(s.groupAccounts[0].GroupAccount, g.GroupAccount)
+				s.Require().Equal(s.groupAccounts[0].Address, g.Address)
 				s.Require().Equal(s.groupAccounts[0].Admin, g.Admin)
 				s.Require().Equal(s.groupAccounts[0].Metadata, g.Metadata)
 				s.Require().Equal(s.groupAccounts[0].Version, g.Version)
@@ -475,7 +475,7 @@ func (s *IntegrationTestSuite) TestQueryProposalsByGroupAccount() {
 		},
 		{
 			"found proposals",
-			[]string{s.groupAccounts[0].GroupAccount, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			[]string{s.groupAccounts[0].Address, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			false,
 			"",
 			0,
@@ -636,7 +636,7 @@ func (s *IntegrationTestSuite) TestQueryVotesByVoter() {
 		},
 		{
 			"no votes",
-			[]string{s.groupAccounts[0].GroupAccount, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			[]string{s.groupAccounts[0].Address, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			true,
 			"",
 			0,

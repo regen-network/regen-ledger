@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
@@ -80,18 +82,24 @@ func (ff FixtureFactory) Setup() testutil.Fixture {
 	require.NoError(ff.t, err)
 
 	return fixture{
-		baseApp: baseApp,
-		router:  mm.router,
-		t:       ff.t,
-		signers: ff.signers,
+		baseApp:               baseApp,
+		router:                mm.router,
+		cdc:                   cdc,
+		initGenesisHandlers:   mm.initGenesisHandlers,
+		exportGenesisHandlers: mm.exportGenesisHandlers,
+		t:                     ff.t,
+		signers:               ff.signers,
 	}
 }
 
 type fixture struct {
-	baseApp *baseapp.BaseApp
-	router  *router
-	t       *testing.T
-	signers []sdk.AccAddress
+	baseApp               *baseapp.BaseApp
+	router                *router
+	cdc                   *codec.ProtoCodec
+	initGenesisHandlers   map[string]module.InitGenesisHandler
+	exportGenesisHandlers map[string]module.ExportGenesisHandler
+	t                     *testing.T
+	signers               []sdk.AccAddress
 }
 
 func (f fixture) Context() context.Context {
@@ -108,6 +116,18 @@ func (f fixture) QueryConn() grpc.ClientConnInterface {
 
 func (f fixture) Signers() []sdk.AccAddress {
 	return f.signers
+}
+
+func (f fixture) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (abci.ResponseInitChain, error) {
+	return initGenesis(ctx, f.cdc, genesisData, []abci.ValidatorUpdate{}, f.initGenesisHandlers)
+}
+
+func (f fixture) ExportGenesis(ctx sdk.Context) (map[string]json.RawMessage, error) {
+	return exportGenesis(ctx, f.cdc, f.exportGenesisHandlers)
+}
+
+func (f fixture) Codec() *codec.ProtoCodec {
+	return f.cdc
 }
 
 func (f fixture) Teardown() {}

@@ -61,7 +61,7 @@ type Persistent interface {
 }
 
 // Index allows efficient prefix scans is stored as key = concat(indexKeyBytes, rowIDUint64) with value empty
-// so that the row NaturalKey is allows a fixed with 8 byte integer. This allows the MultiKeyIndex key bytes to be
+// so that the row PrimaryKey is allows a fixed with 8 byte integer. This allows the MultiKeyIndex key bytes to be
 // variable length and scanned iteratively. The
 type Index interface {
 	// Has checks if a key exists. Panics on nil key.
@@ -155,7 +155,7 @@ func NewTypeSafeRowGetter(storeKey sdk.StoreKey, prefixKey byte, model reflect.T
 		}
 
 		store := prefix.NewStore(ctx.KVStore(storeKey), []byte{prefixKey})
-		it := store.Iterator(prefixRange(rowID))
+		it := store.Iterator(PrefixRange(rowID))
 		defer it.Close()
 		if !it.Valid() {
 			return ErrNotFound
