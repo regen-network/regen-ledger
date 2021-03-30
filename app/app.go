@@ -84,7 +84,6 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 )
@@ -543,7 +542,7 @@ func (app *RegenApp) SimulationManager() *module.SimulationManager {
 }
 
 // NewManager implements the SimulationApp interface
-func (app *RegenApp) NewManager() *servermodule.Manager {
+func (app *RegenApp) NewManager() *server.Manager {
 	return app.smm
 }
 
