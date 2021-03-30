@@ -86,7 +86,7 @@ func QueryGroupAccountInfoCmd() *cobra.Command {
 			queryClient := group.NewQueryClient(clientCtx)
 
 			res, err := queryClient.GroupAccountInfo(cmd.Context(), &group.QueryGroupAccountInfoRequest{
-				GroupAccount: args[0],
+				Address: args[0],
 			})
 			if err != nil {
 				return err
@@ -310,8 +310,8 @@ func QueryProposalsByGroupAccountCmd() *cobra.Command {
 			queryClient := group.NewQueryClient(clientCtx)
 
 			res, err := queryClient.ProposalsByGroupAccount(cmd.Context(), &group.QueryProposalsByGroupAccountRequest{
-				GroupAccount: args[0],
-				Pagination:   pageReq,
+				Address:    args[0],
+				Pagination: pageReq,
 			})
 			if err != nil {
 				return err

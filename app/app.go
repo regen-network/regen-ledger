@@ -58,6 +58,7 @@ import (
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	"github.com/gorilla/mux"
 	"github.com/rakyll/statik/fs"
+	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/spf13/cast"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -178,6 +179,13 @@ type RegenApp struct {
 
 	// simulation manager
 	sm *module.SimulationManager
+
+	// server module manager
+	// NOTE: We will likely want to make this new manager compatible
+	// with module.Manager so that we can have existing cosmos-sdk modules
+	// use ADR 33 approach without the need for removing their keepers
+	// and a larger refactoring.
+	smm *server.Manager
 }
 
 // NewRegenApp returns a reference to an initialized RegenApp.
@@ -311,7 +319,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	)
 
 	// register experimental modules here
-	setCustomModules(app, interfaceRegistry)
+	app.smm = setCustomModules(app, interfaceRegistry)
 
 	var skipGenesisInvariants = cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
@@ -456,7 +464,8 @@ func (app *RegenApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.
 func (app *RegenApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
-	return app.mm.InitGenesis(ctx, app.appCodec, genesisState)
+	res := app.mm.InitGenesis(ctx, app.appCodec, genesisState)
+	return app.smm.InitGenesis(ctx, genesisState, res.Validators)
 }
 
 // LoadHeight loads a particular height

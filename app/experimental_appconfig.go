@@ -21,7 +21,7 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
-	servermodule "github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	group "github.com/regen-network/regen-ledger/x/group/module"
@@ -72,10 +72,11 @@ func (app *RegenApp) setCustomKeeprs(bApp *baseapp.BaseApp, keys map[string]*sdk
 	govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.wasmKeeper, wasm.EnableAllProposals))
 }
 
-func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) {
+// setCustomModules registers new modules with the server module manager.
+func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *server.Manager {
 
 	/* New Module Wiring START */
-	newModuleManager := servermodule.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
+	newModuleManager := server.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
 
 	// BEGIN HACK: this is a total, ugly hack until x/auth supports ADR 033 or we have a suitable alternative
 	groupModule := group.Module{AccountKeeper: app.AccountKeeper}
@@ -95,6 +96,8 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 	if err != nil {
 		panic(err)
 	}
+
+	return newModuleManager
 	/* New Module Wiring END */
 }
 
