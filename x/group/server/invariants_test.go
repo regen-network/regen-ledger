@@ -29,8 +29,8 @@ func TestTallyVotesInvariant(t *testing.T) {
 	require.NoError(t, err)
 	curCtx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
 	curCtx = curCtx.WithBlockHeight(10)
-	prevCtx := curCtx.WithBlockHeight(curCtx.BlockHeight() - 1)
-
+	prevCtx, _ := curCtx.CacheContext()
+	prevCtx = prevCtx.WithBlockHeight(curCtx.BlockHeight() - 1)
 	// Proposal Table
 	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, key, &group.Proposal{}, cdc)
 	proposalTable := proposalTableBuilder.Build()
@@ -220,13 +220,16 @@ func TestTallyVotesInvariant(t *testing.T) {
 		prevProposals := spec.prevReq
 		curProposals := spec.curReq
 
+		cachePrevCtx, _ := prevCtx.CacheContext()
+		cacheCurCtx, _ := curCtx.CacheContext()
+
 		for i := 0; i < len(prevProposals) && i < len(curProposals); i++ {
-			_, err = proposalTable.Create(prevCtx, prevProposals[i])
+			_, err = proposalTable.Create(cachePrevCtx, prevProposals[i])
 			require.NoError(t, err)
-			_, err = proposalTable.Create(curCtx, curProposals[i])
+			_, err = proposalTable.Create(cacheCurCtx, curProposals[i])
 			require.NoError(t, err)
 		}
-		_, broken := tallyVotesInvariant(curCtx, proposalTable)
+		_, broken := tallyVotesInvariant(cacheCurCtx, cachePrevCtx, proposalTable)
 		require.Equal(t, spec.expErr, broken)
 	}
 }
