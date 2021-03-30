@@ -22,20 +22,20 @@ func (s serverImpl) AllInvariants() sdk.Invariant {
 
 func (s serverImpl) tallyVotesInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		msg, broken := tallyVotesInvariant(ctx, s.proposalTable)
+		if ctx.BlockHeight()-1 < 0 {
+			return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", "Not enough blocks to perform TallyVotesInvariant"), false
+		}
+		prevCtx, _ := ctx.CacheContext()
+		prevCtx = prevCtx.WithBlockHeight(ctx.BlockHeight() - 1)
+		msg, broken := tallyVotesInvariant(ctx, prevCtx, s.proposalTable)
 		return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", msg), broken
 	}
 }
 
-func tallyVotesInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table) (string, bool) {
+func tallyVotesInvariant(ctx sdk.Context, prevCtx sdk.Context, proposalTable orm.AutoUInt64Table) (string, bool) {
 
 	var msg string
 	var broken bool
-
-	if ctx.BlockHeight()-1 < 0 {
-		return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", "Not enough blocks to perform TallyVotesInvariant"), false
-	}
-	prevCtx := ctx.WithBlockHeight(ctx.BlockHeight() - 1)
 
 	prevIt, err := proposalTable.PrefixScan(prevCtx, 1, math.MaxUint64)
 	if err != nil {
