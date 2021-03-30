@@ -19,7 +19,6 @@ import (
 )
 
 func TestTallyVotesInvariant(t *testing.T) {
-	var s serverImpl
 	interfaceRegistry := types.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
 	key := sdk.NewKVStoreKey(group.ModuleName)
@@ -36,7 +35,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 
 	// Proposal Table
 	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, key, &group.Proposal{}, cdc)
-	s.proposalTable = proposalTableBuilder.Build()
+	proposalTable := proposalTableBuilder.Build()
 
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	_, _, addr2 := testdata.KeyTestPubAddr()
@@ -92,13 +91,13 @@ func TestTallyVotesInvariant(t *testing.T) {
 		},
 	}
 
-	_, err = s.proposalTable.Create(prevCtx, prevProposal)
+	_, err = proposalTable.Create(prevCtx, prevProposal)
 	if err != nil {
 		fmt.Println(err)
 		panic("create proposal")
 	}
 
-	_, err = s.proposalTable.Create(curCtx, curProposal)
+	_, err = proposalTable.Create(curCtx, curProposal)
 	if err != nil {
 		fmt.Println(err)
 		panic("create proposal")
