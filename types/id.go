@@ -1,6 +1,10 @@
 package types
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/regen-network/regen-ledger/types/address"
+)
 
 type ModuleID struct {
 	ModuleName string
@@ -8,5 +12,5 @@ type ModuleID struct {
 }
 
 func (m ModuleID) Address() sdk.AccAddress {
-	return AddressHash(m.ModuleName, m.Path)
+	return address.Module(m.ModuleName, m.Path)
 }
