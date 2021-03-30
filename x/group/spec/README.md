@@ -9,7 +9,7 @@ parent:
 
 This document specifies the group module.
 
-This module allows 
+This module allows TODO
 
 ## Contents
 
