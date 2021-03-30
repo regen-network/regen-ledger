@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -27,9 +26,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 	cms := store.NewCommitMultiStore(db)
 	cms.MountStoreWithDB(key, sdk.StoreTypeIAVL, db)
 	err := cms.LoadLatestVersion()
-	if err != nil {
-		panic(err)
-	}
+	require.NoError(t, err)
 	curCtx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
 	curCtx = curCtx.WithBlockHeight(10)
 	prevCtx := curCtx.WithBlockHeight(curCtx.BlockHeight() - 1)
@@ -42,15 +39,9 @@ func TestTallyVotesInvariant(t *testing.T) {
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
 	curBlockTime, err := gogotypes.TimestampProto(curCtx.BlockTime())
-	if err != nil {
-		fmt.Println("block time conversion")
-		panic(err)
-	}
+	require.NoError(t, err)
 	prevBlockTime, err := gogotypes.TimestampProto(prevCtx.BlockTime())
-	if err != nil {
-		fmt.Println("block time conversion")
-		panic(err)
-	}
+	require.NoError(t, err)
 
 	specs := map[string]struct {
 		prevReq []*group.Proposal
@@ -231,19 +222,11 @@ func TestTallyVotesInvariant(t *testing.T) {
 
 		for i := 0; i < len(prevProposals) && i < len(curProposals); i++ {
 			_, err = proposalTable.Create(prevCtx, prevProposals[i])
-			if err != nil {
-				fmt.Println(err)
-				panic("create proposal")
-			}
+			require.NoError(t, err)
 			_, err = proposalTable.Create(curCtx, curProposals[i])
-			if err != nil {
-				fmt.Println(err)
-				panic("create proposal")
-			}
+			require.NoError(t, err)
 		}
-
-		var test require.TestingT
 		_, broken := tallyVotesInvariant(curCtx, proposalTable)
-		require.Equal(test, spec.expErr, broken)
+		require.Equal(t, spec.expErr, broken)
 	}
 }
