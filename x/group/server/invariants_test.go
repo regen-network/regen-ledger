@@ -97,7 +97,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 				},
 			},
 		},
-		"invariant broken": {
+		"current block yes vote count must be greater than previous block yes vote count": {
 			prevReq: &group.Proposal{
 				GroupAccount:        addr1.String(),
 				Proposers:           []string{addr1.String()},
@@ -138,6 +138,129 @@ func TestTallyVotesInvariant(t *testing.T) {
 			},
 			expErr: true,
 		},
+		"current block no vote count must be greater than previous block no vote count": {
+			prevReq: &group.Proposal{
+				GroupAccount:        addr1.String(),
+				Proposers:           []string{addr1.String()},
+				SubmittedAt:         *prevBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Result:              group.ProposalResultUnfinalized,
+				Status:              group.ProposalStatusSubmitted,
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
+				Timeout: gogotypes.Timestamp{
+					Seconds: 600,
+				},
+				VoteState: group.Tally{
+					YesCount:     "0",
+					NoCount:      "2",
+					AbstainCount: "0",
+					VetoCount:    "0",
+				},
+			},
+			curReq: &group.Proposal{
+				GroupAccount:        addr2.String(),
+				Proposers:           []string{addr2.String()},
+				SubmittedAt:         *curBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Result:              group.ProposalResultUnfinalized,
+				Status:              group.ProposalStatusSubmitted,
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
+				Timeout: gogotypes.Timestamp{
+					Seconds: 600,
+				},
+				VoteState: group.Tally{
+					YesCount:     "0",
+					NoCount:      "1",
+					AbstainCount: "0",
+					VetoCount:    "0",
+				},
+			},
+			expErr: true,
+		},
+		"current block abstain vote count must be greater than previous block abstain vote count": {
+			prevReq: &group.Proposal{
+				GroupAccount:        addr1.String(),
+				Proposers:           []string{addr1.String()},
+				SubmittedAt:         *prevBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Result:              group.ProposalResultUnfinalized,
+				Status:              group.ProposalStatusSubmitted,
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
+				Timeout: gogotypes.Timestamp{
+					Seconds: 600,
+				},
+				VoteState: group.Tally{
+					YesCount:     "0",
+					NoCount:      "0",
+					AbstainCount: "2",
+					VetoCount:    "0",
+				},
+			},
+			curReq: &group.Proposal{
+				GroupAccount:        addr2.String(),
+				Proposers:           []string{addr2.String()},
+				SubmittedAt:         *curBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Result:              group.ProposalResultUnfinalized,
+				Status:              group.ProposalStatusSubmitted,
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
+				Timeout: gogotypes.Timestamp{
+					Seconds: 600,
+				},
+				VoteState: group.Tally{
+					YesCount:     "0",
+					NoCount:      "0",
+					AbstainCount: "1",
+					VetoCount:    "0",
+				},
+			},
+			expErr: true,
+		},
+		"current block veto vote count must be greater than previous block veto vote count": {
+			prevReq: &group.Proposal{
+				GroupAccount:        addr1.String(),
+				Proposers:           []string{addr1.String()},
+				SubmittedAt:         *prevBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Result:              group.ProposalResultUnfinalized,
+				Status:              group.ProposalStatusSubmitted,
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
+				Timeout: gogotypes.Timestamp{
+					Seconds: 600,
+				},
+				VoteState: group.Tally{
+					YesCount:     "0",
+					NoCount:      "0",
+					AbstainCount: "0",
+					VetoCount:    "2",
+				},
+			},
+			curReq: &group.Proposal{
+				GroupAccount:        addr2.String(),
+				Proposers:           []string{addr2.String()},
+				SubmittedAt:         *curBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Result:              group.ProposalResultUnfinalized,
+				Status:              group.ProposalStatusSubmitted,
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
+				Timeout: gogotypes.Timestamp{
+					Seconds: 600,
+				},
+				VoteState: group.Tally{
+					YesCount:     "0",
+					NoCount:      "0",
+					AbstainCount: "0",
+					VetoCount:    "1",
+				},
+			},
+			expErr: true,
+		},
 	}
 	for _, spec := range specs {
 		spec := spec
@@ -157,7 +280,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 		}
 
 		var test require.TestingT
-		_, broken := tallyVotesInvariant(prevProposal, curProposal)
+		_, broken := tallyVotesInvariant(curCtx, proposalTable)
 		require.Equal(test, spec.expErr, broken)
 	}
 }
