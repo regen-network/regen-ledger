@@ -10,6 +10,9 @@ jobs:
   goreleaser:
     runs-on: ubuntu-latest
     steps:
+    #       echo "====================================="
+    #       ln -s  /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1  /usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0
+    #       echo "====================================="
       -
         name: GCC multilib
         run: |
@@ -17,9 +20,7 @@ jobs:
           sudo apt-get install libcrypto++6 libssl1.1 libssl-dev --reinstall
           echo "====================================="
           ls /usr/lib/x86_64-linux-gnu
-          echo "====================================="
-          ln -s  /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1  /usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0
-          echo "====================================="
+         
       -
         name: OSXCross for CGO Support
         run: |
