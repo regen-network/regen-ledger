@@ -1,22 +1,22 @@
 name: goreleaser
 
-on:
-  pull_request:
-  push:
-    tags:
-      - '*'
+on: [push]
+  # pull_request:
+  # push:
+  #   tags:
+  #     - '*'
 jobs:
   goreleaser:
 
     runs-on: ubuntu-latest
-
+# sudo apt-get install libcrypto++6 libssl1.1 libssl-dev --reinstall
     steps:
       -
         name: GCC multilib
         run: |
           sudo apt-get update
           sudo apt-get install gcc-multilib g++-multilib clang 
-          sudo apt-get install libcrypto++6 libssl1.1 libssl-dev --reinstall
+          
       -
         name: OSXCross for CGO Support
         run: |
