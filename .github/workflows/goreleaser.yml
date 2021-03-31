@@ -15,10 +15,7 @@ jobs:
     #       echo "====================================="
           #     echo "====================================="
           # ls /usr/lib/x86_64-linux-gnu
-      -
-        name: find libcrypto
-        run: |
-          whereis libcrypto.so.1.0.0
+        
 
       -
         name: GCC multilib
@@ -26,6 +23,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install gcc-multilib g++-multilib clang 
           sudo apt-get install libcrypto++6 libssl1.1 libssl-dev --reinstall
+
+       -
+        name: find libcrypto
+        run: |
+          whereis libcrypto.so.1.0.0
+          whereis libcrypto.so.1.1
+       
          
       -
         name: OSXCross for CGO Support
