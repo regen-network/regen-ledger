@@ -99,8 +99,6 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 
 	return newModuleManager
 	/* New Module Wiring END */
-
-	return newModuleManager
 }
 
 func (app *RegenApp) registerUpgradeHandlers() {
