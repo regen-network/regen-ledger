@@ -20,6 +20,7 @@ type Configurator interface {
 	ModuleKey() RootModuleKey
 	Marshaler() codec.Marshaler
 	RequireServer(interface{})
+	RegisterGenesisHandlers(module.InitGenesisHandler, module.ExportGenesisHandler)
 }
 
 // LegacyRouteModule is the module type that a module must implement

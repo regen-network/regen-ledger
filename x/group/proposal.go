@@ -4,6 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
 )
 
@@ -21,7 +22,7 @@ func (p *Proposal) SetMsgs(msgs []sdk.Msg) error {
 }
 
 func (p Proposal) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(p.GroupAccount)
+	_, err := sdk.AccAddressFromBech32(p.Address)
 	if err != nil {
 		return sdkerrors.Wrap(err, "group account")
 	}
@@ -86,4 +87,8 @@ func (p Proposal) ValidateBasic() error {
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (p Proposal) UnpackInterfaces(unpacker types.AnyUnpacker) error {
 	return server.UnpackInterfaces(unpacker, p.Msgs)
+}
+
+func (p Proposal) PrimaryKey() []byte {
+	return orm.EncodeSequence(p.ProposalId)
 }

@@ -51,13 +51,13 @@ type serverImpl struct {
 	groupByAdminIndex orm.Index
 
 	// Group Member Table
-	groupMemberTable         orm.NaturalKeyTable
+	groupMemberTable         orm.PrimaryKeyTable
 	groupMemberByGroupIndex  orm.UInt64Index
 	groupMemberByMemberIndex orm.Index
 
 	// Group Account Table
 	groupAccountSeq          orm.Sequence
-	groupAccountTable        orm.NaturalKeyTable
+	groupAccountTable        orm.PrimaryKeyTable
 	groupAccountByGroupIndex orm.UInt64Index
 	groupAccountByAdminIndex orm.Index
 
@@ -67,7 +67,7 @@ type serverImpl struct {
 	proposalByProposerIndex     orm.Index
 
 	// Vote Table
-	voteTable           orm.NaturalKeyTable
+	voteTable           orm.PrimaryKeyTable
 	voteByProposalIndex orm.UInt64Index
 	voteByVoterIndex    orm.Index
 }
@@ -88,7 +88,7 @@ func newServer(storeKey servermodule.RootModuleKey, accKeeper AccountKeeper, cdc
 	s.groupTable = groupTableBuilder.Build()
 
 	// Group Member Table
-	groupMemberTableBuilder := orm.NewNaturalKeyTableBuilder(GroupMemberTablePrefix, storeKey, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	groupMemberTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, storeKey, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.groupMemberByGroupIndex = orm.NewUInt64Index(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]uint64, error) {
 		group := val.(*group.GroupMember).GroupId
 		return []uint64{group}, nil
@@ -105,7 +105,7 @@ func newServer(storeKey servermodule.RootModuleKey, accKeeper AccountKeeper, cdc
 
 	// Group Account Table
 	s.groupAccountSeq = orm.NewSequence(storeKey, GroupAccountTableSeqPrefix)
-	groupAccountTableBuilder := orm.NewNaturalKeyTableBuilder(GroupAccountTablePrefix, storeKey, &group.GroupAccountInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	groupAccountTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupAccountTablePrefix, storeKey, &group.GroupAccountInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.groupAccountByGroupIndex = orm.NewUInt64Index(groupAccountTableBuilder, GroupAccountByGroupIndexPrefix, func(value interface{}) ([]uint64, error) {
 		group := value.(*group.GroupAccountInfo).GroupId
 		return []uint64{group}, nil
@@ -122,9 +122,9 @@ func newServer(storeKey servermodule.RootModuleKey, accKeeper AccountKeeper, cdc
 
 	// Proposal Table
 	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, storeKey, &group.Proposal{}, cdc)
-	// proposalTableBuilder := orm.NewNaturalKeyTableBuilder(ProposalTablePrefix, key, &group.Proposal{}, orm.Max255DynamicLengthIndexKeyCodec{})
+	// proposalTableBuilder := orm.NewPrimaryKeyTableBuilder(ProposalTablePrefix, key, &group.Proposal{}, orm.Max255DynamicLengthIndexKeyCodec{})
 	s.proposalByGroupAccountIndex = orm.NewIndex(proposalTableBuilder, ProposalByGroupAccountIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
-		account := value.(*group.Proposal).GroupAccount
+		account := value.(*group.Proposal).Address
 		addr, err := sdk.AccAddressFromBech32(account)
 		if err != nil {
 			return nil, err
@@ -146,7 +146,7 @@ func newServer(storeKey servermodule.RootModuleKey, accKeeper AccountKeeper, cdc
 	s.proposalTable = proposalTableBuilder.Build()
 
 	// Vote Table
-	voteTableBuilder := orm.NewNaturalKeyTableBuilder(VoteTablePrefix, storeKey, &group.Vote{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	voteTableBuilder := orm.NewPrimaryKeyTableBuilder(VoteTablePrefix, storeKey, &group.Vote{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.voteByProposalIndex = orm.NewUInt64Index(voteTableBuilder, VoteByProposalIndexPrefix, func(value interface{}) ([]uint64, error) {
 		return []uint64{value.(*group.Vote).ProposalId}, nil
 	})
@@ -166,6 +166,7 @@ func RegisterServices(configurator servermodule.Configurator, accountKeeper Acco
 	impl := newServer(configurator.ModuleKey(), accountKeeper, configurator.Marshaler())
 	group.RegisterMsgServer(configurator.MsgServer(), impl)
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
+	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 
 	// Require servers from external modules for ADR 033 message routing
 	configurator.RequireServer((*ecocredit.MsgServer)(nil))

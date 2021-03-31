@@ -215,7 +215,7 @@ func TestMsgCreateGroupAccount(t *testing.T) {
 
 func TestMsgCreateProposalRequest(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
-	groupAddr := addr.String()
+	groupAccAddr := addr.String()
 
 	_, _, addr = testdata.KeyTestPubAddr()
 	memberAddr := addr.String()
@@ -226,7 +226,7 @@ func TestMsgCreateProposalRequest(t *testing.T) {
 	}{
 		"all good with minimum fields set": {
 			src: MsgCreateProposalRequest{
-				GroupAccount: groupAddr,
+				Address: groupAccAddr,
 				Proposers:    []string{memberAddr},
 			},
 		},
@@ -238,27 +238,27 @@ func TestMsgCreateProposalRequest(t *testing.T) {
 		},
 		"proposers required": {
 			src: MsgCreateProposalRequest{
-				GroupAccount: groupAddr,
+				Address: groupAccAddr,
 			},
 			expErr: true,
 		},
 		"valid proposer address required": {
 			src: MsgCreateProposalRequest{
-				GroupAccount: groupAddr,
+				Address: groupAccAddr,
 				Proposers:    []string{"invalid-member-address"},
 			},
 			expErr: true,
 		},
 		"no duplicate proposers": {
 			src: MsgCreateProposalRequest{
-				GroupAccount: groupAddr,
+				Address: groupAccAddr,
 				Proposers:    []string{memberAddr, memberAddr},
 			},
 			expErr: true,
 		},
 		"empty proposer address not allowed": {
 			src: MsgCreateProposalRequest{
-				GroupAccount: groupAddr,
+				Address: groupAccAddr,
 				Proposers:    []string{memberAddr, ""},
 			},
 			expErr: true,
