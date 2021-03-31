@@ -23,16 +23,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install gcc-multilib g++-multilib clang 
           sudo apt-get install libcrypto++6 libssl1.1 libssl-dev --reinstall
-
-      
-       
-         
+    
       -
         name: OSXCross for CGO Support
         run: |
           mkdir ../../osxcross
           git clone https://github.com/likhita-809/osxcross-target.git ../../osxcross/target
-          ls /home
+          ls /home/runner
+          echo "===================="
+          ls /home/linuxbrew
+          echo "====================="
+          ls /home/runneradmin
 
       -              
         name: find libcrypto
