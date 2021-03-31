@@ -8,36 +8,22 @@ on:
 #       - '*'
 jobs:
   goreleaser:
-    runs-on: ubuntu-latest
-    steps:
-    #       echo "====================================="
-    #       ln -s  /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1  /usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0
-    #       echo "====================================="
-          #     echo "====================================="
-          # ls /usr/lib/x86_64-linux-gnu
-        
 
+    runs-on: ubuntu-latest
+    
+    steps:
       -
         name: GCC multilib
         run: |
           sudo apt-get update
           sudo apt-get install gcc-multilib g++-multilib clang 
           sudo apt-get install libcrypto++6 libssl1.1 libssl-dev --reinstall
-    
       -
         name: OSXCross for CGO Support
         run: |
           mkdir ../../osxcross
           git clone https://github.com/likhita-809/osxcross-target.git ../../osxcross/target
-          ls /home/runner/work/osxcross/target/target/bin
           sudo cp /home/runner/work/osxcross/target/target/lib/libcrypto.so.1.0.0 /usr/lib/x86_64-linux-gnu
-          
-      -              
-        name: find libcrypto
-        run: |
-          whereis libcrypto.so.1.0.0
-          whereis libcrypto.so.1.1
-
       -
         name: Checkout
         uses: actions/checkout@v2
