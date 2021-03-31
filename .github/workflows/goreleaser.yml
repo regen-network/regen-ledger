@@ -22,9 +22,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install gcc-multilib g++-multilib clang 
-          sudo apt-get install libcrypto++6 libssl1.0.0 libssl-dev --reinstall
+          sudo apt-get install libcrypto++6 libssl1.1 libssl-dev --reinstall
 
-      -
+      -              
         name: find libcrypto
         run: |
           whereis libcrypto.so.1.0.0
