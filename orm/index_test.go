@@ -1,4 +1,4 @@
-package orm
+package orm_test
 
 import (
 	"testing"
@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/testutil/testdata"
 )
 
@@ -23,12 +24,12 @@ func TestIndexPrefixScan(t *testing.T) {
 		testTablePrefix = iota
 		testTableSeqPrefix
 	)
-	tBuilder := NewAutoUInt64TableBuilder(testTablePrefix, testTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
-	idx := NewIndex(tBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]RowID, error) {
-		return []RowID{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
+	tBuilder := orm.NewAutoUInt64TableBuilder(testTablePrefix, testTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
+	idx := orm.NewIndex(tBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
+		return []orm.RowID{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
 	})
 	tb := tBuilder.Build()
-	ctx := NewMockContext()
+	ctx := orm.NewMockContext()
 
 	g1 := testdata.GroupInfo{
 		Description: "my test 1",
@@ -50,58 +51,58 @@ func TestIndexPrefixScan(t *testing.T) {
 	specs := map[string]struct {
 		start, end []byte
 		expResult  []testdata.GroupInfo
-		expRowIDs  []RowID
+		expRowIDs  []orm.RowID
 		expError   *errors.Error
-		method     func(ctx HasKVStore, start, end []byte) (Iterator, error)
+		method     func(ctx orm.HasKVStore, start, end []byte) (orm.Iterator, error)
 	}{
 		"exact match with a single result": {
 			start:     []byte("admin-address-a"),
 			end:       []byte("admin-address-b"),
 			method:    idx.PrefixScan,
 			expResult: []testdata.GroupInfo{g1},
-			expRowIDs: []RowID{EncodeSequence(1)},
+			expRowIDs: []orm.RowID{orm.EncodeSequence(1)},
 		},
 		"one result by prefix": {
 			start:     []byte("admin-address"),
 			end:       []byte("admin-address-b"),
 			method:    idx.PrefixScan,
 			expResult: []testdata.GroupInfo{g1},
-			expRowIDs: []RowID{EncodeSequence(1)},
+			expRowIDs: []orm.RowID{orm.EncodeSequence(1)},
 		},
 		"multi key elements by exact match": {
 			start:     []byte("admin-address-b"),
 			end:       []byte("admin-address-c"),
 			method:    idx.PrefixScan,
 			expResult: []testdata.GroupInfo{g2, g3},
-			expRowIDs: []RowID{EncodeSequence(2), EncodeSequence(3)},
+			expRowIDs: []orm.RowID{orm.EncodeSequence(2), orm.EncodeSequence(3)},
 		},
 		"open end query": {
 			start:     []byte("admin-address-b"),
 			end:       nil,
 			method:    idx.PrefixScan,
 			expResult: []testdata.GroupInfo{g2, g3},
-			expRowIDs: []RowID{EncodeSequence(2), EncodeSequence(3)},
+			expRowIDs: []orm.RowID{orm.EncodeSequence(2), orm.EncodeSequence(3)},
 		},
 		"open start query": {
 			start:     nil,
 			end:       []byte("admin-address-b"),
 			method:    idx.PrefixScan,
 			expResult: []testdata.GroupInfo{g1},
-			expRowIDs: []RowID{EncodeSequence(1)},
+			expRowIDs: []orm.RowID{orm.EncodeSequence(1)},
 		},
 		"open start and end query": {
 			start:     nil,
 			end:       nil,
 			method:    idx.PrefixScan,
 			expResult: []testdata.GroupInfo{g1, g2, g3},
-			expRowIDs: []RowID{EncodeSequence(1), EncodeSequence(2), EncodeSequence(3)},
+			expRowIDs: []orm.RowID{orm.EncodeSequence(1), orm.EncodeSequence(2), orm.EncodeSequence(3)},
 		},
 		"all matching prefix": {
 			start:     []byte("admin"),
 			end:       nil,
 			method:    idx.PrefixScan,
 			expResult: []testdata.GroupInfo{g1, g2, g3},
-			expRowIDs: []RowID{EncodeSequence(1), EncodeSequence(2), EncodeSequence(3)},
+			expRowIDs: []orm.RowID{orm.EncodeSequence(1), orm.EncodeSequence(2), orm.EncodeSequence(3)},
 		},
 		"non matching prefix": {
 			start:     []byte("nobody"),
@@ -113,62 +114,62 @@ func TestIndexPrefixScan(t *testing.T) {
 			start:    []byte("any"),
 			end:      []byte("any"),
 			method:   idx.PrefixScan,
-			expError: ErrArgument,
+			expError: orm.ErrArgument,
 		},
 		"start after end": {
 			start:    []byte("b"),
 			end:      []byte("a"),
 			method:   idx.PrefixScan,
-			expError: ErrArgument,
+			expError: orm.ErrArgument,
 		},
 		"reverse: exact match with a single result": {
 			start:     []byte("admin-address-a"),
 			end:       []byte("admin-address-b"),
 			method:    idx.ReversePrefixScan,
 			expResult: []testdata.GroupInfo{g1},
-			expRowIDs: []RowID{EncodeSequence(1)},
+			expRowIDs: []orm.RowID{orm.EncodeSequence(1)},
 		},
 		"reverse: one result by prefix": {
 			start:     []byte("admin-address"),
 			end:       []byte("admin-address-b"),
 			method:    idx.ReversePrefixScan,
 			expResult: []testdata.GroupInfo{g1},
-			expRowIDs: []RowID{EncodeSequence(1)},
+			expRowIDs: []orm.RowID{orm.EncodeSequence(1)},
 		},
 		"reverse: multi key elements by exact match": {
 			start:     []byte("admin-address-b"),
 			end:       []byte("admin-address-c"),
 			method:    idx.ReversePrefixScan,
 			expResult: []testdata.GroupInfo{g3, g2},
-			expRowIDs: []RowID{EncodeSequence(3), EncodeSequence(2)},
+			expRowIDs: []orm.RowID{orm.EncodeSequence(3), orm.EncodeSequence(2)},
 		},
 		"reverse: open end query": {
 			start:     []byte("admin-address-b"),
 			end:       nil,
 			method:    idx.ReversePrefixScan,
 			expResult: []testdata.GroupInfo{g3, g2},
-			expRowIDs: []RowID{EncodeSequence(3), EncodeSequence(2)},
+			expRowIDs: []orm.RowID{orm.EncodeSequence(3), orm.EncodeSequence(2)},
 		},
 		"reverse: open start query": {
 			start:     nil,
 			end:       []byte("admin-address-b"),
 			method:    idx.ReversePrefixScan,
 			expResult: []testdata.GroupInfo{g1},
-			expRowIDs: []RowID{EncodeSequence(1)},
+			expRowIDs: []orm.RowID{orm.EncodeSequence(1)},
 		},
 		"reverse: open start and end query": {
 			start:     nil,
 			end:       nil,
 			method:    idx.ReversePrefixScan,
 			expResult: []testdata.GroupInfo{g3, g2, g1},
-			expRowIDs: []RowID{EncodeSequence(3), EncodeSequence(2), EncodeSequence(1)},
+			expRowIDs: []orm.RowID{orm.EncodeSequence(3), orm.EncodeSequence(2), orm.EncodeSequence(1)},
 		},
 		"reverse: all matching prefix": {
 			start:     []byte("admin"),
 			end:       nil,
 			method:    idx.ReversePrefixScan,
 			expResult: []testdata.GroupInfo{g3, g2, g1},
-			expRowIDs: []RowID{EncodeSequence(3), EncodeSequence(2), EncodeSequence(1)},
+			expRowIDs: []orm.RowID{orm.EncodeSequence(3), orm.EncodeSequence(2), orm.EncodeSequence(1)},
 		},
 		"reverse: non matching prefix": {
 			start:     []byte("nobody"),
@@ -180,13 +181,13 @@ func TestIndexPrefixScan(t *testing.T) {
 			start:    []byte("any"),
 			end:      []byte("any"),
 			method:   idx.ReversePrefixScan,
-			expError: ErrArgument,
+			expError: orm.ErrArgument,
 		},
 		"reverse: start after end": {
 			start:    []byte("b"),
 			end:      []byte("a"),
 			method:   idx.ReversePrefixScan,
-			expError: ErrArgument,
+			expError: orm.ErrArgument,
 		},
 	}
 	for msg, spec := range specs {
@@ -197,7 +198,7 @@ func TestIndexPrefixScan(t *testing.T) {
 				return
 			}
 			var loaded []testdata.GroupInfo
-			rowIDs, err := ReadAll(it, &loaded)
+			rowIDs, err := orm.ReadAll(it, &loaded)
 			require.NoError(t, err)
 			assert.Equal(t, spec.expResult, loaded)
 			assert.Equal(t, spec.expRowIDs, rowIDs)
@@ -211,16 +212,16 @@ func TestUniqueIndex(t *testing.T) {
 
 	storeKey := sdk.NewKVStoreKey("test")
 
-	tableBuilder := NewNaturalKeyTableBuilder(GroupMemberTablePrefix, storeKey, &testdata.GroupMember{}, Max255DynamicLengthIndexKeyCodec{}, cdc)
-	uniqueIdx := NewUniqueIndex(tableBuilder, 0x10, func(val interface{}) (RowID, error) {
+	tableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	uniqueIdx := orm.NewUniqueIndex(tableBuilder, 0x10, func(val interface{}) (orm.RowID, error) {
 		return []byte{val.(*testdata.GroupMember).Member[0]}, nil
 	})
 	myTable := tableBuilder.Build()
 
-	ctx := NewMockContext()
+	ctx := orm.NewMockContext()
 
 	m := testdata.GroupMember{
-		Group:  sdk.AccAddress(EncodeSequence(1)),
+		Group:  sdk.AccAddress(orm.EncodeSequence(1)),
 		Member: sdk.AccAddress([]byte("member-address")),
 		Weight: 10,
 	}
@@ -238,7 +239,7 @@ func TestUniqueIndex(t *testing.T) {
 	var loaded testdata.GroupMember
 	rowID, err := it.LoadNext(&loaded)
 	require.NoError(t, err)
-	require.Equal(t, RowID(m.NaturalKey()), rowID)
+	require.Equal(t, orm.RowID(m.PrimaryKey()), rowID)
 	require.Equal(t, m, loaded)
 
 	// GetPaginated
@@ -265,7 +266,7 @@ func TestUniqueIndex(t *testing.T) {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
-				require.Equal(t, RowID(m.NaturalKey()), rowID)
+				require.Equal(t, orm.RowID(m.PrimaryKey()), rowID)
 				require.Equal(t, m, loaded)
 			}
 		})
@@ -276,36 +277,36 @@ func TestUniqueIndex(t *testing.T) {
 	require.NoError(t, err)
 	rowID, err = it.LoadNext(&loaded)
 	require.NoError(t, err)
-	require.Equal(t, RowID(m.NaturalKey()), rowID)
+	require.Equal(t, orm.RowID(m.PrimaryKey()), rowID)
 	require.Equal(t, m, loaded)
 
 	// PrefixScan no match
 	it, err = uniqueIdx.PrefixScan(ctx, []byte{byte('n')}, nil)
 	require.NoError(t, err)
 	rowID, err = it.LoadNext(&loaded)
-	require.Error(t, ErrIteratorDone, err)
+	require.Error(t, orm.ErrIteratorDone, err)
 
 	// ReversePrefixScan match
 	it, err = uniqueIdx.ReversePrefixScan(ctx, []byte{byte('a')}, []byte{byte('z')})
 	require.NoError(t, err)
 	rowID, err = it.LoadNext(&loaded)
 	require.NoError(t, err)
-	require.Equal(t, RowID(m.NaturalKey()), rowID)
+	require.Equal(t, orm.RowID(m.PrimaryKey()), rowID)
 	require.Equal(t, m, loaded)
 
 	// ReversePrefixScan no match
 	it, err = uniqueIdx.ReversePrefixScan(ctx, []byte{byte('l')}, nil)
 	require.NoError(t, err)
 	rowID, err = it.LoadNext(&loaded)
-	require.Error(t, ErrIteratorDone, err)
+	require.Error(t, orm.ErrIteratorDone, err)
 	// create with same index key should fail
 	new := testdata.GroupMember{
-		Group:  sdk.AccAddress(EncodeSequence(1)),
+		Group:  sdk.AccAddress(orm.EncodeSequence(1)),
 		Member: sdk.AccAddress([]byte("my-other")),
 		Weight: 10,
 	}
 	err = myTable.Create(ctx, &new)
-	require.Error(t, ErrUniqueConstraint, err)
+	require.Error(t, orm.ErrUniqueConstraint, err)
 
 	// and when delete
 	err = myTable.Delete(ctx, &m)
@@ -335,11 +336,11 @@ func TestPrefixRange(t *testing.T) {
 		t.Run(testName, func(t *testing.T) {
 			if tc.expPanic {
 				require.Panics(t, func() {
-					prefixRange(tc.src)
+					orm.PrefixRange(tc.src)
 				})
 				return
 			}
-			start, end := prefixRange(tc.src)
+			start, end := orm.PrefixRange(tc.src)
 			assert.Equal(t, tc.expStart, start)
 			assert.Equal(t, tc.expEnd, end)
 		})

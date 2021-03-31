@@ -1,19 +1,20 @@
-package orm
+package orm_test
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/testutil/testdata"
 )
 
 type GroupKeeper struct {
 	key                      sdk.StoreKey
-	groupTable               AutoUInt64Table
-	groupByAdminIndex        Index
-	groupMemberTable         NaturalKeyTable
-	groupMemberByGroupIndex  Index
-	groupMemberByMemberIndex Index
+	groupTable               orm.AutoUInt64Table
+	groupByAdminIndex        orm.Index
+	groupMemberTable         orm.PrimaryKeyTable
+	groupMemberByGroupIndex  orm.Index
+	groupMemberByMemberIndex orm.Index
 }
 
 var (
@@ -30,21 +31,21 @@ var (
 func NewGroupKeeper(storeKey sdk.StoreKey, cdc codec.Marshaler) GroupKeeper {
 	k := GroupKeeper{key: storeKey}
 
-	groupTableBuilder := NewAutoUInt64TableBuilder(GroupTablePrefix, GroupTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
+	groupTableBuilder := orm.NewAutoUInt64TableBuilder(GroupTablePrefix, GroupTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
 	// note: quite easy to mess with Index prefixes when managed outside. no fail fast on duplicates
-	k.groupByAdminIndex = NewIndex(groupTableBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]RowID, error) {
-		return []RowID{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
+	k.groupByAdminIndex = orm.NewIndex(groupTableBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
+		return []orm.RowID{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
 	})
 	k.groupTable = groupTableBuilder.Build()
 
-	groupMemberTableBuilder := NewNaturalKeyTableBuilder(GroupMemberTablePrefix, storeKey, &testdata.GroupMember{}, Max255DynamicLengthIndexKeyCodec{}, cdc)
+	groupMemberTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 
-	k.groupMemberByGroupIndex = NewIndex(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]RowID, error) {
+	k.groupMemberByGroupIndex = orm.NewIndex(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
 		group := val.(*testdata.GroupMember).Group
-		return []RowID{[]byte(group)}, nil
+		return []orm.RowID{[]byte(group)}, nil
 	})
-	k.groupMemberByMemberIndex = NewIndex(groupMemberTableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]RowID, error) {
-		return []RowID{[]byte(val.(*testdata.GroupMember).Member)}, nil
+	k.groupMemberByMemberIndex = orm.NewIndex(groupMemberTableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
+		return []orm.RowID{[]byte(val.(*testdata.GroupMember).Member)}, nil
 	})
 	k.groupMemberTable = groupMemberTableBuilder.Build()
 

@@ -23,11 +23,13 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.8
 	github.com/tendermint/tm-db v0.6.4
-	google.golang.org/genproto v0.0.0-20210212180131-e7f2df4ecc2d // indirect
-	google.golang.org/grpc v1.35.0
+	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2 // indirect
+	google.golang.org/genproto v0.0.0-20210325141258-5636347f2b14 // indirect
+	google.golang.org/grpc v1.36.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
+replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.42.3-regen-1
