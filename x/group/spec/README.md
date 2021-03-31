@@ -39,8 +39,12 @@ This module allows TODO
     - [Msg/Vote](03_msg_service.md#msgvote)
     - [Msg/Exec](03_msg_service.md#msgexec)
 4. **[Events](04_events.md)**
-    - [MsgGrantFeeAllowance](04_events.md#msggrantfeeallowance)
-    - [MsgrevokeFeeAllowance](04_events.md#msgrevokefeeallowance)
-    - [Exec fee allowance](04_events.md#exec-fee-allowance)
+    - [EventCreateGroup](04_events.md#eventcreategroup)
+    - [EventUpdateGroup](04_events.md#eventupdategroup)
+    - [EventCreateGroupAccount](04_events.md#eventcreategroupaccount)
+    - [EventUpdateGroupAccount](04_events.md#eventupdategroupaccount)
+    - [EventCreateProposal](04_events.md#eventcreateproposal)
+    - [EventVote](04_events.md#eventvote)
+    - [EventExec](04_events.md#eventexec)
 
 
