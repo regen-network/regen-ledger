@@ -229,7 +229,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 			_, err = proposalTable.Create(cacheCurCtx, curProposals[i])
 			require.NoError(t, err)
 		}
-		_, broken := tallyVotesInvariant(cacheCurCtx, cachePrevCtx, proposalTable)
+		_, broken, _ := tallyVotesInvariant(cacheCurCtx, cachePrevCtx, proposalTable)
 		require.Equal(t, spec.expErr, broken)
 	}
 }

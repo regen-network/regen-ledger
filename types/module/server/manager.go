@@ -250,6 +250,7 @@ func (c *configurator) QueryServer() gogogrpc.Server {
 func (c *configurator) RegisterInvariantsHandler(registry RegisterInvariantsHandler) {
 	c.registerInvariantsHandler = registry
 }
+
 func (c *configurator) RegisterGenesisHandlers(initGenesisHandler module.InitGenesisHandler, exportGenesisHandler module.ExportGenesisHandler) {
 	c.initGenesisHandler = initGenesisHandler
 	c.exportGenesisHandler = exportGenesisHandler

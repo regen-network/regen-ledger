@@ -72,7 +72,6 @@ func (app *RegenApp) setCustomKeeprs(bApp *baseapp.BaseApp, keys map[string]*sdk
 	govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.wasmKeeper, wasm.EnableAllProposals))
 }
 
-// func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *servermodule.Manager {
 // setCustomModules registers new modules with the server module manager.
 func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *server.Manager {
 
