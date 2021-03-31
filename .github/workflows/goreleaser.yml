@@ -15,7 +15,8 @@ jobs:
     #       echo "====================================="
           #     echo "====================================="
           # ls /usr/lib/x86_64-linux-gnu
-      -name: find libcrypto
+      -
+        name: find libcrypto
         run: |
           whereis libcrypto.so.1.0.0
 
