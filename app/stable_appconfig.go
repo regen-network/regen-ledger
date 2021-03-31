@@ -27,10 +27,6 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 	}
 }
 
-// func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *servermodule.Manager {
-// 	return &servermodule.Manager{}
-// }
-
 // setCustomModules registers new modules with the server module manager.
 // It does nothing here and returns an empty manager since we're not using experimental mode.
 func setCustomModules(_ *RegenApp, _ types.InterfaceRegistry) *server.Manager {
