@@ -1,7 +1,7 @@
 env:
   - GO111MODULE=on
   - CGO_ENABLED=1
-  - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/target/binaries/lib
+  - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
 
 builds:
   - id: regen-darwin-amd64
