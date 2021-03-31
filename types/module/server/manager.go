@@ -1,6 +1,8 @@
 package server
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 
@@ -8,25 +10,31 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	gogogrpc "github.com/gogo/protobuf/grpc"
+	abci "github.com/tendermint/tendermint/abci/types"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/module"
 )
 
 // Manager is the server module manager
 type Manager struct {
-	baseApp          *baseapp.BaseApp
-	cdc              *codec.ProtoCodec
-	keys             map[string]ModuleKey
-	router           *router
-	requiredServices map[reflect.Type]bool
+	baseApp               *baseapp.BaseApp
+	cdc                   *codec.ProtoCodec
+	keys                  map[string]ModuleKey
+	router                *router
+	requiredServices      map[reflect.Type]bool
+	initGenesisHandlers   map[string]module.InitGenesisHandler
+	exportGenesisHandlers map[string]module.ExportGenesisHandler
 }
 
 // NewManager creates a new Manager
 func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 	return &Manager{
-		baseApp: baseApp,
-		cdc:     cdc,
-		keys:    map[string]ModuleKey{},
+		baseApp:               baseApp,
+		cdc:                   cdc,
+		keys:                  map[string]ModuleKey{},
+		initGenesisHandlers:   map[string]module.InitGenesisHandler{},
+		exportGenesisHandlers: map[string]module.ExportGenesisHandler{},
 		router: &router{
 			handlers:         map[string]handler{},
 			providedServices: map[reflect.Type]bool{},
@@ -97,6 +105,8 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		}
 
 		serverMod.RegisterServices(cfg)
+		mm.initGenesisHandlers[name] = cfg.initGenesisHandler
+		mm.exportGenesisHandlers[name] = cfg.exportGenesisHandler
 
 		// If mod implements LegacyRouteModule, register module route.
 		// This is currently used for the group module as part of #218.
@@ -110,6 +120,7 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		for typ := range cfg.requiredServices {
 			mm.requiredServices[typ] = true
 		}
+
 	}
 
 	return nil
@@ -137,13 +148,78 @@ func (mm *Manager) CompleteInitialization() error {
 	return nil
 }
 
+// InitGenesis performs init genesis functionality for modules.
+// We pass in existing validatorUpdates from the sdk module Manager.InitGenesis.
+func (mm *Manager) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage, validatorUpdates []abci.ValidatorUpdate) abci.ResponseInitChain {
+	res, err := initGenesis(ctx, mm.cdc, genesisData, validatorUpdates, mm.initGenesisHandlers)
+	if err != nil {
+		panic(err)
+	}
+	return res
+}
+
+func initGenesis(ctx sdk.Context, cdc codec.JSONMarshaler,
+	genesisData map[string]json.RawMessage, validatorUpdates []abci.ValidatorUpdate,
+	initGenesisHandlers map[string]module.InitGenesisHandler) (abci.ResponseInitChain, error) {
+	for name, initGenesisHandler := range initGenesisHandlers {
+		if genesisData[name] == nil || initGenesisHandler == nil {
+			continue
+		}
+		moduleValUpdates, err := initGenesisHandler(types.Context{Context: ctx}, cdc, genesisData[name])
+		if err != nil {
+			return abci.ResponseInitChain{}, err
+		}
+
+		// use these validator updates if provided, the module manager assumes
+		// only one module will update the validator set
+		if len(moduleValUpdates) > 0 {
+			if len(validatorUpdates) > 0 {
+				return abci.ResponseInitChain{}, errors.New("validator InitGenesis updates already set by a previous module")
+			}
+			validatorUpdates = moduleValUpdates
+		}
+	}
+
+	return abci.ResponseInitChain{
+		Validators: validatorUpdates,
+	}, nil
+}
+
+// ExportGenesis performs export genesis functionality for modules.
+func (mm *Manager) ExportGenesis(ctx sdk.Context) map[string]json.RawMessage {
+	genesisData, err := exportGenesis(ctx, mm.cdc, mm.exportGenesisHandlers)
+	if err != nil {
+		panic(err)
+	}
+
+	return genesisData
+}
+
+func exportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, exportGenesisHandlers map[string]module.ExportGenesisHandler) (map[string]json.RawMessage, error) {
+	var err error
+	genesisData := make(map[string]json.RawMessage)
+	for name, exportGenesisHandler := range exportGenesisHandlers {
+		if exportGenesisHandler == nil {
+			continue
+		}
+		genesisData[name], err = exportGenesisHandler(types.Context{Context: ctx}, cdc)
+		if err != nil {
+			return genesisData, err
+		}
+	}
+
+	return genesisData, nil
+}
+
 type configurator struct {
-	msgServer        gogogrpc.Server
-	queryServer      gogogrpc.Server
-	key              *rootModuleKey
-	cdc              codec.Marshaler
-	requiredServices map[reflect.Type]bool
-	router           sdk.Router
+	msgServer            gogogrpc.Server
+	queryServer          gogogrpc.Server
+	key                  *rootModuleKey
+	cdc                  codec.Marshaler
+	requiredServices     map[reflect.Type]bool
+	router               sdk.Router
+	initGenesisHandler   module.InitGenesisHandler
+	exportGenesisHandler module.ExportGenesisHandler
 }
 
 var _ Configurator = &configurator{}
@@ -154,6 +230,11 @@ func (c *configurator) MsgServer() gogogrpc.Server {
 
 func (c *configurator) QueryServer() gogogrpc.Server {
 	return c.queryServer
+}
+
+func (c *configurator) RegisterGenesisHandlers(initGenesisHandler module.InitGenesisHandler, exportGenesisHandler module.ExportGenesisHandler) {
+	c.initGenesisHandler = initGenesisHandler
+	c.exportGenesisHandler = exportGenesisHandler
 }
 
 func (c *configurator) ModuleKey() RootModuleKey {
