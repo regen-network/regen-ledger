@@ -1,13 +1,15 @@
 package simulation
 
 import (
-	"encoding/json"
-	"fmt"
 	"math/rand"
 
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/gogo/protobuf/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	gogotypes "github.com/gogo/protobuf/types"
+
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
@@ -49,14 +51,21 @@ func GetGroupMembers(r *rand.Rand, accounts []simtypes.Account) []*group.GroupMe
 	return groupMembers
 }
 
-func GetGroupAccounts(r *rand.Rand, accounts []simtypes.Account) []*group.GroupAccountInfo {
+func GetGroupAccounts(r *rand.Rand, simState *module.SimulationState) []*group.GroupAccountInfo {
 	groupMembers := make([]*group.GroupAccountInfo, 3)
 	for i := 0; i < 3; i++ {
-		acc, _ := simtypes.RandomAcc(r, accounts)
+		acc, _ := simtypes.RandomAcc(r, simState.Accounts)
+		any, err := codectypes.NewAnyWithValue(group.NewThresholdDecisionPolicy("10", gogotypes.Duration{Seconds: 1}))
+		if err != nil {
+			panic(err)
+		}
 		groupMembers[i] = &group.GroupAccountInfo{
-			GroupId:  1,
-			Admin:    acc.Address.String(),
-			Metadata: []byte(simtypes.RandStringOfLength(r, 10)),
+			GroupId:        1,
+			Admin:          acc.Address.String(),
+			Address:        acc.Address.String(),
+			Version:        1,
+			DecisionPolicy: any,
+			Metadata:       []byte(simtypes.RandStringOfLength(r, 10)),
 		}
 	}
 	return groupMembers
@@ -65,7 +74,16 @@ func GetGroupAccounts(r *rand.Rand, accounts []simtypes.Account) []*group.GroupA
 func GetProposals(r *rand.Rand, simState *module.SimulationState) []*group.Proposal {
 	groupMembers := make([]*group.Proposal, 3)
 	for i := 0; i < 3; i++ {
+
 		acc, _ := simtypes.RandomAcc(r, simState.Accounts)
+		anyMsg, err := codectypes.NewAnyWithValue(&banktypes.MsgSend{
+			FromAddress: acc.Address.String(),
+			ToAddress:   acc.Address.String(),
+			Amount:      sdk.NewCoins(sdk.NewInt64Coin("test", 10)),
+		})
+		if err != nil {
+			panic(err)
+		}
 		groupMembers[i] = &group.Proposal{
 			ProposalId:          1,
 			Proposers:           []string{simState.Accounts[0].Address.String(), simState.Accounts[1].Address.String()},
@@ -77,8 +95,9 @@ func GetProposals(r *rand.Rand, simState *module.SimulationState) []*group.Propo
 			VoteState:           group.Tally{},
 			ExecutorResult:      group.ProposalExecutorResultNotRun,
 			Metadata:            []byte(simtypes.RandStringOfLength(r, 50)),
-			SubmittedAt:         types.Timestamp{},
-			Timeout:             types.Timestamp{},
+			SubmittedAt:         gogotypes.Timestamp{Seconds: 1},
+			Timeout:             gogotypes.Timestamp{Seconds: 1000},
+			Msgs:                []*codectypes.Any{anyMsg},
 		}
 	}
 	return groupMembers
@@ -105,7 +124,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	var groupAccounts []*group.GroupAccountInfo
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, GroupAccountInfo, &groupAccounts, simState.Rand,
-		func(r *rand.Rand) { groupAccounts = GetGroupAccounts(r, simState.Accounts) },
+		func(r *rand.Rand) { groupAccounts = GetGroupAccounts(r, simState) },
 	)
 
 	// proposals
@@ -124,12 +143,6 @@ func RandomizedGenState(simState *module.SimulationState) {
 		ProposalSeq:     1,
 		Proposals:       proposals,
 	}
-
-	bz, err := json.MarshalIndent(&groupGenesis, "", " ")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("Selected randomly generated %s parameters:\n%s\n", group.ModuleName, bz)
 
 	simState.GenState[group.ModuleName] = simState.Cdc.MustMarshalJSON(&groupGenesis)
 
