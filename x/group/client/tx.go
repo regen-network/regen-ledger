@@ -369,9 +369,9 @@ func MsgUpdateGroupAccountAdminCmd() *cobra.Command {
 			}
 
 			msg := &group.MsgUpdateGroupAccountAdminRequest{
-				Admin:        clientCtx.GetFromAddress().String(),
-				GroupAccount: args[1],
-				NewAdmin:     args[2],
+				Admin:    clientCtx.GetFromAddress().String(),
+				Address:  args[1],
+				NewAdmin: args[2],
 			}
 			if err = msg.ValidateBasic(); err != nil {
 				return fmt.Errorf("message validation failed: %w", err)
@@ -458,9 +458,9 @@ func MsgUpdateGroupAccountMetadataCmd() *cobra.Command {
 			}
 
 			msg := &group.MsgUpdateGroupAccountMetadataRequest{
-				Admin:        clientCtx.GetFromAddress().String(),
-				GroupAccount: args[1],
-				Metadata:     b,
+				Admin:    clientCtx.GetFromAddress().String(),
+				Address:  args[1],
+				Metadata: b,
 			}
 			if err = msg.ValidateBasic(); err != nil {
 				return fmt.Errorf("message validation failed: %w", err)

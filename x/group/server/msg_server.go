@@ -109,7 +109,7 @@ func (s serverImpl) UpdateGroupMembers(ctx types.Context, req *group.MsgUpdateGr
 			// Checking if the group member is already part of the group.
 			var found bool
 			var prevGroupMember group.GroupMember
-			switch err := s.groupMemberTable.GetOne(ctx, groupMember.NaturalKey(), &prevGroupMember); {
+			switch err := s.groupMemberTable.GetOne(ctx, groupMember.PrimaryKey(), &prevGroupMember); {
 			case err == nil:
 				found = true
 			case orm.ErrNotFound.Is(err):
@@ -296,12 +296,12 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 		return nil, sdkerrors.Wrap(err, "could not create group account")
 	}
 
-	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroupAccount{GroupAccount: accountAddr.String()})
+	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroupAccount{Address: accountAddr.String()})
 	if err != nil {
 		return nil, err
 	}
 
-	return &group.MsgCreateGroupAccountResponse{GroupAccount: accountAddr.String()}, nil
+	return &group.MsgCreateGroupAccountResponse{Address: accountAddr.String()}, nil
 }
 
 func (s serverImpl) UpdateGroupAccountAdmin(ctx types.Context, req *group.MsgUpdateGroupAccountAdminRequest) (*group.MsgUpdateGroupAccountAdminResponse, error) {
@@ -311,7 +311,7 @@ func (s serverImpl) UpdateGroupAccountAdmin(ctx types.Context, req *group.MsgUpd
 		return s.groupAccountTable.Save(ctx, groupAccount)
 	}
 
-	err := s.doUpdateGroupAccount(ctx, req.GroupAccount, req.Admin, action, "group account admin updated")
+	err := s.doUpdateGroupAccount(ctx, req.Address, req.Admin, action, "group account admin updated")
 	if err != nil {
 		return nil, err
 	}
@@ -332,7 +332,7 @@ func (s serverImpl) UpdateGroupAccountDecisionPolicy(ctx types.Context, req *gro
 		return s.groupAccountTable.Save(ctx, groupAccount)
 	}
 
-	err := s.doUpdateGroupAccount(ctx, req.GroupAccount, req.Admin, action, "group account decision policy updated")
+	err := s.doUpdateGroupAccount(ctx, req.Address, req.Admin, action, "group account decision policy updated")
 	if err != nil {
 		return nil, err
 	}
@@ -353,7 +353,7 @@ func (s serverImpl) UpdateGroupAccountMetadata(ctx types.Context, req *group.Msg
 		return nil, err
 	}
 
-	err := s.doUpdateGroupAccount(ctx, req.GroupAccount, req.Admin, action, "group account metadata updated")
+	err := s.doUpdateGroupAccount(ctx, req.Address, req.Admin, action, "group account metadata updated")
 	if err != nil {
 		return nil, err
 	}
@@ -362,7 +362,7 @@ func (s serverImpl) UpdateGroupAccountMetadata(ctx types.Context, req *group.Msg
 }
 
 func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreateProposalRequest) (*group.MsgCreateProposalResponse, error) {
-	accountAddress, err := sdk.AccAddressFromBech32(req.GroupAccount)
+	accountAddress, err := sdk.AccAddressFromBech32(req.Address)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "request group account")
 	}
@@ -386,7 +386,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 
 	// Only members of the group can submit a new proposal.
 	for i := range proposers {
-		if !s.groupMemberTable.Has(ctx, group.GroupMember{GroupId: g.GroupId, Member: &group.Member{Address: proposers[i]}}.NaturalKey()) {
+		if !s.groupMemberTable.Has(ctx, group.GroupMember{GroupId: g.GroupId, Member: &group.Member{Address: proposers[i]}}.PrimaryKey()) {
 			return nil, sdkerrors.Wrapf(group.ErrUnauthorized, "not in group: %s", proposers[i])
 		}
 	}
@@ -425,7 +425,8 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 	}
 
 	m := &group.Proposal{
-		GroupAccount:        req.GroupAccount,
+		ProposalId:          s.proposalTable.Sequence().PeekNextVal(ctx),
+		Address:             req.Address,
 		Metadata:            metadata,
 		Proposers:           proposers,
 		SubmittedAt:         *blockTime,
@@ -491,7 +492,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 	var accountInfo group.GroupAccountInfo
 
 	// Ensure that group account hasn't been modified since the proposal submission.
-	address, err := sdk.AccAddressFromBech32(proposal.GroupAccount)
+	address, err := sdk.AccAddressFromBech32(proposal.Address)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "group account")
 	}
@@ -514,7 +515,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 	// Count and store votes.
 	voterAddr := req.Voter
 	voter := group.GroupMember{GroupId: electorate.GroupId, Member: &group.Member{Address: voterAddr}}
-	if err := s.groupMemberTable.GetOne(ctx, voter.NaturalKey(), &voter); err != nil {
+	if err := s.groupMemberTable.GetOne(ctx, voter.PrimaryKey(), &voter); err != nil {
 		return nil, sdkerrors.Wrapf(err, "address: %s", voterAddr)
 	}
 	newVote := group.Vote{
@@ -585,7 +586,7 @@ func (s serverImpl) Exec(ctx types.Context, req *group.MsgExecRequest) (*group.M
 	}
 
 	var accountInfo group.GroupAccountInfo
-	address, err := sdk.AccAddressFromBech32(proposal.GroupAccount)
+	address, err := sdk.AccAddressFromBech32(proposal.Address)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "group account")
 	}
@@ -629,7 +630,7 @@ func (s serverImpl) Exec(ctx types.Context, req *group.MsgExecRequest) (*group.M
 		logger := ctx.Logger().With("module", fmt.Sprintf("x/%s", group.ModuleName))
 		// Cashing context so that we don't update the store in case of failure.
 		ctx, flush := ctx.CacheContext()
-		address, err := sdk.AccAddressFromBech32(accountInfo.GroupAccount)
+		address, err := sdk.AccAddressFromBech32(accountInfo.Address)
 		if err != nil {
 			return nil, sdkerrors.Wrap(err, "group account")
 		}
@@ -694,7 +695,7 @@ func (s serverImpl) doUpdateGroupAccount(ctx types.Context, groupAccount string,
 		return sdkerrors.Wrap(err, note)
 	}
 
-	err = ctx.EventManager().EmitTypedEvent(&group.EventUpdateGroupAccount{GroupAccount: admin})
+	err = ctx.EventManager().EmitTypedEvent(&group.EventUpdateGroupAccount{Address: admin})
 	if err != nil {
 		return err
 	}

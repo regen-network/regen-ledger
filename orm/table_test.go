@@ -1,4 +1,4 @@
-package orm
+package orm_test
 
 import (
 	"fmt"
@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/testutil/testdata"
 )
 
@@ -27,11 +28,11 @@ func TestCreate(t *testing.T) {
 		},
 		"wrong type": {
 			src: &testdata.GroupMember{
-				Group:  sdk.AccAddress(EncodeSequence(1)),
+				Group:  sdk.AccAddress(orm.EncodeSequence(1)),
 				Member: sdk.AccAddress([]byte("member-address")),
 				Weight: 10,
 			},
-			expErr: ErrType,
+			expErr: orm.ErrType,
 		},
 		"model validation fails": {
 			src:    &testdata.GroupInfo{Description: "invalid"},
@@ -45,10 +46,10 @@ func TestCreate(t *testing.T) {
 
 			storeKey := sdk.NewKVStoreKey("test")
 			const anyPrefix = 0x10
-			tableBuilder := NewTableBuilder(anyPrefix, storeKey, &testdata.GroupInfo{}, Max255DynamicLengthIndexKeyCodec{}, cdc)
+			tableBuilder := orm.NewTableBuilder(anyPrefix, storeKey, &testdata.GroupInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 			myTable := tableBuilder.Build()
 
-			ctx := NewMockContext()
+			ctx := orm.NewMockContext()
 			err := myTable.Create(ctx, []byte("my-id"), spec.src)
 
 			require.True(t, spec.expErr.Is(err), err)
@@ -59,7 +60,7 @@ func TestCreate(t *testing.T) {
 			var loaded testdata.GroupInfo
 			err = myTable.GetOne(ctx, []byte("my-id"), &loaded)
 			if spec.expErr != nil {
-				require.True(t, ErrNotFound.Is(err))
+				require.True(t, orm.ErrNotFound.Is(err))
 				return
 			}
 			require.NoError(t, err)
@@ -81,11 +82,11 @@ func TestUpdate(t *testing.T) {
 		},
 		"wrong type": {
 			src: &testdata.GroupMember{
-				Group:  sdk.AccAddress(EncodeSequence(1)),
+				Group:  sdk.AccAddress(orm.EncodeSequence(1)),
 				Member: sdk.AccAddress([]byte("member-address")),
 				Weight: 9999,
 			},
-			expErr: ErrType,
+			expErr: orm.ErrType,
 		},
 		"model validation fails": {
 			src:    &testdata.GroupInfo{Description: "invalid"},
@@ -99,14 +100,14 @@ func TestUpdate(t *testing.T) {
 
 			storeKey := sdk.NewKVStoreKey("test")
 			const anyPrefix = 0x10
-			tableBuilder := NewTableBuilder(anyPrefix, storeKey, &testdata.GroupInfo{}, Max255DynamicLengthIndexKeyCodec{}, cdc)
+			tableBuilder := orm.NewTableBuilder(anyPrefix, storeKey, &testdata.GroupInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 			myTable := tableBuilder.Build()
 
 			initValue := testdata.GroupInfo{
 				Description: "my old group description",
 				Admin:       sdk.AccAddress([]byte("my-old-admin-address")),
 			}
-			ctx := NewMockContext()
+			ctx := orm.NewMockContext()
 			err := myTable.Create(ctx, []byte("my-id"), &initValue)
 			require.NoError(t, err)
 

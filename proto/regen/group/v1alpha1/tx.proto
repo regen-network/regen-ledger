@@ -143,8 +143,8 @@ message MsgCreateGroupAccountRequest {
 // MsgCreateGroupAccountResponse is the Msg/CreateGroupAccount response type.
 message MsgCreateGroupAccountResponse {
 
-    // group_account is the account address of the newly created group account.
-    string group_account = 1;
+    // address is the account address of the newly created group account.
+    string address = 1;
 }
 
 // MsgUpdateGroupAccountAdminRequest is the Msg/UpdateGroupAccountAdmin request type.
@@ -153,8 +153,8 @@ message MsgUpdateGroupAccountAdminRequest {
     // admin is the account address of the group admin.
     string admin = 1;
     
-    // group_account is the group account address.
-    string group_account = 2;
+    // address is the group account address.
+    string address = 2;
     
     // new_admin is the new group account admin.
     string new_admin = 3;
@@ -170,8 +170,8 @@ message MsgUpdateGroupAccountDecisionPolicyRequest {
     // admin is the account address of the group admin.
     string admin = 1;
     
-    // group_account is the group account address.
-    string group_account = 2;
+    // address is the group account address.
+    string address = 2;
     
     // decision_policy is the updated group account decision policy.
     google.protobuf.Any decision_policy = 3 [(cosmos_proto.accepts_interface) = "DecisionPolicy"];
@@ -186,8 +186,8 @@ message MsgUpdateGroupAccountMetadataRequest {
     // admin is the account address of the group admin.
     string admin = 1;
     
-    // group_account is the group account address.
-    string group_account = 2;
+    // address is the group account address.
+    string address = 2;
     
     // metadata is the updated group account metadata.
     bytes metadata = 3;
@@ -204,8 +204,8 @@ message MsgUpdateGroupAccountMetadataResponse { }
 message MsgCreateProposalRequest {
     option (gogoproto.goproto_getters) = false;
 
-    // group_account is the group account address.
-    string group_account = 1;
+    // address is the group account address.
+    string address = 1;
     
     // proposers are the account addresses of the proposers.
     // Proposers signatures will be counted as yes votes.
