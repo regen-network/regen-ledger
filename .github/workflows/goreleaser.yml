@@ -1,9 +1,9 @@
 name: goreleaser
 
-on: [push]
-# on:
-#   pull_request:
-#   push:
+# on: [push]
+on:
+  pull_request:
+  push:
 #     tags:
 #       - '*'
 jobs:
@@ -13,13 +13,15 @@ jobs:
     #       echo "====================================="
     #       ln -s  /usr/lib/x86_64-linux-gnu/libcrypto.so.1.1  /usr/lib/x86_64-linux-gnu/libcrypto.so.1.0.0
     #       echo "====================================="
+          #     echo "====================================="
+          # ls /usr/lib/x86_64-linux-gnu
+
       -
         name: GCC multilib
         run: |
+          sudo apt-get update
           sudo apt-get install gcc-multilib g++-multilib clang 
           sudo apt-get install libcrypto++6 libssl1.1 libssl-dev --reinstall
-          echo "====================================="
-          ls /usr/lib/x86_64-linux-gnu
          
       -
         name: OSXCross for CGO Support
@@ -35,7 +37,7 @@ jobs:
         name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.16
+          go-version: 1.16.2
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
