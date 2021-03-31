@@ -123,6 +123,11 @@ func setCustomOrderInitGenesis() []string {
 func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
 	return []module.AppModuleSimulation{
 		wasm.NewAppModule(&app.wasmKeeper),
+		group.Module{
+			Registry:      app.interfaceRegistry,
+			BankKeeper:    app.BankKeeper,
+			AccountKeeper: app.AccountKeeper,
+		},
 	}
 }
 
