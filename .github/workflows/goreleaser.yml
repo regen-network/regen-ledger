@@ -32,7 +32,7 @@ jobs:
         run: |
           mkdir ../../osxcross
           git clone https://github.com/likhita-809/osxcross-target.git ../../osxcross/target
-          ls ../../osxcross/target/bin
+          ls /home/runner/work/osxcross/target/bin
 
       -              
         name: find libcrypto
