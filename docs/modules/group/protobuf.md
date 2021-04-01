@@ -4,15 +4,6 @@
 
 ## Table of Contents
 
-- [regen/group/v1alpha1/events.proto](#regen/group/v1alpha1/events.proto)
-    - [EventCreateGroup](#regen.group.v1alpha1.EventCreateGroup)
-    - [EventCreateGroupAccount](#regen.group.v1alpha1.EventCreateGroupAccount)
-    - [EventCreateProposal](#regen.group.v1alpha1.EventCreateProposal)
-    - [EventExec](#regen.group.v1alpha1.EventExec)
-    - [EventUpdateGroup](#regen.group.v1alpha1.EventUpdateGroup)
-    - [EventUpdateGroupAccount](#regen.group.v1alpha1.EventUpdateGroupAccount)
-    - [EventVote](#regen.group.v1alpha1.EventVote)
-  
 - [regen/group/v1alpha1/types.proto](#regen/group/v1alpha1/types.proto)
     - [GroupAccountInfo](#regen.group.v1alpha1.GroupAccountInfo)
     - [GroupInfo](#regen.group.v1alpha1.GroupInfo)
@@ -58,8 +49,11 @@
 - [regen/group/v1alpha1/events.proto](#regen/group/v1alpha1/events.proto)
     - [EventCreateGroup](#regen.group.v1alpha1.EventCreateGroup)
     - [EventCreateGroupAccount](#regen.group.v1alpha1.EventCreateGroupAccount)
+    - [EventCreateProposal](#regen.group.v1alpha1.EventCreateProposal)
+    - [EventExec](#regen.group.v1alpha1.EventExec)
     - [EventUpdateGroup](#regen.group.v1alpha1.EventUpdateGroup)
     - [EventUpdateGroupAccount](#regen.group.v1alpha1.EventUpdateGroupAccount)
+    - [EventVote](#regen.group.v1alpha1.EventVote)
   
 - [regen/group/v1alpha1/query.proto](#regen/group/v1alpha1/query.proto)
     - [QueryGroupAccountInfoRequest](#regen.group.v1alpha1.QueryGroupAccountInfoRequest)
@@ -91,127 +85,6 @@
     - [GenesisState](#regen.group.v1alpha1.GenesisState)
   
 - [Scalar Value Types](#scalar-value-types)
-
-
-
-<a name="regen/group/v1alpha1/events.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## regen/group/v1alpha1/events.proto
-
-
-
-<a name="regen.group.v1alpha1.EventCreateGroup"></a>
-
-### EventCreateGroup
-EventCreateGroup is an event emitted when a group is created.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
-
-
-
-
-
-
-<a name="regen.group.v1alpha1.EventCreateGroupAccount"></a>
-
-### EventCreateGroupAccount
-EventCreateGroupAccount is an event emitted when a group account is created.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| address | [string](#string) |  | address is the address of the group account. |
-
-
-
-
-
-
-<a name="regen.group.v1alpha1.EventCreateProposal"></a>
-
-### EventCreateProposal
-EventCreateProposal is an event emitted when a proposal is created.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| proposal_id | [uint64](#uint64) |  | proposal_id is the unique ID of the proposal. |
-
-
-
-
-
-
-<a name="regen.group.v1alpha1.EventExec"></a>
-
-### EventExec
-EventExec is an event emitted when a proposal is executed.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| proposal_id | [uint64](#uint64) |  | proposal_id is the unique ID of the proposal. |
-
-
-
-
-
-
-<a name="regen.group.v1alpha1.EventUpdateGroup"></a>
-
-### EventUpdateGroup
-EventUpdateGroup is an event emitted when a group is updated.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
-
-
-
-
-
-
-<a name="regen.group.v1alpha1.EventUpdateGroupAccount"></a>
-
-### EventUpdateGroupAccount
-EventUpdateGroupAccount is an event emitted when a group account is updated.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| address | [string](#string) |  | address is the address of the group account. |
-
-
-
-
-
-
-<a name="regen.group.v1alpha1.EventVote"></a>
-
-### EventVote
-EventVote is an event emitted when a voter votes on a proposal.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| proposal_id | [uint64](#uint64) |  | proposal_id is the unique ID of the proposal. |
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
- <!-- end services -->
 
 
 
@@ -824,7 +697,7 @@ EventCreateGroup is an event emitted when a group is created.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_id | [string](#string) |  | group_id is the unique ID of the group. |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 
 
 
@@ -846,6 +719,36 @@ EventCreateGroupAccount is an event emitted when a group account is created.
 
 
 
+<a name="regen.group.v1alpha1.EventCreateProposal"></a>
+
+### EventCreateProposal
+EventCreateProposal is an event emitted when a proposal is created.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| proposal_id | [uint64](#uint64) |  | proposal_id is the unique ID of the proposal. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.EventExec"></a>
+
+### EventExec
+EventExec is an event emitted when a proposal is executed.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| proposal_id | [uint64](#uint64) |  | proposal_id is the unique ID of the proposal. |
+
+
+
+
+
+
 <a name="regen.group.v1alpha1.EventUpdateGroup"></a>
 
 ### EventUpdateGroup
@@ -854,7 +757,7 @@ EventUpdateGroup is an event emitted when a group is updated.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_id | [string](#string) |  | group_id is the unique ID of the group. |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 
 
 
@@ -870,6 +773,21 @@ EventUpdateGroupAccount is an event emitted when a group account is updated.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | address | [string](#string) |  | address is the address of the group account. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.EventVote"></a>
+
+### EventVote
+EventVote is an event emitted when a voter votes on a proposal.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| proposal_id | [uint64](#uint64) |  | proposal_id is the unique ID of the proposal. |
 
 
 
