@@ -13,12 +13,6 @@ func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
 	ir.RegisterRoute(group.ModuleName, "Tally-Votes", s.tallyVotesInvariant())
 }
 
-func (s serverImpl) AllInvariants() sdk.Invariant {
-	return func(ctx sdk.Context) (string, bool) {
-		return s.tallyVotesInvariant()(ctx)
-	}
-}
-
 func (s serverImpl) tallyVotesInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		if ctx.BlockHeight()-1 < 0 {
