@@ -9,7 +9,7 @@ parent:
 
 This document specifies the group module.
 
-This module allows the creation and management of on chain multisig accounts and enables voting for message execution.
+This module allows the creation and management of on chain multisig accounts and enables voting for message execution based on configurable decision policies.
 
 ## Contents
 
