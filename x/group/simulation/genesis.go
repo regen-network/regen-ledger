@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"fmt"
 	"math/rand"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -174,6 +175,12 @@ func RandomizedGenState(simState *module.SimulationState) {
 		Votes:           votes,
 	}
 
+	bz, err := simState.Cdc.MarshalJSON(&groupGenesis)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Selected randomly generated %s parameters:\n%s\n", group.ModuleName, bz)
 	simState.GenState[group.ModuleName] = simState.Cdc.MustMarshalJSON(&groupGenesis)
 
 }
