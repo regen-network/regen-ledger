@@ -29,7 +29,7 @@ const (
 	OpMsgCreateGroupAccountRequest        = "op_weight_msg_create_group_account"
 	OpMsgUpdateGroupAccountAdmin          = "op_weight_msg_update_group_account_admin"
 	OpMsgUpdateGroupAccountDecisionPolicy = "op_weight_msg_update_group_account_decision_policy"
-	OpMsgUpdateGroupAccountComment        = "op_weight_msg_update_group_account_comment"
+	OpMsgUpdateGroupAccountMetaData       = "op_weight_msg_update_group_account_metadata"
 	OpMsgCreateProposal                   = "op_weight_msg_create_proposal"
 	OpMsgVote                             = "op_weight_msg_vote"
 	OpMsgExec                             = "ops_weight_msg_exec"
@@ -110,7 +110,7 @@ func WeightedOperations(
 			weightMsgUpdateGroupAccountDecisionPolicy = WeightUpdateGroup
 		},
 	)
-	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupAccountComment, &weightMsgUpdateGroupAccountComment, nil,
+	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupAccountMetaData, &weightMsgUpdateGroupAccountComment, nil,
 		func(_ *rand.Rand) {
 			weightMsgUpdateGroupAccountComment = WeightUpdateGroup
 		},
@@ -159,7 +159,7 @@ func WeightedOperations(
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateGroupAccountComment,
-			SimulateMsgUpdateGroupAccountComment(ak, bk, qryClient),
+			SimulateMsgUpdateGroupAccountMetadata(ak, bk, qryClient),
 		),
 	}
 }
@@ -686,8 +686,8 @@ func SimulateMsgUpdateGroupAccountDecisionPolicy(ak exported.AccountKeeper,
 	}
 }
 
-// SimulateMsgUpdateGroupAccountComment generates a MsgUpdateGroupAccountMetadataRequest with random values
-func SimulateMsgUpdateGroupAccountComment(ak exported.AccountKeeper,
+// SimulateMsgUpdateGroupAccountMetadata generates a MsgUpdateGroupAccountMetadataRequest with random values
+func SimulateMsgUpdateGroupAccountMetadata(ak exported.AccountKeeper,
 	bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {

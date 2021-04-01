@@ -541,11 +541,6 @@ func (app *RegenApp) SimulationManager() *module.SimulationManager {
 	return app.sm
 }
 
-// NewManager implements the SimulationApp interface
-func (app *RegenApp) NewManager() *server.Manager {
-	return app.smm
-}
-
 // RegisterAPIRoutes registers all application module routes with the provided
 // API server.
 func (app *RegenApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {

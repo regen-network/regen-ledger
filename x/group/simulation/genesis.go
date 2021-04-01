@@ -27,7 +27,7 @@ func getGroups(r *rand.Rand, accounts []simtypes.Account) []*group.GroupInfo {
 	for i := 0; i < 3; i++ {
 		acc, _ := simtypes.RandomAcc(r, accounts)
 		groups[i] = &group.GroupInfo{
-			GroupId:     1,
+			GroupId:     uint64(i + 1),
 			Admin:       acc.Address.String(),
 			Metadata:    []byte(simtypes.RandStringOfLength(r, 10)),
 			Version:     1,
@@ -42,7 +42,7 @@ func getGroupMembers(r *rand.Rand, accounts []simtypes.Account) []*group.GroupMe
 	for i := 0; i < 3; i++ {
 		acc, _ := simtypes.RandomAcc(r, accounts)
 		groupMembers[i] = &group.GroupMember{
-			GroupId: 1,
+			GroupId: uint64(i + 1),
 			Member: &group.Member{
 				Address:  acc.Address.String(),
 				Weight:   "10",
@@ -62,7 +62,7 @@ func getGroupAccounts(r *rand.Rand, simState *module.SimulationState) []*group.G
 			panic(err)
 		}
 		groupMembers[i] = &group.GroupAccountInfo{
-			GroupId:        1,
+			GroupId:        uint64(i + 1),
 			Admin:          acc.Address.String(),
 			Address:        acc.Address.String(),
 			Version:        1,
@@ -74,40 +74,40 @@ func getGroupAccounts(r *rand.Rand, simState *module.SimulationState) []*group.G
 }
 
 func getProposals(r *rand.Rand, simState *module.SimulationState) []*group.Proposal {
-	groupMembers := make([]*group.Proposal, 3)
+	proposals := make([]*group.Proposal, 3)
 	for i := 0; i < 3; i++ {
 
-		acc, _ := simtypes.RandomAcc(r, simState.Accounts)
-		anyMsg, err := codectypes.NewAnyWithValue(&banktypes.MsgSend{
-			FromAddress: acc.Address.String(),
-			ToAddress:   acc.Address.String(),
-			Amount:      sdk.NewCoins(sdk.NewInt64Coin("test", 10)),
-		})
-		if err != nil {
-			panic(err)
-		}
-		groupMembers[i] = &group.Proposal{
-			ProposalId:          1,
+		from, _ := simtypes.RandomAcc(r, simState.Accounts)
+		to, _ := simtypes.RandomAcc(r, simState.Accounts)
+
+		proposal := &group.Proposal{
+			ProposalId:          uint64(i + 1),
 			Proposers:           []string{simState.Accounts[0].Address.String(), simState.Accounts[1].Address.String()},
-			Address:             acc.Address.String(),
-			GroupVersion:        1,
-			GroupAccountVersion: 1,
+			Address:             from.Address.String(),
+			GroupVersion:        uint64(i + 1),
+			GroupAccountVersion: uint64(i + 1),
 			Status:              group.ProposalStatusSubmitted,
 			Result:              group.ProposalResultAccepted,
 			VoteState: group.Tally{
-				YesCount:     "1",
+				YesCount:     "3",
 				NoCount:      "0",
-				AbstainCount: "1",
+				AbstainCount: "0",
 				VetoCount:    "0",
 			},
 			ExecutorResult: group.ProposalExecutorResultNotRun,
 			Metadata:       []byte(simtypes.RandStringOfLength(r, 50)),
 			SubmittedAt:    gogotypes.Timestamp{Seconds: 1},
 			Timeout:        gogotypes.Timestamp{Seconds: 1000},
-			Msgs:           []*codectypes.Any{anyMsg},
 		}
+		proposal.SetMsgs([]sdk.Msg{&banktypes.MsgSend{
+			FromAddress: from.Address.String(),
+			ToAddress:   to.Address.String(),
+			Amount:      sdk.NewCoins(sdk.NewInt64Coin("test", 10)),
+		}})
+
+		proposals[i] = proposal
 	}
-	return groupMembers
+	return proposals
 }
 
 func getVotes(r *rand.Rand, simState *module.SimulationState) []*group.Vote {
@@ -115,8 +115,8 @@ func getVotes(r *rand.Rand, simState *module.SimulationState) []*group.Vote {
 
 	for i := 0; i < 3; i++ {
 		votes[i] = &group.Vote{
-			ProposalId:  1,
-			Voter:       simState.Accounts[0].Address.String(),
+			ProposalId:  uint64(i + 1),
+			Voter:       simState.Accounts[i].Address.String(),
 			Choice:      group.Choice_CHOICE_YES,
 			Metadata:    []byte(simtypes.RandStringOfLength(r, 50)),
 			SubmittedAt: gogotypes.Timestamp{Seconds: 10},
