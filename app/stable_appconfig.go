@@ -14,6 +14,7 @@ import (
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
+	"github.com/regen-network/regen-ledger/types/module/server"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
@@ -25,11 +26,14 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 	}
 }
 
+// setCustomModules registers new modules with the server module manager.
+// It does nothing here and returns an empty manager since we're not using experimental mode.
+func setCustomModules(_ *RegenApp, _ types.InterfaceRegistry) *server.Manager {
+	return &server.Manager{}
+}
 func setCustomKVStoreKeys() []string {
 	return []string{}
 }
-
-func setCustomModules(_ *RegenApp, _ types.InterfaceRegistry) {}
 
 func (app *RegenApp) registerUpgradeHandlers() {}
 

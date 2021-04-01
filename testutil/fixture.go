@@ -11,8 +11,11 @@ package testutil
 
 import (
 	"context"
+	"encoding/json"
 
+	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 	"google.golang.org/grpc"
 )
 
@@ -39,6 +42,15 @@ type Fixture interface {
 	// Signers are a list of addresses which can be used to sign transactions. They may either be
 	// random or correspond to nodes in a test network which have keyrings.
 	Signers() []sdk.AccAddress
+
+	// InitGenesis initializes genesis for all modules with provided genesisData.
+	InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (abci.ResponseInitChain, error)
+
+	// ExportGenesis returns raw encoded JSON genesis state for all modules.
+	ExportGenesis(ctx sdk.Context) (map[string]json.RawMessage, error)
+
+	// Codec is the app ProtoCodec.
+	Codec() *codec.ProtoCodec
 
 	// Teardown performs any teardown actions for the fixture.
 	Teardown()

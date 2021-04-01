@@ -62,8 +62,8 @@ message QueryGroupInfoResponse {
 // QueryGroupAccountInfoRequest is the Query/GroupAccountInfo request type.
 message QueryGroupAccountInfoRequest {
 
-  // group_account is the account address of the group account.
-  string group_account = 1;
+  // address is the account address of the group account.
+  string address = 1;
 }
 
 // QueryGroupAccountInfoResponse is the Query/GroupAccountInfo response type.
@@ -170,8 +170,8 @@ message QueryProposalResponse {
 // QueryProposalsByGroupAccountRequest is the Query/ProposalByGroupAccount request type.
 message QueryProposalsByGroupAccountRequest {
 
-  // group_account is the group account address related to proposals.
-  string group_account = 1;
+  // address is the group account address related to proposals.
+  string address = 1;
 
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;

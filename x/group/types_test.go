@@ -198,13 +198,13 @@ func TestThresholdDecisionPolicyValidateBasic(t *testing.T) {
 	}
 }
 
-func TestVoteNaturalKey(t *testing.T) {
+func TestVotePrimaryKey(t *testing.T) {
 	addr := []byte{0xff, 0xfe}
 	v := Vote{
 		ProposalId: 1,
 		Voter:      string(addr[:]),
 	}
-	assert.Equal(t, []byte{0, 0, 0, 0, 0, 0, 0, 1, 0xff, 0xfe}, v.NaturalKey())
+	assert.Equal(t, []byte{0, 0, 0, 0, 0, 0, 0, 1, 0xff, 0xfe}, v.PrimaryKey())
 }
 
 func TestGroupInfoValidation(t *testing.T) {

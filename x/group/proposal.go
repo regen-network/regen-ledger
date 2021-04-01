@@ -4,6 +4,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/orm"
 )
 
 func (p *Proposal) GetMsgs() []sdk.Msg {
@@ -34,7 +35,7 @@ func (p *Proposal) SetMsgs(new []sdk.Msg) error {
 }
 
 func (p Proposal) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(p.GroupAccount)
+	_, err := sdk.AccAddressFromBech32(p.Address)
 	if err != nil {
 		return sdkerrors.Wrap(err, "group account")
 	}
@@ -107,4 +108,8 @@ func (p Proposal) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 	}
 
 	return nil
+}
+
+func (p Proposal) PrimaryKey() []byte {
+	return orm.EncodeSequence(p.ProposalId)
 }
