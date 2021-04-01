@@ -30,9 +30,9 @@ type Manager struct {
 
 // RegisterInvariants registers all module routes and module querier routes
 func (mm *Manager) RegisterInvariants(ir sdk.InvariantRegistry) {
-	for _, moduleName := range mm.registerInvariantsHandler {
-		if moduleName != nil {
-			moduleName(ir)
+	for _, invariant := range mm.registerInvariantsHandler {
+		if invariant != nil {
+			invariant(ir)
 		}
 	}
 }

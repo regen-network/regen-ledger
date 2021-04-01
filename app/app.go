@@ -178,12 +178,6 @@ type RegenApp struct {
 	// simulation manager
 	sm *module.SimulationManager
 
-	// new module manager
-	// XXX We will likely want to make this new manager compatible
-	// with module.Manager so that we can have existing cosmos-sdk modules
-	// use ADR 33 approach without the need for removing their keepers
-	// and a larger refactoring.
-	// nm *servermodule.Manager
 	// server module manager
 	// NOTE: We will likely want to make this new manager compatible
 	// with module.Manager so that we can have existing cosmos-sdk modules
@@ -325,7 +319,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// register experimental modules here
 	app.smm = setCustomModules(app, interfaceRegistry)
 	app.smm.RegisterInvariants(&app.CrisisKeeper)
-	// app.smm = setCustomModules(app, interfaceRegistry)
 
 	var skipGenesisInvariants = cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
