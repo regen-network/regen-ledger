@@ -9,7 +9,7 @@ parent:
 
 This document specifies the group module.
 
-This module allows TODO
+This module allows the creation and management of on chain multisig accounts and enables voting for message execution.
 
 ## Contents
 
