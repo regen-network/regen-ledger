@@ -9,8 +9,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
+const votesInvariant = "Tally-Votes"
+
 func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
-	ir.RegisterRoute(group.ModuleName, "Tally-Votes", s.tallyVotesInvariant())
+	ir.RegisterRoute(group.ModuleName, votesInvariant, s.tallyVotesInvariant())
 }
 
 func (s serverImpl) tallyVotesInvariant() sdk.Invariant {
@@ -54,43 +56,45 @@ func tallyVotesInvariant(ctx sdk.Context, prevCtx sdk.Context, proposalTable orm
 		return msg, broken, err
 	}
 
-	for i := 0; i < len(prevProposals) && i < len(curProposals); i++ {
-		prevYesCount, err := prevProposals[i].VoteState.GetYesCount()
-		if err != nil {
-			return msg, broken, err
-		}
-		curYesCount, err := curProposals[i].VoteState.GetYesCount()
-		if err != nil {
-			return msg, broken, err
-		}
-		prevNoCount, err := prevProposals[i].VoteState.GetNoCount()
-		if err != nil {
-			return msg, broken, err
-		}
-		curNoCount, err := curProposals[i].VoteState.GetNoCount()
-		if err != nil {
-			return msg, broken, err
-		}
-		prevAbstainCount, err := prevProposals[i].VoteState.GetAbstainCount()
-		if err != nil {
-			return msg, broken, err
-		}
-		curAbstainCount, err := curProposals[i].VoteState.GetAbstainCount()
-		if err != nil {
-			return msg, broken, err
-		}
-		prevVetoCount, err := prevProposals[i].VoteState.GetVetoCount()
-		if err != nil {
-			return msg, broken, err
-		}
-		curVetoCount, err := curProposals[i].VoteState.GetVetoCount()
-		if err != nil {
-			return msg, broken, err
-		}
-		if (curYesCount.Cmp(prevYesCount) == -1) || (curNoCount.Cmp(prevNoCount) == -1) || (curAbstainCount.Cmp(prevAbstainCount) == -1) || (curVetoCount.Cmp(prevVetoCount) == -1) {
-			broken = true
-			msg += "vote tally sums must never have less than the block before\n"
-			return msg, broken, err
+	for i := 0; i < len(prevProposals); i++ {
+		if prevProposals[i].ProposalId == curProposals[i].ProposalId {
+			prevYesCount, err := prevProposals[i].VoteState.GetYesCount()
+			if err != nil {
+				return msg, broken, err
+			}
+			curYesCount, err := curProposals[i].VoteState.GetYesCount()
+			if err != nil {
+				return msg, broken, err
+			}
+			prevNoCount, err := prevProposals[i].VoteState.GetNoCount()
+			if err != nil {
+				return msg, broken, err
+			}
+			curNoCount, err := curProposals[i].VoteState.GetNoCount()
+			if err != nil {
+				return msg, broken, err
+			}
+			prevAbstainCount, err := prevProposals[i].VoteState.GetAbstainCount()
+			if err != nil {
+				return msg, broken, err
+			}
+			curAbstainCount, err := curProposals[i].VoteState.GetAbstainCount()
+			if err != nil {
+				return msg, broken, err
+			}
+			prevVetoCount, err := prevProposals[i].VoteState.GetVetoCount()
+			if err != nil {
+				return msg, broken, err
+			}
+			curVetoCount, err := curProposals[i].VoteState.GetVetoCount()
+			if err != nil {
+				return msg, broken, err
+			}
+			if (curYesCount.Cmp(prevYesCount) == -1) || (curNoCount.Cmp(prevNoCount) == -1) || (curAbstainCount.Cmp(prevAbstainCount) == -1) || (curVetoCount.Cmp(prevVetoCount) == -1) {
+				broken = true
+				msg += "vote tally sums must never have less than the block before\n"
+				return msg, broken, err
+			}
 		}
 	}
 	return msg, broken, err
