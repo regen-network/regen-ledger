@@ -9,7 +9,9 @@ import (
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
-const votesInvariant = "Tally-Votes"
+const (
+	votesInvariant = "Tally-Votes"
+)
 
 func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
 	ir.RegisterRoute(group.ModuleName, votesInvariant, s.tallyVotesInvariant())
@@ -18,7 +20,7 @@ func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
 func (s serverImpl) tallyVotesInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		if ctx.BlockHeight()-1 < 0 {
-			return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", "Not enough blocks to perform TallyVotesInvariant"), false
+			return sdk.FormatInvariant(group.ModuleName, votesInvariant, "Not enough blocks to perform TallyVotesInvariant"), false
 		}
 		prevCtx, _ := ctx.CacheContext()
 		prevCtx = prevCtx.WithBlockHeight(ctx.BlockHeight() - 1)
@@ -26,7 +28,7 @@ func (s serverImpl) tallyVotesInvariant() sdk.Invariant {
 		if err != nil {
 			panic(err)
 		}
-		return sdk.FormatInvariant(group.ModuleName, "Tally-Votes", msg), broken
+		return sdk.FormatInvariant(group.ModuleName, votesInvariant, msg), broken
 	}
 }
 
