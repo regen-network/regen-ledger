@@ -7,6 +7,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/group/simulation"
 )
 
+// WeightedOperations returns all the group module operations with their respective weights.
 func (s serverImpl) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 
 	queryClient := group.NewQueryClient(s.key)

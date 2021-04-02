@@ -99,11 +99,14 @@ func getProposals(r *rand.Rand, simState *module.SimulationState) []*group.Propo
 			SubmittedAt:    gogotypes.Timestamp{Seconds: 1},
 			Timeout:        gogotypes.Timestamp{Seconds: 1000},
 		}
-		proposal.SetMsgs([]sdk.Msg{&banktypes.MsgSend{
+		err := proposal.SetMsgs([]sdk.Msg{&banktypes.MsgSend{
 			FromAddress: from.Address.String(),
 			ToAddress:   to.Address.String(),
 			Amount:      sdk.NewCoins(sdk.NewInt64Coin("test", 10)),
 		}})
+		if err != nil {
+			panic(err)
+		}
 
 		proposals[i] = proposal
 	}
