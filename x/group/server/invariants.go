@@ -136,37 +136,35 @@ func tallyTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 		return msg, broken, err
 	}
 
-	var members []*group.GroupMember
+	var groupMembers []*group.GroupMember
 
 	memberIt, err := groupMemberTable.PrefixScan(ctx, nil, nil)
 	if err != nil {
 		return msg, broken, err
 	}
-	_, err = orm.ReadAll(memberIt, &members)
+	_, err = orm.ReadAll(memberIt, &groupMembers)
 	if err != nil {
 		return msg, broken, err
 	}
 
-	var sum int64
-
+	var membersWeight int64
 	for i := 0; i < len(groupInfo); i++ {
-
-		sum = 0
-		for j := 0; j < len(members); j++ {
-			if groupInfo[i].GroupId == members[j].GroupId {
-				MemWeight, err := strconv.ParseInt(members[j].GetMember().Weight, 10, 64)
+		membersWeight = 0
+		for j := 0; j < len(groupMembers); j++ {
+			if groupInfo[i].GroupId == groupMembers[j].GroupId {
+				curMemWeight, err := strconv.ParseInt(groupMembers[j].GetMember().Weight, 10, 64)
 				if err != nil {
 					return msg, broken, err
 				}
-				sum = sum + MemWeight
+				membersWeight = membersWeight + curMemWeight
 			}
 		}
-		totalWeight, err := regenMath.ParsePositiveDecimal(groupInfo[i].GetTotalWeight())
+		groupWeight, err := regenMath.ParsePositiveDecimal(groupInfo[i].GetTotalWeight())
 		if err != nil {
 			return msg, broken, err
 		}
-		memSum := apd.New(sum, 0)
-		if (totalWeight.Cmp(memSum) == 1) || (totalWeight.Cmp(memSum) == -1) {
+		totalMembersWeight := apd.New(membersWeight, 0)
+		if (groupWeight.Cmp(totalMembersWeight) == 1) || (groupWeight.Cmp(totalMembersWeight) == -1) {
 			broken = true
 			msg += "group's TotalWeight must be equal to the sum of its members' weights\n"
 			break
