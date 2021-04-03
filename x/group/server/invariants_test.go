@@ -233,3 +233,107 @@ func TestTallyVotesInvariant(t *testing.T) {
 		require.Equal(t, spec.expErr, broken)
 	}
 }
+
+func TestTallyTotalWeightInvariant(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+	key := sdk.NewKVStoreKey(group.ModuleName)
+	db := dbm.NewMemDB()
+	cms := store.NewCommitMultiStore(db)
+	cms.MountStoreWithDB(key, sdk.StoreTypeIAVL, db)
+	err := cms.LoadLatestVersion()
+	require.NoError(t, err)
+	curCtx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
+	curCtx = curCtx.WithBlockHeight(10)
+	// Group Table
+	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, key, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
+	groupTable := groupTableBuilder.Build()
+
+	// Members Table
+	groupMemberTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, key, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	groupMemberTable := groupMemberTableBuilder.Build()
+
+	_, _, addr1 := testdata.KeyTestPubAddr()
+	_, _, addr2 := testdata.KeyTestPubAddr()
+
+	specs := map[string]struct {
+		groupReq   []*group.GroupInfo
+		membersReq []*group.GroupMember
+		expErr     bool
+	}{
+		"invariant not broken": {
+			groupReq: []*group.GroupInfo{
+				{
+					GroupId:     1,
+					Admin:       addr1.String(),
+					Version:     1,
+					TotalWeight: "3",
+				},
+			},
+			membersReq: []*group.GroupMember{
+				{
+					GroupId: 1,
+					Member: &group.Member{
+						Address: addr1.String(),
+						Weight:  "1",
+					},
+				},
+				{
+					GroupId: 1,
+					Member: &group.Member{
+						Address: addr2.String(),
+						Weight:  "2",
+					},
+				},
+			},
+			expErr: false,
+		},
+
+		"group's TotalWeight must be equal to sum of its members weight ": {
+			groupReq: []*group.GroupInfo{
+				{
+					GroupId:     1,
+					Admin:       addr1.String(),
+					Version:     1,
+					TotalWeight: "3",
+				},
+			},
+			membersReq: []*group.GroupMember{
+				{
+					GroupId: 1,
+					Member: &group.Member{
+						Address: addr1.String(),
+						Weight:  "2",
+					},
+				},
+				{
+					GroupId: 1,
+					Member: &group.Member{
+						Address: addr2.String(),
+						Weight:  "2",
+					},
+				},
+			},
+			expErr: true,
+		},
+	}
+
+	for _, spec := range specs {
+		cacheCurCtx, _ := curCtx.CacheContext()
+		groupReq := spec.groupReq
+		members := spec.membersReq
+
+		for i := 0; i < len(groupReq); i++ {
+			err := groupTable.Create(cacheCurCtx, group.ID(groupReq[i].GroupId).Bytes(), groupReq[i])
+			require.NoError(t, err)
+		}
+
+		for i := 0; i < len(members); i++ {
+			err := groupMemberTable.Create(cacheCurCtx, members[i])
+			require.NoError(t, err)
+		}
+
+		_, broken, _ := tallyTotalWeightInvariant(cacheCurCtx, groupTable, groupMemberTable)
+		require.Equal(t, spec.expErr, broken)
+	}
+}
