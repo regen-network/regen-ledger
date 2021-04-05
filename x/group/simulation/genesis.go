@@ -75,8 +75,8 @@ func getGroupAccounts(r *rand.Rand, simState *module.SimulationState) []*group.G
 
 func getProposals(r *rand.Rand, simState *module.SimulationState) []*group.Proposal {
 	proposals := make([]*group.Proposal, 3)
-	for i := 0; i < 3; i++ {
 
+	for i := 0; i < 3; i++ {
 		from, _ := simtypes.RandomAcc(r, simState.Accounts)
 		to, _ := simtypes.RandomAcc(r, simState.Accounts)
 
