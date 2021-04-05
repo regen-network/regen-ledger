@@ -185,5 +185,4 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 	fmt.Printf("Selected randomly generated %s parameters:\n%s\n", group.ModuleName, bz)
 	simState.GenState[group.ModuleName] = simState.Cdc.MustMarshalJSON(&groupGenesis)
-
 }
