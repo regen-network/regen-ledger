@@ -3,24 +3,29 @@
 ########################################
 ### Simulations
 
+simulation_tags=""
+
+ifeq ($(EXPERIMENTAL),true)
+	simulation_tags += experimental
+endif
+
 sim-regen-nondeterminism:
 	@echo "Running nondeterminism test..."
 	@go test -mod=readonly $(APP_DIR) -run TestAppStateDeterminism -Enabled=true \
-		-NumBlocks=50 -BlockSize=100 -Commit=true -Period=0 -v -timeout 24h -tags=experimental
-
+		-NumBlocks=100 -BlockSize=200 -Commit=true -Period=0 -v -timeout 24h -tags="$(simulation_tags)"
 sim-regen-custom-genesis-fast:
 	@echo "Running custom genesis simulation..."
 	@echo "By default, ${HOME}/.regen/config/genesis.json will be used."
 	@go test -mod=readonly $(APP_DIR) -run TestFullAppSimulation -Genesis=${HOME}/.regen/config/genesis.json \
-		-Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h -tags=experimental
+		-Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Seed=99 -Period=5 -v -timeout 24h -tags="$(simulation_tags)"
 
 sim-regen-fast:
 	@echo "Running quick Regen simulation. This may take several minutes..."
-	@go test -mod=readonly $(APP_DIR) -run TestFullAppSimulation -Enabled=true -NumBlocks=50 -BlockSize=100 -Commit=true -Seed=99 -Period=5 -v -timeout 24h -tags=experimental
+	@go test -mod=readonly $(APP_DIR) -run TestFullAppSimulation -Enabled=true -NumBlocks=50 -BlockSize=100 -Commit=true -Seed=99 -Period=5 -v -timeout 24h -tags="$(simulation_tags)"
 
 sim-regen-import-export: runsim
 	@echo "Running Regen import/export simulation. This may take several minutes..."
-	$(GOPATH)/bin/runsim -Jobs=4 -ExitOnFail 25 5 TestImportExport
+	$(GOPATH)/bin/runsim -Jobs=4 -ExitOnFail 25 5 TestImportExport 
 
 sim-regen-after-import: runsim
 	@echo "Running application simulation-after-import. This may take several minutes..."
