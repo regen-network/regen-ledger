@@ -159,7 +159,7 @@ func tallyTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 				membersWeight += curMemWeight
 			}
 		}
-		groupWeight, err := regenMath.ParsePositiveDecimal(groupInfo[i].GetTotalWeight())
+		groupWeight, err := regenMath.ParseNonNegativeDecimal(groupInfo[i].GetTotalWeight())
 		if err != nil {
 			return msg, broken, err
 		}
