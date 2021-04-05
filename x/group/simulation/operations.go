@@ -170,6 +170,7 @@ func SimulateMsgCreateGroup(ak exported.AccountKeeper, bk exported.BankKeeper) s
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc := accounts[0]
 		account := ak.GetAccount(ctx, acc.Address)
+		accAddr := acc.Address.String()
 
 		spendableCoins := bk.SpendableCoins(ctx, account.GetAddress())
 		fees, err := simtypes.RandomFees(r, ctx, spendableCoins)
@@ -179,13 +180,13 @@ func SimulateMsgCreateGroup(ak exported.AccountKeeper, bk exported.BankKeeper) s
 
 		members := []group.Member{
 			{
-				Address:  acc.Address.String(),
+				Address:  accAddr,
 				Weight:   fmt.Sprintf("%d", WeightGroupMember),
 				Metadata: []byte(simtypes.RandStringOfLength(r, 10)),
 			},
 		}
 
-		msg := &group.MsgCreateGroupRequest{Admin: acc.Address.String(), Members: members, Metadata: []byte(simtypes.RandStringOfLength(r, 10))}
+		msg := &group.MsgCreateGroupRequest{Admin: accAddr, Members: members, Metadata: []byte(simtypes.RandStringOfLength(r, 10))}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
 		tx, err := helpers.GenTx(

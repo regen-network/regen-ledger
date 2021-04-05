@@ -75,15 +75,16 @@ func getGroupAccounts(r *rand.Rand, simState *module.SimulationState) []*group.G
 
 func getProposals(r *rand.Rand, simState *module.SimulationState) []*group.Proposal {
 	proposals := make([]*group.Proposal, 3)
-
+	proposers := []string{simState.Accounts[0].Address.String(), simState.Accounts[1].Address.String()}
 	for i := 0; i < 3; i++ {
 		from, _ := simtypes.RandomAcc(r, simState.Accounts)
 		to, _ := simtypes.RandomAcc(r, simState.Accounts)
+		fromAddr := from.Address.String()
 
 		proposal := &group.Proposal{
 			ProposalId:          uint64(i + 1),
-			Proposers:           []string{simState.Accounts[0].Address.String(), simState.Accounts[1].Address.String()},
-			Address:             from.Address.String(),
+			Proposers:           proposers,
+			Address:             fromAddr,
 			GroupVersion:        uint64(i + 1),
 			GroupAccountVersion: uint64(i + 1),
 			Status:              group.ProposalStatusSubmitted,
@@ -100,7 +101,7 @@ func getProposals(r *rand.Rand, simState *module.SimulationState) []*group.Propo
 			Timeout:        gogotypes.Timestamp{Seconds: 1000},
 		}
 		err := proposal.SetMsgs([]sdk.Msg{&banktypes.MsgSend{
-			FromAddress: from.Address.String(),
+			FromAddress: fromAddr,
 			ToAddress:   to.Address.String(),
 			Amount:      sdk.NewCoins(sdk.NewInt64Coin("test", 10)),
 		}})
@@ -110,6 +111,7 @@ func getProposals(r *rand.Rand, simState *module.SimulationState) []*group.Propo
 
 		proposals[i] = proposal
 	}
+
 	return proposals
 }
 
