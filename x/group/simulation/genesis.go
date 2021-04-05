@@ -90,9 +90,9 @@ func getProposals(r *rand.Rand, simState *module.SimulationState) []*group.Propo
 			Status:              group.ProposalStatusSubmitted,
 			Result:              group.ProposalResultAccepted,
 			VoteState: group.Tally{
-				YesCount:     "3",
-				NoCount:      "0",
-				AbstainCount: "0",
+				YesCount:     "1",
+				NoCount:      "1",
+				AbstainCount: "1",
 				VetoCount:    "0",
 			},
 			ExecutorResult: group.ProposalExecutorResultNotRun,
@@ -122,13 +122,26 @@ func getVotes(r *rand.Rand, simState *module.SimulationState) []*group.Vote {
 		votes[i] = &group.Vote{
 			ProposalId:  uint64(i + 1),
 			Voter:       simState.Accounts[i].Address.String(),
-			Choice:      group.Choice_CHOICE_YES,
+			Choice:      getVoteChoice(i),
 			Metadata:    []byte(simtypes.RandStringOfLength(r, 50)),
 			SubmittedAt: gogotypes.Timestamp{Seconds: 10},
 		}
 	}
 
 	return votes
+}
+
+func getVoteChoice(index int) group.Choice {
+	switch index {
+	case 0:
+		return group.Choice_CHOICE_YES
+	case 1:
+		return group.Choice_CHOICE_NO
+	case 2:
+		return group.Choice_CHOICE_ABSTAIN
+	default:
+		return group.Choice_CHOICE_VETO
+	}
 }
 
 // RandomizedGenState generates a random GenesisState for the group module.
