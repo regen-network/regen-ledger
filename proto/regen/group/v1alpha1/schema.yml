@@ -1,0 +1,19 @@
+sequences:
+  - name: group_seq
+    prefix:
+      byte: 0x1
+tables:
+  - name: group_info
+    prefix:
+      byte: 0x0
+    type: GroupInfo
+    primary_key:
+      - seq: group_seq
+    indexes:
+      - name: by_admin
+        prefix:
+          byte: 0x2
+        parts:
+          - field:
+
+
