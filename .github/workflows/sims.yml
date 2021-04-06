@@ -56,7 +56,8 @@ jobs:
       - name: Display go version
         run: go version
       - name: Set experimental ENV flag
-        run: echo "{experimental}={true}" >> $GITHUB_ENV
+        env:
+          experimental: true
       - uses: technote-space/get-diff-action@v4
         with:
           PATTERNS: |
@@ -84,7 +85,8 @@ jobs:
       - name: Display go version
         run: go version
       - name: Set experimental ENV flag
-        run: echo "{experimental}={true}" >> $GITHUB_ENV
+        env:
+          experimental: true
       - uses: technote-space/get-diff-action@v4
         with:
           SUFFIX_FILTER: |
@@ -114,7 +116,8 @@ jobs:
       - name: Display go version
         run: go version
       - name: Set experimental ENV flag
-        run: echo "{experimental}={true}" >> $GITHUB_ENV
+        env:
+          experimental: true
       - uses: technote-space/get-diff-action@v4
         with:
           SUFFIX_FILTER: |
@@ -144,7 +147,8 @@ jobs:
       - name: Display go version
         run: go version
       - name: Set experimental ENV flag
-        run: echo "{experimental}={true}" >> $GITHUB_ENV
+        env:
+          experimental: true
       - uses: technote-space/get-diff-action@v4
         with:
           SUFFIX_FILTER: |
@@ -176,7 +180,8 @@ jobs:
       - name: Display go version
         run: go version
       - name: Set experimental ENV flag
-        run: echo "{experimental}={false}" >> $GITHUB_ENV
+        env:
+          experimental: false
       - uses: technote-space/get-diff-action@v4
         with:
           PATTERNS: |
@@ -204,7 +209,8 @@ jobs:
       - name: Display go version
         run: go version
       - name: Set experimental ENV flag
-        run: echo "{experimental}={false}" >> $GITHUB_ENV
+        env:
+          experimental: false
       - uses: technote-space/get-diff-action@v4
         with:
           SUFFIX_FILTER: |
@@ -234,7 +240,8 @@ jobs:
       - name: Display go version
         run: go version
       - name: Set experimental ENV flag
-        run: echo "{experimental}={false}" >> $GITHUB_ENV
+        env:
+          experimental: false
       - uses: technote-space/get-diff-action@v4
         with:
           SUFFIX_FILTER: |
@@ -264,7 +271,8 @@ jobs:
       - name: Display go version
         run: go version
       - name: Set experimental ENV flag
-        run: echo "{experimental}={false}" >> $GITHUB_ENV
+        env:
+          experimental: false
       - uses: technote-space/get-diff-action@v4
         with:
           SUFFIX_FILTER: |
