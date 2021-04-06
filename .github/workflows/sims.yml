@@ -55,9 +55,6 @@ jobs:
           go-version: 1.15
       - name: Display go version
         run: go version
-      - name: Set experimental ENV flag
-        env:
-          experimental: true
       - uses: technote-space/get-diff-action@v4
         with:
           PATTERNS: |
@@ -70,6 +67,8 @@ jobs:
           key: ${{ runner.os }}-go-runsim-binary
         if: env.GIT_DIFF
       - name: sim-nondeterminism-experimental
+        env:
+          experimental: true
         run: |
           make sim-regen-nondeterminism
         if: env.GIT_DIFF
@@ -84,9 +83,6 @@ jobs:
           go-version: 1.15
       - name: Display go version
         run: go version
-      - name: Set experimental ENV flag
-        env:
-          experimental: true
       - uses: technote-space/get-diff-action@v4
         with:
           SUFFIX_FILTER: |
@@ -101,6 +97,8 @@ jobs:
           key: ${{ runner.os }}-go-runsim-binary
         if: env.GIT_DIFF
       - name: sim-import-export-experimental
+        env:
+          experimental: true
         run: |
           make sim-regen-import-export
         if: env.GIT_DIFF
@@ -115,9 +113,6 @@ jobs:
           go-version: 1.15
       - name: Display go version
         run: go version
-      - name: Set experimental ENV flag
-        env:
-          experimental: true
       - uses: technote-space/get-diff-action@v4
         with:
           SUFFIX_FILTER: |
@@ -132,6 +127,8 @@ jobs:
           key: ${{ runner.os }}-go-runsim-binary
         if: env.GIT_DIFF
       - name: sim-after-import-experimental
+        env:
+          experimental: true
         run: |
           make sim-regen-after-import
         if: env.GIT_DIFF
@@ -146,9 +143,6 @@ jobs:
           go-version: 1.15
       - name: Display go version
         run: go version
-      - name: Set experimental ENV flag
-        env:
-          experimental: true
       - uses: technote-space/get-diff-action@v4
         with:
           SUFFIX_FILTER: |
@@ -163,6 +157,8 @@ jobs:
           key: ${{ runner.os }}-go-runsim-binary
         if: env.GIT_DIFF
       - name: sim-fullapp-experimental
+        env:
+          experimental: true
         run: |
           make sim-regen-fast
         if: env.GIT_DIFF
@@ -179,9 +175,6 @@ jobs:
           go-version: 1.15
       - name: Display go version
         run: go version
-      - name: Set experimental ENV flag
-        env:
-          experimental: false
       - uses: technote-space/get-diff-action@v4
         with:
           PATTERNS: |
@@ -194,6 +187,8 @@ jobs:
           key: ${{ runner.os }}-go-runsim-binary
         if: env.GIT_DIFF
       - name: sim-nondeterminism-stable
+        env:
+          experimental: false
         run: |
           make sim-regen-nondeterminism
         if: env.GIT_DIFF
@@ -208,9 +203,6 @@ jobs:
           go-version: 1.15
       - name: Display go version
         run: go version
-      - name: Set experimental ENV flag
-        env:
-          experimental: false
       - uses: technote-space/get-diff-action@v4
         with:
           SUFFIX_FILTER: |
@@ -225,6 +217,8 @@ jobs:
           key: ${{ runner.os }}-go-runsim-binary
         if: env.GIT_DIFF
       - name: sim-import-export-stable
+        env:
+          experimental: false
         run: |
           make sim-regen-import-export
         if: env.GIT_DIFF
@@ -239,9 +233,6 @@ jobs:
           go-version: 1.15
       - name: Display go version
         run: go version
-      - name: Set experimental ENV flag
-        env:
-          experimental: false
       - uses: technote-space/get-diff-action@v4
         with:
           SUFFIX_FILTER: |
@@ -256,6 +247,8 @@ jobs:
           key: ${{ runner.os }}-go-runsim-binary
         if: env.GIT_DIFF
       - name: sim-after-import-stable
+        env:
+          experimental: false
         run: |
           make sim-regen-after-import
         if: env.GIT_DIFF
@@ -270,9 +263,6 @@ jobs:
           go-version: 1.15
       - name: Display go version
         run: go version
-      - name: Set experimental ENV flag
-        env:
-          experimental: false
       - uses: technote-space/get-diff-action@v4
         with:
           SUFFIX_FILTER: |
@@ -287,6 +277,8 @@ jobs:
           key: ${{ runner.os }}-go-runsim-binary
         if: env.GIT_DIFF
       - name: sim-fullapp-stable
+        env:
+          experimental: false
         run: |
           make sim-regen-fast
         if: env.GIT_DIFF
