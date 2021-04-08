@@ -133,29 +133,30 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 	}
 
 	var curGroupMembers []*group.GroupMember
-	memIt, err := groupMemberByGroupIndex.PrefixScan(ctx, 1, math.MaxUint64)
-	if err != nil {
-		return msg, broken, err
-	}
-	_, err = orm.ReadAll(memIt, &curGroupMembers)
-	if err != nil {
-		return msg, broken, err
-	}
 
 	membersWeight := apd.New(0, 0)
+
 	for i := 0; i < len(groupInfo); i++ {
+		memIt, err := groupMemberByGroupIndex.Get(ctx, groupInfo[i].GroupId)
+		if err != nil {
+			return msg, broken, err
+		}
+		_, err = orm.ReadAll(memIt, &curGroupMembers)
+		if err != nil {
+			return msg, broken, err
+		}
+
 		for j := 0; j < len(curGroupMembers); j++ {
-			if groupInfo[i].GroupId == curGroupMembers[j].GroupId {
-				curMemWeight, err := regenMath.ParseNonNegativeDecimal(curGroupMembers[j].GetMember().GetWeight())
-				if err != nil {
-					return msg, broken, err
-				}
-				err = regenMath.Add(membersWeight, membersWeight, curMemWeight)
-				if err != nil {
-					return msg, broken, err
-				}
+			curMemWeight, err := regenMath.ParseNonNegativeDecimal(curGroupMembers[j].GetMember().GetWeight())
+			if err != nil {
+				return msg, broken, err
+			}
+			err = regenMath.Add(membersWeight, membersWeight, curMemWeight)
+			if err != nil {
+				return msg, broken, err
 			}
 		}
+
 		groupWeight, err := regenMath.ParseNonNegativeDecimal(groupInfo[i].GetTotalWeight())
 		if err != nil {
 			return msg, broken, err

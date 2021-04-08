@@ -31,6 +31,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 	curCtx = curCtx.WithBlockHeight(10)
 	prevCtx, _ := curCtx.CacheContext()
 	prevCtx = prevCtx.WithBlockHeight(curCtx.BlockHeight() - 1)
+
 	// Proposal Table
 	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, key, &group.Proposal{}, cdc)
 	proposalTable := proposalTableBuilder.Build()
@@ -245,11 +246,12 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 	require.NoError(t, err)
 	curCtx := sdk.NewContext(cms, tmproto.Header{}, false, log.NewNopLogger())
 	curCtx = curCtx.WithBlockHeight(10)
+
 	// Group Table
 	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, key, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
 	groupTable := groupTableBuilder.Build()
 
-	// Members Table
+	// Group Member Table
 	groupMemberTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, key, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	groupMemberByGroupIndex := orm.NewUInt64Index(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]uint64, error) {
 		group := val.(*group.GroupMember).GroupId
