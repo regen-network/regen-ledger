@@ -15,7 +15,9 @@ The `groupTable` stores `GroupInfo`: `0x0 | []byte(group_id) -> ProtocolBuffer(G
 
 ### groupSeq
 
-The value of `groupSeq` is incremented when creating a new group and corresponds to the new `GroupId`: `0x1 | 0x1 -> BigEndian`
+The value of `groupSeq` is incremented when creating a new group and corresponds to the new `GroupId`: `0x1 | 0x1 -> BigEndian`.
+
+The second `0x1` corresponds to the ORM `sequenceStorageKey`.
 
 ### groupByAdminIndex
 
@@ -42,6 +44,8 @@ The `groupAccountTable` stores `GroupAccountInfo`: `0x20 | []byte(Address) -> Pr
 The value of `groupAccountSeq` is incremented when creating a new group account and is used to generate the new group account `Address`:
 `0x21 | 0x1 -> BigEndian`
 
+The second `0x1` corresponds to the ORM `sequenceStorageKey`.
+
 ### groupAccountByGroupIndex
 
 `groupAccountByGroupIndex` allows to retrieve group accounts by group id using prefix `0x22`.
@@ -58,6 +62,8 @@ The `proposalTable` stores `Proposal`s: `0x30 | []byte(ProposalId) -> ProtocolBu
 ### proposalSeq
 
 The value of `proposalSeq` is incremented when creating a new proposal and corresponds to the new `ProposalId`: `0x31 | 0x1 -> BigEndian`
+
+The second `0x1` corresponds to the ORM `sequenceStorageKey`.
 
 ### proposalByGroupAccountIndex
 
