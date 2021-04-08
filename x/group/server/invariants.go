@@ -142,8 +142,7 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 		return msg, broken, err
 	}
 
-	var membersWeight *apd.Decimal
-	membersWeight = apd.New(0, 0)
+	membersWeight := apd.New(0, 0)
 	for i := 0; i < len(groupInfo); i++ {
 		for j := 0; j < len(curGroupMembers); j++ {
 			if groupInfo[i].GroupId == curGroupMembers[j].GroupId {
