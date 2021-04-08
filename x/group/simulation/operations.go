@@ -316,14 +316,9 @@ func SimulateMsgCreateProposal(ak exported.AccountKeeper, bk exported.BankKeeper
 			return op, nil, nil
 		}
 
-		result, err := queryClient.GroupAccountsByAdmin(ctx, &group.QueryGroupAccountsByAdminRequest{Admin: groupAdmin})
-		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateProposal, "fail to query group info"), nil, err
-		}
-
-		groupAccounts := result.GetGroupAccounts()
-		if len(groupAccounts) == 0 {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateProposal, "no group account found"), nil, nil
+		groupAccounts, opMsg, err := groupAccountsByAdmin(ctx, queryClient, groupAdmin)
+		if groupAccounts == nil {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateProposal, opMsg), nil, err
 		}
 
 		msg := group.MsgCreateProposalRequest{
@@ -379,15 +374,10 @@ func SimulateMsgUpdateGroupAdmin(ak exported.AccountKeeper, bk exported.BankKeep
 		if groupAdmin == "" {
 			return op, nil, nil
 		}
-		result1, err := queryClient.GroupAccountsByAdmin(ctx, &group.QueryGroupAccountsByAdminRequest{Admin: groupAdmin})
-		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAdmin, "update-group-admin: fail to query group info"), nil, err
-		}
 
-		groupAccounts := result1.GetGroupAccounts()
-
-		if len(groupAccounts) == 0 {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAdmin, "no group account found"), nil, nil
+		groupAccounts, opMsg, err := groupAccountsByAdmin(ctx, queryClient, groupAdmin)
+		if groupAccounts == nil {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAdmin, opMsg), nil, err
 		}
 
 		msg := group.MsgUpdateGroupAdminRequest{
@@ -496,14 +486,9 @@ func SimulateMsgUpdateGroupMembers(ak exported.AccountKeeper,
 			return op, nil, nil
 		}
 
-		result, err := queryClient.GroupAccountsByAdmin(ctx, &group.QueryGroupAccountsByAdminRequest{Admin: groupAdmin})
-		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupMembers, "fail to query group info"), nil, err
-		}
-
-		groupAccounts := result.GetGroupAccounts()
-		if len(groupAccounts) == 0 {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupMembers, "no group account found"), nil, nil
+		groupAccounts, opMsg, err := groupAccountsByAdmin(ctx, queryClient, groupAdmin)
+		if groupAccounts == nil {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupMembers, opMsg), nil, err
 		}
 
 		members := []group.Member{
@@ -574,14 +559,9 @@ func SimulateMsgUpdateGroupAccountAdmin(ak exported.AccountKeeper, bk exported.B
 			return op, nil, nil
 		}
 
-		result, err := queryClient.GroupAccountsByAdmin(ctx, &group.QueryGroupAccountsByAdminRequest{Admin: groupAdmin})
-		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountAdmin, "fail to query group info"), nil, err
-		}
-
-		groupAccounts := result.GetGroupAccounts()
-		if len(groupAccounts) == 0 {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountAdmin, "no group account found"), nil, nil
+		groupAccounts, opMsg, err := groupAccountsByAdmin(ctx, queryClient, groupAdmin)
+		if groupAccounts == nil {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountAdmin, opMsg), nil, err
 		}
 
 		msg := group.MsgUpdateGroupAccountAdminRequest{
@@ -637,14 +617,9 @@ func SimulateMsgUpdateGroupAccountDecisionPolicy(ak exported.AccountKeeper,
 			return op, nil, nil
 		}
 
-		result, err := queryClient.GroupAccountsByAdmin(ctx, &group.QueryGroupAccountsByAdminRequest{Admin: groupAdmin})
-		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountDecisionPolicy, "fail to query group info"), nil, err
-		}
-
-		groupAccounts := result.GetGroupAccounts()
-		if len(groupAccounts) == 0 {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountDecisionPolicy, "no group account found"), nil, nil
+		groupAccounts, opMsg, err := groupAccountsByAdmin(ctx, queryClient, groupAdmin)
+		if groupAccounts == nil {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountDecisionPolicy, opMsg), nil, err
 		}
 
 		adminBech32, err := sdk.AccAddressFromBech32(groupAccounts[0].Admin)
@@ -713,14 +688,9 @@ func SimulateMsgUpdateGroupAccountMetadata(ak exported.AccountKeeper,
 			return op, nil, nil
 		}
 
-		result, err := queryClient.GroupAccountsByAdmin(ctx, &group.QueryGroupAccountsByAdminRequest{Admin: groupAdmin})
-		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountComment, "fail to query group info"), nil, err
-		}
-
-		groupAccounts := result.GetGroupAccounts()
-		if len(groupAccounts) == 0 {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountComment, "no group account found"), nil, nil
+		groupAccounts, opMsg, err := groupAccountsByAdmin(ctx, queryClient, groupAdmin)
+		if groupAccounts == nil {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountComment, opMsg), nil, err
 		}
 
 		msg := group.MsgUpdateGroupAccountMetadataRequest{
@@ -776,14 +746,9 @@ func SimulateMsgVote(ak exported.AccountKeeper,
 			return op, nil, nil
 		}
 
-		result, err := queryClient.GroupAccountsByAdmin(ctx, &group.QueryGroupAccountsByAdminRequest{Admin: groupAdmin})
-		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "fail to query group info"), nil, err
-		}
-
-		groupAccounts := result.GetGroupAccounts()
-		if len(groupAccounts) == 0 {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "no group account found"), nil, nil
+		groupAccounts, opMsg, err := groupAccountsByAdmin(ctx, queryClient, groupAdmin)
+		if groupAccounts == nil {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, opMsg), nil, err
 		}
 
 		proposalsResult, err := queryClient.ProposalsByGroupAccount(ctx, &group.QueryProposalsByGroupAccountRequest{Address: groupAccounts[0].Address})
@@ -873,14 +838,9 @@ func SimulateMsgExec(ak exported.AccountKeeper,
 			return op, nil, nil
 		}
 
-		result, err := queryClient.GroupAccountsByAdmin(ctx, &group.QueryGroupAccountsByAdminRequest{Admin: groupAdmin})
-		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "fail to query group info"), nil, err
-		}
-
-		groupAccounts := result.GetGroupAccounts()
-		if len(groupAccounts) == 0 {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "no group account found"), nil, nil
+		groupAccounts, opMsg, err := groupAccountsByAdmin(ctx, queryClient, groupAdmin)
+		if groupAccounts == nil {
+			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, opMsg), nil, err
 		}
 
 		proposalsResult, err := queryClient.ProposalsByGroupAccount(ctx, &group.QueryProposalsByGroupAccountRequest{Address: groupAccounts[0].Address})
@@ -935,4 +895,17 @@ func SimulateMsgExec(ak exported.AccountKeeper,
 
 		return simtypes.NewOperationMsg(&msg, true, ""), nil, err
 	}
+}
+
+func groupAccountsByAdmin(ctx regentypes.Context, qryClient group.QueryClient, admin string) ([]*group.GroupAccountInfo, string, error) {
+	result, err := qryClient.GroupAccountsByAdmin(ctx, &group.QueryGroupAccountsByAdminRequest{Admin: admin})
+	if err != nil {
+		return nil, "fail to query group info", err
+	}
+
+	groupAccounts := result.GetGroupAccounts()
+	if len(groupAccounts) == 0 {
+		return nil, "no group account found", nil
+	}
+	return groupAccounts, "", nil
 }

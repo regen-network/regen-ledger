@@ -97,7 +97,6 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 		panic(err)
 	}
 
-	return newModuleManager
 	/* New Module Wiring END */
 	return newModuleManager
 }
