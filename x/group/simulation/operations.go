@@ -35,6 +35,8 @@ const (
 	OpMsgExec                             = "ops_weight_msg_exec"
 )
 
+//  If update group or group account txn's executed, `SimulateMsgVote` & `SimulateMsgExec` txn's returns `noOp`.
+//  That's why we have less weight for update group & group-account txn's.
 const (
 	WeightCreateGroup    = 150
 	WeightCreateProposal = 100
