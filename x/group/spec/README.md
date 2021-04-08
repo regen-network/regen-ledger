@@ -9,7 +9,7 @@ parent:
 
 This document specifies the group module.
 
-This module allows the creation and management of on chain multisig accounts and enables voting for message execution based on configurable decision policies.
+This module allows the creation and management of on-chain multisig accounts and enables voting for message execution based on configurable decision policies.
 
 ## Contents
 
@@ -46,5 +46,4 @@ This module allows the creation and management of on chain multisig accounts and
     - [EventCreateProposal](04_events.md#eventcreateproposal)
     - [EventVote](04_events.md#eventvote)
     - [EventExec](04_events.md#eventexec)
-
 
