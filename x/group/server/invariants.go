@@ -2,7 +2,6 @@ package server
 
 import (
 	"math"
-	"strconv"
 
 	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,12 +13,12 @@ import (
 
 const (
 	votesInvariant  = "Tally-Votes"
-	weightInvariant = "Tally-TotalWeight"
+	weightInvariant = "Group-TotalWeight"
 )
 
 func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
 	ir.RegisterRoute(group.ModuleName, votesInvariant, s.tallyVotesInvariant())
-	ir.RegisterRoute(group.ModuleName, weightInvariant, s.tallyTotalWeightInvariant())
+	ir.RegisterRoute(group.ModuleName, weightInvariant, s.groupTotalWeightInvariant())
 }
 
 func (s serverImpl) tallyVotesInvariant() sdk.Invariant {
@@ -37,12 +36,9 @@ func (s serverImpl) tallyVotesInvariant() sdk.Invariant {
 	}
 }
 
-func (s serverImpl) tallyTotalWeightInvariant() sdk.Invariant {
+func (s serverImpl) groupTotalWeightInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		if ctx.BlockHeight() < 0 {
-			return sdk.FormatInvariant(group.ModuleName, weightInvariant, "Not enough blocks to perform TallyVotesInvariant"), false
-		}
-		msg, broken, err := tallyTotalWeightInvariant(ctx, s.groupTable, s.groupMemberTable)
+		msg, broken, err := groupTotalWeightInvariant(ctx, s.groupTable, s.groupMemberByGroupIndex)
 		if err != nil {
 			panic(err)
 		}
@@ -120,7 +116,7 @@ func tallyVotesInvariant(ctx sdk.Context, prevCtx sdk.Context, proposalTable orm
 	return msg, broken, err
 }
 
-func tallyTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMemberTable orm.PrimaryKeyTable) (string, bool, error) {
+func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMemberByGroupIndex orm.UInt64Index) (string, bool, error) {
 
 	var msg string
 	var broken bool
@@ -136,35 +132,33 @@ func tallyTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 		return msg, broken, err
 	}
 
-	var groupMembers []*group.GroupMember
-
-	memberIt, err := groupMemberTable.PrefixScan(ctx, nil, nil)
+	var curGroupMembers []*group.GroupMember
+	memIt, err := groupMemberByGroupIndex.PrefixScan(ctx, 1, math.MaxUint64)
 	if err != nil {
 		return msg, broken, err
 	}
-	_, err = orm.ReadAll(memberIt, &groupMembers)
+	_, err = orm.ReadAll(memIt, &curGroupMembers)
 	if err != nil {
 		return msg, broken, err
 	}
 
-	var membersWeight int64
+	var membersWeight *apd.Decimal
+	membersWeight = apd.New(0, 0)
 	for i := 0; i < len(groupInfo); i++ {
-		membersWeight = 0
-		for j := 0; j < len(groupMembers); j++ {
-			if groupInfo[i].GroupId == groupMembers[j].GroupId {
-				curMemWeight, err := strconv.ParseInt(groupMembers[j].GetMember().Weight, 10, 64)
+		for j := 0; j < len(curGroupMembers); j++ {
+			if groupInfo[i].GroupId == curGroupMembers[j].GroupId {
+				curMemWeight, err := regenMath.ParseNonNegativeDecimal(curGroupMembers[j].GetMember().GetWeight())
 				if err != nil {
 					return msg, broken, err
 				}
-				membersWeight += curMemWeight
+				regenMath.Add(membersWeight, membersWeight, curMemWeight)
 			}
 		}
 		groupWeight, err := regenMath.ParseNonNegativeDecimal(groupInfo[i].GetTotalWeight())
 		if err != nil {
 			return msg, broken, err
 		}
-		totalMembersWeight := apd.New(membersWeight, 0)
-		if (groupWeight.Cmp(totalMembersWeight) == 1) || (groupWeight.Cmp(totalMembersWeight) == -1) {
+		if groupWeight.Cmp(membersWeight) != 0 {
 			broken = true
 			msg += "group's TotalWeight must be equal to the sum of its members' weights\n"
 			break

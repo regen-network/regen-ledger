@@ -234,7 +234,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 	}
 }
 
-func TestTallyTotalWeightInvariant(t *testing.T) {
+func TestGroupTotalWeightInvariant(t *testing.T) {
 	interfaceRegistry := types.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
 	key := sdk.NewKVStoreKey(group.ModuleName)
@@ -251,6 +251,10 @@ func TestTallyTotalWeightInvariant(t *testing.T) {
 
 	// Members Table
 	groupMemberTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, key, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	groupMemberByGroupIndex := orm.NewUInt64Index(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]uint64, error) {
+		group := val.(*group.GroupMember).GroupId
+		return []uint64{group}, nil
+	})
 	groupMemberTable := groupMemberTableBuilder.Build()
 
 	_, _, addr1 := testdata.KeyTestPubAddr()
@@ -333,7 +337,7 @@ func TestTallyTotalWeightInvariant(t *testing.T) {
 			require.NoError(t, err)
 		}
 
-		_, broken, _ := tallyTotalWeightInvariant(cacheCurCtx, groupTable, groupMemberTable)
+		_, broken, _ := groupTotalWeightInvariant(cacheCurCtx, groupTable, groupMemberByGroupIndex)
 		require.Equal(t, spec.expErr, broken)
 	}
 }
