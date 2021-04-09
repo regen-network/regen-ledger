@@ -18,7 +18,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
-func GetCtxCodecKey(t *testing.T) (sdk.Context, *codec.ProtoCodec, *sdk.KVStoreKey) {
+func getCtxCodecKey(t *testing.T) (sdk.Context, *codec.ProtoCodec, *sdk.KVStoreKey) {
 	interfaceRegistry := types.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
 	key := sdk.NewKVStoreKey(group.ModuleName)
@@ -33,7 +33,7 @@ func GetCtxCodecKey(t *testing.T) (sdk.Context, *codec.ProtoCodec, *sdk.KVStoreK
 }
 
 func TestTallyVotesInvariant(t *testing.T) {
-	curCtx, cdc, key := GetCtxCodecKey(t)
+	curCtx, cdc, key := getCtxCodecKey(t)
 	prevCtx, _ := curCtx.CacheContext()
 	prevCtx = prevCtx.WithBlockHeight(curCtx.BlockHeight() - 1)
 
@@ -241,7 +241,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 }
 
 func TestGroupTotalWeightInvariant(t *testing.T) {
-	curCtx, cdc, key := GetCtxCodecKey(t)
+	curCtx, cdc, key := getCtxCodecKey(t)
 
 	// Group Table
 	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, key, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
