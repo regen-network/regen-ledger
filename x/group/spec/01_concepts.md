@@ -9,7 +9,7 @@ order: 1
 A group is simply an aggregation of accounts with associated weights. It is not
 an account and doesn't have a balance. It doesn't in and of itself have any
 sort of voting or decision weight. It does have an "administrator" which has
-the weight to add, remove and update members in the group. Note that a
+the ability to add, remove and update members in the group. Note that a
 group account could be an administrator of a group.
 
 ## Group Account
@@ -23,7 +23,6 @@ is recommended is to have a single master group account for a given group,
 and then to create separate group accounts with different decision policies
 and delegate the desired permissions from the master account to
 those "sub-accounts" using the `x/authz` module.
-
 
 ## Decision Policy
 
