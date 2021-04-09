@@ -3,7 +3,7 @@ module github.com/regen-network/regen-ledger
 go 1.15
 
 require (
-	github.com/CosmWasm/wasmd v0.14.0
+	github.com/CosmWasm/wasmd v0.15.0
 	github.com/btcsuite/btcutil v1.0.2
 	github.com/cockroachdb/apd/v2 v2.0.2
 	github.com/cosmos/cosmos-sdk v0.42.0-rc0
@@ -34,4 +34,4 @@ replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
 
-replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.42.3-regen-2
+replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.42.4-regen-1
