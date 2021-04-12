@@ -137,6 +137,7 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 	membersWeight := apd.New(0, 0)
 	for i := 0; i < len(groupInfo); i++ {
 		memIt, err := groupMemberByGroupIndex.Get(ctx, groupInfo[i].GroupId)
+		defer memIt.Close()
 		if err != nil {
 			return msg, broken, err
 		}
