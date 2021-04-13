@@ -24,9 +24,13 @@ It is not guaranteed that APIs of features in the experimental build will remain
 
 ### Added
 * make configurable builds (#256)
+* add remaining group events
+* add group module documentation (#314)
 
 ### Changed
-* Upgrade to Cosmos SDK v0.42.4
+* upgrade to Cosmos SDK v0.42.4
+* update group tx commands
+* remove colon from regen addresses
 
 ## [0.6.0] - 2021-02-04
 
