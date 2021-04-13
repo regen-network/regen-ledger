@@ -6,9 +6,8 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
-
-	"github.com/regen-network/regen-ledger/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/client"
 )

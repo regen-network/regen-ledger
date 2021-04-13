@@ -7,9 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/regen-network/regen-ledger/testutil/testdata"
-
-	"github.com/regen-network/regen-ledger/testutil"
+	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/regen-network/regen-ledger/types/testutil/testdata"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -25,6 +24,10 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
+<<<<<<< HEAD
+=======
+	"github.com/regen-network/regen-ledger/types/testutil/testdata"
+>>>>>>> WIP:add types,testutil,orm,group modules
 	"github.com/regen-network/regen-ledger/types"
 
 	"github.com/regen-network/regen-ledger/x/group"

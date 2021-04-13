@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/types"
 	gocid "github.com/ipfs/go-cid"
-	"github.com/regen-network/regen-ledger/testutil/network"
+	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/stretchr/testify/suite"
 )
 

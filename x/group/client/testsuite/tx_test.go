@@ -18,8 +18,10 @@ import (
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 
-	"github.com/regen-network/regen-ledger/testutil/cli"
-	"github.com/regen-network/regen-ledger/testutil/network"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/types/testutil/cli"
+	"github.com/regen-network/regen-ledger/types/testutil/network"
+
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/client"
 )

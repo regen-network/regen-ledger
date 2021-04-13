@@ -8,6 +8,8 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/regen-ledger v0.6.2
+	github.com/regen-network/regen-ledger/x/data v0.0.0-00010101000000-000000000000 // indirect
+	github.com/regen-network/regen-ledger/x/ecocredit v0.0.0-00010101000000-000000000000 // indirect
 	github.com/rs/zerolog v1.21.0
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.1.3
@@ -19,3 +21,7 @@ require (
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 replace github.com/regen-network/regen-ledger => ../
+
+replace github.com/regen-network/regen-ledger/x/data/module => ../x/data/module
+
+replace github.com/regen-network/regen-ledger/x/ecocredit/module => ../x/ecocredit/module
