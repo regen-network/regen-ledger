@@ -4,6 +4,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/module"
 )
 
@@ -32,4 +33,11 @@ type Configurator interface {
 // This is currently used for the group module as part of #218.
 type LegacyRouteModule interface {
 	Route(Configurator) sdk.Route
+}
+
+type InvokerFactory func(callInfo CallInfo) (types.Invoker, error)
+
+type CallInfo struct {
+	Method string
+	Caller types.ModuleID
 }

@@ -66,13 +66,8 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		}
 
 		name := serverMod.Name()
-
 		invokerFactory := mm.router.invokerFactory(name)
-
-		key := &rootModuleKey{
-			moduleName:     name,
-			invokerFactory: invokerFactory,
-		}
+		key := NewRootModuleKey(name, invokerFactory)
 
 		if _, found := mm.keys[name]; found {
 			return fmt.Errorf("module named %s defined twice", name)
@@ -214,7 +209,7 @@ func exportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, exportGenesisHandle
 type configurator struct {
 	msgServer            gogogrpc.Server
 	queryServer          gogogrpc.Server
-	key                  *rootModuleKey
+	key                  RootModuleKey // *rootModuleKey
 	cdc                  codec.Marshaler
 	requiredServices     map[reflect.Type]bool
 	router               sdk.Router

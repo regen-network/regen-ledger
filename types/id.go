@@ -1,16 +1,9 @@
 package types
 
-import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"github.com/regen-network/regen-ledger/types/address"
-)
-
 type ModuleID struct {
-	ModuleName string
-	Path       []byte
-}
-
-func (m ModuleID) Address() sdk.AccAddress {
-	return address.Module(m.ModuleName, m.Path)
+	// Name of a module used by router, used when registering a MsgServer and invoking
+	// gRPC services.
+	Name string
+	// Address of a module
+	Address []byte
 }

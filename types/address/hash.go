@@ -1,5 +1,7 @@
 package address
 
+// TODO remove this functions and use the latest SDK.
+
 import (
 	"crypto/sha256"
 )
@@ -31,8 +33,12 @@ func Hash(typ string, key []byte) []byte {
 }
 
 // Module is a specialized version of a composed address for modules. Each module account
-// is constructed from a module name and module account key.
-func Module(moduleName string, key []byte) []byte {
-	mKey := append([]byte(moduleName), 0)
-	return Hash("module", append(mKey, key...))
+// is constructed from a module name.
+func Module(moduleName string) []byte {
+	return Hash("module", []byte(moduleName))
+}
+
+// Derive derives a new address from the main `address` and a derivation `key`.
+func Derive(address []byte, key []byte) []byte {
+	return Hash(string(address), key)
 }
