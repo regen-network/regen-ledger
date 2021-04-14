@@ -17,7 +17,10 @@ type Addressable interface {
 // Deprecated: use SDK function instead.
 func Hash(typ string, key []byte) []byte {
 	hasher := sha256.New()
-	hasher.Write([]byte(typ))
+	_, err := hasher.Write([]byte(typ))
+	if err != nil {
+		panic(err) // NOTE: this error is always nil
+	}
 	th := hasher.Sum(nil)
 
 	hasher.Reset()
