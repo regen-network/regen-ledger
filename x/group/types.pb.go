@@ -555,7 +555,7 @@ type Proposal struct {
 	GroupAccountVersion uint64 `protobuf:"varint,7,opt,name=group_account_version,json=groupAccountVersion,proto3" json:"group_account_version,omitempty"`
 	// Status represents the high level position in the life cycle of the proposal. Initial value is Submitted.
 	Status Proposal_Status `protobuf:"varint,8,opt,name=status,proto3,enum=regen.group.v1alpha1.Proposal_Status" json:"status,omitempty"`
-	// result is the final result based on the votes and election rule. Initial value is Undefined.
+	// result is the final result based on the votes and election rule. Initial value is unfinalized.
 	// The result is persisted so that clients can always rely on this state and not have to replicate the logic.
 	Result Proposal_Result `protobuf:"varint,9,opt,name=result,proto3,enum=regen.group.v1alpha1.Proposal_Result" json:"result,omitempty"`
 	// vote_state contains the sums of all weighted votes for this proposal.
