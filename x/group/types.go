@@ -152,7 +152,6 @@ func (g GroupMember) PrimaryKey() []byte {
 }
 
 func (g GroupAccountInfo) PrimaryKey() []byte {
-	// TODO: the following line fails, because sdk.AccAddressFromBech32 requires 20-byte addresses .
 	addr, err := sdk.AccAddressFromBech32(g.Address)
 	if err != nil {
 		panic(err)
