@@ -11,6 +11,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/address"
 )
 
+// ModuleKey is an interface for module servers required by router.
 type ModuleKey interface {
 	types.InvokerConn
 
@@ -30,10 +31,13 @@ type moduleKey struct {
 	i          InvokerFactory
 }
 
+// NewDerivedModuleKey creates a ModuleKey with a derived moduel address based on parent
+// module address and derivation key.
 func NewDerivedModuleKey(modName string, parentAddr, derivationKey []byte, i InvokerFactory) ModuleKey {
 	return moduleKey{modName, address.Derive(parentAddr, derivationKey), i}
 }
 
+// Invoker implements ModuleKey interface
 func (d moduleKey) Invoker(methodName string) (types.Invoker, error) {
 	return d.i(CallInfo{
 		Method: methodName,
@@ -41,6 +45,7 @@ func (d moduleKey) Invoker(methodName string) (types.Invoker, error) {
 	})
 }
 
+// Invoke implements ModuleKey interface
 func (d moduleKey) Invoke(ctx context.Context, method string, args interface{}, reply interface{}, _ ...grpc.CallOption) error {
 	invoker, err := d.Invoker(method)
 	if err != nil {
@@ -50,10 +55,12 @@ func (d moduleKey) Invoke(ctx context.Context, method string, args interface{}, 
 	return invoker(ctx, args, reply)
 }
 
+// NewStream implements ModuleKey interface
 func (d moduleKey) NewStream(context.Context, *grpc.StreamDesc, string, ...grpc.CallOption) (grpc.ClientStream, error) {
 	return nil, fmt.Errorf("unsupported")
 }
 
+// ModuleID implements ModuleKey interface
 func (d moduleKey) ModuleID() types.ModuleID {
 	return types.ModuleID{
 		Name:    d.moduleName,
@@ -61,10 +68,12 @@ func (d moduleKey) ModuleID() types.ModuleID {
 	}
 }
 
+// Address implements ModuleKey interface
 func (d moduleKey) Address() sdk.AccAddress {
 	return d.addr
 }
 
+// Derive implements ModuleKey interface
 func (d moduleKey) Derive(key []byte) ModuleKey {
 	return NewDerivedModuleKey(d.moduleName, d.addr, key, d.i)
 }
@@ -79,10 +88,12 @@ func NewRootModuleKey(name string, i InvokerFactory) RootModuleKey {
 	return &rootModuleKey{moduleKey{name, address.Module(name), i}}
 }
 
+// Name implements sdk.StoreKey interface
 func (r rootModuleKey) Name() string {
 	return r.moduleName
 }
 
+// String implements sdk.StoreKey interface
 func (r rootModuleKey) String() string {
 	return fmt.Sprintf("rootModuleKey{%p, %s}", &r, r.moduleName)
 }
