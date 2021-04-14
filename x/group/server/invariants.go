@@ -121,13 +121,9 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 	var msg string
 	var broken bool
 
-	var groupInfo []*group.GroupInfo
+	var groupInfo group.GroupInfo
 
 	groupIt, err := groupTable.PrefixScan(ctx, nil, nil)
-	if err != nil {
-		return msg, broken, err
-	}
-	_, err = orm.ReadAll(groupIt, &groupInfo)
 	if err != nil {
 		return msg, broken, err
 	}
@@ -135,8 +131,13 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 	var groupMember group.GroupMember
 
 	membersWeight := apd.New(0, 0)
-	for i := 0; i < len(groupInfo); i++ {
-		memIt, err := groupMemberByGroupIndex.Get(ctx, groupInfo[i].GroupId)
+
+	for {
+		_, err := groupIt.LoadNext(&groupInfo)
+		if orm.ErrIteratorDone.Is(err) {
+			break
+		}
+		memIt, err := groupMemberByGroupIndex.Get(ctx, groupInfo.GroupId)
 		if err != nil {
 			return msg, broken, err
 		}
@@ -156,7 +157,7 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 				}
 			}
 		}
-		groupWeight, err := regenMath.ParseNonNegativeDecimal(groupInfo[i].GetTotalWeight())
+		groupWeight, err := regenMath.ParseNonNegativeDecimal(groupInfo.GetTotalWeight())
 		if err != nil {
 			return msg, broken, err
 		}
