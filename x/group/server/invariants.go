@@ -143,16 +143,17 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 		defer memIt.Close()
 		for {
 			_, err = memIt.LoadNext(&groupMember)
-			if err != nil {
+			if orm.ErrIteratorDone.Is(err) {
 				break
-			}
-			curMemWeight, err := regenMath.ParseNonNegativeDecimal(groupMember.GetMember().GetWeight())
-			if err != nil {
-				return msg, broken, err
-			}
-			err = regenMath.Add(membersWeight, membersWeight, curMemWeight)
-			if err != nil {
-				return msg, broken, err
+			} else {
+				curMemWeight, err := regenMath.ParseNonNegativeDecimal(groupMember.GetMember().GetWeight())
+				if err != nil {
+					return msg, broken, err
+				}
+				err = regenMath.Add(membersWeight, membersWeight, curMemWeight)
+				if err != nil {
+					return msg, broken, err
+				}
 			}
 		}
 		groupWeight, err := regenMath.ParseNonNegativeDecimal(groupInfo[i].GetTotalWeight())
