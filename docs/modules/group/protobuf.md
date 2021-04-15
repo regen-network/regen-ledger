@@ -7,8 +7,11 @@
 - [regen/group/v1alpha1/events.proto](#regen/group/v1alpha1/events.proto)
     - [EventCreateGroup](#regen.group.v1alpha1.EventCreateGroup)
     - [EventCreateGroupAccount](#regen.group.v1alpha1.EventCreateGroupAccount)
+    - [EventCreateProposal](#regen.group.v1alpha1.EventCreateProposal)
+    - [EventExec](#regen.group.v1alpha1.EventExec)
     - [EventUpdateGroup](#regen.group.v1alpha1.EventUpdateGroup)
     - [EventUpdateGroupAccount](#regen.group.v1alpha1.EventUpdateGroupAccount)
+    - [EventVote](#regen.group.v1alpha1.EventVote)
   
 - [regen/group/v1alpha1/types.proto](#regen/group/v1alpha1/types.proto)
     - [GroupAccountInfo](#regen.group.v1alpha1.GroupAccountInfo)
@@ -100,7 +103,7 @@ EventCreateGroup is an event emitted when a group is created.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_id | [string](#string) |  | group_id is the unique ID of the group. |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 
 
 
@@ -122,6 +125,36 @@ EventCreateGroupAccount is an event emitted when a group account is created.
 
 
 
+<a name="regen.group.v1alpha1.EventCreateProposal"></a>
+
+### EventCreateProposal
+EventCreateProposal is an event emitted when a proposal is created.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| proposal_id | [uint64](#uint64) |  | proposal_id is the unique ID of the proposal. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.EventExec"></a>
+
+### EventExec
+EventExec is an event emitted when a proposal is executed.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| proposal_id | [uint64](#uint64) |  | proposal_id is the unique ID of the proposal. |
+
+
+
+
+
+
 <a name="regen.group.v1alpha1.EventUpdateGroup"></a>
 
 ### EventUpdateGroup
@@ -130,7 +163,7 @@ EventUpdateGroup is an event emitted when a group is updated.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_id | [string](#string) |  | group_id is the unique ID of the group. |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 
 
 
@@ -146,6 +179,21 @@ EventUpdateGroupAccount is an event emitted when a group account is updated.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | address | [string](#string) |  | address is the address of the group account. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.EventVote"></a>
+
+### EventVote
+EventVote is an event emitted when a voter votes on a proposal.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| proposal_id | [uint64](#uint64) |  | proposal_id is the unique ID of the proposal. |
 
 
 
@@ -276,7 +324,7 @@ passes as well as some optional metadata associated with the proposal.
 | group_version | [uint64](#uint64) |  | group_version tracks the version of the group that this proposal corresponds to. When group membership is changed, existing proposals from previous group versions will become invalid. |
 | group_account_version | [uint64](#uint64) |  | group_account_version tracks the version of the group account that this proposal corresponds to. When a decision policy is changed, existing proposals from previous policy versions will become invalid. |
 | status | [Proposal.Status](#regen.group.v1alpha1.Proposal.Status) |  | Status represents the high level position in the life cycle of the proposal. Initial value is Submitted. |
-| result | [Proposal.Result](#regen.group.v1alpha1.Proposal.Result) |  | result is the final result based on the votes and election rule. Initial value is Undefined. The result is persisted so that clients can always rely on this state and not have to replicate the logic. |
+| result | [Proposal.Result](#regen.group.v1alpha1.Proposal.Result) |  | result is the final result based on the votes and election rule. Initial value is unfinalized. The result is persisted so that clients can always rely on this state and not have to replicate the logic. |
 | vote_state | [Tally](#regen.group.v1alpha1.Tally) |  | vote_state contains the sums of all weighted votes for this proposal. |
 | timeout | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timeout is the timestamp of the block where the proposal execution times out. Header times of the votes and execution messages must be before this end time to be included in the election. After the timeout timestamp the proposal can not be executed anymore and should be considered pending delete. |
 | executor_result | [Proposal.ExecutorResult](#regen.group.v1alpha1.Proposal.ExecutorResult) |  | executor_result is the final result based on the votes and election rule. Initial value is NotRun. |

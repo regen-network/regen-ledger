@@ -1,11 +1,15 @@
-# Group Module
+<!--
+order: 1
+-->
+
+# Concepts
 
 ## Group
 
 A group is simply an aggregation of accounts with associated weights. It is not
 an account and doesn't have a balance. It doesn't in and of itself have any
 sort of voting or decision weight. It does have an "administrator" which has
-the weight to add, remove and update members in the group. Note that a
+the ability to add, remove and update members in the group. Note that a
 group account could be an administrator of a group.
 
 ## Group Account
@@ -19,7 +23,6 @@ is recommended is to have a single master group account for a given group,
 and then to create separate group accounts with different decision policies
 and delegate the desired permissions from the master account to
 those "sub-accounts" using the `x/authz` module.
-
 
 ## Decision Policy
 
@@ -57,9 +60,9 @@ is submitted.
 Proposals will not be automatically executed by the chain in this current design,
 but rather a user must submit a `Msg/Exec` transaction to attempt to execute the
 proposal based on the current votes and decision policy. A future upgrade could
-automate this propose and have the group account (or a fee granter) pay.
+automate this and have the group account (or a fee granter) pay.
 
-## Changing Group Membership
+### Changing Group Membership
 
 In the current implementation, changing a group's membership (adding or removing members or changing their weight)
 will cause all existing proposals for group accounts linked to this group
