@@ -38,10 +38,18 @@ const (
 //  If update group or group account txn's executed, `SimulateMsgVote` & `SimulateMsgExec` txn's returns `noOp`.
 //  That's why we have less weight for update group & group-account txn's.
 const (
-	WeightCreateGroup    = 150
-	WeightCreateProposal = 100
-	WeightUpdateGroup    = 5
-	WeightGroupMember    = 40
+	WeightCreateGroup                      = 100
+	WeightCreateGroupAccount               = 100
+	WeightCreateProposal                   = 90
+	WeightMsgVote                          = 90
+	WeightMsgExec                          = 90
+	WeightUpdateGroupMetadata              = 5
+	WeightUpdateGroupAdmin                 = 5
+	WeightUpdateGroupMembers               = 5
+	WeightUpdateGroupAccountAdmin          = 5
+	WeightUpdateGroupAccountDecisionPolicy = 5
+	WeightUpdateGroupAccountComment        = 5
+	GroupMemberWeight                      = 40
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights
@@ -69,7 +77,7 @@ func WeightedOperations(
 	)
 	appParams.GetOrGenerate(cdc, OpMsgCreateGroupAccountRequest, &weightMsgCreateGroupAccount, nil,
 		func(_ *rand.Rand) {
-			weightMsgCreateGroupAccount = WeightCreateGroup
+			weightMsgCreateGroupAccount = WeightCreateGroupAccount
 		},
 	)
 	appParams.GetOrGenerate(cdc, OpMsgCreateProposal, &weightMsgCreateProposal, nil,
@@ -79,42 +87,42 @@ func WeightedOperations(
 	)
 	appParams.GetOrGenerate(cdc, OpMsgVote, &weightMsgVote, nil,
 		func(_ *rand.Rand) {
-			weightMsgVote = WeightCreateProposal
+			weightMsgVote = WeightMsgVote
 		},
 	)
 	appParams.GetOrGenerate(cdc, OpMsgExec, &weightMsgExec, nil,
 		func(_ *rand.Rand) {
-			weightMsgExec = weightMsgCreateProposal
+			weightMsgExec = WeightMsgExec
 		},
 	)
 	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupMetadata, &weightMsgUpdateGroupMetadata, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateGroupMetadata = WeightUpdateGroup
+			weightMsgUpdateGroupMetadata = WeightUpdateGroupMetadata
 		},
 	)
 	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupAdminRequest, &weightMsgUpdateGroupAdmin, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateGroupAdmin = WeightUpdateGroup
+			weightMsgUpdateGroupAdmin = WeightUpdateGroupAdmin
 		},
 	)
 	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupMembers, &weightMsgUpdateGroupMembers, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateGroupMembers = WeightUpdateGroup
+			weightMsgUpdateGroupMembers = WeightUpdateGroupMembers
 		},
 	)
 	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupAccountAdmin, &weightMsgUpdateGroupAccountAdmin, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateGroupAccountAdmin = WeightUpdateGroup
+			weightMsgUpdateGroupAccountAdmin = WeightUpdateGroupAccountAdmin
 		},
 	)
 	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupAccountDecisionPolicy, &weightMsgUpdateGroupAccountDecisionPolicy, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateGroupAccountDecisionPolicy = WeightUpdateGroup
+			weightMsgUpdateGroupAccountDecisionPolicy = WeightUpdateGroupAccountDecisionPolicy
 		},
 	)
 	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupAccountMetaData, &weightMsgUpdateGroupAccountComment, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateGroupAccountComment = WeightUpdateGroup
+			weightMsgUpdateGroupAccountComment = WeightUpdateGroupAccountComment
 		},
 	)
 
@@ -183,7 +191,7 @@ func SimulateMsgCreateGroup(ak exported.AccountKeeper, bk exported.BankKeeper) s
 		members := []group.Member{
 			{
 				Address:  accAddr,
-				Weight:   fmt.Sprintf("%d", WeightGroupMember),
+				Weight:   fmt.Sprintf("%d", GroupMemberWeight),
 				Metadata: []byte(simtypes.RandStringOfLength(r, 10)),
 			},
 		}
@@ -494,12 +502,12 @@ func SimulateMsgUpdateGroupMembers(ak exported.AccountKeeper,
 		members := []group.Member{
 			{
 				Address:  acc2.Address.String(),
-				Weight:   fmt.Sprintf("%d", WeightGroupMember),
+				Weight:   fmt.Sprintf("%d", GroupMemberWeight),
 				Metadata: []byte(simtypes.RandStringOfLength(r, 10)),
 			},
 			{
 				Address:  acc3.Address.String(),
-				Weight:   fmt.Sprintf("%d", WeightGroupMember),
+				Weight:   fmt.Sprintf("%d", GroupMemberWeight),
 				Metadata: []byte(simtypes.RandStringOfLength(r, 10)),
 			},
 		}
