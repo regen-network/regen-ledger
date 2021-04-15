@@ -35,7 +35,7 @@ func SetMsgs(msgs []sdk.Msg) ([]*types.Any, error) {
 	return anys, nil
 }
 
-// SetMsgs takes a slice of Any's and turn them into sdk.Msg's.
+// GetMsgs takes a slice of Any's and turn them into sdk.Msg's.
 // This is similar to what is in the cosmos-sdk sdk.Tx
 // and could eventually be merged in.
 func GetMsgs(anys []*types.Any) []sdk.Msg {
