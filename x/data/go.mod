@@ -9,7 +9,6 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/ipfs/go-cid v0.0.7
-	github.com/regen-network/regen-ledger v0.6.2 // indirect
 	github.com/spf13/cobra v1.1.3
 	github.com/stretchr/testify v1.7.0
 	google.golang.org/grpc v1.37.0
@@ -17,10 +16,8 @@ require (
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
-replace github.com/regen-network/regen-ledger => ../../
-
 replace github.com/regen-network/regen-ledger/types => ../../types
 
-replace github.com/regen-network/regen-ledger/app => ../../app
+replace github.com/regen-network/regen-ledger/types/testutil => ../../types/testutil
 
-replace github.com/regen-network/regen-ledger/orm => ../../orm
+replace github.com/regen-network/regen-ledger => ../../

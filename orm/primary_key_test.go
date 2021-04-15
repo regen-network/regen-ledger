@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/types/testutil/testdata"
+	"github.com/regen-network/regen-ledger/testutil/testdata"
 )
 
 func TestPrimaryKeyTablePrefixScan(t *testing.T) {

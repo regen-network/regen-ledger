@@ -5,7 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/types/testutil/testdata"
+	"github.com/regen-network/regen-ledger/testutil/testdata"
 )
 
 type GroupKeeper struct {

@@ -43,6 +43,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/regen-network/regen-ledger/app" // replace app by module x
 )
 
 // package-wide network lock to only allow one test network at a time
@@ -53,9 +54,9 @@ var lock = new(sync.Mutex)
 type AppConstructor = func(val Validator) servertypes.Application
 
 func NewSimApp(val Validator) servertypes.Application {
-	return NewRegenApp(
+	return app.NewRegenApp(
 		val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
-		MakeEncodingConfig(),
+		app.MakeEncodingConfig(),
 		simapp.EmptyAppOptions{},
 		baseapp.SetPruning(storetypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
 		baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
@@ -91,7 +92,7 @@ type Config struct {
 // DefaultConfig returns a sane default configuration suitable for nearly all
 // testing requirements.
 func DefaultConfig() Config {
-	encCfg := MakeEncodingConfig()
+	encCfg := app.MakeEncodingConfig()
 
 	return Config{
 		Codec:             encCfg.Marshaler,
@@ -100,7 +101,7 @@ func DefaultConfig() Config {
 		InterfaceRegistry: encCfg.InterfaceRegistry,
 		AccountRetriever:  authtypes.AccountRetriever{},
 		AppConstructor:    NewSimApp,
-		GenesisState:      ModuleBasics.DefaultGenesis(encCfg.Marshaler),
+		GenesisState:      app.ModuleBasics.DefaultGenesis(encCfg.Marshaler),
 		TimeoutCommit:     2 * time.Second,
 		ChainID:           "chain-" + tmrand.NewRand().Str(6),
 		NumValidators:     4,
