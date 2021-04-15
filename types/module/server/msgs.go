@@ -47,7 +47,7 @@ func GetMsgs(anys []*types.Any) ([]sdk.Msg, error) {
 		if isServiceMsg(any.TypeUrl) {
 			req := any.GetCachedValue()
 			if req == nil {
-				return nil, fmt.Errorf("any cached value is nil. Transaction messages must be correctly packed Any values.")
+				return nil, fmt.Errorf("any cached value is nil, transaction messages must be correctly packed Any values")
 			}
 			msg = sdk.ServiceMsg{
 				MethodName: any.TypeUrl,
