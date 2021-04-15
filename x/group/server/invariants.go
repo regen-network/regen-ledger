@@ -122,13 +122,13 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 	var broken bool
 
 	var groupInfo group.GroupInfo
+	var groupMember group.GroupMember
 
 	groupIt, err := groupTable.PrefixScan(ctx, nil, nil)
 	if err != nil {
 		return msg, broken, err
 	}
-
-	var groupMember group.GroupMember
+	defer groupIt.Close()
 
 	membersWeight := apd.New(0, 0)
 
