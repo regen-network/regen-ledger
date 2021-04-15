@@ -125,7 +125,7 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 				sdkCtx := sdk.UnwrapSDKContext(ctx)
 				handler := rtr.legacyRouter.Route(sdkCtx, msgRoute)
 				if handler == nil {
-					return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized message route: %s;", msgRoute)
+					return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized message route: %s", msgRoute)
 				}
 
 				_, err = handler(sdkCtx, msg)
