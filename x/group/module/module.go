@@ -86,7 +86,7 @@ func (a Module) Route(configurator servermodule.Configurator) sdk.Route {
 
 // AppModuleSimulation functions
 
-// GenerateGenesisState creates a randomized GenState of the group module.
+// GenerateGenesisState creates a randomized GenesisState of the group module.
 func (Module) GenerateGenesisState(simState *module.SimulationState) {
 	simulation.RandomizedGenState(simState)
 }
