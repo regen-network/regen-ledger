@@ -1,10 +1,12 @@
 package server
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // isServiceMsg checks if a type URL corresponds to a service method name,
@@ -38,25 +40,29 @@ func SetMsgs(msgs []sdk.Msg) ([]*types.Any, error) {
 // GetMsgs takes a slice of Any's and turn them into sdk.Msg's.
 // This is similar to what is in the cosmos-sdk sdk.Tx
 // and could eventually be merged in.
-func GetMsgs(anys []*types.Any) []sdk.Msg {
+func GetMsgs(anys []*types.Any) ([]sdk.Msg, error) {
 	msgs := make([]sdk.Msg, len(anys))
 	for i, any := range anys {
 		var msg sdk.Msg
 		if isServiceMsg(any.TypeUrl) {
 			req := any.GetCachedValue()
 			if req == nil {
-				panic("Any cached value is nil. Transaction messages must be correctly packed Any values.")
+				return nil, fmt.Errorf("any cached value is nil. Transaction messages must be correctly packed Any values.")
 			}
 			msg = sdk.ServiceMsg{
 				MethodName: any.TypeUrl,
 				Request:    any.GetCachedValue().(sdk.MsgRequest),
 			}
 		} else {
-			msg = any.GetCachedValue().(sdk.Msg)
+			var ok bool
+			msg, ok = any.GetCachedValue().(sdk.Msg)
+			if !ok {
+				return nil, errors.Wrapf(errors.ErrInvalidType, "expected %T, got %T", (sdk.Msg)(nil), any.GetCachedValue())
+			}
 		}
 		msgs[i] = msg
 	}
-	return msgs
+	return msgs, nil
 }
 
 func UnpackInterfaces(unpacker types.AnyUnpacker, anys []*types.Any) error {

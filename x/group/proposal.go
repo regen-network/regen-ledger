@@ -9,7 +9,11 @@ import (
 )
 
 func (p *Proposal) GetMsgs() []sdk.Msg {
-	return server.GetMsgs(p.Msgs)
+	msgs, err := server.GetMsgs(p.Msgs)
+	if err != nil {
+		panic(err)
+	}
+	return msgs
 }
 
 func (p *Proposal) SetMsgs(msgs []sdk.Msg) error {

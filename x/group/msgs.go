@@ -568,7 +568,11 @@ func (m *MsgCreateProposalRequest) SetMsgs(msgs []sdk.Msg) error {
 
 // GetMsgs unpacks m.Msgs Any's into sdk.Msg's
 func (m MsgCreateProposalRequest) GetMsgs() []sdk.Msg {
-	return server.GetMsgs(m.Msgs)
+	msgs, err := server.GetMsgs(m.Msgs)
+	if err != nil {
+		panic(err)
+	}
+	return msgs
 }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
