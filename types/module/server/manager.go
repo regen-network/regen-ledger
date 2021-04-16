@@ -18,23 +18,34 @@ import (
 
 // Manager is the server module manager
 type Manager struct {
-	baseApp               *baseapp.BaseApp
-	cdc                   *codec.ProtoCodec
-	keys                  map[string]ModuleKey
-	router                *router
-	requiredServices      map[reflect.Type]bool
-	initGenesisHandlers   map[string]module.InitGenesisHandler
-	exportGenesisHandlers map[string]module.ExportGenesisHandler
+	baseApp                   *baseapp.BaseApp
+	cdc                       *codec.ProtoCodec
+	keys                      map[string]ModuleKey
+	router                    *router
+	requiredServices          map[reflect.Type]bool
+	initGenesisHandlers       map[string]module.InitGenesisHandler
+	exportGenesisHandlers     map[string]module.ExportGenesisHandler
+	registerInvariantsHandler map[string]RegisterInvariantsHandler
+}
+
+// RegisterInvariants registers all module routes and module querier routes
+func (mm *Manager) RegisterInvariants(ir sdk.InvariantRegistry) {
+	for _, invariant := range mm.registerInvariantsHandler {
+		if invariant != nil {
+			invariant(ir)
+		}
+	}
 }
 
 // NewManager creates a new Manager
 func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 	return &Manager{
-		baseApp:               baseApp,
-		cdc:                   cdc,
-		keys:                  map[string]ModuleKey{},
-		initGenesisHandlers:   map[string]module.InitGenesisHandler{},
-		exportGenesisHandlers: map[string]module.ExportGenesisHandler{},
+		baseApp:                   baseApp,
+		cdc:                       cdc,
+		keys:                      map[string]ModuleKey{},
+		registerInvariantsHandler: map[string]RegisterInvariantsHandler{},
+		initGenesisHandlers:       map[string]module.InitGenesisHandler{},
+		exportGenesisHandlers:     map[string]module.ExportGenesisHandler{},
 		router: &router{
 			handlers:         map[string]handler{},
 			providedServices: map[reflect.Type]bool{},
@@ -105,6 +116,7 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		}
 
 		serverMod.RegisterServices(cfg)
+		mm.registerInvariantsHandler[name] = cfg.registerInvariantsHandler
 		mm.initGenesisHandlers[name] = cfg.initGenesisHandler
 		mm.exportGenesisHandlers[name] = cfg.exportGenesisHandler
 
@@ -211,15 +223,18 @@ func exportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, exportGenesisHandle
 	return genesisData, nil
 }
 
+type RegisterInvariantsHandler func(ir sdk.InvariantRegistry)
+
 type configurator struct {
-	msgServer            gogogrpc.Server
-	queryServer          gogogrpc.Server
-	key                  *rootModuleKey
-	cdc                  codec.Marshaler
-	requiredServices     map[reflect.Type]bool
-	router               sdk.Router
-	initGenesisHandler   module.InitGenesisHandler
-	exportGenesisHandler module.ExportGenesisHandler
+	msgServer                 gogogrpc.Server
+	queryServer               gogogrpc.Server
+	key                       *rootModuleKey
+	cdc                       codec.Marshaler
+	requiredServices          map[reflect.Type]bool
+	router                    sdk.Router
+	initGenesisHandler        module.InitGenesisHandler
+	exportGenesisHandler      module.ExportGenesisHandler
+	registerInvariantsHandler RegisterInvariantsHandler
 }
 
 var _ Configurator = &configurator{}
@@ -230,6 +245,10 @@ func (c *configurator) MsgServer() gogogrpc.Server {
 
 func (c *configurator) QueryServer() gogogrpc.Server {
 	return c.queryServer
+}
+
+func (c *configurator) RegisterInvariantsHandler(registry RegisterInvariantsHandler) {
+	c.registerInvariantsHandler = registry
 }
 
 func (c *configurator) RegisterGenesisHandlers(initGenesisHandler module.InitGenesisHandler, exportGenesisHandler module.ExportGenesisHandler) {
