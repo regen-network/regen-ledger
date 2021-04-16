@@ -7,19 +7,21 @@ import (
 	"strings"
 	"time"
 
+	"github.com/regen-network/regen-ledger/testutil/testdata"
+
 	"github.com/regen-network/regen-ledger/testutil"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 
 	gogotypes "github.com/gogo/protobuf/types"
+
 	"github.com/stretchr/testify/suite"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	"github.com/regen-network/regen-ledger/testutil/testdata"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/group"
