@@ -109,7 +109,7 @@ func (app *RegenApp) registerUpgradeHandlers() {
 
 func (app *RegenApp) setCustomModuleManager() []module.AppModule {
 	return []module.AppModule{
-		wasm.NewAppModule(&app.wasmKeeper),
+		wasm.NewAppModule(&app.wasmKeeper, app.StakingKeeper),
 	}
 }
 
@@ -121,7 +121,7 @@ func setCustomOrderInitGenesis() []string {
 
 func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
 	return []module.AppModuleSimulation{
-		wasm.NewAppModule(&app.wasmKeeper),
+		wasm.NewAppModule(&app.wasmKeeper, app.StakingKeeper),
 	}
 }
 
