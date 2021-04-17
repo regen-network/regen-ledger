@@ -22,6 +22,16 @@ type IntegrationTestSuite struct {
 	signer             sdk.AccAddress
 }
 
+/*
+func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
+	return &IntegrationTestSuite{cfg : cfg}
+}
+*/
+
+// TODO call NewIntegrationTestSuite to set cfg field of IntegrationTestSuite
+// remove cfg := network.DefaultConfig()
+// replace cfg.NumValidators = 2 with s.cfg.NumValidators = 2
+// replace s.network = network.New(s.T(), cfg) with s.network = network.New(s.T(), s.cfg)
 func (s *IntegrationTestSuite) SetupSuite() {
 	//s.T().Log("setting up integration test suite")
 	//

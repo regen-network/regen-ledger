@@ -40,14 +40,17 @@ type IntegrationTestSuite struct {
 
 const validMetadata = "AQ=="
 
+func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
+	return &IntegrationTestSuite{cfg : cfg}
+}
+
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	cfg := network.DefaultConfig()
-	cfg.NumValidators = 2
-
-	s.cfg = cfg
-	s.network = network.New(s.T(), cfg)
+// We execute NewIntegrationTestSuite to set cfg field of IntegrationTestSuite
+//	cfg := network.DefaultConfig() 
+	s.cfg.NumValidators = 2
+	s.network = network.New(s.T(), s.cfg)
 
 	_, err := s.network.WaitForHeight(1)
 	s.Require().NoError(err)

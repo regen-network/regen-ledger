@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/regen-network/regen-ledger/testutil"
+	"github.com/regen-network/regen-ledger/types/testutil"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"

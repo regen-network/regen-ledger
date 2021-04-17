@@ -7,20 +7,26 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/suite"
-
-	"github.com/cosmos/cosmos-sdk/testutil/network"
+	"github.com/regen-network/regen-ledger/types/testutil/network"
 )
 
+// We can not start 
 type IntegrationTestSuite struct {
 	suite.Suite
 
+	cfg network.Config
 	network *network.Network
+}
+
+func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
+	return &IntegrationTestSuite{cfg : cfg}
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	s.network = network.New(s.T(), network.DefaultConfig())
+	// how to initiate config here?
+	s.network = network.New(s.T(), s.cfg)
 	s.Require().NotNil(s.network)
 
 	_, err := s.network.WaitForHeight(1)
