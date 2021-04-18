@@ -1,9 +1,10 @@
 package math
 
 import (
+	"testing"
+
 	"github.com/cockroachdb/apd/v2"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func Test_CountDecPlaces(t *testing.T) {
