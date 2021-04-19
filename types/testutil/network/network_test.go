@@ -10,7 +10,6 @@ import (
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 )
 
-// We can not start 
 type IntegrationTestSuite struct {
 	suite.Suite
 
@@ -43,6 +42,3 @@ func (s *IntegrationTestSuite) TestNetwork_Liveness() {
 	s.Require().NoError(err, "expected to reach 10 blocks; got %d", h)
 }
 
-func TestIntegrationTestSuite(t *testing.T) {
-	suite.Run(t, new(IntegrationTestSuite))
-}

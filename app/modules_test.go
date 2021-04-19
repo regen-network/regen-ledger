@@ -2,31 +2,29 @@ package app_test
 
 import (
 	"fmt"
-	"time"
 	"testing"
+	"time"
 
-
-
-    "github.com/stretchr/testify/suite"
 	"github.com/regen-network/regen-ledger/types/testutil/network" //could not import error
+	"github.com/stretchr/testify/suite"
 	//data "github.com/regen-network/regen-ledger/x/data/client/testsuite"
-	group "github.com/regen-network/regen-ledger/x/data/group/client/testsuite"
-	testutil "github.com/regen-network/regen-ledger/types/testutil/network_test" //could not import error
-	"github.com/regen-network/regen-ledger/app"	
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	dbm "github.com/tendermint/tm-db"
+	"github.com/cosmos/cosmos-sdk/crypto/hd"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/cosmos/cosmos-sdk/crypto/hd"
-	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/regen-network/regen-ledger/app"
+	testutil "github.com/regen-network/regen-ledger/types/testutil/network_test" //could not import error
+	group "github.com/regen-network/regen-ledger/x/data/group/client/testsuite"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
-
+	dbm "github.com/tendermint/tm-db"
 )
-// NewSimApp is not used in repository, why we need it?
-func NewSimApp(val network.Validator) servertypes.Application {
+
+// NewRegenAppConstructor is not used in repository, why we need it?
+func NewRegenAppConstructor(val network.Validator) servertypes.Application {
 	return app.NewRegenApp(
 		val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
 		app.MakeEncodingConfig(),
@@ -47,7 +45,7 @@ func DefaultConfig() network.Config {
 		LegacyAmino:       encCfg.Amino,
 		InterfaceRegistry: encCfg.InterfaceRegistry,
 		AccountRetriever:  authtypes.AccountRetriever{},
-		AppConstructor:    NewSimApp,// do we need arguments to NewSimApp?
+		AppConstructor:    NewRegenAppConstructor, // do we need arguments to NewRegenAppConstructor?
 		GenesisState:      app.ModuleBasics.DefaultGenesis(encCfg.Marshaler),
 		TimeoutCommit:     2 * time.Second,
 		ChainID:           "chain-" + tmrand.NewRand().Str(6),
