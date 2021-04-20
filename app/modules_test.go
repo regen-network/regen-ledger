@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/regen-network/regen-ledger/types/testutil/network" //could not import error
+	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/stretchr/testify/suite"
 	//data "github.com/regen-network/regen-ledger/x/data/client/testsuite"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -17,13 +17,12 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/regen-network/regen-ledger/app"
-	testutil "github.com/regen-network/regen-ledger/types/testutil/network_test" //could not import error
+	testutil "github.com/regen-network/regen-ledger/types/testutil/network_test"
 	group "github.com/regen-network/regen-ledger/x/data/group/client/testsuite"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	dbm "github.com/tendermint/tm-db"
 )
 
-// NewRegenAppConstructor is not used in repository, why we need it?
 func NewRegenAppConstructor(val network.Validator) servertypes.Application {
 	return app.NewRegenApp(
 		val.Ctx.Logger, dbm.NewMemDB(), nil, true, make(map[int64]bool), val.Ctx.Config.RootDir, 0,
@@ -45,7 +44,7 @@ func DefaultConfig() network.Config {
 		LegacyAmino:       encCfg.Amino,
 		InterfaceRegistry: encCfg.InterfaceRegistry,
 		AccountRetriever:  authtypes.AccountRetriever{},
-		AppConstructor:    NewRegenAppConstructor, // do we need arguments to NewRegenAppConstructor?
+		AppConstructor:    NewRegenAppConstructor,
 		GenesisState:      app.ModuleBasics.DefaultGenesis(encCfg.Marshaler),
 		TimeoutCommit:     2 * time.Second,
 		ChainID:           "chain-" + tmrand.NewRand().Str(6),
