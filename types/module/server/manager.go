@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	gogogrpc "github.com/gogo/protobuf/grpc"
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -226,6 +227,7 @@ func exportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, exportGenesisHandle
 type RegisterInvariantsHandler func(ir sdk.InvariantRegistry)
 
 type configurator struct {
+	sdkmodule.Configurator
 	msgServer                 gogogrpc.Server
 	queryServer               gogogrpc.Server
 	key                       *rootModuleKey
