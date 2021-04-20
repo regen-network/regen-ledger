@@ -121,7 +121,6 @@ func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper
 
 	// Proposal Table
 	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, storeKey, &group.Proposal{}, cdc)
-	// proposalTableBuilder := orm.NewPrimaryKeyTableBuilder(ProposalTablePrefix, key, &group.Proposal{}, orm.Max255DynamicLengthIndexKeyCodec{})
 	s.proposalByGroupAccountIndex = orm.NewIndex(proposalTableBuilder, ProposalByGroupAccountIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
 		account := value.(*group.Proposal).Address
 		addr, err := sdk.AccAddressFromBech32(account)

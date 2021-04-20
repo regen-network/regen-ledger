@@ -5,7 +5,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"reflect"
-	"strconv"
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
@@ -81,7 +80,7 @@ func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequ
 		}
 	}
 
-	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroup{GroupId: strconv.FormatUint(groupID, 10)})
+	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateGroup{GroupId: groupID})
 	if err != nil {
 		return nil, err
 	}
@@ -453,7 +452,10 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 		return nil, sdkerrors.Wrap(err, "create proposal")
 	}
 
-	// TODO: add event #215
+	err = ctx.EventManager().EmitTypedEvent(&group.EventCreateProposal{ProposalId: id})
+	if err != nil {
+		return nil, err
+	}
 
 	return &group.MsgCreateProposalResponse{ProposalId: id}, nil
 }
@@ -542,7 +544,10 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 		return nil, err
 	}
 
-	// TODO: add event #215
+	err = ctx.EventManager().EmitTypedEvent(&group.EventVote{ProposalId: id})
+	if err != nil {
+		return nil, err
+	}
 
 	return &group.MsgVoteResponse{}, nil
 }
@@ -645,7 +650,11 @@ func (s serverImpl) Exec(ctx types.Context, req *group.MsgExecRequest) (*group.M
 	if err != nil {
 		return nil, err
 	}
-	// TODO: add event #215
+
+	err = ctx.EventManager().EmitTypedEvent(&group.EventExec{ProposalId: id})
+	if err != nil {
+		return nil, err
+	}
 
 	return res, nil
 }
@@ -702,7 +711,7 @@ func (s serverImpl) doUpdateGroup(ctx types.Context, req authNGroupReq, action a
 		return err
 	}
 
-	err = ctx.EventManager().EmitTypedEvent(&group.EventUpdateGroup{GroupId: strconv.FormatUint(req.GetGroupID(), 10)})
+	err = ctx.EventManager().EmitTypedEvent(&group.EventUpdateGroup{GroupId: req.GetGroupID()})
 	if err != nil {
 		return err
 	}
