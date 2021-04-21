@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/types/testutil/testdata"
 )
 
 func TestUInt64Index(t *testing.T) {
@@ -22,15 +21,15 @@ func TestUInt64Index(t *testing.T) {
 	storeKey := sdk.NewKVStoreKey("test")
 
 	const anyPrefix = 0x10
-	tableBuilder := orm.NewPrimaryKeyTableBuilder(anyPrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	tableBuilder := orm.NewPrimaryKeyTableBuilder(anyPrefix, storeKey, &orm.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	myIndex := orm.NewUInt64Index(tableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]uint64, error) {
-		return []uint64{uint64(val.(*testdata.GroupMember).Member[0])}, nil
+		return []uint64{uint64(val.(*orm.GroupMember).Member[0])}, nil
 	})
 	myTable := tableBuilder.Build()
 
 	ctx := orm.NewMockContext()
 
-	m := testdata.GroupMember{
+	m := orm.GroupMember{
 		Group:  sdk.AccAddress(orm.EncodeSequence(1)),
 		Member: sdk.AccAddress([]byte("member-address")),
 		Weight: 10,
@@ -46,7 +45,7 @@ func TestUInt64Index(t *testing.T) {
 	// Get
 	it, err := myIndex.Get(ctx, indexedKey)
 	require.NoError(t, err)
-	var loaded testdata.GroupMember
+	var loaded orm.GroupMember
 	rowID, err := it.LoadNext(&loaded)
 	require.NoError(t, err)
 	require.Equal(t, uint64(1), orm.DecodeSequence(rowID))

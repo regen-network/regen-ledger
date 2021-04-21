@@ -13,7 +13,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/types/testutil/testdata"
 )
 
 func TestIndexPrefixScan(t *testing.T) {
@@ -24,33 +23,33 @@ func TestIndexPrefixScan(t *testing.T) {
 		testTablePrefix = iota
 		testTableSeqPrefix
 	)
-	tBuilder := orm.NewAutoUInt64TableBuilder(testTablePrefix, testTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
+	tBuilder := orm.NewAutoUInt64TableBuilder(testTablePrefix, testTableSeqPrefix, storeKey, &orm.GroupInfo{}, cdc)
 	idx := orm.NewIndex(tBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
-		return []orm.RowID{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
+		return []orm.RowID{[]byte(val.(*orm.GroupInfo).Admin)}, nil
 	})
 	tb := tBuilder.Build()
 	ctx := orm.NewMockContext()
 
-	g1 := testdata.GroupInfo{
+	g1 := orm.GroupInfo{
 		Description: "my test 1",
 		Admin:       sdk.AccAddress([]byte("admin-address-a")),
 	}
-	g2 := testdata.GroupInfo{
+	g2 := orm.GroupInfo{
 		Description: "my test 2",
 		Admin:       sdk.AccAddress([]byte("admin-address-b")),
 	}
-	g3 := testdata.GroupInfo{
+	g3 := orm.GroupInfo{
 		Description: "my test 3",
 		Admin:       sdk.AccAddress([]byte("admin-address-b")),
 	}
-	for _, g := range []testdata.GroupInfo{g1, g2, g3} {
+	for _, g := range []orm.GroupInfo{g1, g2, g3} {
 		_, err := tb.Create(ctx, &g)
 		require.NoError(t, err)
 	}
 
 	specs := map[string]struct {
 		start, end []byte
-		expResult  []testdata.GroupInfo
+		expResult  []orm.GroupInfo
 		expRowIDs  []orm.RowID
 		expError   *errors.Error
 		method     func(ctx orm.HasKVStore, start, end []byte) (orm.Iterator, error)
@@ -59,56 +58,56 @@ func TestIndexPrefixScan(t *testing.T) {
 			start:     []byte("admin-address-a"),
 			end:       []byte("admin-address-b"),
 			method:    idx.PrefixScan,
-			expResult: []testdata.GroupInfo{g1},
+			expResult: []orm.GroupInfo{g1},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(1)},
 		},
 		"one result by prefix": {
 			start:     []byte("admin-address"),
 			end:       []byte("admin-address-b"),
 			method:    idx.PrefixScan,
-			expResult: []testdata.GroupInfo{g1},
+			expResult: []orm.GroupInfo{g1},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(1)},
 		},
 		"multi key elements by exact match": {
 			start:     []byte("admin-address-b"),
 			end:       []byte("admin-address-c"),
 			method:    idx.PrefixScan,
-			expResult: []testdata.GroupInfo{g2, g3},
+			expResult: []orm.GroupInfo{g2, g3},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(2), orm.EncodeSequence(3)},
 		},
 		"open end query": {
 			start:     []byte("admin-address-b"),
 			end:       nil,
 			method:    idx.PrefixScan,
-			expResult: []testdata.GroupInfo{g2, g3},
+			expResult: []orm.GroupInfo{g2, g3},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(2), orm.EncodeSequence(3)},
 		},
 		"open start query": {
 			start:     nil,
 			end:       []byte("admin-address-b"),
 			method:    idx.PrefixScan,
-			expResult: []testdata.GroupInfo{g1},
+			expResult: []orm.GroupInfo{g1},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(1)},
 		},
 		"open start and end query": {
 			start:     nil,
 			end:       nil,
 			method:    idx.PrefixScan,
-			expResult: []testdata.GroupInfo{g1, g2, g3},
+			expResult: []orm.GroupInfo{g1, g2, g3},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(1), orm.EncodeSequence(2), orm.EncodeSequence(3)},
 		},
 		"all matching prefix": {
 			start:     []byte("admin"),
 			end:       nil,
 			method:    idx.PrefixScan,
-			expResult: []testdata.GroupInfo{g1, g2, g3},
+			expResult: []orm.GroupInfo{g1, g2, g3},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(1), orm.EncodeSequence(2), orm.EncodeSequence(3)},
 		},
 		"non matching prefix": {
 			start:     []byte("nobody"),
 			end:       nil,
 			method:    idx.PrefixScan,
-			expResult: []testdata.GroupInfo{},
+			expResult: []orm.GroupInfo{},
 		},
 		"start equals end": {
 			start:    []byte("any"),
@@ -126,56 +125,56 @@ func TestIndexPrefixScan(t *testing.T) {
 			start:     []byte("admin-address-a"),
 			end:       []byte("admin-address-b"),
 			method:    idx.ReversePrefixScan,
-			expResult: []testdata.GroupInfo{g1},
+			expResult: []orm.GroupInfo{g1},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(1)},
 		},
 		"reverse: one result by prefix": {
 			start:     []byte("admin-address"),
 			end:       []byte("admin-address-b"),
 			method:    idx.ReversePrefixScan,
-			expResult: []testdata.GroupInfo{g1},
+			expResult: []orm.GroupInfo{g1},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(1)},
 		},
 		"reverse: multi key elements by exact match": {
 			start:     []byte("admin-address-b"),
 			end:       []byte("admin-address-c"),
 			method:    idx.ReversePrefixScan,
-			expResult: []testdata.GroupInfo{g3, g2},
+			expResult: []orm.GroupInfo{g3, g2},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(3), orm.EncodeSequence(2)},
 		},
 		"reverse: open end query": {
 			start:     []byte("admin-address-b"),
 			end:       nil,
 			method:    idx.ReversePrefixScan,
-			expResult: []testdata.GroupInfo{g3, g2},
+			expResult: []orm.GroupInfo{g3, g2},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(3), orm.EncodeSequence(2)},
 		},
 		"reverse: open start query": {
 			start:     nil,
 			end:       []byte("admin-address-b"),
 			method:    idx.ReversePrefixScan,
-			expResult: []testdata.GroupInfo{g1},
+			expResult: []orm.GroupInfo{g1},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(1)},
 		},
 		"reverse: open start and end query": {
 			start:     nil,
 			end:       nil,
 			method:    idx.ReversePrefixScan,
-			expResult: []testdata.GroupInfo{g3, g2, g1},
+			expResult: []orm.GroupInfo{g3, g2, g1},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(3), orm.EncodeSequence(2), orm.EncodeSequence(1)},
 		},
 		"reverse: all matching prefix": {
 			start:     []byte("admin"),
 			end:       nil,
 			method:    idx.ReversePrefixScan,
-			expResult: []testdata.GroupInfo{g3, g2, g1},
+			expResult: []orm.GroupInfo{g3, g2, g1},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(3), orm.EncodeSequence(2), orm.EncodeSequence(1)},
 		},
 		"reverse: non matching prefix": {
 			start:     []byte("nobody"),
 			end:       nil,
 			method:    idx.ReversePrefixScan,
-			expResult: []testdata.GroupInfo{},
+			expResult: []orm.GroupInfo{},
 		},
 		"reverse: start equals end": {
 			start:    []byte("any"),
@@ -197,7 +196,7 @@ func TestIndexPrefixScan(t *testing.T) {
 			if spec.expError != nil {
 				return
 			}
-			var loaded []testdata.GroupInfo
+			var loaded []orm.GroupInfo
 			rowIDs, err := orm.ReadAll(it, &loaded)
 			require.NoError(t, err)
 			assert.Equal(t, spec.expResult, loaded)
@@ -212,15 +211,15 @@ func TestUniqueIndex(t *testing.T) {
 
 	storeKey := sdk.NewKVStoreKey("test")
 
-	tableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	tableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, storeKey, &orm.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	uniqueIdx := orm.NewUniqueIndex(tableBuilder, 0x10, func(val interface{}) (orm.RowID, error) {
-		return []byte{val.(*testdata.GroupMember).Member[0]}, nil
+		return []byte{val.(*orm.GroupMember).Member[0]}, nil
 	})
 	myTable := tableBuilder.Build()
 
 	ctx := orm.NewMockContext()
 
-	m := testdata.GroupMember{
+	m := orm.GroupMember{
 		Group:  sdk.AccAddress(orm.EncodeSequence(1)),
 		Member: sdk.AccAddress([]byte("member-address")),
 		Weight: 10,
@@ -236,7 +235,7 @@ func TestUniqueIndex(t *testing.T) {
 	// Get
 	it, err := uniqueIdx.Get(ctx, indexedKey)
 	require.NoError(t, err)
-	var loaded testdata.GroupMember
+	var loaded orm.GroupMember
 	rowID, err := it.LoadNext(&loaded)
 	require.NoError(t, err)
 	require.Equal(t, orm.RowID(m.PrimaryKey()), rowID)
@@ -300,7 +299,7 @@ func TestUniqueIndex(t *testing.T) {
 	rowID, err = it.LoadNext(&loaded)
 	require.Error(t, orm.ErrIteratorDone, err)
 	// create with same index key should fail
-	new := testdata.GroupMember{
+	new := orm.GroupMember{
 		Group:  sdk.AccAddress(orm.EncodeSequence(1)),
 		Member: sdk.AccAddress([]byte("my-other")),
 		Weight: 10,

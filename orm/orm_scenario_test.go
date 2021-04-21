@@ -13,7 +13,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/types/testutil/testdata"
 )
 
 func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
@@ -25,7 +24,7 @@ func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
 
 	k := NewGroupKeeper(storeKey, cdc)
 
-	g := testdata.GroupInfo{
+	g := orm.GroupInfo{
 		GroupId:     1,
 		Description: "my test",
 		Admin:       sdk.AccAddress([]byte("admin-address")),
@@ -38,7 +37,7 @@ func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
 	require.True(t, exists)
 
 	// and load it
-	var loaded testdata.GroupInfo
+	var loaded orm.GroupInfo
 
 	binKey, err := k.groupTable.GetOne(ctx, rowID, &loaded)
 	require.NoError(t, err)
@@ -94,13 +93,13 @@ func TestKeeperEndToEndWithPrimaryKeyTable(t *testing.T) {
 
 	k := NewGroupKeeper(storeKey, cdc)
 
-	g := testdata.GroupInfo{
+	g := orm.GroupInfo{
 		GroupId:     1,
 		Description: "my test",
 		Admin:       sdk.AccAddress([]byte("admin-address")),
 	}
 
-	m := testdata.GroupMember{
+	m := orm.GroupMember{
 		Group:  sdk.AccAddress(orm.EncodeSequence(1)),
 		Member: sdk.AccAddress([]byte("member-address")),
 		Weight: 10,
@@ -117,7 +116,7 @@ func TestKeeperEndToEndWithPrimaryKeyTable(t *testing.T) {
 	exists := k.groupMemberTable.Has(ctx, primaryKey)
 	require.True(t, exists)
 	// and load it by primary key
-	var loaded testdata.GroupMember
+	var loaded orm.GroupMember
 	err = k.groupMemberTable.GetOne(ctx, primaryKey, &loaded)
 	require.NoError(t, err)
 
@@ -143,7 +142,7 @@ func TestKeeperEndToEndWithPrimaryKeyTable(t *testing.T) {
 	require.True(t, orm.ErrUniqueConstraint.Is(err), err)
 
 	// and when entity updated with new primary key
-	updatedMember := &testdata.GroupMember{
+	updatedMember := &orm.GroupMember{
 		Group:  m.Group,
 		Member: []byte("new-member-address"),
 		Weight: m.Weight,
@@ -153,7 +152,7 @@ func TestKeeperEndToEndWithPrimaryKeyTable(t *testing.T) {
 	require.Error(t, err)
 
 	// and when entity updated with non primary key attribute modified
-	updatedMember = &testdata.GroupMember{
+	updatedMember = &orm.GroupMember{
 		Group:  m.Group,
 		Member: m.Member,
 		Weight: 99,
@@ -184,13 +183,13 @@ func TestGasCostsPrimaryKeyTable(t *testing.T) {
 
 	k := NewGroupKeeper(storeKey, cdc)
 
-	g := testdata.GroupInfo{
+	g := orm.GroupInfo{
 		GroupId:     1,
 		Description: "my test",
 		Admin:       sdk.AccAddress([]byte("admin-address")),
 	}
 
-	m := testdata.GroupMember{
+	m := orm.GroupMember{
 		Group:  sdk.AccAddress(orm.EncodeSequence(1)),
 		Member: sdk.AccAddress([]byte("member-address")),
 		Weight: 10,
@@ -205,7 +204,7 @@ func TestGasCostsPrimaryKeyTable(t *testing.T) {
 
 	// get by primary key
 	gCtx.ResetGasMeter()
-	var loaded testdata.GroupMember
+	var loaded orm.GroupMember
 	err = k.groupMemberTable.GetOne(gCtx, m.PrimaryKey(), &loaded)
 	require.NoError(t, err)
 	t.Logf("gas consumed on get by primary key: %d", gCtx.GasConsumed())
@@ -215,7 +214,7 @@ func TestGasCostsPrimaryKeyTable(t *testing.T) {
 	// and when loaded from MultiKeyIndex
 	it, err := k.groupMemberByGroupIndex.Get(gCtx, orm.EncodeSequence(groupRowID))
 	require.NoError(t, err)
-	var loadedSlice []testdata.GroupMember
+	var loadedSlice []orm.GroupMember
 	_, err = orm.ReadAll(it, &loadedSlice)
 	require.NoError(t, err)
 
@@ -230,7 +229,7 @@ func TestGasCostsPrimaryKeyTable(t *testing.T) {
 	// with 3 elements
 	for i := 1; i < 4; i++ {
 		gCtx.ResetGasMeter()
-		m := testdata.GroupMember{
+		m := orm.GroupMember{
 			Group:  sdk.AccAddress(orm.EncodeSequence(1)),
 			Member: sdk.AccAddress([]byte(fmt.Sprintf("member-address%d", i))),
 			Weight: 10,
@@ -242,7 +241,7 @@ func TestGasCostsPrimaryKeyTable(t *testing.T) {
 
 	for i := 1; i < 4; i++ {
 		gCtx.ResetGasMeter()
-		m := testdata.GroupMember{
+		m := orm.GroupMember{
 			Group:  sdk.AccAddress(orm.EncodeSequence(1)),
 			Member: sdk.AccAddress([]byte(fmt.Sprintf("member-address%d", i))),
 			Weight: 10,
@@ -284,7 +283,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 	testRecords := 10
 	for i := 1; i <= testRecords; i++ {
 		myAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, sdk.AddrLen))
-		g := testdata.GroupInfo{
+		g := orm.GroupInfo{
 			GroupId:     uint64(i),
 			Description: fmt.Sprintf("my test %d", i),
 			Admin:       myAddr,
@@ -294,7 +293,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, uint64(i), groupRowID)
 	}
-	var groups []*testdata.GroupInfo
+	var groups []*orm.GroupInfo
 	seqVal, err := orm.ExportTableData(ctx, k.groupTable, &groups)
 	require.NoError(t, err)
 
@@ -307,7 +306,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 
 	for i := 1; i <= testRecords; i++ {
 		require.True(t, k.groupTable.Has(ctx, uint64(i)))
-		var loaded testdata.GroupInfo
+		var loaded orm.GroupInfo
 		groupRowID, err := k.groupTable.GetOne(ctx, uint64(i), &loaded)
 		require.NoError(t, err)
 
@@ -320,7 +319,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 		require.True(t, k.groupByAdminIndex.Has(ctx, exp))
 		it, err := k.groupByAdminIndex.Get(ctx, exp)
 		require.NoError(t, err)
-		var all []testdata.GroupInfo
+		var all []orm.GroupInfo
 		orm.ReadAll(it, &all)
 		require.Len(t, all, 1)
 		assert.Equal(t, loaded, all[0])
@@ -338,10 +337,10 @@ func TestExportImportStatePrimaryKeyTable(t *testing.T) {
 	k := NewGroupKeeper(storeKey, cdc)
 	myGroupAddr := sdk.AccAddress(bytes.Repeat([]byte{byte('a')}, sdk.AddrLen))
 	testRecordsNum := 10
-	testRecords := make([]testdata.GroupMember, testRecordsNum)
+	testRecords := make([]orm.GroupMember, testRecordsNum)
 	for i := 1; i <= testRecordsNum; i++ {
 		myAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, sdk.AddrLen))
-		g := testdata.GroupMember{
+		g := orm.GroupMember{
 			Group:  myGroupAddr,
 			Member: myAddr,
 			Weight: uint64(i),
@@ -350,7 +349,7 @@ func TestExportImportStatePrimaryKeyTable(t *testing.T) {
 		require.NoError(t, err)
 		testRecords[i-1] = g
 	}
-	var groupMembers []*testdata.GroupMember
+	var groupMembers []*orm.GroupMember
 	_, err := orm.ExportTableData(ctx, k.groupMemberTable, &groupMembers)
 	require.NoError(t, err)
 
@@ -363,7 +362,7 @@ func TestExportImportStatePrimaryKeyTable(t *testing.T) {
 	// then all data is set again
 	it, err := k.groupMemberTable.PrefixScan(ctx, nil, nil)
 	require.NoError(t, err)
-	var loaded []testdata.GroupMember
+	var loaded []orm.GroupMember
 	keys, err := orm.ReadAll(it, &loaded)
 	require.NoError(t, err)
 	for i := range keys {
@@ -390,12 +389,12 @@ func TestExportImportStatePrimaryKeyTable(t *testing.T) {
 		keys, err = orm.ReadAll(it, &loaded)
 		require.NoError(t, err)
 		assert.Equal(t, []orm.RowID{v.PrimaryKey()}, keys)
-		assert.Equal(t, []testdata.GroupMember{v}, loaded)
+		assert.Equal(t, []orm.GroupMember{v}, loaded)
 	}
 }
 
-func first(t *testing.T, it orm.Iterator) ([]byte, testdata.GroupInfo) {
-	var loaded testdata.GroupInfo
+func first(t *testing.T, it orm.Iterator) ([]byte, orm.GroupInfo) {
+	var loaded orm.GroupInfo
 	key, err := orm.First(it, &loaded)
 	require.NoError(t, err)
 	return key, loaded

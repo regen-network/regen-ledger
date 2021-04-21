@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/types/testutil/testdata"
 )
 
 func TestReadAll(t *testing.T) {
@@ -24,42 +23,42 @@ func TestReadAll(t *testing.T) {
 		expResult orm.ModelSlicePtr
 	}{
 		"all good with object slice": {
-			srcIT: mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}),
+			srcIT: mockIter(orm.EncodeSequence(1), &orm.GroupInfo{Description: "test"}),
 			destSlice: func() orm.ModelSlicePtr {
-				x := make([]testdata.GroupInfo, 1)
+				x := make([]orm.GroupInfo, 1)
 				return &x
 			},
 			expIDs:    []orm.RowID{orm.EncodeSequence(1)},
-			expResult: &[]testdata.GroupInfo{{Description: "test"}},
+			expResult: &[]orm.GroupInfo{{Description: "test"}},
 		},
 		"all good with pointer slice": {
-			srcIT: mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}),
+			srcIT: mockIter(orm.EncodeSequence(1), &orm.GroupInfo{Description: "test"}),
 			destSlice: func() orm.ModelSlicePtr {
-				x := make([]*testdata.GroupInfo, 1)
+				x := make([]*orm.GroupInfo, 1)
 				return &x
 			},
 			expIDs:    []orm.RowID{orm.EncodeSequence(1)},
-			expResult: &[]*testdata.GroupInfo{{Description: "test"}},
+			expResult: &[]*orm.GroupInfo{{Description: "test"}},
 		},
 		"dest slice empty": {
-			srcIT: mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{}),
+			srcIT: mockIter(orm.EncodeSequence(1), &orm.GroupInfo{}),
 			destSlice: func() orm.ModelSlicePtr {
-				x := make([]testdata.GroupInfo, 0)
+				x := make([]orm.GroupInfo, 0)
 				return &x
 			},
 			expIDs:    []orm.RowID{orm.EncodeSequence(1)},
-			expResult: &[]testdata.GroupInfo{{}},
+			expResult: &[]orm.GroupInfo{{}},
 		},
 		"dest pointer with nil value": {
-			srcIT: mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{}),
+			srcIT: mockIter(orm.EncodeSequence(1), &orm.GroupInfo{}),
 			destSlice: func() orm.ModelSlicePtr {
-				return (*[]testdata.GroupInfo)(nil)
+				return (*[]orm.GroupInfo)(nil)
 			},
 			expErr: orm.ErrArgument,
 		},
 		"iterator is nil": {
 			srcIT:     nil,
-			destSlice: func() orm.ModelSlicePtr { return new([]testdata.GroupInfo) },
+			destSlice: func() orm.ModelSlicePtr { return new([]orm.GroupInfo) },
 			expErr:    orm.ErrArgument,
 		},
 		"dest slice is nil": {
@@ -69,13 +68,13 @@ func TestReadAll(t *testing.T) {
 		},
 		"dest slice is not a pointer": {
 			srcIT:     orm.IteratorFunc(nil),
-			destSlice: func() orm.ModelSlicePtr { return make([]testdata.GroupInfo, 1) },
+			destSlice: func() orm.ModelSlicePtr { return make([]orm.GroupInfo, 1) },
 			expErr:    orm.ErrArgument,
 		},
 		"error on loadNext is returned": {
 			srcIT: orm.NewInvalidIterator(),
 			destSlice: func() orm.ModelSlicePtr {
-				x := make([]testdata.GroupInfo, 1)
+				x := make([]orm.GroupInfo, 1)
 				return &x
 			},
 			expErr: orm.ErrIteratorInvalid,
@@ -97,24 +96,24 @@ func TestReadAll(t *testing.T) {
 func TestLimitedIterator(t *testing.T) {
 	specs := map[string]struct {
 		src orm.Iterator
-		exp []testdata.GroupInfo
+		exp []orm.GroupInfo
 	}{
 		"all from range with max > length": {
-			src: orm.LimitIterator(mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}), 2),
-			exp: []testdata.GroupInfo{testdata.GroupInfo{Description: "test"}},
+			src: orm.LimitIterator(mockIter(orm.EncodeSequence(1), &orm.GroupInfo{Description: "test"}), 2),
+			exp: []orm.GroupInfo{orm.GroupInfo{Description: "test"}},
 		},
 		"up to max": {
-			src: orm.LimitIterator(mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}), 1),
-			exp: []testdata.GroupInfo{testdata.GroupInfo{Description: "test"}},
+			src: orm.LimitIterator(mockIter(orm.EncodeSequence(1), &orm.GroupInfo{Description: "test"}), 1),
+			exp: []orm.GroupInfo{orm.GroupInfo{Description: "test"}},
 		},
 		"none when max = 0": {
-			src: orm.LimitIterator(mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}), 0),
-			exp: []testdata.GroupInfo{},
+			src: orm.LimitIterator(mockIter(orm.EncodeSequence(1), &orm.GroupInfo{Description: "test"}), 0),
+			exp: []orm.GroupInfo{},
 		},
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
-			var loaded []testdata.GroupInfo
+			var loaded []orm.GroupInfo
 			_, err := orm.ReadAll(spec.src, &loaded)
 			require.NoError(t, err)
 			assert.EqualValues(t, spec.exp, loaded)
@@ -131,36 +130,36 @@ func TestPaginate(t *testing.T) {
 		testTablePrefix = iota
 		testTableSeqPrefix
 	)
-	tBuilder := orm.NewAutoUInt64TableBuilder(testTablePrefix, testTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
+	tBuilder := orm.NewAutoUInt64TableBuilder(testTablePrefix, testTableSeqPrefix, storeKey, &orm.GroupInfo{}, cdc)
 	idx := orm.NewIndex(tBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
-		return []orm.RowID{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
+		return []orm.RowID{[]byte(val.(*orm.GroupInfo).Admin)}, nil
 	})
 	tb := tBuilder.Build()
 	ctx := orm.NewMockContext()
 
 	admin := sdk.AccAddress([]byte("admin-address"))
-	g1 := testdata.GroupInfo{
+	g1 := orm.GroupInfo{
 		Description: "my test 1",
 		Admin:       admin,
 	}
-	g2 := testdata.GroupInfo{
+	g2 := orm.GroupInfo{
 		Description: "my test 2",
 		Admin:       admin,
 	}
-	g3 := testdata.GroupInfo{
+	g3 := orm.GroupInfo{
 		Description: "my test 3",
 		Admin:       sdk.AccAddress([]byte("other-admin-address")),
 	}
-	g4 := testdata.GroupInfo{
+	g4 := orm.GroupInfo{
 		Description: "my test 4",
 		Admin:       admin,
 	}
-	g5 := testdata.GroupInfo{
+	g5 := orm.GroupInfo{
 		Description: "my test 5",
 		Admin:       sdk.AccAddress([]byte("other-admin-address")),
 	}
 
-	for _, g := range []testdata.GroupInfo{g1, g2, g3, g4, g5} {
+	for _, g := range []orm.GroupInfo{g1, g2, g3, g4, g5} {
 		_, err := tb.Create(ctx, &g)
 		require.NoError(t, err)
 	}
@@ -168,13 +167,13 @@ func TestPaginate(t *testing.T) {
 	specs := map[string]struct {
 		pageReq    *query.PageRequest
 		expPageRes *query.PageResponse
-		exp        []testdata.GroupInfo
+		exp        []orm.GroupInfo
 		key        []byte
 		expErr     bool
 	}{
 		"one item": {
 			pageReq:    &query.PageRequest{Key: nil, Limit: 1},
-			exp:        []testdata.GroupInfo{g1},
+			exp:        []orm.GroupInfo{g1},
 			expPageRes: &query.PageResponse{Total: 0, NextKey: orm.EncodeSequence(2)},
 			key:        admin,
 		},
@@ -185,50 +184,50 @@ func TestPaginate(t *testing.T) {
 		},
 		"up to max": {
 			pageReq:    &query.PageRequest{Key: nil, Limit: 3, CountTotal: true},
-			exp:        []testdata.GroupInfo{g1, g2, g4},
+			exp:        []orm.GroupInfo{g1, g2, g4},
 			expPageRes: &query.PageResponse{Total: 3, NextKey: nil},
 			key:        admin,
 		},
 		"no results": {
 			pageReq:    &query.PageRequest{Key: nil, Limit: 2, CountTotal: true},
-			exp:        []testdata.GroupInfo{},
+			exp:        []orm.GroupInfo{},
 			expPageRes: &query.PageResponse{Total: 0, NextKey: nil},
 			key:        sdk.AccAddress([]byte("no-group-address")),
 		},
 		"with offset and count total": {
 			pageReq:    &query.PageRequest{Key: nil, Offset: 1, Limit: 2, CountTotal: true},
-			exp:        []testdata.GroupInfo{g2, g4},
+			exp:        []orm.GroupInfo{g2, g4},
 			expPageRes: &query.PageResponse{Total: 3, NextKey: nil},
 			key:        admin,
 		},
 		"nil/default page req (limit = 100 > number of items)": {
 			pageReq:    nil,
-			exp:        []testdata.GroupInfo{g1, g2, g4},
+			exp:        []orm.GroupInfo{g1, g2, g4},
 			expPageRes: &query.PageResponse{Total: 3, NextKey: nil},
 			key:        admin,
 		},
 		"with key and limit < number of elem (count total is ignored in this case)": {
 			pageReq:    &query.PageRequest{Key: orm.EncodeSequence(2), Limit: 1, CountTotal: true},
-			exp:        []testdata.GroupInfo{g2},
+			exp:        []orm.GroupInfo{g2},
 			expPageRes: &query.PageResponse{Total: 0, NextKey: orm.EncodeSequence(4)},
 			key:        admin,
 		},
 		"with key and limit >= number of elem": {
 			pageReq:    &query.PageRequest{Key: orm.EncodeSequence(2), Limit: 2},
-			exp:        []testdata.GroupInfo{g2, g4},
+			exp:        []orm.GroupInfo{g2, g4},
 			expPageRes: &query.PageResponse{Total: 0, NextKey: nil},
 			key:        admin,
 		},
 		"with nothing left to iterate from key": {
 			pageReq:    &query.PageRequest{Key: orm.EncodeSequence(5)},
-			exp:        []testdata.GroupInfo{},
+			exp:        []orm.GroupInfo{},
 			expPageRes: &query.PageResponse{Total: 0, NextKey: nil},
 			key:        admin,
 		},
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
-			var loaded []testdata.GroupInfo
+			var loaded []orm.GroupInfo
 
 			it, err := idx.GetPaginated(ctx, spec.key, spec.pageReq)
 			require.NoError(t, err)

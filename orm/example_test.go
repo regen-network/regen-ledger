@@ -5,7 +5,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/types/testutil/testdata"
 )
 
 type GroupKeeper struct {
@@ -31,21 +30,21 @@ var (
 func NewGroupKeeper(storeKey sdk.StoreKey, cdc codec.Marshaler) GroupKeeper {
 	k := GroupKeeper{key: storeKey}
 
-	groupTableBuilder := orm.NewAutoUInt64TableBuilder(GroupTablePrefix, GroupTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
+	groupTableBuilder := orm.NewAutoUInt64TableBuilder(GroupTablePrefix, GroupTableSeqPrefix, storeKey, &orm.GroupInfo{}, cdc)
 	// note: quite easy to mess with Index prefixes when managed outside. no fail fast on duplicates
 	k.groupByAdminIndex = orm.NewIndex(groupTableBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
-		return []orm.RowID{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
+		return []orm.RowID{[]byte(val.(*orm.GroupInfo).Admin)}, nil
 	})
 	k.groupTable = groupTableBuilder.Build()
 
-	groupMemberTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	groupMemberTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, storeKey, &orm.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 
 	k.groupMemberByGroupIndex = orm.NewIndex(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
-		group := val.(*testdata.GroupMember).Group
+		group := val.(*orm.GroupMember).Group
 		return []orm.RowID{[]byte(group)}, nil
 	})
 	k.groupMemberByMemberIndex = orm.NewIndex(groupMemberTableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
-		return []orm.RowID{[]byte(val.(*testdata.GroupMember).Member)}, nil
+		return []orm.RowID{[]byte(val.(*orm.GroupMember).Member)}, nil
 	})
 	k.groupMemberTable = groupMemberTableBuilder.Build()
 

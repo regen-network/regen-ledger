@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/types/testutil/testdata"
 )
 
 func TestCreate(t *testing.T) {
@@ -21,13 +20,13 @@ func TestCreate(t *testing.T) {
 		expErr *errors.Error
 	}{
 		"happy path": {
-			src: &testdata.GroupInfo{
+			src: &orm.GroupInfo{
 				Description: "my group",
 				Admin:       sdk.AccAddress([]byte("my-admin-address")),
 			},
 		},
 		"wrong type": {
-			src: &testdata.GroupMember{
+			src: &orm.GroupMember{
 				Group:  sdk.AccAddress(orm.EncodeSequence(1)),
 				Member: sdk.AccAddress([]byte("member-address")),
 				Weight: 10,
@@ -35,8 +34,8 @@ func TestCreate(t *testing.T) {
 			expErr: orm.ErrType,
 		},
 		"model validation fails": {
-			src:    &testdata.GroupInfo{Description: "invalid"},
-			expErr: testdata.ErrTest,
+			src:    &orm.GroupInfo{Description: "invalid"},
+			expErr: orm.ErrTest,
 		},
 	}
 	for msg, spec := range specs {
@@ -46,7 +45,7 @@ func TestCreate(t *testing.T) {
 
 			storeKey := sdk.NewKVStoreKey("test")
 			const anyPrefix = 0x10
-			tableBuilder := orm.NewTableBuilder(anyPrefix, storeKey, &testdata.GroupInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+			tableBuilder := orm.NewTableBuilder(anyPrefix, storeKey, &orm.GroupInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 			myTable := tableBuilder.Build()
 
 			ctx := orm.NewMockContext()
@@ -57,7 +56,7 @@ func TestCreate(t *testing.T) {
 			assert.Equal(t, shouldExists, myTable.Has(ctx, []byte("my-id")), fmt.Sprintf("expected %v", shouldExists))
 
 			// then
-			var loaded testdata.GroupInfo
+			var loaded orm.GroupInfo
 			err = myTable.GetOne(ctx, []byte("my-id"), &loaded)
 			if spec.expErr != nil {
 				require.True(t, orm.ErrNotFound.Is(err))
@@ -75,13 +74,13 @@ func TestUpdate(t *testing.T) {
 		expErr *errors.Error
 	}{
 		"happy path": {
-			src: &testdata.GroupInfo{
+			src: &orm.GroupInfo{
 				Description: "my group",
 				Admin:       sdk.AccAddress([]byte("my-admin-address")),
 			},
 		},
 		"wrong type": {
-			src: &testdata.GroupMember{
+			src: &orm.GroupMember{
 				Group:  sdk.AccAddress(orm.EncodeSequence(1)),
 				Member: sdk.AccAddress([]byte("member-address")),
 				Weight: 9999,
@@ -89,8 +88,8 @@ func TestUpdate(t *testing.T) {
 			expErr: orm.ErrType,
 		},
 		"model validation fails": {
-			src:    &testdata.GroupInfo{Description: "invalid"},
-			expErr: testdata.ErrTest,
+			src:    &orm.GroupInfo{Description: "invalid"},
+			expErr: orm.ErrTest,
 		},
 	}
 	for msg, spec := range specs {
@@ -100,10 +99,10 @@ func TestUpdate(t *testing.T) {
 
 			storeKey := sdk.NewKVStoreKey("test")
 			const anyPrefix = 0x10
-			tableBuilder := orm.NewTableBuilder(anyPrefix, storeKey, &testdata.GroupInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+			tableBuilder := orm.NewTableBuilder(anyPrefix, storeKey, &orm.GroupInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 			myTable := tableBuilder.Build()
 
-			initValue := testdata.GroupInfo{
+			initValue := orm.GroupInfo{
 				Description: "my old group description",
 				Admin:       sdk.AccAddress([]byte("my-old-admin-address")),
 			}
@@ -116,7 +115,7 @@ func TestUpdate(t *testing.T) {
 			require.True(t, spec.expErr.Is(err), "got ", err)
 
 			// then
-			var loaded testdata.GroupInfo
+			var loaded orm.GroupInfo
 			require.NoError(t, myTable.GetOne(ctx, []byte("my-id"), &loaded))
 			if spec.expErr == nil {
 				assert.Equal(t, spec.src, &loaded)

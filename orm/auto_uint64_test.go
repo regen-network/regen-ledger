@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/types/testutil/testdata"
 )
 
 func TestAutoUInt64PrefixScan(t *testing.T) {
@@ -24,29 +23,29 @@ func TestAutoUInt64PrefixScan(t *testing.T) {
 		testTablePrefix = iota
 		testTableSeqPrefix
 	)
-	tb := orm.NewAutoUInt64TableBuilder(testTablePrefix, testTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc).Build()
+	tb := orm.NewAutoUInt64TableBuilder(testTablePrefix, testTableSeqPrefix, storeKey, &orm.GroupInfo{}, cdc).Build()
 	ctx := orm.NewMockContext()
 
-	g1 := testdata.GroupInfo{
+	g1 := orm.GroupInfo{
 		Description: "my test 1",
 		Admin:       sdk.AccAddress([]byte("admin-address")),
 	}
-	g2 := testdata.GroupInfo{
+	g2 := orm.GroupInfo{
 		Description: "my test 2",
 		Admin:       sdk.AccAddress([]byte("admin-address")),
 	}
-	g3 := testdata.GroupInfo{
+	g3 := orm.GroupInfo{
 		Description: "my test 3",
 		Admin:       sdk.AccAddress([]byte("admin-address")),
 	}
-	for _, g := range []testdata.GroupInfo{g1, g2, g3} {
+	for _, g := range []orm.GroupInfo{g1, g2, g3} {
 		_, err := tb.Create(ctx, &g)
 		require.NoError(t, err)
 	}
 
 	specs := map[string]struct {
 		start, end uint64
-		expResult  []testdata.GroupInfo
+		expResult  []orm.GroupInfo
 		expRowIDs  []orm.RowID
 		expError   *errors.Error
 		method     func(ctx orm.HasKVStore, start uint64, end uint64) (orm.Iterator, error)
@@ -55,35 +54,35 @@ func TestAutoUInt64PrefixScan(t *testing.T) {
 			start:     1,
 			end:       2,
 			method:    tb.PrefixScan,
-			expResult: []testdata.GroupInfo{g1},
+			expResult: []orm.GroupInfo{g1},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(1)},
 		},
 		"first 2 elements": {
 			start:     1,
 			end:       3,
 			method:    tb.PrefixScan,
-			expResult: []testdata.GroupInfo{g1, g2},
+			expResult: []orm.GroupInfo{g1, g2},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(1), orm.EncodeSequence(2)},
 		},
 		"first 3 elements": {
 			start:     1,
 			end:       4,
 			method:    tb.PrefixScan,
-			expResult: []testdata.GroupInfo{g1, g2, g3},
+			expResult: []orm.GroupInfo{g1, g2, g3},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(1), orm.EncodeSequence(2), orm.EncodeSequence(3)},
 		},
 		"search with max end": {
 			start:     1,
 			end:       math.MaxUint64,
 			method:    tb.PrefixScan,
-			expResult: []testdata.GroupInfo{g1, g2, g3},
+			expResult: []orm.GroupInfo{g1, g2, g3},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(1), orm.EncodeSequence(2), orm.EncodeSequence(3)},
 		},
 		"2 to end": {
 			start:     2,
 			end:       5,
 			method:    tb.PrefixScan,
-			expResult: []testdata.GroupInfo{g2, g3},
+			expResult: []orm.GroupInfo{g2, g3},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(2), orm.EncodeSequence(3)},
 		},
 		"start before end should fail": {
@@ -102,35 +101,35 @@ func TestAutoUInt64PrefixScan(t *testing.T) {
 			start:     1,
 			end:       2,
 			method:    tb.ReversePrefixScan,
-			expResult: []testdata.GroupInfo{g1},
+			expResult: []orm.GroupInfo{g1},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(1)},
 		},
 		"reverse first 2 elements": {
 			start:     1,
 			end:       3,
 			method:    tb.ReversePrefixScan,
-			expResult: []testdata.GroupInfo{g2, g1},
+			expResult: []orm.GroupInfo{g2, g1},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(2), orm.EncodeSequence(1)},
 		},
 		"reverse first 3 elements": {
 			start:     1,
 			end:       4,
 			method:    tb.ReversePrefixScan,
-			expResult: []testdata.GroupInfo{g3, g2, g1},
+			expResult: []orm.GroupInfo{g3, g2, g1},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(3), orm.EncodeSequence(2), orm.EncodeSequence(1)},
 		},
 		"reverse search with max end": {
 			start:     1,
 			end:       math.MaxUint64,
 			method:    tb.ReversePrefixScan,
-			expResult: []testdata.GroupInfo{g3, g2, g1},
+			expResult: []orm.GroupInfo{g3, g2, g1},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(3), orm.EncodeSequence(2), orm.EncodeSequence(1)},
 		},
 		"reverse 2 to end": {
 			start:     2,
 			end:       5,
 			method:    tb.ReversePrefixScan,
-			expResult: []testdata.GroupInfo{g3, g2},
+			expResult: []orm.GroupInfo{g3, g2},
 			expRowIDs: []orm.RowID{orm.EncodeSequence(3), orm.EncodeSequence(2)},
 		},
 		"reverse start before end should fail": {
@@ -153,7 +152,7 @@ func TestAutoUInt64PrefixScan(t *testing.T) {
 			if spec.expError != nil {
 				return
 			}
-			var loaded []testdata.GroupInfo
+			var loaded []orm.GroupInfo
 			rowIDs, err := orm.ReadAll(it, &loaded)
 			require.NoError(t, err)
 			assert.Equal(t, spec.expResult, loaded)

@@ -13,7 +13,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/types/testutil/testdata"
 )
 
 func TestTypeSafeRowGetter(t *testing.T) {
@@ -21,7 +20,7 @@ func TestTypeSafeRowGetter(t *testing.T) {
 	ctx := orm.NewMockContext()
 	const prefixKey = 0x2
 	store := prefix.NewStore(ctx.KVStore(storeKey), []byte{prefixKey})
-	md := testdata.GroupInfo{Description: "foo"}
+	md := orm.GroupInfo{Description: "foo"}
 	bz, err := md.Marshal()
 	require.NoError(t, err)
 	store.Set(orm.EncodeSequence(1), bz)
@@ -34,26 +33,26 @@ func TestTypeSafeRowGetter(t *testing.T) {
 	}{
 		"happy path": {
 			srcRowID:     orm.EncodeSequence(1),
-			srcModelType: reflect.TypeOf(testdata.GroupInfo{}),
-			expObj:       testdata.GroupInfo{Description: "foo"},
+			srcModelType: reflect.TypeOf(orm.GroupInfo{}),
+			expObj:       orm.GroupInfo{Description: "foo"},
 		},
 		"unknown rowID should return ErrNotFound": {
 			srcRowID:     orm.EncodeSequence(999),
-			srcModelType: reflect.TypeOf(testdata.GroupInfo{}),
+			srcModelType: reflect.TypeOf(orm.GroupInfo{}),
 			expErr:       orm.ErrNotFound,
 		},
 		"wrong type should cause ErrType": {
 			srcRowID:     orm.EncodeSequence(1),
-			srcModelType: reflect.TypeOf(testdata.GroupMember{}),
+			srcModelType: reflect.TypeOf(orm.GroupMember{}),
 			expErr:       orm.ErrType,
 		},
 		"empty rowID not allowed": {
 			srcRowID:     []byte{},
-			srcModelType: reflect.TypeOf(testdata.GroupInfo{}),
+			srcModelType: reflect.TypeOf(orm.GroupInfo{}),
 			expErr:       orm.ErrArgument,
 		},
 		"nil rowID not allowed": {
-			srcModelType: reflect.TypeOf(testdata.GroupInfo{}),
+			srcModelType: reflect.TypeOf(orm.GroupInfo{}),
 			expErr:       orm.ErrArgument,
 		},
 	}
@@ -63,7 +62,7 @@ func TestTypeSafeRowGetter(t *testing.T) {
 			cdc := codec.NewProtoCodec(interfaceRegistry)
 
 			getter := orm.NewTypeSafeRowGetter(storeKey, prefixKey, spec.srcModelType, cdc)
-			var loadedObj testdata.GroupInfo
+			var loadedObj orm.GroupInfo
 
 			err := getter(ctx, spec.srcRowID, &loadedObj)
 			if spec.expErr != nil {
