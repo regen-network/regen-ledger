@@ -7,28 +7,20 @@ import (
 	"strings"
 	"time"
 
-	"github.com/regen-network/regen-ledger/testutil/testdata"
-
-	"github.com/regen-network/regen-ledger/testutil"
-	servermodule "github.com/regen-network/regen-ledger/types/module/server"
-
-	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-
-	bank "github.com/cosmos/cosmos-sdk/x/bank"
-
-	gogotypes "github.com/gogo/protobuf/types"
-
-	"github.com/stretchr/testify/suite"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bank "github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	gogotypes "github.com/gogo/protobuf/types"
+	"github.com/stretchr/testify/suite"
 
+	"github.com/regen-network/regen-ledger/testutil"
+	"github.com/regen-network/regen-ledger/testutil/testdata"
 	"github.com/regen-network/regen-ledger/types"
-
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/group"
-
 	groupserver "github.com/regen-network/regen-ledger/x/group/server"
 )
 
@@ -77,8 +69,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.ctx = types.Context{Context: s.sdkCtx}
 	s.genesisCtx = types.Context{Context: sdkCtx}
 
-	totalSupply := banktypes.NewSupply(sdk.NewCoins(sdk.NewInt64Coin("test", 400000000)))
-	s.bankKeeper.SetSupply(sdkCtx, totalSupply)
+	// totalSupply := banktypes.NewSupply(sdk.NewCoins(sdk.NewInt64Coin("test", 400000000)))
+	s.Require().NoError(s.bankKeeper.MintCoins(s.sdkCtx, banktypes.ModuleName, sdk.NewCoins(sdk.NewInt64Coin("test", 400000000))))
+	// s.bankKeeper.SetSupply(sdkCtx, totalSupply)
 	s.bankKeeper.SetParams(sdkCtx, banktypes.DefaultParams())
 
 	s.msgClient = group.NewMsgClient(s.fixture.TxConn())
@@ -121,7 +114,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 	s.groupAccountAddr = addr
 
-	s.Require().NoError(s.bankKeeper.SetBalances(s.sdkCtx, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+	s.Require().NoError(s.bankKeeper.MintCoins(s.sdkCtx, banktypes.ModuleName, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+	s.Require().NoError(s.bankKeeper.SendCoinsFromModuleToAccount(s.sdkCtx, banktypes.ModuleName, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+	// s.Require().NoError(s.bankKeeper.SetBalances(s.sdkCtx, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -1883,7 +1878,10 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 
 				_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{Signer: s.addr1.String(), ProposalId: myProposalID})
 				s.Require().NoError(err)
-				s.Require().NoError(s.bankKeeper.SetBalances(ctx.(types.Context).Context, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+				s.Require().NoError(s.bankKeeper.MintCoins(ctx.(types.Context).Context, banktypes.ModuleName, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+				s.Require().NoError(s.bankKeeper.SendCoinsFromModuleToAccount(ctx.(types.Context).Context, banktypes.ModuleName, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+
+				// s.Require().NoError(s.bankKeeper.SetBalances(ctx.(types.Context).Context, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
 				return myProposalID
 			},
 			expProposalStatus: group.ProposalStatusClosed,
