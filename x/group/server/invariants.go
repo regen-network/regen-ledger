@@ -218,16 +218,16 @@ func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 			}
 			voteChoice := vote.GetChoice()
 			if voteChoice != 0 {
-				voteCount += 1
+				voteCount++
 			}
 			if voteChoice == group.Choice_CHOICE_YES {
-				yesCount += 1
+				yesCount++
 			} else if voteChoice == group.Choice_CHOICE_NO {
-				noCount += 1
+				noCount++
 			} else if voteChoice == group.Choice_CHOICE_ABSTAIN {
-				abstainCount += 1
+				abstainCount++
 			} else if voteChoice == group.Choice_CHOICE_VETO {
-				vetoCount += 1
+				vetoCount++
 			}
 		}
 
@@ -240,28 +240,27 @@ func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 			broken = true
 			msg += "proposal Tally must be equal to the sum of votes\n"
 			return msg, broken, err
-		} else {
-			proposalYesCount, err := proposal.VoteState.GetYesCount()
-			if err != nil {
-				return msg, broken, err
-			}
-			proposalNoCount, err := proposal.VoteState.GetNoCount()
-			if err != nil {
-				return msg, broken, err
-			}
-			proposalAbstainCount, err := proposal.VoteState.GetAbstainCount()
-			if err != nil {
-				return msg, broken, err
-			}
-			proposalVetoCount, err := proposal.VoteState.GetVetoCount()
-			if err != nil {
-				return msg, broken, err
-			}
-			if (proposalYesCount.Coeff.Int64() != yesCount) || (proposalNoCount.Coeff.Int64() != noCount) || (proposalAbstainCount.Coeff.Int64() != abstainCount) || (proposalVetoCount.Coeff.Int64() != vetoCount) {
-				broken = true
-				msg += "proposal Tally must be equal to the sum of votes\n"
-				return msg, broken, err
-			}
+		}
+		proposalYesCount, err := proposal.VoteState.GetYesCount()
+		if err != nil {
+			return msg, broken, err
+		}
+		proposalNoCount, err := proposal.VoteState.GetNoCount()
+		if err != nil {
+			return msg, broken, err
+		}
+		proposalAbstainCount, err := proposal.VoteState.GetAbstainCount()
+		if err != nil {
+			return msg, broken, err
+		}
+		proposalVetoCount, err := proposal.VoteState.GetVetoCount()
+		if err != nil {
+			return msg, broken, err
+		}
+		if (proposalYesCount.Coeff.Int64() != yesCount) || (proposalNoCount.Coeff.Int64() != noCount) || (proposalAbstainCount.Coeff.Int64() != abstainCount) || (proposalVetoCount.Coeff.Int64() != vetoCount) {
+			broken = true
+			msg += "proposal Tally must be equal to the sum of votes\n"
+			return msg, broken, err
 		}
 	}
 	return msg, broken, err
