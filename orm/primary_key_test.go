@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/orm/testdata"
 )
 
 func TestPrimaryKeyTablePrefixScan(t *testing.T) {
@@ -22,34 +23,34 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 		testTablePrefix = iota
 	)
 
-	tb := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &orm.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc).
+	tb := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc).
 		Build()
 
 	ctx := orm.NewMockContext()
 
 	const anyWeight = 1
-	m1 := orm.GroupMember{
+	m1 := testdata.GroupMember{
 		Group:  []byte("group-a"),
 		Member: []byte("member-one"),
 		Weight: anyWeight,
 	}
-	m2 := orm.GroupMember{
+	m2 := testdata.GroupMember{
 		Group:  []byte("group-a"),
 		Member: []byte("member-two"),
 		Weight: anyWeight,
 	}
-	m3 := orm.GroupMember{
+	m3 := testdata.GroupMember{
 		Group:  []byte("group-b"),
 		Member: []byte("member-two"),
 		Weight: anyWeight,
 	}
-	for _, g := range []orm.GroupMember{m1, m2, m3} {
+	for _, g := range []testdata.GroupMember{m1, m2, m3} {
 		require.NoError(t, tb.Create(ctx, &g))
 	}
 
 	specs := map[string]struct {
 		start, end []byte
-		expResult  []orm.GroupMember
+		expResult  []testdata.GroupMember
 		expRowIDs  []orm.RowID
 		expError   *errors.Error
 		method     func(ctx orm.HasKVStore, start, end []byte) (orm.Iterator, error)
@@ -58,63 +59,63 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 			start:     []byte("group-amember-one"), // == m1.PrimaryKey()
 			end:       []byte("group-amember-two"), // == m2.PrimaryKey()
 			method:    tb.PrefixScan,
-			expResult: []orm.GroupMember{m1},
+			expResult: []testdata.GroupMember{m1},
 			expRowIDs: []orm.RowID{m1.PrimaryKey()},
 		},
 		"one result by prefix": {
 			start:     []byte("group-a"),
 			end:       []byte("group-amember-two"), // == m2.PrimaryKey()
 			method:    tb.PrefixScan,
-			expResult: []orm.GroupMember{m1},
+			expResult: []testdata.GroupMember{m1},
 			expRowIDs: []orm.RowID{m1.PrimaryKey()},
 		},
 		"multi key elements by group prefix": {
 			start:     []byte("group-a"),
 			end:       []byte("group-b"),
 			method:    tb.PrefixScan,
-			expResult: []orm.GroupMember{m1, m2},
+			expResult: []testdata.GroupMember{m1, m2},
 			expRowIDs: []orm.RowID{m1.PrimaryKey(), m2.PrimaryKey()},
 		},
 		"open end query with second group": {
 			start:     []byte("group-b"),
 			end:       nil,
 			method:    tb.PrefixScan,
-			expResult: []orm.GroupMember{m3},
+			expResult: []testdata.GroupMember{m3},
 			expRowIDs: []orm.RowID{m3.PrimaryKey()},
 		},
 		"open end query with all": {
 			start:     []byte("group-a"),
 			end:       nil,
 			method:    tb.PrefixScan,
-			expResult: []orm.GroupMember{m1, m2, m3},
+			expResult: []testdata.GroupMember{m1, m2, m3},
 			expRowIDs: []orm.RowID{m1.PrimaryKey(), m2.PrimaryKey(), m3.PrimaryKey()},
 		},
 		"open start query": {
 			start:     nil,
 			end:       []byte("group-b"),
 			method:    tb.PrefixScan,
-			expResult: []orm.GroupMember{m1, m2},
+			expResult: []testdata.GroupMember{m1, m2},
 			expRowIDs: []orm.RowID{m1.PrimaryKey(), m2.PrimaryKey()},
 		},
 		"open start and end query": {
 			start:     nil,
 			end:       nil,
 			method:    tb.PrefixScan,
-			expResult: []orm.GroupMember{m1, m2, m3},
+			expResult: []testdata.GroupMember{m1, m2, m3},
 			expRowIDs: []orm.RowID{m1.PrimaryKey(), m2.PrimaryKey(), m3.PrimaryKey()},
 		},
 		"all matching prefix": {
 			start:     []byte("group"),
 			end:       nil,
 			method:    tb.PrefixScan,
-			expResult: []orm.GroupMember{m1, m2, m3},
+			expResult: []testdata.GroupMember{m1, m2, m3},
 			expRowIDs: []orm.RowID{m1.PrimaryKey(), m2.PrimaryKey(), m3.PrimaryKey()},
 		},
 		"non matching prefix": {
 			start:     []byte("nobody"),
 			end:       nil,
 			method:    tb.PrefixScan,
-			expResult: []orm.GroupMember{},
+			expResult: []testdata.GroupMember{},
 		},
 		"start equals end": {
 			start:    []byte("any"),
@@ -132,63 +133,63 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 			start:     []byte("group-amember-one"), // == m1.PrimaryKey()
 			end:       []byte("group-amember-two"), // == m2.PrimaryKey()
 			method:    tb.ReversePrefixScan,
-			expResult: []orm.GroupMember{m1},
+			expResult: []testdata.GroupMember{m1},
 			expRowIDs: []orm.RowID{m1.PrimaryKey()},
 		},
 		"reverse: one result by prefix": {
 			start:     []byte("group-a"),
 			end:       []byte("group-amember-two"), // == m2.PrimaryKey()
 			method:    tb.ReversePrefixScan,
-			expResult: []orm.GroupMember{m1},
+			expResult: []testdata.GroupMember{m1},
 			expRowIDs: []orm.RowID{m1.PrimaryKey()},
 		},
 		"reverse: multi key elements by group prefix": {
 			start:     []byte("group-a"),
 			end:       []byte("group-b"),
 			method:    tb.ReversePrefixScan,
-			expResult: []orm.GroupMember{m2, m1},
+			expResult: []testdata.GroupMember{m2, m1},
 			expRowIDs: []orm.RowID{m2.PrimaryKey(), m1.PrimaryKey()},
 		},
 		"reverse: open end query with second group": {
 			start:     []byte("group-b"),
 			end:       nil,
 			method:    tb.ReversePrefixScan,
-			expResult: []orm.GroupMember{m3},
+			expResult: []testdata.GroupMember{m3},
 			expRowIDs: []orm.RowID{m3.PrimaryKey()},
 		},
 		"reverse: open end query with all": {
 			start:     []byte("group-a"),
 			end:       nil,
 			method:    tb.ReversePrefixScan,
-			expResult: []orm.GroupMember{m3, m2, m1},
+			expResult: []testdata.GroupMember{m3, m2, m1},
 			expRowIDs: []orm.RowID{m3.PrimaryKey(), m2.PrimaryKey(), m1.PrimaryKey()},
 		},
 		"reverse: open start query": {
 			start:     nil,
 			end:       []byte("group-b"),
 			method:    tb.ReversePrefixScan,
-			expResult: []orm.GroupMember{m2, m1},
+			expResult: []testdata.GroupMember{m2, m1},
 			expRowIDs: []orm.RowID{m2.PrimaryKey(), m1.PrimaryKey()},
 		},
 		"reverse: open start and end query": {
 			start:     nil,
 			end:       nil,
 			method:    tb.ReversePrefixScan,
-			expResult: []orm.GroupMember{m3, m2, m1},
+			expResult: []testdata.GroupMember{m3, m2, m1},
 			expRowIDs: []orm.RowID{m3.PrimaryKey(), m2.PrimaryKey(), m1.PrimaryKey()},
 		},
 		"reverse: all matching prefix": {
 			start:     []byte("group"),
 			end:       nil,
 			method:    tb.ReversePrefixScan,
-			expResult: []orm.GroupMember{m3, m2, m1},
+			expResult: []testdata.GroupMember{m3, m2, m1},
 			expRowIDs: []orm.RowID{m3.PrimaryKey(), m2.PrimaryKey(), m1.PrimaryKey()},
 		},
 		"reverse: non matching prefix": {
 			start:     []byte("nobody"),
 			end:       nil,
 			method:    tb.ReversePrefixScan,
-			expResult: []orm.GroupMember{},
+			expResult: []testdata.GroupMember{},
 		},
 		"reverse: start equals end": {
 			start:    []byte("any"),
@@ -210,7 +211,7 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 			if spec.expError != nil {
 				return
 			}
-			var loaded []orm.GroupMember
+			var loaded []testdata.GroupMember
 			rowIDs, err := orm.ReadAll(it, &loaded)
 			require.NoError(t, err)
 			assert.Equal(t, spec.expResult, loaded)
@@ -226,12 +227,12 @@ func TestContains(t *testing.T) {
 	storeKey := sdk.NewKVStoreKey("test")
 	const testTablePrefix = iota
 
-	tb := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &orm.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc).
+	tb := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc).
 		Build()
 
 	ctx := orm.NewMockContext()
 
-	myPersistentObj := orm.GroupMember{
+	myPersistentObj := testdata.GroupMember{
 		Group:  []byte("group-a"),
 		Member: []byte("member-one"),
 		Weight: 1,
@@ -246,7 +247,7 @@ func TestContains(t *testing.T) {
 
 		"same object": {src: &myPersistentObj, exp: true},
 		"clone": {
-			src: &orm.GroupMember{
+			src: &testdata.GroupMember{
 				Group:  []byte("group-a"),
 				Member: []byte("member-one"),
 				Weight: 1,
@@ -254,7 +255,7 @@ func TestContains(t *testing.T) {
 			exp: true,
 		},
 		"different primary key": {
-			src: &orm.GroupMember{
+			src: &testdata.GroupMember{
 				Group:  []byte("another group"),
 				Member: []byte("member-one"),
 				Weight: 1,
@@ -275,5 +276,5 @@ func TestContains(t *testing.T) {
 }
 
 type mockPrimaryKeyed struct {
-	*orm.GroupMember
+	*testdata.GroupMember
 }

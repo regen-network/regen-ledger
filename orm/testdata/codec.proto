@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package orm;
+package testdata;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/orm";
+option go_package = "github.com/regen-network/regen-ledger/orm/testdata";
 
 message GroupInfo {
   uint64 group_id = 1;

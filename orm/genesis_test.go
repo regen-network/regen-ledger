@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/orm/testdata"
 	"github.com/stretchr/testify/require"
 )
 
@@ -16,11 +17,11 @@ func TestImportExportTableData(t *testing.T) {
 
 	storeKey := sdk.NewKVStoreKey("test")
 	const prefix = iota
-	table := orm.NewAutoUInt64TableBuilder(prefix, 0x1, storeKey, &orm.GroupInfo{}, cdc).Build()
+	table := orm.NewAutoUInt64TableBuilder(prefix, 0x1, storeKey, &testdata.GroupInfo{}, cdc).Build()
 
 	ctx := orm.NewMockContext()
 
-	groups := []*orm.GroupInfo{
+	groups := []*testdata.GroupInfo{
 		{
 			GroupId: 1,
 			Admin:   sdk.AccAddress([]byte("admin1-address")),
@@ -35,14 +36,14 @@ func TestImportExportTableData(t *testing.T) {
 	require.NoError(t, err)
 
 	for _, g := range groups {
-		var loaded orm.GroupInfo
+		var loaded testdata.GroupInfo
 		_, err := table.GetOne(ctx, g.GroupId, &loaded)
 		require.NoError(t, err)
 
 		require.Equal(t, g, &loaded)
 	}
 
-	var exported []*orm.GroupInfo
+	var exported []*testdata.GroupInfo
 	seq, err := orm.ExportTableData(ctx, table, &exported)
 	require.NoError(t, err)
 	require.Equal(t, seq, uint64(2))
