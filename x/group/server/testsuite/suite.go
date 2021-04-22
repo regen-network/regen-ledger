@@ -8,14 +8,18 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bank "github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 
+	"github.com/regen-network/regen-ledger/app"
 	"github.com/regen-network/regen-ledger/testutil"
 	"github.com/regen-network/regen-ledger/testutil/testdata"
 	"github.com/regen-network/regen-ledger/types"
@@ -27,6 +31,7 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
+	app            *app.RegenApp
 	fixtureFactory *servermodule.FixtureFactory
 	fixture        testutil.Fixture
 
@@ -50,6 +55,15 @@ type IntegrationTestSuite struct {
 	blockTime time.Time
 }
 
+const (
+	bankDenom = "bank"
+)
+
+var (
+	minterAcc = authtypes.NewEmptyModuleAccount(authtypes.Minter, authtypes.Minter)
+	bankAcc   = authtypes.NewEmptyModuleAccount(bankDenom)
+)
+
 func NewIntegrationTestSuite(fixtureFactory *servermodule.FixtureFactory, accountKeeper authkeeper.AccountKeeper, bankKeeper bankkeeper.BaseKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
@@ -63,14 +77,38 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.blockTime = time.Now().UTC()
 
+	interfaceRegistry := codectypes.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+	key := sdk.NewKVStoreKey(group.ModuleName)
+	// var app app.RegenApp
+
 	// TODO clean up once types.Context merged upstream into sdk.Context
 	sdkCtx := s.fixture.Context().(types.Context).WithBlockTime(s.blockTime)
 	s.sdkCtx, _ = sdkCtx.CacheContext()
 	s.ctx = types.Context{Context: s.sdkCtx}
 	s.genesisCtx = types.Context{Context: sdkCtx}
 
+	s.accountKeeper.SetParams(sdkCtx, authtypes.DefaultParams())
+	s.bankKeeper.SetParams(sdkCtx, banktypes.DefaultParams())
+
 	// totalSupply := banktypes.NewSupply(sdk.NewCoins(sdk.NewInt64Coin("test", 400000000)))
-	s.Require().NoError(s.bankKeeper.MintCoins(s.sdkCtx, banktypes.ModuleName, sdk.NewCoins(sdk.NewInt64Coin("test", 400000000))))
+	totalSupply := sdk.NewCoins(sdk.NewInt64Coin("test", 400000000))
+
+	// s.accountKeeper.SetModuleAccount(s.sdkCtx, minterAcc)
+	// s.accountKeeper.SetModuleAccount(s.sdkCtx, bankAcc)
+	// a := s.accountKeeper.GetModuleAccount(s.sdkCtx, minterAcc.Name)
+	maccPerms := app.GetMaccPerms()
+	maccPerms[bankDenom] = []string{bankDenom}
+
+	s.app.AccountKeeper = authkeeper.NewAccountKeeper(
+		cdc, key, s.app.GetSubspace(authtypes.ModuleName), authtypes.ProtoBaseAccount, maccPerms,
+	)
+	s.app.BankKeeper = bankkeeper.NewBaseKeeper(
+		cdc, key, s.app.AccountKeeper, s.app.GetSubspace(banktypes.ModuleName), nil,
+	)
+	s.Require().NoError(s.app.BankKeeper.MintCoins(s.sdkCtx, bankDenom, totalSupply))
+	// fmt.Println(s.accountKeeper.SetModuleAccount(s.sdkCtx, minterAcc))
+	// s.Require().NoError(s.bankKeeper.MintCoins(sdkCtx, minterAcc.GetName(), totalSupply))
 	// s.bankKeeper.SetSupply(sdkCtx, totalSupply)
 	s.bankKeeper.SetParams(sdkCtx, banktypes.DefaultParams())
 
@@ -114,8 +152,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 	s.groupAccountAddr = addr
 
-	s.Require().NoError(s.bankKeeper.MintCoins(s.sdkCtx, banktypes.ModuleName, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
-	s.Require().NoError(s.bankKeeper.SendCoinsFromModuleToAccount(s.sdkCtx, banktypes.ModuleName, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+	s.Require().NoError(s.bankKeeper.MintCoins(s.sdkCtx, group.ModuleName, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+	s.Require().NoError(s.bankKeeper.SendCoinsFromModuleToAccount(s.sdkCtx, group.ModuleName, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
 	// s.Require().NoError(s.bankKeeper.SetBalances(s.sdkCtx, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
 }
 
@@ -1711,7 +1749,7 @@ func (s *IntegrationTestSuite) TestDoExecuteMsgs() {
 			if spec.srcHandler != nil {
 				router = baseapp.NewRouter().AddRoute(sdk.NewRoute("MsgAuthenticated", spec.srcHandler))
 			} else {
-				router = baseapp.NewRouter().AddRoute(sdk.NewRoute(banktypes.ModuleName, bank.NewHandler(s.bankKeeper)))
+				router = baseapp.NewRouter().AddRoute(sdk.NewRoute(authtypes.Minter, bank.NewHandler(s.bankKeeper)))
 			}
 			_, err := groupserver.DoExecuteMsgs(ctx, router, s.groupAccountAddr, spec.srcMsgs)
 			if spec.expErr {
@@ -1878,8 +1916,9 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 
 				_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{Signer: s.addr1.String(), ProposalId: myProposalID})
 				s.Require().NoError(err)
-				s.Require().NoError(s.bankKeeper.MintCoins(ctx.(types.Context).Context, banktypes.ModuleName, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
-				s.Require().NoError(s.bankKeeper.SendCoinsFromModuleToAccount(ctx.(types.Context).Context, banktypes.ModuleName, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+
+				s.Require().NoError(s.bankKeeper.MintCoins(ctx.(types.Context).Context, group.ModuleName, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+				s.Require().NoError(s.bankKeeper.SendCoinsFromModuleToAccount(ctx.(types.Context).Context, group.ModuleName, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
 
 				// s.Require().NoError(s.bankKeeper.SetBalances(ctx.(types.Context).Context, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
 				return myProposalID
