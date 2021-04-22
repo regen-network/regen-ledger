@@ -200,7 +200,6 @@ func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 	var noCount int64
 	var abstainCount int64
 	var vetoCount int64
-
 	for {
 		_, err := proposalIt.LoadNext(&proposal)
 		if orm.ErrIteratorDone.Is(err) {

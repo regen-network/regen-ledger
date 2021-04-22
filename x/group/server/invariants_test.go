@@ -414,6 +414,7 @@ func TestProposalTallyInvariant(t *testing.T) {
 			},
 			expErr: false,
 		},
+
 		"proposal Tally must be equal to the sum of votes": {
 			proposalReq: []*group.Proposal{
 				{
