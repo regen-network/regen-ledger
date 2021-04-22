@@ -13,6 +13,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/group"
@@ -57,7 +58,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 		"invariant not broken": {
 			prevReq: []*group.Proposal{
 				{
-					ProposalId:          0,
+					ProposalId:          1,
 					Address:             addr1.String(),
 					Proposers:           []string{addr1.String()},
 					SubmittedAt:         *prevBlockTime,
@@ -73,7 +74,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 
 			curReq: []*group.Proposal{
 				{
-					ProposalId:          0,
+					ProposalId:          1,
 					Address:             addr2.String(),
 					Proposers:           []string{addr2.String()},
 					SubmittedAt:         *curBlockTime,
@@ -90,7 +91,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 		"current block yes vote count must be greater than previous block yes vote count": {
 			prevReq: []*group.Proposal{
 				{
-					ProposalId:          0,
+					ProposalId:          1,
 					Address:             addr1.String(),
 					Proposers:           []string{addr1.String()},
 					SubmittedAt:         *prevBlockTime,
@@ -105,7 +106,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 			},
 			curReq: []*group.Proposal{
 				{
-					ProposalId:          0,
+					ProposalId:          1,
 					Address:             addr2.String(),
 					Proposers:           []string{addr2.String()},
 					SubmittedAt:         *curBlockTime,
@@ -123,7 +124,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 		"current block no vote count must be greater than previous block no vote count": {
 			prevReq: []*group.Proposal{
 				{
-					ProposalId:          0,
+					ProposalId:          1,
 					Address:             addr1.String(),
 					Proposers:           []string{addr1.String()},
 					SubmittedAt:         *prevBlockTime,
@@ -138,7 +139,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 			},
 			curReq: []*group.Proposal{
 				{
-					ProposalId:          0,
+					ProposalId:          1,
 					Address:             addr2.String(),
 					Proposers:           []string{addr2.String()},
 					SubmittedAt:         *curBlockTime,
@@ -156,7 +157,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 		"current block abstain vote count must be greater than previous block abstain vote count": {
 			prevReq: []*group.Proposal{
 				{
-					ProposalId:          0,
+					ProposalId:          1,
 					Address:             addr1.String(),
 					Proposers:           []string{addr1.String()},
 					SubmittedAt:         *prevBlockTime,
@@ -171,7 +172,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 			},
 			curReq: []*group.Proposal{
 				{
-					ProposalId:          0,
+					ProposalId:          1,
 					Address:             addr2.String(),
 					Proposers:           []string{addr2.String()},
 					SubmittedAt:         *curBlockTime,
@@ -189,7 +190,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 		"current block veto vote count must be greater than previous block veto vote count": {
 			prevReq: []*group.Proposal{
 				{
-					ProposalId:          0,
+					ProposalId:          1,
 					Address:             addr1.String(),
 					Proposers:           []string{addr1.String()},
 					SubmittedAt:         *prevBlockTime,
@@ -204,7 +205,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 			},
 			curReq: []*group.Proposal{
 				{
-					ProposalId:          0,
+					ProposalId:          1,
 					Address:             addr2.String(),
 					Proposers:           []string{addr2.String()},
 					SubmittedAt:         *curBlockTime,
@@ -336,6 +337,139 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 		}
 
 		_, broken, _ := groupTotalWeightInvariant(cacheCurCtx, groupTable, groupMemberByGroupIndex)
+		require.Equal(t, spec.expErr, broken)
+	}
+}
+
+func TestProposalTallyInvariant(t *testing.T) {
+	curCtx, cdc, key := getCtxCodecKey(t)
+
+	// Proposal Table
+	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, key, &group.Proposal{}, cdc)
+	proposalTable := proposalTableBuilder.Build()
+
+	// Vote Table
+	voteTableBuilder := orm.NewPrimaryKeyTableBuilder(VoteTablePrefix, key, &group.Vote{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	voteByProposalIndex := orm.NewUInt64Index(voteTableBuilder, VoteByProposalIndexPrefix, func(value interface{}) ([]uint64, error) {
+		return []uint64{value.(*group.Vote).ProposalId}, nil
+	})
+	voteTable := voteTableBuilder.Build()
+
+	_, _, addr1 := testdata.KeyTestPubAddr()
+	_, _, addr2 := testdata.KeyTestPubAddr()
+	_, _, addr3 := testdata.KeyTestPubAddr()
+
+	curBlockTime, err := gogotypes.TimestampProto(curCtx.BlockTime())
+	require.NoError(t, err)
+
+	specs := map[string]struct {
+		proposalReq []*group.Proposal
+		voteReq     []*group.Vote
+		expErr      bool
+	}{
+		"invariant not broken": {
+			proposalReq: []*group.Proposal{
+				{
+					ProposalId:          1,
+					Address:             addr1.String(),
+					Proposers:           []string{addr1.String()},
+					SubmittedAt:         *curBlockTime,
+					GroupVersion:        1,
+					GroupAccountVersion: 1,
+					Status:              group.ProposalStatusSubmitted,
+					Result:              group.ProposalResultUnfinalized,
+					VoteState:           group.Tally{YesCount: "2", NoCount: "1", AbstainCount: "0", VetoCount: "0"},
+					Timeout:             gogotypes.Timestamp{Seconds: 600},
+					ExecutorResult:      group.ProposalExecutorResultNotRun,
+				},
+			},
+			voteReq: []*group.Vote{
+				{
+					ProposalId: 1,
+					Voter:      addr1.String(),
+					Choice:     group.Choice_CHOICE_YES,
+					SubmittedAt: gogotypes.Timestamp{
+						Seconds: timestamppb.Now().Seconds,
+						Nanos:   timestamppb.Now().Nanos,
+					},
+				},
+				{
+					ProposalId: 1,
+					Voter:      addr2.String(),
+					Choice:     group.Choice_CHOICE_NO,
+					SubmittedAt: gogotypes.Timestamp{
+						Seconds: timestamppb.Now().Seconds,
+						Nanos:   timestamppb.Now().Nanos,
+					},
+				},
+				{
+					ProposalId: 1,
+					Voter:      addr3.String(),
+					Choice:     group.Choice_CHOICE_YES,
+					SubmittedAt: gogotypes.Timestamp{
+						Seconds: timestamppb.Now().Seconds,
+						Nanos:   timestamppb.Now().Nanos,
+					},
+				},
+			},
+			expErr: false,
+		},
+		"proposal Tally must be equal to the sum of votes": {
+			proposalReq: []*group.Proposal{
+				{
+					ProposalId:          1,
+					Address:             addr1.String(),
+					Proposers:           []string{addr1.String()},
+					SubmittedAt:         *curBlockTime,
+					GroupVersion:        1,
+					GroupAccountVersion: 1,
+					Status:              group.ProposalStatusSubmitted,
+					Result:              group.ProposalResultUnfinalized,
+					VoteState:           group.Tally{YesCount: "1", NoCount: "1", AbstainCount: "1", VetoCount: "0"},
+					Timeout:             gogotypes.Timestamp{Seconds: 600},
+					ExecutorResult:      group.ProposalExecutorResultNotRun,
+				},
+			},
+			voteReq: []*group.Vote{
+				{
+					ProposalId: 1,
+					Voter:      addr1.String(),
+					Choice:     group.Choice_CHOICE_YES,
+					SubmittedAt: gogotypes.Timestamp{
+						Seconds: timestamppb.Now().Seconds,
+						Nanos:   timestamppb.Now().Nanos,
+					},
+				},
+				{
+					ProposalId: 1,
+					Voter:      addr2.String(),
+					Choice:     group.Choice_CHOICE_NO,
+					SubmittedAt: gogotypes.Timestamp{
+						Seconds: timestamppb.Now().Seconds,
+						Nanos:   timestamppb.Now().Nanos,
+					},
+				},
+			},
+			expErr: true,
+		},
+	}
+
+	for _, spec := range specs {
+		cacheCurCtx, _ := curCtx.CacheContext()
+		proposals := spec.proposalReq
+		votes := spec.voteReq
+
+		for i := 0; i < len(proposals); i++ {
+			_, err = proposalTable.Create(cacheCurCtx, proposals[i])
+			require.NoError(t, err)
+		}
+
+		for i := 0; i < len(votes); i++ {
+			err = voteTable.Create(cacheCurCtx, votes[i])
+			require.NoError(t, err)
+		}
+
+		_, broken, _ := proposalTallyInvariant(cacheCurCtx, proposalTable, voteByProposalIndex)
 		require.Equal(t, spec.expErr, broken)
 	}
 }

@@ -12,13 +12,15 @@ import (
 )
 
 const (
-	votesInvariant  = "Tally-Votes"
-	weightInvariant = "Group-TotalWeight"
+	votesInvariant              = "Tally-Votes"
+	weightInvariant             = "Group-TotalWeight"
+	proposalTallyVotesInvariant = "Tally-Proposal-Votes-With-Sum-Of-Votes"
 )
 
 func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
 	ir.RegisterRoute(group.ModuleName, votesInvariant, s.tallyVotesInvariant())
 	ir.RegisterRoute(group.ModuleName, weightInvariant, s.groupTotalWeightInvariant())
+	ir.RegisterRoute(group.ModuleName, proposalTallyVotesInvariant, s.proposalTallyInvariant())
 }
 
 func (s serverImpl) tallyVotesInvariant() sdk.Invariant {
@@ -43,6 +45,16 @@ func (s serverImpl) groupTotalWeightInvariant() sdk.Invariant {
 			panic(err)
 		}
 		return sdk.FormatInvariant(group.ModuleName, weightInvariant, msg), broken
+	}
+}
+
+func (s serverImpl) proposalTallyInvariant() sdk.Invariant {
+	return func(ctx sdk.Context) (string, bool) {
+		msg, broken, err := proposalTallyInvariant(ctx, s.proposalTable, s.voteByProposalIndex)
+		if err != nil {
+			panic(err)
+		}
+		return sdk.FormatInvariant(group.ModuleName, proposalTallyVotesInvariant, msg), broken
 	}
 }
 
@@ -165,6 +177,92 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 			broken = true
 			msg += "group's TotalWeight must be equal to the sum of its members' weights\n"
 			break
+		}
+	}
+	return msg, broken, err
+}
+
+func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, voteByProposalIndex orm.UInt64Index) (string, bool, error) {
+
+	var msg string
+	var broken bool
+
+	var proposal group.Proposal
+	var vote group.Vote
+
+	proposalIt, err := proposalTable.PrefixScan(ctx, 1, math.MaxUint64)
+	if err != nil {
+		return msg, broken, err
+	}
+
+	var voteCount int64
+	var yesCount int64
+	var noCount int64
+	var abstainCount int64
+	var vetoCount int64
+
+	for {
+		_, err := proposalIt.LoadNext(&proposal)
+		if orm.ErrIteratorDone.Is(err) {
+			break
+		}
+		voteIt, err := voteByProposalIndex.Get(ctx, proposal.ProposalId)
+		if err != nil {
+			return msg, broken, err
+		}
+		defer voteIt.Close()
+
+		for {
+			_, err = voteIt.LoadNext(&vote)
+			if orm.ErrIteratorDone.Is(err) {
+				break
+			}
+			voteChoice := vote.GetChoice()
+			if voteChoice != 0 {
+				voteCount += 1
+			}
+			if voteChoice == group.Choice_CHOICE_YES {
+				yesCount += 1
+			} else if voteChoice == group.Choice_CHOICE_NO {
+				noCount += 1
+			} else if voteChoice == group.Choice_CHOICE_ABSTAIN {
+				abstainCount += 1
+			} else if voteChoice == group.Choice_CHOICE_VETO {
+				vetoCount += 1
+			}
+		}
+
+		proposalTotalVotes, err := proposal.VoteState.TotalCounts()
+		if err != nil {
+			return msg, broken, err
+		}
+
+		if voteCount != proposalTotalVotes.Coeff.Int64() {
+			broken = true
+			msg += "proposal Tally must be equal to the sum of votes\n"
+			return msg, broken, err
+		} else {
+			proposalYesCount, err := proposal.VoteState.GetYesCount()
+			if err != nil {
+				return msg, broken, err
+			}
+			proposalNoCount, err := proposal.VoteState.GetNoCount()
+			if err != nil {
+				return msg, broken, err
+			}
+			proposalAbstainCount, err := proposal.VoteState.GetAbstainCount()
+			if err != nil {
+				return msg, broken, err
+			}
+			proposalVetoCount, err := proposal.VoteState.GetVetoCount()
+			if err != nil {
+				return msg, broken, err
+			}
+			if (proposalYesCount.Coeff.Int64() != yesCount) || (proposalNoCount.Coeff.Int64() != noCount) || (proposalAbstainCount.Coeff.Int64() != abstainCount) || (proposalVetoCount.Coeff.Int64() != vetoCount) {
+				broken = true
+				msg += "proposal Tally must be equal to the sum of votes\n"
+				return msg, broken, err
+			}
 		}
 	}
 	return msg, broken, err
