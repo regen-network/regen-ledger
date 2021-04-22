@@ -220,13 +220,14 @@ func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 			if voteChoice != 0 {
 				voteCount++
 			}
-			if voteChoice == group.Choice_CHOICE_YES {
+			switch voteChoice {
+			case group.Choice_CHOICE_YES:
 				yesCount++
-			} else if voteChoice == group.Choice_CHOICE_NO {
+			case group.Choice_CHOICE_NO:
 				noCount++
-			} else if voteChoice == group.Choice_CHOICE_ABSTAIN {
+			case group.Choice_CHOICE_ABSTAIN:
 				abstainCount++
-			} else if voteChoice == group.Choice_CHOICE_VETO {
+			case group.Choice_CHOICE_VETO:
 				vetoCount++
 			}
 		}
@@ -259,7 +260,7 @@ func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 		}
 		if (proposalYesCount.Coeff.Int64() != yesCount) || (proposalNoCount.Coeff.Int64() != noCount) || (proposalAbstainCount.Coeff.Int64() != abstainCount) || (proposalVetoCount.Coeff.Int64() != vetoCount) {
 			broken = true
-			msg += "proposal Tally must be equal to the sum of votes\n"
+			msg += "proposal Tally type must correspond to the Vote type\n"
 			return msg, broken, err
 		}
 	}

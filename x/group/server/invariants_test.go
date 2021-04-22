@@ -414,7 +414,6 @@ func TestProposalTallyInvariant(t *testing.T) {
 			},
 			expErr: false,
 		},
-
 		"proposal Tally must be equal to the sum of votes": {
 			proposalReq: []*group.Proposal{
 				{
@@ -445,6 +444,53 @@ func TestProposalTallyInvariant(t *testing.T) {
 					ProposalId: 1,
 					Voter:      addr2.String(),
 					Choice:     group.Choice_CHOICE_NO,
+					SubmittedAt: gogotypes.Timestamp{
+						Seconds: timestamppb.Now().Seconds,
+						Nanos:   timestamppb.Now().Nanos,
+					},
+				},
+			},
+			expErr: true,
+		},
+		"proposal Tally type must correspond to the Vote type": {
+			proposalReq: []*group.Proposal{
+				{
+					ProposalId:          1,
+					Address:             addr1.String(),
+					Proposers:           []string{addr1.String()},
+					SubmittedAt:         *curBlockTime,
+					GroupVersion:        1,
+					GroupAccountVersion: 1,
+					Status:              group.ProposalStatusSubmitted,
+					Result:              group.ProposalResultUnfinalized,
+					VoteState:           group.Tally{YesCount: "1", NoCount: "1", AbstainCount: "1", VetoCount: "0"},
+					Timeout:             gogotypes.Timestamp{Seconds: 600},
+					ExecutorResult:      group.ProposalExecutorResultNotRun,
+				},
+			},
+			voteReq: []*group.Vote{
+				{
+					ProposalId: 1,
+					Voter:      addr1.String(),
+					Choice:     group.Choice_CHOICE_YES,
+					SubmittedAt: gogotypes.Timestamp{
+						Seconds: timestamppb.Now().Seconds,
+						Nanos:   timestamppb.Now().Nanos,
+					},
+				},
+				{
+					ProposalId: 1,
+					Voter:      addr2.String(),
+					Choice:     group.Choice_CHOICE_NO,
+					SubmittedAt: gogotypes.Timestamp{
+						Seconds: timestamppb.Now().Seconds,
+						Nanos:   timestamppb.Now().Nanos,
+					},
+				},
+				{
+					ProposalId: 1,
+					Voter:      addr3.String(),
+					Choice:     group.Choice_CHOICE_VETO,
 					SubmittedAt: gogotypes.Timestamp{
 						Seconds: timestamppb.Now().Seconds,
 						Nanos:   timestamppb.Now().Nanos,
