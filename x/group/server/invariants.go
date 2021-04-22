@@ -195,11 +195,12 @@ func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 		return msg, broken, err
 	}
 
-	var voteCount int64
-	var yesCount int64
-	var noCount int64
-	var abstainCount int64
-	var vetoCount int64
+	var totalVoteCount int64
+	var totalYesCount int64
+	var totalNoCount int64
+	var totalAbstainCount int64
+	var totalVetoCount int64
+
 	for {
 		_, err := proposalIt.LoadNext(&proposal)
 		if orm.ErrIteratorDone.Is(err) {
@@ -218,17 +219,17 @@ func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 			}
 			voteChoice := vote.GetChoice()
 			if voteChoice != 0 {
-				voteCount++
+				totalVoteCount++
 			}
 			switch voteChoice {
 			case group.Choice_CHOICE_YES:
-				yesCount++
+				totalYesCount++
 			case group.Choice_CHOICE_NO:
-				noCount++
+				totalNoCount++
 			case group.Choice_CHOICE_ABSTAIN:
-				abstainCount++
+				totalAbstainCount++
 			case group.Choice_CHOICE_VETO:
-				vetoCount++
+				totalVetoCount++
 			}
 		}
 
@@ -237,7 +238,7 @@ func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 			return msg, broken, err
 		}
 
-		if voteCount != proposalTotalVotes.Coeff.Int64() {
+		if totalVoteCount != proposalTotalVotes.Coeff.Int64() {
 			broken = true
 			msg += "proposal Tally must be equal to the sum of votes\n"
 			return msg, broken, err
@@ -258,7 +259,7 @@ func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 		if err != nil {
 			return msg, broken, err
 		}
-		if (proposalYesCount.Coeff.Int64() != yesCount) || (proposalNoCount.Coeff.Int64() != noCount) || (proposalAbstainCount.Coeff.Int64() != abstainCount) || (proposalVetoCount.Coeff.Int64() != vetoCount) {
+		if (proposalYesCount.Coeff.Int64() != totalYesCount) || (proposalNoCount.Coeff.Int64() != totalNoCount) || (proposalAbstainCount.Coeff.Int64() != totalAbstainCount) || (proposalVetoCount.Coeff.Int64() != totalVetoCount) {
 			broken = true
 			msg += "proposal Tally type must correspond to the Vote type\n"
 			return msg, broken, err
