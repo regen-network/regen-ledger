@@ -175,6 +175,8 @@ github.com/envoyproxy/protoc-gen-validate v0.3.0-java h1:bV5JGEB1ouEzZa0hgVDFFiC
 github.com/envoyproxy/protoc-gen-validate v0.3.0-java/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
 github.com/envoyproxy/protoc-gen-validate v0.5.1 h1:MkpAQXrYF26uVnlFruA05G0xmM5rfE0OZDZPGY/UABU=
 github.com/envoyproxy/protoc-gen-validate v0.5.1/go.mod h1:xL5IroIBOR+aTp0IZk48epGwBV3+LcuaosPL0pr0hE0=
+github.com/envoyproxy/protoc-gen-validate v0.6.0 h1:frdmK9OVubC7yO3C7DWPx0zrJWtTfEDcvAETaiMZYv4=
+github.com/envoyproxy/protoc-gen-validate v0.6.0/go.mod h1:txg5va2Qkip90uYoSKH+nkAAmXrb2j3iq4FLwdrCbXQ=
 github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 h1:0JZ+dUmQeA8IIVUMzysrX4/AKuQwWhV2dYQuPZdvdSQ=
 github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51/go.mod h1:Yg+htXGokKKdzcwhuNDwVvN+uBxDGXJ7G/VN1d8fa64=
 github.com/facebookgo/stack v0.0.0-20160209184415-751773369052 h1:JWuenKqqX8nojtoVVWjGfOF9635RETekkoH6Cc9SX0A=
@@ -931,6 +933,8 @@ google.golang.org/genproto v0.0.0-20210406143921-e86de6bf7a46 h1:f4STrQZf8jaowsi
 google.golang.org/genproto v0.0.0-20210406143921-e86de6bf7a46/go.mod h1:P3QM42oQyzQSnHPnZ/vqoCdDmzH28fzWByN9asMeM8A=
 google.golang.org/genproto v0.0.0-20210421164718-3947dc264843 h1:H1DhP53WMRaBnh6sOAENBSST/qd4ikaYYKWRsOlV+gI=
 google.golang.org/genproto v0.0.0-20210421164718-3947dc264843/go.mod h1:P3QM42oQyzQSnHPnZ/vqoCdDmzH28fzWByN9asMeM8A=
+google.golang.org/genproto v0.0.0-20210423144448-3a41ef94ed2b h1:Rt15zyw7G2yfLqmsjEa1xICjWEw+topkn7vEAR6bVPk=
+google.golang.org/genproto v0.0.0-20210423144448-3a41ef94ed2b/go.mod h1:P3QM42oQyzQSnHPnZ/vqoCdDmzH28fzWByN9asMeM8A=
 google.golang.org/grpc v1.33.2 h1:EQyQC3sa8M+p6Ulc8yy9SWSS2GVwyRc83gAbG8lrl4o=
 google.golang.org/grpc v1.33.2/go.mod h1:JMHMWHQWaTccqQQlmk3MJZS+GWXOdAesneDmEnv2fbc=
 google.golang.org/protobuf v0.0.0-20200109180630-ec00e32a8dfd/go.mod h1:DFci5gLYBciE7Vtevhsrf46CRTquxDuWsQurQQe4oz8=

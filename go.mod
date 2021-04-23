@@ -12,7 +12,7 @@ require (
 	github.com/cockroachdb/apd/v2 v2.0.2 // indirect
 	github.com/cosmos/cosmos-sdk v0.42.0-rc0
 	github.com/enigmampc/btcutil v1.0.3-0.20200723161021-e2fb6adb2a25
-	github.com/envoyproxy/protoc-gen-validate v0.5.1 // indirect
+	github.com/envoyproxy/protoc-gen-validate v0.6.0 // indirect
 	github.com/gogo/protobuf v1.3.3
 	github.com/google/uuid v1.2.0 // indirect
 	github.com/gorilla/mux v1.8.0
@@ -35,7 +35,7 @@ require (
 	github.com/tendermint/tendermint v0.34.9
 	github.com/tendermint/tm-db v0.6.4
 	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b // indirect
-	google.golang.org/genproto v0.0.0-20210421164718-3947dc264843 // indirect
+	google.golang.org/genproto v0.0.0-20210423144448-3a41ef94ed2b // indirect
 	google.golang.org/grpc v1.36.1
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
@@ -45,3 +45,11 @@ replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.4
 
 replace github.com/cosmos/cosmos-sdk => github.com/regen-network/cosmos-sdk v0.42.4-regen-1
+
+replace github.com/regen-network/regen-ledger/types => ./types
+
+replace github.com/regen-network/regen-ledger/x/data => ./x/data
+
+replace github.com/regen-network/regen-ledger/x/ecocredit => ./x/ecocredit
+
+replace github.com/regen-network/regen-ledger/x/group => ./x/group

@@ -8,7 +8,6 @@ require (
 	github.com/gogo/protobuf v1.3.3
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/lib/pq v1.10.0 // indirect
-	github.com/regen-network/regen-ledger/types/testutil v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.1.3
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.10
@@ -20,4 +19,3 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 
 replace github.com/regen-network/regen-ledger => ../
 
-replace github.com/regen-network/regen-ledger/types/testutil => ../types/testutil
