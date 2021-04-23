@@ -1,23 +1,19 @@
-// +build norace
-
-package network_test
+package network
 
 import (
-	"testing"
 	"time"
 
 	"github.com/stretchr/testify/suite"
-	"github.com/regen-network/regen-ledger/types/testutil/network"
 )
 
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	cfg network.Config
-	network *network.Network
+	cfg Config
+	network *Network
 }
 
-func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
+func NewIntegrationTestSuite(cfg Config) *IntegrationTestSuite {
 	return &IntegrationTestSuite{cfg : cfg}
 }
 
@@ -25,7 +21,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
 	// how to initiate config here?
-	s.network = network.New(s.T(), s.cfg)
+	s.network = New(s.T(), s.cfg)
 	s.Require().NotNil(s.network)
 
 	_, err := s.network.WaitForHeight(1)

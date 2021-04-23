@@ -17,8 +17,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/regen-network/regen-ledger/app"
-	testutil "github.com/regen-network/regen-ledger/types/testutil/network_test"
-	group "github.com/regen-network/regen-ledger/x/data/group/client/testsuite"
+	group "github.com/regen-network/regen-ledger/x/group/client/testsuite"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	dbm "github.com/tendermint/tm-db"
 )
@@ -67,6 +66,6 @@ func TestModules(t *testing.T) {
 
 	//suite.Run(t, data.NewIntegrationTestSuite(cfg))
 	suite.Run(t, group.NewIntegrationTestSuite(cfg))
-	suite.Run(t, testutil.NewIntegrationTestSuite(cfg))
+	suite.Run(t, network.NewIntegrationTestSuite(cfg))
 
 }
