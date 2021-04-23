@@ -3,13 +3,12 @@ package testsuite
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"sort"
 	"strings"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/codec"
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -19,7 +18,6 @@ import (
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/regen-network/regen-ledger/app"
 	"github.com/regen-network/regen-ledger/testutil"
 	"github.com/regen-network/regen-ledger/testutil/testdata"
 	"github.com/regen-network/regen-ledger/types"
@@ -31,7 +29,6 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	app            *app.RegenApp
 	fixtureFactory *servermodule.FixtureFactory
 	fixture        testutil.Fixture
 
@@ -60,8 +57,9 @@ const (
 )
 
 var (
-	minterAcc = authtypes.NewEmptyModuleAccount(authtypes.Minter, authtypes.Minter)
 	bankAcc   = authtypes.NewEmptyModuleAccount(bankDenom)
+	newAcc    = authtypes.NewModuleAccount(bankAcc.BaseAccount, authtypes.ModuleName, authtypes.ModuleName)
+	minterAcc = authtypes.NewEmptyModuleAccount(authtypes.Minter, authtypes.Minter)
 )
 
 func NewIntegrationTestSuite(fixtureFactory *servermodule.FixtureFactory, accountKeeper authkeeper.AccountKeeper, bankKeeper bankkeeper.BaseKeeper) *IntegrationTestSuite {
@@ -77,10 +75,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.blockTime = time.Now().UTC()
 
-	interfaceRegistry := codectypes.NewInterfaceRegistry()
-	cdc := codec.NewProtoCodec(interfaceRegistry)
-	key := sdk.NewKVStoreKey(group.ModuleName)
-	// var app app.RegenApp
+	// interfaceRegistry := codectypes.NewInterfaceRegistry()
+	// cdc := codec.NewProtoCodec(interfaceRegistry)
+	// key := sdk.NewKVStoreKey(group.ModuleName)
 
 	// TODO clean up once types.Context merged upstream into sdk.Context
 	sdkCtx := s.fixture.Context().(types.Context).WithBlockTime(s.blockTime)
@@ -88,25 +85,36 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.ctx = types.Context{Context: s.sdkCtx}
 	s.genesisCtx = types.Context{Context: sdkCtx}
 
-	s.accountKeeper.SetParams(sdkCtx, authtypes.DefaultParams())
-	s.bankKeeper.SetParams(sdkCtx, banktypes.DefaultParams())
+	// s.accountKeeper.SetParams(sdkCtx, authtypes.DefaultParams())
+	// s.bankKeeper.SetParams(sdkCtx, banktypes.DefaultParams())
 
 	// totalSupply := banktypes.NewSupply(sdk.NewCoins(sdk.NewInt64Coin("test", 400000000)))
 	totalSupply := sdk.NewCoins(sdk.NewInt64Coin("test", 400000000))
 
-	// s.accountKeeper.SetModuleAccount(s.sdkCtx, minterAcc)
+	s.accountKeeper.SetModuleAccount(s.sdkCtx, minterAcc)
+	fmt.Println(minterAcc)
+	fmt.Println(newAcc)
+	fmt.Println(minterAcc.GetName())
+	fmt.Println(s.accountKeeper.GetModuleAccount(s.sdkCtx, minterAcc.GetName()))
+	// fmt.Println(s.)
+	panic("")
+	// s.accountKeeper.SetModuleAccount(s.sdkCtx, newAcc)
+	// fmt.Println(minterAcc)
+	// panic("")
 	// s.accountKeeper.SetModuleAccount(s.sdkCtx, bankAcc)
-	// a := s.accountKeeper.GetModuleAccount(s.sdkCtx, minterAcc.Name)
-	maccPerms := app.GetMaccPerms()
-	maccPerms[bankDenom] = []string{bankDenom}
+	// a := s.accountKeeper.GetModuleAccount(s.sdkCtx, banktypes.ModuleName)
+	// fmt.Println(a)
+	// panic("")
+	// maccPerms := app.GetMaccPerms()
+	// maccPerms[bankDenom] = []string{bankDenom}
 
-	s.app.AccountKeeper = authkeeper.NewAccountKeeper(
-		cdc, key, s.app.GetSubspace(authtypes.ModuleName), authtypes.ProtoBaseAccount, maccPerms,
-	)
-	s.app.BankKeeper = bankkeeper.NewBaseKeeper(
-		cdc, key, s.app.AccountKeeper, s.app.GetSubspace(banktypes.ModuleName), nil,
-	)
-	s.Require().NoError(s.app.BankKeeper.MintCoins(s.sdkCtx, bankDenom, totalSupply))
+	// s.app.AccountKeeper = authkeeper.NewAccountKeeper(
+	// 	cdc, key, s.app.GetSubspace(authtypes.ModuleName), authtypes.ProtoBaseAccount, maccPerms,
+	// )
+	// s.app.BankKeeper = bankkeeper.NewBaseKeeper(
+	// 	cdc, key, s.app.AccountKeeper, s.app.GetSubspace(banktypes.ModuleName), nil,
+	// )
+	s.Require().NoError(s.bankKeeper.MintCoins(s.sdkCtx, bankAcc.GetName(), totalSupply))
 	// fmt.Println(s.accountKeeper.SetModuleAccount(s.sdkCtx, minterAcc))
 	// s.Require().NoError(s.bankKeeper.MintCoins(sdkCtx, minterAcc.GetName(), totalSupply))
 	// s.bankKeeper.SetSupply(sdkCtx, totalSupply)
