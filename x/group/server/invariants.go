@@ -12,15 +12,15 @@ import (
 )
 
 const (
-	votesInvariant              = "Tally-Votes"
-	weightInvariant             = "Group-TotalWeight"
-	proposalTallyVotesInvariant = "Tally-Proposal-Votes-With-Sum-Of-Votes"
+	votesInvariant    = "Tally-Votes"
+	weightInvariant   = "Group-TotalWeight"
+	votesSumInvariant = "Tally-Votes-Sum"
 )
 
 func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
 	ir.RegisterRoute(group.ModuleName, votesInvariant, s.tallyVotesInvariant())
 	ir.RegisterRoute(group.ModuleName, weightInvariant, s.groupTotalWeightInvariant())
-	ir.RegisterRoute(group.ModuleName, proposalTallyVotesInvariant, s.proposalTallyInvariant())
+	ir.RegisterRoute(group.ModuleName, votesSumInvariant, s.proposalTallyInvariant())
 }
 
 func (s serverImpl) tallyVotesInvariant() sdk.Invariant {
@@ -54,7 +54,7 @@ func (s serverImpl) proposalTallyInvariant() sdk.Invariant {
 		if err != nil {
 			panic(err)
 		}
-		return sdk.FormatInvariant(group.ModuleName, proposalTallyVotesInvariant, msg), broken
+		return sdk.FormatInvariant(group.ModuleName, votesSumInvariant, msg), broken
 	}
 }
 
@@ -194,6 +194,7 @@ func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 	if err != nil {
 		return msg, broken, err
 	}
+	defer proposalIt.Close()
 
 	var totalVoteCount int64
 	var totalYesCount int64
@@ -218,7 +219,7 @@ func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 				break
 			}
 			voteChoice := vote.GetChoice()
-			if voteChoice != 0 {
+			if voteChoice != group.Choice_CHOICE_UNSPECIFIED {
 				totalVoteCount++
 			}
 			switch voteChoice {
