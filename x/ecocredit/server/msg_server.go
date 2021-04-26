@@ -11,7 +11,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/util"
+	"github.com/regen-network/regen-ledger/x/ecocredit/util"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 

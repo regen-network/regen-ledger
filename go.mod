@@ -4,9 +4,7 @@ go 1.15
 
 require (
 	github.com/CosmWasm/wasmd v0.15.0
-	github.com/btcsuite/btcutil v1.0.2
 	github.com/cosmos/cosmos-sdk v0.42.4
-	github.com/enigmampc/btcutil v1.0.3-0.20200723161021-e2fb6adb2a25
 	github.com/gogo/protobuf v1.3.3
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
