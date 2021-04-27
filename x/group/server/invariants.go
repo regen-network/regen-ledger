@@ -219,22 +219,26 @@ func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 	if err != nil {
 		return msg, broken, err
 	}
-
 	_, err = orm.ReadAll(groupAccIt, &groupAcc)
-	fmt.Println(groupAcc)
 	fmt.Println(err)
+	fmt.Println(len(groupAcc))
+	fmt.Println(len(groupMember))
 	panic("")
+	if err != nil {
+		return msg, broken, err
+	}
+
+	// address, err := sdk.AccAddressFromBech32(proposal[0].Address)
+	// if err != nil {
+	// 	return msg, broken, sdkerrors.Wrap(err, "group account")
+	// }
+
+	// err = groupAccountTable.GetOne(ctx, address.Bytes(), &groupAcc)
+	// // fmt.Println(err)
+	// // panic("")
 	// if err != nil {
 	// 	return msg, broken, err
 	// }
-
-	fmt.Println(proposal)
-	fmt.Println("====================")
-	fmt.Println(groupMember)
-	// fmt.Println("====================")
-	// fmt.Println(groupAcc)
-	panic("")
-
 	return msg, broken, err
 }
 

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -455,23 +454,15 @@ func TestProposalTallyInvariant(t *testing.T) {
 			require.NoError(t, err)
 		}
 
-		fmt.Println(groupAcc[0])
 		for i := 0; i < len(groupAcc); i++ {
 			err := groupAcc[i].SetDecisionPolicy(spec.policy)
 			require.NoError(t, err)
 		}
 
-		fmt.Println(groupAcc[0])
-		panic("")
 		for i := 0; i < len(groupAcc); i++ {
 			err = groupAccountTable.Create(cacheCurCtx, groupAcc[i])
 			require.NoError(t, err)
 		}
-
-		fmt.Println(votes[0])
-		fmt.Println(spec.policy)
-		fmt.Println(groupAcc[0])
-		panic("")
 
 		_, broken, _ := proposalTallyInvariant(cacheCurCtx, proposalTable, voteByProposalIndex, groupMemberTable, groupAccountTable)
 		require.Equal(t, spec.expErr, broken)
