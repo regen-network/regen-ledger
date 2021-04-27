@@ -1,20 +1,19 @@
 package simulation
 
 import (
+	"fmt"
 	"math/rand"
 	"strings"
-
-	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	gogotypes "github.com/gogo/protobuf/types"
 
+	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	gogotypes "github.com/gogo/protobuf/types"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/exported"
@@ -178,7 +177,7 @@ func WeightedOperations(
 func SimulateMsgCreateGroup(ak exported.AccountKeeper, bk exported.BankKeeper) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		acc := accounts[0]
+		acc, _ := simtypes.RandomAcc(r, accounts)
 		account := ak.GetAccount(ctx, acc.Address)
 		accAddr := acc.Address.String()
 

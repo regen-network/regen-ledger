@@ -31,7 +31,7 @@ func getGroups(r *rand.Rand, accounts []simtypes.Account) []*group.GroupInfo {
 			Admin:       acc.Address.String(),
 			Metadata:    []byte(simtypes.RandStringOfLength(r, 10)),
 			Version:     1,
-			TotalWeight: "30",
+			TotalWeight: "10",
 		}
 	}
 	return groups
