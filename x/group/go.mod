@@ -18,8 +18,8 @@ require (
 	google.golang.org/grpc v1.37.0
 )
 
+replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+
 replace github.com/regen-network/regen-ledger/orm => ../../orm
 
 replace github.com/regen-network/regen-ledger/types => ../../types
-
-replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1

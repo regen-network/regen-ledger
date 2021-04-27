@@ -3,8 +3,6 @@ package testsuite
 import (
 	"context"
 
-	//"github.com/regen-network/regen-ledger/types/testutil/network"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 

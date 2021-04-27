@@ -20,7 +20,6 @@ func NewIntegrationTestSuite(cfg Config) *IntegrationTestSuite {
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	// how to initiate config here?
 	s.network = New(s.T(), s.cfg)
 	s.Require().NotNil(s.network)
 

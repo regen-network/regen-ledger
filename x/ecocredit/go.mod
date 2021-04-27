@@ -19,8 +19,8 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 )
 
+replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
+
 replace github.com/regen-network/regen-ledger/orm => ../../orm
 
 replace github.com/regen-network/regen-ledger/types => ../../types
-
-replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
