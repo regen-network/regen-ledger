@@ -356,6 +356,14 @@ func TestProposalTallyInvariant(t *testing.T) {
 		group := value.(*group.GroupAccountInfo).GroupId
 		return []uint64{group}, nil
 	})
+	groupAccountByAddressIndex := orm.NewIndex(groupAccountTableBuilder, GroupAccountByAddressIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
+		account := value.(*group.GroupAccountInfo).Address
+		addr, err := sdk.AccAddressFromBech32(account)
+		if err != nil {
+			return nil, err
+		}
+		return []orm.RowID{addr.Bytes()}, nil
+	})
 	groupAccountTable := groupAccountTableBuilder.Build()
 
 	// Group Member Table
@@ -530,7 +538,7 @@ func TestProposalTallyInvariant(t *testing.T) {
 		}
 
 		// _, broken, _ := proposalTallyInvariant(cacheCurCtx, proposalTable, groupAccountByGroupIndex, groupMemberByGroupIndex, voteByProposalIndex, proposalByGroupAccountIndex, groupMemberTable, groupAccountTable, groupTable, voteByVoterIndex)
-		_, broken, _ := proposalTallyInvariant(cacheCurCtx, groupAccountByGroupIndex, groupMemberByGroupIndex, proposalByGroupAccountIndex, groupTable)
+		_, broken, _ := proposalTallyInvariant(cacheCurCtx, proposalTable, groupAccountByAddressIndex, groupAccountByGroupIndex, groupMemberByGroupIndex, proposalByGroupAccountIndex, groupTable)
 		require.Equal(t, spec.expErr, broken)
 
 	}
