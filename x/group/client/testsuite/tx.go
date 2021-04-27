@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"testing"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -1565,8 +1564,4 @@ func getTxSendFileName(s *IntegrationTestSuite, from string, to string) string {
 		from, to, s.cfg.BondDenom,
 	)
 	return testutil.WriteToNewTempFile(s.T(), tx).Name()
-}
-
-func TestIntegrationTestSuite(t *testing.T) {
-	suite.Run(t, new(IntegrationTestSuite))
 }
