@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/cockroachdb/apd/v2"
@@ -52,8 +51,7 @@ func (s serverImpl) groupTotalWeightInvariant() sdk.Invariant {
 func (s serverImpl) proposalTallyInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		// msg, broken, err := proposalTallyInvariant(ctx, s.proposalTable, s.voteByProposalIndex)
-		msg, broken, err := proposalTallyInvariant(ctx, s.proposalTable, s.voteByProposalIndex, s.groupMemberTable, s.groupAccountTable)
-
+		msg, broken, err := proposalTallyInvariant(ctx, s.groupAccountByGroupIndex, s.groupMemberByGroupIndex, s.proposalByGroupAccountIndex, s.groupTable)
 		if err != nil {
 			panic(err)
 		}
@@ -185,60 +183,83 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 	return msg, broken, err
 }
 
-func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, voteByProposalIndex orm.UInt64Index, groupMemberTable orm.PrimaryKeyTable, groupAccountTable orm.PrimaryKeyTable) (string, bool, error) {
-
+// func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, groupAccountByGroupIndex orm.UInt64Index, groupMemberByGroupIndex orm.UInt64Index, voteByProposalIndex orm.UInt64Index, proposalByGroupAccountIndex orm.Index, groupMemberTable orm.PrimaryKeyTable, groupAccountTable orm.PrimaryKeyTable, groupTable orm.Table, voteByVoterIndex orm.Index) (string, bool, error) {
+func proposalTallyInvariant(ctx sdk.Context, groupAccountByGroupIndex orm.UInt64Index, groupMemberByGroupIndex orm.UInt64Index, proposalByGroupAccountIndex orm.Index, groupTable orm.Table) (string, bool, error) {
 	var msg string
 	var broken bool
 
-	var proposal []group.Proposal
+	var groupInfo group.GroupInfo
+	var proposal group.Proposal
 	// var vote group.Vote
-	var groupMember []group.GroupMember
-	var groupAcc []group.GroupAccountInfo
+	var groupMember group.GroupMember
+	var groupAcc group.GroupAccountInfo
 
-	proposalIt, err := proposalTable.PrefixScan(ctx, 1, math.MaxUint64)
+	groupIt, err := groupTable.PrefixScan(ctx, nil, nil)
 	if err != nil {
 		return msg, broken, err
 	}
+	defer groupIt.Close()
 
-	_, err = orm.ReadAll(proposalIt, &proposal)
-	if err != nil {
-		return msg, broken, err
-	}
-
-	groupMemIt, err := groupMemberTable.PrefixScan(ctx, nil, nil)
-	if err != nil {
-		return msg, broken, err
-	}
-
-	_, err = orm.ReadAll(groupMemIt, &groupMember)
-	if err != nil {
-		return msg, broken, err
-	}
-
-	groupAccIt, err := groupAccountTable.PrefixScan(ctx, nil, nil)
-	if err != nil {
-		return msg, broken, err
-	}
-	_, err = orm.ReadAll(groupAccIt, &groupAcc)
-	fmt.Println(err)
-	fmt.Println(len(groupAcc))
-	fmt.Println(len(groupMember))
-	panic("")
-	if err != nil {
-		return msg, broken, err
-	}
-
-	// address, err := sdk.AccAddressFromBech32(proposal[0].Address)
-	// if err != nil {
-	// 	return msg, broken, sdkerrors.Wrap(err, "group account")
-	// }
-
-	// err = groupAccountTable.GetOne(ctx, address.Bytes(), &groupAcc)
-	// // fmt.Println(err)
-	// // panic("")
+	// proposalIt, err := proposalTable.PrefixScan(ctx, 1, math.MaxUint64)
 	// if err != nil {
 	// 	return msg, broken, err
 	// }
+	// _, err = orm.ReadAll(proposalIt, &proposal)
+	// if err != nil {
+	// 	return msg, broken, err
+	// }
+
+	var membersWeight *apd.Decimal = apd.New(0, 0)
+	for {
+		_, err := groupIt.LoadNext(&groupInfo)
+		if orm.ErrIteratorDone.Is(err) {
+			break
+		}
+		groupAccIt, err := groupAccountByGroupIndex.Get(ctx, groupInfo.GroupId)
+		if err != nil {
+			return msg, broken, err
+		}
+
+		for {
+			_, err := groupAccIt.LoadNext(&groupAcc)
+			if orm.ErrIteratorDone.Is(err) {
+				break
+			}
+
+			proposalIt, err := proposalByGroupAccountIndex.Get(ctx, []byte(groupAcc.Address))
+			if err != nil {
+				return msg, broken, err
+			}
+
+			for {
+				_, err := proposalIt.LoadNext(&proposal)
+				if orm.ErrIteratorDone.Is(err) {
+					break
+				}
+			}
+			groupMemIt, err := groupMemberByGroupIndex.Get(ctx, groupAcc.GroupId)
+			if err != nil {
+				return msg, broken, err
+			}
+
+			for {
+				_, err := groupMemIt.LoadNext(&groupMember)
+				if orm.ErrIteratorDone.Is(err) {
+					break
+				}
+				curMemWeight, err := regenMath.ParseNonNegativeDecimal(groupMember.GetMember().GetWeight())
+				if err != nil {
+					return msg, broken, err
+				}
+				err = regenMath.Add(membersWeight, membersWeight, curMemWeight)
+				if err != nil {
+					return msg, broken, err
+				}
+			}
+
+		}
+
+	}
 	return msg, broken, err
 }
 
