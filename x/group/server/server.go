@@ -21,11 +21,10 @@ const (
 	GroupMemberByMemberIndexPrefix byte = 0x12
 
 	// Group Account Table
-	GroupAccountTablePrefix          byte = 0x20
-	GroupAccountTableSeqPrefix       byte = 0x21
-	GroupAccountByGroupIndexPrefix   byte = 0x22
-	GroupAccountByAdminIndexPrefix   byte = 0x23
-	GroupAccountByAddressIndexPrefix byte = 0x24
+	GroupAccountTablePrefix        byte = 0x20
+	GroupAccountTableSeqPrefix     byte = 0x21
+	GroupAccountByGroupIndexPrefix byte = 0x22
+	GroupAccountByAdminIndexPrefix byte = 0x23
 
 	// Proposal Table
 	ProposalTablePrefix               byte = 0x30
@@ -56,11 +55,10 @@ type serverImpl struct {
 	groupMemberByMemberIndex orm.Index
 
 	// Group Account Table
-	groupAccountSeq            orm.Sequence
-	groupAccountTable          orm.PrimaryKeyTable
-	groupAccountByGroupIndex   orm.UInt64Index
-	groupAccountByAdminIndex   orm.Index
-	groupAccountByAddressIndex orm.Index
+	groupAccountSeq          orm.Sequence
+	groupAccountTable        orm.PrimaryKeyTable
+	groupAccountByGroupIndex orm.UInt64Index
+	groupAccountByAdminIndex orm.Index
 
 	// Proposal Table
 	proposalTable               orm.AutoUInt64Table
@@ -114,14 +112,6 @@ func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper
 	s.groupAccountByAdminIndex = orm.NewIndex(groupAccountTableBuilder, GroupAccountByAdminIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
 		admin := value.(*group.GroupAccountInfo).Admin
 		addr, err := sdk.AccAddressFromBech32(admin)
-		if err != nil {
-			return nil, err
-		}
-		return []orm.RowID{addr.Bytes()}, nil
-	})
-	s.groupAccountByAddressIndex = orm.NewIndex(groupAccountTableBuilder, GroupAccountByAddressIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
-		account := value.(*group.GroupAccountInfo).Address
-		addr, err := sdk.AccAddressFromBech32(account)
 		if err != nil {
 			return nil, err
 		}
