@@ -342,7 +342,7 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 	}
 }
 
-func TestProposalTallyInvariant(t *testing.T) {
+func TestTallyVotesSumInvariant(t *testing.T) {
 	curCtx, cdc, key := getCtxCodecKey(t)
 
 	// Group Account Table
@@ -398,14 +398,14 @@ func TestProposalTallyInvariant(t *testing.T) {
 					GroupId: 1,
 					Member: &group.Member{
 						Address: addr1.String(),
-						Weight:  "2",
+						Weight:  "4",
 					},
 				},
 				{
 					GroupId: 1,
 					Member: &group.Member{
 						Address: addr2.String(),
-						Weight:  "1",
+						Weight:  "3",
 					},
 				},
 			},
@@ -419,7 +419,7 @@ func TestProposalTallyInvariant(t *testing.T) {
 					GroupAccountVersion: 1,
 					Status:              group.ProposalStatusSubmitted,
 					Result:              group.ProposalResultUnfinalized,
-					VoteState:           group.Tally{YesCount: "2", NoCount: "1", AbstainCount: "0", VetoCount: "0"},
+					VoteState:           group.Tally{YesCount: "4", NoCount: "3", AbstainCount: "0", VetoCount: "0"},
 					Timeout:             gogotypes.Timestamp{Seconds: 600},
 					ExecutorResult:      group.ProposalExecutorResultNotRun,
 				},
@@ -446,57 +446,7 @@ func TestProposalTallyInvariant(t *testing.T) {
 			},
 			expErr: false,
 		},
-		"proposal tally must correspond to the sum of votes": {
-			groupAccReq: []*group.GroupAccountInfo{
-				{
-					Address: addr1.String(),
-					GroupId: 1,
-					Admin:   adminAddr.String(),
-					Version: 1,
-				},
-			},
-			policy: group.NewThresholdDecisionPolicy(
-				"1",
-				gogotypes.Duration{Seconds: 1},
-			),
-			membersReq: []*group.GroupMember{
-				{
-					GroupId: 1,
-					Member: &group.Member{
-						Address: addr1.String(),
-						Weight:  "2",
-					},
-				},
-			},
-			proposalReq: []*group.Proposal{
-				{
-					ProposalId:          1,
-					Address:             addr1.String(),
-					Proposers:           []string{addr1.String()},
-					SubmittedAt:         *curBlockTime,
-					GroupVersion:        1,
-					GroupAccountVersion: 1,
-					Status:              group.ProposalStatusSubmitted,
-					Result:              group.ProposalResultUnfinalized,
-					VoteState:           group.Tally{YesCount: "2", NoCount: "1", AbstainCount: "0", VetoCount: "0"},
-					Timeout:             gogotypes.Timestamp{Seconds: 600},
-					ExecutorResult:      group.ProposalExecutorResultNotRun,
-				},
-			},
-			voteReq: []*group.Vote{
-				{
-					ProposalId: 1,
-					Voter:      addr1.String(),
-					Choice:     group.Choice_CHOICE_YES,
-					SubmittedAt: gogotypes.Timestamp{
-						Seconds: timestamppb.Now().Seconds,
-						Nanos:   timestamppb.Now().Nanos,
-					},
-				},
-			},
-			expErr: true,
-		},
-		"group member's weight must be equal to the correspoding vote": {
+		"proposal tally must correspond to the sum of vote weights": {
 			groupAccReq: []*group.GroupAccountInfo{
 				{
 					Address: addr1.String(),
@@ -521,7 +471,7 @@ func TestProposalTallyInvariant(t *testing.T) {
 					GroupId: 1,
 					Member: &group.Member{
 						Address: addr2.String(),
-						Weight:  "1",
+						Weight:  "3",
 					},
 				},
 			},
@@ -535,7 +485,7 @@ func TestProposalTallyInvariant(t *testing.T) {
 					GroupAccountVersion: 1,
 					Status:              group.ProposalStatusSubmitted,
 					Result:              group.ProposalResultUnfinalized,
-					VoteState:           group.Tally{YesCount: "2", NoCount: "1", AbstainCount: "0", VetoCount: "0"},
+					VoteState:           group.Tally{YesCount: "6", NoCount: "0", AbstainCount: "0", VetoCount: "0"},
 					Timeout:             gogotypes.Timestamp{Seconds: 600},
 					ExecutorResult:      group.ProposalExecutorResultNotRun,
 				},
@@ -544,7 +494,7 @@ func TestProposalTallyInvariant(t *testing.T) {
 				{
 					ProposalId: 1,
 					Voter:      addr1.String(),
-					Choice:     group.Choice_CHOICE_NO,
+					Choice:     group.Choice_CHOICE_YES,
 					SubmittedAt: gogotypes.Timestamp{
 						Seconds: timestamppb.Now().Seconds,
 						Nanos:   timestamppb.Now().Nanos,
@@ -554,6 +504,72 @@ func TestProposalTallyInvariant(t *testing.T) {
 					ProposalId: 1,
 					Voter:      addr2.String(),
 					Choice:     group.Choice_CHOICE_YES,
+					SubmittedAt: gogotypes.Timestamp{
+						Seconds: timestamppb.Now().Seconds,
+						Nanos:   timestamppb.Now().Nanos,
+					},
+				},
+			},
+			expErr: true,
+		},
+		"proposal VoteState must correspond to the vote choice": {
+			groupAccReq: []*group.GroupAccountInfo{
+				{
+					Address: addr1.String(),
+					GroupId: 1,
+					Admin:   adminAddr.String(),
+					Version: 1,
+				},
+			},
+			policy: group.NewThresholdDecisionPolicy(
+				"1",
+				gogotypes.Duration{Seconds: 1},
+			),
+			membersReq: []*group.GroupMember{
+				{
+					GroupId: 1,
+					Member: &group.Member{
+						Address: addr1.String(),
+						Weight:  "4",
+					},
+				},
+				{
+					GroupId: 1,
+					Member: &group.Member{
+						Address: addr2.String(),
+						Weight:  "3",
+					},
+				},
+			},
+			proposalReq: []*group.Proposal{
+				{
+					ProposalId:          1,
+					Address:             addr1.String(),
+					Proposers:           []string{addr1.String()},
+					SubmittedAt:         *curBlockTime,
+					GroupVersion:        1,
+					GroupAccountVersion: 1,
+					Status:              group.ProposalStatusSubmitted,
+					Result:              group.ProposalResultUnfinalized,
+					VoteState:           group.Tally{YesCount: "4", NoCount: "3", AbstainCount: "0", VetoCount: "0"},
+					Timeout:             gogotypes.Timestamp{Seconds: 600},
+					ExecutorResult:      group.ProposalExecutorResultNotRun,
+				},
+			},
+			voteReq: []*group.Vote{
+				{
+					ProposalId: 1,
+					Voter:      addr1.String(),
+					Choice:     group.Choice_CHOICE_YES,
+					SubmittedAt: gogotypes.Timestamp{
+						Seconds: timestamppb.Now().Seconds,
+						Nanos:   timestamppb.Now().Nanos,
+					},
+				},
+				{
+					ProposalId: 1,
+					Voter:      addr2.String(),
+					Choice:     group.Choice_CHOICE_ABSTAIN,
 					SubmittedAt: gogotypes.Timestamp{
 						Seconds: timestamppb.Now().Seconds,
 						Nanos:   timestamppb.Now().Nanos,
@@ -596,7 +612,7 @@ func TestProposalTallyInvariant(t *testing.T) {
 			require.NoError(t, err)
 		}
 
-		_, broken, _ := proposalTallyInvariant(cacheCurCtx, proposalTable, groupAccountTable, groupMemberByGroupIndex, voteTable)
+		_, broken, _ := tallyVotesSumInvariant(cacheCurCtx, proposalTable, groupAccountTable, groupMemberByGroupIndex, voteTable)
 		require.Equal(t, spec.expErr, broken)
 
 	}

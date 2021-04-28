@@ -2,7 +2,6 @@ package server
 
 import (
 	"math"
-	"strconv"
 
 	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,7 +20,7 @@ const (
 func (s serverImpl) RegisterInvariants(ir sdk.InvariantRegistry) {
 	ir.RegisterRoute(group.ModuleName, votesInvariant, s.tallyVotesInvariant())
 	ir.RegisterRoute(group.ModuleName, weightInvariant, s.groupTotalWeightInvariant())
-	ir.RegisterRoute(group.ModuleName, votesSumInvariant, s.proposalTallyInvariant())
+	ir.RegisterRoute(group.ModuleName, votesSumInvariant, s.tallyVotesSumInvariant())
 }
 
 func (s serverImpl) tallyVotesInvariant() sdk.Invariant {
@@ -49,9 +48,9 @@ func (s serverImpl) groupTotalWeightInvariant() sdk.Invariant {
 	}
 }
 
-func (s serverImpl) proposalTallyInvariant() sdk.Invariant {
+func (s serverImpl) tallyVotesSumInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		msg, broken, err := proposalTallyInvariant(ctx, s.proposalTable, s.groupAccountTable, s.groupMemberByGroupIndex, s.voteTable)
+		msg, broken, err := tallyVotesSumInvariant(ctx, s.proposalTable, s.groupAccountTable, s.groupMemberByGroupIndex, s.voteTable)
 		if err != nil {
 			panic(err)
 		}
@@ -183,7 +182,7 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 	return msg, broken, err
 }
 
-func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, groupAccountTable orm.PrimaryKeyTable, groupMemberByGroupIndex orm.UInt64Index, voteTable orm.PrimaryKeyTable) (string, bool, error) {
+func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, groupAccountTable orm.PrimaryKeyTable, groupMemberByGroupIndex orm.UInt64Index, voteTable orm.PrimaryKeyTable) (string, bool, error) {
 	var msg string
 	var broken bool
 
@@ -198,7 +197,11 @@ func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 	}
 	defer proposalIt.Close()
 
-	membersWeight := apd.New(0, 0)
+	totalVotingWeight := apd.New(0, 0)
+	yesVoteWeight := apd.New(0, 0)
+	noVoteWeight := apd.New(0, 0)
+	abstainVoteWeight := apd.New(0, 0)
+	vetoVoteWeight := apd.New(0, 0)
 
 	for {
 		_, err := proposalIt.LoadNext(&proposal)
@@ -235,37 +238,67 @@ func proposalTallyInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 				return msg, broken, err
 			}
 
-			curMemWeight, err := regenMath.ParseNonNegativeDecimal(groupMem.GetMember().GetWeight())
+			curMemVotingWeight, err := regenMath.ParseNonNegativeDecimal(groupMem.Member.Weight)
+			if err != nil {
+				return msg, broken, err
+			}
+			err = regenMath.Add(totalVotingWeight, totalVotingWeight, curMemVotingWeight)
 			if err != nil {
 				return msg, broken, err
 			}
 
-			voteChoice := strconv.FormatInt(int64(group.Choice_value[vote.GetChoice().String()]), 10)
-			curVoteWeight, err := regenMath.ParseNonNegativeDecimal(voteChoice)
-			if err != nil {
-				return msg, broken, err
+			switch vote.Choice {
+			case group.Choice_CHOICE_YES:
+				err = regenMath.Add(yesVoteWeight, yesVoteWeight, curMemVotingWeight)
+				if err != nil {
+					return msg, broken, err
+				}
+			case group.Choice_CHOICE_NO:
+				err = regenMath.Add(noVoteWeight, noVoteWeight, curMemVotingWeight)
+				if err != nil {
+					return msg, broken, err
+				}
+			case group.Choice_CHOICE_ABSTAIN:
+				err = regenMath.Add(abstainVoteWeight, abstainVoteWeight, curMemVotingWeight)
+				if err != nil {
+					return msg, broken, err
+				}
+			case group.Choice_CHOICE_VETO:
+				err = regenMath.Add(vetoVoteWeight, vetoVoteWeight, curMemVotingWeight)
+				if err != nil {
+					return msg, broken, err
+				}
 			}
-
-			if curMemWeight.Cmp(curVoteWeight) != 0 {
-				broken = true
-				msg += "group member's weight must be equal to the corresponding vote\n"
-				break
-			}
-			err = regenMath.Add(membersWeight, membersWeight, curMemWeight)
-			if err != nil {
-				return msg, broken, err
-			}
-
 		}
 
 		totalProposalVotes, err := proposal.VoteState.TotalCounts()
 		if err != nil {
 			return msg, broken, err
 		}
-		if totalProposalVotes.Cmp(membersWeight) != 0 {
+		proposalYesCount, err := proposal.VoteState.GetYesCount()
+		if err != nil {
+			return msg, broken, err
+		}
+		proposalNoCount, err := proposal.VoteState.GetNoCount()
+		if err != nil {
+			return msg, broken, err
+		}
+		proposalAbstainCount, err := proposal.VoteState.GetAbstainCount()
+		if err != nil {
+			return msg, broken, err
+		}
+		proposalVetoCount, err := proposal.VoteState.GetVetoCount()
+		if err != nil {
+			return msg, broken, err
+		}
+		if totalProposalVotes.Cmp(totalVotingWeight) != 0 {
 			broken = true
-			msg += "proposal tally must correspond to the sum of votes\n"
+			msg += "proposal tally must correspond to the sum of vote weights\n"
 			break
+		}
+		if (yesVoteWeight.Cmp(proposalYesCount) != 0) || (noVoteWeight.Cmp(proposalNoCount) != 0) || (abstainVoteWeight.Cmp(proposalAbstainCount) != 0) || (vetoVoteWeight.Cmp(proposalVetoCount) != 0) {
+			broken = true
+			msg += "proposal VoteState must correspond to the vote choice\n"
 		}
 	}
 	return msg, broken, err
