@@ -388,12 +388,6 @@ func TestProposalTallyInvariant(t *testing.T) {
 					Admin:   adminAddr.String(),
 					Version: 1,
 				},
-				{
-					Address: addr2.String(),
-					GroupId: 1,
-					Admin:   adminAddr.String(),
-					Version: 1,
-				},
 			},
 			policy: group.NewThresholdDecisionPolicy(
 				"1",
@@ -460,12 +454,6 @@ func TestProposalTallyInvariant(t *testing.T) {
 					Admin:   adminAddr.String(),
 					Version: 1,
 				},
-				{
-					Address: addr2.String(),
-					GroupId: 1,
-					Admin:   adminAddr.String(),
-					Version: 1,
-				},
 			},
 			policy: group.NewThresholdDecisionPolicy(
 				"1",
@@ -512,12 +500,6 @@ func TestProposalTallyInvariant(t *testing.T) {
 			groupAccReq: []*group.GroupAccountInfo{
 				{
 					Address: addr1.String(),
-					GroupId: 1,
-					Admin:   adminAddr.String(),
-					Version: 1,
-				},
-				{
-					Address: addr2.String(),
 					GroupId: 1,
 					Admin:   adminAddr.String(),
 					Version: 1,
