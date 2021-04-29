@@ -300,6 +300,13 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 			broken = true
 			msg += "proposal VoteState must correspond to the vote choice\n"
 		}
+
+		totalVotingWeight = apd.New(0, 0)
+		yesVoteWeight = apd.New(0, 0)
+		noVoteWeight = apd.New(0, 0)
+		abstainVoteWeight = apd.New(0, 0)
+		vetoVoteWeight = apd.New(0, 0)
+
 	}
 	return msg, broken, err
 }
