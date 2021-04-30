@@ -52,12 +52,12 @@ func TestTallyVotesInvariant(t *testing.T) {
 	require.NoError(t, err)
 
 	specs := map[string]struct {
-		prevReq []*group.Proposal
-		curReq  []*group.Proposal
-		expErr  bool
+		prevProposals []*group.Proposal
+		curProposals  []*group.Proposal
+		expErr        bool
 	}{
 		"invariant not broken": {
-			prevReq: []*group.Proposal{
+			prevProposals: []*group.Proposal{
 				{
 					ProposalId:          1,
 					Address:             addr1.String(),
@@ -73,7 +73,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 				},
 			},
 
-			curReq: []*group.Proposal{
+			curProposals: []*group.Proposal{
 				{
 					ProposalId:          1,
 					Address:             addr2.String(),
@@ -90,7 +90,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 			},
 		},
 		"current block yes vote count must be greater than previous block yes vote count": {
-			prevReq: []*group.Proposal{
+			prevProposals: []*group.Proposal{
 				{
 					ProposalId:          1,
 					Address:             addr1.String(),
@@ -105,7 +105,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 					ExecutorResult:      group.ProposalExecutorResultNotRun,
 				},
 			},
-			curReq: []*group.Proposal{
+			curProposals: []*group.Proposal{
 				{
 					ProposalId:          1,
 					Address:             addr2.String(),
@@ -123,7 +123,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 			expErr: true,
 		},
 		"current block no vote count must be greater than previous block no vote count": {
-			prevReq: []*group.Proposal{
+			prevProposals: []*group.Proposal{
 				{
 					ProposalId:          1,
 					Address:             addr1.String(),
@@ -138,7 +138,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 					ExecutorResult:      group.ProposalExecutorResultNotRun,
 				},
 			},
-			curReq: []*group.Proposal{
+			curProposals: []*group.Proposal{
 				{
 					ProposalId:          1,
 					Address:             addr2.String(),
@@ -156,7 +156,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 			expErr: true,
 		},
 		"current block abstain vote count must be greater than previous block abstain vote count": {
-			prevReq: []*group.Proposal{
+			prevProposals: []*group.Proposal{
 				{
 					ProposalId:          1,
 					Address:             addr1.String(),
@@ -171,7 +171,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 					ExecutorResult:      group.ProposalExecutorResultNotRun,
 				},
 			},
-			curReq: []*group.Proposal{
+			curProposals: []*group.Proposal{
 				{
 					ProposalId:          1,
 					Address:             addr2.String(),
@@ -189,7 +189,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 			expErr: true,
 		},
 		"current block veto vote count must be greater than previous block veto vote count": {
-			prevReq: []*group.Proposal{
+			prevProposals: []*group.Proposal{
 				{
 					ProposalId:          1,
 					Address:             addr1.String(),
@@ -204,7 +204,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 					ExecutorResult:      group.ProposalExecutorResultNotRun,
 				},
 			},
-			curReq: []*group.Proposal{
+			curProposals: []*group.Proposal{
 				{
 					ProposalId:          1,
 					Address:             addr2.String(),
@@ -225,8 +225,8 @@ func TestTallyVotesInvariant(t *testing.T) {
 
 	for _, spec := range specs {
 
-		prevProposals := spec.prevReq
-		curProposals := spec.curReq
+		prevProposals := spec.prevProposals
+		curProposals := spec.curProposals
 
 		cachePrevCtx, _ := prevCtx.CacheContext()
 		cacheCurCtx, _ := curCtx.CacheContext()
@@ -261,12 +261,12 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
 	specs := map[string]struct {
-		groupReq   []*group.GroupInfo
-		membersReq []*group.GroupMember
+		groupsInfo []*group.GroupInfo
+		members    []*group.GroupMember
 		expErr     bool
 	}{
 		"invariant not broken": {
-			groupReq: []*group.GroupInfo{
+			groupsInfo: []*group.GroupInfo{
 				{
 					GroupId:     1,
 					Admin:       addr1.String(),
@@ -274,7 +274,7 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 					TotalWeight: "3",
 				},
 			},
-			membersReq: []*group.GroupMember{
+			members: []*group.GroupMember{
 				{
 					GroupId: 1,
 					Member: &group.Member{
@@ -294,7 +294,7 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 		},
 
 		"group's TotalWeight must be equal to sum of its members weight ": {
-			groupReq: []*group.GroupInfo{
+			groupsInfo: []*group.GroupInfo{
 				{
 					GroupId:     1,
 					Admin:       addr1.String(),
@@ -302,7 +302,7 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 					TotalWeight: "3",
 				},
 			},
-			membersReq: []*group.GroupMember{
+			members: []*group.GroupMember{
 				{
 					GroupId: 1,
 					Member: &group.Member{
@@ -324,11 +324,11 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 
 	for _, spec := range specs {
 		cacheCurCtx, _ := curCtx.CacheContext()
-		groupReq := spec.groupReq
-		members := spec.membersReq
+		groupsInfo := spec.groupsInfo
+		members := spec.members
 
-		for i := 0; i < len(groupReq); i++ {
-			err := groupTable.Create(cacheCurCtx, group.ID(groupReq[i].GroupId).Bytes(), groupReq[i])
+		for i := 0; i < len(groupsInfo); i++ {
+			err := groupTable.Create(cacheCurCtx, group.ID(groupsInfo[i].GroupId).Bytes(), groupsInfo[i])
 			require.NoError(t, err)
 		}
 
@@ -373,15 +373,14 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 	require.NoError(t, err)
 
 	specs := map[string]struct {
-		groupAccReq []*group.GroupAccountInfo
-		policy      group.DecisionPolicy
-		membersReq  []*group.GroupMember
-		proposalReq []*group.Proposal
-		voteReq     []*group.Vote
-		expErr      bool
+		groupAccs []*group.GroupAccountInfo
+		members   []*group.GroupMember
+		proposals []*group.Proposal
+		votes     []*group.Vote
+		expErr    bool
 	}{
 		"invariant not broken": {
-			groupAccReq: []*group.GroupAccountInfo{
+			groupAccs: []*group.GroupAccountInfo{
 				{
 					Address: addr1.String(),
 					GroupId: 1,
@@ -389,11 +388,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					Version: 1,
 				},
 			},
-			policy: group.NewThresholdDecisionPolicy(
-				"1",
-				gogotypes.Duration{Seconds: 1},
-			),
-			membersReq: []*group.GroupMember{
+			members: []*group.GroupMember{
 				{
 					GroupId: 1,
 					Member: &group.Member{
@@ -409,7 +404,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					},
 				},
 			},
-			proposalReq: []*group.Proposal{
+			proposals: []*group.Proposal{
 				{
 					ProposalId:          1,
 					Address:             addr1.String(),
@@ -424,7 +419,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					ExecutorResult:      group.ProposalExecutorResultNotRun,
 				},
 			},
-			voteReq: []*group.Vote{
+			votes: []*group.Vote{
 				{
 					ProposalId: 1,
 					Voter:      addr1.String(),
@@ -447,7 +442,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 			expErr: false,
 		},
 		"proposal tally must correspond to the sum of vote weights": {
-			groupAccReq: []*group.GroupAccountInfo{
+			groupAccs: []*group.GroupAccountInfo{
 				{
 					Address: addr1.String(),
 					GroupId: 1,
@@ -455,11 +450,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					Version: 1,
 				},
 			},
-			policy: group.NewThresholdDecisionPolicy(
-				"1",
-				gogotypes.Duration{Seconds: 1},
-			),
-			membersReq: []*group.GroupMember{
+			members: []*group.GroupMember{
 				{
 					GroupId: 1,
 					Member: &group.Member{
@@ -475,7 +466,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					},
 				},
 			},
-			proposalReq: []*group.Proposal{
+			proposals: []*group.Proposal{
 				{
 					ProposalId:          1,
 					Address:             addr1.String(),
@@ -490,7 +481,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					ExecutorResult:      group.ProposalExecutorResultNotRun,
 				},
 			},
-			voteReq: []*group.Vote{
+			votes: []*group.Vote{
 				{
 					ProposalId: 1,
 					Voter:      addr1.String(),
@@ -513,7 +504,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 			expErr: true,
 		},
 		"proposal VoteState must correspond to the vote choice": {
-			groupAccReq: []*group.GroupAccountInfo{
+			groupAccs: []*group.GroupAccountInfo{
 				{
 					Address: addr1.String(),
 					GroupId: 1,
@@ -521,11 +512,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					Version: 1,
 				},
 			},
-			policy: group.NewThresholdDecisionPolicy(
-				"1",
-				gogotypes.Duration{Seconds: 1},
-			),
-			membersReq: []*group.GroupMember{
+			members: []*group.GroupMember{
 				{
 					GroupId: 1,
 					Member: &group.Member{
@@ -541,7 +528,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					},
 				},
 			},
-			proposalReq: []*group.Proposal{
+			proposals: []*group.Proposal{
 				{
 					ProposalId:          1,
 					Address:             addr1.String(),
@@ -556,7 +543,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					ExecutorResult:      group.ProposalExecutorResultNotRun,
 				},
 			},
-			voteReq: []*group.Vote{
+			votes: []*group.Vote{
 				{
 					ProposalId: 1,
 					Voter:      addr1.String(),
@@ -582,18 +569,15 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 
 	for _, spec := range specs {
 		cacheCurCtx, _ := curCtx.CacheContext()
-		proposals := spec.proposalReq
-		members := spec.membersReq
-		votes := spec.voteReq
-		groupAcc := spec.groupAccReq
+		proposals := spec.proposals
+		members := spec.members
+		votes := spec.votes
+		groupAccs := spec.groupAccs
 
-		for i := 0; i < len(groupAcc); i++ {
-			err := groupAcc[i].SetDecisionPolicy(spec.policy)
+		for i := 0; i < len(groupAccs); i++ {
+			err := groupAccs[i].SetDecisionPolicy(group.NewThresholdDecisionPolicy("1", gogotypes.Duration{Seconds: 1}))
 			require.NoError(t, err)
-		}
-
-		for i := 0; i < len(groupAcc); i++ {
-			err = groupAccountTable.Create(cacheCurCtx, groupAcc[i])
+			err = groupAccountTable.Create(cacheCurCtx, groupAccs[i])
 			require.NoError(t, err)
 		}
 
