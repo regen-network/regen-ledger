@@ -197,13 +197,14 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 	}
 	defer proposalIt.Close()
 
-	totalVotingWeight := apd.New(0, 0)
-	yesVoteWeight := apd.New(0, 0)
-	noVoteWeight := apd.New(0, 0)
-	abstainVoteWeight := apd.New(0, 0)
-	vetoVoteWeight := apd.New(0, 0)
-
 	for {
+
+		totalVotingWeight := apd.New(0, 0)
+		yesVoteWeight := apd.New(0, 0)
+		noVoteWeight := apd.New(0, 0)
+		abstainVoteWeight := apd.New(0, 0)
+		vetoVoteWeight := apd.New(0, 0)
+
 		_, err := proposalIt.LoadNext(&proposal)
 		if orm.ErrIteratorDone.Is(err) {
 			break
@@ -300,13 +301,6 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 			broken = true
 			msg += "proposal VoteState must correspond to the vote choice\n"
 		}
-
-		totalVotingWeight = apd.New(0, 0)
-		yesVoteWeight = apd.New(0, 0)
-		noVoteWeight = apd.New(0, 0)
-		abstainVoteWeight = apd.New(0, 0)
-		vetoVoteWeight = apd.New(0, 0)
-
 	}
 	return msg, broken, err
 }
