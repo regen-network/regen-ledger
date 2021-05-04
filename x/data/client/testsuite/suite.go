@@ -26,6 +26,7 @@ type IntegrationTestSuite struct {
 // remove cfg := network.DefaultConfig()
 // replace cfg.NumValidators = 2 with s.cfg.NumValidators = 2
 // replace s.network = network.New(s.T(), cfg) with s.network = network.New(s.T(), s.cfg)
+// remove TestIntegrationTestSuite func
 func (s *IntegrationTestSuite) SetupSuite() {
 	//s.T().Log("setting up integration test suite")
 	//
