@@ -18,7 +18,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
-const flagMembers = "members"
+const flagExec = "exec"
 
 // TxCmd returns a root CLI command handler for all x/group transaction commands.
 func TxCmd(name string) *cobra.Command {
@@ -118,7 +118,6 @@ Where members.json contains:
 		},
 	}
 
-	cmd.Flags().String(flagMembers, "", "Members file path")
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
@@ -192,7 +191,6 @@ Set a member's weight to "0" to delete it.
 		},
 	}
 
-	cmd.Flags().String(flagMembers, "", "Members file path")
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
@@ -529,6 +527,7 @@ Parameters:
 		},
 	}
 
+	cmd.Flags().String(flagExec, "", "Execute proposal on creation and consider proposers signatures as Yes votes; using either \"try\" to enable future votes if needed or \"must\" to reject the proposal if it can't be executed immediately")
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd

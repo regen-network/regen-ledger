@@ -216,6 +216,31 @@ message MsgCreateProposalRequest {
 
     // msgs is a list of Msgs that will be executed if the proposal passes.
     repeated google.protobuf.Any msgs = 4;
+
+    // Exec defines modes of execution of a proposal.
+    enum Exec {
+
+        // An empty value means that there should be separate MsgVote 
+        // and MsgExec requests for the proposal to execute.
+        EXEC_UNSPECIFIED = 0;
+
+        // Proposers signatures are considered as Yes votes and
+        // we'll try to execute the proposal on creation.
+        // If the proposal is not allowed per the DecisionPolicy,
+        // the proposal will still be open for new votes and could 
+        // be executed separately at a later point.
+        EXEC_TRY = 1;
+
+        // Proposers signatures are considered as Yes votes and
+        // we'll try to execute the proposal on creation.
+        // But if the proposal is not allowed, it will be considered as
+        // rejected.
+        EXEC_MUST = 2;
+    }
+
+    // exec is the mode of execution of the proposal, whether it should be executed
+    // immediately on creation or not.
+    Exec exec = 5;
 }
 
 // MsgCreateProposalResponse is the Msg/CreateProposal response type.

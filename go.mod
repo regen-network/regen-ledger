@@ -23,8 +23,8 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.9
 	github.com/tendermint/tm-db v0.6.4
-	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2 // indirect
-	google.golang.org/genproto v0.0.0-20210406143921-e86de6bf7a46 // indirect
+	golang.org/x/crypto v0.0.0-20210421170649-83a5a9bb288b // indirect
+	google.golang.org/genproto v0.0.0-20210427215850-f767ed18ee4d // indirect
 	google.golang.org/grpc v1.36.1
 	gopkg.in/yaml.v2 v2.4.0
 )

@@ -457,6 +457,22 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 		return nil, err
 	}
 
+	// Execution mode specified
+	if req.Exec != 0 {
+		// Consider proposers as Yes votes
+		for i := range proposers {
+			_, err = s.Vote(ctx, &group.MsgVoteRequest{
+				ProposalId: id,
+				Voter:      proposers[i],
+				Choice:     group.Choice_CHOICE_YES,
+			})
+			if err != nil {
+				return nil, err
+			}
+		}
+
+	}
+
 	return &group.MsgCreateProposalResponse{ProposalId: id}, nil
 }
 
