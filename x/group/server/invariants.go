@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/cockroachdb/apd/v2"
@@ -161,10 +160,7 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 		if err != nil {
 			return msg, broken, err
 		}
-		fmt.Println("===========================================================================================================")
-		fmt.Println(groupWeight)
-		fmt.Println(membersWeight)
-		fmt.Println("===========================================================================================================")
+
 		if groupWeight.Cmp(membersWeight) != 0 {
 			broken = true
 			msg += "group's TotalWeight must be equal to the sum of its members' weights\n"
