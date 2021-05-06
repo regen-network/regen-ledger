@@ -82,8 +82,6 @@
     - [MsgVoteRequest](#regen.group.v1alpha1.MsgVoteRequest)
     - [MsgVoteResponse](#regen.group.v1alpha1.MsgVoteResponse)
   
-    - [MsgCreateProposalRequest.Exec](#regen.group.v1alpha1.MsgCreateProposalRequest.Exec)
-  
     - [Msg](#regen.group.v1alpha1.Msg)
   
 - [Scalar Value Types](#scalar-value-types)
@@ -958,7 +956,7 @@ MsgCreateProposalRequest is the Msg/CreateProposal request type.
 | proposers | [string](#string) | repeated | proposers are the account addresses of the proposers. Proposers signatures will be counted as yes votes. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the proposal. |
 | msgs | [google.protobuf.Any](#google.protobuf.Any) | repeated | msgs is a list of Msgs that will be executed if the proposal passes. |
-| exec | [MsgCreateProposalRequest.Exec](#regen.group.v1alpha1.MsgCreateProposalRequest.Exec) |  | exec is the mode of execution of the proposal, whether it should be executed immediately on creation or not. |
+| try_exec | [bool](#bool) |  | try_exec defines the mode of execution of the proposal, whether it should be executed immediately on creation or not. Proposers signatures are considered as Yes votes. If the proposal is not allowed per the DecisionPolicy, the proposal will still be open for new votes and could be executed at a later point. |
 
 
 
@@ -1180,6 +1178,7 @@ MsgVoteRequest is the Msg/Vote request type.
 | voter | [string](#string) |  | voter is the voter account address. |
 | choice | [Choice](#regen.group.v1alpha1.Choice) |  | choice is the voter's choice on the proposal. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the vote. |
+| try_exec | [bool](#bool) |  | try_exec will try to execute the proposal immediately after the vote, if set to true. |
 
 
 
@@ -1196,19 +1195,6 @@ MsgVoteResponse is the Msg/Vote response type.
 
 
  <!-- end messages -->
-
-
-<a name="regen.group.v1alpha1.MsgCreateProposalRequest.Exec"></a>
-
-### MsgCreateProposalRequest.Exec
-Exec defines modes of execution of a proposal.
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| EXEC_UNSPECIFIED | 0 | An empty value means that there should be separate MsgVote and MsgExec requests for the proposal to execute. |
-| EXEC_TRY | 1 | Proposers signatures are considered as Yes votes and we'll try to execute the proposal on creation. If the proposal is not allowed per the DecisionPolicy, the proposal will still be open for new votes and could be executed separately at a later point. |
-| EXEC_MUST | 2 | Proposers signatures are considered as Yes votes and we'll try to execute the proposal on creation. But if the proposal is not allowed, it will be considered as rejected. |
-
 
  <!-- end enums -->
 

@@ -1114,14 +1114,13 @@ func (s *IntegrationTestSuite) TestGroupAccountsByAdminOrGroup() {
 
 func (s *IntegrationTestSuite) TestCreateProposal() {
 	myGroupID := s.groupID
+	accountAddr := s.groupAccountAddr
 
 	accountReq := &group.MsgCreateGroupAccountRequest{
 		Admin:    s.addr1.String(),
 		GroupId:  myGroupID,
 		Metadata: nil,
 	}
-	accountAddr := s.groupAccountAddr
-
 	policy := group.NewThresholdDecisionPolicy(
 		"100",
 		gogotypes.Duration{Seconds: 1},
@@ -1132,16 +1131,32 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 	s.Require().NoError(err)
 	bigThresholdAddr := bigThresholdRes.Address
 
+	defaultProposal := group.Proposal{
+		Status: group.ProposalStatusSubmitted,
+		Result: group.ProposalResultUnfinalized,
+		VoteState: group.Tally{
+			YesCount:     "0",
+			NoCount:      "0",
+			AbstainCount: "0",
+			VetoCount:    "0",
+		},
+		ExecutorResult: group.ProposalExecutorResultNotRun,
+	}
+
 	specs := map[string]struct {
-		req    *group.MsgCreateProposalRequest
-		msgs   []sdk.Msg
-		expErr bool
+		req         *group.MsgCreateProposalRequest
+		msgs        []sdk.Msg
+		expProposal group.Proposal
+		expErr      bool
+		postRun     func(sdkCtx sdk.Context)
 	}{
 		"all good with minimal fields set": {
 			req: &group.MsgCreateProposalRequest{
 				Address:   accountAddr.String(),
 				Proposers: []string{s.addr2.String()},
 			},
+			expProposal: defaultProposal,
+			postRun:     func(sdkCtx sdk.Context) {},
 		},
 		"all good with good msg payload": {
 			req: &group.MsgCreateProposalRequest{
@@ -1153,6 +1168,8 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 				ToAddress:   s.addr2.String(),
 				Amount:      sdk.Coins{sdk.NewInt64Coin("token", 100)},
 			}},
+			expProposal: defaultProposal,
+			postRun:     func(sdkCtx sdk.Context) {},
 		},
 		"metadata too long": {
 			req: &group.MsgCreateProposalRequest{
@@ -1160,49 +1177,56 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 				Metadata:  bytes.Repeat([]byte{1}, 256),
 				Proposers: []string{s.addr2.String()},
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"group account required": {
 			req: &group.MsgCreateProposalRequest{
 				Metadata:  nil,
 				Proposers: []string{s.addr2.String()},
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"existing group account required": {
 			req: &group.MsgCreateProposalRequest{
 				Address:   s.addr1.String(),
 				Proposers: []string{s.addr2.String()},
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"impossible case: decision policy threshold > total group weight": {
 			req: &group.MsgCreateProposalRequest{
 				Address:   bigThresholdAddr,
 				Proposers: []string{s.addr2.String()},
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"only group members can create a proposal": {
 			req: &group.MsgCreateProposalRequest{
 				Address:   accountAddr.String(),
 				Proposers: []string{s.addr3.String()},
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"all proposers must be in group": {
 			req: &group.MsgCreateProposalRequest{
 				Address:   accountAddr.String(),
 				Proposers: []string{s.addr2.String(), s.addr4.String()},
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"proposers must not be empty": {
 			req: &group.MsgCreateProposalRequest{
 				Address:   accountAddr.String(),
 				Proposers: []string{s.addr2.String(), ""},
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"admin that is not a group member can not create proposal": {
 			req: &group.MsgCreateProposalRequest{
@@ -1210,7 +1234,8 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 				Metadata:  nil,
 				Proposers: []string{s.addr1.String()},
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"reject msgs that are not authz by group account": {
 			req: &group.MsgCreateProposalRequest{
@@ -1218,8 +1243,38 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 				Metadata:  nil,
 				Proposers: []string{s.addr2.String()},
 			},
-			msgs:   []sdk.Msg{&testdata.MsgAuthenticated{Signers: []sdk.AccAddress{s.addr1}}},
-			expErr: true,
+			msgs:    []sdk.Msg{&testdata.MsgAuthenticated{Signers: []sdk.AccAddress{s.addr1}}},
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
+		},
+		"with try exec": {
+			req: &group.MsgCreateProposalRequest{
+				Address:   accountAddr.String(),
+				Proposers: []string{s.addr2.String()},
+				TryExec:   true,
+			},
+			msgs: []sdk.Msg{&banktypes.MsgSend{
+				FromAddress: accountAddr.String(),
+				ToAddress:   s.addr2.String(),
+				Amount:      sdk.Coins{sdk.NewInt64Coin("token", 100)},
+			}},
+			expProposal: group.Proposal{
+				Status: group.ProposalStatusClosed,
+				Result: group.ProposalResultAccepted,
+				VoteState: group.Tally{
+					YesCount:     "1",
+					NoCount:      "0",
+					AbstainCount: "0",
+					VetoCount:    "0",
+				},
+				ExecutorResult: group.ProposalExecutorResultSuccess,
+			},
+			postRun: func(sdkCtx sdk.Context) {
+				fromBalances := s.bankKeeper.GetAllBalances(sdkCtx, accountAddr)
+				s.Require().Equal(sdk.Coins{sdk.NewInt64Coin("test", 9900)}, fromBalances)
+				toBalances := s.bankKeeper.GetAllBalances(sdkCtx, s.addr2)
+				s.Require().Equal(sdk.Coins{sdk.NewInt64Coin("test", 100)}, toBalances)
+			},
 		},
 	}
 	for msg, spec := range specs {
@@ -1227,6 +1282,11 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 		s.Run(msg, func() {
 			err := spec.req.SetMsgs(spec.msgs)
 			s.Require().NoError(err)
+			sdkCtx := s.ctx.(types.Context).Context
+			// s.Require().NoError(s.bankKeeper.SetBalances(sdkCtx, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+
+			// s.Require().NoError(s.bankKeeper.SetBalances(s.sdkCtx, accountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+			// ctx := types.Context{Context: s.sdkCtx}
 
 			res, err := s.msgClient.CreateProposal(s.ctx, spec.req)
 			if spec.expErr {
@@ -1251,14 +1311,10 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 
 			s.Assert().Equal(uint64(1), proposal.GroupVersion)
 			s.Assert().Equal(uint64(1), proposal.GroupAccountVersion)
-			s.Assert().Equal(group.ProposalStatusSubmitted, proposal.Status)
-			s.Assert().Equal(group.ProposalResultUnfinalized, proposal.Result)
-			s.Assert().Equal(group.Tally{
-				YesCount:     "0",
-				NoCount:      "0",
-				AbstainCount: "0",
-				VetoCount:    "0",
-			}, proposal.VoteState)
+			s.Assert().Equal(spec.expProposal.Status, proposal.Status)
+			s.Assert().Equal(spec.expProposal.Result, proposal.Result)
+			s.Assert().Equal(spec.expProposal.VoteState, proposal.VoteState)
+			s.Assert().Equal(spec.expProposal.ExecutorResult, proposal.ExecutorResult)
 
 			timeout, err := gogotypes.TimestampFromProto(&proposal.Timeout)
 			s.Require().NoError(err)
@@ -1269,13 +1325,15 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 			} else {
 				s.Assert().Equal(spec.msgs, proposal.GetMsgs())
 			}
+
+			spec.postRun(sdkCtx)
 		})
 	}
 }
 
 func (s *IntegrationTestSuite) TestVote() {
 	members := []group.Member{
-		{Address: s.addr2.String(), Weight: "1"},
+		{Address: s.addr4.String(), Weight: "1"},
 		{Address: s.addr3.String(), Weight: "2"},
 	}
 	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
@@ -1307,7 +1365,7 @@ func (s *IntegrationTestSuite) TestVote() {
 	req := &group.MsgCreateProposalRequest{
 		Address:   accountAddr,
 		Metadata:  nil,
-		Proposers: []string{s.addr2.String()},
+		Proposers: []string{s.addr4.String()},
 		Msgs:      nil,
 	}
 	proposalRes, err := s.msgClient.CreateProposal(s.ctx, req)
@@ -1352,7 +1410,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"vote yes": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voter:      s.addr2.String(),
+				Voter:      s.addr4.String(),
 				Choice:     group.Choice_CHOICE_YES,
 			},
 			expVoteState: group.Tally{
@@ -1367,7 +1425,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"vote no": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voter:      s.addr2.String(),
+				Voter:      s.addr4.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			expVoteState: group.Tally{
@@ -1382,7 +1440,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"vote abstain": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voter:      s.addr2.String(),
+				Voter:      s.addr4.String(),
 				Choice:     group.Choice_CHOICE_ABSTAIN,
 			},
 			expVoteState: group.Tally{
@@ -1397,7 +1455,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"vote veto": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voter:      s.addr2.String(),
+				Voter:      s.addr4.String(),
 				Choice:     group.Choice_CHOICE_VETO,
 			},
 			expVoteState: group.Tally{
@@ -1427,7 +1485,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"reject new votes when final decision is made already": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voter:      s.addr2.String(),
+				Voter:      s.addr4.String(),
 				Choice:     group.Choice_CHOICE_YES,
 			},
 			doBefore: func(ctx context.Context) {
@@ -1443,7 +1501,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"metadata too long": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voter:      s.addr2.String(),
+				Voter:      s.addr4.String(),
 				Metadata:   bytes.Repeat([]byte{1}, 256),
 				Choice:     group.Choice_CHOICE_NO,
 			},
@@ -1452,7 +1510,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"existing proposal required": {
 			req: &group.MsgVoteRequest{
 				ProposalId: 999,
-				Voter:      s.addr2.String(),
+				Voter:      s.addr4.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			expErr: true,
@@ -1460,14 +1518,14 @@ func (s *IntegrationTestSuite) TestVote() {
 		"empty choice": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voter:      s.addr2.String(),
+				Voter:      s.addr4.String(),
 			},
 			expErr: true,
 		},
 		"invalid choice": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voter:      s.addr2.String(),
+				Voter:      s.addr4.String(),
 				Choice:     5,
 			},
 			expErr: true,
@@ -1475,7 +1533,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"voter must be in group": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voter:      s.addr4.String(),
+				Voter:      s.addr2.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			expErr: true,
@@ -1506,7 +1564,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"on timeout": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voter:      s.addr2.String(),
+				Voter:      s.addr4.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			srcCtx: s.sdkCtx.WithBlockTime(s.blockTime.Add(time.Second)),
@@ -1515,7 +1573,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"closed already": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voter:      s.addr2.String(),
+				Voter:      s.addr4.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			doBefore: func(ctx context.Context) {
@@ -1531,13 +1589,13 @@ func (s *IntegrationTestSuite) TestVote() {
 		"voted already": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voter:      s.addr2.String(),
+				Voter:      s.addr4.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			doBefore: func(ctx context.Context) {
 				_, err := s.msgClient.Vote(ctx, &group.MsgVoteRequest{
 					ProposalId: myProposalID,
-					Voter:      s.addr2.String(),
+					Voter:      s.addr4.String(),
 					Choice:     group.Choice_CHOICE_YES,
 				})
 				s.Require().NoError(err)
@@ -1547,7 +1605,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"with group modified": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voter:      s.addr2.String(),
+				Voter:      s.addr4.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			doBefore: func(ctx context.Context) {
@@ -1563,7 +1621,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		"with policy modified": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
-				Voter:      s.addr2.String(),
+				Voter:      s.addr4.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
 			doBefore: func(ctx context.Context) {

@@ -458,7 +458,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 	}
 
 	// Execution mode specified
-	if req.Exec != 0 {
+	if req.TryExec {
 		// Consider proposers as Yes votes
 		for i := range proposers {
 			_, err = s.Vote(ctx, &group.MsgVoteRequest{
@@ -466,11 +466,21 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 				Voter:      proposers[i],
 				Choice:     group.Choice_CHOICE_YES,
 			})
+			// Should we return MsgCreateProposalResponse with proposal id?
 			if err != nil {
 				return nil, err
 			}
 		}
-
+		// Then try to execute the proposal
+		_, err = s.Exec(ctx, &group.MsgExecRequest{
+			ProposalId: id,
+			// Should we consider the first proposer as the signer? or maybe the group account?
+			Signer: proposers[0],
+		})
+		// Should we return MsgCreateProposalResponse with proposal id?
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &group.MsgCreateProposalResponse{ProposalId: id}, nil
