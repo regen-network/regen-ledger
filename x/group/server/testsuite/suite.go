@@ -1367,11 +1367,13 @@ func (s *IntegrationTestSuite) TestVote() {
 		Proposers: []string{s.addr4.String()},
 		Msgs:      nil,
 	}
-	req.SetMsgs([]sdk.Msg{&banktypes.MsgSend{
+	err = req.SetMsgs([]sdk.Msg{&banktypes.MsgSend{
 		FromAddress: accountAddr,
 		ToAddress:   s.addr5.String(),
 		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
 	}})
+	s.Require().NoError(err)
+
 	proposalRes, err := s.msgClient.CreateProposal(s.ctx, req)
 	s.Require().NoError(err)
 	myProposalID := proposalRes.ProposalId
