@@ -457,7 +457,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 		return nil, err
 	}
 
-	// Execution mode specified
+	// Try to execute proposal immediately
 	if req.TryExec {
 		// Consider proposers as Yes votes
 		for i := range proposers {
@@ -573,6 +573,17 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 	err = ctx.EventManager().EmitTypedEvent(&group.EventVote{ProposalId: id})
 	if err != nil {
 		return nil, err
+	}
+
+	// Try to execute proposal immediately
+	if req.TryExec {
+		_, err = s.Exec(ctx, &group.MsgExecRequest{
+			ProposalId: id,
+			Signer:     voterAddr,
+		})
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &group.MsgVoteResponse{}, nil

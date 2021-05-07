@@ -1359,12 +1359,19 @@ func (s *IntegrationTestSuite) TestVote() {
 	s.Require().NoError(err)
 	s.Require().NotNil(groupAccount)
 
+	s.Require().NoError(s.bankKeeper.SetBalances(s.sdkCtx, groupAccount, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+
 	req := &group.MsgCreateProposalRequest{
 		Address:   accountAddr,
 		Metadata:  nil,
 		Proposers: []string{s.addr4.String()},
 		Msgs:      nil,
 	}
+	req.SetMsgs([]sdk.Msg{&banktypes.MsgSend{
+		FromAddress: accountAddr,
+		ToAddress:   s.addr5.String(),
+		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
+	}})
 	proposalRes, err := s.msgClient.CreateProposal(s.ctx, req)
 	s.Require().NoError(err)
 	myProposalID := proposalRes.ProposalId
@@ -1403,6 +1410,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		expVoteState      group.Tally
 		expProposalStatus group.Proposal_Status
 		expResult         group.Proposal_Result
+		postRun           func(sdkCtx sdk.Context)
 	}{
 		"vote yes": {
 			req: &group.MsgVoteRequest{
@@ -1418,6 +1426,29 @@ func (s *IntegrationTestSuite) TestVote() {
 			},
 			expProposalStatus: group.ProposalStatusSubmitted,
 			expResult:         group.ProposalResultUnfinalized,
+			postRun:           func(sdkCtx sdk.Context) {},
+		},
+		"with try exec": {
+			req: &group.MsgVoteRequest{
+				ProposalId: myProposalID,
+				Voter:      s.addr3.String(),
+				Choice:     group.Choice_CHOICE_YES,
+				TryExec:    true,
+			},
+			expVoteState: group.Tally{
+				YesCount:     "2",
+				NoCount:      "0",
+				AbstainCount: "0",
+				VetoCount:    "0",
+			},
+			expProposalStatus: group.ProposalStatusClosed,
+			expResult:         group.ProposalResultAccepted,
+			postRun: func(sdkCtx sdk.Context) {
+				fromBalances := s.bankKeeper.GetAllBalances(sdkCtx, groupAccount)
+				s.Require().Equal(sdk.Coins{sdk.NewInt64Coin("test", 9900)}, fromBalances)
+				toBalances := s.bankKeeper.GetAllBalances(sdkCtx, s.addr2)
+				s.Require().Equal(sdk.Coins{sdk.NewInt64Coin("test", 100)}, toBalances)
+			},
 		},
 		"vote no": {
 			req: &group.MsgVoteRequest{
@@ -1433,6 +1464,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			},
 			expProposalStatus: group.ProposalStatusSubmitted,
 			expResult:         group.ProposalResultUnfinalized,
+			postRun:           func(sdkCtx sdk.Context) {},
 		},
 		"vote abstain": {
 			req: &group.MsgVoteRequest{
@@ -1448,6 +1480,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			},
 			expProposalStatus: group.ProposalStatusSubmitted,
 			expResult:         group.ProposalResultUnfinalized,
+			postRun:           func(sdkCtx sdk.Context) {},
 		},
 		"vote veto": {
 			req: &group.MsgVoteRequest{
@@ -1463,6 +1496,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			},
 			expProposalStatus: group.ProposalStatusSubmitted,
 			expResult:         group.ProposalResultUnfinalized,
+			postRun:           func(sdkCtx sdk.Context) {},
 		},
 		"apply decision policy early": {
 			req: &group.MsgVoteRequest{
@@ -1478,6 +1512,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			},
 			expProposalStatus: group.ProposalStatusClosed,
 			expResult:         group.ProposalResultAccepted,
+			postRun:           func(sdkCtx sdk.Context) {},
 		},
 		"reject new votes when final decision is made already": {
 			req: &group.MsgVoteRequest{
@@ -1493,7 +1528,8 @@ func (s *IntegrationTestSuite) TestVote() {
 				})
 				s.Require().NoError(err)
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"metadata too long": {
 			req: &group.MsgVoteRequest{
@@ -1502,7 +1538,8 @@ func (s *IntegrationTestSuite) TestVote() {
 				Metadata:   bytes.Repeat([]byte{1}, 256),
 				Choice:     group.Choice_CHOICE_NO,
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"existing proposal required": {
 			req: &group.MsgVoteRequest{
@@ -1510,14 +1547,16 @@ func (s *IntegrationTestSuite) TestVote() {
 				Voter:      s.addr4.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"empty choice": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
 				Voter:      s.addr4.String(),
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"invalid choice": {
 			req: &group.MsgVoteRequest{
@@ -1525,7 +1564,8 @@ func (s *IntegrationTestSuite) TestVote() {
 				Voter:      s.addr4.String(),
 				Choice:     5,
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"voter must be in group": {
 			req: &group.MsgVoteRequest{
@@ -1533,7 +1573,8 @@ func (s *IntegrationTestSuite) TestVote() {
 				Voter:      s.addr2.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"voter must not be empty": {
 			req: &group.MsgVoteRequest{
@@ -1541,14 +1582,16 @@ func (s *IntegrationTestSuite) TestVote() {
 				Voter:      "",
 				Choice:     group.Choice_CHOICE_NO,
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"voters must not be nil": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,
 				Choice:     group.Choice_CHOICE_NO,
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"admin that is not a group member can not vote": {
 			req: &group.MsgVoteRequest{
@@ -1556,7 +1599,8 @@ func (s *IntegrationTestSuite) TestVote() {
 				Voter:      s.addr1.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"on timeout": {
 			req: &group.MsgVoteRequest{
@@ -1564,8 +1608,9 @@ func (s *IntegrationTestSuite) TestVote() {
 				Voter:      s.addr4.String(),
 				Choice:     group.Choice_CHOICE_NO,
 			},
-			srcCtx: s.sdkCtx.WithBlockTime(s.blockTime.Add(time.Second)),
-			expErr: true,
+			srcCtx:  s.sdkCtx.WithBlockTime(s.blockTime.Add(time.Second)),
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"closed already": {
 			req: &group.MsgVoteRequest{
@@ -1581,7 +1626,8 @@ func (s *IntegrationTestSuite) TestVote() {
 				})
 				s.Require().NoError(err)
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"voted already": {
 			req: &group.MsgVoteRequest{
@@ -1597,7 +1643,8 @@ func (s *IntegrationTestSuite) TestVote() {
 				})
 				s.Require().NoError(err)
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"with group modified": {
 			req: &group.MsgVoteRequest{
@@ -1613,7 +1660,8 @@ func (s *IntegrationTestSuite) TestVote() {
 				})
 				s.Require().NoError(err)
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 		"with policy modified": {
 			req: &group.MsgVoteRequest{
@@ -1635,7 +1683,8 @@ func (s *IntegrationTestSuite) TestVote() {
 				_, err = s.msgClient.UpdateGroupAccountDecisionPolicy(ctx, m)
 				s.Require().NoError(err)
 			},
-			expErr: true,
+			expErr:  true,
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 	}
 	for msg, spec := range specs {
@@ -1715,6 +1764,8 @@ func (s *IntegrationTestSuite) TestVote() {
 			s.Assert().Equal(spec.expVoteState, proposal.VoteState)
 			s.Assert().Equal(spec.expResult, proposal.Result)
 			s.Assert().Equal(spec.expProposalStatus, proposal.Status)
+
+			spec.postRun(sdkCtx)
 		})
 	}
 }
