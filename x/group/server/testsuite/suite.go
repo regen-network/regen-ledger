@@ -1410,6 +1410,7 @@ func (s *IntegrationTestSuite) TestVote() {
 		expVoteState      group.Tally
 		expProposalStatus group.Proposal_Status
 		expResult         group.Proposal_Result
+		expExecutorResult group.Proposal_ExecutorResult
 		postRun           func(sdkCtx sdk.Context)
 	}{
 		"vote yes": {
@@ -1426,6 +1427,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			},
 			expProposalStatus: group.ProposalStatusSubmitted,
 			expResult:         group.ProposalResultUnfinalized,
+			expExecutorResult: group.ProposalExecutorResultNotRun,
 			postRun:           func(sdkCtx sdk.Context) {},
 		},
 		"with try exec": {
@@ -1443,6 +1445,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			},
 			expProposalStatus: group.ProposalStatusClosed,
 			expResult:         group.ProposalResultAccepted,
+			expExecutorResult: group.ProposalExecutorResultSuccess,
 			postRun: func(sdkCtx sdk.Context) {
 				fromBalances := s.bankKeeper.GetAllBalances(sdkCtx, groupAccount)
 				s.Require().Equal(sdk.Coins{sdk.NewInt64Coin("test", 9900)}, fromBalances)
@@ -1464,6 +1467,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			},
 			expProposalStatus: group.ProposalStatusSubmitted,
 			expResult:         group.ProposalResultUnfinalized,
+			expExecutorResult: group.ProposalExecutorResultNotRun,
 			postRun:           func(sdkCtx sdk.Context) {},
 		},
 		"vote abstain": {
@@ -1480,6 +1484,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			},
 			expProposalStatus: group.ProposalStatusSubmitted,
 			expResult:         group.ProposalResultUnfinalized,
+			expExecutorResult: group.ProposalExecutorResultNotRun,
 			postRun:           func(sdkCtx sdk.Context) {},
 		},
 		"vote veto": {
@@ -1496,6 +1501,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			},
 			expProposalStatus: group.ProposalStatusSubmitted,
 			expResult:         group.ProposalResultUnfinalized,
+			expExecutorResult: group.ProposalExecutorResultNotRun,
 			postRun:           func(sdkCtx sdk.Context) {},
 		},
 		"apply decision policy early": {
@@ -1512,6 +1518,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			},
 			expProposalStatus: group.ProposalStatusClosed,
 			expResult:         group.ProposalResultAccepted,
+			expExecutorResult: group.ProposalExecutorResultNotRun,
 			postRun:           func(sdkCtx sdk.Context) {},
 		},
 		"reject new votes when final decision is made already": {
@@ -1764,6 +1771,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			s.Assert().Equal(spec.expVoteState, proposal.VoteState)
 			s.Assert().Equal(spec.expResult, proposal.Result)
 			s.Assert().Equal(spec.expProposalStatus, proposal.Status)
+			s.Assert().Equal(spec.expExecutorResult, proposal.ExecutorResult)
 
 			spec.postRun(sdkCtx)
 		})
