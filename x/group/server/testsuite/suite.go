@@ -1116,6 +1116,12 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 	myGroupID := s.groupID
 	accountAddr := s.groupAccountAddr
 
+	msgSend := &banktypes.MsgSend{
+		FromAddress: s.groupAccountAddr.String(),
+		ToAddress:   s.addr2.String(),
+		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
+	}
+
 	accountReq := &group.MsgCreateGroupAccountRequest{
 		Admin:    s.addr1.String(),
 		GroupId:  myGroupID,
@@ -1253,11 +1259,7 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 				Proposers: []string{s.addr2.String()},
 				TryExec:   true,
 			},
-			msgs: []sdk.Msg{&banktypes.MsgSend{
-				FromAddress: accountAddr.String(),
-				ToAddress:   s.addr2.String(),
-				Amount:      sdk.Coins{sdk.NewInt64Coin("token", 100)},
-			}},
+			msgs: []sdk.Msg{msgSend},
 			expProposal: group.Proposal{
 				Status: group.ProposalStatusClosed,
 				Result: group.ProposalResultAccepted,
@@ -1282,11 +1284,6 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 		s.Run(msg, func() {
 			err := spec.req.SetMsgs(spec.msgs)
 			s.Require().NoError(err)
-			sdkCtx := s.ctx.(types.Context).Context
-			// s.Require().NoError(s.bankKeeper.SetBalances(sdkCtx, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
-
-			// s.Require().NoError(s.bankKeeper.SetBalances(s.sdkCtx, accountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
-			// ctx := types.Context{Context: s.sdkCtx}
 
 			res, err := s.msgClient.CreateProposal(s.ctx, spec.req)
 			if spec.expErr {
@@ -1326,7 +1323,7 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 				s.Assert().Equal(spec.msgs, proposal.GetMsgs())
 			}
 
-			spec.postRun(sdkCtx)
+			spec.postRun(s.sdkCtx)
 		})
 	}
 }
@@ -1812,8 +1809,8 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expProposalStatus: group.ProposalStatusClosed,
 			expProposalResult: group.ProposalResultAccepted,
 			expExecutorResult: group.ProposalExecutorResultSuccess,
-			expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9900)},
-			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 100)},
+			expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9800)},
+			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 200)},
 		},
 		"proposal with multiple messages executed when accepted": {
 			setupProposal: func(ctx context.Context) uint64 {
@@ -1823,8 +1820,8 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expProposalStatus: group.ProposalStatusClosed,
 			expProposalResult: group.ProposalResultAccepted,
 			expExecutorResult: group.ProposalExecutorResultSuccess,
-			expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9800)},
-			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 200)},
+			expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9700)},
+			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 300)},
 		},
 		"proposal not executed when rejected": {
 			setupProposal: func(ctx context.Context) uint64 {
@@ -1912,8 +1909,8 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expProposalStatus: group.ProposalStatusClosed,
 			expProposalResult: group.ProposalResultAccepted,
 			expExecutorResult: group.ProposalExecutorResultSuccess,
-			expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9900)},
-			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 100)},
+			expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9800)},
+			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 200)},
 		},
 		"rollback all msg updates on failure": {
 			setupProposal: func(ctx context.Context) uint64 {
