@@ -916,7 +916,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountDecisionPolicy() {
 				[]string{
 					groupAccount.Admin,
 					groupAccount.Address,
-					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"2\", \"timeout\":\"2s\"}",
+					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"40000s\"}",
 				},
 				commonFlags...,
 			),
@@ -931,7 +931,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountDecisionPolicy() {
 				[]string{
 					groupAccount.Admin,
 					groupAccount.Address,
-					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"2\", \"timeout\":\"2s\"}",
+					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"50000s\"}",
 					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 				},
 				commonFlags...,
@@ -1150,6 +1150,24 @@ func (s *IntegrationTestSuite) TestTxCreateProposal() {
 			0,
 		},
 		{
+			"with try exec",
+			append(
+				[]string{
+					s.groupAccounts[0].Address,
+					val.Address.String(),
+					validTxFileName,
+					"",
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+					fmt.Sprintf("--%s=true", client.FlagTryExec),
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
 			"with amino-json",
 			append(
 				[]string{
@@ -1317,6 +1335,23 @@ func (s *IntegrationTestSuite) TestTxVote() {
 					val.Address.String(),
 					"CHOICE_YES",
 					"",
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"with try exec",
+			append(
+				[]string{
+					"7",
+					val.Address.String(),
+					"CHOICE_YES",
+					"",
+					fmt.Sprintf("--%s=true", client.FlagTryExec),
 				},
 				commonFlags...,
 			),

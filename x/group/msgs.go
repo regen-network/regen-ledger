@@ -487,11 +487,12 @@ func (m MsgCreateGroupAccountRequest) UnpackInterfaces(unpacker types.AnyUnpacke
 var _ sdk.Msg = &MsgCreateProposalRequest{}
 
 // NewMsgCreateProposalRequest creates a new MsgCreateProposalRequest.
-func NewMsgCreateProposalRequest(address string, proposers []string, msgs []sdk.Msg, metadata []byte) (*MsgCreateProposalRequest, error) {
+func NewMsgCreateProposalRequest(address string, proposers []string, msgs []sdk.Msg, metadata []byte, tryExec bool) (*MsgCreateProposalRequest, error) {
 	m := &MsgCreateProposalRequest{
 		Address:   address,
 		Proposers: proposers,
 		Metadata:  metadata,
+		TryExec:   tryExec,
 	}
 	err := m.SetMsgs(msgs)
 	if err != nil {
