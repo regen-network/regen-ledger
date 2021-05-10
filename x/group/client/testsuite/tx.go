@@ -44,7 +44,7 @@ func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-// We execute NewIntegrationTestSuite to set cfg field of IntegrationTestSuite
+	// We execute NewIntegrationTestSuite to set cfg field of IntegrationTestSuite
 	s.cfg.NumValidators = 2
 	s.network = network.New(s.T(), s.cfg)
 
