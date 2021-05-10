@@ -14,7 +14,7 @@ type IntegrationTestSuite struct {
 }
 
 func NewIntegrationTestSuite(cfg Config) *IntegrationTestSuite {
-	return &IntegrationTestSuite{cfg : cfg}
+	return &IntegrationTestSuite{cfg: cfg}
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
@@ -36,4 +36,3 @@ func (s *IntegrationTestSuite) TestNetwork_Liveness() {
 	h, err := s.network.WaitForHeightWithTimeout(10, time.Minute)
 	s.Require().NoError(err, "expected to reach 10 blocks; got %d", h)
 }
-
