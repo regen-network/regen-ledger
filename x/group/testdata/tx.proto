@@ -4,7 +4,7 @@ package testdata;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/testutil/testdata";
+option go_package = "github.com/regen-network/regen-ledger/x/group/testdata";
 
 message MsgAuthenticated {
     repeated bytes signers = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];

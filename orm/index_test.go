@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/testutil/testdata"
+	"github.com/regen-network/regen-ledger/orm/testdata"
 )
 
 func TestIndexPrefixScan(t *testing.T) {

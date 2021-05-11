@@ -7,9 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/regen-network/regen-ledger/testutil/testdata"
-
-	"github.com/regen-network/regen-ledger/testutil"
+	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/regen-network/regen-ledger/x/group/testdata"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
