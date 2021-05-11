@@ -130,9 +130,8 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 	}
 	defer groupIt.Close()
 
-	membersWeight := apd.New(0, 0)
-
 	for {
+		membersWeight := apd.New(0, 0)
 		_, err := groupIt.LoadNext(&groupInfo)
 		if orm.ErrIteratorDone.Is(err) {
 			break
@@ -161,6 +160,7 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 		if err != nil {
 			return msg, broken, err
 		}
+
 		if groupWeight.Cmp(membersWeight) != 0 {
 			broken = true
 			msg += "group's TotalWeight must be equal to the sum of its members' weights\n"
