@@ -1405,15 +1405,15 @@ func (s *IntegrationTestSuite) TestVote() {
 	}, proposals[0].VoteState)
 
 	specs := map[string]struct {
-		req               *group.MsgVoteRequest
 		srcCtx            sdk.Context
-		doBefore          func(ctx context.Context)
-		expErr            bool
 		expVoteState      group.Tally
+		req               *group.MsgVoteRequest
+		doBefore          func(ctx context.Context)
+		postRun           func(sdkCtx sdk.Context)
 		expProposalStatus group.Proposal_Status
 		expResult         group.Proposal_Result
 		expExecutorResult group.Proposal_ExecutorResult
-		postRun           func(sdkCtx sdk.Context)
+		expErr            bool
 	}{
 		"vote yes": {
 			req: &group.MsgVoteRequest{
