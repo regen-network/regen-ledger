@@ -37,4 +37,5 @@ func init() {
 		}
 		return fmt.Errorf("unexpected address length %d", n)
 	})
+	config.Seal()
 }
