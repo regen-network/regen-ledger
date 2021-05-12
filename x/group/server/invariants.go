@@ -53,9 +53,9 @@ func (s serverImpl) tallyVotesSumInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		msg, broken, err := tallyVotesSumInvariant(ctx, s.proposalTable, s.groupAccountTable, s.groupMemberByGroupIndex, s.voteTable)
 		if err != nil {
-			fmt.Println("===================================")
+			fmt.Println("\n===================================")
 			fmt.Println(err)
-			fmt.Println("===================================")
+			fmt.Println("====================================")
 			panic(err)
 		}
 		return sdk.FormatInvariant(group.ModuleName, votesSumInvariant, msg), broken
@@ -197,6 +197,10 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 
 	proposalIt, err := proposalTable.PrefixScan(ctx, 1, math.MaxUint64)
 	if err != nil {
+		fmt.Println("\n===================================")
+		fmt.Println("Proposalit err")
+		fmt.Println(err)
+		fmt.Println("===================================")
 		return msg, broken, err
 	}
 	defer proposalIt.Close()
@@ -211,18 +215,34 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 
 		_, err := proposalIt.LoadNext(&proposal)
 		if orm.ErrIteratorDone.Is(err) {
+			fmt.Println("\n===================================")
+			fmt.Println("Proposal loading err")
+			fmt.Println(err)
+			fmt.Println("===================================")
 			break
 		}
 		address, err := sdk.AccAddressFromBech32(proposal.Address)
 		if err != nil {
+			fmt.Println("\n===================================")
+			fmt.Println("address err")
+			fmt.Println(err)
+			fmt.Println("===================================")
 			return msg, broken, err
 		}
 		err = groupAccountTable.GetOne(ctx, address.Bytes(), &groupAcc)
 		if err != nil {
+			fmt.Println("\n===================================")
+			fmt.Println("groupaccounttable err")
+			fmt.Println(err)
+			fmt.Println("===================================")
 			return msg, broken, err
 		}
 		groupMemIt, err := groupMemberByGroupIndex.Get(ctx, groupAcc.GroupId)
 		if err != nil {
+			fmt.Println("\n===================================")
+			fmt.Println("groupmemberbygroupindex err")
+			fmt.Println(err)
+			fmt.Println("===================================")
 			return msg, broken, err
 		}
 		defer groupMemIt.Close()
@@ -230,25 +250,45 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 		for {
 			_, err := groupMemIt.LoadNext(&groupMem)
 			if orm.ErrIteratorDone.Is(err) {
+				fmt.Println("\n===================================")
+				fmt.Println("groupmemm loading err")
+				fmt.Println(err)
+				fmt.Println("===================================")
 				break
 			}
 
 			voterAddress, err := sdk.AccAddressFromBech32(groupMem.Member.GetAddress())
 			if err != nil {
+				fmt.Println("\n===================================")
+				fmt.Println("voteraddress err")
+				fmt.Println(err)
+				fmt.Println("===================================")
 				return msg, broken, err
 			}
 
 			err = voteTable.GetOne(ctx, group.Vote{ProposalId: proposal.ProposalId, Voter: voterAddress.String()}.PrimaryKey(), &vote)
 			if err != nil {
+				fmt.Println("\n===================================")
+				fmt.Println("votetable err")
+				fmt.Println(err)
+				fmt.Println("===================================")
 				return msg, broken, err
 			}
 
 			curMemVotingWeight, err := regenMath.ParseNonNegativeDecimal(groupMem.Member.Weight)
 			if err != nil {
+				fmt.Println("\n===================================")
+				fmt.Println("curmemvotingweight err")
+				fmt.Println(err)
+				fmt.Println("===================================")
 				return msg, broken, err
 			}
 			err = regenMath.Add(totalVotingWeight, totalVotingWeight, curMemVotingWeight)
 			if err != nil {
+				fmt.Println("\n===================================")
+				fmt.Println("totalvotingweight adding err")
+				fmt.Println(err)
+				fmt.Println("===================================")
 				return msg, broken, err
 			}
 
@@ -256,21 +296,37 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 			case group.Choice_CHOICE_YES:
 				err = regenMath.Add(yesVoteWeight, yesVoteWeight, curMemVotingWeight)
 				if err != nil {
+					fmt.Println("\n===================================")
+					fmt.Println("yesvoteweight adding err")
+					fmt.Println(err)
+					fmt.Println("===================================")
 					return msg, broken, err
 				}
 			case group.Choice_CHOICE_NO:
 				err = regenMath.Add(noVoteWeight, noVoteWeight, curMemVotingWeight)
 				if err != nil {
+					fmt.Println("\n===================================")
+					fmt.Println("novoteweight adding err")
+					fmt.Println(err)
+					fmt.Println("===================================")
 					return msg, broken, err
 				}
 			case group.Choice_CHOICE_ABSTAIN:
 				err = regenMath.Add(abstainVoteWeight, abstainVoteWeight, curMemVotingWeight)
 				if err != nil {
+					fmt.Println("\n===================================")
+					fmt.Println("abstainvoteweight adding err")
+					fmt.Println(err)
+					fmt.Println("===================================")
 					return msg, broken, err
 				}
 			case group.Choice_CHOICE_VETO:
 				err = regenMath.Add(vetoVoteWeight, vetoVoteWeight, curMemVotingWeight)
 				if err != nil {
+					fmt.Println("\n===================================")
+					fmt.Println("vetovoteweight adding err")
+					fmt.Println(err)
+					fmt.Println("===================================")
 					return msg, broken, err
 				}
 			}
@@ -278,22 +334,42 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 
 		totalProposalVotes, err := proposal.VoteState.TotalCounts()
 		if err != nil {
+			fmt.Println("\n===================================")
+			fmt.Println("totalproposalvotes count err")
+			fmt.Println(err)
+			fmt.Println("===================================")
 			return msg, broken, err
 		}
 		proposalYesCount, err := proposal.VoteState.GetYesCount()
 		if err != nil {
+			fmt.Println("\n===================================")
+			fmt.Println("proposalyescount err")
+			fmt.Println(err)
+			fmt.Println("===================================")
 			return msg, broken, err
 		}
 		proposalNoCount, err := proposal.VoteState.GetNoCount()
 		if err != nil {
+			fmt.Println("\n===================================")
+			fmt.Println("proposalnocount err")
+			fmt.Println(err)
+			fmt.Println("===================================")
 			return msg, broken, err
 		}
 		proposalAbstainCount, err := proposal.VoteState.GetAbstainCount()
 		if err != nil {
+			fmt.Println("\n===================================")
+			fmt.Println("proposalabstaincount err")
+			fmt.Println(err)
+			fmt.Println("===================================")
 			return msg, broken, err
 		}
 		proposalVetoCount, err := proposal.VoteState.GetVetoCount()
 		if err != nil {
+			fmt.Println("\n===================================")
+			fmt.Println("proposalvetocount err")
+			fmt.Println(err)
+			fmt.Println("===================================")
 			return msg, broken, err
 		}
 		if totalProposalVotes.Cmp(totalVotingWeight) != 0 {
