@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/cockroachdb/apd/v2"
@@ -52,6 +53,9 @@ func (s serverImpl) tallyVotesSumInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
 		msg, broken, err := tallyVotesSumInvariant(ctx, s.proposalTable, s.groupAccountTable, s.groupMemberByGroupIndex, s.voteTable)
 		if err != nil {
+			fmt.Println("===================================")
+			fmt.Println(err)
+			fmt.Println("===================================")
 			panic(err)
 		}
 		return sdk.FormatInvariant(group.ModuleName, votesSumInvariant, msg), broken
