@@ -235,7 +235,8 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 			fmt.Println("groupaccounttable err")
 			fmt.Println(err)
 			fmt.Println("===================================")
-			return msg, broken, err
+			break
+			// return msg, broken, err
 		}
 		groupMemIt, err := groupMemberByGroupIndex.Get(ctx, groupAcc.GroupId)
 		if err != nil {
