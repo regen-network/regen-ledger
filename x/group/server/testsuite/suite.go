@@ -22,8 +22,10 @@ import (
 	"github.com/regen-network/regen-ledger/testutil/testdata"
 	"github.com/regen-network/regen-ledger/types"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/group"
 	groupserver "github.com/regen-network/regen-ledger/x/group/server"
+	"github.com/regen-network/regen-ledger/x/group/testdata"
 )
 
 type IntegrationTestSuite struct {
