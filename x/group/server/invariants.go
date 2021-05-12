@@ -223,7 +223,7 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 
 			err = groupMemberTable.GetOne(ctx, vote.PrimaryKey(), &groupMem)
 			if err != nil {
-				return msg, broken, err
+				break
 			}
 
 			curMemVotingWeight, err := regenMath.ParseNonNegativeDecimal(groupMem.Member.Weight)
