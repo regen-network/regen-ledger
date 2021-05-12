@@ -50,7 +50,7 @@ func (s serverImpl) groupTotalWeightInvariant() sdk.Invariant {
 
 func (s serverImpl) tallyVotesSumInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		msg, broken, err := tallyVotesSumInvariant(ctx, s.proposalTable, s.groupAccountTable, s.groupMemberByGroupIndex, s.voteTable)
+		msg, broken, err := tallyVotesSumInvariant(ctx, s.proposalTable, s.groupMemberTable, s.voteByProposalIndex)
 		if err != nil {
 			panic(err)
 		}
@@ -182,12 +182,11 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 	return msg, broken, err
 }
 
-func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, groupAccountTable orm.PrimaryKeyTable, groupMemberByGroupIndex orm.UInt64Index, voteTable orm.PrimaryKeyTable) (string, bool, error) {
+func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, groupMemberTable orm.PrimaryKeyTable, voteByProposalIndex orm.UInt64Index) (string, bool, error) {
 	var msg string
 	var broken bool
 
 	var proposal group.Proposal
-	var groupAcc group.GroupAccountInfo
 	var groupMem group.GroupMember
 	var vote group.Vote
 
@@ -209,32 +208,20 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 		if orm.ErrIteratorDone.Is(err) {
 			break
 		}
-		address, err := sdk.AccAddressFromBech32(proposal.Address)
+
+		voteIt, err := voteByProposalIndex.Get(ctx, proposal.ProposalId)
 		if err != nil {
 			return msg, broken, err
 		}
-		err = groupAccountTable.GetOne(ctx, address.Bytes(), &groupAcc)
-		if err != nil {
-			break
-		}
-		groupMemIt, err := groupMemberByGroupIndex.Get(ctx, groupAcc.GroupId)
-		if err != nil {
-			return msg, broken, err
-		}
-		defer groupMemIt.Close()
+		defer voteIt.Close()
 
 		for {
-			_, err := groupMemIt.LoadNext(&groupMem)
+			_, err := voteIt.LoadNext(&vote)
 			if orm.ErrIteratorDone.Is(err) {
 				break
 			}
 
-			voterAddress, err := sdk.AccAddressFromBech32(groupMem.Member.GetAddress())
-			if err != nil {
-				return msg, broken, err
-			}
-
-			err = voteTable.GetOne(ctx, group.Vote{ProposalId: proposal.ProposalId, Voter: voterAddress.String()}.PrimaryKey(), &vote)
+			err = groupMemberTable.GetOne(ctx, vote.PrimaryKey(), &groupMem)
 			if err != nil {
 				return msg, broken, err
 			}

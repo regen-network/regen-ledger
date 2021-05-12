@@ -54,7 +54,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 	specs := map[string]struct {
 		prevProposals []*group.Proposal
 		curProposals  []*group.Proposal
-		expErr        bool
+		expBroken     bool
 	}{
 		"invariant not broken": {
 			prevProposals: []*group.Proposal{
@@ -120,7 +120,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 					ExecutorResult:      group.ProposalExecutorResultNotRun,
 				},
 			},
-			expErr: true,
+			expBroken: true,
 		},
 		"current block no vote count must be greater than previous block no vote count": {
 			prevProposals: []*group.Proposal{
@@ -153,7 +153,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 					ExecutorResult:      group.ProposalExecutorResultNotRun,
 				},
 			},
-			expErr: true,
+			expBroken: true,
 		},
 		"current block abstain vote count must be greater than previous block abstain vote count": {
 			prevProposals: []*group.Proposal{
@@ -186,7 +186,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 					ExecutorResult:      group.ProposalExecutorResultNotRun,
 				},
 			},
-			expErr: true,
+			expBroken: true,
 		},
 		"current block veto vote count must be greater than previous block veto vote count": {
 			prevProposals: []*group.Proposal{
@@ -219,7 +219,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 					ExecutorResult:      group.ProposalExecutorResultNotRun,
 				},
 			},
-			expErr: true,
+			expBroken: true,
 		},
 	}
 
@@ -237,8 +237,10 @@ func TestTallyVotesInvariant(t *testing.T) {
 			_, err = proposalTable.Create(cacheCurCtx, curProposals[i])
 			require.NoError(t, err)
 		}
-		_, broken, _ := tallyVotesInvariant(cacheCurCtx, cachePrevCtx, proposalTable)
-		require.Equal(t, spec.expErr, broken)
+		_, broken, err := tallyVotesInvariant(cacheCurCtx, cachePrevCtx, proposalTable)
+		require.Equal(t, spec.expBroken, broken)
+
+		require.NoError(t, err)
 	}
 }
 
@@ -261,9 +263,9 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
 	specs := map[string]struct {
-		groupsInfo []*group.GroupInfo
-		members    []*group.GroupMember
-		expErr     bool
+		groupsInfo   []*group.GroupInfo
+		groupMembers []*group.GroupMember
+		expBroken    bool
 	}{
 		"invariant not broken": {
 			groupsInfo: []*group.GroupInfo{
@@ -274,7 +276,7 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 					TotalWeight: "3",
 				},
 			},
-			members: []*group.GroupMember{
+			groupMembers: []*group.GroupMember{
 				{
 					GroupId: 1,
 					Member: &group.Member{
@@ -290,7 +292,7 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 					},
 				},
 			},
-			expErr: false,
+			expBroken: false,
 		},
 
 		"group's TotalWeight must be equal to sum of its members weight ": {
@@ -302,7 +304,7 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 					TotalWeight: "3",
 				},
 			},
-			members: []*group.GroupMember{
+			groupMembers: []*group.GroupMember{
 				{
 					GroupId: 1,
 					Member: &group.Member{
@@ -318,43 +320,37 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 					},
 				},
 			},
-			expErr: true,
+			expBroken: true,
 		},
 	}
 
 	for _, spec := range specs {
 		cacheCurCtx, _ := curCtx.CacheContext()
 		groupsInfo := spec.groupsInfo
-		members := spec.members
+		groupMembers := spec.groupMembers
 
 		for i := 0; i < len(groupsInfo); i++ {
 			err := groupTable.Create(cacheCurCtx, group.ID(groupsInfo[i].GroupId).Bytes(), groupsInfo[i])
 			require.NoError(t, err)
 		}
 
-		for i := 0; i < len(members); i++ {
-			err := groupMemberTable.Create(cacheCurCtx, members[i])
+		for i := 0; i < len(groupMembers); i++ {
+			err := groupMemberTable.Create(cacheCurCtx, groupMembers[i])
 			require.NoError(t, err)
 		}
 
-		_, broken, _ := groupTotalWeightInvariant(cacheCurCtx, groupTable, groupMemberByGroupIndex)
-		require.Equal(t, spec.expErr, broken)
+		_, broken, err := groupTotalWeightInvariant(cacheCurCtx, groupTable, groupMemberByGroupIndex)
+		require.Equal(t, spec.expBroken, broken)
+
+		require.NoError(t, err)
 	}
 }
 
 func TestTallyVotesSumInvariant(t *testing.T) {
 	curCtx, cdc, key := getCtxCodecKey(t)
 
-	// Group Account Table
-	groupAccountTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupAccountTablePrefix, key, &group.GroupAccountInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
-	groupAccountTable := groupAccountTableBuilder.Build()
-
 	// Group Member Table
 	groupMemberTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, key, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
-	groupMemberByGroupIndex := orm.NewUInt64Index(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]uint64, error) {
-		group := val.(*group.GroupMember).GroupId
-		return []uint64{group}, nil
-	})
 	groupMemberTable := groupMemberTableBuilder.Build()
 
 	// Proposal Table
@@ -363,9 +359,11 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 
 	// Vote Table
 	voteTableBuilder := orm.NewPrimaryKeyTableBuilder(VoteTablePrefix, key, &group.Vote{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	voteByProposalIndex := orm.NewUInt64Index(voteTableBuilder, VoteByProposalIndexPrefix, func(value interface{}) ([]uint64, error) {
+		return []uint64{value.(*group.Vote).ProposalId}, nil
+	})
 	voteTable := voteTableBuilder.Build()
 
-	_, _, adminAddr := testdata.KeyTestPubAddr()
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
@@ -373,22 +371,13 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 	require.NoError(t, err)
 
 	specs := map[string]struct {
-		groupAccs []*group.GroupAccountInfo
-		members   []*group.GroupMember
-		proposals []*group.Proposal
-		votes     []*group.Vote
-		expErr    bool
+		groupMembers []*group.GroupMember
+		proposals    []*group.Proposal
+		votes        []*group.Vote
+		expBroken    bool
 	}{
 		"invariant not broken": {
-			groupAccs: []*group.GroupAccountInfo{
-				{
-					Address: addr1.String(),
-					GroupId: 1,
-					Admin:   adminAddr.String(),
-					Version: 1,
-				},
-			},
-			members: []*group.GroupMember{
+			groupMembers: []*group.GroupMember{
 				{
 					GroupId: 1,
 					Member: &group.Member{
@@ -439,18 +428,10 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					},
 				},
 			},
-			expErr: false,
+			expBroken: false,
 		},
 		"proposal tally must correspond to the sum of vote weights": {
-			groupAccs: []*group.GroupAccountInfo{
-				{
-					Address: addr1.String(),
-					GroupId: 1,
-					Admin:   adminAddr.String(),
-					Version: 1,
-				},
-			},
-			members: []*group.GroupMember{
+			groupMembers: []*group.GroupMember{
 				{
 					GroupId: 1,
 					Member: &group.Member{
@@ -501,18 +482,10 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					},
 				},
 			},
-			expErr: true,
+			expBroken: true,
 		},
 		"proposal VoteState must correspond to the vote choice": {
-			groupAccs: []*group.GroupAccountInfo{
-				{
-					Address: addr1.String(),
-					GroupId: 1,
-					Admin:   adminAddr.String(),
-					Version: 1,
-				},
-			},
-			members: []*group.GroupMember{
+			groupMembers: []*group.GroupMember{
 				{
 					GroupId: 1,
 					Member: &group.Member{
@@ -563,26 +536,18 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					},
 				},
 			},
-			expErr: true,
+			expBroken: true,
 		},
 	}
 
 	for _, spec := range specs {
 		cacheCurCtx, _ := curCtx.CacheContext()
 		proposals := spec.proposals
-		members := spec.members
+		groupMembers := spec.groupMembers
 		votes := spec.votes
-		groupAccs := spec.groupAccs
 
-		for i := 0; i < len(groupAccs); i++ {
-			err := groupAccs[i].SetDecisionPolicy(group.NewThresholdDecisionPolicy("1", gogotypes.Duration{Seconds: 1}))
-			require.NoError(t, err)
-			err = groupAccountTable.Create(cacheCurCtx, groupAccs[i])
-			require.NoError(t, err)
-		}
-
-		for i := 0; i < len(members); i++ {
-			err = groupMemberTable.Create(cacheCurCtx, members[i])
+		for i := 0; i < len(groupMembers); i++ {
+			err = groupMemberTable.Create(cacheCurCtx, groupMembers[i])
 			require.NoError(t, err)
 		}
 
@@ -596,8 +561,10 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 			require.NoError(t, err)
 		}
 
-		_, broken, _ := tallyVotesSumInvariant(cacheCurCtx, proposalTable, groupAccountTable, groupMemberByGroupIndex, voteTable)
-		require.Equal(t, spec.expErr, broken)
+		_, broken, err := tallyVotesSumInvariant(cacheCurCtx, proposalTable, groupMemberTable, voteByProposalIndex)
+		require.Equal(t, spec.expBroken, broken)
+
+		require.NoError(t, err)
 
 	}
 }
