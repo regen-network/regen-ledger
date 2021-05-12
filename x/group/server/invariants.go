@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/cockroachdb/apd/v2"
@@ -223,7 +224,7 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 
 			err = groupMemberTable.GetOne(ctx, vote.PrimaryKey(), &groupMem)
 			if err != nil {
-				break
+				return msg, broken, err
 			}
 
 			curMemVotingWeight, err := regenMath.ParseNonNegativeDecimal(groupMem.Member.Weight)
@@ -279,6 +280,10 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 		if err != nil {
 			return msg, broken, err
 		}
+		fmt.Println("=========================================================")
+		fmt.Println(totalProposalVotes)
+		fmt.Println(totalVotingWeight)
+		fmt.Println("=========================================================")
 		if totalProposalVotes.Cmp(totalVotingWeight) != 0 {
 			broken = true
 			msg += "proposal tally must correspond to the sum of vote weights\n"
