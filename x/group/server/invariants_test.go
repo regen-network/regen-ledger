@@ -351,6 +351,14 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 
 	// Group Member Table
 	groupMemberTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, key, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	groupMemberByMemberIndex := orm.NewIndex(groupMemberTableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
+		memberAddr := val.(*group.GroupMember).Member.Address
+		addr, err := sdk.AccAddressFromBech32(memberAddr)
+		if err != nil {
+			return nil, err
+		}
+		return []orm.RowID{addr.Bytes()}, nil
+	})
 	groupMemberTable := groupMemberTableBuilder.Build()
 
 	// Proposal Table
@@ -561,7 +569,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 			require.NoError(t, err)
 		}
 
-		_, broken, err := tallyVotesSumInvariant(cacheCurCtx, proposalTable, groupMemberTable, voteByProposalIndex)
+		_, broken, err := tallyVotesSumInvariant(cacheCurCtx, proposalTable, groupMemberTable, groupMemberByMemberIndex, voteByProposalIndex)
 		require.Equal(t, spec.expBroken, broken)
 
 		require.NoError(t, err)

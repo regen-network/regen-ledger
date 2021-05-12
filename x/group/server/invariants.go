@@ -51,7 +51,10 @@ func (s serverImpl) groupTotalWeightInvariant() sdk.Invariant {
 
 func (s serverImpl) tallyVotesSumInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		msg, broken, err := tallyVotesSumInvariant(ctx, s.proposalTable, s.groupMemberTable, s.voteByProposalIndex)
+		msg, broken, err := tallyVotesSumInvariant(ctx, s.proposalTable, s.groupMemberTable, s.groupMemberByMemberIndex, s.voteByProposalIndex)
+		fmt.Println("\n=========================================================")
+		fmt.Println(err)
+		fmt.Println("=========================================================")
 		if err != nil {
 			panic(err)
 		}
@@ -183,7 +186,7 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 	return msg, broken, err
 }
 
-func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, groupMemberTable orm.PrimaryKeyTable, voteByProposalIndex orm.UInt64Index) (string, bool, error) {
+func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, groupMemberTable orm.PrimaryKeyTable, groupMemberByMemberIndex orm.Index, voteByProposalIndex orm.UInt64Index) (string, bool, error) {
 	var msg string
 	var broken bool
 
@@ -222,40 +225,54 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 				break
 			}
 
-			err = groupMemberTable.GetOne(ctx, vote.PrimaryKey(), &groupMem)
+			groupMemIt, err := groupMemberByMemberIndex.Get(ctx, []byte(vote.Voter))
 			if err != nil {
 				return msg, broken, err
 			}
+			defer groupMemIt.Close()
 
-			curMemVotingWeight, err := regenMath.ParseNonNegativeDecimal(groupMem.Member.Weight)
-			if err != nil {
-				return msg, broken, err
-			}
-			err = regenMath.Add(totalVotingWeight, totalVotingWeight, curMemVotingWeight)
-			if err != nil {
-				return msg, broken, err
-			}
+			for {
+				_, err := groupMemIt.LoadNext(&groupMem)
+				if orm.ErrIteratorDone.Is(err) {
+					fmt.Println("\n:::::::::::::::::::::::::::::::::::")
+					fmt.Println(vote)
+					fmt.Println(groupMem)
+					fmt.Println(err)
+					fmt.Println("::::::::::::::::::::::::::::::::::::")
 
-			switch vote.Choice {
-			case group.Choice_CHOICE_YES:
-				err = regenMath.Add(yesVoteWeight, yesVoteWeight, curMemVotingWeight)
+					break
+				}
+
+				curMemVotingWeight, err := regenMath.ParseNonNegativeDecimal(groupMem.Member.Weight)
 				if err != nil {
 					return msg, broken, err
 				}
-			case group.Choice_CHOICE_NO:
-				err = regenMath.Add(noVoteWeight, noVoteWeight, curMemVotingWeight)
+				err = regenMath.Add(totalVotingWeight, totalVotingWeight, curMemVotingWeight)
 				if err != nil {
 					return msg, broken, err
 				}
-			case group.Choice_CHOICE_ABSTAIN:
-				err = regenMath.Add(abstainVoteWeight, abstainVoteWeight, curMemVotingWeight)
-				if err != nil {
-					return msg, broken, err
-				}
-			case group.Choice_CHOICE_VETO:
-				err = regenMath.Add(vetoVoteWeight, vetoVoteWeight, curMemVotingWeight)
-				if err != nil {
-					return msg, broken, err
+
+				switch vote.Choice {
+				case group.Choice_CHOICE_YES:
+					err = regenMath.Add(yesVoteWeight, yesVoteWeight, curMemVotingWeight)
+					if err != nil {
+						return msg, broken, err
+					}
+				case group.Choice_CHOICE_NO:
+					err = regenMath.Add(noVoteWeight, noVoteWeight, curMemVotingWeight)
+					if err != nil {
+						return msg, broken, err
+					}
+				case group.Choice_CHOICE_ABSTAIN:
+					err = regenMath.Add(abstainVoteWeight, abstainVoteWeight, curMemVotingWeight)
+					if err != nil {
+						return msg, broken, err
+					}
+				case group.Choice_CHOICE_VETO:
+					err = regenMath.Add(vetoVoteWeight, vetoVoteWeight, curMemVotingWeight)
+					if err != nil {
+						return msg, broken, err
+					}
 				}
 			}
 		}
