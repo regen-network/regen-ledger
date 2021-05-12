@@ -6,7 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/types"
 	gocid "github.com/ipfs/go-cid"
-	"github.com/regen-network/regen-ledger/testutil/network"
+	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -22,6 +22,11 @@ type IntegrationTestSuite struct {
 	signer             sdk.AccAddress
 }
 
+// TODO call NewIntegrationTestSuite to set cfg field of IntegrationTestSuite
+// remove cfg := network.DefaultConfig()
+// replace cfg.NumValidators = 2 with s.cfg.NumValidators = 2
+// replace s.network = network.New(s.T(), cfg) with s.network = network.New(s.T(), s.cfg)
+// remove TestIntegrationTestSuite func
 func (s *IntegrationTestSuite) SetupSuite() {
 	//s.T().Log("setting up integration test suite")
 	//
