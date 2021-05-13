@@ -8,13 +8,11 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/simulation"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	gogogrpc "github.com/gogo/protobuf/grpc"
 	abci "github.com/tendermint/tendermint/abci/types"
-	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/module"
