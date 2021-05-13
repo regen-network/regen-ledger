@@ -50,7 +50,7 @@ func (s serverImpl) groupTotalWeightInvariant() sdk.Invariant {
 
 func (s serverImpl) tallyVotesSumInvariant() sdk.Invariant {
 	return func(ctx sdk.Context) (string, bool) {
-		msg, broken, err := tallyVotesSumInvariant(ctx, s.proposalTable, s.groupMemberTable, s.groupMemberByMemberIndex, s.voteByProposalIndex, s.groupAccountTable)
+		msg, broken, err := tallyVotesSumInvariant(ctx, s.proposalTable, s.groupMemberTable, s.voteByProposalIndex, s.groupAccountTable)
 		if err != nil {
 			panic(err)
 		}
@@ -182,7 +182,7 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 	return msg, broken, err
 }
 
-func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, groupMemberTable orm.PrimaryKeyTable, groupMemberByMemberIndex orm.Index, voteByProposalIndex orm.UInt64Index, groupAccountTable orm.PrimaryKeyTable) (string, bool, error) {
+func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, groupMemberTable orm.PrimaryKeyTable, voteByProposalIndex orm.UInt64Index, groupAccountTable orm.PrimaryKeyTable) (string, bool, error) {
 	var msg string
 	var broken bool
 
