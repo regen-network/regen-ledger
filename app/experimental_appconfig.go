@@ -3,8 +3,6 @@
 package app
 
 import (
-	"path/filepath"
-
 	// "github.com/CosmWasm/wasmd/x/wasm"
 	// wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -35,7 +33,7 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 		// ),
 		gov.NewAppModuleBasic(
 			paramsclient.ProposalHandler, distrclient.ProposalHandler,
-			upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler
+			upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
 		),
 		data.Module{},
 		ecocredit.Module{},
@@ -107,8 +105,8 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 }
 
 func (app *RegenApp) registerUpgradeHandlers() {
-	app.UpgradeKeeper.SetUpgradeHandler("Mau", func(ctx sdk.Context, plan upgradetypes.Plan) {
-		// no-op handler, does nothing
+	app.UpgradeKeeper.SetUpgradeHandler("Mau", func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
+		return vm, nil
 	})
 }
 
