@@ -177,7 +177,7 @@ type RegenApp struct {
 	TransferKeeper   ibctransferkeeper.Keeper
 	FeeGrantKeeper   feegrantkeeper.Keeper
 	AuthzKeeper      authzkeeper.Keeper
-	//nolint
+
 	// wasmKeeper wasm.Keeper // only used in experimental builds
 
 	// make scoped keepers public for test purposes
