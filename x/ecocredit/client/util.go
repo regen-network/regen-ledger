@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
-	"github.com/regen-network/regen-ledger/client"
+	"github.com/regen-network/regen-ledger/types/module/client"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
