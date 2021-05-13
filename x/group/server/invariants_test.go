@@ -349,6 +349,10 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 func TestTallyVotesSumInvariant(t *testing.T) {
 	curCtx, cdc, key := getCtxCodecKey(t)
 
+	// Group Account Table
+	groupAccountTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupAccountTablePrefix, key, &group.GroupAccountInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	groupAccountTable := groupAccountTableBuilder.Build()
+
 	// Group Member Table
 	groupMemberTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, key, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	groupMemberByMemberIndex := orm.NewIndex(groupMemberTableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
@@ -372,6 +376,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 	})
 	voteTable := voteTableBuilder.Build()
 
+	_, _, adminAddr := testdata.KeyTestPubAddr()
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
@@ -379,12 +384,21 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 	require.NoError(t, err)
 
 	specs := map[string]struct {
+		groupAccs    []*group.GroupAccountInfo
 		groupMembers []*group.GroupMember
 		proposals    []*group.Proposal
 		votes        []*group.Vote
 		expBroken    bool
 	}{
 		"invariant not broken": {
+			groupAccs: []*group.GroupAccountInfo{
+				{
+					Address: addr1.String(),
+					GroupId: 1,
+					Admin:   adminAddr.String(),
+					Version: 1,
+				},
+			},
 			groupMembers: []*group.GroupMember{
 				{
 					GroupId: 1,
@@ -439,6 +453,14 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 			expBroken: false,
 		},
 		"proposal tally must correspond to the sum of vote weights": {
+			groupAccs: []*group.GroupAccountInfo{
+				{
+					Address: addr1.String(),
+					GroupId: 1,
+					Admin:   adminAddr.String(),
+					Version: 1,
+				},
+			},
 			groupMembers: []*group.GroupMember{
 				{
 					GroupId: 1,
@@ -493,6 +515,14 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 			expBroken: true,
 		},
 		"proposal VoteState must correspond to the vote choice": {
+			groupAccs: []*group.GroupAccountInfo{
+				{
+					Address: addr1.String(),
+					GroupId: 1,
+					Admin:   adminAddr.String(),
+					Version: 1,
+				},
+			},
 			groupMembers: []*group.GroupMember{
 				{
 					GroupId: 1,
@@ -551,8 +581,16 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 	for _, spec := range specs {
 		cacheCurCtx, _ := curCtx.CacheContext()
 		proposals := spec.proposals
+		groupAccs := spec.groupAccs
 		groupMembers := spec.groupMembers
 		votes := spec.votes
+
+		for i := 0; i < len(groupAccs); i++ {
+			err := groupAccs[i].SetDecisionPolicy(group.NewThresholdDecisionPolicy("1", gogotypes.Duration{Seconds: 1}))
+			require.NoError(t, err)
+			err = groupAccountTable.Create(cacheCurCtx, groupAccs[i])
+			require.NoError(t, err)
+		}
 
 		for i := 0; i < len(groupMembers); i++ {
 			err = groupMemberTable.Create(cacheCurCtx, groupMembers[i])
@@ -569,7 +607,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 			require.NoError(t, err)
 		}
 
-		_, broken, err := tallyVotesSumInvariant(cacheCurCtx, proposalTable, groupMemberTable, groupMemberByMemberIndex, voteByProposalIndex)
+		_, broken, err := tallyVotesSumInvariant(cacheCurCtx, proposalTable, groupMemberTable, groupMemberByMemberIndex, voteByProposalIndex, groupAccountTable)
 		require.Equal(t, spec.expBroken, broken)
 
 		require.NoError(t, err)
