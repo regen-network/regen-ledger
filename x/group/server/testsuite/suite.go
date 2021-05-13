@@ -7,28 +7,21 @@ import (
 	"strings"
 	"time"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
-	"github.com/regen-network/regen-ledger/x/group/testdata"
-	servermodule "github.com/regen-network/regen-ledger/types/module/server"
-
-	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-
-	bank "github.com/cosmos/cosmos-sdk/x/bank"
-
-	gogotypes "github.com/gogo/protobuf/types"
-
-	"github.com/stretchr/testify/suite"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	bank "github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	gogotypes "github.com/gogo/protobuf/types"
+	"github.com/stretchr/testify/suite"
 
 	"github.com/regen-network/regen-ledger/types"
-
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/group"
-
 	groupserver "github.com/regen-network/regen-ledger/x/group/server"
+	"github.com/regen-network/regen-ledger/x/group/testdata"
 )
 
 type IntegrationTestSuite struct {

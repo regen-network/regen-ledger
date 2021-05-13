@@ -145,7 +145,7 @@ type AfterDeleteInterceptor func(ctx HasKVStore, rowID RowID, value codec.ProtoM
 type RowGetter func(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) error
 
 // NewTypeSafeRowGetter returns a `RowGetter` with type check on the dest parameter.
-func NewTypeSafeRowGetter(storeKey sdk.StoreKey, prefixKey byte, model reflect.Type, cdc codec.Marshaler) RowGetter {
+func NewTypeSafeRowGetter(storeKey sdk.StoreKey, prefixKey byte, model reflect.Type, cdc codec.Codec) RowGetter {
 	return func(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) error {
 		if len(rowID) == 0 {
 			return errors.Wrap(ErrArgument, "key must not be nil")
@@ -160,7 +160,7 @@ func NewTypeSafeRowGetter(storeKey sdk.StoreKey, prefixKey byte, model reflect.T
 		if !it.Valid() {
 			return ErrNotFound
 		}
-		return cdc.UnmarshalBinaryBare(it.Value(), dest)
+		return cdc.Unmarshal(it.Value(), dest)
 	}
 }
 

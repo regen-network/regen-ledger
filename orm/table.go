@@ -20,11 +20,11 @@ type TableBuilder struct {
 	indexKeyCodec IndexKeyCodec
 	afterSave     []AfterSaveInterceptor
 	afterDelete   []AfterDeleteInterceptor
-	cdc           codec.Marshaler
+	cdc           codec.Codec
 }
 
 // NewTableBuilder creates a builder to setup a Table object.
-func NewTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, idxKeyCodec IndexKeyCodec, cdc codec.Marshaler) *TableBuilder {
+func NewTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, idxKeyCodec IndexKeyCodec, cdc codec.Codec) *TableBuilder {
 	if model == nil {
 		panic("Model must not be nil")
 	}
@@ -94,7 +94,7 @@ type Table struct {
 	storeKey    sdk.StoreKey
 	afterSave   []AfterSaveInterceptor
 	afterDelete []AfterDeleteInterceptor
-	cdc         codec.Marshaler
+	cdc         codec.Codec
 }
 
 // Create persists the given object under the rowID key. It does not check if the
@@ -111,7 +111,7 @@ func (a Table) Create(ctx HasKVStore, rowID RowID, obj codec.ProtoMarshaler) err
 		return err
 	}
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
-	v, err := a.cdc.MarshalBinaryBare(obj)
+	v, err := a.cdc.Marshal(obj)
 	if err != nil {
 		return errors.Wrapf(err, "failed to serialize %T", obj)
 	}
@@ -143,7 +143,7 @@ func (a Table) Save(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler) 
 	if err := a.GetOne(ctx, rowID, oldValue); err != nil {
 		return errors.Wrap(err, "load old value")
 	}
-	newValueEncoded, err := a.cdc.MarshalBinaryBare(newValue)
+	newValueEncoded, err := a.cdc.Marshal(newValue)
 	if err != nil {
 		return errors.Wrapf(err, "failed to serialize %T", newValue)
 	}

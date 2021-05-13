@@ -22,9 +22,9 @@ type ServiceMsgClientConn struct {
 var _ gogogrpc.ClientConn = &ServiceMsgClientConn{}
 
 func (t *ServiceMsgClientConn) Invoke(_ context.Context, method string, args, _ interface{}, _ ...grpc.CallOption) error {
-	req, ok := args.(sdk.MsgRequest)
+	req, ok := args.(sdk.Msg)
 	if !ok {
-		return fmt.Errorf("%T should implement %T", args, (*sdk.MsgRequest)(nil))
+		return fmt.Errorf("%T should implement %T", args, (*sdk.Msg)(nil))
 	}
 
 	err := req.ValidateBasic()
@@ -32,10 +32,7 @@ func (t *ServiceMsgClientConn) Invoke(_ context.Context, method string, args, _ 
 		return err
 	}
 
-	t.Msgs = append(t.Msgs, sdk.ServiceMsg{
-		MethodName: method,
-		Request:    req,
-	})
+	t.Msgs = append(t.Msgs, req)
 
 	return nil
 }
