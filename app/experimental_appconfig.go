@@ -1,4 +1,5 @@
 // +build experimental
+// Uncomment the wasm related code while integrating wasm
 
 package app
 
@@ -27,10 +28,6 @@ import (
 
 func setCustomModuleBasics() []module.AppModuleBasic {
 	return []module.AppModuleBasic{
-		// gov.NewAppModuleBasic(
-		// 	append(wasmclient.ProposalHandlers, paramsclient.ProposalHandler, distrclient.ProposalHandler,
-		// 		upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler)...,
-		// ),
 		gov.NewAppModuleBasic(
 			paramsclient.ProposalHandler, distrclient.ProposalHandler,
 			upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
