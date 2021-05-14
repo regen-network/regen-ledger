@@ -172,9 +172,6 @@ type RegenApp struct {
 	FeeGrantKeeper   feegrantkeeper.Keeper
 	AuthzKeeper      authzkeeper.Keeper
 
-	// Uncomment this when integrating wasm
-	// wasmKeeper wasm.Keeper // only used in experimental builds
-
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
