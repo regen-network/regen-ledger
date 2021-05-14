@@ -3,16 +3,20 @@ package testsuite
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"sort"
 	"strings"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	bank "github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 
@@ -23,6 +27,8 @@ import (
 	groupserver "github.com/regen-network/regen-ledger/x/group/server"
 	"github.com/regen-network/regen-ledger/x/group/testdata"
 )
+
+const holder = "holder"
 
 type IntegrationTestSuite struct {
 	suite.Suite
@@ -69,8 +75,37 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.ctx = types.Context{Context: s.sdkCtx}
 	s.genesisCtx = types.Context{Context: sdkCtx}
 
-	totalSupply := banktypes.NewSupply(sdk.NewCoins(sdk.NewInt64Coin("test", 400000000)))
-	s.bankKeeper.SetSupply(sdkCtx, totalSupply)
+	// totalSupply := banktypes.NewSupply(sdk.NewCoins(sdk.NewInt64Coin("test", 400000000)))
+	// s.bankKeeper.SetSupply(sdkCtx, totalSupply)
+
+	macc := authtypes.NewEmptyModuleAccount(holder)
+	// maccI := (s.accountKeeper.NewAccount(s.sdkCtx, macc)).(authtypes.ModuleAccountI) // set the account number
+	// s.accountKeeper.SetModuleAccount(s.sdkCtx, maccI)
+
+	// a, b := s.accountKeeper.GetModuleAccountAndPermissions(s.sdkCtx, maccI.GetName())
+
+	baseAcc := s.accountKeeper.NewAccountWithAddress(s.sdkCtx, authtypes.NewModuleAddress("baseAcc"))
+	ma := authtypes.NewModuleAccount(authtypes.NewBaseAccount(baseAcc.GetAddress(), baseAcc.GetPubKey(), baseAcc.GetAccountNumber(), baseAcc.GetSequence()), macc.Name, macc.Permissions...)
+
+	err := s.bankKeeper.SendCoinsFromModuleToAccount(sdkCtx, minttypes.ModuleName, ma.GetAddress(), sdk.NewCoins(sdk.NewInt64Coin("test", 400000000)))
+	if err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+	fmt.Println(":::::::::::::::::::::::::::::::::;")
+	fmt.Println(ma)
+
+	// fmt.Println(maccI)
+	// fmt.Println(ma)
+	// fmt.Println(baseAcc)
+
+	// err := s.bankKeeper.MintCoins(s.sdkCtx, ma.GetName(), sdk.NewCoins(sdk.NewInt64Coin("test", 400000000)))
+	// if err != nil {
+	// 	fmt.Println(";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;")
+	// 	panic(err)
+	// }
+	// fmt.Println("////////////////////////////////////////")
+
 	s.bankKeeper.SetParams(sdkCtx, banktypes.DefaultParams())
 
 	s.msgClient = group.NewMsgClient(s.fixture.TxConn())
@@ -113,7 +148,24 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 	s.groupAccountAddr = addr
 
-	s.Require().NoError(s.bankKeeper.SetBalances(s.sdkCtx, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+	// macc := authtypes.NewEmptyModuleAccount(holder)
+	// maccI := (s.accountKeeper.NewAccount(s.sdkCtx, macc)).(authtypes.ModuleAccountI) // set the account number
+	// s.accountKeeper.SetModuleAccount(s.sdkCtx, maccI)
+	// // encCfg := app.MakeEncodingConfig()
+	// // db := dbm.NewMemDB()
+	// // app := app.NewRegenApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, app.DefaultNodeHome, 0, encCfg, simapp.EmptyAppOptions{})
+
+	simappSetup := simapp.Setup(false)
+
+	maccPerms := simapp.GetMaccPerms()
+	maccPerms[holder] = nil
+	maccPerms[authtypes.Minter] = []string{authtypes.Minter}
+
+	s.Require().NoError(simapp.FundAccount(simappSetup, s.sdkCtx, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+
+	// s.Require().NoError(simapp.FundModuleAccount(simappSetup, s.sdkCtx, s.groupAccountAddr.String(), sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+
+	// s.Require().NoError(s.bankKeeper.SetBalances(s.sdkCtx, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
@@ -1875,7 +1927,26 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 
 				_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{Signer: s.addr1.String(), ProposalId: myProposalID})
 				s.Require().NoError(err)
-				s.Require().NoError(s.bankKeeper.SetBalances(ctx.(types.Context).Context, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+
+				macc := authtypes.NewEmptyModuleAccount(holder)
+				maccI := (s.accountKeeper.NewAccount(ctx.(types.Context).Context, macc)).(authtypes.ModuleAccountI) // set the account number
+				s.accountKeeper.SetModuleAccount(ctx.(types.Context).Context, maccI)
+				// encCfg := app.MakeEncodingConfig()
+				// db := dbm.NewMemDB()
+				// app := app.NewRegenApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, app.DefaultNodeHome, 0, encCfg, simapp.EmptyAppOptions{})
+
+				simappSetup := simapp.Setup(false)
+				err = simapp.FundModuleAccount(simappSetup, ctx.(types.Context).Context, s.groupAccountAddr.String(), sdk.Coins{sdk.NewInt64Coin("test", 10002)})
+				fmt.Println(":::::::::::::::::::::::::::::::")
+				fmt.Println(err)
+				fmt.Println(":::::::::::::::::::::::::::::::")
+
+				panic("")
+
+				// s.Require().NoError(simapp.FundModuleAccount(simappSetup, ctx.(types.Context).Context, s.groupAccountAddr.String(), sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+
+				// s.Require().NoError(s.bankKeeper.SetBalances(ctx.(types.Context).Context, s.groupAccountAddr, sdk.Coins{sdk.NewInt64Coin("test", 10002)}))
+
 				return myProposalID
 			},
 			expProposalStatus: group.ProposalStatusClosed,

@@ -7,12 +7,9 @@ import (
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/spf13/cobra"
-
 	"gopkg.in/yaml.v2"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -67,16 +64,15 @@ Parameters:
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 
-			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			c, err := newMsgSrvClient(cmd)
 			if err != nil {
 				return err
 			}
-
 			msg := ecocredit.MsgCreateClassRequest{
 				Designer: args[0], Issuers: issuers, Metadata: b,
 			}
-
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+			_, err = c.client.CreateClass(cmd.Context(), &msg)
+			return c.send(err)
 		},
 	}
 }
@@ -105,16 +101,15 @@ Parameters:
 				return err
 			}
 
-			clientCtx, err := sdkclient.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
 			msg := ecocredit.MsgCreateBatchRequest{
 				Issuer: args[0], ClassId: args[1], Metadata: b, Issuance: issuance,
 			}
-
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+			c, err := newMsgSrvClient(cmd)
+			if err != nil {
+				return err
+			}
+			_, err = c.client.CreateBatch(cmd.Context(), &msg)
+			return c.send(err)
 		},
 	}
 }
@@ -135,16 +130,16 @@ Parameters:
 			if err := yaml.Unmarshal([]byte(args[1]), &credits); err != nil {
 				return err
 			}
-
-			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			c, err := newMsgSrvClient(cmd)
 			if err != nil {
 				return err
 			}
 			msg := ecocredit.MsgSendRequest{
-				Sender:    clientCtx.GetFromAddress().String(),
+				Sender:    c.Cctx.GetFromAddress().String(),
 				Recipient: args[0], Credits: credits,
 			}
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+			_, err = c.client.Send(cmd.Context(), &msg)
+			return c.send(err)
 		},
 	}
 }
@@ -164,16 +159,16 @@ Parameters:
 			if err := yaml.Unmarshal([]byte(args[0]), &credits); err != nil {
 				return err
 			}
-			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			c, err := newMsgSrvClient(cmd)
 			if err != nil {
 				return err
 			}
-
 			msg := ecocredit.MsgRetireRequest{
-				Holder:  clientCtx.GetFromAddress().String(),
+				Holder:  c.Cctx.GetFromAddress().String(),
 				Credits: credits,
 			}
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+			_, err = c.client.Retire(cmd.Context(), &msg)
+			return c.send(err)
 		},
 	}
 }
@@ -193,18 +188,16 @@ Parameters:
 			if err == nil {
 				return err
 			}
-
-			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			c, err := newMsgSrvClient(cmd)
 			if err != nil {
 				return err
 			}
-
 			msg := ecocredit.MsgSetPrecisionRequest{
-				Issuer:     clientCtx.GetFromAddress().String(),
+				Issuer:     c.Cctx.GetFromAddress().String(),
 				BatchDenom: args[0], MaxDecimalPlaces: uint32(decimals),
 			}
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
-
+			_, err = c.client.SetPrecision(cmd.Context(), &msg)
+			return c.send(err)
 		},
 	}
 }

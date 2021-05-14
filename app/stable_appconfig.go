@@ -15,14 +15,6 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 
-	"github.com/cosmos/cosmos-sdk/x/feegrant"
-	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
-	feegrantmodule "github.com/cosmos/cosmos-sdk/x/feegrant/module"
-
-	"github.com/cosmos/cosmos-sdk/x/authz"
-	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
-	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
-
 	"github.com/regen-network/regen-ledger/types/module/server"
 )
 
@@ -32,8 +24,6 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 			paramsclient.ProposalHandler, distrclient.ProposalHandler,
 			upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
 		),
-		feegrantmodule.AppModuleBasic{},
-		authzmodule.AppModuleBasic{},
 	}
 }
 
@@ -43,45 +33,24 @@ func setCustomModules(_ *RegenApp, _ types.InterfaceRegistry) *server.Manager {
 	return &server.Manager{}
 }
 func setCustomKVStoreKeys() []string {
-	return []string{
-		feegrant.StoreKey,
-		authzkeeper.StoreKey,
-	}
+	return []string{}
 }
 
 func (app *RegenApp) registerUpgradeHandlers() {}
 
 func (app *RegenApp) setCustomModuleManager() []module.AppModule {
-	return []module.AppModule{
-		feegrantmodule.NewAppModule(app.appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
-		authzmodule.NewAppModule(app.appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-	}
+	return []module.AppModule{}
 }
 
-func (app *RegenApp) setCustomKeeprs(_ *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec, _ govtypes.Router, _ string) {
-	feegrantKeeper := feegrantkeeper.NewKeeper(
-		appCodec, keys[feegrant.StoreKey], &app.AccountKeeper,
-	)
-	app.FeeGrantKeeper = feegrantKeeper
-
-	authzKeeper := authzkeeper.NewKeeper(
-		keys[authzkeeper.StoreKey], appCodec, app.MsgServiceRouter(),
-	)
-	app.AuthzKeeper = authzKeeper
+func (app *RegenApp) setCustomKeeprs(_ *baseapp.BaseApp, _ map[string]*sdk.KVStoreKey, _ codec.Codec, _ govtypes.Router, _ string) {
 }
 
 func setCustomOrderInitGenesis() []string {
-	return []string{
-		feegrant.ModuleName,
-		authz.ModuleName,
-	}
+	return []string{}
 }
 
 func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
-	return []module.AppModuleSimulation{
-		feegrantmodule.NewAppModule(app.appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
-		authzmodule.NewAppModule(app.appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
-	}
+	return []module.AppModuleSimulation{}
 }
 
 func initCustomParamsKeeper(_ *paramskeeper.Keeper) {}

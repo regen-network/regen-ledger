@@ -16,6 +16,8 @@ import (
 	"github.com/regen-network/regen-ledger/orm/testdata"
 )
 
+const addrLen = 20
+
 func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
 	interfaceRegistry := types.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
@@ -283,8 +285,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 
 	testRecords := 10
 	for i := 1; i <= testRecords; i++ {
-		// myAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, sdk.AddrLen))
-		myAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, 20))
+		myAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, addrLen))
 		g := testdata.GroupInfo{
 			GroupId:     uint64(i),
 			Description: fmt.Sprintf("my test %d", i),
@@ -314,8 +315,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 
 		require.Equal(t, orm.RowID(orm.EncodeSequence(uint64(i))), groupRowID)
 		assert.Equal(t, fmt.Sprintf("my test %d", i), loaded.Description)
-		// exp := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, sdk.AddrLen))
-		exp := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, 20))
+		exp := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, addrLen))
 		assert.Equal(t, exp, loaded.Admin)
 
 		// and also the indexes
@@ -338,13 +338,11 @@ func TestExportImportStatePrimaryKeyTable(t *testing.T) {
 	ctx := orm.NewMockContext()
 
 	k := NewGroupKeeper(storeKey, cdc)
-	// myGroupAddr := sdk.AccAddress(bytes.Repeat([]byte{byte('a')}, sdk.AddrLen))
-	myGroupAddr := sdk.AccAddress(bytes.Repeat([]byte{byte('a')}, 20))
+	myGroupAddr := sdk.AccAddress(bytes.Repeat([]byte{byte('a')}, addrLen))
 	testRecordsNum := 10
 	testRecords := make([]testdata.GroupMember, testRecordsNum)
 	for i := 1; i <= testRecordsNum; i++ {
-		// myAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, sdk.AddrLen))
-		myAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, 20))
+		myAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, addrLen))
 		g := testdata.GroupMember{
 			Group:  myGroupAddr,
 			Member: myAddr,
