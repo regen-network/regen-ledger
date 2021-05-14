@@ -12,7 +12,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/spf13/cobra"
-
 	"gopkg.in/yaml.v2"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -71,11 +70,9 @@ Parameters:
 			if err != nil {
 				return err
 			}
-
 			msg := ecocredit.MsgCreateClassRequest{
 				Designer: args[0], Issuers: issuers, Metadata: b,
 			}
-
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
@@ -109,7 +106,6 @@ Parameters:
 			if err != nil {
 				return err
 			}
-
 			msg := ecocredit.MsgCreateBatchRequest{
 				Issuer: args[0], ClassId: args[1], Metadata: b, Issuance: issuance,
 			}
@@ -135,7 +131,6 @@ Parameters:
 			if err := yaml.Unmarshal([]byte(args[1]), &credits); err != nil {
 				return err
 			}
-
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
 			if err != nil {
 				return err
@@ -168,7 +163,6 @@ Parameters:
 			if err != nil {
 				return err
 			}
-
 			msg := ecocredit.MsgRetireRequest{
 				Holder:  clientCtx.GetFromAddress().String(),
 				Credits: credits,
@@ -193,18 +187,15 @@ Parameters:
 			if err == nil {
 				return err
 			}
-
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
-
 			msg := ecocredit.MsgSetPrecisionRequest{
 				Issuer:     clientCtx.GetFromAddress().String(),
 				BatchDenom: args[0], MaxDecimalPlaces: uint32(decimals),
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
-
 		},
 	}
 }

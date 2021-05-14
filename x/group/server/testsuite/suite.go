@@ -27,6 +27,8 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 )
 
+const holder = "holder"
+
 type IntegrationTestSuite struct {
 	suite.Suite
 
