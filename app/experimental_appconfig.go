@@ -1,5 +1,4 @@
 // +build experimental
-// Uncomment the wasm related code while integrating wasm
 
 package app
 
@@ -26,6 +25,7 @@ import (
 	group "github.com/regen-network/regen-ledger/x/group/module"
 )
 
+// Uncomment the wasm related code while integrating wasm
 func setCustomModuleBasics() []module.AppModuleBasic {
 	return []module.AppModuleBasic{
 		gov.NewAppModuleBasic(
