@@ -3,9 +3,9 @@ module github.com/regen-network/regen-ledger
 go 1.15
 
 require (
+	// github.com/CosmWasm/wasmd v0.15.0
 	github.com/cosmos/cosmos-sdk v0.43.0-beta1
 	github.com/cosmos/ibc-go v1.0.0-alpha2
-	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/regen-ledger/types v0.0.0-00010101000000-000000000000
