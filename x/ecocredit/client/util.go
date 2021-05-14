@@ -5,7 +5,6 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/spf13/cobra"
 
-	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
