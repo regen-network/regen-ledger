@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/authz"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
@@ -20,6 +21,7 @@ import (
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
 )
@@ -47,7 +49,15 @@ func setCustomKVStoreKeys() []string {
 	}
 }
 
-func (app *RegenApp) registerUpgradeHandlers() {}
+func (app *RegenApp) registerUpgradeHandlers() {
+	app.UpgradeKeeper.SetUpgradeHandler("v0.43.0-beta1-upgrade", func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+
+		// skipping x/auth migrations. It is already patched in regen-ledger v1.0
+		fromVM["auth"] = auth.AppModule{}.ConsensusVersion()
+
+		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
+	})
+}
 
 func (app *RegenApp) setCustomModuleManager() []module.AppModule {
 	return []module.AppModule{
