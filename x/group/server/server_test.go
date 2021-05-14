@@ -43,20 +43,16 @@ func TestServer(t *testing.T) {
 	stakingSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, stakingtypes.ModuleName)
 	mintSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, minttypes.ModuleName)
 
-	accountKeeper := authkeeper.NewAccountKeeper(
-		cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, map[string][]string{
-			stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
-			minttypes.ModuleName:           {authtypes.Minter},
-			stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
-		},
-	)
-
 	maccPerms := map[string][]string{
 		authtypes.FeeCollectorName:     nil,
 		minttypes.ModuleName:           {authtypes.Minter},
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 	}
+
+	accountKeeper := authkeeper.NewAccountKeeper(
+		cdc, authKey, authSubspace, authtypes.ProtoBaseAccount, maccPerms,
+	)
 
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {

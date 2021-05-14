@@ -192,7 +192,7 @@ type RegenApp struct {
 	// and a larger refactoring.
 	smm *server.Manager
 
-	// the configurator
+	// module configurator
 	configurator module.Configurator
 }
 
@@ -459,10 +459,10 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 // MakeCodecs constructs the *std.Codec and *codec.LegacyAmino instances used by
 // Regenapp. It is useful for tests and clients who do not want to construct the
 // full Regenapp
-// func MakeCodecs() (codec.Codec, *codec.LegacyAmino) {
-// 	config := MakeEncodingConfig()
-// 	return config.Marshaler, config.Amino
-// }
+func MakeCodecs() (codec.Codec, *codec.LegacyAmino) {
+	config := MakeEncodingConfig()
+	return config.Marshaler, config.Amino
+}
 
 // Name returns the name of the App
 func (app *RegenApp) Name() string { return app.BaseApp.Name() }
