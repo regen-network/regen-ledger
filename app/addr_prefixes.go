@@ -8,8 +8,6 @@ import (
 )
 
 const (
-	// AddrLen defines the length of an account's address
-	AddrLen = 20
 	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
 	Bech32PrefixAccAddr = "regen"
 	// Bech32PrefixAccPub defines the Bech32 prefix of an account's public key

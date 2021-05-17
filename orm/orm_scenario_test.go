@@ -12,10 +12,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/regen-network/regen-ledger/app"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/orm/testdata"
 )
+
+const addrLen = 10
 
 func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
 	interfaceRegistry := types.NewInterfaceRegistry()
@@ -284,7 +285,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 
 	testRecords := 10
 	for i := 1; i <= testRecords; i++ {
-		myAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, app.AddrLen))
+		myAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, addrLen))
 		g := testdata.GroupInfo{
 			GroupId:     uint64(i),
 			Description: fmt.Sprintf("my test %d", i),
@@ -314,7 +315,7 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 
 		require.Equal(t, orm.RowID(orm.EncodeSequence(uint64(i))), groupRowID)
 		assert.Equal(t, fmt.Sprintf("my test %d", i), loaded.Description)
-		exp := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, app.AddrLen))
+		exp := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, addrLen))
 		assert.Equal(t, exp, loaded.Admin)
 
 		// and also the indexes
@@ -337,11 +338,11 @@ func TestExportImportStatePrimaryKeyTable(t *testing.T) {
 	ctx := orm.NewMockContext()
 
 	k := NewGroupKeeper(storeKey, cdc)
-	myGroupAddr := sdk.AccAddress(bytes.Repeat([]byte{byte('a')}, app.AddrLen))
+	myGroupAddr := sdk.AccAddress(bytes.Repeat([]byte{byte('a')}, addrLen))
 	testRecordsNum := 10
 	testRecords := make([]testdata.GroupMember, testRecordsNum)
 	for i := 1; i <= testRecordsNum; i++ {
-		myAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, app.AddrLen))
+		myAddr := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, addrLen))
 		g := testdata.GroupMember{
 			Group:  myGroupAddr,
 			Member: myAddr,
