@@ -1,29 +1,26 @@
-// +build experimental
-
 package testsuite
 
 import (
 	"fmt"
 	"strconv"
 	"strings"
-	"testing"
-
-	tmcli "github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/testutil"
-	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
+
 	"github.com/gogo/protobuf/proto"
+	"github.com/stretchr/testify/suite"
+	tmcli "github.com/tendermint/tendermint/libs/cli"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/testutil/cli"
-	"github.com/regen-network/regen-ledger/testutil/network"
+	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
+	"github.com/regen-network/regen-ledger/types/testutil/cli"
+	"github.com/regen-network/regen-ledger/types/testutil/network"
 
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/client"
-	"github.com/stretchr/testify/suite"
 )
 
 type IntegrationTestSuite struct {
@@ -40,14 +37,16 @@ type IntegrationTestSuite struct {
 
 const validMetadata = "AQ=="
 
+func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
+	return &IntegrationTestSuite{cfg : cfg}
+}
+
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
 
-	cfg := network.DefaultConfig()
-	cfg.NumValidators = 2
-
-	s.cfg = cfg
-	s.network = network.New(s.T(), cfg)
+	// We execute NewIntegrationTestSuite to set cfg field of IntegrationTestSuite
+	s.cfg.NumValidators = 2
+	s.network = network.New(s.T(), s.cfg)
 
 	_, err := s.network.WaitForHeight(1)
 	s.Require().NoError(err)
@@ -1564,8 +1563,4 @@ func getTxSendFileName(s *IntegrationTestSuite, from string, to string) string {
 		from, to, s.cfg.BondDenom,
 	)
 	return testutil.WriteToNewTempFile(s.T(), tx).Name()
-}
-
-func TestIntegrationTestSuite(t *testing.T) {
-	suite.Run(t, new(IntegrationTestSuite))
 }

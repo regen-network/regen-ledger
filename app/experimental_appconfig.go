@@ -12,14 +12,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-
 	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
@@ -78,8 +78,8 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 	/* New Module Wiring START */
 	newModuleManager := server.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
 
-	// BEGIN HACK: this is a total, ugly hack until x/auth supports ADR 033 or we have a suitable alternative
-	groupModule := group.Module{AccountKeeper: app.AccountKeeper}
+	// BEGIN HACK: this is a total, ugly hack until x/auth & x/bank supports ADR 033 or we have a suitable alternative
+	groupModule := group.Module{AccountKeeper: app.AccountKeeper, BankKeeper: app.BankKeeper}
 	// use a separate newModules from the global NewModules here because we need to pass state into the group module
 	newModules := []moduletypes.Module{
 		ecocredit.Module{},
@@ -97,8 +97,8 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 		panic(err)
 	}
 
-	return newModuleManager
 	/* New Module Wiring END */
+	return newModuleManager
 }
 
 func (app *RegenApp) registerUpgradeHandlers() {
@@ -109,7 +109,7 @@ func (app *RegenApp) registerUpgradeHandlers() {
 
 func (app *RegenApp) setCustomModuleManager() []module.AppModule {
 	return []module.AppModule{
-		wasm.NewAppModule(&app.wasmKeeper),
+		wasm.NewAppModule(&app.wasmKeeper, app.StakingKeeper),
 	}
 }
 
@@ -121,7 +121,12 @@ func setCustomOrderInitGenesis() []string {
 
 func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
 	return []module.AppModuleSimulation{
-		wasm.NewAppModule(&app.wasmKeeper),
+		wasm.NewAppModule(&app.wasmKeeper, app.StakingKeeper),
+		group.Module{
+			Registry:      app.interfaceRegistry,
+			BankKeeper:    app.BankKeeper,
+			AccountKeeper: app.AccountKeeper,
+		},
 	}
 }
 

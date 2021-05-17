@@ -8,6 +8,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/cosmos/cosmos-sdk/types/simulation"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	gogogrpc "github.com/gogo/protobuf/grpc"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -18,29 +21,46 @@ import (
 
 // Manager is the server module manager
 type Manager struct {
-	baseApp               *baseapp.BaseApp
-	cdc                   *codec.ProtoCodec
-	keys                  map[string]ModuleKey
-	router                *router
-	requiredServices      map[reflect.Type]bool
-	initGenesisHandlers   map[string]module.InitGenesisHandler
-	exportGenesisHandlers map[string]module.ExportGenesisHandler
+	baseApp                    *baseapp.BaseApp
+	cdc                        *codec.ProtoCodec
+	keys                       map[string]ModuleKey
+	router                     *router
+	requiredServices           map[reflect.Type]bool
+	initGenesisHandlers        map[string]module.InitGenesisHandler
+	exportGenesisHandlers      map[string]module.ExportGenesisHandler
+	registerInvariantsHandler  map[string]RegisterInvariantsHandler
+	weightedOperationsHandlers map[string]WeightedOperationsHandler
+}
+
+// RegisterInvariants registers all module routes and module querier routes
+func (mm *Manager) RegisterInvariants(ir sdk.InvariantRegistry) {
+	for _, invariant := range mm.registerInvariantsHandler {
+		if invariant != nil {
+			invariant(ir)
+		}
+	}
 }
 
 // NewManager creates a new Manager
 func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 	return &Manager{
-		baseApp:               baseApp,
-		cdc:                   cdc,
-		keys:                  map[string]ModuleKey{},
-		initGenesisHandlers:   map[string]module.InitGenesisHandler{},
-		exportGenesisHandlers: map[string]module.ExportGenesisHandler{},
+		baseApp:                   baseApp,
+		cdc:                       cdc,
+		keys:                      map[string]ModuleKey{},
+		registerInvariantsHandler: map[string]RegisterInvariantsHandler{},
+		initGenesisHandlers:       map[string]module.InitGenesisHandler{},
+		exportGenesisHandlers:     map[string]module.ExportGenesisHandler{},
 		router: &router{
 			handlers:         map[string]handler{},
 			providedServices: map[reflect.Type]bool{},
 			antiReentryMap:   map[string]bool{},
 		},
+		weightedOperationsHandlers: map[string]WeightedOperationsHandler{},
 	}
+}
+
+func (mm *Manager) GetWeightedOperationsHandlers() map[string]WeightedOperationsHandler {
+	return mm.weightedOperationsHandlers
 }
 
 // RegisterModules registers modules with the Manager and registers their services.
@@ -105,8 +125,13 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		}
 
 		serverMod.RegisterServices(cfg)
+		mm.registerInvariantsHandler[name] = cfg.registerInvariantsHandler
 		mm.initGenesisHandlers[name] = cfg.initGenesisHandler
 		mm.exportGenesisHandlers[name] = cfg.exportGenesisHandler
+
+		if cfg.weightedOperationHandler != nil {
+			mm.weightedOperationsHandlers[name] = cfg.weightedOperationHandler
+		}
 
 		// If mod implements LegacyRouteModule, register module route.
 		// This is currently used for the group module as part of #218.
@@ -124,6 +149,22 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 	}
 
 	return nil
+}
+
+// WeightedOperations returns all the modules' weighted operations of an application
+func (mm *Manager) WeightedOperations(state sdkmodule.SimulationState, modules []sdkmodule.AppModuleSimulation) []simulation.WeightedOperation {
+	wOps := make([]simulation.WeightedOperation, 0, len(modules)+len(mm.weightedOperationsHandlers))
+	// adding non ADR-33 modules weighted operations
+	for _, m := range modules {
+		wOps = append(wOps, m.WeightedOperations(state)...)
+	}
+
+	// adding ADR-33 modules weighted operations
+	for _, weightedOperationHandler := range mm.weightedOperationsHandlers {
+		wOps = append(wOps, weightedOperationHandler(state)...)
+	}
+
+	return wOps
 }
 
 // AuthorizationMiddleware is a function that allows for more complex authorization than the default authorization scheme,
@@ -211,18 +252,26 @@ func exportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, exportGenesisHandle
 	return genesisData, nil
 }
 
+type RegisterInvariantsHandler func(ir sdk.InvariantRegistry)
+
 type configurator struct {
-	msgServer            gogogrpc.Server
-	queryServer          gogogrpc.Server
-	key                  *rootModuleKey
-	cdc                  codec.Marshaler
-	requiredServices     map[reflect.Type]bool
-	router               sdk.Router
-	initGenesisHandler   module.InitGenesisHandler
-	exportGenesisHandler module.ExportGenesisHandler
+	msgServer                 gogogrpc.Server
+	queryServer               gogogrpc.Server
+	key                       *rootModuleKey
+	cdc                       codec.Marshaler
+	requiredServices          map[reflect.Type]bool
+	router                    sdk.Router
+	initGenesisHandler        module.InitGenesisHandler
+	exportGenesisHandler      module.ExportGenesisHandler
+	weightedOperationHandler  WeightedOperationsHandler
+	registerInvariantsHandler RegisterInvariantsHandler
 }
 
 var _ Configurator = &configurator{}
+
+func (c *configurator) RegisterWeightedOperationsHandler(operationsHandler WeightedOperationsHandler) {
+	c.weightedOperationHandler = operationsHandler
+}
 
 func (c *configurator) MsgServer() gogogrpc.Server {
 	return c.msgServer
@@ -230,6 +279,10 @@ func (c *configurator) MsgServer() gogogrpc.Server {
 
 func (c *configurator) QueryServer() gogogrpc.Server {
 	return c.queryServer
+}
+
+func (c *configurator) RegisterInvariantsHandler(registry RegisterInvariantsHandler) {
+	c.registerInvariantsHandler = registry
 }
 
 func (c *configurator) RegisterGenesisHandlers(initGenesisHandler module.InitGenesisHandler, exportGenesisHandler module.ExportGenesisHandler) {
@@ -254,3 +307,5 @@ func (c *configurator) Router() sdk.Router {
 func (c *configurator) RequireServer(serverInterface interface{}) {
 	c.requiredServices[reflect.TypeOf(serverInterface)] = true
 }
+
+type WeightedOperationsHandler func(simstate sdkmodule.SimulationState) []simulation.WeightedOperation

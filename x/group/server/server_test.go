@@ -11,7 +11,6 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-
 	"github.com/stretchr/testify/suite"
 
 	"github.com/regen-network/regen-ledger/types/module"
