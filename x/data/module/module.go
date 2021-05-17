@@ -50,6 +50,9 @@ func (a Module) GetTxCmd() *cobra.Command {
 	return client.TxCmd(a.Name())
 }
 
+// ConsensusVersion implements AppModule/ConsensusVersion.
+func (Module) ConsensusVersion() uint64 { return 1 }
+
 func (a Module) RegisterGRPCGatewayRoutes(sdkclient.Context, *runtime.ServeMux) {}
 
 /**** DEPRECATED ****/

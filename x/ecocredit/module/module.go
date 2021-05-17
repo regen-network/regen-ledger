@@ -52,6 +52,9 @@ func (a Module) GetTxCmd() *cobra.Command {
 
 func (a Module) RegisterGRPCGatewayRoutes(sdkclient.Context, *runtime.ServeMux) {}
 
+// ConsensusVersion implements AppModule/ConsensusVersion.
+func (Module) ConsensusVersion() uint64 { return 1 }
+
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
 func (a Module) RegisterLegacyAminoCodec(*codec.LegacyAmino)       {}

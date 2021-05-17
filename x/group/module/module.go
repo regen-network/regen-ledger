@@ -81,6 +81,9 @@ func (a Module) Route(configurator servermodule.Configurator) sdk.Route {
 	return sdk.NewRoute(group.RouterKey, server.NewHandler(configurator, a.AccountKeeper, a.BankKeeper))
 }
 
+// ConsensusVersion implements AppModule/ConsensusVersion.
+func (Module) ConsensusVersion() uint64 { return 1 }
+
 // AppModuleSimulation functions
 
 // GenerateGenesisState creates a randomized GenesisState of the group module.
