@@ -29,7 +29,7 @@ func init() {
 	config.SetBech32PrefixForConsensusNode(Bech32PrefixConsAddr, Bech32PrefixConsPub)
 	config.SetAddressVerifier(func(bytes []byte) error {
 		n := len(bytes)
-		if (n != 0) && (n < address.MaxAddrLen) {
+		if (n != 0) && (n <= address.MaxAddrLen) {
 			return nil
 		}
 		return fmt.Errorf("unexpected address length %d", n)
