@@ -3,8 +3,6 @@
 package app
 
 import (
-	// "github.com/CosmWasm/wasmd/x/wasm"
-	// wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
