@@ -16,6 +16,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm/testdata"
 )
 
+// Testing ORM with arbitrary address length
 const addrLen = 10
 
 func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {

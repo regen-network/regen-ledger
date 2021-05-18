@@ -123,7 +123,7 @@ func (s *IntegrationTestSuite) TearDownSuite() {
 	s.fixture.Teardown()
 }
 
-// TODO: https://github.com/cosmos/cosmos-sdk/pull/9315/files/685fb260461fa951c56cfad8efe5f93b6a4f71f3#r630942517
+// TODO: https://github.com/cosmos/cosmos-sdk/issues/9346
 func fundAccount(bankKeeper bankkeeper.Keeper, ctx sdk.Context, addr sdk.AccAddress, amounts sdk.Coins) error {
 	if err := bankKeeper.MintCoins(ctx, minttypes.ModuleName, amounts); err != nil {
 		return err
