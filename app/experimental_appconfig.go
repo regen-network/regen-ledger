@@ -23,7 +23,6 @@ import (
 	group "github.com/regen-network/regen-ledger/x/group/module"
 )
 
-// Uncomment the wasm related code while integrating wasm
 func setCustomModuleBasics() []module.AppModuleBasic {
 	return []module.AppModuleBasic{
 		gov.NewAppModuleBasic(
@@ -38,7 +37,6 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 
 func setCustomKVStoreKeys() []string {
 	return []string{}
-	// return []string{wasm.StoreKey}
 }
 
 func (app *RegenApp) setCustomKeeprs(bApp *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec, govRouter govtypes.Router, homePath string) {
