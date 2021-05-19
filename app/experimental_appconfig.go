@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	"github.com/cosmos/cosmos-sdk/x/auth"
 	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -72,8 +73,12 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 }
 
 func (app *RegenApp) registerUpgradeHandlers() {
-	app.UpgradeKeeper.SetUpgradeHandler("Mau", func(ctx sdk.Context, plan upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
-		return vm, nil
+	app.UpgradeKeeper.SetUpgradeHandler("v0.43.0-beta1-upgrade", func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+
+		// skipping x/auth migrations. It is already patched in regen-ledger v1.0
+		fromVM["auth"] = auth.AppModule{}.ConsensusVersion()
+
+		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
 }
 
