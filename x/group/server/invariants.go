@@ -218,7 +218,7 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 
 		err = groupAccountTable.GetOne(ctx, address.Bytes(), &groupAcc)
 		if err != nil {
-			return msg, broken, err
+			break
 		}
 
 		voteIt, err := voteByProposalIndex.Get(ctx, proposal.ProposalId)
