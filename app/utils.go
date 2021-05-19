@@ -11,7 +11,7 @@ import (
 
 // SimulationOperations retrieves the simulation params from the provided file path
 // and returns all the modules weighted operations
-func SimulationOperations(app *RegenApp, cdc codec.JSONMarshaler, config simulation.Config) []simulation.WeightedOperation {
+func SimulationOperations(app *RegenApp, cdc codec.JSONCodec, config simulation.Config) []simulation.WeightedOperation {
 	simState := module.SimulationState{
 		AppParams: make(simulation.AppParams),
 		Cdc:       cdc,

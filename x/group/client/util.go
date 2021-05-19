@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 
 	"github.com/cosmos/cosmos-sdk/client"
+
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
@@ -19,7 +20,7 @@ func parseMembers(clientCtx client.Context, membersFile string) ([]group.Member,
 		return nil, err
 	}
 
-	err = clientCtx.JSONMarshaler.UnmarshalJSON(contents, &members)
+	err = clientCtx.JSONCodec.UnmarshalJSON(contents, &members)
 	if err != nil {
 		return nil, err
 	}
