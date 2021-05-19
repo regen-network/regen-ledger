@@ -20,10 +20,6 @@ import (
 
 const FlagTryExec = "try-exec"
 
-func addTryExecFlagToCmd(cmd *cobra.Command) {
-	cmd.Flags().Bool(FlagTryExec, false, "Try to execute proposal immediately (proposers signatures are considered as Yes votes)")
-}
-
 // TxCmd returns a root CLI command handler for all x/group transaction commands.
 func TxCmd(name string) *cobra.Command {
 	txCmd := &cobra.Command{
@@ -534,7 +530,7 @@ Parameters:
 		},
 	}
 
-	addTryExecFlagToCmd(cmd)
+	cmd.Flags().Bool(FlagTryExec, false, "Try to execute proposal immediately after creation (proposers signatures are considered as Yes votes)")
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
@@ -606,7 +602,7 @@ Parameters:
 		},
 	}
 
-	addTryExecFlagToCmd(cmd)
+	cmd.Flags().Bool(FlagTryExec, false, "Try to execute proposal immediately after voting")
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
