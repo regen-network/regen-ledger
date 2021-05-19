@@ -6,8 +6,8 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	regenMath "github.com/regen-network/regen-ledger/math"
 	"github.com/regen-network/regen-ledger/orm"
+	regenMath "github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/group"
 )
 

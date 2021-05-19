@@ -3,6 +3,8 @@ package server
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
@@ -26,13 +28,13 @@ func DoExecuteMsgs(ctx sdk.Context, router sdk.Router, groupAccount sdk.AccAddre
 		return nil, err
 	}
 	for i, msg := range msgs {
-		handler := router.Route(ctx, msg.Route())
+		handler := router.Route(ctx, msg.(legacytx.LegacyMsg).Route())
 		if handler == nil {
-			return nil, errors.Wrapf(group.ErrInvalid, "no message handler found for %q", msg.Route())
+			return nil, errors.Wrapf(group.ErrInvalid, "no message handler found for %q", msg.(legacytx.LegacyMsg).Route())
 		}
 		r, err := handler(ctx, msg)
 		if err != nil {
-			return nil, errors.Wrapf(err, "message %q at position %d", msg.Type(), i)
+			return nil, errors.Wrapf(err, "message %q at position %d", msg.(legacytx.LegacyMsg).Type(), i)
 		}
 		if r != nil {
 			results[i] = *r
