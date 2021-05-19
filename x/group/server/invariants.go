@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/cockroachdb/apd/v2"
@@ -217,7 +218,7 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 
 		err = groupAccountTable.GetOne(ctx, address.Bytes(), &groupAcc)
 		if err != nil {
-			break
+			return msg, broken, err
 		}
 
 		voteIt, err := voteByProposalIndex.Get(ctx, proposal.ProposalId)
@@ -295,13 +296,15 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 
 		if totalProposalVotes.Cmp(totalVotingWeight) != 0 {
 			broken = true
-			msg += "proposal tally must correspond to the sum of vote weights\n"
+			msg += "proposal VoteState must correspond to the sum of votes weights\n"
+			fmt.Printf("Proposal with ID %d has total proposal votes %s, but got sum of votes weights %s\n", proposal.ProposalId, totalProposalVotes.String(), totalVotingWeight.String())
 			break
 		}
 
 		if (yesVoteWeight.Cmp(proposalYesCount) != 0) || (noVoteWeight.Cmp(proposalNoCount) != 0) || (abstainVoteWeight.Cmp(proposalAbstainCount) != 0) || (vetoVoteWeight.Cmp(proposalVetoCount) != 0) {
 			broken = true
 			msg += "proposal VoteState must correspond to the vote choice\n"
+			fmt.Printf("Proposal with ID %d and voter address %s must correspond to the vote choice\n", proposal.ProposalId, vote.Voter)
 			break
 		}
 	}
