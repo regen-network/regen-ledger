@@ -14,6 +14,7 @@ import (
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
+
 	"github.com/regen-network/regen-ledger/types/module/server"
 )
 
@@ -41,7 +42,7 @@ func (app *RegenApp) setCustomModuleManager() []module.AppModule {
 	return []module.AppModule{}
 }
 
-func (app *RegenApp) setCustomKeeprs(_ *baseapp.BaseApp, _ map[string]*sdk.KVStoreKey, _ codec.Marshaler, _ govtypes.Router, _ string) {
+func (app *RegenApp) setCustomKeeprs(_ *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec, _ govtypes.Router, _ string) {
 }
 
 func setCustomOrderInitGenesis() []string {

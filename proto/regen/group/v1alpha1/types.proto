@@ -195,7 +195,7 @@ message Proposal {
         RESULT_REJECTED = 3 [(gogoproto.enumvalue_customname) = "ProposalResultRejected"];
     }
 
-    // result is the final result based on the votes and election rule. Initial value is Undefined.
+    // result is the final result based on the votes and election rule. Initial value is unfinalized.
     // The result is persisted so that clients can always rely on this state and not have to replicate the logic.
     Result result = 9;
 

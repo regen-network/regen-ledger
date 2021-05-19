@@ -8,7 +8,7 @@ import (
 var _ Indexable = &PrimaryKeyTableBuilder{}
 
 // NewPrimaryKeyTableBuilder creates a builder to setup a PrimaryKeyTable object.
-func NewPrimaryKeyTableBuilder(prefixData byte, storeKey sdk.StoreKey, model PrimaryKeyed, codec IndexKeyCodec, cdc codec.Marshaler) *PrimaryKeyTableBuilder {
+func NewPrimaryKeyTableBuilder(prefixData byte, storeKey sdk.StoreKey, model PrimaryKeyed, codec IndexKeyCodec, cdc codec.Codec) *PrimaryKeyTableBuilder {
 	return &PrimaryKeyTableBuilder{
 		TableBuilder: NewTableBuilder(prefixData, storeKey, model, codec, cdc),
 	}

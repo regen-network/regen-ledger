@@ -36,9 +36,9 @@ func (a Module) RegisterServices(configurator servermodule.Configurator) {
 	server.RegisterServices(configurator)
 }
 
-func (a Module) DefaultGenesis(codec.JSONMarshaler) json.RawMessage { return nil }
+func (a Module) DefaultGenesis(codec.JSONCodec) json.RawMessage { return nil }
 
-func (a Module) ValidateGenesis(codec.JSONMarshaler, sdkclient.TxEncodingConfig, json.RawMessage) error {
+func (a Module) ValidateGenesis(codec.JSONCodec, sdkclient.TxEncodingConfig, json.RawMessage) error {
 	return nil
 }
 
@@ -49,6 +49,9 @@ func (a Module) GetQueryCmd() *cobra.Command {
 func (a Module) GetTxCmd() *cobra.Command {
 	return client.TxCmd(a.Name())
 }
+
+// ConsensusVersion implements AppModule/ConsensusVersion.
+func (Module) ConsensusVersion() uint64 { return 1 }
 
 func (a Module) RegisterGRPCGatewayRoutes(sdkclient.Context, *runtime.ServeMux) {}
 

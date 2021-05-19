@@ -13,9 +13,9 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
+	"github.com/spf13/cobra"
 
 	"github.com/regen-network/regen-ledger/x/group"
-	"github.com/spf13/cobra"
 )
 
 const flagMembers = "members"
@@ -241,8 +241,8 @@ func MsgUpdateGroupAdminCmd() *cobra.Command {
 // MsgUpdateGroupMetadataCmd creates a CLI command for Msg/UpdateGroupMetadata.
 func MsgUpdateGroupMetadataCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-group-admin [admin] [group-id] [metadata]",
-		Short: "Update a group's admin",
+		Use:   "update-group-metadata [admin] [group-id] [metadata]",
+		Short: "Update a group's metadata",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			err := cmd.Flags().Set(flags.FlagFrom, args[0])
@@ -320,7 +320,7 @@ $ %s tx group create-group-account [admin] [group-id] [metadata] \
 			}
 
 			var policy group.DecisionPolicy
-			if err := clientCtx.JSONMarshaler.UnmarshalInterfaceJSON([]byte(args[3]), &policy); err != nil {
+			if err := clientCtx.JSONCodec.UnmarshalInterfaceJSON([]byte(args[3]), &policy); err != nil {
 				return err
 			}
 
@@ -404,7 +404,7 @@ func MsgUpdateGroupAccountDecisionPolicyCmd() *cobra.Command {
 			}
 
 			var policy group.DecisionPolicy
-			if err := clientCtx.JSONMarshaler.UnmarshalInterfaceJSON([]byte(args[2]), &policy); err != nil {
+			if err := clientCtx.JSONCodec.UnmarshalInterfaceJSON([]byte(args[2]), &policy); err != nil {
 				return err
 			}
 

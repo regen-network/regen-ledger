@@ -5,7 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/testutil/testdata"
+	"github.com/regen-network/regen-ledger/orm/testdata"
 )
 
 type GroupKeeper struct {
@@ -28,7 +28,7 @@ var (
 	GroupMemberByMemberIndexPrefix byte = 0x7
 )
 
-func NewGroupKeeper(storeKey sdk.StoreKey, cdc codec.Marshaler) GroupKeeper {
+func NewGroupKeeper(storeKey sdk.StoreKey, cdc codec.Codec) GroupKeeper {
 	k := GroupKeeper{key: storeKey}
 
 	groupTableBuilder := orm.NewAutoUInt64TableBuilder(GroupTablePrefix, GroupTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)

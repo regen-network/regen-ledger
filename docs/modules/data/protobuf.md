@@ -16,14 +16,20 @@
     - [GraphMerkleTree](#regen.data.v1alpha2.GraphMerkleTree)
     - [MediaType](#regen.data.v1alpha2.MediaType)
   
+- [regen/data/v1alpha2/tx.proto](#regen/data/v1alpha2/tx.proto)
+    - [MsgAnchorDataRequest](#regen.data.v1alpha2.MsgAnchorDataRequest)
+    - [MsgAnchorDataResponse](#regen.data.v1alpha2.MsgAnchorDataResponse)
+    - [MsgSignDataRequest](#regen.data.v1alpha2.MsgSignDataRequest)
+    - [MsgSignDataResponse](#regen.data.v1alpha2.MsgSignDataResponse)
+    - [MsgStoreRawDataRequest](#regen.data.v1alpha2.MsgStoreRawDataRequest)
+    - [MsgStoreRawDataResponse](#regen.data.v1alpha2.MsgStoreRawDataResponse)
+  
+    - [Msg](#regen.data.v1alpha2.Msg)
+  
 - [regen/data/v1alpha2/events.proto](#regen/data/v1alpha2/events.proto)
     - [EventAnchorData](#regen.data.v1alpha2.EventAnchorData)
     - [EventSignData](#regen.data.v1alpha2.EventSignData)
     - [EventStoreRawData](#regen.data.v1alpha2.EventStoreRawData)
-  
-- [regen/data/v1alpha2/genesis.proto](#regen/data/v1alpha2/genesis.proto)
-    - [GenesisContentEntry](#regen.data.v1alpha2.GenesisContentEntry)
-    - [GenesisState](#regen.data.v1alpha2.GenesisState)
   
 - [regen/data/v1alpha2/query.proto](#regen/data/v1alpha2/query.proto)
     - [ContentEntry](#regen.data.v1alpha2.ContentEntry)
@@ -34,15 +40,9 @@
   
     - [Query](#regen.data.v1alpha2.Query)
   
-- [regen/data/v1alpha2/tx.proto](#regen/data/v1alpha2/tx.proto)
-    - [MsgAnchorDataRequest](#regen.data.v1alpha2.MsgAnchorDataRequest)
-    - [MsgAnchorDataResponse](#regen.data.v1alpha2.MsgAnchorDataResponse)
-    - [MsgSignDataRequest](#regen.data.v1alpha2.MsgSignDataRequest)
-    - [MsgSignDataResponse](#regen.data.v1alpha2.MsgSignDataResponse)
-    - [MsgStoreRawDataRequest](#regen.data.v1alpha2.MsgStoreRawDataRequest)
-    - [MsgStoreRawDataResponse](#regen.data.v1alpha2.MsgStoreRawDataResponse)
-  
-    - [Msg](#regen.data.v1alpha2.Msg)
+- [regen/data/v1alpha2/genesis.proto](#regen/data/v1alpha2/genesis.proto)
+    - [GenesisContentEntry](#regen.data.v1alpha2.GenesisContentEntry)
+    - [GenesisState](#regen.data.v1alpha2.GenesisState)
   
 - [Scalar Value Types](#scalar-value-types)
 
@@ -209,6 +209,130 @@ MediaType defines MIME media types to be used with a ContentHash.Raw hash.
 
 
 
+<a name="regen/data/v1alpha2/tx.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## regen/data/v1alpha2/tx.proto
+
+
+
+<a name="regen.data.v1alpha2.MsgAnchorDataRequest"></a>
+
+### MsgAnchorDataRequest
+MsgAnchorDataRequest is the Msg/AnchorData request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sender | [string](#string) |  | sender is the address of the sender of the transaction. The sender in StoreData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing services. |
+| hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the hash-based identifier for the anchored content. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.MsgAnchorDataResponse"></a>
+
+### MsgAnchorDataResponse
+MsgAnchorDataRequest is the Msg/AnchorData response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the timestamp of the block at which the data was anchored. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.MsgSignDataRequest"></a>
+
+### MsgSignDataRequest
+MsgSignDataRequest is the Msg/SignData request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| signers | [string](#string) | repeated | signers are the addresses of the accounts signing the data. By making a SignData request, the signers are attesting to the veracity of the data referenced by the cid. The precise meaning of this may vary depending on the underlying data. |
+| hash | [ContentHash.Graph](#regen.data.v1alpha2.ContentHash.Graph) |  | hash is the hash-based identifier for the anchored content. Only RDF graph data can be signed as its data model is intended to specifically convey semantic meaning. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.MsgSignDataResponse"></a>
+
+### MsgSignDataResponse
+MsgSignDataResponse is the Msg/SignData response type.
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.MsgStoreRawDataRequest"></a>
+
+### MsgStoreRawDataRequest
+MsgStoreRawDataRequest is the Msg/StoreRawData request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sender | [string](#string) |  | sender is the address of the sender of the transaction. The sender in StoreData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing services. |
+| content_hash | [ContentHash.Raw](#regen.data.v1alpha2.ContentHash.Raw) |  | content_hash is the hash-based identifier for the anchored content. |
+| content | [bytes](#bytes) |  | content is the content of the raw data corresponding to the provided content hash. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.MsgStoreRawDataResponse"></a>
+
+### MsgStoreRawDataResponse
+MsgStoreRawDataRequest is the Msg/StoreRawData response type.
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="regen.data.v1alpha2.Msg"></a>
+
+### Msg
+Msg is the regen.data.v1alpha1 Msg service
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| AnchorData | [MsgAnchorDataRequest](#regen.data.v1alpha2.MsgAnchorDataRequest) | [MsgAnchorDataResponse](#regen.data.v1alpha2.MsgAnchorDataResponse) | AnchorData "anchors" a piece of data to the blockchain based on its secure hash, effectively providing a tamper resistant timestamp.
+
+The sender in AnchorData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing timestamp services. SignData should be used to create a digital signature attesting to the veracity of some piece of data. |
+| SignData | [MsgSignDataRequest](#regen.data.v1alpha2.MsgSignDataRequest) | [MsgSignDataResponse](#regen.data.v1alpha2.MsgSignDataResponse) | SignData allows for signing of an arbitrary piece of data on the blockchain. By "signing" data the signers are making a statement about the veracity of the data itself. It is like signing a legal document, meaning that I agree to all conditions and to the best of my knowledge everything is true. When anchoring data, the sender is not attesting to the veracity of the data, they are simply communicating that it exists.
+
+On-chain signatures have the following benefits: - on-chain identities can be managed using different cryptographic keys that change over time through key rotation practices - an on-chain identity may represent an organization and through delegation individual members may sign on behalf of the group - the blockchain transaction envelope provides built-in replay protection and timestamping
+
+SignData implicitly calls AnchorData if the data was not already anchored.
+
+SignData can be called multiple times for the same content hash with different signers and those signers will be appended to the list of signers. |
+| StoreRawData | [MsgStoreRawDataRequest](#regen.data.v1alpha2.MsgStoreRawDataRequest) | [MsgStoreRawDataResponse](#regen.data.v1alpha2.MsgStoreRawDataResponse) | StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
+
+StoreRawData implicitly calls AnchorData if the data was not already anchored.
+
+The sender in StoreRawData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing storage services. SignData should be used to create a digital signature attesting to the veracity of some piece of data. |
+
+ <!-- end services -->
+
+
+
 <a name="regen/data/v1alpha2/events.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -256,55 +380,6 @@ EventStoreRawData is an event emitted when data is stored on-chain.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | iri | [string](#string) |  | iri is the data IRI |
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
- <!-- end services -->
-
-
-
-<a name="regen/data/v1alpha2/genesis.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## regen/data/v1alpha2/genesis.proto
-
-
-
-<a name="regen.data.v1alpha2.GenesisContentEntry"></a>
-
-### GenesisContentEntry
-GenesisContentEntry is a genesis content entry
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the ContentHash |
-| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the anchor Timestamp |
-| signers | [SignerEntry](#regen.data.v1alpha2.SignerEntry) | repeated | signers are the signers, if any |
-| content | [Content](#regen.data.v1alpha2.Content) |  | content is the actual content if stored on-chain |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.GenesisState"></a>
-
-### GenesisState
-GenesisState is the genesis state
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| entries | [GenesisContentEntry](#regen.data.v1alpha2.GenesisContentEntry) | repeated | entries are the content entries |
 
 
 
@@ -428,91 +503,40 @@ Query is the regen.data.v1alpha1 Query service
 
 
 
-<a name="regen/data/v1alpha2/tx.proto"></a>
+<a name="regen/data/v1alpha2/genesis.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
-## regen/data/v1alpha2/tx.proto
+## regen/data/v1alpha2/genesis.proto
 
 
 
-<a name="regen.data.v1alpha2.MsgAnchorDataRequest"></a>
+<a name="regen.data.v1alpha2.GenesisContentEntry"></a>
 
-### MsgAnchorDataRequest
-MsgAnchorDataRequest is the Msg/AnchorData request type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| sender | [string](#string) |  | sender is the address of the sender of the transaction. The sender in StoreData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing services. |
-| hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the hash-based identifier for the anchored content. |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.MsgAnchorDataResponse"></a>
-
-### MsgAnchorDataResponse
-MsgAnchorDataRequest is the Msg/AnchorData response type.
+### GenesisContentEntry
+GenesisContentEntry is a genesis content entry
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the timestamp of the block at which the data was anchored. |
+| hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the ContentHash |
+| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the anchor Timestamp |
+| signers | [SignerEntry](#regen.data.v1alpha2.SignerEntry) | repeated | signers are the signers, if any |
+| content | [Content](#regen.data.v1alpha2.Content) |  | content is the actual content if stored on-chain |
 
 
 
 
 
 
-<a name="regen.data.v1alpha2.MsgSignDataRequest"></a>
+<a name="regen.data.v1alpha2.GenesisState"></a>
 
-### MsgSignDataRequest
-MsgSignDataRequest is the Msg/SignData request type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| signers | [string](#string) | repeated | signers are the addresses of the accounts signing the data. By making a SignData request, the signers are attesting to the veracity of the data referenced by the cid. The precise meaning of this may vary depending on the underlying data. |
-| hash | [ContentHash.Graph](#regen.data.v1alpha2.ContentHash.Graph) |  | hash is the hash-based identifier for the anchored content. Only RDF graph data can be signed as its data model is intended to specifically convey semantic meaning. |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.MsgSignDataResponse"></a>
-
-### MsgSignDataResponse
-MsgSignDataResponse is the Msg/SignData response type.
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.MsgStoreRawDataRequest"></a>
-
-### MsgStoreRawDataRequest
-MsgStoreRawDataRequest is the Msg/StoreRawData request type.
+### GenesisState
+GenesisState is the genesis state
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sender | [string](#string) |  | sender is the address of the sender of the transaction. The sender in StoreData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing services. |
-| content_hash | [ContentHash.Raw](#regen.data.v1alpha2.ContentHash.Raw) |  | content_hash is the hash-based identifier for the anchored content. |
-| content | [bytes](#bytes) |  | content is the content of the raw data corresponding to the provided content hash. |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.MsgStoreRawDataResponse"></a>
-
-### MsgStoreRawDataResponse
-MsgStoreRawDataRequest is the Msg/StoreRawData response type.
+| entries | [GenesisContentEntry](#regen.data.v1alpha2.GenesisContentEntry) | repeated | entries are the content entries |
 
 
 
@@ -523,30 +547,6 @@ MsgStoreRawDataRequest is the Msg/StoreRawData response type.
  <!-- end enums -->
 
  <!-- end HasExtensions -->
-
-
-<a name="regen.data.v1alpha2.Msg"></a>
-
-### Msg
-Msg is the regen.data.v1alpha1 Msg service
-
-| Method Name | Request Type | Response Type | Description |
-| ----------- | ------------ | ------------- | ------------|
-| AnchorData | [MsgAnchorDataRequest](#regen.data.v1alpha2.MsgAnchorDataRequest) | [MsgAnchorDataResponse](#regen.data.v1alpha2.MsgAnchorDataResponse) | AnchorData "anchors" a piece of data to the blockchain based on its secure hash, effectively providing a tamper resistant timestamp.
-
-The sender in AnchorData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing timestamp services. SignData should be used to create a digital signature attesting to the veracity of some piece of data. |
-| SignData | [MsgSignDataRequest](#regen.data.v1alpha2.MsgSignDataRequest) | [MsgSignDataResponse](#regen.data.v1alpha2.MsgSignDataResponse) | SignData allows for signing of an arbitrary piece of data on the blockchain. By "signing" data the signers are making a statement about the veracity of the data itself. It is like signing a legal document, meaning that I agree to all conditions and to the best of my knowledge everything is true. When anchoring data, the sender is not attesting to the veracity of the data, they are simply communicating that it exists.
-
-On-chain signatures have the following benefits: - on-chain identities can be managed using different cryptographic keys that change over time through key rotation practices - an on-chain identity may represent an organization and through delegation individual members may sign on behalf of the group - the blockchain transaction envelope provides built-in replay protection and timestamping
-
-SignData implicitly calls AnchorData if the data was not already anchored.
-
-SignData can be called multiple times for the same content hash with different signers and those signers will be appended to the list of signers. |
-| StoreRawData | [MsgStoreRawDataRequest](#regen.data.v1alpha2.MsgStoreRawDataRequest) | [MsgStoreRawDataResponse](#regen.data.v1alpha2.MsgStoreRawDataResponse) | StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
-
-StoreRawData implicitly calls AnchorData if the data was not already anchored.
-
-The sender in StoreRawData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing storage services. SignData should be used to create a digital signature attesting to the veracity of some piece of data. |
 
  <!-- end services -->
 
