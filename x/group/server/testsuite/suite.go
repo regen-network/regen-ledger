@@ -1362,7 +1362,7 @@ func (s *IntegrationTestSuite) TestVote() {
 	s.Require().NoError(err)
 	s.Require().NotNil(groupAccount)
 
-	s.Require().NoError(s.bankKeeper.SetBalances(s.sdkCtx, groupAccount, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
+	s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, groupAccount, sdk.Coins{sdk.NewInt64Coin("test", 10000)}))
 
 	req := &group.MsgCreateProposalRequest{
 		Address:   accountAddr,
