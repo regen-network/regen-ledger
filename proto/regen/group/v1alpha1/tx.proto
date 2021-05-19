@@ -200,6 +200,20 @@ message MsgUpdateGroupAccountMetadataResponse { }
 // Proposals and Voting
 //
 
+// Exec defines modes of execution of a proposal on creation or on new vote.
+enum Exec {
+
+    // An empty value means that there should be separate 
+    // a MsgExec request for the proposal to execute.
+    EXEC_UNSPECIFIED = 0;
+
+    // Try to execute the proposal immediately.
+    // If the proposal is not allowed per the DecisionPolicy,
+    // the proposal will still be open and could 
+    // be executed at a later point.
+    EXEC_TRY = 1;
+}
+
 // MsgCreateProposalRequest is the Msg/CreateProposal request type.
 message MsgCreateProposalRequest {
     option (gogoproto.goproto_getters) = false;
@@ -217,13 +231,10 @@ message MsgCreateProposalRequest {
     // msgs is a list of Msgs that will be executed if the proposal passes.
     repeated google.protobuf.Any msgs = 4;
 
-    // try_exec defines the mode of execution of the proposal,
+    // exec defines the mode of execution of the proposal,
     // whether it should be executed immediately on creation or not.
-    // Proposers signatures are considered as Yes votes.
-    // If the proposal is not allowed per the DecisionPolicy,
-    // the proposal will still be open for new votes and could 
-    // be executed at a later point.
-    bool try_exec = 5;
+    // If so, proposers signatures are considered as Yes votes.
+    Exec exec = 5;
 }
 
 // MsgCreateProposalResponse is the Msg/CreateProposal response type.
@@ -248,9 +259,9 @@ message MsgVoteRequest {
     // metadata is any arbitrary metadata to attached to the vote.
     bytes metadata = 4;
 
-    // try_exec will try to execute the proposal immediately 
-    // after the vote, if set to true.
-    bool try_exec = 5;
+    // exec defines whether the proposal should be executed
+    // immediately after voting or not.
+    Exec exec = 5;
 }
 
 // MsgVoteResponse is the Msg/Vote response type.

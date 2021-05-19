@@ -458,7 +458,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 	}
 
 	// Try to execute proposal immediately
-	if req.TryExec {
+	if req.Exec == group.Exec_EXEC_TRY {
 		// Consider proposers as Yes votes
 		for i := range proposers {
 			_, err = s.Vote(ctx, &group.MsgVoteRequest{
@@ -576,7 +576,7 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 	}
 
 	// Try to execute proposal immediately
-	if req.TryExec {
+	if req.Exec == group.Exec_EXEC_TRY {
 		_, err = s.Exec(ctx, &group.MsgExecRequest{
 			ProposalId: id,
 			Signer:     voterAddr,

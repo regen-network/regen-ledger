@@ -1257,7 +1257,7 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 			req: &group.MsgCreateProposalRequest{
 				Address:   accountAddr.String(),
 				Proposers: []string{s.addr2.String()},
-				TryExec:   true,
+				Exec:      group.Exec_EXEC_TRY,
 			},
 			msgs: []sdk.Msg{msgSend},
 			expProposal: group.Proposal{
@@ -1437,7 +1437,7 @@ func (s *IntegrationTestSuite) TestVote() {
 				ProposalId: myProposalID,
 				Voter:      s.addr3.String(),
 				Choice:     group.Choice_CHOICE_YES,
-				TryExec:    true,
+				Exec:       group.Exec_EXEC_TRY,
 			},
 			expVoteState: group.Tally{
 				YesCount:     "2",

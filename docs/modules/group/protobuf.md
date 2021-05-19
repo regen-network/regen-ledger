@@ -82,6 +82,8 @@
     - [MsgVoteRequest](#regen.group.v1alpha1.MsgVoteRequest)
     - [MsgVoteResponse](#regen.group.v1alpha1.MsgVoteResponse)
   
+    - [Exec](#regen.group.v1alpha1.Exec)
+  
     - [Msg](#regen.group.v1alpha1.Msg)
   
 - [Scalar Value Types](#scalar-value-types)
@@ -956,7 +958,7 @@ MsgCreateProposalRequest is the Msg/CreateProposal request type.
 | proposers | [string](#string) | repeated | proposers are the account addresses of the proposers. Proposers signatures will be counted as yes votes. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the proposal. |
 | msgs | [google.protobuf.Any](#google.protobuf.Any) | repeated | msgs is a list of Msgs that will be executed if the proposal passes. |
-| try_exec | [bool](#bool) |  | try_exec defines the mode of execution of the proposal, whether it should be executed immediately on creation or not. Proposers signatures are considered as Yes votes. If the proposal is not allowed per the DecisionPolicy, the proposal will still be open for new votes and could be executed at a later point. |
+| exec | [Exec](#regen.group.v1alpha1.Exec) |  | exec defines the mode of execution of the proposal, whether it should be executed immediately on creation or not. If so, proposers signatures are considered as Yes votes. |
 
 
 
@@ -1178,7 +1180,7 @@ MsgVoteRequest is the Msg/Vote request type.
 | voter | [string](#string) |  | voter is the voter account address. |
 | choice | [Choice](#regen.group.v1alpha1.Choice) |  | choice is the voter's choice on the proposal. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the vote. |
-| try_exec | [bool](#bool) |  | try_exec will try to execute the proposal immediately after the vote, if set to true. |
+| exec | [Exec](#regen.group.v1alpha1.Exec) |  | exec defines whether the proposal should be executed immediately after voting or not. |
 
 
 
@@ -1195,6 +1197,18 @@ MsgVoteResponse is the Msg/Vote response type.
 
 
  <!-- end messages -->
+
+
+<a name="regen.group.v1alpha1.Exec"></a>
+
+### Exec
+Exec defines modes of execution of a proposal on creation or on new vote.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| EXEC_UNSPECIFIED | 0 | An empty value means that there should be separate a MsgExec request for the proposal to execute. |
+| EXEC_TRY | 1 | Try to execute the proposal immediately. If the proposal is not allowed per the DecisionPolicy, the proposal will still be open and could be executed at a later point. |
+
 
  <!-- end enums -->
 

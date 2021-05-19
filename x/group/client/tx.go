@@ -18,7 +18,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
-const FlagTryExec = "try-exec"
+const (
+	FlagExec = "exec"
+	ExecTry  = "try"
+)
 
 // TxCmd returns a root CLI command handler for all x/group transaction commands.
 func TxCmd(name string) *cobra.Command {
@@ -509,14 +512,14 @@ Parameters:
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 
-			tryExec, _ := cmd.Flags().GetBool(FlagTryExec)
+			execStr, _ := cmd.Flags().GetString(FlagExec)
 
 			msg, err := group.NewMsgCreateProposalRequest(
 				args[0],
 				proposers,
 				msgs,
 				b,
-				tryExec,
+				execFromString(execStr),
 			)
 			if err != nil {
 				return err
@@ -530,7 +533,7 @@ Parameters:
 		},
 	}
 
-	cmd.Flags().Bool(FlagTryExec, false, "Try to execute proposal immediately after creation (proposers signatures are considered as Yes votes)")
+	cmd.Flags().String(FlagExec, "", "Set to 1 to try to execute proposal immediately after creation (proposers signatures are considered as Yes votes)")
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
@@ -581,14 +584,14 @@ Parameters:
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 
-			tryExec, _ := cmd.Flags().GetBool(FlagTryExec)
+			execStr, _ := cmd.Flags().GetString(FlagExec)
 
 			msg := &group.MsgVoteRequest{
 				ProposalId: proposalID,
 				Voter:      args[1],
 				Choice:     choice,
 				Metadata:   b,
-				TryExec:    tryExec,
+				Exec:       execFromString(execStr),
 			}
 			if err != nil {
 				return err
@@ -602,7 +605,7 @@ Parameters:
 		},
 	}
 
-	cmd.Flags().Bool(FlagTryExec, false, "Try to execute proposal immediately after voting")
+	cmd.Flags().String(FlagExec, "", "Set to 1 to try to execute proposal immediately after voting")
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
