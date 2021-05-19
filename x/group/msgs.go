@@ -179,7 +179,7 @@ func (m MsgUpdateGroupMembersRequest) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
-var _ sdk.MsgRequest = &MsgUpdateGroupMembersRequest{}
+var _ sdk.Msg = &MsgUpdateGroupMembersRequest{}
 
 // GetSigners returns the expected signers for a MsgUpdateGroupMembersRequest.
 func (m MsgUpdateGroupMembersRequest) GetSigners() []sdk.AccAddress {

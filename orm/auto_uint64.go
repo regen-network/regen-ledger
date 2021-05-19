@@ -8,7 +8,7 @@ import (
 var _ Indexable = &AutoUInt64TableBuilder{}
 
 // NewAutoUInt64TableBuilder creates a builder to setup a AutoUInt64Table object.
-func NewAutoUInt64TableBuilder(prefixData byte, prefixSeq byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, cdc codec.Marshaler) *AutoUInt64TableBuilder {
+func NewAutoUInt64TableBuilder(prefixData byte, prefixSeq byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, cdc codec.Codec) *AutoUInt64TableBuilder {
 	if prefixData == prefixSeq {
 		panic("prefixData and prefixSeq must be unique")
 	}

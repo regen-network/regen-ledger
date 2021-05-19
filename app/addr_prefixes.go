@@ -1,10 +1,10 @@
 package app
 
 import (
-	"encoding/binary"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/address"
 )
 
 const (
@@ -29,10 +29,7 @@ func init() {
 	config.SetBech32PrefixForConsensusNode(Bech32PrefixConsAddr, Bech32PrefixConsPub)
 	config.SetAddressVerifier(func(bytes []byte) error {
 		n := len(bytes)
-		if n == sdk.AddrLen {
-			return nil
-		}
-		if n <= binary.MaxVarintLen64+1 {
+		if (n != 0) && (n <= address.MaxAddrLen) {
 			return nil
 		}
 		return fmt.Errorf("unexpected address length %d", n)
