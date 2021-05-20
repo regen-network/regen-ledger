@@ -3,7 +3,7 @@ module github.com/regen-network/regen-ledger
 go 1.15
 
 require (
-	github.com/cosmos/cosmos-sdk v0.43.0-beta1
+	github.com/cosmos/cosmos-sdk v0.43.0-beta1.0.20210520130629-fbb50cfa0a43
 	github.com/cosmos/ibc-go v1.0.0-alpha2
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
