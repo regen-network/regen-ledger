@@ -18,6 +18,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
+// TODO: Revisit this once we have propoer gas fee framework.
+// Tracking issues https://github.com/cosmos/cosmos-sdk/issues/9054, https://github.com/cosmos/cosmos-sdk/discussions/9072
+const gasCostPerIteration = uint64(20)
+
 func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequest) (*group.MsgCreateGroupResponse, error) {
 	metadata := req.Metadata
 	members := group.Members{Members: req.Members}
@@ -461,6 +465,7 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 	if req.Exec == group.Exec_EXEC_TRY {
 		// Consider proposers as Yes votes
 		for i := range proposers {
+			ctx.GasMeter().ConsumeGas(gasCostPerIteration, "vote on proposal")
 			_, err = s.Vote(ctx, &group.MsgVoteRequest{
 				ProposalId: id,
 				Voter:      proposers[i],
