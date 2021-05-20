@@ -73,17 +73,17 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("cannot find method named %s", methodName))
 	}
 
-	moduleName := handler.moduleName
+	// moduleName := handler.moduleName
 
 	if writeCondition != nil && handler.commitWrites {
 		// msg handler
 		return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
-			if rtr.antiReentryMap[moduleName] {
-				return fmt.Errorf("re-entrant module calls not allowed for security reasons! module %s is already on the call stack", moduleName)
-			}
+			// if rtr.antiReentryMap[moduleName] {
+			// 	return fmt.Errorf("re-entrant module calls not allowed for security reasons! module %s is already on the call stack", moduleName)
+			// }
 
-			rtr.antiReentryMap[moduleName] = true
-			defer delete(rtr.antiReentryMap, moduleName)
+			// rtr.antiReentryMap[moduleName] = true
+			// defer delete(rtr.antiReentryMap, moduleName)
 
 			msgReq, ok := request.(sdk.Msg)
 			if !ok {

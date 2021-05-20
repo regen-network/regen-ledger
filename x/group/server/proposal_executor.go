@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+	"github.com/gogo/protobuf/proto"
 
 	"github.com/regen-network/regen-ledger/x/group"
 )
@@ -13,20 +13,11 @@ import (
 func (s serverImpl) execMsgs(ctx context.Context, path []byte, proposal group.Proposal) error {
 	msgs := proposal.GetMsgs()
 	for _, msg := range msgs {
-		var methodName string
-		var request sdk.MsgRequest
-		if legacyMsg, ok := msg.(legacytx.LegacyMsg); ok {
-			methodName = msg.Route()
-			request = msg
-		} else {
-			methodName = msg.Route()
-			request = msg.Request
-		}
 		var reply interface{}
 		derivedKey := s.key.Derive(path)
 		// Execute the message using the derived key,
 		// this will verify that the message signer is the group account.
-		err := derivedKey.Invoke(ctx, methodName, request, reply)
+		err := derivedKey.Invoke(ctx, "/"+proto.MessageName(msg), msg, reply)
 		if err != nil {
 			return err
 		}
