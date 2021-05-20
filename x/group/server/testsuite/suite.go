@@ -1458,6 +1458,23 @@ func (s *IntegrationTestSuite) TestVote() {
 				s.Require().Equal(sdk.Coins{sdk.NewInt64Coin("test", 100)}, toBalances)
 			},
 		},
+		"with try exec, not enough yes votes for proposal to pass": {
+			req: &group.MsgVoteRequest{
+				ProposalId: myProposalID,
+				Voter:      s.addr4.String(),
+				Choice:     group.Choice_CHOICE_YES,
+				Exec:       group.Exec_EXEC_TRY,
+			},
+			expVoteState: group.Tally{
+				YesCount:     "1",
+				NoCount:      "0",
+				AbstainCount: "0",
+				VetoCount:    "0",
+			},
+			expProposalStatus: group.ProposalStatusSubmitted,
+			expResult:         group.ProposalResultUnfinalized,
+			expExecutorResult: group.ProposalExecutorResultNotRun,
+		},
 		"vote no": {
 			req: &group.MsgVoteRequest{
 				ProposalId: myProposalID,

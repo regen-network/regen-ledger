@@ -1360,6 +1360,23 @@ func (s *IntegrationTestSuite) TestTxVote() {
 			0,
 		},
 		{
+			"with try exec, not enough yes votes for proposal to pass",
+			append(
+				[]string{
+					"8",
+					val.Address.String(),
+					"CHOICE_NO",
+					"",
+					fmt.Sprintf("--%s=try", client.FlagExec),
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
 			"with amino-json",
 			append(
 				[]string{
