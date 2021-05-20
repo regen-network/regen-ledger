@@ -5,6 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
+
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
@@ -13,12 +15,12 @@ func (s serverImpl) execMsgs(ctx context.Context, path []byte, proposal group.Pr
 	for _, msg := range msgs {
 		var methodName string
 		var request sdk.MsgRequest
-		if svcMsg, ok := msg.(sdk.ServiceMsg); ok {
-			methodName = svcMsg.Route()
-			request = svcMsg.Request
-		} else {
+		if legacyMsg, ok := msg.(legacytx.LegacyMsg); ok {
 			methodName = msg.Route()
 			request = msg
+		} else {
+			methodName = msg.Route()
+			request = msg.Request
 		}
 		var reply interface{}
 		derivedKey := s.key.Derive(path)

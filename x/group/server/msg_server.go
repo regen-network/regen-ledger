@@ -12,9 +12,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	gogotypes "github.com/gogo/protobuf/types"
-	"github.com/regen-network/regen-ledger/math"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/group"
 )
 

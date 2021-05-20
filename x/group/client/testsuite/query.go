@@ -1,16 +1,13 @@
-// +build experimental
-
 package testsuite
 
 import (
 	"fmt"
 	"strconv"
 
-	tmcli "github.com/tendermint/tendermint/libs/cli"
-
-	"github.com/regen-network/regen-ledger/testutil/cli"
+	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/client"
+	tmcli "github.com/tendermint/tendermint/libs/cli"
 )
 
 func (s *IntegrationTestSuite) TestQueryGroupInfo() {
@@ -60,7 +57,7 @@ func (s *IntegrationTestSuite) TestQueryGroupInfo() {
 				s.Require().NoError(err, out.String())
 
 				var g group.GroupInfo
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &g))
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &g))
 				s.Require().Equal(s.group.GroupId, g.GroupId)
 				s.Require().Equal(s.group.Admin, g.Admin)
 				s.Require().Equal(s.group.TotalWeight, g.TotalWeight)
@@ -123,7 +120,7 @@ func (s *IntegrationTestSuite) TestQueryGroupMembers() {
 				s.Require().NoError(err, out.String())
 
 				var res group.QueryGroupMembersResponse
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(len(res.Members), len(tc.expectMembers))
 				for i := range res.Members {
 					s.Require().Equal(res.Members[i].GroupId, tc.expectMembers[i].GroupId)
@@ -189,7 +186,7 @@ func (s *IntegrationTestSuite) TestQueryGroupsByAdmin() {
 				s.Require().NoError(err, out.String())
 
 				var res group.QueryGroupsByAdminResponse
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(len(res.Groups), len(tc.expectGroups))
 				for i := range res.Groups {
 					s.Require().Equal(res.Groups[i].GroupId, tc.expectGroups[i].GroupId)
@@ -250,7 +247,7 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountInfo() {
 				s.Require().NoError(err, out.String())
 
 				var g group.GroupAccountInfo
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &g))
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &g))
 				s.Require().Equal(s.groupAccounts[0].GroupId, g.GroupId)
 				s.Require().Equal(s.groupAccounts[0].Address, g.Address)
 				s.Require().Equal(s.groupAccounts[0].Admin, g.Admin)
@@ -318,7 +315,7 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountsByGroup() {
 				s.Require().NoError(err, out.String())
 
 				var res group.QueryGroupAccountsByGroupResponse
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(len(res.GroupAccounts), len(tc.expectGroupAccounts))
 				for i := range res.GroupAccounts {
 					s.Require().Equal(res.GroupAccounts[i].GroupId, tc.expectGroupAccounts[i].GroupId)
@@ -388,7 +385,7 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountsByAdmin() {
 				s.Require().NoError(err, out.String())
 
 				var res group.QueryGroupAccountsByAdminResponse
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(len(res.GroupAccounts), len(tc.expectGroupAccounts))
 				for i := range res.GroupAccounts {
 					s.Require().Equal(res.GroupAccounts[i].GroupId, tc.expectGroupAccounts[i].GroupId)
@@ -498,7 +495,7 @@ func (s *IntegrationTestSuite) TestQueryProposalsByGroupAccount() {
 				s.Require().NoError(err, out.String())
 
 				var res group.QueryProposalsByGroupAccountResponse
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(len(res.Proposals), len(tc.expectProposals))
 				for i := range res.Proposals {
 					s.Require().Equal(res.Proposals[i], tc.expectProposals[i])
@@ -604,7 +601,7 @@ func (s *IntegrationTestSuite) TestQueryVotesByProposal() {
 				s.Require().NoError(err, out.String())
 
 				var res group.QueryVotesByProposalResponse
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(len(res.Votes), len(tc.expectVotes))
 				for i := range res.Votes {
 					s.Require().Equal(res.Votes[i], tc.expectVotes[i])
@@ -667,7 +664,7 @@ func (s *IntegrationTestSuite) TestQueryVotesByVoter() {
 				s.Require().NoError(err, out.String())
 
 				var res group.QueryVotesByVoterResponse
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(len(res.Votes), len(tc.expectVotes))
 				for i := range res.Votes {
 					s.Require().Equal(res.Votes[i], tc.expectVotes[i])

@@ -9,6 +9,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/group"
+	"github.com/regen-network/regen-ledger/x/group/exported"
 )
 
 const (
@@ -43,7 +44,8 @@ const (
 type serverImpl struct {
 	key servermodule.RootModuleKey
 
-	accKeeper AccountKeeper
+	accKeeper  exported.AccountKeeper
+	bankKeeper exported.BankKeeper
 
 	// Group Table
 	groupSeq          orm.Sequence
@@ -72,8 +74,8 @@ type serverImpl struct {
 	voteByVoterIndex    orm.Index
 }
 
-func newServer(storeKey servermodule.RootModuleKey, accKeeper AccountKeeper, cdc codec.Marshaler) serverImpl {
-	s := serverImpl{key: storeKey, accKeeper: accKeeper}
+func newServer(storeKey servermodule.RootModuleKey, accKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper, cdc codec.Codec) serverImpl {
+	s := serverImpl{key: storeKey, accKeeper: accKeeper, bankKeeper: bankKeeper}
 
 	// Group Table
 	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, storeKey, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
@@ -161,12 +163,13 @@ func newServer(storeKey servermodule.RootModuleKey, accKeeper AccountKeeper, cdc
 	return s
 }
 
-func RegisterServices(configurator servermodule.Configurator, accountKeeper AccountKeeper) {
-	impl := newServer(configurator.ModuleKey(), accountKeeper, configurator.Marshaler())
+func RegisterServices(configurator servermodule.Configurator, accountKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper) {
+	impl := newServer(configurator.ModuleKey(), accountKeeper, bankKeeper, configurator.Marshaler())
 	group.RegisterMsgServer(configurator.MsgServer(), impl)
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
+	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 
 	// Require servers from external modules for ADR 033 message routing
 	configurator.RequireServer((*ecocredit.MsgServer)(nil))

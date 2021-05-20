@@ -7,8 +7,8 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	proto "github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/types"
-	"github.com/regen-network/regen-ledger/math"
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/types/math"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"

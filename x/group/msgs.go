@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	proto "github.com/gogo/protobuf/proto"
-	"github.com/regen-network/regen-ledger/math"
+	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/types/module/server"
 )
 
@@ -180,7 +180,7 @@ func (m MsgUpdateGroupMembersRequest) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
-var _ sdk.MsgRequest = &MsgUpdateGroupMembersRequest{}
+var _ sdk.Msg = &MsgUpdateGroupMembersRequest{}
 
 // GetSigners returns the expected signers for a MsgUpdateGroupMembersRequest.
 func (m MsgUpdateGroupMembersRequest) GetSigners() []sdk.AccAddress {

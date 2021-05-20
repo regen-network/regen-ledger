@@ -19,10 +19,11 @@ type Configurator interface {
 	sdkmodule.Configurator
 
 	ModuleKey() RootModuleKey
-	Marshaler() codec.Marshaler
+	Marshaler() codec.Codec
 	RequireServer(interface{})
 	RegisterInvariantsHandler(registry RegisterInvariantsHandler)
 	RegisterGenesisHandlers(module.InitGenesisHandler, module.ExportGenesisHandler)
+	RegisterWeightedOperationsHandler(WeightedOperationsHandler)
 }
 
 // LegacyRouteModule is the module type that a module must implement

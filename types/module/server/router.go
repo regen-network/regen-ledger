@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/regen-network/regen-ledger/types"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	gogogrpc "github.com/gogo/protobuf/grpc"
 	"google.golang.org/grpc"
+
+	"github.com/regen-network/regen-ledger/types"
 )
 
 type handler struct {
@@ -25,7 +25,6 @@ type router struct {
 	providedServices map[reflect.Type]bool
 	antiReentryMap   map[string]bool
 	authzMiddleware  AuthorizationMiddleware
-	legacyRouter     sdk.Router
 }
 
 type registrar struct {
@@ -55,7 +54,7 @@ func (r registrar) RegisterService(sd *grpc.ServiceDesc, ss interface{}) {
 			}
 
 			resValue := reflect.ValueOf(res)
-			if !resValue.IsZero() && reply != nil {
+			if !resValue.IsZero() {
 				reflect.ValueOf(reply).Elem().Set(resValue.Elem())
 			}
 			return nil
@@ -68,23 +67,17 @@ func (r registrar) RegisterService(sd *grpc.ServiceDesc, ss interface{}) {
 	}
 }
 
-func (rtr *router) invoker(methodName string, writeCondition func(context.Context, string, sdk.MsgRequest) error) (types.Invoker, error) {
-	var handler handler
-	// In case of ServiceMsg, we can use ADR 033 router handler
-	if isServiceMsg(methodName) {
-		h, found := rtr.handlers[methodName]
-		handler = h
-		if !found {
-			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("cannot find method named %s", methodName))
-		}
+func (rtr *router) invoker(methodName string, writeCondition func(context.Context, string, sdk.Msg) error) (types.Invoker, error) {
+	handler, found := rtr.handlers[methodName]
+	if !found {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("cannot find method named %s", methodName))
 	}
 
 	moduleName := handler.moduleName
 
-	return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
-		msg, isMsg := request.(sdk.Msg)
+	if writeCondition != nil && handler.commitWrites {
 		// msg handler
-		if writeCondition != nil && (handler.commitWrites || isMsg) {
+		return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
 			if rtr.antiReentryMap[moduleName] {
 				return fmt.Errorf("re-entrant module calls not allowed for security reasons! module %s is already on the call stack", moduleName)
 			}
@@ -92,9 +85,9 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 			rtr.antiReentryMap[moduleName] = true
 			defer delete(rtr.antiReentryMap, moduleName)
 
-			msgReq, ok := request.(sdk.MsgRequest)
+			msgReq, ok := request.(sdk.Msg)
 			if !ok {
-				return fmt.Errorf("expected %T, got %T", (*sdk.MsgRequest)(nil), request)
+				return fmt.Errorf("expected %T, got %T", (*sdk.Msg)(nil), request)
 			}
 
 			err := msgReq.ValidateBasic()
@@ -109,52 +102,38 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 
 			// cache wrap the multistore so that inter-module writes are atomic
 			// see https://github.com/cosmos/cosmos-sdk/issues/8030
-			regenCtx := types.UnwrapSDKContext(ctx)
-			cacheMs := regenCtx.MultiStore().CacheMultiStore()
-			ctx = sdk.WrapSDKContext(regenCtx.WithMultiStore(cacheMs))
-
-			if isServiceMsg(methodName) {
-				err = handler.f(ctx, request, response)
-				if err != nil {
-					return err
-				}
-			} else {
-				// legacy sdk.Msg routing using sdk.Router
-				// for routing non ServiceMsg
-				msgRoute := msg.Route()
-				sdkCtx := sdk.UnwrapSDKContext(ctx)
-				handler := rtr.legacyRouter.Route(sdkCtx, msgRoute)
-				if handler == nil {
-					return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized message route: %s", msgRoute)
-				}
-
-				_, err = handler(sdkCtx, msg)
-				if err != nil {
-					return err
-				}
-			}
-
-			// only commit writes if there is no error so that calls are atomic
-			cacheMs.Write()
-		} else {
-			// query handler
-
-			// cache wrap the multistore so that writes are batched
 			sdkCtx := types.UnwrapSDKContext(ctx)
 			cacheMs := sdkCtx.MultiStore().CacheMultiStore()
 			ctx = types.Context{Context: sdkCtx.WithMultiStore(cacheMs)}
 
-			err := handler.f(ctx, request, response)
+			err = handler.f(ctx, request, response)
 			if err != nil {
 				return err
 			}
 
+			// only commit writes if there is no error so that calls are atomic
 			cacheMs.Write()
+
+			return nil
+		}, nil
+	}
+
+	// query handler
+	return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
+		// cache wrap the multistore so that writes are batched
+		sdkCtx := types.UnwrapSDKContext(ctx)
+		cacheMs := sdkCtx.MultiStore().CacheMultiStore()
+		ctx = types.Context{Context: sdkCtx.WithMultiStore(cacheMs)}
+
+		err := handler.f(ctx, request, response)
+		if err != nil {
+			return err
 		}
+
+		cacheMs.Write()
+
 		return nil
-
 	}, nil
-
 }
 
 func (rtr *router) invokerFactory(moduleName string) InvokerFactory {
@@ -167,7 +146,7 @@ func (rtr *router) invokerFactory(moduleName string) InvokerFactory {
 
 		moduleAddr := moduleID.Address()
 
-		writeCondition := func(ctx context.Context, methodName string, msgReq sdk.MsgRequest) error {
+		writeCondition := func(ctx context.Context, methodName string, msgReq sdk.Msg) error {
 			signers := msgReq.GetSigners()
 			if len(signers) != 1 {
 				return fmt.Errorf("inter module Msg invocation requires a single expected signer (%s), but %s expects multiple signers (%+v),  ", moduleAddr, methodName, signers)
@@ -198,7 +177,7 @@ func (rtr *router) testTxFactory(signers []sdk.AccAddress) InvokerFactory {
 	}
 
 	return func(callInfo CallInfo) (types.Invoker, error) {
-		return rtr.invoker(callInfo.Method, func(_ context.Context, _ string, req sdk.MsgRequest) error {
+		return rtr.invoker(callInfo.Method, func(_ context.Context, _ string, req sdk.Msg) error {
 			for _, signer := range req.GetSigners() {
 				if _, found := signerMap[signer.String()]; !found {
 					return sdkerrors.ErrUnauthorized
