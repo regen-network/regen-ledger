@@ -211,100 +211,106 @@ func tallyVotesSumInvariant(ctx sdk.Context, proposalTable orm.AutoUInt64Table, 
 			break
 		}
 
-		address, err := sdk.AccAddressFromBech32(proposal.Address)
-		if err != nil {
-			return msg, broken, err
-		}
+		if proposal.Status == group.ProposalStatusSubmitted {
+			address, err := sdk.AccAddressFromBech32(proposal.Address)
+			if err != nil {
+				return msg, broken, err
+			}
 
-		err = groupAccountTable.GetOne(ctx, address.Bytes(), &groupAcc)
-		if err != nil {
-			break
-		}
-
-		voteIt, err := voteByProposalIndex.Get(ctx, proposal.ProposalId)
-		if err != nil {
-			return msg, broken, err
-		}
-		defer voteIt.Close()
-
-		for {
-			_, err := voteIt.LoadNext(&vote)
-			if orm.ErrIteratorDone.Is(err) {
+			err = groupAccountTable.GetOne(ctx, address.Bytes(), &groupAcc)
+			if err != nil {
 				break
 			}
 
-			groupMem = group.GroupMember{GroupId: groupAcc.GroupId, Member: &group.Member{Address: vote.Voter}}
+			voteIt, err := voteByProposalIndex.Get(ctx, proposal.ProposalId)
+			if err != nil {
+				return msg, broken, err
+			}
+			defer voteIt.Close()
 
-			err = groupMemberTable.GetOne(ctx, groupMem.PrimaryKey(), &groupMem)
+			for {
+				_, err := voteIt.LoadNext(&vote)
+				if orm.ErrIteratorDone.Is(err) {
+					break
+				}
+
+				groupMem = group.GroupMember{GroupId: groupAcc.GroupId, Member: &group.Member{Address: vote.Voter}}
+
+				err = groupMemberTable.GetOne(ctx, groupMem.PrimaryKey(), &groupMem)
+				if err != nil {
+					return msg, broken, err
+				}
+
+				curMemVotingWeight, err := regenMath.ParseNonNegativeDecimal(groupMem.Member.Weight)
+				if err != nil {
+					return msg, broken, err
+				}
+				err = regenMath.Add(totalVotingWeight, totalVotingWeight, curMemVotingWeight)
+				if err != nil {
+					return msg, broken, err
+				}
+
+				switch vote.Choice {
+				case group.Choice_CHOICE_YES:
+					err = regenMath.Add(yesVoteWeight, yesVoteWeight, curMemVotingWeight)
+					if err != nil {
+						return msg, broken, err
+					}
+				case group.Choice_CHOICE_NO:
+					err = regenMath.Add(noVoteWeight, noVoteWeight, curMemVotingWeight)
+					if err != nil {
+						return msg, broken, err
+					}
+				case group.Choice_CHOICE_ABSTAIN:
+					err = regenMath.Add(abstainVoteWeight, abstainVoteWeight, curMemVotingWeight)
+					if err != nil {
+						return msg, broken, err
+					}
+				case group.Choice_CHOICE_VETO:
+					err = regenMath.Add(vetoVoteWeight, vetoVoteWeight, curMemVotingWeight)
+					if err != nil {
+						return msg, broken, err
+					}
+				}
+			}
+
+			totalProposalVotes, err := proposal.VoteState.TotalCounts()
+			if err != nil {
+				return msg, broken, err
+			}
+			proposalYesCount, err := proposal.VoteState.GetYesCount()
+			if err != nil {
+				return msg, broken, err
+			}
+			proposalNoCount, err := proposal.VoteState.GetNoCount()
+			if err != nil {
+				return msg, broken, err
+			}
+			proposalAbstainCount, err := proposal.VoteState.GetAbstainCount()
+			if err != nil {
+				return msg, broken, err
+			}
+			proposalVetoCount, err := proposal.VoteState.GetVetoCount()
 			if err != nil {
 				return msg, broken, err
 			}
 
-			curMemVotingWeight, err := regenMath.ParseNonNegativeDecimal(groupMem.Member.Weight)
-			if err != nil {
-				return msg, broken, err
-			}
-			err = regenMath.Add(totalVotingWeight, totalVotingWeight, curMemVotingWeight)
-			if err != nil {
-				return msg, broken, err
+			if totalProposalVotes.Cmp(totalVotingWeight) != 0 {
+				broken = true
+				msg += "proposal VoteState must correspond to the sum of votes weights\n"
+				fmt.Printf("Proposal with ID %d has total proposal votes %s, but got sum of votes weights %s\n", proposal.ProposalId, totalProposalVotes.String(), totalVotingWeight.String())
+				break
 			}
 
-			switch vote.Choice {
-			case group.Choice_CHOICE_YES:
-				err = regenMath.Add(yesVoteWeight, yesVoteWeight, curMemVotingWeight)
-				if err != nil {
-					return msg, broken, err
-				}
-			case group.Choice_CHOICE_NO:
-				err = regenMath.Add(noVoteWeight, noVoteWeight, curMemVotingWeight)
-				if err != nil {
-					return msg, broken, err
-				}
-			case group.Choice_CHOICE_ABSTAIN:
-				err = regenMath.Add(abstainVoteWeight, abstainVoteWeight, curMemVotingWeight)
-				if err != nil {
-					return msg, broken, err
-				}
-			case group.Choice_CHOICE_VETO:
-				err = regenMath.Add(vetoVoteWeight, vetoVoteWeight, curMemVotingWeight)
-				if err != nil {
-					return msg, broken, err
-				}
+			if (yesVoteWeight.Cmp(proposalYesCount) != 0) || (noVoteWeight.Cmp(proposalNoCount) != 0) || (abstainVoteWeight.Cmp(proposalAbstainCount) != 0) || (vetoVoteWeight.Cmp(proposalVetoCount) != 0) {
+				broken = true
+				msg += "proposal VoteState must correspond to the vote choice\n"
+				fmt.Printf("Proposal with ID %d and voter address %s must correspond to the vote choice\n", proposal.ProposalId, vote.Voter)
+				break
 			}
-		}
-
-		totalProposalVotes, err := proposal.VoteState.TotalCounts()
-		if err != nil {
-			return msg, broken, err
-		}
-		proposalYesCount, err := proposal.VoteState.GetYesCount()
-		if err != nil {
-			return msg, broken, err
-		}
-		proposalNoCount, err := proposal.VoteState.GetNoCount()
-		if err != nil {
-			return msg, broken, err
-		}
-		proposalAbstainCount, err := proposal.VoteState.GetAbstainCount()
-		if err != nil {
-			return msg, broken, err
-		}
-		proposalVetoCount, err := proposal.VoteState.GetVetoCount()
-		if err != nil {
-			return msg, broken, err
-		}
-
-		if totalProposalVotes.Cmp(totalVotingWeight) != 0 {
+		} else {
 			broken = true
-			msg += "proposal VoteState must correspond to the sum of votes weights\n"
-			fmt.Printf("Proposal with ID %d has total proposal votes %s, but got sum of votes weights %s\n", proposal.ProposalId, totalProposalVotes.String(), totalVotingWeight.String())
-			break
-		}
-
-		if (yesVoteWeight.Cmp(proposalYesCount) != 0) || (noVoteWeight.Cmp(proposalNoCount) != 0) || (abstainVoteWeight.Cmp(proposalAbstainCount) != 0) || (vetoVoteWeight.Cmp(proposalVetoCount) != 0) {
-			broken = true
-			msg += "proposal VoteState must correspond to the vote choice\n"
-			fmt.Printf("Proposal with ID %d and voter address %s must correspond to the vote choice\n", proposal.ProposalId, vote.Voter)
+			msg += "current proposal status must be active to ensure that the group members weights haven't changed"
 			break
 		}
 	}

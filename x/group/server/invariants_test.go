@@ -568,6 +568,130 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 			},
 			expBroken: true,
 		},
+		"proposal status closed": {
+			groupAccs: []*group.GroupAccountInfo{
+				{
+					Address: addr1.String(),
+					GroupId: 1,
+					Admin:   adminAddr.String(),
+					Version: 1,
+				},
+			},
+			groupMembers: []*group.GroupMember{
+				{
+					GroupId: 1,
+					Member: &group.Member{
+						Address: addr1.String(),
+						Weight:  "4",
+					},
+				},
+				{
+					GroupId: 1,
+					Member: &group.Member{
+						Address: addr2.String(),
+						Weight:  "3",
+					},
+				},
+			},
+			proposals: []*group.Proposal{
+				{
+					ProposalId:          1,
+					Address:             addr1.String(),
+					Proposers:           []string{addr1.String()},
+					SubmittedAt:         *curBlockTime,
+					GroupVersion:        1,
+					GroupAccountVersion: 1,
+					Status:              group.ProposalStatusClosed,
+					Result:              group.ProposalResultUnfinalized,
+					VoteState:           group.Tally{YesCount: "4", NoCount: "3", AbstainCount: "0", VetoCount: "0"},
+					Timeout:             gogotypes.Timestamp{Seconds: 600},
+					ExecutorResult:      group.ProposalExecutorResultNotRun,
+				},
+			},
+			votes: []*group.Vote{
+				{
+					ProposalId: 1,
+					Voter:      addr1.String(),
+					Choice:     group.Choice_CHOICE_YES,
+					SubmittedAt: gogotypes.Timestamp{
+						Seconds: timestamppb.Now().Seconds,
+						Nanos:   timestamppb.Now().Nanos,
+					},
+				},
+				{
+					ProposalId: 1,
+					Voter:      addr2.String(),
+					Choice:     group.Choice_CHOICE_NO,
+					SubmittedAt: gogotypes.Timestamp{
+						Seconds: timestamppb.Now().Seconds,
+						Nanos:   timestamppb.Now().Nanos,
+					},
+				},
+			},
+			expBroken: true,
+		},
+		"proposal status aborted": {
+			groupAccs: []*group.GroupAccountInfo{
+				{
+					Address: addr1.String(),
+					GroupId: 1,
+					Admin:   adminAddr.String(),
+					Version: 1,
+				},
+			},
+			groupMembers: []*group.GroupMember{
+				{
+					GroupId: 1,
+					Member: &group.Member{
+						Address: addr1.String(),
+						Weight:  "4",
+					},
+				},
+				{
+					GroupId: 1,
+					Member: &group.Member{
+						Address: addr2.String(),
+						Weight:  "3",
+					},
+				},
+			},
+			proposals: []*group.Proposal{
+				{
+					ProposalId:          1,
+					Address:             addr1.String(),
+					Proposers:           []string{addr1.String()},
+					SubmittedAt:         *curBlockTime,
+					GroupVersion:        1,
+					GroupAccountVersion: 1,
+					Status:              group.ProposalStatusAborted,
+					Result:              group.ProposalResultUnfinalized,
+					VoteState:           group.Tally{YesCount: "4", NoCount: "3", AbstainCount: "0", VetoCount: "0"},
+					Timeout:             gogotypes.Timestamp{Seconds: 600},
+					ExecutorResult:      group.ProposalExecutorResultNotRun,
+				},
+			},
+			votes: []*group.Vote{
+				{
+					ProposalId: 1,
+					Voter:      addr1.String(),
+					Choice:     group.Choice_CHOICE_YES,
+					SubmittedAt: gogotypes.Timestamp{
+						Seconds: timestamppb.Now().Seconds,
+						Nanos:   timestamppb.Now().Nanos,
+					},
+				},
+				{
+					ProposalId: 1,
+					Voter:      addr2.String(),
+					Choice:     group.Choice_CHOICE_NO,
+					SubmittedAt: gogotypes.Timestamp{
+						Seconds: timestamppb.Now().Seconds,
+						Nanos:   timestamppb.Now().Nanos,
+					},
+				},
+			},
+			expBroken: true,
+		},
 	}
 
 	for _, spec := range specs {
@@ -601,8 +725,6 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 
 		_, broken, err := tallyVotesSumInvariant(cacheCurCtx, proposalTable, groupMemberTable, voteByProposalIndex, groupAccountTable)
 		require.Equal(t, spec.expBroken, broken)
-
 		require.NoError(t, err)
-
 	}
 }
