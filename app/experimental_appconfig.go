@@ -106,6 +106,7 @@ func (app *RegenApp) registerUpgradeHandlers() {
 
 	if upgradeInfo.Name == "v0.43.0-beta1-upgrade" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
+			// TODO We should also add store upgrades for group, data, and ecocredit
 			Added: []string{"authz", "feegrant"},
 		}
 
