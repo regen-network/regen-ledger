@@ -235,7 +235,7 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.Table, proposalTable
 		}
 
 		if proposal.GroupAccountVersion != groupAcc.Version {
-			msg += fmt.Sprintf("group account was modified\n")
+			msg += fmt.Sprintf("group account with address %s was modified\n", groupAcc.Address)
 			return msg, broken
 		}
 
@@ -246,7 +246,7 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.Table, proposalTable
 		}
 
 		if groupInfo.Version != proposal.GroupVersion {
-			msg += fmt.Sprintf("group was modified\n")
+			msg += fmt.Sprintf("group with id %d was modified\n", groupInfo.GroupId)
 			return msg, broken
 		}
 
@@ -273,7 +273,7 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.Table, proposalTable
 
 			curMemVotingWeight, err := regenMath.ParseNonNegativeDecimal(groupMem.Member.Weight)
 			if err != nil {
-				msg += fmt.Sprintf("error while parsing non-nengative decimal for group member %s\n", groupMem.Member.Address)
+				msg += fmt.Sprintf("error while parsing non-negative decimal for group member %s\n", groupMem.Member.Address)
 				return msg, broken
 			}
 			err = regenMath.Add(totalVotingWeight, totalVotingWeight, curMemVotingWeight)
@@ -317,36 +317,34 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.Table, proposalTable
 		}
 		proposalYesCount, err := proposal.VoteState.GetYesCount()
 		if err != nil {
-			msg += fmt.Sprintf("error while getting yes votes weight of proposal with ID %d\n", proposal.ProposalId)
+			msg += fmt.Sprintf("error while getting the weighted sum of yes votes for proposal with ID %d\n", proposal.ProposalId)
 			return msg, broken
 		}
 		proposalNoCount, err := proposal.VoteState.GetNoCount()
 		if err != nil {
-			msg += fmt.Sprintf("error while getting no votes weight of proposal with ID %d\n", proposal.ProposalId)
+			msg += fmt.Sprintf("error while getting the weighted sum of no votes for proposal with ID %d\n", proposal.ProposalId)
 			return msg, broken
 		}
 		proposalAbstainCount, err := proposal.VoteState.GetAbstainCount()
 		if err != nil {
-			msg += fmt.Sprintf("error while getting abstain votes weight of proposal with ID %d\n", proposal.ProposalId)
+			msg += fmt.Sprintf("error while getting the weighted sum of abstain votes for proposal with ID %d\n", proposal.ProposalId)
 			return msg, broken
 		}
 		proposalVetoCount, err := proposal.VoteState.GetVetoCount()
 		if err != nil {
-			msg += fmt.Sprintf("error while getting veto votes weight of proposal with ID %d\n", proposal.ProposalId)
+			msg += fmt.Sprintf("error while getting the weighted sum of veto votes for proposal with ID %d\n", proposal.ProposalId)
 			return msg, broken
 		}
 
 		if totalProposalVotes.Cmp(totalVotingWeight) != 0 {
 			broken = true
-			msg += "proposal VoteState must correspond to the sum of votes weights\n"
-			fmt.Printf("Proposal with ID %d has total proposal votes %s, but got sum of votes weights %s\n", proposal.ProposalId, totalProposalVotes.String(), totalVotingWeight.String())
+			msg += fmt.Sprintf("proposal VoteState must correspond to the sum of votes weights\nProposal with ID %d has total proposal votes %s, but got sum of votes weights %s\n", proposal.ProposalId, totalProposalVotes.String(), totalVotingWeight.String())
 			break
 		}
 
 		if (yesVoteWeight.Cmp(proposalYesCount) != 0) || (noVoteWeight.Cmp(proposalNoCount) != 0) || (abstainVoteWeight.Cmp(proposalAbstainCount) != 0) || (vetoVoteWeight.Cmp(proposalVetoCount) != 0) {
 			broken = true
-			msg += "proposal VoteState must correspond to the vote choice\n"
-			fmt.Printf("Proposal with ID %d and voter address %s must correspond to the vote choice\n", proposal.ProposalId, vote.Voter)
+			msg += fmt.Sprintf("proposal VoteState must correspond to the vote choice\nProposal with ID %d and voter address %s must correspond to the vote choice\n", proposal.ProposalId, vote.Voter)
 			break
 		}
 	}
