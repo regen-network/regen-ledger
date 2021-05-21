@@ -253,9 +253,11 @@ $(TEST_TARGETS): run-tests
 
 run-tests:
 ifneq (,$(shell which tparse 2>/dev/null))
-	go test -mod=readonly -json $(ARGS) $(TEST_PACKAGES) | tparse
+	#go test -mod=readonly -json $(ARGS) $(TEST_PACKAGES) | tparse
+	find . -name go.mod -execdir go test ./... \;
 else
-	go test -mod=readonly $(ARGS) $(TEST_PACKAGES)
+	#go test -mod=readonly $(ARGS) $(TEST_PACKAGES)
+	find . -name go.mod -execdir go test ./... \;
 endif
 
 .PHONY: run-tests test test-all $(TEST_TARGETS)
