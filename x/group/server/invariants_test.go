@@ -52,172 +52,152 @@ func TestTallyVotesInvariant(t *testing.T) {
 	require.NoError(t, err)
 
 	specs := map[string]struct {
-		prevProposals []*group.Proposal
-		curProposals  []*group.Proposal
+		prevProposals *group.Proposal
+		curProposals  *group.Proposal
 		expBroken     bool
 	}{
 		"invariant not broken": {
-			prevProposals: []*group.Proposal{
-				{
-					ProposalId:          1,
-					Address:             addr1.String(),
-					Proposers:           []string{addr1.String()},
-					SubmittedAt:         *prevBlockTime,
-					GroupVersion:        1,
-					GroupAccountVersion: 1,
-					Status:              group.ProposalStatusSubmitted,
-					Result:              group.ProposalResultUnfinalized,
-					VoteState:           group.Tally{YesCount: "1", NoCount: "0", AbstainCount: "0", VetoCount: "0"},
-					Timeout:             gogotypes.Timestamp{Seconds: 600},
-					ExecutorResult:      group.ProposalExecutorResultNotRun,
-				},
+			prevProposals: &group.Proposal{
+				ProposalId:          1,
+				Address:             addr1.String(),
+				Proposers:           []string{addr1.String()},
+				SubmittedAt:         *prevBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Status:              group.ProposalStatusSubmitted,
+				Result:              group.ProposalResultUnfinalized,
+				VoteState:           group.Tally{YesCount: "1", NoCount: "0", AbstainCount: "0", VetoCount: "0"},
+				Timeout:             gogotypes.Timestamp{Seconds: 600},
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
 
-			curProposals: []*group.Proposal{
-				{
-					ProposalId:          1,
-					Address:             addr2.String(),
-					Proposers:           []string{addr2.String()},
-					SubmittedAt:         *curBlockTime,
-					GroupVersion:        1,
-					GroupAccountVersion: 1,
-					Status:              group.ProposalStatusSubmitted,
-					Result:              group.ProposalResultUnfinalized,
-					VoteState:           group.Tally{YesCount: "2", NoCount: "0", AbstainCount: "0", VetoCount: "0"},
-					Timeout:             gogotypes.Timestamp{Seconds: 600},
-					ExecutorResult:      group.ProposalExecutorResultNotRun,
-				},
+			curProposals: &group.Proposal{
+				ProposalId:          1,
+				Address:             addr2.String(),
+				Proposers:           []string{addr2.String()},
+				SubmittedAt:         *curBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Status:              group.ProposalStatusSubmitted,
+				Result:              group.ProposalResultUnfinalized,
+				VoteState:           group.Tally{YesCount: "2", NoCount: "0", AbstainCount: "0", VetoCount: "0"},
+				Timeout:             gogotypes.Timestamp{Seconds: 600},
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
 		},
 		"current block yes vote count must be greater than previous block yes vote count": {
-			prevProposals: []*group.Proposal{
-				{
-					ProposalId:          1,
-					Address:             addr1.String(),
-					Proposers:           []string{addr1.String()},
-					SubmittedAt:         *prevBlockTime,
-					GroupVersion:        1,
-					GroupAccountVersion: 1,
-					Status:              group.ProposalStatusSubmitted,
-					Result:              group.ProposalResultUnfinalized,
-					VoteState:           group.Tally{YesCount: "2", NoCount: "0", AbstainCount: "0", VetoCount: "0"},
-					Timeout:             gogotypes.Timestamp{Seconds: 600},
-					ExecutorResult:      group.ProposalExecutorResultNotRun,
-				},
+			prevProposals: &group.Proposal{
+				ProposalId:          1,
+				Address:             addr1.String(),
+				Proposers:           []string{addr1.String()},
+				SubmittedAt:         *prevBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Status:              group.ProposalStatusSubmitted,
+				Result:              group.ProposalResultUnfinalized,
+				VoteState:           group.Tally{YesCount: "2", NoCount: "0", AbstainCount: "0", VetoCount: "0"},
+				Timeout:             gogotypes.Timestamp{Seconds: 600},
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
-			curProposals: []*group.Proposal{
-				{
-					ProposalId:          1,
-					Address:             addr2.String(),
-					Proposers:           []string{addr2.String()},
-					SubmittedAt:         *curBlockTime,
-					GroupVersion:        1,
-					GroupAccountVersion: 1,
-					Status:              group.ProposalStatusSubmitted,
-					Result:              group.ProposalResultUnfinalized,
-					VoteState:           group.Tally{YesCount: "1", NoCount: "0", AbstainCount: "0", VetoCount: "0"},
-					Timeout:             gogotypes.Timestamp{Seconds: 600},
-					ExecutorResult:      group.ProposalExecutorResultNotRun,
-				},
+			curProposals: &group.Proposal{
+				ProposalId:          1,
+				Address:             addr2.String(),
+				Proposers:           []string{addr2.String()},
+				SubmittedAt:         *curBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Status:              group.ProposalStatusSubmitted,
+				Result:              group.ProposalResultUnfinalized,
+				VoteState:           group.Tally{YesCount: "1", NoCount: "0", AbstainCount: "0", VetoCount: "0"},
+				Timeout:             gogotypes.Timestamp{Seconds: 600},
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
 			expBroken: true,
 		},
 		"current block no vote count must be greater than previous block no vote count": {
-			prevProposals: []*group.Proposal{
-				{
-					ProposalId:          1,
-					Address:             addr1.String(),
-					Proposers:           []string{addr1.String()},
-					SubmittedAt:         *prevBlockTime,
-					GroupVersion:        1,
-					GroupAccountVersion: 1,
-					Status:              group.ProposalStatusSubmitted,
-					Result:              group.ProposalResultUnfinalized,
-					VoteState:           group.Tally{YesCount: "0", NoCount: "2", AbstainCount: "0", VetoCount: "0"},
-					Timeout:             gogotypes.Timestamp{Seconds: 600},
-					ExecutorResult:      group.ProposalExecutorResultNotRun,
-				},
+			prevProposals: &group.Proposal{
+				ProposalId:          1,
+				Address:             addr1.String(),
+				Proposers:           []string{addr1.String()},
+				SubmittedAt:         *prevBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Status:              group.ProposalStatusSubmitted,
+				Result:              group.ProposalResultUnfinalized,
+				VoteState:           group.Tally{YesCount: "0", NoCount: "2", AbstainCount: "0", VetoCount: "0"},
+				Timeout:             gogotypes.Timestamp{Seconds: 600},
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
-			curProposals: []*group.Proposal{
-				{
-					ProposalId:          1,
-					Address:             addr2.String(),
-					Proposers:           []string{addr2.String()},
-					SubmittedAt:         *curBlockTime,
-					GroupVersion:        1,
-					GroupAccountVersion: 1,
-					Status:              group.ProposalStatusSubmitted,
-					Result:              group.ProposalResultUnfinalized,
-					VoteState:           group.Tally{YesCount: "0", NoCount: "1", AbstainCount: "0", VetoCount: "0"},
-					Timeout:             gogotypes.Timestamp{Seconds: 600},
-					ExecutorResult:      group.ProposalExecutorResultNotRun,
-				},
+			curProposals: &group.Proposal{
+				ProposalId:          1,
+				Address:             addr2.String(),
+				Proposers:           []string{addr2.String()},
+				SubmittedAt:         *curBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Status:              group.ProposalStatusSubmitted,
+				Result:              group.ProposalResultUnfinalized,
+				VoteState:           group.Tally{YesCount: "0", NoCount: "1", AbstainCount: "0", VetoCount: "0"},
+				Timeout:             gogotypes.Timestamp{Seconds: 600},
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
 			expBroken: true,
 		},
 		"current block abstain vote count must be greater than previous block abstain vote count": {
-			prevProposals: []*group.Proposal{
-				{
-					ProposalId:          1,
-					Address:             addr1.String(),
-					Proposers:           []string{addr1.String()},
-					SubmittedAt:         *prevBlockTime,
-					GroupVersion:        1,
-					GroupAccountVersion: 1,
-					Status:              group.ProposalStatusSubmitted,
-					Result:              group.ProposalResultUnfinalized,
-					VoteState:           group.Tally{YesCount: "0", NoCount: "0", AbstainCount: "2", VetoCount: "0"},
-					Timeout:             gogotypes.Timestamp{Seconds: 600},
-					ExecutorResult:      group.ProposalExecutorResultNotRun,
-				},
+			prevProposals: &group.Proposal{
+				ProposalId:          1,
+				Address:             addr1.String(),
+				Proposers:           []string{addr1.String()},
+				SubmittedAt:         *prevBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Status:              group.ProposalStatusSubmitted,
+				Result:              group.ProposalResultUnfinalized,
+				VoteState:           group.Tally{YesCount: "0", NoCount: "0", AbstainCount: "2", VetoCount: "0"},
+				Timeout:             gogotypes.Timestamp{Seconds: 600},
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
-			curProposals: []*group.Proposal{
-				{
-					ProposalId:          1,
-					Address:             addr2.String(),
-					Proposers:           []string{addr2.String()},
-					SubmittedAt:         *curBlockTime,
-					GroupVersion:        1,
-					GroupAccountVersion: 1,
-					Status:              group.ProposalStatusSubmitted,
-					Result:              group.ProposalResultUnfinalized,
-					VoteState:           group.Tally{YesCount: "0", NoCount: "0", AbstainCount: "1", VetoCount: "0"},
-					Timeout:             gogotypes.Timestamp{Seconds: 600},
-					ExecutorResult:      group.ProposalExecutorResultNotRun,
-				},
+			curProposals: &group.Proposal{
+				ProposalId:          1,
+				Address:             addr2.String(),
+				Proposers:           []string{addr2.String()},
+				SubmittedAt:         *curBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Status:              group.ProposalStatusSubmitted,
+				Result:              group.ProposalResultUnfinalized,
+				VoteState:           group.Tally{YesCount: "0", NoCount: "0", AbstainCount: "1", VetoCount: "0"},
+				Timeout:             gogotypes.Timestamp{Seconds: 600},
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
 			expBroken: true,
 		},
 		"current block veto vote count must be greater than previous block veto vote count": {
-			prevProposals: []*group.Proposal{
-				{
-					ProposalId:          1,
-					Address:             addr1.String(),
-					Proposers:           []string{addr1.String()},
-					SubmittedAt:         *prevBlockTime,
-					GroupVersion:        1,
-					GroupAccountVersion: 1,
-					Status:              group.ProposalStatusSubmitted,
-					Result:              group.ProposalResultUnfinalized,
-					VoteState:           group.Tally{YesCount: "0", NoCount: "0", AbstainCount: "0", VetoCount: "2"},
-					Timeout:             gogotypes.Timestamp{Seconds: 600},
-					ExecutorResult:      group.ProposalExecutorResultNotRun,
-				},
+			prevProposals: &group.Proposal{
+				ProposalId:          1,
+				Address:             addr1.String(),
+				Proposers:           []string{addr1.String()},
+				SubmittedAt:         *prevBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Status:              group.ProposalStatusSubmitted,
+				Result:              group.ProposalResultUnfinalized,
+				VoteState:           group.Tally{YesCount: "0", NoCount: "0", AbstainCount: "0", VetoCount: "2"},
+				Timeout:             gogotypes.Timestamp{Seconds: 600},
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
-			curProposals: []*group.Proposal{
-				{
-					ProposalId:          1,
-					Address:             addr2.String(),
-					Proposers:           []string{addr2.String()},
-					SubmittedAt:         *curBlockTime,
-					GroupVersion:        1,
-					GroupAccountVersion: 1,
-					Status:              group.ProposalStatusSubmitted,
-					Result:              group.ProposalResultUnfinalized,
-					VoteState:           group.Tally{YesCount: "0", NoCount: "0", AbstainCount: "0", VetoCount: "1"},
-					Timeout:             gogotypes.Timestamp{Seconds: 600},
-					ExecutorResult:      group.ProposalExecutorResultNotRun,
-				},
+			curProposals: &group.Proposal{
+				ProposalId:          1,
+				Address:             addr2.String(),
+				Proposers:           []string{addr2.String()},
+				SubmittedAt:         *curBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Status:              group.ProposalStatusSubmitted,
+				Result:              group.ProposalResultUnfinalized,
+				VoteState:           group.Tally{YesCount: "0", NoCount: "0", AbstainCount: "0", VetoCount: "1"},
+				Timeout:             gogotypes.Timestamp{Seconds: 600},
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
 			expBroken: true,
 		},
@@ -231,12 +211,11 @@ func TestTallyVotesInvariant(t *testing.T) {
 		cachePrevCtx, _ := prevCtx.CacheContext()
 		cacheCurCtx, _ := curCtx.CacheContext()
 
-		for i := 0; i < len(prevProposals) && i < len(curProposals); i++ {
-			_, err = proposalTable.Create(cachePrevCtx, prevProposals[i])
-			require.NoError(t, err)
-			_, err = proposalTable.Create(cacheCurCtx, curProposals[i])
-			require.NoError(t, err)
-		}
+		_, err = proposalTable.Create(cachePrevCtx, prevProposals)
+		require.NoError(t, err)
+		_, err = proposalTable.Create(cacheCurCtx, curProposals)
+		require.NoError(t, err)
+
 		_, broken := tallyVotesInvariant(cacheCurCtx, cachePrevCtx, proposalTable)
 		require.Equal(t, spec.expBroken, broken)
 	}
@@ -261,18 +240,16 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
 	specs := map[string]struct {
-		groupsInfo   []*group.GroupInfo
+		groupsInfo   *group.GroupInfo
 		groupMembers []*group.GroupMember
 		expBroken    bool
 	}{
 		"invariant not broken": {
-			groupsInfo: []*group.GroupInfo{
-				{
-					GroupId:     1,
-					Admin:       addr1.String(),
-					Version:     1,
-					TotalWeight: "3",
-				},
+			groupsInfo: &group.GroupInfo{
+				GroupId:     1,
+				Admin:       addr1.String(),
+				Version:     1,
+				TotalWeight: "3",
 			},
 			groupMembers: []*group.GroupMember{
 				{
@@ -294,13 +271,11 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 		},
 
 		"group's TotalWeight must be equal to sum of its members weight ": {
-			groupsInfo: []*group.GroupInfo{
-				{
-					GroupId:     1,
-					Admin:       addr1.String(),
-					Version:     1,
-					TotalWeight: "3",
-				},
+			groupsInfo: &group.GroupInfo{
+				GroupId:     1,
+				Admin:       addr1.String(),
+				Version:     1,
+				TotalWeight: "3",
 			},
 			groupMembers: []*group.GroupMember{
 				{
@@ -327,10 +302,8 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 		groupsInfo := spec.groupsInfo
 		groupMembers := spec.groupMembers
 
-		for i := 0; i < len(groupsInfo); i++ {
-			err := groupTable.Create(cacheCurCtx, group.ID(groupsInfo[i].GroupId).Bytes(), groupsInfo[i])
-			require.NoError(t, err)
-		}
+		err := groupTable.Create(cacheCurCtx, group.ID(groupsInfo.GroupId).Bytes(), groupsInfo)
+		require.NoError(t, err)
 
 		for i := 0; i < len(groupMembers); i++ {
 			err := groupMemberTable.Create(cacheCurCtx, groupMembers[i])
@@ -376,29 +349,25 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 	require.NoError(t, err)
 
 	specs := map[string]struct {
-		groupsInfo   []*group.GroupInfo
-		groupAccs    []*group.GroupAccountInfo
+		groupsInfo   *group.GroupInfo
+		groupAccs    *group.GroupAccountInfo
 		groupMembers []*group.GroupMember
-		proposals    []*group.Proposal
+		proposals    *group.Proposal
 		votes        []*group.Vote
 		expBroken    bool
 	}{
 		"invariant not broken": {
-			groupsInfo: []*group.GroupInfo{
-				{
-					GroupId:     1,
-					Admin:       adminAddr.String(),
-					Version:     1,
-					TotalWeight: "7",
-				},
+			groupsInfo: &group.GroupInfo{
+				GroupId:     1,
+				Admin:       adminAddr.String(),
+				Version:     1,
+				TotalWeight: "7",
 			},
-			groupAccs: []*group.GroupAccountInfo{
-				{
-					Address: addr1.String(),
-					GroupId: 1,
-					Admin:   adminAddr.String(),
-					Version: 1,
-				},
+			groupAccs: &group.GroupAccountInfo{
+				Address: addr1.String(),
+				GroupId: 1,
+				Admin:   adminAddr.String(),
+				Version: 1,
 			},
 			groupMembers: []*group.GroupMember{
 				{
@@ -416,20 +385,18 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					},
 				},
 			},
-			proposals: []*group.Proposal{
-				{
-					ProposalId:          1,
-					Address:             addr1.String(),
-					Proposers:           []string{addr1.String()},
-					SubmittedAt:         *curBlockTime,
-					GroupVersion:        1,
-					GroupAccountVersion: 1,
-					Status:              group.ProposalStatusSubmitted,
-					Result:              group.ProposalResultUnfinalized,
-					VoteState:           group.Tally{YesCount: "4", NoCount: "3", AbstainCount: "0", VetoCount: "0"},
-					Timeout:             gogotypes.Timestamp{Seconds: 600},
-					ExecutorResult:      group.ProposalExecutorResultNotRun,
-				},
+			proposals: &group.Proposal{
+				ProposalId:          1,
+				Address:             addr1.String(),
+				Proposers:           []string{addr1.String()},
+				SubmittedAt:         *curBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Status:              group.ProposalStatusSubmitted,
+				Result:              group.ProposalResultUnfinalized,
+				VoteState:           group.Tally{YesCount: "4", NoCount: "3", AbstainCount: "0", VetoCount: "0"},
+				Timeout:             gogotypes.Timestamp{Seconds: 600},
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
 			votes: []*group.Vote{
 				{
@@ -454,21 +421,17 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 			expBroken: false,
 		},
 		"proposal tally must correspond to the sum of vote weights": {
-			groupsInfo: []*group.GroupInfo{
-				{
-					GroupId:     1,
-					Admin:       adminAddr.String(),
-					Version:     1,
-					TotalWeight: "5",
-				},
+			groupsInfo: &group.GroupInfo{
+				GroupId:     1,
+				Admin:       adminAddr.String(),
+				Version:     1,
+				TotalWeight: "5",
 			},
-			groupAccs: []*group.GroupAccountInfo{
-				{
-					Address: addr1.String(),
-					GroupId: 1,
-					Admin:   adminAddr.String(),
-					Version: 1,
-				},
+			groupAccs: &group.GroupAccountInfo{
+				Address: addr1.String(),
+				GroupId: 1,
+				Admin:   adminAddr.String(),
+				Version: 1,
 			},
 			groupMembers: []*group.GroupMember{
 				{
@@ -486,20 +449,18 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					},
 				},
 			},
-			proposals: []*group.Proposal{
-				{
-					ProposalId:          1,
-					Address:             addr1.String(),
-					Proposers:           []string{addr1.String()},
-					SubmittedAt:         *curBlockTime,
-					GroupVersion:        1,
-					GroupAccountVersion: 1,
-					Status:              group.ProposalStatusSubmitted,
-					Result:              group.ProposalResultUnfinalized,
-					VoteState:           group.Tally{YesCount: "6", NoCount: "0", AbstainCount: "0", VetoCount: "0"},
-					Timeout:             gogotypes.Timestamp{Seconds: 600},
-					ExecutorResult:      group.ProposalExecutorResultNotRun,
-				},
+			proposals: &group.Proposal{
+				ProposalId:          1,
+				Address:             addr1.String(),
+				Proposers:           []string{addr1.String()},
+				SubmittedAt:         *curBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Status:              group.ProposalStatusSubmitted,
+				Result:              group.ProposalResultUnfinalized,
+				VoteState:           group.Tally{YesCount: "6", NoCount: "0", AbstainCount: "0", VetoCount: "0"},
+				Timeout:             gogotypes.Timestamp{Seconds: 600},
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
 			votes: []*group.Vote{
 				{
@@ -524,21 +485,17 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 			expBroken: true,
 		},
 		"proposal VoteState must correspond to the vote choice": {
-			groupsInfo: []*group.GroupInfo{
-				{
-					GroupId:     1,
-					Admin:       adminAddr.String(),
-					Version:     1,
-					TotalWeight: "7",
-				},
+			groupsInfo: &group.GroupInfo{
+				GroupId:     1,
+				Admin:       adminAddr.String(),
+				Version:     1,
+				TotalWeight: "7",
 			},
-			groupAccs: []*group.GroupAccountInfo{
-				{
-					Address: addr1.String(),
-					GroupId: 1,
-					Admin:   adminAddr.String(),
-					Version: 1,
-				},
+			groupAccs: &group.GroupAccountInfo{
+				Address: addr1.String(),
+				GroupId: 1,
+				Admin:   adminAddr.String(),
+				Version: 1,
 			},
 			groupMembers: []*group.GroupMember{
 				{
@@ -556,20 +513,18 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					},
 				},
 			},
-			proposals: []*group.Proposal{
-				{
-					ProposalId:          1,
-					Address:             addr1.String(),
-					Proposers:           []string{addr1.String()},
-					SubmittedAt:         *curBlockTime,
-					GroupVersion:        1,
-					GroupAccountVersion: 1,
-					Status:              group.ProposalStatusSubmitted,
-					Result:              group.ProposalResultUnfinalized,
-					VoteState:           group.Tally{YesCount: "4", NoCount: "3", AbstainCount: "0", VetoCount: "0"},
-					Timeout:             gogotypes.Timestamp{Seconds: 600},
-					ExecutorResult:      group.ProposalExecutorResultNotRun,
-				},
+			proposals: &group.Proposal{
+				ProposalId:          1,
+				Address:             addr1.String(),
+				Proposers:           []string{addr1.String()},
+				SubmittedAt:         *curBlockTime,
+				GroupVersion:        1,
+				GroupAccountVersion: 1,
+				Status:              group.ProposalStatusSubmitted,
+				Result:              group.ProposalResultUnfinalized,
+				VoteState:           group.Tally{YesCount: "4", NoCount: "3", AbstainCount: "0", VetoCount: "0"},
+				Timeout:             gogotypes.Timestamp{Seconds: 600},
+				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
 			votes: []*group.Vote{
 				{
@@ -597,27 +552,27 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 
 	for _, spec := range specs {
 		cacheCurCtx, _ := curCtx.CacheContext()
+		groupsInfo := spec.groupsInfo
 		proposals := spec.proposals
 		groupAccs := spec.groupAccs
 		groupMembers := spec.groupMembers
 		votes := spec.votes
 
-		for i := 0; i < len(groupAccs); i++ {
-			err := groupAccs[i].SetDecisionPolicy(group.NewThresholdDecisionPolicy("1", gogotypes.Duration{Seconds: 1}))
-			require.NoError(t, err)
-			err = groupAccountTable.Create(cacheCurCtx, groupAccs[i])
-			require.NoError(t, err)
-		}
+		err := groupTable.Create(cacheCurCtx, group.ID(groupsInfo.GroupId).Bytes(), groupsInfo)
+		require.NoError(t, err)
+
+		err = groupAccs.SetDecisionPolicy(group.NewThresholdDecisionPolicy("1", gogotypes.Duration{Seconds: 1}))
+		require.NoError(t, err)
+		err = groupAccountTable.Create(cacheCurCtx, groupAccs)
+		require.NoError(t, err)
 
 		for i := 0; i < len(groupMembers); i++ {
 			err = groupMemberTable.Create(cacheCurCtx, groupMembers[i])
 			require.NoError(t, err)
 		}
 
-		for i := 0; i < len(proposals); i++ {
-			_, err = proposalTable.Create(cacheCurCtx, proposals[i])
-			require.NoError(t, err)
-		}
+		_, err = proposalTable.Create(cacheCurCtx, proposals)
+		require.NoError(t, err)
 
 		for i := 0; i < len(votes); i++ {
 			err = voteTable.Create(cacheCurCtx, votes[i])
