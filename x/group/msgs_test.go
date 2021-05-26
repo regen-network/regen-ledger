@@ -146,13 +146,6 @@ func TestMsgCreateGroupAccount(t *testing.T) {
 			timeout:   proto.Duration{Seconds: 1},
 			expErr:    true,
 		},
-		"valid admin required": {
-			admin:     []byte("invalid-address"),
-			group:     1,
-			threshold: "1",
-			timeout:   proto.Duration{Seconds: 1},
-			expErr:    true,
-		},
 		"group required": {
 			admin:     myAddr,
 			threshold: "1",
