@@ -1,4 +1,5 @@
 // +build experimental
+// +build norace
 
 package app_test
 
