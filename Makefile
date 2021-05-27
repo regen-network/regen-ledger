@@ -264,7 +264,6 @@ ifneq (,$(shell which tparse 2>/dev/null))
 	done
 else
 	#go test -mod=readonly $(ARGS) $(TEST_PACKAGES)
-	# find . -name go.mod -execdir go test ./... \;
 	@echo "Unit tests"; \
 	for module in $(SUB_MODULES); do \
 		cd ${CURRENT_DIR}/$$module; \
