@@ -9,7 +9,7 @@ jobs:
   tests:
     name: Unit tests
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 15
     steps:
       - name: Install Go
         uses: actions/setup-go@v2.1.3
