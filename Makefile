@@ -256,7 +256,6 @@ CURRENT_DIR = $(shell pwd)
 run-tests:
 ifneq (,$(shell which tparse 2>/dev/null))
 	#go test -mod=readonly -json $(ARGS) $(TEST_PACKAGES) | tparse
-	# find . -name go.mod -execdir go test ./... \;
 	@echo "Unit tests"; \
 	for module in $(SUB_MODULES); do \
 		cd ${CURRENT_DIR}/$$module; \
