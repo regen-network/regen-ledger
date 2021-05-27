@@ -251,7 +251,7 @@ test-race: TEST_PACKAGES=$(PACKAGES_NOSIMULATION)
 
 $(TEST_TARGETS): run-tests
 
-SUB_MODULES = $(shell find . -type f -name 'go.mod' -printf '%h\n' | sort)
+SUB_MODULES = $(shell find . -type f -name 'go.mod' -print0 | xargs -0 -n1 dirname | sort)
 CURRENT_DIR = $(shell pwd)
 run-tests:
 ifneq (,$(shell which tparse 2>/dev/null))
