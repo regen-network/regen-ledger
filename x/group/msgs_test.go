@@ -146,13 +146,6 @@ func TestMsgCreateGroupAccount(t *testing.T) {
 			timeout:   proto.Duration{Seconds: 1},
 			expErr:    true,
 		},
-		"valid admin required": {
-			admin:     []byte("invalid-address"),
-			group:     1,
-			threshold: "1",
-			timeout:   proto.Duration{Seconds: 1},
-			expErr:    true,
-		},
 		"group required": {
 			admin:     myAddr,
 			threshold: "1",
@@ -226,8 +219,8 @@ func TestMsgCreateProposalRequest(t *testing.T) {
 	}{
 		"all good with minimum fields set": {
 			src: MsgCreateProposalRequest{
-				Address: groupAccAddr,
-				Proposers:    []string{memberAddr},
+				Address:   groupAccAddr,
+				Proposers: []string{memberAddr},
 			},
 		},
 		"group account required": {
@@ -244,22 +237,22 @@ func TestMsgCreateProposalRequest(t *testing.T) {
 		},
 		"valid proposer address required": {
 			src: MsgCreateProposalRequest{
-				Address: groupAccAddr,
-				Proposers:    []string{"invalid-member-address"},
+				Address:   groupAccAddr,
+				Proposers: []string{"invalid-member-address"},
 			},
 			expErr: true,
 		},
 		"no duplicate proposers": {
 			src: MsgCreateProposalRequest{
-				Address: groupAccAddr,
-				Proposers:    []string{memberAddr, memberAddr},
+				Address:   groupAccAddr,
+				Proposers: []string{memberAddr, memberAddr},
 			},
 			expErr: true,
 		},
 		"empty proposer address not allowed": {
 			src: MsgCreateProposalRequest{
-				Address: groupAccAddr,
-				Proposers:    []string{memberAddr, ""},
+				Address:   groupAccAddr,
+				Proposers: []string{memberAddr, ""},
 			},
 			expErr: true,
 		},
