@@ -3,16 +3,15 @@ package server
 import (
 	"fmt"
 
-	"github.com/regen-network/regen-ledger/types"
-
 	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/util"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/util"
 )
 
 func (s serverImpl) CreateClass(ctx types.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error) {
@@ -77,7 +76,9 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 
 		recipient := issuance.Recipient
 
-		if !tradable.IsZero() {
+		if tradable.IsZero() {
+			store.Delete(TradableBalanceKey(recipient, batchDenom))
+		} else {
 			err = math.Add(tradableSupply, tradableSupply, tradable)
 			if err != nil {
 				return nil, err
@@ -89,7 +90,9 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 			}
 		}
 
-		if !retired.IsZero() {
+		if retired.IsZero() {
+			store.Delete(RetiredBalanceKey(recipient, batchDenom))
+		} else {
 			err = math.Add(retiredSupply, retiredSupply, retired)
 			if err != nil {
 				return nil, err
