@@ -5,26 +5,23 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/gorilla/mux"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/spf13/cobra"
-
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/gorilla/mux"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/spf13/cobra"
+
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/client"
-
 	"github.com/regen-network/regen-ledger/x/group/exported"
 	"github.com/regen-network/regen-ledger/x/group/server"
 	"github.com/regen-network/regen-ledger/x/group/simulation"
-
-	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 )
 
 type Module struct {
@@ -52,11 +49,11 @@ func (a Module) RegisterServices(configurator servermodule.Configurator) {
 	server.RegisterServices(configurator, a.AccountKeeper, a.BankKeeper)
 }
 
-func (a Module) DefaultGenesis(marshaler codec.JSONMarshaler) json.RawMessage {
+func (a Module) DefaultGenesis(marshaler codec.JSONCodec) json.RawMessage {
 	return marshaler.MustMarshalJSON(group.NewGenesisState())
 }
 
-func (a Module) ValidateGenesis(cdc codec.JSONMarshaler, config sdkclient.TxEncodingConfig, bz json.RawMessage) error {
+func (a Module) ValidateGenesis(cdc codec.JSONCodec, config sdkclient.TxEncodingConfig, bz json.RawMessage) error {
 	var data group.GenesisState
 	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", group.ModuleName, err)
@@ -83,6 +80,9 @@ func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 func (a Module) Route(configurator servermodule.Configurator) sdk.Route {
 	return sdk.NewRoute(group.RouterKey, server.NewHandler(configurator, a.AccountKeeper, a.BankKeeper))
 }
+
+// ConsensusVersion implements AppModule/ConsensusVersion.
+func (Module) ConsensusVersion() uint64 { return 1 }
 
 // AppModuleSimulation functions
 

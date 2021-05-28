@@ -3,11 +3,12 @@ package ecocredit
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/regen-network/regen-ledger/types/math"
 )
 
 var (
-	_, _, _, _, _ sdk.MsgRequest = &MsgCreateClassRequest{}, &MsgCreateBatchRequest{}, &MsgSendRequest{},
+	_, _, _, _, _ sdk.Msg = &MsgCreateClassRequest{}, &MsgCreateBatchRequest{}, &MsgSendRequest{},
 		&MsgRetireRequest{}, &MsgSetPrecisionRequest{}
 )
 

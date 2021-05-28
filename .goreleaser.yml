@@ -1,0 +1,79 @@
+project_name: regen-ledger
+
+env:
+  - GO111MODULE=on
+  - CGO_ENABLED=1
+  - LD_LIBRARY_PATH=/home/runner/work/osxcross/target/binaries/lib
+
+builds:
+  - id: regen-darwin-amd64
+    binary: regen
+    main: ./app/regen
+    goarch:
+      - amd64
+    goos:
+      - darwin
+    env:
+      - CC=/home/runner/work/osxcross/target/target/bin/o64-clang
+      - CXX=/home/runner/work/osxcross/target/target/bin/o64-clang++
+    flags:
+      - -tags="netgo ledger"
+      - -trimpath
+      - -mod=readonly
+    ldflags:
+      - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}} -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
+
+  - id: regen-linux-amd64
+    binary: regen
+    main: ./app/regen
+    goarch:
+      - amd64
+    goos:
+      - linux
+    flags:
+      - -tags="netgo ledger"
+      - -trimpath
+      - -mod=readonly
+    ldflags:
+      - -s -w -X github.com/cosmos/cosmos-sdk/version.Name=regen -X github.com/cosmos/cosmos-sdk/version.AppName=regen -X github.com/cosmos/cosmos-sdk/version.Version={{.Version}} -X github.com/cosmos/cosmos-sdk/version.Commit={{.Commit}} -X "github.com/cosmos/cosmos-sdk/version.BuildTags=netgo,ledger"
+ 
+archives:
+  - id: regen
+    builds:
+      - regen-darwin-amd64
+      - regen-linux-amd64   
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: true
+    format: zip
+    files:
+      - none*
+brews:
+  - name: regen-ledger
+    ids: 
+      - regen
+    tap:
+      owner: regen-network
+      name: regen-ledger
+    homepage: "https://www.regen.network/"
+    description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
+    custom_block: |
+      head "https://github.com/regen-network/regen-ledger.git"
+    test: |
+      system "#{bin}/regen --version"
+    install: |
+      bin.install "regen"
+nfpms:
+- maintainer: regen-network
+  description: "Blockchain-powered marketplace for climate solutions and planetary regenerations"
+  homepage: https://github.com/likhita-809/regen-ledger
+  license: MIT
+  formats:
+  - deb
+  - rpm
+  - apk
+release:
+  github:
+    owner: regen-network
+    name: regen-ledger
+  prerelease: auto
+  draft: false
