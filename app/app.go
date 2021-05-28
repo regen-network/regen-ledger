@@ -141,7 +141,7 @@ var (
 )
 
 func init() {
-	// this changes the power reduction from 10e6 to 10e2 for the regen-test-1001 testnet which will give
+	// this changes the power reduction from 10e6 to 10e2, which will give
 	// every validator 10,000 times more voting power than they currently have
 	sdk.DefaultPowerReduction = sdk.NewIntFromBigInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(2), nil))
 }
