@@ -55,18 +55,19 @@ func getSubAndSetDecimal(store sdk.KVStore, key []byte, x *apd.Decimal) error {
 		return err
 	}
 
+	err = math.SafeSub(value, value, x)
+	if err != nil {
+		return err
+	}
+
 	if value.IsZero() {
 		store.Delete(key)
 		return nil
 	} else {
-		err = math.SafeSub(value, value, x)
-		if err != nil {
-			return err
-		}
-
 		setDecimal(store, key, value)
 		return nil
 	}
+
 }
 
 func setUInt32(store sdk.KVStore, key []byte, value uint32) error {
