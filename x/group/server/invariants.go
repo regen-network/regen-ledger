@@ -57,27 +57,27 @@ func tallyVotesInvariant(ctx sdk.Context, prevCtx sdk.Context, proposalTable orm
 
 	prevIt, err := proposalTable.PrefixScan(prevCtx, 1, math.MaxUint64)
 	if err != nil {
-		msg += fmt.Sprintf("PrefixScan failure on proposal table at block height %d\n", prevCtx.BlockHeight())
+		msg += fmt.Sprintf("PrefixScan failure on proposal table at block height %d\n%v\n", prevCtx.BlockHeight(), err)
 		return msg, broken
 	}
 
 	curIt, err := proposalTable.PrefixScan(ctx, 1, math.MaxUint64)
 	if err != nil {
-		msg += fmt.Sprintf("PrefixScan failure on proposal table at block height %d\n", ctx.BlockHeight())
+		msg += fmt.Sprintf("PrefixScan failure on proposal table at block height %d\n%v\n", ctx.BlockHeight(), err)
 		return msg, broken
 	}
 
 	var curProposals []*group.Proposal
 	_, err = orm.ReadAll(curIt, &curProposals)
 	if err != nil {
-		msg += fmt.Sprintf("error while getting all the proposals at block height %d\n", ctx.BlockHeight())
+		msg += fmt.Sprintf("error while getting all the proposals at block height %d\n%v\n", ctx.BlockHeight(), err)
 		return msg, broken
 	}
 
 	var prevProposals []*group.Proposal
 	_, err = orm.ReadAll(prevIt, &prevProposals)
 	if err != nil {
-		msg += fmt.Sprintf("error while getting all the proposals at block height %d\n", prevCtx.BlockHeight())
+		msg += fmt.Sprintf("error while getting all the proposals at block height %d\n%v\n", prevCtx.BlockHeight(), err)
 		return msg, broken
 	}
 
@@ -85,42 +85,42 @@ func tallyVotesInvariant(ctx sdk.Context, prevCtx sdk.Context, proposalTable orm
 		if prevProposals[i].ProposalId == curProposals[i].ProposalId {
 			prevYesCount, err := prevProposals[i].VoteState.GetYesCount()
 			if err != nil {
-				msg += fmt.Sprintf("error while getting yes votes weight of proposal at block height %d\n", prevCtx.BlockHeight())
+				msg += fmt.Sprintf("error while getting yes votes weight of proposal at block height %d\n%v\n", prevCtx.BlockHeight(), err)
 				return msg, broken
 			}
 			curYesCount, err := curProposals[i].VoteState.GetYesCount()
 			if err != nil {
-				msg += fmt.Sprintf("error while getting yes votes weight of proposal at block height %d\n", ctx.BlockHeight())
+				msg += fmt.Sprintf("error while getting yes votes weight of proposal at block height %d\n%v\n", ctx.BlockHeight(), err)
 				return msg, broken
 			}
 			prevNoCount, err := prevProposals[i].VoteState.GetNoCount()
 			if err != nil {
-				msg += fmt.Sprintf("error while getting no votes weight of proposal at block height %d\n", prevCtx.BlockHeight())
+				msg += fmt.Sprintf("error while getting no votes weight of proposal at block height %d\n%v\n", prevCtx.BlockHeight(), err)
 				return msg, broken
 			}
 			curNoCount, err := curProposals[i].VoteState.GetNoCount()
 			if err != nil {
-				msg += fmt.Sprintf("error while getting no votes weight of proposal at block height %d\n", ctx.BlockHeight())
+				msg += fmt.Sprintf("error while getting no votes weight of proposal at block height %d\n%v\n", ctx.BlockHeight(), err)
 				return msg, broken
 			}
 			prevAbstainCount, err := prevProposals[i].VoteState.GetAbstainCount()
 			if err != nil {
-				msg += fmt.Sprintf("error while getting abstain votes weight of proposal at block height %d\n", prevCtx.BlockHeight())
+				msg += fmt.Sprintf("error while getting abstain votes weight of proposal at block height %d\n%v\n", prevCtx.BlockHeight(), err)
 				return msg, broken
 			}
 			curAbstainCount, err := curProposals[i].VoteState.GetAbstainCount()
 			if err != nil {
-				msg += fmt.Sprintf("error while getting abstain votes weight of proposal at block height %d\n", ctx.BlockHeight())
+				msg += fmt.Sprintf("error while getting abstain votes weight of proposal at block height %d\n%v\n", ctx.BlockHeight(), err)
 				return msg, broken
 			}
 			prevVetoCount, err := prevProposals[i].VoteState.GetVetoCount()
 			if err != nil {
-				msg += fmt.Sprintf("error while getting veto votes weight of proposal at block height %d\n", prevCtx.BlockHeight())
+				msg += fmt.Sprintf("error while getting veto votes weight of proposal at block height %d\n%v\n", prevCtx.BlockHeight(), err)
 				return msg, broken
 			}
 			curVetoCount, err := curProposals[i].VoteState.GetVetoCount()
 			if err != nil {
-				msg += fmt.Sprintf("error while getting veto votes weight of proposal at block height %d\n", ctx.BlockHeight())
+				msg += fmt.Sprintf("error while getting veto votes weight of proposal at block height %d\n%v\n", ctx.BlockHeight(), err)
 				return msg, broken
 			}
 			if (curYesCount.Cmp(prevYesCount) == -1) || (curNoCount.Cmp(prevNoCount) == -1) || (curAbstainCount.Cmp(prevAbstainCount) == -1) || (curVetoCount.Cmp(prevVetoCount) == -1) {
@@ -143,7 +143,7 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 
 	groupIt, err := groupTable.PrefixScan(ctx, nil, nil)
 	if err != nil {
-		msg += fmt.Sprintf("PrefixScan failure on group table\n")
+		msg += fmt.Sprintf("PrefixScan failure on group table\n%v\n", err)
 		return msg, broken
 	}
 	defer groupIt.Close()
@@ -156,7 +156,7 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 		}
 		memIt, err := groupMemberByGroupIndex.Get(ctx, groupInfo.GroupId)
 		if err != nil {
-			msg += fmt.Sprintf("error while returning group member iterator for group with ID %d\n", groupInfo.GroupId)
+			msg += fmt.Sprintf("error while returning group member iterator for group with ID %d\n%v\n", groupInfo.GroupId, err)
 			return msg, broken
 		}
 		defer memIt.Close()
@@ -168,18 +168,18 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 			}
 			curMemWeight, err := regenMath.ParseNonNegativeDecimal(groupMember.GetMember().GetWeight())
 			if err != nil {
-				msg += fmt.Sprintf("error while parsing non-nengative decimal for group member %s\n", groupMember.Member.Address)
+				msg += fmt.Sprintf("error while parsing non-nengative decimal for group member %s\n%v\n", groupMember.Member.Address, err)
 				return msg, broken
 			}
 			err = regenMath.Add(membersWeight, membersWeight, curMemWeight)
 			if err != nil {
-				msg += fmt.Sprintf("decimal addition error while adding group member voting weight to total voting weight\n")
+				msg += fmt.Sprintf("decimal addition error while adding group member voting weight to total voting weight\n%v\n", err)
 				return msg, broken
 			}
 		}
 		groupWeight, err := regenMath.ParseNonNegativeDecimal(groupInfo.GetTotalWeight())
 		if err != nil {
-			msg += fmt.Sprintf("error while parsing non-nengative decimal for group with ID %d\n", groupInfo.GroupId)
+			msg += fmt.Sprintf("error while parsing non-nengative decimal for group with ID %d\n%v\n", groupInfo.GroupId, err)
 			return msg, broken
 		}
 
@@ -204,7 +204,7 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.Table, proposalTable
 
 	proposalIt, err := proposalTable.PrefixScan(ctx, 1, math.MaxUint64)
 	if err != nil {
-		msg += fmt.Sprintf("PrefixScan failure on proposal table at block height %d\n", ctx.BlockHeight())
+		msg += fmt.Sprintf("PrefixScan failure on proposal table at block height %d\n%v\n", ctx.BlockHeight(), err)
 		return msg, broken
 	}
 	defer proposalIt.Close()
@@ -224,13 +224,13 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.Table, proposalTable
 
 		address, err := sdk.AccAddressFromBech32(proposal.Address)
 		if err != nil {
-			msg += fmt.Sprintf("error while converting proposal address of type string to type AccAddress\n")
+			msg += fmt.Sprintf("error while converting proposal address of type string to type AccAddress\n%v\n", err)
 			return msg, broken
 		}
 
 		err = groupAccountTable.GetOne(ctx, address.Bytes(), &groupAcc)
 		if err != nil {
-			msg += fmt.Sprintf("group account not found for address: %s\n", proposal.Address)
+			msg += fmt.Sprintf("group account not found for address: %s\n%v\n", proposal.Address, err)
 			return msg, broken
 		}
 
@@ -241,7 +241,7 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.Table, proposalTable
 
 		err = groupTable.GetOne(ctx, group.ID(groupAcc.GroupId).Bytes(), &groupInfo)
 		if err != nil {
-			msg += fmt.Sprintf("group info not found for group id %d\n", groupAcc.GroupId)
+			msg += fmt.Sprintf("group info not found for group id %d\n%v\n", groupAcc.GroupId, err)
 			return msg, broken
 		}
 
@@ -252,7 +252,7 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.Table, proposalTable
 
 		voteIt, err := voteByProposalIndex.Get(ctx, proposal.ProposalId)
 		if err != nil {
-			msg += fmt.Sprintf("error while returning vote iterator for proposal with ID %d\n", proposal.ProposalId)
+			msg += fmt.Sprintf("error while returning vote iterator for proposal with ID %d\n%v\n", proposal.ProposalId, err)
 			return msg, broken
 		}
 		defer voteIt.Close()
@@ -267,18 +267,18 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.Table, proposalTable
 
 			err = groupMemberTable.GetOne(ctx, groupMem.PrimaryKey(), &groupMem)
 			if err != nil {
-				msg += fmt.Sprintf("group member not found with group ID %d and group member %s\n", groupAcc.GroupId, vote.Voter)
+				msg += fmt.Sprintf("group member not found with group ID %d and group member %s\n%v\n", groupAcc.GroupId, vote.Voter, err)
 				return msg, broken
 			}
 
 			curMemVotingWeight, err := regenMath.ParseNonNegativeDecimal(groupMem.Member.Weight)
 			if err != nil {
-				msg += fmt.Sprintf("error while parsing non-negative decimal for group member %s\n", groupMem.Member.Address)
+				msg += fmt.Sprintf("error while parsing non-negative decimal for group member %s\n%v\n", groupMem.Member.Address, err)
 				return msg, broken
 			}
 			err = regenMath.Add(totalVotingWeight, totalVotingWeight, curMemVotingWeight)
 			if err != nil {
-				msg += fmt.Sprintf("decimal addition error while adding current member voting weight to total voting weight\n")
+				msg += fmt.Sprintf("decimal addition error while adding current member voting weight to total voting weight\n%v\n", err)
 				return msg, broken
 			}
 
@@ -286,25 +286,25 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.Table, proposalTable
 			case group.Choice_CHOICE_YES:
 				err = regenMath.Add(yesVoteWeight, yesVoteWeight, curMemVotingWeight)
 				if err != nil {
-					msg += fmt.Sprintf("decimal addition error\n")
+					msg += fmt.Sprintf("decimal addition error\n%v\n", err)
 					return msg, broken
 				}
 			case group.Choice_CHOICE_NO:
 				err = regenMath.Add(noVoteWeight, noVoteWeight, curMemVotingWeight)
 				if err != nil {
-					msg += fmt.Sprintf("decimal addition error\n")
+					msg += fmt.Sprintf("decimal addition error\n%v\n", err)
 					return msg, broken
 				}
 			case group.Choice_CHOICE_ABSTAIN:
 				err = regenMath.Add(abstainVoteWeight, abstainVoteWeight, curMemVotingWeight)
 				if err != nil {
-					msg += fmt.Sprintf("decimal addition error\n")
+					msg += fmt.Sprintf("decimal addition error\n%v\n", err)
 					return msg, broken
 				}
 			case group.Choice_CHOICE_VETO:
 				err = regenMath.Add(vetoVoteWeight, vetoVoteWeight, curMemVotingWeight)
 				if err != nil {
-					msg += fmt.Sprintf("decimal addition error\n")
+					msg += fmt.Sprintf("decimal addition error\n%v\n", err)
 					return msg, broken
 				}
 			}
@@ -312,27 +312,27 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.Table, proposalTable
 
 		totalProposalVotes, err := proposal.VoteState.TotalCounts()
 		if err != nil {
-			msg += fmt.Sprintf("error while getting total weighted votes of proposal with ID %d\n", proposal.ProposalId)
+			msg += fmt.Sprintf("error while getting total weighted votes of proposal with ID %d\n%v\n", proposal.ProposalId, err)
 			return msg, broken
 		}
 		proposalYesCount, err := proposal.VoteState.GetYesCount()
 		if err != nil {
-			msg += fmt.Sprintf("error while getting the weighted sum of yes votes for proposal with ID %d\n", proposal.ProposalId)
+			msg += fmt.Sprintf("error while getting the weighted sum of yes votes for proposal with ID %d\n%v\n", proposal.ProposalId, err)
 			return msg, broken
 		}
 		proposalNoCount, err := proposal.VoteState.GetNoCount()
 		if err != nil {
-			msg += fmt.Sprintf("error while getting the weighted sum of no votes for proposal with ID %d\n", proposal.ProposalId)
+			msg += fmt.Sprintf("error while getting the weighted sum of no votes for proposal with ID %d\n%v\n", proposal.ProposalId, err)
 			return msg, broken
 		}
 		proposalAbstainCount, err := proposal.VoteState.GetAbstainCount()
 		if err != nil {
-			msg += fmt.Sprintf("error while getting the weighted sum of abstain votes for proposal with ID %d\n", proposal.ProposalId)
+			msg += fmt.Sprintf("error while getting the weighted sum of abstain votes for proposal with ID %d\n%v\n", proposal.ProposalId, err)
 			return msg, broken
 		}
 		proposalVetoCount, err := proposal.VoteState.GetVetoCount()
 		if err != nil {
-			msg += fmt.Sprintf("error while getting the weighted sum of veto votes for proposal with ID %d\n", proposal.ProposalId)
+			msg += fmt.Sprintf("error while getting the weighted sum of veto votes for proposal with ID %d\n%v\n", proposal.ProposalId, err)
 			return msg, broken
 		}
 
