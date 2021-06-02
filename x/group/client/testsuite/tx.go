@@ -9,16 +9,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/testutil"
-
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
-
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/client"
 )
@@ -38,7 +36,7 @@ type IntegrationTestSuite struct {
 const validMetadata = "AQ=="
 
 func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
-	return &IntegrationTestSuite{cfg : cfg}
+	return &IntegrationTestSuite{cfg: cfg}
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
@@ -54,7 +52,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	val := s.network.Validators[0]
 
 	// create a new account
-	info, _, err := val.ClientCtx.Keyring.NewMnemonic("NewValidator", keyring.English, sdk.FullFundraiserPath, hd.Secp256k1)
+	info, _, err := val.ClientCtx.Keyring.NewMnemonic("NewValidator", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
 	s.Require().NoError(err)
 
 	account := sdk.AccAddress(info.GetPubKey().Address())
@@ -94,7 +92,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.Require().NoError(err, out.String())
 	var txResp = sdk.TxResponse{}
-	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &txResp), out.String())
+	s.Require().NoError(val.ClientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &txResp), out.String())
 	s.Require().Equal(uint32(0), txResp.Code, out.String())
 
 	s.group = &group.GroupInfo{GroupId: 1, Admin: val.Address.String(), Metadata: []byte{1}, TotalWeight: "1", Version: 1}
@@ -113,7 +111,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			),
 		)
 		s.Require().NoError(err, out.String())
-		s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &txResp), out.String())
+		s.Require().NoError(val.ClientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &txResp), out.String())
 		s.Require().Equal(uint32(0), txResp.Code, out.String())
 
 		out, err = cli.ExecTestCLICmd(val.ClientCtx, client.QueryGroupAccountsByGroupCmd(), []string{"1", fmt.Sprintf("--%s=json", tmcli.OutputFlag)})
@@ -121,7 +119,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	}
 
 	var res group.QueryGroupAccountsByGroupResponse
-	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &res))
+	s.Require().NoError(val.ClientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &res))
 	s.Require().Equal(len(res.GroupAccounts), 4)
 	s.groupAccounts = res.GroupAccounts
 
@@ -140,7 +138,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		),
 	)
 	s.Require().NoError(err, out.String())
-	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &txResp), out.String())
+	s.Require().NoError(val.ClientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &txResp), out.String())
 	s.Require().Equal(uint32(0), txResp.Code, out.String())
 
 	// vote
@@ -156,21 +154,21 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		),
 	)
 	s.Require().NoError(err, out.String())
-	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &txResp), out.String())
+	s.Require().NoError(val.ClientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &txResp), out.String())
 	s.Require().Equal(uint32(0), txResp.Code, out.String())
 
 	out, err = cli.ExecTestCLICmd(val.ClientCtx, client.QueryProposalCmd(), []string{"1", fmt.Sprintf("--%s=json", tmcli.OutputFlag)})
 	s.Require().NoError(err, out.String())
 
 	var proposalRes group.QueryProposalResponse
-	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &proposalRes))
+	s.Require().NoError(val.ClientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &proposalRes))
 	s.proposal = proposalRes.Proposal
 
 	out, err = cli.ExecTestCLICmd(val.ClientCtx, client.QueryVoteByProposalVoterCmd(), []string{"1", val.Address.String(), fmt.Sprintf("--%s=json", tmcli.OutputFlag)})
 	s.Require().NoError(err, out.String())
 
 	var voteRes group.QueryVoteByProposalVoterResponse
-	s.Require().NoError(val.ClientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), &voteRes))
+	s.Require().NoError(val.ClientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &voteRes))
 	s.vote = voteRes.Vote
 }
 
@@ -327,7 +325,7 @@ func (s *IntegrationTestSuite) TestTxCreateGroup() {
 				s.Require().Contains(out.String(), tc.expectErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 
 				txResp := tc.respType.(*sdk.TxResponse)
 				s.Require().Equal(tc.expectedCode, txResp.Code, out.String())
@@ -447,7 +445,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAdmin() {
 				s.Require().Contains(out.String(), tc.expectErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 
 				txResp := tc.respType.(*sdk.TxResponse)
 				s.Require().Equal(tc.expectedCode, txResp.Code, out.String())
@@ -533,7 +531,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupMetadata() {
 				s.Require().Contains(out.String(), tc.expectErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 
 				txResp := tc.respType.(*sdk.TxResponse)
 				s.Require().Equal(tc.expectedCode, txResp.Code, out.String())
@@ -655,7 +653,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupMembers() {
 				s.Require().Contains(out.String(), tc.expectErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 
 				txResp := tc.respType.(*sdk.TxResponse)
 				s.Require().Equal(tc.expectedCode, txResp.Code, out.String())
@@ -730,7 +728,7 @@ func (s *IntegrationTestSuite) TestTxCreateGroupAccount() {
 				commonFlags...,
 			),
 			true,
-			"The specified item could not be found in the keyring",
+			"key not found",
 			&sdk.TxResponse{},
 			0,
 		},
@@ -779,7 +777,7 @@ func (s *IntegrationTestSuite) TestTxCreateGroupAccount() {
 				s.Require().Contains(out.String(), tc.expectErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 
 				txResp := tc.respType.(*sdk.TxResponse)
 				s.Require().Equal(tc.expectedCode, txResp.Code, out.String())
@@ -850,7 +848,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountAdmin() {
 				commonFlags...,
 			),
 			true,
-			"The specified item could not be found in the keyring",
+			"key not found",
 			&sdk.TxResponse{},
 			0,
 		},
@@ -882,7 +880,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountAdmin() {
 				s.Require().Contains(out.String(), tc.expectErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 
 				txResp := tc.respType.(*sdk.TxResponse)
 				s.Require().Equal(tc.expectedCode, txResp.Code, out.String())
@@ -953,7 +951,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountDecisionPolicy() {
 				commonFlags...,
 			),
 			true,
-			"The specified item could not be found in the keyring",
+			"key not found",
 			&sdk.TxResponse{},
 			0,
 		},
@@ -985,7 +983,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountDecisionPolicy() {
 				s.Require().Contains(out.String(), tc.expectErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 
 				txResp := tc.respType.(*sdk.TxResponse)
 				s.Require().Equal(tc.expectedCode, txResp.Code, out.String())
@@ -1071,7 +1069,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountMetadata() {
 				commonFlags...,
 			),
 			true,
-			"The specified item could not be found in the keyring",
+			"key not found",
 			&sdk.TxResponse{},
 			0,
 		},
@@ -1103,7 +1101,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountMetadata() {
 				s.Require().Contains(out.String(), tc.expectErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 
 				txResp := tc.respType.(*sdk.TxResponse)
 				s.Require().Equal(tc.expectedCode, txResp.Code, out.String())
@@ -1266,7 +1264,7 @@ func (s *IntegrationTestSuite) TestTxCreateProposal() {
 				s.Require().Contains(out.String(), tc.expectErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 
 				txResp := tc.respType.(*sdk.TxResponse)
 				s.Require().Equal(tc.expectedCode, txResp.Code, out.String())
@@ -1420,7 +1418,7 @@ func (s *IntegrationTestSuite) TestTxVote() {
 				s.Require().Contains(out.String(), tc.expectErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 
 				txResp := tc.respType.(*sdk.TxResponse)
 				s.Require().Equal(tc.expectedCode, txResp.Code, out.String())
@@ -1548,7 +1546,7 @@ func (s *IntegrationTestSuite) TestTxExec() {
 				s.Require().Contains(out.String(), tc.expectErrMsg)
 			} else {
 				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.JSONMarshaler.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+				s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 
 				txResp := tc.respType.(*sdk.TxResponse)
 				s.Require().Equal(tc.expectedCode, txResp.Code, out.String())

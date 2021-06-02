@@ -8,12 +8,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
-	"github.com/cosmos/cosmos-sdk/x/simulation"
-
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/cosmos/cosmos-sdk/x/simulation"
 	gogotypes "github.com/gogo/protobuf/types"
+
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/exported"
@@ -53,8 +53,8 @@ const (
 
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
-	appParams simtypes.AppParams, cdc codec.JSONMarshaler, ak exported.AccountKeeper,
-	bk exported.BankKeeper, qryClient group.QueryClient) simulation.WeightedOperations {
+	appParams simtypes.AppParams, cdc codec.JSONCodec, ak exported.AccountKeeper,
+	bk exported.BankKeeper, qryClient group.QueryClient, protoCdc *codec.ProtoCodec) simulation.WeightedOperations {
 	var (
 		weightMsgCreateGroup                      int
 		weightMsgUpdateGroupAdmin                 int
@@ -128,53 +128,53 @@ func WeightedOperations(
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgCreateGroup,
-			SimulateMsgCreateGroup(ak, bk),
+			SimulateMsgCreateGroup(ak, bk, protoCdc),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgCreateGroupAccount,
-			SimulateMsgCreateGroupAccount(ak, bk, qryClient),
+			SimulateMsgCreateGroupAccount(ak, bk, qryClient, protoCdc),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgCreateProposal,
-			SimulateMsgCreateProposal(ak, bk, qryClient),
+			SimulateMsgCreateProposal(ak, bk, qryClient, protoCdc),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgVote,
-			SimulateMsgVote(ak, bk, qryClient),
+			SimulateMsgVote(ak, bk, qryClient, protoCdc),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgExec,
-			SimulateMsgExec(ak, bk, qryClient),
+			SimulateMsgExec(ak, bk, qryClient, protoCdc),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateGroupMetadata,
-			SimulateMsgUpdateGroupMetadata(ak, bk, qryClient),
+			SimulateMsgUpdateGroupMetadata(ak, bk, qryClient, protoCdc),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateGroupAdmin,
-			SimulateMsgUpdateGroupAdmin(ak, bk, qryClient),
+			SimulateMsgUpdateGroupAdmin(ak, bk, qryClient, protoCdc),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateGroupMembers,
-			SimulateMsgUpdateGroupMembers(ak, bk, qryClient),
+			SimulateMsgUpdateGroupMembers(ak, bk, qryClient, protoCdc),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateGroupAccountAdmin,
-			SimulateMsgUpdateGroupAccountAdmin(ak, bk, qryClient),
+			SimulateMsgUpdateGroupAccountAdmin(ak, bk, qryClient, protoCdc),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateGroupAccountDecisionPolicy,
-			SimulateMsgUpdateGroupAccountDecisionPolicy(ak, bk, qryClient),
+			SimulateMsgUpdateGroupAccountDecisionPolicy(ak, bk, qryClient, protoCdc),
 		),
 		simulation.NewWeightedOperation(
 			weightMsgUpdateGroupAccountComment,
-			SimulateMsgUpdateGroupAccountMetadata(ak, bk, qryClient),
+			SimulateMsgUpdateGroupAccountMetadata(ak, bk, qryClient, protoCdc),
 		),
 	}
 }
 
 // SimulateMsgCreateGroup generates a MsgCreateGroupRequest with random values
-func SimulateMsgCreateGroup(ak exported.AccountKeeper, bk exported.BankKeeper) simtypes.Operation {
+func SimulateMsgCreateGroup(ak exported.AccountKeeper, bk exported.BankKeeper, protoCdc *codec.ProtoCodec) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc, _ := simtypes.RandomAcc(r, accounts)
@@ -217,12 +217,12 @@ func SimulateMsgCreateGroup(ak exported.AccountKeeper, bk exported.BankKeeper) s
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, ""), nil, err
+		return simtypes.NewOperationMsg(msg, true, "", protoCdc), nil, err
 	}
 }
 
 // SimulateMsgCreateGroupAccount generates a NewMsgCreateGroupAccountRequest with random values
-func SimulateMsgCreateGroupAccount(ak exported.AccountKeeper, bk exported.BankKeeper, qryClient group.QueryClient) simtypes.Operation {
+func SimulateMsgCreateGroupAccount(ak exported.AccountKeeper, bk exported.BankKeeper, qryClient group.QueryClient, protoCdc *codec.ProtoCodec) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc := accounts[0]
@@ -279,7 +279,7 @@ func SimulateMsgCreateGroupAccount(ak exported.AccountKeeper, bk exported.BankKe
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
-		return simtypes.NewOperationMsg(msg, true, ""), nil, err
+		return simtypes.NewOperationMsg(msg, true, "", protoCdc), nil, err
 	}
 }
 
@@ -302,7 +302,7 @@ func getGroupDetails(sdkCtx sdk.Context, qryClient group.QueryClient, acc simtyp
 }
 
 // SimulateMsgCreateProposal generates a NewMsgCreateProposalRequest with random values
-func SimulateMsgCreateProposal(ak exported.AccountKeeper, bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+func SimulateMsgCreateProposal(ak exported.AccountKeeper, bk exported.BankKeeper, queryClient group.QueryClient, protoCdc *codec.ProtoCodec) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc := accounts[0]
@@ -353,12 +353,12 @@ func SimulateMsgCreateProposal(ak exported.AccountKeeper, bk exported.BankKeeper
 		if err != nil {
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
-		return simtypes.NewOperationMsg(&msg, true, ""), nil, err
+		return simtypes.NewOperationMsg(&msg, true, "", protoCdc), nil, err
 	}
 }
 
 // SimulateMsgUpdateGroupAdmin generates a MsgUpdateGroupAccountAdminRequest with random values
-func SimulateMsgUpdateGroupAdmin(ak exported.AccountKeeper, bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+func SimulateMsgUpdateGroupAdmin(ak exported.AccountKeeper, bk exported.BankKeeper, queryClient group.QueryClient, protoCdc *codec.ProtoCodec) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc1 := accounts[0]
@@ -413,12 +413,12 @@ func SimulateMsgUpdateGroupAdmin(ak exported.AccountKeeper, bk exported.BankKeep
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(&msg, true, ""), nil, err
+		return simtypes.NewOperationMsg(&msg, true, "", protoCdc), nil, err
 	}
 }
 
 // SimulateMsgUpdateGroupMetadata generates a MsgUpdateGroupMetadataRequest with random values
-func SimulateMsgUpdateGroupMetadata(ak exported.AccountKeeper, bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+func SimulateMsgUpdateGroupMetadata(ak exported.AccountKeeper, bk exported.BankKeeper, queryClient group.QueryClient, protoCdc *codec.ProtoCodec) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc := accounts[0]
@@ -464,13 +464,13 @@ func SimulateMsgUpdateGroupMetadata(ak exported.AccountKeeper, bk exported.BankK
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(&msg, true, ""), nil, err
+		return simtypes.NewOperationMsg(&msg, true, "", protoCdc), nil, err
 	}
 }
 
 // SimulateMsgUpdateGroupMembers generates a MsgUpdateGroupMembersRequest with random values
 func SimulateMsgUpdateGroupMembers(ak exported.AccountKeeper,
-	bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+	bk exported.BankKeeper, queryClient group.QueryClient, protoCdc *codec.ProtoCodec) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc1 := accounts[0]
@@ -537,12 +537,12 @@ func SimulateMsgUpdateGroupMembers(ak exported.AccountKeeper,
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(&msg, true, ""), nil, err
+		return simtypes.NewOperationMsg(&msg, true, "", protoCdc), nil, err
 	}
 }
 
 // SimulateMsgUpdateGroupAccountAdmin generates a MsgUpdateGroupAccountAdminRequest with random values
-func SimulateMsgUpdateGroupAccountAdmin(ak exported.AccountKeeper, bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+func SimulateMsgUpdateGroupAccountAdmin(ak exported.AccountKeeper, bk exported.BankKeeper, queryClient group.QueryClient, protoCdc *codec.ProtoCodec) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc1 := accounts[0]
@@ -597,13 +597,13 @@ func SimulateMsgUpdateGroupAccountAdmin(ak exported.AccountKeeper, bk exported.B
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(&msg, true, ""), nil, err
+		return simtypes.NewOperationMsg(&msg, true, "", protoCdc), nil, err
 	}
 }
 
 // SimulateMsgUpdateGroupAccountDecisionPolicy generates a NewMsgUpdateGroupAccountDecisionPolicyRequest with random values
 func SimulateMsgUpdateGroupAccountDecisionPolicy(ak exported.AccountKeeper,
-	bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+	bk exported.BankKeeper, queryClient group.QueryClient, protoCdc *codec.ProtoCodec) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc1 := accounts[0]
@@ -667,13 +667,13 @@ func SimulateMsgUpdateGroupAccountDecisionPolicy(ak exported.AccountKeeper,
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(msg, true, ""), nil, err
+		return simtypes.NewOperationMsg(msg, true, "", protoCdc), nil, err
 	}
 }
 
 // SimulateMsgUpdateGroupAccountMetadata generates a MsgUpdateGroupAccountMetadataRequest with random values
 func SimulateMsgUpdateGroupAccountMetadata(ak exported.AccountKeeper,
-	bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+	bk exported.BankKeeper, queryClient group.QueryClient, protoCdc *codec.ProtoCodec) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc1 := accounts[0]
@@ -726,13 +726,13 @@ func SimulateMsgUpdateGroupAccountMetadata(ak exported.AccountKeeper,
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(&msg, true, ""), nil, err
+		return simtypes.NewOperationMsg(&msg, true, "", protoCdc), nil, err
 	}
 }
 
 // SimulateMsgVote generates a MsgVote with random values
 func SimulateMsgVote(ak exported.AccountKeeper,
-	bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+	bk exported.BankKeeper, queryClient group.QueryClient, protoCdc *codec.ProtoCodec) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc1 := accounts[0]
@@ -818,13 +818,13 @@ func SimulateMsgVote(ak exported.AccountKeeper,
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(&msg, true, ""), nil, err
+		return simtypes.NewOperationMsg(&msg, true, "", protoCdc), nil, err
 	}
 }
 
 // SimulateMsgExec generates a MsgExec with random values
 func SimulateMsgExec(ak exported.AccountKeeper,
-	bk exported.BankKeeper, queryClient group.QueryClient) simtypes.Operation {
+	bk exported.BankKeeper, queryClient group.QueryClient, protoCdc *codec.ProtoCodec) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accounts []simtypes.Account, chainID string) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		acc1 := accounts[0]
@@ -900,7 +900,7 @@ func SimulateMsgExec(ak exported.AccountKeeper,
 			return simtypes.NoOpMsg(group.ModuleName, msg.Type(), "unable to deliver tx"), nil, err
 		}
 
-		return simtypes.NewOperationMsg(&msg, true, ""), nil, err
+		return simtypes.NewOperationMsg(&msg, true, "", protoCdc), nil, err
 	}
 }
 

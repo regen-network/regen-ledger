@@ -8,10 +8,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/simulation"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	gogogrpc "github.com/gogo/protobuf/grpc"
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -169,7 +168,7 @@ func (mm *Manager) WeightedOperations(state sdkmodule.SimulationState, modules [
 
 // AuthorizationMiddleware is a function that allows for more complex authorization than the default authorization scheme,
 // such as delegated permissions. It will be called only if the default authorization fails.
-type AuthorizationMiddleware func(ctx sdk.Context, methodName string, req sdk.MsgRequest, signer sdk.AccAddress) bool
+type AuthorizationMiddleware func(ctx sdk.Context, methodName string, req sdk.Msg, signer sdk.AccAddress) bool
 
 // SetAuthorizationMiddleware sets AuthorizationMiddleware for the Manager.
 func (mm *Manager) SetAuthorizationMiddleware(authzFunc AuthorizationMiddleware) {
@@ -199,7 +198,7 @@ func (mm *Manager) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawM
 	return res
 }
 
-func initGenesis(ctx sdk.Context, cdc codec.JSONMarshaler,
+func initGenesis(ctx sdk.Context, cdc codec.JSONCodec,
 	genesisData map[string]json.RawMessage, validatorUpdates []abci.ValidatorUpdate,
 	initGenesisHandlers map[string]module.InitGenesisHandler) (abci.ResponseInitChain, error) {
 	for name, initGenesisHandler := range initGenesisHandlers {
@@ -236,7 +235,7 @@ func (mm *Manager) ExportGenesis(ctx sdk.Context) map[string]json.RawMessage {
 	return genesisData
 }
 
-func exportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, exportGenesisHandlers map[string]module.ExportGenesisHandler) (map[string]json.RawMessage, error) {
+func exportGenesis(ctx sdk.Context, cdc codec.JSONCodec, exportGenesisHandlers map[string]module.ExportGenesisHandler) (map[string]json.RawMessage, error) {
 	var err error
 	genesisData := make(map[string]json.RawMessage)
 	for name, exportGenesisHandler := range exportGenesisHandlers {
@@ -255,10 +254,11 @@ func exportGenesis(ctx sdk.Context, cdc codec.JSONMarshaler, exportGenesisHandle
 type RegisterInvariantsHandler func(ir sdk.InvariantRegistry)
 
 type configurator struct {
+	sdkmodule.Configurator
 	msgServer                 gogogrpc.Server
 	queryServer               gogogrpc.Server
 	key                       *rootModuleKey
-	cdc                       codec.Marshaler
+	cdc                       codec.Codec
 	requiredServices          map[reflect.Type]bool
 	router                    sdk.Router
 	initGenesisHandler        module.InitGenesisHandler
@@ -294,7 +294,7 @@ func (c *configurator) ModuleKey() RootModuleKey {
 	return c.key
 }
 
-func (c *configurator) Marshaler() codec.Marshaler {
+func (c *configurator) Marshaler() codec.Codec {
 	return c.cdc
 }
 

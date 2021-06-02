@@ -73,7 +73,7 @@ type serverImpl struct {
 	voteByVoterIndex    orm.Index
 }
 
-func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper, cdc codec.Marshaler) serverImpl {
+func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper, cdc codec.Codec) serverImpl {
 	s := serverImpl{key: storeKey, router: router, accKeeper: accKeeper, bankKeeper: bankKeeper}
 
 	// Group Table
