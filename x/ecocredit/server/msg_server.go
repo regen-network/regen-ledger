@@ -76,9 +76,7 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 
 		recipient := issuance.Recipient
 
-		if tradable.IsZero() {
-			store.Delete(TradableBalanceKey(recipient, batchDenom))
-		} else {
+		if !tradable.IsZero() {
 			err = math.Add(tradableSupply, tradableSupply, tradable)
 			if err != nil {
 				return nil, err
@@ -90,9 +88,7 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 			}
 		}
 
-		if retired.IsZero() {
-			store.Delete(RetiredBalanceKey(recipient, batchDenom))
-		} else {
+		if !retired.IsZero() {
 			err = math.Add(retiredSupply, retiredSupply, retired)
 			if err != nil {
 				return nil, err
@@ -120,17 +116,8 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 		}
 	}
 
-	if tradableSupply.IsZero() {
-		store.Delete(TradableSupplyKey(batchDenom))
-	} else {
-		setDecimal(store, TradableSupplyKey(batchDenom), tradableSupply)
-	}
-
-	if retiredSupply.IsZero() {
-		store.Delete(RetiredSupplyKey(batchDenom))
-	} else {
-		setDecimal(store, RetiredSupplyKey(batchDenom), retiredSupply)
-	}
+	setDecimal(store, TradableSupplyKey(batchDenom), tradableSupply)
+	setDecimal(store, RetiredSupplyKey(batchDenom), retiredSupply)
 
 	var totalSupply apd.Decimal
 	err := math.Add(&totalSupply, tradableSupply, retiredSupply)
