@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	proto "github.com/gogo/protobuf/types"
-	"github.com/regen-network/regen-ledger/math"
+	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -395,14 +395,14 @@ func TestGroupAccountInfo(t *testing.T) {
 			timeout:      proto.Duration{Seconds: 1},
 			expErr:       true,
 		},
-		"invalid group account address": {
+		"valid variable length group account address": {
 			group:        1,
-			groupAccount: []byte("any-invalid-group-address"),
+			groupAccount: []byte("any-group-address"),
 			admin:        []byte("valid--admin-address"),
 			version:      1,
 			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
-			expErr:       true,
+			expErr:       false,
 		},
 		"empty group account address": {
 			group:     1,
@@ -420,14 +420,14 @@ func TestGroupAccountInfo(t *testing.T) {
 			timeout:      proto.Duration{Seconds: 1},
 			expErr:       true,
 		},
-		"invalid admin account address": {
+		"valid variable length admin account address": {
 			group:        1,
 			groupAccount: []byte("valid--group-address"),
-			admin:        []byte("any-invalid-admin-address"),
+			admin:        []byte("any-admin-address"),
 			version:      1,
 			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
-			expErr:       true,
+			expErr:       false,
 		},
 		"empty version number": {
 			group:        1,

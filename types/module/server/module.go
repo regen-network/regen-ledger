@@ -19,13 +19,16 @@ type Configurator interface {
 	sdkmodule.Configurator
 
 	ModuleKey() RootModuleKey
-	Marshaler() codec.Marshaler
+	Marshaler() codec.Codec
 	RequireServer(interface{})
+	RegisterInvariantsHandler(registry RegisterInvariantsHandler)
 	RegisterGenesisHandlers(module.InitGenesisHandler, module.ExportGenesisHandler)
 
 	// Router() is temporarily added here to use in the group module.
 	// TODO: remove once #225 addressed
 	Router() sdk.Router
+
+	RegisterWeightedOperationsHandler(WeightedOperationsHandler)
 }
 
 // LegacyRouteModule is the module type that a module must implement
