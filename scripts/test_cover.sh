@@ -12,8 +12,18 @@ for m in ${SUBMODULES[@]}; do
     for pkg in ${PKGS[@]}; do
         go test -v -timeout 30m -race -coverprofile=profile.out -covermode=atomic -tags='ledger test_ledger_mock' "$pkg"
         if [ -f profile.out ]; then
-            tail -n +2 profile.out >> coverage.txt;
-            rm profile.out
+            tail -n +2 profile.out >> $CURDIR/coverage.txt;
         fi
+            rm profile.out
     done
+done
+
+cd $CURDIR
+excludelist=" $(find ./ -type f -name '*.pb.go')"
+excludelist+=" $(find ./ -type f -name '*.pb.gw.go')"
+excludelist+="$(find ./ -type f -name '*.go' | xargs grep -l 'DONTCOVER')"
+for filename in ${excludelist}; do
+filename=$(echo $filename | sed 's/^./github.com\/regen-network\/regen-ledger/g')
+echo "Excluding ${filename} from coverage report..."
+sed -i.bak "/$(echo $filename | sed 's/\//\\\//g')/d" coverage.txt
 done
