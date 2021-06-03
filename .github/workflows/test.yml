@@ -51,7 +51,7 @@ jobs:
           sed -i.bak "/$(echo $filename | sed 's/\//\\\//g')/d" coverage.txt
         if: env.GIT_DIFF
       - name: Upload codecov report
-      - uses: codecov/codecov-action@v1.5.0
+        uses: codecov/codecov-action@v1.5.0
         with:
           flags: ${{matrix.envs}}
           file: coverage.txt
