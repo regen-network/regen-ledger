@@ -40,16 +40,6 @@ jobs:
         run: export EXPERIMENTAL=true
       - name: run test cover
         run: make test-cover
-      - name: filter out DONTCOVER
-        run: |
-          excludelist=" $(find ./ -type f -name '*.pb.go')"
-          excludelist+=" $(find ./ -type f -name '*.pb.gw.go')"
-          excludelist+="$(find ./ -type f -name '*.go' | xargs grep -l 'DONTCOVER')"
-          for filename in ${excludelist}; do
-          filename=$(echo $filename | sed 's/^./github.com\/regen-network\/regen-ledger/g')
-          echo "Excluding ${filename} from coverage report..."
-          sed -i.bak "/$(echo $filename | sed 's/\//\\\//g')/d" coverage.txt
-        if: env.GIT_DIFF
       - name: Upload codecov report
         uses: codecov/codecov-action@v1.5.0
         with:
