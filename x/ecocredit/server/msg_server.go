@@ -116,17 +116,8 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 		}
 	}
 
-	if tradableSupply.IsZero() {
-		store.Delete(TradableSupplyKey(batchDenom))
-	} else {
-		setDecimal(store, TradableSupplyKey(batchDenom), tradableSupply)
-	}
-
-	if retiredSupply.IsZero() {
-		store.Delete(RetiredSupplyKey(batchDenom))
-	} else {
-		setDecimal(store, RetiredSupplyKey(batchDenom), retiredSupply)
-	}
+	setDecimal(store, TradableSupplyKey(batchDenom), tradableSupply)
+	setDecimal(store, RetiredSupplyKey(batchDenom), retiredSupply)
 
 	var totalSupply apd.Decimal
 	err := math.Add(&totalSupply, tradableSupply, retiredSupply)
