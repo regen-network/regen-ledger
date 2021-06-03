@@ -10,11 +10,11 @@ import (
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
-func (s serverImpl) execMsgs(ctx context.Context, path []byte, proposal group.Proposal) error {
+func (s serverImpl) execMsgs(ctx context.Context, derivationKey []byte, proposal group.Proposal) error {
 	msgs := proposal.GetMsgs()
 	for _, msg := range msgs {
 		var reply interface{}
-		derivedKey := s.key.Derive(path)
+		derivedKey := s.key.Derive(derivationKey)
 		// Execute the message using the derived key,
 		// this will verify that the message signer is the group account.
 		err := derivedKey.Invoke(ctx, "/"+proto.MessageName(msg), msg, reply)

@@ -252,7 +252,7 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 
 	// Generate group account address.
 	var accountAddr sdk.AccAddress
-	var accountPath []byte
+	var accountDerivationKey []byte
 	// loop here in the rare case of a collision
 	for {
 		nextAccVal := s.groupAccountSeq.NextVal(ctx)
@@ -262,8 +262,8 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 			return nil, err
 		}
 
-		accountPath = buf.Bytes()
-		accountID := s.key.Derive(accountPath)
+		accountDerivationKey = buf.Bytes()
+		accountID := s.key.Derive(accountDerivationKey)
 		accountAddr = accountID.Address()
 
 		if s.accKeeper.GetAccount(ctx.Context, accountAddr) != nil {
@@ -289,7 +289,7 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 		metadata,
 		1,
 		policy,
-		accountPath,
+		accountDerivationKey,
 	)
 	if err != nil {
 		return nil, err
@@ -634,7 +634,7 @@ func (s serverImpl) Exec(ctx types.Context, req *group.MsgExecRequest) (*group.M
 		// Cashing context so that we don't update the store in case of failure.
 		ctx, flush := ctx.CacheContext()
 
-		err := s.execMsgs(sdk.WrapSDKContext(ctx), accountInfo.Path, proposal)
+		err := s.execMsgs(sdk.WrapSDKContext(ctx), accountInfo.DerivationKey, proposal)
 		if err != nil {
 			proposal.ExecutorResult = group.ProposalExecutorResultFailure
 			proposalType := reflect.TypeOf(proposal).String()

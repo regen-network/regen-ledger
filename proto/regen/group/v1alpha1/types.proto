@@ -122,9 +122,9 @@ message GroupAccountInfo {
     // decision_policy specifies the group account's decision policy.
     google.protobuf.Any decision_policy = 6 [(cosmos_proto.accepts_interface) = "DecisionPolicy"];
 
-    // path is the "derivation" path of the group account ModuleID,
+    // derivation_key is the "derivation" key of the group account,
     // which is needed to derive the group root module key and execute proposals.
-    bytes path = 7;
+    bytes derivation_key = 7;
 
 }
 
