@@ -1,13 +1,13 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 set -e
 
 SUBMODULES=$(find . -type f -name 'go.mod' -print0 | xargs -0 -n1 dirname | sort)
-PWD=$(pwd)
+CURDIR=$(pwd)
 echo "mode: atomic" > coverage.txt
 
 for m in ${SUBMODULES[@]}; do
-    cd $PWD/$m
+    cd $CURDIR/$m
     PKGS=$(go list ./...)
     for pkg in ${PKGS[@]}; do
         go test -v -timeout 30m -race -coverprofile=profile.out -covermode=atomic -tags='ledger test_ledger_mock' "$pkg"
