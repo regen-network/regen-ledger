@@ -398,15 +398,15 @@ func TestGroupAccountInfo(t *testing.T) {
 			path:         []byte("path"),
 			expErr:       true,
 		},
-		"invalid group account address": {
+		"valid variable length group account address": {
 			group:        1,
-			groupAccount: []byte("any-invalid-group-address"),
+			groupAccount: []byte("any-group-address"),
 			admin:        []byte("valid--admin-address"),
 			version:      1,
 			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
 			path:         []byte("path"),
-			expErr:       true,
+			expErr:       false,
 		},
 		"empty group account address": {
 			group:     1,
@@ -426,15 +426,15 @@ func TestGroupAccountInfo(t *testing.T) {
 			path:         []byte("path"),
 			expErr:       true,
 		},
-		"invalid admin account address": {
+		"valid variable length admin account address": {
 			group:        1,
 			groupAccount: []byte("valid--group-address"),
-			admin:        []byte("any-invalid-admin-address"),
+			admin:        []byte("any-admin-address"),
 			version:      1,
 			threshold:    "1",
 			timeout:      proto.Duration{Seconds: 1},
 			path:         []byte("path"),
-			expErr:       true,
+			expErr:       false,
 		},
 		"empty version number": {
 			group:        1,
