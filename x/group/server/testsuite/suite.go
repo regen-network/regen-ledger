@@ -90,7 +90,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	// Initial group, group account and balance setup
 	members := []group.Member{
-		{Address: s.addr2.String(), Weight: "1"},
+		{Address: s.addr5.String(), Weight: "1"}, {Address: s.addr2.String(), Weight: "2"},
 	}
 	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
 		Admin:    s.addr1.String(),
@@ -101,7 +101,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.groupID = groupRes.GroupId
 
 	policy := group.NewThresholdDecisionPolicy(
-		"1",
+		"2",
 		gogotypes.Duration{Seconds: 1},
 	)
 	accountReq := &group.MsgCreateGroupAccountRequest{
@@ -147,7 +147,7 @@ func (s *IntegrationTestSuite) TestCreateGroup() {
 			GroupId:     s.groupID,
 			Version:     1,
 			Admin:       s.addr1.String(),
-			TotalWeight: "1",
+			TotalWeight: "3",
 			Metadata:    nil,
 		},
 		{
@@ -363,7 +363,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupMetadata() {
 				GroupId:     groupID,
 				Admin:       oldAdmin,
 				Metadata:    []byte{1, 2, 3},
-				TotalWeight: "1",
+				TotalWeight: "3",
 				Version:     2,
 			},
 		},
@@ -1216,7 +1216,7 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 		"only group members can create a proposal": {
 			req: &group.MsgCreateProposalRequest{
 				Address:   accountAddr.String(),
-				Proposers: []string{s.addr3.String()},
+				Proposers: []string{s.addr4.String()},
 			},
 			expErr:  true,
 			postRun: func(sdkCtx sdk.Context) {},
@@ -1267,7 +1267,7 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 				Status: group.ProposalStatusClosed,
 				Result: group.ProposalResultAccepted,
 				VoteState: group.Tally{
-					YesCount:     "1",
+					YesCount:     "2",
 					NoCount:      "0",
 					AbstainCount: "0",
 					VetoCount:    "0",
@@ -1280,6 +1280,26 @@ func (s *IntegrationTestSuite) TestCreateProposal() {
 				toBalances := s.bankKeeper.GetAllBalances(sdkCtx, s.addr2)
 				s.Require().Equal(sdk.Coins{sdk.NewInt64Coin("test", 100)}, toBalances)
 			},
+		},
+		"with try exec, not enough yes votes for proposal to pass": {
+			req: &group.MsgCreateProposalRequest{
+				Address:   accountAddr.String(),
+				Proposers: []string{s.addr5.String()},
+				Exec:      group.Exec_EXEC_TRY,
+			},
+			msgs: []sdk.Msg{msgSend},
+			expProposal: group.Proposal{
+				Status: group.ProposalStatusSubmitted,
+				Result: group.ProposalResultUnfinalized,
+				VoteState: group.Tally{
+					YesCount:     "1",
+					NoCount:      "0",
+					AbstainCount: "0",
+					VetoCount:    "0",
+				},
+				ExecutorResult: group.ProposalExecutorResultNotRun,
+			},
+			postRun: func(sdkCtx sdk.Context) {},
 		},
 	}
 	for msg, spec := range specs {
@@ -1474,6 +1494,7 @@ func (s *IntegrationTestSuite) TestVote() {
 			expProposalStatus: group.ProposalStatusSubmitted,
 			expResult:         group.ProposalResultUnfinalized,
 			expExecutorResult: group.ProposalExecutorResultNotRun,
+			postRun:           func(sdkCtx sdk.Context) {},
 		},
 		"vote no": {
 			req: &group.MsgVoteRequest{

@@ -730,7 +730,7 @@ func (s serverImpl) doUpdateGroupAccount(ctx types.Context, groupAccount string,
 
 	// Only current group account admin is authorized to update a group account.
 	if groupAccountAdmin.String() != groupAccountInfo.Admin {
-		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not group admin")
+		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not group account admin")
 	}
 
 	if err := action(&groupAccountInfo); err != nil {
