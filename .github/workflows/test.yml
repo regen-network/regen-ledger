@@ -36,8 +36,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: set experimental env
-        run: export EXPERIMENTAL=true
         if: matrix.envs == 'experimental-codecov'
+        run: export EXPERIMENTAL=true
       - name: run test cover
         run: make test-cover
       - name: filter out DONTCOVER
