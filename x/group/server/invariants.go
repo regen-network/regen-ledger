@@ -204,7 +204,7 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.Table, proposalTable
 
 	proposalIt, err := proposalTable.PrefixScan(ctx, 1, math.MaxUint64)
 	if err != nil {
-		msg += fmt.Sprintf("PrefixScan failure on proposal table at block height %d\n%v\n", ctx.BlockHeight(), err)
+		msg += fmt.Sprintf("PrefixScan failure on proposal table\n%v\n", err)
 		return msg, broken
 	}
 	defer proposalIt.Close()

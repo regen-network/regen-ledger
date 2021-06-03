@@ -52,12 +52,12 @@ func TestTallyVotesInvariant(t *testing.T) {
 	require.NoError(t, err)
 
 	specs := map[string]struct {
-		prevProposals *group.Proposal
-		curProposals  *group.Proposal
-		expBroken     bool
+		prevProposal *group.Proposal
+		curProposal  *group.Proposal
+		expBroken    bool
 	}{
 		"invariant not broken": {
-			prevProposals: &group.Proposal{
+			prevProposal: &group.Proposal{
 				ProposalId:          1,
 				Address:             addr1.String(),
 				Proposers:           []string{addr1.String()},
@@ -71,7 +71,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
 
-			curProposals: &group.Proposal{
+			curProposal: &group.Proposal{
 				ProposalId:          1,
 				Address:             addr2.String(),
 				Proposers:           []string{addr2.String()},
@@ -86,7 +86,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 			},
 		},
 		"current block yes vote count must be greater than previous block yes vote count": {
-			prevProposals: &group.Proposal{
+			prevProposal: &group.Proposal{
 				ProposalId:          1,
 				Address:             addr1.String(),
 				Proposers:           []string{addr1.String()},
@@ -99,7 +99,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 				Timeout:             gogotypes.Timestamp{Seconds: 600},
 				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
-			curProposals: &group.Proposal{
+			curProposal: &group.Proposal{
 				ProposalId:          1,
 				Address:             addr2.String(),
 				Proposers:           []string{addr2.String()},
@@ -115,7 +115,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 			expBroken: true,
 		},
 		"current block no vote count must be greater than previous block no vote count": {
-			prevProposals: &group.Proposal{
+			prevProposal: &group.Proposal{
 				ProposalId:          1,
 				Address:             addr1.String(),
 				Proposers:           []string{addr1.String()},
@@ -128,7 +128,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 				Timeout:             gogotypes.Timestamp{Seconds: 600},
 				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
-			curProposals: &group.Proposal{
+			curProposal: &group.Proposal{
 				ProposalId:          1,
 				Address:             addr2.String(),
 				Proposers:           []string{addr2.String()},
@@ -144,7 +144,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 			expBroken: true,
 		},
 		"current block abstain vote count must be greater than previous block abstain vote count": {
-			prevProposals: &group.Proposal{
+			prevProposal: &group.Proposal{
 				ProposalId:          1,
 				Address:             addr1.String(),
 				Proposers:           []string{addr1.String()},
@@ -157,7 +157,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 				Timeout:             gogotypes.Timestamp{Seconds: 600},
 				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
-			curProposals: &group.Proposal{
+			curProposal: &group.Proposal{
 				ProposalId:          1,
 				Address:             addr2.String(),
 				Proposers:           []string{addr2.String()},
@@ -173,7 +173,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 			expBroken: true,
 		},
 		"current block veto vote count must be greater than previous block veto vote count": {
-			prevProposals: &group.Proposal{
+			prevProposal: &group.Proposal{
 				ProposalId:          1,
 				Address:             addr1.String(),
 				Proposers:           []string{addr1.String()},
@@ -186,7 +186,7 @@ func TestTallyVotesInvariant(t *testing.T) {
 				Timeout:             gogotypes.Timestamp{Seconds: 600},
 				ExecutorResult:      group.ProposalExecutorResultNotRun,
 			},
-			curProposals: &group.Proposal{
+			curProposal: &group.Proposal{
 				ProposalId:          1,
 				Address:             addr2.String(),
 				Proposers:           []string{addr2.String()},
@@ -205,15 +205,15 @@ func TestTallyVotesInvariant(t *testing.T) {
 
 	for _, spec := range specs {
 
-		prevProposals := spec.prevProposals
-		curProposals := spec.curProposals
+		prevProposal := spec.prevProposal
+		curProposal := spec.curProposal
 
 		cachePrevCtx, _ := prevCtx.CacheContext()
 		cacheCurCtx, _ := curCtx.CacheContext()
 
-		_, err = proposalTable.Create(cachePrevCtx, prevProposals)
+		_, err = proposalTable.Create(cachePrevCtx, prevProposal)
 		require.NoError(t, err)
-		_, err = proposalTable.Create(cacheCurCtx, curProposals)
+		_, err = proposalTable.Create(cacheCurCtx, curProposal)
 		require.NoError(t, err)
 
 		_, broken := tallyVotesInvariant(cacheCurCtx, cachePrevCtx, proposalTable)
@@ -350,9 +350,9 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 
 	specs := map[string]struct {
 		groupsInfo   *group.GroupInfo
-		groupAccs    *group.GroupAccountInfo
+		groupAcc     *group.GroupAccountInfo
 		groupMembers []*group.GroupMember
-		proposals    *group.Proposal
+		proposal     *group.Proposal
 		votes        []*group.Vote
 		expBroken    bool
 	}{
@@ -363,7 +363,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 				Version:     1,
 				TotalWeight: "7",
 			},
-			groupAccs: &group.GroupAccountInfo{
+			groupAcc: &group.GroupAccountInfo{
 				Address: addr1.String(),
 				GroupId: 1,
 				Admin:   adminAddr.String(),
@@ -385,7 +385,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					},
 				},
 			},
-			proposals: &group.Proposal{
+			proposal: &group.Proposal{
 				ProposalId:          1,
 				Address:             addr1.String(),
 				Proposers:           []string{addr1.String()},
@@ -427,7 +427,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 				Version:     1,
 				TotalWeight: "5",
 			},
-			groupAccs: &group.GroupAccountInfo{
+			groupAcc: &group.GroupAccountInfo{
 				Address: addr1.String(),
 				GroupId: 1,
 				Admin:   adminAddr.String(),
@@ -449,7 +449,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					},
 				},
 			},
-			proposals: &group.Proposal{
+			proposal: &group.Proposal{
 				ProposalId:          1,
 				Address:             addr1.String(),
 				Proposers:           []string{addr1.String()},
@@ -491,7 +491,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 				Version:     1,
 				TotalWeight: "7",
 			},
-			groupAccs: &group.GroupAccountInfo{
+			groupAcc: &group.GroupAccountInfo{
 				Address: addr1.String(),
 				GroupId: 1,
 				Admin:   adminAddr.String(),
@@ -513,7 +513,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 					},
 				},
 			},
-			proposals: &group.Proposal{
+			proposal: &group.Proposal{
 				ProposalId:          1,
 				Address:             addr1.String(),
 				Proposers:           []string{addr1.String()},
@@ -553,17 +553,17 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 	for _, spec := range specs {
 		cacheCurCtx, _ := curCtx.CacheContext()
 		groupsInfo := spec.groupsInfo
-		proposals := spec.proposals
-		groupAccs := spec.groupAccs
+		proposal := spec.proposal
+		groupAcc := spec.groupAcc
 		groupMembers := spec.groupMembers
 		votes := spec.votes
 
 		err := groupTable.Create(cacheCurCtx, group.ID(groupsInfo.GroupId).Bytes(), groupsInfo)
 		require.NoError(t, err)
 
-		err = groupAccs.SetDecisionPolicy(group.NewThresholdDecisionPolicy("1", gogotypes.Duration{Seconds: 1}))
+		err = groupAcc.SetDecisionPolicy(group.NewThresholdDecisionPolicy("1", gogotypes.Duration{Seconds: 1}))
 		require.NoError(t, err)
-		err = groupAccountTable.Create(cacheCurCtx, groupAccs)
+		err = groupAccountTable.Create(cacheCurCtx, groupAcc)
 		require.NoError(t, err)
 
 		for i := 0; i < len(groupMembers); i++ {
@@ -571,7 +571,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 			require.NoError(t, err)
 		}
 
-		_, err = proposalTable.Create(cacheCurCtx, proposals)
+		_, err = proposalTable.Create(cacheCurCtx, proposal)
 		require.NoError(t, err)
 
 		for i := 0; i < len(votes); i++ {
