@@ -5,5 +5,5 @@ type ModuleID struct {
 	// gRPC services.
 	Name string
 	// Address of a module
-	Address []byte
+	Address []byte // TODO - maybe we can remove it?
 }

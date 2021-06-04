@@ -5,10 +5,10 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/address"
 	"google.golang.org/grpc"
 
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/address"
 )
 
 // ModuleKey is an interface for module servers required by router.
@@ -21,7 +21,12 @@ type ModuleKey interface {
 }
 
 type RootModuleKey interface {
-	ModuleKey
+	// ModuleKey // TODO
+
+	types.InvokerConn
+	ModuleID() types.ModuleID
+	Derive(key []byte) ModuleKey
+
 	sdk.StoreKey
 }
 
@@ -31,7 +36,7 @@ type moduleKey struct {
 	i          InvokerFactory
 }
 
-// NewDerivedModuleKey creates a ModuleKey with a derived moduel address based on parent
+// NewDerivedModuleKey creates a ModuleKey with a derived module address based on parent
 // module address and derivation key.
 func NewDerivedModuleKey(modName string, parentAddr, derivationKey []byte, i InvokerFactory) ModuleKey {
 	return moduleKey{modName, address.Derive(parentAddr, derivationKey), i}
@@ -85,7 +90,8 @@ type rootModuleKey struct {
 var _ RootModuleKey = rootModuleKey{}
 
 func NewRootModuleKey(name string, i InvokerFactory) RootModuleKey {
-	return &rootModuleKey{moduleKey{name, address.Module(name), i}}
+	// return &rootModuleKey{moduleKey{name, address.Module(name), i}}  // TODO
+	return &rootModuleKey{moduleKey{name, []byte(name), i}}
 }
 
 // Name implements sdk.StoreKey interface

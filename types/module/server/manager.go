@@ -22,7 +22,7 @@ import (
 type Manager struct {
 	baseApp                    *baseapp.BaseApp
 	cdc                        *codec.ProtoCodec
-	keys                       map[string]ModuleKey
+	keys                       map[string]RootModuleKey
 	router                     *router
 	requiredServices           map[reflect.Type]bool
 	initGenesisHandlers        map[string]module.InitGenesisHandler
@@ -45,7 +45,7 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 	return &Manager{
 		baseApp:                   baseApp,
 		cdc:                       cdc,
-		keys:                      map[string]ModuleKey{},
+		keys:                      map[string]RootModuleKey{},
 		registerInvariantsHandler: map[string]RegisterInvariantsHandler{},
 		initGenesisHandlers:       map[string]module.InitGenesisHandler{},
 		exportGenesisHandlers:     map[string]module.ExportGenesisHandler{},
@@ -252,7 +252,7 @@ type configurator struct {
 	sdkmodule.Configurator
 	msgServer                 gogogrpc.Server
 	queryServer               gogogrpc.Server
-	key                       RootModuleKey // *rootModuleKey
+	key                       RootModuleKey
 	cdc                       codec.Codec
 	requiredServices          map[reflect.Type]bool
 	router                    sdk.Router
