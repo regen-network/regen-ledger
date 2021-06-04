@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v2
       - name: set experimental flags
         if: matrix.envs == 'experimental-tests'
-        # run: EXPERIMENTAL=true
+        run: EXPERIMENTAL=true
       - name: run tests
         run: make test
         # if: env.GIT_DIFF
