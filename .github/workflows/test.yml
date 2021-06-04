@@ -35,16 +35,15 @@ jobs:
           go-version: 1.15
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: set experimental env
+      - name: run experimental test cover
         if: matrix.envs == 'experimental-codecov'
-        run: export EXPERIMENTAL=true
-      - name: run test cover
-        run: make test-cover
-        # if: env.GIT_DIFF
+        run: EXPERIMENTAL=true make test-cover
+      - name: run stable test cover
+        if: matrix.envs == 'experimental-codecov'
+        run: EXPERIMENTAL=false make test-cover
       - name: Upload codecov report
         uses: codecov/codecov-action@v1
         with:
           flags: ${{matrix.envs}}
           file: coverage.txt
-        # if: env.GIT_DIFF
 
