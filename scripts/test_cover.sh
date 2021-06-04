@@ -13,11 +13,12 @@ for m in ${SUBMODULES[@]}; do
         go test -v -timeout 30m -race -coverprofile=profile.out -covermode=atomic -tags='ledger test_ledger_mock' "$pkg"
         if [ -f profile.out ]; then
             tail -n +2 profile.out >> $CURDIR/coverage.txt;
-        fi
             rm profile.out
+        fi
     done
 done
 
+# filter out DONTCOVER, pb.go, pb.gw.go
 cd $CURDIR
 excludelist=" $(find ./ -type f -name '*.pb.go')"
 excludelist+=" $(find ./ -type f -name '*.pb.gw.go')"
