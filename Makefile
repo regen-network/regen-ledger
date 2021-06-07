@@ -187,7 +187,7 @@ update-swagger-docs: statik
 		echo "\033[91mSwagger docs are out of sync!!!\033[0m";\
 		exit 1;\
 	else \
-			echo "\033[92mSwagger docs are in sync\033[0m";\
+		echo "\033[92mSwagger docs are in sync\033[0m";\
 	fi
 .PHONY: update-swagger-docs
 
@@ -356,7 +356,7 @@ proto-lint-direct:
 	@buf lint --error-format=json
 
 proto-check-breaking:
-	@$(DOCKER_BUF) breaking --against-input $(HTTPS_GIT)#branch=master
+	@$(DOCKER_BUF) breaking --against $(HTTPS_GIT)#branch=master
 
 proto-check-breaking-direct:
 	@buf breaking --against '.git#branch=master'
