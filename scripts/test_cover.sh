@@ -24,7 +24,7 @@ excludelist=" $(find ./ -type f -name '*.pb.go')"
 excludelist+=" $(find ./ -type f -name '*.pb.gw.go')"
 excludelist+="$(find ./ -type f -name '*.go' | xargs grep -l 'DONTCOVER')"
 for filename in ${excludelist}; do
-filename=$(echo $filename | sed 's/^./github.com\/regen-network\/regen-ledger/g')
-echo "Excluding ${filename} from coverage report..."
-sed -i.bak "/$(echo $filename | sed 's/\//\\\//g')/d" coverage.txt
+    filename=$(echo $filename | sed 's/^./github.com\/regen-network\/regen-ledger/g')
+    echo "Excluding ${filename} from coverage report..."
+    sed -i.bak "/$(echo $filename | sed 's/\//\\\//g')/d" coverage.txt
 done
