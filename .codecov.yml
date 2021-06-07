@@ -16,7 +16,7 @@ coverage:
     changes: false
 
 comment:
-  layout: "header, diff"
+  layout: "header, diff, flags"
   behavior: default  # update if exists else create new
 
 ignore:
