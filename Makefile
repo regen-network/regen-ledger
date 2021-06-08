@@ -256,14 +256,12 @@ SUB_MODULES = $(shell find . -type f -name 'go.mod' -print0 | xargs -0 -n1 dirna
 CURRENT_DIR = $(shell pwd)
 run-tests:
 ifneq (,$(shell which tparse 2>/dev/null))
-	#go test -mod=readonly -json $(ARGS) $(TEST_PACKAGES) | tparse
 	@echo "Unit tests"; \
 	for module in $(SUB_MODULES); do \
 		cd ${CURRENT_DIR}/$$module; \
 		go test -mod=readonly -json $(ARGS) $(TEST_PACKAGES) ./... | tparse; \
 	done
 else
-	#go test -mod=readonly $(ARGS) $(TEST_PACKAGES)
 	@echo "Unit tests"; \
 	for module in $(SUB_MODULES); do \
 		cd ${CURRENT_DIR}/$$module; \
@@ -274,7 +272,8 @@ endif
 .PHONY: run-tests test test-all $(TEST_TARGETS)
 
 test-cover:
-	@export VERSION=$(VERSION); bash -x scripts/test_cover.sh
+	@export VERSION=$(VERSION); 
+	@bash scripts/test_cover.sh
 .PHONY: test-cover
 
 benchmark:
