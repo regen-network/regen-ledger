@@ -190,3 +190,6 @@ build/
 /proto-tools-stamp
 /tools-stamp
 dist/
+
+# pre-commit
+.pre-commit-config.yaml
