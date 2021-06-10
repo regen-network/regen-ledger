@@ -203,8 +203,8 @@ message MsgUpdateGroupAccountMetadataResponse { }
 // Exec defines modes of execution of a proposal on creation or on new vote.
 enum Exec {
 
-    // An empty value means that there should be separate 
-    // a MsgExec request for the proposal to execute.
+    // An empty value means that there should be a separate 
+    // MsgExec request for the proposal to execute.
     EXEC_UNSPECIFIED = 0;
 
     // Try to execute the proposal immediately.

@@ -29,8 +29,8 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 type Exec int32
 
 const (
-	// An empty value means that there should be separate
-	// a MsgExec request for the proposal to execute.
+	// An empty value means that there should be a separate
+	// MsgExec request for the proposal to execute.
 	Exec_EXEC_UNSPECIFIED Exec = 0
 	// Try to execute the proposal immediately.
 	// If the proposal is not allowed per the DecisionPolicy,

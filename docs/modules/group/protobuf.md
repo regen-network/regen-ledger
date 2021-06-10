@@ -1206,7 +1206,7 @@ Exec defines modes of execution of a proposal on creation or on new vote.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| EXEC_UNSPECIFIED | 0 | An empty value means that there should be separate a MsgExec request for the proposal to execute. |
+| EXEC_UNSPECIFIED | 0 | An empty value means that there should be a separate MsgExec request for the proposal to execute. |
 | EXEC_TRY | 1 | Try to execute the proposal immediately. If the proposal is not allowed per the DecisionPolicy, the proposal will still be open and could be executed at a later point. |
 
 
