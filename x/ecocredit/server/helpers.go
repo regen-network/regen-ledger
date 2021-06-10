@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/cockroachdb/apd/v2"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -30,9 +29,14 @@ func getDecimal(store sdk.KVStore, key []byte) (*apd.Decimal, error) {
 func setDecimal(store sdk.KVStore, key []byte, value *apd.Decimal) {
 	// always remove all trailing zeros for canonical representation
 	value, _ = value.Reduce(value)
-	// use floating notation here always for canonical representation
-	str := value.Text('f')
-	store.Set(key, []byte(str))
+
+	if value.IsZero() {
+		store.Delete(key)
+	} else {
+		// use floating notation here always for canonical representation
+		str := value.Text('f')
+		store.Set(key, []byte(str))
+	}
 }
 
 func getAddAndSetDecimal(store sdk.KVStore, key []byte, x *apd.Decimal) error {
