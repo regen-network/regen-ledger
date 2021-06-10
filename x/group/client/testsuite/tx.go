@@ -100,7 +100,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// create 5 group accounts
 	for i := 0; i < 5; i++ {
 		threshold := i + 1
-		if i+1 > 3 {
+		if threshold > 3 {
 			threshold = 3
 		}
 		out, err = cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateGroupAccountCmd(),
