@@ -99,7 +99,7 @@ func (s *IntegrationTestSuite) TestQueryGroupMembers() {
 					GroupId: s.group.GroupId,
 					Member: &group.Member{
 						Address:  val.Address.String(),
-						Weight:   "1",
+						Weight:   "3",
 						Metadata: []byte{1},
 					},
 				},
@@ -298,6 +298,7 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountsByGroup() {
 				s.groupAccounts[1],
 				s.groupAccounts[2],
 				s.groupAccounts[3],
+				s.groupAccounts[4],
 			},
 		},
 	}
@@ -368,6 +369,7 @@ func (s *IntegrationTestSuite) TestQueryGroupAccountsByAdmin() {
 				s.groupAccounts[1],
 				s.groupAccounts[2],
 				s.groupAccounts[3],
+				s.groupAccounts[4],
 			},
 		},
 	}

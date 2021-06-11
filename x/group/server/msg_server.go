@@ -18,6 +18,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
+// TODO: Revisit this once we have propoer gas fee framework.
+// Tracking issues https://github.com/cosmos/cosmos-sdk/issues/9054, https://github.com/cosmos/cosmos-sdk/discussions/9072
+const gasCostPerIteration = uint64(20)
+
 func (s serverImpl) CreateGroup(ctx types.Context, req *group.MsgCreateGroupRequest) (*group.MsgCreateGroupResponse, error) {
 	metadata := req.Metadata
 	members := group.Members{Members: req.Members}
@@ -457,6 +461,32 @@ func (s serverImpl) CreateProposal(ctx types.Context, req *group.MsgCreatePropos
 		return nil, err
 	}
 
+	// Try to execute proposal immediately
+	if req.Exec == group.Exec_EXEC_TRY {
+		// Consider proposers as Yes votes
+		for i := range proposers {
+			ctx.GasMeter().ConsumeGas(gasCostPerIteration, "vote on proposal")
+			_, err = s.Vote(ctx, &group.MsgVoteRequest{
+				ProposalId: id,
+				Voter:      proposers[i],
+				Choice:     group.Choice_CHOICE_YES,
+			})
+			if err != nil {
+				return &group.MsgCreateProposalResponse{ProposalId: id}, sdkerrors.Wrap(err, "The proposal was created but failed on vote")
+			}
+		}
+		// Then try to execute the proposal
+		_, err = s.Exec(ctx, &group.MsgExecRequest{
+			ProposalId: id,
+			// We consider the first proposer as the MsgExecRequest signer
+			// but that could be revisited (eg using the group account)
+			Signer: proposers[0],
+		})
+		if err != nil {
+			return &group.MsgCreateProposalResponse{ProposalId: id}, sdkerrors.Wrap(err, "The proposal was created but failed on exec")
+		}
+	}
+
 	return &group.MsgCreateProposalResponse{ProposalId: id}, nil
 }
 
@@ -547,6 +577,17 @@ func (s serverImpl) Vote(ctx types.Context, req *group.MsgVoteRequest) (*group.M
 	err = ctx.EventManager().EmitTypedEvent(&group.EventVote{ProposalId: id})
 	if err != nil {
 		return nil, err
+	}
+
+	// Try to execute proposal immediately
+	if req.Exec == group.Exec_EXEC_TRY {
+		_, err = s.Exec(ctx, &group.MsgExecRequest{
+			ProposalId: id,
+			Signer:     voterAddr,
+		})
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &group.MsgVoteResponse{}, nil
@@ -688,7 +729,7 @@ func (s serverImpl) doUpdateGroupAccount(ctx types.Context, groupAccount string,
 
 	// Only current group account admin is authorized to update a group account.
 	if groupAccountAdmin.String() != groupAccountInfo.Admin {
-		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not group admin")
+		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "not group account admin")
 	}
 
 	if err := action(&groupAccountInfo); err != nil {
