@@ -59,8 +59,12 @@ is submitted.
 
 Proposals will not be automatically executed by the chain in this current design,
 but rather a user must submit a `Msg/Exec` transaction to attempt to execute the
-proposal based on the current votes and decision policy. A future upgrade could
-automate this and have the group account (or a fee granter) pay.
+proposal based on the current votes and decision policy.
+It's also possible to try to execute a proposal immediately on creation or on
+new votes using the `Exec` field of `Msg/CreateProposal` and `Msg/Vote` requests.
+In the former case, proposers signatures are considered as yes votes.
+For now, if the proposal can't be executed, it'll still be opened for new votes and
+could be executed later on.
 
 ### Changing Group Membership
 

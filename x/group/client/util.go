@@ -27,3 +27,12 @@ func parseMembers(clientCtx client.Context, membersFile string) ([]group.Member,
 
 	return members.Members, nil
 }
+
+func execFromString(execStr string) group.Exec {
+	exec := group.Exec_EXEC_UNSPECIFIED
+	switch execStr {
+	case ExecTry:
+		exec = group.Exec_EXEC_TRY
+	}
+	return exec
+}
