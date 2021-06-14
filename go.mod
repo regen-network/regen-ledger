@@ -3,6 +3,7 @@ module github.com/regen-network/regen-ledger
 go 1.15
 
 require (
+	github.com/TheBookPeople/iso3166 v0.0.0-20160919111731-b671ca53a641 // indirect
 	github.com/cosmos/cosmos-sdk v0.43.0-rc0
 	github.com/cosmos/ibc-go v1.0.0-alpha2
 	github.com/gorilla/mux v1.8.0
@@ -18,7 +19,7 @@ require (
 	github.com/tendermint/tendermint v0.34.11
 	github.com/tendermint/tm-db v0.6.4
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
-	google.golang.org/genproto v0.0.0-20210611144927-798beca9d670 // indirect
+	google.golang.org/genproto v0.0.0-20210614182748-5b3b54cad159 // indirect
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2

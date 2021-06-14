@@ -2,12 +2,14 @@ package server
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/regen-network/regen-ledger/types"
 
 	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/TheBookPeople/iso3166"
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -248,6 +250,13 @@ func (s serverImpl) Send(ctx types.Context, req *ecocredit.MsgSendRequest) (*eco
 func (s serverImpl) Retire(ctx types.Context, req *ecocredit.MsgRetireRequest) (*ecocredit.MsgRetireResponse, error) {
 	store := ctx.KVStore(s.storeKey)
 	holder := req.Holder
+
+	// TODO: Parse the location string here
+	err := validateLocation(req.Location)
+	if err != nil {
+		return nil, err
+	}
+
 	for _, credit := range req.Credits {
 		denom := batchDenomT(credit.BatchDenom)
 		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
@@ -346,4 +355,48 @@ func retire(ctx types.Context, store sdk.KVStore, recipient string, batchDenom b
 		BatchDenom: string(batchDenom),
 		Units:      math.DecimalString(retired),
 	})
+}
+
+// validateLocation checks that the country and region conform to ISO 3166 and
+// the postal code is valid
+func validateLocation(location string) error {
+	country, region, postalCode, err := parseLocation(location)
+	if err != nil {
+		return err
+	}
+	
+	if _, err := iso3166.Decode(country, region, false); err != nil {
+		return err
+	}
+
+	if err := validatePostalCode(postalCode); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func parseLocation(location string) (string, string, string, error) {
+	strings := strings.Split(location, "-")
+	switch numStrings := len(strings); numStrings {
+	case 1:
+		return strings[0], "", "", nil
+	case 2:
+		return strings[0], strings[1], "", nil
+	case 3:
+		return strings[0], strings[1], strings[2], nil
+	default:
+		return "", "", "", fmt.Errorf("Location should have format <country-code>[-<region-code>[-<postal-code>]]")
+	}
+}
+
+// validatePostalCode currently checks that the postal code is not longer than
+// 10 characters, as currently the longest postal codes in the world are 10
+// characters
+func validatePostalCode(postalCode string) error {
+	if len(postalCode) > 10 {
+		return fmt.Errorf("The postal code must not be longer than 10 characters")
+	}
+
+	return nil
 }

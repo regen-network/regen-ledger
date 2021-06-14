@@ -507,6 +507,7 @@ MsgRetireRequest is the Msg/Retire request type.
 | ----- | ---- | ----- | ----------- |
 | holder | [string](#string) |  | holder is the credit holder address. |
 | credits | [MsgRetireRequest.RetireUnits](#regen.ecocredit.v1alpha1.MsgRetireRequest.RetireUnits) | repeated | credits are the credits being retired. |
+| location | [string](#string) |  | location is the location of the beneficiary or buyer of the retiring credits.It is a string of the form <country-code>[-<sub-national-code>[-<postal-code>]], with the first two fields conforming to ISO 3166-2 |
 
 
 
