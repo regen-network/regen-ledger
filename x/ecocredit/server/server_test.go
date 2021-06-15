@@ -33,7 +33,6 @@ func TestServer(t *testing.T) {
 	paramsKey := sdk.NewKVStoreKey(paramstypes.StoreKey)
 	tkey := sdk.NewTransientStoreKey(paramstypes.TStoreKey)
 
-	// baseApp.Router().AddRoute(sdk.NewRoute(banktypes.ModuleName, bank.NewHandler(bankKeeper)))
 	baseApp.MountStore(authKey, sdk.StoreTypeIAVL)
 	baseApp.MountStore(bankKey, sdk.StoreTypeIAVL)
 	baseApp.MountStore(paramsKey, sdk.StoreTypeIAVL)
