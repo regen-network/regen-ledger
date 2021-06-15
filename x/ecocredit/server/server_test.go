@@ -41,7 +41,7 @@ func TestServer(t *testing.T) {
 
 	authSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, authtypes.ModuleName)
 	bankSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, banktypes.ModuleName)
-	ecocreditSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, ecocredittypes.DefaultParamspace)
+	ecocreditSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, ecocredittypes.ModuleName)
 
 	maccPerms := map[string][]string{
 		minttypes.ModuleName:      {authtypes.Minter},
