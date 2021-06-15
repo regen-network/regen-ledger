@@ -3,6 +3,7 @@ module github.com/regen-network/regen-ledger/x/ecocredit
 go 1.15
 
 require (
+	github.com/TheBookPeople/iso3166 v0.0.0-20160919111731-b671ca53a641
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/cockroachdb/apd/v2 v2.0.2
 	github.com/cosmos/cosmos-sdk v0.43.0-rc0
