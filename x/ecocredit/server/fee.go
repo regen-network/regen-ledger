@@ -6,14 +6,14 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-func (s serverImpl) GetCreditClassFee(ctx sdk.Context) sdk.Coins {
+func (s serverImpl) getCreditClassFee(ctx sdk.Context) sdk.Coins {
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(ctx, &params)
 	return params.CreditClassFee
 }
 
-func (s serverImpl) ChargeCreditClassFee(ctx sdk.Context, designerAddr sdk.AccAddress) error {
-	creditClassFee := s.GetCreditClassFee(ctx)
+func (s serverImpl) chargeCreditClassFee(ctx sdk.Context, designerAddr sdk.AccAddress) error {
+	creditClassFee := s.getCreditClassFee(ctx)
 
 	// Move the fee to the ecocredit module's account
 	err := s.bankKeeper.SendCoinsFromAccountToModule(ctx, designerAddr, ecocredit.ModuleName, creditClassFee)

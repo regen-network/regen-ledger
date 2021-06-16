@@ -24,7 +24,18 @@ func (s serverImpl) CreateClass(ctx types.Context, req *ecocredit.MsgCreateClass
 	classID := s.idSeq.NextVal(ctx)
 	classIDStr := util.Uint64ToBase58Check(classID)
 
-	err := s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
+	// Charge the designer a fee to create the credit class
+	designerAddress, err := sdk.AccAddressFromBech32(req.Designer)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.chargeCreditClassFee(ctx.Context, designerAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
 		ClassId:  classIDStr,
 		Designer: req.Designer,
 		Issuers:  req.Issuers,
@@ -38,17 +49,6 @@ func (s serverImpl) CreateClass(ctx types.Context, req *ecocredit.MsgCreateClass
 		ClassId:  classIDStr,
 		Designer: req.Designer,
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	// Charge the designer a fee to create the credit class
-	designerAddress, err := sdk.AccAddressFromBech32(req.Designer)
-	if err != nil {
-		return nil, err
-	}
-
-	err = s.ChargeCreditClassFee(ctx.Context, designerAddress)
 	if err != nil {
 		return nil, err
 	}

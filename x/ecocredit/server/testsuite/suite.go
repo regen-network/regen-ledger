@@ -9,6 +9,7 @@ import (
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/regen-network/regen-ledger/types"
@@ -21,11 +22,12 @@ type IntegrationTestSuite struct {
 	fixtureFactory testutil.FixtureFactory
 	fixture        testutil.Fixture
 
-	sdkCtx      sdk.Context
-	ctx         context.Context
-	msgClient   ecocredit.MsgClient
-	queryClient ecocredit.QueryClient
-	signers     []sdk.AccAddress
+	sdkCtx            sdk.Context
+	ctx               context.Context
+	msgClient         ecocredit.MsgClient
+	queryClient       ecocredit.QueryClient
+	paramsQueryClient params.QueryClient
+	signers           []sdk.AccAddress
 
 	paramSpace  paramstypes.Subspace
 	bankKeeper  bankkeeper.Keeper
@@ -53,6 +55,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().GreaterOrEqual(len(s.signers), 6)
 	s.msgClient = ecocredit.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = ecocredit.NewQueryClient(s.fixture.QueryConn())
+	s.paramsQueryClient = params.NewQueryClient(s.fixture.QueryConn())
 }
 
 func fundAccount(bankKeeper bankkeeper.Keeper, ctx sdk.Context, addr sdk.AccAddress, amounts sdk.Coins) error {

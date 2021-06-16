@@ -11,8 +11,8 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/stretchr/testify/suite"
-
 	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
@@ -27,6 +27,7 @@ func TestServer(t *testing.T) {
 	amino := codec.NewLegacyAmino()
 
 	authtypes.RegisterInterfaces(cdc.InterfaceRegistry())
+	params.RegisterInterfaces(cdc.InterfaceRegistry())
 
 	authKey := sdk.NewKVStoreKey(authtypes.StoreKey)
 	bankKey := sdk.NewKVStoreKey(banktypes.StoreKey)
