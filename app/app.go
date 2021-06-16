@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"io"
+	"math/big"
 	"net/http"
 	"os"
 
@@ -89,6 +90,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 const (
@@ -136,10 +138,15 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+		ecocredit.ModuleName:           {authtypes.Burner},
 	}
 )
 
-func init() {}
+func init() {
+	// this changes the power reduction from 10e6 to 10e2, which will give
+	// every validator 10,000 times more voting power than they currently have
+	sdk.DefaultPowerReduction = sdk.NewIntFromBigInt(new(big.Int).Exp(big.NewInt(10), big.NewInt(2), nil))
+}
 
 // Extended ABCI application
 type RegenApp struct {

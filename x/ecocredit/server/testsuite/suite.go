@@ -6,8 +6,13 @@ import (
 	"github.com/regen-network/regen-ledger/types/testutil"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/stretchr/testify/suite"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -17,36 +22,71 @@ type IntegrationTestSuite struct {
 	fixtureFactory testutil.FixtureFactory
 	fixture        testutil.Fixture
 
-	ctx         context.Context
-	msgClient   ecocredit.MsgClient
-	queryClient ecocredit.QueryClient
-	signers     []sdk.AccAddress
+	sdkCtx            sdk.Context
+	ctx               context.Context
+	msgClient         ecocredit.MsgClient
+	queryClient       ecocredit.QueryClient
+	paramsQueryClient params.QueryClient
+	signers           []sdk.AccAddress
+
+	paramSpace  paramstypes.Subspace
+	bankKeeper  bankkeeper.Keeper
 }
 
-func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory) *IntegrationTestSuite {
-	return &IntegrationTestSuite{fixtureFactory: fixtureFactory}
+func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper) *IntegrationTestSuite {
+	return &IntegrationTestSuite{
+		fixtureFactory: fixtureFactory,
+		paramSpace:     paramSpace,
+		bankKeeper:     bankKeeper,
+	}
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.fixture = s.fixtureFactory.Setup()
-	s.ctx = s.fixture.Context()
+
+	// TODO clean up once types.Context merged upstream into sdk.Context
+	s.sdkCtx, _ = s.fixture.Context().(types.Context).CacheContext()
+	s.ctx = types.Context{Context: s.sdkCtx}
+
+	ecocreditParams := ecocredit.DefaultParams()
+	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
+
 	s.signers = s.fixture.Signers()
 	s.Require().GreaterOrEqual(len(s.signers), 6)
 	s.msgClient = ecocredit.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = ecocredit.NewQueryClient(s.fixture.QueryConn())
+	s.paramsQueryClient = params.NewQueryClient(s.fixture.QueryConn())
+}
+
+func fundAccount(bankKeeper bankkeeper.Keeper, ctx sdk.Context, addr sdk.AccAddress, amounts sdk.Coins) error {
+	if err := bankKeeper.MintCoins(ctx, minttypes.ModuleName, amounts); err != nil {
+		return err
+	}
+	return bankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, addr, amounts)
 }
 
 func (s *IntegrationTestSuite) TestScenario() {
-	designer := s.signers[0].String()
+	designer := s.signers[0]
 	issuer1 := s.signers[1].String()
 	issuer2 := s.signers[2].String()
 	addr1 := s.signers[3].String()
 	addr2 := s.signers[4].String()
 	addr3 := s.signers[5].String()
 
-	// create class
+	// create class with insufficient funds and it should fail
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClassRequest{
-		Designer: designer,
+		Designer: designer.String(),
+		Issuers:  []string{issuer1, issuer2},
+		Metadata: nil,
+	})
+	s.Require().Error(err)
+	s.Require().Nil(createClsRes)
+
+	// create class with sufficient funds and it should succeed
+	s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+
+	createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClassRequest{
+		Designer: designer.String(),
 		Issuers:  []string{issuer1, issuer2},
 		Metadata: nil,
 	})
@@ -55,6 +95,9 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	clsID := createClsRes.ClassId
 	s.Require().NotEmpty(clsID)
+
+	// designer should have no funds remaining
+	s.Require().Equal(s.bankKeeper.GetBalance(s.sdkCtx, designer, "stake"), sdk.NewInt64Coin("stake", 0))
 
 	// create batch
 	t0, t1 := "10.37", "1007.3869"

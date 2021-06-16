@@ -1,10 +1,7 @@
-// +build experimental
-
-package app_test
+package testsuite
 
 import (
 	"fmt"
-	"testing"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -15,13 +12,11 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/stretchr/testify/suite"
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/regen-network/regen-ledger/app"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
-	group "github.com/regen-network/regen-ledger/x/group/client/testsuite"
 )
 
 func NewRegenAppConstructor(val network.Validator) servertypes.Application {
@@ -60,12 +55,4 @@ func DefaultConfig() network.Config {
 		SigningAlgo:       string(hd.Secp256k1Type),
 		KeyringOptions:    []keyring.Option{},
 	}
-}
-
-func TestModules(t *testing.T) {
-	cfg := DefaultConfig()
-
-	suite.Run(t, group.NewIntegrationTestSuite(cfg))
-	suite.Run(t, network.NewIntegrationTestSuite(cfg))
-
 }
