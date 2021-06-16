@@ -11,15 +11,31 @@ import (
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit/util"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/util"
 )
 
+// CreateClass creates a new class of ecocredit
+//
+// The designer is charged a fee for creating the class. This is controlled by
+// the global parameter CreditClassFee, which can be updated through the
+// governance process.
 func (s serverImpl) CreateClass(ctx types.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error) {
 	classID := s.idSeq.NextVal(ctx)
 	classIDStr := util.Uint64ToBase58Check(classID)
 
-	err := s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
+	// Charge the designer a fee to create the credit class
+	designerAddress, err := sdk.AccAddressFromBech32(req.Designer)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.chargeCreditClassFee(ctx.Context, designerAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
 		ClassId:  classIDStr,
 		Designer: req.Designer,
 		Issuers:  req.Issuers,

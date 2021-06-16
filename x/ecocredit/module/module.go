@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -18,14 +19,28 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 )
 
-type Module struct{}
+type Module struct {
+	paramSpace paramtypes.Subspace
+	bankKeeper ecocredit.BankKeeper
+}
+
+func NewModule(paramSpace paramtypes.Subspace, bankKeeper ecocredit.BankKeeper) Module {
+	if !paramSpace.HasKeyTable() {
+		paramSpace = paramSpace.WithKeyTable(ecocredit.ParamKeyTable())
+	}
+
+	return Module{
+		paramSpace: paramSpace,
+		bankKeeper: bankKeeper,
+	}
+}
 
 var _ module.AppModuleBasic = Module{}
 var _ servermodule.Module = Module{}
 var _ climodule.Module = Module{}
 
 func (a Module) Name() string {
-	return "ecocredit"
+	return ecocredit.ModuleName
 }
 
 func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
@@ -33,10 +48,12 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func (a Module) RegisterServices(configurator servermodule.Configurator) {
-	server.RegisterServices(configurator)
+	server.RegisterServices(configurator, a.paramSpace, a.bankKeeper)
 }
 
-func (a Module) DefaultGenesis(codec.JSONCodec) json.RawMessage { return nil }
+func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
+	return cdc.MustMarshalJSON(ecocredit.DefaultGenesisState())
+}
 
 func (a Module) ValidateGenesis(codec.JSONCodec, sdkclient.TxEncodingConfig, json.RawMessage) error {
 	return nil
