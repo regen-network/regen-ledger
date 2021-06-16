@@ -220,10 +220,11 @@ type MsgCreateBatchRequest_BatchIssuance struct {
 	// effectively retired by the issuer on receipt. Decimal values are
 	// acceptable.
 	RetiredUnits string `protobuf:"bytes,3,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty" yaml:"retired_units"`
-	// retirement_location is the location of the beneficiary or buyer of the retired
-	// credits. It is a string of the form
-	// <country-code>[-<sub-national-code>[-<postal-code>]], with the first two fields
-	// conforming to ISO 3166-2
+	// retirement_location is the location of the beneficiary or buyer of the
+	// retired credits. This must be provided if retired_units is positive. It
+	// is a string of the form
+	// <country-code>[-<sub-national-code>[-<postal-code>]], with the first two
+	// fields conforming to ISO 3166-2.
 	RetirementLocation string `protobuf:"bytes,4,opt,name=retirement_location,json=retirementLocation,proto3" json:"retirement_location,omitempty" yaml:"retirement_location"`
 }
 
@@ -410,10 +411,11 @@ type MsgSendRequest_SendUnits struct {
 	// effectively retired by the recipient on receipt. Decimal values are
 	// acceptable within the precision returned by Query/Precision.
 	RetiredUnits string `protobuf:"bytes,3,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty" yaml:"retired_units"`
-	// retirement_location is the location of the beneficiary or buyer of the retired
-	// credits. It is a string of the form
-	// <country-code>[-<sub-national-code>[-<postal-code>]], with the first two fields
-	// conforming to ISO 3166-2
+	// retirement_location is the location of the beneficiary or buyer of the
+	// retired credits. This must be provided if retired_units is positive. It
+	// is a string of the form
+	// <country-code>[-<sub-national-code>[-<postal-code>]], with the first two
+	// fields conforming to ISO 3166-2.
 	RetirementLocation string `protobuf:"bytes,4,opt,name=retirement_location,json=retirementLocation,proto3" json:"retirement_location,omitempty" yaml:"retirement_location"`
 }
 

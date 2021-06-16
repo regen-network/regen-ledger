@@ -445,7 +445,7 @@ single recipient.
 | recipient | [string](#string) |  | recipient is the account of the recipient. |
 | tradable_units | [string](#string) |  | tradable_units are the units of credits in this issuance that can be traded by this recipient. Decimal values are acceptable. |
 | retired_units | [string](#string) |  | retired_units are the units of credits in this issuance that are effectively retired by the issuer on receipt. Decimal values are acceptable. |
-| retirement_location | [string](#string) |  | retirement_location is the location of the beneficiary or buyer of the retired credits. It is a string of the form <country-code>[-<sub-national-code>[-<postal-code>]], with the first two fields conforming to ISO 3166-2 |
+| retirement_location | [string](#string) |  | retirement_location is the location of the beneficiary or buyer of the retired credits. This must be provided if retired_units is positive. It is a string of the form <country-code>[-<sub-national-code>[-<postal-code>]], with the first two fields conforming to ISO 3166-2. |
 
 
 
@@ -570,7 +570,7 @@ SendUnits are the tradable and retired units of a credit batch to send.
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
 | tradable_units | [string](#string) |  | tradable_units are the units of credits in this issuance that can be traded by this recipient. Decimal values are acceptable within the precision returned by Query/Precision. |
 | retired_units | [string](#string) |  | retired_units are the units of credits in this transfer that are effectively retired by the recipient on receipt. Decimal values are acceptable within the precision returned by Query/Precision. |
-| retirement_location | [string](#string) |  | retirement_location is the location of the beneficiary or buyer of the retired credits. It is a string of the form <country-code>[-<sub-national-code>[-<postal-code>]], with the first two fields conforming to ISO 3166-2 |
+| retirement_location | [string](#string) |  | retirement_location is the location of the beneficiary or buyer of the retired credits. This must be provided if retired_units is positive. It is a string of the form <country-code>[-<sub-national-code>[-<postal-code>]], with the first two fields conforming to ISO 3166-2. |
 
 
 

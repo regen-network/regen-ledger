@@ -3,7 +3,6 @@ module github.com/regen-network/regen-ledger
 go 1.15
 
 require (
-	github.com/TheBookPeople/iso3166 v0.0.0-20160919111731-b671ca53a641 // indirect
 	github.com/cosmos/cosmos-sdk v0.43.0-rc0
 	github.com/cosmos/ibc-go v1.0.0-alpha2
 	github.com/gorilla/mux v1.8.0
