@@ -240,10 +240,10 @@ type EventRetire struct {
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
 	// units is the decimal number of credits that have been retired.
 	Units string `protobuf:"bytes,3,opt,name=units,proto3" json:"units,omitempty"`
-	// location is the location of the beneficiary or buyer of the retiring
+	// location is the location of the beneficiary or buyer of the retired
 	// credits. It is a string of the form
 	// <country-code>[-<sub-national-code>[-<postal-code>]], with the first two fields
-	// conforming to ISO 3166-2
+	// conforming to ISO 3166-2.
 	Location string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 }
 

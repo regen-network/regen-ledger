@@ -125,7 +125,7 @@ batches have been retired at once for easy indexing.
 | retirer | [string](#string) |  | retirer is the account which has done the "retiring". This will be the account receiving credits in the case that credits were retired upon issuance using Msg/CreateBatch or retired upon transfer using Msg/Send. |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
 | units | [string](#string) |  | units is the decimal number of credits that have been retired. |
-| location | [string](#string) |  | location is the location of the beneficiary or buyer of the retiring credits. It is a string of the form <country-code>[-<sub-national-code>[-<postal-code>]], with the first two fields conforming to ISO 3166-2 |
+| location | [string](#string) |  | location is the location of the beneficiary or buyer of the retired credits. It is a string of the form <country-code>[-<sub-national-code>[-<postal-code>]], with the first two fields conforming to ISO 3166-2. |
 
 
 
@@ -509,7 +509,7 @@ MsgRetireRequest is the Msg/Retire request type.
 | ----- | ---- | ----- | ----------- |
 | holder | [string](#string) |  | holder is the credit holder address. |
 | credits | [MsgRetireRequest.RetireUnits](#regen.ecocredit.v1alpha1.MsgRetireRequest.RetireUnits) | repeated | credits are the credits being retired. |
-| location | [string](#string) |  | location is the location of the beneficiary or buyer of the retiring credits. It is a string of the form <country-code>[-<sub-national-code>[-<postal-code>]], with the first two fields conforming to ISO 3166-2 |
+| location | [string](#string) |  | location is the location of the beneficiary or buyer of the retired credits. It is a string of the form <country-code>[-<sub-national-code>[-<postal-code>]], with the first two fields conforming to ISO 3166-2. |
 
 
 

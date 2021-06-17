@@ -523,10 +523,10 @@ type MsgRetireRequest struct {
 	Holder string `protobuf:"bytes,1,opt,name=holder,proto3" json:"holder,omitempty"`
 	// credits are the credits being retired.
 	Credits []*MsgRetireRequest_RetireUnits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
-	// location is the location of the beneficiary or buyer of the retiring
+	// location is the location of the beneficiary or buyer of the retired
 	// credits. It is a string of the form
 	// <country-code>[-<sub-national-code>[-<postal-code>]], with the first two fields
-	// conforming to ISO 3166-2
+	// conforming to ISO 3166-2.
 	Location string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 }
 
