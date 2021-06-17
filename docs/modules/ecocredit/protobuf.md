@@ -13,8 +13,10 @@
 - [regen/ecocredit/v1alpha1/types.proto](#regen/ecocredit/v1alpha1/types.proto)
     - [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo)
     - [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo)
-    - [GenesisState](#regen.ecocredit.v1alpha1.GenesisState)
     - [Params](#regen.ecocredit.v1alpha1.Params)
+  
+- [regen/ecocredit/v1alpha1/genesis.proto](#regen/ecocredit/v1alpha1/genesis.proto)
+    - [GenesisState](#regen.ecocredit.v1alpha1.GenesisState)
   
 - [regen/ecocredit/v1alpha1/query.proto](#regen/ecocredit/v1alpha1/query.proto)
     - [QueryBalanceRequest](#regen.ecocredit.v1alpha1.QueryBalanceRequest)
@@ -184,21 +186,6 @@ ClassInfo represents the high-level on-chain information for a credit class.
 
 
 
-<a name="regen.ecocredit.v1alpha1.GenesisState"></a>
-
-### GenesisState
-GenesisState defines the state of the ecocredit module that is needed at genesis
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| params | [Params](#regen.ecocredit.v1alpha1.Params) |  | Params contains the updateable global parameters for use with the x/params module |
-
-
-
-
-
-
 <a name="regen.ecocredit.v1alpha1.Params"></a>
 
 ### Params
@@ -209,6 +196,40 @@ use with the x/params module.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | credit_class_fee | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | credit_class_fee is the fixed fee charged on creation of a new credit class |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="regen/ecocredit/v1alpha1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## regen/ecocredit/v1alpha1/genesis.proto
+
+
+
+<a name="regen.ecocredit.v1alpha1.GenesisState"></a>
+
+### GenesisState
+GenesisState defines ecocredit module's genesis state.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| params | [Params](#regen.ecocredit.v1alpha1.Params) |  | Params contains the updateable global parameters for use with the x/params module |
+| class_infos | [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo) | repeated | class_infos is the list of credit class info. |
+| batch_infos | [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo) | repeated | batch_infos is the list of credit batch info. |
+| idSeq | [uint64](#uint64) |  | id_seq is used to get next class/batch id. |
 
 
 

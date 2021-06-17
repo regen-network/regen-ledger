@@ -17,4 +17,7 @@ message GenesisState {
 
   // batch_infos is the list of credit batch info.
   repeated BatchInfo batch_infos = 3;
+
+  // id_seq is used to get next class/batch id.
+  uint64 idSeq = 4;
 }
