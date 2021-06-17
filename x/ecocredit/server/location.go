@@ -22,7 +22,6 @@ func validateLocation(location string) error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
 	}
 
-
 	if regionCode != "" {
 		_, err = country.FindSubdivisionByCode(regionCode)
 		if err != nil {
