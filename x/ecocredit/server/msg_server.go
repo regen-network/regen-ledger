@@ -264,14 +264,7 @@ func (s serverImpl) Retire(ctx types.Context, req *ecocredit.MsgRetireRequest) (
 			return nil, err
 		}
 
-		// subtract tradable balance
-		err = getSubAndSetDecimal(store, TradableBalanceKey(holder, denom), toRetire)
-		if err != nil {
-			return nil, err
-		}
-
-		// subtract tradable supply
-		err = getSubAndSetDecimal(store, TradableSupplyKey(denom), toRetire)
+		err = subtractTradableBalanceAndSupply(store, holder, denom, toRetire)
 		if err != nil {
 			return nil, err
 		}
@@ -290,6 +283,43 @@ func (s serverImpl) Retire(ctx types.Context, req *ecocredit.MsgRetireRequest) (
 	}
 
 	return &ecocredit.MsgRetireResponse{}, nil
+}
+
+func (s serverImpl) Cancel(ctx types.Context, req *ecocredit.MsgCancelRequest) (*ecocredit.MsgCancelResponse, error) {
+	store := ctx.KVStore(s.storeKey)
+	holder := req.Holder
+	for _, credit := range req.Credits {
+		denom := batchDenomT(credit.BatchDenom)
+		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
+			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid credit denom", denom))
+		}
+
+		maxDecimalPlaces, err := getUint32(store, MaxDecimalPlacesKey(denom))
+		if err != nil {
+			return nil, err
+		}
+
+		toCancel, err := math.ParsePositiveFixedDecimal(credit.Units, maxDecimalPlaces)
+		if err != nil {
+			return nil, err
+		}
+
+		err = subtractTradableBalanceAndSupply(store, holder, denom, toCancel)
+		if err != nil {
+			return nil, err
+		}
+
+		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCancel{
+			Canceller:  holder,
+			BatchDenom: string(denom),
+			Units:      math.DecimalString(toCancel),
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &ecocredit.MsgCancelResponse{}, nil
 }
 
 func (s serverImpl) SetPrecision(ctx types.Context, req *ecocredit.MsgSetPrecisionRequest) (*ecocredit.MsgSetPrecisionResponse, error) {
@@ -346,4 +376,20 @@ func retire(ctx types.Context, store sdk.KVStore, recipient string, batchDenom b
 		BatchDenom: string(batchDenom),
 		Units:      math.DecimalString(retired),
 	})
+}
+
+func subtractTradableBalanceAndSupply(store sdk.KVStore, holder string, batchDenom batchDenomT, amount *apd.Decimal) error {
+	// subtract tradable balance
+	err := getSubAndSetDecimal(store, TradableBalanceKey(holder, batchDenom), amount)
+	if err != nil {
+		return err
+	}
+
+	// subtract tradable supply
+	err = getSubAndSetDecimal(store, TradableSupplyKey(batchDenom), amount)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

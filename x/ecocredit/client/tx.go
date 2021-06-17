@@ -32,6 +32,7 @@ func TxCmd(name string) *cobra.Command {
 		txflags(txCreateBatch()),
 		txflags(txSend()),
 		txflags(txRetire()),
+		txflags(txCancel()),
 		txflags(txSetPrecision()),
 	)
 	return cmd
@@ -164,6 +165,34 @@ Parameters:
 				return err
 			}
 			msg := ecocredit.MsgRetireRequest{
+				Holder:  clientCtx.GetFromAddress().String(),
+				Credits: credits,
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	}
+}
+
+func txCancel() *cobra.Command {
+	return &cobra.Command{
+		Use:   "cancel [credits]",
+		Short: "Cancels a specified amounts of credits from the account of the transaction author (--from)",
+		Long: `Cancels a specified amounts of credits from the account of the transaction author (--from)
+
+Parameters:
+  credits:  YAML encoded credit list. Note: numerical values must be written in strings.
+            eg: '[{batch_denom: "100/2", units: "5"}]'`,
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			var credits = []*ecocredit.MsgCancelRequest_CancelUnits{}
+			if err := yaml.Unmarshal([]byte(args[0]), &credits); err != nil {
+				return err
+			}
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+			msg := ecocredit.MsgCancelRequest{
 				Holder:  clientCtx.GetFromAddress().String(),
 				Credits: credits,
 			}

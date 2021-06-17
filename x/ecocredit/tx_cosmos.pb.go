@@ -28,6 +28,10 @@ type MsgClient interface {
 	Send(ctx context.Context, in *MsgSendRequest, opts ...grpc.CallOption) (*MsgSendResponse, error)
 	// Retire retires a specified number of credits in the holder's account.
 	Retire(ctx context.Context, in *MsgRetireRequest, opts ...grpc.CallOption) (*MsgRetireResponse, error)
+	// Cancel removes a number of credits from the holder's account and also
+	// deducts them from the tradable supply, effectively cancelling their
+	// issuance on Regen Ledger
+	Cancel(ctx context.Context, in *MsgCancelRequest, opts ...grpc.CallOption) (*MsgCancelResponse, error)
 	// SetPrecision allows an issuer to increase the decimal precision of a credit
 	// batch. It is an experimental feature to concretely explore an idea proposed
 	// in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
@@ -57,6 +61,7 @@ type msgClient struct {
 	_CreateBatch  types.Invoker
 	_Send         types.Invoker
 	_Retire       types.Invoker
+	_Cancel       types.Invoker
 	_SetPrecision types.Invoker
 }
 
@@ -156,6 +161,29 @@ func (c *msgClient) Retire(ctx context.Context, in *MsgRetireRequest, opts ...gr
 	return out, nil
 }
 
+func (c *msgClient) Cancel(ctx context.Context, in *MsgCancelRequest, opts ...grpc.CallOption) (*MsgCancelResponse, error) {
+	if invoker := c._Cancel; invoker != nil {
+		var out MsgCancelResponse
+		err := invoker(ctx, in, &out)
+		return &out, err
+	}
+	if invokerConn, ok := c.cc.(types.InvokerConn); ok {
+		var err error
+		c._Cancel, err = invokerConn.Invoker("/regen.ecocredit.v1alpha1.Msg/Cancel")
+		if err != nil {
+			var out MsgCancelResponse
+			err = c._Cancel(ctx, in, &out)
+			return &out, err
+		}
+	}
+	out := new(MsgCancelResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/Cancel", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) SetPrecision(ctx context.Context, in *MsgSetPrecisionRequest, opts ...grpc.CallOption) (*MsgSetPrecisionResponse, error) {
 	if invoker := c._SetPrecision; invoker != nil {
 		var out MsgSetPrecisionResponse
@@ -193,6 +221,10 @@ type MsgServer interface {
 	Send(types.Context, *MsgSendRequest) (*MsgSendResponse, error)
 	// Retire retires a specified number of credits in the holder's account.
 	Retire(types.Context, *MsgRetireRequest) (*MsgRetireResponse, error)
+	// Cancel removes a number of credits from the holder's account and also
+	// deducts them from the tradable supply, effectively cancelling their
+	// issuance on Regen Ledger
+	Cancel(types.Context, *MsgCancelRequest) (*MsgCancelResponse, error)
 	// SetPrecision allows an issuer to increase the decimal precision of a credit
 	// batch. It is an experimental feature to concretely explore an idea proposed
 	// in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
@@ -292,6 +324,24 @@ func _Msg_Retire_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_Cancel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCancelRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).Cancel(types.UnwrapSDKContext(ctx), in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1alpha1.Msg/Cancel",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).Cancel(types.UnwrapSDKContext(ctx), req.(*MsgCancelRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_SetPrecision_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgSetPrecisionRequest)
 	if err := dec(in); err != nil {
@@ -334,6 +384,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_Retire_Handler,
 		},
 		{
+			MethodName: "Cancel",
+			Handler:    _Msg_Cancel_Handler,
+		},
+		{
 			MethodName: "SetPrecision",
 			Handler:    _Msg_SetPrecision_Handler,
 		},
@@ -346,5 +400,6 @@ const (
 	MsgCreateBatchMethod  = "/regen.ecocredit.v1alpha1.Msg/CreateBatch"
 	MsgSendMethod         = "/regen.ecocredit.v1alpha1.Msg/Send"
 	MsgRetireMethod       = "/regen.ecocredit.v1alpha1.Msg/Retire"
+	MsgCancelMethod       = "/regen.ecocredit.v1alpha1.Msg/Cancel"
 	MsgSetPrecisionMethod = "/regen.ecocredit.v1alpha1.Msg/SetPrecision"
 )

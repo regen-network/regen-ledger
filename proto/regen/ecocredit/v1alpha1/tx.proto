@@ -25,6 +25,11 @@ service Msg {
   // Retire retires a specified number of credits in the holder's account.
   rpc Retire(MsgRetireRequest) returns (MsgRetireResponse);
 
+  // Cancel removes a number of credits from the holder's account and also
+  // deducts them from the tradable supply, effectively cancelling their
+  // issuance on Regen Ledger
+  rpc Cancel(MsgCancelRequest) returns (MsgCancelResponse);
+
   // SetPrecision allows an issuer to increase the decimal precision of a credit
   // batch. It is an experimental feature to concretely explore an idea proposed
   // in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
@@ -171,6 +176,31 @@ message MsgRetireRequest {
 
 // MsgRetireRequest is the Msg/Retire response type.
 message MsgRetireResponse {}
+
+// MsgCancelRequest is the Msg/Cancel request type.
+message MsgCancelRequest {
+
+  // holder is the credit holder address.
+  string holder = 1;
+
+  // credits are the credits being cancelled.
+  repeated CancelUnits credits = 2;
+
+  // CancelUnits are the units of the batch being cancelled.
+  message CancelUnits {
+
+    // batch_denom is the unique ID of the credit batch.
+    string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+
+    // units are the units of credits being cancelled.
+    // Decimal values are acceptable within the precision returned by
+    // Query/Precision.
+    string units = 2;
+  }
+}
+
+// MsgCancelResponse is the Msg/Cancel response type.
+message MsgCancelResponse {}
 
 // MsgRetireRequest is the Msg/SetPrecision request type.
 message MsgSetPrecisionRequest {
