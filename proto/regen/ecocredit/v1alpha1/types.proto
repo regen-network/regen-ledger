@@ -47,12 +47,8 @@ message BatchInfo {
 // use with the x/params module.
 message Params {
   // credit_class_fee is the fixed fee charged on creation of a new credit class
-  repeated cosmos.base.v1beta1.Coin credit_class_fee = 1
-      [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
-}
-
-// GenesisState defines the state of the ecocredit module that is needed at genesis
-message GenesisState {
-  // Params contains the updateable global parameters for use with the x/params module
-  Params params = 1 [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"params\""];
+  repeated cosmos.base.v1beta1.Coin credit_class_fee = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
 }

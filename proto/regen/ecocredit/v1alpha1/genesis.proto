@@ -1,0 +1,20 @@
+syntax = "proto3";
+package regen.ecocredit.v1alpha1;
+
+import "regen/ecocredit/v1alpha1/types.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+
+// GenesisState defines ecocredit module's genesis state.
+message GenesisState {
+  // Params contains the updateable global parameters for use with the x/params
+  // module
+  Params params = 1 [ (gogoproto.nullable) = false ];
+
+  // class_infos is the list of credit class info.
+  repeated ClassInfo class_infos = 2;
+
+  // batch_infos is the list of credit batch info.
+  repeated BatchInfo batch_infos = 3;
+}
