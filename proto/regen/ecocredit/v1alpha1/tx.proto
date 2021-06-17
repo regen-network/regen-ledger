@@ -184,10 +184,10 @@ message MsgRetireRequest {
     string units = 2;
   }
 
-  // location is the location of the beneficiary or buyer of the retiring
+  // location is the location of the beneficiary or buyer of the retired
   // credits. It is a string of the form
   // <country-code>[-<sub-national-code>[-<postal-code>]], with the first two fields
-  // conforming to ISO 3166-2
+  // conforming to ISO 3166-2.
   string location = 3;
 }
 

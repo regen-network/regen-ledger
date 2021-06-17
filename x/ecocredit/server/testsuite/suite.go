@@ -213,6 +213,12 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expectErr:          true,
 		},
 		{
+			name:               "can't retire without a location",
+			toRetire:           "0.0001",
+			retirementLocation: "",
+			expectErr:          true,
+		},
+		{
 			name:               "can retire a small amount of credits",
 			toRetire:           "0.0001",
 			retirementLocation: "AF",
