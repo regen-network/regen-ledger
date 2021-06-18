@@ -229,7 +229,7 @@ GenesisState defines ecocredit module's genesis state.
 | params | [Params](#regen.ecocredit.v1alpha1.Params) |  | Params contains the updateable global parameters for use with the x/params module |
 | class_infos | [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo) | repeated | class_infos is the list of credit class info. |
 | batch_infos | [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo) | repeated | batch_infos is the list of credit batch info. |
-| idSeq | [uint64](#uint64) |  | id_seq is used to get next class/batch id. |
+| id_seq | [uint64](#uint64) |  | id_seq is used to get next class/batch id. |
 
 
 

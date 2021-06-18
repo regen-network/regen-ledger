@@ -19,5 +19,5 @@ message GenesisState {
   repeated BatchInfo batch_infos = 3;
 
   // id_seq is used to get next class/batch id.
-  uint64 idSeq = 4;
+  uint64 id_seq = 4;
 }
