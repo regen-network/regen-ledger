@@ -180,12 +180,12 @@ func txCancel() *cobra.Command {
 		Long: `Cancels a specified amounts of credits from the account of the transaction author (--from)
 
 Parameters:
-  credits:  YAML encoded credit list. Note: numerical values must be written in strings.
-            eg: '[{batch_denom: "100/2", amount: "5"}]'`,
+  credits:  comma-separated list of credits in the form <amount>:<batch-denom>
+            eg: 10:ABC/123,0.1:XYZ/456`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var credits = []*ecocredit.MsgCancelRequest_CancelCredits{}
-			if err := yaml.Unmarshal([]byte(args[0]), &credits); err != nil {
+			credits, err := parseCancelCreditsList(args[0])
+			if err != nil {
 				return err
 			}
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
