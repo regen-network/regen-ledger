@@ -31,9 +31,9 @@ func TestParseCredits(t *testing.T) {
 		{
 			name:           "can parse single credits with simple decimal",
 			creditsListStr: "10:ABC/123",
-			expectErr:       false,
-			expCreditsList:  []credits{
-				credits {
+			expectErr:      false,
+			expCreditsList: []credits{
+				credits{
 					batchDenom: "ABC/123",
 					amount:     "10",
 				},
@@ -42,9 +42,9 @@ func TestParseCredits(t *testing.T) {
 		{
 			name:           "can parse single credits with multiple places",
 			creditsListStr: "10.0000001:ABC/123",
-			expectErr:       false,
-			expCreditsList:  []credits{
-				credits {
+			expectErr:      false,
+			expCreditsList: []credits{
+				credits{
 					batchDenom: "ABC/123",
 					amount:     "10.0000001",
 				},
@@ -53,9 +53,9 @@ func TestParseCredits(t *testing.T) {
 		{
 			name:           "can parse single credits with no digit before decimal point",
 			creditsListStr: ".0000001:ABC/123",
-			expectErr:       false,
-			expCreditsList:  []credits{
-				credits {
+			expectErr:      false,
+			expCreditsList: []credits{
+				credits{
 					batchDenom: "ABC/123",
 					amount:     ".0000001",
 				},
@@ -64,17 +64,17 @@ func TestParseCredits(t *testing.T) {
 		{
 			name:           "can parse multiple credits",
 			creditsListStr: ".0000001:ABC/123,10:345/XYZ,10000.0001:IJK/LMN",
-			expectErr:       false,
-			expCreditsList:  []credits{
-				credits {
+			expectErr:      false,
+			expCreditsList: []credits{
+				credits{
 					batchDenom: "ABC/123",
 					amount:     ".0000001",
 				},
-				credits {
+				credits{
 					batchDenom: "345/XYZ",
 					amount:     "10",
 				},
-				credits {
+				credits{
 					batchDenom: "IJK/LMN",
 					amount:     "10000.0001",
 				},
@@ -90,6 +90,14 @@ func TestParseCredits(t *testing.T) {
 			} else {
 				require.NoError(t, err)
 				require.Equal(t, spec.expCreditsList, creditsList)
+			}
+
+			// Also check that the tests pass successfully when wrapping with CancelCredits
+			_, err = parseCancelCreditsList(spec.creditsListStr)
+			if spec.expectErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
 			}
 		})
 	}
