@@ -1,0 +1,132 @@
+syntax = "proto3";
+package regen.curation.v1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/curation";
+
+// Msg is the regen.curation.v1 Msg service.
+service Msg {
+    // CreateTagSet creates a new tag set with the provided metadata and returns an auto-generated tag set ID.
+    rpc CreateTagSet(MsgCreateTagSet) returns (MsgCreateTagSetResponse) {}
+
+    // CreateTag creates a new tag in a tag set with the provided metadata and returns an auto-generated tag ID.
+    rpc CreateTag(MsgCreateTag) returns (MsgCreateTagResponse) {}
+
+    // TagAsset associates a tag with an asset denom.
+    rpc TagAsset(MsgTagAsset) returns (MsgTagAssetResponse) {}
+
+    // TagAsset associates a tag with a whole class of assets identified by the asset denom prefix.
+    rpc TagAssetClass(MsgTagAssetClass) returns (MsgTagAssetClassResponse) {}
+
+    // EditTagSetMetadata edits a tag set's metadata.
+    rpc EditTagSetMetadata(MsgEditTagSetMetadata) returns (MsgEditTagSetMetadataReponse) {}
+
+    // ChangeTagSetMaintainer changes the maintainer of a tag set.
+    rpc ChangeTagSetMaintainer(MsgChangeTagSetMaintainer) returns (MsgChangeTagSetMaintainerResponse) {}
+
+    // EditTagMetadata edits a tag's metadata.
+    rpc EditTagMetadata(MsgEditTagMetadata) returns (MsgEditTagMetadataReponse) {}
+}
+
+// MsgCreateTagSet is the Msg/CreateTagSet request type.
+message MsgCreateTagSet {
+    // maintainer is the address of the tag set maintainer.
+    string maintainer = 1;
+
+    // name is an optional human readable name of the tag set.
+    string name = 2;
+
+    // description is an optional human readable description of the tag set.
+    string description = 3;
+
+    // uri is an optional URI/URL describing the tag set.
+    string uri = 4;
+}
+
+// MsgCreateTagSetResponse is the Msg/CreateTagSetResponse response type.
+message MsgCreateTagSetResponse {
+    // tag_set_id is the auto-generated ID of the tag set.
+    string tag_set_id = 1;
+}
+
+// MsgCreateTag is the Msg/CreateTag request type.
+message MsgCreateTag {
+    // maintainer is the address of the tag set maintainer.
+    string maintainer = 1;
+
+    // tag_set_id is the ID of the tag set within which this tag should be created.
+    string tag_set_id = 2;
+
+    // name is an optional human readable name of the tag .
+    string name = 3;
+
+    // description is an optional human readable description of the tag.
+    string description = 4;
+
+    // uri is an optional URI/URL describing the tag.
+    string uri = 5;
+}
+
+// MsgCreateTagResponse is the MsgCreateTagResponse response type.
+message MsgCreateTagResponse {
+    // tag_id is the auto-generated ID of the tag. It is always prefixed by the tag set ID for the tag
+    // set within which it was created and a `/` character.
+    string tag_id = 1;
+}
+
+// MsgTagAsset is the Msg/TagAsset request type.
+message MsgTagAsset {
+    // maintainer is the address of the tag's maintainer (this is always the same as the tag set's maintainer).
+    string maintainer = 1;
+
+    // tag_id is the ID of the tag.
+    string tag_id = 2;
+
+    // denom is the denom of the asset.
+    string denom = 3;
+}
+
+// MsgTagAssetResponse is the Msg/TagAssetResponse response type.
+message MsgTagAssetResponse { }
+
+message MsgTagAssetClass {
+    // maintainer is the address of the tag's maintainer (this is always the same as the tag set's maintainer).
+    string maintainer = 1;
+
+    // tag_id is the ID of the tag.
+    string tag_id = 2;
+
+    // denom_prefix is the prefix of denom's in this asset class. This could correspond to a credit class prefix which
+    // is always the prefix of all credit batches issued within this class. This provides a way to tag whole classes of
+    // credits or NFTs.
+    string denom_prefix = 3;
+}
+
+message MsgTagAssetClassResponse { }
+
+message MsgEditTagSetMetadata {
+    string maintainer = 1;
+    string tag_set_id = 2;
+    string name = 3;
+    string description = 4;
+    string uri = 5;
+}
+
+message MsgEditTagSetMetadataReponse { }
+
+message MsgChangeTagSetMaintainer {
+    string maintainer = 1;
+    string tag_set_id = 2;
+    string new_maintainer = 3;
+}
+
+message MsgChangeTagSetMaintainerResponse { }
+
+message MsgEditTagMetadata {
+    string maintainer = 1;
+    string tag_id = 2;
+    string name = 3;
+    string description = 4;
+    string uri = 5;
+}
+
+message MsgEditTagMetadataReponse { }
