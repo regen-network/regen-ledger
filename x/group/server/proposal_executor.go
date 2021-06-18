@@ -5,19 +5,21 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/gogo/protobuf/proto"
 
+	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
 func (s serverImpl) execMsgs(ctx context.Context, derivationKey []byte, proposal group.Proposal) error {
+	derivedKey := s.key.Derive(derivationKey)
 	msgs := proposal.GetMsgs()
+
 	for _, msg := range msgs {
 		var reply interface{}
-		derivedKey := s.key.Derive(derivationKey)
+
 		// Execute the message using the derived key,
 		// this will verify that the message signer is the group account.
-		err := derivedKey.Invoke(ctx, "/"+proto.MessageName(msg), msg, reply)
+		err := derivedKey.Invoke(ctx, server.TypeURL(msg), msg, reply)
 		if err != nil {
 			return err
 		}

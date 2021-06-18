@@ -19,6 +19,7 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/testdata"
 )
@@ -1703,21 +1704,19 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9900)},
 			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 100)},
 		},
-		// "proposal with ServiceMsg executed when accepted": {
-		// 	setupProposal: func(ctx context.Context) uint64 {
-		// 		msgs := []sdk.Msg{sdk.ServiceMsg{
-		// 			MethodName: "/regen.ecocredit.v1alpha1.Msg/CreateClass",
-		// 			Request: &ecocredit.MsgCreateClassRequest{
-		// 				Designer: s.groupAccountAddr.String(),
-		// 				Issuers:  []string{s.groupAccountAddr.String()},
-		// 			},
-		// 		}}
-		// 		return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
-		// 	},
-		// 	expProposalStatus: group.ProposalStatusClosed,
-		// 	expProposalResult: group.ProposalResultAccepted,
-		// 	expExecutorResult: group.ProposalExecutorResultSuccess,
-		// },
+		"proposal with ADR 033 executed when accepted": {
+			setupProposal: func(ctx context.Context) uint64 {
+				msgs := []sdk.Msg{&ecocredit.MsgCreateClassRequest{
+					Designer: s.groupAccountAddr.String(),
+					Issuers:  []string{s.groupAccountAddr.String()},
+				},
+				}
+				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
+			},
+			expProposalStatus: group.ProposalStatusClosed,
+			expProposalResult: group.ProposalResultAccepted,
+			expExecutorResult: group.ProposalExecutorResultSuccess,
+		},
 		"proposal with multiple messages executed when accepted": {
 			setupProposal: func(ctx context.Context) uint64 {
 				msgs := []sdk.Msg{msgSend1, msgSend1}
