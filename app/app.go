@@ -90,6 +90,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 const (
@@ -137,6 +138,7 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+		ecocredit.ModuleName:           {authtypes.Burner},
 	}
 )
 
