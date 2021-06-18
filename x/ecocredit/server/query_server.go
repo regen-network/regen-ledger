@@ -45,8 +45,8 @@ func (s serverImpl) Balance(ctx types.Context, request *ecocredit.QueryBalanceRe
 	}
 
 	return &ecocredit.QueryBalanceResponse{
-		TradableUnits: math.DecimalString(tradable),
-		RetiredUnits:  math.DecimalString(retired),
+		TradableAmount: math.DecimalString(tradable),
+		RetiredAmount:  math.DecimalString(retired),
 	}, nil
 }
 

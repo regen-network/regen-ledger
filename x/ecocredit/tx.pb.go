@@ -213,13 +213,13 @@ func (m *MsgCreateBatchRequest) GetMetadata() []byte {
 type MsgCreateBatchRequest_BatchIssuance struct {
 	// recipient is the account of the recipient.
 	Recipient string `protobuf:"bytes,1,opt,name=recipient,proto3" json:"recipient,omitempty"`
-	// tradable_units are the units of credits in this issuance that can be
+	// tradable_amount is the number of credits in this issuance that can be
 	// traded by this recipient. Decimal values are acceptable.
-	TradableUnits string `protobuf:"bytes,2,opt,name=tradable_units,json=tradableUnits,proto3" json:"tradable_units,omitempty" yaml:"tradable_units"`
-	// retired_units are the units of credits in this issuance that are
+	TradableAmount string `protobuf:"bytes,2,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty" yaml:"tradable_amount"`
+	// retired_amount is the number of credits in this issuance that are
 	// effectively retired by the issuer on receipt. Decimal values are
 	// acceptable.
-	RetiredUnits string `protobuf:"bytes,3,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty" yaml:"retired_units"`
+	RetiredAmount string `protobuf:"bytes,3,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty" yaml:"retired_amount"`
 }
 
 func (m *MsgCreateBatchRequest_BatchIssuance) Reset()         { *m = MsgCreateBatchRequest_BatchIssuance{} }
@@ -262,16 +262,16 @@ func (m *MsgCreateBatchRequest_BatchIssuance) GetRecipient() string {
 	return ""
 }
 
-func (m *MsgCreateBatchRequest_BatchIssuance) GetTradableUnits() string {
+func (m *MsgCreateBatchRequest_BatchIssuance) GetTradableAmount() string {
 	if m != nil {
-		return m.TradableUnits
+		return m.TradableAmount
 	}
 	return ""
 }
 
-func (m *MsgCreateBatchRequest_BatchIssuance) GetRetiredUnits() string {
+func (m *MsgCreateBatchRequest_BatchIssuance) GetRetiredAmount() string {
 	if m != nil {
-		return m.RetiredUnits
+		return m.RetiredAmount
 	}
 	return ""
 }
@@ -329,7 +329,7 @@ type MsgSendRequest struct {
 	// sender is the address of the account receiving credits.
 	Recipient string `protobuf:"bytes,2,opt,name=recipient,proto3" json:"recipient,omitempty"`
 	// credits are the credits being sent.
-	Credits []*MsgSendRequest_SendUnits `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
+	Credits []*MsgSendRequest_SendCredits `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
 }
 
 func (m *MsgSendRequest) Reset()         { *m = MsgSendRequest{} }
@@ -379,39 +379,41 @@ func (m *MsgSendRequest) GetRecipient() string {
 	return ""
 }
 
-func (m *MsgSendRequest) GetCredits() []*MsgSendRequest_SendUnits {
+func (m *MsgSendRequest) GetCredits() []*MsgSendRequest_SendCredits {
 	if m != nil {
 		return m.Credits
 	}
 	return nil
 }
 
-// SendUnits are the tradable and retired units of a credit batch to send.
-type MsgSendRequest_SendUnits struct {
+// SendCredits specifies a batch and the number of credits being transferred.
+// This is split into tradable credits, which will remain tradable on receipt,
+// and retired credits, which will be retired on receipt.
+type MsgSendRequest_SendCredits struct {
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
-	// tradable_units are the units of credits in this issuance that can be
-	// traded by this recipient. Decimal values are acceptable within the
+	// tradable_amount is the number of credits in this transfer that can be
+	// traded by the recipient. Decimal values are acceptable within the
 	// precision returned by Query/Precision.
-	TradableUnits string `protobuf:"bytes,2,opt,name=tradable_units,json=tradableUnits,proto3" json:"tradable_units,omitempty" yaml:"tradable_units"`
-	// retired_units are the units of credits in this issuance that are
+	TradableAmount string `protobuf:"bytes,2,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty" yaml:"tradable_amount"`
+	// retired_amount is the number of credits in this transfer that are
 	// effectively retired by the issuer on receipt. Decimal values are
 	// acceptable within the precision returned by Query/Precision.
-	RetiredUnits string `protobuf:"bytes,3,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty" yaml:"retired_units"`
+	RetiredAmount string `protobuf:"bytes,3,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty" yaml:"retired_amount"`
 }
 
-func (m *MsgSendRequest_SendUnits) Reset()         { *m = MsgSendRequest_SendUnits{} }
-func (m *MsgSendRequest_SendUnits) String() string { return proto.CompactTextString(m) }
-func (*MsgSendRequest_SendUnits) ProtoMessage()    {}
-func (*MsgSendRequest_SendUnits) Descriptor() ([]byte, []int) {
+func (m *MsgSendRequest_SendCredits) Reset()         { *m = MsgSendRequest_SendCredits{} }
+func (m *MsgSendRequest_SendCredits) String() string { return proto.CompactTextString(m) }
+func (*MsgSendRequest_SendCredits) ProtoMessage()    {}
+func (*MsgSendRequest_SendCredits) Descriptor() ([]byte, []int) {
 	return fileDescriptor_96891bdd11ac56ed, []int{4, 0}
 }
-func (m *MsgSendRequest_SendUnits) XXX_Unmarshal(b []byte) error {
+func (m *MsgSendRequest_SendCredits) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSendRequest_SendUnits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgSendRequest_SendCredits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSendRequest_SendUnits.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgSendRequest_SendCredits.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -421,35 +423,35 @@ func (m *MsgSendRequest_SendUnits) XXX_Marshal(b []byte, deterministic bool) ([]
 		return b[:n], nil
 	}
 }
-func (m *MsgSendRequest_SendUnits) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSendRequest_SendUnits.Merge(m, src)
+func (m *MsgSendRequest_SendCredits) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSendRequest_SendCredits.Merge(m, src)
 }
-func (m *MsgSendRequest_SendUnits) XXX_Size() int {
+func (m *MsgSendRequest_SendCredits) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSendRequest_SendUnits) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSendRequest_SendUnits.DiscardUnknown(m)
+func (m *MsgSendRequest_SendCredits) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSendRequest_SendCredits.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSendRequest_SendUnits proto.InternalMessageInfo
+var xxx_messageInfo_MsgSendRequest_SendCredits proto.InternalMessageInfo
 
-func (m *MsgSendRequest_SendUnits) GetBatchDenom() string {
+func (m *MsgSendRequest_SendCredits) GetBatchDenom() string {
 	if m != nil {
 		return m.BatchDenom
 	}
 	return ""
 }
 
-func (m *MsgSendRequest_SendUnits) GetTradableUnits() string {
+func (m *MsgSendRequest_SendCredits) GetTradableAmount() string {
 	if m != nil {
-		return m.TradableUnits
+		return m.TradableAmount
 	}
 	return ""
 }
 
-func (m *MsgSendRequest_SendUnits) GetRetiredUnits() string {
+func (m *MsgSendRequest_SendCredits) GetRetiredAmount() string {
 	if m != nil {
-		return m.RetiredUnits
+		return m.RetiredAmount
 	}
 	return ""
 }
@@ -496,7 +498,7 @@ type MsgRetireRequest struct {
 	// holder is the credit holder address.
 	Holder string `protobuf:"bytes,1,opt,name=holder,proto3" json:"holder,omitempty"`
 	// credits are the credits being retired.
-	Credits []*MsgRetireRequest_RetireUnits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
+	Credits []*MsgRetireRequest_RetireCredits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
 }
 
 func (m *MsgRetireRequest) Reset()         { *m = MsgRetireRequest{} }
@@ -539,35 +541,35 @@ func (m *MsgRetireRequest) GetHolder() string {
 	return ""
 }
 
-func (m *MsgRetireRequest) GetCredits() []*MsgRetireRequest_RetireUnits {
+func (m *MsgRetireRequest) GetCredits() []*MsgRetireRequest_RetireCredits {
 	if m != nil {
 		return m.Credits
 	}
 	return nil
 }
 
-// RetireUnits are the units of the batch being retired.
-type MsgRetireRequest_RetireUnits struct {
+// RetireCredits specifies a batch and the number of credits being retired.
+type MsgRetireRequest_RetireCredits struct {
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
-	// retired_units are the units of credits being retired.
+	// amount is the number of credits being retired.
 	// Decimal values are acceptable within the precision returned by
 	// Query/Precision.
-	Units string `protobuf:"bytes,2,opt,name=units,proto3" json:"units,omitempty"`
+	Amount string `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
-func (m *MsgRetireRequest_RetireUnits) Reset()         { *m = MsgRetireRequest_RetireUnits{} }
-func (m *MsgRetireRequest_RetireUnits) String() string { return proto.CompactTextString(m) }
-func (*MsgRetireRequest_RetireUnits) ProtoMessage()    {}
-func (*MsgRetireRequest_RetireUnits) Descriptor() ([]byte, []int) {
+func (m *MsgRetireRequest_RetireCredits) Reset()         { *m = MsgRetireRequest_RetireCredits{} }
+func (m *MsgRetireRequest_RetireCredits) String() string { return proto.CompactTextString(m) }
+func (*MsgRetireRequest_RetireCredits) ProtoMessage()    {}
+func (*MsgRetireRequest_RetireCredits) Descriptor() ([]byte, []int) {
 	return fileDescriptor_96891bdd11ac56ed, []int{6, 0}
 }
-func (m *MsgRetireRequest_RetireUnits) XXX_Unmarshal(b []byte) error {
+func (m *MsgRetireRequest_RetireCredits) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRetireRequest_RetireUnits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRetireRequest_RetireCredits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRetireRequest_RetireUnits.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRetireRequest_RetireCredits.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -577,28 +579,28 @@ func (m *MsgRetireRequest_RetireUnits) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *MsgRetireRequest_RetireUnits) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRetireRequest_RetireUnits.Merge(m, src)
+func (m *MsgRetireRequest_RetireCredits) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRetireRequest_RetireCredits.Merge(m, src)
 }
-func (m *MsgRetireRequest_RetireUnits) XXX_Size() int {
+func (m *MsgRetireRequest_RetireCredits) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRetireRequest_RetireUnits) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRetireRequest_RetireUnits.DiscardUnknown(m)
+func (m *MsgRetireRequest_RetireCredits) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRetireRequest_RetireCredits.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRetireRequest_RetireUnits proto.InternalMessageInfo
+var xxx_messageInfo_MsgRetireRequest_RetireCredits proto.InternalMessageInfo
 
-func (m *MsgRetireRequest_RetireUnits) GetBatchDenom() string {
+func (m *MsgRetireRequest_RetireCredits) GetBatchDenom() string {
 	if m != nil {
 		return m.BatchDenom
 	}
 	return ""
 }
 
-func (m *MsgRetireRequest_RetireUnits) GetUnits() string {
+func (m *MsgRetireRequest_RetireCredits) GetAmount() string {
 	if m != nil {
-		return m.Units
+		return m.Amount
 	}
 	return ""
 }
@@ -645,7 +647,7 @@ type MsgCancelRequest struct {
 	// holder is the credit holder address.
 	Holder string `protobuf:"bytes,1,opt,name=holder,proto3" json:"holder,omitempty"`
 	// credits are the credits being cancelled.
-	Credits []*MsgCancelRequest_CancelUnits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
+	Credits []*MsgCancelRequest_CancelCredits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
 }
 
 func (m *MsgCancelRequest) Reset()         { *m = MsgCancelRequest{} }
@@ -688,35 +690,35 @@ func (m *MsgCancelRequest) GetHolder() string {
 	return ""
 }
 
-func (m *MsgCancelRequest) GetCredits() []*MsgCancelRequest_CancelUnits {
+func (m *MsgCancelRequest) GetCredits() []*MsgCancelRequest_CancelCredits {
 	if m != nil {
 		return m.Credits
 	}
 	return nil
 }
 
-// CancelUnits are the units of the batch being cancelled.
-type MsgCancelRequest_CancelUnits struct {
+// CancelCredits specifies a batch and the number of credits being cancelled.
+type MsgCancelRequest_CancelCredits struct {
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
-	// units are the units of credits being cancelled.
+	// amount is the number of credits being cancelled.
 	// Decimal values are acceptable within the precision returned by
 	// Query/Precision.
-	Units string `protobuf:"bytes,2,opt,name=units,proto3" json:"units,omitempty"`
+	Amount string `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
-func (m *MsgCancelRequest_CancelUnits) Reset()         { *m = MsgCancelRequest_CancelUnits{} }
-func (m *MsgCancelRequest_CancelUnits) String() string { return proto.CompactTextString(m) }
-func (*MsgCancelRequest_CancelUnits) ProtoMessage()    {}
-func (*MsgCancelRequest_CancelUnits) Descriptor() ([]byte, []int) {
+func (m *MsgCancelRequest_CancelCredits) Reset()         { *m = MsgCancelRequest_CancelCredits{} }
+func (m *MsgCancelRequest_CancelCredits) String() string { return proto.CompactTextString(m) }
+func (*MsgCancelRequest_CancelCredits) ProtoMessage()    {}
+func (*MsgCancelRequest_CancelCredits) Descriptor() ([]byte, []int) {
 	return fileDescriptor_96891bdd11ac56ed, []int{8, 0}
 }
-func (m *MsgCancelRequest_CancelUnits) XXX_Unmarshal(b []byte) error {
+func (m *MsgCancelRequest_CancelCredits) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCancelRequest_CancelUnits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCancelRequest_CancelCredits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCancelRequest_CancelUnits.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCancelRequest_CancelCredits.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -726,28 +728,28 @@ func (m *MsgCancelRequest_CancelUnits) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *MsgCancelRequest_CancelUnits) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCancelRequest_CancelUnits.Merge(m, src)
+func (m *MsgCancelRequest_CancelCredits) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCancelRequest_CancelCredits.Merge(m, src)
 }
-func (m *MsgCancelRequest_CancelUnits) XXX_Size() int {
+func (m *MsgCancelRequest_CancelCredits) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCancelRequest_CancelUnits) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCancelRequest_CancelUnits.DiscardUnknown(m)
+func (m *MsgCancelRequest_CancelCredits) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCancelRequest_CancelCredits.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCancelRequest_CancelUnits proto.InternalMessageInfo
+var xxx_messageInfo_MsgCancelRequest_CancelCredits proto.InternalMessageInfo
 
-func (m *MsgCancelRequest_CancelUnits) GetBatchDenom() string {
+func (m *MsgCancelRequest_CancelCredits) GetBatchDenom() string {
 	if m != nil {
 		return m.BatchDenom
 	}
 	return ""
 }
 
-func (m *MsgCancelRequest_CancelUnits) GetUnits() string {
+func (m *MsgCancelRequest_CancelCredits) GetAmount() string {
 	if m != nil {
-		return m.Units
+		return m.Amount
 	}
 	return ""
 }
@@ -796,7 +798,7 @@ type MsgSetPrecisionRequest struct {
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
 	// max_decimal_places is the new maximum number of decimal places that can be
-	// used to represent some quantity of credit units. It is an experimental
+	// used to represent some quantity of credits. It is an experimental
 	// feature to concretely explore an idea proposed in
 	// https://github.com/cosmos/cosmos-sdk/issues/7113.
 	MaxDecimalPlaces uint32 `protobuf:"varint,3,opt,name=max_decimal_places,json=maxDecimalPlaces,proto3" json:"max_decimal_places,omitempty" yaml:"max_decimal_places"`
@@ -900,13 +902,13 @@ func init() {
 	proto.RegisterType((*MsgCreateBatchRequest_BatchIssuance)(nil), "regen.ecocredit.v1alpha1.MsgCreateBatchRequest.BatchIssuance")
 	proto.RegisterType((*MsgCreateBatchResponse)(nil), "regen.ecocredit.v1alpha1.MsgCreateBatchResponse")
 	proto.RegisterType((*MsgSendRequest)(nil), "regen.ecocredit.v1alpha1.MsgSendRequest")
-	proto.RegisterType((*MsgSendRequest_SendUnits)(nil), "regen.ecocredit.v1alpha1.MsgSendRequest.SendUnits")
+	proto.RegisterType((*MsgSendRequest_SendCredits)(nil), "regen.ecocredit.v1alpha1.MsgSendRequest.SendCredits")
 	proto.RegisterType((*MsgSendResponse)(nil), "regen.ecocredit.v1alpha1.MsgSendResponse")
 	proto.RegisterType((*MsgRetireRequest)(nil), "regen.ecocredit.v1alpha1.MsgRetireRequest")
-	proto.RegisterType((*MsgRetireRequest_RetireUnits)(nil), "regen.ecocredit.v1alpha1.MsgRetireRequest.RetireUnits")
+	proto.RegisterType((*MsgRetireRequest_RetireCredits)(nil), "regen.ecocredit.v1alpha1.MsgRetireRequest.RetireCredits")
 	proto.RegisterType((*MsgRetireResponse)(nil), "regen.ecocredit.v1alpha1.MsgRetireResponse")
 	proto.RegisterType((*MsgCancelRequest)(nil), "regen.ecocredit.v1alpha1.MsgCancelRequest")
-	proto.RegisterType((*MsgCancelRequest_CancelUnits)(nil), "regen.ecocredit.v1alpha1.MsgCancelRequest.CancelUnits")
+	proto.RegisterType((*MsgCancelRequest_CancelCredits)(nil), "regen.ecocredit.v1alpha1.MsgCancelRequest.CancelCredits")
 	proto.RegisterType((*MsgCancelResponse)(nil), "regen.ecocredit.v1alpha1.MsgCancelResponse")
 	proto.RegisterType((*MsgSetPrecisionRequest)(nil), "regen.ecocredit.v1alpha1.MsgSetPrecisionRequest")
 	proto.RegisterType((*MsgSetPrecisionResponse)(nil), "regen.ecocredit.v1alpha1.MsgSetPrecisionResponse")
@@ -915,56 +917,57 @@ func init() {
 func init() { proto.RegisterFile("regen/ecocredit/v1alpha1/tx.proto", fileDescriptor_96891bdd11ac56ed) }
 
 var fileDescriptor_96891bdd11ac56ed = []byte{
-	// 781 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x56, 0xcb, 0x6e, 0xd3, 0x40,
-	0x14, 0xad, 0x93, 0xbe, 0x32, 0x69, 0xfa, 0x98, 0x3e, 0x48, 0x2d, 0x48, 0x82, 0x57, 0x01, 0x84,
-	0xd3, 0x14, 0x09, 0x24, 0xa4, 0x4a, 0x28, 0xed, 0x82, 0xaa, 0x44, 0x2a, 0xae, 0x58, 0xf0, 0x90,
-	0xa2, 0x89, 0x3d, 0x72, 0x2c, 0x1c, 0x3b, 0x78, 0x26, 0x10, 0x96, 0xac, 0xd8, 0xf2, 0x25, 0x2c,
-	0xf9, 0x03, 0x24, 0x96, 0x5d, 0x22, 0x84, 0x22, 0xd4, 0xfe, 0x41, 0xbe, 0x00, 0x79, 0x66, 0xe2,
-	0x8c, 0x13, 0x68, 0x4c, 0x05, 0x62, 0xe7, 0x73, 0x7d, 0x5f, 0xe7, 0xdc, 0xb9, 0x63, 0x83, 0xeb,
-	0x01, 0xb6, 0xb1, 0x57, 0xc1, 0xa6, 0x6f, 0x06, 0xd8, 0x72, 0x68, 0xe5, 0x75, 0x15, 0xb9, 0x9d,
-	0x16, 0xaa, 0x56, 0x68, 0x4f, 0xef, 0x04, 0x3e, 0xf5, 0x61, 0x9e, 0xb9, 0xe8, 0x91, 0x8b, 0x3e,
-	0x74, 0x51, 0x37, 0x6c, 0xdf, 0xf6, 0x99, 0x53, 0x25, 0x7c, 0xe2, 0xfe, 0x9a, 0x03, 0x36, 0xeb,
-	0xc4, 0xde, 0x0f, 0x30, 0xa2, 0x78, 0xdf, 0x45, 0x84, 0x18, 0xf8, 0x55, 0x17, 0x13, 0x0a, 0x55,
-	0xb0, 0x68, 0x61, 0xe2, 0xd8, 0x1e, 0x0e, 0xf2, 0x4a, 0x49, 0x29, 0x67, 0x8c, 0x08, 0xc3, 0x3c,
-	0x58, 0x70, 0x08, 0xe9, 0xe2, 0x80, 0xe4, 0x53, 0xa5, 0x74, 0x39, 0x63, 0x0c, 0x61, 0x18, 0xd5,
-	0xc6, 0x14, 0x59, 0x88, 0xa2, 0x7c, 0xba, 0xa4, 0x94, 0x97, 0x8c, 0x08, 0x6b, 0x0f, 0xc1, 0xd6,
-	0x78, 0x29, 0xd2, 0xf1, 0x3d, 0x82, 0xa1, 0x0e, 0x16, 0xcd, 0xd0, 0xd0, 0x70, 0x2c, 0x5e, 0xab,
-	0xb6, 0x3e, 0xe8, 0x17, 0x57, 0xde, 0xa2, 0xb6, 0x7b, 0x5f, 0x1b, 0xbe, 0xd1, 0x8c, 0x05, 0xf6,
-	0x78, 0x68, 0x69, 0xef, 0xd3, 0x52, 0xd7, 0x35, 0x44, 0xcd, 0xd6, 0xb0, 0xeb, 0x2d, 0x30, 0xcf,
-	0x5b, 0x11, 0x3d, 0x0b, 0x14, 0xab, 0x90, 0x9a, 0x5e, 0x01, 0x3e, 0x05, 0x8b, 0x61, 0x24, 0xf2,
-	0x4c, 0x9c, 0x4f, 0x97, 0xd2, 0xe5, 0xec, 0xee, 0x9e, 0xfe, 0x3b, 0x65, 0xf5, 0x5f, 0xb6, 0xa2,
-	0x33, 0x70, 0x28, 0x92, 0x18, 0x51, 0xba, 0x98, 0x44, 0xb3, 0x71, 0x89, 0xd4, 0x8f, 0x0a, 0xc8,
-	0xc5, 0xe2, 0xe0, 0x55, 0x90, 0x09, 0xb0, 0xe9, 0x74, 0x1c, 0xec, 0x51, 0xc1, 0x69, 0x64, 0x80,
-	0x0f, 0xc0, 0x32, 0x0d, 0x90, 0x85, 0x9a, 0x2e, 0x6e, 0x74, 0x3d, 0x87, 0x12, 0x41, 0x6e, 0x7b,
-	0xd0, 0x2f, 0x6e, 0x72, 0x72, 0xf1, 0xf7, 0x9a, 0x91, 0x1b, 0x1a, 0x9e, 0x84, 0x18, 0xee, 0x81,
-	0x5c, 0x80, 0xa9, 0x13, 0x60, 0x4b, 0x24, 0x48, 0xb3, 0x04, 0xf9, 0x41, 0xbf, 0xb8, 0xc1, 0x13,
-	0xc4, 0x5e, 0x6b, 0xc6, 0x92, 0xc0, 0x2c, 0x5c, 0x7b, 0x2c, 0xcd, 0x54, 0xb0, 0x17, 0x33, 0xbd,
-	0x07, 0xb2, 0xcd, 0xd0, 0xd0, 0xb0, 0xb0, 0xe7, 0xb7, 0xc5, 0x58, 0xb7, 0x06, 0xfd, 0x22, 0xe4,
-	0x69, 0xa5, 0x97, 0x9a, 0x01, 0x18, 0x3a, 0x60, 0xe0, 0x7b, 0x0a, 0x2c, 0xd7, 0x89, 0x7d, 0x82,
-	0x3d, 0x4b, 0x9a, 0x2a, 0xc1, 0x9e, 0x35, 0x9a, 0x2a, 0x47, 0x71, 0x71, 0x52, 0xe3, 0xe2, 0x3c,
-	0x02, 0x0b, 0x7c, 0x52, 0x44, 0x8c, 0x70, 0xf7, 0xc2, 0x11, 0x4a, 0x05, 0xf5, 0xf0, 0x99, 0x11,
-	0x34, 0x86, 0x29, 0xd4, 0xcf, 0x0a, 0xc8, 0x44, 0xe6, 0x4b, 0xb3, 0xfb, 0xff, 0x13, 0x5b, 0x03,
-	0x2b, 0x11, 0x59, 0x3e, 0x2a, 0xed, 0x9b, 0x02, 0x56, 0xeb, 0xc4, 0x36, 0x98, 0x9b, 0xa4, 0x79,
-	0xcb, 0x77, 0x25, 0xcd, 0x39, 0x82, 0xc7, 0x23, 0x55, 0x53, 0x4c, 0xd5, 0xbb, 0x17, 0xaa, 0x1a,
-	0x4b, 0xaa, 0x73, 0x34, 0xa6, 0xec, 0x0b, 0x90, 0x95, 0xec, 0x97, 0x97, 0x76, 0x03, 0xcc, 0x49,
-	0x8a, 0x1a, 0x1c, 0x68, 0xeb, 0x60, 0x4d, 0x6a, 0x23, 0xce, 0x78, 0x3f, 0x5c, 0x31, 0xf7, 0x2f,
-	0x33, 0x8e, 0x25, 0xd5, 0x39, 0x9a, 0x64, 0x2c, 0xd9, 0xff, 0x0d, 0xe3, 0x61, 0x1b, 0x82, 0xf1,
-	0x27, 0x85, 0x6d, 0xea, 0x09, 0xa6, 0xc7, 0xe1, 0x86, 0x10, 0xc7, 0xf7, 0xa6, 0xdd, 0x99, 0x63,
-	0x6d, 0xa5, 0x12, 0xb7, 0x75, 0x04, 0x60, 0x1b, 0xf5, 0x1a, 0x16, 0x36, 0x9d, 0x36, 0x72, 0x1b,
-	0x1d, 0x17, 0x99, 0x98, 0x1f, 0xd3, 0x5c, 0xed, 0xda, 0xa0, 0x5f, 0xdc, 0xe6, 0xf1, 0x93, 0x3e,
-	0x9a, 0xb1, 0xda, 0x46, 0xbd, 0x03, 0x6e, 0x3b, 0xe6, 0xa6, 0x6d, 0x70, 0x65, 0xa2, 0x6f, 0xce,
-	0x69, 0xf7, 0xdd, 0x1c, 0x48, 0xd7, 0x89, 0x0d, 0x3b, 0x20, 0x2b, 0x7d, 0x55, 0x60, 0x25, 0xc1,
-	0x4d, 0x2d, 0x7f, 0xea, 0xd4, 0x9d, 0xe4, 0x01, 0xe2, 0x72, 0x8b, 0x2a, 0xb2, 0x3b, 0x2f, 0x51,
-	0x45, 0xf9, 0xdb, 0x90, 0xa8, 0x62, 0xfc, 0x3a, 0x7d, 0x0e, 0x66, 0xc3, 0x9d, 0x85, 0xe5, 0xa4,
-	0x77, 0x98, 0x7a, 0x23, 0x81, 0xa7, 0x48, 0x8e, 0xc0, 0x3c, 0x5f, 0x10, 0x78, 0x33, 0xf9, 0x32,
-	0xab, 0xb7, 0x12, 0xf9, 0x8e, 0x4a, 0xf0, 0x13, 0x39, 0xa5, 0x44, 0x6c, 0x7b, 0xa6, 0x94, 0x88,
-	0x1f, 0x71, 0x48, 0xc0, 0x92, 0x7c, 0x4c, 0xe0, 0xce, 0x14, 0x01, 0x26, 0x36, 0x41, 0xad, 0xfe,
-	0x41, 0x04, 0x2f, 0x5a, 0x3b, 0xfa, 0x72, 0x56, 0x50, 0x4e, 0xcf, 0x0a, 0xca, 0x8f, 0xb3, 0x82,
-	0xf2, 0xe1, 0xbc, 0x30, 0x73, 0x7a, 0x5e, 0x98, 0xf9, 0x7a, 0x5e, 0x98, 0x79, 0x56, 0xb5, 0x1d,
-	0xda, 0xea, 0x36, 0x75, 0xd3, 0x6f, 0x57, 0x58, 0xda, 0xdb, 0x1e, 0xa6, 0x6f, 0xfc, 0xe0, 0xa5,
-	0x40, 0x2e, 0xb6, 0x6c, 0x1c, 0x54, 0x7a, 0xa3, 0xdf, 0xb9, 0xe6, 0x3c, 0xfb, 0x27, 0xbb, 0xf3,
-	0x33, 0x00, 0x00, 0xff, 0xff, 0x3a, 0x9d, 0xe9, 0x34, 0xe8, 0x09, 0x00, 0x00,
+	// 787 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x56, 0xcd, 0x6e, 0xd3, 0x4a,
+	0x14, 0xae, 0x93, 0xde, 0xb4, 0x9d, 0x34, 0xfd, 0x99, 0xde, 0xe6, 0xa6, 0xd6, 0xbd, 0x49, 0xae,
+	0x57, 0x01, 0x84, 0xdd, 0x14, 0x24, 0x10, 0x12, 0x12, 0x24, 0x5d, 0x50, 0x55, 0x41, 0xc5, 0x5d,
+	0x01, 0x8b, 0x30, 0xb1, 0x47, 0x8e, 0x85, 0x7f, 0x82, 0x67, 0x02, 0x61, 0xc9, 0x03, 0x20, 0xf1,
+	0x30, 0x88, 0x67, 0x60, 0x83, 0xd4, 0x25, 0xab, 0xa8, 0x6a, 0x25, 0x1e, 0x20, 0x4f, 0x80, 0x3c,
+	0x33, 0x4e, 0xec, 0xa4, 0x34, 0xa6, 0x02, 0x89, 0x9d, 0xbf, 0x33, 0xe7, 0xf7, 0x3b, 0x73, 0xce,
+	0x18, 0xfc, 0x1f, 0x60, 0x0b, 0x7b, 0x1a, 0x36, 0x7c, 0x23, 0xc0, 0xa6, 0x4d, 0xb5, 0xd7, 0x75,
+	0xe4, 0xf4, 0xba, 0xa8, 0xae, 0xd1, 0x81, 0xda, 0x0b, 0x7c, 0xea, 0xc3, 0x12, 0x53, 0x51, 0xc7,
+	0x2a, 0x6a, 0xa4, 0x22, 0xff, 0x6d, 0xf9, 0x96, 0xcf, 0x94, 0xb4, 0xf0, 0x8b, 0xeb, 0x2b, 0x36,
+	0xd8, 0x6e, 0x11, 0xab, 0x19, 0x60, 0x44, 0x71, 0xd3, 0x41, 0x84, 0xe8, 0xf8, 0x55, 0x1f, 0x13,
+	0x0a, 0x65, 0xb0, 0x6c, 0x62, 0x62, 0x5b, 0x1e, 0x0e, 0x4a, 0x52, 0x55, 0xaa, 0xad, 0xe8, 0x63,
+	0x0c, 0x4b, 0x60, 0xc9, 0x26, 0xa4, 0x8f, 0x03, 0x52, 0xca, 0x54, 0xb3, 0xb5, 0x15, 0x3d, 0x82,
+	0xa1, 0x95, 0x8b, 0x29, 0x32, 0x11, 0x45, 0xa5, 0x6c, 0x55, 0xaa, 0xad, 0xea, 0x63, 0xac, 0x3c,
+	0x02, 0xc5, 0xe9, 0x50, 0xa4, 0xe7, 0x7b, 0x04, 0x43, 0x15, 0x2c, 0x1b, 0xa1, 0xa0, 0x6d, 0x9b,
+	0x3c, 0x56, 0x63, 0x6b, 0x34, 0xac, 0xac, 0xbf, 0x45, 0xae, 0x73, 0x4f, 0x89, 0x4e, 0x14, 0x7d,
+	0x89, 0x7d, 0x1e, 0x98, 0xca, 0xfb, 0x6c, 0x2c, 0xeb, 0x06, 0xa2, 0x46, 0x37, 0xca, 0xba, 0x08,
+	0x72, 0x3c, 0x15, 0x91, 0xb3, 0x40, 0x89, 0x08, 0x99, 0xf9, 0x11, 0xe0, 0x53, 0xb0, 0x1c, 0x5a,
+	0x22, 0xcf, 0xc0, 0xa5, 0x6c, 0x35, 0x5b, 0xcb, 0xef, 0xdd, 0x57, 0x7f, 0xc4, 0xac, 0x7a, 0x61,
+	0x2a, 0x2a, 0x03, 0x07, 0xc2, 0x89, 0x3e, 0x76, 0x97, 0xa0, 0x68, 0x31, 0x49, 0x91, 0xfc, 0x51,
+	0x02, 0x85, 0x84, 0x1d, 0xfc, 0x17, 0xac, 0x04, 0xd8, 0xb0, 0x7b, 0x36, 0xf6, 0xa8, 0xa8, 0x69,
+	0x22, 0x80, 0x4d, 0xb0, 0x4e, 0x03, 0x64, 0xa2, 0x8e, 0x83, 0xdb, 0xc8, 0xf5, 0xfb, 0x1e, 0x15,
+	0xd5, 0xc9, 0xa3, 0x61, 0xa5, 0xc8, 0xab, 0x9b, 0x52, 0x50, 0xf4, 0xb5, 0x48, 0xf2, 0x90, 0x09,
+	0xe0, 0x03, 0xb0, 0x16, 0x60, 0x6a, 0x07, 0xd8, 0x8c, 0x7c, 0x64, 0x99, 0x8f, 0x9d, 0xd1, 0xb0,
+	0xb2, 0xcd, 0x7d, 0x24, 0xcf, 0x15, 0xbd, 0x20, 0x04, 0xdc, 0x83, 0xf2, 0x24, 0xd6, 0x59, 0xc1,
+	0x81, 0xe8, 0xec, 0x1d, 0x90, 0xef, 0x84, 0x82, 0xb6, 0x89, 0x3d, 0xdf, 0x15, 0xcd, 0x2d, 0x8e,
+	0x86, 0x15, 0xc8, 0x1d, 0xc7, 0x0e, 0x15, 0x1d, 0x30, 0xb4, 0xcf, 0xc0, 0xb7, 0x0c, 0x58, 0x6b,
+	0x11, 0xeb, 0x18, 0x7b, 0x66, 0xac, 0xb7, 0x04, 0x7b, 0xe6, 0xa4, 0xb7, 0x1c, 0x25, 0x29, 0xca,
+	0x4c, 0x53, 0xf4, 0x18, 0x2c, 0xf1, 0x7e, 0x11, 0xd1, 0xc8, 0xdb, 0x97, 0x36, 0x32, 0x16, 0x50,
+	0x0d, 0xbf, 0x9b, 0xdc, 0x56, 0x8f, 0x9c, 0xc8, 0x5f, 0x24, 0x90, 0x8f, 0x1d, 0x5c, 0xb9, 0xc2,
+	0x3f, 0xa5, 0x77, 0x9b, 0x60, 0x7d, 0x5c, 0x36, 0x6f, 0x9a, 0x72, 0x2a, 0x81, 0x8d, 0x16, 0xb1,
+	0x74, 0xa6, 0x17, 0x63, 0xbf, 0xeb, 0x3b, 0x31, 0xf6, 0x39, 0x82, 0xfa, 0x84, 0xdf, 0x0c, 0xe3,
+	0xf7, 0xee, 0xa5, 0xfc, 0x26, 0x9c, 0xaa, 0x1c, 0xcd, 0x70, 0xfc, 0x02, 0x14, 0x12, 0x27, 0x57,
+	0x27, 0xb9, 0x08, 0x72, 0x71, 0x6e, 0x75, 0x81, 0x94, 0x2d, 0xb0, 0x19, 0x4b, 0x26, 0x59, 0x77,
+	0x33, 0x1c, 0x3c, 0xe7, 0x17, 0xd7, 0x9d, 0x70, 0xaa, 0x72, 0x74, 0x51, 0xdd, 0x89, 0x93, 0xdf,
+	0x55, 0x77, 0x94, 0x8c, 0xa8, 0xfb, 0x93, 0xc4, 0xe6, 0xf7, 0x18, 0xd3, 0xa3, 0x70, 0x6e, 0x88,
+	0xed, 0x7b, 0xf3, 0xf6, 0xe9, 0x54, 0x62, 0x99, 0xd4, 0x89, 0x1d, 0x02, 0xe8, 0xa2, 0x41, 0xdb,
+	0xc4, 0x86, 0xed, 0x22, 0xa7, 0xdd, 0x73, 0x90, 0x81, 0x09, 0xbb, 0xb4, 0x85, 0xc6, 0x7f, 0xa3,
+	0x61, 0x65, 0x87, 0xdb, 0xcf, 0xea, 0x28, 0xfa, 0x86, 0x8b, 0x06, 0xfb, 0x5c, 0x76, 0xc4, 0x45,
+	0x3b, 0xe0, 0x9f, 0x99, 0xbc, 0x79, 0x4d, 0x7b, 0xef, 0xfe, 0x02, 0xd9, 0x16, 0xb1, 0x60, 0x0f,
+	0xe4, 0x63, 0x2f, 0x0e, 0xd4, 0x52, 0x6c, 0xf1, 0xf8, 0x33, 0x28, 0xef, 0xa6, 0x37, 0x10, 0x2b,
+	0x6f, 0x1c, 0x91, 0x6d, 0xc2, 0x54, 0x11, 0xe3, 0xef, 0x46, 0xaa, 0x88, 0xc9, 0x25, 0xfb, 0x1c,
+	0x2c, 0x86, 0xf3, 0x0b, 0x6b, 0x69, 0x37, 0x9b, 0x7c, 0x2d, 0x85, 0xa6, 0x70, 0x8e, 0x40, 0x8e,
+	0x8f, 0x09, 0xbc, 0x9e, 0x7e, 0xb0, 0xe5, 0x1b, 0xa9, 0x74, 0x27, 0x21, 0xf8, 0x8d, 0x9c, 0x13,
+	0x22, 0x31, 0x43, 0x73, 0x42, 0x24, 0xaf, 0x38, 0x24, 0x60, 0x35, 0x7e, 0x4d, 0xe0, 0xee, 0x1c,
+	0x02, 0x66, 0x26, 0x41, 0xae, 0xff, 0x84, 0x05, 0x0f, 0xda, 0x38, 0xfc, 0x7c, 0x56, 0x96, 0x4e,
+	0xce, 0xca, 0xd2, 0xe9, 0x59, 0x59, 0xfa, 0x70, 0x5e, 0x5e, 0x38, 0x39, 0x2f, 0x2f, 0x7c, 0x3d,
+	0x2f, 0x2f, 0x3c, 0xab, 0x5b, 0x36, 0xed, 0xf6, 0x3b, 0xaa, 0xe1, 0xbb, 0x1a, 0x73, 0x7b, 0xd3,
+	0xc3, 0xf4, 0x8d, 0x1f, 0xbc, 0x14, 0xc8, 0xc1, 0xa6, 0x85, 0x03, 0x6d, 0x30, 0xf9, 0xd5, 0xeb,
+	0xe4, 0xd8, 0xff, 0xda, 0xad, 0xef, 0x01, 0x00, 0x00, 0xff, 0xff, 0xbc, 0xf1, 0x50, 0xd3, 0x04,
+	0x0a, 0x00, 0x00,
 }
 
 func (m *MsgCreateClassRequest) Marshal() (dAtA []byte, err error) {
@@ -1121,17 +1124,17 @@ func (m *MsgCreateBatchRequest_BatchIssuance) MarshalToSizedBuffer(dAtA []byte) 
 	_ = i
 	var l int
 	_ = l
-	if len(m.RetiredUnits) > 0 {
-		i -= len(m.RetiredUnits)
-		copy(dAtA[i:], m.RetiredUnits)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.RetiredUnits)))
+	if len(m.RetiredAmount) > 0 {
+		i -= len(m.RetiredAmount)
+		copy(dAtA[i:], m.RetiredAmount)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.RetiredAmount)))
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.TradableUnits) > 0 {
-		i -= len(m.TradableUnits)
-		copy(dAtA[i:], m.TradableUnits)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.TradableUnits)))
+	if len(m.TradableAmount) > 0 {
+		i -= len(m.TradableAmount)
+		copy(dAtA[i:], m.TradableAmount)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.TradableAmount)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1226,7 +1229,7 @@ func (m *MsgSendRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgSendRequest_SendUnits) Marshal() (dAtA []byte, err error) {
+func (m *MsgSendRequest_SendCredits) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1236,27 +1239,27 @@ func (m *MsgSendRequest_SendUnits) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgSendRequest_SendUnits) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgSendRequest_SendCredits) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgSendRequest_SendUnits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgSendRequest_SendCredits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.RetiredUnits) > 0 {
-		i -= len(m.RetiredUnits)
-		copy(dAtA[i:], m.RetiredUnits)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.RetiredUnits)))
+	if len(m.RetiredAmount) > 0 {
+		i -= len(m.RetiredAmount)
+		copy(dAtA[i:], m.RetiredAmount)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.RetiredAmount)))
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.TradableUnits) > 0 {
-		i -= len(m.TradableUnits)
-		copy(dAtA[i:], m.TradableUnits)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.TradableUnits)))
+	if len(m.TradableAmount) > 0 {
+		i -= len(m.TradableAmount)
+		copy(dAtA[i:], m.TradableAmount)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.TradableAmount)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1337,7 +1340,7 @@ func (m *MsgRetireRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRetireRequest_RetireUnits) Marshal() (dAtA []byte, err error) {
+func (m *MsgRetireRequest_RetireCredits) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1347,20 +1350,20 @@ func (m *MsgRetireRequest_RetireUnits) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRetireRequest_RetireUnits) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRetireRequest_RetireCredits) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRetireRequest_RetireUnits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRetireRequest_RetireCredits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Units) > 0 {
-		i -= len(m.Units)
-		copy(dAtA[i:], m.Units)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Units)))
+	if len(m.Amount) > 0 {
+		i -= len(m.Amount)
+		copy(dAtA[i:], m.Amount)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Amount)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1441,7 +1444,7 @@ func (m *MsgCancelRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgCancelRequest_CancelUnits) Marshal() (dAtA []byte, err error) {
+func (m *MsgCancelRequest_CancelCredits) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1451,20 +1454,20 @@ func (m *MsgCancelRequest_CancelUnits) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgCancelRequest_CancelUnits) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCancelRequest_CancelCredits) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCancelRequest_CancelUnits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCancelRequest_CancelCredits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.Units) > 0 {
-		i -= len(m.Units)
-		copy(dAtA[i:], m.Units)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Units)))
+	if len(m.Amount) > 0 {
+		i -= len(m.Amount)
+		copy(dAtA[i:], m.Amount)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Amount)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1650,11 +1653,11 @@ func (m *MsgCreateBatchRequest_BatchIssuance) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.TradableUnits)
+	l = len(m.TradableAmount)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.RetiredUnits)
+	l = len(m.RetiredAmount)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -1697,7 +1700,7 @@ func (m *MsgSendRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgSendRequest_SendUnits) Size() (n int) {
+func (m *MsgSendRequest_SendCredits) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1707,11 +1710,11 @@ func (m *MsgSendRequest_SendUnits) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.TradableUnits)
+	l = len(m.TradableAmount)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.RetiredUnits)
+	l = len(m.RetiredAmount)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -1746,7 +1749,7 @@ func (m *MsgRetireRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgRetireRequest_RetireUnits) Size() (n int) {
+func (m *MsgRetireRequest_RetireCredits) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1756,7 +1759,7 @@ func (m *MsgRetireRequest_RetireUnits) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Units)
+	l = len(m.Amount)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -1791,7 +1794,7 @@ func (m *MsgCancelRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgCancelRequest_CancelUnits) Size() (n int) {
+func (m *MsgCancelRequest_CancelCredits) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1801,7 +1804,7 @@ func (m *MsgCancelRequest_CancelUnits) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Units)
+	l = len(m.Amount)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -2336,7 +2339,7 @@ func (m *MsgCreateBatchRequest_BatchIssuance) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TradableUnits", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field TradableAmount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2364,11 +2367,11 @@ func (m *MsgCreateBatchRequest_BatchIssuance) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.TradableUnits = string(dAtA[iNdEx:postIndex])
+			m.TradableAmount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RetiredUnits", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field RetiredAmount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2396,7 +2399,7 @@ func (m *MsgCreateBatchRequest_BatchIssuance) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.RetiredUnits = string(dAtA[iNdEx:postIndex])
+			m.RetiredAmount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -2629,7 +2632,7 @@ func (m *MsgSendRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Credits = append(m.Credits, &MsgSendRequest_SendUnits{})
+			m.Credits = append(m.Credits, &MsgSendRequest_SendCredits{})
 			if err := m.Credits[len(m.Credits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -2658,7 +2661,7 @@ func (m *MsgSendRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgSendRequest_SendUnits) Unmarshal(dAtA []byte) error {
+func (m *MsgSendRequest_SendCredits) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2681,10 +2684,10 @@ func (m *MsgSendRequest_SendUnits) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: SendUnits: wiretype end group for non-group")
+			return fmt.Errorf("proto: SendCredits: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: SendUnits: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: SendCredits: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2721,7 +2724,7 @@ func (m *MsgSendRequest_SendUnits) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TradableUnits", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field TradableAmount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2749,11 +2752,11 @@ func (m *MsgSendRequest_SendUnits) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.TradableUnits = string(dAtA[iNdEx:postIndex])
+			m.TradableAmount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RetiredUnits", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field RetiredAmount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -2781,7 +2784,7 @@ func (m *MsgSendRequest_SendUnits) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.RetiredUnits = string(dAtA[iNdEx:postIndex])
+			m.RetiredAmount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -2950,7 +2953,7 @@ func (m *MsgRetireRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Credits = append(m.Credits, &MsgRetireRequest_RetireUnits{})
+			m.Credits = append(m.Credits, &MsgRetireRequest_RetireCredits{})
 			if err := m.Credits[len(m.Credits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -2979,7 +2982,7 @@ func (m *MsgRetireRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRetireRequest_RetireUnits) Unmarshal(dAtA []byte) error {
+func (m *MsgRetireRequest_RetireCredits) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3002,10 +3005,10 @@ func (m *MsgRetireRequest_RetireUnits) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: RetireUnits: wiretype end group for non-group")
+			return fmt.Errorf("proto: RetireCredits: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: RetireUnits: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: RetireCredits: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3042,7 +3045,7 @@ func (m *MsgRetireRequest_RetireUnits) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Units", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3070,7 +3073,7 @@ func (m *MsgRetireRequest_RetireUnits) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Units = string(dAtA[iNdEx:postIndex])
+			m.Amount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -3239,7 +3242,7 @@ func (m *MsgCancelRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Credits = append(m.Credits, &MsgCancelRequest_CancelUnits{})
+			m.Credits = append(m.Credits, &MsgCancelRequest_CancelCredits{})
 			if err := m.Credits[len(m.Credits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -3268,7 +3271,7 @@ func (m *MsgCancelRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgCancelRequest_CancelUnits) Unmarshal(dAtA []byte) error {
+func (m *MsgCancelRequest_CancelCredits) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3291,10 +3294,10 @@ func (m *MsgCancelRequest_CancelUnits) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: CancelUnits: wiretype end group for non-group")
+			return fmt.Errorf("proto: CancelCredits: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: CancelUnits: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: CancelCredits: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3331,7 +3334,7 @@ func (m *MsgCancelRequest_CancelUnits) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Units", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3359,7 +3362,7 @@ func (m *MsgCancelRequest_CancelUnits) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Units = string(dAtA[iNdEx:postIndex])
+			m.Amount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

@@ -35,9 +35,9 @@ message BatchInfo {
   // issuer is the issuer of the credit batch.
   string issuer = 3;
 
-  // total_units is the total number of units in the credit batch and is
+  // total_amount is the total number of credits in the credit batch and is
   // immutable.
-  string total_units = 4 [ (gogoproto.moretags) = "yaml:\"total_units\"" ];
+  string total_amount = 4 [ (gogoproto.moretags) = "yaml:\"total_amount\"" ];
 
   // metadata is any arbitrary metadata to attached to the credit batch.
   bytes metadata = 5;

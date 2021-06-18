@@ -71,7 +71,7 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 	store := ctx.KVStore(s.storeKey)
 
 	for _, issuance := range req.Issuance {
-		tradable, err := math.ParseNonNegativeDecimal(issuance.TradableUnits)
+		tradable, err := math.ParseNonNegativeDecimal(issuance.TradableAmount)
 		if err != nil {
 			return nil, err
 		}
@@ -81,7 +81,7 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 			maxDecimalPlaces = decPlaces
 		}
 
-		retired, err := math.ParseNonNegativeDecimal(issuance.RetiredUnits)
+		retired, err := math.ParseNonNegativeDecimal(issuance.RetiredAmount)
 		if err != nil {
 			return nil, err
 		}
@@ -126,7 +126,7 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
 			Recipient:  recipient,
 			BatchDenom: string(batchDenom),
-			Units:      math.DecimalString(&sum),
+			Amount:     math.DecimalString(&sum),
 		})
 		if err != nil {
 			return nil, err
@@ -144,11 +144,11 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 
 	totalSupplyStr := math.DecimalString(&totalSupply)
 	err = s.batchInfoTable.Create(ctx, &ecocredit.BatchInfo{
-		ClassId:    classID,
-		BatchDenom: string(batchDenom),
-		Issuer:     req.Issuer,
-		TotalUnits: totalSupplyStr,
-		Metadata:   req.Metadata,
+		ClassId:     classID,
+		BatchDenom:  string(batchDenom),
+		Issuer:      req.Issuer,
+		TotalAmount: totalSupplyStr,
+		Metadata:    req.Metadata,
 	})
 	if err != nil {
 		return nil, err
@@ -160,10 +160,10 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 	}
 
 	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateBatch{
-		ClassId:    classID,
-		BatchDenom: string(batchDenom),
-		Issuer:     req.Issuer,
-		TotalUnits: totalSupplyStr,
+		ClassId:     classID,
+		BatchDenom:  string(batchDenom),
+		Issuer:      req.Issuer,
+		TotalAmount: totalSupplyStr,
 	})
 	if err != nil {
 		return nil, err
@@ -185,12 +185,12 @@ func (s serverImpl) Send(ctx types.Context, req *ecocredit.MsgSendRequest) (*eco
 			return nil, err
 		}
 
-		tradable, err := math.ParseNonNegativeFixedDecimal(credit.TradableUnits, maxDecimalPlaces)
+		tradable, err := math.ParseNonNegativeFixedDecimal(credit.TradableAmount, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
 		}
 
-		retired, err := math.ParseNonNegativeFixedDecimal(credit.RetiredUnits, maxDecimalPlaces)
+		retired, err := math.ParseNonNegativeFixedDecimal(credit.RetiredAmount, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
 		}
@@ -235,7 +235,7 @@ func (s serverImpl) Send(ctx types.Context, req *ecocredit.MsgSendRequest) (*eco
 			Sender:     sender,
 			Recipient:  recipient,
 			BatchDenom: string(denom),
-			Units:      math.DecimalString(&sum),
+			Amount:     math.DecimalString(&sum),
 		})
 		if err != nil {
 			return nil, err
@@ -259,7 +259,7 @@ func (s serverImpl) Retire(ctx types.Context, req *ecocredit.MsgRetireRequest) (
 			return nil, err
 		}
 
-		toRetire, err := math.ParsePositiveFixedDecimal(credit.Units, maxDecimalPlaces)
+		toRetire, err := math.ParsePositiveFixedDecimal(credit.Amount, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
 		}
@@ -299,7 +299,7 @@ func (s serverImpl) Cancel(ctx types.Context, req *ecocredit.MsgCancelRequest) (
 			return nil, err
 		}
 
-		toCancel, err := math.ParsePositiveFixedDecimal(credit.Units, maxDecimalPlaces)
+		toCancel, err := math.ParsePositiveFixedDecimal(credit.Amount, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
 		}
@@ -312,7 +312,7 @@ func (s serverImpl) Cancel(ctx types.Context, req *ecocredit.MsgCancelRequest) (
 		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCancel{
 			Canceller:  holder,
 			BatchDenom: string(denom),
-			Units:      math.DecimalString(toCancel),
+			Amount:     math.DecimalString(toCancel),
 		})
 		if err != nil {
 			return nil, err
@@ -374,7 +374,7 @@ func retire(ctx types.Context, store sdk.KVStore, recipient string, batchDenom b
 	return ctx.EventManager().EmitTypedEvent(&ecocredit.EventRetire{
 		Retirer:    recipient,
 		BatchDenom: string(batchDenom),
-		Units:      math.DecimalString(retired),
+		Amount:     math.DecimalString(retired),
 	})
 }
 

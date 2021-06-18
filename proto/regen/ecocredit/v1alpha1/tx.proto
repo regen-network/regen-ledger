@@ -97,16 +97,16 @@ message MsgCreateBatchRequest {
     // recipient is the account of the recipient.
     string recipient = 1;
 
-    // tradable_units are the units of credits in this issuance that can be
+    // tradable_amount is the number of credits in this issuance that can be
     // traded by this recipient. Decimal values are acceptable.
-    string tradable_units = 2
-        [ (gogoproto.moretags) = "yaml:\"tradable_units\"" ];
+    string tradable_amount = 2
+        [ (gogoproto.moretags) = "yaml:\"tradable_amount\"" ];
 
-    // retired_units are the units of credits in this issuance that are
+    // retired_amount is the number of credits in this issuance that are
     // effectively retired by the issuer on receipt. Decimal values are
     // acceptable.
-    string retired_units = 3
-        [ (gogoproto.moretags) = "yaml:\"retired_units\"" ];
+    string retired_amount = 3
+        [ (gogoproto.moretags) = "yaml:\"retired_amount\"" ];
   }
 }
 
@@ -127,25 +127,27 @@ message MsgSendRequest {
   string recipient = 2;
 
   // credits are the credits being sent.
-  repeated SendUnits credits = 3;
+  repeated SendCredits credits = 3;
 
-  // SendUnits are the tradable and retired units of a credit batch to send.
-  message SendUnits {
+  // SendCredits specifies a batch and the number of credits being transferred.
+  // This is split into tradable credits, which will remain tradable on receipt,
+  // and retired credits, which will be retired on receipt.
+  message SendCredits {
 
     // batch_denom is the unique ID of the credit batch.
     string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
 
-    // tradable_units are the units of credits in this issuance that can be
-    // traded by this recipient. Decimal values are acceptable within the
+    // tradable_amount is the number of credits in this transfer that can be
+    // traded by the recipient. Decimal values are acceptable within the
     // precision returned by Query/Precision.
-    string tradable_units = 2
-        [ (gogoproto.moretags) = "yaml:\"tradable_units\"" ];
+    string tradable_amount = 2
+        [ (gogoproto.moretags) = "yaml:\"tradable_amount\"" ];
 
-    // retired_units are the units of credits in this issuance that are
+    // retired_amount is the number of credits in this transfer that are
     // effectively retired by the issuer on receipt. Decimal values are
     // acceptable within the precision returned by Query/Precision.
-    string retired_units = 3
-        [ (gogoproto.moretags) = "yaml:\"retired_units\"" ];
+    string retired_amount = 3
+        [ (gogoproto.moretags) = "yaml:\"retired_amount\"" ];
   }
 }
 
@@ -159,18 +161,18 @@ message MsgRetireRequest {
   string holder = 1;
 
   // credits are the credits being retired.
-  repeated RetireUnits credits = 2;
+  repeated RetireCredits credits = 2;
 
-  // RetireUnits are the units of the batch being retired.
-  message RetireUnits {
+  // RetireCredits specifies a batch and the number of credits being retired.
+  message RetireCredits {
 
     // batch_denom is the unique ID of the credit batch.
     string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
 
-    // retired_units are the units of credits being retired.
+    // amount is the number of credits being retired.
     // Decimal values are acceptable within the precision returned by
     // Query/Precision.
-    string units = 2;
+    string amount = 2;
   }
 }
 
@@ -184,18 +186,18 @@ message MsgCancelRequest {
   string holder = 1;
 
   // credits are the credits being cancelled.
-  repeated CancelUnits credits = 2;
+  repeated CancelCredits credits = 2;
 
-  // CancelUnits are the units of the batch being cancelled.
-  message CancelUnits {
+  // CancelCredits specifies a batch and the number of credits being cancelled.
+  message CancelCredits {
 
     // batch_denom is the unique ID of the credit batch.
     string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
 
-    // units are the units of credits being cancelled.
+    // amount is the number of credits being cancelled.
     // Decimal values are acceptable within the precision returned by
     // Query/Precision.
-    string units = 2;
+    string amount = 2;
   }
 }
 
@@ -212,7 +214,7 @@ message MsgSetPrecisionRequest {
   string batch_denom = 2 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
 
   // max_decimal_places is the new maximum number of decimal places that can be
-  // used to represent some quantity of credit units. It is an experimental
+  // used to represent some quantity of credits. It is an experimental
   // feature to concretely explore an idea proposed in
   // https://github.com/cosmos/cosmos-sdk/issues/7113.
   uint32 max_decimal_places = 3

@@ -111,19 +111,19 @@ func (s *IntegrationTestSuite) TestScenario() {
 		ClassId: clsID,
 		Issuance: []*ecocredit.MsgCreateBatchRequest_BatchIssuance{
 			{
-				Recipient:     addr1,
-				TradableUnits: t0,
-				RetiredUnits:  r0,
+				Recipient:      addr1,
+				TradableAmount: t0,
+				RetiredAmount:  r0,
 			},
 			{
-				Recipient:     addr2,
-				TradableUnits: t1,
-				RetiredUnits:  r1,
+				Recipient:      addr2,
+				TradableAmount: t1,
+				RetiredAmount:  r1,
 			},
 			{
-				Recipient:     addr4,
-				TradableUnits: t2,
-				RetiredUnits:  r2,
+				Recipient:      addr4,
+				TradableAmount: t2,
+				RetiredAmount:  r2,
 			},
 		},
 	})
@@ -140,8 +140,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(queryBalanceRes)
-	s.Require().Equal(t0, queryBalanceRes.TradableUnits)
-	s.Require().Equal(r0, queryBalanceRes.RetiredUnits)
+	s.Require().Equal(t0, queryBalanceRes.TradableAmount)
+	s.Require().Equal(r0, queryBalanceRes.RetiredAmount)
 
 	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
 		Account:    addr2,
@@ -149,8 +149,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(queryBalanceRes)
-	s.Require().Equal(t1, queryBalanceRes.TradableUnits)
-	s.Require().Equal(r1, queryBalanceRes.RetiredUnits)
+	s.Require().Equal(t1, queryBalanceRes.TradableAmount)
+	s.Require().Equal(r1, queryBalanceRes.RetiredAmount)
 
 	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
 		Account:    addr4,
@@ -158,8 +158,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(queryBalanceRes)
-	s.Require().Equal(t2, queryBalanceRes.TradableUnits)
-	s.Require().Equal(r2, queryBalanceRes.RetiredUnits)
+	s.Require().Equal(t2, queryBalanceRes.TradableAmount)
+	s.Require().Equal(r2, queryBalanceRes.RetiredAmount)
 
 	// query supply
 	querySupplyRes, err := s.queryClient.Supply(s.ctx, &ecocredit.QuerySupplyRequest{BatchDenom: batchDenom})
@@ -235,10 +235,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 		s.Run(tc.name, func() {
 			_, err := s.msgClient.Cancel(s.ctx, &ecocredit.MsgCancelRequest{
 				Holder: tc.holder,
-				Credits: []*ecocredit.MsgCancelRequest_CancelUnits{
+				Credits: []*ecocredit.MsgCancelRequest_CancelCredits{
 					{
 						BatchDenom: batchDenom,
-						Units:      tc.toCancel,
+						Amount:     tc.toCancel,
 					},
 				},
 			})
@@ -255,8 +255,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 				})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBalanceRes)
-				s.Require().Equal(tc.expTradeable, queryBalanceRes.TradableUnits)
-				s.Require().Equal(tc.expRetired, queryBalanceRes.RetiredUnits)
+				s.Require().Equal(tc.expTradeable, queryBalanceRes.TradableAmount)
+				s.Require().Equal(tc.expRetired, queryBalanceRes.RetiredAmount)
 
 				// query supply
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &ecocredit.QuerySupplyRequest{BatchDenom: batchDenom})
@@ -327,10 +327,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 		s.Run(tc.name, func() {
 			_, err := s.msgClient.Retire(s.ctx, &ecocredit.MsgRetireRequest{
 				Holder: addr1,
-				Credits: []*ecocredit.MsgRetireRequest_RetireUnits{
+				Credits: []*ecocredit.MsgRetireRequest_RetireCredits{
 					{
 						BatchDenom: batchDenom,
-						Units:      tc.toRetire,
+						Amount:     tc.toRetire,
 					},
 				},
 			})
@@ -347,8 +347,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 				})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBalanceRes)
-				s.Require().Equal(tc.expTradeable, queryBalanceRes.TradableUnits)
-				s.Require().Equal(tc.expRetired, queryBalanceRes.RetiredUnits)
+				s.Require().Equal(tc.expTradeable, queryBalanceRes.TradableAmount)
+				s.Require().Equal(tc.expRetired, queryBalanceRes.RetiredAmount)
 
 				// query supply
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &ecocredit.QuerySupplyRequest{BatchDenom: batchDenom})
@@ -422,11 +422,11 @@ func (s *IntegrationTestSuite) TestScenario() {
 			_, err := s.msgClient.Send(s.ctx, &ecocredit.MsgSendRequest{
 				Sender:    addr2,
 				Recipient: addr3,
-				Credits: []*ecocredit.MsgSendRequest_SendUnits{
+				Credits: []*ecocredit.MsgSendRequest_SendCredits{
 					{
-						BatchDenom:    batchDenom,
-						TradableUnits: tc.sendTradeable,
-						RetiredUnits:  tc.sendRetired,
+						BatchDenom:     batchDenom,
+						TradableAmount: tc.sendTradeable,
+						RetiredAmount:  tc.sendRetired,
 					},
 				},
 			})
@@ -443,8 +443,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 				})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBalanceRes)
-				s.Require().Equal(tc.expTradeableSender, queryBalanceRes.TradableUnits)
-				s.Require().Equal(tc.expRetiredSender, queryBalanceRes.RetiredUnits)
+				s.Require().Equal(tc.expTradeableSender, queryBalanceRes.TradableAmount)
+				s.Require().Equal(tc.expRetiredSender, queryBalanceRes.RetiredAmount)
 
 				// query recipient balance
 				queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
@@ -453,8 +453,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 				})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBalanceRes)
-				s.Require().Equal(tc.expTradeableRecipient, queryBalanceRes.TradableUnits)
-				s.Require().Equal(tc.expRetiredRecipient, queryBalanceRes.RetiredUnits)
+				s.Require().Equal(tc.expTradeableRecipient, queryBalanceRes.TradableAmount)
+				s.Require().Equal(tc.expRetiredRecipient, queryBalanceRes.RetiredAmount)
 
 				// query supply
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &ecocredit.QuerySupplyRequest{BatchDenom: batchDenom})

@@ -33,7 +33,7 @@
   
 - [regen/ecocredit/v1alpha1/tx.proto](#regen/ecocredit/v1alpha1/tx.proto)
     - [MsgCancelRequest](#regen.ecocredit.v1alpha1.MsgCancelRequest)
-    - [MsgCancelRequest.CancelUnits](#regen.ecocredit.v1alpha1.MsgCancelRequest.CancelUnits)
+    - [MsgCancelRequest.CancelCredits](#regen.ecocredit.v1alpha1.MsgCancelRequest.CancelCredits)
     - [MsgCancelResponse](#regen.ecocredit.v1alpha1.MsgCancelResponse)
     - [MsgCreateBatchRequest](#regen.ecocredit.v1alpha1.MsgCreateBatchRequest)
     - [MsgCreateBatchRequest.BatchIssuance](#regen.ecocredit.v1alpha1.MsgCreateBatchRequest.BatchIssuance)
@@ -41,10 +41,10 @@
     - [MsgCreateClassRequest](#regen.ecocredit.v1alpha1.MsgCreateClassRequest)
     - [MsgCreateClassResponse](#regen.ecocredit.v1alpha1.MsgCreateClassResponse)
     - [MsgRetireRequest](#regen.ecocredit.v1alpha1.MsgRetireRequest)
-    - [MsgRetireRequest.RetireUnits](#regen.ecocredit.v1alpha1.MsgRetireRequest.RetireUnits)
+    - [MsgRetireRequest.RetireCredits](#regen.ecocredit.v1alpha1.MsgRetireRequest.RetireCredits)
     - [MsgRetireResponse](#regen.ecocredit.v1alpha1.MsgRetireResponse)
     - [MsgSendRequest](#regen.ecocredit.v1alpha1.MsgSendRequest)
-    - [MsgSendRequest.SendUnits](#regen.ecocredit.v1alpha1.MsgSendRequest.SendUnits)
+    - [MsgSendRequest.SendCredits](#regen.ecocredit.v1alpha1.MsgSendRequest.SendCredits)
     - [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse)
     - [MsgSetPrecisionRequest](#regen.ecocredit.v1alpha1.MsgSetPrecisionRequest)
     - [MsgSetPrecisionResponse](#regen.ecocredit.v1alpha1.MsgSetPrecisionResponse)
@@ -74,7 +74,7 @@ emitted for each batch_denom. This allows for easier indexing.
 | ----- | ---- | ----- | ----------- |
 | canceller | [string](#string) |  | canceller is the account which has cancelled the credits, which should be the holder of the credits. |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
-| units | [string](#string) |  | units is the decimal number of credits that have been retired. |
+| amount | [string](#string) |  | amount is the decimal number of credits that have been cancelled. |
 
 
 
@@ -92,7 +92,7 @@ EventCreateBatch is an event emitted when a credit batch is created.
 | class_id | [string](#string) |  | class_id is the unique ID of credit class. |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
 | issuer | [string](#string) |  | issuer is the account address of the issuer of the credit batch. |
-| total_units | [string](#string) |  | total_units is the total number of units in the credit batch. |
+| total_amount | [string](#string) |  | total_amount is the total number of credits in the credit batch. |
 
 
 
@@ -128,7 +128,7 @@ transferred will result in a separate EventReceive for easy indexing.
 | sender | [string](#string) |  | sender is the sender of the credits in the case that this event is the result of a transfer. It will not be set when credits are received at initial issuance. |
 | recipient | [string](#string) |  | recipient is the recipient of the credits |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
-| units | [string](#string) |  | units is the decimal number of both tradable and retired credits received. |
+| amount | [string](#string) |  | amonut is the decimal number of both tradable and retired credits received. |
 
 
 
@@ -147,7 +147,7 @@ emitted for each batch_denom. This allows for easier indexing.
 | ----- | ---- | ----- | ----------- |
 | retirer | [string](#string) |  | retirer is the account which has done the "retiring". This will be the account receiving credits in the case that credits were retired upon issuance using Msg/CreateBatch or retired upon transfer using Msg/Send. |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
-| units | [string](#string) |  | units is the decimal number of credits that have been retired. |
+| amount | [string](#string) |  | amount is the decimal number of credits that have been retired. |
 
 
 
@@ -181,7 +181,7 @@ BatchInfo represents the high-level on-chain information for a credit batch.
 | class_id | [string](#string) |  | class_id is the unique ID of credit class. |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
 | issuer | [string](#string) |  | issuer is the issuer of the credit batch. |
-| total_units | [string](#string) |  | total_units is the total number of units in the credit batch and is immutable. |
+| total_amount | [string](#string) |  | total_amount is the total number of credits in the credit batch and is immutable. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit batch. |
 
 
@@ -278,8 +278,8 @@ QueryBalanceResponse is the Query/Balance response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| tradable_units | [string](#string) |  | tradable_units is the decimal number of tradable units. |
-| retired_units | [string](#string) |  | retired_units is the decimal number of retired units. |
+| tradable_amount | [string](#string) |  | tradable_amount is the decimal number of tradable credits. |
+| retired_amount | [string](#string) |  | retired_amount is the decimal number of retired credits. |
 
 
 
@@ -369,7 +369,7 @@ QueryPrecisionResponse is the Query/Precision response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| max_decimal_places | [uint32](#uint32) |  | max_decimal_places is the maximum number of decimal places that can be used to represent some quantity of credit units. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. |
+| max_decimal_places | [uint32](#uint32) |  | max_decimal_places is the maximum number of decimal places that can be used to represent some quantity of credits. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. |
 
 
 
@@ -399,8 +399,8 @@ QuerySupplyResponse is the Query/Supply response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| tradable_supply | [string](#string) |  | tradable_units is the decimal number of tradable units in the batch supply. |
-| retired_supply | [string](#string) |  | retired_supply is the decimal number of retired units in the batch supply. |
+| tradable_supply | [string](#string) |  | tradable_supply is the decimal number of tradable credits in the batch supply. |
+| retired_supply | [string](#string) |  | retired_supply is the decimal number of retired credits in the batch supply. |
 
 
 
@@ -424,7 +424,7 @@ Msg is the regen.ecocredit.v1alpha1 Query service.
 | BatchInfo | [QueryBatchInfoRequest](#regen.ecocredit.v1alpha1.QueryBatchInfoRequest) | [QueryBatchInfoResponse](#regen.ecocredit.v1alpha1.QueryBatchInfoResponse) | BatchInfo queries for information on a credit batch. |
 | Balance | [QueryBalanceRequest](#regen.ecocredit.v1alpha1.QueryBalanceRequest) | [QueryBalanceResponse](#regen.ecocredit.v1alpha1.QueryBalanceResponse) | Balance queries the balance (both tradable and retired) of a given credit batch for a given account. |
 | Supply | [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest) | [QuerySupplyResponse](#regen.ecocredit.v1alpha1.QuerySupplyResponse) | Supply queries the tradable and retired supply of a credit batch. |
-| Precision | [QueryPrecisionRequest](#regen.ecocredit.v1alpha1.QueryPrecisionRequest) | [QueryPrecisionResponse](#regen.ecocredit.v1alpha1.QueryPrecisionResponse) | Precision queries the number of decimal places that can be used to represent credit batch units. See Tx/SetPrecision for more details. |
+| Precision | [QueryPrecisionRequest](#regen.ecocredit.v1alpha1.QueryPrecisionRequest) | [QueryPrecisionResponse](#regen.ecocredit.v1alpha1.QueryPrecisionResponse) | Precision queries the number of decimal places that can be used to represent credits in a batch. See Tx/SetPrecision for more details. |
 
  <!-- end services -->
 
@@ -446,23 +446,23 @@ MsgCancelRequest is the Msg/Cancel request type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | holder | [string](#string) |  | holder is the credit holder address. |
-| credits | [MsgCancelRequest.CancelUnits](#regen.ecocredit.v1alpha1.MsgCancelRequest.CancelUnits) | repeated | credits are the credits being cancelled. |
+| credits | [MsgCancelRequest.CancelCredits](#regen.ecocredit.v1alpha1.MsgCancelRequest.CancelCredits) | repeated | credits are the credits being cancelled. |
 
 
 
 
 
 
-<a name="regen.ecocredit.v1alpha1.MsgCancelRequest.CancelUnits"></a>
+<a name="regen.ecocredit.v1alpha1.MsgCancelRequest.CancelCredits"></a>
 
-### MsgCancelRequest.CancelUnits
-CancelUnits are the units of the batch being cancelled.
+### MsgCancelRequest.CancelCredits
+CancelCredits specifies a batch and the number of credits being cancelled.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
-| units | [string](#string) |  | units are the units of credits being cancelled. Decimal values are acceptable within the precision returned by Query/Precision. |
+| amount | [string](#string) |  | amount is the number of credits being cancelled. Decimal values are acceptable within the precision returned by Query/Precision. |
 
 
 
@@ -507,8 +507,8 @@ single recipient.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | recipient | [string](#string) |  | recipient is the account of the recipient. |
-| tradable_units | [string](#string) |  | tradable_units are the units of credits in this issuance that can be traded by this recipient. Decimal values are acceptable. |
-| retired_units | [string](#string) |  | retired_units are the units of credits in this issuance that are effectively retired by the issuer on receipt. Decimal values are acceptable. |
+| tradable_amount | [string](#string) |  | tradable_amount is the number of credits in this issuance that can be traded by this recipient. Decimal values are acceptable. |
+| retired_amount | [string](#string) |  | retired_amount is the number of credits in this issuance that are effectively retired by the issuer on receipt. Decimal values are acceptable. |
 
 
 
@@ -571,23 +571,23 @@ MsgRetireRequest is the Msg/Retire request type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | holder | [string](#string) |  | holder is the credit holder address. |
-| credits | [MsgRetireRequest.RetireUnits](#regen.ecocredit.v1alpha1.MsgRetireRequest.RetireUnits) | repeated | credits are the credits being retired. |
+| credits | [MsgRetireRequest.RetireCredits](#regen.ecocredit.v1alpha1.MsgRetireRequest.RetireCredits) | repeated | credits are the credits being retired. |
 
 
 
 
 
 
-<a name="regen.ecocredit.v1alpha1.MsgRetireRequest.RetireUnits"></a>
+<a name="regen.ecocredit.v1alpha1.MsgRetireRequest.RetireCredits"></a>
 
-### MsgRetireRequest.RetireUnits
-RetireUnits are the units of the batch being retired.
+### MsgRetireRequest.RetireCredits
+RetireCredits specifies a batch and the number of credits being retired.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
-| units | [string](#string) |  | retired_units are the units of credits being retired. Decimal values are acceptable within the precision returned by Query/Precision. |
+| amount | [string](#string) |  | amount is the number of credits being retired. Decimal values are acceptable within the precision returned by Query/Precision. |
 
 
 
@@ -614,24 +614,26 @@ MsgSendRequest is the Msg/Send request type.
 | ----- | ---- | ----- | ----------- |
 | sender | [string](#string) |  | sender is the address of the account sending credits. |
 | recipient | [string](#string) |  | sender is the address of the account receiving credits. |
-| credits | [MsgSendRequest.SendUnits](#regen.ecocredit.v1alpha1.MsgSendRequest.SendUnits) | repeated | credits are the credits being sent. |
+| credits | [MsgSendRequest.SendCredits](#regen.ecocredit.v1alpha1.MsgSendRequest.SendCredits) | repeated | credits are the credits being sent. |
 
 
 
 
 
 
-<a name="regen.ecocredit.v1alpha1.MsgSendRequest.SendUnits"></a>
+<a name="regen.ecocredit.v1alpha1.MsgSendRequest.SendCredits"></a>
 
-### MsgSendRequest.SendUnits
-SendUnits are the tradable and retired units of a credit batch to send.
+### MsgSendRequest.SendCredits
+SendCredits specifies a batch and the number of credits being transferred.
+This is split into tradable credits, which will remain tradable on receipt,
+and retired credits, which will be retired on receipt.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
-| tradable_units | [string](#string) |  | tradable_units are the units of credits in this issuance that can be traded by this recipient. Decimal values are acceptable within the precision returned by Query/Precision. |
-| retired_units | [string](#string) |  | retired_units are the units of credits in this issuance that are effectively retired by the issuer on receipt. Decimal values are acceptable within the precision returned by Query/Precision. |
+| tradable_amount | [string](#string) |  | tradable_amount is the number of credits in this transfer that can be traded by the recipient. Decimal values are acceptable within the precision returned by Query/Precision. |
+| retired_amount | [string](#string) |  | retired_amount is the number of credits in this transfer that are effectively retired by the issuer on receipt. Decimal values are acceptable within the precision returned by Query/Precision. |
 
 
 
@@ -658,7 +660,7 @@ MsgRetireRequest is the Msg/SetPrecision request type.
 | ----- | ---- | ----- | ----------- |
 | issuer | [string](#string) |  | issuer is the address of the batch issuer. |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
-| max_decimal_places | [uint32](#uint32) |  | max_decimal_places is the new maximum number of decimal places that can be used to represent some quantity of credit units. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. |
+| max_decimal_places | [uint32](#uint32) |  | max_decimal_places is the new maximum number of decimal places that can be used to represent some quantity of credits. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. |
 
 
 
