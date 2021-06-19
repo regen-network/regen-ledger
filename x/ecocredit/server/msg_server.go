@@ -92,6 +92,10 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 		}
 
 		recipient := issuance.Recipient
+		recipientAddr, err := sdk.AccAddressFromBech32(recipient)
+		if err != nil {
+			return nil, err
+		}
 
 		if !tradable.IsZero() {
 			err = math.Add(tradableSupply, tradableSupply, tradable)
@@ -99,7 +103,7 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 				return nil, err
 			}
 
-			err := getAddAndSetDecimal(store, TradableBalanceKey(recipient, batchDenom), tradable)
+			err = getAddAndSetDecimal(store, TradableBalanceKey(recipientAddr, batchDenom), tradable)
 			if err != nil {
 				return nil, err
 			}
@@ -111,7 +115,7 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 				return nil, err
 			}
 
-			err = retire(ctx, store, recipient, batchDenom, retired)
+			err = retire(ctx, store, recipientAddr, batchDenom, retired)
 			if err != nil {
 				return nil, err
 			}
@@ -201,8 +205,13 @@ func (s serverImpl) Send(ctx types.Context, req *ecocredit.MsgSendRequest) (*eco
 			return nil, err
 		}
 
+		senderAddr, err := sdk.AccAddressFromBech32(sender)
+		if err != nil {
+			return nil, err
+		}
+
 		// subtract balance
-		err = getSubAndSetDecimal(store, TradableBalanceKey(sender, denom), &sum)
+		err = getSubAndSetDecimal(store, TradableBalanceKey(senderAddr, denom), &sum)
 		if err != nil {
 			return nil, err
 		}
@@ -213,14 +222,19 @@ func (s serverImpl) Send(ctx types.Context, req *ecocredit.MsgSendRequest) (*eco
 			return nil, err
 		}
 
+		recipientAddr, err := sdk.AccAddressFromBech32(recipient)
+		if err != nil {
+			return nil, err
+		}
+
 		// Add tradable balance
-		err = getAddAndSetDecimal(store, TradableBalanceKey(recipient, denom), tradable)
+		err = getAddAndSetDecimal(store, TradableBalanceKey(recipientAddr, denom), tradable)
 		if err != nil {
 			return nil, err
 		}
 
 		// Add retired balance
-		err = retire(ctx, store, recipient, denom, retired)
+		err = retire(ctx, store, recipientAddr, denom, retired)
 		if err != nil {
 			return nil, err
 		}
@@ -264,8 +278,13 @@ func (s serverImpl) Retire(ctx types.Context, req *ecocredit.MsgRetireRequest) (
 			return nil, err
 		}
 
+		holderAddr, err := sdk.AccAddressFromBech32(holder)
+		if err != nil {
+			return nil, err
+		}
+
 		// subtract tradable balance
-		err = getSubAndSetDecimal(store, TradableBalanceKey(holder, denom), toRetire)
+		err = getSubAndSetDecimal(store, TradableBalanceKey(holderAddr, denom), toRetire)
 		if err != nil {
 			return nil, err
 		}
@@ -277,7 +296,7 @@ func (s serverImpl) Retire(ctx types.Context, req *ecocredit.MsgRetireRequest) (
 		}
 
 		//  Add retired balance
-		err = retire(ctx, store, holder, denom, toRetire)
+		err = retire(ctx, store, holderAddr, denom, toRetire)
 		if err != nil {
 			return nil, err
 		}
@@ -335,14 +354,14 @@ func (s serverImpl) assertClassIssuer(ctx types.Context, classID, issuer string)
 	return sdkerrors.ErrUnauthorized
 }
 
-func retire(ctx types.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired *apd.Decimal) error {
+func retire(ctx types.Context, store sdk.KVStore, recipient sdk.AccAddress, batchDenom batchDenomT, retired *apd.Decimal) error {
 	err := getAddAndSetDecimal(store, RetiredBalanceKey(recipient, batchDenom), retired)
 	if err != nil {
 		return err
 	}
 
 	return ctx.EventManager().EmitTypedEvent(&ecocredit.EventRetire{
-		Retirer:    recipient,
+		Retirer:    recipient.String(),
 		BatchDenom: string(batchDenom),
 		Units:      math.DecimalString(retired),
 	})

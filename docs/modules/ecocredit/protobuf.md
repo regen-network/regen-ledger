@@ -254,7 +254,7 @@ GenesisState defines ecocredit module's genesis state.
 | retried_balances | [Balance](#regen.ecocredit.v1alpha1.Balance) | repeated | retried_balances represents list of balance. |
 | tradable_supplies | [Supply](#regen.ecocredit.v1alpha1.Supply) | repeated | tradable_supplies represents list of supply. |
 | retried_supplies | [Supply](#regen.ecocredit.v1alpha1.Supply) | repeated | retried_supplies represents list of supply |
-| precions | [Precision](#regen.ecocredit.v1alpha1.Precision) | repeated | precisions represents list of Precision. |
+| precisions | [Precision](#regen.ecocredit.v1alpha1.Precision) | repeated | precisions represents list of Precision. |
 
 
 
