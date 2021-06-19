@@ -34,6 +34,16 @@ type GenesisState struct {
 	BatchInfos []*BatchInfo `protobuf:"bytes,3,rep,name=batch_infos,json=batchInfos,proto3" json:"batch_infos,omitempty"`
 	// id_seq is used to get next class/batch id.
 	IdSeq uint64 `protobuf:"varint,4,opt,name=id_seq,json=idSeq,proto3" json:"id_seq,omitempty"`
+	// tradable_balances represents list of tradable balance
+	TradableBalances []*Balance `protobuf:"bytes,5,rep,name=tradable_balances,json=tradableBalances,proto3" json:"tradable_balances,omitempty"`
+	// retried_balances represents list of balance.
+	RetriedBalances []*Balance `protobuf:"bytes,6,rep,name=retried_balances,json=retriedBalances,proto3" json:"retried_balances,omitempty"`
+	// tradable_supplies represents list of supply.
+	TradableSupplies []*Supply `protobuf:"bytes,7,rep,name=tradable_supplies,json=tradableSupplies,proto3" json:"tradable_supplies,omitempty"`
+	// retried_supplies represents list of supply
+	RetriedSupplies []*Supply `protobuf:"bytes,8,rep,name=retried_supplies,json=retriedSupplies,proto3" json:"retried_supplies,omitempty"`
+	// precisions represents list of Precision.
+	Precions []*Precision `protobuf:"bytes,9,rep,name=precions,proto3" json:"precions,omitempty"`
 }
 
 func (m *GenesisState) Reset()         { *m = GenesisState{} }
@@ -97,8 +107,224 @@ func (m *GenesisState) GetIdSeq() uint64 {
 	return 0
 }
 
+func (m *GenesisState) GetTradableBalances() []*Balance {
+	if m != nil {
+		return m.TradableBalances
+	}
+	return nil
+}
+
+func (m *GenesisState) GetRetriedBalances() []*Balance {
+	if m != nil {
+		return m.RetriedBalances
+	}
+	return nil
+}
+
+func (m *GenesisState) GetTradableSupplies() []*Supply {
+	if m != nil {
+		return m.TradableSupplies
+	}
+	return nil
+}
+
+func (m *GenesisState) GetRetriedSupplies() []*Supply {
+	if m != nil {
+		return m.RetriedSupplies
+	}
+	return nil
+}
+
+func (m *GenesisState) GetPrecions() []*Precision {
+	if m != nil {
+		return m.Precions
+	}
+	return nil
+}
+
+// Precision defines decimal precision of a credit
+// batch.
+type Precision struct {
+	// batch_denom is the unique ID of the credit batch.
+	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	// max_decimal_places is the new maximum number of decimal places that can be
+	// used to represent some quantity of credit units. It is an experimental
+	// feature to concretely explore an idea proposed in
+	// https://github.com/cosmos/cosmos-sdk/issues/7113.
+	MaxDecimalPlaces uint32 `protobuf:"varint,3,opt,name=max_decimal_places,json=maxDecimalPlaces,proto3" json:"max_decimal_places,omitempty"`
+}
+
+func (m *Precision) Reset()         { *m = Precision{} }
+func (m *Precision) String() string { return proto.CompactTextString(m) }
+func (*Precision) ProtoMessage()    {}
+func (*Precision) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2f9cb84fe1853321, []int{1}
+}
+func (m *Precision) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Precision) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Precision.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Precision) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Precision.Merge(m, src)
+}
+func (m *Precision) XXX_Size() int {
+	return m.Size()
+}
+func (m *Precision) XXX_DiscardUnknown() {
+	xxx_messageInfo_Precision.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Precision proto.InternalMessageInfo
+
+func (m *Precision) GetBatchDenom() string {
+	if m != nil {
+		return m.BatchDenom
+	}
+	return ""
+}
+
+func (m *Precision) GetMaxDecimalPlaces() uint32 {
+	if m != nil {
+		return m.MaxDecimalPlaces
+	}
+	return 0
+}
+
+// Balance defines credit batch tradable/retired balance.
+type Balance struct {
+	// reciepient is the address of the account receiving credits.
+	Reciepient string `protobuf:"bytes,1,opt,name=reciepient,proto3" json:"reciepient,omitempty"`
+	// batch_denom is the unique ID of the credit batch.
+	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	// balance is the retired balance of the credit batch.
+	Balance string `protobuf:"bytes,3,opt,name=balance,proto3" json:"balance,omitempty"`
+}
+
+func (m *Balance) Reset()         { *m = Balance{} }
+func (m *Balance) String() string { return proto.CompactTextString(m) }
+func (*Balance) ProtoMessage()    {}
+func (*Balance) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2f9cb84fe1853321, []int{2}
+}
+func (m *Balance) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Balance) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Balance.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Balance) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Balance.Merge(m, src)
+}
+func (m *Balance) XXX_Size() int {
+	return m.Size()
+}
+func (m *Balance) XXX_DiscardUnknown() {
+	xxx_messageInfo_Balance.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Balance proto.InternalMessageInfo
+
+func (m *Balance) GetReciepient() string {
+	if m != nil {
+		return m.Reciepient
+	}
+	return ""
+}
+
+func (m *Balance) GetBatchDenom() string {
+	if m != nil {
+		return m.BatchDenom
+	}
+	return ""
+}
+
+func (m *Balance) GetBalance() string {
+	if m != nil {
+		return m.Balance
+	}
+	return ""
+}
+
+// Supply defines credit batch tradable/retired supply.
+type Supply struct {
+	// batch_denom is the unique ID of the credit batch.
+	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	// supply is the tradable supply of the credit batch.
+	Supply string `protobuf:"bytes,2,opt,name=supply,proto3" json:"supply,omitempty"`
+}
+
+func (m *Supply) Reset()         { *m = Supply{} }
+func (m *Supply) String() string { return proto.CompactTextString(m) }
+func (*Supply) ProtoMessage()    {}
+func (*Supply) Descriptor() ([]byte, []int) {
+	return fileDescriptor_2f9cb84fe1853321, []int{3}
+}
+func (m *Supply) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Supply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Supply.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Supply) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Supply.Merge(m, src)
+}
+func (m *Supply) XXX_Size() int {
+	return m.Size()
+}
+func (m *Supply) XXX_DiscardUnknown() {
+	xxx_messageInfo_Supply.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Supply proto.InternalMessageInfo
+
+func (m *Supply) GetBatchDenom() string {
+	if m != nil {
+		return m.BatchDenom
+	}
+	return ""
+}
+
+func (m *Supply) GetSupply() string {
+	if m != nil {
+		return m.Supply
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*GenesisState)(nil), "regen.ecocredit.v1alpha1.GenesisState")
+	proto.RegisterType((*Precision)(nil), "regen.ecocredit.v1alpha1.Precision")
+	proto.RegisterType((*Balance)(nil), "regen.ecocredit.v1alpha1.Balance")
+	proto.RegisterType((*Supply)(nil), "regen.ecocredit.v1alpha1.Supply")
 }
 
 func init() {
@@ -106,26 +332,39 @@ func init() {
 }
 
 var fileDescriptor_2f9cb84fe1853321 = []byte{
-	// 294 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x2b, 0x4a, 0x4d, 0x4f,
-	0xcd, 0xd3, 0x4f, 0x4d, 0xce, 0x4f, 0x2e, 0x4a, 0x4d, 0xc9, 0x2c, 0xd1, 0x2f, 0x33, 0x4c, 0xcc,
-	0x29, 0xc8, 0x48, 0x34, 0xd4, 0x4f, 0x4f, 0xcd, 0x4b, 0x2d, 0xce, 0x2c, 0xd6, 0x2b, 0x28, 0xca,
-	0x2f, 0xc9, 0x17, 0x92, 0x00, 0xab, 0xd3, 0x83, 0xab, 0xd3, 0x83, 0xa9, 0x93, 0x52, 0xc1, 0x69,
-	0x42, 0x49, 0x65, 0x41, 0x2a, 0x54, 0xbf, 0x94, 0x48, 0x7a, 0x7e, 0x7a, 0x3e, 0x98, 0xa9, 0x0f,
-	0x62, 0x41, 0x44, 0x95, 0x3e, 0x32, 0x72, 0xf1, 0xb8, 0x43, 0xec, 0x09, 0x2e, 0x49, 0x2c, 0x49,
-	0x15, 0xb2, 0xe3, 0x62, 0x2b, 0x48, 0x2c, 0x4a, 0xcc, 0x2d, 0x96, 0x60, 0x54, 0x60, 0xd4, 0xe0,
-	0x36, 0x52, 0xd0, 0xc3, 0x65, 0xaf, 0x5e, 0x00, 0x58, 0x9d, 0x13, 0xcb, 0x89, 0x7b, 0xf2, 0x0c,
-	0x41, 0x50, 0x5d, 0x42, 0x2e, 0x5c, 0xdc, 0xc9, 0x39, 0x89, 0xc5, 0xc5, 0xf1, 0x99, 0x79, 0x69,
-	0xf9, 0xc5, 0x12, 0x4c, 0x0a, 0xcc, 0x1a, 0xdc, 0x46, 0xca, 0xb8, 0x0d, 0x71, 0x06, 0x29, 0xf6,
-	0xcc, 0x4b, 0xcb, 0x0f, 0xe2, 0x4a, 0x86, 0x31, 0xc1, 0xa6, 0x24, 0x25, 0x96, 0x24, 0x67, 0x40,
-	0x4d, 0x61, 0x26, 0x64, 0x8a, 0x13, 0x48, 0x31, 0xc4, 0x94, 0x24, 0x18, 0xb3, 0x58, 0x48, 0x94,
-	0x8b, 0x2d, 0x33, 0x25, 0xbe, 0x38, 0xb5, 0x50, 0x82, 0x45, 0x81, 0x51, 0x83, 0x25, 0x88, 0x35,
-	0x33, 0x25, 0x38, 0xb5, 0xd0, 0xc9, 0xfb, 0xc4, 0x23, 0x39, 0xc6, 0x0b, 0x8f, 0xe4, 0x18, 0x1f,
-	0x3c, 0x92, 0x63, 0x9c, 0xf0, 0x58, 0x8e, 0xe1, 0xc2, 0x63, 0x39, 0x86, 0x1b, 0x8f, 0xe5, 0x18,
-	0xa2, 0x0c, 0xd3, 0x33, 0x4b, 0x32, 0x4a, 0x93, 0xf4, 0x92, 0xf3, 0x73, 0xf5, 0xc1, 0x76, 0xe9,
-	0xe6, 0xa5, 0x96, 0x94, 0xe7, 0x17, 0x65, 0x43, 0x79, 0x39, 0xa9, 0x29, 0xe9, 0xa9, 0x45, 0xfa,
-	0x15, 0x88, 0xb0, 0x4e, 0x62, 0x03, 0x87, 0xa3, 0x31, 0x20, 0x00, 0x00, 0xff, 0xff, 0xd2, 0x49,
-	0x52, 0x61, 0xc7, 0x01, 0x00, 0x00,
+	// 510 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x93, 0xc1, 0x6e, 0xd3, 0x40,
+	0x10, 0x86, 0xe3, 0x36, 0x75, 0x9a, 0x0d, 0x88, 0xb0, 0x02, 0x64, 0xf5, 0xe0, 0x9a, 0x80, 0x50,
+	0x0e, 0x60, 0x2b, 0xe5, 0x0e, 0x22, 0x44, 0x42, 0xa8, 0x80, 0x22, 0xe7, 0xd6, 0x4b, 0xb4, 0xb6,
+	0xa7, 0xce, 0x0a, 0x7b, 0xd7, 0xdd, 0xdd, 0x42, 0xf2, 0x16, 0x3c, 0x56, 0x8f, 0x3d, 0x72, 0x42,
+	0x28, 0xb9, 0xf2, 0x10, 0xc8, 0x9b, 0xb5, 0x53, 0x81, 0xd2, 0xf4, 0x36, 0x33, 0xfe, 0xe7, 0xfb,
+	0x47, 0x33, 0x5e, 0xf4, 0x42, 0x40, 0x0a, 0x2c, 0x80, 0x98, 0xc7, 0x02, 0x12, 0xaa, 0x82, 0x6f,
+	0x03, 0x92, 0x15, 0x33, 0x32, 0x08, 0x52, 0x60, 0x20, 0xa9, 0xf4, 0x0b, 0xc1, 0x15, 0xc7, 0x8e,
+	0xd6, 0xf9, 0xb5, 0xce, 0xaf, 0x74, 0x47, 0xcf, 0xb7, 0x12, 0xd4, 0xa2, 0x00, 0xd3, 0x7f, 0xf4,
+	0x28, 0xe5, 0x29, 0xd7, 0x61, 0x50, 0x46, 0xeb, 0x6a, 0xef, 0x4f, 0x13, 0xdd, 0xfb, 0xb0, 0xf6,
+	0x99, 0x28, 0xa2, 0x00, 0xbf, 0x41, 0x76, 0x41, 0x04, 0xc9, 0xa5, 0x63, 0x79, 0x56, 0xbf, 0x73,
+	0xe2, 0xf9, 0xdb, 0x7c, 0xfd, 0xb1, 0xd6, 0x0d, 0x9b, 0x57, 0xbf, 0x8e, 0x1b, 0xa1, 0xe9, 0xc2,
+	0x23, 0xd4, 0x89, 0x33, 0x22, 0xe5, 0x94, 0xb2, 0x73, 0x2e, 0x9d, 0x3d, 0x6f, 0xbf, 0xdf, 0x39,
+	0x79, 0xb6, 0x1d, 0xf2, 0xbe, 0x14, 0x7f, 0x64, 0xe7, 0x3c, 0x44, 0x71, 0x15, 0x6a, 0x4a, 0x44,
+	0x54, 0x3c, 0x33, 0x94, 0xfd, 0x5d, 0x94, 0x61, 0x29, 0x5e, 0x53, 0xa2, 0x2a, 0x94, 0xf8, 0x31,
+	0xb2, 0x69, 0x32, 0x95, 0x70, 0xe1, 0x34, 0x3d, 0xab, 0xdf, 0x0c, 0x0f, 0x68, 0x32, 0x81, 0x0b,
+	0xfc, 0x05, 0x3d, 0x54, 0x82, 0x24, 0x24, 0xca, 0x60, 0x1a, 0x91, 0x8c, 0xb0, 0x18, 0xa4, 0x73,
+	0xa0, 0x2d, 0x9e, 0xde, 0x66, 0xa1, 0x95, 0x61, 0xb7, 0xea, 0x35, 0x05, 0x89, 0x3f, 0xa1, 0xae,
+	0x00, 0x25, 0x28, 0x24, 0x1b, 0x9c, 0x7d, 0x57, 0xdc, 0x03, 0xd3, 0x5a, 0xd3, 0x3e, 0xdf, 0x98,
+	0x4e, 0x5e, 0x16, 0x45, 0x46, 0x41, 0x3a, 0x2d, 0x8d, 0xbb, 0xe5, 0x16, 0x93, 0x52, 0xb9, 0xd8,
+	0x0c, 0x37, 0x31, 0x9d, 0xf8, 0x74, 0x33, 0x5c, 0x4d, 0x3b, 0xbc, 0x23, 0xad, 0x9a, 0xad, 0x86,
+	0xbd, 0x45, 0x87, 0x85, 0x80, 0x98, 0x72, 0x26, 0x9d, 0xf6, 0xae, 0x9b, 0x8c, 0x4b, 0xa5, 0xa4,
+	0x9c, 0x85, 0x75, 0x53, 0xef, 0x0c, 0xb5, 0xeb, 0x32, 0x3e, 0xae, 0x8e, 0x9c, 0x00, 0xe3, 0xb9,
+	0xb3, 0xe7, 0x59, 0xfd, 0xb6, 0xb9, 0xdf, 0xa8, 0xac, 0xe0, 0x97, 0x08, 0xe7, 0x64, 0x3e, 0x4d,
+	0x20, 0xa6, 0x39, 0xc9, 0xa6, 0x45, 0x46, 0xca, 0xd5, 0xee, 0x7b, 0x56, 0xff, 0x7e, 0xd8, 0xcd,
+	0xc9, 0x7c, 0xb4, 0xfe, 0x30, 0xd6, 0xf5, 0x5e, 0x82, 0x5a, 0x66, 0x89, 0xd8, 0x45, 0xa8, 0x74,
+	0x81, 0x82, 0x02, 0x53, 0xfa, 0x47, 0x6e, 0x87, 0x37, 0x2a, 0xbb, 0x9d, 0x1d, 0xd4, 0x32, 0xa7,
+	0xd4, 0x76, 0xed, 0xb0, 0x4a, 0x7b, 0xef, 0x90, 0xbd, 0xde, 0xce, 0xbf, 0x10, 0xeb, 0x3f, 0xc8,
+	0x13, 0x64, 0xeb, 0x95, 0x2f, 0x8c, 0x81, 0xc9, 0x86, 0xa7, 0x57, 0x4b, 0xd7, 0xba, 0x5e, 0xba,
+	0xd6, 0xef, 0xa5, 0x6b, 0xfd, 0x58, 0xb9, 0x8d, 0xeb, 0x95, 0xdb, 0xf8, 0xb9, 0x72, 0x1b, 0x67,
+	0x83, 0x94, 0xaa, 0xd9, 0x65, 0xe4, 0xc7, 0x3c, 0x0f, 0xf4, 0x5e, 0x5f, 0x31, 0x50, 0xdf, 0xb9,
+	0xf8, 0x6a, 0xb2, 0x0c, 0x92, 0x14, 0x44, 0x30, 0xdf, 0xbc, 0xf5, 0xc8, 0xd6, 0xef, 0xf8, 0xf5,
+	0xdf, 0x00, 0x00, 0x00, 0xff, 0xff, 0x05, 0xf0, 0x7a, 0x79, 0x47, 0x04, 0x00, 0x00,
 }
 
 func (m *GenesisState) Marshal() (dAtA []byte, err error) {
@@ -148,6 +387,76 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Precions) > 0 {
+		for iNdEx := len(m.Precions) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Precions[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x4a
+		}
+	}
+	if len(m.RetriedSupplies) > 0 {
+		for iNdEx := len(m.RetriedSupplies) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.RetriedSupplies[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x42
+		}
+	}
+	if len(m.TradableSupplies) > 0 {
+		for iNdEx := len(m.TradableSupplies) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.TradableSupplies[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x3a
+		}
+	}
+	if len(m.RetriedBalances) > 0 {
+		for iNdEx := len(m.RetriedBalances) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.RetriedBalances[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x32
+		}
+	}
+	if len(m.TradableBalances) > 0 {
+		for iNdEx := len(m.TradableBalances) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.TradableBalances[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x2a
+		}
+	}
 	if m.IdSeq != 0 {
 		i = encodeVarintGenesis(dAtA, i, uint64(m.IdSeq))
 		i--
@@ -194,6 +503,122 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *Precision) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Precision) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Precision) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.MaxDecimalPlaces != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.MaxDecimalPlaces))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.BatchDenom) > 0 {
+		i -= len(m.BatchDenom)
+		copy(dAtA[i:], m.BatchDenom)
+		i = encodeVarintGenesis(dAtA, i, uint64(len(m.BatchDenom)))
+		i--
+		dAtA[i] = 0x12
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *Balance) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Balance) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Balance) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Balance) > 0 {
+		i -= len(m.Balance)
+		copy(dAtA[i:], m.Balance)
+		i = encodeVarintGenesis(dAtA, i, uint64(len(m.Balance)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.BatchDenom) > 0 {
+		i -= len(m.BatchDenom)
+		copy(dAtA[i:], m.BatchDenom)
+		i = encodeVarintGenesis(dAtA, i, uint64(len(m.BatchDenom)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Reciepient) > 0 {
+		i -= len(m.Reciepient)
+		copy(dAtA[i:], m.Reciepient)
+		i = encodeVarintGenesis(dAtA, i, uint64(len(m.Reciepient)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *Supply) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Supply) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Supply) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Supply) > 0 {
+		i -= len(m.Supply)
+		copy(dAtA[i:], m.Supply)
+		i = encodeVarintGenesis(dAtA, i, uint64(len(m.Supply)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.BatchDenom) > 0 {
+		i -= len(m.BatchDenom)
+		copy(dAtA[i:], m.BatchDenom)
+		i = encodeVarintGenesis(dAtA, i, uint64(len(m.BatchDenom)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintGenesis(dAtA []byte, offset int, v uint64) int {
 	offset -= sovGenesis(v)
 	base := offset
@@ -227,6 +652,90 @@ func (m *GenesisState) Size() (n int) {
 	}
 	if m.IdSeq != 0 {
 		n += 1 + sovGenesis(uint64(m.IdSeq))
+	}
+	if len(m.TradableBalances) > 0 {
+		for _, e := range m.TradableBalances {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.RetriedBalances) > 0 {
+		for _, e := range m.RetriedBalances {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.TradableSupplies) > 0 {
+		for _, e := range m.TradableSupplies {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.RetriedSupplies) > 0 {
+		for _, e := range m.RetriedSupplies {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.Precions) > 0 {
+		for _, e := range m.Precions {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *Precision) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.BatchDenom)
+	if l > 0 {
+		n += 1 + l + sovGenesis(uint64(l))
+	}
+	if m.MaxDecimalPlaces != 0 {
+		n += 1 + sovGenesis(uint64(m.MaxDecimalPlaces))
+	}
+	return n
+}
+
+func (m *Balance) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Reciepient)
+	if l > 0 {
+		n += 1 + l + sovGenesis(uint64(l))
+	}
+	l = len(m.BatchDenom)
+	if l > 0 {
+		n += 1 + l + sovGenesis(uint64(l))
+	}
+	l = len(m.Balance)
+	if l > 0 {
+		n += 1 + l + sovGenesis(uint64(l))
+	}
+	return n
+}
+
+func (m *Supply) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.BatchDenom)
+	if l > 0 {
+		n += 1 + l + sovGenesis(uint64(l))
+	}
+	l = len(m.Supply)
+	if l > 0 {
+		n += 1 + l + sovGenesis(uint64(l))
 	}
 	return n
 }
@@ -386,6 +895,546 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TradableBalances", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TradableBalances = append(m.TradableBalances, &Balance{})
+			if err := m.TradableBalances[len(m.TradableBalances)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RetriedBalances", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RetriedBalances = append(m.RetriedBalances, &Balance{})
+			if err := m.RetriedBalances[len(m.RetriedBalances)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TradableSupplies", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TradableSupplies = append(m.TradableSupplies, &Supply{})
+			if err := m.TradableSupplies[len(m.TradableSupplies)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RetriedSupplies", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RetriedSupplies = append(m.RetriedSupplies, &Supply{})
+			if err := m.RetriedSupplies[len(m.RetriedSupplies)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Precions", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Precions = append(m.Precions, &Precision{})
+			if err := m.Precions[len(m.Precions)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGenesis(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Precision) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGenesis
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Precision: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Precision: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxDecimalPlaces", wireType)
+			}
+			m.MaxDecimalPlaces = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MaxDecimalPlaces |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGenesis(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Balance) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGenesis
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Balance: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Balance: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Reciepient", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Reciepient = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Balance", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Balance = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipGenesis(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Supply) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowGenesis
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Supply: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Supply: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Supply", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Supply = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipGenesis(dAtA[iNdEx:])

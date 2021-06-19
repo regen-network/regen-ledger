@@ -16,7 +16,10 @@
     - [Params](#regen.ecocredit.v1alpha1.Params)
   
 - [regen/ecocredit/v1alpha1/genesis.proto](#regen/ecocredit/v1alpha1/genesis.proto)
+    - [Balance](#regen.ecocredit.v1alpha1.Balance)
     - [GenesisState](#regen.ecocredit.v1alpha1.GenesisState)
+    - [Precision](#regen.ecocredit.v1alpha1.Precision)
+    - [Supply](#regen.ecocredit.v1alpha1.Supply)
   
 - [regen/ecocredit/v1alpha1/query.proto](#regen/ecocredit/v1alpha1/query.proto)
     - [QueryBalanceRequest](#regen.ecocredit.v1alpha1.QueryBalanceRequest)
@@ -218,6 +221,23 @@ use with the x/params module.
 
 
 
+<a name="regen.ecocredit.v1alpha1.Balance"></a>
+
+### Balance
+Balance defines credit batch tradable/retired balance.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| reciepient | [string](#string) |  | reciepient is the address of the account receiving credits. |
+| batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
+| balance | [string](#string) |  | balance is the retired balance of the credit batch. |
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha1.GenesisState"></a>
 
 ### GenesisState
@@ -230,6 +250,44 @@ GenesisState defines ecocredit module's genesis state.
 | class_infos | [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo) | repeated | class_infos is the list of credit class info. |
 | batch_infos | [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo) | repeated | batch_infos is the list of credit batch info. |
 | id_seq | [uint64](#uint64) |  | id_seq is used to get next class/batch id. |
+| tradable_balances | [Balance](#regen.ecocredit.v1alpha1.Balance) | repeated | tradable_balances represents list of tradable balance |
+| retried_balances | [Balance](#regen.ecocredit.v1alpha1.Balance) | repeated | retried_balances represents list of balance. |
+| tradable_supplies | [Supply](#regen.ecocredit.v1alpha1.Supply) | repeated | tradable_supplies represents list of supply. |
+| retried_supplies | [Supply](#regen.ecocredit.v1alpha1.Supply) | repeated | retried_supplies represents list of supply |
+| precions | [Precision](#regen.ecocredit.v1alpha1.Precision) | repeated | precisions represents list of Precision. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.Precision"></a>
+
+### Precision
+Precision defines decimal precision of a credit
+batch.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
+| max_decimal_places | [uint32](#uint32) |  | max_decimal_places is the new maximum number of decimal places that can be used to represent some quantity of credit units. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.Supply"></a>
+
+### Supply
+Supply defines credit batch tradable/retired supply.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
+| supply | [string](#string) |  | supply is the tradable supply of the credit batch. |
 
 
 

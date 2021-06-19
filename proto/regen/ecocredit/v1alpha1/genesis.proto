@@ -20,4 +20,53 @@ message GenesisState {
 
   // id_seq is used to get next class/batch id.
   uint64 id_seq = 4;
+
+  // tradable_balances represents list of tradable balance
+  repeated Balance tradable_balances = 5;
+
+  // retried_balances represents list of balance.
+  repeated Balance retried_balances = 6;
+
+  // tradable_supplies represents list of supply.
+  repeated Supply tradable_supplies = 7;
+
+  // retried_supplies represents list of supply
+  repeated Supply retried_supplies = 8;
+
+  // precisions represents list of Precision.
+  repeated Precision precions = 9;
+}
+
+// Precision defines decimal precision of a credit
+// batch.
+message Precision {
+  // batch_denom is the unique ID of the credit batch.
+  string batch_denom = 2;
+
+  // max_decimal_places is the new maximum number of decimal places that can be
+  // used to represent some quantity of credit units. It is an experimental
+  // feature to concretely explore an idea proposed in
+  // https://github.com/cosmos/cosmos-sdk/issues/7113.
+  uint32 max_decimal_places = 3;
+}
+
+// Balance defines credit batch tradable/retired balance.
+message Balance {
+  // reciepient is the address of the account receiving credits.
+  string reciepient = 1;
+
+  // batch_denom is the unique ID of the credit batch.
+  string batch_denom = 2;
+
+  // balance is the retired balance of the credit batch.
+  string balance = 3;
+}
+
+// Supply defines credit batch tradable/retired supply.
+message Supply {
+  // batch_denom is the unique ID of the credit batch.
+  string batch_denom = 1;
+
+  // supply is the tradable supply of the credit batch.
+  string supply = 2;
 }
