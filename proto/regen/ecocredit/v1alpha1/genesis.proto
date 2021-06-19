@@ -34,7 +34,7 @@ message GenesisState {
   repeated Supply retried_supplies = 8;
 
   // precisions represents list of Precision.
-  repeated Precision precions = 9;
+  repeated Precision precisions = 9;
 }
 
 // Precision defines decimal precision of a credit
