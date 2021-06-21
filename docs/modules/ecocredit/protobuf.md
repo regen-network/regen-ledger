@@ -250,10 +250,10 @@ GenesisState defines ecocredit module's genesis state.
 | class_infos | [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo) | repeated | class_infos is the list of credit class info. |
 | batch_infos | [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo) | repeated | batch_infos is the list of credit batch info. |
 | id_seq | [uint64](#uint64) |  | id_seq is used to get next class/batch id. |
-| tradable_balances | [Balance](#regen.ecocredit.v1alpha1.Balance) | repeated | tradable_balances represents list of tradable balance |
-| retried_balances | [Balance](#regen.ecocredit.v1alpha1.Balance) | repeated | retried_balances represents list of balance. |
-| tradable_supplies | [Supply](#regen.ecocredit.v1alpha1.Supply) | repeated | tradable_supplies represents list of supply. |
-| retried_supplies | [Supply](#regen.ecocredit.v1alpha1.Supply) | repeated | retried_supplies represents list of supply |
+| tradable_balances | [Balance](#regen.ecocredit.v1alpha1.Balance) | repeated | tradable_balances represents list of Balance. |
+| retried_balances | [Balance](#regen.ecocredit.v1alpha1.Balance) | repeated | retried_balances represents list of Balance. |
+| tradable_supplies | [Supply](#regen.ecocredit.v1alpha1.Supply) | repeated | tradable_supplies represents list of Supply.. |
+| retried_supplies | [Supply](#regen.ecocredit.v1alpha1.Supply) | repeated | retried_supplies represents list of Supply. |
 | precisions | [Precision](#regen.ecocredit.v1alpha1.Precision) | repeated | precisions represents list of Precision. |
 
 

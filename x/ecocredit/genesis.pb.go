@@ -34,13 +34,13 @@ type GenesisState struct {
 	BatchInfos []*BatchInfo `protobuf:"bytes,3,rep,name=batch_infos,json=batchInfos,proto3" json:"batch_infos,omitempty"`
 	// id_seq is used to get next class/batch id.
 	IdSeq uint64 `protobuf:"varint,4,opt,name=id_seq,json=idSeq,proto3" json:"id_seq,omitempty"`
-	// tradable_balances represents list of tradable balance
+	// tradable_balances represents list of Balance.
 	TradableBalances []*Balance `protobuf:"bytes,5,rep,name=tradable_balances,json=tradableBalances,proto3" json:"tradable_balances,omitempty"`
-	// retried_balances represents list of balance.
+	// retried_balances represents list of Balance.
 	RetriedBalances []*Balance `protobuf:"bytes,6,rep,name=retried_balances,json=retriedBalances,proto3" json:"retried_balances,omitempty"`
-	// tradable_supplies represents list of supply.
+	// tradable_supplies represents list of Supply..
 	TradableSupplies []*Supply `protobuf:"bytes,7,rep,name=tradable_supplies,json=tradableSupplies,proto3" json:"tradable_supplies,omitempty"`
-	// retried_supplies represents list of supply
+	// retried_supplies represents list of Supply.
 	RetriedSupplies []*Supply `protobuf:"bytes,8,rep,name=retried_supplies,json=retriedSupplies,proto3" json:"retried_supplies,omitempty"`
 	// precisions represents list of Precision.
 	Precisions []*Precision `protobuf:"bytes,9,rep,name=precisions,proto3" json:"precisions,omitempty"`

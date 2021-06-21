@@ -21,16 +21,16 @@ message GenesisState {
   // id_seq is used to get next class/batch id.
   uint64 id_seq = 4;
 
-  // tradable_balances represents list of tradable balance
+  // tradable_balances represents list of Balance.
   repeated Balance tradable_balances = 5;
 
-  // retried_balances represents list of balance.
+  // retried_balances represents list of Balance.
   repeated Balance retried_balances = 6;
 
-  // tradable_supplies represents list of supply.
+  // tradable_supplies represents list of Supply..
   repeated Supply tradable_supplies = 7;
 
-  // retried_supplies represents list of supply
+  // retried_supplies represents list of Supply.
   repeated Supply retried_supplies = 8;
 
   // precisions represents list of Precision.
