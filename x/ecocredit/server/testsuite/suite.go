@@ -2,6 +2,7 @@ package testsuite
 
 import (
 	"context"
+	"time"
 
 	"github.com/regen-network/regen-ledger/types/testutil"
 
@@ -29,8 +30,11 @@ type IntegrationTestSuite struct {
 	paramsQueryClient params.QueryClient
 	signers           []sdk.AccAddress
 
-	paramSpace  paramstypes.Subspace
-	bankKeeper  bankkeeper.Keeper
+	paramSpace paramstypes.Subspace
+	bankKeeper bankkeeper.Keeper
+
+	genesisCtx types.Context
+	blockTime  time.Time
 }
 
 func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper) *IntegrationTestSuite {
@@ -44,9 +48,13 @@ func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.fixture = s.fixtureFactory.Setup()
 
+	s.blockTime = time.Now().UTC()
+
 	// TODO clean up once types.Context merged upstream into sdk.Context
-	s.sdkCtx, _ = s.fixture.Context().(types.Context).CacheContext()
+	sdkCtx := s.fixture.Context().(types.Context).WithBlockTime(s.blockTime)
+	s.sdkCtx, _ = sdkCtx.CacheContext()
 	s.ctx = types.Context{Context: s.sdkCtx}
+	s.genesisCtx = types.Context{Context: sdkCtx}
 
 	ecocreditParams := ecocredit.DefaultParams()
 	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
@@ -58,11 +66,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.paramsQueryClient = params.NewQueryClient(s.fixture.QueryConn())
 }
 
-func fundAccount(bankKeeper bankkeeper.Keeper, ctx sdk.Context, addr sdk.AccAddress, amounts sdk.Coins) error {
-	if err := bankKeeper.MintCoins(ctx, minttypes.ModuleName, amounts); err != nil {
+func (s *IntegrationTestSuite) fundAccount(addr sdk.AccAddress, amounts sdk.Coins) error {
+	if err := s.bankKeeper.MintCoins(s.sdkCtx, minttypes.ModuleName, amounts); err != nil {
 		return err
 	}
-	return bankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, addr, amounts)
+	return s.bankKeeper.SendCoinsFromModuleToAccount(s.sdkCtx, minttypes.ModuleName, addr, amounts)
 }
 
 func (s *IntegrationTestSuite) TestScenario() {
@@ -83,7 +91,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Nil(createClsRes)
 
 	// create class with sufficient funds and it should succeed
-	s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+	s.Require().NoError(s.fundAccount(designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
 
 	createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClassRequest{
 		Designer: designer.String(),
