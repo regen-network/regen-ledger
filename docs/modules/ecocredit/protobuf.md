@@ -251,9 +251,9 @@ GenesisState defines ecocredit module's genesis state.
 | batch_infos | [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo) | repeated | batch_infos is the list of credit batch info. |
 | id_seq | [uint64](#uint64) |  | id_seq is used to get next class/batch id. |
 | tradable_balances | [Balance](#regen.ecocredit.v1alpha1.Balance) | repeated | tradable_balances represents list of Balance. |
-| retried_balances | [Balance](#regen.ecocredit.v1alpha1.Balance) | repeated | retried_balances represents list of Balance. |
+| retired_balances | [Balance](#regen.ecocredit.v1alpha1.Balance) | repeated | retired_balances represents list of Balance. |
 | tradable_supplies | [Supply](#regen.ecocredit.v1alpha1.Supply) | repeated | tradable_supplies represents list of Supply.. |
-| retried_supplies | [Supply](#regen.ecocredit.v1alpha1.Supply) | repeated | retried_supplies represents list of Supply. |
+| retired_supplies | [Supply](#regen.ecocredit.v1alpha1.Supply) | repeated | retired_supplies represents list of Supply. |
 | precisions | [Precision](#regen.ecocredit.v1alpha1.Precision) | repeated | precisions represents list of Precision. |
 
 

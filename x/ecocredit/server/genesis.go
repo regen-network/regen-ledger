@@ -48,7 +48,7 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.JSONCodec, data jso
 		setDecimal(store, key, tradable)
 	}
 
-	for _, rBalance := range genesisState.RetriedBalances {
+	for _, rBalance := range genesisState.RetiredBalances {
 		addr, err := sdk.AccAddressFromBech32(rBalance.Reciepient)
 		if err != nil {
 			return nil, err
@@ -70,7 +70,7 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.JSONCodec, data jso
 		setDecimal(store, key, supply)
 	}
 
-	for _, rSupply := range genesisState.RetriedSupplies {
+	for _, rSupply := range genesisState.RetiredSupplies {
 		key := RetiredSupplyKey(batchDenomT(rSupply.BatchDenom))
 		supply, err := math.ParseNonNegativeDecimal(rSupply.Supply)
 		if err != nil {
@@ -116,9 +116,9 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.JSONCodec) (json.
 		BatchInfos:       batchInfos,
 		IdSeq:            s.idSeq.CurVal(ctx),
 		TradableBalances: tradableBalances,
-		RetriedBalances:  retiredBalances,
+		RetiredBalances:  retiredBalances,
 		TradableSupplies: tradableSupplies,
-		RetriedSupplies:  retiredSupplies,
+		RetiredSupplies:  retiredSupplies,
 		Precisions:       precisions,
 	}
 

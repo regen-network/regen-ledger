@@ -36,12 +36,12 @@ type GenesisState struct {
 	IdSeq uint64 `protobuf:"varint,4,opt,name=id_seq,json=idSeq,proto3" json:"id_seq,omitempty"`
 	// tradable_balances represents list of Balance.
 	TradableBalances []*Balance `protobuf:"bytes,5,rep,name=tradable_balances,json=tradableBalances,proto3" json:"tradable_balances,omitempty"`
-	// retried_balances represents list of Balance.
-	RetriedBalances []*Balance `protobuf:"bytes,6,rep,name=retried_balances,json=retriedBalances,proto3" json:"retried_balances,omitempty"`
+	// retired_balances represents list of Balance.
+	RetiredBalances []*Balance `protobuf:"bytes,6,rep,name=retired_balances,json=retiredBalances,proto3" json:"retired_balances,omitempty"`
 	// tradable_supplies represents list of Supply..
 	TradableSupplies []*Supply `protobuf:"bytes,7,rep,name=tradable_supplies,json=tradableSupplies,proto3" json:"tradable_supplies,omitempty"`
-	// retried_supplies represents list of Supply.
-	RetriedSupplies []*Supply `protobuf:"bytes,8,rep,name=retried_supplies,json=retriedSupplies,proto3" json:"retried_supplies,omitempty"`
+	// retired_supplies represents list of Supply.
+	RetiredSupplies []*Supply `protobuf:"bytes,8,rep,name=retired_supplies,json=retiredSupplies,proto3" json:"retired_supplies,omitempty"`
 	// precisions represents list of Precision.
 	Precisions []*Precision `protobuf:"bytes,9,rep,name=precisions,proto3" json:"precisions,omitempty"`
 }
@@ -114,9 +114,9 @@ func (m *GenesisState) GetTradableBalances() []*Balance {
 	return nil
 }
 
-func (m *GenesisState) GetRetriedBalances() []*Balance {
+func (m *GenesisState) GetRetiredBalances() []*Balance {
 	if m != nil {
-		return m.RetriedBalances
+		return m.RetiredBalances
 	}
 	return nil
 }
@@ -128,9 +128,9 @@ func (m *GenesisState) GetTradableSupplies() []*Supply {
 	return nil
 }
 
-func (m *GenesisState) GetRetriedSupplies() []*Supply {
+func (m *GenesisState) GetRetiredSupplies() []*Supply {
 	if m != nil {
-		return m.RetriedSupplies
+		return m.RetiredSupplies
 	}
 	return nil
 }
@@ -350,7 +350,7 @@ var fileDescriptor_2f9cb84fe1853321 = []byte{
 	0x21, 0x93, 0x46, 0x33, 0x01, 0x97, 0x56, 0xcb, 0x31, 0x06, 0x2d, 0xff, 0x90, 0x46, 0x53, 0xb8,
 	0xc4, 0x5f, 0xd1, 0x13, 0xc9, 0x49, 0x44, 0x82, 0x04, 0x66, 0x01, 0x49, 0x48, 0x16, 0x82, 0xb0,
 	0x0e, 0x95, 0xc5, 0x8b, 0xbb, 0x2c, 0x94, 0xd2, 0xef, 0x55, 0xbd, 0xba, 0x20, 0xf0, 0x67, 0xd4,
-	0xe3, 0x20, 0x39, 0x85, 0x68, 0x83, 0x33, 0xef, 0x8b, 0x7b, 0xac, 0x5b, 0x6b, 0xda, 0x97, 0xad,
+	0xe3, 0x20, 0x29, 0x87, 0x68, 0x83, 0x33, 0xef, 0x8b, 0x7b, 0xac, 0x5b, 0x6b, 0xda, 0x97, 0xad,
 	0xe9, 0xc4, 0x55, 0x9e, 0x27, 0x14, 0x84, 0xd5, 0x56, 0xb8, 0x3b, 0x6e, 0x31, 0x2d, 0x94, 0xcb,
 	0xcd, 0x70, 0x53, 0xdd, 0x89, 0xcf, 0x36, 0xc3, 0xd5, 0xb4, 0x07, 0xf7, 0xa4, 0x55, 0xb3, 0xd5,
 	0xb0, 0x53, 0x84, 0x72, 0x0e, 0x21, 0x15, 0x94, 0x65, 0xc2, 0xea, 0xec, 0xbb, 0xca, 0xa4, 0xd2,
@@ -364,7 +364,7 @@ var fileDescriptor_2f9cb84fe1853321 = []byte{
 	0x3f, 0x2b, 0xdb, 0xf8, 0xb9, 0xb6, 0x1b, 0x37, 0x6b, 0xbb, 0xf1, 0x6b, 0x6d, 0x37, 0xce, 0x87,
 	0x31, 0x95, 0xf3, 0xab, 0xc0, 0x0d, 0x59, 0xea, 0xa9, 0xcd, 0xbe, 0xcd, 0x40, 0xfe, 0x60, 0xfc,
 	0x9b, 0xce, 0x12, 0x88, 0x62, 0xe0, 0xde, 0x62, 0xf3, 0xde, 0x03, 0x53, 0xbd, 0xe5, 0x77, 0xff,
-	0x02, 0x00, 0x00, 0xff, 0xff, 0xdc, 0xd7, 0x73, 0xcb, 0x4b, 0x04, 0x00, 0x00,
+	0x02, 0x00, 0x00, 0xff, 0xff, 0x01, 0x96, 0x76, 0x09, 0x4b, 0x04, 0x00, 0x00,
 }
 
 func (m *GenesisState) Marshal() (dAtA []byte, err error) {
@@ -401,10 +401,10 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0x4a
 		}
 	}
-	if len(m.RetriedSupplies) > 0 {
-		for iNdEx := len(m.RetriedSupplies) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.RetiredSupplies) > 0 {
+		for iNdEx := len(m.RetiredSupplies) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.RetriedSupplies[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.RetiredSupplies[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -429,10 +429,10 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0x3a
 		}
 	}
-	if len(m.RetriedBalances) > 0 {
-		for iNdEx := len(m.RetriedBalances) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.RetiredBalances) > 0 {
+		for iNdEx := len(m.RetiredBalances) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.RetriedBalances[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.RetiredBalances[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -659,8 +659,8 @@ func (m *GenesisState) Size() (n int) {
 			n += 1 + l + sovGenesis(uint64(l))
 		}
 	}
-	if len(m.RetriedBalances) > 0 {
-		for _, e := range m.RetriedBalances {
+	if len(m.RetiredBalances) > 0 {
+		for _, e := range m.RetiredBalances {
 			l = e.Size()
 			n += 1 + l + sovGenesis(uint64(l))
 		}
@@ -671,8 +671,8 @@ func (m *GenesisState) Size() (n int) {
 			n += 1 + l + sovGenesis(uint64(l))
 		}
 	}
-	if len(m.RetriedSupplies) > 0 {
-		for _, e := range m.RetriedSupplies {
+	if len(m.RetiredSupplies) > 0 {
+		for _, e := range m.RetiredSupplies {
 			l = e.Size()
 			n += 1 + l + sovGenesis(uint64(l))
 		}
@@ -931,7 +931,7 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 6:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RetriedBalances", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field RetiredBalances", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -958,8 +958,8 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.RetriedBalances = append(m.RetriedBalances, &Balance{})
-			if err := m.RetriedBalances[len(m.RetriedBalances)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.RetiredBalances = append(m.RetiredBalances, &Balance{})
+			if err := m.RetiredBalances[len(m.RetiredBalances)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -999,7 +999,7 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 8:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RetriedSupplies", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field RetiredSupplies", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1026,8 +1026,8 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.RetriedSupplies = append(m.RetriedSupplies, &Supply{})
-			if err := m.RetriedSupplies[len(m.RetriedSupplies)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			m.RetiredSupplies = append(m.RetiredSupplies, &Supply{})
+			if err := m.RetiredSupplies[len(m.RetiredSupplies)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

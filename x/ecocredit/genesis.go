@@ -13,9 +13,9 @@ func DefaultGenesisState() *GenesisState {
 		BatchInfos:       []*BatchInfo{},
 		IdSeq:            0,
 		TradableBalances: []*Balance{},
-		RetriedBalances:  []*Balance{},
+		RetiredBalances:  []*Balance{},
 		TradableSupplies: []*Supply{},
-		RetriedSupplies:  []*Supply{},
+		RetiredSupplies:  []*Supply{},
 		Precisions:       []*Precision{},
 	}
 }
