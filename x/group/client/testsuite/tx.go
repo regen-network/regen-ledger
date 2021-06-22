@@ -75,7 +75,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// create a group
 	validMembers := fmt.Sprintf(`{"members": [{
 	  "address": "%s",
-		"weight": "1",
+		"weight": "3",
 		"metadata": "%s"
 	}]}`, val.Address.String(), validMetadata)
 	validMembersFile := testutil.WriteToNewTempFile(s.T(), validMembers)
@@ -95,17 +95,21 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(val.ClientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &txResp), out.String())
 	s.Require().Equal(uint32(0), txResp.Code, out.String())
 
-	s.group = &group.GroupInfo{GroupId: 1, Admin: val.Address.String(), Metadata: []byte{1}, TotalWeight: "1", Version: 1}
+	s.group = &group.GroupInfo{GroupId: 1, Admin: val.Address.String(), Metadata: []byte{1}, TotalWeight: "3", Version: 1}
 
-	// create 4 group accounts
-	for i := 0; i < 4; i++ {
+	// create 5 group accounts
+	for i := 0; i < 5; i++ {
+		threshold := i + 1
+		if threshold > 3 {
+			threshold = 3
+		}
 		out, err = cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateGroupAccountCmd(),
 			append(
 				[]string{
 					val.Address.String(),
 					"1",
 					validMetadata,
-					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"30000s\"}",
+					fmt.Sprintf("{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"%d\", \"timeout\":\"30000s\"}", threshold),
 				},
 				commonFlags...,
 			),
@@ -120,7 +124,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	var res group.QueryGroupAccountsByGroupResponse
 	s.Require().NoError(val.ClientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &res))
-	s.Require().Equal(len(res.GroupAccounts), 4)
+	s.Require().Equal(len(res.GroupAccounts), 5)
 	s.groupAccounts = res.GroupAccounts
 
 	// create a proposal
@@ -790,7 +794,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountAdmin() {
 	val := s.network.Validators[0]
 	newAdmin := s.network.Validators[1].Address
 	clientCtx := val.ClientCtx
-	groupAccount := s.groupAccounts[1]
+	groupAccount := s.groupAccounts[3]
 
 	var commonFlags = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -826,7 +830,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountAdmin() {
 			append(
 				[]string{
 					groupAccount.Admin,
-					s.groupAccounts[2].Address,
+					s.groupAccounts[4].Address,
 					newAdmin.String(),
 					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 				},
@@ -893,7 +897,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountDecisionPolicy() {
 	val := s.network.Validators[0]
 	newAdmin := s.network.Validators[1].Address
 	clientCtx := val.ClientCtx
-	groupAccount := s.groupAccounts[3]
+	groupAccount := s.groupAccounts[2]
 
 	var commonFlags = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -915,7 +919,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountDecisionPolicy() {
 				[]string{
 					groupAccount.Admin,
 					groupAccount.Address,
-					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"2\", \"timeout\":\"2s\"}",
+					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"40000s\"}",
 				},
 				commonFlags...,
 			),
@@ -930,7 +934,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountDecisionPolicy() {
 				[]string{
 					groupAccount.Admin,
 					groupAccount.Address,
-					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"2\", \"timeout\":\"2s\"}",
+					"{\"@type\":\"/regen.group.v1alpha1.ThresholdDecisionPolicy\", \"threshold\":\"1\", \"timeout\":\"50000s\"}",
 					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 				},
 				commonFlags...,
@@ -996,7 +1000,7 @@ func (s *IntegrationTestSuite) TestTxUpdateGroupAccountMetadata() {
 	val := s.network.Validators[0]
 	newAdmin := s.network.Validators[1].Address
 	clientCtx := val.ClientCtx
-	groupAccount := s.groupAccounts[3]
+	groupAccount := s.groupAccounts[2]
 
 	var commonFlags = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -1122,6 +1126,7 @@ func (s *IntegrationTestSuite) TestTxCreateProposal() {
 
 	validTxFileName := getTxSendFileName(s, s.groupAccounts[0].Address, val.Address.String())
 	unauthzTxFileName := getTxSendFileName(s, val.Address.String(), s.groupAccounts[0].Address)
+	validTxFileName2 := getTxSendFileName(s, s.groupAccounts[3].Address, val.Address.String())
 
 	testCases := []struct {
 		name         string
@@ -1140,6 +1145,42 @@ func (s *IntegrationTestSuite) TestTxCreateProposal() {
 					validTxFileName,
 					"",
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"with try exec",
+			append(
+				[]string{
+					s.groupAccounts[0].Address,
+					val.Address.String(),
+					validTxFileName,
+					"",
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+					fmt.Sprintf("--%s=try", client.FlagExec),
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"with try exec, not enough yes votes for proposal to pass",
+			append(
+				[]string{
+					s.groupAccounts[3].Address,
+					val.Address.String(),
+					validTxFileName2,
+					"",
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+					fmt.Sprintf("--%s=try", client.FlagExec),
 				},
 				commonFlags...,
 			),
@@ -1283,12 +1324,12 @@ func (s *IntegrationTestSuite) TestTxVote() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	validTxFileName := getTxSendFileName(s, s.groupAccounts[3].Address, val.Address.String())
+	validTxFileName := getTxSendFileName(s, s.groupAccounts[1].Address, val.Address.String())
 	for i := 0; i < 2; i++ {
 		out, err := cli.ExecTestCLICmd(val.ClientCtx, client.MsgCreateProposalCmd(),
 			append(
 				[]string{
-					s.groupAccounts[3].Address,
+					s.groupAccounts[1].Address,
 					val.Address.String(),
 					validTxFileName,
 					"",
@@ -1316,6 +1357,40 @@ func (s *IntegrationTestSuite) TestTxVote() {
 					val.Address.String(),
 					"CHOICE_YES",
 					"",
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"with try exec",
+			append(
+				[]string{
+					"7",
+					val.Address.String(),
+					"CHOICE_YES",
+					"",
+					fmt.Sprintf("--%s=try", client.FlagExec),
+				},
+				commonFlags...,
+			),
+			false,
+			"",
+			&sdk.TxResponse{},
+			0,
+		},
+		{
+			"with try exec, not enough yes votes for proposal to pass",
+			append(
+				[]string{
+					"8",
+					val.Address.String(),
+					"CHOICE_NO",
+					"",
+					fmt.Sprintf("--%s=try", client.FlagExec),
 				},
 				commonFlags...,
 			),
