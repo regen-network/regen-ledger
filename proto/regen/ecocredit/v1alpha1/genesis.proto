@@ -58,7 +58,7 @@ message Balance {
   // batch_denom is the unique ID of the credit batch.
   string batch_denom = 2;
 
-  // balance is the retired balance of the credit batch.
+  // balance is the tradable/retired balance of the credit batch.
   string balance = 3;
 }
 
@@ -67,6 +67,6 @@ message Supply {
   // batch_denom is the unique ID of the credit batch.
   string batch_denom = 1;
 
-  // supply is the tradable supply of the credit batch.
+  // supply is the tradable/retired supply of the credit batch.
   string supply = 2;
 }

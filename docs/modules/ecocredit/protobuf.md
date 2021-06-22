@@ -231,7 +231,7 @@ Balance defines credit batch tradable/retired balance.
 | ----- | ---- | ----- | ----------- |
 | reciepient | [string](#string) |  | reciepient is the address of the account receiving credits. |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
-| balance | [string](#string) |  | balance is the retired balance of the credit batch. |
+| balance | [string](#string) |  | balance is the tradable/retired balance of the credit batch. |
 
 
 
@@ -287,7 +287,7 @@ Supply defines credit batch tradable/retired supply.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
-| supply | [string](#string) |  | supply is the tradable supply of the credit batch. |
+| supply | [string](#string) |  | supply is the tradable/retired supply of the credit batch. |
 
 
 

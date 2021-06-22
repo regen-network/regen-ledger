@@ -9,11 +9,11 @@ import (
 // both represented as strings
 type batchDenomT string
 
-// - 0x0 <accAddrLen (1 Byte)><accAddr_Bytes><denom_Bytes>
-// - 0x1 <denom_Bytes>
-// - 0x2 <accAddrLen (1 Byte)><accAddr_Bytes><denom_Bytes>
-// - 0x3 <denom_Bytes>
-// - 0x7 <denom_Bytes>
+// - 0x0 <accAddrLen (1 Byte)><accAddr_Bytes><denom_Bytes>: TradableBalance
+// - 0x1 <denom_Bytes>: TradableSupply
+// - 0x2 <accAddrLen (1 Byte)><accAddr_Bytes><denom_Bytes>: RetiredBalance
+// - 0x3 <denom_Bytes>: RetiredSupply
+// - 0x7 <denom_Bytes>: MaxDecimalPlaces
 
 func TradableBalanceKey(acc sdk.AccAddress, denom batchDenomT) []byte {
 	key := []byte{TradableBalancePrefix}

@@ -207,7 +207,7 @@ type Balance struct {
 	Reciepient string `protobuf:"bytes,1,opt,name=reciepient,proto3" json:"reciepient,omitempty"`
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
-	// balance is the retired balance of the credit batch.
+	// balance is the tradable/retired balance of the credit batch.
 	Balance string `protobuf:"bytes,3,opt,name=balance,proto3" json:"balance,omitempty"`
 }
 
@@ -269,7 +269,7 @@ func (m *Balance) GetBalance() string {
 type Supply struct {
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
-	// supply is the tradable supply of the credit batch.
+	// supply is the tradable/retired supply of the credit batch.
 	Supply string `protobuf:"bytes,2,opt,name=supply,proto3" json:"supply,omitempty"`
 }
 
