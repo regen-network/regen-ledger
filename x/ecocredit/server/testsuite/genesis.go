@@ -3,109 +3,107 @@ package testsuite
 import (
 	"encoding/json"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
-
-func (s *IntegrationTestSuite) TestInitExportGenesisDefaultParams() {
-	require := s.Require()
-	ctx := s.genesisCtx
-	cdc := s.fixture.Codec()
-
-	// Set the param set to empty values to properly test init
-	var ecocreditParams ecocredit.Params
-	s.paramSpace.SetParamSet(ctx.Context, &ecocreditParams)
-
-	genesisState := ecocredit.DefaultGenesisState()
-	genesisBytes, err := cdc.MarshalJSON(genesisState)
-	require.NoError(err)
-
-	genesisData := map[string]json.RawMessage{ecocredit.ModuleName: genesisBytes}
-	_, err = s.fixture.InitGenesis(ctx.Context, genesisData)
-	require.NoError(err)
-
-	expGenesisData, err := s.fixture.ExportGenesis(ctx.Context)
-	require.NoError(err)
-
-	require.Equal(string(genesisData[ecocredit.ModuleName]), string(expGenesisData[ecocredit.ModuleName]))
-}
 
 func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	require := s.Require()
 	ctx := s.genesisCtx
-	designer1 := s.signers[0].String()
+	designer1 := s.signers[0]
 	designer2 := s.signers[1].String()
 	issuer1 := s.signers[2].String()
 	issuer2 := s.signers[3].String()
-	issuer3 := s.signers[4].String()
-	// designer3 := s.signers[5]
-	// addr3 := s.signers[6].String()
-	cdc := s.fixture.Codec()
+	addr1 := s.signers[4].String()
 
 	// Set the param set to empty values to properly test init
 	var ecocreditParams ecocredit.Params
 	s.paramSpace.SetParamSet(ctx.Context, &ecocreditParams)
 
-	genesisState := ecocredit.DefaultGenesisState()
-	genesisBytes, err := cdc.MarshalJSON(genesisState)
-	require.NoError(err)
-
-	genesisData := map[string]json.RawMessage{ecocredit.ModuleName: genesisBytes}
-	_, err = s.fixture.InitGenesis(ctx.Context, genesisData)
-	require.NoError(err)
-
-	exported, err := s.fixture.ExportGenesis(ctx.Context)
-	require.NoError(err)
-
-	var exportedGenesisState ecocredit.GenesisState
-	err = cdc.UnmarshalJSON(exported[ecocredit.ModuleName], &exportedGenesisState)
-	require.NoError(err)
-
-	require.Equal(genesisState.Params, exportedGenesisState.Params)
-
 	classInfos := []*ecocredit.ClassInfo{
 		{
-			ClassId:  "1",
-			Designer: designer1,
+			ClassId:  "4",
+			Designer: designer1.String(),
 			Issuers:  []string{issuer1, issuer2},
 			Metadata: []byte("credit class metadata"),
 		},
 		{
-			ClassId:  "2",
+			ClassId:  "5",
 			Designer: designer2,
-			Issuers:  []string{issuer2, issuer3},
+			Issuers:  []string{issuer2, addr1},
 			Metadata: []byte("credit class metadata"),
 		},
 	}
 
 	batchInfos := []*ecocredit.BatchInfo{
 		{
-			ClassId:    "1",
-			BatchDenom: "1/3",
+			ClassId:    "4",
+			BatchDenom: "4/6",
 			Issuer:     issuer1,
 			TotalUnits: "100",
 			Metadata:   []byte("batch metadata"),
 		}, {
-			ClassId:    "2",
-			BatchDenom: "1/4",
-			Issuer:     issuer3,
+			ClassId:    "5",
+			BatchDenom: "5/7",
+			Issuer:     addr1,
 			TotalUnits: "100",
 			Metadata:   []byte("batch metadata"),
 		},
 	}
 
-	genesisState = &ecocredit.GenesisState{
-		Params:     ecocredit.DefaultParams(),
-		ClassInfos: classInfos,
-		BatchInfos: batchInfos,
-		IdSeq:      3,
+	tradableBalances := []*ecocredit.Balance{
+		{
+			Reciepient: addr1,
+			BatchDenom: "4/6",
+			Balance:    "90.003",
+		},
 	}
 
-	genesisBytes, err = cdc.MarshalJSON(genesisState)
-	require.NoError(err)
+	retiredBalances := []*ecocredit.Balance{
+		{
+			Reciepient: addr1,
+			BatchDenom: "4/6",
+			Balance:    "9.997",
+		},
+	}
 
-	genesisData = map[string]json.RawMessage{ecocredit.ModuleName: genesisBytes}
-	_, err = s.fixture.InitGenesis(ctx.Context, genesisData)
-	require.NoError(err)
+	tradableSupplies := []*ecocredit.Supply{
+		{
+			BatchDenom: "4/6",
+			Supply:     "90.003",
+		},
+	}
+
+	retiredSupplies := []*ecocredit.Supply{
+		{
+			BatchDenom: "4/6",
+			Supply:     "9.997",
+		},
+	}
+
+	precisions := []*ecocredit.Precision{
+		{
+			BatchDenom:       "4/6",
+			MaxDecimalPlaces: 5,
+		},
+	}
+
+	genesisState := &ecocredit.GenesisState{
+		Params:           ecocredit.DefaultParams(),
+		IdSeq:            7,
+		ClassInfos:       classInfos,
+		BatchInfos:       batchInfos,
+		Precisions:       precisions,
+		TradableBalances: tradableBalances,
+		RetiredBalances:  retiredBalances,
+		TradableSupplies: tradableSupplies,
+		RetiredSupplies:  retiredSupplies,
+	}
+	s.initGenesisState(ctx, genesisState)
+
+	exportedGenesisState := s.exportGenesisState(ctx)
+	require.Equal(genesisState.Params, exportedGenesisState.Params)
+	require.Equal(genesisState.IdSeq, exportedGenesisState.IdSeq)
 
 	for _, classInfo := range classInfos {
 		res, err := s.queryClient.ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{
@@ -123,9 +121,83 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 		s.assetBatchInfoEqual(res.Info, batchInfo)
 	}
 
+	for i, tradableBalance := range tradableBalances {
+		res, err := s.queryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{
+			Account:    tradableBalance.Reciepient,
+			BatchDenom: tradableBalance.BatchDenom,
+		})
+		require.NoError(err)
+		require.NotNil(res)
+		s.assertTradableBalanceEqual(res, tradableBalance)
+		s.assertRetiredBalanceEqual(res, *retiredBalances[i])
+	}
+
+	for i, supply := range tradableSupplies {
+		res, err := s.queryClient.Supply(ctx, &ecocredit.QuerySupplyRequest{
+			BatchDenom: supply.BatchDenom,
+		})
+		require.NoError(err)
+		require.NotNil(res)
+		require.Equal(res.TradableSupply, supply.Supply)
+		require.Equal(res.RetiredSupply, retiredSupplies[i].Supply)
+	}
+
+	for _, precision := range precisions {
+		res, err := s.queryClient.Precision(ctx, &ecocredit.QueryPrecisionRequest{
+			BatchDenom: precision.BatchDenom,
+		})
+		require.NoError(err)
+		require.NotNil(res)
+		require.Equal(precision.MaxDecimalPlaces, res.MaxDecimalPlaces)
+	}
+
+	exported := s.exportGenesisState(ctx)
+	require.Equal(uint64(7), exported.IdSeq)
+	require.Equal(genesisState.Params, exported.Params)
+	require.Equal(genesisState.ClassInfos, exported.ClassInfos)
+	require.Equal(genesisState.BatchInfos, exported.BatchInfos)
+	require.Equal(genesisState.RetiredBalances, exported.RetiredBalances)
+	require.Equal(genesisState.TradableBalances, exported.TradableBalances)
+	require.Equal(genesisState.TradableSupplies, exported.TradableSupplies)
+	require.Equal(genesisState.RetiredSupplies, exported.RetiredSupplies)
+	require.Equal(genesisState.Precisions, exported.Precisions)
 }
 
-func (s IntegrationTestSuite) assetClassInfoEqual(q, other *ecocredit.ClassInfo) {
+func (s *IntegrationTestSuite) assertTradableBalanceEqual(res *ecocredit.QueryBalanceResponse, balance *ecocredit.Balance) {
+	require := s.Require()
+	require.Equal(balance.Balance, res.TradableUnits)
+}
+
+func (s *IntegrationTestSuite) assertRetiredBalanceEqual(res *ecocredit.QueryBalanceResponse, balance ecocredit.Balance) {
+	require := s.Require()
+	require.Equal(balance.Balance, res.RetiredUnits)
+}
+
+func (s *IntegrationTestSuite) exportGenesisState(ctx types.Context) ecocredit.GenesisState {
+	require := s.Require()
+	cdc := s.fixture.Codec()
+	exported, err := s.fixture.ExportGenesis(ctx.Context)
+	require.NoError(err)
+
+	var exportedGenesisState ecocredit.GenesisState
+	err = cdc.UnmarshalJSON(exported[ecocredit.ModuleName], &exportedGenesisState)
+	require.NoError(err)
+
+	return exportedGenesisState
+}
+
+func (s *IntegrationTestSuite) initGenesisState(ctx types.Context, genesisState *ecocredit.GenesisState) {
+	cdc := s.fixture.Codec()
+	require := s.Require()
+	genesisBytes, err := cdc.MarshalJSON(genesisState)
+	require.NoError(err)
+
+	genesisData := map[string]json.RawMessage{ecocredit.ModuleName: genesisBytes}
+	_, err = s.fixture.InitGenesis(ctx.Context, genesisData)
+	require.NoError(err)
+}
+
+func (s *IntegrationTestSuite) assetClassInfoEqual(q, other *ecocredit.ClassInfo) {
 	require := s.Require()
 	require.Equal(q.ClassId, other.ClassId)
 	require.Equal(q.Designer, other.Designer)
@@ -133,7 +205,7 @@ func (s IntegrationTestSuite) assetClassInfoEqual(q, other *ecocredit.ClassInfo)
 	require.Equal(q.Metadata, other.Metadata)
 }
 
-func (s IntegrationTestSuite) assetBatchInfoEqual(q, other *ecocredit.BatchInfo) {
+func (s *IntegrationTestSuite) assetBatchInfoEqual(q, other *ecocredit.BatchInfo) {
 	require := s.Require()
 	require.Equal(q.ClassId, other.ClassId)
 	require.Equal(q.BatchDenom, other.BatchDenom)
