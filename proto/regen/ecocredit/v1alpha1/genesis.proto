@@ -52,8 +52,8 @@ message Precision {
 
 // Balance defines credit batch tradable/retired balance.
 message Balance {
-  // reciepient is the address of the account receiving credits.
-  string reciepient = 1;
+  // address is the account address of the account holding credits.
+  string address = 1;
 
   // batch_denom is the unique ID of the credit batch.
   string batch_denom = 2;
