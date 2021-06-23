@@ -53,7 +53,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 
 	tradableBalances := []*ecocredit.Balance{
 		{
-			Reciepient: addr1,
+			Address:    addr1,
 			BatchDenom: "4/6",
 			Balance:    "90.003",
 		},
@@ -61,7 +61,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 
 	retiredBalances := []*ecocredit.Balance{
 		{
-			Reciepient: addr1,
+			Address:    addr1,
 			BatchDenom: "4/6",
 			Balance:    "9.997",
 		},
@@ -123,7 +123,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 
 	for i, tradableBalance := range tradableBalances {
 		res, err := s.queryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{
-			Account:    tradableBalance.Reciepient,
+			Account:    tradableBalance.Address,
 			BatchDenom: tradableBalance.BatchDenom,
 		})
 		require.NoError(err)

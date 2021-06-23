@@ -36,7 +36,7 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.JSONCodec, data jso
 
 	store := ctx.KVStore(s.storeKey)
 	for _, balance := range genesisState.TradableBalances {
-		addr, err := sdk.AccAddressFromBech32(balance.Reciepient)
+		addr, err := sdk.AccAddressFromBech32(balance.Address)
 		if err != nil {
 			return nil, err
 		}
@@ -49,7 +49,7 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.JSONCodec, data jso
 	}
 
 	for _, rBalance := range genesisState.RetiredBalances {
-		addr, err := sdk.AccAddressFromBech32(rBalance.Reciepient)
+		addr, err := sdk.AccAddressFromBech32(rBalance.Address)
 		if err != nil {
 			return nil, err
 		}
@@ -154,7 +154,7 @@ func (s serverImpl) getBalances(store sdk.KVStore, storeKey byte) []*ecocredit.B
 	for ; iter.Valid(); iter.Next() {
 		addr, denomMetaData := ParseTradableBalanceKey(iter.Key())
 		tradableBalances = append(tradableBalances, &ecocredit.Balance{
-			Reciepient: addr.String(),
+			Address:    addr.String(),
 			BatchDenom: string(denomMetaData),
 			Balance:    string(iter.Value()),
 		})

@@ -229,7 +229,7 @@ Balance defines credit batch tradable/retired balance.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| reciepient | [string](#string) |  | reciepient is the address of the account receiving credits. |
+| address | [string](#string) |  | address is the account address of the account holding credits. |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
 | balance | [string](#string) |  | balance is the tradable/retired balance of the credit batch. |
 
