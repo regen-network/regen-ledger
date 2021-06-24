@@ -34,15 +34,15 @@ type GenesisState struct {
 	BatchInfos []*BatchInfo `protobuf:"bytes,3,rep,name=batch_infos,json=batchInfos,proto3" json:"batch_infos,omitempty"`
 	// id_seq is used to get next class/batch id.
 	IdSeq uint64 `protobuf:"varint,4,opt,name=id_seq,json=idSeq,proto3" json:"id_seq,omitempty"`
-	// tradable_balances represents list of Balance.
+	// tradable_balances is the list of credit batch tradable units.
 	TradableBalances []*Balance `protobuf:"bytes,5,rep,name=tradable_balances,json=tradableBalances,proto3" json:"tradable_balances,omitempty"`
-	// retired_balances represents list of Balance.
+	// retired_balances is the list of credit batch retired units.
 	RetiredBalances []*Balance `protobuf:"bytes,6,rep,name=retired_balances,json=retiredBalances,proto3" json:"retired_balances,omitempty"`
-	// tradable_supplies represents list of Supply..
+	// tradable_supplies is the list of credit batch tradable supply.
 	TradableSupplies []*Supply `protobuf:"bytes,7,rep,name=tradable_supplies,json=tradableSupplies,proto3" json:"tradable_supplies,omitempty"`
-	// retired_supplies represents list of Supply.
+	// retired_supplies is the list of credit batch retired supply.
 	RetiredSupplies []*Supply `protobuf:"bytes,8,rep,name=retired_supplies,json=retiredSupplies,proto3" json:"retired_supplies,omitempty"`
-	// precisions represents list of Precision.
+	// precisions is the list of decimal precision of a credit batch.
 	Precisions []*Precision `protobuf:"bytes,9,rep,name=precisions,proto3" json:"precisions,omitempty"`
 }
 
@@ -142,8 +142,7 @@ func (m *GenesisState) GetPrecisions() []*Precision {
 	return nil
 }
 
-// Precision defines decimal precision of a credit
-// batch.
+// Precision represents a credit batch precision with a batch_denom and max_decimal_places.
 type Precision struct {
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
@@ -201,13 +200,14 @@ func (m *Precision) GetMaxDecimalPlaces() uint32 {
 	return 0
 }
 
-// Balance defines credit batch tradable/retired balance.
+// Balance represents tradable or retired units of a credit batch with an account address,
+// batch_denom, and balance.
 type Balance struct {
 	// address is the account address of the account holding credits.
 	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
-	// balance is the tradable/retired balance of the credit batch.
+	// balance is the tradable or retired balance of the credit batch.
 	Balance string `protobuf:"bytes,3,opt,name=balance,proto3" json:"balance,omitempty"`
 }
 
@@ -265,11 +265,11 @@ func (m *Balance) GetBalance() string {
 	return ""
 }
 
-// Supply defines credit batch tradable/retired supply.
+// Supply represents a tradable or retired supply of a credit batch.
 type Supply struct {
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
-	// supply is the tradable/retired supply of the credit batch.
+	// supply is the tradable or retired supply of the credit batch.
 	Supply string `protobuf:"bytes,2,opt,name=supply,proto3" json:"supply,omitempty"`
 }
 

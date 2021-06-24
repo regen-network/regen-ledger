@@ -21,24 +21,23 @@ message GenesisState {
   // id_seq is used to get next class/batch id.
   uint64 id_seq = 4;
 
-  // tradable_balances represents list of Balance.
+  // tradable_balances is the list of credit batch tradable units.
   repeated Balance tradable_balances = 5;
 
-  // retired_balances represents list of Balance.
+  // retired_balances is the list of credit batch retired units.
   repeated Balance retired_balances = 6;
 
-  // tradable_supplies represents list of Supply..
+  // tradable_supplies is the list of credit batch tradable supply.
   repeated Supply tradable_supplies = 7;
 
-  // retired_supplies represents list of Supply.
+  // retired_supplies is the list of credit batch retired supply.
   repeated Supply retired_supplies = 8;
 
-  // precisions represents list of Precision.
+  // precisions is the list of decimal precision of a credit batch.
   repeated Precision precisions = 9;
 }
 
-// Precision defines decimal precision of a credit
-// batch.
+// Precision represents a credit batch precision with a batch_denom and max_decimal_places.
 message Precision {
   // batch_denom is the unique ID of the credit batch.
   string batch_denom = 2;
@@ -50,7 +49,8 @@ message Precision {
   uint32 max_decimal_places = 3;
 }
 
-// Balance defines credit batch tradable/retired balance.
+// Balance represents tradable or retired units of a credit batch with an account address, 
+// batch_denom, and balance.
 message Balance {
   // address is the account address of the account holding credits.
   string address = 1;
@@ -58,15 +58,15 @@ message Balance {
   // batch_denom is the unique ID of the credit batch.
   string batch_denom = 2;
 
-  // balance is the tradable/retired balance of the credit batch.
+  // balance is the tradable or retired balance of the credit batch.
   string balance = 3;
 }
 
-// Supply defines credit batch tradable/retired supply.
+// Supply represents a tradable or retired supply of a credit batch.
 message Supply {
   // batch_denom is the unique ID of the credit batch.
   string batch_denom = 1;
 
-  // supply is the tradable/retired supply of the credit batch.
+  // supply is the tradable or retired supply of the credit batch.
   string supply = 2;
 }

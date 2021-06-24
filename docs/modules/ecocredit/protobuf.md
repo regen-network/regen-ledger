@@ -224,14 +224,15 @@ use with the x/params module.
 <a name="regen.ecocredit.v1alpha1.Balance"></a>
 
 ### Balance
-Balance defines credit batch tradable/retired balance.
+Balance represents tradable or retired units of a credit batch with an account address, 
+batch_denom, and balance.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | address | [string](#string) |  | address is the account address of the account holding credits. |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
-| balance | [string](#string) |  | balance is the tradable/retired balance of the credit batch. |
+| balance | [string](#string) |  | balance is the tradable or retired balance of the credit batch. |
 
 
 
@@ -250,11 +251,11 @@ GenesisState defines ecocredit module's genesis state.
 | class_infos | [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo) | repeated | class_infos is the list of credit class info. |
 | batch_infos | [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo) | repeated | batch_infos is the list of credit batch info. |
 | id_seq | [uint64](#uint64) |  | id_seq is used to get next class/batch id. |
-| tradable_balances | [Balance](#regen.ecocredit.v1alpha1.Balance) | repeated | tradable_balances represents list of Balance. |
-| retired_balances | [Balance](#regen.ecocredit.v1alpha1.Balance) | repeated | retired_balances represents list of Balance. |
-| tradable_supplies | [Supply](#regen.ecocredit.v1alpha1.Supply) | repeated | tradable_supplies represents list of Supply.. |
-| retired_supplies | [Supply](#regen.ecocredit.v1alpha1.Supply) | repeated | retired_supplies represents list of Supply. |
-| precisions | [Precision](#regen.ecocredit.v1alpha1.Precision) | repeated | precisions represents list of Precision. |
+| tradable_balances | [Balance](#regen.ecocredit.v1alpha1.Balance) | repeated | tradable_balances is the list of credit batch tradable units. |
+| retired_balances | [Balance](#regen.ecocredit.v1alpha1.Balance) | repeated | retired_balances is the list of credit batch retired units. |
+| tradable_supplies | [Supply](#regen.ecocredit.v1alpha1.Supply) | repeated | tradable_supplies is the list of credit batch tradable supply. |
+| retired_supplies | [Supply](#regen.ecocredit.v1alpha1.Supply) | repeated | retired_supplies is the list of credit batch retired supply. |
+| precisions | [Precision](#regen.ecocredit.v1alpha1.Precision) | repeated | precisions is the list of decimal precision of a credit batch. |
 
 
 
@@ -264,8 +265,7 @@ GenesisState defines ecocredit module's genesis state.
 <a name="regen.ecocredit.v1alpha1.Precision"></a>
 
 ### Precision
-Precision defines decimal precision of a credit
-batch.
+Precision represents a credit batch precision with a batch_denom and max_decimal_places.
 
 
 | Field | Type | Label | Description |
@@ -281,13 +281,13 @@ batch.
 <a name="regen.ecocredit.v1alpha1.Supply"></a>
 
 ### Supply
-Supply defines credit batch tradable/retired supply.
+Supply represents a tradable or retired supply of a credit batch.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
-| supply | [string](#string) |  | supply is the tradable/retired supply of the credit batch. |
+| supply | [string](#string) |  | supply is the tradable or retired supply of the credit batch. |
 
 
 
