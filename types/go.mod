@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/cockroachdb/apd/v2 v2.0.2
-	github.com/cosmos/cosmos-sdk v0.43.0-beta1.0.20210622080249-5e564352ae77
+	github.com/cosmos/cosmos-sdk v0.43.0-rc0
 	github.com/gogo/protobuf v1.3.3
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/lib/pq v1.10.0 // indirect
