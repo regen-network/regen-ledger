@@ -321,7 +321,7 @@ $ %s tx group create-group-account [admin] [group-id] [metadata] \
 			}
 
 			var policy group.DecisionPolicy
-			if err := clientCtx.JSONCodec.UnmarshalInterfaceJSON([]byte(args[3]), &policy); err != nil {
+			if err := clientCtx.Codec.UnmarshalInterfaceJSON([]byte(args[3]), &policy); err != nil {
 				return err
 			}
 
@@ -405,7 +405,7 @@ func MsgUpdateGroupAccountDecisionPolicyCmd() *cobra.Command {
 			}
 
 			var policy group.DecisionPolicy
-			if err := clientCtx.JSONCodec.UnmarshalInterfaceJSON([]byte(args[2]), &policy); err != nil {
+			if err := clientCtx.Codec.UnmarshalInterfaceJSON([]byte(args[2]), &policy); err != nil {
 				return err
 			}
 

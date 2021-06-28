@@ -14,8 +14,8 @@ import (
 type Module interface {
 	module.TypeModule
 
-	DefaultGenesis(codec.JSONCodec) json.RawMessage
-	ValidateGenesis(codec.JSONCodec, client.TxEncodingConfig, json.RawMessage) error
+	DefaultGenesis(codec.Codec) json.RawMessage
+	ValidateGenesis(codec.Codec, client.TxEncodingConfig, json.RawMessage) error
 	GetTxCmd() *cobra.Command
 	GetQueryCmd() *cobra.Command
 }

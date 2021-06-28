@@ -20,7 +20,7 @@ func parseMembers(clientCtx client.Context, membersFile string) ([]group.Member,
 		return nil, err
 	}
 
-	err = clientCtx.JSONCodec.UnmarshalJSON(contents, &members)
+	err = clientCtx.Codec.UnmarshalJSON(contents, &members)
 	if err != nil {
 		return nil, err
 	}

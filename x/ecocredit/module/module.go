@@ -51,11 +51,11 @@ func (a Module) RegisterServices(configurator servermodule.Configurator) {
 	server.RegisterServices(configurator, a.paramSpace, a.bankKeeper)
 }
 
-func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
+func (a Module) DefaultGenesis(cdc codec.Codec) json.RawMessage {
 	return cdc.MustMarshalJSON(ecocredit.DefaultGenesisState())
 }
 
-func (a Module) ValidateGenesis(codec.JSONCodec, sdkclient.TxEncodingConfig, json.RawMessage) error {
+func (a Module) ValidateGenesis(codec.Codec, sdkclient.TxEncodingConfig, json.RawMessage) error {
 	return nil
 }
 
