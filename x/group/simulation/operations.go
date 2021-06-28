@@ -53,7 +53,7 @@ const (
 
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
-	appParams simtypes.AppParams, cdc codec.Codec, ak exported.AccountKeeper,
+	appParams simtypes.AppParams, cdc codec.JSONCodec, ak exported.AccountKeeper,
 	bk exported.BankKeeper, qryClient group.QueryClient, protoCdc *codec.ProtoCodec) simulation.WeightedOperations {
 	var (
 		weightMsgCreateGroup                      int
