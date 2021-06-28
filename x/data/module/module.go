@@ -36,9 +36,9 @@ func (a Module) RegisterServices(configurator servermodule.Configurator) {
 	server.RegisterServices(configurator)
 }
 
-func (a Module) DefaultGenesis(codec.Codec) json.RawMessage { return nil }
+func (a Module) DefaultGenesis(codec.JSONCodec) json.RawMessage { return nil }
 
-func (a Module) ValidateGenesis(codec.Codec, sdkclient.TxEncodingConfig, json.RawMessage) error {
+func (a Module) ValidateGenesis(codec.JSONCodec, sdkclient.TxEncodingConfig, json.RawMessage) error {
 	return nil
 }
 

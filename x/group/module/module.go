@@ -49,11 +49,11 @@ func (a Module) RegisterServices(configurator servermodule.Configurator) {
 	server.RegisterServices(configurator, a.AccountKeeper, a.BankKeeper)
 }
 
-func (a Module) DefaultGenesis(marshaler codec.Codec) json.RawMessage {
+func (a Module) DefaultGenesis(marshaler codec.JSONCodec) json.RawMessage {
 	return marshaler.MustMarshalJSON(group.NewGenesisState())
 }
 
-func (a Module) ValidateGenesis(cdc codec.Codec, config sdkclient.TxEncodingConfig, bz json.RawMessage) error {
+func (a Module) ValidateGenesis(cdc codec.JSONCodec, config sdkclient.TxEncodingConfig, bz json.RawMessage) error {
 	var data group.GenesisState
 	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
 		return fmt.Errorf("failed to unmarshal %s genesis state: %w", group.ModuleName, err)
