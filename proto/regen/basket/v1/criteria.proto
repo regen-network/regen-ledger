@@ -1,0 +1,28 @@
+syntax = "proto3";
+package regen.basket.v1;
+
+import "google/protobuf/any.proto";
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/basket";
+
+// AndCriteria returns a criteria that allows denoms that match all of the provided criteria.
+message AndCriteria {
+    option (cosmos_proto.implements_interface) = "regen.basket.Criteria";
+
+    google.protobuf.Any criteria = 1 [(cosmos_proto.accepts_interface) = "regen.basket.Criteria"];
+}
+
+// OrCriteria returns a criteria that allows denoms that match any of the provided criteria.
+message OrCriteria {
+    option (cosmos_proto.implements_interface) = "regen.basket.Criteria";
+
+    google.protobuf.Any criteria = 1 [(cosmos_proto.accepts_interface) = "regen.basket.Criteria"];
+}
+
+// DenomPrefixCriteria returns a criteria that allows all denoms with the provided prefix.
+message DenomPrefixCriteria {
+    option (cosmos_proto.implements_interface) = "regen.basket.Criteria";
+
+    string prefix = 1;
+}

@@ -1,0 +1,53 @@
+syntax = "proto3";
+package regen.basket.v1;
+
+option go_package = "github.com/regen-network/regen-ledger/x/basket";
+
+import "google/protobuf/any.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+
+service Msg {
+    // CreateBasket creates a new basket denom which will accept assets of
+    // any denoms that match the given criteria in exchange for basket tokens.
+    rpc CreateBasket(MsgCreateBasket) returns (MsgCreateBasketResponse) {}
+
+    // Add adds the provided assets into the basket. The account which added
+    // the assets to the basket will receive the equivalent amount of basket tokens
+    // in return and the basket will become the owner of the added assets.
+    rpc Add(MsgAdd) returns (MsgAddResponse) {}
+
+    // Remove removes the specified assets from the basket. The account removing
+    // the assets must return the equivalent number of basket tokens to the basket
+    // where they will be burned and in exchange will become the owner of the requested
+    // assets. If the specified assets are not available in the basket, the request will fail.
+    rpc Remove(MsgRemove) returns (MsgRemoveResponse) {}
+}
+
+message MsgCreateBasket {
+    string sender = 1;
+    google.protobuf.Any criteria = 2 [(cosmos_proto.accepts_interface) = "regen.basket.Criteria"];
+}
+
+message MsgCreateBasketResponse {
+    string basket_denom = 1;
+}
+
+message MsgAdd {
+    string adder_address = 1;
+    string basket_denom = 2;
+    repeated cosmos.base.v1beta1.Coin assets = 3;
+}
+
+message MsgAddResponse {
+    string basket_tokens_received = 1;
+}
+
+message MsgRemove {
+    string remover_address = 1;
+    string basket_denom = 2;
+    string amount_removing = 3;
+    repeated cosmos.base.v1beta1.Coin assets = 4;
+}
+
+message MsgRemoveResponse {}
