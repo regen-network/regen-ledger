@@ -128,7 +128,7 @@ transferred will result in a separate EventReceive for easy indexing.
 | sender | [string](#string) |  | sender is the sender of the credits in the case that this event is the result of a transfer. It will not be set when credits are received at initial issuance. |
 | recipient | [string](#string) |  | recipient is the recipient of the credits |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
-| amount | [string](#string) |  | amonut is the decimal number of both tradable and retired credits received. |
+| amount | [string](#string) |  | amount is the decimal number of both tradable and retired credits received. |
 
 
 
@@ -181,7 +181,7 @@ BatchInfo represents the high-level on-chain information for a credit batch.
 | class_id | [string](#string) |  | class_id is the unique ID of credit class. |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
 | issuer | [string](#string) |  | issuer is the issuer of the credit batch. |
-| total_amount | [string](#string) |  | total_amount is the total number of credits in the credit batch and is immutable. |
+| total_amount | [string](#string) |  | total_amount is the total number of credits in the credit batch and is immutable. Some of the credits may be cancelled, so will no longer be tracked in the tradable or retired supply for that batch, but they are not removed from the total amount. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit batch. |
 
 

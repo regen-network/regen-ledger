@@ -107,7 +107,9 @@ type BatchInfo struct {
 	// issuer is the issuer of the credit batch.
 	Issuer string `protobuf:"bytes,3,opt,name=issuer,proto3" json:"issuer,omitempty"`
 	// total_amount is the total number of credits in the credit batch and is
-	// immutable.
+	// immutable. Some of the credits may be cancelled, so will no longer be
+	// tracked in the tradable or retired supply for that batch, but they are not
+	// removed from the total amount.
 	TotalAmount string `protobuf:"bytes,4,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty" yaml:"total_amount"`
 	// metadata is any arbitrary metadata to attached to the credit batch.
 	Metadata []byte `protobuf:"bytes,5,opt,name=metadata,proto3" json:"metadata,omitempty"`

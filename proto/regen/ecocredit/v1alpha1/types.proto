@@ -36,7 +36,9 @@ message BatchInfo {
   string issuer = 3;
 
   // total_amount is the total number of credits in the credit batch and is
-  // immutable.
+  // immutable. Some of the credits may be cancelled, so will no longer be
+  // tracked in the tradable or retired supply for that batch, but they are not
+  // removed from the total amount.
   string total_amount = 4 [ (gogoproto.moretags) = "yaml:\"total_amount\"" ];
 
   // metadata is any arbitrary metadata to attached to the credit batch.

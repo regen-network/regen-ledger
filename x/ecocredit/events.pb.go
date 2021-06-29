@@ -163,7 +163,7 @@ type EventReceive struct {
 	Recipient string `protobuf:"bytes,2,opt,name=recipient,proto3" json:"recipient,omitempty"`
 	// batch_denom is the unique ID of credit batch.
 	BatchDenom string `protobuf:"bytes,3,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
-	// amonut is the decimal number of both tradable and retired credits received.
+	// amount is the decimal number of both tradable and retired credits received.
 	Amount string `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 

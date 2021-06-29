@@ -148,8 +148,8 @@ Parameters:
 func txRetire() *cobra.Command {
 	return &cobra.Command{
 		Use:   "retire [credits]",
-		Short: "Retires a specified amounts of credits from the account of the transaction author (--from)",
-		Long: `Retires a specified amounts of credits from the account of the transaction author (--from)
+		Short: "Retires a specified amount of credits from the account of the transaction author (--from)",
+		Long: `Retires a specified amount of credits from the account of the transaction author (--from)
 
 Parameters:
   credits:  YAML encoded credit list. Note: numerical values must be written in strings.
@@ -176,8 +176,8 @@ Parameters:
 func txCancel() *cobra.Command {
 	return &cobra.Command{
 		Use:   "cancel [credits]",
-		Short: "Cancels a specified amounts of credits from the account of the transaction author (--from)",
-		Long: `Cancels a specified amounts of credits from the account of the transaction author (--from)
+		Short: "Cancels a specified amount of credits from the account of the transaction author (--from)",
+		Long: `Cancels a specified amount of credits from the account of the transaction author (--from)
 
 Parameters:
   credits:  comma-separated list of credits in the form <amount>:<batch-denom>

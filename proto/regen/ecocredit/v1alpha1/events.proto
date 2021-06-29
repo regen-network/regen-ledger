@@ -47,7 +47,7 @@ message EventReceive {
   // batch_denom is the unique ID of credit batch.
   string batch_denom = 3 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
 
-  // amonut is the decimal number of both tradable and retired credits received.
+  // amount is the decimal number of both tradable and retired credits received.
   string amount = 4;
 }
 
