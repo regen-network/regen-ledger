@@ -64,7 +64,6 @@ func (d moduleKey) NewStream(context.Context, *grpc.StreamDesc, string, ...grpc.
 func (d moduleKey) ModuleAcc() types.ModuleAcc {
 	return types.ModuleAcc{
 		Module:  d.moduleName,
-		Key:     d.key,
 		Address: d.addr,
 	}
 }
