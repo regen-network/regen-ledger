@@ -14,7 +14,8 @@ import (
 func (s serverImpl) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 
 	interfaceRegistry := types.NewInterfaceRegistry()
-	queryClient := group.NewQueryClient(s.key)
+	key := s.key.Derive([]byte("client"))
+	queryClient := group.NewQueryClient(key)
 	return simulation.WeightedOperations(
 		simState.AppParams, simState.Cdc,
 		s.accKeeper, s.bankKeeper, queryClient, codec.NewProtoCodec(interfaceRegistry),

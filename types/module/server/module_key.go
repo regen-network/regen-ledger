@@ -11,7 +11,17 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 )
 
-// ModuleKey is an interface for module servers required by router.
+// RootModuleKey is a master key for modules to derive module accounts. It can be used as
+// a store key. It doesn't have address - only ModuleKey is addressable. It can't be used to
+// instantiate gRPC clients - derive a module key to use it with clients.
+type RootModuleKey interface {
+	sdk.StoreKey
+
+	Derive(key []byte) ModuleKey
+}
+
+// ModuleKey is an interface for module servers required by router. It's used to reference
+// a moudle account, derive sub accounts and as a connection interface for gRPC clients.
 type ModuleKey interface {
 	types.InvokerConn
 
@@ -20,27 +30,11 @@ type ModuleKey interface {
 	Derive(key []byte) ModuleKey
 }
 
-// RootModuleKey is a master key for modules to derive other keys. It doesn't have address -
-// only ModuleKey is addressable.
-type RootModuleKey interface {
-	types.InvokerConn
-	ModuleAcc() types.ModuleAcc
-	Derive(key []byte) ModuleKey
-
-	sdk.StoreKey
-}
-
 type moduleKey struct {
 	moduleName string
 	addr       []byte
 	key        []byte
 	i          InvokerFactory
-}
-
-// NewDerivedModuleKey creates a ModuleKey with a derived module address based on parent
-// module address and derivation key.
-func NewDerivedModuleKey(modName string, parentAddr, derivationKey []byte, i InvokerFactory) ModuleKey {
-	return moduleKey{modName, address.Derive(parentAddr, derivationKey), derivationKey, i}
 }
 
 // Invoker implements ModuleKey interface
@@ -82,19 +76,18 @@ func (d moduleKey) Address() sdk.AccAddress {
 
 // Derive implements ModuleKey interface
 func (d moduleKey) Derive(key []byte) ModuleKey {
-	return NewDerivedModuleKey(d.moduleName, d.addr, key, d.i)
+	return &moduleKey{d.moduleName, address.Derive(d.addr, key), key, d.i}
 }
 
 type rootModuleKey struct {
-	moduleKey
+	moduleName string
+	i          InvokerFactory
 }
 
 var _ RootModuleKey = rootModuleKey{}
 
 func NewRootModuleKey(name string, i InvokerFactory) RootModuleKey {
-	// return &rootModuleKey{moduleKey{name, address.Module(name), i}}  // TODO
-	key := []byte(name)
-	return &rootModuleKey{moduleKey{name, key, address.Module(name, key), i}}
+	return &rootModuleKey{name, i}
 }
 
 // Name implements sdk.StoreKey interface
@@ -105,4 +98,9 @@ func (r rootModuleKey) Name() string {
 // String implements sdk.StoreKey interface
 func (r rootModuleKey) String() string {
 	return fmt.Sprintf("rootModuleKey{%p, %s}", &r, r.moduleName)
+}
+
+// Derive implements RootModuleKey interface
+func (r rootModuleKey) Derive(key []byte) ModuleKey {
+	return &moduleKey{r.moduleName, address.Module(r.moduleName, key), key, r.i}
 }
