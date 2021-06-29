@@ -197,19 +197,19 @@ func (s *IntegrationTestSuite) TestScenario() {
 		{
 			name:               "can't retire to an invalid country",
 			toRetire:           "0.0001",
-			retirementLocation: "ZZ",
+			retirementLocation: "ZZZ",
 			expectErr:          true,
 		},
 		{
 			name:               "can't retire to an invalid region",
 			toRetire:           "0.0001",
-			retirementLocation: "AF-ZZ",
+			retirementLocation: "AF-ZZZZ",
 			expectErr:          true,
 		},
 		{
 			name:               "can't retire to an invalid postal code",
 			toRetire:           "0.0001",
-			retirementLocation: "AF-BDS-01234567890",
+			retirementLocation: "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
 			expectErr:          true,
 		},
 		{
@@ -241,7 +241,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		{
 			name:               "can retire all credits",
 			toRetire:           "0.3699",
-			retirementLocation: "AF-BDS-12345",
+			retirementLocation: "AF-BDS 12345",
 			expectErr:          false,
 			expTradeable:       "0",
 			expRetired:         "14.656",
@@ -325,21 +325,21 @@ func (s *IntegrationTestSuite) TestScenario() {
 			name:               "can't send to an invalid country",
 			sendTradeable:      "10",
 			sendRetired:        "20",
-			retirementLocation: "ZZ",
+			retirementLocation: "ZZZ",
 			expectErr:          true,
 		},
 		{
 			name:               "can't send to an invalid region",
 			sendTradeable:      "10",
 			sendRetired:        "20",
-			retirementLocation: "AF-ZZ",
+			retirementLocation: "AF-ZZZZ",
 			expectErr:          true,
 		},
 		{
 			name:               "can't send to an invalid postal code",
 			sendTradeable:      "10",
 			sendRetired:        "20",
-			retirementLocation: "AF-BDS-01234567890",
+			retirementLocation: "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
 			expectErr:          true,
 		},
 		{

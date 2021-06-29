@@ -111,12 +111,6 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 				return nil, err
 			}
 
-			// Validate retirement location
-			err = validateLocation(issuance.RetirementLocation)
-			if err != nil {
-				return nil, err
-			}
-
 			err = retire(ctx, store, recipient, batchDenom, retired, issuance.RetirementLocation)
 			if err != nil {
 				return nil, err
@@ -226,12 +220,6 @@ func (s serverImpl) Send(ctx types.Context, req *ecocredit.MsgSendRequest) (*eco
 				return nil, err
 			}
 
-			// Validate retirement location
-			err = validateLocation(credit.RetirementLocation)
-			if err != nil {
-				return nil, err
-			}
-
 			// Add retired balance
 			err = retire(ctx, store, recipient, denom, retired, credit.RetirementLocation)
 			if err != nil {
@@ -262,11 +250,6 @@ func (s serverImpl) Send(ctx types.Context, req *ecocredit.MsgSendRequest) (*eco
 func (s serverImpl) Retire(ctx types.Context, req *ecocredit.MsgRetireRequest) (*ecocredit.MsgRetireResponse, error) {
 	store := ctx.KVStore(s.storeKey)
 	holder := req.Holder
-
-	err := validateLocation(req.Location)
-	if err != nil {
-		return nil, err
-	}
 
 	for _, credit := range req.Credits {
 		denom := batchDenomT(credit.BatchDenom)

@@ -1,4 +1,4 @@
-package server
+package ecocredit
 
 import (
 	"testing"
@@ -24,7 +24,7 @@ func TestValidateLocation(t *testing.T) {
 		},
 		{
 			name:      "can't validate invalid country code",
-			location:  "ZZ",
+			location:  "ZZZ",
 			expectErr: true,
 		},
 		{
@@ -44,22 +44,22 @@ func TestValidateLocation(t *testing.T) {
 		},
 		{
 			name:      "can't validate invalid region code",
-			location:  "BF-ZZ",
+			location:  "BF-ZZZZ",
 			expectErr: true,
 		},
 		{
 			name:      "can validate valid postal code",
-			location:  "BF-BAL-1",
+			location:  "BF-BAL 1",
 			expectErr: false,
 		},
 		{
 			name:      "can validate valid postal code 2",
-			location:  "BF-BAL-0123456789",
+			location:  "BF-BAL 0123456789",
 			expectErr: false,
 		},
 		{
 			name:      "can't validate invalid postal code",
-			location:  "BF-BAL-01234567890",
+			location:  "BF-BAL 0123456789012345678901234567890123456789012345678901234567890123456789",
 			expectErr: true,
 		},
 	}
