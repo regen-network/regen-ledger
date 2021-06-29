@@ -15,7 +15,7 @@ import (
 type ModuleKey interface {
 	types.InvokerConn
 
-	ModuleID() types.ModuleID
+	ModuleAcc() types.ModuleAcc
 	Address() sdk.AccAddress
 	Derive(key []byte) ModuleKey
 }
@@ -24,7 +24,7 @@ type ModuleKey interface {
 // only ModuleKey is addressable.
 type RootModuleKey interface {
 	types.InvokerConn
-	ModuleID() types.ModuleID
+	ModuleAcc() types.ModuleAcc
 	Derive(key []byte) ModuleKey
 
 	sdk.StoreKey
@@ -47,7 +47,7 @@ func NewDerivedModuleKey(modName string, parentAddr, derivationKey []byte, i Inv
 func (d moduleKey) Invoker(methodName string) (types.Invoker, error) {
 	return d.i(CallInfo{
 		Method: methodName,
-		Caller: d.ModuleID(),
+		Caller: d.ModuleAcc(),
 	})
 }
 
@@ -66,11 +66,12 @@ func (d moduleKey) NewStream(context.Context, *grpc.StreamDesc, string, ...grpc.
 	return nil, fmt.Errorf("unsupported")
 }
 
-// ModuleID implements ModuleKey interface
-func (d moduleKey) ModuleID() types.ModuleID {
-	return types.ModuleID{
-		Name: d.moduleName,
-		Key:  d.key,
+// ModuleAcc implements ModuleKey interface
+func (d moduleKey) ModuleAcc() types.ModuleAcc {
+	return types.ModuleAcc{
+		Module:  d.moduleName,
+		Key:     d.key,
+		Address: d.addr,
 	}
 }
 
@@ -92,7 +93,8 @@ var _ RootModuleKey = rootModuleKey{}
 
 func NewRootModuleKey(name string, i InvokerFactory) RootModuleKey {
 	// return &rootModuleKey{moduleKey{name, address.Module(name), i}}  // TODO
-	return &rootModuleKey{moduleKey{name, []byte(name), i}}
+	key := []byte(name)
+	return &rootModuleKey{moduleKey{name, key, address.Module(name, key), i}}
 }
 
 // Name implements sdk.StoreKey interface

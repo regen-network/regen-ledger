@@ -139,9 +139,9 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 func (rtr *router) invokerFactory(moduleName string) InvokerFactory {
 	return func(callInfo CallInfo) (types.Invoker, error) {
 		moduleID := callInfo.Caller
-		if moduleName != moduleID.Name {
+		if moduleName != moduleID.Module {
 			return nil, sdkerrors.Wrap(sdkerrors.ErrUnauthorized,
-				fmt.Sprintf("expected a call from module %s, but module %s is calling", moduleName, moduleID.Name))
+				fmt.Sprintf("expected a call from module %s, but module %s is calling", moduleName, moduleID.Module))
 		}
 
 		writeCondition := func(ctx context.Context, methodName string, msgReq sdk.Msg) error {
@@ -150,16 +150,16 @@ func (rtr *router) invokerFactory(moduleName string) InvokerFactory {
 				return fmt.Errorf("unsupported message: inter module Msg invocation handles Msgs with only one signer, but %s expects multiple signers (%+v),  ", methodName, signers)
 			}
 
-			if bytes.Equal(moduleID.Key, signers[0]) {
+			if bytes.Equal(moduleID.Address, signers[0]) {
 				return nil
 			}
 
-			if rtr.authzMiddleware != nil && rtr.authzMiddleware(sdk.UnwrapSDKContext(ctx), methodName, msgReq, moduleID.Key) {
+			if rtr.authzMiddleware != nil && rtr.authzMiddleware(sdk.UnwrapSDKContext(ctx), methodName, msgReq, moduleID.Address) {
 				return nil
 			}
 
 			return sdkerrors.Wrap(sdkerrors.ErrUnauthorized,
-				fmt.Sprintf("expected %s, got %s", signers[0], moduleID.Key))
+				fmt.Sprintf("expected %s, got %s", signers[0], moduleID.Address))
 		}
 
 		return rtr.invoker(callInfo.Method, writeCondition)
