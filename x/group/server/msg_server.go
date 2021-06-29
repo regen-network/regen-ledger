@@ -267,17 +267,17 @@ func (s serverImpl) CreateGroupAccount(ctx types.Context, req *group.MsgCreateGr
 
 		accountID := s.key.Derive(buf.Bytes())
 		accountAddr = accountID.Address()
-
 		if s.accKeeper.GetAccount(ctx.Context, accountAddr) != nil {
 			// handle a rare collision
 			continue
 		}
 
+		accAddrStr := accountAddr.String()
 		acc := s.accKeeper.NewAccount(ctx.Context, &authtypes.ModuleAccount{
 			BaseAccount: &authtypes.BaseAccount{
-				Address: accountAddr.String(),
+				Address: accAddrStr,
 			},
-			Name: accountAddr.String(),
+			Name: accAddrStr,
 		})
 		s.accKeeper.SetAccount(ctx.Context, acc)
 

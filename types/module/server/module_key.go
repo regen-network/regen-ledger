@@ -20,9 +20,9 @@ type ModuleKey interface {
 	Derive(key []byte) ModuleKey
 }
 
+// RootModuleKey is a master key for modules to derive other keys. It doesn't have address -
+// only ModuleKey is addressable.
 type RootModuleKey interface {
-	// ModuleKey // TODO
-
 	types.InvokerConn
 	ModuleID() types.ModuleID
 	Derive(key []byte) ModuleKey
@@ -33,13 +33,14 @@ type RootModuleKey interface {
 type moduleKey struct {
 	moduleName string
 	addr       []byte
+	key        []byte
 	i          InvokerFactory
 }
 
 // NewDerivedModuleKey creates a ModuleKey with a derived module address based on parent
 // module address and derivation key.
 func NewDerivedModuleKey(modName string, parentAddr, derivationKey []byte, i InvokerFactory) ModuleKey {
-	return moduleKey{modName, address.Derive(parentAddr, derivationKey), i}
+	return moduleKey{modName, address.Derive(parentAddr, derivationKey), derivationKey, i}
 }
 
 // Invoker implements ModuleKey interface
@@ -68,8 +69,8 @@ func (d moduleKey) NewStream(context.Context, *grpc.StreamDesc, string, ...grpc.
 // ModuleID implements ModuleKey interface
 func (d moduleKey) ModuleID() types.ModuleID {
 	return types.ModuleID{
-		Name:    d.moduleName,
-		Address: d.addr,
+		Name: d.moduleName,
+		Key:  d.key,
 	}
 }
 

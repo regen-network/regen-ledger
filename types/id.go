@@ -1,9 +1,10 @@
 package types
 
+// TODO: rename to ModuleAccount
 type ModuleID struct {
 	// Name of a module used by router, used when registering a MsgServer and invoking
-	// gRPC services.
+	// service methods.
 	Name string
-	// Address of a module
-	Address []byte // TODO - maybe we can remove it?
+	// Key for identifying cross-module messages and module address derivation
+	Key []byte
 }

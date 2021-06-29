@@ -147,21 +147,19 @@ func (rtr *router) invokerFactory(moduleName string) InvokerFactory {
 		writeCondition := func(ctx context.Context, methodName string, msgReq sdk.Msg) error {
 			signers := msgReq.GetSigners()
 			if len(signers) != 1 {
-				return fmt.Errorf("inter module Msg invocation requires a single expected signer (%s), but %s expects multiple signers (%+v),  ", moduleID.Address, methodName, signers)
+				return fmt.Errorf("unsupported message: inter module Msg invocation handles Msgs with only one signer, but %s expects multiple signers (%+v),  ", methodName, signers)
 			}
 
-			signer := signers[0]
-
-			if bytes.Equal(moduleID.Address, signer) {
+			if bytes.Equal(moduleID.Key, signers[0]) {
 				return nil
 			}
 
-			if rtr.authzMiddleware != nil && rtr.authzMiddleware(sdk.UnwrapSDKContext(ctx), methodName, msgReq, moduleID.Address) {
+			if rtr.authzMiddleware != nil && rtr.authzMiddleware(sdk.UnwrapSDKContext(ctx), methodName, msgReq, moduleID.Key) {
 				return nil
 			}
 
 			return sdkerrors.Wrap(sdkerrors.ErrUnauthorized,
-				fmt.Sprintf("expected %s, got %s", signers[0], moduleID.Address))
+				fmt.Sprintf("expected %s, got %s", signers[0], moduleID.Key))
 		}
 
 		return rtr.invoker(callInfo.Method, writeCondition)
