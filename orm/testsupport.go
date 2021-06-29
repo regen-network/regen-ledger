@@ -47,6 +47,10 @@ func (d debuggingGasMeter) GasConsumedToLimit() types.Gas {
 	return d.g.GasConsumedToLimit()
 }
 
+func (d debuggingGasMeter) RefundGas(amount uint64, descriptor string) {
+	d.g.RefundGas(amount, descriptor)
+}
+
 func (d debuggingGasMeter) Limit() types.Gas {
 	return d.g.Limit()
 }

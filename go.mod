@@ -3,7 +3,7 @@ module github.com/regen-network/regen-ledger
 go 1.15
 
 require (
-	github.com/cosmos/cosmos-sdk v0.43.0-beta1.0.20210520130629-fbb50cfa0a43
+	github.com/cosmos/cosmos-sdk v0.43.0-rc0
 	github.com/cosmos/ibc-go v1.0.0-alpha2
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
@@ -11,15 +11,14 @@ require (
 	github.com/regen-network/regen-ledger/x/data v0.0.0-00010101000000-000000000000
 	github.com/regen-network/regen-ledger/x/ecocredit v0.0.0-00010101000000-000000000000
 	github.com/regen-network/regen-ledger/x/group v0.0.0-00010101000000-000000000000
-	github.com/rs/zerolog v1.21.0
+	github.com/rs/zerolog v1.23.0
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.1.3
 	github.com/stretchr/testify v1.7.0
-	github.com/tendermint/tendermint v0.34.10
+	github.com/tendermint/tendermint v0.34.11
 	github.com/tendermint/tm-db v0.6.4
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
 	google.golang.org/genproto v0.0.0-20210611144927-798beca9d670 // indirect
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
