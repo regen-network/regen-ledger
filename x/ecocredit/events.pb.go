@@ -242,8 +242,9 @@ type EventRetire struct {
 	Units string `protobuf:"bytes,3,opt,name=units,proto3" json:"units,omitempty"`
 	// location is the location of the beneficiary or buyer of the retired
 	// credits. It is a string of the form
-	// <country-code>[-<sub-national-code>[-<postal-code>]], with the first two fields
-	// conforming to ISO 3166-2.
+	// <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+	// fields conforming to ISO 3166-2, and postal-code being up to 64
+	// alphanumeric characters.
 	Location string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 }
 

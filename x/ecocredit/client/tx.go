@@ -158,7 +158,8 @@ Parameters:
   retirement_location: A string representing the location of the buyer or
                        beneficiary of retired credits. It has the form
                        <country-code>[-<region-code>[ <postal-code>]], where
-                       country-code and region-code are taken from ISO 3166.
+                       country-code and region-code are taken from ISO 3166, and
+                       postal-code being up to 64 alphanumeric characters.
                        eg: 'AA-BB 12345'`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {

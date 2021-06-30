@@ -13,52 +13,57 @@ func TestValidateLocation(t *testing.T) {
 		expectErr bool
 	}{
 		{
-			name:      "can validate valid country code",
+			name:      "valid country code",
 			location:  "AF",
 			expectErr: false,
 		},
 		{
-			name:      "can validate valid country code 2",
+			name:      "valid country code 2",
 			location:  "BF",
 			expectErr: false,
 		},
 		{
-			name:      "can't validate invalid country code",
+			name:      "invalid country code",
 			location:  "ZZZ",
 			expectErr: true,
 		},
 		{
-			name:      "can't validate invalid country code 2",
+			name:      "invalid country code 2",
 			location:  "Z!adflksdfZ",
 			expectErr: true,
 		},
 		{
-			name:      "can validate valid region code",
+			name:      "valid region code",
 			location:  "AF-BDS",
 			expectErr: false,
 		},
 		{
-			name:      "can validate valid region code 2",
-			location:  "BF-BAL",
+			name:      "valid region code 2",
+			location:  "BF-B12",
 			expectErr: false,
 		},
 		{
-			name:      "can't validate invalid region code",
+			name:      "invalid region code",
 			location:  "BF-ZZZZ",
 			expectErr: true,
 		},
 		{
-			name:      "can validate valid postal code",
+			name:      "invalid region code 2",
+			location:  "BF-AB!",
+			expectErr: true,
+		},
+		{
+			name:      "valid postal code",
 			location:  "BF-BAL 1",
 			expectErr: false,
 		},
 		{
-			name:      "can validate valid postal code 2",
-			location:  "BF-BAL 0123456789",
+			name:      "valid postal code 2",
+			location:  "BF-B12 0123456789",
 			expectErr: false,
 		},
 		{
-			name:      "can't validate invalid postal code",
+			name:      "invalid postal code",
 			location:  "BF-BAL 0123456789012345678901234567890123456789012345678901234567890123456789",
 			expectErr: true,
 		},
