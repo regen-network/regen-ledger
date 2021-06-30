@@ -12,11 +12,11 @@ message GenesisState {
   // module
   Params params = 1 [ (gogoproto.nullable) = false ];
 
-  // class_infos is the list of credit class info.
-  repeated ClassInfo class_infos = 2;
+  // class_info is the list of credit class info.
+  repeated ClassInfo class_info = 2;
 
-  // batch_infos is the list of credit batch info.
-  repeated BatchInfo batch_infos = 3;
+  // batch_info is the list of credit batch info.
+  repeated BatchInfo batch_info = 3;
 
   // id_seq is used to get next class/batch id.
   uint64 id_seq = 4;
@@ -40,13 +40,13 @@ message GenesisState {
 // Precision represents a credit batch precision with a batch_denom and max_decimal_places.
 message Precision {
   // batch_denom is the unique ID of the credit batch.
-  string batch_denom = 2;
+  string batch_denom = 1;
 
   // max_decimal_places is the new maximum number of decimal places that can be
   // used to represent some quantity of credit units. It is an experimental
   // feature to concretely explore an idea proposed in
   // https://github.com/cosmos/cosmos-sdk/issues/7113.
-  uint32 max_decimal_places = 3;
+  uint32 max_decimal_places = 2;
 }
 
 // Balance represents tradable or retired units of a credit batch with an account address, 

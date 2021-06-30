@@ -93,8 +93,8 @@ func (s *GenesisState) Validate() error {
 func DefaultGenesisState() *GenesisState {
 	return &GenesisState{
 		Params:           DefaultParams(),
-		ClassInfos:       []*ClassInfo{},
-		BatchInfos:       []*BatchInfo{},
+		ClassInfo:        []*ClassInfo{},
+		BatchInfo:        []*BatchInfo{},
 		IdSeq:            0,
 		TradableBalances: []*Balance{},
 		RetiredBalances:  []*Balance{},

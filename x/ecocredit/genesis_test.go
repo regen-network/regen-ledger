@@ -1,7 +1,6 @@
 package ecocredit_test
 
 import (
-	fmt "fmt"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -46,7 +45,7 @@ func TestGenesisValidate(t *testing.T) {
 						MaxDecimalPlaces: 3,
 					},
 				}
-				genesisState.ClassInfos = []*ecocredit.ClassInfo{
+				genesisState.ClassInfo = []*ecocredit.ClassInfo{
 					{
 						ClassId:  "1",
 						Designer: addr1.String(),
@@ -54,7 +53,7 @@ func TestGenesisValidate(t *testing.T) {
 						Metadata: []byte("meta-data"),
 					},
 				}
-				genesisState.BatchInfos = []*ecocredit.BatchInfo{
+				genesisState.BatchInfo = []*ecocredit.BatchInfo{
 					{
 						ClassId:    "1",
 						BatchDenom: "1/2",
@@ -85,7 +84,7 @@ func TestGenesisValidate(t *testing.T) {
 						MaxDecimalPlaces: 3,
 					},
 				}
-				genesisState.ClassInfos = []*ecocredit.ClassInfo{
+				genesisState.ClassInfo = []*ecocredit.ClassInfo{
 					{
 						ClassId:  "1",
 						Designer: addr1.String(),
@@ -93,7 +92,7 @@ func TestGenesisValidate(t *testing.T) {
 						Metadata: []byte("meta-data"),
 					},
 				}
-				genesisState.BatchInfos = []*ecocredit.BatchInfo{
+				genesisState.BatchInfo = []*ecocredit.BatchInfo{
 					{
 						ClassId:    "1",
 						BatchDenom: "1/2",
@@ -136,7 +135,7 @@ func TestGenesisValidate(t *testing.T) {
 			"expect error: invalid tradable supply",
 			func() *ecocredit.GenesisState {
 				genesisState := ecocredit.DefaultGenesisState()
-				genesisState.ClassInfos = []*ecocredit.ClassInfo{
+				genesisState.ClassInfo = []*ecocredit.ClassInfo{
 					{
 						ClassId:  "1",
 						Designer: addr1.String(),
@@ -144,7 +143,7 @@ func TestGenesisValidate(t *testing.T) {
 						Metadata: []byte("meta-data"),
 					},
 				}
-				genesisState.BatchInfos = []*ecocredit.BatchInfo{
+				genesisState.BatchInfo = []*ecocredit.BatchInfo{
 					{
 						ClassId:    "1",
 						BatchDenom: "1/2",
@@ -182,7 +181,7 @@ func TestGenesisValidate(t *testing.T) {
 			"expect error: invalid retired supply",
 			func() *ecocredit.GenesisState {
 				genesisState := ecocredit.DefaultGenesisState()
-				genesisState.ClassInfos = []*ecocredit.ClassInfo{
+				genesisState.ClassInfo = []*ecocredit.ClassInfo{
 					{
 						ClassId:  "1",
 						Designer: addr1.String(),
@@ -190,7 +189,7 @@ func TestGenesisValidate(t *testing.T) {
 						Metadata: []byte("meta-data"),
 					},
 				}
-				genesisState.BatchInfos = []*ecocredit.BatchInfo{
+				genesisState.BatchInfo = []*ecocredit.BatchInfo{
 					{
 						ClassId:    "1",
 						BatchDenom: "1/2",
@@ -245,7 +244,7 @@ func TestGenesisValidate(t *testing.T) {
 						MaxDecimalPlaces: 3,
 					},
 				}
-				genesisState.ClassInfos = []*ecocredit.ClassInfo{
+				genesisState.ClassInfo = []*ecocredit.ClassInfo{
 					{
 						ClassId:  "1",
 						Designer: addr1.String(),
@@ -253,7 +252,7 @@ func TestGenesisValidate(t *testing.T) {
 						Metadata: []byte("meta-data"),
 					},
 				}
-				genesisState.BatchInfos = []*ecocredit.BatchInfo{
+				genesisState.BatchInfo = []*ecocredit.BatchInfo{
 					{
 						ClassId:    "1",
 						BatchDenom: "1/2",
@@ -309,7 +308,6 @@ func TestGenesisValidate(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.gensisState().Validate()
 			if tc.expectErr {
-				fmt.Println(err.Error())
 				require.Error(t, err)
 				require.Equal(t, tc.errorMsg, err.Error())
 			} else {
@@ -318,5 +316,4 @@ func TestGenesisValidate(t *testing.T) {
 		})
 	}
 
-	// require.True(t, false)
 }

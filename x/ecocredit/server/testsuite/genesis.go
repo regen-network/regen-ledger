@@ -20,7 +20,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	var ecocreditParams ecocredit.Params
 	s.paramSpace.SetParamSet(ctx.Context, &ecocreditParams)
 
-	classInfos := []*ecocredit.ClassInfo{
+	classInfo := []*ecocredit.ClassInfo{
 		{
 			ClassId:  "4",
 			Designer: designer1.String(),
@@ -35,7 +35,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 		},
 	}
 
-	batchInfos := []*ecocredit.BatchInfo{
+	batchInfo := []*ecocredit.BatchInfo{
 		{
 			ClassId:    "4",
 			BatchDenom: "4/6",
@@ -91,8 +91,8 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	genesisState := &ecocredit.GenesisState{
 		Params:           ecocredit.DefaultParams(),
 		IdSeq:            7,
-		ClassInfos:       classInfos,
-		BatchInfos:       batchInfos,
+		ClassInfo:        classInfo,
+		BatchInfo:        batchInfo,
 		Precisions:       precisions,
 		TradableBalances: tradableBalances,
 		RetiredBalances:  retiredBalances,
@@ -105,20 +105,20 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	require.Equal(genesisState.Params, exportedGenesisState.Params)
 	require.Equal(genesisState.IdSeq, exportedGenesisState.IdSeq)
 
-	for _, classInfo := range classInfos {
+	for _, info := range classInfo {
 		res, err := s.queryClient.ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{
-			ClassId: classInfo.ClassId,
+			ClassId: info.ClassId,
 		})
 		require.NoError(err)
-		s.assetClassInfoEqual(res.Info, classInfo)
+		s.assetClassInfoEqual(res.Info, info)
 	}
 
-	for _, batchInfo := range batchInfos {
+	for _, info := range batchInfo {
 		res, err := s.queryClient.BatchInfo(ctx, &ecocredit.QueryBatchInfoRequest{
-			BatchDenom: batchInfo.BatchDenom,
+			BatchDenom: info.BatchDenom,
 		})
 		require.NoError(err)
-		s.assetBatchInfoEqual(res.Info, batchInfo)
+		s.assetBatchInfoEqual(res.Info, info)
 	}
 
 	for i, tradableBalance := range tradableBalances {
@@ -154,8 +154,8 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	exported := s.exportGenesisState(ctx)
 	require.Equal(uint64(7), exported.IdSeq)
 	require.Equal(genesisState.Params, exported.Params)
-	require.Equal(genesisState.ClassInfos, exported.ClassInfos)
-	require.Equal(genesisState.BatchInfos, exported.BatchInfos)
+	require.Equal(genesisState.ClassInfo, exported.ClassInfo)
+	require.Equal(genesisState.BatchInfo, exported.BatchInfo)
 	require.Equal(genesisState.RetiredBalances, exported.RetiredBalances)
 	require.Equal(genesisState.TradableBalances, exported.TradableBalances)
 	require.Equal(genesisState.TradableSupplies, exported.TradableSupplies)

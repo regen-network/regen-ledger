@@ -26,12 +26,12 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 
 	s.paramSpace.SetParamSet(ctx.Context, &genesisState.Params)
 
-	if err := orm.ImportTableData(ctx, s.classInfoTable, genesisState.ClassInfos, 0); err != nil {
-		return nil, errors.Wrap(err, "class-infos")
+	if err := orm.ImportTableData(ctx, s.classInfoTable, genesisState.ClassInfo, 0); err != nil {
+		return nil, errors.Wrap(err, "class-info")
 	}
 
-	if err := orm.ImportTableData(ctx, s.batchInfoTable, genesisState.BatchInfos, 0); err != nil {
-		return nil, errors.Wrap(err, "batch-infos")
+	if err := orm.ImportTableData(ctx, s.batchInfoTable, genesisState.BatchInfo, 0); err != nil {
+		return nil, errors.Wrap(err, "batch-info")
 	}
 
 	store := ctx.KVStore(s.storeKey)
@@ -87,21 +87,21 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 	return []abci.ValidatorUpdate{}, nil
 }
 
-// ExportGenesis will dump the contents of the keeper into a serializable GenesisState.
-func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.JSONCodec) (json.RawMessage, error) {
+// ExportGenesis will dump the ecocredit module state into a serializable GenesisState.
+func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawMessage, error) {
 	// Get Params from the store and put them in the genesis state
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(ctx.Context, &params)
 
 	store := ctx.KVStore(s.storeKey)
-	var classInfos []*ecocredit.ClassInfo
-	if _, err := orm.ExportTableData(ctx, s.classInfoTable, &classInfos); err != nil {
-		return nil, errors.Wrap(err, "class-infos")
+	var classInfo []*ecocredit.ClassInfo
+	if _, err := orm.ExportTableData(ctx, s.classInfoTable, &classInfo); err != nil {
+		return nil, errors.Wrap(err, "class-info")
 	}
 
-	var batchInfos []*ecocredit.BatchInfo
-	if _, err := orm.ExportTableData(ctx, s.batchInfoTable, &batchInfos); err != nil {
-		return nil, errors.Wrap(err, "batch-infos")
+	var batchInfo []*ecocredit.BatchInfo
+	if _, err := orm.ExportTableData(ctx, s.batchInfoTable, &batchInfo); err != nil {
+		return nil, errors.Wrap(err, "batch-info")
 	}
 
 	tradableBalances := s.getBalances(store, TradableBalancePrefix)
@@ -112,8 +112,8 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.JSONCodec) (json.
 
 	gs := &ecocredit.GenesisState{
 		Params:           params,
-		ClassInfos:       classInfos,
-		BatchInfos:       batchInfos,
+		ClassInfo:        classInfo,
+		BatchInfo:        batchInfo,
 		IdSeq:            s.idSeq.CurVal(ctx),
 		TradableBalances: tradableBalances,
 		RetiredBalances:  retiredBalances,
