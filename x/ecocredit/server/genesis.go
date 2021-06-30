@@ -18,7 +18,7 @@ import (
 
 // InitGenesis performs genesis initialization for the ecocredit module. It
 // returns no validator updates.
-func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.JSONCodec, data json.RawMessage) ([]abci.ValidatorUpdate, error) {
+func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.RawMessage) ([]abci.ValidatorUpdate, error) {
 	var genesisState ecocredit.GenesisState
 	cdc.MustUnmarshalJSON(data, &genesisState)
 
