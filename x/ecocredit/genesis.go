@@ -34,36 +34,12 @@ func (s *GenesisState) Validate() error {
 		retiredSupply[rSupply.BatchDenom] = supply
 	}
 
-	for _, tBalance := range s.TradableBalances {
-		balance, err := math.ParsePositiveFixedDecimal(tBalance.Balance, decimalPlaces[tBalance.BatchDenom])
-		if err != nil {
-			return err
-		}
-
-		if supply, ok := calTradableSupply[tBalance.BatchDenom]; ok {
-			if err := math.Add(supply, supply, balance); err != nil {
-				return err
-			}
-			calTradableSupply[tBalance.BatchDenom] = supply
-		} else {
-			calTradableSupply[tBalance.BatchDenom] = balance
-		}
+	if err := calculateSupply(decimalPlaces, s.TradableBalances, calTradableSupply); err != nil {
+		return err
 	}
 
-	for _, rBalance := range s.RetiredBalances {
-		balance, err := math.ParsePositiveFixedDecimal(rBalance.Balance, decimalPlaces[rBalance.BatchDenom])
-		if err != nil {
-			return err
-		}
-
-		if supply, ok := calRetiredSupply[rBalance.BatchDenom]; ok {
-			if err := math.Add(supply, supply, balance); err != nil {
-				return err
-			}
-			calRetiredSupply[rBalance.BatchDenom] = supply
-		} else {
-			calRetiredSupply[rBalance.BatchDenom] = balance
-		}
+	if err := calculateSupply(decimalPlaces, s.RetiredBalances, calRetiredSupply); err != nil {
+		return err
 	}
 
 	for denom, calSupply := range calTradableSupply {
@@ -86,6 +62,25 @@ func (s *GenesisState) Validate() error {
 		}
 	}
 
+	return nil
+}
+
+func calculateSupply(decimalPlaces map[string]uint32, balances []*Balance, calSupply map[string]*apd.Decimal) error {
+	for _, b := range balances {
+		balance, err := math.ParsePositiveFixedDecimal(b.Balance, decimalPlaces[b.BatchDenom])
+		if err != nil {
+			return err
+		}
+
+		if supply, ok := calSupply[b.BatchDenom]; ok {
+			if err := math.Add(supply, supply, balance); err != nil {
+				return err
+			}
+			calSupply[b.BatchDenom] = supply
+		} else {
+			calSupply[b.BatchDenom] = balance
+		}
+	}
 	return nil
 }
 

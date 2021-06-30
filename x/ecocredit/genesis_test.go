@@ -315,5 +315,4 @@ func TestGenesisValidate(t *testing.T) {
 			}
 		})
 	}
-
 }

@@ -21,7 +21,7 @@ func TradableBalanceKey(acc sdk.AccAddress, denom batchDenomT) []byte {
 	return append(key, denom...)
 }
 
-func ParseTradableBalanceKey(key []byte) (sdk.AccAddress, batchDenomT) {
+func ParseBalanceKey(key []byte) (sdk.AccAddress, batchDenomT) {
 	addrLen := key[1]
 	addr := sdk.AccAddress(key[2 : 2+addrLen])
 	return addr, batchDenomT(key[2+addrLen:])
@@ -32,7 +32,7 @@ func TradableSupplyKey(batchDenom batchDenomT) []byte {
 	return append(key, batchDenom...)
 }
 
-func ParseTradableSupplyKey(key []byte) batchDenomT {
+func ParseSupplyKey(key []byte) batchDenomT {
 	return batchDenomT(key[1:])
 }
 
@@ -42,19 +42,9 @@ func RetiredBalanceKey(acc sdk.AccAddress, batchDenom batchDenomT) []byte {
 	return append(key, batchDenom...)
 }
 
-func ParseRetiredBalanceKey(key []byte) (sdk.AccAddress, batchDenomT) {
-	addrLen := key[1]
-	addr := sdk.AccAddress(key[2 : 2+addrLen])
-	return addr, batchDenomT(key[2+addrLen:])
-}
-
 func RetiredSupplyKey(batchDenom batchDenomT) []byte {
 	key := []byte{RetiredSupplyPrefix}
 	return append(key, batchDenom...)
-}
-
-func ParseRetiredSupplyKey(key []byte) batchDenomT {
-	return batchDenomT(key[1:])
 }
 
 func MaxDecimalPlacesKey(batchDenom batchDenomT) []byte {

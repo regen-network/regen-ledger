@@ -15,25 +15,25 @@ func TestKeys(t *testing.T) {
 
 	// tradable-balance-key
 	key := TradableBalanceKey(addr, batchDenom)
-	a, d := ParseTradableBalanceKey(key)
+	a, d := ParseBalanceKey(key)
 	require.Equal(t, a, addr)
 	require.Equal(t, d, batchDenom)
 
 	// tradable-supply-key
 	key = TradableSupplyKey(batchDenom)
-	d = ParseTradableSupplyKey(key)
+	d = ParseSupplyKey(key)
 	require.Equal(t, a, addr)
 	require.Equal(t, d, batchDenom)
 
 	// retired-balance-key
 	key = RetiredBalanceKey(addr, batchDenom)
-	a, d = ParseRetiredBalanceKey(key)
+	a, d = ParseBalanceKey(key)
 	require.Equal(t, a, addr)
 	require.Equal(t, d, batchDenom)
 
 	// retired-supply-key
 	key = RetiredSupplyKey(batchDenom)
-	d = ParseRetiredSupplyKey(key)
+	d = ParseSupplyKey(key)
 	require.Equal(t, a, addr)
 	require.Equal(t, d, batchDenom)
 

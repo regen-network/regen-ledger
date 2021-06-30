@@ -152,7 +152,7 @@ func (s serverImpl) getBalances(store sdk.KVStore, storeKey byte) []*ecocredit.B
 	defer iter.Close()
 	var tradableBalances []*ecocredit.Balance
 	for ; iter.Valid(); iter.Next() {
-		addr, denomMetaData := ParseTradableBalanceKey(iter.Key())
+		addr, denomMetaData := ParseBalanceKey(iter.Key())
 		tradableBalances = append(tradableBalances, &ecocredit.Balance{
 			Address:    addr.String(),
 			BatchDenom: string(denomMetaData),
@@ -167,7 +167,7 @@ func (s serverImpl) getSupplies(store sdk.KVStore, storeKey byte) []*ecocredit.S
 	defer iter.Close()
 	var retiredSupplies []*ecocredit.Supply
 	for ; iter.Valid(); iter.Next() {
-		denomMetaData := ParseRetiredSupplyKey(iter.Key())
+		denomMetaData := ParseSupplyKey(iter.Key())
 		retiredSupplies = append(retiredSupplies, &ecocredit.Supply{
 			BatchDenom: string(denomMetaData),
 			Supply:     string(iter.Value()),
