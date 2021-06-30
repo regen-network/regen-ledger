@@ -16,6 +16,9 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
+type supplyKey func(batchDenom batchDenomT) []byte
+type balanceKey func(addr sdk.AccAddress, batchDenom batchDenomT) []byte
+
 // InitGenesis performs genesis initialization for the ecocredit module. It
 // returns no validator updates.
 func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.RawMessage) ([]abci.ValidatorUpdate, error) {
@@ -35,48 +38,29 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 	}
 
 	store := ctx.KVStore(s.storeKey)
-	for _, balance := range genesisState.TradableBalances {
-		addr, err := sdk.AccAddressFromBech32(balance.Address)
-		if err != nil {
-			return nil, err
-		}
-		tradable, err := math.ParseNonNegativeDecimal(balance.Balance)
-		if err != nil {
-			return nil, err
-		}
-		key := TradableBalanceKey(addr, batchDenomT(balance.BatchDenom))
-		setDecimal(store, key, tradable)
+
+	if err := setBalance(store, genesisState.TradableBalances, func(addr sdk.AccAddress, batchDenom batchDenomT) []byte {
+		return TradableBalanceKey(addr, batchDenom)
+	}); err != nil {
+		return nil, err
 	}
 
-	for _, rBalance := range genesisState.RetiredBalances {
-		addr, err := sdk.AccAddressFromBech32(rBalance.Address)
-		if err != nil {
-			return nil, err
-		}
-		retired, err := math.ParseNonNegativeDecimal(rBalance.Balance)
-		if err != nil {
-			return nil, err
-		}
-		key := RetiredBalanceKey(addr, batchDenomT(rBalance.BatchDenom))
-		setDecimal(store, key, retired)
+	if err := setBalance(store, genesisState.RetiredBalances, func(addr sdk.AccAddress, batchDenom batchDenomT) []byte {
+		return RetiredBalanceKey(addr, batchDenom)
+	}); err != nil {
+		return nil, err
 	}
 
-	for _, tSupply := range genesisState.TradableSupplies {
-		key := TradableSupplyKey(batchDenomT(tSupply.BatchDenom))
-		supply, err := math.ParseNonNegativeDecimal(tSupply.Supply)
-		if err != nil {
-			return nil, err
-		}
-		setDecimal(store, key, supply)
+	if err := setSupply(store, genesisState.TradableSupplies, func(bd batchDenomT) []byte {
+		return TradableSupplyKey(bd)
+	}); err != nil {
+		return nil, err
 	}
 
-	for _, rSupply := range genesisState.RetiredSupplies {
-		key := RetiredSupplyKey(batchDenomT(rSupply.BatchDenom))
-		supply, err := math.ParseNonNegativeDecimal(rSupply.Supply)
-		if err != nil {
-			return nil, err
-		}
-		setDecimal(store, key, supply)
+	if err := setSupply(store, genesisState.RetiredSupplies, func(bd batchDenomT) []byte {
+		return RetiredSupplyKey(bd)
+	}); err != nil {
+		return nil, err
 	}
 
 	for _, precision := range genesisState.Precisions {
@@ -85,6 +69,34 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 	}
 
 	return []abci.ValidatorUpdate{}, nil
+}
+
+func setSupply(store sdk.KVStore, supplies []*ecocredit.Supply, keyFunc supplyKey) error {
+	for _, supply := range supplies {
+		d, err := math.ParseNonNegativeDecimal(supply.Supply)
+		if err != nil {
+			return err
+		}
+		setDecimal(store, keyFunc(batchDenomT(supply.BatchDenom)), d)
+	}
+
+	return nil
+}
+
+func setBalance(store sdk.KVStore, balances []*ecocredit.Balance, keyFunc balanceKey) error {
+	for _, balance := range balances {
+		addr, err := sdk.AccAddressFromBech32(balance.Address)
+		if err != nil {
+			return err
+		}
+		d, err := math.ParseNonNegativeDecimal(balance.Balance)
+		if err != nil {
+			return err
+		}
+		setDecimal(store, keyFunc(addr, batchDenomT(balance.BatchDenom)), d)
+	}
+
+	return nil
 }
 
 // ExportGenesis will dump the ecocredit module state into a serializable GenesisState.

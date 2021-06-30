@@ -42,26 +42,27 @@ func (s *GenesisState) Validate() error {
 		return err
 	}
 
-	for denom, calSupply := range calTradableSupply {
-		if supply, ok := tradableSupply[denom]; ok {
-			if supply.Cmp(calSupply) != 0 {
-				return sdkerrors.ErrInvalidCoins.Wrapf("tradable: supply is incorrect for %s credit batch, expected %v, got %v", denom, supply, calSupply)
-			}
-		} else {
-			return sdkerrors.ErrNotFound.Wrapf("tradable: supply is not found for %s credit batch", denom)
-		}
+	if err := validateSupply(calTradableSupply, tradableSupply); err != nil {
+		return sdkerrors.Wrap(err, "tradable")
 	}
 
-	for denom, calSupply := range calRetiredSupply {
-		if supply, ok := retiredSupply[denom]; ok {
-			if supply.Cmp(calSupply) != 0 {
-				return sdkerrors.ErrInvalidCoins.Wrapf("retired: supply is incorrect for %s credit batch, expected %v, got %v", denom, supply, calSupply)
-			}
-		} else {
-			return sdkerrors.ErrNotFound.Wrapf("retired: supply is not found for %s credit batch", denom)
-		}
+	if err := validateSupply(calRetiredSupply, retiredSupply); err != nil {
+		return sdkerrors.Wrap(err, "retired")
 	}
 
+	return nil
+}
+
+func validateSupply(calSupply, supply map[string]*apd.Decimal) error {
+	for denom, cs := range calSupply {
+		if s, ok := supply[denom]; ok {
+			if s.Cmp(cs) != 0 {
+				return sdkerrors.ErrInvalidCoins.Wrapf("supply is incorrect for %s credit batch, expected %v, got %v", denom, s, cs)
+			}
+		} else {
+			return sdkerrors.ErrNotFound.Wrapf("supply is not found for %s credit batch", denom)
+		}
+	}
 	return nil
 }
 
