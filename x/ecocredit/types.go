@@ -1,13 +1,21 @@
 package ecocredit
 
-import "github.com/regen-network/regen-ledger/orm"
+import (
+	"github.com/regen-network/regen-ledger/orm"
+)
 
-var _, _ orm.NaturalKeyed = &ClassInfo{}, &BatchInfo{}
+var _, _ orm.PrimaryKeyed = &ClassInfo{}, &BatchInfo{}
 
-func (m *ClassInfo) NaturalKey() []byte {
+func (m *ClassInfo) PrimaryKey() []byte {
 	return []byte(m.ClassId)
 }
 
-func (m *BatchInfo) NaturalKey() []byte {
+func (m *BatchInfo) PrimaryKey() []byte {
 	return []byte(m.BatchDenom)
+}
+
+func DefaultGenesisState() *GenesisState {
+	return &GenesisState{
+		Params: DefaultParams(),
+	}
 }

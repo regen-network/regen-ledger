@@ -1,25 +1,25 @@
 package app
 
 import (
-	"encoding/binary"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/address"
 )
 
 const (
 	// Bech32PrefixAccAddr defines the Bech32 prefix of an account's address
-	Bech32PrefixAccAddr = "regen:"
+	Bech32PrefixAccAddr = "regen"
 	// Bech32PrefixAccPub defines the Bech32 prefix of an account's public key
-	Bech32PrefixAccPub = "regen:pub"
+	Bech32PrefixAccPub = "regenpub"
 	// Bech32PrefixValAddr defines the Bech32 prefix of a validator's operator address
-	Bech32PrefixValAddr = "regen:valoper"
+	Bech32PrefixValAddr = "regenvaloper"
 	// Bech32PrefixValPub defines the Bech32 prefix of a validator's operator public key
-	Bech32PrefixValPub = "regen:valoperpub"
+	Bech32PrefixValPub = "regenvaloperpub"
 	// Bech32PrefixConsAddr defines the Bech32 prefix of a consensus node address
-	Bech32PrefixConsAddr = "regen:valcons"
+	Bech32PrefixConsAddr = "regenvalcons"
 	// Bech32PrefixConsPub defines the Bech32 prefix of a consensus node public key
-	Bech32PrefixConsPub = "regen:valconspub"
+	Bech32PrefixConsPub = "regenvalconspub"
 )
 
 func init() {
@@ -29,12 +29,10 @@ func init() {
 	config.SetBech32PrefixForConsensusNode(Bech32PrefixConsAddr, Bech32PrefixConsPub)
 	config.SetAddressVerifier(func(bytes []byte) error {
 		n := len(bytes)
-		if n == sdk.AddrLen {
-			return nil
-		}
-		if n <= binary.MaxVarintLen64+1 {
+		if (n != 0) && (n <= address.MaxAddrLen) {
 			return nil
 		}
 		return fmt.Errorf("unexpected address length %d", n)
 	})
+	config.Seal()
 }

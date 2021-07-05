@@ -49,7 +49,7 @@ func (s Sequence) PeekNextVal(ctx HasKVStore) uint64 {
 }
 
 // InitVal sets the start value for the sequence. It must be called only once on an empty DB.
-// Otherwise an error is returned when the key exits. The given start value is stored as current
+// Otherwise an error is returned when the key exists. The given start value is stored as current
 // value.
 //
 // It is recommended to call this method only for a sequence start value other than `1` as the

@@ -7,8 +7,8 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	proto "github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/types"
-	"github.com/regen-network/regen-ledger/math"
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/types/math"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -144,15 +144,15 @@ func (p ThresholdDecisionPolicy) ValidateBasic() error {
 	return nil
 }
 
-func (g GroupMember) NaturalKey() []byte {
+func (g GroupMember) PrimaryKey() []byte {
 	result := make([]byte, 8, 8+len(g.Member.Address))
-	copy(result[0:8], g.GroupId.Bytes())
+	copy(result[0:8], ID(g.GroupId).Bytes())
 	result = append(result, g.Member.Address...)
 	return result
 }
 
-func (g GroupAccountInfo) NaturalKey() []byte {
-	addr, err := sdk.AccAddressFromBech32(g.GroupAccount)
+func (g GroupAccountInfo) PrimaryKey() []byte {
+	addr, err := sdk.AccAddressFromBech32(g.Address)
 	if err != nil {
 		panic(err)
 	}
@@ -162,27 +162,34 @@ func (g GroupAccountInfo) NaturalKey() []byte {
 var _ orm.Validateable = GroupAccountInfo{}
 
 // NewGroupAccountInfo creates a new GroupAccountInfo instance
-func NewGroupAccountInfo(groupAccount sdk.AccAddress, group ID, admin sdk.AccAddress, metadata []byte, version uint64, decisionPolicy DecisionPolicy) (GroupAccountInfo, error) {
+func NewGroupAccountInfo(address sdk.AccAddress, group uint64, admin sdk.AccAddress, metadata []byte, version uint64, decisionPolicy DecisionPolicy) (GroupAccountInfo, error) {
 	p := GroupAccountInfo{
-		GroupAccount: groupAccount.String(),
-		GroupId:      group,
-		Admin:        admin.String(),
-		Metadata:     metadata,
-		Version:      version,
+		Address:  address.String(),
+		GroupId:  group,
+		Admin:    admin.String(),
+		Metadata: metadata,
+		Version:  version,
 	}
 
-	msg, ok := decisionPolicy.(proto.Message)
-	if !ok {
-		return GroupAccountInfo{}, fmt.Errorf("%T does not implement proto.Message", decisionPolicy)
-	}
-
-	any, err := codectypes.NewAnyWithValue(msg)
+	err := p.SetDecisionPolicy(decisionPolicy)
 	if err != nil {
 		return GroupAccountInfo{}, err
 	}
 
-	p.DecisionPolicy = any
 	return p, nil
+}
+
+func (g *GroupAccountInfo) SetDecisionPolicy(decisionPolicy DecisionPolicy) error {
+	msg, ok := decisionPolicy.(proto.Message)
+	if !ok {
+		return fmt.Errorf("can't proto marshal %T", msg)
+	}
+	any, err := codectypes.NewAnyWithValue(msg)
+	if err != nil {
+		return err
+	}
+	g.DecisionPolicy = any
+	return nil
 }
 
 func (g GroupAccountInfo) GetDecisionPolicy() DecisionPolicy {
@@ -199,7 +206,7 @@ func (g GroupAccountInfo) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
-	_, err = sdk.AccAddressFromBech32(g.GroupAccount)
+	_, err = sdk.AccAddressFromBech32(g.Address)
 	if err != nil {
 		return sdkerrors.Wrap(err, "group account")
 	}
@@ -227,9 +234,9 @@ func (g GroupAccountInfo) UnpackInterfaces(unpacker codectypes.AnyUnpacker) erro
 	return unpacker.UnpackAny(g.DecisionPolicy, &decisionPolicy)
 }
 
-func (v Vote) NaturalKey() []byte {
+func (v Vote) PrimaryKey() []byte {
 	result := make([]byte, 8, 8+len(v.Voter))
-	copy(result[0:8], v.ProposalId.Bytes())
+	copy(result[0:8], ProposalID(v.ProposalId).Bytes())
 	result = append(result, v.Voter...)
 	return result
 }
@@ -261,6 +268,16 @@ func (v Vote) ValidateBasic() error {
 	return nil
 }
 
+// ChoiceFromString returns a Choice from a string. It returns an error
+// if the string is invalid.
+func ChoiceFromString(str string) (Choice, error) {
+	choice, ok := Choice_value[str]
+	if !ok {
+		return Choice_CHOICE_UNSPECIFIED, fmt.Errorf("'%s' is not a valid vote choice", str)
+	}
+	return Choice(choice), nil
+}
+
 // MaxMetadataLength defines the max length of the metadata bytes field
 // for various entities within the group module
 // TODO: This could be used as params once x/params is upgraded to use protobuf
@@ -269,7 +286,7 @@ const MaxMetadataLength = 255
 var _ orm.Validateable = GroupInfo{}
 
 func (g GroupInfo) ValidateBasic() error {
-	if g.GroupId.Empty() {
+	if g.GroupId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
 
@@ -287,10 +304,14 @@ func (g GroupInfo) ValidateBasic() error {
 	return nil
 }
 
+func (g GroupInfo) PrimaryKey() []byte {
+	return orm.EncodeSequence(g.GroupId)
+}
+
 var _ orm.Validateable = GroupMember{}
 
 func (g GroupMember) ValidateBasic() error {
-	if g.GroupId.Empty() {
+	if g.GroupId == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "group")
 	}
 
@@ -455,5 +476,29 @@ func (t Tally) ValidateBasic() error {
 	if _, err := t.GetVetoCount(); err != nil {
 		return sdkerrors.Wrap(err, "veto count")
 	}
+	return nil
+}
+
+// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+func (q QueryGroupAccountsByGroupResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+	for _, g := range q.GroupAccounts {
+		err := g.UnpackInterfaces(unpacker)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+func (q QueryGroupAccountsByAdminResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
+	for _, g := range q.GroupAccounts {
+		err := g.UnpackInterfaces(unpacker)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }

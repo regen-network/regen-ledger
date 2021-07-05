@@ -2,7 +2,7 @@
 
 PACKAGES_NOSIMULATION=$(shell go list ./... | grep -v '/simulation')
 PACKAGES_SIMTEST=$(shell go list ./... | grep '/simulation')
-VERSION := $(shell echo $(shell git describe --always) | sed 's/^v//')
+VERSION := $(shell echo $(shell git describe --tags))
 COMMIT := $(shell git log -1 --format='%H')
 LEDGER_ENABLED ?= true
 BINDIR ?= $(GOPATH)/bin
@@ -17,6 +17,11 @@ export GO111MODULE = on
 # process build tags
 
 build_tags = netgo
+
+ifeq ($(EXPERIMENTAL),true)
+	build_tags += experimental
+endif
+
 ifeq ($(LEDGER_ENABLED),true)
   ifeq ($(OS),Windows_NT)
     GCCEXE = $(shell where gcc.exe 2> NUL)
@@ -43,8 +48,7 @@ endif
 ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))
   build_tags += gcc
 endif
-build_tags += $(BUILD_TAGS)
-build_tags := $(strip $(build_tags))
+
 
 whitespace :=
 whitespace += $(whitespace)
@@ -65,6 +69,7 @@ ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))
 endif
 ifeq (badgerdb,$(findstring badgerdb,$(COSMOS_BUILD_OPTIONS)))
   ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=badgerdb
+  BUILD_TAGS += badgerdb
 endif
 # handle rocksdb
 ifeq (rocksdb,$(findstring rocksdb,$(TENDERMINT_BUILD_OPTIONS)))
@@ -81,6 +86,9 @@ ifeq (,$(findstring nostrip,$(COSMOS_BUILD_OPTIONS)))
 endif
 ldflags += $(LDFLAGS)
 ldflags := $(strip $(ldflags))
+
+build_tags += $(BUILD_TAGS)
+build_tags := $(strip $(build_tags))
 
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 # check for nostrip option
@@ -136,15 +144,16 @@ build-regen-linux: go.sum $(BUILDDIR)/
 
 .PHONY: build build-linux build-regen-all build-regen-linux
 
+mockgen_cmd=go run github.com/golang/mock/mockgen
+
 mocks: $(MOCKS_DIR)
-	mockgen -source=client/account_retriever.go -package mocks -destination tests/mocks/account_retriever.go
-	mockgen -package mocks -destination tests/mocks/tendermint_tm_db_DB.go github.com/tendermint/tm-db DB
-	mockgen -source=types/module/module.go -package mocks -destination tests/mocks/types_module_module.go
-	mockgen -source=types/invariant.go -package mocks -destination tests/mocks/types_invariant.go
-	mockgen -source=types/router.go -package mocks -destination tests/mocks/types_router.go
-	mockgen -source=types/handler.go -package mocks -destination tests/mocks/types_handler.go
-	mockgen -package mocks -destination tests/mocks/grpc_server.go github.com/gogo/protobuf/grpc Server
-	mockgen -package mocks -destination tests/mocks/tendermint_tendermint_libs_log_DB.go github.com/tendermint/tendermint/libs/log Logger
+	$(mockgen_cmd) -source=client/account_retriever.go -package mocks -destination tests/mocks/account_retriever.go
+	$(mockgen_cmd) -package mocks -destination tests/mocks/tendermint_tm_db_DB.go github.com/tendermint/tm-db DB
+	$(mockgen_cmd) -source=types/module/module.go -package mocks -destination tests/mocks/types_module_module.go
+	$(mockgen_cmd) -source=types/invariant.go -package mocks -destination tests/mocks/types_invariant.go
+	$(mockgen_cmd) -source=types/router.go -package mocks -destination tests/mocks/types_router.go
+	$(mockgen_cmd) -package mocks -destination tests/mocks/grpc_server.go github.com/gogo/protobuf/grpc Server
+	$(mockgen_cmd) -package mocks -destination tests/mocks/tendermint_tendermint_libs_log_DB.go github.com/tendermint/tendermint/libs/log Logger
 .PHONY: mocks
 
 $(MOCKS_DIR):
@@ -175,11 +184,11 @@ go.sum: go.mod
 update-swagger-docs: statik
 	$(BINDIR)/statik -src=client/docs/swagger-ui -dest=client/docs -f -m
 	@if [ -n "$(git status --porcelain)" ]; then \
-        echo "\033[91mSwagger docs are out of sync!!!\033[0m";\
-        exit 1;\
-    else \
-    	echo "\033[92mSwagger docs are in sync\033[0m";\
-    fi
+		echo "\033[91mSwagger docs are out of sync!!!\033[0m";\
+		exit 1;\
+	else \
+		echo "\033[92mSwagger docs are in sync\033[0m";\
+	fi
 .PHONY: update-swagger-docs
 
 godocs:
@@ -221,27 +230,50 @@ TEST_TARGETS := test-unit test-unit-amino test-unit-proto test-ledger-mock test-
 # Test runs-specific rules. To add a new test target, just add
 # a new rule, customise ARGS or TEST_PACKAGES ad libitum, and
 # append the new rule to the TEST_TARGETS list.
+UNIT_TEST_ARGS		= cgo ledger test_ledger_mock norace
+AMINO_TEST_ARGS		= ledger test_ledger_mock test_amino norace
+LEDGER_TEST_ARGS	= cgo ledger norace
+LEDGER_MOCK_ARGS	= ledger test_ledger_mock norace
+TEST_RACE_ARGS		= cgo ledger test_ledger_mock
+ifeq ($(EXPERIMENTAL),true)
+	UNIT_TEST_ARGS		+= experimental
+	AMINO_TEST_ARGS		+= expermental
+	LEDGER_TEST_ARGS	+= experimental
+	LEDGER_MOCK_ARGS	+= experimental
+	TEST_RACE_ARGS		+= experimental
+endif
 
-test-unit: ARGS=-tags='cgo ledger test_ledger_mock norace'
-test-unit-amino: ARGS=-tags='ledger test_ledger_mock test_amino norace'
-test-ledger: ARGS=-tags='cgo ledger norace'
-test-ledger-mock: ARGS=-tags='ledger test_ledger_mock norace'
-test-race: ARGS=-race -tags='cgo ledger test_ledger_mock'
+test-unit: ARGS=-tags='$(UNIT_TEST_ARGS)'
+test-unit-amino: ARGS=-tags='${AMINO_TEST_ARGS}'
+test-ledger: ARGS=-tags='${LEDGER_TEST_ARGS}'
+test-ledger-mock: ARGS=-tags='${LEDGER_MOCK_ARGS}'
+test-race: ARGS=-race -tags='${TEST_RACE_ARGS}'
 test-race: TEST_PACKAGES=$(PACKAGES_NOSIMULATION)
 
 $(TEST_TARGETS): run-tests
 
+SUB_MODULES = $(shell find . -type f -name 'go.mod' -print0 | xargs -0 -n1 dirname | sort)
+CURRENT_DIR = $(shell pwd)
 run-tests:
 ifneq (,$(shell which tparse 2>/dev/null))
-	go test -mod=readonly -json $(ARGS) $(TEST_PACKAGES) | tparse
+	@echo "Unit tests"; \
+	for module in $(SUB_MODULES); do \
+		cd ${CURRENT_DIR}/$$module; \
+		go test -mod=readonly -json $(ARGS) $(TEST_PACKAGES) ./... | tparse; \
+	done
 else
-	go test -mod=readonly $(ARGS) $(TEST_PACKAGES)
+	@echo "Unit tests"; \
+	for module in $(SUB_MODULES); do \
+		cd ${CURRENT_DIR}/$$module; \
+		go test -mod=readonly $(ARGS) $(TEST_PACKAGES) ./... ; \
+	done
 endif
 
 .PHONY: run-tests test test-all $(TEST_TARGETS)
 
 test-cover:
-	@export VERSION=$(VERSION); bash -x scripts/test_cover.sh
+	@export VERSION=$(VERSION);
+	@bash scripts/test_cover.sh
 .PHONY: test-cover
 
 benchmark:
@@ -295,30 +327,39 @@ devdoc-update:
 ###                                Protobuf                                 ###
 ###############################################################################
 
+containerProtoVer=v0.2
+containerProtoImage=tendermintdev/sdk-proto-gen:$(containerProtoVer)
+containerProtoGen=cosmos-sdk-proto-gen-$(containerProtoVer)
+containerProtoFmt=cosmos-sdk-proto-fmt-$(containerProtoVer)
+
 proto-all: proto-gen proto-lint proto-check-breaking proto-format
 .PHONY: proto-all proto-gen proto-gen-docker proto-lint proto-check-breaking proto-format
 
 proto-gen:
-	@./scripts/protocgen.sh
-
-proto-gen-docker:
 	@echo "Generating Protobuf files"
-	docker run -v $(shell pwd):/workspace --workdir /workspace tendermintdev/sdk-proto-gen sh ./scripts/protocgen.sh
+	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGen}$$"; then docker start -a $(containerProtoGen); else docker run --name $(containerProtoGen) -v $(CURDIR):/workspace --workdir /workspace $(containerProtoImage) \
+		sh ./scripts/protocgen.sh; fi
 
 proto-format:
-	find ./ -not -path "./third_party/*" -name *.proto -exec clang-format -i {} \;
+	@echo "Formatting Protobuf files"
+	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoFmt}$$"; then docker start -a $(containerProtoFmt); else docker run --name $(containerProtoFmt) -v $(CURDIR):/workspace --workdir /workspace tendermintdev/docker-build-proto \
+		find ./ -not -path "./third_party/*" -name "*.proto" -exec clang-format -i {} \; ; fi
+
+proto-format-direct:
+	find ./ -not -path "./third_party/*" -name "*.proto" -exec clang-format -i {} \;
 
 proto-lint:
+	@$(DOCKER_BUF) lint --error-format=json
+
+proto-lint-direct:
 	@buf lint --error-format=json
 
 proto-check-breaking:
+	@$(DOCKER_BUF) breaking --against $(HTTPS_GIT)#branch=master
+
+proto-check-breaking-direct:
 	@buf breaking --against '.git#branch=master'
 
-proto-lint-docker:
-	@$(DOCKER_BUF) lint --error-format=json
-
-proto-check-breaking-docker:
-	@$(DOCKER_BUF) breaking --against-input $(HTTPS_GIT)#branch=master
 
 GOGO_PROTO_URL   = https://raw.githubusercontent.com/regen-network/protobuf/cosmos
 REGEN_COSMOS_PROTO_URL = https://raw.githubusercontent.com/regen-network/cosmos-proto/master
@@ -337,6 +378,7 @@ proto-update-deps:
 
 	@mkdir -p $(COSMOS_PROTO_TYPES)/base/query/v1beta1/
 	@curl -sSL $(COSMOS_PROTO_URL)/base/query/v1beta1/pagination.proto > $(COSMOS_PROTO_TYPES)/base/query/v1beta1/pagination.proto
+	@curl -sSL $(COSMOS_PROTO_URL)/base/v1beta1/coin.proto > $(COSMOS_PROTO_TYPES)/base/v1beta1/coin.proto
 
 
 ###############################################################################
