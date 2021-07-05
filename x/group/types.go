@@ -487,19 +487,16 @@ func (t Tally) ValidateBasic() error {
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (q QueryGroupAccountsByGroupResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
-	for _, g := range q.GroupAccounts {
-		err := g.UnpackInterfaces(unpacker)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return unpackGroupAccounts(unpacker, q.GroupAccounts)
 }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (q QueryGroupAccountsByAdminResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
-	for _, g := range q.GroupAccounts {
+	return unpackGroupAccounts(unpacker, q.GroupAccounts)
+}
+
+func unpackGroupAccounts(unpacker codectypes.AnyUnpacker, accs []*GroupAccountInfo) error {
+	for _, g := range accs {
 		err := g.UnpackInterfaces(unpacker)
 		if err != nil {
 			return err
