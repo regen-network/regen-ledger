@@ -198,7 +198,7 @@ func (mm *Manager) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawM
 	return res
 }
 
-func initGenesis(ctx sdk.Context, cdc codec.JSONCodec,
+func initGenesis(ctx sdk.Context, cdc codec.Codec,
 	genesisData map[string]json.RawMessage, validatorUpdates []abci.ValidatorUpdate,
 	initGenesisHandlers map[string]module.InitGenesisHandler) (abci.ResponseInitChain, error) {
 	for name, initGenesisHandler := range initGenesisHandlers {
@@ -235,7 +235,7 @@ func (mm *Manager) ExportGenesis(ctx sdk.Context) map[string]json.RawMessage {
 	return genesisData
 }
 
-func exportGenesis(ctx sdk.Context, cdc codec.JSONCodec, exportGenesisHandlers map[string]module.ExportGenesisHandler) (map[string]json.RawMessage, error) {
+func exportGenesis(ctx sdk.Context, cdc codec.Codec, exportGenesisHandlers map[string]module.ExportGenesisHandler) (map[string]json.RawMessage, error) {
 	var err error
 	genesisData := make(map[string]json.RawMessage)
 	for name, exportGenesisHandler := range exportGenesisHandlers {

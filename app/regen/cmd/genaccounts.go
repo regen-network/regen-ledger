@@ -115,7 +115,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 				return fmt.Errorf("failed to unmarshal genesis state: %w", err)
 			}
 
-			cdc := clientCtx.JSONCodec
+			cdc := clientCtx.Codec
 			authGenState := authtypes.GetGenesisStateFromAppState(cdc.(codec.Codec), appState)
 
 			accs, err := authtypes.UnpackAccounts(authGenState.Accounts)
