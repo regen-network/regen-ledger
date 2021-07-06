@@ -9,7 +9,7 @@ import (
 
 var (
 	_, _, _, _, _, _ sdk.Msg = &MsgCreateClassRequest{}, &MsgCreateBatchRequest{}, &MsgSendRequest{},
-	  &MsgRetireRequest{}, &MsgCancelRequest{}, &MsgSetPrecisionRequest{}
+		&MsgRetireRequest{}, &MsgCancelRequest{}, &MsgSetPrecisionRequest{}
 )
 
 func (m *MsgCreateClassRequest) ValidateBasic() error {
@@ -36,9 +36,16 @@ func (m *MsgCreateBatchRequest) ValidateBasic() error {
 			return err
 		}
 
-		_, err = math.ParseNonNegativeDecimal(iss.RetiredAmount)
+		retiredAmount, err := math.ParseNonNegativeDecimal(iss.RetiredAmount)
 		if err != nil {
 			return err
+		}
+
+		if !retiredAmount.IsZero() {
+			err = validateLocation(iss.RetirementLocation)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -60,9 +67,16 @@ func (m *MsgSendRequest) ValidateBasic() error {
 			return err
 		}
 
-		_, err = math.ParseNonNegativeDecimal(iss.RetiredAmount)
+		retiredAmount, err := math.ParseNonNegativeDecimal(iss.RetiredAmount)
 		if err != nil {
 			return err
+		}
+
+		if !retiredAmount.IsZero() {
+			err = validateLocation(iss.RetirementLocation)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -84,6 +98,12 @@ func (m *MsgRetireRequest) ValidateBasic() error {
 			return err
 		}
 	}
+
+	err := validateLocation(m.Location)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -148,6 +148,7 @@ emitted for each batch_denom. This allows for easier indexing.
 | retirer | [string](#string) |  | retirer is the account which has done the "retiring". This will be the account receiving credits in the case that credits were retired upon issuance using Msg/CreateBatch or retired upon transfer using Msg/Send. |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
 | amount | [string](#string) |  | amount is the decimal number of credits that have been retired. |
+| location | [string](#string) |  | location is the location of the beneficiary or buyer of the retired credits. It is a string of the form <country-code>[-<sub-national-code>[ <postal-code>]], with the first two fields conforming to ISO 3166-2, and postal-code being up to 64 alphanumeric characters. |
 
 
 
@@ -509,6 +510,7 @@ single recipient.
 | recipient | [string](#string) |  | recipient is the account of the recipient. |
 | tradable_amount | [string](#string) |  | tradable_amount is the number of credits in this issuance that can be traded by this recipient. Decimal values are acceptable. |
 | retired_amount | [string](#string) |  | retired_amount is the number of credits in this issuance that are effectively retired by the issuer on receipt. Decimal values are acceptable. |
+| retirement_location | [string](#string) |  | retirement_location is the location of the beneficiary or buyer of the retired credits. This must be provided if retired_amount is positive. It is a string of the form <country-code>[-<sub-national-code>[ <postal-code>]], with the first two fields conforming to ISO 3166-2, and postal-code being up to 64 alphanumeric characters. |
 
 
 
@@ -572,6 +574,7 @@ MsgRetireRequest is the Msg/Retire request type.
 | ----- | ---- | ----- | ----------- |
 | holder | [string](#string) |  | holder is the credit holder address. |
 | credits | [MsgRetireRequest.RetireCredits](#regen.ecocredit.v1alpha1.MsgRetireRequest.RetireCredits) | repeated | credits are the credits being retired. |
+| location | [string](#string) |  | location is the location of the beneficiary or buyer of the retired credits. It is a string of the form <country-code>[-<sub-national-code>[ <postal-code>]], with the first two fields conforming to ISO 3166-2, and postal-code being up to 64 alphanumeric characters. |
 
 
 
@@ -634,6 +637,7 @@ and retired credits, which will be retired on receipt.
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
 | tradable_amount | [string](#string) |  | tradable_amount is the number of credits in this transfer that can be traded by the recipient. Decimal values are acceptable within the precision returned by Query/Precision. |
 | retired_amount | [string](#string) |  | retired_amount is the number of credits in this transfer that are effectively retired by the issuer on receipt. Decimal values are acceptable within the precision returned by Query/Precision. |
+| retirement_location | [string](#string) |  | retirement_location is the location of the beneficiary or buyer of the retired credits. This must be provided if retired_amount is positive. It is a string of the form <country-code>[-<sub-national-code>[ <postal-code>]], with the first two fields conforming to ISO 3166-2, and postal-code being up to 64 alphanumeric characters. |
 
 
 

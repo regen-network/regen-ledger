@@ -107,6 +107,15 @@ message MsgCreateBatchRequest {
     // acceptable.
     string retired_amount = 3
         [ (gogoproto.moretags) = "yaml:\"retired_amount\"" ];
+
+    // retirement_location is the location of the beneficiary or buyer of the
+    // retired credits. This must be provided if retired_amount is positive. It
+    // is a string of the form
+    // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+    // fields conforming to ISO 3166-2, and postal-code being up to 64
+    // alphanumeric characters.
+    string retirement_location = 4
+        [ (gogoproto.moretags) = "yaml:\"retirement_location\"" ];
   }
 }
 
@@ -148,6 +157,15 @@ message MsgSendRequest {
     // acceptable within the precision returned by Query/Precision.
     string retired_amount = 3
         [ (gogoproto.moretags) = "yaml:\"retired_amount\"" ];
+
+    // retirement_location is the location of the beneficiary or buyer of the
+    // retired credits. This must be provided if retired_amount is positive. It
+    // is a string of the form
+    // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+    // fields conforming to ISO 3166-2, and postal-code being up to 64
+    // alphanumeric characters.
+    string retirement_location = 4
+        [ (gogoproto.moretags) = "yaml:\"retirement_location\"" ];
   }
 }
 
@@ -174,6 +192,13 @@ message MsgRetireRequest {
     // Query/Precision.
     string amount = 2;
   }
+
+  // location is the location of the beneficiary or buyer of the retired
+  // credits. It is a string of the form
+  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+  // fields conforming to ISO 3166-2, and postal-code being up to 64
+  // alphanumeric characters.
+  string location = 3;
 }
 
 // MsgRetireRequest is the Msg/Retire response type.

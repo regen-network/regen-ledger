@@ -29,8 +29,8 @@ type IntegrationTestSuite struct {
 	paramsQueryClient params.QueryClient
 	signers           []sdk.AccAddress
 
-	paramSpace  paramstypes.Subspace
-	bankKeeper  bankkeeper.Keeper
+	paramSpace paramstypes.Subspace
+	bankKeeper bankkeeper.Keeper
 }
 
 func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper) *IntegrationTestSuite {
@@ -111,19 +111,22 @@ func (s *IntegrationTestSuite) TestScenario() {
 		ClassId: clsID,
 		Issuance: []*ecocredit.MsgCreateBatchRequest_BatchIssuance{
 			{
-				Recipient:      addr1,
-				TradableAmount: t0,
-				RetiredAmount:  r0,
+				Recipient:          addr1,
+				TradableAmount:     t0,
+				RetiredAmount:      r0,
+				RetirementLocation: "GB",
 			},
 			{
-				Recipient:      addr2,
-				TradableAmount: t1,
-				RetiredAmount:  r1,
+				Recipient:          addr2,
+				TradableAmount:     t1,
+				RetiredAmount:      r1,
+				RetirementLocation: "BF",
 			},
 			{
-				Recipient:      addr4,
-				TradableAmount: t2,
-				RetiredAmount:  r2,
+				Recipient:          addr4,
+				TradableAmount:     t2,
+				RetiredAmount:      r2,
+				RetirementLocation: "",
 			},
 		},
 	})
@@ -272,6 +275,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	retireCases := []struct {
 		name               string
 		toRetire           string
+		retirementLocation string
 		expectErr          bool
 		expTradeable       string
 		expRetired         string
@@ -279,18 +283,45 @@ func (s *IntegrationTestSuite) TestScenario() {
 		expRetiredSupply   string
 	}{
 		{
-			name:      "cannot retire more credits than are tradeable",
-			toRetire:  "10.371",
-			expectErr: true,
+			name:               "cannot retire more credits than are tradeable",
+			toRetire:           "10.371",
+			retirementLocation: "AF",
+			expectErr:          true,
 		},
 		{
-			name:      "can't use more than 7 decimal places",
-			toRetire:  "10.00000001",
-			expectErr: true,
+			name:               "can't use more than 7 decimal places",
+			toRetire:           "10.00000001",
+			retirementLocation: "AF",
+			expectErr:          true,
+		},
+		{
+			name:               "can't retire to an invalid country",
+			toRetire:           "0.0001",
+			retirementLocation: "ZZZ",
+			expectErr:          true,
+		},
+		{
+			name:               "can't retire to an invalid region",
+			toRetire:           "0.0001",
+			retirementLocation: "AF-ZZZZ",
+			expectErr:          true,
+		},
+		{
+			name:               "can't retire to an invalid postal code",
+			toRetire:           "0.0001",
+			retirementLocation: "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
+			expectErr:          true,
+		},
+		{
+			name:               "can't retire without a location",
+			toRetire:           "0.0001",
+			retirementLocation: "",
+			expectErr:          true,
 		},
 		{
 			name:               "can retire a small amount of credits",
 			toRetire:           "0.0001",
+			retirementLocation: "AF",
 			expectErr:          false,
 			expTradeable:       "9.3699",
 			expRetired:         "4.2861",
@@ -300,6 +331,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		{
 			name:               "can retire more credits",
 			toRetire:           "9",
+			retirementLocation: "AF-BDS",
 			expectErr:          false,
 			expTradeable:       "0.3699",
 			expRetired:         "13.2861",
@@ -309,6 +341,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		{
 			name:               "can retire all credits",
 			toRetire:           "0.3699",
+			retirementLocation: "AF-BDS 12345",
 			expectErr:          false,
 			expTradeable:       "0",
 			expRetired:         "13.656",
@@ -333,6 +366,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 						Amount:     tc.toRetire,
 					},
 				},
+				Location: tc.retirementLocation,
 			})
 
 			if tc.expectErr {
@@ -364,6 +398,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		name                  string
 		sendTradeable         string
 		sendRetired           string
+		retirementLocation    string
 		expectErr             bool
 		expTradeableSender    string
 		expRetiredSender      string
@@ -373,21 +408,45 @@ func (s *IntegrationTestSuite) TestScenario() {
 		expRetiredSupply      string
 	}{
 		{
-			name:          "can't send more tradeable than is tradeable",
-			sendTradeable: "2000",
-			sendRetired:   "10",
-			expectErr:     true,
+			name:               "can't send more tradeable than is tradeable",
+			sendTradeable:      "2000",
+			sendRetired:        "10",
+			retirementLocation: "AF",
+			expectErr:          true,
 		},
 		{
-			name:          "can't send more retired than is tradeable",
-			sendTradeable: "10",
-			sendRetired:   "2000",
-			expectErr:     true,
+			name:               "can't send more retired than is tradeable",
+			sendTradeable:      "10",
+			sendRetired:        "2000",
+			retirementLocation: "AF",
+			expectErr:          true,
+		},
+		{
+			name:               "can't send to an invalid country",
+			sendTradeable:      "10",
+			sendRetired:        "20",
+			retirementLocation: "ZZZ",
+			expectErr:          true,
+		},
+		{
+			name:               "can't send to an invalid region",
+			sendTradeable:      "10",
+			sendRetired:        "20",
+			retirementLocation: "AF-ZZZZ",
+			expectErr:          true,
+		},
+		{
+			name:               "can't send to an invalid postal code",
+			sendTradeable:      "10",
+			sendRetired:        "20",
+			retirementLocation: "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
+			expectErr:          true,
 		},
 		{
 			name:                  "can send some",
 			sendTradeable:         "10",
 			sendRetired:           "20",
+			retirementLocation:    "AF",
 			expectErr:             false,
 			expTradeableSender:    "977.3869",
 			expRetiredSender:      "10000.4589902",
@@ -397,9 +456,23 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expRetiredSupply:      "10034.1149902",
 		},
 		{
+			name:                  "can send with no retirement location",
+			sendTradeable:         "10",
+			sendRetired:           "0",
+			retirementLocation:    "",
+			expectErr:             false,
+			expTradeableSender:    "967.3869",
+			expRetiredSender:      "10000.4589902",
+			expTradeableRecipient: "20",
+			expRetiredRecipient:   "20",
+			expTradeableSupply:    "987.3869",
+			expRetiredSupply:      "10034.1149902",
+		},
+		{
 			name:                  "can send all tradeable",
-			sendTradeable:         "77.3869",
+			sendTradeable:         "67.3869",
 			sendRetired:           "900",
+			retirementLocation:    "AF",
 			expectErr:             false,
 			expTradeableSender:    "0",
 			expRetiredSender:      "10000.4589902",
@@ -424,9 +497,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 				Recipient: addr3,
 				Credits: []*ecocredit.MsgSendRequest_SendCredits{
 					{
-						BatchDenom:     batchDenom,
-						TradableAmount: tc.sendTradeable,
-						RetiredAmount:  tc.sendRetired,
+						BatchDenom:         batchDenom,
+						TradableAmount:     tc.sendTradeable,
+						RetiredAmount:      tc.sendRetired,
+						RetirementLocation: tc.retirementLocation,
 					},
 				},
 			})
