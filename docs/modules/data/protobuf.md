@@ -31,10 +31,6 @@
     - [EventSignData](#regen.data.v1alpha2.EventSignData)
     - [EventStoreRawData](#regen.data.v1alpha2.EventStoreRawData)
   
-- [regen/data/v1alpha2/genesis.proto](#regen/data/v1alpha2/genesis.proto)
-    - [GenesisContentEntry](#regen.data.v1alpha2.GenesisContentEntry)
-    - [GenesisState](#regen.data.v1alpha2.GenesisState)
-  
 - [regen/data/v1alpha2/query.proto](#regen/data/v1alpha2/query.proto)
     - [ContentEntry](#regen.data.v1alpha2.ContentEntry)
     - [QueryByHashRequest](#regen.data.v1alpha2.QueryByHashRequest)
@@ -228,7 +224,8 @@ MsgAnchorDataRequest is the Msg/AnchorData request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| iri | [string](#string) |  | iri is the data IRI |
+| sender | [string](#string) |  | sender is the address of the sender of the transaction. The sender in StoreData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing services. |
+| hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the hash-based identifier for the anchored content. |
 
 
 
@@ -243,8 +240,7 @@ MsgAnchorDataRequest is the Msg/AnchorData response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| iri | [string](#string) |  | iri is the data IRI |
-| signers | [string](#string) | repeated | signers are the addresses of the accounts which have signed the data. |
+| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the timestamp of the block at which the data was anchored. |
 
 
 
@@ -259,7 +255,8 @@ MsgSignDataRequest is the Msg/SignData request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| iri | [string](#string) |  | iri is the data IRI |
+| signers | [string](#string) | repeated | signers are the addresses of the accounts signing the data. By making a SignData request, the signers are attesting to the veracity of the data referenced by the cid. The precise meaning of this may vary depending on the underlying data. |
+| hash | [ContentHash.Graph](#regen.data.v1alpha2.ContentHash.Graph) |  | hash is the hash-based identifier for the anchored content. Only RDF graph data can be signed as its data model is intended to specifically convey semantic meaning. |
 
 
 
@@ -281,33 +278,22 @@ MsgSignDataResponse is the Msg/SignData response type.
 ### MsgStoreRawDataRequest
 MsgStoreRawDataRequest is the Msg/StoreRawData request type.
 
-<a name="regen.data.v1alpha2.GenesisContentEntry"></a>
-
-### GenesisContentEntry
-GenesisContentEntry is a genesis content entry
-
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the ContentHash |
-| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the anchor Timestamp |
-| signers | [SignerEntry](#regen.data.v1alpha2.SignerEntry) | repeated | signers are the signers, if any |
-| content | [Content](#regen.data.v1alpha2.Content) |  | content is the actual content if stored on-chain |
+| sender | [string](#string) |  | sender is the address of the sender of the transaction. The sender in StoreData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing services. |
+| content_hash | [ContentHash.Raw](#regen.data.v1alpha2.ContentHash.Raw) |  | content_hash is the hash-based identifier for the anchored content. |
+| content | [bytes](#bytes) |  | content is the content of the raw data corresponding to the provided content hash. |
 
 
 
 
 
 
-<a name="regen.data.v1alpha2.GenesisState"></a>
+<a name="regen.data.v1alpha2.MsgStoreRawDataResponse"></a>
 
-### GenesisState
-GenesisState is the genesis state
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| entries | [GenesisContentEntry](#regen.data.v1alpha2.GenesisContentEntry) | repeated | entries are the content entries |
+### MsgStoreRawDataResponse
+MsgStoreRawDataRequest is the Msg/StoreRawData response type.
 
 
 
@@ -336,26 +322,8 @@ On-chain signatures have the following benefits: - on-chain identities can be ma
 
 SignData implicitly calls AnchorData if the data was not already anchored.
 
-<a name="regen.data.v1alpha2.ContentEntry"></a>
-
-### ContentEntry
-ContentEntry describes data referenced and possibly stored on chain
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the content hash |
-| iri | [string](#string) |  | iri is the content IRI |
-| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the anchor Timestamp |
-| signers | [SignerEntry](#regen.data.v1alpha2.SignerEntry) | repeated | signers are the signers, if any |
-| content | [Content](#regen.data.v1alpha2.Content) |  | content is the actual content if stored on-chain |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.QueryByHashRequest"></a>
+SignData can be called multiple times for the same content hash with different signers and those signers will be appended to the list of signers. |
+| StoreRawData | [MsgStoreRawDataRequest](#regen.data.v1alpha2.MsgStoreRawDataRequest) | [MsgStoreRawDataResponse](#regen.data.v1alpha2.MsgStoreRawDataResponse) | StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
 
 StoreRawData implicitly calls AnchorData if the data was not already anchored.
 
@@ -380,7 +348,7 @@ EventAnchorData is an event emitted when data is anchored on-chain.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| entry | [ContentEntry](#regen.data.v1alpha2.ContentEntry) |  | entry is the ContentEntry |
+| iri | [string](#string) |  | iri is the data IRI |
 
 
 
@@ -411,8 +379,7 @@ EventStoreRawData is an event emitted when data is stored on-chain.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| entries | [ContentEntry](#regen.data.v1alpha2.ContentEntry) | repeated | entries is the ContentEntry's signed by the queried signer |
-| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination is the pagination PageResponse. |
+| iri | [string](#string) |  | iri is the data IRI |
 
 
 
@@ -443,8 +410,11 @@ ContentEntry describes data referenced and possibly stored on chain
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sender | [string](#string) |  | sender is the address of the sender of the transaction. The sender in StoreData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing services. |
-| hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the hash-based identifier for the anchored content. |
+| hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the content hash |
+| iri | [string](#string) |  | iri is the content IRI |
+| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the anchor Timestamp |
+| signers | [SignerEntry](#regen.data.v1alpha2.SignerEntry) | repeated | signers are the signers, if any |
+| content | [Content](#regen.data.v1alpha2.Content) |  | content is the actual content if stored on-chain |
 
 
 
@@ -474,8 +444,7 @@ QueryByContentHashResponse is the Query/ByContentHash response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| signers | [string](#string) | repeated | signers are the addresses of the accounts signing the data. By making a SignData request, the signers are attesting to the veracity of the data referenced by the cid. The precise meaning of this may vary depending on the underlying data. |
-| hash | [ContentHash.Graph](#regen.data.v1alpha2.ContentHash.Graph) |  | hash is the hash-based identifier for the anchored content. Only RDF graph data can be signed as its data model is intended to specifically convey semantic meaning. |
+| entry | [ContentEntry](#regen.data.v1alpha2.ContentEntry) |  | entry is the ContentEntry |
 
 
 
@@ -506,9 +475,8 @@ QueryBySignerResponse is the Query/BySigner response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sender | [string](#string) |  | sender is the address of the sender of the transaction. The sender in StoreData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing services. |
-| content_hash | [ContentHash.Raw](#regen.data.v1alpha2.ContentHash.Raw) |  | content_hash is the hash-based identifier for the anchored content. |
-| content | [bytes](#bytes) |  | content is the content of the raw data corresponding to the provided content hash. |
+| entries | [ContentEntry](#regen.data.v1alpha2.ContentEntry) | repeated | entries is the ContentEntry's signed by the queried signer |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination is the pagination PageResponse. |
 
 
 
@@ -549,8 +517,6 @@ TODO option (google.api.http).get = "/regen/data/v1alpha2/{hash}"; |
 ### GenesisContentEntry
 GenesisContentEntry is a genesis content entry
 
-SignData can be called multiple times for the same content hash with different signers and those signers will be appended to the list of signers. |
-| StoreRawData | [MsgStoreRawDataRequest](#regen.data.v1alpha2.MsgStoreRawDataRequest) | [MsgStoreRawDataResponse](#regen.data.v1alpha2.MsgStoreRawDataResponse) | StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |

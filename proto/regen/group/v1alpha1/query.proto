@@ -19,7 +19,7 @@ service Query {
 
   // GroupAccountInfo queries group account info based on group account address.
   rpc GroupAccountInfo(QueryGroupAccountInfoRequest) returns (QueryGroupAccountInfoResponse) {
-    option (google.api.http).get = "/regen/group/v1alpha1/groups/accounts/{group_account}";
+    option (google.api.http).get = "/regen/group/v1alpha1/groups/accounts/{address}";
   }
   // GroupMembers queries members of a group
   rpc GroupMembers(QueryGroupMembersRequest) returns (QueryGroupMembersResponse) {
@@ -48,7 +48,7 @@ service Query {
 
   // ProposalsByGroupAccount queries proposals based on group account address.
   rpc ProposalsByGroupAccount(QueryProposalsByGroupAccountRequest) returns (QueryProposalsByGroupAccountResponse) {
-    option (google.api.http).get = "/regen/group/v1alpha1/group-accounts/{group_account}/proposals";
+    option (google.api.http).get = "/regen/group/v1alpha1/group-accounts/{address}/proposals";
   }
   
   // VoteByProposalVoter queries a vote by proposal id and voter.

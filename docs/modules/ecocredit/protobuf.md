@@ -94,6 +94,37 @@ ClassInfo represents the high-level on-chain information for a credit class.
 
 
 
+
+<a name="regen.ecocredit.v1alpha1.GenesisState"></a>
+
+### GenesisState
+GenesisState defines the state of the ecocredit module that is needed at genesis
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| params | [Params](#regen.ecocredit.v1alpha1.Params) |  | Params contains the updateable global parameters for use with the x/params module |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.Params"></a>
+
+### Params
+Params defines the updatable global parameters of the ecocredit module for
+use with the x/params module.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| credit_class_fee | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | credit_class_fee is the fixed fee charged on creation of a new credit class |
+
+
+
+
+
  <!-- end messages -->
 
  <!-- end enums -->
@@ -178,38 +209,6 @@ MsgCreateClassRequest is the Msg/CreateClass request type.
 
 
 
-
-<a name="regen.ecocredit.v1alpha1.GenesisState"></a>
-
-### GenesisState
-GenesisState defines the state of the ecocredit module that is needed at genesis
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| params | [Params](#regen.ecocredit.v1alpha1.Params) |  | Params contains the updateable global parameters for use with the x/params module |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha1.Params"></a>
-
-### Params
-Params defines the updatable global parameters of the ecocredit module for
-use with the x/params module.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| credit_class_fee | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | credit_class_fee is the fixed fee charged on creation of a new credit class |
-
-
-
-
-
- <!-- end messages -->
 
 <a name="regen.ecocredit.v1alpha1.MsgCreateClassResponse"></a>
 

@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"math/rand"
@@ -61,7 +62,9 @@ func (a Module) ValidateGenesis(cdc codec.JSONCodec, config sdkclient.TxEncoding
 	return data.Validate()
 }
 
-func (a Module) RegisterGRPCGatewayRoutes(sdkclient.Context, *runtime.ServeMux) {}
+func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
+	group.RegisterQueryHandlerClient(context.Background(), mux, group.NewQueryClient(clientCtx))
+}
 
 func (a Module) GetTxCmd() *cobra.Command {
 	return client.TxCmd(a.Name())

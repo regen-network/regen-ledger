@@ -15,6 +15,10 @@ protoc_gen_doc() {
   go get -u github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc 2>/dev/null
 }
 
+protoc_gen_gateway2() {
+  go get github.com/aleem1314/grpc-gateway/protoc-gen-grpc-gateway2@v1.16.5-final 2>/dev/null
+}
+
 protoc_gen_gocosmos2() {
   cd protoc-gen-go-cosmos2
   go install .
@@ -24,6 +28,7 @@ protoc_gen_gocosmos2() {
 protoc_gen_gocosmos
 protoc_gen_gocosmos2
 protoc_gen_doc
+protoc_gen_gateway2
 go mod tidy
 
 proto_dirs=$(find ./proto -path -prune -o -name '*.proto' -print0 | xargs -0 -n1 dirname | sort | uniq)
@@ -54,7 +59,7 @@ google/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
   buf protoc \
   -I "proto" \
   -I "third_party/proto" \
-  --grpc-gateway_out=logtostderr=true:. \
+  --grpc-gateway2_out=logtostderr=true:. \
   $(find "${dir}" -maxdepth 1 -name '*.proto')
 
   # get the module name, e.g. from "./proto/regen/data/v1alpha1", extract "data"
