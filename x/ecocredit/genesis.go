@@ -6,7 +6,9 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 )
 
-// ValidateGenesis check the given genesis state has no integrity issues.
+// Validate performs basic validation for each credit-batch,
+// it returns an error if credit-batch tradable or retired supply
+// does not match the sum of all tradable or retired balances
 func (s *GenesisState) Validate() error {
 	decimalPlaces := make(map[string]uint32)
 	calTradableSupply := make(map[string]*apd.Decimal)
