@@ -27,3 +27,5 @@ ignore:
   - "tests/*"
   - "contrib"
   - "**/*.pb.go"
+  - "**/*.pb.gw.go"
+  - "scripts"
