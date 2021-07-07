@@ -180,6 +180,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 		expTradeable       string
 		expTradeableSupply string
 		expRetired         string
+		expTotalAmount     string
+		expAmountCancelled string
 	}{
 		{
 			name:      "can't cancel more credits than are tradeable",
@@ -207,6 +209,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expTradeable:       "97.9998",
 			expTradeableSupply: "1115.7567",
 			expRetired:         "0",
+			expTotalAmount:     "11120.5016902",
+			expAmountCancelled: "2.0002",
 		},
 		{
 			name:               "can cancel all remaining credits",
@@ -216,6 +220,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expTradeable:       "0",
 			expTradeableSupply: "1017.7569",
 			expRetired:         "0",
+			expTotalAmount:     "11022.5018902",
+			expAmountCancelled: "100.0000",
 		},
 		{
 			name:      "can't cancel anymore credits",
@@ -231,6 +237,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expTradeable:       "9.37",
 			expTradeableSupply: "1016.7569",
 			expRetired:         "4.286",
+			expTotalAmount:     "11021.5018902",
+			expAmountCancelled: "101.0000",
 		},
 	}
 
@@ -267,6 +275,13 @@ func (s *IntegrationTestSuite) TestScenario() {
 				s.Require().NotNil(querySupplyRes)
 				s.Require().Equal(tc.expTradeableSupply, querySupplyRes.TradableSupply)
 				s.Require().Equal(rSupply0, querySupplyRes.RetiredSupply)
+
+				// query batchInfo
+				queryBatchInfoRes, err := s.queryClient.BatchInfo(s.ctx, &ecocredit.QueryBatchInfoRequest{BatchDenom: batchDenom})
+				s.Require().NoError(err)
+				s.Require().NotNil(queryBatchInfoRes)
+				s.Require().Equal(tc.expTotalAmount, queryBatchInfoRes.Info.TotalAmount)
+				s.Require().Equal(tc.expAmountCancelled, queryBatchInfoRes.Info.AmountCancelled)
 			}
 		})
 	}

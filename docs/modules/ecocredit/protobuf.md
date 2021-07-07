@@ -182,8 +182,9 @@ BatchInfo represents the high-level on-chain information for a credit batch.
 | class_id | [string](#string) |  | class_id is the unique ID of credit class. |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
 | issuer | [string](#string) |  | issuer is the issuer of the credit batch. |
-| total_amount | [string](#string) |  | total_amount is the total number of credits in the credit batch and is immutable. Some of the credits may be cancelled, so will no longer be tracked in the tradable or retired supply for that batch, but they are not removed from the total amount. |
+| total_amount | [string](#string) |  | total_amount is the total number of active credits in the credit batch. Some of the issued credits may be cancelled and will be removed from total_amount and tracked in amount_cancelled. total_amount and amount_cancelled will always sum to the original amount of credits that were issued. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit batch. |
+| amount_cancelled | [string](#string) |  | amount_cancelled is the number of credits in the batch that have been cancelled, effectively undoing there issuance. The sum of total_amount and amount_cancelled will always sum to the original amount of credits that were issued. |
 
 
 
