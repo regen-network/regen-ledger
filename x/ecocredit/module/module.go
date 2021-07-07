@@ -11,6 +11,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	"github.com/spf13/cobra"
 
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
@@ -38,6 +39,7 @@ func NewModule(paramSpace paramtypes.Subspace, bankKeeper ecocredit.BankKeeper) 
 
 var _ module.AppModuleBasic = Module{}
 var _ servermodule.Module = Module{}
+var _ restmodule.Module = Module{}
 var _ climodule.Module = Module{}
 
 func (a Module) Name() string {
