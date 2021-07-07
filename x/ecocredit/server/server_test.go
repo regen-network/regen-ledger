@@ -21,7 +21,7 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	ff := server.NewFixtureFactory(t, 6)
+	ff := server.NewFixtureFactory(t, 7)
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()
 	amino := codec.NewLegacyAmino()

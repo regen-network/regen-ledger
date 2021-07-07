@@ -89,8 +89,9 @@ Parameters:
   class_id:  credit class
   metadata:  base64 encoded issuance metadata
   issuance:  YAML encode issuance list. Note: numerical values must be written in strings.
-             eg: '[{recipient: "xrn:sdgkjhs2345u79ghisodg", tradable_units: "10", retired_units: "2"}]'
-             Note: "tradable_units" and "retired_units" default to 0.`,
+             eg: '[{recipient: "xrn:sdgkjhs2345u79ghisodg", tradable_units: "10", retired_units: "2", retirement_location: "YY-ZZ 12345"}]'
+             Note: "tradable_units" and "retired_units" default to 0.
+             Note: "retirement_location" is only required when "retired_units" is positive.`,
 		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			b, err := base64.StdEncoding.DecodeString(args[2])
@@ -124,7 +125,8 @@ func txSend() *cobra.Command {
 Parameters:
   recipient: recipient address
   credits:   YAML encoded credit list. Note: numerical values must be written in strings.
-             eg: '[{batch_denom: "100/2", tradable_units: "5", retired_units: "0"}]'`,
+             eg: '[{batch_denom: "100/2", tradable_units: "5", retired_units: "0", retirement_location: "YY-ZZ 12345"}]'
+             Note: "retirement_location" is only required when "retired_units" is positive.`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var credits = []*ecocredit.MsgSendRequest_SendUnits{}
@@ -146,14 +148,20 @@ Parameters:
 
 func txRetire() *cobra.Command {
 	return &cobra.Command{
-		Use:   "retire [credits]",
+		Use:   "retire [credits] [retirement_location]",
 		Short: "Retires a specified amounts of credits from the account of the transaction author (--from)",
 		Long: `Retires a specified amounts of credits from the account of the transaction author (--from)
 
 Parameters:
-  credits:  YAML encoded credit list. Note: numerical values must be written in strings.
-            eg: '[{batch_denom: "100/2", units: "5"}]'`,
-		Args: cobra.ExactArgs(1),
+  credits:             YAML encoded credit list. Note: numerical values must be written in strings.
+                       eg: '[{batch_denom: "100/2", units: "5"}]'
+  retirement_location: A string representing the location of the buyer or
+                       beneficiary of retired credits. It has the form
+                       <country-code>[-<region-code>[ <postal-code>]], where
+                       country-code and region-code are taken from ISO 3166, and
+                       postal-code being up to 64 alphanumeric characters.
+                       eg: 'AA-BB 12345'`,
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var credits = []*ecocredit.MsgRetireRequest_RetireUnits{}
 			if err := yaml.Unmarshal([]byte(args[0]), &credits); err != nil {
@@ -164,8 +172,9 @@ Parameters:
 				return err
 			}
 			msg := ecocredit.MsgRetireRequest{
-				Holder:  clientCtx.GetFromAddress().String(),
-				Credits: credits,
+				Holder:   clientCtx.GetFromAddress().String(),
+				Credits:  credits,
+				Location: args[1],
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
