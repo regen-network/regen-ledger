@@ -16,20 +16,14 @@
     - [GraphMerkleTree](#regen.data.v1alpha2.GraphMerkleTree)
     - [MediaType](#regen.data.v1alpha2.MediaType)
   
-- [regen/data/v1alpha2/tx.proto](#regen/data/v1alpha2/tx.proto)
-    - [MsgAnchorDataRequest](#regen.data.v1alpha2.MsgAnchorDataRequest)
-    - [MsgAnchorDataResponse](#regen.data.v1alpha2.MsgAnchorDataResponse)
-    - [MsgSignDataRequest](#regen.data.v1alpha2.MsgSignDataRequest)
-    - [MsgSignDataResponse](#regen.data.v1alpha2.MsgSignDataResponse)
-    - [MsgStoreRawDataRequest](#regen.data.v1alpha2.MsgStoreRawDataRequest)
-    - [MsgStoreRawDataResponse](#regen.data.v1alpha2.MsgStoreRawDataResponse)
-  
-    - [Msg](#regen.data.v1alpha2.Msg)
-  
 - [regen/data/v1alpha2/events.proto](#regen/data/v1alpha2/events.proto)
     - [EventAnchorData](#regen.data.v1alpha2.EventAnchorData)
     - [EventSignData](#regen.data.v1alpha2.EventSignData)
     - [EventStoreRawData](#regen.data.v1alpha2.EventStoreRawData)
+  
+- [regen/data/v1alpha2/genesis.proto](#regen/data/v1alpha2/genesis.proto)
+    - [GenesisContentEntry](#regen.data.v1alpha2.GenesisContentEntry)
+    - [GenesisState](#regen.data.v1alpha2.GenesisState)
   
 - [regen/data/v1alpha2/query.proto](#regen/data/v1alpha2/query.proto)
     - [ContentEntry](#regen.data.v1alpha2.ContentEntry)
@@ -40,9 +34,15 @@
   
     - [Query](#regen.data.v1alpha2.Query)
   
-- [regen/data/v1alpha2/genesis.proto](#regen/data/v1alpha2/genesis.proto)
-    - [GenesisContentEntry](#regen.data.v1alpha2.GenesisContentEntry)
-    - [GenesisState](#regen.data.v1alpha2.GenesisState)
+- [regen/data/v1alpha2/tx.proto](#regen/data/v1alpha2/tx.proto)
+    - [MsgAnchorDataRequest](#regen.data.v1alpha2.MsgAnchorDataRequest)
+    - [MsgAnchorDataResponse](#regen.data.v1alpha2.MsgAnchorDataResponse)
+    - [MsgSignDataRequest](#regen.data.v1alpha2.MsgSignDataRequest)
+    - [MsgSignDataResponse](#regen.data.v1alpha2.MsgSignDataResponse)
+    - [MsgStoreRawDataRequest](#regen.data.v1alpha2.MsgStoreRawDataRequest)
+    - [MsgStoreRawDataResponse](#regen.data.v1alpha2.MsgStoreRawDataResponse)
+  
+    - [Msg](#regen.data.v1alpha2.Msg)
   
 - [Scalar Value Types](#scalar-value-types)
 
@@ -209,6 +209,225 @@ MediaType defines MIME media types to be used with a ContentHash.Raw hash.
 
 
 
+<a name="regen/data/v1alpha2/events.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## regen/data/v1alpha2/events.proto
+
+
+
+<a name="regen.data.v1alpha2.EventAnchorData"></a>
+
+### EventAnchorData
+EventAnchorData is an event emitted when data is anchored on-chain.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| iri | [string](#string) |  | iri is the data IRI |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.EventSignData"></a>
+
+### EventSignData
+EventSignData is an event emitted when data is signed on-chain.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| iri | [string](#string) |  | iri is the data IRI |
+| signers | [string](#string) | repeated | signers are the addresses of the accounts which have signed the data. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.EventStoreRawData"></a>
+
+### EventStoreRawData
+EventStoreRawData is an event emitted when data is stored on-chain.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| iri | [string](#string) |  | iri is the data IRI |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="regen/data/v1alpha2/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## regen/data/v1alpha2/genesis.proto
+
+
+
+<a name="regen.data.v1alpha2.GenesisContentEntry"></a>
+
+### GenesisContentEntry
+GenesisContentEntry is a genesis content entry
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the ContentHash |
+| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the anchor Timestamp |
+| signers | [SignerEntry](#regen.data.v1alpha2.SignerEntry) | repeated | signers are the signers, if any |
+| content | [Content](#regen.data.v1alpha2.Content) |  | content is the actual content if stored on-chain |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.GenesisState"></a>
+
+### GenesisState
+GenesisState is the genesis state
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| entries | [GenesisContentEntry](#regen.data.v1alpha2.GenesisContentEntry) | repeated | entries are the content entries |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="regen/data/v1alpha2/query.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## regen/data/v1alpha2/query.proto
+
+
+
+<a name="regen.data.v1alpha2.ContentEntry"></a>
+
+### ContentEntry
+ContentEntry describes data referenced and possibly stored on chain
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the content hash |
+| iri | [string](#string) |  | iri is the content IRI |
+| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the anchor Timestamp |
+| signers | [SignerEntry](#regen.data.v1alpha2.SignerEntry) | repeated | signers are the signers, if any |
+| content | [Content](#regen.data.v1alpha2.Content) |  | content is the actual content if stored on-chain |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.QueryByHashRequest"></a>
+
+### QueryByHashRequest
+QueryByContentHashRequest is the Query/ByContentHash request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the hash-based identifier for the anchored content. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.QueryByHashResponse"></a>
+
+### QueryByHashResponse
+QueryByContentHashResponse is the Query/ByContentHash response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| entry | [ContentEntry](#regen.data.v1alpha2.ContentEntry) |  | entry is the ContentEntry |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.QueryBySignerRequest"></a>
+
+### QueryBySignerRequest
+QueryBySignerRequest is the Query/BySigner request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| signer | [string](#string) |  | signer is the address of the signer to query by. |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination is the PageRequest to use for pagination. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.QueryBySignerResponse"></a>
+
+### QueryBySignerResponse
+QueryBySignerResponse is the Query/BySigner response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| entries | [ContentEntry](#regen.data.v1alpha2.ContentEntry) | repeated | entries is the ContentEntry's signed by the queried signer |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination is the pagination PageResponse. |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+
+<a name="regen.data.v1alpha2.Query"></a>
+
+### Query
+Query is the regen.data.v1alpha1 Query service
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| ByHash | [QueryByHashRequest](#regen.data.v1alpha2.QueryByHashRequest) | [QueryByHashResponse](#regen.data.v1alpha2.QueryByHashResponse) | ByHash queries data based on its ContentHash. |
+| BySigner | [QueryBySignerRequest](#regen.data.v1alpha2.QueryBySignerRequest) | [QueryBySignerResponse](#regen.data.v1alpha2.QueryBySignerResponse) | BySigner queries data based on signers. |
+
+ <!-- end services -->
+
+
+
 <a name="regen/data/v1alpha2/tx.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -328,227 +547,6 @@ SignData can be called multiple times for the same content hash with different s
 StoreRawData implicitly calls AnchorData if the data was not already anchored.
 
 The sender in StoreRawData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing storage services. SignData should be used to create a digital signature attesting to the veracity of some piece of data. |
-
- <!-- end services -->
-
-
-
-<a name="regen/data/v1alpha2/events.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## regen/data/v1alpha2/events.proto
-
-
-
-<a name="regen.data.v1alpha2.EventAnchorData"></a>
-
-### EventAnchorData
-EventAnchorData is an event emitted when data is anchored on-chain.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| iri | [string](#string) |  | iri is the data IRI |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.EventSignData"></a>
-
-### EventSignData
-EventSignData is an event emitted when data is signed on-chain.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| iri | [string](#string) |  | iri is the data IRI |
-| signers | [string](#string) | repeated | signers are the addresses of the accounts which have signed the data. |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.EventStoreRawData"></a>
-
-### EventStoreRawData
-EventStoreRawData is an event emitted when data is stored on-chain.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| iri | [string](#string) |  | iri is the data IRI |
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
- <!-- end services -->
-
-
-
-<a name="regen/data/v1alpha2/query.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## regen/data/v1alpha2/query.proto
-
-
-
-<a name="regen.data.v1alpha2.ContentEntry"></a>
-
-### ContentEntry
-ContentEntry describes data referenced and possibly stored on chain
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the content hash |
-| iri | [string](#string) |  | iri is the content IRI |
-| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the anchor Timestamp |
-| signers | [SignerEntry](#regen.data.v1alpha2.SignerEntry) | repeated | signers are the signers, if any |
-| content | [Content](#regen.data.v1alpha2.Content) |  | content is the actual content if stored on-chain |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.QueryByHashRequest"></a>
-
-### QueryByHashRequest
-QueryByContentHashRequest is the Query/ByContentHash request type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the hash-based identifier for the anchored content. |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.QueryByHashResponse"></a>
-
-### QueryByHashResponse
-QueryByContentHashResponse is the Query/ByContentHash response type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| entry | [ContentEntry](#regen.data.v1alpha2.ContentEntry) |  | entry is the ContentEntry |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.QueryBySignerRequest"></a>
-
-### QueryBySignerRequest
-QueryBySignerRequest is the Query/BySigner request type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| signer | [string](#string) |  | signer is the address of the signer to query by. |
-| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination is the PageRequest to use for pagination. |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.QueryBySignerResponse"></a>
-
-### QueryBySignerResponse
-QueryBySignerResponse is the Query/BySigner response type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| entries | [ContentEntry](#regen.data.v1alpha2.ContentEntry) | repeated | entries is the ContentEntry's signed by the queried signer |
-| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination is the pagination PageResponse. |
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
-
-
-<a name="regen.data.v1alpha2.Query"></a>
-
-### Query
-Query is the regen.data.v1alpha1 Query service
-
-| Method Name | Request Type | Response Type | Description |
-| ----------- | ------------ | ------------- | ------------|
-| ByHash | [QueryByHashRequest](#regen.data.v1alpha2.QueryByHashRequest) | [QueryByHashResponse](#regen.data.v1alpha2.QueryByHashResponse) | ByHash queries data based on its ContentHash.
-
-TODO option (google.api.http).get = "/regen/data/v1alpha2/{hash}"; |
-| BySigner | [QueryBySignerRequest](#regen.data.v1alpha2.QueryBySignerRequest) | [QueryBySignerResponse](#regen.data.v1alpha2.QueryBySignerResponse) | BySigner queries data based on signers. |
-
- <!-- end services -->
-
-
-
-<a name="regen/data/v1alpha2/genesis.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## regen/data/v1alpha2/genesis.proto
-
-
-
-<a name="regen.data.v1alpha2.GenesisContentEntry"></a>
-
-### GenesisContentEntry
-GenesisContentEntry is a genesis content entry
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the ContentHash |
-| timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the anchor Timestamp |
-| signers | [SignerEntry](#regen.data.v1alpha2.SignerEntry) | repeated | signers are the signers, if any |
-| content | [Content](#regen.data.v1alpha2.Content) |  | content is the actual content if stored on-chain |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.GenesisState"></a>
-
-### GenesisState
-GenesisState is the genesis state
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| entries | [GenesisContentEntry](#regen.data.v1alpha2.GenesisContentEntry) | repeated | entries are the content entries |
-
-
-
-
-
- <!-- end messages -->
-
- <!-- end enums -->
-
- <!-- end HasExtensions -->
 
  <!-- end services -->
 

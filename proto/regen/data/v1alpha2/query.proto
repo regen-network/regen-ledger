@@ -13,8 +13,7 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 service Query {
   // ByHash queries data based on its ContentHash.
   rpc ByHash (QueryByHashRequest) returns (QueryByHashResponse) {
-    // TODO 
-    // option (google.api.http).get = "/regen/data/v1alpha2/{hash}";
+    option (google.api.http).get = "/regen/data/v1alpha2/by-hash";
   }
 
   // BySigner queries data based on signers.

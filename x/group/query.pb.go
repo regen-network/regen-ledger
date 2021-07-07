@@ -4,11 +4,16 @@
 package group
 
 import (
+	context "context"
 	fmt "fmt"
 	query "github.com/cosmos/cosmos-sdk/types/query"
 	_ "github.com/gogo/protobuf/gogoproto"
+	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -1270,6 +1275,468 @@ var fileDescriptor_2523b81f3b315123 = []byte{
 	0xf0, 0x1e, 0xf3, 0xde, 0x95, 0xab, 0x7d, 0xda, 0x74, 0xa8, 0x47, 0xee, 0x8b, 0x04, 0x8d, 0x73,
 	0xfc, 0xbf, 0x55, 0x95, 0x7f, 0x03, 0x00, 0x00, 0xff, 0xff, 0x7f, 0xf2, 0xc6, 0xce, 0x69, 0x13,
 	0x00, 0x00,
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion4
+
+// QueryClient is the client API for Query service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type QueryClient interface {
+	// GroupInfo queries group info based on group id.
+	GroupInfo(ctx context.Context, in *QueryGroupInfoRequest, opts ...grpc.CallOption) (*QueryGroupInfoResponse, error)
+	// GroupAccountInfo queries group account info based on group account address.
+	GroupAccountInfo(ctx context.Context, in *QueryGroupAccountInfoRequest, opts ...grpc.CallOption) (*QueryGroupAccountInfoResponse, error)
+	// GroupMembers queries members of a group
+	GroupMembers(ctx context.Context, in *QueryGroupMembersRequest, opts ...grpc.CallOption) (*QueryGroupMembersResponse, error)
+	// GroupsByAdmin queries groups by admin address.
+	GroupsByAdmin(ctx context.Context, in *QueryGroupsByAdminRequest, opts ...grpc.CallOption) (*QueryGroupsByAdminResponse, error)
+	// GroupAccountsByGroup queries group accounts by group id.
+	GroupAccountsByGroup(ctx context.Context, in *QueryGroupAccountsByGroupRequest, opts ...grpc.CallOption) (*QueryGroupAccountsByGroupResponse, error)
+	// GroupsByAdmin queries group accounts by admin address.
+	GroupAccountsByAdmin(ctx context.Context, in *QueryGroupAccountsByAdminRequest, opts ...grpc.CallOption) (*QueryGroupAccountsByAdminResponse, error)
+	// Proposal queries a proposal based on proposal id.
+	Proposal(ctx context.Context, in *QueryProposalRequest, opts ...grpc.CallOption) (*QueryProposalResponse, error)
+	// ProposalsByGroupAccount queries proposals based on group account address.
+	ProposalsByGroupAccount(ctx context.Context, in *QueryProposalsByGroupAccountRequest, opts ...grpc.CallOption) (*QueryProposalsByGroupAccountResponse, error)
+	// VoteByProposalVoter queries a vote by proposal id and voter.
+	VoteByProposalVoter(ctx context.Context, in *QueryVoteByProposalVoterRequest, opts ...grpc.CallOption) (*QueryVoteByProposalVoterResponse, error)
+	// VotesByProposal queries a vote by proposal.
+	VotesByProposal(ctx context.Context, in *QueryVotesByProposalRequest, opts ...grpc.CallOption) (*QueryVotesByProposalResponse, error)
+	// VotesByVoter queries a vote by voter.
+	VotesByVoter(ctx context.Context, in *QueryVotesByVoterRequest, opts ...grpc.CallOption) (*QueryVotesByVoterResponse, error)
+}
+
+type queryClient struct {
+	cc grpc1.ClientConn
+}
+
+func NewQueryClient(cc grpc1.ClientConn) QueryClient {
+	return &queryClient{cc}
+}
+
+func (c *queryClient) GroupInfo(ctx context.Context, in *QueryGroupInfoRequest, opts ...grpc.CallOption) (*QueryGroupInfoResponse, error) {
+	out := new(QueryGroupInfoResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Query/GroupInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GroupAccountInfo(ctx context.Context, in *QueryGroupAccountInfoRequest, opts ...grpc.CallOption) (*QueryGroupAccountInfoResponse, error) {
+	out := new(QueryGroupAccountInfoResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Query/GroupAccountInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GroupMembers(ctx context.Context, in *QueryGroupMembersRequest, opts ...grpc.CallOption) (*QueryGroupMembersResponse, error) {
+	out := new(QueryGroupMembersResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Query/GroupMembers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GroupsByAdmin(ctx context.Context, in *QueryGroupsByAdminRequest, opts ...grpc.CallOption) (*QueryGroupsByAdminResponse, error) {
+	out := new(QueryGroupsByAdminResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Query/GroupsByAdmin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GroupAccountsByGroup(ctx context.Context, in *QueryGroupAccountsByGroupRequest, opts ...grpc.CallOption) (*QueryGroupAccountsByGroupResponse, error) {
+	out := new(QueryGroupAccountsByGroupResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Query/GroupAccountsByGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GroupAccountsByAdmin(ctx context.Context, in *QueryGroupAccountsByAdminRequest, opts ...grpc.CallOption) (*QueryGroupAccountsByAdminResponse, error) {
+	out := new(QueryGroupAccountsByAdminResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Query/GroupAccountsByAdmin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Proposal(ctx context.Context, in *QueryProposalRequest, opts ...grpc.CallOption) (*QueryProposalResponse, error) {
+	out := new(QueryProposalResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Query/Proposal", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ProposalsByGroupAccount(ctx context.Context, in *QueryProposalsByGroupAccountRequest, opts ...grpc.CallOption) (*QueryProposalsByGroupAccountResponse, error) {
+	out := new(QueryProposalsByGroupAccountResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Query/ProposalsByGroupAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) VoteByProposalVoter(ctx context.Context, in *QueryVoteByProposalVoterRequest, opts ...grpc.CallOption) (*QueryVoteByProposalVoterResponse, error) {
+	out := new(QueryVoteByProposalVoterResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Query/VoteByProposalVoter", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) VotesByProposal(ctx context.Context, in *QueryVotesByProposalRequest, opts ...grpc.CallOption) (*QueryVotesByProposalResponse, error) {
+	out := new(QueryVotesByProposalResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Query/VotesByProposal", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) VotesByVoter(ctx context.Context, in *QueryVotesByVoterRequest, opts ...grpc.CallOption) (*QueryVotesByVoterResponse, error) {
+	out := new(QueryVotesByVoterResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Query/VotesByVoter", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// QueryServer is the server API for Query service.
+type QueryServer interface {
+	// GroupInfo queries group info based on group id.
+	GroupInfo(context.Context, *QueryGroupInfoRequest) (*QueryGroupInfoResponse, error)
+	// GroupAccountInfo queries group account info based on group account address.
+	GroupAccountInfo(context.Context, *QueryGroupAccountInfoRequest) (*QueryGroupAccountInfoResponse, error)
+	// GroupMembers queries members of a group
+	GroupMembers(context.Context, *QueryGroupMembersRequest) (*QueryGroupMembersResponse, error)
+	// GroupsByAdmin queries groups by admin address.
+	GroupsByAdmin(context.Context, *QueryGroupsByAdminRequest) (*QueryGroupsByAdminResponse, error)
+	// GroupAccountsByGroup queries group accounts by group id.
+	GroupAccountsByGroup(context.Context, *QueryGroupAccountsByGroupRequest) (*QueryGroupAccountsByGroupResponse, error)
+	// GroupsByAdmin queries group accounts by admin address.
+	GroupAccountsByAdmin(context.Context, *QueryGroupAccountsByAdminRequest) (*QueryGroupAccountsByAdminResponse, error)
+	// Proposal queries a proposal based on proposal id.
+	Proposal(context.Context, *QueryProposalRequest) (*QueryProposalResponse, error)
+	// ProposalsByGroupAccount queries proposals based on group account address.
+	ProposalsByGroupAccount(context.Context, *QueryProposalsByGroupAccountRequest) (*QueryProposalsByGroupAccountResponse, error)
+	// VoteByProposalVoter queries a vote by proposal id and voter.
+	VoteByProposalVoter(context.Context, *QueryVoteByProposalVoterRequest) (*QueryVoteByProposalVoterResponse, error)
+	// VotesByProposal queries a vote by proposal.
+	VotesByProposal(context.Context, *QueryVotesByProposalRequest) (*QueryVotesByProposalResponse, error)
+	// VotesByVoter queries a vote by voter.
+	VotesByVoter(context.Context, *QueryVotesByVoterRequest) (*QueryVotesByVoterResponse, error)
+}
+
+// UnimplementedQueryServer can be embedded to have forward compatible implementations.
+type UnimplementedQueryServer struct {
+}
+
+func (*UnimplementedQueryServer) GroupInfo(ctx context.Context, req *QueryGroupInfoRequest) (*QueryGroupInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GroupInfo not implemented")
+}
+func (*UnimplementedQueryServer) GroupAccountInfo(ctx context.Context, req *QueryGroupAccountInfoRequest) (*QueryGroupAccountInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GroupAccountInfo not implemented")
+}
+func (*UnimplementedQueryServer) GroupMembers(ctx context.Context, req *QueryGroupMembersRequest) (*QueryGroupMembersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GroupMembers not implemented")
+}
+func (*UnimplementedQueryServer) GroupsByAdmin(ctx context.Context, req *QueryGroupsByAdminRequest) (*QueryGroupsByAdminResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GroupsByAdmin not implemented")
+}
+func (*UnimplementedQueryServer) GroupAccountsByGroup(ctx context.Context, req *QueryGroupAccountsByGroupRequest) (*QueryGroupAccountsByGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GroupAccountsByGroup not implemented")
+}
+func (*UnimplementedQueryServer) GroupAccountsByAdmin(ctx context.Context, req *QueryGroupAccountsByAdminRequest) (*QueryGroupAccountsByAdminResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GroupAccountsByAdmin not implemented")
+}
+func (*UnimplementedQueryServer) Proposal(ctx context.Context, req *QueryProposalRequest) (*QueryProposalResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Proposal not implemented")
+}
+func (*UnimplementedQueryServer) ProposalsByGroupAccount(ctx context.Context, req *QueryProposalsByGroupAccountRequest) (*QueryProposalsByGroupAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProposalsByGroupAccount not implemented")
+}
+func (*UnimplementedQueryServer) VoteByProposalVoter(ctx context.Context, req *QueryVoteByProposalVoterRequest) (*QueryVoteByProposalVoterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VoteByProposalVoter not implemented")
+}
+func (*UnimplementedQueryServer) VotesByProposal(ctx context.Context, req *QueryVotesByProposalRequest) (*QueryVotesByProposalResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VotesByProposal not implemented")
+}
+func (*UnimplementedQueryServer) VotesByVoter(ctx context.Context, req *QueryVotesByVoterRequest) (*QueryVotesByVoterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method VotesByVoter not implemented")
+}
+
+func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
+	s.RegisterService(&_Query_serviceDesc, srv)
+}
+
+func _Query_GroupInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGroupInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GroupInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Query/GroupInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GroupInfo(ctx, req.(*QueryGroupInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GroupAccountInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGroupAccountInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GroupAccountInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Query/GroupAccountInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GroupAccountInfo(ctx, req.(*QueryGroupAccountInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GroupMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGroupMembersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GroupMembers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Query/GroupMembers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GroupMembers(ctx, req.(*QueryGroupMembersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GroupsByAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGroupsByAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GroupsByAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Query/GroupsByAdmin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GroupsByAdmin(ctx, req.(*QueryGroupsByAdminRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GroupAccountsByGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGroupAccountsByGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GroupAccountsByGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Query/GroupAccountsByGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GroupAccountsByGroup(ctx, req.(*QueryGroupAccountsByGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GroupAccountsByAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGroupAccountsByAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GroupAccountsByAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Query/GroupAccountsByAdmin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GroupAccountsByAdmin(ctx, req.(*QueryGroupAccountsByAdminRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Proposal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryProposalRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Proposal(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Query/Proposal",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Proposal(ctx, req.(*QueryProposalRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ProposalsByGroupAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryProposalsByGroupAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ProposalsByGroupAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Query/ProposalsByGroupAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ProposalsByGroupAccount(ctx, req.(*QueryProposalsByGroupAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_VoteByProposalVoter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryVoteByProposalVoterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).VoteByProposalVoter(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Query/VoteByProposalVoter",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).VoteByProposalVoter(ctx, req.(*QueryVoteByProposalVoterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_VotesByProposal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryVotesByProposalRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).VotesByProposal(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Query/VotesByProposal",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).VotesByProposal(ctx, req.(*QueryVotesByProposalRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_VotesByVoter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryVotesByVoterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).VotesByVoter(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Query/VotesByVoter",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).VotesByVoter(ctx, req.(*QueryVotesByVoterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _Query_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "regen.group.v1alpha1.Query",
+	HandlerType: (*QueryServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GroupInfo",
+			Handler:    _Query_GroupInfo_Handler,
+		},
+		{
+			MethodName: "GroupAccountInfo",
+			Handler:    _Query_GroupAccountInfo_Handler,
+		},
+		{
+			MethodName: "GroupMembers",
+			Handler:    _Query_GroupMembers_Handler,
+		},
+		{
+			MethodName: "GroupsByAdmin",
+			Handler:    _Query_GroupsByAdmin_Handler,
+		},
+		{
+			MethodName: "GroupAccountsByGroup",
+			Handler:    _Query_GroupAccountsByGroup_Handler,
+		},
+		{
+			MethodName: "GroupAccountsByAdmin",
+			Handler:    _Query_GroupAccountsByAdmin_Handler,
+		},
+		{
+			MethodName: "Proposal",
+			Handler:    _Query_Proposal_Handler,
+		},
+		{
+			MethodName: "ProposalsByGroupAccount",
+			Handler:    _Query_ProposalsByGroupAccount_Handler,
+		},
+		{
+			MethodName: "VoteByProposalVoter",
+			Handler:    _Query_VoteByProposalVoter_Handler,
+		},
+		{
+			MethodName: "VotesByProposal",
+			Handler:    _Query_VotesByProposal_Handler,
+		},
+		{
+			MethodName: "VotesByVoter",
+			Handler:    _Query_VotesByVoter_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "regen/group/v1alpha1/query.proto",
 }
 
 func (m *QueryGroupInfoRequest) Marshal() (dAtA []byte, err error) {

@@ -17,7 +17,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/grpc-ecosystem/grpc-gateway/utilities"
-	"github.com/regen-network/regen-ledger/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/grpclog"
@@ -56,7 +55,7 @@ func request_Query_GroupInfo_0(ctx context.Context, marshaler runtime.Marshaler,
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "group_id", err)
 	}
 
-	msg, err := client.GroupInfo(types.UnwrapSDKContext(ctx), &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GroupInfo(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -83,7 +82,7 @@ func local_request_Query_GroupInfo_0(ctx context.Context, marshaler runtime.Mars
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "group_id", err)
 	}
 
-	msg, err := server.GroupInfo(types.UnwrapSDKContext(ctx), &protoReq)
+	msg, err := server.GroupInfo(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -110,7 +109,7 @@ func request_Query_GroupAccountInfo_0(ctx context.Context, marshaler runtime.Mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "address", err)
 	}
 
-	msg, err := client.GroupAccountInfo(types.UnwrapSDKContext(ctx), &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GroupAccountInfo(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -137,7 +136,7 @@ func local_request_Query_GroupAccountInfo_0(ctx context.Context, marshaler runti
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "address", err)
 	}
 
-	msg, err := server.GroupAccountInfo(types.UnwrapSDKContext(ctx), &protoReq)
+	msg, err := server.GroupAccountInfo(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -175,7 +174,7 @@ func request_Query_GroupMembers_0(ctx context.Context, marshaler runtime.Marshal
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.GroupMembers(types.UnwrapSDKContext(ctx), &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GroupMembers(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -209,7 +208,7 @@ func local_request_Query_GroupMembers_0(ctx context.Context, marshaler runtime.M
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.GroupMembers(types.UnwrapSDKContext(ctx), &protoReq)
+	msg, err := server.GroupMembers(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -247,7 +246,7 @@ func request_Query_GroupsByAdmin_0(ctx context.Context, marshaler runtime.Marsha
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.GroupsByAdmin(types.UnwrapSDKContext(ctx), &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GroupsByAdmin(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -281,7 +280,7 @@ func local_request_Query_GroupsByAdmin_0(ctx context.Context, marshaler runtime.
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.GroupsByAdmin(types.UnwrapSDKContext(ctx), &protoReq)
+	msg, err := server.GroupsByAdmin(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -319,7 +318,7 @@ func request_Query_GroupAccountsByGroup_0(ctx context.Context, marshaler runtime
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.GroupAccountsByGroup(types.UnwrapSDKContext(ctx), &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GroupAccountsByGroup(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -353,7 +352,7 @@ func local_request_Query_GroupAccountsByGroup_0(ctx context.Context, marshaler r
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.GroupAccountsByGroup(types.UnwrapSDKContext(ctx), &protoReq)
+	msg, err := server.GroupAccountsByGroup(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -391,7 +390,7 @@ func request_Query_GroupAccountsByAdmin_0(ctx context.Context, marshaler runtime
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.GroupAccountsByAdmin(types.UnwrapSDKContext(ctx), &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GroupAccountsByAdmin(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -425,7 +424,7 @@ func local_request_Query_GroupAccountsByAdmin_0(ctx context.Context, marshaler r
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.GroupAccountsByAdmin(types.UnwrapSDKContext(ctx), &protoReq)
+	msg, err := server.GroupAccountsByAdmin(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -452,7 +451,7 @@ func request_Query_Proposal_0(ctx context.Context, marshaler runtime.Marshaler, 
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "proposal_id", err)
 	}
 
-	msg, err := client.Proposal(types.UnwrapSDKContext(ctx), &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.Proposal(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -479,7 +478,7 @@ func local_request_Query_Proposal_0(ctx context.Context, marshaler runtime.Marsh
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "proposal_id", err)
 	}
 
-	msg, err := server.Proposal(types.UnwrapSDKContext(ctx), &protoReq)
+	msg, err := server.Proposal(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -517,7 +516,7 @@ func request_Query_ProposalsByGroupAccount_0(ctx context.Context, marshaler runt
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.ProposalsByGroupAccount(types.UnwrapSDKContext(ctx), &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.ProposalsByGroupAccount(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -551,7 +550,7 @@ func local_request_Query_ProposalsByGroupAccount_0(ctx context.Context, marshale
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.ProposalsByGroupAccount(types.UnwrapSDKContext(ctx), &protoReq)
+	msg, err := server.ProposalsByGroupAccount(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -589,7 +588,7 @@ func request_Query_VoteByProposalVoter_0(ctx context.Context, marshaler runtime.
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "voter", err)
 	}
 
-	msg, err := client.VoteByProposalVoter(types.UnwrapSDKContext(ctx), &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.VoteByProposalVoter(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -627,7 +626,7 @@ func local_request_Query_VoteByProposalVoter_0(ctx context.Context, marshaler ru
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "voter", err)
 	}
 
-	msg, err := server.VoteByProposalVoter(types.UnwrapSDKContext(ctx), &protoReq)
+	msg, err := server.VoteByProposalVoter(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -665,7 +664,7 @@ func request_Query_VotesByProposal_0(ctx context.Context, marshaler runtime.Mars
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.VotesByProposal(types.UnwrapSDKContext(ctx), &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.VotesByProposal(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -699,7 +698,7 @@ func local_request_Query_VotesByProposal_0(ctx context.Context, marshaler runtim
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.VotesByProposal(types.UnwrapSDKContext(ctx), &protoReq)
+	msg, err := server.VotesByProposal(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -737,7 +736,7 @@ func request_Query_VotesByVoter_0(ctx context.Context, marshaler runtime.Marshal
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.VotesByVoter(types.UnwrapSDKContext(ctx), &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.VotesByVoter(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -771,7 +770,7 @@ func local_request_Query_VotesByVoter_0(ctx context.Context, marshaler runtime.M
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.VotesByVoter(types.UnwrapSDKContext(ctx), &protoReq)
+	msg, err := server.VotesByVoter(ctx, &protoReq)
 	return msg, metadata, err
 
 }

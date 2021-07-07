@@ -17,7 +17,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/grpc-ecosystem/grpc-gateway/utilities"
-	"github.com/regen-network/regen-ledger/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/grpclog"
@@ -56,7 +55,7 @@ func request_Query_ClassInfo_0(ctx context.Context, marshaler runtime.Marshaler,
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "class_id", err)
 	}
 
-	msg, err := client.ClassInfo(types.UnwrapSDKContext(ctx), &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.ClassInfo(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -83,7 +82,7 @@ func local_request_Query_ClassInfo_0(ctx context.Context, marshaler runtime.Mars
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "class_id", err)
 	}
 
-	msg, err := server.ClassInfo(types.UnwrapSDKContext(ctx), &protoReq)
+	msg, err := server.ClassInfo(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -110,7 +109,7 @@ func request_Query_BatchInfo_0(ctx context.Context, marshaler runtime.Marshaler,
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "batch_denom", err)
 	}
 
-	msg, err := client.BatchInfo(types.UnwrapSDKContext(ctx), &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.BatchInfo(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -137,7 +136,7 @@ func local_request_Query_BatchInfo_0(ctx context.Context, marshaler runtime.Mars
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "batch_denom", err)
 	}
 
-	msg, err := server.BatchInfo(types.UnwrapSDKContext(ctx), &protoReq)
+	msg, err := server.BatchInfo(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -175,7 +174,7 @@ func request_Query_Balance_0(ctx context.Context, marshaler runtime.Marshaler, c
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "account", err)
 	}
 
-	msg, err := client.Balance(types.UnwrapSDKContext(ctx), &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.Balance(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -213,7 +212,7 @@ func local_request_Query_Balance_0(ctx context.Context, marshaler runtime.Marsha
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "account", err)
 	}
 
-	msg, err := server.Balance(types.UnwrapSDKContext(ctx), &protoReq)
+	msg, err := server.Balance(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -240,7 +239,7 @@ func request_Query_Supply_0(ctx context.Context, marshaler runtime.Marshaler, cl
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "batch_denom", err)
 	}
 
-	msg, err := client.Supply(types.UnwrapSDKContext(ctx), &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.Supply(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -267,7 +266,7 @@ func local_request_Query_Supply_0(ctx context.Context, marshaler runtime.Marshal
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "batch_denom", err)
 	}
 
-	msg, err := server.Supply(types.UnwrapSDKContext(ctx), &protoReq)
+	msg, err := server.Supply(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -294,7 +293,7 @@ func request_Query_Precision_0(ctx context.Context, marshaler runtime.Marshaler,
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "batch_denom", err)
 	}
 
-	msg, err := client.Precision(types.UnwrapSDKContext(ctx), &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.Precision(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
@@ -321,7 +320,7 @@ func local_request_Query_Precision_0(ctx context.Context, marshaler runtime.Mars
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "batch_denom", err)
 	}
 
-	msg, err := server.Precision(types.UnwrapSDKContext(ctx), &protoReq)
+	msg, err := server.Precision(ctx, &protoReq)
 	return msg, metadata, err
 
 }

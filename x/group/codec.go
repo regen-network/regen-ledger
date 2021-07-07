@@ -42,7 +42,7 @@ func RegisterTypes(registry cdctypes.InterfaceRegistry) {
 		&MsgExecRequest{},
 	)
 
-	msgservice.RegisterMsgServiceDesc(registry, &Msg_ServiceDesc)
+	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 
 	registry.RegisterInterface(
 		"regen.group.v1alpha1.DecisionPolicy",
