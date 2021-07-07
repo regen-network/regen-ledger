@@ -1,12 +1,13 @@
 package server
 
 import (
+	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/orm"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/group"
-
-	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/regen-network/regen-ledger/x/group/exported"
 )
 
 const (
@@ -39,8 +40,11 @@ const (
 )
 
 type serverImpl struct {
-	storeKey sdk.StoreKey
-	router   sdk.Router
+	key    servermodule.RootModuleKey
+	router sdk.Router
+
+	accKeeper  exported.AccountKeeper
+	bankKeeper exported.BankKeeper
 
 	// Group Table
 	groupSeq          orm.Sequence
@@ -48,13 +52,13 @@ type serverImpl struct {
 	groupByAdminIndex orm.Index
 
 	// Group Member Table
-	groupMemberTable         orm.NaturalKeyTable
+	groupMemberTable         orm.PrimaryKeyTable
 	groupMemberByGroupIndex  orm.UInt64Index
 	groupMemberByMemberIndex orm.Index
 
 	// Group Account Table
 	groupAccountSeq          orm.Sequence
-	groupAccountTable        orm.NaturalKeyTable
+	groupAccountTable        orm.PrimaryKeyTable
 	groupAccountByGroupIndex orm.UInt64Index
 	groupAccountByAdminIndex orm.Index
 
@@ -64,13 +68,13 @@ type serverImpl struct {
 	proposalByProposerIndex     orm.Index
 
 	// Vote Table
-	voteTable           orm.NaturalKeyTable
+	voteTable           orm.PrimaryKeyTable
 	voteByProposalIndex orm.UInt64Index
 	voteByVoterIndex    orm.Index
 }
 
-func newServer(storeKey sdk.StoreKey, router sdk.Router, cdc codec.Marshaler) serverImpl {
-	s := serverImpl{storeKey: storeKey, router: router}
+func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper, cdc codec.Codec) serverImpl {
+	s := serverImpl{key: storeKey, router: router, accKeeper: accKeeper, bankKeeper: bankKeeper}
 
 	// Group Table
 	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, storeKey, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
@@ -85,10 +89,10 @@ func newServer(storeKey sdk.StoreKey, router sdk.Router, cdc codec.Marshaler) se
 	s.groupTable = groupTableBuilder.Build()
 
 	// Group Member Table
-	groupMemberTableBuilder := orm.NewNaturalKeyTableBuilder(GroupMemberTablePrefix, storeKey, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	groupMemberTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, storeKey, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.groupMemberByGroupIndex = orm.NewUInt64Index(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]uint64, error) {
 		group := val.(*group.GroupMember).GroupId
-		return []uint64{uint64(group)}, nil
+		return []uint64{group}, nil
 	})
 	s.groupMemberByMemberIndex = orm.NewIndex(groupMemberTableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
 		memberAddr := val.(*group.GroupMember).Member.Address
@@ -102,10 +106,10 @@ func newServer(storeKey sdk.StoreKey, router sdk.Router, cdc codec.Marshaler) se
 
 	// Group Account Table
 	s.groupAccountSeq = orm.NewSequence(storeKey, GroupAccountTableSeqPrefix)
-	groupAccountTableBuilder := orm.NewNaturalKeyTableBuilder(GroupAccountTablePrefix, storeKey, &group.GroupAccountInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	groupAccountTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupAccountTablePrefix, storeKey, &group.GroupAccountInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.groupAccountByGroupIndex = orm.NewUInt64Index(groupAccountTableBuilder, GroupAccountByGroupIndexPrefix, func(value interface{}) ([]uint64, error) {
 		group := value.(*group.GroupAccountInfo).GroupId
-		return []uint64{uint64(group)}, nil
+		return []uint64{group}, nil
 	})
 	s.groupAccountByAdminIndex = orm.NewIndex(groupAccountTableBuilder, GroupAccountByAdminIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
 		admin := value.(*group.GroupAccountInfo).Admin
@@ -119,9 +123,8 @@ func newServer(storeKey sdk.StoreKey, router sdk.Router, cdc codec.Marshaler) se
 
 	// Proposal Table
 	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, storeKey, &group.Proposal{}, cdc)
-	// proposalTableBuilder := orm.NewNaturalKeyTableBuilder(ProposalTablePrefix, storeKey, &group.Proposal{}, orm.Max255DynamicLengthIndexKeyCodec{})
 	s.proposalByGroupAccountIndex = orm.NewIndex(proposalTableBuilder, ProposalByGroupAccountIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
-		account := value.(*group.Proposal).GroupAccount
+		account := value.(*group.Proposal).Address
 		addr, err := sdk.AccAddressFromBech32(account)
 		if err != nil {
 			return nil, err
@@ -143,9 +146,9 @@ func newServer(storeKey sdk.StoreKey, router sdk.Router, cdc codec.Marshaler) se
 	s.proposalTable = proposalTableBuilder.Build()
 
 	// Vote Table
-	voteTableBuilder := orm.NewNaturalKeyTableBuilder(VoteTablePrefix, storeKey, &group.Vote{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	voteTableBuilder := orm.NewPrimaryKeyTableBuilder(VoteTablePrefix, storeKey, &group.Vote{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.voteByProposalIndex = orm.NewUInt64Index(voteTableBuilder, VoteByProposalIndexPrefix, func(value interface{}) ([]uint64, error) {
-		return []uint64{uint64(value.(*group.Vote).ProposalId)}, nil
+		return []uint64{value.(*group.Vote).ProposalId}, nil
 	})
 	s.voteByVoterIndex = orm.NewIndex(voteTableBuilder, VoteByVoterIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
 		addr, err := sdk.AccAddressFromBech32(value.(*group.Vote).Voter)
@@ -159,8 +162,11 @@ func newServer(storeKey sdk.StoreKey, router sdk.Router, cdc codec.Marshaler) se
 	return s
 }
 
-func RegisterServices(configurator servermodule.Configurator) {
-	impl := newServer(configurator.ModuleKey(), configurator.Router(), configurator.Marshaler())
+func RegisterServices(configurator servermodule.Configurator, accountKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper) {
+	impl := newServer(configurator.ModuleKey(), configurator.Router(), accountKeeper, bankKeeper, configurator.Marshaler())
 	group.RegisterMsgServer(configurator.MsgServer(), impl)
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
+	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
+	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
+	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 }

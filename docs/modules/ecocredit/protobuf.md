@@ -13,6 +13,8 @@
 - [regen/ecocredit/v1alpha1/types.proto](#regen/ecocredit/v1alpha1/types.proto)
     - [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo)
     - [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo)
+    - [GenesisState](#regen.ecocredit.v1alpha1.GenesisState)
+    - [Params](#regen.ecocredit.v1alpha1.Params)
   
 - [regen/ecocredit/v1alpha1/query.proto](#regen/ecocredit/v1alpha1/query.proto)
     - [QueryBalanceRequest](#regen.ecocredit.v1alpha1.QueryBalanceRequest)
@@ -123,6 +125,7 @@ batches have been retired at once for easy indexing.
 | retirer | [string](#string) |  | retirer is the account which has done the "retiring". This will be the account receiving credits in the case that credits were retired upon issuance using Msg/CreateBatch or retired upon transfer using Msg/Send. |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
 | units | [string](#string) |  | units is the decimal number of credits that have been retired. |
+| location | [string](#string) |  | location is the location of the beneficiary or buyer of the retired credits. It is a string of the form <country-code>[-<sub-national-code>[ <postal-code>]], with the first two fields conforming to ISO 3166-2, and postal-code being up to 64 alphanumeric characters. |
 
 
 
@@ -176,6 +179,37 @@ ClassInfo represents the high-level on-chain information for a credit class.
 | designer | [string](#string) |  | designer is the designer of the credit class. |
 | issuers | [string](#string) | repeated | issuers are the approved issuers of the credit class. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit class. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.GenesisState"></a>
+
+### GenesisState
+GenesisState defines the state of the ecocredit module that is needed at genesis
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| params | [Params](#regen.ecocredit.v1alpha1.Params) |  | Params contains the updateable global parameters for use with the x/params module |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.Params"></a>
+
+### Params
+Params defines the updatable global parameters of the ecocredit module for
+use with the x/params module.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| credit_class_fee | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | credit_class_fee is the fixed fee charged on creation of a new credit class |
 
 
 
@@ -411,6 +445,7 @@ single recipient.
 | recipient | [string](#string) |  | recipient is the account of the recipient. |
 | tradable_units | [string](#string) |  | tradable_units are the units of credits in this issuance that can be traded by this recipient. Decimal values are acceptable. |
 | retired_units | [string](#string) |  | retired_units are the units of credits in this issuance that are effectively retired by the issuer on receipt. Decimal values are acceptable. |
+| retirement_location | [string](#string) |  | retirement_location is the location of the beneficiary or buyer of the retired credits. This must be provided if retired_units is positive. It is a string of the form <country-code>[-<sub-national-code>[ <postal-code>]], with the first two fields conforming to ISO 3166-2, and postal-code being up to 64 alphanumeric characters. |
 
 
 
@@ -474,6 +509,7 @@ MsgRetireRequest is the Msg/Retire request type.
 | ----- | ---- | ----- | ----------- |
 | holder | [string](#string) |  | holder is the credit holder address. |
 | credits | [MsgRetireRequest.RetireUnits](#regen.ecocredit.v1alpha1.MsgRetireRequest.RetireUnits) | repeated | credits are the credits being retired. |
+| location | [string](#string) |  | location is the location of the beneficiary or buyer of the retired credits. It is a string of the form <country-code>[-<sub-national-code>[ <postal-code>]], with the first two fields conforming to ISO 3166-2, and postal-code being up to 64 alphanumeric characters. |
 
 
 
@@ -533,7 +569,8 @@ SendUnits are the tradable and retired units of a credit batch to send.
 | ----- | ---- | ----- | ----------- |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
 | tradable_units | [string](#string) |  | tradable_units are the units of credits in this issuance that can be traded by this recipient. Decimal values are acceptable within the precision returned by Query/Precision. |
-| retired_units | [string](#string) |  | retired_units are the units of credits in this issuance that are effectively retired by the issuer on receipt. Decimal values are acceptable within the precision returned by Query/Precision. |
+| retired_units | [string](#string) |  | retired_units are the units of credits in this transfer that are effectively retired by the recipient on receipt. Decimal values are acceptable within the precision returned by Query/Precision. |
+| retirement_location | [string](#string) |  | retirement_location is the location of the beneficiary or buyer of the retired credits. This must be provided if retired_units is positive. It is a string of the form <country-code>[-<sub-national-code>[ <postal-code>]], with the first two fields conforming to ISO 3166-2, and postal-code being up to 64 alphanumeric characters. |
 
 
 

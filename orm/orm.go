@@ -61,7 +61,7 @@ type Persistent interface {
 }
 
 // Index allows efficient prefix scans is stored as key = concat(indexKeyBytes, rowIDUint64) with value empty
-// so that the row NaturalKey is allows a fixed with 8 byte integer. This allows the MultiKeyIndex key bytes to be
+// so that the row PrimaryKey is allows a fixed with 8 byte integer. This allows the MultiKeyIndex key bytes to be
 // variable length and scanned iteratively. The
 type Index interface {
 	// Has checks if a key exists. Panics on nil key.
@@ -145,7 +145,7 @@ type AfterDeleteInterceptor func(ctx HasKVStore, rowID RowID, value codec.ProtoM
 type RowGetter func(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) error
 
 // NewTypeSafeRowGetter returns a `RowGetter` with type check on the dest parameter.
-func NewTypeSafeRowGetter(storeKey sdk.StoreKey, prefixKey byte, model reflect.Type, cdc codec.Marshaler) RowGetter {
+func NewTypeSafeRowGetter(storeKey sdk.StoreKey, prefixKey byte, model reflect.Type, cdc codec.Codec) RowGetter {
 	return func(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) error {
 		if len(rowID) == 0 {
 			return errors.Wrap(ErrArgument, "key must not be nil")
@@ -155,12 +155,12 @@ func NewTypeSafeRowGetter(storeKey sdk.StoreKey, prefixKey byte, model reflect.T
 		}
 
 		store := prefix.NewStore(ctx.KVStore(storeKey), []byte{prefixKey})
-		it := store.Iterator(prefixRange(rowID))
+		it := store.Iterator(PrefixRange(rowID))
 		defer it.Close()
 		if !it.Valid() {
 			return ErrNotFound
 		}
-		return cdc.UnmarshalBinaryBare(it.Value(), dest)
+		return cdc.Unmarshal(it.Value(), dest)
 	}
 }
 

@@ -3,11 +3,12 @@ package ecocredit
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/regen-network/regen-ledger/math"
+
+	"github.com/regen-network/regen-ledger/types/math"
 )
 
 var (
-	_, _, _, _, _ sdk.MsgRequest = &MsgCreateClassRequest{}, &MsgCreateBatchRequest{}, &MsgSendRequest{},
+	_, _, _, _, _ sdk.Msg = &MsgCreateClassRequest{}, &MsgCreateBatchRequest{}, &MsgSendRequest{},
 		&MsgRetireRequest{}, &MsgSetPrecisionRequest{}
 )
 
@@ -35,9 +36,16 @@ func (m *MsgCreateBatchRequest) ValidateBasic() error {
 			return err
 		}
 
-		_, err = math.ParseNonNegativeDecimal(iss.RetiredUnits)
+		retiredUnits, err := math.ParseNonNegativeDecimal(iss.RetiredUnits)
 		if err != nil {
 			return err
+		}
+
+		if !retiredUnits.IsZero() {
+			err = validateLocation(iss.RetirementLocation)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -59,9 +67,16 @@ func (m *MsgSendRequest) ValidateBasic() error {
 			return err
 		}
 
-		_, err = math.ParseNonNegativeDecimal(iss.RetiredUnits)
+		retiredUnits, err := math.ParseNonNegativeDecimal(iss.RetiredUnits)
 		if err != nil {
 			return err
+		}
+
+		if !retiredUnits.IsZero() {
+			err = validateLocation(iss.RetirementLocation)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -83,6 +98,12 @@ func (m *MsgRetireRequest) ValidateBasic() error {
 			return err
 		}
 	}
+
+	err := validateLocation(m.Location)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

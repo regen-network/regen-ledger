@@ -122,7 +122,7 @@ func TestMsgCreateGroupAccount(t *testing.T) {
 
 	specs := map[string]struct {
 		admin     sdk.AccAddress
-		group     ID
+		group     uint64
 		threshold string
 		timeout   proto.Duration
 		expErr    bool
@@ -141,13 +141,6 @@ func TestMsgCreateGroupAccount(t *testing.T) {
 			expErr:    true,
 		},
 		"admin required": {
-			group:     1,
-			threshold: "1",
-			timeout:   proto.Duration{Seconds: 1},
-			expErr:    true,
-		},
-		"valid admin required": {
-			admin:     []byte("invalid-address"),
 			group:     1,
 			threshold: "1",
 			timeout:   proto.Duration{Seconds: 1},
@@ -215,7 +208,7 @@ func TestMsgCreateGroupAccount(t *testing.T) {
 
 func TestMsgCreateProposalRequest(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
-	groupAddr := addr.String()
+	groupAccAddr := addr.String()
 
 	_, _, addr = testdata.KeyTestPubAddr()
 	memberAddr := addr.String()
@@ -226,8 +219,8 @@ func TestMsgCreateProposalRequest(t *testing.T) {
 	}{
 		"all good with minimum fields set": {
 			src: MsgCreateProposalRequest{
-				GroupAccount: groupAddr,
-				Proposers:    []string{memberAddr},
+				Address:   groupAccAddr,
+				Proposers: []string{memberAddr},
 			},
 		},
 		"group account required": {
@@ -238,28 +231,28 @@ func TestMsgCreateProposalRequest(t *testing.T) {
 		},
 		"proposers required": {
 			src: MsgCreateProposalRequest{
-				GroupAccount: groupAddr,
+				Address: groupAccAddr,
 			},
 			expErr: true,
 		},
 		"valid proposer address required": {
 			src: MsgCreateProposalRequest{
-				GroupAccount: groupAddr,
-				Proposers:    []string{"invalid-member-address"},
+				Address:   groupAccAddr,
+				Proposers: []string{"invalid-member-address"},
 			},
 			expErr: true,
 		},
 		"no duplicate proposers": {
 			src: MsgCreateProposalRequest{
-				GroupAccount: groupAddr,
-				Proposers:    []string{memberAddr, memberAddr},
+				Address:   groupAccAddr,
+				Proposers: []string{memberAddr, memberAddr},
 			},
 			expErr: true,
 		},
 		"empty proposer address not allowed": {
 			src: MsgCreateProposalRequest{
-				GroupAccount: groupAddr,
-				Proposers:    []string{memberAddr, ""},
+				Address:   groupAccAddr,
+				Proposers: []string{memberAddr, ""},
 			},
 			expErr: true,
 		},

@@ -7,17 +7,18 @@
 - [regen/group/v1alpha1/events.proto](#regen/group/v1alpha1/events.proto)
     - [EventCreateGroup](#regen.group.v1alpha1.EventCreateGroup)
     - [EventCreateGroupAccount](#regen.group.v1alpha1.EventCreateGroupAccount)
+    - [EventCreateProposal](#regen.group.v1alpha1.EventCreateProposal)
+    - [EventExec](#regen.group.v1alpha1.EventExec)
     - [EventUpdateGroup](#regen.group.v1alpha1.EventUpdateGroup)
     - [EventUpdateGroupAccount](#regen.group.v1alpha1.EventUpdateGroupAccount)
-  
-- [regen/group/v1alpha1/genesis.proto](#regen/group/v1alpha1/genesis.proto)
-    - [GenesisState](#regen.group.v1alpha1.GenesisState)
+    - [EventVote](#regen.group.v1alpha1.EventVote)
   
 - [regen/group/v1alpha1/types.proto](#regen/group/v1alpha1/types.proto)
     - [GroupAccountInfo](#regen.group.v1alpha1.GroupAccountInfo)
     - [GroupInfo](#regen.group.v1alpha1.GroupInfo)
     - [GroupMember](#regen.group.v1alpha1.GroupMember)
     - [Member](#regen.group.v1alpha1.Member)
+    - [Members](#regen.group.v1alpha1.Members)
     - [Proposal](#regen.group.v1alpha1.Proposal)
     - [Tally](#regen.group.v1alpha1.Tally)
     - [ThresholdDecisionPolicy](#regen.group.v1alpha1.ThresholdDecisionPolicy)
@@ -27,6 +28,9 @@
     - [Proposal.ExecutorResult](#regen.group.v1alpha1.Proposal.ExecutorResult)
     - [Proposal.Result](#regen.group.v1alpha1.Proposal.Result)
     - [Proposal.Status](#regen.group.v1alpha1.Proposal.Status)
+  
+- [regen/group/v1alpha1/genesis.proto](#regen/group/v1alpha1/genesis.proto)
+    - [GenesisState](#regen.group.v1alpha1.GenesisState)
   
 - [regen/group/v1alpha1/query.proto](#regen/group/v1alpha1/query.proto)
     - [QueryGroupAccountInfoRequest](#regen.group.v1alpha1.QueryGroupAccountInfoRequest)
@@ -78,6 +82,8 @@
     - [MsgVoteRequest](#regen.group.v1alpha1.MsgVoteRequest)
     - [MsgVoteResponse](#regen.group.v1alpha1.MsgVoteResponse)
   
+    - [Exec](#regen.group.v1alpha1.Exec)
+  
     - [Msg](#regen.group.v1alpha1.Msg)
   
 - [Scalar Value Types](#scalar-value-types)
@@ -99,7 +105,7 @@ EventCreateGroup is an event emitted when a group is created.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_id | [string](#string) |  | group_id is the unique ID of the group. |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 
 
 
@@ -114,7 +120,37 @@ EventCreateGroupAccount is an event emitted when a group account is created.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_account | [string](#string) |  | group_account is the address of the group account. |
+| address | [string](#string) |  | address is the address of the group account. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.EventCreateProposal"></a>
+
+### EventCreateProposal
+EventCreateProposal is an event emitted when a proposal is created.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| proposal_id | [uint64](#uint64) |  | proposal_id is the unique ID of the proposal. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.EventExec"></a>
+
+### EventExec
+EventExec is an event emitted when a proposal is executed.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| proposal_id | [uint64](#uint64) |  | proposal_id is the unique ID of the proposal. |
 
 
 
@@ -129,7 +165,7 @@ EventUpdateGroup is an event emitted when a group is updated.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_id | [string](#string) |  | group_id is the unique ID of the group. |
+| group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 
 
 
@@ -144,34 +180,22 @@ EventUpdateGroupAccount is an event emitted when a group account is updated.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_account | [string](#string) |  | group_account is the address of the group account. |
+| address | [string](#string) |  | address is the address of the group account. |
 
 
 
 
 
- <!-- end messages -->
 
- <!-- end enums -->
+<a name="regen.group.v1alpha1.EventVote"></a>
 
- <!-- end HasExtensions -->
-
- <!-- end services -->
+### EventVote
+EventVote is an event emitted when a voter votes on a proposal.
 
 
-
-<a name="regen/group/v1alpha1/genesis.proto"></a>
-<p align="right"><a href="#top">Top</a></p>
-
-## regen/group/v1alpha1/genesis.proto
-
-
-
-<a name="regen.group.v1alpha1.GenesisState"></a>
-
-### GenesisState
-TODO: #214
-GenesisState defines the group module's genesis state.
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| proposal_id | [uint64](#uint64) |  | proposal_id is the unique ID of the proposal. |
 
 
 
@@ -202,7 +226,7 @@ GroupAccountInfo represents the high-level on-chain information for a group acco
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_account | [string](#string) |  | group_account is the group account address. |
+| address | [string](#string) |  | address is the group account address. |
 | group_id | [uint64](#uint64) |  | group_id is the unique ID of the group. |
 | admin | [string](#string) |  | admin is the account address of the group admin. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the group account. |
@@ -267,6 +291,21 @@ non-zero weight and metadata.
 
 
 
+<a name="regen.group.v1alpha1.Members"></a>
+
+### Members
+Members defines a repeated slice of Member objects.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| members | [Member](#regen.group.v1alpha1.Member) | repeated | members is the list of members. |
+
+
+
+
+
+
 <a name="regen.group.v1alpha1.Proposal"></a>
 
 ### Proposal
@@ -278,14 +317,15 @@ passes as well as some optional metadata associated with the proposal.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_account | [string](#string) |  | group_account is the group account address. |
+| proposal_id | [uint64](#uint64) |  | proposal_id is the unique id of the proposal. |
+| address | [string](#string) |  | address is the group account address. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the proposal. |
 | proposers | [string](#string) | repeated | proposers are the account addresses of the proposers. |
 | submitted_at | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | submitted_at is a timestamp specifying when a proposal was submitted. |
-| group_version | [uint64](#uint64) |  | group_version tracks the version of the group that this proposal corresponds to. When group membership is changed, existing proposals for prior group versions will become invalid. |
-| group_account_version | [uint64](#uint64) |  | group_account_version tracks the version of the group account that this proposal corresponds to. When a decision policy is changed, an existing proposals for prior policy versions will become invalid. |
+| group_version | [uint64](#uint64) |  | group_version tracks the version of the group that this proposal corresponds to. When group membership is changed, existing proposals from previous group versions will become invalid. |
+| group_account_version | [uint64](#uint64) |  | group_account_version tracks the version of the group account that this proposal corresponds to. When a decision policy is changed, existing proposals from previous policy versions will become invalid. |
 | status | [Proposal.Status](#regen.group.v1alpha1.Proposal.Status) |  | Status represents the high level position in the life cycle of the proposal. Initial value is Submitted. |
-| result | [Proposal.Result](#regen.group.v1alpha1.Proposal.Result) |  | result is the final result based on the votes and election rule. Initial value is Undefined. The result is persisted so that clients can always rely on this state and not have to replicate the logic. |
+| result | [Proposal.Result](#regen.group.v1alpha1.Proposal.Result) |  | result is the final result based on the votes and election rule. Initial value is unfinalized. The result is persisted so that clients can always rely on this state and not have to replicate the logic. |
 | vote_state | [Tally](#regen.group.v1alpha1.Tally) |  | vote_state contains the sums of all weighted votes for this proposal. |
 | timeout | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timeout is the timestamp of the block where the proposal execution times out. Header times of the votes and execution messages must be before this end time to be included in the election. After the timeout timestamp the proposal can not be executed anymore and should be considered pending delete. |
 | executor_result | [Proposal.ExecutorResult](#regen.group.v1alpha1.Proposal.ExecutorResult) |  | executor_result is the final result based on the votes and election rule. Initial value is NotRun. |
@@ -322,7 +362,7 @@ ThresholdDecisionPolicy implements the DecisionPolicy interface
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| threshold | [string](#string) |  | threshold is a fix weight value that must be met or exceeded for a proposal to succeed. |
+| threshold | [string](#string) |  | threshold is the minimum weighted sum of yes votes that must be met or exceeded for a proposal to succeed. |
 | timeout | [google.protobuf.Duration](#google.protobuf.Duration) |  | timeout is the duration from submission of a proposal to the end of voting period Within this times votes and exec messages can be submitted. |
 
 
@@ -415,6 +455,44 @@ Status defines proposal statuses.
 
 
 
+<a name="regen/group/v1alpha1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## regen/group/v1alpha1/genesis.proto
+
+
+
+<a name="regen.group.v1alpha1.GenesisState"></a>
+
+### GenesisState
+GenesisState defines the group module's genesis state.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| group_seq | [uint64](#uint64) |  | group_seq is the group table orm.Sequence, it is used to get the next group ID. |
+| groups | [GroupInfo](#regen.group.v1alpha1.GroupInfo) | repeated | groups is the list of groups info. |
+| group_members | [GroupMember](#regen.group.v1alpha1.GroupMember) | repeated | group_members is the list of groups members. |
+| group_account_seq | [uint64](#uint64) |  | group_account_seq is the group account table orm.Sequence, it is used to generate the next group account address. |
+| group_accounts | [GroupAccountInfo](#regen.group.v1alpha1.GroupAccountInfo) | repeated | group_accounts is the list of group accounts info. |
+| proposal_seq | [uint64](#uint64) |  | proposal_seq is the proposal table orm.Sequence, it is used to get the next proposal ID. |
+| proposals | [Proposal](#regen.group.v1alpha1.Proposal) | repeated | proposals is the list of proposals. |
+| votes | [Vote](#regen.group.v1alpha1.Vote) | repeated | votes is the list of votes. |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
 <a name="regen/group/v1alpha1/query.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -430,7 +508,7 @@ QueryGroupAccountInfoRequest is the Query/GroupAccountInfo request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_account | [string](#string) |  | group_account is the account address of the group account. |
+| address | [string](#string) |  | address is the account address of the group account. |
 
 
 
@@ -648,7 +726,7 @@ QueryProposalsByGroupAccountRequest is the Query/ProposalByGroupAccount request 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_account | [string](#string) |  | group_account is the group account address related to proposals. |
+| address | [string](#string) |  | address is the group account address related to proposals. |
 | pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
 
 
@@ -782,7 +860,7 @@ Query is the regen.group.v1alpha1 Query service.
 | ----------- | ------------ | ------------- | ------------|
 | GroupInfo | [QueryGroupInfoRequest](#regen.group.v1alpha1.QueryGroupInfoRequest) | [QueryGroupInfoResponse](#regen.group.v1alpha1.QueryGroupInfoResponse) | GroupInfo queries group info based on group id. |
 | GroupAccountInfo | [QueryGroupAccountInfoRequest](#regen.group.v1alpha1.QueryGroupAccountInfoRequest) | [QueryGroupAccountInfoResponse](#regen.group.v1alpha1.QueryGroupAccountInfoResponse) | GroupAccountInfo queries group account info based on group account address. |
-| GroupMembers | [QueryGroupMembersRequest](#regen.group.v1alpha1.QueryGroupMembersRequest) | [QueryGroupMembersResponse](#regen.group.v1alpha1.QueryGroupMembersResponse) | GroupMembers queries members for a group |
+| GroupMembers | [QueryGroupMembersRequest](#regen.group.v1alpha1.QueryGroupMembersRequest) | [QueryGroupMembersResponse](#regen.group.v1alpha1.QueryGroupMembersResponse) | GroupMembers queries members of a group |
 | GroupsByAdmin | [QueryGroupsByAdminRequest](#regen.group.v1alpha1.QueryGroupsByAdminRequest) | [QueryGroupsByAdminResponse](#regen.group.v1alpha1.QueryGroupsByAdminResponse) | GroupsByAdmin queries groups by admin address. |
 | GroupAccountsByGroup | [QueryGroupAccountsByGroupRequest](#regen.group.v1alpha1.QueryGroupAccountsByGroupRequest) | [QueryGroupAccountsByGroupResponse](#regen.group.v1alpha1.QueryGroupAccountsByGroupResponse) | GroupAccountsByGroup queries group accounts by group id. |
 | GroupAccountsByAdmin | [QueryGroupAccountsByAdminRequest](#regen.group.v1alpha1.QueryGroupAccountsByAdminRequest) | [QueryGroupAccountsByAdminResponse](#regen.group.v1alpha1.QueryGroupAccountsByAdminResponse) | GroupsByAdmin queries group accounts by admin address. |
@@ -829,7 +907,7 @@ MsgCreateGroupAccountResponse is the Msg/CreateGroupAccount response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_account | [string](#string) |  | group_account is the account address of the newly created group account. |
+| address | [string](#string) |  | address is the account address of the newly created group account. |
 
 
 
@@ -876,10 +954,11 @@ MsgCreateProposalRequest is the Msg/CreateProposal request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| group_account | [string](#string) |  | group_account is the group account address. |
+| address | [string](#string) |  | address is the group account address. |
 | proposers | [string](#string) | repeated | proposers are the account addresses of the proposers. Proposers signatures will be counted as yes votes. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the proposal. |
 | msgs | [google.protobuf.Any](#google.protobuf.Any) | repeated | msgs is a list of Msgs that will be executed if the proposal passes. |
+| exec | [Exec](#regen.group.v1alpha1.Exec) |  | exec defines the mode of execution of the proposal, whether it should be executed immediately on creation or not. If so, proposers signatures are considered as Yes votes. |
 
 
 
@@ -936,7 +1015,7 @@ MsgUpdateGroupAccountAdminRequest is the Msg/UpdateGroupAccountAdmin request typ
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | admin | [string](#string) |  | admin is the account address of the group admin. |
-| group_account | [string](#string) |  | group_account is the group account address. |
+| address | [string](#string) |  | address is the group account address. |
 | new_admin | [string](#string) |  | new_admin is the new group account admin. |
 
 
@@ -963,7 +1042,7 @@ MsgUpdateGroupAccountDecisionPolicyRequest is the Msg/UpdateGroupAccountDecision
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | admin | [string](#string) |  | admin is the account address of the group admin. |
-| group_account | [string](#string) |  | group_account is the group account address. |
+| address | [string](#string) |  | address is the group account address. |
 | decision_policy | [google.protobuf.Any](#google.protobuf.Any) |  | decision_policy is the updated group account decision policy. |
 
 
@@ -990,7 +1069,7 @@ MsgUpdateGroupAccountMetadataRequest is the Msg/UpdateGroupAccountMetadata reque
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | admin | [string](#string) |  | admin is the account address of the group admin. |
-| group_account | [string](#string) |  | group_account is the group account address. |
+| address | [string](#string) |  | address is the group account address. |
 | metadata | [bytes](#bytes) |  | metadata is the updated group account metadata. |
 
 
@@ -1101,6 +1180,7 @@ MsgVoteRequest is the Msg/Vote request type.
 | voter | [string](#string) |  | voter is the voter account address. |
 | choice | [Choice](#regen.group.v1alpha1.Choice) |  | choice is the voter's choice on the proposal. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the vote. |
+| exec | [Exec](#regen.group.v1alpha1.Exec) |  | exec defines whether the proposal should be executed immediately after voting or not. |
 
 
 
@@ -1117,6 +1197,18 @@ MsgVoteResponse is the Msg/Vote response type.
 
 
  <!-- end messages -->
+
+
+<a name="regen.group.v1alpha1.Exec"></a>
+
+### Exec
+Exec defines modes of execution of a proposal on creation or on new vote.
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| EXEC_UNSPECIFIED | 0 | An empty value means that there should be a separate MsgExec request for the proposal to execute. |
+| EXEC_TRY | 1 | Try to execute the proposal immediately. If the proposal is not allowed per the DecisionPolicy, the proposal will still be open and could be executed at a later point. |
+
 
  <!-- end enums -->
 

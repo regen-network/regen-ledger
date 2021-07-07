@@ -3,9 +3,10 @@ package server
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/regen-network/regen-ledger/types/module/server"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -23,28 +24,36 @@ const (
 type serverImpl struct {
 	storeKey sdk.StoreKey
 
+	paramSpace paramtypes.Subspace
+	bankKeeper ecocredit.BankKeeper
+
 	// we use a single sequence to avoid having the same string/ID identifying a class and batch denom
 	idSeq          orm.Sequence
-	classInfoTable orm.NaturalKeyTable
-	batchInfoTable orm.NaturalKeyTable
+	classInfoTable orm.PrimaryKeyTable
+	batchInfoTable orm.PrimaryKeyTable
 }
 
-func newServer(storeKey sdk.StoreKey, cdc codec.Marshaler) serverImpl {
-	s := serverImpl{storeKey: storeKey}
+func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace, bankKeeper ecocredit.BankKeeper, cdc codec.Codec) serverImpl {
+	s := serverImpl{
+		storeKey:   storeKey,
+		paramSpace: paramSpace,
+		bankKeeper: bankKeeper,
+	}
 
 	s.idSeq = orm.NewSequence(storeKey, IDSeqPrefix)
 
-	classInfoTableBuilder := orm.NewNaturalKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ecocredit.ClassInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	classInfoTableBuilder := orm.NewPrimaryKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ecocredit.ClassInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.classInfoTable = classInfoTableBuilder.Build()
 
-	batchInfoTableBuilder := orm.NewNaturalKeyTableBuilder(BatchInfoTablePrefix, storeKey, &ecocredit.BatchInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	batchInfoTableBuilder := orm.NewPrimaryKeyTableBuilder(BatchInfoTablePrefix, storeKey, &ecocredit.BatchInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.batchInfoTable = batchInfoTableBuilder.Build()
 
 	return s
 }
 
-func RegisterServices(configurator server.Configurator) {
-	impl := newServer(configurator.ModuleKey(), configurator.Marshaler())
+func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Subspace, bankKeeper ecocredit.BankKeeper) {
+	impl := newServer(configurator.ModuleKey(), paramSpace, bankKeeper, configurator.Marshaler())
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
+	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 }

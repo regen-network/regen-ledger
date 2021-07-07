@@ -5,13 +5,12 @@ import (
 	"crypto"
 	"fmt"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 var (
-	_, _, _ sdk.MsgRequest = &MsgAnchorDataRequest{}, &MsgSignDataRequest{}, &MsgStoreRawDataRequest{}
+	_, _, _ sdk.Msg = &MsgAnchorDataRequest{}, &MsgSignDataRequest{}, &MsgStoreRawDataRequest{}
 )
 
 func (m *MsgAnchorDataRequest) ValidateBasic() error {
@@ -46,12 +45,12 @@ func (m *MsgSignDataRequest) GetSigners() []sdk.AccAddress {
 }
 
 func (m *MsgStoreRawDataRequest) ValidateBasic() error {
-	err := m.Hash.Validate()
+	err := m.ContentHash.Validate()
 	if err != nil {
 		return err
 	}
 
-	digestAlgorithm := m.Hash.DigestAlgorithm
+	digestAlgorithm := m.ContentHash.DigestAlgorithm
 	switch digestAlgorithm {
 	case DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256:
 		hash := crypto.BLAKE2b_256.New()
@@ -61,7 +60,7 @@ func (m *MsgStoreRawDataRequest) ValidateBasic() error {
 		}
 
 		digest := hash.Sum(nil)
-		if !bytes.Equal(m.Hash.Hash, digest) {
+		if !bytes.Equal(m.ContentHash.Hash, digest) {
 			return ErrHashVerificationFailed
 		}
 

@@ -20,7 +20,7 @@ type QueryClient interface {
 	GroupInfo(ctx context.Context, in *QueryGroupInfoRequest, opts ...grpc.CallOption) (*QueryGroupInfoResponse, error)
 	// GroupAccountInfo queries group account info based on group account address.
 	GroupAccountInfo(ctx context.Context, in *QueryGroupAccountInfoRequest, opts ...grpc.CallOption) (*QueryGroupAccountInfoResponse, error)
-	// GroupMembers queries members for a group
+	// GroupMembers queries members of a group
 	GroupMembers(ctx context.Context, in *QueryGroupMembersRequest, opts ...grpc.CallOption) (*QueryGroupMembersResponse, error)
 	// GroupsByAdmin queries groups by admin address.
 	GroupsByAdmin(ctx context.Context, in *QueryGroupsByAdminRequest, opts ...grpc.CallOption) (*QueryGroupsByAdminResponse, error)
@@ -318,7 +318,7 @@ type QueryServer interface {
 	GroupInfo(types.Context, *QueryGroupInfoRequest) (*QueryGroupInfoResponse, error)
 	// GroupAccountInfo queries group account info based on group account address.
 	GroupAccountInfo(types.Context, *QueryGroupAccountInfoRequest) (*QueryGroupAccountInfoResponse, error)
-	// GroupMembers queries members for a group
+	// GroupMembers queries members of a group
 	GroupMembers(types.Context, *QueryGroupMembersRequest) (*QueryGroupMembersResponse, error)
 	// GroupsByAdmin queries groups by admin address.
 	GroupsByAdmin(types.Context, *QueryGroupsByAdminRequest) (*QueryGroupsByAdminResponse, error)
