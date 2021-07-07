@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+* record retirement locations of ecocredit (#328)
+
 ## [1.0.0] - 2021-04-13
 
 This release is the version of regen-ledger that will be used for the mainnet launch of Regen Network's blockchain (chain-id: `regen-1`).
@@ -34,7 +37,7 @@ It is not guaranteed that APIs of features in the experimental build will remain
 
 ## [0.6.0] - 2021-02-04
 
-This release contains first iterations of the `x/ecocredit` and `x/data` modules which were launched in a Devnet as part of the Open Climate Collabathon in Nov 2020. 
+This release contains first iterations of the `x/ecocredit` and `x/data` modules which were launched in a Devnet as part of the Open Climate Collabathon in Nov 2020.
 
 It is more or less a full rewrite of regen-ledger to upgrade it to Stargate (Cosmos SDK v0.40)
 
@@ -94,7 +97,7 @@ internal testnet
 - [\#18](https://github.com/regen-network/regen-ledger/issues/18) Graph package and binary serialization format
 - [\#27](https://github.com/regen-network/regen-ledger/issues/27) Create claim module
 - [\#166185199](https://www.pivotaltracker.com/story/show/166185199) Integrate Cosmos staking modules
-    
+
 ## [0.3.0] - 2019-01-09
 
 - Updated `xrn-test-2` testnet at height `1000`
