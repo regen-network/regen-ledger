@@ -115,7 +115,7 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 				return nil, err
 			}
 
-			err = retire(ctx, store, recipient, batchDenom, retired, issuance.RetirementLocation)
+			err = retire(ctx, store, recipientAddr, batchDenom, retired, issuance.RetirementLocation)
 			if err != nil {
 				return nil, err
 			}
@@ -181,6 +181,16 @@ func (s serverImpl) Send(ctx types.Context, req *ecocredit.MsgSendRequest) (*eco
 	sender := req.Sender
 	recipient := req.Recipient
 
+	senderAddr, err := sdk.AccAddressFromBech32(sender)
+	if err != nil {
+		return nil, err
+	}
+
+	recipientAddr, err := sdk.AccAddressFromBech32(recipient)
+	if err != nil {
+		return nil, err
+	}
+
 	for _, credit := range req.Credits {
 		denom := batchDenomT(credit.BatchDenom)
 
@@ -205,18 +215,8 @@ func (s serverImpl) Send(ctx types.Context, req *ecocredit.MsgSendRequest) (*eco
 			return nil, err
 		}
 
-		senderAddr, err := sdk.AccAddressFromBech32(sender)
-		if err != nil {
-			return nil, err
-		}
-
 		// subtract balance
 		err = getSubAndSetDecimal(store, TradableBalanceKey(senderAddr, denom), &sum)
-		if err != nil {
-			return nil, err
-		}
-
-		recipientAddr, err := sdk.AccAddressFromBech32(recipient)
 		if err != nil {
 			return nil, err
 		}
@@ -235,7 +235,7 @@ func (s serverImpl) Send(ctx types.Context, req *ecocredit.MsgSendRequest) (*eco
 			}
 
 			// Add retired balance
-			err = retire(ctx, store, recipient, denom, retired, credit.RetirementLocation)
+			err = retire(ctx, store, recipientAddr, denom, retired, credit.RetirementLocation)
 			if err != nil {
 				return nil, err
 			}
