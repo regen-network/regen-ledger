@@ -7,7 +7,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
@@ -74,8 +73,8 @@ func TestServer(t *testing.T) {
 	)
 
 	baseApp := ff.BaseApp()
-
-	baseApp.Router().AddRoute(sdk.NewRoute(banktypes.ModuleName, bank.NewHandler(bankKeeper)))
+	baseApp.MsgServiceRouter().SetInterfaceRegistry(cdc.InterfaceRegistry())
+	banktypes.RegisterMsgServer(baseApp.MsgServiceRouter(), bankkeeper.NewMsgServerImpl(bankKeeper))
 	baseApp.MountStore(tkey, sdk.StoreTypeTransient)
 	baseApp.MountStore(paramsKey, sdk.StoreTypeIAVL)
 	baseApp.MountStore(authKey, sdk.StoreTypeIAVL)

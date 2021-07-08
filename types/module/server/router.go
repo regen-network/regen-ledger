@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
@@ -26,7 +27,7 @@ type router struct {
 	handlers         map[string]handler
 	providedServices map[reflect.Type]bool
 	authzMiddleware  AuthorizationMiddleware
-	legacyRouter     sdk.Router
+	msgServiceRouter *baseapp.MsgServiceRouter
 }
 
 type registrar struct {
@@ -124,11 +125,11 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 				}
 			} else {
 				// legacyMsg routing using sdk.Router
-				msgRoute := legacyMsg.Route()
+				// msgRoute := legacyMsg.Route()
 				sdkCtx := sdk.UnwrapSDKContext(ctx)
-				handler := rtr.legacyRouter.Route(sdkCtx, msgRoute)
+				handler := rtr.msgServiceRouter.HandlerByTypeURL(TypeURL(req))
 				if handler == nil {
-					return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized message route: %s;", msgRoute)
+					return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized message route: %s;", TypeURL(req))
 				}
 
 				_, err = handler(sdkCtx, legacyMsg)

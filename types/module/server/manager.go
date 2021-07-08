@@ -52,7 +52,7 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 		router: &router{
 			handlers:         map[string]handler{},
 			providedServices: map[reflect.Type]bool{},
-			legacyRouter:     baseApp.Router(),
+			msgServiceRouter: baseApp.MsgServiceRouter(),
 		},
 		requiredServices:           map[reflect.Type]bool{},
 		weightedOperationsHandlers: map[string]WeightedOperationsHandler{},
