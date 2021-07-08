@@ -212,7 +212,7 @@ func (rtr *router) testQueryFactory() InvokerFactory {
 }
 
 func TypeURL(req proto.Message) string {
-	return "/%s" + proto.MessageName(req)
+	return "/" + proto.MessageName(req)
 }
 
 func noopInterceptor(_ context.Context, _ interface{}, _ *grpc.UnaryServerInfo, _ grpc.UnaryHandler) (interface{}, error) {
