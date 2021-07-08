@@ -9,7 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 	gogogrpc "github.com/gogo/protobuf/grpc"
 	"github.com/gogo/protobuf/proto"
 	"google.golang.org/grpc"
@@ -91,11 +90,12 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 		if !ok {
 			return fmt.Errorf("expected proto.Message, got %T for service method %s", request, methodName)
 		}
-		handler, found := rtr.handlers[TypeURL(req)]
+
+		typeURL := TypeURL(req)
+		handler, found := rtr.handlers[typeURL]
 
 		msg, isMsg := request.(sdk.Msg)
-		legacyMsg, isLegacyMsg := request.(legacytx.LegacyMsg)
-		if !found && !isLegacyMsg {
+		if !found && !isMsg {
 			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("cannot find method named %s", methodName))
 		}
 
@@ -124,15 +124,14 @@ func (rtr *router) invoker(methodName string, writeCondition func(context.Contex
 					return err
 				}
 			} else {
-				// legacyMsg routing using sdk.Router
-				// msgRoute := legacyMsg.Route()
+				// routing using baseapp.MsgServiceRouter
 				sdkCtx := sdk.UnwrapSDKContext(ctx)
-				handler := rtr.msgServiceRouter.HandlerByTypeURL(TypeURL(req))
+				handler := rtr.msgServiceRouter.HandlerByTypeURL(typeURL)
 				if handler == nil {
-					return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized message route: %s;", TypeURL(req))
+					return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized message route: %s;", typeURL)
 				}
 
-				_, err = handler(sdkCtx, legacyMsg)
+				_, err = handler(sdkCtx, msg)
 				if err != nil {
 					return err
 				}
