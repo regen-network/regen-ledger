@@ -66,4 +66,11 @@ message EventRetire {
 
   // units is the decimal number of credits that have been retired.
   string units = 3;
+
+  // location is the location of the beneficiary or buyer of the retired
+  // credits. It is a string of the form
+  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+  // fields conforming to ISO 3166-2, and postal-code being up to 64
+  // alphanumeric characters.
+  string location = 4;
 }

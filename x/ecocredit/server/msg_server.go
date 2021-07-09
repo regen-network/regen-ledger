@@ -111,7 +111,7 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 				return nil, err
 			}
 
-			err = retire(ctx, store, recipient, batchDenom, retired)
+			err = retire(ctx, store, recipient, batchDenom, retired, issuance.RetirementLocation)
 			if err != nil {
 				return nil, err
 			}
@@ -207,28 +207,30 @@ func (s serverImpl) Send(ctx types.Context, req *ecocredit.MsgSendRequest) (*eco
 			return nil, err
 		}
 
-		// subtract retired from tradable supply
-		err = getSubAndSetDecimal(store, TradableSupplyKey(denom), retired)
-		if err != nil {
-			return nil, err
-		}
-
 		// Add tradable balance
 		err = getAddAndSetDecimal(store, TradableBalanceKey(recipient, denom), tradable)
 		if err != nil {
 			return nil, err
 		}
 
-		// Add retired balance
-		err = retire(ctx, store, recipient, denom, retired)
-		if err != nil {
-			return nil, err
-		}
+		if !retired.IsZero() {
+			// subtract retired from tradable supply
+			err = getSubAndSetDecimal(store, TradableSupplyKey(denom), retired)
+			if err != nil {
+				return nil, err
+			}
 
-		// Add retired supply
-		err = getAddAndSetDecimal(store, RetiredSupplyKey(denom), retired)
-		if err != nil {
-			return nil, err
+			// Add retired balance
+			err = retire(ctx, store, recipient, denom, retired, credit.RetirementLocation)
+			if err != nil {
+				return nil, err
+			}
+
+			// Add retired supply
+			err = getAddAndSetDecimal(store, RetiredSupplyKey(denom), retired)
+			if err != nil {
+				return nil, err
+			}
 		}
 
 		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
@@ -248,6 +250,7 @@ func (s serverImpl) Send(ctx types.Context, req *ecocredit.MsgSendRequest) (*eco
 func (s serverImpl) Retire(ctx types.Context, req *ecocredit.MsgRetireRequest) (*ecocredit.MsgRetireResponse, error) {
 	store := ctx.KVStore(s.storeKey)
 	holder := req.Holder
+
 	for _, credit := range req.Credits {
 		denom := batchDenomT(credit.BatchDenom)
 		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
@@ -277,7 +280,7 @@ func (s serverImpl) Retire(ctx types.Context, req *ecocredit.MsgRetireRequest) (
 		}
 
 		//  Add retired balance
-		err = retire(ctx, store, holder, denom, toRetire)
+		err = retire(ctx, store, holder, denom, toRetire, req.Location)
 		if err != nil {
 			return nil, err
 		}
@@ -335,7 +338,7 @@ func (s serverImpl) assertClassIssuer(ctx types.Context, classID, issuer string)
 	return sdkerrors.ErrUnauthorized
 }
 
-func retire(ctx types.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired *apd.Decimal) error {
+func retire(ctx types.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired *apd.Decimal, location string) error {
 	err := getAddAndSetDecimal(store, RetiredBalanceKey(recipient, batchDenom), retired)
 	if err != nil {
 		return err
@@ -345,5 +348,6 @@ func retire(ctx types.Context, store sdk.KVStore, recipient string, batchDenom b
 		Retirer:    recipient,
 		BatchDenom: string(batchDenom),
 		Units:      math.DecimalString(retired),
+		Location:   location,
 	})
 }

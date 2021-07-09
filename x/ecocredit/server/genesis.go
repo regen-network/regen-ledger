@@ -10,17 +10,16 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-
 // InitGenesis performs genesis initialization for the ecocredit module. It
 // returns no validator updates.
-func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.JSONCodec, data json.RawMessage) ([]abci.ValidatorUpdate, error) {
+func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.RawMessage) ([]abci.ValidatorUpdate, error) {
 	var genesisState ecocredit.GenesisState
 	cdc.MustUnmarshalJSON(data, &genesisState)
 	s.paramSpace.SetParamSet(ctx.Context, &genesisState.Params)
 	return []abci.ValidatorUpdate{}, nil
 }
 
-func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.JSONCodec) (json.RawMessage, error) {
+func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawMessage, error) {
 	// Get Params from the store and put them in the genesis state
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(ctx.Context, &params)
