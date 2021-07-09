@@ -42,6 +42,7 @@ func setCustomKVStoreKeys() []string {
 
 func (app *RegenApp) registerUpgradeHandlers() {
 	// This is the upgrade plan name we used in the gov proposal.
+	// This is the upgrade plan name we used in the gov proposal.
 	upgradeName := "v0.43.0-rc0-upgrade"
 	app.UpgradeKeeper.SetUpgradeHandler(upgradeName, func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
 		// 1st-time running in-store migrations, using 1 as fromVersion to
