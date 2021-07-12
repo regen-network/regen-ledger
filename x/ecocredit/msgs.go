@@ -30,6 +30,10 @@ func (m *MsgCreateClassRequest) GetSigners() []sdk.AccAddress {
 }
 
 func (m *MsgCreateBatchRequest) ValidateBasic() error {
+	if m.EndDate.Before(*m.StartDate) {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "The batch end date (%s) must be the same as or after the batch start date (%s)", m.EndDate.Format("2006-01-02"), m.StartDate.Format("2006-01-02"))
+	}
+
 	for _, iss := range m.Issuance {
 		_, err := math.ParseNonNegativeDecimal(iss.TradableAmount)
 		if err != nil {
