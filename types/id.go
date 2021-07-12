@@ -1,12 +1,10 @@
 package types
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
-
-type ModuleID struct {
-	ModuleName string
-	Path       []byte
-}
-
-func (m ModuleID) Address() sdk.AccAddress {
-	return AddressHash(m.ModuleName, m.Path)
+// ModuleAcc represents an account managed by a module
+type ModuleAcc struct {
+	// Module name managing this account. Used by router, used when registering a MsgServer
+	// and invoking service methods.
+	Module string
+	// Address of the module account generated using a derivation mechanism.
+	Address []byte
 }
