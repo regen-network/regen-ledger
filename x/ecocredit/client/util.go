@@ -31,6 +31,15 @@ func mkQueryClient(cmd *cobra.Command) (ecocredit.QueryClient, sdkclient.Context
 	return ecocredit.NewQueryClient(ctx), ctx, err
 }
 
+func WriteMsgCreateBatchJSON(clientCtx sdkclient.Context, batchFile string, msg *ecocredit.MsgCreateBatch) error {
+	bytes, err := clientCtx.Codec.MarshalJSON(msg)
+	if err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(batchFile, bytes, 0664)
+}
+
 func parseMsgCreateBatch(clientCtx sdkclient.Context, batchFile string) (*ecocredit.MsgCreateBatch, error) {
 	contents, err := ioutil.ReadFile(batchFile)
 	if err != nil {
@@ -108,7 +117,7 @@ func parseCredits(creditsStr string) (credits, error) {
 	}, nil
 }
 
-func parseDate(field string, date string) (time.Time, error) {
+func ParseDate(field string, date string) (time.Time, error) {
 	t, err := time.Parse("2006-01-02", date)
 	if err != nil {
 		return t, sdkerrors.ErrInvalidRequest.Wrapf("%s must have format yyyy-mm-dd, but received %v", field, date)
