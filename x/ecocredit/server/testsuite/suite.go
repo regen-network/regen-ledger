@@ -65,6 +65,10 @@ func fundAccount(bankKeeper bankkeeper.Keeper, ctx sdk.Context, addr sdk.AccAddr
 	return bankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, addr, amounts)
 }
 
+func (s *IntegrationTestSuite) TearDownSuite() {
+	s.fixture.Teardown()
+}
+
 func (s *IntegrationTestSuite) TestScenario() {
 	designer := s.signers[0]
 	issuer1 := s.signers[1].String()
