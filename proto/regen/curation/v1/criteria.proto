@@ -1,0 +1,17 @@
+syntax = "proto3";
+package regen.curation.v1;
+
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/curation";
+
+// TagCriteria returns a criteria that allows denoms that have the given tag.
+message TagCriteria {
+    option (cosmos_proto.implements_interface) = "regen.basket.Criteria";
+
+    string tag = 1;
+}
+
+
+
+
