@@ -85,7 +85,15 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 
 	maxDecimalPlaces := classInfo.CreditType.Precision
 	batchID := s.idSeq.NextVal(ctx)
-	batchDenom := batchDenomT(fmt.Sprintf("%s/%s", classID, util.Uint64ToBase58Check(batchID)))
+	intClassID, err := util.DecodeBase58(classID)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+	batchDenomStr, err := ecocredit.FormatDenom(intClassID, batchID, req.StartDate, req.EndDate)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+	batchDenom := batchDenomT(batchDenomStr)
 	tradableSupply := math.NewDecFromInt64(0)
 	retiredSupply := math.NewDecFromInt64(0)
 

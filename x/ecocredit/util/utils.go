@@ -51,3 +51,17 @@ func FastRemoveWhitespace(str string) string {
 	}
 	return b.String()
 }
+
+func DecodeBase58(s string) (uint64, error) {
+	out, _, err := base58.CheckDecode(s)
+	if err != nil {
+		return 0, nil
+	}
+
+	n, bytesRead := binary.Uvarint(out)
+	if bytesRead <= 0 {
+		return 0, fmt.Errorf("decoding base58 failed reading binary Uvarint")
+	}
+
+	return n, nil
+}

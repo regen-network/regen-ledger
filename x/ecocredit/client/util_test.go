@@ -14,68 +14,68 @@ func TestParseCredits(t *testing.T) {
 		expCreditsList []credits
 	}{
 		{
-			name:           "can't parse credits with missing colon",
-			creditsListStr: "10ABC/123",
+			name:           "can't parse credits with missing prefix",
+			creditsListStr: "10ABC:123",
 			expectErr:      true,
 		},
 		{
 			name:           "can't parse credits with malformed batch denom",
-			creditsListStr: "10:ABC123",
+			creditsListStr: "10eco:ABC123",
 			expectErr:      true,
 		},
 		{
 			name:           "can't parse credits with malformed amount",
-			creditsListStr: "10!:ABC/123",
+			creditsListStr: "10!eco:ABC:123",
 			expectErr:      true,
 		},
 		{
 			name:           "can parse single credits with simple decimal",
-			creditsListStr: "10:ABC/123",
+			creditsListStr: "10eco:ABC:123",
 			expectErr:      false,
 			expCreditsList: []credits{
-				credits{
-					batchDenom: "ABC/123",
+				{
+					batchDenom: "eco:ABC:123",
 					amount:     "10",
 				},
 			},
 		},
 		{
 			name:           "can parse single credits with multiple places",
-			creditsListStr: "10.0000001:ABC/123",
+			creditsListStr: "10.0000001eco:ABC:123",
 			expectErr:      false,
 			expCreditsList: []credits{
-				credits{
-					batchDenom: "ABC/123",
+				{
+					batchDenom: "eco:ABC:123",
 					amount:     "10.0000001",
 				},
 			},
 		},
 		{
 			name:           "can parse single credits with no digit before decimal point",
-			creditsListStr: ".0000001:ABC/123",
+			creditsListStr: ".0000001eco:ABC:123",
 			expectErr:      false,
 			expCreditsList: []credits{
-				credits{
-					batchDenom: "ABC/123",
+				{
+					batchDenom: "eco:ABC:123",
 					amount:     ".0000001",
 				},
 			},
 		},
 		{
 			name:           "can parse multiple credits",
-			creditsListStr: ".0000001:ABC/123,10:345/XYZ,10000.0001:IJK/LMN",
+			creditsListStr: ".0000001eco:ABC:123,10eco:345:XYZ,10000.0001eco:IJK:LMN",
 			expectErr:      false,
 			expCreditsList: []credits{
-				credits{
-					batchDenom: "ABC/123",
+				{
+					batchDenom: "eco:ABC:123",
 					amount:     ".0000001",
 				},
-				credits{
-					batchDenom: "345/XYZ",
+				{
+					batchDenom: "eco:345:XYZ",
 					amount:     "10",
 				},
-				credits{
-					batchDenom: "IJK/LMN",
+				{
+					batchDenom: "eco:IJK:LMN",
 					amount:     "10000.0001",
 				},
 			},
