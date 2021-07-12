@@ -86,8 +86,8 @@ type EventCreateBatch struct {
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
 	// issuer is the account address of the issuer of the credit batch.
 	Issuer string `protobuf:"bytes,3,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	// total_units is the total number of units in the credit batch.
-	TotalUnits string `protobuf:"bytes,4,opt,name=total_units,json=totalUnits,proto3" json:"total_units,omitempty" yaml:"total_units"`
+	// total_amount is the total number of credits in the credit batch.
+	TotalAmount string `protobuf:"bytes,4,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty" yaml:"total_amount"`
 }
 
 func (m *EventCreateBatch) Reset()         { *m = EventCreateBatch{} }
@@ -144,9 +144,9 @@ func (m *EventCreateBatch) GetIssuer() string {
 	return ""
 }
 
-func (m *EventCreateBatch) GetTotalUnits() string {
+func (m *EventCreateBatch) GetTotalAmount() string {
 	if m != nil {
-		return m.TotalUnits
+		return m.TotalAmount
 	}
 	return ""
 }
@@ -163,8 +163,8 @@ type EventReceive struct {
 	Recipient string `protobuf:"bytes,2,opt,name=recipient,proto3" json:"recipient,omitempty"`
 	// batch_denom is the unique ID of credit batch.
 	BatchDenom string `protobuf:"bytes,3,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
-	// units is the decimal number of both tradable and retired credits received.
-	Units string `protobuf:"bytes,4,opt,name=units,proto3" json:"units,omitempty"`
+	// amount is the decimal number of both tradable and retired credits received.
+	Amount string `protobuf:"bytes,4,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
 func (m *EventReceive) Reset()         { *m = EventReceive{} }
@@ -221,16 +221,16 @@ func (m *EventReceive) GetBatchDenom() string {
 	return ""
 }
 
-func (m *EventReceive) GetUnits() string {
+func (m *EventReceive) GetAmount() string {
 	if m != nil {
-		return m.Units
+		return m.Amount
 	}
 	return ""
 }
 
-// EventRetire is an event emitted when credits are retired. An separate event
-// is emitted for each batch_denom in the case where credits from multiple
-// batches have been retired at once for easy indexing.
+// EventRetire is an event emitted when credits are retired. When credits are
+// retired from multiple batches in the same transaction, a separate event is
+// emitted for each batch_denom. This allows for easier indexing.
 type EventRetire struct {
 	// retirer is the account which has done the "retiring". This will be the
 	// account receiving credits in the case that credits were retired upon
@@ -238,8 +238,8 @@ type EventRetire struct {
 	Retirer string `protobuf:"bytes,1,opt,name=retirer,proto3" json:"retirer,omitempty"`
 	// batch_denom is the unique ID of credit batch.
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
-	// units is the decimal number of credits that have been retired.
-	Units string `protobuf:"bytes,3,opt,name=units,proto3" json:"units,omitempty"`
+	// amount is the decimal number of credits that have been retired.
+	Amount string `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
 	// location is the location of the beneficiary or buyer of the retired
 	// credits. It is a string of the form
 	// <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
@@ -295,9 +295,9 @@ func (m *EventRetire) GetBatchDenom() string {
 	return ""
 }
 
-func (m *EventRetire) GetUnits() string {
+func (m *EventRetire) GetAmount() string {
 	if m != nil {
-		return m.Units
+		return m.Amount
 	}
 	return ""
 }
@@ -309,11 +309,79 @@ func (m *EventRetire) GetLocation() string {
 	return ""
 }
 
+// EventCancel is an event emitted when credits are cancelled. When credits are
+// cancelled from multiple batches in the same transaction, a separate event is
+// emitted for each batch_denom. This allows for easier indexing.
+type EventCancel struct {
+	// canceller is the account which has cancelled the credits, which should be
+	// the holder of the credits.
+	Canceller string `protobuf:"bytes,1,opt,name=canceller,proto3" json:"canceller,omitempty"`
+	// batch_denom is the unique ID of credit batch.
+	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
+	// amount is the decimal number of credits that have been cancelled.
+	Amount string `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
+}
+
+func (m *EventCancel) Reset()         { *m = EventCancel{} }
+func (m *EventCancel) String() string { return proto.CompactTextString(m) }
+func (*EventCancel) ProtoMessage()    {}
+func (*EventCancel) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5b6a013b00aef3af, []int{4}
+}
+func (m *EventCancel) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventCancel) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventCancel.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventCancel) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventCancel.Merge(m, src)
+}
+func (m *EventCancel) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventCancel) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventCancel.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventCancel proto.InternalMessageInfo
+
+func (m *EventCancel) GetCanceller() string {
+	if m != nil {
+		return m.Canceller
+	}
+	return ""
+}
+
+func (m *EventCancel) GetBatchDenom() string {
+	if m != nil {
+		return m.BatchDenom
+	}
+	return ""
+}
+
+func (m *EventCancel) GetAmount() string {
+	if m != nil {
+		return m.Amount
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*EventCreateClass)(nil), "regen.ecocredit.v1alpha1.EventCreateClass")
 	proto.RegisterType((*EventCreateBatch)(nil), "regen.ecocredit.v1alpha1.EventCreateBatch")
 	proto.RegisterType((*EventReceive)(nil), "regen.ecocredit.v1alpha1.EventReceive")
 	proto.RegisterType((*EventRetire)(nil), "regen.ecocredit.v1alpha1.EventRetire")
+	proto.RegisterType((*EventCancel)(nil), "regen.ecocredit.v1alpha1.EventCancel")
 }
 
 func init() {
@@ -321,33 +389,34 @@ func init() {
 }
 
 var fileDescriptor_5b6a013b00aef3af = []byte{
-	// 404 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0xcd, 0x8a, 0xdb, 0x30,
-	0x14, 0x85, 0xa3, 0xa6, 0xcd, 0x8f, 0x52, 0x68, 0x71, 0x43, 0x30, 0xa1, 0x38, 0xc5, 0x50, 0xe8,
-	0xa6, 0x36, 0xa1, 0x8b, 0x42, 0x97, 0x4e, 0xbb, 0x28, 0xdd, 0x19, 0xba, 0xe9, 0xa2, 0x41, 0x91,
-	0x2f, 0x8e, 0xa8, 0x23, 0x05, 0x49, 0x49, 0x67, 0xde, 0x62, 0x98, 0x79, 0xa9, 0x59, 0xcc, 0x22,
-	0xcb, 0x59, 0x85, 0x21, 0x79, 0x83, 0x3c, 0xc1, 0x20, 0xf9, 0x27, 0x9e, 0xac, 0x66, 0x66, 0x77,
-	0x3f, 0xeb, 0x5c, 0x9d, 0x73, 0xe5, 0x8b, 0x3f, 0x4a, 0x48, 0x81, 0x87, 0x40, 0x05, 0x95, 0x90,
-	0x30, 0x1d, 0xae, 0xc7, 0x24, 0x5b, 0xce, 0xc9, 0x38, 0x84, 0x35, 0x70, 0xad, 0x82, 0xa5, 0x14,
-	0x5a, 0x38, 0xae, 0x95, 0x05, 0x95, 0x2c, 0x28, 0x65, 0xc3, 0x7e, 0x2a, 0x52, 0x61, 0x45, 0xa1,
-	0xa9, 0x72, 0xbd, 0xff, 0x17, 0xbf, 0xfd, 0x61, 0xfa, 0x27, 0x12, 0x88, 0x86, 0x49, 0x46, 0x94,
-	0x72, 0x02, 0xdc, 0xa1, 0xa6, 0x98, 0xb2, 0xc4, 0x45, 0x1f, 0xd0, 0xa7, 0x6e, 0xf4, 0xee, 0xb0,
-	0x1d, 0xbd, 0x39, 0x27, 0x8b, 0xec, 0x9b, 0x5f, 0x9e, 0xf8, 0x71, 0xdb, 0x96, 0x3f, 0x13, 0x67,
-	0x88, 0x3b, 0x09, 0x28, 0x96, 0x72, 0x90, 0xee, 0x0b, 0xa3, 0x8f, 0x2b, 0xf6, 0x6f, 0xd0, 0x03,
-	0x83, 0x88, 0x68, 0x3a, 0x7f, 0xb2, 0xc1, 0x57, 0xdc, 0x9b, 0x99, 0xc6, 0x69, 0x02, 0x5c, 0x2c,
-	0x72, 0x8f, 0x68, 0x70, 0xd8, 0x8e, 0x9c, 0xbc, 0xa5, 0x76, 0xe8, 0xc7, 0xd8, 0xd2, 0x77, 0x03,
-	0xce, 0x00, 0xb7, 0x98, 0x52, 0x2b, 0x90, 0x6e, 0xd3, 0xe6, 0x2a, 0xc8, 0x5c, 0xa8, 0x85, 0x26,
-	0xd9, 0x74, 0xc5, 0x99, 0x56, 0xee, 0xcb, 0xd3, 0x0b, 0x6b, 0x87, 0x7e, 0x8c, 0x2d, 0xfd, 0xb6,
-	0x70, 0x85, 0xf0, 0x6b, 0x3b, 0x4e, 0x0c, 0x14, 0xd8, 0x1a, 0x8c, 0x83, 0x02, 0x9e, 0x80, 0xcc,
-	0x07, 0x89, 0x0b, 0x72, 0xde, 0xe3, 0xae, 0x04, 0xca, 0x96, 0x0c, 0xb8, 0x2e, 0x1e, 0xe5, 0xf8,
-	0xe1, 0x74, 0xa0, 0xe6, 0xa3, 0x07, 0xea, 0xe3, 0x57, 0xb5, 0xc8, 0x71, 0x0e, 0xfe, 0x25, 0xc2,
-	0xbd, 0x22, 0x95, 0x66, 0x12, 0x1c, 0x17, 0xb7, 0xa5, 0xad, 0xca, 0x54, 0x25, 0x3e, 0xff, 0x25,
-	0x2b, 0xe3, 0x66, 0xcd, 0xd8, 0xfc, 0xf9, 0x4c, 0x50, 0xa2, 0x99, 0xe0, 0x45, 0xa2, 0x8a, 0xa3,
-	0x5f, 0xd7, 0x3b, 0x0f, 0x6d, 0x76, 0x1e, 0xba, 0xdb, 0x79, 0xe8, 0x62, 0xef, 0x35, 0x36, 0x7b,
-	0xaf, 0x71, 0xbb, 0xf7, 0x1a, 0x7f, 0xc6, 0x29, 0xd3, 0xf3, 0xd5, 0x2c, 0xa0, 0x62, 0x11, 0xda,
-	0x75, 0xfd, 0xcc, 0x41, 0xff, 0x17, 0xf2, 0x5f, 0x41, 0x19, 0x24, 0x29, 0xc8, 0xf0, 0xec, 0xb8,
-	0xec, 0xb3, 0x96, 0xdd, 0xd6, 0x2f, 0xf7, 0x01, 0x00, 0x00, 0xff, 0xff, 0x59, 0x60, 0x88, 0xd1,
-	0x06, 0x03, 0x00, 0x00,
+	// 428 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x93, 0xcf, 0x8e, 0xd3, 0x30,
+	0x10, 0xc6, 0x6b, 0x8a, 0xf6, 0x8f, 0xbb, 0x12, 0xc8, 0x8b, 0x96, 0x68, 0x85, 0x52, 0x64, 0x09,
+	0x89, 0x0b, 0x89, 0x2a, 0x0e, 0x48, 0x7b, 0x23, 0x85, 0x03, 0xe2, 0x96, 0x23, 0x07, 0x2a, 0xd7,
+	0x19, 0xa5, 0x16, 0x8e, 0x5d, 0x39, 0x6e, 0x01, 0x89, 0x87, 0xe0, 0x00, 0xef, 0xc4, 0x8d, 0x3d,
+	0x72, 0xaa, 0x50, 0xfb, 0x06, 0x7d, 0x02, 0x64, 0xc7, 0x49, 0x03, 0xb7, 0x15, 0x7b, 0x9b, 0x5f,
+	0xfc, 0xd9, 0xdf, 0x37, 0xa3, 0x0c, 0x7e, 0x62, 0xa0, 0x04, 0x95, 0x02, 0xd7, 0xdc, 0x40, 0x21,
+	0x6c, 0xba, 0x9e, 0x30, 0xb9, 0x5c, 0xb0, 0x49, 0x0a, 0x6b, 0x50, 0xb6, 0x4e, 0x96, 0x46, 0x5b,
+	0x4d, 0x22, 0x2f, 0x4b, 0x3a, 0x59, 0xd2, 0xca, 0x2e, 0x1f, 0x94, 0xba, 0xd4, 0x5e, 0x94, 0xba,
+	0xaa, 0xd1, 0xd3, 0xf7, 0xf8, 0xfe, 0x6b, 0x77, 0x7f, 0x6a, 0x80, 0x59, 0x98, 0x4a, 0x56, 0xd7,
+	0x24, 0xc1, 0x27, 0xdc, 0x15, 0x33, 0x51, 0x44, 0xe8, 0x31, 0x7a, 0x7a, 0x9a, 0x9d, 0xef, 0x37,
+	0xe3, 0x7b, 0x9f, 0x59, 0x25, 0xaf, 0x68, 0x7b, 0x42, 0xf3, 0x63, 0x5f, 0xbe, 0x29, 0xc8, 0x25,
+	0x3e, 0x29, 0xa0, 0x16, 0xa5, 0x02, 0x13, 0xdd, 0x71, 0xfa, 0xbc, 0x63, 0xfa, 0x13, 0xfd, 0x65,
+	0x90, 0x31, 0xcb, 0x17, 0x37, 0x36, 0x78, 0x81, 0x47, 0x73, 0x77, 0x71, 0x56, 0x80, 0xd2, 0x55,
+	0xe3, 0x91, 0x5d, 0xec, 0x37, 0x63, 0xd2, 0x5c, 0xe9, 0x1d, 0xd2, 0x1c, 0x7b, 0x7a, 0xe5, 0x80,
+	0x5c, 0xe0, 0x23, 0x51, 0xd7, 0x2b, 0x30, 0xd1, 0xd0, 0xe7, 0x0a, 0x44, 0xae, 0xf0, 0x99, 0xd5,
+	0x96, 0xc9, 0x19, 0xab, 0xf4, 0x4a, 0xd9, 0xe8, 0xae, 0x7f, 0xf1, 0xe1, 0x7e, 0x33, 0x3e, 0x6f,
+	0x5e, 0xec, 0x9f, 0xd2, 0x7c, 0xe4, 0xf1, 0x65, 0x43, 0xdf, 0x11, 0x3e, 0xf3, 0x1d, 0xe5, 0xc0,
+	0x41, 0xac, 0xc1, 0x99, 0xd4, 0xa0, 0x0a, 0x30, 0x4d, 0x2f, 0x79, 0x20, 0xf2, 0x08, 0x9f, 0x1a,
+	0xe0, 0x62, 0x29, 0x40, 0xd9, 0x30, 0x97, 0xc3, 0x87, 0x7f, 0x7b, 0x1a, 0xde, 0xa4, 0xa7, 0x7e,
+	0xea, 0x3c, 0x10, 0xfd, 0x86, 0xf0, 0x28, 0xe4, 0xb2, 0xc2, 0x00, 0x89, 0xf0, 0xb1, 0xf1, 0x55,
+	0x9b, 0xab, 0xc5, 0xff, 0x1a, 0x67, 0xb0, 0x1e, 0xf6, 0xad, 0xdd, 0x0f, 0x20, 0x35, 0x67, 0x56,
+	0x68, 0x15, 0x42, 0x75, 0x4c, 0xbf, 0x84, 0x54, 0x53, 0xa6, 0x38, 0x48, 0x37, 0x14, 0xee, 0x2b,
+	0xd9, 0xe5, 0x3a, 0x7c, 0xb8, 0xf5, 0x64, 0xd9, 0xdb, 0x1f, 0xdb, 0x18, 0x5d, 0x6f, 0x63, 0xf4,
+	0x7b, 0x1b, 0xa3, 0xaf, 0xbb, 0x78, 0x70, 0xbd, 0x8b, 0x07, 0xbf, 0x76, 0xf1, 0xe0, 0xdd, 0xa4,
+	0x14, 0x76, 0xb1, 0x9a, 0x27, 0x5c, 0x57, 0xa9, 0xdf, 0x99, 0x67, 0x0a, 0xec, 0x47, 0x6d, 0x3e,
+	0x04, 0x92, 0x50, 0x94, 0x60, 0xd2, 0x4f, 0x87, 0x8d, 0x9b, 0x1f, 0xf9, 0x95, 0x79, 0xfe, 0x27,
+	0x00, 0x00, 0xff, 0xff, 0x81, 0x77, 0xea, 0xf3, 0x8b, 0x03, 0x00, 0x00,
 }
 
 func (m *EventCreateClass) Marshal() (dAtA []byte, err error) {
@@ -407,10 +476,10 @@ func (m *EventCreateBatch) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.TotalUnits) > 0 {
-		i -= len(m.TotalUnits)
-		copy(dAtA[i:], m.TotalUnits)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.TotalUnits)))
+	if len(m.TotalAmount) > 0 {
+		i -= len(m.TotalAmount)
+		copy(dAtA[i:], m.TotalAmount)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.TotalAmount)))
 		i--
 		dAtA[i] = 0x22
 	}
@@ -458,10 +527,10 @@ func (m *EventReceive) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.Units) > 0 {
-		i -= len(m.Units)
-		copy(dAtA[i:], m.Units)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.Units)))
+	if len(m.Amount) > 0 {
+		i -= len(m.Amount)
+		copy(dAtA[i:], m.Amount)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Amount)))
 		i--
 		dAtA[i] = 0x22
 	}
@@ -516,10 +585,10 @@ func (m *EventRetire) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x22
 	}
-	if len(m.Units) > 0 {
-		i -= len(m.Units)
-		copy(dAtA[i:], m.Units)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.Units)))
+	if len(m.Amount) > 0 {
+		i -= len(m.Amount)
+		copy(dAtA[i:], m.Amount)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Amount)))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -534,6 +603,50 @@ func (m *EventRetire) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i -= len(m.Retirer)
 		copy(dAtA[i:], m.Retirer)
 		i = encodeVarintEvents(dAtA, i, uint64(len(m.Retirer)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *EventCancel) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventCancel) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventCancel) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Amount) > 0 {
+		i -= len(m.Amount)
+		copy(dAtA[i:], m.Amount)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Amount)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.BatchDenom) > 0 {
+		i -= len(m.BatchDenom)
+		copy(dAtA[i:], m.BatchDenom)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.BatchDenom)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Canceller) > 0 {
+		i -= len(m.Canceller)
+		copy(dAtA[i:], m.Canceller)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Canceller)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -586,7 +699,7 @@ func (m *EventCreateBatch) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
-	l = len(m.TotalUnits)
+	l = len(m.TotalAmount)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
@@ -611,7 +724,7 @@ func (m *EventReceive) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
-	l = len(m.Units)
+	l = len(m.Amount)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
@@ -632,11 +745,32 @@ func (m *EventRetire) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
-	l = len(m.Units)
+	l = len(m.Amount)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
 	l = len(m.Location)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	return n
+}
+
+func (m *EventCancel) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Canceller)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.BatchDenom)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	l = len(m.Amount)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
@@ -893,7 +1027,7 @@ func (m *EventCreateBatch) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TotalUnits", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field TotalAmount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -921,7 +1055,7 @@ func (m *EventCreateBatch) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.TotalUnits = string(dAtA[iNdEx:postIndex])
+			m.TotalAmount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1074,7 +1208,7 @@ func (m *EventReceive) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Units", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1102,7 +1236,7 @@ func (m *EventReceive) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Units = string(dAtA[iNdEx:postIndex])
+			m.Amount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -1223,7 +1357,7 @@ func (m *EventRetire) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Units", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1251,7 +1385,7 @@ func (m *EventRetire) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Units = string(dAtA[iNdEx:postIndex])
+			m.Amount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
@@ -1284,6 +1418,155 @@ func (m *EventRetire) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Location = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventCancel) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventCancel: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventCancel: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Canceller", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Canceller = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Amount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Amount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

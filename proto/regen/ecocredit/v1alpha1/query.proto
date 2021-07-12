@@ -23,7 +23,7 @@ service Query {
   rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse);
 
   // Precision queries the number of decimal places that can be used to
-  // represent credit batch units. See Tx/SetPrecision for more details.
+  // represent credits in a batch. See Tx/SetPrecision for more details.
   rpc Precision(QueryPrecisionRequest) returns (QueryPrecisionResponse);
 }
 
@@ -68,12 +68,12 @@ message QueryBalanceRequest {
 // QueryBalanceResponse is the Query/Balance response type.
 message QueryBalanceResponse {
 
-  // tradable_units is the decimal number of tradable units.
-  string tradable_units = 1
-      [ (gogoproto.moretags) = "yaml:\"tradable_units\"" ];
+  // tradable_amount is the decimal number of tradable credits.
+  string tradable_amount = 1
+      [ (gogoproto.moretags) = "yaml:\"tradable_amount\"" ];
 
-  // retired_units is the decimal number of retired units.
-  string retired_units = 2 [ (gogoproto.moretags) = "yaml:\"retired_units\"" ];
+  // retired_amount is the decimal number of retired credits.
+  string retired_amount = 2 [ (gogoproto.moretags) = "yaml:\"retired_amount\"" ];
 }
 
 // QuerySupplyRequest is the Query/Supply request type.
@@ -86,11 +86,11 @@ message QuerySupplyRequest {
 // QuerySupplyResponse is the Query/Supply response type.
 message QuerySupplyResponse {
 
-  // tradable_units is the decimal number of tradable units in the batch supply.
+  // tradable_supply is the decimal number of tradable credits in the batch supply.
   string tradable_supply = 1
       [ (gogoproto.moretags) = "yaml:\"tradable_supply\"" ];
 
-  // retired_supply is the decimal number of retired units in the batch supply.
+  // retired_supply is the decimal number of retired credits in the batch supply.
   string retired_supply = 2
       [ (gogoproto.moretags) = "yaml:\"retired_supply\"" ];
 }
@@ -106,7 +106,7 @@ message QueryPrecisionRequest {
 message QueryPrecisionResponse {
 
   // max_decimal_places is the maximum number of decimal places that can be used
-  // to represent some quantity of credit units. It is an experimental feature
+  // to represent some quantity of credits. It is an experimental feature
   // to concretely explore an idea proposed in
   // https://github.com/cosmos/cosmos-sdk/issues/7113.
   uint32 max_decimal_places = 1

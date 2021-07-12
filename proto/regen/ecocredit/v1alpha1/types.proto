@@ -35,12 +35,21 @@ message BatchInfo {
   // issuer is the issuer of the credit batch.
   string issuer = 3;
 
-  // total_units is the total number of units in the credit batch and is
-  // immutable.
-  string total_units = 4 [ (gogoproto.moretags) = "yaml:\"total_units\"" ];
+  // total_amount is the total number of active credits in the credit batch.
+  // Some of the issued credits may be cancelled and will be removed from
+  // total_amount and tracked in amount_cancelled. total_amount and
+  // amount_cancelled will always sum to the original amount of credits that
+  // were issued.
+  string total_amount = 4 [ (gogoproto.moretags) = "yaml:\"total_amount\"" ];
 
   // metadata is any arbitrary metadata to attached to the credit batch.
   bytes metadata = 5;
+
+  // amount_cancelled is the number of credits in the batch that have been
+  // cancelled, effectively undoing there issuance. The sum of total_amount and
+  // amount_cancelled will always sum to the original amount of credits that
+  // were issued.
+  string amount_cancelled = 6;
 }
 
 // Params defines the updatable global parameters of the ecocredit module for
