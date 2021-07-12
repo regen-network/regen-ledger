@@ -15,6 +15,19 @@ service Query {
 
   // BySigner queries data based on signers.
   rpc BySigner (QueryBySignerRequest) returns (QueryBySignerResponse);
+
+  rpc IDsByIRI (QueryIDsByIRIRequest) returns (QueryIDsByIRIResponse);
+
+  rpc IRIsByID (QueryIRIsByIDRequest) returns (QueryIRIsByIDResponse);
+
+  rpc ByIRI (QueryByIRIRequest) returns (QueryByIRIResponse)
+
+  rpc ValidateGraph (ValidateGraphRequest) returns (ValidateGraphResponse);
+
+  rpc ValidateShapesGraph (ValidateShapesGraphRequest) returns (ValidateShapesGraphResponse);
+
+  rpc ConvertToCompactDataset (ConvertToCompactDatasetRequest) returns (ConvertToCompactDatasetResponse);
+  rpc ConvertFromCompactDataset (ConvertFromCompactDatasetRequest) returns (ConvertFromCompactDatasetResponse);
 }
 
 // QueryByContentHashRequest is the Query/ByContentHash request type.
@@ -63,4 +76,66 @@ message ContentEntry {
 
   // content is the actual content if stored on-chain
   Content content = 5;
+}
+
+message QueryIRIsByIDRequest {
+  repeated uint64 ids = 1;
+}
+
+message QueryIRIsByIDResponse {
+  repeated string iris = 1;
+}
+
+message QueryByIRIRequest {
+  string iri = 1;
+
+  // accept is a list of MIME content types the client accepts like the HTTP Accept content header
+  string accept = 2;
+}
+
+message QueryByIRIResponse {
+  bytes body = 1;
+
+  // content_type is the MIME type of the content like the HTTP Content-Type header
+  string content_type = 2;
+}
+
+message ValidateGraphRequest {
+  string data_graph_iri = 1;
+  string shapes_graph_iri = 2;
+  string accept = 3;
+}
+
+message ValidateGraphResponse {
+  bytes content = 1;
+  string content_type = 2;
+}
+
+message ValidateShapesGraphRequest {
+  string shapes_graph_iri = 1;
+  string accept = 2;
+}
+
+message ValidateShapesGraphResponse {
+  bytes content = 1;
+  string content_type = 2;
+}
+
+message ConvertToCompactDatasetRequest {
+  bytes content = 1;
+  string content_type = 2;
+}
+
+message ConvertToCompactDatasetResponse {
+  CompactDataset.Dataset dataset = 1;
+}
+
+message ConvertFromCompactDatasetRequest {
+  CompactDataset.Dataset dataset = 1;
+  string accept = 2;
+}
+
+message ConvertFromCompactDatasetResponse {
+  bytes content = 1;
+  string content_type = 2;
 }

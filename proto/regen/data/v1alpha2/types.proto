@@ -21,6 +21,8 @@ message ContentHash {
         // Graph specifies graph data that conforms to the RDF data model.
         // The canonicalization algorithm used for an RDF graph is specified by GraphCanonicalizationAlgorithm.
         Graph graph = 2;
+
+        Geo geo = 3;
     }
 
     // Raw is the content hash type used for raw data
@@ -49,6 +51,14 @@ message ContentHash {
 
         // merkle_tree is the merkle tree type used for the graph hash, if any
         GraphMerkleTree merkle_tree = 4;
+    }
+
+    message Geo {
+        // hash represents the hash of the data based on the specified digest_algorithm
+        bytes hash = 1;
+
+        // digest_algorithm represents the hash digest algorithm.
+        DigestAlgorithm digest_algorithm = 2;
     }
 }
 
@@ -163,3 +173,74 @@ message SignerEntry {
     google.protobuf.Timestamp timestamp = 2;
 }
 
+message CompactDataset {
+    repeated Node default_graph = 1;
+    repeated NamedGraph named_graphs = 2;
+    repeated string new_iris = 3;
+    repeated bytes new_geographies = 4;
+
+    message NamedGraph {
+        oneof name {
+            bytes internal_id = 1;
+            sint32 local_ref = 2;
+        }
+        repeated Node graph = 3;
+    }
+
+    message Node {
+        oneof subject {
+            bytes internal_id = 1;
+            sint32 local_ref = 2;
+        }
+        repeated Properties properties = 3;
+    }
+
+    message Properties {
+        oneof predicate {
+            bytes internal_id = 1;
+            sint32 local_ref = 2;
+        }
+        repeated Term objects = 3;
+    }
+
+    message Term {
+        oneof sum {
+            bytes object_internal_id = 1;
+            sint32 object_local_ref = 2;
+            WellknownDatatype well_known_datatype = 3;
+            bytes data_type_internal_id = 4;
+            sint32 data_type_local_ref = 5;
+        }
+
+        string lang = 6;
+
+        oneof literal_value {
+            string str_value = 7;
+            google.protobuf.Timestamp timestamp_value = 8;
+            google.protobuf.Duration duration_value = 9;
+            sint64 geo_id = 10;
+        }
+    }
+
+    enum WellknownDatatype {
+        DATATYPE_UNSPECIFIED = 0;
+        DATATYPE_BOOL_FALSE = 1;
+        DATATYPE_BOOL_TRUE = 2;
+        DATATYPE_DECIMAL = 3;
+        DATATYPE_INTEGER = 4;
+        DATATYPE_STRING = 5;
+        DATATYPE_ANY_URI = 6;
+        DATATYPE_DATE = 7;
+        DATATYPE_TIME = 8;
+        DATATYPE_DATE_TIME = 9;
+        DATATYPE_BASE64_STRING = 10;
+        DATATYPE_WKT_LITERAL = 11;
+    }
+}
+
+message SparseMerkleCompactProof {
+    repeated bytes side_nodes = 1;
+    bytes non_membership_leaf_data = 2;
+    bytes bit_mask = 3;
+    int64 num_side_nodes = 4;
+}

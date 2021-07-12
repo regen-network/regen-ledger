@@ -61,6 +61,12 @@ message MsgCreateClassRequest {
 
   // metadata is any arbitrary metadata to attached to the credit class.
   bytes metadata = 3;
+
+  // must live on chain
+  GraphID batch_shapes_graph_id = 4;
+
+  // allow_off_chain_metadata allows credit batch metadata to live off-chain
+  bool allow_off_chain_batch_metadata = 5;
 }
 
 // MsgCreateClassResponse is the Msg/CreateClass response type.
@@ -83,7 +89,10 @@ message MsgCreateBatchRequest {
   repeated BatchIssuance issuance = 3;
 
   // metadata is any arbitrary metadata to attached to the credit batch.
-  bytes metadata = 4;
+  bytes data_id = 4;
+
+  ContentHash.Graph hash
+  Graph.Dataset dataset
 
   // BatchIssuance represents the issuance of some credits in a batch to a
   // single recipient.
