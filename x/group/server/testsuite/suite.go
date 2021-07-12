@@ -7,10 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
-	bank "github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
@@ -21,8 +19,8 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/group"
-	groupserver "github.com/regen-network/regen-ledger/x/group/server"
 	"github.com/regen-network/regen-ledger/x/group/testdata"
 )
 
@@ -805,7 +803,7 @@ func (s *IntegrationTestSuite) TestCreateGroupAccount() {
 
 func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
 	admin, newAdmin := s.addr1, s.addr2
-	groupAccountAddr, myGroupID, policy := createGroupAndGroupAccount(admin, s)
+	groupAccountAddr, myGroupID, policy, derivationKey := createGroupAndGroupAccount(admin, s)
 
 	specs := map[string]struct {
 		req             *group.MsgUpdateGroupAccountAdminRequest
@@ -825,6 +823,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
 				Metadata:       nil,
 				Version:        2,
 				DecisionPolicy: nil,
+				DerivationKey:  derivationKey,
 			},
 			expErr: true,
 		},
@@ -841,6 +840,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
 				Metadata:       nil,
 				Version:        2,
 				DecisionPolicy: nil,
+				DerivationKey:  derivationKey,
 			},
 			expErr: true,
 		},
@@ -857,6 +857,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
 				Metadata:       nil,
 				Version:        2,
 				DecisionPolicy: nil,
+				DerivationKey:  derivationKey,
 			},
 			expErr: false,
 		},
@@ -885,7 +886,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountAdmin() {
 
 func (s *IntegrationTestSuite) TestUpdateGroupAccountMetadata() {
 	admin := s.addr1
-	groupAccountAddr, myGroupID, policy := createGroupAndGroupAccount(admin, s)
+	groupAccountAddr, myGroupID, policy, derivationKey := createGroupAndGroupAccount(admin, s)
 
 	specs := map[string]struct {
 		req             *group.MsgUpdateGroupAccountMetadataRequest
@@ -932,6 +933,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountMetadata() {
 				Metadata:       []byte("hello"),
 				Version:        2,
 				DecisionPolicy: nil,
+				DerivationKey:  derivationKey,
 			},
 			expErr: false,
 		},
@@ -960,7 +962,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountMetadata() {
 
 func (s *IntegrationTestSuite) TestUpdateGroupAccountDecisionPolicy() {
 	admin := s.addr1
-	groupAccountAddr, myGroupID, policy := createGroupAndGroupAccount(admin, s)
+	groupAccountAddr, myGroupID, policy, derivationKey := createGroupAndGroupAccount(admin, s)
 
 	specs := map[string]struct {
 		req             *group.MsgUpdateGroupAccountDecisionPolicyRequest
@@ -1002,6 +1004,7 @@ func (s *IntegrationTestSuite) TestUpdateGroupAccountDecisionPolicy() {
 				Metadata:       nil,
 				Version:        2,
 				DecisionPolicy: nil,
+				DerivationKey:  derivationKey,
 			},
 			expErr: false,
 		},
@@ -1821,75 +1824,16 @@ func (s *IntegrationTestSuite) TestVote() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestDoExecuteMsgs() {
-	msgSend := &banktypes.MsgSend{
-		FromAddress: s.groupAccountAddr.String(),
-		ToAddress:   s.addr2.String(),
-		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
-	}
-
-	unauthzMsgSend := &banktypes.MsgSend{
-		FromAddress: s.addr1.String(),
-		ToAddress:   s.addr2.String(),
-		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
-	}
-
-	specs := map[string]struct {
-		srcMsgs    []sdk.Msg
-		srcHandler sdk.Handler
-		expErr     bool
-	}{
-		"all good": {
-			srcMsgs: []sdk.Msg{msgSend},
-		},
-		"not authz by group account": {
-			srcMsgs: []sdk.Msg{unauthzMsgSend},
-			expErr:  true,
-		},
-		"mixed group account msgs": {
-			srcMsgs: []sdk.Msg{
-				msgSend,
-				unauthzMsgSend,
-			},
-			expErr: true,
-		},
-		"no handler": {
-			srcMsgs: []sdk.Msg{&testdata.MsgAuthenticated{Signers: []sdk.AccAddress{s.groupAccountAddr}}},
-			expErr:  true,
-		},
-		"not panic on nil result": {
-			srcMsgs: []sdk.Msg{&testdata.MsgAuthenticated{Signers: []sdk.AccAddress{s.groupAccountAddr}}},
-			srcHandler: func(ctx sdk.Context, msg sdk.Msg) (result *sdk.Result, err error) {
-				return nil, nil
-			},
-		},
-	}
-	for msg, spec := range specs {
-		spec := spec
-		s.Run(msg, func() {
-			ctx, _ := s.sdkCtx.CacheContext()
-
-			var router sdk.Router
-			if spec.srcHandler != nil {
-				router = baseapp.NewRouter().AddRoute(sdk.NewRoute("MsgAuthenticated", spec.srcHandler))
-			} else {
-				router = baseapp.NewRouter().AddRoute(sdk.NewRoute(banktypes.ModuleName, bank.NewHandler(s.bankKeeper)))
-			}
-			_, err := groupserver.DoExecuteMsgs(ctx, router, s.groupAccountAddr, spec.srcMsgs)
-			if spec.expErr {
-				s.Require().Error(err)
-				return
-			}
-			s.Require().NoError(err)
-		})
-	}
-}
-
 func (s *IntegrationTestSuite) TestExecProposal() {
-	msgSend := &banktypes.MsgSend{
+	msgSend1 := &banktypes.MsgSend{
 		FromAddress: s.groupAccountAddr.String(),
 		ToAddress:   s.addr2.String(),
 		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 100)},
+	}
+	msgSend2 := &banktypes.MsgSend{
+		FromAddress: s.groupAccountAddr.String(),
+		ToAddress:   s.addr2.String(),
+		Amount:      sdk.Coins{sdk.NewInt64Coin("test", 10001)},
 	}
 	proposers := []string{s.addr2.String()}
 
@@ -1905,7 +1849,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 	}{
 		"proposal executed when accepted": {
 			setupProposal: func(ctx context.Context) uint64 {
-				msgs := []sdk.Msg{msgSend}
+				msgs := []sdk.Msg{msgSend1}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
 			},
 			expProposalStatus: group.ProposalStatusClosed,
@@ -1914,9 +1858,22 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 			expFromBalances:   sdk.Coins{sdk.NewInt64Coin("test", 9800)},
 			expToBalances:     sdk.Coins{sdk.NewInt64Coin("test", 200)},
 		},
+		"proposal with ADR 033 executed when accepted": {
+			setupProposal: func(ctx context.Context) uint64 {
+				msgs := []sdk.Msg{&ecocredit.MsgCreateClassRequest{
+					Designer: s.groupAccountAddr.String(),
+					Issuers:  []string{s.groupAccountAddr.String()},
+				},
+				}
+				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
+			},
+			expProposalStatus: group.ProposalStatusClosed,
+			expProposalResult: group.ProposalResultAccepted,
+			expExecutorResult: group.ProposalExecutorResultSuccess,
+		},
 		"proposal with multiple messages executed when accepted": {
 			setupProposal: func(ctx context.Context) uint64 {
-				msgs := []sdk.Msg{msgSend, msgSend}
+				msgs := []sdk.Msg{msgSend1, msgSend1}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
 			},
 			expProposalStatus: group.ProposalStatusClosed,
@@ -1927,7 +1884,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"proposal not executed when rejected": {
 			setupProposal: func(ctx context.Context) uint64 {
-				msgs := []sdk.Msg{msgSend}
+				msgs := []sdk.Msg{msgSend1}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
 			},
 			expProposalStatus: group.ProposalStatusClosed,
@@ -1936,7 +1893,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"open proposal must not fail": {
 			setupProposal: func(ctx context.Context) uint64 {
-				return createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
+				return createProposal(ctx, s, []sdk.Msg{msgSend1}, proposers)
 			},
 			expProposalStatus: group.ProposalStatusSubmitted,
 			expProposalResult: group.ProposalResultUnfinalized,
@@ -1950,7 +1907,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"Decision policy also applied on timeout": {
 			setupProposal: func(ctx context.Context) uint64 {
-				msgs := []sdk.Msg{msgSend}
+				msgs := []sdk.Msg{msgSend1}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
 			},
 			srcBlockTime:      s.blockTime.Add(time.Second),
@@ -1960,7 +1917,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"Decision policy also applied after timeout": {
 			setupProposal: func(ctx context.Context) uint64 {
-				msgs := []sdk.Msg{msgSend}
+				msgs := []sdk.Msg{msgSend1}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_NO)
 			},
 			srcBlockTime:      s.blockTime.Add(time.Second).Add(time.Millisecond),
@@ -1970,7 +1927,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"with group modified before tally": {
 			setupProposal: func(ctx context.Context) uint64 {
-				myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
+				myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend1}, proposers)
 
 				// then modify group
 				_, err := s.msgClient.UpdateGroupMetadata(ctx, &group.MsgUpdateGroupMetadataRequest{
@@ -1987,7 +1944,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"with group account modified before tally": {
 			setupProposal: func(ctx context.Context) uint64 {
-				myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend}, proposers)
+				myProposalID := createProposal(ctx, s, []sdk.Msg{msgSend1}, proposers)
 				_, err := s.msgClient.UpdateGroupAccountMetadata(ctx, &group.MsgUpdateGroupAccountMetadataRequest{
 					Admin:    s.addr1.String(),
 					Address:  s.groupAccountAddr.String(),
@@ -2002,7 +1959,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"prevent double execution when successful": {
 			setupProposal: func(ctx context.Context) uint64 {
-				myProposalID := createProposalAndVote(ctx, s, []sdk.Msg{msgSend}, proposers, group.Choice_CHOICE_YES)
+				myProposalID := createProposalAndVote(ctx, s, []sdk.Msg{msgSend1}, proposers, group.Choice_CHOICE_YES)
 
 				_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{Signer: s.addr1.String(), ProposalId: myProposalID})
 				s.Require().NoError(err)
@@ -2016,12 +1973,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"rollback all msg updates on failure": {
 			setupProposal: func(ctx context.Context) uint64 {
-				msgs := []sdk.Msg{
-					msgSend, &banktypes.MsgSend{
-						FromAddress: s.groupAccountAddr.String(),
-						ToAddress:   s.addr2.String(),
-						Amount:      sdk.Coins{sdk.NewInt64Coin("test", 10001)}},
-				}
+				msgs := []sdk.Msg{msgSend1, msgSend2}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
 			},
 			expProposalStatus: group.ProposalStatusClosed,
@@ -2030,12 +1982,7 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		},
 		"executable when failed before": {
 			setupProposal: func(ctx context.Context) uint64 {
-				msgs := []sdk.Msg{
-					&banktypes.MsgSend{
-						FromAddress: s.groupAccountAddr.String(),
-						ToAddress:   s.addr2.String(),
-						Amount:      sdk.Coins{sdk.NewInt64Coin("test", 10001)}},
-				}
+				msgs := []sdk.Msg{msgSend2}
 				myProposalID := createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
 
 				_, err := s.msgClient.Exec(ctx, &group.MsgExecRequest{Signer: s.addr1.String(), ProposalId: myProposalID})
@@ -2132,7 +2079,7 @@ func createProposalAndVote(
 func createGroupAndGroupAccount(
 	admin sdk.AccAddress,
 	s *IntegrationTestSuite,
-) (string, uint64, group.DecisionPolicy) {
+) (string, uint64, group.DecisionPolicy, []byte) {
 	groupRes, err := s.msgClient.CreateGroup(s.ctx, &group.MsgCreateGroupRequest{
 		Admin:    admin.String(),
 		Members:  nil,
@@ -2157,5 +2104,8 @@ func createGroupAndGroupAccount(
 	groupAccountRes, err := s.msgClient.CreateGroupAccount(s.ctx, groupAccount)
 	s.Require().NoError(err)
 
-	return groupAccountRes.Address, myGroupID, policy
+	res, err := s.queryClient.GroupAccountInfo(s.ctx, &group.QueryGroupAccountInfoRequest{Address: groupAccountRes.Address})
+	s.Require().NoError(err)
+
+	return groupAccountRes.Address, myGroupID, policy, res.Info.DerivationKey
 }

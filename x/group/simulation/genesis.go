@@ -53,23 +53,24 @@ func getGroupMembers(r *rand.Rand, accounts []simtypes.Account) []*group.GroupMe
 }
 
 func getGroupAccounts(r *rand.Rand, simState *module.SimulationState) []*group.GroupAccountInfo {
-	groupMembers := make([]*group.GroupAccountInfo, 3)
+	groupAccounts := make([]*group.GroupAccountInfo, 3)
 	for i := 0; i < 3; i++ {
 		acc, _ := simtypes.RandomAcc(r, simState.Accounts)
 		any, err := codectypes.NewAnyWithValue(group.NewThresholdDecisionPolicy("10", gogotypes.Duration{Seconds: 1}))
 		if err != nil {
 			panic(err)
 		}
-		groupMembers[i] = &group.GroupAccountInfo{
+		groupAccounts[i] = &group.GroupAccountInfo{
 			GroupId:        uint64(i + 1),
 			Admin:          acc.Address.String(),
 			Address:        acc.Address.String(),
 			Version:        1,
 			DecisionPolicy: any,
 			Metadata:       []byte(simtypes.RandStringOfLength(r, 10)),
+			DerivationKey:  []byte(simtypes.RandStringOfLength(r, 10)),
 		}
 	}
-	return groupMembers
+	return groupAccounts
 }
 
 func getProposals(r *rand.Rand, simState *module.SimulationState) []*group.Proposal {

@@ -6,6 +6,8 @@ import (
 
 	"github.com/regen-network/regen-ledger/orm"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/x/data"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/exported"
 )
@@ -40,8 +42,7 @@ const (
 )
 
 type serverImpl struct {
-	key    servermodule.RootModuleKey
-	router sdk.Router
+	key servermodule.RootModuleKey
 
 	accKeeper  exported.AccountKeeper
 	bankKeeper exported.BankKeeper
@@ -73,8 +74,8 @@ type serverImpl struct {
 	voteByVoterIndex    orm.Index
 }
 
-func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper, cdc codec.Codec) serverImpl {
-	s := serverImpl{key: storeKey, router: router, accKeeper: accKeeper, bankKeeper: bankKeeper}
+func newServer(storeKey servermodule.RootModuleKey, accKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper, cdc codec.Codec) serverImpl {
+	s := serverImpl{key: storeKey, accKeeper: accKeeper, bankKeeper: bankKeeper}
 
 	// Group Table
 	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, storeKey, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
@@ -163,10 +164,14 @@ func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper
 }
 
 func RegisterServices(configurator servermodule.Configurator, accountKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper) {
-	impl := newServer(configurator.ModuleKey(), configurator.Router(), accountKeeper, bankKeeper, configurator.Marshaler())
+	impl := newServer(configurator.ModuleKey(), accountKeeper, bankKeeper, configurator.Marshaler())
 	group.RegisterMsgServer(configurator.MsgServer(), impl)
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
+
+	// Require servers from external modules for ADR 033 message routing
+	configurator.RequireServer((*ecocredit.MsgServer)(nil))
+	configurator.RequireServer((*data.MsgServer)(nil))
 }

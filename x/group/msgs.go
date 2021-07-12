@@ -8,6 +8,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	proto "github.com/gogo/protobuf/proto"
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/types/module/server"
 )
 
 // Group message types and routes
@@ -558,14 +559,9 @@ func (m MsgCreateProposalRequest) ValidateBasic() error {
 
 // SetMsgs packs msgs into Any's
 func (m *MsgCreateProposalRequest) SetMsgs(msgs []sdk.Msg) error {
-	anys := make([]*types.Any, len(msgs))
-
-	for i, msg := range msgs {
-		var err error
-		anys[i], err = types.NewAnyWithValue(msg)
-		if err != nil {
-			return err
-		}
+	anys, err := server.SetMsgs(msgs)
+	if err != nil {
+		return err
 	}
 	m.Msgs = anys
 	return nil
@@ -573,34 +569,16 @@ func (m *MsgCreateProposalRequest) SetMsgs(msgs []sdk.Msg) error {
 
 // GetMsgs unpacks m.Msgs Any's into sdk.Msg's
 func (m MsgCreateProposalRequest) GetMsgs() []sdk.Msg {
-	msgs := make([]sdk.Msg, len(m.Msgs))
-	for i, any := range m.Msgs {
-		msg, ok := any.GetCachedValue().(sdk.Msg)
-		if !ok {
-			return nil
-		}
-		msgs[i] = msg
+	msgs, err := server.GetMsgs(m.Msgs)
+	if err != nil {
+		panic(err)
 	}
 	return msgs
 }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (m MsgCreateProposalRequest) UnpackInterfaces(unpacker types.AnyUnpacker) error {
-	// for _, m := range m.Msgs {
-	// 	err := types.UnpackInterfaces(m, unpacker)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// }
-	for _, any := range m.Msgs {
-		var msg sdk.Msg
-		err := unpacker.UnpackAny(any, &msg)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return server.UnpackInterfaces(unpacker, m.Msgs)
 }
 
 var _ sdk.Msg = &MsgVoteRequest{}

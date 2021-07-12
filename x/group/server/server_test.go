@@ -7,7 +7,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
@@ -19,7 +18,9 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
-	groupmodule "github.com/regen-network/regen-ledger/x/group/module"
+	data "github.com/regen-network/regen-ledger/x/data/module"
+	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
+	group "github.com/regen-network/regen-ledger/x/group/module"
 	"github.com/regen-network/regen-ledger/x/group/server/testsuite"
 )
 
@@ -72,8 +73,8 @@ func TestServer(t *testing.T) {
 	)
 
 	baseApp := ff.BaseApp()
-
-	baseApp.Router().AddRoute(sdk.NewRoute(banktypes.ModuleName, bank.NewHandler(bankKeeper)))
+	baseApp.MsgServiceRouter().SetInterfaceRegistry(cdc.InterfaceRegistry())
+	banktypes.RegisterMsgServer(baseApp.MsgServiceRouter(), bankkeeper.NewMsgServerImpl(bankKeeper))
 	baseApp.MountStore(tkey, sdk.StoreTypeTransient)
 	baseApp.MountStore(paramsKey, sdk.StoreTypeIAVL)
 	baseApp.MountStore(authKey, sdk.StoreTypeIAVL)
@@ -81,7 +82,11 @@ func TestServer(t *testing.T) {
 	baseApp.MountStore(stakingKey, sdk.StoreTypeIAVL)
 	baseApp.MountStore(mintKey, sdk.StoreTypeIAVL)
 
-	ff.SetModules([]module.Module{groupmodule.Module{AccountKeeper: accountKeeper}})
+	ff.SetModules([]module.Module{
+		group.Module{AccountKeeper: accountKeeper},
+		ecocredit.Module{},
+		data.Module{},
+	})
 
 	s := testsuite.NewIntegrationTestSuite(ff, accountKeeper, bankKeeper, mintKeeper)
 

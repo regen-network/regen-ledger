@@ -23,11 +23,6 @@ type Configurator interface {
 	RequireServer(interface{})
 	RegisterInvariantsHandler(registry RegisterInvariantsHandler)
 	RegisterGenesisHandlers(module.InitGenesisHandler, module.ExportGenesisHandler)
-
-	// Router() is temporarily added here to use in the group module.
-	// TODO: remove once #225 addressed
-	Router() sdk.Router
-
 	RegisterWeightedOperationsHandler(WeightedOperationsHandler)
 }
 
