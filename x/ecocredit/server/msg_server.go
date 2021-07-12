@@ -149,6 +149,8 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 		Issuer:     req.Issuer,
 		TotalUnits: totalSupplyStr,
 		Metadata:   req.Metadata,
+		StartDate:  req.StartDate,
+		EndDate:    req.EndDate,
 	})
 	if err != nil {
 		return nil, err
