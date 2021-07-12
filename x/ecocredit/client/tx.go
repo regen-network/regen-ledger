@@ -189,8 +189,8 @@ func txCancel() *cobra.Command {
 		Long: `Cancels a specified amount of credits from the account of the transaction author (--from)
 
 Parameters:
-  credits:  comma-separated list of credits in the form <amount>:<batch-denom>
-            eg: 10:ABC/123,0.1:XYZ/456`,
+  credits:  comma-separated list of credits in the form <amount><batch-denom>
+            eg: 10eco:ABC:123,0.1eco:XYZ:456`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			credits, err := parseCancelCreditsList(args[0])

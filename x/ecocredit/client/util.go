@@ -35,8 +35,8 @@ type credits struct {
 
 var (
 	reCreditAmt  = `[[:digit:]]+(?:\.[[:digit:]]+)?|\.[[:digit:]]+`
-	reBatchDenom = `[a-zA-Z0-9]+\/[a-zA-Z0-9]+`
-	reCredits    = regexp.MustCompile(fmt.Sprintf(`^(%s)\:(%s)$`, reCreditAmt, reBatchDenom))
+	reBatchDenom = `eco\:[a-zA-Z0-9]+\:[a-zA-Z0-9]+`
+	reCredits    = regexp.MustCompile(fmt.Sprintf(`^(%s)(%s)$`, reCreditAmt, reBatchDenom))
 )
 
 func parseCancelCreditsList(creditsListStr string) ([]*ecocredit.MsgCancelRequest_CancelCredits, error) {
@@ -47,7 +47,7 @@ func parseCancelCreditsList(creditsListStr string) ([]*ecocredit.MsgCancelReques
 
 	cancelCreditsList := make([]*ecocredit.MsgCancelRequest_CancelCredits, len(creditsList))
 	for i, credits := range creditsList {
-		cancelCreditsList[i] = &ecocredit.MsgCancelRequest_CancelCredits {
+		cancelCreditsList[i] = &ecocredit.MsgCancelRequest_CancelCredits{
 			BatchDenom: credits.batchDenom,
 			Amount:     credits.amount,
 		}
@@ -84,7 +84,7 @@ func parseCredits(creditsStr string) (credits, error) {
 		return credits{}, fmt.Errorf("invalid credit expression: %s", creditsStr)
 	}
 
-	return credits {
+	return credits{
 		batchDenom: matches[2],
 		amount:     matches[1],
 	}, nil
