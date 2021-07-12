@@ -1,9 +1,9 @@
-all: simd-env
+all: regen-env
 
-simd-env:
-	docker build --build-arg UID=$(shell id -u) --build-arg GID=$(shell id -g) --tag cosmossdk/simd-env simd-env
+clean:
+	docker rmi -f regenledger/regen-env
 
-rbuilder:
-	docker build --tag cosmossdk/rbuilder rbuilder
+regen-env:
+	docker build --build-arg UID=$(shell id -u) --build-arg GID=$(shell id -g) --tag regenledger/regen-env regen-env
 
-.PHONY: all simd-env rbuilder
+.PHONY: all regen-env

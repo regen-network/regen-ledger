@@ -1,4 +1,5 @@
 version: '3'
+
 services:
   postgres:
     image: mdillon/postgis:11
@@ -8,3 +9,27 @@ services:
       - "5433:5432"
     volumes:
       - ./.postgres:/var/lib/postgresql/data
+
+  regennode0:
+    container_name: regennode0
+    image: "regenledger/regen-env"
+    ports:
+      - "26696-26697:26656-26657"
+      - "1321:1317"
+      - "9095:9090"
+    environment:
+      - ID=0
+      - LOG=${LOG:-regen.log}
+    volumes:
+      - ./build:/regen:Z
+    networks:
+      localnet:
+        ipv4_address: 192.168.11.2
+
+networks:
+  localnet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.11.0/25
