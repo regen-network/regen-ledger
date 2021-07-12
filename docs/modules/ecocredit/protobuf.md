@@ -161,6 +161,8 @@ BatchInfo represents the high-level on-chain information for a credit batch.
 | issuer | [string](#string) |  | issuer is the issuer of the credit batch. |
 | total_units | [string](#string) |  | total_units is the total number of units in the credit batch and is immutable. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit batch. |
+| start_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | start_date is the beginning of the period during which this credit batch was quantified and verified. |
+| end_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | end_date is the end of the period during which this credit batch was quantified and verified. |
 
 
 
@@ -427,6 +429,8 @@ MsgCreateBatchRequest is the Msg/CreateBatch request type.
 | class_id | [string](#string) |  | class_id is the unique ID of the class. |
 | issuance | [MsgCreateBatchRequest.BatchIssuance](#regen.ecocredit.v1alpha1.MsgCreateBatchRequest.BatchIssuance) | repeated | issuance are the credits issued in the batch. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit batch. |
+| start_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | start_date is the beginning of the period during which this credit batch was quantified and verified. |
+| end_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | end_date is the end of the period during which this credit batch was quantified and verified. |
 
 
 

@@ -2,6 +2,7 @@ package testsuite
 
 import (
 	"context"
+	"time"
 
 	"github.com/regen-network/regen-ledger/types/testutil"
 
@@ -29,8 +30,8 @@ type IntegrationTestSuite struct {
 	paramsQueryClient params.QueryClient
 	signers           []sdk.AccAddress
 
-	paramSpace  paramstypes.Subspace
-	bankKeeper  bankkeeper.Keeper
+	paramSpace paramstypes.Subspace
+	bankKeeper bankkeeper.Keeper
 }
 
 func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper) *IntegrationTestSuite {
@@ -103,12 +104,29 @@ func (s *IntegrationTestSuite) TestScenario() {
 	// create batch
 	t0, t1, t2 := "10.37", "1007.3869", "0"
 	tSupply0 := "1017.7569"
-	r0, r1, r2:= "4.286", "10000.4589902", "0"
+	r0, r1, r2 := "4.286", "10000.4589902", "0"
 	rSupply0 := "10004.7449902"
 
+	time1 := time.Now()
+	time2 := time.Now()
+
+	// Batch creation should fail if the EndDate is before the StartDate
 	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatchRequest{
-		Issuer:  issuer1,
-		ClassId: clsID,
+		Issuer:    issuer1,
+		ClassId:   clsID,
+		Issuance:  []*ecocredit.MsgCreateBatchRequest_BatchIssuance{},
+		StartDate: &time2,
+		EndDate:   &time1,
+	})
+	s.Require().Error(err)
+	s.Require().Nil(createBatchRes)
+
+	// Batch creation should succeed with StartDate before EndDate, and valid data
+	createBatchRes, err = s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatchRequest{
+		Issuer:    issuer1,
+		ClassId:   clsID,
+		StartDate: &time1,
+		EndDate:   &time2,
 		Issuance: []*ecocredit.MsgCreateBatchRequest_BatchIssuance{
 			{
 				Recipient:          addr1,
@@ -262,8 +280,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 				Holder: addr1,
 				Credits: []*ecocredit.MsgRetireRequest_RetireUnits{
 					{
-						BatchDenom:         batchDenom,
-						Units:              tc.toRetire,
+						BatchDenom: batchDenom,
+						Units:      tc.toRetire,
 					},
 				},
 				Location: tc.retirementLocation,
@@ -397,9 +415,9 @@ func (s *IntegrationTestSuite) TestScenario() {
 				Recipient: addr3,
 				Credits: []*ecocredit.MsgSendRequest_SendUnits{
 					{
-						BatchDenom:    batchDenom,
-						TradableUnits: tc.sendTradeable,
-						RetiredUnits:  tc.sendRetired,
+						BatchDenom:         batchDenom,
+						TradableUnits:      tc.sendTradeable,
+						RetiredUnits:       tc.sendRetired,
 						RetirementLocation: tc.retirementLocation,
 					},
 				},
