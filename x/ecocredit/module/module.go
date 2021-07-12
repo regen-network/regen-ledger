@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"encoding/json"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
@@ -10,6 +11,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	"github.com/spf13/cobra"
 
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
@@ -37,6 +39,7 @@ func NewModule(paramSpace paramtypes.Subspace, bankKeeper ecocredit.BankKeeper) 
 
 var _ module.AppModuleBasic = Module{}
 var _ servermodule.Module = Module{}
+var _ restmodule.Module = Module{}
 var _ climodule.Module = Module{}
 
 func (a Module) Name() string {
@@ -49,6 +52,11 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 
 func (a Module) RegisterServices(configurator servermodule.Configurator) {
 	server.RegisterServices(configurator, a.paramSpace, a.bankKeeper)
+}
+
+//nolint:errcheck
+func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
+	ecocredit.RegisterQueryHandlerClient(context.Background(), mux, ecocredit.NewQueryClient(clientCtx))
 }
 
 func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
@@ -66,8 +74,6 @@ func (a Module) GetQueryCmd() *cobra.Command {
 func (a Module) GetTxCmd() *cobra.Command {
 	return client.TxCmd(a.Name())
 }
-
-func (a Module) RegisterGRPCGatewayRoutes(sdkclient.Context, *runtime.ServeMux) {}
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (Module) ConsensusVersion() uint64 { return 1 }

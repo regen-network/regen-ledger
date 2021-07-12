@@ -1,15 +1,15 @@
 package server
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
 var _ data.QueryServer = serverImpl{}
 
-func (s serverImpl) ByHash(ctx types.Context, request *data.QueryByHashRequest) (*data.QueryByHashResponse, error) {
+func (s serverImpl) ByHash(goCtx context.Context, request *data.QueryByHashRequest) (*data.QueryByHashResponse, error) {
 	return nil, fmt.Errorf("not implemented")
 	//cid := request.Cid
 	//
@@ -44,7 +44,7 @@ func (s serverImpl) ByHash(ctx types.Context, request *data.QueryByHashRequest) 
 	//}, err
 }
 
-func (s serverImpl) BySigner(ctx types.Context, request *data.QueryBySignerRequest) (*data.QueryBySignerResponse, error) {
+func (s serverImpl) BySigner(goCtx context.Context, request *data.QueryBySignerRequest) (*data.QueryBySignerResponse, error) {
 	return nil, fmt.Errorf("not implemented")
 	//store := prefix.NewStore(ctx.KVStore(s.storeKey), SignerCIDIndexPrefix(request.Signer))
 	//

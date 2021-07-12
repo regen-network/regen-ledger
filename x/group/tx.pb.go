@@ -4,11 +4,16 @@
 package group
 
 import (
+	context "context"
 	fmt "fmt"
 	types "github.com/cosmos/cosmos-sdk/codec/types"
 	_ "github.com/gogo/protobuf/gogoproto"
+	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	_ "github.com/regen-network/cosmos-proto"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -1253,6 +1258,468 @@ var fileDescriptor_b4673626e7797578 = []byte{
 	0x68, 0xcf, 0xe4, 0x54, 0x9b, 0x3e, 0x89, 0x8e, 0x68, 0xf8, 0x99, 0xb4, 0xba, 0xc4, 0xf5, 0x48,
 	0x68, 0x1e, 0x8b, 0xff, 0xf2, 0x0e, 0x66, 0xf9, 0x4e, 0xde, 0xfe, 0x3b, 0x00, 0x00, 0xff, 0xff,
 	0x03, 0x76, 0x35, 0x0c, 0x7c, 0x0e, 0x00, 0x00,
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion4
+
+// MsgClient is the client API for Msg service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type MsgClient interface {
+	// CreateGroup creates a new group with an admin account address, a list of members and some optional metadata.
+	CreateGroup(ctx context.Context, in *MsgCreateGroupRequest, opts ...grpc.CallOption) (*MsgCreateGroupResponse, error)
+	// UpdateGroupMembers updates the group members with given group id and admin address.
+	UpdateGroupMembers(ctx context.Context, in *MsgUpdateGroupMembersRequest, opts ...grpc.CallOption) (*MsgUpdateGroupMembersResponse, error)
+	// UpdateGroupAdmin updates the group admin with given group id and previous admin address.
+	UpdateGroupAdmin(ctx context.Context, in *MsgUpdateGroupAdminRequest, opts ...grpc.CallOption) (*MsgUpdateGroupAdminResponse, error)
+	// UpdateGroupMetadata updates the group metadata with given group id and admin address.
+	UpdateGroupMetadata(ctx context.Context, in *MsgUpdateGroupMetadataRequest, opts ...grpc.CallOption) (*MsgUpdateGroupMetadataResponse, error)
+	// CreateGroupAccount creates a new group account using given DecisionPolicy.
+	CreateGroupAccount(ctx context.Context, in *MsgCreateGroupAccountRequest, opts ...grpc.CallOption) (*MsgCreateGroupAccountResponse, error)
+	// UpdateGroupAccountAdmin updates a group account admin.
+	UpdateGroupAccountAdmin(ctx context.Context, in *MsgUpdateGroupAccountAdminRequest, opts ...grpc.CallOption) (*MsgUpdateGroupAccountAdminResponse, error)
+	// UpdateGroupAccountDecisionPolicy allows a group account decision policy to be updated.
+	UpdateGroupAccountDecisionPolicy(ctx context.Context, in *MsgUpdateGroupAccountDecisionPolicyRequest, opts ...grpc.CallOption) (*MsgUpdateGroupAccountDecisionPolicyResponse, error)
+	// UpdateGroupAccountMetadata updates a group account metadata.
+	UpdateGroupAccountMetadata(ctx context.Context, in *MsgUpdateGroupAccountMetadataRequest, opts ...grpc.CallOption) (*MsgUpdateGroupAccountMetadataResponse, error)
+	// CreateProposal submits a new proposal.
+	CreateProposal(ctx context.Context, in *MsgCreateProposalRequest, opts ...grpc.CallOption) (*MsgCreateProposalResponse, error)
+	// Vote allows a voter to vote on a proposal.
+	Vote(ctx context.Context, in *MsgVoteRequest, opts ...grpc.CallOption) (*MsgVoteResponse, error)
+	// Exec executes a proposal.
+	Exec(ctx context.Context, in *MsgExecRequest, opts ...grpc.CallOption) (*MsgExecResponse, error)
+}
+
+type msgClient struct {
+	cc grpc1.ClientConn
+}
+
+func NewMsgClient(cc grpc1.ClientConn) MsgClient {
+	return &msgClient{cc}
+}
+
+func (c *msgClient) CreateGroup(ctx context.Context, in *MsgCreateGroupRequest, opts ...grpc.CallOption) (*MsgCreateGroupResponse, error) {
+	out := new(MsgCreateGroupResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/CreateGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateGroupMembers(ctx context.Context, in *MsgUpdateGroupMembersRequest, opts ...grpc.CallOption) (*MsgUpdateGroupMembersResponse, error) {
+	out := new(MsgUpdateGroupMembersResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/UpdateGroupMembers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateGroupAdmin(ctx context.Context, in *MsgUpdateGroupAdminRequest, opts ...grpc.CallOption) (*MsgUpdateGroupAdminResponse, error) {
+	out := new(MsgUpdateGroupAdminResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/UpdateGroupAdmin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateGroupMetadata(ctx context.Context, in *MsgUpdateGroupMetadataRequest, opts ...grpc.CallOption) (*MsgUpdateGroupMetadataResponse, error) {
+	out := new(MsgUpdateGroupMetadataResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/UpdateGroupMetadata", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) CreateGroupAccount(ctx context.Context, in *MsgCreateGroupAccountRequest, opts ...grpc.CallOption) (*MsgCreateGroupAccountResponse, error) {
+	out := new(MsgCreateGroupAccountResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/CreateGroupAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateGroupAccountAdmin(ctx context.Context, in *MsgUpdateGroupAccountAdminRequest, opts ...grpc.CallOption) (*MsgUpdateGroupAccountAdminResponse, error) {
+	out := new(MsgUpdateGroupAccountAdminResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/UpdateGroupAccountAdmin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateGroupAccountDecisionPolicy(ctx context.Context, in *MsgUpdateGroupAccountDecisionPolicyRequest, opts ...grpc.CallOption) (*MsgUpdateGroupAccountDecisionPolicyResponse, error) {
+	out := new(MsgUpdateGroupAccountDecisionPolicyResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/UpdateGroupAccountDecisionPolicy", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateGroupAccountMetadata(ctx context.Context, in *MsgUpdateGroupAccountMetadataRequest, opts ...grpc.CallOption) (*MsgUpdateGroupAccountMetadataResponse, error) {
+	out := new(MsgUpdateGroupAccountMetadataResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/UpdateGroupAccountMetadata", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) CreateProposal(ctx context.Context, in *MsgCreateProposalRequest, opts ...grpc.CallOption) (*MsgCreateProposalResponse, error) {
+	out := new(MsgCreateProposalResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/CreateProposal", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) Vote(ctx context.Context, in *MsgVoteRequest, opts ...grpc.CallOption) (*MsgVoteResponse, error) {
+	out := new(MsgVoteResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/Vote", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) Exec(ctx context.Context, in *MsgExecRequest, opts ...grpc.CallOption) (*MsgExecResponse, error) {
+	out := new(MsgExecResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/Exec", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// MsgServer is the server API for Msg service.
+type MsgServer interface {
+	// CreateGroup creates a new group with an admin account address, a list of members and some optional metadata.
+	CreateGroup(context.Context, *MsgCreateGroupRequest) (*MsgCreateGroupResponse, error)
+	// UpdateGroupMembers updates the group members with given group id and admin address.
+	UpdateGroupMembers(context.Context, *MsgUpdateGroupMembersRequest) (*MsgUpdateGroupMembersResponse, error)
+	// UpdateGroupAdmin updates the group admin with given group id and previous admin address.
+	UpdateGroupAdmin(context.Context, *MsgUpdateGroupAdminRequest) (*MsgUpdateGroupAdminResponse, error)
+	// UpdateGroupMetadata updates the group metadata with given group id and admin address.
+	UpdateGroupMetadata(context.Context, *MsgUpdateGroupMetadataRequest) (*MsgUpdateGroupMetadataResponse, error)
+	// CreateGroupAccount creates a new group account using given DecisionPolicy.
+	CreateGroupAccount(context.Context, *MsgCreateGroupAccountRequest) (*MsgCreateGroupAccountResponse, error)
+	// UpdateGroupAccountAdmin updates a group account admin.
+	UpdateGroupAccountAdmin(context.Context, *MsgUpdateGroupAccountAdminRequest) (*MsgUpdateGroupAccountAdminResponse, error)
+	// UpdateGroupAccountDecisionPolicy allows a group account decision policy to be updated.
+	UpdateGroupAccountDecisionPolicy(context.Context, *MsgUpdateGroupAccountDecisionPolicyRequest) (*MsgUpdateGroupAccountDecisionPolicyResponse, error)
+	// UpdateGroupAccountMetadata updates a group account metadata.
+	UpdateGroupAccountMetadata(context.Context, *MsgUpdateGroupAccountMetadataRequest) (*MsgUpdateGroupAccountMetadataResponse, error)
+	// CreateProposal submits a new proposal.
+	CreateProposal(context.Context, *MsgCreateProposalRequest) (*MsgCreateProposalResponse, error)
+	// Vote allows a voter to vote on a proposal.
+	Vote(context.Context, *MsgVoteRequest) (*MsgVoteResponse, error)
+	// Exec executes a proposal.
+	Exec(context.Context, *MsgExecRequest) (*MsgExecResponse, error)
+}
+
+// UnimplementedMsgServer can be embedded to have forward compatible implementations.
+type UnimplementedMsgServer struct {
+}
+
+func (*UnimplementedMsgServer) CreateGroup(ctx context.Context, req *MsgCreateGroupRequest) (*MsgCreateGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGroup not implemented")
+}
+func (*UnimplementedMsgServer) UpdateGroupMembers(ctx context.Context, req *MsgUpdateGroupMembersRequest) (*MsgUpdateGroupMembersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupMembers not implemented")
+}
+func (*UnimplementedMsgServer) UpdateGroupAdmin(ctx context.Context, req *MsgUpdateGroupAdminRequest) (*MsgUpdateGroupAdminResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupAdmin not implemented")
+}
+func (*UnimplementedMsgServer) UpdateGroupMetadata(ctx context.Context, req *MsgUpdateGroupMetadataRequest) (*MsgUpdateGroupMetadataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupMetadata not implemented")
+}
+func (*UnimplementedMsgServer) CreateGroupAccount(ctx context.Context, req *MsgCreateGroupAccountRequest) (*MsgCreateGroupAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGroupAccount not implemented")
+}
+func (*UnimplementedMsgServer) UpdateGroupAccountAdmin(ctx context.Context, req *MsgUpdateGroupAccountAdminRequest) (*MsgUpdateGroupAccountAdminResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupAccountAdmin not implemented")
+}
+func (*UnimplementedMsgServer) UpdateGroupAccountDecisionPolicy(ctx context.Context, req *MsgUpdateGroupAccountDecisionPolicyRequest) (*MsgUpdateGroupAccountDecisionPolicyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupAccountDecisionPolicy not implemented")
+}
+func (*UnimplementedMsgServer) UpdateGroupAccountMetadata(ctx context.Context, req *MsgUpdateGroupAccountMetadataRequest) (*MsgUpdateGroupAccountMetadataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupAccountMetadata not implemented")
+}
+func (*UnimplementedMsgServer) CreateProposal(ctx context.Context, req *MsgCreateProposalRequest) (*MsgCreateProposalResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateProposal not implemented")
+}
+func (*UnimplementedMsgServer) Vote(ctx context.Context, req *MsgVoteRequest) (*MsgVoteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Vote not implemented")
+}
+func (*UnimplementedMsgServer) Exec(ctx context.Context, req *MsgExecRequest) (*MsgExecResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Exec not implemented")
+}
+
+func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
+	s.RegisterService(&_Msg_serviceDesc, srv)
+}
+
+func _Msg_CreateGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).CreateGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/CreateGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).CreateGroup(ctx, req.(*MsgCreateGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateGroupMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateGroupMembersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateGroupMembers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/UpdateGroupMembers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateGroupMembers(ctx, req.(*MsgUpdateGroupMembersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateGroupAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateGroupAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateGroupAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/UpdateGroupAdmin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateGroupAdmin(ctx, req.(*MsgUpdateGroupAdminRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateGroupMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateGroupMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateGroupMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/UpdateGroupMetadata",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateGroupMetadata(ctx, req.(*MsgUpdateGroupMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_CreateGroupAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateGroupAccountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).CreateGroupAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/CreateGroupAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).CreateGroupAccount(ctx, req.(*MsgCreateGroupAccountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateGroupAccountAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateGroupAccountAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateGroupAccountAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/UpdateGroupAccountAdmin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateGroupAccountAdmin(ctx, req.(*MsgUpdateGroupAccountAdminRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateGroupAccountDecisionPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateGroupAccountDecisionPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateGroupAccountDecisionPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/UpdateGroupAccountDecisionPolicy",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateGroupAccountDecisionPolicy(ctx, req.(*MsgUpdateGroupAccountDecisionPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateGroupAccountMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateGroupAccountMetadataRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateGroupAccountMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/UpdateGroupAccountMetadata",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateGroupAccountMetadata(ctx, req.(*MsgUpdateGroupAccountMetadataRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_CreateProposal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateProposalRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).CreateProposal(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/CreateProposal",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).CreateProposal(ctx, req.(*MsgCreateProposalRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_Vote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgVoteRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).Vote(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/Vote",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).Vote(ctx, req.(*MsgVoteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_Exec_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgExecRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).Exec(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/Exec",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).Exec(ctx, req.(*MsgExecRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _Msg_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "regen.group.v1alpha1.Msg",
+	HandlerType: (*MsgServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateGroup",
+			Handler:    _Msg_CreateGroup_Handler,
+		},
+		{
+			MethodName: "UpdateGroupMembers",
+			Handler:    _Msg_UpdateGroupMembers_Handler,
+		},
+		{
+			MethodName: "UpdateGroupAdmin",
+			Handler:    _Msg_UpdateGroupAdmin_Handler,
+		},
+		{
+			MethodName: "UpdateGroupMetadata",
+			Handler:    _Msg_UpdateGroupMetadata_Handler,
+		},
+		{
+			MethodName: "CreateGroupAccount",
+			Handler:    _Msg_CreateGroupAccount_Handler,
+		},
+		{
+			MethodName: "UpdateGroupAccountAdmin",
+			Handler:    _Msg_UpdateGroupAccountAdmin_Handler,
+		},
+		{
+			MethodName: "UpdateGroupAccountDecisionPolicy",
+			Handler:    _Msg_UpdateGroupAccountDecisionPolicy_Handler,
+		},
+		{
+			MethodName: "UpdateGroupAccountMetadata",
+			Handler:    _Msg_UpdateGroupAccountMetadata_Handler,
+		},
+		{
+			MethodName: "CreateProposal",
+			Handler:    _Msg_CreateProposal_Handler,
+		},
+		{
+			MethodName: "Vote",
+			Handler:    _Msg_Vote_Handler,
+		},
+		{
+			MethodName: "Exec",
+			Handler:    _Msg_Exec_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "regen/group/v1alpha1/tx.proto",
 }
 
 func (m *MsgCreateGroupRequest) Marshal() (dAtA []byte, err error) {

@@ -6,5 +6,5 @@ import (
 )
 
 func RegisterTypes(registry codectypes.InterfaceRegistry) {
-	msgservice.RegisterMsgServiceDesc(registry, &Msg_ServiceDesc)
+	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }

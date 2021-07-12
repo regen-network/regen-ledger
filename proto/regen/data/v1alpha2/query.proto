@@ -2,19 +2,24 @@ syntax = "proto3";
 
 package regen.data.v1alpha2;
 
+import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "regen/data/v1alpha2/types.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/data";
 
-// Query is the regen.data.v1alpha1 Query service
+// Query is the regen.data.v1alpha2 Query service
 service Query {
   // ByHash queries data based on its ContentHash.
-  rpc ByHash (QueryByHashRequest) returns (QueryByHashResponse);
+  rpc ByHash (QueryByHashRequest) returns (QueryByHashResponse) {
+    option (google.api.http).get = "/regen/data/v1alpha2/by_hash";
+  }
 
   // BySigner queries data based on signers.
-  rpc BySigner (QueryBySignerRequest) returns (QueryBySignerResponse);
+  rpc BySigner (QueryBySignerRequest) returns (QueryBySignerResponse) {
+    option (google.api.http).get = "/regen/data/v1alpha2/signers/{signer}";
+  }
 }
 
 // QueryByContentHashRequest is the Query/ByContentHash request type.

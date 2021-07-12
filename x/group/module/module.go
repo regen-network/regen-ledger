@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"math/rand"
@@ -16,6 +17,7 @@ import (
 	"github.com/spf13/cobra"
 
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
+	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/group"
 	"github.com/regen-network/regen-ledger/x/group/client"
@@ -33,6 +35,7 @@ type Module struct {
 var _ module.AppModuleBasic = Module{}
 var _ module.AppModuleSimulation = Module{}
 var _ servermodule.Module = Module{}
+var _ restmodule.Module = Module{}
 var _ climodule.Module = Module{}
 var _ servermodule.LegacyRouteModule = Module{}
 
@@ -61,7 +64,9 @@ func (a Module) ValidateGenesis(cdc codec.JSONCodec, config sdkclient.TxEncoding
 	return data.Validate()
 }
 
-func (a Module) RegisterGRPCGatewayRoutes(sdkclient.Context, *runtime.ServeMux) {}
+func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
+	group.RegisterQueryHandlerClient(context.Background(), mux, group.NewQueryClient(clientCtx))
+}
 
 func (a Module) GetTxCmd() *cobra.Command {
 	return client.TxCmd(a.Name())

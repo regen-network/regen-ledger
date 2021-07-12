@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.group.v1alpha1;
 
 import "regen/group/v1alpha1/types.proto";
+import "google/api/annotations.proto";
 import "gogoproto/gogo.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
@@ -12,37 +13,58 @@ option go_package = "github.com/regen-network/regen-ledger/x/group";
 service Query {
 
   // GroupInfo queries group info based on group id.
-  rpc GroupInfo(QueryGroupInfoRequest) returns (QueryGroupInfoResponse);
+  rpc GroupInfo(QueryGroupInfoRequest) returns (QueryGroupInfoResponse) {
+    option (google.api.http).get = "/regen/group/v1alpha1/groups/{group_id}/info";
+  }
 
   // GroupAccountInfo queries group account info based on group account address.
-  rpc GroupAccountInfo(QueryGroupAccountInfoRequest) returns (QueryGroupAccountInfoResponse);
-  
+  rpc GroupAccountInfo(QueryGroupAccountInfoRequest) returns (QueryGroupAccountInfoResponse) {
+    option (google.api.http).get = "/regen/group/v1alpha1/groups/accounts/{address}";
+  }
   // GroupMembers queries members of a group
-  rpc GroupMembers(QueryGroupMembersRequest) returns (QueryGroupMembersResponse);
+  rpc GroupMembers(QueryGroupMembersRequest) returns (QueryGroupMembersResponse) {
+    option (google.api.http).get = "/regen/group/v1alpha1/groups/{group_id}/members";
+  }
 
   // GroupsByAdmin queries groups by admin address.
-  rpc GroupsByAdmin(QueryGroupsByAdminRequest) returns (QueryGroupsByAdminResponse);
+  rpc GroupsByAdmin(QueryGroupsByAdminRequest) returns (QueryGroupsByAdminResponse) {
+    option (google.api.http).get = "/regen/group/v1alpha1/groups/admins/{admin}";
+  }
 
   // GroupAccountsByGroup queries group accounts by group id.
-  rpc GroupAccountsByGroup(QueryGroupAccountsByGroupRequest) returns (QueryGroupAccountsByGroupResponse);
+  rpc GroupAccountsByGroup(QueryGroupAccountsByGroupRequest) returns (QueryGroupAccountsByGroupResponse) {
+    option (google.api.http).get = "/regen/group/v1alpha1/groups/{group_id}/accounts";
+  }
   
   // GroupsByAdmin queries group accounts by admin address.
-  rpc GroupAccountsByAdmin(QueryGroupAccountsByAdminRequest) returns (QueryGroupAccountsByAdminResponse);
+  rpc GroupAccountsByAdmin(QueryGroupAccountsByAdminRequest) returns (QueryGroupAccountsByAdminResponse) {
+    option (google.api.http).get = "/regen/group/v1alpha1/admins/{admin}/accounts";
+  }
   
   // Proposal queries a proposal based on proposal id.
-  rpc Proposal(QueryProposalRequest) returns (QueryProposalResponse);
+  rpc Proposal(QueryProposalRequest) returns (QueryProposalResponse) {
+    option (google.api.http).get = "/regen/group/v1alpha1/proposals/{proposal_id}";
+  }
 
   // ProposalsByGroupAccount queries proposals based on group account address.
-  rpc ProposalsByGroupAccount(QueryProposalsByGroupAccountRequest) returns (QueryProposalsByGroupAccountResponse);
+  rpc ProposalsByGroupAccount(QueryProposalsByGroupAccountRequest) returns (QueryProposalsByGroupAccountResponse) {
+    option (google.api.http).get = "/regen/group/v1alpha1/group-accounts/{address}/proposals";
+  }
   
   // VoteByProposalVoter queries a vote by proposal id and voter.
-  rpc VoteByProposalVoter(QueryVoteByProposalVoterRequest) returns (QueryVoteByProposalVoterResponse);
+  rpc VoteByProposalVoter(QueryVoteByProposalVoterRequest) returns (QueryVoteByProposalVoterResponse) {
+    option (google.api.http).get = "/regen/group/v1alpha1/proposals/{proposal_id}/votes/{voter}";
+  }
 
   // VotesByProposal queries a vote by proposal.
-  rpc VotesByProposal(QueryVotesByProposalRequest) returns (QueryVotesByProposalResponse);
+  rpc VotesByProposal(QueryVotesByProposalRequest) returns (QueryVotesByProposalResponse) {
+    option (google.api.http).get = "/regen/group/v1alpha1/proposals/{proposal_id}/votes";
+  }
 
   // VotesByVoter queries a vote by voter.
-  rpc VotesByVoter(QueryVotesByVoterRequest) returns (QueryVotesByVoterResponse);
+  rpc VotesByVoter(QueryVotesByVoterRequest) returns (QueryVotesByVoterResponse) {
+    option (google.api.http).get = "/regen/group/v1alpha1/voters/{voter}";
+  }
 }
 
 // QueryGroupInfoRequest is the Query/GroupInfo request type.

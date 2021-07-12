@@ -417,7 +417,7 @@ QueryBySignerResponse is the Query/BySigner response type.
 <a name="regen.data.v1alpha2.Query"></a>
 
 ### Query
-Query is the regen.data.v1alpha1 Query service
+Query is the regen.data.v1alpha2 Query service
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
