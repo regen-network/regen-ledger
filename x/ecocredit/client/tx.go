@@ -222,7 +222,7 @@ Parameters:
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			decimals, err := strconv.ParseUint(args[1], 10, 32)
-			if err == nil {
+			if err != nil {
 				return err
 			}
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
