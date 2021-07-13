@@ -4,23 +4,13 @@ This document provides instructions for running a full node for a live network.
 
 ## Prerequisites
 
-In order to install the `cosmovisor` and `regen` binaries, you'll need the following: 
+In order to install the `regen` binary, you'll need the following: 
 
 - Git `>=2`
 - Make `>=4`
 - Go `>=1.15`
 
-In order to run a full node for a live network, we recommend the following:
-
-- 8GB RAM
-- 4vCPUs
-- 200GB Disk space
-
-For more information on hardware requirements, see [Prerequisites](./prerequisites). 
-
-## Install Cosmovisor
-
-...
+For more information (including hardware recommendations), see [Prerequisites](./prerequisites). 
 
 ## Install Regen
 
@@ -51,34 +41,29 @@ regen init node
 
 ## Update Genesis
 
-Download the genesis file for either `regen-1` or `regen-devnet-5`.
+Update the genesis file for either Regen Mainnet or Regen Devnet.
 
-For `regen-1`:
+For Regen Mainnet (`regen-1`):
 ```
-wget https://raw.githubusercontent.com/regen-network/mainnet/main/regen-1/genesis.json
-```
-
-For `regen-devnet-5`:
-```
-...
+curl http://104.131.169.70:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
 
-Move `genesis.json` to node config:
+For Regen Devnet (`regen-devnet-5`):
 ```
-mv genesis.json ~/.regen/config/genesis.json
-```
-
-## Update Genesis
-
-```sh
 curl http://18.220.101.192:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
 
 ## Update Peers
 
-Update `~/.regen/config/config.toml`:
+Update `~/.regen/config/config.toml` to include persistent peers.
+
+For Regen Mainnet (`regen-1`):
 ```
 persistent_peers = "69975e7afdf731a165e40449fcffc75167a084fc@104.131.169.70:26656,d35d652b6cb3bf7d6cb8d4bd7c036ea03e7be2ab@116.203.182.185:26656,ffacd3202ded6945fed12fa4fd715b1874985b8c@3.98.38.91:26656"
+```
+
+For Regen Devnet (`regen-devnet-5`):
+```
 ```
 
 ## Start Node

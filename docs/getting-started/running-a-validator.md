@@ -1,6 +1,6 @@
 # Running a Validator
 
-This document provides instructions for running a validator node for a live network.
+This document provides instructions for running a validator node for a live network. With both Regen Mainnet and Regen Devnet already launched and running, this document will focus on how to become a validator post-genesis (after a chain has launched).
 
 ## Prerequisites
 
@@ -10,19 +10,19 @@ In order to install the `cosmovisor` and `regen` binaries, you'll need the follo
 - Make `>=4`
 - Go `>=1.15`
 
-In order to run a validator node for a live network, we recommend the following:
-
-- 8GB RAM
-- 4vCPUs
-- 200GB Disk space
-
-For more information, see [Prerequisites](./prerequisites). 
+For more information (including hardware recommendations), see [Prerequisites](./prerequisites). 
 
 ## Install Cosmovisor
 
-...
+Cosmovisor is a process manager for running application binaries. Using Cosmovisor is not required but recommended for node operators that would like to perform automatic upgrades.
 
-## Build Regen Binary
+To install `cosmovisor`, run the following command:
+
+```
+go get github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
+```
+
+## Install Regen
 
 Clone the `regen-ledger` repository:
 ```
@@ -49,43 +49,54 @@ Check to make sure the install was successful:
 regen version
 ```
 
-## Creating Keys
+## Add Validator Key
 
 As a validator who signs blocks, your node must have a public/private keypair. Regen Ledger keys can be managed with the `regen keys` subcommand. A new key pair can be generated using:
 
-```sh
-KEY_NAME=my_validator # Or choose your own key name.
-regen keys add $KEY_NAME
-
-# We will also save the generated address in a variable for later use.
-MY_VALIDATOR_ADDRESS=$(regen keys show $KEY_NAME -a)
+```
+regen keys add [name]
 ```
 
-If you'd like to use a custom keyring backend, you can find more information on the [Cosmos SDK keyring docs](https://docs.cosmos.network/master/run-node/keyring.html).
+If you create a new key, make sure you store the mnemonic phrase in a safe place.
 
-**Make sure you save the seed mnemonic in a safe place!**
+If you'd like to use an existing key or a custom keyring backend, you can find more information in the Cosmos SDK [Keyring](https://docs.cosmos.network/master/run-node/keyring.html) documentation.
+
+<!-- TODO: buying tokens and sending to validator account -->
 
 ## Update Genesis
 
-```sh
+Update the genesis file for either Regen Mainnet or Regen Devnet.
+
+For Regen Mainnet (`regen-1`):
+```
+curl http://104.131.169.70:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
+```
+
+For Regen Devnet (`regen-devnet-5`):
+```
 curl http://18.220.101.192:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
 
 ## Update Peers
 
-Be sure to also add well-known seed nodes for your local node's initial peer discovery:
+Next, you will need to add seed nodes for initial peer discovery:
 
-```sh
+For Regen Mainnet (`regen-1`):
+```
 PERSISTENT_PEERS="a621e6bf1f5981b3e72e059f86cbfc9dc5577fcb@18.220.101.192:26656"
 sed -i 's#tcp://127.0.0.1:26657#tcp://0.0.0.0:26657#g' ~/.regen/config/config.toml
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
+For Regen Devnet (`regen-devnet-5`):
+```
+```
+
 ## Cosmovisor Service
 
-In the `cosmovisor` directory create the systemd files. Copy the entire code block below and paste in your shell and hit enter
+In the `cosmovisor` directory, create the systemd files.
 
-```sh
+```
 echo "[Unit]
 Description=Cosmovisor daemon
 After=network-online.target
@@ -103,13 +114,27 @@ WantedBy=multi-user.target
 " >cosmovisor.service
 ```
 
-Move the newly create file to the systemd directory reload systemctl and start `cosmovisor`
-```sh
+Move the newly created file to the systemd directory, reload systemctl, and start `cosmovisor`:
+```
 sudo mv cosmovisor.service /lib/systemd/system/cosmovisor.service
-```
-```sh
 sudo -S systemctl daemon-reload
-```
-```sh
 sudo -S systemctl start cosmovisor
+```
+
+## Create Validator
+
+<!-- TODO: buying tokens and sending to validator account -->
+
+```
+regen tx staking create-validator \
+  --amount=9000000uregen \
+  --pubkey=$(regen tendermint show-validator) \
+  --moniker="<your_moniker>" \
+  --chain-id=regen-1 \
+  --commission-rate="0.10" \
+  --commission-max-rate="0.20" \
+  --commission-max-change-rate="0.01" \
+  --min-self-delegation="1" \
+  --gas="auto" \
+  --from=<your_wallet_name>
 ```

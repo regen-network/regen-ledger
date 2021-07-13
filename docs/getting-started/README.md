@@ -2,6 +2,8 @@
 
 This document provides instructions for running a single node network on your local machine and then submitting your first few transactions to that network using the command line. Running a single node network is a great way to get familiar with Regen Ledger and its functionality.
 
+<!-- TODO: update example to use ecocredit module once updated to v1.1 -->
+
 ## Prerequisites
 
 In order to install the `regen` binary, you'll need the following: 
@@ -10,7 +12,7 @@ In order to install the `regen` binary, you'll need the following:
 - Make `>=4`
 - Go `>=1.15`
 
-For more information, see [prerequisites](./prerequisites). 
+For more information, see [Prerequisites](./prerequisites). 
 
 ## Install Regen
 

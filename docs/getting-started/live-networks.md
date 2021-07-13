@@ -2,44 +2,44 @@
 
 This document provides an overview of live networks currently running the `regen-ledger` blockchain application and how to interact with a live network using the `regen` binary.
 
+By default, the `regen` binary will connect to a [local node](#running-a-node). In order to connect to a live network, you'll need to know the address of a public node.
+
 ## Available Networks
 
-### regen-1
+### Regen Mainnet
 
-`regen-1` is the chain ID for the main network.
+`regen-1` is the chain ID for Regen Mainnet.
+
+Regen Mainnet is currently using the `v1.0.0` release tag of `regen-ledger`.
+
+The following URL is the node endpoint for one of our lead validators:
 
 http://104.131.169.70:26657/
 
-http://104.131.169.70:26657/genesis
-
 For more information, see [regen-network/mainnet](https://github.com/regen-network/mainnet).
 
-### regen-devnet-5
+### Regen Devnet
 
-`regen-devnet-5` is the chain ID for the development network.
+`regen-devnet-5` is the chain ID for Regen Devnet.
+
+Regen Devnet is currently using the `v1.0.0` release tag of `regen-ledger`.
+
+The following URL is the node endpoint for one of our lead validators:
 
 http://18.220.101.192:26657/
 
-http://18.220.101.192:26657/genesis
-
 For more information, see [regen-network/testnets](https://github.com/regen-network/testnets).
 
-## Test Commands
+## Interacting With A Node
 
-By default the command line client will connect to a [local node](#running-a-node). To connect to mainnet or a devnet, you must know the network's chain ID and the address of a public node.
+First, you'll need to install the `regen` binary. What version you install depends on what network you intend to interact with. For installation instructions, see [Install Regen](./#install-regen).
 
-...
-
-In order to interact with a node from a live network, you will need to provide a `--node` flag with a valid peer address. See [the API documentation](../api.md) for more information.
-
-...
-
-Regardless of whether you're running a local node, or connecting directly to a live network, you can run `regen status` to verify that the CLI is able to connect to the blockchain node.
-
-...
-
-If connecting to a live network, make sure you provide a `--node` flag with the correct address of a live peer. For example, to check the status of `regen-devnet-5`, run the following command:
+In order to interact with a node from a live network, you'll need to provide a `--node` flag with a valid node address. Before submitting any queries and transactions, you should first check the status of the node. To check the status of the Regen Mainnet node provided above, run the following command:
 
 ```
-regen status --node http://18.220.101.192:26657
+regen status --node http://104.131.169.70:26657
 ```
+
+<!-- TODO: add `regen config node` instructions once updated to v1.1 -->
+
+For more information about what commands are available, see [Command-Line Interface](http://localhost:8080/api.html#command-line-interface).
