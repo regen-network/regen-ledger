@@ -37,17 +37,17 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 
 	batchInfo := []*ecocredit.BatchInfo{
 		{
-			ClassId:    "4",
-			BatchDenom: "4/6",
-			Issuer:     issuer1,
-			TotalUnits: "100",
-			Metadata:   []byte("batch metadata"),
+			ClassId:     "4",
+			BatchDenom:  "4/6",
+			Issuer:      issuer1,
+			TotalAmount: "100",
+			Metadata:    []byte("batch metadata"),
 		}, {
-			ClassId:    "5",
-			BatchDenom: "5/7",
-			Issuer:     addr1,
-			TotalUnits: "100",
-			Metadata:   []byte("batch metadata"),
+			ClassId:     "5",
+			BatchDenom:  "5/7",
+			Issuer:      addr1,
+			TotalAmount: "100",
+			Metadata:    []byte("batch metadata"),
 		},
 	}
 
@@ -165,12 +165,12 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 
 func (s *IntegrationTestSuite) assertTradableBalanceEqual(res *ecocredit.QueryBalanceResponse, balance *ecocredit.Balance) {
 	require := s.Require()
-	require.Equal(balance.Balance, res.TradableUnits)
+	require.Equal(balance.Balance, res.TradableAmount)
 }
 
 func (s *IntegrationTestSuite) assertRetiredBalanceEqual(res *ecocredit.QueryBalanceResponse, balance ecocredit.Balance) {
 	require := s.Require()
-	require.Equal(balance.Balance, res.RetiredUnits)
+	require.Equal(balance.Balance, res.RetiredAmount)
 }
 
 func (s *IntegrationTestSuite) exportGenesisState(ctx types.Context) ecocredit.GenesisState {
@@ -211,5 +211,5 @@ func (s *IntegrationTestSuite) assetBatchInfoEqual(q, other *ecocredit.BatchInfo
 	require.Equal(q.BatchDenom, other.BatchDenom)
 	require.Equal(q.Issuer, other.Issuer)
 	require.Equal(q.Metadata, other.Metadata)
-	require.Equal(q.TotalUnits, other.TotalUnits)
+	require.Equal(q.TotalAmount, other.TotalAmount)
 }
