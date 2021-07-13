@@ -7,6 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/pkg/errors"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -39,26 +40,34 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 
 	store := ctx.KVStore(s.storeKey)
 
-	if err := setBalance(store, genesisState.TradableBalances, func(addr sdk.AccAddress, batchDenom batchDenomT) []byte {
-		return TradableBalanceKey(addr, batchDenom)
+	if err := setBalanceAndSupply(store, genesisState.TradableBalances,
+		func(addr sdk.AccAddress, batchDenom batchDenomT) []byte {
+			return TradableBalanceKey(addr, batchDenom)
+		},
+		func(batchDenom batchDenomT) []byte {
+			return TradableSupplyKey(batchDenom)
+		}); err != nil {
+		return nil, err
+	}
+
+	if err := validateSupply(store, genesisState.TradableSupplies, func(denom batchDenomT) []byte {
+		return TradableSupplyKey(denom)
 	}); err != nil {
 		return nil, err
 	}
 
-	if err := setBalance(store, genesisState.RetiredBalances, func(addr sdk.AccAddress, batchDenom batchDenomT) []byte {
-		return RetiredBalanceKey(addr, batchDenom)
-	}); err != nil {
+	if err := setBalanceAndSupply(store, genesisState.RetiredBalances,
+		func(addr sdk.AccAddress, batchDenom batchDenomT) []byte {
+			return RetiredBalanceKey(addr, batchDenom)
+		},
+		func(batchDenom batchDenomT) []byte {
+			return RetiredSupplyKey(batchDenom)
+		}); err != nil {
 		return nil, err
 	}
 
-	if err := setSupply(store, genesisState.TradableSupplies, func(bd batchDenomT) []byte {
-		return TradableSupplyKey(bd)
-	}); err != nil {
-		return nil, err
-	}
-
-	if err := setSupply(store, genesisState.RetiredSupplies, func(bd batchDenomT) []byte {
-		return RetiredSupplyKey(bd)
+	if err := validateSupply(store, genesisState.RetiredSupplies, func(denom batchDenomT) []byte {
+		return RetiredSupplyKey(denom)
 	}); err != nil {
 		return nil, err
 	}
@@ -71,19 +80,30 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 	return []abci.ValidatorUpdate{}, nil
 }
 
-func setSupply(store sdk.KVStore, supplies []*ecocredit.Supply, keyFunc supplyKey) error {
+// validateSupply returns an error if credit batch genesis tradable or retired supply does not equals to calculated supply.
+func validateSupply(store sdk.KVStore, supplies []*ecocredit.Supply, keyFunc supplyKey) error {
 	for _, supply := range supplies {
-		d, err := math.ParseNonNegativeDecimal(supply.Supply)
+		parsedSupply, err := math.ParseNonNegativeDecimal(supply.Supply)
 		if err != nil {
 			return err
 		}
-		setDecimal(store, keyFunc(batchDenomT(supply.BatchDenom)), d)
+
+		s, err := getDecimal(store, keyFunc(batchDenomT(supply.BatchDenom)))
+		if err != nil {
+			return err
+		}
+
+		if s.Cmp(parsedSupply) != 0 {
+			return sdkerrors.ErrInvalidCoins.Wrapf("supply is incorrect for %s credit batch, expected %v, got %v", supply.BatchDenom, s, parsedSupply)
+		}
 	}
 
 	return nil
 }
 
-func setBalance(store sdk.KVStore, balances []*ecocredit.Balance, keyFunc balanceKey) error {
+// setBalanceAndSupply sets the tradable or retired balance for an account and update tradable or retired supply for batch denom.
+func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance, balanceKeyFunc balanceKey,
+	supplyKeyFunc supplyKey) error {
 	for _, balance := range balances {
 		addr, err := sdk.AccAddressFromBech32(balance.Address)
 		if err != nil {
@@ -93,7 +113,9 @@ func setBalance(store sdk.KVStore, balances []*ecocredit.Balance, keyFunc balanc
 		if err != nil {
 			return err
 		}
-		setDecimal(store, keyFunc(addr, batchDenomT(balance.BatchDenom)), d)
+		setDecimal(store, balanceKeyFunc(addr, batchDenomT(balance.BatchDenom)), d)
+
+		getAddAndSetDecimal(store, supplyKeyFunc(batchDenomT(balance.BatchDenom)), d)
 	}
 
 	return nil

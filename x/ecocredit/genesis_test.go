@@ -55,11 +55,11 @@ func TestGenesisValidate(t *testing.T) {
 				}
 				genesisState.BatchInfo = []*ecocredit.BatchInfo{
 					{
-						ClassId:    "1",
-						BatchDenom: "1/2",
-						Issuer:     addr1.String(),
-						TotalUnits: "1000",
-						Metadata:   []byte("meta-data"),
+						ClassId:     "1",
+						BatchDenom:  "1/2",
+						Issuer:      addr1.String(),
+						TotalAmount: "1000",
+						Metadata:    []byte("meta-data"),
 					},
 				}
 				genesisState.TradableBalances = []*ecocredit.Balance{
@@ -94,11 +94,11 @@ func TestGenesisValidate(t *testing.T) {
 				}
 				genesisState.BatchInfo = []*ecocredit.BatchInfo{
 					{
-						ClassId:    "1",
-						BatchDenom: "1/2",
-						Issuer:     addr1.String(),
-						TotalUnits: "1000",
-						Metadata:   []byte("meta-data"),
+						ClassId:     "1",
+						BatchDenom:  "1/2",
+						Issuer:      addr1.String(),
+						TotalAmount: "1000",
+						Metadata:    []byte("meta-data"),
 					},
 				}
 				genesisState.TradableBalances = []*ecocredit.Balance{
@@ -145,11 +145,11 @@ func TestGenesisValidate(t *testing.T) {
 				}
 				genesisState.BatchInfo = []*ecocredit.BatchInfo{
 					{
-						ClassId:    "1",
-						BatchDenom: "1/2",
-						Issuer:     addr1.String(),
-						TotalUnits: "1000",
-						Metadata:   []byte("meta-data"),
+						ClassId:     "1",
+						BatchDenom:  "1/2",
+						Issuer:      addr1.String(),
+						TotalAmount: "1000",
+						Metadata:    []byte("meta-data"),
 					},
 				}
 				genesisState.TradableBalances = []*ecocredit.Balance{
@@ -191,11 +191,11 @@ func TestGenesisValidate(t *testing.T) {
 				}
 				genesisState.BatchInfo = []*ecocredit.BatchInfo{
 					{
-						ClassId:    "1",
-						BatchDenom: "1/2",
-						Issuer:     addr1.String(),
-						TotalUnits: "1000",
-						Metadata:   []byte("meta-data"),
+						ClassId:     "1",
+						BatchDenom:  "1/2",
+						Issuer:      addr1.String(),
+						TotalAmount: "1000",
+						Metadata:    []byte("meta-data"),
 					},
 				}
 				genesisState.TradableBalances = []*ecocredit.Balance{
@@ -254,11 +254,11 @@ func TestGenesisValidate(t *testing.T) {
 				}
 				genesisState.BatchInfo = []*ecocredit.BatchInfo{
 					{
-						ClassId:    "1",
-						BatchDenom: "1/2",
-						Issuer:     addr1.String(),
-						TotalUnits: "1000",
-						Metadata:   []byte("meta-data"),
+						ClassId:     "1",
+						BatchDenom:  "1/2",
+						Issuer:      addr1.String(),
+						TotalAmount: "1000",
+						Metadata:    []byte("meta-data"),
 					},
 				}
 				genesisState.TradableBalances = []*ecocredit.Balance{
