@@ -26,7 +26,7 @@ type QueryClient interface {
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(ctx context.Context, in *QuerySupplyRequest, opts ...grpc.CallOption) (*QuerySupplyResponse, error)
 	// Precision queries the number of decimal places that can be used to
-	// represent credit batch units. See Tx/SetPrecision for more details.
+	// represent credits in a batch. See Tx/SetPrecision for more details.
 	Precision(ctx context.Context, in *QueryPrecisionRequest, opts ...grpc.CallOption) (*QueryPrecisionResponse, error)
 }
 
@@ -170,7 +170,7 @@ type QueryServer interface {
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(types.Context, *QuerySupplyRequest) (*QuerySupplyResponse, error)
 	// Precision queries the number of decimal places that can be used to
-	// represent credit batch units. See Tx/SetPrecision for more details.
+	// represent credits in a batch. See Tx/SetPrecision for more details.
 	Precision(types.Context, *QueryPrecisionRequest) (*QueryPrecisionResponse, error)
 }
 
