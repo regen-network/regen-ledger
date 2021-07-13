@@ -13,9 +13,3 @@ func (m *ClassInfo) PrimaryKey() []byte {
 func (m *BatchInfo) PrimaryKey() []byte {
 	return []byte(m.BatchDenom)
 }
-
-func DefaultGenesisState() *GenesisState {
-	return &GenesisState{
-		Params: DefaultParams(),
-	}
-}
