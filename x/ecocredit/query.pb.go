@@ -270,10 +270,10 @@ func (m *QueryBalanceRequest) GetBatchDenom() string {
 
 // QueryBalanceResponse is the Query/Balance response type.
 type QueryBalanceResponse struct {
-	// tradable_units is the decimal number of tradable units.
-	TradableUnits string `protobuf:"bytes,1,opt,name=tradable_units,json=tradableUnits,proto3" json:"tradable_units,omitempty" yaml:"tradable_units"`
-	// retired_units is the decimal number of retired units.
-	RetiredUnits string `protobuf:"bytes,2,opt,name=retired_units,json=retiredUnits,proto3" json:"retired_units,omitempty" yaml:"retired_units"`
+	// tradable_amount is the decimal number of tradable credits.
+	TradableAmount string `protobuf:"bytes,1,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty" yaml:"tradable_amount"`
+	// retired_amount is the decimal number of retired credits.
+	RetiredAmount string `protobuf:"bytes,2,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty" yaml:"retired_amount"`
 }
 
 func (m *QueryBalanceResponse) Reset()         { *m = QueryBalanceResponse{} }
@@ -309,16 +309,16 @@ func (m *QueryBalanceResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryBalanceResponse proto.InternalMessageInfo
 
-func (m *QueryBalanceResponse) GetTradableUnits() string {
+func (m *QueryBalanceResponse) GetTradableAmount() string {
 	if m != nil {
-		return m.TradableUnits
+		return m.TradableAmount
 	}
 	return ""
 }
 
-func (m *QueryBalanceResponse) GetRetiredUnits() string {
+func (m *QueryBalanceResponse) GetRetiredAmount() string {
 	if m != nil {
-		return m.RetiredUnits
+		return m.RetiredAmount
 	}
 	return ""
 }
@@ -371,9 +371,9 @@ func (m *QuerySupplyRequest) GetBatchDenom() string {
 
 // QuerySupplyResponse is the Query/Supply response type.
 type QuerySupplyResponse struct {
-	// tradable_units is the decimal number of tradable units in the batch supply.
+	// tradable_supply is the decimal number of tradable credits in the batch supply.
 	TradableSupply string `protobuf:"bytes,1,opt,name=tradable_supply,json=tradableSupply,proto3" json:"tradable_supply,omitempty" yaml:"tradable_supply"`
-	// retired_supply is the decimal number of retired units in the batch supply.
+	// retired_supply is the decimal number of retired credits in the batch supply.
 	RetiredSupply string `protobuf:"bytes,2,opt,name=retired_supply,json=retiredSupply,proto3" json:"retired_supply,omitempty" yaml:"retired_supply"`
 }
 
@@ -473,7 +473,7 @@ func (m *QueryPrecisionRequest) GetBatchDenom() string {
 // QueryPrecisionResponse is the Query/Precision response type.
 type QueryPrecisionResponse struct {
 	// max_decimal_places is the maximum number of decimal places that can be used
-	// to represent some quantity of credit units. It is an experimental feature
+	// to represent some quantity of credits. It is an experimental feature
 	// to concretely explore an idea proposed in
 	// https://github.com/cosmos/cosmos-sdk/issues/7113.
 	MaxDecimalPlaces uint32 `protobuf:"varint,1,opt,name=max_decimal_places,json=maxDecimalPlaces,proto3" json:"max_decimal_places,omitempty" yaml:"max_decimal_places"`
@@ -1010,17 +1010,17 @@ func (m *QueryBalanceResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if len(m.RetiredUnits) > 0 {
-		i -= len(m.RetiredUnits)
-		copy(dAtA[i:], m.RetiredUnits)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.RetiredUnits)))
+	if len(m.RetiredAmount) > 0 {
+		i -= len(m.RetiredAmount)
+		copy(dAtA[i:], m.RetiredAmount)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.RetiredAmount)))
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.TradableUnits) > 0 {
-		i -= len(m.TradableUnits)
-		copy(dAtA[i:], m.TradableUnits)
-		i = encodeVarintQuery(dAtA, i, uint64(len(m.TradableUnits)))
+	if len(m.TradableAmount) > 0 {
+		i -= len(m.TradableAmount)
+		copy(dAtA[i:], m.TradableAmount)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.TradableAmount)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -1238,11 +1238,11 @@ func (m *QueryBalanceResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.TradableUnits)
+	l = len(m.TradableAmount)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
-	l = len(m.RetiredUnits)
+	l = len(m.RetiredAmount)
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
@@ -1806,7 +1806,7 @@ func (m *QueryBalanceResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TradableUnits", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field TradableAmount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1834,11 +1834,11 @@ func (m *QueryBalanceResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.TradableUnits = string(dAtA[iNdEx:postIndex])
+			m.TradableAmount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RetiredUnits", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field RetiredAmount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -1866,7 +1866,7 @@ func (m *QueryBalanceResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.RetiredUnits = string(dAtA[iNdEx:postIndex])
+			m.RetiredAmount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex

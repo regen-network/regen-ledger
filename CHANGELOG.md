@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+* add support for credit cancelling (#385)
 * record retirement locations of ecocredit (#328)
 
 ## [1.0.0] - 2021-04-13

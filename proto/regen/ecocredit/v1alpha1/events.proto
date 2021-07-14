@@ -28,8 +28,8 @@ message EventCreateBatch {
   // issuer is the account address of the issuer of the credit batch.
   string issuer = 3;
 
-  // total_units is the total number of units in the credit batch.
-  string total_units = 4 [ (gogoproto.moretags) = "yaml:\"total_units\"" ];
+  // total_amount is the total number of credits in the credit batch.
+  string total_amount = 4 [ (gogoproto.moretags) = "yaml:\"total_amount\"" ];
 }
 
 // EventReceive is an event emitted when credits are received either upon
@@ -47,13 +47,13 @@ message EventReceive {
   // batch_denom is the unique ID of credit batch.
   string batch_denom = 3 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
 
-  // units is the decimal number of both tradable and retired credits received.
-  string units = 4;
+  // amount is the decimal number of both tradable and retired credits received.
+  string amount = 4;
 }
 
-// EventRetire is an event emitted when credits are retired. An separate event
-// is emitted for each batch_denom in the case where credits from multiple
-// batches have been retired at once for easy indexing.
+// EventRetire is an event emitted when credits are retired. When credits are
+// retired from multiple batches in the same transaction, a separate event is
+// emitted for each batch_denom. This allows for easier indexing.
 message EventRetire {
 
   // retirer is the account which has done the "retiring". This will be the
@@ -64,8 +64,8 @@ message EventRetire {
   // batch_denom is the unique ID of credit batch.
   string batch_denom = 2 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
 
-  // units is the decimal number of credits that have been retired.
-  string units = 3;
+  // amount is the decimal number of credits that have been retired.
+  string amount = 3;
 
   // location is the location of the beneficiary or buyer of the retired
   // credits. It is a string of the form
@@ -73,4 +73,20 @@ message EventRetire {
   // fields conforming to ISO 3166-2, and postal-code being up to 64
   // alphanumeric characters.
   string location = 4;
+}
+
+// EventCancel is an event emitted when credits are cancelled. When credits are
+// cancelled from multiple batches in the same transaction, a separate event is
+// emitted for each batch_denom. This allows for easier indexing.
+message EventCancel {
+
+  // canceller is the account which has cancelled the credits, which should be
+  // the holder of the credits.
+  string canceller = 1;
+
+  // batch_denom is the unique ID of credit batch.
+  string batch_denom = 2 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+
+  // amount is the decimal number of credits that have been cancelled.
+  string amount = 3;
 }
