@@ -93,6 +93,8 @@ EventCreateBatch is an event emitted when a credit batch is created.
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
 | issuer | [string](#string) |  | issuer is the account address of the issuer of the credit batch. |
 | total_amount | [string](#string) |  | total_amount is the total number of credits in the credit batch. |
+| start_date | [string](#string) |  | start_date is the beginning of the period during which this credit batch was quantified and verified. |
+| end_date | [string](#string) |  | end_date is the end of the period during which this credit batch was quantified and verified. |
 
 
 
