@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/regen-network/regen-ledger/types"
@@ -20,7 +21,8 @@ import (
 // The designer is charged a fee for creating the class. This is controlled by
 // the global parameter CreditClassFee, which can be updated through the
 // governance process.
-func (s serverImpl) CreateClass(ctx types.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error) {
+func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateClassRequest) (*ecocredit.MsgCreateClassResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
 	classID := s.idSeq.NextVal(ctx)
 	classIDStr := util.Uint64ToBase58Check(classID)
 
@@ -56,7 +58,8 @@ func (s serverImpl) CreateClass(ctx types.Context, req *ecocredit.MsgCreateClass
 	return &ecocredit.MsgCreateClassResponse{ClassId: classIDStr}, nil
 }
 
-func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatchRequest) (*ecocredit.MsgCreateBatchResponse, error) {
+func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatchRequest) (*ecocredit.MsgCreateBatchResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
 	classID := req.ClassId
 	if err := s.assertClassIssuer(ctx, classID, req.Issuer); err != nil {
 		return nil, err
@@ -175,7 +178,8 @@ func (s serverImpl) CreateBatch(ctx types.Context, req *ecocredit.MsgCreateBatch
 	return &ecocredit.MsgCreateBatchResponse{BatchDenom: string(batchDenom)}, nil
 }
 
-func (s serverImpl) Send(ctx types.Context, req *ecocredit.MsgSendRequest) (*ecocredit.MsgSendResponse, error) {
+func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSendRequest) (*ecocredit.MsgSendResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
 	sender := req.Sender
 	recipient := req.Recipient
@@ -250,7 +254,8 @@ func (s serverImpl) Send(ctx types.Context, req *ecocredit.MsgSendRequest) (*eco
 	return &ecocredit.MsgSendResponse{}, nil
 }
 
-func (s serverImpl) Retire(ctx types.Context, req *ecocredit.MsgRetireRequest) (*ecocredit.MsgRetireResponse, error) {
+func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetireRequest) (*ecocredit.MsgRetireResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
 	holder := req.Holder
 
@@ -291,7 +296,8 @@ func (s serverImpl) Retire(ctx types.Context, req *ecocredit.MsgRetireRequest) (
 	return &ecocredit.MsgRetireResponse{}, nil
 }
 
-func (s serverImpl) Cancel(ctx types.Context, req *ecocredit.MsgCancelRequest) (*ecocredit.MsgCancelResponse, error) {
+func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancelRequest) (*ecocredit.MsgCancelResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
 	holder := req.Holder
 	for _, credit := range req.Credits {
@@ -361,7 +367,8 @@ func (s serverImpl) Cancel(ctx types.Context, req *ecocredit.MsgCancelRequest) (
 	return &ecocredit.MsgCancelResponse{}, nil
 }
 
-func (s serverImpl) SetPrecision(ctx types.Context, req *ecocredit.MsgSetPrecisionRequest) (*ecocredit.MsgSetPrecisionResponse, error) {
+func (s serverImpl) SetPrecision(goCtx context.Context, req *ecocredit.MsgSetPrecisionRequest) (*ecocredit.MsgSetPrecisionResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
 	var batchInfo ecocredit.BatchInfo
 	err := s.batchInfoTable.GetOne(ctx, orm.RowID(req.BatchDenom), &batchInfo)
 	if err != nil {
@@ -391,7 +398,8 @@ func (s serverImpl) SetPrecision(ctx types.Context, req *ecocredit.MsgSetPrecisi
 
 // assertClassIssuer makes sure that the issuer is part of issuers of given classID.
 // Returns ErrUnauthorized otherwise.
-func (s serverImpl) assertClassIssuer(ctx types.Context, classID, issuer string) error {
+func (s serverImpl) assertClassIssuer(goCtx context.Context, classID, issuer string) error {
+	ctx := types.UnwrapSDKContext(goCtx)
 	classInfo, err := s.getClassInfo(ctx, classID)
 	if err != nil {
 		return err
