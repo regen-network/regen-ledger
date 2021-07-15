@@ -33,6 +33,7 @@ func tradableSupplyInvariant(store types.KVStore) (string, bool) {
 	if err := iterateBalances(store, TradableBalancePrefix, func(denom string, balance *apd.Decimal) bool {
 		if supply, ok := calTradableSupplies[denom]; ok {
 			if err := math.Add(supply, balance, supply); err != nil {
+				broken = true
 				msg += fmt.Sprintf("error adding credit batch tradable supply %v", err)
 			}
 			calTradableSupplies[denom] = supply
@@ -79,6 +80,7 @@ func retiredSupplyInvariant(store types.KVStore) (string, bool) {
 	if err := iterateBalances(store, TradableBalancePrefix, func(denom string, balance *apd.Decimal) bool {
 		if supply, ok := calRetiredSupplies[denom]; ok {
 			if err := math.Add(supply, balance, supply); err != nil {
+				broken = true
 				msg += fmt.Sprintf("error adding credit batch retired supply %v", err)
 			}
 			calRetiredSupplies[denom] = supply
