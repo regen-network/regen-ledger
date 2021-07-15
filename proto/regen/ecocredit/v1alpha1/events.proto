@@ -38,6 +38,13 @@ message EventCreateBatch {
   // end_date is the end of the period during which this credit batch was
   // quantified and verified.
   string end_date = 6 [ (gogoproto.moretags) = "yaml:\"end_date\"" ];
+
+  // project_location is the location of the project backing the credits in this
+  // batch. It is a string of the form
+  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+  // fields conforming to ISO 3166-2, and postal-code being up to 64
+  // alphanumeric characters.
+  string project_location = 7 [(gogoproto.moretags) = "yaml:\"project_location\""];
 }
 
 // EventReceive is an event emitted when credits are received either upon

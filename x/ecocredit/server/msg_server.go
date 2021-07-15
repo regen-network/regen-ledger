@@ -157,6 +157,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		AmountCancelled: amountCancelledStr,
 		StartDate:       req.StartDate,
 		EndDate:         req.EndDate,
+		ProjectLocation: req.ProjectLocation,
 	})
 	if err != nil {
 		return nil, err
@@ -168,12 +169,13 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	}
 
 	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateBatch{
-		ClassId:     classID,
-		BatchDenom:  string(batchDenom),
-		Issuer:      req.Issuer,
-		TotalAmount: totalSupplyStr,
-		StartDate:   req.StartDate.Format("2006-01-02"),
-		EndDate:     req.EndDate.Format("2006-01-02"),
+		ClassId:         classID,
+		BatchDenom:      string(batchDenom),
+		Issuer:          req.Issuer,
+		TotalAmount:     totalSupplyStr,
+		StartDate:       req.StartDate.Format("2006-01-02"),
+		EndDate:         req.EndDate.Format("2006-01-02"),
+		ProjectLocation: req.ProjectLocation,
 	})
 	if err != nil {
 		return nil, err
