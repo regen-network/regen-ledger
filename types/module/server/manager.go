@@ -55,8 +55,9 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 		router: &router{
 			handlers:         map[string]handler{},
 			providedServices: map[reflect.Type]bool{},
-			antiReentryMap:   map[string]bool{},
+			msgServiceRouter: baseApp.MsgServiceRouter(),
 		},
+		requiredServices:           map[reflect.Type]bool{},
 		weightedOperationsHandlers: map[string]WeightedOperationsHandler{},
 	}
 }
@@ -136,7 +137,6 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 			key:              key,
 			cdc:              mm.cdc,
 			requiredServices: map[reflect.Type]bool{},
-			router:           mm.baseApp.Router(), // TODO: remove once #225 addressed
 		}
 
 		serverMod.RegisterServices(cfg)
@@ -276,7 +276,6 @@ type configurator struct {
 	key                       *rootModuleKey
 	cdc                       codec.Codec
 	requiredServices          map[reflect.Type]bool
-	router                    sdk.Router
 	initGenesisHandler        module.InitGenesisHandler
 	exportGenesisHandler      module.ExportGenesisHandler
 	weightedOperationHandler  WeightedOperationsHandler
@@ -312,12 +311,6 @@ func (c *configurator) ModuleKey() RootModuleKey {
 
 func (c *configurator) Marshaler() codec.Codec {
 	return c.cdc
-}
-
-// Router is temporarily added here to use in the group module.
-// TODO: remove once #225 addressed
-func (c *configurator) Router() sdk.Router {
-	return c.router
 }
 
 func (c *configurator) RequireServer(serverInterface interface{}) {

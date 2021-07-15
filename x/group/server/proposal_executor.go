@@ -1,12 +1,31 @@
 package server
 
 import (
+	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 
+	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/group"
 )
+
+func (s serverImpl) execMsgs(ctx context.Context, derivationKey []byte, proposal group.Proposal) error {
+	derivedKey := s.key.Derive(derivationKey)
+	msgs := proposal.GetMsgs()
+
+	for _, msg := range msgs {
+		var reply interface{}
+
+		// Execute the message using the derived key,
+		// this will verify that the message signer is the group account.
+		err := derivedKey.Invoke(ctx, server.TypeURL(msg), msg, reply)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 // ensureMsgAuthZ checks that if a message requires signers that all of them are equal to the given group account.
 func ensureMsgAuthZ(msgs []sdk.Msg, groupAccount sdk.AccAddress) error {
@@ -18,27 +37,4 @@ func ensureMsgAuthZ(msgs []sdk.Msg, groupAccount sdk.AccAddress) error {
 		}
 	}
 	return nil
-}
-
-// DoExecuteMsgs routes the messages to the registered handlers. Messages are limited to those that require no authZ or
-// by the group account only. Otherwise this gives access to other peoples accounts as the sdk ant handler is bypassed
-func DoExecuteMsgs(ctx sdk.Context, router sdk.Router, groupAccount sdk.AccAddress, msgs []sdk.Msg) ([]sdk.Result, error) {
-	results := make([]sdk.Result, len(msgs))
-	if err := ensureMsgAuthZ(msgs, groupAccount); err != nil {
-		return nil, err
-	}
-	for i, msg := range msgs {
-		handler := router.Route(ctx, msg.(legacytx.LegacyMsg).Route())
-		if handler == nil {
-			return nil, errors.Wrapf(group.ErrInvalid, "no message handler found for %q", msg.(legacytx.LegacyMsg).Route())
-		}
-		r, err := handler(ctx, msg)
-		if err != nil {
-			return nil, errors.Wrapf(err, "message %q at position %d", msg.(legacytx.LegacyMsg).Type(), i)
-		}
-		if r != nil {
-			results[i] = *r
-		}
-	}
-	return results, nil
 }

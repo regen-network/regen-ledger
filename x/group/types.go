@@ -162,13 +162,15 @@ func (g GroupAccountInfo) PrimaryKey() []byte {
 var _ orm.Validateable = GroupAccountInfo{}
 
 // NewGroupAccountInfo creates a new GroupAccountInfo instance
-func NewGroupAccountInfo(address sdk.AccAddress, group uint64, admin sdk.AccAddress, metadata []byte, version uint64, decisionPolicy DecisionPolicy) (GroupAccountInfo, error) {
+func NewGroupAccountInfo(address sdk.AccAddress, group uint64, admin sdk.AccAddress, metadata []byte,
+	version uint64, decisionPolicy DecisionPolicy, derivationKey []byte) (GroupAccountInfo, error) {
 	p := GroupAccountInfo{
-		Address:  address.String(),
-		GroupId:  group,
-		Admin:    admin.String(),
-		Metadata: metadata,
-		Version:  version,
+		Address:       address.String(),
+		GroupId:       group,
+		Admin:         admin.String(),
+		Metadata:      metadata,
+		Version:       version,
+		DerivationKey: derivationKey,
 	}
 
 	err := p.SetDecisionPolicy(decisionPolicy)
@@ -224,6 +226,10 @@ func (g GroupAccountInfo) ValidateBasic() error {
 	}
 	if err := policy.ValidateBasic(); err != nil {
 		return sdkerrors.Wrap(err, "policy")
+	}
+
+	if g.DerivationKey == nil {
+		return sdkerrors.Wrap(ErrEmpty, "derivationKey")
 	}
 	return nil
 }
@@ -481,19 +487,16 @@ func (t Tally) ValidateBasic() error {
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (q QueryGroupAccountsByGroupResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
-	for _, g := range q.GroupAccounts {
-		err := g.UnpackInterfaces(unpacker)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return unpackGroupAccounts(unpacker, q.GroupAccounts)
 }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (q QueryGroupAccountsByAdminResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
-	for _, g := range q.GroupAccounts {
+	return unpackGroupAccounts(unpacker, q.GroupAccounts)
+}
+
+func unpackGroupAccounts(unpacker codectypes.AnyUnpacker, accs []*GroupAccountInfo) error {
+	for _, g := range accs {
 		err := g.UnpackInterfaces(unpacker)
 		if err != nil {
 			return err

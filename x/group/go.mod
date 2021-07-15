@@ -12,6 +12,8 @@ require (
 	github.com/regen-network/cosmos-proto v0.3.1
 	github.com/regen-network/regen-ledger/orm v0.0.0-00010101000000-000000000000
 	github.com/regen-network/regen-ledger/types v0.0.0-00010101000000-000000000000
+	github.com/regen-network/regen-ledger/x/data v0.0.0-20210602121340-fa967f821a6e
+	github.com/regen-network/regen-ledger/x/ecocredit v0.0.0-20210602121340-fa967f821a6e
 	github.com/spf13/cobra v1.1.3
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.11
