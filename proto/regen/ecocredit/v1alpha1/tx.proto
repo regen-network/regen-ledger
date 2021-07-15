@@ -105,7 +105,8 @@ message MsgCreateBatchRequest {
   // batch. It is a string of the form
   // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
   // fields conforming to ISO 3166-2, and postal-code being up to 64
-  // alphanumeric characters.
+  // alphanumeric characters. country-code is required, while sub-national-code
+  // and postal-code can be added for increasing precision.
   string project_location = 7 [(gogoproto.moretags) = "yaml:\"project_location\""];
 
   // BatchIssuance represents the issuance of some credits in a batch to a

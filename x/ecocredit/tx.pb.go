@@ -164,7 +164,8 @@ type MsgCreateBatchRequest struct {
 	// batch. It is a string of the form
 	// <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
 	// fields conforming to ISO 3166-2, and postal-code being up to 64
-	// alphanumeric characters.
+	// alphanumeric characters. country-code is required, while sub-national-code
+	// and postal-code can be added for increasing precision.
 	ProjectLocation string `protobuf:"bytes,7,opt,name=project_location,json=projectLocation,proto3" json:"project_location,omitempty" yaml:"project_location"`
 }
 

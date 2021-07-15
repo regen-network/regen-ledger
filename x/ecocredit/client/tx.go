@@ -79,9 +79,19 @@ Parameters:
 	}
 }
 
+const (
+	FlagIssuer          string = "issuer"
+	FlagClassId         string = "class-id"
+	FlagStartDate       string = "start-date"
+	FlagEndDate         string = "end-date"
+	FlagProjectLocation string = "project-location"
+	FlagMetadata        string = "metadata"
+	FlagIssuance        string = "issuance"
+)
+
 func txCreateBatch() *cobra.Command {
-	return &cobra.Command{
-		Use:   "create-batch [issuer] [class_id] [start_date] [end_date] [project_location] [metadata] [issuance]",
+	cmd := &cobra.Command{
+		Use:   "create-batch [--issuer issuer] [--class-id class_id] [--start-date start_date] [--end-date end_date] [--project-location project_location] [--metadata metadata] [--issuance issuance]",
 		Short: "Issues a new credit batch",
 		Long: `Issues a new credit batch.
 
@@ -101,22 +111,53 @@ Parameters:
                     Note: "tradable_amount" and "retired_amount" default to 0.
                     Note: "retirement_location" is only required when
 		          "retired_amount" is positive.`,
-		Args: cobra.ExactArgs(7),
+		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			startDate, err := parseDate("start_date", args[2])
+			issuer, err := cmd.Flags().GetString(FlagIssuer)
 			if err != nil {
 				return err
 			}
-			endDate, err := parseDate("end_date", args[3])
+
+			classId, err := cmd.Flags().GetString(FlagClassId)
 			if err != nil {
 				return err
 			}
-			b, err := base64.StdEncoding.DecodeString(args[5])
+
+			startDateStr, err := cmd.Flags().GetString(FlagStartDate)
+			if err != nil {
+				return err
+			}
+			startDate, err := parseDate("start_date", startDateStr)
+			if err != nil {
+				return err
+			}
+
+			endDateStr, err := cmd.Flags().GetString(FlagEndDate)
+			if err != nil {
+				return err
+			}
+			endDate, err := parseDate("end_date", endDateStr)
+			if err != nil {
+				return err
+			}
+
+			projectLocation, err := cmd.Flags().GetString(FlagProjectLocation)
+			if err != nil {
+				return err
+			}
+
+			metadataStr, err := cmd.Flags().GetString(FlagMetadata)
+			if err != nil {
+				return err
+			}
+			b, err := base64.StdEncoding.DecodeString(metadataStr)
 			if err != nil {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
+
+			issuanceStr, err := cmd.Flags().GetString(FlagIssuance)
 			var issuance = []*ecocredit.MsgCreateBatchRequest_BatchIssuance{}
-			if err = yaml.Unmarshal([]byte(args[6]), &issuance); err != nil {
+			if err = yaml.Unmarshal([]byte(issuanceStr), &issuance); err != nil {
 				return err
 			}
 
@@ -125,11 +166,11 @@ Parameters:
 				return err
 			}
 			msg := ecocredit.MsgCreateBatchRequest{
-				Issuer:          args[0],
-				ClassId:         args[1],
+				Issuer:          issuer,
+				ClassId:         classId,
 				StartDate:       &startDate,
 				EndDate:         &endDate,
-				ProjectLocation: args[4],
+				ProjectLocation: projectLocation,
 				Metadata:        b,
 				Issuance:        issuance,
 			}
@@ -137,6 +178,20 @@ Parameters:
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
+	cmd.Flags().String(FlagIssuer, "", "issuer address")
+	cmd.MarkFlagRequired(FlagIssuer)
+	cmd.Flags().String(FlagClassId, "", "credit class")
+	cmd.MarkFlagRequired(FlagClassId)
+	cmd.Flags().String(FlagStartDate, "", "The beginning of the period during which this credit batch was quantified and verified. Format: yyyy-mm-dd.")
+	cmd.MarkFlagRequired(FlagStartDate)
+	cmd.Flags().String(FlagEndDate, "", "The end of the period during which this credit batch was quantified and verified. Format: yyyy-mm-dd.")
+	cmd.MarkFlagRequired(FlagEndDate)
+	cmd.Flags().String(FlagProjectLocation, "", "The location of the project that is backing the credits in this batch")
+	cmd.MarkFlagRequired(FlagProjectLocation)
+	cmd.Flags().String(FlagMetadata, "", "base64 encoded issuance metadata")
+	cmd.Flags().String(FlagIssuance, "", "YAML encode issuance list.\neg: '[{recipient: \"xrn:sdgkjhs2345u79ghisodg\", tradable_amount: \"10\", retired_amount: \"2\", retirement_location: \"YY-ZZ 12345\"}]'\nNote: numerical values must be written in strings.\nNote: \"tradable_amount\" and \"retired_amount\" default to 0.\nNote: \"retirement_location\" is only required when\n\"retired_amount\" is positive.")
+	cmd.MarkFlagRequired(FlagIssuance)
+	return cmd
 }
 
 func txSend() *cobra.Command {
