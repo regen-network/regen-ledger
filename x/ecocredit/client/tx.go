@@ -94,7 +94,7 @@ Parameters:
               quantified and verified. Format: yyyy-mm-dd.
   metadata:   base64 encoded issuance metadata
   issuance:   YAML encode issuance list. Note: numerical values must be written in strings.
-              eg: '[{recipient: "xrn:sdgkjhs2345u79ghisodg", tradable_amount: "10", retired_amount: "2", retirement_location: "YY-ZZ 12345"}]'
+              eg: '[{recipient: "regensdgkjhs2345u79ghisodg", tradable_amount: "10", retired_amount: "2", retirement_location: "YY-ZZ 12345"}]'
               Note: "tradable_amount" and "retired_amount" default to 0.
               Note: "retirement_location" is only required when "retired_amount" is positive.`,
 		Args: cobra.ExactArgs(6),
