@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.v1alpha1;
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 
@@ -89,6 +90,16 @@ message MsgCreateBatchRequest {
 
   // metadata is any arbitrary metadata to attached to the credit batch.
   bytes metadata = 4;
+
+  // start_date is the beginning of the period during which this credit batch
+  // was quantified and verified.
+  google.protobuf.Timestamp start_date = 5
+      [(gogoproto.stdtime) = true, (gogoproto.moretags) = "yaml:\"start_date\""];
+
+  // end_date is the end of the period during which this credit batch was
+  // quantified and verified.
+  google.protobuf.Timestamp end_date = 6
+      [(gogoproto.stdtime) = true, (gogoproto.moretags) = "yaml:\"end_date\""];
 
   // BatchIssuance represents the issuance of some credits in a batch to a
   // single recipient.

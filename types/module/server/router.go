@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	gogogrpc "github.com/gogo/protobuf/grpc"
+	"github.com/gogo/protobuf/proto"
 	"google.golang.org/grpc"
 
 	"github.com/regen-network/regen-ledger/types"
@@ -23,8 +25,8 @@ type handler struct {
 type router struct {
 	handlers         map[string]handler
 	providedServices map[reflect.Type]bool
-	antiReentryMap   map[string]bool
 	authzMiddleware  AuthorizationMiddleware
+	msgServiceRouter *baseapp.MsgServiceRouter
 }
 
 type registrar struct {
@@ -44,6 +46,21 @@ func (r registrar) RegisterService(sd *grpc.ServiceDesc, ss interface{}) {
 	for _, method := range sd.Methods {
 		fqName := fmt.Sprintf("/%s/%s", sd.ServiceName, method.MethodName)
 		methodHandler := method.Handler
+
+		var requestTypeName string
+
+		_, _ = methodHandler(nil, context.Background(), func(i interface{}) error {
+			req, ok := i.(proto.Message)
+			if !ok {
+				// We panic here because there is no other alternative and the app cannot be initialized correctly
+				// this should only happen if there is a problem with code generation in which case the app won't
+				// work correctly anyway.
+				panic(fmt.Errorf("can't register request type %T for service method %s", i, fqName))
+			}
+			requestTypeName = TypeURL(req)
+			return nil
+		}, noopInterceptor)
+
 		f := func(ctx context.Context, args, reply interface{}) error {
 			res, err := methodHandler(ss, ctx, func(i interface{}) error { return nil },
 				func(ctx context.Context, _ interface{}, _ *grpc.UnaryServerInfo, unaryHandler grpc.UnaryHandler) (resp interface{}, err error) {
@@ -54,12 +71,12 @@ func (r registrar) RegisterService(sd *grpc.ServiceDesc, ss interface{}) {
 			}
 
 			resValue := reflect.ValueOf(res)
-			if !resValue.IsZero() {
+			if !resValue.IsZero() && reply != nil {
 				reflect.ValueOf(reply).Elem().Set(resValue.Elem())
 			}
 			return nil
 		}
-		r.handlers[fqName] = handler{
+		r.handlers[requestTypeName] = handler{
 			f:            f,
 			commitWrites: r.commitWrites,
 			moduleName:   r.moduleName,
@@ -68,71 +85,71 @@ func (r registrar) RegisterService(sd *grpc.ServiceDesc, ss interface{}) {
 }
 
 func (rtr *router) invoker(methodName string, writeCondition func(context.Context, string, sdk.Msg) error) (types.Invoker, error) {
-	handler, found := rtr.handlers[methodName]
-	if !found {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("cannot find method named %s", methodName))
-	}
+	return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
+		req, ok := request.(proto.Message)
+		if !ok {
+			return fmt.Errorf("expected proto.Message, got %T for service method %s", request, methodName)
+		}
 
-	moduleName := handler.moduleName
+		typeURL := TypeURL(req)
+		handler, found := rtr.handlers[typeURL]
 
-	if writeCondition != nil && handler.commitWrites {
+		msg, isMsg := request.(sdk.Msg)
+		if !found && !isMsg {
+			return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("cannot find method named %s", methodName))
+		}
+
+		// cache wrap the multistore so that inter-module writes are atomic
+		// see https://github.com/cosmos/cosmos-sdk/issues/8030
+		regenCtx := types.UnwrapSDKContext(ctx)
+		cacheMs := regenCtx.MultiStore().CacheMultiStore()
+		ctx = sdk.WrapSDKContext(regenCtx.WithMultiStore(cacheMs))
+
 		// msg handler
-		return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
-			if rtr.antiReentryMap[moduleName] {
-				return fmt.Errorf("re-entrant module calls not allowed for security reasons! module %s is already on the call stack", moduleName)
-			}
-
-			rtr.antiReentryMap[moduleName] = true
-			defer delete(rtr.antiReentryMap, moduleName)
-
-			msgReq, ok := request.(sdk.Msg)
-			if !ok {
-				return fmt.Errorf("expected %T, got %T", (*sdk.Msg)(nil), request)
-			}
-
-			err := msgReq.ValidateBasic()
+		if writeCondition != nil && (handler.commitWrites || isMsg) {
+			err := msg.ValidateBasic()
 			if err != nil {
 				return err
 			}
 
-			err = writeCondition(ctx, methodName, msgReq)
+			err = writeCondition(ctx, methodName, msg)
 			if err != nil {
 				return err
 			}
 
-			// cache wrap the multistore so that inter-module writes are atomic
-			// see https://github.com/cosmos/cosmos-sdk/issues/8030
-			sdkCtx := types.UnwrapSDKContext(ctx)
-			cacheMs := sdkCtx.MultiStore().CacheMultiStore()
-			ctx = types.Context{Context: sdkCtx.WithMultiStore(cacheMs)}
+			// ADR-033 router
+			if found {
+				err = handler.f(ctx, request, response)
+				if err != nil {
+					return err
+				}
+			} else {
+				// routing using baseapp.MsgServiceRouter
+				sdkCtx := sdk.UnwrapSDKContext(ctx)
+				handler := rtr.msgServiceRouter.HandlerByTypeURL(typeURL)
+				if handler == nil {
+					return sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized message route: %s;", typeURL)
+				}
 
-			err = handler.f(ctx, request, response)
-			if err != nil {
-				return err
+				_, err = handler(sdkCtx, msg)
+				if err != nil {
+					return err
+				}
 			}
 
 			// only commit writes if there is no error so that calls are atomic
 			cacheMs.Write()
+		} else {
+			// query handler
+			err := handler.f(ctx, request, response)
+			if err != nil {
+				return err
+			}
 
-			return nil
-		}, nil
-	}
-
-	// query handler
-	return func(ctx context.Context, request interface{}, response interface{}, opts ...interface{}) error {
-		// cache wrap the multistore so that writes are batched
-		sdkCtx := types.UnwrapSDKContext(ctx)
-		cacheMs := sdkCtx.MultiStore().CacheMultiStore()
-		ctx = types.Context{Context: sdkCtx.WithMultiStore(cacheMs)}
-
-		err := handler.f(ctx, request, response)
-		if err != nil {
-			return err
+			cacheMs.Write()
 		}
-
-		cacheMs.Write()
-
 		return nil
+
 	}, nil
 }
 
@@ -192,4 +209,12 @@ func (rtr *router) testQueryFactory() InvokerFactory {
 	return func(callInfo CallInfo) (types.Invoker, error) {
 		return rtr.invoker(callInfo.Method, nil)
 	}
+}
+
+func TypeURL(req proto.Message) string {
+	return "/" + proto.MessageName(req)
+}
+
+func noopInterceptor(_ context.Context, _ interface{}, _ *grpc.UnaryServerInfo, _ grpc.UnaryHandler) (interface{}, error) {
+	return nil, nil
 }

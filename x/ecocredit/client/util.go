@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/gogo/protobuf/proto"
 	"github.com/spf13/cobra"
 
@@ -47,7 +49,7 @@ func parseCancelCreditsList(creditsListStr string) ([]*ecocredit.MsgCancelReques
 
 	cancelCreditsList := make([]*ecocredit.MsgCancelRequest_CancelCredits, len(creditsList))
 	for i, credits := range creditsList {
-		cancelCreditsList[i] = &ecocredit.MsgCancelRequest_CancelCredits {
+		cancelCreditsList[i] = &ecocredit.MsgCancelRequest_CancelCredits{
 			BatchDenom: credits.batchDenom,
 			Amount:     credits.amount,
 		}
@@ -84,8 +86,16 @@ func parseCredits(creditsStr string) (credits, error) {
 		return credits{}, fmt.Errorf("invalid credit expression: %s", creditsStr)
 	}
 
-	return credits {
+	return credits{
 		batchDenom: matches[2],
 		amount:     matches[1],
 	}, nil
+}
+
+func parseDate(field string, date string) (time.Time, error) {
+	t, err := time.Parse("2006-01-02", date)
+	if err != nil {
+		return t, sdkerrors.ErrInvalidRequest.Wrapf("%s must have format yyyy-mm-dd, but received %v", field, date)
+	}
+	return t, nil
 }

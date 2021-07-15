@@ -12,6 +12,7 @@ lint:
   ignore:
     - cosmos
     - gogoproto
+    - google
     - cosmos_proto
 breaking:
   use:
@@ -19,4 +20,5 @@ breaking:
   ignore:
     - cosmos
     - gogoproto
+    - google
     - cosmos_proto

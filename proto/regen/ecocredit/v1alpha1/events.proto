@@ -30,6 +30,14 @@ message EventCreateBatch {
 
   // total_amount is the total number of credits in the credit batch.
   string total_amount = 4 [ (gogoproto.moretags) = "yaml:\"total_amount\"" ];
+
+  // start_date is the beginning of the period during which this credit batch
+  // was quantified and verified.
+  string start_date = 5 [ (gogoproto.moretags) = "yaml:\"start_date\"" ];
+
+  // end_date is the end of the period during which this credit batch was
+  // quantified and verified.
+  string end_date = 6 [ (gogoproto.moretags) = "yaml:\"end_date\"" ];
 }
 
 // EventReceive is an event emitted when credits are received either upon

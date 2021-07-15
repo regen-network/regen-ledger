@@ -4,6 +4,7 @@ package regen.ecocredit.v1alpha1;
 
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 
@@ -49,7 +50,17 @@ message BatchInfo {
   // cancelled, effectively undoing there issuance. The sum of total_amount and
   // amount_cancelled will always sum to the original amount of credits that
   // were issued.
-  string amount_cancelled = 6;
+  string amount_cancelled = 6 [ (gogoproto.moretags) = "yaml:\"amount_cancelled\"" ];
+
+  // start_date is the beginning of the period during which this credit batch
+  // was quantified and verified.
+  google.protobuf.Timestamp start_date = 7
+      [(gogoproto.stdtime) = true, (gogoproto.moretags) = "yaml:\"start_date\""];
+
+  // end_date is the end of the period during which this credit batch was
+  // quantified and verified.
+  google.protobuf.Timestamp end_date = 8
+      [(gogoproto.stdtime) = true, (gogoproto.moretags) = "yaml:\"end_date\""];
 }
 
 // Params defines the updatable global parameters of the ecocredit module for

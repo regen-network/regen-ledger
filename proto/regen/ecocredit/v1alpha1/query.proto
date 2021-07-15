@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package regen.ecocredit.v1alpha1;
-
+import "google/api/annotations.proto";
 import "regen/ecocredit/v1alpha1/types.proto";
 import "gogoproto/gogo.proto";
 
@@ -10,21 +10,36 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 // Msg is the regen.ecocredit.v1alpha1 Query service.
 service Query {
   // ClassInfo queries for information on a credit class.
-  rpc ClassInfo(QueryClassInfoRequest) returns (QueryClassInfoResponse);
+  rpc ClassInfo(QueryClassInfoRequest) returns (QueryClassInfoResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/class_info/{class_id}";
+  }
 
   // BatchInfo queries for information on a credit batch.
-  rpc BatchInfo(QueryBatchInfoRequest) returns (QueryBatchInfoResponse);
+  rpc BatchInfo(QueryBatchInfoRequest) returns (QueryBatchInfoResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/batch_info/{batch_denom}";
+  }
 
   // Balance queries the balance (both tradable and retired) of a given credit
   // batch for a given account.
-  rpc Balance(QueryBalanceRequest) returns (QueryBalanceResponse);
+  rpc Balance(QueryBalanceRequest) returns (QueryBalanceResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/batches/{batch_denom}/balances/{account}";
+  }
 
   // Supply queries the tradable and retired supply of a credit batch.
-  rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse);
+  rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/batch_info/{batch_denom}/supply";
+  }
 
   // Precision queries the number of decimal places that can be used to
   // represent credits in a batch. See Tx/SetPrecision for more details.
-  rpc Precision(QueryPrecisionRequest) returns (QueryPrecisionResponse);
+  rpc Precision(QueryPrecisionRequest) returns (QueryPrecisionResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/batches/{batch_denom}/precision";
+  }
 }
 
 // QueryClassInfoRequest is the Query/ClassInfo request type.
@@ -73,7 +88,8 @@ message QueryBalanceResponse {
       [ (gogoproto.moretags) = "yaml:\"tradable_amount\"" ];
 
   // retired_amount is the decimal number of retired credits.
-  string retired_amount = 2 [ (gogoproto.moretags) = "yaml:\"retired_amount\"" ];
+  string retired_amount = 2
+      [ (gogoproto.moretags) = "yaml:\"retired_amount\"" ];
 }
 
 // QuerySupplyRequest is the Query/Supply request type.
@@ -86,11 +102,13 @@ message QuerySupplyRequest {
 // QuerySupplyResponse is the Query/Supply response type.
 message QuerySupplyResponse {
 
-  // tradable_supply is the decimal number of tradable credits in the batch supply.
+  // tradable_supply is the decimal number of tradable credits in the batch
+  // supply.
   string tradable_supply = 1
       [ (gogoproto.moretags) = "yaml:\"tradable_supply\"" ];
 
-  // retired_supply is the decimal number of retired credits in the batch supply.
+  // retired_supply is the decimal number of retired credits in the batch
+  // supply.
   string retired_supply = 2
       [ (gogoproto.moretags) = "yaml:\"retired_supply\"" ];
 }
