@@ -155,6 +155,8 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		TotalAmount:     totalSupplyStr,
 		Metadata:        req.Metadata,
 		AmountCancelled: amountCancelledStr,
+		StartDate:       req.StartDate,
+		EndDate:         req.EndDate,
 	})
 	if err != nil {
 		return nil, err
@@ -170,6 +172,8 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		BatchDenom:  string(batchDenom),
 		Issuer:      req.Issuer,
 		TotalAmount: totalSupplyStr,
+		StartDate:   req.StartDate.Format("2006-01-02"),
+		EndDate:     req.EndDate.Format("2006-01-02"),
 	})
 	if err != nil {
 		return nil, err

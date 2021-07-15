@@ -81,26 +81,38 @@ Parameters:
 
 func txCreateBatch() *cobra.Command {
 	return &cobra.Command{
-		Use:   "create-batch [issuer] [class_id] [metadata] [issuance]",
+		Use:   "create-batch [issuer] [class_id] [start_date] [end_date] [metadata] [issuance]",
 		Short: "Issues a new credit batch",
 		Long: `Issues a new credit batch.
 
 Parameters:
-  issuer:    issuer address
-  class_id:  credit class
-  metadata:  base64 encoded issuance metadata
-  issuance:  YAML encode issuance list. Note: numerical values must be written in strings.
-             eg: '[{recipient: "xrn:sdgkjhs2345u79ghisodg", tradable_amount: "10", retired_amount: "2", retirement_location: "YY-ZZ 12345"}]'
-             Note: "tradable_amount" and "retired_amount" default to 0.
-             Note: "retirement_location" is only required when "retired_amount" is positive.`,
-		Args: cobra.ExactArgs(4),
+  issuer:     issuer address
+  class_id:   credit class
+  start_date: The beginning of the period during which this credit batch was
+              quantified and verified. Format: yyyy-mm-dd.
+  end_date:   The end of the period during which this credit batch was
+              quantified and verified. Format: yyyy-mm-dd.
+  metadata:   base64 encoded issuance metadata
+  issuance:   YAML encode issuance list. Note: numerical values must be written in strings.
+              eg: '[{recipient: "xrn:sdgkjhs2345u79ghisodg", tradable_amount: "10", retired_amount: "2", retirement_location: "YY-ZZ 12345"}]'
+              Note: "tradable_amount" and "retired_amount" default to 0.
+              Note: "retirement_location" is only required when "retired_amount" is positive.`,
+		Args: cobra.ExactArgs(6),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			b, err := base64.StdEncoding.DecodeString(args[2])
+			startDate, err := parseDate("start_date", args[2])
+			if err != nil {
+				return err
+			}
+			endDate, err := parseDate("end_date", args[3])
+			if err != nil {
+				return err
+			}
+			b, err := base64.StdEncoding.DecodeString(args[4])
 			if err != nil {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 			var issuance = []*ecocredit.MsgCreateBatchRequest_BatchIssuance{}
-			if err = yaml.Unmarshal([]byte(args[3]), &issuance); err != nil {
+			if err = yaml.Unmarshal([]byte(args[5]), &issuance); err != nil {
 				return err
 			}
 
@@ -109,7 +121,12 @@ Parameters:
 				return err
 			}
 			msg := ecocredit.MsgCreateBatchRequest{
-				Issuer: args[0], ClassId: args[1], Metadata: b, Issuance: issuance,
+				Issuer:    args[0],
+				ClassId:   args[1],
+				StartDate: &startDate,
+				EndDate:   &endDate,
+				Metadata:  b,
+				Issuance:  issuance,
 			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)

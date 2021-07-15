@@ -2,6 +2,7 @@ package testsuite
 
 import (
 	"context"
+	"time"
 
 	"github.com/regen-network/regen-ledger/types/testutil"
 
@@ -106,9 +107,45 @@ func (s *IntegrationTestSuite) TestScenario() {
 	r0, r1, r2 := "4.286", "10000.4589902", "0"
 	rSupply0 := "10004.7449902"
 
+	time1 := time.Now()
+	time2 := time.Now()
+
+	// Batch creation should fail if the StartDate is missing
+	err = (&ecocredit.MsgCreateBatchRequest{
+		Issuer:    issuer1,
+		ClassId:   clsID,
+		Issuance:  []*ecocredit.MsgCreateBatchRequest_BatchIssuance{},
+		StartDate: nil,
+		EndDate:   &time2,
+	}).ValidateBasic()
+	s.Require().Error(err)
+
+	// Batch creation should fail if the EndDate is missing
+	err = (&ecocredit.MsgCreateBatchRequest{
+		Issuer:    issuer1,
+		ClassId:   clsID,
+		Issuance:  []*ecocredit.MsgCreateBatchRequest_BatchIssuance{},
+		StartDate: &time1,
+		EndDate:   nil,
+	}).ValidateBasic()
+	s.Require().Error(err)
+
+	// Batch creation should fail if the EndDate is before the StartDate
+	err = (&ecocredit.MsgCreateBatchRequest{
+		Issuer:    issuer1,
+		ClassId:   clsID,
+		Issuance:  []*ecocredit.MsgCreateBatchRequest_BatchIssuance{},
+		StartDate: &time2,
+		EndDate:   &time1,
+	}).ValidateBasic()
+	s.Require().Error(err)
+
+	// Batch creation should succeed with StartDate before EndDate, and valid data
 	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatchRequest{
-		Issuer:  issuer1,
-		ClassId: clsID,
+		Issuer:    issuer1,
+		ClassId:   clsID,
+		StartDate: &time1,
+		EndDate:   &time2,
 		Issuance: []*ecocredit.MsgCreateBatchRequest_BatchIssuance{
 			{
 				Recipient:          addr1,

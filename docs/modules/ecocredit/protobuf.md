@@ -93,6 +93,8 @@ EventCreateBatch is an event emitted when a credit batch is created.
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
 | issuer | [string](#string) |  | issuer is the account address of the issuer of the credit batch. |
 | total_amount | [string](#string) |  | total_amount is the total number of credits in the credit batch. |
+| start_date | [string](#string) |  | start_date is the beginning of the period during which this credit batch was quantified and verified. |
+| end_date | [string](#string) |  | end_date is the end of the period during which this credit batch was quantified and verified. |
 
 
 
@@ -185,6 +187,8 @@ BatchInfo represents the high-level on-chain information for a credit batch.
 | total_amount | [string](#string) |  | total_amount is the total number of active credits in the credit batch. Some of the issued credits may be cancelled and will be removed from total_amount and tracked in amount_cancelled. total_amount and amount_cancelled will always sum to the original amount of credits that were issued. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit batch. |
 | amount_cancelled | [string](#string) |  | amount_cancelled is the number of credits in the batch that have been cancelled, effectively undoing there issuance. The sum of total_amount and amount_cancelled will always sum to the original amount of credits that were issued. |
+| start_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | start_date is the beginning of the period during which this credit batch was quantified and verified. |
+| end_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | end_date is the end of the period during which this credit batch was quantified and verified. |
 
 
 
@@ -493,6 +497,8 @@ MsgCreateBatchRequest is the Msg/CreateBatch request type.
 | class_id | [string](#string) |  | class_id is the unique ID of the class. |
 | issuance | [MsgCreateBatchRequest.BatchIssuance](#regen.ecocredit.v1alpha1.MsgCreateBatchRequest.BatchIssuance) | repeated | issuance are the credits issued in the batch. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit batch. |
+| start_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | start_date is the beginning of the period during which this credit batch was quantified and verified. |
+| end_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | end_date is the end of the period during which this credit batch was quantified and verified. |
 
 
 
