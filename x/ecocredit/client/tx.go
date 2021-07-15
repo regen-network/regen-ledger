@@ -5,7 +5,6 @@ import (
 	"errors"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
@@ -100,13 +99,13 @@ Parameters:
               Note: "retirement_location" is only required when "retired_amount" is positive.`,
 		Args: cobra.ExactArgs(6),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			startDate, err := time.Parse("2006-01-02", args[2])
+			startDate, err := parseDate("start_date", args[2])
 			if err != nil {
-				return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "start_date must have format yyyy-mm-dd, but received %v", args[2])
+				return err
 			}
-			endDate, err := time.Parse("2006-01-02", args[3])
+			endDate, err := parseDate("end_date", args[3])
 			if err != nil {
-				return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "end_date must have format yyyy-mm-dd, but received %v", args[3])
+				return err
 			}
 			b, err := base64.StdEncoding.DecodeString(args[4])
 			if err != nil {
