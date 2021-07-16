@@ -9,7 +9,7 @@ import (
 
 var _ data.MsgServer = serverImpl{}
 
-func (s serverImpl) AnchorData(goCtx context.Context, request *data.MsgAnchorDataRequest) (*data.MsgAnchorDataResponse, error) {
+func (s serverImpl) AnchorData(goCtx context.Context, request *data.MsgAnchorData) (*data.MsgAnchorDataResponse, error) {
 	return nil, fmt.Errorf("not implemented")
 	//cidBz := request.Cid
 	//key := AnchorKey(cidBz)
@@ -65,7 +65,7 @@ func (s serverImpl) AnchorData(goCtx context.Context, request *data.MsgAnchorDat
 
 //var emptyBz = []byte{0}
 
-func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignDataRequest) (*data.MsgSignDataResponse, error) {
+func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignData) (*data.MsgSignDataResponse, error) {
 	return nil, fmt.Errorf("not implemented")
 	//cidBz := request.Cid
 	//
@@ -104,7 +104,7 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignDataReq
 	//return &data.MsgSignDataResponse{}, nil
 }
 
-func (s serverImpl) StoreRawData(goCtx context.Context, request *data.MsgStoreRawDataRequest) (*data.MsgStoreRawDataResponse, error) {
+func (s serverImpl) StoreRawData(goCtx context.Context, request *data.MsgStoreRawData) (*data.MsgStoreRawDataResponse, error) {
 	return nil, fmt.Errorf("not implemented")
 	//cidBz := request.Cid
 	//

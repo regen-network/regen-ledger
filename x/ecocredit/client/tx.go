@@ -71,7 +71,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			msg := ecocredit.MsgCreateClassRequest{
+			msg := ecocredit.MsgCreateClass{
 				Designer: args[0], Issuers: issuers, Metadata: b,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
@@ -111,7 +111,7 @@ Parameters:
 			if err != nil {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
-			var issuance = []*ecocredit.MsgCreateBatchRequest_BatchIssuance{}
+			var issuance = []*ecocredit.MsgCreateBatch_BatchIssuance{}
 			if err = yaml.Unmarshal([]byte(args[5]), &issuance); err != nil {
 				return err
 			}
@@ -120,7 +120,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			msg := ecocredit.MsgCreateBatchRequest{
+			msg := ecocredit.MsgCreateBatch{
 				Issuer:    args[0],
 				ClassId:   args[1],
 				StartDate: &startDate,
@@ -147,7 +147,7 @@ Parameters:
              Note: "retirement_location" is only required when "retired_amount" is positive.`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var credits = []*ecocredit.MsgSendRequest_SendCredits{}
+			var credits = []*ecocredit.MsgSend_SendCredits{}
 			if err := yaml.Unmarshal([]byte(args[1]), &credits); err != nil {
 				return err
 			}
@@ -155,7 +155,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			msg := ecocredit.MsgSendRequest{
+			msg := ecocredit.MsgSend{
 				Sender:    clientCtx.GetFromAddress().String(),
 				Recipient: args[0], Credits: credits,
 			}
@@ -181,7 +181,7 @@ Parameters:
                        eg: 'AA-BB 12345'`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var credits = []*ecocredit.MsgRetireRequest_RetireCredits{}
+			var credits = []*ecocredit.MsgRetire_RetireCredits{}
 			if err := yaml.Unmarshal([]byte(args[0]), &credits); err != nil {
 				return err
 			}
@@ -189,7 +189,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			msg := ecocredit.MsgRetireRequest{
+			msg := ecocredit.MsgRetire{
 				Holder:   clientCtx.GetFromAddress().String(),
 				Credits:  credits,
 				Location: args[1],
@@ -218,7 +218,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			msg := ecocredit.MsgCancelRequest{
+			msg := ecocredit.MsgCancel{
 				Holder:  clientCtx.GetFromAddress().String(),
 				Credits: credits,
 			}
@@ -246,7 +246,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			msg := ecocredit.MsgSetPrecisionRequest{
+			msg := ecocredit.MsgSetPrecision{
 				Issuer:     clientCtx.GetFromAddress().String(),
 				BatchDenom: args[0], MaxDecimalPlaces: uint32(decimals),
 			}
