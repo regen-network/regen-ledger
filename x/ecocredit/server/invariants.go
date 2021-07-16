@@ -77,7 +77,7 @@ func retiredSupplyInvariant(store types.KVStore) (string, bool) {
 		broken bool
 	)
 	calRetiredSupplies := make(map[string]*apd.Decimal)
-	if err := iterateBalances(store, TradableBalancePrefix, func(denom string, balance *apd.Decimal) bool {
+	if err := iterateBalances(store, RetiredBalancePrefix, func(denom string, balance *apd.Decimal) bool {
 		if supply, ok := calRetiredSupplies[denom]; ok {
 			if err := math.Add(supply, balance, supply); err != nil {
 				broken = true
@@ -133,13 +133,13 @@ func iterateBalances(store sdk.KVStore, storeKey byte, cb func(denom string, bal
 	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
 	defer iter.Close()
 	for ; iter.Valid(); iter.Next() {
-		denom := string(ParseSupplyKey(iter.Key()))
+		_, denom := ParseBalanceKey(iter.Key())
 		balance, err := math.ParseNonNegativeDecimal(string(iter.Value()))
 		if err != nil {
 			return err
 		}
 
-		if cb(denom, balance) {
+		if cb(string(denom), balance) {
 			break
 		}
 	}
