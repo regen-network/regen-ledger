@@ -29,4 +29,4 @@ replace github.com/regen-network/regen-ledger/orm => ../../orm
 
 replace github.com/regen-network/regen-ledger/types => ../../types
 
-replace github.com/regen-network/regen-ledger/x/ecocredit => github.com/regen-network/regen-ledger/x/ecocredit@3e2436354f5a2de800856095069e36484a43941a
+replace github.com/regen-network/regen-ledger/x/ecocredit => ../ecocredit
