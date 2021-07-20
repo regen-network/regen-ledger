@@ -19,6 +19,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
+	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	group "github.com/regen-network/regen-ledger/x/group/module"
 	"github.com/regen-network/regen-ledger/x/group/server/testsuite"
@@ -43,12 +44,14 @@ func TestServer(t *testing.T) {
 	bankSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, banktypes.ModuleName)
 	stakingSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, stakingtypes.ModuleName)
 	mintSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, minttypes.ModuleName)
+	ecocreditSubspace := paramstypes.NewSubspace(cdc, amino, paramsKey, tkey, ecocredittypes.ModuleName)
 
 	maccPerms := map[string][]string{
 		authtypes.FeeCollectorName:     nil,
 		minttypes.ModuleName:           {authtypes.Minter},
 		stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
+		ecocredittypes.ModuleName:      {authtypes.Burner},
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(
@@ -82,13 +85,14 @@ func TestServer(t *testing.T) {
 	baseApp.MountStore(stakingKey, sdk.StoreTypeIAVL)
 	baseApp.MountStore(mintKey, sdk.StoreTypeIAVL)
 
+	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, bankKeeper)
 	ff.SetModules([]module.Module{
 		group.Module{AccountKeeper: accountKeeper},
-		ecocredit.Module{},
+		ecocreditModule,
 		data.Module{},
 	})
 
-	s := testsuite.NewIntegrationTestSuite(ff, accountKeeper, bankKeeper, mintKeeper)
+	s := testsuite.NewIntegrationTestSuite(ff, accountKeeper, bankKeeper, mintKeeper, ecocreditSubspace)
 
 	suite.Run(t, s)
 }

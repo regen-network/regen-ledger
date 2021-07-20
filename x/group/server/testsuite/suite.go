@@ -13,6 +13,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	gogotypes "github.com/gogo/protobuf/types"
 	"github.com/stretchr/testify/suite"
 
@@ -45,18 +46,26 @@ type IntegrationTestSuite struct {
 	groupID          uint64
 
 	accountKeeper authkeeper.AccountKeeper
+	paramSpace    paramstypes.Subspace
 	bankKeeper    bankkeeper.Keeper
 	mintKeeper    mintkeeper.Keeper
 
 	blockTime time.Time
 }
 
-func NewIntegrationTestSuite(fixtureFactory *servermodule.FixtureFactory, accountKeeper authkeeper.AccountKeeper, bankKeeper bankkeeper.BaseKeeper, mintKeeper mintkeeper.Keeper) *IntegrationTestSuite {
+func NewIntegrationTestSuite(
+	fixtureFactory *servermodule.FixtureFactory,
+	accountKeeper authkeeper.AccountKeeper,
+	bankKeeper bankkeeper.BaseKeeper,
+	mintKeeper mintkeeper.Keeper,
+	paramSpace paramstypes.Subspace) *IntegrationTestSuite {
+
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
 		accountKeeper:  accountKeeper,
 		bankKeeper:     bankKeeper,
 		mintKeeper:     mintKeeper,
+		paramSpace:     paramSpace,
 	}
 }
 
@@ -69,8 +78,12 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	sdkCtx := s.fixture.Context().(types.Context).WithBlockTime(s.blockTime)
 	s.sdkCtx, _ = sdkCtx.CacheContext()
 	s.ctx = types.Context{Context: s.sdkCtx}
-	s.genesisCtx = types.Context{Context: sdkCtx}
 
+	ecocreditParams := ecocredit.DefaultParams()
+	ecocreditParams.CreditClassFee = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(0))) // overwriting the fee to 0stake
+	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
+
+	s.genesisCtx = types.Context{Context: sdkCtx}
 	s.Require().NoError(s.bankKeeper.MintCoins(s.sdkCtx, minttypes.ModuleName, sdk.NewCoins(sdk.NewInt64Coin("test", 400000000))))
 
 	s.bankKeeper.SetParams(sdkCtx, banktypes.DefaultParams())
