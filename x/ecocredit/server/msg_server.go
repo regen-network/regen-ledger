@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/regen-network/regen-ledger/types"
@@ -31,6 +32,16 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 	if err != nil {
 		return nil, err
 	}
+
+	allowListed, err := s.isDesignerAllowListed(ctx.Context, designerAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	if !allowListed {
+		return nil, fmt.Errorf("%s is not allowed to create credit classes", designerAddress.String())
+	}
+
 
 	err = s.chargeCreditClassFee(ctx.Context, designerAddress)
 	if err != nil {
@@ -444,4 +455,20 @@ func subtractTradableBalanceAndSupply(store sdk.KVStore, holder string, batchDen
 	}
 
 	return nil
+}
+
+func (s serverImpl) isDesignerAllowListed(ctx sdk.Context, addr sdk.Address) (bool, error) {
+	var params ecocredit.Params
+	s.paramSpace.GetParamSet(ctx, &params)
+	s.paramSpace.GetParamSet(ctx, &params)
+	for _,sAddr := params.AllowedClassCreatorAddresses {
+		allowListedAddr, err := sdk.AccAddressFromBech32(sAddr)
+		if err != nil {
+			return false, err
+		}
+		if addr.Equals(allowListedAddr) {
+			return true, nil
+		}
+	}
+	return false, nil
 }
