@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/regen-network/regen-ledger/types"
@@ -457,11 +456,12 @@ func subtractTradableBalanceAndSupply(store sdk.KVStore, holder string, batchDen
 	return nil
 }
 
+// checks if the given address is in the allowlist of credit creators
 func (s serverImpl) isDesignerAllowListed(ctx sdk.Context, addr sdk.Address) (bool, error) {
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(ctx, &params)
 	s.paramSpace.GetParamSet(ctx, &params)
-	for _,sAddr := params.AllowedClassCreatorAddresses {
+	for _,sAddr := range params.AllowedClassCreatorAddresses{
 		allowListedAddr, err := sdk.AccAddressFromBech32(sAddr)
 		if err != nil {
 			return false, err
