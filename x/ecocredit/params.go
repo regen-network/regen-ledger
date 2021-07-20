@@ -9,8 +9,9 @@ import (
 
 var (
 	// TODO: Decide a sensible default value
-	DefaultCreditClassFeeTokens = sdk.NewInt(10000)
-	KeyCreditClassFee           = []byte("CreditClassFee")
+	DefaultCreditClassFeeTokens  = sdk.NewInt(10000)
+	KeyCreditClassFee            = []byte("CreditClassFee")
+	KeyAllowlistedCreditCreators = []byte("AllowlistCreditCreators")
 )
 
 func ParamKeyTable() paramtypes.KeyTable {
@@ -21,6 +22,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyCreditClassFee, &p.CreditClassFee, validateCreditClassFee),
+		paramtypes.NewParamSetPair(KeyAllowlistedCreditCreators, &p.AllowedClassCreatorAddresses, validateAllowlistCreditCreators),
 	}
 }
 
@@ -37,12 +39,22 @@ func validateCreditClassFee(i interface{}) error {
 	return nil
 }
 
-func NewParams(creditClassFee sdk.Coins) Params {
+func validateAllowlistCreditCreators(i interface{}) error {
+	_, ok := i.([]sdk.Address)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	return nil
+}
+
+func NewParams(creditClassFee sdk.Coins, allowlist []string) Params {
 	return Params{
-		CreditClassFee: creditClassFee,
+		CreditClassFee:               creditClassFee,
+		AllowedClassCreatorAddresses: allowlist,
 	}
 }
 
+// TODO(tyler): what to put for default addresses???
 func DefaultParams() Params {
-	return NewParams(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)))
+	return NewParams(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)), []string{})
 }
