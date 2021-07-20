@@ -2,9 +2,12 @@ package client
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
@@ -90,106 +93,69 @@ const (
 )
 
 func txCreateBatch() *cobra.Command {
+	var (
+		startDate = time.Unix(10000, 10000).UTC()
+		endDate   = time.Unix(10000, 10050).UTC()
+	)
+	createBatchJSON, err := json.MarshalIndent(
+		ecocredit.MsgCreateBatchRequest{
+			// Leave issuer empty, because we'll use --from flag
+			Issuer:  "",
+			ClassId: "1BX53GF",
+			Issuance: []*ecocredit.MsgCreateBatchRequest_BatchIssuance{
+				&ecocredit.MsgCreateBatchRequest_BatchIssuance{
+					Recipient:          "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+					TradableAmount:     "1000",
+					RetiredAmount:      "15",
+					RetirementLocation: "ST-UVW XY Z12",
+				},
+			},
+			Metadata:        []byte{0x1, 0x2},
+			StartDate:       &startDate,
+			EndDate:         &endDate,
+			ProjectLocation: "AB-CDE FG1 345",
+		},
+		"                    ",
+		"    ",
+	)
+	if err != nil {
+		panic("Couldn't marshal MsgCreateBatch to JSON")
+	}
 	cmd := &cobra.Command{
-		Use:   "create-batch [--issuer issuer] [--class-id class_id] [--start-date start_date] [--end-date end_date] [--project-location project_location] [--metadata metadata] [--issuance issuance]",
+		Use:   "create-batch msg-create-batch",
 		Short: "Issues a new credit batch",
-		Long: `Issues a new credit batch.
+		Long: fmt.Sprintf(`Issues a new credit batch.
 
 Parameters:
-  issuer:           issuer address
-  class_id:         credit class
-  start_date:       The beginning of the period during which this credit batch
-                    was quantified and verified. Format: yyyy-mm-dd.
-  end_date:         The end of the period during which this credit batch was
-                    quantified and verified. Format: yyyy-mm-dd.
-  project_location: The location of the project that is backing the credits in
-                    this batch
-  metadata:         base64 encoded issuance metadata
-  issuance:         YAML encode issuance list.
-                    eg: '[{recipient: "xrn:sdgkjhs2345u79ghisodg", tradable_amount: "10", retired_amount: "2", retirement_location: "YY-ZZ 12345"}]'
-                    Note: numerical values must be written in strings.
-                    Note: "tradable_amount" and "retired_amount" default to 0.
-                    Note: "retirement_location" is only required when
-		          "retired_amount" is positive.`,
-		Args: cobra.ExactArgs(0),
+  msg-create-batch: A JSON object representing MsgCreateBatch. This could be
+                    passed from a JSON file like:
+		    regen tx create-batch "$(< batch.json)"
+		    The JSON has format:
+                    %s`, createBatchJSON),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			issuer, err := cmd.Flags().GetString(FlagIssuer)
-			if err != nil {
-				return err
-			}
-
-			classId, err := cmd.Flags().GetString(FlagClassId)
-			if err != nil {
-				return err
-			}
-
-			startDateStr, err := cmd.Flags().GetString(FlagStartDate)
-			if err != nil {
-				return err
-			}
-			startDate, err := parseDate("start_date", startDateStr)
-			if err != nil {
-				return err
-			}
-
-			endDateStr, err := cmd.Flags().GetString(FlagEndDate)
-			if err != nil {
-				return err
-			}
-			endDate, err := parseDate("end_date", endDateStr)
-			if err != nil {
-				return err
-			}
-
-			projectLocation, err := cmd.Flags().GetString(FlagProjectLocation)
-			if err != nil {
-				return err
-			}
-
-			metadataStr, err := cmd.Flags().GetString(FlagMetadata)
-			if err != nil {
-				return err
-			}
-			b, err := base64.StdEncoding.DecodeString(metadataStr)
-			if err != nil {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
-			}
-
-			issuanceStr, err := cmd.Flags().GetString(FlagIssuance)
-			var issuance = []*ecocredit.MsgCreateBatchRequest_BatchIssuance{}
-			if err = yaml.Unmarshal([]byte(issuanceStr), &issuance); err != nil {
-				return err
-			}
-
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
-			msg := ecocredit.MsgCreateBatchRequest{
-				Issuer:          issuer,
-				ClassId:         classId,
-				StartDate:       &startDate,
-				EndDate:         &endDate,
-				ProjectLocation: projectLocation,
-				Metadata:        b,
-				Issuance:        issuance,
+
+			// Unmarshal the JSON representation of the request
+			var msg ecocredit.MsgCreateBatchRequest
+			err = json.Unmarshal([]byte(args[0]), &msg)
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrapf("parsing batch JSON:\n%s", err.Error())
 			}
+
+			// Get the batch issuer from the --from flag
+			issuer, err := cmd.Flags().GetString(flags.FlagFrom)
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+			}
+			msg.Issuer = issuer
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
-	cmd.Flags().String(FlagIssuer, "", "issuer address")
-	cmd.MarkFlagRequired(FlagIssuer)
-	cmd.Flags().String(FlagClassId, "", "credit class")
-	cmd.MarkFlagRequired(FlagClassId)
-	cmd.Flags().String(FlagStartDate, "", "The beginning of the period during which this credit batch was quantified and verified. Format: yyyy-mm-dd.")
-	cmd.MarkFlagRequired(FlagStartDate)
-	cmd.Flags().String(FlagEndDate, "", "The end of the period during which this credit batch was quantified and verified. Format: yyyy-mm-dd.")
-	cmd.MarkFlagRequired(FlagEndDate)
-	cmd.Flags().String(FlagProjectLocation, "", "The location of the project that is backing the credits in this batch")
-	cmd.MarkFlagRequired(FlagProjectLocation)
-	cmd.Flags().String(FlagMetadata, "", "base64 encoded issuance metadata")
-	cmd.Flags().String(FlagIssuance, "", "YAML encode issuance list.\neg: '[{recipient: \"xrn:sdgkjhs2345u79ghisodg\", tradable_amount: \"10\", retired_amount: \"2\", retirement_location: \"YY-ZZ 12345\"}]'\nNote: numerical values must be written in strings.\nNote: \"tradable_amount\" and \"retired_amount\" default to 0.\nNote: \"retirement_location\" is only required when\n\"retired_amount\" is positive.")
 	cmd.MarkFlagRequired(FlagIssuance)
 	return cmd
 }

@@ -95,11 +95,7 @@ type EventCreateBatch struct {
 	// quantified and verified.
 	EndDate string `protobuf:"bytes,6,opt,name=end_date,json=endDate,proto3" json:"end_date,omitempty" yaml:"end_date"`
 	// project_location is the location of the project backing the credits in this
-	// batch. It is a string of the form
-	// <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
-	// fields conforming to ISO 3166-2, and postal-code being up to 64
-	// alphanumeric characters. country-code is required, while sub-national-code
-	// and postal-code can be added for increasing precision.
+	// batch. Full documentation can be found in MsgCreateBatch.project_location.
 	ProjectLocation string `protobuf:"bytes,7,opt,name=project_location,json=projectLocation,proto3" json:"project_location,omitempty" yaml:"project_location"`
 }
 
