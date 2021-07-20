@@ -689,7 +689,6 @@ func (s serverImpl) Exec(goCtx context.Context, req *group.MsgExec) (*group.MsgE
 
 		err := s.execMsgs(sdk.WrapSDKContext(ctx), accountInfo.DerivationKey, proposal)
 		if err != nil {
-			fmt.Println("err", err)
 			proposal.ExecutorResult = group.ProposalExecutorResultFailure
 			proposalType := reflect.TypeOf(proposal).String()
 			logger.Info("proposal execution failed", "cause", err, "type", proposalType, "proposalID", id)

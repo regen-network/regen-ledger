@@ -2,7 +2,6 @@ package testsuite
 
 import (
 	"encoding/json"
-	"fmt"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -128,9 +127,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 		require.Equal(votesRes.Votes[0], genesisState.Votes[0])
 	}
 
-	fmt.Println("ererer")
 	exported, err := s.fixture.ExportGenesis(ctx.Context)
-	fmt.Println("err1", exported, err)
 	require.NoError(err)
 
 	var exportedGenesisState group.GenesisState
