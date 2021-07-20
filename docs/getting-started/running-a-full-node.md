@@ -36,7 +36,7 @@ make install
 
 Initialize node:
 ```
-regen init node
+regen init [moniker]
 ```
 
 ## Update Genesis
@@ -55,15 +55,22 @@ curl http://18.220.101.192:26657/genesis | jq .result.genesis > ~/.regen/config/
 
 ## Update Peers
 
-Update `~/.regen/config/config.toml` to include persistent peers.
+Add a seed node for initial peer discovery.
+
+<!-- TODO: update to use dedicated full node operated by RND -->
 
 For Regen Mainnet (`regen-1`):
 ```
-persistent_peers = "69975e7afdf731a165e40449fcffc75167a084fc@104.131.169.70:26656,d35d652b6cb3bf7d6cb8d4bd7c036ea03e7be2ab@116.203.182.185:26656,ffacd3202ded6945fed12fa4fd715b1874985b8c@3.98.38.91:26656"
+PERSISTENT_PEERS="69975e7afdf731a165e40449fcffc75167a084fc@104.131.169.70:26656"
+sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
+
+<!-- TODO: update to use dedicated full node operated by RND -->
 
 For Regen Devnet (`regen-devnet-5`):
 ```
+PERSISTENT_PEERS="a621e6bf1f5981b3e72e059f86cbfc9dc5577fcb@18.220.101.192:26656"
+sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
 ## Start Node

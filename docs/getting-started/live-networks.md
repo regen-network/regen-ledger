@@ -12,6 +12,8 @@ By default, the `regen` binary will connect to a [local node](#running-a-node). 
 
 Regen Mainnet is currently using the `v1.0.0` release tag of `regen-ledger`.
 
+<!-- TODO: update to use dedicated full node operated by RND -->
+
 The following URL is the node endpoint for one of our lead validators:
 
 http://104.131.169.70:26657/
@@ -24,6 +26,8 @@ For more information, see [regen-network/mainnet](https://github.com/regen-netwo
 
 Regen Devnet is currently using the `v1.0.0` release tag of `regen-ledger`.
 
+<!-- TODO: update to use dedicated full node operated by RND -->
+
 The following URL is the node endpoint for one of our lead validators:
 
 http://18.220.101.192:26657/
@@ -32,12 +36,18 @@ For more information, see [regen-network/testnets](https://github.com/regen-netw
 
 ## Interacting With A Node
 
-First, you'll need to install the `regen` binary. What version you install depends on what network you intend to interact with. For installation instructions, see [Install Regen](./#install-regen).
+First, you'll need to install the `regen` binary. For installation instructions, see [Install Regen](./#install-regen).
 
-In order to interact with a node from a live network, you'll need to provide a `--node` flag with a valid node address. Before submitting any queries and transactions, you should first check the status of the node. To check the status of the Regen Mainnet node provided above, run the following command:
+In order to interact with a node from a live network, you'll need to provide a `--node` flag with a valid node address to your commands. Before submitting any queries or transactions, you should first check the status of the node using the `status` command.
 
+To check the status of the Regen Mainnet node provided above, run the following command:
 ```
 regen status --node http://104.131.169.70:26657
+```
+
+To check the status of the Regen Devnet node provided above, run the following command:
+```
+regen status --node http://18.220.101.192:26657
 ```
 
 <!-- TODO: add `regen config node` instructions once updated to v1.1 -->
