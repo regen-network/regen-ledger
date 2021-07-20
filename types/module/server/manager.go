@@ -258,12 +258,15 @@ func exportGenesis(ctx sdk.Context, cdc codec.Codec, exportGenesisHandlers map[s
 		if exportGenesisHandler == nil {
 			continue
 		}
+		fmt.Println("name", name)
 		genesisData[name], err = exportGenesisHandler(types.Context{Context: ctx}, cdc)
+		fmt.Println("err123", err)
 		if err != nil {
 			return genesisData, err
 		}
 	}
 
+	fmt.Println("genesisData", genesisData)
 	return genesisData, nil
 }
 
