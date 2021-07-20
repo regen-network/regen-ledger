@@ -50,32 +50,45 @@ message BatchInfo {
   // cancelled, effectively undoing there issuance. The sum of total_amount and
   // amount_cancelled will always sum to the original amount of credits that
   // were issued.
-  string amount_cancelled = 6 [ (gogoproto.moretags) = "yaml:\"amount_cancelled\"" ];
+  string amount_cancelled = 6
+      [ (gogoproto.moretags) = "yaml:\"amount_cancelled\"" ];
 
   // start_date is the beginning of the period during which this credit batch
   // was quantified and verified.
-  google.protobuf.Timestamp start_date = 7
-      [(gogoproto.stdtime) = true, (gogoproto.moretags) = "yaml:\"start_date\""];
+  google.protobuf.Timestamp start_date = 7 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"start_date\""
+  ];
 
   // end_date is the end of the period during which this credit batch was
   // quantified and verified.
-  google.protobuf.Timestamp end_date = 8
-      [(gogoproto.stdtime) = true, (gogoproto.moretags) = "yaml:\"end_date\""];
+  google.protobuf.Timestamp end_date = 8 [
+    (gogoproto.stdtime) = true,
+    (gogoproto.moretags) = "yaml:\"end_date\""
+  ];
 }
 
 // Params defines the updatable global parameters of the ecocredit module for
 // use with the x/params module.
 message Params {
   // credit_class_fee is the fixed fee charged on creation of a new credit class
-  repeated cosmos.base.v1beta1.Coin credit_class_fee = 1
-      [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+  repeated cosmos.base.v1beta1.Coin credit_class_fee = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
 
-  // allowed_class_creator_addresses is an allowlist defining the addresses with the required permissions to create credit classes
+  // allowed_class_creator_addresses is an allowlist defining the addresses with
+  // the required permissions to create credit classes
   repeated string allowed_class_creator_addresses = 2;
 }
 
-// GenesisState defines the state of the ecocredit module that is needed at genesis
+// GenesisState defines the state of the ecocredit module that is needed at
+// genesis
 message GenesisState {
-  // Params contains the updateable global parameters for use with the x/params module
-  Params params = 1 [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"params\""];
+  // Params contains the updateable global parameters for use with the x/params
+  // module
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.moretags) = "yaml:\"params\""
+  ];
 }
