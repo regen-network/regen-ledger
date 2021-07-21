@@ -228,7 +228,8 @@ type Params struct {
 	// allowed_class_creator_addresses is an allowlist defining the addresses with
 	// the required permissions to create credit classes
 	AllowedClassCreatorAddresses []string `protobuf:"bytes,2,rep,name=allowed_class_creator_addresses,json=allowedClassCreatorAddresses,proto3" json:"allowed_class_creator_addresses,omitempty"`
-	// allowlist_enabled is a param that enables/disables the allowlist for credit creation
+	// allowlist_enabled is a param that enables/disables the allowlist for credit
+	// creation
 	AllowlistEnabled bool `protobuf:"varint,3,opt,name=allowlist_enabled,json=allowlistEnabled,proto3" json:"allowlist_enabled,omitempty"`
 }
 

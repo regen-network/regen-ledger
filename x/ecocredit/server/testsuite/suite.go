@@ -693,7 +693,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			// fund the designer account
 			s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, tc.designerAcc, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
 
-			createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClassRequest{
+			createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
 				Designer: tc.designerAcc.String(),
 				Issuers:  []string{issuer1, issuer2},
 				Metadata: nil,
