@@ -75,7 +75,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			msg := ecocredit.MsgCreateClassRequest{
+			msg := ecocredit.MsgCreateClass{
 				Designer: args[0], Issuers: issuers, Metadata: b,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
@@ -115,7 +115,7 @@ Parameters:
 				return err
 			}
 
-			templateIssuance := &ecocredit.MsgCreateBatchRequest_BatchIssuance{
+			templateIssuance := &ecocredit.MsgCreateBatch_BatchIssuance{
 				Recipient:          "recipient-address",
 				TradableAmount:     "tradable-amount",
 				RetiredAmount:      "retired-amount",
@@ -123,7 +123,7 @@ Parameters:
 			}
 
 			numIssuances, err := cmd.Flags().GetUint32(FlagIssuances)
-			issuances := make([]*ecocredit.MsgCreateBatchRequest_BatchIssuance, numIssuances)
+			issuances := make([]*ecocredit.MsgCreateBatch_BatchIssuance, numIssuances)
 			for i := range issuances {
 				issuances[i] = templateIssuance
 			}
@@ -160,7 +160,7 @@ Parameters:
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 
-			msg := &ecocredit.MsgCreateBatchRequest{
+			msg := &ecocredit.MsgCreateBatch{
 				ClassId:         classId,
 				Issuance:        issuances,
 				Metadata:        b,
@@ -196,11 +196,11 @@ func txCreateBatch() *cobra.Command {
 		endDate   = time.Unix(10000, 10050).UTC()
 	)
 	createExampleBatchJSON, err := json.MarshalIndent(
-		ecocredit.MsgCreateBatchRequest{
+		ecocredit.MsgCreateBatch{
 			// Leave issuer empty, because we'll use --from flag
 			Issuer:  "",
 			ClassId: "1BX53GF",
-			Issuance: []*ecocredit.MsgCreateBatchRequest_BatchIssuance{
+			Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
 				{
 					Recipient:          "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
 					TradableAmount:     "1000",
@@ -267,7 +267,7 @@ Parameters:
              Note: "retirement_location" is only required when "retired_amount" is positive.`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var credits = []*ecocredit.MsgSendRequest_SendCredits{}
+			var credits = []*ecocredit.MsgSend_SendCredits{}
 			if err := yaml.Unmarshal([]byte(args[1]), &credits); err != nil {
 				return err
 			}
@@ -275,7 +275,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			msg := ecocredit.MsgSendRequest{
+			msg := ecocredit.MsgSend{
 				Sender:    clientCtx.GetFromAddress().String(),
 				Recipient: args[0], Credits: credits,
 			}
@@ -301,7 +301,7 @@ Parameters:
                        eg: 'AA-BB 12345'`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var credits = []*ecocredit.MsgRetireRequest_RetireCredits{}
+			var credits = []*ecocredit.MsgRetire_RetireCredits{}
 			if err := yaml.Unmarshal([]byte(args[0]), &credits); err != nil {
 				return err
 			}
@@ -309,7 +309,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			msg := ecocredit.MsgRetireRequest{
+			msg := ecocredit.MsgRetire{
 				Holder:   clientCtx.GetFromAddress().String(),
 				Credits:  credits,
 				Location: args[1],
@@ -338,7 +338,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			msg := ecocredit.MsgCancelRequest{
+			msg := ecocredit.MsgCancel{
 				Holder:  clientCtx.GetFromAddress().String(),
 				Credits: credits,
 			}
@@ -366,7 +366,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			msg := ecocredit.MsgSetPrecisionRequest{
+			msg := ecocredit.MsgSetPrecision{
 				Issuer:     clientCtx.GetFromAddress().String(),
 				BatchDenom: args[0], MaxDecimalPlaces: uint32(decimals),
 			}

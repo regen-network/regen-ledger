@@ -59,27 +59,27 @@
     - [Query](#regen.group.v1alpha1.Query)
   
 - [regen/group/v1alpha1/tx.proto](#regen/group/v1alpha1/tx.proto)
-    - [MsgCreateGroupAccountRequest](#regen.group.v1alpha1.MsgCreateGroupAccountRequest)
+    - [MsgCreateGroup](#regen.group.v1alpha1.MsgCreateGroup)
+    - [MsgCreateGroupAccount](#regen.group.v1alpha1.MsgCreateGroupAccount)
     - [MsgCreateGroupAccountResponse](#regen.group.v1alpha1.MsgCreateGroupAccountResponse)
-    - [MsgCreateGroupRequest](#regen.group.v1alpha1.MsgCreateGroupRequest)
     - [MsgCreateGroupResponse](#regen.group.v1alpha1.MsgCreateGroupResponse)
-    - [MsgCreateProposalRequest](#regen.group.v1alpha1.MsgCreateProposalRequest)
+    - [MsgCreateProposal](#regen.group.v1alpha1.MsgCreateProposal)
     - [MsgCreateProposalResponse](#regen.group.v1alpha1.MsgCreateProposalResponse)
-    - [MsgExecRequest](#regen.group.v1alpha1.MsgExecRequest)
+    - [MsgExec](#regen.group.v1alpha1.MsgExec)
     - [MsgExecResponse](#regen.group.v1alpha1.MsgExecResponse)
-    - [MsgUpdateGroupAccountAdminRequest](#regen.group.v1alpha1.MsgUpdateGroupAccountAdminRequest)
+    - [MsgUpdateGroupAccountAdmin](#regen.group.v1alpha1.MsgUpdateGroupAccountAdmin)
     - [MsgUpdateGroupAccountAdminResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountAdminResponse)
-    - [MsgUpdateGroupAccountDecisionPolicyRequest](#regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyRequest)
+    - [MsgUpdateGroupAccountDecisionPolicy](#regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicy)
     - [MsgUpdateGroupAccountDecisionPolicyResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyResponse)
-    - [MsgUpdateGroupAccountMetadataRequest](#regen.group.v1alpha1.MsgUpdateGroupAccountMetadataRequest)
+    - [MsgUpdateGroupAccountMetadata](#regen.group.v1alpha1.MsgUpdateGroupAccountMetadata)
     - [MsgUpdateGroupAccountMetadataResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountMetadataResponse)
-    - [MsgUpdateGroupAdminRequest](#regen.group.v1alpha1.MsgUpdateGroupAdminRequest)
+    - [MsgUpdateGroupAdmin](#regen.group.v1alpha1.MsgUpdateGroupAdmin)
     - [MsgUpdateGroupAdminResponse](#regen.group.v1alpha1.MsgUpdateGroupAdminResponse)
-    - [MsgUpdateGroupMembersRequest](#regen.group.v1alpha1.MsgUpdateGroupMembersRequest)
+    - [MsgUpdateGroupMembers](#regen.group.v1alpha1.MsgUpdateGroupMembers)
     - [MsgUpdateGroupMembersResponse](#regen.group.v1alpha1.MsgUpdateGroupMembersResponse)
-    - [MsgUpdateGroupMetadataRequest](#regen.group.v1alpha1.MsgUpdateGroupMetadataRequest)
+    - [MsgUpdateGroupMetadata](#regen.group.v1alpha1.MsgUpdateGroupMetadata)
     - [MsgUpdateGroupMetadataResponse](#regen.group.v1alpha1.MsgUpdateGroupMetadataResponse)
-    - [MsgVoteRequest](#regen.group.v1alpha1.MsgVoteRequest)
+    - [MsgVote](#regen.group.v1alpha1.MsgVote)
     - [MsgVoteResponse](#regen.group.v1alpha1.MsgVoteResponse)
   
     - [Exec](#regen.group.v1alpha1.Exec)
@@ -882,10 +882,27 @@ Query is the regen.group.v1alpha1 Query service.
 
 
 
-<a name="regen.group.v1alpha1.MsgCreateGroupAccountRequest"></a>
+<a name="regen.group.v1alpha1.MsgCreateGroup"></a>
 
-### MsgCreateGroupAccountRequest
-MsgCreateGroupAccountRequest is the Msg/CreateGroupAccount request type.
+### MsgCreateGroup
+MsgCreateGroup is the Msg/CreateGroup request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| admin | [string](#string) |  | admin is the account address of the group admin. |
+| members | [Member](#regen.group.v1alpha1.Member) | repeated | members defines the group members. |
+| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the group. |
+
+
+
+
+
+
+<a name="regen.group.v1alpha1.MsgCreateGroupAccount"></a>
+
+### MsgCreateGroupAccount
+MsgCreateGroupAccount is the Msg/CreateGroupAccount request type.
 
 
 | Field | Type | Label | Description |
@@ -915,23 +932,6 @@ MsgCreateGroupAccountResponse is the Msg/CreateGroupAccount response type.
 
 
 
-<a name="regen.group.v1alpha1.MsgCreateGroupRequest"></a>
-
-### MsgCreateGroupRequest
-MsgCreateGroupRequest is the Msg/CreateGroup request type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| admin | [string](#string) |  | admin is the account address of the group admin. |
-| members | [Member](#regen.group.v1alpha1.Member) | repeated | members defines the group members. |
-| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the group. |
-
-
-
-
-
-
 <a name="regen.group.v1alpha1.MsgCreateGroupResponse"></a>
 
 ### MsgCreateGroupResponse
@@ -947,10 +947,10 @@ MsgCreateGroupResponse is the Msg/CreateGroup response type.
 
 
 
-<a name="regen.group.v1alpha1.MsgCreateProposalRequest"></a>
+<a name="regen.group.v1alpha1.MsgCreateProposal"></a>
 
-### MsgCreateProposalRequest
-MsgCreateProposalRequest is the Msg/CreateProposal request type.
+### MsgCreateProposal
+MsgCreateProposal is the Msg/CreateProposal request type.
 
 
 | Field | Type | Label | Description |
@@ -981,10 +981,10 @@ MsgCreateProposalResponse is the Msg/CreateProposal response type.
 
 
 
-<a name="regen.group.v1alpha1.MsgExecRequest"></a>
+<a name="regen.group.v1alpha1.MsgExec"></a>
 
-### MsgExecRequest
-MsgExecRequest is the Msg/Exec request type.
+### MsgExec
+MsgExec is the Msg/Exec request type.
 
 
 | Field | Type | Label | Description |
@@ -1007,10 +1007,10 @@ MsgExecResponse is the Msg/Exec request type.
 
 
 
-<a name="regen.group.v1alpha1.MsgUpdateGroupAccountAdminRequest"></a>
+<a name="regen.group.v1alpha1.MsgUpdateGroupAccountAdmin"></a>
 
-### MsgUpdateGroupAccountAdminRequest
-MsgUpdateGroupAccountAdminRequest is the Msg/UpdateGroupAccountAdmin request type.
+### MsgUpdateGroupAccountAdmin
+MsgUpdateGroupAccountAdmin is the Msg/UpdateGroupAccountAdmin request type.
 
 
 | Field | Type | Label | Description |
@@ -1034,10 +1034,10 @@ MsgUpdateGroupAccountAdminResponse is the Msg/UpdateGroupAccountAdmin response t
 
 
 
-<a name="regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyRequest"></a>
+<a name="regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicy"></a>
 
-### MsgUpdateGroupAccountDecisionPolicyRequest
-MsgUpdateGroupAccountDecisionPolicyRequest is the Msg/UpdateGroupAccountDecisionPolicy request type.
+### MsgUpdateGroupAccountDecisionPolicy
+MsgUpdateGroupAccountDecisionPolicy is the Msg/UpdateGroupAccountDecisionPolicy request type.
 
 
 | Field | Type | Label | Description |
@@ -1061,10 +1061,10 @@ MsgUpdateGroupAccountDecisionPolicyResponse is the Msg/UpdateGroupAccountDecisio
 
 
 
-<a name="regen.group.v1alpha1.MsgUpdateGroupAccountMetadataRequest"></a>
+<a name="regen.group.v1alpha1.MsgUpdateGroupAccountMetadata"></a>
 
-### MsgUpdateGroupAccountMetadataRequest
-MsgUpdateGroupAccountMetadataRequest is the Msg/UpdateGroupAccountMetadata request type.
+### MsgUpdateGroupAccountMetadata
+MsgUpdateGroupAccountMetadata is the Msg/UpdateGroupAccountMetadata request type.
 
 
 | Field | Type | Label | Description |
@@ -1088,10 +1088,10 @@ MsgUpdateGroupAccountMetadataResponse is the Msg/UpdateGroupAccountMetadata resp
 
 
 
-<a name="regen.group.v1alpha1.MsgUpdateGroupAdminRequest"></a>
+<a name="regen.group.v1alpha1.MsgUpdateGroupAdmin"></a>
 
-### MsgUpdateGroupAdminRequest
-MsgUpdateGroupAdminRequest is the Msg/UpdateGroupAdmin request type.
+### MsgUpdateGroupAdmin
+MsgUpdateGroupAdmin is the Msg/UpdateGroupAdmin request type.
 
 
 | Field | Type | Label | Description |
@@ -1115,10 +1115,10 @@ MsgUpdateGroupAdminResponse is the Msg/UpdateGroupAdmin response type.
 
 
 
-<a name="regen.group.v1alpha1.MsgUpdateGroupMembersRequest"></a>
+<a name="regen.group.v1alpha1.MsgUpdateGroupMembers"></a>
 
-### MsgUpdateGroupMembersRequest
-MsgUpdateGroupMembersRequest is the Msg/UpdateGroupMembers request type.
+### MsgUpdateGroupMembers
+MsgUpdateGroupMembers is the Msg/UpdateGroupMembers request type.
 
 
 | Field | Type | Label | Description |
@@ -1142,10 +1142,10 @@ MsgUpdateGroupMembersResponse is the Msg/UpdateGroupMembers response type.
 
 
 
-<a name="regen.group.v1alpha1.MsgUpdateGroupMetadataRequest"></a>
+<a name="regen.group.v1alpha1.MsgUpdateGroupMetadata"></a>
 
-### MsgUpdateGroupMetadataRequest
-MsgUpdateGroupMetadataRequest is the Msg/UpdateGroupMetadata request type.
+### MsgUpdateGroupMetadata
+MsgUpdateGroupMetadata is the Msg/UpdateGroupMetadata request type.
 
 
 | Field | Type | Label | Description |
@@ -1169,10 +1169,10 @@ MsgUpdateGroupMetadataResponse is the Msg/UpdateGroupMetadata response type.
 
 
 
-<a name="regen.group.v1alpha1.MsgVoteRequest"></a>
+<a name="regen.group.v1alpha1.MsgVote"></a>
 
-### MsgVoteRequest
-MsgVoteRequest is the Msg/Vote request type.
+### MsgVote
+MsgVote is the Msg/Vote request type.
 
 
 | Field | Type | Label | Description |
@@ -1223,17 +1223,17 @@ Msg is the regen.group.v1alpha1 Msg service.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| CreateGroup | [MsgCreateGroupRequest](#regen.group.v1alpha1.MsgCreateGroupRequest) | [MsgCreateGroupResponse](#regen.group.v1alpha1.MsgCreateGroupResponse) | CreateGroup creates a new group with an admin account address, a list of members and some optional metadata. |
-| UpdateGroupMembers | [MsgUpdateGroupMembersRequest](#regen.group.v1alpha1.MsgUpdateGroupMembersRequest) | [MsgUpdateGroupMembersResponse](#regen.group.v1alpha1.MsgUpdateGroupMembersResponse) | UpdateGroupMembers updates the group members with given group id and admin address. |
-| UpdateGroupAdmin | [MsgUpdateGroupAdminRequest](#regen.group.v1alpha1.MsgUpdateGroupAdminRequest) | [MsgUpdateGroupAdminResponse](#regen.group.v1alpha1.MsgUpdateGroupAdminResponse) | UpdateGroupAdmin updates the group admin with given group id and previous admin address. |
-| UpdateGroupMetadata | [MsgUpdateGroupMetadataRequest](#regen.group.v1alpha1.MsgUpdateGroupMetadataRequest) | [MsgUpdateGroupMetadataResponse](#regen.group.v1alpha1.MsgUpdateGroupMetadataResponse) | UpdateGroupMetadata updates the group metadata with given group id and admin address. |
-| CreateGroupAccount | [MsgCreateGroupAccountRequest](#regen.group.v1alpha1.MsgCreateGroupAccountRequest) | [MsgCreateGroupAccountResponse](#regen.group.v1alpha1.MsgCreateGroupAccountResponse) | CreateGroupAccount creates a new group account using given DecisionPolicy. |
-| UpdateGroupAccountAdmin | [MsgUpdateGroupAccountAdminRequest](#regen.group.v1alpha1.MsgUpdateGroupAccountAdminRequest) | [MsgUpdateGroupAccountAdminResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountAdminResponse) | UpdateGroupAccountAdmin updates a group account admin. |
-| UpdateGroupAccountDecisionPolicy | [MsgUpdateGroupAccountDecisionPolicyRequest](#regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyRequest) | [MsgUpdateGroupAccountDecisionPolicyResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyResponse) | UpdateGroupAccountDecisionPolicy allows a group account decision policy to be updated. |
-| UpdateGroupAccountMetadata | [MsgUpdateGroupAccountMetadataRequest](#regen.group.v1alpha1.MsgUpdateGroupAccountMetadataRequest) | [MsgUpdateGroupAccountMetadataResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountMetadataResponse) | UpdateGroupAccountMetadata updates a group account metadata. |
-| CreateProposal | [MsgCreateProposalRequest](#regen.group.v1alpha1.MsgCreateProposalRequest) | [MsgCreateProposalResponse](#regen.group.v1alpha1.MsgCreateProposalResponse) | CreateProposal submits a new proposal. |
-| Vote | [MsgVoteRequest](#regen.group.v1alpha1.MsgVoteRequest) | [MsgVoteResponse](#regen.group.v1alpha1.MsgVoteResponse) | Vote allows a voter to vote on a proposal. |
-| Exec | [MsgExecRequest](#regen.group.v1alpha1.MsgExecRequest) | [MsgExecResponse](#regen.group.v1alpha1.MsgExecResponse) | Exec executes a proposal. |
+| CreateGroup | [MsgCreateGroup](#regen.group.v1alpha1.MsgCreateGroup) | [MsgCreateGroupResponse](#regen.group.v1alpha1.MsgCreateGroupResponse) | CreateGroup creates a new group with an admin account address, a list of members and some optional metadata. |
+| UpdateGroupMembers | [MsgUpdateGroupMembers](#regen.group.v1alpha1.MsgUpdateGroupMembers) | [MsgUpdateGroupMembersResponse](#regen.group.v1alpha1.MsgUpdateGroupMembersResponse) | UpdateGroupMembers updates the group members with given group id and admin address. |
+| UpdateGroupAdmin | [MsgUpdateGroupAdmin](#regen.group.v1alpha1.MsgUpdateGroupAdmin) | [MsgUpdateGroupAdminResponse](#regen.group.v1alpha1.MsgUpdateGroupAdminResponse) | UpdateGroupAdmin updates the group admin with given group id and previous admin address. |
+| UpdateGroupMetadata | [MsgUpdateGroupMetadata](#regen.group.v1alpha1.MsgUpdateGroupMetadata) | [MsgUpdateGroupMetadataResponse](#regen.group.v1alpha1.MsgUpdateGroupMetadataResponse) | UpdateGroupMetadata updates the group metadata with given group id and admin address. |
+| CreateGroupAccount | [MsgCreateGroupAccount](#regen.group.v1alpha1.MsgCreateGroupAccount) | [MsgCreateGroupAccountResponse](#regen.group.v1alpha1.MsgCreateGroupAccountResponse) | CreateGroupAccount creates a new group account using given DecisionPolicy. |
+| UpdateGroupAccountAdmin | [MsgUpdateGroupAccountAdmin](#regen.group.v1alpha1.MsgUpdateGroupAccountAdmin) | [MsgUpdateGroupAccountAdminResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountAdminResponse) | UpdateGroupAccountAdmin updates a group account admin. |
+| UpdateGroupAccountDecisionPolicy | [MsgUpdateGroupAccountDecisionPolicy](#regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicy) | [MsgUpdateGroupAccountDecisionPolicyResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyResponse) | UpdateGroupAccountDecisionPolicy allows a group account decision policy to be updated. |
+| UpdateGroupAccountMetadata | [MsgUpdateGroupAccountMetadata](#regen.group.v1alpha1.MsgUpdateGroupAccountMetadata) | [MsgUpdateGroupAccountMetadataResponse](#regen.group.v1alpha1.MsgUpdateGroupAccountMetadataResponse) | UpdateGroupAccountMetadata updates a group account metadata. |
+| CreateProposal | [MsgCreateProposal](#regen.group.v1alpha1.MsgCreateProposal) | [MsgCreateProposalResponse](#regen.group.v1alpha1.MsgCreateProposalResponse) | CreateProposal submits a new proposal. |
+| Vote | [MsgVote](#regen.group.v1alpha1.MsgVote) | [MsgVoteResponse](#regen.group.v1alpha1.MsgVoteResponse) | Vote allows a voter to vote on a proposal. |
+| Exec | [MsgExec](#regen.group.v1alpha1.MsgExec) | [MsgExecResponse](#regen.group.v1alpha1.MsgExecResponse) | Exec executes a proposal. |
 
  <!-- end services -->
 

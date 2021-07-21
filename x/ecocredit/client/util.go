@@ -31,13 +31,13 @@ func mkQueryClient(cmd *cobra.Command) (ecocredit.QueryClient, sdkclient.Context
 	return ecocredit.NewQueryClient(ctx), ctx, err
 }
 
-func parseMsgCreateBatch(clientCtx sdkclient.Context, batchFile string) (*ecocredit.MsgCreateBatchRequest, error) {
+func parseMsgCreateBatch(clientCtx sdkclient.Context, batchFile string) (*ecocredit.MsgCreateBatch, error) {
 	contents, err := ioutil.ReadFile(batchFile)
 	if err != nil {
 		return nil, err
 	}
 
-	var msg ecocredit.MsgCreateBatchRequest
+	var msg ecocredit.MsgCreateBatch
 	err = clientCtx.Codec.UnmarshalJSON(contents, &msg)
 	if err != nil {
 		return nil, err
@@ -57,15 +57,15 @@ var (
 	reCredits    = regexp.MustCompile(fmt.Sprintf(`^(%s)\:(%s)$`, reCreditAmt, reBatchDenom))
 )
 
-func parseCancelCreditsList(creditsListStr string) ([]*ecocredit.MsgCancelRequest_CancelCredits, error) {
+func parseCancelCreditsList(creditsListStr string) ([]*ecocredit.MsgCancel_CancelCredits, error) {
 	creditsList, err := parseCreditsList(creditsListStr)
 	if err != nil {
 		return nil, err
 	}
 
-	cancelCreditsList := make([]*ecocredit.MsgCancelRequest_CancelCredits, len(creditsList))
+	cancelCreditsList := make([]*ecocredit.MsgCancel_CancelCredits, len(creditsList))
 	for i, credits := range creditsList {
-		cancelCreditsList[i] = &ecocredit.MsgCancelRequest_CancelCredits{
+		cancelCreditsList[i] = &ecocredit.MsgCancel_CancelCredits{
 			BatchDenom: credits.batchDenom,
 			Amount:     credits.amount,
 		}
