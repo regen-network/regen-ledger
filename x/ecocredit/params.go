@@ -40,9 +40,15 @@ func validateCreditClassFee(i interface{}) error {
 }
 
 func validateAllowlistCreditCreators(i interface{}) error {
-	_, ok := i.([]sdk.Address)
+	v, ok := i.([]string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+	for _, sAddr := range v {
+		_, err := sdk.AccAddressFromBech32(sAddr)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
