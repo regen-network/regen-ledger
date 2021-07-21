@@ -28,3 +28,5 @@ replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alp
 replace github.com/regen-network/regen-ledger/orm => ../../orm
 
 replace github.com/regen-network/regen-ledger/types => ../../types
+
+replace github.com/regen-network/regen-ledger/x/ecocredit => ../ecocredit

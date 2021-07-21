@@ -14,32 +14,32 @@ import (
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterInterface((*DecisionPolicy)(nil), nil)
 	cdc.RegisterConcrete(&ThresholdDecisionPolicy{}, "cosmos-sdk/ThresholdDecisionPolicy", nil)
-	cdc.RegisterConcrete(&MsgCreateGroupRequest{}, "cosmos-sdk/MsgCreateGroup", nil)
-	cdc.RegisterConcrete(&MsgUpdateGroupMembersRequest{}, "cosmos-sdk/MsgUpdateGroupMembers", nil)
-	cdc.RegisterConcrete(&MsgUpdateGroupAdminRequest{}, "cosmos-sdk/MsgUpdateGroupAdmin", nil)
-	cdc.RegisterConcrete(&MsgUpdateGroupMetadataRequest{}, "cosmos-sdk/MsgUpdateGroupMetadata", nil)
-	cdc.RegisterConcrete(&MsgCreateGroupAccountRequest{}, "cosmos-sdk/MsgCreateGroupAccount", nil)
-	cdc.RegisterConcrete(&MsgUpdateGroupAccountAdminRequest{}, "cosmos-sdk/MsgUpdateGroupAccountAdmin", nil)
-	cdc.RegisterConcrete(&MsgUpdateGroupAccountDecisionPolicyRequest{}, "cosmos-sdk/MsgUpdateGroupAccountDecisionPolicy", nil)
-	cdc.RegisterConcrete(&MsgUpdateGroupAccountMetadataRequest{}, "cosmos-sdk/MsgUpdateGroupAccountMetadata", nil)
-	cdc.RegisterConcrete(&MsgCreateProposalRequest{}, "cosmos-sdk/group/MsgCreateProposal", nil)
-	cdc.RegisterConcrete(&MsgVoteRequest{}, "cosmos-sdk/group/MsgVote", nil)
-	cdc.RegisterConcrete(&MsgExecRequest{}, "cosmos-sdk/group/MsgExec", nil)
+	cdc.RegisterConcrete(&MsgCreateGroup{}, "cosmos-sdk/MsgCreateGroup", nil)
+	cdc.RegisterConcrete(&MsgUpdateGroupMembers{}, "cosmos-sdk/MsgUpdateGroupMembers", nil)
+	cdc.RegisterConcrete(&MsgUpdateGroupAdmin{}, "cosmos-sdk/MsgUpdateGroupAdmin", nil)
+	cdc.RegisterConcrete(&MsgUpdateGroupMetadata{}, "cosmos-sdk/MsgUpdateGroupMetadata", nil)
+	cdc.RegisterConcrete(&MsgCreateGroupAccount{}, "cosmos-sdk/MsgCreateGroupAccount", nil)
+	cdc.RegisterConcrete(&MsgUpdateGroupAccountAdmin{}, "cosmos-sdk/MsgUpdateGroupAccountAdmin", nil)
+	cdc.RegisterConcrete(&MsgUpdateGroupAccountDecisionPolicy{}, "cosmos-sdk/MsgUpdateGroupAccountDecisionPolicy", nil)
+	cdc.RegisterConcrete(&MsgUpdateGroupAccountMetadata{}, "cosmos-sdk/MsgUpdateGroupAccountMetadata", nil)
+	cdc.RegisterConcrete(&MsgCreateProposal{}, "cosmos-sdk/group/MsgCreateProposal", nil)
+	cdc.RegisterConcrete(&MsgVote{}, "cosmos-sdk/group/MsgVote", nil)
+	cdc.RegisterConcrete(&MsgExec{}, "cosmos-sdk/group/MsgExec", nil)
 }
 
 func RegisterTypes(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgCreateGroupRequest{},
-		&MsgUpdateGroupMembersRequest{},
-		&MsgUpdateGroupAdminRequest{},
-		&MsgUpdateGroupMetadataRequest{},
-		&MsgCreateGroupAccountRequest{},
-		&MsgUpdateGroupAccountAdminRequest{},
-		&MsgUpdateGroupAccountDecisionPolicyRequest{},
-		&MsgUpdateGroupAccountMetadataRequest{},
-		&MsgCreateProposalRequest{},
-		&MsgVoteRequest{},
-		&MsgExecRequest{},
+		&MsgCreateGroup{},
+		&MsgUpdateGroupMembers{},
+		&MsgUpdateGroupAdmin{},
+		&MsgUpdateGroupMetadata{},
+		&MsgCreateGroupAccount{},
+		&MsgUpdateGroupAccountAdmin{},
+		&MsgUpdateGroupAccountDecisionPolicy{},
+		&MsgUpdateGroupAccountMetadata{},
+		&MsgCreateProposal{},
+		&MsgVote{},
+		&MsgExec{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

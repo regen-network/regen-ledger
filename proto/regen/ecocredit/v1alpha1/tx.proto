@@ -12,24 +12,24 @@ service Msg {
 
   // CreateClass creates a new credit class with an approved list of issuers and
   // optional metadata.
-  rpc CreateClass(MsgCreateClassRequest) returns (MsgCreateClassResponse);
+  rpc CreateClass(MsgCreateClass) returns (MsgCreateClassResponse);
 
   // CreateBatch creates a new batch of credits for an existing credit class.
   // This will create a new batch denom with a fixed supply. Issued credits can
   // be distributed to recipients in either tradable or retired form.
-  rpc CreateBatch(MsgCreateBatchRequest) returns (MsgCreateBatchResponse);
+  rpc CreateBatch(MsgCreateBatch) returns (MsgCreateBatchResponse);
 
   // Send sends tradeable credits from one account to another account. Sent
   // credits can either be tradable or retired on receipt.
-  rpc Send(MsgSendRequest) returns (MsgSendResponse);
+  rpc Send(MsgSend) returns (MsgSendResponse);
 
   // Retire retires a specified number of credits in the holder's account.
-  rpc Retire(MsgRetireRequest) returns (MsgRetireResponse);
+  rpc Retire(MsgRetire) returns (MsgRetireResponse);
 
   // Cancel removes a number of credits from the holder's account and also
   // deducts them from the tradable supply, effectively cancelling their
   // issuance on Regen Ledger
-  rpc Cancel(MsgCancelRequest) returns (MsgCancelResponse);
+  rpc Cancel(MsgCancel) returns (MsgCancelResponse);
 
   // SetPrecision allows an issuer to increase the decimal precision of a credit
   // batch. It is an experimental feature to concretely explore an idea proposed
@@ -51,11 +51,11 @@ service Msg {
   // precision so under the hood it is still basically an integer, but the fixed
   // precision can be increased so its more adaptable long term than just an
   // integer.
-  rpc SetPrecision(MsgSetPrecisionRequest) returns (MsgSetPrecisionResponse);
+  rpc SetPrecision(MsgSetPrecision) returns (MsgSetPrecisionResponse);
 }
 
-// MsgCreateClassRequest is the Msg/CreateClass request type.
-message MsgCreateClassRequest {
+// MsgCreateClass is the Msg/CreateClass request type.
+message MsgCreateClass {
 
   // designer is the address of the account which designed the credit class. The
   // designer has special permissions to change the list of issuers and perform
@@ -76,8 +76,8 @@ message MsgCreateClassResponse {
   string class_id = 1 [ (gogoproto.moretags) = "yaml:\"class_id\"" ];
 }
 
-// MsgCreateBatchRequest is the Msg/CreateBatch request type.
-message MsgCreateBatchRequest {
+// MsgCreateBatch is the Msg/CreateBatch request type.
+message MsgCreateBatch {
 
   // issuer is the address of the batch issuer.
   string issuer = 1;
@@ -137,8 +137,8 @@ message MsgCreateBatchResponse {
   string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
 }
 
-// MsgSendRequest is the Msg/Send request type.
-message MsgSendRequest {
+// MsgSend is the Msg/Send request type.
+message MsgSend {
 
   // sender is the address of the account sending credits.
   string sender = 1;
@@ -183,8 +183,8 @@ message MsgSendRequest {
 // MsgSendResponse is the Msg/Send response type.
 message MsgSendResponse {}
 
-// MsgRetireRequest is the Msg/Retire request type.
-message MsgRetireRequest {
+// MsgRetire is the Msg/Retire request type.
+message MsgRetire {
 
   // holder is the credit holder address.
   string holder = 1;
@@ -212,11 +212,11 @@ message MsgRetireRequest {
   string location = 3;
 }
 
-// MsgRetireRequest is the Msg/Retire response type.
+// MsgRetire is the Msg/Retire response type.
 message MsgRetireResponse {}
 
-// MsgCancelRequest is the Msg/Cancel request type.
-message MsgCancelRequest {
+// MsgCancel is the Msg/Cancel request type.
+message MsgCancel {
 
   // holder is the credit holder address.
   string holder = 1;
@@ -240,8 +240,8 @@ message MsgCancelRequest {
 // MsgCancelResponse is the Msg/Cancel response type.
 message MsgCancelResponse {}
 
-// MsgRetireRequest is the Msg/SetPrecision request type.
-message MsgSetPrecisionRequest {
+// MsgRetire is the Msg/SetPrecision request type.
+message MsgSetPrecision {
 
   // issuer is the address of the batch issuer.
   string issuer = 1;
@@ -257,5 +257,5 @@ message MsgSetPrecisionRequest {
       [ (gogoproto.moretags) = "yaml:\"max_decimal_places\"" ];
 }
 
-// MsgRetireRequest is the Msg/SetPrecision response type.
+// MsgRetire is the Msg/SetPrecision response type.
 message MsgSetPrecisionResponse {}

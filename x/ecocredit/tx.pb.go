@@ -32,8 +32,8 @@ var _ = time.Kitchen
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgCreateClassRequest is the Msg/CreateClass request type.
-type MsgCreateClassRequest struct {
+// MsgCreateClass is the Msg/CreateClass request type.
+type MsgCreateClass struct {
 	// designer is the address of the account which designed the credit class. The
 	// designer has special permissions to change the list of issuers and perform
 	// other administrative operations.
@@ -44,18 +44,18 @@ type MsgCreateClassRequest struct {
 	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
-func (m *MsgCreateClassRequest) Reset()         { *m = MsgCreateClassRequest{} }
-func (m *MsgCreateClassRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateClassRequest) ProtoMessage()    {}
-func (*MsgCreateClassRequest) Descriptor() ([]byte, []int) {
+func (m *MsgCreateClass) Reset()         { *m = MsgCreateClass{} }
+func (m *MsgCreateClass) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateClass) ProtoMessage()    {}
+func (*MsgCreateClass) Descriptor() ([]byte, []int) {
 	return fileDescriptor_96891bdd11ac56ed, []int{0}
 }
-func (m *MsgCreateClassRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateClass) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCreateClassRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateClass) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCreateClassRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateClass.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -65,33 +65,33 @@ func (m *MsgCreateClassRequest) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *MsgCreateClassRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateClassRequest.Merge(m, src)
+func (m *MsgCreateClass) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateClass.Merge(m, src)
 }
-func (m *MsgCreateClassRequest) XXX_Size() int {
+func (m *MsgCreateClass) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCreateClassRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateClassRequest.DiscardUnknown(m)
+func (m *MsgCreateClass) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateClass.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCreateClassRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateClass proto.InternalMessageInfo
 
-func (m *MsgCreateClassRequest) GetDesigner() string {
+func (m *MsgCreateClass) GetDesigner() string {
 	if m != nil {
 		return m.Designer
 	}
 	return ""
 }
 
-func (m *MsgCreateClassRequest) GetIssuers() []string {
+func (m *MsgCreateClass) GetIssuers() []string {
 	if m != nil {
 		return m.Issuers
 	}
 	return nil
 }
 
-func (m *MsgCreateClassRequest) GetMetadata() []byte {
+func (m *MsgCreateClass) GetMetadata() []byte {
 	if m != nil {
 		return m.Metadata
 	}
@@ -144,14 +144,14 @@ func (m *MsgCreateClassResponse) GetClassId() string {
 	return ""
 }
 
-// MsgCreateBatchRequest is the Msg/CreateBatch request type.
-type MsgCreateBatchRequest struct {
+// MsgCreateBatch is the Msg/CreateBatch request type.
+type MsgCreateBatch struct {
 	// issuer is the address of the batch issuer.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
 	// class_id is the unique ID of the class.
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty" yaml:"class_id"`
 	// issuance are the credits issued in the batch.
-	Issuance []*MsgCreateBatchRequest_BatchIssuance `protobuf:"bytes,3,rep,name=issuance,proto3" json:"issuance,omitempty"`
+	Issuance []*MsgCreateBatch_BatchIssuance `protobuf:"bytes,3,rep,name=issuance,proto3" json:"issuance,omitempty"`
 	// metadata is any arbitrary metadata to attached to the credit batch.
 	Metadata []byte `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// start_date is the beginning of the period during which this credit batch
@@ -162,18 +162,18 @@ type MsgCreateBatchRequest struct {
 	EndDate *time.Time `protobuf:"bytes,6,opt,name=end_date,json=endDate,proto3,stdtime" json:"end_date,omitempty" yaml:"end_date"`
 }
 
-func (m *MsgCreateBatchRequest) Reset()         { *m = MsgCreateBatchRequest{} }
-func (m *MsgCreateBatchRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateBatchRequest) ProtoMessage()    {}
-func (*MsgCreateBatchRequest) Descriptor() ([]byte, []int) {
+func (m *MsgCreateBatch) Reset()         { *m = MsgCreateBatch{} }
+func (m *MsgCreateBatch) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateBatch) ProtoMessage()    {}
+func (*MsgCreateBatch) Descriptor() ([]byte, []int) {
 	return fileDescriptor_96891bdd11ac56ed, []int{2}
 }
-func (m *MsgCreateBatchRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateBatch) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCreateBatchRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateBatch) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCreateBatchRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateBatch.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -183,54 +183,54 @@ func (m *MsgCreateBatchRequest) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *MsgCreateBatchRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateBatchRequest.Merge(m, src)
+func (m *MsgCreateBatch) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateBatch.Merge(m, src)
 }
-func (m *MsgCreateBatchRequest) XXX_Size() int {
+func (m *MsgCreateBatch) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCreateBatchRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateBatchRequest.DiscardUnknown(m)
+func (m *MsgCreateBatch) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateBatch.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCreateBatchRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateBatch proto.InternalMessageInfo
 
-func (m *MsgCreateBatchRequest) GetIssuer() string {
+func (m *MsgCreateBatch) GetIssuer() string {
 	if m != nil {
 		return m.Issuer
 	}
 	return ""
 }
 
-func (m *MsgCreateBatchRequest) GetClassId() string {
+func (m *MsgCreateBatch) GetClassId() string {
 	if m != nil {
 		return m.ClassId
 	}
 	return ""
 }
 
-func (m *MsgCreateBatchRequest) GetIssuance() []*MsgCreateBatchRequest_BatchIssuance {
+func (m *MsgCreateBatch) GetIssuance() []*MsgCreateBatch_BatchIssuance {
 	if m != nil {
 		return m.Issuance
 	}
 	return nil
 }
 
-func (m *MsgCreateBatchRequest) GetMetadata() []byte {
+func (m *MsgCreateBatch) GetMetadata() []byte {
 	if m != nil {
 		return m.Metadata
 	}
 	return nil
 }
 
-func (m *MsgCreateBatchRequest) GetStartDate() *time.Time {
+func (m *MsgCreateBatch) GetStartDate() *time.Time {
 	if m != nil {
 		return m.StartDate
 	}
 	return nil
 }
 
-func (m *MsgCreateBatchRequest) GetEndDate() *time.Time {
+func (m *MsgCreateBatch) GetEndDate() *time.Time {
 	if m != nil {
 		return m.EndDate
 	}
@@ -239,7 +239,7 @@ func (m *MsgCreateBatchRequest) GetEndDate() *time.Time {
 
 // BatchIssuance represents the issuance of some credits in a batch to a
 // single recipient.
-type MsgCreateBatchRequest_BatchIssuance struct {
+type MsgCreateBatch_BatchIssuance struct {
 	// recipient is the account of the recipient.
 	Recipient string `protobuf:"bytes,1,opt,name=recipient,proto3" json:"recipient,omitempty"`
 	// tradable_amount is the number of credits in this issuance that can be
@@ -258,18 +258,18 @@ type MsgCreateBatchRequest_BatchIssuance struct {
 	RetirementLocation string `protobuf:"bytes,4,opt,name=retirement_location,json=retirementLocation,proto3" json:"retirement_location,omitempty" yaml:"retirement_location"`
 }
 
-func (m *MsgCreateBatchRequest_BatchIssuance) Reset()         { *m = MsgCreateBatchRequest_BatchIssuance{} }
-func (m *MsgCreateBatchRequest_BatchIssuance) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateBatchRequest_BatchIssuance) ProtoMessage()    {}
-func (*MsgCreateBatchRequest_BatchIssuance) Descriptor() ([]byte, []int) {
+func (m *MsgCreateBatch_BatchIssuance) Reset()         { *m = MsgCreateBatch_BatchIssuance{} }
+func (m *MsgCreateBatch_BatchIssuance) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateBatch_BatchIssuance) ProtoMessage()    {}
+func (*MsgCreateBatch_BatchIssuance) Descriptor() ([]byte, []int) {
 	return fileDescriptor_96891bdd11ac56ed, []int{2, 0}
 }
-func (m *MsgCreateBatchRequest_BatchIssuance) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateBatch_BatchIssuance) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCreateBatchRequest_BatchIssuance) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateBatch_BatchIssuance) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCreateBatchRequest_BatchIssuance.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateBatch_BatchIssuance.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -279,40 +279,40 @@ func (m *MsgCreateBatchRequest_BatchIssuance) XXX_Marshal(b []byte, deterministi
 		return b[:n], nil
 	}
 }
-func (m *MsgCreateBatchRequest_BatchIssuance) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateBatchRequest_BatchIssuance.Merge(m, src)
+func (m *MsgCreateBatch_BatchIssuance) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateBatch_BatchIssuance.Merge(m, src)
 }
-func (m *MsgCreateBatchRequest_BatchIssuance) XXX_Size() int {
+func (m *MsgCreateBatch_BatchIssuance) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCreateBatchRequest_BatchIssuance) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateBatchRequest_BatchIssuance.DiscardUnknown(m)
+func (m *MsgCreateBatch_BatchIssuance) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateBatch_BatchIssuance.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCreateBatchRequest_BatchIssuance proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateBatch_BatchIssuance proto.InternalMessageInfo
 
-func (m *MsgCreateBatchRequest_BatchIssuance) GetRecipient() string {
+func (m *MsgCreateBatch_BatchIssuance) GetRecipient() string {
 	if m != nil {
 		return m.Recipient
 	}
 	return ""
 }
 
-func (m *MsgCreateBatchRequest_BatchIssuance) GetTradableAmount() string {
+func (m *MsgCreateBatch_BatchIssuance) GetTradableAmount() string {
 	if m != nil {
 		return m.TradableAmount
 	}
 	return ""
 }
 
-func (m *MsgCreateBatchRequest_BatchIssuance) GetRetiredAmount() string {
+func (m *MsgCreateBatch_BatchIssuance) GetRetiredAmount() string {
 	if m != nil {
 		return m.RetiredAmount
 	}
 	return ""
 }
 
-func (m *MsgCreateBatchRequest_BatchIssuance) GetRetirementLocation() string {
+func (m *MsgCreateBatch_BatchIssuance) GetRetirementLocation() string {
 	if m != nil {
 		return m.RetirementLocation
 	}
@@ -365,28 +365,28 @@ func (m *MsgCreateBatchResponse) GetBatchDenom() string {
 	return ""
 }
 
-// MsgSendRequest is the Msg/Send request type.
-type MsgSendRequest struct {
+// MsgSend is the Msg/Send request type.
+type MsgSend struct {
 	// sender is the address of the account sending credits.
 	Sender string `protobuf:"bytes,1,opt,name=sender,proto3" json:"sender,omitempty"`
 	// sender is the address of the account receiving credits.
 	Recipient string `protobuf:"bytes,2,opt,name=recipient,proto3" json:"recipient,omitempty"`
 	// credits are the credits being sent.
-	Credits []*MsgSendRequest_SendCredits `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
+	Credits []*MsgSend_SendCredits `protobuf:"bytes,3,rep,name=credits,proto3" json:"credits,omitempty"`
 }
 
-func (m *MsgSendRequest) Reset()         { *m = MsgSendRequest{} }
-func (m *MsgSendRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgSendRequest) ProtoMessage()    {}
-func (*MsgSendRequest) Descriptor() ([]byte, []int) {
+func (m *MsgSend) Reset()         { *m = MsgSend{} }
+func (m *MsgSend) String() string { return proto.CompactTextString(m) }
+func (*MsgSend) ProtoMessage()    {}
+func (*MsgSend) Descriptor() ([]byte, []int) {
 	return fileDescriptor_96891bdd11ac56ed, []int{4}
 }
-func (m *MsgSendRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgSend) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSendRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgSend) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSendRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgSend.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -396,33 +396,33 @@ func (m *MsgSendRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return b[:n], nil
 	}
 }
-func (m *MsgSendRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSendRequest.Merge(m, src)
+func (m *MsgSend) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSend.Merge(m, src)
 }
-func (m *MsgSendRequest) XXX_Size() int {
+func (m *MsgSend) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSendRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSendRequest.DiscardUnknown(m)
+func (m *MsgSend) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSend.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSendRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgSend proto.InternalMessageInfo
 
-func (m *MsgSendRequest) GetSender() string {
+func (m *MsgSend) GetSender() string {
 	if m != nil {
 		return m.Sender
 	}
 	return ""
 }
 
-func (m *MsgSendRequest) GetRecipient() string {
+func (m *MsgSend) GetRecipient() string {
 	if m != nil {
 		return m.Recipient
 	}
 	return ""
 }
 
-func (m *MsgSendRequest) GetCredits() []*MsgSendRequest_SendCredits {
+func (m *MsgSend) GetCredits() []*MsgSend_SendCredits {
 	if m != nil {
 		return m.Credits
 	}
@@ -432,7 +432,7 @@ func (m *MsgSendRequest) GetCredits() []*MsgSendRequest_SendCredits {
 // SendCredits specifies a batch and the number of credits being transferred.
 // This is split into tradable credits, which will remain tradable on receipt,
 // and retired credits, which will be retired on receipt.
-type MsgSendRequest_SendCredits struct {
+type MsgSend_SendCredits struct {
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
 	// tradable_amount is the number of credits in this transfer that can be
@@ -452,18 +452,18 @@ type MsgSendRequest_SendCredits struct {
 	RetirementLocation string `protobuf:"bytes,4,opt,name=retirement_location,json=retirementLocation,proto3" json:"retirement_location,omitempty" yaml:"retirement_location"`
 }
 
-func (m *MsgSendRequest_SendCredits) Reset()         { *m = MsgSendRequest_SendCredits{} }
-func (m *MsgSendRequest_SendCredits) String() string { return proto.CompactTextString(m) }
-func (*MsgSendRequest_SendCredits) ProtoMessage()    {}
-func (*MsgSendRequest_SendCredits) Descriptor() ([]byte, []int) {
+func (m *MsgSend_SendCredits) Reset()         { *m = MsgSend_SendCredits{} }
+func (m *MsgSend_SendCredits) String() string { return proto.CompactTextString(m) }
+func (*MsgSend_SendCredits) ProtoMessage()    {}
+func (*MsgSend_SendCredits) Descriptor() ([]byte, []int) {
 	return fileDescriptor_96891bdd11ac56ed, []int{4, 0}
 }
-func (m *MsgSendRequest_SendCredits) XXX_Unmarshal(b []byte) error {
+func (m *MsgSend_SendCredits) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSendRequest_SendCredits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgSend_SendCredits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSendRequest_SendCredits.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgSend_SendCredits.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -473,40 +473,40 @@ func (m *MsgSendRequest_SendCredits) XXX_Marshal(b []byte, deterministic bool) (
 		return b[:n], nil
 	}
 }
-func (m *MsgSendRequest_SendCredits) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSendRequest_SendCredits.Merge(m, src)
+func (m *MsgSend_SendCredits) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSend_SendCredits.Merge(m, src)
 }
-func (m *MsgSendRequest_SendCredits) XXX_Size() int {
+func (m *MsgSend_SendCredits) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSendRequest_SendCredits) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSendRequest_SendCredits.DiscardUnknown(m)
+func (m *MsgSend_SendCredits) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSend_SendCredits.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSendRequest_SendCredits proto.InternalMessageInfo
+var xxx_messageInfo_MsgSend_SendCredits proto.InternalMessageInfo
 
-func (m *MsgSendRequest_SendCredits) GetBatchDenom() string {
+func (m *MsgSend_SendCredits) GetBatchDenom() string {
 	if m != nil {
 		return m.BatchDenom
 	}
 	return ""
 }
 
-func (m *MsgSendRequest_SendCredits) GetTradableAmount() string {
+func (m *MsgSend_SendCredits) GetTradableAmount() string {
 	if m != nil {
 		return m.TradableAmount
 	}
 	return ""
 }
 
-func (m *MsgSendRequest_SendCredits) GetRetiredAmount() string {
+func (m *MsgSend_SendCredits) GetRetiredAmount() string {
 	if m != nil {
 		return m.RetiredAmount
 	}
 	return ""
 }
 
-func (m *MsgSendRequest_SendCredits) GetRetirementLocation() string {
+func (m *MsgSend_SendCredits) GetRetirementLocation() string {
 	if m != nil {
 		return m.RetirementLocation
 	}
@@ -550,12 +550,12 @@ func (m *MsgSendResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgSendResponse proto.InternalMessageInfo
 
-// MsgRetireRequest is the Msg/Retire request type.
-type MsgRetireRequest struct {
+// MsgRetire is the Msg/Retire request type.
+type MsgRetire struct {
 	// holder is the credit holder address.
 	Holder string `protobuf:"bytes,1,opt,name=holder,proto3" json:"holder,omitempty"`
 	// credits are the credits being retired.
-	Credits []*MsgRetireRequest_RetireCredits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
+	Credits []*MsgRetire_RetireCredits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
 	// location is the location of the beneficiary or buyer of the retired
 	// credits. It is a string of the form
 	// <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
@@ -564,18 +564,18 @@ type MsgRetireRequest struct {
 	Location string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 }
 
-func (m *MsgRetireRequest) Reset()         { *m = MsgRetireRequest{} }
-func (m *MsgRetireRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgRetireRequest) ProtoMessage()    {}
-func (*MsgRetireRequest) Descriptor() ([]byte, []int) {
+func (m *MsgRetire) Reset()         { *m = MsgRetire{} }
+func (m *MsgRetire) String() string { return proto.CompactTextString(m) }
+func (*MsgRetire) ProtoMessage()    {}
+func (*MsgRetire) Descriptor() ([]byte, []int) {
 	return fileDescriptor_96891bdd11ac56ed, []int{6}
 }
-func (m *MsgRetireRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgRetire) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRetireRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRetire) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRetireRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRetire.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -585,33 +585,33 @@ func (m *MsgRetireRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return b[:n], nil
 	}
 }
-func (m *MsgRetireRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRetireRequest.Merge(m, src)
+func (m *MsgRetire) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRetire.Merge(m, src)
 }
-func (m *MsgRetireRequest) XXX_Size() int {
+func (m *MsgRetire) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRetireRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRetireRequest.DiscardUnknown(m)
+func (m *MsgRetire) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRetire.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRetireRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgRetire proto.InternalMessageInfo
 
-func (m *MsgRetireRequest) GetHolder() string {
+func (m *MsgRetire) GetHolder() string {
 	if m != nil {
 		return m.Holder
 	}
 	return ""
 }
 
-func (m *MsgRetireRequest) GetCredits() []*MsgRetireRequest_RetireCredits {
+func (m *MsgRetire) GetCredits() []*MsgRetire_RetireCredits {
 	if m != nil {
 		return m.Credits
 	}
 	return nil
 }
 
-func (m *MsgRetireRequest) GetLocation() string {
+func (m *MsgRetire) GetLocation() string {
 	if m != nil {
 		return m.Location
 	}
@@ -619,7 +619,7 @@ func (m *MsgRetireRequest) GetLocation() string {
 }
 
 // RetireCredits specifies a batch and the number of credits being retired.
-type MsgRetireRequest_RetireCredits struct {
+type MsgRetire_RetireCredits struct {
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
 	// amount is the number of credits being retired.
@@ -628,18 +628,18 @@ type MsgRetireRequest_RetireCredits struct {
 	Amount string `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
-func (m *MsgRetireRequest_RetireCredits) Reset()         { *m = MsgRetireRequest_RetireCredits{} }
-func (m *MsgRetireRequest_RetireCredits) String() string { return proto.CompactTextString(m) }
-func (*MsgRetireRequest_RetireCredits) ProtoMessage()    {}
-func (*MsgRetireRequest_RetireCredits) Descriptor() ([]byte, []int) {
+func (m *MsgRetire_RetireCredits) Reset()         { *m = MsgRetire_RetireCredits{} }
+func (m *MsgRetire_RetireCredits) String() string { return proto.CompactTextString(m) }
+func (*MsgRetire_RetireCredits) ProtoMessage()    {}
+func (*MsgRetire_RetireCredits) Descriptor() ([]byte, []int) {
 	return fileDescriptor_96891bdd11ac56ed, []int{6, 0}
 }
-func (m *MsgRetireRequest_RetireCredits) XXX_Unmarshal(b []byte) error {
+func (m *MsgRetire_RetireCredits) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgRetireRequest_RetireCredits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgRetire_RetireCredits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgRetireRequest_RetireCredits.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgRetire_RetireCredits.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -649,33 +649,33 @@ func (m *MsgRetireRequest_RetireCredits) XXX_Marshal(b []byte, deterministic boo
 		return b[:n], nil
 	}
 }
-func (m *MsgRetireRequest_RetireCredits) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgRetireRequest_RetireCredits.Merge(m, src)
+func (m *MsgRetire_RetireCredits) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgRetire_RetireCredits.Merge(m, src)
 }
-func (m *MsgRetireRequest_RetireCredits) XXX_Size() int {
+func (m *MsgRetire_RetireCredits) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgRetireRequest_RetireCredits) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgRetireRequest_RetireCredits.DiscardUnknown(m)
+func (m *MsgRetire_RetireCredits) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgRetire_RetireCredits.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgRetireRequest_RetireCredits proto.InternalMessageInfo
+var xxx_messageInfo_MsgRetire_RetireCredits proto.InternalMessageInfo
 
-func (m *MsgRetireRequest_RetireCredits) GetBatchDenom() string {
+func (m *MsgRetire_RetireCredits) GetBatchDenom() string {
 	if m != nil {
 		return m.BatchDenom
 	}
 	return ""
 }
 
-func (m *MsgRetireRequest_RetireCredits) GetAmount() string {
+func (m *MsgRetire_RetireCredits) GetAmount() string {
 	if m != nil {
 		return m.Amount
 	}
 	return ""
 }
 
-// MsgRetireRequest is the Msg/Retire response type.
+// MsgRetire is the Msg/Retire response type.
 type MsgRetireResponse struct {
 }
 
@@ -712,26 +712,26 @@ func (m *MsgRetireResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgRetireResponse proto.InternalMessageInfo
 
-// MsgCancelRequest is the Msg/Cancel request type.
-type MsgCancelRequest struct {
+// MsgCancel is the Msg/Cancel request type.
+type MsgCancel struct {
 	// holder is the credit holder address.
 	Holder string `protobuf:"bytes,1,opt,name=holder,proto3" json:"holder,omitempty"`
 	// credits are the credits being cancelled.
-	Credits []*MsgCancelRequest_CancelCredits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
+	Credits []*MsgCancel_CancelCredits `protobuf:"bytes,2,rep,name=credits,proto3" json:"credits,omitempty"`
 }
 
-func (m *MsgCancelRequest) Reset()         { *m = MsgCancelRequest{} }
-func (m *MsgCancelRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgCancelRequest) ProtoMessage()    {}
-func (*MsgCancelRequest) Descriptor() ([]byte, []int) {
+func (m *MsgCancel) Reset()         { *m = MsgCancel{} }
+func (m *MsgCancel) String() string { return proto.CompactTextString(m) }
+func (*MsgCancel) ProtoMessage()    {}
+func (*MsgCancel) Descriptor() ([]byte, []int) {
 	return fileDescriptor_96891bdd11ac56ed, []int{8}
 }
-func (m *MsgCancelRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgCancel) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCancelRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCancel) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCancelRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCancel.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -741,26 +741,26 @@ func (m *MsgCancelRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return b[:n], nil
 	}
 }
-func (m *MsgCancelRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCancelRequest.Merge(m, src)
+func (m *MsgCancel) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCancel.Merge(m, src)
 }
-func (m *MsgCancelRequest) XXX_Size() int {
+func (m *MsgCancel) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCancelRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCancelRequest.DiscardUnknown(m)
+func (m *MsgCancel) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCancel.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCancelRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgCancel proto.InternalMessageInfo
 
-func (m *MsgCancelRequest) GetHolder() string {
+func (m *MsgCancel) GetHolder() string {
 	if m != nil {
 		return m.Holder
 	}
 	return ""
 }
 
-func (m *MsgCancelRequest) GetCredits() []*MsgCancelRequest_CancelCredits {
+func (m *MsgCancel) GetCredits() []*MsgCancel_CancelCredits {
 	if m != nil {
 		return m.Credits
 	}
@@ -768,7 +768,7 @@ func (m *MsgCancelRequest) GetCredits() []*MsgCancelRequest_CancelCredits {
 }
 
 // CancelCredits specifies a batch and the number of credits being cancelled.
-type MsgCancelRequest_CancelCredits struct {
+type MsgCancel_CancelCredits struct {
 	// batch_denom is the unique ID of the credit batch.
 	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
 	// amount is the number of credits being cancelled.
@@ -777,18 +777,18 @@ type MsgCancelRequest_CancelCredits struct {
 	Amount string `protobuf:"bytes,2,opt,name=amount,proto3" json:"amount,omitempty"`
 }
 
-func (m *MsgCancelRequest_CancelCredits) Reset()         { *m = MsgCancelRequest_CancelCredits{} }
-func (m *MsgCancelRequest_CancelCredits) String() string { return proto.CompactTextString(m) }
-func (*MsgCancelRequest_CancelCredits) ProtoMessage()    {}
-func (*MsgCancelRequest_CancelCredits) Descriptor() ([]byte, []int) {
+func (m *MsgCancel_CancelCredits) Reset()         { *m = MsgCancel_CancelCredits{} }
+func (m *MsgCancel_CancelCredits) String() string { return proto.CompactTextString(m) }
+func (*MsgCancel_CancelCredits) ProtoMessage()    {}
+func (*MsgCancel_CancelCredits) Descriptor() ([]byte, []int) {
 	return fileDescriptor_96891bdd11ac56ed, []int{8, 0}
 }
-func (m *MsgCancelRequest_CancelCredits) XXX_Unmarshal(b []byte) error {
+func (m *MsgCancel_CancelCredits) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCancelRequest_CancelCredits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCancel_CancelCredits) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCancelRequest_CancelCredits.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCancel_CancelCredits.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -798,26 +798,26 @@ func (m *MsgCancelRequest_CancelCredits) XXX_Marshal(b []byte, deterministic boo
 		return b[:n], nil
 	}
 }
-func (m *MsgCancelRequest_CancelCredits) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCancelRequest_CancelCredits.Merge(m, src)
+func (m *MsgCancel_CancelCredits) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCancel_CancelCredits.Merge(m, src)
 }
-func (m *MsgCancelRequest_CancelCredits) XXX_Size() int {
+func (m *MsgCancel_CancelCredits) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCancelRequest_CancelCredits) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCancelRequest_CancelCredits.DiscardUnknown(m)
+func (m *MsgCancel_CancelCredits) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCancel_CancelCredits.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCancelRequest_CancelCredits proto.InternalMessageInfo
+var xxx_messageInfo_MsgCancel_CancelCredits proto.InternalMessageInfo
 
-func (m *MsgCancelRequest_CancelCredits) GetBatchDenom() string {
+func (m *MsgCancel_CancelCredits) GetBatchDenom() string {
 	if m != nil {
 		return m.BatchDenom
 	}
 	return ""
 }
 
-func (m *MsgCancelRequest_CancelCredits) GetAmount() string {
+func (m *MsgCancel_CancelCredits) GetAmount() string {
 	if m != nil {
 		return m.Amount
 	}
@@ -861,8 +861,8 @@ func (m *MsgCancelResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgCancelResponse proto.InternalMessageInfo
 
-// MsgRetireRequest is the Msg/SetPrecision request type.
-type MsgSetPrecisionRequest struct {
+// MsgRetire is the Msg/SetPrecision request type.
+type MsgSetPrecision struct {
 	// issuer is the address of the batch issuer.
 	Issuer string `protobuf:"bytes,1,opt,name=issuer,proto3" json:"issuer,omitempty"`
 	// batch_denom is the unique ID of the credit batch.
@@ -874,18 +874,18 @@ type MsgSetPrecisionRequest struct {
 	MaxDecimalPlaces uint32 `protobuf:"varint,3,opt,name=max_decimal_places,json=maxDecimalPlaces,proto3" json:"max_decimal_places,omitempty" yaml:"max_decimal_places"`
 }
 
-func (m *MsgSetPrecisionRequest) Reset()         { *m = MsgSetPrecisionRequest{} }
-func (m *MsgSetPrecisionRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgSetPrecisionRequest) ProtoMessage()    {}
-func (*MsgSetPrecisionRequest) Descriptor() ([]byte, []int) {
+func (m *MsgSetPrecision) Reset()         { *m = MsgSetPrecision{} }
+func (m *MsgSetPrecision) String() string { return proto.CompactTextString(m) }
+func (*MsgSetPrecision) ProtoMessage()    {}
+func (*MsgSetPrecision) Descriptor() ([]byte, []int) {
 	return fileDescriptor_96891bdd11ac56ed, []int{10}
 }
-func (m *MsgSetPrecisionRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgSetPrecision) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSetPrecisionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgSetPrecision) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSetPrecisionRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgSetPrecision.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -895,40 +895,40 @@ func (m *MsgSetPrecisionRequest) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *MsgSetPrecisionRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSetPrecisionRequest.Merge(m, src)
+func (m *MsgSetPrecision) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSetPrecision.Merge(m, src)
 }
-func (m *MsgSetPrecisionRequest) XXX_Size() int {
+func (m *MsgSetPrecision) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSetPrecisionRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSetPrecisionRequest.DiscardUnknown(m)
+func (m *MsgSetPrecision) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSetPrecision.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSetPrecisionRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgSetPrecision proto.InternalMessageInfo
 
-func (m *MsgSetPrecisionRequest) GetIssuer() string {
+func (m *MsgSetPrecision) GetIssuer() string {
 	if m != nil {
 		return m.Issuer
 	}
 	return ""
 }
 
-func (m *MsgSetPrecisionRequest) GetBatchDenom() string {
+func (m *MsgSetPrecision) GetBatchDenom() string {
 	if m != nil {
 		return m.BatchDenom
 	}
 	return ""
 }
 
-func (m *MsgSetPrecisionRequest) GetMaxDecimalPlaces() uint32 {
+func (m *MsgSetPrecision) GetMaxDecimalPlaces() uint32 {
 	if m != nil {
 		return m.MaxDecimalPlaces
 	}
 	return 0
 }
 
-// MsgRetireRequest is the Msg/SetPrecision response type.
+// MsgRetire is the Msg/SetPrecision response type.
 type MsgSetPrecisionResponse struct {
 }
 
@@ -966,86 +966,85 @@ func (m *MsgSetPrecisionResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgSetPrecisionResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgCreateClassRequest)(nil), "regen.ecocredit.v1alpha1.MsgCreateClassRequest")
+	proto.RegisterType((*MsgCreateClass)(nil), "regen.ecocredit.v1alpha1.MsgCreateClass")
 	proto.RegisterType((*MsgCreateClassResponse)(nil), "regen.ecocredit.v1alpha1.MsgCreateClassResponse")
-	proto.RegisterType((*MsgCreateBatchRequest)(nil), "regen.ecocredit.v1alpha1.MsgCreateBatchRequest")
-	proto.RegisterType((*MsgCreateBatchRequest_BatchIssuance)(nil), "regen.ecocredit.v1alpha1.MsgCreateBatchRequest.BatchIssuance")
+	proto.RegisterType((*MsgCreateBatch)(nil), "regen.ecocredit.v1alpha1.MsgCreateBatch")
+	proto.RegisterType((*MsgCreateBatch_BatchIssuance)(nil), "regen.ecocredit.v1alpha1.MsgCreateBatch.BatchIssuance")
 	proto.RegisterType((*MsgCreateBatchResponse)(nil), "regen.ecocredit.v1alpha1.MsgCreateBatchResponse")
-	proto.RegisterType((*MsgSendRequest)(nil), "regen.ecocredit.v1alpha1.MsgSendRequest")
-	proto.RegisterType((*MsgSendRequest_SendCredits)(nil), "regen.ecocredit.v1alpha1.MsgSendRequest.SendCredits")
+	proto.RegisterType((*MsgSend)(nil), "regen.ecocredit.v1alpha1.MsgSend")
+	proto.RegisterType((*MsgSend_SendCredits)(nil), "regen.ecocredit.v1alpha1.MsgSend.SendCredits")
 	proto.RegisterType((*MsgSendResponse)(nil), "regen.ecocredit.v1alpha1.MsgSendResponse")
-	proto.RegisterType((*MsgRetireRequest)(nil), "regen.ecocredit.v1alpha1.MsgRetireRequest")
-	proto.RegisterType((*MsgRetireRequest_RetireCredits)(nil), "regen.ecocredit.v1alpha1.MsgRetireRequest.RetireCredits")
+	proto.RegisterType((*MsgRetire)(nil), "regen.ecocredit.v1alpha1.MsgRetire")
+	proto.RegisterType((*MsgRetire_RetireCredits)(nil), "regen.ecocredit.v1alpha1.MsgRetire.RetireCredits")
 	proto.RegisterType((*MsgRetireResponse)(nil), "regen.ecocredit.v1alpha1.MsgRetireResponse")
-	proto.RegisterType((*MsgCancelRequest)(nil), "regen.ecocredit.v1alpha1.MsgCancelRequest")
-	proto.RegisterType((*MsgCancelRequest_CancelCredits)(nil), "regen.ecocredit.v1alpha1.MsgCancelRequest.CancelCredits")
+	proto.RegisterType((*MsgCancel)(nil), "regen.ecocredit.v1alpha1.MsgCancel")
+	proto.RegisterType((*MsgCancel_CancelCredits)(nil), "regen.ecocredit.v1alpha1.MsgCancel.CancelCredits")
 	proto.RegisterType((*MsgCancelResponse)(nil), "regen.ecocredit.v1alpha1.MsgCancelResponse")
-	proto.RegisterType((*MsgSetPrecisionRequest)(nil), "regen.ecocredit.v1alpha1.MsgSetPrecisionRequest")
+	proto.RegisterType((*MsgSetPrecision)(nil), "regen.ecocredit.v1alpha1.MsgSetPrecision")
 	proto.RegisterType((*MsgSetPrecisionResponse)(nil), "regen.ecocredit.v1alpha1.MsgSetPrecisionResponse")
 }
 
 func init() { proto.RegisterFile("regen/ecocredit/v1alpha1/tx.proto", fileDescriptor_96891bdd11ac56ed) }
 
 var fileDescriptor_96891bdd11ac56ed = []byte{
-	// 927 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x56, 0x4f, 0x73, 0xdb, 0x44,
-	0x14, 0x8f, 0xec, 0xc6, 0x89, 0x9f, 0xeb, 0xa4, 0xd9, 0x50, 0xd7, 0xd1, 0x80, 0x6d, 0x74, 0x32,
-	0x30, 0x48, 0x4d, 0x60, 0x06, 0x86, 0x19, 0x66, 0xc0, 0xce, 0x81, 0x4e, 0x49, 0x29, 0x6a, 0x2f,
-	0xc0, 0xc1, 0x5d, 0x4b, 0x0f, 0x45, 0x83, 0xfe, 0x18, 0xed, 0x1a, 0xc2, 0x91, 0x19, 0xb8, 0xf7,
-	0x13, 0xf0, 0x31, 0xe0, 0x2b, 0x70, 0xec, 0x91, 0x93, 0xe9, 0x24, 0xdf, 0xc0, 0x67, 0x0e, 0x8c,
-	0x76, 0x57, 0xb6, 0x64, 0x43, 0x2d, 0x32, 0x70, 0xe1, 0xa6, 0xdf, 0xdb, 0xf7, 0x7e, 0xef, 0xed,
-	0x7b, 0xbf, 0xdd, 0x15, 0xbc, 0x9a, 0xa0, 0x87, 0x91, 0x85, 0x4e, 0xec, 0x24, 0xe8, 0xfa, 0xdc,
-	0xfa, 0xe6, 0x98, 0x06, 0x93, 0x73, 0x7a, 0x6c, 0xf1, 0x0b, 0x73, 0x92, 0xc4, 0x3c, 0x26, 0x6d,
-	0xe1, 0x62, 0x2e, 0x5c, 0xcc, 0xcc, 0x45, 0x7f, 0xc9, 0x8b, 0xbd, 0x58, 0x38, 0x59, 0xe9, 0x97,
-	0xf4, 0xd7, 0xbb, 0x5e, 0x1c, 0x7b, 0x01, 0x5a, 0x02, 0x8d, 0xa7, 0x5f, 0x5a, 0xdc, 0x0f, 0x91,
-	0x71, 0x1a, 0x4e, 0xa4, 0x83, 0xe1, 0xc3, 0xed, 0x33, 0xe6, 0x0d, 0x13, 0xa4, 0x1c, 0x87, 0x01,
-	0x65, 0xcc, 0xc6, 0xaf, 0xa7, 0xc8, 0x38, 0xd1, 0x61, 0xd7, 0x45, 0xe6, 0x7b, 0x11, 0x26, 0x6d,
-	0xad, 0xa7, 0xf5, 0xeb, 0xf6, 0x02, 0x93, 0x36, 0xec, 0xf8, 0x8c, 0x4d, 0x31, 0x61, 0xed, 0x4a,
-	0xaf, 0xda, 0xaf, 0xdb, 0x19, 0x4c, 0xa3, 0x42, 0xe4, 0xd4, 0xa5, 0x9c, 0xb6, 0xab, 0x3d, 0xad,
-	0x7f, 0xd3, 0x5e, 0x60, 0xe3, 0x23, 0x68, 0xad, 0xa6, 0x62, 0x93, 0x38, 0x62, 0x48, 0x4c, 0xd8,
-	0x75, 0x52, 0xc3, 0xc8, 0x77, 0x65, 0xae, 0xc1, 0xe1, 0x7c, 0xd6, 0xdd, 0xff, 0x8e, 0x86, 0xc1,
-	0x7b, 0x46, 0xb6, 0x62, 0xd8, 0x3b, 0xe2, 0xf3, 0x9e, 0x6b, 0xfc, 0xb0, 0x9d, 0xab, 0x7a, 0x40,
-	0xb9, 0x73, 0x9e, 0x55, 0xdd, 0x82, 0x9a, 0x2c, 0x45, 0xd5, 0xac, 0x50, 0x21, 0x43, 0x65, 0x73,
-	0x06, 0xf2, 0x19, 0xec, 0xa6, 0x91, 0x34, 0x72, 0xb0, 0x5d, 0xed, 0x55, 0xfb, 0x8d, 0x93, 0xf7,
-	0xcd, 0xbf, 0x6b, 0xbd, 0xf9, 0x97, 0xa5, 0x98, 0x02, 0xdc, 0x53, 0x24, 0xf6, 0x82, 0xae, 0xd0,
-	0xa2, 0x1b, 0xc5, 0x16, 0x91, 0xc7, 0x00, 0x8c, 0xd3, 0x84, 0x8f, 0x5c, 0xca, 0xb1, 0xbd, 0xdd,
-	0xd3, 0xfa, 0x8d, 0x13, 0xdd, 0x94, 0x33, 0x34, 0xb3, 0x19, 0x9a, 0x8f, 0xb3, 0x19, 0x0e, 0x8e,
-	0xe6, 0xb3, 0xee, 0x81, 0xdc, 0xc4, 0x32, 0xce, 0x78, 0xfa, 0x7b, 0x57, 0xb3, 0xeb, 0xc2, 0x70,
-	0x4a, 0x39, 0x92, 0x07, 0xb0, 0x8b, 0x91, 0x2b, 0x39, 0x6b, 0x1b, 0x39, 0xef, 0x2c, 0x1b, 0x93,
-	0x45, 0x49, 0xc6, 0x1d, 0x8c, 0xdc, 0x94, 0x4f, 0xff, 0xb1, 0x02, 0xcd, 0xc2, 0xee, 0xc8, 0xcb,
-	0x50, 0x4f, 0xd0, 0xf1, 0x27, 0x3e, 0x46, 0x5c, 0x75, 0x7e, 0x69, 0x20, 0x43, 0xd8, 0xe7, 0x09,
-	0x75, 0xe9, 0x38, 0xc0, 0x11, 0x0d, 0xe3, 0x69, 0xc4, 0xd5, 0x0c, 0xf4, 0xf9, 0xac, 0xdb, 0x92,
-	0xa9, 0x56, 0x1c, 0x0c, 0x7b, 0x2f, 0xb3, 0x7c, 0x28, 0x0c, 0xe4, 0x03, 0xd8, 0x4b, 0x90, 0xfb,
-	0x09, 0xba, 0x19, 0x47, 0x55, 0x70, 0xa4, 0x2d, 0xb8, 0x2d, 0x39, 0x8a, 0xeb, 0x86, 0xdd, 0x54,
-	0x06, 0xc5, 0xf0, 0x09, 0x1c, 0x4a, 0x43, 0x88, 0x11, 0x1f, 0x05, 0xb1, 0x43, 0xb9, 0x1f, 0x47,
-	0x62, 0x06, 0xf5, 0x41, 0x67, 0x3e, 0xeb, 0xea, 0x79, 0x9a, 0x82, 0x93, 0x61, 0x93, 0xa5, 0xf5,
-	0xe3, 0xcc, 0xf8, 0x69, 0x4e, 0xd0, 0x6a, 0xf4, 0x4a, 0xd0, 0xef, 0x40, 0x63, 0x9c, 0x1a, 0x46,
-	0x2e, 0x46, 0x71, 0xa8, 0x34, 0xdd, 0x9a, 0xcf, 0xba, 0x44, 0xa6, 0xc8, 0x2d, 0x1a, 0x36, 0x08,
-	0x74, 0x2a, 0xc0, 0x2f, 0x55, 0xd8, 0x3b, 0x63, 0xde, 0x23, 0x8c, 0xdc, 0x9c, 0xa4, 0x19, 0x46,
-	0xee, 0x52, 0xd2, 0x12, 0x15, 0x7b, 0x5e, 0x59, 0xed, 0xf9, 0x03, 0xd8, 0x91, 0x32, 0x65, 0x4a,
-	0xbf, 0x6f, 0xbf, 0x50, 0xbf, 0xb9, 0x84, 0x66, 0xfa, 0x3d, 0x94, 0xb1, 0x76, 0x46, 0xa2, 0xff,
-	0x54, 0x81, 0x46, 0x6e, 0xe1, 0xda, 0x3b, 0xfc, 0xdf, 0x8a, 0xe1, 0x00, 0xf6, 0x17, 0x7d, 0x94,
-	0x2a, 0x30, 0xfe, 0xd0, 0xe0, 0xd6, 0x19, 0xf3, 0x6c, 0xe1, 0x9c, 0x1b, 0xe7, 0x79, 0x1c, 0xe4,
-	0xc6, 0x29, 0x11, 0xb1, 0x97, 0x03, 0xab, 0x88, 0x81, 0xbd, 0xfb, 0xc2, 0x81, 0x15, 0x48, 0x4d,
-	0x89, 0x56, 0x87, 0x96, 0x5e, 0x35, 0x8b, 0x9d, 0x55, 0xe5, 0x1d, 0x9e, 0x61, 0xfd, 0x09, 0x34,
-	0x0b, 0x51, 0xd7, 0x9f, 0x68, 0x0b, 0x6a, 0xf9, 0x41, 0xda, 0x0a, 0x19, 0x87, 0x70, 0x90, 0x2b,
-	0x54, 0xf5, 0xe4, 0xb9, 0xec, 0xc9, 0x30, 0xbd, 0x36, 0x82, 0x7f, 0xb9, 0x27, 0x05, 0x52, 0x53,
-	0xa2, 0x35, 0x21, 0x3f, 0x81, 0x66, 0x61, 0xe5, 0xbf, 0xda, 0x77, 0x56, 0x8c, 0xda, 0xf7, 0xcf,
-	0x9a, 0xb8, 0x2c, 0x1e, 0x21, 0x7f, 0x98, 0x1e, 0x52, 0xe6, 0xc7, 0xd1, 0xa6, 0x37, 0x6b, 0xa5,
-	0xb0, 0x4a, 0xe9, 0xc2, 0xee, 0x03, 0x09, 0xe9, 0xc5, 0xc8, 0x45, 0xc7, 0x0f, 0x69, 0x30, 0x9a,
-	0x04, 0xd4, 0x41, 0x26, 0x04, 0xd0, 0x1c, 0xbc, 0x32, 0x9f, 0x75, 0x8f, 0x64, 0xfc, 0xba, 0x8f,
-	0x61, 0xdf, 0x0a, 0xe9, 0xc5, 0xa9, 0xb4, 0x3d, 0x94, 0xa6, 0x23, 0xb8, 0xb3, 0x56, 0xb7, 0xdc,
-	0xd3, 0xc9, 0xf7, 0xdb, 0x50, 0x3d, 0x63, 0x1e, 0x99, 0x40, 0x23, 0xf7, 0xaa, 0x13, 0xab, 0xc4,
-	0x4b, 0x99, 0xff, 0xd5, 0xd0, 0xef, 0x96, 0x0f, 0x50, 0xf7, 0xeb, 0x22, 0xa3, 0xb8, 0x76, 0x4b,
-	0x65, 0xcc, 0xbf, 0xcd, 0xa5, 0x32, 0x16, 0x6f, 0xf4, 0x2f, 0xe0, 0x46, 0x7a, 0xb6, 0x49, 0xbf,
-	0xec, 0x35, 0xaa, 0xbf, 0x56, 0xc2, 0x53, 0x91, 0x53, 0xa8, 0xc9, 0x63, 0x42, 0x5e, 0x2f, 0x7f,
-	0xe8, 0xf5, 0x37, 0x4a, 0xf9, 0x2e, 0x53, 0x48, 0x45, 0x6e, 0x48, 0x51, 0x38, 0x43, 0x1b, 0x52,
-	0x14, 0x25, 0x4e, 0x18, 0xdc, 0xcc, 0xcb, 0x84, 0xdc, 0xdd, 0xd0, 0x80, 0xb5, 0x93, 0xa0, 0x1f,
-	0xff, 0x83, 0x08, 0x99, 0x74, 0x70, 0xff, 0xd7, 0xcb, 0x8e, 0xf6, 0xec, 0xb2, 0xa3, 0x3d, 0xbf,
-	0xec, 0x68, 0x4f, 0xaf, 0x3a, 0x5b, 0xcf, 0xae, 0x3a, 0x5b, 0xbf, 0x5d, 0x75, 0xb6, 0x3e, 0x3f,
-	0xf6, 0x7c, 0x7e, 0x3e, 0x1d, 0x9b, 0x4e, 0x1c, 0x5a, 0x82, 0xf6, 0xcd, 0x08, 0xf9, 0xb7, 0x71,
-	0xf2, 0x95, 0x42, 0x01, 0xba, 0x1e, 0x26, 0xd6, 0xc5, 0xf2, 0x7f, 0x7b, 0x5c, 0x13, 0xbf, 0x43,
-	0x6f, 0xfd, 0x19, 0x00, 0x00, 0xff, 0xff, 0x75, 0xf1, 0x09, 0xcd, 0x89, 0x0b, 0x00, 0x00,
+	// 911 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x56, 0x41, 0x6f, 0xe3, 0x44,
+	0x14, 0xae, 0x93, 0x92, 0x34, 0x2f, 0x9b, 0x96, 0x4e, 0x21, 0x9b, 0x5a, 0x90, 0x64, 0xbd, 0x97,
+	0x20, 0xb4, 0x0e, 0x29, 0x12, 0x48, 0x9c, 0x20, 0xa9, 0x04, 0xab, 0x52, 0x58, 0x4c, 0x4f, 0x7b,
+	0xc9, 0x4e, 0xec, 0x87, 0x6b, 0x61, 0x7b, 0x22, 0xcf, 0x14, 0xc2, 0x0f, 0xe0, 0xbe, 0xbf, 0x80,
+	0x3b, 0x27, 0xfe, 0x06, 0xc7, 0x15, 0x17, 0x38, 0x05, 0xd4, 0xde, 0x39, 0xe4, 0xc0, 0x19, 0x79,
+	0xc6, 0x76, 0xec, 0xac, 0x76, 0x63, 0x55, 0x70, 0xd9, 0x4b, 0x92, 0xf7, 0xe6, 0x7b, 0xdf, 0x7b,
+	0xf3, 0xbe, 0x37, 0x33, 0x81, 0x7b, 0x11, 0xba, 0x18, 0x0e, 0xd1, 0x66, 0x76, 0x84, 0x8e, 0x27,
+	0x86, 0xdf, 0x8d, 0xa8, 0x3f, 0xbf, 0xa4, 0xa3, 0xa1, 0x58, 0x98, 0xf3, 0x88, 0x09, 0x46, 0x3a,
+	0x12, 0x62, 0x66, 0x10, 0x33, 0x85, 0xe8, 0x6f, 0xb8, 0xcc, 0x65, 0x12, 0x34, 0x8c, 0x7f, 0x29,
+	0xbc, 0xde, 0x73, 0x19, 0x73, 0x7d, 0x1c, 0x4a, 0x6b, 0x76, 0xf5, 0xcd, 0x50, 0x78, 0x01, 0x72,
+	0x41, 0x83, 0xb9, 0x02, 0x18, 0x33, 0xd8, 0x3f, 0xe7, 0xee, 0x24, 0x42, 0x2a, 0x70, 0xe2, 0x53,
+	0xce, 0x89, 0x0e, 0x7b, 0x0e, 0x72, 0xcf, 0x0d, 0x31, 0xea, 0x68, 0x7d, 0x6d, 0xd0, 0xb0, 0x32,
+	0x9b, 0x74, 0xa0, 0xee, 0x71, 0x7e, 0x85, 0x11, 0xef, 0x54, 0xfa, 0xd5, 0x41, 0xc3, 0x4a, 0xcd,
+	0x38, 0x2a, 0x40, 0x41, 0x1d, 0x2a, 0x68, 0xa7, 0xda, 0xd7, 0x06, 0x77, 0xac, 0xcc, 0x36, 0x3e,
+	0x83, 0x76, 0x31, 0x87, 0x85, 0x7c, 0xce, 0x42, 0x8e, 0xc4, 0x84, 0x3d, 0x3b, 0x76, 0x4c, 0x3d,
+	0x47, 0xe5, 0x1a, 0x1f, 0xad, 0x96, 0xbd, 0x83, 0x1f, 0x68, 0xe0, 0x7f, 0x64, 0xa4, 0x2b, 0x86,
+	0x55, 0x97, 0x3f, 0x1f, 0x3a, 0xc6, 0x3f, 0xbb, 0xb9, 0x72, 0xc7, 0x54, 0xd8, 0x97, 0xa4, 0x0d,
+	0x35, 0x55, 0x43, 0x52, 0x6c, 0x62, 0x15, 0xa8, 0x2b, 0xdb, 0xa9, 0x89, 0x05, 0x7b, 0x71, 0x24,
+	0x0d, 0x6d, 0xec, 0x54, 0xfb, 0xd5, 0x41, 0xf3, 0xe4, 0x03, 0xf3, 0x45, 0xcd, 0x36, 0x8b, 0x35,
+	0x98, 0xf2, 0xf3, 0x61, 0x12, 0x6d, 0x65, 0x3c, 0x85, 0xa6, 0xec, 0x16, 0x9b, 0x42, 0x2e, 0x00,
+	0xb8, 0xa0, 0x91, 0x98, 0x3a, 0x54, 0x60, 0xe7, 0xb5, 0xbe, 0x36, 0x68, 0x9e, 0xe8, 0xa6, 0x92,
+	0xcb, 0x4c, 0xe5, 0x32, 0x2f, 0x52, 0xb9, 0xc6, 0xc7, 0xab, 0x65, 0xef, 0x50, 0x55, 0xbf, 0x8e,
+	0x33, 0x9e, 0xfe, 0xd9, 0xd3, 0xac, 0x86, 0x74, 0x9c, 0x52, 0x81, 0xe4, 0x0b, 0xd8, 0xc3, 0xd0,
+	0x51, 0x9c, 0xb5, 0xad, 0x9c, 0x77, 0xd7, 0x1d, 0x49, 0xa3, 0x14, 0x63, 0x1d, 0x43, 0x27, 0xe6,
+	0xd3, 0x7f, 0xac, 0x40, 0xab, 0xb0, 0x3b, 0xf2, 0x16, 0x34, 0x22, 0xb4, 0xbd, 0xb9, 0x87, 0xa1,
+	0x48, 0x5a, 0xbe, 0x76, 0x90, 0x09, 0x1c, 0x88, 0x88, 0x3a, 0x74, 0xe6, 0xe3, 0x94, 0x06, 0xec,
+	0x2a, 0x14, 0x49, 0xf3, 0xf5, 0xd5, 0xb2, 0xd7, 0x56, 0xa9, 0x36, 0x00, 0x86, 0xb5, 0x9f, 0x7a,
+	0x3e, 0x91, 0x0e, 0xf2, 0x31, 0xec, 0x47, 0x28, 0xbc, 0x08, 0x9d, 0x94, 0xa3, 0x2a, 0x39, 0xe2,
+	0x16, 0xbc, 0xa9, 0x38, 0x8a, 0xeb, 0x86, 0xd5, 0x4a, 0x1c, 0x09, 0xc3, 0x97, 0x70, 0xa4, 0x1c,
+	0x01, 0x86, 0x62, 0xea, 0x33, 0x9b, 0x0a, 0x8f, 0x85, 0x52, 0x83, 0xc6, 0xb8, 0xbb, 0x5a, 0xf6,
+	0xf4, 0x3c, 0x4d, 0x01, 0x64, 0x58, 0x64, 0xed, 0xfd, 0x3c, 0x75, 0x7e, 0x95, 0x1b, 0x61, 0xd9,
+	0x8f, 0x6c, 0x84, 0x3f, 0x84, 0xe6, 0x2c, 0x76, 0x4c, 0x1d, 0x0c, 0x59, 0x90, 0x4c, 0x71, 0x7b,
+	0xb5, 0xec, 0x11, 0x95, 0x22, 0xb7, 0x68, 0x58, 0x20, 0xad, 0x53, 0x69, 0xfc, 0x5c, 0x85, 0xfa,
+	0x39, 0x77, 0xbf, 0xc6, 0xd0, 0x89, 0x87, 0x98, 0x63, 0xe8, 0xac, 0x87, 0x58, 0x59, 0xc5, 0x66,
+	0x57, 0x36, 0x9b, 0xfd, 0x29, 0xd4, 0xd5, 0x60, 0xf2, 0x64, 0x62, 0x1f, 0xbc, 0x74, 0x62, 0xe3,
+	0x4c, 0x66, 0xfc, 0x31, 0x51, 0x41, 0x56, 0x1a, 0xad, 0xff, 0x54, 0x81, 0x66, 0x6e, 0xe1, 0xd6,
+	0x7b, 0x7a, 0x65, 0xe5, 0x3f, 0x84, 0x83, 0xa4, 0x81, 0xa9, 0xee, 0xc6, 0xdf, 0x1a, 0x34, 0xce,
+	0xb9, 0x6b, 0x49, 0x70, 0x2c, 0xe0, 0x25, 0xf3, 0x73, 0x02, 0x2a, 0x8b, 0x9c, 0xad, 0x25, 0xaa,
+	0x48, 0x89, 0x46, 0x2f, 0x95, 0x48, 0xb1, 0x99, 0xea, 0x6b, 0x53, 0xa6, 0xf8, 0x3a, 0xc9, 0xf6,
+	0x52, 0x55, 0x37, 0x73, 0x6a, 0xeb, 0x4f, 0xa0, 0x55, 0x88, 0xba, 0xbd, 0x86, 0x6d, 0xa8, 0xe5,
+	0xa5, 0xb3, 0x12, 0xcb, 0x38, 0x82, 0xc3, 0xac, 0xc2, 0xac, 0x0b, 0xbf, 0xa9, 0x2e, 0x4c, 0xe2,
+	0xab, 0xc1, 0xff, 0xaf, 0xba, 0xa0, 0xd8, 0x4c, 0xf5, 0xf5, 0xdc, 0xb0, 0x3e, 0x81, 0x56, 0x61,
+	0xe5, 0xff, 0xda, 0xa9, 0x4a, 0x92, 0xed, 0xf4, 0x17, 0x2d, 0x99, 0x01, 0xf1, 0x28, 0x3e, 0x81,
+	0xdc, 0x63, 0xe1, 0x0b, 0xdf, 0x9e, 0x8d, 0x8a, 0x2a, 0xa5, 0x2b, 0x3a, 0x03, 0x12, 0xd0, 0xc5,
+	0xd4, 0x41, 0xdb, 0x0b, 0xa8, 0x3f, 0x9d, 0xfb, 0xd4, 0x46, 0x2e, 0xb5, 0x6e, 0x8d, 0xdf, 0x5e,
+	0x2d, 0x7b, 0xc7, 0x2a, 0xfe, 0x79, 0x8c, 0x61, 0xbd, 0x1e, 0xd0, 0xc5, 0xa9, 0xf2, 0x3d, 0x52,
+	0xae, 0x63, 0xb8, 0xbb, 0x51, 0x70, 0xba, 0x99, 0x93, 0xdf, 0x77, 0xa1, 0x7a, 0xce, 0x5d, 0xe2,
+	0x41, 0x33, 0xff, 0xf4, 0x0f, 0x4a, 0xbc, 0x78, 0x12, 0xa9, 0xbf, 0x57, 0x16, 0x99, 0xdd, 0x93,
+	0x59, 0x2a, 0xf5, 0x6c, 0x0f, 0xca, 0x3e, 0xae, 0xa5, 0x52, 0x15, 0xaf, 0xe4, 0x0b, 0xd8, 0x95,
+	0xb7, 0xea, 0xbd, 0xad, 0xd7, 0xa1, 0xfe, 0xce, 0x56, 0x48, 0xc6, 0xfa, 0x18, 0x6a, 0xc9, 0x61,
+	0xbf, 0x5f, 0xe2, 0x0c, 0xeb, 0xef, 0x96, 0x00, 0xe5, 0xb9, 0x93, 0x23, 0x74, 0xbf, 0xc4, 0xc9,
+	0xd8, 0xc2, 0x5d, 0x1c, 0x5c, 0xe2, 0xc3, 0x9d, 0xc2, 0xd0, 0x6e, 0xdb, 0xf2, 0x1a, 0xaa, 0x8f,
+	0x4a, 0x43, 0xd3, 0x6c, 0xe3, 0xb3, 0x5f, 0xaf, 0xbb, 0xda, 0xb3, 0xeb, 0xae, 0xf6, 0xd7, 0x75,
+	0x57, 0x7b, 0x7a, 0xd3, 0xdd, 0x79, 0x76, 0xd3, 0xdd, 0xf9, 0xe3, 0xa6, 0xbb, 0xf3, 0x78, 0xe4,
+	0x7a, 0xe2, 0xf2, 0x6a, 0x66, 0xda, 0x2c, 0x18, 0x4a, 0xda, 0x07, 0x21, 0x8a, 0xef, 0x59, 0xf4,
+	0x6d, 0x62, 0xf9, 0xe8, 0xb8, 0x18, 0x0d, 0x17, 0xeb, 0xff, 0xbf, 0xb3, 0x9a, 0xfc, 0xcf, 0xf2,
+	0xfe, 0xbf, 0x01, 0x00, 0x00, 0xff, 0xff, 0xe3, 0x65, 0x81, 0xb8, 0x19, 0x0b, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1062,20 +1061,20 @@ const _ = grpc.SupportPackageIsVersion4
 type MsgClient interface {
 	// CreateClass creates a new credit class with an approved list of issuers and
 	// optional metadata.
-	CreateClass(ctx context.Context, in *MsgCreateClassRequest, opts ...grpc.CallOption) (*MsgCreateClassResponse, error)
+	CreateClass(ctx context.Context, in *MsgCreateClass, opts ...grpc.CallOption) (*MsgCreateClassResponse, error)
 	// CreateBatch creates a new batch of credits for an existing credit class.
 	// This will create a new batch denom with a fixed supply. Issued credits can
 	// be distributed to recipients in either tradable or retired form.
-	CreateBatch(ctx context.Context, in *MsgCreateBatchRequest, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error)
+	CreateBatch(ctx context.Context, in *MsgCreateBatch, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error)
 	// Send sends tradeable credits from one account to another account. Sent
 	// credits can either be tradable or retired on receipt.
-	Send(ctx context.Context, in *MsgSendRequest, opts ...grpc.CallOption) (*MsgSendResponse, error)
+	Send(ctx context.Context, in *MsgSend, opts ...grpc.CallOption) (*MsgSendResponse, error)
 	// Retire retires a specified number of credits in the holder's account.
-	Retire(ctx context.Context, in *MsgRetireRequest, opts ...grpc.CallOption) (*MsgRetireResponse, error)
+	Retire(ctx context.Context, in *MsgRetire, opts ...grpc.CallOption) (*MsgRetireResponse, error)
 	// Cancel removes a number of credits from the holder's account and also
 	// deducts them from the tradable supply, effectively cancelling their
 	// issuance on Regen Ledger
-	Cancel(ctx context.Context, in *MsgCancelRequest, opts ...grpc.CallOption) (*MsgCancelResponse, error)
+	Cancel(ctx context.Context, in *MsgCancel, opts ...grpc.CallOption) (*MsgCancelResponse, error)
 	// SetPrecision allows an issuer to increase the decimal precision of a credit
 	// batch. It is an experimental feature to concretely explore an idea proposed
 	// in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
@@ -1096,7 +1095,7 @@ type MsgClient interface {
 	// precision so under the hood it is still basically an integer, but the fixed
 	// precision can be increased so its more adaptable long term than just an
 	// integer.
-	SetPrecision(ctx context.Context, in *MsgSetPrecisionRequest, opts ...grpc.CallOption) (*MsgSetPrecisionResponse, error)
+	SetPrecision(ctx context.Context, in *MsgSetPrecision, opts ...grpc.CallOption) (*MsgSetPrecisionResponse, error)
 }
 
 type msgClient struct {
@@ -1107,7 +1106,7 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) CreateClass(ctx context.Context, in *MsgCreateClassRequest, opts ...grpc.CallOption) (*MsgCreateClassResponse, error) {
+func (c *msgClient) CreateClass(ctx context.Context, in *MsgCreateClass, opts ...grpc.CallOption) (*MsgCreateClassResponse, error) {
 	out := new(MsgCreateClassResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/CreateClass", in, out, opts...)
 	if err != nil {
@@ -1116,7 +1115,7 @@ func (c *msgClient) CreateClass(ctx context.Context, in *MsgCreateClassRequest, 
 	return out, nil
 }
 
-func (c *msgClient) CreateBatch(ctx context.Context, in *MsgCreateBatchRequest, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error) {
+func (c *msgClient) CreateBatch(ctx context.Context, in *MsgCreateBatch, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error) {
 	out := new(MsgCreateBatchResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/CreateBatch", in, out, opts...)
 	if err != nil {
@@ -1125,7 +1124,7 @@ func (c *msgClient) CreateBatch(ctx context.Context, in *MsgCreateBatchRequest, 
 	return out, nil
 }
 
-func (c *msgClient) Send(ctx context.Context, in *MsgSendRequest, opts ...grpc.CallOption) (*MsgSendResponse, error) {
+func (c *msgClient) Send(ctx context.Context, in *MsgSend, opts ...grpc.CallOption) (*MsgSendResponse, error) {
 	out := new(MsgSendResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/Send", in, out, opts...)
 	if err != nil {
@@ -1134,7 +1133,7 @@ func (c *msgClient) Send(ctx context.Context, in *MsgSendRequest, opts ...grpc.C
 	return out, nil
 }
 
-func (c *msgClient) Retire(ctx context.Context, in *MsgRetireRequest, opts ...grpc.CallOption) (*MsgRetireResponse, error) {
+func (c *msgClient) Retire(ctx context.Context, in *MsgRetire, opts ...grpc.CallOption) (*MsgRetireResponse, error) {
 	out := new(MsgRetireResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/Retire", in, out, opts...)
 	if err != nil {
@@ -1143,7 +1142,7 @@ func (c *msgClient) Retire(ctx context.Context, in *MsgRetireRequest, opts ...gr
 	return out, nil
 }
 
-func (c *msgClient) Cancel(ctx context.Context, in *MsgCancelRequest, opts ...grpc.CallOption) (*MsgCancelResponse, error) {
+func (c *msgClient) Cancel(ctx context.Context, in *MsgCancel, opts ...grpc.CallOption) (*MsgCancelResponse, error) {
 	out := new(MsgCancelResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/Cancel", in, out, opts...)
 	if err != nil {
@@ -1152,7 +1151,7 @@ func (c *msgClient) Cancel(ctx context.Context, in *MsgCancelRequest, opts ...gr
 	return out, nil
 }
 
-func (c *msgClient) SetPrecision(ctx context.Context, in *MsgSetPrecisionRequest, opts ...grpc.CallOption) (*MsgSetPrecisionResponse, error) {
+func (c *msgClient) SetPrecision(ctx context.Context, in *MsgSetPrecision, opts ...grpc.CallOption) (*MsgSetPrecisionResponse, error) {
 	out := new(MsgSetPrecisionResponse)
 	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Msg/SetPrecision", in, out, opts...)
 	if err != nil {
@@ -1165,20 +1164,20 @@ func (c *msgClient) SetPrecision(ctx context.Context, in *MsgSetPrecisionRequest
 type MsgServer interface {
 	// CreateClass creates a new credit class with an approved list of issuers and
 	// optional metadata.
-	CreateClass(context.Context, *MsgCreateClassRequest) (*MsgCreateClassResponse, error)
+	CreateClass(context.Context, *MsgCreateClass) (*MsgCreateClassResponse, error)
 	// CreateBatch creates a new batch of credits for an existing credit class.
 	// This will create a new batch denom with a fixed supply. Issued credits can
 	// be distributed to recipients in either tradable or retired form.
-	CreateBatch(context.Context, *MsgCreateBatchRequest) (*MsgCreateBatchResponse, error)
+	CreateBatch(context.Context, *MsgCreateBatch) (*MsgCreateBatchResponse, error)
 	// Send sends tradeable credits from one account to another account. Sent
 	// credits can either be tradable or retired on receipt.
-	Send(context.Context, *MsgSendRequest) (*MsgSendResponse, error)
+	Send(context.Context, *MsgSend) (*MsgSendResponse, error)
 	// Retire retires a specified number of credits in the holder's account.
-	Retire(context.Context, *MsgRetireRequest) (*MsgRetireResponse, error)
+	Retire(context.Context, *MsgRetire) (*MsgRetireResponse, error)
 	// Cancel removes a number of credits from the holder's account and also
 	// deducts them from the tradable supply, effectively cancelling their
 	// issuance on Regen Ledger
-	Cancel(context.Context, *MsgCancelRequest) (*MsgCancelResponse, error)
+	Cancel(context.Context, *MsgCancel) (*MsgCancelResponse, error)
 	// SetPrecision allows an issuer to increase the decimal precision of a credit
 	// batch. It is an experimental feature to concretely explore an idea proposed
 	// in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
@@ -1199,29 +1198,29 @@ type MsgServer interface {
 	// precision so under the hood it is still basically an integer, but the fixed
 	// precision can be increased so its more adaptable long term than just an
 	// integer.
-	SetPrecision(context.Context, *MsgSetPrecisionRequest) (*MsgSetPrecisionResponse, error)
+	SetPrecision(context.Context, *MsgSetPrecision) (*MsgSetPrecisionResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) CreateClass(ctx context.Context, req *MsgCreateClassRequest) (*MsgCreateClassResponse, error) {
+func (*UnimplementedMsgServer) CreateClass(ctx context.Context, req *MsgCreateClass) (*MsgCreateClassResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateClass not implemented")
 }
-func (*UnimplementedMsgServer) CreateBatch(ctx context.Context, req *MsgCreateBatchRequest) (*MsgCreateBatchResponse, error) {
+func (*UnimplementedMsgServer) CreateBatch(ctx context.Context, req *MsgCreateBatch) (*MsgCreateBatchResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateBatch not implemented")
 }
-func (*UnimplementedMsgServer) Send(ctx context.Context, req *MsgSendRequest) (*MsgSendResponse, error) {
+func (*UnimplementedMsgServer) Send(ctx context.Context, req *MsgSend) (*MsgSendResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Send not implemented")
 }
-func (*UnimplementedMsgServer) Retire(ctx context.Context, req *MsgRetireRequest) (*MsgRetireResponse, error) {
+func (*UnimplementedMsgServer) Retire(ctx context.Context, req *MsgRetire) (*MsgRetireResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Retire not implemented")
 }
-func (*UnimplementedMsgServer) Cancel(ctx context.Context, req *MsgCancelRequest) (*MsgCancelResponse, error) {
+func (*UnimplementedMsgServer) Cancel(ctx context.Context, req *MsgCancel) (*MsgCancelResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Cancel not implemented")
 }
-func (*UnimplementedMsgServer) SetPrecision(ctx context.Context, req *MsgSetPrecisionRequest) (*MsgSetPrecisionResponse, error) {
+func (*UnimplementedMsgServer) SetPrecision(ctx context.Context, req *MsgSetPrecision) (*MsgSetPrecisionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SetPrecision not implemented")
 }
 
@@ -1230,7 +1229,7 @@ func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 }
 
 func _Msg_CreateClass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCreateClassRequest)
+	in := new(MsgCreateClass)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1242,13 +1241,13 @@ func _Msg_CreateClass_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/regen.ecocredit.v1alpha1.Msg/CreateClass",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateClass(ctx, req.(*MsgCreateClassRequest))
+		return srv.(MsgServer).CreateClass(ctx, req.(*MsgCreateClass))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_CreateBatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCreateBatchRequest)
+	in := new(MsgCreateBatch)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1260,13 +1259,13 @@ func _Msg_CreateBatch_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/regen.ecocredit.v1alpha1.Msg/CreateBatch",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).CreateBatch(ctx, req.(*MsgCreateBatchRequest))
+		return srv.(MsgServer).CreateBatch(ctx, req.(*MsgCreateBatch))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_Send_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSendRequest)
+	in := new(MsgSend)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1278,13 +1277,13 @@ func _Msg_Send_Handler(srv interface{}, ctx context.Context, dec func(interface{
 		FullMethod: "/regen.ecocredit.v1alpha1.Msg/Send",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Send(ctx, req.(*MsgSendRequest))
+		return srv.(MsgServer).Send(ctx, req.(*MsgSend))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_Retire_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgRetireRequest)
+	in := new(MsgRetire)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1296,13 +1295,13 @@ func _Msg_Retire_Handler(srv interface{}, ctx context.Context, dec func(interfac
 		FullMethod: "/regen.ecocredit.v1alpha1.Msg/Retire",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Retire(ctx, req.(*MsgRetireRequest))
+		return srv.(MsgServer).Retire(ctx, req.(*MsgRetire))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_Cancel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgCancelRequest)
+	in := new(MsgCancel)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1314,13 +1313,13 @@ func _Msg_Cancel_Handler(srv interface{}, ctx context.Context, dec func(interfac
 		FullMethod: "/regen.ecocredit.v1alpha1.Msg/Cancel",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Cancel(ctx, req.(*MsgCancelRequest))
+		return srv.(MsgServer).Cancel(ctx, req.(*MsgCancel))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Msg_SetPrecision_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSetPrecisionRequest)
+	in := new(MsgSetPrecision)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -1332,7 +1331,7 @@ func _Msg_SetPrecision_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: "/regen.ecocredit.v1alpha1.Msg/SetPrecision",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SetPrecision(ctx, req.(*MsgSetPrecisionRequest))
+		return srv.(MsgServer).SetPrecision(ctx, req.(*MsgSetPrecision))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1370,7 +1369,7 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	Metadata: "regen/ecocredit/v1alpha1/tx.proto",
 }
 
-func (m *MsgCreateClassRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreateClass) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1380,12 +1379,12 @@ func (m *MsgCreateClassRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgCreateClassRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateClass) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCreateClassRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateClass) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1446,7 +1445,7 @@ func (m *MsgCreateClassResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgCreateBatchRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreateBatch) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1456,12 +1455,12 @@ func (m *MsgCreateBatchRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgCreateBatchRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateBatch) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCreateBatchRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateBatch) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1524,7 +1523,7 @@ func (m *MsgCreateBatchRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgCreateBatchRequest_BatchIssuance) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreateBatch_BatchIssuance) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1534,12 +1533,12 @@ func (m *MsgCreateBatchRequest_BatchIssuance) Marshal() (dAtA []byte, err error)
 	return dAtA[:n], nil
 }
 
-func (m *MsgCreateBatchRequest_BatchIssuance) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateBatch_BatchIssuance) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCreateBatchRequest_BatchIssuance) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateBatch_BatchIssuance) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1605,7 +1604,7 @@ func (m *MsgCreateBatchResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgSendRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgSend) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1615,12 +1614,12 @@ func (m *MsgSendRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgSendRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgSend) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgSendRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgSend) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1656,7 +1655,7 @@ func (m *MsgSendRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgSendRequest_SendCredits) Marshal() (dAtA []byte, err error) {
+func (m *MsgSend_SendCredits) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1666,12 +1665,12 @@ func (m *MsgSendRequest_SendCredits) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgSendRequest_SendCredits) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgSend_SendCredits) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgSendRequest_SendCredits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgSend_SendCredits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1730,7 +1729,7 @@ func (m *MsgSendResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRetireRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgRetire) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1740,12 +1739,12 @@ func (m *MsgRetireRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRetireRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRetire) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRetireRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRetire) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1781,7 +1780,7 @@ func (m *MsgRetireRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgRetireRequest_RetireCredits) Marshal() (dAtA []byte, err error) {
+func (m *MsgRetire_RetireCredits) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1791,12 +1790,12 @@ func (m *MsgRetireRequest_RetireCredits) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgRetireRequest_RetireCredits) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgRetire_RetireCredits) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgRetireRequest_RetireCredits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgRetire_RetireCredits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1841,7 +1840,7 @@ func (m *MsgRetireResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgCancelRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgCancel) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1851,12 +1850,12 @@ func (m *MsgCancelRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgCancelRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCancel) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCancelRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCancel) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1885,7 +1884,7 @@ func (m *MsgCancelRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgCancelRequest_CancelCredits) Marshal() (dAtA []byte, err error) {
+func (m *MsgCancel_CancelCredits) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1895,12 +1894,12 @@ func (m *MsgCancelRequest_CancelCredits) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgCancelRequest_CancelCredits) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCancel_CancelCredits) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCancelRequest_CancelCredits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCancel_CancelCredits) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1945,7 +1944,7 @@ func (m *MsgCancelResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgSetPrecisionRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgSetPrecision) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1955,12 +1954,12 @@ func (m *MsgSetPrecisionRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgSetPrecisionRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgSetPrecision) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgSetPrecisionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgSetPrecision) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2021,7 +2020,7 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgCreateClassRequest) Size() (n int) {
+func (m *MsgCreateClass) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2057,7 +2056,7 @@ func (m *MsgCreateClassResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgCreateBatchRequest) Size() (n int) {
+func (m *MsgCreateBatch) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2092,7 +2091,7 @@ func (m *MsgCreateBatchRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgCreateBatchRequest_BatchIssuance) Size() (n int) {
+func (m *MsgCreateBatch_BatchIssuance) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2130,7 +2129,7 @@ func (m *MsgCreateBatchResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgSendRequest) Size() (n int) {
+func (m *MsgSend) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2153,7 +2152,7 @@ func (m *MsgSendRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgSendRequest_SendCredits) Size() (n int) {
+func (m *MsgSend_SendCredits) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2187,7 +2186,7 @@ func (m *MsgSendResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgRetireRequest) Size() (n int) {
+func (m *MsgRetire) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2210,7 +2209,7 @@ func (m *MsgRetireRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgRetireRequest_RetireCredits) Size() (n int) {
+func (m *MsgRetire_RetireCredits) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2236,7 +2235,7 @@ func (m *MsgRetireResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgCancelRequest) Size() (n int) {
+func (m *MsgCancel) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2255,7 +2254,7 @@ func (m *MsgCancelRequest) Size() (n int) {
 	return n
 }
 
-func (m *MsgCancelRequest_CancelCredits) Size() (n int) {
+func (m *MsgCancel_CancelCredits) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2281,7 +2280,7 @@ func (m *MsgCancelResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgSetPrecisionRequest) Size() (n int) {
+func (m *MsgSetPrecision) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2316,7 +2315,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgCreateClassRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateClass) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2339,10 +2338,10 @@ func (m *MsgCreateClassRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateClassRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreateClass: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateClassRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreateClass: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2552,7 +2551,7 @@ func (m *MsgCreateClassResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgCreateBatchRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateBatch) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2575,10 +2574,10 @@ func (m *MsgCreateBatchRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateBatchRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreateBatch: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateBatchRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreateBatch: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2674,7 +2673,7 @@ func (m *MsgCreateBatchRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Issuance = append(m.Issuance, &MsgCreateBatchRequest_BatchIssuance{})
+			m.Issuance = append(m.Issuance, &MsgCreateBatch_BatchIssuance{})
 			if err := m.Issuance[len(m.Issuance)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -2809,7 +2808,7 @@ func (m *MsgCreateBatchRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgCreateBatchRequest_BatchIssuance) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateBatch_BatchIssuance) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3075,7 +3074,7 @@ func (m *MsgCreateBatchResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgSendRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgSend) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3098,10 +3097,10 @@ func (m *MsgSendRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSendRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgSend: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSendRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgSend: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3197,7 +3196,7 @@ func (m *MsgSendRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Credits = append(m.Credits, &MsgSendRequest_SendCredits{})
+			m.Credits = append(m.Credits, &MsgSend_SendCredits{})
 			if err := m.Credits[len(m.Credits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -3226,7 +3225,7 @@ func (m *MsgSendRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgSendRequest_SendCredits) Unmarshal(dAtA []byte) error {
+func (m *MsgSend_SendCredits) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3460,7 +3459,7 @@ func (m *MsgSendResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRetireRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgRetire) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3483,10 +3482,10 @@ func (m *MsgRetireRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgRetireRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgRetire: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgRetireRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgRetire: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3550,7 +3549,7 @@ func (m *MsgRetireRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Credits = append(m.Credits, &MsgRetireRequest_RetireCredits{})
+			m.Credits = append(m.Credits, &MsgRetire_RetireCredits{})
 			if err := m.Credits[len(m.Credits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -3611,7 +3610,7 @@ func (m *MsgRetireRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgRetireRequest_RetireCredits) Unmarshal(dAtA []byte) error {
+func (m *MsgRetire_RetireCredits) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3781,7 +3780,7 @@ func (m *MsgRetireResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgCancelRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgCancel) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3804,10 +3803,10 @@ func (m *MsgCancelRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCancelRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCancel: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCancelRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCancel: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3871,7 +3870,7 @@ func (m *MsgCancelRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Credits = append(m.Credits, &MsgCancelRequest_CancelCredits{})
+			m.Credits = append(m.Credits, &MsgCancel_CancelCredits{})
 			if err := m.Credits[len(m.Credits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -3900,7 +3899,7 @@ func (m *MsgCancelRequest) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgCancelRequest_CancelCredits) Unmarshal(dAtA []byte) error {
+func (m *MsgCancel_CancelCredits) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4070,7 +4069,7 @@ func (m *MsgCancelResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgSetPrecisionRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgSetPrecision) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4093,10 +4092,10 @@ func (m *MsgSetPrecisionRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSetPrecisionRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgSetPrecision: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSetPrecisionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgSetPrecision: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

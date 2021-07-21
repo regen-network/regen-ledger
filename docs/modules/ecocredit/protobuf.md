@@ -32,21 +32,21 @@
     - [Query](#regen.ecocredit.v1alpha1.Query)
   
 - [regen/ecocredit/v1alpha1/tx.proto](#regen/ecocredit/v1alpha1/tx.proto)
-    - [MsgCancelRequest](#regen.ecocredit.v1alpha1.MsgCancelRequest)
-    - [MsgCancelRequest.CancelCredits](#regen.ecocredit.v1alpha1.MsgCancelRequest.CancelCredits)
+    - [MsgCancel](#regen.ecocredit.v1alpha1.MsgCancel)
+    - [MsgCancel.CancelCredits](#regen.ecocredit.v1alpha1.MsgCancel.CancelCredits)
     - [MsgCancelResponse](#regen.ecocredit.v1alpha1.MsgCancelResponse)
-    - [MsgCreateBatchRequest](#regen.ecocredit.v1alpha1.MsgCreateBatchRequest)
-    - [MsgCreateBatchRequest.BatchIssuance](#regen.ecocredit.v1alpha1.MsgCreateBatchRequest.BatchIssuance)
+    - [MsgCreateBatch](#regen.ecocredit.v1alpha1.MsgCreateBatch)
+    - [MsgCreateBatch.BatchIssuance](#regen.ecocredit.v1alpha1.MsgCreateBatch.BatchIssuance)
     - [MsgCreateBatchResponse](#regen.ecocredit.v1alpha1.MsgCreateBatchResponse)
-    - [MsgCreateClassRequest](#regen.ecocredit.v1alpha1.MsgCreateClassRequest)
+    - [MsgCreateClass](#regen.ecocredit.v1alpha1.MsgCreateClass)
     - [MsgCreateClassResponse](#regen.ecocredit.v1alpha1.MsgCreateClassResponse)
-    - [MsgRetireRequest](#regen.ecocredit.v1alpha1.MsgRetireRequest)
-    - [MsgRetireRequest.RetireCredits](#regen.ecocredit.v1alpha1.MsgRetireRequest.RetireCredits)
+    - [MsgRetire](#regen.ecocredit.v1alpha1.MsgRetire)
+    - [MsgRetire.RetireCredits](#regen.ecocredit.v1alpha1.MsgRetire.RetireCredits)
     - [MsgRetireResponse](#regen.ecocredit.v1alpha1.MsgRetireResponse)
-    - [MsgSendRequest](#regen.ecocredit.v1alpha1.MsgSendRequest)
-    - [MsgSendRequest.SendCredits](#regen.ecocredit.v1alpha1.MsgSendRequest.SendCredits)
+    - [MsgSend](#regen.ecocredit.v1alpha1.MsgSend)
+    - [MsgSend.SendCredits](#regen.ecocredit.v1alpha1.MsgSend.SendCredits)
     - [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse)
-    - [MsgSetPrecisionRequest](#regen.ecocredit.v1alpha1.MsgSetPrecisionRequest)
+    - [MsgSetPrecision](#regen.ecocredit.v1alpha1.MsgSetPrecision)
     - [MsgSetPrecisionResponse](#regen.ecocredit.v1alpha1.MsgSetPrecisionResponse)
   
     - [Msg](#regen.ecocredit.v1alpha1.Msg)
@@ -443,25 +443,25 @@ Msg is the regen.ecocredit.v1alpha1 Query service.
 
 
 
-<a name="regen.ecocredit.v1alpha1.MsgCancelRequest"></a>
+<a name="regen.ecocredit.v1alpha1.MsgCancel"></a>
 
-### MsgCancelRequest
-MsgCancelRequest is the Msg/Cancel request type.
+### MsgCancel
+MsgCancel is the Msg/Cancel request type.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | holder | [string](#string) |  | holder is the credit holder address. |
-| credits | [MsgCancelRequest.CancelCredits](#regen.ecocredit.v1alpha1.MsgCancelRequest.CancelCredits) | repeated | credits are the credits being cancelled. |
+| credits | [MsgCancel.CancelCredits](#regen.ecocredit.v1alpha1.MsgCancel.CancelCredits) | repeated | credits are the credits being cancelled. |
 
 
 
 
 
 
-<a name="regen.ecocredit.v1alpha1.MsgCancelRequest.CancelCredits"></a>
+<a name="regen.ecocredit.v1alpha1.MsgCancel.CancelCredits"></a>
 
-### MsgCancelRequest.CancelCredits
+### MsgCancel.CancelCredits
 CancelCredits specifies a batch and the number of credits being cancelled.
 
 
@@ -485,17 +485,17 @@ MsgCancelResponse is the Msg/Cancel response type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.MsgCreateBatchRequest"></a>
+<a name="regen.ecocredit.v1alpha1.MsgCreateBatch"></a>
 
-### MsgCreateBatchRequest
-MsgCreateBatchRequest is the Msg/CreateBatch request type.
+### MsgCreateBatch
+MsgCreateBatch is the Msg/CreateBatch request type.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | issuer | [string](#string) |  | issuer is the address of the batch issuer. |
 | class_id | [string](#string) |  | class_id is the unique ID of the class. |
-| issuance | [MsgCreateBatchRequest.BatchIssuance](#regen.ecocredit.v1alpha1.MsgCreateBatchRequest.BatchIssuance) | repeated | issuance are the credits issued in the batch. |
+| issuance | [MsgCreateBatch.BatchIssuance](#regen.ecocredit.v1alpha1.MsgCreateBatch.BatchIssuance) | repeated | issuance are the credits issued in the batch. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit batch. |
 | start_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | start_date is the beginning of the period during which this credit batch was quantified and verified. |
 | end_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | end_date is the end of the period during which this credit batch was quantified and verified. |
@@ -505,9 +505,9 @@ MsgCreateBatchRequest is the Msg/CreateBatch request type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.MsgCreateBatchRequest.BatchIssuance"></a>
+<a name="regen.ecocredit.v1alpha1.MsgCreateBatch.BatchIssuance"></a>
 
-### MsgCreateBatchRequest.BatchIssuance
+### MsgCreateBatch.BatchIssuance
 BatchIssuance represents the issuance of some credits in a batch to a
 single recipient.
 
@@ -539,10 +539,10 @@ MsgCreateBatchResponse is the Msg/CreateBatch response type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.MsgCreateClassRequest"></a>
+<a name="regen.ecocredit.v1alpha1.MsgCreateClass"></a>
 
-### MsgCreateClassRequest
-MsgCreateClassRequest is the Msg/CreateClass request type.
+### MsgCreateClass
+MsgCreateClass is the Msg/CreateClass request type.
 
 
 | Field | Type | Label | Description |
@@ -571,16 +571,16 @@ MsgCreateClassResponse is the Msg/CreateClass response type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.MsgRetireRequest"></a>
+<a name="regen.ecocredit.v1alpha1.MsgRetire"></a>
 
-### MsgRetireRequest
-MsgRetireRequest is the Msg/Retire request type.
+### MsgRetire
+MsgRetire is the Msg/Retire request type.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | holder | [string](#string) |  | holder is the credit holder address. |
-| credits | [MsgRetireRequest.RetireCredits](#regen.ecocredit.v1alpha1.MsgRetireRequest.RetireCredits) | repeated | credits are the credits being retired. |
+| credits | [MsgRetire.RetireCredits](#regen.ecocredit.v1alpha1.MsgRetire.RetireCredits) | repeated | credits are the credits being retired. |
 | location | [string](#string) |  | location is the location of the beneficiary or buyer of the retired credits. It is a string of the form <country-code>[-<sub-national-code>[ <postal-code>]], with the first two fields conforming to ISO 3166-2, and postal-code being up to 64 alphanumeric characters. |
 
 
@@ -588,9 +588,9 @@ MsgRetireRequest is the Msg/Retire request type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.MsgRetireRequest.RetireCredits"></a>
+<a name="regen.ecocredit.v1alpha1.MsgRetire.RetireCredits"></a>
 
-### MsgRetireRequest.RetireCredits
+### MsgRetire.RetireCredits
 RetireCredits specifies a batch and the number of credits being retired.
 
 
@@ -607,33 +607,33 @@ RetireCredits specifies a batch and the number of credits being retired.
 <a name="regen.ecocredit.v1alpha1.MsgRetireResponse"></a>
 
 ### MsgRetireResponse
-MsgRetireRequest is the Msg/Retire response type.
+MsgRetire is the Msg/Retire response type.
 
 
 
 
 
 
-<a name="regen.ecocredit.v1alpha1.MsgSendRequest"></a>
+<a name="regen.ecocredit.v1alpha1.MsgSend"></a>
 
-### MsgSendRequest
-MsgSendRequest is the Msg/Send request type.
+### MsgSend
+MsgSend is the Msg/Send request type.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | sender | [string](#string) |  | sender is the address of the account sending credits. |
 | recipient | [string](#string) |  | sender is the address of the account receiving credits. |
-| credits | [MsgSendRequest.SendCredits](#regen.ecocredit.v1alpha1.MsgSendRequest.SendCredits) | repeated | credits are the credits being sent. |
+| credits | [MsgSend.SendCredits](#regen.ecocredit.v1alpha1.MsgSend.SendCredits) | repeated | credits are the credits being sent. |
 
 
 
 
 
 
-<a name="regen.ecocredit.v1alpha1.MsgSendRequest.SendCredits"></a>
+<a name="regen.ecocredit.v1alpha1.MsgSend.SendCredits"></a>
 
-### MsgSendRequest.SendCredits
+### MsgSend.SendCredits
 SendCredits specifies a batch and the number of credits being transferred.
 This is split into tradable credits, which will remain tradable on receipt,
 and retired credits, which will be retired on receipt.
@@ -661,10 +661,10 @@ MsgSendResponse is the Msg/Send response type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.MsgSetPrecisionRequest"></a>
+<a name="regen.ecocredit.v1alpha1.MsgSetPrecision"></a>
 
-### MsgSetPrecisionRequest
-MsgRetireRequest is the Msg/SetPrecision request type.
+### MsgSetPrecision
+MsgRetire is the Msg/SetPrecision request type.
 
 
 | Field | Type | Label | Description |
@@ -681,7 +681,7 @@ MsgRetireRequest is the Msg/SetPrecision request type.
 <a name="regen.ecocredit.v1alpha1.MsgSetPrecisionResponse"></a>
 
 ### MsgSetPrecisionResponse
-MsgRetireRequest is the Msg/SetPrecision response type.
+MsgRetire is the Msg/SetPrecision response type.
 
 
 
@@ -701,12 +701,12 @@ Msg is the regen.ecocredit.v1alpha1 Msg service.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| CreateClass | [MsgCreateClassRequest](#regen.ecocredit.v1alpha1.MsgCreateClassRequest) | [MsgCreateClassResponse](#regen.ecocredit.v1alpha1.MsgCreateClassResponse) | CreateClass creates a new credit class with an approved list of issuers and optional metadata. |
-| CreateBatch | [MsgCreateBatchRequest](#regen.ecocredit.v1alpha1.MsgCreateBatchRequest) | [MsgCreateBatchResponse](#regen.ecocredit.v1alpha1.MsgCreateBatchResponse) | CreateBatch creates a new batch of credits for an existing credit class. This will create a new batch denom with a fixed supply. Issued credits can be distributed to recipients in either tradable or retired form. |
-| Send | [MsgSendRequest](#regen.ecocredit.v1alpha1.MsgSendRequest) | [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse) | Send sends tradeable credits from one account to another account. Sent credits can either be tradable or retired on receipt. |
-| Retire | [MsgRetireRequest](#regen.ecocredit.v1alpha1.MsgRetireRequest) | [MsgRetireResponse](#regen.ecocredit.v1alpha1.MsgRetireResponse) | Retire retires a specified number of credits in the holder's account. |
-| Cancel | [MsgCancelRequest](#regen.ecocredit.v1alpha1.MsgCancelRequest) | [MsgCancelResponse](#regen.ecocredit.v1alpha1.MsgCancelResponse) | Cancel removes a number of credits from the holder's account and also deducts them from the tradable supply, effectively cancelling their issuance on Regen Ledger |
-| SetPrecision | [MsgSetPrecisionRequest](#regen.ecocredit.v1alpha1.MsgSetPrecisionRequest) | [MsgSetPrecisionResponse](#regen.ecocredit.v1alpha1.MsgSetPrecisionResponse) | SetPrecision allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal places allowed for a credit batch is determined by the original number of decimal places used with calling CreatBatch. SetPrecision allows the number of allowed decimal places to be increased, effectively making the supply more granular without actually changing any balances. It allows asset issuers to be able to issue an asset without needing to think about how many subdivisions are needed upfront. While it may not be relevant for credits which likely have a fairly stable market value, I wanted to experiment a bit and this serves as a proof of concept for a broader bank redesign where say for instance a coin like the ATOM or XRN could be issued in its own units rather than micro or nano-units. Instead an operation like SetPrecision would allow trading in micro, nano or pico in the future based on market demand. Arbitrary, unbounded precision is not desirable because this can lead to spam attacks (like sending 0.000000000000000000000000000001 coins). This is effectively fixed precision so under the hood it is still basically an integer, but the fixed precision can be increased so its more adaptable long term than just an integer. |
+| CreateClass | [MsgCreateClass](#regen.ecocredit.v1alpha1.MsgCreateClass) | [MsgCreateClassResponse](#regen.ecocredit.v1alpha1.MsgCreateClassResponse) | CreateClass creates a new credit class with an approved list of issuers and optional metadata. |
+| CreateBatch | [MsgCreateBatch](#regen.ecocredit.v1alpha1.MsgCreateBatch) | [MsgCreateBatchResponse](#regen.ecocredit.v1alpha1.MsgCreateBatchResponse) | CreateBatch creates a new batch of credits for an existing credit class. This will create a new batch denom with a fixed supply. Issued credits can be distributed to recipients in either tradable or retired form. |
+| Send | [MsgSend](#regen.ecocredit.v1alpha1.MsgSend) | [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse) | Send sends tradeable credits from one account to another account. Sent credits can either be tradable or retired on receipt. |
+| Retire | [MsgRetire](#regen.ecocredit.v1alpha1.MsgRetire) | [MsgRetireResponse](#regen.ecocredit.v1alpha1.MsgRetireResponse) | Retire retires a specified number of credits in the holder's account. |
+| Cancel | [MsgCancel](#regen.ecocredit.v1alpha1.MsgCancel) | [MsgCancelResponse](#regen.ecocredit.v1alpha1.MsgCancelResponse) | Cancel removes a number of credits from the holder's account and also deducts them from the tradable supply, effectively cancelling their issuance on Regen Ledger |
+| SetPrecision | [MsgSetPrecision](#regen.ecocredit.v1alpha1.MsgSetPrecision) | [MsgSetPrecisionResponse](#regen.ecocredit.v1alpha1.MsgSetPrecisionResponse) | SetPrecision allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal places allowed for a credit batch is determined by the original number of decimal places used with calling CreatBatch. SetPrecision allows the number of allowed decimal places to be increased, effectively making the supply more granular without actually changing any balances. It allows asset issuers to be able to issue an asset without needing to think about how many subdivisions are needed upfront. While it may not be relevant for credits which likely have a fairly stable market value, I wanted to experiment a bit and this serves as a proof of concept for a broader bank redesign where say for instance a coin like the ATOM or XRN could be issued in its own units rather than micro or nano-units. Instead an operation like SetPrecision would allow trading in micro, nano or pico in the future based on market demand. Arbitrary, unbounded precision is not desirable because this can lead to spam attacks (like sending 0.000000000000000000000000000001 coins). This is effectively fixed precision so under the hood it is still basically an integer, but the fixed precision can be increased so its more adaptable long term than just an integer. |
 
  <!-- end services -->
 

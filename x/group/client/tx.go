@@ -108,7 +108,7 @@ Where members.json contains:
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 
-			msg := &group.MsgCreateGroupRequest{
+			msg := &group.MsgCreateGroup{
 				Admin:    clientCtx.GetFromAddress().String(),
 				Members:  members,
 				Metadata: b,
@@ -181,7 +181,7 @@ Set a member's weight to "0" to delete it.
 				return err
 			}
 
-			msg := &group.MsgUpdateGroupMembersRequest{
+			msg := &group.MsgUpdateGroupMembers{
 				Admin:         clientCtx.GetFromAddress().String(),
 				MemberUpdates: members,
 				GroupId:       groupID,
@@ -221,7 +221,7 @@ func MsgUpdateGroupAdminCmd() *cobra.Command {
 				return err
 			}
 
-			msg := &group.MsgUpdateGroupAdminRequest{
+			msg := &group.MsgUpdateGroupAdmin{
 				Admin:    clientCtx.GetFromAddress().String(),
 				NewAdmin: args[2],
 				GroupId:  groupID,
@@ -266,7 +266,7 @@ func MsgUpdateGroupMetadataCmd() *cobra.Command {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 
-			msg := &group.MsgUpdateGroupMetadataRequest{
+			msg := &group.MsgUpdateGroupMetadata{
 				Admin:    clientCtx.GetFromAddress().String(),
 				Metadata: b,
 				GroupId:  groupID,
@@ -330,7 +330,7 @@ $ %s tx group create-group-account [admin] [group-id] [metadata] \
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 
-			msg, err := group.NewMsgCreateGroupAccountRequest(
+			msg, err := group.NewMsgCreateGroupAccount(
 				clientCtx.GetFromAddress(),
 				groupID,
 				b,
@@ -369,7 +369,7 @@ func MsgUpdateGroupAccountAdminCmd() *cobra.Command {
 				return err
 			}
 
-			msg := &group.MsgUpdateGroupAccountAdminRequest{
+			msg := &group.MsgUpdateGroupAccountAdmin{
 				Admin:    clientCtx.GetFromAddress().String(),
 				Address:  args[1],
 				NewAdmin: args[2],
@@ -458,7 +458,7 @@ func MsgUpdateGroupAccountMetadataCmd() *cobra.Command {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 
-			msg := &group.MsgUpdateGroupAccountMetadataRequest{
+			msg := &group.MsgUpdateGroupAccountMetadata{
 				Admin:    clientCtx.GetFromAddress().String(),
 				Address:  args[1],
 				Metadata: b,
@@ -586,7 +586,7 @@ Parameters:
 
 			execStr, _ := cmd.Flags().GetString(FlagExec)
 
-			msg := &group.MsgVoteRequest{
+			msg := &group.MsgVote{
 				ProposalId: proposalID,
 				Voter:      args[1],
 				Choice:     choice,
@@ -628,7 +628,7 @@ func MsgExecCmd() *cobra.Command {
 				return err
 			}
 
-			msg := &group.MsgExecRequest{
+			msg := &group.MsgExec{
 				ProposalId: proposalID,
 				Signer:     clientCtx.GetFromAddress().String(),
 			}
