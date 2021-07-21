@@ -120,6 +120,10 @@ go get github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
 
 The next step will be to configure `cosmovisor` as a `systemd` service. For more information about the environment variables used to configure `cosmovisor`, see [Cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor).
 
+::: warning
+You'll want to carefully consider the options you set when configuring cosmovisor. The current version of cosmovisor does not require the checksum parameter to be included in the URL of the downloadable upgrade binary, so the auto-download option should be used with caution.
+:::
+
 Create the `cosmovisor.service` file:
 ```
 echo "[Unit]
@@ -129,7 +133,7 @@ After=network-online.target
 Environment="DAEMON_NAME=regen"
 Environment="DAEMON_HOME=${HOME}/.${DAEMON}"
 Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
-Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
+Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=true"
 User=${USER}
 ExecStart=${GOBIN}/cosmovisor start
 Restart=always
@@ -177,7 +181,7 @@ Submit a transaction to create a validator:
 
 ```
 regen tx staking create-validator \
-  --amount=9000000uregen \
+  --amount=<stake_amount> \
   --pubkey=$(regen tendermint show-validator) \
   --moniker="<node_moniker>" \
   --chain-id=<chain_id> \
