@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * add support for credit cancelling (#385)
 * record retirement locations of ecocredit (#328)
 * add dates as top level fields in credit batches (#393)
-* add params for an allowlist of permissioned credit creators (#425)
+* add params for an allowlist of permissioned credit designers (#425)
 
 ## [1.0.0] - 2021-04-13
 
