@@ -75,6 +75,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	addr3 := s.signers[5].String()
 	addr4 := s.signers[6].String()
 
+	s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistedCreditCreators, []string{designer.String()})
 	// create class with insufficient funds and it should fail
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClassRequest{
 		Designer: designer.String(),
