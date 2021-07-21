@@ -17,7 +17,7 @@ service Msg {
   // data. They can simply be a intermediary providing timestamp services.
   // SignData should be used to create a digital signature attesting to the
   // veracity of some piece of data.
-  rpc AnchorData(MsgAnchorDataRequest) returns (MsgAnchorDataResponse);
+  rpc AnchorData(MsgAnchorData) returns (MsgAnchorDataResponse);
 
   // SignData allows for signing of an arbitrary piece of data on the
   // blockchain. By "signing" data the signers are making a statement about the
@@ -38,7 +38,7 @@ service Msg {
   //
   // SignData can be called multiple times for the same content hash with different
   // signers and those signers will be appended to the list of signers.
-  rpc SignData(MsgSignDataRequest) returns (MsgSignDataResponse);
+  rpc SignData(MsgSignData) returns (MsgSignDataResponse);
 
   // StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
   //
@@ -48,11 +48,11 @@ service Msg {
   // data. They can simply be a intermediary providing storage services.
   // SignData should be used to create a digital signature attesting to the
   // veracity of some piece of data.
-  rpc StoreRawData(MsgStoreRawDataRequest) returns (MsgStoreRawDataResponse);
+  rpc StoreRawData(MsgStoreRawData) returns (MsgStoreRawDataResponse);
 }
 
-// MsgAnchorDataRequest is the Msg/AnchorData request type.
-message MsgAnchorDataRequest {
+// MsgAnchorData is the Msg/AnchorData request type.
+message MsgAnchorData {
   // sender is the address of the sender of the transaction.
   // The sender in StoreData is not attesting to the veracity of the underlying
   // data. They can simply be a intermediary providing services.
@@ -62,15 +62,15 @@ message MsgAnchorDataRequest {
   ContentHash hash = 2;
 }
 
-// MsgAnchorDataRequest is the Msg/AnchorData response type.
+// MsgAnchorData is the Msg/AnchorData response type.
 message MsgAnchorDataResponse {
 
   // timestamp is the timestamp of the block at which the data was anchored.
   google.protobuf.Timestamp timestamp = 1;
 }
 
-// MsgSignDataRequest is the Msg/SignData request type.
-message MsgSignDataRequest {
+// MsgSignData is the Msg/SignData request type.
+message MsgSignData {
   option (gogoproto.goproto_getters) = false;
 
   // signers are the addresses of the accounts signing the data.
@@ -87,8 +87,8 @@ message MsgSignDataRequest {
 // MsgSignDataResponse is the Msg/SignData response type.
 message MsgSignDataResponse {}
 
-// MsgStoreRawDataRequest is the Msg/StoreRawData request type.
-message MsgStoreRawDataRequest {
+// MsgStoreRawData is the Msg/StoreRawData request type.
+message MsgStoreRawData {
   // sender is the address of the sender of the transaction.
   // The sender in StoreData is not attesting to the veracity of the underlying
   // data. They can simply be a intermediary providing services.
@@ -101,5 +101,5 @@ message MsgStoreRawDataRequest {
   bytes content = 3;
 }
 
-// MsgStoreRawDataRequest is the Msg/StoreRawData response type.
+// MsgStoreRawData is the Msg/StoreRawData response type.
 message MsgStoreRawDataResponse { }

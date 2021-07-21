@@ -8,8 +8,8 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
 	github.com/regen-network/regen-ledger/types v0.0.0-00010101000000-000000000000
-	github.com/regen-network/regen-ledger/x/data v0.0.0-00010101000000-000000000000
-	github.com/regen-network/regen-ledger/x/ecocredit v0.0.0-00010101000000-000000000000
+	github.com/regen-network/regen-ledger/x/data v0.0.0-20210602121340-fa967f821a6e
+	github.com/regen-network/regen-ledger/x/ecocredit v0.0.0-20210602121340-fa967f821a6e
 	github.com/regen-network/regen-ledger/x/group v0.0.0-00010101000000-000000000000
 	github.com/rs/zerolog v1.23.0
 	github.com/spf13/cast v1.3.1
@@ -17,8 +17,8 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.11
 	github.com/tendermint/tm-db v0.6.4
-	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
-	google.golang.org/genproto v0.0.0-20210611144927-798beca9d670 // indirect
+	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
+	google.golang.org/genproto v0.0.0-20210715145939-324b959e9c22 // indirect
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2

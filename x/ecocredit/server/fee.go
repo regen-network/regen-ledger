@@ -25,6 +25,9 @@ func (s serverImpl) chargeCreditClassFee(ctx sdk.Context, designerAddr sdk.AccAd
 	// TODO: Update this implementation based on the discussion at
 	// https://github.com/regen-network/regen-ledger/issues/351
 	err = s.bankKeeper.BurnCoins(ctx, ecocredit.ModuleName, creditClassFee)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
