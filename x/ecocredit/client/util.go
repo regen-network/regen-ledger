@@ -41,15 +41,15 @@ var (
 	reCredits    = regexp.MustCompile(fmt.Sprintf(`^(%s)\:(%s)$`, reCreditAmt, reBatchDenom))
 )
 
-func parseCancelCreditsList(creditsListStr string) ([]*ecocredit.MsgCancelRequest_CancelCredits, error) {
+func parseCancelCreditsList(creditsListStr string) ([]*ecocredit.MsgCancel_CancelCredits, error) {
 	creditsList, err := parseCreditsList(creditsListStr)
 	if err != nil {
 		return nil, err
 	}
 
-	cancelCreditsList := make([]*ecocredit.MsgCancelRequest_CancelCredits, len(creditsList))
+	cancelCreditsList := make([]*ecocredit.MsgCancel_CancelCredits, len(creditsList))
 	for i, credits := range creditsList {
-		cancelCreditsList[i] = &ecocredit.MsgCancelRequest_CancelCredits{
+		cancelCreditsList[i] = &ecocredit.MsgCancel_CancelCredits{
 			BatchDenom: credits.batchDenom,
 			Amount:     credits.amount,
 		}

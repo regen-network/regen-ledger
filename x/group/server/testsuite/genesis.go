@@ -7,6 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	proto "github.com/gogo/protobuf/types"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
@@ -77,7 +78,14 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	genesisBytes, err := cdc.MarshalJSON(genesisState)
 	require.NoError(err)
 
-	genesisData := map[string]json.RawMessage{group.ModuleName: genesisBytes}
+	ecocreditGenesisState := ecocredit.DefaultGenesisState()
+	ecocreditGenesisBytes, err := cdc.MarshalJSON(ecocreditGenesisState)
+	require.NoError(err)
+
+	genesisData := map[string]json.RawMessage{
+		group.ModuleName:     genesisBytes,
+		ecocredit.ModuleName: ecocreditGenesisBytes,
+	}
 	_, err = s.fixture.InitGenesis(ctx.Context, genesisData)
 	require.NoError(err)
 
