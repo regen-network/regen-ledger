@@ -20,7 +20,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-// TxCmd returns a root CLI command handler for all x/data transaction commands.
+// TxCmd returns a root CLI command handler for all x/ecocredit transaction commands.
 func TxCmd(name string) *cobra.Command {
 	cmd := &cobra.Command{
 		SuggestionsMinimumDistance: 2,
@@ -32,6 +32,7 @@ func TxCmd(name string) *cobra.Command {
 	}
 	cmd.AddCommand(
 		txflags(txCreateClass()),
+		txGenBatchJSON(),
 		txflags(txCreateBatch()),
 		txflags(txSend()),
 		txflags(txRetire()),
@@ -80,6 +81,113 @@ Parameters:
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
+}
+
+const (
+	FlagClassId         string = "class-id"
+	FlagIssuances       string = "issuances"
+	FlagStartDate       string = "start-date"
+	FlagEndDate         string = "end-date"
+	FlagProjectLocation string = "project-location"
+	FlagMetadata        string = "metadata"
+)
+
+func txGenBatchJSON() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "gen-batch-json [--class-id class_id] [--issuances issuances] [--start-date start_date] [--end-date end_date] [--project-location project_location] [--metadata metadata]",
+		Short: "Generates JSON to represent a new credit batch for use with create-batch command",
+		Long: `Generates JSON to represent a new credit batch for use with create-batch command.
+
+Parameters:
+  class_id:         credit class
+  issuances:        The number of template issuances to generate
+  start_date:       The beginning of the period during which this credit batch
+                    was quantified and verified. Format: yyyy-mm-dd.
+  end_date:         The end of the period during which this credit batch was
+                    quantified and verified. Format: yyyy-mm-dd.
+  project_location: The location of the project that is backing the credits in
+                    this batch
+  metadata:         base64 encoded issuance metadata`,
+		Args: cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			classId, err := cmd.Flags().GetString(FlagClassId)
+			if err != nil {
+				return err
+			}
+
+			templateIssuance := &ecocredit.MsgCreateBatchRequest_BatchIssuance{
+				Recipient:          "recipient-address",
+				TradableAmount:     "tradable-amount",
+				RetiredAmount:      "retired-amount",
+				RetirementLocation: "retirement-location",
+			}
+
+			numIssuances, err := cmd.Flags().GetUint32(FlagIssuances)
+			issuances := make([]*ecocredit.MsgCreateBatchRequest_BatchIssuance, numIssuances)
+			for i := range issuances {
+				issuances[i] = templateIssuance
+			}
+
+			startDateStr, err := cmd.Flags().GetString(FlagStartDate)
+			if err != nil {
+				return err
+			}
+			startDate, err := parseDate("start_date", startDateStr)
+			if err != nil {
+				return err
+			}
+
+			endDateStr, err := cmd.Flags().GetString(FlagEndDate)
+			if err != nil {
+				return err
+			}
+			endDate, err := parseDate("end_date", endDateStr)
+			if err != nil {
+				return err
+			}
+
+			projectLocation, err := cmd.Flags().GetString(FlagProjectLocation)
+			if err != nil {
+				return err
+			}
+
+			metadataStr, err := cmd.Flags().GetString(FlagMetadata)
+			if err != nil {
+				return err
+			}
+			b, err := base64.StdEncoding.DecodeString(metadataStr)
+			if err != nil {
+				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
+			}
+
+			msg := &ecocredit.MsgCreateBatchRequest{
+				ClassId:         classId,
+				Issuance:        issuances,
+				Metadata:        b,
+				StartDate:       &startDate,
+				EndDate:         &endDate,
+				ProjectLocation: projectLocation,
+			}
+
+			// Marshal and output JSON of message
+			msgJson, err := json.MarshalIndent(msg, "", "    ")
+			fmt.Print(string(msgJson))
+
+			return nil
+		},
+	}
+	cmd.Flags().String(FlagClassId, "", "credit class")
+	cmd.MarkFlagRequired(FlagClassId)
+	cmd.Flags().Uint32(FlagIssuances, 0, "The number of template issuances to generate")
+	cmd.MarkFlagRequired(FlagIssuances)
+	cmd.Flags().String(FlagStartDate, "", "The beginning of the period during which this credit batch was quantified and verified. Format: yyyy-mm-dd.")
+	cmd.MarkFlagRequired(FlagStartDate)
+	cmd.Flags().String(FlagEndDate, "", "The end of the period during which this credit batch was quantified and verified. Format: yyyy-mm-dd.")
+	cmd.MarkFlagRequired(FlagEndDate)
+	cmd.Flags().String(FlagProjectLocation, "", "The location of the project that is backing the credits in this batch")
+	cmd.MarkFlagRequired(FlagProjectLocation)
+	cmd.Flags().String(FlagMetadata, "", "base64 encoded issuance metadata")
+	return cmd
 }
 
 func txCreateBatch() *cobra.Command {
