@@ -9,6 +9,7 @@ lint:
     - COMMENTS
   except:
     - SERVICE_SUFFIX
+    - RPC_REQUEST_STANDARD_NAME
   ignore:
     - cosmos
     - gogoproto

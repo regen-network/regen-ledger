@@ -14,10 +14,10 @@ import (
 func TestMsgAnchorDataRequest_GetSigners(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 
-	msg := &MsgAnchorDataRequest{Sender: addr.String()}
+	msg := &MsgAnchorData{Sender: addr.String()}
 	require.Equal(t, []sdk.AccAddress{addr}, msg.GetSigners())
 
-	msg = &MsgAnchorDataRequest{Sender: ""}
+	msg = &MsgAnchorData{Sender: ""}
 	require.Panics(t, func() {
 		msg.GetSigners()
 	})
@@ -62,7 +62,7 @@ func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgAnchorDataRequest{
+			m := &MsgAnchorData{
 				Sender: tt.fields.Sender,
 				Hash:   tt.fields.Hash,
 			}
@@ -80,13 +80,13 @@ func TestMsgSignDataRequest_GetSigners(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
-	msg := &MsgSignDataRequest{Signers: []string{addr.String(), addr2.String()}}
+	msg := &MsgSignData{Signers: []string{addr.String(), addr2.String()}}
 	require.Equal(t, []sdk.AccAddress{addr, addr2}, msg.GetSigners())
 
-	msg = &MsgSignDataRequest{Signers: nil}
+	msg = &MsgSignData{Signers: nil}
 	require.Empty(t, msg.GetSigners())
 
-	msg = &MsgSignDataRequest{Signers: []string{"abcd"}}
+	msg = &MsgSignData{Signers: []string{"abcd"}}
 	require.Panics(t, func() {
 		msg.GetSigners()
 	})
@@ -131,7 +131,7 @@ func TestMsgSignDataRequest_ValidateBasic(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgSignDataRequest{
+			m := &MsgSignData{
 				Signers: tt.fields.Signers,
 				Hash:    tt.fields.Hash,
 			}
@@ -148,10 +148,10 @@ func TestMsgSignDataRequest_ValidateBasic(t *testing.T) {
 func TestMsgStoreRawDataRequest_GetSigners(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 
-	msg := &MsgStoreRawDataRequest{Sender: addr.String()}
+	msg := &MsgStoreRawData{Sender: addr.String()}
 	require.Equal(t, []sdk.AccAddress{addr}, msg.GetSigners())
 
-	msg = &MsgStoreRawDataRequest{Sender: ""}
+	msg = &MsgStoreRawData{Sender: ""}
 	require.Panics(t, func() {
 		msg.GetSigners()
 	})
@@ -204,7 +204,7 @@ func TestMsgStoreRawDataRequest_ValidateBasic(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MsgStoreRawDataRequest{
+			m := &MsgStoreRawData{
 				Sender:      tt.fields.Sender,
 				ContentHash: tt.fields.Hash,
 				Content:     tt.fields.Content,
