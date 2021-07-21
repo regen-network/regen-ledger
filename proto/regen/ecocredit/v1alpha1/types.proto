@@ -80,6 +80,10 @@ message Params {
   // allowed_class_creator_addresses is an allowlist defining the addresses with
   // the required permissions to create credit classes
   repeated string allowed_class_creator_addresses = 2;
+
+  // allowlist_enabled is a param that enables/disables the allowlist for credit
+  // creation
+  bool allowlist_enabled = 3;
 }
 
 // GenesisState defines the state of the ecocredit module that is needed at

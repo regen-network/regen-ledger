@@ -216,7 +216,8 @@ ClassInfo represents the high-level on-chain information for a credit class.
 <a name="regen.ecocredit.v1alpha1.GenesisState"></a>
 
 ### GenesisState
-GenesisState defines the state of the ecocredit module that is needed at genesis
+GenesisState defines the state of the ecocredit module that is needed at
+genesis
 
 
 | Field | Type | Label | Description |
@@ -239,6 +240,7 @@ use with the x/params module.
 | ----- | ---- | ----- | ----------- |
 | credit_class_fee | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | credit_class_fee is the fixed fee charged on creation of a new credit class |
 | allowed_class_creator_addresses | [string](#string) | repeated | allowed_class_creator_addresses is an allowlist defining the addresses with the required permissions to create credit classes |
+| allowlist_enabled | [bool](#bool) |  | allowlist_enabled is a param that enables/disables the allowlist for credit creation |
 
 
 
