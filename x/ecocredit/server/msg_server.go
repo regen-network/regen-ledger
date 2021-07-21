@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"fmt"
-
 	"github.com/regen-network/regen-ledger/types"
 
 	"github.com/cockroachdb/apd/v2"

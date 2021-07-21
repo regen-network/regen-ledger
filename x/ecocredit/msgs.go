@@ -17,6 +17,10 @@ func (m *MsgCreateClass) ValidateBasic() error {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "issuers cannot be empty")
 	}
 
+	if len(m.CreditType) == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "credit class must have a credit type")
+	}
+
 	return nil
 }
 

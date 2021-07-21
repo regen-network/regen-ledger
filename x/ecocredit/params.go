@@ -2,6 +2,7 @@ package ecocredit
 
 import (
 	"fmt"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -48,10 +49,11 @@ func validateCreditTypes(i interface{}) error {
 	// ensure no duplicate credit types
 	seenTypes := make(map[string]bool)
 	for _, ct := range v {
-		if seenTypes[ct.Type] == true {
-			return fmt.Errorf("duplicate credit type: %s", ct.Type)
+		t := strings.ToLower(ct.Type)
+		if seenTypes[t] == true {
+			return fmt.Errorf("duplicate credit type: %s", t)
 		}
-		seenTypes[ct.Type] = true
+		seenTypes[t] = true
 	}
 
 	return nil

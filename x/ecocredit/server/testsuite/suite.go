@@ -50,6 +50,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.ctx = types.Context{Context: s.sdkCtx}
 
 	ecocreditParams := ecocredit.DefaultParams()
+	ecocreditParams.CreditTypes = []*ecocredit.CreditType{{Type: "carbon", Unit: "kg", Precision: 3}}
 	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
 
 	s.signers = s.fixture.Signers()
@@ -77,9 +78,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	// create class with insufficient funds and it should fail
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-		Designer: designer.String(),
-		Issuers:  []string{issuer1, issuer2},
-		Metadata: nil,
+		Designer:   designer.String(),
+		Issuers:    []string{issuer1, issuer2},
+		Metadata:   nil,
+		CreditType: "carbon",
 	})
 	s.Require().Error(err)
 	s.Require().Nil(createClsRes)
@@ -88,9 +90,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
 
 	createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-		Designer: designer.String(),
-		Issuers:  []string{issuer1, issuer2},
-		Metadata: nil,
+		Designer:   designer.String(),
+		Issuers:    []string{issuer1, issuer2},
+		Metadata:   nil,
+		CreditType: "carbon",
 	})
 	s.Require().NoError(err)
 	s.Require().NotNil(createClsRes)
@@ -631,6 +634,64 @@ func (s *IntegrationTestSuite) TestScenario() {
 						BatchDenom: tc.msg.BatchDenom})
 				require.NoError(err)
 				require.Equal(tc.msg.MaxDecimalPlaces, res.MaxDecimalPlaces)
+			}
+		})
+	}
+
+	/****   TEST CREDIT TYPES   ****/
+	creditTypeCases := []struct {
+		name        string
+		creditTypes []*ecocredit.CreditType
+		tx          ecocredit.MsgCreateClass
+		wantErr     bool
+	}{
+		{
+			name:        "valid ecocredit creation",
+			creditTypes: []*ecocredit.CreditType{{Type: "carbon", Unit: "kg", Precision: 3}},
+			tx: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
+				Issuers: []string{s.signers[1].String(), s.signers[2].String()}, Metadata: nil, CreditType: "carbon"},
+			wantErr: false,
+		},
+		{
+			name:        "invalid request - not a valid credit type",
+			creditTypes: []*ecocredit.CreditType{{Type: "carbon", Unit: "kg", Precision: 3}},
+			tx: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
+				Issuers: []string{s.signers[1].String(), s.signers[2].String()}, Metadata: nil, CreditType: "biodiversity"},
+			wantErr: true,
+		},
+		{
+			name:        "request with strange font should be valid",
+			creditTypes: []*ecocredit.CreditType{{Type: "carbon", Unit: "kg", Precision: 3}},
+			tx: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
+				Issuers: []string{s.signers[1].String(), s.signers[2].String()}, Metadata: nil, CreditType: "cArBoN"},
+			wantErr: false,
+		},
+		{
+			name:        "empty credit types should error",
+			creditTypes: []*ecocredit.CreditType{},
+			tx: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
+				Issuers: []string{s.signers[1].String(), s.signers[2].String()}, Metadata: nil, CreditType: "carbon"},
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range creditTypeCases {
+		tc := tc
+
+		s.Run(tc.name, func() {
+			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyCreditTypes, tc.creditTypes)
+			designer, err := sdk.AccAddressFromBech32(tc.tx.Designer)
+			require.NoError(err)
+
+			// fund the designer account so tx will go through
+			s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+			res, err := s.msgClient.CreateClass(s.ctx, &tc.tx)
+			if tc.wantErr {
+				require.Error(err)
+				require.Nil(res)
+			} else {
+				require.NoError(err)
+				require.NotNil(res)
 			}
 		})
 	}

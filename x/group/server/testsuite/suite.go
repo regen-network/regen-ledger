@@ -80,6 +80,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.ctx = types.Context{Context: s.sdkCtx}
 
 	ecocreditParams := ecocredit.DefaultParams()
+	ecocreditParams.CreditTypes = []*ecocredit.CreditType{{Type: "carbon", Unit: "kg", Precision: 3}}
 	ecocreditParams.CreditClassFee = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(0))) // overwriting the fee to 0stake
 	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
 
@@ -1874,8 +1875,9 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		"proposal with ADR 033 executed when accepted": {
 			setupProposal: func(ctx context.Context) uint64 {
 				msgs := []sdk.Msg{&ecocredit.MsgCreateClass{
-					Designer: s.groupAccountAddr.String(),
-					Issuers:  []string{s.groupAccountAddr.String()},
+					Designer:   s.groupAccountAddr.String(),
+					Issuers:    []string{s.groupAccountAddr.String()},
+					CreditType: "carbon",
 				},
 				}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
