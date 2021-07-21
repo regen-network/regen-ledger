@@ -40,9 +40,18 @@ func validateCreditClassFee(i interface{}) error {
 }
 
 func validateCreditTypes(i interface{}) error {
-	_, ok := i.([]*CreditType)
+	v, ok := i.([]*CreditType)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	// ensure no duplicate credit types
+	seenTypes := make(map[string]bool)
+	for _, ct := range v {
+		if seenTypes[ct.Type] == true {
+			return fmt.Errorf("duplicate credit type: %s", ct.Type)
+		}
+		seenTypes[ct.Type] = true
 	}
 
 	return nil

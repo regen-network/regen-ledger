@@ -37,11 +37,17 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 		return nil, err
 	}
 
+	creditType, err := s.getCreditType(ctx.Context, req.CreditType)
+	if err != nil {
+		return nil, err
+	}
+
 	err = s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
-		ClassId:  classIDStr,
-		Designer: req.Designer,
-		Issuers:  req.Issuers,
-		Metadata: req.Metadata,
+		ClassId:    classIDStr,
+		Designer:   req.Designer,
+		Issuers:    req.Issuers,
+		Metadata:   req.Metadata,
+		CreditType: creditType,
 	})
 	if err != nil {
 		return nil, err
