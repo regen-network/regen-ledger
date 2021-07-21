@@ -472,6 +472,7 @@ func (s serverImpl) isDesignerAllowListed(ctx sdk.Context, addr sdk.Address) (bo
 	return false, nil
 }
 
+// checks if the allowlist of credit creators is enabled
 func (s serverImpl) allowlistEnabled(ctx sdk.Context) bool {
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(ctx, &params)
