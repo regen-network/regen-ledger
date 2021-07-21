@@ -82,28 +82,18 @@ Parameters:
 	}
 }
 
-const (
-	FlagIssuer          string = "issuer"
-	FlagClassId         string = "class-id"
-	FlagStartDate       string = "start-date"
-	FlagEndDate         string = "end-date"
-	FlagProjectLocation string = "project-location"
-	FlagMetadata        string = "metadata"
-	FlagIssuance        string = "issuance"
-)
-
 func txCreateBatch() *cobra.Command {
 	var (
 		startDate = time.Unix(10000, 10000).UTC()
 		endDate   = time.Unix(10000, 10050).UTC()
 	)
-	createBatchJSON, err := json.MarshalIndent(
+	createExampleBatchJSON, err := json.MarshalIndent(
 		ecocredit.MsgCreateBatchRequest{
 			// Leave issuer empty, because we'll use --from flag
 			Issuer:  "",
 			ClassId: "1BX53GF",
 			Issuance: []*ecocredit.MsgCreateBatchRequest_BatchIssuance{
-				&ecocredit.MsgCreateBatchRequest_BatchIssuance{
+				{
 					Recipient:          "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
 					TradableAmount:     "1000",
 					RetiredAmount:      "15",
@@ -115,23 +105,21 @@ func txCreateBatch() *cobra.Command {
 			EndDate:         &endDate,
 			ProjectLocation: "AB-CDE FG1 345",
 		},
-		"                    ",
+		"                              ",
 		"    ",
 	)
 	if err != nil {
 		panic("Couldn't marshal MsgCreateBatch to JSON")
 	}
 	cmd := &cobra.Command{
-		Use:   "create-batch msg-create-batch",
+		Use:   "create-batch [msg-create-batch-json-file]",
 		Short: "Issues a new credit batch",
 		Long: fmt.Sprintf(`Issues a new credit batch.
 
 Parameters:
-  msg-create-batch: A JSON object representing MsgCreateBatch. This could be
-                    passed from a JSON file like:
-		    regen tx create-batch "$(< batch.json)"
-		    The JSON has format:
-                    %s`, createBatchJSON),
+  msg-create-batch-json-file: Path to a file containing a JSON object
+			      representing MsgCreateBatch. The JSON has format:
+                              %s`, createExampleBatchJSON),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
@@ -139,9 +127,8 @@ Parameters:
 				return err
 			}
 
-			// Unmarshal the JSON representation of the request
-			var msg ecocredit.MsgCreateBatchRequest
-			err = json.Unmarshal([]byte(args[0]), &msg)
+			// Parse the JSON file representing the request
+			msg, err := parseMsgCreateBatch(clientCtx, args[0])
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrapf("parsing batch JSON:\n%s", err.Error())
 			}
@@ -153,10 +140,9 @@ Parameters:
 			}
 			msg.Issuer = issuer
 
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
-	cmd.MarkFlagRequired(FlagIssuance)
 	return cmd
 }
 
