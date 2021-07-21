@@ -35,7 +35,7 @@ git checkout v1.0.0
 
 *For Regen Devnet:*
 ```
-git checkout v1.0.0
+git checkout v1.0.0-rc0
 ```
 
 Install the `regen` binary (the `EXPERIMENTAL` option enables experimental features).
@@ -66,7 +66,7 @@ regen init [moniker] --chain-id regen-1
 
 *For Regen Devnet:*
 ```
-regen init [moniker] --chain-id regen-devnet-1
+regen init [moniker] --chain-id regen-devnet-5
 ```
 
 ## Update Genesis

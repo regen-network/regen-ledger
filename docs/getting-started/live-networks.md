@@ -28,7 +28,7 @@ For more information, see [regen-network/mainnet](https://github.com/regen-netwo
 
 <!-- TODO: add information about genesis binary and upgrade binaries -->
 
-Regen Devnet launched with the `v1.0.0` release tag of `regen-ledger`.
+Regen Devnet launched with the `v1.0.0-rc0` release tag of `regen-ledger`.
 
 <!-- TODO: update to use dedicated full node operated by RND -->
 
