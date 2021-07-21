@@ -456,7 +456,7 @@ func subtractTradableBalanceAndSupply(store sdk.KVStore, holder string, batchDen
 	return nil
 }
 
-// checks if the given address is in the allowlist of credit creators
+// Checks if the given address is in the allowlist of credit class designers
 func (s serverImpl) isDesignerAllowListed(ctx sdk.Context, addr sdk.Address) (bool, error) {
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(ctx, &params)
@@ -472,7 +472,7 @@ func (s serverImpl) isDesignerAllowListed(ctx sdk.Context, addr sdk.Address) (bo
 	return false, nil
 }
 
-// checks if the allowlist of credit creators is enabled
+// Checks if the allowlist of credit class designers is enabled
 func (s serverImpl) allowlistEnabled(ctx sdk.Context) bool {
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(ctx, &params)
