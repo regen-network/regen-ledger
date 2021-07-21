@@ -11,6 +11,7 @@ var (
 	// TODO: Decide a sensible default value
 	DefaultCreditClassFeeTokens = sdk.NewInt(10000)
 	KeyCreditClassFee           = []byte("CreditClassFee")
+	KeyCreditTypes              = []byte("CreditTypes")
 )
 
 func ParamKeyTable() paramtypes.KeyTable {
@@ -21,6 +22,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyCreditClassFee, &p.CreditClassFee, validateCreditClassFee),
+		paramtypes.NewParamSetPair(KeyCreditTypes, &p.CreditTypes, validateCreditTypes),
 	}
 }
 
@@ -37,12 +39,22 @@ func validateCreditClassFee(i interface{}) error {
 	return nil
 }
 
-func NewParams(creditClassFee sdk.Coins) Params {
+func validateCreditTypes(i interface{}) error {
+	_, ok := i.([]*CreditType)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	return nil
+}
+
+func NewParams(creditClassFee sdk.Coins, creditTypes []*CreditType) Params {
 	return Params{
 		CreditClassFee: creditClassFee,
+		CreditTypes:    creditTypes,
 	}
 }
 
 func DefaultParams() Params {
-	return NewParams(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)))
+	return NewParams(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)), []*CreditType{})
 }

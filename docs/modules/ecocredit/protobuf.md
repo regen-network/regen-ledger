@@ -14,6 +14,7 @@
 - [regen/ecocredit/v1alpha1/types.proto](#regen/ecocredit/v1alpha1/types.proto)
     - [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo)
     - [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo)
+    - [CreditType](#regen.ecocredit.v1alpha1.CreditType)
     - [GenesisState](#regen.ecocredit.v1alpha1.GenesisState)
     - [Params](#regen.ecocredit.v1alpha1.Params)
   
@@ -24,6 +25,8 @@
     - [QueryBatchInfoResponse](#regen.ecocredit.v1alpha1.QueryBatchInfoResponse)
     - [QueryClassInfoRequest](#regen.ecocredit.v1alpha1.QueryClassInfoRequest)
     - [QueryClassInfoResponse](#regen.ecocredit.v1alpha1.QueryClassInfoResponse)
+    - [QueryCreditTypesRequest](#regen.ecocredit.v1alpha1.QueryCreditTypesRequest)
+    - [QueryCreditTypesResponse](#regen.ecocredit.v1alpha1.QueryCreditTypesResponse)
     - [QueryPrecisionRequest](#regen.ecocredit.v1alpha1.QueryPrecisionRequest)
     - [QueryPrecisionResponse](#regen.ecocredit.v1alpha1.QueryPrecisionResponse)
     - [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest)
@@ -207,6 +210,24 @@ ClassInfo represents the high-level on-chain information for a credit class.
 | designer | [string](#string) |  | designer is the designer of the credit class. |
 | issuers | [string](#string) | repeated | issuers are the approved issuers of the credit class. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit class. |
+| credit_type | [CreditType](#regen.ecocredit.v1alpha1.CreditType) |  | credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.CreditType"></a>
+
+### CreditType
+CreditType defines the measurement unit/precision of a certain credit type (e.g. carbon, biodiversity...)
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| type | [string](#string) |  |  |
+| unit | [string](#string) |  |  |
+| precision | [uint32](#uint32) |  |  |
 
 
 
@@ -238,6 +259,7 @@ use with the x/params module.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | credit_class_fee | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | credit_class_fee is the fixed fee charged on creation of a new credit class |
+| credit_types | [CreditType](#regen.ecocredit.v1alpha1.CreditType) | repeated | credit_types is a list of definitions for credit types |
 
 
 
@@ -352,6 +374,31 @@ QueryClassInfoResponse is the Query/ClassInfo request type.
 
 
 
+<a name="regen.ecocredit.v1alpha1.QueryCreditTypesRequest"></a>
+
+### QueryCreditTypesRequest
+
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QueryCreditTypesResponse"></a>
+
+### QueryCreditTypesResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| credit_types | [CreditType](#regen.ecocredit.v1alpha1.CreditType) | repeated |  |
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha1.QueryPrecisionRequest"></a>
 
 ### QueryPrecisionRequest
@@ -431,6 +478,7 @@ Msg is the regen.ecocredit.v1alpha1 Query service.
 | Balance | [QueryBalanceRequest](#regen.ecocredit.v1alpha1.QueryBalanceRequest) | [QueryBalanceResponse](#regen.ecocredit.v1alpha1.QueryBalanceResponse) | Balance queries the balance (both tradable and retired) of a given credit batch for a given account. |
 | Supply | [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest) | [QuerySupplyResponse](#regen.ecocredit.v1alpha1.QuerySupplyResponse) | Supply queries the tradable and retired supply of a credit batch. |
 | Precision | [QueryPrecisionRequest](#regen.ecocredit.v1alpha1.QueryPrecisionRequest) | [QueryPrecisionResponse](#regen.ecocredit.v1alpha1.QueryPrecisionResponse) | Precision queries the number of decimal places that can be used to represent credits in a batch. See Tx/SetPrecision for more details. |
+| CreditTypes | [QueryCreditTypesRequest](#regen.ecocredit.v1alpha1.QueryCreditTypesRequest) | [QueryCreditTypesResponse](#regen.ecocredit.v1alpha1.QueryCreditTypesResponse) |  |
 
  <!-- end services -->
 
@@ -550,6 +598,7 @@ MsgCreateClass is the Msg/CreateClass request type.
 | designer | [string](#string) |  | designer is the address of the account which designed the credit class. The designer has special permissions to change the list of issuers and perform other administrative operations. |
 | issuers | [string](#string) | repeated | issuers are the account addresses of the approved issuers. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit class. |
+| credit_type | [string](#string) |  | credit_type describes the type of credit (e.g. "carbon", "biodiversity"). |
 
 
 

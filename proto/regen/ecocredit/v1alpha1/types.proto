@@ -22,6 +22,9 @@ message ClassInfo {
 
   // metadata is any arbitrary metadata to attached to the credit class.
   bytes metadata = 4;
+
+  // credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision.
+  CreditType credit_type = 5;
 }
 
 // BatchInfo represents the high-level on-chain information for a credit batch.
@@ -69,10 +72,20 @@ message Params {
   // credit_class_fee is the fixed fee charged on creation of a new credit class
   repeated cosmos.base.v1beta1.Coin credit_class_fee = 1
       [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+
+  // credit_types is a list of definitions for credit types
+  repeated CreditType credit_types = 2;
 }
 
 // GenesisState defines the state of the ecocredit module that is needed at genesis
 message GenesisState {
   // Params contains the updateable global parameters for use with the x/params module
   Params params = 1 [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"params\""];
+}
+
+// CreditType defines the measurement unit/precision of a certain credit type (e.g. carbon, biodiversity...)
+message CreditType {
+  string type = 1;
+  string unit = 2;
+  uint32 precision = 3;
 }
