@@ -86,3 +86,9 @@ func (s serverImpl) Precision(goCtx context.Context, request *ecocredit.QueryPre
 
 	return &ecocredit.QueryPrecisionResponse{MaxDecimalPlaces: x}, nil
 }
+
+func (s serverImpl) CreditTypes(goCtx context.Context, _ *ecocredit.QueryCreditTypesRequest) (*ecocredit.QueryCreditTypesResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx).Context
+	creditTypes := s.getAllCreditTypes(ctx)
+	return &ecocredit.QueryCreditTypesResponse{CreditTypes: creditTypes}, nil
+}

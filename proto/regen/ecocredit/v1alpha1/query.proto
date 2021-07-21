@@ -40,6 +40,11 @@ service Query {
     option (google.api.http).get =
         "/regen/ecocredit/v1alpha1/batches/{batch_denom}/precision";
   }
+
+  rpc CreditTypes(QueryCreditTypesRequest) returns (QueryCreditTypesResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/credit_types";
+  }
 }
 
 // QueryClassInfoRequest is the Query/ClassInfo request type.
@@ -129,4 +134,10 @@ message QueryPrecisionResponse {
   // https://github.com/cosmos/cosmos-sdk/issues/7113.
   uint32 max_decimal_places = 1
       [ (gogoproto.moretags) = "yaml:\"max_decimal_places\"" ];
+}
+
+message QueryCreditTypesRequest {}
+
+message QueryCreditTypesResponse {
+  repeated CreditType credit_types = 1;
 }
