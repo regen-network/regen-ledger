@@ -2,7 +2,7 @@
 
 This document provides an overview of live networks currently running the `regen-ledger` blockchain application and how to interact with a live network using the `regen` binary.
 
-By default, the `regen` binary will connect to a [local node](#running-a-node). In order to connect to a live network, you'll need to know the address of a public node.
+By default, the `regen` binary will connect to a local node. In order to connect to a live network, you'll need to know the address of a public node.
 
 ## Available Networks
 
@@ -10,13 +10,15 @@ By default, the `regen` binary will connect to a [local node](#running-a-node). 
 
 `regen-1` is the chain ID for Regen Mainnet.
 
-Regen Mainnet is currently using the `v1.0.0` release tag of `regen-ledger`.
+<!-- TODO: add information about genesis binary and upgrade binaries -->
+
+Regen Mainnet launched with the `v1.0.0` release tag of `regen-ledger`.
 
 <!-- TODO: update to use dedicated full node operated by RND -->
 
 The following URL is the node endpoint for one of our lead validators:
 
-http://104.131.169.70:26657/
+[http://104.131.169.70:26657/](http://104.131.169.70:26657/)
 
 For more information, see [regen-network/mainnet](https://github.com/regen-network/mainnet).
 
@@ -24,13 +26,15 @@ For more information, see [regen-network/mainnet](https://github.com/regen-netwo
 
 `regen-devnet-5` is the chain ID for Regen Devnet.
 
-Regen Devnet is currently using the `v1.0.0` release tag of `regen-ledger`.
+<!-- TODO: add information about genesis binary and upgrade binaries -->
+
+Regen Devnet launched with the `v1.0.0` release tag of `regen-ledger`.
 
 <!-- TODO: update to use dedicated full node operated by RND -->
 
 The following URL is the node endpoint for one of our lead validators:
 
-http://18.220.101.192:26657/
+[http://18.220.101.192:26657/](http://18.220.101.192:26657/)
 
 For more information, see [regen-network/testnets](https://github.com/regen-network/testnets).
 

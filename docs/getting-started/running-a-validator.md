@@ -1,6 +1,6 @@
 # Running a Validator
 
-This document provides instructions for running a validator node for a live network. With both Regen Mainnet and Regen Devnet already launched and running, this document will focus on how to become a validator for a live network that has already launched.
+This document provides instructions for running a validator node for a [live network](./live-networks.html). With both Regen Mainnet and Regen Devnet already launched and running, this document will focus on how to become a validator for a network post-genesis.
 
 ## Prerequisites
 
@@ -24,14 +24,30 @@ Change to the `regen-ledger` directory:
 cd regen-ledger
 ```
 
-Check out the latest stable version:
+<!-- TODO: add information about genesis binary and upgrade binaries -->
+
+Check out the version that the network launched with.
+
+*For Regen Mainnet:*
 ```
 git checkout v1.0.0
 ```
 
-Install the `regen` binary:
+*For Regen Devnet:*
+```
+git checkout v1.0.0
+```
+
+Install the `regen` binary (the `EXPERIMENTAL` option enables experimental features).
+
+*For Regen Mainnet:*
 ```
 make install
+```
+
+*For Regen Devnet:*
+```
+EXPERIMENTAL=true make install
 ```
 
 Check to make sure the install was successful:
@@ -39,30 +55,16 @@ Check to make sure the install was successful:
 regen version
 ```
 
-## Add Validator Key
-
-As a validator who signs blocks, your node must have a public/private key pair. Regen Ledger keys can be managed with the `regen keys` subcommand. A new key pair can be generated using:
-
-```
-regen keys add [name]
-```
-
-::: warning
-If you create a new key, make sure you store the mnemonic phrase in a safe place. You will not be able to recover your new key without the mnemonic phrase.
-:::
-
-If you'd like to use an existing key or a custom keyring backend, you can find more information about adding keys and keyring backends in the Cosmos SDK [Keyring](https://docs.cosmos.network/master/run-node/keyring.html) documentation.
-
 ## Initialize Node
 
-Create the configuration files and data directory by initializing the node.
+Create the configuration files and data directory by initializing the node. In the following command, replace `[moniker]` with a name of your choice. 
 
-For Regen Mainnet (`regen-1`):
+*For Regen Mainnet:*
 ```
 regen init [moniker] --chain-id regen-1
 ```
 
-For Regen Devnet (`regen-devnet-5`):
+*For Regen Devnet:*
 ```
 regen init [moniker] --chain-id regen-devnet-1
 ```
@@ -73,14 +75,14 @@ Update the genesis file using a node endpoint.
 
 <!-- TODO: update to use dedicated full node operated by RND -->
 
-For Regen Mainnet (`regen-1`):
+*For Regen Mainnet:*
 ```
 curl http://104.131.169.70:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
 
 <!-- TODO: update to use dedicated full node operated by RND -->
 
-For Regen Devnet (`regen-devnet-5`):
+*For Regen Devnet:*
 ```
 curl http://18.220.101.192:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
@@ -91,7 +93,7 @@ Add a seed node for initial peer discovery.
 
 <!-- TODO: update to use dedicated full node operated by RND -->
 
-For Regen Mainnet (`regen-1`):
+*For Regen Mainnet:*
 ```
 PERSISTENT_PEERS="69975e7afdf731a165e40449fcffc75167a084fc@104.131.169.70:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
@@ -99,9 +101,9 @@ sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.reg
 
 <!-- TODO: update to use dedicated full node operated by RND -->
 
-For Regen Devnet (`regen-devnet-5`):
+*For Regen Devnet:*
 ```
-PERSISTENT_PEERS="a621e6bf1f5981b3e72e059f86cbfc9dc5577fcb@18.220.101.192:26656"
+PERSISTENT_PEERS="b2679a74d6bd9f89a3c294c447d6930293255e6b@18.220.101.192:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
@@ -118,10 +120,6 @@ go get github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
 
 The next step will be to configure `cosmovisor` as a `systemd` service. For more information about the environment variables used to configure `cosmovisor`, see [Cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor).
 
-::: warning
-You'll want to carefully consider the options you set when configuring cosmovisor.
-:::
-
 Create the `cosmovisor.service` file:
 ```
 echo "[Unit]
@@ -130,6 +128,7 @@ After=network-online.target
 [Service]
 Environment="DAEMON_NAME=regen"
 Environment="DAEMON_HOME=${HOME}/.${DAEMON}"
+Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
 Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
 User=${USER}
 ExecStart=${GOBIN}/cosmovisor start
@@ -151,6 +150,20 @@ Reload systemctl and start `cosmovisor`:
 sudo -S systemctl daemon-reload
 sudo -S systemctl start cosmovisor
 ```
+
+## Add Validator Key
+
+As a validator who signs blocks, your node must have a public/private key pair. Regen Ledger keys can be managed with the `regen keys` subcommand. A new key pair can be generated using:
+
+```
+regen keys add [name]
+```
+
+::: warning
+If you create a new key, make sure you store the mnemonic phrase in a safe place. You will not be able to recover your new key without the mnemonic phrase.
+:::
+
+If you'd like to use an existing key or a custom keyring backend, you can find more information about adding keys and keyring backends in the Cosmos SDK [Keyring](https://docs.cosmos.network/master/run-node/keyring.html) documentation.
 
 ## Create Validator
 
