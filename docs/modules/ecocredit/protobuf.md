@@ -27,8 +27,6 @@
     - [QueryClassInfoResponse](#regen.ecocredit.v1alpha1.QueryClassInfoResponse)
     - [QueryCreditTypesRequest](#regen.ecocredit.v1alpha1.QueryCreditTypesRequest)
     - [QueryCreditTypesResponse](#regen.ecocredit.v1alpha1.QueryCreditTypesResponse)
-    - [QueryPrecisionRequest](#regen.ecocredit.v1alpha1.QueryPrecisionRequest)
-    - [QueryPrecisionResponse](#regen.ecocredit.v1alpha1.QueryPrecisionResponse)
     - [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest)
     - [QuerySupplyResponse](#regen.ecocredit.v1alpha1.QuerySupplyResponse)
   
@@ -49,8 +47,6 @@
     - [MsgSend](#regen.ecocredit.v1alpha1.MsgSend)
     - [MsgSend.SendCredits](#regen.ecocredit.v1alpha1.MsgSend.SendCredits)
     - [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse)
-    - [MsgSetPrecision](#regen.ecocredit.v1alpha1.MsgSetPrecision)
-    - [MsgSetPrecisionResponse](#regen.ecocredit.v1alpha1.MsgSetPrecisionResponse)
   
     - [Msg](#regen.ecocredit.v1alpha1.Msg)
   
@@ -399,36 +395,6 @@ QueryClassInfoResponse is the Query/ClassInfo request type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.QueryPrecisionRequest"></a>
-
-### QueryPrecisionRequest
-QueryPrecisionRequest is the Query/Precision request type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch to query. |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha1.QueryPrecisionResponse"></a>
-
-### QueryPrecisionResponse
-QueryPrecisionResponse is the Query/Precision response type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| max_decimal_places | [uint32](#uint32) |  | max_decimal_places is the maximum number of decimal places that can be used to represent some quantity of credits. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. |
-
-
-
-
-
-
 <a name="regen.ecocredit.v1alpha1.QuerySupplyRequest"></a>
 
 ### QuerySupplyRequest
@@ -477,7 +443,6 @@ Msg is the regen.ecocredit.v1alpha1 Query service.
 | BatchInfo | [QueryBatchInfoRequest](#regen.ecocredit.v1alpha1.QueryBatchInfoRequest) | [QueryBatchInfoResponse](#regen.ecocredit.v1alpha1.QueryBatchInfoResponse) | BatchInfo queries for information on a credit batch. |
 | Balance | [QueryBalanceRequest](#regen.ecocredit.v1alpha1.QueryBalanceRequest) | [QueryBalanceResponse](#regen.ecocredit.v1alpha1.QueryBalanceResponse) | Balance queries the balance (both tradable and retired) of a given credit batch for a given account. |
 | Supply | [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest) | [QuerySupplyResponse](#regen.ecocredit.v1alpha1.QuerySupplyResponse) | Supply queries the tradable and retired supply of a credit batch. |
-| Precision | [QueryPrecisionRequest](#regen.ecocredit.v1alpha1.QueryPrecisionRequest) | [QueryPrecisionResponse](#regen.ecocredit.v1alpha1.QueryPrecisionResponse) | Precision queries the number of decimal places that can be used to represent credits in a batch. See Tx/SetPrecision for more details. |
 | CreditTypes | [QueryCreditTypesRequest](#regen.ecocredit.v1alpha1.QueryCreditTypesRequest) | [QueryCreditTypesResponse](#regen.ecocredit.v1alpha1.QueryCreditTypesResponse) |  |
 
  <!-- end services -->
@@ -709,33 +674,6 @@ MsgSendResponse is the Msg/Send response type.
 
 
 
-
-<a name="regen.ecocredit.v1alpha1.MsgSetPrecision"></a>
-
-### MsgSetPrecision
-MsgRetire is the Msg/SetPrecision request type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| issuer | [string](#string) |  | issuer is the address of the batch issuer. |
-| batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
-| max_decimal_places | [uint32](#uint32) |  | max_decimal_places is the new maximum number of decimal places that can be used to represent some quantity of credits. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha1.MsgSetPrecisionResponse"></a>
-
-### MsgSetPrecisionResponse
-MsgRetire is the Msg/SetPrecision response type.
-
-
-
-
-
  <!-- end messages -->
 
  <!-- end enums -->
@@ -755,7 +693,6 @@ Msg is the regen.ecocredit.v1alpha1 Msg service.
 | Send | [MsgSend](#regen.ecocredit.v1alpha1.MsgSend) | [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse) | Send sends tradeable credits from one account to another account. Sent credits can either be tradable or retired on receipt. |
 | Retire | [MsgRetire](#regen.ecocredit.v1alpha1.MsgRetire) | [MsgRetireResponse](#regen.ecocredit.v1alpha1.MsgRetireResponse) | Retire retires a specified number of credits in the holder's account. |
 | Cancel | [MsgCancel](#regen.ecocredit.v1alpha1.MsgCancel) | [MsgCancelResponse](#regen.ecocredit.v1alpha1.MsgCancelResponse) | Cancel removes a number of credits from the holder's account and also deducts them from the tradable supply, effectively cancelling their issuance on Regen Ledger |
-| SetPrecision | [MsgSetPrecision](#regen.ecocredit.v1alpha1.MsgSetPrecision) | [MsgSetPrecisionResponse](#regen.ecocredit.v1alpha1.MsgSetPrecisionResponse) | SetPrecision allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal places allowed for a credit batch is determined by the original number of decimal places used with calling CreatBatch. SetPrecision allows the number of allowed decimal places to be increased, effectively making the supply more granular without actually changing any balances. It allows asset issuers to be able to issue an asset without needing to think about how many subdivisions are needed upfront. While it may not be relevant for credits which likely have a fairly stable market value, I wanted to experiment a bit and this serves as a proof of concept for a broader bank redesign where say for instance a coin like the ATOM or XRN could be issued in its own units rather than micro or nano-units. Instead an operation like SetPrecision would allow trading in micro, nano or pico in the future based on market demand. Arbitrary, unbounded precision is not desirable because this can lead to spam attacks (like sending 0.000000000000000000000000000001 coins). This is effectively fixed precision so under the hood it is still basically an integer, but the fixed precision can be increased so its more adaptable long term than just an integer. |
 
  <!-- end services -->
 

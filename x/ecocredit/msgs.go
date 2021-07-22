@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	_, _, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
-		&MsgRetire{}, &MsgCancel{}, &MsgSetPrecision{}
+	_, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
+		&MsgRetire{}, &MsgCancel{}
 )
 
 func (m *MsgCreateClass) ValidateBasic() error {
@@ -142,22 +142,6 @@ func (m *MsgCancel) ValidateBasic() error {
 
 func (m *MsgCancel) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Holder)
-	if err != nil {
-		panic(err)
-	}
-
-	return []sdk.AccAddress{addr}
-}
-
-func (m *MsgSetPrecision) ValidateBasic() error {
-	if len(m.BatchDenom) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "missing batch_denom")
-	}
-	return nil
-}
-
-func (m *MsgSetPrecision) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(m.Issuer)
 	if err != nil {
 		panic(err)
 	}

@@ -376,35 +376,6 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 	return &ecocredit.MsgCancelResponse{}, nil
 }
 
-func (s serverImpl) SetPrecision(goCtx context.Context, req *ecocredit.MsgSetPrecision) (*ecocredit.MsgSetPrecisionResponse, error) {
-	ctx := types.UnwrapSDKContext(goCtx)
-	var batchInfo ecocredit.BatchInfo
-	err := s.batchInfoTable.GetOne(ctx, orm.RowID(req.BatchDenom), &batchInfo)
-	if err != nil {
-		return nil, err
-	}
-	if req.Issuer != batchInfo.Issuer {
-		return nil, sdkerrors.ErrUnauthorized
-	}
-	store := ctx.KVStore(s.storeKey)
-	key := MaxDecimalPlacesKey(batchDenomT(req.BatchDenom))
-	x, err := getUint32(store, key)
-	if err != nil {
-		return nil, err
-	}
-
-	if req.MaxDecimalPlaces <= x {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("Maximum decimal can only be increased, it is currently %d, and %d was requested", x, req.MaxDecimalPlaces))
-	}
-
-	err = setUInt32(store, key, req.MaxDecimalPlaces)
-	if err != nil {
-		return nil, err
-	}
-
-	return &ecocredit.MsgSetPrecisionResponse{}, nil
-}
-
 // assertClassIssuer makes sure that the issuer is part of issuers of given classID.
 // Returns ErrUnauthorized otherwise.
 func (s serverImpl) assertClassIssuer(goCtx context.Context, classID, issuer string) error {

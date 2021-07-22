@@ -3,7 +3,6 @@ package client
 import (
 	"encoding/base64"
 	"errors"
-	"strconv"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -33,7 +32,6 @@ func TxCmd(name string) *cobra.Command {
 		txflags(txSend()),
 		txflags(txRetire()),
 		txflags(txCancel()),
-		txflags(txSetPrecision()),
 	)
 	return cmd
 }
@@ -221,34 +219,6 @@ Parameters:
 			msg := ecocredit.MsgCancel{
 				Holder:  clientCtx.GetFromAddress().String(),
 				Credits: credits,
-			}
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
-		},
-	}
-}
-
-func txSetPrecision() *cobra.Command {
-	return &cobra.Command{
-		Use:   "set_precision [batch_denom] [decimals]",
-		Short: "Allows an issuer to increase the decimal precision of a credit batch",
-		Long: `Allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature.
-
-Parameters:
-  batch_denom: credit batch ID
-  decimals:    maximum number of decimals of precision`,
-		Args: cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			decimals, err := strconv.ParseUint(args[1], 10, 32)
-			if err != nil {
-				return err
-			}
-			clientCtx, err := sdkclient.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-			msg := ecocredit.MsgSetPrecision{
-				Issuer:     clientCtx.GetFromAddress().String(),
-				BatchDenom: args[0], MaxDecimalPlaces: uint32(decimals),
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},

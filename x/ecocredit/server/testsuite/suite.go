@@ -595,49 +595,6 @@ func (s *IntegrationTestSuite) TestScenario() {
 		})
 	}
 
-	/****   TEST SET PRECISION   ****/
-	precisionCases := []struct {
-		name string
-		msg  ecocredit.MsgSetPrecision
-		ok   bool
-	}{
-		{
-			"can NOT decrease the decimals", ecocredit.MsgSetPrecision{
-				Issuer: issuer1, BatchDenom: batchDenom, MaxDecimalPlaces: 2},
-			false,
-		}, {
-			"can NOT set to the same value", ecocredit.MsgSetPrecision{
-				Issuer: issuer1, BatchDenom: batchDenom, MaxDecimalPlaces: 7},
-			false,
-		}, {
-			"can increase", ecocredit.MsgSetPrecision{
-				Issuer: issuer1, BatchDenom: batchDenom, MaxDecimalPlaces: 8},
-			true,
-		}, {
-			"can NOT change precision of not existing denom", ecocredit.MsgSetPrecision{
-				Issuer: issuer1, BatchDenom: "not/existing", MaxDecimalPlaces: 1},
-			false,
-		},
-	}
-	require := s.Require()
-	for _, tc := range precisionCases {
-		tc := tc
-		s.Run(tc.name, func() {
-			_, err := s.msgClient.SetPrecision(s.ctx, &tc.msg)
-
-			if !tc.ok {
-				require.Error(err)
-			} else {
-				require.NoError(err)
-				res, err := s.queryClient.Precision(s.ctx,
-					&ecocredit.QueryPrecisionRequest{
-						BatchDenom: tc.msg.BatchDenom})
-				require.NoError(err)
-				require.Equal(tc.msg.MaxDecimalPlaces, res.MaxDecimalPlaces)
-			}
-		})
-	}
-
 	/****   TEST CREDIT TYPES   ****/
 	creditTypeCases := []struct {
 		name        string
@@ -646,7 +603,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		wantErr     bool
 	}{
 		{
-			name:        "valid ecocredit creation",
+			name:        "valid eco credit creation",
 			creditTypes: []*ecocredit.CreditType{{Type: "carbon", Unit: "kg", Precision: 3}},
 			tx: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
 				Issuers: []string{s.signers[1].String(), s.signers[2].String()}, Metadata: nil, CreditType: "carbon"},
@@ -679,6 +636,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		tc := tc
 
 		s.Run(tc.name, func() {
+			require := s.Require()
 			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyCreditTypes, tc.creditTypes)
 			designer, err := sdk.AccAddressFromBech32(tc.tx.Designer)
 			require.NoError(err)
