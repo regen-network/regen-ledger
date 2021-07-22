@@ -92,8 +92,8 @@ message CreditType {
   // the type of credit (e.g. carbon, biodiversity, etc)
   string type = 1;
 
-  // the measurement unit (e.g. kg, tonne, etc)
-  string unit = 2;
+  // the measurement unit (e.g. kg, ton, etc)
+  string units = 2;
 
   // the decimal precision
   uint32 precision = 3;
