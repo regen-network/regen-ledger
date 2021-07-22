@@ -80,7 +80,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.ctx = types.Context{Context: s.sdkCtx}
 
 	ecocreditParams := ecocredit.DefaultParams()
-	ecocreditParams.CreditTypes = []*ecocredit.CreditType{{Type: "carbon", Unit: "kg", Precision: 6}}
+	ecocreditParams.CreditTypes = []*ecocredit.CreditType{{Type: "carbon", Units: "kg", Precision: 6}}
 	ecocreditParams.CreditClassFee = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(0))) // overwriting the fee to 0stake
 	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
 

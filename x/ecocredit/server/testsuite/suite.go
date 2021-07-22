@@ -50,7 +50,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.ctx = types.Context{Context: s.sdkCtx}
 
 	ecocreditParams := ecocredit.DefaultParams()
-	ecocreditParams.CreditTypes = []*ecocredit.CreditType{{Type: "carbon", Unit: "kg", Precision: 6}}
+	ecocreditParams.CreditTypes = []*ecocredit.CreditType{{Type: "carbon", Units: "kg", Precision: 6}}
 	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
 
 	s.signers = s.fixture.Signers()
@@ -630,21 +630,21 @@ func (s *IntegrationTestSuite) TestScenario() {
 	}{
 		{
 			name:        "valid eco credit creation",
-			creditTypes: []*ecocredit.CreditType{{Type: "carbon", Unit: "kg", Precision: 3}},
+			creditTypes: []*ecocredit.CreditType{{Type: "carbon", Units: "kg", Precision: 3}},
 			tx: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
 				Issuers: []string{s.signers[1].String(), s.signers[2].String()}, Metadata: nil, CreditType: "carbon"},
 			wantErr: false,
 		},
 		{
 			name:        "invalid request - not a valid credit type",
-			creditTypes: []*ecocredit.CreditType{{Type: "carbon", Unit: "kg", Precision: 3}},
+			creditTypes: []*ecocredit.CreditType{{Type: "carbon", Units: "kg", Precision: 3}},
 			tx: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
 				Issuers: []string{s.signers[1].String(), s.signers[2].String()}, Metadata: nil, CreditType: "biodiversity"},
 			wantErr: true,
 		},
 		{
 			name:        "request with strange font should be valid",
-			creditTypes: []*ecocredit.CreditType{{Type: "carbon", Unit: "kg", Precision: 3}},
+			creditTypes: []*ecocredit.CreditType{{Type: "carbon", Units: "kg", Precision: 3}},
 			tx: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
 				Issuers: []string{s.signers[1].String(), s.signers[2].String()}, Metadata: nil, CreditType: "cArBoN"},
 			wantErr: false,

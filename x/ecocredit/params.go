@@ -64,7 +64,7 @@ func validateCreditTypes(i interface{}) error {
 		if ct.Type == "" {
 			return fmt.Errorf("empty credit type name")
 		}
-		if ct.Unit == "" {
+		if ct.Units == "" {
 			return fmt.Errorf("empty credit unit")
 		}
 
