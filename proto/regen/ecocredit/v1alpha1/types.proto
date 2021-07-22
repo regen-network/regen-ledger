@@ -61,6 +61,10 @@ message BatchInfo {
   // quantified and verified.
   google.protobuf.Timestamp end_date = 8
       [(gogoproto.stdtime) = true, (gogoproto.moretags) = "yaml:\"end_date\""];
+
+  // project_location is the location of the project backing the credits in this
+  // batch. Full documentation can be found in MsgCreateBatch.project_location.
+  string project_location = 9 [(gogoproto.moretags) = "yaml:\"project_location\""];
 }
 
 // Params defines the updatable global parameters of the ecocredit module for

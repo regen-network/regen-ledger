@@ -40,6 +40,11 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf("The batch end date (%s) must be the same as or after the batch start date (%s)", m.EndDate.Format("2006-01-02"), m.StartDate.Format("2006-01-02"))
 	}
 
+	err := validateLocation(m.ProjectLocation)
+	if err != nil {
+		return err
+	}
+
 	for _, iss := range m.Issuance {
 		_, err := math.ParseNonNegativeDecimal(iss.TradableAmount)
 		if err != nil {
