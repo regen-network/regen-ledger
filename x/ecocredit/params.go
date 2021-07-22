@@ -15,6 +15,11 @@ var (
 	KeyCreditTypes              = []byte("CreditTypes")
 )
 
+// TODO: remove after we open governance changes for precision
+const (
+	PRECISION = 6
+)
+
 func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
 }
@@ -46,12 +51,17 @@ func validateCreditTypes(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	// ensure no duplicate credit types
+	// ensure no duplicate credit types and that all precisions conform to hardcoded PRECISION above
 	seenTypes := make(map[string]bool)
 	for _, ct := range v {
 		t := strings.ToLower(ct.Type)
+		t = strings.TrimSpace(t)
 		if seenTypes[t] == true {
 			return fmt.Errorf("duplicate credit type: %s", t)
+		}
+		// TODO: remove after we open governance changes for precision
+		if ct.Precision != PRECISION {
+			return fmt.Errorf("invalid precision %d: precision is currently lockd to %d", ct.Precision, PRECISION)
 		}
 		seenTypes[t] = true
 	}
