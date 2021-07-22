@@ -10,8 +10,9 @@ import (
 func (s serverImpl) getCreditType(ctx sdk.Context, creditTypeName string) (*ecocredit.CreditType, error) {
 	creditTypes := s.getAllCreditTypes(ctx)
 	creditTypeName = strings.ToLower(creditTypeName)
+	creditTypeName = strings.TrimSpace(creditTypeName)
 	for _, creditType := range creditTypes {
-		if strings.ToLower(creditType.Type) == creditTypeName {
+		if creditType.Type == creditTypeName {
 			return creditType, nil
 		}
 	}
