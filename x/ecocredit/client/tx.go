@@ -43,15 +43,16 @@ func txflags(cmd *cobra.Command) *cobra.Command {
 
 func txCreateClass() *cobra.Command {
 	return &cobra.Command{
-		Use:   "create-class [designer] [issuer[,issuer]*] [metadata]",
+		Use:   "create-class [designer] [issuer[,issuer]*] [metadata] [credit type]",
 		Short: "Creates a new credit class",
 		Long: `Creates a new credit class.
 
 Parameters:
-  designer:  address of the account which designed the credit class
-  issuer:    comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
-  metadata:  base64 encoded metadata - arbitrary data attached to the credit class info`,
-		Args: cobra.ExactArgs(3),
+  designer:  	address of the account which designed the credit class
+  issuer:    	comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
+  metadata:  	base64 encoded metadata - arbitrary data attached to the credit class info
+  credit type: 	the credit class type (e.g. carbon, biodiversity, etc)`,
+		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			issuers := strings.Split(args[1], ",")
 			for i := range issuers {
@@ -64,13 +65,17 @@ Parameters:
 			if err != nil {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
+			if args[3] == "" {
+				return errors.New("credit type is required")
+			}
+			creditType := args[3]
 
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 			msg := ecocredit.MsgCreateClass{
-				Designer: args[0], Issuers: issuers, Metadata: b,
+				Designer: args[0], Issuers: issuers, Metadata: b, CreditType: creditType,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
