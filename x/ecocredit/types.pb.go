@@ -343,8 +343,11 @@ func (m *GenesisState) GetParams() Params {
 
 // CreditType defines the measurement unit/precision of a certain credit type (e.g. carbon, biodiversity...)
 type CreditType struct {
-	Type      string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
-	Unit      string `protobuf:"bytes,2,opt,name=unit,proto3" json:"unit,omitempty"`
+	// the type of credit (e.g. carbon, biodiversity, etc)
+	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	// the measurement unit (e.g. kg, tonne, etc)
+	Unit string `protobuf:"bytes,2,opt,name=unit,proto3" json:"unit,omitempty"`
+	// the decimal precision
 	Precision uint32 `protobuf:"varint,3,opt,name=precision,proto3" json:"precision,omitempty"`
 }
 

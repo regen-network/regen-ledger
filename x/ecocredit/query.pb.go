@@ -426,6 +426,7 @@ func (m *QuerySupplyResponse) GetRetiredSupply() string {
 	return ""
 }
 
+// QueryCreditTypesRequest is the Query/Credit_Types request type
 type QueryCreditTypesRequest struct {
 }
 
@@ -462,7 +463,9 @@ func (m *QueryCreditTypesRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryCreditTypesRequest proto.InternalMessageInfo
 
+// QueryCreditTypesRequest is the Query/Credit_Types response type
 type QueryCreditTypesResponse struct {
+	// list of credit types
 	CreditTypes []*CreditType `protobuf:"bytes,1,rep,name=credit_types,json=creditTypes,proto3" json:"credit_types,omitempty"`
 }
 
@@ -593,6 +596,7 @@ type QueryClient interface {
 	Balance(ctx context.Context, in *QueryBalanceRequest, opts ...grpc.CallOption) (*QueryBalanceResponse, error)
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(ctx context.Context, in *QuerySupplyRequest, opts ...grpc.CallOption) (*QuerySupplyResponse, error)
+	// CreditTypes queries the allow credit type information
 	CreditTypes(ctx context.Context, in *QueryCreditTypesRequest, opts ...grpc.CallOption) (*QueryCreditTypesResponse, error)
 }
 
@@ -660,6 +664,7 @@ type QueryServer interface {
 	Balance(context.Context, *QueryBalanceRequest) (*QueryBalanceResponse, error)
 	// Supply queries the tradable and retired supply of a credit batch.
 	Supply(context.Context, *QuerySupplyRequest) (*QuerySupplyResponse, error)
+	// CreditTypes queries the allow credit type information
 	CreditTypes(context.Context, *QueryCreditTypesRequest) (*QueryCreditTypesResponse, error)
 }
 

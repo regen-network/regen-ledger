@@ -34,6 +34,7 @@ service Query {
         "/regen/ecocredit/v1alpha1/batch_info/{batch_denom}/supply";
   }
 
+  // CreditTypes queries the allow credit type information
   rpc CreditTypes(QueryCreditTypesRequest) returns (QueryCreditTypesResponse) {
     option (google.api.http).get =
         "/regen/ecocredit/v1alpha1/credit_types";
@@ -111,8 +112,11 @@ message QuerySupplyResponse {
       [ (gogoproto.moretags) = "yaml:\"retired_supply\"" ];
 }
 
+// QueryCreditTypesRequest is the Query/Credit_Types request type
 message QueryCreditTypesRequest {}
 
+// QueryCreditTypesRequest is the Query/Credit_Types response type
 message QueryCreditTypesResponse {
+  // list of credit types
   repeated CreditType credit_types = 1;
 }

@@ -223,9 +223,9 @@ CreditType defines the measurement unit/precision of a certain credit type (e.g.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| type | [string](#string) |  |  |
-| unit | [string](#string) |  |  |
-| precision | [uint32](#uint32) |  |  |
+| type | [string](#string) |  | the type of credit (e.g. carbon, biodiversity, etc) |
+| unit | [string](#string) |  | the measurement unit (e.g. kg, tonne, etc) |
+| precision | [uint32](#uint32) |  | the decimal precision |
 
 
 
@@ -375,7 +375,7 @@ QueryClassInfoResponse is the Query/ClassInfo request type.
 <a name="regen.ecocredit.v1alpha1.QueryCreditTypesRequest"></a>
 
 ### QueryCreditTypesRequest
-
+QueryCreditTypesRequest is the Query/Credit_Types request type
 
 
 
@@ -385,12 +385,12 @@ QueryClassInfoResponse is the Query/ClassInfo request type.
 <a name="regen.ecocredit.v1alpha1.QueryCreditTypesResponse"></a>
 
 ### QueryCreditTypesResponse
-
+QueryCreditTypesRequest is the Query/Credit_Types response type
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| credit_types | [CreditType](#regen.ecocredit.v1alpha1.CreditType) | repeated |  |
+| credit_types | [CreditType](#regen.ecocredit.v1alpha1.CreditType) | repeated | list of credit types |
 
 
 
@@ -445,7 +445,7 @@ Msg is the regen.ecocredit.v1alpha1 Query service.
 | BatchInfo | [QueryBatchInfoRequest](#regen.ecocredit.v1alpha1.QueryBatchInfoRequest) | [QueryBatchInfoResponse](#regen.ecocredit.v1alpha1.QueryBatchInfoResponse) | BatchInfo queries for information on a credit batch. |
 | Balance | [QueryBalanceRequest](#regen.ecocredit.v1alpha1.QueryBalanceRequest) | [QueryBalanceResponse](#regen.ecocredit.v1alpha1.QueryBalanceResponse) | Balance queries the balance (both tradable and retired) of a given credit batch for a given account. |
 | Supply | [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest) | [QuerySupplyResponse](#regen.ecocredit.v1alpha1.QuerySupplyResponse) | Supply queries the tradable and retired supply of a credit batch. |
-| CreditTypes | [QueryCreditTypesRequest](#regen.ecocredit.v1alpha1.QueryCreditTypesRequest) | [QueryCreditTypesResponse](#regen.ecocredit.v1alpha1.QueryCreditTypesResponse) |  |
+| CreditTypes | [QueryCreditTypesRequest](#regen.ecocredit.v1alpha1.QueryCreditTypesRequest) | [QueryCreditTypesResponse](#regen.ecocredit.v1alpha1.QueryCreditTypesResponse) | CreditTypes queries the allow credit type information |
 
  <!-- end services -->
 
