@@ -50,7 +50,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.ctx = types.Context{Context: s.sdkCtx}
 
 	ecocreditParams := ecocredit.DefaultParams()
-	ecocreditParams.CreditTypes = []*ecocredit.CreditType{{Type: "carbon", Unit: "kg", Precision: 3}}
+	ecocreditParams.CreditTypes = []*ecocredit.CreditType{{Type: "carbon", Unit: "kg", Precision: 6}}
 	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
 
 	s.signers = s.fixture.Signers()
