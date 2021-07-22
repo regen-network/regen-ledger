@@ -5,17 +5,23 @@ package ecocredit
 
 import (
 	fmt "fmt"
+	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
+	types1 "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
+	_ "github.com/gogo/protobuf/types"
+	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
 	io "io"
 	math "math"
 	math_bits "math/bits"
+	time "time"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+var _ = time.Kitchen
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
@@ -104,11 +110,28 @@ type BatchInfo struct {
 	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
 	// issuer is the issuer of the credit batch.
 	Issuer string `protobuf:"bytes,3,opt,name=issuer,proto3" json:"issuer,omitempty"`
-	// total_units is the total number of units in the credit batch and is
-	// immutable.
-	TotalUnits string `protobuf:"bytes,4,opt,name=total_units,json=totalUnits,proto3" json:"total_units,omitempty" yaml:"total_units"`
+	// total_amount is the total number of active credits in the credit batch.
+	// Some of the issued credits may be cancelled and will be removed from
+	// total_amount and tracked in amount_cancelled. total_amount and
+	// amount_cancelled will always sum to the original amount of credits that
+	// were issued.
+	TotalAmount string `protobuf:"bytes,4,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty" yaml:"total_amount"`
 	// metadata is any arbitrary metadata to attached to the credit batch.
 	Metadata []byte `protobuf:"bytes,5,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	// amount_cancelled is the number of credits in the batch that have been
+	// cancelled, effectively undoing there issuance. The sum of total_amount and
+	// amount_cancelled will always sum to the original amount of credits that
+	// were issued.
+	AmountCancelled string `protobuf:"bytes,6,opt,name=amount_cancelled,json=amountCancelled,proto3" json:"amount_cancelled,omitempty" yaml:"amount_cancelled"`
+	// start_date is the beginning of the period during which this credit batch
+	// was quantified and verified.
+	StartDate *time.Time `protobuf:"bytes,7,opt,name=start_date,json=startDate,proto3,stdtime" json:"start_date,omitempty" yaml:"start_date"`
+	// end_date is the end of the period during which this credit batch was
+	// quantified and verified.
+	EndDate *time.Time `protobuf:"bytes,8,opt,name=end_date,json=endDate,proto3,stdtime" json:"end_date,omitempty" yaml:"end_date"`
+	// project_location is the location of the project backing the credits in this
+	// batch. Full documentation can be found in MsgCreateBatch.project_location.
+	ProjectLocation string `protobuf:"bytes,9,opt,name=project_location,json=projectLocation,proto3" json:"project_location,omitempty" yaml:"project_location"`
 }
 
 func (m *BatchInfo) Reset()         { *m = BatchInfo{} }
@@ -165,9 +188,9 @@ func (m *BatchInfo) GetIssuer() string {
 	return ""
 }
 
-func (m *BatchInfo) GetTotalUnits() string {
+func (m *BatchInfo) GetTotalAmount() string {
 	if m != nil {
-		return m.TotalUnits
+		return m.TotalAmount
 	}
 	return ""
 }
@@ -179,9 +202,132 @@ func (m *BatchInfo) GetMetadata() []byte {
 	return nil
 }
 
+func (m *BatchInfo) GetAmountCancelled() string {
+	if m != nil {
+		return m.AmountCancelled
+	}
+	return ""
+}
+
+func (m *BatchInfo) GetStartDate() *time.Time {
+	if m != nil {
+		return m.StartDate
+	}
+	return nil
+}
+
+func (m *BatchInfo) GetEndDate() *time.Time {
+	if m != nil {
+		return m.EndDate
+	}
+	return nil
+}
+
+func (m *BatchInfo) GetProjectLocation() string {
+	if m != nil {
+		return m.ProjectLocation
+	}
+	return ""
+}
+
+// Params defines the updatable global parameters of the ecocredit module for
+// use with the x/params module.
+type Params struct {
+	// credit_class_fee is the fixed fee charged on creation of a new credit class
+	CreditClassFee github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=credit_class_fee,json=creditClassFee,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"credit_class_fee"`
+}
+
+func (m *Params) Reset()         { *m = Params{} }
+func (m *Params) String() string { return proto.CompactTextString(m) }
+func (*Params) ProtoMessage()    {}
+func (*Params) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5342f4dcaeff1a84, []int{2}
+}
+func (m *Params) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Params) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Params.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Params) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Params.Merge(m, src)
+}
+func (m *Params) XXX_Size() int {
+	return m.Size()
+}
+func (m *Params) XXX_DiscardUnknown() {
+	xxx_messageInfo_Params.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Params proto.InternalMessageInfo
+
+func (m *Params) GetCreditClassFee() github_com_cosmos_cosmos_sdk_types.Coins {
+	if m != nil {
+		return m.CreditClassFee
+	}
+	return nil
+}
+
+// GenesisState defines the state of the ecocredit module that is needed at genesis
+type GenesisState struct {
+	// Params contains the updateable global parameters for use with the x/params module
+	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params" yaml:"params"`
+}
+
+func (m *GenesisState) Reset()         { *m = GenesisState{} }
+func (m *GenesisState) String() string { return proto.CompactTextString(m) }
+func (*GenesisState) ProtoMessage()    {}
+func (*GenesisState) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5342f4dcaeff1a84, []int{3}
+}
+func (m *GenesisState) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *GenesisState) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_GenesisState.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *GenesisState) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GenesisState.Merge(m, src)
+}
+func (m *GenesisState) XXX_Size() int {
+	return m.Size()
+}
+func (m *GenesisState) XXX_DiscardUnknown() {
+	xxx_messageInfo_GenesisState.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GenesisState proto.InternalMessageInfo
+
+func (m *GenesisState) GetParams() Params {
+	if m != nil {
+		return m.Params
+	}
+	return Params{}
+}
+
 func init() {
 	proto.RegisterType((*ClassInfo)(nil), "regen.ecocredit.v1alpha1.ClassInfo")
 	proto.RegisterType((*BatchInfo)(nil), "regen.ecocredit.v1alpha1.BatchInfo")
+	proto.RegisterType((*Params)(nil), "regen.ecocredit.v1alpha1.Params")
+	proto.RegisterType((*GenesisState)(nil), "regen.ecocredit.v1alpha1.GenesisState")
 }
 
 func init() {
@@ -189,29 +335,47 @@ func init() {
 }
 
 var fileDescriptor_5342f4dcaeff1a84 = []byte{
-	// 342 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0x31, 0x4f, 0xc2, 0x40,
-	0x14, 0xc7, 0x39, 0x51, 0xa0, 0xa7, 0x89, 0x49, 0x35, 0xe4, 0xc2, 0x50, 0x48, 0xe3, 0xc0, 0x62,
-	0x1b, 0xe2, 0x60, 0xe2, 0x58, 0x5d, 0x88, 0x5b, 0x13, 0x17, 0x17, 0x72, 0xf4, 0x9e, 0xa5, 0xb1,
-	0xbd, 0x23, 0x77, 0x87, 0xca, 0x87, 0x30, 0xf1, 0x63, 0x39, 0x32, 0x3a, 0x11, 0x85, 0x6f, 0xc0,
-	0x27, 0x30, 0x77, 0x05, 0x84, 0xd5, 0xed, 0x7e, 0x79, 0xbf, 0xf7, 0xf2, 0x7f, 0x79, 0x87, 0x2f,
-	0x24, 0xa4, 0xc0, 0x43, 0x48, 0x44, 0x22, 0x81, 0x65, 0x3a, 0x7c, 0xe9, 0xd1, 0x7c, 0x3c, 0xa2,
-	0xbd, 0x50, 0x4f, 0xc7, 0xa0, 0x82, 0xb1, 0x14, 0x5a, 0xb8, 0xc4, 0x5a, 0xc1, 0xd6, 0x0a, 0x36,
-	0x56, 0xeb, 0x3c, 0x15, 0xa9, 0xb0, 0x52, 0x68, 0x5e, 0xa5, 0xef, 0xbf, 0x23, 0xec, 0xdc, 0xe6,
-	0x54, 0xa9, 0x3e, 0x7f, 0x12, 0x6e, 0x80, 0x1b, 0x89, 0x81, 0x41, 0xc6, 0x08, 0xea, 0xa0, 0xae,
-	0x13, 0x9d, 0xad, 0xe6, 0xed, 0xd3, 0x29, 0x2d, 0xf2, 0x1b, 0x7f, 0x53, 0xf1, 0xe3, 0xba, 0x7d,
-	0xf6, 0x99, 0xdb, 0xc2, 0x0d, 0x06, 0x2a, 0x4b, 0x39, 0x48, 0x72, 0x60, 0xfc, 0x78, 0xcb, 0x2e,
-	0xc1, 0xf5, 0x4c, 0xa9, 0x09, 0x48, 0x45, 0xaa, 0x9d, 0x6a, 0xd7, 0x89, 0x37, 0x68, 0xba, 0x0a,
-	0xd0, 0x94, 0x51, 0x4d, 0xc9, 0x61, 0x07, 0x75, 0x4f, 0xe2, 0x2d, 0xfb, 0x3f, 0x08, 0x3b, 0x11,
-	0xd5, 0xc9, 0xe8, 0x5f, 0x79, 0xae, 0xf1, 0xf1, 0xd0, 0x34, 0x0f, 0x18, 0x70, 0x51, 0x94, 0x91,
-	0xa2, 0xe6, 0x6a, 0xde, 0x76, 0xcb, 0x96, 0x9d, 0xa2, 0x1f, 0x63, 0x4b, 0x77, 0x06, 0xdc, 0x26,
-	0xae, 0x95, 0xe9, 0x48, 0xd5, 0xae, 0xb1, 0x26, 0x33, 0x50, 0x0b, 0x4d, 0xf3, 0xc1, 0x84, 0x67,
-	0x5a, 0xd9, 0xb4, 0x7b, 0x03, 0x77, 0x8a, 0x7e, 0x8c, 0x2d, 0x3d, 0x18, 0xd8, 0xdb, 0xf1, 0x68,
-	0x7f, 0xc7, 0xe8, 0xfe, 0x73, 0xe1, 0xa1, 0xd9, 0xc2, 0x43, 0xdf, 0x0b, 0x0f, 0x7d, 0x2c, 0xbd,
-	0xca, 0x6c, 0xe9, 0x55, 0xbe, 0x96, 0x5e, 0xe5, 0xb1, 0x97, 0x66, 0x7a, 0x34, 0x19, 0x06, 0x89,
-	0x28, 0x42, 0x7b, 0xc8, 0x4b, 0x0e, 0xfa, 0x55, 0xc8, 0xe7, 0x35, 0xe5, 0xc0, 0x52, 0x90, 0xe1,
-	0xdb, 0xdf, 0x2f, 0x18, 0xd6, 0xec, 0x1d, 0xaf, 0x7e, 0x03, 0x00, 0x00, 0xff, 0xff, 0xfd, 0x04,
-	0x0c, 0x34, 0x1f, 0x02, 0x00, 0x00,
+	// 640 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x54, 0xcb, 0x6e, 0xd3, 0x40,
+	0x14, 0x8d, 0x49, 0x49, 0xe2, 0x49, 0xa1, 0xc5, 0x85, 0xd6, 0x0d, 0x92, 0x1d, 0x59, 0x2c, 0xb2,
+	0xe9, 0x98, 0x94, 0x05, 0x52, 0x77, 0xb8, 0x55, 0x51, 0x05, 0x02, 0x64, 0xba, 0x62, 0x63, 0x4d,
+	0xec, 0x5b, 0xd7, 0xd4, 0x9e, 0x89, 0x3c, 0x93, 0x42, 0x57, 0x7c, 0x01, 0x52, 0xd7, 0x7c, 0x02,
+	0x5f, 0xd2, 0x65, 0x97, 0xac, 0x5c, 0xd4, 0xfe, 0x81, 0xbf, 0x00, 0x79, 0xc6, 0xee, 0x23, 0x12,
+	0x42, 0x62, 0x95, 0x39, 0x77, 0xee, 0x39, 0x3e, 0x57, 0x77, 0x4e, 0xd0, 0xb3, 0x1c, 0x62, 0xa0,
+	0x2e, 0x84, 0x2c, 0xcc, 0x21, 0x4a, 0x84, 0x7b, 0x3c, 0x26, 0xe9, 0xf4, 0x90, 0x8c, 0x5d, 0x71,
+	0x32, 0x05, 0x8e, 0xa7, 0x39, 0x13, 0xcc, 0x30, 0x65, 0x17, 0xbe, 0xee, 0xc2, 0x4d, 0xd7, 0xc0,
+	0x0a, 0x19, 0xcf, 0x18, 0x77, 0x27, 0x84, 0x83, 0x7b, 0x3c, 0x9e, 0x80, 0x20, 0x63, 0x37, 0x64,
+	0x09, 0x55, 0xcc, 0xc1, 0xe3, 0x98, 0xc5, 0x4c, 0x1e, 0xdd, 0xea, 0x54, 0x57, 0xed, 0x98, 0xb1,
+	0x38, 0x05, 0x57, 0xa2, 0xc9, 0xec, 0xc0, 0x15, 0x49, 0x06, 0x5c, 0x90, 0x6c, 0xaa, 0x1a, 0x9c,
+	0xef, 0x1a, 0xd2, 0xb7, 0x53, 0xc2, 0xf9, 0x1e, 0x3d, 0x60, 0x06, 0x46, 0xbd, 0xb0, 0x02, 0x41,
+	0x12, 0x99, 0xda, 0x50, 0x1b, 0xe9, 0xde, 0x4a, 0x59, 0xd8, 0x4b, 0x27, 0x24, 0x4b, 0xb7, 0x9c,
+	0xe6, 0xc6, 0xf1, 0xbb, 0xf2, 0xb8, 0x17, 0x19, 0x03, 0xd4, 0x8b, 0x80, 0x27, 0x31, 0x85, 0xdc,
+	0xbc, 0x57, 0xf5, 0xfb, 0xd7, 0xd8, 0x30, 0x51, 0x37, 0xe1, 0x7c, 0x06, 0x39, 0x37, 0xdb, 0xc3,
+	0xf6, 0x48, 0xf7, 0x1b, 0x58, 0xb1, 0x32, 0x10, 0x24, 0x22, 0x82, 0x98, 0x0b, 0x43, 0x6d, 0xb4,
+	0xe8, 0x5f, 0x63, 0xe7, 0xc7, 0x02, 0xd2, 0x3d, 0x22, 0xc2, 0xc3, 0xff, 0xf2, 0xf3, 0x12, 0xf5,
+	0x27, 0x15, 0x39, 0x88, 0x80, 0xb2, 0x4c, 0x59, 0xf2, 0x56, 0xcb, 0xc2, 0x36, 0x14, 0xe5, 0xd6,
+	0xa5, 0xe3, 0x23, 0x89, 0x76, 0x2a, 0x60, 0xac, 0xa2, 0x8e, 0x72, 0x67, 0xb6, 0xe5, 0x18, 0x35,
+	0x32, 0xb6, 0xd0, 0xa2, 0x60, 0x82, 0xa4, 0x01, 0xc9, 0xd8, 0x8c, 0x0a, 0x69, 0x57, 0xf7, 0xd6,
+	0xca, 0xc2, 0x5e, 0x51, 0x8a, 0xb7, 0x6f, 0x1d, 0xbf, 0x2f, 0xe1, 0x2b, 0x89, 0xee, 0x8c, 0x79,
+	0xff, 0xee, 0x98, 0xc6, 0x2e, 0x5a, 0x56, 0x9c, 0x20, 0x24, 0x34, 0x84, 0x34, 0x85, 0xc8, 0xec,
+	0x48, 0xed, 0xa7, 0x65, 0x61, 0xaf, 0x29, 0xed, 0xf9, 0x0e, 0xc7, 0x5f, 0x52, 0xa5, 0xed, 0xa6,
+	0x62, 0xec, 0x23, 0xc4, 0x05, 0xc9, 0x45, 0x10, 0x11, 0x01, 0x66, 0x77, 0xa8, 0x8d, 0xfa, 0x9b,
+	0x03, 0xac, 0x96, 0x8e, 0x9b, 0xa5, 0xe3, 0xfd, 0x66, 0xe9, 0xde, 0x7a, 0x59, 0xd8, 0x8f, 0x94,
+	0xfa, 0x0d, 0xcf, 0x39, 0xbd, 0xb0, 0x35, 0x5f, 0x97, 0x85, 0x1d, 0x22, 0xc0, 0x78, 0x87, 0x7a,
+	0x40, 0x23, 0xa5, 0xd9, 0xfb, 0xa7, 0xe6, 0xda, 0xcd, 0x4a, 0x1a, 0x96, 0x52, 0xec, 0x02, 0x8d,
+	0xa4, 0xde, 0x2e, 0x5a, 0x9e, 0xe6, 0xec, 0x33, 0x84, 0x22, 0x48, 0x59, 0x48, 0x44, 0xc2, 0xa8,
+	0xa9, 0xcf, 0x4f, 0x3b, 0xdf, 0xe1, 0xf8, 0x4b, 0x75, 0xe9, 0x6d, 0x53, 0xf9, 0x86, 0x3a, 0x1f,
+	0x48, 0x4e, 0x32, 0x6e, 0xcc, 0xd0, 0xb2, 0x0a, 0x48, 0xa0, 0x5e, 0xc1, 0x01, 0x80, 0xa9, 0x0d,
+	0xdb, 0xa3, 0xfe, 0xe6, 0x3a, 0x56, 0x41, 0xc1, 0x55, 0x50, 0x70, 0x1d, 0x14, 0xbc, 0xcd, 0x12,
+	0xea, 0x3d, 0x3f, 0x2b, 0xec, 0xd6, 0xcf, 0x0b, 0x7b, 0x14, 0x27, 0xe2, 0x70, 0x36, 0xc1, 0x21,
+	0xcb, 0xdc, 0x3a, 0x55, 0xea, 0x67, 0x83, 0x47, 0x47, 0x75, 0x1c, 0x2b, 0x02, 0xf7, 0x1f, 0xaa,
+	0x8f, 0xc8, 0x80, 0xec, 0x02, 0x38, 0x01, 0x5a, 0x7c, 0x0d, 0x14, 0x78, 0xc2, 0x3f, 0x8a, 0x6a,
+	0xb0, 0xf7, 0xa8, 0x33, 0x95, 0x86, 0xe4, 0xeb, 0xec, 0x6f, 0x0e, 0xf1, 0xdf, 0xf2, 0x8b, 0x95,
+	0x71, 0xef, 0x49, 0xe5, 0xa1, 0x2c, 0xec, 0x07, 0xf5, 0xd0, 0xb2, 0xea, 0xf8, 0xb5, 0x8c, 0xf7,
+	0xe6, 0xec, 0xd2, 0xd2, 0xce, 0x2f, 0x2d, 0xed, 0xf7, 0xa5, 0xa5, 0x9d, 0x5e, 0x59, 0xad, 0xf3,
+	0x2b, 0xab, 0xf5, 0xeb, 0xca, 0x6a, 0x7d, 0x1a, 0xdf, 0x32, 0x2d, 0x3f, 0xb2, 0x41, 0x41, 0x7c,
+	0x61, 0xf9, 0x51, 0x8d, 0x52, 0x88, 0x62, 0xc8, 0xdd, 0xaf, 0x37, 0xff, 0x30, 0x93, 0x8e, 0x5c,
+	0xd6, 0x8b, 0x3f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xcd, 0xc2, 0x5a, 0x98, 0x7b, 0x04, 0x00, 0x00,
 }
 
 func (m *ClassInfo) Marshal() (dAtA []byte, err error) {
@@ -287,6 +451,40 @@ func (m *BatchInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.ProjectLocation) > 0 {
+		i -= len(m.ProjectLocation)
+		copy(dAtA[i:], m.ProjectLocation)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.ProjectLocation)))
+		i--
+		dAtA[i] = 0x4a
+	}
+	if m.EndDate != nil {
+		n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.EndDate, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.EndDate):])
+		if err1 != nil {
+			return 0, err1
+		}
+		i -= n1
+		i = encodeVarintTypes(dAtA, i, uint64(n1))
+		i--
+		dAtA[i] = 0x42
+	}
+	if m.StartDate != nil {
+		n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(*m.StartDate, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(*m.StartDate):])
+		if err2 != nil {
+			return 0, err2
+		}
+		i -= n2
+		i = encodeVarintTypes(dAtA, i, uint64(n2))
+		i--
+		dAtA[i] = 0x3a
+	}
+	if len(m.AmountCancelled) > 0 {
+		i -= len(m.AmountCancelled)
+		copy(dAtA[i:], m.AmountCancelled)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.AmountCancelled)))
+		i--
+		dAtA[i] = 0x32
+	}
 	if len(m.Metadata) > 0 {
 		i -= len(m.Metadata)
 		copy(dAtA[i:], m.Metadata)
@@ -294,10 +492,10 @@ func (m *BatchInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x2a
 	}
-	if len(m.TotalUnits) > 0 {
-		i -= len(m.TotalUnits)
-		copy(dAtA[i:], m.TotalUnits)
-		i = encodeVarintTypes(dAtA, i, uint64(len(m.TotalUnits)))
+	if len(m.TotalAmount) > 0 {
+		i -= len(m.TotalAmount)
+		copy(dAtA[i:], m.TotalAmount)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.TotalAmount)))
 		i--
 		dAtA[i] = 0x22
 	}
@@ -322,6 +520,76 @@ func (m *BatchInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0xa
 	}
+	return len(dAtA) - i, nil
+}
+
+func (m *Params) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Params) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.CreditClassFee) > 0 {
+		for iNdEx := len(m.CreditClassFee) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.CreditClassFee[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTypes(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *GenesisState) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *GenesisState) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintTypes(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0xa
 	return len(dAtA) - i, nil
 }
 
@@ -381,7 +649,7 @@ func (m *BatchInfo) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTypes(uint64(l))
 	}
-	l = len(m.TotalUnits)
+	l = len(m.TotalAmount)
 	if l > 0 {
 		n += 1 + l + sovTypes(uint64(l))
 	}
@@ -389,6 +657,48 @@ func (m *BatchInfo) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTypes(uint64(l))
 	}
+	l = len(m.AmountCancelled)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	if m.StartDate != nil {
+		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.StartDate)
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	if m.EndDate != nil {
+		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.EndDate)
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	l = len(m.ProjectLocation)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	return n
+}
+
+func (m *Params) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.CreditClassFee) > 0 {
+		for _, e := range m.CreditClassFee {
+			l = e.Size()
+			n += 1 + l + sovTypes(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *GenesisState) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Params.Size()
+	n += 1 + l + sovTypes(uint64(l))
 	return n
 }
 
@@ -708,7 +1018,7 @@ func (m *BatchInfo) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TotalUnits", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field TotalAmount", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -736,7 +1046,7 @@ func (m *BatchInfo) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.TotalUnits = string(dAtA[iNdEx:postIndex])
+			m.TotalAmount = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 5:
 			if wireType != 2 {
@@ -770,6 +1080,315 @@ func (m *BatchInfo) Unmarshal(dAtA []byte) error {
 			m.Metadata = append(m.Metadata[:0], dAtA[iNdEx:postIndex]...)
 			if m.Metadata == nil {
 				m.Metadata = []byte{}
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AmountCancelled", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AmountCancelled = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StartDate", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.StartDate == nil {
+				m.StartDate = new(time.Time)
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.StartDate, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field EndDate", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.EndDate == nil {
+				m.EndDate = new(time.Time)
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.EndDate, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProjectLocation", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ProjectLocation = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Params) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Params: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Params: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CreditClassFee", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.CreditClassFee = append(m.CreditClassFee, types1.Coin{})
+			if err := m.CreditClassFee[len(m.CreditClassFee)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *GenesisState) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: GenesisState: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: GenesisState: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
 			}
 			iNdEx = postIndex
 		default:

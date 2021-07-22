@@ -1,13 +1,17 @@
 package client
 
 import (
+	"fmt"
+	"io/ioutil"
+	"regexp"
+	"strings"
+	"time"
+
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/gogo/protobuf/proto"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 
-	"github.com/regen-network/regen-ledger/client"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -27,29 +31,87 @@ func mkQueryClient(cmd *cobra.Command) (ecocredit.QueryClient, sdkclient.Context
 	return ecocredit.NewQueryClient(ctx), ctx, err
 }
 
-type msgSrvClient struct {
-	Cctx   *sdkclient.Context
-	conn   *client.ServiceMsgClientConn
-	client ecocredit.MsgClient
-	flags  *pflag.FlagSet
+func parseMsgCreateBatch(clientCtx sdkclient.Context, batchFile string) (*ecocredit.MsgCreateBatch, error) {
+	contents, err := ioutil.ReadFile(batchFile)
+	if err != nil {
+		return nil, err
+	}
+
+	var msg ecocredit.MsgCreateBatch
+	err = clientCtx.Codec.UnmarshalJSON(contents, &msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return &msg, nil
 }
 
-func newMsgSrvClient(cmd *cobra.Command) (msgSrvClient, error) {
-	f := cmd.Flags()
-	clientCtx, err := sdkclient.GetClientTxContext(cmd)
+type credits struct {
+	batchDenom string
+	amount     string
+}
+
+var (
+	reCreditAmt  = `[[:digit:]]+(?:\.[[:digit:]]+)?|\.[[:digit:]]+`
+	reBatchDenom = `[a-zA-Z0-9]+\/[a-zA-Z0-9]+`
+	reCredits    = regexp.MustCompile(fmt.Sprintf(`^(%s)\:(%s)$`, reCreditAmt, reBatchDenom))
+)
+
+func parseCancelCreditsList(creditsListStr string) ([]*ecocredit.MsgCancel_CancelCredits, error) {
+	creditsList, err := parseCreditsList(creditsListStr)
 	if err != nil {
-		return msgSrvClient{}, err
+		return nil, err
 	}
-	conn := &client.ServiceMsgClientConn{}
-	return msgSrvClient{
-		&clientCtx, conn, ecocredit.NewMsgClient(conn), f,
+
+	cancelCreditsList := make([]*ecocredit.MsgCancel_CancelCredits, len(creditsList))
+	for i, credits := range creditsList {
+		cancelCreditsList[i] = &ecocredit.MsgCancel_CancelCredits{
+			BatchDenom: credits.batchDenom,
+			Amount:     credits.amount,
+		}
+	}
+
+	return cancelCreditsList, nil
+}
+
+func parseCreditsList(creditsListStr string) ([]credits, error) {
+	creditsListStr = strings.TrimSpace(creditsListStr)
+	if len(creditsListStr) == 0 {
+		return nil, nil
+	}
+
+	creditsStrs := strings.Split(creditsListStr, ",")
+	creditsList := make([]credits, len(creditsStrs))
+	for i, creditsStr := range creditsStrs {
+		credits, err := parseCredits(creditsStr)
+		if err != nil {
+			return nil, err
+		}
+
+		creditsList[i] = credits
+	}
+
+	return creditsList, nil
+}
+
+func parseCredits(creditsStr string) (credits, error) {
+	creditsStr = strings.TrimSpace(creditsStr)
+
+	matches := reCredits.FindStringSubmatch(creditsStr)
+	if matches == nil {
+		return credits{}, fmt.Errorf("invalid credit expression: %s", creditsStr)
+	}
+
+	return credits{
+		batchDenom: matches[2],
+		amount:     matches[1],
 	}, nil
 }
 
-// executes a MsgService transaction
-func (c msgSrvClient) send(err error) error {
+func parseDate(field string, date string) (time.Time, error) {
+	t, err := time.Parse("2006-01-02", date)
 	if err != nil {
-		return err
+		return t, sdkerrors.ErrInvalidRequest.Wrapf("%s must have format yyyy-mm-dd, but received %v", field, date)
 	}
-	return tx.GenerateOrBroadcastTxCLI(*c.Cctx, c.flags, c.conn.Msgs...)
+	return t, nil
 }

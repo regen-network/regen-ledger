@@ -7,7 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	proto "github.com/gogo/protobuf/types"
-	"github.com/regen-network/regen-ledger/math"
+	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -198,13 +198,13 @@ func TestThresholdDecisionPolicyValidateBasic(t *testing.T) {
 	}
 }
 
-func TestVoteNaturalKey(t *testing.T) {
+func TestVotePrimaryKey(t *testing.T) {
 	addr := []byte{0xff, 0xfe}
 	v := Vote{
 		ProposalId: 1,
 		Voter:      string(addr[:]),
 	}
-	assert.Equal(t, []byte{0, 0, 0, 0, 0, 0, 0, 1, 0xff, 0xfe}, v.NaturalKey())
+	assert.Equal(t, []byte{0, 0, 0, 0, 0, 0, 0, 1, 0xff, 0xfe}, v.PrimaryKey())
 }
 
 func TestGroupInfoValidation(t *testing.T) {
@@ -370,120 +370,143 @@ func TestGroupMemberValidation(t *testing.T) {
 
 func TestGroupAccountInfo(t *testing.T) {
 	specs := map[string]struct {
-		groupAccount sdk.AccAddress
-		group        uint64
-		admin        sdk.AccAddress
-		version      uint64
-		threshold    string
-		timeout      proto.Duration
-		expErr       bool
+		groupAccount  sdk.AccAddress
+		group         uint64
+		admin         sdk.AccAddress
+		version       uint64
+		threshold     string
+		timeout       proto.Duration
+		derivationKey []byte
+		expErr        bool
 	}{
 		"all good": {
-			group:        1,
-			groupAccount: []byte("valid--group-address"),
-			admin:        []byte("valid--admin-address"),
-			version:      1,
-			threshold:    "1",
-			timeout:      proto.Duration{Seconds: 1},
+			group:         1,
+			groupAccount:  []byte("valid--group-address"),
+			admin:         []byte("valid--admin-address"),
+			version:       1,
+			threshold:     "1",
+			derivationKey: []byte("derivationKey"),
+			timeout:       proto.Duration{Seconds: 1},
 		},
 		"invalid group": {
-			group:        0,
-			groupAccount: []byte("valid--group-address"),
-			admin:        []byte("valid--admin-address"),
-			version:      1,
-			threshold:    "1",
-			timeout:      proto.Duration{Seconds: 1},
-			expErr:       true,
+			group:         0,
+			groupAccount:  []byte("valid--group-address"),
+			admin:         []byte("valid--admin-address"),
+			version:       1,
+			threshold:     "1",
+			timeout:       proto.Duration{Seconds: 1},
+			derivationKey: []byte("derivationKey"),
+			expErr:        true,
 		},
-		"invalid group account address": {
-			group:        1,
-			groupAccount: []byte("any-invalid-group-address"),
-			admin:        []byte("valid--admin-address"),
-			version:      1,
-			threshold:    "1",
-			timeout:      proto.Duration{Seconds: 1},
-			expErr:       true,
+		"valid variable length group account address": {
+			group:         1,
+			groupAccount:  []byte("any-group-address"),
+			admin:         []byte("valid--admin-address"),
+			version:       1,
+			threshold:     "1",
+			timeout:       proto.Duration{Seconds: 1},
+			derivationKey: []byte("derivationKey"),
+			expErr:        false,
 		},
 		"empty group account address": {
-			group:     1,
-			admin:     []byte("valid--admin-address"),
-			version:   1,
-			threshold: "1",
-			timeout:   proto.Duration{Seconds: 1},
-			expErr:    true,
+			group:         1,
+			admin:         []byte("valid--admin-address"),
+			version:       1,
+			threshold:     "1",
+			timeout:       proto.Duration{Seconds: 1},
+			derivationKey: []byte("derivationKey"),
+			expErr:        true,
 		},
 		"empty admin account address": {
-			group:        1,
-			groupAccount: []byte("valid--group-address"),
-			version:      1,
-			threshold:    "1",
-			timeout:      proto.Duration{Seconds: 1},
-			expErr:       true,
+			group:         1,
+			groupAccount:  []byte("valid--group-address"),
+			version:       1,
+			threshold:     "1",
+			timeout:       proto.Duration{Seconds: 1},
+			derivationKey: []byte("derivationKey"),
+			expErr:        true,
 		},
-		"invalid admin account address": {
-			group:        1,
-			groupAccount: []byte("valid--group-address"),
-			admin:        []byte("any-invalid-admin-address"),
-			version:      1,
-			threshold:    "1",
-			timeout:      proto.Duration{Seconds: 1},
-			expErr:       true,
+		"valid variable length admin account address": {
+			group:         1,
+			groupAccount:  []byte("valid--group-address"),
+			admin:         []byte("any-admin-address"),
+			version:       1,
+			threshold:     "1",
+			timeout:       proto.Duration{Seconds: 1},
+			derivationKey: []byte("derivationKey"),
+			expErr:        false,
 		},
 		"empty version number": {
-			group:        1,
-			groupAccount: []byte("valid--group-address"),
-			admin:        []byte("valid--admin-address"),
-			threshold:    "1",
-			timeout:      proto.Duration{Seconds: 1},
-			expErr:       true,
+			group:         1,
+			groupAccount:  []byte("valid--group-address"),
+			admin:         []byte("valid--admin-address"),
+			threshold:     "1",
+			timeout:       proto.Duration{Seconds: 1},
+			derivationKey: []byte("derivationKey"),
+			expErr:        true,
 		},
 		"missing decision policy": {
-			group:        1,
-			groupAccount: []byte("valid--group-address"),
-			admin:        []byte("valid--admin-address"),
-			version:      1,
-			expErr:       true,
+			group:         1,
+			groupAccount:  []byte("valid--group-address"),
+			admin:         []byte("valid--admin-address"),
+			version:       1,
+			derivationKey: []byte("derivationKey"),
+			expErr:        true,
 		},
 		"missing decision policy timeout": {
-			group:        1,
-			groupAccount: []byte("valid--group-address"),
-			admin:        []byte("valid--admin-address"),
-			version:      1,
-			threshold:    "1",
-			expErr:       true,
+			group:         1,
+			groupAccount:  []byte("valid--group-address"),
+			admin:         []byte("valid--admin-address"),
+			version:       1,
+			threshold:     "1",
+			derivationKey: []byte("derivationKey"),
+			expErr:        true,
 		},
 		"decision policy with invalid timeout": {
+			group:         1,
+			groupAccount:  []byte("valid--group-address"),
+			admin:         []byte("valid--admin-address"),
+			version:       1,
+			threshold:     "1",
+			timeout:       proto.Duration{Seconds: -1},
+			derivationKey: []byte("derivationKey"),
+			expErr:        true,
+		},
+		"missing decision policy threshold": {
+			group:         1,
+			groupAccount:  []byte("valid--group-address"),
+			admin:         []byte("valid--admin-address"),
+			version:       1,
+			timeout:       proto.Duration{Seconds: 1},
+			derivationKey: []byte("derivationKey"),
+			expErr:        true,
+		},
+		"decision policy with negative threshold": {
+			group:         1,
+			groupAccount:  []byte("valid--group-address"),
+			admin:         []byte("valid--admin-address"),
+			version:       1,
+			threshold:     "-1",
+			timeout:       proto.Duration{Seconds: 1},
+			derivationKey: []byte("derivationKey"),
+			expErr:        true,
+		},
+		"decision policy with zero threshold": {
+			group:         1,
+			groupAccount:  []byte("valid--group-address"),
+			admin:         []byte("valid--admin-address"),
+			version:       1,
+			threshold:     "0",
+			timeout:       proto.Duration{Seconds: 1},
+			derivationKey: []byte("derivationKey"),
+			expErr:        true,
+		},
+		"empty derivationKey": {
 			group:        1,
 			groupAccount: []byte("valid--group-address"),
 			admin:        []byte("valid--admin-address"),
 			version:      1,
 			threshold:    "1",
-			timeout:      proto.Duration{Seconds: -1},
-			expErr:       true,
-		},
-		"missing decision policy threshold": {
-			group:        1,
-			groupAccount: []byte("valid--group-address"),
-			admin:        []byte("valid--admin-address"),
-			version:      1,
-			timeout:      proto.Duration{Seconds: 1},
-			expErr:       true,
-		},
-		"decision policy with negative threshold": {
-			group:        1,
-			groupAccount: []byte("valid--group-address"),
-			admin:        []byte("valid--admin-address"),
-			version:      1,
-			threshold:    "-1",
-			timeout:      proto.Duration{Seconds: 1},
-			expErr:       true,
-		},
-		"decision policy with zero threshold": {
-			group:        1,
-			groupAccount: []byte("valid--group-address"),
-			admin:        []byte("valid--admin-address"),
-			version:      1,
-			threshold:    "0",
 			timeout:      proto.Duration{Seconds: 1},
 			expErr:       true,
 		},
@@ -500,6 +523,7 @@ func TestGroupAccountInfo(t *testing.T) {
 					Threshold: spec.threshold,
 					Timeout:   spec.timeout,
 				},
+				spec.derivationKey,
 			)
 			require.NoError(t, err)
 

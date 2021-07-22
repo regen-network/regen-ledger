@@ -13,12 +13,15 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
 	authclient "github.com/cosmos/cosmos-sdk/x/auth/client"
+	"github.com/spf13/cobra"
 
 	"github.com/regen-network/regen-ledger/x/group"
-	"github.com/spf13/cobra"
 )
 
-const flagMembers = "members"
+const (
+	FlagExec = "exec"
+	ExecTry  = "try"
+)
 
 // TxCmd returns a root CLI command handler for all x/group transaction commands.
 func TxCmd(name string) *cobra.Command {
@@ -105,7 +108,7 @@ Where members.json contains:
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 
-			msg := &group.MsgCreateGroupRequest{
+			msg := &group.MsgCreateGroup{
 				Admin:    clientCtx.GetFromAddress().String(),
 				Members:  members,
 				Metadata: b,
@@ -118,7 +121,6 @@ Where members.json contains:
 		},
 	}
 
-	cmd.Flags().String(flagMembers, "", "Members file path")
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
@@ -179,7 +181,7 @@ Set a member's weight to "0" to delete it.
 				return err
 			}
 
-			msg := &group.MsgUpdateGroupMembersRequest{
+			msg := &group.MsgUpdateGroupMembers{
 				Admin:         clientCtx.GetFromAddress().String(),
 				MemberUpdates: members,
 				GroupId:       groupID,
@@ -192,7 +194,6 @@ Set a member's weight to "0" to delete it.
 		},
 	}
 
-	cmd.Flags().String(flagMembers, "", "Members file path")
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
@@ -220,7 +221,7 @@ func MsgUpdateGroupAdminCmd() *cobra.Command {
 				return err
 			}
 
-			msg := &group.MsgUpdateGroupAdminRequest{
+			msg := &group.MsgUpdateGroupAdmin{
 				Admin:    clientCtx.GetFromAddress().String(),
 				NewAdmin: args[2],
 				GroupId:  groupID,
@@ -241,8 +242,8 @@ func MsgUpdateGroupAdminCmd() *cobra.Command {
 // MsgUpdateGroupMetadataCmd creates a CLI command for Msg/UpdateGroupMetadata.
 func MsgUpdateGroupMetadataCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "update-group-admin [admin] [group-id] [metadata]",
-		Short: "Update a group's admin",
+		Use:   "update-group-metadata [admin] [group-id] [metadata]",
+		Short: "Update a group's metadata",
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			err := cmd.Flags().Set(flags.FlagFrom, args[0])
@@ -265,7 +266,7 @@ func MsgUpdateGroupMetadataCmd() *cobra.Command {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 
-			msg := &group.MsgUpdateGroupMetadataRequest{
+			msg := &group.MsgUpdateGroupMetadata{
 				Admin:    clientCtx.GetFromAddress().String(),
 				Metadata: b,
 				GroupId:  groupID,
@@ -320,7 +321,7 @@ $ %s tx group create-group-account [admin] [group-id] [metadata] \
 			}
 
 			var policy group.DecisionPolicy
-			if err := clientCtx.JSONMarshaler.UnmarshalInterfaceJSON([]byte(args[3]), &policy); err != nil {
+			if err := clientCtx.Codec.UnmarshalInterfaceJSON([]byte(args[3]), &policy); err != nil {
 				return err
 			}
 
@@ -329,7 +330,7 @@ $ %s tx group create-group-account [admin] [group-id] [metadata] \
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 
-			msg, err := group.NewMsgCreateGroupAccountRequest(
+			msg, err := group.NewMsgCreateGroupAccount(
 				clientCtx.GetFromAddress(),
 				groupID,
 				b,
@@ -368,10 +369,10 @@ func MsgUpdateGroupAccountAdminCmd() *cobra.Command {
 				return err
 			}
 
-			msg := &group.MsgUpdateGroupAccountAdminRequest{
-				Admin:        clientCtx.GetFromAddress().String(),
-				GroupAccount: args[1],
-				NewAdmin:     args[2],
+			msg := &group.MsgUpdateGroupAccountAdmin{
+				Admin:    clientCtx.GetFromAddress().String(),
+				Address:  args[1],
+				NewAdmin: args[2],
 			}
 			if err = msg.ValidateBasic(); err != nil {
 				return fmt.Errorf("message validation failed: %w", err)
@@ -404,7 +405,7 @@ func MsgUpdateGroupAccountDecisionPolicyCmd() *cobra.Command {
 			}
 
 			var policy group.DecisionPolicy
-			if err := clientCtx.JSONMarshaler.UnmarshalInterfaceJSON([]byte(args[2]), &policy); err != nil {
+			if err := clientCtx.Codec.UnmarshalInterfaceJSON([]byte(args[2]), &policy); err != nil {
 				return err
 			}
 
@@ -457,10 +458,10 @@ func MsgUpdateGroupAccountMetadataCmd() *cobra.Command {
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 
-			msg := &group.MsgUpdateGroupAccountMetadataRequest{
-				Admin:        clientCtx.GetFromAddress().String(),
-				GroupAccount: args[1],
-				Metadata:     b,
+			msg := &group.MsgUpdateGroupAccountMetadata{
+				Admin:    clientCtx.GetFromAddress().String(),
+				Address:  args[1],
+				Metadata: b,
 			}
 			if err = msg.ValidateBasic(); err != nil {
 				return fmt.Errorf("message validation failed: %w", err)
@@ -511,11 +512,14 @@ Parameters:
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 
+			execStr, _ := cmd.Flags().GetString(FlagExec)
+
 			msg, err := group.NewMsgCreateProposalRequest(
 				args[0],
 				proposers,
 				msgs,
 				b,
+				execFromString(execStr),
 			)
 			if err != nil {
 				return err
@@ -529,6 +533,7 @@ Parameters:
 		},
 	}
 
+	cmd.Flags().String(FlagExec, "", "Set to 1 to try to execute proposal immediately after creation (proposers signatures are considered as Yes votes)")
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
@@ -579,11 +584,14 @@ Parameters:
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 
-			msg := &group.MsgVoteRequest{
+			execStr, _ := cmd.Flags().GetString(FlagExec)
+
+			msg := &group.MsgVote{
 				ProposalId: proposalID,
 				Voter:      args[1],
 				Choice:     choice,
 				Metadata:   b,
+				Exec:       execFromString(execStr),
 			}
 			if err != nil {
 				return err
@@ -597,6 +605,7 @@ Parameters:
 		},
 	}
 
+	cmd.Flags().String(FlagExec, "", "Set to 1 to try to execute proposal immediately after voting")
 	flags.AddTxFlagsToCmd(cmd)
 
 	return cmd
@@ -619,7 +628,7 @@ func MsgExecCmd() *cobra.Command {
 				return err
 			}
 
-			msg := &group.MsgExecRequest{
+			msg := &group.MsgExec{
 				ProposalId: proposalID,
 				Signer:     clientCtx.GetFromAddress().String(),
 			}

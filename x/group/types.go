@@ -7,8 +7,8 @@ import (
 	"github.com/cockroachdb/apd/v2"
 	proto "github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/types"
-	"github.com/regen-network/regen-ledger/math"
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/types/math"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -144,15 +144,15 @@ func (p ThresholdDecisionPolicy) ValidateBasic() error {
 	return nil
 }
 
-func (g GroupMember) NaturalKey() []byte {
+func (g GroupMember) PrimaryKey() []byte {
 	result := make([]byte, 8, 8+len(g.Member.Address))
 	copy(result[0:8], ID(g.GroupId).Bytes())
 	result = append(result, g.Member.Address...)
 	return result
 }
 
-func (g GroupAccountInfo) NaturalKey() []byte {
-	addr, err := sdk.AccAddressFromBech32(g.GroupAccount)
+func (g GroupAccountInfo) PrimaryKey() []byte {
+	addr, err := sdk.AccAddressFromBech32(g.Address)
 	if err != nil {
 		panic(err)
 	}
@@ -162,13 +162,15 @@ func (g GroupAccountInfo) NaturalKey() []byte {
 var _ orm.Validateable = GroupAccountInfo{}
 
 // NewGroupAccountInfo creates a new GroupAccountInfo instance
-func NewGroupAccountInfo(groupAccount sdk.AccAddress, group uint64, admin sdk.AccAddress, metadata []byte, version uint64, decisionPolicy DecisionPolicy) (GroupAccountInfo, error) {
+func NewGroupAccountInfo(address sdk.AccAddress, group uint64, admin sdk.AccAddress, metadata []byte,
+	version uint64, decisionPolicy DecisionPolicy, derivationKey []byte) (GroupAccountInfo, error) {
 	p := GroupAccountInfo{
-		GroupAccount: groupAccount.String(),
-		GroupId:      group,
-		Admin:        admin.String(),
-		Metadata:     metadata,
-		Version:      version,
+		Address:       address.String(),
+		GroupId:       group,
+		Admin:         admin.String(),
+		Metadata:      metadata,
+		Version:       version,
+		DerivationKey: derivationKey,
 	}
 
 	err := p.SetDecisionPolicy(decisionPolicy)
@@ -206,7 +208,7 @@ func (g GroupAccountInfo) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
-	_, err = sdk.AccAddressFromBech32(g.GroupAccount)
+	_, err = sdk.AccAddressFromBech32(g.Address)
 	if err != nil {
 		return sdkerrors.Wrap(err, "group account")
 	}
@@ -225,6 +227,10 @@ func (g GroupAccountInfo) ValidateBasic() error {
 	if err := policy.ValidateBasic(); err != nil {
 		return sdkerrors.Wrap(err, "policy")
 	}
+
+	if g.DerivationKey == nil {
+		return sdkerrors.Wrap(ErrEmpty, "derivationKey")
+	}
 	return nil
 }
 
@@ -234,7 +240,7 @@ func (g GroupAccountInfo) UnpackInterfaces(unpacker codectypes.AnyUnpacker) erro
 	return unpacker.UnpackAny(g.DecisionPolicy, &decisionPolicy)
 }
 
-func (v Vote) NaturalKey() []byte {
+func (v Vote) PrimaryKey() []byte {
 	result := make([]byte, 8, 8+len(v.Voter))
 	copy(result[0:8], ProposalID(v.ProposalId).Bytes())
 	result = append(result, v.Voter...)
@@ -302,6 +308,10 @@ func (g GroupInfo) ValidateBasic() error {
 		return sdkerrors.Wrap(ErrEmpty, "version")
 	}
 	return nil
+}
+
+func (g GroupInfo) PrimaryKey() []byte {
+	return orm.EncodeSequence(g.GroupId)
 }
 
 var _ orm.Validateable = GroupMember{}
@@ -477,19 +487,16 @@ func (t Tally) ValidateBasic() error {
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (q QueryGroupAccountsByGroupResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
-	for _, g := range q.GroupAccounts {
-		err := g.UnpackInterfaces(unpacker)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return unpackGroupAccounts(unpacker, q.GroupAccounts)
 }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (q QueryGroupAccountsByAdminResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
-	for _, g := range q.GroupAccounts {
+	return unpackGroupAccounts(unpacker, q.GroupAccounts)
+}
+
+func unpackGroupAccounts(unpacker codectypes.AnyUnpacker, accs []*GroupAccountInfo) error {
+	for _, g := range accs {
 		err := g.UnpackInterfaces(unpacker)
 		if err != nil {
 			return err

@@ -13,45 +13,45 @@ import "regen/group/v1alpha1/types.proto";
 service Msg {
 
     // CreateGroup creates a new group with an admin account address, a list of members and some optional metadata.
-    rpc CreateGroup(MsgCreateGroupRequest) returns (MsgCreateGroupResponse);
+    rpc CreateGroup(MsgCreateGroup) returns (MsgCreateGroupResponse);
 
     // UpdateGroupMembers updates the group members with given group id and admin address.
-    rpc UpdateGroupMembers(MsgUpdateGroupMembersRequest) returns (MsgUpdateGroupMembersResponse);
+    rpc UpdateGroupMembers(MsgUpdateGroupMembers) returns (MsgUpdateGroupMembersResponse);
 
     // UpdateGroupAdmin updates the group admin with given group id and previous admin address.
-    rpc UpdateGroupAdmin(MsgUpdateGroupAdminRequest) returns (MsgUpdateGroupAdminResponse);
+    rpc UpdateGroupAdmin(MsgUpdateGroupAdmin) returns (MsgUpdateGroupAdminResponse);
 
     // UpdateGroupMetadata updates the group metadata with given group id and admin address.
-    rpc UpdateGroupMetadata(MsgUpdateGroupMetadataRequest) returns (MsgUpdateGroupMetadataResponse);
+    rpc UpdateGroupMetadata(MsgUpdateGroupMetadata) returns (MsgUpdateGroupMetadataResponse);
 
     // CreateGroupAccount creates a new group account using given DecisionPolicy. 
-    rpc CreateGroupAccount(MsgCreateGroupAccountRequest) returns (MsgCreateGroupAccountResponse);
+    rpc CreateGroupAccount(MsgCreateGroupAccount) returns (MsgCreateGroupAccountResponse);
 
     // UpdateGroupAccountAdmin updates a group account admin. 
-    rpc UpdateGroupAccountAdmin(MsgUpdateGroupAccountAdminRequest) returns (MsgUpdateGroupAccountAdminResponse);
+    rpc UpdateGroupAccountAdmin(MsgUpdateGroupAccountAdmin) returns (MsgUpdateGroupAccountAdminResponse);
 
     // UpdateGroupAccountDecisionPolicy allows a group account decision policy to be updated.
-    rpc UpdateGroupAccountDecisionPolicy(MsgUpdateGroupAccountDecisionPolicyRequest) returns (MsgUpdateGroupAccountDecisionPolicyResponse);
+    rpc UpdateGroupAccountDecisionPolicy(MsgUpdateGroupAccountDecisionPolicy) returns (MsgUpdateGroupAccountDecisionPolicyResponse);
 
     // UpdateGroupAccountMetadata updates a group account metadata.
-    rpc UpdateGroupAccountMetadata(MsgUpdateGroupAccountMetadataRequest) returns (MsgUpdateGroupAccountMetadataResponse);
+    rpc UpdateGroupAccountMetadata(MsgUpdateGroupAccountMetadata) returns (MsgUpdateGroupAccountMetadataResponse);
 
     // CreateProposal submits a new proposal.
-    rpc CreateProposal(MsgCreateProposalRequest) returns (MsgCreateProposalResponse);
+    rpc CreateProposal(MsgCreateProposal) returns (MsgCreateProposalResponse);
 
     // Vote allows a voter to vote on a proposal.
-    rpc Vote(MsgVoteRequest) returns (MsgVoteResponse);
+    rpc Vote(MsgVote) returns (MsgVoteResponse);
 
     // Exec executes a proposal.
-    rpc Exec(MsgExecRequest) returns (MsgExecResponse);
+    rpc Exec(MsgExec) returns (MsgExecResponse);
 }
 
 //
 // Groups
 //
 
-// MsgCreateGroupRequest is the Msg/CreateGroup request type.
-message MsgCreateGroupRequest {
+// MsgCreateGroup is the Msg/CreateGroup request type.
+message MsgCreateGroup {
 
     // admin is the account address of the group admin.
     string admin = 1;
@@ -70,8 +70,8 @@ message MsgCreateGroupResponse {
     uint64 group_id = 1;
 }
 
-// MsgUpdateGroupMembersRequest is the Msg/UpdateGroupMembers request type.
-message MsgUpdateGroupMembersRequest {
+// MsgUpdateGroupMembers is the Msg/UpdateGroupMembers request type.
+message MsgUpdateGroupMembers {
 
     // admin is the account address of the group admin.
     string admin = 1;
@@ -87,8 +87,8 @@ message MsgUpdateGroupMembersRequest {
 // MsgUpdateGroupMembersResponse is the Msg/UpdateGroupMembers response type.
 message MsgUpdateGroupMembersResponse { }
 
-// MsgUpdateGroupAdminRequest is the Msg/UpdateGroupAdmin request type.
-message MsgUpdateGroupAdminRequest {
+// MsgUpdateGroupAdmin is the Msg/UpdateGroupAdmin request type.
+message MsgUpdateGroupAdmin {
 
     // admin is the current account address of the group admin.
     string admin = 1;
@@ -103,8 +103,8 @@ message MsgUpdateGroupAdminRequest {
 // MsgUpdateGroupAdminResponse is the Msg/UpdateGroupAdmin response type.
 message MsgUpdateGroupAdminResponse { }
 
-// MsgUpdateGroupMetadataRequest is the Msg/UpdateGroupMetadata request type.
-message MsgUpdateGroupMetadataRequest {
+// MsgUpdateGroupMetadata is the Msg/UpdateGroupMetadata request type.
+message MsgUpdateGroupMetadata {
 
     // admin is the account address of the group admin.
     string admin = 1;
@@ -123,8 +123,8 @@ message MsgUpdateGroupMetadataResponse { }
 // Group Accounts
 //
 
-// MsgCreateGroupAccountRequest is the Msg/CreateGroupAccount request type.
-message MsgCreateGroupAccountRequest {
+// MsgCreateGroupAccount is the Msg/CreateGroupAccount request type.
+message MsgCreateGroupAccount {
     option (gogoproto.goproto_getters) = false;
 
     // admin is the account address of the group admin.
@@ -143,18 +143,18 @@ message MsgCreateGroupAccountRequest {
 // MsgCreateGroupAccountResponse is the Msg/CreateGroupAccount response type.
 message MsgCreateGroupAccountResponse {
 
-    // group_account is the account address of the newly created group account.
-    string group_account = 1;
+    // address is the account address of the newly created group account.
+    string address = 1;
 }
 
-// MsgUpdateGroupAccountAdminRequest is the Msg/UpdateGroupAccountAdmin request type.
-message MsgUpdateGroupAccountAdminRequest {
+// MsgUpdateGroupAccountAdmin is the Msg/UpdateGroupAccountAdmin request type.
+message MsgUpdateGroupAccountAdmin {
 
     // admin is the account address of the group admin.
     string admin = 1;
     
-    // group_account is the group account address.
-    string group_account = 2;
+    // address is the group account address.
+    string address = 2;
     
     // new_admin is the new group account admin.
     string new_admin = 3;
@@ -163,15 +163,15 @@ message MsgUpdateGroupAccountAdminRequest {
 // MsgUpdateGroupAccountAdminResponse is the Msg/UpdateGroupAccountAdmin response type.
 message MsgUpdateGroupAccountAdminResponse { }
 
-// MsgUpdateGroupAccountDecisionPolicyRequest is the Msg/UpdateGroupAccountDecisionPolicy request type.
-message MsgUpdateGroupAccountDecisionPolicyRequest {
+// MsgUpdateGroupAccountDecisionPolicy is the Msg/UpdateGroupAccountDecisionPolicy request type.
+message MsgUpdateGroupAccountDecisionPolicy {
     option (gogoproto.goproto_getters) = false;
 
     // admin is the account address of the group admin.
     string admin = 1;
     
-    // group_account is the group account address.
-    string group_account = 2;
+    // address is the group account address.
+    string address = 2;
     
     // decision_policy is the updated group account decision policy.
     google.protobuf.Any decision_policy = 3 [(cosmos_proto.accepts_interface) = "DecisionPolicy"];
@@ -180,14 +180,14 @@ message MsgUpdateGroupAccountDecisionPolicyRequest {
 // MsgUpdateGroupAccountDecisionPolicyResponse is the Msg/UpdateGroupAccountDecisionPolicy response type.
 message MsgUpdateGroupAccountDecisionPolicyResponse { }
 
-// MsgUpdateGroupAccountMetadataRequest is the Msg/UpdateGroupAccountMetadata request type.
-message MsgUpdateGroupAccountMetadataRequest {
+// MsgUpdateGroupAccountMetadata is the Msg/UpdateGroupAccountMetadata request type.
+message MsgUpdateGroupAccountMetadata {
 
     // admin is the account address of the group admin.
     string admin = 1;
     
-    // group_account is the group account address.
-    string group_account = 2;
+    // address is the group account address.
+    string address = 2;
     
     // metadata is the updated group account metadata.
     bytes metadata = 3;
@@ -200,12 +200,26 @@ message MsgUpdateGroupAccountMetadataResponse { }
 // Proposals and Voting
 //
 
-// MsgCreateProposalRequest is the Msg/CreateProposal request type.
-message MsgCreateProposalRequest {
+// Exec defines modes of execution of a proposal on creation or on new vote.
+enum Exec {
+
+    // An empty value means that there should be a separate 
+    // MsgExec request for the proposal to execute.
+    EXEC_UNSPECIFIED = 0;
+
+    // Try to execute the proposal immediately.
+    // If the proposal is not allowed per the DecisionPolicy,
+    // the proposal will still be open and could 
+    // be executed at a later point.
+    EXEC_TRY = 1;
+}
+
+// MsgCreateProposal is the Msg/CreateProposal request type.
+message MsgCreateProposal {
     option (gogoproto.goproto_getters) = false;
 
-    // group_account is the group account address.
-    string group_account = 1;
+    // address is the group account address.
+    string address = 1;
     
     // proposers are the account addresses of the proposers.
     // Proposers signatures will be counted as yes votes.
@@ -216,6 +230,11 @@ message MsgCreateProposalRequest {
 
     // msgs is a list of Msgs that will be executed if the proposal passes.
     repeated google.protobuf.Any msgs = 4;
+
+    // exec defines the mode of execution of the proposal,
+    // whether it should be executed immediately on creation or not.
+    // If so, proposers signatures are considered as Yes votes.
+    Exec exec = 5;
 }
 
 // MsgCreateProposalResponse is the Msg/CreateProposal response type.
@@ -225,8 +244,8 @@ message MsgCreateProposalResponse {
     uint64 proposal_id = 1;
 }
 
-// MsgVoteRequest is the Msg/Vote request type.
-message MsgVoteRequest {
+// MsgVote is the Msg/Vote request type.
+message MsgVote {
 
     // proposal is the unique ID of the proposal.
     uint64 proposal_id = 1;
@@ -239,13 +258,17 @@ message MsgVoteRequest {
 
     // metadata is any arbitrary metadata to attached to the vote.
     bytes metadata = 4;
+
+    // exec defines whether the proposal should be executed
+    // immediately after voting or not.
+    Exec exec = 5;
 }
 
 // MsgVoteResponse is the Msg/Vote response type.
 message MsgVoteResponse { }
 
-// MsgExecRequest is the Msg/Exec request type.
-message MsgExecRequest {
+// MsgExec is the Msg/Exec request type.
+message MsgExec {
 
     // proposal is the unique ID of the proposal.
     uint64 proposal_id = 1;

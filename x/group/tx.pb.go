@@ -4,11 +4,16 @@
 package group
 
 import (
+	context "context"
 	fmt "fmt"
 	types "github.com/cosmos/cosmos-sdk/codec/types"
 	_ "github.com/gogo/protobuf/gogoproto"
+	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	_ "github.com/regen-network/cosmos-proto"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -25,8 +30,40 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// MsgCreateGroupRequest is the Msg/CreateGroup request type.
-type MsgCreateGroupRequest struct {
+// Exec defines modes of execution of a proposal on creation or on new vote.
+type Exec int32
+
+const (
+	// An empty value means that there should be a separate
+	// MsgExec request for the proposal to execute.
+	Exec_EXEC_UNSPECIFIED Exec = 0
+	// Try to execute the proposal immediately.
+	// If the proposal is not allowed per the DecisionPolicy,
+	// the proposal will still be open and could
+	// be executed at a later point.
+	Exec_EXEC_TRY Exec = 1
+)
+
+var Exec_name = map[int32]string{
+	0: "EXEC_UNSPECIFIED",
+	1: "EXEC_TRY",
+}
+
+var Exec_value = map[string]int32{
+	"EXEC_UNSPECIFIED": 0,
+	"EXEC_TRY":         1,
+}
+
+func (x Exec) String() string {
+	return proto.EnumName(Exec_name, int32(x))
+}
+
+func (Exec) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_b4673626e7797578, []int{0}
+}
+
+// MsgCreateGroup is the Msg/CreateGroup request type.
+type MsgCreateGroup struct {
 	// admin is the account address of the group admin.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// members defines the group members.
@@ -35,18 +72,18 @@ type MsgCreateGroupRequest struct {
 	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
-func (m *MsgCreateGroupRequest) Reset()         { *m = MsgCreateGroupRequest{} }
-func (m *MsgCreateGroupRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateGroupRequest) ProtoMessage()    {}
-func (*MsgCreateGroupRequest) Descriptor() ([]byte, []int) {
+func (m *MsgCreateGroup) Reset()         { *m = MsgCreateGroup{} }
+func (m *MsgCreateGroup) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateGroup) ProtoMessage()    {}
+func (*MsgCreateGroup) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b4673626e7797578, []int{0}
 }
-func (m *MsgCreateGroupRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateGroup) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCreateGroupRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateGroup) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCreateGroupRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateGroup.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -56,33 +93,33 @@ func (m *MsgCreateGroupRequest) XXX_Marshal(b []byte, deterministic bool) ([]byt
 		return b[:n], nil
 	}
 }
-func (m *MsgCreateGroupRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateGroupRequest.Merge(m, src)
+func (m *MsgCreateGroup) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateGroup.Merge(m, src)
 }
-func (m *MsgCreateGroupRequest) XXX_Size() int {
+func (m *MsgCreateGroup) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCreateGroupRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateGroupRequest.DiscardUnknown(m)
+func (m *MsgCreateGroup) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateGroup.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCreateGroupRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateGroup proto.InternalMessageInfo
 
-func (m *MsgCreateGroupRequest) GetAdmin() string {
+func (m *MsgCreateGroup) GetAdmin() string {
 	if m != nil {
 		return m.Admin
 	}
 	return ""
 }
 
-func (m *MsgCreateGroupRequest) GetMembers() []Member {
+func (m *MsgCreateGroup) GetMembers() []Member {
 	if m != nil {
 		return m.Members
 	}
 	return nil
 }
 
-func (m *MsgCreateGroupRequest) GetMetadata() []byte {
+func (m *MsgCreateGroup) GetMetadata() []byte {
 	if m != nil {
 		return m.Metadata
 	}
@@ -135,8 +172,8 @@ func (m *MsgCreateGroupResponse) GetGroupId() uint64 {
 	return 0
 }
 
-// MsgUpdateGroupMembersRequest is the Msg/UpdateGroupMembers request type.
-type MsgUpdateGroupMembersRequest struct {
+// MsgUpdateGroupMembers is the Msg/UpdateGroupMembers request type.
+type MsgUpdateGroupMembers struct {
 	// admin is the account address of the group admin.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// group_id is the unique ID of the group.
@@ -146,18 +183,18 @@ type MsgUpdateGroupMembersRequest struct {
 	MemberUpdates []Member `protobuf:"bytes,3,rep,name=member_updates,json=memberUpdates,proto3" json:"member_updates"`
 }
 
-func (m *MsgUpdateGroupMembersRequest) Reset()         { *m = MsgUpdateGroupMembersRequest{} }
-func (m *MsgUpdateGroupMembersRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateGroupMembersRequest) ProtoMessage()    {}
-func (*MsgUpdateGroupMembersRequest) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateGroupMembers) Reset()         { *m = MsgUpdateGroupMembers{} }
+func (m *MsgUpdateGroupMembers) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateGroupMembers) ProtoMessage()    {}
+func (*MsgUpdateGroupMembers) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b4673626e7797578, []int{2}
 }
-func (m *MsgUpdateGroupMembersRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateGroupMembers) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateGroupMembersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateGroupMembers) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateGroupMembersRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateGroupMembers.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -167,33 +204,33 @@ func (m *MsgUpdateGroupMembersRequest) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateGroupMembersRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateGroupMembersRequest.Merge(m, src)
+func (m *MsgUpdateGroupMembers) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateGroupMembers.Merge(m, src)
 }
-func (m *MsgUpdateGroupMembersRequest) XXX_Size() int {
+func (m *MsgUpdateGroupMembers) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateGroupMembersRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateGroupMembersRequest.DiscardUnknown(m)
+func (m *MsgUpdateGroupMembers) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateGroupMembers.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateGroupMembersRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateGroupMembers proto.InternalMessageInfo
 
-func (m *MsgUpdateGroupMembersRequest) GetAdmin() string {
+func (m *MsgUpdateGroupMembers) GetAdmin() string {
 	if m != nil {
 		return m.Admin
 	}
 	return ""
 }
 
-func (m *MsgUpdateGroupMembersRequest) GetGroupId() uint64 {
+func (m *MsgUpdateGroupMembers) GetGroupId() uint64 {
 	if m != nil {
 		return m.GroupId
 	}
 	return 0
 }
 
-func (m *MsgUpdateGroupMembersRequest) GetMemberUpdates() []Member {
+func (m *MsgUpdateGroupMembers) GetMemberUpdates() []Member {
 	if m != nil {
 		return m.MemberUpdates
 	}
@@ -237,8 +274,8 @@ func (m *MsgUpdateGroupMembersResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGroupMembersResponse proto.InternalMessageInfo
 
-// MsgUpdateGroupAdminRequest is the Msg/UpdateGroupAdmin request type.
-type MsgUpdateGroupAdminRequest struct {
+// MsgUpdateGroupAdmin is the Msg/UpdateGroupAdmin request type.
+type MsgUpdateGroupAdmin struct {
 	// admin is the current account address of the group admin.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// group_id is the unique ID of the group.
@@ -247,18 +284,18 @@ type MsgUpdateGroupAdminRequest struct {
 	NewAdmin string `protobuf:"bytes,3,opt,name=new_admin,json=newAdmin,proto3" json:"new_admin,omitempty"`
 }
 
-func (m *MsgUpdateGroupAdminRequest) Reset()         { *m = MsgUpdateGroupAdminRequest{} }
-func (m *MsgUpdateGroupAdminRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateGroupAdminRequest) ProtoMessage()    {}
-func (*MsgUpdateGroupAdminRequest) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateGroupAdmin) Reset()         { *m = MsgUpdateGroupAdmin{} }
+func (m *MsgUpdateGroupAdmin) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateGroupAdmin) ProtoMessage()    {}
+func (*MsgUpdateGroupAdmin) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b4673626e7797578, []int{4}
 }
-func (m *MsgUpdateGroupAdminRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateGroupAdmin) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateGroupAdminRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateGroupAdmin) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateGroupAdminRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateGroupAdmin.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -268,33 +305,33 @@ func (m *MsgUpdateGroupAdminRequest) XXX_Marshal(b []byte, deterministic bool) (
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateGroupAdminRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateGroupAdminRequest.Merge(m, src)
+func (m *MsgUpdateGroupAdmin) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateGroupAdmin.Merge(m, src)
 }
-func (m *MsgUpdateGroupAdminRequest) XXX_Size() int {
+func (m *MsgUpdateGroupAdmin) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateGroupAdminRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateGroupAdminRequest.DiscardUnknown(m)
+func (m *MsgUpdateGroupAdmin) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateGroupAdmin.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateGroupAdminRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateGroupAdmin proto.InternalMessageInfo
 
-func (m *MsgUpdateGroupAdminRequest) GetAdmin() string {
+func (m *MsgUpdateGroupAdmin) GetAdmin() string {
 	if m != nil {
 		return m.Admin
 	}
 	return ""
 }
 
-func (m *MsgUpdateGroupAdminRequest) GetGroupId() uint64 {
+func (m *MsgUpdateGroupAdmin) GetGroupId() uint64 {
 	if m != nil {
 		return m.GroupId
 	}
 	return 0
 }
 
-func (m *MsgUpdateGroupAdminRequest) GetNewAdmin() string {
+func (m *MsgUpdateGroupAdmin) GetNewAdmin() string {
 	if m != nil {
 		return m.NewAdmin
 	}
@@ -338,8 +375,8 @@ func (m *MsgUpdateGroupAdminResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGroupAdminResponse proto.InternalMessageInfo
 
-// MsgUpdateGroupMetadataRequest is the Msg/UpdateGroupMetadata request type.
-type MsgUpdateGroupMetadataRequest struct {
+// MsgUpdateGroupMetadata is the Msg/UpdateGroupMetadata request type.
+type MsgUpdateGroupMetadata struct {
 	// admin is the account address of the group admin.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// group_id is the unique ID of the group.
@@ -348,18 +385,18 @@ type MsgUpdateGroupMetadataRequest struct {
 	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
-func (m *MsgUpdateGroupMetadataRequest) Reset()         { *m = MsgUpdateGroupMetadataRequest{} }
-func (m *MsgUpdateGroupMetadataRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateGroupMetadataRequest) ProtoMessage()    {}
-func (*MsgUpdateGroupMetadataRequest) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateGroupMetadata) Reset()         { *m = MsgUpdateGroupMetadata{} }
+func (m *MsgUpdateGroupMetadata) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateGroupMetadata) ProtoMessage()    {}
+func (*MsgUpdateGroupMetadata) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b4673626e7797578, []int{6}
 }
-func (m *MsgUpdateGroupMetadataRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateGroupMetadata) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateGroupMetadataRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateGroupMetadata) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateGroupMetadataRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateGroupMetadata.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -369,33 +406,33 @@ func (m *MsgUpdateGroupMetadataRequest) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateGroupMetadataRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateGroupMetadataRequest.Merge(m, src)
+func (m *MsgUpdateGroupMetadata) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateGroupMetadata.Merge(m, src)
 }
-func (m *MsgUpdateGroupMetadataRequest) XXX_Size() int {
+func (m *MsgUpdateGroupMetadata) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateGroupMetadataRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateGroupMetadataRequest.DiscardUnknown(m)
+func (m *MsgUpdateGroupMetadata) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateGroupMetadata.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateGroupMetadataRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateGroupMetadata proto.InternalMessageInfo
 
-func (m *MsgUpdateGroupMetadataRequest) GetAdmin() string {
+func (m *MsgUpdateGroupMetadata) GetAdmin() string {
 	if m != nil {
 		return m.Admin
 	}
 	return ""
 }
 
-func (m *MsgUpdateGroupMetadataRequest) GetGroupId() uint64 {
+func (m *MsgUpdateGroupMetadata) GetGroupId() uint64 {
 	if m != nil {
 		return m.GroupId
 	}
 	return 0
 }
 
-func (m *MsgUpdateGroupMetadataRequest) GetMetadata() []byte {
+func (m *MsgUpdateGroupMetadata) GetMetadata() []byte {
 	if m != nil {
 		return m.Metadata
 	}
@@ -439,8 +476,8 @@ func (m *MsgUpdateGroupMetadataResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGroupMetadataResponse proto.InternalMessageInfo
 
-// MsgCreateGroupAccountRequest is the Msg/CreateGroupAccount request type.
-type MsgCreateGroupAccountRequest struct {
+// MsgCreateGroupAccount is the Msg/CreateGroupAccount request type.
+type MsgCreateGroupAccount struct {
 	// admin is the account address of the group admin.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// group_id is the unique ID of the group.
@@ -451,18 +488,18 @@ type MsgCreateGroupAccountRequest struct {
 	DecisionPolicy *types.Any `protobuf:"bytes,4,opt,name=decision_policy,json=decisionPolicy,proto3" json:"decision_policy,omitempty"`
 }
 
-func (m *MsgCreateGroupAccountRequest) Reset()         { *m = MsgCreateGroupAccountRequest{} }
-func (m *MsgCreateGroupAccountRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateGroupAccountRequest) ProtoMessage()    {}
-func (*MsgCreateGroupAccountRequest) Descriptor() ([]byte, []int) {
+func (m *MsgCreateGroupAccount) Reset()         { *m = MsgCreateGroupAccount{} }
+func (m *MsgCreateGroupAccount) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateGroupAccount) ProtoMessage()    {}
+func (*MsgCreateGroupAccount) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b4673626e7797578, []int{8}
 }
-func (m *MsgCreateGroupAccountRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateGroupAccount) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCreateGroupAccountRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateGroupAccount) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCreateGroupAccountRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateGroupAccount.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -472,22 +509,22 @@ func (m *MsgCreateGroupAccountRequest) XXX_Marshal(b []byte, deterministic bool)
 		return b[:n], nil
 	}
 }
-func (m *MsgCreateGroupAccountRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateGroupAccountRequest.Merge(m, src)
+func (m *MsgCreateGroupAccount) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateGroupAccount.Merge(m, src)
 }
-func (m *MsgCreateGroupAccountRequest) XXX_Size() int {
+func (m *MsgCreateGroupAccount) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCreateGroupAccountRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateGroupAccountRequest.DiscardUnknown(m)
+func (m *MsgCreateGroupAccount) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateGroupAccount.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCreateGroupAccountRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateGroupAccount proto.InternalMessageInfo
 
 // MsgCreateGroupAccountResponse is the Msg/CreateGroupAccount response type.
 type MsgCreateGroupAccountResponse struct {
-	// group_account is the account address of the newly created group account.
-	GroupAccount string `protobuf:"bytes,1,opt,name=group_account,json=groupAccount,proto3" json:"group_account,omitempty"`
+	// address is the account address of the newly created group account.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 }
 
 func (m *MsgCreateGroupAccountResponse) Reset()         { *m = MsgCreateGroupAccountResponse{} }
@@ -523,35 +560,35 @@ func (m *MsgCreateGroupAccountResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgCreateGroupAccountResponse proto.InternalMessageInfo
 
-func (m *MsgCreateGroupAccountResponse) GetGroupAccount() string {
+func (m *MsgCreateGroupAccountResponse) GetAddress() string {
 	if m != nil {
-		return m.GroupAccount
+		return m.Address
 	}
 	return ""
 }
 
-// MsgUpdateGroupAccountAdminRequest is the Msg/UpdateGroupAccountAdmin request type.
-type MsgUpdateGroupAccountAdminRequest struct {
+// MsgUpdateGroupAccountAdmin is the Msg/UpdateGroupAccountAdmin request type.
+type MsgUpdateGroupAccountAdmin struct {
 	// admin is the account address of the group admin.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
-	// group_account is the group account address.
-	GroupAccount string `protobuf:"bytes,2,opt,name=group_account,json=groupAccount,proto3" json:"group_account,omitempty"`
+	// address is the group account address.
+	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
 	// new_admin is the new group account admin.
 	NewAdmin string `protobuf:"bytes,3,opt,name=new_admin,json=newAdmin,proto3" json:"new_admin,omitempty"`
 }
 
-func (m *MsgUpdateGroupAccountAdminRequest) Reset()         { *m = MsgUpdateGroupAccountAdminRequest{} }
-func (m *MsgUpdateGroupAccountAdminRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateGroupAccountAdminRequest) ProtoMessage()    {}
-func (*MsgUpdateGroupAccountAdminRequest) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateGroupAccountAdmin) Reset()         { *m = MsgUpdateGroupAccountAdmin{} }
+func (m *MsgUpdateGroupAccountAdmin) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateGroupAccountAdmin) ProtoMessage()    {}
+func (*MsgUpdateGroupAccountAdmin) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b4673626e7797578, []int{10}
 }
-func (m *MsgUpdateGroupAccountAdminRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateGroupAccountAdmin) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateGroupAccountAdminRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateGroupAccountAdmin) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateGroupAccountAdminRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateGroupAccountAdmin.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -561,33 +598,33 @@ func (m *MsgUpdateGroupAccountAdminRequest) XXX_Marshal(b []byte, deterministic 
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateGroupAccountAdminRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateGroupAccountAdminRequest.Merge(m, src)
+func (m *MsgUpdateGroupAccountAdmin) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateGroupAccountAdmin.Merge(m, src)
 }
-func (m *MsgUpdateGroupAccountAdminRequest) XXX_Size() int {
+func (m *MsgUpdateGroupAccountAdmin) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateGroupAccountAdminRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateGroupAccountAdminRequest.DiscardUnknown(m)
+func (m *MsgUpdateGroupAccountAdmin) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateGroupAccountAdmin.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateGroupAccountAdminRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateGroupAccountAdmin proto.InternalMessageInfo
 
-func (m *MsgUpdateGroupAccountAdminRequest) GetAdmin() string {
+func (m *MsgUpdateGroupAccountAdmin) GetAdmin() string {
 	if m != nil {
 		return m.Admin
 	}
 	return ""
 }
 
-func (m *MsgUpdateGroupAccountAdminRequest) GetGroupAccount() string {
+func (m *MsgUpdateGroupAccountAdmin) GetAddress() string {
 	if m != nil {
-		return m.GroupAccount
+		return m.Address
 	}
 	return ""
 }
 
-func (m *MsgUpdateGroupAccountAdminRequest) GetNewAdmin() string {
+func (m *MsgUpdateGroupAccountAdmin) GetNewAdmin() string {
 	if m != nil {
 		return m.NewAdmin
 	}
@@ -631,32 +668,28 @@ func (m *MsgUpdateGroupAccountAdminResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGroupAccountAdminResponse proto.InternalMessageInfo
 
-// MsgUpdateGroupAccountDecisionPolicyRequest is the Msg/UpdateGroupAccountDecisionPolicy request type.
-type MsgUpdateGroupAccountDecisionPolicyRequest struct {
+// MsgUpdateGroupAccountDecisionPolicy is the Msg/UpdateGroupAccountDecisionPolicy request type.
+type MsgUpdateGroupAccountDecisionPolicy struct {
 	// admin is the account address of the group admin.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
-	// group_account is the group account address.
-	GroupAccount string `protobuf:"bytes,2,opt,name=group_account,json=groupAccount,proto3" json:"group_account,omitempty"`
+	// address is the group account address.
+	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
 	// decision_policy is the updated group account decision policy.
 	DecisionPolicy *types.Any `protobuf:"bytes,3,opt,name=decision_policy,json=decisionPolicy,proto3" json:"decision_policy,omitempty"`
 }
 
-func (m *MsgUpdateGroupAccountDecisionPolicyRequest) Reset() {
-	*m = MsgUpdateGroupAccountDecisionPolicyRequest{}
-}
-func (m *MsgUpdateGroupAccountDecisionPolicyRequest) String() string {
-	return proto.CompactTextString(m)
-}
-func (*MsgUpdateGroupAccountDecisionPolicyRequest) ProtoMessage() {}
-func (*MsgUpdateGroupAccountDecisionPolicyRequest) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateGroupAccountDecisionPolicy) Reset()         { *m = MsgUpdateGroupAccountDecisionPolicy{} }
+func (m *MsgUpdateGroupAccountDecisionPolicy) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateGroupAccountDecisionPolicy) ProtoMessage()    {}
+func (*MsgUpdateGroupAccountDecisionPolicy) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b4673626e7797578, []int{12}
 }
-func (m *MsgUpdateGroupAccountDecisionPolicyRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateGroupAccountDecisionPolicy) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateGroupAccountDecisionPolicyRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateGroupAccountDecisionPolicy) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateGroupAccountDecisionPolicyRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateGroupAccountDecisionPolicy.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -666,17 +699,17 @@ func (m *MsgUpdateGroupAccountDecisionPolicyRequest) XXX_Marshal(b []byte, deter
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateGroupAccountDecisionPolicyRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateGroupAccountDecisionPolicyRequest.Merge(m, src)
+func (m *MsgUpdateGroupAccountDecisionPolicy) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateGroupAccountDecisionPolicy.Merge(m, src)
 }
-func (m *MsgUpdateGroupAccountDecisionPolicyRequest) XXX_Size() int {
+func (m *MsgUpdateGroupAccountDecisionPolicy) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateGroupAccountDecisionPolicyRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateGroupAccountDecisionPolicyRequest.DiscardUnknown(m)
+func (m *MsgUpdateGroupAccountDecisionPolicy) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateGroupAccountDecisionPolicy.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateGroupAccountDecisionPolicyRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateGroupAccountDecisionPolicy proto.InternalMessageInfo
 
 // MsgUpdateGroupAccountDecisionPolicyResponse is the Msg/UpdateGroupAccountDecisionPolicy response type.
 type MsgUpdateGroupAccountDecisionPolicyResponse struct {
@@ -719,28 +752,28 @@ func (m *MsgUpdateGroupAccountDecisionPolicyResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGroupAccountDecisionPolicyResponse proto.InternalMessageInfo
 
-// MsgUpdateGroupAccountMetadataRequest is the Msg/UpdateGroupAccountMetadata request type.
-type MsgUpdateGroupAccountMetadataRequest struct {
+// MsgUpdateGroupAccountMetadata is the Msg/UpdateGroupAccountMetadata request type.
+type MsgUpdateGroupAccountMetadata struct {
 	// admin is the account address of the group admin.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
-	// group_account is the group account address.
-	GroupAccount string `protobuf:"bytes,2,opt,name=group_account,json=groupAccount,proto3" json:"group_account,omitempty"`
+	// address is the group account address.
+	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
 	// metadata is the updated group account metadata.
 	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 }
 
-func (m *MsgUpdateGroupAccountMetadataRequest) Reset()         { *m = MsgUpdateGroupAccountMetadataRequest{} }
-func (m *MsgUpdateGroupAccountMetadataRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgUpdateGroupAccountMetadataRequest) ProtoMessage()    {}
-func (*MsgUpdateGroupAccountMetadataRequest) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateGroupAccountMetadata) Reset()         { *m = MsgUpdateGroupAccountMetadata{} }
+func (m *MsgUpdateGroupAccountMetadata) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateGroupAccountMetadata) ProtoMessage()    {}
+func (*MsgUpdateGroupAccountMetadata) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b4673626e7797578, []int{14}
 }
-func (m *MsgUpdateGroupAccountMetadataRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateGroupAccountMetadata) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgUpdateGroupAccountMetadataRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateGroupAccountMetadata) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgUpdateGroupAccountMetadataRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateGroupAccountMetadata.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -750,33 +783,33 @@ func (m *MsgUpdateGroupAccountMetadataRequest) XXX_Marshal(b []byte, determinist
 		return b[:n], nil
 	}
 }
-func (m *MsgUpdateGroupAccountMetadataRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgUpdateGroupAccountMetadataRequest.Merge(m, src)
+func (m *MsgUpdateGroupAccountMetadata) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateGroupAccountMetadata.Merge(m, src)
 }
-func (m *MsgUpdateGroupAccountMetadataRequest) XXX_Size() int {
+func (m *MsgUpdateGroupAccountMetadata) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgUpdateGroupAccountMetadataRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgUpdateGroupAccountMetadataRequest.DiscardUnknown(m)
+func (m *MsgUpdateGroupAccountMetadata) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateGroupAccountMetadata.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgUpdateGroupAccountMetadataRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateGroupAccountMetadata proto.InternalMessageInfo
 
-func (m *MsgUpdateGroupAccountMetadataRequest) GetAdmin() string {
+func (m *MsgUpdateGroupAccountMetadata) GetAdmin() string {
 	if m != nil {
 		return m.Admin
 	}
 	return ""
 }
 
-func (m *MsgUpdateGroupAccountMetadataRequest) GetGroupAccount() string {
+func (m *MsgUpdateGroupAccountMetadata) GetAddress() string {
 	if m != nil {
-		return m.GroupAccount
+		return m.Address
 	}
 	return ""
 }
 
-func (m *MsgUpdateGroupAccountMetadataRequest) GetMetadata() []byte {
+func (m *MsgUpdateGroupAccountMetadata) GetMetadata() []byte {
 	if m != nil {
 		return m.Metadata
 	}
@@ -820,10 +853,10 @@ func (m *MsgUpdateGroupAccountMetadataResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpdateGroupAccountMetadataResponse proto.InternalMessageInfo
 
-// MsgCreateProposalRequest is the Msg/CreateProposal request type.
-type MsgCreateProposalRequest struct {
-	// group_account is the group account address.
-	GroupAccount string `protobuf:"bytes,1,opt,name=group_account,json=groupAccount,proto3" json:"group_account,omitempty"`
+// MsgCreateProposal is the Msg/CreateProposal request type.
+type MsgCreateProposal struct {
+	// address is the group account address.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	// proposers are the account addresses of the proposers.
 	// Proposers signatures will be counted as yes votes.
 	Proposers []string `protobuf:"bytes,2,rep,name=proposers,proto3" json:"proposers,omitempty"`
@@ -831,20 +864,24 @@ type MsgCreateProposalRequest struct {
 	Metadata []byte `protobuf:"bytes,3,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// msgs is a list of Msgs that will be executed if the proposal passes.
 	Msgs []*types.Any `protobuf:"bytes,4,rep,name=msgs,proto3" json:"msgs,omitempty"`
+	// exec defines the mode of execution of the proposal,
+	// whether it should be executed immediately on creation or not.
+	// If so, proposers signatures are considered as Yes votes.
+	Exec Exec `protobuf:"varint,5,opt,name=exec,proto3,enum=regen.group.v1alpha1.Exec" json:"exec,omitempty"`
 }
 
-func (m *MsgCreateProposalRequest) Reset()         { *m = MsgCreateProposalRequest{} }
-func (m *MsgCreateProposalRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgCreateProposalRequest) ProtoMessage()    {}
-func (*MsgCreateProposalRequest) Descriptor() ([]byte, []int) {
+func (m *MsgCreateProposal) Reset()         { *m = MsgCreateProposal{} }
+func (m *MsgCreateProposal) String() string { return proto.CompactTextString(m) }
+func (*MsgCreateProposal) ProtoMessage()    {}
+func (*MsgCreateProposal) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b4673626e7797578, []int{16}
 }
-func (m *MsgCreateProposalRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgCreateProposal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgCreateProposalRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgCreateProposal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgCreateProposalRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgCreateProposal.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -854,17 +891,17 @@ func (m *MsgCreateProposalRequest) XXX_Marshal(b []byte, deterministic bool) ([]
 		return b[:n], nil
 	}
 }
-func (m *MsgCreateProposalRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgCreateProposalRequest.Merge(m, src)
+func (m *MsgCreateProposal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgCreateProposal.Merge(m, src)
 }
-func (m *MsgCreateProposalRequest) XXX_Size() int {
+func (m *MsgCreateProposal) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgCreateProposalRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgCreateProposalRequest.DiscardUnknown(m)
+func (m *MsgCreateProposal) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgCreateProposal.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgCreateProposalRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgCreateProposal proto.InternalMessageInfo
 
 // MsgCreateProposalResponse is the Msg/CreateProposal response type.
 type MsgCreateProposalResponse struct {
@@ -912,8 +949,8 @@ func (m *MsgCreateProposalResponse) GetProposalId() uint64 {
 	return 0
 }
 
-// MsgVoteRequest is the Msg/Vote request type.
-type MsgVoteRequest struct {
+// MsgVote is the Msg/Vote request type.
+type MsgVote struct {
 	// proposal is the unique ID of the proposal.
 	ProposalId uint64 `protobuf:"varint,1,opt,name=proposal_id,json=proposalId,proto3" json:"proposal_id,omitempty"`
 	// voter is the voter account address.
@@ -922,20 +959,23 @@ type MsgVoteRequest struct {
 	Choice Choice `protobuf:"varint,3,opt,name=choice,proto3,enum=regen.group.v1alpha1.Choice" json:"choice,omitempty"`
 	// metadata is any arbitrary metadata to attached to the vote.
 	Metadata []byte `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	// exec defines whether the proposal should be executed
+	// immediately after voting or not.
+	Exec Exec `protobuf:"varint,5,opt,name=exec,proto3,enum=regen.group.v1alpha1.Exec" json:"exec,omitempty"`
 }
 
-func (m *MsgVoteRequest) Reset()         { *m = MsgVoteRequest{} }
-func (m *MsgVoteRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgVoteRequest) ProtoMessage()    {}
-func (*MsgVoteRequest) Descriptor() ([]byte, []int) {
+func (m *MsgVote) Reset()         { *m = MsgVote{} }
+func (m *MsgVote) String() string { return proto.CompactTextString(m) }
+func (*MsgVote) ProtoMessage()    {}
+func (*MsgVote) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b4673626e7797578, []int{18}
 }
-func (m *MsgVoteRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgVote) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgVoteRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgVote) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgVoteRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgVote.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -945,44 +985,51 @@ func (m *MsgVoteRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return b[:n], nil
 	}
 }
-func (m *MsgVoteRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgVoteRequest.Merge(m, src)
+func (m *MsgVote) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgVote.Merge(m, src)
 }
-func (m *MsgVoteRequest) XXX_Size() int {
+func (m *MsgVote) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgVoteRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgVoteRequest.DiscardUnknown(m)
+func (m *MsgVote) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgVote.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgVoteRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgVote proto.InternalMessageInfo
 
-func (m *MsgVoteRequest) GetProposalId() uint64 {
+func (m *MsgVote) GetProposalId() uint64 {
 	if m != nil {
 		return m.ProposalId
 	}
 	return 0
 }
 
-func (m *MsgVoteRequest) GetVoter() string {
+func (m *MsgVote) GetVoter() string {
 	if m != nil {
 		return m.Voter
 	}
 	return ""
 }
 
-func (m *MsgVoteRequest) GetChoice() Choice {
+func (m *MsgVote) GetChoice() Choice {
 	if m != nil {
 		return m.Choice
 	}
 	return Choice_CHOICE_UNSPECIFIED
 }
 
-func (m *MsgVoteRequest) GetMetadata() []byte {
+func (m *MsgVote) GetMetadata() []byte {
 	if m != nil {
 		return m.Metadata
 	}
 	return nil
+}
+
+func (m *MsgVote) GetExec() Exec {
+	if m != nil {
+		return m.Exec
+	}
+	return Exec_EXEC_UNSPECIFIED
 }
 
 // MsgVoteResponse is the Msg/Vote response type.
@@ -1022,26 +1069,26 @@ func (m *MsgVoteResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgVoteResponse proto.InternalMessageInfo
 
-// MsgExecRequest is the Msg/Exec request type.
-type MsgExecRequest struct {
+// MsgExec is the Msg/Exec request type.
+type MsgExec struct {
 	// proposal is the unique ID of the proposal.
 	ProposalId uint64 `protobuf:"varint,1,opt,name=proposal_id,json=proposalId,proto3" json:"proposal_id,omitempty"`
 	// signer is the account address used to execute the proposal.
 	Signer string `protobuf:"bytes,2,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
-func (m *MsgExecRequest) Reset()         { *m = MsgExecRequest{} }
-func (m *MsgExecRequest) String() string { return proto.CompactTextString(m) }
-func (*MsgExecRequest) ProtoMessage()    {}
-func (*MsgExecRequest) Descriptor() ([]byte, []int) {
+func (m *MsgExec) Reset()         { *m = MsgExec{} }
+func (m *MsgExec) String() string { return proto.CompactTextString(m) }
+func (*MsgExec) ProtoMessage()    {}
+func (*MsgExec) Descriptor() ([]byte, []int) {
 	return fileDescriptor_b4673626e7797578, []int{20}
 }
-func (m *MsgExecRequest) XXX_Unmarshal(b []byte) error {
+func (m *MsgExec) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgExecRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgExec) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgExecRequest.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgExec.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1051,26 +1098,26 @@ func (m *MsgExecRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, erro
 		return b[:n], nil
 	}
 }
-func (m *MsgExecRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgExecRequest.Merge(m, src)
+func (m *MsgExec) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgExec.Merge(m, src)
 }
-func (m *MsgExecRequest) XXX_Size() int {
+func (m *MsgExec) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgExecRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgExecRequest.DiscardUnknown(m)
+func (m *MsgExec) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgExec.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgExecRequest proto.InternalMessageInfo
+var xxx_messageInfo_MsgExec proto.InternalMessageInfo
 
-func (m *MsgExecRequest) GetProposalId() uint64 {
+func (m *MsgExec) GetProposalId() uint64 {
 	if m != nil {
 		return m.ProposalId
 	}
 	return 0
 }
 
-func (m *MsgExecRequest) GetSigner() string {
+func (m *MsgExec) GetSigner() string {
 	if m != nil {
 		return m.Signer
 	}
@@ -1115,96 +1162,561 @@ func (m *MsgExecResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgExecResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgCreateGroupRequest)(nil), "regen.group.v1alpha1.MsgCreateGroupRequest")
+	proto.RegisterEnum("regen.group.v1alpha1.Exec", Exec_name, Exec_value)
+	proto.RegisterType((*MsgCreateGroup)(nil), "regen.group.v1alpha1.MsgCreateGroup")
 	proto.RegisterType((*MsgCreateGroupResponse)(nil), "regen.group.v1alpha1.MsgCreateGroupResponse")
-	proto.RegisterType((*MsgUpdateGroupMembersRequest)(nil), "regen.group.v1alpha1.MsgUpdateGroupMembersRequest")
+	proto.RegisterType((*MsgUpdateGroupMembers)(nil), "regen.group.v1alpha1.MsgUpdateGroupMembers")
 	proto.RegisterType((*MsgUpdateGroupMembersResponse)(nil), "regen.group.v1alpha1.MsgUpdateGroupMembersResponse")
-	proto.RegisterType((*MsgUpdateGroupAdminRequest)(nil), "regen.group.v1alpha1.MsgUpdateGroupAdminRequest")
+	proto.RegisterType((*MsgUpdateGroupAdmin)(nil), "regen.group.v1alpha1.MsgUpdateGroupAdmin")
 	proto.RegisterType((*MsgUpdateGroupAdminResponse)(nil), "regen.group.v1alpha1.MsgUpdateGroupAdminResponse")
-	proto.RegisterType((*MsgUpdateGroupMetadataRequest)(nil), "regen.group.v1alpha1.MsgUpdateGroupMetadataRequest")
+	proto.RegisterType((*MsgUpdateGroupMetadata)(nil), "regen.group.v1alpha1.MsgUpdateGroupMetadata")
 	proto.RegisterType((*MsgUpdateGroupMetadataResponse)(nil), "regen.group.v1alpha1.MsgUpdateGroupMetadataResponse")
-	proto.RegisterType((*MsgCreateGroupAccountRequest)(nil), "regen.group.v1alpha1.MsgCreateGroupAccountRequest")
+	proto.RegisterType((*MsgCreateGroupAccount)(nil), "regen.group.v1alpha1.MsgCreateGroupAccount")
 	proto.RegisterType((*MsgCreateGroupAccountResponse)(nil), "regen.group.v1alpha1.MsgCreateGroupAccountResponse")
-	proto.RegisterType((*MsgUpdateGroupAccountAdminRequest)(nil), "regen.group.v1alpha1.MsgUpdateGroupAccountAdminRequest")
+	proto.RegisterType((*MsgUpdateGroupAccountAdmin)(nil), "regen.group.v1alpha1.MsgUpdateGroupAccountAdmin")
 	proto.RegisterType((*MsgUpdateGroupAccountAdminResponse)(nil), "regen.group.v1alpha1.MsgUpdateGroupAccountAdminResponse")
-	proto.RegisterType((*MsgUpdateGroupAccountDecisionPolicyRequest)(nil), "regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyRequest")
+	proto.RegisterType((*MsgUpdateGroupAccountDecisionPolicy)(nil), "regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicy")
 	proto.RegisterType((*MsgUpdateGroupAccountDecisionPolicyResponse)(nil), "regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyResponse")
-	proto.RegisterType((*MsgUpdateGroupAccountMetadataRequest)(nil), "regen.group.v1alpha1.MsgUpdateGroupAccountMetadataRequest")
+	proto.RegisterType((*MsgUpdateGroupAccountMetadata)(nil), "regen.group.v1alpha1.MsgUpdateGroupAccountMetadata")
 	proto.RegisterType((*MsgUpdateGroupAccountMetadataResponse)(nil), "regen.group.v1alpha1.MsgUpdateGroupAccountMetadataResponse")
-	proto.RegisterType((*MsgCreateProposalRequest)(nil), "regen.group.v1alpha1.MsgCreateProposalRequest")
+	proto.RegisterType((*MsgCreateProposal)(nil), "regen.group.v1alpha1.MsgCreateProposal")
 	proto.RegisterType((*MsgCreateProposalResponse)(nil), "regen.group.v1alpha1.MsgCreateProposalResponse")
-	proto.RegisterType((*MsgVoteRequest)(nil), "regen.group.v1alpha1.MsgVoteRequest")
+	proto.RegisterType((*MsgVote)(nil), "regen.group.v1alpha1.MsgVote")
 	proto.RegisterType((*MsgVoteResponse)(nil), "regen.group.v1alpha1.MsgVoteResponse")
-	proto.RegisterType((*MsgExecRequest)(nil), "regen.group.v1alpha1.MsgExecRequest")
+	proto.RegisterType((*MsgExec)(nil), "regen.group.v1alpha1.MsgExec")
 	proto.RegisterType((*MsgExecResponse)(nil), "regen.group.v1alpha1.MsgExecResponse")
 }
 
 func init() { proto.RegisterFile("regen/group/v1alpha1/tx.proto", fileDescriptor_b4673626e7797578) }
 
 var fileDescriptor_b4673626e7797578 = []byte{
-	// 942 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x57, 0x4f, 0x73, 0xdb, 0x44,
-	0x14, 0xf7, 0xc6, 0x22, 0x4d, 0x5e, 0x5a, 0x17, 0x96, 0x50, 0x1c, 0x35, 0x71, 0x8c, 0x48, 0x07,
-	0x0f, 0x25, 0x12, 0x49, 0x3a, 0x03, 0x53, 0x7a, 0x20, 0x69, 0x99, 0x4e, 0x0e, 0x9e, 0x29, 0x62,
-	0xe0, 0xc0, 0xc5, 0xa3, 0x48, 0x8b, 0x2c, 0xb0, 0xb5, 0xaa, 0x56, 0xae, 0xe3, 0x61, 0x3a, 0xc3,
-	0x0d, 0x0e, 0x1c, 0xb8, 0x70, 0x80, 0x13, 0x37, 0x86, 0x3b, 0x1f, 0x80, 0x03, 0x87, 0x0e, 0xa7,
-	0xde, 0xe0, 0xc4, 0x30, 0xc9, 0x17, 0x61, 0xbc, 0xbb, 0xb2, 0x65, 0x5b, 0x92, 0xe5, 0x04, 0x6e,
-	0x79, 0x7a, 0xef, 0xfd, 0xde, 0xef, 0xfd, 0xd9, 0xf7, 0x62, 0xd8, 0x0a, 0x89, 0x4b, 0x7c, 0xc3,
-	0x0d, 0x69, 0x2f, 0x30, 0x9e, 0xec, 0x59, 0x9d, 0xa0, 0x6d, 0xed, 0x19, 0xd1, 0xa9, 0x1e, 0x84,
-	0x34, 0xa2, 0x78, 0x9d, 0xab, 0x75, 0xae, 0xd6, 0x63, 0xb5, 0xba, 0xee, 0x52, 0x97, 0x72, 0x03,
-	0x63, 0xf8, 0x97, 0xb0, 0x55, 0x37, 0x6c, 0xca, 0xba, 0x94, 0xb5, 0x84, 0x42, 0x08, 0xb1, 0xca,
-	0xa5, 0xd4, 0xed, 0x10, 0x83, 0x4b, 0x27, 0xbd, 0xcf, 0x0c, 0xcb, 0x1f, 0x48, 0x55, 0x3d, 0x9d,
-	0xc0, 0x20, 0x20, 0xd2, 0x59, 0xfb, 0x1a, 0xc1, 0x2b, 0x4d, 0xe6, 0xde, 0x0f, 0x89, 0x15, 0x91,
-	0x87, 0x43, 0x3b, 0x93, 0x3c, 0xee, 0x11, 0x16, 0xe1, 0x75, 0x78, 0xc1, 0x72, 0xba, 0x9e, 0x5f,
-	0x45, 0x75, 0xd4, 0x58, 0x35, 0x85, 0x80, 0xef, 0xc1, 0x95, 0x2e, 0xe9, 0x9e, 0x90, 0x90, 0x55,
-	0x97, 0xea, 0xe5, 0xc6, 0xda, 0xfe, 0xa6, 0x9e, 0x96, 0x85, 0xde, 0xe4, 0x46, 0x47, 0xca, 0xb3,
-	0xbf, 0xb7, 0x4b, 0x66, 0xec, 0x82, 0x55, 0x58, 0xe9, 0x92, 0xc8, 0x72, 0xac, 0xc8, 0xaa, 0x96,
-	0xeb, 0xa8, 0x71, 0xd5, 0x1c, 0xc9, 0xda, 0x01, 0xdc, 0x98, 0x26, 0xc2, 0x02, 0xea, 0x33, 0x82,
-	0x37, 0x60, 0x85, 0xa3, 0xb7, 0x3c, 0x87, 0x93, 0x51, 0xcc, 0x2b, 0x5c, 0x3e, 0x76, 0xb4, 0x1f,
-	0x11, 0x6c, 0x36, 0x99, 0xfb, 0x71, 0xe0, 0xc4, 0x5e, 0x22, 0x30, 0xcb, 0xcf, 0x22, 0x89, 0xb8,
-	0x34, 0x81, 0x88, 0x8f, 0xa1, 0x22, 0xd8, 0xb6, 0x7a, 0x1c, 0x94, 0x55, 0xcb, 0x85, 0xf3, 0xbc,
-	0x26, 0x3c, 0x05, 0x1b, 0xa6, 0x6d, 0xc3, 0x56, 0x06, 0x37, 0x91, 0x98, 0xf6, 0x39, 0xa8, 0x93,
-	0x06, 0x87, 0x43, 0x76, 0x17, 0xa6, 0x7e, 0x13, 0x56, 0x7d, 0xd2, 0x6f, 0x09, 0xa7, 0x32, 0x77,
-	0x5a, 0xf1, 0x49, 0x9f, 0x83, 0x6a, 0x5b, 0x70, 0x33, 0x35, 0x96, 0xa4, 0xd2, 0x99, 0xe5, 0x2a,
-	0xfa, 0x72, 0x61, 0x36, 0x79, 0xbd, 0xae, 0x43, 0x2d, 0x2b, 0x9a, 0xe4, 0xf3, 0xbb, 0x68, 0x6c,
-	0x62, 0x1c, 0x0e, 0x6d, 0x9b, 0xf6, 0xfc, 0xe8, 0xff, 0xe0, 0x83, 0x3f, 0x84, 0xeb, 0x0e, 0xb1,
-	0x3d, 0xe6, 0x51, 0xbf, 0x15, 0xd0, 0x8e, 0x67, 0x0f, 0xaa, 0x4a, 0x1d, 0x35, 0xd6, 0xf6, 0xd7,
-	0x75, 0xf1, 0xb8, 0xf4, 0xf8, 0x71, 0xe9, 0x87, 0xfe, 0xe0, 0x08, 0xff, 0xf1, 0xeb, 0x6e, 0xe5,
-	0x81, 0x74, 0x78, 0xc4, 0xed, 0xcd, 0x8a, 0x33, 0x21, 0xdf, 0x55, 0xbe, 0xf9, 0x69, 0xbb, 0xa4,
-	0x3d, 0xe0, 0x65, 0x4d, 0xcb, 0x42, 0xce, 0xf6, 0xeb, 0x70, 0x4d, 0x10, 0xb6, 0x84, 0x42, 0xa6,
-	0x73, 0xd5, 0x4d, 0x18, 0x6b, 0x5f, 0xc2, 0x6b, 0x53, 0xbd, 0x13, 0x8a, 0x02, 0xe3, 0x32, 0x83,
-	0xbf, 0x34, 0x8b, 0x9f, 0x3f, 0x38, 0x3b, 0xa0, 0xe5, 0x05, 0x97, 0xfd, 0xfa, 0x0d, 0xc1, 0x9b,
-	0xa9, 0x66, 0x53, 0x65, 0xba, 0x3c, 0xd9, 0x94, 0x5e, 0x95, 0xff, 0x93, 0x5e, 0xed, 0xc2, 0xed,
-	0x42, 0x19, 0xc8, 0x8c, 0x9f, 0xc2, 0x4e, 0xaa, 0x79, 0xb1, 0x87, 0x53, 0x28, 0xd5, 0xbc, 0x27,
-	0xf4, 0x06, 0xdc, 0x9a, 0x13, 0x5e, 0xf2, 0xfc, 0x05, 0x41, 0x75, 0x34, 0x83, 0x8f, 0x42, 0x1a,
-	0x50, 0x66, 0x75, 0x62, 0x72, 0x45, 0xc6, 0x0f, 0x6f, 0xc2, 0x6a, 0xc0, 0xfd, 0xe2, 0xad, 0xbf,
-	0x6a, 0x8e, 0x3f, 0xe4, 0xbe, 0xab, 0x06, 0x28, 0x5d, 0xe6, 0xb2, 0xaa, 0xc2, 0x57, 0x68, 0x6a,
-	0x83, 0x4c, 0x6e, 0x21, 0x5b, 0x70, 0x0f, 0x36, 0x52, 0xa8, 0xca, 0xa7, 0xb2, 0x0d, 0x6b, 0x81,
-	0xfc, 0x36, 0xbe, 0x04, 0x10, 0x7f, 0x3a, 0x76, 0xb4, 0x1f, 0x10, 0x54, 0x9a, 0xcc, 0xfd, 0x84,
-	0x46, 0x24, 0xce, 0x6f, 0x9e, 0xcf, 0xb0, 0x3b, 0x4f, 0x68, 0x44, 0x42, 0x59, 0x7f, 0x21, 0xe0,
-	0x3b, 0xb0, 0x6c, 0xb7, 0xa9, 0x67, 0x13, 0x9e, 0x51, 0x25, 0x6b, 0xf9, 0xdf, 0xe7, 0x36, 0xa6,
-	0xb4, 0x9d, 0xa8, 0x84, 0x32, 0xd5, 0xae, 0x97, 0xe0, 0xfa, 0x88, 0x9a, 0x6c, 0xcc, 0x31, 0x67,
-	0xfb, 0xc1, 0x29, 0xb1, 0x0b, 0xb3, 0xbd, 0x01, 0xcb, 0xcc, 0x73, 0xfd, 0x11, 0x5d, 0x29, 0x49,
-	0x74, 0x01, 0x25, 0xd0, 0xf7, 0xff, 0x04, 0x28, 0x37, 0x99, 0x8b, 0xdb, 0xb0, 0x96, 0x58, 0x3f,
-	0xf8, 0x76, 0xc6, 0x19, 0x4b, 0xfb, 0x17, 0x40, 0x7d, 0xab, 0x98, 0xb1, 0xec, 0xcf, 0x53, 0xc0,
-	0xb3, 0xb7, 0x0e, 0xef, 0x67, 0x62, 0x64, 0x1e, 0x6d, 0xf5, 0x60, 0x21, 0x1f, 0x19, 0xbe, 0x0f,
-	0x2f, 0x4e, 0x5f, 0x37, 0xfc, 0x76, 0x11, 0xa0, 0xe4, 0x16, 0x55, 0xf7, 0x16, 0xf0, 0x90, 0x81,
-	0xbf, 0x42, 0xf0, 0x72, 0xca, 0x29, 0xc3, 0x05, 0xb3, 0x98, 0xd8, 0x16, 0xea, 0x9d, 0xc5, 0x9c,
-	0xc6, 0xa5, 0x9f, 0xbd, 0x31, 0x39, 0xa5, 0xcf, 0x3c, 0xab, 0x39, 0xa5, 0xcf, 0x39, 0x62, 0xdf,
-	0x22, 0x78, 0x35, 0xe3, 0x40, 0xe0, 0x77, 0x0a, 0x15, 0x74, 0xf6, 0x9e, 0xa9, 0xef, 0x2e, 0xee,
-	0x28, 0xe9, 0xfc, 0x8c, 0xa0, 0x3e, 0x6f, 0x8d, 0xe3, 0xf7, 0x17, 0x80, 0x4f, 0xbd, 0x61, 0xea,
-	0xe1, 0x25, 0x10, 0x24, 0xd3, 0xef, 0x11, 0xa8, 0xd9, 0x2b, 0x1c, 0xdf, 0x5d, 0x20, 0xc2, 0xf4,
-	0x20, 0xbd, 0x77, 0x21, 0x5f, 0xc9, 0xeb, 0x31, 0x54, 0x26, 0x97, 0x30, 0xd6, 0xe7, 0xcc, 0xc5,
-	0xd4, 0x61, 0x51, 0x8d, 0xc2, 0xf6, 0x32, 0xe4, 0x47, 0xa0, 0x0c, 0xb7, 0x23, 0xde, 0xc9, 0x74,
-	0x4c, 0xec, 0x75, 0xf5, 0xd6, 0x1c, 0xab, 0x31, 0xe8, 0x70, 0x29, 0xe6, 0x80, 0x26, 0xd6, 0x6f,
-	0x0e, 0x68, 0x72, 0xb3, 0x1e, 0x3d, 0x7c, 0x76, 0x56, 0x43, 0xcf, 0xcf, 0x6a, 0xe8, 0x9f, 0xb3,
-	0x1a, 0xfa, 0xee, 0xbc, 0x56, 0x7a, 0x7e, 0x5e, 0x2b, 0xfd, 0x75, 0x5e, 0x2b, 0x7d, 0xba, 0xeb,
-	0x7a, 0x51, 0xbb, 0x77, 0xa2, 0xdb, 0xb4, 0x6b, 0x70, 0xa8, 0x5d, 0x9f, 0x44, 0x7d, 0x1a, 0x7e,
-	0x21, 0xa5, 0x0e, 0x71, 0x5c, 0x12, 0x1a, 0xa7, 0xe2, 0x07, 0xd9, 0xc9, 0x32, 0xbf, 0x83, 0x07,
-	0xff, 0x06, 0x00, 0x00, 0xff, 0xff, 0x3c, 0x97, 0x2e, 0x02, 0x27, 0x0e, 0x00, 0x00,
+	// 974 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x57, 0x4f, 0x73, 0xdb, 0x54,
+	0x10, 0xf7, 0x8b, 0xd5, 0xfc, 0xd9, 0x14, 0x37, 0x55, 0x4d, 0x71, 0xd4, 0xc6, 0xf1, 0x88, 0x76,
+	0x6a, 0x9a, 0x46, 0x22, 0x49, 0x0f, 0x14, 0x7a, 0x49, 0x52, 0xd3, 0xf1, 0x0c, 0x66, 0x82, 0xa0,
+	0x0c, 0x70, 0xf1, 0x28, 0xd2, 0x43, 0x11, 0xb5, 0xf5, 0x34, 0x7a, 0x72, 0x12, 0xdf, 0xb8, 0x30,
+	0x03, 0x17, 0x86, 0x19, 0xbe, 0x40, 0x3f, 0x01, 0x27, 0xae, 0x5c, 0xb8, 0xd0, 0xe1, 0xd4, 0x23,
+	0x27, 0x86, 0x49, 0xbe, 0x08, 0xe3, 0x27, 0xe9, 0x55, 0x8a, 0x25, 0x59, 0xea, 0xe4, 0xe6, 0xd5,
+	0xfe, 0x76, 0xf7, 0xb7, 0x7f, 0xde, 0xee, 0x18, 0xd6, 0x3c, 0x6c, 0x61, 0x47, 0xb5, 0x3c, 0x32,
+	0x72, 0xd5, 0xe3, 0x2d, 0x7d, 0xe0, 0x1e, 0xe9, 0x5b, 0xaa, 0x7f, 0xaa, 0xb8, 0x1e, 0xf1, 0x89,
+	0x58, 0x67, 0x6a, 0x85, 0xa9, 0x95, 0x48, 0x2d, 0xd5, 0x2d, 0x62, 0x11, 0x06, 0x50, 0x27, 0xbf,
+	0x02, 0xac, 0xb4, 0x6a, 0x10, 0x3a, 0x24, 0xb4, 0x1f, 0x28, 0x02, 0x21, 0x52, 0x59, 0x84, 0x58,
+	0x03, 0xac, 0x32, 0xe9, 0x70, 0xf4, 0xad, 0xaa, 0x3b, 0xe3, 0x50, 0xd5, 0x4a, 0x27, 0x30, 0x76,
+	0x71, 0x68, 0x2c, 0x7f, 0x8f, 0xa0, 0xd6, 0xa3, 0xd6, 0xbe, 0x87, 0x75, 0x1f, 0x3f, 0x9d, 0xe0,
+	0xc4, 0x3a, 0x5c, 0xd1, 0xcd, 0xa1, 0xed, 0x34, 0x50, 0x0b, 0xb5, 0x97, 0xb4, 0x40, 0x10, 0x1f,
+	0xc3, 0xc2, 0x10, 0x0f, 0x0f, 0xb1, 0x47, 0x1b, 0x73, 0xad, 0x6a, 0x7b, 0x79, 0xfb, 0xb6, 0x92,
+	0x46, 0x5f, 0xe9, 0x31, 0xd0, 0x9e, 0xf0, 0xf2, 0xdf, 0xf5, 0x8a, 0x16, 0x99, 0x88, 0x12, 0x2c,
+	0x0e, 0xb1, 0xaf, 0x9b, 0xba, 0xaf, 0x37, 0xaa, 0x2d, 0xd4, 0xbe, 0xaa, 0x71, 0x59, 0xde, 0x81,
+	0x9b, 0x49, 0x06, 0x1a, 0xa6, 0x2e, 0x71, 0x28, 0x16, 0x57, 0x61, 0x91, 0x79, 0xef, 0xdb, 0x26,
+	0x23, 0x23, 0x68, 0x0b, 0x4c, 0xee, 0x9a, 0xf2, 0xaf, 0x08, 0xde, 0xee, 0x51, 0xeb, 0x99, 0x6b,
+	0x46, 0x56, 0xbd, 0x30, 0x54, 0x3a, 0xfd, 0xb8, 0xab, 0xb9, 0x84, 0x2b, 0xb1, 0x0b, 0xb5, 0x80,
+	0x66, 0x7f, 0xc4, 0xbc, 0xd1, 0x46, 0xb5, 0x70, 0x82, 0x6f, 0x05, 0x96, 0x01, 0x0d, 0x2a, 0xaf,
+	0xc3, 0x5a, 0x2a, 0xa9, 0x28, 0x23, 0xd9, 0x80, 0x1b, 0x49, 0xc0, 0x2e, 0x63, 0x57, 0x9a, 0xf3,
+	0x2d, 0x58, 0x72, 0xf0, 0x49, 0x3f, 0x30, 0xaa, 0x32, 0xa3, 0x45, 0x07, 0x9f, 0x30, 0x6f, 0xf2,
+	0x1a, 0xdc, 0x4a, 0x09, 0xc2, 0x39, 0x60, 0x56, 0xef, 0x04, 0xc9, 0xa0, 0x13, 0xe5, 0x69, 0xe4,
+	0xb5, 0xb5, 0x05, 0xcd, 0xf4, 0x30, 0x9c, 0xc8, 0x1f, 0x41, 0x0f, 0x63, 0x9d, 0xdf, 0x35, 0x0c,
+	0x32, 0x72, 0xfc, 0x4b, 0x25, 0x22, 0x7e, 0x06, 0xd7, 0x4c, 0x6c, 0xd8, 0xd4, 0x26, 0x4e, 0xdf,
+	0x25, 0x03, 0xdb, 0x18, 0x37, 0x84, 0x16, 0x6a, 0x2f, 0x6f, 0xd7, 0x95, 0xe0, 0xe5, 0x28, 0xd1,
+	0xcb, 0x51, 0x76, 0x9d, 0xf1, 0x9e, 0xf8, 0xf7, 0xef, 0x9b, 0xb5, 0x27, 0xa1, 0xc1, 0x01, 0xc3,
+	0x6b, 0x35, 0x33, 0x21, 0x7f, 0x28, 0xfc, 0xf8, 0x62, 0xbd, 0x22, 0x3f, 0x62, 0xdd, 0x9e, 0xa6,
+	0xcf, 0xe7, 0xb7, 0x01, 0x0b, 0xba, 0x69, 0x7a, 0x98, 0xd2, 0x30, 0x91, 0x48, 0x94, 0x6d, 0x90,
+	0x2e, 0xb4, 0x28, 0x30, 0xcd, 0x1b, 0x87, 0x98, 0xb7, 0xb9, 0x84, 0xb7, 0xfc, 0x69, 0xb8, 0x03,
+	0x72, 0x76, 0x28, 0xde, 0x8b, 0xdf, 0x10, 0xbc, 0x9b, 0x0a, 0x4b, 0x56, 0xa2, 0x34, 0xb5, 0x94,
+	0xe2, 0x57, 0x2f, 0xa5, 0xf8, 0x9b, 0xb0, 0x51, 0x80, 0x2f, 0xcf, 0xef, 0xf9, 0xc5, 0x97, 0x19,
+	0xc2, 0x67, 0xcc, 0x7e, 0x76, 0x62, 0x79, 0xa3, 0x7f, 0x0f, 0xee, 0xe6, 0x06, 0xe3, 0xac, 0xfe,
+	0x42, 0x70, 0x9d, 0x8f, 0xd0, 0x81, 0x47, 0x5c, 0x42, 0xf5, 0x41, 0xf6, 0xd8, 0x88, 0xb7, 0x61,
+	0xc9, 0x65, 0xa8, 0x68, 0x0d, 0x2f, 0x69, 0xaf, 0x3f, 0xe4, 0x3e, 0x82, 0x36, 0x08, 0x43, 0x6a,
+	0xd1, 0x86, 0xc0, 0x56, 0x5b, 0x6a, 0xf1, 0x35, 0x86, 0x10, 0x15, 0x10, 0xf0, 0x29, 0x36, 0x1a,
+	0x57, 0x5a, 0xa8, 0x5d, 0xdb, 0x96, 0xd2, 0x97, 0x60, 0xe7, 0x14, 0x1b, 0x1a, 0xc3, 0x85, 0xed,
+	0x78, 0x0c, 0xab, 0x53, 0x89, 0xf0, 0x77, 0xb0, 0x0e, 0xcb, 0x6e, 0xf8, 0xed, 0xf5, 0x2a, 0x87,
+	0xe8, 0x53, 0xd7, 0x94, 0xff, 0x44, 0xb0, 0xd0, 0xa3, 0xd6, 0x97, 0xc4, 0x9f, 0x0d, 0x9e, 0x74,
+	0xea, 0x98, 0xf8, 0xd8, 0x0b, 0x3b, 0x12, 0x08, 0xe2, 0x43, 0x98, 0x37, 0x8e, 0x88, 0x6d, 0x60,
+	0x96, 0x7a, 0x2d, 0x6b, 0x7b, 0xef, 0x33, 0x8c, 0x16, 0x62, 0x13, 0x25, 0x13, 0x2e, 0x94, 0xac,
+	0x64, 0x21, 0xe4, 0xeb, 0x70, 0x2d, 0xcc, 0x81, 0xf7, 0x77, 0x8f, 0xa5, 0x35, 0xc1, 0xcc, 0x4e,
+	0xeb, 0x26, 0xcc, 0x53, 0xdb, 0x72, 0x78, 0x5e, 0xa1, 0x14, 0xba, 0x65, 0x71, 0x42, 0xb7, 0xf7,
+	0xef, 0x83, 0xc0, 0x7c, 0xd6, 0x61, 0xa5, 0xf3, 0x55, 0x67, 0xbf, 0xff, 0xec, 0xd3, 0xcf, 0x0f,
+	0x3a, 0xfb, 0xdd, 0x8f, 0xbb, 0x9d, 0x27, 0x2b, 0x15, 0xf1, 0x2a, 0x2c, 0xb2, 0xaf, 0x5f, 0x68,
+	0x5f, 0xaf, 0xa0, 0xed, 0x9f, 0x00, 0xaa, 0x3d, 0x6a, 0x89, 0x3a, 0x2c, 0xc7, 0x8f, 0xfc, 0x9d,
+	0x8c, 0xe3, 0x96, 0xd8, 0x67, 0xd2, 0x83, 0x22, 0x28, 0xde, 0xe6, 0x63, 0x10, 0x53, 0xee, 0xf1,
+	0x46, 0xa6, 0x8f, 0x69, 0xb0, 0xb4, 0x53, 0x02, 0xcc, 0xe3, 0xba, 0xb0, 0x32, 0x75, 0x51, 0xdf,
+	0x2b, 0xe2, 0x88, 0x41, 0xa5, 0xad, 0xc2, 0x50, 0x1e, 0x71, 0x0c, 0x37, 0xd2, 0xee, 0xe7, 0x83,
+	0x62, 0xec, 0x03, 0xb4, 0xf4, 0xb0, 0x0c, 0x3a, 0x5e, 0xe4, 0x94, 0x83, 0xb9, 0x51, 0xa4, 0x51,
+	0x21, 0x38, 0xa7, 0xc8, 0x39, 0xb7, 0xec, 0x07, 0x04, 0xef, 0x64, 0xdd, 0xab, 0xf7, 0x0b, 0x55,
+	0x30, 0x66, 0x21, 0x7d, 0x50, 0xd6, 0x82, 0xf3, 0x78, 0x81, 0xa0, 0x35, 0xf3, 0x4a, 0x3d, 0x2a,
+	0xe1, 0x3e, 0x69, 0x2a, 0xed, 0xbe, 0xb1, 0x29, 0xa7, 0xf8, 0x33, 0x02, 0x29, 0xe7, 0xd2, 0xec,
+	0x94, 0x88, 0xc0, 0x87, 0xe5, 0xa3, 0x37, 0x30, 0xe2, 0x84, 0xbe, 0x83, 0xda, 0x85, 0x13, 0x73,
+	0x6f, 0xc6, 0x08, 0x44, 0x40, 0x49, 0x2d, 0x08, 0xe4, 0xb1, 0x3e, 0x01, 0x81, 0xad, 0xf1, 0xb5,
+	0x4c, 0xc3, 0x89, 0x5a, 0xba, 0x9b, 0xab, 0x8e, 0x7b, 0x63, 0x9b, 0x2e, 0xdb, 0xdb, 0x44, 0x9d,
+	0xe3, 0x2d, 0xbe, 0x37, 0xf7, 0x9e, 0xbe, 0x3c, 0x6b, 0xa2, 0x57, 0x67, 0x4d, 0xf4, 0xdf, 0x59,
+	0x13, 0xfd, 0x72, 0xde, 0xac, 0xbc, 0x3a, 0x6f, 0x56, 0xfe, 0x39, 0x6f, 0x56, 0xbe, 0xd9, 0xb4,
+	0x6c, 0xff, 0x68, 0x74, 0xa8, 0x18, 0x64, 0xa8, 0x32, 0x57, 0x9b, 0x0e, 0xf6, 0x4f, 0x88, 0xf7,
+	0x3c, 0x94, 0x06, 0xd8, 0xb4, 0xb0, 0xa7, 0x9e, 0x06, 0x7f, 0xa5, 0x0e, 0xe7, 0xd9, 0xdd, 0xdc,
+	0xf9, 0x3f, 0x00, 0x00, 0xff, 0xff, 0x44, 0x4b, 0xbb, 0x9d, 0xe1, 0x0d, 0x00, 0x00,
 }
 
-func (m *MsgCreateGroupRequest) Marshal() (dAtA []byte, err error) {
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion4
+
+// MsgClient is the client API for Msg service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type MsgClient interface {
+	// CreateGroup creates a new group with an admin account address, a list of members and some optional metadata.
+	CreateGroup(ctx context.Context, in *MsgCreateGroup, opts ...grpc.CallOption) (*MsgCreateGroupResponse, error)
+	// UpdateGroupMembers updates the group members with given group id and admin address.
+	UpdateGroupMembers(ctx context.Context, in *MsgUpdateGroupMembers, opts ...grpc.CallOption) (*MsgUpdateGroupMembersResponse, error)
+	// UpdateGroupAdmin updates the group admin with given group id and previous admin address.
+	UpdateGroupAdmin(ctx context.Context, in *MsgUpdateGroupAdmin, opts ...grpc.CallOption) (*MsgUpdateGroupAdminResponse, error)
+	// UpdateGroupMetadata updates the group metadata with given group id and admin address.
+	UpdateGroupMetadata(ctx context.Context, in *MsgUpdateGroupMetadata, opts ...grpc.CallOption) (*MsgUpdateGroupMetadataResponse, error)
+	// CreateGroupAccount creates a new group account using given DecisionPolicy.
+	CreateGroupAccount(ctx context.Context, in *MsgCreateGroupAccount, opts ...grpc.CallOption) (*MsgCreateGroupAccountResponse, error)
+	// UpdateGroupAccountAdmin updates a group account admin.
+	UpdateGroupAccountAdmin(ctx context.Context, in *MsgUpdateGroupAccountAdmin, opts ...grpc.CallOption) (*MsgUpdateGroupAccountAdminResponse, error)
+	// UpdateGroupAccountDecisionPolicy allows a group account decision policy to be updated.
+	UpdateGroupAccountDecisionPolicy(ctx context.Context, in *MsgUpdateGroupAccountDecisionPolicy, opts ...grpc.CallOption) (*MsgUpdateGroupAccountDecisionPolicyResponse, error)
+	// UpdateGroupAccountMetadata updates a group account metadata.
+	UpdateGroupAccountMetadata(ctx context.Context, in *MsgUpdateGroupAccountMetadata, opts ...grpc.CallOption) (*MsgUpdateGroupAccountMetadataResponse, error)
+	// CreateProposal submits a new proposal.
+	CreateProposal(ctx context.Context, in *MsgCreateProposal, opts ...grpc.CallOption) (*MsgCreateProposalResponse, error)
+	// Vote allows a voter to vote on a proposal.
+	Vote(ctx context.Context, in *MsgVote, opts ...grpc.CallOption) (*MsgVoteResponse, error)
+	// Exec executes a proposal.
+	Exec(ctx context.Context, in *MsgExec, opts ...grpc.CallOption) (*MsgExecResponse, error)
+}
+
+type msgClient struct {
+	cc grpc1.ClientConn
+}
+
+func NewMsgClient(cc grpc1.ClientConn) MsgClient {
+	return &msgClient{cc}
+}
+
+func (c *msgClient) CreateGroup(ctx context.Context, in *MsgCreateGroup, opts ...grpc.CallOption) (*MsgCreateGroupResponse, error) {
+	out := new(MsgCreateGroupResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/CreateGroup", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateGroupMembers(ctx context.Context, in *MsgUpdateGroupMembers, opts ...grpc.CallOption) (*MsgUpdateGroupMembersResponse, error) {
+	out := new(MsgUpdateGroupMembersResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/UpdateGroupMembers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateGroupAdmin(ctx context.Context, in *MsgUpdateGroupAdmin, opts ...grpc.CallOption) (*MsgUpdateGroupAdminResponse, error) {
+	out := new(MsgUpdateGroupAdminResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/UpdateGroupAdmin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateGroupMetadata(ctx context.Context, in *MsgUpdateGroupMetadata, opts ...grpc.CallOption) (*MsgUpdateGroupMetadataResponse, error) {
+	out := new(MsgUpdateGroupMetadataResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/UpdateGroupMetadata", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) CreateGroupAccount(ctx context.Context, in *MsgCreateGroupAccount, opts ...grpc.CallOption) (*MsgCreateGroupAccountResponse, error) {
+	out := new(MsgCreateGroupAccountResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/CreateGroupAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateGroupAccountAdmin(ctx context.Context, in *MsgUpdateGroupAccountAdmin, opts ...grpc.CallOption) (*MsgUpdateGroupAccountAdminResponse, error) {
+	out := new(MsgUpdateGroupAccountAdminResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/UpdateGroupAccountAdmin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateGroupAccountDecisionPolicy(ctx context.Context, in *MsgUpdateGroupAccountDecisionPolicy, opts ...grpc.CallOption) (*MsgUpdateGroupAccountDecisionPolicyResponse, error) {
+	out := new(MsgUpdateGroupAccountDecisionPolicyResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/UpdateGroupAccountDecisionPolicy", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) UpdateGroupAccountMetadata(ctx context.Context, in *MsgUpdateGroupAccountMetadata, opts ...grpc.CallOption) (*MsgUpdateGroupAccountMetadataResponse, error) {
+	out := new(MsgUpdateGroupAccountMetadataResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/UpdateGroupAccountMetadata", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) CreateProposal(ctx context.Context, in *MsgCreateProposal, opts ...grpc.CallOption) (*MsgCreateProposalResponse, error) {
+	out := new(MsgCreateProposalResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/CreateProposal", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) Vote(ctx context.Context, in *MsgVote, opts ...grpc.CallOption) (*MsgVoteResponse, error) {
+	out := new(MsgVoteResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/Vote", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) Exec(ctx context.Context, in *MsgExec, opts ...grpc.CallOption) (*MsgExecResponse, error) {
+	out := new(MsgExecResponse)
+	err := c.cc.Invoke(ctx, "/regen.group.v1alpha1.Msg/Exec", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// MsgServer is the server API for Msg service.
+type MsgServer interface {
+	// CreateGroup creates a new group with an admin account address, a list of members and some optional metadata.
+	CreateGroup(context.Context, *MsgCreateGroup) (*MsgCreateGroupResponse, error)
+	// UpdateGroupMembers updates the group members with given group id and admin address.
+	UpdateGroupMembers(context.Context, *MsgUpdateGroupMembers) (*MsgUpdateGroupMembersResponse, error)
+	// UpdateGroupAdmin updates the group admin with given group id and previous admin address.
+	UpdateGroupAdmin(context.Context, *MsgUpdateGroupAdmin) (*MsgUpdateGroupAdminResponse, error)
+	// UpdateGroupMetadata updates the group metadata with given group id and admin address.
+	UpdateGroupMetadata(context.Context, *MsgUpdateGroupMetadata) (*MsgUpdateGroupMetadataResponse, error)
+	// CreateGroupAccount creates a new group account using given DecisionPolicy.
+	CreateGroupAccount(context.Context, *MsgCreateGroupAccount) (*MsgCreateGroupAccountResponse, error)
+	// UpdateGroupAccountAdmin updates a group account admin.
+	UpdateGroupAccountAdmin(context.Context, *MsgUpdateGroupAccountAdmin) (*MsgUpdateGroupAccountAdminResponse, error)
+	// UpdateGroupAccountDecisionPolicy allows a group account decision policy to be updated.
+	UpdateGroupAccountDecisionPolicy(context.Context, *MsgUpdateGroupAccountDecisionPolicy) (*MsgUpdateGroupAccountDecisionPolicyResponse, error)
+	// UpdateGroupAccountMetadata updates a group account metadata.
+	UpdateGroupAccountMetadata(context.Context, *MsgUpdateGroupAccountMetadata) (*MsgUpdateGroupAccountMetadataResponse, error)
+	// CreateProposal submits a new proposal.
+	CreateProposal(context.Context, *MsgCreateProposal) (*MsgCreateProposalResponse, error)
+	// Vote allows a voter to vote on a proposal.
+	Vote(context.Context, *MsgVote) (*MsgVoteResponse, error)
+	// Exec executes a proposal.
+	Exec(context.Context, *MsgExec) (*MsgExecResponse, error)
+}
+
+// UnimplementedMsgServer can be embedded to have forward compatible implementations.
+type UnimplementedMsgServer struct {
+}
+
+func (*UnimplementedMsgServer) CreateGroup(ctx context.Context, req *MsgCreateGroup) (*MsgCreateGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGroup not implemented")
+}
+func (*UnimplementedMsgServer) UpdateGroupMembers(ctx context.Context, req *MsgUpdateGroupMembers) (*MsgUpdateGroupMembersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupMembers not implemented")
+}
+func (*UnimplementedMsgServer) UpdateGroupAdmin(ctx context.Context, req *MsgUpdateGroupAdmin) (*MsgUpdateGroupAdminResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupAdmin not implemented")
+}
+func (*UnimplementedMsgServer) UpdateGroupMetadata(ctx context.Context, req *MsgUpdateGroupMetadata) (*MsgUpdateGroupMetadataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupMetadata not implemented")
+}
+func (*UnimplementedMsgServer) CreateGroupAccount(ctx context.Context, req *MsgCreateGroupAccount) (*MsgCreateGroupAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateGroupAccount not implemented")
+}
+func (*UnimplementedMsgServer) UpdateGroupAccountAdmin(ctx context.Context, req *MsgUpdateGroupAccountAdmin) (*MsgUpdateGroupAccountAdminResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupAccountAdmin not implemented")
+}
+func (*UnimplementedMsgServer) UpdateGroupAccountDecisionPolicy(ctx context.Context, req *MsgUpdateGroupAccountDecisionPolicy) (*MsgUpdateGroupAccountDecisionPolicyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupAccountDecisionPolicy not implemented")
+}
+func (*UnimplementedMsgServer) UpdateGroupAccountMetadata(ctx context.Context, req *MsgUpdateGroupAccountMetadata) (*MsgUpdateGroupAccountMetadataResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateGroupAccountMetadata not implemented")
+}
+func (*UnimplementedMsgServer) CreateProposal(ctx context.Context, req *MsgCreateProposal) (*MsgCreateProposalResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateProposal not implemented")
+}
+func (*UnimplementedMsgServer) Vote(ctx context.Context, req *MsgVote) (*MsgVoteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Vote not implemented")
+}
+func (*UnimplementedMsgServer) Exec(ctx context.Context, req *MsgExec) (*MsgExecResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Exec not implemented")
+}
+
+func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
+	s.RegisterService(&_Msg_serviceDesc, srv)
+}
+
+func _Msg_CreateGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateGroup)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).CreateGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/CreateGroup",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).CreateGroup(ctx, req.(*MsgCreateGroup))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateGroupMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateGroupMembers)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateGroupMembers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/UpdateGroupMembers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateGroupMembers(ctx, req.(*MsgUpdateGroupMembers))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateGroupAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateGroupAdmin)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateGroupAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/UpdateGroupAdmin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateGroupAdmin(ctx, req.(*MsgUpdateGroupAdmin))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateGroupMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateGroupMetadata)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateGroupMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/UpdateGroupMetadata",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateGroupMetadata(ctx, req.(*MsgUpdateGroupMetadata))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_CreateGroupAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateGroupAccount)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).CreateGroupAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/CreateGroupAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).CreateGroupAccount(ctx, req.(*MsgCreateGroupAccount))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateGroupAccountAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateGroupAccountAdmin)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateGroupAccountAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/UpdateGroupAccountAdmin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateGroupAccountAdmin(ctx, req.(*MsgUpdateGroupAccountAdmin))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateGroupAccountDecisionPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateGroupAccountDecisionPolicy)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateGroupAccountDecisionPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/UpdateGroupAccountDecisionPolicy",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateGroupAccountDecisionPolicy(ctx, req.(*MsgUpdateGroupAccountDecisionPolicy))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_UpdateGroupAccountMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateGroupAccountMetadata)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpdateGroupAccountMetadata(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/UpdateGroupAccountMetadata",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpdateGroupAccountMetadata(ctx, req.(*MsgUpdateGroupAccountMetadata))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_CreateProposal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgCreateProposal)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).CreateProposal(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/CreateProposal",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).CreateProposal(ctx, req.(*MsgCreateProposal))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_Vote_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgVote)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).Vote(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/Vote",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).Vote(ctx, req.(*MsgVote))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_Exec_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgExec)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).Exec(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.group.v1alpha1.Msg/Exec",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).Exec(ctx, req.(*MsgExec))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _Msg_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "regen.group.v1alpha1.Msg",
+	HandlerType: (*MsgServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateGroup",
+			Handler:    _Msg_CreateGroup_Handler,
+		},
+		{
+			MethodName: "UpdateGroupMembers",
+			Handler:    _Msg_UpdateGroupMembers_Handler,
+		},
+		{
+			MethodName: "UpdateGroupAdmin",
+			Handler:    _Msg_UpdateGroupAdmin_Handler,
+		},
+		{
+			MethodName: "UpdateGroupMetadata",
+			Handler:    _Msg_UpdateGroupMetadata_Handler,
+		},
+		{
+			MethodName: "CreateGroupAccount",
+			Handler:    _Msg_CreateGroupAccount_Handler,
+		},
+		{
+			MethodName: "UpdateGroupAccountAdmin",
+			Handler:    _Msg_UpdateGroupAccountAdmin_Handler,
+		},
+		{
+			MethodName: "UpdateGroupAccountDecisionPolicy",
+			Handler:    _Msg_UpdateGroupAccountDecisionPolicy_Handler,
+		},
+		{
+			MethodName: "UpdateGroupAccountMetadata",
+			Handler:    _Msg_UpdateGroupAccountMetadata_Handler,
+		},
+		{
+			MethodName: "CreateProposal",
+			Handler:    _Msg_CreateProposal_Handler,
+		},
+		{
+			MethodName: "Vote",
+			Handler:    _Msg_Vote_Handler,
+		},
+		{
+			MethodName: "Exec",
+			Handler:    _Msg_Exec_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "regen/group/v1alpha1/tx.proto",
+}
+
+func (m *MsgCreateGroup) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1214,12 +1726,12 @@ func (m *MsgCreateGroupRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgCreateGroupRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateGroup) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCreateGroupRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateGroup) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1283,7 +1795,7 @@ func (m *MsgCreateGroupResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateGroupMembersRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateGroupMembers) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1293,12 +1805,12 @@ func (m *MsgUpdateGroupMembersRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateGroupMembersRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupMembers) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateGroupMembersRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupMembers) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1355,7 +1867,7 @@ func (m *MsgUpdateGroupMembersResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateGroupAdminRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateGroupAdmin) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1365,12 +1877,12 @@ func (m *MsgUpdateGroupAdminRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateGroupAdminRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupAdmin) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateGroupAdminRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupAdmin) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1420,7 +1932,7 @@ func (m *MsgUpdateGroupAdminResponse) MarshalToSizedBuffer(dAtA []byte) (int, er
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateGroupMetadataRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateGroupMetadata) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1430,12 +1942,12 @@ func (m *MsgUpdateGroupMetadataRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateGroupMetadataRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupMetadata) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateGroupMetadataRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupMetadata) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1485,7 +1997,7 @@ func (m *MsgUpdateGroupMetadataResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgCreateGroupAccountRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreateGroupAccount) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1495,12 +2007,12 @@ func (m *MsgCreateGroupAccountRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgCreateGroupAccountRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateGroupAccount) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCreateGroupAccountRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateGroupAccount) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1559,17 +2071,17 @@ func (m *MsgCreateGroupAccountResponse) MarshalToSizedBuffer(dAtA []byte) (int, 
 	_ = i
 	var l int
 	_ = l
-	if len(m.GroupAccount) > 0 {
-		i -= len(m.GroupAccount)
-		copy(dAtA[i:], m.GroupAccount)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.GroupAccount)))
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Address)))
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateGroupAccountAdminRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateGroupAccountAdmin) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1579,12 +2091,12 @@ func (m *MsgUpdateGroupAccountAdminRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateGroupAccountAdminRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupAccountAdmin) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateGroupAccountAdminRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupAccountAdmin) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1596,10 +2108,10 @@ func (m *MsgUpdateGroupAccountAdminRequest) MarshalToSizedBuffer(dAtA []byte) (i
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.GroupAccount) > 0 {
-		i -= len(m.GroupAccount)
-		copy(dAtA[i:], m.GroupAccount)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.GroupAccount)))
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Address)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1636,7 +2148,7 @@ func (m *MsgUpdateGroupAccountAdminResponse) MarshalToSizedBuffer(dAtA []byte) (
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateGroupAccountDecisionPolicyRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateGroupAccountDecisionPolicy) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1646,12 +2158,12 @@ func (m *MsgUpdateGroupAccountDecisionPolicyRequest) Marshal() (dAtA []byte, err
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateGroupAccountDecisionPolicyRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupAccountDecisionPolicy) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateGroupAccountDecisionPolicyRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupAccountDecisionPolicy) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1668,10 +2180,10 @@ func (m *MsgUpdateGroupAccountDecisionPolicyRequest) MarshalToSizedBuffer(dAtA [
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.GroupAccount) > 0 {
-		i -= len(m.GroupAccount)
-		copy(dAtA[i:], m.GroupAccount)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.GroupAccount)))
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Address)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1708,7 +2220,7 @@ func (m *MsgUpdateGroupAccountDecisionPolicyResponse) MarshalToSizedBuffer(dAtA 
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgUpdateGroupAccountMetadataRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateGroupAccountMetadata) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1718,12 +2230,12 @@ func (m *MsgUpdateGroupAccountMetadataRequest) Marshal() (dAtA []byte, err error
 	return dAtA[:n], nil
 }
 
-func (m *MsgUpdateGroupAccountMetadataRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupAccountMetadata) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgUpdateGroupAccountMetadataRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateGroupAccountMetadata) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1735,10 +2247,10 @@ func (m *MsgUpdateGroupAccountMetadataRequest) MarshalToSizedBuffer(dAtA []byte)
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.GroupAccount) > 0 {
-		i -= len(m.GroupAccount)
-		copy(dAtA[i:], m.GroupAccount)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.GroupAccount)))
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Address)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -1775,7 +2287,7 @@ func (m *MsgUpdateGroupAccountMetadataResponse) MarshalToSizedBuffer(dAtA []byte
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgCreateProposalRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgCreateProposal) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1785,16 +2297,21 @@ func (m *MsgCreateProposalRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgCreateProposalRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgCreateProposal) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgCreateProposalRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgCreateProposal) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
+	if m.Exec != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Exec))
+		i--
+		dAtA[i] = 0x28
+	}
 	if len(m.Msgs) > 0 {
 		for iNdEx := len(m.Msgs) - 1; iNdEx >= 0; iNdEx-- {
 			{
@@ -1825,10 +2342,10 @@ func (m *MsgCreateProposalRequest) MarshalToSizedBuffer(dAtA []byte) (int, error
 			dAtA[i] = 0x12
 		}
 	}
-	if len(m.GroupAccount) > 0 {
-		i -= len(m.GroupAccount)
-		copy(dAtA[i:], m.GroupAccount)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.GroupAccount)))
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Address)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -1863,7 +2380,7 @@ func (m *MsgCreateProposalResponse) MarshalToSizedBuffer(dAtA []byte) (int, erro
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgVoteRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgVote) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1873,16 +2390,21 @@ func (m *MsgVoteRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgVoteRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgVote) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgVoteRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgVote) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
+	if m.Exec != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Exec))
+		i--
+		dAtA[i] = 0x28
+	}
 	if len(m.Metadata) > 0 {
 		i -= len(m.Metadata)
 		copy(dAtA[i:], m.Metadata)
@@ -1933,7 +2455,7 @@ func (m *MsgVoteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgExecRequest) Marshal() (dAtA []byte, err error) {
+func (m *MsgExec) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1943,12 +2465,12 @@ func (m *MsgExecRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgExecRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgExec) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgExecRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgExec) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2002,7 +2524,7 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgCreateGroupRequest) Size() (n int) {
+func (m *MsgCreateGroup) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2037,7 +2559,7 @@ func (m *MsgCreateGroupResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateGroupMembersRequest) Size() (n int) {
+func (m *MsgUpdateGroupMembers) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2068,7 +2590,7 @@ func (m *MsgUpdateGroupMembersResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateGroupAdminRequest) Size() (n int) {
+func (m *MsgUpdateGroupAdmin) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2097,7 +2619,7 @@ func (m *MsgUpdateGroupAdminResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateGroupMetadataRequest) Size() (n int) {
+func (m *MsgUpdateGroupMetadata) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2126,7 +2648,7 @@ func (m *MsgUpdateGroupMetadataResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgCreateGroupAccountRequest) Size() (n int) {
+func (m *MsgCreateGroupAccount) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2156,14 +2678,14 @@ func (m *MsgCreateGroupAccountResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	l = len(m.GroupAccount)
+	l = len(m.Address)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
 
-func (m *MsgUpdateGroupAccountAdminRequest) Size() (n int) {
+func (m *MsgUpdateGroupAccountAdmin) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2173,7 +2695,7 @@ func (m *MsgUpdateGroupAccountAdminRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.GroupAccount)
+	l = len(m.Address)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -2193,7 +2715,7 @@ func (m *MsgUpdateGroupAccountAdminResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateGroupAccountDecisionPolicyRequest) Size() (n int) {
+func (m *MsgUpdateGroupAccountDecisionPolicy) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2203,7 +2725,7 @@ func (m *MsgUpdateGroupAccountDecisionPolicyRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.GroupAccount)
+	l = len(m.Address)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -2223,7 +2745,7 @@ func (m *MsgUpdateGroupAccountDecisionPolicyResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgUpdateGroupAccountMetadataRequest) Size() (n int) {
+func (m *MsgUpdateGroupAccountMetadata) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2233,7 +2755,7 @@ func (m *MsgUpdateGroupAccountMetadataRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.GroupAccount)
+	l = len(m.Address)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -2253,13 +2775,13 @@ func (m *MsgUpdateGroupAccountMetadataResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgCreateProposalRequest) Size() (n int) {
+func (m *MsgCreateProposal) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.GroupAccount)
+	l = len(m.Address)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
@@ -2279,6 +2801,9 @@ func (m *MsgCreateProposalRequest) Size() (n int) {
 			n += 1 + l + sovTx(uint64(l))
 		}
 	}
+	if m.Exec != 0 {
+		n += 1 + sovTx(uint64(m.Exec))
+	}
 	return n
 }
 
@@ -2294,7 +2819,7 @@ func (m *MsgCreateProposalResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgVoteRequest) Size() (n int) {
+func (m *MsgVote) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2314,6 +2839,9 @@ func (m *MsgVoteRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
+	if m.Exec != 0 {
+		n += 1 + sovTx(uint64(m.Exec))
+	}
 	return n
 }
 
@@ -2326,7 +2854,7 @@ func (m *MsgVoteResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgExecRequest) Size() (n int) {
+func (m *MsgExec) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2357,7 +2885,7 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgCreateGroupRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateGroup) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2380,10 +2908,10 @@ func (m *MsgCreateGroupRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateGroupRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreateGroup: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateGroupRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreateGroup: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2582,7 +3110,7 @@ func (m *MsgCreateGroupResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateGroupMembersRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateGroupMembers) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2605,10 +3133,10 @@ func (m *MsgUpdateGroupMembersRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateGroupMembersRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateGroupMembers: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateGroupMembersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateGroupMembers: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2773,7 +3301,7 @@ func (m *MsgUpdateGroupMembersResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateGroupAdminRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateGroupAdmin) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2796,10 +3324,10 @@ func (m *MsgUpdateGroupAdminRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateGroupAdminRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateGroupAdmin: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateGroupAdminRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateGroupAdmin: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2962,7 +3490,7 @@ func (m *MsgUpdateGroupAdminResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateGroupMetadataRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateGroupMetadata) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2985,10 +3513,10 @@ func (m *MsgUpdateGroupMetadataRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateGroupMetadataRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateGroupMetadata: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateGroupMetadataRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateGroupMetadata: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3153,7 +3681,7 @@ func (m *MsgUpdateGroupMetadataResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgCreateGroupAccountRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateGroupAccount) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3176,10 +3704,10 @@ func (m *MsgCreateGroupAccountRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateGroupAccountRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreateGroupAccount: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateGroupAccountRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreateGroupAccount: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3358,7 +3886,7 @@ func (m *MsgCreateGroupAccountResponse) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GroupAccount", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3386,7 +3914,7 @@ func (m *MsgCreateGroupAccountResponse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.GroupAccount = string(dAtA[iNdEx:postIndex])
+			m.Address = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -3412,7 +3940,7 @@ func (m *MsgCreateGroupAccountResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateGroupAccountAdminRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateGroupAccountAdmin) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3435,10 +3963,10 @@ func (m *MsgUpdateGroupAccountAdminRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateGroupAccountAdminRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateGroupAccountAdmin: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateGroupAccountAdminRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateGroupAccountAdmin: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3475,7 +4003,7 @@ func (m *MsgUpdateGroupAccountAdminRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GroupAccount", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3503,7 +4031,7 @@ func (m *MsgUpdateGroupAccountAdminRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.GroupAccount = string(dAtA[iNdEx:postIndex])
+			m.Address = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -3614,7 +4142,7 @@ func (m *MsgUpdateGroupAccountAdminResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgUpdateGroupAccountDecisionPolicyRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateGroupAccountDecisionPolicy) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3637,10 +4165,10 @@ func (m *MsgUpdateGroupAccountDecisionPolicyRequest) Unmarshal(dAtA []byte) erro
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateGroupAccountDecisionPolicyRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateGroupAccountDecisionPolicy: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateGroupAccountDecisionPolicyRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateGroupAccountDecisionPolicy: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3677,7 +4205,7 @@ func (m *MsgUpdateGroupAccountDecisionPolicyRequest) Unmarshal(dAtA []byte) erro
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GroupAccount", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3705,7 +4233,7 @@ func (m *MsgUpdateGroupAccountDecisionPolicyRequest) Unmarshal(dAtA []byte) erro
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.GroupAccount = string(dAtA[iNdEx:postIndex])
+			m.Address = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -3820,7 +4348,7 @@ func (m *MsgUpdateGroupAccountDecisionPolicyResponse) Unmarshal(dAtA []byte) err
 	}
 	return nil
 }
-func (m *MsgUpdateGroupAccountMetadataRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateGroupAccountMetadata) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -3843,10 +4371,10 @@ func (m *MsgUpdateGroupAccountMetadataRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgUpdateGroupAccountMetadataRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateGroupAccountMetadata: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgUpdateGroupAccountMetadataRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateGroupAccountMetadata: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -3883,7 +4411,7 @@ func (m *MsgUpdateGroupAccountMetadataRequest) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GroupAccount", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3911,7 +4439,7 @@ func (m *MsgUpdateGroupAccountMetadataRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.GroupAccount = string(dAtA[iNdEx:postIndex])
+			m.Address = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
@@ -4024,7 +4552,7 @@ func (m *MsgUpdateGroupAccountMetadataResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgCreateProposalRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgCreateProposal) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4047,15 +4575,15 @@ func (m *MsgCreateProposalRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgCreateProposalRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgCreateProposal: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgCreateProposalRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgCreateProposal: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GroupAccount", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -4083,7 +4611,7 @@ func (m *MsgCreateProposalRequest) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.GroupAccount = string(dAtA[iNdEx:postIndex])
+			m.Address = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -4185,6 +4713,25 @@ func (m *MsgCreateProposalRequest) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Exec", wireType)
+			}
+			m.Exec = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Exec |= Exec(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -4281,7 +4828,7 @@ func (m *MsgCreateProposalResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgVoteRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgVote) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4304,10 +4851,10 @@ func (m *MsgVoteRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgVoteRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgVote: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgVoteRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgVote: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -4414,6 +4961,25 @@ func (m *MsgVoteRequest) Unmarshal(dAtA []byte) error {
 				m.Metadata = []byte{}
 			}
 			iNdEx = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Exec", wireType)
+			}
+			m.Exec = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Exec |= Exec(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -4491,7 +5057,7 @@ func (m *MsgVoteResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgExecRequest) Unmarshal(dAtA []byte) error {
+func (m *MsgExec) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -4514,10 +5080,10 @@ func (m *MsgExecRequest) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgExecRequest: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgExec: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgExecRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgExec: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

@@ -62,7 +62,7 @@ func newIndex(builder Indexable, prefix byte, indexer *Indexer) MultiKeyIndex {
 // Has checks if a key exists. Panics on nil key.
 func (i MultiKeyIndex) Has(ctx HasKVStore, key []byte) bool {
 	store := prefix.NewStore(ctx.KVStore(i.storeKey), []byte{i.prefix})
-	it := store.Iterator(prefixRange(key))
+	it := store.Iterator(PrefixRange(key))
 	defer it.Close()
 	return it.Valid()
 }
@@ -70,7 +70,7 @@ func (i MultiKeyIndex) Has(ctx HasKVStore, key []byte) bool {
 // Get returns a result iterator for the searchKey. Parameters must not be nil.
 func (i MultiKeyIndex) Get(ctx HasKVStore, searchKey []byte) (Iterator, error) {
 	store := prefix.NewStore(ctx.KVStore(i.storeKey), []byte{i.prefix})
-	it := store.Iterator(prefixRange(searchKey))
+	it := store.Iterator(PrefixRange(searchKey))
 	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, keyCodec: i.indexKeyCodec}, nil
 }
 
@@ -79,7 +79,7 @@ func (i MultiKeyIndex) Get(ctx HasKVStore, searchKey []byte) (Iterator, error) {
 // The pageRequest.Key is the rowID while searchKey is a MultiKeyIndex key.
 func (i MultiKeyIndex) GetPaginated(ctx HasKVStore, searchKey []byte, pageRequest *query.PageRequest) (Iterator, error) {
 	store := prefix.NewStore(ctx.KVStore(i.storeKey), []byte{i.prefix})
-	start, end := prefixRange(searchKey)
+	start, end := PrefixRange(searchKey)
 
 	if pageRequest != nil && len(pageRequest.Key) != 0 {
 		start = i.indexKeyCodec.BuildIndexKey(searchKey, RowID(pageRequest.Key))
@@ -182,7 +182,7 @@ func (i indexIterator) Close() error {
 	return nil
 }
 
-// prefixRange turns a prefix into a (start, end) range. The start is the given prefix value and
+// PrefixRange turns a prefix into a (start, end) range. The start is the given prefix value and
 // the end is calculated by adding 1 bit to the start value. Nil is not allowed as prefix.
 // 		Example: []byte{1, 3, 4} becomes []byte{1, 3, 5}
 // 				 []byte{15, 42, 255, 255} becomes []byte{15, 43, 0, 0}
@@ -190,7 +190,7 @@ func (i indexIterator) Close() error {
 // In case of an overflow the end is set to nil.
 //		Example: []byte{255, 255, 255, 255} becomes nil
 //
-func prefixRange(prefix []byte) ([]byte, []byte) {
+func PrefixRange(prefix []byte) ([]byte, []byte) {
 	if prefix == nil {
 		panic("nil key not allowed")
 	}
