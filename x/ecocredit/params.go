@@ -2,10 +2,10 @@ package ecocredit
 
 import (
 	"fmt"
-	"strings"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	"github.com/regen-network/regen-ledger/x/ecocredit/util"
+	"strings"
 )
 
 var (
@@ -55,13 +55,21 @@ func validateCreditTypes(i interface{}) error {
 	seenTypes := make(map[string]bool)
 	for _, ct := range v {
 		t := strings.ToLower(ct.Type)
-		t = strings.TrimSpace(t)
-		if seenTypes[t] == true {
-			return fmt.Errorf("duplicate credit type: %s", t)
-		}
+		t = util.FastRemoveWhitespace(t)
+
 		// TODO: remove after we open governance changes for precision
 		if ct.Precision != PRECISION {
 			return fmt.Errorf("invalid precision %d: precision is currently lockd to %d", ct.Precision, PRECISION)
+		}
+		if ct.Type == "" {
+			return fmt.Errorf("empty credit type name")
+		}
+		if ct.Unit == "" {
+			return fmt.Errorf("empty credit unit")
+		}
+
+		if seenTypes[t] == true {
+			return fmt.Errorf("duplicate credit type: %s", t)
 		}
 		seenTypes[t] = true
 	}
