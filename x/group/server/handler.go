@@ -19,47 +19,47 @@ func NewHandler(configurator servermodule.Configurator, accountKeeper exported.A
 		regenCtx := types.Context{Context: ctx}
 
 		switch msg := msg.(type) {
-		case *group.MsgCreateGroupRequest:
+		case *group.MsgCreateGroup:
 			res, err := impl.CreateGroup(regenCtx, msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *group.MsgUpdateGroupMembersRequest:
+		case *group.MsgUpdateGroupMembers:
 			res, err := impl.UpdateGroupMembers(regenCtx, msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *group.MsgUpdateGroupAdminRequest:
+		case *group.MsgUpdateGroupAdmin:
 			res, err := impl.UpdateGroupAdmin(regenCtx, msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *group.MsgUpdateGroupMetadataRequest:
+		case *group.MsgUpdateGroupMetadata:
 			res, err := impl.UpdateGroupMetadata(regenCtx, msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *group.MsgCreateGroupAccountRequest:
+		case *group.MsgCreateGroupAccount:
 			res, err := impl.CreateGroupAccount(regenCtx, msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *group.MsgUpdateGroupAccountAdminRequest:
+		case *group.MsgUpdateGroupAccountAdmin:
 			res, err := impl.UpdateGroupAccountAdmin(regenCtx, msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *group.MsgUpdateGroupAccountDecisionPolicyRequest:
+		case *group.MsgUpdateGroupAccountDecisionPolicy:
 			res, err := impl.UpdateGroupAccountDecisionPolicy(regenCtx, msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *group.MsgUpdateGroupAccountMetadataRequest:
+		case *group.MsgUpdateGroupAccountMetadata:
 			res, err := impl.UpdateGroupAccountMetadata(regenCtx, msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *group.MsgCreateProposalRequest:
+		case *group.MsgCreateProposal:
 			res, err := impl.CreateProposal(regenCtx, msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *group.MsgVoteRequest:
+		case *group.MsgVote:
 			res, err := impl.Vote(regenCtx, msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 
-		case *group.MsgExecRequest:
+		case *group.MsgExec:
 			res, err := impl.Exec(regenCtx, msg)
 			return sdk.WrapServiceResult(ctx, res, err)
 

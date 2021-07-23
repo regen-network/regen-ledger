@@ -35,11 +35,11 @@
     - [Query](#regen.data.v1alpha2.Query)
   
 - [regen/data/v1alpha2/tx.proto](#regen/data/v1alpha2/tx.proto)
-    - [MsgAnchorDataRequest](#regen.data.v1alpha2.MsgAnchorDataRequest)
+    - [MsgAnchorData](#regen.data.v1alpha2.MsgAnchorData)
     - [MsgAnchorDataResponse](#regen.data.v1alpha2.MsgAnchorDataResponse)
-    - [MsgSignDataRequest](#regen.data.v1alpha2.MsgSignDataRequest)
+    - [MsgSignData](#regen.data.v1alpha2.MsgSignData)
     - [MsgSignDataResponse](#regen.data.v1alpha2.MsgSignDataResponse)
-    - [MsgStoreRawDataRequest](#regen.data.v1alpha2.MsgStoreRawDataRequest)
+    - [MsgStoreRawData](#regen.data.v1alpha2.MsgStoreRawData)
     - [MsgStoreRawDataResponse](#regen.data.v1alpha2.MsgStoreRawDataResponse)
   
     - [Msg](#regen.data.v1alpha2.Msg)
@@ -435,10 +435,10 @@ Query is the regen.data.v1alpha2 Query service
 
 
 
-<a name="regen.data.v1alpha2.MsgAnchorDataRequest"></a>
+<a name="regen.data.v1alpha2.MsgAnchorData"></a>
 
-### MsgAnchorDataRequest
-MsgAnchorDataRequest is the Msg/AnchorData request type.
+### MsgAnchorData
+MsgAnchorData is the Msg/AnchorData request type.
 
 
 | Field | Type | Label | Description |
@@ -454,7 +454,7 @@ MsgAnchorDataRequest is the Msg/AnchorData request type.
 <a name="regen.data.v1alpha2.MsgAnchorDataResponse"></a>
 
 ### MsgAnchorDataResponse
-MsgAnchorDataRequest is the Msg/AnchorData response type.
+MsgAnchorData is the Msg/AnchorData response type.
 
 
 | Field | Type | Label | Description |
@@ -466,10 +466,10 @@ MsgAnchorDataRequest is the Msg/AnchorData response type.
 
 
 
-<a name="regen.data.v1alpha2.MsgSignDataRequest"></a>
+<a name="regen.data.v1alpha2.MsgSignData"></a>
 
-### MsgSignDataRequest
-MsgSignDataRequest is the Msg/SignData request type.
+### MsgSignData
+MsgSignData is the Msg/SignData request type.
 
 
 | Field | Type | Label | Description |
@@ -492,10 +492,10 @@ MsgSignDataResponse is the Msg/SignData response type.
 
 
 
-<a name="regen.data.v1alpha2.MsgStoreRawDataRequest"></a>
+<a name="regen.data.v1alpha2.MsgStoreRawData"></a>
 
-### MsgStoreRawDataRequest
-MsgStoreRawDataRequest is the Msg/StoreRawData request type.
+### MsgStoreRawData
+MsgStoreRawData is the Msg/StoreRawData request type.
 
 
 | Field | Type | Label | Description |
@@ -512,7 +512,7 @@ MsgStoreRawDataRequest is the Msg/StoreRawData request type.
 <a name="regen.data.v1alpha2.MsgStoreRawDataResponse"></a>
 
 ### MsgStoreRawDataResponse
-MsgStoreRawDataRequest is the Msg/StoreRawData response type.
+MsgStoreRawData is the Msg/StoreRawData response type.
 
 
 
@@ -532,17 +532,17 @@ Msg is the regen.data.v1alpha1 Msg service
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| AnchorData | [MsgAnchorDataRequest](#regen.data.v1alpha2.MsgAnchorDataRequest) | [MsgAnchorDataResponse](#regen.data.v1alpha2.MsgAnchorDataResponse) | AnchorData "anchors" a piece of data to the blockchain based on its secure hash, effectively providing a tamper resistant timestamp.
+| AnchorData | [MsgAnchorData](#regen.data.v1alpha2.MsgAnchorData) | [MsgAnchorDataResponse](#regen.data.v1alpha2.MsgAnchorDataResponse) | AnchorData "anchors" a piece of data to the blockchain based on its secure hash, effectively providing a tamper resistant timestamp.
 
 The sender in AnchorData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing timestamp services. SignData should be used to create a digital signature attesting to the veracity of some piece of data. |
-| SignData | [MsgSignDataRequest](#regen.data.v1alpha2.MsgSignDataRequest) | [MsgSignDataResponse](#regen.data.v1alpha2.MsgSignDataResponse) | SignData allows for signing of an arbitrary piece of data on the blockchain. By "signing" data the signers are making a statement about the veracity of the data itself. It is like signing a legal document, meaning that I agree to all conditions and to the best of my knowledge everything is true. When anchoring data, the sender is not attesting to the veracity of the data, they are simply communicating that it exists.
+| SignData | [MsgSignData](#regen.data.v1alpha2.MsgSignData) | [MsgSignDataResponse](#regen.data.v1alpha2.MsgSignDataResponse) | SignData allows for signing of an arbitrary piece of data on the blockchain. By "signing" data the signers are making a statement about the veracity of the data itself. It is like signing a legal document, meaning that I agree to all conditions and to the best of my knowledge everything is true. When anchoring data, the sender is not attesting to the veracity of the data, they are simply communicating that it exists.
 
 On-chain signatures have the following benefits: - on-chain identities can be managed using different cryptographic keys that change over time through key rotation practices - an on-chain identity may represent an organization and through delegation individual members may sign on behalf of the group - the blockchain transaction envelope provides built-in replay protection and timestamping
 
 SignData implicitly calls AnchorData if the data was not already anchored.
 
 SignData can be called multiple times for the same content hash with different signers and those signers will be appended to the list of signers. |
-| StoreRawData | [MsgStoreRawDataRequest](#regen.data.v1alpha2.MsgStoreRawDataRequest) | [MsgStoreRawDataResponse](#regen.data.v1alpha2.MsgStoreRawDataResponse) | StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
+| StoreRawData | [MsgStoreRawData](#regen.data.v1alpha2.MsgStoreRawData) | [MsgStoreRawDataResponse](#regen.data.v1alpha2.MsgStoreRawDataResponse) | StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
 
 StoreRawData implicitly calls AnchorData if the data was not already anchored.
 

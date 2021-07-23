@@ -83,7 +83,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	addr4 := s.signers[6].String()
 
 	// create class with insufficient funds and it should fail
-	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClassRequest{
+	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
 		Designer: designer.String(),
 		Issuers:  []string{issuer1, issuer2},
 		Metadata: nil,
@@ -94,7 +94,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	// create class with sufficient funds and it should succeed
 	s.Require().NoError(s.fundAccount(designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
 
-	createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClassRequest{
+	createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
 		Designer: designer.String(),
 		Issuers:  []string{issuer1, issuer2},
 		Metadata: nil,
@@ -118,42 +118,68 @@ func (s *IntegrationTestSuite) TestScenario() {
 	time2 := time.Now()
 
 	// Batch creation should fail if the StartDate is missing
-	err = (&ecocredit.MsgCreateBatchRequest{
-		Issuer:    issuer1,
-		ClassId:   clsID,
-		Issuance:  []*ecocredit.MsgCreateBatchRequest_BatchIssuance{},
-		StartDate: nil,
-		EndDate:   &time2,
+	err = (&ecocredit.MsgCreateBatch{
+		Issuer:          issuer1,
+		ClassId:         clsID,
+		Issuance:        []*ecocredit.MsgCreateBatch_BatchIssuance{},
+		StartDate:       nil,
+		EndDate:         &time2,
+		ProjectLocation: "AB",
 	}).ValidateBasic()
 	s.Require().Error(err)
 
 	// Batch creation should fail if the EndDate is missing
-	err = (&ecocredit.MsgCreateBatchRequest{
-		Issuer:    issuer1,
-		ClassId:   clsID,
-		Issuance:  []*ecocredit.MsgCreateBatchRequest_BatchIssuance{},
-		StartDate: &time1,
-		EndDate:   nil,
+	err = (&ecocredit.MsgCreateBatch{
+		Issuer:          issuer1,
+		ClassId:         clsID,
+		Issuance:        []*ecocredit.MsgCreateBatch_BatchIssuance{},
+		StartDate:       &time1,
+		EndDate:         nil,
+		ProjectLocation: "AB",
 	}).ValidateBasic()
 	s.Require().Error(err)
 
 	// Batch creation should fail if the EndDate is before the StartDate
-	err = (&ecocredit.MsgCreateBatchRequest{
-		Issuer:    issuer1,
-		ClassId:   clsID,
-		Issuance:  []*ecocredit.MsgCreateBatchRequest_BatchIssuance{},
-		StartDate: &time2,
-		EndDate:   &time1,
+	err = (&ecocredit.MsgCreateBatch{
+		Issuer:          issuer1,
+		ClassId:         clsID,
+		Issuance:        []*ecocredit.MsgCreateBatch_BatchIssuance{},
+		StartDate:       &time2,
+		EndDate:         &time1,
+		ProjectLocation: "AB",
+	}).ValidateBasic()
+	s.Require().Error(err)
+
+	// Batch creation should fail if the ProjectLocation is missing
+	err = (&ecocredit.MsgCreateBatch{
+		Issuer:          issuer1,
+		ClassId:         clsID,
+		Issuance:        []*ecocredit.MsgCreateBatch_BatchIssuance{},
+		StartDate:       &time1,
+		EndDate:         &time2,
+		ProjectLocation: "",
+	}).ValidateBasic()
+	s.Require().Error(err)
+
+	// Batch creation should fail if the ProjectLocation is invalid
+	err = (&ecocredit.MsgCreateBatch{
+		Issuer:          issuer1,
+		ClassId:         clsID,
+		Issuance:        []*ecocredit.MsgCreateBatch_BatchIssuance{},
+		StartDate:       &time1,
+		EndDate:         &time2,
+		ProjectLocation: "ABCD",
 	}).ValidateBasic()
 	s.Require().Error(err)
 
 	// Batch creation should succeed with StartDate before EndDate, and valid data
-	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatchRequest{
-		Issuer:    issuer1,
-		ClassId:   clsID,
-		StartDate: &time1,
-		EndDate:   &time2,
-		Issuance: []*ecocredit.MsgCreateBatchRequest_BatchIssuance{
+	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
+		Issuer:          issuer1,
+		ClassId:         clsID,
+		StartDate:       &time1,
+		EndDate:         &time2,
+		ProjectLocation: "AB",
+		Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
 			{
 				Recipient:          addr1,
 				TradableAmount:     t0,
@@ -288,9 +314,9 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	for _, tc := range cancelCases {
 		s.Run(tc.name, func() {
-			_, err := s.msgClient.Cancel(s.ctx, &ecocredit.MsgCancelRequest{
+			_, err := s.msgClient.Cancel(s.ctx, &ecocredit.MsgCancel{
 				Holder: tc.holder,
-				Credits: []*ecocredit.MsgCancelRequest_CancelCredits{
+				Credits: []*ecocredit.MsgCancel_CancelCredits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     tc.toCancel,
@@ -417,9 +443,9 @@ func (s *IntegrationTestSuite) TestScenario() {
 	for _, tc := range retireCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			_, err := s.msgClient.Retire(s.ctx, &ecocredit.MsgRetireRequest{
+			_, err := s.msgClient.Retire(s.ctx, &ecocredit.MsgRetire{
 				Holder: addr1,
-				Credits: []*ecocredit.MsgRetireRequest_RetireCredits{
+				Credits: []*ecocredit.MsgRetire_RetireCredits{
 					{
 						BatchDenom: batchDenom,
 						Amount:     tc.toRetire,
@@ -551,10 +577,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 	for _, tc := range sendCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			_, err := s.msgClient.Send(s.ctx, &ecocredit.MsgSendRequest{
+			_, err := s.msgClient.Send(s.ctx, &ecocredit.MsgSend{
 				Sender:    addr2,
 				Recipient: addr3,
-				Credits: []*ecocredit.MsgSendRequest_SendCredits{
+				Credits: []*ecocredit.MsgSend_SendCredits{
 					{
 						BatchDenom:         batchDenom,
 						TradableAmount:     tc.sendTradeable,
@@ -602,23 +628,23 @@ func (s *IntegrationTestSuite) TestScenario() {
 	/****   TEST SET PRECISION   ****/
 	precisionCases := []struct {
 		name string
-		msg  ecocredit.MsgSetPrecisionRequest
+		msg  ecocredit.MsgSetPrecision
 		ok   bool
 	}{
 		{
-			"can NOT decrease the decimals", ecocredit.MsgSetPrecisionRequest{
+			"can NOT decrease the decimals", ecocredit.MsgSetPrecision{
 				Issuer: issuer1, BatchDenom: batchDenom, MaxDecimalPlaces: 2},
 			false,
 		}, {
-			"can NOT set to the same value", ecocredit.MsgSetPrecisionRequest{
+			"can NOT set to the same value", ecocredit.MsgSetPrecision{
 				Issuer: issuer1, BatchDenom: batchDenom, MaxDecimalPlaces: 7},
 			false,
 		}, {
-			"can increase", ecocredit.MsgSetPrecisionRequest{
+			"can increase", ecocredit.MsgSetPrecision{
 				Issuer: issuer1, BatchDenom: batchDenom, MaxDecimalPlaces: 8},
 			true,
 		}, {
-			"can NOT change precision of not existing denom", ecocredit.MsgSetPrecisionRequest{
+			"can NOT change precision of not existing denom", ecocredit.MsgSetPrecision{
 				Issuer: issuer1, BatchDenom: "not/existing", MaxDecimalPlaces: 1},
 			false,
 		},
