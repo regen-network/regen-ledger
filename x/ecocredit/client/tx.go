@@ -52,10 +52,10 @@ func txCreateClass() *cobra.Command {
 		Long: `Creates a new credit class.
 
 Parameters:
-  designer:  	address of the account which designed the credit class
-  issuer:    	comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
-  metadata:  	base64 encoded metadata - arbitrary data attached to the credit class info
-  credit type: 	the credit class type (e.g. carbon, biodiversity, etc)`,
+  designer:  	    address of the account which designed the credit class
+  issuer:    	    comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
+  metadata:  	    base64 encoded metadata - arbitrary data attached to the credit class info
+  credit type:    the credit class type (e.g. carbon, biodiversity, etc)`,
 		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			issuers := strings.Split(args[1], ",")
@@ -70,7 +70,7 @@ Parameters:
 				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
 			}
 			if args[3] == "" {
-				return errors.New("credit type is required")
+				return sdkerrors.ErrInvalidRequest.Wrap("credit type is required")
 			}
 			creditType := args[3]
 

@@ -18,7 +18,7 @@ func (m *MsgCreateClass) ValidateBasic() error {
 	}
 
 	if len(m.CreditType) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "credit class must have a credit type")
+		return sdkerrors.ErrInvalidRequest.Wrap("credit class must have a credit type")
 	}
 
 	return nil

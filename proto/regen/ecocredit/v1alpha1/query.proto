@@ -34,10 +34,11 @@ service Query {
         "/regen/ecocredit/v1alpha1/batch_info/{batch_denom}/supply";
   }
 
-  // CreditTypes queries the allow credit type information
+  // CreditTypes returns the list of allowed types that credit classes can have. 
+  // See Types/CreditType for more details.
   rpc CreditTypes(QueryCreditTypesRequest) returns (QueryCreditTypesResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/credit_types";
+        "/regen/ecocredit/v1alpha1/credit-types";
   }
 }
 
