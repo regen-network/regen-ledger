@@ -3,6 +3,7 @@ package ecocredit
 import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/util"
 	"strings"
@@ -17,7 +18,7 @@ var (
 
 // TODO: remove after we open governance changes for precision
 const (
-	PRECISION = 6
+	PRECISION uint32 = 6
 )
 
 func ParamKeyTable() paramtypes.KeyTable {
@@ -46,32 +47,33 @@ func validateCreditClassFee(i interface{}) error {
 }
 
 func validateCreditTypes(i interface{}) error {
-	v, ok := i.([]*CreditType)
+	creditTypes, ok := i.([]*CreditType)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
 	// ensure no duplicate credit types and that all precisions conform to hardcoded PRECISION above
 	seenTypes := make(map[string]bool)
-	for _, ct := range v {
-		t := strings.ToLower(ct.Type)
-		t = util.FastRemoveWhitespace(t)
-
+	for _, creditType := range creditTypes {
+		T := strings.ToLower(creditType.Type)
+		T = util.FastRemoveWhitespace(T)
+		if T != creditType.Type {
+			return sdkerrors.ErrInvalidRequest.Wrapf("credit type should be normalized: got %s, should be %s", creditType.Type, T)
+		}
+		if seenTypes[T] == true {
+			return sdkerrors.ErrInvalidRequest.Wrapf("duplicate credit types in request: %s", T)
+		}
 		// TODO: remove after we open governance changes for precision
-		if ct.Precision != PRECISION {
-			return fmt.Errorf("invalid precision %d: precision is currently lockd to %d", ct.Precision, PRECISION)
+		if creditType.Precision != PRECISION {
+			return sdkerrors.ErrInvalidRequest.Wrapf("invalid precision %d: precision is currently locked to %d", creditType.Precision, PRECISION)
 		}
-		if ct.Type == "" {
-			return fmt.Errorf("empty credit type name")
+		if creditType.Type == "" {
+			return sdkerrors.ErrInvalidRequest.Wrap("empty credit type name")
 		}
-		if ct.Units == "" {
-			return fmt.Errorf("empty credit unit")
+		if creditType.Units == "" {
+			return sdkerrors.ErrInvalidRequest.Wrap("empty credit type units")
 		}
-
-		if seenTypes[t] == true {
-			return fmt.Errorf("duplicate credit type: %s", t)
-		}
-		seenTypes[t] = true
+		seenTypes[T] = true
 	}
 
 	return nil
