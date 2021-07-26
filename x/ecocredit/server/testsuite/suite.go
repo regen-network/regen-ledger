@@ -54,7 +54,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
 
 	s.signers = s.fixture.Signers()
-	s.Require().GreaterOrEqual(len(s.signers), 7)
+	s.Require().GreaterOrEqual(len(s.signers), 8)
 	s.msgClient = ecocredit.NewMsgClient(s.fixture.TxConn())
 	s.queryClient = ecocredit.NewQueryClient(s.fixture.QueryConn())
 	s.paramsQueryClient = params.NewQueryClient(s.fixture.QueryConn())
@@ -75,6 +75,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	addr2 := s.signers[4].String()
 	addr3 := s.signers[5].String()
 	addr4 := s.signers[6].String()
+	addr5 := s.signers[7].String()
 
 	// create class with insufficient funds and it should fail
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
@@ -230,6 +231,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 				RetiredAmount:      r2,
 				RetirementLocation: "",
 			},
+			{
+				Recipient:          addr5,
+				RetirementLocation: "",
+			},
 		},
 	})
 	s.Require().NoError(err)
@@ -265,6 +270,16 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().NotNil(queryBalanceRes)
 	s.Require().Equal(t2, queryBalanceRes.TradableAmount)
 	s.Require().Equal(r2, queryBalanceRes.RetiredAmount)
+
+	// if we didn't issue tradable or retired balances, they'll be default to zero.
+	queryBalanceRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
+		Account:    addr5,
+		BatchDenom: batchDenom,
+	})
+	s.Require().NoError(err)
+	s.Require().NotNil(queryBalanceRes)
+	s.Require().Equal("0", queryBalanceRes.TradableAmount)
+	s.Require().Equal("0", queryBalanceRes.RetiredAmount)
 
 	// query supply
 	querySupplyRes, err := s.queryClient.Supply(s.ctx, &ecocredit.QuerySupplyRequest{BatchDenom: batchDenom})
