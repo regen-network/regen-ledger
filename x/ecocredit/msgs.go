@@ -103,7 +103,25 @@ func (m *MsgCreateBatch) GetSigners() []sdk.AccAddress {
 }
 
 func (m *MsgSend) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Sender)
+	if err != nil {
+		return err
+	}
+
+	_, err = sdk.AccAddressFromBech32(m.Recipient)
+	if err != nil {
+		return err
+	}
+
+	if len(m.Credits) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("Credits should not be empty")
+	}
+
 	for _, iss := range m.Credits {
+		if iss.BatchDenom == "" {
+			return sdkerrors.ErrInvalidRequest.Wrap("BatchDenom should not be empty")
+		}
+
 		_, err := math.ParseNonNegativeDecimal(iss.TradableAmount)
 		if err != nil {
 			return err
@@ -134,14 +152,26 @@ func (m *MsgSend) GetSigners() []sdk.AccAddress {
 }
 
 func (m *MsgRetire) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Holder)
+	if err != nil {
+		return err
+	}
+
+	if len(m.Credits) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("credits should not be empty")
+	}
+
 	for _, iss := range m.Credits {
+		if iss.BatchDenom == "" {
+			return sdkerrors.ErrInvalidRequest.Wrap("batch denom should not be empty")
+		}
 		_, err := math.ParsePositiveDecimal(iss.Amount)
 		if err != nil {
 			return err
 		}
 	}
 
-	err := validateLocation(m.Location)
+	err = validateLocation(m.Location)
 	if err != nil {
 		return err
 	}
@@ -159,7 +189,20 @@ func (m *MsgRetire) GetSigners() []sdk.AccAddress {
 }
 
 func (m *MsgCancel) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Holder)
+	if err != nil {
+		return err
+	}
+
+	if len(m.Credits) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("credits should not be empty")
+	}
+
 	for _, iss := range m.Credits {
+		if iss.BatchDenom == "" {
+			return sdkerrors.ErrInvalidRequest.Wrap("batch denom should not be empty")
+		}
+
 		_, err := math.ParsePositiveDecimal(iss.Amount)
 		if err != nil {
 			return err

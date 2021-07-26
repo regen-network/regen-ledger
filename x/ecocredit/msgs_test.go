@@ -101,6 +101,16 @@ func TestMsgCreateBatch(t *testing.T) {
 			},
 			expErr: false,
 		},
+		"invalid with  wrong issuer": {
+			src: MsgCreateBatch{
+				Issuer:          "wrongIssuer",
+				ClassId:         "ID",
+				StartDate:       &startDate,
+				EndDate:         &endDate,
+				ProjectLocation: "AB-CDE FG1 345",
+			},
+			expErr: true,
+		},
 		"valid msg without Issuance.TradableAmount (assumes zero by default)": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
@@ -110,6 +120,23 @@ func TestMsgCreateBatch(t *testing.T) {
 				Issuance: []*MsgCreateBatch_BatchIssuance{
 					{
 						Recipient:          addr2.String(),
+						RetiredAmount:      "50",
+						RetirementLocation: "ST-UVW XY Z12",
+					},
+				},
+				ProjectLocation: "AB-CDE FG1 345",
+			},
+			expErr: false,
+		},
+		"invalid with wrong recipient": {
+			src: MsgCreateBatch{
+				Issuer:    addr1.String(),
+				ClassId:   "ID",
+				StartDate: &startDate,
+				EndDate:   &endDate,
+				Issuance: []*MsgCreateBatch_BatchIssuance{
+					{
+						Recipient:          "wrongRecipient",
 						RetiredAmount:      "50",
 						RetirementLocation: "ST-UVW XY Z12",
 					},
@@ -149,7 +176,7 @@ func TestMsgCreateBatch(t *testing.T) {
 			},
 			expErr: false,
 		},
-		"invalid msg with Issuance.RetirementLocation": {
+		"invalid msg with wrong Issuance.RetirementLocation": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
 				ClassId:   "ID",
@@ -249,6 +276,387 @@ func TestMsgCreateBatch(t *testing.T) {
 				StartDate: &endDate,
 				EndDate:   &startDate,
 				Metadata:  []byte("hello"),
+			},
+			expErr: true,
+		},
+	}
+
+	for msg, test := range tests {
+		t.Run(msg, func(t *testing.T) {
+			err := test.src.ValidateBasic()
+			if test.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestMsgSend(t *testing.T) {
+	_, _, addr1 := testdata.KeyTestPubAddr()
+	_, _, addr2 := testdata.KeyTestPubAddr()
+
+	tests := map[string]struct {
+		src    MsgSend
+		expErr bool
+	}{
+		"valid msg": {
+			src: MsgSend{
+				Sender:    addr1.String(),
+				Recipient: addr2.String(),
+				Credits: []*MsgSend_SendCredits{
+					{
+						BatchDenom:         "some_denom",
+						TradableAmount:     "10",
+						RetiredAmount:      "10",
+						RetirementLocation: "ST-UVW XY Z12",
+					},
+				},
+			},
+			expErr: false,
+		},
+		"valid msg with Credits.RetiredAmount zero": {
+			src: MsgSend{
+				Sender:    addr1.String(),
+				Recipient: addr2.String(),
+				Credits: []*MsgSend_SendCredits{
+					{
+						BatchDenom:     "some_denom",
+						TradableAmount: "10",
+						RetiredAmount:  "0",
+					},
+				},
+			},
+			expErr: false,
+		},
+		"invalid msg without credits": {
+			src: MsgSend{
+				Sender:    addr1.String(),
+				Recipient: addr2.String(),
+			},
+			expErr: true,
+		},
+		"invalid msg without sender": {
+			src: MsgSend{
+				Recipient: addr2.String(),
+				Credits: []*MsgSend_SendCredits{
+					{
+						BatchDenom:         "some_denom",
+						TradableAmount:     "10",
+						RetiredAmount:      "10",
+						RetirementLocation: "ST-UVW XY Z12",
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid msg without recipient": {
+			src: MsgSend{
+				Sender: addr1.String(),
+				Credits: []*MsgSend_SendCredits{
+					{
+						BatchDenom:         "some_denom",
+						TradableAmount:     "10",
+						RetiredAmount:      "10",
+						RetirementLocation: "ST-UVW XY Z12",
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid msg without Credits.BatchDenom": {
+			src: MsgSend{
+				Sender:    addr1.String(),
+				Recipient: addr2.String(),
+				Credits: []*MsgSend_SendCredits{
+					{
+						TradableAmount:     "10",
+						RetiredAmount:      "10",
+						RetirementLocation: "ST-UVW XY Z12",
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid msg without Credits.TradableAmount set": {
+			src: MsgSend{
+				Sender:    addr1.String(),
+				Recipient: addr2.String(),
+				Credits: []*MsgSend_SendCredits{
+					{
+						BatchDenom:         "some_denom",
+						RetiredAmount:      "10",
+						RetirementLocation: "ST-UVW XY Z12",
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid msg without Credits.RetiredAmount set": {
+			src: MsgSend{
+				Sender:    addr1.String(),
+				Recipient: addr2.String(),
+				Credits: []*MsgSend_SendCredits{
+					{
+						BatchDenom:         "some_denom",
+						TradableAmount:     "10",
+						RetirementLocation: "ST-UVW XY Z12",
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid msg without Credits.RetirementLocation set": {
+			src: MsgSend{
+				Sender:    addr1.String(),
+				Recipient: addr2.String(),
+				Credits: []*MsgSend_SendCredits{
+					{
+						BatchDenom:     "some_denom",
+						TradableAmount: "10",
+						RetiredAmount:  "10",
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid msg with wrong sender": {
+			src: MsgSend{
+				Sender:    "wrongSender",
+				Recipient: addr2.String(),
+				Credits: []*MsgSend_SendCredits{
+					{
+						BatchDenom:     "some_denom",
+						TradableAmount: "10",
+						RetiredAmount:  "10",
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid msg with wrong recipient": {
+			src: MsgSend{
+				Sender:    addr1.String(),
+				Recipient: "wrongRecipient",
+				Credits: []*MsgSend_SendCredits{
+					{
+						BatchDenom:     "some_denom",
+						TradableAmount: "10",
+						RetiredAmount:  "10",
+					},
+				},
+			},
+			expErr: true,
+		},
+	}
+
+	for msg, test := range tests {
+		t.Run(msg, func(t *testing.T) {
+			err := test.src.ValidateBasic()
+			if test.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestMsgRetire(t *testing.T) {
+	_, _, addr1 := testdata.KeyTestPubAddr()
+
+	tests := map[string]struct {
+		src    MsgRetire
+		expErr bool
+	}{
+		"valid msg": {
+			src: MsgRetire{
+				Holder: addr1.String(),
+				Credits: []*MsgRetire_RetireCredits{
+					{
+						BatchDenom: "some_denom",
+						Amount:     "10",
+					},
+				},
+				Location: "AB-CDE FG1 345",
+			},
+			expErr: false,
+		},
+		"invalid msg without holder": {
+			src: MsgRetire{
+				Credits: []*MsgRetire_RetireCredits{
+					{
+						BatchDenom: "some_denom",
+						Amount:     "10",
+					},
+				},
+				Location: "AB-CDE FG1 345",
+			},
+			expErr: true,
+		},
+		"invalid msg with wrong holder address": {
+			src: MsgRetire{
+				Holder: "wrongHolder",
+				Credits: []*MsgRetire_RetireCredits{
+					{
+						BatchDenom: "some_denom",
+						Amount:     "10",
+					},
+				},
+				Location: "AB-CDE FG1 345",
+			},
+			expErr: true,
+		},
+		"invalid msg without credits": {
+			src: MsgRetire{
+				Holder:   addr1.String(),
+				Location: "AB-CDE FG1 345",
+			},
+			expErr: true,
+		},
+		"invalid msg without Credits.BatchDenom": {
+			src: MsgRetire{
+				Holder: addr1.String(),
+				Credits: []*MsgRetire_RetireCredits{
+					{
+						Amount: "10",
+					},
+				},
+				Location: "AB-CDE FG1 345",
+			},
+			expErr: true,
+		},
+		"invalid msg without Credits.Amount": {
+			src: MsgRetire{
+				Holder: addr1.String(),
+				Credits: []*MsgRetire_RetireCredits{
+					{
+						BatchDenom: "some_denom",
+					},
+				},
+				Location: "AB-CDE FG1 345",
+			},
+			expErr: true,
+		},
+		"invalid msg with wrong Credits.Amount": {
+			src: MsgRetire{
+				Holder: addr1.String(),
+				Credits: []*MsgRetire_RetireCredits{
+					{
+						BatchDenom: "some_denom",
+						Amount:     "abc",
+					},
+				},
+				Location: "AB-CDE FG1 345",
+			},
+			expErr: true,
+		},
+		"invalid msg without location": {
+			src: MsgRetire{
+				Holder: addr1.String(),
+				Credits: []*MsgRetire_RetireCredits{
+					{
+						BatchDenom: "some_denom",
+						Amount:     "10",
+					},
+				},
+			},
+			expErr: true,
+		},
+	}
+
+	for msg, test := range tests {
+		t.Run(msg, func(t *testing.T) {
+			err := test.src.ValidateBasic()
+			if test.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestMsgCancel(t *testing.T) {
+	_, _, addr1 := testdata.KeyTestPubAddr()
+
+	tests := map[string]struct {
+		src    MsgCancel
+		expErr bool
+	}{
+		"valid msg": {
+			src: MsgCancel{
+				Holder: addr1.String(),
+				Credits: []*MsgCancel_CancelCredits{
+					{
+						BatchDenom: "some_denom",
+						Amount:     "10",
+					},
+				},
+			},
+			expErr: false,
+		},
+		"invalid msg without holder": {
+			src: MsgCancel{
+				Credits: []*MsgCancel_CancelCredits{
+					{
+						BatchDenom: "some_denom",
+						Amount:     "10",
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid msg with wrong holder address": {
+			src: MsgCancel{
+				Holder: "wrongHolder",
+				Credits: []*MsgCancel_CancelCredits{
+					{
+						BatchDenom: "some_denom",
+						Amount:     "10",
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid msg without credits": {
+			src: MsgCancel{
+				Holder: addr1.String(),
+			},
+			expErr: true,
+		},
+		"invalid msg without Credits.BatchDenom": {
+			src: MsgCancel{
+				Holder: addr1.String(),
+				Credits: []*MsgCancel_CancelCredits{
+					{
+						Amount: "10",
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid msg without Credits.Amount": {
+			src: MsgCancel{
+				Holder: addr1.String(),
+				Credits: []*MsgCancel_CancelCredits{
+					{
+						BatchDenom: "some_denom",
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid msg with wrong Credits.Amount": {
+			src: MsgCancel{
+				Holder: addr1.String(),
+				Credits: []*MsgCancel_CancelCredits{
+					{
+						BatchDenom: "some_denom",
+						Amount:     "abc",
+					},
+				},
 			},
 			expErr: true,
 		},
