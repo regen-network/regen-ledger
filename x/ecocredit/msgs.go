@@ -44,6 +44,11 @@ func (m *MsgCreateClass) GetSigners() []sdk.AccAddress {
 }
 
 func (m *MsgCreateBatch) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Issuer)
+	if err != nil {
+		return err
+	}
+
 	if m.StartDate == nil {
 		return sdkerrors.ErrInvalidRequest.Wrap("Must provide a start date for the credit batch")
 	}
@@ -53,8 +58,11 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 	if m.EndDate.Before(*m.StartDate) {
 		return sdkerrors.ErrInvalidRequest.Wrapf("The batch end date (%s) must be the same as or after the batch start date (%s)", m.EndDate.Format("2006-01-02"), m.StartDate.Format("2006-01-02"))
 	}
+	if m.ClassId == "" {
+		return sdkerrors.ErrInvalidRequest.Wrapf("Class ID should not be empty")
+	}
 
-	err := validateLocation(m.ProjectLocation)
+	err = validateLocation(m.ProjectLocation)
 	if err != nil {
 		return err
 	}

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMsgCreateClassMsg(t *testing.T) {
+func TestMsgCreateClass(t *testing.T) {
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	_, _, addr2 := testdata.KeyTestPubAddr()
 	tests := map[string]struct {
@@ -61,7 +61,7 @@ func TestMsgCreateClassMsg(t *testing.T) {
 	}
 }
 
-func TestMsgCreateBatchMsg(t *testing.T) {
+func TestMsgCreateBatch(t *testing.T) {
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
@@ -90,6 +90,167 @@ func TestMsgCreateBatchMsg(t *testing.T) {
 				Metadata:        []byte("hello"),
 			},
 			expErr: false,
+		},
+		"valid msg with minimal fields": {
+			src: MsgCreateBatch{
+				Issuer:          addr1.String(),
+				ClassId:         "ID",
+				StartDate:       &startDate,
+				EndDate:         &endDate,
+				ProjectLocation: "AB-CDE FG1 345",
+			},
+			expErr: false,
+		},
+		"valid msg without Issuance.TradableAmount (assumes zero by default)": {
+			src: MsgCreateBatch{
+				Issuer:    addr1.String(),
+				ClassId:   "ID",
+				StartDate: &startDate,
+				EndDate:   &endDate,
+				Issuance: []*MsgCreateBatch_BatchIssuance{
+					{
+						Recipient:          addr2.String(),
+						RetiredAmount:      "50",
+						RetirementLocation: "ST-UVW XY Z12",
+					},
+				},
+				ProjectLocation: "AB-CDE FG1 345",
+			},
+			expErr: false,
+		},
+		"invalid msg with wrong Issuance.TradableAmount": {
+			src: MsgCreateBatch{
+				Issuer:    addr1.String(),
+				ClassId:   "ID",
+				StartDate: &startDate,
+				EndDate:   &endDate,
+				Issuance: []*MsgCreateBatch_BatchIssuance{
+					{
+						Recipient:      addr2.String(),
+						TradableAmount: "abc",
+					},
+				},
+				ProjectLocation: "AB-CDE FG1 345",
+			},
+			expErr: true,
+		},
+		"valid msg without Issuance.RetiredAmount (assumes zero by default)": {
+			src: MsgCreateBatch{
+				Issuer:    addr1.String(),
+				ClassId:   "ID",
+				StartDate: &startDate,
+				EndDate:   &endDate,
+				Issuance: []*MsgCreateBatch_BatchIssuance{
+					{
+						Recipient: addr2.String(),
+					},
+				},
+				ProjectLocation: "AB-CDE FG1 345",
+			},
+			expErr: false,
+		},
+		"invalid msg with Issuance.RetirementLocation": {
+			src: MsgCreateBatch{
+				Issuer:    addr1.String(),
+				ClassId:   "ID",
+				StartDate: &startDate,
+				EndDate:   &endDate,
+				Issuance: []*MsgCreateBatch_BatchIssuance{
+					{
+						Recipient:          addr2.String(),
+						RetiredAmount:      "50",
+						RetirementLocation: "wrong location",
+					},
+				},
+				ProjectLocation: "AB-CDE FG1 345",
+			},
+			expErr: true,
+		},
+		"invalid msg with wrong Issuance.RetiredAmount": {
+			src: MsgCreateBatch{
+				Issuer:    addr1.String(),
+				ClassId:   "ID",
+				StartDate: &startDate,
+				EndDate:   &endDate,
+				Issuance: []*MsgCreateBatch_BatchIssuance{
+					{
+						Recipient:     addr2.String(),
+						RetiredAmount: "abc",
+					},
+				},
+				ProjectLocation: "AB-CDE FG1 345",
+			},
+			expErr: true,
+		},
+		"invalid msg with wrong ProjectLocation": {
+			src: MsgCreateBatch{
+				Issuer:          addr1.String(),
+				ClassId:         "ID",
+				StartDate:       &startDate,
+				EndDate:         &endDate,
+				ProjectLocation: "wrong location",
+			},
+			expErr: true,
+		},
+		"invalid msg without issuer": {
+			src: MsgCreateBatch{
+				ClassId:         "ID",
+				StartDate:       &startDate,
+				EndDate:         &endDate,
+				ProjectLocation: "AB-CDE FG1 345",
+				Metadata:        []byte("hello"),
+			},
+			expErr: true,
+		},
+		"invalid msg without class id": {
+			src: MsgCreateBatch{
+				Issuer:          addr1.String(),
+				StartDate:       &startDate,
+				EndDate:         &endDate,
+				ProjectLocation: "AB-CDE FG1 345",
+				Metadata:        []byte("hello"),
+			},
+			expErr: true,
+		},
+		"invalid msg without start date": {
+			src: MsgCreateBatch{
+				Issuer:          addr1.String(),
+				ClassId:         "ID",
+				EndDate:         &endDate,
+				ProjectLocation: "AB-CDE FG1 345",
+				Metadata:        []byte("hello"),
+			},
+			expErr: true,
+		},
+		"invalid msg without enddate": {
+			src: MsgCreateBatch{
+				Issuer:          addr1.String(),
+				ClassId:         "ID",
+				StartDate:       &startDate,
+				ProjectLocation: "AB-CDE FG1 345",
+				Metadata:        []byte("hello"),
+			},
+			expErr: true,
+		},
+		"invalid msg without project location": {
+			src: MsgCreateBatch{
+				Issuer:    addr1.String(),
+				ClassId:   "ID",
+				StartDate: &startDate,
+				EndDate:   &endDate,
+				Metadata:  []byte("hello"),
+			},
+			expErr: true,
+		},
+		"invalid msg with enddate < startdate": {
+			src: MsgCreateBatch{
+				Issuer:    addr1.String(),
+				ClassId:   "ID",
+				StartDate: &endDate,
+				EndDate:   &startDate,
+				Metadata:  []byte("hello"),
+			},
+			expErr: true,
 		},
 	}
 
