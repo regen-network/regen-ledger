@@ -11,14 +11,13 @@ import (
 )
 
 const (
-	TradableBalancePrefix  byte = 0x0
-	TradableSupplyPrefix   byte = 0x1
-	RetiredBalancePrefix   byte = 0x2
-	RetiredSupplyPrefix    byte = 0x3
-	IDSeqPrefix            byte = 0x4
-	ClassInfoTablePrefix   byte = 0x5
-	BatchInfoTablePrefix   byte = 0x6
-	MaxDecimalPlacesPrefix byte = 0x7
+	TradableBalancePrefix byte = 0x0
+	TradableSupplyPrefix  byte = 0x1
+	RetiredBalancePrefix  byte = 0x2
+	RetiredSupplyPrefix   byte = 0x3
+	IDSeqPrefix           byte = 0x4
+	ClassInfoTablePrefix  byte = 0x5
+	BatchInfoTablePrefix  byte = 0x6
 )
 
 type serverImpl struct {

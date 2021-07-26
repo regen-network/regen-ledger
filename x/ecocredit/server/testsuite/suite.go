@@ -107,8 +107,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	// create batch
 	t0, t1, t2 := "10.37", "1007.3869", "100"
 	tSupply0 := "1117.7569"
-	r0, r1, r2 := "4.286", "10000.4589902", "0"
-	rSupply0 := "10004.7449902"
+	r0, r1, r2 := "4.286", "10000.45899", "0"
+	rSupply0 := "10004.74499"
 
 	time1 := time.Now()
 	time2 := time.Now()
@@ -168,8 +168,44 @@ func (s *IntegrationTestSuite) TestScenario() {
 	}).ValidateBasic()
 	s.Require().Error(err)
 
-	// Batch creation should succeed with StartDate before EndDate, and valid data
+	// Batch should fail because the tradable amount is > the credit type precision
 	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
+		Issuer:          issuer1,
+		ClassId:         clsID,
+		StartDate:       &time1,
+		EndDate:         &time2,
+		ProjectLocation: "AB",
+		Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
+			{
+				Recipient:          addr1,
+				TradableAmount:     "1.1234567",
+				RetiredAmount:      "0",
+				RetirementLocation: "",
+			},
+		},
+	})
+	s.Require().Error(err)
+
+	// Batch should fail because the retired amount is > the credit type precision
+	createBatchRes, err = s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
+		Issuer:          issuer1,
+		ClassId:         clsID,
+		StartDate:       &time1,
+		EndDate:         &time2,
+		ProjectLocation: "AB",
+		Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
+			{
+				Recipient:          addr1,
+				TradableAmount:     "0",
+				RetiredAmount:      "1.1234567",
+				RetirementLocation: "AB",
+			},
+		},
+	})
+	s.Require().Error(err)
+
+	// Batch creation should succeed with StartDate before EndDate, and valid data
+	createBatchRes, err = s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
 		Issuer:          issuer1,
 		ClassId:         clsID,
 		StartDate:       &time1,
@@ -256,6 +292,12 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expectErr: true,
 		},
 		{
+			name:      "can't cancel with a higher precision than the credit type",
+			holder:    addr4,
+			toCancel:  "0.1234567",
+			expectErr: true,
+		},
+		{
 			name:      "can't cancel no credits",
 			holder:    addr4,
 			toCancel:  "0",
@@ -275,7 +317,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expTradeable:       "97.9998",
 			expTradeableSupply: "1115.7567",
 			expRetired:         "0",
-			expTotalAmount:     "11120.5016902",
+			expTotalAmount:     "11120.50169",
 			expAmountCancelled: "2.0002",
 		},
 		{
@@ -286,7 +328,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expTradeable:       "0",
 			expTradeableSupply: "1017.7569",
 			expRetired:         "0",
-			expTotalAmount:     "11022.5018902",
+			expTotalAmount:     "11022.50189",
 			expAmountCancelled: "100.0000",
 		},
 		{
@@ -303,7 +345,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expTradeable:       "9.37",
 			expTradeableSupply: "1016.7569",
 			expRetired:         "4.286",
-			expTotalAmount:     "11021.5018902",
+			expTotalAmount:     "11021.50189",
 			expAmountCancelled: "101.0000",
 		},
 	}
@@ -370,7 +412,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expectErr:          true,
 		},
 		{
-			name:               "can't use more than 7 decimal places",
+			name:               "can't use more precision than the credit type allows (6)",
 			toRetire:           "10.00000001",
 			retirementLocation: "AF",
 			expectErr:          true,
@@ -407,7 +449,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expTradeable:       "9.3699",
 			expRetired:         "4.2861",
 			expTradeableSupply: "1016.7568",
-			expRetiredSupply:   "10004.7450902",
+			expRetiredSupply:   "10004.74509",
 		},
 		{
 			name:               "can retire more credits",
@@ -417,7 +459,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expTradeable:       "0.3699",
 			expRetired:         "13.2861",
 			expTradeableSupply: "1007.7568",
-			expRetiredSupply:   "10013.7450902",
+			expRetiredSupply:   "10013.74509",
 		},
 		{
 			name:               "can retire all credits",
@@ -427,7 +469,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expTradeable:       "0",
 			expRetired:         "13.656",
 			expTradeableSupply: "1007.3869",
-			expRetiredSupply:   "10014.1149902",
+			expRetiredSupply:   "10014.11499",
 		},
 		{
 			name:      "can't retire any more credits",
@@ -530,11 +572,11 @@ func (s *IntegrationTestSuite) TestScenario() {
 			retirementLocation:    "AF",
 			expectErr:             false,
 			expTradeableSender:    "977.3869",
-			expRetiredSender:      "10000.4589902",
+			expRetiredSender:      "10000.45899",
 			expTradeableRecipient: "10",
 			expRetiredRecipient:   "20",
 			expTradeableSupply:    "987.3869",
-			expRetiredSupply:      "10034.1149902",
+			expRetiredSupply:      "10034.11499",
 		},
 		{
 			name:                  "can send with no retirement location",
@@ -543,11 +585,11 @@ func (s *IntegrationTestSuite) TestScenario() {
 			retirementLocation:    "",
 			expectErr:             false,
 			expTradeableSender:    "967.3869",
-			expRetiredSender:      "10000.4589902",
+			expRetiredSender:      "10000.45899",
 			expTradeableRecipient: "20",
 			expRetiredRecipient:   "20",
 			expTradeableSupply:    "987.3869",
-			expRetiredSupply:      "10034.1149902",
+			expRetiredSupply:      "10034.11499",
 		},
 		{
 			name:                  "can send all tradeable",
@@ -556,11 +598,11 @@ func (s *IntegrationTestSuite) TestScenario() {
 			retirementLocation:    "AF",
 			expectErr:             false,
 			expTradeableSender:    "0",
-			expRetiredSender:      "10000.4589902",
+			expRetiredSender:      "10000.45899",
 			expTradeableRecipient: "87.3869",
 			expRetiredRecipient:   "920",
 			expTradeableSupply:    "87.3869",
-			expRetiredSupply:      "10934.1149902",
+			expRetiredSupply:      "10934.11499",
 		},
 		{
 			name:          "can't send any more",
@@ -625,34 +667,34 @@ func (s *IntegrationTestSuite) TestScenario() {
 	creditTypeCases := []struct {
 		name        string
 		creditTypes []*ecocredit.CreditType
-		tx          ecocredit.MsgCreateClass
+		msg         ecocredit.MsgCreateClass
 		wantErr     bool
 	}{
 		{
 			name:        "valid eco credit creation",
 			creditTypes: []*ecocredit.CreditType{{Type: "carbon", Units: "kg", Precision: 3}},
-			tx: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
+			msg: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
 				Issuers: []string{s.signers[1].String(), s.signers[2].String()}, Metadata: nil, CreditType: "carbon"},
 			wantErr: false,
 		},
 		{
 			name:        "invalid request - not a valid credit type",
 			creditTypes: []*ecocredit.CreditType{{Type: "carbon", Units: "kg", Precision: 3}},
-			tx: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
+			msg: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
 				Issuers: []string{s.signers[1].String(), s.signers[2].String()}, Metadata: nil, CreditType: "biodiversity"},
 			wantErr: true,
 		},
 		{
 			name:        "request with strange font should be valid",
 			creditTypes: []*ecocredit.CreditType{{Type: "carbon", Units: "kg", Precision: 3}},
-			tx: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
+			msg: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
 				Issuers: []string{s.signers[1].String(), s.signers[2].String()}, Metadata: nil, CreditType: "cArBoN"},
 			wantErr: false,
 		},
 		{
 			name:        "empty credit types should error",
 			creditTypes: []*ecocredit.CreditType{},
-			tx: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
+			msg: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
 				Issuers: []string{s.signers[1].String(), s.signers[2].String()}, Metadata: nil, CreditType: "carbon"},
 			wantErr: true,
 		},
@@ -664,12 +706,12 @@ func (s *IntegrationTestSuite) TestScenario() {
 		s.Run(tc.name, func() {
 			require := s.Require()
 			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyCreditTypes, tc.creditTypes)
-			designer, err := sdk.AccAddressFromBech32(tc.tx.Designer)
+			designer, err := sdk.AccAddressFromBech32(tc.msg.Designer)
 			require.NoError(err)
 
 			// fund the designer account so tx will go through
 			s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
-			res, err := s.msgClient.CreateClass(s.ctx, &tc.tx)
+			res, err := s.msgClient.CreateClass(s.ctx, &tc.msg)
 			if tc.wantErr {
 				require.Error(err)
 				require.Nil(res)
