@@ -1,6 +1,8 @@
 package ecocredit
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -13,8 +15,20 @@ var (
 )
 
 func (m *MsgCreateClass) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Designer)
+	if err != nil {
+		return sdkerrors.Wrap(err, "designer")
+	}
+
 	if len(m.Issuers) == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "issuers cannot be empty")
+	} else {
+		for _, issuer := range m.Issuers {
+			_, err := sdk.AccAddressFromBech32(issuer)
+			if err != nil {
+				return sdkerrors.Wrap(err, fmt.Sprintf("issuer: %s", issuer))
+			}
+		}
 	}
 
 	return nil
