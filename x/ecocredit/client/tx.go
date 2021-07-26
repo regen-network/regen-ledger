@@ -47,7 +47,7 @@ func txflags(cmd *cobra.Command) *cobra.Command {
 
 func txCreateClass() *cobra.Command {
 	return &cobra.Command{
-		Use:   "create-class [designer] [issuer[,issuer]*] [metadata] [credit type]",
+		Use:   "create-class [designer] [issuer[,issuer]*] [credit type] [metadata]",
 		Short: "Creates a new credit class",
 		Long: `Creates a new credit class.
 
@@ -63,16 +63,16 @@ Parameters:
 				issuers[i] = strings.TrimSpace(issuers[i])
 			}
 			if args[2] == "" {
+				return sdkerrors.ErrInvalidRequest.Wrap("credit type is required")
+			}
+			creditType := args[2]
+			if args[3] == "" {
 				return errors.New("base64_metadata is required")
 			}
-			b, err := base64.StdEncoding.DecodeString(args[2])
+			b, err := base64.StdEncoding.DecodeString(args[3])
 			if err != nil {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
+				return sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
 			}
-			if args[3] == "" {
-				return errors.New("credit type is required")
-			}
-			creditType := args[3]
 
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
 			if err != nil {
