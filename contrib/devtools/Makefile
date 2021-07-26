@@ -5,24 +5,19 @@
 ###
 ifeq ($(OS),Windows_NT)
   GO := $(shell where go.exe 2> NUL)
-  FS := \\
+  FS := "\\"
 else
   GO := $(shell command -v go 2> /dev/null)
-  FS := /
+  FS := "/"
 endif
 
 ifeq ($(GO),)
   $(error could not find go. Is it in PATH? $(GO))
 endif
 
-GOPATH ?= $(shell $(GO) env GOPATH)
-GITHUBDIR := $(GOPATH)$(FS)src$(FS)github.com
-GOLANGCI_LINT_VERSION := v1.16.0
-GOLANGCI_LINT_HASHSUM := ac897cadc180bf0c1a4bf27776c410debad27205b22856b861d41d39d06509cf
-
-###
-# Functions
-###
+###############################################################################
+###                                Functions                                ###
+###############################################################################
 
 go_get = $(if $(findstring Windows_NT,$(OS)),\
 IF NOT EXIST $(GITHUBDIR)$(FS)$(1)$(FS) ( mkdir $(GITHUBDIR)$(FS)$(1) ) else (cd .) &\
@@ -33,46 +28,65 @@ mkdir -p $(GITHUBDIR)$(FS)$(1) &&\
 )\
 cd $(GITHUBDIR)$(FS)$(1)$(FS)$(2) && git fetch origin && git checkout -q $(3)
 
-go_install = $(call go_get,$(1),$(2),$(3)) && cd $(GITHUBDIR)$(FS)$(1)$(FS)$(2) && $(GO) install
-
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 mkfile_dir := $(shell cd $(shell dirname $(mkfile_path)); pwd)
 
-###
-# tools
-###
+
+###############################################################################
+###                                 Tools                                   ###
+###############################################################################
+
+PREFIX ?= /usr/local
+BIN ?= $(PREFIX)/bin
+UNAME_S ?= $(shell uname -s)
+UNAME_M ?= $(shell uname -m)
+
+GOPATH ?= $(shell $(GO) env GOPATH)
+GITHUBDIR := $(GOPATH)$(FS)src$(FS)github.com
+
+BUF_VERSION ?= 0.11.0
 
 TOOLS_DESTDIR  ?= $(GOPATH)/bin
-
-GOLANGCI_LINT   = $(TOOLS_DESTDIR)/golangci-lint
-STATIK          = $(TOOLS_DESTDIR)/statik
-GOIMPORTS       = $(TOOLS_DESTDIR)/goimports
-CLOG            = $(TOOLS_DESTDIR)/clog
-RUNSIM          = $(TOOLS_DESTDIR)/runsim
-
-all: tools
+STATIK         = $(TOOLS_DESTDIR)/statik
+RUNSIM         = $(TOOLS_DESTDIR)/runsim
 
 tools: tools-stamp
-tools-stamp: $(STATIK) $(GOIMPORTS) $(CLOG) $(GOLANGCI_LINT) $(RUNSIM)
+tools-stamp: statik runsim
+	# Create dummy file to satisfy dependency and avoid
+	# rebuilding when this Makefile target is hit twice
+	# in a row.
 	touch $@
 
-$(GOLANGCI_LINT): $(mkfile_dir)/install-golangci-lint.sh
-	bash $(mkfile_dir)/install-golangci-lint.sh $(TOOLS_DESTDIR) $(GOLANGCI_LINT_VERSION) $(GOLANGCI_LINT_HASHSUM)
+proto-tools: proto-tools-stamp
+proto-tools-stamp:
+	bash $(mkfile_dir)/proto-tools-installer.sh
+	# Create dummy file to satisfy dependency and avoid
+	# rebuilding when this Makefile target is hit twice
+	# in a row.
+	touch $@
 
+# Install the runsim binary with a temporary workaround of entering an outside
+# directory as the "go get" command ignores the -mod option and will polute the
+# go.{mod, sum} files.
+#
+# ref: https://github.com/golang/go/issues/30515
+statik: $(STATIK)
 $(STATIK):
-	$(call go_install,rakyll,statik,v0.1.5)
+	@echo "Installing statik..."
+	@(cd /tmp && go get github.com/rakyll/statik@v0.1.6)
 
-$(GOIMPORTS):
-	go get golang.org/x/tools/cmd/goimports@v0.0.0-20190114222345-bf090417da8b
-
-$(CLOG):
-	$(call go_install,alessio,clog,1)
-
+# Install the runsim binary with a temporary workaround of entering an outside
+# directory as the "go get" command ignores the -mod option and will polute the
+# go.{mod, sum} files.
+#
+# ref: https://github.com/golang/go/issues/30515
+runsim: $(RUNSIM)
 $(RUNSIM):
-	go install -mod=readonly github.com/cosmos/cosmos-sdk/contrib/runsim
+	@echo "Installing runsim..."
+	@(cd /tmp && go get github.com/cosmos/tools/cmd/runsim@v1.0.0)
 
 tools-clean:
-	rm -f $(STATIK) $(GOIMPORTS) $(CLOG) $(GOLANGCI_LINT)
-	rm -f tools-stamp
+	rm -f $(STATIK) $(GOLANGCI_LINT) $(RUNSIM)
+	rm -f proto-tools-stamp tools-stamp
 
-.PHONY: all tools tools-clean
+.PHONY: tools-clean statik runsim

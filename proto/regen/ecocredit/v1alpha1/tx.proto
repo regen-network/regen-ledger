@@ -1,0 +1,269 @@
+syntax = "proto3";
+
+package regen.ecocredit.v1alpha1;
+
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+
+// Msg is the regen.ecocredit.v1alpha1 Msg service.
+service Msg {
+
+  // CreateClass creates a new credit class with an approved list of issuers and
+  // optional metadata.
+  rpc CreateClass(MsgCreateClass) returns (MsgCreateClassResponse);
+
+  // CreateBatch creates a new batch of credits for an existing credit class.
+  // This will create a new batch denom with a fixed supply. Issued credits can
+  // be distributed to recipients in either tradable or retired form.
+  rpc CreateBatch(MsgCreateBatch) returns (MsgCreateBatchResponse);
+
+  // Send sends tradeable credits from one account to another account. Sent
+  // credits can either be tradable or retired on receipt.
+  rpc Send(MsgSend) returns (MsgSendResponse);
+
+  // Retire retires a specified number of credits in the holder's account.
+  rpc Retire(MsgRetire) returns (MsgRetireResponse);
+
+  // Cancel removes a number of credits from the holder's account and also
+  // deducts them from the tradable supply, effectively cancelling their
+  // issuance on Regen Ledger
+  rpc Cancel(MsgCancel) returns (MsgCancelResponse);
+
+  // SetPrecision allows an issuer to increase the decimal precision of a credit
+  // batch. It is an experimental feature to concretely explore an idea proposed
+  // in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
+  // places allowed for a credit batch is determined by the original number of
+  // decimal places used with calling CreatBatch. SetPrecision allows the number
+  // of allowed decimal places to be increased, effectively making the supply
+  // more granular without actually changing any balances. It allows asset
+  // issuers to be able to issue an asset without needing to think about how
+  // many subdivisions are needed upfront. While it may not be relevant for
+  // credits which likely have a fairly stable market value, I wanted to
+  // experiment a bit and this serves as a proof of concept for a broader bank
+  // redesign where say for instance a coin like the ATOM or XRN could be issued
+  // in its own units rather than micro or nano-units. Instead an operation like
+  // SetPrecision would allow trading in micro, nano or pico in the future based
+  // on market demand. Arbitrary, unbounded precision is not desirable because
+  // this can lead to spam attacks (like sending
+  // 0.000000000000000000000000000001 coins). This is effectively fixed
+  // precision so under the hood it is still basically an integer, but the fixed
+  // precision can be increased so its more adaptable long term than just an
+  // integer.
+  rpc SetPrecision(MsgSetPrecision) returns (MsgSetPrecisionResponse);
+}
+
+// MsgCreateClass is the Msg/CreateClass request type.
+message MsgCreateClass {
+
+  // designer is the address of the account which designed the credit class. The
+  // designer has special permissions to change the list of issuers and perform
+  // other administrative operations.
+  string designer = 1;
+
+  // issuers are the account addresses of the approved issuers.
+  repeated string issuers = 2;
+
+  // metadata is any arbitrary metadata to attached to the credit class.
+  bytes metadata = 3;
+}
+
+// MsgCreateClassResponse is the Msg/CreateClass response type.
+message MsgCreateClassResponse {
+
+  // class_id is the unique ID of the newly created credit class.
+  string class_id = 1 [ (gogoproto.moretags) = "yaml:\"class_id\"" ];
+}
+
+// MsgCreateBatch is the Msg/CreateBatch request type.
+message MsgCreateBatch {
+
+  // issuer is the address of the batch issuer.
+  string issuer = 1;
+
+  // class_id is the unique ID of the class.
+  string class_id = 2 [ (gogoproto.moretags) = "yaml:\"class_id\"" ];
+
+  // issuance are the credits issued in the batch.
+  repeated BatchIssuance issuance = 3;
+
+  // metadata is any arbitrary metadata to attached to the credit batch.
+  bytes metadata = 4;
+
+  // start_date is the beginning of the period during which this credit batch
+  // was quantified and verified.
+  google.protobuf.Timestamp start_date = 5
+      [(gogoproto.stdtime) = true, (gogoproto.moretags) = "yaml:\"start_date\""];
+
+  // end_date is the end of the period during which this credit batch was
+  // quantified and verified.
+  google.protobuf.Timestamp end_date = 6
+      [(gogoproto.stdtime) = true, (gogoproto.moretags) = "yaml:\"end_date\""];
+
+  // project_location is the location of the project backing the credits in this
+  // batch. It is a string of the form
+  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+  // fields conforming to ISO 3166-2, and postal-code being up to 64
+  // alphanumeric characters. country-code is required, while sub-national-code
+  // and postal-code can be added for increasing precision.
+  string project_location = 7 [(gogoproto.moretags) = "yaml:\"project_location\""];
+
+  // BatchIssuance represents the issuance of some credits in a batch to a
+  // single recipient.
+  message BatchIssuance {
+
+    // recipient is the account of the recipient.
+    string recipient = 1;
+
+    // tradable_amount is the number of credits in this issuance that can be
+    // traded by this recipient. Decimal values are acceptable.
+    string tradable_amount = 2
+        [ (gogoproto.moretags) = "yaml:\"tradable_amount\"" ];
+
+    // retired_amount is the number of credits in this issuance that are
+    // effectively retired by the issuer on receipt. Decimal values are
+    // acceptable.
+    string retired_amount = 3
+        [ (gogoproto.moretags) = "yaml:\"retired_amount\"" ];
+
+    // retirement_location is the location of the beneficiary or buyer of the
+    // retired credits. This must be provided if retired_amount is positive. It
+    // is a string of the form
+    // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+    // fields conforming to ISO 3166-2, and postal-code being up to 64
+    // alphanumeric characters.
+    string retirement_location = 4
+        [ (gogoproto.moretags) = "yaml:\"retirement_location\"" ];
+  }
+}
+
+// MsgCreateBatchResponse is the Msg/CreateBatch response type.
+message MsgCreateBatchResponse {
+
+  // batch_denom is the unique denomination ID of the newly created batch.
+  string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+}
+
+// MsgSend is the Msg/Send request type.
+message MsgSend {
+
+  // sender is the address of the account sending credits.
+  string sender = 1;
+
+  // sender is the address of the account receiving credits.
+  string recipient = 2;
+
+  // credits are the credits being sent.
+  repeated SendCredits credits = 3;
+
+  // SendCredits specifies a batch and the number of credits being transferred.
+  // This is split into tradable credits, which will remain tradable on receipt,
+  // and retired credits, which will be retired on receipt.
+  message SendCredits {
+
+    // batch_denom is the unique ID of the credit batch.
+    string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+
+    // tradable_amount is the number of credits in this transfer that can be
+    // traded by the recipient. Decimal values are acceptable within the
+    // precision returned by Query/Precision.
+    string tradable_amount = 2
+        [ (gogoproto.moretags) = "yaml:\"tradable_amount\"" ];
+
+    // retired_amount is the number of credits in this transfer that are
+    // effectively retired by the issuer on receipt. Decimal values are
+    // acceptable within the precision returned by Query/Precision.
+    string retired_amount = 3
+        [ (gogoproto.moretags) = "yaml:\"retired_amount\"" ];
+
+    // retirement_location is the location of the beneficiary or buyer of the
+    // retired credits. This must be provided if retired_amount is positive. It
+    // is a string of the form
+    // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+    // fields conforming to ISO 3166-2, and postal-code being up to 64
+    // alphanumeric characters.
+    string retirement_location = 4
+        [ (gogoproto.moretags) = "yaml:\"retirement_location\"" ];
+  }
+}
+
+// MsgSendResponse is the Msg/Send response type.
+message MsgSendResponse {}
+
+// MsgRetire is the Msg/Retire request type.
+message MsgRetire {
+
+  // holder is the credit holder address.
+  string holder = 1;
+
+  // credits are the credits being retired.
+  repeated RetireCredits credits = 2;
+
+  // RetireCredits specifies a batch and the number of credits being retired.
+  message RetireCredits {
+
+    // batch_denom is the unique ID of the credit batch.
+    string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+
+    // amount is the number of credits being retired.
+    // Decimal values are acceptable within the precision returned by
+    // Query/Precision.
+    string amount = 2;
+  }
+
+  // location is the location of the beneficiary or buyer of the retired
+  // credits. It is a string of the form
+  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+  // fields conforming to ISO 3166-2, and postal-code being up to 64
+  // alphanumeric characters.
+  string location = 3;
+}
+
+// MsgRetire is the Msg/Retire response type.
+message MsgRetireResponse {}
+
+// MsgCancel is the Msg/Cancel request type.
+message MsgCancel {
+
+  // holder is the credit holder address.
+  string holder = 1;
+
+  // credits are the credits being cancelled.
+  repeated CancelCredits credits = 2;
+
+  // CancelCredits specifies a batch and the number of credits being cancelled.
+  message CancelCredits {
+
+    // batch_denom is the unique ID of the credit batch.
+    string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+
+    // amount is the number of credits being cancelled.
+    // Decimal values are acceptable within the precision returned by
+    // Query/Precision.
+    string amount = 2;
+  }
+}
+
+// MsgCancelResponse is the Msg/Cancel response type.
+message MsgCancelResponse {}
+
+// MsgRetire is the Msg/SetPrecision request type.
+message MsgSetPrecision {
+
+  // issuer is the address of the batch issuer.
+  string issuer = 1;
+
+  // batch_denom is the unique ID of the credit batch.
+  string batch_denom = 2 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+
+  // max_decimal_places is the new maximum number of decimal places that can be
+  // used to represent some quantity of credits. It is an experimental
+  // feature to concretely explore an idea proposed in
+  // https://github.com/cosmos/cosmos-sdk/issues/7113.
+  uint32 max_decimal_places = 3
+      [ (gogoproto.moretags) = "yaml:\"max_decimal_places\"" ];
+}
+
+// MsgRetire is the Msg/SetPrecision response type.
+message MsgSetPrecisionResponse {}

@@ -16,10 +16,17 @@ coverage:
     changes: false
 
 comment:
-  layout: "header, diff"
+  layout: "header, diff, flags"
   behavior: default  # update if exists else create new
 
 ignore:
   - "docs"
   - "*.md"
   - "*.org"
+  - "build"
+  - "tests/*"
+  - "contrib"
+  - "**/*.pb.go"
+  - "**/*.pb.gw.go"
+  - "scripts"
+  

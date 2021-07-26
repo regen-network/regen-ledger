@@ -1,45 +1,47 @@
-// Mostly copied from https://github.com/cosmos/gaia/tree/master/app
 package app
 
 import (
+	"encoding/json"
 	"os"
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/db"
-	"github.com/tendermint/tendermint/libs/log"
-
-	"github.com/cosmos/cosmos-sdk/codec"
-
 	abci "github.com/tendermint/tendermint/abci/types"
+	"github.com/tendermint/tendermint/libs/log"
+	dbm "github.com/tendermint/tm-db"
 )
 
-func TestGaiadExport(t *testing.T) {
-	db := db.NewMemDB()
-	gapp := NewXrnApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, 0)
-	setGenesis(gapp)
+func TestSimAppExportAndBlockedAddrs(t *testing.T) {
+	encCfg := MakeEncodingConfig()
+	db := dbm.NewMemDB()
+	app := NewRegenApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encCfg, simapp.EmptyAppOptions{})
 
-	// Making a new app object with the db, so that initchain hasn't been called
-	newGapp := NewXrnApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, 0)
-	_, _, err := newGapp.ExportAppStateAndValidators(false, []string{})
-	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
-}
-
-func setGenesis(gapp *XrnApp) error {
-
-	genesisState := NewDefaultGenesisState()
-	stateBytes, err := codec.MarshalJSONIndent(gapp.cdc, genesisState)
-	if err != nil {
-		return err
+	for acc := range maccPerms {
+		require.Equal(t, true, app.BankKeeper.BlockedAddr(app.AccountKeeper.GetModuleAddress(acc)),
+			"ensure that all module account addresses are properly blocked in bank keeper")
 	}
 
+	genesisState := NewDefaultGenesisState(encCfg.Marshaler)
+	stateBytes, err := json.MarshalIndent(genesisState, "", "  ")
+	require.NoError(t, err)
+
 	// Initialize the chain
-	gapp.InitChain(
+	app.InitChain(
 		abci.RequestInitChain{
 			Validators:    []abci.ValidatorUpdate{},
 			AppStateBytes: stateBytes,
 		},
 	)
-	gapp.Commit()
-	return nil
+	app.Commit()
+
+	// Making a new app object with the db, so that initchain hasn't been called
+	app2 := NewRegenApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, encCfg, simapp.EmptyAppOptions{})
+	_, err = app2.ExportAppStateAndValidators(false, []string{})
+	require.NoError(t, err, "ExportAppStateAndValidators should not have an error")
+}
+
+func TestGetMaccPerms(t *testing.T) {
+	dup := GetMaccPerms()
+	require.Equal(t, maccPerms, dup, "duplicated module account permissions differed from actual module account permissions")
 }

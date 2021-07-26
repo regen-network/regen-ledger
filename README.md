@@ -1,7 +1,8 @@
 # Regen Ledger
 ![banner](docs/regen-network-image.jpg)
 
-[![pipeline status](https://gitlab.com/regen-network/regen-ledger/badges/master/pipeline.svg)](https://gitlab.com/regen-network/regen-ledger/commits/master)
+[![Build status](https://github.com/regen-network/regen-ledger/workflows/Build/badge.svg)](https://github.com/regen-network/regen-ledger/commits/master)
+[![Tests status](https://github.com/regen-network/regen-ledger/workflows/Tests/badge.svg)](https://github.com/regen-network/regen-ledger/commits/master)
 ![GitHub issues](https://img.shields.io/github/issues/regen-network/regen-ledger.svg)
 [![GitHub issues by-label](https://img.shields.io/github/issues/regen-network/regen-ledger/good%20first%20issue.svg)](https://github.com/regen-network/regen-ledger/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 [![codecov](https://codecov.io/gh/regen-network/regen-ledger/branch/master/graph/badge.svg)](https://codecov.io/gh/regen-network/regen-ledger)
@@ -11,12 +12,13 @@
 [![Gitter chat](https://badges.gitter.im/regen-network/regen-ledger.png)](https://gitter.im/regen-network/regen-ledger "Gitter chat")
 
 
-A distributed ledger for ecology built on top of the 
+A distributed ledger for ecology built on top of the
 [cosmos-sdk](http://github.com/cosmos/cosmos-sdk).
 
 ## Getting Started
 
-See [Getting Started](docs/getting_started.md).
+
+See [Getting Started](docs/getting-started.md) for instructions how to install and run the blockchain.
 
 ## Core Features
 
@@ -39,13 +41,13 @@ made up of a few very basic pieces of information:
 - what is being claimed about this geographical region,
 - who is making the claim, and
 - any supporting evidence the claimant would like to associate with their claim
- 
-The actual data for claims can be stored on or off the Regen Ledger blockchain. 
+
+The actual data for claims can be stored on or off the Regen Ledger blockchain.
 In order to make claim data publicly available to the whole world, it can
 be stored directly on the blockchain. In order to keep some or all of the
 data private, it can be stored off-chain but "tracked" on-chain by
 providing a cryptographic hash and URL, as well as possibly some metadata about
-the claim. 
+the claim.
 
 The facilities for storing data on-chain and tracking data off-chain
 are managed by Regen Leder's [data](https://godoc.org/github.com/regen-network/regen-ledger/x/data)
@@ -73,7 +75,7 @@ will define:
 given appropriate permissions
 - how compute functions should be written and executed to ensure that results
 are reproducible
-- how computers that are executing compute functions (called oracles) should 
+- how computers that are executing compute functions (called oracles) should
 interact with Regen Ledger in order to have results stored back into the
 ecological state database
 

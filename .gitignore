@@ -65,6 +65,7 @@ flycheck_*.el
 # Test binary, build with `go test -c`
 *.test
 coverage.txt
+coverage.txt.bak
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
@@ -172,3 +173,23 @@ tags
 
 # End of https://www.gitignore.io/api/go,vim,emacs,intellij
 /.xrnd
+
+
+# vscode
+.vscode
+
+# goland
+.idea
+
+build/
+
+# OS
+.DS_Store
+
+/protoc-gen-go-cosmos2/protoc-gen-go-cosmos2
+/proto-tools-stamp
+/tools-stamp
+dist/
+
+# pre-commit
+.pre-commit-config.yaml

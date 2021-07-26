@@ -1,10 +1,10 @@
 package data
 
 import (
-	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
 
-// RegisterCodec registers concrete types on the Amino codec
-func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgStoreGraph{}, "data/MsgStoreGraph", nil)
+func RegisterTypes(registry types.InterfaceRegistry) {
+	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
