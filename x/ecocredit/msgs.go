@@ -46,23 +46,28 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 	}
 
 	for _, iss := range m.Issuance {
-		_, err := math.ParseNonNegativeDecimal(iss.TradableAmount)
-		if err != nil {
-			return err
-		}
-
-		retiredAmount, err := math.ParseNonNegativeDecimal(iss.RetiredAmount)
-		if err != nil {
-			return err
-		}
-
-		if !retiredAmount.IsZero() {
-			err = validateLocation(iss.RetirementLocation)
+		if iss.TradableAmount != "" {
+			_, err := math.ParseNonNegativeDecimal(iss.TradableAmount)
 			if err != nil {
 				return err
 			}
 		}
+
+		if iss.RetiredAmount != "" {
+			retiredAmount, err := math.ParseNonNegativeDecimal(iss.RetiredAmount)
+			if err != nil {
+				return err
+			}
+
+			if !retiredAmount.IsZero() {
+				err = validateLocation(iss.RetirementLocation)
+				if err != nil {
+					return err
+				}
+			}
+		}
 	}
+
 	return nil
 }
 
