@@ -14,11 +14,11 @@ var (
 
 func (m *MsgCreateClass) ValidateBasic() error {
 	if len(m.Issuers) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "issuers cannot be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("issuers cannot be empty")
 	}
 
 	if len(m.CreditType) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "credit class must have a credit type")
+		return sdkerrors.ErrInvalidRequest.Wrap("credit class must have a credit type")
 	}
 
 	return nil
