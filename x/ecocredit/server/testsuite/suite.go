@@ -688,29 +688,45 @@ func (s *IntegrationTestSuite) TestScenario() {
 		{
 			name:        "valid eco credit creation",
 			creditTypes: []*ecocredit.CreditType{{Type: "carbon", Units: "kg", Precision: 3}},
-			msg: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
-				Issuers: []string{s.signers[1].String(), s.signers[2].String()}, Metadata: nil, CreditType: "carbon"},
+			msg: ecocredit.MsgCreateClass{
+				Designer:   s.signers[0].String(),
+				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
+				Metadata:   nil,
+				CreditType: "carbon",
+			},
 			wantErr: false,
 		},
 		{
 			name:        "invalid request - not a valid credit type",
 			creditTypes: []*ecocredit.CreditType{{Type: "carbon", Units: "kg", Precision: 3}},
-			msg: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
-				Issuers: []string{s.signers[1].String(), s.signers[2].String()}, Metadata: nil, CreditType: "biodiversity"},
+			msg: ecocredit.MsgCreateClass{
+				Designer:   s.signers[0].String(),
+				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
+				Metadata:   nil,
+				CreditType: "biodiversity",
+			},
 			wantErr: true,
 		},
 		{
 			name:        "request with strange font should be valid",
 			creditTypes: []*ecocredit.CreditType{{Type: "carbon", Units: "kg", Precision: 3}},
-			msg: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
-				Issuers: []string{s.signers[1].String(), s.signers[2].String()}, Metadata: nil, CreditType: "cArBoN"},
+			msg: ecocredit.MsgCreateClass{
+				Designer:   s.signers[0].String(),
+				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
+				Metadata:   nil,
+				CreditType: "cArBoN",
+			},
 			wantErr: false,
 		},
 		{
 			name:        "empty credit types should error",
 			creditTypes: []*ecocredit.CreditType{},
-			msg: ecocredit.MsgCreateClass{Designer: s.signers[0].String(),
-				Issuers: []string{s.signers[1].String(), s.signers[2].String()}, Metadata: nil, CreditType: "carbon"},
+			msg: ecocredit.MsgCreateClass{
+				Designer:   s.signers[0].String(),
+				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
+				Metadata:   nil,
+				CreditType: "carbon",
+			},
 			wantErr: true,
 		},
 	}
