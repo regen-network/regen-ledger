@@ -15,6 +15,17 @@ func TestDec(t *testing.T) {
 	five := NewDecFromInt64(5)
 	minusOne := NewDecFromInt64(-1)
 
+	onePointOneFive, err := NewDecFromString("1.15")
+	require.NoError(t, err)
+	twoPointThreeFour, err := NewDecFromString("2.34")
+	require.NoError(t, err)
+	threePointFourNine, err := NewDecFromString("3.49")
+	require.NoError(t, err)
+	onePointFourNine, err := NewDecFromString("1.49")
+	require.NoError(t, err)
+	minusFivePointZero, err := NewDecFromString("-5.0")
+	require.NoError(t, err)
+
 	res, err := two.Add(zero)
 	require.NoError(t, err)
 	require.True(t, res.IsEqual(two))
@@ -40,6 +51,18 @@ func TestDec(t *testing.T) {
 	require.Equal(t, int64(4), x)
 
 	require.Equal(t, "5", five.String())
+
+	res, err = onePointOneFive.Add(twoPointThreeFour)
+	require.NoError(t, err)
+	require.True(t, res.IsEqual(threePointFourNine))
+
+	res, err = threePointFourNine.Sub(two)
+	require.NoError(t, err)
+	require.True(t, res.IsEqual(onePointFourNine))
+
+	res, err = minusOne.Sub(four)
+	require.NoError(t, err)
+	require.True(t, res.IsEqual(minusFivePointZero))
 
 	require.True(t, zero.IsZero())
 	require.False(t, zero.IsPositive())
