@@ -4,13 +4,14 @@ import (
 	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/ecocredit/util"
 	"strings"
 )
 
 func (s serverImpl) getCreditType(ctx sdk.Context, creditTypeName string) (*ecocredit.CreditType, error) {
 	creditTypes := s.getAllCreditTypes(ctx)
 	creditTypeName = strings.ToLower(creditTypeName)
-	creditTypeName = strings.TrimSpace(creditTypeName)
+	creditTypeName = util.FastRemoveWhitespace(creditTypeName)
 	for _, creditType := range creditTypes {
 		if creditType.Type == creditTypeName {
 			return creditType, nil
