@@ -1,7 +1,10 @@
-- Start date: 2020-02-27
-- RFC PR: [regen-ledger#107](https://github.com/regen-network/regen-ledger/pull/107)
-- Regen Network Issue: n/a
-- Authors: @clevinson, @aaronc
+RFC-001: Ecocredit Module
+=========================
+
+- Created: 2020-02-27
+- Status: __ACCEPTED__
+- Relevant Discussions/Issues/PRs: [regen-ledger#107](https://github.com/regen-network/regen-ledger/pull/107)
+- Authors: Cory Levinson (@clevinson), Aaron Craelius (@aaronc)
 
 # Summary
 

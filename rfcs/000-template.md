@@ -1,6 +1,9 @@
-- Start date: (fill me in with today's date, YYYY-MM-DD)
-- RFC PR: [regen-ledger#0000](https://github.com/regen-network/regen-ledger/pull/0000)
-- Regen Network Issue: [regen-ledger#0000](https://github.com/regen-network/regen-ledger/issues/0000)
+RFC-XXX: Title of RFC
+=====================
+
+- Created: (fill me in with today's date, YYYY-MM-DD)
+- Status: __ACCEPTED__
+- Relevant Discussions/Issues/PRs: [regen-ledger#107](https://github.com/regen-network/regen-ledger/pull/107)
 - Authors:
 
 # Summary
