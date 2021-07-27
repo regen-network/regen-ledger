@@ -1,5 +1,5 @@
-RFC-001: Ecocredit Module
-=========================
+RFC-001: Ecosystem Service Credit Module
+========================================
 
 - Created: 2020-02-27
 - Status: __ACCEPTED__

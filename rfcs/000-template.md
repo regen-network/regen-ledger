@@ -2,8 +2,9 @@ RFC-XXX: Title of RFC
 =====================
 
 - Created: (fill me in with today's date, YYYY-MM-DD)
-- Status: __ACCEPTED__
-- Relevant Discussions/Issues/PRs: [regen-ledger#107](https://github.com/regen-network/regen-ledger/pull/107)
+- Status: __DRAFT__ | __IN REVIEW__ | __ACCEPTED__ | __REJECTED__ | __SUPERSEDED__ | __ABANDONED__
+- Superseded By: N/A
+- RFC PR: [regen-ledger#107](https://github.com/regen-network/regen-ledger/pull/107)
 - Authors:
 
 # Summary
@@ -21,3 +22,8 @@ The recommended approach to fulfill the needs presented in the previous section.
 # Rationale
 
 Include an overview of what tradeoffs exist when taking this approach, what benefits come from it, and/or what alternatives were considered.
+
+# References
+
+1. ..
+2. ..
