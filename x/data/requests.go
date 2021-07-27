@@ -10,14 +10,14 @@ import (
 )
 
 var (
-	_, _, _ sdk.Msg = &MsgAnchorDataRequest{}, &MsgSignDataRequest{}, &MsgStoreRawDataRequest{}
+	_, _, _ sdk.Msg = &MsgAnchorData{}, &MsgSignData{}, &MsgStoreRawData{}
 )
 
-func (m *MsgAnchorDataRequest) ValidateBasic() error {
+func (m *MsgAnchorData) ValidateBasic() error {
 	return m.Hash.Validate()
 }
 
-func (m *MsgAnchorDataRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgAnchorData) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Sender)
 	if err != nil {
 		panic(err)
@@ -26,11 +26,11 @@ func (m *MsgAnchorDataRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
-func (m *MsgSignDataRequest) ValidateBasic() error {
+func (m *MsgSignData) ValidateBasic() error {
 	return m.Hash.Validate()
 }
 
-func (m *MsgSignDataRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgSignData) GetSigners() []sdk.AccAddress {
 	addrs := make([]sdk.AccAddress, len(m.Signers))
 
 	for i, signer := range m.Signers {
@@ -44,7 +44,7 @@ func (m *MsgSignDataRequest) GetSigners() []sdk.AccAddress {
 	return addrs
 }
 
-func (m *MsgStoreRawDataRequest) ValidateBasic() error {
+func (m *MsgStoreRawData) ValidateBasic() error {
 	err := m.ContentHash.Validate()
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func (m *MsgStoreRawDataRequest) ValidateBasic() error {
 	}
 }
 
-func (m *MsgStoreRawDataRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgStoreRawData) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Sender)
 	if err != nil {
 		panic(err)

@@ -8,6 +8,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/server/api"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/simulation"
@@ -16,6 +17,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/module"
+	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 )
 
 // Manager is the server module manager
@@ -23,6 +25,7 @@ type Manager struct {
 	baseApp                    *baseapp.BaseApp
 	cdc                        *codec.ProtoCodec
 	keys                       map[string]ModuleKey
+	modules                    []module.Module
 	router                     *router
 	requiredServices           map[reflect.Type]bool
 	initGenesisHandlers        map[string]module.InitGenesisHandler
@@ -52,8 +55,9 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 		router: &router{
 			handlers:         map[string]handler{},
 			providedServices: map[reflect.Type]bool{},
-			antiReentryMap:   map[string]bool{},
+			msgServiceRouter: baseApp.MsgServiceRouter(),
 		},
+		requiredServices:           map[reflect.Type]bool{},
 		weightedOperationsHandlers: map[string]WeightedOperationsHandler{},
 	}
 }
@@ -62,8 +66,21 @@ func (mm *Manager) GetWeightedOperationsHandlers() map[string]WeightedOperations
 	return mm.weightedOperationsHandlers
 }
 
+// RegisterGRPCGatewayRoutes registers all module grpc-gateway routes
+func (mm *Manager) RegisterGRPCGatewayRoutes(apiSvr *api.Server) {
+	for _, m := range mm.modules {
+		// check if we actually have a grpc-gateway module, otherwise skip
+		serverMod, ok := m.(restmodule.Module)
+		if !ok {
+			continue
+		}
+		serverMod.RegisterGRPCGatewayRoutes(apiSvr.ClientCtx, apiSvr.GRPCGatewayRouter)
+	}
+}
+
 // RegisterModules registers modules with the Manager and registers their services.
 func (mm *Manager) RegisterModules(modules []module.Module) error {
+	mm.modules = modules
 	// First we register all interface types. This is done for all modules first before registering
 	// any services in case there are any weird dependencies that will cause service initialization to fail.
 	for _, mod := range modules {
@@ -120,7 +137,6 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 			key:              key,
 			cdc:              mm.cdc,
 			requiredServices: map[reflect.Type]bool{},
-			router:           mm.baseApp.Router(), // TODO: remove once #225 addressed
 		}
 
 		serverMod.RegisterServices(cfg)
@@ -198,7 +214,7 @@ func (mm *Manager) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawM
 	return res
 }
 
-func initGenesis(ctx sdk.Context, cdc codec.JSONCodec,
+func initGenesis(ctx sdk.Context, cdc codec.Codec,
 	genesisData map[string]json.RawMessage, validatorUpdates []abci.ValidatorUpdate,
 	initGenesisHandlers map[string]module.InitGenesisHandler) (abci.ResponseInitChain, error) {
 	for name, initGenesisHandler := range initGenesisHandlers {
@@ -235,7 +251,7 @@ func (mm *Manager) ExportGenesis(ctx sdk.Context) map[string]json.RawMessage {
 	return genesisData
 }
 
-func exportGenesis(ctx sdk.Context, cdc codec.JSONCodec, exportGenesisHandlers map[string]module.ExportGenesisHandler) (map[string]json.RawMessage, error) {
+func exportGenesis(ctx sdk.Context, cdc codec.Codec, exportGenesisHandlers map[string]module.ExportGenesisHandler) (map[string]json.RawMessage, error) {
 	var err error
 	genesisData := make(map[string]json.RawMessage)
 	for name, exportGenesisHandler := range exportGenesisHandlers {
@@ -260,7 +276,6 @@ type configurator struct {
 	key                       *rootModuleKey
 	cdc                       codec.Codec
 	requiredServices          map[reflect.Type]bool
-	router                    sdk.Router
 	initGenesisHandler        module.InitGenesisHandler
 	exportGenesisHandler      module.ExportGenesisHandler
 	weightedOperationHandler  WeightedOperationsHandler
@@ -296,12 +311,6 @@ func (c *configurator) ModuleKey() RootModuleKey {
 
 func (c *configurator) Marshaler() codec.Codec {
 	return c.cdc
-}
-
-// Router is temporarily added here to use in the group module.
-// TODO: remove once #225 addressed
-func (c *configurator) Router() sdk.Router {
-	return c.router
 }
 
 func (c *configurator) RequireServer(serverInterface interface{}) {
