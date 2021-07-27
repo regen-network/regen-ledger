@@ -47,6 +47,13 @@ func TestMsgCreateClass(t *testing.T) {
 			},
 			expErr: true,
 		},
+		"invalid with wrong designer": {
+			src: MsgCreateClass{
+				Designer: "wrongDesigner",
+				Issuers:  []string{addr1.String(), addr2.String()},
+			},
+			expErr: true,
+		},
 	}
 
 	for msg, test := range tests {
@@ -128,23 +135,6 @@ func TestMsgCreateBatch(t *testing.T) {
 			},
 			expErr: false,
 		},
-		"invalid with wrong recipient": {
-			src: MsgCreateBatch{
-				Issuer:    addr1.String(),
-				ClassId:   "ID",
-				StartDate: &startDate,
-				EndDate:   &endDate,
-				Issuance: []*MsgCreateBatch_BatchIssuance{
-					{
-						Recipient:          "wrongRecipient",
-						RetiredAmount:      "50",
-						RetirementLocation: "ST-UVW XY Z12",
-					},
-				},
-				ProjectLocation: "AB-CDE FG1 345",
-			},
-			expErr: false,
-		},
 		"invalid msg with wrong Issuance.TradableAmount": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
@@ -176,6 +166,22 @@ func TestMsgCreateBatch(t *testing.T) {
 			},
 			expErr: false,
 		},
+		"invalid msg with wrong Issuance.RetiredAmount": {
+			src: MsgCreateBatch{
+				Issuer:    addr1.String(),
+				ClassId:   "ID",
+				StartDate: &startDate,
+				EndDate:   &endDate,
+				Issuance: []*MsgCreateBatch_BatchIssuance{
+					{
+						Recipient:     addr2.String(),
+						RetiredAmount: "abc",
+					},
+				},
+				ProjectLocation: "AB-CDE FG1 345",
+			},
+			expErr: true,
+		},
 		"invalid msg with wrong Issuance.RetirementLocation": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
@@ -193,7 +199,7 @@ func TestMsgCreateBatch(t *testing.T) {
 			},
 			expErr: true,
 		},
-		"invalid msg with wrong Issuance.RetiredAmount": {
+		"invalid msg without Issuance.RetirementLocation": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
 				ClassId:   "ID",
@@ -202,7 +208,7 @@ func TestMsgCreateBatch(t *testing.T) {
 				Issuance: []*MsgCreateBatch_BatchIssuance{
 					{
 						Recipient:     addr2.String(),
-						RetiredAmount: "abc",
+						RetiredAmount: "50",
 					},
 				},
 				ProjectLocation: "AB-CDE FG1 345",
@@ -279,6 +285,39 @@ func TestMsgCreateBatch(t *testing.T) {
 			},
 			expErr: true,
 		},
+		"invalid with wrong recipient": {
+			src: MsgCreateBatch{
+				Issuer:    addr1.String(),
+				ClassId:   "ID",
+				StartDate: &startDate,
+				EndDate:   &endDate,
+				Issuance: []*MsgCreateBatch_BatchIssuance{
+					{
+						Recipient:          "wrongRecipient",
+						RetiredAmount:      "50",
+						RetirementLocation: "ST-UVW XY Z12",
+					},
+				},
+				ProjectLocation: "AB-CDE FG1 345",
+			},
+			expErr: true,
+		},
+		"invalid msg without recipient address": {
+			src: MsgCreateBatch{
+				Issuer:    addr1.String(),
+				ClassId:   "ID",
+				StartDate: &startDate,
+				EndDate:   &endDate,
+				Issuance: []*MsgCreateBatch_BatchIssuance{
+					{
+						RetiredAmount:      "50",
+						RetirementLocation: "ST-UVW XY Z12",
+					},
+				},
+				ProjectLocation: "AB-CDE FG1 345",
+			},
+			expErr: true,
+		},
 	}
 
 	for msg, test := range tests {
@@ -316,7 +355,7 @@ func TestMsgSend(t *testing.T) {
 			},
 			expErr: false,
 		},
-		"valid msg with Credits.RetiredAmount zero": {
+		"invalid msg with Credits.RetiredAmount negative value": {
 			src: MsgSend{
 				Sender:    addr1.String(),
 				Recipient: addr2.String(),
@@ -324,11 +363,11 @@ func TestMsgSend(t *testing.T) {
 					{
 						BatchDenom:     "some_denom",
 						TradableAmount: "10",
-						RetiredAmount:  "0",
+						RetiredAmount:  "-10",
 					},
 				},
 			},
-			expErr: false,
+			expErr: true,
 		},
 		"invalid msg without credits": {
 			src: MsgSend{
@@ -407,7 +446,7 @@ func TestMsgSend(t *testing.T) {
 			},
 			expErr: true,
 		},
-		"invalid msg without Credits.RetirementLocation set": {
+		"invalid msg without Credits.RetirementLocation": {
 			src: MsgSend{
 				Sender:    addr1.String(),
 				Recipient: addr2.String(),
@@ -420,6 +459,20 @@ func TestMsgSend(t *testing.T) {
 				},
 			},
 			expErr: true,
+		},
+		"valid msg without Credits.RetirementLocation(When RetiredAmount is zero)": {
+			src: MsgSend{
+				Sender:    addr1.String(),
+				Recipient: addr2.String(),
+				Credits: []*MsgSend_SendCredits{
+					{
+						BatchDenom:     "some_denom",
+						TradableAmount: "10",
+						RetiredAmount:  "0",
+					},
+				},
+			},
+			expErr: false,
 		},
 		"invalid msg with wrong sender": {
 			src: MsgSend{
@@ -561,6 +614,19 @@ func TestMsgRetire(t *testing.T) {
 						Amount:     "10",
 					},
 				},
+			},
+			expErr: true,
+		},
+		"invalid msg with wrong location": {
+			src: MsgRetire{
+				Holder: addr1.String(),
+				Credits: []*MsgRetire_RetireCredits{
+					{
+						BatchDenom: "some_denom",
+						Amount:     "10",
+					},
+				},
+				Location: "wrongLocation",
 			},
 			expErr: true,
 		},

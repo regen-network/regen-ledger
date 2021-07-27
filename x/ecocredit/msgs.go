@@ -1,8 +1,6 @@
 package ecocredit
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -21,13 +19,13 @@ func (m *MsgCreateClass) ValidateBasic() error {
 	}
 
 	if len(m.Issuers) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "issuers cannot be empty")
-	} else {
-		for _, issuer := range m.Issuers {
-			_, err := sdk.AccAddressFromBech32(issuer)
-			if err != nil {
-				return sdkerrors.Wrap(err, fmt.Sprintf("issuer: %s", issuer))
-			}
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Issuers cannot be empty")
+	}
+
+	for _, issuer := range m.Issuers {
+		_, err := sdk.AccAddressFromBech32(issuer)
+		if err != nil {
+			return sdkerrors.Wrapf(err, "issuer: %s", issuer)
 		}
 	}
 
@@ -59,7 +57,7 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf("The batch end date (%s) must be the same as or after the batch start date (%s)", m.EndDate.Format("2006-01-02"), m.StartDate.Format("2006-01-02"))
 	}
 	if m.ClassId == "" {
-		return sdkerrors.ErrInvalidRequest.Wrapf("Class ID should not be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("Class ID should not be empty")
 	}
 
 	err = validateLocation(m.ProjectLocation)
@@ -68,6 +66,11 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 	}
 
 	for _, iss := range m.Issuance {
+		_, err := sdk.AccAddressFromBech32(iss.Recipient)
+		if err != nil {
+			return err
+		}
+
 		if iss.TradableAmount != "" {
 			_, err := math.ParseNonNegativeDecimal(iss.TradableAmount)
 			if err != nil {
@@ -158,12 +161,12 @@ func (m *MsgRetire) ValidateBasic() error {
 	}
 
 	if len(m.Credits) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("credits should not be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("Credits should not be empty")
 	}
 
 	for _, iss := range m.Credits {
 		if iss.BatchDenom == "" {
-			return sdkerrors.ErrInvalidRequest.Wrap("batch denom should not be empty")
+			return sdkerrors.ErrInvalidRequest.Wrap("BatchDenom should not be empty")
 		}
 		_, err := math.ParsePositiveDecimal(iss.Amount)
 		if err != nil {
@@ -195,12 +198,12 @@ func (m *MsgCancel) ValidateBasic() error {
 	}
 
 	if len(m.Credits) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("credits should not be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("Credits should not be empty")
 	}
 
 	for _, iss := range m.Credits {
 		if iss.BatchDenom == "" {
-			return sdkerrors.ErrInvalidRequest.Wrap("batch denom should not be empty")
+			return sdkerrors.ErrInvalidRequest.Wrap("BatchDenom should not be empty")
 		}
 
 		_, err := math.ParsePositiveDecimal(iss.Amount)
