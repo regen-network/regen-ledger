@@ -116,6 +116,14 @@ To install `cosmovisor`, run the following command:
 go get github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
 ```
 
+## Set Genesis Binary
+
+Create the folder for the genesis binary and copy the `regen` binary:
+```
+mkdir -p $HOME/.regen/cosmovisor/genesis/bin
+cp ./build/regen $HOME/.regen/cosmovisor/genesis/bin
+```
+
 ## Cosmovisor Service
 
 The next step will be to configure `cosmovisor` as a `systemd` service. For more information about the environment variables used to configure `cosmovisor`, see [Cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor).
@@ -131,7 +139,7 @@ Description=Cosmovisor daemon
 After=network-online.target
 [Service]
 Environment="DAEMON_NAME=regen"
-Environment="DAEMON_HOME=${HOME}/.${DAEMON}"
+Environment="DAEMON_HOME=${HOME}/.regen"
 Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
 Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=true"
 User=${USER}

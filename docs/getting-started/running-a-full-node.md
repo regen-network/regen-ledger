@@ -4,7 +4,7 @@ This document provides instructions for running a full node for a [live network]
 
 ## Prerequisites
 
-In order to install the `regen` binary, you'll need the following: 
+In order to install the `cosmovisor` and `regen` binaries, you'll need the following: 
 
 - Git `>=2`
 - Make `>=4`
@@ -73,10 +73,14 @@ regen init [moniker] --chain-id regen-devnet-5
 
 Update the genesis file for either Regen Mainnet or Regen Devnet.
 
+<!-- TODO: update to use dedicated full node operated by RND -->
+
 *For Regen Mainnet:*
 ```
 curl http://104.131.169.70:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
+
+<!-- TODO: update to use dedicated full node operated by RND -->
 
 *For Regen Devnet:*
 ```
@@ -105,7 +109,65 @@ sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.reg
 
 ## Start Node
 
+At this point, the node is ready. If you do not need to run a dedicated full node in a separate process, you can start the node using the `regen` binary.
+
 Start node:
 ```
 regen start
+```
+
+## Install Cosmovisor
+
+[Cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor) is a process manager for running application binaries. Using Cosmovisor is not required but recommended for node operators that would like to automate the upgrade process.
+
+To install `cosmovisor`, run the following command:
+```
+go get github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
+```
+
+## Set Genesis Binary
+
+Create the folder for the genesis binary and copy the `regen` binary:
+```
+mkdir -p $HOME/.regen/cosmovisor/genesis/bin
+cp ./build/regen $HOME/.regen/cosmovisor/genesis/bin
+```
+
+## Cosmovisor Service
+
+The next step will be to configure `cosmovisor` as a `systemd` service. For more information about the environment variables used to configure `cosmovisor`, see [Cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor).
+
+::: warning
+You'll want to carefully consider the options you set when configuring cosmovisor. The current version of cosmovisor does not require the checksum parameter to be included in the URL of the downloadable upgrade binary, so the auto-download option should be used with caution.
+:::
+
+Create the `cosmovisor.service` file:
+```
+echo "[Unit]
+Description=Cosmovisor daemon
+After=network-online.target
+[Service]
+Environment="DAEMON_NAME=regen"
+Environment="DAEMON_HOME=${HOME}/.regen"
+Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
+Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=true"
+User=${USER}
+ExecStart=${GOBIN}/cosmovisor start
+Restart=always
+RestartSec=3
+LimitNOFILE=4096
+[Install]
+WantedBy=multi-user.target
+" >cosmovisor.service
+```
+
+Move the file to the systemd directory:
+```
+sudo mv cosmovisor.service /lib/systemd/system/cosmovisor.service
+```
+
+Reload systemctl and start `cosmovisor`:
+```
+sudo -S systemctl daemon-reload
+sudo -S systemctl start cosmovisor
 ```

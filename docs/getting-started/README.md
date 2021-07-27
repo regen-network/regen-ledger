@@ -76,19 +76,24 @@ In this case, `node` is the name (or "moniker") of the node and `test` is the ch
 
 When the node was initialized, a `genesis.json` file was created within the `config` directory. In this section, you will be adding two genesis accounts (accounts with an initial token balance) and a genesis transaction (a transaction that registers the validator account in the validator set).
 
+Update native staking token to `uregen`:
+```
+sed -i "s/stake/uregen/g" ~/.regen/config/genesis.json
+```
+
 Add `validator` account to `genesis.json`:
 ```
-regen add-genesis-account validator 5000000000stake --keyring-backend test
+regen add-genesis-account validator 5000000000uregen --keyring-backend test
 ```
 
 Add `delegator` account to `genesis.json`:
 ```
-regen add-genesis-account delegator 2000000000stake --keyring-backend test
+regen add-genesis-account delegator 2000000000uregen --keyring-backend test
 ```
 
 Create genesis transaction:
 ```
-regen gentx validator 1000000stake --chain-id test --keyring-backend test
+regen gentx validator 1000000uregen --chain-id test --keyring-backend test
 ```
 
 Add genesis transaction to `genesis.json`:
@@ -111,16 +116,16 @@ You should see logs printed in your terminal with information about services sta
 
 ## Test Commands
 
-Now that you have a single node network running, you can open a new terminal window and interact with the node using the same `regen` binary. Let's delegate some `stake` tokens to the validator and then collect the rewards.
+Now that you have a single node network running, you can open a new terminal window and interact with the node using the same `regen` binary. Let's delegate some `uregen` tokens to the validator and then collect the rewards.
 
 Get the validator address for the `validator` account:
 ```
 regen keys show validator --bech val --keyring-backend test
 ```
 
-Using the validator address, delegate some `stake` tokens:
+Using the validator address, delegate some `uregen` tokens:
 ```
-regen tx staking delegate [validator_address] 10000000stake --from delegator --keyring-backend test --chain-id test
+regen tx staking delegate [validator_address] 10000000uregen --from delegator --keyring-backend test --chain-id test
 ```
 
 In order to query all delegations, you'll need the address for the `delegator` account:
@@ -148,4 +153,4 @@ Check the account balance:
 regen q bank balances [delegator_address]
 ```
 
-You have successfully delegated `stake` tokens to the `validator` account from the `delegator` account and then collected the rewards.
+You have successfully delegated `uregen` tokens to the `validator` account from the `delegator` account and then collected the rewards.
