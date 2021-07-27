@@ -8,7 +8,7 @@ RFC-001: Ecosystem Service Credit Module
 
 # Summary
 
-This RFC aims to layout a high level architecture and featureset for Regen Network's onchain handling of Ecosystem Service Credits. It was originally circulated as a [google doc](https://docs.google.com/document/d/1-CRfpZgPxiaZB4nhMwKKkeWbLDI5dYc0hmGwnGkCHP4/edit#), and was accepted on 2020-05-21.
+This RFC aims to layout a high level architecture and featureset for Regen Network's onchain handling of Ecosystem Service Credits. It was originally circulated as a [google doc](https://docs.google.com/document/d/1-CRfpZgPxiaZB4nhMwKKkeWbLDI5dYc0hmGwnGkCHP4/edit#) [1], and was accepted on 2020-05-21.
 
 # Need
 
@@ -33,11 +33,11 @@ Although the needs illustrated above are meant to primarily address our own inte
 
 #### Previous Work
 
-Prior to this RFC, initial specifications have been worked on in 2019 in the form of [an initial Go specification on github](https://github.com/regen-network/regen-ledger/pull/67/files#diff-68348df3fa3097a94a14436af03aab22).
+Prior to this RFC, initial specifications have been worked on in 2019 in the form of [an initial Go specification on github](https://github.com/regen-network/regen-ledger/pull/67/files#diff-68348df3fa3097a94a14436af03aab22) [2].
 
 #### Protobuf Definitions
 
-The corresponding protocol buffer definitions for the approach outlined in this RFC can be found [here](https://github.com/regen-network/regen-ledger/pull/102/files#diff-6fd37b2fd19e0fae88459fdc5025921f).
+The corresponding protocol buffer definitions for the approach outlined in this RFC were formalized in [regen-ledger#102](https://github.com/regen-network/regen-ledger/pull/102/files#diff-6fd37b2fd19e0fae88459fdc5025921f) [3].
 
 ## Definitions
 
@@ -152,3 +152,8 @@ Specifically, the metadata fields in the credit class and credit vintage could b
 
 Another design decision made in this proposal was to only implement two possible states for credits: “tradable” and “retired”. These are the two known states that we need to be able to manage for our first use case with the registry. While it is assumed that there may be more complex state machines that we will need to support at a later date, we chose to start with satisfying the current use case for the same reasons illustrated above (reducing complexity, and allowing future use cases to drive more complex functionality or generalizations).
 
+# References
+
+1. https://docs.google.com/document/d/1-CRfpZgPxiaZB4nhMwKKkeWbLDI5dYc0hmGwnGkCHP4/edit#
+2. https://github.com/regen-network/regen-ledger/pull/67/files#diff-68348df3fa3097a94a14436af03aab22
+3. https://github.com/regen-network/regen-ledger/pull/102/files#diff-6fd37b2fd19e0fae88459fdc5025921f
