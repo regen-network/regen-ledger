@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"io/ioutil"
 	"regexp"
 	"strings"
 	"time"
@@ -28,6 +29,21 @@ func mkQueryClient(cmd *cobra.Command) (ecocredit.QueryClient, sdkclient.Context
 		return nil, sdkclient.Context{}, err
 	}
 	return ecocredit.NewQueryClient(ctx), ctx, err
+}
+
+func parseMsgCreateBatch(clientCtx sdkclient.Context, batchFile string) (*ecocredit.MsgCreateBatch, error) {
+	contents, err := ioutil.ReadFile(batchFile)
+	if err != nil {
+		return nil, err
+	}
+
+	var msg ecocredit.MsgCreateBatch
+	err = clientCtx.Codec.UnmarshalJSON(contents, &msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return &msg, nil
 }
 
 type credits struct {
