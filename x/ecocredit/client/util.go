@@ -31,15 +31,6 @@ func mkQueryClient(cmd *cobra.Command) (ecocredit.QueryClient, sdkclient.Context
 	return ecocredit.NewQueryClient(ctx), ctx, err
 }
 
-func WriteMsgCreateBatchJSON(clientCtx sdkclient.Context, batchFile string, msg *ecocredit.MsgCreateBatch) error {
-	bytes, err := clientCtx.Codec.MarshalJSON(msg)
-	if err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(batchFile, bytes, 0664)
-}
-
 func parseMsgCreateBatch(clientCtx sdkclient.Context, batchFile string) (*ecocredit.MsgCreateBatch, error) {
 	contents, err := ioutil.ReadFile(batchFile)
 	if err != nil {

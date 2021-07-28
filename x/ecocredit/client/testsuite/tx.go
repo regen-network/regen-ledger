@@ -132,7 +132,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	if err != nil {
 		panic(err.Error())
 	}
-	err = client.WriteMsgCreateBatchJSON(val.ClientCtx, file.Name(), &msgCreateBatch)
+	err = writeMsgCreateBatchJSON(val.ClientCtx, file.Name(), &msgCreateBatch)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -381,7 +381,7 @@ func mustWriteBatchJSON(clientCtx sdkclient.Context, msgCreateBatch *ecocredit.M
 	if err != nil {
 		panic(err.Error())
 	}
-	err = client.WriteMsgCreateBatchJSON(clientCtx, batchJson.Name(), msgCreateBatch)
+	err = writeMsgCreateBatchJSON(clientCtx, batchJson.Name(), msgCreateBatch)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -393,7 +393,16 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
-	//TODO: Write some invalid JSON to a file and show that doesn't work!
+	// Write some invalid JSON to a file
+	invalidJsonFile, err := ioutil.TempFile(s.T().TempDir(), "invalid*.json")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	err = ioutil.WriteFile(invalidJsonFile.Name(), []byte("{asdljdfklfklksdflk}"), 0664)
+	if err != nil {
+		panic(err.Error())
+	}
 
 	// Create a valid MsgCreateBatch
 	startDate, err := client.ParseDate("start date", "2021-01-01")
@@ -481,6 +490,18 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 			args:           []string{"abcde", "abcde"},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name: "invalid json",
+			args: append(
+				[]string{
+					invalidJsonFile.Name(),
+					makeFlagFrom(val.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr:      true,
+			expectedErrMsg: "Error: parsing batch JSON",
 		},
 		{
 			name: "invalid class id",
@@ -1063,4 +1084,13 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 			}
 		})
 	}
+}
+
+func writeMsgCreateBatchJSON(clientCtx sdkclient.Context, batchFile string, msg *ecocredit.MsgCreateBatch) error {
+	bytes, err := clientCtx.Codec.MarshalJSON(msg)
+	if err != nil {
+		return err
+	}
+
+	return ioutil.WriteFile(batchFile, bytes, 0664)
 }
