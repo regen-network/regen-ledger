@@ -12,7 +12,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
-func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.JSONCodec, data json.RawMessage) ([]abci.ValidatorUpdate, error) {
+func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.RawMessage) ([]abci.ValidatorUpdate, error) {
 	var genesisState group.GenesisState
 	cdc.MustUnmarshalJSON(data, &genesisState)
 
@@ -45,7 +45,7 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.JSONCodec, data jso
 	return []abci.ValidatorUpdate{}, nil
 }
 
-func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.JSONCodec) (json.RawMessage, error) {
+func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawMessage, error) {
 	genesisState := group.NewGenesisState()
 
 	var groups []*group.GroupInfo

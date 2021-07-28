@@ -91,6 +91,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 const (
@@ -138,6 +139,7 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+		ecocredit.ModuleName:           {authtypes.Burner},
 	}
 )
 
@@ -591,6 +593,9 @@ func (app *RegenApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIC
 
 	ModuleBasics.RegisterRESTRoutes(clientCtx, apiSvr.Router)
 	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
+
+	// Register `server.Manager` modules grpc-gateway routes with API server.
+	app.smm.RegisterGRPCGatewayRoutes(apiSvr)
 
 	// register swagger API from root so that other applications can override easily
 	if apiConfig.Swagger {

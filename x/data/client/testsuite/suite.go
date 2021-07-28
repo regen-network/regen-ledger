@@ -189,7 +189,7 @@ func (s *IntegrationTestSuite) TestTxAnchorData() {
 	//			s.Require().Contains(out.String(), tc.expectErrMsg)
 	//		} else {
 	//			s.Require().NoError(err, out.String())
-	//			s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+	//			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 	//
 	//			txResp := tc.respType.(*sdk.TxResponse)
 	//			s.Require().Equal(tc.expectedCode, txResp.Code, out.String())
@@ -241,7 +241,7 @@ func (s *IntegrationTestSuite) TestGetAnchorDataByCID() {
 	//
 	//		} else {
 	//			s.Require().NoError(err, out.String())
-	//			s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), &tc.resp), out.String())
+	//			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &tc.resp), out.String())
 	//
 	//			txResp := tc.resp
 	//			s.Require().NotNil(txResp)
@@ -328,7 +328,7 @@ func (s *IntegrationTestSuite) TestTxSignData() {
 	//			s.Require().Contains(out.String(), tc.expectErrMsg)
 	//		} else {
 	//			s.Require().NoError(err, out.String())
-	//			s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+	//			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 	//
 	//			txResp := tc.respType.(*sdk.TxResponse)
 	//			s.Require().Equal(tc.expectedCode, txResp.Code, out.String())
@@ -417,7 +417,7 @@ func (s *IntegrationTestSuite) TestTxStoreData() {
 	//			s.Require().Contains(out.String(), tc.expectErrMsg)
 	//		} else {
 	//			s.Require().NoError(err, out.String())
-	//			s.Require().NoError(clientCtx.JSONCodec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
+	//			s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
 	//
 	//			txResp := tc.respType.(*sdk.TxResponse)
 	//			s.Require().Equal(tc.expectedCode, txResp.Code, out.String())

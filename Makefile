@@ -237,7 +237,7 @@ LEDGER_MOCK_ARGS	= ledger test_ledger_mock norace
 TEST_RACE_ARGS		= cgo ledger test_ledger_mock
 ifeq ($(EXPERIMENTAL),true)
 	UNIT_TEST_ARGS		+= experimental
-	AMINO_TEST_ARGS		+= expermental
+	AMINO_TEST_ARGS		+= experimental
 	LEDGER_TEST_ARGS	+= experimental
 	LEDGER_MOCK_ARGS	+= experimental
 	TEST_RACE_ARGS		+= experimental
@@ -272,7 +272,7 @@ endif
 .PHONY: run-tests test test-all $(TEST_TARGETS)
 
 test-cover:
-	@export VERSION=$(VERSION); 
+	@export VERSION=$(VERSION);
 	@bash scripts/test_cover.sh
 .PHONY: test-cover
 
@@ -378,6 +378,7 @@ proto-update-deps:
 
 	@mkdir -p $(COSMOS_PROTO_TYPES)/base/query/v1beta1/
 	@curl -sSL $(COSMOS_PROTO_URL)/base/query/v1beta1/pagination.proto > $(COSMOS_PROTO_TYPES)/base/query/v1beta1/pagination.proto
+	@curl -sSL $(COSMOS_PROTO_URL)/base/v1beta1/coin.proto > $(COSMOS_PROTO_TYPES)/base/v1beta1/coin.proto
 
 
 ###############################################################################
