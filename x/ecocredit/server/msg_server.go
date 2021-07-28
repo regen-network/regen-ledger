@@ -74,24 +74,31 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	store := ctx.KVStore(s.storeKey)
 
 	for _, issuance := range req.Issuance {
-		tradable, err := math.ParseNonNegativeDecimal(issuance.TradableAmount)
-		if err != nil {
-			return nil, err
+		var err error
+		tradable, retired := apd.New(0, 0), apd.New(0, 0)
+
+		if issuance.TradableAmount != "" {
+			tradable, err = math.ParseNonNegativeDecimal(issuance.TradableAmount)
+			if err != nil {
+				return nil, err
+			}
+
+			decPlaces := math.NumDecimalPlaces(tradable)
+			if decPlaces > maxDecimalPlaces {
+				maxDecimalPlaces = decPlaces
+			}
 		}
 
-		decPlaces := math.NumDecimalPlaces(tradable)
-		if decPlaces > maxDecimalPlaces {
-			maxDecimalPlaces = decPlaces
-		}
+		if issuance.RetiredAmount != "" {
+			retired, err = math.ParseNonNegativeDecimal(issuance.RetiredAmount)
+			if err != nil {
+				return nil, err
+			}
 
-		retired, err := math.ParseNonNegativeDecimal(issuance.RetiredAmount)
-		if err != nil {
-			return nil, err
-		}
-
-		decPlaces = math.NumDecimalPlaces(retired)
-		if decPlaces > maxDecimalPlaces {
-			maxDecimalPlaces = decPlaces
+			decPlaces := math.NumDecimalPlaces(retired)
+			if decPlaces > maxDecimalPlaces {
+				maxDecimalPlaces = decPlaces
+			}
 		}
 
 		recipient := issuance.Recipient
