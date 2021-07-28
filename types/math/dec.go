@@ -5,10 +5,21 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+
+// Dec is a wrapper struct around apd.Decimal that does no mutation of apd.Decimal's when performing
+// arithmetic, instead creating a new apd.Decimal for every operation ensuring usage is safe.
+//
+// Using apd.Decimal directly can be unsafe because apd operations mutate the underlying Decimal,
+// but when copying the big.Int structure can be shared between Decimal instances causing corruption.
+// This was originally discovered in regen0-network/mainnet#15.
 type Dec struct {
 	dec apd.Decimal
 }
 
+// In cosmos-sdk#7773, decimal128 (with 34 digits of precision) was suggested for performing
+// Quo/Mult arithmetic generically across the SDK. Even though the SDK
+// has yet to support a GDA with decimal128 (34 digits), we choose to utilize it here.
+// https://github.com/cosmos/cosmos-sdk/issues/7773#issuecomment-725006142
 var dec128Context = apd.Context{
 	Precision:   34,
 	MaxExponent: apd.MaxExponent,
@@ -30,20 +41,24 @@ func NewDecFromInt64(x int64) Dec {
 	return res
 }
 
+// Add returns a new Dec with value `x+y` without mutating any argument and error if
+// there is an overflow.
 func (x Dec) Add(y Dec) (Dec, error) {
 	var z Dec
 	_, err := apd.BaseContext.Add(&z.dec, &x.dec, &y.dec)
 	return z, errors.Wrap(err, "decimal addition error")
 }
 
+// Sub returns a new Dec with value `x-y` without mutating any argument and error if
+// there is an overflow.
 func (x Dec) Sub(y Dec) (Dec, error) {
 	var z Dec
 	_, err := apd.BaseContext.Sub(&z.dec, &x.dec, &y.dec)
-	return z, err
+	return z, errors.Wrap(err, "decimal subtraction error")
 }
 
-// SafeSub subtracts the value of y from x and stores the result in res with arbitrary precision only
-// if the result will be non-negative. An insufficient funds error is returned if the result would be negative.
+// SafeSub subtracts the value of y from x and stores the result in res with arbitrary precision.
+// Returns ErrInsufficientFunds error if the result is negative.
 func (x Dec) SafeSub(y Dec) error {
 	var z Dec
 	_, err := exactContext.Sub(&z.dec, &x.dec, &y.dec)
@@ -58,28 +73,36 @@ func (x Dec) SafeSub(y Dec) error {
 	return nil
 }
 
+// Quo returns a new Dec with value `x/y` (formatted as decimal128, 34 digit precision) without mutating any
+// argument and error if there is an overflow.
 func (x Dec) Quo(y Dec) (Dec, error) {
 	var z Dec
 	_, err := dec128Context.Quo(&z.dec, &x.dec, &y.dec)
-	return z, err
+	return z, errors.Wrap(err, "decimal quotient error")
 }
 
+// Quo returns a new integral Dec with value `x/y` (formatted as decimal128, with 34 digit precision)
+// without mutating any argument and error if there is an overflow.
 func (x Dec) QuoInteger(y Dec) (Dec, error) {
 	var z Dec
 	_, err := dec128Context.QuoInteger(&z.dec, &x.dec, &y.dec)
-	return z, err
+	return z, errors.Wrap(err, "decimal quotient error")
 }
 
+// Quo returns the integral remainder from `x/y` (formatted as decimal128, with 34 digit precision) without
+// mutating any argument and error if the integer part of x/y cannot fit in 34 digit precision
 func (x Dec) Rem(y Dec) (Dec, error) {
 	var z Dec
 	_, err := dec128Context.Rem(&z.dec, &x.dec, &y.dec)
-	return z, err
+	return z, errors.Wrap(err, "decimal remainder error")
 }
 
+// Mul returns a new Dec with value `x*y` (formatted as decimal128, with 34 digit precision) without
+// mutating any argument and error if there is an overflow.
 func (x Dec) Mul(y Dec) (Dec, error) {
 	var z Dec
 	_, err := dec128Context.Mul(&z.dec, &x.dec, &y.dec)
-	return z, err
+	return z, errors.Wrap(err, "decimal multiplication error")
 }
 
 func (x Dec) Int64() (int64, error) {
