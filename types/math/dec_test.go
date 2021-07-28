@@ -34,6 +34,13 @@ func TestDec(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, res.IsEqual(three))
 
+	res, err = five.SafeSub(two)
+	require.NoError(t, err)
+	require.True(t, res.IsEqual(three))
+
+	res, err = two.SafeSub(five)
+	require.Error(t, err, "Expected insufficient funds error")
+
 	res, err = four.Quo(two)
 	require.NoError(t, err)
 	require.True(t, res.IsEqual(two))
@@ -75,4 +82,28 @@ func TestDec(t *testing.T) {
 	require.False(t, minusOne.IsZero())
 	require.False(t, minusOne.IsPositive())
 	require.True(t, minusOne.IsNegative())
+
+
+	/*
+
+	TODO: Add Property Tests
+	========================
+
+	// Arithmetic tests
+
+    Mul(QuoInteger(a,b),b) + Rem(a,b) == a
+
+	Quo(Mul(a,b),b) == a
+
+	Quo(Mul(a,b),a) == b
+
+	Add(b,Sub(a,b)) == a
+
+	Sub(Add(a,b),b) == a
+
+	// Comparison tests
+	Cmp(a,b) IFF -1*Cmp(b,a) for varying precision b & a values
+	IsEqual(a,b) IFF IsEqual(b,a) for varying precision b & a values
+
+	*/
 }
