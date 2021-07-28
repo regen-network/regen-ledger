@@ -80,7 +80,7 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 }
 
 func (app *RegenApp) registerUpgradeHandlers() {
-	app.UpgradeKeeper.SetUpgradeHandler("v0.43.0-beta1-upgrade", func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
+	app.UpgradeKeeper.SetUpgradeHandler("v0.43.0-devnet-upgrade", func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
 		// 1st-time running in-store migrations, using 1 as fromVersion to
 		// avoid running InitGenesis.
 		// Explicitly skipping x/auth migrations. It is already patched in regen-ledger v1.0.
@@ -89,9 +89,12 @@ func (app *RegenApp) registerUpgradeHandlers() {
 			"bank":         1,
 			"capability":   1,
 			"crisis":       1,
+			"data":         1,
 			"distribution": 1,
+			"ecocredit":    1,
 			"evidence":     1,
 			"gov":          1,
+			"group":        1,
 			"mint":         1,
 			"params":       1,
 			"slashing":     1,
@@ -111,9 +114,8 @@ func (app *RegenApp) registerUpgradeHandlers() {
 		panic(err)
 	}
 
-	if upgradeInfo.Name == "v0.43.0-beta1-upgrade" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
+	if upgradeInfo.Name == "v0.43.0-devnet-upgrade" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			// TODO We should also add store upgrades for group, data, and ecocredit
 			Added: []string{"authz", "feegrant"},
 		}
 
