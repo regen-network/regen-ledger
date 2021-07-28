@@ -469,7 +469,7 @@ func subtractTradableBalanceAndSupply(store sdk.KVStore, holder string, batchDen
 func (s serverImpl) isDesignerAllowListed(ctx sdk.Context, addr sdk.Address) (bool, error) {
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(ctx, &params)
-	for _, sAddr := range params.AllowedClassCreatorAddresses {
+	for _, sAddr := range params.AllowedClassDesignerAddresses {
 		allowListedAddr, err := sdk.AccAddressFromBech32(sAddr)
 		if err != nil {
 			return false, err

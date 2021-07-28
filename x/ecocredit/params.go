@@ -23,7 +23,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyCreditClassFee, &p.CreditClassFee, validateCreditClassFee),
-		paramtypes.NewParamSetPair(KeyAllowlistedCreditCreators, &p.AllowedClassCreatorAddresses, validateAllowlistCreditCreators),
+		paramtypes.NewParamSetPair(KeyAllowlistedCreditCreators, &p.AllowedClassDesignerAddresses, validateAllowlistCreditCreators),
 		paramtypes.NewParamSetPair(KeyAllowlistEnabled, &p.AllowlistEnabled, validateAllowlistEnabled),
 	}
 }
@@ -66,9 +66,9 @@ func validateAllowlistEnabled(i interface{}) error {
 
 func NewParams(creditClassFee sdk.Coins, allowlist []string, allowlistEnabled bool) Params {
 	return Params{
-		CreditClassFee:               creditClassFee,
-		AllowedClassCreatorAddresses: allowlist,
-		AllowlistEnabled:             allowlistEnabled,
+		CreditClassFee:                creditClassFee,
+		AllowedClassDesignerAddresses: allowlist,
+		AllowlistEnabled:              allowlistEnabled,
 	}
 }
 
