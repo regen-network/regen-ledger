@@ -71,7 +71,7 @@ Credits that are retired cannot be un-retired by either the credit issuer, or cr
 
 ### Create Credit Class
 
-The create credit class operation creates a new class of a credit class.
+The create credit class operation creates a new credit class.
 
 Arguments:
 - The list of issuers of the new credit class
