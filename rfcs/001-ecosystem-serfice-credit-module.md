@@ -27,7 +27,7 @@ Taking Regen Registry’s pilot projects as our initial use case, we understand 
   - Tradable credits can be transferred between accounts, by the owner
   - Retired credits cannot be transferred, and cannot be unretired
 
-Although the needs illustrated above are meant to primarily address our own internal use cases, we welcome further input & feedback from the larger crypto and ecosystem services communities. Our hope is that the circulation of this document enables us to broaden our understanding of what needs we should be considering when designing a system for on-chain credits. Feedback will either be addressed directly via revisions to this document, or by factoring feedback into future versions of this specification.
+Although the needs illustrated above are meant to primarily address our own internal use cases, we welcome further input and feedback from the larger crypto and ecosystem services communities. Our hope is that the circulation of this document enables us to broaden our understanding of what needs we should be considering when designing a system for on-chain credits. Feedback will either be addressed directly via revisions to this document, or by factoring feedback into future versions of this specification.
 
 # Approach
 
