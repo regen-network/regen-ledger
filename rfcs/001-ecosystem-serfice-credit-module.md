@@ -43,7 +43,7 @@ The corresponding protocol buffer definitions for the approach outlined in this 
 
 ### Credit Class
 
-A credit class defines a type of credits that is maintained by a credit designer and issued by a credit issuer.
+A credit class defines a type of credit that is maintained by a credit designer and issued by a credit issuer.
 
 ### Credit Designer
 
