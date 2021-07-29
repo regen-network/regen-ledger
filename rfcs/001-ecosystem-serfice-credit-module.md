@@ -140,7 +140,7 @@ If credits were represented as fully fungible tokens, then this would mean all c
 
 The other alternative, to preserve full auditability of all credits, would require a traditional NFT design, where each individual atomic credit unit (e.g. 1 ton of carbon) were represented by a unique ID as a non-fungible asset. While this would provide the most auditability, it drastically increases the technical complexity, and introduces usability issues (e.g. each individual credit would need to be traded as an individual transaction).
 
-## On-chain Metadata
+## On-Chain Metadata
 
 This proposal focuses on minimizing on-chain metadata as much as possible. Benefits of this approach include:
 - Reducing technical complexity, thus reducing development time
