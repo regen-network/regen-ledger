@@ -2,7 +2,7 @@ RFCs (Requests for Comment)
 ===========================
 
 Regen Network makes use of RFCs (Requests for Comment) as a method for documenting
-a proposals and specifications that warrent a more structured process.
+proposals and specifications that warrant a more structured process.
 
 It's common that general requirements for new features or modules on Regen Ledger
 may begin being discussed as a github issue, github discussion, or on non-github
