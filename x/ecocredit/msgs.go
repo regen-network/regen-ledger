@@ -19,7 +19,7 @@ func (m *MsgCreateClass) ValidateBasic() error {
 	}
 
 	if len(m.Issuers) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Issuers cannot be empty")
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "issuers cannot be empty")
 	}
 
 	for _, issuer := range m.Issuers {
@@ -48,16 +48,16 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 	}
 
 	if m.StartDate == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("Must provide a start date for the credit batch")
+		return sdkerrors.ErrInvalidRequest.Wrap("must provide a start date for the credit batch")
 	}
 	if m.EndDate == nil {
-		return sdkerrors.ErrInvalidRequest.Wrap("Must provide an end date for the credit batch")
+		return sdkerrors.ErrInvalidRequest.Wrap("must provide an end date for the credit batch")
 	}
 	if m.EndDate.Before(*m.StartDate) {
-		return sdkerrors.ErrInvalidRequest.Wrapf("The batch end date (%s) must be the same as or after the batch start date (%s)", m.EndDate.Format("2006-01-02"), m.StartDate.Format("2006-01-02"))
+		return sdkerrors.ErrInvalidRequest.Wrapf("the batch end date (%s) must be the same as or after the batch start date (%s)", m.EndDate.Format("2006-01-02"), m.StartDate.Format("2006-01-02"))
 	}
 	if m.ClassId == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("Class ID should not be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("class ID should not be empty")
 	}
 
 	err = validateLocation(m.ProjectLocation)
@@ -117,26 +117,26 @@ func (m *MsgSend) ValidateBasic() error {
 	}
 
 	if len(m.Credits) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("Credits should not be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("credits should not be empty")
 	}
 
-	for _, iss := range m.Credits {
-		if iss.BatchDenom == "" {
-			return sdkerrors.ErrInvalidRequest.Wrap("BatchDenom should not be empty")
+	for _, credit := range m.Credits {
+		if credit.BatchDenom == "" {
+			return sdkerrors.ErrInvalidRequest.Wrap("batch denom should not be empty")
 		}
 
-		_, err := math.ParseNonNegativeDecimal(iss.TradableAmount)
+		_, err := math.ParseNonNegativeDecimal(credit.TradableAmount)
 		if err != nil {
 			return err
 		}
 
-		retiredAmount, err := math.ParseNonNegativeDecimal(iss.RetiredAmount)
+		retiredAmount, err := math.ParseNonNegativeDecimal(credit.RetiredAmount)
 		if err != nil {
 			return err
 		}
 
 		if !retiredAmount.IsZero() {
-			err = validateLocation(iss.RetirementLocation)
+			err = validateLocation(credit.RetirementLocation)
 			if err != nil {
 				return err
 			}
@@ -161,14 +161,14 @@ func (m *MsgRetire) ValidateBasic() error {
 	}
 
 	if len(m.Credits) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("Credits should not be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("credits should not be empty")
 	}
 
-	for _, iss := range m.Credits {
-		if iss.BatchDenom == "" {
-			return sdkerrors.ErrInvalidRequest.Wrap("BatchDenom should not be empty")
+	for _, credit := range m.Credits {
+		if credit.BatchDenom == "" {
+			return sdkerrors.ErrInvalidRequest.Wrap("batch denom should not be empty")
 		}
-		_, err := math.ParsePositiveDecimal(iss.Amount)
+		_, err := math.ParsePositiveDecimal(credit.Amount)
 		if err != nil {
 			return err
 		}
@@ -198,15 +198,15 @@ func (m *MsgCancel) ValidateBasic() error {
 	}
 
 	if len(m.Credits) == 0 {
-		return sdkerrors.ErrInvalidRequest.Wrap("Credits should not be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("credits should not be empty")
 	}
 
-	for _, iss := range m.Credits {
-		if iss.BatchDenom == "" {
-			return sdkerrors.ErrInvalidRequest.Wrap("BatchDenom should not be empty")
+	for _, credit := range m.Credits {
+		if credit.BatchDenom == "" {
+			return sdkerrors.ErrInvalidRequest.Wrap("batch denom should not be empty")
 		}
 
-		_, err := math.ParsePositiveDecimal(iss.Amount)
+		_, err := math.ParsePositiveDecimal(credit.Amount)
 		if err != nil {
 			return err
 		}

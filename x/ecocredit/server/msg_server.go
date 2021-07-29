@@ -26,13 +26,6 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 	classID := s.idSeq.NextVal(ctx)
 	classIDStr := util.Uint64ToBase58Check(classID)
 
-	for _, issuer := range req.Issuers {
-		_, err := sdk.AccAddressFromBech32(issuer)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	// Charge the designer a fee to create the credit class
 	designerAddress, err := sdk.AccAddressFromBech32(req.Designer)
 	if err != nil {
@@ -390,13 +383,16 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 func (s serverImpl) SetPrecision(goCtx context.Context, req *ecocredit.MsgSetPrecision) (*ecocredit.MsgSetPrecisionResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	var batchInfo ecocredit.BatchInfo
+
 	err := s.batchInfoTable.GetOne(ctx, orm.RowID(req.BatchDenom), &batchInfo)
 	if err != nil {
 		return nil, err
 	}
+
 	if req.Issuer != batchInfo.Issuer {
 		return nil, sdkerrors.ErrUnauthorized
 	}
+
 	store := ctx.KVStore(s.storeKey)
 	key := MaxDecimalPlacesKey(batchDenomT(req.BatchDenom))
 	x, err := getUint32(store, key)
