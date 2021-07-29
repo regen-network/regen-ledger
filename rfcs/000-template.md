@@ -13,7 +13,7 @@ Brief explanation of what the RFC attempts to address.
 
 # Need
 
-What the identified need? A need should relate to an important and specific opportunity or use case.
+What's the identified need? A need should relate to an important and specific opportunity or use case.
 
 # Approach
 
