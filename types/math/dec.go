@@ -81,7 +81,7 @@ func (x Dec) Quo(y Dec) (Dec, error) {
 	return z, errors.Wrap(err, "decimal quotient error")
 }
 
-// Quo returns a new integral Dec with value `x/y` (formatted as decimal128, with 34 digit precision)
+// QuoInteger returns a new integral Dec with value `x/y` (formatted as decimal128, with 34 digit precision)
 // without mutating any argument and error if there is an overflow.
 func (x Dec) QuoInteger(y Dec) (Dec, error) {
 	var z Dec
@@ -89,7 +89,7 @@ func (x Dec) QuoInteger(y Dec) (Dec, error) {
 	return z, errors.Wrap(err, "decimal quotient error")
 }
 
-// Quo returns the integral remainder from `x/y` (formatted as decimal128, with 34 digit precision) without
+// Rem returns the integral remainder from `x/y` (formatted as decimal128, with 34 digit precision) without
 // mutating any argument and error if the integer part of x/y cannot fit in 34 digit precision
 func (x Dec) Rem(y Dec) (Dec, error) {
 	var z Dec
