@@ -38,6 +38,8 @@ Install the `regen` binary:
 make install
 ```
 
+Note: the `regen` binary is installed into `$(go env GOPATH)/bin`, so please make sure `$(go env GOPATH)/bin` is in your PATH (e.g. `export PATH=$(go env GOPATH)/bin:$PATH` if not already there)
+
 Check to make sure the install was successful:
 ```
 regen version
