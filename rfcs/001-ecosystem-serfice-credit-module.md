@@ -8,7 +8,7 @@ RFC-001: Ecosystem Service Credit Module
 
 # Summary
 
-This RFC aims to layout a high level architecture and featureset for Regen Network's onchain handling of Ecosystem Service Credits. It was originally circulated as a [google doc](https://docs.google.com/document/d/1-CRfpZgPxiaZB4nhMwKKkeWbLDI5dYc0hmGwnGkCHP4/edit#) [1], and was accepted on 2020-05-21.
+This RFC aims to lay out a high level architecture and feature set for Regen Network's on-chain handling of Ecosystem Service Credits. It was originally circulated as a [google doc](https://docs.google.com/document/d/1-CRfpZgPxiaZB4nhMwKKkeWbLDI5dYc0hmGwnGkCHP4/edit#) [1], and was accepted on 2020-05-21.
 
 # Need
 
