@@ -74,7 +74,7 @@ Credits that are retired cannot be un-retired by either the credit issuer, or cr
 The create credit class operation creates a new credit class.
 
 Arguments:
-- The list of issuers of the new credit class
+- the list of issuers of the new credit class
 - arbitrary metadata bytes (optional)
 
 The party signing this transaction is the credit designer. This operation will return a new credit class ID.
