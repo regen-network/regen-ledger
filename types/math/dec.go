@@ -57,21 +57,6 @@ func (x Dec) Sub(y Dec) (Dec, error) {
 	return z, errors.Wrap(err, "decimal subtraction error")
 }
 
-// SafeSub subtracts the value of y from x and returns the result with arbitrary precision.
-// Returns with ErrInsufficientFunds error if the result is negative.
-func (x Dec) SafeSub(y Dec) (Dec, error) {
-	var z Dec
-	_, err := exactContext.Sub(&z.dec, &x.dec, &y.dec)
-	if err != nil {
-		return z, errors.Wrap(err, "decimal subtraction error")
-	}
-
-	if z.IsNegative() {
-		return z, errors.ErrInsufficientFunds
-	}
-
-	return z, nil
-}
 
 // Quo returns a new Dec with value `x/y` (formatted as decimal128, 34 digit precision) without mutating any
 // argument and error if there is an overflow.

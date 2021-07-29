@@ -34,12 +34,19 @@ func TestDec(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, res.IsEqual(three))
 
-	res, err = five.SafeSub(two)
+	res, err = SubBalance(five, two)
 	require.NoError(t, err)
 	require.True(t, res.IsEqual(three))
 
-	res, err = two.SafeSub(five)
+	res, err = SubBalance(two, five)
 	require.Error(t, err, "Expected insufficient funds error")
+
+	res, err = AddBalance(three, two)
+	require.NoError(t, err)
+	require.True(t, res.IsEqual(five))
+
+	res, err = AddBalance(minusFivePointZero, five)
+	require.Error(t, err, "Expected ErrInvalidRequest")
 
 	res, err = four.Quo(two)
 	require.NoError(t, err)
