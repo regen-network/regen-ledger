@@ -221,7 +221,8 @@ EventVote is an event emitted when a voter votes on a proposal.
 <a name="regen.group.v1alpha1.GroupAccountInfo"></a>
 
 ### GroupAccountInfo
-GroupAccountInfo represents the high-level on-chain information for a group account.
+GroupAccountInfo represents the high-level on-chain information for a group
+account.
 
 
 | Field | Type | Label | Description |
@@ -310,10 +311,10 @@ Members defines a repeated slice of Member objects.
 <a name="regen.group.v1alpha1.Proposal"></a>
 
 ### Proposal
-Proposal defines a group proposal. Any member of a group can submit a proposal
-for a group account to decide upon.
-A proposal consists of a set of `sdk.Msg`s that will be executed if the proposal
-passes as well as some optional metadata associated with the proposal.
+Proposal defines a group proposal. Any member of a group can submit a
+proposal for a group account to decide upon. A proposal consists of a set of
+`sdk.Msg`s that will be executed if the proposal passes as well as some
+optional metadata associated with the proposal.
 
 
 | Field | Type | Label | Description |
@@ -534,7 +535,8 @@ QueryGroupAccountInfoResponse is the Query/GroupAccountInfo response type.
 <a name="regen.group.v1alpha1.QueryGroupAccountsByAdminRequest"></a>
 
 ### QueryGroupAccountsByAdminRequest
-QueryGroupAccountsByAdminRequest is the Query/GroupAccountsByAdmin request type.
+QueryGroupAccountsByAdminRequest is the Query/GroupAccountsByAdmin request
+type.
 
 
 | Field | Type | Label | Description |
@@ -550,7 +552,8 @@ QueryGroupAccountsByAdminRequest is the Query/GroupAccountsByAdmin request type.
 <a name="regen.group.v1alpha1.QueryGroupAccountsByAdminResponse"></a>
 
 ### QueryGroupAccountsByAdminResponse
-QueryGroupAccountsByAdminResponse is the Query/GroupAccountsByAdmin response type.
+QueryGroupAccountsByAdminResponse is the Query/GroupAccountsByAdmin response
+type.
 
 
 | Field | Type | Label | Description |
@@ -566,7 +569,8 @@ QueryGroupAccountsByAdminResponse is the Query/GroupAccountsByAdmin response typ
 <a name="regen.group.v1alpha1.QueryGroupAccountsByGroupRequest"></a>
 
 ### QueryGroupAccountsByGroupRequest
-QueryGroupAccountsByGroupRequest is the Query/GroupAccountsByGroup request type.
+QueryGroupAccountsByGroupRequest is the Query/GroupAccountsByGroup request
+type.
 
 
 | Field | Type | Label | Description |
@@ -582,7 +586,8 @@ QueryGroupAccountsByGroupRequest is the Query/GroupAccountsByGroup request type.
 <a name="regen.group.v1alpha1.QueryGroupAccountsByGroupResponse"></a>
 
 ### QueryGroupAccountsByGroupResponse
-QueryGroupAccountsByGroupResponse is the Query/GroupAccountsByGroup response type.
+QueryGroupAccountsByGroupResponse is the Query/GroupAccountsByGroup response
+type.
 
 
 | Field | Type | Label | Description |
@@ -722,7 +727,8 @@ QueryProposalResponse is the Query/Proposal response type.
 <a name="regen.group.v1alpha1.QueryProposalsByGroupAccountRequest"></a>
 
 ### QueryProposalsByGroupAccountRequest
-QueryProposalsByGroupAccountRequest is the Query/ProposalByGroupAccount request type.
+QueryProposalsByGroupAccountRequest is the Query/ProposalByGroupAccount
+request type.
 
 
 | Field | Type | Label | Description |
@@ -738,7 +744,8 @@ QueryProposalsByGroupAccountRequest is the Query/ProposalByGroupAccount request 
 <a name="regen.group.v1alpha1.QueryProposalsByGroupAccountResponse"></a>
 
 ### QueryProposalsByGroupAccountResponse
-QueryProposalsByGroupAccountResponse is the Query/ProposalByGroupAccount response type.
+QueryProposalsByGroupAccountResponse is the Query/ProposalByGroupAccount
+response type.
 
 
 | Field | Type | Label | Description |
@@ -754,7 +761,8 @@ QueryProposalsByGroupAccountResponse is the Query/ProposalByGroupAccount respons
 <a name="regen.group.v1alpha1.QueryVoteByProposalVoterRequest"></a>
 
 ### QueryVoteByProposalVoterRequest
-QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter request type.
+QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter request
+type.
 
 
 | Field | Type | Label | Description |
@@ -770,7 +778,8 @@ QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter request type.
 <a name="regen.group.v1alpha1.QueryVoteByProposalVoterResponse"></a>
 
 ### QueryVoteByProposalVoterResponse
-QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter response type.
+QueryVoteByProposalVoterResponse is the Query/VoteByProposalVoter response
+type.
 
 
 | Field | Type | Label | Description |
@@ -1027,7 +1036,8 @@ MsgUpdateGroupAccountAdmin is the Msg/UpdateGroupAccountAdmin request type.
 <a name="regen.group.v1alpha1.MsgUpdateGroupAccountAdminResponse"></a>
 
 ### MsgUpdateGroupAccountAdminResponse
-MsgUpdateGroupAccountAdminResponse is the Msg/UpdateGroupAccountAdmin response type.
+MsgUpdateGroupAccountAdminResponse is the Msg/UpdateGroupAccountAdmin
+response type.
 
 
 
@@ -1037,7 +1047,8 @@ MsgUpdateGroupAccountAdminResponse is the Msg/UpdateGroupAccountAdmin response t
 <a name="regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicy"></a>
 
 ### MsgUpdateGroupAccountDecisionPolicy
-MsgUpdateGroupAccountDecisionPolicy is the Msg/UpdateGroupAccountDecisionPolicy request type.
+MsgUpdateGroupAccountDecisionPolicy is the
+Msg/UpdateGroupAccountDecisionPolicy request type.
 
 
 | Field | Type | Label | Description |
@@ -1054,7 +1065,8 @@ MsgUpdateGroupAccountDecisionPolicy is the Msg/UpdateGroupAccountDecisionPolicy 
 <a name="regen.group.v1alpha1.MsgUpdateGroupAccountDecisionPolicyResponse"></a>
 
 ### MsgUpdateGroupAccountDecisionPolicyResponse
-MsgUpdateGroupAccountDecisionPolicyResponse is the Msg/UpdateGroupAccountDecisionPolicy response type.
+MsgUpdateGroupAccountDecisionPolicyResponse is the
+Msg/UpdateGroupAccountDecisionPolicy response type.
 
 
 
@@ -1064,7 +1076,8 @@ MsgUpdateGroupAccountDecisionPolicyResponse is the Msg/UpdateGroupAccountDecisio
 <a name="regen.group.v1alpha1.MsgUpdateGroupAccountMetadata"></a>
 
 ### MsgUpdateGroupAccountMetadata
-MsgUpdateGroupAccountMetadata is the Msg/UpdateGroupAccountMetadata request type.
+MsgUpdateGroupAccountMetadata is the Msg/UpdateGroupAccountMetadata request
+type.
 
 
 | Field | Type | Label | Description |
@@ -1081,7 +1094,8 @@ MsgUpdateGroupAccountMetadata is the Msg/UpdateGroupAccountMetadata request type
 <a name="regen.group.v1alpha1.MsgUpdateGroupAccountMetadataResponse"></a>
 
 ### MsgUpdateGroupAccountMetadataResponse
-MsgUpdateGroupAccountMetadataResponse is the Msg/UpdateGroupAccountMetadata response type.
+MsgUpdateGroupAccountMetadataResponse is the Msg/UpdateGroupAccountMetadata
+response type.
 
 
 

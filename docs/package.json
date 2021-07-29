@@ -9,8 +9,12 @@
   },
   "repository": "https://github.com/regen-network/regen-ledger/docs",
   "scripts": {
+    "predev": "./scripts/pre.sh",
     "dev": "vuepress dev",
-    "build": "vuepress build"
+    "postdev": "./scripts/post.sh",
+    "prebuild": "./scripts/pre.sh",
+    "build": "vuepress build",
+    "postbuild": "./scripts/post.sh"
   },
   "license": "MIT",
   "devDependencies": {

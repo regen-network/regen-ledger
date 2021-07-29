@@ -1,9 +1,4 @@
-<!--
-order: 0
-title: Group
-parent:
-  title: "group"
--->
+# Group Module Overview
 
 ## Abstract
 

@@ -103,7 +103,7 @@ message MsgCreateBatch {
 
   // project_location is the location of the project backing the credits in this
   // batch. It is a string of the form
-  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+  // <country_code>[-<sub_national_code>[ <postal_code>]], with the first two
   // fields conforming to ISO 3166-2, and postal-code being up to 64
   // alphanumeric characters. country-code is required, while sub-national-code
   // and postal-code can be added for increasing precision.
@@ -130,7 +130,7 @@ message MsgCreateBatch {
     // retirement_location is the location of the beneficiary or buyer of the
     // retired credits. This must be provided if retired_amount is positive. It
     // is a string of the form
-    // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+    // <country_code>[-<sub_national_code>[ <postal_code>]], with the first two
     // fields conforming to ISO 3166-2, and postal-code being up to 64
     // alphanumeric characters.
     string retirement_location = 4
@@ -180,7 +180,7 @@ message MsgSend {
     // retirement_location is the location of the beneficiary or buyer of the
     // retired credits. This must be provided if retired_amount is positive. It
     // is a string of the form
-    // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+    // <country_code>[-<sub_national_code>[ <postal_code>]], with the first two
     // fields conforming to ISO 3166-2, and postal-code being up to 64
     // alphanumeric characters.
     string retirement_location = 4
@@ -214,7 +214,7 @@ message MsgRetire {
 
   // location is the location of the beneficiary or buyer of the retired
   // credits. It is a string of the form
-  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+  // <country_code>[-<sub_national_code>[ <postal_code>]], with the first two
   // fields conforming to ISO 3166-2, and postal-code being up to 64
   // alphanumeric characters.
   string location = 3;

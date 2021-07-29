@@ -58,16 +58,46 @@ module.exports = {
               title: 'Data Module',
               collapsable: false,
               children: [
-                '/modules/data/',
-                {title: 'Protobuf Documentation', path: '/modules/data/protobuf', collapsable: true}
+                {
+                  title: 'Overview',
+                  path: '/modules/data/'
+                },
+                {
+                  title: 'Protobuf',
+                  path: '/modules/data/protobuf'
+                }
               ]
             },
             {
               title: 'Ecocredit Module',
               collapsable: false,
               children: [
-                '/modules/ecocredit/',
-                {title: 'Protobuf Documentation', path: '/modules/ecocredit/protobuf', collapsable: true}
+                {
+                  title: 'Overview',
+                  path: '/modules/ecocredit/'
+                },
+                {
+                  title: 'Protobuf',
+                  path: '/modules/ecocredit/protobuf'
+                }
+              ]
+            },
+            {
+              title: 'Group Module',
+              collapsable: false,
+              children: [
+                {
+                  title: 'Overview',
+                  path: '/modules/group/'
+                },
+                '/modules/group/01_concepts',
+                '/modules/group/02_state',
+                '/modules/group/03_messages',
+                '/modules/group/04_events',
+                {
+                  title: 'Protobuf',
+                  path: '/modules/group/protobuf'
+                }
               ]
             },
           ]
