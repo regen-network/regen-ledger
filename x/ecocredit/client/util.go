@@ -108,7 +108,7 @@ func parseCredits(creditsStr string) (credits, error) {
 	}, nil
 }
 
-func parseDate(field string, date string) (time.Time, error) {
+func ParseDate(field string, date string) (time.Time, error) {
 	t, err := time.Parse("2006-01-02", date)
 	if err != nil {
 		return t, sdkerrors.ErrInvalidRequest.Wrapf("%s must have format yyyy-mm-dd, but received %v", field, date)
