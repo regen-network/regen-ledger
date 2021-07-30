@@ -18,25 +18,26 @@ module.exports = {
   head: [
     ['meta', { name: 'theme-color', content: '#3eaf7c' }],
     ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
-    ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }]
+    ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }],
     /**
-     * Google Analytics 4 is not supported in vuepress v1 but will be in v2
+     * Google Analytics 4 is not supported in vuepress v1 but will be in v2.
+     * The following is a workaround until we update to vupress v2.
      *
      * ref：https://github.com/vuejs/vuepress/issues/2713
      */
     [
-        'script',
-        {
-            async: true,
-            src: 'https://www.googletagmanager.com/gtag/js?id=G-RSFE0FQ146',
-        }
+      'script',
+      {
+        async: true,
+        src: 'https://www.googletagmanager.com/gtag/js?id=G-RSFE0FQ146',
+      }
     ],
     [
-        'script',
-        {},
-        [
-            "window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', 'G-RSFE0FQ146');",
-        ],
+      'script',
+      {},
+      [
+        "window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', 'G-RSFE0FQ146');",
+      ],
     ],
   ],
 
