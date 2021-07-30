@@ -14,13 +14,18 @@ func Test_validateCreditTypes(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name:    "same names should fail regardless of stylization",
-			args:    []*CreditType{{Type: "c a R b o N ", Units: "kg", Precision: 6}, {Type: "carbon", Units: "kg", Precision: 6}},
+			name:    "wrong type",
+			args:    []*ClassInfo{{ClassId: "foo", Designer: "0xdeadbeef", Issuers: []string{"not", "an", "address"}, Metadata: nil, CreditType: nil}},
+			wantErr: true,
+		},
+		{
+			name:    "cant have duplicates",
+			args:    []*CreditType{{Type: "carbon", Units: "kg", Precision: 6}, {Type: "carbon", Units: "kg", Precision: 6}},
 			wantErr: true,
 		},
 		{
 			name:    "cant use precision other than 6",
-			args:    []*CreditType{{Type: "c a R b o N ", Units: "kg", Precision: 0}},
+			args:    []*CreditType{{Type: "carbon", Units: "kg", Precision: 0}},
 			wantErr: true,
 		},
 		{
@@ -31,6 +36,11 @@ func Test_validateCreditTypes(t *testing.T) {
 		{
 			name:    "cant use empty units",
 			args:    []*CreditType{{Type: "", Units: "", Precision: 6}},
+			wantErr: true,
+		},
+		{
+			name:    "cant use non-normalized credit type name",
+			args:    []*CreditType{{Type: "biODiVerSitY", Units: "kg", Precision: 6}},
 			wantErr: true,
 		},
 	}

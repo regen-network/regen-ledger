@@ -205,18 +205,10 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 
 	for _, credit := range req.Credits {
 		denom := batchDenomT(credit.BatchDenom)
-		var batchInfo ecocredit.BatchInfo
-		err := s.batchInfoTable.GetOne(ctx, orm.RowID(denom), &batchInfo)
+		maxDecimalPlaces, err := s.getBatchPrecision(ctx, denom)
 		if err != nil {
 			return nil, err
 		}
-
-		classInfo, err := s.getClassInfo(ctx, batchInfo.ClassId)
-		if err != nil {
-			return nil, err
-		}
-
-		maxDecimalPlaces := classInfo.CreditType.Precision
 
 		tradable, err := math.ParseNonNegativeFixedDecimal(credit.TradableAmount, maxDecimalPlaces)
 		if err != nil {
@@ -291,18 +283,10 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ec
 			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid credit denom", denom))
 		}
 
-		var batchInfo ecocredit.BatchInfo
-		err := s.batchInfoTable.GetOne(ctx, orm.RowID(denom), &batchInfo)
+		maxDecimalPlaces, err := s.getBatchPrecision(ctx, denom)
 		if err != nil {
 			return nil, err
 		}
-
-		classInfo, err := s.getClassInfo(ctx, batchInfo.ClassId)
-		if err != nil {
-			return nil, err
-		}
-
-		maxDecimalPlaces := classInfo.CreditType.Precision
 
 		toRetire, err := math.ParsePositiveFixedDecimal(credit.Amount, maxDecimalPlaces)
 		if err != nil {
@@ -343,6 +327,8 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid credit denom", denom))
 		}
 
+		// Remove the credits from the total_amount in the batch and add
+		// them to amount_cancelled
 		var batchInfo ecocredit.BatchInfo
 		err := s.batchInfoTable.GetOne(ctx, orm.RowID(denom), &batchInfo)
 		if err != nil {
@@ -444,4 +430,19 @@ func subtractTradableBalanceAndSupply(store sdk.KVStore, holder string, batchDen
 	}
 
 	return nil
+}
+
+func (s serverImpl) getBatchPrecision(ctx types.Context, denom batchDenomT) (uint32, error) {
+	var batchInfo ecocredit.BatchInfo
+	err := s.batchInfoTable.GetOne(ctx, orm.RowID(denom), &batchInfo)
+	if err != nil {
+		return 0, err
+	}
+
+	classInfo, err := s.getClassInfo(ctx, batchInfo.ClassId)
+	if err != nil {
+		return 0, err
+	}
+
+	return classInfo.CreditType.Precision, nil
 }
