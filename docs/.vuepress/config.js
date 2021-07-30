@@ -21,7 +21,7 @@ module.exports = {
     ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }],
     /**
      * Google Analytics 4 is not supported in vuepress v1 but will be in v2.
-     * The following is a workaround until we update to vupress v2.
+     * The following is a workaround until we update to vuepress v2.
      *
      * ref：https://github.com/vuejs/vuepress/issues/2713
      */
