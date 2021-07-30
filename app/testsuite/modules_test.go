@@ -1,19 +1,24 @@
 // +build experimental
-// +build norace
 
-package testsuite_test
+package testsuite
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/suite"
 
-	"github.com/regen-network/regen-ledger/app/testsuite"
+	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/client/testsuite"
 	group "github.com/regen-network/regen-ledger/x/group/client/testsuite"
 )
 
-func TestModules(t *testing.T) {
-	cfg := testsuite.DefaultConfig()
+func TestEcocreditIntegration(t *testing.T) {
+	cfg := DefaultConfig()
+
+	suite.Run(t, ecocredit.NewIntegrationTestSuite(cfg))
+}
+
+func TestGroupIntegration(t *testing.T) {
+	cfg := DefaultConfig()
 
 	suite.Run(t, group.NewIntegrationTestSuite(cfg))
 }
