@@ -12,7 +12,7 @@ This RFC aims to lay out a high level architecture and feature set for Regen Net
 
 # Need
 
-Core to Regen Network’s value proposition is the ability for entities (individuals or organizations) to be able to design and issue credits for ecosystem services in the form of on-chain assets on the Regen Ledger.
+Core to Regen Network’s value proposition is the ability for entities (individuals or organizations) to be able to design and issue credits for ecosystem services in the form of on-chain assets on Regen Ledger.
 
 Driving the initial technical specification for these credits is our work on Regen Registry, a public Ecosystem Service registry built on top of Regen Ledger. Regen Registry makes it possible to issue, trade and retire ecosystem service credits, including for instance soil health credits, carbon credits, biodiversity credits, etc.
 
