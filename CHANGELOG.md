@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### `x/ecocredit`
 
 #### Added
+* (genesis) [#389](https://github.com/regen-network/regen-ledger/pull/389) add genesis import and export.
 * add support for credit cancelling (#385)
 * record retirement locations of ecocredit (#328)
 * add dates as top level fields in credit batches (#393)
