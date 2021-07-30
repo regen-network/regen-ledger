@@ -54,8 +54,8 @@ func txCreateClass() *cobra.Command {
 Parameters:
   designer:  	    address of the account which designed the credit class
   issuer:    	    comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
-  metadata:  	    base64 encoded metadata - arbitrary data attached to the credit class info
   credit type:    the credit class type (e.g. carbon, biodiversity, etc)`,
+  metadata:  	    base64 encoded metadata - arbitrary data attached to the credit class info
 		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			issuers := strings.Split(args[1], ",")
