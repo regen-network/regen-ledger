@@ -6,11 +6,16 @@ SUBMODULES=$(find . -type f -name 'go.mod' -print0 | xargs -0 -n1 dirname | sort
 CURDIR=$(pwd)
 echo "mode: atomic" > coverage.txt
 
+if [ "$EXPERIMENTAL" == "true" ]
+then
+    EXPERIMENTAL_TAG="experimental"
+fi
+
 for m in ${SUBMODULES[@]}; do
     cd $CURDIR/$m
     PKGS=$(go list ./...)
     for pkg in ${PKGS[@]}; do
-        go test -v -timeout 30m -race -coverprofile=profile.out -covermode=atomic -tags='ledger test_ledger_mock' "$pkg"
+        go test -v -timeout 30m -race -coverpkg=all -coverprofile=profile.out -covermode=atomic -tags="ledger test_ledger_mock $EXPERIMENTAL_TAG" "$pkg"
         if [ -f profile.out ]; then
             tail -n +2 profile.out >> $CURDIR/coverage.txt;
             rm profile.out

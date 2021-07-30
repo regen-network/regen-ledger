@@ -16,6 +16,12 @@ func (m *MsgCreateClass) ValidateBasic() error {
 	if len(m.Issuers) == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "issuers cannot be empty")
 	}
+	for _, issuer := range m.Issuers {
+		_, err := sdk.AccAddressFromBech32(issuer)
+		if err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		}
+	}
 
 	return nil
 }
@@ -46,23 +52,33 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 	}
 
 	for _, iss := range m.Issuance {
-		_, err := math.ParseNonNegativeDecimal(iss.TradableAmount)
+		_, err := sdk.AccAddressFromBech32(iss.Recipient)
 		if err != nil {
-			return err
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
 
-		retiredAmount, err := math.ParseNonNegativeDecimal(iss.RetiredAmount)
-		if err != nil {
-			return err
-		}
-
-		if !retiredAmount.IsZero() {
-			err = validateLocation(iss.RetirementLocation)
+		if iss.TradableAmount != "" {
+			_, err := math.ParseNonNegativeDecimal(iss.TradableAmount)
 			if err != nil {
 				return err
 			}
 		}
+
+		if iss.RetiredAmount != "" {
+			retiredAmount, err := math.ParseNonNegativeDecimal(iss.RetiredAmount)
+			if err != nil {
+				return err
+			}
+
+			if !retiredAmount.IsZero() {
+				err = validateLocation(iss.RetirementLocation)
+				if err != nil {
+					return err
+				}
+			}
+		}
 	}
+
 	return nil
 }
 
@@ -76,8 +92,13 @@ func (m *MsgCreateBatch) GetSigners() []sdk.AccAddress {
 }
 
 func (m *MsgSend) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Recipient)
+	if err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+
 	for _, iss := range m.Credits {
-		_, err := math.ParseNonNegativeDecimal(iss.TradableAmount)
+		_, err = math.ParseNonNegativeDecimal(iss.TradableAmount)
 		if err != nil {
 			return err
 		}
