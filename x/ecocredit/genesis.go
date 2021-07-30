@@ -11,45 +11,27 @@ import (
 // does not match the sum of all tradable or retired balances
 func (s *GenesisState) Validate() error {
 	decimalPlaces := make(map[string]uint32)
-	calTradableSupply := make(map[string]*apd.Decimal)
-	calRetiredSupply := make(map[string]*apd.Decimal)
-	tradableSupply := make(map[string]*apd.Decimal)
-	retiredSupply := make(map[string]*apd.Decimal)
+	calSupplies := make(map[string]*apd.Decimal)
+	supplies := make(map[string]*apd.Decimal)
 
 	for _, precision := range s.Precisions {
 		decimalPlaces[precision.BatchDenom] = precision.MaxDecimalPlaces
 	}
 
-	for _, tSupply := range s.TradableSupplies {
-		supply, err := math.ParsePositiveFixedDecimal(tSupply.Supply, decimalPlaces[tSupply.BatchDenom])
+	for _, s := range s.Supplies {
+		supply, err := math.ParsePositiveFixedDecimal(s.Supply, decimalPlaces[s.BatchDenom])
 		if err != nil {
 			return err
 		}
-		tradableSupply[tSupply.BatchDenom] = supply
+		supplies[s.BatchDenom] = supply
 	}
 
-	for _, rSupply := range s.RetiredSupplies {
-		supply, err := math.ParsePositiveFixedDecimal(rSupply.Supply, decimalPlaces[rSupply.BatchDenom])
-		if err != nil {
-			return err
-		}
-		retiredSupply[rSupply.BatchDenom] = supply
-	}
-
-	if err := calculateSupply(decimalPlaces, s.TradableBalances, calTradableSupply); err != nil {
+	if err := calculateSupply(decimalPlaces, s.Balances, calSupplies); err != nil {
 		return err
 	}
 
-	if err := calculateSupply(decimalPlaces, s.RetiredBalances, calRetiredSupply); err != nil {
+	if err := validateSupply(calSupplies, supplies); err != nil {
 		return err
-	}
-
-	if err := validateSupply(calTradableSupply, tradableSupply); err != nil {
-		return sdkerrors.Wrap(err, "tradable")
-	}
-
-	if err := validateSupply(calRetiredSupply, retiredSupply); err != nil {
-		return sdkerrors.Wrap(err, "retired")
 	}
 
 	return nil
@@ -70,6 +52,9 @@ func validateSupply(calSupply, supply map[string]*apd.Decimal) error {
 
 func calculateSupply(decimalPlaces map[string]uint32, balances []*Balance, calSupply map[string]*apd.Decimal) error {
 	for _, b := range balances {
+		if b.Type == Balance_TYPE_UNSPECIFIED {
+			return sdkerrors.ErrInvalidType.Wrapf("expecting %v or %v, got %v", Balance_TYPE_TRADABLE, Balance_TYPE_RETIRED, Balance_TYPE_UNSPECIFIED)
+		}
 		balance, err := math.ParsePositiveFixedDecimal(b.Balance, decimalPlaces[b.BatchDenom])
 		if err != nil {
 			return err
@@ -90,14 +75,12 @@ func calculateSupply(decimalPlaces map[string]uint32, balances []*Balance, calSu
 // DefaultGenesisState returns a default ecocredit module genesis state.
 func DefaultGenesisState() *GenesisState {
 	return &GenesisState{
-		Params:           DefaultParams(),
-		ClassInfo:        []*ClassInfo{},
-		BatchInfo:        []*BatchInfo{},
-		IdSeq:            0,
-		TradableBalances: []*Balance{},
-		RetiredBalances:  []*Balance{},
-		TradableSupplies: []*Supply{},
-		RetiredSupplies:  []*Supply{},
-		Precisions:       []*Precision{},
+		Params:     DefaultParams(),
+		ClassInfo:  []*ClassInfo{},
+		BatchInfo:  []*BatchInfo{},
+		IdSeq:      0,
+		Balances:   []*Balance{},
+		Supplies:   []*Supply{},
+		Precisions: []*Precision{},
 	}
 }

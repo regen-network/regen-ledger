@@ -36,7 +36,7 @@ func TestGenesisValidate(t *testing.T) {
 			"",
 		},
 		{
-			"expect error: no supply for tradable balance",
+			"expect error: supply is missing",
 			func() *ecocredit.GenesisState {
 				genesisState := ecocredit.DefaultGenesisState()
 				genesisState.Precisions = []*ecocredit.Precision{
@@ -62,20 +62,21 @@ func TestGenesisValidate(t *testing.T) {
 						Metadata:    []byte("meta-data"),
 					},
 				}
-				genesisState.TradableBalances = []*ecocredit.Balance{
+				genesisState.Balances = []*ecocredit.Balance{
 					{
 						Address:    addr2.String(),
 						BatchDenom: "1/2",
 						Balance:    "400.456",
+						Type:       ecocredit.Balance_TYPE_TRADABLE,
 					},
 				}
 				return genesisState
 			},
 			true,
-			"tradable: supply is not found for 1/2 credit batch: not found",
+			"supply is not found for 1/2 credit batch: not found",
 		},
 		{
-			"expect error: no supply for retired balance",
+			"expect error: invalid supply",
 			func() *ecocredit.GenesisState {
 				genesisState := ecocredit.DefaultGenesisState()
 				genesisState.Precisions = []*ecocredit.Precision{
@@ -101,84 +102,33 @@ func TestGenesisValidate(t *testing.T) {
 						Metadata:    []byte("meta-data"),
 					},
 				}
-				genesisState.TradableBalances = []*ecocredit.Balance{
-					{
-						Address:    addr2.String(),
-						BatchDenom: "1/2",
-						Balance:    "400.456",
-					},
-					{
-						Address:    addr1.String(),
-						BatchDenom: "1/2",
-						Balance:    "400.111",
-					},
-				}
-				genesisState.TradableSupplies = []*ecocredit.Supply{
-					{
-						BatchDenom: "1/2",
-						Supply:     "800.567",
-					},
-				}
-				genesisState.RetiredBalances = []*ecocredit.Balance{
-					{
-						Address:    addr2.String(),
-						BatchDenom: "1/2",
-						Balance:    "100.123",
-					},
-				}
-				return genesisState
-			},
-			true,
-			"retired: supply is not found for 1/2 credit batch: not found",
-		},
-		{
-			"expect error: invalid tradable supply",
-			func() *ecocredit.GenesisState {
-				genesisState := ecocredit.DefaultGenesisState()
-				genesisState.ClassInfo = []*ecocredit.ClassInfo{
-					{
-						ClassId:  "1",
-						Designer: addr1.String(),
-						Issuers:  []string{addr1.String(), addr2.String()},
-						Metadata: []byte("meta-data"),
-					},
-				}
-				genesisState.BatchInfo = []*ecocredit.BatchInfo{
-					{
-						ClassId:     "1",
-						BatchDenom:  "1/2",
-						Issuer:      addr1.String(),
-						TotalAmount: "1000",
-						Metadata:    []byte("meta-data"),
-					},
-				}
-				genesisState.TradableBalances = []*ecocredit.Balance{
+				genesisState.Balances = []*ecocredit.Balance{
 					{
 						Address:    addr2.String(),
 						BatchDenom: "1/2",
 						Balance:    "100",
+						Type:       ecocredit.Balance_TYPE_TRADABLE,
+					},
+					{
+						Address:    addr2.String(),
+						BatchDenom: "1/2",
+						Balance:    "100",
+						Type:       ecocredit.Balance_TYPE_RETIRED,
 					},
 				}
-				genesisState.TradableSupplies = []*ecocredit.Supply{
+				genesisState.Supplies = []*ecocredit.Supply{
 					{
 						BatchDenom: "1/2",
 						Supply:     "10",
 					},
 				}
-				genesisState.RetiredBalances = []*ecocredit.Balance{
-					{
-						Address:    addr2.String(),
-						BatchDenom: "1/2",
-						Balance:    "100",
-					},
-				}
 				return genesisState
 			},
 			true,
-			"tradable: supply is incorrect for 1/2 credit batch, expected 10, got 100: invalid coins",
+			"supply is incorrect for 1/2 credit batch, expected 10, got 200: invalid coins",
 		},
 		{
-			"expect error: invalid retired supply",
+			"expect error: invalid balance type",
 			func() *ecocredit.GenesisState {
 				genesisState := ecocredit.DefaultGenesisState()
 				genesisState.ClassInfo = []*ecocredit.ClassInfo{
@@ -198,41 +148,30 @@ func TestGenesisValidate(t *testing.T) {
 						Metadata:    []byte("meta-data"),
 					},
 				}
-				genesisState.TradableBalances = []*ecocredit.Balance{
+				genesisState.Balances = []*ecocredit.Balance{
 					{
 						Address:    addr2.String(),
 						BatchDenom: "1/2",
 						Balance:    "100",
+						Type:       ecocredit.Balance_TYPE_TRADABLE,
 					},
-					{
-						Address:    addr1.String(),
-						BatchDenom: "1/2",
-						Balance:    "100",
-					},
-				}
-				genesisState.TradableSupplies = []*ecocredit.Supply{
-					{
-						BatchDenom: "1/2",
-						Supply:     "200",
-					},
-				}
-				genesisState.RetiredBalances = []*ecocredit.Balance{
 					{
 						Address:    addr2.String(),
 						BatchDenom: "1/2",
 						Balance:    "100",
+						Type:       ecocredit.Balance_TYPE_UNSPECIFIED,
 					},
 				}
-				genesisState.RetiredSupplies = []*ecocredit.Supply{
+				genesisState.Supplies = []*ecocredit.Supply{
 					{
 						BatchDenom: "1/2",
-						Supply:     "200",
+						Supply:     "10",
 					},
 				}
 				return genesisState
 			},
 			true,
-			"retired: supply is incorrect for 1/2 credit batch, expected 200, got 100: invalid coins",
+			"expecting TYPE_TRADABLE or TYPE_RETIRED, got TYPE_UNSPECIFIED: invalid type",
 		},
 		{
 			"valid test case",
@@ -261,37 +200,21 @@ func TestGenesisValidate(t *testing.T) {
 						Metadata:    []byte("meta-data"),
 					},
 				}
-				genesisState.TradableBalances = []*ecocredit.Balance{
+				genesisState.Balances = []*ecocredit.Balance{
 					{
 						Address:    addr2.String(),
 						BatchDenom: "1/2",
 						Balance:    "100.123",
+						Type:       ecocredit.Balance_TYPE_TRADABLE,
 					},
 					{
 						Address:    addr1.String(),
 						BatchDenom: "1/2",
 						Balance:    "100.123",
+						Type:       ecocredit.Balance_TYPE_RETIRED,
 					},
 				}
-				genesisState.TradableSupplies = []*ecocredit.Supply{
-					{
-						BatchDenom: "1/2",
-						Supply:     "200.246",
-					},
-				}
-				genesisState.RetiredBalances = []*ecocredit.Balance{
-					{
-						Address:    addr2.String(),
-						BatchDenom: "1/2",
-						Balance:    "100.123",
-					},
-					{
-						Address:    addr1.String(),
-						BatchDenom: "1/2",
-						Balance:    "100.123",
-					},
-				}
-				genesisState.RetiredSupplies = []*ecocredit.Supply{
+				genesisState.Supplies = []*ecocredit.Supply{
 					{
 						BatchDenom: "1/2",
 						Supply:     "200.246",

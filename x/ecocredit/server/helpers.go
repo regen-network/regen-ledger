@@ -10,6 +10,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 func getDecimal(store sdk.KVStore, key []byte) (*apd.Decimal, error) {
@@ -95,4 +96,54 @@ func getUint32(store sdk.KVStore, key []byte) (uint32, error) {
 	}
 
 	return res, nil
+}
+
+func iterateSupplies(store sdk.KVStore, storeKey byte, cb func(denom, supply string) (bool, error)) error {
+	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		stop, err := cb(string(ParseSupplyKey(iter.Key())), string(iter.Value()))
+		if err != nil {
+			return err
+		}
+		if stop {
+			break
+		}
+	}
+
+	return nil
+}
+
+func iterateBalances(store sdk.KVStore, storeKey byte, cb func(address, denom, balance string) bool) {
+	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		addr, denom := ParseBalanceKey(iter.Key())
+		if cb(addr.String(), string(denom), string(iter.Value())) {
+			break
+		}
+	}
+}
+
+func getBalanceKey(balanceType ecocredit.Balance_Type, addr sdk.AccAddress,
+	denom batchDenomT) ([]byte, error) {
+	switch balanceType {
+	case ecocredit.Balance_TYPE_TRADABLE:
+		return TradableBalanceKey(addr, denom), nil
+	case ecocredit.Balance_TYPE_RETIRED:
+		return RetiredBalanceKey(addr, denom), nil
+	default:
+		return nil, sdkerrors.ErrInvalidType.Wrapf("invalid balance key %v", ecocredit.Balance_TYPE_UNSPECIFIED)
+	}
+}
+
+func getSupplyKey(balanceType ecocredit.Balance_Type, denom batchDenomT) ([]byte, error) {
+	switch balanceType {
+	case ecocredit.Balance_TYPE_TRADABLE:
+		return TradableSupplyKey(denom), nil
+	case ecocredit.Balance_TYPE_RETIRED:
+		return RetiredSupplyKey(denom), nil
+	default:
+		return nil, sdkerrors.ErrInvalidType.Wrapf("invalid supply key %v", ecocredit.Balance_TYPE_UNSPECIFIED)
+	}
 }

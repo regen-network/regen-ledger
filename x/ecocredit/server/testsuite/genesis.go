@@ -3,7 +3,9 @@ package testsuite
 import (
 	"encoding/json"
 
+	"github.com/cockroachdb/apd/v2"
 	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -51,33 +53,25 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 		},
 	}
 
-	tradableBalances := []*ecocredit.Balance{
+	balances := []*ecocredit.Balance{
 		{
 			Address:    addr1,
 			BatchDenom: "4/6",
 			Balance:    "90.003",
+			Type:       ecocredit.Balance_TYPE_TRADABLE,
 		},
-	}
-
-	retiredBalances := []*ecocredit.Balance{
 		{
 			Address:    addr1,
 			BatchDenom: "4/6",
 			Balance:    "9.997",
+			Type:       ecocredit.Balance_TYPE_RETIRED,
 		},
 	}
 
-	tradableSupplies := []*ecocredit.Supply{
+	supplies := []*ecocredit.Supply{
 		{
 			BatchDenom: "4/6",
-			Supply:     "90.003",
-		},
-	}
-
-	retiredSupplies := []*ecocredit.Supply{
-		{
-			BatchDenom: "4/6",
-			Supply:     "9.997",
+			Supply:     "100.000",
 		},
 	}
 
@@ -89,17 +83,15 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	}
 
 	genesisState := &ecocredit.GenesisState{
-		Params:           ecocredit.DefaultParams(),
-		IdSeq:            7,
-		ClassInfo:        classInfo,
-		BatchInfo:        batchInfo,
-		Precisions:       precisions,
-		TradableBalances: tradableBalances,
-		RetiredBalances:  retiredBalances,
-		TradableSupplies: tradableSupplies,
-		RetiredSupplies:  retiredSupplies,
+		Params:     ecocredit.DefaultParams(),
+		IdSeq:      7,
+		ClassInfo:  classInfo,
+		BatchInfo:  batchInfo,
+		Precisions: precisions,
+		Balances:   balances,
+		Supplies:   supplies,
 	}
-	s.initGenesisState(ctx, genesisState)
+	require.NoError(s.initGenesisState(ctx, genesisState))
 
 	exportedGenesisState := s.exportGenesisState(ctx)
 	require.Equal(genesisState.Params, exportedGenesisState.Params)
@@ -121,25 +113,33 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 		s.assetBatchInfoEqual(res.Info, info)
 	}
 
-	for i, tradableBalance := range tradableBalances {
+	for _, balance := range balances {
 		res, err := s.queryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{
-			Account:    tradableBalance.Address,
-			BatchDenom: tradableBalance.BatchDenom,
+			Account:    balance.Address,
+			BatchDenom: balance.BatchDenom,
 		})
 		require.NoError(err)
 		require.NotNil(res)
-		s.assertTradableBalanceEqual(res, tradableBalance)
-		s.assertRetiredBalanceEqual(res, *retiredBalances[i])
+		if balance.Type == ecocredit.Balance_TYPE_TRADABLE {
+			require.Equal(res.TradableAmount, balance.Balance)
+		} else if balance.Type == ecocredit.Balance_TYPE_RETIRED {
+			require.Equal(res.RetiredAmount, balance.Balance)
+		}
 	}
 
-	for i, supply := range tradableSupplies {
+	for _, supply := range supplies {
 		res, err := s.queryClient.Supply(ctx, &ecocredit.QuerySupplyRequest{
 			BatchDenom: supply.BatchDenom,
 		})
 		require.NoError(err)
 		require.NotNil(res)
-		require.Equal(res.TradableSupply, supply.Supply)
-		require.Equal(res.RetiredSupply, retiredSupplies[i].Supply)
+		tSupply, err := math.ParseNonNegativeDecimal(res.TradableSupply)
+		require.NoError(err)
+		rSupply, err := math.ParseNonNegativeDecimal(res.RetiredSupply)
+		require.NoError(err)
+		expected := apd.New(0, 0)
+		require.NoError(math.Add(expected, tSupply, rSupply))
+		require.Equal(expected.String(), supply.Supply)
 	}
 
 	for _, precision := range precisions {
@@ -156,21 +156,27 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	require.Equal(genesisState.Params, exported.Params)
 	require.Equal(genesisState.ClassInfo, exported.ClassInfo)
 	require.Equal(genesisState.BatchInfo, exported.BatchInfo)
-	require.Equal(genesisState.RetiredBalances, exported.RetiredBalances)
-	require.Equal(genesisState.TradableBalances, exported.TradableBalances)
-	require.Equal(genesisState.TradableSupplies, exported.TradableSupplies)
-	require.Equal(genesisState.RetiredSupplies, exported.RetiredSupplies)
+	require.Equal(genesisState.Balances, exported.Balances)
+	require.Equal(genesisState.Supplies, exported.Supplies)
 	require.Equal(genesisState.Precisions, exported.Precisions)
-}
 
-func (s *IntegrationTestSuite) assertTradableBalanceEqual(res *ecocredit.QueryBalanceResponse, balance *ecocredit.Balance) {
-	require := s.Require()
-	require.Equal(balance.Balance, res.TradableAmount)
-}
+	// invalid supply
+	genesisState.Supplies = []*ecocredit.Supply{
+		{
+			BatchDenom: "4/6",
+			Supply:     "101.000",
+		},
+	}
+	genesisState.Supplies = []*ecocredit.Supply{
+		{
+			BatchDenom: "4/6",
+			Supply:     "101.000",
+		},
+	}
+	err := s.initGenesisState(ctx, genesisState)
+	require.Error(err)
+	require.Contains(err.Error(), "supply is incorrect for 4/6 credit batch")
 
-func (s *IntegrationTestSuite) assertRetiredBalanceEqual(res *ecocredit.QueryBalanceResponse, balance ecocredit.Balance) {
-	require := s.Require()
-	require.Equal(balance.Balance, res.RetiredAmount)
 }
 
 func (s *IntegrationTestSuite) exportGenesisState(ctx types.Context) ecocredit.GenesisState {
@@ -186,7 +192,7 @@ func (s *IntegrationTestSuite) exportGenesisState(ctx types.Context) ecocredit.G
 	return exportedGenesisState
 }
 
-func (s *IntegrationTestSuite) initGenesisState(ctx types.Context, genesisState *ecocredit.GenesisState) {
+func (s *IntegrationTestSuite) initGenesisState(ctx types.Context, genesisState *ecocredit.GenesisState) error {
 	cdc := s.fixture.Codec()
 	require := s.Require()
 	genesisBytes, err := cdc.MarshalJSON(genesisState)
@@ -194,7 +200,7 @@ func (s *IntegrationTestSuite) initGenesisState(ctx types.Context, genesisState 
 
 	genesisData := map[string]json.RawMessage{ecocredit.ModuleName: genesisBytes}
 	_, err = s.fixture.InitGenesis(ctx.Context, genesisData)
-	require.NoError(err)
+	return err
 }
 
 func (s *IntegrationTestSuite) assetClassInfoEqual(q, other *ecocredit.ClassInfo) {

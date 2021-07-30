@@ -30,7 +30,12 @@ func tradableSupplyInvariant(store types.KVStore) (string, bool) {
 	)
 	calTradableSupplies := make(map[string]*apd.Decimal)
 
-	if err := iterateBalances(store, TradableBalancePrefix, func(denom string, balance *apd.Decimal) bool {
+	iterateBalances(store, TradableBalancePrefix, func(_, denom, b string) bool {
+		balance, err := math.ParseNonNegativeDecimal(b)
+		if err != nil {
+			broken = true
+			msg += fmt.Sprintf("error while parsing tradable balance %v", err)
+		}
 		if supply, ok := calTradableSupplies[denom]; ok {
 			if err := math.Add(supply, balance, supply); err != nil {
 				broken = true
@@ -42,11 +47,14 @@ func tradableSupplyInvariant(store types.KVStore) (string, bool) {
 		}
 
 		return false
-	}); err != nil {
-		msg += fmt.Sprintf("error querying credit batch tradable supply %v", err)
-	}
+	})
 
-	if err := iterateSupplies(store, TradableSupplyPrefix, func(denom string, supply *apd.Decimal) bool {
+	if err := iterateSupplies(store, TradableSupplyPrefix, func(denom string, s string) (bool, error) {
+		supply, err := math.ParseNonNegativeDecimal(s)
+		if err != nil {
+			broken = true
+			msg += fmt.Sprintf("error while parsing tradable supply for denom: %s", denom)
+		}
 		if s1, ok := calTradableSupplies[denom]; ok {
 			if supply.Cmp(s1) != 0 {
 				broken = true
@@ -56,7 +64,7 @@ func tradableSupplyInvariant(store types.KVStore) (string, bool) {
 			broken = true
 			msg += fmt.Sprintf("tradable supply is not found for %s credit batch", denom)
 		}
-		return false
+		return false, nil
 	}); err != nil {
 		msg = fmt.Sprintf("error querying credit batch tradable supply %v", err)
 	}
@@ -77,7 +85,12 @@ func retiredSupplyInvariant(store types.KVStore) (string, bool) {
 		broken bool
 	)
 	calRetiredSupplies := make(map[string]*apd.Decimal)
-	if err := iterateBalances(store, RetiredBalancePrefix, func(denom string, balance *apd.Decimal) bool {
+	iterateBalances(store, RetiredBalancePrefix, func(_, denom, b string) bool {
+		balance, err := math.ParseNonNegativeDecimal(b)
+		if err != nil {
+			broken = true
+			msg += fmt.Sprintf("error while parsing retired balance %v", err)
+		}
 		if supply, ok := calRetiredSupplies[denom]; ok {
 			if err := math.Add(supply, balance, supply); err != nil {
 				broken = true
@@ -88,11 +101,14 @@ func retiredSupplyInvariant(store types.KVStore) (string, bool) {
 			calRetiredSupplies[denom] = balance
 		}
 		return false
-	}); err != nil {
-		msg += fmt.Sprintf("error querying credit batch retired supply %v", err)
-	}
+	})
 
-	if err := iterateSupplies(store, RetiredSupplyPrefix, func(denom string, supply *apd.Decimal) bool {
+	if err := iterateSupplies(store, RetiredSupplyPrefix, func(denom, s string) (bool, error) {
+		supply, err := math.ParseNonNegativeDecimal(s)
+		if err != nil {
+			broken = true
+			msg += fmt.Sprintf("error while parsing reired supply for denom: %s", denom)
+		}
 		if s1, ok := calRetiredSupplies[denom]; ok {
 			if supply.Cmp(s1) != 0 {
 				broken = true
@@ -103,46 +119,10 @@ func retiredSupplyInvariant(store types.KVStore) (string, bool) {
 			msg += fmt.Sprintf("retired supply is not found for %s credit batch", denom)
 		}
 
-		return false
+		return false, nil
 	}); err != nil {
 		msg = fmt.Sprintf("error querying credit batch supply %v", err)
 	}
 
 	return msg, broken
-}
-
-func iterateSupplies(store sdk.KVStore, storeKey byte, cb func(denom string, supply *apd.Decimal) bool) error {
-	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		denom := string(ParseSupplyKey(iter.Key()))
-		supply, err := math.ParseNonNegativeDecimal(string(iter.Value()))
-		if err != nil {
-			return err
-		}
-
-		if cb(denom, supply) {
-			break
-		}
-	}
-
-	return nil
-}
-
-func iterateBalances(store sdk.KVStore, storeKey byte, cb func(denom string, balance *apd.Decimal) bool) error {
-	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
-	defer iter.Close()
-	for ; iter.Valid(); iter.Next() {
-		_, denom := ParseBalanceKey(iter.Key())
-		balance, err := math.ParseNonNegativeDecimal(string(iter.Value()))
-		if err != nil {
-			return err
-		}
-
-		if cb(string(denom), balance) {
-			break
-		}
-	}
-
-	return nil
 }
