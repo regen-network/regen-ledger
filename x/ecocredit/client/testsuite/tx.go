@@ -2,13 +2,12 @@ package testsuite
 
 import (
 	"fmt"
-	"io/ioutil"
 	"strings"
 
-	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
+	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	proto "github.com/gogo/protobuf/proto"
@@ -40,6 +39,14 @@ var validMetadataBytes = []byte{0x1}
 
 func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
 	return &IntegrationTestSuite{cfg: cfg}
+}
+
+// Write a MsgCreateBatch to a new temporary file and return the filename
+func (s *IntegrationTestSuite) writeMsgCreateBatchJSON(msg *ecocredit.MsgCreateBatch) string {
+	bytes, err := s.network.Validators[0].ClientCtx.Codec.MarshalJSON(msg)
+	s.Require().NoError(err)
+
+	return testutil.WriteToNewTempFile(s.T(), string(bytes)).Name()
 }
 
 func (s *IntegrationTestSuite) SetupSuite() {
@@ -99,13 +106,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	}
 
 	startDate, err := client.ParseDate("start date", "2021-01-01")
-	if err != nil {
-		panic(err.Error())
-	}
+	s.Require().NoError(err)
 	endDate, err := client.ParseDate("end date", "2021-02-01")
-	if err != nil {
-		panic(err.Error())
-	}
+	s.Require().NoError(err)
 
 	msgCreateBatch := ecocredit.MsgCreateBatch{
 		ClassId: classId,
@@ -124,24 +127,13 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	}
 
 	// Write MsgCreateBatch to a temporary file
-	dir, err := ioutil.TempDir("", "batches")
-	if err != nil {
-		panic(err.Error())
-	}
-	file, err := ioutil.TempFile(dir, "batch*.json")
-	if err != nil {
-		panic(err.Error())
-	}
-	err = writeMsgCreateBatchJSON(val.ClientCtx, file.Name(), &msgCreateBatch)
-	if err != nil {
-		panic(err.Error())
-	}
+	batchFile := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
 	// Create a credit batch
 	out, err = cli.ExecTestCLICmd(val.ClientCtx, client.TxCreateBatchCmd(),
 		append(
 			[]string{
-				file.Name(),
+				batchFile,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 			},
 			commonFlags...,
@@ -287,8 +279,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				},
 				s.commonTxFlags()...,
 			),
-			expectErr:      false,
-			expectedErrMsg: "",
+			expectErr: false,
 			expectedClassInfo: &ecocredit.ClassInfo{
 				Designer: val0.Address.String(),
 				Issuers:  []string{val0.Address.String()},
@@ -312,8 +303,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				},
 				s.commonTxFlags()...,
 			),
-			expectErr:      false,
-			expectedErrMsg: "",
+			expectErr: false,
 			expectedClassInfo: &ecocredit.ClassInfo{
 				Designer: val0.Address.String(),
 				Issuers:  []string{val0.Address.String(), val1.Address.String()},
@@ -371,48 +361,18 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 	}
 }
 
-// Write MsgCreateBatch to a temporary JSON file and panic on any errors
-func mustWriteBatchJSON(clientCtx sdkclient.Context, msgCreateBatch *ecocredit.MsgCreateBatch) string {
-	dir, err := ioutil.TempDir("", "batches")
-	if err != nil {
-		panic(err.Error())
-	}
-	batchJson, err := ioutil.TempFile(dir, "batch*.json")
-	if err != nil {
-		panic(err.Error())
-	}
-	err = writeMsgCreateBatchJSON(clientCtx, batchJson.Name(), msgCreateBatch)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	return batchJson.Name()
-}
-
 func (s *IntegrationTestSuite) TestTxCreateBatch() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 
 	// Write some invalid JSON to a file
-	invalidJsonFile, err := ioutil.TempFile(s.T().TempDir(), "invalid*.json")
-	if err != nil {
-		panic(err.Error())
-	}
-
-	err = ioutil.WriteFile(invalidJsonFile.Name(), []byte("{asdljdfklfklksdflk}"), 0664)
-	if err != nil {
-		panic(err.Error())
-	}
+	invalidJsonFile := testutil.WriteToNewTempFile(s.T(), "{asdljdfklfklksdflk}")
 
 	// Create a valid MsgCreateBatch
 	startDate, err := client.ParseDate("start date", "2021-01-01")
-	if err != nil {
-		panic(err.Error())
-	}
+	s.Require().NoError(err)
 	endDate, err := client.ParseDate("end date", "2021-02-01")
-	if err != nil {
-		panic(err.Error())
-	}
+	s.Require().NoError(err)
 
 	msgCreateBatch := ecocredit.MsgCreateBatch{
 		ClassId: s.classInfo.ClassId,
@@ -430,46 +390,46 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 		ProjectLocation: "GB",
 	}
 
-	validBatchJson := mustWriteBatchJSON(clientCtx, &msgCreateBatch)
+	validBatchJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
 	// Write batch with invalid class id
 	msgCreateBatch.ClassId = "abcde"
-	invalidClassIdJson := mustWriteBatchJSON(clientCtx, &msgCreateBatch)
+	invalidClassIdJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
 	// Write batch with missing start date
 	msgCreateBatch.ClassId = s.classInfo.ClassId
 	msgCreateBatch.StartDate = nil
-	missingStartDateJson := mustWriteBatchJSON(clientCtx, &msgCreateBatch)
+	missingStartDateJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
 	// Write batch with missing end date
 	msgCreateBatch.StartDate = &startDate
 	msgCreateBatch.EndDate = nil
-	missingEndDateJson := mustWriteBatchJSON(clientCtx, &msgCreateBatch)
+	missingEndDateJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
 	// Write batch with missing project location
 	msgCreateBatch.EndDate = &endDate
 	msgCreateBatch.ProjectLocation = ""
-	missingProjectLocationJson := mustWriteBatchJSON(clientCtx, &msgCreateBatch)
+	missingProjectLocationJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
 	// Write batch with invalid issuance recipient
 	msgCreateBatch.ProjectLocation = "AB"
 	msgCreateBatch.Issuance[0].Recipient = "abcde"
-	invalidRecipientJson := mustWriteBatchJSON(clientCtx, &msgCreateBatch)
+	invalidRecipientJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
 	// Write batch with invalid issuance tradable amount
 	msgCreateBatch.Issuance[0].Recipient = s.network.Validators[1].Address.String()
 	msgCreateBatch.Issuance[0].TradableAmount = "abcde"
-	invalidTradableAmountJson := mustWriteBatchJSON(clientCtx, &msgCreateBatch)
+	invalidTradableAmountJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
 	// Write batch with invalid issuance retired amount
 	msgCreateBatch.Issuance[0].TradableAmount = "100"
 	msgCreateBatch.Issuance[0].RetiredAmount = "abcde"
-	invalidRetiredAmountJson := mustWriteBatchJSON(clientCtx, &msgCreateBatch)
+	invalidRetiredAmountJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
 	// Write batch with invalid issuance retirement location
 	msgCreateBatch.Issuance[0].RetiredAmount = "0.000001"
 	msgCreateBatch.Issuance[0].RetirementLocation = "abcde"
-	invalidRetirementLocationJson := mustWriteBatchJSON(clientCtx, &msgCreateBatch)
+	invalidRetirementLocationJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
 	testCases := []struct {
 		name              string
@@ -620,8 +580,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				},
 				s.commonTxFlags()...,
 			),
-			expectErr:      false,
-			expectedErrMsg: "",
+			expectErr: false,
 			expectedBatchInfo: &ecocredit.BatchInfo{
 				ClassId:         s.classInfo.ClassId,
 				Issuer:          val.Address.String(),
@@ -814,8 +773,7 @@ func (s *IntegrationTestSuite) TestTxSend() {
 				},
 				s.commonTxFlags()...,
 			),
-			expectErr:      false,
-			expectedErrMsg: "",
+			expectErr: false,
 		},
 	}
 
@@ -947,8 +905,7 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 				},
 				s.commonTxFlags()...,
 			),
-			expectErr:      false,
-			expectedErrMsg: "",
+			expectErr: false,
 		},
 	}
 
@@ -1055,8 +1012,7 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 				},
 				s.commonTxFlags()...,
 			),
-			expectErr:      false,
-			expectedErrMsg: "",
+			expectErr: false,
 		},
 	}
 
@@ -1084,13 +1040,4 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 			}
 		})
 	}
-}
-
-func writeMsgCreateBatchJSON(clientCtx sdkclient.Context, batchFile string, msg *ecocredit.MsgCreateBatch) error {
-	bytes, err := clientCtx.Codec.MarshalJSON(msg)
-	if err != nil {
-		return err
-	}
-
-	return ioutil.WriteFile(batchFile, bytes, 0664)
 }
