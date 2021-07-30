@@ -20,6 +20,12 @@ func (m *MsgCreateClass) ValidateBasic() error {
 	if len(m.CreditType) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("credit class must have a credit type")
 	}
+	for _, issuer := range m.Issuers {
+		_, err := sdk.AccAddressFromBech32(issuer)
+		if err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		}
+	}
 
 	return nil
 }
@@ -50,6 +56,11 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 	}
 
 	for _, iss := range m.Issuance {
+		_, err := sdk.AccAddressFromBech32(iss.Recipient)
+		if err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		}
+
 		if iss.TradableAmount != "" {
 			_, err := math.ParseNonNegativeDecimal(iss.TradableAmount)
 			if err != nil {
@@ -85,8 +96,13 @@ func (m *MsgCreateBatch) GetSigners() []sdk.AccAddress {
 }
 
 func (m *MsgSend) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Recipient)
+	if err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+
 	for _, iss := range m.Credits {
-		_, err := math.ParseNonNegativeDecimal(iss.TradableAmount)
+		_, err = math.ParseNonNegativeDecimal(iss.TradableAmount)
 		if err != nil {
 			return err
 		}

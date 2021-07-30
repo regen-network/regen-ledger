@@ -30,32 +30,33 @@ func TxCmd(name string) *cobra.Command {
 		RunE:  client.ValidateCmd,
 	}
 	cmd.AddCommand(
-		txflags(txCreateClass()),
-		txGenBatchJSON(),
-		txflags(txCreateBatch()),
-		txflags(txSend()),
-		txflags(txRetire()),
-		txflags(txCancel()),
+		TxCreateClassCmd(),
+		TxGenBatchJSONCmd(),
+		TxCreateBatchCmd(),
+		TxSendCmd(),
+		TxRetireCmd(),
+		TxCancelCmd(),
 	)
 	return cmd
 }
 
 func txflags(cmd *cobra.Command) *cobra.Command {
 	flags.AddTxFlagsToCmd(cmd)
+	cmd.MarkFlagRequired(flags.FlagFrom)
 	return cmd
 }
 
-func txCreateClass() *cobra.Command {
-	return &cobra.Command{
-		Use:   "create-class [designer] [issuer[,issuer]*] [credit type] [metadata]",
+func TxCreateClassCmd() *cobra.Command {
+	return txflags(&cobra.Command{
+		Use:   "create-class [designer] [issuer[,issuer]*] [metadata]",
 		Short: "Creates a new credit class",
 		Long: `Creates a new credit class.
 
 Parameters:
   designer:  	    address of the account which designed the credit class
   issuer:    	    comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
-  credit type:    the credit class type (e.g. carbon, biodiversity, etc)`,
-  metadata:  	    base64 encoded metadata - arbitrary data attached to the credit class info
+  credit type:    the credit class type (e.g. carbon, biodiversity, etc)
+  metadata:  	    base64 encoded metadata - arbitrary data attached to the credit class info`,
 		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			issuers := strings.Split(args[1], ",")
@@ -83,7 +84,7 @@ Parameters:
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
-	}
+	})
 }
 
 const (
@@ -95,7 +96,7 @@ const (
 	FlagMetadata        string = "metadata"
 )
 
-func txGenBatchJSON() *cobra.Command {
+func TxGenBatchJSONCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "gen-batch-json [--class-id class_id] [--issuances issuances] [--start-date start_date] [--end-date end_date] [--project-location project_location] [--metadata metadata]",
 		Short: "Generates JSON to represent a new credit batch for use with create-batch command",
@@ -137,7 +138,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			startDate, err := parseDate("start_date", startDateStr)
+			startDate, err := ParseDate("start_date", startDateStr)
 			if err != nil {
 				return err
 			}
@@ -146,7 +147,7 @@ Parameters:
 			if err != nil {
 				return err
 			}
-			endDate, err := parseDate("end_date", endDateStr)
+			endDate, err := ParseDate("end_date", endDateStr)
 			if err != nil {
 				return err
 			}
@@ -195,7 +196,7 @@ Parameters:
 	return cmd
 }
 
-func txCreateBatch() *cobra.Command {
+func TxCreateBatchCmd() *cobra.Command {
 	var (
 		startDate = time.Unix(10000, 10000).UTC()
 		endDate   = time.Unix(10000, 10050).UTC()
@@ -224,7 +225,7 @@ func txCreateBatch() *cobra.Command {
 	if err != nil {
 		panic("Couldn't marshal MsgCreateBatch to JSON")
 	}
-	cmd := &cobra.Command{
+	return txflags(&cobra.Command{
 		Use:   "create-batch [msg-create-batch-json-file]",
 		Short: "Issues a new credit batch",
 		Long: fmt.Sprintf(`Issues a new credit batch.
@@ -255,12 +256,11 @@ Parameters:
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
-	}
-	return cmd
+	})
 }
 
-func txSend() *cobra.Command {
-	return &cobra.Command{
+func TxSendCmd() *cobra.Command {
+	return txflags(&cobra.Command{
 		Use:   "send [recipient] [credits]",
 		Short: "Sends credits from the transaction author (--from) to the recipient",
 		Long: `Sends credits from the transaction author (--from) to the recipient.
@@ -286,11 +286,11 @@ Parameters:
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
-	}
+	})
 }
 
-func txRetire() *cobra.Command {
-	return &cobra.Command{
+func TxRetireCmd() *cobra.Command {
+	return txflags(&cobra.Command{
 		Use:   "retire [credits] [retirement_location]",
 		Short: "Retires a specified amount of credits from the account of the transaction author (--from)",
 		Long: `Retires a specified amount of credits from the account of the transaction author (--from)
@@ -321,11 +321,11 @@ Parameters:
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
-	}
+	})
 }
 
-func txCancel() *cobra.Command {
-	return &cobra.Command{
+func TxCancelCmd() *cobra.Command {
+	return txflags(&cobra.Command{
 		Use:   "cancel [credits]",
 		Short: "Cancels a specified amount of credits from the account of the transaction author (--from)",
 		Long: `Cancels a specified amount of credits from the account of the transaction author (--from)
@@ -349,5 +349,5 @@ Parameters:
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
-	}
+	})
 }

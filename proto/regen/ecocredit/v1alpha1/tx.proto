@@ -19,7 +19,7 @@ service Msg {
   // be distributed to recipients in either tradable or retired form.
   rpc CreateBatch(MsgCreateBatch) returns (MsgCreateBatchResponse);
 
-  // Send sends tradeable credits from one account to another account. Sent
+  // Send sends tradable credits from one account to another account. Sent
   // credits can either be tradable or retired on receipt.
   rpc Send(MsgSend) returns (MsgSendResponse);
 
