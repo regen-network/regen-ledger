@@ -111,9 +111,9 @@ func SafeSub(res, x, y *apd.Decimal) error {
 	return nil
 }
 
-// SubBalance subtracts the value of y from x and returns the result with arbitrary precision.
+// SafeSubBalance subtracts the value of y from x and returns the result with arbitrary precision.
 // Returns with ErrInsufficientFunds error if the result is negative.
-func SubBalance(x Dec, y Dec) (Dec, error) {
+func SafeSubBalance(x Dec, y Dec) (Dec, error) {
 	var z Dec
 	_, err := exactContext.Sub(&z.dec, &x.dec, &y.dec)
 	if err != nil {
@@ -127,19 +127,20 @@ func SubBalance(x Dec, y Dec) (Dec, error) {
 	return z, nil
 }
 
-// AddBalance adds the value of x+y and returns the result with arbitrary precision.
+// SafeAddBalance adds the value of x+y and returns the result with arbitrary precision.
 // Returns with ErrInvalidRequest error if either x or y is negative.
-func AddBalance(x Dec, y Dec) (Dec, error) {
+func SafeAddBalance(x Dec, y Dec) (Dec, error) {
 	var z Dec
-	_, err := exactContext.Add(&z.dec, &x.dec, &y.dec)
-	if err != nil {
-		return z, errors.Wrap(err, "decimal subtraction error")
-	}
 
 	if x.IsNegative() || y.IsNegative() {
 		return z, errors.Wrap(
 			errors.ErrInvalidRequest,
 			fmt.Sprintf("AddBalance() requires two non-negative Dec parameters, but received %s and %s", x, y))
+	}
+
+	_, err := exactContext.Add(&z.dec, &x.dec, &y.dec)
+	if err != nil {
+		return z, errors.Wrap(err, "decimal subtraction error")
 	}
 
 	return z, nil
