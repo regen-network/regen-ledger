@@ -16,7 +16,7 @@ Core to Regen Network’s value proposition is the ability for entities (individ
 
 Driving the initial technical specification for these credits is our work on Regen Registry, a public Ecosystem Service registry built on top of Regen Ledger. Regen Registry makes it possible to issue, trade and retire ecosystem service credits, including for instance soil health credits, carbon credits, biodiversity credits, etc.
 
-Taking Regen Registry’s pilot projects as our initial use case, we understand the needs of an ecosystem service credit module to be as follows (for a given Credit Class):
+Taking Regen Registry’s pilot projects as our initial use case, we understand the needs of an ecosystem service credit module to be as follows (for a given credit class):
 - Credits are represented as a fungible on-chain asset, where on-chain accounts can have a balance in the given credit
 - Credits can be issued/minted at any time by a fixed set of “issuers”
 - Credits are issued in batches (a batch of credits is hereafter referred to as a credit batch)
