@@ -39,7 +39,16 @@ module.exports = {
     ],
     sidebar: {
       '/': [
-        'getting-started',
+        {
+          title: 'Getting Started',
+          children: [
+            '/getting-started/',
+            '/getting-started/live-networks',
+            '/getting-started/running-a-full-node',
+            '/getting-started/running-a-validator',
+            '/getting-started/prerequisites'
+          ]
+        },
         'core-functionality',
         'api',
         {

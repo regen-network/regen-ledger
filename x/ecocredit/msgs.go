@@ -8,11 +8,11 @@ import (
 )
 
 var (
-	_, _, _, _, _ sdk.Msg = &MsgCreateClassRequest{}, &MsgCreateBatchRequest{}, &MsgSendRequest{},
-		&MsgRetireRequest{}, &MsgSetPrecisionRequest{}
+	_, _, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
+		&MsgRetire{}, &MsgCancel{}, &MsgSetPrecision{}
 )
 
-func (m *MsgCreateClassRequest) ValidateBasic() error {
+func (m *MsgCreateClass) ValidateBasic() error {
 	if len(m.Issuers) == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "issuers cannot be empty")
 	}
@@ -20,7 +20,7 @@ func (m *MsgCreateClassRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgCreateClassRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgCreateClass) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Designer)
 	if err != nil {
 		panic(err)
@@ -29,29 +29,49 @@ func (m *MsgCreateClassRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
-func (m *MsgCreateBatchRequest) ValidateBasic() error {
+func (m *MsgCreateBatch) ValidateBasic() error {
+	if m.StartDate == nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("Must provide a start date for the credit batch")
+	}
+	if m.EndDate == nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("Must provide an end date for the credit batch")
+	}
+	if m.EndDate.Before(*m.StartDate) {
+		return sdkerrors.ErrInvalidRequest.Wrapf("The batch end date (%s) must be the same as or after the batch start date (%s)", m.EndDate.Format("2006-01-02"), m.StartDate.Format("2006-01-02"))
+	}
+
+	err := validateLocation(m.ProjectLocation)
+	if err != nil {
+		return err
+	}
+
 	for _, iss := range m.Issuance {
-		_, err := math.ParseNonNegativeDecimal(iss.TradableUnits)
-		if err != nil {
-			return err
-		}
-
-		retiredUnits, err := math.ParseNonNegativeDecimal(iss.RetiredUnits)
-		if err != nil {
-			return err
-		}
-
-		if !retiredUnits.IsZero() {
-			err = validateLocation(iss.RetirementLocation)
+		if iss.TradableAmount != "" {
+			_, err := math.ParseNonNegativeDecimal(iss.TradableAmount)
 			if err != nil {
 				return err
 			}
 		}
+
+		if iss.RetiredAmount != "" {
+			retiredAmount, err := math.ParseNonNegativeDecimal(iss.RetiredAmount)
+			if err != nil {
+				return err
+			}
+
+			if !retiredAmount.IsZero() {
+				err = validateLocation(iss.RetirementLocation)
+				if err != nil {
+					return err
+				}
+			}
+		}
 	}
+
 	return nil
 }
 
-func (m *MsgCreateBatchRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgCreateBatch) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Issuer)
 	if err != nil {
 		panic(err)
@@ -60,19 +80,19 @@ func (m *MsgCreateBatchRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
-func (m *MsgSendRequest) ValidateBasic() error {
+func (m *MsgSend) ValidateBasic() error {
 	for _, iss := range m.Credits {
-		_, err := math.ParseNonNegativeDecimal(iss.TradableUnits)
+		_, err := math.ParseNonNegativeDecimal(iss.TradableAmount)
 		if err != nil {
 			return err
 		}
 
-		retiredUnits, err := math.ParseNonNegativeDecimal(iss.RetiredUnits)
+		retiredAmount, err := math.ParseNonNegativeDecimal(iss.RetiredAmount)
 		if err != nil {
 			return err
 		}
 
-		if !retiredUnits.IsZero() {
+		if !retiredAmount.IsZero() {
 			err = validateLocation(iss.RetirementLocation)
 			if err != nil {
 				return err
@@ -82,7 +102,7 @@ func (m *MsgSendRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgSendRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgSend) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Sender)
 	if err != nil {
 		panic(err)
@@ -91,9 +111,9 @@ func (m *MsgSendRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
-func (m *MsgRetireRequest) ValidateBasic() error {
+func (m *MsgRetire) ValidateBasic() error {
 	for _, iss := range m.Credits {
-		_, err := math.ParsePositiveDecimal(iss.Units)
+		_, err := math.ParsePositiveDecimal(iss.Amount)
 		if err != nil {
 			return err
 		}
@@ -107,7 +127,7 @@ func (m *MsgRetireRequest) ValidateBasic() error {
 	return nil
 }
 
-func (m *MsgRetireRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgRetire) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Holder)
 	if err != nil {
 		panic(err)
@@ -116,14 +136,33 @@ func (m *MsgRetireRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
-func (m *MsgSetPrecisionRequest) ValidateBasic() error {
+func (m *MsgCancel) ValidateBasic() error {
+	for _, iss := range m.Credits {
+		_, err := math.ParsePositiveDecimal(iss.Amount)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m *MsgCancel) GetSigners() []sdk.AccAddress {
+	addr, err := sdk.AccAddressFromBech32(m.Holder)
+	if err != nil {
+		panic(err)
+	}
+
+	return []sdk.AccAddress{addr}
+}
+
+func (m *MsgSetPrecision) ValidateBasic() error {
 	if len(m.BatchDenom) == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "missing batch_denom")
 	}
 	return nil
 }
 
-func (m *MsgSetPrecisionRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgSetPrecision) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Issuer)
 	if err != nil {
 		panic(err)

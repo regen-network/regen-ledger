@@ -1,36 +1,27 @@
 package group
 
 import (
-	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/types/module/server"
 )
 
 func (p *Proposal) GetMsgs() []sdk.Msg {
-	msgs := make([]sdk.Msg, len(p.Msgs))
-	for i, any := range p.Msgs {
-		msg, ok := any.GetCachedValue().(sdk.Msg)
-		if !ok {
-			return nil
-		}
-		msgs[i] = msg
+	msgs, err := server.GetMsgs(p.Msgs)
+	if err != nil {
+		panic(err)
 	}
 	return msgs
 }
 
-func (p *Proposal) SetMsgs(new []sdk.Msg) error {
-	p.Msgs = make([]*codectypes.Any, len(new))
-	for i := range new {
-		if new[i] == nil {
-			return sdkerrors.Wrap(ErrInvalid, "msg must not be nil")
-		}
-		any, err := codectypes.NewAnyWithValue(new[i])
-		if err != nil {
-			return err
-		}
-		p.Msgs[i] = any
+func (p *Proposal) SetMsgs(msgs []sdk.Msg) error {
+	anys, err := server.SetMsgs(msgs)
+	if err != nil {
+		return err
 	}
+	p.Msgs = anys
 	return nil
 }
 
@@ -98,16 +89,8 @@ func (p Proposal) ValidateBasic() error {
 }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
-func (p Proposal) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
-	for _, any := range p.Msgs {
-		var msg sdk.Msg
-		err := unpacker.UnpackAny(any, &msg)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+func (p Proposal) UnpackInterfaces(unpacker types.AnyUnpacker) error {
+	return server.UnpackInterfaces(unpacker, p.Msgs)
 }
 
 func (p Proposal) PrimaryKey() []byte {
