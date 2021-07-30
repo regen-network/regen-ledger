@@ -1082,7 +1082,7 @@ type MsgClient interface {
 	// This will create a new batch denom with a fixed supply. Issued credits can
 	// be distributed to recipients in either tradable or retired form.
 	CreateBatch(ctx context.Context, in *MsgCreateBatch, opts ...grpc.CallOption) (*MsgCreateBatchResponse, error)
-	// Send sends tradeable credits from one account to another account. Sent
+	// Send sends tradable credits from one account to another account. Sent
 	// credits can either be tradable or retired on receipt.
 	Send(ctx context.Context, in *MsgSend, opts ...grpc.CallOption) (*MsgSendResponse, error)
 	// Retire retires a specified number of credits in the holder's account.
@@ -1185,7 +1185,7 @@ type MsgServer interface {
 	// This will create a new batch denom with a fixed supply. Issued credits can
 	// be distributed to recipients in either tradable or retired form.
 	CreateBatch(context.Context, *MsgCreateBatch) (*MsgCreateBatchResponse, error)
-	// Send sends tradeable credits from one account to another account. Sent
+	// Send sends tradable credits from one account to another account. Sent
 	// credits can either be tradable or retired on receipt.
 	Send(context.Context, *MsgSend) (*MsgSendResponse, error)
 	// Retire retires a specified number of credits in the holder's account.
