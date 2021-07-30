@@ -94,8 +94,8 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 
 			decPlaces := math.NumDecimalPlaces(tradable)
 			if decPlaces > maxDecimalPlaces {
-				return nil, sdkerrors.ErrInvalidRequest.Wrapf("tradable amount does not conform to credit type "+
-					"precision: is %v, should be %v", decPlaces, maxDecimalPlaces)
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf("tradable amount exceeds precision for credit type: "+
+					"is %v, should be < %v", decPlaces, maxDecimalPlaces)
 			}
 		}
 
