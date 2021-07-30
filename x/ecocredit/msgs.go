@@ -44,7 +44,7 @@ func (m *MsgCreateClass) GetSigners() []sdk.AccAddress {
 func (m *MsgCreateBatch) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Issuer)
 	if err != nil {
-		return err
+		return sdkerrors.Wrap(err, "issuer")
 	}
 
 	if m.StartDate == nil {
@@ -108,12 +108,12 @@ func (m *MsgCreateBatch) GetSigners() []sdk.AccAddress {
 func (m *MsgSend) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Sender)
 	if err != nil {
-		return err
+		return sdkerrors.Wrap(err, "sender")
 	}
 
 	_, err = sdk.AccAddressFromBech32(m.Recipient)
 	if err != nil {
-		return err
+		return sdkerrors.Wrap(err, "recipient")
 	}
 
 	if len(m.Credits) == 0 {
@@ -157,7 +157,7 @@ func (m *MsgSend) GetSigners() []sdk.AccAddress {
 func (m *MsgRetire) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Holder)
 	if err != nil {
-		return err
+		return sdkerrors.Wrap(err, "holder")
 	}
 
 	if len(m.Credits) == 0 {
@@ -194,7 +194,7 @@ func (m *MsgRetire) GetSigners() []sdk.AccAddress {
 func (m *MsgCancel) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Holder)
 	if err != nil {
-		return err
+		return sdkerrors.Wrap(err, "holder")
 	}
 
 	if len(m.Credits) == 0 {
