@@ -255,14 +255,14 @@ func (s *IntegrationTestSuite) TestScenario() {
 		holder             string
 		toCancel           string
 		expectErr          bool
-		expTradeable       string
-		expTradeableSupply string
+		expTradable        string
+		expTradableSupply  string
 		expRetired         string
 		expTotalAmount     string
 		expAmountCancelled string
 	}{
 		{
-			name:      "can't cancel more credits than are tradeable",
+			name:      "can't cancel more credits than are tradable",
 			holder:    addr4,
 			toCancel:  "101",
 			expectErr: true,
@@ -284,8 +284,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 			holder:             addr4,
 			toCancel:           "2.0002",
 			expectErr:          false,
-			expTradeable:       "97.9998",
-			expTradeableSupply: "1115.7567",
+			expTradable:        "97.9998",
+			expTradableSupply:  "1115.7567",
 			expRetired:         "0",
 			expTotalAmount:     "11120.5016902",
 			expAmountCancelled: "2.0002",
@@ -295,8 +295,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 			holder:             addr4,
 			toCancel:           "97.9998",
 			expectErr:          false,
-			expTradeable:       "0",
-			expTradeableSupply: "1017.7569",
+			expTradable:        "0",
+			expTradableSupply:  "1017.7569",
 			expRetired:         "0",
 			expTotalAmount:     "11022.5018902",
 			expAmountCancelled: "100.0000",
@@ -312,8 +312,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 			holder:             addr1,
 			toCancel:           "1",
 			expectErr:          false,
-			expTradeable:       "9.37",
-			expTradeableSupply: "1016.7569",
+			expTradable:        "9.37",
+			expTradableSupply:  "1016.7569",
 			expRetired:         "4.286",
 			expTotalAmount:     "11021.5018902",
 			expAmountCancelled: "101.0000",
@@ -344,14 +344,14 @@ func (s *IntegrationTestSuite) TestScenario() {
 				})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBalanceRes)
-				s.Require().Equal(tc.expTradeable, queryBalanceRes.TradableAmount)
+				s.Require().Equal(tc.expTradable, queryBalanceRes.TradableAmount)
 				s.Require().Equal(tc.expRetired, queryBalanceRes.RetiredAmount)
 
 				// query supply
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &ecocredit.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
-				s.Require().Equal(tc.expTradeableSupply, querySupplyRes.TradableSupply)
+				s.Require().Equal(tc.expTradableSupply, querySupplyRes.TradableSupply)
 				s.Require().Equal(rSupply0, querySupplyRes.RetiredSupply)
 
 				// query batchInfo
@@ -370,13 +370,13 @@ func (s *IntegrationTestSuite) TestScenario() {
 		toRetire           string
 		retirementLocation string
 		expectErr          bool
-		expTradeable       string
+		expTradable        string
 		expRetired         string
-		expTradeableSupply string
+		expTradableSupply  string
 		expRetiredSupply   string
 	}{
 		{
-			name:               "cannot retire more credits than are tradeable",
+			name:               "cannot retire more credits than are tradable",
 			toRetire:           "10.371",
 			retirementLocation: "AF",
 			expectErr:          true,
@@ -416,9 +416,9 @@ func (s *IntegrationTestSuite) TestScenario() {
 			toRetire:           "0.0001",
 			retirementLocation: "AF",
 			expectErr:          false,
-			expTradeable:       "9.3699",
+			expTradable:        "9.3699",
 			expRetired:         "4.2861",
-			expTradeableSupply: "1016.7568",
+			expTradableSupply:  "1016.7568",
 			expRetiredSupply:   "10004.7450902",
 		},
 		{
@@ -426,9 +426,9 @@ func (s *IntegrationTestSuite) TestScenario() {
 			toRetire:           "9",
 			retirementLocation: "AF-BDS",
 			expectErr:          false,
-			expTradeable:       "0.3699",
+			expTradable:        "0.3699",
 			expRetired:         "13.2861",
-			expTradeableSupply: "1007.7568",
+			expTradableSupply:  "1007.7568",
 			expRetiredSupply:   "10013.7450902",
 		},
 		{
@@ -436,9 +436,9 @@ func (s *IntegrationTestSuite) TestScenario() {
 			toRetire:           "0.3699",
 			retirementLocation: "AF-BDS 12345",
 			expectErr:          false,
-			expTradeable:       "0",
+			expTradable:        "0",
 			expRetired:         "13.656",
-			expTradeableSupply: "1007.3869",
+			expTradableSupply:  "1007.3869",
 			expRetiredSupply:   "10014.1149902",
 		},
 		{
@@ -474,111 +474,111 @@ func (s *IntegrationTestSuite) TestScenario() {
 				})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBalanceRes)
-				s.Require().Equal(tc.expTradeable, queryBalanceRes.TradableAmount)
+				s.Require().Equal(tc.expTradable, queryBalanceRes.TradableAmount)
 				s.Require().Equal(tc.expRetired, queryBalanceRes.RetiredAmount)
 
 				// query supply
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &ecocredit.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
-				s.Require().Equal(tc.expTradeableSupply, querySupplyRes.TradableSupply)
+				s.Require().Equal(tc.expTradableSupply, querySupplyRes.TradableSupply)
 				s.Require().Equal(tc.expRetiredSupply, querySupplyRes.RetiredSupply)
 			}
 		})
 	}
 
 	sendCases := []struct {
-		name                  string
-		sendTradeable         string
-		sendRetired           string
-		retirementLocation    string
-		expectErr             bool
-		expTradeableSender    string
-		expRetiredSender      string
-		expTradeableRecipient string
-		expRetiredRecipient   string
-		expTradeableSupply    string
-		expRetiredSupply      string
+		name                 string
+		sendTradable         string
+		sendRetired          string
+		retirementLocation   string
+		expectErr            bool
+		expTradableSender    string
+		expRetiredSender     string
+		expTradableRecipient string
+		expRetiredRecipient  string
+		expTradableSupply    string
+		expRetiredSupply     string
 	}{
 		{
-			name:               "can't send more tradeable than is tradeable",
-			sendTradeable:      "2000",
+			name:               "can't send more tradable than is tradable",
+			sendTradable:       "2000",
 			sendRetired:        "10",
 			retirementLocation: "AF",
 			expectErr:          true,
 		},
 		{
-			name:               "can't send more retired than is tradeable",
-			sendTradeable:      "10",
+			name:               "can't send more retired than is tradable",
+			sendTradable:       "10",
 			sendRetired:        "2000",
 			retirementLocation: "AF",
 			expectErr:          true,
 		},
 		{
 			name:               "can't send to an invalid country",
-			sendTradeable:      "10",
+			sendTradable:       "10",
 			sendRetired:        "20",
 			retirementLocation: "ZZZ",
 			expectErr:          true,
 		},
 		{
 			name:               "can't send to an invalid region",
-			sendTradeable:      "10",
+			sendTradable:       "10",
 			sendRetired:        "20",
 			retirementLocation: "AF-ZZZZ",
 			expectErr:          true,
 		},
 		{
 			name:               "can't send to an invalid postal code",
-			sendTradeable:      "10",
+			sendTradable:       "10",
 			sendRetired:        "20",
 			retirementLocation: "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
 			expectErr:          true,
 		},
 		{
-			name:                  "can send some",
-			sendTradeable:         "10",
-			sendRetired:           "20",
-			retirementLocation:    "AF",
-			expectErr:             false,
-			expTradeableSender:    "977.3869",
-			expRetiredSender:      "10000.4589902",
-			expTradeableRecipient: "10",
-			expRetiredRecipient:   "20",
-			expTradeableSupply:    "987.3869",
-			expRetiredSupply:      "10034.1149902",
+			name:                 "can send some",
+			sendTradable:         "10",
+			sendRetired:          "20",
+			retirementLocation:   "AF",
+			expectErr:            false,
+			expTradableSender:    "977.3869",
+			expRetiredSender:     "10000.4589902",
+			expTradableRecipient: "10",
+			expRetiredRecipient:  "20",
+			expTradableSupply:    "987.3869",
+			expRetiredSupply:     "10034.1149902",
 		},
 		{
-			name:                  "can send with no retirement location",
-			sendTradeable:         "10",
-			sendRetired:           "0",
-			retirementLocation:    "",
-			expectErr:             false,
-			expTradeableSender:    "967.3869",
-			expRetiredSender:      "10000.4589902",
-			expTradeableRecipient: "20",
-			expRetiredRecipient:   "20",
-			expTradeableSupply:    "987.3869",
-			expRetiredSupply:      "10034.1149902",
+			name:                 "can send with no retirement location",
+			sendTradable:         "10",
+			sendRetired:          "0",
+			retirementLocation:   "",
+			expectErr:            false,
+			expTradableSender:    "967.3869",
+			expRetiredSender:     "10000.4589902",
+			expTradableRecipient: "20",
+			expRetiredRecipient:  "20",
+			expTradableSupply:    "987.3869",
+			expRetiredSupply:     "10034.1149902",
 		},
 		{
-			name:                  "can send all tradeable",
-			sendTradeable:         "67.3869",
-			sendRetired:           "900",
-			retirementLocation:    "AF",
-			expectErr:             false,
-			expTradeableSender:    "0",
-			expRetiredSender:      "10000.4589902",
-			expTradeableRecipient: "87.3869",
-			expRetiredRecipient:   "920",
-			expTradeableSupply:    "87.3869",
-			expRetiredSupply:      "10934.1149902",
+			name:                 "can send all tradable",
+			sendTradable:         "67.3869",
+			sendRetired:          "900",
+			retirementLocation:   "AF",
+			expectErr:            false,
+			expTradableSender:    "0",
+			expRetiredSender:     "10000.4589902",
+			expTradableRecipient: "87.3869",
+			expRetiredRecipient:  "920",
+			expTradableSupply:    "87.3869",
+			expRetiredSupply:     "10934.1149902",
 		},
 		{
-			name:          "can't send any more",
-			sendTradeable: "1",
-			sendRetired:   "1",
-			expectErr:     true,
+			name:         "can't send any more",
+			sendTradable: "1",
+			sendRetired:  "1",
+			expectErr:    true,
 		},
 	}
 
@@ -591,7 +591,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 				Credits: []*ecocredit.MsgSend_SendCredits{
 					{
 						BatchDenom:         batchDenom,
-						TradableAmount:     tc.sendTradeable,
+						TradableAmount:     tc.sendTradable,
 						RetiredAmount:      tc.sendRetired,
 						RetirementLocation: tc.retirementLocation,
 					},
@@ -610,7 +610,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 				})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBalanceRes)
-				s.Require().Equal(tc.expTradeableSender, queryBalanceRes.TradableAmount)
+				s.Require().Equal(tc.expTradableSender, queryBalanceRes.TradableAmount)
 				s.Require().Equal(tc.expRetiredSender, queryBalanceRes.RetiredAmount)
 
 				// query recipient balance
@@ -620,14 +620,14 @@ func (s *IntegrationTestSuite) TestScenario() {
 				})
 				s.Require().NoError(err)
 				s.Require().NotNil(queryBalanceRes)
-				s.Require().Equal(tc.expTradeableRecipient, queryBalanceRes.TradableAmount)
+				s.Require().Equal(tc.expTradableRecipient, queryBalanceRes.TradableAmount)
 				s.Require().Equal(tc.expRetiredRecipient, queryBalanceRes.RetiredAmount)
 
 				// query supply
 				querySupplyRes, err = s.queryClient.Supply(s.ctx, &ecocredit.QuerySupplyRequest{BatchDenom: batchDenom})
 				s.Require().NoError(err)
 				s.Require().NotNil(querySupplyRes)
-				s.Require().Equal(tc.expTradeableSupply, querySupplyRes.TradableSupply)
+				s.Require().Equal(tc.expTradableSupply, querySupplyRes.TradableSupply)
 				s.Require().Equal(tc.expRetiredSupply, querySupplyRes.RetiredSupply)
 			}
 		})

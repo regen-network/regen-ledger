@@ -199,6 +199,9 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 
 	for _, credit := range req.Credits {
 		denom := batchDenomT(credit.BatchDenom)
+		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
+		}
 
 		maxDecimalPlaces, err := getUint32(store, MaxDecimalPlacesKey(denom))
 		if err != nil {
@@ -275,7 +278,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ec
 	for _, credit := range req.Credits {
 		denom := batchDenomT(credit.BatchDenom)
 		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
-			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid credit denom", denom))
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
 		}
 
 		maxDecimalPlaces, err := getUint32(store, MaxDecimalPlacesKey(denom))
@@ -319,7 +322,7 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 		// exists
 		denom := batchDenomT(credit.BatchDenom)
 		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
-			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid credit denom", denom))
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
 		}
 
 		// Fetch the max precision of decimal values in this batch
