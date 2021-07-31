@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "Regen Ledger - REST and gRPC Gateway docs",
+        "title": "Regen Ledger - REST and gRPC Gateway Documentation",
         "description": "Documentation describing REST and gRPC endpoints for state queries and broadcasting transactions",
         "version": "1.0.0"
     },
