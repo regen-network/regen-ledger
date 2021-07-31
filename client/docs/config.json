@@ -26,9 +26,14 @@
               }
         },
         {
-            "url": "./client/docs/swagger.yaml",
+            "url": "./tmp-swagger-gen/swagger.yaml",
             "dereference": {
                 "circular": "ignore"
+            },
+            "tags": {
+                "rename": {
+                "Gaia REST": "Tendermint RPC"
+                }
             }
         }
     ]
