@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
         "title": "Regen Ledger - REST and gRPC Gateway docs",
-        "description": "A REST interface for state queries, legacy transactions",
+        "description": "Documentation describing REST and gRPC endpoints for state queries and broadcasting transactions",
         "version": "1.0.0"
     },
     "apis": [
