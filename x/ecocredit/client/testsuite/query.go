@@ -159,7 +159,7 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 		{
 			name:                   "valid credit batch and invalid account",
 			args:                   []string{s.batchInfo.BatchDenom, "abcde", fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
-			expectErr:              false,
+			expectErr:              true,
 			expectedTradableAmount: "0",
 			expectedRetiredAmount:  "0",
 		},
