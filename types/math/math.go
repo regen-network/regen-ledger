@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// ParseNonNegativeDecimal parses a non-negative decimal or returns an error.
+// Deprecated: ParseNonNegativeDecimal parses a non-negative decimal or returns an error.
 func ParseNonNegativeDecimal(x string) (*apd.Decimal, error) {
 	res, _, err := apd.NewFromString(x)
 	if err != nil || res.Sign() < 0 {
@@ -19,7 +19,7 @@ func ParseNonNegativeDecimal(x string) (*apd.Decimal, error) {
 	return res, nil
 }
 
-// ParsePositiveDecimal parses a positive decimal or returns an error.
+// Deprecated: ParsePositiveDecimal parses a positive decimal or returns an error.
 func ParsePositiveDecimal(x string) (*apd.Decimal, error) {
 	res, _, err := apd.NewFromString(x)
 	if err != nil || res.Sign() <= 0 {
@@ -29,12 +29,12 @@ func ParsePositiveDecimal(x string) (*apd.Decimal, error) {
 	return res, nil
 }
 
-// DecimalString prints x as a floating point string.
+// Deprecated: DecimalString prints x as a floating point string.
 func DecimalString(x *apd.Decimal) string {
 	return x.Text('f')
 }
 
-// NumDecimalPlaces returns the number of decimal places in x.
+// Deprecated: NumDecimalPlaces returns the number of decimal places in x.
 func NumDecimalPlaces(x *apd.Decimal) uint32 {
 	if x.Exponent >= 0 {
 		return 0
@@ -42,7 +42,7 @@ func NumDecimalPlaces(x *apd.Decimal) uint32 {
 	return uint32(-x.Exponent)
 }
 
-// ParseNonNegativeDecimal parses a non-negative decimal with a fixed maxDecimalPlaces or returns an error.
+// Deprecated: ParseNonNegativeDecimal parses a non-negative decimal with a fixed maxDecimalPlaces or returns an error.
 func ParseNonNegativeFixedDecimal(x string, maxDecimalPlaces uint32) (*apd.Decimal, error) {
 	res, err := ParseNonNegativeDecimal(x)
 	if err != nil {
@@ -57,7 +57,7 @@ func ParseNonNegativeFixedDecimal(x string, maxDecimalPlaces uint32) (*apd.Decim
 	return res, nil
 }
 
-// ParsePositiveFixedDecimal parses a positive decimal with a fixed maxDecimalPlaces or returns an error.
+// Deprecated: ParsePositiveFixedDecimal parses a positive decimal with a fixed maxDecimalPlaces or returns an error.
 func ParsePositiveFixedDecimal(x string, maxDecimalPlaces uint32) (*apd.Decimal, error) {
 	res, err := ParsePositiveDecimal(x)
 	if err != nil {
@@ -87,7 +87,7 @@ var exactContext = apd.Context{
 	Traps:       apd.DefaultTraps | apd.Inexact | apd.Rounded,
 }
 
-// Add adds x and y and stores the result in res with arbitrary precision or returns an error.
+// Deprecated: Add adds x and y and stores the result in res with arbitrary precision or returns an error.
 func Add(res, x, y *apd.Decimal) error {
 	_, err := exactContext.Add(res, x, y)
 	if err != nil {
@@ -96,7 +96,7 @@ func Add(res, x, y *apd.Decimal) error {
 	return nil
 }
 
-// SafeSub subtracts the value of x from y and stores the result in res with arbitrary precision only
+// Deprecated: SafeSub subtracts the value of x from y and stores the result in res with arbitrary precision only
 // if the result will be non-negative. An insufficient funds error is returned if the result would be negative.
 func SafeSub(res, x, y *apd.Decimal) error {
 	_, err := exactContext.Sub(res, x, y)
@@ -109,4 +109,39 @@ func SafeSub(res, x, y *apd.Decimal) error {
 	}
 
 	return nil
+}
+
+// SafeSubBalance subtracts the value of y from x and returns the result with arbitrary precision.
+// Returns with ErrInsufficientFunds error if the result is negative.
+func SafeSubBalance(x Dec, y Dec) (Dec, error) {
+	var z Dec
+	_, err := exactContext.Sub(&z.dec, &x.dec, &y.dec)
+	if err != nil {
+		return z, errors.Wrap(err, "decimal subtraction error")
+	}
+
+	if z.IsNegative() {
+		return z, errors.ErrInsufficientFunds
+	}
+
+	return z, nil
+}
+
+// SafeAddBalance adds the value of x+y and returns the result with arbitrary precision.
+// Returns with ErrInvalidRequest error if either x or y is negative.
+func SafeAddBalance(x Dec, y Dec) (Dec, error) {
+	var z Dec
+
+	if x.IsNegative() || y.IsNegative() {
+		return z, errors.Wrap(
+			errors.ErrInvalidRequest,
+			fmt.Sprintf("AddBalance() requires two non-negative Dec parameters, but received %s and %s", x, y))
+	}
+
+	_, err := exactContext.Add(&z.dec, &x.dec, &y.dec)
+	if err != nil {
+		return z, errors.Wrap(err, "decimal subtraction error")
+	}
+
+	return z, nil
 }
