@@ -268,10 +268,11 @@ func (s *IntegrationTestSuite) TestQueryCreditTypes() {
 		expectedCreditType []*ecocredit.CreditType
 	}{
 		{
-			name:           "should give credit type",
-			args:           []string{},
-			expectErr:      false,
-			expectedErrMsg: "",
+			name:               "should give credit type",
+			args:               []string{},
+			expectErr:          false,
+			expectedErrMsg:     "",
+			expectedCreditType: []*ecocredit.CreditType{s.classInfo.CreditType},
 		},
 	}
 
