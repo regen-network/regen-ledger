@@ -4,13 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/regen-network/regen-ledger/types"
-
-	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/util"
@@ -67,35 +65,35 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 
 	batchID := s.idSeq.NextVal(ctx)
 	batchDenom := batchDenomT(fmt.Sprintf("%s/%s", classID, util.Uint64ToBase58Check(batchID)))
-	tradableSupply := apd.New(0, 0)
-	retiredSupply := apd.New(0, 0)
+	tradableSupply := math.NewDecFromInt64(0)
+	retiredSupply := math.NewDecFromInt64(0)
 	var maxDecimalPlaces uint32 = 0
 
 	store := ctx.KVStore(s.storeKey)
 
 	for _, issuance := range req.Issuance {
 		var err error
-		tradable, retired := apd.New(0, 0), apd.New(0, 0)
+		tradable, retired := math.NewDecFromInt64(0), math.NewDecFromInt64(0)
 
 		if issuance.TradableAmount != "" {
-			tradable, err = math.ParseNonNegativeDecimal(issuance.TradableAmount)
+			tradable, err = math.NewNonNegativeDecFromString(issuance.TradableAmount)
 			if err != nil {
 				return nil, err
 			}
 
-			decPlaces := math.NumDecimalPlaces(tradable)
+			decPlaces := tradable.NumDecimalPlaces()
 			if decPlaces > maxDecimalPlaces {
 				maxDecimalPlaces = decPlaces
 			}
 		}
 
 		if issuance.RetiredAmount != "" {
-			retired, err = math.ParseNonNegativeDecimal(issuance.RetiredAmount)
+			retired, err = math.NewNonNegativeDecFromString(issuance.RetiredAmount)
 			if err != nil {
 				return nil, err
 			}
 
-			decPlaces := math.NumDecimalPlaces(retired)
+			decPlaces := retired.NumDecimalPlaces()
 			if decPlaces > maxDecimalPlaces {
 				maxDecimalPlaces = decPlaces
 			}
@@ -104,31 +102,30 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		recipient := issuance.Recipient
 
 		if !tradable.IsZero() {
-			err = math.Add(tradableSupply, tradableSupply, tradable)
+			tradableSupply, err = tradableSupply.Add(tradable)
 			if err != nil {
 				return nil, err
 			}
 
-			err := getAddAndSetDecimal(store, TradableBalanceKey(recipient, batchDenom), tradable)
+			err := getAddAndSetDecimal(store, TradableBalanceKey(recipient, batchDenom), &tradable)
 			if err != nil {
 				return nil, err
 			}
 		}
 
 		if !retired.IsZero() {
-			err = math.Add(retiredSupply, retiredSupply, retired)
+			retiredSupply, err = retiredSupply.Add(retired)
 			if err != nil {
 				return nil, err
 			}
 
-			err = retire(ctx, store, recipient, batchDenom, retired, issuance.RetirementLocation)
+			err = retire(ctx, store, recipient, batchDenom, &retired, issuance.RetirementLocation)
 			if err != nil {
 				return nil, err
 			}
 		}
 
-		var sum apd.Decimal
-		err = math.Add(&sum, tradable, retired)
+		sum, err := tradable.Add(retired)
 		if err != nil {
 			return nil, err
 		}
@@ -136,24 +133,23 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
 			Recipient:  recipient,
 			BatchDenom: string(batchDenom),
-			Amount:     math.DecimalString(&sum),
+			Amount:     sum.String(),
 		})
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	setDecimal(store, TradableSupplyKey(batchDenom), tradableSupply)
-	setDecimal(store, RetiredSupplyKey(batchDenom), retiredSupply)
+	setDecimal(store, TradableSupplyKey(batchDenom), &tradableSupply)
+	setDecimal(store, RetiredSupplyKey(batchDenom), &retiredSupply)
 
-	var totalSupply apd.Decimal
-	err := math.Add(&totalSupply, tradableSupply, retiredSupply)
+	totalSupply, err := tradableSupply.Add(retiredSupply)
 	if err != nil {
 		return nil, err
 	}
-	totalSupplyStr := math.DecimalString(&totalSupply)
+	totalSupplyStr := totalSupply.String()
 
-	amountCancelledStr := math.DecimalString(apd.New(0, 0))
+	amountCancelledStr := math.NewDecFromInt64(0).String()
 
 	err = s.batchInfoTable.Create(ctx, &ecocredit.BatchInfo{
 		ClassId:         classID,
@@ -208,18 +204,23 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 			return nil, err
 		}
 
-		tradable, err := math.ParseNonNegativeFixedDecimal(credit.TradableAmount, maxDecimalPlaces)
+		tradable, err := math.NewNonNegativeDecFromString(credit.TradableAmount)
 		if err != nil {
 			return nil, err
 		}
+		if tradable.NumDecimalPlaces() > maxDecimalPlaces {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("number of decimal places in tradable amount exceeds maximum(%v)", maxDecimalPlaces)
+		}
 
-		retired, err := math.ParseNonNegativeFixedDecimal(credit.RetiredAmount, maxDecimalPlaces)
+		retired, err := math.NewNonNegativeDecFromString(credit.RetiredAmount)
 		if err != nil {
 			return nil, err
 		}
+		if retired.NumDecimalPlaces() > maxDecimalPlaces {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("number of decimal places in retired amount exceeds maximum(%v)", maxDecimalPlaces)
+		}
 
-		var sum apd.Decimal
-		err = math.Add(&sum, tradable, retired)
+		sum, err := tradable.Add(retired)
 		if err != nil {
 			return nil, err
 		}
@@ -231,26 +232,26 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 		}
 
 		// Add tradable balance
-		err = getAddAndSetDecimal(store, TradableBalanceKey(recipient, denom), tradable)
+		err = getAddAndSetDecimal(store, TradableBalanceKey(recipient, denom), &tradable)
 		if err != nil {
 			return nil, err
 		}
 
 		if !retired.IsZero() {
 			// subtract retired from tradable supply
-			err = getSubAndSetDecimal(store, TradableSupplyKey(denom), retired)
+			err = getSubAndSetDecimal(store, TradableSupplyKey(denom), &retired)
 			if err != nil {
 				return nil, err
 			}
 
 			// Add retired balance
-			err = retire(ctx, store, recipient, denom, retired, credit.RetirementLocation)
+			err = retire(ctx, store, recipient, denom, &retired, credit.RetirementLocation)
 			if err != nil {
 				return nil, err
 			}
 
 			// Add retired supply
-			err = getAddAndSetDecimal(store, RetiredSupplyKey(denom), retired)
+			err = getAddAndSetDecimal(store, RetiredSupplyKey(denom), &retired)
 			if err != nil {
 				return nil, err
 			}
@@ -260,7 +261,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 			Sender:     sender,
 			Recipient:  recipient,
 			BatchDenom: string(denom),
-			Amount:     math.DecimalString(&sum),
+			Amount:     sum.String(),
 		})
 		if err != nil {
 			return nil, err
@@ -286,24 +287,27 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ec
 			return nil, err
 		}
 
-		toRetire, err := math.ParsePositiveFixedDecimal(credit.Amount, maxDecimalPlaces)
+		toRetire, err := math.NewNonNegativeDecFromString(credit.Amount)
 		if err != nil {
 			return nil, err
 		}
+		if toRetire.NumDecimalPlaces() > maxDecimalPlaces {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("number of decimal places in retired amount exceeds maximum(%v)", maxDecimalPlaces)
+		}
 
-		err = subtractTradableBalanceAndSupply(store, holder, denom, toRetire)
+		err = subtractTradableBalanceAndSupply(store, holder, denom, &toRetire)
 		if err != nil {
 			return nil, err
 		}
 
 		//  Add retired balance
-		err = retire(ctx, store, holder, denom, toRetire, req.Location)
+		err = retire(ctx, store, holder, denom, &toRetire, req.Location)
 		if err != nil {
 			return nil, err
 		}
 
 		//  Add retired supply
-		err = getAddAndSetDecimal(store, RetiredSupplyKey(denom), toRetire)
+		err = getAddAndSetDecimal(store, RetiredSupplyKey(denom), &toRetire)
 		if err != nil {
 			return nil, err
 		}
@@ -333,14 +337,18 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 
 		// Parse the amount of credits to cancel, checking it conforms
 		// to the precision
-		toCancel, err := math.ParsePositiveFixedDecimal(credit.Amount, maxDecimalPlaces)
+		toCancel, err := math.NewNonNegativeDecFromString(credit.Amount)
 		if err != nil {
 			return nil, err
+		}
+		fmt.Printf("Amount to Cancel: %v\n", toCancel.String())
+		if toCancel.NumDecimalPlaces() > maxDecimalPlaces {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("number of decimal places in cancelled amount exceeds maximum(%v)", maxDecimalPlaces)
 		}
 
 		// Remove the credits from the balance of the holder and the
 		// overall supply
-		err = subtractTradableBalanceAndSupply(store, holder, denom, toCancel)
+		err = subtractTradableBalanceAndSupply(store, holder, denom, &toCancel)
 		if err != nil {
 			return nil, err
 		}
@@ -353,19 +361,33 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 			return nil, err
 		}
 
-		totalAmount, err := math.ParsePositiveFixedDecimal(batchInfo.TotalAmount, maxDecimalPlaces)
+		totalAmount, err := math.NewNonNegativeDecFromString(batchInfo.TotalAmount)
 		if err != nil {
 			return nil, err
 		}
-		math.SafeSub(totalAmount, totalAmount, toCancel)
-		batchInfo.TotalAmount = math.DecimalString(totalAmount)
+		if totalAmount.NumDecimalPlaces() > maxDecimalPlaces {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("number of decimal places in batch amount exceeds maximum(%v)", maxDecimalPlaces)
+		}
 
-		amountCancelled, err := math.ParseNonNegativeFixedDecimal(batchInfo.AmountCancelled, maxDecimalPlaces)
+		totalAmount, err = math.SafeSubBalance(totalAmount, toCancel)
 		if err != nil {
 			return nil, err
 		}
-		math.Add(amountCancelled, amountCancelled, toCancel)
-		batchInfo.AmountCancelled = math.DecimalString(amountCancelled)
+		batchInfo.TotalAmount = totalAmount.String()
+
+		amountCancelled, err := math.NewNonNegativeDecFromString(batchInfo.AmountCancelled)
+		if err != nil {
+			return nil, err
+		}
+		if amountCancelled.NumDecimalPlaces() > maxDecimalPlaces {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("number of decimal places in cancelled amount exceeds maximum(%v)", maxDecimalPlaces)
+		}
+
+		amountCancelled, err = amountCancelled.Add(toCancel)
+		if err != nil {
+			return nil, err
+		}
+		batchInfo.AmountCancelled = amountCancelled.String()
 
 		s.batchInfoTable.Save(ctx, &batchInfo)
 
@@ -373,7 +395,7 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCancel{
 			Canceller:  holder,
 			BatchDenom: string(denom),
-			Amount:     math.DecimalString(toCancel),
+			Amount:     toCancel.String(),
 		})
 		if err != nil {
 			return nil, err
@@ -428,7 +450,7 @@ func (s serverImpl) assertClassIssuer(goCtx context.Context, classID, issuer str
 	return sdkerrors.ErrUnauthorized
 }
 
-func retire(ctx types.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired *apd.Decimal, location string) error {
+func retire(ctx types.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired *math.Dec, location string) error {
 	err := getAddAndSetDecimal(store, RetiredBalanceKey(recipient, batchDenom), retired)
 	if err != nil {
 		return err
@@ -437,12 +459,12 @@ func retire(ctx types.Context, store sdk.KVStore, recipient string, batchDenom b
 	return ctx.EventManager().EmitTypedEvent(&ecocredit.EventRetire{
 		Retirer:    recipient,
 		BatchDenom: string(batchDenom),
-		Amount:     math.DecimalString(retired),
+		Amount:     retired.String(),
 		Location:   location,
 	})
 }
 
-func subtractTradableBalanceAndSupply(store sdk.KVStore, holder string, batchDenom batchDenomT, amount *apd.Decimal) error {
+func subtractTradableBalanceAndSupply(store sdk.KVStore, holder string, batchDenom batchDenomT, amount *math.Dec) error {
 	// subtract tradable balance
 	err := getSubAndSetDecimal(store, TradableBalanceKey(holder, batchDenom), amount)
 	if err != nil {

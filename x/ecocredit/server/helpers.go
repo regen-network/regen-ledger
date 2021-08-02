@@ -5,62 +5,61 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/types/math"
 )
 
-func getDecimal(store sdk.KVStore, key []byte) (*apd.Decimal, error) {
+func getDecimal(store sdk.KVStore, key []byte) (*math.Dec, error) {
 	bz := store.Get(key)
 	if bz == nil {
-		return apd.New(0, 0), nil
+		tmp := math.NewDecFromInt64(0)
+		return &tmp, nil
 	}
 
-	value, _, err := apd.NewFromString(string(bz))
+	value, err := math.NewDecFromString(string(bz))
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, fmt.Sprintf("can't unmarshal %s as decimal", bz))
 	}
 
-	return value, nil
+	return &value, nil
 }
 
-func setDecimal(store sdk.KVStore, key []byte, value *apd.Decimal) {
+func setDecimal(store sdk.KVStore, key []byte, value *math.Dec) {
 	// always remove all trailing zeros for canonical representation
-	value, _ = value.Reduce(value)
+	reduced, _ := value.Reduce()
 
-	if value.IsZero() {
+	if reduced.IsZero() {
 		store.Delete(key)
 	} else {
 		// use floating notation here always for canonical representation
-		str := value.Text('f')
-		store.Set(key, []byte(str))
+		store.Set(key, []byte(reduced.String()))
 	}
 }
 
-func getAddAndSetDecimal(store sdk.KVStore, key []byte, x *apd.Decimal) error {
+func getAddAndSetDecimal(store sdk.KVStore, key []byte, x *math.Dec) error {
 	value, err := getDecimal(store, key)
 	if err != nil {
 		return err
 	}
 
-	err = math.Add(value, value, x)
+	sum, err := value.Add(*x)
 	if err != nil {
 		return err
 	}
 
-	setDecimal(store, key, value)
+	setDecimal(store, key, &sum)
 	return nil
 }
 
-func getSubAndSetDecimal(store sdk.KVStore, key []byte, x *apd.Decimal) error {
+func getSubAndSetDecimal(store sdk.KVStore, key []byte, x *math.Dec) error {
 	value, err := getDecimal(store, key)
 	if err != nil {
 		return err
 	}
 
-	err = math.SafeSub(value, value, x)
+	*value, err = math.SafeSubBalance(*value, *x)
 	if err != nil {
 		return err
 	}
