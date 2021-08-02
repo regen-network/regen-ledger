@@ -48,7 +48,7 @@ func txflags(cmd *cobra.Command) *cobra.Command {
 
 func TxCreateClassCmd() *cobra.Command {
 	return txflags(&cobra.Command{
-		Use:   "create-class [designer] [issuer[,issuer]*] [metadata]",
+		Use:   "create-class [designer] [issuer[,issuer]*] [credit type] [metadata]",
 		Short: "Creates a new credit class",
 		Long: `Creates a new credit class.
 
