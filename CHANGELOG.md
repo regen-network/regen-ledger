@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * record retirement locations of ecocredit (#328)
 * add dates as top level fields in credit batches (#393)
 * add project location as field in credit batches (#394)
+* use dec wrapper for decimal operations (#435)
 
 ## [1.0.0] - 2021-04-13
 
