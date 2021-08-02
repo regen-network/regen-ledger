@@ -183,6 +183,8 @@ tags
 
 build/
 
+# swagger-gen
+/tmp-swagger-gen
 # OS
 .DS_Store
 
