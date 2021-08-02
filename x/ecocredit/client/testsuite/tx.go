@@ -87,6 +87,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 				val.Address.String(),
 				val.Address.String(),
 				validMetadata,
+				"carbon",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 			},
 			commonFlags...,
@@ -99,10 +100,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().Equal(uint32(0), txResp.Code, out.String())
 
 	s.classInfo = &ecocredit.ClassInfo{
-		ClassId:  classId,
-		Designer: val.Address.String(),
-		Issuers:  []string{val.Address.String()},
-		Metadata: validMetadataBytes,
+		ClassId:    classId,
+		Designer:   val.Address.String(),
+		Issuers:    []string{val.Address.String()},
+		CreditType: &ecocredit.CreditType{Type: "carbon", Units: "kg", Precision: 6},
+		Metadata:   validMetadataBytes,
 	}
 
 	startDate, err := client.ParseDate("start date", "2021-01-01")
