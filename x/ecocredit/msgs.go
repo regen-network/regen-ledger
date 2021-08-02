@@ -21,6 +21,12 @@ func (m *MsgCreateClass) ValidateBasic() error {
 	if len(m.Issuers) == 0 {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "issuers cannot be empty")
 	}
+	for _, issuer := range m.Issuers {
+		_, err := sdk.AccAddressFromBech32(issuer)
+		if err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		}
+	}
 
 	for _, issuer := range m.Issuers {
 		_, err := sdk.AccAddressFromBech32(issuer)
@@ -68,7 +74,7 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 	for _, iss := range m.Issuance {
 		_, err := sdk.AccAddressFromBech32(iss.Recipient)
 		if err != nil {
-			return err
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
 
 		if iss.TradableAmount != "" {
@@ -113,7 +119,7 @@ func (m *MsgSend) ValidateBasic() error {
 
 	_, err = sdk.AccAddressFromBech32(m.Recipient)
 	if err != nil {
-		return sdkerrors.Wrap(err, "recipient")
+		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
 	if len(m.Credits) == 0 {

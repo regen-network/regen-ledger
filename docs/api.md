@@ -30,7 +30,7 @@ MY_ADDRESS=$(regen keys show $KEY_NAME -a)
 
 If you'd like to use a custom keyring backend, you can find more information on the [Cosmos SDK keyring docs](https://docs.cosmos.network/master/run-node/keyring.html). Make sure you save the seed mnemonic in a safe place!
 
-To receive some funds on this address, copy the content of the `$MY_ADDRESS` variable, and paste your address on [our faucet](https://faucet.devnet.regen.vitwit.com) to receive some funds.
+To receive some funds on this address, copy the content of the `$MY_ADDRESS` variable, and paste your address on [our faucet](https://regen.vitwit.com/faucet) to receive some funds.
 
 ### Sending a Transaction
 
