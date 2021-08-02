@@ -46,6 +46,17 @@ func NewNonNegativeDecFromString(s string) (Dec, error) {
 	return d, nil
 }
 
+func NewPositiveFixedDecFromString(s string, max uint32) (Dec, error) {
+	d, err := NewNonNegativeDecFromString(s)
+	if err != nil {
+		return Dec{}, err
+	}
+	if d.NumDecimalPlaces() > max {
+		return Dec{}, fmt.Errorf("%s exceeds maximum decimal places: %d", s, max)
+	}
+	return d, nil
+}
+
 func NewDecFromInt64(x int64) Dec {
 	var res Dec
 	res.dec.SetInt64(x)

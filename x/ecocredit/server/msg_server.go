@@ -204,20 +204,14 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 			return nil, err
 		}
 
-		tradable, err := math.NewNonNegativeDecFromString(credit.TradableAmount)
+		tradable, err := math.NewPositiveFixedDecFromString(credit.TradableAmount, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
-		}
-		if tradable.NumDecimalPlaces() > maxDecimalPlaces {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("number of decimal places in tradable amount exceeds maximum(%v)", maxDecimalPlaces)
 		}
 
-		retired, err := math.NewNonNegativeDecFromString(credit.RetiredAmount)
+		retired, err := math.NewPositiveFixedDecFromString(credit.RetiredAmount, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
-		}
-		if retired.NumDecimalPlaces() > maxDecimalPlaces {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("number of decimal places in retired amount exceeds maximum(%v)", maxDecimalPlaces)
 		}
 
 		sum, err := tradable.Add(retired)
@@ -287,12 +281,9 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ec
 			return nil, err
 		}
 
-		toRetire, err := math.NewNonNegativeDecFromString(credit.Amount)
+		toRetire, err := math.NewPositiveFixedDecFromString(credit.Amount, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
-		}
-		if toRetire.NumDecimalPlaces() > maxDecimalPlaces {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("number of decimal places in retired amount exceeds maximum(%v)", maxDecimalPlaces)
 		}
 
 		err = subtractTradableBalanceAndSupply(store, holder, denom, &toRetire)
@@ -337,13 +328,9 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 
 		// Parse the amount of credits to cancel, checking it conforms
 		// to the precision
-		toCancel, err := math.NewNonNegativeDecFromString(credit.Amount)
+		toCancel, err := math.NewPositiveFixedDecFromString(credit.Amount, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
-		}
-		fmt.Printf("Amount to Cancel: %v\n", toCancel.String())
-		if toCancel.NumDecimalPlaces() > maxDecimalPlaces {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("number of decimal places in cancelled amount exceeds maximum(%v)", maxDecimalPlaces)
 		}
 
 		// Remove the credits from the balance of the holder and the
@@ -361,12 +348,9 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 			return nil, err
 		}
 
-		totalAmount, err := math.NewNonNegativeDecFromString(batchInfo.TotalAmount)
+		totalAmount, err := math.NewPositiveFixedDecFromString(batchInfo.TotalAmount, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
-		}
-		if totalAmount.NumDecimalPlaces() > maxDecimalPlaces {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("number of decimal places in batch amount exceeds maximum(%v)", maxDecimalPlaces)
 		}
 
 		totalAmount, err = math.SafeSubBalance(totalAmount, toCancel)
@@ -375,12 +359,9 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 		}
 		batchInfo.TotalAmount = totalAmount.String()
 
-		amountCancelled, err := math.NewNonNegativeDecFromString(batchInfo.AmountCancelled)
+		amountCancelled, err := math.NewPositiveFixedDecFromString(batchInfo.AmountCancelled, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
-		}
-		if amountCancelled.NumDecimalPlaces() > maxDecimalPlaces {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("number of decimal places in cancelled amount exceeds maximum(%v)", maxDecimalPlaces)
 		}
 
 		amountCancelled, err = amountCancelled.Add(toCancel)

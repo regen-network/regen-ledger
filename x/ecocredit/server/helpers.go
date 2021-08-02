@@ -28,13 +28,13 @@ func getDecimal(store sdk.KVStore, key []byte) (*math.Dec, error) {
 
 func setDecimal(store sdk.KVStore, key []byte, value *math.Dec) {
 	// always remove all trailing zeros for canonical representation
-	reduced, _ := value.Reduce()
+	*value, _ = value.Reduce()
 
-	if reduced.IsZero() {
+	if value.IsZero() {
 		store.Delete(key)
 	} else {
 		// use floating notation here always for canonical representation
-		store.Set(key, []byte(reduced.String()))
+		store.Set(key, []byte(value.String()))
 	}
 }
 
@@ -44,12 +44,12 @@ func getAddAndSetDecimal(store sdk.KVStore, key []byte, x *math.Dec) error {
 		return err
 	}
 
-	sum, err := value.Add(*x)
+	*value, err = value.Add(*x)
 	if err != nil {
 		return err
 	}
 
-	setDecimal(store, key, &sum)
+	setDecimal(store, key, value)
 	return nil
 }
 
