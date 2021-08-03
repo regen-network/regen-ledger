@@ -38,6 +38,8 @@ Install the `regen` binary:
 make install
 ```
 
+Note: the `regen` binary is installed into `$(go env GOPATH)/bin`, so please make sure `$(go env GOPATH)/bin` is in your PATH (e.g. `export PATH=$(go env GOPATH)/bin:$PATH` if not already there)
+
 Check to make sure the install was successful:
 ```
 regen version
@@ -77,8 +79,17 @@ In this case, `node` is the name (or "moniker") of the node and `test` is the ch
 When the node was initialized, a `genesis.json` file was created within the `config` directory. In this section, you will be adding two genesis accounts (accounts with an initial token balance) and a genesis transaction (a transaction that registers the validator account in the validator set).
 
 Update native staking token to `uregen`:
+
+If you're on a Linux variant:
+
 ```
 sed -i "s/stake/uregen/g" ~/.regen/config/genesis.json
+```
+
+Note: Mac OS does `sed` slightly differently:
+
+```
+sed -i "" "s/stake/uregen/g" ~/.regen/config/genesis.json
 ```
 
 Add `validator` account to `genesis.json`:
