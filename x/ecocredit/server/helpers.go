@@ -11,24 +11,23 @@ import (
 	"github.com/regen-network/regen-ledger/types/math"
 )
 
-func getDecimal(store sdk.KVStore, key []byte) (*math.Dec, error) {
+func getDecimal(store sdk.KVStore, key []byte) (math.Dec, error) {
 	bz := store.Get(key)
 	if bz == nil {
-		tmp := math.NewDecFromInt64(0)
-		return &tmp, nil
+		return math.NewDecFromInt64(0), nil
 	}
 
 	value, err := math.NewDecFromString(string(bz))
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, fmt.Sprintf("can't unmarshal %s as decimal", bz))
+		return math.Dec{}, sdkerrors.Wrap(err, fmt.Sprintf("can't unmarshal %s as decimal", bz))
 	}
 
-	return &value, nil
+	return value, nil
 }
 
-func setDecimal(store sdk.KVStore, key []byte, value *math.Dec) {
+func setDecimal(store sdk.KVStore, key []byte, value math.Dec) {
 	// always remove all trailing zeros for canonical representation
-	*value, _ = value.Reduce()
+	value, _ = value.Reduce()
 
 	if value.IsZero() {
 		store.Delete(key)
@@ -38,13 +37,13 @@ func setDecimal(store sdk.KVStore, key []byte, value *math.Dec) {
 	}
 }
 
-func getAddAndSetDecimal(store sdk.KVStore, key []byte, x *math.Dec) error {
+func getAddAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 	value, err := getDecimal(store, key)
 	if err != nil {
 		return err
 	}
 
-	*value, err = value.Add(*x)
+	value, err = value.Add(x)
 	if err != nil {
 		return err
 	}
@@ -53,13 +52,13 @@ func getAddAndSetDecimal(store sdk.KVStore, key []byte, x *math.Dec) error {
 	return nil
 }
 
-func getSubAndSetDecimal(store sdk.KVStore, key []byte, x *math.Dec) error {
+func getSubAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 	value, err := getDecimal(store, key)
 	if err != nil {
 		return err
 	}
 
-	*value, err = math.SafeSubBalance(*value, *x)
+	value, err = math.SafeSubBalance(value, x)
 	if err != nil {
 		return err
 	}
