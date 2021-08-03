@@ -13,7 +13,7 @@ func (s serverImpl) getCreditType(ctx sdk.Context, creditTypeName string) (*ecoc
 	creditTypeName = strings.ToLower(creditTypeName)
 	creditTypeName = util.FastRemoveWhitespace(creditTypeName)
 	for _, creditType := range creditTypes {
-		if creditType.Type == creditTypeName {
+		if creditType.Name == creditTypeName {
 			return creditType, nil
 		}
 	}

@@ -90,7 +90,7 @@ message GenesisState {
 // CreditType defines the measurement unit/precision of a certain credit type (e.g. carbon, biodiversity...)
 message CreditType {
   // the type of credit (e.g. carbon, biodiversity, etc)
-  string type = 1;
+  string name = 1;
 
   // the measurement unit (e.g. kg, ton, etc)
   string units = 2;

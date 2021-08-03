@@ -55,10 +55,10 @@ func validateCreditTypes(i interface{}) error {
 	// ensure no duplicate credit types and that all precisions conform to hardcoded PRECISION above
 	seenTypes := make(map[string]bool)
 	for _, creditType := range creditTypes {
-		T := strings.ToLower(creditType.Type)
+		T := strings.ToLower(creditType.Name)
 		T = util.FastRemoveWhitespace(T)
-		if T != creditType.Type {
-			return sdkerrors.ErrInvalidRequest.Wrapf("credit type should be normalized: got %s, should be %s", creditType.Type, T)
+		if T != creditType.Name {
+			return sdkerrors.ErrInvalidRequest.Wrapf("credit type should be normalized: got %s, should be %s", creditType.Name, T)
 		}
 		if seenTypes[T] == true {
 			return sdkerrors.ErrInvalidRequest.Wrapf("duplicate credit types in request: %s", T)
@@ -67,7 +67,7 @@ func validateCreditTypes(i interface{}) error {
 		if creditType.Precision != PRECISION {
 			return sdkerrors.ErrInvalidRequest.Wrapf("invalid precision %d: precision is currently locked to %d", creditType.Precision, PRECISION)
 		}
-		if creditType.Type == "" {
+		if creditType.Name == "" {
 			return sdkerrors.ErrInvalidRequest.Wrap("empty credit type name")
 		}
 		if creditType.Units == "" {

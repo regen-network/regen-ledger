@@ -223,7 +223,7 @@ CreditType defines the measurement unit/precision of a certain credit type (e.g.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| type | [string](#string) |  | the type of credit (e.g. carbon, biodiversity, etc) |
+| name | [string](#string) |  | the type of credit (e.g. carbon, biodiversity, etc) |
 | units | [string](#string) |  | the measurement unit (e.g. kg, ton, etc) |
 | precision | [uint32](#uint32) |  | the decimal precision |
 
