@@ -111,61 +111,6 @@ func (s *IntegrationTestSuite) TestScenario() {
 	time1 := time.Now()
 	time2 := time.Now()
 
-	// Batch creation should fail if the StartDate is missing
-	err = (&ecocredit.MsgCreateBatch{
-		Issuer:          issuer1,
-		ClassId:         clsID,
-		Issuance:        []*ecocredit.MsgCreateBatch_BatchIssuance{},
-		StartDate:       nil,
-		EndDate:         &time2,
-		ProjectLocation: "AB",
-	}).ValidateBasic()
-	s.Require().Error(err)
-
-	// Batch creation should fail if the EndDate is missing
-	err = (&ecocredit.MsgCreateBatch{
-		Issuer:          issuer1,
-		ClassId:         clsID,
-		Issuance:        []*ecocredit.MsgCreateBatch_BatchIssuance{},
-		StartDate:       &time1,
-		EndDate:         nil,
-		ProjectLocation: "AB",
-	}).ValidateBasic()
-	s.Require().Error(err)
-
-	// Batch creation should fail if the EndDate is before the StartDate
-	err = (&ecocredit.MsgCreateBatch{
-		Issuer:          issuer1,
-		ClassId:         clsID,
-		Issuance:        []*ecocredit.MsgCreateBatch_BatchIssuance{},
-		StartDate:       &time2,
-		EndDate:         &time1,
-		ProjectLocation: "AB",
-	}).ValidateBasic()
-	s.Require().Error(err)
-
-	// Batch creation should fail if the ProjectLocation is missing
-	err = (&ecocredit.MsgCreateBatch{
-		Issuer:          issuer1,
-		ClassId:         clsID,
-		Issuance:        []*ecocredit.MsgCreateBatch_BatchIssuance{},
-		StartDate:       &time1,
-		EndDate:         &time2,
-		ProjectLocation: "",
-	}).ValidateBasic()
-	s.Require().Error(err)
-
-	// Batch creation should fail if the ProjectLocation is invalid
-	err = (&ecocredit.MsgCreateBatch{
-		Issuer:          issuer1,
-		ClassId:         clsID,
-		Issuance:        []*ecocredit.MsgCreateBatch_BatchIssuance{},
-		StartDate:       &time1,
-		EndDate:         &time2,
-		ProjectLocation: "ABCD",
-	}).ValidateBasic()
-	s.Require().Error(err)
-
 	// Batch creation should succeed with StartDate before EndDate, and valid data
 	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
 		Issuer:          issuer1,
