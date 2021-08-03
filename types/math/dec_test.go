@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"pgregory.net/rapid"
 )
 
 func TestDec(t *testing.T) {
@@ -90,27 +91,21 @@ func TestDec(t *testing.T) {
 	require.False(t, minusOne.IsPositive())
 	require.True(t, minusOne.IsNegative())
 
-
-	/*
-
-	TODO: Add Property Tests
-	========================
-
-	// Arithmetic tests
-
-    Mul(QuoInteger(a,b),b) + Rem(a,b) == a
-
-	Quo(Mul(a,b),b) == a
-
-	Quo(Mul(a,b),a) == b
-
-	Add(b,Sub(a,b)) == a
-
-	Sub(Add(a,b),b) == a
-
-	// Comparison tests
-	Cmp(a,b) IFF -1*Cmp(b,a) for varying precision b & a values
-	IsEqual(a,b) IFF IsEqual(b,a) for varying precision b & a values
-
-	*/
+	// Property tests
+	t.Run("TestSubAdd", rapid.MakeCheck(testSubAdd))
+	t.Run("TestAddSub", rapid.MakeCheck(testAddSub))
 }
+
+// Generator for Dec type
+// TODO: Write this!
+var genDec *rapid.Generator = rapid.Custom(func(t *rapid.T) *Dec {
+	return nil
+})
+
+// Property: (a - b) + b = a
+// TODO: Write this!
+func testSubAdd(t *rapid.T) {}
+
+// Property: (a + b) - b = a
+// TODO: Write this!
+func testAddSub(t *rapid.T) {}
