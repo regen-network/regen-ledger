@@ -386,13 +386,16 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 func (s serverImpl) SetPrecision(goCtx context.Context, req *ecocredit.MsgSetPrecision) (*ecocredit.MsgSetPrecisionResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	var batchInfo ecocredit.BatchInfo
+
 	err := s.batchInfoTable.GetOne(ctx, orm.RowID(req.BatchDenom), &batchInfo)
 	if err != nil {
 		return nil, err
 	}
+
 	if req.Issuer != batchInfo.Issuer {
 		return nil, sdkerrors.ErrUnauthorized
 	}
+
 	store := ctx.KVStore(s.storeKey)
 	key := MaxDecimalPlacesKey(batchDenomT(req.BatchDenom))
 	x, err := getUint32(store, key)
