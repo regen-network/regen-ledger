@@ -199,6 +199,9 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 
 	for _, credit := range req.Credits {
 		denom := batchDenomT(credit.BatchDenom)
+		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
+		}
 
 		maxDecimalPlaces, err := getUint32(store, MaxDecimalPlacesKey(denom))
 		if err != nil {
@@ -275,7 +278,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ec
 	for _, credit := range req.Credits {
 		denom := batchDenomT(credit.BatchDenom)
 		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
-			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid credit denom", denom))
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
 		}
 
 		maxDecimalPlaces, err := getUint32(store, MaxDecimalPlacesKey(denom))
@@ -319,7 +322,7 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 		// exists
 		denom := batchDenomT(credit.BatchDenom)
 		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
-			return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("%s is not a valid credit denom", denom))
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
 		}
 
 		// Fetch the max precision of decimal values in this batch
@@ -383,13 +386,16 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 func (s serverImpl) SetPrecision(goCtx context.Context, req *ecocredit.MsgSetPrecision) (*ecocredit.MsgSetPrecisionResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	var batchInfo ecocredit.BatchInfo
+
 	err := s.batchInfoTable.GetOne(ctx, orm.RowID(req.BatchDenom), &batchInfo)
 	if err != nil {
 		return nil, err
 	}
+
 	if req.Issuer != batchInfo.Issuer {
 		return nil, sdkerrors.ErrUnauthorized
 	}
+
 	store := ctx.KVStore(s.storeKey)
 	key := MaxDecimalPlacesKey(batchDenomT(req.BatchDenom))
 	x, err := getUint32(store, key)

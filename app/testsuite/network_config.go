@@ -48,7 +48,7 @@ func DefaultConfig() network.Config {
 		BondDenom:         sdk.DefaultBondDenom,
 		MinGasPrices:      fmt.Sprintf("0.000006%s", sdk.DefaultBondDenom),
 		AccountTokens:     sdk.TokensFromConsensusPower(1000, sdk.DefaultPowerReduction),
-		StakingTokens:     sdk.TokensFromConsensusPower(500, sdk.DefaultPowerReduction),
+		StakingTokens:     sdk.TokensFromConsensusPower(1000, sdk.DefaultPowerReduction),
 		BondedTokens:      sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction),
 		PruningStrategy:   storetypes.PruningOptionNothing,
 		CleanupDir:        true,
