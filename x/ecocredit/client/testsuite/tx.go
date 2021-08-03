@@ -33,6 +33,7 @@ const (
 	validMetadata = "AQ=="
 	classId       = "18AV53K"
 	batchId       = "1Lb4WV1"
+	creditType    = "carbon"
 )
 
 var validMetadataBytes = []byte{0x1}
@@ -86,8 +87,8 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			[]string{
 				val.Address.String(),
 				val.Address.String(),
+				creditType,
 				validMetadata,
-				"carbon",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 			},
 			commonFlags...,
