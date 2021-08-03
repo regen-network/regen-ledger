@@ -46,10 +46,27 @@ func NewNonNegativeDecFromString(s string) (Dec, error) {
 	return d, nil
 }
 
-func NewPositiveFixedDecFromString(s string, max uint32) (Dec, error) {
-	d, err := NewNonNegativeDecFromString(s)
+func NewNonNegativeFixedDecFromString(s string, max uint32) (Dec, error) {
+	d, err := NewDecFromString(s)
 	if err != nil {
 		return Dec{}, err
+	}
+	if d.IsNegative() {
+		return Dec{}, fmt.Errorf("cannot parse non negative decimal: %s", d.String())
+	}
+	if d.NumDecimalPlaces() > max {
+		return Dec{}, fmt.Errorf("%s exceeds maximum decimal places: %d", s, max)
+	}
+	return d, nil
+}
+
+func NewPositiveFixedDecFromString(s string, max uint32) (Dec, error) {
+	d, err := NewDecFromString(s)
+	if err != nil {
+		return Dec{}, err
+	}
+	if !d.IsPositive() {
+		return Dec{}, fmt.Errorf("%s is not a positive decimal", d.String())
 	}
 	if d.NumDecimalPlaces() > max {
 		return Dec{}, fmt.Errorf("%s exceeds maximum decimal places: %d", s, max)

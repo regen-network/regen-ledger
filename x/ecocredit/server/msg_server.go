@@ -204,12 +204,12 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 			return nil, err
 		}
 
-		tradable, err := math.NewPositiveFixedDecFromString(credit.TradableAmount, maxDecimalPlaces)
+		tradable, err := math.NewNonNegativeFixedDecFromString(credit.TradableAmount, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
 		}
 
-		retired, err := math.NewPositiveFixedDecFromString(credit.RetiredAmount, maxDecimalPlaces)
+		retired, err := math.NewNonNegativeFixedDecFromString(credit.RetiredAmount, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
 		}
