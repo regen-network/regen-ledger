@@ -1,6 +1,14 @@
+require('dotenv').config()
+
 const { description } = require('../package')
+const webpack = require('webpack')
 
 module.exports = {
+  configureWebpack: (config) => {
+    return { plugins: [
+      new webpack.EnvironmentPlugin({ ...process.env })
+    ]}
+  },
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#title
    */
@@ -29,14 +37,14 @@ module.exports = {
       'script',
       {
         async: true,
-        src: 'https://www.googletagmanager.com/gtag/js?id=G-RSFE0FQ146',
+        src: 'https://www.googletagmanager.com/gtag/js?id=' + process.env.GOOGLE_ANALYTICS_ID,
       }
     ],
     [
       'script',
       {},
       [
-        "window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', 'G-RSFE0FQ146');",
+        "window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', '" + process.env.GOOGLE_ANALYTICS_ID + "');",
       ],
     ],
   ],
@@ -95,7 +103,6 @@ module.exports = {
       ],
     }
   },
-
   /**
    * Apply plugins，ref：https://v1.vuepress.vuejs.org/plugin/
    */
