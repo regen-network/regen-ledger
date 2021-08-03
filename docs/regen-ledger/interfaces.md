@@ -1,0 +1,39 @@
+# Regen Ledger API & CLI
+
+Regen Ledger provides three interfaces for interacting with a node:
+
+- command-line interface
+- gRPC interface
+- REST interface
+
+Each interface can be used to query the state. The command-line interface can be used to generate, sign, and broadcast transactions, whereas the gRPC and REST interfaces can only be used to broadcast transactions (a transaction needs to be generated and signed either programmatically or using the command-line interface before it can be broadcasted using the gRPC or REST interfaces).
+
+## Command-Line Interface
+
+The most straightforward way to interact with a node is using the command-line interface.
+
+The `regen` binary serves as the node client and the application client, meaning the `regen` binary can be used to both run a node and interact with it. In [Quick Start](../getting-started/), we started a local node using the `regen` binary and then interacted with that node by submitting queries and transactions. For more examples of interacting with a node using the command-line interface, see [Tutorials](../tutorials/).
+
+## gRPC Interface
+
+[gRPC](https://grpc.io/docs/what-is-grpc/introduction/) is a modern RPC framework that leverages [protocol buffers](https://developers.google.com/protocol-buffers) for encoding requests and responses between a client and service. In the case of Regen Ledger, we use gRPC mostly for querying blockchain state (credit or token balances, data signature records, etc). As a client developer, this means that you can query Regen Ledger state directly by using a gRPC library for your language, in combination with Regen Ledger's protobuf definitions defined [here](https://github.com/regen-network/regen-ledger/tree/master/proto/regen).
+
+In some languages, you may be able to leverage a pre-existing client library to take care of most of the heavy lifting, including compiling protobuf messages. For javascript/typescript developers, [CosmJS](https://github.com/cosmos/cosmjs) is a great place to start.
+
+::: tip
+
+While CosmJS has basic support for all Cosmos SDK based blockchains, you will still need to compile the protobuf messages for Regen Ledger's own modules (e.g. data module, ecocredit module) if you intend to interact with credits or on-chain ecological data.
+
+And be sure to use [cosmjs/stargate](https://cosmos.github.io/cosmjs/latest/stargate/index.html) client!
+:::
+
+## REST Interface
+
+::: tip COMING SOON
+
+All gRPC services and methods on Regen Ledger will soon be made available for more convenient REST based queries through [gRPC Gateway](https://github.com/grpc-ecosystem/grpc-gateway).
+:::
+
+Currently gRPC-gateway endpoints have yet to be added for Regen Ledger's own modules, but the basic Cosmos REST API does exist, so you can still use the REST API for queries to general modules like `x/bank`, `x/staking`, etc.
+
+If you're eager to play around with what's available so far while we're still working on full REST API support for Regen Ledger, make sure you have API server and (optionally) Swagger UI enabled in your `~/.regen/config/app.toml` file, and go to `http://localhost:1317/swagger/` to read through the OpenAPI documentation.

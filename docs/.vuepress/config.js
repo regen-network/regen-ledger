@@ -49,8 +49,13 @@ module.exports = {
             '/getting-started/prerequisites'
           ]
         },
-        'core-functionality',
-        'api',
+        {
+          title: 'Regen Ledger',
+          children: [
+            '/regen-ledger/',
+            '/regen-ledger/interfaces',
+          ]
+        },
         {
           title: 'Modules',
           children: [
@@ -71,7 +76,15 @@ module.exports = {
               ]
             },
           ]
-        }
+        },
+        {
+          title: 'Tutorials',
+          children: [
+            '/tutorials/',
+            // '/tutorials/data-cli',
+            // '/tutorials/data-grpc',
+          ]
+        },
       ],
     }
   },
