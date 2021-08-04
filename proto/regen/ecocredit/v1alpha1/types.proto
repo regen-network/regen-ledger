@@ -25,6 +25,9 @@ message ClassInfo {
 
   // credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision.
   CreditType credit_type = 5;
+
+  // The number of batches issued in this credit class.
+  uint64 num_batches = 6;
 }
 
 // BatchInfo represents the high-level on-chain information for a credit batch.

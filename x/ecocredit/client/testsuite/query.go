@@ -39,10 +39,16 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 			expectedErrMsg: "not found: invalid request",
 		},
 		{
-			name:              "valid credit class",
-			args:              []string{s.classInfo.ClassId, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
-			expectErr:         false,
-			expectedClassInfo: s.classInfo,
+			name:      "valid credit class",
+			args:      []string{s.classInfo.ClassId, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			expectErr: false,
+			expectedClassInfo: &ecocredit.ClassInfo{
+				ClassId:    s.classInfo.ClassId,
+				Designer:   s.classInfo.Designer,
+				Issuers:    s.classInfo.Issuers,
+				Metadata:   s.classInfo.Metadata,
+				NumBatches: 1,
+			},
 		},
 	}
 

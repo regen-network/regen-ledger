@@ -86,7 +86,10 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	}
 
 	maxDecimalPlaces := classInfo.CreditType.Precision
-	batchSeqNo := s.idSeq.NextVal(ctx)
+	batchSeqNo, err := s.nextBatchInClass(ctx, classID)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
 	batchDenomStr, err := ecocredit.FormatDenom(classID, batchSeqNo, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
@@ -424,6 +427,27 @@ func (s serverImpl) assertClassIssuer(goCtx context.Context, classID, issuer str
 		}
 	}
 	return sdkerrors.ErrUnauthorized
+}
+
+// nextBatchInClass gets the sequence number for the next batch in the credit
+// class and updates the class info with the new batch number
+func (s serverImpl) nextBatchInClass(ctx types.Context, classID string) (uint64, error) {
+	classInfo, err := s.getClassInfo(ctx, classID)
+	if err != nil {
+		return 0, err
+	}
+
+	// Get the next value
+	nextVal := classInfo.NumBatches + 1
+
+	// Update the ClassInfo
+	classInfo.NumBatches = nextVal
+	err = s.classInfoTable.Save(ctx, classInfo)
+	if err != nil {
+		return 0, err
+	}
+
+	return nextVal, nil
 }
 
 func retire(ctx types.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired math.Dec, location string) error {

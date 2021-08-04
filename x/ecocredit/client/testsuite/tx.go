@@ -33,7 +33,7 @@ const (
 	validCreditType = "carbon"
 	validMetadata   = "AQ=="
 	classId         = "C001"
-	batchDenom      = "C001-20210101-20210201-02"
+	batchDenom      = "C001-20210101-20210201-01"
 )
 
 var validMetadataBytes = []byte{0x1}

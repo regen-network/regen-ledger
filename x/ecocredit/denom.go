@@ -43,7 +43,7 @@ func FormatDenom(classId string, batchSeqNo uint64, startDate *time.Time, endDat
 	return fmt.Sprintf(
 		"%s-%s-%s-%02d",
 
-		// Class ID as three digits
+		// Class ID string
 		classId,
 
 		// Start Date as YYYYMMDD

@@ -26,7 +26,7 @@ type serverImpl struct {
 	paramSpace paramtypes.Subspace
 	bankKeeper ecocredit.BankKeeper
 
-	// we use a single sequence to avoid having the same string/ID identifying a class and batch denom
+	// Sequence number for classes
 	idSeq          orm.Sequence
 	classInfoTable orm.PrimaryKeyTable
 	batchInfoTable orm.PrimaryKeyTable

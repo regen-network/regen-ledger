@@ -209,6 +209,7 @@ ClassInfo represents the high-level on-chain information for a credit class.
 | issuers | [string](#string) | repeated | issuers are the approved issuers of the credit class. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit class. |
 | credit_type | [CreditType](#regen.ecocredit.v1alpha1.CreditType) |  | credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision. |
+| num_batches | [uint64](#uint64) |  | The number of batches issued in this credit class. |
 
 
 
