@@ -30,10 +30,10 @@ type IntegrationTestSuite struct {
 }
 
 const (
-	validMetadata = "AQ=="
-	classId       = "18AV53K"
-	batchId       = "1Lb4WV1"
-	creditType    = "carbon"
+	validCreditType = "carbon"
+	validMetadata   = "AQ=="
+	classId         = "18AV53K"
+	batchId         = "1Lb4WV1"
 )
 
 var validMetadataBytes = []byte{0x1}
@@ -87,7 +87,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			[]string{
 				val.Address.String(),
 				val.Address.String(),
-				creditType,
+				validCreditType,
 				validMetadata,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
 			},
@@ -196,25 +196,31 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			name:           "missing designer",
 			args:           []string{},
 			expectErr:      true,
-			expectedErrMsg: "Error: accepts 3 arg(s), received 0",
+			expectedErrMsg: "accepts 4 arg(s), received 0",
 		},
 		{
 			name:           "missing issuer",
 			args:           []string{val0.Address.String()},
 			expectErr:      true,
-			expectedErrMsg: "Error: accepts 3 arg(s), received 1",
+			expectedErrMsg: "accepts 4 arg(s), received 1",
+		},
+		{
+			name:           "missing credit type",
+			args:           []string{validCreditType},
+			expectErr:      true,
+			expectedErrMsg: "accepts 4 arg(s), received 1",
 		},
 		{
 			name:           "missing metadata",
 			args:           []string{val0.Address.String(), val0.Address.String()},
 			expectErr:      true,
-			expectedErrMsg: "Error: accepts 3 arg(s), received 2",
+			expectedErrMsg: "accepts 4 arg(s), received 2",
 		},
 		{
 			name:           "too many args",
-			args:           []string{"abcde", "abcde", "abcde", "abcde"},
+			args:           []string{"abcde", "abcde", "abcde", "abcde", "dlskjf"},
 			expectErr:      true,
-			expectedErrMsg: "Error: accepts 3 arg(s), received 4",
+			expectedErrMsg: "accepts 4 arg(s), received 5",
 		},
 		{
 			name: "invalid designer",
@@ -222,6 +228,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				[]string{
 					"abcde",
 					val0.Address.String(),
+					validCreditType,
 					validMetadata,
 					makeFlagFrom(val0.Address.String()),
 				},
@@ -236,6 +243,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				[]string{
 					val0.Address.String(),
 					"abcde",
+					validCreditType,
 					validMetadata,
 					makeFlagFrom(val0.Address.String()),
 				},
@@ -250,6 +258,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				[]string{
 					val0.Address.String(),
 					val0.Address.String(),
+					validCreditType,
 					"=",
 					makeFlagFrom(val0.Address.String()),
 				},
@@ -264,6 +273,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				[]string{
 					val0.Address.String(),
 					val0.Address.String(),
+					validCreditType,
 					validMetadata,
 				},
 				s.commonTxFlags()...,
@@ -277,6 +287,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				[]string{
 					val0.Address.String(),
 					val0.Address.String(),
+					validCreditType,
 					validMetadata,
 					makeFlagFrom(val0.Address.String()),
 				},
@@ -301,6 +312,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 						},
 						",",
 					),
+					validCreditType,
 					validMetadata,
 					makeFlagFrom(val0.Address.String()),
 				},

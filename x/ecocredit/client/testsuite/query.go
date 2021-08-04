@@ -260,6 +260,7 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 func (s *IntegrationTestSuite) TestQueryCreditTypes() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
 	testCases := []struct {
 		name               string
 		args               []string
