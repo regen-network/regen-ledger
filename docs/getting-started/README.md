@@ -47,8 +47,6 @@ You should see `v1.0.0` printed to the console. Now that you have successfully i
 
 ## Create Accounts
 
-For sending transactions on the blockchain, you will need a keypair.
-
 In this section, you will create two test accounts. You will name the first account `validator` and the second account `delegator`. You will create both accounts using the `test` backend, meaning both accounts will not be securely stored and should not be used in a production environment. When using the `test` backend, accounts are stored in the home directory (more on this in the next section). 
 
 Create `validator` account:
