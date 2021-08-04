@@ -50,7 +50,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.ctx = types.Context{Context: s.sdkCtx}
 
 	ecocreditParams := ecocredit.DefaultParams()
-	ecocreditParams.CreditTypes = []*ecocredit.CreditType{{Name: "carbon", Units: "kg", Precision: 6}}
 	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
 
 	s.signers = s.fixture.Signers()
@@ -114,99 +113,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	time1 := time.Now()
 	time2 := time.Now()
 
-	// Batch creation should fail if the StartDate is missing
-	err = (&ecocredit.MsgCreateBatch{
-		Issuer:          issuer1,
-		ClassId:         clsID,
-		Issuance:        []*ecocredit.MsgCreateBatch_BatchIssuance{},
-		StartDate:       nil,
-		EndDate:         &time2,
-		ProjectLocation: "AB",
-	}).ValidateBasic()
-	s.Require().Error(err)
-
-	// Batch creation should fail if the EndDate is missing
-	err = (&ecocredit.MsgCreateBatch{
-		Issuer:          issuer1,
-		ClassId:         clsID,
-		Issuance:        []*ecocredit.MsgCreateBatch_BatchIssuance{},
-		StartDate:       &time1,
-		EndDate:         nil,
-		ProjectLocation: "AB",
-	}).ValidateBasic()
-	s.Require().Error(err)
-
-	// Batch creation should fail if the EndDate is before the StartDate
-	err = (&ecocredit.MsgCreateBatch{
-		Issuer:          issuer1,
-		ClassId:         clsID,
-		Issuance:        []*ecocredit.MsgCreateBatch_BatchIssuance{},
-		StartDate:       &time2,
-		EndDate:         &time1,
-		ProjectLocation: "AB",
-	}).ValidateBasic()
-	s.Require().Error(err)
-
-	// Batch creation should fail if the ProjectLocation is missing
-	err = (&ecocredit.MsgCreateBatch{
-		Issuer:          issuer1,
-		ClassId:         clsID,
-		Issuance:        []*ecocredit.MsgCreateBatch_BatchIssuance{},
-		StartDate:       &time1,
-		EndDate:         &time2,
-		ProjectLocation: "",
-	}).ValidateBasic()
-	s.Require().Error(err)
-
-	// Batch creation should fail if the ProjectLocation is invalid
-	err = (&ecocredit.MsgCreateBatch{
-		Issuer:          issuer1,
-		ClassId:         clsID,
-		Issuance:        []*ecocredit.MsgCreateBatch_BatchIssuance{},
-		StartDate:       &time1,
-		EndDate:         &time2,
-		ProjectLocation: "ABCD",
-	}).ValidateBasic()
-	s.Require().Error(err)
-
-	// Batch should fail because the tradable amount is > the credit type precision
-	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
-		Issuer:          issuer1,
-		ClassId:         clsID,
-		StartDate:       &time1,
-		EndDate:         &time2,
-		ProjectLocation: "AB",
-		Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
-			{
-				Recipient:          addr1,
-				TradableAmount:     "1.1234567",
-				RetiredAmount:      "0",
-				RetirementLocation: "",
-			},
-		},
-	})
-	s.Require().Error(err)
-
-	// Batch should fail because the retired amount is > the credit type precision
-	createBatchRes, err = s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
-		Issuer:          issuer1,
-		ClassId:         clsID,
-		StartDate:       &time1,
-		EndDate:         &time2,
-		ProjectLocation: "AB",
-		Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
-			{
-				Recipient:          addr1,
-				TradableAmount:     "0",
-				RetiredAmount:      "1.1234567",
-				RetirementLocation: "AB",
-			},
-		},
-	})
-	s.Require().Error(err)
-
 	// Batch creation should succeed with StartDate before EndDate, and valid data
-	createBatchRes, err = s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
+	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
 		Issuer:          issuer1,
 		ClassId:         clsID,
 		StartDate:       &time1,

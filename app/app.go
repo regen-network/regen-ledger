@@ -76,6 +76,7 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/modules/core"
 	ibcclient "github.com/cosmos/ibc-go/modules/core/02-client"
+	ibcclienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
 	porttypes "github.com/cosmos/ibc-go/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/modules/core/keeper"
@@ -91,6 +92,9 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+
+	// unnamed import of statik for swagger UI support
+	_ "github.com/regen-network/regen-ledger/client/docs/statik"
 )
 
 const (
@@ -298,7 +302,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
-		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
+		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
 
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
