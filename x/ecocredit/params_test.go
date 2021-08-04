@@ -11,7 +11,7 @@ func TestDefaultParams(t *testing.T) {
 	expected := Params{
 		CreditClassFee:                sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)),
 		AllowedClassDesignerAddresses: []string{},
-		AllowlistEnabled:              true,
+		AllowlistEnabled:              false,
 	}
 	df := DefaultParams()
 
