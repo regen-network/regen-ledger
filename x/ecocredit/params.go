@@ -23,7 +23,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyCreditClassFee, &p.CreditClassFee, validateCreditClassFee),
-		paramtypes.NewParamSetPair(KeyAllowlistedCreditCreators, &p.AllowedClassDesignerAddresses, validateAllowlistCreditCreators),
+		paramtypes.NewParamSetPair(KeyAllowlistedCreditCreators, &p.AllowedClassDesignerAddresses, validateAllowlistCreditDesigners),
 		paramtypes.NewParamSetPair(KeyAllowlistEnabled, &p.AllowlistEnabled, validateAllowlistEnabled),
 	}
 }
@@ -41,7 +41,7 @@ func validateCreditClassFee(i interface{}) error {
 	return nil
 }
 
-func validateAllowlistCreditCreators(i interface{}) error {
+func validateAllowlistCreditDesigners(i interface{}) error {
 	v, ok := i.([]string)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
