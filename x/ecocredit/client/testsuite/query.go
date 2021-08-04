@@ -88,14 +88,20 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name:           "invalid credit batch",
+			name:           "malformed batch denom",
 			args:           []string{"abcde"},
 			expectErr:      true,
-			expectedErrMsg: "not found: invalid request",
+			expectedErrMsg: "denomination didn't match the format",
+		},
+		{
+			name:           "non-existent credit batch",
+			args:           []string{"A000-00000000-00000000-00"},
+			expectErr:      true,
+			expectedErrMsg: "not found",
 		},
 		{
 			name:              "valid credit batch",
-			args:              []string{s.batchInfo.ClassId, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
+			args:              []string{s.batchInfo.BatchDenom, fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
 			expectErr:         false,
 			expectedBatchInfo: s.batchInfo,
 		},

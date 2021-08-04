@@ -14,68 +14,68 @@ func TestParseCredits(t *testing.T) {
 		expCreditsList []credits
 	}{
 		{
-			name:           "can't parse credits with missing prefix",
-			creditsListStr: "10ABC:123",
+			name:           "missing space",
+			creditsListStr: "10C001-20200101-20210101-01",
 			expectErr:      true,
 		},
 		{
-			name:           "can't parse credits with malformed batch denom",
-			creditsListStr: "10eco:ABC123",
+			name:           "malformed batch denom",
+			creditsListStr: "10 ABC123",
 			expectErr:      true,
 		},
 		{
-			name:           "can't parse credits with malformed amount",
-			creditsListStr: "10!eco:ABC:123",
+			name:           "malformed amount",
+			creditsListStr: "10! C001-20200101-20210101-01",
 			expectErr:      true,
 		},
 		{
-			name:           "can parse single credits with simple decimal",
-			creditsListStr: "10eco:ABC:123",
+			name:           "single credits with simple decimal",
+			creditsListStr: "10 C001-20200101-20210101-01",
 			expectErr:      false,
 			expCreditsList: []credits{
 				{
-					batchDenom: "eco:ABC:123",
+					batchDenom: "C001-20200101-20210101-01",
 					amount:     "10",
 				},
 			},
 		},
 		{
-			name:           "can parse single credits with multiple places",
-			creditsListStr: "10.0000001eco:ABC:123",
+			name:           "single credits with multiple places",
+			creditsListStr: "10.0000001 C001-20200101-20210101-01",
 			expectErr:      false,
 			expCreditsList: []credits{
 				{
-					batchDenom: "eco:ABC:123",
+					batchDenom: "C001-20200101-20210101-01",
 					amount:     "10.0000001",
 				},
 			},
 		},
 		{
-			name:           "can parse single credits with no digit before decimal point",
-			creditsListStr: ".0000001eco:ABC:123",
+			name:           "single credits with no digit before decimal point",
+			creditsListStr: ".0000001 C001-20200101-20210101-01",
 			expectErr:      false,
 			expCreditsList: []credits{
 				{
-					batchDenom: "eco:ABC:123",
+					batchDenom: "C001-20200101-20210101-01",
 					amount:     ".0000001",
 				},
 			},
 		},
 		{
-			name:           "can parse multiple credits",
-			creditsListStr: ".0000001eco:ABC:123,10eco:345:XYZ,10000.0001eco:IJK:LMN",
+			name:           "multiple credits",
+			creditsListStr: ".0000001 C001-20200101-20210101-01,10 C001-20200101-20210101-02, 10000.0001 C001-20200101-20210101-03",
 			expectErr:      false,
 			expCreditsList: []credits{
 				{
-					batchDenom: "eco:ABC:123",
+					batchDenom: "C001-20200101-20210101-01",
 					amount:     ".0000001",
 				},
 				{
-					batchDenom: "eco:345:XYZ",
+					batchDenom: "C001-20200101-20210101-02",
 					amount:     "10",
 				},
 				{
-					batchDenom: "eco:IJK:LMN",
+					batchDenom: "C001-20200101-20210101-03",
 					amount:     "10000.0001",
 				},
 			},

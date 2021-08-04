@@ -11,7 +11,6 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/util"
 )
 
 // CreateClass creates a new class of ecocredit
@@ -21,8 +20,11 @@ import (
 // governance process.
 func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateClass) (*ecocredit.MsgCreateClassResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
-	classID := s.idSeq.NextVal(ctx)
-	classIDStr := util.Uint64ToBase58Check(classID)
+	classSeqNo := s.idSeq.NextVal(ctx)
+	classID, err := ecocredit.FormatClassID(classSeqNo)
+	if err != nil {
+		return nil, err
+	}
 
 	// Charge the designer a fee to create the credit class
 	designerAddress, err := sdk.AccAddressFromBech32(req.Designer)
@@ -51,7 +53,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 	}
 
 	err = s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
-		ClassId:    classIDStr,
+		ClassId:    classID,
 		Designer:   req.Designer,
 		Issuers:    req.Issuers,
 		Metadata:   req.Metadata,
@@ -62,14 +64,14 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 	}
 
 	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateClass{
-		ClassId:  classIDStr,
+		ClassId:  classID,
 		Designer: req.Designer,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return &ecocredit.MsgCreateClassResponse{ClassId: classIDStr}, nil
+	return &ecocredit.MsgCreateClassResponse{ClassId: classID}, nil
 }
 
 func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatch) (*ecocredit.MsgCreateBatchResponse, error) {
@@ -84,12 +86,8 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	}
 
 	maxDecimalPlaces := classInfo.CreditType.Precision
-	batchID := s.idSeq.NextVal(ctx)
-	intClassID, err := util.DecodeBase58(classID)
-	if err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-	}
-	batchDenomStr, err := ecocredit.FormatDenom(intClassID, batchID, req.StartDate, req.EndDate)
+	batchSeqNo := s.idSeq.NextVal(ctx)
+	batchDenomStr, err := ecocredit.FormatDenom(classID, batchSeqNo, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}

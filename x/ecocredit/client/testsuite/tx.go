@@ -32,8 +32,8 @@ type IntegrationTestSuite struct {
 const (
 	validCreditType = "carbon"
 	validMetadata   = "AQ=="
-	classId         = "18AV53K"
-	batchId         = "1Lb4WV1"
+	classId         = "C001"
+	batchDenom      = "C001-20210101-20210201-02"
 )
 
 var validMetadataBytes = []byte{0x1}
@@ -150,7 +150,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	s.batchInfo = &ecocredit.BatchInfo{
 		ClassId:         classId,
-		BatchDenom:      fmt.Sprintf("%s/%s", classId, batchId),
+		BatchDenom:      batchDenom,
 		Issuer:          val.Address.String(),
 		TotalAmount:     "100.000001",
 		Metadata:        []byte{0x01},
@@ -961,9 +961,9 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
 
-	validCredits := fmt.Sprintf("5:%s", s.batchInfo.BatchDenom)
-	invalidBatchDenomCredits := "5:abcde"
-	invalidAmountCredits := fmt.Sprintf("abcde:%s", s.batchInfo.BatchDenom)
+	validCredits := fmt.Sprintf("5 %s", s.batchInfo.BatchDenom)
+	invalidBatchDenomCredits := "5 abcde"
+	invalidAmountCredits := fmt.Sprintf("abcde %s", s.batchInfo.BatchDenom)
 
 	testCases := []struct {
 		name           string
