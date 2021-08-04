@@ -17,16 +17,18 @@ func TestMsgCreateClass(t *testing.T) {
 	}{
 		"valid msg": {
 			src: MsgCreateClass{
-				Designer: addr1.String(),
-				Issuers:  []string{addr1.String(), addr2.String()},
-				Metadata: []byte("hello"),
+				Designer:   addr1.String(),
+				Issuers:    []string{addr1.String(), addr2.String()},
+				CreditType: "carbon",
+				Metadata:   []byte("hello"),
 			},
 			expErr: false,
 		},
 		"valid msg without metadata": {
 			src: MsgCreateClass{
-				Designer: addr1.String(),
-				Issuers:  []string{addr1.String(), addr2.String()},
+				Designer:   addr1.String(),
+				CreditType: "carbon",
+				Issuers:    []string{addr1.String(), addr2.String()},
 			},
 			expErr: false,
 		},
@@ -36,20 +38,30 @@ func TestMsgCreateClass(t *testing.T) {
 		},
 		"invalid without issuers": {
 			src: MsgCreateClass{
-				Designer: addr1.String(),
+				Designer:   addr1.String(),
+				CreditType: "carbon",
 			},
 			expErr: true,
 		},
 		"invalid with wrong issuers": {
 			src: MsgCreateClass{
-				Designer: addr1.String(),
-				Issuers:  []string{"xyz", "xyz1"},
+				Designer:   addr1.String(),
+				CreditType: "carbon",
+				Issuers:    []string{"xyz", "xyz1"},
 			},
 			expErr: true,
 		},
 		"invalid with wrong designer": {
 			src: MsgCreateClass{
-				Designer: "wrongDesigner",
+				Designer:   "wrongDesigner",
+				CreditType: "carbon",
+				Issuers:    []string{addr1.String(), addr2.String()},
+			},
+			expErr: true,
+		},
+		"invalid with no credit type": {
+			src: MsgCreateClass{
+				Designer: addr1.String(),
 				Issuers:  []string{addr1.String(), addr2.String()},
 			},
 			expErr: true,
