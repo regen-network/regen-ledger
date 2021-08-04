@@ -486,7 +486,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "Must provide a start date for the credit batch: invalid request",
+			expectedErrMsg: "must provide a start date for the credit batch: invalid request",
 		},
 		{
 			name: "missing end date",
@@ -498,7 +498,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "Must provide an end date for the credit batch: invalid request",
+			expectedErrMsg: "must provide an end date for the credit batch: invalid request",
 		},
 		{
 			name: "missing project location",
