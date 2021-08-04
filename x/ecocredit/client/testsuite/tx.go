@@ -104,7 +104,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		ClassId:    classId,
 		Designer:   val.Address.String(),
 		Issuers:    []string{val.Address.String()},
-		CreditType: &ecocredit.CreditType{Name: "carbon", Units: "kg", Precision: 6},
+		CreditType: &ecocredit.CreditType{Name: "carbon", Units: "tons", Precision: 6},
 		Metadata:   validMetadataBytes,
 	}
 
