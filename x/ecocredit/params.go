@@ -87,5 +87,5 @@ func NewParams(creditClassFee sdk.Coins, creditTypes []*CreditType) Params {
 }
 
 func DefaultParams() Params {
-	return NewParams(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)), []*CreditType{{Name: "carbon", Units: "kg", Precision: PRECISION}})
+	return NewParams(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)), []*CreditType{{Name: "carbon", Units: "tons", Precision: PRECISION}})
 }
