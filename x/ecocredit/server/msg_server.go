@@ -330,7 +330,6 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 		// to the precision
 		toCancel, err := math.NewPositiveFixedDecFromString(credit.Amount, maxDecimalPlaces)
 		if err != nil {
-			fmt.Printf("error cancelling credits: %s\n", credit.Amount)
 			return nil, err
 		}
 
@@ -351,7 +350,6 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 
 		totalAmount, err := math.NewPositiveFixedDecFromString(batchInfo.TotalAmount, maxDecimalPlaces)
 		if err != nil {
-			fmt.Printf("error: total amount isnt positive: %s", batchInfo.TotalAmount)
 			return nil, err
 		}
 
