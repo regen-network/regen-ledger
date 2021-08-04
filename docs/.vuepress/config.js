@@ -56,12 +56,16 @@ module.exports = {
           children: [
             {
               title: 'Data Module',
-              collapsable: false,
               children: [
                 {
                   title: 'Overview',
                   path: '/modules/data/'
                 },
+                // '/modules/data/01_concepts',
+                // '/modules/data/02_state',
+                // '/modules/data/03_messages',
+                // '/modules/data/04_events',
+                // '/modules/data/05_client',
                 {
                   title: 'Protobuf',
                   path: '/modules/data/protobuf'
@@ -70,12 +74,16 @@ module.exports = {
             },
             {
               title: 'Ecocredit Module',
-              collapsable: false,
               children: [
                 {
                   title: 'Overview',
                   path: '/modules/ecocredit/'
                 },
+                // '/modules/ecocredit/01_concepts',
+                // '/modules/ecocredit/02_state',
+                // '/modules/ecocredit/03_messages',
+                // '/modules/ecocredit/04_events',
+                // '/modules/ecocredit/05_client',
                 {
                   title: 'Protobuf',
                   path: '/modules/ecocredit/protobuf'
@@ -84,7 +92,6 @@ module.exports = {
             },
             {
               title: 'Group Module',
-              collapsable: false,
               children: [
                 {
                   title: 'Overview',
@@ -94,6 +101,7 @@ module.exports = {
                 '/modules/group/02_state',
                 '/modules/group/03_messages',
                 '/modules/group/04_events',
+                // '/modules/group/05_client',
                 {
                   title: 'Protobuf',
                   path: '/modules/group/protobuf'
