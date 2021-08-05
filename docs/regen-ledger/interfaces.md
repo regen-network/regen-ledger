@@ -29,7 +29,7 @@ For query commaneds:
 regen query --help
 ```
 
-For more information about the CLI, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/v0.43/run-node/interact-node.html#).
+For more information about the CLI, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/v0.43/run-node/interact-node.html).
 
 ## gRPC Interface
 
@@ -58,7 +58,7 @@ While CosmJS has basic support for all Cosmos SDK based blockchains, you will st
 And be sure to use [cosmjs/stargate](https://cosmos.github.io/cosmjs/latest/stargate/index.html) client!
 :::
 
-For more information about the gRPC interface, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/v0.43/run-node/interact-node.html#).
+For more information about the gRPC interface, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/v0.43/run-node/interact-node.html).
 
 ## REST Interface
 
@@ -79,4 +79,4 @@ curl \
 
 If you're eager to play around with what's available so far while we're still working on full REST API support for Regen Ledger, make sure you have API server and (optionally) Swagger UI enabled in your `~/.regen/config/app.toml` file, and go to `http://localhost:1317/swagger/` to read through the OpenAPI documentation.
 
-For more information about the REST interface, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/v0.43/run-node/interact-node.html#).
+For more information about the REST interface, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/v0.43/run-node/interact-node.html).
