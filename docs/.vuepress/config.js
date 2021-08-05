@@ -40,6 +40,13 @@ module.exports = {
     sidebar: {
       '/': [
         {
+          title: 'Introduction',
+          collapsable: false,
+          children: [
+            '/intro/',
+          ]
+        },
+        {
           title: 'Getting Started',
           children: [
             '/getting-started/',
