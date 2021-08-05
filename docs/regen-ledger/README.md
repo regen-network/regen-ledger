@@ -19,7 +19,7 @@ Regen Ledger has two custom modules in development that support our desired func
 ### Ecocredit Module
 
 ::: tip COMING SOON
-An experimental version of the ecocredit module is available on [Regen Devnet](/getting-started/live-networks.html#regen-devnet). Regen Ledger v2 will include the first official version of the ecocredit module.
+An experimental version of the ecocredit module is available on [Regen Devnet](/getting-started/live-networks.html#regen-devnet). Regen Ledger v2 will include the first official release of the ecocredit module, making the ecocredit module available on [Regen Mainnet](/getting-started/live-networks.html#regen-mainnet).
 :::
 
 The **Ecocredit Module** is our module for managing the issuance, trading, and retiring of credits pertaining to verifiable changes in ecosystem health.
@@ -31,7 +31,7 @@ Check out [Ecocredit Module Overview](./modules/ecocredit/) for more information
 ### Data Module
 
 ::: tip COMING SOON
-An experimental version of the data module will be available soon. The first official version of the data module will be included in Regen Ledger v3.
+A beta version of the data module will be available in experimental builds of Regen Ledger in Q4 2020, and we are targeting a first release on [Regen Mainnet](/getting-started/live-networks.html#regen-mainnet) in Regen Ledger v3.
 :::
 
 High quality and verifiable ecological data is an essential component in any modern ecosystem service marketplace. The **Data Module** is intended to sit alongside the Ecocredit Module, serving as a generic repository for more complex metadata pertaining a credit batch or ecosystem service project.
@@ -50,7 +50,7 @@ Supplemental to the core featureset described, Regen Ledger has out-of-the-box s
 ### Groups Module
 
 ::: tip COMING SOON
-The first official version of the group module will be included in the next release of Cosmos SDK (v0.44) and then included in Regen Ledger v3.
+The first official version of the group module will be included in the next release of Cosmos SDK (v0.44) and then included in Regen Ledger v3 for release on [Regen Mainnet](/getting-started/live-networks.html#regen-mainnet).
 :::
 
 ### CosmWasm
