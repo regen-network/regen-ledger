@@ -9,9 +9,9 @@ import (
 
 func TestDefaultParams(t *testing.T) {
 	expected := Params{
-		CreditClassFee:                sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)),
-		AllowedClassDesignerAddresses: []string{},
-		AllowlistEnabled:              false,
+		CreditClassFee:        sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)),
+		AllowedClassDesigners: []string{},
+		AllowlistEnabled:      false,
 	}
 	df := DefaultParams()
 

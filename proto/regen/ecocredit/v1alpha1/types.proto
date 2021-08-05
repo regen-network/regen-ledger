@@ -78,7 +78,7 @@ message Params {
 
   // allowed_class_designer_addresses is an allowlist defining the addresses with
   // the required permissions to create credit classes
-  repeated string allowed_class_designer_addresses = 2;
+  repeated string allowed_class_designers = 2;
 
   // allowlist_enabled is a param that enables/disables the allowlist for credit
   // creation

@@ -76,7 +76,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	addr4 := s.signers[6].String()
 	addr5 := s.signers[7].String()
 
-	s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistedCreditCreators, []string{designer.String()})
+	s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistedCreditDesigners, []string{designer.String()})
 	// create class with insufficient funds and it should fail
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
 		Designer: designer.String(),
@@ -625,7 +625,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	/****   TEST ALLOWLIST CREDIT DESIGNERS   ****/
 
 	// reset paramspace to empty
-	s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistedCreditCreators, []string{})
+	s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistedCreditDesigners, []string{})
 	allowlistCases := []struct {
 		name             string
 		designerAcc      sdk.AccAddress
@@ -673,7 +673,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	for _, tc := range allowlistCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistedCreditCreators, tc.allowlist)
+			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistedCreditDesigners, tc.allowlist)
 			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistEnabled, tc.allowlistEnabled)
 
 			// fund the designer account
