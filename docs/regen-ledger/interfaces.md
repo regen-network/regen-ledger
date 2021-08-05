@@ -14,9 +14,40 @@ The most straightforward way to interact with a node is using the command-line i
 
 The `regen` binary serves as the node client and the application client, meaning the `regen` binary can be used to both run a node and interact with it. In [Quick Start](../getting-started/), we started a local node using the `regen` binary and then interacted with that node by submitting queries and transactions. For more examples of interacting with a node using the command-line interface, see [Tutorials](../tutorials/).
 
+To learn more about the commands available, [install regen](http://localhost:8080/getting-started/#install-regen) and run the following:
+```
+regen --help
+```
+
+For transaction commands:
+```
+regen tx --help
+```
+
+For query commaneds:
+```
+regen query --help
+```
+
+For more information about the CLI, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/v0.43/run-node/interact-node.html#).
+
 ## gRPC Interface
 
 [gRPC](https://grpc.io/docs/what-is-grpc/introduction/) is a modern RPC framework that leverages [protocol buffers](https://developers.google.com/protocol-buffers) for encoding requests and responses between a client and service. In the case of Regen Ledger, we use gRPC mostly for querying blockchain state (credit or token balances, data signature records, etc). As a client developer, this means that you can query Regen Ledger state directly by using a gRPC library for your language, in combination with Regen Ledger's protobuf definitions defined [here](https://github.com/regen-network/regen-ledger/tree/master/proto/regen).
+
+In addition to using a gRPC library, you can also use [grpcurl](https://github.com/fullstorydev/grpcurl). `grpcurl` is a command-line tool that lets you interact with gRPC servers. If you have a local node running, you can list the Protobuf services available using the following command:
+```
+grpcurl -plaintext localhost:9090 list
+```
+
+To execute a call, you can use the following format:
+```
+grpcurl \
+    -plaintext \
+    -d '{"address":"<address>"}' \
+    localhost:9090 \
+    cosmos.bank.v1beta1.Query/AllBalances
+```
 
 In some languages, you may be able to leverage a pre-existing client library to take care of most of the heavy lifting, including compiling protobuf messages. For javascript/typescript developers, [CosmJS](https://github.com/cosmos/cosmjs) is a great place to start.
 
@@ -27,6 +58,8 @@ While CosmJS has basic support for all Cosmos SDK based blockchains, you will st
 And be sure to use [cosmjs/stargate](https://cosmos.github.io/cosmjs/latest/stargate/index.html) client!
 :::
 
+For more information about the gRPC interface, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/v0.43/run-node/interact-node.html#).
+
 ## REST Interface
 
 ::: tip COMING SOON
@@ -36,4 +69,14 @@ All gRPC services and methods on Regen Ledger will soon be made available for mo
 
 Currently gRPC-gateway endpoints have yet to be added for Regen Ledger's own modules, but the basic Cosmos REST API does exist, so you can still use the REST API for queries to general modules like `x/bank`, `x/staking`, etc.
 
+For example, you can query the balance of an address using the following `curl` command:
+```
+curl \
+    -X GET \
+    -H "Content-Type: application/json" \
+    http://localhost:1317/cosmos/bank/v1beta1/balances/<address>
+```
+
 If you're eager to play around with what's available so far while we're still working on full REST API support for Regen Ledger, make sure you have API server and (optionally) Swagger UI enabled in your `~/.regen/config/app.toml` file, and go to `http://localhost:1317/swagger/` to read through the OpenAPI documentation.
+
+For more information about the REST interface, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/v0.43/run-node/interact-node.html#).
