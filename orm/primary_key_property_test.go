@@ -78,9 +78,21 @@ func (m *primaryKeyMachine) Init(t *rapid.T) {
 	m.state = make(map[string]*testdata.GroupMember)
 }
 
-// Check will check invariants after every action is called
-func (*primaryKeyMachine) Check(t *rapid.T) {
-	// What do we actually want to check here?
+// Check that the real values match the state values. This is kind of overkill,
+// because we should catch any discrepancies in a Has command.
+func (m *primaryKeyMachine) Check(t *rapid.T) {
+	iter, err := m.table.PrefixScan(m.ctx, nil, nil)
+	require.NoError(t, err)
+
+	for {
+		var dest testdata.GroupMember
+		rowID, err := iter.LoadNext(&dest)
+		if err == orm.ErrIteratorDone {
+			break
+		} else {
+			require.Equal(t, *m.state[string(rowID)], dest)
+		}
+	}
 }
 
 // Create is one of the model commands. It adds an object to the table, creating
