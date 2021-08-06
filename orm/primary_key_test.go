@@ -56,60 +56,66 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 		method     func(ctx orm.HasKVStore, start, end []byte) (orm.Iterator, error)
 	}{
 		"exact match with a single result": {
-			start:     []byte("group-amember-one"), // == m1.PrimaryKey()
-			end:       []byte("group-amember-two"), // == m2.PrimaryKey()
+			start: append(
+				orm.AddLengthPrefix([]byte("group-a")),
+				orm.AddLengthPrefix([]byte("member-one"))...,
+			), // == orm.PrimaryKey(&m1)
+			end: append(
+				orm.AddLengthPrefix([]byte("group-a")),
+				orm.AddLengthPrefix([]byte("member-two"))...,
+			), // == orm.PrimaryKey(&m2)
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1},
-			expRowIDs: []orm.RowID{m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1)},
 		},
 		"one result by prefix": {
 			start:     []byte("group-a"),
-			end:       []byte("group-amember-two"), // == m2.PrimaryKey()
+			end:       []byte("group-amember-two"), // == orm.PrimaryKey(&m2)
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1},
-			expRowIDs: []orm.RowID{m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1)},
 		},
 		"multi key elements by group prefix": {
 			start:     []byte("group-a"),
 			end:       []byte("group-b"),
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1, m2},
-			expRowIDs: []orm.RowID{m1.PrimaryKey(), m2.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1), orm.PrimaryKey(&m2)},
 		},
 		"open end query with second group": {
 			start:     []byte("group-b"),
 			end:       nil,
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m3},
-			expRowIDs: []orm.RowID{m3.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m3)},
 		},
 		"open end query with all": {
 			start:     []byte("group-a"),
 			end:       nil,
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1, m2, m3},
-			expRowIDs: []orm.RowID{m1.PrimaryKey(), m2.PrimaryKey(), m3.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1), orm.PrimaryKey(&m2), orm.PrimaryKey(&m3)},
 		},
 		"open start query": {
 			start:     nil,
 			end:       []byte("group-b"),
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1, m2},
-			expRowIDs: []orm.RowID{m1.PrimaryKey(), m2.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1), orm.PrimaryKey(&m2)},
 		},
 		"open start and end query": {
 			start:     nil,
 			end:       nil,
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1, m2, m3},
-			expRowIDs: []orm.RowID{m1.PrimaryKey(), m2.PrimaryKey(), m3.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1), orm.PrimaryKey(&m2), orm.PrimaryKey(&m3)},
 		},
 		"all matching prefix": {
 			start:     []byte("group"),
 			end:       nil,
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1, m2, m3},
-			expRowIDs: []orm.RowID{m1.PrimaryKey(), m2.PrimaryKey(), m3.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1), orm.PrimaryKey(&m2), orm.PrimaryKey(&m3)},
 		},
 		"non matching prefix": {
 			start:     []byte("nobody"),
@@ -130,60 +136,60 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 			expError: orm.ErrArgument,
 		},
 		"reverse: exact match with a single result": {
-			start:     []byte("group-amember-one"), // == m1.PrimaryKey()
-			end:       []byte("group-amember-two"), // == m2.PrimaryKey()
+			start:     []byte("group-amember-one"), // == orm.PrimaryKey(&m1)
+			end:       []byte("group-amember-two"), // == orm.PrimaryKey(&m2)
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m1},
-			expRowIDs: []orm.RowID{m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1)},
 		},
 		"reverse: one result by prefix": {
 			start:     []byte("group-a"),
-			end:       []byte("group-amember-two"), // == m2.PrimaryKey()
+			end:       []byte("group-amember-two"), // == orm.PrimaryKey(&m2)
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m1},
-			expRowIDs: []orm.RowID{m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1)},
 		},
 		"reverse: multi key elements by group prefix": {
 			start:     []byte("group-a"),
 			end:       []byte("group-b"),
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m2, m1},
-			expRowIDs: []orm.RowID{m2.PrimaryKey(), m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m2), orm.PrimaryKey(&m1)},
 		},
 		"reverse: open end query with second group": {
 			start:     []byte("group-b"),
 			end:       nil,
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m3},
-			expRowIDs: []orm.RowID{m3.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m3)},
 		},
 		"reverse: open end query with all": {
 			start:     []byte("group-a"),
 			end:       nil,
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m3, m2, m1},
-			expRowIDs: []orm.RowID{m3.PrimaryKey(), m2.PrimaryKey(), m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m3), orm.PrimaryKey(&m2), orm.PrimaryKey(&m1)},
 		},
 		"reverse: open start query": {
 			start:     nil,
 			end:       []byte("group-b"),
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m2, m1},
-			expRowIDs: []orm.RowID{m2.PrimaryKey(), m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m2), orm.PrimaryKey(&m1)},
 		},
 		"reverse: open start and end query": {
 			start:     nil,
 			end:       nil,
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m3, m2, m1},
-			expRowIDs: []orm.RowID{m3.PrimaryKey(), m2.PrimaryKey(), m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m3), orm.PrimaryKey(&m2), orm.PrimaryKey(&m1)},
 		},
 		"reverse: all matching prefix": {
 			start:     []byte("group"),
 			end:       nil,
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m3, m2, m1},
-			expRowIDs: []orm.RowID{m3.PrimaryKey(), m2.PrimaryKey(), m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m3), orm.PrimaryKey(&m2), orm.PrimaryKey(&m1)},
 		},
 		"reverse: non matching prefix": {
 			start:     []byte("nobody"),

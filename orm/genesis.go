@@ -65,7 +65,7 @@ func ImportTableData(ctx HasKVStore, t TableExportable, data interface{}, seqVal
 		if !ok {
 			return errors.Wrapf(ErrArgument, "unsupported type :%s", reflect.TypeOf(data).Elem().Elem())
 		}
-		err := table.Create(ctx, obj.PrimaryKey(), obj)
+		err := table.Create(ctx, PrimaryKey(obj), obj)
 		if err != nil {
 			return err
 		}

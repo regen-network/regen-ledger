@@ -87,7 +87,7 @@ func (*primaryKeyMachine) Check(t *rapid.T) {
 // an error if it already exists.
 func (m *primaryKeyMachine) Create(t *rapid.T) {
 	g := genGroupMember.Draw(t, "g").(*testdata.GroupMember)
-	pk := string(g.PrimaryKey())
+	pk := string(orm.PrimaryKey(g))
 
 	t.Logf("pk: %v", pk)
 	t.Logf("m.state: %v", m.state)
@@ -115,7 +115,7 @@ func (m *primaryKeyMachine) Save(t *rapid.T) {
 	// Perform the real Save
 	err := m.table.Save(m.ctx, gm)
 
-	if m.state[string(gm.PrimaryKey())] == nil {
+	if m.state[string(orm.PrimaryKey(gm))] == nil {
 		// If there's no value in the model, we expect an error
 		require.Error(t, err)
 	} else {
@@ -123,7 +123,7 @@ func (m *primaryKeyMachine) Save(t *rapid.T) {
 		require.NoError(t, err)
 
 		// Update the model with the new value
-		m.state[string(gm.PrimaryKey())] = gm
+		m.state[string(orm.PrimaryKey(gm))] = gm
 	}
 }
 
@@ -136,7 +136,7 @@ func (m *primaryKeyMachine) Delete(t *rapid.T) {
 	// Perform the real Delete
 	err := m.table.Delete(m.ctx, gm)
 
-	if m.state[string(gm.PrimaryKey())] == nil {
+	if m.state[string(orm.PrimaryKey(gm))] == nil {
 		// If there's no value in the model, we expect an error
 		require.Error(t, err)
 	} else {
@@ -144,14 +144,14 @@ func (m *primaryKeyMachine) Delete(t *rapid.T) {
 		require.NoError(t, err)
 
 		// Delete the value from the model
-		delete(m.state, string(gm.PrimaryKey()))
+		delete(m.state, string(orm.PrimaryKey(gm)))
 	}
 }
 
 // Has is one of the model commands. It checks whether a key already exists in
 // the table.
 func (m *primaryKeyMachine) Has(t *rapid.T) {
-	pk := m.genGroupMember().Draw(t, "g").(*testdata.GroupMember).PrimaryKey()
+	pk := orm.PrimaryKey(m.genGroupMember().Draw(t, "g").(*testdata.GroupMember))
 
 	realHas := m.table.Has(m.ctx, pk)
 	modelHas := m.state[string(pk)] != nil
@@ -162,7 +162,7 @@ func (m *primaryKeyMachine) Has(t *rapid.T) {
 // GetOne is one of the model commands. It fetches an object from the table by
 // its primary key and returns an error if that primary key isn't in the table.
 func (m *primaryKeyMachine) GetOne(t *rapid.T) {
-	pk := m.genGroupMember().Draw(t, "gm").(*testdata.GroupMember).PrimaryKey()
+	pk := orm.PrimaryKey(m.genGroupMember().Draw(t, "gm").(*testdata.GroupMember))
 
 	var gm testdata.GroupMember
 

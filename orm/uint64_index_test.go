@@ -76,7 +76,7 @@ func TestUInt64Index(t *testing.T) {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
-				require.Equal(t, orm.RowID(m.PrimaryKey()), rowID)
+				require.Equal(t, orm.RowID(orm.PrimaryKey(&m)), rowID)
 				require.Equal(t, m, loaded)
 			}
 		})

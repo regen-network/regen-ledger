@@ -1,6 +1,8 @@
 package orm
 
 import (
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -30,8 +32,60 @@ type PrimaryKeyed interface {
 	//
 	// The `IndexKeyCodec` used with the `PrimaryKeyTable` may add certain constraints to the byte representation as
 	// max length = 255 in `Max255DynamicLengthIndexKeyCodec` or a fix length in `FixLengthIndexKeyCodec` for example.
-	PrimaryKey() []byte
+	// PrimaryKey() []byte
+	PrimaryKeyFields() []interface{}
 	codec.ProtoMarshaler
+}
+
+func PrimaryKey(obj PrimaryKeyed) []byte {
+	fields := obj.PrimaryKeyFields()
+	return buildPrimaryKey(fields...)
+}
+
+// This can be strings, bytes, or some integer stuff
+// Strings will be null-terminated, bytes will be length-prefixed, ...
+func buildPrimaryKey(fields ...interface{}) []byte {
+	bytesSlice := make([][]byte, len(fields))
+	totalLen := 0
+	for i, field := range fields {
+		bytesSlice[i] = primaryKeyFieldBytes(field)
+		totalLen += len(bytesSlice[i])
+	}
+	primaryKey := make([]byte, 0, totalLen)
+	for _, bs := range bytesSlice {
+		primaryKey = append(primaryKey, bs...)
+	}
+	return primaryKey
+}
+
+func primaryKeyFieldBytes(field interface{}) []byte {
+	switch v := field.(type) {
+	case []byte:
+		return AddLengthPrefix(v)
+	case string:
+		return NullTerminatedBytes(v)
+	case uint64:
+		return EncodeSequence(v)
+	default:
+		panic(fmt.Sprintf("Type %T not allowed as primary key field", v))
+	}
+}
+
+// Prefix the byte array with its length as 8 bytes
+func AddLengthPrefix(bytes []byte) []byte {
+	newLen := 8 + len(bytes)
+	prefixedBytes := make([]byte, newLen, newLen)
+	copy(prefixedBytes, EncodeSequence(uint64(len(bytes))))
+	copy(prefixedBytes[8:], bytes)
+	return prefixedBytes
+}
+
+// Convert string to byte array and null terminate it
+func NullTerminatedBytes(s string) []byte {
+	newLen := len(s) + 1
+	bytes := make([]byte, newLen, newLen)
+	copy(bytes, s)
+	return bytes
 }
 
 var _ TableExportable = &PrimaryKeyTable{}
@@ -46,7 +100,7 @@ type PrimaryKeyTable struct {
 // key already exists and may return an `ErrUniqueConstraint`.
 // Create iterates though the registered callbacks and may add secondary index keys by them.
 func (a PrimaryKeyTable) Create(ctx HasKVStore, obj PrimaryKeyed) error {
-	rowID := obj.PrimaryKey()
+	rowID := PrimaryKey(obj)
 	if a.table.Has(ctx, rowID) {
 		return ErrUniqueConstraint
 	}
@@ -59,7 +113,7 @@ func (a PrimaryKeyTable) Create(ctx HasKVStore, obj PrimaryKeyed) error {
 //
 // Save iterates though the registered callbacks and may add or remove secondary index keys by them.
 func (a PrimaryKeyTable) Save(ctx HasKVStore, newValue PrimaryKeyed) error {
-	return a.table.Save(ctx, newValue.PrimaryKey(), newValue)
+	return a.table.Save(ctx, PrimaryKey(newValue), newValue)
 }
 
 // Delete removes the object. It expects the primary key to exists already
@@ -68,7 +122,7 @@ func (a PrimaryKeyTable) Save(ctx HasKVStore, newValue PrimaryKeyed) error {
 //
 // Delete iterates though the registered callbacks and removes secondary index keys by them.
 func (a PrimaryKeyTable) Delete(ctx HasKVStore, obj PrimaryKeyed) error {
-	return a.table.Delete(ctx, obj.PrimaryKey())
+	return a.table.Delete(ctx, PrimaryKey(obj))
 }
 
 // Has checks if a key exists. Panics on nil key.
@@ -81,7 +135,7 @@ func (a PrimaryKeyTable) Contains(ctx HasKVStore, obj PrimaryKeyed) bool {
 	if err := assertCorrectType(a.table.model, obj); err != nil {
 		return false
 	}
-	return a.table.Has(ctx, obj.PrimaryKey())
+	return a.table.Has(ctx, PrimaryKey(obj))
 }
 
 // GetOne load the object persisted for the given primary Key into the dest parameter.
