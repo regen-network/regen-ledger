@@ -72,7 +72,6 @@ func NewParams(creditClassFee sdk.Coins, allowlist []string, allowlistEnabled bo
 	}
 }
 
-// TODO(tyler): what to put for default addresses???
 func DefaultParams() Params {
 	return NewParams(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)), []string{}, false)
 }
