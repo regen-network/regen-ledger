@@ -82,7 +82,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	ecocreditParams := ecocredit.DefaultParams()
 	ecocreditParams.CreditClassFee = sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(0))) // overwriting the fee to 0stake
 	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
-	s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistEnabled, false)
 
 	s.genesisCtx = types.Context{Context: sdkCtx}
 	s.Require().NoError(s.bankKeeper.MintCoins(s.sdkCtx, minttypes.ModuleName, sdk.NewCoins(sdk.NewInt64Coin("test", 400000000))))
