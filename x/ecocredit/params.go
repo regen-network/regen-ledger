@@ -9,10 +9,10 @@ import (
 
 var (
 	// TODO: Decide a sensible default value
-	DefaultCreditClassFeeTokens   = sdk.NewInt(10000)
-	KeyCreditClassFee             = []byte("CreditClassFee")
-	KeyAllowlistedCreditDesigners = []byte("AllowlistCreditDesigners")
-	KeyAllowlistEnabled           = []byte("AllowlistEnabled")
+	DefaultCreditClassFeeTokens = sdk.NewInt(10000)
+	KeyCreditClassFee           = []byte("CreditClassFee")
+	KeyAllowedClassDesigners    = []byte("AllowlistCreditDesigners")
+	KeyAllowlistEnabled         = []byte("AllowlistEnabled")
 )
 
 func ParamKeyTable() paramtypes.KeyTable {
@@ -23,7 +23,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyCreditClassFee, &p.CreditClassFee, validateCreditClassFee),
-		paramtypes.NewParamSetPair(KeyAllowlistedCreditDesigners, &p.AllowedClassDesigners, validateAllowlistCreditDesigners),
+		paramtypes.NewParamSetPair(KeyAllowedClassDesigners, &p.AllowedClassDesigners, validateAllowlistCreditDesigners),
 		paramtypes.NewParamSetPair(KeyAllowlistEnabled, &p.AllowlistEnabled, validateAllowlistEnabled),
 	}
 }
