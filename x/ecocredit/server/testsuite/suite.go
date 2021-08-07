@@ -620,4 +620,73 @@ func (s *IntegrationTestSuite) TestScenario() {
 			}
 		})
 	}
+
+	/****   TEST ALLOWLIST CREDIT DESIGNERS   ****/
+	allowlistCases := []struct {
+		name             string
+		designerAcc      sdk.AccAddress
+		allowlist        []string
+		allowlistEnabled bool
+		wantErr          bool
+	}{
+		{
+			name:             "valid allowlist and enabled",
+			allowlist:        []string{s.signers[0].String()},
+			designerAcc:      s.signers[0],
+			allowlistEnabled: true,
+			wantErr:          false,
+		},
+		{
+			name:             "valid multi addrs in allowlist",
+			allowlist:        []string{s.signers[0].String(), s.signers[1].String(), s.signers[2].String()},
+			designerAcc:      s.signers[0],
+			allowlistEnabled: true,
+			wantErr:          false,
+		},
+		{
+			name:             "designer is not part of the allowlist",
+			allowlist:        []string{s.signers[0].String()},
+			designerAcc:      s.signers[1],
+			allowlistEnabled: true,
+			wantErr:          true,
+		},
+		{
+			name:             "valid allowlist but disabled - anyone can create credits",
+			allowlist:        []string{s.signers[0].String()},
+			designerAcc:      s.signers[0],
+			allowlistEnabled: false,
+			wantErr:          false,
+		},
+		{
+			name:             "empty and enabled allowlist - nobody can create credits",
+			allowlist:        []string{},
+			designerAcc:      s.signers[0],
+			allowlistEnabled: true,
+			wantErr:          true,
+		},
+	}
+
+	for _, tc := range allowlistCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowedClassDesigners, tc.allowlist)
+			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistEnabled, tc.allowlistEnabled)
+
+			// fund the designer account
+			s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, tc.designerAcc, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+
+			createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
+				Designer: tc.designerAcc.String(),
+				Issuers:  []string{issuer1, issuer2},
+				Metadata: nil,
+			})
+			if tc.wantErr {
+				s.Require().Error(err)
+				s.Require().Nil(createClsRes)
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(createClsRes)
+			}
+		})
+	}
 }

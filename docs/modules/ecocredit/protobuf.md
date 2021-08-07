@@ -240,6 +240,8 @@ use with the x/params module.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | credit_class_fee | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | credit_class_fee is the fixed fee charged on creation of a new credit class |
+| allowed_class_designers | [string](#string) | repeated | allowed_class_designers is an allowlist defining the addresses with the required permissions to create credit classes |
+| allowlist_enabled | [bool](#bool) |  | allowlist_enabled is a param that enables/disables the allowlist for credit creation |
 
 
 

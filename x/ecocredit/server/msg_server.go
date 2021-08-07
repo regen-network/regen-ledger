@@ -30,6 +30,16 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 		return nil, err
 	}
 
+	if s.allowlistEnabled(ctx.Context) {
+		allowListed, err := s.isDesignerAllowListed(ctx.Context, designerAddress)
+		if err != nil {
+			return nil, err
+		}
+		if !allowListed {
+			return nil, fmt.Errorf("%s is not allowed to create credit classes", designerAddress.String())
+		}
+	}
+
 	err = s.chargeCreditClassFee(ctx.Context, designerAddress)
 	if err != nil {
 		return nil, err
@@ -462,4 +472,27 @@ func subtractTradableBalanceAndSupply(store sdk.KVStore, holder string, batchDen
 	}
 
 	return nil
+}
+
+// Checks if the given address is in the allowlist of credit class designers
+func (s serverImpl) isDesignerAllowListed(ctx sdk.Context, addr sdk.Address) (bool, error) {
+	var params ecocredit.Params
+	s.paramSpace.GetParamSet(ctx, &params)
+	for _, sAddr := range params.AllowedClassDesigners {
+		allowListedAddr, err := sdk.AccAddressFromBech32(sAddr)
+		if err != nil {
+			return false, err
+		}
+		if addr.Equals(allowListedAddr) {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+// Checks if the allowlist of credit class designers is enabled
+func (s serverImpl) allowlistEnabled(ctx sdk.Context) bool {
+	var params ecocredit.Params
+	s.paramSpace.GetParamSet(ctx, &params)
+	return params.AllowlistEnabled
 }
