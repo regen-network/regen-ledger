@@ -20,7 +20,9 @@ func QueryCmd(name string) *cobra.Command {
 		RunE:  client.ValidateCmd,
 	}
 	cmd.AddCommand(
+		QueryClassesCmd(),
 		QueryClassInfoCmd(),
+		QueryBatchesCmd(),
 		QueryBatchInfoCmd(),
 		QueryBalanceCmd(),
 		QuerySupplyCmd(),
@@ -32,6 +34,32 @@ func QueryCmd(name string) *cobra.Command {
 func qflags(cmd *cobra.Command) *cobra.Command {
 	flags.AddQueryFlagsToCmd(cmd)
 	return cmd
+}
+
+func QueryClassesCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "classes",
+		Short: "List all credit classes with pagination flags",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.Classes(cmd.Context(), &ecocredit.QueryClassesRequest{
+				Pagination: pagination,
+			})
+			return print(ctx, res, err)
+		},
+	}
+	flags.AddPaginationFlagsToCmd(cmd, "classes")
+	return qflags(cmd)
 }
 
 func QueryClassInfoCmd() *cobra.Command {
@@ -50,6 +78,33 @@ func QueryClassInfoCmd() *cobra.Command {
 			return print(ctx, res, err)
 		},
 	})
+}
+
+func QueryBatchesCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "batches [class_id]",
+		Short: "List all credit batches in the given class with pagination flags",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.Batches(cmd.Context(), &ecocredit.QueryBatchesRequest{
+				ClassId:    args[0],
+				Pagination: pagination,
+			})
+			return print(ctx, res, err)
+		},
+	}
+	flags.AddPaginationFlagsToCmd(cmd, "batches")
+	return qflags(cmd)
 }
 
 func QueryBatchInfoCmd() *cobra.Command {
