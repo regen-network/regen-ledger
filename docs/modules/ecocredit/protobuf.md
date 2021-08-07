@@ -15,6 +15,7 @@
     - [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo)
     - [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo)
     - [CreditType](#regen.ecocredit.v1alpha1.CreditType)
+    - [CreditTypeSeq](#regen.ecocredit.v1alpha1.CreditTypeSeq)
     - [GenesisState](#regen.ecocredit.v1alpha1.GenesisState)
     - [Params](#regen.ecocredit.v1alpha1.Params)
   
@@ -229,6 +230,23 @@ CreditType defines the measurement unit/precision of a certain credit type
 | abbreviation | [string](#string) |  | abbreviation is a 1-3 character uppercase abbreviation of the CreditType name, used in batch denominations within the CreditType. It must be unique. |
 | unit | [string](#string) |  | the measurement unit (e.g. kg, ton, etc) |
 | precision | [uint32](#uint32) |  | the decimal precision |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.CreditTypeSeq"></a>
+
+### CreditTypeSeq
+CreditTypeSeq associates a sequence number with a credit type abbreviation.
+This represents the number of credit classes created with that credit type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| abbr | [string](#string) |  | The credit type abbreviation |
+| seq_no | [uint64](#uint64) |  | The sequence number of classes of the credit type |
 
 
 

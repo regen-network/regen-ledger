@@ -47,7 +47,11 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 		return nil, err
 	}
 
-	classSeqNo := s.idSeq.NextVal(ctx)
+	classSeqNo, err := s.getCreditTypeSeqNextVal(ctx.Context, creditType)
+	if err != nil {
+		return nil, err
+	}
+
 	classID, err := ecocredit.FormatClassID(creditType, classSeqNo)
 	if err != nil {
 		return nil, err
