@@ -74,11 +74,21 @@ message BatchInfo {
 // use with the x/params module.
 message Params {
   // credit_class_fee is the fixed fee charged on creation of a new credit class
-  repeated cosmos.base.v1beta1.Coin credit_class_fee = 1
-      [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+  repeated cosmos.base.v1beta1.Coin credit_class_fee = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+
+  // allowed_class_designers is an allowlist defining the addresses with
+  // the required permissions to create credit classes
+  repeated string allowed_class_designers = 2;
+
+  // allowlist_enabled is a param that enables/disables the allowlist for credit
+  // creation
+  bool allowlist_enabled = 3;
 
   // credit_types is a list of definitions for credit types
-  repeated CreditType credit_types = 2;
+  repeated CreditType credit_types = 4;
 }
 
 // GenesisState defines the state of the ecocredit module that is needed at genesis
