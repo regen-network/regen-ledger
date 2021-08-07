@@ -218,12 +218,14 @@ ClassInfo represents the high-level on-chain information for a credit class.
 <a name="regen.ecocredit.v1alpha1.CreditType"></a>
 
 ### CreditType
-CreditType defines the measurement unit/precision of a certain credit type (e.g. carbon, biodiversity...)
+CreditType defines the measurement unit/precision of a certain credit type
+(e.g. carbon, biodiversity...)
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | the type of credit (e.g. carbon, biodiversity, etc) |
+| abbreviation | [string](#string) |  | abbreviation is a 1-3 character uppercase abbreviation of the CreditType name, used in batch denominations within the CreditType. It must be unique. |
 | units | [string](#string) |  | the measurement unit (e.g. kg, ton, etc) |
 | precision | [uint32](#uint32) |  | the decimal precision |
 

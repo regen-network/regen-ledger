@@ -594,8 +594,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 		wantErr     bool
 	}{
 		{
-			name:        "valid eco credit creation",
-			creditTypes: []*ecocredit.CreditType{{Name: "carbon", Units: "tons", Precision: 3}},
+			name: "valid eco credit creation",
+			creditTypes: []*ecocredit.CreditType{
+				{Name: "carbon", Abbreviation: "C", Units: "tons", Precision: 3},
+			},
 			msg: ecocredit.MsgCreateClass{
 				Designer:   s.signers[0].String(),
 				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
@@ -605,8 +607,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 			wantErr: false,
 		},
 		{
-			name:        "invalid request - not a valid credit type",
-			creditTypes: []*ecocredit.CreditType{{Name: "carbon", Units: "tons", Precision: 3}},
+			name: "invalid request - not a valid credit type",
+			creditTypes: []*ecocredit.CreditType{
+				{Name: "carbon", Abbreviation: "C", Units: "tons", Precision: 3},
+			},
 			msg: ecocredit.MsgCreateClass{
 				Designer:   s.signers[0].String(),
 				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
@@ -616,8 +620,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 			wantErr: true,
 		},
 		{
-			name:        "request with strange font should be valid",
-			creditTypes: []*ecocredit.CreditType{{Name: "carbon", Units: "tons", Precision: 3}},
+			name: "request with strange font should be valid",
+			creditTypes: []*ecocredit.CreditType{
+				{Name: "carbon", Abbreviation: "C", Units: "tons", Precision: 3},
+			},
 			msg: ecocredit.MsgCreateClass{
 				Designer:   s.signers[0].String(),
 				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},

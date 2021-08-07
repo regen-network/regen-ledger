@@ -2,11 +2,13 @@ package ecocredit
 
 import (
 	"fmt"
+	"regexp"
+	"strings"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit/util"
-	"strings"
 )
 
 var (
@@ -52,30 +54,61 @@ func validateCreditTypes(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	// ensure no duplicate credit types and that all precisions conform to hardcoded PRECISION above
+	// ensure no duplicate credit types or abbreviations and that all
+	// precisions conform to hardcoded PRECISION above
 	seenTypes := make(map[string]bool)
+	seenAbbrs := make(map[string]bool)
 	for _, creditType := range creditTypes {
+		// Validate name
 		T := strings.ToLower(creditType.Name)
 		T = util.FastRemoveWhitespace(T)
 		if T != creditType.Name {
 			return sdkerrors.ErrInvalidRequest.Wrapf("credit type should be normalized: got %s, should be %s", creditType.Name, T)
 		}
-		if seenTypes[T] == true {
+		if creditType.Name == "" {
+			return sdkerrors.ErrInvalidRequest.Wrap("empty credit type name")
+		}
+		if seenTypes[T] {
 			return sdkerrors.ErrInvalidRequest.Wrapf("duplicate credit types in request: %s", T)
 		}
+
+		// Validate abbreviation
+		abbr := creditType.Abbreviation
+		err := validateCreditTypeAbbreviation(abbr)
+		if err != nil {
+			return err
+		}
+		if seenAbbrs[abbr] {
+			return sdkerrors.ErrInvalidRequest.Wrapf("duplicate credit type abbreviation: %s", abbr)
+		}
+
+		// Validate precision
 		// TODO: remove after we open governance changes for precision
 		if creditType.Precision != PRECISION {
 			return sdkerrors.ErrInvalidRequest.Wrapf("invalid precision %d: precision is currently locked to %d", creditType.Precision, PRECISION)
 		}
-		if creditType.Name == "" {
-			return sdkerrors.ErrInvalidRequest.Wrap("empty credit type name")
-		}
+
+		// Validate units
 		if creditType.Units == "" {
 			return sdkerrors.ErrInvalidRequest.Wrap("empty credit type units")
 		}
+
+		// Mark type and abbr as seen
 		seenTypes[T] = true
+		seenAbbrs[abbr] = true
 	}
 
+	return nil
+}
+
+// Check that CreditType abbreviation is valid, i.e. it consists of 1-3
+// uppercase letters
+func validateCreditTypeAbbreviation(abbr string) error {
+	reAbbr := regexp.MustCompile(`^[A-Z]{1,3}$`)
+	matches := reAbbr.FindStringSubmatch(abbr)
+	if matches == nil {
+		return sdkerrors.ErrInvalidRequest.Wrapf("credit type abbreviation must be 1-3 uppercase letters: got %s", abbr)
+	}
 	return nil
 }
 
@@ -87,5 +120,15 @@ func NewParams(creditClassFee sdk.Coins, creditTypes []*CreditType) Params {
 }
 
 func DefaultParams() Params {
-	return NewParams(sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)), []*CreditType{{Name: "carbon", Units: "tons", Precision: PRECISION}})
+	return NewParams(
+		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)),
+		[]*CreditType{
+			{
+				Name:         "carbon",
+				Abbreviation: "C",
+				Units:        "tons",
+				Precision:    PRECISION,
+			},
+		},
+	)
 }
