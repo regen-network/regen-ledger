@@ -47,6 +47,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 				Designer:   s.classInfo.Designer,
 				Issuers:    s.classInfo.Issuers,
 				Metadata:   s.classInfo.Metadata,
+				CreditType: s.classInfo.CreditType,
 				NumBatches: 1,
 			},
 		},

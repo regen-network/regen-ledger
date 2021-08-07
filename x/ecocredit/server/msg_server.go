@@ -20,11 +20,6 @@ import (
 // governance process.
 func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateClass) (*ecocredit.MsgCreateClassResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
-	classSeqNo := s.idSeq.NextVal(ctx)
-	classID, err := ecocredit.FormatClassID(classSeqNo)
-	if err != nil {
-		return nil, err
-	}
 
 	// Charge the designer a fee to create the credit class
 	designerAddress, err := sdk.AccAddressFromBech32(req.Designer)
@@ -48,6 +43,12 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 	}
 
 	creditType, err := s.getCreditType(ctx.Context, req.CreditType)
+	if err != nil {
+		return nil, err
+	}
+
+	classSeqNo := s.idSeq.NextVal(ctx)
+	classID, err := ecocredit.FormatClassID(creditType, classSeqNo)
 	if err != nil {
 		return nil, err
 	}

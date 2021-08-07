@@ -12,12 +12,12 @@ import (
 //
 // The initial version has format:
 // <credit type abbreviation><class seq no>
-func FormatClassID(classSeqNo uint64) (string, error) {
+func FormatClassID(creditType *CreditType, classSeqNo uint64) (string, error) {
 	if classSeqNo > 999 {
 		return "", fmt.Errorf("class sequence number exceeds limit of 999: got %d", classSeqNo)
 	}
 
-	return fmt.Sprintf("C%03d", classSeqNo), nil
+	return fmt.Sprintf("%s%03d", creditType.Abbreviation, classSeqNo), nil
 }
 
 // Calculate the denomination to use for a batch, based on the batch

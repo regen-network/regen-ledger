@@ -15,9 +15,10 @@ func TestDenom(t *testing.T) {
 
 // Property: ValidateClassID(FormatClassID(a)) == nil IFF a <= 999
 func testValidateFormatClassID(t *rapid.T) {
+	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
 	classSeqNo := rapid.Uint64().Draw(t, "classSeqNo").(uint64)
 
-	classId, err := FormatClassID(classSeqNo)
+	classId, err := FormatClassID(creditType, classSeqNo)
 	if classSeqNo > 999 {
 		require.Error(t, err)
 	} else {
@@ -30,12 +31,13 @@ func testValidateFormatClassID(t *rapid.T) {
 
 // Property: ValidateDenom(FormatDenom(a, b, c, d)) == nil IFF b <= 99
 func testValidateFormatDenom(t *rapid.T) {
+	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
 	classSeqNo := rapid.Uint64Range(0, 999).Draw(t, "classSeqNo").(uint64)
 	batchSeqNo := rapid.Uint64().Draw(t, "batchSeqNo").(uint64)
 	startDate := genTime.Draw(t, "startDate").(*time.Time)
 	endDate := genTime.Draw(t, "endDate").(*time.Time)
 
-	classId, err := FormatClassID(classSeqNo)
+	classId, err := FormatClassID(creditType, classSeqNo)
 	require.NoError(t, err)
 
 	denom, err := FormatDenom(classId, batchSeqNo, startDate, endDate)
@@ -48,6 +50,14 @@ func testValidateFormatDenom(t *rapid.T) {
 		require.NoError(t, err)
 	}
 }
+
+// genCreditType generates an empty credit type with a random valid abbreviation
+var genCreditType = rapid.Custom(func(t *rapid.T) *CreditType {
+	abbr := rapid.StringMatching(`[A-Z]{1,3}`).Draw(t, "abbr").(string)
+	return &CreditType{
+		Abbreviation: abbr,
+	}
+})
 
 // genTime generates time values up to the year ~9999 to avoid overflowing the
 // denomination format.
