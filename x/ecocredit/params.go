@@ -11,7 +11,7 @@ var (
 	// TODO: Decide a sensible default value
 	DefaultCreditClassFeeTokens = sdk.NewInt(10000)
 	KeyCreditClassFee           = []byte("CreditClassFee")
-	KeyAllowedClassDesigners    = []byte("AllowlistCreditDesigners")
+	KeyAllowedClassDesigners    = []byte("AllowedClassDesigners")
 	KeyAllowlistEnabled         = []byte("AllowlistEnabled")
 )
 

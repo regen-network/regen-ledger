@@ -76,7 +76,7 @@ message Params {
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 
-  // allowed_class_designer_addresses is an allowlist defining the addresses with
+  // allowed_class_designers is an allowlist defining the addresses with
   // the required permissions to create credit classes
   repeated string allowed_class_designers = 2;
 
