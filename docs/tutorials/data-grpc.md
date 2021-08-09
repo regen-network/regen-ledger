@@ -31,7 +31,7 @@ $ grpcurl -proto ../proto/regen/data/v1alpha1/query.proto describe regen.data.v1
 ```
 
 Here we see that there is one method, `ByCid`, which takes a `QueryByCidRequest`, and returns a `QueryByCidResponse`.
-The structure of these request & response messages can similarly be queried with `grpcurl`, or you can find
+The structure of these request & response messages can be similarly queried with `grpcurl`, or you can find
 details on them in our [protobuf documentation](./modules/data/protobuf.md#regen-data-v1alpha1-query-proto).
 
 Now that we know the structure of our `QueryByCidRequest`, we can query the `ByCid` method directly using a JSON
