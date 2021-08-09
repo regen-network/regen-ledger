@@ -31,7 +31,7 @@ EXAMPLE_CID=zb2rhe5P4gXftAwvA4eXQ5HJwsER2owDyS9sKaQRRVQPn93bA
 regen tx data anchor $KEY_NAME $EXAMPLE_CID
 ```
 
-A summary of the transaction will be displayed, and you can confirm sending it by pressing the `y` key. After a couple of seconds, the confirmation of the transaction will be displayed, in JSON format. Make sure that the `code` field contains `0`, as this means the transaction was successful. If not, then look at the `logs` field for potential errors.
+A summary of the transaction will be displayed, and you can confirm sending it by pressing the `y` key. After a couple of seconds, the confirmation of the transaction will be displayed, in JSON format. Make sure that the `code` field contains `0`, as this means the transaction was successful. If not, inspect the `logs` field for potential errors.
 
 Let's sign the anchor we just created. Signing an anchor in the Data module is attesting to the veracity of the data the CID represents.
 
