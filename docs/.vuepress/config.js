@@ -91,25 +91,6 @@ module.exports = {
           collapsable: false,
           children: [
             {
-              title: 'Data Module',
-              collapsable: false,
-              children: [
-                {
-                  title: 'Overview',
-                  path: '/modules/data/'
-                },
-                // '/modules/data/01_concepts',
-                // '/modules/data/02_state',
-                // '/modules/data/03_messages',
-                // '/modules/data/04_events',
-                // '/modules/data/05_client',
-                {
-                  title: 'Protobuf Documentation',
-                  path: '/modules/data/protobuf'
-                }
-              ]
-            },
-            {
               title: 'Ecocredit Module',
               collapsable: false,
               children: [
@@ -125,6 +106,25 @@ module.exports = {
                 {
                   title: 'Protobuf Documentation',
                   path: '/modules/ecocredit/protobuf'
+                }
+              ]
+            },
+            {
+              title: 'Data Module',
+              collapsable: false,
+              children: [
+                {
+                  title: 'Overview',
+                  path: '/modules/data/'
+                },
+                '/modules/data/01_concepts',
+                // '/modules/data/02_state',
+                // '/modules/data/03_messages',
+                // '/modules/data/04_events',
+                // '/modules/data/05_client',
+                {
+                  title: 'Protobuf Documentation',
+                  path: '/modules/data/protobuf'
                 }
               ]
             },

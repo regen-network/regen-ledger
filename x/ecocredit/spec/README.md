@@ -6,7 +6,9 @@ The ecocredit module is under active development. Check back soon for more infor
 
 ## Abstract
 
-The ecocredit module will enable the ability to define and manage the issuance of new classes of credits for ecosystem services that represent positive ecological health (i.e. soil health credits, carbon credits, biodiversity credits, etc). Each ecocredit asset is represented as a fungible credit that can be issued, traded and retired and each credit is part of a credit class designed and issued by a credit issuer.
+The following documents specify the ecocredit module.
+
+The ecocredit module will enable the ability to define and manage the issuance of new classes of credits for ecosystem services that represent positive ecological health (i.e. soil health credits, carbon credits, biodiversity credits, etc).
 
 <!-- ## Contents
 
