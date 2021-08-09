@@ -39,4 +39,4 @@ Let's sign the anchor we just created. Signing an anchor in the Data module is a
 regen tx data sign $KEY_NAME $EXAMPLE_CID
 ```
 
-Similarily to above, you should see a transaction confirmation after pressing `y`.
+Similarily to above, you should see a transaction confirmation shortly after pressing `y`.
