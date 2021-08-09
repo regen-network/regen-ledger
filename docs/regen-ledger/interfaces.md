@@ -49,7 +49,7 @@ grpcurl \
     cosmos.bank.v1beta1.Query/AllBalances
 ```
 
-In some languages, you may be able to leverage a pre-existing client library to take care of most of the heavy lifting, including compiling protobuf messages. For javascript/typescript developers, [CosmJS](https://github.com/cosmos/cosmjs) is a great place to start.
+In some programming languages, you may be able to leverage a pre-existing client library to take care of most of the heavy lifting, including compiling protobuf messages. For javascript/typescript developers, [CosmJS](https://github.com/cosmos/cosmjs) is a great place to start.
 
 ::: tip
 
