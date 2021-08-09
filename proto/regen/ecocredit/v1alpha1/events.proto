@@ -81,7 +81,7 @@ message EventRetire {
 
   // location is the location of the beneficiary or buyer of the retired
   // credits. It is a string of the form
-  // <country_code>[-<sub_national_code>[ <postal_code>]], with the first two
+  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
   // fields conforming to ISO 3166-2, and postal-code being up to 64
   // alphanumeric characters.
   string location = 4;
