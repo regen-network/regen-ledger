@@ -3,12 +3,10 @@ package ecocredit
 import (
 	"fmt"
 	"regexp"
-	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/regen-network/regen-ledger/x/ecocredit/util"
 )
 
 var (
@@ -87,10 +85,9 @@ func validateCreditTypes(i interface{}) error {
 	seenAbbrs := make(map[string]bool)
 	for _, creditType := range creditTypes {
 		// Validate name
-		T := strings.ToLower(creditType.Name)
-		T = util.FastRemoveWhitespace(T)
+		T := NormalizeCreditTypeName(creditType.Name)
 		if T != creditType.Name {
-			return sdkerrors.ErrInvalidRequest.Wrapf("credit type should be normalized: got %s, should be %s", creditType.Name, T)
+			return sdkerrors.ErrInvalidRequest.Wrapf("credit type name should be normalized: got %s, should be %s", creditType.Name, T)
 		}
 		if creditType.Name == "" {
 			return sdkerrors.ErrInvalidRequest.Wrap("empty credit type name")
@@ -116,8 +113,8 @@ func validateCreditTypes(i interface{}) error {
 		}
 
 		// Validate units
-		if creditType.Units == "" {
-			return sdkerrors.ErrInvalidRequest.Wrap("empty credit type units")
+		if creditType.Unit == "" {
+			return sdkerrors.ErrInvalidRequest.Wrap("empty credit type unit")
 		}
 
 		// Mark type and abbr as seen
@@ -157,7 +154,7 @@ func DefaultParams() Params {
 			{
 				Name:         "carbon",
 				Abbreviation: "C",
-				Units:        "tons",
+				Unit:         "ton",
 				Precision:    PRECISION,
 			},
 		},

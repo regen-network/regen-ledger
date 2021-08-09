@@ -17,7 +17,7 @@ func TestDefaultParams(t *testing.T) {
 			{
 				Name:         "carbon",
 				Abbreviation: "C",
-				Units:        "tons",
+				Unit:         "ton",
 				Precision:    PRECISION,
 			},
 		},
@@ -151,8 +151,8 @@ func Test_validateCreditTypes(t *testing.T) {
 		{
 			name: "valid credit types",
 			args: []*CreditType{
-				{Name: "carbon", Abbreviation: "C", Units: "tons", Precision: 6},
-				{Name: "biodiversity", Abbreviation: "BIO", Units: "mi", Precision: 6},
+				{Name: "carbon", Abbreviation: "C", Unit: "ton", Precision: 6},
+				{Name: "biodiversity", Abbreviation: "BIO", Unit: "mi", Precision: 6},
 			},
 			wantErr: false,
 		},
@@ -172,52 +172,52 @@ func Test_validateCreditTypes(t *testing.T) {
 		{
 			name: "cant have duplicate names",
 			args: []*CreditType{
-				{Name: "carbon", Abbreviation: "C", Units: "tons", Precision: 6},
-				{Name: "carbon", Abbreviation: "CAR", Units: "tons", Precision: 6},
+				{Name: "carbon", Abbreviation: "C", Unit: "ton", Precision: 6},
+				{Name: "carbon", Abbreviation: "CAR", Unit: "ton", Precision: 6},
 			},
 			wantErr: true,
 		},
 		{
 			name:    "cant use non-normalized credit type name",
-			args:    []*CreditType{{Name: "biODiVerSitY", Abbreviation: "BIO", Units: "tons", Precision: 6}},
+			args:    []*CreditType{{Name: "biODiVerSitY", Abbreviation: "BIO", Unit: "ton", Precision: 6}},
 			wantErr: true,
 		},
 		{
 			name:    "cant use empty name",
-			args:    []*CreditType{{Name: "", Abbreviation: "C", Units: "tons", Precision: 6}},
+			args:    []*CreditType{{Name: "", Abbreviation: "C", Unit: "ton", Precision: 6}},
 			wantErr: true,
 		},
 		{
 			name: "cant have duplicate abbreviations",
 			args: []*CreditType{
-				{Name: "carbon", Abbreviation: "C", Units: "tons", Precision: 6},
-				{Name: "carbonic acid", Abbreviation: "C", Units: "tons", Precision: 6},
+				{Name: "carbon", Abbreviation: "C", Unit: "ton", Precision: 6},
+				{Name: "carbonic-acid", Abbreviation: "C", Unit: "ton", Precision: 6},
 			},
 			wantErr: true,
 		},
 		{
 			name:    "cant use empty abbreviation",
-			args:    []*CreditType{{Name: "carbon", Units: "tons", Precision: 6}},
+			args:    []*CreditType{{Name: "carbon", Unit: "ton", Precision: 6}},
 			wantErr: true,
 		},
 		{
 			name:    "cant use lowercase abbreviation",
-			args:    []*CreditType{{Name: "carbon", Abbreviation: "c", Units: "tons", Precision: 6}},
+			args:    []*CreditType{{Name: "carbon", Abbreviation: "c", Unit: "ton", Precision: 6}},
 			wantErr: true,
 		},
 		{
 			name:    "cant use longer than 3 letter abbreviation",
-			args:    []*CreditType{{Name: "carbon", Abbreviation: "CARB", Units: "tons", Precision: 6}},
+			args:    []*CreditType{{Name: "carbon", Abbreviation: "CARB", Unit: "ton", Precision: 6}},
 			wantErr: true,
 		},
 		{
 			name:    "cant use precision other than 6",
-			args:    []*CreditType{{Name: "carbon", Abbreviation: "C", Units: "tons", Precision: 0}},
+			args:    []*CreditType{{Name: "carbon", Abbreviation: "C", Unit: "ton", Precision: 0}},
 			wantErr: true,
 		},
 		{
 			name:    "cant use empty units",
-			args:    []*CreditType{{Name: "carbon", Abbreviation: "C", Units: "", Precision: 6}},
+			args:    []*CreditType{{Name: "carbon", Abbreviation: "C", Unit: "", Precision: 6}},
 			wantErr: true,
 		},
 	}

@@ -108,7 +108,7 @@ message CreditType {
   string abbreviation = 2;
 
   // the measurement unit (e.g. kg, ton, etc)
-  string units = 3;
+  string unit = 3;
 
   // the decimal precision
   uint32 precision = 4;
