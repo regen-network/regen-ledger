@@ -27,8 +27,3 @@ func RetiredSupplyKey(batchDenom batchDenomT) []byte {
 	key := []byte{RetiredSupplyPrefix}
 	return append(key, batchDenom...)
 }
-
-func MaxDecimalPlacesKey(batchDenom batchDenomT) []byte {
-	key := []byte{MaxDecimalPlacesPrefix}
-	return append(key, batchDenom...)
-}

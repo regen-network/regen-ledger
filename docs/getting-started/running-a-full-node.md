@@ -50,7 +50,7 @@ make install
 EXPERIMENTAL=true make install
 ```
 
-Check to make sure the install was successful:
+Check to ensure the install was successful:
 ```
 regen version
 ```
@@ -125,12 +125,17 @@ To install `cosmovisor`, run the following command:
 go get github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
 ```
 
+Check to ensure the install was successful:
+```
+cosmovisor version
+```
+
 ## Set Genesis Binary
 
 Create the folder for the genesis binary and copy the `regen` binary:
 ```
 mkdir -p $HOME/.regen/cosmovisor/genesis/bin
-cp ./build/regen $HOME/.regen/cosmovisor/genesis/bin
+cp $GOBIN/regen $HOME/.regen/cosmovisor/genesis/bin
 ```
 
 ## Cosmovisor Service
@@ -168,6 +173,11 @@ sudo mv cosmovisor.service /lib/systemd/system/cosmovisor.service
 
 Reload systemctl and start `cosmovisor`:
 ```
-sudo -S systemctl daemon-reload
-sudo -S systemctl start cosmovisor
+sudo systemctl daemon-reload
+sudo systemctl start cosmovisor
+```
+
+Check the status of the `cosmovisor` service:
+```
+sudo systemctl status cosmovisor
 ```
