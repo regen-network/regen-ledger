@@ -33,7 +33,7 @@ For more information about the CLI, check out the [Cosmos SDK Documentation](htt
 
 ## gRPC Interface
 
-[gRPC](https://grpc.io/docs/what-is-grpc/introduction/) is a modern RPC framework that leverages [protocol buffers](https://developers.google.com/protocol-buffers) for encoding requests and responses between a client and service. In the case of Regen Ledger, we use gRPC mostly for querying blockchain state (credit or token balances, data signature records, etc). As a client developer, this means that you can query Regen Ledger state directly by using a gRPC library for your language, in combination with Regen Ledger's protobuf definitions defined [here](https://github.com/regen-network/regen-ledger/tree/master/proto/regen).
+[gRPC](https://grpc.io/docs/what-is-grpc/introduction/) is a modern RPC framework that leverages [protocol buffers](https://developers.google.com/protocol-buffers) for encoding requests and responses between a client and service. Regen Ledger uses gRPC primarily for querying blockchain state (credit or token balances, data signature records, etc). As a client developer, this means you can query Regen Ledger state directly by using a gRPC library in your programming language of choice, in combination with Regen Ledger's protobuf definitions defined [here](https://github.com/regen-network/regen-ledger/tree/master/proto/regen).
 
 In addition to using a gRPC library, you can also use [grpcurl](https://github.com/fullstorydev/grpcurl). `grpcurl` is a command-line tool that lets you interact with gRPC servers. If you have a local node running, you can list the Protobuf services available using the following command:
 ```
