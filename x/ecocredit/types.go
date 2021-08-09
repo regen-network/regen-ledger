@@ -18,7 +18,7 @@ func (m *BatchInfo) PrimaryKey() []byte {
 }
 
 func (m *CreditTypeSeq) PrimaryKey() []byte {
-	return []byte(m.Abbr)
+	return []byte(m.Abbreviation)
 }
 
 func DefaultGenesisState() *GenesisState {

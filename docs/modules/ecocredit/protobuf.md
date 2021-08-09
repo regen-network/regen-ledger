@@ -245,8 +245,8 @@ This represents the number of credit classes created with that credit type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| abbr | [string](#string) |  | The credit type abbreviation |
-| seq_no | [uint64](#uint64) |  | The sequence number of classes of the credit type |
+| abbreviation | [string](#string) |  | The credit type abbreviation |
+| seq_number | [uint64](#uint64) |  | The sequence number of classes of the credit type |
 
 
 

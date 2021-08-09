@@ -15,7 +15,7 @@ func TestParseCredits(t *testing.T) {
 	}{
 		{
 			name:           "missing space",
-			creditsListStr: "10C001-20200101-20210101-01",
+			creditsListStr: "10C01-20200101-20210101-001",
 			expectErr:      true,
 		},
 		{
@@ -25,57 +25,68 @@ func TestParseCredits(t *testing.T) {
 		},
 		{
 			name:           "malformed amount",
-			creditsListStr: "10! C001-20200101-20210101-01",
+			creditsListStr: "10! C01-20200101-20210101-001",
 			expectErr:      true,
 		},
 		{
 			name:           "single credits with simple decimal",
-			creditsListStr: "10 C001-20200101-20210101-01",
+			creditsListStr: "10 C01-20200101-20210101-001",
 			expectErr:      false,
 			expCreditsList: []credits{
 				{
-					batchDenom: "C001-20200101-20210101-01",
+					batchDenom: "C01-20200101-20210101-001",
 					amount:     "10",
 				},
 			},
 		},
 		{
 			name:           "single credits with multiple places",
-			creditsListStr: "10.0000001 C001-20200101-20210101-01",
+			creditsListStr: "10.0000001 C01-20200101-20210101-001",
 			expectErr:      false,
 			expCreditsList: []credits{
 				{
-					batchDenom: "C001-20200101-20210101-01",
+					batchDenom: "C01-20200101-20210101-001",
 					amount:     "10.0000001",
 				},
 			},
 		},
 		{
 			name:           "single credits with no digit before decimal point",
-			creditsListStr: ".0000001 C001-20200101-20210101-01",
+			creditsListStr: ".0000001 C01-20200101-20210101-001",
 			expectErr:      false,
 			expCreditsList: []credits{
 				{
-					batchDenom: "C001-20200101-20210101-01",
+					batchDenom: "C01-20200101-20210101-001",
+					amount:     ".0000001",
+				},
+			},
+		},
+		{
+			name:           "single credits overflowing padding",
+			creditsListStr: ".0000001 C123-20200101-20210101-1234",
+			expectErr:      false,
+			expCreditsList: []credits{
+				{
+					batchDenom: "C123-20200101-20210101-1234",
 					amount:     ".0000001",
 				},
 			},
 		},
 		{
 			name:           "multiple credits",
-			creditsListStr: ".0000001 C001-20200101-20210101-01,10 C001-20200101-20210101-02, 10000.0001 C001-20200101-20210101-03",
+			creditsListStr: ".0000001 C01-20200101-20210101-001,10 C01-20200101-20210101-002, 10000.0001 C01-20200101-20210101-003",
 			expectErr:      false,
 			expCreditsList: []credits{
 				{
-					batchDenom: "C001-20200101-20210101-01",
+					batchDenom: "C01-20200101-20210101-001",
 					amount:     ".0000001",
 				},
 				{
-					batchDenom: "C001-20200101-20210101-02",
+					batchDenom: "C01-20200101-20210101-002",
 					amount:     "10",
 				},
 				{
-					batchDenom: "C001-20200101-20210101-03",
+					batchDenom: "C01-20200101-20210101-003",
 					amount:     "10000.0001",
 				},
 			},

@@ -102,7 +102,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 		},
 		{
 			name:           "non-existent credit batch",
-			args:           []string{"A000-00000000-00000000-00"},
+			args:           []string{"A00-00000000-00000000-000"},
 			expectErr:      true,
 			expectedErrMsg: "not found",
 		},

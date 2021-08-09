@@ -39,27 +39,27 @@ func (s serverImpl) getCreditTypeSeqNextVal(ctx sdk.Context, creditType *ecocred
 	// There is an existing CreditTypeSeq, so increment it
 	case nil:
 		// Increment the sequence number
-		creditTypeSeq.SeqNo++
+		creditTypeSeq.SeqNumber++
 		err = s.creditTypeSeqTable.Save(ctx, &creditTypeSeq)
 		if err != nil {
 			return 0, err
 		}
 
 		// Return the new value
-		return creditTypeSeq.SeqNo, nil
+		return creditTypeSeq.SeqNumber, nil
 
 	// There isn't a CreditTypeSeq for this CreditType, so create one
 	case orm.ErrNotFound:
 		// Create a new CreditTypeSeq starting at 1
-		creditTypeSeq.Abbr = creditType.Abbreviation
-		creditTypeSeq.SeqNo = 1
+		creditTypeSeq.Abbreviation = creditType.Abbreviation
+		creditTypeSeq.SeqNumber = 1
 		err = s.creditTypeSeqTable.Create(ctx, &creditTypeSeq)
 		if err != nil {
 			return 0, err
 		}
 
 		// Return the new value
-		return creditTypeSeq.SeqNo, nil
+		return creditTypeSeq.SeqNumber, nil
 
 	// We got an unexpected err, so return it
 	default:

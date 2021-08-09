@@ -13,26 +13,22 @@ func TestDenom(t *testing.T) {
 	t.Run("TestValidateFormatDenom", rapid.MakeCheck(testValidateFormatDenom))
 }
 
-// Property: ValidateClassID(FormatClassID(a)) == nil IFF a <= 999
+// Property: ValidateClassID(FormatClassID(a)) == nil
 func testValidateFormatClassID(t *rapid.T) {
 	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
 	classSeqNo := rapid.Uint64().Draw(t, "classSeqNo").(uint64)
 
 	classId, err := FormatClassID(creditType, classSeqNo)
-	if classSeqNo > 999 {
-		require.Error(t, err)
-	} else {
-		require.NoError(t, err)
+	require.NoError(t, err)
 
-		err = ValidateClassID(classId)
-		require.NoError(t, err)
-	}
+	err = ValidateClassID(classId)
+	require.NoError(t, err)
 }
 
-// Property: ValidateDenom(FormatDenom(a, b, c, d)) == nil IFF b <= 99
+// Property: ValidateDenom(FormatDenom(a, b, c, d)) == nil
 func testValidateFormatDenom(t *rapid.T) {
 	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
-	classSeqNo := rapid.Uint64Range(0, 999).Draw(t, "classSeqNo").(uint64)
+	classSeqNo := rapid.Uint64().Draw(t, "classSeqNo").(uint64)
 	batchSeqNo := rapid.Uint64().Draw(t, "batchSeqNo").(uint64)
 	startDate := genTime.Draw(t, "startDate").(*time.Time)
 	endDate := genTime.Draw(t, "endDate").(*time.Time)
@@ -41,14 +37,11 @@ func testValidateFormatDenom(t *rapid.T) {
 	require.NoError(t, err)
 
 	denom, err := FormatDenom(classId, batchSeqNo, startDate, endDate)
-	if batchSeqNo > 99 {
-		require.Error(t, err)
-	} else {
-		require.NoError(t, err)
+	require.NoError(t, err)
+	t.Log(denom)
 
-		err = ValidateDenom(denom)
-		require.NoError(t, err)
-	}
+	err = ValidateDenom(denom)
+	require.NoError(t, err)
 }
 
 // genCreditType generates an empty credit type with a random valid abbreviation

@@ -32,8 +32,8 @@ type IntegrationTestSuite struct {
 const (
 	validCreditType = "carbon"
 	validMetadata   = "AQ=="
-	classId         = "C001"
-	batchDenom      = "C001-20210101-20210201-01"
+	classId         = "C01"
+	batchDenom      = "C01-20210101-20210201-001"
 )
 
 var validMetadataBytes = []byte{0x1}

@@ -121,8 +121,8 @@ message CreditType {
 // This represents the number of credit classes created with that credit type.
 message CreditTypeSeq {
   // The credit type abbreviation
-  string abbr = 1;
+  string abbreviation = 1;
 
   // The sequence number of classes of the credit type
-  uint64 seq_no = 2;
+  uint64 seq_number = 2;
 }
