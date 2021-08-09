@@ -50,7 +50,7 @@ make install
 EXPERIMENTAL=true make install
 ```
 
-Check to make sure the install was successful:
+Check to ensure the install was successful:
 ```
 regen version
 ```

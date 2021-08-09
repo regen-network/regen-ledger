@@ -24,7 +24,7 @@ An experimental version of the ecocredit module is available on [Regen Devnet](/
 
 The **Ecocredit Module** is our module for managing the issuance, trading, and retiring of credits pertaining to verifiable changes in ecosystem health.
 
-Initially, this module will be used for Regen Network's own [CarbonPlus Grasslands](https://regen-registry.s3.amazonaws.com/GHG+and+Co-Benefits+in+Grazing+Systems+Credit+Class.pdf) credit, but we've designed this module first and foremost to be an open platform for all credit designers - something like an ERC20 token standard for ecosystem service credits.
+Initially, this module will be used for Regen Network's own [CarbonPlus Grasslands](https://regen-registry.s3.amazonaws.com/GHG+and+Co-Benefits+in+Grazing+Systems+Credit+Class.pdf) credit, but we've designed this module first and foremost to be an open platform for all credit designers - something like an [EIP721](https://eips.ethereum.org/EIPS/eip-721) token standard for ecosystem service credits.
 
 Check out [Ecocredit Module Overview](./modules/ecocredit/) for more information about the ecocredit module.
 
