@@ -34,7 +34,7 @@ Check out [Ecocredit Module Overview](./modules/ecocredit/) for more information
 A beta version of the data module will be available in experimental builds of Regen Ledger in Q4 2020, and we are targeting a first release on [Regen Mainnet](/getting-started/live-networks.html#regen-mainnet) in Regen Ledger v3.
 :::
 
-High quality and verifiable ecological data is an essential component in any modern ecosystem service marketplace. The **Data Module** is intended to sit alongside the Ecocredit Module, serving as a generic repository for more complex metadata pertaining a credit batch or ecosystem service project.
+High quality and verifiable ecological data is an essential component in any modern ecosystem service marketplace. The **Data Module** is intended to sit alongside the Ecocredit Module, serving as a generic repository for more complex metadata pertaining to a credit batch or an ecosystem service project.
 
 The basic functionality of the data module includes storing, timestamping, and digitally signing data on Regen Ledger.
 
