@@ -13,38 +13,38 @@ service Query {
   // Classes queries for all credit classes with pagination.
   rpc Classes(QueryClassesRequest) returns (QueryClassesResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/class";
+        "/regen/ecocredit/v1alpha1/classes";
   }
 
   // ClassInfo queries for information on a credit class.
   rpc ClassInfo(QueryClassInfoRequest) returns (QueryClassInfoResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/class/{class_id}";
+        "/regen/ecocredit/v1alpha1/classes/{class_id}";
   }
 
   // Batches queries for all batches in the given credit class with pagination.
   rpc Batches(QueryBatchesRequest) returns (QueryBatchesResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/batch";
+        "/regen/ecocredit/v1alpha1/batches";
   }
 
   // BatchInfo queries for information on a credit batch.
   rpc BatchInfo(QueryBatchInfoRequest) returns (QueryBatchInfoResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/batch/{batch_denom}";
+        "/regen/ecocredit/v1alpha1/batches/{batch_denom}";
   }
 
   // Balance queries the balance (both tradable and retired) of a given credit
   // batch for a given account.
   rpc Balance(QueryBalanceRequest) returns (QueryBalanceResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/batch/{batch_denom}/balance/{account}";
+        "/regen/ecocredit/v1alpha1/batches/{batch_denom}/balance/{account}";
   }
 
   // Supply queries the tradable and retired supply of a credit batch.
   rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/batch/{batch_denom}/supply";
+        "/regen/ecocredit/v1alpha1/batches/{batch_denom}/supply";
   }
 
   // CreditTypes returns the list of allowed types that credit classes can have.
