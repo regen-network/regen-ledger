@@ -55,7 +55,7 @@ In some programming languages, you may be able to leverage a pre-existing client
 
 While CosmJS has basic support for all Cosmos SDK based blockchains, you will still need to compile the protobuf messages for Regen Ledger's own modules (e.g. data module, ecocredit module) if you intend to interact with credits or on-chain ecological data.
 
-And be sure to use [cosmjs/stargate](https://cosmos.github.io/cosmjs/latest/stargate/index.html) client!
+Be sure to use [cosmjs/stargate](https://cosmos.github.io/cosmjs/latest/stargate/index.html) client!
 :::
 
 For more information about the gRPC interface, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/v0.43/run-node/interact-node.html).
