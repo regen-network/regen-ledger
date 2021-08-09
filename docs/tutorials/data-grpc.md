@@ -37,7 +37,7 @@ details on them in our [protobuf documentation](./modules/data/protobuf.md#regen
 Now that we know the structure of our `QueryByCidRequest`, we can query the `ByCid` method directly using a JSON
 encoding of the `QueryByCidRequest` message.
 
-_Note: Since gRPCurl requires bytes be encoded as base64 strings, we have to do some gymnastics to decode our CID
+_Note: Since gRPCurl requires bytes to be encoded as base64 strings, we have to do some gymnastics to decode our CID
 and re-encode the raw bytes using base64. The base64 CID string below is the correct one for the `$EXAMPLE_CID` in
 the CLI tutorial above. For more details on how CIDs work see the [CID spec](https://github.com/multiformats/cid)._
 
@@ -57,4 +57,3 @@ The result should look something like this:
   ]
 }
 ```
-
