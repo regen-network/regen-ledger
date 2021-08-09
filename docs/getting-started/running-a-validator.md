@@ -116,7 +116,7 @@ To install `cosmovisor`, run the following command:
 go get github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
 ```
 
-Check to make sure the install was successful:
+Check to ensure the install was successful:
 ```
 cosmovisor version
 ```
