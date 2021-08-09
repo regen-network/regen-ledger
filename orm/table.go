@@ -104,6 +104,9 @@ type Table struct {
 //
 // Create iterates though the registered callbacks and may add secondary index keys by them.
 func (a Table) Create(ctx HasKVStore, rowID RowID, obj codec.ProtoMarshaler) error {
+	if len(rowID) == 0 {
+		return ErrEmptyKey
+	}
 	if err := assertCorrectType(a.model, obj); err != nil {
 		return err
 	}
@@ -188,8 +191,13 @@ func (a Table) Delete(ctx HasKVStore, rowID RowID) error {
 	return nil
 }
 
-// Has checks if a key exists. Panics on nil key.
+// Has checks if a key exists. Panics on nil or empty key.
 func (a Table) Has(ctx HasKVStore, rowID RowID) bool {
+	// We don't allow creation of values with an empty key, so Has will
+	// always return false
+	if len(rowID) == 0 {
+		return false
+	}
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
 	it := store.Iterator(PrefixRange(rowID))
 	defer it.Close()
@@ -199,6 +207,11 @@ func (a Table) Has(ctx HasKVStore, rowID RowID) bool {
 // GetOne load the object persisted for the given RowID into the dest parameter.
 // If none exists `ErrNotFound` is returned instead. Parameters must not be nil.
 func (a Table) GetOne(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) error {
+	// We don't allow creation of values with an empty key, so we always
+	// return not found error
+	if len(rowID) == 0 {
+		return ErrNotFound
+	}
 	x := NewTypeSafeRowGetter(a.storeKey, a.prefix, a.model, a.cdc)
 	return x(ctx, rowID, dest)
 }
