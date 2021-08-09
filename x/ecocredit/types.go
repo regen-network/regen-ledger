@@ -1,7 +1,10 @@
 package ecocredit
 
 import (
+	"strings"
+
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/x/ecocredit/util"
 )
 
 var _, _ orm.PrimaryKeyed = &ClassInfo{}, &BatchInfo{}
@@ -12,4 +15,9 @@ func (m *ClassInfo) PrimaryKey() []byte {
 
 func (m *BatchInfo) PrimaryKey() []byte {
 	return []byte(m.BatchDenom)
+}
+
+// Normalize credit type name by removing whitespace and converting to lowercase
+func NormalizeCreditTypeName(name string) string {
+	return util.FastRemoveWhitespace(strings.ToLower(name))
 }

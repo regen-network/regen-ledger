@@ -24,7 +24,7 @@ func QueryCmd(name string) *cobra.Command {
 		QueryBatchInfoCmd(),
 		QueryBalanceCmd(),
 		QuerySupplyCmd(),
-		QueryPrecisionCmd(),
+		QueryCreditTypesCmd(),
 	)
 	return cmd
 }
@@ -109,20 +109,18 @@ func QuerySupplyCmd() *cobra.Command {
 	})
 }
 
-func QueryPrecisionCmd() *cobra.Command {
+func QueryCreditTypesCmd() *cobra.Command {
 	return qflags(&cobra.Command{
-		Use:   "precision [batch_denom]",
-		Short: "Retrieve the maximum length of the fractional part of credits in the given batch",
-		Long:  "Retrieve the maximum length of the fractional part of credits in the given batch. The precision tells what is the minimum unit of a credit.\nExample: a decimal number 12.345 has fractional part length equal 3. A precision=5 means that the minimum unit we can trade is 0.00001",
-		Args:  cobra.ExactArgs(1),
+		Use:   "types",
+		Short: "Retrieve the list of credit types",
+		Long:  "Retrieve the list of credit types that contains the type name, measurement unit and precision",
+		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
 			}
-			res, err := c.Precision(cmd.Context(), &ecocredit.QueryPrecisionRequest{
-				BatchDenom: args[0],
-			})
+			res, err := c.CreditTypes(cmd.Context(), &ecocredit.QueryCreditTypesRequest{})
 			return print(ctx, res, err)
 		},
 	})

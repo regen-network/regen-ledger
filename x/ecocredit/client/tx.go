@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
@@ -37,7 +36,6 @@ func TxCmd(name string) *cobra.Command {
 		TxSendCmd(),
 		TxRetireCmd(),
 		TxCancelCmd(),
-		TxSetPrecisionCmd(),
 	)
 	return cmd
 }
@@ -50,26 +48,31 @@ func txflags(cmd *cobra.Command) *cobra.Command {
 
 func TxCreateClassCmd() *cobra.Command {
 	return txflags(&cobra.Command{
-		Use:   "create-class [designer] [issuer[,issuer]*] [metadata]",
+		Use:   "create-class [designer] [issuer[,issuer]*] [credit type] [metadata]",
 		Short: "Creates a new credit class",
 		Long: `Creates a new credit class.
 
 Parameters:
-  designer:  address of the account which designed the credit class
-  issuer:    comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
-  metadata:  base64 encoded metadata - arbitrary data attached to the credit class info`,
-		Args: cobra.ExactArgs(3),
+  designer:  	    address of the account which designed the credit class
+  issuer:    	    comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
+  credit type:    the credit class type (e.g. carbon, biodiversity, etc)
+  metadata:  	    base64 encoded metadata - arbitrary data attached to the credit class info`,
+		Args: cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			issuers := strings.Split(args[1], ",")
 			for i := range issuers {
 				issuers[i] = strings.TrimSpace(issuers[i])
 			}
 			if args[2] == "" {
+				return sdkerrors.ErrInvalidRequest.Wrap("credit type is required")
+			}
+			creditType := args[2]
+			if args[3] == "" {
 				return errors.New("base64_metadata is required")
 			}
-			b, err := base64.StdEncoding.DecodeString(args[2])
+			b, err := base64.StdEncoding.DecodeString(args[3])
 			if err != nil {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
+				return sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
 			}
 
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
@@ -77,7 +80,7 @@ Parameters:
 				return err
 			}
 			msg := ecocredit.MsgCreateClass{
-				Designer: args[0], Issuers: issuers, Metadata: b,
+				Designer: args[0], Issuers: issuers, Metadata: b, CreditType: creditType,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
@@ -343,34 +346,6 @@ Parameters:
 			msg := ecocredit.MsgCancel{
 				Holder:  clientCtx.GetFromAddress().String(),
 				Credits: credits,
-			}
-			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
-		},
-	})
-}
-
-func TxSetPrecisionCmd() *cobra.Command {
-	return txflags(&cobra.Command{
-		Use:   "set_precision [batch_denom] [decimals]",
-		Short: "Allows an issuer to increase the decimal precision of a credit batch",
-		Long: `Allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature.
-
-Parameters:
-  batch_denom: credit batch ID
-  decimals:    maximum number of decimals of precision`,
-		Args: cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			decimals, err := strconv.ParseUint(args[1], 10, 32)
-			if err != nil {
-				return err
-			}
-			clientCtx, err := sdkclient.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-			msg := ecocredit.MsgSetPrecision{
-				Issuer:     clientCtx.GetFromAddress().String(),
-				BatchDenom: args[0], MaxDecimalPlaces: uint32(decimals),
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},

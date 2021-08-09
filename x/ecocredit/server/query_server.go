@@ -8,7 +8,6 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -56,8 +55,8 @@ func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalan
 	}
 
 	return &ecocredit.QueryBalanceResponse{
-		TradableAmount: math.DecimalString(tradable),
-		RetiredAmount:  math.DecimalString(retired),
+		TradableAmount: tradable.String(),
+		RetiredAmount:  retired.String(),
 	}, nil
 }
 
@@ -77,18 +76,13 @@ func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupply
 	}
 
 	return &ecocredit.QuerySupplyResponse{
-		TradableSupply: math.DecimalString(tradable),
-		RetiredSupply:  math.DecimalString(retired),
+		TradableSupply: tradable.String(),
+		RetiredSupply:  retired.String(),
 	}, nil
 }
 
-func (s serverImpl) Precision(goCtx context.Context, request *ecocredit.QueryPrecisionRequest) (*ecocredit.QueryPrecisionResponse, error) {
-	ctx := types.UnwrapSDKContext(goCtx)
-	store := ctx.KVStore(s.storeKey)
-	x, err := getUint32(store, MaxDecimalPlacesKey(batchDenomT(request.BatchDenom)))
-	if err != nil {
-		return nil, err
-	}
-
-	return &ecocredit.QueryPrecisionResponse{MaxDecimalPlaces: x}, nil
+func (s serverImpl) CreditTypes(goCtx context.Context, _ *ecocredit.QueryCreditTypesRequest) (*ecocredit.QueryCreditTypesResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx).Context
+	creditTypes := s.getAllCreditTypes(ctx)
+	return &ecocredit.QueryCreditTypesResponse{CreditTypes: creditTypes}, nil
 }

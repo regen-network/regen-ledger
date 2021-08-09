@@ -34,11 +34,11 @@ service Query {
         "/regen/ecocredit/v1alpha1/batch_info/{batch_denom}/supply";
   }
 
-  // Precision queries the number of decimal places that can be used to
-  // represent credits in a batch. See Tx/SetPrecision for more details.
-  rpc Precision(QueryPrecisionRequest) returns (QueryPrecisionResponse) {
+  // CreditTypes returns the list of allowed types that credit classes can have. 
+  // See Types/CreditType for more details.
+  rpc CreditTypes(QueryCreditTypesRequest) returns (QueryCreditTypesResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/batches/{batch_denom}/precision";
+        "/regen/ecocredit/v1alpha1/credit-types";
   }
 }
 
@@ -113,20 +113,11 @@ message QuerySupplyResponse {
       [ (gogoproto.moretags) = "yaml:\"retired_supply\"" ];
 }
 
-// QueryPrecisionRequest is the Query/Precision request type.
-message QueryPrecisionRequest {
+// QueryCreditTypesRequest is the Query/Credit_Types request type
+message QueryCreditTypesRequest {}
 
-  // batch_denom is the unique ID of credit batch to query.
-  string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
-}
-
-// QueryPrecisionResponse is the Query/Precision response type.
-message QueryPrecisionResponse {
-
-  // max_decimal_places is the maximum number of decimal places that can be used
-  // to represent some quantity of credits. It is an experimental feature
-  // to concretely explore an idea proposed in
-  // https://github.com/cosmos/cosmos-sdk/issues/7113.
-  uint32 max_decimal_places = 1
-      [ (gogoproto.moretags) = "yaml:\"max_decimal_places\"" ];
+// QueryCreditTypesRequest is the Query/Credit_Types response type
+message QueryCreditTypesResponse {
+  // list of credit types
+  repeated CreditType credit_types = 1;
 }

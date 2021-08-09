@@ -1,10 +1,10 @@
 package math
 
 import (
+	"fmt"
 	"github.com/cockroachdb/apd/v2"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
-
 
 // Dec is a wrapper struct around apd.Decimal that does no mutation of apd.Decimal's when performing
 // arithmetic, instead creating a new apd.Decimal for every operation ensuring usage is safe.
@@ -35,6 +35,45 @@ func NewDecFromString(s string) (Dec, error) {
 	return Dec{*d}, nil
 }
 
+func NewNonNegativeDecFromString(s string) (Dec, error) {
+	d, err := NewDecFromString(s)
+	if err != nil {
+		return Dec{}, err
+	}
+	if d.IsNegative() {
+		return Dec{}, fmt.Errorf("cannot parse non negative decimal: %s", d.String())
+	}
+	return d, nil
+}
+
+func NewNonNegativeFixedDecFromString(s string, max uint32) (Dec, error) {
+	d, err := NewDecFromString(s)
+	if err != nil {
+		return Dec{}, err
+	}
+	if d.IsNegative() {
+		return Dec{}, fmt.Errorf("cannot parse non negative decimal: %s", d.String())
+	}
+	if d.NumDecimalPlaces() > max {
+		return Dec{}, fmt.Errorf("%s exceeds maximum decimal places: %d", s, max)
+	}
+	return d, nil
+}
+
+func NewPositiveFixedDecFromString(s string, max uint32) (Dec, error) {
+	d, err := NewDecFromString(s)
+	if err != nil {
+		return Dec{}, err
+	}
+	if !d.IsPositive() {
+		return Dec{}, fmt.Errorf("%s is not a positive decimal", d.String())
+	}
+	if d.NumDecimalPlaces() > max {
+		return Dec{}, fmt.Errorf("%s exceeds maximum decimal places: %d", s, max)
+	}
+	return d, nil
+}
+
 func NewDecFromInt64(x int64) Dec {
 	var res Dec
 	res.dec.SetInt64(x)
@@ -56,7 +95,6 @@ func (x Dec) Sub(y Dec) (Dec, error) {
 	_, err := apd.BaseContext.Sub(&z.dec, &x.dec, &y.dec)
 	return z, errors.Wrap(err, "decimal subtraction error")
 }
-
 
 // Quo returns a new Dec with value `x/y` (formatted as decimal128, 34 digit precision) without mutating any
 // argument and error if there is an overflow.

@@ -334,9 +334,9 @@ devdoc-update:
 
 containerProtoVer=v0.2
 containerProtoImage=tendermintdev/sdk-proto-gen:$(containerProtoVer)
-containerProtoGen=cosmos-sdk-proto-gen-$(containerProtoVer)
-containerProtoFmt=cosmos-sdk-proto-fmt-$(containerProtoVer)
-containerProtoGenSwagger=cosmos-sdk-proto-gen-swagger-$(containerProtoVer)
+containerProtoGen=regen-proto-gen-$(containerProtoVer)
+containerProtoFmt=regen-proto-fmt-$(containerProtoVer)
+containerProtoGenSwagger=regen-proto-gen-swagger-$(containerProtoVer)
 
 proto-all: proto-gen proto-lint proto-check-breaking proto-format
 .PHONY: proto-all proto-gen proto-gen-docker proto-lint proto-check-breaking proto-format

@@ -13,7 +13,6 @@ type batchDenomT string
 // - 0x1 <denom_Bytes>: TradableSupply
 // - 0x2 <accAddrLen (1 Byte)><accAddr_Bytes><denom_Bytes>: RetiredBalance
 // - 0x3 <denom_Bytes>: RetiredSupply
-// - 0x7 <denom_Bytes>: MaxDecimalPlaces
 
 // TradableBalanceKey creates the index key for recipient address and batch-denom
 func TradableBalanceKey(acc sdk.AccAddress, denom batchDenomT) []byte {
@@ -51,15 +50,4 @@ func RetiredBalanceKey(acc sdk.AccAddress, batchDenom batchDenomT) []byte {
 func RetiredSupplyKey(batchDenom batchDenomT) []byte {
 	key := []byte{RetiredSupplyPrefix}
 	return append(key, batchDenom...)
-}
-
-// MaxDecimalPlacesKey creates max decimal index key for a given batch-denom
-func MaxDecimalPlacesKey(batchDenom batchDenomT) []byte {
-	key := []byte{MaxDecimalPlacesPrefix}
-	return append(key, batchDenom...)
-}
-
-// ParseMaxDecimalPlacesKey parses the batch-denom from max decimal places key
-func ParseMaxDecimalPlacesKey(key []byte) batchDenomT {
-	return batchDenomT(key[1:])
 }
