@@ -8,7 +8,7 @@ All the commands below work if you're connecting to a [remote node](./getting-st
 
 ### Create a KeyPair
 
-For sending transactions on the blockchain, you will need a keypair. Regen Ledger keys can be managed with the `regen keys` subcommand. A new key pair can be generated using:
+For sending transactions to the blockchain, you will need a keypair. Regen Ledger keys can be managed with the `regen keys` subcommand. A new key pair can be generated using:
 
 ```sh
 KEY_NAME=my_key # Or choose your own key name.
