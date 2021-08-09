@@ -75,13 +75,8 @@ func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupply
 	}, nil
 }
 
-func (s serverImpl) Precision(goCtx context.Context, request *ecocredit.QueryPrecisionRequest) (*ecocredit.QueryPrecisionResponse, error) {
-	ctx := types.UnwrapSDKContext(goCtx)
-	store := ctx.KVStore(s.storeKey)
-	x, err := getUint32(store, MaxDecimalPlacesKey(batchDenomT(request.BatchDenom)))
-	if err != nil {
-		return nil, err
-	}
-
-	return &ecocredit.QueryPrecisionResponse{MaxDecimalPlaces: x}, nil
+func (s serverImpl) CreditTypes(goCtx context.Context, _ *ecocredit.QueryCreditTypesRequest) (*ecocredit.QueryCreditTypesResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx).Context
+	creditTypes := s.getAllCreditTypes(ctx)
+	return &ecocredit.QueryCreditTypesResponse{CreditTypes: creditTypes}, nil
 }

@@ -14,6 +14,7 @@
 - [regen/ecocredit/v1alpha1/types.proto](#regen/ecocredit/v1alpha1/types.proto)
     - [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo)
     - [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo)
+    - [CreditType](#regen.ecocredit.v1alpha1.CreditType)
     - [GenesisState](#regen.ecocredit.v1alpha1.GenesisState)
     - [Params](#regen.ecocredit.v1alpha1.Params)
   
@@ -24,8 +25,8 @@
     - [QueryBatchInfoResponse](#regen.ecocredit.v1alpha1.QueryBatchInfoResponse)
     - [QueryClassInfoRequest](#regen.ecocredit.v1alpha1.QueryClassInfoRequest)
     - [QueryClassInfoResponse](#regen.ecocredit.v1alpha1.QueryClassInfoResponse)
-    - [QueryPrecisionRequest](#regen.ecocredit.v1alpha1.QueryPrecisionRequest)
-    - [QueryPrecisionResponse](#regen.ecocredit.v1alpha1.QueryPrecisionResponse)
+    - [QueryCreditTypesRequest](#regen.ecocredit.v1alpha1.QueryCreditTypesRequest)
+    - [QueryCreditTypesResponse](#regen.ecocredit.v1alpha1.QueryCreditTypesResponse)
     - [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest)
     - [QuerySupplyResponse](#regen.ecocredit.v1alpha1.QuerySupplyResponse)
   
@@ -46,8 +47,6 @@
     - [MsgSend](#regen.ecocredit.v1alpha1.MsgSend)
     - [MsgSend.SendCredits](#regen.ecocredit.v1alpha1.MsgSend.SendCredits)
     - [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse)
-    - [MsgSetPrecision](#regen.ecocredit.v1alpha1.MsgSetPrecision)
-    - [MsgSetPrecisionResponse](#regen.ecocredit.v1alpha1.MsgSetPrecisionResponse)
   
     - [Msg](#regen.ecocredit.v1alpha1.Msg)
   
@@ -209,6 +208,26 @@ ClassInfo represents the high-level on-chain information for a credit class.
 | designer | [string](#string) |  | designer is the designer of the credit class. |
 | issuers | [string](#string) | repeated | issuers are the approved issuers of the credit class. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit class. |
+| credit_type | [CreditType](#regen.ecocredit.v1alpha1.CreditType) |  | credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.CreditType"></a>
+
+### CreditType
+CreditType defines the measurement unit/precision of a certain credit type
+(e.g. carbon, biodiversity...)
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | the type of credit (e.g. carbon, biodiversity, etc) |
+| abbreviation | [string](#string) |  | abbreviation is a 1-3 character uppercase abbreviation of the CreditType name, used in batch denominations within the CreditType. It must be unique. |
+| unit | [string](#string) |  | the measurement unit (e.g. kg, ton, etc) |
+| precision | [uint32](#uint32) |  | the decimal precision |
 
 
 
@@ -242,6 +261,7 @@ use with the x/params module.
 | credit_class_fee | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | credit_class_fee is the fixed fee charged on creation of a new credit class |
 | allowed_class_designers | [string](#string) | repeated | allowed_class_designers is an allowlist defining the addresses with the required permissions to create credit classes |
 | allowlist_enabled | [bool](#bool) |  | allowlist_enabled is a param that enables/disables the allowlist for credit creation |
+| credit_types | [CreditType](#regen.ecocredit.v1alpha1.CreditType) | repeated | credit_types is a list of definitions for credit types |
 
 
 
@@ -356,30 +376,25 @@ QueryClassInfoResponse is the Query/ClassInfo request type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.QueryPrecisionRequest"></a>
+<a name="regen.ecocredit.v1alpha1.QueryCreditTypesRequest"></a>
 
-### QueryPrecisionRequest
-QueryPrecisionRequest is the Query/Precision request type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch to query. |
+### QueryCreditTypesRequest
+QueryCreditTypesRequest is the Query/Credit_Types request type
 
 
 
 
 
 
-<a name="regen.ecocredit.v1alpha1.QueryPrecisionResponse"></a>
+<a name="regen.ecocredit.v1alpha1.QueryCreditTypesResponse"></a>
 
-### QueryPrecisionResponse
-QueryPrecisionResponse is the Query/Precision response type.
+### QueryCreditTypesResponse
+QueryCreditTypesRequest is the Query/Credit_Types response type
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| max_decimal_places | [uint32](#uint32) |  | max_decimal_places is the maximum number of decimal places that can be used to represent some quantity of credits. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. |
+| credit_types | [CreditType](#regen.ecocredit.v1alpha1.CreditType) | repeated | list of credit types |
 
 
 
@@ -434,7 +449,7 @@ Msg is the regen.ecocredit.v1alpha1 Query service.
 | BatchInfo | [QueryBatchInfoRequest](#regen.ecocredit.v1alpha1.QueryBatchInfoRequest) | [QueryBatchInfoResponse](#regen.ecocredit.v1alpha1.QueryBatchInfoResponse) | BatchInfo queries for information on a credit batch. |
 | Balance | [QueryBalanceRequest](#regen.ecocredit.v1alpha1.QueryBalanceRequest) | [QueryBalanceResponse](#regen.ecocredit.v1alpha1.QueryBalanceResponse) | Balance queries the balance (both tradable and retired) of a given credit batch for a given account. |
 | Supply | [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest) | [QuerySupplyResponse](#regen.ecocredit.v1alpha1.QuerySupplyResponse) | Supply queries the tradable and retired supply of a credit batch. |
-| Precision | [QueryPrecisionRequest](#regen.ecocredit.v1alpha1.QueryPrecisionRequest) | [QueryPrecisionResponse](#regen.ecocredit.v1alpha1.QueryPrecisionResponse) | Precision queries the number of decimal places that can be used to represent credits in a batch. See Tx/SetPrecision for more details. |
+| CreditTypes | [QueryCreditTypesRequest](#regen.ecocredit.v1alpha1.QueryCreditTypesRequest) | [QueryCreditTypesResponse](#regen.ecocredit.v1alpha1.QueryCreditTypesResponse) | CreditTypes returns the list of allowed types that credit classes can have. See Types/CreditType for more details. |
 
  <!-- end services -->
 
@@ -555,6 +570,7 @@ MsgCreateClass is the Msg/CreateClass request type.
 | designer | [string](#string) |  | designer is the address of the account which designed the credit class. The designer has special permissions to change the list of issuers and perform other administrative operations. |
 | issuers | [string](#string) | repeated | issuers are the account addresses of the approved issuers. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit class. |
+| credit_type | [string](#string) |  | credit_type describes the type of credit (e.g. "carbon", "biodiversity"). |
 
 
 
@@ -665,33 +681,6 @@ MsgSendResponse is the Msg/Send response type.
 
 
 
-
-<a name="regen.ecocredit.v1alpha1.MsgSetPrecision"></a>
-
-### MsgSetPrecision
-MsgRetire is the Msg/SetPrecision request type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| issuer | [string](#string) |  | issuer is the address of the batch issuer. |
-| batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
-| max_decimal_places | [uint32](#uint32) |  | max_decimal_places is the new maximum number of decimal places that can be used to represent some quantity of credits. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha1.MsgSetPrecisionResponse"></a>
-
-### MsgSetPrecisionResponse
-MsgRetire is the Msg/SetPrecision response type.
-
-
-
-
-
  <!-- end messages -->
 
  <!-- end enums -->
@@ -711,7 +700,6 @@ Msg is the regen.ecocredit.v1alpha1 Msg service.
 | Send | [MsgSend](#regen.ecocredit.v1alpha1.MsgSend) | [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse) | Send sends tradable credits from one account to another account. Sent credits can either be tradable or retired on receipt. |
 | Retire | [MsgRetire](#regen.ecocredit.v1alpha1.MsgRetire) | [MsgRetireResponse](#regen.ecocredit.v1alpha1.MsgRetireResponse) | Retire retires a specified number of credits in the holder's account. |
 | Cancel | [MsgCancel](#regen.ecocredit.v1alpha1.MsgCancel) | [MsgCancelResponse](#regen.ecocredit.v1alpha1.MsgCancelResponse) | Cancel removes a number of credits from the holder's account and also deducts them from the tradable supply, effectively cancelling their issuance on Regen Ledger |
-| SetPrecision | [MsgSetPrecision](#regen.ecocredit.v1alpha1.MsgSetPrecision) | [MsgSetPrecisionResponse](#regen.ecocredit.v1alpha1.MsgSetPrecisionResponse) | SetPrecision allows an issuer to increase the decimal precision of a credit batch. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal places allowed for a credit batch is determined by the original number of decimal places used with calling CreatBatch. SetPrecision allows the number of allowed decimal places to be increased, effectively making the supply more granular without actually changing any balances. It allows asset issuers to be able to issue an asset without needing to think about how many subdivisions are needed upfront. While it may not be relevant for credits which likely have a fairly stable market value, I wanted to experiment a bit and this serves as a proof of concept for a broader bank redesign where say for instance a coin like the ATOM or XRN could be issued in its own units rather than micro or nano-units. Instead an operation like SetPrecision would allow trading in micro, nano or pico in the future based on market demand. Arbitrary, unbounded precision is not desirable because this can lead to spam attacks (like sending 0.000000000000000000000000000001 coins). This is effectively fixed precision so under the hood it is still basically an integer, but the fixed precision can be increased so its more adaptable long term than just an integer. |
 
  <!-- end services -->
 

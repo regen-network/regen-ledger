@@ -1874,8 +1874,9 @@ func (s *IntegrationTestSuite) TestExecProposal() {
 		"proposal with ADR 033 executed when accepted": {
 			setupProposal: func(ctx context.Context) uint64 {
 				msgs := []sdk.Msg{&ecocredit.MsgCreateClass{
-					Designer: s.groupAccountAddr.String(),
-					Issuers:  []string{s.groupAccountAddr.String()},
+					Designer:   s.groupAccountAddr.String(),
+					Issuers:    []string{s.groupAccountAddr.String()},
+					CreditType: "carbon",
 				},
 				}
 				return createProposalAndVote(ctx, s, msgs, proposers, group.Choice_CHOICE_YES)
