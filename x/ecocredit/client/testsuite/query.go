@@ -419,47 +419,29 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestQueryPrecision() {
+func (s *IntegrationTestSuite) TestQueryCreditTypes() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
-
 	testCases := []struct {
-		name                     string
-		args                     []string
-		expectErr                bool
-		expectedErrMsg           string
-		expectedMaxDecimalPlaces uint32
+		name               string
+		args               []string
+		expectErr          bool
+		expectedErrMsg     string
+		expectedCreditType []*ecocredit.CreditType
 	}{
 		{
-			name:           "missing credit batch",
-			args:           []string{},
-			expectErr:      true,
-			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
-		},
-		{
-			name:           "too many args",
-			args:           []string{"abcde", "abcde"},
-			expectErr:      true,
-			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
-		},
-		{
-			name:                     "invalid credit batch",
-			args:                     []string{"abcde"},
-			expectErr:                false,
-			expectedMaxDecimalPlaces: 0,
-		},
-		{
-			name:                     "valid credit batch",
-			args:                     []string{s.batchInfo.BatchDenom},
-			expectErr:                false,
-			expectedMaxDecimalPlaces: 6,
+			name:               "should give credit type",
+			args:               []string{},
+			expectErr:          false,
+			expectedErrMsg:     "",
+			expectedCreditType: []*ecocredit.CreditType{s.classInfo.CreditType},
 		},
 	}
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryPrecisionCmd()
+			cmd := client.QueryCreditTypesCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expectErr {
 				s.Require().Error(err)
@@ -467,9 +449,9 @@ func (s *IntegrationTestSuite) TestQueryPrecision() {
 			} else {
 				s.Require().NoError(err, out.String())
 
-				var res ecocredit.QueryPrecisionResponse
+				var res ecocredit.QueryCreditTypesResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(tc.expectedMaxDecimalPlaces, res.MaxDecimalPlaces)
+				s.Require().Equal(tc.expectedCreditType, res.CreditTypes)
 			}
 		})
 	}

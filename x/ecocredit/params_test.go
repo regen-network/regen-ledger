@@ -2,9 +2,10 @@ package ecocredit
 
 import (
 	"fmt"
+	"testing"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestDefaultParams(t *testing.T) {
@@ -12,6 +13,14 @@ func TestDefaultParams(t *testing.T) {
 		CreditClassFee:        sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)),
 		AllowedClassDesigners: []string{},
 		AllowlistEnabled:      false,
+		CreditTypes: []*CreditType{
+			{
+				Name:         "carbon",
+				Abbreviation: "C",
+				Unit:         "ton",
+				Precision:    PRECISION,
+			},
+		},
 	}
 	df := DefaultParams()
 
@@ -128,6 +137,94 @@ func Test_validateCreditClassFee(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if err := validateCreditClassFee(tt.args); (err != nil) != tt.wantErr {
 				t.Errorf("validateCreditClassFee() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func Test_validateCreditTypes(t *testing.T) {
+	tests := []struct {
+		name    string
+		args    interface{}
+		wantErr bool
+	}{
+		{
+			name: "valid credit types",
+			args: []*CreditType{
+				{Name: "carbon", Abbreviation: "C", Unit: "ton", Precision: 6},
+				{Name: "biodiversity", Abbreviation: "BIO", Unit: "mi", Precision: 6},
+			},
+			wantErr: false,
+		},
+		{
+			name: "wrong type",
+			args: []*ClassInfo{
+				{
+					ClassId:    "foo",
+					Designer:   "0xdeadbeef",
+					Issuers:    []string{"not", "an", "address"},
+					Metadata:   nil,
+					CreditType: nil,
+				},
+			},
+			wantErr: true,
+		},
+		{
+			name: "cant have duplicate names",
+			args: []*CreditType{
+				{Name: "carbon", Abbreviation: "C", Unit: "ton", Precision: 6},
+				{Name: "carbon", Abbreviation: "CAR", Unit: "ton", Precision: 6},
+			},
+			wantErr: true,
+		},
+		{
+			name:    "cant use non-normalized credit type name",
+			args:    []*CreditType{{Name: "biODiVerSitY", Abbreviation: "BIO", Unit: "ton", Precision: 6}},
+			wantErr: true,
+		},
+		{
+			name:    "cant use empty name",
+			args:    []*CreditType{{Name: "", Abbreviation: "C", Unit: "ton", Precision: 6}},
+			wantErr: true,
+		},
+		{
+			name: "cant have duplicate abbreviations",
+			args: []*CreditType{
+				{Name: "carbon", Abbreviation: "C", Unit: "ton", Precision: 6},
+				{Name: "carbonic-acid", Abbreviation: "C", Unit: "ton", Precision: 6},
+			},
+			wantErr: true,
+		},
+		{
+			name:    "cant use empty abbreviation",
+			args:    []*CreditType{{Name: "carbon", Unit: "ton", Precision: 6}},
+			wantErr: true,
+		},
+		{
+			name:    "cant use lowercase abbreviation",
+			args:    []*CreditType{{Name: "carbon", Abbreviation: "c", Unit: "ton", Precision: 6}},
+			wantErr: true,
+		},
+		{
+			name:    "cant use longer than 3 letter abbreviation",
+			args:    []*CreditType{{Name: "carbon", Abbreviation: "CARB", Unit: "ton", Precision: 6}},
+			wantErr: true,
+		},
+		{
+			name:    "cant use precision other than 6",
+			args:    []*CreditType{{Name: "carbon", Abbreviation: "C", Unit: "ton", Precision: 0}},
+			wantErr: true,
+		},
+		{
+			name:    "cant use empty units",
+			args:    []*CreditType{{Name: "carbon", Abbreviation: "C", Unit: "", Precision: 6}},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := validateCreditTypes(tt.args); (err != nil) != tt.wantErr {
+				t.Errorf("validateCreditTypes() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
