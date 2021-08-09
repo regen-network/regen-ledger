@@ -20,11 +20,11 @@ func QueryCmd(name string) *cobra.Command {
 		RunE:  client.ValidateCmd,
 	}
 	cmd.AddCommand(
-		qflags(queryClassInfo()),
-		qflags(queryBatchInfo()),
-		qflags(queryBalance()),
-		qflags(querySupply()),
-		qflags(queryPrecision()),
+		QueryClassInfoCmd(),
+		QueryBatchInfoCmd(),
+		QueryBalanceCmd(),
+		QuerySupplyCmd(),
+		QueryCreditTypesCmd(),
 	)
 	return cmd
 }
@@ -34,8 +34,8 @@ func qflags(cmd *cobra.Command) *cobra.Command {
 	return cmd
 }
 
-func queryClassInfo() *cobra.Command {
-	return &cobra.Command{
+func QueryClassInfoCmd() *cobra.Command {
+	return qflags(&cobra.Command{
 		Use:   "class-info [class_id]",
 		Short: "Retrieve credit class info",
 		Args:  cobra.ExactArgs(1),
@@ -49,11 +49,11 @@ func queryClassInfo() *cobra.Command {
 			})
 			return print(ctx, res, err)
 		},
-	}
+	})
 }
 
-func queryBatchInfo() *cobra.Command {
-	return &cobra.Command{
+func QueryBatchInfoCmd() *cobra.Command {
+	return qflags(&cobra.Command{
 		Use:   "batch-info [batch_denom]",
 		Short: "Retrieve the credit issuance batch info",
 		Long:  "Retrieve the credit issuance batch info based on the bach_denom (ID)",
@@ -68,11 +68,11 @@ func queryBatchInfo() *cobra.Command {
 			})
 			return print(ctx, res, err)
 		},
-	}
+	})
 }
 
-func queryBalance() *cobra.Command {
-	return &cobra.Command{
+func QueryBalanceCmd() *cobra.Command {
+	return qflags(&cobra.Command{
 		Use:   "balance [batch_denom] [account]",
 		Short: "Retrieve the tradable and retired balances of the credit batch",
 		Long:  "Retrieve the tradable and retired balances of the credit batch for a given account address",
@@ -87,11 +87,11 @@ func queryBalance() *cobra.Command {
 			})
 			return print(ctx, res, err)
 		},
-	}
+	})
 }
 
-func querySupply() *cobra.Command {
-	return &cobra.Command{
+func QuerySupplyCmd() *cobra.Command {
+	return qflags(&cobra.Command{
 		Use:   "supply [batch_denom]",
 		Short: "Retrieve the tradable and retired supply of the credit batch",
 		Long:  "Retrieve the tradable and retired supply of the credit batch",
@@ -106,24 +106,22 @@ func querySupply() *cobra.Command {
 			})
 			return print(ctx, res, err)
 		},
-	}
+	})
 }
 
-func queryPrecision() *cobra.Command {
-	return &cobra.Command{
-		Use:   "precision [batch_denom]",
-		Short: "Retrieve the maximum length of the fractional part of credits in the given batch",
-		Long:  "Retrieve the maximum length of the fractional part of credits in the given batch. The precision tells what is the minimum unit of a credit.\nExample: a decimal number 12.345 has fractional part length equal 3. A precision=5 means that the minimum unit we can trade is 0.00001",
-		Args:  cobra.ExactArgs(1),
+func QueryCreditTypesCmd() *cobra.Command {
+	return qflags(&cobra.Command{
+		Use:   "types",
+		Short: "Retrieve the list of credit types",
+		Long:  "Retrieve the list of credit types that contains the type name, measurement unit and precision",
+		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
 			}
-			res, err := c.Precision(cmd.Context(), &ecocredit.QueryPrecisionRequest{
-				BatchDenom: args[0],
-			})
+			res, err := c.CreditTypes(cmd.Context(), &ecocredit.QueryCreditTypesRequest{})
 			return print(ctx, res, err)
 		},
-	}
+	})
 }
