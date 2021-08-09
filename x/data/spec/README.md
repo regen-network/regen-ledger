@@ -1,14 +1,16 @@
-## Abstract
+# Data Module
 
 ::: tip COMING SOON
 The data module is under active development. Check back soon for more information.
 :::
 
-<!-- The following documents specify the data module.
+## Abstract
+
+The following documents specify the data module.
 
 The data module is intended to be a versatile module for anchoring, signing, and storing data about ecological health, and ecosystem services on Regen Ledger.
 
-## Contents
+<!-- ## Contents
 
 1. **[Concepts](01_concepts.md)**
 2. **[State](02_state.md)**

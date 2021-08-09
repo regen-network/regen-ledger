@@ -92,6 +92,7 @@ module.exports = {
           children: [
             {
               title: 'Data Module',
+              collapsable: false,
               children: [
                 {
                   title: 'Overview',
@@ -103,13 +104,14 @@ module.exports = {
                 // '/modules/data/04_events',
                 // '/modules/data/05_client',
                 {
-                  title: 'Protobuf',
+                  title: 'Protobuf Documentation',
                   path: '/modules/data/protobuf'
                 }
               ]
             },
             {
               title: 'Ecocredit Module',
+              collapsable: false,
               children: [
                 {
                   title: 'Overview',
@@ -121,13 +123,14 @@ module.exports = {
                 // '/modules/ecocredit/04_events',
                 // '/modules/ecocredit/05_client',
                 {
-                  title: 'Protobuf',
+                  title: 'Protobuf Documentation',
                   path: '/modules/ecocredit/protobuf'
                 }
               ]
             },
             {
               title: 'Group Module',
+              collapsable: false,
               children: [
                 {
                   title: 'Overview',
@@ -139,7 +142,7 @@ module.exports = {
                 '/modules/group/04_events',
                 // '/modules/group/05_client',
                 {
-                  title: 'Protobuf',
+                  title: 'Protobuf Documentation',
                   path: '/modules/group/protobuf'
                 }
               ]
