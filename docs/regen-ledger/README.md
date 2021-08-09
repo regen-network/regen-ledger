@@ -56,5 +56,5 @@ The first official version of the group module will be included in the next rele
 ### CosmWasm
 
 ::: tip COMING SOON
-The CosmWasm integration will be included after Regen Ledger v3.
+CosmWasm will be integrated after Regen Ledger v3.
 :::
