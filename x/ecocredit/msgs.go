@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	_, _, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
-		&MsgRetire{}, &MsgCancel{}, &MsgSetPrecision{}
+	_, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
+		&MsgRetire{}, &MsgCancel{}
 )
 
 func (m *MsgCreateClass) ValidateBasic() error {
@@ -19,7 +19,11 @@ func (m *MsgCreateClass) ValidateBasic() error {
 	}
 
 	if len(m.Issuers) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "issuers cannot be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("issuers cannot be empty")
+	}
+
+	if len(m.CreditType) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("credit class must have a credit type")
 	}
 	for _, issuer := range m.Issuers {
 		_, err := sdk.AccAddressFromBech32(issuer)
@@ -222,22 +226,6 @@ func (m *MsgCancel) ValidateBasic() error {
 
 func (m *MsgCancel) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Holder)
-	if err != nil {
-		panic(err)
-	}
-
-	return []sdk.AccAddress{addr}
-}
-
-func (m *MsgSetPrecision) ValidateBasic() error {
-	if len(m.BatchDenom) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "missing batch_denom")
-	}
-	return nil
-}
-
-func (m *MsgSetPrecision) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(m.Issuer)
 	if err != nil {
 		panic(err)
 	}

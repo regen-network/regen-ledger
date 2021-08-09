@@ -30,16 +30,32 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 		return nil, err
 	}
 
+	if s.allowlistEnabled(ctx.Context) {
+		allowListed, err := s.isDesignerAllowListed(ctx.Context, designerAddress)
+		if err != nil {
+			return nil, err
+		}
+		if !allowListed {
+			return nil, fmt.Errorf("%s is not allowed to create credit classes", designerAddress.String())
+		}
+	}
+
 	err = s.chargeCreditClassFee(ctx.Context, designerAddress)
 	if err != nil {
 		return nil, err
 	}
 
+	creditType, err := s.getCreditType(ctx.Context, req.CreditType)
+	if err != nil {
+		return nil, err
+	}
+
 	err = s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
-		ClassId:  classIDStr,
-		Designer: req.Designer,
-		Issuers:  req.Issuers,
-		Metadata: req.Metadata,
+		ClassId:    classIDStr,
+		Designer:   req.Designer,
+		Issuers:    req.Issuers,
+		Metadata:   req.Metadata,
+		CreditType: creditType,
 	})
 	if err != nil {
 		return nil, err
@@ -62,12 +78,16 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	if err := s.assertClassIssuer(ctx, classID, req.Issuer); err != nil {
 		return nil, err
 	}
+	classInfo, err := s.getClassInfo(ctx, classID)
+	if err != nil {
+		return nil, err
+	}
 
+	maxDecimalPlaces := classInfo.CreditType.Precision
 	batchID := s.idSeq.NextVal(ctx)
 	batchDenom := batchDenomT(fmt.Sprintf("%s/%s", classID, util.Uint64ToBase58Check(batchID)))
 	tradableSupply := math.NewDecFromInt64(0)
 	retiredSupply := math.NewDecFromInt64(0)
-	var maxDecimalPlaces uint32 = 0
 
 	store := ctx.KVStore(s.storeKey)
 
@@ -83,7 +103,8 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 
 			decPlaces := tradable.NumDecimalPlaces()
 			if decPlaces > maxDecimalPlaces {
-				maxDecimalPlaces = decPlaces
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf("tradable amount exceeds precision for credit type: "+
+					"is %v, should be < %v", decPlaces, maxDecimalPlaces)
 			}
 		}
 
@@ -95,7 +116,8 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 
 			decPlaces := retired.NumDecimalPlaces()
 			if decPlaces > maxDecimalPlaces {
-				maxDecimalPlaces = decPlaces
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf("retired amount does not conform to credit type "+
+					"precision: %v should be %v", decPlaces, maxDecimalPlaces)
 			}
 		}
 
@@ -166,11 +188,6 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		return nil, err
 	}
 
-	err = setUInt32(store, MaxDecimalPlacesKey(batchDenom), maxDecimalPlaces)
-	if err != nil {
-		return nil, err
-	}
-
 	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateBatch{
 		ClassId:         classID,
 		BatchDenom:      string(batchDenom),
@@ -199,7 +216,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
 		}
 
-		maxDecimalPlaces, err := getUint32(store, MaxDecimalPlacesKey(denom))
+		maxDecimalPlaces, err := s.getBatchPrecision(ctx, denom)
 		if err != nil {
 			return nil, err
 		}
@@ -276,7 +293,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ec
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
 		}
 
-		maxDecimalPlaces, err := getUint32(store, MaxDecimalPlacesKey(denom))
+		maxDecimalPlaces, err := s.getBatchPrecision(ctx, denom)
 		if err != nil {
 			return nil, err
 		}
@@ -320,11 +337,20 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
 		}
 
-		// Fetch the max precision of decimal values in this batch
-		maxDecimalPlaces, err := getUint32(store, MaxDecimalPlacesKey(denom))
+		// Remove the credits from the total_amount in the batch and add
+		// them to amount_cancelled
+		var batchInfo ecocredit.BatchInfo
+		err := s.batchInfoTable.GetOne(ctx, orm.RowID(denom), &batchInfo)
 		if err != nil {
 			return nil, err
 		}
+
+		classInfo, err := s.getClassInfo(ctx, batchInfo.ClassId)
+		if err != nil {
+			return nil, err
+		}
+
+		maxDecimalPlaces := classInfo.CreditType.Precision
 
 		// Parse the amount of credits to cancel, checking it conforms
 		// to the precision
@@ -336,14 +362,6 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 		// Remove the credits from the balance of the holder and the
 		// overall supply
 		err = subtractTradableBalanceAndSupply(store, holder, denom, toCancel)
-		if err != nil {
-			return nil, err
-		}
-
-		// Remove the credits from the total_amount in the batch and add
-		// them to amount_cancelled
-		var batchInfo ecocredit.BatchInfo
-		err = s.batchInfoTable.GetOne(ctx, orm.RowID(denom), &batchInfo)
 		if err != nil {
 			return nil, err
 		}
@@ -384,38 +402,6 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 	}
 
 	return &ecocredit.MsgCancelResponse{}, nil
-}
-
-func (s serverImpl) SetPrecision(goCtx context.Context, req *ecocredit.MsgSetPrecision) (*ecocredit.MsgSetPrecisionResponse, error) {
-	ctx := types.UnwrapSDKContext(goCtx)
-	var batchInfo ecocredit.BatchInfo
-
-	err := s.batchInfoTable.GetOne(ctx, orm.RowID(req.BatchDenom), &batchInfo)
-	if err != nil {
-		return nil, err
-	}
-
-	if req.Issuer != batchInfo.Issuer {
-		return nil, sdkerrors.ErrUnauthorized
-	}
-
-	store := ctx.KVStore(s.storeKey)
-	key := MaxDecimalPlacesKey(batchDenomT(req.BatchDenom))
-	x, err := getUint32(store, key)
-	if err != nil {
-		return nil, err
-	}
-
-	if req.MaxDecimalPlaces <= x {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("Maximum decimal can only be increased, it is currently %d, and %d was requested", x, req.MaxDecimalPlaces))
-	}
-
-	err = setUInt32(store, key, req.MaxDecimalPlaces)
-	if err != nil {
-		return nil, err
-	}
-
-	return &ecocredit.MsgSetPrecisionResponse{}, nil
 }
 
 // assertClassIssuer makes sure that the issuer is part of issuers of given classID.
@@ -462,4 +448,42 @@ func subtractTradableBalanceAndSupply(store sdk.KVStore, holder string, batchDen
 	}
 
 	return nil
+}
+
+func (s serverImpl) getBatchPrecision(ctx types.Context, denom batchDenomT) (uint32, error) {
+	var batchInfo ecocredit.BatchInfo
+	err := s.batchInfoTable.GetOne(ctx, orm.RowID(denom), &batchInfo)
+	if err != nil {
+		return 0, err
+	}
+
+	classInfo, err := s.getClassInfo(ctx, batchInfo.ClassId)
+	if err != nil {
+		return 0, err
+	}
+
+	return classInfo.CreditType.Precision, nil
+}
+
+// Checks if the given address is in the allowlist of credit class designers
+func (s serverImpl) isDesignerAllowListed(ctx sdk.Context, addr sdk.Address) (bool, error) {
+	var params ecocredit.Params
+	s.paramSpace.GetParamSet(ctx, &params)
+	for _, sAddr := range params.AllowedClassDesigners {
+		allowListedAddr, err := sdk.AccAddressFromBech32(sAddr)
+		if err != nil {
+			return false, err
+		}
+		if addr.Equals(allowListedAddr) {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+// Checks if the allowlist of credit class designers is enabled
+func (s serverImpl) allowlistEnabled(ctx sdk.Context) bool {
+	var params ecocredit.Params
+	s.paramSpace.GetParamSet(ctx, &params)
+	return params.AllowlistEnabled
 }
