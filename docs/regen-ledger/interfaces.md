@@ -24,7 +24,7 @@ For transaction commands:
 regen tx --help
 ```
 
-For query commaneds:
+For query commands:
 ```
 regen query --help
 ```
