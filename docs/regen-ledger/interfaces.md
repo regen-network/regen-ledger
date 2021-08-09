@@ -14,7 +14,7 @@ The most straightforward way to interact with a node is using the command-line i
 
 The `regen` binary serves as the node client and the application client, meaning the `regen` binary can be used to both run a node and interact with it. In [Quick Start](../getting-started/), we started a local node using the `regen` binary and then interacted with that node by submitting queries and transactions. For more examples of interacting with a node using the command-line interface, see [Tutorials](../tutorials/).
 
-To learn more about the commands available, [install regen](http://localhost:8080/getting-started/#install-regen) and run the following:
+To learn more about the available commands, [install regen](http://localhost:8080/getting-started/#install-regen) and run the following:
 ```
 regen --help
 ```
