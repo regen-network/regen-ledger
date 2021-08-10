@@ -9,6 +9,25 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
+func (s serverImpl) Classes(goCtx context.Context, request *ecocredit.QueryClassesRequest) (*ecocredit.QueryClassesResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	classesIter, err := s.classInfoTable.PrefixScan(ctx, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var classes []*ecocredit.ClassInfo
+	pageResp, err := orm.Paginate(classesIter, request.Pagination, &classes)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.QueryClassesResponse{
+		Classes:    classes,
+		Pagination: pageResp,
+	}, nil
+}
+
 func (s serverImpl) ClassInfo(goCtx context.Context, request *ecocredit.QueryClassInfoRequest) (*ecocredit.QueryClassInfoResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	classInfo, err := s.getClassInfo(ctx, request.ClassId)
@@ -23,6 +42,28 @@ func (s serverImpl) getClassInfo(ctx types.Context, classID string) (*ecocredit.
 	var classInfo ecocredit.ClassInfo
 	err := s.classInfoTable.GetOne(ctx, orm.RowID(classID), &classInfo)
 	return &classInfo, err
+}
+
+func (s serverImpl) Batches(goCtx context.Context, request *ecocredit.QueryBatchesRequest) (*ecocredit.QueryBatchesResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+
+	// Only read IDs that have a prefix match with the ClassID
+	start, end := orm.PrefixRange([]byte(request.ClassId))
+	batchesIter, err := s.batchInfoTable.PrefixScan(ctx, start, end)
+	if err != nil {
+		return nil, err
+	}
+
+	var batches []*ecocredit.BatchInfo
+	pageResp, err := orm.Paginate(batchesIter, request.Pagination, &batches)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.QueryBatchesResponse{
+		Batches:    batches,
+		Pagination: pageResp,
+	}, nil
 }
 
 func (s serverImpl) BatchInfo(goCtx context.Context, request *ecocredit.QueryBatchInfoRequest) (*ecocredit.QueryBatchInfoResponse, error) {

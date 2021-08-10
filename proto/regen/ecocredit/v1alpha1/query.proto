@@ -4,42 +4,70 @@ package regen.ecocredit.v1alpha1;
 import "google/api/annotations.proto";
 import "regen/ecocredit/v1alpha1/types.proto";
 import "gogoproto/gogo.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 
 // Msg is the regen.ecocredit.v1alpha1 Query service.
 service Query {
+  // Classes queries for all credit classes with pagination.
+  rpc Classes(QueryClassesRequest) returns (QueryClassesResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/classes";
+  }
+
   // ClassInfo queries for information on a credit class.
   rpc ClassInfo(QueryClassInfoRequest) returns (QueryClassInfoResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/class_info/{class_id}";
+        "/regen/ecocredit/v1alpha1/classes/{class_id}";
+  }
+
+  // Batches queries for all batches in the given credit class with pagination.
+  rpc Batches(QueryBatchesRequest) returns (QueryBatchesResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/batches";
   }
 
   // BatchInfo queries for information on a credit batch.
   rpc BatchInfo(QueryBatchInfoRequest) returns (QueryBatchInfoResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/batch_info/{batch_denom}";
+        "/regen/ecocredit/v1alpha1/batches/{batch_denom}";
   }
 
   // Balance queries the balance (both tradable and retired) of a given credit
   // batch for a given account.
   rpc Balance(QueryBalanceRequest) returns (QueryBalanceResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/batches/{batch_denom}/balances/{account}";
+        "/regen/ecocredit/v1alpha1/batches/{batch_denom}/balance/{account}";
   }
 
   // Supply queries the tradable and retired supply of a credit batch.
   rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/batch_info/{batch_denom}/supply";
+        "/regen/ecocredit/v1alpha1/batches/{batch_denom}/supply";
   }
 
-  // CreditTypes returns the list of allowed types that credit classes can have. 
+  // CreditTypes returns the list of allowed types that credit classes can have.
   // See Types/CreditType for more details.
   rpc CreditTypes(QueryCreditTypesRequest) returns (QueryCreditTypesResponse) {
     option (google.api.http).get =
         "/regen/ecocredit/v1alpha1/credit-types";
   }
+}
+
+// QueryClassesRequest is the Query/Classes request type.
+message QueryClassesRequest {
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryClassesResponse is the Query/Classes response type.
+message QueryClassesResponse {
+  // classes are the fetched credit classes.
+  repeated ClassInfo classes = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // QueryClassInfoRequest is the Query/ClassInfo request type.
@@ -54,6 +82,24 @@ message QueryClassInfoResponse {
 
   // info is the ClassInfo for the credit class.
   ClassInfo info = 1;
+}
+
+// QueryBatchesRequest is the Query/Batches request type.
+message QueryBatchesRequest {
+  // class_id is the unique ID of the credit class to query.
+  string class_id = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryBatchesResponse is the Query/Batches response type.
+message QueryBatchesResponse {
+  // batches are the fetched credit batches within the class.
+  repeated BatchInfo batches = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // QueryBatchInfoRequest is the Query/BatchInfo request type.
