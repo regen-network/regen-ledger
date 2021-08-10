@@ -23,8 +23,12 @@
     - [QueryBalanceResponse](#regen.ecocredit.v1alpha1.QueryBalanceResponse)
     - [QueryBatchInfoRequest](#regen.ecocredit.v1alpha1.QueryBatchInfoRequest)
     - [QueryBatchInfoResponse](#regen.ecocredit.v1alpha1.QueryBatchInfoResponse)
+    - [QueryBatchesRequest](#regen.ecocredit.v1alpha1.QueryBatchesRequest)
+    - [QueryBatchesResponse](#regen.ecocredit.v1alpha1.QueryBatchesResponse)
     - [QueryClassInfoRequest](#regen.ecocredit.v1alpha1.QueryClassInfoRequest)
     - [QueryClassInfoResponse](#regen.ecocredit.v1alpha1.QueryClassInfoResponse)
+    - [QueryClassesRequest](#regen.ecocredit.v1alpha1.QueryClassesRequest)
+    - [QueryClassesResponse](#regen.ecocredit.v1alpha1.QueryClassesResponse)
     - [QueryCreditTypesRequest](#regen.ecocredit.v1alpha1.QueryCreditTypesRequest)
     - [QueryCreditTypesResponse](#regen.ecocredit.v1alpha1.QueryCreditTypesResponse)
     - [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest)
@@ -346,6 +350,38 @@ QueryBatchInfoResponse is the Query/BatchInfo response type.
 
 
 
+<a name="regen.ecocredit.v1alpha1.QueryBatchesRequest"></a>
+
+### QueryBatchesRequest
+QueryBatchesRequest is the Query/Batches request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| class_id | [string](#string) |  | class_id is the unique ID of the credit class to query. |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QueryBatchesResponse"></a>
+
+### QueryBatchesResponse
+QueryBatchesResponse is the Query/Batches response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| batches | [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo) | repeated | batches are the fetched credit batches within the class. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha1.QueryClassInfoRequest"></a>
 
 ### QueryClassInfoRequest
@@ -370,6 +406,37 @@ QueryClassInfoResponse is the Query/ClassInfo request type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | info | [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo) |  | info is the ClassInfo for the credit class. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QueryClassesRequest"></a>
+
+### QueryClassesRequest
+QueryClassesRequest is the Query/Classes request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QueryClassesResponse"></a>
+
+### QueryClassesResponse
+QueryClassesResponse is the Query/Classes response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| classes | [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo) | repeated | classes are the fetched credit classes. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
 
 
@@ -445,7 +512,9 @@ Msg is the regen.ecocredit.v1alpha1 Query service.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
+| Classes | [QueryClassesRequest](#regen.ecocredit.v1alpha1.QueryClassesRequest) | [QueryClassesResponse](#regen.ecocredit.v1alpha1.QueryClassesResponse) | Classes queries for all credit classes with pagination. |
 | ClassInfo | [QueryClassInfoRequest](#regen.ecocredit.v1alpha1.QueryClassInfoRequest) | [QueryClassInfoResponse](#regen.ecocredit.v1alpha1.QueryClassInfoResponse) | ClassInfo queries for information on a credit class. |
+| Batches | [QueryBatchesRequest](#regen.ecocredit.v1alpha1.QueryBatchesRequest) | [QueryBatchesResponse](#regen.ecocredit.v1alpha1.QueryBatchesResponse) | Batches queries for all batches in the given credit class with pagination. |
 | BatchInfo | [QueryBatchInfoRequest](#regen.ecocredit.v1alpha1.QueryBatchInfoRequest) | [QueryBatchInfoResponse](#regen.ecocredit.v1alpha1.QueryBatchInfoResponse) | BatchInfo queries for information on a credit batch. |
 | Balance | [QueryBalanceRequest](#regen.ecocredit.v1alpha1.QueryBalanceRequest) | [QueryBalanceResponse](#regen.ecocredit.v1alpha1.QueryBalanceResponse) | Balance queries the balance (both tradable and retired) of a given credit batch for a given account. |
 | Supply | [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest) | [QuerySupplyResponse](#regen.ecocredit.v1alpha1.QuerySupplyResponse) | Supply queries the tradable and retired supply of a credit batch. |
