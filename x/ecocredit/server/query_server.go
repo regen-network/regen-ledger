@@ -22,13 +22,8 @@ func (s serverImpl) Classes(goCtx context.Context, request *ecocredit.QueryClass
 		return nil, err
 	}
 
-	classIDs := make([]string, len(classes))
-	for i, class := range classes {
-		classIDs[i] = class.ClassId
-	}
-
 	return &ecocredit.QueryClassesResponse{
-		Classes:    classIDs,
+		Classes:    classes,
 		Pagination: pageResp,
 	}, nil
 }
@@ -65,13 +60,8 @@ func (s serverImpl) Batches(goCtx context.Context, request *ecocredit.QueryBatch
 		return nil, err
 	}
 
-	batchDenoms := make([]string, len(batches))
-	for i, batch := range batches {
-		batchDenoms[i] = batch.BatchDenom
-	}
-
 	return &ecocredit.QueryBatchesResponse{
-		Batches:    batchDenoms,
+		Batches:    batches,
 		Pagination: pageResp,
 	}, nil
 }

@@ -69,7 +69,13 @@ func (s *IntegrationTestSuite) TestQueryClasses() {
 
 				var res ecocredit.QueryClassesResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(tc.expectedClasses, res.Classes)
+
+				classIDs := make([]string, len(res.Classes))
+				for i, class := range res.Classes {
+					classIDs[i] = class.ClassId
+				}
+
+				s.Require().Equal(tc.expectedClasses, classIDs)
 			}
 		})
 	}
@@ -217,7 +223,13 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 
 				var res ecocredit.QueryBatchesResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(tc.expectedBatchDenoms, res.Batches)
+
+				batchDenoms := make([]string, len(res.Batches))
+				for i, batch := range res.Batches {
+					batchDenoms[i] = batch.BatchDenom
+				}
+
+				s.Require().Equal(tc.expectedBatchDenoms, batchDenoms)
 			}
 		})
 	}

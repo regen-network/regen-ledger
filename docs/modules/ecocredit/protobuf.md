@@ -374,7 +374,7 @@ QueryBatchesResponse is the Query/Batches response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| batches | [string](#string) | repeated | batches are the denominations of existing credit batches within the class. |
+| batches | [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo) | repeated | batches are the fetched credit batches within the class. |
 | pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
 
@@ -435,7 +435,7 @@ QueryClassesResponse is the Query/Classes response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| classes | [string](#string) | repeated | classes are the IDs of existing credit classes. |
+| classes | [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo) | repeated | classes are the fetched credit classes. |
 | pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
 

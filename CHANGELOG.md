@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * use dec wrapper for decimal operations (#435)
 * add credit types to credit class (#424)
 * add params for an allowlist of permissioned credit designers (#425)
+* add queries to list classes and batches with a class (#451)
 
 ## [1.0.0] - 2021-04-13
 

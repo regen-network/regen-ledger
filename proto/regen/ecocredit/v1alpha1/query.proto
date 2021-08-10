@@ -63,8 +63,8 @@ message QueryClassesRequest {
 
 // QueryClassesResponse is the Query/Classes response type.
 message QueryClassesResponse {
-  // classes are the IDs of existing credit classes.
-  repeated string classes = 1;
+  // classes are the fetched credit classes.
+  repeated ClassInfo classes = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
@@ -95,8 +95,8 @@ message QueryBatchesRequest {
 
 // QueryBatchesResponse is the Query/Batches response type.
 message QueryBatchesResponse {
-  // batches are the denominations of existing credit batches within the class.
-  repeated string batches = 1;
+  // batches are the fetched credit batches within the class.
+  repeated BatchInfo batches = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
