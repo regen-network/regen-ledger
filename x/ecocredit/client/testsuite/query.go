@@ -28,15 +28,10 @@ func (s *IntegrationTestSuite) TestQueryClasses() {
 			expectedErrMsg: "Error: accepts 0 arg(s), received 1",
 		},
 		{
-			name:      "no pagination flags",
-			args:      []string{},
-			expectErr: false,
-			expectedClasses: []string{
-				"18AV53K",
-				"1Lb4WV1",
-				"1QaUNEa",
-				"1UnSkkA",
-			},
+			name:            "no pagination flags",
+			args:            []string{},
+			expectErr:       false,
+			expectedClasses: []string{"C01", "C02", "C03", "C04"},
 		},
 		{
 			name: "limit 2",
@@ -44,7 +39,7 @@ func (s *IntegrationTestSuite) TestQueryClasses() {
 				fmt.Sprintf("--%s=2", flags.FlagLimit),
 			},
 			expectErr:       false,
-			expectedClasses: []string{"18AV53K", "1Lb4WV1"},
+			expectedClasses: []string{"C01", "C02"},
 		},
 		{
 			name: "limit 2, offset 2",
@@ -53,7 +48,7 @@ func (s *IntegrationTestSuite) TestQueryClasses() {
 				fmt.Sprintf("--%s=2", flags.FlagOffset),
 			},
 			expectErr:       false,
-			expectedClasses: []string{"1QaUNEa", "1UnSkkA"},
+			expectedClasses: []string{"C03", "C04"},
 		},
 	}
 
@@ -121,7 +116,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 				Issuers:    s.classInfo.Issuers,
 				Metadata:   s.classInfo.Metadata,
 				CreditType: s.classInfo.CreditType,
-				NumBatches: 1,
+				NumBatches: 4,
 			},
 		},
 	}
@@ -176,44 +171,44 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 		},
 		{
 			name:                "existing class no batches",
-			args:                []string{"1Lb4WV1"},
+			args:                []string{"C02"},
 			expectErr:           false,
 			expectedBatchDenoms: []string{},
 		},
 		{
 			name:      "no pagination flags",
-			args:      []string{"18AV53K"},
+			args:      []string{"C01"},
 			expectErr: false,
 			expectedBatchDenoms: []string{
-				"18AV53K/1b1vrHF",
-				"18AV53K/1kJ2yvP",
-				"18AV53K/1sZtdUL",
-				"18AV53K/1uXqqzN",
+				"C01-20210101-20210201-001",
+				"C01-20210101-20210201-002",
+				"C01-20210101-20210201-003",
+				"C01-20210101-20210201-004",
 			},
 		},
 		{
 			name: "limit 2",
 			args: []string{
-				"18AV53K",
+				"C01",
 				fmt.Sprintf("--%s=2", flags.FlagLimit),
 			},
 			expectErr: false,
 			expectedBatchDenoms: []string{
-				"18AV53K/1b1vrHF",
-				"18AV53K/1kJ2yvP",
+				"C01-20210101-20210201-001",
+				"C01-20210101-20210201-002",
 			},
 		},
 		{
 			name: "limit 2, offset 2",
 			args: []string{
-				"18AV53K",
+				"C01",
 				fmt.Sprintf("--%s=2", flags.FlagLimit),
 				fmt.Sprintf("--%s=2", flags.FlagOffset),
 			},
 			expectErr: false,
 			expectedBatchDenoms: []string{
-				"18AV53K/1sZtdUL",
-				"18AV53K/1uXqqzN",
+				"C01-20210101-20210201-003",
+				"C01-20210101-20210201-004",
 			},
 		},
 	}
