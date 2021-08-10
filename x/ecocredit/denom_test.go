@@ -10,7 +10,9 @@ import (
 
 func TestDenom(t *testing.T) {
 	t.Run("TestValidateFormatClassID", rapid.MakeCheck(testValidateFormatClassID))
+	t.Run("TestInvalidClassIDsError", rapid.MakeCheck(testInvalidClassIDsError))
 	t.Run("TestValidateFormatDenom", rapid.MakeCheck(testValidateFormatDenom))
+	t.Run("TestInvalidBatchDenomsError", rapid.MakeCheck(testInvalidBatchDenomsError))
 }
 
 // Property: ValidateClassID(FormatClassID(a)) == nil
@@ -23,6 +25,11 @@ func testValidateFormatClassID(t *rapid.T) {
 
 	err = ValidateClassID(classId)
 	require.NoError(t, err)
+}
+
+func testInvalidClassIDsError(t *rapid.T) {
+	classID := genInvalidClassID.Draw(t, "classID").(string)
+	require.Error(t, ValidateClassID(classID))
 }
 
 // Property: ValidateDenom(FormatDenom(a, b, c, d)) == nil
@@ -44,6 +51,11 @@ func testValidateFormatDenom(t *rapid.T) {
 	require.NoError(t, err)
 }
 
+func testInvalidBatchDenomsError(t *rapid.T) {
+	batchDenom := genInvalidBatchDenom.Draw(t, "batchDenom").(string)
+	require.Error(t, ValidateDenom(batchDenom))
+}
+
 // genCreditType generates an empty credit type with a random valid abbreviation
 var genCreditType = rapid.Custom(func(t *rapid.T) *CreditType {
 	abbr := rapid.StringMatching(`[A-Z]{1,3}`).Draw(t, "abbr").(string)
@@ -60,3 +72,17 @@ var genTime = rapid.Custom(func(t *rapid.T) *time.Time {
 	time := time.Unix(secs, nanos)
 	return &time
 })
+
+// genInvalidClassID generates strings that don't conform to the ClassID format
+var genInvalidClassID = rapid.OneOf(
+	rapid.StringMatching(`[a-zA-Z]*`),
+	rapid.StringMatching(`[0-9]*`),
+	rapid.StringMatching(`[A-Z]{4,}[0-9]*`),
+)
+
+// genInvalidBatchDenom generates strings that don't conform to the BatchDenom
+// format
+var genInvalidBatchDenom = rapid.OneOf(
+	genInvalidClassID,
+	rapid.StringMatching(`[A-Z]{1,3}[0-9]*-[a-zA-Z\-]*`),
+)
