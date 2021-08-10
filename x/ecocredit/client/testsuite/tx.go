@@ -33,7 +33,7 @@ const (
 	validCreditType = "carbon"
 	validMetadata   = "AQ=="
 	classId         = "18AV53K"
-	batchId         = "1Lb4WV1"
+	batchId         = "1b1vrHF"
 )
 
 var validMetadataBytes = []byte{0x1}
@@ -81,25 +81,28 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	}
 
-	// Create a credit class
-	out, err := cli.ExecTestCLICmd(val.ClientCtx, client.TxCreateClassCmd(),
-		append(
-			[]string{
-				val.Address.String(),
-				val.Address.String(),
-				validCreditType,
-				validMetadata,
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
-			},
-			commonFlags...,
-		),
-	)
+	// Create a few credit classes
+	for i := 0; i < 4; i++ {
+		out, err := cli.ExecTestCLICmd(val.ClientCtx, client.TxCreateClassCmd(),
+			append(
+				[]string{
+					val.Address.String(),
+					val.Address.String(),
+					validCreditType,
+					validMetadata,
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				},
+				commonFlags...,
+			),
+		)
 
-	s.Require().NoError(err, out.String())
-	var txResp = sdk.TxResponse{}
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResp), out.String())
-	s.Require().Equal(uint32(0), txResp.Code, out.String())
+		s.Require().NoError(err, out.String())
+		var txResp = sdk.TxResponse{}
+		s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResp), out.String())
+		s.Require().Equal(uint32(0), txResp.Code, out.String())
+	}
 
+	// Store the first one in the test suite
 	s.classInfo = &ecocredit.ClassInfo{
 		ClassId:    classId,
 		Designer:   val.Address.String(),
@@ -132,22 +135,25 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// Write MsgCreateBatch to a temporary file
 	batchFile := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
-	// Create a credit batch
-	out, err = cli.ExecTestCLICmd(val.ClientCtx, client.TxCreateBatchCmd(),
-		append(
-			[]string{
-				batchFile,
-				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
-			},
-			commonFlags...,
-		),
-	)
+	// Create a few credit batches
+	for i := 0; i < 4; i++ {
+		out, err := cli.ExecTestCLICmd(val.ClientCtx, client.TxCreateBatchCmd(),
+			append(
+				[]string{
+					batchFile,
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				},
+				commonFlags...,
+			),
+		)
 
-	s.Require().NoError(err, out.String())
-	txResp = sdk.TxResponse{}
-	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResp), out.String())
-	s.Require().Equal(uint32(0), txResp.Code, out.String())
+		s.Require().NoError(err, out.String())
+		txResp := sdk.TxResponse{}
+		s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResp), out.String())
+		s.Require().Equal(uint32(0), txResp.Code, out.String())
+	}
 
+	// Store the first one in the test suite
 	s.batchInfo = &ecocredit.BatchInfo{
 		ClassId:         classId,
 		BatchDenom:      fmt.Sprintf("%s/%s", classId, batchId),
