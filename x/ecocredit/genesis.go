@@ -14,10 +14,14 @@ func (s *GenesisState) Validate() error {
 	supplies := make(map[string]math.Dec)
 
 	for _, batch := range s.BatchInfo {
+		if _, exists := decimalPlaces[batch.BatchDenom]; exists {
+			continue
+		}
+
 		for _, class := range s.ClassInfo {
 			if batch.ClassId == class.ClassId {
 				decimalPlaces[batch.BatchDenom] = class.CreditType.GetPrecision()
-				continue
+				break
 			}
 		}
 	}
