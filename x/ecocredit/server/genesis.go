@@ -51,9 +51,14 @@ func validateSupplies(store sdk.KVStore, supplies []*ecocredit.Supply) error {
 	var denomT batchDenomT
 	for _, supply := range supplies {
 		denomT = batchDenomT(supply.BatchDenom)
-		tradableSupply, err := math.NewNonNegativeDecFromString(supply.TradableSupply)
-		if err != nil {
-			return err
+		tradableSupply := math.NewDecFromInt64(0)
+		retiredSupply := math.NewDecFromInt64(0)
+		var err error
+		if supply.TradableSupply != "" {
+			tradableSupply, err = math.NewNonNegativeDecFromString(supply.TradableSupply)
+			if err != nil {
+				return err
+			}
 		}
 
 		tradable, err := getDecimal(store, TradableSupplyKey(denomT))
@@ -65,9 +70,11 @@ func validateSupplies(store sdk.KVStore, supplies []*ecocredit.Supply) error {
 			return sdkerrors.ErrInvalidCoins.Wrapf("tradable supply is incorrect for %s credit batch, expected %v, got %v", supply.BatchDenom, tradable, tradableSupply)
 		}
 
-		retiredSupply, err := math.NewNonNegativeDecFromString(supply.RetiredSupply)
-		if err != nil {
-			return err
+		if supply.RetiredSupply != "" {
+			retiredSupply, err = math.NewNonNegativeDecFromString(supply.RetiredSupply)
+			if err != nil {
+				return err
+			}
 		}
 
 		retired, err := getDecimal(store, RetiredSupplyKey(denomT))
@@ -94,8 +101,6 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 
 		// set tradable balance and update supply
 		if balance.TradableBalance != "" {
-			fmt.Println("Tradable balance ====", balance.GetTradableBalance())
-			fmt.Println("Tradable balance ====", balance.GetRetiredBalance())
 			d, err := math.NewNonNegativeDecFromString(balance.TradableBalance)
 			if err != nil {
 				return err

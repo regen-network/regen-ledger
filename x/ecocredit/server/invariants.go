@@ -3,7 +3,6 @@ package server
 import (
 	"fmt"
 
-	"github.com/cockroachdb/apd/v2"
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/types/math"
@@ -85,15 +84,16 @@ func retiredSupplyInvariant(store types.KVStore) (string, bool) {
 		msg    string
 		broken bool
 	)
-	calRetiredSupplies := make(map[string]*apd.Decimal)
+	calRetiredSupplies := make(map[string]math.Dec)
 	iterateBalances(store, RetiredBalancePrefix, func(_, denom, b string) bool {
-		balance, err := math.ParseNonNegativeDecimal(b)
+		balance, err := math.NewNonNegativeDecFromString(b)
 		if err != nil {
 			broken = true
 			msg += fmt.Sprintf("error while parsing retired balance %v", err)
 		}
 		if supply, ok := calRetiredSupplies[denom]; ok {
-			if err := math.Add(supply, balance, supply); err != nil {
+			supply, err := math.SafeAddBalance(balance, supply)
+			if err != nil {
 				broken = true
 				msg += fmt.Sprintf("error adding credit batch retired supply %v", err)
 			}
@@ -105,7 +105,7 @@ func retiredSupplyInvariant(store types.KVStore) (string, bool) {
 	})
 
 	if err := iterateSupplies(store, RetiredSupplyPrefix, func(denom, s string) (bool, error) {
-		supply, err := math.ParseNonNegativeDecimal(s)
+		supply, err := math.NewNonNegativeDecFromString(s)
 		if err != nil {
 			broken = true
 			msg += fmt.Sprintf("error while parsing reired supply for denom: %s", denom)
