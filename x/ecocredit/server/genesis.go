@@ -107,7 +107,6 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 			}
 			key := TradableBalanceKey(addr, denomT)
 			setDecimal(store, key, d)
-			fmt.Println(string(store.Get(key)))
 
 			key = TradableSupplyKey(denomT)
 			getAddAndSetDecimal(store, key, d)

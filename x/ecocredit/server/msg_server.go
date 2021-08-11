@@ -91,7 +91,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 
 	store := ctx.KVStore(s.storeKey)
 
-	for _, issuance := range req.Issuance { 
+	for _, issuance := range req.Issuance {
 		var err error
 		tradable, retired := math.NewDecFromInt64(0), math.NewDecFromInt64(0)
 
