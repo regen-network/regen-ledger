@@ -1,30 +1,47 @@
-# Inter-Blockchain Connections (IBC)
+# IBC Transfers
 
-## Transferring tokens between the REGEN and other chains
+The [Inter-Blockchain Communication (IBC)](https://ibcprotocol.org/) protocol is enabled on Regen Mainnet meaning token holders can transfer tokens between Regen Mainnet and other IBC enabled blockchains.
 
-The IBC protocol is active on Regen Ledger and token holders are able to transfer tokens from one IBC enabled chain to another.  This guide provides the configurations for Keplr wallet and includes the command-line interface (CLI) commands that are needed to accomplish and IBC transfer. 
+This document provides instructions for performing an IBC token transfer using either [Keplr Wallet](https://wallet.keplr.app/) or the [command-line interface (CLI)](/regen-ledger/interfaces.html#command-line-interface). 
 
-## Keplr Wallet
-In order to perform IBC transactions using the Keplr wallet and transfer tokens from the Regen to another chain such as Osmosis, open the keplr extension, click transfer under the IBC Transfer section and simply set the channel-id before clicking send.
+## Available Channels
 
-## Using the command-line interface
-The command for transferring REGEN to OSMOSIS (Regen-1 -> Osmosis-1) via CLI and vice versa is listed including the general commands and examples
+IBC transfers are only possible if there is a relayer running that establishes a connection between two blockchains using IBC channels.
 
-**Transferring tokens from the Regen Ledger to Osmosis chain:**
+The following IBC channels are currently available for transfers to and from Regen Mainnet:
 
-**General command for ibc-transfer**
-```sh
-$ regen tx ibc-transfer transfer <src_port_id> <src_channel_id> <reciver_address> <amount>
+- Osmosis to Regen (`channel-8`)
+- Regen to Osmosis (`channel-1`)
+
+## Using Keplr Wallet
+
+IBC transfers are possible using [Keplr Wallet](https://wallet.keplr.app/). In order transfer tokens between two IBC enabled blockchains, follow these steps:
+
+1. Open the Keplr Wallet extension.
+2. In the header of the extension, select the blockchain that you want to transfer tokens from (for example, "Osmosis" or "Regen").
+3. Click the "Transfer" button under the "IBC Transfer" section. Note that you must have tokens available in order to proceed to the next step.
+4. Select the "Destination Chain". If this is your first time using "IBC Transfer" or your first time sending tokens to a specific chain, you'll need to select the "New IBC Transfer Channel" option, then select the "Destination Chain", provide the "Channel ID" (see [available chains](#available-channels) for the "Channel ID"), and click the "Save" button.
+5. Finally, add the recipient and a memo (optional) and then click the send button.
+
+## Using The Command-Line Interface
+
+IBC transfers are also possible using the [command-line interface (CLI)](/regen-ledger/interfaces.html#command-line-interface). For instructions on how to install the `regen` binary, check out [Quick Start](/getting-started/).
+
+The following command can be used to perform an IBC transfer:
 ```
-Where,
-- `src_port_id` refers to the `port_id` used while establishing the ibc connection between source and destination chains. Here for `REGEN<>OSMOSIS`, `port_id` is `transfer`
-- `src_channel_id` refers to the `channel_id` used while establishing the ibc connection between source and destination chains. Here for `REGEN<>OSMOSIS`, `src_channel_id` is `channel-1`
-
-**Example:**
-```sh
-regen tx ibc-transfer transfer transfer channel-1 <osmosis_receiver_address> 1000000uregen --from mykey --chain-id regen-1 --node http://public-rpc.regen.vitwit.com:26657 --fees 5000uregen
+regen tx ibc-transfer transfer <src_port_id> <src_channel_id> <receiver_address> <amount>
 ```
 
-#### Troubleshooting
-IBC is a secure and battle tested protocol on multiple testnets in order to be production ready.  However, there may be a few cases where your IBC transfers might get stuck and take time to process. If this happens, the IBC protocol ensures that your funds are safe and that all of your pending IBC transfers will eventually be picked up by the relayers.  In case they are not picked up they will be refunded after the packet timeout.
+- `src_port_id` refers to the `port_id` used while establishing the IBC connection between source and destination chains.
+- `src_channel_id` refers to the `channel_id` used while establishing the IBC connection between source and destination chains.
 
+The following example performs a transfer from Regen (`regen-1`) to Osmosis (`osmosis-1`):
+```
+regen tx ibc-transfer transfer transfer channel-1 <receiver_address> 1000000uregen --from mykey --chain-id regen-1 --node http://public-rpc.regen.vitwit.com:26657 --fees 5000uregen
+```
+- In this example, `src_port_id` is `transfer`.
+- In this example, `src_channel_id` is `channel-1`.
+
+## Troubleshooting
+
+IBC is a secure and battle tested protocol.  However, there may be a few cases where your IBC transfers might get stuck and take time to process. If this happens, the IBC protocol ensures that your funds are safe and that all of your pending IBC transfers will eventually be picked up by the relayers.  In the case that they are not picked up, they will be refunded after the packet timeout.
