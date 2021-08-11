@@ -121,6 +121,7 @@ module.exports = {
             '/tutorials/',
             // '/tutorials/data-cli',
             // '/tutorials/data-grpc',
+            '/tutorials/ibc-transfers'
           ]
         },
       ],
