@@ -26,22 +26,6 @@ message GenesisState {
 
   // supplies is the list of credit batch tradable/retired supply.
   repeated Supply supplies = 6;
-
-  // precisions is the list of decimal precision of a credit batch.
-  repeated Precision precisions = 7;
-}
-
-// Precision represents a credit batch precision with a batch_denom and
-// max_decimal_places.
-message Precision {
-  // batch_denom is the unique ID of the credit batch.
-  string batch_denom = 1;
-
-  // max_decimal_places is the new maximum number of decimal places that can be
-  // used to represent some quantity of credit units. It is an experimental
-  // feature to concretely explore an idea proposed in
-  // https://github.com/cosmos/cosmos-sdk/issues/7113.
-  uint32 max_decimal_places = 2;
 }
 
 // Balance represents tradable or retired units of a credit batch with an
@@ -53,21 +37,11 @@ message Balance {
   // batch_denom is the unique ID of the credit batch.
   string batch_denom = 2;
 
-  // balance is the tradable or retired balance of the credit batch.
-  string balance = 3;
+  // tradable_balance is the tradable balance of the credit batch.
+  string tradable_balance = 3;
 
-  // type is the credit batch balance type.
-  Type type = 4;
-
-  // Type is the credit balance type.
-  enum Type {
-    // TYPE_UNSPECIFIED is the unknown credit balance type.
-    TYPE_UNSPECIFIED = 0;
-    // TYPE_TRADABLE is the tradable balance type.
-    TYPE_TRADABLE = 1;
-    // TYPE_RETIRED is the retired balance type.
-    TYPE_RETIRED = 2;
-  }
+  // retired_balance is the retired balance of the credit batch.
+  string retired_balance = 4;
 }
 
 // Supply represents a tradable or retired supply of a credit batch.
@@ -75,6 +49,9 @@ message Supply {
   // batch_denom is the unique ID of the credit batch.
   string batch_denom = 1;
 
-  // supply is the tradable or retired supply of the credit batch.
-  string supply = 2;
+  // tradable_supply is the tradable supply of the credit batch.
+  string tradable_supply = 2;
+
+  // retired_supply is the retired supply of the credit batch.
+  string retired_supply = 3;
 }

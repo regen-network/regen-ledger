@@ -645,7 +645,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistEnabled, tc.allowlistEnabled)
 
 			// fund the designer account
-			s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, tc.designerAcc, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+			s.Require().NoError(s.fundAccount(tc.designerAcc, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
 
 			createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
 				Designer:   tc.designerAcc.String(),
@@ -735,7 +735,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			require.NoError(err)
 
 			// fund the designer account so tx will go through
-			s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+			s.Require().NoError(s.fundAccount(designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
 			res, err := s.msgClient.CreateClass(s.ctx, &tc.msg)
 			if tc.wantErr {
 				require.Error(err)

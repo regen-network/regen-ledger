@@ -28,16 +28,17 @@ func tradableSupplyInvariant(store types.KVStore) (string, bool) {
 		msg    string
 		broken bool
 	)
-	calTradableSupplies := make(map[string]*apd.Decimal)
+	calTradableSupplies := make(map[string]math.Dec)
 
 	iterateBalances(store, TradableBalancePrefix, func(_, denom, b string) bool {
-		balance, err := math.ParseNonNegativeDecimal(b)
+		balance, err := math.NewNonNegativeDecFromString(b)
 		if err != nil {
 			broken = true
 			msg += fmt.Sprintf("error while parsing tradable balance %v", err)
 		}
 		if supply, ok := calTradableSupplies[denom]; ok {
-			if err := math.Add(supply, balance, supply); err != nil {
+			supply, err := math.SafeAddBalance(supply, balance)
+			if err != nil {
 				broken = true
 				msg += fmt.Sprintf("error adding credit batch tradable supply %v", err)
 			}
@@ -50,7 +51,7 @@ func tradableSupplyInvariant(store types.KVStore) (string, bool) {
 	})
 
 	if err := iterateSupplies(store, TradableSupplyPrefix, func(denom string, s string) (bool, error) {
-		supply, err := math.ParseNonNegativeDecimal(s)
+		supply, err := math.NewNonNegativeDecFromString(s)
 		if err != nil {
 			broken = true
 			msg += fmt.Sprintf("error while parsing tradable supply for denom: %s", denom)

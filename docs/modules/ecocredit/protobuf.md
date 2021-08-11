@@ -20,10 +20,7 @@
 - [regen/ecocredit/v1alpha1/genesis.proto](#regen/ecocredit/v1alpha1/genesis.proto)
     - [Balance](#regen.ecocredit.v1alpha1.Balance)
     - [GenesisState](#regen.ecocredit.v1alpha1.GenesisState)
-    - [Precision](#regen.ecocredit.v1alpha1.Precision)
     - [Supply](#regen.ecocredit.v1alpha1.Supply)
-  
-    - [Balance.Type](#regen.ecocredit.v1alpha1.Balance.Type)
   
 - [regen/ecocredit/v1alpha1/query.proto](#regen/ecocredit/v1alpha1/query.proto)
     - [QueryBalanceRequest](#regen.ecocredit.v1alpha1.QueryBalanceRequest)
@@ -287,8 +284,8 @@ account address, batch_denom, and balance.
 | ----- | ---- | ----- | ----------- |
 | address | [string](#string) |  | address is the account address of the account holding credits. |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
-| balance | [string](#string) |  | balance is the tradable or retired balance of the credit batch. |
-| type | [Balance.Type](#regen.ecocredit.v1alpha1.Balance.Type) |  | type is the credit batch balance type. |
+| tradable_balance | [string](#string) |  | tradable_balance is the tradable balance of the credit batch. |
+| retired_balance | [string](#string) |  | retired_balance is the retired balance of the credit batch. |
 
 
 
@@ -309,24 +306,6 @@ GenesisState defines ecocredit module's genesis state.
 | id_seq | [uint64](#uint64) |  | id_seq is used to get next class/batch id. |
 | balances | [Balance](#regen.ecocredit.v1alpha1.Balance) | repeated | balances is the list of credit batch tradable/retired units. |
 | supplies | [Supply](#regen.ecocredit.v1alpha1.Supply) | repeated | supplies is the list of credit batch tradable/retired supply. |
-| precisions | [Precision](#regen.ecocredit.v1alpha1.Precision) | repeated | precisions is the list of decimal precision of a credit batch. |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha1.Precision"></a>
-
-### Precision
-Precision represents a credit batch precision with a batch_denom and
-max_decimal_places.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
-| max_decimal_places | [uint32](#uint32) |  | max_decimal_places is the new maximum number of decimal places that can be used to represent some quantity of credit units. It is an experimental feature to concretely explore an idea proposed in https://github.com/cosmos/cosmos-sdk/issues/7113. |
 
 
 
@@ -342,26 +321,14 @@ Supply represents a tradable or retired supply of a credit batch.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
-| supply | [string](#string) |  | supply is the tradable or retired supply of the credit batch. |
+| tradable_supply | [string](#string) |  | tradable_supply is the tradable supply of the credit batch. |
+| retired_supply | [string](#string) |  | retired_supply is the retired supply of the credit batch. |
 
 
 
 
 
  <!-- end messages -->
-
-
-<a name="regen.ecocredit.v1alpha1.Balance.Type"></a>
-
-### Balance.Type
-Type is the credit balance type.
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| TYPE_UNSPECIFIED | 0 | TYPE_UNSPECIFIED is the unknown credit balance type. |
-| TYPE_TRADABLE | 1 | TYPE_TRADABLE is the tradable balance type. |
-| TYPE_RETIRED | 2 | TYPE_RETIRED is the retired balance type. |
-
 
  <!-- end enums -->
 

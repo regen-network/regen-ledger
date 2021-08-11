@@ -1,11 +1,9 @@
 package server
 
 import (
-	"bytes"
-	"encoding/binary"
 	"encoding/json"
+	"fmt"
 
-	"github.com/cockroachdb/apd/v2"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -45,40 +43,40 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 		return nil, err
 	}
 
-	for _, precision := range genesisState.Precisions {
-		key := MaxDecimalPlacesKey(batchDenomT(precision.BatchDenom))
-		setUInt32(store, key, precision.MaxDecimalPlaces)
-	}
-
 	return []abci.ValidatorUpdate{}, nil
 }
 
 // validateSupplies returns an error if credit batch genesis supply does not equal to calculated supply.
 func validateSupplies(store sdk.KVStore, supplies []*ecocredit.Supply) error {
 	var denomT batchDenomT
-	actual := apd.New(0, 0)
 	for _, supply := range supplies {
-		genesisSupply, err := math.ParseNonNegativeDecimal(supply.Supply)
+		denomT = batchDenomT(supply.BatchDenom)
+		tradableSupply, err := math.NewNonNegativeDecFromString(supply.TradableSupply)
 		if err != nil {
 			return err
 		}
 
-		denomT = batchDenomT(supply.BatchDenom)
 		tradable, err := getDecimal(store, TradableSupplyKey(denomT))
 		if err != nil {
 			return err
 		}
+
+		if tradableSupply.Cmp(tradable) != 0 {
+			return sdkerrors.ErrInvalidCoins.Wrapf("tradable supply is incorrect for %s credit batch, expected %v, got %v", supply.BatchDenom, tradable, tradableSupply)
+		}
+
+		retiredSupply, err := math.NewNonNegativeDecFromString(supply.RetiredSupply)
+		if err != nil {
+			return err
+		}
+
 		retired, err := getDecimal(store, RetiredSupplyKey(denomT))
 		if err != nil {
 			return err
 		}
 
-		if err := math.Add(actual, tradable, retired); err != nil {
-			return err
-		}
-
-		if actual.Cmp(genesisSupply) != 0 {
-			return sdkerrors.ErrInvalidCoins.Wrapf("supply is incorrect for %s credit batch, expected %v, got %v", supply.BatchDenom, actual, genesisSupply)
+		if retiredSupply.Cmp(retired) != 0 {
+			return sdkerrors.ErrInvalidCoins.Wrapf("retired supply is incorrect for %s credit batch, expected %v, got %v", supply.BatchDenom, retired, retiredSupply)
 		}
 	}
 
@@ -92,23 +90,36 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 		if err != nil {
 			return err
 		}
-		d, err := math.ParseNonNegativeDecimal(balance.Balance)
-		if err != nil {
-			return err
-		}
 		denomT := batchDenomT(balance.BatchDenom)
-		balanceKey, err := getBalanceKey(balance.Type, addr, denomT)
-		if err != nil {
-			return err
-		}
-		setDecimal(store, balanceKey, d)
 
-		supplyKey, err := getSupplyKey(balance.Type, denomT)
-		if err != nil {
-			return err
+		// set tradable balance and update supply
+		if balance.TradableBalance != "" {
+			fmt.Println("Tradable balance ====", balance.GetTradableBalance())
+			fmt.Println("Tradable balance ====", balance.GetRetiredBalance())
+			d, err := math.NewNonNegativeDecFromString(balance.TradableBalance)
+			if err != nil {
+				return err
+			}
+			key := TradableBalanceKey(addr, denomT)
+			setDecimal(store, key, d)
+			fmt.Println(string(store.Get(key)))
+
+			key = TradableSupplyKey(denomT)
+			getAddAndSetDecimal(store, key, d)
 		}
 
-		getAddAndSetDecimal(store, supplyKey, d)
+		// set retired balance and update supply
+		if balance.RetiredBalance != "" {
+			d, err := math.NewNonNegativeDecFromString(balance.RetiredBalance)
+			if err != nil {
+				return err
+			}
+			key := RetiredBalanceKey(addr, denomT)
+			setDecimal(store, key, d)
+
+			key = RetiredSupplyKey(denomT)
+			getAddAndSetDecimal(store, key, d)
+		}
 	}
 
 	return nil
@@ -131,101 +142,77 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		return nil, errors.Wrap(err, "batch-info")
 	}
 
-	var balances []*ecocredit.Balance
-	iterateBalances(store, TradableBalancePrefix, func(address, denom, balance string) bool {
-		balances = append(balances, &ecocredit.Balance{
-			Address:    address,
-			BatchDenom: denom,
-			Balance:    balance,
-			Type:       ecocredit.Balance_TYPE_TRADABLE,
-		})
-		return false
-	})
-
-	iterateBalances(store, RetiredBalancePrefix, func(address, denom, balance string) bool {
-		balances = append(balances, &ecocredit.Balance{
-			Address:    address,
-			BatchDenom: denom,
-			Balance:    balance,
-			Type:       ecocredit.Balance_TYPE_RETIRED,
-		})
-		return false
-	})
-
-	suppliesMap := make(map[string]*apd.Decimal)
-
-	iterateSupplies(store, TradableSupplyPrefix, func(denom, value string) (bool, error) {
-		supply, err := math.ParseNonNegativeDecimal(value)
-		if err != nil {
-			panic(err)
+	suppliesMap := make(map[string]*ecocredit.Supply)
+	iterateSupplies(store, TradableSupplyPrefix, func(denom, supply string) (bool, error) {
+		suppliesMap[denom] = &ecocredit.Supply{
+			BatchDenom:     denom,
+			TradableSupply: supply,
 		}
-		if _, exists := suppliesMap[denom]; exists {
-			return true, sdkerrors.ErrConflict.Wrapf("duplicate tradable supply found: denom %s", denom)
-		}
-		suppliesMap[denom] = supply
 
 		return false, nil
 	})
 
-	iterateSupplies(store, RetiredSupplyPrefix, func(denom, value string) (bool, error) {
-		supply := apd.New(0, 0)
-		rSupply, err := math.ParseNonNegativeDecimal(value)
-		if err != nil {
-			return true, err
-		}
-		if tSupply, exists := suppliesMap[denom]; exists {
-			math.Add(supply, tSupply, rSupply)
-			suppliesMap[denom] = supply
+	iterateSupplies(store, RetiredSupplyPrefix, func(denom, supply string) (bool, error) {
+		if _, exists := suppliesMap[denom]; exists {
+			suppliesMap[denom].RetiredSupply = supply
 		} else {
-			suppliesMap[denom] = rSupply
+			suppliesMap[denom] = &ecocredit.Supply{
+				BatchDenom:    denom,
+				RetiredSupply: supply,
+			}
 		}
 
 		return false, nil
 	})
 
 	supplies := make([]*ecocredit.Supply, len(suppliesMap))
-	i := 0
-	for denom, supply := range suppliesMap {
-		supplies[i] = &ecocredit.Supply{
-			BatchDenom: denom,
-			Supply:     supply.String(),
-		}
-		i++
+	index := 0
+	for _, supply := range suppliesMap {
+		supplies[index] = supply
+		index++
 	}
 
-	precisions := s.getPrecisions(store, MaxDecimalPlacesPrefix)
+	balancesMap := make(map[string]*ecocredit.Balance)
+	iterateBalances(store, TradableBalancePrefix, func(address, denom, balance string) bool {
+		balancesMap[fmt.Sprintf("%s%s", address, denom)] = &ecocredit.Balance{
+			Address:         address,
+			BatchDenom:      denom,
+			TradableBalance: balance,
+		}
+
+		return false
+	})
+
+	iterateBalances(store, RetiredBalancePrefix, func(address, denom, balance string) bool {
+		index := fmt.Sprintf("%s%s", address, denom)
+		if _, exists := balancesMap[index]; exists {
+			balancesMap[index].RetiredBalance = balance
+		} else {
+			balancesMap[index] = &ecocredit.Balance{
+				Address:        address,
+				BatchDenom:     denom,
+				RetiredBalance: balance,
+			}
+		}
+
+		return false
+	})
+
+	balances := make([]*ecocredit.Balance, len(balancesMap))
+	index = 0
+	for _, balance := range balancesMap {
+		balances[index] = balance
+		index++
+	}
 
 	gs := &ecocredit.GenesisState{
-		Params:     params,
-		ClassInfo:  classInfo,
-		BatchInfo:  batchInfo,
-		IdSeq:      s.idSeq.CurVal(ctx),
-		Balances:   balances,
-		Supplies:   supplies,
-		Precisions: precisions,
+		Params:    params,
+		ClassInfo: classInfo,
+		BatchInfo: batchInfo,
+		IdSeq:     s.idSeq.CurVal(ctx),
+		Balances:  balances,
+		Supplies:  supplies,
 	}
 
 	return cdc.MustMarshalJSON(gs), nil
-}
-
-func (s serverImpl) getPrecisions(store sdk.KVStore, storeKey byte) []*ecocredit.Precision {
-	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
-	defer iter.Close()
-	var precisions []*ecocredit.Precision
-	for ; iter.Valid(); iter.Next() {
-		denomMetaData := ParseMaxDecimalPlacesKey(iter.Key())
-
-		buf := bytes.NewReader(iter.Value())
-		var val uint32
-		err := binary.Read(buf, binary.LittleEndian, &val)
-		if err != nil {
-			panic(err)
-		}
-
-		precisions = append(precisions, &ecocredit.Precision{
-			BatchDenom:       string(denomMetaData),
-			MaxDecimalPlaces: val,
-		})
-	}
-	return precisions
 }

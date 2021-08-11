@@ -9,7 +9,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/types/math"
-	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 func getDecimal(store sdk.KVStore, key []byte) (math.Dec, error) {
@@ -120,28 +119,5 @@ func iterateBalances(store sdk.KVStore, storeKey byte, cb func(address, denom, b
 		if cb(addr.String(), string(denom), string(iter.Value())) {
 			break
 		}
-	}
-}
-
-func getBalanceKey(balanceType ecocredit.Balance_Type, addr sdk.AccAddress,
-	denom batchDenomT) ([]byte, error) {
-	switch balanceType {
-	case ecocredit.Balance_TYPE_TRADABLE:
-		return TradableBalanceKey(addr, denom), nil
-	case ecocredit.Balance_TYPE_RETIRED:
-		return RetiredBalanceKey(addr, denom), nil
-	default:
-		return nil, sdkerrors.ErrInvalidType.Wrapf("invalid balance key %v", ecocredit.Balance_TYPE_UNSPECIFIED)
-	}
-}
-
-func getSupplyKey(balanceType ecocredit.Balance_Type, denom batchDenomT) ([]byte, error) {
-	switch balanceType {
-	case ecocredit.Balance_TYPE_TRADABLE:
-		return TradableSupplyKey(denom), nil
-	case ecocredit.Balance_TYPE_RETIRED:
-		return RetiredSupplyKey(denom), nil
-	default:
-		return nil, sdkerrors.ErrInvalidType.Wrapf("invalid supply key %v", ecocredit.Balance_TYPE_UNSPECIFIED)
 	}
 }

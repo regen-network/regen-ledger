@@ -1,7 +1,6 @@
 package ecocredit
 
 import (
-	apd "github.com/cockroachdb/apd/v2"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/types/math"
 )
@@ -11,21 +10,44 @@ import (
 // does not match the sum of all tradable or retired balances
 func (s *GenesisState) Validate() error {
 	decimalPlaces := make(map[string]uint32)
-	calSupplies := make(map[string]*apd.Decimal)
-	supplies := make(map[string]*apd.Decimal)
+	calSupplies := make(map[string]math.Dec)
+	supplies := make(map[string]math.Dec)
 
-	for _, precision := range s.Precisions {
-		decimalPlaces[precision.BatchDenom] = precision.MaxDecimalPlaces
+	for _, batch := range s.BatchInfo {
+		for _, class := range s.ClassInfo {
+			if batch.ClassId == class.ClassId {
+				decimalPlaces[batch.BatchDenom] = class.CreditType.GetPrecision()
+				continue
+			}
+		}
 	}
 
 	for _, s := range s.Supplies {
-		supply, err := math.ParsePositiveFixedDecimal(s.Supply, decimalPlaces[s.BatchDenom])
+		tSupply := math.NewDecFromInt64(0)
+		rSupply := math.NewDecFromInt64(0)
+		var err error
+		if s.TradableSupply != "" {
+			tSupply, err = math.NewNonNegativeFixedDecFromString(s.TradableSupply, decimalPlaces[s.BatchDenom])
+			if err != nil {
+				return err
+			}
+		}
+		if s.RetiredSupply != "" {
+			rSupply, err = math.NewNonNegativeFixedDecFromString(s.RetiredSupply, decimalPlaces[s.BatchDenom])
+			if err != nil {
+				return err
+			}
+		}
+
+		total, err := math.SafeAddBalance(tSupply, rSupply)
 		if err != nil {
 			return err
 		}
-		supplies[s.BatchDenom] = supply
+
+		supplies[s.BatchDenom] = total
 	}
 
+	// calculate credit batch supply from genesis tradable and retired balances
 	if err := calculateSupply(decimalPlaces, s.Balances, calSupplies); err != nil {
 		return err
 	}
@@ -37,7 +59,7 @@ func (s *GenesisState) Validate() error {
 	return nil
 }
 
-func validateSupply(calSupply, supply map[string]*apd.Decimal) error {
+func validateSupply(calSupply, supply map[string]math.Dec) error {
 	for denom, cs := range calSupply {
 		if s, ok := supply[denom]; ok {
 			if s.Cmp(cs) != 0 {
@@ -50,37 +72,53 @@ func validateSupply(calSupply, supply map[string]*apd.Decimal) error {
 	return nil
 }
 
-func calculateSupply(decimalPlaces map[string]uint32, balances []*Balance, calSupply map[string]*apd.Decimal) error {
+func calculateSupply(decimalPlaces map[string]uint32, balances []*Balance, calSupply map[string]math.Dec) error {
 	for _, b := range balances {
-		if b.Type == Balance_TYPE_UNSPECIFIED {
-			return sdkerrors.ErrInvalidType.Wrapf("expecting %v or %v, got %v", Balance_TYPE_TRADABLE, Balance_TYPE_RETIRED, Balance_TYPE_UNSPECIFIED)
+		tBalance := math.NewDecFromInt64(0)
+		rBalance := math.NewDecFromInt64(0)
+		var err error
+
+		if b.TradableBalance != "" {
+			tBalance, err = math.NewNonNegativeFixedDecFromString(b.TradableBalance, decimalPlaces[b.BatchDenom])
+			if err != nil {
+				return err
+			}
 		}
-		balance, err := math.ParsePositiveFixedDecimal(b.Balance, decimalPlaces[b.BatchDenom])
+
+		if b.RetiredBalance != "" {
+			rBalance, err = math.NewNonNegativeFixedDecFromString(b.RetiredBalance, decimalPlaces[b.BatchDenom])
+			if err != nil {
+				return err
+			}
+		}
+
+		total, err := math.SafeAddBalance(tBalance, rBalance)
 		if err != nil {
 			return err
 		}
 
 		if supply, ok := calSupply[b.BatchDenom]; ok {
-			if err := math.Add(supply, supply, balance); err != nil {
+			result, err := math.SafeAddBalance(supply, total)
+			if err != nil {
 				return err
 			}
-			calSupply[b.BatchDenom] = supply
+			calSupply[b.BatchDenom] = result
 		} else {
-			calSupply[b.BatchDenom] = balance
+			calSupply[b.BatchDenom] = total
 		}
 	}
+
 	return nil
 }
 
 // DefaultGenesisState returns a default ecocredit module genesis state.
 func DefaultGenesisState() *GenesisState {
 	return &GenesisState{
-		Params:     DefaultParams(),
-		ClassInfo:  []*ClassInfo{},
-		BatchInfo:  []*BatchInfo{},
-		IdSeq:      0,
-		Balances:   []*Balance{},
-		Supplies:   []*Supply{},
-		Precisions: []*Precision{},
+		Params:    DefaultParams(),
+		ClassInfo: []*ClassInfo{},
+		BatchInfo: []*BatchInfo{},
+		IdSeq:     0,
+		Balances:  []*Balance{},
+		Supplies:  []*Supply{},
 	}
 }
