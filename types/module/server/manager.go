@@ -148,15 +148,6 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 			mm.weightedOperationsHandlers[name] = cfg.weightedOperationHandler
 		}
 
-		// If mod implements LegacyRouteModule, register module route.
-		// This is currently used for the group module as part of #218.
-		routeMod, ok := mod.(LegacyRouteModule)
-		if ok {
-			if r := routeMod.Route(cfg); !r.Empty() {
-				mm.baseApp.Router().AddRoute(r)
-			}
-		}
-
 		for typ := range cfg.requiredServices {
 			mm.requiredServices[typ] = true
 		}
