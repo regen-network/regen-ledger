@@ -8,7 +8,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -116,7 +115,7 @@ contain valid denominations. Accounts may optionally be supplied with vesting pa
 			}
 
 			cdc := clientCtx.Codec
-			authGenState := authtypes.GetGenesisStateFromAppState(cdc.(codec.Codec), appState)
+			authGenState := authtypes.GetGenesisStateFromAppState(cdc, appState)
 
 			accs, err := authtypes.UnpackAccounts(authGenState.Accounts)
 			if err != nil {
