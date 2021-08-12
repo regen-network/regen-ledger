@@ -11,13 +11,13 @@ import (
 )
 
 const (
-	TradableBalancePrefix byte = 0x0
-	TradableSupplyPrefix  byte = 0x1
-	RetiredBalancePrefix  byte = 0x2
-	RetiredSupplyPrefix   byte = 0x3
-	IDSeqPrefix           byte = 0x4
-	ClassInfoTablePrefix  byte = 0x5
-	BatchInfoTablePrefix  byte = 0x6
+	TradableBalancePrefix    byte = 0x0
+	TradableSupplyPrefix     byte = 0x1
+	RetiredBalancePrefix     byte = 0x2
+	RetiredSupplyPrefix      byte = 0x3
+	CreditTypeSeqTablePrefix byte = 0x4
+	ClassInfoTablePrefix     byte = 0x5
+	BatchInfoTablePrefix     byte = 0x6
 )
 
 type serverImpl struct {
@@ -26,8 +26,9 @@ type serverImpl struct {
 	paramSpace paramtypes.Subspace
 	bankKeeper ecocredit.BankKeeper
 
-	// we use a single sequence to avoid having the same string/ID identifying a class and batch denom
-	idSeq          orm.Sequence
+	// Store sequence numbers per credit type
+	creditTypeSeqTable orm.PrimaryKeyTable
+
 	classInfoTable orm.PrimaryKeyTable
 	batchInfoTable orm.PrimaryKeyTable
 }
@@ -39,7 +40,8 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace, bankKeeper
 		bankKeeper: bankKeeper,
 	}
 
-	s.idSeq = orm.NewSequence(storeKey, IDSeqPrefix)
+	creditTypeSeqTable := orm.NewPrimaryKeyTableBuilder(CreditTypeSeqTablePrefix, storeKey, &ecocredit.CreditTypeSeq{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	s.creditTypeSeqTable = creditTypeSeqTable.Build()
 
 	classInfoTableBuilder := orm.NewPrimaryKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ecocredit.ClassInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 	s.classInfoTable = classInfoTableBuilder.Build()
