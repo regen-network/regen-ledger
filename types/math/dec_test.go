@@ -143,9 +143,7 @@ func TestDec(t *testing.T) {
 var genDec *rapid.Generator = rapid.Custom(func(t *rapid.T) Dec {
 	f := rapid.Float64().Draw(t, "f").(float64)
 	dec, err := NewDecFromString(fmt.Sprintf("%g", f))
-	if err != nil {
-		t.Fatalf("Failed while generating Dec from float: %g", f)
-	}
+	require.NoError(t, err)
 	return dec
 })
 
@@ -159,9 +157,7 @@ type floatAndDec struct {
 var genFloatAndDec *rapid.Generator = rapid.Custom(func(t *rapid.T) floatAndDec {
 	f := rapid.Float64().Draw(t, "f").(float64)
 	dec, err := NewDecFromString(fmt.Sprintf("%g", f))
-	if err != nil {
-		t.Fatalf("Failed while generating Dec from float: %g", f)
-	}
+	require.NoError(t, err)
 	return floatAndDec{f, dec}
 })
 
@@ -446,8 +442,7 @@ func testSelfQuo(t *rapid.T) {
 
 // Property: a/1 = a
 func testQuoByOne(t *rapid.T) {
-	decNotZero := func(d Dec) bool { return !d.IsZero() }
-	a := genDec.Filter(decNotZero).Draw(t, "a").(Dec)
+	a := genDec.Draw(t, "a").(Dec)
 	one := NewDecFromInt64(1)
 
 	b, err := a.Quo(one)
