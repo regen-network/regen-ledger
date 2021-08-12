@@ -331,6 +331,26 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				Metadata: []byte{0x1},
 			},
 		},
+		{
+			name: "with amino-json",
+			args: append(
+				[]string{
+					val0.Address.String(),
+					val0.Address.String(),
+					validCreditType,
+					validMetadata,
+					makeFlagFrom(val0.Address.String()),
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr: false,
+			expectedClassInfo: &ecocredit.ClassInfo{
+				Designer: val0.Address.String(),
+				Issuers:  []string{val0.Address.String()},
+				Metadata: []byte{0x1},
+			},
+		},
 	}
 
 	for _, tc := range testCases {

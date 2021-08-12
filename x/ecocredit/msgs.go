@@ -12,6 +12,17 @@ var (
 		&MsgRetire{}, &MsgCancel{}
 )
 
+// Route Implements LegacyMsg.
+func (m MsgCreateClass) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type Implements LegacyMsg.
+func (m MsgCreateClass) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes Implements LegacyMsg.
+func (m MsgCreateClass) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
 func (m *MsgCreateClass) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Designer)
 	if err != nil {
@@ -49,6 +60,17 @@ func (m *MsgCreateClass) GetSigners() []sdk.AccAddress {
 	}
 
 	return []sdk.AccAddress{addr}
+}
+
+// Route Implements LegacyMsg.
+func (m MsgCreateBatch) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type Implements LegacyMsg.
+func (m MsgCreateBatch) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes Implements LegacyMsg.
+func (m MsgCreateBatch) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 func (m *MsgCreateBatch) ValidateBasic() error {
@@ -115,6 +137,17 @@ func (m *MsgCreateBatch) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
+// Route Implements LegacyMsg.
+func (m MsgSend) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type Implements LegacyMsg.
+func (m MsgSend) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes Implements LegacyMsg.
+func (m MsgSend) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
 func (m *MsgSend) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Sender)
 	if err != nil {
@@ -164,6 +197,17 @@ func (m *MsgSend) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
+// Route Implements LegacyMsg.
+func (m MsgRetire) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type Implements LegacyMsg.
+func (m MsgRetire) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes Implements LegacyMsg.
+func (m MsgRetire) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
 func (m *MsgRetire) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Holder)
 	if err != nil {
@@ -199,6 +243,17 @@ func (m *MsgRetire) GetSigners() []sdk.AccAddress {
 	}
 
 	return []sdk.AccAddress{addr}
+}
+
+// Route Implements LegacyMsg.
+func (m MsgCancel) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type Implements LegacyMsg.
+func (m MsgCancel) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes Implements LegacyMsg.
+func (m MsgCancel) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 func (m *MsgCancel) ValidateBasic() error {
