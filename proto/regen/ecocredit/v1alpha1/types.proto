@@ -25,6 +25,9 @@ message ClassInfo {
 
   // credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision.
   CreditType credit_type = 5;
+
+  // The number of batches issued in this credit class.
+  uint64 num_batches = 6;
 }
 
 // BatchInfo represents the high-level on-chain information for a credit batch.
@@ -112,4 +115,14 @@ message CreditType {
 
   // the decimal precision
   uint32 precision = 4;
+}
+
+// CreditTypeSeq associates a sequence number with a credit type abbreviation.
+// This represents the number of credit classes created with that credit type.
+message CreditTypeSeq {
+  // The credit type abbreviation
+  string abbreviation = 1;
+
+  // The sequence number of classes of the credit type
+  uint64 seq_number = 2;
 }
