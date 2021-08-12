@@ -19,7 +19,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/group/exported"
 )
 
-// authz message types
+// group message types
 var (
 	TypeMsgCreateGroup                      = sdk.MsgTypeURL(&group.MsgCreateGroup{})
 	TypeMsgUpdateGroupMembers               = sdk.MsgTypeURL(&group.MsgUpdateGroupMembers{})
