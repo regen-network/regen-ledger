@@ -98,7 +98,7 @@ const (
 
 func TxGenBatchJSONCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "gen-batch-json [--class-id class_id] [--issuances issuances] [--start-date start_date] [--end-date end_date] [--project-location project_location] [--metadata metadata]",
+		Use:   "gen-batch-json --class-id [class_id] --issuances [issuances] --start-date [start_date] --end-date [end_date] --project-location [project_location] --metadata [metadata]",
 		Short: "Generates JSON to represent a new credit batch for use with create-batch command",
 		Long: `Generates JSON to represent a new credit batch for use with create-batch command.
 
