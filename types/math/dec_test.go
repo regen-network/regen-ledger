@@ -39,8 +39,6 @@ func TestDec(t *testing.T) {
 	// Properties combining operations
 	t.Run("TestSubAdd", rapid.MakeCheck(testSubAdd))
 	t.Run("TestAddSub", rapid.MakeCheck(testAddSub))
-	// t.Run("TestAddMulDistributes", rapid.MakeCheck(testAddMulDistributes))
-	// t.Run("TestMulQuoIntegerRem", rapid.MakeCheck(testMulQuoIntegerRem))
 	t.Run("TestMulQuoA", rapid.MakeCheck(testMulQuoA))
 	t.Run("TestMulQuoB", rapid.MakeCheck(testMulQuoB))
 
@@ -337,87 +335,6 @@ func testAddSub(t *rapid.T) {
 
 	require.True(t, a.IsEqual(d))
 }
-
-// TODO: Revive this property test with appropriate errors once we need Mul
-// Property: a * (b + c) == (a * b) + (a * c)
-// func testAddMulDistributes(t *rapid.T) {
-// 	a := genDec.Draw(t, "a").(Dec)
-// 	b := genDec.Draw(t, "b").(Dec)
-// 	c := genDec.Draw(t, "c").(Dec)
-
-// 	// a * (b + c)
-// 	d, err := b.Add(c)
-// 	require.NoError(t, err)
-
-// 	e, err := a.Mul(d)
-// 	require.NoError(t, err)
-
-// 	// (a * b) + (a * c)
-// 	f, err := a.Mul(b)
-// 	require.NoError(t, err)
-
-// 	g, err := a.Mul(c)
-// 	require.NoError(t, err)
-
-// 	h, err := f.Add(g)
-// 	require.NoError(t, err)
-
-// 	// Error value
-// 	// TODO: Hmm it seems we can get arbitrarily large errors here...what to do?
-// 	errDec, err := h.Sub(e)
-// 	require.NoError(t, err)
-
-// 	t.Log(errDec.String())
-
-// 	maxErr, err := NewDecFromString("1000")
-// 	require.NoError(t, err)
-
-// 	require.GreaterOrEqual(t, 0, errDec.Cmp(maxErr))
-// }
-
-// TODO: Revive this property test with appropriate errors once we need Mul and
-// Quo
-// Property: ((a div b) * b) + Rem(a, b) == a
-// func testMulQuoIntegerRem(t *rapid.T) {
-// 	decNotZero := func(d Dec) bool { return !d.IsZero() }
-// 	a := genDec.Draw(t, "a").(Dec)
-// 	b := genDec.Filter(decNotZero).Draw(t, "b").(Dec)
-// 	t.Logf("a: %v", a)
-// 	t.Logf("b: %v", b)
-
-// 	c, err := a.QuoInteger(b)
-// 	if err != nil {
-// 		// Catch the case where the precision means this is impossible
-// 		// TODO: Make sure this is happening because of precision issues
-// 		require.Contains(t, err.Error(), "division impossible")
-// 		t.SkipNow()
-// 	}
-// 	require.NoError(t, err)
-// 	t.Logf("a div b: %v", c)
-
-// 	d, err := c.Mul(b)
-// 	require.NoError(t, err)
-// 	t.Logf("(a div b) * b: %v", d)
-
-// 	e, err := a.Rem(b)
-// 	require.NoError(t, err)
-// 	t.Logf("a.Rem(b): %v", e)
-
-// 	f, err := d.Add(e)
-// 	require.NoError(t, err)
-// 	t.Logf("f: %v", f)
-
-// 	// require.True(t, a.IsEqual(f))
-// 	errDec, err := f.Sub(a)
-// 	require.NoError(t, err)
-// 	t.Logf("errDec: %v", errDec)
-
-// 	maxErr, err := NewDecFromString("100")
-// 	require.NoError(t, err)
-
-// 	// errDec <= maxErr
-// 	require.GreaterOrEqual(t, 0, errDec.Cmp(maxErr))
-// }
 
 // Property: a * 0 = 0
 func testMulZero(t *rapid.T) {
