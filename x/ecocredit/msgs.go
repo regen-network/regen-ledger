@@ -3,12 +3,15 @@ package ecocredit
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 
 	"github.com/regen-network/regen-ledger/types/math"
 )
 
 var (
 	_, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
+		&MsgRetire{}, &MsgCancel{}
+	_, _, _, _, _ legacytx.LegacyMsg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
 		&MsgRetire{}, &MsgCancel{}
 )
 

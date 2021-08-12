@@ -2,6 +2,7 @@ package group
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,6 +13,7 @@ import (
 )
 
 var _ sdk.Msg = &MsgCreateGroup{}
+var _ legacytx.LegacyMsg = &MsgCreateGroup{}
 
 // Route Implements Msg.
 func (m MsgCreateGroup) Route() string { return sdk.MsgTypeURL(&m) }
@@ -66,6 +68,7 @@ func (m Member) ValidateBasic() error {
 }
 
 var _ sdk.Msg = &MsgUpdateGroupAdmin{}
+var _ legacytx.LegacyMsg = &MsgUpdateGroupAdmin{}
 
 // Route Implements Msg.
 func (m MsgUpdateGroupAdmin) Route() string { return sdk.MsgTypeURL(&m) }
@@ -114,6 +117,7 @@ func (m *MsgUpdateGroupAdmin) GetGroupID() uint64 {
 }
 
 var _ sdk.Msg = &MsgUpdateGroupMetadata{}
+var _ legacytx.LegacyMsg = &MsgUpdateGroupMetadata{}
 
 // Route Implements Msg.
 func (m MsgUpdateGroupMetadata) Route() string { return sdk.MsgTypeURL(&m) }
@@ -153,6 +157,7 @@ func (m *MsgUpdateGroupMetadata) GetGroupID() uint64 {
 }
 
 var _ sdk.Msg = &MsgUpdateGroupMembers{}
+var _ legacytx.LegacyMsg = &MsgUpdateGroupMembers{}
 
 // Route Implements Msg.
 func (m MsgUpdateGroupMembers) Route() string { return sdk.MsgTypeURL(&m) }
@@ -166,6 +171,7 @@ func (m MsgUpdateGroupMembers) GetSignBytes() []byte {
 }
 
 var _ sdk.Msg = &MsgUpdateGroupMembers{}
+var _ legacytx.LegacyMsg = &MsgUpdateGroupMembers{}
 
 // GetSigners returns the expected signers for a MsgUpdateGroupMembers.
 func (m MsgUpdateGroupMembers) GetSigners() []sdk.AccAddress {
@@ -202,6 +208,7 @@ func (m *MsgUpdateGroupMembers) GetGroupID() uint64 {
 }
 
 var _ sdk.Msg = &MsgCreateGroupAccount{}
+var _ legacytx.LegacyMsg = &MsgCreateGroupAccount{}
 
 // Route Implements Msg.
 func (m MsgCreateGroupAccount) Route() string { return sdk.MsgTypeURL(&m) }
@@ -245,6 +252,7 @@ func (m MsgCreateGroupAccount) ValidateBasic() error {
 }
 
 var _ sdk.Msg = &MsgUpdateGroupAccountAdmin{}
+var _ legacytx.LegacyMsg = &MsgUpdateGroupAccountAdmin{}
 
 // Route Implements Msg.
 func (m MsgUpdateGroupAccountAdmin) Route() string { return sdk.MsgTypeURL(&m) }
@@ -290,6 +298,7 @@ func (m MsgUpdateGroupAccountAdmin) ValidateBasic() error {
 }
 
 var _ sdk.Msg = &MsgUpdateGroupAccountDecisionPolicy{}
+var _ legacytx.LegacyMsg = &MsgUpdateGroupAccountDecisionPolicy{}
 var _ types.UnpackInterfacesMessage = MsgUpdateGroupAccountDecisionPolicy{}
 
 func NewMsgUpdateGroupAccountDecisionPolicyRequest(admin sdk.AccAddress, address sdk.AccAddress, decisionPolicy DecisionPolicy) (*MsgUpdateGroupAccountDecisionPolicy, error) {
@@ -378,6 +387,7 @@ func (m MsgUpdateGroupAccountDecisionPolicy) UnpackInterfaces(unpacker types.Any
 }
 
 var _ sdk.Msg = &MsgUpdateGroupAccountMetadata{}
+var _ legacytx.LegacyMsg = &MsgUpdateGroupAccountMetadata{}
 
 // Route Implements Msg.
 func (m MsgUpdateGroupAccountMetadata) Route() string { return sdk.MsgTypeURL(&m) }
@@ -415,6 +425,7 @@ func (m MsgUpdateGroupAccountMetadata) ValidateBasic() error {
 }
 
 var _ sdk.Msg = &MsgCreateGroupAccount{}
+var _ legacytx.LegacyMsg = &MsgCreateGroupAccount{}
 var _ types.UnpackInterfacesMessage = MsgCreateGroupAccount{}
 
 // NewMsgCreateGroupAccount creates a new MsgCreateGroupAccount.
@@ -471,6 +482,7 @@ func (m MsgCreateGroupAccount) UnpackInterfaces(unpacker types.AnyUnpacker) erro
 }
 
 var _ sdk.Msg = &MsgCreateProposal{}
+var _ legacytx.LegacyMsg = &MsgCreateProposal{}
 
 // NewMsgCreateProposalRequest creates a new MsgCreateProposal.
 func NewMsgCreateProposalRequest(address string, proposers []string, msgs []sdk.Msg, metadata []byte, exec Exec) (*MsgCreateProposal, error) {
@@ -567,6 +579,7 @@ func (m MsgCreateProposal) UnpackInterfaces(unpacker types.AnyUnpacker) error {
 }
 
 var _ sdk.Msg = &MsgVote{}
+var _ legacytx.LegacyMsg = &MsgVote{}
 
 // Route Implements Msg.
 func (m MsgVote) Route() string { return sdk.MsgTypeURL(&m) }
@@ -607,6 +620,7 @@ func (m MsgVote) ValidateBasic() error {
 }
 
 var _ sdk.Msg = &MsgExec{}
+var _ legacytx.LegacyMsg = &MsgExec{}
 
 // Route Implements Msg.
 func (m MsgExec) Route() string { return sdk.MsgTypeURL(&m) }
