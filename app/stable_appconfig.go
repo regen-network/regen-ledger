@@ -18,6 +18,10 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	moduletypes "github.com/regen-network/regen-ledger/types/module"
+	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
+	ecoModule "github.com/regen-network/regen-ledger/x/ecocredit/module"
+	group "github.com/regen-network/regen-ledger/x/group/module"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
 )
@@ -28,16 +32,46 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 			paramsclient.ProposalHandler, distrclient.ProposalHandler,
 			upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
 		),
+		ecoModule.Module{},
+		group.Module{},
 	}
+}
+
+func setCustomKVStoreKeys() []string {
+	return []string{}
 }
 
 // setCustomModules registers new modules with the server module manager.
 // It does nothing here and returns an empty manager since we're not using experimental mode.
-func setCustomModules(_ *RegenApp, _ types.InterfaceRegistry) *server.Manager {
-	return &server.Manager{}
-}
-func setCustomKVStoreKeys() []string {
-	return []string{}
+func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *server.Manager {
+	/* New Module Wiring START */
+	newModuleManager := server.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
+
+	// BEGIN HACK: this is a total, ugly hack until x/auth & x/bank supports ADR 033 or we have a suitable alternative
+	ecocreditModule := ecoModule.NewModule(
+		app.GetSubspace(ecocredittypes.DefaultParamspace),
+		app.BankKeeper,
+	)
+
+	groupModule := group.Module{AccountKeeper: app.AccountKeeper, BankKeeper: app.BankKeeper}
+	// use a separate newModules from the global NewModules here because we need to pass state into the group module
+	newModules := []moduletypes.Module{
+		ecocreditModule,
+		groupModule,
+	}
+	err := newModuleManager.RegisterModules(newModules)
+	if err != nil {
+		panic(err)
+	}
+	// END HACK
+
+	err = newModuleManager.CompleteInitialization()
+	if err != nil {
+		panic(err)
+	}
+
+	/* New Module Wiring END */
+	return newModuleManager
 }
 
 func (app *RegenApp) registerUpgradeHandlers() {
@@ -76,7 +110,7 @@ func (app *RegenApp) registerUpgradeHandlers() {
 
 	if upgradeInfo.Name == upgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{"authz", "feegrant"},
+			Added: []string{"authz", "feegrant", "group", "ecocredit"},
 		}
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
@@ -96,7 +130,15 @@ func setCustomOrderInitGenesis() []string {
 }
 
 func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
-	return []module.AppModuleSimulation{}
+	return []module.AppModuleSimulation{
+		group.Module{
+			Registry:      app.interfaceRegistry,
+			BankKeeper:    app.BankKeeper,
+			AccountKeeper: app.AccountKeeper,
+		},
+	}
 }
 
-func initCustomParamsKeeper(_ *paramskeeper.Keeper) {}
+func initCustomParamsKeeper(paramsKeeper *paramskeeper.Keeper) {
+	paramsKeeper.Subspace(ecocredittypes.DefaultParamspace)
+}
