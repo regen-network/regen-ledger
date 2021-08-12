@@ -630,6 +630,25 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				AmountCancelled: "0",
 			},
 		},
+		{
+			name: "with amino-json",
+			args: append(
+				[]string{
+					validBatchJson,
+					makeFlagFrom(val.Address.String()),
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr: false,
+			expectedBatchInfo: &ecocredit.BatchInfo{
+				ClassId:         s.classInfo.ClassId,
+				Issuer:          val.Address.String(),
+				TotalAmount:     "100.000001",
+				Metadata:        []byte{0x1},
+				AmountCancelled: "0",
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -695,11 +714,11 @@ func (s *IntegrationTestSuite) TestTxSend() {
 	val1 := s.network.Validators[1]
 	clientCtx := val0.ClientCtx
 
-	validCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"88\", retired_amount: \"2\", retirement_location: \"AB-CD\"}]", s.batchInfo.BatchDenom)
-	invalidBatchDenomCredits := fmt.Sprintf("[{batch_denom: abcde, tradable_amount: \"88\", retired_amount: \"2\", retirement_location: \"AB-CD\"}]")
-	invalidTradableAmountCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"abcde\", retired_amount: \"2\", retirement_location: \"AB-CD\"}]", s.batchInfo.BatchDenom)
-	invalidRetiredAmountCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"88\", retired_amount: \"abcde\", retirement_location: \"AB-CD\"}]", s.batchInfo.BatchDenom)
-	invalidRetirementLocationCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"88\", retired_amount: \"2\", retirement_location: \"abcde\"}]", s.batchInfo.BatchDenom)
+	validCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"4\", retired_amount: \"1\", retirement_location: \"AB-CD\"}]", s.batchInfo.BatchDenom)
+	invalidBatchDenomCredits := fmt.Sprintf("[{batch_denom: abcde, tradable_amount: \"4\", retired_amount: \"1\", retirement_location: \"AB-CD\"}]")
+	invalidTradableAmountCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"abcde\", retired_amount: \"1\", retirement_location: \"AB-CD\"}]", s.batchInfo.BatchDenom)
+	invalidRetiredAmountCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"4\", retired_amount: \"abcde\", retirement_location: \"AB-CD\"}]", s.batchInfo.BatchDenom)
+	invalidRetirementLocationCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"4\", retired_amount: \"1\", retirement_location: \"abcde\"}]", s.batchInfo.BatchDenom)
 
 	testCases := []struct {
 		name            string
@@ -811,6 +830,19 @@ func (s *IntegrationTestSuite) TestTxSend() {
 					val1.Address.String(),
 					validCredits,
 					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr: false,
+		},
+		{
+			name: "with amino-json",
+			args: append(
+				[]string{
+					val1.Address.String(),
+					validCredits,
+					makeFlagFrom(val0.Address.String()),
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 				},
 				s.commonTxFlags()...,
 			),
@@ -948,6 +980,19 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 			),
 			expectErr: false,
 		},
+		{
+			name: "with amino-json",
+			args: append(
+				[]string{
+					validCredits,
+					"AB-CD 12345",
+					makeFlagFrom(val0.Address.String()),
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr: false,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -1050,6 +1095,18 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 				[]string{
 					validCredits,
 					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr: false,
+		},
+		{
+			name: "with amino-json",
+			args: append(
+				[]string{
+					validCredits,
+					makeFlagFrom(val0.Address.String()),
+					fmt.Sprintf("--%s=%s", flags.FlagSignMode, flags.SignModeLegacyAminoJSON),
 				},
 				s.commonTxFlags()...,
 			),
