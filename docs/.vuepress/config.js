@@ -170,7 +170,7 @@ module.exports = {
   ],
   markdown: {
     extendMarkdown: md => {
-      md.use(require('./config-gh'))
+      md.use(require('./markdown-it-gh'))
     }
   }
 }
