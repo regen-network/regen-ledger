@@ -12,38 +12,55 @@ var _ Indexable = &PrimaryKeyTableBuilder{}
 // NewPrimaryKeyTableBuilder creates a builder to setup a PrimaryKeyTable object.
 func NewPrimaryKeyTableBuilder(prefixData byte, storeKey sdk.StoreKey, model PrimaryKeyed, codec IndexKeyCodec, cdc codec.Codec) *PrimaryKeyTableBuilder {
 	return &PrimaryKeyTableBuilder{
-		TableBuilder: NewTableBuilder(prefixData, storeKey, model, codec, cdc),
+		tableBuilder: newTableBuilder(prefixData, storeKey, model, codec, cdc),
 	}
 }
 
 type PrimaryKeyTableBuilder struct {
-	*TableBuilder
+	*tableBuilder
 }
 
 func (a PrimaryKeyTableBuilder) Build() PrimaryKeyTable {
-	return PrimaryKeyTable{table: a.TableBuilder.Build()}
+	return PrimaryKeyTable{table: a.tableBuilder.Build()}
 
 }
 
-// PrimaryKeyed defines an object type that is aware of it's immutable primary key.
+// PrimaryKeyed defines an object type that is aware of its immutable primary key.
 type PrimaryKeyed interface {
-	// PrimaryKey returns the immutable and serialized primary key of this object. The primary key has to be unique within
-	// it's domain so that not two with same value can exist in the same table.
+	// PrimaryKeyFields returns the fields of the object that will make up
+	// the primary key. The PrimaryKey function will encode and concatenate
+	// the fields to build the primary key.
 	//
-	// The `IndexKeyCodec` used with the `PrimaryKeyTable` may add certain constraints to the byte representation as
-	// max length = 255 in `Max255DynamicLengthIndexKeyCodec` or a fix length in `FixLengthIndexKeyCodec` for example.
-	// PrimaryKey() []byte
+	// PrimaryKey parts can be []byte, string, and integer types. []byte is
+	// encoded with a length prefix, strings are null-terminated, and
+	// integers are encoded using 4 or 8 byte big endian.
+	//
+	// IMPORTANT: []byte parts are encoded with a single byte length prefix,
+	// so cannot be longer than 256 bytes.
+	//
+	// The `IndexKeyCodec` used with the `PrimaryKeyTable` may add certain
+	// constraints to the byte representation as max length = 255 in
+	// `Max255DynamicLengthIndexKeyCodec` or a fix length in
+	// `FixLengthIndexKeyCodec` for example.
 	PrimaryKeyFields() []interface{}
 	codec.ProtoMarshaler
 }
 
+// PrimaryKey returns the immutable and serialized primary key of this object.
+// The primary key has to be unique within it's domain so that not two with same
+// value can exist in the same table. This means PrimaryKeyFields() has to
+// return a unique value for each object.
+//
+// PrimaryKey parts can be []byte, string, and integer types. []byte is encoded
+// with a length prefix, strings are null-terminated, and integers are encoded
+// using 4 or 8 byte big endian.
 func PrimaryKey(obj PrimaryKeyed) []byte {
 	fields := obj.PrimaryKeyFields()
 	return buildPrimaryKey(fields...)
 }
 
-// This can be strings, bytes, or some integer stuff
-// Strings will be null-terminated, bytes will be length-prefixed, ...
+// buildPrimaryKey encodes and concatenates the PrimaryKeyFields. See PrimaryKey
+// for full documentation of the encoding.
 func buildPrimaryKey(fields ...interface{}) []byte {
 	bytesSlice := make([][]byte, len(fields))
 	totalLen := 0
@@ -73,10 +90,15 @@ func primaryKeyFieldBytes(field interface{}) []byte {
 
 // Prefix the byte array with its length as 8 bytes
 func AddLengthPrefix(bytes []byte) []byte {
-	newLen := 8 + len(bytes)
+	byteLen := len(bytes)
+	if byteLen > 256 {
+		panic("Cannot create primary key with an []byte of length greater than 256 bytes. Try again with a smaller []byte.")
+	}
+
+	newLen := 1 + len(bytes)
 	prefixedBytes := make([]byte, newLen, newLen)
-	copy(prefixedBytes, EncodeSequence(uint64(len(bytes))))
-	copy(prefixedBytes[8:], bytes)
+	copy(prefixedBytes, []byte{uint8(byteLen)})
+	copy(prefixedBytes[1:], bytes)
 	return prefixedBytes
 }
 
@@ -93,7 +115,7 @@ var _ TableExportable = &PrimaryKeyTable{}
 // PrimaryKeyTable provides simpler object style orm methods without passing database RowIDs.
 // Entries are persisted and loaded with a reference to their unique primary key.
 type PrimaryKeyTable struct {
-	table Table
+	table table
 }
 
 // Create persists the given object under their primary key. It checks if the
@@ -178,6 +200,6 @@ func (a PrimaryKeyTable) ReversePrefixScan(ctx HasKVStore, start, end []byte) (I
 }
 
 // Table satisfies the TableExportable interface and must not be used otherwise.
-func (a PrimaryKeyTable) Table() Table {
+func (a PrimaryKeyTable) Table() table {
 	return a.table
 }
