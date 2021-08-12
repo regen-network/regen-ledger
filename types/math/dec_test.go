@@ -144,7 +144,7 @@ var genDec *rapid.Generator = rapid.Custom(func(t *rapid.T) Dec {
 	return dec
 })
 
-// A Dec value and the gloat used to create it
+// A Dec value and the float used to create it
 type floatAndDec struct {
 	float float64
 	dec   Dec
