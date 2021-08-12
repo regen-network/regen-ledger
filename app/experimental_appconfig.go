@@ -42,7 +42,7 @@ func setCustomKVStoreKeys() []string {
 	return []string{}
 }
 
-func (app *RegenApp) setCustomKeeprs(bApp *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec, govRouter govtypes.Router, homePath string) {
+func (app *RegenApp) setCustomKeepers(bApp *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec, govRouter govtypes.Router, homePath string) {
 }
 
 // setCustomModules registers new modules with the server module manager.

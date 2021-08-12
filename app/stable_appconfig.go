@@ -11,7 +11,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/authz"
 	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
@@ -19,12 +21,10 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
-	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
-	ecoModule "github.com/regen-network/regen-ledger/x/ecocredit/module"
-	group "github.com/regen-network/regen-ledger/x/group/module"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
+	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
@@ -33,14 +33,8 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 			paramsclient.ProposalHandler, distrclient.ProposalHandler,
 			upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
 		),
-		data.Module{},
-		ecoModule.Module{},
-		group.Module{},
+		ecocreditmodule.Module{},
 	}
-}
-
-func setCustomKVStoreKeys() []string {
-	return []string{}
 }
 
 // setCustomModules registers new modules with the server module manager.
@@ -51,17 +45,14 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 	newModuleManager := server.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
 
 	// BEGIN HACK: this is a total, ugly hack until x/auth & x/bank supports ADR 033 or we have a suitable alternative
-	ecocreditModule := ecoModule.NewModule(
+	ecocreditModule := ecocreditmodule.NewModule(
 		app.GetSubspace(ecocredittypes.DefaultParamspace),
 		app.BankKeeper,
 	)
 
-	groupModule := group.Module{AccountKeeper: app.AccountKeeper, BankKeeper: app.BankKeeper}
 	// use a separate newModules from the global NewModules here because we need to pass state into the group module
 	newModules := []moduletypes.Module{
 		ecocreditModule,
-		data.Module{},
-		groupModule,
 	}
 	err := newModuleManager.RegisterModules(newModules)
 	if err != nil {
@@ -76,6 +67,9 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 
 	/* New Module Wiring END */
 	return newModuleManager
+}
+func setCustomKVStoreKeys() []string {
+	return []string{}
 }
 
 func (app *RegenApp) registerUpgradeHandlers() {
@@ -114,7 +108,7 @@ func (app *RegenApp) registerUpgradeHandlers() {
 
 	if upgradeInfo.Name == upgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{"authz", "feegrant", "group", "ecocredit", "data"},
+			Added: []string{authz.ModuleName, feegrant.ModuleName, ecocredittypes.ModuleName},
 		}
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
@@ -126,7 +120,7 @@ func (app *RegenApp) setCustomModuleManager() []module.AppModule {
 	return []module.AppModule{}
 }
 
-func (app *RegenApp) setCustomKeeprs(_ *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec, _ govtypes.Router, _ string) {
+func (app *RegenApp) setCustomKeepers(_ *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec, _ govtypes.Router, _ string) {
 }
 
 func setCustomOrderInitGenesis() []string {
@@ -134,13 +128,7 @@ func setCustomOrderInitGenesis() []string {
 }
 
 func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
-	return []module.AppModuleSimulation{
-		group.Module{
-			Registry:      app.interfaceRegistry,
-			BankKeeper:    app.BankKeeper,
-			AccountKeeper: app.AccountKeeper,
-		},
-	}
+	return []module.AppModuleSimulation{}
 }
 
 func initCustomParamsKeeper(paramsKeeper *paramskeeper.Keeper) {

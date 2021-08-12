@@ -339,7 +339,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	)
 	app.AuthzKeeper = authzKeeper
 
-	app.setCustomKeeprs(bApp, keys, appCodec, govRouter, homePath)
+	app.setCustomKeepers(bApp, keys, appCodec, govRouter, homePath)
 
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
