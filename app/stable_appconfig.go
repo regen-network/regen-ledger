@@ -20,11 +20,9 @@ import (
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
-	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 )
 
 func setCustomModuleBasics() []module.AppModuleBasic {
@@ -33,40 +31,13 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 			paramsclient.ProposalHandler, distrclient.ProposalHandler,
 			upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
 		),
-		ecocreditmodule.Module{},
 	}
 }
 
 // setCustomModules registers new modules with the server module manager.
 // It does nothing here and returns an empty manager since we're not using experimental mode.
 func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *server.Manager {
-
-	/* New Module Wiring START */
-	newModuleManager := server.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
-
-	// BEGIN HACK: this is a total, ugly hack until x/auth & x/bank supports ADR 033 or we have a suitable alternative
-	ecocreditModule := ecocreditmodule.NewModule(
-		app.GetSubspace(ecocredittypes.DefaultParamspace),
-		app.BankKeeper,
-	)
-
-	// use a separate newModules from the global NewModules here because we need to pass state into the group module
-	newModules := []moduletypes.Module{
-		ecocreditModule,
-	}
-	err := newModuleManager.RegisterModules(newModules)
-	if err != nil {
-		panic(err)
-	}
-	// END HACK
-
-	err = newModuleManager.CompleteInitialization()
-	if err != nil {
-		panic(err)
-	}
-
-	/* New Module Wiring END */
-	return newModuleManager
+	return server.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
 }
 func setCustomKVStoreKeys() []string {
 	return []string{}
@@ -120,7 +91,7 @@ func (app *RegenApp) setCustomModuleManager() []module.AppModule {
 	return []module.AppModule{}
 }
 
-func (app *RegenApp) setCustomKeepers(_ *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec, _ govtypes.Router, _ string) {
+func (app *RegenApp) setCustomKeeprs(_ *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec, _ govtypes.Router, _ string) {
 }
 
 func setCustomOrderInitGenesis() []string {
@@ -131,6 +102,4 @@ func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
 	return []module.AppModuleSimulation{}
 }
 
-func initCustomParamsKeeper(paramsKeeper *paramskeeper.Keeper) {
-	paramsKeeper.Subspace(ecocredittypes.DefaultParamspace)
-}
+func initCustomParamsKeeper(_ *paramskeeper.Keeper) {}
