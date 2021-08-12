@@ -19,6 +19,7 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
+	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
 	ecoModule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	group "github.com/regen-network/regen-ledger/x/group/module"
@@ -32,6 +33,7 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 			paramsclient.ProposalHandler, distrclient.ProposalHandler,
 			upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
 		),
+		data.Module{},
 		ecoModule.Module{},
 		group.Module{},
 	}
@@ -44,6 +46,7 @@ func setCustomKVStoreKeys() []string {
 // setCustomModules registers new modules with the server module manager.
 // It does nothing here and returns an empty manager since we're not using experimental mode.
 func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *server.Manager {
+
 	/* New Module Wiring START */
 	newModuleManager := server.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
 
@@ -57,6 +60,7 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 	// use a separate newModules from the global NewModules here because we need to pass state into the group module
 	newModules := []moduletypes.Module{
 		ecocreditModule,
+		data.Module{},
 		groupModule,
 	}
 	err := newModuleManager.RegisterModules(newModules)
@@ -110,7 +114,7 @@ func (app *RegenApp) registerUpgradeHandlers() {
 
 	if upgradeInfo.Name == upgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{"authz", "feegrant", "group", "ecocredit"},
+			Added: []string{"authz", "feegrant", "group", "ecocredit", "data"},
 		}
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
