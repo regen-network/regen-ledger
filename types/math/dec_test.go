@@ -30,6 +30,11 @@ func TestDec(t *testing.T) {
 	t.Run("TestMulRightIdentity", rapid.MakeCheck(testMulRightIdentity))
 	t.Run("TestMulCommutative", rapid.MakeCheck(testMulCommutative))
 	t.Run("TestMulAssociative", rapid.MakeCheck(testMulAssociative))
+	t.Run("TestZeroIdentity", rapid.MakeCheck(testMulZero))
+
+	// Properties about division
+	t.Run("TestDivisionBySelf", rapid.MakeCheck(testSelfQuo))
+	t.Run("TestDivisionByOne", rapid.MakeCheck(testQuoByOne))
 
 	// Properties combining operations
 	t.Run("TestSubAdd", rapid.MakeCheck(testSubAdd))
@@ -417,6 +422,38 @@ func testAddSub(t *rapid.T) {
 // 	// errDec <= maxErr
 // 	require.GreaterOrEqual(t, 0, errDec.Cmp(maxErr))
 // }
+
+// Property: a * 0 = 0
+func testMulZero(t *rapid.T) {
+	a := genDec.Draw(t, "a").(Dec)
+	zero := Dec{}
+
+	c, err := a.Mul(zero)
+	require.NoError(t, err)
+	require.True(t, c.IsZero())
+}
+
+// Property: a/a = 1
+func testSelfQuo(t *rapid.T) {
+	decNotZero := func(d Dec) bool { return !d.IsZero() }
+	a := genDec.Filter(decNotZero).Draw(t, "a").(Dec)
+	one := NewDecFromInt64(1)
+
+	b, err := a.Quo(a)
+	require.NoError(t, err)
+	require.True(t, one.IsEqual(b))
+}
+
+// Property: a/1 = a
+func testQuoByOne(t *rapid.T) {
+	decNotZero := func(d Dec) bool { return !d.IsZero() }
+	a := genDec.Filter(decNotZero).Draw(t, "a").(Dec)
+	one := NewDecFromInt64(1)
+
+	b, err := a.Quo(one)
+	require.NoError(t, err)
+	require.True(t, a.IsEqual(b))
+}
 
 // Property: (a * b) / a == b
 func testMulQuoA(t *rapid.T) {
