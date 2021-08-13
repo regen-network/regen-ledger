@@ -64,11 +64,6 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 	}
 	// END HACK
 
-	err = newModuleManager.CompleteInitialization()
-	if err != nil {
-		panic(err)
-	}
-
 	/* New Module Wiring END */
 	return newModuleManager
 }
