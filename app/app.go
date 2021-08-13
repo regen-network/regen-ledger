@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"os"
 
+	moduletypes "github.com/regen-network/regen-ledger/types/module"
+	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -130,6 +133,7 @@ var (
 			vesting.AppModuleBasic{},
 			feegrantmodule.AppModuleBasic{},
 			authzmodule.AppModuleBasic{},
+			ecocreditmodule.Module{},
 		}, setCustomModuleBasics()...)...,
 	)
 
@@ -346,8 +350,21 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		&stakingKeeper, govRouter,
 	)
 
-	// register experimental modules here
+	// register custom modules here
 	app.smm = setCustomModules(app, interfaceRegistry)
+	ecocreditModule := ecocreditmodule.NewModule(
+		app.GetSubspace(ecocredit.DefaultParamspace),
+		app.BankKeeper,
+	)
+	newModules := []moduletypes.Module{ecocreditModule}
+	err := app.smm.RegisterModules(newModules)
+	if err != nil {
+		panic(err)
+	}
+	err = app.smm.CompleteInitialization()
+	if err != nil {
+		panic(err)
+	}
 	app.smm.RegisterInvariants(&app.CrisisKeeper)
 
 	var skipGenesisInvariants = cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
@@ -650,6 +667,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
+	paramsKeeper.Subspace(ecocredit.DefaultParamspace)
 	initCustomParamsKeeper(&paramsKeeper)
 
 	return paramsKeeper

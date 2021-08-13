@@ -11,13 +11,16 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/authz"
 	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
 
 	"github.com/regen-network/regen-ledger/types/module/server"
 )
@@ -33,8 +36,8 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 
 // setCustomModules registers new modules with the server module manager.
 // It does nothing here and returns an empty manager since we're not using experimental mode.
-func setCustomModules(_ *RegenApp, _ types.InterfaceRegistry) *server.Manager {
-	return &server.Manager{}
+func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *server.Manager {
+	return server.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
 }
 func setCustomKVStoreKeys() []string {
 	return []string{}
@@ -76,7 +79,7 @@ func (app *RegenApp) registerUpgradeHandlers() {
 
 	if upgradeInfo.Name == upgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{"authz", "feegrant"},
+			Added: []string{authz.ModuleName, feegrant.ModuleName, ecocredittypes.ModuleName},
 		}
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
