@@ -94,12 +94,6 @@ message Params {
   repeated CreditType credit_types = 4;
 }
 
-// GenesisState defines the state of the ecocredit module that is needed at genesis
-message GenesisState {
-  // Params contains the updateable global parameters for use with the x/params module
-  Params params = 1 [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"params\""];
-}
-
 // CreditType defines the measurement unit/precision of a certain credit type
 // (e.g. carbon, biodiversity...)
 message CreditType {

@@ -340,7 +340,7 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 		{
 			name:                   "valid credit batch and invalid account",
 			args:                   []string{s.batchInfo.BatchDenom, "abcde"},
-			expectErr:              false,
+			expectErr:              true,
 			expectedTradableAmount: "0",
 			expectedRetiredAmount:  "0",
 		},

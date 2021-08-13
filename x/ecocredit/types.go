@@ -21,12 +21,6 @@ func (m *CreditTypeSeq) PrimaryKey() []byte {
 	return []byte(m.Abbreviation)
 }
 
-func DefaultGenesisState() *GenesisState {
-	return &GenesisState{
-		Params: DefaultParams(),
-	}
-}
-
 // Normalize credit type name by removing whitespace and converting to lowercase
 func NormalizeCreditTypeName(name string) string {
 	return util.FastRemoveWhitespace(strings.ToLower(name))

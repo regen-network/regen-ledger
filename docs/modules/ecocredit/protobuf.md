@@ -16,8 +16,12 @@
     - [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo)
     - [CreditType](#regen.ecocredit.v1alpha1.CreditType)
     - [CreditTypeSeq](#regen.ecocredit.v1alpha1.CreditTypeSeq)
-    - [GenesisState](#regen.ecocredit.v1alpha1.GenesisState)
     - [Params](#regen.ecocredit.v1alpha1.Params)
+  
+- [regen/ecocredit/v1alpha1/genesis.proto](#regen/ecocredit/v1alpha1/genesis.proto)
+    - [Balance](#regen.ecocredit.v1alpha1.Balance)
+    - [GenesisState](#regen.ecocredit.v1alpha1.GenesisState)
+    - [Supply](#regen.ecocredit.v1alpha1.Supply)
   
 - [regen/ecocredit/v1alpha1/query.proto](#regen/ecocredit/v1alpha1/query.proto)
     - [QueryBalanceRequest](#regen.ecocredit.v1alpha1.QueryBalanceRequest)
@@ -257,21 +261,6 @@ This represents the number of credit classes created with that credit type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.GenesisState"></a>
-
-### GenesisState
-GenesisState defines the state of the ecocredit module that is needed at genesis
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| params | [Params](#regen.ecocredit.v1alpha1.Params) |  | Params contains the updateable global parameters for use with the x/params module |
-
-
-
-
-
-
 <a name="regen.ecocredit.v1alpha1.Params"></a>
 
 ### Params
@@ -285,6 +274,78 @@ use with the x/params module.
 | allowed_class_designers | [string](#string) | repeated | allowed_class_designers is an allowlist defining the addresses with the required permissions to create credit classes |
 | allowlist_enabled | [bool](#bool) |  | allowlist_enabled is a param that enables/disables the allowlist for credit creation |
 | credit_types | [CreditType](#regen.ecocredit.v1alpha1.CreditType) | repeated | credit_types is a list of definitions for credit types |
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
+<a name="regen/ecocredit/v1alpha1/genesis.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## regen/ecocredit/v1alpha1/genesis.proto
+
+
+
+<a name="regen.ecocredit.v1alpha1.Balance"></a>
+
+### Balance
+Balance represents tradable or retired units of a credit batch with an
+account address, batch_denom, and balance.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| address | [string](#string) |  | address is the account address of the account holding credits. |
+| batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
+| tradable_balance | [string](#string) |  | tradable_balance is the tradable balance of the credit batch. |
+| retired_balance | [string](#string) |  | retired_balance is the retired balance of the credit batch. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.GenesisState"></a>
+
+### GenesisState
+GenesisState defines ecocredit module's genesis state.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| params | [Params](#regen.ecocredit.v1alpha1.Params) |  | Params contains the updateable global parameters for use with the x/params module |
+| class_info | [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo) | repeated | class_info is the list of credit class info. |
+| batch_info | [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo) | repeated | batch_info is the list of credit batch info. |
+| sequences | [CreditTypeSeq](#regen.ecocredit.v1alpha1.CreditTypeSeq) | repeated | sequences is the list of credit type sequence. |
+| balances | [Balance](#regen.ecocredit.v1alpha1.Balance) | repeated | balances is the list of credit batch tradable/retired units. |
+| supplies | [Supply](#regen.ecocredit.v1alpha1.Supply) | repeated | supplies is the list of credit batch tradable/retired supply. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.Supply"></a>
+
+### Supply
+Supply represents a tradable or retired supply of a credit batch.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
+| tradable_supply | [string](#string) |  | tradable_supply is the tradable supply of the credit batch. |
+| retired_supply | [string](#string) |  | retired_supply is the retired supply of the credit batch. |
 
 
 
