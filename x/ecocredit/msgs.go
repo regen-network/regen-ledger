@@ -3,14 +3,28 @@ package ecocredit
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 
 	"github.com/regen-network/regen-ledger/types/math"
 )
 
 var (
-	_, _, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
-		&MsgRetire{}, &MsgCancel{}, &MsgSetPrecision{}
+	_, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
+		&MsgRetire{}, &MsgCancel{}
+	_, _, _, _, _ legacytx.LegacyMsg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
+		&MsgRetire{}, &MsgCancel{}
 )
+
+// Route Implements LegacyMsg.
+func (m MsgCreateClass) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type Implements LegacyMsg.
+func (m MsgCreateClass) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes Implements LegacyMsg.
+func (m MsgCreateClass) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
 
 func (m *MsgCreateClass) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Designer)
@@ -19,7 +33,11 @@ func (m *MsgCreateClass) ValidateBasic() error {
 	}
 
 	if len(m.Issuers) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "issuers cannot be empty")
+		return sdkerrors.ErrInvalidRequest.Wrap("issuers cannot be empty")
+	}
+
+	if len(m.CreditType) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("credit class must have a credit type")
 	}
 	for _, issuer := range m.Issuers {
 		_, err := sdk.AccAddressFromBech32(issuer)
@@ -45,6 +63,17 @@ func (m *MsgCreateClass) GetSigners() []sdk.AccAddress {
 	}
 
 	return []sdk.AccAddress{addr}
+}
+
+// Route Implements LegacyMsg.
+func (m MsgCreateBatch) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type Implements LegacyMsg.
+func (m MsgCreateBatch) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes Implements LegacyMsg.
+func (m MsgCreateBatch) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
 func (m *MsgCreateBatch) ValidateBasic() error {
@@ -111,6 +140,17 @@ func (m *MsgCreateBatch) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
+// Route Implements LegacyMsg.
+func (m MsgSend) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type Implements LegacyMsg.
+func (m MsgSend) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes Implements LegacyMsg.
+func (m MsgSend) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
 func (m *MsgSend) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Sender)
 	if err != nil {
@@ -160,6 +200,17 @@ func (m *MsgSend) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
+// Route Implements LegacyMsg.
+func (m MsgRetire) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type Implements LegacyMsg.
+func (m MsgRetire) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes Implements LegacyMsg.
+func (m MsgRetire) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
 func (m *MsgRetire) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Holder)
 	if err != nil {
@@ -197,6 +248,17 @@ func (m *MsgRetire) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
+// Route Implements LegacyMsg.
+func (m MsgCancel) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type Implements LegacyMsg.
+func (m MsgCancel) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes Implements LegacyMsg.
+func (m MsgCancel) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
 func (m *MsgCancel) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Holder)
 	if err != nil {
@@ -222,22 +284,6 @@ func (m *MsgCancel) ValidateBasic() error {
 
 func (m *MsgCancel) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Holder)
-	if err != nil {
-		panic(err)
-	}
-
-	return []sdk.AccAddress{addr}
-}
-
-func (m *MsgSetPrecision) ValidateBasic() error {
-	if len(m.BatchDenom) == 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "missing batch_denom")
-	}
-	return nil
-}
-
-func (m *MsgSetPrecision) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(m.Issuer)
 	if err != nil {
 		panic(err)
 	}

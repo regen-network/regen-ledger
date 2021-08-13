@@ -52,9 +52,8 @@ type credits struct {
 }
 
 var (
-	reCreditAmt  = `[[:digit:]]+(?:\.[[:digit:]]+)?|\.[[:digit:]]+`
-	reBatchDenom = `[a-zA-Z0-9]+\/[a-zA-Z0-9]+`
-	reCredits    = regexp.MustCompile(fmt.Sprintf(`^(%s)\:(%s)$`, reCreditAmt, reBatchDenom))
+	reCreditAmt = `[[:digit:]]+(?:\.[[:digit:]]+)?|\.[[:digit:]]+`
+	reCredits   = regexp.MustCompile(fmt.Sprintf(`^(%s) (%s)$`, reCreditAmt, ecocredit.ReBatchDenom))
 )
 
 func parseCancelCreditsList(creditsListStr string) ([]*ecocredit.MsgCancel_CancelCredits, error) {

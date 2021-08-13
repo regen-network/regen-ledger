@@ -68,7 +68,15 @@ module.exports = {
     sidebar: {
       '/': [
         {
+          title: 'Introduction',
+          collapsable: false,
+          children: [
+            '/intro/',
+          ]
+        },
+        {
           title: 'Getting Started',
+          collapsable: false,
           children: [
             '/getting-started/',
             '/getting-started/live-networks',
@@ -77,17 +85,27 @@ module.exports = {
             '/getting-started/prerequisites'
           ]
         },
-        'core-functionality',
-        'api',
+        {
+          title: 'Regen Ledger',
+          collapsable: false,
+          children: [
+            '/regen-ledger/',
+            '/regen-ledger/interfaces',
+          ]
+        },
         {
           title: 'Modules',
+          collapsable: false,
           children: [
             {
               title: 'Data Module',
               collapsable: false,
               children: [
                 '/modules/data/',
-                {title: 'Protobuf Documentation', path: '/modules/data/protobuf', collapsable: true}
+                {
+                  title: 'Protobuf Documentation',
+                  path: '/modules/data/protobuf'
+                }
               ]
             },
             {
@@ -95,11 +113,23 @@ module.exports = {
               collapsable: false,
               children: [
                 '/modules/ecocredit/',
-                {title: 'Protobuf Documentation', path: '/modules/ecocredit/protobuf', collapsable: true}
+                {
+                  title: 'Protobuf Documentation',
+                  path: '/modules/ecocredit/protobuf'
+                }
               ]
             },
           ]
-        }
+        },
+        {
+          title: 'Tutorials',
+          collapsable: false,
+          children: [
+            '/tutorials/',
+            // '/tutorials/data-cli',
+            // '/tutorials/data-grpc',
+          ]
+        },
       ],
     }
   },

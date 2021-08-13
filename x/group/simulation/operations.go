@@ -19,6 +19,21 @@ import (
 	"github.com/regen-network/regen-ledger/x/group/exported"
 )
 
+// group message types
+var (
+	TypeMsgCreateGroup                      = sdk.MsgTypeURL(&group.MsgCreateGroup{})
+	TypeMsgUpdateGroupMembers               = sdk.MsgTypeURL(&group.MsgUpdateGroupMembers{})
+	TypeMsgUpdateGroupAdmin                 = sdk.MsgTypeURL(&group.MsgUpdateGroupAdmin{})
+	TypeMsgUpdateGroupMetadata              = sdk.MsgTypeURL(&group.MsgUpdateGroupMetadata{})
+	TypeMsgCreateGroupAccount               = sdk.MsgTypeURL(&group.MsgCreateGroupAccount{})
+	TypeMsgUpdateGroupAccountAdmin          = sdk.MsgTypeURL(&group.MsgUpdateGroupAccountAdmin{})
+	TypeMsgUpdateGroupAccountDecisionPolicy = sdk.MsgTypeURL(&group.MsgUpdateGroupAccountDecisionPolicy{})
+	TypeMsgUpdateGroupAccountMetadata       = sdk.MsgTypeURL(&group.MsgUpdateGroupAccountMetadata{})
+	TypeMsgCreateProposal                   = sdk.MsgTypeURL(&group.MsgCreateProposal{})
+	TypeMsgVote                             = sdk.MsgTypeURL(&group.MsgVote{})
+	TypeMsgExec                             = sdk.MsgTypeURL(&group.MsgExec{})
+)
+
 // Simulation operation weights constants
 const (
 	OpMsgCreateGroup                      = "op_weight_msg_create_group"
@@ -47,7 +62,7 @@ const (
 	WeightUpdateGroupMembers               = 5
 	WeightUpdateGroupAccountAdmin          = 5
 	WeightUpdateGroupAccountDecisionPolicy = 5
-	WeightUpdateGroupAccountComment        = 5
+	WeightUpdateGroupAccountMetadata       = 5
 	GroupMemberWeight                      = 40
 )
 
@@ -63,7 +78,7 @@ func WeightedOperations(
 		weightMsgCreateGroupAccount               int
 		weightMsgUpdateGroupAccountAdmin          int
 		weightMsgUpdateGroupAccountDecisionPolicy int
-		weightMsgUpdateGroupAccountComment        int
+		weightMsgUpdateGroupAccountMetadata       int
 		weightMsgCreateProposal                   int
 		weightMsgVote                             int
 		weightMsgExec                             int
@@ -119,9 +134,9 @@ func WeightedOperations(
 			weightMsgUpdateGroupAccountDecisionPolicy = WeightUpdateGroupAccountDecisionPolicy
 		},
 	)
-	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupAccountMetaData, &weightMsgUpdateGroupAccountComment, nil,
+	appParams.GetOrGenerate(cdc, OpMsgUpdateGroupAccountMetaData, &weightMsgUpdateGroupAccountMetadata, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateGroupAccountComment = WeightUpdateGroupAccountComment
+			weightMsgUpdateGroupAccountMetadata = WeightUpdateGroupAccountMetadata
 		},
 	)
 
@@ -167,7 +182,7 @@ func WeightedOperations(
 			SimulateMsgUpdateGroupAccountDecisionPolicy(ak, bk, qryClient, protoCdc),
 		),
 		simulation.NewWeightedOperation(
-			weightMsgUpdateGroupAccountComment,
+			weightMsgUpdateGroupAccountMetadata,
 			SimulateMsgUpdateGroupAccountMetadata(ak, bk, qryClient, protoCdc),
 		),
 	}
@@ -184,7 +199,7 @@ func SimulateMsgCreateGroup(ak exported.AccountKeeper, bk exported.BankKeeper, p
 		spendableCoins := bk.SpendableCoins(ctx, account.GetAddress())
 		fees, err := simtypes.RandomFees(r, ctx, spendableCoins)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroup, "fee error"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroup, "fee error"), nil, err
 		}
 
 		members := []group.Member{
@@ -209,7 +224,7 @@ func SimulateMsgCreateGroup(ak exported.AccountKeeper, bk exported.BankKeeper, p
 			acc.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroup, "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroup, "unable to generate mock tx"), nil, err
 		}
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
@@ -231,7 +246,7 @@ func SimulateMsgCreateGroupAccount(ak exported.AccountKeeper, bk exported.BankKe
 		spendableCoins := bk.SpendableCoins(ctx, account.GetAddress())
 		fees, err := simtypes.RandomFees(r, ctx, spendableCoins)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroupAccount, "fee error"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroupAccount, "fee error"), nil, err
 		}
 
 		groupAdmin, groupID, op, err := getGroupDetails(ctx, qryClient, acc)
@@ -244,7 +259,7 @@ func SimulateMsgCreateGroupAccount(ak exported.AccountKeeper, bk exported.BankKe
 
 		addr, err := sdk.AccAddressFromBech32(groupAdmin)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroupAccount, "fail to decode acc address"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroupAccount, "fail to decode acc address"), nil, err
 		}
 
 		msg, err := group.NewMsgCreateGroupAccount(
@@ -257,7 +272,7 @@ func SimulateMsgCreateGroupAccount(ak exported.AccountKeeper, bk exported.BankKe
 			},
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroupAccount, err.Error()), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroupAccount, err.Error()), nil, err
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
@@ -272,7 +287,7 @@ func SimulateMsgCreateGroupAccount(ak exported.AccountKeeper, bk exported.BankKe
 			acc.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroupAccount, "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroupAccount, "unable to generate mock tx"), nil, err
 		}
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
@@ -288,17 +303,17 @@ func getGroupDetails(sdkCtx sdk.Context, qryClient group.QueryClient, acc simtyp
 
 	groups, err := qryClient.GroupsByAdmin(ctx, &group.QueryGroupsByAdminRequest{Admin: acc.Address.String()})
 	if err != nil {
-		return "", 0, simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroupAccount, "fail to query groups"), err
+		return "", 0, simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroupAccount, "fail to query groups"), err
 	}
 
 	if len(groups.Groups) == 0 {
-		return "", 0, simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroupAccount, ""), nil
+		return "", 0, simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroupAccount, ""), nil
 	}
 
 	groupAdmin = groups.Groups[0].Admin
 	groupID = groups.Groups[0].GroupId
 
-	return groupAdmin, groupID, simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateGroupAccount, ""), nil
+	return groupAdmin, groupID, simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateGroupAccount, ""), nil
 }
 
 // SimulateMsgCreateProposal generates a NewMsgCreateProposal with random values
@@ -311,7 +326,7 @@ func SimulateMsgCreateProposal(ak exported.AccountKeeper, bk exported.BankKeeper
 		spendableCoins := bk.SpendableCoins(sdkCtx, account.GetAddress())
 		fees, err := simtypes.RandomFees(r, sdkCtx, spendableCoins)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateProposal, "fee error"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateProposal, "fee error"), nil, err
 		}
 
 		ctx := regentypes.Context{Context: sdkCtx}
@@ -325,7 +340,7 @@ func SimulateMsgCreateProposal(ak exported.AccountKeeper, bk exported.BankKeeper
 
 		groupAccounts, opMsg, err := groupAccountsByAdmin(ctx, queryClient, groupAdmin)
 		if groupAccounts == nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateProposal, opMsg), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateProposal, opMsg), nil, err
 		}
 
 		msg := group.MsgCreateProposal{
@@ -346,7 +361,7 @@ func SimulateMsgCreateProposal(ak exported.AccountKeeper, bk exported.BankKeeper
 			acc.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgCreateProposal, "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgCreateProposal, "unable to generate mock tx"), nil, err
 		}
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
@@ -369,7 +384,7 @@ func SimulateMsgUpdateGroupAdmin(ak exported.AccountKeeper, bk exported.BankKeep
 		spendableCoins := bk.SpendableCoins(sdkCtx, account.GetAddress())
 		fees, err := simtypes.RandomFees(r, sdkCtx, spendableCoins)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAdmin, "fee error"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAdmin, "fee error"), nil, err
 		}
 
 		ctx := regentypes.Context{Context: sdkCtx}
@@ -384,7 +399,7 @@ func SimulateMsgUpdateGroupAdmin(ak exported.AccountKeeper, bk exported.BankKeep
 
 		groupAccounts, opMsg, err := groupAccountsByAdmin(ctx, queryClient, groupAdmin)
 		if groupAccounts == nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAdmin, opMsg), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAdmin, opMsg), nil, err
 		}
 
 		msg := group.MsgUpdateGroupAdmin{
@@ -405,7 +420,7 @@ func SimulateMsgUpdateGroupAdmin(ak exported.AccountKeeper, bk exported.BankKeep
 			acc1.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAdmin, "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAdmin, "unable to generate mock tx"), nil, err
 		}
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
@@ -427,7 +442,7 @@ func SimulateMsgUpdateGroupMetadata(ak exported.AccountKeeper, bk exported.BankK
 		spendableCoins := bk.SpendableCoins(sdkCtx, account.GetAddress())
 		fees, err := simtypes.RandomFees(r, sdkCtx, spendableCoins)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupComment, "fee error"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupMetadata, "fee error"), nil, err
 		}
 
 		groupAdmin, groupID, op, err := getGroupDetails(sdkCtx, queryClient, acc)
@@ -456,7 +471,7 @@ func SimulateMsgUpdateGroupMetadata(ak exported.AccountKeeper, bk exported.BankK
 			acc.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupComment, "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupMetadata, "unable to generate mock tx"), nil, err
 		}
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
@@ -481,7 +496,7 @@ func SimulateMsgUpdateGroupMembers(ak exported.AccountKeeper,
 		spendableCoins := bk.SpendableCoins(sdkCtx, account.GetAddress())
 		fees, err := simtypes.RandomFees(r, sdkCtx, spendableCoins)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupMembers, "fee error"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupMembers, "fee error"), nil, err
 		}
 
 		ctx := regentypes.Context{Context: sdkCtx}
@@ -495,7 +510,7 @@ func SimulateMsgUpdateGroupMembers(ak exported.AccountKeeper,
 
 		groupAccounts, opMsg, err := groupAccountsByAdmin(ctx, queryClient, groupAdmin)
 		if groupAccounts == nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupMembers, opMsg), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupMembers, opMsg), nil, err
 		}
 
 		members := []group.Member{
@@ -529,7 +544,7 @@ func SimulateMsgUpdateGroupMembers(ak exported.AccountKeeper,
 			acc1.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupMembers, "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupMembers, "unable to generate mock tx"), nil, err
 		}
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
@@ -553,7 +568,7 @@ func SimulateMsgUpdateGroupAccountAdmin(ak exported.AccountKeeper, bk exported.B
 		spendableCoins := bk.SpendableCoins(sdkCtx, account.GetAddress())
 		fees, err := simtypes.RandomFees(r, sdkCtx, spendableCoins)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountAdmin, "fee error"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAccountAdmin, "fee error"), nil, err
 		}
 
 		ctx := regentypes.Context{Context: sdkCtx}
@@ -568,7 +583,7 @@ func SimulateMsgUpdateGroupAccountAdmin(ak exported.AccountKeeper, bk exported.B
 
 		groupAccounts, opMsg, err := groupAccountsByAdmin(ctx, queryClient, groupAdmin)
 		if groupAccounts == nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountAdmin, opMsg), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAccountAdmin, opMsg), nil, err
 		}
 
 		msg := group.MsgUpdateGroupAccountAdmin{
@@ -589,7 +604,7 @@ func SimulateMsgUpdateGroupAccountAdmin(ak exported.AccountKeeper, bk exported.B
 			acc1.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountAdmin, "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAccountAdmin, "unable to generate mock tx"), nil, err
 		}
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
@@ -612,7 +627,7 @@ func SimulateMsgUpdateGroupAccountDecisionPolicy(ak exported.AccountKeeper,
 		spendableCoins := bk.SpendableCoins(sdkCtx, account.GetAddress())
 		fees, err := simtypes.RandomFees(r, sdkCtx, spendableCoins)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountDecisionPolicy, "fee error"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAccountDecisionPolicy, "fee error"), nil, err
 		}
 
 		ctx := regentypes.Context{Context: sdkCtx}
@@ -626,17 +641,17 @@ func SimulateMsgUpdateGroupAccountDecisionPolicy(ak exported.AccountKeeper,
 
 		groupAccounts, opMsg, err := groupAccountsByAdmin(ctx, queryClient, groupAdmin)
 		if groupAccounts == nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountDecisionPolicy, opMsg), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAccountDecisionPolicy, opMsg), nil, err
 		}
 
 		adminBech32, err := sdk.AccAddressFromBech32(groupAccounts[0].Admin)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountDecisionPolicy, fmt.Sprintf("fail to decide bech32 address: %s", err.Error())), nil, nil
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAccountDecisionPolicy, fmt.Sprintf("fail to decide bech32 address: %s", err.Error())), nil, nil
 		}
 
 		groupAccountBech32, err := sdk.AccAddressFromBech32(groupAccounts[0].Address)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountDecisionPolicy, fmt.Sprintf("fail to decide bech32 address: %s", err.Error())), nil, nil
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAccountDecisionPolicy, fmt.Sprintf("fail to decide bech32 address: %s", err.Error())), nil, nil
 		}
 
 		msg, err := group.NewMsgUpdateGroupAccountDecisionPolicyRequest(adminBech32, groupAccountBech32, &group.ThresholdDecisionPolicy{
@@ -644,7 +659,7 @@ func SimulateMsgUpdateGroupAccountDecisionPolicy(ak exported.AccountKeeper,
 			Timeout:   gogotypes.Duration{Seconds: int64(simtypes.RandIntBetween(r, 100, 1000))},
 		})
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountDecisionPolicy, err.Error()), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAccountDecisionPolicy, err.Error()), nil, err
 		}
 
 		txGen := simappparams.MakeTestEncodingConfig().TxConfig
@@ -659,7 +674,7 @@ func SimulateMsgUpdateGroupAccountDecisionPolicy(ak exported.AccountKeeper,
 			acc1.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountDecisionPolicy, "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAccountDecisionPolicy, "unable to generate mock tx"), nil, err
 		}
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
@@ -683,7 +698,7 @@ func SimulateMsgUpdateGroupAccountMetadata(ak exported.AccountKeeper,
 		spendableCoins := bk.SpendableCoins(sdkCtx, account.GetAddress())
 		fees, err := simtypes.RandomFees(r, sdkCtx, spendableCoins)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountComment, "fee error"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAccountMetadata, "fee error"), nil, err
 		}
 
 		ctx := regentypes.Context{Context: sdkCtx}
@@ -697,7 +712,7 @@ func SimulateMsgUpdateGroupAccountMetadata(ak exported.AccountKeeper,
 
 		groupAccounts, opMsg, err := groupAccountsByAdmin(ctx, queryClient, groupAdmin)
 		if groupAccounts == nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountComment, opMsg), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAccountMetadata, opMsg), nil, err
 		}
 
 		msg := group.MsgUpdateGroupAccountMetadata{
@@ -718,7 +733,7 @@ func SimulateMsgUpdateGroupAccountMetadata(ak exported.AccountKeeper,
 			acc1.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountComment, "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAccountMetadata, "unable to generate mock tx"), nil, err
 		}
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
@@ -742,7 +757,7 @@ func SimulateMsgVote(ak exported.AccountKeeper,
 		spendableCoins := bk.SpendableCoins(sdkCtx, account.GetAddress())
 		fees, err := simtypes.RandomFees(r, sdkCtx, spendableCoins)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "fee error"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgVote, "fee error"), nil, err
 		}
 		ctx := regentypes.Context{Context: sdkCtx}
 		groupAdmin, _, op, err := getGroupDetails(sdkCtx, queryClient, acc1)
@@ -755,16 +770,16 @@ func SimulateMsgVote(ak exported.AccountKeeper,
 
 		groupAccounts, opMsg, err := groupAccountsByAdmin(ctx, queryClient, groupAdmin)
 		if groupAccounts == nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, opMsg), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgVote, opMsg), nil, err
 		}
 
 		proposalsResult, err := queryClient.ProposalsByGroupAccount(ctx, &group.QueryProposalsByGroupAccountRequest{Address: groupAccounts[0].Address})
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "fail to query group info"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgVote, "fail to query group info"), nil, err
 		}
 		proposals := proposalsResult.GetProposals()
 		if len(proposals) == 0 {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "no proposals found"), nil, nil
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgVote, "no proposals found"), nil, nil
 		}
 
 		proposalID := -1
@@ -773,11 +788,11 @@ func SimulateMsgVote(ak exported.AccountKeeper,
 			if proposal.Status == group.ProposalStatusSubmitted {
 				votingPeriodEnd, err := gogotypes.TimestampFromProto(&proposal.Timeout)
 				if err != nil {
-					return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "error: while converting to timestamp"), nil, err
+					return simtypes.NoOpMsg(group.ModuleName, TypeMsgVote, "error: while converting to timestamp"), nil, err
 				}
 				proposalID = int(proposal.ProposalId)
 				if votingPeriodEnd.Before(ctx.BlockTime()) || votingPeriodEnd.Equal(ctx.BlockTime()) {
-					return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "voting period ended: skipping"), nil, nil
+					return simtypes.NoOpMsg(group.ModuleName, TypeMsgVote, "voting period ended: skipping"), nil, nil
 				}
 				break
 			}
@@ -785,7 +800,7 @@ func SimulateMsgVote(ak exported.AccountKeeper,
 
 		// return no-op if no proposal found
 		if proposalID == -1 {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "no proposals found"), nil, nil
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgVote, "no proposals found"), nil, nil
 		}
 
 		msg := group.MsgVote{
@@ -806,7 +821,7 @@ func SimulateMsgVote(ak exported.AccountKeeper,
 			acc1.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountComment, "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAccountMetadata, "unable to generate mock tx"), nil, err
 		}
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
@@ -834,7 +849,7 @@ func SimulateMsgExec(ak exported.AccountKeeper,
 		spendableCoins := bk.SpendableCoins(sdkCtx, account.GetAddress())
 		fees, err := simtypes.RandomFees(r, sdkCtx, spendableCoins)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "fee error"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgVote, "fee error"), nil, err
 		}
 		ctx := regentypes.Context{Context: sdkCtx}
 		groupAdmin, _, op, err := getGroupDetails(sdkCtx, queryClient, acc1)
@@ -847,16 +862,16 @@ func SimulateMsgExec(ak exported.AccountKeeper,
 
 		groupAccounts, opMsg, err := groupAccountsByAdmin(ctx, queryClient, groupAdmin)
 		if groupAccounts == nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, opMsg), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgVote, opMsg), nil, err
 		}
 
 		proposalsResult, err := queryClient.ProposalsByGroupAccount(ctx, &group.QueryProposalsByGroupAccountRequest{Address: groupAccounts[0].Address})
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "fail to query group info"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgVote, "fail to query group info"), nil, err
 		}
 		proposals := proposalsResult.GetProposals()
 		if len(proposals) == 0 {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "no proposals found"), nil, nil
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgVote, "no proposals found"), nil, nil
 		}
 
 		proposalID := -1
@@ -870,7 +885,7 @@ func SimulateMsgExec(ak exported.AccountKeeper,
 
 		// return no-op if no proposal found
 		if proposalID == -1 {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgVote, "no proposals found"), nil, nil
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgVote, "no proposals found"), nil, nil
 		}
 
 		msg := group.MsgExec{
@@ -889,7 +904,7 @@ func SimulateMsgExec(ak exported.AccountKeeper,
 			acc1.PrivKey,
 		)
 		if err != nil {
-			return simtypes.NoOpMsg(group.ModuleName, group.TypeMsgUpdateGroupAccountComment, "unable to generate mock tx"), nil, err
+			return simtypes.NoOpMsg(group.ModuleName, TypeMsgUpdateGroupAccountMetadata, "unable to generate mock tx"), nil, err
 		}
 
 		_, _, err = app.Deliver(txGen.TxEncoder(), tx)

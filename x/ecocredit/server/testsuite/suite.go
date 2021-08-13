@@ -50,6 +50,16 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.ctx = types.Context{Context: s.sdkCtx}
 
 	ecocreditParams := ecocredit.DefaultParams()
+	// Add biodiversity credit type for testing credit type sequence numbers
+	ecocreditParams.CreditTypes = append(
+		ecocreditParams.CreditTypes,
+		&ecocredit.CreditType{
+			Name:         "biodiversity",
+			Abbreviation: "BIO",
+			Unit:         "hectare",
+			Precision:    6,
+		},
+	)
 	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
 
 	s.signers = s.fixture.Signers()
@@ -78,26 +88,55 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	// create class with insufficient funds and it should fail
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-		Designer: designer.String(),
-		Issuers:  []string{issuer1, issuer2},
-		Metadata: nil,
+		Designer:   designer.String(),
+		Issuers:    []string{issuer1, issuer2},
+		Metadata:   nil,
+		CreditType: "carbon",
 	})
 	s.Require().Error(err)
 	s.Require().Nil(createClsRes)
 
-	// create class with sufficient funds and it should succeed
-	s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+	// create classes with sufficient funds and it should succeed
+	s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 40000))))
 
-	createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-		Designer: designer.String(),
-		Issuers:  []string{issuer1, issuer2},
-		Metadata: nil,
-	})
-	s.Require().NoError(err)
-	s.Require().NotNil(createClsRes)
+	// Run multiple tests to test the CreditTypeSeqs
+	createClassTestCases := []struct {
+		creditType      string
+		expectedClassID string
+	}{
+		{
+			creditType:      "carbon",
+			expectedClassID: "C01",
+		},
+		{
+			creditType:      "biodiversity",
+			expectedClassID: "BIO01",
+		},
+		{
+			creditType:      "biodiversity",
+			expectedClassID: "BIO02",
+		},
+		{
+			creditType:      "carbon",
+			expectedClassID: "C02",
+		},
+	}
 
-	clsID := createClsRes.ClassId
-	s.Require().NotEmpty(clsID)
+	for _, tc := range createClassTestCases {
+		createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
+			Designer:   designer.String(),
+			Issuers:    []string{issuer1, issuer2},
+			Metadata:   nil,
+			CreditType: tc.creditType,
+		})
+		s.Require().NoError(err)
+		s.Require().NotNil(createClsRes)
+
+		s.Require().Equal(tc.expectedClassID, createClsRes.ClassId)
+	}
+
+	// Use first test class for remainder of tests
+	clsID := createClassTestCases[0].expectedClassID
 
 	// designer should have no funds remaining
 	s.Require().Equal(s.bankKeeper.GetBalance(s.sdkCtx, designer, "stake"), sdk.NewInt64Coin("stake", 0))
@@ -105,8 +144,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	// create batch
 	t0, t1, t2 := "10.37", "1007.3869", "100"
 	tSupply0 := "1117.7569"
-	r0, r1, r2 := "4.286", "10000.4589902", "0"
-	rSupply0 := "10004.7449902"
+	r0, r1, r2 := "4.286", "10000.45899", "0"
+	rSupply0 := "10004.74499"
 
 	time1 := time.Now()
 	time2 := time.Now()
@@ -213,6 +252,12 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expectErr: true,
 		},
 		{
+			name:      "can't cancel with a higher precision than the credit type",
+			holder:    addr4,
+			toCancel:  "0.1234567",
+			expectErr: true,
+		},
+		{
 			name:      "can't cancel no credits",
 			holder:    addr4,
 			toCancel:  "0",
@@ -232,7 +277,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expTradable:        "97.9998",
 			expTradableSupply:  "1115.7567",
 			expRetired:         "0",
-			expTotalAmount:     "11120.5016902",
+			expTotalAmount:     "11120.50169",
 			expAmountCancelled: "2.0002",
 		},
 		{
@@ -243,7 +288,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expTradable:        "0",
 			expTradableSupply:  "1017.7569",
 			expRetired:         "0",
-			expTotalAmount:     "11022.5018902",
+			expTotalAmount:     "11022.50189",
 			expAmountCancelled: "100.0000",
 		},
 		{
@@ -260,7 +305,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expTradable:        "9.37",
 			expTradableSupply:  "1016.7569",
 			expRetired:         "4.286",
-			expTotalAmount:     "11021.5018902",
+			expTotalAmount:     "11021.50189",
 			expAmountCancelled: "101.0000",
 		},
 	}
@@ -327,7 +372,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expectErr:          true,
 		},
 		{
-			name:               "can't use more than 7 decimal places",
+			name:               "can't use more precision than the credit type allows (6)",
 			toRetire:           "10.00000001",
 			retirementLocation: "AF",
 			expectErr:          true,
@@ -364,7 +409,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expTradable:        "9.3699",
 			expRetired:         "4.2861",
 			expTradableSupply:  "1016.7568",
-			expRetiredSupply:   "10004.7450902",
+			expRetiredSupply:   "10004.74509",
 		},
 		{
 			name:               "can retire more credits",
@@ -374,7 +419,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expTradable:        "0.3699",
 			expRetired:         "13.2861",
 			expTradableSupply:  "1007.7568",
-			expRetiredSupply:   "10013.7450902",
+			expRetiredSupply:   "10013.74509",
 		},
 		{
 			name:               "can retire all credits",
@@ -384,7 +429,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expTradable:        "0",
 			expRetired:         "13.656",
 			expTradableSupply:  "1007.3869",
-			expRetiredSupply:   "10014.1149902",
+			expRetiredSupply:   "10014.11499",
 		},
 		{
 			name:      "can't retire any more credits",
@@ -487,11 +532,11 @@ func (s *IntegrationTestSuite) TestScenario() {
 			retirementLocation:   "AF",
 			expectErr:            false,
 			expTradableSender:    "977.3869",
-			expRetiredSender:     "10000.4589902",
+			expRetiredSender:     "10000.45899",
 			expTradableRecipient: "10",
 			expRetiredRecipient:  "20",
 			expTradableSupply:    "987.3869",
-			expRetiredSupply:     "10034.1149902",
+			expRetiredSupply:     "10034.11499",
 		},
 		{
 			name:                 "can send with no retirement location",
@@ -500,11 +545,11 @@ func (s *IntegrationTestSuite) TestScenario() {
 			retirementLocation:   "",
 			expectErr:            false,
 			expTradableSender:    "967.3869",
-			expRetiredSender:     "10000.4589902",
+			expRetiredSender:     "10000.45899",
 			expTradableRecipient: "20",
 			expRetiredRecipient:  "20",
 			expTradableSupply:    "987.3869",
-			expRetiredSupply:     "10034.1149902",
+			expRetiredSupply:     "10034.11499",
 		},
 		{
 			name:                 "can send all tradable",
@@ -513,11 +558,11 @@ func (s *IntegrationTestSuite) TestScenario() {
 			retirementLocation:   "AF",
 			expectErr:            false,
 			expTradableSender:    "0",
-			expRetiredSender:     "10000.4589902",
+			expRetiredSender:     "10000.45899",
 			expTradableRecipient: "87.3869",
 			expRetiredRecipient:  "920",
 			expTradableSupply:    "87.3869",
-			expRetiredSupply:     "10934.1149902",
+			expRetiredSupply:     "10934.11499",
 		},
 		{
 			name:         "can't send any more",
@@ -578,45 +623,156 @@ func (s *IntegrationTestSuite) TestScenario() {
 		})
 	}
 
-	/****   TEST SET PRECISION   ****/
-	precisionCases := []struct {
-		name string
-		msg  ecocredit.MsgSetPrecision
-		ok   bool
+	/****   TEST ALLOWLIST CREDIT DESIGNERS   ****/
+	allowlistCases := []struct {
+		name             string
+		designerAcc      sdk.AccAddress
+		allowlist        []string
+		allowlistEnabled bool
+		wantErr          bool
 	}{
 		{
-			"can NOT decrease the decimals", ecocredit.MsgSetPrecision{
-				Issuer: issuer1, BatchDenom: batchDenom, MaxDecimalPlaces: 2},
-			false,
-		}, {
-			"can NOT set to the same value", ecocredit.MsgSetPrecision{
-				Issuer: issuer1, BatchDenom: batchDenom, MaxDecimalPlaces: 7},
-			false,
-		}, {
-			"can increase", ecocredit.MsgSetPrecision{
-				Issuer: issuer1, BatchDenom: batchDenom, MaxDecimalPlaces: 8},
-			true,
-		}, {
-			"can NOT change precision of not existing denom", ecocredit.MsgSetPrecision{
-				Issuer: issuer1, BatchDenom: "not/existing", MaxDecimalPlaces: 1},
-			false,
+			name:             "valid allowlist and enabled",
+			allowlist:        []string{s.signers[0].String()},
+			designerAcc:      s.signers[0],
+			allowlistEnabled: true,
+			wantErr:          false,
+		},
+		{
+			name:             "valid multi addrs in allowlist",
+			allowlist:        []string{s.signers[0].String(), s.signers[1].String(), s.signers[2].String()},
+			designerAcc:      s.signers[0],
+			allowlistEnabled: true,
+			wantErr:          false,
+		},
+		{
+			name:             "designer is not part of the allowlist",
+			allowlist:        []string{s.signers[0].String()},
+			designerAcc:      s.signers[1],
+			allowlistEnabled: true,
+			wantErr:          true,
+		},
+		{
+			name:             "valid allowlist but disabled - anyone can create credits",
+			allowlist:        []string{s.signers[0].String()},
+			designerAcc:      s.signers[0],
+			allowlistEnabled: false,
+			wantErr:          false,
+		},
+		{
+			name:             "empty and enabled allowlist - nobody can create credits",
+			allowlist:        []string{},
+			designerAcc:      s.signers[0],
+			allowlistEnabled: true,
+			wantErr:          true,
 		},
 	}
-	require := s.Require()
-	for _, tc := range precisionCases {
+
+	for _, tc := range allowlistCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			_, err := s.msgClient.SetPrecision(s.ctx, &tc.msg)
+			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowedClassDesigners, tc.allowlist)
+			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistEnabled, tc.allowlistEnabled)
 
-			if !tc.ok {
+			// fund the designer account
+			s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, tc.designerAcc, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+
+			createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
+				Designer:   tc.designerAcc.String(),
+				Issuers:    []string{issuer1, issuer2},
+				CreditType: "carbon",
+				Metadata:   nil,
+			})
+			if tc.wantErr {
+				s.Require().Error(err)
+				s.Require().Nil(createClsRes)
+			} else {
+				s.Require().NoError(err)
+				s.Require().NotNil(createClsRes)
+			}
+		})
+	}
+
+	// Disable credit class allowlist for credit type tests
+	s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistEnabled, false)
+
+	/****   TEST CREDIT TYPES   ****/
+	creditTypeCases := []struct {
+		name        string
+		creditTypes []*ecocredit.CreditType
+		msg         ecocredit.MsgCreateClass
+		wantErr     bool
+	}{
+		{
+			name: "valid eco credit creation",
+			creditTypes: []*ecocredit.CreditType{
+				{Name: "carbon", Abbreviation: "C", Unit: "ton", Precision: 3},
+			},
+			msg: ecocredit.MsgCreateClass{
+				Designer:   s.signers[0].String(),
+				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
+				Metadata:   nil,
+				CreditType: "carbon",
+			},
+			wantErr: false,
+		},
+		{
+			name: "invalid request - not a valid credit type",
+			creditTypes: []*ecocredit.CreditType{
+				{Name: "carbon", Abbreviation: "C", Unit: "ton", Precision: 3},
+			},
+			msg: ecocredit.MsgCreateClass{
+				Designer:   s.signers[0].String(),
+				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
+				Metadata:   nil,
+				CreditType: "biodiversity",
+			},
+			wantErr: true,
+		},
+		{
+			name: "request with strange font should be valid",
+			creditTypes: []*ecocredit.CreditType{
+				{Name: "carbon", Abbreviation: "C", Unit: "ton", Precision: 3},
+			},
+			msg: ecocredit.MsgCreateClass{
+				Designer:   s.signers[0].String(),
+				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
+				Metadata:   nil,
+				CreditType: "cArBoN",
+			},
+			wantErr: false,
+		},
+		{
+			name:        "empty credit types should error",
+			creditTypes: []*ecocredit.CreditType{},
+			msg: ecocredit.MsgCreateClass{
+				Designer:   s.signers[0].String(),
+				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
+				Metadata:   nil,
+				CreditType: "carbon",
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range creditTypeCases {
+		tc := tc
+
+		s.Run(tc.name, func() {
+			require := s.Require()
+			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyCreditTypes, tc.creditTypes)
+			designer, err := sdk.AccAddressFromBech32(tc.msg.Designer)
+			require.NoError(err)
+
+			// fund the designer account so tx will go through
+			s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+			res, err := s.msgClient.CreateClass(s.ctx, &tc.msg)
+			if tc.wantErr {
 				require.Error(err)
+				require.Nil(res)
 			} else {
 				require.NoError(err)
-				res, err := s.queryClient.Precision(s.ctx,
-					&ecocredit.QueryPrecisionRequest{
-						BatchDenom: tc.msg.BatchDenom})
-				require.NoError(err)
-				require.Equal(tc.msg.MaxDecimalPlaces, res.MaxDecimalPlaces)
+				require.NotNil(res)
 			}
 		})
 	}
