@@ -121,7 +121,7 @@ func DefaultGenesisState() *GenesisState {
 		Params:    DefaultParams(),
 		ClassInfo: []*ClassInfo{},
 		BatchInfo: []*BatchInfo{},
-		IdSeq:     0,
+		Sequences: []*CreditTypeSeq{},
 		Balances:  []*Balance{},
 		Supplies:  []*Supply{},
 	}

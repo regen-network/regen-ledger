@@ -22,9 +22,11 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 	var genesisState ecocredit.GenesisState
 	cdc.MustUnmarshalJSON(data, &genesisState)
 
-	s.idSeq.InitVal(ctx, genesisState.IdSeq)
-
 	s.paramSpace.SetParamSet(ctx.Context, &genesisState.Params)
+
+	if err := orm.ImportTableData(ctx, s.creditTypeSeqTable, genesisState.Sequences, 0); err != nil {
+		return nil, errors.Wrap(err, "sequences")
+	}
 
 	if err := orm.ImportTableData(ctx, s.classInfoTable, genesisState.ClassInfo, 0); err != nil {
 		return nil, errors.Wrap(err, "class-info")
@@ -146,6 +148,11 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		return nil, errors.Wrap(err, "batch-info")
 	}
 
+	var sequences []*ecocredit.CreditTypeSeq
+	if _, err := orm.ExportTableData(ctx, s.creditTypeSeqTable, &sequences); err != nil {
+		return nil, errors.Wrap(err, "batch-info")
+	}
+
 	suppliesMap := make(map[string]*ecocredit.Supply)
 	iterateSupplies(store, TradableSupplyPrefix, func(denom, supply string) (bool, error) {
 		suppliesMap[denom] = &ecocredit.Supply{
@@ -213,7 +220,7 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		Params:    params,
 		ClassInfo: classInfo,
 		BatchInfo: batchInfo,
-		IdSeq:     s.idSeq.CurVal(ctx),
+		Sequences: sequences,
 		Balances:  balances,
 		Supplies:  supplies,
 	}

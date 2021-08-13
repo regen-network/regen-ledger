@@ -69,9 +69,16 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 		},
 	}
 
+	sequences := []*ecocredit.CreditTypeSeq{
+		{
+			Abbreviation: "BIO",
+			SeqNumber:    0,
+		},
+	}
+
 	genesisState := &ecocredit.GenesisState{
 		Params:    ecocredit.DefaultParams(),
-		IdSeq:     7,
+		Sequences: sequences,
 		ClassInfo: classInfo,
 		BatchInfo: batchInfo,
 		Balances:  balances,
@@ -81,7 +88,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 
 	exportedGenesisState := s.exportGenesisState(ctx)
 	require.Equal(genesisState.Params, exportedGenesisState.Params)
-	require.Equal(genesisState.IdSeq, exportedGenesisState.IdSeq)
+	require.Equal(genesisState.Sequences, exportedGenesisState.Sequences)
 
 	for _, info := range classInfo {
 		res, err := s.queryClient.ClassInfo(ctx, &ecocredit.QueryClassInfoRequest{
@@ -126,7 +133,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	}
 
 	exported := s.exportGenesisState(ctx)
-	require.Equal(uint64(7), exported.IdSeq)
+	require.Equal(genesisState.Sequences, exportedGenesisState.Sequences)
 	require.Equal(genesisState.Params, exported.Params)
 	require.Equal(genesisState.ClassInfo, exported.ClassInfo)
 	require.Equal(genesisState.BatchInfo, exported.BatchInfo)

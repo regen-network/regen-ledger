@@ -104,7 +104,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Nil(createClsRes)
 
 	// create class with sufficient funds and it should succeed
-	s.Require().NoError(s.fundAccount(designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+	s.Require().NoError(s.fundAccount(designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 40000))))
 
 	// Run multiple tests to test the CreditTypeSeqs
 	createClassTestCases := []struct {
@@ -682,7 +682,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistEnabled, tc.allowlistEnabled)
 
 			// fund the designer account
-			s.Require().NoError(s.fundAccount(tc.designerAcc, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+			s.Require().NoError(s.fundAccount(tc.designerAcc, sdk.NewCoins(sdk.NewInt64Coin("stake", 40000))))
 
 			createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
 				Designer:   tc.designerAcc.String(),
