@@ -2,7 +2,6 @@ package server
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 
 	"github.com/regen-network/regen-ledger/types/module"
@@ -24,11 +23,4 @@ type Configurator interface {
 	RegisterInvariantsHandler(registry RegisterInvariantsHandler)
 	RegisterGenesisHandlers(module.InitGenesisHandler, module.ExportGenesisHandler)
 	RegisterWeightedOperationsHandler(WeightedOperationsHandler)
-}
-
-// LegacyRouteModule is the module type that a module must implement
-// to support legacy sdk.Msg routing.
-// This is currently used for the group module as part of #218.
-type LegacyRouteModule interface {
-	Route(Configurator) sdk.Route
 }
