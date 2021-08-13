@@ -49,7 +49,7 @@ func TestUInt64Index(t *testing.T) {
 	var loaded testdata.GroupMember
 	rowID, err := it.LoadNext(&loaded)
 	require.NoError(t, err)
-	require.Equal(t, uint64(8), orm.DecodeSequence(rowID))
+	require.Equal(t, uint64(0x800000000000000), orm.DecodeSequence(rowID))
 	require.Equal(t, m, loaded)
 
 	// GetPaginated
@@ -87,7 +87,7 @@ func TestUInt64Index(t *testing.T) {
 	require.NoError(t, err)
 	rowID, err = it.LoadNext(&loaded)
 	require.NoError(t, err)
-	require.Equal(t, uint64(8), orm.DecodeSequence(rowID))
+	require.Equal(t, uint64(0x800000000000000), orm.DecodeSequence(rowID))
 	require.Equal(t, m, loaded)
 
 	// PrefixScan no match
@@ -101,7 +101,7 @@ func TestUInt64Index(t *testing.T) {
 	require.NoError(t, err)
 	rowID, err = it.LoadNext(&loaded)
 	require.NoError(t, err)
-	require.Equal(t, uint64(8), orm.DecodeSequence(rowID))
+	require.Equal(t, uint64(0x800000000000000), orm.DecodeSequence(rowID))
 	require.Equal(t, m, loaded)
 
 	// ReversePrefixScan no match

@@ -114,7 +114,7 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1), orm.PrimaryKey(&m2), orm.PrimaryKey(&m3)},
 		},
 		"all matching prefix": {
-			start:     orm.AddLengthPrefix([]byte("group-c"))[:13], // == LengthPrefix + "group"
+			start:     orm.AddLengthPrefix([]byte("group")), // == LengthPrefix + "group"
 			end:       nil,
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1, m2, m3},
@@ -197,7 +197,7 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 			expRowIDs: []orm.RowID{orm.PrimaryKey(&m3), orm.PrimaryKey(&m2), orm.PrimaryKey(&m1)},
 		},
 		"reverse: all matching prefix": {
-			start:     orm.AddLengthPrefix([]byte("group-c"))[:13], // == LengthPrefix + "group"
+			start:     orm.AddLengthPrefix([]byte("group")), // == LengthPrefix + "group"
 			end:       nil,
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m3, m2, m1},
