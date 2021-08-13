@@ -8,21 +8,9 @@ var (
 	ErrTest = errors.Register("orm_testdata", 9999, "test")
 )
 
-// func (g GroupMember) PrimaryKey() []byte {
-// 	result := make([]byte, 0, len(g.Group)+len(g.Member))
-// 	// result = append(result, byte(len(g.Group)))
-// 	result = append(result, g.Group...)
-// 	result = append(result, g.Member...)
-// 	return result
-// }
-
 func (g GroupMember) PrimaryKeyFields() []interface{} {
 	return []interface{}{[]byte(g.Group), []byte(g.Member)}
 }
-
-// func (g GroupInfo) PrimaryKey() []byte {
-// 	return orm.EncodeSequence(g.GroupId)
-// }
 
 func (g GroupInfo) PrimaryKeyFields() []interface{} {
 	return []interface{}{g.GroupId}

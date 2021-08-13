@@ -4,7 +4,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
 )
 
@@ -93,6 +92,6 @@ func (p Proposal) UnpackInterfaces(unpacker types.AnyUnpacker) error {
 	return server.UnpackInterfaces(unpacker, p.Msgs)
 }
 
-func (p Proposal) PrimaryKey() []byte {
-	return orm.EncodeSequence(p.ProposalId)
+func (p Proposal) PrimaryKeyFields() []interface{} {
+	return []interface{}{p.ProposalId}
 }

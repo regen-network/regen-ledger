@@ -59,19 +59,13 @@ func (s serverImpl) CreateGroup(goCtx context.Context, req *group.MsgCreateGroup
 
 	// Create a new group in the groupTable.
 	groupInfo := &group.GroupInfo{
-		GroupId:     1,
+		GroupId:     s.groupTable.Sequence().PeekNextVal(ctx),
 		Admin:       admin,
 		Metadata:    metadata,
 		Version:     1,
 		TotalWeight: math.DecimalString(totalWeight),
 	}
 	groupID, err := s.groupTable.Create(ctx, groupInfo)
-	if err != nil {
-		return nil, sdkerrors.Wrap(err, "could not create group")
-	}
-
-	groupInfo.GroupId = groupID
-	err = s.groupTable.Save(ctx, groupID, groupInfo)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "could not create group")
 	}

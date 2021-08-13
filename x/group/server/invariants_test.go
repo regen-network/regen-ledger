@@ -481,28 +481,28 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 		},
 		"proposal VoteState must correspond to the vote choice": {
 			groupsInfo: &group.GroupInfo{
-				GroupId:     2,
+				GroupId:     1,
 				Admin:       adminAddr.String(),
 				Version:     1,
 				TotalWeight: "7",
 			},
 			groupAcc: &group.GroupAccountInfo{
 				Address:       addr1.String(),
-				GroupId:       2,
+				GroupId:       1,
 				Admin:         adminAddr.String(),
 				Version:       1,
 				DerivationKey: []byte("derivation-key"),
 			},
 			groupMembers: []*group.GroupMember{
 				{
-					GroupId: 2,
+					GroupId: 1,
 					Member: &group.Member{
 						Address: addr1.String(),
 						Weight:  "4",
 					},
 				},
 				{
-					GroupId: 2,
+					GroupId: 1,
 					Member: &group.Member{
 						Address: addr2.String(),
 						Weight:  "3",

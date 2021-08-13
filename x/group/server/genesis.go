@@ -16,7 +16,7 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 	var genesisState group.GenesisState
 	cdc.MustUnmarshalJSON(data, &genesisState)
 
-	if err := orm.ImportTableData(ctx, s.groupTable, genesisState.Groups, 0); err != nil {
+	if err := orm.ImportTableData(ctx, s.groupTable, genesisState.Groups, genesisState.GroupSeq); err != nil {
 		return nil, errors.Wrap(err, "groups")
 	}
 

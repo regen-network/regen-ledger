@@ -228,7 +228,7 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, pro
 			return msg, broken
 		}
 
-		err = groupAccountTable.GetOne(ctx, address.Bytes(), &groupAcc)
+		err = groupAccountTable.GetOne(ctx, orm.AddLengthPrefix(address.Bytes()), &groupAcc)
 		if err != nil {
 			msg += fmt.Sprintf("group account not found for address: %s\n%v\n", proposal.Address, err)
 			return msg, broken
