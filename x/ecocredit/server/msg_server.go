@@ -11,7 +11,6 @@ import (
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/util"
 )
 
 // CreateClass creates a new class of ecocredit
@@ -21,8 +20,6 @@ import (
 // governance process.
 func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateClass) (*ecocredit.MsgCreateClassResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
-	classID := s.idSeq.NextVal(ctx)
-	classIDStr := util.Uint64ToBase58Check(classID)
 
 	// Charge the designer a fee to create the credit class
 	designerAddress, err := sdk.AccAddressFromBech32(req.Designer)
@@ -50,8 +47,18 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 		return nil, err
 	}
 
+	classSeqNo, err := s.getCreditTypeSeqNextVal(ctx.Context, creditType)
+	if err != nil {
+		return nil, err
+	}
+
+	classID, err := ecocredit.FormatClassID(creditType, classSeqNo)
+	if err != nil {
+		return nil, err
+	}
+
 	err = s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
-		ClassId:    classIDStr,
+		ClassId:    classID,
 		Designer:   req.Designer,
 		Issuers:    req.Issuers,
 		Metadata:   req.Metadata,
@@ -62,14 +69,14 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 	}
 
 	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateClass{
-		ClassId:  classIDStr,
+		ClassId:  classID,
 		Designer: req.Designer,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return &ecocredit.MsgCreateClassResponse{ClassId: classIDStr}, nil
+	return &ecocredit.MsgCreateClassResponse{ClassId: classID}, nil
 }
 
 func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatch) (*ecocredit.MsgCreateBatchResponse, error) {
@@ -84,8 +91,15 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	}
 
 	maxDecimalPlaces := classInfo.CreditType.Precision
-	batchID := s.idSeq.NextVal(ctx)
-	batchDenom := batchDenomT(fmt.Sprintf("%s/%s", classID, util.Uint64ToBase58Check(batchID)))
+	batchSeqNo, err := s.nextBatchInClass(ctx, classID)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+	batchDenomStr, err := ecocredit.FormatDenom(classID, batchSeqNo, req.StartDate, req.EndDate)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+	batchDenom := batchDenomT(batchDenomStr)
 	tradableSupply := math.NewDecFromInt64(0)
 	retiredSupply := math.NewDecFromInt64(0)
 
@@ -418,6 +432,27 @@ func (s serverImpl) assertClassIssuer(goCtx context.Context, classID, issuer str
 		}
 	}
 	return sdkerrors.ErrUnauthorized
+}
+
+// nextBatchInClass gets the sequence number for the next batch in the credit
+// class and updates the class info with the new batch number
+func (s serverImpl) nextBatchInClass(ctx types.Context, classID string) (uint64, error) {
+	classInfo, err := s.getClassInfo(ctx, classID)
+	if err != nil {
+		return 0, err
+	}
+
+	// Get the next value
+	nextVal := classInfo.NumBatches + 1
+
+	// Update the ClassInfo
+	classInfo.NumBatches = nextVal
+	err = s.classInfoTable.Save(ctx, classInfo)
+	if err != nil {
+		return 0, err
+	}
+
+	return nextVal, nil
 }
 
 func retire(ctx types.Context, store sdk.KVStore, recipient string, batchDenom batchDenomT, retired math.Dec, location string) error {

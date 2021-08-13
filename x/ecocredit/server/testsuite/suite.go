@@ -50,6 +50,16 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.ctx = types.Context{Context: s.sdkCtx}
 
 	ecocreditParams := ecocredit.DefaultParams()
+	// Add biodiversity credit type for testing credit type sequence numbers
+	ecocreditParams.CreditTypes = append(
+		ecocreditParams.CreditTypes,
+		&ecocredit.CreditType{
+			Name:         "biodiversity",
+			Abbreviation: "BIO",
+			Unit:         "hectare",
+			Precision:    6,
+		},
+	)
 	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
 
 	s.signers = s.fixture.Signers()
@@ -86,20 +96,47 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Error(err)
 	s.Require().Nil(createClsRes)
 
-	// create class with sufficient funds and it should succeed
-	s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+	// create classes with sufficient funds and it should succeed
+	s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 40000))))
 
-	createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-		Designer:   designer.String(),
-		Issuers:    []string{issuer1, issuer2},
-		Metadata:   nil,
-		CreditType: "carbon",
-	})
-	s.Require().NoError(err)
-	s.Require().NotNil(createClsRes)
+	// Run multiple tests to test the CreditTypeSeqs
+	createClassTestCases := []struct {
+		creditType      string
+		expectedClassID string
+	}{
+		{
+			creditType:      "carbon",
+			expectedClassID: "C01",
+		},
+		{
+			creditType:      "biodiversity",
+			expectedClassID: "BIO01",
+		},
+		{
+			creditType:      "biodiversity",
+			expectedClassID: "BIO02",
+		},
+		{
+			creditType:      "carbon",
+			expectedClassID: "C02",
+		},
+	}
 
-	clsID := createClsRes.ClassId
-	s.Require().NotEmpty(clsID)
+	for _, tc := range createClassTestCases {
+		createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
+			Designer:   designer.String(),
+			Issuers:    []string{issuer1, issuer2},
+			Metadata:   nil,
+			CreditType: tc.creditType,
+		})
+		s.Require().NoError(err)
+		s.Require().NotNil(createClsRes)
+
+		s.Require().Equal(tc.expectedClassID, createClsRes.ClassId)
+	}
+
+	// Use first test class for remainder of tests
+	clsID := createClassTestCases[0].expectedClassID
 
 	// designer should have no funds remaining
 	s.Require().Equal(s.bankKeeper.GetBalance(s.sdkCtx, designer, "stake"), sdk.NewInt64Coin("stake", 0))

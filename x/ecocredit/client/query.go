@@ -3,6 +3,7 @@ package client
 import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/spf13/cobra"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -118,8 +119,15 @@ func QueryBatchInfoCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			batchDenom := args[0]
+			err = ecocredit.ValidateDenom(batchDenom)
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+			}
+
 			res, err := c.BatchInfo(cmd.Context(), &ecocredit.QueryBatchInfoRequest{
-				BatchDenom: args[0],
+				BatchDenom: batchDenom,
 			})
 			return print(ctx, res, err)
 		},

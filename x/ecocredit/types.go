@@ -7,7 +7,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/util"
 )
 
-var _, _ orm.PrimaryKeyed = &ClassInfo{}, &BatchInfo{}
+var _, _, _ orm.PrimaryKeyed = &ClassInfo{}, &BatchInfo{}, &CreditTypeSeq{}
 
 func (m *ClassInfo) PrimaryKey() []byte {
 	return []byte(m.ClassId)
@@ -15,6 +15,10 @@ func (m *ClassInfo) PrimaryKey() []byte {
 
 func (m *BatchInfo) PrimaryKey() []byte {
 	return []byte(m.BatchDenom)
+}
+
+func (m *CreditTypeSeq) PrimaryKey() []byte {
+	return []byte(m.Abbreviation)
 }
 
 func DefaultGenesisState() *GenesisState {
