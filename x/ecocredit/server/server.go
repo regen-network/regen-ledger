@@ -57,4 +57,5 @@ func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Su
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
+	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
 }
