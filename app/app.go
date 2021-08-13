@@ -2,12 +2,13 @@ package app
 
 import (
 	"encoding/json"
-	moduletypes "github.com/regen-network/regen-ledger/types/module"
-	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	"io"
 	"math/big"
 	"net/http"
 	"os"
+
+	moduletypes "github.com/regen-network/regen-ledger/types/module"
+	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
