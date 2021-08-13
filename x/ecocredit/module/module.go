@@ -86,4 +86,6 @@ func (Module) ConsensusVersion() uint64 { return 1 }
 
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
-func (a Module) RegisterLegacyAminoCodec(*codec.LegacyAmino)       {}
+func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
+	ecocredit.RegisterLegacyAminoCodec(cdc)
+}

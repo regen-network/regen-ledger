@@ -2,6 +2,7 @@ package group
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
 
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -11,28 +12,14 @@ import (
 	"github.com/regen-network/regen-ledger/types/module/server"
 )
 
-// Group message types and routes
-const (
-	TypeMsgCreateGroup                      = "create_group"
-	TypeMsgUpdateGroupAdmin                 = "update_group_admin"
-	TypeMsgUpdateGroupComment               = "update_group_comment"
-	TypeMsgUpdateGroupMembers               = "update_group_members"
-	TypeMsgCreateGroupAccount               = "create_group_account"
-	TypeMsgUpdateGroupAccountAdmin          = "update_group_account_admin"
-	TypeMsgUpdateGroupAccountDecisionPolicy = "update_group_account_decision_policy"
-	TypeMsgUpdateGroupAccountComment        = "update_group_account_comment"
-	TypeMsgCreateProposal                   = "create_proposal"
-	TypeMsgVote                             = "vote"
-	TypeMsgExec                             = "exec"
-)
-
 var _ sdk.Msg = &MsgCreateGroup{}
+var _ legacytx.LegacyMsg = &MsgCreateGroup{}
 
 // Route Implements Msg.
-func (m MsgCreateGroup) Route() string { return RouterKey }
+func (m MsgCreateGroup) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type Implements Msg.
-func (m MsgCreateGroup) Type() string { return TypeMsgCreateGroup }
+func (m MsgCreateGroup) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes Implements Msg.
 func (m MsgCreateGroup) GetSignBytes() []byte {
@@ -81,12 +68,13 @@ func (m Member) ValidateBasic() error {
 }
 
 var _ sdk.Msg = &MsgUpdateGroupAdmin{}
+var _ legacytx.LegacyMsg = &MsgUpdateGroupAdmin{}
 
 // Route Implements Msg.
-func (m MsgUpdateGroupAdmin) Route() string { return RouterKey }
+func (m MsgUpdateGroupAdmin) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type Implements Msg.
-func (m MsgUpdateGroupAdmin) Type() string { return TypeMsgUpdateGroupAdmin }
+func (m MsgUpdateGroupAdmin) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes Implements Msg.
 func (m MsgUpdateGroupAdmin) GetSignBytes() []byte {
@@ -129,12 +117,13 @@ func (m *MsgUpdateGroupAdmin) GetGroupID() uint64 {
 }
 
 var _ sdk.Msg = &MsgUpdateGroupMetadata{}
+var _ legacytx.LegacyMsg = &MsgUpdateGroupMetadata{}
 
 // Route Implements Msg.
-func (m MsgUpdateGroupMetadata) Route() string { return RouterKey }
+func (m MsgUpdateGroupMetadata) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type Implements Msg.
-func (m MsgUpdateGroupMetadata) Type() string { return TypeMsgUpdateGroupComment }
+func (m MsgUpdateGroupMetadata) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes Implements Msg.
 func (m MsgUpdateGroupMetadata) GetSignBytes() []byte {
@@ -168,12 +157,13 @@ func (m *MsgUpdateGroupMetadata) GetGroupID() uint64 {
 }
 
 var _ sdk.Msg = &MsgUpdateGroupMembers{}
+var _ legacytx.LegacyMsg = &MsgUpdateGroupMembers{}
 
 // Route Implements Msg.
-func (m MsgUpdateGroupMembers) Route() string { return RouterKey }
+func (m MsgUpdateGroupMembers) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type Implements Msg.
-func (m MsgUpdateGroupMembers) Type() string { return TypeMsgUpdateGroupMembers }
+func (m MsgUpdateGroupMembers) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes Implements Msg.
 func (m MsgUpdateGroupMembers) GetSignBytes() []byte {
@@ -181,6 +171,7 @@ func (m MsgUpdateGroupMembers) GetSignBytes() []byte {
 }
 
 var _ sdk.Msg = &MsgUpdateGroupMembers{}
+var _ legacytx.LegacyMsg = &MsgUpdateGroupMembers{}
 
 // GetSigners returns the expected signers for a MsgUpdateGroupMembers.
 func (m MsgUpdateGroupMembers) GetSigners() []sdk.AccAddress {
@@ -217,12 +208,13 @@ func (m *MsgUpdateGroupMembers) GetGroupID() uint64 {
 }
 
 var _ sdk.Msg = &MsgCreateGroupAccount{}
+var _ legacytx.LegacyMsg = &MsgCreateGroupAccount{}
 
 // Route Implements Msg.
-func (m MsgCreateGroupAccount) Route() string { return RouterKey }
+func (m MsgCreateGroupAccount) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type Implements Msg.
-func (m MsgCreateGroupAccount) Type() string { return TypeMsgCreateGroupAccount }
+func (m MsgCreateGroupAccount) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes Implements Msg.
 func (m MsgCreateGroupAccount) GetSignBytes() []byte {
@@ -260,12 +252,13 @@ func (m MsgCreateGroupAccount) ValidateBasic() error {
 }
 
 var _ sdk.Msg = &MsgUpdateGroupAccountAdmin{}
+var _ legacytx.LegacyMsg = &MsgUpdateGroupAccountAdmin{}
 
 // Route Implements Msg.
-func (m MsgUpdateGroupAccountAdmin) Route() string { return RouterKey }
+func (m MsgUpdateGroupAccountAdmin) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type Implements Msg.
-func (m MsgUpdateGroupAccountAdmin) Type() string { return TypeMsgUpdateGroupAccountAdmin }
+func (m MsgUpdateGroupAccountAdmin) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes Implements Msg.
 func (m MsgUpdateGroupAccountAdmin) GetSignBytes() []byte {
@@ -305,6 +298,7 @@ func (m MsgUpdateGroupAccountAdmin) ValidateBasic() error {
 }
 
 var _ sdk.Msg = &MsgUpdateGroupAccountDecisionPolicy{}
+var _ legacytx.LegacyMsg = &MsgUpdateGroupAccountDecisionPolicy{}
 var _ types.UnpackInterfacesMessage = MsgUpdateGroupAccountDecisionPolicy{}
 
 func NewMsgUpdateGroupAccountDecisionPolicyRequest(admin sdk.AccAddress, address sdk.AccAddress, decisionPolicy DecisionPolicy) (*MsgUpdateGroupAccountDecisionPolicy, error) {
@@ -333,11 +327,11 @@ func (m *MsgUpdateGroupAccountDecisionPolicy) SetDecisionPolicy(decisionPolicy D
 }
 
 // Route Implements Msg.
-func (m MsgUpdateGroupAccountDecisionPolicy) Route() string { return RouterKey }
+func (m MsgUpdateGroupAccountDecisionPolicy) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type Implements Msg.
 func (m MsgUpdateGroupAccountDecisionPolicy) Type() string {
-	return TypeMsgUpdateGroupAccountDecisionPolicy
+	return sdk.MsgTypeURL(&m)
 }
 
 // GetSignBytes Implements Msg.
@@ -393,12 +387,13 @@ func (m MsgUpdateGroupAccountDecisionPolicy) UnpackInterfaces(unpacker types.Any
 }
 
 var _ sdk.Msg = &MsgUpdateGroupAccountMetadata{}
+var _ legacytx.LegacyMsg = &MsgUpdateGroupAccountMetadata{}
 
 // Route Implements Msg.
-func (m MsgUpdateGroupAccountMetadata) Route() string { return RouterKey }
+func (m MsgUpdateGroupAccountMetadata) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type Implements Msg.
-func (m MsgUpdateGroupAccountMetadata) Type() string { return TypeMsgUpdateGroupAccountComment }
+func (m MsgUpdateGroupAccountMetadata) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes Implements Msg.
 func (m MsgUpdateGroupAccountMetadata) GetSignBytes() []byte {
@@ -430,6 +425,7 @@ func (m MsgUpdateGroupAccountMetadata) ValidateBasic() error {
 }
 
 var _ sdk.Msg = &MsgCreateGroupAccount{}
+var _ legacytx.LegacyMsg = &MsgCreateGroupAccount{}
 var _ types.UnpackInterfacesMessage = MsgCreateGroupAccount{}
 
 // NewMsgCreateGroupAccount creates a new MsgCreateGroupAccount.
@@ -486,6 +482,7 @@ func (m MsgCreateGroupAccount) UnpackInterfaces(unpacker types.AnyUnpacker) erro
 }
 
 var _ sdk.Msg = &MsgCreateProposal{}
+var _ legacytx.LegacyMsg = &MsgCreateProposal{}
 
 // NewMsgCreateProposalRequest creates a new MsgCreateProposal.
 func NewMsgCreateProposalRequest(address string, proposers []string, msgs []sdk.Msg, metadata []byte, exec Exec) (*MsgCreateProposal, error) {
@@ -503,10 +500,10 @@ func NewMsgCreateProposalRequest(address string, proposers []string, msgs []sdk.
 }
 
 // Route Implements Msg.
-func (m MsgCreateProposal) Route() string { return RouterKey }
+func (m MsgCreateProposal) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type Implements Msg.
-func (m MsgCreateProposal) Type() string { return TypeMsgCreateProposal }
+func (m MsgCreateProposal) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes Implements Msg.
 func (m MsgCreateProposal) GetSignBytes() []byte {
@@ -582,12 +579,13 @@ func (m MsgCreateProposal) UnpackInterfaces(unpacker types.AnyUnpacker) error {
 }
 
 var _ sdk.Msg = &MsgVote{}
+var _ legacytx.LegacyMsg = &MsgVote{}
 
 // Route Implements Msg.
-func (m MsgVote) Route() string { return RouterKey }
+func (m MsgVote) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type Implements Msg.
-func (m MsgVote) Type() string { return TypeMsgVote }
+func (m MsgVote) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes Implements Msg.
 func (m MsgVote) GetSignBytes() []byte {
@@ -622,12 +620,13 @@ func (m MsgVote) ValidateBasic() error {
 }
 
 var _ sdk.Msg = &MsgExec{}
+var _ legacytx.LegacyMsg = &MsgExec{}
 
 // Route Implements Msg.
-func (m MsgExec) Route() string { return RouterKey }
+func (m MsgExec) Route() string { return sdk.MsgTypeURL(&m) }
 
 // Type Implements Msg.
-func (m MsgExec) Type() string { return TypeMsgExec }
+func (m MsgExec) Type() string { return sdk.MsgTypeURL(&m) }
 
 // GetSignBytes Implements Msg.
 func (m MsgExec) GetSignBytes() []byte {
