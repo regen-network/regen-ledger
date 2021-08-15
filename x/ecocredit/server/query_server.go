@@ -3,6 +3,8 @@ package server
 import (
 	"context"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/types"
 
 	"github.com/regen-network/regen-ledger/orm"
@@ -78,13 +80,17 @@ func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalan
 	acc := request.Account
 	denom := batchDenomT(request.BatchDenom)
 	store := ctx.KVStore(s.storeKey)
-
-	tradable, err := getDecimal(store, TradableBalanceKey(acc, denom))
+	accAddr, err := sdk.AccAddressFromBech32(acc)
 	if err != nil {
 		return nil, err
 	}
 
-	retired, err := getDecimal(store, RetiredBalanceKey(acc, denom))
+	tradable, err := getDecimal(store, TradableBalanceKey(accAddr, denom))
+	if err != nil {
+		return nil, err
+	}
+
+	retired, err := getDecimal(store, RetiredBalanceKey(accAddr, denom))
 	if err != nil {
 		return nil, err
 	}
