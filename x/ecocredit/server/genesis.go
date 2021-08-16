@@ -22,6 +22,7 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 	var genesisState ecocredit.GenesisState
 	cdc.MustUnmarshalJSON(data, &genesisState)
 
+	genesisState.Params.AllowlistEnabled = true
 	s.paramSpace.SetParamSet(ctx.Context, &genesisState.Params)
 
 	if err := orm.ImportTableData(ctx, s.creditTypeSeqTable, genesisState.Sequences, 0); err != nil {
