@@ -13,7 +13,7 @@ require (
 	github.com/tendermint/tendermint v0.34.11
 	github.com/tendermint/tm-db v0.6.4
 	google.golang.org/grpc v1.38.0
-	pgregory.net/rapid v0.4.7 // indirect
+	pgregory.net/rapid v0.4.7
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1

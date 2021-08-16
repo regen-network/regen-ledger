@@ -32,6 +32,9 @@ type IntegrationTestSuite struct {
 
 	paramSpace paramstypes.Subspace
 	bankKeeper bankkeeper.Keeper
+
+	genesisCtx types.Context
+	blockTime  time.Time
 }
 
 func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper) *IntegrationTestSuite {
@@ -45,9 +48,13 @@ func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.fixture = s.fixtureFactory.Setup()
 
+	s.blockTime = time.Now().UTC()
+
 	// TODO clean up once types.Context merged upstream into sdk.Context
-	s.sdkCtx, _ = s.fixture.Context().(types.Context).CacheContext()
+	sdkCtx := s.fixture.Context().(types.Context).WithBlockTime(s.blockTime)
+	s.sdkCtx, _ = sdkCtx.CacheContext()
 	s.ctx = types.Context{Context: s.sdkCtx}
+	s.genesisCtx = types.Context{Context: sdkCtx}
 
 	ecocreditParams := ecocredit.DefaultParams()
 	// Add biodiversity credit type for testing credit type sequence numbers
@@ -69,11 +76,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.paramsQueryClient = params.NewQueryClient(s.fixture.QueryConn())
 }
 
-func fundAccount(bankKeeper bankkeeper.Keeper, ctx sdk.Context, addr sdk.AccAddress, amounts sdk.Coins) error {
-	if err := bankKeeper.MintCoins(ctx, minttypes.ModuleName, amounts); err != nil {
+func (s *IntegrationTestSuite) fundAccount(addr sdk.AccAddress, amounts sdk.Coins) error {
+	if err := s.bankKeeper.MintCoins(s.sdkCtx, minttypes.ModuleName, amounts); err != nil {
 		return err
 	}
-	return bankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, addr, amounts)
+	return s.bankKeeper.SendCoinsFromModuleToAccount(s.sdkCtx, minttypes.ModuleName, addr, amounts)
 }
 
 func (s *IntegrationTestSuite) TestScenario() {
@@ -96,8 +103,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Error(err)
 	s.Require().Nil(createClsRes)
 
-	// create classes with sufficient funds and it should succeed
-	s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 40000))))
+	// create class with sufficient funds and it should succeed
+	s.Require().NoError(s.fundAccount(designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 40000))))
 
 	// Run multiple tests to test the CreditTypeSeqs
 	createClassTestCases := []struct {
@@ -675,7 +682,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistEnabled, tc.allowlistEnabled)
 
 			// fund the designer account
-			s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, tc.designerAcc, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+			s.Require().NoError(s.fundAccount(tc.designerAcc, sdk.NewCoins(sdk.NewInt64Coin("stake", 40000))))
 
 			createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
 				Designer:   tc.designerAcc.String(),
@@ -765,7 +772,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			require.NoError(err)
 
 			// fund the designer account so tx will go through
-			s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+			s.Require().NoError(s.fundAccount(designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
 			res, err := s.msgClient.CreateClass(s.ctx, &tc.msg)
 			if tc.wantErr {
 				require.Error(err)

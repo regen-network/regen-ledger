@@ -3,6 +3,7 @@ package module
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
@@ -71,8 +72,13 @@ func (a Module) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
 	return cdc.MustMarshalJSON(ecocredit.DefaultGenesisState())
 }
 
-func (a Module) ValidateGenesis(codec.JSONCodec, sdkclient.TxEncodingConfig, json.RawMessage) error {
-	return nil
+func (a Module) ValidateGenesis(cdc codec.JSONCodec, _ sdkclient.TxEncodingConfig, bz json.RawMessage) error {
+	var data ecocredit.GenesisState
+	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
+		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ecocredit.ModuleName, err)
+	}
+
+	return data.Validate()
 }
 
 func (a Module) GetQueryCmd() *cobra.Command {

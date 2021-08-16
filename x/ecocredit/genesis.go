@@ -1,0 +1,128 @@
+package ecocredit
+
+import (
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/types/math"
+)
+
+// Validate performs basic validation for each credit-batch,
+// it returns an error if credit-batch tradable or retired supply
+// does not match the sum of all tradable or retired balances
+func (s *GenesisState) Validate() error {
+	decimalPlaces := make(map[string]uint32)
+	calSupplies := make(map[string]math.Dec)
+	supplies := make(map[string]math.Dec)
+
+	for _, batch := range s.BatchInfo {
+		if _, exists := decimalPlaces[batch.BatchDenom]; exists {
+			continue
+		}
+
+		for _, class := range s.ClassInfo {
+			if batch.ClassId == class.ClassId {
+				decimalPlaces[batch.BatchDenom] = class.CreditType.GetPrecision()
+				break
+			}
+		}
+	}
+
+	for _, s := range s.Supplies {
+		tSupply := math.NewDecFromInt64(0)
+		rSupply := math.NewDecFromInt64(0)
+		var err error
+		if s.TradableSupply != "" {
+			tSupply, err = math.NewNonNegativeFixedDecFromString(s.TradableSupply, decimalPlaces[s.BatchDenom])
+			if err != nil {
+				return err
+			}
+		}
+		if s.RetiredSupply != "" {
+			rSupply, err = math.NewNonNegativeFixedDecFromString(s.RetiredSupply, decimalPlaces[s.BatchDenom])
+			if err != nil {
+				return err
+			}
+		}
+
+		total, err := math.SafeAddBalance(tSupply, rSupply)
+		if err != nil {
+			return err
+		}
+
+		supplies[s.BatchDenom] = total
+	}
+
+	// calculate credit batch supply from genesis tradable and retired balances
+	if err := calculateSupply(decimalPlaces, s.Balances, calSupplies); err != nil {
+		return err
+	}
+
+	if err := validateSupply(calSupplies, supplies); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func validateSupply(calSupply, supply map[string]math.Dec) error {
+	for denom, cs := range calSupply {
+		if s, ok := supply[denom]; ok {
+			if s.Cmp(cs) != 0 {
+				return sdkerrors.ErrInvalidCoins.Wrapf("supply is incorrect for %s credit batch, expected %v, got %v", denom, s, cs)
+			}
+		} else {
+			return sdkerrors.ErrNotFound.Wrapf("supply is not found for %s credit batch", denom)
+		}
+	}
+	return nil
+}
+
+func calculateSupply(decimalPlaces map[string]uint32, balances []*Balance, calSupply map[string]math.Dec) error {
+	for _, b := range balances {
+		tBalance := math.NewDecFromInt64(0)
+		rBalance := math.NewDecFromInt64(0)
+		var err error
+
+		if b.TradableBalance != "" {
+			tBalance, err = math.NewNonNegativeFixedDecFromString(b.TradableBalance, decimalPlaces[b.BatchDenom])
+			if err != nil {
+				return err
+			}
+		}
+
+		if b.RetiredBalance != "" {
+			rBalance, err = math.NewNonNegativeFixedDecFromString(b.RetiredBalance, decimalPlaces[b.BatchDenom])
+			if err != nil {
+				return err
+			}
+		}
+
+		total, err := math.SafeAddBalance(tBalance, rBalance)
+		if err != nil {
+			return err
+		}
+
+		if supply, ok := calSupply[b.BatchDenom]; ok {
+			result, err := math.SafeAddBalance(supply, total)
+			if err != nil {
+				return err
+			}
+			calSupply[b.BatchDenom] = result
+		} else {
+			calSupply[b.BatchDenom] = total
+		}
+	}
+
+	return nil
+}
+
+// DefaultGenesisState returns a default ecocredit module genesis state.
+func DefaultGenesisState() *GenesisState {
+	return &GenesisState{
+		Params:    DefaultParams(),
+		ClassInfo: []*ClassInfo{},
+		BatchInfo: []*BatchInfo{},
+		Sequences: []*CreditTypeSeq{},
+		Balances:  []*Balance{},
+		Supplies:  []*Supply{},
+	}
+}

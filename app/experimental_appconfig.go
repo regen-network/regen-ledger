@@ -11,7 +11,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/authz"
 	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
@@ -22,7 +24,6 @@ import (
 	"github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
-	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	group "github.com/regen-network/regen-ledger/x/group/module"
 )
 
@@ -33,7 +34,6 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 			upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
 		),
 		data.Module{},
-		ecocredit.Module{},
 		group.Module{},
 	}
 }
@@ -61,7 +61,6 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 	groupModule := group.Module{AccountKeeper: app.AccountKeeper, BankKeeper: app.BankKeeper}
 	// use a separate newModules from the global NewModules here because we need to pass state into the group module
 	newModules := []moduletypes.Module{
-		ecocreditModule,
 		data.Module{},
 		groupModule,
 	}
@@ -70,11 +69,6 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 		panic(err)
 	}
 	// END HACK
-
-	err = newModuleManager.CompleteInitialization()
-	if err != nil {
-		panic(err)
-	}
 
 	/* New Module Wiring END */
 	return newModuleManager
@@ -115,7 +109,7 @@ func (app *RegenApp) registerUpgradeHandlers() {
 	if upgradeInfo.Name == "v0.43.0-beta1-upgrade" && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
 		storeUpgrades := storetypes.StoreUpgrades{
 			// TODO We should also add store upgrades for group, data, and ecocredit
-			Added: []string{"authz", "feegrant"},
+			Added: []string{authz.ModuleName, feegrant.ModuleName, ecocredittypes.ModuleName},
 		}
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
@@ -142,6 +136,4 @@ func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
 	}
 }
 
-func initCustomParamsKeeper(paramsKeeper *paramskeeper.Keeper) {
-	paramsKeeper.Subspace(ecocredittypes.DefaultParamspace)
-}
+func initCustomParamsKeeper(paramsKeeper *paramskeeper.Keeper) {}

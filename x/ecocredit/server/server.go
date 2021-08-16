@@ -63,4 +63,5 @@ func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Su
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
+	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
 }
