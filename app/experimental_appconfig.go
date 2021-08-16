@@ -54,6 +54,7 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 	// BEGIN HACK: this is a total, ugly hack until x/auth & x/bank supports ADR 033 or we have a suitable alternative
 	ecocreditModule := ecocredit.NewModule(
 		app.GetSubspace(ecocredittypes.DefaultParamspace),
+		app.AccountKeeper,
 		app.BankKeeper,
 	)
 
@@ -137,6 +138,7 @@ func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
 			BankKeeper:    app.BankKeeper,
 			AccountKeeper: app.AccountKeeper,
 		},
+		ecocredit.NewModule(app.GetSubspace(ecocredittypes.DefaultParamspace), app.AccountKeeper, app.BankKeeper),
 	}
 }
 
