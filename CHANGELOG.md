@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Features
 
-* Add support for on-chain creation of Permanent Locked Accounts ([regen-network/cosmos-sdk#42](http://github.com/regen-network/cosmos-sdk/pull/42)
+* Add support for on-chain creation of Permanent Locked Accounts (#482, [regen-network/cosmos-sdk#42](http://github.com/regen-network/cosmos-sdk/pull/42)
 
 ### `x/ecocredit`
 
