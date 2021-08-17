@@ -336,7 +336,7 @@ devdoc-update:
 containerProtoVer=v0.2
 containerProtoImage=tendermintdev/sdk-proto-gen:$(containerProtoVer)
 containerProtoGen=${PROJECT_NAME}-proto-gen-$(containerProtoVer)
-containerProtoFmt=${PROJECT_NAME}-fmt-$(containerProtoVer)
+containerProtoFmt=${PROJECT_NAME}-proto-fmt-$(containerProtoVer)
 containerProtoGenSwagger=${PROJECT_NAME}-proto-gen-swagger-$(containerProtoVer)
 
 proto-all: proto-gen proto-lint proto-check-breaking proto-format
