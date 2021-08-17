@@ -69,6 +69,7 @@ var xxx_messageInfo_QueryParamsRequest proto.InternalMessageInfo
 
 // QueryParamsResponse is the Query/Params response type.
 type QueryParamsResponse struct {
+	// params defines the parameters of the ecocredit module.
 	Params *Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params,omitempty"`
 }
 

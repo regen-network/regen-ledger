@@ -568,7 +568,7 @@ QueryParamsResponse is the Query/Params response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| params | [Params](#regen.ecocredit.v1alpha1.Params) |  |  |
+| params | [Params](#regen.ecocredit.v1alpha1.Params) |  | params defines the parameters of the ecocredit module. |
 
 
 

@@ -66,6 +66,7 @@ message QueryParamsRequest {}
 
 // QueryParamsResponse is the Query/Params response type.
 message QueryParamsResponse {
+  // params defines the parameters of the ecocredit module.
   Params params = 1;
 }
 
