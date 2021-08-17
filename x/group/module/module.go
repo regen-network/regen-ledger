@@ -37,7 +37,6 @@ var _ module.AppModuleSimulation = Module{}
 var _ servermodule.Module = Module{}
 var _ restmodule.Module = Module{}
 var _ climodule.Module = Module{}
-var _ servermodule.LegacyRouteModule = Module{}
 
 func (a Module) Name() string {
 	return group.ModuleName
@@ -80,10 +79,6 @@ func (a Module) GetQueryCmd() *cobra.Command {
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}
 func (a Module) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	group.RegisterLegacyAminoCodec(cdc)
-}
-
-func (a Module) Route(configurator servermodule.Configurator) sdk.Route {
-	return sdk.NewRoute(group.RouterKey, server.NewHandler(configurator, a.AccountKeeper, a.BankKeeper))
 }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.

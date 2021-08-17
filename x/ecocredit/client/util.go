@@ -52,9 +52,8 @@ type credits struct {
 }
 
 var (
-	reCreditAmt  = `[[:digit:]]+(?:\.[[:digit:]]+)?|\.[[:digit:]]+`
-	reBatchDenom = `[a-zA-Z0-9]+\/[a-zA-Z0-9]+`
-	reCredits    = regexp.MustCompile(fmt.Sprintf(`^(%s)\:(%s)$`, reCreditAmt, reBatchDenom))
+	reCreditAmt = `[[:digit:]]+(?:\.[[:digit:]]+)?|\.[[:digit:]]+`
+	reCredits   = regexp.MustCompile(fmt.Sprintf(`^(%s) (%s)$`, reCreditAmt, ecocredit.ReBatchDenom))
 )
 
 func parseCancelCreditsList(creditsListStr string) ([]*ecocredit.MsgCancel_CancelCredits, error) {
@@ -108,7 +107,7 @@ func parseCredits(creditsStr string) (credits, error) {
 	}, nil
 }
 
-func parseDate(field string, date string) (time.Time, error) {
+func ParseDate(field string, date string) (time.Time, error) {
 	t, err := time.Parse("2006-01-02", date)
 	if err != nil {
 		return t, sdkerrors.ErrInvalidRequest.Wrapf("%s must have format yyyy-mm-dd, but received %v", field, date)

@@ -3,6 +3,8 @@ package util
 import (
 	"encoding/binary"
 	"fmt"
+	"strings"
+	"unicode"
 
 	"github.com/btcsuite/btcutil/base58"
 	"github.com/enigmampc/btcutil/bech32"
@@ -37,4 +39,15 @@ func Uint64ToBase58Check(x uint64) string {
 	buf := make([]byte, binary.MaxVarintLen64)
 	n := binary.PutUvarint(buf, x)
 	return base58.CheckEncode(buf[:n], 0)
+}
+
+func FastRemoveWhitespace(str string) string {
+	var b strings.Builder
+	b.Grow(len(str))
+	for _, ch := range str {
+		if !unicode.IsSpace(ch) {
+			b.WriteRune(ch)
+		}
+	}
+	return b.String()
 }

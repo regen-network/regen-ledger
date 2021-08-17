@@ -3,12 +3,32 @@ package server
 import (
 	"context"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/types"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
+
+func (s serverImpl) Classes(goCtx context.Context, request *ecocredit.QueryClassesRequest) (*ecocredit.QueryClassesResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	classesIter, err := s.classInfoTable.PrefixScan(ctx, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var classes []*ecocredit.ClassInfo
+	pageResp, err := orm.Paginate(classesIter, request.Pagination, &classes)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.QueryClassesResponse{
+		Classes:    classes,
+		Pagination: pageResp,
+	}, nil
+}
 
 func (s serverImpl) ClassInfo(goCtx context.Context, request *ecocredit.QueryClassInfoRequest) (*ecocredit.QueryClassInfoResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
@@ -26,6 +46,28 @@ func (s serverImpl) getClassInfo(ctx types.Context, classID string) (*ecocredit.
 	return &classInfo, err
 }
 
+func (s serverImpl) Batches(goCtx context.Context, request *ecocredit.QueryBatchesRequest) (*ecocredit.QueryBatchesResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+
+	// Only read IDs that have a prefix match with the ClassID
+	start, end := orm.PrefixRange([]byte(request.ClassId))
+	batchesIter, err := s.batchInfoTable.PrefixScan(ctx, start, end)
+	if err != nil {
+		return nil, err
+	}
+
+	var batches []*ecocredit.BatchInfo
+	pageResp, err := orm.Paginate(batchesIter, request.Pagination, &batches)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.QueryBatchesResponse{
+		Batches:    batches,
+		Pagination: pageResp,
+	}, nil
+}
+
 func (s serverImpl) BatchInfo(goCtx context.Context, request *ecocredit.QueryBatchInfoRequest) (*ecocredit.QueryBatchInfoResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	var batchInfo ecocredit.BatchInfo
@@ -38,20 +80,24 @@ func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalan
 	acc := request.Account
 	denom := batchDenomT(request.BatchDenom)
 	store := ctx.KVStore(s.storeKey)
-
-	tradable, err := getDecimal(store, TradableBalanceKey(acc, denom))
+	accAddr, err := sdk.AccAddressFromBech32(acc)
 	if err != nil {
 		return nil, err
 	}
 
-	retired, err := getDecimal(store, RetiredBalanceKey(acc, denom))
+	tradable, err := getDecimal(store, TradableBalanceKey(accAddr, denom))
+	if err != nil {
+		return nil, err
+	}
+
+	retired, err := getDecimal(store, RetiredBalanceKey(accAddr, denom))
 	if err != nil {
 		return nil, err
 	}
 
 	return &ecocredit.QueryBalanceResponse{
-		TradableAmount: math.DecimalString(tradable),
-		RetiredAmount:  math.DecimalString(retired),
+		TradableAmount: tradable.String(),
+		RetiredAmount:  retired.String(),
 	}, nil
 }
 
@@ -71,18 +117,13 @@ func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupply
 	}
 
 	return &ecocredit.QuerySupplyResponse{
-		TradableSupply: math.DecimalString(tradable),
-		RetiredSupply:  math.DecimalString(retired),
+		TradableSupply: tradable.String(),
+		RetiredSupply:  retired.String(),
 	}, nil
 }
 
-func (s serverImpl) Precision(goCtx context.Context, request *ecocredit.QueryPrecisionRequest) (*ecocredit.QueryPrecisionResponse, error) {
-	ctx := types.UnwrapSDKContext(goCtx)
-	store := ctx.KVStore(s.storeKey)
-	x, err := getUint32(store, MaxDecimalPlacesKey(batchDenomT(request.BatchDenom)))
-	if err != nil {
-		return nil, err
-	}
-
-	return &ecocredit.QueryPrecisionResponse{MaxDecimalPlaces: x}, nil
+func (s serverImpl) CreditTypes(goCtx context.Context, _ *ecocredit.QueryCreditTypesRequest) (*ecocredit.QueryCreditTypesResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx).Context
+	creditTypes := s.getAllCreditTypes(ctx)
+	return &ecocredit.QueryCreditTypesResponse{CreditTypes: creditTypes}, nil
 }

@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"os"
 
+	moduletypes "github.com/regen-network/regen-ledger/types/module"
+	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -76,6 +79,7 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/modules/core"
 	ibcclient "github.com/cosmos/ibc-go/modules/core/02-client"
+	ibcclienttypes "github.com/cosmos/ibc-go/modules/core/02-client/types"
 	porttypes "github.com/cosmos/ibc-go/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/modules/core/keeper"
@@ -91,6 +95,9 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+
+	// unnamed import of statik for swagger UI support
+	_ "github.com/regen-network/regen-ledger/client/docs/statik"
 )
 
 const (
@@ -126,6 +133,7 @@ var (
 			vesting.AppModuleBasic{},
 			feegrantmodule.AppModuleBasic{},
 			authzmodule.AppModuleBasic{},
+			ecocreditmodule.Module{},
 		}, setCustomModuleBasics()...)...,
 	)
 
@@ -298,7 +306,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
-		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
+		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
 
 	// Create Transfer Keepers
 	app.TransferKeeper = ibctransferkeeper.NewKeeper(
@@ -342,8 +350,21 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		&stakingKeeper, govRouter,
 	)
 
-	// register experimental modules here
+	// register custom modules here
 	app.smm = setCustomModules(app, interfaceRegistry)
+	ecocreditModule := ecocreditmodule.NewModule(
+		app.GetSubspace(ecocredit.DefaultParamspace),
+		app.BankKeeper,
+	)
+	newModules := []moduletypes.Module{ecocreditModule}
+	err := app.smm.RegisterModules(newModules)
+	if err != nil {
+		panic(err)
+	}
+	err = app.smm.CompleteInitialization()
+	if err != nil {
+		panic(err)
+	}
 	app.smm.RegisterInvariants(&app.CrisisKeeper)
 
 	var skipGenesisInvariants = cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
@@ -646,6 +667,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
+	paramsKeeper.Subspace(ecocredit.DefaultParamspace)
 	initCustomParamsKeeper(&paramsKeeper)
 
 	return paramsKeeper

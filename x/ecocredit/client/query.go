@@ -3,6 +3,7 @@ package client
 import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/spf13/cobra"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -20,11 +21,13 @@ func QueryCmd(name string) *cobra.Command {
 		RunE:  client.ValidateCmd,
 	}
 	cmd.AddCommand(
-		qflags(queryClassInfo()),
-		qflags(queryBatchInfo()),
-		qflags(queryBalance()),
-		qflags(querySupply()),
-		qflags(queryPrecision()),
+		QueryClassesCmd(),
+		QueryClassInfoCmd(),
+		QueryBatchesCmd(),
+		QueryBatchInfoCmd(),
+		QueryBalanceCmd(),
+		QuerySupplyCmd(),
+		QueryCreditTypesCmd(),
 	)
 	return cmd
 }
@@ -34,8 +37,34 @@ func qflags(cmd *cobra.Command) *cobra.Command {
 	return cmd
 }
 
-func queryClassInfo() *cobra.Command {
-	return &cobra.Command{
+func QueryClassesCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "classes",
+		Short: "List all credit classes with pagination flags",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.Classes(cmd.Context(), &ecocredit.QueryClassesRequest{
+				Pagination: pagination,
+			})
+			return print(ctx, res, err)
+		},
+	}
+	flags.AddPaginationFlagsToCmd(cmd, "classes")
+	return qflags(cmd)
+}
+
+func QueryClassInfoCmd() *cobra.Command {
+	return qflags(&cobra.Command{
 		Use:   "class-info [class_id]",
 		Short: "Retrieve credit class info",
 		Args:  cobra.ExactArgs(1),
@@ -49,11 +78,38 @@ func queryClassInfo() *cobra.Command {
 			})
 			return print(ctx, res, err)
 		},
-	}
+	})
 }
 
-func queryBatchInfo() *cobra.Command {
-	return &cobra.Command{
+func QueryBatchesCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "batches [class_id]",
+		Short: "List all credit batches in the given class with pagination flags",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.Batches(cmd.Context(), &ecocredit.QueryBatchesRequest{
+				ClassId:    args[0],
+				Pagination: pagination,
+			})
+			return print(ctx, res, err)
+		},
+	}
+	flags.AddPaginationFlagsToCmd(cmd, "batches")
+	return qflags(cmd)
+}
+
+func QueryBatchInfoCmd() *cobra.Command {
+	return qflags(&cobra.Command{
 		Use:   "batch-info [batch_denom]",
 		Short: "Retrieve the credit issuance batch info",
 		Long:  "Retrieve the credit issuance batch info based on the bach_denom (ID)",
@@ -63,16 +119,23 @@ func queryBatchInfo() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			batchDenom := args[0]
+			err = ecocredit.ValidateDenom(batchDenom)
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+			}
+
 			res, err := c.BatchInfo(cmd.Context(), &ecocredit.QueryBatchInfoRequest{
-				BatchDenom: args[0],
+				BatchDenom: batchDenom,
 			})
 			return print(ctx, res, err)
 		},
-	}
+	})
 }
 
-func queryBalance() *cobra.Command {
-	return &cobra.Command{
+func QueryBalanceCmd() *cobra.Command {
+	return qflags(&cobra.Command{
 		Use:   "balance [batch_denom] [account]",
 		Short: "Retrieve the tradable and retired balances of the credit batch",
 		Long:  "Retrieve the tradable and retired balances of the credit batch for a given account address",
@@ -87,11 +150,11 @@ func queryBalance() *cobra.Command {
 			})
 			return print(ctx, res, err)
 		},
-	}
+	})
 }
 
-func querySupply() *cobra.Command {
-	return &cobra.Command{
+func QuerySupplyCmd() *cobra.Command {
+	return qflags(&cobra.Command{
 		Use:   "supply [batch_denom]",
 		Short: "Retrieve the tradable and retired supply of the credit batch",
 		Long:  "Retrieve the tradable and retired supply of the credit batch",
@@ -106,24 +169,22 @@ func querySupply() *cobra.Command {
 			})
 			return print(ctx, res, err)
 		},
-	}
+	})
 }
 
-func queryPrecision() *cobra.Command {
-	return &cobra.Command{
-		Use:   "precision [batch_denom]",
-		Short: "Retrieve the maximum length of the fractional part of credits in the given batch",
-		Long:  "Retrieve the maximum length of the fractional part of credits in the given batch. The precision tells what is the minimum unit of a credit.\nExample: a decimal number 12.345 has fractional part length equal 3. A precision=5 means that the minimum unit we can trade is 0.00001",
-		Args:  cobra.ExactArgs(1),
+func QueryCreditTypesCmd() *cobra.Command {
+	return qflags(&cobra.Command{
+		Use:   "types",
+		Short: "Retrieve the list of credit types",
+		Long:  "Retrieve the list of credit types that contains the type name, measurement unit and precision",
+		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
 			if err != nil {
 				return err
 			}
-			res, err := c.Precision(cmd.Context(), &ecocredit.QueryPrecisionRequest{
-				BatchDenom: args[0],
-			})
+			res, err := c.CreditTypes(cmd.Context(), &ecocredit.QueryCreditTypesRequest{})
 			return print(ctx, res, err)
 		},
-	}
+	})
 }

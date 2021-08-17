@@ -22,6 +22,12 @@ message ClassInfo {
 
   // metadata is any arbitrary metadata to attached to the credit class.
   bytes metadata = 4;
+
+  // credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision.
+  CreditType credit_type = 5;
+
+  // The number of batches issued in this credit class.
+  uint64 num_batches = 6;
 }
 
 // BatchInfo represents the high-level on-chain information for a credit batch.
@@ -71,12 +77,46 @@ message BatchInfo {
 // use with the x/params module.
 message Params {
   // credit_class_fee is the fixed fee charged on creation of a new credit class
-  repeated cosmos.base.v1beta1.Coin credit_class_fee = 1
-      [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+  repeated cosmos.base.v1beta1.Coin credit_class_fee = 1 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+
+  // allowed_class_designers is an allowlist defining the addresses with
+  // the required permissions to create credit classes
+  repeated string allowed_class_designers = 2;
+
+  // allowlist_enabled is a param that enables/disables the allowlist for credit
+  // creation
+  bool allowlist_enabled = 3;
+
+  // credit_types is a list of definitions for credit types
+  repeated CreditType credit_types = 4;
 }
 
-// GenesisState defines the state of the ecocredit module that is needed at genesis
-message GenesisState {
-  // Params contains the updateable global parameters for use with the x/params module
-  Params params = 1 [(gogoproto.nullable) = false, (gogoproto.moretags) = "yaml:\"params\""];
+// CreditType defines the measurement unit/precision of a certain credit type
+// (e.g. carbon, biodiversity...)
+message CreditType {
+  // the type of credit (e.g. carbon, biodiversity, etc)
+  string name = 1;
+
+  // abbreviation is a 1-3 character uppercase abbreviation of the CreditType
+  // name, used in batch denominations within the CreditType. It must be unique.
+  string abbreviation = 2;
+
+  // the measurement unit (e.g. kg, ton, etc)
+  string unit = 3;
+
+  // the decimal precision
+  uint32 precision = 4;
+}
+
+// CreditTypeSeq associates a sequence number with a credit type abbreviation.
+// This represents the number of credit classes created with that credit type.
+message CreditTypeSeq {
+  // The credit type abbreviation
+  string abbreviation = 1;
+
+  // The sequence number of classes of the credit type
+  uint64 seq_number = 2;
 }
