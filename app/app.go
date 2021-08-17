@@ -354,6 +354,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	app.smm = setCustomModules(app, interfaceRegistry)
 	ecocreditModule := ecocreditmodule.NewModule(
 		app.GetSubspace(ecocredit.DefaultParamspace),
+		app.AccountKeeper,
 		app.BankKeeper,
 	)
 	newModules := []moduletypes.Module{ecocreditModule}
