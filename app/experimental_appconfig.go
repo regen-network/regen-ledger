@@ -24,6 +24,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
+	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	group "github.com/regen-network/regen-ledger/x/group/module"
 )
 
@@ -52,11 +53,6 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 	newModuleManager := server.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
 
 	// BEGIN HACK: this is a total, ugly hack until x/auth & x/bank supports ADR 033 or we have a suitable alternative
-	ecocreditModule := ecocredit.NewModule(
-		app.GetSubspace(ecocredittypes.DefaultParamspace),
-		app.AccountKeeper,
-		app.BankKeeper,
-	)
 
 	groupModule := group.Module{AccountKeeper: app.AccountKeeper, BankKeeper: app.BankKeeper}
 	// use a separate newModules from the global NewModules here because we need to pass state into the group module

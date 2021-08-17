@@ -13,6 +13,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	regentypes "github.com/regen-network/regen-ledger/types"
 )
 
 // Simulation operation weights constants
@@ -33,7 +34,7 @@ var (
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
-	ak exported.AccountKeeper, bk exported.BankKeeper) simulation.WeightedOperations {
+	ak exported.AccountKeeper, bk exported.BankKeeper, qryClient ecocredit.QueryClient) simulation.WeightedOperations {
 
 	var (
 		weightMsgCreateClass int
@@ -48,25 +49,42 @@ func WeightedOperations(
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgCreateClass,
-			SimulateMsgCreateClass(ak, bk),
+			SimulateMsgCreateClass(ak, bk, qryClient),
 		),
 	}
 }
 
 // SimulateMsgCreateClass generates a MsgCreateClass with random values.
-func SimulateMsgCreateClass(ak exported.AccountKeeper, bk exported.BankKeeper) simtypes.Operation {
+func SimulateMsgCreateClass(ak exported.AccountKeeper, bk exported.BankKeeper,
+	qryClient ecocredit.QueryClient) simtypes.Operation {
 	return func(
-		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 
 		designer, _ := simtypes.RandomAcc(r, accs)
 		issuers := []string{accs[0].Address.String(), accs[1].Address.String()}
 
-		designerAcc := ak.GetAccount(ctx, designer.Address)
-		spendableCoins := bk.SpendableCoins(ctx, designer.Address)
-		fees, err := simtypes.RandomFees(r, ctx, spendableCoins)
+		designerAcc := ak.GetAccount(sdkCtx, designer.Address)
+
+		ctx := regentypes.Context{Context: sdkCtx}
+		res, err := qryClient.Params(ctx, &ecocredit.QueryParamsRequest{})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateClass, err.Error()), nil, err
+		}
+
+		params := res.Params
+		if params.AllowlistEnabled && !contains(params.AllowedClassDesigners, designer.Address.String()) {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateClass, "not allowed to create credit class"), nil, nil // skip
+		}
+
+		spendableCoins := bk.SpendableCoins(sdkCtx, designer.Address)
+		fees, err := simtypes.RandomFees(r, sdkCtx, spendableCoins)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateClass, err.Error()), nil, err
+		}
+
+		if spendableCoins.IsAllLTE(params.CreditClassFee) {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateClass, "not enough balance"), nil, nil
 		}
 
 		msg := &ecocredit.MsgCreateClass{
@@ -98,4 +116,13 @@ func SimulateMsgCreateClass(ak exported.AccountKeeper, bk exported.BankKeeper) s
 
 		return simtypes.NewOperationMsg(msg, true, "", nil), nil, err
 	}
+}
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }

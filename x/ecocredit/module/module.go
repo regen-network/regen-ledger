@@ -113,7 +113,7 @@ func (Module) ProposalContents(simState module.SimulationState) []simtypes.Weigh
 
 // RandomizedParams creates randomized ecocredit param changes for the simulator.
 func (Module) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
-	return nil
+	return simulation.ParamChanges(r)
 }
 
 // RegisterStoreDecoder registers a decoder for ecocredit module's types
