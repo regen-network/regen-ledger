@@ -67,7 +67,14 @@ func (app *RegenApp) registerUpgradeHandlers() {
 			"ibc":          1,
 			"genutil":      1,
 			"transfer":     1,
+			"ecocredit":    1, // we dont run InitiGenesis for ecocredit, right?
 		}
+
+		var params ecocredittypes.Params
+		subSpace := app.GetSubspace(ecocredittypes.DefaultParamspace)
+		subSpace.GetParamSet(ctx, &params)
+		params.AllowlistEnabled = true
+	    subSpace.SetParamSet(ctx, &params)
 
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
