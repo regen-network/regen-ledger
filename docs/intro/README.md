@@ -20,12 +20,14 @@ The following block explorers currently support Regen Ledger:
 
 - [Aneka - Regen Mainnet](https://regen.aneka.io/)
 - [Aneka - Regen Devnet](https://prelaunch.regen.aneka.io/)
+- [Ping - Regen Mainnet](https://ping.pub/regen/)
 
 ## Wallets
 
 The following wallets currently support Regen Ledger:
 
 - [Keplr Wallet](https://wallet.keplr.app/) - Web
+- [Ping Wallet](https://ping.pub/) - Web
 
 ## Community
 
