@@ -65,7 +65,7 @@ In this design, credit batches can be split up into any fractional amount (arbit
 
 Retirement is the state in which a credit can no longer be transferred. In conventional blockchain terminology, this is practically equivalent to the burned state and the word burn may be used in the technical implementation. The main difference is that we still care to actively track the balance of retired credits. Conceptually retiring a credit implies that the holder of a credit is “consuming” the credit as an offset to satisfy voluntary or compliance-related offset commitments.
 
-Credits that are retired cannot be un-retired by either the credit issuer, or credit designer.
+Credit retirement is permanent. Retired credits cannot be un-retired by either the credit issuer or credit designer.
 
 ## Operations
 
@@ -145,6 +145,7 @@ The other alternative, which preserves full auditability of all credits, would r
 This proposal focuses on minimizing on-chain metadata as much as possible. Benefits of this approach include:
 - Reducing technical complexity, thus reducing development time
 - Allowing for specific use cases to drive future functionality
+- Minimizing state bloat
 
 Specifically, the metadata fields in the credit class and credit vintage could be designed to be much more explicit, with several required on-chain metadata fields. Since we are not planning on implementing on-chain scraping of credit metadata, it seems more appropriate to allow for arbitrary bytes, and allow for standards for metadata best practices to evolve over a longer period of time once we can generalize across several use cases.
 
