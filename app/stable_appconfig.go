@@ -70,11 +70,9 @@ func (app *RegenApp) registerUpgradeHandlers() {
 			"ecocredit":    1, // we dont run InitiGenesis for ecocredit, right?
 		}
 
-		var params ecocredittypes.Params
-		subSpace := app.GetSubspace(ecocredittypes.DefaultParamspace)
-		subSpace.GetParamSet(ctx, &params)
-		params.AllowlistEnabled = true
-	    subSpace.SetParamSet(ctx, &params)
+		gen := ecocredittypes.DefaultGenesisState()
+		gen.Params.AllowlistEnabled = true
+		app.mm.Modules[ecocredittypes.ModuleName].InitGenesis(ctx, app.appCodec, app.cdc.MustMarshalJSON(gen))
 
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
