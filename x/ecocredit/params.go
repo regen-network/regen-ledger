@@ -149,7 +149,7 @@ func DefaultParams() Params {
 	return NewParams(
 		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)),
 		[]string{},
-		true,
+		false,
 		[]*CreditType{
 			{
 				Name:         "carbon",
