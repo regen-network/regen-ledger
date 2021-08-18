@@ -309,9 +309,27 @@ func TestAddLengthPrefix(t *testing.T) {
 			require.Equal(t, tc.expected, out)
 		})
 	}
+
 	require.Panics(t, func() {
 		orm.AddLengthPrefix(make([]byte, 300))
 	})
+}
+
+func TestNullTerminatedBytes(t *testing.T) {
+	tcs := []struct {
+		name     string
+		in       string
+		expected []byte
+	}{
+		{"empty", "", []byte{0}},
+		{"some data", "abc", []byte{0x61, 0x62, 0x63, 0}},
+	}
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			out := orm.NullTerminatedBytes(tc.in)
+			require.Equal(t, tc.expected, out)
+		})
+	}
 }
 
 type mockPrimaryKeyed struct {
