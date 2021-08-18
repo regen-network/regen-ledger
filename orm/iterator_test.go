@@ -101,11 +101,11 @@ func TestLimitedIterator(t *testing.T) {
 	}{
 		"all from range with max > length": {
 			src: orm.LimitIterator(mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}), 2),
-			exp: []testdata.GroupInfo{testdata.GroupInfo{Description: "test"}},
+			exp: []testdata.GroupInfo{{Description: "test"}},
 		},
 		"up to max": {
 			src: orm.LimitIterator(mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}), 1),
-			exp: []testdata.GroupInfo{testdata.GroupInfo{Description: "test"}},
+			exp: []testdata.GroupInfo{{Description: "test"}},
 		},
 		"none when max = 0": {
 			src: orm.LimitIterator(mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}), 0),
