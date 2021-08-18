@@ -114,7 +114,7 @@ The above fields may be included on-chain (serialized as a JSON string or protob
 
 #### Overlap Behavior
 
-It is generally illegal to issue a credit batch of the same credit class for overlapping polygons and dates although the blockchain state machine will not explicitly enforce this as off-chain auditing and slashing is a more efficient and robust way to do this.
+Although it is generally illegal to issue a credit batch of the same credit class for overlapping polygons and dates, the blockchain state machine will not explicitly enforce this, as off-chain auditing and slashing is a more efficient and robust way to do this.
 
 ### Send
 
