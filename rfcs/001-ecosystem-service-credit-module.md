@@ -59,7 +59,7 @@ A credit batch refers to a batch of credits issued at a single point in time (us
 
 ### Credit
 
-In this design credit batches can be split up into any fractional amount (arbitrary precision decimal) as needed and thus credit batches are the top-level thing issued, but they can be split up as needed. Credits is thus a loose term to describe some quantities of credits potentially of different batches and classes. “One credit” would generally refer to 1.0 units of a given credit batch.
+In this design, credit batches can be split up into any fractional amount (arbitrary precision decimal) as needed and thus credit batches are the top-level asset issued, but they can be split up as needed. Credits is thus a loose term to describe some quantities of credits potentially of different batches and classes. “One credit” would generally refer to 1.0 units of a given credit batch.
 
 ### Retirement
 
