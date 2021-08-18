@@ -203,15 +203,15 @@ func (a table) Delete(ctx HasKVStore, rowID RowID) error {
 	return nil
 }
 
-// Has checks if a key exists. Panics on nil or empty key.
-func (a table) Has(ctx HasKVStore, rowID RowID) bool {
+// Has checks if a key exists. Panics on nil key, and returns false on empty key.
+func (a table) Has(ctx HasKVStore, key RowID) bool {
 	// We don't allow creation of values with an empty key, so Has will
 	// always return false
-	if len(rowID) == 0 {
+	if len(key) == 0 {
 		return false
 	}
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
-	it := store.Iterator(PrefixRange(rowID))
+	it := store.Iterator(PrefixRange(key))
 	defer it.Close()
 	return it.Valid()
 }

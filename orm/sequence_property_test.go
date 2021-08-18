@@ -30,7 +30,6 @@ func (m *sequenceMachine) Init(t *rapid.T) {
 
 	// Create primary key table
 	storeKey := sdk.NewKVStoreKey("test")
-	const testSeqPrefix = iota
 	seq := orm.NewSequence(storeKey, 0x1)
 	m.seq = &seq
 
