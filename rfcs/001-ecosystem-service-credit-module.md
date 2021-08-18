@@ -55,7 +55,7 @@ A credit issuer can issue credit batches to project developers based on successf
 
 ### Credit Batch
 
-A credit batch refers to a batch of credits issued at a single point in time (usually corresponding to some off or on-chain verification event, and corresponding to some project).
+A credit batch refers to a batch of credits issued at a single point in time (usually corresponding to some off or on-chain verification event and some project).
 
 ### Credit
 
