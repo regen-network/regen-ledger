@@ -138,7 +138,7 @@ The design described above can be understood as a Fractional NFT (Non-Fungible T
 
 If credits were represented as fully fungible tokens, then this would mean all credits of a given credit class would be completely interchangeable with each other regardless of the vintage they came from. This may indeed be the desired behavior in many cases, but representing a credit class in this way would remove the ability to be able to uniquely track credits from a given vintage, which is important for auditing purposes.
 
-The other alternative, to preserve full auditability of all credits, would require a traditional NFT design, where each individual atomic credit unit (e.g. 1 ton of carbon) would be represented by a unique ID as a non-fungible asset. While this would provide the most auditability, it drastically increases the technical complexity, and introduces usability issues (e.g. each individual credit would need to be traded as an individual transaction).
+The other alternative, which preserves full auditability of all credits, would require a traditional NFT design, where each individual atomic credit unit (e.g. 1 ton of carbon) would be represented by a unique ID as a non-fungible asset. While this would provide the most auditability, it drastically increases the technical complexity, and introduces usability issues (e.g. each individual credit would need to be traded as an individual transaction).
 
 ## On-Chain Metadata
 
