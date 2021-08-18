@@ -31,7 +31,7 @@ var (
 
 // genCreditClassFee randomized CreditClassFee
 func genCreditClassFee(r *rand.Rand) sdk.Coins {
-	return sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, simtypes.RandomAmount(r, sdk.NewInt(1000))))
+	return sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 1, 5)))))
 }
 
 // genAllowedClassDesigners generate random set of designers

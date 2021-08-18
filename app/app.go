@@ -8,7 +8,6 @@ import (
 	"os"
 
 	moduletypes "github.com/regen-network/regen-ledger/types/module"
-	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -95,6 +94,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/regen-network/regen-ledger/client/docs/statik"
@@ -443,6 +443,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 			authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 			ibc.NewAppModule(app.IBCKeeper),
 			transferModule,
+			ecocreditmodule.NewModule(app.GetSubspace(ecocredit.DefaultParamspace), app.AccountKeeper, app.BankKeeper),
 		}, app.setCustomSimulationManager()...)...,
 	)
 

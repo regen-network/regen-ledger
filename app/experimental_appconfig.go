@@ -24,7 +24,6 @@ import (
 	"github.com/regen-network/regen-ledger/types/module/server"
 	data "github.com/regen-network/regen-ledger/x/data/module"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
-	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	group "github.com/regen-network/regen-ledger/x/group/module"
 )
 
@@ -128,7 +127,6 @@ func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
 			BankKeeper:    app.BankKeeper,
 			AccountKeeper: app.AccountKeeper,
 		},
-		ecocredit.NewModule(app.GetSubspace(ecocredittypes.DefaultParamspace), app.AccountKeeper, app.BankKeeper),
 	}
 }
 
