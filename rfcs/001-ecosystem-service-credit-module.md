@@ -118,7 +118,7 @@ Although it is generally illegal to issue a credit batch of the same credit clas
 
 ### Send
 
-The send operation transfers some units of a credit batch from the current holder to another account. Retired/burned credits cannot be transferred.
+The send operation transfers some units of a credit batch from the current holder to another account. Retired credits cannot be transferred.
 
 Sends can be performed only by the account owner, or an authorized representative (via some external module like message authorization).
 
