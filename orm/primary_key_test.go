@@ -293,6 +293,27 @@ func TestContains(t *testing.T) {
 	}
 }
 
+func TestAddLengthPrefix(t *testing.T) {
+	tcs := []struct {
+		name     string
+		in       []byte
+		expected []byte
+	}{
+		{"empty", []byte{}, []byte{0}},
+		{"nil", nil, []byte{0}},
+		{"some data", []byte{0, 1, 100, 200}, []byte{4, 0, 1, 100, 200}},
+	}
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			out := orm.AddLengthPrefix(tc.in)
+			require.Equal(t, tc.expected, out)
+		})
+	}
+	require.Panics(t, func() {
+		orm.AddLengthPrefix(make([]byte, 300))
+	})
+}
+
 type mockPrimaryKeyed struct {
 	*testdata.GroupMember
 }

@@ -51,17 +51,21 @@ type PrimaryKeyed interface {
 // value can exist in the same table. This means PrimaryKeyFields() has to
 // return a unique value for each object.
 //
-// PrimaryKey parts can be []byte, string, and integer types. []byte is encoded
-// with a length prefix, strings are null-terminated, and integers are encoded
-// using 4 or 8 byte big endian.
+// PrimaryKey parts can be []byte, string, and integer types. The function will panic if
+// it there is a part of any other type.
+// []byte is encoded with a length prefix, strings are null-terminated, and integers are
+// encoded using 4 or 8 byte big endian.
+// The function panics if obj.PrimaryKey contains an
 func PrimaryKey(obj PrimaryKeyed) []byte {
 	fields := obj.PrimaryKeyFields()
-	return buildPrimaryKey(fields...)
+	return buildPrimaryKey(fields)
 }
 
 // buildPrimaryKey encodes and concatenates the PrimaryKeyFields. See PrimaryKey
 // for full documentation of the encoding.
-func buildPrimaryKey(fields ...interface{}) []byte {
+// fields must have elements of type []byte, string or integer. If it contains other type
+// the the function will panic.
+func buildPrimaryKey(fields []interface{}) []byte {
 	bytesSlice := make([][]byte, len(fields))
 	totalLen := 0
 	for i, field := range fields {
@@ -88,15 +92,15 @@ func primaryKeyFieldBytes(field interface{}) []byte {
 	}
 }
 
-// Prefix the byte array with its length as 8 bytes
+// Prefix the byte array with its length as 8 bytes. The function will panic
+// if the bytes length is bigger than 256.
 func AddLengthPrefix(bytes []byte) []byte {
 	byteLen := len(bytes)
 	if byteLen > 256 {
 		panic("Cannot create primary key with an []byte of length greater than 256 bytes. Try again with a smaller []byte.")
 	}
 
-	newLen := 1 + len(bytes)
-	prefixedBytes := make([]byte, newLen, newLen)
+	prefixedBytes := make([]byte, 1+len(bytes))
 	copy(prefixedBytes, []byte{uint8(byteLen)})
 	copy(prefixedBytes[1:], bytes)
 	return prefixedBytes
@@ -104,8 +108,7 @@ func AddLengthPrefix(bytes []byte) []byte {
 
 // Convert string to byte array and null terminate it
 func NullTerminatedBytes(s string) []byte {
-	newLen := len(s) + 1
-	bytes := make([]byte, newLen, newLen)
+	bytes := make([]byte, len(s)+1)
 	copy(bytes, s)
 	return bytes
 }
