@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"reflect"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -131,12 +132,22 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 			moduleName:   name,
 		}
 
+		//// NewConfigurator returns a new Configurator instance
+		//func NewConfigurator(cdc codec.Codec, msgServer grpc.Server, queryServer grpc.Server) Configurator {
+		//	return configurator{
+		//	cdc:         cdc,
+		//	msgServer:   msgServer,
+		//	queryServer: queryServer,
+		//	migrations:  map[string]map[uint64]MigrationHandler{},
+		//}
+		//}
 		cfg := &configurator{
 			msgServer:        msgRegistrar,
 			queryServer:      queryRegistrar,
 			key:              key,
 			cdc:              mm.cdc,
 			requiredServices: map[reflect.Type]bool{},
+			migrations:       map[string]map[uint64]sdkmodule.MigrationHandler{},
 		}
 
 		serverMod.RegisterServices(cfg)
@@ -271,6 +282,7 @@ type configurator struct {
 	exportGenesisHandler      module.ExportGenesisHandler
 	weightedOperationHandler  WeightedOperationsHandler
 	registerInvariantsHandler RegisterInvariantsHandler
+	migrations                map[string]map[uint64]sdkmodule.MigrationHandler
 }
 
 var _ Configurator = &configurator{}
@@ -306,6 +318,24 @@ func (c *configurator) Marshaler() codec.Codec {
 
 func (c *configurator) RequireServer(serverInterface interface{}) {
 	c.requiredServices[reflect.TypeOf(serverInterface)] = true
+}
+
+func (c *configurator) RegisterMigration(moduleName string, forVersion uint64, handler sdkmodule.MigrationHandler) error {
+	if forVersion == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidVersion, "module migration versions should start at 1")
+	}
+
+	if c.migrations[moduleName] == nil {
+		c.migrations[moduleName] = map[uint64]sdkmodule.MigrationHandler{}
+	}
+
+	if c.migrations[moduleName][forVersion] != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrLogic, "another migration for module %s and version %d already exists", moduleName, forVersion)
+	}
+
+	c.migrations[moduleName][forVersion] = handler
+
+	return nil
 }
 
 type WeightedOperationsHandler func(simstate sdkmodule.SimulationState) []simulation.WeightedOperation

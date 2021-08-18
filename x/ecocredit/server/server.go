@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -58,4 +59,8 @@ func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Su
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
+	fmt.Printf("%+v\n", configurator)
+	if err := configurator.RegisterMigration(ecocredit.ModuleName, 1, Migrator{server: impl}.Migrate0to1); err != nil {
+		panic(err)
+	}
 }

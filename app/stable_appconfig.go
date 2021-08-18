@@ -50,6 +50,7 @@ func (app *RegenApp) registerUpgradeHandlers() {
 		// 1st-time running in-store migrations, using 1 as fromVersion to
 		// avoid running InitGenesis.
 		// Explicitly skipping x/auth migrations. It is already patched in regen-ledger v1.0.
+
 		fromVM := map[string]uint64{
 			"auth":         auth.AppModule{}.ConsensusVersion(),
 			"bank":         1,
@@ -67,7 +68,12 @@ func (app *RegenApp) registerUpgradeHandlers() {
 			"ibc":          1,
 			"genutil":      1,
 			"transfer":     1,
+			"ecocredit":    1,
 		}
+
+		// force genesis to run so that ecocredit's upgrade handler will execute
+		gen := app.appCodec.MustMarshalJSON(ecocredittypes.DefaultGenesisState())
+		app.mm.Modules[ecocredittypes.ModuleName].InitGenesis(ctx, app.appCodec, gen)
 
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
