@@ -122,7 +122,7 @@ The send operation transfers some units of a credit batch from the current holde
 
 Sends can be performed only by the account owner, or an authorized representative (via some external module like message authorization).
 
-### Retire/Burn
+### Retire
 
 The retire or burn operation retires some units of a credit batch that the signer of the transaction holds, making them non-transferrable.
 
