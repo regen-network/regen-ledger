@@ -132,15 +132,6 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 			moduleName:   name,
 		}
 
-		//// NewConfigurator returns a new Configurator instance
-		//func NewConfigurator(cdc codec.Codec, msgServer grpc.Server, queryServer grpc.Server) Configurator {
-		//	return configurator{
-		//	cdc:         cdc,
-		//	msgServer:   msgServer,
-		//	queryServer: queryServer,
-		//	migrations:  map[string]map[uint64]MigrationHandler{},
-		//}
-		//}
 		cfg := &configurator{
 			msgServer:        msgRegistrar,
 			queryServer:      queryRegistrar,

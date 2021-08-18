@@ -50,7 +50,6 @@ func (app *RegenApp) registerUpgradeHandlers() {
 		// 1st-time running in-store migrations, using 1 as fromVersion to
 		// avoid running InitGenesis.
 		// Explicitly skipping x/auth migrations. It is already patched in regen-ledger v1.0.
-
 		fromVM := map[string]uint64{
 			"auth":         auth.AppModule{}.ConsensusVersion(),
 			"bank":         1,
