@@ -124,7 +124,7 @@ Sends can be performed only by the account owner, or an authorized representativ
 
 ### Retire
 
-The retire or burn operation retires some units of a credit batch that the signer of the transaction holds, making them non-transferrable.
+The retire operation retires some units of a credit batch that the signer of the transaction holds, making them non-transferrable.
 
 Retiring can be done by either the credit owner, or the credit issuer.
 
