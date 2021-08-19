@@ -75,6 +75,8 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 	return &ecocredit.MsgCreateClassResponse{ClassId: classID}, nil
 }
 
+// CreateBatch creates a new batch of credits.
+// Credits in the batch must not have more decimal places than the credit type's specified precision.
 func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatch) (*ecocredit.MsgCreateBatchResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	classID := req.ClassId
@@ -109,30 +111,26 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		var err error
 		tradable, retired := math.NewDecFromInt64(0), math.NewDecFromInt64(0)
 
-		if issuance.TradableAmount != "" {
-			tradable, err = math.NewNonNegativeDecFromString(issuance.TradableAmount)
-			if err != nil {
-				return nil, err
-			}
-
-			decPlaces := tradable.NumDecimalPlaces()
-			if decPlaces > maxDecimalPlaces {
-				return nil, sdkerrors.ErrInvalidRequest.Wrapf("tradable amount exceeds precision for credit type: "+
-					"is %v, should be < %v", decPlaces, maxDecimalPlaces)
-			}
+		tradable, err = math.NewNonNegativeDecFromString(issuance.TradableAmount)
+		if err != nil {
+			return nil, err
 		}
 
-		if issuance.RetiredAmount != "" {
-			retired, err = math.NewNonNegativeDecFromString(issuance.RetiredAmount)
-			if err != nil {
-				return nil, err
-			}
+		decPlaces := tradable.NumDecimalPlaces()
+		if decPlaces > maxDecimalPlaces {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("tradable amount exceeds precision for credit type: "+
+				"is %v, should be < %v", decPlaces, maxDecimalPlaces)
+		}
 
-			decPlaces := retired.NumDecimalPlaces()
-			if decPlaces > maxDecimalPlaces {
-				return nil, sdkerrors.ErrInvalidRequest.Wrapf("retired amount does not conform to credit type "+
-					"precision: %v should be %v", decPlaces, maxDecimalPlaces)
-			}
+		retired, err = math.NewNonNegativeDecFromString(issuance.RetiredAmount)
+		if err != nil {
+			return nil, err
+		}
+
+		decPlaces = retired.NumDecimalPlaces()
+		if decPlaces > maxDecimalPlaces {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("retired amount does not conform to credit type "+
+				"precision: %v should be %v", decPlaces, maxDecimalPlaces)
 		}
 
 		recipient := issuance.Recipient
@@ -222,6 +220,8 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	return &ecocredit.MsgCreateBatchResponse{BatchDenom: string(batchDenom)}, nil
 }
 
+// Send sends credits to a recipient.
+// Send also retires credits if the amount to retire is specified in the request.
 func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocredit.MsgSendResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
@@ -310,6 +310,8 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 	return &ecocredit.MsgSendResponse{}, nil
 }
 
+// Retire credits to the specified location.
+// WARNING: retiring credits is permanent. Retired credits cannot be un-retired.
 func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ecocredit.MsgRetireResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
@@ -355,6 +357,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ec
 	return &ecocredit.MsgRetireResponse{}, nil
 }
 
+// Cancel credits, removing them from the supply and balance of the holder
 func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ecocredit.MsgCancelResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
@@ -483,6 +486,7 @@ func retire(ctx types.Context, store sdk.KVStore, recipient sdk.AccAddress, batc
 	})
 }
 
+// subtracts `amount` from the tradable balance and tradable supply
 func subtractTradableBalanceAndSupply(store sdk.KVStore, holder sdk.AccAddress, batchDenom batchDenomT, amount math.Dec) error {
 	// subtract tradable balance
 	err := subAndSetDecimal(store, TradableBalanceKey(holder, batchDenom), amount)
@@ -499,6 +503,7 @@ func subtractTradableBalanceAndSupply(store sdk.KVStore, holder sdk.AccAddress, 
 	return nil
 }
 
+// gets the precision of the credit type associated with the batch
 func (s serverImpl) getBatchPrecision(ctx types.Context, denom batchDenomT) (uint32, error) {
 	var batchInfo ecocredit.BatchInfo
 	err := s.batchInfoTable.GetOne(ctx, orm.RowID(denom), &batchInfo)
