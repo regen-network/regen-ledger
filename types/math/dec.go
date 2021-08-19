@@ -60,6 +60,17 @@ func NewNonNegativeFixedDecFromString(s string, max uint32) (Dec, error) {
 	return d, nil
 }
 
+func NewPositiveDecFromString(s string) (Dec, error) {
+	d, err := NewDecFromString(s)
+	if err != nil {
+		return Dec{}, err
+	}
+	if !d.IsPositive() {
+		return Dec{}, fmt.Errorf("%s is not a positive decimal", s)
+	}
+	return d, nil
+}
+
 func NewPositiveFixedDecFromString(s string, max uint32) (Dec, error) {
 	d, err := NewDecFromString(s)
 	if err != nil {
