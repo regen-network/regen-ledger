@@ -6,23 +6,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Features
+## [v2.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/v2.0.0-beta1) - 2021-08-19
 
-* Add support for on-chain creation of Permanent Locked Accounts (#482, [regen-network/cosmos-sdk#42](http://github.com/regen-network/cosmos-sdk/pull/42)
+### General
+
+#### Added
+
+* [#388](https://github.com/regen-network/regen-ledger/pull/388) Add support for rosetta
+* [#482](https://github.com/regen-network/regen-ledger/pull/482)
+    Add support for on-chain creation of Permanent Locked Accounts
+    ([regen-network/cosmos-sdk#42](http://github.com/regen-network/cosmos-sdk/pull/42))
+* [#349](https://github.com/regen-network/regen-ledger/pull/349) Add x/feegrant & x/authz from Cosmos SDK v0.43
+
+#### Changed
+
+* [#422](https://github.com/regen-network/regen-ledger/pull/422) remove `Request` suffix in Msgs
+* [#322](https://github.com/regen-network/regen-ledger/pull/322) Split regen ledger into multiple go modules
+* [#482](https://github.com/regen-network/regen-ledger/pull/482) Upgrade Cosmos SDK to v0.43.0
+
+#### Fixed
+
+* [#386](https://github.com/regen-network/regen-ledger/pull/386) fix IBC proposal registration
 
 ### `x/ecocredit`
 
 #### Added
-* (genesis) [#389](https://github.com/regen-network/regen-ledger/pull/389) add genesis import and export.
-* add support for credit cancelling (#385)
-* record retirement locations of ecocredit (#328)
-* add dates as top level fields in credit batches (#393)
-* add project location as field in credit batches (#394)
-* use dec wrapper for decimal operations (#435)
-* add credit types to credit class (#424)
-* add params for an allowlist of permissioned credit designers (#425)
-* add queries to list classes and batches with a class (#451)
-* update class ID and batch denomination formats (#392)
+
+* (genesis) [#389](https://github.com/regen-network/regen-ledger/pull/389) add genesis import and export
+* [#385](https://github.com/regen-network/regen-ledger/pull/385) add support for credit cancelling
+* [#425](https://github.com/regen-network/regen-ledger/pull/425) add params for an allowlist of permissioned credit designers
+* [#451](https://github.com/regen-network/regen-ledger/pull/451) add queries to list classes and batches with a class
+* [#183](https://github.com/regen-network/regen-ledger/pull/183) add grpc-gateway support for query routes
+
+
+#### Changed
+
+* [#375](https://github.com/regen-network/regen-ledger/pull/375) add fixed fee for creating new credit class
+* [#392](https://github.com/regen-network/regen-ledger/pull/392) update class ID and batch denomination formats
+* [#328](https://github.com/regen-network/regen-ledger/pull/328) record retirement locations of ecocredit
+* [#393](https://github.com/regen-network/regen-ledger/pull/393) add dates as top level fields in credit batches
+* [#394](https://github.com/regen-network/regen-ledger/pull/394) add project location as field in credit batches
+* [#435](https://github.com/regen-network/regen-ledger/pull/435) use dec wrapper for decimal operations
+* [#424](https://github.com/regen-network/regen-ledger/pull/424) add credit types to credit class
+
+### `x/group`
+
+#### Added
+
+* [#330](https://github.com/regen-network/regen-ledger/pull/330) add invariant checks for groups' vote sums
+* [#333](https://github.com/regen-network/regen-ledger/pull/333) try to execute group proposal on submission or on new vote
+* [#183](https://github.com/regen-network/regen-ledger/pull/183) add grpc-gateway support for query routes
 
 ## [1.0.0] - 2021-04-13
 
