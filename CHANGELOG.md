@@ -13,9 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Added
 
 * [#388](https://github.com/regen-network/regen-ledger/pull/388) Add support for rosetta
-* ([#482](https://github.com/regen-network/regen-ledger/pull/482),
-    [regen-network/cosmos-sdk#42](http://github.com/regen-network/cosmos-sdk/pull/42))
+* [#482](https://github.com/regen-network/regen-ledger/pull/482)
     Add support for on-chain creation of Permanent Locked Accounts
+    ([regen-network/cosmos-sdk#42](http://github.com/regen-network/cosmos-sdk/pull/42))
 * [#349](https://github.com/regen-network/regen-ledger/pull/349) Add x/feegrant & x/authz from Cosmos SDK v0.43
 
 #### Changed
