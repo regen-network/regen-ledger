@@ -53,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Added
 
-* [#330](https://github.com/regen-network/regen-ledger/pull/330) add invariant checks for vote sums
+* [#330](https://github.com/regen-network/regen-ledger/pull/330) add invariant checks for groups' vote sums
 * [#333](https://github.com/regen-network/regen-ledger/pull/333) try to execute group proposal on submission or on new vote
 * [#183](https://github.com/regen-network/regen-ledger/pull/183) add grpc-gateway support for query routes
 
