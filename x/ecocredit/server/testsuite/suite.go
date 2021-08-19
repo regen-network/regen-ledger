@@ -713,7 +713,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		{
 			name: "valid eco credit creation",
 			creditTypes: []*ecocredit.CreditType{
-				{Name: "carbon", Abbreviation: "C", Unit: "ton", Precision: 3},
+				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
 			},
 			msg: ecocredit.MsgCreateClass{
 				Designer:   s.signers[0].String(),
@@ -726,7 +726,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		{
 			name: "invalid request - not a valid credit type",
 			creditTypes: []*ecocredit.CreditType{
-				{Name: "carbon", Abbreviation: "C", Unit: "ton", Precision: 3},
+				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
 			},
 			msg: ecocredit.MsgCreateClass{
 				Designer:   s.signers[0].String(),
@@ -739,7 +739,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		{
 			name: "request with strange font should be valid",
 			creditTypes: []*ecocredit.CreditType{
-				{Name: "carbon", Abbreviation: "C", Unit: "ton", Precision: 3},
+				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
 			},
 			msg: ecocredit.MsgCreateClass{
 				Designer:   s.signers[0].String(),
