@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [v2.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/v2.0.0-beta1) - 2021-08-18
+## [v2.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/v2.0.0-beta1) - 2021-08-19
 
 ### General
 
