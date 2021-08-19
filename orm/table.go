@@ -11,9 +11,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var _ Indexable = &TableBuilder{}
+var _ Indexable = &tableBuilder{}
 
-type TableBuilder struct {
+type tableBuilder struct {
 	model         reflect.Type
 	prefixData    byte
 	storeKey      sdk.StoreKey
@@ -23,8 +23,8 @@ type TableBuilder struct {
 	cdc           codec.Codec
 }
 
-// NewTableBuilder creates a builder to setup a Table object.
-func NewTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, idxKeyCodec IndexKeyCodec, cdc codec.Codec) *TableBuilder {
+// newTableBuilder creates a builder to setup a table object.
+func newTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, idxKeyCodec IndexKeyCodec, cdc codec.Codec) *tableBuilder {
 	if model == nil {
 		panic("Model must not be nil")
 	}
@@ -38,7 +38,7 @@ func NewTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMa
 	if tp.Kind() == reflect.Ptr {
 		tp = tp.Elem()
 	}
-	return &TableBuilder{
+	return &tableBuilder{
 		prefixData:    prefixData,
 		storeKey:      storeKey,
 		model:         tp,
@@ -47,22 +47,28 @@ func NewTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMa
 	}
 }
 
-func (a TableBuilder) IndexKeyCodec() IndexKeyCodec {
+// TestTableBuilder exposes the private tableBuilder type for testing purposes.
+// It is not safe to use this outside of test code.
+func TestTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, idxKeyCodec IndexKeyCodec, cdc codec.Codec) *tableBuilder {
+	return newTableBuilder(prefixData, storeKey, model, idxKeyCodec, cdc)
+}
+
+func (a tableBuilder) IndexKeyCodec() IndexKeyCodec {
 	return a.indexKeyCodec
 }
 
 // RowGetter returns a type safe RowGetter.
-func (a TableBuilder) RowGetter() RowGetter {
+func (a tableBuilder) RowGetter() RowGetter {
 	return NewTypeSafeRowGetter(a.storeKey, a.prefixData, a.model, a.cdc)
 }
 
-func (a TableBuilder) StoreKey() sdk.StoreKey {
+func (a tableBuilder) StoreKey() sdk.StoreKey {
 	return a.storeKey
 }
 
-// Build creates a new Table object.
-func (a TableBuilder) Build() Table {
-	return Table{
+// Build creates a new table object.
+func (a tableBuilder) Build() table {
+	return table{
 		model:       a.model,
 		prefix:      a.prefixData,
 		storeKey:    a.storeKey,
@@ -73,22 +79,28 @@ func (a TableBuilder) Build() Table {
 }
 
 // AddAfterSaveInterceptor can be used to register a callback function that is executed after an object is created and/or updated.
-func (a *TableBuilder) AddAfterSaveInterceptor(interceptor AfterSaveInterceptor) {
+func (a *tableBuilder) AddAfterSaveInterceptor(interceptor AfterSaveInterceptor) {
 	a.afterSave = append(a.afterSave, interceptor)
 }
 
 // AddAfterDeleteInterceptor can be used to register a callback function that is executed after an object is deleted.
-func (a *TableBuilder) AddAfterDeleteInterceptor(interceptor AfterDeleteInterceptor) {
+func (a *tableBuilder) AddAfterDeleteInterceptor(interceptor AfterDeleteInterceptor) {
 	a.afterDelete = append(a.afterDelete, interceptor)
 }
 
-var _ TableExportable = &Table{}
+var _ TableExportable = &table{}
 
-// Table is the high level object to storage mapper functionality. Persistent entities are stored by an unique identifier
-// called `RowID`.
-// The Table struct does not enforce uniqueness of the `RowID` but expects this to be satisfied by the callers and conditions
-// to optimize Gas usage.
-type Table struct {
+// table is the high level object to storage mapper functionality. Persistent
+// entities are stored by an unique identifier called `RowID`. The table struct
+// does not:
+// - enforce uniqueness of the `RowID`
+// - enforce prefix uniqueness of keys, i.e. not allowing one key to be a prefix
+// of another
+// - optimize Gas usage conditions
+// The caller must ensure that these things are handled. The table struct is
+// private, so that we only custom tables built on top of table, that do satisfy
+// these requirements.
+type table struct {
 	model       reflect.Type
 	prefix      byte
 	storeKey    sdk.StoreKey
@@ -103,7 +115,10 @@ type Table struct {
 // by checking the state via `Has` function before.
 //
 // Create iterates though the registered callbacks and may add secondary index keys by them.
-func (a Table) Create(ctx HasKVStore, rowID RowID, obj codec.ProtoMarshaler) error {
+func (a table) Create(ctx HasKVStore, rowID RowID, obj codec.ProtoMarshaler) error {
+	if len(rowID) == 0 {
+		return ErrEmptyKey
+	}
 	if err := assertCorrectType(a.model, obj); err != nil {
 		return err
 	}
@@ -129,7 +144,7 @@ func (a Table) Create(ctx HasKVStore, rowID RowID, obj codec.ProtoMarshaler) err
 // is fulfilled. Parameters must not be nil.
 //
 // Save iterates though the registered callbacks and may add or remove secondary index keys by them.
-func (a Table) Save(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler) error {
+func (a table) Save(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler) error {
 	if err := assertCorrectType(a.model, newValue); err != nil {
 		return err
 	}
@@ -171,7 +186,7 @@ func assertValid(obj codec.ProtoMarshaler) error {
 // is fulfilled.
 //
 // Delete iterates though the registered callbacks and removes secondary index keys by them.
-func (a Table) Delete(ctx HasKVStore, rowID RowID) error {
+func (a table) Delete(ctx HasKVStore, rowID RowID) error {
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
 
 	var oldValue = reflect.New(a.model).Interface().(codec.ProtoMarshaler)
@@ -188,17 +203,27 @@ func (a Table) Delete(ctx HasKVStore, rowID RowID) error {
 	return nil
 }
 
-// Has checks if a key exists. Panics on nil key.
-func (a Table) Has(ctx HasKVStore, rowID RowID) bool {
+// Has checks if a key exists. Panics on nil key, and returns false on empty key.
+func (a table) Has(ctx HasKVStore, key RowID) bool {
+	// We don't allow creation of values with an empty key, so Has will
+	// always return false
+	if len(key) == 0 {
+		return false
+	}
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
-	it := store.Iterator(PrefixRange(rowID))
+	it := store.Iterator(PrefixRange(key))
 	defer it.Close()
 	return it.Valid()
 }
 
 // GetOne load the object persisted for the given RowID into the dest parameter.
 // If none exists `ErrNotFound` is returned instead. Parameters must not be nil.
-func (a Table) GetOne(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) error {
+func (a table) GetOne(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) error {
+	// We don't allow creation of values with an empty key, so we always
+	// return not found error
+	if len(rowID) == 0 {
+		return ErrNotFound
+	}
 	x := NewTypeSafeRowGetter(a.storeKey, a.prefix, a.model, a.cdc)
 	return x(ctx, rowID, dest)
 }
@@ -219,7 +244,7 @@ func (a Table) GetOne(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) er
 //			it = LimitIterator(it, defaultLimit)
 //
 // CONTRACT: No writes may happen within a domain while an iterator exists over it.
-func (a Table) PrefixScan(ctx HasKVStore, start, end RowID) (Iterator, error) {
+func (a table) PrefixScan(ctx HasKVStore, start, end RowID) (Iterator, error) {
 	if start != nil && end != nil && bytes.Compare(start, end) >= 0 {
 		return NewInvalidIterator(), errors.Wrap(ErrArgument, "start must be before end")
 	}
@@ -240,7 +265,7 @@ func (a Table) PrefixScan(ctx HasKVStore, start, end RowID) (Iterator, error) {
 // this as an endpoint to the public without further limits. See `LimitIterator`
 //
 // CONTRACT: No writes may happen within a domain while an iterator exists over it.
-func (a Table) ReversePrefixScan(ctx HasKVStore, start, end RowID) (Iterator, error) {
+func (a table) ReversePrefixScan(ctx HasKVStore, start, end RowID) (Iterator, error) {
 	if start != nil && end != nil && bytes.Compare(start, end) >= 0 {
 		return NewInvalidIterator(), errors.Wrap(ErrArgument, "start must be before end")
 	}
@@ -252,7 +277,7 @@ func (a Table) ReversePrefixScan(ctx HasKVStore, start, end RowID) (Iterator, er
 	}, nil
 }
 
-func (a Table) Table() Table {
+func (a table) Table() table {
 	return a
 }
 

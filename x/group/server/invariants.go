@@ -133,7 +133,7 @@ func tallyVotesInvariant(ctx sdk.Context, prevCtx sdk.Context, proposalTable orm
 	return msg, broken
 }
 
-func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMemberByGroupIndex orm.UInt64Index) (string, bool) {
+func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, groupMemberByGroupIndex orm.UInt64Index) (string, bool) {
 
 	var msg string
 	var broken bool
@@ -141,7 +141,7 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 	var groupInfo group.GroupInfo
 	var groupMember group.GroupMember
 
-	groupIt, err := groupTable.PrefixScan(ctx, nil, nil)
+	groupIt, err := groupTable.PrefixScan(ctx, 1, math.MaxUint64)
 	if err != nil {
 		msg += fmt.Sprintf("PrefixScan failure on group table\n%v\n", err)
 		return msg, broken
@@ -192,7 +192,7 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.Table, groupMembe
 	return msg, broken
 }
 
-func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.Table, proposalTable orm.AutoUInt64Table, groupMemberTable orm.PrimaryKeyTable, voteByProposalIndex orm.UInt64Index, groupAccountTable orm.PrimaryKeyTable) (string, bool) {
+func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, proposalTable orm.AutoUInt64Table, groupMemberTable orm.PrimaryKeyTable, voteByProposalIndex orm.UInt64Index, groupAccountTable orm.PrimaryKeyTable) (string, bool) {
 	var msg string
 	var broken bool
 
@@ -228,7 +228,7 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.Table, proposalTable
 			return msg, broken
 		}
 
-		err = groupAccountTable.GetOne(ctx, address.Bytes(), &groupAcc)
+		err = groupAccountTable.GetOne(ctx, orm.AddLengthPrefix(address.Bytes()), &groupAcc)
 		if err != nil {
 			msg += fmt.Sprintf("group account not found for address: %s\n%v\n", proposal.Address, err)
 			return msg, broken
@@ -239,7 +239,7 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.Table, proposalTable
 			return msg, broken
 		}
 
-		err = groupTable.GetOne(ctx, group.ID(groupAcc.GroupId).Bytes(), &groupInfo)
+		_, err = groupTable.GetOne(ctx, groupAcc.GroupId, &groupInfo)
 		if err != nil {
 			msg += fmt.Sprintf("group info not found for group id %d\n%v\n", groupAcc.GroupId, err)
 			return msg, broken
@@ -265,7 +265,7 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.Table, proposalTable
 
 			groupMem = group.GroupMember{GroupId: groupAcc.GroupId, Member: &group.Member{Address: vote.Voter}}
 
-			err = groupMemberTable.GetOne(ctx, groupMem.PrimaryKey(), &groupMem)
+			err = groupMemberTable.GetOne(ctx, orm.PrimaryKey(&groupMem), &groupMem)
 			if err != nil {
 				msg += fmt.Sprintf("group member not found with group ID %d and group member %s\n%v\n", groupAcc.GroupId, vote.Voter, err)
 				return msg, broken

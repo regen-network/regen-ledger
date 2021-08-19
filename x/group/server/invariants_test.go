@@ -224,9 +224,22 @@ func TestTallyVotesInvariant(t *testing.T) {
 func TestGroupTotalWeightInvariant(t *testing.T) {
 	curCtx, cdc, key := getCtxCodecKey(t)
 
+	_, _, addr1 := testdata.KeyTestPubAddr()
+	_, _, addr2 := testdata.KeyTestPubAddr()
+
 	// Group Table
-	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, key, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
+	groupTableBuilder := orm.NewAutoUInt64TableBuilder(GroupTablePrefix, GroupTableSeqPrefix, key, &group.GroupInfo{}, cdc)
 	groupTable := groupTableBuilder.Build()
+
+	groupInfo := &group.GroupInfo{
+		GroupId:     1,
+		Admin:       addr1.String(),
+		Version:     1,
+		TotalWeight: "3",
+	}
+	rowID, err := groupTable.Create(curCtx, groupInfo)
+	require.NoError(t, err)
+	require.Equal(t, uint64(1), rowID)
 
 	// Group Member Table
 	groupMemberTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, key, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
@@ -236,21 +249,11 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 	})
 	groupMemberTable := groupMemberTableBuilder.Build()
 
-	_, _, addr1 := testdata.KeyTestPubAddr()
-	_, _, addr2 := testdata.KeyTestPubAddr()
-
 	specs := map[string]struct {
-		groupsInfo   *group.GroupInfo
 		groupMembers []*group.GroupMember
 		expBroken    bool
 	}{
 		"invariant not broken": {
-			groupsInfo: &group.GroupInfo{
-				GroupId:     1,
-				Admin:       addr1.String(),
-				Version:     1,
-				TotalWeight: "3",
-			},
 			groupMembers: []*group.GroupMember{
 				{
 					GroupId: 1,
@@ -271,12 +274,6 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 		},
 
 		"group's TotalWeight must be equal to sum of its members weight ": {
-			groupsInfo: &group.GroupInfo{
-				GroupId:     1,
-				Admin:       addr1.String(),
-				Version:     1,
-				TotalWeight: "3",
-			},
 			groupMembers: []*group.GroupMember{
 				{
 					GroupId: 1,
@@ -299,11 +296,7 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 
 	for _, spec := range specs {
 		cacheCurCtx, _ := curCtx.CacheContext()
-		groupsInfo := spec.groupsInfo
 		groupMembers := spec.groupMembers
-
-		err := groupTable.Create(cacheCurCtx, group.ID(groupsInfo.GroupId).Bytes(), groupsInfo)
-		require.NoError(t, err)
 
 		for i := 0; i < len(groupMembers); i++ {
 			err := groupMemberTable.Create(cacheCurCtx, groupMembers[i])
@@ -319,7 +312,7 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 	curCtx, cdc, key := getCtxCodecKey(t)
 
 	// Group Table
-	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, key, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
+	groupTableBuilder := orm.NewAutoUInt64TableBuilder(GroupTablePrefix, GroupTableSeqPrefix, key, &group.GroupInfo{}, cdc)
 	groupTable := groupTableBuilder.Build()
 
 	// Group Account Table
@@ -561,8 +554,9 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 		groupMembers := spec.groupMembers
 		votes := spec.votes
 
-		err := groupTable.Create(cacheCurCtx, group.ID(groupsInfo.GroupId).Bytes(), groupsInfo)
+		groupID, err := groupTable.Create(cacheCurCtx, groupsInfo)
 		require.NoError(t, err)
+		require.Equal(t, groupsInfo.GroupId, groupID)
 
 		err = groupAcc.SetDecisionPolicy(group.NewThresholdDecisionPolicy("1", gogotypes.Duration{Seconds: 1}))
 		require.NoError(t, err)
