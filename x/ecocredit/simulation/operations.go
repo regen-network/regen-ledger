@@ -4,7 +4,6 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -30,10 +29,10 @@ const (
 // ecocredit operations weights
 const (
 	WeightCreateClass = 100
-	WeightCreateBatch = 100
-	WeightSend        = 80
-	WeightRetire      = 80
-	WeightCancel      = 80
+	WeightCreateBatch = 80
+	WeightSend        = 60
+	WeightRetire      = 60
+	WeightCancel      = 60
 )
 
 // ecocredit message types
@@ -55,7 +54,7 @@ func WeightedOperations(
 		weightMsgCreateBatch int
 		weightMsgSend        int
 		weightMsgRetire      int
-	// 	// weightMsgCancel      int
+		weightMsgCancel      int
 	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgCreateClass, &weightMsgCreateClass, nil,
@@ -82,11 +81,11 @@ func WeightedOperations(
 		},
 	)
 
-	// appParams.GetOrGenerate(cdc, OpWeightMsgCancel, &weightMsgCancel, nil,
-	// 	func(_ *rand.Rand) {
-	// 		weightMsgCancel = WeightCancel
-	// 	},
-	// )
+	appParams.GetOrGenerate(cdc, OpWeightMsgCancel, &weightMsgCancel, nil,
+		func(_ *rand.Rand) {
+			weightMsgCancel = WeightCancel
+		},
+	)
 
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
@@ -105,10 +104,10 @@ func WeightedOperations(
 			weightMsgRetire,
 			SimulateMsgRetire(ak, bk, qryClient),
 		),
-		// simulation.NewWeightedOperation(
-		// 	weightMsgCancel,
-		// 	SimulateMsgCancel(ak, bk, qryClient),
-		// ),
+		simulation.NewWeightedOperation(
+			weightMsgCancel,
+			SimulateMsgCancel(ak, bk, qryClient),
+		),
 	}
 }
 
@@ -465,11 +464,21 @@ func SimulateMsgCancel(ak exported.AccountKeeper, bk exported.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancel, "account not found"), nil, nil
 		}
 
-		holderAcc := ak.GetAccount(sdkCtx, acc.Address)
-		spendableCoins := bk.SpendableCoins(sdkCtx, acc.Address)
-		fees, err := simtypes.RandomFees(r, sdkCtx, spendableCoins)
+		balanceRes, err := qryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{
+			Account:    batch.Issuer,
+			BatchDenom: batch.BatchDenom,
+		})
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancel, err.Error()), nil, err
+		}
+
+		tradableBalance, err := math.NewNonNegativeDecFromString(balanceRes.TradableAmount)
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancel, err.Error()), nil, err
+		}
+
+		if tradableBalance.IsZero() {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancel, "balance is zero"), nil, nil
 		}
 
 		msg := &ecocredit.MsgCancel{
@@ -477,32 +486,28 @@ func SimulateMsgCancel(ak exported.AccountKeeper, bk exported.BankKeeper,
 			Credits: []*ecocredit.MsgCancel_CancelCredits{
 				{
 					BatchDenom: batch.BatchDenom,
-					Amount:     "123.123",
+					Amount:     balanceRes.TradableAmount,
 				},
 			},
 		}
 
-		txGen := simappparams.MakeTestEncodingConfig().TxConfig
-		tx, err := helpers.GenTx(
-			txGen,
-			[]sdk.Msg{msg},
-			fees,
-			helpers.DefaultGenTxGas,
-			chainID,
-			[]uint64{holderAcc.GetAccountNumber()},
-			[]uint64{holderAcc.GetSequence()},
-			acc.PrivKey,
-		)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancel, "unable to generate mock tx"), nil, err
+		spendable := bk.SpendableCoins(sdkCtx, acc.Address)
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      acc,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
 		}
 
-		_, _, err = app.Deliver(txGen.TxEncoder(), tx)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancel, "unable to deliver tx"), nil, err
-		}
-
-		return simtypes.NewOperationMsg(msg, true, "", nil), nil, nil
+		return simulation.GenAndDeliverTxWithRandFees(txCtx)
 	}
 }
 
