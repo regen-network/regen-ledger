@@ -12,7 +12,7 @@ func (s serverImpl) getCreditType(ctx sdk.Context, creditTypeName string) (ecocr
 	creditTypes := s.getAllCreditTypes(ctx)
 	creditTypeName = ecocredit.NormalizeCreditTypeName(creditTypeName)
 	for _, creditType := range creditTypes {
-		if creditType.Name == creditTypeName {
+		if ecocredit.NormalizeCreditTypeName(creditType.Name) == creditTypeName {
 			return *creditType, nil
 		}
 	}
