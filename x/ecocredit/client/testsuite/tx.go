@@ -463,16 +463,10 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 		expectedBatchInfo *ecocredit.BatchInfo
 	}{
 		{
-			name:           "missing filename",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
-		},
-		{
-			name:           "too many args",
-			args:           []string{"abcde", "abcde"},
-			expectErr:      true,
-			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
 			name: "invalid json",
@@ -710,16 +704,10 @@ func (s *IntegrationTestSuite) TestTxSend() {
 		expectedErrMsg  string
 	}{
 		{
-			name:           "missing recipient",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 2 arg(s), received 0",
-		},
-		{
-			name:           "missing credits",
-			args:           []string{val1.Address.String()},
-			expectErr:      true,
-			expectedErrMsg: "Error: accepts 2 arg(s), received 1",
 		},
 		{
 			name:           "too many args",
@@ -881,16 +869,10 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 		expectedErrMsg  string
 	}{
 		{
-			name:           "missing credits",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 2 arg(s), received 0",
-		},
-		{
-			name:           "missing retirement location",
-			args:           []string{validCredits},
-			expectErr:      true,
-			expectedErrMsg: "Error: accepts 2 arg(s), received 1",
 		},
 		{
 			name:           "too many args",
@@ -1025,16 +1007,10 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 		expectedErrMsg string
 	}{
 		{
-			name:           "missing credits",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
-		},
-		{
-			name:           "too many args",
-			args:           []string{"abcde", "abcde"},
-			expectErr:      true,
-			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
 			name: "invalid batch denom",
