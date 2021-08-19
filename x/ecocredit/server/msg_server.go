@@ -111,26 +111,30 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		var err error
 		tradable, retired := math.NewDecFromInt64(0), math.NewDecFromInt64(0)
 
-		tradable, err = math.NewNonNegativeDecFromString(issuance.TradableAmount)
-		if err != nil {
-			return nil, err
+		if issuance.TradableAmount != "" {
+			tradable, err = math.NewNonNegativeDecFromString(issuance.TradableAmount)
+			if err != nil {
+				return nil, err
+			}
+
+			decPlaces := tradable.NumDecimalPlaces()
+			if decPlaces > maxDecimalPlaces {
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf("tradable amount exceeds precision for credit type: "+
+					"is %v, should be < %v", decPlaces, maxDecimalPlaces)
+			}
 		}
 
-		decPlaces := tradable.NumDecimalPlaces()
-		if decPlaces > maxDecimalPlaces {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("tradable amount exceeds precision for credit type: "+
-				"is %v, should be < %v", decPlaces, maxDecimalPlaces)
-		}
+		if issuance.RetiredAmount != "" {
+			retired, err = math.NewNonNegativeDecFromString(issuance.RetiredAmount)
+			if err != nil {
+				return nil, err
+			}
 
-		retired, err = math.NewNonNegativeDecFromString(issuance.RetiredAmount)
-		if err != nil {
-			return nil, err
-		}
-
-		decPlaces = retired.NumDecimalPlaces()
-		if decPlaces > maxDecimalPlaces {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("retired amount does not conform to credit type "+
-				"precision: %v should be %v", decPlaces, maxDecimalPlaces)
+			decPlaces := retired.NumDecimalPlaces()
+			if decPlaces > maxDecimalPlaces {
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf("retired amount does not conform to credit type "+
+					"precision: %v should be %v", decPlaces, maxDecimalPlaces)
+			}
 		}
 
 		recipient := issuance.Recipient
