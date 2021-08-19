@@ -199,28 +199,10 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 		expectedClassInfo *ecocredit.ClassInfo
 	}{
 		{
-			name:           "missing designer",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "accepts 4 arg(s), received 0",
-		},
-		{
-			name:           "missing issuer",
-			args:           []string{val0.Address.String()},
-			expectErr:      true,
-			expectedErrMsg: "accepts 4 arg(s), received 1",
-		},
-		{
-			name:           "missing credit type",
-			args:           []string{validCreditType},
-			expectErr:      true,
-			expectedErrMsg: "accepts 4 arg(s), received 1",
-		},
-		{
-			name:           "missing metadata",
-			args:           []string{val0.Address.String(), val0.Address.String()},
-			expectErr:      true,
-			expectedErrMsg: "accepts 4 arg(s), received 2",
 		},
 		{
 			name:           "too many args",
