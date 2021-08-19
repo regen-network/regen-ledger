@@ -751,19 +751,6 @@ func (s *IntegrationTestSuite) TestScenario() {
 			wantErr: false,
 		},
 		{
-			name: "mismatch stylzings should be valid",
-			creditTypes: []*ecocredit.CreditType{
-				{Name: "cArBoN", Abbreviation: "C", Unit: "ton", Precision: 3},
-			},
-			msg: ecocredit.MsgCreateClass{
-				Designer:   s.signers[0].String(),
-				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
-				Metadata:   nil,
-				CreditType: "CARBon",
-			},
-			wantErr: false,
-		},
-		{
 			name:        "empty credit types should error",
 			creditTypes: []*ecocredit.CreditType{},
 			msg: ecocredit.MsgCreateClass{
