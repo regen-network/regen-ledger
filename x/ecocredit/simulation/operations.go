@@ -1,9 +1,11 @@
 package simulation
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -117,8 +119,8 @@ func SimulateMsgCreateClass(ak exported.AccountKeeper, bk exported.BankKeeper,
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		designer, _ := simtypes.RandomAcc(r, accs)
-		issuers := []string{accs[0].Address.String(), accs[1].Address.String()}
+		designer := accs[0]
+		issuers := randomIssuers(r, accs)
 
 		ctx := regentypes.Context{Context: sdkCtx}
 		res, err := qryClient.Params(ctx, &ecocredit.QueryParamsRequest{})
@@ -158,7 +160,7 @@ func SimulateMsgCreateClass(ak exported.AccountKeeper, bk exported.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return simulation.GenAndDeliverTxWithRandFees(txCtx)
+		return GenAndDeliverTxWithRandFees(txCtx)
 	}
 }
 
@@ -167,7 +169,7 @@ func SimulateMsgCreateBatch(ak exported.AccountKeeper, bk exported.BankKeeper,
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		issuer, _ := simtypes.RandomAcc(r, accs)
+		issuer := accs[0]
 
 		ctx := regentypes.Context{Context: sdkCtx}
 		res, err := qryClient.Classes(ctx, &ecocredit.QueryClassesRequest{})
@@ -256,6 +258,7 @@ func SimulateMsgSend(ak exported.AccountKeeper, bk exported.BankKeeper,
 		if len(batches) == 0 {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, "no credit batches"), nil, nil
 		}
+
 		index = r.Intn(len(batches))
 		batch := batches[index]
 
@@ -296,6 +299,7 @@ func SimulateMsgSend(ak exported.AccountKeeper, bk exported.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, "account not found"), nil, nil
 		}
 
+		randSub := simtypes.RandIntBetween(r, 1, 100)
 		issuer := ak.GetAccount(sdkCtx, acc.Address)
 		spendable := bk.SpendableCoins(sdkCtx, issuer.GetAddress())
 
@@ -305,8 +309,8 @@ func SimulateMsgSend(ak exported.AccountKeeper, bk exported.BankKeeper,
 			Credits: []*ecocredit.MsgSend_SendCredits{
 				{
 					BatchDenom:         batch.BatchDenom,
-					TradableAmount:     tradableBalance.String(),
-					RetiredAmount:      retiredBalance.String(),
+					TradableAmount:     math.NewDecFromInt64(int64(randSub)).String(),
+					RetiredAmount:      math.NewDecFromInt64(int64(randSub)).String(),
 					RetirementLocation: "ST-UVW XY Z12",
 				},
 			},
@@ -327,7 +331,7 @@ func SimulateMsgSend(ak exported.AccountKeeper, bk exported.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return simulation.GenAndDeliverTxWithRandFees(txCtx)
+		return GenAndDeliverTxWithRandFees(txCtx)
 	}
 }
 
@@ -364,6 +368,7 @@ func SimulateMsgRetire(ak exported.AccountKeeper, bk exported.BankKeeper,
 		index = r.Intn(len(batches))
 		batch := batches[index]
 
+		randSub := simtypes.RandIntBetween(r, 1, 100)
 		balanceRes, err := qryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{
 			Account:    batch.Issuer,
 			BatchDenom: batch.BatchDenom,
@@ -399,7 +404,7 @@ func SimulateMsgRetire(ak exported.AccountKeeper, bk exported.BankKeeper,
 			Credits: []*ecocredit.MsgRetire_RetireCredits{
 				{
 					BatchDenom: batch.BatchDenom,
-					Amount:     balanceRes.RetiredAmount,
+					Amount:     math.NewDecFromInt64(int64(randSub)).String(),
 				},
 			},
 			Location: "ST-UVW XY Z12",
@@ -446,6 +451,9 @@ func SimulateMsgCancel(ak exported.AccountKeeper, bk exported.BankKeeper,
 		res1, err := qryClient.Batches(ctx, &ecocredit.QueryBatchesRequest{
 			ClassId: class.ClassId,
 		})
+		if err != nil {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancel, err.Error()), nil, err
+		}
 
 		batches := res1.Batches
 		if len(batches) == 0 {
@@ -520,19 +528,77 @@ func contains(s []string, e string) bool {
 	return false
 }
 
+func randomIssuers(r *rand.Rand, accounts []simtypes.Account) []string {
+	n := simtypes.RandIntBetween(r, 3, 15)
+	issuers := make([]string, n)
+	for i := 0; i < n; i++ {
+		acc, _ := simtypes.RandomAcc(r, accounts)
+		issuers[i] = acc.Address.String()
+	}
+
+	return issuers
+}
+
 func generateBatchIssuence(r *rand.Rand, accs []simtypes.Account) []*ecocredit.MsgCreateBatch_BatchIssuance {
-	numIssuences := simtypes.RandIntBetween(r, 1, 5)
+	numIssuences := simtypes.RandIntBetween(r, 3, 12)
 	res := make([]*ecocredit.MsgCreateBatch_BatchIssuance, numIssuences)
 
 	for i := 0; i < numIssuences; i++ {
-		recipient, _ := simtypes.RandomAcc(r, accs)
+		recipient := accs[i]
 		res[i] = &ecocredit.MsgCreateBatch_BatchIssuance{
 			Recipient:          recipient.Address.String(),
-			TradableAmount:     "12345.123",
-			RetiredAmount:      "1245.123",
+			TradableAmount:     "12345.123123",
+			RetiredAmount:      "1245.123123",
 			RetirementLocation: "RD",
 		}
 	}
 
 	return res
+}
+
+// GenAndDeliverTxWithRandFees generates a transaction with a random fee and delivers it.
+func GenAndDeliverTxWithRandFees(txCtx simulation.OperationInput) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+	account := txCtx.AccountKeeper.GetAccount(txCtx.Context, txCtx.SimAccount.Address)
+	spendable := txCtx.Bankkeeper.SpendableCoins(txCtx.Context, account.GetAddress())
+
+	var fees sdk.Coins
+	var err error
+
+	coins, hasNeg := spendable.SafeSub(txCtx.CoinsSpentInMsg)
+	if hasNeg {
+		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "message doesn't leave room for fees"), nil, err
+	}
+
+	fees, err = simtypes.RandomFees(txCtx.R, txCtx.Context, coins)
+	if err != nil {
+		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to generate fees"), nil, err
+	}
+	return GenAndDeliverTx(txCtx, fees)
+}
+
+// GenAndDeliverTx generates a transactions and delivers it.
+func GenAndDeliverTx(txCtx simulation.OperationInput, fees sdk.Coins) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+	account := txCtx.AccountKeeper.GetAccount(txCtx.Context, txCtx.SimAccount.Address)
+	tx, err := helpers.GenTx(
+		txCtx.TxGen,
+		[]sdk.Msg{txCtx.Msg},
+		fees,
+		2000000000,
+		txCtx.Context.ChainID(),
+		[]uint64{account.GetAccountNumber()},
+		[]uint64{account.GetSequence()},
+		txCtx.SimAccount.PrivKey,
+	)
+
+	if err != nil {
+		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to generate mock tx"), nil, err
+	}
+
+	_, _, err = txCtx.App.Deliver(txCtx.TxGen.TxEncoder(), tx)
+	if err != nil {
+		fmt.Println(txCtx.Msg)
+		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to deliver tx"), nil, err
+	}
+
+	return simtypes.NewOperationMsg(txCtx.Msg, true, "", txCtx.Cdc), nil, nil
 }

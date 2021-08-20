@@ -31,39 +31,45 @@ var (
 
 // genCreditClassFee randomized CreditClassFee
 func genCreditClassFee(r *rand.Rand) sdk.Coins {
-	return sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 1, 5)))))
+	return sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1)))
 }
 
 // genAllowedClassDesigners generate random set of designers
-func genAllowedClassDesigners(r *rand.Rand) []string {
-	accounts := simtypes.RandomAccounts(r, 3)
-	designers := make([]string, 3)
-	for i, account := range accounts {
-		designers[i] = account.Address.String()
+func genAllowedClassDesigners(r *rand.Rand, accs []simtypes.Account) []string {
+	n := simtypes.RandIntBetween(r, 5, 20)
+	designers := make([]string, n)
+
+	for i := 0; i < n; i++ {
+		designers[i] = accs[i].Address.String()
 	}
 
 	return designers
 }
 
 func genAllowListEnabled(r *rand.Rand) bool {
-	return r.Int63n(101) <= 50
+	return r.Int63n(101) <= 90
 }
 
 func genCreditTypes(r *rand.Rand) []*ecocredit.CreditType {
-	return ecocredit.DefaultParams().CreditTypes
+	return []*ecocredit.CreditType{
+		{
+			Name:         "carbon",
+			Abbreviation: "C",
+			Unit:         "ton",
+			Precision:    6,
+		},
+	}
 }
 
-func genClasses(r *rand.Rand) []*ecocredit.ClassInfo {
+func genClasses(r *rand.Rand, accounts []simtypes.Account) []*ecocredit.ClassInfo {
 	classes := make([]*ecocredit.ClassInfo, 3)
-	accounts := simtypes.RandomAccounts(r, 3)
-	for i := 0; i < 3; i++ {
-		classes[i] = &ecocredit.ClassInfo{
-			ClassId:    fmt.Sprintf("C%2d", i),
+	for i := 1; i < 4; i++ {
+		classes[i-1] = &ecocredit.ClassInfo{
+			ClassId:    fmt.Sprintf("C%02d", i),
 			Designer:   accounts[0].Address.String(),
 			Issuers:    []string{accounts[0].Address.String(), accounts[1].Address.String(), accounts[2].Address.String()},
 			Metadata:   []byte(simtypes.RandStringOfLength(r, 10)),
 			CreditType: ecocredit.DefaultParams().CreditTypes[0],
-			NumBatches: 4,
 		}
 	}
 	return classes
@@ -72,10 +78,10 @@ func genClasses(r *rand.Rand) []*ecocredit.ClassInfo {
 func genBatches(r *rand.Rand) []*ecocredit.BatchInfo {
 	batches := make([]*ecocredit.BatchInfo, 3)
 	accounts := simtypes.RandomAccounts(r, 3)
-	for i := 0; i < 3; i++ {
-		classID := fmt.Sprintf("C%2d", i)
-		bd, _ := ecocredit.FormatDenom(classID, uint64(i), &startTime, &endTime)
-		batches[i] = &ecocredit.BatchInfo{
+	for i := 1; i < 4; i++ {
+		classID := fmt.Sprintf("C%02d", i)
+		bd, _ := ecocredit.FormatDenom(classID, 1, &startTime, &endTime)
+		batches[i-1] = &ecocredit.BatchInfo{
 			ClassId:         classID,
 			BatchDenom:      bd,
 			TotalAmount:     "100000",
@@ -83,7 +89,7 @@ func genBatches(r *rand.Rand) []*ecocredit.BatchInfo {
 			AmountCancelled: "100",
 			StartDate:       &startTime,
 			EndDate:         &endTime,
-			Issuer:          accounts[i].Address.String(),
+			Issuer:          accounts[i-1].Address.String(),
 			ProjectLocation: "AB-CDE FG1 345",
 		}
 	}
@@ -96,8 +102,8 @@ func genBalances(r *rand.Rand) []*ecocredit.Balance {
 	accounts := simtypes.RandomAccounts(r, 4)
 
 	for i := 0; i < 3; i++ {
-		classID := fmt.Sprintf("C%2d", i)
-		bd, _ := ecocredit.FormatDenom(classID, uint64(i), &startTime, &endTime)
+		classID := fmt.Sprintf("C%02d", i+1)
+		bd, _ := ecocredit.FormatDenom(classID, 1, &startTime, &endTime)
 		balances = append(balances,
 			&ecocredit.Balance{
 				Address:         accounts[i].Address.String(),
@@ -120,8 +126,8 @@ func genBalances(r *rand.Rand) []*ecocredit.Balance {
 func genSupplies(r *rand.Rand) []*ecocredit.Supply {
 	supplies := make([]*ecocredit.Supply, 3)
 	for i := 0; i < 3; i++ {
-		classID := fmt.Sprintf("C%2d", i)
-		bd, _ := ecocredit.FormatDenom(classID, uint64(i), &startTime, &endTime)
+		classID := fmt.Sprintf("C%02d", i+1)
+		bd, _ := ecocredit.FormatDenom(classID, 1, &startTime, &endTime)
 		supplies[i] = &ecocredit.Supply{
 			BatchDenom:     bd,
 			TradableSupply: "1000.111",
@@ -148,13 +154,19 @@ func RandomizedGenState(simState *module.SimulationState) {
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, allowedDesigners, &allowedClassDesigners, simState.Rand,
-		func(r *rand.Rand) { allowedClassDesigners = genAllowedClassDesigners(r) },
+		simState.Cdc, typeAllowListEnabled, &allowListEnabled, simState.Rand,
+		func(r *rand.Rand) { allowListEnabled = genAllowListEnabled(r) },
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, typeAllowListEnabled, &allowListEnabled, simState.Rand,
-		func(r *rand.Rand) { allowListEnabled = genAllowListEnabled(r) },
+		simState.Cdc, allowedDesigners, &allowedClassDesigners, simState.Rand,
+		func(r *rand.Rand) {
+			if allowListEnabled {
+				allowedClassDesigners = genAllowedClassDesigners(r, simState.Accounts)
+			} else {
+				allowedClassDesigners = []string{}
+			}
+		},
 	)
 
 	simState.AppParams.GetOrGenerate(
@@ -166,7 +178,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	var classes []*ecocredit.ClassInfo
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, class, &classes, simState.Rand,
-		func(r *rand.Rand) { classes = genClasses(r) },
+		func(r *rand.Rand) { classes = genClasses(r, simState.Accounts) },
 	)
 
 	// batches

@@ -14,6 +14,8 @@ import (
 // ParamChanges defines the parameters that can be modified by param change proposals
 // on the simulation
 func ParamChanges(r *rand.Rand) []simtypes.ParamChange {
+	allowListEnabled := false
+
 	return []simtypes.ParamChange{
 		simulation.NewSimParamChange(ecocredit.ModuleName, string(ecocredit.KeyCreditClassFee),
 			func(r *rand.Rand) string {
@@ -28,17 +30,23 @@ func ParamChanges(r *rand.Rand) []simtypes.ParamChange {
 
 		simulation.NewSimParamChange(ecocredit.ModuleName, string(ecocredit.KeyAllowlistEnabled),
 			func(r *rand.Rand) string {
-				return fmt.Sprintf("%v", genAllowListEnabled(r))
+				allowListEnabled = genAllowListEnabled(r)
+				return fmt.Sprintf("%v", allowListEnabled)
 			},
 		),
 
 		simulation.NewSimParamChange(ecocredit.ModuleName, string(ecocredit.KeyAllowedClassDesigners),
 			func(r *rand.Rand) string {
-				bz, err := json.Marshal(genAllowedClassDesigners(r))
-				if err != nil {
-					panic(err)
+				if allowListEnabled {
+					accs := simtypes.RandomAccounts(r, 10)
+					bz, err := json.Marshal(genAllowedClassDesigners(r, accs))
+					if err != nil {
+						panic(err)
+					}
+					return string(bz)
+				} else {
+					return ""
 				}
-				return string(bz)
 			},
 		),
 
