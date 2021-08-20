@@ -36,7 +36,7 @@ func genCreditClassFee(r *rand.Rand) sdk.Coins {
 
 // genAllowedClassDesigners generate random set of designers
 func genAllowedClassDesigners(r *rand.Rand, accs []simtypes.Account) []string {
-	n := simtypes.RandIntBetween(r, 5, 20)
+	n := simtypes.RandIntBetween(r, 1, len(accs))
 	designers := make([]string, n)
 
 	for i := 0; i < n; i++ {

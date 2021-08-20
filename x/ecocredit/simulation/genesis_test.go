@@ -40,7 +40,7 @@ func TestRandomizedGenState(t *testing.T) {
 	var ecocreditGenesis ecocredit.GenesisState
 	simState.Cdc.MustUnmarshalJSON(simState.GenState[ecocredit.ModuleName], &ecocreditGenesis)
 
-	require.Equal(t, ecocreditGenesis.Params.AllowedClassDesigners, []string{"cosmos1tfyuvy5rawprfgpe5gw27ttvyx6ncl5ful46ce", "cosmos1ysheq4ktyj8hrczru0ly09d75vqupekqtfhe8n", "cosmos1fmutlx953wsr066h63esgek2tx9ntxzk2dk89j"})
+	require.Equal(t, ecocreditGenesis.Params.AllowedClassDesigners, []string{"cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"})
 	require.Equal(t, ecocreditGenesis.Params.AllowlistEnabled, true)
 	require.Equal(t, ecocreditGenesis.Params.CreditClassFee, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1))))
 	require.Equal(t, ecocreditGenesis.Params.AllowlistEnabled, true)
