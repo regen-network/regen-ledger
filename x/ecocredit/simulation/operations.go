@@ -368,7 +368,6 @@ func SimulateMsgRetire(ak exported.AccountKeeper, bk exported.BankKeeper,
 		index = r.Intn(len(batches))
 		batch := batches[index]
 
-		randSub := simtypes.RandIntBetween(r, 1, 100)
 		balanceRes, err := qryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{
 			Account:    batch.Issuer,
 			BatchDenom: batch.BatchDenom,
@@ -377,15 +376,16 @@ func SimulateMsgRetire(ak exported.AccountKeeper, bk exported.BankKeeper,
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, err.Error()), nil, err
 		}
 
-		retiredBalance, err := math.NewNonNegativeDecFromString(balanceRes.RetiredAmount)
+		tradableBalance, err := math.NewNonNegativeDecFromString(balanceRes.TradableAmount)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, err.Error()), nil, err
 		}
 
-		if retiredBalance.IsZero() {
+		if tradableBalance.IsZero() {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRetire, "balance is zero"), nil, nil
 		}
 
+		randSub := math.NewDecFromInt64(int64(simtypes.RandIntBetween(r, 1, 10)))
 		addr, err := sdk.AccAddressFromBech32(batch.Issuer)
 		if err != nil {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRetire, err.Error()), nil, err
@@ -395,20 +395,30 @@ func SimulateMsgRetire(ak exported.AccountKeeper, bk exported.BankKeeper,
 		if !found {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRetire, "account not found"), nil, nil
 		}
+		spendable := bk.SpendableCoins(sdkCtx, holder.Address)
 
-		holderAcc := ak.GetAccount(sdkCtx, holder.Address)
-		spendable := bk.SpendableCoins(sdkCtx, holderAcc.GetAddress())
+		if !spendable.IsAllPositive() {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRetire, "insufficient funds"), nil, nil
+		}
+
+		if tradableBalance.Cmp(randSub) != 1 {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, "insufficient funds"), nil, nil
+		}
 
 		msg := &ecocredit.MsgRetire{
 			Holder: holder.Address.String(),
 			Credits: []*ecocredit.MsgRetire_RetireCredits{
 				{
 					BatchDenom: batch.BatchDenom,
-					Amount:     math.NewDecFromInt64(int64(randSub)).String(),
+					Amount:     randSub.String(),
 				},
 			},
 			Location: "ST-UVW XY Z12",
 		}
+
+		fmt.Println("============================================")
+		fmt.Println(spendable.String())
+		fmt.Println(randSub.String())
 
 		txCtx := simulation.OperationInput{
 			R:               r,
@@ -425,7 +435,7 @@ func SimulateMsgRetire(ak exported.AccountKeeper, bk exported.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return simulation.GenAndDeliverTxWithRandFees(txCtx)
+		return GenAndDeliverTxWithRandFees(txCtx)
 	}
 }
 
@@ -515,7 +525,7 @@ func SimulateMsgCancel(ak exported.AccountKeeper, bk exported.BankKeeper,
 			CoinsSpentInMsg: spendable,
 		}
 
-		return simulation.GenAndDeliverTxWithRandFees(txCtx)
+		return GenAndDeliverTxWithRandFees(txCtx)
 	}
 }
 
@@ -583,7 +593,7 @@ func GenAndDeliverTx(txCtx simulation.OperationInput, fees sdk.Coins) (simtypes.
 		txCtx.TxGen,
 		[]sdk.Msg{txCtx.Msg},
 		fees,
-		2000000000,
+		300000,
 		txCtx.Context.ChainID(),
 		[]uint64{account.GetAccountNumber()},
 		[]uint64{account.GetSequence()},
@@ -596,7 +606,6 @@ func GenAndDeliverTx(txCtx simulation.OperationInput, fees sdk.Coins) (simtypes.
 
 	_, _, err = txCtx.App.Deliver(txCtx.TxGen.TxEncoder(), tx)
 	if err != nil {
-		fmt.Println(txCtx.Msg)
 		return simtypes.NoOpMsg(txCtx.ModuleName, txCtx.MsgType, "unable to deliver tx"), nil, err
 	}
 
