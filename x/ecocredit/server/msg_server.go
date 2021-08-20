@@ -80,7 +80,6 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatch) (*ecocredit.MsgCreateBatchResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	classID := req.ClassId
-
 	classInfo, err := s.getClassInfo(ctx, classID)
 	if err != nil {
 		return nil, err
