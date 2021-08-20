@@ -469,6 +469,12 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
 		},
 		{
+			name:           "too many args",
+			args:           []string{"r", "e", "g", "e", "n"},
+			expectErr:      true,
+			expectedErrMsg: "Error: accepts 1 arg(s), received 5",
+		},
+		{
 			name: "invalid json",
 			args: append(
 				[]string{
