@@ -593,7 +593,7 @@ func GenAndDeliverTx(txCtx simulation.OperationInput, fees sdk.Coins) (simtypes.
 		txCtx.TxGen,
 		[]sdk.Msg{txCtx.Msg},
 		fees,
-		400000,
+		1000000,
 		txCtx.Context.ChainID(),
 		[]uint64{account.GetAccountNumber()},
 		[]uint64{account.GetSequence()},
