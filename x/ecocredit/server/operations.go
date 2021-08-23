@@ -13,6 +13,7 @@ import (
 func (s serverImpl) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	key := s.storeKey.(servermodule.RootModuleKey)
 	queryClient := ecocredit.NewQueryClient(key)
+
 	return simulation.WeightedOperations(
 		simState.AppParams, simState.Cdc,
 		s.accountKeeper, s.bankKeeper,
