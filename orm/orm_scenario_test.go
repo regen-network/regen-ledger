@@ -116,7 +116,7 @@ func TestKeeperEndToEndWithPrimaryKeyTable(t *testing.T) {
 	require.NoError(t, err)
 
 	// then we should find it by primary key
-	primaryKey := m.PrimaryKey()
+	primaryKey := orm.PrimaryKey(&m)
 	exists := k.groupMemberTable.Has(ctx, primaryKey)
 	require.True(t, exists)
 	// and load it by primary key
@@ -209,7 +209,7 @@ func TestGasCostsPrimaryKeyTable(t *testing.T) {
 	// get by primary key
 	gCtx.ResetGasMeter()
 	var loaded testdata.GroupMember
-	err = k.groupMemberTable.GetOne(gCtx, m.PrimaryKey(), &loaded)
+	err = k.groupMemberTable.GetOne(gCtx, orm.PrimaryKey(&m), &loaded)
 	require.NoError(t, err)
 	t.Logf("gas consumed on get by primary key: %d", gCtx.GasConsumed())
 
@@ -250,7 +250,7 @@ func TestGasCostsPrimaryKeyTable(t *testing.T) {
 			Member: sdk.AccAddress([]byte(fmt.Sprintf("member-address%d", i))),
 			Weight: 10,
 		}
-		err = k.groupMemberTable.GetOne(gCtx, m.PrimaryKey(), &loaded)
+		err = k.groupMemberTable.GetOne(gCtx, orm.PrimaryKey(&m), &loaded)
 		require.NoError(t, err)
 		t.Logf("%d: gas consumed on get by primary key: %d", i, gCtx.GasConsumed())
 	}
@@ -370,7 +370,7 @@ func TestExportImportStatePrimaryKeyTable(t *testing.T) {
 	keys, err := orm.ReadAll(it, &loaded)
 	require.NoError(t, err)
 	for i := range keys {
-		assert.Equal(t, testRecords[i].PrimaryKey(), keys[i].Bytes())
+		assert.Equal(t, orm.PrimaryKey(&testRecords[i]), keys[i].Bytes())
 	}
 	assert.Equal(t, testRecords, loaded)
 
@@ -381,7 +381,7 @@ func TestExportImportStatePrimaryKeyTable(t *testing.T) {
 	keys, err = orm.ReadAll(it, &loaded)
 	require.NoError(t, err)
 	for i := range keys {
-		assert.Equal(t, testRecords[i].PrimaryKey(), keys[i].Bytes())
+		assert.Equal(t, orm.PrimaryKey(&testRecords[i]), keys[i].Bytes())
 	}
 	assert.Equal(t, testRecords, loaded)
 
@@ -392,7 +392,7 @@ func TestExportImportStatePrimaryKeyTable(t *testing.T) {
 		loaded = nil
 		keys, err = orm.ReadAll(it, &loaded)
 		require.NoError(t, err)
-		assert.Equal(t, []orm.RowID{v.PrimaryKey()}, keys)
+		assert.Equal(t, []orm.RowID{orm.PrimaryKey(&v)}, keys)
 		assert.Equal(t, []testdata.GroupMember{v}, loaded)
 	}
 }
