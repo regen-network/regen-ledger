@@ -62,13 +62,12 @@ func (s serverImpl) Batches(goCtx context.Context, request *ecocredit.QueryBatch
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
-	if request.ClassId == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "class id cannot be empty")
+	if err := ecocredit.ValidateClassID(request.ClassId); err != nil {
+		return nil, err
 	}
 
-	ctx := types.UnwrapSDKContext(goCtx)
-
 	// Only read IDs that have a prefix match with the ClassID
+	ctx := types.UnwrapSDKContext(goCtx)
 	start, end := orm.PrefixRange([]byte(request.ClassId))
 	batchesIter, err := s.batchInfoTable.PrefixScan(ctx, start, end)
 	if err != nil {

@@ -63,7 +63,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 				ClassId: "",
 			},
 			true,
-			"key must not be nil",
+			"not found",
 		},
 		{
 			"credit class not found",
@@ -115,12 +115,12 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 			"empty class id",
 			&ecocredit.QueryBatchesRequest{},
 			true,
-			"class id cannot be empty",
+			"class ID didn't match the format",
 		},
 		{
 			"valid test case",
 			&ecocredit.QueryBatchesRequest{
-				ClassId: "4",
+				ClassId: "C04",
 			},
 			false,
 			"",
@@ -159,7 +159,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 			"empty batch denom",
 			&ecocredit.QueryBatchInfoRequest{},
 			true,
-			"key must not be nil",
+			"not found",
 		},
 		{
 			"batch not found",
