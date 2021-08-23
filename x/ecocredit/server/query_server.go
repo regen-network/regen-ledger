@@ -3,6 +3,9 @@ package server
 import (
 	"context"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/types"
@@ -12,6 +15,10 @@ import (
 )
 
 func (s serverImpl) Classes(goCtx context.Context, request *ecocredit.QueryClassesRequest) (*ecocredit.QueryClassesResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
 	ctx := types.UnwrapSDKContext(goCtx)
 	classesIter, err := s.classInfoTable.PrefixScan(ctx, nil, nil)
 	if err != nil {
@@ -31,6 +38,10 @@ func (s serverImpl) Classes(goCtx context.Context, request *ecocredit.QueryClass
 }
 
 func (s serverImpl) ClassInfo(goCtx context.Context, request *ecocredit.QueryClassInfoRequest) (*ecocredit.QueryClassInfoResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
 	ctx := types.UnwrapSDKContext(goCtx)
 	classInfo, err := s.getClassInfo(ctx, request.ClassId)
 	if err != nil {
@@ -47,6 +58,14 @@ func (s serverImpl) getClassInfo(ctx types.Context, classID string) (*ecocredit.
 }
 
 func (s serverImpl) Batches(goCtx context.Context, request *ecocredit.QueryBatchesRequest) (*ecocredit.QueryBatchesResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
+	if request.ClassId == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "class id cannot be empty")
+	}
+
 	ctx := types.UnwrapSDKContext(goCtx)
 
 	// Only read IDs that have a prefix match with the ClassID
@@ -69,6 +88,10 @@ func (s serverImpl) Batches(goCtx context.Context, request *ecocredit.QueryBatch
 }
 
 func (s serverImpl) BatchInfo(goCtx context.Context, request *ecocredit.QueryBatchInfoRequest) (*ecocredit.QueryBatchInfoResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
 	ctx := types.UnwrapSDKContext(goCtx)
 	var batchInfo ecocredit.BatchInfo
 	err := s.batchInfoTable.GetOne(ctx, orm.RowID(request.BatchDenom), &batchInfo)
@@ -76,6 +99,10 @@ func (s serverImpl) BatchInfo(goCtx context.Context, request *ecocredit.QueryBat
 }
 
 func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalanceRequest) (*ecocredit.QueryBalanceResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
 	ctx := types.UnwrapSDKContext(goCtx)
 	acc := request.Account
 	denom := batchDenomT(request.BatchDenom)
