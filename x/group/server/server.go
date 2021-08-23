@@ -167,7 +167,7 @@ func RegisterServices(configurator servermodule.Configurator, accountKeeper expo
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
-	// configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
+	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 
 	// Require servers from external modules for ADR 033 message routing
 	configurator.RequireServer((*ecocredit.MsgServer)(nil))
