@@ -7,6 +7,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	proto "github.com/gogo/protobuf/types"
+	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -204,7 +205,7 @@ func TestVotePrimaryKey(t *testing.T) {
 		ProposalId: 1,
 		Voter:      string(addr[:]),
 	}
-	assert.Equal(t, []byte{0, 0, 0, 0, 0, 0, 0, 1, 0xff, 0xfe}, v.PrimaryKey())
+	assert.Equal(t, []byte{0, 0, 0, 0, 0, 0, 0, 1, 0xff, 0xfe, 0}, orm.PrimaryKey(&v))
 }
 
 func TestGroupInfoValidation(t *testing.T) {

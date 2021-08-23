@@ -154,7 +154,7 @@ func DefaultParams() Params {
 			{
 				Name:         "carbon",
 				Abbreviation: "C",
-				Unit:         "ton",
+				Unit:         "metric ton CO2 equivalent",
 				Precision:    PRECISION,
 			},
 		},

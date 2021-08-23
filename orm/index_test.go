@@ -239,7 +239,7 @@ func TestUniqueIndex(t *testing.T) {
 	var loaded testdata.GroupMember
 	rowID, err := it.LoadNext(&loaded)
 	require.NoError(t, err)
-	require.Equal(t, orm.RowID(m.PrimaryKey()), rowID)
+	require.Equal(t, orm.RowID(orm.PrimaryKey(&m)), rowID)
 	require.Equal(t, m, loaded)
 
 	// GetPaginated
@@ -266,7 +266,7 @@ func TestUniqueIndex(t *testing.T) {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
-				require.Equal(t, orm.RowID(m.PrimaryKey()), rowID)
+				require.Equal(t, orm.RowID(orm.PrimaryKey(&m)), rowID)
 				require.Equal(t, m, loaded)
 			}
 		})
@@ -277,7 +277,7 @@ func TestUniqueIndex(t *testing.T) {
 	require.NoError(t, err)
 	rowID, err = it.LoadNext(&loaded)
 	require.NoError(t, err)
-	require.Equal(t, orm.RowID(m.PrimaryKey()), rowID)
+	require.Equal(t, orm.RowID(orm.PrimaryKey(&m)), rowID)
 	require.Equal(t, m, loaded)
 
 	// PrefixScan no match
@@ -291,7 +291,7 @@ func TestUniqueIndex(t *testing.T) {
 	require.NoError(t, err)
 	rowID, err = it.LoadNext(&loaded)
 	require.NoError(t, err)
-	require.Equal(t, orm.RowID(m.PrimaryKey()), rowID)
+	require.Equal(t, orm.RowID(orm.PrimaryKey(&m)), rowID)
 	require.Equal(t, m, loaded)
 
 	// ReversePrefixScan no match

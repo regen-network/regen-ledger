@@ -45,7 +45,7 @@ func setCustomKVStoreKeys() []string {
 
 func (app *RegenApp) registerUpgradeHandlers() {
 	// This is the upgrade plan name we used in the gov proposal.
-	upgradeName := "v0.43.0-rc0-upgrade"
+	upgradeName := "v2.0-upgrade"
 	app.UpgradeKeeper.SetUpgradeHandler(upgradeName, func(ctx sdk.Context, plan upgradetypes.Plan, _ module.VersionMap) (module.VersionMap, error) {
 		// 1st-time running in-store migrations, using 1 as fromVersion to
 		// avoid running InitGenesis.
@@ -67,7 +67,12 @@ func (app *RegenApp) registerUpgradeHandlers() {
 			"ibc":          1,
 			"genutil":      1,
 			"transfer":     1,
+			"ecocredit":    1, // we don't run InitGenesis for ecocredit in `RunMigrations`, but manually instead.
 		}
+
+		gen := ecocredittypes.DefaultGenesisState()
+		gen.Params.AllowlistEnabled = true
+		app.mm.Modules[ecocredittypes.ModuleName].InitGenesis(ctx, app.appCodec, app.cdc.MustMarshalJSON(gen))
 
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
