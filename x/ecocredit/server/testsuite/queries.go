@@ -76,7 +76,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 		{
 			"valid test case",
 			&ecocredit.QueryClassInfoRequest{
-				ClassId: "4",
+				ClassId: "BIO01",
 			},
 			false,
 			"",
@@ -159,12 +159,12 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 			"empty batch denom",
 			&ecocredit.QueryBatchInfoRequest{},
 			true,
-			"not found",
+			"denomination didn't match the format",
 		},
 		{
 			"batch not found",
 			&ecocredit.QueryBatchInfoRequest{
-				BatchDenom: "invalid-batch",
+				BatchDenom: "A00-00000000-00000000-000",
 			},
 			true,
 			"not found",
@@ -172,7 +172,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 		{
 			"valid testcase",
 			&ecocredit.QueryBatchInfoRequest{
-				BatchDenom: "4",
+				BatchDenom: "BIO01-00000000-00000000-001",
 			},
 			false,
 			"",

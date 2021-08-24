@@ -91,9 +91,14 @@ func (s serverImpl) BatchInfo(goCtx context.Context, request *ecocredit.QueryBat
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
+	if err := ecocredit.ValidateDenom(request.BatchDenom); err != nil {
+		return nil, err
+	}
+
 	ctx := types.UnwrapSDKContext(goCtx)
 	var batchInfo ecocredit.BatchInfo
 	err := s.batchInfoTable.GetOne(ctx, orm.RowID(request.BatchDenom), &batchInfo)
+
 	return &ecocredit.QueryBatchInfoResponse{Info: &batchInfo}, err
 }
 
