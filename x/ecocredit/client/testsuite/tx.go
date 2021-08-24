@@ -515,7 +515,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 			),
 			expectErr:       true,
 			errInTxResponse: true,
-			expectedErrMsg:  "not found",
+			expectedErrMsg:  "class ID didn't match the format",
 		},
 		{
 			name: "missing start date",
@@ -671,8 +671,8 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 					s.Require().Contains(res.RawLog, tc.expectedErrMsg)
 				} else {
 					s.Require().Error(err)
-					fmt.Println(out.String())
 					s.Require().Contains(out.String(), tc.expectedErrMsg)
+
 				}
 			} else {
 				s.Require().NoError(err, out.String())
