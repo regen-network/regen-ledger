@@ -671,7 +671,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 					s.Require().Contains(res.RawLog, tc.expectedErrMsg)
 				} else {
 					s.Require().Error(err)
-					s.Require().Contains(out.String(), tc.expectedErrMsg)
+					s.Require().Contains(out.String(), tc.expectedErrMsg, out.String())
 				}
 			} else {
 				s.Require().NoError(err, out.String())
