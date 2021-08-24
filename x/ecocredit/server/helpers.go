@@ -94,3 +94,30 @@ func getUint32(store sdk.KVStore, key []byte) (uint32, error) {
 
 	return res, nil
 }
+
+func iterateSupplies(store sdk.KVStore, storeKey byte, cb func(denom, supply string) (bool, error)) error {
+	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		stop, err := cb(string(ParseSupplyKey(iter.Key())), string(iter.Value()))
+		if err != nil {
+			return err
+		}
+		if stop {
+			break
+		}
+	}
+
+	return nil
+}
+
+func iterateBalances(store sdk.KVStore, storeKey byte, cb func(address, denom, balance string) bool) {
+	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		addr, denom := ParseBalanceKey(iter.Key())
+		if cb(addr.String(), string(denom), string(iter.Value())) {
+			break
+		}
+	}
+}

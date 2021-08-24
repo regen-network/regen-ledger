@@ -48,8 +48,7 @@ type serverImpl struct {
 	bankKeeper exported.BankKeeper
 
 	// Group Table
-	groupSeq          orm.Sequence
-	groupTable        orm.Table
+	groupTable        orm.AutoUInt64Table
 	groupByAdminIndex orm.Index
 
 	// Group Member Table
@@ -78,8 +77,7 @@ func newServer(storeKey servermodule.RootModuleKey, accKeeper exported.AccountKe
 	s := serverImpl{key: storeKey, accKeeper: accKeeper, bankKeeper: bankKeeper}
 
 	// Group Table
-	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, storeKey, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
-	s.groupSeq = orm.NewSequence(storeKey, GroupTableSeqPrefix)
+	groupTableBuilder := orm.NewAutoUInt64TableBuilder(GroupTablePrefix, GroupTableSeqPrefix, storeKey, &group.GroupInfo{}, cdc)
 	s.groupByAdminIndex = orm.NewIndex(groupTableBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
 		addr, err := sdk.AccAddressFromBech32(val.(*group.GroupInfo).Admin)
 		if err != nil {

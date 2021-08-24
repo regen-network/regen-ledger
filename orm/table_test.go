@@ -46,7 +46,7 @@ func TestCreate(t *testing.T) {
 
 			storeKey := sdk.NewKVStoreKey("test")
 			const anyPrefix = 0x10
-			tableBuilder := orm.NewTableBuilder(anyPrefix, storeKey, &testdata.GroupInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+			tableBuilder := orm.TestTableBuilder(anyPrefix, storeKey, &testdata.GroupInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 			myTable := tableBuilder.Build()
 
 			ctx := orm.NewMockContext()
@@ -100,7 +100,7 @@ func TestUpdate(t *testing.T) {
 
 			storeKey := sdk.NewKVStoreKey("test")
 			const anyPrefix = 0x10
-			tableBuilder := orm.NewTableBuilder(anyPrefix, storeKey, &testdata.GroupInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+			tableBuilder := orm.TestTableBuilder(anyPrefix, storeKey, &testdata.GroupInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
 			myTable := tableBuilder.Build()
 
 			initValue := testdata.GroupInfo{

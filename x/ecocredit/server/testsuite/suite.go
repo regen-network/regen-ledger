@@ -32,6 +32,9 @@ type IntegrationTestSuite struct {
 
 	paramSpace paramstypes.Subspace
 	bankKeeper bankkeeper.Keeper
+
+	genesisCtx types.Context
+	blockTime  time.Time
 }
 
 func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper) *IntegrationTestSuite {
@@ -45,11 +48,25 @@ func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.fixture = s.fixtureFactory.Setup()
 
+	s.blockTime = time.Now().UTC()
+
 	// TODO clean up once types.Context merged upstream into sdk.Context
-	s.sdkCtx, _ = s.fixture.Context().(types.Context).CacheContext()
+	sdkCtx := s.fixture.Context().(types.Context).WithBlockTime(s.blockTime)
+	s.sdkCtx, _ = sdkCtx.CacheContext()
 	s.ctx = types.Context{Context: s.sdkCtx}
+	s.genesisCtx = types.Context{Context: sdkCtx}
 
 	ecocreditParams := ecocredit.DefaultParams()
+	// Add biodiversity credit type for testing credit type sequence numbers
+	ecocreditParams.CreditTypes = append(
+		ecocreditParams.CreditTypes,
+		&ecocredit.CreditType{
+			Name:         "biodiversity",
+			Abbreviation: "BIO",
+			Unit:         "hectare",
+			Precision:    6,
+		},
+	)
 	s.paramSpace.SetParamSet(s.sdkCtx, &ecocreditParams)
 
 	s.signers = s.fixture.Signers()
@@ -59,11 +76,11 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.paramsQueryClient = params.NewQueryClient(s.fixture.QueryConn())
 }
 
-func fundAccount(bankKeeper bankkeeper.Keeper, ctx sdk.Context, addr sdk.AccAddress, amounts sdk.Coins) error {
-	if err := bankKeeper.MintCoins(ctx, minttypes.ModuleName, amounts); err != nil {
+func (s *IntegrationTestSuite) fundAccount(addr sdk.AccAddress, amounts sdk.Coins) error {
+	if err := s.bankKeeper.MintCoins(s.sdkCtx, minttypes.ModuleName, amounts); err != nil {
 		return err
 	}
-	return bankKeeper.SendCoinsFromModuleToAccount(ctx, minttypes.ModuleName, addr, amounts)
+	return s.bankKeeper.SendCoinsFromModuleToAccount(s.sdkCtx, minttypes.ModuleName, addr, amounts)
 }
 
 func (s *IntegrationTestSuite) TestScenario() {
@@ -87,19 +104,46 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Nil(createClsRes)
 
 	// create class with sufficient funds and it should succeed
-	s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+	s.Require().NoError(s.fundAccount(designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 40000))))
 
-	createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-		Designer:   designer.String(),
-		Issuers:    []string{issuer1, issuer2},
-		Metadata:   nil,
-		CreditType: "carbon",
-	})
-	s.Require().NoError(err)
-	s.Require().NotNil(createClsRes)
+	// Run multiple tests to test the CreditTypeSeqs
+	createClassTestCases := []struct {
+		creditType      string
+		expectedClassID string
+	}{
+		{
+			creditType:      "carbon",
+			expectedClassID: "C01",
+		},
+		{
+			creditType:      "biodiversity",
+			expectedClassID: "BIO01",
+		},
+		{
+			creditType:      "biodiversity",
+			expectedClassID: "BIO02",
+		},
+		{
+			creditType:      "carbon",
+			expectedClassID: "C02",
+		},
+	}
 
-	clsID := createClsRes.ClassId
-	s.Require().NotEmpty(clsID)
+	for _, tc := range createClassTestCases {
+		createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
+			Designer:   designer.String(),
+			Issuers:    []string{issuer1, issuer2},
+			Metadata:   nil,
+			CreditType: tc.creditType,
+		})
+		s.Require().NoError(err)
+		s.Require().NotNil(createClsRes)
+
+		s.Require().Equal(tc.expectedClassID, createClsRes.ClassId)
+	}
+
+	// Use first test class for remainder of tests
+	clsID := createClassTestCases[0].expectedClassID
 
 	// designer should have no funds remaining
 	s.Require().Equal(s.bankKeeper.GetBalance(s.sdkCtx, designer, "stake"), sdk.NewInt64Coin("stake", 0))
@@ -638,7 +682,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistEnabled, tc.allowlistEnabled)
 
 			// fund the designer account
-			s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, tc.designerAcc, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+			s.Require().NoError(s.fundAccount(tc.designerAcc, sdk.NewCoins(sdk.NewInt64Coin("stake", 40000))))
 
 			createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
 				Designer:   tc.designerAcc.String(),
@@ -669,7 +713,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		{
 			name: "valid eco credit creation",
 			creditTypes: []*ecocredit.CreditType{
-				{Name: "carbon", Abbreviation: "C", Unit: "ton", Precision: 3},
+				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
 			},
 			msg: ecocredit.MsgCreateClass{
 				Designer:   s.signers[0].String(),
@@ -682,7 +726,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		{
 			name: "invalid request - not a valid credit type",
 			creditTypes: []*ecocredit.CreditType{
-				{Name: "carbon", Abbreviation: "C", Unit: "ton", Precision: 3},
+				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
 			},
 			msg: ecocredit.MsgCreateClass{
 				Designer:   s.signers[0].String(),
@@ -695,7 +739,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		{
 			name: "request with strange font should be valid",
 			creditTypes: []*ecocredit.CreditType{
-				{Name: "carbon", Abbreviation: "C", Unit: "ton", Precision: 3},
+				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
 			},
 			msg: ecocredit.MsgCreateClass{
 				Designer:   s.signers[0].String(),
@@ -728,7 +772,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			require.NoError(err)
 
 			// fund the designer account so tx will go through
-			s.Require().NoError(fundAccount(s.bankKeeper, s.sdkCtx, designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+			s.Require().NoError(s.fundAccount(designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
 			res, err := s.msgClient.CreateClass(s.ctx, &tc.msg)
 			if tc.wantErr {
 				require.Error(err)
