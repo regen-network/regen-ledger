@@ -15,20 +15,20 @@ func NewAutoUInt64TableBuilder(prefixData byte, prefixSeq byte, storeKey sdk.Sto
 
 	uInt64KeyCodec := FixLengthIndexKeys(EncodedSeqLength)
 	return &AutoUInt64TableBuilder{
-		TableBuilder: NewTableBuilder(prefixData, storeKey, model, uInt64KeyCodec, cdc),
+		tableBuilder: newTableBuilder(prefixData, storeKey, model, uInt64KeyCodec, cdc),
 		seq:          NewSequence(storeKey, prefixSeq),
 	}
 }
 
 type AutoUInt64TableBuilder struct {
-	*TableBuilder
+	*tableBuilder
 	seq Sequence
 }
 
 // Build create the AutoUInt64Table object.
 func (a AutoUInt64TableBuilder) Build() AutoUInt64Table {
 	return AutoUInt64Table{
-		table: a.TableBuilder.Build(),
+		table: a.tableBuilder.Build(),
 		seq:   a.seq,
 	}
 }
@@ -38,7 +38,7 @@ var _ TableExportable = &AutoUInt64Table{}
 
 // AutoUInt64Table is the table type which an auto incrementing ID.
 type AutoUInt64Table struct {
-	table Table
+	table table
 	seq   Sequence
 }
 
@@ -125,6 +125,6 @@ func (a AutoUInt64Table) Sequence() Sequence {
 }
 
 // Table satisfies the TableExportable interface and must not be used otherwise.
-func (a AutoUInt64Table) Table() Table {
+func (a AutoUInt64Table) Table() table {
 	return a.table
 }

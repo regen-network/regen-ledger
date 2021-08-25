@@ -25,7 +25,8 @@ func (s serverImpl) GroupInfo(goCtx context.Context, request *group.QueryGroupIn
 func (s serverImpl) getGroupInfo(goCtx context.Context, id uint64) (group.GroupInfo, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	var obj group.GroupInfo
-	return obj, s.groupTable.GetOne(ctx, group.ID(id).Bytes(), &obj)
+	_, err := s.groupTable.GetOne(ctx, id, &obj)
+	return obj, err
 }
 
 func (s serverImpl) GroupAccountInfo(goCtx context.Context, request *group.QueryGroupAccountInfoRequest) (*group.QueryGroupAccountInfoResponse, error) {
@@ -45,7 +46,7 @@ func (s serverImpl) GroupAccountInfo(goCtx context.Context, request *group.Query
 func (s serverImpl) getGroupAccountInfo(goCtx context.Context, accountAddress sdk.AccAddress) (group.GroupAccountInfo, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	var obj group.GroupAccountInfo
-	return obj, s.groupAccountTable.GetOne(ctx, accountAddress.Bytes(), &obj)
+	return obj, s.groupAccountTable.GetOne(ctx, orm.AddLengthPrefix(accountAddress.Bytes()), &obj)
 }
 
 func (s serverImpl) GroupMembers(goCtx context.Context, request *group.QueryGroupMembersRequest) (*group.QueryGroupMembersResponse, error) {
@@ -259,7 +260,7 @@ func (s serverImpl) VotesByVoter(goCtx context.Context, request *group.QueryVote
 
 func (s serverImpl) getVote(ctx types.Context, proposalID uint64, voter sdk.AccAddress) (group.Vote, error) {
 	var v group.Vote
-	return v, s.voteTable.GetOne(ctx, group.Vote{ProposalId: proposalID, Voter: voter.String()}.PrimaryKey(), &v)
+	return v, s.voteTable.GetOne(ctx, orm.PrimaryKey(&group.Vote{ProposalId: proposalID, Voter: voter.String()}), &v)
 }
 
 func (s serverImpl) getVotesByProposal(ctx types.Context, proposalID uint64, pageRequest *query.PageRequest) (orm.Iterator, error) {

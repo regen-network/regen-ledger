@@ -16,11 +16,8 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 	var genesisState group.GenesisState
 	cdc.MustUnmarshalJSON(data, &genesisState)
 
-	if err := orm.ImportTableData(ctx, s.groupTable, genesisState.Groups, 0); err != nil {
+	if err := orm.ImportTableData(ctx, s.groupTable, genesisState.Groups, genesisState.GroupSeq); err != nil {
 		return nil, errors.Wrap(err, "groups")
-	}
-	if err := s.groupSeq.InitVal(ctx, genesisState.GroupSeq); err != nil {
-		return nil, errors.Wrap(err, "group seq")
 	}
 
 	if err := orm.ImportTableData(ctx, s.groupMemberTable, genesisState.GroupMembers, 0); err != nil {
@@ -49,12 +46,12 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 	genesisState := group.NewGenesisState()
 
 	var groups []*group.GroupInfo
-	_, err := orm.ExportTableData(ctx, s.groupTable, &groups)
+	groupSeq, err := orm.ExportTableData(ctx, s.groupTable, &groups)
 	if err != nil {
 		return nil, errors.Wrap(err, "groups")
 	}
 	genesisState.Groups = groups
-	genesisState.GroupSeq = s.groupSeq.CurVal(ctx)
+	genesisState.GroupSeq = groupSeq
 
 	var groupMembers []*group.GroupMember
 	_, err = orm.ExportTableData(ctx, s.groupMemberTable, &groupMembers)
