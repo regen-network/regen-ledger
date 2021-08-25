@@ -514,7 +514,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr:       true,
-			errInTxResponse: true,
+			errInTxResponse: false,
 			expectedErrMsg:  "class ID didn't match the format",
 		},
 		{
@@ -672,7 +672,6 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				} else {
 					s.Require().Error(err)
 					s.Require().Contains(out.String(), tc.expectedErrMsg)
-
 				}
 			} else {
 				s.Require().NoError(err, out.String())
@@ -716,7 +715,7 @@ func (s *IntegrationTestSuite) TestTxSend() {
 	clientCtx := val0.ClientCtx
 
 	validCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"4\", retired_amount: \"1\", retirement_location: \"AB-CD\"}]", s.batchInfo.BatchDenom)
-	invalidBatchDenomCredits := fmt.Sprintf("[{batch_denom: abcde, tradable_amount: \"4\", retired_amount: \"1\", retirement_location: \"AB-CD\"}]")
+	invalidBatchDenomCredits := "[{batch_denom: abcde, tradable_amount: \"4\", retired_amount: \"1\", retirement_location: \"AB-CD\"}]"
 	invalidTradableAmountCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"abcde\", retired_amount: \"1\", retirement_location: \"AB-CD\"}]", s.batchInfo.BatchDenom)
 	invalidRetiredAmountCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"4\", retired_amount: \"abcde\", retirement_location: \"AB-CD\"}]", s.batchInfo.BatchDenom)
 	invalidRetirementLocationCredits := fmt.Sprintf("[{batch_denom: \"%s\", tradable_amount: \"4\", retired_amount: \"1\", retirement_location: \"abcde\"}]", s.batchInfo.BatchDenom)
@@ -889,7 +888,7 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 	clientCtx := val0.ClientCtx
 
 	validCredits := fmt.Sprintf("[{batch_denom: \"%s\", amount: \"5\"}]", s.batchInfo.BatchDenom)
-	invalidBatchDenomCredits := fmt.Sprintf("[{batch_denom: abcde, amount: \"5\"}]")
+	invalidBatchDenomCredits := "[{batch_denom: abcde, amount: \"5\"}]"
 	invalidAmountCredits := fmt.Sprintf("[{batch_denom: \"%s\", amount: \"abcde\"}]", s.batchInfo.BatchDenom)
 
 	testCases := []struct {
