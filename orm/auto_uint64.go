@@ -53,13 +53,13 @@ func (a AutoUInt64Table) Create(ctx HasKVStore, obj codec.ProtoMarshaler) (uint6
 	return autoIncID, nil
 }
 
-// Save updates the given object under the rowID key. It expects the key to exists already
+// Update updates the given object under the rowID key. It expects the key to exists already
 // and fails with an `ErrNotFound` otherwise. Any caller must therefore make sure that this contract
 // is fulfilled. Parameters must not be nil.
 //
-// Save iterates though the registered callbacks and may add or remove secondary index keys by them.
-func (a AutoUInt64Table) Save(ctx HasKVStore, rowID uint64, newValue codec.ProtoMarshaler) error {
-	return a.table.Save(ctx, EncodeSequence(rowID), newValue)
+// Update iterates though the registered callbacks and may add or remove secondary index keys by them.
+func (a AutoUInt64Table) Update(ctx HasKVStore, rowID uint64, newValue codec.ProtoMarshaler) error {
+	return a.table.Update(ctx, EncodeSequence(rowID), newValue)
 }
 
 // Delete removes the object under the rowID key. It expects the key to exists already
@@ -124,7 +124,14 @@ func (a AutoUInt64Table) Sequence() Sequence {
 	return a.seq
 }
 
-// Table satisfies the TableExportable interface and must not be used otherwise.
-func (a AutoUInt64Table) Table() table {
-	return a.table
+// ExportIterator returns an iterator over the values to export
+func (a AutoUInt64Table) ExportIterator(ctx HasKVStore) (Iterator, error) {
+	return a.table.ExportIterator(ctx)
+}
+
+// ImportSlice clears the table and initialises it with the data in the
+// interface{}. The interface{} should be a slice of values which implement the
+// PrimaryKeyed interface, but this is checked at runtime.
+func (a AutoUInt64Table) ImportSlice(ctx HasKVStore, data interface{}) error {
+	return a.table.ImportSlice(ctx, data)
 }

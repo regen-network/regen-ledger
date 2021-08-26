@@ -426,7 +426,7 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 		}
 		batchInfo.AmountCancelled = amountCancelled.String()
 
-		s.batchInfoTable.Save(ctx, &batchInfo)
+		s.batchInfoTable.Update(ctx, &batchInfo)
 
 		// Emit the cancellation event
 		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCancel{
@@ -471,7 +471,7 @@ func (s serverImpl) nextBatchInClass(ctx types.Context, classID string) (uint64,
 
 	// Update the ClassInfo
 	classInfo.NumBatches = nextVal
-	err = s.classInfoTable.Save(ctx, classInfo)
+	err = s.classInfoTable.Update(ctx, classInfo)
 	if err != nil {
 		return 0, err
 	}

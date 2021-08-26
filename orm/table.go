@@ -139,12 +139,12 @@ func (a table) Create(ctx HasKVStore, rowID RowID, obj codec.ProtoMarshaler) err
 	return nil
 }
 
-// Save updates the given object under the rowID key. It expects the key to exists already
+// Update updates the given object under the rowID key. It expects the key to exists already
 // and fails with an `ErrNotFound` otherwise. Any caller must therefore make sure that this contract
 // is fulfilled. Parameters must not be nil.
 //
-// Save iterates though the registered callbacks and may add or remove secondary index keys by them.
-func (a table) Save(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler) error {
+// Update iterates though the registered callbacks and may add or remove secondary index keys by them.
+func (a table) Update(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler) error {
 	if err := assertCorrectType(a.model, newValue); err != nil {
 		return err
 	}
@@ -277,8 +277,44 @@ func (a table) ReversePrefixScan(ctx HasKVStore, start, end RowID) (Iterator, er
 	}, nil
 }
 
-func (a table) Table() table {
-	return a
+// ExportIterator returns an iterator over the values to export
+func (a table) ExportIterator(ctx HasKVStore) (Iterator, error) {
+	return a.PrefixScan(ctx, nil, nil)
+}
+
+// ImportSlice clears the table and initialises it with the data in the
+// interface{}. The interface{} should be a slice of values which implement the
+// PrimaryKeyed interface, but this is checked at runtime.
+func (a table) ImportSlice(ctx HasKVStore, data interface{}) error {
+	// Clear all data
+	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
+	it := store.Iterator(nil, nil)
+	defer it.Close()
+	for ; it.Valid(); it.Next() {
+		if err := a.Delete(ctx, it.Key()); err != nil {
+			return err
+		}
+	}
+
+	// Provided data must be a slice
+	modelSlice := reflect.ValueOf(data)
+	if modelSlice.Kind() != reflect.Slice {
+		return errors.Wrap(ErrArgument, "data must be a slice")
+	}
+
+	// Import values from slice
+	for i := 0; i < modelSlice.Len(); i++ {
+		obj, ok := modelSlice.Index(i).Interface().(PrimaryKeyed)
+		if !ok {
+			return errors.Wrapf(ErrArgument, "unsupported type :%s", reflect.TypeOf(data).Elem().Elem())
+		}
+		err := a.Create(ctx, PrimaryKey(obj), obj)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // typeSafeIterator is initialized with a type safe RowGetter only.

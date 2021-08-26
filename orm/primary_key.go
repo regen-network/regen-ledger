@@ -132,13 +132,13 @@ func (a PrimaryKeyTable) Create(ctx HasKVStore, obj PrimaryKeyed) error {
 	return a.table.Create(ctx, rowID, obj)
 }
 
-// Save updates the given object under the primary key. It expects the key to exists already
+// Update updates the given object under the primary key. It expects the key to exists already
 // and fails with an `ErrNotFound` otherwise. Any caller must therefore make sure that this contract
 // is fulfilled. Parameters must not be nil.
 //
-// Save iterates though the registered callbacks and may add or remove secondary index keys by them.
-func (a PrimaryKeyTable) Save(ctx HasKVStore, newValue PrimaryKeyed) error {
-	return a.table.Save(ctx, PrimaryKey(newValue), newValue)
+// Update iterates though the registered callbacks and may add or remove secondary index keys by them.
+func (a PrimaryKeyTable) Update(ctx HasKVStore, newValue PrimaryKeyed) error {
+	return a.table.Update(ctx, PrimaryKey(newValue), newValue)
 }
 
 // Delete removes the object. It expects the primary key to exists already
@@ -202,7 +202,14 @@ func (a PrimaryKeyTable) ReversePrefixScan(ctx HasKVStore, start, end []byte) (I
 	return a.table.ReversePrefixScan(ctx, start, end)
 }
 
-// Table satisfies the TableExportable interface and must not be used otherwise.
-func (a PrimaryKeyTable) Table() table {
-	return a.table
+// ExportIterator returns an iterator over the values to export
+func (a PrimaryKeyTable) ExportIterator(ctx HasKVStore) (Iterator, error) {
+	return a.table.ExportIterator(ctx)
+}
+
+// ImportSlice clears the table and initialises it with the data in the
+// interface{}. The interface{} should be a slice of values which implement the
+// PrimaryKeyed interface, but this is checked at runtime.
+func (a PrimaryKeyTable) ImportSlice(ctx HasKVStore, data interface{}) error {
+	return a.table.ImportSlice(ctx, data)
 }

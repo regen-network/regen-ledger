@@ -65,7 +65,7 @@ func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
 
 	// when updated
 	g.Admin = []byte("new-admin-address")
-	err = k.groupTable.Save(ctx, rowID, &g)
+	err = k.groupTable.Update(ctx, rowID, &g)
 	require.NoError(t, err)
 
 	// then indexes are updated, too
@@ -152,7 +152,7 @@ func TestKeeperEndToEndWithPrimaryKeyTable(t *testing.T) {
 		Weight: m.Weight,
 	}
 	// then it should fail as the primary key is immutable
-	err = k.groupMemberTable.Save(ctx, updatedMember)
+	err = k.groupMemberTable.Update(ctx, updatedMember)
 	require.Error(t, err)
 
 	// and when entity updated with non primary key attribute modified
@@ -162,7 +162,7 @@ func TestKeeperEndToEndWithPrimaryKeyTable(t *testing.T) {
 		Weight: 99,
 	}
 	// then it should not fail
-	err = k.groupMemberTable.Save(ctx, updatedMember)
+	err = k.groupMemberTable.Update(ctx, updatedMember)
 	require.NoError(t, err)
 
 	// and when entity deleted
