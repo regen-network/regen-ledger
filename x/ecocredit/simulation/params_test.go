@@ -14,7 +14,20 @@ func TestParamChanges(t *testing.T) {
 	s := rand.NewSource(1)
 	r := rand.New(s)
 
-	bz, err := json.Marshal(ecocredit.DefaultParams().CreditTypes)
+	bz, err := json.Marshal([]*ecocredit.CreditType{
+		{
+			Name:         "carbon",
+			Abbreviation: "C",
+			Unit:         "metric ton CO2 equivalent",
+			Precision:    6,
+		},
+		{
+			Name:         "biodiversity",
+			Abbreviation: "BIO",
+			Unit:         "ton",
+			Precision:    6,
+		}},
+	)
 	require.NoError(t, err)
 
 	expected := []struct {

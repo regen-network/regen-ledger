@@ -53,6 +53,12 @@ func genCreditTypes(r *rand.Rand) []*ecocredit.CreditType {
 			Unit:         "metric ton CO2 equivalent",
 			Precision:    6,
 		},
+		{
+			Name:         "biodiversity",
+			Abbreviation: "BIO",
+			Unit:         "ton",
+			Precision:    6,
+		},
 	}
 }
 
