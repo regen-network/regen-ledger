@@ -29,7 +29,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(ctx.Context, &params)
-	if params.AllowlistEnabled && !s.isDesignerAllowListed(params, designerAddress) {
+	if params.AllowlistEnabled && !s.isDesignerAllowListed(params.AllowedClassDesigners, designerAddress) {
 		return nil, fmt.Errorf("%s is not allowed to create credit classes", designerAddress.String())
 	}
 
@@ -523,8 +523,8 @@ func (s serverImpl) getBatchPrecision(ctx types.Context, denom batchDenomT) (uin
 }
 
 // Checks if the given address is in the allowlist of credit class designers
-func (s serverImpl) isDesignerAllowListed(params ecocredit.Params, designer sdk.Address) bool {
-	for _, addr := range params.AllowedClassDesigners {
+func (s serverImpl) isDesignerAllowListed(allowlist []string, designer sdk.Address) bool {
+	for _, addr := range allowlist {
 		allowListedAddr, _ := sdk.AccAddressFromBech32(addr)
 		if designer.Equals(allowListedAddr) {
 			return true
