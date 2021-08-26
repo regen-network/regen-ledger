@@ -84,7 +84,7 @@ func (s *IntegrationTestSuite) fundAccount(addr sdk.AccAddress, amounts sdk.Coin
 }
 
 func (s *IntegrationTestSuite) TestScenario() {
-	designer := s.signers[0]
+	admin := s.signers[0]
 	issuer1 := s.signers[1].String()
 	issuer2 := s.signers[2].String()
 	addr1 := s.signers[3].String()
@@ -95,7 +95,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	// create class with insufficient funds and it should fail
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-		Designer:   designer.String(),
+		Admin:      admin.String(),
 		Issuers:    []string{issuer1, issuer2},
 		Metadata:   nil,
 		CreditType: "carbon",
@@ -104,7 +104,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Nil(createClsRes)
 
 	// create class with sufficient funds and it should succeed
-	s.Require().NoError(s.fundAccount(designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 40000))))
+	s.Require().NoError(s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 40000))))
 
 	// Run multiple tests to test the CreditTypeSeqs
 	createClassTestCases := []struct {
@@ -131,7 +131,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	for _, tc := range createClassTestCases {
 		createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-			Designer:   designer.String(),
+			Admin:      admin.String(),
 			Issuers:    []string{issuer1, issuer2},
 			Metadata:   nil,
 			CreditType: tc.creditType,
@@ -145,8 +145,8 @@ func (s *IntegrationTestSuite) TestScenario() {
 	// Use first test class for remainder of tests
 	clsID := createClassTestCases[0].expectedClassID
 
-	// designer should have no funds remaining
-	s.Require().Equal(s.bankKeeper.GetBalance(s.sdkCtx, designer, "stake"), sdk.NewInt64Coin("stake", 0))
+	// admin should have no funds remaining
+	s.Require().Equal(s.bankKeeper.GetBalance(s.sdkCtx, admin, "stake"), sdk.NewInt64Coin("stake", 0))
 
 	// create batch
 	t0, t1, t2 := "10.37", "1007.3869", "100"
@@ -630,10 +630,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 		})
 	}
 
-	/****   TEST ALLOWLIST CREDIT DESIGNERS   ****/
+	/****   TEST ALLOWLIST CREDIT CREATORS   ****/
 	allowlistCases := []struct {
 		name             string
-		designerAcc      sdk.AccAddress
+		creatorAcc       sdk.AccAddress
 		allowlist        []string
 		allowlistEnabled bool
 		wantErr          bool
@@ -641,35 +641,35 @@ func (s *IntegrationTestSuite) TestScenario() {
 		{
 			name:             "valid allowlist and enabled",
 			allowlist:        []string{s.signers[0].String()},
-			designerAcc:      s.signers[0],
+			creatorAcc:       s.signers[0],
 			allowlistEnabled: true,
 			wantErr:          false,
 		},
 		{
 			name:             "valid multi addrs in allowlist",
 			allowlist:        []string{s.signers[0].String(), s.signers[1].String(), s.signers[2].String()},
-			designerAcc:      s.signers[0],
+			creatorAcc:       s.signers[0],
 			allowlistEnabled: true,
 			wantErr:          false,
 		},
 		{
-			name:             "designer is not part of the allowlist",
+			name:             "creator is not part of the allowlist",
 			allowlist:        []string{s.signers[0].String()},
-			designerAcc:      s.signers[1],
+			creatorAcc:       s.signers[1],
 			allowlistEnabled: true,
 			wantErr:          true,
 		},
 		{
 			name:             "valid allowlist but disabled - anyone can create credits",
 			allowlist:        []string{s.signers[0].String()},
-			designerAcc:      s.signers[0],
+			creatorAcc:       s.signers[0],
 			allowlistEnabled: false,
 			wantErr:          false,
 		},
 		{
 			name:             "empty and enabled allowlist - nobody can create credits",
 			allowlist:        []string{},
-			designerAcc:      s.signers[0],
+			creatorAcc:       s.signers[0],
 			allowlistEnabled: true,
 			wantErr:          true,
 		},
@@ -678,14 +678,14 @@ func (s *IntegrationTestSuite) TestScenario() {
 	for _, tc := range allowlistCases {
 		tc := tc
 		s.Run(tc.name, func() {
-			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowedClassDesigners, tc.allowlist)
+			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowedClassCreators, tc.allowlist)
 			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyAllowlistEnabled, tc.allowlistEnabled)
 
-			// fund the designer account
-			s.Require().NoError(s.fundAccount(tc.designerAcc, sdk.NewCoins(sdk.NewInt64Coin("stake", 40000))))
+			// fund the creator account
+			s.Require().NoError(s.fundAccount(tc.creatorAcc, sdk.NewCoins(sdk.NewInt64Coin("stake", 40000))))
 
 			createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-				Designer:   tc.designerAcc.String(),
+				Admin:      tc.creatorAcc.String(),
 				Issuers:    []string{issuer1, issuer2},
 				CreditType: "carbon",
 				Metadata:   nil,
@@ -716,7 +716,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
 			},
 			msg: ecocredit.MsgCreateClass{
-				Designer:   s.signers[0].String(),
+				Admin:      s.signers[0].String(),
 				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
 				Metadata:   nil,
 				CreditType: "carbon",
@@ -729,7 +729,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
 			},
 			msg: ecocredit.MsgCreateClass{
-				Designer:   s.signers[0].String(),
+				Admin:      s.signers[0].String(),
 				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
 				Metadata:   nil,
 				CreditType: "biodiversity",
@@ -742,7 +742,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
 			},
 			msg: ecocredit.MsgCreateClass{
-				Designer:   s.signers[0].String(),
+				Admin:      s.signers[0].String(),
 				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
 				Metadata:   nil,
 				CreditType: "cArBoN",
@@ -753,7 +753,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			name:        "empty credit types should error",
 			creditTypes: []*ecocredit.CreditType{},
 			msg: ecocredit.MsgCreateClass{
-				Designer:   s.signers[0].String(),
+				Admin:      s.signers[0].String(),
 				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
 				Metadata:   nil,
 				CreditType: "carbon",
@@ -768,11 +768,11 @@ func (s *IntegrationTestSuite) TestScenario() {
 		s.Run(tc.name, func() {
 			require := s.Require()
 			s.paramSpace.Set(s.sdkCtx, ecocredit.KeyCreditTypes, tc.creditTypes)
-			designer, err := sdk.AccAddressFromBech32(tc.msg.Designer)
+			admin, err := sdk.AccAddressFromBech32(tc.msg.Admin)
 			require.NoError(err)
 
-			// fund the designer account so tx will go through
-			s.Require().NoError(s.fundAccount(designer, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
+			// fund the admin account so tx will go through
+			s.Require().NoError(s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 10000))))
 			res, err := s.msgClient.CreateClass(s.ctx, &tc.msg)
 			if tc.wantErr {
 				require.Error(err)

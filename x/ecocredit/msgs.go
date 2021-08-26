@@ -27,9 +27,9 @@ func (m MsgCreateClass) GetSignBytes() []byte {
 }
 
 func (m *MsgCreateClass) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(m.Designer)
+	_, err := sdk.AccAddressFromBech32(m.Admin)
 	if err != nil {
-		return sdkerrors.Wrap(err, "designer")
+		return sdkerrors.Wrap(err, "admin")
 	}
 
 	if len(m.Issuers) == 0 {
@@ -57,7 +57,7 @@ func (m *MsgCreateClass) ValidateBasic() error {
 }
 
 func (m *MsgCreateClass) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(m.Designer)
+	addr, err := sdk.AccAddressFromBech32(m.Admin)
 	if err != nil {
 		panic(err)
 	}

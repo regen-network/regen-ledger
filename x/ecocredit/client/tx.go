@@ -48,12 +48,12 @@ func txflags(cmd *cobra.Command) *cobra.Command {
 
 func TxCreateClassCmd() *cobra.Command {
 	return txflags(&cobra.Command{
-		Use:   "create-class [designer] [issuer[,issuer]*] [credit type] [metadata]",
+		Use:   "create-class [admin] [issuer[,issuer]*] [credit type] [metadata]",
 		Short: "Creates a new credit class",
 		Long: `Creates a new credit class.
 
 Parameters:
-  designer:  	    address of the account which designed the credit class
+  admin:           address of the account which can manage the credit class
   issuer:    	    comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
   credit type:    the credit class type (e.g. carbon, biodiversity, etc)
   metadata:  	    base64 encoded metadata - arbitrary data attached to the credit class info`,
@@ -80,7 +80,10 @@ Parameters:
 				return err
 			}
 			msg := ecocredit.MsgCreateClass{
-				Designer: args[0], Issuers: issuers, Metadata: b, CreditType: creditType,
+				Admin:      args[0],
+				Issuers:    issuers,
+				Metadata:   b,
+				CreditType: creditType,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},

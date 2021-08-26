@@ -105,7 +105,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// Store the first one in the test suite
 	s.classInfo = &ecocredit.ClassInfo{
 		ClassId:    classId,
-		Designer:   val.Address.String(),
+		Admin:      val.Address.String(),
 		Issuers:    []string{val.Address.String()},
 		CreditType: ecocredit.DefaultParams().CreditTypes[0],
 		Metadata:   validMetadataBytes,
@@ -199,7 +199,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 		expectedClassInfo *ecocredit.ClassInfo
 	}{
 		{
-			name:           "missing designer",
+			name:           "missing admin",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "accepts 4 arg(s), received 0",
@@ -229,7 +229,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			expectedErrMsg: "accepts 4 arg(s), received 5",
 		},
 		{
-			name: "invalid designer",
+			name: "invalid admin",
 			args: append(
 				[]string{
 					"abcde",
@@ -301,7 +301,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			),
 			expectErr: false,
 			expectedClassInfo: &ecocredit.ClassInfo{
-				Designer: val0.Address.String(),
+				Admin:    val0.Address.String(),
 				Issuers:  []string{val0.Address.String()},
 				Metadata: []byte{0x1},
 			},
@@ -326,7 +326,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			),
 			expectErr: false,
 			expectedClassInfo: &ecocredit.ClassInfo{
-				Designer: val0.Address.String(),
+				Admin:    val0.Address.String(),
 				Issuers:  []string{val0.Address.String(), val1.Address.String()},
 				Metadata: []byte{0x1},
 			},
@@ -346,7 +346,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			),
 			expectErr: false,
 			expectedClassInfo: &ecocredit.ClassInfo{
-				Designer: val0.Address.String(),
+				Admin:    val0.Address.String(),
 				Issuers:  []string{val0.Address.String()},
 				Metadata: []byte{0x1},
 			},
@@ -389,7 +389,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 								var queryRes ecocredit.QueryClassInfoResponse
 								s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
 
-								s.Require().Equal(tc.expectedClassInfo.Designer, queryRes.Info.Designer)
+								s.Require().Equal(tc.expectedClassInfo.Admin, queryRes.Info.Admin)
 								s.Require().Equal(tc.expectedClassInfo.Issuers, queryRes.Info.Issuers)
 								s.Require().Equal(tc.expectedClassInfo.Metadata, queryRes.Info.Metadata)
 							}
