@@ -23,10 +23,10 @@ func (m *CreditTypeSeq) PrimaryKeyFields() []interface{} {
 
 // Normalize credit type name by removing whitespace and converting to lowercase
 func NormalizeCreditTypeName(name string) string {
-	return FastRemoveWhitespace(strings.ToLower(name))
+	return fastRemoveWhitespace(strings.ToLower(name))
 }
 
-func FastRemoveWhitespace(str string) string {
+func fastRemoveWhitespace(str string) string {
 	var b strings.Builder
 	b.Grow(len(str))
 	for _, ch := range str {
