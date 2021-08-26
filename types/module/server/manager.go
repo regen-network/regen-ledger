@@ -80,7 +80,7 @@ func (mm *Manager) RegisterGRPCGatewayRoutes(apiSvr *api.Server) {
 
 // RegisterModules registers modules with the Manager and registers their services.
 func (mm *Manager) RegisterModules(modules []module.Module) error {
-	mm.modules = modules
+	mm.modules = append(mm.modules, modules...)
 	// First we register all interface types. This is done for all modules first before registering
 	// any services in case there are any weird dependencies that will cause service initialization to fail.
 	for _, mod := range modules {
