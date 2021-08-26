@@ -31,7 +31,7 @@ type Manager struct {
 	initGenesisHandlers        map[string]module.InitGenesisHandler
 	exportGenesisHandlers      map[string]module.ExportGenesisHandler
 	registerInvariantsHandler  map[string]RegisterInvariantsHandler
-	weightedOperationsHandlers map[string]WeightedOperationsHandler
+	weightedOperationsHandlers []WeightedOperationsHandler
 }
 
 // RegisterInvariants registers all module routes and module querier routes
@@ -58,11 +58,11 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 			msgServiceRouter: baseApp.MsgServiceRouter(),
 		},
 		requiredServices:           map[reflect.Type]bool{},
-		weightedOperationsHandlers: map[string]WeightedOperationsHandler{},
+		weightedOperationsHandlers: []WeightedOperationsHandler{},
 	}
 }
 
-func (mm *Manager) GetWeightedOperationsHandlers() map[string]WeightedOperationsHandler {
+func (mm *Manager) GetWeightedOperationsHandlers() []WeightedOperationsHandler {
 	return mm.weightedOperationsHandlers
 }
 
@@ -145,7 +145,7 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		mm.exportGenesisHandlers[name] = cfg.exportGenesisHandler
 
 		if cfg.weightedOperationHandler != nil {
-			mm.weightedOperationsHandlers[name] = cfg.weightedOperationHandler
+			mm.weightedOperationsHandlers = append(mm.weightedOperationsHandlers, cfg.weightedOperationHandler)
 		}
 
 		for typ := range cfg.requiredServices {
