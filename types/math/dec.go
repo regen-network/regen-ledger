@@ -2,6 +2,7 @@ package math
 
 import (
 	"fmt"
+
 	"github.com/cockroachdb/apd/v2"
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -56,6 +57,17 @@ func NewNonNegativeFixedDecFromString(s string, max uint32) (Dec, error) {
 	}
 	if d.NumDecimalPlaces() > max {
 		return Dec{}, fmt.Errorf("%s exceeds maximum decimal places: %d", s, max)
+	}
+	return d, nil
+}
+
+func NewPositiveDecFromString(s string) (Dec, error) {
+	d, err := NewDecFromString(s)
+	if err != nil {
+		return Dec{}, err
+	}
+	if !d.IsPositive() {
+		return Dec{}, fmt.Errorf("%s is not a positive decimal", d.String())
 	}
 	return d, nil
 }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/orm"
@@ -149,7 +148,7 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, 
 	defer groupIt.Close()
 
 	for {
-		membersWeight := apd.New(0, 0)
+		membersWeight := regenMath.NewDecFromInt64(0)
 		_, err := groupIt.LoadNext(&groupInfo)
 		if orm.ErrIteratorDone.Is(err) {
 			break
@@ -166,18 +165,18 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, 
 			if orm.ErrIteratorDone.Is(err) {
 				break
 			}
-			curMemWeight, err := regenMath.ParseNonNegativeDecimal(groupMember.GetMember().GetWeight())
+			curMemWeight, err := regenMath.NewNonNegativeDecFromString(groupMember.GetMember().GetWeight())
 			if err != nil {
 				msg += fmt.Sprintf("error while parsing non-nengative decimal for group member %s\n%v\n", groupMember.Member.Address, err)
 				return msg, broken
 			}
-			err = regenMath.Add(membersWeight, membersWeight, curMemWeight)
+			membersWeight, err = membersWeight.Add(curMemWeight)
 			if err != nil {
 				msg += fmt.Sprintf("decimal addition error while adding group member voting weight to total voting weight\n%v\n", err)
 				return msg, broken
 			}
 		}
-		groupWeight, err := regenMath.ParseNonNegativeDecimal(groupInfo.GetTotalWeight())
+		groupWeight, err := regenMath.NewNonNegativeDecFromString(groupInfo.GetTotalWeight())
 		if err != nil {
 			msg += fmt.Sprintf("error while parsing non-nengative decimal for group with ID %d\n%v\n", groupInfo.GroupId, err)
 			return msg, broken
@@ -211,11 +210,11 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, pro
 
 	for {
 
-		totalVotingWeight := apd.New(0, 0)
-		yesVoteWeight := apd.New(0, 0)
-		noVoteWeight := apd.New(0, 0)
-		abstainVoteWeight := apd.New(0, 0)
-		vetoVoteWeight := apd.New(0, 0)
+		totalVotingWeight := regenMath.NewDecFromInt64(0)
+		yesVoteWeight := regenMath.NewDecFromInt64(0)
+		noVoteWeight := regenMath.NewDecFromInt64(0)
+		abstainVoteWeight := regenMath.NewDecFromInt64(0)
+		vetoVoteWeight := regenMath.NewDecFromInt64(0)
 
 		_, err := proposalIt.LoadNext(&proposal)
 		if orm.ErrIteratorDone.Is(err) {
@@ -271,12 +270,12 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, pro
 				return msg, broken
 			}
 
-			curMemVotingWeight, err := regenMath.ParseNonNegativeDecimal(groupMem.Member.Weight)
+			curMemVotingWeight, err := regenMath.NewNonNegativeDecFromString(groupMem.Member.Weight)
 			if err != nil {
 				msg += fmt.Sprintf("error while parsing non-negative decimal for group member %s\n%v\n", groupMem.Member.Address, err)
 				return msg, broken
 			}
-			err = regenMath.Add(totalVotingWeight, totalVotingWeight, curMemVotingWeight)
+			totalVotingWeight, err = totalVotingWeight.Add(curMemVotingWeight)
 			if err != nil {
 				msg += fmt.Sprintf("decimal addition error while adding current member voting weight to total voting weight\n%v\n", err)
 				return msg, broken
@@ -284,25 +283,25 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, pro
 
 			switch vote.Choice {
 			case group.Choice_CHOICE_YES:
-				err = regenMath.Add(yesVoteWeight, yesVoteWeight, curMemVotingWeight)
+				yesVoteWeight, err = yesVoteWeight.Add(curMemVotingWeight)
 				if err != nil {
 					msg += fmt.Sprintf("decimal addition error\n%v\n", err)
 					return msg, broken
 				}
 			case group.Choice_CHOICE_NO:
-				err = regenMath.Add(noVoteWeight, noVoteWeight, curMemVotingWeight)
+				noVoteWeight, err = noVoteWeight.Add(curMemVotingWeight)
 				if err != nil {
 					msg += fmt.Sprintf("decimal addition error\n%v\n", err)
 					return msg, broken
 				}
 			case group.Choice_CHOICE_ABSTAIN:
-				err = regenMath.Add(abstainVoteWeight, abstainVoteWeight, curMemVotingWeight)
+				abstainVoteWeight, err = abstainVoteWeight.Add(curMemVotingWeight)
 				if err != nil {
 					msg += fmt.Sprintf("decimal addition error\n%v\n", err)
 					return msg, broken
 				}
 			case group.Choice_CHOICE_VETO:
-				err = regenMath.Add(vetoVoteWeight, vetoVoteWeight, curMemVotingWeight)
+				vetoVoteWeight, err = vetoVoteWeight.Add(curMemVotingWeight)
 				if err != nil {
 					msg += fmt.Sprintf("decimal addition error\n%v\n", err)
 					return msg, broken

@@ -107,14 +107,14 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 		}
 
 		if iss.TradableAmount != "" {
-			_, err := math.ParseNonNegativeDecimal(iss.TradableAmount)
+			_, err := math.NewNonNegativeDecFromString(iss.TradableAmount)
 			if err != nil {
 				return err
 			}
 		}
 
 		if iss.RetiredAmount != "" {
-			retiredAmount, err := math.ParseNonNegativeDecimal(iss.RetiredAmount)
+			retiredAmount, err := math.NewNonNegativeDecFromString(iss.RetiredAmount)
 			if err != nil {
 				return err
 			}
@@ -171,12 +171,12 @@ func (m *MsgSend) ValidateBasic() error {
 			return sdkerrors.ErrInvalidRequest.Wrap("batch denom should not be empty")
 		}
 
-		_, err := math.ParseNonNegativeDecimal(credit.TradableAmount)
+		_, err := math.NewNonNegativeDecFromString(credit.TradableAmount)
 		if err != nil {
 			return err
 		}
 
-		retiredAmount, err := math.ParseNonNegativeDecimal(credit.RetiredAmount)
+		retiredAmount, err := math.NewNonNegativeDecFromString(credit.RetiredAmount)
 		if err != nil {
 			return err
 		}
@@ -225,7 +225,7 @@ func (m *MsgRetire) ValidateBasic() error {
 		if credit.BatchDenom == "" {
 			return sdkerrors.ErrInvalidRequest.Wrap("batch denom should not be empty")
 		}
-		_, err := math.ParsePositiveDecimal(credit.Amount)
+		_, err := math.NewPositiveDecFromString(credit.Amount)
 		if err != nil {
 			return err
 		}
@@ -274,7 +274,7 @@ func (m *MsgCancel) ValidateBasic() error {
 			return sdkerrors.ErrInvalidRequest.Wrap("batch denom should not be empty")
 		}
 
-		_, err := math.ParsePositiveDecimal(credit.Amount)
+		_, err := math.NewPositiveDecFromString(credit.Amount)
 		if err != nil {
 			return err
 		}
