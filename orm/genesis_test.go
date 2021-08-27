@@ -17,7 +17,9 @@ func TestImportExportTableData(t *testing.T) {
 
 	storeKey := sdk.NewKVStoreKey("test")
 	const prefix = iota
-	table := orm.NewAutoUInt64TableBuilder(prefix, 0x1, storeKey, &testdata.GroupInfo{}, cdc).Build()
+	builder, err := orm.NewAutoUInt64TableBuilder(prefix, 0x1, storeKey, &testdata.GroupInfo{}, cdc)
+	require.NoError(t, err)
+	table := builder.Build()
 
 	ctx := orm.NewMockContext()
 
@@ -32,7 +34,7 @@ func TestImportExportTableData(t *testing.T) {
 		},
 	}
 
-	err := orm.ImportTableData(ctx, table, groups, 2)
+	err = orm.ImportTableData(ctx, table, groups, 2)
 	require.NoError(t, err)
 
 	for _, g := range groups {

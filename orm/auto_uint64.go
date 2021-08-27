@@ -8,16 +8,20 @@ import (
 var _ Indexable = &AutoUInt64TableBuilder{}
 
 // NewAutoUInt64TableBuilder creates a builder to setup a AutoUInt64Table object.
-func NewAutoUInt64TableBuilder(prefixData byte, prefixSeq byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, cdc codec.Codec) *AutoUInt64TableBuilder {
+func NewAutoUInt64TableBuilder(prefixData byte, prefixSeq byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, cdc codec.Codec) (*AutoUInt64TableBuilder, error) {
 	if prefixData == prefixSeq {
-		panic("prefixData and prefixSeq must be unique")
+		return nil, ErrUniqueConstraint.Wrap("prefixData and prefixSeq must be unique")
 	}
 
 	uInt64KeyCodec := FixLengthIndexKeys(EncodedSeqLength)
-	return &AutoUInt64TableBuilder{
-		tableBuilder: newTableBuilder(prefixData, storeKey, model, uInt64KeyCodec, cdc),
-		seq:          NewSequence(storeKey, prefixSeq),
+	tableBuilder, err := newTableBuilder(prefixData, storeKey, model, uInt64KeyCodec, cdc)
+	if err != nil {
+		return nil, err
 	}
+	return &AutoUInt64TableBuilder{
+		tableBuilder: tableBuilder,
+		seq:          NewSequence(storeKey, prefixSeq),
+	}, nil
 }
 
 type AutoUInt64TableBuilder struct {

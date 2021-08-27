@@ -24,15 +24,15 @@ type tableBuilder struct {
 }
 
 // newTableBuilder creates a builder to setup a table object.
-func newTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, idxKeyCodec IndexKeyCodec, cdc codec.Codec) *tableBuilder {
+func newTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, idxKeyCodec IndexKeyCodec, cdc codec.Codec) (*tableBuilder, error) {
 	if model == nil {
-		panic("Model must not be nil")
+		return nil, ErrArgument.Wrap("Model must not be nil")
 	}
 	if storeKey == nil {
-		panic("StoreKey must not be nil")
+		return nil, ErrArgument.Wrap("StoreKey must not be nil")
 	}
 	if idxKeyCodec == nil {
-		panic("IndexKeyCodec must not be nil")
+		return nil, ErrArgument.Wrap("IndexKeyCodec must not be nil")
 	}
 	tp := reflect.TypeOf(model)
 	if tp.Kind() == reflect.Ptr {
@@ -44,12 +44,12 @@ func newTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMa
 		model:         tp,
 		indexKeyCodec: idxKeyCodec,
 		cdc:           cdc,
-	}
+	}, nil
 }
 
 // TestTableBuilder exposes the private tableBuilder type for testing purposes.
 // It is not safe to use this outside of test code.
-func TestTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, idxKeyCodec IndexKeyCodec, cdc codec.Codec) *tableBuilder {
+func TestTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, idxKeyCodec IndexKeyCodec, cdc codec.Codec) (*tableBuilder, error) {
 	return newTableBuilder(prefixData, storeKey, model, idxKeyCodec, cdc)
 }
 
