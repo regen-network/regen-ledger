@@ -28,10 +28,14 @@ var dec128Context = apd.Context{
 	Traps:       apd.DefaultTraps,
 }
 
+const mathCodespace = "math"
+
+var ErrInvalidDecString = errors.Register(mathCodespace, 1, "invalid decimal string")
+
 func NewDecFromString(s string) (Dec, error) {
 	d, _, err := apd.NewFromString(s)
 	if err != nil {
-		return Dec{}, err
+		return Dec{}, ErrInvalidDecString.Wrap(err.Error())
 	}
 	return Dec{*d}, nil
 }
@@ -39,10 +43,10 @@ func NewDecFromString(s string) (Dec, error) {
 func NewNonNegativeDecFromString(s string) (Dec, error) {
 	d, err := NewDecFromString(s)
 	if err != nil {
-		return Dec{}, err
+		return Dec{}, ErrInvalidDecString.Wrapf("expected a non-negative decimal, got %s", s)
 	}
 	if d.IsNegative() {
-		return Dec{}, fmt.Errorf("cannot parse non negative decimal: %s", d.String())
+		return Dec{}, ErrInvalidDecString.Wrapf("expected a non-negative decimal, got %s", s)
 	}
 	return d, nil
 }
@@ -50,10 +54,10 @@ func NewNonNegativeDecFromString(s string) (Dec, error) {
 func NewNonNegativeFixedDecFromString(s string, max uint32) (Dec, error) {
 	d, err := NewDecFromString(s)
 	if err != nil {
-		return Dec{}, err
+		return Dec{}, ErrInvalidDecString.Wrapf("expected a non-negative decimal, got %s", s)
 	}
 	if d.IsNegative() {
-		return Dec{}, fmt.Errorf("cannot parse non negative decimal: %s", d.String())
+		return Dec{}, ErrInvalidDecString.Wrapf("expected a non-negative decimal, got %s", s)
 	}
 	if d.NumDecimalPlaces() > max {
 		return Dec{}, fmt.Errorf("%s exceeds maximum decimal places: %d", s, max)
@@ -64,10 +68,10 @@ func NewNonNegativeFixedDecFromString(s string, max uint32) (Dec, error) {
 func NewPositiveDecFromString(s string) (Dec, error) {
 	d, err := NewDecFromString(s)
 	if err != nil {
-		return Dec{}, err
+		return Dec{}, ErrInvalidDecString.Wrapf("expected a positive decimal, got %s", s)
 	}
 	if !d.IsPositive() {
-		return Dec{}, fmt.Errorf("%s is not a positive decimal", d.String())
+		return Dec{}, ErrInvalidDecString.Wrapf("expected a positive decimal, got %s", s)
 	}
 	return d, nil
 }
@@ -75,10 +79,10 @@ func NewPositiveDecFromString(s string) (Dec, error) {
 func NewPositiveFixedDecFromString(s string, max uint32) (Dec, error) {
 	d, err := NewDecFromString(s)
 	if err != nil {
-		return Dec{}, err
+		return Dec{}, ErrInvalidDecString.Wrapf("expected a positive decimal, got %s", s)
 	}
 	if !d.IsPositive() {
-		return Dec{}, fmt.Errorf("%s is not a positive decimal", d.String())
+		return Dec{}, ErrInvalidDecString.Wrapf("expected a positive decimal, got %s", s)
 	}
 	if d.NumDecimalPlaces() > max {
 		return Dec{}, fmt.Errorf("%s exceeds maximum decimal places: %d", s, max)
