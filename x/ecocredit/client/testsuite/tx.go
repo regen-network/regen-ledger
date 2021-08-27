@@ -87,7 +87,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			append(
 				[]string{
 					val.Address.String(),
-					val.Address.String(),
 					validCreditType,
 					validMetadata,
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
@@ -199,55 +198,33 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 		expectedClassInfo *ecocredit.ClassInfo
 	}{
 		{
-			name:           "missing admin",
+			name:           "missing issuer",
 			args:           []string{},
 			expectErr:      true,
-			expectedErrMsg: "accepts 4 arg(s), received 0",
-		},
-		{
-			name:           "missing issuer",
-			args:           []string{val0.Address.String()},
-			expectErr:      true,
-			expectedErrMsg: "accepts 4 arg(s), received 1",
+			expectedErrMsg: "accepts 3 arg(s), received 0",
 		},
 		{
 			name:           "missing credit type",
-			args:           []string{validCreditType},
+			args:           []string{val0.Address.String()},
 			expectErr:      true,
-			expectedErrMsg: "accepts 4 arg(s), received 1",
+			expectedErrMsg: "accepts 3 arg(s), received 1",
 		},
 		{
 			name:           "missing metadata",
-			args:           []string{val0.Address.String(), val0.Address.String()},
+			args:           []string{val0.Address.String(), validCreditType},
 			expectErr:      true,
-			expectedErrMsg: "accepts 4 arg(s), received 2",
+			expectedErrMsg: "accepts 3 arg(s), received 2",
 		},
 		{
 			name:           "too many args",
-			args:           []string{"abcde", "abcde", "abcde", "abcde", "dlskjf"},
+			args:           []string{"abcde", "abcde", "abcde", "abcde"},
 			expectErr:      true,
-			expectedErrMsg: "accepts 4 arg(s), received 5",
-		},
-		{
-			name: "invalid admin",
-			args: append(
-				[]string{
-					"abcde",
-					val0.Address.String(),
-					validCreditType,
-					validMetadata,
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "decoding bech32 failed: invalid bech32 string length 5",
+			expectedErrMsg: "accepts 3 arg(s), received 4",
 		},
 		{
 			name: "invalid issuer",
 			args: append(
 				[]string{
-					val0.Address.String(),
 					"abcde",
 					validCreditType,
 					validMetadata,
@@ -263,7 +240,6 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			args: append(
 				[]string{
 					val0.Address.String(),
-					val0.Address.String(),
 					validCreditType,
 					"=",
 					makeFlagFrom(val0.Address.String()),
@@ -278,7 +254,6 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			args: append(
 				[]string{
 					val0.Address.String(),
-					val0.Address.String(),
 					validCreditType,
 					validMetadata,
 				},
@@ -291,7 +266,6 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			name: "single issuer",
 			args: append(
 				[]string{
-					val0.Address.String(),
 					val0.Address.String(),
 					validCreditType,
 					validMetadata,
@@ -310,7 +284,6 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			name: "multiple issuers",
 			args: append(
 				[]string{
-					val0.Address.String(),
 					strings.Join(
 						[]string{
 							val0.Address.String(),
@@ -335,7 +308,6 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			name: "with amino-json",
 			args: append(
 				[]string{
-					val0.Address.String(),
 					val0.Address.String(),
 					validCreditType,
 					validMetadata,

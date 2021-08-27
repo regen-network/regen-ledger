@@ -48,29 +48,40 @@ func txflags(cmd *cobra.Command) *cobra.Command {
 
 func TxCreateClassCmd() *cobra.Command {
 	return txflags(&cobra.Command{
-		Use:   "create-class [admin] [issuer[,issuer]*] [credit type] [metadata]",
-		Short: "Creates a new credit class",
-		Long: `Creates a new credit class.
+		Use:   "create-class [issuer[,issuer]*] [credit type] [metadata]",
+		Short: "Creates a new credit class with transaction author (--from) as admin",
+		Long: `Creates a new credit class with transaction author (--from) as admin.
+The transaction author must pay the fee associated with creating a new credit class.
 
 Parameters:
-  admin:           address of the account which can manage the credit class
   issuer:    	    comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
   credit type:    the credit class type (e.g. carbon, biodiversity, etc)
   metadata:  	    base64 encoded metadata - arbitrary data attached to the credit class info`,
-		Args: cobra.ExactArgs(4),
+		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			issuers := strings.Split(args[1], ",")
+			// Get the class admin from the --from flag
+			admin, err := cmd.Flags().GetString(flags.FlagFrom)
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+			}
+
+			// Parse the comma-separated list of issuers
+			issuers := strings.Split(args[0], ",")
 			for i := range issuers {
 				issuers[i] = strings.TrimSpace(issuers[i])
 			}
-			if args[2] == "" {
+
+			// Check credit type is provided
+			if args[1] == "" {
 				return sdkerrors.ErrInvalidRequest.Wrap("credit type is required")
 			}
-			creditType := args[2]
-			if args[3] == "" {
+			creditType := args[1]
+
+			// Check that metadata is provided and decode it
+			if args[2] == "" {
 				return errors.New("base64_metadata is required")
 			}
-			b, err := base64.StdEncoding.DecodeString(args[3])
+			b, err := base64.StdEncoding.DecodeString(args[2])
 			if err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
 			}
@@ -80,7 +91,7 @@ Parameters:
 				return err
 			}
 			msg := ecocredit.MsgCreateClass{
-				Admin:      args[0],
+				Admin:      admin,
 				Issuers:    issuers,
 				Metadata:   b,
 				CreditType: creditType,

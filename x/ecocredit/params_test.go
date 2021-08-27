@@ -27,7 +27,7 @@ func TestDefaultParams(t *testing.T) {
 	require.Equal(t, df.String(), expected.String())
 }
 
-func Test_validateAllowlistCreditCreators(t *testing.T) {
+func Test_validateAllowedClassCreators(t *testing.T) {
 
 	genAddrs := make([]string, 0, 3)
 	for i := 0; i < 3; i++ {
@@ -67,8 +67,8 @@ func Test_validateAllowlistCreditCreators(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := validateAllowlistCreditCreators(tt.args); (err != nil) != tt.wantErr {
-				t.Errorf("validateAllowlistCreditCreators() error = %v, wantErr %v", err, tt.wantErr)
+			if err := validateAllowedClassCreators(tt.args); (err != nil) != tt.wantErr {
+				t.Errorf("validateAllowedClassCreators() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
