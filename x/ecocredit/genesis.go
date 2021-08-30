@@ -60,6 +60,30 @@ func (s *GenesisState) Validate() error {
 		return err
 	}
 
+	if err := validateParams(s.Params); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func validateParams(p Params) error {
+	if err := validateCreditTypes(p.CreditTypes); err != nil {
+		return err
+	}
+
+	if err := validateAllowlistCreditDesigners(p.AllowedClassDesigners); err != nil {
+		return err
+	}
+
+	if err := validateAllowlistEnabled(p.AllowlistEnabled); err != nil {
+		return err
+	}
+
+	if err := validateCreditClassFee(p.CreditClassFee); err != nil {
+		return err
+	}
+
 	return nil
 }
 
