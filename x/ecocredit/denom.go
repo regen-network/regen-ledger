@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"regexp"
 	"time"
-
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // Calculate the ID to use for a new credit class, based on the credit type and
@@ -64,7 +62,7 @@ var (
 func ValidateClassID(classId string) error {
 	matches := reFullClassID.FindStringSubmatch(classId)
 	if matches == nil {
-		return sdkerrors.ErrInvalidType.Wrapf("class ID didn't match the format: expected A00, got %s", classId)
+		return ErrParseFailure.Wrapf("class ID didn't match the format: expected A00, got %s", classId)
 	}
 	return nil
 }
@@ -74,7 +72,7 @@ func ValidateClassID(classId string) error {
 func ValidateDenom(denom string) error {
 	matches := reFullBatchDenom.FindStringSubmatch(denom)
 	if matches == nil {
-		return sdkerrors.ErrInvalidType.Wrapf("denomination didn't match the format: expected A00-00000000-00000000-000, got %s", denom)
+		return ErrParseFailure.Wrapf("denomination didn't match the format: expected A00-00000000-00000000-000, got %s", denom)
 	}
 	return nil
 }

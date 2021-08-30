@@ -322,7 +322,6 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				Issuers:  []string{val0.Address.String()},
 				Metadata: []byte{0x1},
 			},
-			respCode: 0,
 		},
 		{
 			name: "multiple issuers",
@@ -348,7 +347,6 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				Issuers:  []string{val0.Address.String(), val1.Address.String()},
 				Metadata: []byte{0x1},
 			},
-			respCode: 0,
 		},
 		{
 			name: "with amino-json",
@@ -369,7 +367,6 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 				Issuers:  []string{val0.Address.String()},
 				Metadata: []byte{0x1},
 			},
-			respCode: 0,
 		},
 	}
 
