@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/client"
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -27,7 +26,7 @@ func TxCmd(name string) *cobra.Command {
 
 		Use:   name,
 		Short: "Ecocredit module transactions",
-		RunE:  client.ValidateCmd,
+		RunE:  sdkclient.ValidateCmd,
 	}
 	cmd.AddCommand(
 		TxCreateClassCmd(),
@@ -174,6 +173,10 @@ Required Flags:
 
 			// Marshal and output JSON of message
 			msgJson, err := json.MarshalIndent(msg, "", "    ")
+			if err != nil {
+				return err
+			}
+
 			fmt.Print(string(msgJson))
 
 			return nil
@@ -245,11 +248,8 @@ Parameters:
 			}
 
 			// Get the batch issuer from the --from flag
-			issuer, err := cmd.Flags().GetString(flags.FlagFrom)
-			if err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-			}
-			msg.Issuer = issuer
+			issuer := clientCtx.GetFromAddress()
+			msg.Issuer = issuer.String()
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
