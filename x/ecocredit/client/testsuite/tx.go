@@ -635,7 +635,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 			args: append(
 				[]string{
 					validBatchJson,
-					makeFlagFrom("NewValidator0"),
+					makeFlagFrom("node0"),
 				},
 				s.commonTxFlags()...,
 			),
