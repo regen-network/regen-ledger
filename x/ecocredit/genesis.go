@@ -62,7 +62,7 @@ func (s *GenesisState) Validate() error {
 	}
 
 	// run each params validation method
-	if err := validateParams(s.Params); err != nil {
+	if err := s.Params.Validate(); err != nil {
 		return err
 	}
 
@@ -114,26 +114,6 @@ func areCreditTypesEqual(t1, t2 CreditType) bool {
 		return false
 	}
 	return true
-}
-
-func validateParams(p Params) error {
-	if err := validateCreditTypes(p.CreditTypes); err != nil {
-		return err
-	}
-
-	if err := validateAllowlistCreditDesigners(p.AllowedClassDesigners); err != nil {
-		return err
-	}
-
-	if err := validateAllowlistEnabled(p.AllowlistEnabled); err != nil {
-		return err
-	}
-
-	if err := validateCreditClassFee(p.CreditClassFee); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func validateSupply(calSupply, supply map[string]math.Dec) error {

@@ -37,6 +37,27 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	}
 }
 
+// Validate will run each param field's validate method
+func (p Params) Validate() error {
+	if err := validateCreditTypes(p.CreditTypes); err != nil {
+		return err
+	}
+
+	if err := validateAllowlistCreditDesigners(p.AllowedClassDesigners); err != nil {
+		return err
+	}
+
+	if err := validateAllowlistEnabled(p.AllowlistEnabled); err != nil {
+		return err
+	}
+
+	if err := validateCreditClassFee(p.CreditClassFee); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func validateCreditClassFee(i interface{}) error {
 	v, ok := i.(sdk.Coins)
 	if !ok {
