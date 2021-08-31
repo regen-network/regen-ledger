@@ -1,6 +1,7 @@
 package ecocredit
 
 import (
+	"fmt"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/types/math"
 )
@@ -60,11 +61,59 @@ func (s *GenesisState) Validate() error {
 		return err
 	}
 
+	// run each params validation method
 	if err := validateParams(s.Params); err != nil {
 		return err
 	}
 
+	// check that the CreditTypes in the ClassInfo slice all exist in params.CreditTypes
+	if err := validateClassInfoTypes(s.Params.CreditTypes, s.ClassInfo); err != nil {
+		return err
+	}
+
 	return nil
+}
+
+func validateClassInfoTypes(creditTypes []*CreditType, classInfos []*ClassInfo) error {
+	typeMap := make(map[string]CreditType, len(creditTypes))
+
+	// convert to map for easier lookups
+	for _, cType := range creditTypes {
+		typeMap[cType.Abbreviation] = *cType
+	}
+
+	for _, cInfo := range classInfos {
+		// fetch param via abbreviation
+		cType, ok := typeMap[cInfo.CreditType.Abbreviation]
+
+		// if its not found, its an invalid credit type
+		if !ok {
+			return fmt.Errorf("invalid credit type abbreviation: %s", cInfo.CreditType.Abbreviation)
+		}
+
+		// check that the other fields are equal
+		if !areCreditTypesEqual(cType, *cInfo.CreditType) {
+			return fmt.Errorf("credit type %s does not match param type %s", cInfo.CreditType.Name, cType.Name)
+		}
+	}
+	return nil
+}
+
+// checks that fields are equal between two credits.
+func areCreditTypesEqual(t1, t2 CreditType) bool {
+	if t1.Abbreviation != t2.Abbreviation {
+		return false
+	}
+	if t1.Name != t2.Name {
+		return false
+	}
+	if t1.Precision != t2.Precision {
+		return false
+	}
+	if t1.Unit != t2.Unit {
+		return false
+	}
+	return true
 }
 
 func validateParams(p Params) error {
