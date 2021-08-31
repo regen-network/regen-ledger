@@ -59,6 +59,81 @@ func TestGenesisValidate(t *testing.T) {
 			"",
 		},
 		{
+			"invalid credit type param",
+			func() *ecocredit.GenesisState {
+				genesisState := ecocredit.DefaultGenesisState()
+				genesisState.ClassInfo = []*ecocredit.ClassInfo{
+					{
+						ClassId:  "1",
+						Designer: addr1.String(),
+						Issuers:  []string{addr1.String(), addr2.String()},
+						Metadata: []byte("meta-data"),
+						CreditType: &ecocredit.CreditType{
+							Name:         "carbon",
+							Abbreviation: "C",
+							Unit:         "metric ton CO2 equivalent",
+							Precision:    6,
+						},
+					},
+				}
+				genesisState.Params.CreditTypes = []*ecocredit.CreditType{{
+					Name:         "carbon",
+					Abbreviation: "C",
+					Unit:         "metric ton CO2 equivalent",
+					Precision:    7,
+				}}
+				return genesisState
+			},
+			true,
+			"invalid precision 7: precision is currently locked to 6: invalid request",
+		},
+		{
+			"invalid credit type in class info",
+			func() *ecocredit.GenesisState {
+				genesisState := ecocredit.DefaultGenesisState()
+				genesisState.ClassInfo = []*ecocredit.ClassInfo{
+					{
+						ClassId:  "1",
+						Designer: addr1.String(),
+						Issuers:  []string{addr1.String(), addr2.String()},
+						Metadata: []byte("meta-data"),
+						CreditType: &ecocredit.CreditType{
+							Name:         "badbadnotgood",
+							Abbreviation: "C",
+							Unit:         "metric ton CO2 equivalent",
+							Precision:    6,
+						},
+					},
+				}
+				return genesisState
+			},
+			true,
+			"credit type badbadnotgood does not match param type carbon",
+		},
+		{
+			"invalid: bad abbreviation",
+			func() *ecocredit.GenesisState {
+				genesisState := ecocredit.DefaultGenesisState()
+				genesisState.ClassInfo = []*ecocredit.ClassInfo{
+					{
+						ClassId:  "1",
+						Designer: addr1.String(),
+						Issuers:  []string{addr1.String(), addr2.String()},
+						Metadata: []byte("meta-data"),
+						CreditType: &ecocredit.CreditType{
+							Name:         "carbon",
+							Abbreviation: "F",
+							Unit:         "metric ton CO2 equivalent",
+							Precision:    6,
+						},
+					},
+				}
+				return genesisState
+			},
+			true,
+			"invalid credit type abbreviation: F",
+		},
+		{
 			"expect error: supply is missing",
 			func() *ecocredit.GenesisState {
 				genesisState := ecocredit.DefaultGenesisState()
