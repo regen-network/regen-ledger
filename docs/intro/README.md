@@ -27,7 +27,6 @@ The following block explorers currently support Regen Ledger:
 The following wallets currently support Regen Ledger:
 
 - [Keplr Wallet](https://wallet.keplr.app/) - Web
-- [Ping Wallet](https://ping.pub/) - Web
 
 ## Community
 
