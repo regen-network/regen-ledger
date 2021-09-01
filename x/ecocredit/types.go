@@ -2,9 +2,9 @@ package ecocredit
 
 import (
 	"strings"
+	"unicode"
 
 	"github.com/regen-network/regen-ledger/orm"
-	"github.com/regen-network/regen-ledger/x/ecocredit/util"
 )
 
 var _, _, _ orm.PrimaryKeyed = &ClassInfo{}, &BatchInfo{}, &CreditTypeSeq{}
@@ -23,5 +23,16 @@ func (m *CreditTypeSeq) PrimaryKeyFields() []interface{} {
 
 // Normalize credit type name by removing whitespace and converting to lowercase
 func NormalizeCreditTypeName(name string) string {
-	return util.FastRemoveWhitespace(strings.ToLower(name))
+	return fastRemoveWhitespace(strings.ToLower(name))
+}
+
+func fastRemoveWhitespace(str string) string {
+	var b strings.Builder
+	b.Grow(len(str))
+	for _, ch := range str {
+		if !unicode.IsSpace(ch) {
+			b.WriteRune(ch)
+		}
+	}
+	return b.String()
 }
