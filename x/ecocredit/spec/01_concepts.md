@@ -2,31 +2,33 @@
 
 ## Credit Type
 
-A credit type is the top-level category of credit. Each credit class is associated with a credit type. A credit type is defined by a name (e.g. carbon, biodiversity), an abbreviation (i.e. a unique 1-3 character uppercase abbreviation used in credit batch denominations), a measurement unit (e.g. kilograms, tons), and a decimal precision.
+A credit type defines the type of credit and the primary unit of measurement used within a credit class methodology. Each credit class is associated with a single credit type. A credit type is defined by a name (e.g. "carbon", "biodiversity"), an abbreviation (a unique set of 1-3 uppercase characters), a measurement unit (e.g. "kilograms", "tons"), and a decimal precision.
+
+A credit type is like a super-class. For example, all credit classes that use "metric ton CO2 equivalent" as the primary unit of measurement would use the "carbon" credit type. The credit type abbreviation is used to construct the credit class ID (for example, "C1" is the ID for the first credit class that uses the "carbon" credit type where "C" is the credit type abbreviation).
 
 ## Credit Class
 
-A credit class is associated with a credit type and includes metadata that defines a methodology for measuring and monitoring ecological state. The metadata within a credit class defines the structure, procedures, and requirements of the methodology. A credit class is created and maintained by a credit class designer and includes a list of approved credit issuers.
+A credit class includes metadata that defines a methodology for measuring and monitoring changes in ecological state. The credit class metadata defines the structure, procedures, and requirements of the methodology. Each credit class is associated with a single credit type that defines the primary unit of measurement used within the credit class methodology. Each credit class includes a credit admin and a list of approved credit issuers.
 
-## Credit Designer
+## Credit Admin
 
-A credit designer is the authority responsible for creating a credit class and maintaining its list of approved credit issuers. A credit designer is represented by an address.
+A credit admin is the authority responsible for maintaining the credit class. In the first version of the ecocredit module, the credit admin is simply the authority who created the credit class. In the next version of the ecocredit module, the credit admin will be responsible for maintaining the list of approved credit issuers within the credit class. A credit admin is represented by an address.
 
 ## Credit Issuer
 
-A credit issuer is the authority responsible for issuing credit batches upon successful satisfaction of methodology constraints. A credit issuer is represented by an address.
+A credit issuer is the authority responsible for issuing credit batches for a given credit class upon the successful satisfaction of methodology constraints. A credit issuer must be listed as a credit issuer within a given credit class in order to issue credit batches from that credit class. A credit issuer is represented by an address.
 
 ## Credit Batch
 
-Credits are issued in batches by credit issuers granted the authority to issue credits for a given credit class. A credit batch refers to a batch of credits issued at a single point in time. Each credit batch has a unique ID (i.e. denomination) that starts with the abbreviation of the credit type.
+Credits are issued in batches by credit issuers granted the authority to issue credits for a given credit class. A credit batch refers to a batch of credits issued at a single point in time. Each credit batch has a unique ID (i.e. denomination) that starts with the abbreviation of the credit type, followed by the start date, the end date, and the batch sequence number.
 
 ## Credits
 
-Credits is loose term for any fractional amount of a credit batch. Credits are issued in credit batches for a given credit class by an approved credit issuer.
+Credits is a loose term for any fractional amount of a credit batch. Credits are issued in credit batches for a given credit class by an approved credit issuer.
 
 ## Tradable Credits
 
-Tradable credits are credit that can be transferred between accounts.
+Tradable credits are credits that can be transferred between accounts.
 
 ## Retired Credits
 
