@@ -268,7 +268,6 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			args: append(
 				[]string{
 					val0.Address.String(),
-					val0.Address.String(),
 					"caarbon",
 					validMetadata,
 					makeFlagFrom(val0.Address.String()),
