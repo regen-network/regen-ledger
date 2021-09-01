@@ -12,7 +12,7 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 message ClassInfo {
 
   // class_id is the unique ID of credit class.
-  string class_id = 1 [ (gogoproto.moretags) = "yaml:\"class_id\"" ];
+  string class_id = 1 [ json_name = "class_id" ];
 
   // designer is the designer of the credit class.
   string designer = 2;
@@ -24,20 +24,20 @@ message ClassInfo {
   bytes metadata = 4;
 
   // credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision.
-  CreditType credit_type = 5;
+  CreditType credit_type = 5 [ json_name = "credit_type" ];
 
   // The number of batches issued in this credit class.
-  uint64 num_batches = 6;
+  uint64 num_batches = 6 [ json_name = "num_batches" ];
 }
 
 // BatchInfo represents the high-level on-chain information for a credit batch.
 message BatchInfo {
 
   // class_id is the unique ID of credit class.
-  string class_id = 1 [ (gogoproto.moretags) = "yaml:\"class_id\"" ];
+  string class_id = 1 [ json_name = "class_id" ];
 
   // batch_denom is the unique ID of credit batch.
-  string batch_denom = 2 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+  string batch_denom = 2 [ json_name = "batch_denom" ];
 
   // issuer is the issuer of the credit batch.
   string issuer = 3;
@@ -47,7 +47,7 @@ message BatchInfo {
   // total_amount and tracked in amount_cancelled. total_amount and
   // amount_cancelled will always sum to the original amount of credits that
   // were issued.
-  string total_amount = 4 [ (gogoproto.moretags) = "yaml:\"total_amount\"" ];
+  string total_amount = 4 [ json_name = "total_amount" ];
 
   // metadata is any arbitrary metadata to attached to the credit batch.
   bytes metadata = 5;
@@ -56,21 +56,21 @@ message BatchInfo {
   // cancelled, effectively undoing there issuance. The sum of total_amount and
   // amount_cancelled will always sum to the original amount of credits that
   // were issued.
-  string amount_cancelled = 6 [ (gogoproto.moretags) = "yaml:\"amount_cancelled\"" ];
+  string amount_cancelled = 6 [ json_name = "amount_cancelled" ];
 
   // start_date is the beginning of the period during which this credit batch
   // was quantified and verified.
   google.protobuf.Timestamp start_date = 7
-      [(gogoproto.stdtime) = true, (gogoproto.moretags) = "yaml:\"start_date\""];
+      [(gogoproto.stdtime) = true, json_name = "start_date"];
 
   // end_date is the end of the period during which this credit batch was
   // quantified and verified.
   google.protobuf.Timestamp end_date = 8
-      [(gogoproto.stdtime) = true, (gogoproto.moretags) = "yaml:\"end_date\""];
+      [(gogoproto.stdtime) = true, json_name = "end_date"];
 
   // project_location is the location of the project backing the credits in this
   // batch. Full documentation can be found in MsgCreateBatch.project_location.
-  string project_location = 9 [(gogoproto.moretags) = "yaml:\"project_location\""];
+  string project_location = 9 [ json_name = "project_location" ];
 }
 
 // Params defines the updatable global parameters of the ecocredit module for
@@ -79,19 +79,21 @@ message Params {
   // credit_class_fee is the fixed fee charged on creation of a new credit class
   repeated cosmos.base.v1beta1.Coin credit_class_fee = 1 [
     (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    json_name = "credit_class_fee"
   ];
 
   // allowed_class_designers is an allowlist defining the addresses with
   // the required permissions to create credit classes
-  repeated string allowed_class_designers = 2;
+  repeated string allowed_class_designers = 2
+      [ json_name = "allowed_class_designers" ];
 
   // allowlist_enabled is a param that enables/disables the allowlist for credit
   // creation
-  bool allowlist_enabled = 3;
+  bool allowlist_enabled = 3 [ json_name = "allowlist_enabled" ];
 
   // credit_types is a list of definitions for credit types
-  repeated CreditType credit_types = 4;
+  repeated CreditType credit_types = 4 [ json_name = "credit_types" ];
 }
 
 // CreditType defines the measurement unit/precision of a certain credit type
@@ -118,5 +120,5 @@ message CreditTypeSeq {
   string abbreviation = 1;
 
   // The sequence number of classes of the credit type
-  uint64 seq_number = 2;
+  uint64 seq_number = 2 [ json_name = "seq_number" ];
 }
