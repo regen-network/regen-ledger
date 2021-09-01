@@ -144,19 +144,16 @@ func (p ThresholdDecisionPolicy) ValidateBasic() error {
 	return nil
 }
 
-func (g GroupMember) PrimaryKey() []byte {
-	result := make([]byte, 8, 8+len(g.Member.Address))
-	copy(result[0:8], ID(g.GroupId).Bytes())
-	result = append(result, g.Member.Address...)
-	return result
+func (g GroupMember) PrimaryKeyFields() []interface{} {
+	return []interface{}{ID(g.GroupId).Bytes(), g.Member.Address}
 }
 
-func (g GroupAccountInfo) PrimaryKey() []byte {
+func (g GroupAccountInfo) PrimaryKeyFields() []interface{} {
 	addr, err := sdk.AccAddressFromBech32(g.Address)
 	if err != nil {
 		panic(err)
 	}
-	return addr
+	return []interface{}{[]byte(addr)}
 }
 
 var _ orm.Validateable = GroupAccountInfo{}
@@ -240,11 +237,8 @@ func (g GroupAccountInfo) UnpackInterfaces(unpacker codectypes.AnyUnpacker) erro
 	return unpacker.UnpackAny(g.DecisionPolicy, &decisionPolicy)
 }
 
-func (v Vote) PrimaryKey() []byte {
-	result := make([]byte, 8, 8+len(v.Voter))
-	copy(result[0:8], ProposalID(v.ProposalId).Bytes())
-	result = append(result, v.Voter...)
-	return result
+func (v Vote) PrimaryKeyFields() []interface{} {
+	return []interface{}{v.ProposalId, v.Voter}
 }
 
 var _ orm.Validateable = Vote{}
@@ -310,8 +304,8 @@ func (g GroupInfo) ValidateBasic() error {
 	return nil
 }
 
-func (g GroupInfo) PrimaryKey() []byte {
-	return orm.EncodeSequence(g.GroupId)
+func (g GroupInfo) PrimaryKeyFields() []interface{} {
+	return []interface{}{g.GroupId}
 }
 
 var _ orm.Validateable = GroupMember{}

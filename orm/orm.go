@@ -24,6 +24,7 @@ var (
 	ErrUniqueConstraint  = errors.Register(ormCodespace, 111, "unique constraint violation")
 	ErrArgument          = errors.Register(ormCodespace, 112, "invalid argument")
 	ErrIndexKeyMaxLength = errors.Register(ormCodespace, 113, "index key exceeds max length")
+	ErrEmptyKey          = errors.Register(ormCodespace, 114, "cannot use empty key")
 )
 
 // HasKVStore is a subset of the cosmos-sdk context defined for loose coupling and simpler test setups.
