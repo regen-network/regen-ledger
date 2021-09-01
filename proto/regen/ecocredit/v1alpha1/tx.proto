@@ -35,10 +35,10 @@ service Msg {
 // MsgCreateClass is the Msg/CreateClass request type.
 message MsgCreateClass {
 
-  // designer is the address of the account which designed the credit class. The
-  // designer has special permissions to change the list of issuers and perform
-  // other administrative operations.
-  string designer = 1;
+  // admin is the address of the account which can manage the credit class. The
+  // admin has permissions to change the list of issuers and perform other
+  // administrative operations.
+  string admin = 1;
 
   // issuers are the account addresses of the approved issuers.
   repeated string issuers = 2;
