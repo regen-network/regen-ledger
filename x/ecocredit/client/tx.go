@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/cosmos/cosmos-sdk/client"
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -27,7 +26,7 @@ func TxCmd(name string) *cobra.Command {
 
 		Use:   name,
 		Short: "Ecocredit module transactions",
-		RunE:  client.ValidateCmd,
+		RunE:  sdkclient.ValidateCmd,
 	}
 	cmd.AddCommand(
 		TxCreateClassCmd(),
@@ -48,39 +47,61 @@ func txflags(cmd *cobra.Command) *cobra.Command {
 
 func TxCreateClassCmd() *cobra.Command {
 	return txflags(&cobra.Command{
-		Use:   "create-class [designer] [issuer[,issuer]*] [credit type] [metadata]",
-		Short: "Creates a new credit class",
-		Long: `Creates a new credit class.
+		Use:   "create-class [issuer[,issuer]*] [credit type] [metadata]",
+		Short: "Creates a new credit class with transaction author (--from) as admin",
+		Long: fmt.Sprintf(
+			`Creates a new credit class with transaction author (--from) as admin.
+
+The transaction author must have permission to create a new credit class by
+being a member of the %s allowlist. This is a governance parameter, so can be
+queried via the command line.
+
+They must also pay the fee associated with creating a new credit class, defined
+by the %s parameter, so should make sure they have enough funds to cover that.
 
 Parameters:
-  designer:  	    address of the account which designed the credit class
   issuer:    	    comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
   credit type:    the credit class type (e.g. carbon, biodiversity, etc)
   metadata:  	    base64 encoded metadata - arbitrary data attached to the credit class info`,
-		Args: cobra.ExactArgs(4),
+			ecocredit.KeyAllowedClassCreators,
+			ecocredit.KeyCreditClassFee,
+		),
+		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			issuers := strings.Split(args[1], ",")
-			for i := range issuers {
-				issuers[i] = strings.TrimSpace(issuers[i])
-			}
-			if args[2] == "" {
-				return sdkerrors.ErrInvalidRequest.Wrap("credit type is required")
-			}
-			creditType := args[2]
-			if args[3] == "" {
-				return errors.New("base64_metadata is required")
-			}
-			b, err := base64.StdEncoding.DecodeString(args[3])
-			if err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
-			}
-
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
+
+			// Get the class admin from the --from flag
+			admin := clientCtx.GetFromAddress()
+
+			// Parse the comma-separated list of issuers
+			issuers := strings.Split(args[0], ",")
+			for i := range issuers {
+				issuers[i] = strings.TrimSpace(issuers[i])
+			}
+
+			// Check credit type is provided
+			if args[1] == "" {
+				return sdkerrors.ErrInvalidRequest.Wrap("credit type is required")
+			}
+			creditType := args[1]
+
+			// Check that metadata is provided and decode it
+			if args[2] == "" {
+				return errors.New("base64_metadata is required")
+			}
+			b, err := base64.StdEncoding.DecodeString(args[2])
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
+			}
+
 			msg := ecocredit.MsgCreateClass{
-				Designer: args[0], Issuers: issuers, Metadata: b, CreditType: creditType,
+				Admin:      admin.String(),
+				Issuers:    issuers,
+				Metadata:   b,
+				CreditType: creditType,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
@@ -174,6 +195,10 @@ Required Flags:
 
 			// Marshal and output JSON of message
 			msgJson, err := json.MarshalIndent(msg, "", "    ")
+			if err != nil {
+				return err
+			}
+
 			fmt.Print(string(msgJson))
 
 			return nil
@@ -245,11 +270,8 @@ Parameters:
 			}
 
 			// Get the batch issuer from the --from flag
-			issuer, err := cmd.Flags().GetString(flags.FlagFrom)
-			if err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-			}
-			msg.Issuer = issuer
+			issuer := clientCtx.GetFromAddress()
+			msg.Issuer = issuer.String()
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},

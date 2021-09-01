@@ -1,7 +1,6 @@
 package ecocredit
 
 import (
-	"fmt"
 	"regexp"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -13,7 +12,7 @@ var (
 	// TODO: Decide a sensible default value
 	DefaultCreditClassFeeTokens = sdk.NewInt(10000)
 	KeyCreditClassFee           = []byte("CreditClassFee")
-	KeyAllowedClassDesigners    = []byte("AllowedClassDesigners")
+	KeyAllowedClassCreators     = []byte("AllowedClassCreators")
 	KeyAllowlistEnabled         = []byte("AllowlistEnabled")
 	KeyCreditTypes              = []byte("CreditTypes")
 )
@@ -31,7 +30,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyCreditClassFee, &p.CreditClassFee, validateCreditClassFee),
-		paramtypes.NewParamSetPair(KeyAllowedClassDesigners, &p.AllowedClassDesigners, validateAllowlistCreditDesigners),
+		paramtypes.NewParamSetPair(KeyAllowedClassCreators, &p.AllowedClassCreators, validateAllowedClassCreators),
 		paramtypes.NewParamSetPair(KeyAllowlistEnabled, &p.AllowlistEnabled, validateAllowlistEnabled),
 		paramtypes.NewParamSetPair(KeyCreditTypes, &p.CreditTypes, validateCreditTypes),
 	}
@@ -40,7 +39,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 func validateCreditClassFee(i interface{}) error {
 	v, ok := i.(sdk.Coins)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
 	}
 
 	if err := v.Validate(); err != nil {
@@ -50,10 +49,10 @@ func validateCreditClassFee(i interface{}) error {
 	return nil
 }
 
-func validateAllowlistCreditDesigners(i interface{}) error {
+func validateAllowedClassCreators(i interface{}) error {
 	v, ok := i.([]string)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
 	}
 	for _, sAddr := range v {
 		_, err := sdk.AccAddressFromBech32(sAddr)
@@ -67,7 +66,7 @@ func validateAllowlistCreditDesigners(i interface{}) error {
 func validateAllowlistEnabled(i interface{}) error {
 	_, ok := i.(bool)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
 	}
 
 	return nil
@@ -76,7 +75,7 @@ func validateAllowlistEnabled(i interface{}) error {
 func validateCreditTypes(i interface{}) error {
 	creditTypes, ok := i.([]*CreditType)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
 	}
 
 	// ensure no duplicate credit types or abbreviations and that all
@@ -138,10 +137,10 @@ func validateCreditTypeAbbreviation(abbr string) error {
 
 func NewParams(creditClassFee sdk.Coins, allowlist []string, allowlistEnabled bool, creditTypes []*CreditType) Params {
 	return Params{
-		CreditClassFee:        creditClassFee,
-		AllowedClassDesigners: allowlist,
-		AllowlistEnabled:      allowlistEnabled,
-		CreditTypes:           creditTypes,
+		CreditClassFee:       creditClassFee,
+		AllowedClassCreators: allowlist,
+		AllowlistEnabled:     allowlistEnabled,
+		CreditTypes:          creditTypes,
 	}
 }
 

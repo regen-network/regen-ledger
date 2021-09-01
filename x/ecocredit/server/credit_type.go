@@ -1,9 +1,9 @@
 package server
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -18,7 +18,7 @@ func (s serverImpl) getCreditType(ctx sdk.Context, creditTypeName string) (ecocr
 			return *creditType, nil
 		}
 	}
-	return ecocredit.CreditType{}, fmt.Errorf("%s is not a valid credit type", creditTypeName)
+	return ecocredit.CreditType{}, sdkerrors.ErrInvalidType.Wrapf("%s is not a valid credit type", creditTypeName)
 }
 
 func (s serverImpl) getAllCreditTypes(ctx sdk.Context) []*ecocredit.CreditType {

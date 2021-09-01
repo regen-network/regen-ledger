@@ -28,8 +28,8 @@ func (m MsgCreateClass) GetSignBytes() []byte {
 
 func (m *MsgCreateClass) ValidateBasic() error {
 
-	if _, err := sdk.AccAddressFromBech32(m.Designer); err != nil {
-		return sdkerrors.Wrap(err, "designer")
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
+		return sdkerrors.Wrap(err, "admin")
 	}
 
 	if len(m.Issuers) == 0 {
@@ -50,7 +50,7 @@ func (m *MsgCreateClass) ValidateBasic() error {
 }
 
 func (m *MsgCreateClass) GetSigners() []sdk.AccAddress {
-	addr, _ := sdk.AccAddressFromBech32(m.Designer)
+	addr, _ := sdk.AccAddressFromBech32(m.Admin)
 	return []sdk.AccAddress{addr}
 }
 
@@ -80,8 +80,9 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 	if m.EndDate.Before(*m.StartDate) {
 		return sdkerrors.ErrInvalidRequest.Wrapf("the batch end date (%s) must be the same as or after the batch start date (%s)", m.EndDate.Format("2006-01-02"), m.StartDate.Format("2006-01-02"))
 	}
-	if m.ClassId == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("class ID should not be empty")
+
+	if err := ValidateClassID(m.ClassId); err != nil {
+		return err
 	}
 
 	if err := validateLocation(m.ProjectLocation); err != nil {
@@ -108,7 +109,6 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 			}
 
 			if !retiredAmount.IsZero() {
-
 				if err = validateLocation(iss.RetirementLocation); err != nil {
 					return err
 				}
@@ -189,7 +189,6 @@ func (m MsgRetire) GetSignBytes() []byte {
 }
 
 func (m *MsgRetire) ValidateBasic() error {
-
 	if _, err := sdk.AccAddressFromBech32(m.Holder); err != nil {
 		return sdkerrors.Wrap(err, "holder")
 	}
@@ -205,7 +204,6 @@ func (m *MsgRetire) ValidateBasic() error {
 		if _, err := math.NewPositiveDecFromString(credit.Amount); err != nil {
 			return err
 		}
-
 	}
 
 	if err := validateLocation(m.Location); err != nil {

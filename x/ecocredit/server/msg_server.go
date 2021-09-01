@@ -15,25 +15,25 @@ import (
 
 // CreateClass creates a new class of ecocredit
 //
-// The designer is charged a fee for creating the class. This is controlled by
+// The admin is charged a fee for creating the class. This is controlled by
 // the global parameter CreditClassFee, which can be updated through the
 // governance process.
 func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateClass) (*ecocredit.MsgCreateClassResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 
-	// Charge the designer a fee to create the credit class
-	designerAddress, err := sdk.AccAddressFromBech32(req.Designer)
+	// Charge the admin a fee to create the credit class
+	adminAddress, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
 		return nil, err
 	}
 
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(ctx.Context, &params)
-	if params.AllowlistEnabled && !s.isDesignerAllowListed(params.AllowedClassDesigners, designerAddress) {
-		return nil, fmt.Errorf("%s is not allowed to create credit classes", designerAddress.String())
+	if params.AllowlistEnabled && !s.isCreatorAllowListed(params.AllowedClassCreators, adminAddress) {
+		return nil, fmt.Errorf("%s is not allowed to create credit classes", adminAddress.String())
 	}
 
-	err = s.chargeCreditClassFee(ctx.Context, designerAddress)
+	err = s.chargeCreditClassFee(ctx.Context, adminAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 
 	err = s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
 		ClassId:    classID,
-		Designer:   req.Designer,
+		Admin:      req.Admin,
 		Issuers:    req.Issuers,
 		Metadata:   req.Metadata,
 		CreditType: &creditType,
@@ -65,8 +65,8 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 	}
 
 	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateClass{
-		ClassId:  classID,
-		Designer: req.Designer,
+		ClassId: classID,
+		Admin:   req.Admin,
 	})
 	if err != nil {
 		return nil, err
@@ -523,7 +523,7 @@ func (s serverImpl) getBatchPrecision(ctx types.Context, denom batchDenomT) (uin
 }
 
 // Checks if the given address is in the allowlist of credit class designers
-func (s serverImpl) isDesignerAllowListed(allowlist []string, designer sdk.Address) bool {
+func (s serverImpl) isCreatorAllowListed(allowlist []string, designer sdk.Address) bool {
 	for _, addr := range allowlist {
 		allowListedAddr, _ := sdk.AccAddressFromBech32(addr)
 		if designer.Equals(allowListedAddr) {
