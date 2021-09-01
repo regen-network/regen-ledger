@@ -652,6 +652,24 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 			},
 		},
 		{
+			name: "valid batch with from key-name",
+			args: append(
+				[]string{
+					validBatchJson,
+					makeFlagFrom("node0"),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr: false,
+			expectedBatchInfo: &ecocredit.BatchInfo{
+				ClassId:         s.classInfo.ClassId,
+				Issuer:          val.Address.String(),
+				TotalAmount:     "100.000001",
+				Metadata:        []byte{0x1},
+				AmountCancelled: "0",
+			},
+		},
+		{
 			name: "with amino-json",
 			args: append(
 				[]string{
