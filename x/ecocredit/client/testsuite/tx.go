@@ -196,6 +196,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 		args              []string
 		expectErr         bool
 		expectedErrMsg    string
+		respCode          uint32
 		expectedClassInfo *ecocredit.ClassInfo
 	}{
 		{
@@ -288,6 +289,22 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			expectedErrMsg: "required flag(s) \"from\" not set",
 		},
 		{
+			name: "invalid credit type",
+			args: append(
+				[]string{
+					val0.Address.String(),
+					val0.Address.String(),
+					"caarbon",
+					validMetadata,
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr:      false,
+			expectedErrMsg: "caarbon is not a valid credit type",
+			respCode:       29,
+		},
+		{
 			name: "single issuer",
 			args: append(
 				[]string{
@@ -373,30 +390,34 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 
 				var res sdk.TxResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(tc.respCode, res.Code)
+				if tc.respCode == 0 {
+					classIdFound := false
+					for _, e := range res.Logs[0].Events {
+						if e.Type == proto.MessageName(&ecocredit.EventCreateClass{}) {
+							for _, attr := range e.Attributes {
+								if attr.Key == "class_id" {
+									classIdFound = true
+									classId := strings.Trim(attr.Value, "\"")
 
-				classIdFound := false
-				for _, e := range res.Logs[0].Events {
-					if e.Type == proto.MessageName(&ecocredit.EventCreateClass{}) {
-						for _, attr := range e.Attributes {
-							if attr.Key == "class_id" {
-								classIdFound = true
-								classId := strings.Trim(attr.Value, "\"")
+									queryCmd := client.QueryClassInfoCmd()
+									queryArgs := []string{classId, flagOutputJSON}
+									queryOut, err := cli.ExecTestCLICmd(clientCtx, queryCmd, queryArgs)
+									s.Require().NoError(err, queryOut.String())
+									var queryRes ecocredit.QueryClassInfoResponse
+									s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
 
-								queryCmd := client.QueryClassInfoCmd()
-								queryArgs := []string{classId, flagOutputJSON}
-								queryOut, err := cli.ExecTestCLICmd(clientCtx, queryCmd, queryArgs)
-								s.Require().NoError(err, queryOut.String())
-								var queryRes ecocredit.QueryClassInfoResponse
-								s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
-
-								s.Require().Equal(tc.expectedClassInfo.Designer, queryRes.Info.Designer)
-								s.Require().Equal(tc.expectedClassInfo.Issuers, queryRes.Info.Issuers)
-								s.Require().Equal(tc.expectedClassInfo.Metadata, queryRes.Info.Metadata)
+									s.Require().Equal(tc.expectedClassInfo.Designer, queryRes.Info.Designer)
+									s.Require().Equal(tc.expectedClassInfo.Issuers, queryRes.Info.Issuers)
+									s.Require().Equal(tc.expectedClassInfo.Metadata, queryRes.Info.Metadata)
+								}
 							}
 						}
 					}
+					s.Require().True(classIdFound)
+				} else {
+					s.Require().Contains(res.RawLog, tc.expectedErrMsg)
 				}
-				s.Require().True(classIdFound)
 			}
 		})
 	}
