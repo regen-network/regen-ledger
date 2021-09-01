@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -33,7 +32,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 			return nil, err
 		}
 		if !allowListed {
-			return nil, fmt.Errorf("%s is not allowed to create credit classes", adminAddress.String())
+			return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", adminAddress.String())
 		}
 	}
 
