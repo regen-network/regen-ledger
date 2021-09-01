@@ -573,7 +573,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "parse exponent: : strconv.ParseInt",
+			expectedErrMsg: "invalid decimal string",
 		},
 		{
 			name: "invalid issuance retired amount",
@@ -585,7 +585,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "parse exponent: : strconv.ParseInt",
+			expectedErrMsg: "invalid decimal string",
 		},
 		{
 			name: "invalid issuance retirement location",
@@ -793,7 +793,7 @@ func (s *IntegrationTestSuite) TestTxSend() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "parse exponent: : strconv.ParseInt",
+			expectedErrMsg: "invalid decimal string",
 		},
 		{
 			name: "invalid retired amount",
@@ -806,7 +806,7 @@ func (s *IntegrationTestSuite) TestTxSend() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "parse exponent: : strconv.ParseInt",
+			expectedErrMsg: "invalid decimal string",
 		},
 		{
 			name: "invalid retirement location",
@@ -945,7 +945,7 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "parse exponent: : strconv.ParseInt",
+			expectedErrMsg: "invalid decimal string",
 		},
 		{
 			name: "invalid retirement location",
