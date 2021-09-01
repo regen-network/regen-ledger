@@ -23,13 +23,13 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 
 	classInfo := []*ecocredit.ClassInfo{
 		{
-			ClassId:  "4",
+			ClassId:  "BIO01",
 			Designer: designer1.String(),
 			Issuers:  []string{issuer1, issuer2},
 			Metadata: []byte("credit class metadata"),
 		},
 		{
-			ClassId:  "5",
+			ClassId:  "BIO02",
 			Designer: designer2,
 			Issuers:  []string{issuer2, addr1},
 			Metadata: []byte("credit class metadata"),
@@ -38,14 +38,14 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 
 	batchInfo := []*ecocredit.BatchInfo{
 		{
-			ClassId:     "4",
-			BatchDenom:  "4/6",
+			ClassId:     "BIO01",
+			BatchDenom:  "BIO01-00000000-00000000-001",
 			Issuer:      issuer1,
 			TotalAmount: "100",
 			Metadata:    []byte("batch metadata"),
 		}, {
-			ClassId:     "5",
-			BatchDenom:  "5/7",
+			ClassId:     "BIO02",
+			BatchDenom:  "BIO02-00000000-00000000-001",
 			Issuer:      addr1,
 			TotalAmount: "100",
 			Metadata:    []byte("batch metadata"),
@@ -55,7 +55,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	balances := []*ecocredit.Balance{
 		{
 			Address:         addr1,
-			BatchDenom:      "4/6",
+			BatchDenom:      "BIO01-00000000-00000000-001",
 			TradableBalance: "90.003",
 			RetiredBalance:  "9.997",
 		},
@@ -63,7 +63,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 
 	supplies := []*ecocredit.Supply{
 		{
-			BatchDenom:     "4/6",
+			BatchDenom:     "BIO01-00000000-00000000-001",
 			TradableSupply: "90.003",
 			RetiredSupply:  "9.997",
 		},
@@ -72,7 +72,7 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	sequences := []*ecocredit.CreditTypeSeq{
 		{
 			Abbreviation: "BIO",
-			SeqNumber:    0,
+			SeqNumber:    3,
 		},
 	}
 
@@ -143,14 +143,14 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	// invalid supply
 	genesisState.Supplies = []*ecocredit.Supply{
 		{
-			BatchDenom:     "4/6",
+			BatchDenom:     "BIO01-00000000-00000000-001",
 			TradableSupply: "101.000",
 		},
 	}
 
 	err := s.initGenesisState(ctx, genesisState)
 	require.Error(err)
-	require.Contains(err.Error(), "supply is incorrect for 4/6 credit batch")
+	require.Contains(err.Error(), "supply is incorrect for BIO01-00000000-00000000-001 credit batch")
 
 }
 
