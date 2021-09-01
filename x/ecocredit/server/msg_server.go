@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -13,29 +14,29 @@ import (
 
 // CreateClass creates a new class of ecocredit
 //
-// The designer is charged a fee for creating the class. This is controlled by
+// The admin is charged a fee for creating the class. This is controlled by
 // the global parameter CreditClassFee, which can be updated through the
 // governance process.
 func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateClass) (*ecocredit.MsgCreateClassResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 
-	// Charge the designer a fee to create the credit class
-	designerAddress, err := sdk.AccAddressFromBech32(req.Designer)
+	// Charge the admin a fee to create the credit class
+	adminAddress, err := sdk.AccAddressFromBech32(req.Admin)
 	if err != nil {
 		return nil, err
 	}
 
 	if s.allowlistEnabled(ctx.Context) {
-		allowListed, err := s.isDesignerAllowListed(ctx.Context, designerAddress)
+		allowListed, err := s.isCreatorAllowListed(ctx.Context, adminAddress)
 		if err != nil {
 			return nil, err
 		}
 		if !allowListed {
-			return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", designerAddress.String())
+			return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", adminAddress.String())
 		}
 	}
 
-	err = s.chargeCreditClassFee(ctx.Context, designerAddress)
+	err = s.chargeCreditClassFee(ctx.Context, adminAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +58,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 
 	err = s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
 		ClassId:    classID,
-		Designer:   req.Designer,
+		Admin:      req.Admin,
 		Issuers:    req.Issuers,
 		Metadata:   req.Metadata,
 		CreditType: creditType,
@@ -67,8 +68,8 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 	}
 
 	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateClass{
-		ClassId:  classID,
-		Designer: req.Designer,
+		ClassId: classID,
+		Admin:   req.Admin,
 	})
 	if err != nil {
 		return nil, err
@@ -523,11 +524,11 @@ func (s serverImpl) getBatchPrecision(ctx types.Context, denom batchDenomT) (uin
 	return classInfo.CreditType.Precision, nil
 }
 
-// Checks if the given address is in the allowlist of credit class designers
-func (s serverImpl) isDesignerAllowListed(ctx sdk.Context, addr sdk.Address) (bool, error) {
+// Checks if the given address is in the allowlist of credit class creators
+func (s serverImpl) isCreatorAllowListed(ctx sdk.Context, addr sdk.Address) (bool, error) {
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(ctx, &params)
-	for _, sAddr := range params.AllowedClassDesigners {
+	for _, sAddr := range params.AllowedClassCreators {
 		allowListedAddr, err := sdk.AccAddressFromBech32(sAddr)
 		if err != nil {
 			return false, err
@@ -539,7 +540,7 @@ func (s serverImpl) isDesignerAllowListed(ctx sdk.Context, addr sdk.Address) (bo
 	return false, nil
 }
 
-// Checks if the allowlist of credit class designers is enabled
+// Checks if the allowlist of credit class creators is enabled
 func (s serverImpl) allowlistEnabled(ctx sdk.Context) bool {
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(ctx, &params)

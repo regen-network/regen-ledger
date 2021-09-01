@@ -12,11 +12,11 @@ func (s serverImpl) getCreditClassFee(ctx sdk.Context) sdk.Coins {
 	return params.CreditClassFee
 }
 
-func (s serverImpl) chargeCreditClassFee(ctx sdk.Context, designerAddr sdk.AccAddress) error {
+func (s serverImpl) chargeCreditClassFee(ctx sdk.Context, creatorAddr sdk.AccAddress) error {
 	creditClassFee := s.getCreditClassFee(ctx)
 
 	// Move the fee to the ecocredit module's account
-	err := s.bankKeeper.SendCoinsFromAccountToModule(ctx, designerAddr, ecocredit.ModuleName, creditClassFee)
+	err := s.bankKeeper.SendCoinsFromAccountToModule(ctx, creatorAddr, ecocredit.ModuleName, creditClassFee)
 	if err != nil {
 		return err
 	}

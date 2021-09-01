@@ -42,7 +42,7 @@ func TestGenesisValidate(t *testing.T) {
 				genesisState.ClassInfo = []*ecocredit.ClassInfo{
 					{
 						ClassId:  "1",
-						Designer: addr1.String(),
+						Admin:    addr1.String(),
 						Issuers:  []string{addr1.String(), addr2.String()},
 						Metadata: []byte("meta-data"),
 						CreditType: &ecocredit.CreditType{
@@ -66,7 +66,7 @@ func TestGenesisValidate(t *testing.T) {
 				genesisState.ClassInfo = []*ecocredit.ClassInfo{
 					{
 						ClassId:  "1",
-						Designer: addr1.String(),
+						Admin:    addr1.String(),
 						Issuers:  []string{addr1.String(), addr2.String()},
 						Metadata: []byte("meta-data"),
 						CreditType: &ecocredit.CreditType{
@@ -105,7 +105,7 @@ func TestGenesisValidate(t *testing.T) {
 				genesisState.ClassInfo = []*ecocredit.ClassInfo{
 					{
 						ClassId:    "1",
-						Designer:   addr1.String(),
+						Admin:      addr1.String(),
 						Issuers:    []string{addr1.String(), addr2.String()},
 						Metadata:   []byte("meta-data"),
 						CreditType: genesisState.Params.CreditTypes[0],
@@ -146,7 +146,7 @@ func TestGenesisValidate(t *testing.T) {
 				genesisState.ClassInfo = []*ecocredit.ClassInfo{
 					{
 						ClassId:    "1",
-						Designer:   addr1.String(),
+						Admin:      addr1.String(),
 						Issuers:    []string{addr1.String(), addr2.String()},
 						Metadata:   []byte("meta-data"),
 						CreditType: genesisState.Params.CreditTypes[0],
@@ -194,14 +194,14 @@ func TestGenesisValidate(t *testing.T) {
 				genesisState.ClassInfo = []*ecocredit.ClassInfo{
 					{
 						ClassId:    "1",
-						Designer:   addr1.String(),
+						Admin:      addr1.String(),
 						Issuers:    []string{addr1.String(), addr2.String()},
 						Metadata:   []byte("meta-data"),
 						CreditType: genesisState.Params.CreditTypes[0],
 					},
 					{
 						ClassId:    "2",
-						Designer:   addr2.String(),
+						Admin:      addr2.String(),
 						Issuers:    []string{addr1.String(), addr2.String()},
 						Metadata:   []byte("meta-data"),
 						CreditType: genesisState.Params.CreditTypes[0],
