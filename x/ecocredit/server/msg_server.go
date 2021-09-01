@@ -85,7 +85,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		return nil, err
 	}
 
-	if err = s.assertClassIssuer(classInfo, req.Issuer); err != nil {
+	if err = classInfo.AssertClassIssuer(req.Issuer); err != nil {
 		return nil, err
 	}
 
@@ -446,17 +446,6 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 	}
 
 	return &ecocredit.MsgCancelResponse{}, nil
-}
-
-// assertClassIssuer makes sure that the issuer is part of issuers of given classID.
-// Returns ErrUnauthorized otherwise.
-func (s serverImpl) assertClassIssuer(classInfo *ecocredit.ClassInfo, issuer string) error {
-	for _, i := range classInfo.Issuers {
-		if issuer == i {
-			return nil
-		}
-	}
-	return sdkerrors.ErrUnauthorized
 }
 
 // nextBatchInClass gets the sequence number for the next batch in the credit
