@@ -1,7 +1,3 @@
-<!--
-order: 2
--->
-
 # State
 
 The `group` module uses the `orm` package which provides table storage with support for
