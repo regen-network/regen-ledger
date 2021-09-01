@@ -119,7 +119,7 @@ EventCreateClass is an event emitted when a credit class is created.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | class_id | [string](#string) |  | class_id is the unique ID of credit class. |
-| designer | [string](#string) |  | designer is the designer of the credit class. |
+| admin | [string](#string) |  | admin is the admin of the credit class. |
 
 
 
@@ -214,7 +214,7 @@ ClassInfo represents the high-level on-chain information for a credit class.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | class_id | [string](#string) |  | class_id is the unique ID of credit class. |
-| designer | [string](#string) |  | designer is the designer of the credit class. |
+| admin | [string](#string) |  | admin is the admin of the credit class. |
 | issuers | [string](#string) | repeated | issuers are the approved issuers of the credit class. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit class. |
 | credit_type | [CreditType](#regen.ecocredit.v1alpha1.CreditType) |  | credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision. |
@@ -271,7 +271,7 @@ use with the x/params module.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | credit_class_fee | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | credit_class_fee is the fixed fee charged on creation of a new credit class |
-| allowed_class_designers | [string](#string) | repeated | allowed_class_designers is an allowlist defining the addresses with the required permissions to create credit classes |
+| allowed_class_creators | [string](#string) | repeated | allowed_class_creators is an allowlist defining the addresses with the required permissions to create credit classes |
 | allowlist_enabled | [bool](#bool) |  | allowlist_enabled is a param that enables/disables the allowlist for credit creation |
 | credit_types | [CreditType](#regen.ecocredit.v1alpha1.CreditType) | repeated | credit_types is a list of definitions for credit types |
 
@@ -716,7 +716,7 @@ MsgCreateClass is the Msg/CreateClass request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| designer | [string](#string) |  | designer is the address of the account which designed the credit class. The designer has special permissions to change the list of issuers and perform other administrative operations. |
+| admin | [string](#string) |  | admin is the address of the account which can manage the credit class. The admin has permissions to change the list of issuers and perform other administrative operations. |
 | issuers | [string](#string) | repeated | issuers are the account addresses of the approved issuers. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit class. |
 | credit_type | [string](#string) |  | credit_type describes the type of credit (e.g. "carbon", "biodiversity"). |

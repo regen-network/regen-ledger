@@ -112,7 +112,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 			expectErr: false,
 			expectedClassInfo: &ecocredit.ClassInfo{
 				ClassId:    s.classInfo.ClassId,
-				Designer:   s.classInfo.Designer,
+				Admin:      s.classInfo.Admin,
 				Issuers:    s.classInfo.Issuers,
 				Metadata:   s.classInfo.Metadata,
 				CreditType: s.classInfo.CreditType,

@@ -11,8 +11,8 @@ import (
 func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	require := s.Require()
 	ctx := s.genesisCtx
-	designer1 := s.signers[0]
-	designer2 := s.signers[1].String()
+	admin1 := s.signers[0]
+	admin2 := s.signers[1].String()
 	issuer1 := s.signers[2].String()
 	issuer2 := s.signers[3].String()
 	addr1 := s.signers[4].String()
@@ -24,13 +24,13 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	classInfo := []*ecocredit.ClassInfo{
 		{
 			ClassId:  "BIO01",
-			Designer: designer1.String(),
+			Admin:    admin1.String(),
 			Issuers:  []string{issuer1, issuer2},
 			Metadata: []byte("credit class metadata"),
 		},
 		{
 			ClassId:  "BIO02",
-			Designer: designer2,
+			Admin:    admin2,
 			Issuers:  []string{issuer2, addr1},
 			Metadata: []byte("credit class metadata"),
 		},
@@ -181,7 +181,7 @@ func (s *IntegrationTestSuite) initGenesisState(ctx types.Context, genesisState 
 func (s *IntegrationTestSuite) assetClassInfoEqual(q, other *ecocredit.ClassInfo) {
 	require := s.Require()
 	require.Equal(q.ClassId, other.ClassId)
-	require.Equal(q.Designer, other.Designer)
+	require.Equal(q.Admin, other.Admin)
 	require.Equal(q.Issuers, other.Issuers)
 	require.Equal(q.Metadata, other.Metadata)
 }
