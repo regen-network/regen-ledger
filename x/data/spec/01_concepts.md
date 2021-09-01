@@ -1,7 +1,4 @@
-# Data Module Overview
-
-The data module is intended to be a versatile module for anchoring, signing, 
-and storing data about ecological health, and ecosystem services on Regen Ledger.
+# Concepts
 
 These three functionalities each provide different kinds of information and guarantees
 about the data being referenced.
@@ -13,3 +10,4 @@ about the data being referenced.
 - __Data Storing__: Storing the raw data itself on the blockchain. This is useful when 
   availability guarantees are necessary. This can also be useful in cases where one
   wants smart contracts to have direct access to the data itself.
+  
