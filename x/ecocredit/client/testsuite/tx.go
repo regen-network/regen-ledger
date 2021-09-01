@@ -297,6 +297,24 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			},
 		},
 		{
+			name: "single issuer with from key-name",
+			args: append(
+				[]string{
+					val0.Address.String(),
+					validCreditType,
+					validMetadata,
+					makeFlagFrom("node0"),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr: false,
+			expectedClassInfo: &ecocredit.ClassInfo{
+				Admin:    val0.Address.String(),
+				Issuers:  []string{val0.Address.String()},
+				Metadata: []byte{0x1},
+			},
+		},
+		{
 			name: "multiple issuers",
 			args: append(
 				[]string{

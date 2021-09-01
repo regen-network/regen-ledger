@@ -68,11 +68,13 @@ Parameters:
 		),
 		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// Get the class admin from the --from flag
-			admin, err := cmd.Flags().GetString(flags.FlagFrom)
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
 			if err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+				return err
 			}
+
+			// Get the class admin from the --from flag
+			admin := clientCtx.GetFromAddress()
 
 			// Parse the comma-separated list of issuers
 			issuers := strings.Split(args[0], ",")
@@ -95,12 +97,8 @@ Parameters:
 				return sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
 			}
 
-			clientCtx, err := sdkclient.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
 			msg := ecocredit.MsgCreateClass{
-				Admin:      admin,
+				Admin:      admin.String(),
 				Issuers:    issuers,
 				Metadata:   b,
 				CreditType: creditType,
