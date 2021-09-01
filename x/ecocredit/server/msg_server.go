@@ -2,8 +2,6 @@ package server
 
 import (
 	"context"
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -33,7 +31,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 			return nil, err
 		}
 		if !allowListed {
-			return nil, fmt.Errorf("%s is not allowed to create credit classes", designerAddress.String())
+			return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", designerAddress.String())
 		}
 	}
 
@@ -80,8 +78,9 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 }
 
 func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatch) (*ecocredit.MsgCreateBatchResponse, error) {
-	ctx := types.UnwrapSDKContext(goCtx)
 	classID := req.ClassId
+
+	ctx := types.UnwrapSDKContext(goCtx)
 	if err := s.assertClassIssuer(ctx, classID, req.Issuer); err != nil {
 		return nil, err
 	}

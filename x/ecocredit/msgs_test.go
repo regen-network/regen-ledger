@@ -94,7 +94,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"valid msg": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
-				ClassId:   "ID",
+				ClassId:   "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*MsgCreateBatch_BatchIssuance{
@@ -113,7 +113,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"valid msg with minimal fields": {
 			src: MsgCreateBatch{
 				Issuer:          addr1.String(),
-				ClassId:         "ID",
+				ClassId:         "C01",
 				StartDate:       &startDate,
 				EndDate:         &endDate,
 				ProjectLocation: "AB-CDE FG1 345",
@@ -133,7 +133,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"valid msg without Issuance.TradableAmount (assumes zero by default)": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
-				ClassId:   "ID",
+				ClassId:   "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*MsgCreateBatch_BatchIssuance{
@@ -166,7 +166,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"valid msg without Issuance.RetiredAmount (assumes zero by default)": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
-				ClassId:   "ID",
+				ClassId:   "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*MsgCreateBatch_BatchIssuance{
