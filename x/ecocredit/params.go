@@ -1,7 +1,6 @@
 package ecocredit
 
 import (
-	"fmt"
 	"regexp"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -40,7 +39,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 func validateCreditClassFee(i interface{}) error {
 	v, ok := i.(sdk.Coins)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
 	}
 
 	if err := v.Validate(); err != nil {
@@ -53,7 +52,7 @@ func validateCreditClassFee(i interface{}) error {
 func validateAllowlistCreditDesigners(i interface{}) error {
 	v, ok := i.([]string)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
 	}
 	for _, sAddr := range v {
 		_, err := sdk.AccAddressFromBech32(sAddr)
@@ -67,7 +66,7 @@ func validateAllowlistCreditDesigners(i interface{}) error {
 func validateAllowlistEnabled(i interface{}) error {
 	_, ok := i.(bool)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
 	}
 
 	return nil
@@ -76,7 +75,7 @@ func validateAllowlistEnabled(i interface{}) error {
 func validateCreditTypes(i interface{}) error {
 	creditTypes, ok := i.([]*CreditType)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
 	}
 
 	// ensure no duplicate credit types or abbreviations and that all
