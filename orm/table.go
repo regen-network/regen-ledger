@@ -204,7 +204,7 @@ func (a table) Delete(ctx HasKVStore, rowID RowID) error {
 }
 
 // Has checks if a key exists. Returns false when the key is empty or nil because
-// we don't allow to create values with such keys.
+// we don't allow creation of values without a key.
 func (a table) Has(ctx HasKVStore, key RowID) bool {
 	if len(key) == 0 {
 		return false
