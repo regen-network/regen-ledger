@@ -126,9 +126,6 @@ type PrimaryKeyTable struct {
 // Create iterates though the registered callbacks and may add secondary index keys by them.
 func (a PrimaryKeyTable) Create(ctx HasKVStore, obj PrimaryKeyed) error {
 	rowID := PrimaryKey(obj)
-	if a.table.Has(ctx, rowID) {
-		return ErrUniqueConstraint
-	}
 	return a.table.Create(ctx, rowID, obj)
 }
 
@@ -139,6 +136,15 @@ func (a PrimaryKeyTable) Create(ctx HasKVStore, obj PrimaryKeyed) error {
 // Update iterates though the registered callbacks and may add or remove secondary index keys by them.
 func (a PrimaryKeyTable) Update(ctx HasKVStore, newValue PrimaryKeyed) error {
 	return a.table.Update(ctx, PrimaryKey(newValue), newValue)
+}
+
+// Set persists the given object under the rowID key. It does not check if the
+// key already exists and overwrites the value if it does.
+//
+// Set iterates though the registered callbacks and may add secondary index keys
+// by them.
+func (a PrimaryKeyTable) Set(ctx HasKVStore, newValue PrimaryKeyed) error {
+	return a.table.Set(ctx, PrimaryKey(newValue), newValue)
 }
 
 // Delete removes the object. It expects the primary key to exists already

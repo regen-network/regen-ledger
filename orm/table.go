@@ -18,7 +18,7 @@ type tableBuilder struct {
 	prefixData    byte
 	storeKey      sdk.StoreKey
 	indexKeyCodec IndexKeyCodec
-	afterSave     []AfterSaveInterceptor
+	afterSet      []AfterSetInterceptor
 	afterDelete   []AfterDeleteInterceptor
 	cdc           codec.Codec
 }
@@ -72,15 +72,15 @@ func (a tableBuilder) Build() table {
 		model:       a.model,
 		prefix:      a.prefixData,
 		storeKey:    a.storeKey,
-		afterSave:   a.afterSave,
+		afterSet:    a.afterSet,
 		afterDelete: a.afterDelete,
 		cdc:         a.cdc,
 	}
 }
 
-// AddAfterSaveInterceptor can be used to register a callback function that is executed after an object is created and/or updated.
-func (a *tableBuilder) AddAfterSaveInterceptor(interceptor AfterSaveInterceptor) {
-	a.afterSave = append(a.afterSave, interceptor)
+// AddAfterSetInterceptor can be used to register a callback function that is executed after an object is created and/or updated.
+func (a *tableBuilder) AddAfterSetInterceptor(interceptor AfterSetInterceptor) {
+	a.afterSet = append(a.afterSet, interceptor)
 }
 
 // AddAfterDeleteInterceptor can be used to register a callback function that is executed after an object is deleted.
@@ -104,50 +104,22 @@ type table struct {
 	model       reflect.Type
 	prefix      byte
 	storeKey    sdk.StoreKey
-	afterSave   []AfterSaveInterceptor
+	afterSet    []AfterSetInterceptor
 	afterDelete []AfterDeleteInterceptor
 	cdc         codec.Codec
 }
 
-// Create persists the given object under the rowID key. It does not check if the
-// key already exists. Any caller must either make sure that this contract is fulfilled
-// by providing a universal unique ID or sequence that is guaranteed to not exist yet or
-// by checking the state via `Has` function before.
+// Create persists the given object under the rowID key, returning an
+// ErrUniqueConstraint if a value already exists at that key.
 //
-// Create iterates though the registered callbacks and may add secondary index keys by them.
+// Create iterates though the registered callbacks and may add secondary index
+// keys by them.
 func (a table) Create(ctx HasKVStore, rowID RowID, obj codec.ProtoMarshaler) error {
-	if err := a.assertValue(rowID, obj); err != nil {
-		return err
-	}
-	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
-	return a.save(ctx, store, rowID, obj, nil)
-}
-
-// assertValue performs common assertions for key and value to be stored using ORM.
-func (a table) assertValue(key RowID, obj codec.ProtoMarshaler) error {
-	if len(key) == 0 {
-		return ErrEmptyKey
-	}
-	if err := assertCorrectType(a.model, obj); err != nil {
-		return err
-	}
-	return assertValid(obj)
-}
-
-// save stores the K/V in the store
-func (a table) save(ctx HasKVStore, store prefix.Store, key RowID, obj, oldObj codec.ProtoMarshaler) error {
-	val, err := a.cdc.Marshal(obj)
-	if err != nil {
-		return errors.Wrapf(err, "failed to serialize %T", val)
+	if a.Has(ctx, rowID) {
+		return ErrUniqueConstraint
 	}
 
-	store.Set(key, val)
-	for i, itc := range a.afterSave {
-		if err := itc(ctx, key, obj, oldObj); err != nil {
-			return errors.Wrapf(err, "interceptor %d failed", i)
-		}
-	}
-	return nil
+	return a.Set(ctx, rowID, obj)
 }
 
 // Update updates the given object under the rowID key. It expects the key to exists already
@@ -156,6 +128,22 @@ func (a table) save(ctx HasKVStore, store prefix.Store, key RowID, obj, oldObj c
 //
 // Update iterates though the registered callbacks and may add or remove secondary index keys by them.
 func (a table) Update(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler) error {
+	if !a.Has(ctx, rowID) {
+		return ErrNotFound
+	}
+
+	return a.Set(ctx, rowID, newValue)
+}
+
+// Set persists the given object under the rowID key. It does not check if the
+// key already exists and overwrites the value if it does.
+//
+// Set iterates though the registered callbacks and may add secondary index keys
+// by them.
+func (a table) Set(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler) error {
+	if len(rowID) == 0 {
+		return ErrEmptyKey
+	}
 	if err := assertCorrectType(a.model, newValue); err != nil {
 		return err
 	}
@@ -164,12 +152,25 @@ func (a table) Update(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler
 	}
 
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
-	var oldValue = reflect.New(a.model).Interface().(codec.ProtoMarshaler)
 
-	if err := a.GetOne(ctx, rowID, oldValue); err != nil {
-		return errors.Wrap(err, "load old value")
+	var oldValue codec.ProtoMarshaler
+	if a.Has(ctx, rowID) {
+		oldValue = reflect.New(a.model).Interface().(codec.ProtoMarshaler)
+		a.GetOne(ctx, rowID, oldValue)
 	}
-	return a.save(ctx, store, rowID, newValue, oldValue)
+
+	newValueEncoded, err := a.cdc.Marshal(newValue)
+	if err != nil {
+		return errors.Wrapf(err, "failed to serialize %T", newValue)
+	}
+
+	store.Set(rowID, newValueEncoded)
+	for i, itc := range a.afterSet {
+		if err := itc(ctx, rowID, newValue, oldValue); err != nil {
+			return errors.Wrapf(err, "interceptor %d failed", i)
+		}
+	}
+	return nil
 }
 
 func assertValid(obj codec.ProtoMarshaler) error {

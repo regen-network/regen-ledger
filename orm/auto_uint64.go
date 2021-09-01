@@ -62,6 +62,15 @@ func (a AutoUInt64Table) Update(ctx HasKVStore, rowID uint64, newValue codec.Pro
 	return a.table.Update(ctx, EncodeSequence(rowID), newValue)
 }
 
+// Set persists the given object under the rowID key. It does not check if the
+// key already exists and overwrites the value if it does.
+//
+// Set iterates though the registered callbacks and may add secondary index keys
+// by them.
+func (a AutoUInt64Table) Set(ctx HasKVStore, rowID uint64, newValue codec.ProtoMarshaler) error {
+	return a.table.Set(ctx, EncodeSequence(rowID), newValue)
+}
+
 // Delete removes the object under the rowID key. It expects the key to exists already
 // and fails with a `ErrNotFound` otherwise. Any caller must therefore make sure that this contract
 // is fulfilled.
