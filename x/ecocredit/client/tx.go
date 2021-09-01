@@ -50,13 +50,23 @@ func TxCreateClassCmd() *cobra.Command {
 	return txflags(&cobra.Command{
 		Use:   "create-class [issuer[,issuer]*] [credit type] [metadata]",
 		Short: "Creates a new credit class with transaction author (--from) as admin",
-		Long: `Creates a new credit class with transaction author (--from) as admin.
-The transaction author must pay the fee associated with creating a new credit class.
+		Long: fmt.Sprintf(
+			`Creates a new credit class with transaction author (--from) as admin.
+
+The transaction author must have permission to create a new credit class by
+being a member of the %s allowlist. This is a governance parameter, so can be
+queried via the command line.
+
+They must also pay the fee associated with creating a new credit class, defined
+by the %s parameter, so should make sure they have enough funds to cover that.
 
 Parameters:
   issuer:    	    comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
   credit type:    the credit class type (e.g. carbon, biodiversity, etc)
   metadata:  	    base64 encoded metadata - arbitrary data attached to the credit class info`,
+			ecocredit.KeyAllowedClassCreators,
+			ecocredit.KeyCreditClassFee,
+		),
 		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Get the class admin from the --from flag
