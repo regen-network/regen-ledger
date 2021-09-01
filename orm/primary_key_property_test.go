@@ -139,6 +139,18 @@ func (m *primaryKeyMachine) Update(t *rapid.T) {
 	}
 }
 
+// Set is one of the model commands. It sets the value at a key in the table
+// wether it exists or not.
+func (m *primaryKeyMachine) Set(t *rapid.T) {
+	g := genGroupMember.Draw(t, "g").(*testdata.GroupMember)
+	pk := string(orm.PrimaryKey(g))
+
+	err := m.table.Set(m.ctx, g)
+
+	require.NoError(t, err)
+	m.state[pk] = g
+}
+
 // Delete is one of the model commands. It removes the object with the given
 // primary key from the table and returns an error if that primary key doesn't
 // already exist in the table.
