@@ -117,11 +117,11 @@ func (s *IntegrationTestSuite) TestScenario() {
 		},
 		{
 			creditType:      "biodiversity",
-			expectedClassID: "BIO01",
+			expectedClassID: "BIO04",
 		},
 		{
 			creditType:      "biodiversity",
-			expectedClassID: "BIO02",
+			expectedClassID: "BIO05",
 		},
 		{
 			creditType:      "carbon",
