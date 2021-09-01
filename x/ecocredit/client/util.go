@@ -98,7 +98,7 @@ func parseCredits(creditsStr string) (credits, error) {
 
 	matches := reCredits.FindStringSubmatch(creditsStr)
 	if matches == nil {
-		return credits{}, fmt.Errorf("invalid credit expression: %s", creditsStr)
+		return credits{}, ecocredit.ErrParseFailure.Wrapf("invalid credit expression: %s", creditsStr)
 	}
 
 	return credits{
