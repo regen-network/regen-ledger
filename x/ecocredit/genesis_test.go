@@ -66,7 +66,7 @@ func TestGenesisValidate(t *testing.T) {
 				genesisState.ClassInfo = []*ecocredit.ClassInfo{
 					{
 						ClassId:  "1",
-						Designer: addr1.String(),
+						Admin:    addr1.String(),
 						Issuers:  []string{addr1.String(), addr2.String()},
 						Metadata: []byte("meta-data"),
 						CreditType: &ecocredit.CreditType{
@@ -95,7 +95,7 @@ func TestGenesisValidate(t *testing.T) {
 				genesisState.ClassInfo = []*ecocredit.ClassInfo{
 					{
 						ClassId:  "1",
-						Designer: addr1.String(),
+						Admin:    addr1.String(),
 						Issuers:  []string{addr1.String(), addr2.String()},
 						Metadata: []byte("meta-data"),
 						CreditType: &ecocredit.CreditType{
@@ -118,7 +118,7 @@ func TestGenesisValidate(t *testing.T) {
 				genesisState.ClassInfo = []*ecocredit.ClassInfo{
 					{
 						ClassId:  "1",
-						Designer: addr1.String(),
+						Admin:    addr1.String(),
 						Issuers:  []string{addr1.String(), addr2.String()},
 						Metadata: []byte("meta-data"),
 						CreditType: &ecocredit.CreditType{
@@ -141,7 +141,7 @@ func TestGenesisValidate(t *testing.T) {
 				genesisState.ClassInfo = []*ecocredit.ClassInfo{
 					{
 						ClassId:  "1",
-						Designer: addr1.String(),
+						Admin:    addr1.String(),
 						Issuers:  []string{addr1.String(), addr2.String()},
 						Metadata: []byte("meta-data"),
 						CreditType: &ecocredit.CreditType{

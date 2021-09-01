@@ -42,7 +42,7 @@ func (p Params) Validate() error {
 		return err
 	}
 
-	if err := validateAllowlistCreditDesigners(p.AllowedClassDesigners); err != nil {
+	if err := validateAllowedClassCreators(p.AllowedClassCreators); err != nil {
 		return err
 	}
 
