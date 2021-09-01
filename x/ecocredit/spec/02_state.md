@@ -44,7 +44,7 @@ The `creditTypeSeqTable` stores `CreditTypeSeq`:
 
 `0x4 | []byte(Abbreviation) -> ProtocolBuffer(CreditTypeSeq)`
 
-+++ https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha1/types.proto#L114-122
++++ https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha1/types.proto#L114-L122
 
 ## Class Info Table
 
@@ -52,7 +52,7 @@ The `classInfoTable` stores `ClassInfo`:
 
 `0x5 | []byte(ClassId) -> ProtocolBuffer(ClassInfo)`
 
-+++ https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha1/types.proto#L11-31
++++ https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha1/types.proto#L11-L31
 
 ## Batch Info Table
 
@@ -60,4 +60,4 @@ The `batchInfoTable` stores `BatchInfo`:
 
 `0x6 | []byte(BatchId) -> ProtocolBuffer(BatchInfo)`
 
-+++ https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha1/types.proto#L33-74
++++ https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha1/types.proto#L33-L74

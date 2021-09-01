@@ -4,7 +4,7 @@
 
 `MsgCreateClass` creates a new credit class with a credit class designer, an approved list of issuers, optional metadata, and a credit type. The party signing this transaction is the credit designer. 
 
-+++ https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha1/tx.proto#L35-51
++++ https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha1/tx.proto#L35-L51
 
 ### Arguments:
 
@@ -29,7 +29,7 @@ The message must specify the receiver of the batch of credits as well as the num
 
 In order to support use cases when credits are to be immediately retired upon issuance, for each account to be issued credits, both an amount of tradeable and retired credit units can be specified.
 
-+++ https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha1/tx.proto#L60-120
++++ https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha1/tx.proto#L60-L120
 
 ### Arguments:
 
@@ -57,7 +57,7 @@ This operation will return a new credit batch ID.
 
 Send sends tradable credits from one account to another account. Sent credits can either be tradable or retired on receipt.
 
-+++ https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha1/tx.proto#L129-170
++++ https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha1/tx.proto#L129-L170
 
 ### Arguments:
 
@@ -79,7 +79,7 @@ Send sends tradable credits from one account to another account. Sent credits ca
 
 Retire retires a specified number of credits in the holder's account.
 
-+++ https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha1/tx.proto#L170-202
++++ https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha1/tx.proto#L170-L202
 
 ### Arguments:
 
@@ -99,7 +99,7 @@ Retire retires a specified number of credits in the holder's account.
 
 Cancel removes a number of credits from the holder's account and also deducts them from the tradable supply, effectively cancelling their issuance on Regen Ledger.
 
-+++ https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha1/tx.proto#L207-227
++++ https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha1/tx.proto#L207-L227
 
 ### Arguments:
 
