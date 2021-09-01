@@ -1,6 +1,7 @@
 package ecocredit_test
 
 import (
+	"fmt"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -59,7 +60,7 @@ func TestGenesisValidate(t *testing.T) {
 			"",
 		},
 		{
-			"invalid credit type param",
+			"invalid: credit type param",
 			func() *ecocredit.GenesisState {
 				genesisState := ecocredit.DefaultGenesisState()
 				genesisState.ClassInfo = []*ecocredit.ClassInfo{
@@ -88,7 +89,7 @@ func TestGenesisValidate(t *testing.T) {
 			"invalid precision 7: precision is currently locked to 6: invalid request",
 		},
 		{
-			"invalid credit type in class info",
+			"invalid: type name does not match param name",
 			func() *ecocredit.GenesisState {
 				genesisState := ecocredit.DefaultGenesisState()
 				genesisState.ClassInfo = []*ecocredit.ClassInfo{
@@ -108,10 +109,33 @@ func TestGenesisValidate(t *testing.T) {
 				return genesisState
 			},
 			true,
-			"credit type badbadnotgood does not match param type carbon",
+			formatCreditTypeParamError(ecocredit.CreditType{"badbadnotgood", "C", "metric ton CO2 equivalent", 6}).Error(),
 		},
 		{
-			"invalid: bad abbreviation",
+			"invalid: wrong unit types does not match param types",
+			func() *ecocredit.GenesisState {
+				genesisState := ecocredit.DefaultGenesisState()
+				genesisState.ClassInfo = []*ecocredit.ClassInfo{
+					{
+						ClassId:  "1",
+						Designer: addr1.String(),
+						Issuers:  []string{addr1.String(), addr2.String()},
+						Metadata: []byte("meta-data"),
+						CreditType: &ecocredit.CreditType{
+							Name:         "carbon",
+							Abbreviation: "C",
+							Unit:         "inches",
+							Precision:    6,
+						},
+					},
+				}
+				return genesisState
+			},
+			true,
+			formatCreditTypeParamError(ecocredit.CreditType{"carbon", "C", "inches", 6}).Error(),
+		},
+		{
+			"invalid: non-existent abbreviation",
 			func() *ecocredit.GenesisState {
 				genesisState := ecocredit.DefaultGenesisState()
 				genesisState.ClassInfo = []*ecocredit.ClassInfo{
@@ -131,7 +155,7 @@ func TestGenesisValidate(t *testing.T) {
 				return genesisState
 			},
 			true,
-			"invalid credit type abbreviation: F",
+			"unknown credit type abbreviation: F",
 		},
 		{
 			"expect error: supply is missing",
@@ -343,4 +367,10 @@ func TestGenesisValidate(t *testing.T) {
 			}
 		})
 	}
+}
+
+var defaultCreditTypes = ecocredit.DefaultGenesisState().Params.CreditTypes
+
+func formatCreditTypeParamError(ct ecocredit.CreditType) error {
+	return fmt.Errorf("credit type %+v does not match param type %+v", ct, *defaultCreditTypes[0])
 }

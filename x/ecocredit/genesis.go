@@ -86,34 +86,17 @@ func validateClassInfoTypes(creditTypes []*CreditType, classInfos []*ClassInfo) 
 		// fetch param via abbreviation
 		cType, ok := typeMap[cInfo.CreditType.Abbreviation]
 
-		// if its not found, its an invalid credit type
+		// if it's not found, its an invalid credit type
 		if !ok {
-			return fmt.Errorf("invalid credit type abbreviation: %s", cInfo.CreditType.Abbreviation)
+			return fmt.Errorf("unknown credit type abbreviation: %s", cInfo.CreditType.Abbreviation)
 		}
 
-		// check that the other fields are equal
-		if !areCreditTypesEqual(cType, *cInfo.CreditType) {
-			return fmt.Errorf("credit type %s does not match param type %s", cInfo.CreditType.Name, cType.Name)
+		// check that the credit types are equal
+		if cType != *cInfo.CreditType {
+			return fmt.Errorf("credit type %+v does not match param type %+v", *cInfo.CreditType, cType)
 		}
 	}
 	return nil
-}
-
-// checks that fields are equal between two credits.
-func areCreditTypesEqual(t1, t2 CreditType) bool {
-	if t1.Abbreviation != t2.Abbreviation {
-		return false
-	}
-	if t1.Name != t2.Name {
-		return false
-	}
-	if t1.Precision != t2.Precision {
-		return false
-	}
-	if t1.Unit != t2.Unit {
-		return false
-	}
-	return true
 }
 
 func validateSupply(calSupply, supply map[string]math.Dec) error {
