@@ -112,7 +112,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 			expectErr: false,
 			expectedClassInfo: &ecocredit.ClassInfo{
 				ClassId:    s.classInfo.ClassId,
-				Designer:   s.classInfo.Designer,
+				Admin:      s.classInfo.Admin,
 				Issuers:    s.classInfo.Issuers,
 				Metadata:   s.classInfo.Metadata,
 				CreditType: s.classInfo.CreditType,
@@ -164,10 +164,10 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name:                "invalid class id",
-			args:                []string{"abcde"},
-			expectErr:           false,
-			expectedBatchDenoms: []string{},
+			name:           "invalid class id",
+			args:           []string{"abcde"},
+			expectErr:      true,
+			expectedErrMsg: "class ID didn't match the format",
 		},
 		{
 			name:                "existing class no batches",
