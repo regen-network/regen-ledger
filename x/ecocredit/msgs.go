@@ -91,12 +91,12 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 	if m.EndDate.Before(*m.StartDate) {
 		return sdkerrors.ErrInvalidRequest.Wrapf("the batch end date (%s) must be the same as or after the batch start date (%s)", m.EndDate.Format("2006-01-02"), m.StartDate.Format("2006-01-02"))
 	}
-	if m.ClassId == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("class ID should not be empty")
+
+	if err := ValidateClassID(m.ClassId); err != nil {
+		return err
 	}
 
-	err = validateLocation(m.ProjectLocation)
-	if err != nil {
+	if err := validateLocation(m.ProjectLocation); err != nil {
 		return err
 	}
 

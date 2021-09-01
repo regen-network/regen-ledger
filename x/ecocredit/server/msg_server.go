@@ -78,8 +78,9 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 }
 
 func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatch) (*ecocredit.MsgCreateBatchResponse, error) {
-	ctx := types.UnwrapSDKContext(goCtx)
 	classID := req.ClassId
+
+	ctx := types.UnwrapSDKContext(goCtx)
 	if err := s.assertClassIssuer(ctx, classID, req.Issuer); err != nil {
 		return nil, err
 	}
