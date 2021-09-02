@@ -98,10 +98,10 @@ Parameters:
 			}
 
 			msg := ecocredit.MsgCreateClass{
-				Admin:      admin.String(),
-				Issuers:    issuers,
-				Metadata:   b,
-				CreditType: creditType,
+				Admin:          admin.String(),
+				Issuers:        issuers,
+				Metadata:       b,
+				CreditTypeName: creditType,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
