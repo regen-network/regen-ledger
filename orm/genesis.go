@@ -10,7 +10,7 @@ import (
 // TableExportable
 type TableExportable interface {
 	// Table returns the table to export
-	Table() Table
+	Table() table
 }
 
 // SequenceExportable
@@ -65,7 +65,7 @@ func ImportTableData(ctx HasKVStore, t TableExportable, data interface{}, seqVal
 		if !ok {
 			return errors.Wrapf(ErrArgument, "unsupported type :%s", reflect.TypeOf(data).Elem().Elem())
 		}
-		err := table.Create(ctx, obj.PrimaryKey(), obj)
+		err := table.Create(ctx, PrimaryKey(obj), obj)
 		if err != nil {
 			return err
 		}
@@ -75,7 +75,7 @@ func ImportTableData(ctx HasKVStore, t TableExportable, data interface{}, seqVal
 }
 
 // clearAllInTable deletes all entries in a table with delete interceptors called
-func clearAllInTable(ctx HasKVStore, table Table) error {
+func clearAllInTable(ctx HasKVStore, table table) error {
 	store := prefix.NewStore(ctx.KVStore(table.storeKey), []byte{table.prefix})
 	it := store.Iterator(nil, nil)
 	defer it.Close()

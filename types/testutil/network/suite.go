@@ -9,7 +9,7 @@ import (
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	cfg Config
+	cfg     Config
 	network *Network
 }
 
