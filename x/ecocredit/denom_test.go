@@ -20,7 +20,7 @@ func testValidateFormatClassID(t *rapid.T) {
 	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
 	classSeqNo := rapid.Uint64().Draw(t, "classSeqNo").(uint64)
 
-	classId, err := FormatClassID(creditType, classSeqNo)
+	classId, err := FormatClassID(*creditType, classSeqNo)
 	require.NoError(t, err)
 
 	err = ValidateClassID(classId)
@@ -40,7 +40,7 @@ func testValidateFormatDenom(t *rapid.T) {
 	startDate := genTime.Draw(t, "startDate").(*time.Time)
 	endDate := genTime.Draw(t, "endDate").(*time.Time)
 
-	classId, err := FormatClassID(creditType, classSeqNo)
+	classId, err := FormatClassID(*creditType, classSeqNo)
 	require.NoError(t, err)
 
 	denom, err := FormatDenom(classId, batchSeqNo, startDate, endDate)

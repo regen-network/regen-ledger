@@ -111,7 +111,7 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 			setDecimal(store, key, d)
 
 			key = TradableSupplyKey(denomT)
-			getAddAndSetDecimal(store, key, d)
+			addAndSetDecimal(store, key, d)
 		}
 
 		// set retired balance and update supply
@@ -124,7 +124,7 @@ func setBalanceAndSupply(store sdk.KVStore, balances []*ecocredit.Balance) error
 			setDecimal(store, key, d)
 
 			key = RetiredSupplyKey(denomT)
-			getAddAndSetDecimal(store, key, d)
+			addAndSetDecimal(store, key, d)
 		}
 	}
 
