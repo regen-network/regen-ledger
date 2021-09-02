@@ -10,9 +10,9 @@ import (
 
 func TestDefaultParams(t *testing.T) {
 	expected := Params{
-		CreditClassFee:        sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)),
-		AllowedClassDesigners: []string{},
-		AllowlistEnabled:      false,
+		CreditClassFee:       sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)),
+		AllowedClassCreators: []string{},
+		AllowlistEnabled:     false,
 		CreditTypes: []*CreditType{
 			{
 				Name:         "carbon",
@@ -27,7 +27,7 @@ func TestDefaultParams(t *testing.T) {
 	require.Equal(t, df.String(), expected.String())
 }
 
-func Test_validateAllowlistCreditCreators(t *testing.T) {
+func Test_validateAllowedClassCreators(t *testing.T) {
 
 	genAddrs := make([]string, 0, 3)
 	for i := 0; i < 3; i++ {
@@ -67,8 +67,8 @@ func Test_validateAllowlistCreditCreators(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := validateAllowlistCreditDesigners(tt.args); (err != nil) != tt.wantErr {
-				t.Errorf("validateAllowlistCreditCreators() error = %v, wantErr %v", err, tt.wantErr)
+			if err := validateAllowedClassCreators(tt.args); (err != nil) != tt.wantErr {
+				t.Errorf("validateAllowedClassCreators() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
@@ -161,7 +161,7 @@ func Test_validateCreditTypes(t *testing.T) {
 			args: []*ClassInfo{
 				{
 					ClassId:    "foo",
-					Designer:   "0xdeadbeef",
+					Admin:      "0xdeadbeef",
 					Issuers:    []string{"not", "an", "address"},
 					Metadata:   nil,
 					CreditType: nil,

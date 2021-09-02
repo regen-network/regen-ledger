@@ -17,7 +17,7 @@ func TestMsgCreateClass(t *testing.T) {
 	}{
 		"valid msg": {
 			src: MsgCreateClass{
-				Designer:   addr1.String(),
+				Admin:      addr1.String(),
 				Issuers:    []string{addr1.String(), addr2.String()},
 				CreditType: "carbon",
 				Metadata:   []byte("hello"),
@@ -26,34 +26,34 @@ func TestMsgCreateClass(t *testing.T) {
 		},
 		"valid msg without metadata": {
 			src: MsgCreateClass{
-				Designer:   addr1.String(),
+				Admin:      addr1.String(),
 				CreditType: "carbon",
 				Issuers:    []string{addr1.String(), addr2.String()},
 			},
 			expErr: false,
 		},
-		"invalid without designer": {
+		"invalid without admin": {
 			src:    MsgCreateClass{},
 			expErr: true,
 		},
 		"invalid without issuers": {
 			src: MsgCreateClass{
-				Designer:   addr1.String(),
+				Admin:      addr1.String(),
 				CreditType: "carbon",
 			},
 			expErr: true,
 		},
 		"invalid with wrong issuers": {
 			src: MsgCreateClass{
-				Designer:   addr1.String(),
+				Admin:      addr1.String(),
 				CreditType: "carbon",
 				Issuers:    []string{"xyz", "xyz1"},
 			},
 			expErr: true,
 		},
-		"invalid with wrong designer": {
+		"invalid with wrong admin": {
 			src: MsgCreateClass{
-				Designer:   "wrongDesigner",
+				Admin:      "wrongAdmin",
 				CreditType: "carbon",
 				Issuers:    []string{addr1.String(), addr2.String()},
 			},
@@ -61,8 +61,8 @@ func TestMsgCreateClass(t *testing.T) {
 		},
 		"invalid with no credit type": {
 			src: MsgCreateClass{
-				Designer: addr1.String(),
-				Issuers:  []string{addr1.String(), addr2.String()},
+				Admin:   addr1.String(),
+				Issuers: []string{addr1.String(), addr2.String()},
 			},
 			expErr: true,
 		},
@@ -94,7 +94,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"valid msg": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
-				ClassId:   "ID",
+				ClassId:   "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*MsgCreateBatch_BatchIssuance{
@@ -113,7 +113,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"valid msg with minimal fields": {
 			src: MsgCreateBatch{
 				Issuer:          addr1.String(),
-				ClassId:         "ID",
+				ClassId:         "C01",
 				StartDate:       &startDate,
 				EndDate:         &endDate,
 				ProjectLocation: "AB-CDE FG1 345",
@@ -133,7 +133,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"valid msg without Issuance.TradableAmount (assumes zero by default)": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
-				ClassId:   "ID",
+				ClassId:   "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*MsgCreateBatch_BatchIssuance{
@@ -166,7 +166,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"valid msg without Issuance.RetiredAmount (assumes zero by default)": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
-				ClassId:   "ID",
+				ClassId:   "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*MsgCreateBatch_BatchIssuance{

@@ -14,8 +14,8 @@ message ClassInfo {
   // class_id is the unique ID of credit class.
   string class_id = 1 [ (gogoproto.moretags) = "yaml:\"class_id\"" ];
 
-  // designer is the designer of the credit class.
-  string designer = 2;
+  // admin is the admin of the credit class.
+  string admin = 2;
 
   // issuers are the approved issuers of the credit class.
   repeated string issuers = 3;
@@ -82,9 +82,9 @@ message Params {
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 
-  // allowed_class_designers is an allowlist defining the addresses with
+  // allowed_class_creators is an allowlist defining the addresses with
   // the required permissions to create credit classes
-  repeated string allowed_class_designers = 2;
+  repeated string allowed_class_creators = 2;
 
   // allowlist_enabled is a param that enables/disables the allowlist for credit
   // creation
