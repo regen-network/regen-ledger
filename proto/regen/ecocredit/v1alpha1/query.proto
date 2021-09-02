@@ -73,7 +73,7 @@ message QueryClassesResponse {
 message QueryClassInfoRequest {
 
   // class_id is the unique ID of credit class to query.
-  string class_id = 1 [ json_name = "class_id" ];
+  string class_id = 1;
 }
 
 // QueryClassInfoResponse is the Query/ClassInfo request type.
@@ -86,7 +86,7 @@ message QueryClassInfoResponse {
 // QueryBatchesRequest is the Query/Batches request type.
 message QueryBatchesRequest {
   // class_id is the unique ID of the credit class to query.
-  string class_id = 1 [ json_name = "class_id" ];
+  string class_id = 1;
 
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
@@ -105,7 +105,7 @@ message QueryBatchesResponse {
 message QueryBatchInfoRequest {
 
   // batch_denom is the unique ID of credit batch to query.
-  string batch_denom = 1 [ json_name = "batch_denom" ];
+  string batch_denom = 1;
 }
 
 // QueryBatchInfoResponse is the Query/BatchInfo response type.
@@ -122,24 +122,24 @@ message QueryBalanceRequest {
   string account = 1;
 
   // batch_denom is the unique ID of credit batch balance to query.
-  string batch_denom = 2 [ json_name = "batch_denom" ];
+  string batch_denom = 2;
 }
 
 // QueryBalanceResponse is the Query/Balance response type.
 message QueryBalanceResponse {
 
   // tradable_amount is the decimal number of tradable credits.
-  string tradable_amount = 1 [ json_name = "tradable_amount" ];
+  string tradable_amount = 1;
 
   // retired_amount is the decimal number of retired credits.
-  string retired_amount = 2 [ json_name = "retired_amount" ];
+  string retired_amount = 2;
 }
 
 // QuerySupplyRequest is the Query/Supply request type.
 message QuerySupplyRequest {
 
   // batch_denom is the unique ID of credit batch to query.
-  string batch_denom = 1 [ json_name = "batch_denom" ];
+  string batch_denom = 1;
 }
 
 // QuerySupplyResponse is the Query/Supply response type.
@@ -147,11 +147,11 @@ message QuerySupplyResponse {
 
   // tradable_supply is the decimal number of tradable credits in the batch
   // supply.
-  string tradable_supply = 1 [ json_name = "tradable_supply" ];
+  string tradable_supply = 1;
 
   // retired_supply is the decimal number of retired credits in the batch
   // supply.
-  string retired_supply = 2 [ json_name = "retired_supply" ];
+  string retired_supply = 2;
 }
 
 // QueryCreditTypesRequest is the Query/Credit_Types request type
@@ -160,5 +160,5 @@ message QueryCreditTypesRequest {}
 // QueryCreditTypesRequest is the Query/Credit_Types response type
 message QueryCreditTypesResponse {
   // list of credit types
-  repeated CreditType credit_types = 1 [ json_name = "credit_types" ];
+  repeated CreditType credit_types = 1;
 }

@@ -12,7 +12,7 @@ option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 message ClassInfo {
 
   // class_id is the unique ID of credit class.
-  string class_id = 1 [ json_name = "class_id" ];
+  string class_id = 1;
 
   // admin is the admin of the credit class.
   string admin = 2;
@@ -24,20 +24,20 @@ message ClassInfo {
   bytes metadata = 4;
 
   // credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision.
-  CreditType credit_type = 5 [ json_name = "credit_type" ];
+  CreditType credit_type = 5;
 
   // The number of batches issued in this credit class.
-  uint64 num_batches = 6 [ json_name = "num_batches" ];
+  uint64 num_batches = 6;
 }
 
 // BatchInfo represents the high-level on-chain information for a credit batch.
 message BatchInfo {
 
   // class_id is the unique ID of credit class.
-  string class_id = 1 [ json_name = "class_id" ];
+  string class_id = 1;
 
   // batch_denom is the unique ID of credit batch.
-  string batch_denom = 2 [ json_name = "batch_denom" ];
+  string batch_denom = 2;
 
   // issuer is the issuer of the credit batch.
   string issuer = 3;
@@ -47,7 +47,7 @@ message BatchInfo {
   // total_amount and tracked in amount_cancelled. total_amount and
   // amount_cancelled will always sum to the original amount of credits that
   // were issued.
-  string total_amount = 4 [ json_name = "total_amount" ];
+  string total_amount = 4;
 
   // metadata is any arbitrary metadata to attached to the credit batch.
   bytes metadata = 5;
@@ -56,21 +56,19 @@ message BatchInfo {
   // cancelled, effectively undoing there issuance. The sum of total_amount and
   // amount_cancelled will always sum to the original amount of credits that
   // were issued.
-  string amount_cancelled = 6 [ json_name = "amount_cancelled" ];
+  string amount_cancelled = 6;
 
   // start_date is the beginning of the period during which this credit batch
   // was quantified and verified.
-  google.protobuf.Timestamp start_date = 7
-      [(gogoproto.stdtime) = true, json_name = "start_date"];
+  google.protobuf.Timestamp start_date = 7 [ (gogoproto.stdtime) = true ];
 
   // end_date is the end of the period during which this credit batch was
   // quantified and verified.
-  google.protobuf.Timestamp end_date = 8
-      [(gogoproto.stdtime) = true, json_name = "end_date"];
+  google.protobuf.Timestamp end_date = 8 [ (gogoproto.stdtime) = true ];
 
   // project_location is the location of the project backing the credits in this
   // batch. Full documentation can be found in MsgCreateBatch.project_location.
-  string project_location = 9 [ json_name = "project_location" ];
+  string project_location = 9;
 }
 
 // Params defines the updatable global parameters of the ecocredit module for
@@ -79,21 +77,19 @@ message Params {
   // credit_class_fee is the fixed fee charged on creation of a new credit class
   repeated cosmos.base.v1beta1.Coin credit_class_fee = 1 [
     (gogoproto.nullable) = false,
-    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
-    json_name = "credit_class_fee"
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
   ];
 
   // allowed_class_creators is an allowlist defining the addresses with
   // the required permissions to create credit classes
-  repeated string allowed_class_creators = 2
-      [ json_name = "allowed_class_creators" ];
+  repeated string allowed_class_creators = 2;
 
   // allowlist_enabled is a param that enables/disables the allowlist for credit
   // creation
-  bool allowlist_enabled = 3 [ json_name = "allowlist_enabled" ];
+  bool allowlist_enabled = 3;
 
   // credit_types is a list of definitions for credit types
-  repeated CreditType credit_types = 4 [ json_name = "credit_types" ];
+  repeated CreditType credit_types = 4;
 }
 
 // CreditType defines the measurement unit/precision of a certain credit type
@@ -120,5 +116,5 @@ message CreditTypeSeq {
   string abbreviation = 1;
 
   // The sequence number of classes of the credit type
-  uint64 seq_number = 2 [ json_name = "seq_number" ];
+  uint64 seq_number = 2;
 }
