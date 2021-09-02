@@ -199,22 +199,10 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 		expectedClassInfo *ecocredit.ClassInfo
 	}{
 		{
-			name:           "missing issuer",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "accepts 3 arg(s), received 0",
-		},
-		{
-			name:           "missing credit type",
-			args:           []string{val0.Address.String()},
-			expectErr:      true,
-			expectedErrMsg: "accepts 3 arg(s), received 1",
-		},
-		{
-			name:           "missing metadata",
-			args:           []string{val0.Address.String(), validCreditType},
-			expectErr:      true,
-			expectedErrMsg: "accepts 3 arg(s), received 2",
 		},
 		{
 			name:           "too many args",
@@ -491,16 +479,16 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 		expectedBatchInfo *ecocredit.BatchInfo
 	}{
 		{
-			name:           "missing filename",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
 		},
 		{
 			name:           "too many args",
-			args:           []string{"abcde", "abcde"},
+			args:           []string{"r", "e", "g", "e", "n"},
 			expectErr:      true,
-			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
+			expectedErrMsg: "Error: accepts 1 arg(s), received 5",
 		},
 		{
 			name: "invalid json",
@@ -585,7 +573,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "expected a non-negative decimal, got abcde",
+			expectedErrMsg: "invalid decimal string",
 		},
 		{
 			name: "invalid issuance retired amount",
@@ -597,7 +585,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "expected a non-negative decimal, got abcde",
+			expectedErrMsg: "invalid decimal string",
 		},
 		{
 			name: "invalid issuance retirement location",
@@ -756,16 +744,10 @@ func (s *IntegrationTestSuite) TestTxSend() {
 		expectedErrMsg  string
 	}{
 		{
-			name:           "missing recipient",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 2 arg(s), received 0",
-		},
-		{
-			name:           "missing credits",
-			args:           []string{val1.Address.String()},
-			expectErr:      true,
-			expectedErrMsg: "Error: accepts 2 arg(s), received 1",
 		},
 		{
 			name:           "too many args",
@@ -811,7 +793,7 @@ func (s *IntegrationTestSuite) TestTxSend() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "expected a non-negative decimal, got abcde",
+			expectedErrMsg: "invalid decimal string",
 		},
 		{
 			name: "invalid retired amount",
@@ -824,7 +806,7 @@ func (s *IntegrationTestSuite) TestTxSend() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "expected a non-negative decimal, got abcde",
+			expectedErrMsg: "invalid decimal string",
 		},
 		{
 			name: "invalid retirement location",
@@ -927,16 +909,10 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 		expectedErrMsg  string
 	}{
 		{
-			name:           "missing credits",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 2 arg(s), received 0",
-		},
-		{
-			name:           "missing retirement location",
-			args:           []string{validCredits},
-			expectErr:      true,
-			expectedErrMsg: "Error: accepts 2 arg(s), received 1",
 		},
 		{
 			name:           "too many args",
@@ -969,7 +945,7 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "expected a positive decimal, got abcde",
+			expectedErrMsg: "invalid decimal string",
 		},
 		{
 			name: "invalid retirement location",
@@ -1071,16 +1047,10 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 		expectedErrMsg string
 	}{
 		{
-			name:           "missing credits",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
-		},
-		{
-			name:           "too many args",
-			args:           []string{"abcde", "abcde"},
-			expectErr:      true,
-			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
 			name: "invalid batch denom",

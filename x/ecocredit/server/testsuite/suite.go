@@ -271,12 +271,6 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expectErr: true,
 		},
 		{
-			name:      "can't cancel beyond precision of batch",
-			holder:    addr4,
-			toCancel:  "0.00000001",
-			expectErr: true,
-		},
-		{
 			name:               "can cancel a small amount of credits",
 			holder:             addr4,
 			toCancel:           "2.0002",
@@ -497,6 +491,13 @@ func (s *IntegrationTestSuite) TestScenario() {
 		expTradableSupply    string
 		expRetiredSupply     string
 	}{
+		{
+			name:               "can't send an amount with more decimal places than allowed precision (6)",
+			sendTradable:       "2.123456789",
+			sendRetired:        "10.123456789",
+			retirementLocation: "AF",
+			expectErr:          true,
+		},
 		{
 			name:               "can't send more tradable than is tradable",
 			sendTradable:       "2000",

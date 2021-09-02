@@ -89,7 +89,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 		expectedClassInfo *ecocredit.ClassInfo
 	}{
 		{
-			name:           "missing credit class",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
@@ -152,7 +152,7 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 		expectedBatchDenoms []string
 	}{
 		{
-			name:           "missing class id",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
@@ -250,7 +250,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 		expectedBatchInfo *ecocredit.BatchInfo
 	}{
 		{
-			name:           "missing credit batch",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
@@ -313,16 +313,10 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 		expectedRetiredAmount  string
 	}{
 		{
-			name:           "missing credit batch",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 2 arg(s), received 0",
-		},
-		{
-			name:           "missing address",
-			args:           []string{"abcde"},
-			expectErr:      true,
-			expectedErrMsg: "Error: accepts 2 arg(s), received 1",
 		},
 		{
 			name:           "too many args",
@@ -393,7 +387,7 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 		expectedRetiredSupply  string
 	}{
 		{
-			name:           "missing credit batch",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
