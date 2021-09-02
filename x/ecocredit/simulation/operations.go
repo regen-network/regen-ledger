@@ -508,7 +508,7 @@ func getRandomBatchFromClass(ctx regentypes.Context, r *rand.Rand, qryClient eco
 		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "no batch found"), nil
 	}
 
-	return batches[r.Intn(len(batches))], simtypes.NoOpMsg(ecocredit.ModuleName, msgType,""),nil
+	return batches[r.Intn(len(batches))], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""),nil
 }
 
 func contains(s []string, e string) bool {
