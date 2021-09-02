@@ -151,7 +151,7 @@ func TestGenesisValidate(t *testing.T) {
 			formatCreditTypeParamError(ecocredit.CreditType{"badbadnotgood", "C", "metric ton CO2 equivalent", 6}).Error(),
 		},
 		{
-			"invalid: wrong unit types does not match param types",
+			"invalid: type unit does not match param unit",
 			func() *ecocredit.GenesisState {
 				genesisState := ecocredit.DefaultGenesisState()
 				genesisState.ClassInfo = []*ecocredit.ClassInfo{
