@@ -1,7 +1,6 @@
 package ecocredit
 
 import (
-	"fmt"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/types/math"
 )
@@ -88,12 +87,12 @@ func validateClassInfoTypes(creditTypes []*CreditType, classInfos []*ClassInfo) 
 
 		// if it's not found, its an invalid credit type
 		if !ok {
-			return fmt.Errorf("unknown credit type abbreviation: %s", cInfo.CreditType.Abbreviation)
+			return sdkerrors.ErrNotFound.Wrapf("unknown credit type abbreviation: %s", cInfo.CreditType.Abbreviation)
 		}
 
 		// check that the credit types are equal
 		if cType != *cInfo.CreditType {
-			return fmt.Errorf("credit type %+v does not match param type %+v", *cInfo.CreditType, cType)
+			return sdkerrors.ErrInvalidType.Wrapf("credit type %+v does not match param type %+v", *cInfo.CreditType, cType)
 		}
 	}
 	return nil

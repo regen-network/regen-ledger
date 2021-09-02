@@ -78,7 +78,7 @@ func validateAllowedClassCreators(i interface{}) error {
 	for _, sAddr := range v {
 		_, err := sdk.AccAddressFromBech32(sAddr)
 		if err != nil {
-			return err
+			return sdkerrors.ErrInvalidAddress.Wrapf("invalid creator address: %s", err.Error())
 		}
 	}
 	return nil
