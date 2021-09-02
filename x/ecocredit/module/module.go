@@ -22,18 +22,17 @@ import (
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
-	"github.com/regen-network/regen-ledger/x/ecocredit/exported"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit/simulation"
 )
 
 type Module struct {
 	paramSpace    paramtypes.Subspace
-	accountKeeper exported.AccountKeeper
-	bankKeeper    exported.BankKeeper
+	accountKeeper ecocredit.AccountKeeper
+	bankKeeper    ecocredit.BankKeeper
 }
 
-func NewModule(paramSpace paramtypes.Subspace, accountKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper) Module {
+func NewModule(paramSpace paramtypes.Subspace, accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper) Module {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(ecocredit.ParamKeyTable())
 	}
