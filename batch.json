@@ -1,0 +1,15 @@
+{
+    "class_id": "A05",
+    "issuance": [
+        {
+            "recipient": "regen177xee5sdtdyj2q4y8x9qdenlleczg8lkyacq7l",
+            "tradable_amount": "100",
+            "retired_amount": "10",
+            "retirement_location": "US"
+        }
+    ],
+    "metadata": "12ab",
+    "start_date": "2020-01-01T00:00:00Z",
+    "end_date": "2020-10-01T00:00:00Z",
+    "projectLocation": "US"
+}
