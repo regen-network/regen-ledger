@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/regen-network/regen-ledger/orm"
-	regenMath "github.com/regen-network/regen-ledger/types/math"
+	regenmath "github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/group"
 )
 
@@ -148,7 +148,7 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, 
 	defer groupIt.Close()
 
 	for {
-		membersWeight := regenMath.NewDecFromInt64(0)
+		membersWeight := regenmath.NewDecFromInt64(0)
 		_, err := groupIt.LoadNext(&groupInfo)
 		if orm.ErrIteratorDone.Is(err) {
 			break
@@ -165,7 +165,7 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, 
 			if orm.ErrIteratorDone.Is(err) {
 				break
 			}
-			curMemWeight, err := regenMath.NewNonNegativeDecFromString(groupMember.GetMember().GetWeight())
+			curMemWeight, err := regenmath.NewNonNegativeDecFromString(groupMember.GetMember().GetWeight())
 			if err != nil {
 				msg += fmt.Sprintf("error while parsing non-nengative decimal for group member %s\n%v\n", groupMember.Member.Address, err)
 				return msg, broken
@@ -176,7 +176,7 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, 
 				return msg, broken
 			}
 		}
-		groupWeight, err := regenMath.NewNonNegativeDecFromString(groupInfo.GetTotalWeight())
+		groupWeight, err := regenmath.NewNonNegativeDecFromString(groupInfo.GetTotalWeight())
 		if err != nil {
 			msg += fmt.Sprintf("error while parsing non-nengative decimal for group with ID %d\n%v\n", groupInfo.GroupId, err)
 			return msg, broken
@@ -210,11 +210,11 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, pro
 
 	for {
 
-		totalVotingWeight := regenMath.NewDecFromInt64(0)
-		yesVoteWeight := regenMath.NewDecFromInt64(0)
-		noVoteWeight := regenMath.NewDecFromInt64(0)
-		abstainVoteWeight := regenMath.NewDecFromInt64(0)
-		vetoVoteWeight := regenMath.NewDecFromInt64(0)
+		totalVotingWeight := regenmath.NewDecFromInt64(0)
+		yesVoteWeight := regenmath.NewDecFromInt64(0)
+		noVoteWeight := regenmath.NewDecFromInt64(0)
+		abstainVoteWeight := regenmath.NewDecFromInt64(0)
+		vetoVoteWeight := regenmath.NewDecFromInt64(0)
 
 		_, err := proposalIt.LoadNext(&proposal)
 		if orm.ErrIteratorDone.Is(err) {
@@ -270,7 +270,7 @@ func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, pro
 				return msg, broken
 			}
 
-			curMemVotingWeight, err := regenMath.NewNonNegativeDecFromString(groupMem.Member.Weight)
+			curMemVotingWeight, err := regenmath.NewNonNegativeDecFromString(groupMem.Member.Weight)
 			if err != nil {
 				msg += fmt.Sprintf("error while parsing non-negative decimal for group member %s\n%v\n", groupMem.Member.Address, err)
 				return msg, broken

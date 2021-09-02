@@ -87,7 +87,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			append(
 				[]string{
 					val.Address.String(),
-					val.Address.String(),
 					validCreditType,
 					validMetadata,
 					fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
@@ -105,7 +104,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	// Store the first one in the test suite
 	s.classInfo = &ecocredit.ClassInfo{
 		ClassId:    classId,
-		Designer:   val.Address.String(),
+		Admin:      val.Address.String(),
 		Issuers:    []string{val.Address.String()},
 		CreditType: ecocredit.DefaultParams().CreditTypes[0],
 		Metadata:   validMetadataBytes,
@@ -200,55 +199,21 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 		expectedClassInfo *ecocredit.ClassInfo
 	}{
 		{
-			name:           "missing designer",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
-			expectedErrMsg: "accepts 4 arg(s), received 0",
-		},
-		{
-			name:           "missing issuer",
-			args:           []string{val0.Address.String()},
-			expectErr:      true,
-			expectedErrMsg: "accepts 4 arg(s), received 1",
-		},
-		{
-			name:           "missing credit type",
-			args:           []string{validCreditType},
-			expectErr:      true,
-			expectedErrMsg: "accepts 4 arg(s), received 1",
-		},
-		{
-			name:           "missing metadata",
-			args:           []string{val0.Address.String(), val0.Address.String()},
-			expectErr:      true,
-			expectedErrMsg: "accepts 4 arg(s), received 2",
+			expectedErrMsg: "accepts 3 arg(s), received 0",
 		},
 		{
 			name:           "too many args",
-			args:           []string{"abcde", "abcde", "abcde", "abcde", "dlskjf"},
+			args:           []string{"abcde", "abcde", "abcde", "abcde"},
 			expectErr:      true,
-			expectedErrMsg: "accepts 4 arg(s), received 5",
-		},
-		{
-			name: "invalid designer",
-			args: append(
-				[]string{
-					"abcde",
-					val0.Address.String(),
-					validCreditType,
-					validMetadata,
-					makeFlagFrom(val0.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "decoding bech32 failed: invalid bech32 string length 5",
+			expectedErrMsg: "accepts 3 arg(s), received 4",
 		},
 		{
 			name: "invalid issuer",
 			args: append(
 				[]string{
-					val0.Address.String(),
 					"abcde",
 					validCreditType,
 					validMetadata,
@@ -264,7 +229,6 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			args: append(
 				[]string{
 					val0.Address.String(),
-					val0.Address.String(),
 					validCreditType,
 					"=",
 					makeFlagFrom(val0.Address.String()),
@@ -279,7 +243,6 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			args: append(
 				[]string{
 					val0.Address.String(),
-					val0.Address.String(),
 					validCreditType,
 					validMetadata,
 				},
@@ -292,7 +255,6 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			name: "invalid credit type",
 			args: append(
 				[]string{
-					val0.Address.String(),
 					val0.Address.String(),
 					"caarbon",
 					validMetadata,
@@ -309,7 +271,6 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			args: append(
 				[]string{
 					val0.Address.String(),
-					val0.Address.String(),
 					validCreditType,
 					validMetadata,
 					makeFlagFrom(val0.Address.String()),
@@ -318,7 +279,25 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			),
 			expectErr: false,
 			expectedClassInfo: &ecocredit.ClassInfo{
-				Designer: val0.Address.String(),
+				Admin:    val0.Address.String(),
+				Issuers:  []string{val0.Address.String()},
+				Metadata: []byte{0x1},
+			},
+		},
+		{
+			name: "single issuer with from key-name",
+			args: append(
+				[]string{
+					val0.Address.String(),
+					validCreditType,
+					validMetadata,
+					makeFlagFrom("node0"),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr: false,
+			expectedClassInfo: &ecocredit.ClassInfo{
+				Admin:    val0.Address.String(),
 				Issuers:  []string{val0.Address.String()},
 				Metadata: []byte{0x1},
 			},
@@ -327,7 +306,6 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			name: "multiple issuers",
 			args: append(
 				[]string{
-					val0.Address.String(),
 					strings.Join(
 						[]string{
 							val0.Address.String(),
@@ -343,7 +321,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			),
 			expectErr: false,
 			expectedClassInfo: &ecocredit.ClassInfo{
-				Designer: val0.Address.String(),
+				Admin:    val0.Address.String(),
 				Issuers:  []string{val0.Address.String(), val1.Address.String()},
 				Metadata: []byte{0x1},
 			},
@@ -352,7 +330,6 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			name: "with amino-json",
 			args: append(
 				[]string{
-					val0.Address.String(),
 					val0.Address.String(),
 					validCreditType,
 					validMetadata,
@@ -363,7 +340,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			),
 			expectErr: false,
 			expectedClassInfo: &ecocredit.ClassInfo{
-				Designer: val0.Address.String(),
+				Admin:    val0.Address.String(),
 				Issuers:  []string{val0.Address.String()},
 				Metadata: []byte{0x1},
 			},
@@ -407,7 +384,7 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 									var queryRes ecocredit.QueryClassInfoResponse
 									s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
 
-									s.Require().Equal(tc.expectedClassInfo.Designer, queryRes.Info.Designer)
+									s.Require().Equal(tc.expectedClassInfo.Admin, queryRes.Info.Admin)
 									s.Require().Equal(tc.expectedClassInfo.Issuers, queryRes.Info.Issuers)
 									s.Require().Equal(tc.expectedClassInfo.Metadata, queryRes.Info.Metadata)
 								}
@@ -502,16 +479,16 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 		expectedBatchInfo *ecocredit.BatchInfo
 	}{
 		{
-			name:           "missing filename",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
 		},
 		{
 			name:           "too many args",
-			args:           []string{"abcde", "abcde"},
+			args:           []string{"r", "e", "g", "e", "n"},
 			expectErr:      true,
-			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
+			expectedErrMsg: "Error: accepts 1 arg(s), received 5",
 		},
 		{
 			name: "invalid json",
@@ -596,7 +573,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "expected a non-negative decimal, got abcde",
+			expectedErrMsg: "invalid decimal string",
 		},
 		{
 			name: "invalid issuance retired amount",
@@ -608,7 +585,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "expected a non-negative decimal, got abcde",
+			expectedErrMsg: "invalid decimal string",
 		},
 		{
 			name: "invalid issuance retirement location",
@@ -639,6 +616,24 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				[]string{
 					validBatchJson,
 					makeFlagFrom(val.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr: false,
+			expectedBatchInfo: &ecocredit.BatchInfo{
+				ClassId:         s.classInfo.ClassId,
+				Issuer:          val.Address.String(),
+				TotalAmount:     "100.000001",
+				Metadata:        []byte{0x1},
+				AmountCancelled: "0",
+			},
+		},
+		{
+			name: "valid batch with from key-name",
+			args: append(
+				[]string{
+					validBatchJson,
+					makeFlagFrom("node0"),
 				},
 				s.commonTxFlags()...,
 			),
@@ -749,16 +744,10 @@ func (s *IntegrationTestSuite) TestTxSend() {
 		expectedErrMsg  string
 	}{
 		{
-			name:           "missing recipient",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 2 arg(s), received 0",
-		},
-		{
-			name:           "missing credits",
-			args:           []string{val1.Address.String()},
-			expectErr:      true,
-			expectedErrMsg: "Error: accepts 2 arg(s), received 1",
 		},
 		{
 			name:           "too many args",
@@ -804,7 +793,7 @@ func (s *IntegrationTestSuite) TestTxSend() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "expected a non-negative decimal, got abcde",
+			expectedErrMsg: "invalid decimal string",
 		},
 		{
 			name: "invalid retired amount",
@@ -817,7 +806,7 @@ func (s *IntegrationTestSuite) TestTxSend() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "expected a non-negative decimal, got abcde",
+			expectedErrMsg: "invalid decimal string",
 		},
 		{
 			name: "invalid retirement location",
@@ -920,16 +909,10 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 		expectedErrMsg  string
 	}{
 		{
-			name:           "missing credits",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 2 arg(s), received 0",
-		},
-		{
-			name:           "missing retirement location",
-			args:           []string{validCredits},
-			expectErr:      true,
-			expectedErrMsg: "Error: accepts 2 arg(s), received 1",
 		},
 		{
 			name:           "too many args",
@@ -962,7 +945,7 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "expected a positive decimal, got abcde",
+			expectedErrMsg: "invalid decimal string",
 		},
 		{
 			name: "invalid retirement location",
@@ -1064,16 +1047,10 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 		expectedErrMsg string
 	}{
 		{
-			name:           "missing credits",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
-		},
-		{
-			name:           "too many args",
-			args:           []string{"abcde", "abcde"},
-			expectErr:      true,
-			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
 			name: "invalid batch denom",

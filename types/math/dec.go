@@ -17,6 +17,10 @@ type Dec struct {
 	dec apd.Decimal
 }
 
+const mathCodespace = "math"
+
+var ErrInvalidDecString = errors.Register(mathCodespace, 1, "invalid decimal string")
+
 // In cosmos-sdk#7773, decimal128 (with 34 digits of precision) was suggested for performing
 // Quo/Mult arithmetic generically across the SDK. Even though the SDK
 // has yet to support a GDA with decimal128 (34 digits), we choose to utilize it here.
@@ -27,10 +31,6 @@ var dec128Context = apd.Context{
 	MinExponent: apd.MinExponent,
 	Traps:       apd.DefaultTraps,
 }
-
-const mathCodespace = "math"
-
-var ErrInvalidDecString = errors.Register(mathCodespace, 1, "invalid decimal string")
 
 func NewDecFromString(s string) (Dec, error) {
 	d, _, err := apd.NewFromString(s)
@@ -43,7 +43,7 @@ func NewDecFromString(s string) (Dec, error) {
 func NewNonNegativeDecFromString(s string) (Dec, error) {
 	d, err := NewDecFromString(s)
 	if err != nil {
-		return Dec{}, ErrInvalidDecString.Wrapf("expected a non-negative decimal, got %s", s)
+		return Dec{}, ErrInvalidDecString.Wrap(err.Error())
 	}
 	if d.IsNegative() {
 		return Dec{}, ErrInvalidDecString.Wrapf("expected a non-negative decimal, got %s", s)
@@ -52,12 +52,9 @@ func NewNonNegativeDecFromString(s string) (Dec, error) {
 }
 
 func NewNonNegativeFixedDecFromString(s string, max uint32) (Dec, error) {
-	d, err := NewDecFromString(s)
+	d, err := NewNonNegativeDecFromString(s)
 	if err != nil {
-		return Dec{}, ErrInvalidDecString.Wrapf("expected a non-negative decimal, got %s", s)
-	}
-	if d.IsNegative() {
-		return Dec{}, ErrInvalidDecString.Wrapf("expected a non-negative decimal, got %s", s)
+		return Dec{}, err
 	}
 	if d.NumDecimalPlaces() > max {
 		return Dec{}, fmt.Errorf("%s exceeds maximum decimal places: %d", s, max)
@@ -68,7 +65,7 @@ func NewNonNegativeFixedDecFromString(s string, max uint32) (Dec, error) {
 func NewPositiveDecFromString(s string) (Dec, error) {
 	d, err := NewDecFromString(s)
 	if err != nil {
-		return Dec{}, ErrInvalidDecString.Wrapf("expected a positive decimal, got %s", s)
+		return Dec{}, ErrInvalidDecString.Wrap(err.Error())
 	}
 	if !d.IsPositive() {
 		return Dec{}, ErrInvalidDecString.Wrapf("expected a positive decimal, got %s", s)
@@ -77,12 +74,9 @@ func NewPositiveDecFromString(s string) (Dec, error) {
 }
 
 func NewPositiveFixedDecFromString(s string, max uint32) (Dec, error) {
-	d, err := NewDecFromString(s)
+	d, err := NewPositiveDecFromString(s)
 	if err != nil {
-		return Dec{}, ErrInvalidDecString.Wrapf("expected a positive decimal, got %s", s)
-	}
-	if !d.IsPositive() {
-		return Dec{}, ErrInvalidDecString.Wrapf("expected a positive decimal, got %s", s)
+		return Dec{}, err
 	}
 	if d.NumDecimalPlaces() > max {
 		return Dec{}, fmt.Errorf("%s exceeds maximum decimal places: %d", s, max)

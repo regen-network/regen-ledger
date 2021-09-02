@@ -116,23 +116,34 @@ type table struct {
 //
 // Create iterates though the registered callbacks and may add secondary index keys by them.
 func (a table) Create(ctx HasKVStore, rowID RowID, obj codec.ProtoMarshaler) error {
-	if len(rowID) == 0 {
+	if err := a.assertValue(rowID, obj); err != nil {
+		return err
+	}
+	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
+	return a.save(ctx, store, rowID, obj, nil)
+}
+
+// assertValue performs common assertions for key and value to be stored using ORM.
+func (a table) assertValue(key RowID, obj codec.ProtoMarshaler) error {
+	if len(key) == 0 {
 		return ErrEmptyKey
 	}
 	if err := assertCorrectType(a.model, obj); err != nil {
 		return err
 	}
-	if err := assertValid(obj); err != nil {
-		return err
-	}
-	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
-	v, err := a.cdc.Marshal(obj)
+	return assertValid(obj)
+}
+
+// save stores the K/V in the store
+func (a table) save(ctx HasKVStore, store prefix.Store, key RowID, obj, oldObj codec.ProtoMarshaler) error {
+	val, err := a.cdc.Marshal(obj)
 	if err != nil {
-		return errors.Wrapf(err, "failed to serialize %T", obj)
+		return errors.Wrapf(err, "failed to serialize %T", val)
 	}
-	store.Set(rowID, v)
+
+	store.Set(key, val)
 	for i, itc := range a.afterSave {
-		if err := itc(ctx, rowID, obj, nil); err != nil {
+		if err := itc(ctx, key, obj, oldObj); err != nil {
 			return errors.Wrapf(err, "interceptor %d failed", i)
 		}
 	}
@@ -158,18 +169,7 @@ func (a table) Save(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler) 
 	if err := a.GetOne(ctx, rowID, oldValue); err != nil {
 		return errors.Wrap(err, "load old value")
 	}
-	newValueEncoded, err := a.cdc.Marshal(newValue)
-	if err != nil {
-		return errors.Wrapf(err, "failed to serialize %T", newValue)
-	}
-
-	store.Set(rowID, newValueEncoded)
-	for i, itc := range a.afterSave {
-		if err := itc(ctx, rowID, newValue, oldValue); err != nil {
-			return errors.Wrapf(err, "interceptor %d failed", i)
-		}
-	}
-	return nil
+	return a.save(ctx, store, rowID, newValue, oldValue)
 }
 
 func assertValid(obj codec.ProtoMarshaler) error {
@@ -203,10 +203,9 @@ func (a table) Delete(ctx HasKVStore, rowID RowID) error {
 	return nil
 }
 
-// Has checks if a key exists. Panics on nil key, and returns false on empty key.
+// Has checks if a key exists. Returns false when the key is empty or nil because
+// we don't allow creation of values without a key.
 func (a table) Has(ctx HasKVStore, key RowID) bool {
-	// We don't allow creation of values with an empty key, so Has will
-	// always return false
 	if len(key) == 0 {
 		return false
 	}
@@ -217,10 +216,9 @@ func (a table) Has(ctx HasKVStore, key RowID) bool {
 }
 
 // GetOne load the object persisted for the given RowID into the dest parameter.
-// If none exists `ErrNotFound` is returned instead. Parameters must not be nil.
+// If none exists or `rowID==nil` then `ErrNotFound` is returned instead.
+// Parameters must not be nil - we don't allow creation of values with empty keys.
 func (a table) GetOne(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) error {
-	// We don't allow creation of values with an empty key, so we always
-	// return not found error
 	if len(rowID) == 0 {
 		return ErrNotFound
 	}
