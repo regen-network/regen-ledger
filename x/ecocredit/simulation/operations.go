@@ -492,7 +492,7 @@ func getRandomClass(ctx regentypes.Context, r *rand.Rand, qryClient ecocredit.Qu
 		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "no credit class found"), nil
 	}
 
-	return classes[r.Intn(len(classes))], simtypes.NoOpMsg(ecocredit.ModuleName, msgType,""),nil
+	return classes[r.Intn(len(classes))], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""),nil
 }
 
 func getRandomBatchFromClass(ctx regentypes.Context, r *rand.Rand, qryClient ecocredit.QueryClient,  msgType, classID string) (*ecocredit.BatchInfo, simtypes.OperationMsg, error) {
