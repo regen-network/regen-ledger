@@ -38,7 +38,7 @@ func TestParamChanges(t *testing.T) {
 	}{
 		{"ecocredit/CreditClassFee", "CreditClassFee", "[{\"denom\":\"stake\",\"amount\":\"1\"}]", "ecocredit"},
 		{"ecocredit/AllowlistEnabled", "AllowlistEnabled", "true", "ecocredit"},
-		{"ecocredit/AllowedClassDesigners", "AllowedClassDesigners", "[\"cosmos18wa8fq26625ap562yvxvd026gtm3yq904v3kk5\",\"cosmos1xrstn0emdpfkh3ajhmwgmxf4cj60zem2th7cy7\"]", "ecocredit"},
+		{"ecocredit/AllowedClassCreators", "AllowedClassCreators", "[\"cosmos18wa8fq26625ap562yvxvd026gtm3yq904v3kk5\",\"cosmos1xrstn0emdpfkh3ajhmwgmxf4cj60zem2th7cy7\"]", "ecocredit"},
 		{"ecocredit/CreditTypes", "CreditTypes", string(bz), "ecocredit"},
 	}
 

@@ -35,13 +35,13 @@ func ParamChanges(r *rand.Rand) []simtypes.ParamChange {
 			},
 		),
 
-		simulation.NewSimParamChange(ecocredit.ModuleName, string(ecocredit.KeyAllowedClassDesigners),
+		simulation.NewSimParamChange(ecocredit.ModuleName, string(ecocredit.KeyAllowedClassCreators),
 			func(r *rand.Rand) string {
 				var bz []byte
 				var err error
 				if allowListEnabled {
 					accs := simtypes.RandomAccounts(r, 10)
-					bz, err = json.Marshal(genAllowedClassDesigners(r, accs))
+					bz, err = json.Marshal(genAllowedClassCreators(r, accs))
 					if err != nil {
 						panic(err)
 					}

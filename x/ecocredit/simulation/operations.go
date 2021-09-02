@@ -118,7 +118,7 @@ func SimulateMsgCreateClass(ak exported.AccountKeeper, bk exported.BankKeeper,
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		designer := accs[0]
+		admin := accs[0]
 		issuers := randomIssuers(r, accs)
 
 		ctx := regentypes.Context{Context: sdkCtx}
@@ -128,11 +128,11 @@ func SimulateMsgCreateClass(ak exported.AccountKeeper, bk exported.BankKeeper,
 		}
 
 		params := res.Params
-		if params.AllowlistEnabled && !contains(params.AllowedClassDesigners, designer.Address.String()) {
+		if params.AllowlistEnabled && !contains(params.AllowedClassCreators, admin.Address.String()) {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateClass, "not allowed to create credit class"), nil, nil // skip
 		}
 
-		spendable := bk.SpendableCoins(sdkCtx, designer.Address)
+		spendable := bk.SpendableCoins(sdkCtx, admin.Address)
 		if spendable.IsAllLTE(params.CreditClassFee) {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateClass, "not enough balance"), nil, nil
 		}
@@ -140,7 +140,7 @@ func SimulateMsgCreateClass(ak exported.AccountKeeper, bk exported.BankKeeper,
 		creditTypes := []string{"carbon", "biodiversity"}
 
 		msg := &ecocredit.MsgCreateClass{
-			Designer:   designer.Address.String(),
+			Admin:      admin.Address.String(),
 			Issuers:    issuers,
 			Metadata:   []byte(simtypes.RandStringOfLength(r, 10)),
 			CreditType: creditTypes[r.Intn(len(creditTypes))],
@@ -154,7 +154,7 @@ func SimulateMsgCreateClass(ak exported.AccountKeeper, bk exported.BankKeeper,
 			Msg:             msg,
 			MsgType:         msg.Type(),
 			Context:         sdkCtx,
-			SimAccount:      designer,
+			SimAccount:      admin,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
 			ModuleName:      ecocredit.ModuleName,
@@ -204,7 +204,7 @@ func SimulateMsgCreateBatch(ak exported.AccountKeeper, bk exported.BankKeeper,
 		msg := &ecocredit.MsgCreateBatch{
 			Issuer:          issuer.Address.String(),
 			ClassId:         classID,
-			Issuance:        generateBatchIssuence(r, accs),
+			Issuance:        generateBatchIssuance(r, accs),
 			StartDate:       &now,
 			EndDate:         &tenHours,
 			Metadata:        []byte(simtypes.RandStringOfLength(r, 10)),
@@ -481,7 +481,7 @@ func SimulateMsgCancel(ak exported.AccountKeeper, bk exported.BankKeeper,
 	}
 }
 
-func getRandomClass(ctx regentypes.Context, r *rand.Rand, qryClient ecocredit.QueryClient,  msgType string) (*ecocredit.ClassInfo, simtypes.OperationMsg, error) {
+func getRandomClass(ctx regentypes.Context, r *rand.Rand, qryClient ecocredit.QueryClient, msgType string) (*ecocredit.ClassInfo, simtypes.OperationMsg, error) {
 	res, err := qryClient.Classes(ctx, &ecocredit.QueryClassesRequest{})
 	if err != nil {
 		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err
@@ -492,7 +492,7 @@ func getRandomClass(ctx regentypes.Context, r *rand.Rand, qryClient ecocredit.Qu
 		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "no credit class found"), nil
 	}
 
-	return classes[r.Intn(len(classes))], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""),nil
+	return classes[r.Intn(len(classes))], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
 
 func getRandomBatchFromClass(ctx regentypes.Context, r *rand.Rand, qryClient ecocredit.QueryClient, msgType, classID string) (*ecocredit.BatchInfo, simtypes.OperationMsg, error) {
@@ -508,7 +508,7 @@ func getRandomBatchFromClass(ctx regentypes.Context, r *rand.Rand, qryClient eco
 		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "no batch found"), nil
 	}
 
-	return batches[r.Intn(len(batches))], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""),nil
+	return batches[r.Intn(len(batches))], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
 
 func contains(s []string, e string) bool {
@@ -531,7 +531,7 @@ func randomIssuers(r *rand.Rand, accounts []simtypes.Account) []string {
 	return issuers
 }
 
-func generateBatchIssuence(r *rand.Rand, accs []simtypes.Account) []*ecocredit.MsgCreateBatch_BatchIssuance {
+func generateBatchIssuance(r *rand.Rand, accs []simtypes.Account) []*ecocredit.MsgCreateBatch_BatchIssuance {
 	numIssuences := simtypes.RandIntBetween(r, 3, 10)
 	res := make([]*ecocredit.MsgCreateBatch_BatchIssuance, numIssuences)
 

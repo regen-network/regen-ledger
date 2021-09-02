@@ -19,7 +19,7 @@ const (
 	balance              = "balances"
 	supply               = "supplies"
 	classFee             = "credit_class_fee"
-	allowedDesigners     = "allowed_class_designers"
+	allowedCreators      = "allowed_class_creators"
 	typeAllowListEnabled = "allow_list_enabled"
 	typeCreditTypes      = "credit_types"
 )
@@ -29,16 +29,16 @@ func genCreditClassFee(r *rand.Rand) sdk.Coins {
 	return sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1)))
 }
 
-// genAllowedClassDesigners generate random set of designers
-func genAllowedClassDesigners(r *rand.Rand, accs []simtypes.Account) []string {
+// genAllowedClassCreators generate random set of creators
+func genAllowedClassCreators(r *rand.Rand, accs []simtypes.Account) []string {
 	n := simtypes.RandIntBetween(r, 1, len(accs))
-	designers := make([]string, n)
+	creators := make([]string, n)
 
 	for i := 0; i < n; i++ {
-		designers[i] = accs[i].Address.String()
+		creators[i] = accs[i].Address.String()
 	}
 
-	return designers
+	return creators
 }
 
 func genAllowListEnabled(r *rand.Rand) bool {
@@ -64,10 +64,12 @@ func genCreditTypes(r *rand.Rand) []*ecocredit.CreditType {
 
 func genClasses(r *rand.Rand, accounts []simtypes.Account) []*ecocredit.ClassInfo {
 	classes := make([]*ecocredit.ClassInfo, 3)
+	creditType := ecocredit.DefaultParams().CreditTypes[0]
+
 	for i := 1; i < 4; i++ {
 		classes[i-1] = &ecocredit.ClassInfo{
-			ClassId:    fmt.Sprintf("C%02d", i),
-			Designer:   accounts[0].Address.String(),
+			ClassId:    ecocredit.FormatClassID(creditType, uint64(i)),
+			Admin:      accounts[0].Address.String(),
 			Issuers:    []string{accounts[0].Address.String(), accounts[1].Address.String(), accounts[2].Address.String()},
 			Metadata:   []byte(simtypes.RandStringOfLength(r, 10)),
 			CreditType: ecocredit.DefaultParams().CreditTypes[0],
@@ -79,9 +81,10 @@ func genClasses(r *rand.Rand, accounts []simtypes.Account) []*ecocredit.ClassInf
 func genBatches(r *rand.Rand, startTime, endTime time.Time) []*ecocredit.BatchInfo {
 	batches := make([]*ecocredit.BatchInfo, 3)
 	accounts := simtypes.RandomAccounts(r, 3)
+	creditType := ecocredit.DefaultParams().CreditTypes[0]
 
 	for i := 1; i < 4; i++ {
-		classID := fmt.Sprintf("C%02d", i)
+		classID := ecocredit.FormatClassID(creditType, uint64(i))
 		bd, _ := ecocredit.FormatDenom(classID, uint64(i), &startTime, &endTime)
 		batches[i-1] = &ecocredit.BatchInfo{
 			ClassId:         classID,
@@ -102,9 +105,10 @@ func genBatches(r *rand.Rand, startTime, endTime time.Time) []*ecocredit.BatchIn
 func genBalances(r *rand.Rand, startTime, endTime time.Time) []*ecocredit.Balance {
 	var balances []*ecocredit.Balance
 	accounts := simtypes.RandomAccounts(r, 4)
+	creditType := ecocredit.DefaultParams().CreditTypes[0]
 
 	for i := 0; i < 3; i++ {
-		classID := fmt.Sprintf("C%02d", i+1)
+		classID := ecocredit.FormatClassID(creditType, uint64(i+1))
 		bd, _ := ecocredit.FormatDenom(classID, uint64(i+1), &startTime, &endTime)
 		balances = append(balances,
 			&ecocredit.Balance{
@@ -127,9 +131,10 @@ func genBalances(r *rand.Rand, startTime, endTime time.Time) []*ecocredit.Balanc
 
 func genSupplies(r *rand.Rand, startTime, endTime time.Time) []*ecocredit.Supply {
 	supplies := make([]*ecocredit.Supply, 3)
+	creditType := ecocredit.DefaultParams().CreditTypes[0]
 
 	for i := 0; i < 3; i++ {
-		classID := fmt.Sprintf("C%02d", i+1)
+		classID := ecocredit.FormatClassID(creditType, uint64(i+1))
 		bd, _ := ecocredit.FormatDenom(classID, uint64(i+1), &startTime, &endTime)
 		supplies[i] = &ecocredit.Supply{
 			BatchDenom:     bd,
@@ -146,12 +151,12 @@ func RandomizedGenState(simState *module.SimulationState) {
 	startTime := simtypes.RandTimestamp(simState.Rand)
 	endTime := startTime.Add(24 * time.Hour)
 
-	//params
+	// params
 	var (
-		creditClassFee        sdk.Coins
-		allowedClassDesigners []string
-		allowListEnabled      bool
-		creditTypes           []*ecocredit.CreditType
+		creditClassFee       sdk.Coins
+		allowedClassCreators []string
+		allowListEnabled     bool
+		creditTypes          []*ecocredit.CreditType
 	)
 
 	simState.AppParams.GetOrGenerate(
@@ -165,12 +170,12 @@ func RandomizedGenState(simState *module.SimulationState) {
 	)
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, allowedDesigners, &allowedClassDesigners, simState.Rand,
+		simState.Cdc, allowedCreators, &allowedClassCreators, simState.Rand,
 		func(r *rand.Rand) {
 			if allowListEnabled {
-				allowedClassDesigners = genAllowedClassDesigners(r, simState.Accounts)
+				allowedClassCreators = genAllowedClassCreators(r, simState.Accounts)
 			} else {
-				allowedClassDesigners = []string{}
+				allowedClassCreators = []string{}
 			}
 		},
 	)
@@ -210,10 +215,10 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 	ecocreditGenesis := ecocredit.GenesisState{
 		Params: ecocredit.Params{
-			CreditClassFee:        creditClassFee,
-			AllowedClassDesigners: allowedClassDesigners,
-			AllowlistEnabled:      allowListEnabled,
-			CreditTypes:           creditTypes,
+			CreditClassFee:       creditClassFee,
+			AllowedClassCreators: allowedClassCreators,
+			AllowlistEnabled:     allowListEnabled,
+			CreditTypes:          creditTypes,
 		},
 		ClassInfo: classes,
 		BatchInfo: batches,
