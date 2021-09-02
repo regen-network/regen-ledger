@@ -495,7 +495,7 @@ func getRandomClass(ctx regentypes.Context, r *rand.Rand, qryClient ecocredit.Qu
 	return classes[r.Intn(len(classes))], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""),nil
 }
 
-func getRandomBatchFromClass(ctx regentypes.Context, r *rand.Rand, qryClient ecocredit.QueryClient,  msgType, classID string) (*ecocredit.BatchInfo, simtypes.OperationMsg, error) {
+func getRandomBatchFromClass(ctx regentypes.Context, r *rand.Rand, qryClient ecocredit.QueryClient, msgType, classID string) (*ecocredit.BatchInfo, simtypes.OperationMsg, error) {
 	res, err := qryClient.Batches(ctx, &ecocredit.QueryBatchesRequest{
 		ClassId: classID,
 	})
