@@ -272,7 +272,7 @@ func SimulateMsgSend(ak exported.AccountKeeper, bk exported.BankKeeper,
 
 		recipient, _ := simtypes.RandomAcc(r, accs)
 		if batch.Issuer == recipient.Address.String() {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, "sender & reciever are same"), nil, nil
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, "sender & recipient are same"), nil, nil
 		}
 
 		addr, err := sdk.AccAddressFromBech32(batch.Issuer)
