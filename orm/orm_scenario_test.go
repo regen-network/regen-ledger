@@ -298,13 +298,13 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 		require.Equal(t, uint64(i), groupRowID)
 	}
 	var groups []*testdata.GroupInfo
-	seqVal, err := orm.ExportTableData(ctx, k.groupTable, &groups)
+	seqVal, err := k.groupTable.Export(ctx, &groups)
 	require.NoError(t, err)
 
 	// when a new db seeded
 	ctx = orm.NewMockContext()
 
-	err = orm.ImportTableData(ctx, k.groupTable, groups, seqVal)
+	err = k.groupTable.Import(ctx, groups, seqVal)
 	require.NoError(t, err)
 	// then all data is set again
 
@@ -354,13 +354,13 @@ func TestExportImportStatePrimaryKeyTable(t *testing.T) {
 		testRecords[i-1] = g
 	}
 	var groupMembers []*testdata.GroupMember
-	_, err := orm.ExportTableData(ctx, k.groupMemberTable, &groupMembers)
+	_, err := k.groupMemberTable.Export(ctx, &groupMembers)
 	require.NoError(t, err)
 
 	// when a new db seeded
 	ctx = orm.NewMockContext()
 
-	err = orm.ImportTableData(ctx, k.groupMemberTable, groupMembers, 0)
+	err = k.groupMemberTable.Import(ctx, groupMembers, 0)
 	require.NoError(t, err)
 
 	// then all data is set again

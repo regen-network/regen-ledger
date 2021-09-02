@@ -140,7 +140,7 @@ func (m *primaryKeyMachine) Update(t *rapid.T) {
 }
 
 // Set is one of the model commands. It sets the value at a key in the table
-// wether it exists or not.
+// whether it exists or not.
 func (m *primaryKeyMachine) Set(t *rapid.T) {
 	g := genGroupMember.Draw(t, "g").(*testdata.GroupMember)
 	pk := string(orm.PrimaryKey(g))

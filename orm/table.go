@@ -112,8 +112,8 @@ type table struct {
 // Create persists the given object under the rowID key, returning an
 // ErrUniqueConstraint if a value already exists at that key.
 //
-// Create iterates though the registered callbacks and may add secondary index
-// keys by them.
+// Create iterates through the registered callbacks that may add secondary index
+// keys.
 func (a table) Create(ctx HasKVStore, rowID RowID, obj codec.ProtoMarshaler) error {
 	if a.Has(ctx, rowID) {
 		return ErrUniqueConstraint
@@ -122,11 +122,13 @@ func (a table) Create(ctx HasKVStore, rowID RowID, obj codec.ProtoMarshaler) err
 	return a.Set(ctx, rowID, obj)
 }
 
-// Update updates the given object under the rowID key. It expects the key to exists already
-// and fails with an `ErrNotFound` otherwise. Any caller must therefore make sure that this contract
-// is fulfilled. Parameters must not be nil.
+// Update updates the given object under the rowID key. It expects the key to
+// exists already and fails with an `ErrNotFound` otherwise. Any caller must
+// therefore make sure that this contract is fulfilled. Parameters must not be
+// nil.
 //
-// Update iterates though the registered callbacks and may add or remove secondary index keys by them.
+// Update iterates through the registered callbacks that may add or remove
+// secondary index keys.
 func (a table) Update(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler) error {
 	if !a.Has(ctx, rowID) {
 		return ErrNotFound
@@ -138,8 +140,8 @@ func (a table) Update(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler
 // Set persists the given object under the rowID key. It does not check if the
 // key already exists and overwrites the value if it does.
 //
-// Set iterates though the registered callbacks and may add secondary index keys
-// by them.
+// Set iterates through the registered callbacks that may add secondary index
+// keys.
 func (a table) Set(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler) error {
 	if len(rowID) == 0 {
 		return ErrEmptyKey
@@ -182,11 +184,12 @@ func assertValid(obj codec.ProtoMarshaler) error {
 	return nil
 }
 
-// Delete removes the object under the rowID key. It expects the key to exists already
-// and fails with a `ErrNotFound` otherwise. Any caller must therefore make sure that this contract
-// is fulfilled.
+// Delete removes the object under the rowID key. It expects the key to exists
+// already and fails with a `ErrNotFound` otherwise. Any caller must therefore
+// make sure that this contract is fulfilled.
 //
-// Delete iterates though the registered callbacks and removes secondary index keys by them.
+// Delete iterates through the registered callbacks that remove secondary index
+// keys.
 func (a table) Delete(ctx HasKVStore, rowID RowID) error {
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
 
@@ -204,8 +207,8 @@ func (a table) Delete(ctx HasKVStore, rowID RowID) error {
 	return nil
 }
 
-// Has checks if a key exists. Returns false when the key is empty or nil because
-// we don't allow creation of values without a key.
+// Has checks if a key exists. Returns false when the key is empty or nil
+// because we don't allow creation of values without a key.
 func (a table) Has(ctx HasKVStore, key RowID) bool {
 	if len(key) == 0 {
 		return false
@@ -276,15 +279,22 @@ func (a table) ReversePrefixScan(ctx HasKVStore, start, end RowID) (Iterator, er
 	}, nil
 }
 
-// ExportIterator returns an iterator over the values to export
-func (a table) ExportIterator(ctx HasKVStore) (Iterator, error) {
-	return a.PrefixScan(ctx, nil, nil)
+// Export stores all the values in the table in the passed ModelSlicePtr.
+func (a table) Export(ctx HasKVStore, dest ModelSlicePtr) (uint64, error) {
+	it, err := a.PrefixScan(ctx, nil, nil)
+	if err != nil {
+		return 0, errors.Wrap(err, "table Export failure when exporting table data")
+	}
+	_, err = ReadAll(it, dest)
+	if err != nil {
+		return 0, err
+	}
+	return 0, nil
 }
 
-// ImportSlice clears the table and initialises it with the data in the
-// interface{}. The interface{} should be a slice of values which implement the
-// PrimaryKeyed interface, but this is checked at runtime.
-func (a table) ImportSlice(ctx HasKVStore, data interface{}) error {
+// Import clears the table and initializes it from the given data interface{}.
+// data should be a slice of structs that implement PrimaryKeyed.
+func (a table) Import(ctx HasKVStore, data interface{}, _ uint64) error {
 	// Clear all data
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
 	it := store.Iterator(nil, nil)

@@ -123,17 +123,21 @@ type PrimaryKeyTable struct {
 
 // Create persists the given object under their primary key. It checks if the
 // key already exists and may return an `ErrUniqueConstraint`.
-// Create iterates though the registered callbacks and may add secondary index keys by them.
+//
+// Create iterates through the registered callbacks that may add secondary
+// index keys.
 func (a PrimaryKeyTable) Create(ctx HasKVStore, obj PrimaryKeyed) error {
 	rowID := PrimaryKey(obj)
 	return a.table.Create(ctx, rowID, obj)
 }
 
-// Update updates the given object under the primary key. It expects the key to exists already
-// and fails with an `ErrNotFound` otherwise. Any caller must therefore make sure that this contract
-// is fulfilled. Parameters must not be nil.
+// Update updates the given object under the primary key. It expects the key to
+// exists already and fails with an `ErrNotFound` otherwise. Any caller must
+// therefore make sure that this contract is fulfilled. Parameters must not be
+// nil.
 //
-// Update iterates though the registered callbacks and may add or remove secondary index keys by them.
+// Update iterates through the registered callbacks that may add or remove
+// secondary index keys.
 func (a PrimaryKeyTable) Update(ctx HasKVStore, newValue PrimaryKeyed) error {
 	return a.table.Update(ctx, PrimaryKey(newValue), newValue)
 }
@@ -141,17 +145,18 @@ func (a PrimaryKeyTable) Update(ctx HasKVStore, newValue PrimaryKeyed) error {
 // Set persists the given object under the rowID key. It does not check if the
 // key already exists and overwrites the value if it does.
 //
-// Set iterates though the registered callbacks and may add secondary index keys
-// by them.
+// Set iterates through the registered callbacks that may add secondary index
+// keys.
 func (a PrimaryKeyTable) Set(ctx HasKVStore, newValue PrimaryKeyed) error {
 	return a.table.Set(ctx, PrimaryKey(newValue), newValue)
 }
 
-// Delete removes the object. It expects the primary key to exists already
-// and fails with a `ErrNotFound` otherwise. Any caller must therefore make sure that this contract
-// is fulfilled.
+// Delete removes the object. It expects the primary key to exists already and
+// fails with a `ErrNotFound` otherwise. Any caller must therefore make sure
+// that this contract is fulfilled.
 //
-// Delete iterates though the registered callbacks and removes secondary index keys by them.
+// Delete iterates through the registered callbacks that remove secondary index
+// keys.
 func (a PrimaryKeyTable) Delete(ctx HasKVStore, obj PrimaryKeyed) error {
 	return a.table.Delete(ctx, PrimaryKey(obj))
 }
@@ -208,14 +213,13 @@ func (a PrimaryKeyTable) ReversePrefixScan(ctx HasKVStore, start, end []byte) (I
 	return a.table.ReversePrefixScan(ctx, start, end)
 }
 
-// ExportIterator returns an iterator over the values to export
-func (a PrimaryKeyTable) ExportIterator(ctx HasKVStore) (Iterator, error) {
-	return a.table.ExportIterator(ctx)
+// Export stores all the values in the table in the passed ModelSlicePtr.
+func (a PrimaryKeyTable) Export(ctx HasKVStore, dest ModelSlicePtr) (uint64, error) {
+	return a.table.Export(ctx, dest)
 }
 
-// ImportSlice clears the table and initialises it with the data in the
-// interface{}. The interface{} should be a slice of values which implement the
-// PrimaryKeyed interface, but this is checked at runtime.
-func (a PrimaryKeyTable) ImportSlice(ctx HasKVStore, data interface{}) error {
-	return a.table.ImportSlice(ctx, data)
+// Import clears the table and initializes it from the given data interface{}.
+// data should be a slice of structs that implement PrimaryKeyed.
+func (a PrimaryKeyTable) Import(ctx HasKVStore, data interface{}, seqValue uint64) error {
+	return a.table.Import(ctx, data, seqValue)
 }
