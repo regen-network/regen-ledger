@@ -8,15 +8,17 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-func (s serverImpl) getCreditType(ctx sdk.Context, creditTypeName string) (*ecocredit.CreditType, error) {
+func (s serverImpl) getCreditType(ctx sdk.Context, creditTypeName string) (ecocredit.CreditType, error) {
 	creditTypes := s.getAllCreditTypes(ctx)
 	creditTypeName = ecocredit.NormalizeCreditTypeName(creditTypeName)
 	for _, creditType := range creditTypes {
+		// credit type name's stored via params have enforcement on normalization, so we can be sure they will already
+		// be normalized here.
 		if creditType.Name == creditTypeName {
-			return creditType, nil
+			return *creditType, nil
 		}
 	}
-	return nil, sdkerrors.ErrInvalidType.Wrapf("%s is not a valid credit type", creditTypeName)
+	return ecocredit.CreditType{}, sdkerrors.ErrInvalidType.Wrapf("%s is not a valid credit type", creditTypeName)
 }
 
 func (s serverImpl) getAllCreditTypes(ctx sdk.Context) []*ecocredit.CreditType {
@@ -29,7 +31,7 @@ func (s serverImpl) getAllCreditTypes(ctx sdk.Context) []*ecocredit.CreditType {
 // returns its next value, and persists that value in the store. If there is no
 // CreditTypeSeq for the given CreditType, then a new CreditTypeSeq is created
 // starting at 1.
-func (s serverImpl) getCreditTypeSeqNextVal(ctx sdk.Context, creditType *ecocredit.CreditType) (uint64, error) {
+func (s serverImpl) getCreditTypeSeqNextVal(ctx sdk.Context, creditType ecocredit.CreditType) (uint64, error) {
 	// Lookup the sequence number for the given credit type
 	var creditTypeSeq ecocredit.CreditTypeSeq
 	err := s.creditTypeSeqTable.GetOne(ctx, orm.RowID(creditType.Abbreviation), &creditTypeSeq)

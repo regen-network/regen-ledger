@@ -1,6 +1,7 @@
 package ecocredit
 
 import (
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strings"
 	"unicode"
 
@@ -19,6 +20,17 @@ func (m *BatchInfo) PrimaryKeyFields() []interface{} {
 
 func (m *CreditTypeSeq) PrimaryKeyFields() []interface{} {
 	return []interface{}{m.Abbreviation}
+}
+
+// AssertClassIssuer makes sure that the issuer is part of issuers of given classID.
+// Returns ErrUnauthorized otherwise.
+func (m *ClassInfo) AssertClassIssuer(issuer string) error {
+	for _, i := range m.Issuers {
+		if issuer == i {
+			return nil
+		}
+	}
+	return sdkerrors.ErrUnauthorized
 }
 
 // Normalize credit type name by removing whitespace and converting to lowercase
