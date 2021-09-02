@@ -16,45 +16,45 @@ import (
 	"github.com/regen-network/regen-ledger/orm/testdata"
 )
 
-var _, _, _ orm.Indexable = &NilCodecBuilder{}, &NilStoreKeyBuilder{}, &NilRowGetterBuilder{}
+var _, _, _ orm.Indexable = &nilCodecBuilder{}, &nilStoreKeyBuilder{}, &nilRowGetterBuilder{}
 
-type NilCodecBuilder struct{}
+type nilCodecBuilder struct{}
 
-func (b *NilCodecBuilder) StoreKey() sdk.StoreKey {
+func (b *nilCodecBuilder) StoreKey() sdk.StoreKey {
 	return sdk.NewKVStoreKey("test")
 }
-func (b *NilCodecBuilder) RowGetter() orm.RowGetter {
+func (b *nilCodecBuilder) RowGetter() orm.RowGetter {
 	return func(a orm.HasKVStore, b orm.RowID, c codec.ProtoMarshaler) error { return nil }
 }
-func (b *NilCodecBuilder) IndexKeyCodec() orm.IndexKeyCodec                     { return nil }
-func (b *NilCodecBuilder) AddAfterSaveInterceptor(orm.AfterSaveInterceptor)     {}
-func (b *NilCodecBuilder) AddAfterDeleteInterceptor(orm.AfterDeleteInterceptor) {}
+func (b *nilCodecBuilder) IndexKeyCodec() orm.IndexKeyCodec                     { return nil }
+func (b *nilCodecBuilder) AddAfterSaveInterceptor(orm.AfterSaveInterceptor)     {}
+func (b *nilCodecBuilder) AddAfterDeleteInterceptor(orm.AfterDeleteInterceptor) {}
 
-type NilStoreKeyBuilder struct{}
+type nilStoreKeyBuilder struct{}
 
-func (b *NilStoreKeyBuilder) StoreKey() sdk.StoreKey { return nil }
-func (b *NilStoreKeyBuilder) RowGetter() orm.RowGetter {
+func (b *nilStoreKeyBuilder) StoreKey() sdk.StoreKey { return nil }
+func (b *nilStoreKeyBuilder) RowGetter() orm.RowGetter {
 	return func(a orm.HasKVStore, b orm.RowID, c codec.ProtoMarshaler) error { return nil }
 }
-func (b *NilStoreKeyBuilder) IndexKeyCodec() orm.IndexKeyCodec {
+func (b *nilStoreKeyBuilder) IndexKeyCodec() orm.IndexKeyCodec {
 	return orm.Max255DynamicLengthIndexKeyCodec{}
 }
-func (b *NilStoreKeyBuilder) AddAfterSaveInterceptor(orm.AfterSaveInterceptor)     {}
-func (b *NilStoreKeyBuilder) AddAfterDeleteInterceptor(orm.AfterDeleteInterceptor) {}
+func (b *nilStoreKeyBuilder) AddAfterSaveInterceptor(orm.AfterSaveInterceptor)     {}
+func (b *nilStoreKeyBuilder) AddAfterDeleteInterceptor(orm.AfterDeleteInterceptor) {}
 
-type NilRowGetterBuilder struct{}
+type nilRowGetterBuilder struct{}
 
-func (b *NilRowGetterBuilder) StoreKey() sdk.StoreKey {
+func (b *nilRowGetterBuilder) StoreKey() sdk.StoreKey {
 	return sdk.NewKVStoreKey("test")
 }
-func (b *NilRowGetterBuilder) RowGetter() orm.RowGetter {
+func (b *nilRowGetterBuilder) RowGetter() orm.RowGetter {
 	return nil
 }
-func (b *NilRowGetterBuilder) IndexKeyCodec() orm.IndexKeyCodec {
+func (b *nilRowGetterBuilder) IndexKeyCodec() orm.IndexKeyCodec {
 	return orm.Max255DynamicLengthIndexKeyCodec{}
 }
-func (b *NilRowGetterBuilder) AddAfterSaveInterceptor(orm.AfterSaveInterceptor)     {}
-func (b *NilRowGetterBuilder) AddAfterDeleteInterceptor(orm.AfterDeleteInterceptor) {}
+func (b *nilRowGetterBuilder) AddAfterSaveInterceptor(orm.AfterSaveInterceptor)     {}
+func (b *nilRowGetterBuilder) AddAfterDeleteInterceptor(orm.AfterDeleteInterceptor) {}
 
 func TestNewIndex(t *testing.T) {
 	interfaceRegistry := types.NewInterfaceRegistry()
@@ -78,19 +78,19 @@ func TestNewIndex(t *testing.T) {
 	}{
 		{
 			name:        "nil codec",
-			builder:     &NilCodecBuilder{},
+			builder:     &nilCodecBuilder{},
 			expectErr:   true,
 			expectedErr: "IndexKeyCodec must not be nil",
 		},
 		{
 			name:        "nil storeKey",
-			builder:     &NilStoreKeyBuilder{},
+			builder:     &nilStoreKeyBuilder{},
 			expectErr:   true,
 			expectedErr: "StoreKey must not be nil",
 		},
 		{
 			name:        "nil rowGetter",
-			builder:     &NilRowGetterBuilder{},
+			builder:     &nilRowGetterBuilder{},
 			expectErr:   true,
 			expectedErr: "RowGetter must not be nil",
 		},
