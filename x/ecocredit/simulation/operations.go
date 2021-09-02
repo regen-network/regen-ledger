@@ -481,7 +481,7 @@ func SimulateMsgCancel(ak exported.AccountKeeper, bk exported.BankKeeper,
 	}
 }
 
-func getRandomClass(ctx regentypes.Context, r *rand.Rand, qryClient ecocredit.QueryClient,  msgType string) (*ecocredit.ClassInfo, simtypes.OperationMsg, error) {
+func getRandomClass(ctx regentypes.Context, r *rand.Rand, qryClient ecocredit.QueryClient, msgType string) (*ecocredit.ClassInfo, simtypes.OperationMsg, error) {
 	res, err := qryClient.Classes(ctx, &ecocredit.QueryClassesRequest{})
 	if err != nil {
 		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err
