@@ -85,7 +85,7 @@ func validateClassInfoTypes(creditTypes []*CreditType, classInfos []*ClassInfo) 
 		// fetch param via abbreviation
 		cType, ok := typeMap[cInfo.CreditType.Abbreviation]
 
-		// if it's not found, its an invalid credit type
+		// if it's not found, it's an invalid credit type
 		if !ok {
 			return sdkerrors.ErrNotFound.Wrapf("unknown credit type abbreviation: %s", cInfo.CreditType.Abbreviation)
 		}
