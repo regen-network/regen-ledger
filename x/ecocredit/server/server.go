@@ -8,7 +8,6 @@ import (
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/exported"
 )
 
 const (
@@ -25,8 +24,8 @@ type serverImpl struct {
 	storeKey sdk.StoreKey
 
 	paramSpace    paramtypes.Subspace
-	bankKeeper    exported.BankKeeper
-	accountKeeper exported.AccountKeeper
+	bankKeeper    ecocredit.BankKeeper
+	accountKeeper ecocredit.AccountKeeper
 
 	// Store sequence numbers per credit type
 	creditTypeSeqTable orm.PrimaryKeyTable
@@ -36,7 +35,7 @@ type serverImpl struct {
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
-	accountKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper, cdc codec.Codec) serverImpl {
+	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, cdc codec.Codec) serverImpl {
 	s := serverImpl{
 		storeKey:      storeKey,
 		paramSpace:    paramSpace,
@@ -56,8 +55,8 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	return s
 }
 
-func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Subspace, accountKeeper exported.AccountKeeper,
-	bankKeeper exported.BankKeeper) {
+func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Subspace, accountKeeper ecocredit.AccountKeeper,
+	bankKeeper ecocredit.BankKeeper) {
 	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, configurator.Marshaler())
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)

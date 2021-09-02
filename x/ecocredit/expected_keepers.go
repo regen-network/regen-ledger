@@ -1,4 +1,4 @@
-package exported
+package ecocredit
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"

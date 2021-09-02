@@ -11,7 +11,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
-	"github.com/regen-network/regen-ledger/x/ecocredit/exported"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -48,7 +47,7 @@ var (
 // WeightedOperations returns all the operations from the module with their respective weights
 func WeightedOperations(
 	appParams simtypes.AppParams, cdc codec.JSONCodec,
-	ak exported.AccountKeeper, bk exported.BankKeeper, qryClient ecocredit.QueryClient) simulation.WeightedOperations {
+	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient ecocredit.QueryClient) simulation.WeightedOperations {
 
 	var (
 		weightMsgCreateClass int
@@ -113,7 +112,7 @@ func WeightedOperations(
 }
 
 // SimulateMsgCreateClass generates a MsgCreateClass with random values.
-func SimulateMsgCreateClass(ak exported.AccountKeeper, bk exported.BankKeeper,
+func SimulateMsgCreateClass(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient ecocredit.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
@@ -166,7 +165,7 @@ func SimulateMsgCreateClass(ak exported.AccountKeeper, bk exported.BankKeeper,
 }
 
 // SimulateMsgCreateBatch generates a MsgCreateBatch with random values.
-func SimulateMsgCreateBatch(ak exported.AccountKeeper, bk exported.BankKeeper,
+func SimulateMsgCreateBatch(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient ecocredit.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
@@ -231,7 +230,7 @@ func SimulateMsgCreateBatch(ak exported.AccountKeeper, bk exported.BankKeeper,
 }
 
 // SimulateMsgSend generates a MsgSend with random values.
-func SimulateMsgSend(ak exported.AccountKeeper, bk exported.BankKeeper,
+func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient ecocredit.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
@@ -322,7 +321,7 @@ func SimulateMsgSend(ak exported.AccountKeeper, bk exported.BankKeeper,
 }
 
 // SimulateMsgRetire generates a MsgRetire with random values.
-func SimulateMsgRetire(ak exported.AccountKeeper, bk exported.BankKeeper,
+func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient ecocredit.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
@@ -407,7 +406,7 @@ func SimulateMsgRetire(ak exported.AccountKeeper, bk exported.BankKeeper,
 }
 
 // SimulateMsgCancel generates a MsgCancel with random values.
-func SimulateMsgCancel(ak exported.AccountKeeper, bk exported.BankKeeper,
+func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient ecocredit.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
