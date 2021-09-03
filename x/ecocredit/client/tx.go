@@ -60,9 +60,9 @@ They must also pay the fee associated with creating a new credit class, defined
 by the %s parameter, so should make sure they have enough funds to cover that.
 
 Parameters:
-  issuer:    	    comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
+  issuer:    	       comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
   credit type name:    the name of the credit class type (e.g. carbon, biodiversity, etc)
-  metadata:  	    base64 encoded metadata - arbitrary data attached to the credit class info`,
+  metadata:  	       base64 encoded metadata - arbitrary data attached to the credit class info`,
 			ecocredit.KeyAllowedClassCreators,
 			ecocredit.KeyCreditClassFee,
 		),
