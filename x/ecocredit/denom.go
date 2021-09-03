@@ -12,7 +12,7 @@ import (
 //
 // The initial version has format:
 // <credit type abbreviation><class seq no>
-func FormatClassID(creditType *CreditType, classSeqNo uint64) (string, error) {
+func FormatClassID(creditType CreditType, classSeqNo uint64) (string, error) {
 	return fmt.Sprintf("%s%02d", creditType.Abbreviation, classSeqNo), nil
 }
 
