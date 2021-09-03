@@ -113,7 +113,7 @@ func validateCreditTypes(i interface{}) error {
 			return sdkerrors.ErrInvalidRequest.Wrap("empty credit type name")
 		}
 		if seenTypes[T] {
-			return sdkerrors.ErrInvalidRequest.Wrapf("duplicate credit types in request: %s", T)
+			return sdkerrors.ErrInvalidRequest.Wrapf("duplicate credit type name in request: %s", T)
 		}
 
 		// Validate abbreviation
