@@ -1,6 +1,7 @@
 package ecocredit_test
 
 import (
+	"fmt"
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -41,16 +42,11 @@ func TestGenesisValidate(t *testing.T) {
 				genesisState := ecocredit.DefaultGenesisState()
 				genesisState.ClassInfo = []*ecocredit.ClassInfo{
 					{
-						ClassId:  "1",
-						Admin:    addr1.String(),
-						Issuers:  []string{addr1.String(), addr2.String()},
-						Metadata: []byte("meta-data"),
-						CreditType: &ecocredit.CreditType{
-							Name:         "carbon",
-							Abbreviation: "C",
-							Unit:         "metric ton CO2 equivalent",
-							Precision:    6,
-						},
+						ClassId:    "1",
+						Admin:      addr1.String(),
+						Issuers:    []string{addr1.String(), addr2.String()},
+						Metadata:   []byte("meta-data"),
+						CreditType: genesisState.Params.CreditTypes[0],
 					},
 				}
 				return genesisState
@@ -59,10 +55,105 @@ func TestGenesisValidate(t *testing.T) {
 			"",
 		},
 		{
-			"expect error: supply is missing",
+			"invalid: credit type param",
 			func() *ecocredit.GenesisState {
 				genesisState := ecocredit.DefaultGenesisState()
-
+				genesisState.ClassInfo = []*ecocredit.ClassInfo{
+					{
+						ClassId:    "1",
+						Admin:      addr1.String(),
+						Issuers:    []string{addr1.String(), addr2.String()},
+						Metadata:   []byte("meta-data"),
+						CreditType: genesisState.Params.CreditTypes[0],
+					},
+				}
+				genesisState.Params.CreditTypes = []*ecocredit.CreditType{{
+					Name:         "carbon",
+					Abbreviation: "C",
+					Unit:         "metric ton CO2 equivalent",
+					Precision:    7,
+				}}
+				return genesisState
+			},
+			true,
+			"invalid precision 7: precision is currently locked to 6: invalid request",
+		},
+		{
+			"invalid: duplicate credit type",
+			func() *ecocredit.GenesisState {
+				genesisState := ecocredit.DefaultGenesisState()
+				genesisState.ClassInfo = []*ecocredit.ClassInfo{
+					{
+						ClassId:    "1",
+						Admin:      addr1.String(),
+						Issuers:    []string{addr1.String(), addr2.String()},
+						Metadata:   []byte("meta-data"),
+						CreditType: genesisState.Params.CreditTypes[0],
+					},
+				}
+				genesisState.Params.CreditTypes = []*ecocredit.CreditType{{
+					Name:         "carbon",
+					Abbreviation: "C",
+					Unit:         "metric ton CO2 equivalent",
+					Precision:    6,
+				}, {
+					Name:         "carbon",
+					Abbreviation: "C",
+					Unit:         "metric ton CO2 equivalent",
+					Precision:    6,
+				}}
+				return genesisState
+			},
+			true,
+			"duplicate credit types in request: carbon: invalid request",
+		},
+		{
+			"invalid: bad addresses in allowlist",
+			func() *ecocredit.GenesisState {
+				genesisState := ecocredit.DefaultGenesisState()
+				genesisState.ClassInfo = []*ecocredit.ClassInfo{
+					{
+						ClassId:    "1",
+						Admin:      addr1.String(),
+						Issuers:    []string{addr1.String(), addr2.String()},
+						Metadata:   []byte("meta-data"),
+						CreditType: genesisState.Params.CreditTypes[0],
+					},
+				}
+				genesisState.Params.AllowlistEnabled = true
+				genesisState.Params.AllowedClassCreators = []string{"-=!?#09)("}
+				return genesisState
+			},
+			true,
+			"invalid creator address: decoding bech32 failed: invalid index of 1: invalid address",
+		},
+		{
+			"invalid: type name does not match param name",
+			func() *ecocredit.GenesisState {
+				genesisState := ecocredit.DefaultGenesisState()
+				genesisState.ClassInfo = []*ecocredit.ClassInfo{
+					{
+						ClassId:  "1",
+						Admin:    addr1.String(),
+						Issuers:  []string{addr1.String(), addr2.String()},
+						Metadata: []byte("meta-data"),
+						CreditType: &ecocredit.CreditType{
+							Name:         "badbadnotgood",
+							Abbreviation: "C",
+							Unit:         "metric ton CO2 equivalent",
+							Precision:    6,
+						},
+					},
+				}
+				return genesisState
+			},
+			true,
+			formatCreditTypeParamError(ecocredit.CreditType{"badbadnotgood", "C", "metric ton CO2 equivalent", 6}).Error(),
+		},
+		{
+			"invalid: type unit does not match param unit",
+			func() *ecocredit.GenesisState {
+				genesisState := ecocredit.DefaultGenesisState()
 				genesisState.ClassInfo = []*ecocredit.ClassInfo{
 					{
 						ClassId:  "1",
@@ -72,9 +163,51 @@ func TestGenesisValidate(t *testing.T) {
 						CreditType: &ecocredit.CreditType{
 							Name:         "carbon",
 							Abbreviation: "C",
+							Unit:         "inches",
+							Precision:    6,
+						},
+					},
+				}
+				return genesisState
+			},
+			true,
+			formatCreditTypeParamError(ecocredit.CreditType{"carbon", "C", "inches", 6}).Error(),
+		},
+		{
+			"invalid: non-existent abbreviation",
+			func() *ecocredit.GenesisState {
+				genesisState := ecocredit.DefaultGenesisState()
+				genesisState.ClassInfo = []*ecocredit.ClassInfo{
+					{
+						ClassId:  "1",
+						Admin:    addr1.String(),
+						Issuers:  []string{addr1.String(), addr2.String()},
+						Metadata: []byte("meta-data"),
+						CreditType: &ecocredit.CreditType{
+							Name:         "carbon",
+							Abbreviation: "F",
 							Unit:         "metric ton CO2 equivalent",
 							Precision:    6,
 						},
+					},
+				}
+				return genesisState
+			},
+			true,
+			"unknown credit type abbreviation: F: not found",
+		},
+		{
+			"expect error: supply is missing",
+			func() *ecocredit.GenesisState {
+				genesisState := ecocredit.DefaultGenesisState()
+
+				genesisState.ClassInfo = []*ecocredit.ClassInfo{
+					{
+						ClassId:    "1",
+						Admin:      addr1.String(),
+						Issuers:    []string{addr1.String(), addr2.String()},
+						Metadata:   []byte("meta-data"),
+						CreditType: genesisState.Params.CreditTypes[0],
 					},
 				}
 				genesisState.BatchInfo = []*ecocredit.BatchInfo{
@@ -268,4 +401,10 @@ func TestGenesisValidate(t *testing.T) {
 			}
 		})
 	}
+}
+
+var defaultCreditTypes = ecocredit.DefaultGenesisState().Params.CreditTypes
+
+func formatCreditTypeParamError(ct ecocredit.CreditType) error {
+	return fmt.Errorf("credit type %+v does not match param type %+v: invalid type", ct, *defaultCreditTypes[0])
 }

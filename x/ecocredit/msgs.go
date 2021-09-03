@@ -27,8 +27,8 @@ func (m MsgCreateClass) GetSignBytes() []byte {
 }
 
 func (m *MsgCreateClass) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(m.Admin)
-	if err != nil {
+
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
@@ -40,16 +40,9 @@ func (m *MsgCreateClass) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("credit class must have a credit type")
 	}
 	for _, issuer := range m.Issuers {
-		_, err := sdk.AccAddressFromBech32(issuer)
-		if err != nil {
-			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-		}
-	}
 
-	for _, issuer := range m.Issuers {
-		_, err := sdk.AccAddressFromBech32(issuer)
-		if err != nil {
-			return sdkerrors.Wrapf(err, "issuer: %s", issuer)
+		if _, err := sdk.AccAddressFromBech32(issuer); err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
 	}
 
@@ -57,11 +50,7 @@ func (m *MsgCreateClass) ValidateBasic() error {
 }
 
 func (m *MsgCreateClass) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(m.Admin)
-	if err != nil {
-		panic(err)
-	}
-
+	addr, _ := sdk.AccAddressFromBech32(m.Admin)
 	return []sdk.AccAddress{addr}
 }
 
@@ -77,8 +66,8 @@ func (m MsgCreateBatch) GetSignBytes() []byte {
 }
 
 func (m *MsgCreateBatch) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(m.Issuer)
-	if err != nil {
+
+	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
 		return sdkerrors.Wrap(err, "issuer")
 	}
 
@@ -101,27 +90,26 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 	}
 
 	for _, iss := range m.Issuance {
-		_, err := sdk.AccAddressFromBech32(iss.Recipient)
-		if err != nil {
+
+		if _, err := sdk.AccAddressFromBech32(iss.Recipient); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
 
 		if iss.TradableAmount != "" {
-			_, err := math.ParseNonNegativeDecimal(iss.TradableAmount)
-			if err != nil {
+
+			if _, err := math.NewNonNegativeDecFromString(iss.TradableAmount); err != nil {
 				return err
 			}
 		}
 
 		if iss.RetiredAmount != "" {
-			retiredAmount, err := math.ParseNonNegativeDecimal(iss.RetiredAmount)
+			retiredAmount, err := math.NewNonNegativeDecFromString(iss.RetiredAmount)
 			if err != nil {
 				return err
 			}
 
 			if !retiredAmount.IsZero() {
-				err = validateLocation(iss.RetirementLocation)
-				if err != nil {
+				if err = validateLocation(iss.RetirementLocation); err != nil {
 					return err
 				}
 			}
@@ -132,11 +120,7 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 }
 
 func (m *MsgCreateBatch) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(m.Issuer)
-	if err != nil {
-		panic(err)
-	}
-
+	addr, _ := sdk.AccAddressFromBech32(m.Issuer)
 	return []sdk.AccAddress{addr}
 }
 
@@ -152,13 +136,12 @@ func (m MsgSend) GetSignBytes() []byte {
 }
 
 func (m *MsgSend) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(m.Sender)
-	if err != nil {
+
+	if _, err := sdk.AccAddressFromBech32(m.Sender); err != nil {
 		return sdkerrors.Wrap(err, "sender")
 	}
 
-	_, err = sdk.AccAddressFromBech32(m.Recipient)
-	if err != nil {
+	if _, err := sdk.AccAddressFromBech32(m.Recipient); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
@@ -171,19 +154,17 @@ func (m *MsgSend) ValidateBasic() error {
 			return sdkerrors.ErrInvalidRequest.Wrap("batch denom should not be empty")
 		}
 
-		_, err := math.ParseNonNegativeDecimal(credit.TradableAmount)
-		if err != nil {
+		if _, err := math.NewNonNegativeDecFromString(credit.TradableAmount); err != nil {
 			return err
 		}
 
-		retiredAmount, err := math.ParseNonNegativeDecimal(credit.RetiredAmount)
+		retiredAmount, err := math.NewNonNegativeDecFromString(credit.RetiredAmount)
 		if err != nil {
 			return err
 		}
 
 		if !retiredAmount.IsZero() {
-			err = validateLocation(credit.RetirementLocation)
-			if err != nil {
+			if err = validateLocation(credit.RetirementLocation); err != nil {
 				return err
 			}
 		}
@@ -192,11 +173,7 @@ func (m *MsgSend) ValidateBasic() error {
 }
 
 func (m *MsgSend) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(m.Sender)
-	if err != nil {
-		panic(err)
-	}
-
+	addr, _ := sdk.AccAddressFromBech32(m.Sender)
 	return []sdk.AccAddress{addr}
 }
 
@@ -212,8 +189,7 @@ func (m MsgRetire) GetSignBytes() []byte {
 }
 
 func (m *MsgRetire) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(m.Holder)
-	if err != nil {
+	if _, err := sdk.AccAddressFromBech32(m.Holder); err != nil {
 		return sdkerrors.Wrap(err, "holder")
 	}
 
@@ -225,14 +201,12 @@ func (m *MsgRetire) ValidateBasic() error {
 		if credit.BatchDenom == "" {
 			return sdkerrors.ErrInvalidRequest.Wrap("batch denom should not be empty")
 		}
-		_, err := math.ParsePositiveDecimal(credit.Amount)
-		if err != nil {
+		if _, err := math.NewPositiveDecFromString(credit.Amount); err != nil {
 			return err
 		}
 	}
 
-	err = validateLocation(m.Location)
-	if err != nil {
+	if err := validateLocation(m.Location); err != nil {
 		return err
 	}
 
@@ -240,11 +214,7 @@ func (m *MsgRetire) ValidateBasic() error {
 }
 
 func (m *MsgRetire) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(m.Holder)
-	if err != nil {
-		panic(err)
-	}
-
+	addr, _ := sdk.AccAddressFromBech32(m.Holder)
 	return []sdk.AccAddress{addr}
 }
 
@@ -260,8 +230,8 @@ func (m MsgCancel) GetSignBytes() []byte {
 }
 
 func (m *MsgCancel) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(m.Holder)
-	if err != nil {
+
+	if _, err := sdk.AccAddressFromBech32(m.Holder); err != nil {
 		return sdkerrors.Wrap(err, "holder")
 	}
 
@@ -274,8 +244,7 @@ func (m *MsgCancel) ValidateBasic() error {
 			return sdkerrors.ErrInvalidRequest.Wrap("batch denom should not be empty")
 		}
 
-		_, err := math.ParsePositiveDecimal(credit.Amount)
-		if err != nil {
+		if _, err := math.NewPositiveDecFromString(credit.Amount); err != nil {
 			return err
 		}
 	}
@@ -283,10 +252,6 @@ func (m *MsgCancel) ValidateBasic() error {
 }
 
 func (m *MsgCancel) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(m.Holder)
-	if err != nil {
-		panic(err)
-	}
-
+	addr, _ := sdk.AccAddressFromBech32(m.Holder)
 	return []sdk.AccAddress{addr}
 }
