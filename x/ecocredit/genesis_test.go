@@ -105,7 +105,7 @@ func TestGenesisValidate(t *testing.T) {
 				return genesisState
 			},
 			true,
-			"duplicate credit types in request: carbon: invalid request",
+			"duplicate credit type name in request: carbon: invalid request",
 		},
 		{
 			"invalid: bad addresses in allowlist",
