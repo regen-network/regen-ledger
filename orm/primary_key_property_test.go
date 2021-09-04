@@ -64,13 +64,15 @@ func (m *primaryKeyMachine) Init(t *rapid.T) {
 	cdc := codec.NewProtoCodec(interfaceRegistry)
 	storeKey := sdk.NewKVStoreKey("test")
 	const testTablePrefix = iota
-	table := orm.NewPrimaryKeyTableBuilder(
+	builder, err := orm.NewPrimaryKeyTableBuilder(
 		testTablePrefix,
 		storeKey,
 		&testdata.GroupMember{},
 		orm.Max255DynamicLengthIndexKeyCodec{},
 		cdc,
-	).Build()
+	)
+	require.NoError(t, err)
+	table := builder.Build()
 
 	m.table = &table
 

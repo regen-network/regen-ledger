@@ -16,7 +16,7 @@ var reLocation = regexp.MustCompile(`^([A-Z]{2})(?:-([A-Z0-9]{1,3})(?: ([a-zA-Z0
 func validateLocation(location string) error {
 	matches := reLocation.FindStringSubmatch(location)
 	if matches == nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "Invalid retirement location: %s.\nLocation should have format <country-code>[-<region-code>[ <postal-code>]].\n", location)
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "Invalid location: %s.\nLocation should have format <country-code>[-<region-code>[ <postal-code>]].\n", location)
 	}
 
 	return nil

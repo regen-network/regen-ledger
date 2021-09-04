@@ -11,6 +11,92 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestNewIndexer(t *testing.T) {
+	testCases := []struct {
+		name        string
+		indexerFunc IndexerFunc
+		codec       IndexKeyCodec
+		expectErr   bool
+		expectedErr string
+	}{
+		{
+			name:        "nil indexer func",
+			indexerFunc: nil,
+			codec:       Max255DynamicLengthIndexKeyCodec{},
+			expectErr:   true,
+			expectedErr: "Indexer func must not be nil",
+		},
+		{
+			name:        "nil codec",
+			indexerFunc: func(interface{}) ([]RowID, error) { return nil, nil },
+			codec:       nil,
+			expectErr:   true,
+			expectedErr: "IndexKeyCodec must not be nil",
+		},
+		{
+			name:        "all not nil",
+			indexerFunc: func(interface{}) ([]RowID, error) { return nil, nil },
+			codec:       Max255DynamicLengthIndexKeyCodec{},
+			expectErr:   false,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			indexer, err := NewIndexer(tc.indexerFunc, tc.codec)
+			if tc.expectErr {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), tc.expectedErr)
+			} else {
+				require.NoError(t, err)
+				require.NotNil(t, indexer)
+			}
+		})
+	}
+}
+
+func TestNewUniqueIndexer(t *testing.T) {
+	testCases := []struct {
+		name        string
+		indexerFunc UniqueIndexerFunc
+		codec       IndexKeyCodec
+		expectErr   bool
+		expectedErr string
+	}{
+		{
+			name:        "nil indexer func",
+			indexerFunc: nil,
+			codec:       Max255DynamicLengthIndexKeyCodec{},
+			expectErr:   true,
+			expectedErr: "Indexer func must not be nil",
+		},
+		{
+			name:        "nil codec",
+			indexerFunc: func(interface{}) (RowID, error) { return nil, nil },
+			codec:       nil,
+			expectErr:   true,
+			expectedErr: "IndexKeyCodec must not be nil",
+		},
+		{
+			name:        "all not nil",
+			indexerFunc: func(interface{}) (RowID, error) { return nil, nil },
+			codec:       Max255DynamicLengthIndexKeyCodec{},
+			expectErr:   false,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			indexer, err := NewUniqueIndexer(tc.indexerFunc, tc.codec)
+			if tc.expectErr {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), tc.expectedErr)
+			} else {
+				require.NoError(t, err)
+				require.NotNil(t, indexer)
+			}
+		})
+	}
+}
+
 func TestIndexerOnCreate(t *testing.T) {
 	var myRowID RowID = EncodeSequence(1)
 
@@ -72,10 +158,11 @@ func TestIndexerOnCreate(t *testing.T) {
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
 			mockPolicy := &addFuncRecorder{}
-			idx := NewIndexer(spec.srcFunc, Max255DynamicLengthIndexKeyCodec{})
+			idx, err := NewIndexer(spec.srcFunc, Max255DynamicLengthIndexKeyCodec{})
+			require.NoError(t, err)
 			idx.addFunc = mockPolicy.add
 
-			err := idx.OnCreate(nil, myRowID, nil)
+			err = idx.OnCreate(nil, myRowID, nil)
 			if spec.expErr != nil {
 				require.Equal(t, spec.expErr, err)
 				return
@@ -146,8 +233,9 @@ func TestIndexerOnDelete(t *testing.T) {
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
 			codec := FixLengthIndexKeys(EncodedSeqLength)
-			idx := NewIndexer(spec.srcFunc, codec)
-			err := idx.OnDelete(store, myRowID, nil)
+			idx, err := NewIndexer(spec.srcFunc, codec)
+			require.NoError(t, err)
+			err = idx.OnDelete(store, myRowID, nil)
 			if spec.expErr != nil {
 				require.Equal(t, spec.expErr, err)
 				return
@@ -259,11 +347,12 @@ func TestIndexerOnUpdate(t *testing.T) {
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
-			idx := NewIndexer(spec.srcFunc, codec)
+			idx, err := NewIndexer(spec.srcFunc, codec)
+			require.NoError(t, err)
 			if spec.addFunc != nil {
 				idx.addFunc = spec.addFunc
 			}
-			err := idx.OnUpdate(store, myRowID, 1, 0)
+			err = idx.OnUpdate(store, myRowID, 1, 0)
 			if spec.expErr != nil {
 				require.Equal(t, spec.expErr, err)
 				return
