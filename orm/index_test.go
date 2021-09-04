@@ -16,6 +16,104 @@ import (
 	"github.com/regen-network/regen-ledger/orm/testdata"
 )
 
+var _, _, _ orm.Indexable = &nilCodecBuilder{}, &nilStoreKeyBuilder{}, &nilRowGetterBuilder{}
+
+type nilCodecBuilder struct{}
+
+func (b *nilCodecBuilder) StoreKey() sdk.StoreKey {
+	return sdk.NewKVStoreKey("test")
+}
+func (b *nilCodecBuilder) RowGetter() orm.RowGetter {
+	return func(a orm.HasKVStore, b orm.RowID, c codec.ProtoMarshaler) error { return nil }
+}
+func (b *nilCodecBuilder) IndexKeyCodec() orm.IndexKeyCodec                     { return nil }
+func (b *nilCodecBuilder) AddAfterSaveInterceptor(orm.AfterSaveInterceptor)     {}
+func (b *nilCodecBuilder) AddAfterDeleteInterceptor(orm.AfterDeleteInterceptor) {}
+
+type nilStoreKeyBuilder struct{}
+
+func (b *nilStoreKeyBuilder) StoreKey() sdk.StoreKey { return nil }
+func (b *nilStoreKeyBuilder) RowGetter() orm.RowGetter {
+	return func(a orm.HasKVStore, b orm.RowID, c codec.ProtoMarshaler) error { return nil }
+}
+func (b *nilStoreKeyBuilder) IndexKeyCodec() orm.IndexKeyCodec {
+	return orm.Max255DynamicLengthIndexKeyCodec{}
+}
+func (b *nilStoreKeyBuilder) AddAfterSaveInterceptor(orm.AfterSaveInterceptor)     {}
+func (b *nilStoreKeyBuilder) AddAfterDeleteInterceptor(orm.AfterDeleteInterceptor) {}
+
+type nilRowGetterBuilder struct{}
+
+func (b *nilRowGetterBuilder) StoreKey() sdk.StoreKey {
+	return sdk.NewKVStoreKey("test")
+}
+func (b *nilRowGetterBuilder) RowGetter() orm.RowGetter {
+	return nil
+}
+func (b *nilRowGetterBuilder) IndexKeyCodec() orm.IndexKeyCodec {
+	return orm.Max255DynamicLengthIndexKeyCodec{}
+}
+func (b *nilRowGetterBuilder) AddAfterSaveInterceptor(orm.AfterSaveInterceptor)     {}
+func (b *nilRowGetterBuilder) AddAfterDeleteInterceptor(orm.AfterDeleteInterceptor) {}
+
+func TestNewIndex(t *testing.T) {
+	interfaceRegistry := types.NewInterfaceRegistry()
+	cdc := codec.NewProtoCodec(interfaceRegistry)
+	storeKey := sdk.NewKVStoreKey("test")
+	const (
+		testTablePrefix = iota
+		testTableSeqPrefix
+	)
+	tBuilder, err := orm.NewAutoUInt64TableBuilder(testTablePrefix, testTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
+	require.NoError(t, err)
+	indexer := func(val interface{}) ([]orm.RowID, error) {
+		return []orm.RowID{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
+	}
+
+	testCases := []struct {
+		name        string
+		builder     orm.Indexable
+		expectErr   bool
+		expectedErr string
+	}{
+		{
+			name:        "nil codec",
+			builder:     &nilCodecBuilder{},
+			expectErr:   true,
+			expectedErr: "IndexKeyCodec must not be nil",
+		},
+		{
+			name:        "nil storeKey",
+			builder:     &nilStoreKeyBuilder{},
+			expectErr:   true,
+			expectedErr: "StoreKey must not be nil",
+		},
+		{
+			name:        "nil rowGetter",
+			builder:     &nilRowGetterBuilder{},
+			expectErr:   true,
+			expectedErr: "RowGetter must not be nil",
+		},
+		{
+			name:      "all not nil",
+			builder:   tBuilder,
+			expectErr: false,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			index, err := orm.NewIndex(tc.builder, 0x1, indexer)
+			if tc.expectErr {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), tc.expectedErr)
+			} else {
+				require.NoError(t, err)
+				require.NotEmpty(t, index)
+			}
+		})
+	}
+}
+
 func TestIndexPrefixScan(t *testing.T) {
 	interfaceRegistry := types.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
@@ -24,10 +122,12 @@ func TestIndexPrefixScan(t *testing.T) {
 		testTablePrefix = iota
 		testTableSeqPrefix
 	)
-	tBuilder := orm.NewAutoUInt64TableBuilder(testTablePrefix, testTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
-	idx := orm.NewIndex(tBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
+	tBuilder, err := orm.NewAutoUInt64TableBuilder(testTablePrefix, testTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
+	require.NoError(t, err)
+	idx, err := orm.NewIndex(tBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
 		return []orm.RowID{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
 	})
+	require.NoError(t, err)
 	tb := tBuilder.Build()
 	ctx := orm.NewMockContext()
 
@@ -212,10 +312,12 @@ func TestUniqueIndex(t *testing.T) {
 
 	storeKey := sdk.NewKVStoreKey("test")
 
-	tableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
-	uniqueIdx := orm.NewUniqueIndex(tableBuilder, 0x10, func(val interface{}) (orm.RowID, error) {
+	tableBuilder, err := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	require.NoError(t, err)
+	uniqueIdx, err := orm.NewUniqueIndex(tableBuilder, 0x10, func(val interface{}) (orm.RowID, error) {
 		return []byte{val.(*testdata.GroupMember).Member[0]}, nil
 	})
+	require.NoError(t, err)
 	myTable := tableBuilder.Build()
 
 	ctx := orm.NewMockContext()
@@ -225,7 +327,7 @@ func TestUniqueIndex(t *testing.T) {
 		Member: sdk.AccAddress([]byte("member-address")),
 		Weight: 10,
 	}
-	err := myTable.Create(ctx, &m)
+	err = myTable.Create(ctx, &m)
 	require.NoError(t, err)
 
 	indexedKey := []byte{byte('m')}

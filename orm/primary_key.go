@@ -10,10 +10,14 @@ import (
 var _ Indexable = &PrimaryKeyTableBuilder{}
 
 // NewPrimaryKeyTableBuilder creates a builder to setup a PrimaryKeyTable object.
-func NewPrimaryKeyTableBuilder(prefixData byte, storeKey sdk.StoreKey, model PrimaryKeyed, codec IndexKeyCodec, cdc codec.Codec) *PrimaryKeyTableBuilder {
-	return &PrimaryKeyTableBuilder{
-		tableBuilder: newTableBuilder(prefixData, storeKey, model, codec, cdc),
+func NewPrimaryKeyTableBuilder(prefixData byte, storeKey sdk.StoreKey, model PrimaryKeyed, codec IndexKeyCodec, cdc codec.Codec) (*PrimaryKeyTableBuilder, error) {
+	tableBuilder, err := newTableBuilder(prefixData, storeKey, model, codec, cdc)
+	if err != nil {
+		return nil, err
 	}
+	return &PrimaryKeyTableBuilder{
+		tableBuilder: tableBuilder,
+	}, nil
 }
 
 type PrimaryKeyTableBuilder struct {
