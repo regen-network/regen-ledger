@@ -719,7 +719,7 @@ MsgCreateClass is the Msg/CreateClass request type.
 | admin | [string](#string) |  | admin is the address of the account which can manage the credit class. The admin has permissions to change the list of issuers and perform other administrative operations. |
 | issuers | [string](#string) | repeated | issuers are the account addresses of the approved issuers. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit class. |
-| credit_type | [string](#string) |  | credit_type describes the type of credit (e.g. "carbon", "biodiversity"). |
+| credit_type_name | [string](#string) |  | credit_type describes the type of credit (e.g. "carbon", "biodiversity"). |
 
 
 
