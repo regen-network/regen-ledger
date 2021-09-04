@@ -47,7 +47,7 @@ func txflags(cmd *cobra.Command) *cobra.Command {
 
 func TxCreateClassCmd() *cobra.Command {
 	return txflags(&cobra.Command{
-		Use:   "create-class [issuer[,issuer]*] [credit type] [metadata]",
+		Use:   "create-class [issuer[,issuer]*] [credit type name] [metadata]",
 		Short: "Creates a new credit class with transaction author (--from) as admin",
 		Long: fmt.Sprintf(
 			`Creates a new credit class with transaction author (--from) as admin.
@@ -60,9 +60,9 @@ They must also pay the fee associated with creating a new credit class, defined
 by the %s parameter, so should make sure they have enough funds to cover that.
 
 Parameters:
-  issuer:    	    comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
-  credit type:    the credit class type (e.g. carbon, biodiversity, etc)
-  metadata:  	    base64 encoded metadata - arbitrary data attached to the credit class info`,
+  issuer:    	       comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
+  credit type name:    the name of the credit class type (e.g. carbon, biodiversity, etc)
+  metadata:  	       base64 encoded metadata - arbitrary data attached to the credit class info`,
 			ecocredit.KeyAllowedClassCreators,
 			ecocredit.KeyCreditClassFee,
 		),
@@ -82,11 +82,11 @@ Parameters:
 				issuers[i] = strings.TrimSpace(issuers[i])
 			}
 
-			// Check credit type is provided
+			// Check credit type name is provided
 			if args[1] == "" {
-				return sdkerrors.ErrInvalidRequest.Wrap("credit type is required")
+				return sdkerrors.ErrInvalidRequest.Wrap("credit type name is required")
 			}
-			creditType := args[1]
+			creditTypeName := args[1]
 
 			// Check that metadata is provided and decode it
 			if args[2] == "" {
@@ -98,10 +98,10 @@ Parameters:
 			}
 
 			msg := ecocredit.MsgCreateClass{
-				Admin:      admin.String(),
-				Issuers:    issuers,
-				Metadata:   b,
-				CreditType: creditType,
+				Admin:          admin.String(),
+				Issuers:        issuers,
+				Metadata:       b,
+				CreditTypeName: creditTypeName,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},

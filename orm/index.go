@@ -29,22 +29,26 @@ type MultiKeyIndex struct {
 }
 
 // NewIndex builds a MultiKeyIndex
-func NewIndex(builder Indexable, prefix byte, indexer IndexerFunc) MultiKeyIndex {
-	return newIndex(builder, prefix, NewIndexer(indexer, builder.IndexKeyCodec()))
+func NewIndex(builder Indexable, prefix byte, indexerF IndexerFunc) (MultiKeyIndex, error) {
+	indexer, err := NewIndexer(indexerF, builder.IndexKeyCodec())
+	if err != nil {
+		return MultiKeyIndex{}, err
+	}
+	return newIndex(builder, prefix, indexer)
 }
 
-func newIndex(builder Indexable, prefix byte, indexer *Indexer) MultiKeyIndex {
+func newIndex(builder Indexable, prefix byte, indexer *Indexer) (MultiKeyIndex, error) {
 	codec := builder.IndexKeyCodec()
 	if codec == nil {
-		panic("IndexKeyCodec must not be nil")
+		return MultiKeyIndex{}, ErrArgument.Wrap("IndexKeyCodec must not be nil")
 	}
 	storeKey := builder.StoreKey()
 	if storeKey == nil {
-		panic("StoreKey must not be nil")
+		return MultiKeyIndex{}, ErrArgument.Wrap("StoreKey must not be nil")
 	}
 	rowGetter := builder.RowGetter()
 	if rowGetter == nil {
-		panic("RowGetter must not be nil")
+		return MultiKeyIndex{}, ErrArgument.Wrap("RowGetter must not be nil")
 	}
 
 	idx := MultiKeyIndex{
@@ -56,7 +60,7 @@ func newIndex(builder Indexable, prefix byte, indexer *Indexer) MultiKeyIndex {
 	}
 	builder.AddAfterSaveInterceptor(idx.onSave)
 	builder.AddAfterDeleteInterceptor(idx.onDelete)
-	return idx
+	return idx, nil
 }
 
 // Has checks if a key exists. Panics on nil key.
@@ -149,10 +153,18 @@ type UniqueIndex struct {
 }
 
 // NewUniqueIndex create a new Index object where duplicate keys are prohibited.
-func NewUniqueIndex(builder Indexable, prefix byte, uniqueIndexerFunc UniqueIndexerFunc) UniqueIndex {
-	return UniqueIndex{
-		MultiKeyIndex: newIndex(builder, prefix, NewUniqueIndexer(uniqueIndexerFunc, builder.IndexKeyCodec())),
+func NewUniqueIndex(builder Indexable, prefix byte, uniqueIndexerFunc UniqueIndexerFunc) (UniqueIndex, error) {
+	uniqueIndexer, err := NewUniqueIndexer(uniqueIndexerFunc, builder.IndexKeyCodec())
+	if err != nil {
+		return UniqueIndex{}, err
 	}
+	multiKeyIndex, err := newIndex(builder, prefix, uniqueIndexer)
+	if err != nil {
+		return UniqueIndex{}, err
+	}
+	return UniqueIndex{
+		MultiKeyIndex: multiKeyIndex,
+	}, nil
 }
 
 // indexIterator uses rowGetter to lazy load new model values on request.
