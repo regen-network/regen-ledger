@@ -19,24 +19,24 @@ type Indexer struct {
 }
 
 // NewIndexer returns an indexer that supports multiple reference keys for an entity.
-func NewIndexer(indexerFunc IndexerFunc, codec IndexKeyCodec) *Indexer {
+func NewIndexer(indexerFunc IndexerFunc, codec IndexKeyCodec) (*Indexer, error) {
 	if indexerFunc == nil {
-		panic("Indexer func must not be nil")
+		return nil, ErrArgument.Wrap("Indexer func must not be nil")
 	}
 	if codec == nil {
-		panic("IndexKeyCodec must not be nil")
+		return nil, ErrArgument.Wrap("IndexKeyCodec must not be nil")
 	}
 	return &Indexer{
 		indexerFunc:   pruneEmptyKeys(indexerFunc),
 		addFunc:       multiKeyAddFunc,
 		indexKeyCodec: codec,
-	}
+	}, nil
 }
 
 // NewUniqueIndexer returns an indexer that requires exactly one reference keys for an entity.
-func NewUniqueIndexer(f UniqueIndexerFunc, codec IndexKeyCodec) *Indexer {
+func NewUniqueIndexer(f UniqueIndexerFunc, codec IndexKeyCodec) (*Indexer, error) {
 	if f == nil {
-		panic("indexer func must not be nil")
+		return nil, ErrArgument.Wrap("Indexer func must not be nil")
 	}
 	adaptor := func(indexerFunc UniqueIndexerFunc) IndexerFunc {
 		return func(v interface{}) ([]RowID, error) {
@@ -44,9 +44,12 @@ func NewUniqueIndexer(f UniqueIndexerFunc, codec IndexKeyCodec) *Indexer {
 			return []RowID{k}, err
 		}
 	}
-	idx := NewIndexer(adaptor(f), codec)
+	idx, err := NewIndexer(adaptor(f), codec)
+	if err != nil {
+		return nil, err
+	}
 	idx.addFunc = uniqueKeysAddFunc
-	return idx
+	return idx, nil
 }
 
 // OnCreate persists the secondary index entries for the new object.

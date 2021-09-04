@@ -60,6 +60,41 @@ func (s *GenesisState) Validate() error {
 		return err
 	}
 
+	// run each params validation method
+	if err := s.Params.Validate(); err != nil {
+		return err
+	}
+
+	// check that the CreditTypes in the ClassInfo slice all exist in params.CreditTypes
+	if err := validateClassInfoTypes(s.Params.CreditTypes, s.ClassInfo); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func validateClassInfoTypes(creditTypes []*CreditType, classInfos []*ClassInfo) error {
+	typeMap := make(map[string]CreditType, len(creditTypes))
+
+	// convert to map for easier lookups
+	for _, cType := range creditTypes {
+		typeMap[cType.Abbreviation] = *cType
+	}
+
+	for _, cInfo := range classInfos {
+		// fetch param via abbreviation
+		cType, ok := typeMap[cInfo.CreditType.Abbreviation]
+
+		// if it's not found, it's an invalid credit type
+		if !ok {
+			return sdkerrors.ErrNotFound.Wrapf("unknown credit type abbreviation: %s", cInfo.CreditType.Abbreviation)
+		}
+
+		// check that the credit types are equal
+		if cType != *cInfo.CreditType {
+			return sdkerrors.ErrInvalidType.Wrapf("credit type %+v does not match param type %+v", *cInfo.CreditType, cType)
+		}
+	}
 	return nil
 }
 

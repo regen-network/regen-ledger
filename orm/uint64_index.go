@@ -28,10 +28,14 @@ type UInt64Index struct {
 }
 
 // NewUInt64Index creates a typed secondary index
-func NewUInt64Index(builder Indexable, prefix byte, indexer UInt64IndexerFunc) UInt64Index {
-	return UInt64Index{
-		multiKeyIndex: NewIndex(builder, prefix, UInt64MultiKeyAdapter(indexer)),
+func NewUInt64Index(builder Indexable, prefix byte, indexer UInt64IndexerFunc) (UInt64Index, error) {
+	multiKeyIndex, err := NewIndex(builder, prefix, UInt64MultiKeyAdapter(indexer))
+	if err != nil {
+		return UInt64Index{}, err
 	}
+	return UInt64Index{
+		multiKeyIndex: multiKeyIndex,
+	}, nil
 }
 
 // Has checks if a key exists. Panics on nil key.

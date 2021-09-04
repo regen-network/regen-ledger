@@ -38,7 +38,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 		return nil, err
 	}
 
-	creditType, err := s.getCreditType(ctx.Context, req.CreditType)
+	creditType, err := s.getCreditType(ctx.Context, req.CreditTypeName)
 	if err != nil {
 		return nil, err
 	}
@@ -429,8 +429,7 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 		}
 		batchInfo.AmountCancelled = amountCancelled.String()
 
-		err = s.batchInfoTable.Save(ctx, &batchInfo)
-		if err != nil {
+		if err = s.batchInfoTable.Save(ctx, &batchInfo); err != nil {
 			return nil, err
 		}
 
