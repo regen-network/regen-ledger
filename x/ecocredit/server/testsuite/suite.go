@@ -95,10 +95,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	// create class with insufficient funds and it should fail
 	createClsRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-		Admin:      admin.String(),
-		Issuers:    []string{issuer1, issuer2},
-		Metadata:   nil,
-		CreditType: "carbon",
+		Admin:          admin.String(),
+		Issuers:        []string{issuer1, issuer2},
+		Metadata:       nil,
+		CreditTypeName: "carbon",
 	})
 	s.Require().Error(err)
 	s.Require().Nil(createClsRes)
@@ -131,10 +131,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	for _, tc := range createClassTestCases {
 		createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-			Admin:      admin.String(),
-			Issuers:    []string{issuer1, issuer2},
-			Metadata:   nil,
-			CreditType: tc.creditType,
+			Admin:          admin.String(),
+			Issuers:        []string{issuer1, issuer2},
+			Metadata:       nil,
+			CreditTypeName: tc.creditType,
 		})
 		s.Require().NoError(err)
 		s.Require().NotNil(createClsRes)
@@ -686,10 +686,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 			s.Require().NoError(s.fundAccount(tc.creatorAcc, sdk.NewCoins(sdk.NewInt64Coin("stake", 40000))))
 
 			createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-				Admin:      tc.creatorAcc.String(),
-				Issuers:    []string{issuer1, issuer2},
-				CreditType: "carbon",
-				Metadata:   nil,
+				Admin:          tc.creatorAcc.String(),
+				Issuers:        []string{issuer1, issuer2},
+				CreditTypeName: "carbon",
+				Metadata:       nil,
 			})
 			if tc.wantErr {
 				s.Require().Error(err)
@@ -717,10 +717,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
 			},
 			msg: ecocredit.MsgCreateClass{
-				Admin:      s.signers[0].String(),
-				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
-				Metadata:   nil,
-				CreditType: "carbon",
+				Admin:          s.signers[0].String(),
+				Issuers:        []string{s.signers[1].String(), s.signers[2].String()},
+				Metadata:       nil,
+				CreditTypeName: "carbon",
 			},
 			wantErr: false,
 		},
@@ -730,10 +730,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
 			},
 			msg: ecocredit.MsgCreateClass{
-				Admin:      s.signers[0].String(),
-				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
-				Metadata:   nil,
-				CreditType: "biodiversity",
+				Admin:          s.signers[0].String(),
+				Issuers:        []string{s.signers[1].String(), s.signers[2].String()},
+				Metadata:       nil,
+				CreditTypeName: "biodiversity",
 			},
 			wantErr: true,
 		},
@@ -743,10 +743,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 				{Name: "carbon", Abbreviation: "C", Unit: "metric ton CO2 equivalent", Precision: 3},
 			},
 			msg: ecocredit.MsgCreateClass{
-				Admin:      s.signers[0].String(),
-				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
-				Metadata:   nil,
-				CreditType: "cArBoN",
+				Admin:          s.signers[0].String(),
+				Issuers:        []string{s.signers[1].String(), s.signers[2].String()},
+				Metadata:       nil,
+				CreditTypeName: "cArBoN",
 			},
 			wantErr: false,
 		},
@@ -754,10 +754,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 			name:        "empty credit types should error",
 			creditTypes: []*ecocredit.CreditType{},
 			msg: ecocredit.MsgCreateClass{
-				Admin:      s.signers[0].String(),
-				Issuers:    []string{s.signers[1].String(), s.signers[2].String()},
-				Metadata:   nil,
-				CreditType: "carbon",
+				Admin:          s.signers[0].String(),
+				Issuers:        []string{s.signers[1].String(), s.signers[2].String()},
+				Metadata:       nil,
+				CreditTypeName: "carbon",
 			},
 			wantErr: true,
 		},
