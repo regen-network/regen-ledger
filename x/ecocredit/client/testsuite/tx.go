@@ -549,7 +549,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "Invalid retirement location",
+			expectedErrMsg: "Invalid location",
 		},
 		{
 			name: "invalid issuance recipient",
@@ -597,7 +597,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "Invalid retirement location: abcde",
+			expectedErrMsg: "Invalid location: abcde",
 		},
 		{
 			name: "missing from flag",
@@ -819,7 +819,7 @@ func (s *IntegrationTestSuite) TestTxSend() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "Invalid retirement location: abcde",
+			expectedErrMsg: "Invalid location: abcde",
 		},
 		{
 			name: "missing from flag",
@@ -958,7 +958,7 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "Invalid retirement location: abcde",
+			expectedErrMsg: "Invalid location: abcde",
 		},
 		{
 			name: "missing from flag",

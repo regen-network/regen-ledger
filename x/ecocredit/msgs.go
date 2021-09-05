@@ -96,7 +96,6 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 		}
 
 		if iss.TradableAmount != "" {
-
 			if _, err := math.NewNonNegativeDecFromString(iss.TradableAmount); err != nil {
 				return err
 			}
