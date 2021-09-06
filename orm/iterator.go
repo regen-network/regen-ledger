@@ -55,14 +55,14 @@ type LimitedIterator struct {
 // LimitIterator returns a new iterator that returns max number of elements.
 // The parent iterator must not be nil
 // max can be 0 or any positive number
-func LimitIterator(parent Iterator, max int) *LimitedIterator {
+func LimitIterator(parent Iterator, max int) (*LimitedIterator, error) {
 	if max < 0 {
-		panic("quantity must not be negative")
+		return nil, ErrArgument.Wrap("quantity must not be negative")
 	}
 	if parent == nil {
-		panic("parent iterator must not be nil")
+		return nil, ErrArgument.Wrap("parent iterator must not be nil")
 	}
-	return &LimitedIterator{remainingCount: max, parentIterator: parent}
+	return &LimitedIterator{remainingCount: max, parentIterator: parent}, nil
 }
 
 // LoadNext loads the next value in the sequence into the pointer passed as dest and returns the key. If there

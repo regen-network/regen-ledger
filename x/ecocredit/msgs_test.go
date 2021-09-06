@@ -17,18 +17,18 @@ func TestMsgCreateClass(t *testing.T) {
 	}{
 		"valid msg": {
 			src: MsgCreateClass{
-				Admin:      addr1.String(),
-				Issuers:    []string{addr1.String(), addr2.String()},
-				CreditType: "carbon",
-				Metadata:   []byte("hello"),
+				Admin:          addr1.String(),
+				Issuers:        []string{addr1.String(), addr2.String()},
+				CreditTypeName: "carbon",
+				Metadata:       []byte("hello"),
 			},
 			expErr: false,
 		},
 		"valid msg without metadata": {
 			src: MsgCreateClass{
-				Admin:      addr1.String(),
-				CreditType: "carbon",
-				Issuers:    []string{addr1.String(), addr2.String()},
+				Admin:          addr1.String(),
+				CreditTypeName: "carbon",
+				Issuers:        []string{addr1.String(), addr2.String()},
 			},
 			expErr: false,
 		},
@@ -38,24 +38,24 @@ func TestMsgCreateClass(t *testing.T) {
 		},
 		"invalid without issuers": {
 			src: MsgCreateClass{
-				Admin:      addr1.String(),
-				CreditType: "carbon",
+				Admin:          addr1.String(),
+				CreditTypeName: "carbon",
 			},
 			expErr: true,
 		},
 		"invalid with wrong issuers": {
 			src: MsgCreateClass{
-				Admin:      addr1.String(),
-				CreditType: "carbon",
-				Issuers:    []string{"xyz", "xyz1"},
+				Admin:          addr1.String(),
+				CreditTypeName: "carbon",
+				Issuers:        []string{"xyz", "xyz1"},
 			},
 			expErr: true,
 		},
 		"invalid with wrong admin": {
 			src: MsgCreateClass{
-				Admin:      "wrongAdmin",
-				CreditType: "carbon",
-				Issuers:    []string{addr1.String(), addr2.String()},
+				Admin:          "wrongAdmin",
+				CreditTypeName: "carbon",
+				Issuers:        []string{addr1.String(), addr2.String()},
 			},
 			expErr: true,
 		},

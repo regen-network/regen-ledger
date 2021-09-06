@@ -23,8 +23,9 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 		testTablePrefix = iota
 	)
 
-	tb := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc).
-		Build()
+	builder, err := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	require.NoError(t, err)
+	tb := builder.Build()
 
 	ctx := orm.NewMockContext()
 
@@ -245,8 +246,9 @@ func TestContains(t *testing.T) {
 	storeKey := sdk.NewKVStoreKey("test")
 	const testTablePrefix = iota
 
-	tb := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc).
-		Build()
+	builder, err := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	require.NoError(t, err)
+	tb := builder.Build()
 
 	ctx := orm.NewMockContext()
 
@@ -255,7 +257,7 @@ func TestContains(t *testing.T) {
 		Member: []byte("member-one"),
 		Weight: 1,
 	}
-	err := tb.Create(ctx, &myPersistentObj)
+	err = tb.Create(ctx, &myPersistentObj)
 	require.NoError(t, err)
 
 	specs := map[string]struct {

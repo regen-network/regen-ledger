@@ -359,10 +359,10 @@ func initSupply(t *testing.T, store sdk.KVStore, supply []*ecocredit.Supply) {
 		d, err := math.NewNonNegativeDecFromString(s.TradableSupply)
 		require.NoError(t, err)
 		key := TradableSupplyKey(denomT)
-		getAddAndSetDecimal(store, key, d)
+		addAndSetDecimal(store, key, d)
 		d, err = math.NewNonNegativeDecFromString(s.RetiredSupply)
 		require.NoError(t, err)
 		key = RetiredSupplyKey(denomT)
-		getAddAndSetDecimal(store, key, d)
+		addAndSetDecimal(store, key, d)
 	}
 }
