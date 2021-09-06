@@ -139,10 +139,10 @@ func SimulateMsgCreateClass(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		creditTypes := []string{"carbon", "biodiversity"}
 
 		msg := &ecocredit.MsgCreateClass{
-			Admin:      admin.Address.String(),
-			Issuers:    issuers,
-			Metadata:   []byte(simtypes.RandStringOfLength(r, 10)),
-			CreditType: creditTypes[r.Intn(len(creditTypes))],
+			Admin:          admin.Address.String(),
+			Issuers:        issuers,
+			Metadata:       []byte(simtypes.RandStringOfLength(r, 10)),
+			CreditTypeName: creditTypes[r.Intn(len(creditTypes))],
 		}
 
 		txCtx := simulation.OperationInput{

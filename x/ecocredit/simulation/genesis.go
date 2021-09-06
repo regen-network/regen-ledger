@@ -68,7 +68,7 @@ func genClasses(r *rand.Rand, accounts []simtypes.Account) []*ecocredit.ClassInf
 
 	for i := 1; i < 4; i++ {
 		classes[i-1] = &ecocredit.ClassInfo{
-			ClassId:    ecocredit.FormatClassID(creditType, uint64(i)),
+			ClassId:    ecocredit.FormatClassID(*creditType, uint64(i)),
 			Admin:      accounts[0].Address.String(),
 			Issuers:    []string{accounts[0].Address.String(), accounts[1].Address.String(), accounts[2].Address.String()},
 			Metadata:   []byte(simtypes.RandStringOfLength(r, 10)),
@@ -84,7 +84,7 @@ func genBatches(r *rand.Rand, startTime, endTime time.Time) []*ecocredit.BatchIn
 	creditType := ecocredit.DefaultParams().CreditTypes[0]
 
 	for i := 1; i < 4; i++ {
-		classID := ecocredit.FormatClassID(creditType, uint64(i))
+		classID := ecocredit.FormatClassID(*creditType, uint64(i))
 		bd, _ := ecocredit.FormatDenom(classID, uint64(i), &startTime, &endTime)
 		batches[i-1] = &ecocredit.BatchInfo{
 			ClassId:         classID,
@@ -108,7 +108,7 @@ func genBalances(r *rand.Rand, startTime, endTime time.Time) []*ecocredit.Balanc
 	creditType := ecocredit.DefaultParams().CreditTypes[0]
 
 	for i := 0; i < 3; i++ {
-		classID := ecocredit.FormatClassID(creditType, uint64(i+1))
+		classID := ecocredit.FormatClassID(*creditType, uint64(i+1))
 		bd, _ := ecocredit.FormatDenom(classID, uint64(i+1), &startTime, &endTime)
 		balances = append(balances,
 			&ecocredit.Balance{
@@ -134,7 +134,7 @@ func genSupplies(r *rand.Rand, startTime, endTime time.Time) []*ecocredit.Supply
 	creditType := ecocredit.DefaultParams().CreditTypes[0]
 
 	for i := 0; i < 3; i++ {
-		classID := ecocredit.FormatClassID(creditType, uint64(i+1))
+		classID := ecocredit.FormatClassID(*creditType, uint64(i+1))
 		bd, _ := ecocredit.FormatDenom(classID, uint64(i+1), &startTime, &endTime)
 		supplies[i] = &ecocredit.Supply{
 			BatchDenom:     bd,
