@@ -27,7 +27,7 @@ func (b *nilCodecBuilder) RowGetter() orm.RowGetter {
 	return func(a orm.HasKVStore, b orm.RowID, c codec.ProtoMarshaler) error { return nil }
 }
 func (b *nilCodecBuilder) IndexKeyCodec() orm.IndexKeyCodec                     { return nil }
-func (b *nilCodecBuilder) AddAfterSaveInterceptor(orm.AfterSaveInterceptor)     {}
+func (b *nilCodecBuilder) AddAfterSetInterceptor(orm.AfterSetInterceptor)       {}
 func (b *nilCodecBuilder) AddAfterDeleteInterceptor(orm.AfterDeleteInterceptor) {}
 
 type nilStoreKeyBuilder struct{}
@@ -39,7 +39,7 @@ func (b *nilStoreKeyBuilder) RowGetter() orm.RowGetter {
 func (b *nilStoreKeyBuilder) IndexKeyCodec() orm.IndexKeyCodec {
 	return orm.Max255DynamicLengthIndexKeyCodec{}
 }
-func (b *nilStoreKeyBuilder) AddAfterSaveInterceptor(orm.AfterSaveInterceptor)     {}
+func (b *nilStoreKeyBuilder) AddAfterSetInterceptor(orm.AfterSetInterceptor)       {}
 func (b *nilStoreKeyBuilder) AddAfterDeleteInterceptor(orm.AfterDeleteInterceptor) {}
 
 type nilRowGetterBuilder struct{}
@@ -53,7 +53,7 @@ func (b *nilRowGetterBuilder) RowGetter() orm.RowGetter {
 func (b *nilRowGetterBuilder) IndexKeyCodec() orm.IndexKeyCodec {
 	return orm.Max255DynamicLengthIndexKeyCodec{}
 }
-func (b *nilRowGetterBuilder) AddAfterSaveInterceptor(orm.AfterSaveInterceptor)     {}
+func (b *nilRowGetterBuilder) AddAfterSetInterceptor(orm.AfterSetInterceptor)       {}
 func (b *nilRowGetterBuilder) AddAfterDeleteInterceptor(orm.AfterDeleteInterceptor) {}
 
 func TestNewIndex(t *testing.T) {
