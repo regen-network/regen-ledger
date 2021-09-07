@@ -40,7 +40,7 @@ func (r RowID) Bytes() []byte {
 	return r
 }
 
-// Validateable is an interface that Persistent types can implement and is called on any orm save or update operation.
+// Validateable is an interface that Persistent types can implement and is called on any orm set operation.
 type Validateable interface {
 	// ValidateBasic is a sanity check on the data. Any error returned prevents create or updates.
 	ValidateBasic() error
@@ -131,12 +131,12 @@ type Indexable interface {
 	StoreKey() sdk.StoreKey
 	RowGetter() RowGetter
 	IndexKeyCodec() IndexKeyCodec
-	AddAfterSaveInterceptor(interceptor AfterSaveInterceptor)
+	AddAfterSetInterceptor(interceptor AfterSetInterceptor)
 	AddAfterDeleteInterceptor(interceptor AfterDeleteInterceptor)
 }
 
-// AfterSaveInterceptor defines a callback function to be called on Create + Update.
-type AfterSaveInterceptor func(ctx HasKVStore, rowID RowID, newValue, oldValue codec.ProtoMarshaler) error
+// AfterSetInterceptor defines a callback function to be called on Create + Update.
+type AfterSetInterceptor func(ctx HasKVStore, rowID RowID, newValue, oldValue codec.ProtoMarshaler) error
 
 // AfterDeleteInterceptor defines a callback function to be called on Delete operations.
 type AfterDeleteInterceptor func(ctx HasKVStore, rowID RowID, value codec.ProtoMarshaler) error
