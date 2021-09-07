@@ -116,9 +116,9 @@ func (m *primaryKeyMachine) Create(t *rapid.T) {
 	}
 }
 
-// Save is one of the model commands. It updates the value at a given primary
+// Update is one of the model commands. It updates the value at a given primary
 // key and fails if that primary key doesn't already exist in the table.
-func (m *primaryKeyMachine) Save(t *rapid.T) {
+func (m *primaryKeyMachine) Update(t *rapid.T) {
 	gm := m.genGroupMember().Draw(t, "gm").(*testdata.GroupMember)
 
 	// We can only really change the weight here, because Group and Member
@@ -126,8 +126,8 @@ func (m *primaryKeyMachine) Save(t *rapid.T) {
 	newWeight := rapid.Uint64().Draw(t, "newWeight").(uint64)
 	gm.Weight = newWeight
 
-	// Perform the real Save
-	err := m.table.Save(m.ctx, gm)
+	// Perform the real Update
+	err := m.table.Update(m.ctx, gm)
 
 	if m.state[string(orm.PrimaryKey(gm))] == nil {
 		// If there's no value in the model, we expect an error
@@ -139,6 +139,18 @@ func (m *primaryKeyMachine) Save(t *rapid.T) {
 		// Update the model with the new value
 		m.state[string(orm.PrimaryKey(gm))] = gm
 	}
+}
+
+// Set is one of the model commands. It sets the value at a key in the table
+// whether it exists or not.
+func (m *primaryKeyMachine) Set(t *rapid.T) {
+	g := genGroupMember.Draw(t, "g").(*testdata.GroupMember)
+	pk := string(orm.PrimaryKey(g))
+
+	err := m.table.Set(m.ctx, g)
+
+	require.NoError(t, err)
+	m.state[pk] = g
 }
 
 // Delete is one of the model commands. It removes the object with the given

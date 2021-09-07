@@ -34,7 +34,7 @@ func TestImportExportTableData(t *testing.T) {
 		},
 	}
 
-	err = orm.ImportTableData(ctx, table, groups, 2)
+	err = table.Import(ctx, groups, 2)
 	require.NoError(t, err)
 
 	for _, g := range groups {
@@ -46,7 +46,7 @@ func TestImportExportTableData(t *testing.T) {
 	}
 
 	var exported []*testdata.GroupInfo
-	seq, err := orm.ExportTableData(ctx, table, &exported)
+	seq, err := table.Export(ctx, &exported)
 	require.NoError(t, err)
 	require.Equal(t, seq, uint64(2))
 

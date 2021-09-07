@@ -313,7 +313,7 @@ func TestAddLengthPrefix(t *testing.T) {
 	}
 
 	require.Panics(t, func() {
-		orm.AddLengthPrefix(make([]byte, 300))
+		orm.AddLengthPrefix(make([]byte, 256))
 	})
 }
 
