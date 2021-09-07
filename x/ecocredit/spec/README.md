@@ -4,7 +4,7 @@
 
 The following documents specify the ecocredit module.
 
-The ecocredit module enables the ability to define and manage the issuance of new classes of credits for ecosystem services that represent positive ecological health (i.e. soil health credits, carbon credits, biodiversity credits, etc).
+The ecocredit module enables the ability to define and manage credit classes and to issue ecosystem service credits (i.e. carbon credits, biodiversity credits, soil health credits, etc).
 
 ## Contents
 
