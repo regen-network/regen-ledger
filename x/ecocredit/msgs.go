@@ -36,7 +36,7 @@ func (m *MsgCreateClass) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("issuers cannot be empty")
 	}
 
-	if len(m.CreditType) == 0 {
+	if len(m.CreditTypeName) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("credit class must have a credit type")
 	}
 	for _, issuer := range m.Issuers {
@@ -96,7 +96,6 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 		}
 
 		if iss.TradableAmount != "" {
-
 			if _, err := math.NewNonNegativeDecFromString(iss.TradableAmount); err != nil {
 				return err
 			}

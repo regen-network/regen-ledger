@@ -9,77 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// Deprecated: ParseNonNegativeDecimal parses a non-negative decimal or returns an error.
-func ParseNonNegativeDecimal(x string) (*apd.Decimal, error) {
-	res, _, err := apd.NewFromString(x)
-	if err != nil || res.Sign() < 0 {
-		return nil, errors.Wrap(errors.ErrInvalidRequest, fmt.Sprintf("expected a non-negative decimal, got %s", x))
-	}
-
-	return res, nil
-}
-
-// Deprecated: ParsePositiveDecimal parses a positive decimal or returns an error.
-func ParsePositiveDecimal(x string) (*apd.Decimal, error) {
-	res, _, err := apd.NewFromString(x)
-	if err != nil || res.Sign() <= 0 {
-		return nil, errors.Wrap(errors.ErrInvalidRequest, fmt.Sprintf("expected a positive decimal, got %s", x))
-	}
-
-	return res, nil
-}
-
-// Deprecated: DecimalString prints x as a floating point string.
-func DecimalString(x *apd.Decimal) string {
-	return x.Text('f')
-}
-
-// Deprecated: NumDecimalPlaces returns the number of decimal places in x.
-func NumDecimalPlaces(x *apd.Decimal) uint32 {
-	if x.Exponent >= 0 {
-		return 0
-	}
-	return uint32(-x.Exponent)
-}
-
-// Deprecated: ParseNonNegativeDecimal parses a non-negative decimal with a fixed maxDecimalPlaces or returns an error.
-func ParseNonNegativeFixedDecimal(x string, maxDecimalPlaces uint32) (*apd.Decimal, error) {
-	res, err := ParseNonNegativeDecimal(x)
-	if err != nil {
-		return nil, err
-	}
-
-	err = requireMaxDecimals(res, maxDecimalPlaces)
-	if err != nil {
-		return nil, err
-	}
-
-	return res, nil
-}
-
-// Deprecated: ParsePositiveFixedDecimal parses a positive decimal with a fixed maxDecimalPlaces or returns an error.
-func ParsePositiveFixedDecimal(x string, maxDecimalPlaces uint32) (*apd.Decimal, error) {
-	res, err := ParsePositiveDecimal(x)
-	if err != nil {
-		return nil, err
-	}
-
-	err = requireMaxDecimals(res, maxDecimalPlaces)
-	if err != nil {
-		return nil, err
-	}
-
-	return res, nil
-}
-
-func requireMaxDecimals(x *apd.Decimal, maxDecimalPlaces uint32) error {
-	n := NumDecimalPlaces(x)
-	if n > maxDecimalPlaces {
-		return errors.Wrap(errors.ErrInvalidRequest, fmt.Sprintf("expected no more than %d decimal places in %s, got %d", maxDecimalPlaces, x, n))
-	}
-	return nil
-}
-
 var exactContext = apd.Context{
 	Precision:   0,
 	MaxExponent: apd.MaxExponent,
@@ -87,28 +16,24 @@ var exactContext = apd.Context{
 	Traps:       apd.DefaultTraps | apd.Inexact | apd.Rounded,
 }
 
-// Deprecated: Add adds x and y and stores the result in res with arbitrary precision or returns an error.
-func Add(res, x, y *apd.Decimal) error {
-	_, err := exactContext.Add(res, x, y)
-	if err != nil {
-		return errors.Wrap(err, "decimal addition error")
-	}
-	return nil
+// Add adds x and y
+func Add(x Dec, y Dec) (Dec, error) {
+	return x.Add(y)
 }
 
-// Deprecated: SafeSub subtracts the value of x from y and stores the result in res with arbitrary precision only
-// if the result will be non-negative. An insufficient funds error is returned if the result would be negative.
-func SafeSub(res, x, y *apd.Decimal) error {
-	_, err := exactContext.Sub(res, x, y)
+// SubNonNegative subtracts the value of y from x and returns the result with
+// arbitrary precision. Returns an error if the result is negative.
+func SubNonNegative(x Dec, y Dec) (Dec, error) {
+	z, err := x.Sub(y)
 	if err != nil {
-		return errors.Wrap(err, "decimal subtraction error")
+		return Dec{}, err
 	}
 
-	if res.Sign() < 0 {
-		return errors.ErrInsufficientFunds
+	if z.IsNegative() {
+		return z, fmt.Errorf("result negative during non-negative subtraction")
 	}
 
-	return nil
+	return z, nil
 }
 
 // SafeSubBalance subtracts the value of y from x and returns the result with arbitrary precision.

@@ -1,12 +1,12 @@
 package client
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
-	"time"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -47,7 +47,7 @@ func txflags(cmd *cobra.Command) *cobra.Command {
 
 func TxCreateClassCmd() *cobra.Command {
 	return txflags(&cobra.Command{
-		Use:   "create-class [issuer[,issuer]*] [credit type] [metadata]",
+		Use:   "create-class [issuer[,issuer]*] [credit type name] [metadata]",
 		Short: "Creates a new credit class with transaction author (--from) as admin",
 		Long: fmt.Sprintf(
 			`Creates a new credit class with transaction author (--from) as admin.
@@ -60,9 +60,9 @@ They must also pay the fee associated with creating a new credit class, defined
 by the %s parameter, so should make sure they have enough funds to cover that.
 
 Parameters:
-  issuer:    	    comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
-  credit type:    the credit class type (e.g. carbon, biodiversity, etc)
-  metadata:  	    base64 encoded metadata - arbitrary data attached to the credit class info`,
+  issuer:    	       comma separated (no spaces) list of issuer account addresses. Example: "addr1,addr2"
+  credit type name:    the name of the credit class type (e.g. carbon, biodiversity, etc)
+  metadata:  	       base64 encoded metadata - arbitrary data attached to the credit class info`,
 			ecocredit.KeyAllowedClassCreators,
 			ecocredit.KeyCreditClassFee,
 		),
@@ -82,11 +82,11 @@ Parameters:
 				issuers[i] = strings.TrimSpace(issuers[i])
 			}
 
-			// Check credit type is provided
+			// Check credit type name is provided
 			if args[1] == "" {
-				return sdkerrors.ErrInvalidRequest.Wrap("credit type is required")
+				return sdkerrors.ErrInvalidRequest.Wrap("credit type name is required")
 			}
-			creditType := args[1]
+			creditTypeName := args[1]
 
 			// Check that metadata is provided and decode it
 			if args[2] == "" {
@@ -98,10 +98,10 @@ Parameters:
 			}
 
 			msg := ecocredit.MsgCreateClass{
-				Admin:      admin.String(),
-				Issuers:    issuers,
-				Metadata:   b,
-				CreditType: creditType,
+				Admin:          admin.String(),
+				Issuers:        issuers,
+				Metadata:       b,
+				CreditTypeName: creditTypeName,
 			}
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
@@ -193,13 +193,17 @@ Required Flags:
 				ProjectLocation: projectLocation,
 			}
 
+
 			// Marshal and output JSON of message
-			msgJson, err := json.MarshalIndent(msg, "", "    ")
+			ctx := sdkclient.GetClientContextFromCmd(cmd)
+			msgJson, err := ctx.Codec.MarshalJSON(msg)
 			if err != nil {
 				return err
 			}
 
-			fmt.Print(string(msgJson))
+			var formattedJson bytes.Buffer
+			json.Indent(&formattedJson, msgJson, "", "    ")
+			fmt.Println(formattedJson.String())
 
 			return nil
 		},
@@ -219,34 +223,7 @@ Required Flags:
 }
 
 func TxCreateBatchCmd() *cobra.Command {
-	var (
-		startDate = time.Unix(10000, 10000).UTC()
-		endDate   = time.Unix(10000, 10050).UTC()
-	)
-	createExampleBatchJSON, err := json.MarshalIndent(
-		ecocredit.MsgCreateBatch{
-			// Leave issuer empty, because we'll use --from flag
-			Issuer:  "",
-			ClassId: "1BX53GF",
-			Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
-				{
-					Recipient:          "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
-					TradableAmount:     "1000",
-					RetiredAmount:      "15",
-					RetirementLocation: "ST-UVW XY Z12",
-				},
-			},
-			Metadata:        []byte{0x1, 0x2},
-			StartDate:       &startDate,
-			EndDate:         &endDate,
-			ProjectLocation: "AB-CDE FG1 345",
-		},
-		"                              ",
-		"    ",
-	)
-	if err != nil {
-		panic("Couldn't marshal MsgCreateBatch to JSON")
-	}
+
 	return txflags(&cobra.Command{
 		Use:   "create-batch [msg-create-batch-json-file]",
 		Short: "Issues a new credit batch",
@@ -254,8 +231,23 @@ func TxCreateBatchCmd() *cobra.Command {
 
 Parameters:
   msg-create-batch-json-file: Path to a file containing a JSON object
-			      representing MsgCreateBatch. The JSON has format:
-                              %s`, createExampleBatchJSON),
+                              representing MsgCreateBatch. The JSON has format:
+                              {
+                                "class_id"": "C01",
+                                "issuance": [
+                                  {
+                                    "recipient":           "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
+                                    "tradable_amount":     "1000",
+                                    "retired_amount":      "15",
+                                    "retirement_location": "ST-UVW XY Z12",
+                                  },
+                                ],
+                                "metadata":         "AQI=",
+                                "start_date":       "1990-01-01",
+                                "end_date":         "1995-10-31",
+                                "project_location": "AB-CDE FG1 345",
+                              }
+                              `),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)

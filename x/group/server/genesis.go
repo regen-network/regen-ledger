@@ -7,7 +7,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/x/group"
 )
@@ -16,26 +15,26 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 	var genesisState group.GenesisState
 	cdc.MustUnmarshalJSON(data, &genesisState)
 
-	if err := orm.ImportTableData(ctx, s.groupTable, genesisState.Groups, genesisState.GroupSeq); err != nil {
+	if err := s.groupTable.Import(ctx, genesisState.Groups, genesisState.GroupSeq); err != nil {
 		return nil, errors.Wrap(err, "groups")
 	}
 
-	if err := orm.ImportTableData(ctx, s.groupMemberTable, genesisState.GroupMembers, 0); err != nil {
+	if err := s.groupMemberTable.Import(ctx, genesisState.GroupMembers, 0); err != nil {
 		return nil, errors.Wrap(err, "group members")
 	}
 
-	if err := orm.ImportTableData(ctx, s.groupAccountTable, genesisState.GroupAccounts, 0); err != nil {
+	if err := s.groupAccountTable.Import(ctx, genesisState.GroupAccounts, 0); err != nil {
 		return nil, errors.Wrap(err, "group accounts")
 	}
 	if err := s.groupAccountSeq.InitVal(ctx, genesisState.GroupAccountSeq); err != nil {
 		return nil, errors.Wrap(err, "group account seq")
 	}
 
-	if err := orm.ImportTableData(ctx, s.proposalTable, genesisState.Proposals, genesisState.ProposalSeq); err != nil {
+	if err := s.proposalTable.Import(ctx, genesisState.Proposals, genesisState.ProposalSeq); err != nil {
 		return nil, errors.Wrap(err, "proposals")
 	}
 
-	if err := orm.ImportTableData(ctx, s.voteTable, genesisState.Votes, 0); err != nil {
+	if err := s.voteTable.Import(ctx, genesisState.Votes, 0); err != nil {
 		return nil, errors.Wrap(err, "votes")
 	}
 
@@ -46,7 +45,7 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 	genesisState := group.NewGenesisState()
 
 	var groups []*group.GroupInfo
-	groupSeq, err := orm.ExportTableData(ctx, s.groupTable, &groups)
+	groupSeq, err := s.groupTable.Export(ctx, &groups)
 	if err != nil {
 		return nil, errors.Wrap(err, "groups")
 	}
@@ -54,14 +53,14 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 	genesisState.GroupSeq = groupSeq
 
 	var groupMembers []*group.GroupMember
-	_, err = orm.ExportTableData(ctx, s.groupMemberTable, &groupMembers)
+	_, err = s.groupMemberTable.Export(ctx, &groupMembers)
 	if err != nil {
 		return nil, errors.Wrap(err, "group members")
 	}
 	genesisState.GroupMembers = groupMembers
 
 	var groupAccounts []*group.GroupAccountInfo
-	_, err = orm.ExportTableData(ctx, s.groupAccountTable, &groupAccounts)
+	_, err = s.groupAccountTable.Export(ctx, &groupAccounts)
 	if err != nil {
 		return nil, errors.Wrap(err, "group accounts")
 	}
@@ -69,7 +68,7 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 	genesisState.GroupAccountSeq = s.groupAccountSeq.CurVal(ctx)
 
 	var proposals []*group.Proposal
-	proposalSeq, err := orm.ExportTableData(ctx, s.proposalTable, &proposals)
+	proposalSeq, err := s.proposalTable.Export(ctx, &proposals)
 	if err != nil {
 		return nil, errors.Wrap(err, "proposals")
 	}
@@ -77,7 +76,7 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 	genesisState.ProposalSeq = proposalSeq
 
 	var votes []*group.Vote
-	_, err = orm.ExportTableData(ctx, s.voteTable, &votes)
+	_, err = s.voteTable.Export(ctx, &votes)
 	if err != nil {
 		return nil, errors.Wrap(err, "votes")
 	}
