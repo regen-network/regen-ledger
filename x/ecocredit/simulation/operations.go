@@ -531,7 +531,7 @@ func randomIssuers(r *rand.Rand, accounts []simtypes.Account) []string {
 }
 
 func generateBatchIssuance(r *rand.Rand, accs []simtypes.Account) []*ecocredit.MsgCreateBatch_BatchIssuance {
-	numIssuences := simtypes.RandIntBetween(r, 3, 10)
+	numIssuances := simtypes.RandIntBetween(r, 3, 10)
 	res := make([]*ecocredit.MsgCreateBatch_BatchIssuance, numIssuences)
 
 	for i := 0; i < numIssuences; i++ {
