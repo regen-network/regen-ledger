@@ -10,10 +10,14 @@ import (
 var _ Indexable = &PrimaryKeyTableBuilder{}
 
 // NewPrimaryKeyTableBuilder creates a builder to setup a PrimaryKeyTable object.
-func NewPrimaryKeyTableBuilder(prefixData byte, storeKey sdk.StoreKey, model PrimaryKeyed, codec IndexKeyCodec, cdc codec.Codec) *PrimaryKeyTableBuilder {
-	return &PrimaryKeyTableBuilder{
-		tableBuilder: newTableBuilder(prefixData, storeKey, model, codec, cdc),
+func NewPrimaryKeyTableBuilder(prefixData byte, storeKey sdk.StoreKey, model PrimaryKeyed, codec IndexKeyCodec, cdc codec.Codec) (*PrimaryKeyTableBuilder, error) {
+	tableBuilder, err := newTableBuilder(prefixData, storeKey, model, codec, cdc)
+	if err != nil {
+		return nil, err
 	}
+	return &PrimaryKeyTableBuilder{
+		tableBuilder: tableBuilder,
+	}, nil
 }
 
 type PrimaryKeyTableBuilder struct {
@@ -36,7 +40,7 @@ type PrimaryKeyed interface {
 	// integers are encoded using 4 or 8 byte big endian.
 	//
 	// IMPORTANT: []byte parts are encoded with a single byte length prefix,
-	// so cannot be longer than 256 bytes.
+	// so cannot be longer than 255 bytes.
 	//
 	// The `IndexKeyCodec` used with the `PrimaryKeyTable` may add certain
 	// constraints to the byte representation as max length = 255 in
@@ -93,11 +97,11 @@ func primaryKeyFieldBytes(field interface{}) []byte {
 }
 
 // Prefix the byte array with its length as 8 bytes. The function will panic
-// if the bytes length is bigger than 256.
+// if the bytes length is bigger than 255.
 func AddLengthPrefix(bytes []byte) []byte {
 	byteLen := len(bytes)
-	if byteLen > 256 {
-		panic("Cannot create primary key with an []byte of length greater than 256 bytes. Try again with a smaller []byte.")
+	if byteLen > 255 {
+		panic("Cannot create primary key with an []byte of length greater than 255 bytes. Try again with a smaller []byte.")
 	}
 
 	prefixedBytes := make([]byte, 1+len(bytes))
