@@ -12,8 +12,8 @@ message EventCreateClass {
   // class_id is the unique ID of credit class.
   string class_id = 1 [ (gogoproto.moretags) = "yaml:\"class_id\"" ];
 
-  // designer is the designer of the credit class.
-  string designer = 2;
+  // admin is the admin of the credit class.
+  string admin = 2;
 }
 
 // EventCreateBatch is an event emitted when a credit batch is created.

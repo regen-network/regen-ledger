@@ -1,15 +1,4 @@
-# Ecocredit Module Overview
-
-::: tip COMING SOON
-
-Expect updates on this page soon...
-
-In the meantime, make sure you're familiar with the basics of the
-[Regen Ledger API & CLI](../../api.md), and then let `regen tx ecocredit --help`
-and the Ecocredit Module [Protobuf Documentation](./protobuf.md)
-be your guide!
-
-:::
+# Client
 
 ### Ecocredit Transactions
 
@@ -29,6 +18,7 @@ $ regen tx ecocredit --help
 #   send          Sends credits from the transaction author (--from) to the recipient
 #   set_precision Allows an issuer to increase the decimal precision of a credit batch
 ```
+
 ### Ecocredit Queries
 
 ```sh

@@ -1,13 +1,8 @@
-<!--
-order: 0
-title: Group
-parent:
-  title: "group"
--->
+# Group Module
 
 ## Abstract
 
-This document specifies the group module.
+The following documents specify the group module.
 
 This module allows the creation and management of on-chain multisig accounts and enables voting for message execution based on configurable decision policies.
 

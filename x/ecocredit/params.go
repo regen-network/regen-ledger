@@ -12,7 +12,7 @@ var (
 	// TODO: Decide a sensible default value
 	DefaultCreditClassFeeTokens = sdk.NewInt(10000)
 	KeyCreditClassFee           = []byte("CreditClassFee")
-	KeyAllowedClassDesigners    = []byte("AllowedClassDesigners")
+	KeyAllowedClassCreators     = []byte("AllowedClassCreators")
 	KeyAllowlistEnabled         = []byte("AllowlistEnabled")
 	KeyCreditTypes              = []byte("CreditTypes")
 )
@@ -30,10 +30,31 @@ func ParamKeyTable() paramtypes.KeyTable {
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyCreditClassFee, &p.CreditClassFee, validateCreditClassFee),
-		paramtypes.NewParamSetPair(KeyAllowedClassDesigners, &p.AllowedClassDesigners, validateAllowlistCreditDesigners),
+		paramtypes.NewParamSetPair(KeyAllowedClassCreators, &p.AllowedClassCreators, validateAllowedClassCreators),
 		paramtypes.NewParamSetPair(KeyAllowlistEnabled, &p.AllowlistEnabled, validateAllowlistEnabled),
 		paramtypes.NewParamSetPair(KeyCreditTypes, &p.CreditTypes, validateCreditTypes),
 	}
+}
+
+// Validate will run each param field's validate method
+func (p Params) Validate() error {
+	if err := validateCreditTypes(p.CreditTypes); err != nil {
+		return err
+	}
+
+	if err := validateAllowedClassCreators(p.AllowedClassCreators); err != nil {
+		return err
+	}
+
+	if err := validateAllowlistEnabled(p.AllowlistEnabled); err != nil {
+		return err
+	}
+
+	if err := validateCreditClassFee(p.CreditClassFee); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func validateCreditClassFee(i interface{}) error {
@@ -49,7 +70,7 @@ func validateCreditClassFee(i interface{}) error {
 	return nil
 }
 
-func validateAllowlistCreditDesigners(i interface{}) error {
+func validateAllowedClassCreators(i interface{}) error {
 	v, ok := i.([]string)
 	if !ok {
 		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
@@ -57,7 +78,7 @@ func validateAllowlistCreditDesigners(i interface{}) error {
 	for _, sAddr := range v {
 		_, err := sdk.AccAddressFromBech32(sAddr)
 		if err != nil {
-			return err
+			return sdkerrors.ErrInvalidAddress.Wrapf("invalid creator address: %s", err.Error())
 		}
 	}
 	return nil
@@ -92,7 +113,7 @@ func validateCreditTypes(i interface{}) error {
 			return sdkerrors.ErrInvalidRequest.Wrap("empty credit type name")
 		}
 		if seenTypes[T] {
-			return sdkerrors.ErrInvalidRequest.Wrapf("duplicate credit types in request: %s", T)
+			return sdkerrors.ErrInvalidRequest.Wrapf("duplicate credit type name in request: %s", T)
 		}
 
 		// Validate abbreviation
@@ -137,10 +158,10 @@ func validateCreditTypeAbbreviation(abbr string) error {
 
 func NewParams(creditClassFee sdk.Coins, allowlist []string, allowlistEnabled bool, creditTypes []*CreditType) Params {
 	return Params{
-		CreditClassFee:        creditClassFee,
-		AllowedClassDesigners: allowlist,
-		AllowlistEnabled:      allowlistEnabled,
-		CreditTypes:           creditTypes,
+		CreditClassFee:       creditClassFee,
+		AllowedClassCreators: allowlist,
+		AllowlistEnabled:     allowlistEnabled,
+		CreditTypes:          creditTypes,
 	}
 }
 
