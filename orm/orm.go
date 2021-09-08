@@ -118,6 +118,9 @@ type Iterator interface {
 
 // IndexKeyCodec defines the encoding/ decoding methods for building/ splitting index keys.
 type IndexKeyCodec interface {
+	// PrefixSearchableKey adds an optional prefix to the searchable key and
+	// should be called before all prefix lookups and stores
+	PrefixSearchableKey(searchableKey []byte) []byte
 	// BuildIndexKey encodes a searchable key and the target RowID.
 	BuildIndexKey(searchableKey []byte, rowID RowID) []byte
 	// StripRowID returns the RowID from the combined persistentIndexKey. It is the reverse operation to BuildIndexKey

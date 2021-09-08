@@ -62,7 +62,7 @@ func newIndex(builder Indexable, prefix byte, indexer *Indexer) MultiKeyIndex {
 // Has checks if a key exists. Panics on nil key.
 func (i MultiKeyIndex) Has(ctx HasKVStore, key []byte) bool {
 	store := prefix.NewStore(ctx.KVStore(i.storeKey), []byte{i.prefix})
-	it := store.Iterator(PrefixRange(key))
+	it := store.Iterator(PrefixRange(i.indexKeyCodec.PrefixSearchableKey(key)))
 	defer it.Close()
 	return it.Valid()
 }
@@ -70,7 +70,7 @@ func (i MultiKeyIndex) Has(ctx HasKVStore, key []byte) bool {
 // Get returns a result iterator for the searchKey. Parameters must not be nil.
 func (i MultiKeyIndex) Get(ctx HasKVStore, searchKey []byte) (Iterator, error) {
 	store := prefix.NewStore(ctx.KVStore(i.storeKey), []byte{i.prefix})
-	it := store.Iterator(PrefixRange(searchKey))
+	it := store.Iterator(PrefixRange(i.indexKeyCodec.PrefixSearchableKey(searchKey)))
 	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, keyCodec: i.indexKeyCodec}, nil
 }
 
@@ -79,7 +79,7 @@ func (i MultiKeyIndex) Get(ctx HasKVStore, searchKey []byte) (Iterator, error) {
 // The pageRequest.Key is the rowID while searchKey is a MultiKeyIndex key.
 func (i MultiKeyIndex) GetPaginated(ctx HasKVStore, searchKey []byte, pageRequest *query.PageRequest) (Iterator, error) {
 	store := prefix.NewStore(ctx.KVStore(i.storeKey), []byte{i.prefix})
-	start, end := PrefixRange(searchKey)
+	start, end := PrefixRange(i.indexKeyCodec.PrefixSearchableKey(searchKey))
 
 	if pageRequest != nil && len(pageRequest.Key) != 0 {
 		start = i.indexKeyCodec.BuildIndexKey(searchKey, RowID(pageRequest.Key))

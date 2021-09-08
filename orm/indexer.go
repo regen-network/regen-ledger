@@ -104,7 +104,7 @@ func uniqueKeysAddFunc(store sdk.KVStore, codec IndexKeyCodec, secondaryIndexKey
 	if len(secondaryIndexKey) == 0 {
 		return errors.Wrap(ErrArgument, "empty index key")
 	}
-	it := store.Iterator(PrefixRange(secondaryIndexKey))
+	it := store.Iterator(PrefixRange(codec.PrefixSearchableKey(secondaryIndexKey)))
 	defer it.Close()
 	if it.Valid() {
 		return ErrUniqueConstraint

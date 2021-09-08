@@ -228,7 +228,7 @@ func TestUniqueIndex(t *testing.T) {
 	err := myTable.Create(ctx, &m)
 	require.NoError(t, err)
 
-	indexedKey := append([]byte{0x1}, byte('m'))
+	indexedKey := []byte{'m'}
 
 	// Has
 	assert.True(t, uniqueIdx.Has(ctx, indexedKey))

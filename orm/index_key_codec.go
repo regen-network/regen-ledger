@@ -1,12 +1,19 @@
 package orm
 
+var _, _ IndexKeyCodec = Max255DynamicLengthIndexKeyCodec{}, FixLengthIndexKeyCodec{}
+
 // Max255DynamicLengthIndexKeyCodec works with up to 255 byte dynamic size RowIDs.
 // They are encoded as `concat(searchableKey, rowID, len(rowID)[0])` and can be used
 // with PrimaryKey or external Key tables for example.
 type Max255DynamicLengthIndexKeyCodec struct{}
 
-// TODO Update docs
-// BuildIndexKey builds the index key by appending searchableKey with rowID and length int.
+// PrefixSearchableKey adds a length prefix to the searchable key
+func (Max255DynamicLengthIndexKeyCodec) PrefixSearchableKey(searchableKey []byte) []byte {
+	return AddLengthPrefix(searchableKey)
+}
+
+// BuildIndexKey builds the index key by adding a length prefix to searchableKey
+// and appending it with rowID.
 // The RowID length must not be greater than 255.
 func (Max255DynamicLengthIndexKeyCodec) BuildIndexKey(searchableKey []byte, rowID RowID) []byte {
 	rowIDLen := len(rowID)
@@ -21,9 +28,9 @@ func (Max255DynamicLengthIndexKeyCodec) BuildIndexKey(searchableKey []byte, rowI
 	return res
 }
 
-// TODO Update docs
-// StripRowID returns the RowID from the combined persistentIndexKey. It is the reverse operation to BuildIndexKey
-// but with the searchableKey and length int dropped.
+// StripRowID returns the RowID from the combined persistentIndexKey. It is the
+// reverse operation to BuildIndexKey dropping the searchableKey and its length
+// prefix.
 func (Max255DynamicLengthIndexKeyCodec) StripRowID(persistentIndexKey []byte) RowID {
 	searchableKeyLen := persistentIndexKey[0]
 	return persistentIndexKey[1+searchableKeyLen:]
@@ -39,6 +46,11 @@ type FixLengthIndexKeyCodec struct {
 // FixLengthIndexKeys is a constructor for FixLengthIndexKeyCodec.
 func FixLengthIndexKeys(rowIDLength int) *FixLengthIndexKeyCodec {
 	return &FixLengthIndexKeyCodec{rowIDLength: rowIDLength}
+}
+
+// PrefixSearchableKey adds no prefix
+func (FixLengthIndexKeyCodec) PrefixSearchableKey(searchableKey []byte) []byte {
+	return searchableKey
 }
 
 // BuildIndexKey builds the index key by appending searchableKey with rowID.

@@ -68,7 +68,11 @@ func (i UInt64Index) GetPaginated(ctx HasKVStore, searchKey uint64, pageRequest 
 //
 // CONTRACT: No writes may happen within a domain while an iterator exists over it.
 func (i UInt64Index) PrefixScan(ctx HasKVStore, start, end uint64) (Iterator, error) {
-	return i.multiKeyIndex.PrefixScan(ctx, EncodeSequence(start), EncodeSequence(end))
+	return i.multiKeyIndex.PrefixScan(
+		ctx,
+		i.multiKeyIndex.indexKeyCodec.PrefixSearchableKey(EncodeSequence(start)),
+		i.multiKeyIndex.indexKeyCodec.PrefixSearchableKey(EncodeSequence(end)),
+	)
 }
 
 // ReversePrefixScan returns an Iterator over a domain of keys in descending order. End is exclusive.
@@ -81,5 +85,9 @@ func (i UInt64Index) PrefixScan(ctx HasKVStore, start, end uint64) (Iterator, er
 //
 // CONTRACT: No writes may happen within a domain while an iterator exists over it.
 func (i UInt64Index) ReversePrefixScan(ctx HasKVStore, start, end uint64) (Iterator, error) {
-	return i.multiKeyIndex.ReversePrefixScan(ctx, EncodeSequence(start), EncodeSequence(end))
+	return i.multiKeyIndex.ReversePrefixScan(
+		ctx,
+		i.multiKeyIndex.indexKeyCodec.PrefixSearchableKey(EncodeSequence(start)),
+		i.multiKeyIndex.indexKeyCodec.PrefixSearchableKey(EncodeSequence(end)),
+	)
 }
