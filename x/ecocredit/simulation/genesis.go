@@ -1,14 +1,17 @@
 package simulation
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"strconv"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -26,7 +29,7 @@ const (
 
 // genCreditClassFee randomized CreditClassFee
 func genCreditClassFee(r *rand.Rand) sdk.Coins {
-	return sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1)))
+	return sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(simtypes.RandIntBetween(r, 1, 100)))))
 }
 
 // genAllowedClassCreators generate random set of creators
@@ -62,36 +65,40 @@ func genCreditTypes(r *rand.Rand) []*ecocredit.CreditType {
 	}
 }
 
-func genClasses(r *rand.Rand, accounts []simtypes.Account) []*ecocredit.ClassInfo {
+func genClasses(r *rand.Rand, accounts []simtypes.Account, creditTypes []*ecocredit.CreditType) []*ecocredit.ClassInfo {
 	classes := make([]*ecocredit.ClassInfo, 3)
-	creditType := ecocredit.DefaultParams().CreditTypes[0]
 
 	for i := 1; i < 4; i++ {
+		creditType := creditTypes[r.Intn(len(creditTypes))]
 		classes[i-1] = &ecocredit.ClassInfo{
 			ClassId:    ecocredit.FormatClassID(*creditType, uint64(i)),
 			Admin:      accounts[0].Address.String(),
 			Issuers:    []string{accounts[0].Address.String(), accounts[1].Address.String(), accounts[2].Address.String()},
-			Metadata:   []byte(simtypes.RandStringOfLength(r, 10)),
-			CreditType: ecocredit.DefaultParams().CreditTypes[0],
+			Metadata:   []byte(simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 10, 100))),
+			CreditType: creditType,
 		}
 	}
 	return classes
 }
 
-func genBatches(r *rand.Rand, startTime, endTime time.Time) []*ecocredit.BatchInfo {
+func genBatches(r *rand.Rand, classes []*ecocredit.ClassInfo,
+	creditTypes []*ecocredit.CreditType) []*ecocredit.BatchInfo {
 	batches := make([]*ecocredit.BatchInfo, 3)
 	accounts := simtypes.RandomAccounts(r, 3)
-	creditType := ecocredit.DefaultParams().CreditTypes[0]
 
 	for i := 1; i < 4; i++ {
+		startTime := simtypes.RandTimestamp(r)
+		endTime := startTime.Add(24 * time.Hour)
+		creditType := classes[i-1].CreditType
 		classID := ecocredit.FormatClassID(*creditType, uint64(i))
 		bd, _ := ecocredit.FormatDenom(classID, uint64(i), &startTime, &endTime)
+
 		batches[i-1] = &ecocredit.BatchInfo{
 			ClassId:         classID,
 			BatchDenom:      bd,
-			TotalAmount:     "100000",
-			Metadata:        []byte(simtypes.RandStringOfLength(r, 10)),
-			AmountCancelled: "100",
+			TotalAmount:     fmt.Sprintf("%d", simtypes.RandIntBetween(r, 500, 100000)),
+			Metadata:        []byte(simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 10, 100))),
+			AmountCancelled: fmt.Sprintf("%d", simtypes.RandIntBetween(r, 1, 50)),
 			StartDate:       &startTime,
 			EndDate:         &endTime,
 			Issuer:          accounts[i-1].Address.String(),
@@ -102,55 +109,102 @@ func genBatches(r *rand.Rand, startTime, endTime time.Time) []*ecocredit.BatchIn
 	return batches
 }
 
-func genBalances(r *rand.Rand, startTime, endTime time.Time) []*ecocredit.Balance {
-	var balances []*ecocredit.Balance
+func genBalances(r *rand.Rand,
+	classes []*ecocredit.ClassInfo,
+	batches []*ecocredit.BatchInfo,
+	creditTypes []*ecocredit.CreditType) []*ecocredit.Balance {
+	var result []*ecocredit.Balance
 	accounts := simtypes.RandomAccounts(r, 4)
-	creditType := ecocredit.DefaultParams().CreditTypes[0]
 
 	for i := 0; i < 3; i++ {
+		creditType := classes[i].CreditType
 		classID := ecocredit.FormatClassID(*creditType, uint64(i+1))
-		bd, _ := ecocredit.FormatDenom(classID, uint64(i+1), &startTime, &endTime)
-		balances = append(balances,
+		batch := getBatchbyClassID(batches, classID)
+		bd, _ := ecocredit.FormatDenom(classID, uint64(i+1), batch.StartDate, batch.EndDate)
+		balances := genRandomBalances(r, batch.TotalAmount, 4)
+		result = append(result,
 			&ecocredit.Balance{
 				Address:         accounts[i].Address.String(),
 				BatchDenom:      bd,
-				TradableBalance: "987.123",
-				RetiredBalance:  "123.123",
+				TradableBalance: balances[0],
+				RetiredBalance:  balances[1],
 			},
 			&ecocredit.Balance{
 				Address:         accounts[i+1].Address.String(),
 				BatchDenom:      bd,
-				TradableBalance: "12.988",
-				RetiredBalance:  "876.988",
+				TradableBalance: balances[2],
+				RetiredBalance:  balances[3],
 			},
 		)
 	}
 
-	return balances
+	return result
 }
 
-func genSupplies(r *rand.Rand, startTime, endTime time.Time) []*ecocredit.Supply {
+func getBatchbyClassID(batches []*ecocredit.BatchInfo, classID string) *ecocredit.BatchInfo {
+	for _, batch := range batches {
+		if batch.ClassId == classID {
+			return batch
+		}
+	}
+
+	return nil
+}
+
+func genSupplies(r *rand.Rand, classes []*ecocredit.ClassInfo,
+	batches []*ecocredit.BatchInfo,
+	balances []*ecocredit.Balance, creditTypes []*ecocredit.CreditType) []*ecocredit.Supply {
 	supplies := make([]*ecocredit.Supply, 3)
-	creditType := ecocredit.DefaultParams().CreditTypes[0]
 
 	for i := 0; i < 3; i++ {
+		creditType := classes[i].CreditType
 		classID := ecocredit.FormatClassID(*creditType, uint64(i+1))
-		bd, _ := ecocredit.FormatDenom(classID, uint64(i+1), &startTime, &endTime)
-		supplies[i] = &ecocredit.Supply{
-			BatchDenom:     bd,
-			TradableSupply: "1000.111",
-			RetiredSupply:  "1000.111",
-		}
+		batch := getBatchbyClassID(batches, classID)
+		bd, _ := ecocredit.FormatDenom(classID, uint64(i+1), batch.StartDate, batch.EndDate)
+		supply, _ := getBatchSupplyByDenom(balances, bd)
+		supplies[i] = supply
 	}
 
 	return supplies
 }
 
+func getBatchSupplyByDenom(balances []*ecocredit.Balance, denom string) (*ecocredit.Supply, error) {
+	tradableSupply := math.NewDecFromInt64(0)
+	retiredSupply := math.NewDecFromInt64(0)
+
+	for _, balance := range balances {
+		if balance.BatchDenom == denom {
+			tradable, err := math.NewDecFromString(balance.TradableBalance)
+			if err != nil {
+				return nil, err
+			}
+
+			retired, err := math.NewDecFromString(balance.RetiredBalance)
+			if err != nil {
+				return nil, err
+			}
+
+			tradableSupply, err = tradableSupply.Add(tradable)
+			if err != nil {
+				return nil, err
+			}
+			retiredSupply, err = retiredSupply.Add(retired)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	return &ecocredit.Supply{
+		BatchDenom:     denom,
+		TradableSupply: tradableSupply.String(),
+		RetiredSupply:  retiredSupply.String(),
+	}, nil
+
+}
+
 // RandomizedGenState generates a random GenesisState for the ecocredit module.
 func RandomizedGenState(simState *module.SimulationState) {
-	startTime := simtypes.RandTimestamp(simState.Rand)
-	endTime := startTime.Add(24 * time.Hour)
-
 	// params
 	var (
 		creditClassFee       sdk.Coins
@@ -189,28 +243,28 @@ func RandomizedGenState(simState *module.SimulationState) {
 	var classes []*ecocredit.ClassInfo
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, class, &classes, simState.Rand,
-		func(r *rand.Rand) { classes = genClasses(r, simState.Accounts) },
+		func(r *rand.Rand) { classes = genClasses(r, simState.Accounts, creditTypes) },
 	)
 
 	// batches
 	var batches []*ecocredit.BatchInfo
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, batch, &batches, simState.Rand,
-		func(r *rand.Rand) { batches = genBatches(r, startTime, endTime) },
+		func(r *rand.Rand) { batches = genBatches(r, classes, creditTypes) },
 	)
 
 	// balances
 	var balances []*ecocredit.Balance
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, balance, &balances, simState.Rand,
-		func(r *rand.Rand) { balances = genBalances(r, startTime, endTime) },
+		func(r *rand.Rand) { balances = genBalances(r, classes, batches, creditTypes) },
 	)
 
 	// supplies
 	var supplies []*ecocredit.Supply
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, supply, &supplies, simState.Rand,
-		func(r *rand.Rand) { supplies = genSupplies(r, startTime, endTime) },
+		func(r *rand.Rand) { supplies = genSupplies(r, classes, batches, balances, creditTypes) },
 	)
 
 	ecocreditGenesis := ecocredit.GenesisState{
@@ -229,14 +283,33 @@ func RandomizedGenState(simState *module.SimulationState) {
 				Abbreviation: "C",
 				SeqNumber:    4,
 			},
+			{
+				Abbreviation: "BIO",
+				SeqNumber:    4,
+			},
 		},
 	}
 
-	bz, err := json.MarshalIndent(ecocreditGenesis.Params, "", " ")
-	if err != nil {
+	bz := simState.Cdc.MustMarshalJSON(&ecocreditGenesis)
+	var out bytes.Buffer
+	if err := json.Indent(&out, bz, "", " "); err != nil {
 		panic(err)
 	}
-	fmt.Printf("Selected randomly generated ecocredit parameters:\n%s\n", bz)
+
+	fmt.Printf("Selected randomly generated ecocredit parameters:\n%s\n", out.String())
 
 	simState.GenState[ecocredit.ModuleName] = simState.Cdc.MustMarshalJSON(&ecocreditGenesis)
+}
+
+func genRandomBalances(r *rand.Rand, total string, n int) []string {
+	res := make([]string, n)
+	sum, _ := strconv.Atoi(total)
+
+	for i := 0; i < n; i++ {
+		j := simtypes.RandIntBetween(r, 0, sum)
+		res[i] = fmt.Sprintf("%d", j)
+		sum -= j
+	}
+
+	return res
 }

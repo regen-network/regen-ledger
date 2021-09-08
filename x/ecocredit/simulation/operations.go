@@ -132,9 +132,9 @@ func SimulateMsgCreateClass(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		spendable := bk.SpendableCoins(sdkCtx, admin.Address)
-		if spendable.IsAllLTE(params.CreditClassFee) {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateClass, "not enough balance"), nil, nil
-		}
+		// if spendable.IsAllLTE(params.CreditClassFee) {
+		// 	return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateClass, "not enough balance"), nil, nil
+		// }
 
 		creditTypes := []string{"carbon", "biodiversity"}
 
@@ -532,9 +532,9 @@ func randomIssuers(r *rand.Rand, accounts []simtypes.Account) []string {
 
 func generateBatchIssuance(r *rand.Rand, accs []simtypes.Account) []*ecocredit.MsgCreateBatch_BatchIssuance {
 	numIssuances := simtypes.RandIntBetween(r, 3, 10)
-	res := make([]*ecocredit.MsgCreateBatch_BatchIssuance, numIssuences)
+	res := make([]*ecocredit.MsgCreateBatch_BatchIssuance, numIssuances)
 
-	for i := 0; i < numIssuences; i++ {
+	for i := 0; i < numIssuances; i++ {
 		recipient := accs[i]
 		res[i] = &ecocredit.MsgCreateBatch_BatchIssuance{
 			Recipient:          recipient.Address.String(),

@@ -42,7 +42,7 @@ func TestRandomizedGenState(t *testing.T) {
 
 	require.Equal(t, ecocreditGenesis.Params.AllowedClassCreators, []string{"cosmos1tnh2q55v8wyygtt9srz5safamzdengsnqeycj3"})
 	require.Equal(t, ecocreditGenesis.Params.AllowlistEnabled, true)
-	require.Equal(t, ecocreditGenesis.Params.CreditClassFee, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(1))))
+	require.Equal(t, ecocreditGenesis.Params.CreditClassFee, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(999))))
 	require.Equal(t, ecocreditGenesis.Params.AllowlistEnabled, true)
 
 	require.Len(t, ecocreditGenesis.ClassInfo, 3)
@@ -53,6 +53,10 @@ func TestRandomizedGenState(t *testing.T) {
 	require.Equal(t, ecocreditGenesis.Sequences, []*ecocredit.CreditTypeSeq{
 		{
 			Abbreviation: "C",
+			SeqNumber:    4,
+		},
+		{
+			Abbreviation: "BIO",
 			SeqNumber:    4,
 		},
 	})
