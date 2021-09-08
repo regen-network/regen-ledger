@@ -54,7 +54,7 @@ message MsgCreateClass {
 message MsgCreateClassResponse {
 
   // class_id is the unique ID of the newly created credit class.
-  string class_id = 1 [ (gogoproto.moretags) = "yaml:\"class_id\"" ];
+  string class_id = 1;
 }
 
 // MsgCreateBatch is the Msg/CreateBatch request type.
@@ -64,7 +64,7 @@ message MsgCreateBatch {
   string issuer = 1;
 
   // class_id is the unique ID of the class.
-  string class_id = 2 [ (gogoproto.moretags) = "yaml:\"class_id\"" ];
+  string class_id = 2;
 
   // issuance are the credits issued in the batch.
   repeated BatchIssuance issuance = 3;
@@ -74,13 +74,11 @@ message MsgCreateBatch {
 
   // start_date is the beginning of the period during which this credit batch
   // was quantified and verified.
-  google.protobuf.Timestamp start_date = 5
-      [(gogoproto.stdtime) = true, (gogoproto.moretags) = "yaml:\"start_date\""];
+  google.protobuf.Timestamp start_date = 5 [ (gogoproto.stdtime) = true ];
 
   // end_date is the end of the period during which this credit batch was
   // quantified and verified.
-  google.protobuf.Timestamp end_date = 6
-      [(gogoproto.stdtime) = true, (gogoproto.moretags) = "yaml:\"end_date\""];
+  google.protobuf.Timestamp end_date = 6 [ (gogoproto.stdtime) = true ];
 
   // project_location is the location of the project backing the credits in this
   // batch. It is a string of the form
@@ -88,7 +86,7 @@ message MsgCreateBatch {
   // fields conforming to ISO 3166-2, and postal-code being up to 64
   // alphanumeric characters. country-code is required, while sub-national-code
   // and postal-code can be added for increasing precision.
-  string project_location = 7 [(gogoproto.moretags) = "yaml:\"project_location\""];
+  string project_location = 7;
 
   // BatchIssuance represents the issuance of some credits in a batch to a
   // single recipient.
@@ -99,14 +97,12 @@ message MsgCreateBatch {
 
     // tradable_amount is the number of credits in this issuance that can be
     // traded by this recipient. Decimal values are acceptable.
-    string tradable_amount = 2
-        [ (gogoproto.moretags) = "yaml:\"tradable_amount\"" ];
+    string tradable_amount = 2;
 
     // retired_amount is the number of credits in this issuance that are
     // effectively retired by the issuer on receipt. Decimal values are
     // acceptable.
-    string retired_amount = 3
-        [ (gogoproto.moretags) = "yaml:\"retired_amount\"" ];
+    string retired_amount = 3;
 
     // retirement_location is the location of the beneficiary or buyer of the
     // retired credits. This must be provided if retired_amount is positive. It
@@ -114,8 +110,7 @@ message MsgCreateBatch {
     // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
     // fields conforming to ISO 3166-2, and postal-code being up to 64
     // alphanumeric characters.
-    string retirement_location = 4
-        [ (gogoproto.moretags) = "yaml:\"retirement_location\"" ];
+    string retirement_location = 4;
   }
 }
 
@@ -123,7 +118,7 @@ message MsgCreateBatch {
 message MsgCreateBatchResponse {
 
   // batch_denom is the unique denomination ID of the newly created batch.
-  string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+  string batch_denom = 1;
 }
 
 // MsgSend is the Msg/Send request type.
@@ -144,19 +139,17 @@ message MsgSend {
   message SendCredits {
 
     // batch_denom is the unique ID of the credit batch.
-    string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+    string batch_denom = 1;
 
     // tradable_amount is the number of credits in this transfer that can be
     // traded by the recipient. Decimal values are acceptable within the
     // precision returned by Query/Precision.
-    string tradable_amount = 2
-        [ (gogoproto.moretags) = "yaml:\"tradable_amount\"" ];
+    string tradable_amount = 2;
 
     // retired_amount is the number of credits in this transfer that are
     // effectively retired by the issuer on receipt. Decimal values are
     // acceptable within the precision returned by Query/Precision.
-    string retired_amount = 3
-        [ (gogoproto.moretags) = "yaml:\"retired_amount\"" ];
+    string retired_amount = 3;
 
     // retirement_location is the location of the beneficiary or buyer of the
     // retired credits. This must be provided if retired_amount is positive. It
@@ -164,8 +157,7 @@ message MsgSend {
     // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
     // fields conforming to ISO 3166-2, and postal-code being up to 64
     // alphanumeric characters.
-    string retirement_location = 4
-        [ (gogoproto.moretags) = "yaml:\"retirement_location\"" ];
+    string retirement_location = 4;
   }
 }
 
@@ -185,7 +177,7 @@ message MsgRetire {
   message RetireCredits {
 
     // batch_denom is the unique ID of the credit batch.
-    string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+    string batch_denom = 1;
 
     // amount is the number of credits being retired.
     // Decimal values are acceptable within the precision returned by
@@ -217,7 +209,7 @@ message MsgCancel {
   message CancelCredits {
 
     // batch_denom is the unique ID of the credit batch.
-    string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+    string batch_denom = 1;
 
     // amount is the number of credits being cancelled.
     // Decimal values are acceptable within the precision returned by
