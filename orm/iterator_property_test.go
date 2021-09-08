@@ -24,7 +24,7 @@ func TestPaginationProperty(t *testing.T) {
 		}
 		limit := rapid.Uint64Range(1, upperLimit).Draw(t, "limit").(uint64)
 
-		// Reconstruct the slice from the pages
+		// Reconstruct the slice from offset pages
 		reconstructedGroupMembers := make([]*testdata.GroupMember, 0, len(groupMembers))
 		for offset := uint64(0); offset < uint64(len(groupMembers)); offset += limit {
 			pageRequest := &query.PageRequest{
@@ -39,9 +39,45 @@ func TestPaginationProperty(t *testing.T) {
 				end = uint64(len(groupMembers))
 			}
 			dest := reconstructedGroupMembers[offset:end]
-			groupMembersIt := testGroupMemberIterator(groupMembers)
+			groupMembersIt := testGroupMemberIterator(groupMembers, nil)
 			orm.Paginate(groupMembersIt, pageRequest, &dest)
 			reconstructedGroupMembers = append(reconstructedGroupMembers, dest...)
+		}
+
+		// Should be the same slice
+		require.Equal(t, len(groupMembers), len(reconstructedGroupMembers))
+		for i, gm := range groupMembers {
+			require.Equal(t, *gm, *reconstructedGroupMembers[i])
+		}
+
+		// Reconstruct the slice from keyed pages
+		reconstructedGroupMembers = make([]*testdata.GroupMember, 0, len(groupMembers))
+		var start uint64 = 0
+		key := orm.EncodeSequence(0)
+		for key != nil {
+			pageRequest := &query.PageRequest{
+				Key:        key,
+				Offset:     0,
+				Limit:      limit,
+				CountTotal: false,
+				Reverse:    false,
+			}
+
+			end := start + limit
+			if end > uint64(len(groupMembers)) {
+				end = uint64(len(groupMembers))
+			}
+
+			dest := reconstructedGroupMembers[start:end]
+			groupMembersIt := testGroupMemberIterator(groupMembers, key)
+
+			resp, err := orm.Paginate(groupMembersIt, pageRequest, &dest)
+			require.NoError(t, err)
+			key = resp.NextKey
+
+			reconstructedGroupMembers = append(reconstructedGroupMembers, dest...)
+
+			start += limit
 		}
 
 		// Should be the same slice
@@ -52,9 +88,12 @@ func TestPaginationProperty(t *testing.T) {
 	}))
 }
 
-func testGroupMemberIterator(gms []*testdata.GroupMember) orm.Iterator {
+func testGroupMemberIterator(gms []*testdata.GroupMember, key orm.RowID) orm.Iterator {
 	var closed bool
 	var index int
+	if key != nil {
+		index = int(orm.DecodeSequence(key))
+	}
 	return orm.IteratorFunc(func(dest codec.ProtoMarshaler) (orm.RowID, error) {
 		if dest == nil {
 			return nil, errors.Wrap(orm.ErrArgument, "destination object must not be nil")
@@ -68,7 +107,7 @@ func testGroupMemberIterator(gms []*testdata.GroupMember) orm.Iterator {
 			return nil, orm.ErrIteratorDone
 		}
 
-		rowID := orm.PrimaryKey(gms[index])
+		rowID := orm.EncodeSequence(uint64(index))
 
 		bytes, err := gms[index].Marshal()
 		if err != nil {
