@@ -52,7 +52,7 @@ func customSMM(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *server
 		app.BankKeeper,
 	)
 	newModules := []moduletypes.Module{ecocreditModule}
-	err := app.smm.RegisterModules(newModules)
+	err := newModuleManager.RegisterModules(newModules)
 	if err != nil {
 		panic(err)
 	}
