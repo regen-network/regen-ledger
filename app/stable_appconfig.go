@@ -6,6 +6,8 @@ package app
 import (
 	"encoding/json"
 
+	moduletypes "github.com/regen-network/regen-ledger/types/module"
+	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -38,10 +40,25 @@ func setCustomModuleBasics() []module.AppModuleBasic {
 	}
 }
 
-// setCustomModules registers new modules with the server module manager.
-// It does nothing here and returns an empty manager since we're not using experimental mode.
-func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *server.Manager {
-	return server.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
+// customSMM instantiates a custom server module manager and registers
+// new modules with the smm.
+func customSMM(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *server.Manager {
+	/* New Module Wiring START */
+	newModuleManager := server.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
+
+	// BEGIN HACK: this is a total, ugly hack until x/auth & x/bank supports ADR 033 or we have a suitable alternative
+	ecocreditModule := ecocreditmodule.NewModule(
+		app.GetSubspace(ecocredittypes.DefaultParamspace),
+		app.BankKeeper,
+	)
+	newModules := []moduletypes.Module{ecocreditModule}
+	err := app.smm.RegisterModules(newModules)
+	if err != nil {
+		panic(err)
+	}
+
+	/* New Module Wiring END */
+	return newModuleManager
 }
 func setCustomKVStoreKeys() []string {
 	return []string{}

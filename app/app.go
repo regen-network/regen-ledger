@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 
-	moduletypes "github.com/regen-network/regen-ledger/types/module"
 	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -354,17 +353,8 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	)
 
 	// register custom modules here
-	app.smm = setCustomModules(app, interfaceRegistry)
-	ecocreditModule := ecocreditmodule.NewModule(
-		app.GetSubspace(ecocredit.DefaultParamspace),
-		app.BankKeeper,
-	)
-	newModules := []moduletypes.Module{ecocreditModule}
-	err := app.smm.RegisterModules(newModules)
-	if err != nil {
-		panic(err)
-	}
-	err = app.smm.CompleteInitialization()
+	app.smm = customSMM(app, interfaceRegistry)
+	err := app.smm.CompleteInitialization()
 	if err != nil {
 		panic(err)
 	}

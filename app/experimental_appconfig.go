@@ -45,8 +45,9 @@ func setCustomKVStoreKeys() []string {
 func (app *RegenApp) setCustomKeeprs(bApp *baseapp.BaseApp, keys map[string]*sdk.KVStoreKey, appCodec codec.Codec, govRouter govtypes.Router, homePath string) {
 }
 
-// setCustomModules registers new modules with the server module manager.
-func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *server.Manager {
+// customSMM instantiates a custom server module manager and registers
+// new modules with the smm.
+func customSMM(app *RegenApp, interfaceRegistry types.InterfaceRegistry) *server.Manager {
 
 	/* New Module Wiring START */
 	newModuleManager := server.NewManager(app.BaseApp, codec.NewProtoCodec(interfaceRegistry))
