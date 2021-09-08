@@ -20,19 +20,19 @@ func TestEncodeIndexKey(t *testing.T) {
 			srcKey:   []byte{0x0, 0x1, 0x2},
 			srcRowID: []byte{0x3, 0x4},
 			enc:      Max255DynamicLengthIndexKeyCodec{},
-			expKey:   []byte{0x0, 0x1, 0x2, 0x3, 0x4, 0x2},
+			expKey:   []byte{0x3, 0x0, 0x1, 0x2, 0x3, 0x4},
 		},
 		"dynamic length example 2": {
 			srcKey:   []byte{0x0, 0x1},
 			srcRowID: []byte{0x2, 0x3, 0x4},
 			enc:      Max255DynamicLengthIndexKeyCodec{},
-			expKey:   []byte{0x0, 0x1, 0x2, 0x3, 0x4, 0x3},
+			expKey:   []byte{0x2, 0x0, 0x1, 0x2, 0x3, 0x4},
 		},
 		"dynamic length max row ID": {
 			srcKey:   []byte{0x0, 0x1},
 			srcRowID: []byte(strings.Repeat("a", 255)),
 			enc:      Max255DynamicLengthIndexKeyCodec{},
-			expKey:   append(append([]byte{0x0, 0x1}, []byte(strings.Repeat("a", 255))...), 0xff),
+			expKey:   append([]byte{0x2, 0x0, 0x1}, []byte(strings.Repeat("a", 255))...),
 		},
 		"dynamic length panics with empty rowID": {
 			srcKey:   []byte{0x0, 0x1},
@@ -40,9 +40,9 @@ func TestEncodeIndexKey(t *testing.T) {
 			enc:      Max255DynamicLengthIndexKeyCodec{},
 			expPanic: true,
 		},
-		"dynamic length exceeds max row ID": {
-			srcKey:   []byte{0x0, 0x1},
-			srcRowID: []byte(strings.Repeat("a", 256)),
+		"dynamic length exceeds max searchable key": {
+			srcKey:   []byte(strings.Repeat("a", 257)),
+			srcRowID: []byte{0x0, 0x1},
 			enc:      Max255DynamicLengthIndexKeyCodec{},
 			expPanic: true,
 		},
@@ -86,17 +86,17 @@ func TestDecodeIndexKey(t *testing.T) {
 		expRowID RowID
 	}{
 		"dynamic length example 1": {
-			srcKey:   []byte{0x0, 0x1, 0x2, 0x3, 0x4, 0x2},
+			srcKey:   []byte{0x3, 0x0, 0x1, 0x2, 0x3, 0x4},
 			enc:      Max255DynamicLengthIndexKeyCodec{},
 			expRowID: []byte{0x3, 0x4},
 		},
 		"dynamic length example 2": {
-			srcKey:   []byte{0x0, 0x1, 0x2, 0x3, 0x4, 0x3},
+			srcKey:   []byte{0x2, 0x0, 0x1, 0x2, 0x3, 0x4},
 			enc:      Max255DynamicLengthIndexKeyCodec{},
 			expRowID: []byte{0x2, 0x3, 0x4},
 		},
 		"dynamic length max row ID": {
-			srcKey:   append(append([]byte{0x0, 0x1}, []byte(strings.Repeat("a", 255))...), 0xff),
+			srcKey:   append([]byte{0x2, 0x0, 0x1}, []byte(strings.Repeat("a", 255))...),
 			enc:      Max255DynamicLengthIndexKeyCodec{},
 			expRowID: []byte(strings.Repeat("a", 255)),
 		},

@@ -5,31 +5,28 @@ package orm
 // with PrimaryKey or external Key tables for example.
 type Max255DynamicLengthIndexKeyCodec struct{}
 
+// TODO Update docs
 // BuildIndexKey builds the index key by appending searchableKey with rowID and length int.
 // The RowID length must not be greater than 255.
 func (Max255DynamicLengthIndexKeyCodec) BuildIndexKey(searchableKey []byte, rowID RowID) []byte {
 	rowIDLen := len(rowID)
-	switch {
-	case rowIDLen == 0:
+	if rowIDLen == 0 {
 		panic("Empty RowID")
-	case rowIDLen > 255:
-		panic("RowID exceeds max size")
 	}
 
 	searchableKeyLen := len(searchableKey)
-	res := make([]byte, searchableKeyLen+rowIDLen+1)
-	copy(res, searchableKey)
-	copy(res[searchableKeyLen:], rowID)
-	res[searchableKeyLen+rowIDLen] = byte(rowIDLen)
+	res := make([]byte, 1+searchableKeyLen+rowIDLen)
+	copy(res, AddLengthPrefix(searchableKey))
+	copy(res[1+searchableKeyLen:], rowID)
 	return res
 }
 
+// TODO Update docs
 // StripRowID returns the RowID from the combined persistentIndexKey. It is the reverse operation to BuildIndexKey
 // but with the searchableKey and length int dropped.
 func (Max255DynamicLengthIndexKeyCodec) StripRowID(persistentIndexKey []byte) RowID {
-	n := len(persistentIndexKey)
-	searchableKeyLen := persistentIndexKey[n-1]
-	return persistentIndexKey[n-int(searchableKeyLen)-1 : n-1]
+	searchableKeyLen := persistentIndexKey[0]
+	return persistentIndexKey[1+searchableKeyLen:]
 }
 
 // FixLengthIndexKeyCodec expects the RowID to always have the same length with all entries.

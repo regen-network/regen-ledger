@@ -228,7 +228,7 @@ func TestUniqueIndex(t *testing.T) {
 	err := myTable.Create(ctx, &m)
 	require.NoError(t, err)
 
-	indexedKey := []byte{byte('m')}
+	indexedKey := append([]byte{0x1}, byte('m'))
 
 	// Has
 	assert.True(t, uniqueIdx.Has(ctx, indexedKey))
@@ -273,7 +273,7 @@ func TestUniqueIndex(t *testing.T) {
 	}
 
 	// PrefixScan match
-	it, err = uniqueIdx.PrefixScan(ctx, []byte{byte('m')}, []byte{byte('n')})
+	it, err = uniqueIdx.PrefixScan(ctx, []byte{0x1}, []byte{0x2})
 	require.NoError(t, err)
 	rowID, err = it.LoadNext(&loaded)
 	require.NoError(t, err)
@@ -283,11 +283,11 @@ func TestUniqueIndex(t *testing.T) {
 	// PrefixScan no match
 	it, err = uniqueIdx.PrefixScan(ctx, []byte{byte('n')}, nil)
 	require.NoError(t, err)
-	rowID, err = it.LoadNext(&loaded)
+	_, err = it.LoadNext(&loaded)
 	require.Error(t, orm.ErrIteratorDone, err)
 
 	// ReversePrefixScan match
-	it, err = uniqueIdx.ReversePrefixScan(ctx, []byte{byte('a')}, []byte{byte('z')})
+	it, err = uniqueIdx.ReversePrefixScan(ctx, []byte{0x1}, []byte{0x3})
 	require.NoError(t, err)
 	rowID, err = it.LoadNext(&loaded)
 	require.NoError(t, err)
@@ -297,7 +297,7 @@ func TestUniqueIndex(t *testing.T) {
 	// ReversePrefixScan no match
 	it, err = uniqueIdx.ReversePrefixScan(ctx, []byte{byte('l')}, nil)
 	require.NoError(t, err)
-	rowID, err = it.LoadNext(&loaded)
+	_, err = it.LoadNext(&loaded)
 	require.Error(t, orm.ErrIteratorDone, err)
 	// create with same index key should fail
 	new := testdata.GroupMember{
