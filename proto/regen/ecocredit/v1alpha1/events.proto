@@ -2,15 +2,13 @@ syntax = "proto3";
 
 package regen.ecocredit.v1alpha1;
 
-import "gogoproto/gogo.proto";
-
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 
 // EventCreateClass is an event emitted when a credit class is created.
 message EventCreateClass {
 
   // class_id is the unique ID of credit class.
-  string class_id = 1 [ (gogoproto.moretags) = "yaml:\"class_id\"" ];
+  string class_id = 1;
 
   // admin is the admin of the credit class.
   string admin = 2;
@@ -20,28 +18,28 @@ message EventCreateClass {
 message EventCreateBatch {
 
   // class_id is the unique ID of credit class.
-  string class_id = 1 [ (gogoproto.moretags) = "yaml:\"class_id\"" ];
+  string class_id = 1;
 
   // batch_denom is the unique ID of credit batch.
-  string batch_denom = 2 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+  string batch_denom = 2;
 
   // issuer is the account address of the issuer of the credit batch.
   string issuer = 3;
 
   // total_amount is the total number of credits in the credit batch.
-  string total_amount = 4 [ (gogoproto.moretags) = "yaml:\"total_amount\"" ];
+  string total_amount = 4;
 
   // start_date is the beginning of the period during which this credit batch
   // was quantified and verified.
-  string start_date = 5 [ (gogoproto.moretags) = "yaml:\"start_date\"" ];
+  string start_date = 5;
 
   // end_date is the end of the period during which this credit batch was
   // quantified and verified.
-  string end_date = 6 [ (gogoproto.moretags) = "yaml:\"end_date\"" ];
+  string end_date = 6;
 
   // project_location is the location of the project backing the credits in this
   // batch. Full documentation can be found in MsgCreateBatch.project_location.
-  string project_location = 7 [(gogoproto.moretags) = "yaml:\"project_location\""];
+  string project_location = 7;
 }
 
 // EventReceive is an event emitted when credits are received either upon
@@ -57,7 +55,7 @@ message EventReceive {
   string recipient = 2;
 
   // batch_denom is the unique ID of credit batch.
-  string batch_denom = 3 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+  string batch_denom = 3;
 
   // amount is the decimal number of both tradable and retired credits received.
   string amount = 4;
@@ -74,7 +72,7 @@ message EventRetire {
   string retirer = 1;
 
   // batch_denom is the unique ID of credit batch.
-  string batch_denom = 2 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+  string batch_denom = 2;
 
   // amount is the decimal number of credits that have been retired.
   string amount = 3;
@@ -97,7 +95,7 @@ message EventCancel {
   string canceller = 1;
 
   // batch_denom is the unique ID of credit batch.
-  string batch_denom = 2 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+  string batch_denom = 2;
 
   // amount is the decimal number of credits that have been cancelled.
   string amount = 3;
