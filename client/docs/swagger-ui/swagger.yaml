@@ -872,9 +872,9 @@ paths:
                   class_id:
                     type: string
                     description: class_id is the unique ID of credit class.
-                  designer:
+                  admin:
                     type: string
-                    description: designer is the designer of the credit class.
+                    description: admin is the admin of the credit class.
                   issuers:
                     type: array
                     items:
@@ -27961,7 +27961,7 @@ definitions:
       metadata:
         type: string
         format: byte
-        description: metadata is any arbitrary metadata to attached to the credit batch.
+        description: metadata is any arbitrary metadata attached to the credit batch.
       amount_cancelled:
         type: string
         description: >-
@@ -28005,9 +28005,9 @@ definitions:
       class_id:
         type: string
         description: class_id is the unique ID of credit class.
-      designer:
+      admin:
         type: string
-        description: designer is the designer of the credit class.
+        description: admin is the admin of the credit class.
       issuers:
         type: array
         items:
@@ -28115,9 +28115,9 @@ definitions:
           class_id:
             type: string
             description: class_id is the unique ID of credit class.
-          designer:
+          admin:
             type: string
-            description: designer is the designer of the credit class.
+            description: admin is the admin of the credit class.
           issuers:
             type: array
             items:

@@ -35,9 +35,7 @@ service Msg {
 // MsgCreateClass is the Msg/CreateClass request type.
 message MsgCreateClass {
 
-  // admin is the address of the account which can manage the credit class. The
-  // admin has permissions to change the list of issuers and perform other
-  // administrative operations.
+  // admin is the address of the account that created the credit class.
   string admin = 1;
 
   // issuers are the account addresses of the approved issuers.
@@ -69,7 +67,7 @@ message MsgCreateBatch {
   // issuance are the credits issued in the batch.
   repeated BatchIssuance issuance = 3;
 
-  // metadata is any arbitrary metadata to attached to the credit batch.
+  // metadata is any arbitrary metadata attached to the credit batch.
   bytes metadata = 4;
 
   // start_date is the beginning of the period during which this credit batch
