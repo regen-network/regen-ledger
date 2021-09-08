@@ -42,7 +42,7 @@ func (s serverImpl) getCreditTypeSeqNextVal(ctx sdk.Context, creditType ecocredi
 	case nil:
 		// Increment the sequence number
 		creditTypeSeq.SeqNumber++
-		err = s.creditTypeSeqTable.Save(ctx, &creditTypeSeq)
+		err = s.creditTypeSeqTable.Update(ctx, &creditTypeSeq)
 		if err != nil {
 			return 0, err
 		}

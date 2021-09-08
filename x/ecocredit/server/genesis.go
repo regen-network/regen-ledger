@@ -8,7 +8,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/pkg/errors"
-	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/math"
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -24,15 +23,15 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 
 	s.paramSpace.SetParamSet(ctx.Context, &genesisState.Params)
 
-	if err := orm.ImportTableData(ctx, s.creditTypeSeqTable, genesisState.Sequences, 0); err != nil {
+	if err := s.creditTypeSeqTable.Import(ctx, genesisState.Sequences, 0); err != nil {
 		return nil, errors.Wrap(err, "sequences")
 	}
 
-	if err := orm.ImportTableData(ctx, s.classInfoTable, genesisState.ClassInfo, 0); err != nil {
+	if err := s.classInfoTable.Import(ctx, genesisState.ClassInfo, 0); err != nil {
 		return nil, errors.Wrap(err, "class-info")
 	}
 
-	if err := orm.ImportTableData(ctx, s.batchInfoTable, genesisState.BatchInfo, 0); err != nil {
+	if err := s.batchInfoTable.Import(ctx, genesisState.BatchInfo, 0); err != nil {
 		return nil, errors.Wrap(err, "batch-info")
 	}
 
@@ -139,17 +138,17 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 
 	store := ctx.KVStore(s.storeKey)
 	var classInfo []*ecocredit.ClassInfo
-	if _, err := orm.ExportTableData(ctx, s.classInfoTable, &classInfo); err != nil {
+	if _, err := s.classInfoTable.Export(ctx, &classInfo); err != nil {
 		return nil, errors.Wrap(err, "class-info")
 	}
 
 	var batchInfo []*ecocredit.BatchInfo
-	if _, err := orm.ExportTableData(ctx, s.batchInfoTable, &batchInfo); err != nil {
+	if _, err := s.batchInfoTable.Export(ctx, &batchInfo); err != nil {
 		return nil, errors.Wrap(err, "batch-info")
 	}
 
 	var sequences []*ecocredit.CreditTypeSeq
-	if _, err := orm.ExportTableData(ctx, s.creditTypeSeqTable, &sequences); err != nil {
+	if _, err := s.creditTypeSeqTable.Export(ctx, &sequences); err != nil {
 		return nil, errors.Wrap(err, "batch-info")
 	}
 

@@ -58,7 +58,7 @@ func newIndex(builder Indexable, prefix byte, indexer *Indexer) (MultiKeyIndex, 
 		indexer:       indexer,
 		indexKeyCodec: codec,
 	}
-	builder.AddAfterSaveInterceptor(idx.onSave)
+	builder.AddAfterSetInterceptor(idx.onSet)
 	builder.AddAfterDeleteInterceptor(idx.onDelete)
 	return idx, nil
 }
@@ -135,7 +135,7 @@ func (i MultiKeyIndex) ReversePrefixScan(ctx HasKVStore, start []byte, end []byt
 	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, keyCodec: i.indexKeyCodec}, nil
 }
 
-func (i MultiKeyIndex) onSave(ctx HasKVStore, rowID RowID, newValue, oldValue codec.ProtoMarshaler) error {
+func (i MultiKeyIndex) onSet(ctx HasKVStore, rowID RowID, newValue, oldValue codec.ProtoMarshaler) error {
 	store := prefix.NewStore(ctx.KVStore(i.storeKey), []byte{i.prefix})
 	if oldValue == nil {
 		return i.indexer.OnCreate(store, rowID, newValue)

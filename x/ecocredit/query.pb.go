@@ -7,7 +7,6 @@ import (
 	context "context"
 	fmt "fmt"
 	query "github.com/cosmos/cosmos-sdk/types/query"
-	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -217,7 +216,7 @@ func (m *QueryClassesResponse) GetPagination() *query.PageResponse {
 // QueryClassInfoRequest is the Query/ClassInfo request type.
 type QueryClassInfoRequest struct {
 	// class_id is the unique ID of credit class to query.
-	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty" yaml:"class_id"`
+	ClassId string `protobuf:"bytes,1,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 }
 
 func (m *QueryClassInfoRequest) Reset()         { *m = QueryClassInfoRequest{} }
@@ -419,7 +418,7 @@ func (m *QueryBatchesResponse) GetPagination() *query.PageResponse {
 // QueryBatchInfoRequest is the Query/BatchInfo request type.
 type QueryBatchInfoRequest struct {
 	// batch_denom is the unique ID of credit batch to query.
-	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
+	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 }
 
 func (m *QueryBatchInfoRequest) Reset()         { *m = QueryBatchInfoRequest{} }
@@ -513,7 +512,7 @@ type QueryBalanceRequest struct {
 	// account is the address of the account whose balance is being queried.
 	Account string `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
 	// batch_denom is the unique ID of credit batch balance to query.
-	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
+	BatchDenom string `protobuf:"bytes,2,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 }
 
 func (m *QueryBalanceRequest) Reset()         { *m = QueryBalanceRequest{} }
@@ -566,9 +565,9 @@ func (m *QueryBalanceRequest) GetBatchDenom() string {
 // QueryBalanceResponse is the Query/Balance response type.
 type QueryBalanceResponse struct {
 	// tradable_amount is the decimal number of tradable credits.
-	TradableAmount string `protobuf:"bytes,1,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty" yaml:"tradable_amount"`
+	TradableAmount string `protobuf:"bytes,1,opt,name=tradable_amount,json=tradableAmount,proto3" json:"tradable_amount,omitempty"`
 	// retired_amount is the decimal number of retired credits.
-	RetiredAmount string `protobuf:"bytes,2,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty" yaml:"retired_amount"`
+	RetiredAmount string `protobuf:"bytes,2,opt,name=retired_amount,json=retiredAmount,proto3" json:"retired_amount,omitempty"`
 }
 
 func (m *QueryBalanceResponse) Reset()         { *m = QueryBalanceResponse{} }
@@ -621,7 +620,7 @@ func (m *QueryBalanceResponse) GetRetiredAmount() string {
 // QuerySupplyRequest is the Query/Supply request type.
 type QuerySupplyRequest struct {
 	// batch_denom is the unique ID of credit batch to query.
-	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty" yaml:"batch_denom"`
+	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
 }
 
 func (m *QuerySupplyRequest) Reset()         { *m = QuerySupplyRequest{} }
@@ -668,10 +667,10 @@ func (m *QuerySupplyRequest) GetBatchDenom() string {
 type QuerySupplyResponse struct {
 	// tradable_supply is the decimal number of tradable credits in the batch
 	// supply.
-	TradableSupply string `protobuf:"bytes,1,opt,name=tradable_supply,json=tradableSupply,proto3" json:"tradable_supply,omitempty" yaml:"tradable_supply"`
+	TradableSupply string `protobuf:"bytes,1,opt,name=tradable_supply,json=tradableSupply,proto3" json:"tradable_supply,omitempty"`
 	// retired_supply is the decimal number of retired credits in the batch
 	// supply.
-	RetiredSupply string `protobuf:"bytes,2,opt,name=retired_supply,json=retiredSupply,proto3" json:"retired_supply,omitempty" yaml:"retired_supply"`
+	RetiredSupply string `protobuf:"bytes,2,opt,name=retired_supply,json=retiredSupply,proto3" json:"retired_supply,omitempty"`
 }
 
 func (m *QuerySupplyResponse) Reset()         { *m = QuerySupplyResponse{} }
