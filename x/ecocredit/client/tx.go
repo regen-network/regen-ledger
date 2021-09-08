@@ -13,7 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v2"
+	"sigs.k8s.io/yaml"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -192,7 +192,6 @@ Required Flags:
 				EndDate:         &endDate,
 				ProjectLocation: projectLocation,
 			}
-
 
 			// Marshal and output JSON of message
 			ctx := sdkclient.GetClientContextFromCmd(cmd)

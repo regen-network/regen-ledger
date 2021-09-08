@@ -186,7 +186,7 @@ func TestUpdate(t *testing.T) {
 			require.NoError(t, err)
 
 			// when
-			err = myTable.Save(ctx, []byte("my-id"), spec.src)
+			err = myTable.Update(ctx, []byte("my-id"), spec.src)
 			require.True(t, spec.expErr.Is(err), "got ", err)
 
 			// then

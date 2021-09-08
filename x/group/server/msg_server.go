@@ -164,8 +164,8 @@ func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *group.MsgUpda
 				if err != nil {
 					return err
 				}
-				// Save updated group member in the groupMemberTable.
-				if err := s.groupMemberTable.Save(ctx, &groupMember); err != nil {
+				// Update updated group member in the groupMemberTable.
+				if err := s.groupMemberTable.Update(ctx, &groupMember); err != nil {
 					return sdkerrors.Wrap(err, "add member")
 				}
 				// else handle create.
@@ -181,7 +181,7 @@ func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *group.MsgUpda
 		// Update group in the groupTable.
 		g.TotalWeight = totalWeight.String()
 		g.Version++
-		return s.groupTable.Save(ctx, g.GroupId, g)
+		return s.groupTable.Update(ctx, g.GroupId, g)
 	}
 
 	err := s.doUpdateGroup(ctx, req, action, "members updated")
@@ -198,7 +198,7 @@ func (s serverImpl) UpdateGroupAdmin(goCtx context.Context, req *group.MsgUpdate
 		g.Admin = req.NewAdmin
 		g.Version++
 
-		return s.groupTable.Save(ctx, g.GroupId, g)
+		return s.groupTable.Update(ctx, g.GroupId, g)
 	}
 
 	err := s.doUpdateGroup(ctx, req, action, "admin updated")
@@ -214,7 +214,7 @@ func (s serverImpl) UpdateGroupMetadata(goCtx context.Context, req *group.MsgUpd
 	action := func(g *group.GroupInfo) error {
 		g.Metadata = req.Metadata
 		g.Version++
-		return s.groupTable.Save(ctx, g.GroupId, g)
+		return s.groupTable.Update(ctx, g.GroupId, g)
 	}
 
 	if err := assertMetadataLength(req.Metadata, "group metadata"); err != nil {
@@ -318,7 +318,7 @@ func (s serverImpl) UpdateGroupAccountAdmin(goCtx context.Context, req *group.Ms
 	action := func(groupAccount *group.GroupAccountInfo) error {
 		groupAccount.Admin = req.NewAdmin
 		groupAccount.Version++
-		return s.groupAccountTable.Save(ctx, groupAccount)
+		return s.groupAccountTable.Update(ctx, groupAccount)
 	}
 
 	err := s.doUpdateGroupAccount(ctx, req.Address, req.Admin, action, "group account admin updated")
@@ -340,7 +340,7 @@ func (s serverImpl) UpdateGroupAccountDecisionPolicy(goCtx context.Context, req 
 		}
 
 		groupAccount.Version++
-		return s.groupAccountTable.Save(ctx, groupAccount)
+		return s.groupAccountTable.Update(ctx, groupAccount)
 	}
 
 	err := s.doUpdateGroupAccount(ctx, req.Address, req.Admin, action, "group account decision policy updated")
@@ -358,7 +358,7 @@ func (s serverImpl) UpdateGroupAccountMetadata(goCtx context.Context, req *group
 	action := func(groupAccount *group.GroupAccountInfo) error {
 		groupAccount.Metadata = metadata
 		groupAccount.Version++
-		return s.groupAccountTable.Save(ctx, groupAccount)
+		return s.groupAccountTable.Update(ctx, groupAccount)
 	}
 
 	if err := assertMetadataLength(metadata, "group account metadata"); err != nil {
@@ -579,7 +579,7 @@ func (s serverImpl) Vote(goCtx context.Context, req *group.MsgVote) (*group.MsgV
 		return nil, err
 	}
 
-	if err = s.proposalTable.Save(ctx, id, &proposal); err != nil {
+	if err = s.proposalTable.Update(ctx, id, &proposal); err != nil {
 		return nil, err
 	}
 
@@ -646,7 +646,7 @@ func (s serverImpl) Exec(goCtx context.Context, req *group.MsgExec) (*group.MsgE
 	}
 
 	storeUpdates := func() (*group.MsgExecResponse, error) {
-		if err := s.proposalTable.Save(ctx, id, &proposal); err != nil {
+		if err := s.proposalTable.Update(ctx, id, &proposal); err != nil {
 			return nil, err
 		}
 		return &group.MsgExecResponse{}, nil
