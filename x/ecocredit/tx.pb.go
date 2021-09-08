@@ -34,9 +34,7 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgCreateClass is the Msg/CreateClass request type.
 type MsgCreateClass struct {
-	// admin is the address of the account which can manage the credit class. The
-	// admin has permissions to change the list of issuers and perform other
-	// administrative operations.
+	// admin is the address of the account that created the credit class.
 	Admin string `protobuf:"bytes,1,opt,name=admin,proto3" json:"admin,omitempty"`
 	// issuers are the account addresses of the approved issuers.
 	Issuers []string `protobuf:"bytes,2,rep,name=issuers,proto3" json:"issuers,omitempty"`
@@ -161,7 +159,7 @@ type MsgCreateBatch struct {
 	ClassId string `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	// issuance are the credits issued in the batch.
 	Issuance []*MsgCreateBatch_BatchIssuance `protobuf:"bytes,3,rep,name=issuance,proto3" json:"issuance,omitempty"`
-	// metadata is any arbitrary metadata to attached to the credit batch.
+	// metadata is any arbitrary metadata attached to the credit batch.
 	Metadata []byte `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// start_date is the beginning of the period during which this credit batch
 	// was quantified and verified.

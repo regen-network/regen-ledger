@@ -134,7 +134,7 @@ type BatchInfo struct {
 	// amount_cancelled will always sum to the original amount of credits that
 	// were issued.
 	TotalAmount string `protobuf:"bytes,4,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty"`
-	// metadata is any arbitrary metadata to attached to the credit batch.
+	// metadata is any arbitrary metadata attached to the credit batch.
 	Metadata []byte `protobuf:"bytes,5,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// amount_cancelled is the number of credits in the batch that have been
 	// cancelled, effectively undoing there issuance. The sum of total_amount and
