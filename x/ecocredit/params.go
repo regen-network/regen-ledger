@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	// TODO: Decide a sensible default value
-	DefaultCreditClassFeeTokens = sdk.NewInt(10000)
+	// This is a value of 20 REGEN
+	DefaultCreditClassFeeTokens = sdk.NewInt(2e7)
 	KeyCreditClassFee           = []byte("CreditClassFee")
 	KeyAllowedClassCreators     = []byte("AllowedClassCreators")
 	KeyAllowlistEnabled         = []byte("AllowlistEnabled")
