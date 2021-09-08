@@ -1,6 +1,7 @@
 package simulation
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -132,9 +133,9 @@ func SimulateMsgCreateClass(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		spendable := bk.SpendableCoins(sdkCtx, admin.Address)
-		// if spendable.IsAllLTE(params.CreditClassFee) {
-		// 	return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateClass, "not enough balance"), nil, nil
-		// }
+		if spendable.IsAllLTE(params.CreditClassFee) {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCreateClass, "not enough balance"), nil, nil
+		}
 
 		creditTypes := []string{"carbon", "biodiversity"}
 
@@ -538,8 +539,8 @@ func generateBatchIssuance(r *rand.Rand, accs []simtypes.Account) []*ecocredit.M
 		recipient := accs[i]
 		res[i] = &ecocredit.MsgCreateBatch_BatchIssuance{
 			Recipient:          recipient.Address.String(),
-			TradableAmount:     "12345.123123",
-			RetiredAmount:      "1245.123123",
+			TradableAmount:     fmt.Sprintf("%d", simtypes.RandIntBetween(r, 500, 100000)),
+			RetiredAmount:      fmt.Sprintf("%d", simtypes.RandIntBetween(r, 500, 10000)),
 			RetirementLocation: "RD",
 		}
 	}
