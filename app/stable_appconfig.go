@@ -33,6 +33,7 @@ import (
 
 func setCustomModuleBasics() []module.AppModuleBasic {
 	return []module.AppModuleBasic{
+		ecocreditmodule.Module{},
 		gov.NewAppModuleBasic(
 			paramsclient.ProposalHandler, distrclient.ProposalHandler,
 			upgradeclient.ProposalHandler, upgradeclient.CancelProposalHandler,
@@ -131,4 +132,6 @@ func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
 	return []module.AppModuleSimulation{}
 }
 
-func initCustomParamsKeeper(_ *paramskeeper.Keeper) {}
+func initCustomParamsKeeper(paramsKeeper *paramskeeper.Keeper) {
+	paramsKeeper.Subspace(ecocredittypes.DefaultParamspace)
+}

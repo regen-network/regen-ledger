@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"os"
 
-	ecocreditmodule "github.com/regen-network/regen-ledger/x/ecocredit/module"
-
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -131,7 +129,6 @@ var (
 			vesting.AppModuleBasic{},
 			feegrantmodule.AppModuleBasic{},
 			authzmodule.AppModuleBasic{},
-			ecocreditmodule.Module{},
 		}, setCustomModuleBasics()...)...,
 	)
 
@@ -651,7 +648,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
-	paramsKeeper.Subspace(ecocredit.DefaultParamspace)
 	initCustomParamsKeeper(&paramsKeeper)
 
 	return paramsKeeper
