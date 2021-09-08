@@ -13,6 +13,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
+// TODO: Revisit this once we have proper gas fee framework.
+// Tracking issues https://github.com/cosmos/cosmos-sdk/issues/9054, https://github.com/cosmos/cosmos-sdk/discussions/9072
+const gasCostPerIteration = uint64(20)
+
 // CreateClass creates a new class of ecocredit
 //
 // The admin is charged a fee for creating the class. This is controlled by
@@ -179,6 +183,8 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		if err != nil {
 			return nil, err
 		}
+
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "batch issuance")
 	}
 
 	setDecimal(store, TradableSupplyKey(batchDenom), tradableSupply)
@@ -308,6 +314,8 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 		if err != nil {
 			return nil, err
 		}
+
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "send ecocredits")
 	}
 
 	return &ecocredit.MsgSendResponse{}, nil
@@ -355,6 +363,8 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ec
 		if err != nil {
 			return nil, err
 		}
+
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "retire ecocredits")
 	}
 
 	return &ecocredit.MsgRetireResponse{}, nil
@@ -442,6 +452,8 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 		if err != nil {
 			return nil, err
 		}
+
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "cancel ecocredits")
 	}
 
 	return &ecocredit.MsgCancelResponse{}, nil
