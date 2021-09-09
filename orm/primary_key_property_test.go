@@ -202,13 +202,3 @@ func (m *primaryKeyMachine) GetOne(t *rapid.T) {
 		require.Equal(t, *m.state[string(pk)], gm)
 	}
 }
-
-// genGroupMember generates a new group member. At the moment it doesn't
-// generate empty strings for Group or Member.
-var genGroupMember = rapid.Custom(func(t *rapid.T) *testdata.GroupMember {
-	return &testdata.GroupMember{
-		Group:  []byte(rapid.StringN(1, 100, 150).Draw(t, "group").(string)),
-		Member: []byte(rapid.StringN(1, 100, 150).Draw(t, "member").(string)),
-		Weight: rapid.Uint64().Draw(t, "weight").(uint64),
-	}
-})
