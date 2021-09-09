@@ -72,7 +72,10 @@ func (i Indexer) OnDelete(store sdk.KVStore, rowID RowID, value interface{}) err
 	}
 
 	for _, secondaryIndexKey := range secondaryIndexKeys {
-		indexKey := i.indexKeyCodec.BuildIndexKey(secondaryIndexKey, rowID)
+		indexKey, err := i.indexKeyCodec.BuildIndexKey(secondaryIndexKey, rowID)
+		if err != nil {
+			return err
+		}
 		store.Delete(indexKey)
 	}
 	return nil
@@ -89,7 +92,11 @@ func (i Indexer) OnUpdate(store sdk.KVStore, rowID RowID, newValue, oldValue int
 		return err
 	}
 	for _, oldIdxKey := range difference(oldSecIdxKeys, newSecIdxKeys) {
-		store.Delete(i.indexKeyCodec.BuildIndexKey(oldIdxKey, rowID))
+		indexKey, err := i.indexKeyCodec.BuildIndexKey(oldIdxKey, rowID)
+		if err != nil {
+			return err
+		}
+		store.Delete(indexKey)
 	}
 	for _, newIdxKey := range difference(newSecIdxKeys, oldSecIdxKeys) {
 		if err := i.addFunc(store, i.indexKeyCodec, newIdxKey, rowID); err != nil {
@@ -109,7 +116,12 @@ func uniqueKeysAddFunc(store sdk.KVStore, codec IndexKeyCodec, secondaryIndexKey
 	if it.Valid() {
 		return ErrUniqueConstraint
 	}
-	indexKey := codec.BuildIndexKey(secondaryIndexKey, rowID)
+
+	indexKey, err := codec.BuildIndexKey(secondaryIndexKey, rowID)
+	if err != nil {
+		return err
+	}
+
 	store.Set(indexKey, []byte{})
 	return nil
 }
@@ -120,7 +132,11 @@ func multiKeyAddFunc(store sdk.KVStore, codec IndexKeyCodec, secondaryIndexKey [
 		return errors.Wrap(ErrArgument, "empty index key")
 	}
 
-	indexKey := codec.BuildIndexKey(secondaryIndexKey, rowID)
+	indexKey, err := codec.BuildIndexKey(secondaryIndexKey, rowID)
+	if err != nil {
+		return err
+	}
+
 	store.Set(indexKey, []byte{})
 	return nil
 }

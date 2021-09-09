@@ -14,7 +14,7 @@ func TestEncodeIndexKey(t *testing.T) {
 		srcRowID RowID
 		enc      IndexKeyCodec
 		expKey   []byte
-		expPanic bool
+		expError bool
 	}{
 		"dynamic length example 1": {
 			srcKey:   []byte{0x0, 0x1, 0x2},
@@ -34,48 +34,47 @@ func TestEncodeIndexKey(t *testing.T) {
 			enc:      Max255DynamicLengthIndexKeyCodec{},
 			expKey:   append([]byte{0x2, 0x0, 0x1}, []byte(strings.Repeat("a", 255))...),
 		},
-		"dynamic length panics with empty rowID": {
+		"dynamic length errors with empty rowID": {
 			srcKey:   []byte{0x0, 0x1},
 			srcRowID: []byte{},
 			enc:      Max255DynamicLengthIndexKeyCodec{},
-			expPanic: true,
+			expError: true,
 		},
 		"dynamic length exceeds max searchable key": {
 			srcKey:   []byte(strings.Repeat("a", 257)),
 			srcRowID: []byte{0x0, 0x1},
 			enc:      Max255DynamicLengthIndexKeyCodec{},
-			expPanic: true,
+			expError: true,
 		},
 		"uint64 example": {
 			srcKey:   []byte{0x0, 0x1, 0x2},
 			srcRowID: []byte{0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8},
-			enc:      FixLengthIndexKeys(8),
+			enc:      FixLengthIndexKeys(3, 8),
 			expKey:   []byte{0x0, 0x1, 0x2, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8},
 		},
-		"uint64 panics with empty rowID": {
+		"uint64 errors with empty rowID": {
 			srcKey:   []byte{0x0, 0x1},
 			srcRowID: []byte{},
-			enc:      FixLengthIndexKeys(8),
-			expPanic: true,
+			enc:      FixLengthIndexKeys(2, 8),
+			expError: true,
 		},
 		"uint64 exceeds max bytes in rowID": {
 			srcKey:   []byte{0x0, 0x1},
 			srcRowID: []byte{0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9},
-			enc:      FixLengthIndexKeys(8),
-			expPanic: true,
+			enc:      FixLengthIndexKeys(2, 8),
+			expError: true,
 		},
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
-			if spec.expPanic {
-				require.Panics(t,
-					func() {
-						_ = spec.enc.BuildIndexKey(spec.srcKey, spec.srcRowID)
-					})
-				return
+			if spec.expError {
+				_, err := spec.enc.BuildIndexKey(spec.srcKey, spec.srcRowID)
+				require.Error(t, err)
+			} else {
+				got, err := spec.enc.BuildIndexKey(spec.srcKey, spec.srcRowID)
+				require.NoError(t, err)
+				assert.Equal(t, spec.expKey, got)
 			}
-			got := spec.enc.BuildIndexKey(spec.srcKey, spec.srcRowID)
-			assert.Equal(t, spec.expKey, got)
 		})
 	}
 }
@@ -103,7 +102,7 @@ func TestDecodeIndexKey(t *testing.T) {
 		"uint64 example": {
 			srcKey:   []byte{0x0, 0x1, 0x2, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8},
 			expRowID: []byte{0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8},
-			enc:      FixLengthIndexKeys(8),
+			enc:      FixLengthIndexKeys(9, 8),
 		},
 	}
 	for msg, spec := range specs {

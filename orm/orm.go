@@ -116,18 +116,6 @@ type Iterator interface {
 	io.Closer
 }
 
-// IndexKeyCodec defines the encoding/ decoding methods for building/ splitting index keys.
-type IndexKeyCodec interface {
-	// PrefixSearchableKey adds an optional prefix to the searchable key and
-	// should be called before all prefix lookups and stores
-	PrefixSearchableKey(searchableKey []byte) []byte
-	// BuildIndexKey encodes a searchable key and the target RowID.
-	BuildIndexKey(searchableKey []byte, rowID RowID) []byte
-	// StripRowID returns the RowID from the combined persistentIndexKey. It is the reverse operation to BuildIndexKey
-	// but with the searchableKey dropped.
-	StripRowID(persistentIndexKey []byte) RowID
-}
-
 // Indexable types are used to setup new tables.
 // This interface provides a set of functions that can be called by indexes to register and interact with the tables.
 type Indexable interface {

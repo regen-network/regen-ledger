@@ -82,7 +82,11 @@ func (i MultiKeyIndex) GetPaginated(ctx HasKVStore, searchKey []byte, pageReques
 	start, end := PrefixRange(i.indexKeyCodec.PrefixSearchableKey(searchKey))
 
 	if pageRequest != nil && len(pageRequest.Key) != 0 {
-		start = i.indexKeyCodec.BuildIndexKey(searchKey, RowID(pageRequest.Key))
+		var err error
+		start, err = i.indexKeyCodec.BuildIndexKey(searchKey, RowID(pageRequest.Key))
+		if err != nil {
+			return nil, err
+		}
 	}
 	it := store.Iterator(start, end)
 	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, keyCodec: i.indexKeyCodec}, nil
