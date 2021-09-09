@@ -22,10 +22,12 @@ func TestUInt64Index(t *testing.T) {
 	storeKey := sdk.NewKVStoreKey("test")
 
 	const anyPrefix = 0x10
-	tableBuilder := orm.NewPrimaryKeyTableBuilder(anyPrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
-	myIndex := orm.NewUInt64Index(tableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]uint64, error) {
+	tableBuilder, err := orm.NewPrimaryKeyTableBuilder(anyPrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	require.NoError(t, err)
+	myIndex, err := orm.NewUInt64Index(tableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]uint64, error) {
 		return []uint64{uint64(val.(*testdata.GroupMember).Member[0])}, nil
 	})
+	require.NoError(t, err)
 	myTable := tableBuilder.Build()
 
 	ctx := orm.NewMockContext()
@@ -35,7 +37,7 @@ func TestUInt64Index(t *testing.T) {
 		Member: sdk.AccAddress([]byte("member-address")),
 		Weight: 10,
 	}
-	err := myTable.Create(ctx, &m)
+	err = myTable.Create(ctx, &m)
 	require.NoError(t, err)
 
 	indexedKey := uint64('m')

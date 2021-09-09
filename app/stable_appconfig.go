@@ -4,6 +4,10 @@
 package app
 
 import (
+	"encoding/json"
+
+	abci "github.com/tendermint/tendermint/abci/types"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
@@ -72,7 +76,10 @@ func (app *RegenApp) registerUpgradeHandlers() {
 
 		gen := ecocredittypes.DefaultGenesisState()
 		gen.Params.AllowlistEnabled = true
-		app.mm.Modules[ecocredittypes.ModuleName].InitGenesis(ctx, app.appCodec, app.cdc.MustMarshalJSON(gen))
+
+		modules := make(map[string]json.RawMessage)
+		modules[ecocredittypes.ModuleName] = app.cdc.MustMarshalJSON(gen)
+		app.smm.InitGenesis(ctx, modules, []abci.ValidatorUpdate{})
 
 		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})

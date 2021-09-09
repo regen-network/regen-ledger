@@ -40,13 +40,22 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace, bankKeeper
 		bankKeeper: bankKeeper,
 	}
 
-	creditTypeSeqTable := orm.NewPrimaryKeyTableBuilder(CreditTypeSeqTablePrefix, storeKey, &ecocredit.CreditTypeSeq{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	creditTypeSeqTable, err := orm.NewPrimaryKeyTableBuilder(CreditTypeSeqTablePrefix, storeKey, &ecocredit.CreditTypeSeq{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
 	s.creditTypeSeqTable = creditTypeSeqTable.Build()
 
-	classInfoTableBuilder := orm.NewPrimaryKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ecocredit.ClassInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	classInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ecocredit.ClassInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
 	s.classInfoTable = classInfoTableBuilder.Build()
 
-	batchInfoTableBuilder := orm.NewPrimaryKeyTableBuilder(BatchInfoTablePrefix, storeKey, &ecocredit.BatchInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	batchInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(BatchInfoTablePrefix, storeKey, &ecocredit.BatchInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
 	s.batchInfoTable = batchInfoTableBuilder.Build()
 
 	return s

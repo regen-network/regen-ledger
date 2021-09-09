@@ -3,7 +3,6 @@ syntax = "proto3";
 package regen.ecocredit.v1alpha1;
 import "google/api/annotations.proto";
 import "regen/ecocredit/v1alpha1/types.proto";
-import "gogoproto/gogo.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
@@ -74,7 +73,7 @@ message QueryClassesResponse {
 message QueryClassInfoRequest {
 
   // class_id is the unique ID of credit class to query.
-  string class_id = 1 [ (gogoproto.moretags) = "yaml:\"class_id\"" ];
+  string class_id = 1;
 }
 
 // QueryClassInfoResponse is the Query/ClassInfo request type.
@@ -106,7 +105,7 @@ message QueryBatchesResponse {
 message QueryBatchInfoRequest {
 
   // batch_denom is the unique ID of credit batch to query.
-  string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+  string batch_denom = 1;
 }
 
 // QueryBatchInfoResponse is the Query/BatchInfo response type.
@@ -123,26 +122,24 @@ message QueryBalanceRequest {
   string account = 1;
 
   // batch_denom is the unique ID of credit batch balance to query.
-  string batch_denom = 2 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+  string batch_denom = 2;
 }
 
 // QueryBalanceResponse is the Query/Balance response type.
 message QueryBalanceResponse {
 
   // tradable_amount is the decimal number of tradable credits.
-  string tradable_amount = 1
-      [ (gogoproto.moretags) = "yaml:\"tradable_amount\"" ];
+  string tradable_amount = 1;
 
   // retired_amount is the decimal number of retired credits.
-  string retired_amount = 2
-      [ (gogoproto.moretags) = "yaml:\"retired_amount\"" ];
+  string retired_amount = 2;
 }
 
 // QuerySupplyRequest is the Query/Supply request type.
 message QuerySupplyRequest {
 
   // batch_denom is the unique ID of credit batch to query.
-  string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+  string batch_denom = 1;
 }
 
 // QuerySupplyResponse is the Query/Supply response type.
@@ -150,13 +147,11 @@ message QuerySupplyResponse {
 
   // tradable_supply is the decimal number of tradable credits in the batch
   // supply.
-  string tradable_supply = 1
-      [ (gogoproto.moretags) = "yaml:\"tradable_supply\"" ];
+  string tradable_supply = 1;
 
   // retired_supply is the decimal number of retired credits in the batch
   // supply.
-  string retired_supply = 2
-      [ (gogoproto.moretags) = "yaml:\"retired_supply\"" ];
+  string retired_supply = 2;
 }
 
 // QueryCreditTypesRequest is the Query/Credit_Types request type
