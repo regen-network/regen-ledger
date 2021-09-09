@@ -29,11 +29,11 @@ const (
 
 // ecocredit operations weights
 const (
-	WeightCreateClass = 100
-	WeightCreateBatch = 80
-	WeightSend        = 70
-	WeightRetire      = 70
-	WeightCancel      = 70
+	WeightCreateClass = 10
+	WeightCreateBatch = 50
+	WeightSend        = 100
+	WeightRetire      = 80
+	WeightCancel      = 30
 )
 
 // ecocredit message types
