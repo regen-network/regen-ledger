@@ -1,7 +1,3 @@
-<!--
-order: 4
--->
-
 # Events
 
 The group module emits the following events:

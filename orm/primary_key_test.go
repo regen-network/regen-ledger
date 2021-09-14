@@ -23,8 +23,9 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 		testTablePrefix = iota
 	)
 
-	tb := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc).
-		Build()
+	builder, err := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	require.NoError(t, err)
+	tb := builder.Build()
 
 	ctx := orm.NewMockContext()
 
@@ -56,60 +57,69 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 		method     func(ctx orm.HasKVStore, start, end []byte) (orm.Iterator, error)
 	}{
 		"exact match with a single result": {
-			start:     []byte("group-amember-one"), // == m1.PrimaryKey()
-			end:       []byte("group-amember-two"), // == m2.PrimaryKey()
+			start: append(
+				orm.AddLengthPrefix([]byte("group-a")),
+				orm.AddLengthPrefix([]byte("member-one"))...,
+			), // == orm.PrimaryKey(&m1)
+			end: append(
+				orm.AddLengthPrefix([]byte("group-a")),
+				orm.AddLengthPrefix([]byte("member-two"))...,
+			), // == orm.PrimaryKey(&m2)
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1},
-			expRowIDs: []orm.RowID{m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1)},
 		},
 		"one result by prefix": {
-			start:     []byte("group-a"),
-			end:       []byte("group-amember-two"), // == m2.PrimaryKey()
+			start: orm.AddLengthPrefix([]byte("group-a")),
+			end: append(
+				orm.AddLengthPrefix([]byte("group-a")),
+				orm.AddLengthPrefix([]byte("member-two"))...,
+			), // == orm.PrimaryKey(&m2)
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1},
-			expRowIDs: []orm.RowID{m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1)},
 		},
 		"multi key elements by group prefix": {
-			start:     []byte("group-a"),
-			end:       []byte("group-b"),
+			start:     orm.AddLengthPrefix([]byte("group-a")),
+			end:       orm.AddLengthPrefix([]byte("group-b")),
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1, m2},
-			expRowIDs: []orm.RowID{m1.PrimaryKey(), m2.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1), orm.PrimaryKey(&m2)},
 		},
 		"open end query with second group": {
-			start:     []byte("group-b"),
+			start:     orm.AddLengthPrefix([]byte("group-b")),
 			end:       nil,
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m3},
-			expRowIDs: []orm.RowID{m3.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m3)},
 		},
 		"open end query with all": {
-			start:     []byte("group-a"),
+			start:     orm.AddLengthPrefix([]byte("group-a")),
 			end:       nil,
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1, m2, m3},
-			expRowIDs: []orm.RowID{m1.PrimaryKey(), m2.PrimaryKey(), m3.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1), orm.PrimaryKey(&m2), orm.PrimaryKey(&m3)},
 		},
 		"open start query": {
 			start:     nil,
-			end:       []byte("group-b"),
+			end:       orm.AddLengthPrefix([]byte("group-b")),
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1, m2},
-			expRowIDs: []orm.RowID{m1.PrimaryKey(), m2.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1), orm.PrimaryKey(&m2)},
 		},
 		"open start and end query": {
 			start:     nil,
 			end:       nil,
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1, m2, m3},
-			expRowIDs: []orm.RowID{m1.PrimaryKey(), m2.PrimaryKey(), m3.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1), orm.PrimaryKey(&m2), orm.PrimaryKey(&m3)},
 		},
 		"all matching prefix": {
-			start:     []byte("group"),
+			start:     orm.AddLengthPrefix([]byte("group")), // == LengthPrefix + "group"
 			end:       nil,
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1, m2, m3},
-			expRowIDs: []orm.RowID{m1.PrimaryKey(), m2.PrimaryKey(), m3.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1), orm.PrimaryKey(&m2), orm.PrimaryKey(&m3)},
 		},
 		"non matching prefix": {
 			start:     []byte("nobody"),
@@ -130,60 +140,69 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 			expError: orm.ErrArgument,
 		},
 		"reverse: exact match with a single result": {
-			start:     []byte("group-amember-one"), // == m1.PrimaryKey()
-			end:       []byte("group-amember-two"), // == m2.PrimaryKey()
+			start: append(
+				orm.AddLengthPrefix([]byte("group-a")),
+				orm.AddLengthPrefix([]byte("member-one"))...,
+			), // == orm.PrimaryKey(&m1)
+			end: append(
+				orm.AddLengthPrefix([]byte("group-a")),
+				orm.AddLengthPrefix([]byte("member-two"))...,
+			), // == orm.PrimaryKey(&m2)
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m1},
-			expRowIDs: []orm.RowID{m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1)},
 		},
 		"reverse: one result by prefix": {
-			start:     []byte("group-a"),
-			end:       []byte("group-amember-two"), // == m2.PrimaryKey()
+			start: orm.AddLengthPrefix([]byte("group-a")),
+			end: append(
+				orm.AddLengthPrefix([]byte("group-a")),
+				orm.AddLengthPrefix([]byte("member-two"))...,
+			), // == orm.PrimaryKey(&m2)
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m1},
-			expRowIDs: []orm.RowID{m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m1)},
 		},
 		"reverse: multi key elements by group prefix": {
-			start:     []byte("group-a"),
-			end:       []byte("group-b"),
+			start:     orm.AddLengthPrefix([]byte("group-a")),
+			end:       orm.AddLengthPrefix([]byte("group-b")),
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m2, m1},
-			expRowIDs: []orm.RowID{m2.PrimaryKey(), m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m2), orm.PrimaryKey(&m1)},
 		},
 		"reverse: open end query with second group": {
-			start:     []byte("group-b"),
+			start:     orm.AddLengthPrefix([]byte("group-b")),
 			end:       nil,
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m3},
-			expRowIDs: []orm.RowID{m3.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m3)},
 		},
 		"reverse: open end query with all": {
-			start:     []byte("group-a"),
+			start:     orm.AddLengthPrefix([]byte("group-a")),
 			end:       nil,
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m3, m2, m1},
-			expRowIDs: []orm.RowID{m3.PrimaryKey(), m2.PrimaryKey(), m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m3), orm.PrimaryKey(&m2), orm.PrimaryKey(&m1)},
 		},
 		"reverse: open start query": {
 			start:     nil,
-			end:       []byte("group-b"),
+			end:       orm.AddLengthPrefix([]byte("group-b")),
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m2, m1},
-			expRowIDs: []orm.RowID{m2.PrimaryKey(), m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m2), orm.PrimaryKey(&m1)},
 		},
 		"reverse: open start and end query": {
 			start:     nil,
 			end:       nil,
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m3, m2, m1},
-			expRowIDs: []orm.RowID{m3.PrimaryKey(), m2.PrimaryKey(), m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m3), orm.PrimaryKey(&m2), orm.PrimaryKey(&m1)},
 		},
 		"reverse: all matching prefix": {
-			start:     []byte("group"),
+			start:     orm.AddLengthPrefix([]byte("group")), // == LengthPrefix + "group"
 			end:       nil,
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m3, m2, m1},
-			expRowIDs: []orm.RowID{m3.PrimaryKey(), m2.PrimaryKey(), m1.PrimaryKey()},
+			expRowIDs: []orm.RowID{orm.PrimaryKey(&m3), orm.PrimaryKey(&m2), orm.PrimaryKey(&m1)},
 		},
 		"reverse: non matching prefix": {
 			start:     []byte("nobody"),
@@ -227,8 +246,9 @@ func TestContains(t *testing.T) {
 	storeKey := sdk.NewKVStoreKey("test")
 	const testTablePrefix = iota
 
-	tb := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc).
-		Build()
+	builder, err := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	require.NoError(t, err)
+	tb := builder.Build()
 
 	ctx := orm.NewMockContext()
 
@@ -237,7 +257,7 @@ func TestContains(t *testing.T) {
 		Member: []byte("member-one"),
 		Weight: 1,
 	}
-	err := tb.Create(ctx, &myPersistentObj)
+	err = tb.Create(ctx, &myPersistentObj)
 	require.NoError(t, err)
 
 	specs := map[string]struct {
@@ -271,6 +291,45 @@ func TestContains(t *testing.T) {
 		t.Run(msg, func(t *testing.T) {
 			got := tb.Contains(ctx, spec.src)
 			assert.Equal(t, spec.exp, got)
+		})
+	}
+}
+
+func TestAddLengthPrefix(t *testing.T) {
+	tcs := []struct {
+		name     string
+		in       []byte
+		expected []byte
+	}{
+		{"empty", []byte{}, []byte{0}},
+		{"nil", nil, []byte{0}},
+		{"some data", []byte{0, 1, 100, 200}, []byte{4, 0, 1, 100, 200}},
+	}
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			out := orm.AddLengthPrefix(tc.in)
+			require.Equal(t, tc.expected, out)
+		})
+	}
+
+	require.Panics(t, func() {
+		orm.AddLengthPrefix(make([]byte, 256))
+	})
+}
+
+func TestNullTerminatedBytes(t *testing.T) {
+	tcs := []struct {
+		name     string
+		in       string
+		expected []byte
+	}{
+		{"empty", "", []byte{0}},
+		{"some data", "abc", []byte{0x61, 0x62, 0x63, 0}},
+	}
+	for _, tc := range tcs {
+		t.Run(tc.name, func(t *testing.T) {
+			out := orm.NullTerminatedBytes(tc.in)
+			require.Equal(t, tc.expected, out)
 		})
 	}
 }

@@ -40,7 +40,8 @@ func TestTallyVotesInvariant(t *testing.T) {
 	prevCtx = prevCtx.WithBlockHeight(curCtx.BlockHeight() - 1)
 
 	// Proposal Table
-	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, key, &group.Proposal{}, cdc)
+	proposalTableBuilder, err := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, key, &group.Proposal{}, cdc)
+	require.NoError(t, err)
 	proposalTable := proposalTableBuilder.Build()
 
 	_, _, addr1 := testdata.KeyTestPubAddr()
@@ -224,33 +225,39 @@ func TestTallyVotesInvariant(t *testing.T) {
 func TestGroupTotalWeightInvariant(t *testing.T) {
 	curCtx, cdc, key := getCtxCodecKey(t)
 
-	// Group Table
-	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, key, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
-	groupTable := groupTableBuilder.Build()
-
-	// Group Member Table
-	groupMemberTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, key, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
-	groupMemberByGroupIndex := orm.NewUInt64Index(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]uint64, error) {
-		group := val.(*group.GroupMember).GroupId
-		return []uint64{group}, nil
-	})
-	groupMemberTable := groupMemberTableBuilder.Build()
-
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	_, _, addr2 := testdata.KeyTestPubAddr()
 
+	// Group Table
+	groupTableBuilder, err := orm.NewAutoUInt64TableBuilder(GroupTablePrefix, GroupTableSeqPrefix, key, &group.GroupInfo{}, cdc)
+	require.NoError(t, err)
+	groupTable := groupTableBuilder.Build()
+
+	groupInfo := &group.GroupInfo{
+		GroupId:     1,
+		Admin:       addr1.String(),
+		Version:     1,
+		TotalWeight: "3",
+	}
+	rowID, err := groupTable.Create(curCtx, groupInfo)
+	require.NoError(t, err)
+	require.Equal(t, uint64(1), rowID)
+
+	// Group Member Table
+	groupMemberTableBuilder, err := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, key, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	require.NoError(t, err)
+	groupMemberByGroupIndex, err := orm.NewUInt64Index(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]uint64, error) {
+		group := val.(*group.GroupMember).GroupId
+		return []uint64{group}, nil
+	})
+	require.NoError(t, err)
+	groupMemberTable := groupMemberTableBuilder.Build()
+
 	specs := map[string]struct {
-		groupsInfo   *group.GroupInfo
 		groupMembers []*group.GroupMember
 		expBroken    bool
 	}{
 		"invariant not broken": {
-			groupsInfo: &group.GroupInfo{
-				GroupId:     1,
-				Admin:       addr1.String(),
-				Version:     1,
-				TotalWeight: "3",
-			},
 			groupMembers: []*group.GroupMember{
 				{
 					GroupId: 1,
@@ -271,12 +278,6 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 		},
 
 		"group's TotalWeight must be equal to sum of its members weight ": {
-			groupsInfo: &group.GroupInfo{
-				GroupId:     1,
-				Admin:       addr1.String(),
-				Version:     1,
-				TotalWeight: "3",
-			},
 			groupMembers: []*group.GroupMember{
 				{
 					GroupId: 1,
@@ -299,11 +300,7 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 
 	for _, spec := range specs {
 		cacheCurCtx, _ := curCtx.CacheContext()
-		groupsInfo := spec.groupsInfo
 		groupMembers := spec.groupMembers
-
-		err := groupTable.Create(cacheCurCtx, group.ID(groupsInfo.GroupId).Bytes(), groupsInfo)
-		require.NoError(t, err)
 
 		for i := 0; i < len(groupMembers); i++ {
 			err := groupMemberTable.Create(cacheCurCtx, groupMembers[i])
@@ -319,26 +316,32 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 	curCtx, cdc, key := getCtxCodecKey(t)
 
 	// Group Table
-	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, key, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
+	groupTableBuilder, err := orm.NewAutoUInt64TableBuilder(GroupTablePrefix, GroupTableSeqPrefix, key, &group.GroupInfo{}, cdc)
+	require.NoError(t, err)
 	groupTable := groupTableBuilder.Build()
 
 	// Group Account Table
-	groupAccountTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupAccountTablePrefix, key, &group.GroupAccountInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	groupAccountTableBuilder, err := orm.NewPrimaryKeyTableBuilder(GroupAccountTablePrefix, key, &group.GroupAccountInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	require.NoError(t, err)
 	groupAccountTable := groupAccountTableBuilder.Build()
 
 	// Group Member Table
-	groupMemberTableBuilder := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, key, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	groupMemberTableBuilder, err := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, key, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	require.NoError(t, err)
 	groupMemberTable := groupMemberTableBuilder.Build()
 
 	// Proposal Table
-	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, key, &group.Proposal{}, cdc)
+	proposalTableBuilder, err := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, key, &group.Proposal{}, cdc)
+	require.NoError(t, err)
 	proposalTable := proposalTableBuilder.Build()
 
 	// Vote Table
-	voteTableBuilder := orm.NewPrimaryKeyTableBuilder(VoteTablePrefix, key, &group.Vote{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
-	voteByProposalIndex := orm.NewUInt64Index(voteTableBuilder, VoteByProposalIndexPrefix, func(value interface{}) ([]uint64, error) {
+	voteTableBuilder, err := orm.NewPrimaryKeyTableBuilder(VoteTablePrefix, key, &group.Vote{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	require.NoError(t, err)
+	voteByProposalIndex, err := orm.NewUInt64Index(voteTableBuilder, VoteByProposalIndexPrefix, func(value interface{}) ([]uint64, error) {
 		return []uint64{value.(*group.Vote).ProposalId}, nil
 	})
+	require.NoError(t, err)
 	voteTable := voteTableBuilder.Build()
 
 	_, _, adminAddr := testdata.KeyTestPubAddr()
@@ -561,8 +564,9 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 		groupMembers := spec.groupMembers
 		votes := spec.votes
 
-		err := groupTable.Create(cacheCurCtx, group.ID(groupsInfo.GroupId).Bytes(), groupsInfo)
+		groupID, err := groupTable.Create(cacheCurCtx, groupsInfo)
 		require.NoError(t, err)
+		require.Equal(t, groupsInfo.GroupId, groupID)
 
 		err = groupAcc.SetDecisionPolicy(group.NewThresholdDecisionPolicy("1", gogotypes.Duration{Seconds: 1}))
 		require.NoError(t, err)

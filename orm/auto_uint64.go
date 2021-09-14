@@ -3,47 +3,54 @@ package orm
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 var _ Indexable = &AutoUInt64TableBuilder{}
 
 // NewAutoUInt64TableBuilder creates a builder to setup a AutoUInt64Table object.
-func NewAutoUInt64TableBuilder(prefixData byte, prefixSeq byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, cdc codec.Codec) *AutoUInt64TableBuilder {
+func NewAutoUInt64TableBuilder(prefixData byte, prefixSeq byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, cdc codec.Codec) (*AutoUInt64TableBuilder, error) {
 	if prefixData == prefixSeq {
-		panic("prefixData and prefixSeq must be unique")
+		return nil, ErrUniqueConstraint.Wrap("prefixData and prefixSeq must be unique")
 	}
 
 	uInt64KeyCodec := FixLengthIndexKeys(EncodedSeqLength)
-	return &AutoUInt64TableBuilder{
-		TableBuilder: NewTableBuilder(prefixData, storeKey, model, uInt64KeyCodec, cdc),
-		seq:          NewSequence(storeKey, prefixSeq),
+	tableBuilder, err := newTableBuilder(prefixData, storeKey, model, uInt64KeyCodec, cdc)
+	if err != nil {
+		return nil, err
 	}
+	return &AutoUInt64TableBuilder{
+		tableBuilder: tableBuilder,
+		seq:          NewSequence(storeKey, prefixSeq),
+	}, nil
 }
 
 type AutoUInt64TableBuilder struct {
-	*TableBuilder
+	*tableBuilder
 	seq Sequence
 }
 
 // Build create the AutoUInt64Table object.
 func (a AutoUInt64TableBuilder) Build() AutoUInt64Table {
 	return AutoUInt64Table{
-		table: a.TableBuilder.Build(),
+		table: a.tableBuilder.Build(),
 		seq:   a.seq,
 	}
 }
 
-var _ SequenceExportable = &AutoUInt64Table{}
 var _ TableExportable = &AutoUInt64Table{}
 
 // AutoUInt64Table is the table type which an auto incrementing ID.
 type AutoUInt64Table struct {
-	table Table
+	table table
 	seq   Sequence
 }
 
-// Create a new persistent object with an auto generated uint64 primary key. They key is returned.
-// Create iterates though the registered callbacks and may add secondary index keys by them.
+// Create a new persistent object with an auto generated uint64 primary key. The
+// key is returned.
+//
+// Create iterates through the registered callbacks that may add secondary index
+// keys.
 func (a AutoUInt64Table) Create(ctx HasKVStore, obj codec.ProtoMarshaler) (uint64, error) {
 	autoIncID := a.seq.NextVal(ctx)
 	err := a.table.Create(ctx, EncodeSequence(autoIncID), obj)
@@ -53,20 +60,32 @@ func (a AutoUInt64Table) Create(ctx HasKVStore, obj codec.ProtoMarshaler) (uint6
 	return autoIncID, nil
 }
 
-// Save updates the given object under the rowID key. It expects the key to exists already
-// and fails with an `ErrNotFound` otherwise. Any caller must therefore make sure that this contract
-// is fulfilled. Parameters must not be nil.
+// Update updates the given object under the rowID key. It expects the key to
+// exists already and fails with an `ErrNotFound` otherwise. Any caller must
+// therefore make sure that this contract is fulfilled. Parameters must not be
+// nil.
 //
-// Save iterates though the registered callbacks and may add or remove secondary index keys by them.
-func (a AutoUInt64Table) Save(ctx HasKVStore, rowID uint64, newValue codec.ProtoMarshaler) error {
-	return a.table.Save(ctx, EncodeSequence(rowID), newValue)
+// Update iterates through the registered callbacks that may add or remove
+// secondary index keys.
+func (a AutoUInt64Table) Update(ctx HasKVStore, rowID uint64, newValue codec.ProtoMarshaler) error {
+	return a.table.Update(ctx, EncodeSequence(rowID), newValue)
 }
 
-// Delete removes the object under the rowID key. It expects the key to exists already
-// and fails with a `ErrNotFound` otherwise. Any caller must therefore make sure that this contract
-// is fulfilled.
+// Set persists the given object under the rowID key. It does not check if the
+// key already exists and overwrites the value if it does.
 //
-// Delete iterates though the registered callbacks and removes secondary index keys by them.
+// Set iterates through the registered callbacks that may add secondary index
+// keys.
+func (a AutoUInt64Table) Set(ctx HasKVStore, rowID uint64, newValue codec.ProtoMarshaler) error {
+	return a.table.Set(ctx, EncodeSequence(rowID), newValue)
+}
+
+// Delete removes the object under the rowID key. It expects the key to exists
+// already and fails with a `ErrNotFound` otherwise. Any caller must therefore
+// make sure that this contract is fulfilled.
+//
+// Delete iterates through the registered callbacks that remove secondary index
+// keys.
 func (a AutoUInt64Table) Delete(ctx HasKVStore, rowID uint64) error {
 	return a.table.Delete(ctx, EncodeSequence(rowID))
 }
@@ -124,7 +143,21 @@ func (a AutoUInt64Table) Sequence() Sequence {
 	return a.seq
 }
 
-// Table satisfies the TableExportable interface and must not be used otherwise.
-func (a AutoUInt64Table) Table() Table {
-	return a.table
+// Export stores all the values in the table in the passed ModelSlicePtr and
+// returns the current value of the associated sequence.
+func (a AutoUInt64Table) Export(ctx HasKVStore, dest ModelSlicePtr) (uint64, error) {
+	_, err := a.table.Export(ctx, dest)
+	if err != nil {
+		return 0, err
+	}
+	return a.seq.CurVal(ctx), nil
+}
+
+// Import clears the table and initializes it from the given data interface{}.
+// data should be a slice of structs that implement PrimaryKeyed.
+func (a AutoUInt64Table) Import(ctx HasKVStore, data interface{}, seqValue uint64) error {
+	if err := a.seq.InitVal(ctx, seqValue); err != nil {
+		return errors.Wrap(err, "sequence")
+	}
+	return a.table.Import(ctx, data, seqValue)
 }

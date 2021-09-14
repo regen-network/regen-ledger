@@ -9,7 +9,6 @@ import (
 
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	"github.com/cockroachdb/apd/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	gogotypes "github.com/gogo/protobuf/types"
@@ -37,7 +36,7 @@ func (s serverImpl) CreateGroup(goCtx context.Context, req *group.MsgCreateGroup
 		return nil, err
 	}
 
-	totalWeight := apd.New(0, 0)
+	totalWeight := math.NewDecFromInt64(0)
 	for i := range members.Members {
 		m := members.Members[i]
 		if err := assertMetadataLength(m.Metadata, "member metadata"); err != nil {
@@ -45,27 +44,27 @@ func (s serverImpl) CreateGroup(goCtx context.Context, req *group.MsgCreateGroup
 		}
 
 		// Members of a group must have a positive weight.
-		weight, err := math.ParsePositiveDecimal(m.Weight)
+		weight, err := math.NewPositiveDecFromString(m.Weight)
 		if err != nil {
 			return nil, err
 		}
 
 		// Adding up members weights to compute group total weight.
-		err = math.Add(totalWeight, totalWeight, weight)
+		totalWeight, err = totalWeight.Add(weight)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	// Create a new group in the groupTable.
-	groupID := s.groupSeq.NextVal(ctx)
-	err := s.groupTable.Create(ctx, group.ID(groupID).Bytes(), &group.GroupInfo{
-		GroupId:     groupID,
+	groupInfo := &group.GroupInfo{
+		GroupId:     s.groupTable.Sequence().PeekNextVal(ctx),
 		Admin:       admin,
 		Metadata:    metadata,
 		Version:     1,
-		TotalWeight: math.DecimalString(totalWeight),
-	})
+		TotalWeight: totalWeight.String(),
+	}
+	groupID, err := s.groupTable.Create(ctx, groupInfo)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "could not create group")
 	}
@@ -97,7 +96,7 @@ func (s serverImpl) CreateGroup(goCtx context.Context, req *group.MsgCreateGroup
 func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *group.MsgUpdateGroupMembers) (*group.MsgUpdateGroupMembersResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	action := func(g *group.GroupInfo) error {
-		totalWeight, err := math.ParseNonNegativeDecimal(g.TotalWeight)
+		totalWeight, err := math.NewNonNegativeDecFromString(g.TotalWeight)
 		if err != nil {
 			return err
 		}
@@ -116,7 +115,7 @@ func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *group.MsgUpda
 			// Checking if the group member is already part of the group.
 			var found bool
 			var prevGroupMember group.GroupMember
-			switch err := s.groupMemberTable.GetOne(ctx, groupMember.PrimaryKey(), &prevGroupMember); {
+			switch err := s.groupMemberTable.GetOne(ctx, orm.PrimaryKey(&groupMember), &prevGroupMember); {
 			case err == nil:
 				found = true
 			case orm.ErrNotFound.Is(err):
@@ -125,7 +124,7 @@ func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *group.MsgUpda
 				return sdkerrors.Wrap(err, "get group member")
 			}
 
-			newMemberWeight, err := math.ParseNonNegativeDecimal(groupMember.Member.Weight)
+			newMemberWeight, err := math.NewNonNegativeDecFromString(groupMember.Member.Weight)
 			if err != nil {
 				return err
 			}
@@ -137,13 +136,13 @@ func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *group.MsgUpda
 					return sdkerrors.Wrap(orm.ErrNotFound, "unknown member")
 				}
 
-				previousMemberWeight, err := math.ParseNonNegativeDecimal(prevGroupMember.Member.Weight)
+				previousMemberWeight, err := math.NewNonNegativeDecFromString(prevGroupMember.Member.Weight)
 				if err != nil {
 					return err
 				}
 
 				// Subtract the weight of the group member to delete from the group total weight.
-				err = math.SafeSub(totalWeight, totalWeight, previousMemberWeight)
+				totalWeight, err = math.SubNonNegative(totalWeight, previousMemberWeight)
 				if err != nil {
 					return err
 				}
@@ -156,17 +155,17 @@ func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *group.MsgUpda
 			}
 			// If group member already exists, handle update
 			if found {
-				previousMemberWeight, err := math.ParseNonNegativeDecimal(prevGroupMember.Member.Weight)
+				previousMemberWeight, err := math.NewNonNegativeDecFromString(prevGroupMember.Member.Weight)
 				if err != nil {
 					return err
 				}
 				// Subtract previous weight from the group total weight.
-				err = math.SafeSub(totalWeight, totalWeight, previousMemberWeight)
+				totalWeight, err = math.SubNonNegative(totalWeight, previousMemberWeight)
 				if err != nil {
 					return err
 				}
-				// Save updated group member in the groupMemberTable.
-				if err := s.groupMemberTable.Save(ctx, &groupMember); err != nil {
+				// Update updated group member in the groupMemberTable.
+				if err := s.groupMemberTable.Update(ctx, &groupMember); err != nil {
 					return sdkerrors.Wrap(err, "add member")
 				}
 				// else handle create.
@@ -174,16 +173,15 @@ func (s serverImpl) UpdateGroupMembers(goCtx context.Context, req *group.MsgUpda
 				return sdkerrors.Wrap(err, "add member")
 			}
 			// In both cases (handle + update), we need to add the new member's weight to the group total weight.
-			err = math.Add(totalWeight, totalWeight, newMemberWeight)
+			totalWeight, err = totalWeight.Add(newMemberWeight)
 			if err != nil {
 				return err
 			}
 		}
 		// Update group in the groupTable.
-		g.TotalWeight = math.DecimalString(totalWeight)
+		g.TotalWeight = totalWeight.String()
 		g.Version++
-		groupID := group.ID(g.GroupId).Bytes()
-		return s.groupTable.Save(ctx, groupID, g)
+		return s.groupTable.Update(ctx, g.GroupId, g)
 	}
 
 	err := s.doUpdateGroup(ctx, req, action, "members updated")
@@ -200,8 +198,7 @@ func (s serverImpl) UpdateGroupAdmin(goCtx context.Context, req *group.MsgUpdate
 		g.Admin = req.NewAdmin
 		g.Version++
 
-		groupID := group.ID(g.GroupId).Bytes()
-		return s.groupTable.Save(ctx, groupID, g)
+		return s.groupTable.Update(ctx, g.GroupId, g)
 	}
 
 	err := s.doUpdateGroup(ctx, req, action, "admin updated")
@@ -217,8 +214,7 @@ func (s serverImpl) UpdateGroupMetadata(goCtx context.Context, req *group.MsgUpd
 	action := func(g *group.GroupInfo) error {
 		g.Metadata = req.Metadata
 		g.Version++
-		groupID := group.ID(g.GroupId).Bytes()
-		return s.groupTable.Save(ctx, groupID, g)
+		return s.groupTable.Update(ctx, g.GroupId, g)
 	}
 
 	if err := assertMetadataLength(req.Metadata, "group metadata"); err != nil {
@@ -322,7 +318,7 @@ func (s serverImpl) UpdateGroupAccountAdmin(goCtx context.Context, req *group.Ms
 	action := func(groupAccount *group.GroupAccountInfo) error {
 		groupAccount.Admin = req.NewAdmin
 		groupAccount.Version++
-		return s.groupAccountTable.Save(ctx, groupAccount)
+		return s.groupAccountTable.Update(ctx, groupAccount)
 	}
 
 	err := s.doUpdateGroupAccount(ctx, req.Address, req.Admin, action, "group account admin updated")
@@ -344,7 +340,7 @@ func (s serverImpl) UpdateGroupAccountDecisionPolicy(goCtx context.Context, req 
 		}
 
 		groupAccount.Version++
-		return s.groupAccountTable.Save(ctx, groupAccount)
+		return s.groupAccountTable.Update(ctx, groupAccount)
 	}
 
 	err := s.doUpdateGroupAccount(ctx, req.Address, req.Admin, action, "group account decision policy updated")
@@ -362,7 +358,7 @@ func (s serverImpl) UpdateGroupAccountMetadata(goCtx context.Context, req *group
 	action := func(groupAccount *group.GroupAccountInfo) error {
 		groupAccount.Metadata = metadata
 		groupAccount.Version++
-		return s.groupAccountTable.Save(ctx, groupAccount)
+		return s.groupAccountTable.Update(ctx, groupAccount)
 	}
 
 	if err := assertMetadataLength(metadata, "group account metadata"); err != nil {
@@ -403,7 +399,7 @@ func (s serverImpl) CreateProposal(goCtx context.Context, req *group.MsgCreatePr
 
 	// Only members of the group can submit a new proposal.
 	for i := range proposers {
-		if !s.groupMemberTable.Has(ctx, group.GroupMember{GroupId: g.GroupId, Member: &group.Member{Address: proposers[i]}}.PrimaryKey()) {
+		if !s.groupMemberTable.Has(ctx, orm.PrimaryKey(&group.GroupMember{GroupId: g.GroupId, Member: &group.Member{Address: proposers[i]}})) {
 			return nil, sdkerrors.Wrapf(group.ErrUnauthorized, "not in group: %s", proposers[i])
 		}
 	}
@@ -533,14 +529,13 @@ func (s serverImpl) Vote(goCtx context.Context, req *group.MsgVote) (*group.MsgV
 		return nil, sdkerrors.Wrap(group.ErrExpired, "voting period has ended already")
 	}
 
-	var accountInfo group.GroupAccountInfo
-
 	// Ensure that group account hasn't been modified since the proposal submission.
 	address, err := sdk.AccAddressFromBech32(proposal.Address)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "group account")
 	}
-	if err := s.groupAccountTable.GetOne(ctx, address.Bytes(), &accountInfo); err != nil {
+	accountInfo, err := s.getGroupAccountInfo(ctx, address.Bytes())
+	if err != nil {
 		return nil, sdkerrors.Wrap(err, "load group account")
 	}
 	if proposal.GroupAccountVersion != accountInfo.Version {
@@ -559,7 +554,7 @@ func (s serverImpl) Vote(goCtx context.Context, req *group.MsgVote) (*group.MsgV
 	// Count and store votes.
 	voterAddr := req.Voter
 	voter := group.GroupMember{GroupId: electorate.GroupId, Member: &group.Member{Address: voterAddr}}
-	if err := s.groupMemberTable.GetOne(ctx, voter.PrimaryKey(), &voter); err != nil {
+	if err := s.groupMemberTable.GetOne(ctx, orm.PrimaryKey(&voter), &voter); err != nil {
 		return nil, sdkerrors.Wrapf(err, "address: %s", voterAddr)
 	}
 	newVote := group.Vote{
@@ -584,7 +579,7 @@ func (s serverImpl) Vote(goCtx context.Context, req *group.MsgVote) (*group.MsgV
 		return nil, err
 	}
 
-	if err = s.proposalTable.Save(ctx, id, &proposal); err != nil {
+	if err = s.proposalTable.Update(ctx, id, &proposal); err != nil {
 		return nil, err
 	}
 
@@ -641,17 +636,17 @@ func (s serverImpl) Exec(goCtx context.Context, req *group.MsgExec) (*group.MsgE
 		return nil, sdkerrors.Wrapf(group.ErrInvalid, "not possible with proposal status %s", proposal.Status.String())
 	}
 
-	var accountInfo group.GroupAccountInfo
 	address, err := sdk.AccAddressFromBech32(proposal.Address)
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "group account")
 	}
-	if err := s.groupAccountTable.GetOne(ctx, address.Bytes(), &accountInfo); err != nil {
+	accountInfo, err := s.getGroupAccountInfo(ctx, address.Bytes())
+	if err != nil {
 		return nil, sdkerrors.Wrap(err, "load group account")
 	}
 
 	storeUpdates := func() (*group.MsgExecResponse, error) {
-		if err := s.proposalTable.Save(ctx, id, &proposal); err != nil {
+		if err := s.proposalTable.Update(ctx, id, &proposal); err != nil {
 			return nil, err
 		}
 		return &group.MsgExecResponse{}, nil
@@ -728,8 +723,7 @@ func (s serverImpl) doUpdateGroupAccount(ctx types.Context, groupAccount string,
 		return sdkerrors.Wrap(err, "group admin")
 	}
 
-	var groupAccountInfo group.GroupAccountInfo
-	err = s.groupAccountTable.GetOne(ctx, groupAccountAddress.Bytes(), &groupAccountInfo)
+	groupAccountInfo, err := s.getGroupAccountInfo(ctx, groupAccountAddress.Bytes())
 	if err != nil {
 		return sdkerrors.Wrap(err, "load group account")
 	}
