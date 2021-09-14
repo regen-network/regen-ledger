@@ -139,7 +139,8 @@ transferred will result in a separate EventReceive for easy indexing.
 | sender | [string](#string) |  | sender is the sender of the credits in the case that this event is the result of a transfer. It will not be set when credits are received at initial issuance. |
 | recipient | [string](#string) |  | recipient is the recipient of the credits |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
-| amount | [string](#string) |  | amount is the decimal number of both tradable and retired credits received. |
+| amountTradable | [string](#string) |  | amountTradable is the decimal number of tradable credits received. |
+| amountRetired | [string](#string) |  | amountRetired is the decimal number of retired credits received. |
 
 
 
