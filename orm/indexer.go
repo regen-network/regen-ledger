@@ -6,35 +6,30 @@ import (
 )
 
 // IndexerFunc creates one or multiple index keys for the source object.
-type IndexerFunc func(value interface{}) ([]RowID, error)
+type IndexerFunc func(value interface{}) ([]interface{}, error)
 
 // IndexerFunc creates exactly one index key for the source object.
-type UniqueIndexerFunc func(value interface{}) (RowID, error)
+type UniqueIndexerFunc func(value interface{}) (interface{}, error)
 
 // Indexer manages the persistence for an Index based on searchable keys and operations.
 type Indexer struct {
-	indexerFunc   IndexerFunc
-	addFunc       func(store sdk.KVStore, codec IndexKeyCodec, secondaryIndexKey []byte, rowID RowID) error
-	indexKeyCodec IndexKeyCodec
+	indexerFunc IndexerFunc
+	addFunc     func(store sdk.KVStore, secondaryIndexKey []byte, rowID RowID) error
 }
 
 // NewIndexer returns an indexer that supports multiple reference keys for an entity.
-func NewIndexer(indexerFunc IndexerFunc, codec IndexKeyCodec) (*Indexer, error) {
+func NewIndexer(indexerFunc IndexerFunc) (*Indexer, error) {
 	if indexerFunc == nil {
 		return nil, ErrArgument.Wrap("Indexer func must not be nil")
 	}
-	if codec == nil {
-		return nil, ErrArgument.Wrap("IndexKeyCodec must not be nil")
-	}
 	return &Indexer{
-		indexerFunc:   pruneEmptyKeys(indexerFunc),
-		addFunc:       multiKeyAddFunc,
-		indexKeyCodec: codec,
+		indexerFunc: pruneEmptyKeys(indexerFunc),
+		addFunc:     multiKeyAddFunc,
 	}, nil
 }
 
 // NewUniqueIndexer returns an indexer that requires exactly one reference keys for an entity.
-func NewUniqueIndexer(f UniqueIndexerFunc, codec IndexKeyCodec) (*Indexer, error) {
+func NewUniqueIndexer(f UniqueIndexerFunc) (*Indexer, error) {
 	if f == nil {
 		return nil, ErrArgument.Wrap("Indexer func must not be nil")
 	}
@@ -44,7 +39,7 @@ func NewUniqueIndexer(f UniqueIndexerFunc, codec IndexKeyCodec) (*Indexer, error
 			return []RowID{k}, err
 		}
 	}
-	idx, err := NewIndexer(adaptor(f), codec)
+	idx, err := NewIndexer(adaptor(f))
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +55,7 @@ func (i Indexer) OnCreate(store sdk.KVStore, rowID RowID, value interface{}) err
 	}
 
 	for _, secondaryIndexKey := range secondaryIndexKeys {
-		if err := i.addFunc(store, i.indexKeyCodec, secondaryIndexKey, rowID); err != nil {
+		if err := i.addFunc(store, secondaryIndexKey, rowID); err != nil {
 			return err
 		}
 	}
@@ -75,7 +70,7 @@ func (i Indexer) OnDelete(store sdk.KVStore, rowID RowID, value interface{}) err
 	}
 
 	for _, secondaryIndexKey := range secondaryIndexKeys {
-		indexKey, err := i.indexKeyCodec.BuildIndexKey(secondaryIndexKey, rowID)
+		indexKey, err := buildKeyFromParts([]interface{}{secondaryIndexKey, rowID})
 		if err != nil {
 			return err
 		}
@@ -161,14 +156,18 @@ func difference(a []RowID, b []RowID) []RowID {
 
 // pruneEmptyKeys drops any empty key from IndexerFunc f returned
 func pruneEmptyKeys(f IndexerFunc) IndexerFunc {
-	return func(v interface{}) ([]RowID, error) {
+	return func(v interface{}) ([]interface{}, error) {
 		keys, err := f(v)
 		if err != nil || keys == nil {
 			return keys, err
 		}
-		r := make([]RowID, 0, len(keys))
+		r := make([]interface{}, 0, len(keys))
 		for i := range keys {
-			if len(keys[i]) != 0 {
+			key, err := keyPartBytes(keys[i], true)
+			if err != nil {
+				return nil, err
+			}
+			if len(key) != 0 {
 				r = append(r, keys[i])
 			}
 		}

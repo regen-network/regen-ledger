@@ -63,7 +63,7 @@ type Persistent interface {
 
 // Index allows efficient prefix scans is stored as key = concat(indexKeyBytes, rowIDUint64) with value empty
 // so that the row PrimaryKey is allows a fixed with 8 byte integer. This allows the MultiKeyIndex key bytes to be
-// variable length and scanned iteratively. The
+// variable length and scanned iteratively.
 type Index interface {
 	// Has checks if a key exists. Panics on nil key.
 	Has(ctx HasKVStore, key []byte) bool
@@ -104,6 +104,8 @@ type Index interface {
 	//
 	// CONTRACT: No writes may happen within a domain while an iterator exists over it.
 	ReversePrefixScan(ctx HasKVStore, start []byte, end []byte) (Iterator, error)
+
+	StripRowID(indexKey []byte) RowID
 }
 
 // Iterator allows iteration through a sequence of key value pairs
@@ -121,7 +123,6 @@ type Iterator interface {
 type Indexable interface {
 	StoreKey() sdk.StoreKey
 	RowGetter() RowGetter
-	IndexKeyCodec() IndexKeyCodec
 	AddAfterSetInterceptor(interceptor AfterSetInterceptor)
 	AddAfterDeleteInterceptor(interceptor AfterDeleteInterceptor)
 }
