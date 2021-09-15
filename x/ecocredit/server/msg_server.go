@@ -447,6 +447,57 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 	return &ecocredit.MsgCancelResponse{}, nil
 }
 
+func (s serverImpl) UpdateClassAdmin(goCtx context.Context, update *ecocredit.MsgUpdateClassAdmin) (*ecocredit.MsgUpdateClassAdminResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	cInfo, err := s.getClassInfo(ctx, update.ClassId)
+	if err != nil {
+		return nil, err
+	}
+
+	if cInfo.Admin != update.Admin {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("you are not the administrator of this class")
+	}
+
+	cInfo.Admin = update.NewAdmin
+	err = s.classInfoTable.Update(ctx, cInfo)
+
+	return &ecocredit.MsgUpdateClassAdminResponse{}, err
+}
+
+func (s serverImpl) UpdateClassIssuers(goCtx context.Context, update *ecocredit.MsgUpdateClassIssuers) (*ecocredit.MsgUpdateClassIssuersResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	cInfo, err := s.getClassInfo(ctx, update.ClassId)
+	if err != nil {
+		return nil, err
+	}
+
+	if cInfo.Admin != update.Admin {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("you are not the administrator of this class")
+	}
+
+	cInfo.Issuers = update.Issuers
+	err = s.classInfoTable.Update(ctx, cInfo)
+
+	return &ecocredit.MsgUpdateClassIssuersResponse{}, err
+}
+
+func (s serverImpl) UpdateClassMetadata(goCtx context.Context, update *ecocredit.MsgUpdateClassMetadata) (*ecocredit.MsgUpdateClassMetadataResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	cInfo, err := s.getClassInfo(ctx, update.ClassId)
+	if err != nil {
+		return nil, err
+	}
+
+	if cInfo.Admin != update.Admin {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("you are not the administrator of this class")
+	}
+
+	cInfo.Metadata = update.Metadata
+	err = s.classInfoTable.Update(ctx, cInfo)
+
+	return &ecocredit.MsgUpdateClassMetadataResponse{}, err
+}
+
 // nextBatchInClass gets the sequence number for the next batch in the credit
 // class and updates the class info with the new batch number
 func (s serverImpl) nextBatchInClass(ctx types.Context, classInfo *ecocredit.ClassInfo) (uint64, error) {
