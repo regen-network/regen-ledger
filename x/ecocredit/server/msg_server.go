@@ -447,52 +447,52 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 	return &ecocredit.MsgCancelResponse{}, nil
 }
 
-func (s serverImpl) UpdateClassAdmin(goCtx context.Context, update *ecocredit.MsgUpdateClassAdmin) (*ecocredit.MsgUpdateClassAdminResponse, error) {
+func (s serverImpl) UpdateClassAdmin(goCtx context.Context, req *ecocredit.MsgUpdateClassAdmin) (*ecocredit.MsgUpdateClassAdminResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
-	cInfo, err := s.getClassInfo(ctx, update.ClassId)
+	cInfo, err := s.getClassInfo(ctx, req.ClassId)
 	if err != nil {
 		return nil, err
 	}
 
-	if cInfo.Admin != update.Admin {
+	if cInfo.Admin != req.Admin {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("you are not the administrator of this class")
 	}
 
-	cInfo.Admin = update.NewAdmin
+	cInfo.Admin = req.NewAdmin
 	err = s.classInfoTable.Update(ctx, cInfo)
 
 	return &ecocredit.MsgUpdateClassAdminResponse{}, err
 }
 
-func (s serverImpl) UpdateClassIssuers(goCtx context.Context, update *ecocredit.MsgUpdateClassIssuers) (*ecocredit.MsgUpdateClassIssuersResponse, error) {
+func (s serverImpl) UpdateClassIssuers(goCtx context.Context, req *ecocredit.MsgUpdateClassIssuers) (*ecocredit.MsgUpdateClassIssuersResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
-	cInfo, err := s.getClassInfo(ctx, update.ClassId)
+	cInfo, err := s.getClassInfo(ctx, req.ClassId)
 	if err != nil {
 		return nil, err
 	}
 
-	if cInfo.Admin != update.Admin {
+	if cInfo.Admin != req.Admin {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("you are not the administrator of this class")
 	}
 
-	cInfo.Issuers = update.Issuers
+	cInfo.Issuers = req.Issuers
 	err = s.classInfoTable.Update(ctx, cInfo)
 
 	return &ecocredit.MsgUpdateClassIssuersResponse{}, err
 }
 
-func (s serverImpl) UpdateClassMetadata(goCtx context.Context, update *ecocredit.MsgUpdateClassMetadata) (*ecocredit.MsgUpdateClassMetadataResponse, error) {
+func (s serverImpl) UpdateClassMetadata(goCtx context.Context, req *ecocredit.MsgUpdateClassMetadata) (*ecocredit.MsgUpdateClassMetadataResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
-	cInfo, err := s.getClassInfo(ctx, update.ClassId)
+	cInfo, err := s.getClassInfo(ctx, req.ClassId)
 	if err != nil {
 		return nil, err
 	}
 
-	if cInfo.Admin != update.Admin {
+	if cInfo.Admin != req.Admin {
 		return nil, sdkerrors.ErrUnauthorized.Wrapf("you are not the administrator of this class")
 	}
 
-	cInfo.Metadata = update.Metadata
+	cInfo.Metadata = req.Metadata
 	err = s.classInfoTable.Update(ctx, cInfo)
 
 	return &ecocredit.MsgUpdateClassMetadataResponse{}, err
