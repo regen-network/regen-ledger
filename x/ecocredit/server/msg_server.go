@@ -33,7 +33,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(ctx.Context, &params)
-	if params.AllowlistEnabled && !s.isCreatorAllowListed(params.AllowedClassCreators, adminAddress) {
+	if params.AllowlistEnabled && !s.isCreatorAllowListed(ctx, params.AllowedClassCreators, adminAddress) {
 		return nil, fmt.Errorf("%s is not allowed to create credit classes", adminAddress.String())
 	}
 
@@ -522,9 +522,10 @@ func (s serverImpl) getBatchPrecision(ctx types.Context, denom batchDenomT) (uin
 	return classInfo.CreditType.Precision, nil
 }
 
-// Checks if the given address is in the allowlist of credit class designers
-func (s serverImpl) isCreatorAllowListed(allowlist []string, designer sdk.Address) bool {
+// Checks if the given address is in the allowlist of credit class creators
+func (s serverImpl) isCreatorAllowListed(ctx sdk.Context, allowlist []string, designer sdk.Address) bool {
 	for _, addr := range allowlist {
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "credit class creators allowlist")
 		allowListedAddr, _ := sdk.AccAddressFromBech32(addr)
 		if designer.Equals(allowListedAddr) {
 			return true
