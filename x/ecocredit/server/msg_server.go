@@ -523,7 +523,7 @@ func (s serverImpl) getBatchPrecision(ctx types.Context, denom batchDenomT) (uin
 }
 
 // Checks if the given address is in the allowlist of credit class creators
-func (s serverImpl) isCreatorAllowListed(ctx sdk.Context, allowlist []string, designer sdk.Address) bool {
+func (s serverImpl) isCreatorAllowListed(ctx types.Context, allowlist []string, designer sdk.Address) bool {
 	for _, addr := range allowlist {
 		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "credit class creators allowlist")
 		allowListedAddr, _ := sdk.AccAddressFromBech32(addr)
