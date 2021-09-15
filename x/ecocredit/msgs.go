@@ -34,7 +34,7 @@ func (m MsgCreateClass) GetSignBytes() []byte {
 func (m *MsgCreateClass) ValidateBasic() error {
 
 	if len(m.Metadata) > MaxMetadataLength {
-		ErrMaxLimit.Wrap("credit class metadata")
+		return ErrMaxLimit.Wrap("credit class metadata")
 	}
 
 	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
@@ -77,7 +77,7 @@ func (m MsgCreateBatch) GetSignBytes() []byte {
 func (m *MsgCreateBatch) ValidateBasic() error {
 
 	if len(m.Metadata) > MaxMetadataLength {
-		ErrMaxLimit.Wrap("credit batch metadata")
+		return ErrMaxLimit.Wrap("credit batch metadata")
 	}
 
 	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
