@@ -1,6 +1,6 @@
 # State
 
-The `ecocrdit` module uses the `KVStore` directly for credit batch balances and supplies and the `orm` package for table storage of credit type sequences, credit classes, and credit batches.
+The `ecocredit` module uses the `KVStore` directly for credit batch balances and supplies and the `orm` package for table storage of credit type sequences, credit classes, and credit batches.
 
 ## Tradable Balance
 
