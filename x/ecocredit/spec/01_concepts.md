@@ -16,15 +16,15 @@ Each credit class is associated with a single credit type, which is the primary 
 
 ## Credit Class Creator
 
-A credit class creator is an address with the authority to create credit classes. A credit class creator is granted the authority to create credit classes by being on the list of approved credit class creators (an on-chain parameter that can only be updated through the governance process). A credit class creator creates a credit class by executing a transaction. A credit class creator becomes the credit class admin upon creation of the credit class and is therein referred to as the credit class admin.
+A credit class creator is an address with the authority to create credit classes. The list of approved credit class creators is stored as an on-chain parameter that can only be updated through the governance process. Credit classes can be created  by executing a transaction on-chain with the required credit type, metadata, and list of approved issuers. Upon creation of a credit class credit, the credit class creator is set as the admin for the given credit class.
 
 ## Credit Class Admin
 
-The credit class admin is defined within a credit class. A credit class admin is the address with the authority to manage the credit class. In the initial version of the ecocredit module, the credit class admin simply represents the creator of the credit class. In the next version of the ecocredit module, the credit class admin will have the ability to manage the list of credit class issuers and potentially other properties of the credit class.
+The credit class admin is defined within a credit class as the address with the authority to manage and update the credit class. The credit class admin will have the ability to transfer the admin role to another address, manage the list of credit class issuers, and change credit class metadata.
 
 ## Credit Issuers
 
-The credit issuers are defined within a credit class. Credit issuers are a list of addresses with the authority to issue credit batches from the credit class. The list of credit issuers are defined at the time the credit class is created. In the next version of the ecocredit module, the credit class admin will have the ability to manage the list of credit issuers for the credit class that they administer.
+The credit issuers are defined within a credit class as a list of addresses with the authority to mint new credits and issue credit batches of the corresponding credit class. The list of credit issuers are defined at the time the credit class is created. The credit class admin will be able to manage the list of credit issuers for the credit class that they administer.
 
 ## Credit Batch
 
