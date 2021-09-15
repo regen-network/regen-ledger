@@ -18,7 +18,7 @@ var (
 // MaxMetadataLength defines the max length of the metadata bytes field
 // for the credit-class & credit-batch.
 // TODO: This could be used as params once x/params is upgraded to use protobuf
-const MaxMetadataLength = 255
+const MaxMetadataLength = 256
 
 // Route Implements LegacyMsg.
 func (m MsgCreateClass) Route() string { return sdk.MsgTypeURL(&m) }
