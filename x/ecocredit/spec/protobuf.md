@@ -194,7 +194,7 @@ BatchInfo represents the high-level on-chain information for a credit batch.
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
 | issuer | [string](#string) |  | issuer is the issuer of the credit batch. |
 | total_amount | [string](#string) |  | total_amount is the total number of active credits in the credit batch. Some of the issued credits may be cancelled and will be removed from total_amount and tracked in amount_cancelled. total_amount and amount_cancelled will always sum to the original amount of credits that were issued. |
-| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit batch. |
+| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata attached to the credit batch. |
 | amount_cancelled | [string](#string) |  | amount_cancelled is the number of credits in the batch that have been cancelled, effectively undoing there issuance. The sum of total_amount and amount_cancelled will always sum to the original amount of credits that were issued. |
 | start_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | start_date is the beginning of the period during which this credit batch was quantified and verified. |
 | end_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | end_date is the end of the period during which this credit batch was quantified and verified. |
@@ -664,7 +664,7 @@ MsgCreateBatch is the Msg/CreateBatch request type.
 | issuer | [string](#string) |  | issuer is the address of the batch issuer. |
 | class_id | [string](#string) |  | class_id is the unique ID of the class. |
 | issuance | [MsgCreateBatch.BatchIssuance](#regen.ecocredit.v1alpha1.MsgCreateBatch.BatchIssuance) | repeated | issuance are the credits issued in the batch. |
-| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit batch. |
+| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata attached to the credit batch. |
 | start_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | start_date is the beginning of the period during which this credit batch was quantified and verified. |
 | end_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | end_date is the end of the period during which this credit batch was quantified and verified. |
 | project_location | [string](#string) |  | project_location is the location of the project backing the credits in this batch. It is a string of the form <country-code>[-<sub-national-code>[ <postal-code>]], with the first two fields conforming to ISO 3166-2, and postal-code being up to 64 alphanumeric characters. country-code is required, while sub-national-code and postal-code can be added for increasing precision. |
@@ -716,7 +716,7 @@ MsgCreateClass is the Msg/CreateClass request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| admin | [string](#string) |  | admin is the address of the account which can manage the credit class. The admin has permissions to change the list of issuers and perform other administrative operations. |
+| admin | [string](#string) |  | admin is the address of the account that created the credit class. |
 | issuers | [string](#string) | repeated | issuers are the account addresses of the approved issuers. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit class. |
 | credit_type_name | [string](#string) |  | credit_type_name describes the type of credit (e.g. "carbon", "biodiversity"). |

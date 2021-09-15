@@ -49,7 +49,7 @@ message BatchInfo {
   // were issued.
   string total_amount = 4;
 
-  // metadata is any arbitrary metadata to attached to the credit batch.
+  // metadata is any arbitrary metadata attached to the credit batch.
   bytes metadata = 5;
 
   // amount_cancelled is the number of credits in the batch that have been
