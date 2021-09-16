@@ -187,12 +187,7 @@ proto-swagger-gen:
 	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGenSwagger}$$"; then docker start -a $(containerProtoGenSwagger); else docker run --name $(containerProtoGenSwagger) -v $(CURDIR):/workspace --workdir /workspace $(containerProtoImage) \
 		sh ./scripts/protoc-swagger-gen.sh; fi
 	
-update-swagger-docs: 
-	@if [ ! -f ./client/docs/swagger-ui/swagger.yaml ]; then \
-		echo "\033[91m swagger.yaml file is missing.!!!\033[0m";\
-		exit 1;\
-	fi
-	
+update-swagger-docs: statik
 	$(BINDIR)/statik -src=client/docs/swagger-ui -dest=client/docs -f -m
 	@if [ -n "$(git status --porcelain)" ]; then \
 		echo "\033[91mSwagger docs are out of sync!!!\033[0m";\
@@ -200,7 +195,6 @@ update-swagger-docs:
 	else \
 		echo "\033[92mSwagger docs are in sync\033[0m";\
 	fi
-	@rm -f ./client/docs/swagger-ui/swagger.yaml
 .PHONY: update-swagger-docs
 
 godocs:
