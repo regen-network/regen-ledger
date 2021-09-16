@@ -195,6 +195,7 @@ update-swagger-docs: statik
 	else \
 		echo "\033[92mSwagger docs are in sync\033[0m";\
 	fi
+	@rm -f ./client/docs/swagger-ui/swagger.yaml
 .PHONY: update-swagger-docs
 
 godocs:
