@@ -110,3 +110,40 @@ func (s *IntegrationTestSuite) TestGetClass() {
 		})
 	}
 }
+
+func (s *IntegrationTestSuite) TestGetBatches() {
+	val := s.network.Validators[0]
+
+	testCases := []struct {
+		name       string
+		url        string
+		numBatches int
+	}{
+		{
+			"valid request",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches", val.APIAddress),
+			3,
+		},
+		{
+			"valid request with pagination",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches?pagination.limit=2", val.APIAddress),
+			2,
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var batches ecocredit.QueryBatchesResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &batches)
+
+			require.NoError(err)
+			require.NotNil(batches.Batches)
+			require.Len(batches.Batches, tc.numBatches)
+		})
+	}
+}
