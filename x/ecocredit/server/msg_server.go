@@ -13,6 +13,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
+// TODO: Revisit this once we have proper gas fee framework.
+// Tracking issues https://github.com/cosmos/cosmos-sdk/issues/9054, https://github.com/cosmos/cosmos-sdk/discussions/9072
+const gasCostPerIteration = uint64(10)
+
 // CreateClass creates a new class of ecocredit
 //
 // The admin is charged a fee for creating the class. This is controlled by
@@ -29,7 +33,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(ctx.Context, &params)
-	if params.AllowlistEnabled && !s.isCreatorAllowListed(params.AllowedClassCreators, adminAddress) {
+	if params.AllowlistEnabled && !s.isCreatorAllowListed(ctx, params.AllowedClassCreators, adminAddress) {
 		return nil, fmt.Errorf("%s is not allowed to create credit classes", adminAddress.String())
 	}
 
@@ -179,6 +183,8 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		if err != nil {
 			return nil, err
 		}
+
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "batch issuance")
 	}
 
 	setDecimal(store, TradableSupplyKey(batchDenom), tradableSupply)
@@ -308,6 +314,8 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 		if err != nil {
 			return nil, err
 		}
+
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "send ecocredits")
 	}
 
 	return &ecocredit.MsgSendResponse{}, nil
@@ -355,6 +363,8 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ec
 		if err != nil {
 			return nil, err
 		}
+
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "retire ecocredits")
 	}
 
 	return &ecocredit.MsgRetireResponse{}, nil
@@ -442,6 +452,8 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 		if err != nil {
 			return nil, err
 		}
+
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "cancel ecocredits")
 	}
 
 	return &ecocredit.MsgCancelResponse{}, nil
@@ -510,9 +522,10 @@ func (s serverImpl) getBatchPrecision(ctx types.Context, denom batchDenomT) (uin
 	return classInfo.CreditType.Precision, nil
 }
 
-// Checks if the given address is in the allowlist of credit class designers
-func (s serverImpl) isCreatorAllowListed(allowlist []string, designer sdk.Address) bool {
+// Checks if the given address is in the allowlist of credit class creators
+func (s serverImpl) isCreatorAllowListed(ctx types.Context, allowlist []string, designer sdk.Address) bool {
 	for _, addr := range allowlist {
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "credit class creators allowlist")
 		allowListedAddr, _ := sdk.AccAddressFromBech32(addr)
 		if designer.Equals(allowListedAddr) {
 			return true
