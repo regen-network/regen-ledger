@@ -4,6 +4,8 @@ package regen.ecocredit.v1alpha1;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
+import "regen/ecocredit/v1alpha1/filter.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 
@@ -30,6 +32,18 @@ service Msg {
   // deducts them from the tradable supply, effectively cancelling their
   // issuance on Regen Ledger
   rpc Cancel(MsgCancel) returns (MsgCancelResponse);
+
+  rpc Sell(MsgSell) returns (MsgSellResponse);
+
+  rpc Buy(MsgBuy) returns (MsgBuyResponse);
+
+  rpc CreatePool(MsgCreatePool) returns (MsgCreatePoolResponse);
+
+  rpc DepositPool(MsgDepositPool) returns (MsgDepositPoolResponse);
+
+  rpc WithdrawPool(MsgWithdrawPool) returns (MsgWithdrawPoolResponse);
+
+  rpc WithdrawPoolExact(MsgWithdrawPoolExact) returns (MsgWithdrawPoolExactResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -218,3 +232,82 @@ message MsgCancel {
 
 // MsgCancelResponse is the Msg/Cancel response type.
 message MsgCancelResponse {}
+
+message MsgSell {
+  string owner = 1;
+  repeated Order orders = 2;
+
+  message Order {
+    string batch_denom = 1;
+    string amount = 2;
+    string ask_denom = 3;
+    string ask_price = 4;
+    bool dont_auto_retire = 5;
+  }
+}
+
+message MsgSellResponse {
+  repeated uint64 order_ids = 1;
+}
+
+message MsgBuy {
+  string buyer = 1;
+  repeated Order orders = 3;
+
+  message Order {
+    BatchFilter filter = 1;
+    string amount = 2;
+    string bid_denom = 3;
+    string bid_price = 4;
+    bool dont_auto_retire = 5;
+  }
+}
+
+message MsgBuyResponse {
+  repeated uint64 order_ids = 1;
+}
+
+message MsgCreatePool {
+  string creator = 1;
+  BatchFilter filter = 2;
+  PoolDeposit deposit = 3;
+}
+
+message MsgCreatePoolResponse {
+  uint64 pool_id = 1;
+}
+
+message PoolDeposit {
+  repeated CreditAmount sell_credits = 1;
+  cosmos.base.v1beta1.Coin buy_coin = 2;
+}
+
+message CreditAmount {
+  string batch_denom = 1;
+  string amount = 2;
+}
+
+message MsgDepositPool {
+  string depositor = 1;
+  uint64 pool_id = 2;
+  PoolDeposit deposit = 3;
+}
+
+
+message MsgDepositPoolResponse {}
+
+message MsgWithdrawPool {
+  string depositor = 1;
+  uint64 pool_id = 2;
+  cosmos.base.v1beta1.Coin buy_coin = 3;
+}
+
+message MsgWithdrawPoolResponse {}
+
+message MsgWithdrawPoolExact {
+  string depositor = 1;
+  uint64 pool_id = 2;
+  repeated CreditAmount credits = 3;
+}
+
+message MsgWithdrawPoolExactResponse {}

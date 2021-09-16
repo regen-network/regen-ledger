@@ -118,3 +118,7 @@ message CreditTypeSeq {
   // The sequence number of classes of the credit type
   uint64 seq_number = 2;
 }
+
+message Filter {
+
+}

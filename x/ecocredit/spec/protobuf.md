@@ -11,11 +11,17 @@
     - [EventReceive](#regen.ecocredit.v1alpha1.EventReceive)
     - [EventRetire](#regen.ecocredit.v1alpha1.EventRetire)
   
+- [regen/ecocredit/v1alpha1/filter.proto](#regen/ecocredit/v1alpha1/filter.proto)
+    - [BatchFilter](#regen.ecocredit.v1alpha1.BatchFilter)
+    - [Condition](#regen.ecocredit.v1alpha1.Condition)
+    - [Criteria](#regen.ecocredit.v1alpha1.Criteria)
+  
 - [regen/ecocredit/v1alpha1/types.proto](#regen/ecocredit/v1alpha1/types.proto)
     - [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo)
     - [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo)
     - [CreditType](#regen.ecocredit.v1alpha1.CreditType)
     - [CreditTypeSeq](#regen.ecocredit.v1alpha1.CreditTypeSeq)
+    - [Filter](#regen.ecocredit.v1alpha1.Filter)
     - [Params](#regen.ecocredit.v1alpha1.Params)
   
 - [regen/ecocredit/v1alpha1/genesis.proto](#regen/ecocredit/v1alpha1/genesis.proto)
@@ -42,6 +48,10 @@
     - [Query](#regen.ecocredit.v1alpha1.Query)
   
 - [regen/ecocredit/v1alpha1/tx.proto](#regen/ecocredit/v1alpha1/tx.proto)
+    - [CreditAmount](#regen.ecocredit.v1alpha1.CreditAmount)
+    - [MsgBuy](#regen.ecocredit.v1alpha1.MsgBuy)
+    - [MsgBuy.Order](#regen.ecocredit.v1alpha1.MsgBuy.Order)
+    - [MsgBuyResponse](#regen.ecocredit.v1alpha1.MsgBuyResponse)
     - [MsgCancel](#regen.ecocredit.v1alpha1.MsgCancel)
     - [MsgCancel.CancelCredits](#regen.ecocredit.v1alpha1.MsgCancel.CancelCredits)
     - [MsgCancelResponse](#regen.ecocredit.v1alpha1.MsgCancelResponse)
@@ -50,12 +60,24 @@
     - [MsgCreateBatchResponse](#regen.ecocredit.v1alpha1.MsgCreateBatchResponse)
     - [MsgCreateClass](#regen.ecocredit.v1alpha1.MsgCreateClass)
     - [MsgCreateClassResponse](#regen.ecocredit.v1alpha1.MsgCreateClassResponse)
+    - [MsgCreatePool](#regen.ecocredit.v1alpha1.MsgCreatePool)
+    - [MsgCreatePoolResponse](#regen.ecocredit.v1alpha1.MsgCreatePoolResponse)
+    - [MsgDepositPool](#regen.ecocredit.v1alpha1.MsgDepositPool)
+    - [MsgDepositPoolResponse](#regen.ecocredit.v1alpha1.MsgDepositPoolResponse)
     - [MsgRetire](#regen.ecocredit.v1alpha1.MsgRetire)
     - [MsgRetire.RetireCredits](#regen.ecocredit.v1alpha1.MsgRetire.RetireCredits)
     - [MsgRetireResponse](#regen.ecocredit.v1alpha1.MsgRetireResponse)
+    - [MsgSell](#regen.ecocredit.v1alpha1.MsgSell)
+    - [MsgSell.Order](#regen.ecocredit.v1alpha1.MsgSell.Order)
+    - [MsgSellResponse](#regen.ecocredit.v1alpha1.MsgSellResponse)
     - [MsgSend](#regen.ecocredit.v1alpha1.MsgSend)
     - [MsgSend.SendCredits](#regen.ecocredit.v1alpha1.MsgSend.SendCredits)
     - [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse)
+    - [MsgWithdrawPool](#regen.ecocredit.v1alpha1.MsgWithdrawPool)
+    - [MsgWithdrawPoolExact](#regen.ecocredit.v1alpha1.MsgWithdrawPoolExact)
+    - [MsgWithdrawPoolExactResponse](#regen.ecocredit.v1alpha1.MsgWithdrawPoolExactResponse)
+    - [MsgWithdrawPoolResponse](#regen.ecocredit.v1alpha1.MsgWithdrawPoolResponse)
+    - [PoolDeposit](#regen.ecocredit.v1alpha1.PoolDeposit)
   
     - [Msg](#regen.ecocredit.v1alpha1.Msg)
   
@@ -175,6 +197,52 @@ emitted for each batch_denom. This allows for easier indexing.
 
 
 
+<a name="regen/ecocredit/v1alpha1/filter.proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## regen/ecocredit/v1alpha1/filter.proto
+
+
+
+<a name="regen.ecocredit.v1alpha1.BatchFilter"></a>
+
+### BatchFilter
+
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.Condition"></a>
+
+### Condition
+
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.Criteria"></a>
+
+### Criteria
+
+
+
+
+
+
+ <!-- end messages -->
+
+ <!-- end enums -->
+
+ <!-- end HasExtensions -->
+
+ <!-- end services -->
+
+
+
 <a name="regen/ecocredit/v1alpha1/types.proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -255,6 +323,16 @@ This represents the number of credit classes created with that credit type.
 | ----- | ---- | ----- | ----------- |
 | abbreviation | [string](#string) |  | The credit type abbreviation |
 | seq_number | [uint64](#uint64) |  | The sequence number of classes of the credit type |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.Filter"></a>
+
+### Filter
+
 
 
 
@@ -611,6 +689,72 @@ Msg is the regen.ecocredit.v1alpha1 Query service.
 
 
 
+<a name="regen.ecocredit.v1alpha1.CreditAmount"></a>
+
+### CreditAmount
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| batch_denom | [string](#string) |  |  |
+| amount | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgBuy"></a>
+
+### MsgBuy
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| buyer | [string](#string) |  |  |
+| orders | [MsgBuy.Order](#regen.ecocredit.v1alpha1.MsgBuy.Order) | repeated |  |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgBuy.Order"></a>
+
+### MsgBuy.Order
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [BatchFilter](#regen.ecocredit.v1alpha1.BatchFilter) |  |  |
+| amount | [string](#string) |  |  |
+| bid_denom | [string](#string) |  |  |
+| bid_price | [string](#string) |  |  |
+| dont_auto_retire | [bool](#bool) |  |  |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgBuyResponse"></a>
+
+### MsgBuyResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| order_ids | [uint64](#uint64) | repeated |  |
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha1.MsgCancel"></a>
 
 ### MsgCancel
@@ -741,6 +885,65 @@ MsgCreateClassResponse is the Msg/CreateClass response type.
 
 
 
+<a name="regen.ecocredit.v1alpha1.MsgCreatePool"></a>
+
+### MsgCreatePool
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| creator | [string](#string) |  |  |
+| filter | [BatchFilter](#regen.ecocredit.v1alpha1.BatchFilter) |  |  |
+| deposit | [PoolDeposit](#regen.ecocredit.v1alpha1.PoolDeposit) |  |  |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgCreatePoolResponse"></a>
+
+### MsgCreatePoolResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pool_id | [uint64](#uint64) |  |  |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgDepositPool"></a>
+
+### MsgDepositPool
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| depositor | [string](#string) |  |  |
+| pool_id | [uint64](#uint64) |  |  |
+| deposit | [PoolDeposit](#regen.ecocredit.v1alpha1.PoolDeposit) |  |  |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgDepositPoolResponse"></a>
+
+### MsgDepositPoolResponse
+
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha1.MsgRetire"></a>
 
 ### MsgRetire
@@ -778,6 +981,56 @@ RetireCredits specifies a batch and the number of credits being retired.
 
 ### MsgRetireResponse
 MsgRetire is the Msg/Retire response type.
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgSell"></a>
+
+### MsgSell
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| owner | [string](#string) |  |  |
+| orders | [MsgSell.Order](#regen.ecocredit.v1alpha1.MsgSell.Order) | repeated |  |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgSell.Order"></a>
+
+### MsgSell.Order
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| batch_denom | [string](#string) |  |  |
+| amount | [string](#string) |  |  |
+| ask_denom | [string](#string) |  |  |
+| ask_price | [string](#string) |  |  |
+| dont_auto_retire | [bool](#bool) |  |  |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgSellResponse"></a>
+
+### MsgSellResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| order_ids | [uint64](#uint64) | repeated |  |
 
 
 
@@ -830,6 +1083,76 @@ MsgSendResponse is the Msg/Send response type.
 
 
 
+
+<a name="regen.ecocredit.v1alpha1.MsgWithdrawPool"></a>
+
+### MsgWithdrawPool
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| depositor | [string](#string) |  |  |
+| pool_id | [uint64](#uint64) |  |  |
+| buy_coin | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgWithdrawPoolExact"></a>
+
+### MsgWithdrawPoolExact
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| depositor | [string](#string) |  |  |
+| pool_id | [uint64](#uint64) |  |  |
+| credits | [CreditAmount](#regen.ecocredit.v1alpha1.CreditAmount) | repeated |  |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgWithdrawPoolExactResponse"></a>
+
+### MsgWithdrawPoolExactResponse
+
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgWithdrawPoolResponse"></a>
+
+### MsgWithdrawPoolResponse
+
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.PoolDeposit"></a>
+
+### PoolDeposit
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sell_credits | [CreditAmount](#regen.ecocredit.v1alpha1.CreditAmount) | repeated |  |
+| buy_coin | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  |  |
+
+
+
+
+
  <!-- end messages -->
 
  <!-- end enums -->
@@ -849,6 +1172,12 @@ Msg is the regen.ecocredit.v1alpha1 Msg service.
 | Send | [MsgSend](#regen.ecocredit.v1alpha1.MsgSend) | [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse) | Send sends tradable credits from one account to another account. Sent credits can either be tradable or retired on receipt. |
 | Retire | [MsgRetire](#regen.ecocredit.v1alpha1.MsgRetire) | [MsgRetireResponse](#regen.ecocredit.v1alpha1.MsgRetireResponse) | Retire retires a specified number of credits in the holder's account. |
 | Cancel | [MsgCancel](#regen.ecocredit.v1alpha1.MsgCancel) | [MsgCancelResponse](#regen.ecocredit.v1alpha1.MsgCancelResponse) | Cancel removes a number of credits from the holder's account and also deducts them from the tradable supply, effectively cancelling their issuance on Regen Ledger |
+| Sell | [MsgSell](#regen.ecocredit.v1alpha1.MsgSell) | [MsgSellResponse](#regen.ecocredit.v1alpha1.MsgSellResponse) |  |
+| Buy | [MsgBuy](#regen.ecocredit.v1alpha1.MsgBuy) | [MsgBuyResponse](#regen.ecocredit.v1alpha1.MsgBuyResponse) |  |
+| CreatePool | [MsgCreatePool](#regen.ecocredit.v1alpha1.MsgCreatePool) | [MsgCreatePoolResponse](#regen.ecocredit.v1alpha1.MsgCreatePoolResponse) |  |
+| DepositPool | [MsgDepositPool](#regen.ecocredit.v1alpha1.MsgDepositPool) | [MsgDepositPoolResponse](#regen.ecocredit.v1alpha1.MsgDepositPoolResponse) |  |
+| WithdrawPool | [MsgWithdrawPool](#regen.ecocredit.v1alpha1.MsgWithdrawPool) | [MsgWithdrawPoolResponse](#regen.ecocredit.v1alpha1.MsgWithdrawPoolResponse) |  |
+| WithdrawPoolExact | [MsgWithdrawPoolExact](#regen.ecocredit.v1alpha1.MsgWithdrawPoolExact) | [MsgWithdrawPoolExactResponse](#regen.ecocredit.v1alpha1.MsgWithdrawPoolExactResponse) |  |
 
  <!-- end services -->
 

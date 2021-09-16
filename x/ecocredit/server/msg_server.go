@@ -520,3 +520,27 @@ func (s serverImpl) isCreatorAllowListed(allowlist []string, designer sdk.Addres
 	}
 	return false
 }
+
+func (s serverImpl) Sell(ctx context.Context, sell *ecocredit.MsgSell) (*ecocredit.MsgSellResponse, error) {
+	panic("implement me")
+}
+
+func (s serverImpl) Buy(ctx context.Context, buy *ecocredit.MsgBuy) (*ecocredit.MsgBuyResponse, error) {
+	panic("implement me")
+}
+
+func (s serverImpl) CreatePool(ctx context.Context, pool *ecocredit.MsgCreatePool) (*ecocredit.MsgCreatePoolResponse, error) {
+	panic("implement me")
+}
+
+func (s serverImpl) DepositPool(ctx context.Context, pool *ecocredit.MsgDepositPool) (*ecocredit.MsgDepositPoolResponse, error) {
+	panic("implement me")
+}
+
+func (s serverImpl) WithdrawPool(ctx context.Context, pool *ecocredit.MsgWithdrawPool) (*ecocredit.MsgWithdrawPoolResponse, error) {
+	panic("implement me")
+}
+
+func (s serverImpl) WithdrawPoolExact(ctx context.Context, exact *ecocredit.MsgWithdrawPoolExact) (*ecocredit.MsgWithdrawPoolExactResponse, error) {
+	panic("implement me")
+}

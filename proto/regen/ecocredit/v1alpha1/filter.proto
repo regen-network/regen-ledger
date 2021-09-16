@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package regen.ecocredit.v1alpha1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+
+message BatchFilter {
+//  repeated Condition or = 1;
+}
+
+message Condition {
+//  oneof sum {
+//    ExactBatchCondition exact = 1;
+//  }
+}
+
+message Criteria {
+//  google.protobuf.Timestamp start_date = 1;
+//  google.protobuf.Timestamp end_date = 2;
+}
