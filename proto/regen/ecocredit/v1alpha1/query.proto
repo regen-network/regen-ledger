@@ -52,6 +52,21 @@ service Query {
     option (google.api.http).get =
         "/regen/ecocredit/v1alpha1/credit-types";
   }
+
+  // Params queries the ecocredit module parameters.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/params";
+  }
+}
+
+// QueryParamsRequest is the Query/Params request type.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is the Query/Params response type.
+message QueryParamsResponse {
+  // params defines the parameters of the ecocredit module.
+  Params params = 1;
 }
 
 // QueryClassesRequest is the Query/Classes request type.
