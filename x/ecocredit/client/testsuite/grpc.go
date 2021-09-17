@@ -118,16 +118,36 @@ func (s *IntegrationTestSuite) TestGetBatches() {
 		name       string
 		url        string
 		numBatches int
+		expErr     bool
+		errMsg     string
 	}{
 		{
+			"invalid class-id",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches?class_id=%s", val.APIAddress, "abcd"),
+			0,
+			true,
+			"class ID didn't match the format",
+		},
+		{
+			"no batches found",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches?class_id=%s", val.APIAddress, "C100"),
+			0,
+			false,
+			"",
+		},
+		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches", val.APIAddress),
-			3,
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches?class_id=%s", val.APIAddress, "C01"),
+			4,
+			false,
+			"",
 		},
 		{
 			"valid request with pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches?pagination.limit=2", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches?class_id=%s&pagination.limit=2", val.APIAddress, "C01"),
 			2,
+			false,
+			"",
 		},
 	}
 
@@ -141,9 +161,14 @@ func (s *IntegrationTestSuite) TestGetBatches() {
 			var batches ecocredit.QueryBatchesResponse
 			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &batches)
 
-			require.NoError(err)
-			require.NotNil(batches.Batches)
-			require.Len(batches.Batches, tc.numBatches)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(string(resp), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.NotNil(batches.Batches)
+				require.Len(batches.Batches, tc.numBatches)
+			}
 		})
 	}
 }
@@ -152,22 +177,29 @@ func (s *IntegrationTestSuite) TestGetBatch() {
 	val := s.network.Validators[0]
 
 	testCases := []struct {
-		name       string
-		url        string
-		expErr     bool
-		errMsg     string
-		batchDenom string
+		name    string
+		url     string
+		expErr  bool
+		errMsg  string
+		classID string
 	}{
 		{
-			"batch not found",
+			"invalid batch denom",
 			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s", val.APIAddress, "C999"),
+			true,
+			"denomination didn't match the format",
+			"",
+		},
+		{
+			"no batches found",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s", val.APIAddress, "A00-00000000-00000000-000"),
 			true,
 			"not found",
 			"",
 		},
 		{
 			"valid test",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s", val.APIAddress, "C01"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s", val.APIAddress, "C01-20210101-20210201-002"),
 			false,
 			"",
 			"C01",
@@ -186,10 +218,11 @@ func (s *IntegrationTestSuite) TestGetBatch() {
 
 			if tc.expErr {
 				require.Error(err)
+				require.Contains(string(resp), tc.errMsg)
 			} else {
 				require.NoError(err)
 				require.NotNil(batch.Info)
-				require.Contains(batch.Info.BatchDenom, tc.batchDenom)
+				require.Equal(batch.Info.ClassId, tc.classID)
 			}
 		})
 	}
@@ -207,10 +240,105 @@ func (s *IntegrationTestSuite) TestCreditTypes() {
 	err = val.ClientCtx.Codec.UnmarshalJSON(resp, &creditTypes)
 
 	require.NoError(err)
-	require.Equal(creditTypes.String(), `{[name:"carbon" abbreviation:"C" unit:"metric ton CO2 equivalent" precision:6 ]}`)
+	require.Len(creditTypes.CreditTypes, 1)
+	require.Equal(creditTypes.CreditTypes[0].Abbreviation, "C")
+	require.Equal(creditTypes.CreditTypes[0].Name, "carbon")
 }
 
 func (s *IntegrationTestSuite) TestGetBalance() {
-	// val := s.network.Validators[0]
+	val := s.network.Validators[0]
 
+	testCases := []struct {
+		name   string
+		url    string
+		expErr bool
+		errMsg string
+	}{
+		{
+			"invalid batch-denom",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s/balance/%s", val.APIAddress, "abcd", val.Address.String()),
+			true,
+			"denomination didn't match the format",
+		},
+		{
+			"invalid account address",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s/balance/%s", val.APIAddress, "C01-20210101-20210201-001", "abcd"),
+			true,
+			"decoding bech32 failed",
+		},
+		{
+			"valid test",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s/balance/%s", val.APIAddress, "C01-20210101-20210201-002", val.Address.String()),
+			false,
+			"",
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var balance ecocredit.QueryBalanceResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &balance)
+
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(string(resp), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.NotNil(balance)
+				require.Equal(balance.TradableAmount, "100")
+				require.Equal(balance.RetiredAmount, "0.000001")
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestGetSupply() {
+	val := s.network.Validators[0]
+
+	testCases := []struct {
+		name   string
+		url    string
+		expErr bool
+		errMsg string
+	}{
+		{
+			"invalid batch-denom",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s/supply", val.APIAddress, "abcd"),
+			true,
+			"denomination didn't match the format",
+		},
+		{
+			"valid test",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s/supply", val.APIAddress, "C01-20210101-20210201-001"),
+			false,
+			"",
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var supply ecocredit.QuerySupplyResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &supply)
+
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(string(resp), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.NotNil(supply)
+				require.Equal(supply.RetiredSupply, "0.000001")
+				require.Equal(supply.TradableSupply, "100")
+			}
+		})
+	}
 }

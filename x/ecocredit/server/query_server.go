@@ -107,6 +107,10 @@ func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalan
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
+	if err := ecocredit.ValidateDenom(request.BatchDenom); err != nil {
+		return nil, err
+	}
+
 	ctx := types.UnwrapSDKContext(goCtx)
 	acc := request.Account
 	denom := batchDenomT(request.BatchDenom)
@@ -133,6 +137,14 @@ func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalan
 }
 
 func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupplyRequest) (*ecocredit.QuerySupplyResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
+	if err := ecocredit.ValidateDenom(request.BatchDenom); err != nil {
+		return nil, err
+	}
+
 	ctx := types.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
 	denom := batchDenomT(request.BatchDenom)
