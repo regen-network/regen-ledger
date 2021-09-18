@@ -52,10 +52,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 		return nil, err
 	}
 
-	classID, err := ecocredit.FormatClassID(creditType, classSeqNo)
-	if err != nil {
-		return nil, err
-	}
+	classID := ecocredit.FormatClassID(creditType, classSeqNo)
 
 	err = s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
 		ClassId:    classID,
@@ -170,15 +167,11 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 			}
 		}
 
-		sum, err := tradable.Add(retired)
-		if err != nil {
-			return nil, err
-		}
-
 		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
-			Recipient:  recipient,
-			BatchDenom: string(batchDenom),
-			Amount:     sum.String(),
+			Recipient:      recipient,
+			BatchDenom:     string(batchDenom),
+			RetiredAmount:  tradable.String(),
+			TradableAmount: retired.String(),
 		})
 		if err != nil {
 			return nil, err
@@ -306,10 +299,11 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 		}
 
 		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
-			Sender:     sender,
-			Recipient:  recipient,
-			BatchDenom: string(denom),
-			Amount:     sum.String(),
+			Sender:         sender,
+			Recipient:      recipient,
+			BatchDenom:     string(denom),
+			TradableAmount: tradable.String(),
+			RetiredAmount:  retired.String(),
 		})
 		if err != nil {
 			return nil, err
