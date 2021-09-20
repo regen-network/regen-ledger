@@ -886,6 +886,10 @@ func TestMsgUpdateClassMetadata(t *testing.T) {
 			src:    MsgUpdateClassMetadata{Admin: a1.String()},
 			expErr: true,
 		},
+		"invalid: metadata too large": {
+			src:    MsgUpdateClassMetadata{Admin: a1.String(), ClassId: "C01", Metadata: []byte(randomString(256))},
+			expErr: true,
+		},
 	}
 
 	for msg, test := range tests {
@@ -898,4 +902,14 @@ func TestMsgUpdateClassMetadata(t *testing.T) {
 			}
 		})
 	}
+}
+
+func randomString(n int) string {
+	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
 }

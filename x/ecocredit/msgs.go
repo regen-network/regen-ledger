@@ -353,6 +353,10 @@ func (m *MsgUpdateClassMetadata) ValidateBasic() error {
 		return err
 	}
 
+	if len(m.Metadata) > MaxMetadataLength {
+		return ErrMaxLimit.Wrap("credit class metadata")
+	}
+
 	return nil
 }
 

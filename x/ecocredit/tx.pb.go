@@ -1305,7 +1305,7 @@ type MsgClient interface {
 	UpdateClassAdmin(ctx context.Context, in *MsgUpdateClassAdmin, opts ...grpc.CallOption) (*MsgUpdateClassAdminResponse, error)
 	// UpdateClassIssuers updates the credit class issuer list
 	UpdateClassIssuers(ctx context.Context, in *MsgUpdateClassIssuers, opts ...grpc.CallOption) (*MsgUpdateClassIssuersResponse, error)
-	// UpdateClassMetadata updates the credit class meta data
+	// UpdateClassMetadata updates the credit class metadata
 	UpdateClassMetadata(ctx context.Context, in *MsgUpdateClassMetadata, opts ...grpc.CallOption) (*MsgUpdateClassMetadataResponse, error)
 }
 
@@ -1411,7 +1411,7 @@ type MsgServer interface {
 	UpdateClassAdmin(context.Context, *MsgUpdateClassAdmin) (*MsgUpdateClassAdminResponse, error)
 	// UpdateClassIssuers updates the credit class issuer list
 	UpdateClassIssuers(context.Context, *MsgUpdateClassIssuers) (*MsgUpdateClassIssuersResponse, error)
-	// UpdateClassMetadata updates the credit class meta data
+	// UpdateClassMetadata updates the credit class metadata
 	UpdateClassMetadata(context.Context, *MsgUpdateClassMetadata) (*MsgUpdateClassMetadataResponse, error)
 }
 

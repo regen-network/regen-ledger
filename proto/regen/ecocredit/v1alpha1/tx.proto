@@ -37,7 +37,7 @@ service Msg {
   // UpdateClassIssuers updates the credit class issuer list
   rpc UpdateClassIssuers(MsgUpdateClassIssuers) returns (MsgUpdateClassIssuersResponse);
 
-  // UpdateClassMetadata updates the credit class meta data
+  // UpdateClassMetadata updates the credit class metadata
   rpc UpdateClassMetadata(MsgUpdateClassMetadata) returns (MsgUpdateClassMetadataResponse);
 }
 
