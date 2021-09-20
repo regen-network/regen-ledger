@@ -23,8 +23,9 @@ const (
 type serverImpl struct {
 	storeKey sdk.StoreKey
 
-	paramSpace paramtypes.Subspace
-	bankKeeper ecocredit.BankKeeper
+	paramSpace    paramtypes.Subspace
+	bankKeeper    ecocredit.BankKeeper
+	accountKeeper ecocredit.AccountKeeper
 
 	// Store sequence numbers per credit type
 	creditTypeSeqTable orm.PrimaryKeyTable
@@ -33,11 +34,13 @@ type serverImpl struct {
 	batchInfoTable orm.PrimaryKeyTable
 }
 
-func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace, bankKeeper ecocredit.BankKeeper, cdc codec.Codec) serverImpl {
+func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
+	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, cdc codec.Codec) serverImpl {
 	s := serverImpl{
-		storeKey:   storeKey,
-		paramSpace: paramSpace,
-		bankKeeper: bankKeeper,
+		storeKey:      storeKey,
+		paramSpace:    paramSpace,
+		bankKeeper:    bankKeeper,
+		accountKeeper: accountKeeper,
 	}
 
 	creditTypeSeqTable, err := orm.NewPrimaryKeyTableBuilder(CreditTypeSeqTablePrefix, storeKey, &ecocredit.CreditTypeSeq{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
@@ -61,10 +64,12 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace, bankKeeper
 	return s
 }
 
-func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Subspace, bankKeeper ecocredit.BankKeeper) {
-	impl := newServer(configurator.ModuleKey(), paramSpace, bankKeeper, configurator.Marshaler())
+func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Subspace, accountKeeper ecocredit.AccountKeeper,
+	bankKeeper ecocredit.BankKeeper) {
+	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, configurator.Marshaler())
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
 	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
+	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
 }

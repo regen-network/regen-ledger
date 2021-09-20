@@ -413,24 +413,28 @@ func (s *IntegrationTestSuite) TestScenario() {
 		expRetired         string
 		expTotalAmount     string
 		expAmountCancelled string
+		expErrMessage      string
 	}{
 		{
-			name:      "can't cancel more credits than are tradable",
-			holder:    addr4,
-			toCancel:  "101",
-			expectErr: true,
+			name:          "can't cancel more credits than are tradable",
+			holder:        addr4,
+			toCancel:      "101",
+			expectErr:     true,
+			expErrMessage: "insufficient credit balance",
 		},
 		{
-			name:      "can't cancel with a higher precision than the credit type",
-			holder:    addr4,
-			toCancel:  "0.1234567",
-			expectErr: true,
+			name:          "can't cancel with a higher precision than the credit type",
+			holder:        addr4,
+			toCancel:      "0.1234567",
+			expectErr:     true,
+			expErrMessage: "exceeds maximum decimal places",
 		},
 		{
-			name:      "can't cancel no credits",
-			holder:    addr4,
-			toCancel:  "0",
-			expectErr: true,
+			name:          "can't cancel no credits",
+			holder:        addr4,
+			toCancel:      "0",
+			expectErr:     true,
+			expErrMessage: "expected a positive decimal",
 		},
 		{
 			name:               "can cancel a small amount of credits",
@@ -455,10 +459,11 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expAmountCancelled: "100.0000",
 		},
 		{
-			name:      "can't cancel anymore credits",
-			holder:    addr4,
-			toCancel:  "1",
-			expectErr: true,
+			name:          "can't cancel anymore credits",
+			holder:        addr4,
+			toCancel:      "1",
+			expectErr:     true,
+			expErrMessage: "insufficient credit balance",
 		},
 		{
 			name:               "can cancel from account with positive retired balance",
@@ -487,6 +492,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 			if tc.expectErr {
 				s.Require().Error(err)
+				s.Require().Contains(err.Error(), tc.expErrMessage)
 			} else {
 				s.Require().NoError(err)
 
@@ -527,42 +533,49 @@ func (s *IntegrationTestSuite) TestScenario() {
 		expRetired         string
 		expTradableSupply  string
 		expRetiredSupply   string
+		expErrMessage      string
 	}{
 		{
 			name:               "cannot retire more credits than are tradable",
 			toRetire:           "10.371",
 			retirementLocation: "AF",
 			expectErr:          true,
+			expErrMessage:      "insufficient credit balance",
 		},
 		{
 			name:               "can't use more precision than the credit type allows (6)",
 			toRetire:           "10.00000001",
 			retirementLocation: "AF",
 			expectErr:          true,
+			expErrMessage:      "exceeds maximum decimal places",
 		},
 		{
 			name:               "can't retire to an invalid country",
 			toRetire:           "0.0001",
 			retirementLocation: "ZZZ",
 			expectErr:          true,
+			expErrMessage:      "Invalid location",
 		},
 		{
 			name:               "can't retire to an invalid region",
 			toRetire:           "0.0001",
 			retirementLocation: "AF-ZZZZ",
 			expectErr:          true,
+			expErrMessage:      "Invalid location",
 		},
 		{
 			name:               "can't retire to an invalid postal code",
 			toRetire:           "0.0001",
 			retirementLocation: "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
 			expectErr:          true,
+			expErrMessage:      "Invalid location",
 		},
 		{
 			name:               "can't retire without a location",
 			toRetire:           "0.0001",
 			retirementLocation: "",
 			expectErr:          true,
+			expErrMessage:      "Invalid location",
 		},
 		{
 			name:               "can retire a small amount of credits",
@@ -595,9 +608,11 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expRetiredSupply:   "10014.11499",
 		},
 		{
-			name:      "can't retire any more credits",
-			toRetire:  "1",
-			expectErr: true,
+			name:               "can't retire any more credits",
+			toRetire:           "1",
+			retirementLocation: "AF-BDS",
+			expectErr:          true,
+			expErrMessage:      "insufficient credit balance",
 		},
 	}
 
@@ -617,6 +632,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 			if tc.expectErr {
 				s.Require().Error(err)
+				s.Require().Contains(err.Error(), tc.expErrMessage)
 			} else {
 				s.Require().NoError(err)
 
@@ -652,6 +668,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 		expRetiredRecipient  string
 		expTradableSupply    string
 		expRetiredSupply     string
+		expErrMessage        string
 	}{
 		{
 			name:               "can't send an amount with more decimal places than allowed precision (6)",
@@ -659,6 +676,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:        "10.123456789",
 			retirementLocation: "AF",
 			expectErr:          true,
+			expErrMessage:      "exceeds maximum decimal places",
 		},
 		{
 			name:               "can't send more tradable than is tradable",
@@ -666,6 +684,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:        "10",
 			retirementLocation: "AF",
 			expectErr:          true,
+			expErrMessage:      "insufficient credit balance",
 		},
 		{
 			name:               "can't send more retired than is tradable",
@@ -673,6 +692,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:        "2000",
 			retirementLocation: "AF",
 			expectErr:          true,
+			expErrMessage:      "insufficient credit balance",
 		},
 		{
 			name:               "can't send to an invalid country",
@@ -680,6 +700,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:        "20",
 			retirementLocation: "ZZZ",
 			expectErr:          true,
+			expErrMessage:      "Invalid location",
 		},
 		{
 			name:               "can't send to an invalid region",
@@ -687,6 +708,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:        "20",
 			retirementLocation: "AF-ZZZZ",
 			expectErr:          true,
+			expErrMessage:      "Invalid location",
 		},
 		{
 			name:               "can't send to an invalid postal code",
@@ -694,6 +716,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 			sendRetired:        "20",
 			retirementLocation: "AF-BDS 0123456789012345678901234567890123456789012345678901234567890123456789",
 			expectErr:          true,
+			expErrMessage:      "Invalid location",
 		},
 		{
 			name:                 "can send some",
@@ -735,10 +758,12 @@ func (s *IntegrationTestSuite) TestScenario() {
 			expRetiredSupply:     "10934.11499",
 		},
 		{
-			name:         "can't send any more",
-			sendTradable: "1",
-			sendRetired:  "1",
-			expectErr:    true,
+			name:               "can't send any more",
+			sendTradable:       "1",
+			sendRetired:        "1",
+			expectErr:          true,
+			retirementLocation: "AF",
+			expErrMessage:      "insufficient credit balance",
 		},
 	}
 
@@ -760,6 +785,7 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 			if tc.expectErr {
 				s.Require().Error(err)
+				s.Require().Contains(err.Error(), tc.expErrMessage)
 			} else {
 				s.Require().NoError(err)
 
