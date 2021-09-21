@@ -31,7 +31,6 @@ wget "https://raw.githubusercontent.com/cosmos/cosmos-sdk/${SDK_VERSION}/client/
 swagger-combine ./client/docs/config.json -o ./tmp-swagger-gen/swagger.yaml -f yaml --continueOnConflictingPaths true --includeDefinitions true
 
 # move generated swagger file to swagger-ui directory
-rm -f ./client/docs/swagger-ui/swagger.yaml
 cp ./tmp-swagger-gen/swagger.yaml ./client/docs/swagger-ui/
 
 # clean swagger files

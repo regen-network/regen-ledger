@@ -1327,6 +1327,111 @@ paths:
                       format: byte
       tags:
         - Query
+  /regen/ecocredit/v1alpha1/params:
+    get:
+      summary: Params queries the ecocredit module parameters.
+      operationId: Ecocredit/Params
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                description: params defines the parameters of the ecocredit module.
+                type: object
+                properties:
+                  credit_class_fee:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
+
+
+                        NOTE: The amount field is an Int which implements the
+                        custom method
+
+                        signatures required by gogoproto.
+                    title: >-
+                      credit_class_fee is the fixed fee charged on creation of a
+                      new credit class
+                  allowed_class_creators:
+                    type: array
+                    items:
+                      type: string
+                    title: >-
+                      allowed_class_creators is an allowlist defining the
+                      addresses with
+
+                      the required permissions to create credit classes
+                  allowlist_enabled:
+                    type: boolean
+                    format: boolean
+                    title: >-
+                      allowlist_enabled is a param that enables/disables the
+                      allowlist for credit
+
+                      creation
+                  credit_types:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          title: 'the type of credit (e.g. carbon, biodiversity, etc)'
+                        abbreviation:
+                          type: string
+                          description: >-
+                            abbreviation is a 1-3 character uppercase
+                            abbreviation of the CreditType
+
+                            name, used in batch denominations within the
+                            CreditType. It must be unique.
+                        unit:
+                          type: string
+                          title: 'the measurement unit (e.g. kg, ton, etc)'
+                        precision:
+                          type: integer
+                          format: int64
+                          title: the decimal precision
+                      title: >-
+                        CreditType defines the measurement unit/precision of a
+                        certain credit type
+
+                        (e.g. carbon, biodiversity...)
+                    title: credit_types is a list of definitions for credit types
+            description: QueryParamsResponse is the Query/Params response type.
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      tags:
+        - Query
   '/regen/group/v1alpha1/admins/{admin}/accounts':
     get:
       summary: GroupsByAdmin queries group accounts by admin address.
@@ -29898,6 +30003,18 @@ definitions:
         format: date-time
         title: timestamp is the time at which the data was signed
     title: SignerEntry is a signer entry wrapping a signer address and timestamp
+  cosmos.base.v1beta1.Coin:
+    type: object
+    properties:
+      denom:
+        type: string
+      amount:
+        type: string
+    description: |-
+      Coin defines a token with a denomination and an amount.
+
+      NOTE: The amount field is an Int which implements the custom method
+      signatures required by gogoproto.
   regen.ecocredit.v1alpha1.BatchInfo:
     type: object
     properties:
@@ -30043,6 +30160,73 @@ definitions:
     title: |-
       CreditType defines the measurement unit/precision of a certain credit type
       (e.g. carbon, biodiversity...)
+  regen.ecocredit.v1alpha1.Params:
+    type: object
+    properties:
+      credit_class_fee:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
+        title: >-
+          credit_class_fee is the fixed fee charged on creation of a new credit
+          class
+      allowed_class_creators:
+        type: array
+        items:
+          type: string
+        title: |-
+          allowed_class_creators is an allowlist defining the addresses with
+          the required permissions to create credit classes
+      allowlist_enabled:
+        type: boolean
+        format: boolean
+        title: >-
+          allowlist_enabled is a param that enables/disables the allowlist for
+          credit
+
+          creation
+      credit_types:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+              title: 'the type of credit (e.g. carbon, biodiversity, etc)'
+            abbreviation:
+              type: string
+              description: >-
+                abbreviation is a 1-3 character uppercase abbreviation of the
+                CreditType
+
+                name, used in batch denominations within the CreditType. It must
+                be unique.
+            unit:
+              type: string
+              title: 'the measurement unit (e.g. kg, ton, etc)'
+            precision:
+              type: integer
+              format: int64
+              title: the decimal precision
+          title: >-
+            CreditType defines the measurement unit/precision of a certain
+            credit type
+
+            (e.g. carbon, biodiversity...)
+        title: credit_types is a list of definitions for credit types
+    description: |-
+      Params defines the updatable global parameters of the ecocredit module for
+      use with the x/params module.
   regen.ecocredit.v1alpha1.QueryBalanceResponse:
     type: object
     properties:
@@ -30398,6 +30582,78 @@ definitions:
             (e.g. carbon, biodiversity...)
         title: list of credit types
     title: QueryCreditTypesRequest is the Query/Credit_Types response type
+  regen.ecocredit.v1alpha1.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        description: params defines the parameters of the ecocredit module.
+        type: object
+        properties:
+          credit_class_fee:
+            type: array
+            items:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
+
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
+            title: >-
+              credit_class_fee is the fixed fee charged on creation of a new
+              credit class
+          allowed_class_creators:
+            type: array
+            items:
+              type: string
+            title: |-
+              allowed_class_creators is an allowlist defining the addresses with
+              the required permissions to create credit classes
+          allowlist_enabled:
+            type: boolean
+            format: boolean
+            title: >-
+              allowlist_enabled is a param that enables/disables the allowlist
+              for credit
+
+              creation
+          credit_types:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                  title: 'the type of credit (e.g. carbon, biodiversity, etc)'
+                abbreviation:
+                  type: string
+                  description: >-
+                    abbreviation is a 1-3 character uppercase abbreviation of
+                    the CreditType
+
+                    name, used in batch denominations within the CreditType. It
+                    must be unique.
+                unit:
+                  type: string
+                  title: 'the measurement unit (e.g. kg, ton, etc)'
+                precision:
+                  type: integer
+                  format: int64
+                  title: the decimal precision
+              title: >-
+                CreditType defines the measurement unit/precision of a certain
+                credit type
+
+                (e.g. carbon, biodiversity...)
+            title: credit_types is a list of definitions for credit types
+    description: QueryParamsResponse is the Query/Params response type.
   regen.ecocredit.v1alpha1.QuerySupplyResponse:
     type: object
     properties:
@@ -34479,18 +34735,6 @@ definitions:
     description: |-
       SendEnabled maps coin denom to a send_enabled status (whether a denom is
       sendable).
-  cosmos.base.v1beta1.Coin:
-    type: object
-    properties:
-      denom:
-        type: string
-      amount:
-        type: string
-    description: |-
-      Coin defines a token with a denomination and an amount.
-
-      NOTE: The amount field is an Int which implements the custom method
-      signatures required by gogoproto.
   cosmos.base.tendermint.v1beta1.GetBlockByHeightResponse:
     type: object
     properties:
