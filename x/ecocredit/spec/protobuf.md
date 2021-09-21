@@ -36,6 +36,8 @@
     - [QueryClassesResponse](#regen.ecocredit.v1alpha1.QueryClassesResponse)
     - [QueryCreditTypesRequest](#regen.ecocredit.v1alpha1.QueryCreditTypesRequest)
     - [QueryCreditTypesResponse](#regen.ecocredit.v1alpha1.QueryCreditTypesResponse)
+    - [QueryParamsRequest](#regen.ecocredit.v1alpha1.QueryParamsRequest)
+    - [QueryParamsResponse](#regen.ecocredit.v1alpha1.QueryParamsResponse)
     - [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest)
     - [QuerySupplyResponse](#regen.ecocredit.v1alpha1.QuerySupplyResponse)
   
@@ -549,6 +551,31 @@ QueryCreditTypesRequest is the Query/Credit_Types response type
 
 
 
+<a name="regen.ecocredit.v1alpha1.QueryParamsRequest"></a>
+
+### QueryParamsRequest
+QueryParamsRequest is the Query/Params request type.
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QueryParamsResponse"></a>
+
+### QueryParamsResponse
+QueryParamsResponse is the Query/Params response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| params | [Params](#regen.ecocredit.v1alpha1.Params) |  | params defines the parameters of the ecocredit module. |
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha1.QuerySupplyRequest"></a>
 
 ### QuerySupplyRequest
@@ -600,6 +627,7 @@ Msg is the regen.ecocredit.v1alpha1 Query service.
 | Balance | [QueryBalanceRequest](#regen.ecocredit.v1alpha1.QueryBalanceRequest) | [QueryBalanceResponse](#regen.ecocredit.v1alpha1.QueryBalanceResponse) | Balance queries the balance (both tradable and retired) of a given credit batch for a given account. |
 | Supply | [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest) | [QuerySupplyResponse](#regen.ecocredit.v1alpha1.QuerySupplyResponse) | Supply queries the tradable and retired supply of a credit batch. |
 | CreditTypes | [QueryCreditTypesRequest](#regen.ecocredit.v1alpha1.QueryCreditTypesRequest) | [QueryCreditTypesResponse](#regen.ecocredit.v1alpha1.QueryCreditTypesResponse) | CreditTypes returns the list of allowed types that credit classes can have. See Types/CreditType for more details. |
+| Params | [QueryParamsRequest](#regen.ecocredit.v1alpha1.QueryParamsRequest) | [QueryParamsResponse](#regen.ecocredit.v1alpha1.QueryParamsResponse) | Params queries the ecocredit module parameters. |
 
  <!-- end services -->
 
