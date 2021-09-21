@@ -36,8 +36,8 @@ func TxCmd(name string) *cobra.Command {
 		TxRetireCmd(),
 		TxCancelCmd(),
 		TxUpdateClassMetadataCmd(),
-		TxUpdateClassIssuers(),
-		TxUpdateClassAdmin(),
+		TxUpdateClassIssuersCmd(),
+		TxUpdateClassAdminCmd(),
 	)
 	return cmd
 }
@@ -407,7 +407,7 @@ Parameters:
 	})
 }
 
-func TxUpdateClassAdmin() *cobra.Command {
+func TxUpdateClassAdminCmd() *cobra.Command {
 	return txflags(&cobra.Command{
 		Use:   "update-metadata [class-id] [admin]",
 		Short: "Updates the admin for a specific credit class",
@@ -447,7 +447,7 @@ Parameters:
 	})
 }
 
-func TxUpdateClassIssuers() *cobra.Command {
+func TxUpdateClassIssuersCmd() *cobra.Command {
 	return txflags(&cobra.Command{
 		Use:   "update-issuers [class-id] [issuers]",
 		Short: "Update the list of issuers for a specific credit class",

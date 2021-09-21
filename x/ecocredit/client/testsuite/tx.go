@@ -26,8 +26,9 @@ type IntegrationTestSuite struct {
 	cfg     network.Config
 	network *network.Network
 
-	classInfo *ecocredit.ClassInfo
-	batchInfo *ecocredit.BatchInfo
+	testAccount sdk.AccAddress
+	classInfo   *ecocredit.ClassInfo
+	batchInfo   *ecocredit.BatchInfo
 }
 
 const (
@@ -65,6 +66,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	info, _, err := val.ClientCtx.Keyring.NewMnemonic("NewValidator0", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
 	s.Require().NoError(err)
 
+	_, a1pub, a1 := testdata.KeyTestPubAddr()
+	val.ClientCtx.Keyring.SavePubKey("throwaway", a1pub, hd.Secp256k1Type)
+
 	account := sdk.AccAddress(info.GetPubKey().Address())
 	_, err = banktestutil.MsgSendExec(
 		val.ClientCtx,
@@ -75,6 +79,17 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	)
 	s.Require().NoError(err)
+
+	_, err = banktestutil.MsgSendExec(
+		val.ClientCtx,
+		val.Address,
+		a1,
+		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	)
+	s.Require().NoError(err)
+	s.testAccount = a1
 
 	var commonFlags = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -1147,24 +1162,28 @@ func (s *IntegrationTestSuite) TestTxUpdateAdmin() {
 	clientCtx := val0.ClientCtx
 
 	testCases := []struct {
-		name   string
-		args   []string
-		expErr bool
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
 	}{
 		{
-			name:   "invalid request: not enough args",
-			args:   []string{},
-			expErr: true,
+			name:      "invalid request: not enough args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "accepts 2 arg(s), received 0",
 		},
 		{
-			name:   "invalid request: bad id",
-			args:   []string{"not-an-id", a1.String()},
-			expErr: true,
+			name:      "invalid request: no id",
+			args:      []string{"", a1.String()},
+			expErr:    true,
+			expErrMsg: "class-id is required",
 		},
 		{
-			name:   "invalid request: not the admin",
-			args:   append([]string{classId, a1.String(), makeFlagFrom(a1.String())}, s.commonTxFlags()...),
-			expErr: true,
+			name:      "invalid request: no admin address",
+			args:      append([]string{classId, "", makeFlagFrom(a1.String())}, s.commonTxFlags()...),
+			expErr:    true,
+			expErrMsg: "new admin address is required",
 		},
 		{
 			name:   "valid request",
@@ -1175,7 +1194,7 @@ func (s *IntegrationTestSuite) TestTxUpdateAdmin() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.TxUpdateClassAdmin()
+			cmd := client.TxUpdateClassAdminCmd()
 			_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
@@ -1206,24 +1225,34 @@ func (s *IntegrationTestSuite) TestTxUpdateMetadata() {
 	clientCtx := val0.ClientCtx
 
 	testCases := []struct {
-		name   string
-		args   []string
-		expErr bool
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
 	}{
 		{
-			name:   "invalid request: not enough args",
-			args:   []string{},
-			expErr: true,
+			name:      "invalid request: not enough args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "accepts 2 arg(s), received 0",
 		},
 		{
-			name:   "invalid request: bad id",
-			args:   []string{"not-an-id", a1.String()},
-			expErr: true,
+			name:      "invalid request: bad id",
+			args:      []string{"", a1.String()},
+			expErr:    true,
+			expErrMsg: "class-id is required",
 		},
 		{
-			name:   "invalid request: not the admin",
-			args:   append([]string{classId, a1.String(), makeFlagFrom(a1.String())}, s.commonTxFlags()...),
-			expErr: true,
+			name:      "invalid request: no metadata",
+			args:      append([]string{classId, "", makeFlagFrom(a1.String())}, s.commonTxFlags()...),
+			expErr:    true,
+			expErrMsg: "base64_metadata is required",
+		},
+		{
+			name:      "invalid request: bad metadata",
+			args:      append([]string{classId, "test", makeFlagFrom(a1.String())}, s.commonTxFlags()...),
+			expErr:    true,
+			expErrMsg: "metadata is malformed, proper base64 string is required",
 		},
 		{
 			name:   "valid request",
@@ -1260,31 +1289,34 @@ func (s *IntegrationTestSuite) TestTxUpdateMetadata() {
 
 func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 	const classId = "C03"
-	_, _, a1 := testdata.KeyTestPubAddr()
 	_, _, a2 := testdata.KeyTestPubAddr()
-	newIssuers := []string{a1.String(), a2.String()}
+	newIssuers := []string{s.testAccount.String(), a2.String()}
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
 
 	testCases := []struct {
-		name   string
-		args   []string
-		expErr bool
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
 	}{
 		{
-			name:   "invalid request: not enough args",
-			args:   []string{},
-			expErr: true,
+			name:      "invalid request: not enough args",
+			args:      append([]string{makeFlagFrom(s.testAccount.String())}, s.commonTxFlags()...),
+			expErr:    true,
+			expErrMsg: "accepts 2 arg(s), received 0",
 		},
 		{
-			name:   "invalid request: bad id",
-			args:   []string{"not-an-id", a1.String()},
-			expErr: true,
+			name:      "invalid request: no id",
+			args:      append([]string{"", s.testAccount.String(), makeFlagFrom(val0.Address.String())}, s.commonTxFlags()...),
+			expErr:    true,
+			expErrMsg: "class-id is required",
 		},
 		{
-			name:   "invalid request: not the admin",
-			args:   append([]string{classId, a1.String(), makeFlagFrom(a1.String())}, s.commonTxFlags()...),
-			expErr: true,
+			name:      "invalid request: bad issuer addresses",
+			args:      append([]string{classId, "hello,world", makeFlagFrom(s.testAccount.String())}, s.commonTxFlags()...),
+			expErr:    true,
+			expErrMsg: "invalid address",
 		},
 		{
 			name:   "valid request",
@@ -1295,10 +1327,11 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.TxUpdateClassIssuers()
+			cmd := client.TxUpdateClassIssuersCmd()
 			_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
+				s.Require().Contains(err.Error(), tc.expErrMsg)
 			} else {
 				s.Require().NoError(err)
 
