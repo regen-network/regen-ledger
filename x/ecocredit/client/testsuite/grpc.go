@@ -123,28 +123,28 @@ func (s *IntegrationTestSuite) TestGetBatches() {
 	}{
 		{
 			"invalid class-id",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches?class_id=%s", val.APIAddress, "abcd"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/classes/%s/batches", val.APIAddress, "abcd"),
 			0,
 			true,
 			"class ID didn't match the format",
 		},
 		{
 			"no batches found",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches?class_id=%s", val.APIAddress, "C100"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/classes/%s/batches", val.APIAddress, "C100"),
 			0,
 			false,
 			"",
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches?class_id=%s", val.APIAddress, "C01"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/classes/%s/batches", val.APIAddress, "C01"),
 			4,
 			false,
 			"",
 		},
 		{
 			"valid request with pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches?class_id=%s&pagination.limit=2", val.APIAddress, "C01"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/classes/%sbatches?pagination.limit=2", val.APIAddress, "C01"),
 			2,
 			false,
 			"",

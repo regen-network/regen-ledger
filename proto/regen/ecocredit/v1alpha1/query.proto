@@ -24,7 +24,7 @@ service Query {
   // Batches queries for all batches in the given credit class with pagination.
   rpc Batches(QueryBatchesRequest) returns (QueryBatchesResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/batches";
+        "/regen/ecocredit/v1alpha1/classes/{class_id}/batches";
   }
 
   // BatchInfo queries for information on a credit batch.
