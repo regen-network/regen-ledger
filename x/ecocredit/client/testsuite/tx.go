@@ -1,22 +1,23 @@
 package testsuite
 
 import (
+	"encoding/base64"
 	"fmt"
-	"strings"
-
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/testutil"
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
-	proto "github.com/gogo/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
+	"strings"
 )
 
 type IntegrationTestSuite struct {
@@ -1133,6 +1134,185 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 				var res sdk.TxResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(uint32(0), res.Code)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestTxUpdateAdmin() {
+	// use this classId as to not corrupt other tests
+	const classId = "C02"
+	_, _, a1 := testdata.KeyTestPubAddr()
+	val0 := s.network.Validators[0]
+	clientCtx := val0.ClientCtx
+
+	testCases := []struct {
+		name   string
+		args   []string
+		expErr bool
+	}{
+		{
+			name:   "invalid request: not enough args",
+			args:   []string{},
+			expErr: true,
+		},
+		{
+			name:   "invalid request: bad id",
+			args:   []string{"not-an-id", a1.String()},
+			expErr: true,
+		},
+		{
+			name:   "invalid request: not the admin",
+			args:   append([]string{classId, a1.String(), makeFlagFrom(a1.String())}, s.commonTxFlags()...),
+			expErr: true,
+		},
+		{
+			name:   "valid request",
+			args:   append([]string{classId, a1.String(), makeFlagFrom(val0.Address.String())}, s.commonTxFlags()...),
+			expErr: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.TxUpdateClassAdmin()
+			_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+			} else {
+				s.Require().NoError(err)
+
+				// query the class info
+				query := client.QueryClassInfoCmd()
+				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{classId, flagOutputJSON})
+				s.Require().NoError(err, out.String())
+				var res ecocredit.QueryClassInfoResponse
+				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
+				s.Require().NoError(err)
+
+				// check the admin has been changed
+				s.Require().Equal(res.Info.Admin, tc.args[1])
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestTxUpdateMetadata() {
+	// use C03 here as C02 will be corrupted by the admin change test
+	const classId = "C03"
+	newMetaData := base64.StdEncoding.EncodeToString([]byte("hello"))
+	_, _, a1 := testdata.KeyTestPubAddr()
+	val0 := s.network.Validators[0]
+	clientCtx := val0.ClientCtx
+
+	testCases := []struct {
+		name   string
+		args   []string
+		expErr bool
+	}{
+		{
+			name:   "invalid request: not enough args",
+			args:   []string{},
+			expErr: true,
+		},
+		{
+			name:   "invalid request: bad id",
+			args:   []string{"not-an-id", a1.String()},
+			expErr: true,
+		},
+		{
+			name:   "invalid request: not the admin",
+			args:   append([]string{classId, a1.String(), makeFlagFrom(a1.String())}, s.commonTxFlags()...),
+			expErr: true,
+		},
+		{
+			name:   "valid request",
+			args:   append([]string{classId, newMetaData, makeFlagFrom(val0.Address.String())}, s.commonTxFlags()...),
+			expErr: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.TxUpdateClassMetadataCmd()
+			_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+			} else {
+				s.Require().NoError(err)
+
+				// query the credit class info
+				query := client.QueryClassInfoCmd()
+				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{classId, flagOutputJSON})
+				s.Require().NoError(err, out.String())
+				var res ecocredit.QueryClassInfoResponse
+				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
+				s.Require().NoError(err)
+
+				// check metadata changed
+				b, err := base64.StdEncoding.DecodeString(newMetaData)
+				s.Require().NoError(err)
+				s.Require().Equal(res.Info.Metadata, b)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
+	const classId = "C03"
+	_, _, a1 := testdata.KeyTestPubAddr()
+	_, _, a2 := testdata.KeyTestPubAddr()
+	newIssuers := []string{a1.String(), a2.String()}
+	val0 := s.network.Validators[0]
+	clientCtx := val0.ClientCtx
+
+	testCases := []struct {
+		name   string
+		args   []string
+		expErr bool
+	}{
+		{
+			name:   "invalid request: not enough args",
+			args:   []string{},
+			expErr: true,
+		},
+		{
+			name:   "invalid request: bad id",
+			args:   []string{"not-an-id", a1.String()},
+			expErr: true,
+		},
+		{
+			name:   "invalid request: not the admin",
+			args:   append([]string{classId, a1.String(), makeFlagFrom(a1.String())}, s.commonTxFlags()...),
+			expErr: true,
+		},
+		{
+			name:   "valid request",
+			args:   append([]string{classId, fmt.Sprintf("%s,%s", newIssuers[0], newIssuers[1]), makeFlagFrom(val0.Address.String())}, s.commonTxFlags()...),
+			expErr: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.TxUpdateClassIssuers()
+			_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+			} else {
+				s.Require().NoError(err)
+
+				// query the credit class info
+				query := client.QueryClassInfoCmd()
+				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{classId, flagOutputJSON})
+				s.Require().NoError(err, out.String())
+				var res ecocredit.QueryClassInfoResponse
+				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
+				s.Require().NoError(err)
+
+				// check issuers list was changed
+				s.Require().NoError(err)
+				s.Require().Equal(res.Info.Issuers, newIssuers)
 			}
 		})
 	}
