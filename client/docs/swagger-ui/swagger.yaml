@@ -573,7 +573,200 @@ paths:
           format: boolean
       tags:
         - Query
-  '/regen/ecocredit/v1alpha1/batch_info/{batch_denom}':
+  /regen/ecocredit/v1alpha1/batches:
+    get:
+      summary: >-
+        Batches queries for all batches in the given credit class with
+        pagination.
+      operationId: Batches
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              batches:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    class_id:
+                      type: string
+                      description: class_id is the unique ID of credit class.
+                    batch_denom:
+                      type: string
+                      description: batch_denom is the unique ID of credit batch.
+                    issuer:
+                      type: string
+                      description: issuer is the issuer of the credit batch.
+                    total_amount:
+                      type: string
+                      description: >-
+                        total_amount is the total number of active credits in
+                        the credit batch.
+
+                        Some of the issued credits may be cancelled and will be
+                        removed from
+
+                        total_amount and tracked in amount_cancelled.
+                        total_amount and
+
+                        amount_cancelled will always sum to the original amount
+                        of credits that
+
+                        were issued.
+                    metadata:
+                      type: string
+                      format: byte
+                      description: >-
+                        metadata is any arbitrary metadata attached to the
+                        credit batch.
+                    amount_cancelled:
+                      type: string
+                      description: >-
+                        amount_cancelled is the number of credits in the batch
+                        that have been
+
+                        cancelled, effectively undoing there issuance. The sum
+                        of total_amount and
+
+                        amount_cancelled will always sum to the original amount
+                        of credits that
+
+                        were issued.
+                    start_date:
+                      type: string
+                      format: date-time
+                      description: >-
+                        start_date is the beginning of the period during which
+                        this credit batch
+
+                        was quantified and verified.
+                    end_date:
+                      type: string
+                      format: date-time
+                      description: >-
+                        end_date is the end of the period during which this
+                        credit batch was
+
+                        quantified and verified.
+                    project_location:
+                      type: string
+                      description: >-
+                        project_location is the location of the project backing
+                        the credits in this
+
+                        batch. Full documentation can be found in
+                        MsgCreateBatch.project_location.
+                  description: >-
+                    BatchInfo represents the high-level on-chain information for
+                    a credit batch.
+                description: batches are the fetched credit batches within the class.
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    title: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: QueryBatchesResponse is the Query/Batches response type.
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: class_id
+          description: class_id is the unique ID of the credit class to query.
+          in: query
+          required: false
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+          format: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+          in: query
+          required: false
+          type: boolean
+          format: boolean
+      tags:
+        - Query
+  '/regen/ecocredit/v1alpha1/batches/{batch_denom}':
     get:
       summary: BatchInfo queries for information on a credit batch.
       operationId: BatchInfo
@@ -584,7 +777,6 @@ paths:
             type: object
             properties:
               info:
-                description: info is the BatchInfo for the credit batch.
                 type: object
                 properties:
                   class_id:
@@ -616,8 +808,8 @@ paths:
                     type: string
                     format: byte
                     description: >-
-                      metadata is any arbitrary metadata to attached to the
-                      credit batch.
+                      metadata is any arbitrary metadata attached to the credit
+                      batch.
                   amount_cancelled:
                     type: string
                     description: >-
@@ -655,6 +847,9 @@ paths:
 
                       batch. Full documentation can be found in
                       MsgCreateBatch.project_location.
+                description: >-
+                  BatchInfo represents the high-level on-chain information for a
+                  credit batch.
             description: QueryBatchInfoResponse is the Query/BatchInfo response type.
         default:
           description: An unexpected error response
@@ -686,62 +881,7 @@ paths:
           type: string
       tags:
         - Query
-  '/regen/ecocredit/v1alpha1/batch_info/{batch_denom}/supply':
-    get:
-      summary: Supply queries the tradable and retired supply of a credit batch.
-      operationId: Supply
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              tradable_supply:
-                type: string
-                description: >-
-                  tradable_supply is the decimal number of tradable credits in
-                  the batch
-
-                  supply.
-              retired_supply:
-                type: string
-                description: >-
-                  retired_supply is the decimal number of retired credits in the
-                  batch
-
-                  supply.
-            description: QuerySupplyResponse is the Query/Supply response type.
-        default:
-          description: An unexpected error response
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: batch_denom
-          description: batch_denom is the unique ID of credit batch to query.
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  '/regen/ecocredit/v1alpha1/batches/{batch_denom}/balances/{account}':
+  '/regen/ecocredit/v1alpha1/batches/{batch_denom}/balance/{account}':
     get:
       summary: >-
         Balance queries the balance (both tradable and retired) of a given
@@ -799,32 +939,31 @@ paths:
           type: string
       tags:
         - Query
-  '/regen/ecocredit/v1alpha1/batches/{batch_denom}/precision':
+  '/regen/ecocredit/v1alpha1/batches/{batch_denom}/supply':
     get:
-      summary: |-
-        Precision queries the number of decimal places that can be used to
-        represent credits in a batch. See Tx/SetPrecision for more details.
-      operationId: Precision
+      summary: Supply queries the tradable and retired supply of a credit batch.
+      operationId: Supply
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              max_decimal_places:
-                type: integer
-                format: int64
+              tradable_supply:
+                type: string
                 description: >-
-                  max_decimal_places is the maximum number of decimal places
-                  that can be used
+                  tradable_supply is the decimal number of tradable credits in
+                  the batch
 
-                  to represent some quantity of credits. It is an experimental
-                  feature
+                  supply.
+              retired_supply:
+                type: string
+                description: >-
+                  retired_supply is the decimal number of retired credits in the
+                  batch
 
-                  to concretely explore an idea proposed in
-
-                  https://github.com/cosmos/cosmos-sdk/issues/7113.
-            description: QueryPrecisionResponse is the Query/Precision response type.
+                  supply.
+            description: QuerySupplyResponse is the Query/Supply response type.
         default:
           description: An unexpected error response
           schema:
@@ -855,7 +994,175 @@ paths:
           type: string
       tags:
         - Query
-  '/regen/ecocredit/v1alpha1/class_info/{class_id}':
+  /regen/ecocredit/v1alpha1/classes:
+    get:
+      summary: Classes queries for all credit classes with pagination.
+      operationId: Classes
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              classes:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    class_id:
+                      type: string
+                      description: class_id is the unique ID of credit class.
+                    admin:
+                      type: string
+                      description: admin is the admin of the credit class.
+                    issuers:
+                      type: array
+                      items:
+                        type: string
+                      description: issuers are the approved issuers of the credit class.
+                    metadata:
+                      type: string
+                      format: byte
+                      description: >-
+                        metadata is any arbitrary metadata to attached to the
+                        credit class.
+                    credit_type:
+                      description: >-
+                        credit_type describes the type of credit (e.g. carbon,
+                        biodiversity), as well as unit and precision.
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          title: 'the type of credit (e.g. carbon, biodiversity, etc)'
+                        abbreviation:
+                          type: string
+                          description: >-
+                            abbreviation is a 1-3 character uppercase
+                            abbreviation of the CreditType
+
+                            name, used in batch denominations within the
+                            CreditType. It must be unique.
+                        unit:
+                          type: string
+                          title: 'the measurement unit (e.g. kg, ton, etc)'
+                        precision:
+                          type: integer
+                          format: int64
+                          title: the decimal precision
+                      title: >-
+                        CreditType defines the measurement unit/precision of a
+                        certain credit type
+
+                        (e.g. carbon, biodiversity...)
+                    num_batches:
+                      type: string
+                      format: uint64
+                      description: The number of batches issued in this credit class.
+                  description: >-
+                    ClassInfo represents the high-level on-chain information for
+                    a credit class.
+                description: classes are the fetched credit classes.
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    title: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: QueryClassesResponse is the Query/Classes response type.
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+          format: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+          in: query
+          required: false
+          type: boolean
+          format: boolean
+      tags:
+        - Query
+  '/regen/ecocredit/v1alpha1/classes/{class_id}':
     get:
       summary: ClassInfo queries for information on a credit class.
       operationId: ClassInfo
@@ -866,7 +1173,6 @@ paths:
             type: object
             properties:
               info:
-                description: info is the ClassInfo for the credit class.
                 type: object
                 properties:
                   class_id:
@@ -886,6 +1192,42 @@ paths:
                     description: >-
                       metadata is any arbitrary metadata to attached to the
                       credit class.
+                  credit_type:
+                    description: >-
+                      credit_type describes the type of credit (e.g. carbon,
+                      biodiversity), as well as unit and precision.
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        title: 'the type of credit (e.g. carbon, biodiversity, etc)'
+                      abbreviation:
+                        type: string
+                        description: >-
+                          abbreviation is a 1-3 character uppercase abbreviation
+                          of the CreditType
+
+                          name, used in batch denominations within the
+                          CreditType. It must be unique.
+                      unit:
+                        type: string
+                        title: 'the measurement unit (e.g. kg, ton, etc)'
+                      precision:
+                        type: integer
+                        format: int64
+                        title: the decimal precision
+                    title: >-
+                      CreditType defines the measurement unit/precision of a
+                      certain credit type
+
+                      (e.g. carbon, biodiversity...)
+                  num_batches:
+                    type: string
+                    format: uint64
+                    description: The number of batches issued in this credit class.
+                description: >-
+                  ClassInfo represents the high-level on-chain information for a
+                  credit class.
             description: QueryClassInfoResponse is the Query/ClassInfo request type.
         default:
           description: An unexpected error response
@@ -915,6 +1257,179 @@ paths:
           in: path
           required: true
           type: string
+      tags:
+        - Query
+  /regen/ecocredit/v1alpha1/credit-types:
+    get:
+      summary: >-
+        CreditTypes returns the list of allowed types that credit classes can
+        have.
+
+        See Types/CreditType for more details.
+      operationId: CreditTypes
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              credit_types:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      title: 'the type of credit (e.g. carbon, biodiversity, etc)'
+                    abbreviation:
+                      type: string
+                      description: >-
+                        abbreviation is a 1-3 character uppercase abbreviation
+                        of the CreditType
+
+                        name, used in batch denominations within the CreditType.
+                        It must be unique.
+                    unit:
+                      type: string
+                      title: 'the measurement unit (e.g. kg, ton, etc)'
+                    precision:
+                      type: integer
+                      format: int64
+                      title: the decimal precision
+                  title: >-
+                    CreditType defines the measurement unit/precision of a
+                    certain credit type
+
+                    (e.g. carbon, biodiversity...)
+                title: list of credit types
+            title: QueryCreditTypesRequest is the Query/Credit_Types response type
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      tags:
+        - Query
+  /regen/ecocredit/v1alpha1/params:
+    get:
+      summary: Params queries the ecocredit module parameters.
+      operationId: Ecocredit/Params
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              params:
+                description: params defines the parameters of the ecocredit module.
+                type: object
+                properties:
+                  credit_class_fee:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
+
+
+                        NOTE: The amount field is an Int which implements the
+                        custom method
+
+                        signatures required by gogoproto.
+                    title: >-
+                      credit_class_fee is the fixed fee charged on creation of a
+                      new credit class
+                  allowed_class_creators:
+                    type: array
+                    items:
+                      type: string
+                    title: >-
+                      allowed_class_creators is an allowlist defining the
+                      addresses with
+
+                      the required permissions to create credit classes
+                  allowlist_enabled:
+                    type: boolean
+                    format: boolean
+                    title: >-
+                      allowlist_enabled is a param that enables/disables the
+                      allowlist for credit
+
+                      creation
+                  credit_types:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                          type: string
+                          title: 'the type of credit (e.g. carbon, biodiversity, etc)'
+                        abbreviation:
+                          type: string
+                          description: >-
+                            abbreviation is a 1-3 character uppercase
+                            abbreviation of the CreditType
+
+                            name, used in batch denominations within the
+                            CreditType. It must be unique.
+                        unit:
+                          type: string
+                          title: 'the measurement unit (e.g. kg, ton, etc)'
+                        precision:
+                          type: integer
+                          format: int64
+                          title: the decimal precision
+                      title: >-
+                        CreditType defines the measurement unit/precision of a
+                        certain credit type
+
+                        (e.g. carbon, biodiversity...)
+                    title: credit_types is a list of definitions for credit types
+            description: QueryParamsResponse is the Query/Params response type.
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
       tags:
         - Query
   '/regen/group/v1alpha1/admins/{admin}/accounts':
@@ -10012,7 +10527,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -10752,7 +11267,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -10823,9 +11338,164 @@ paths:
           type: string
       tags:
         - Query
-  /cosmos/bank/v1beta1/denoms_metadata:
+  '/cosmos/bank/v1beta1/denom_owners/{denom}':
     get:
       summary: >-
+        DenomOwners queries for all account addresses that own a particular
+        token
+
+        denomination.
+      operationId: DenomOwners
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              denom_owners:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                      description: >-
+                        address defines the address that owns a particular
+                        denomination.
+                    balance:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
+
+
+                        NOTE: The amount field is an Int which implements the
+                        custom method
+
+                        signatures required by gogoproto.
+                  description: >-
+                    DenomOwner defines structure representing an account that
+                    owns or holds a
+
+                    particular denominated token. It contains the account
+                    address and account
+
+                    balance of the denominated token.
+              pagination:
+                description: pagination defines the pagination in the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    title: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: >-
+              QueryDenomOwnersResponse defines the RPC response of a DenomOwners
+              RPC query.
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                    value:
+                      type: string
+                      format: byte
+      parameters:
+        - name: denom
+          description: >-
+            denom defines the coin denomination to query all account holders
+            for.
+          in: path
+          required: true
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+          format: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+          in: query
+          required: false
+          type: boolean
+          format: boolean
+      tags:
+        - Query
+  /cosmos/bank/v1beta1/denoms_metadata:
+    get:
+      summary: |-
         DenomsMetadata queries the client metadata for all registered coin
         denominations.
       operationId: DenomsMetadata
@@ -10901,6 +11571,18 @@ paths:
                         (eg: ATOM). This can
 
                         be the same as the display.
+                    uri:
+                      type: string
+                      description: >-
+                        URI to a document (on or off-chain) that contains
+                        additional information. Optional.
+                    uri_hash:
+                      type: string
+                      description: >-
+                        URIHash is a sha256 hash of a document pointed by URI.
+                        It's used to verify that
+
+                        the document didn't change. Optional.
                   description: |-
                     Metadata represents a struct that describes
                     a basic token.
@@ -11002,7 +11684,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -11084,6 +11766,18 @@ paths:
                       ATOM). This can
 
                       be the same as the display.
+                  uri:
+                    type: string
+                    description: >-
+                      URI to a document (on or off-chain) that contains
+                      additional information. Optional.
+                  uri_hash:
+                    type: string
+                    description: >-
+                      URIHash is a sha256 hash of a document pointed by URI.
+                      It's used to verify that
+
+                      the document didn't change. Optional.
                 description: |-
                   Metadata represents a struct that describes
                   a basic token.
@@ -11304,7 +11998,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -12967,6 +13661,8 @@ paths:
                           type: string
                           title: checksum
                       title: Module is the type for VersionInfo
+                  cosmos_sdk_version:
+                    type: string
                 description: VersionInfo is the type for the GetNodeInfoResponse message.
             description: >-
               GetNodeInfoResponse is the request type for the Query/GetNodeInfo
@@ -13833,7 +14529,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -14310,7 +15006,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -14964,7 +15660,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -15422,7 +16118,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -16650,7 +17346,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -17430,7 +18126,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -17931,6 +18627,24 @@ paths:
                       format: uint64
                     voter:
                       type: string
+                    option:
+                      description: >-
+                        Deprecated: Prefer to use `options` instead. This field
+                        is set in queries
+
+                        if and only if `len(options) == 1` and that option has
+                        weight 1. In all
+
+                        other cases, this field will default to
+                        VOTE_OPTION_UNSPECIFIED.
+                      type: string
+                      enum:
+                        - VOTE_OPTION_UNSPECIFIED
+                        - VOTE_OPTION_YES
+                        - VOTE_OPTION_ABSTAIN
+                        - VOTE_OPTION_NO
+                        - VOTE_OPTION_NO_WITH_VETO
+                      default: VOTE_OPTION_UNSPECIFIED
                     options:
                       type: array
                       items:
@@ -18231,7 +18945,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -18257,6 +18971,24 @@ paths:
                     format: uint64
                   voter:
                     type: string
+                  option:
+                    description: >-
+                      Deprecated: Prefer to use `options` instead. This field is
+                      set in queries
+
+                      if and only if `len(options) == 1` and that option has
+                      weight 1. In all
+
+                      other cases, this field will default to
+                      VOTE_OPTION_UNSPECIFIED.
+                    type: string
+                    enum:
+                      - VOTE_OPTION_UNSPECIFIED
+                      - VOTE_OPTION_YES
+                      - VOTE_OPTION_ABSTAIN
+                      - VOTE_OPTION_NO
+                      - VOTE_OPTION_NO_WITH_VETO
+                    default: VOTE_OPTION_UNSPECIFIED
                   options:
                     type: array
                     items:
@@ -18927,7 +19659,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -19364,7 +20096,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -19772,7 +20504,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -20112,7 +20844,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -20711,7 +21443,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -21889,11 +22621,6 @@ paths:
                   bond_denom:
                     type: string
                     description: bond_denom defines the bondable coin denomination.
-                  power_reduction:
-                    type: string
-                    title: >-
-                      power_reduction is the amount of staking tokens required
-                      for 1 unit of consensus-engine power
             description: >-
               QueryParamsResponse is response type for the Query/Params RPC
               method.
@@ -22887,7 +23614,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -23738,7 +24465,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -24605,7 +25332,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -25148,7 +25875,7 @@ paths:
           format: boolean
         - name: pagination.reverse
           description: >-
-            reverse is set to true indicates that, results to be returned in the
+            reverse is set to true if results are to be returned in the
             descending order.
           in: query
           required: false
@@ -26141,6 +26868,16 @@ paths:
                       Time or Height is
 
                       reached and the software will exit.
+                  time:
+                    type: string
+                    format: date-time
+                    description: >-
+                      Deprecated: Time based upgrades have been deprecated. Time
+                      based upgrade logic
+
+                      has been removed from the SDK.
+
+                      If this field is not empty, an error will be thrown.
                   height:
                     type: string
                     format: int64
@@ -26155,6 +26892,181 @@ paths:
 
                       such as a git commit that validators could automatically
                       upgrade to
+                  upgraded_client_state:
+                    type: object
+                    properties:
+                      type_url:
+                        type: string
+                        description: >-
+                          A URL/resource name that uniquely identifies the type
+                          of the serialized
+
+                          protocol buffer message. This string must contain at
+                          least
+
+                          one "/" character. The last segment of the URL's path
+                          must represent
+
+                          the fully qualified name of the type (as in
+
+                          `path/google.protobuf.Duration`). The name should be
+                          in a canonical form
+
+                          (e.g., leading "." is not accepted).
+
+
+                          In practice, teams usually precompile into the binary
+                          all types that they
+
+                          expect it to use in the context of Any. However, for
+                          URLs which use the
+
+                          scheme `http`, `https`, or no scheme, one can
+                          optionally set up a type
+
+                          server that maps type URLs to message definitions as
+                          follows:
+
+
+                          * If no scheme is provided, `https` is assumed.
+
+                          * An HTTP GET on the URL must yield a
+                          [google.protobuf.Type][]
+                            value in binary format, or produce an error.
+                          * Applications are allowed to cache lookup results
+                          based on the
+                            URL, or have them precompiled into a binary to avoid any
+                            lookup. Therefore, binary compatibility needs to be preserved
+                            on changes to types. (Use versioned type names to manage
+                            breaking changes.)
+
+                          Note: this functionality is not currently available in
+                          the official
+
+                          protobuf release, and it is not used for type URLs
+                          beginning with
+
+                          type.googleapis.com.
+
+
+                          Schemes other than `http`, `https` (or the empty
+                          scheme) might be
+
+                          used with implementation specific semantics.
+                      value:
+                        type: string
+                        format: byte
+                        description: >-
+                          Must be a valid serialized protocol buffer of the
+                          above specified type.
+                    description: >-
+                      `Any` contains an arbitrary serialized protocol buffer
+                      message along with a
+
+                      URL that describes the type of the serialized message.
+
+
+                      Protobuf library provides support to pack/unpack Any
+                      values in the form
+
+                      of utility functions or additional generated methods of
+                      the Any type.
+
+
+                      Example 1: Pack and unpack a message in C++.
+
+                          Foo foo = ...;
+                          Any any;
+                          any.PackFrom(foo);
+                          ...
+                          if (any.UnpackTo(&foo)) {
+                            ...
+                          }
+
+                      Example 2: Pack and unpack a message in Java.
+
+                          Foo foo = ...;
+                          Any any = Any.pack(foo);
+                          ...
+                          if (any.is(Foo.class)) {
+                            foo = any.unpack(Foo.class);
+                          }
+
+                       Example 3: Pack and unpack a message in Python.
+
+                          foo = Foo(...)
+                          any = Any()
+                          any.Pack(foo)
+                          ...
+                          if any.Is(Foo.DESCRIPTOR):
+                            any.Unpack(foo)
+                            ...
+
+                       Example 4: Pack and unpack a message in Go
+
+                           foo := &pb.Foo{...}
+                           any, err := ptypes.MarshalAny(foo)
+                           ...
+                           foo := &pb.Foo{}
+                           if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                             ...
+                           }
+
+                      The pack methods provided by protobuf library will by
+                      default use
+
+                      'type.googleapis.com/full.type.name' as the type URL and
+                      the unpack
+
+                      methods only use the fully qualified type name after the
+                      last '/'
+
+                      in the type URL, for example "foo.bar.com/x/y.z" will
+                      yield type
+
+                      name "y.z".
+
+
+
+                      JSON
+
+                      ====
+
+                      The JSON representation of an `Any` value uses the regular
+
+                      representation of the deserialized, embedded message, with
+                      an
+
+                      additional field `@type` which contains the type URL.
+                      Example:
+
+                          package google.profile;
+                          message Person {
+                            string first_name = 1;
+                            string last_name = 2;
+                          }
+
+                          {
+                            "@type": "type.googleapis.com/google.profile.Person",
+                            "firstName": <string>,
+                            "lastName": <string>
+                          }
+
+                      If the embedded message type is well-known and has a
+                      custom JSON
+
+                      representation, that representation will be embedded
+                      adding a field
+
+                      `value` which holds the custom JSON in addition to the
+                      `@type`
+
+                      field. Example (for message [google.protobuf.Duration][]):
+
+                          {
+                            "@type": "type.googleapis.com/google.protobuf.Duration",
+                            "value": "1.212s"
+                          }
             description: >-
               QueryCurrentPlanResponse is the response type for the
               Query/CurrentPlan RPC
@@ -26802,6 +27714,1165 @@ paths:
           required: true
           type: string
           format: int64
+      tags:
+        - Query
+  /cosmos/authz/v1beta1/grants:
+    get:
+      summary: 'Returns list of `Authorization`, granted to the grantee by the granter.'
+      operationId: Grants
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              grants:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    authorization:
+                      type: object
+                      properties:
+                        type_url:
+                          type: string
+                          description: >-
+                            A URL/resource name that uniquely identifies the
+                            type of the serialized
+
+                            protocol buffer message. This string must contain at
+                            least
+
+                            one "/" character. The last segment of the URL's
+                            path must represent
+
+                            the fully qualified name of the type (as in
+
+                            `path/google.protobuf.Duration`). The name should be
+                            in a canonical form
+
+                            (e.g., leading "." is not accepted).
+
+
+                            In practice, teams usually precompile into the
+                            binary all types that they
+
+                            expect it to use in the context of Any. However, for
+                            URLs which use the
+
+                            scheme `http`, `https`, or no scheme, one can
+                            optionally set up a type
+
+                            server that maps type URLs to message definitions as
+                            follows:
+
+
+                            * If no scheme is provided, `https` is assumed.
+
+                            * An HTTP GET on the URL must yield a
+                            [google.protobuf.Type][]
+                              value in binary format, or produce an error.
+                            * Applications are allowed to cache lookup results
+                            based on the
+                              URL, or have them precompiled into a binary to avoid any
+                              lookup. Therefore, binary compatibility needs to be preserved
+                              on changes to types. (Use versioned type names to manage
+                              breaking changes.)
+
+                            Note: this functionality is not currently available
+                            in the official
+
+                            protobuf release, and it is not used for type URLs
+                            beginning with
+
+                            type.googleapis.com.
+
+
+                            Schemes other than `http`, `https` (or the empty
+                            scheme) might be
+
+                            used with implementation specific semantics.
+                        value:
+                          type: string
+                          format: byte
+                          description: >-
+                            Must be a valid serialized protocol buffer of the
+                            above specified type.
+                      description: >-
+                        `Any` contains an arbitrary serialized protocol buffer
+                        message along with a
+
+                        URL that describes the type of the serialized message.
+
+
+                        Protobuf library provides support to pack/unpack Any
+                        values in the form
+
+                        of utility functions or additional generated methods of
+                        the Any type.
+
+
+                        Example 1: Pack and unpack a message in C++.
+
+                            Foo foo = ...;
+                            Any any;
+                            any.PackFrom(foo);
+                            ...
+                            if (any.UnpackTo(&foo)) {
+                              ...
+                            }
+
+                        Example 2: Pack and unpack a message in Java.
+
+                            Foo foo = ...;
+                            Any any = Any.pack(foo);
+                            ...
+                            if (any.is(Foo.class)) {
+                              foo = any.unpack(Foo.class);
+                            }
+
+                         Example 3: Pack and unpack a message in Python.
+
+                            foo = Foo(...)
+                            any = Any()
+                            any.Pack(foo)
+                            ...
+                            if any.Is(Foo.DESCRIPTOR):
+                              any.Unpack(foo)
+                              ...
+
+                         Example 4: Pack and unpack a message in Go
+
+                             foo := &pb.Foo{...}
+                             any, err := ptypes.MarshalAny(foo)
+                             ...
+                             foo := &pb.Foo{}
+                             if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                               ...
+                             }
+
+                        The pack methods provided by protobuf library will by
+                        default use
+
+                        'type.googleapis.com/full.type.name' as the type URL and
+                        the unpack
+
+                        methods only use the fully qualified type name after the
+                        last '/'
+
+                        in the type URL, for example "foo.bar.com/x/y.z" will
+                        yield type
+
+                        name "y.z".
+
+
+
+                        JSON
+
+                        ====
+
+                        The JSON representation of an `Any` value uses the
+                        regular
+
+                        representation of the deserialized, embedded message,
+                        with an
+
+                        additional field `@type` which contains the type URL.
+                        Example:
+
+                            package google.profile;
+                            message Person {
+                              string first_name = 1;
+                              string last_name = 2;
+                            }
+
+                            {
+                              "@type": "type.googleapis.com/google.profile.Person",
+                              "firstName": <string>,
+                              "lastName": <string>
+                            }
+
+                        If the embedded message type is well-known and has a
+                        custom JSON
+
+                        representation, that representation will be embedded
+                        adding a field
+
+                        `value` which holds the custom JSON in addition to the
+                        `@type`
+
+                        field. Example (for message
+                        [google.protobuf.Duration][]):
+
+                            {
+                              "@type": "type.googleapis.com/google.protobuf.Duration",
+                              "value": "1.212s"
+                            }
+                    expiration:
+                      type: string
+                      format: date-time
+                  description: |-
+                    Grant gives permissions to execute
+                    the provide method with expiration time.
+                description: >-
+                  authorizations is a list of grants granted for grantee by
+                  granter.
+              pagination:
+                description: pagination defines an pagination for the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    title: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: >-
+              QueryGrantsResponse is the response type for the
+              Query/Authorizations RPC method.
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                      description: >-
+                        A URL/resource name that uniquely identifies the type of
+                        the serialized
+
+                        protocol buffer message. This string must contain at
+                        least
+
+                        one "/" character. The last segment of the URL's path
+                        must represent
+
+                        the fully qualified name of the type (as in
+
+                        `path/google.protobuf.Duration`). The name should be in
+                        a canonical form
+
+                        (e.g., leading "." is not accepted).
+
+
+                        In practice, teams usually precompile into the binary
+                        all types that they
+
+                        expect it to use in the context of Any. However, for
+                        URLs which use the
+
+                        scheme `http`, `https`, or no scheme, one can optionally
+                        set up a type
+
+                        server that maps type URLs to message definitions as
+                        follows:
+
+
+                        * If no scheme is provided, `https` is assumed.
+
+                        * An HTTP GET on the URL must yield a
+                        [google.protobuf.Type][]
+                          value in binary format, or produce an error.
+                        * Applications are allowed to cache lookup results based
+                        on the
+                          URL, or have them precompiled into a binary to avoid any
+                          lookup. Therefore, binary compatibility needs to be preserved
+                          on changes to types. (Use versioned type names to manage
+                          breaking changes.)
+
+                        Note: this functionality is not currently available in
+                        the official
+
+                        protobuf release, and it is not used for type URLs
+                        beginning with
+
+                        type.googleapis.com.
+
+
+                        Schemes other than `http`, `https` (or the empty scheme)
+                        might be
+
+                        used with implementation specific semantics.
+                    value:
+                      type: string
+                      format: byte
+                      description: >-
+                        Must be a valid serialized protocol buffer of the above
+                        specified type.
+                  description: >-
+                    `Any` contains an arbitrary serialized protocol buffer
+                    message along with a
+
+                    URL that describes the type of the serialized message.
+
+
+                    Protobuf library provides support to pack/unpack Any values
+                    in the form
+
+                    of utility functions or additional generated methods of the
+                    Any type.
+
+
+                    Example 1: Pack and unpack a message in C++.
+
+                        Foo foo = ...;
+                        Any any;
+                        any.PackFrom(foo);
+                        ...
+                        if (any.UnpackTo(&foo)) {
+                          ...
+                        }
+
+                    Example 2: Pack and unpack a message in Java.
+
+                        Foo foo = ...;
+                        Any any = Any.pack(foo);
+                        ...
+                        if (any.is(Foo.class)) {
+                          foo = any.unpack(Foo.class);
+                        }
+
+                     Example 3: Pack and unpack a message in Python.
+
+                        foo = Foo(...)
+                        any = Any()
+                        any.Pack(foo)
+                        ...
+                        if any.Is(Foo.DESCRIPTOR):
+                          any.Unpack(foo)
+                          ...
+
+                     Example 4: Pack and unpack a message in Go
+
+                         foo := &pb.Foo{...}
+                         any, err := ptypes.MarshalAny(foo)
+                         ...
+                         foo := &pb.Foo{}
+                         if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                           ...
+                         }
+
+                    The pack methods provided by protobuf library will by
+                    default use
+
+                    'type.googleapis.com/full.type.name' as the type URL and the
+                    unpack
+
+                    methods only use the fully qualified type name after the
+                    last '/'
+
+                    in the type URL, for example "foo.bar.com/x/y.z" will yield
+                    type
+
+                    name "y.z".
+
+
+
+                    JSON
+
+                    ====
+
+                    The JSON representation of an `Any` value uses the regular
+
+                    representation of the deserialized, embedded message, with
+                    an
+
+                    additional field `@type` which contains the type URL.
+                    Example:
+
+                        package google.profile;
+                        message Person {
+                          string first_name = 1;
+                          string last_name = 2;
+                        }
+
+                        {
+                          "@type": "type.googleapis.com/google.profile.Person",
+                          "firstName": <string>,
+                          "lastName": <string>
+                        }
+
+                    If the embedded message type is well-known and has a custom
+                    JSON
+
+                    representation, that representation will be embedded adding
+                    a field
+
+                    `value` which holds the custom JSON in addition to the
+                    `@type`
+
+                    field. Example (for message [google.protobuf.Duration][]):
+
+                        {
+                          "@type": "type.googleapis.com/google.protobuf.Duration",
+                          "value": "1.212s"
+                        }
+      parameters:
+        - name: granter
+          in: query
+          required: false
+          type: string
+        - name: grantee
+          in: query
+          required: false
+          type: string
+        - name: msg_type_url
+          description: >-
+            Optional, msg_type_url, when set, will query only grants matching
+            given msg type.
+          in: query
+          required: false
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+          format: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+          in: query
+          required: false
+          type: boolean
+          format: boolean
+      tags:
+        - Query
+  '/cosmos/feegrant/v1beta1/allowance/{granter}/{grantee}':
+    get:
+      summary: Allowance returns fee granted to the grantee by the granter.
+      operationId: Allowance
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              allowance:
+                description: allowance is a allowance granted for grantee by granter.
+                type: object
+                properties:
+                  granter:
+                    type: string
+                    description: >-
+                      granter is the address of the user granting an allowance
+                      of their funds.
+                  grantee:
+                    type: string
+                    description: >-
+                      grantee is the address of the user being granted an
+                      allowance of another user's funds.
+                  allowance:
+                    description: allowance can be any of basic and filtered fee allowance.
+                    type: object
+                    properties:
+                      type_url:
+                        type: string
+                        description: >-
+                          A URL/resource name that uniquely identifies the type
+                          of the serialized
+
+                          protocol buffer message. This string must contain at
+                          least
+
+                          one "/" character. The last segment of the URL's path
+                          must represent
+
+                          the fully qualified name of the type (as in
+
+                          `path/google.protobuf.Duration`). The name should be
+                          in a canonical form
+
+                          (e.g., leading "." is not accepted).
+
+
+                          In practice, teams usually precompile into the binary
+                          all types that they
+
+                          expect it to use in the context of Any. However, for
+                          URLs which use the
+
+                          scheme `http`, `https`, or no scheme, one can
+                          optionally set up a type
+
+                          server that maps type URLs to message definitions as
+                          follows:
+
+
+                          * If no scheme is provided, `https` is assumed.
+
+                          * An HTTP GET on the URL must yield a
+                          [google.protobuf.Type][]
+                            value in binary format, or produce an error.
+                          * Applications are allowed to cache lookup results
+                          based on the
+                            URL, or have them precompiled into a binary to avoid any
+                            lookup. Therefore, binary compatibility needs to be preserved
+                            on changes to types. (Use versioned type names to manage
+                            breaking changes.)
+
+                          Note: this functionality is not currently available in
+                          the official
+
+                          protobuf release, and it is not used for type URLs
+                          beginning with
+
+                          type.googleapis.com.
+
+
+                          Schemes other than `http`, `https` (or the empty
+                          scheme) might be
+
+                          used with implementation specific semantics.
+                      value:
+                        type: string
+                        format: byte
+                        description: >-
+                          Must be a valid serialized protocol buffer of the
+                          above specified type.
+                title: >-
+                  Grant is stored in the KVStore to record a grant with full
+                  context
+            description: >-
+              QueryAllowanceResponse is the response type for the
+              Query/Allowance RPC method.
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                      description: >-
+                        A URL/resource name that uniquely identifies the type of
+                        the serialized
+
+                        protocol buffer message. This string must contain at
+                        least
+
+                        one "/" character. The last segment of the URL's path
+                        must represent
+
+                        the fully qualified name of the type (as in
+
+                        `path/google.protobuf.Duration`). The name should be in
+                        a canonical form
+
+                        (e.g., leading "." is not accepted).
+
+
+                        In practice, teams usually precompile into the binary
+                        all types that they
+
+                        expect it to use in the context of Any. However, for
+                        URLs which use the
+
+                        scheme `http`, `https`, or no scheme, one can optionally
+                        set up a type
+
+                        server that maps type URLs to message definitions as
+                        follows:
+
+
+                        * If no scheme is provided, `https` is assumed.
+
+                        * An HTTP GET on the URL must yield a
+                        [google.protobuf.Type][]
+                          value in binary format, or produce an error.
+                        * Applications are allowed to cache lookup results based
+                        on the
+                          URL, or have them precompiled into a binary to avoid any
+                          lookup. Therefore, binary compatibility needs to be preserved
+                          on changes to types. (Use versioned type names to manage
+                          breaking changes.)
+
+                        Note: this functionality is not currently available in
+                        the official
+
+                        protobuf release, and it is not used for type URLs
+                        beginning with
+
+                        type.googleapis.com.
+
+
+                        Schemes other than `http`, `https` (or the empty scheme)
+                        might be
+
+                        used with implementation specific semantics.
+                    value:
+                      type: string
+                      format: byte
+                      description: >-
+                        Must be a valid serialized protocol buffer of the above
+                        specified type.
+                  description: >-
+                    `Any` contains an arbitrary serialized protocol buffer
+                    message along with a
+
+                    URL that describes the type of the serialized message.
+
+
+                    Protobuf library provides support to pack/unpack Any values
+                    in the form
+
+                    of utility functions or additional generated methods of the
+                    Any type.
+
+
+                    Example 1: Pack and unpack a message in C++.
+
+                        Foo foo = ...;
+                        Any any;
+                        any.PackFrom(foo);
+                        ...
+                        if (any.UnpackTo(&foo)) {
+                          ...
+                        }
+
+                    Example 2: Pack and unpack a message in Java.
+
+                        Foo foo = ...;
+                        Any any = Any.pack(foo);
+                        ...
+                        if (any.is(Foo.class)) {
+                          foo = any.unpack(Foo.class);
+                        }
+
+                     Example 3: Pack and unpack a message in Python.
+
+                        foo = Foo(...)
+                        any = Any()
+                        any.Pack(foo)
+                        ...
+                        if any.Is(Foo.DESCRIPTOR):
+                          any.Unpack(foo)
+                          ...
+
+                     Example 4: Pack and unpack a message in Go
+
+                         foo := &pb.Foo{...}
+                         any, err := ptypes.MarshalAny(foo)
+                         ...
+                         foo := &pb.Foo{}
+                         if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                           ...
+                         }
+
+                    The pack methods provided by protobuf library will by
+                    default use
+
+                    'type.googleapis.com/full.type.name' as the type URL and the
+                    unpack
+
+                    methods only use the fully qualified type name after the
+                    last '/'
+
+                    in the type URL, for example "foo.bar.com/x/y.z" will yield
+                    type
+
+                    name "y.z".
+
+
+
+                    JSON
+
+                    ====
+
+                    The JSON representation of an `Any` value uses the regular
+
+                    representation of the deserialized, embedded message, with
+                    an
+
+                    additional field `@type` which contains the type URL.
+                    Example:
+
+                        package google.profile;
+                        message Person {
+                          string first_name = 1;
+                          string last_name = 2;
+                        }
+
+                        {
+                          "@type": "type.googleapis.com/google.profile.Person",
+                          "firstName": <string>,
+                          "lastName": <string>
+                        }
+
+                    If the embedded message type is well-known and has a custom
+                    JSON
+
+                    representation, that representation will be embedded adding
+                    a field
+
+                    `value` which holds the custom JSON in addition to the
+                    `@type`
+
+                    field. Example (for message [google.protobuf.Duration][]):
+
+                        {
+                          "@type": "type.googleapis.com/google.protobuf.Duration",
+                          "value": "1.212s"
+                        }
+      parameters:
+        - name: granter
+          description: >-
+            granter is the address of the user granting an allowance of their
+            funds.
+          in: path
+          required: true
+          type: string
+        - name: grantee
+          description: >-
+            grantee is the address of the user being granted an allowance of
+            another user's funds.
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  '/cosmos/feegrant/v1beta1/allowances/{grantee}':
+    get:
+      summary: Allowances returns all the grants for address.
+      operationId: Allowances
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              allowances:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    granter:
+                      type: string
+                      description: >-
+                        granter is the address of the user granting an allowance
+                        of their funds.
+                    grantee:
+                      type: string
+                      description: >-
+                        grantee is the address of the user being granted an
+                        allowance of another user's funds.
+                    allowance:
+                      description: >-
+                        allowance can be any of basic and filtered fee
+                        allowance.
+                      type: object
+                      properties:
+                        type_url:
+                          type: string
+                          description: >-
+                            A URL/resource name that uniquely identifies the
+                            type of the serialized
+
+                            protocol buffer message. This string must contain at
+                            least
+
+                            one "/" character. The last segment of the URL's
+                            path must represent
+
+                            the fully qualified name of the type (as in
+
+                            `path/google.protobuf.Duration`). The name should be
+                            in a canonical form
+
+                            (e.g., leading "." is not accepted).
+
+
+                            In practice, teams usually precompile into the
+                            binary all types that they
+
+                            expect it to use in the context of Any. However, for
+                            URLs which use the
+
+                            scheme `http`, `https`, or no scheme, one can
+                            optionally set up a type
+
+                            server that maps type URLs to message definitions as
+                            follows:
+
+
+                            * If no scheme is provided, `https` is assumed.
+
+                            * An HTTP GET on the URL must yield a
+                            [google.protobuf.Type][]
+                              value in binary format, or produce an error.
+                            * Applications are allowed to cache lookup results
+                            based on the
+                              URL, or have them precompiled into a binary to avoid any
+                              lookup. Therefore, binary compatibility needs to be preserved
+                              on changes to types. (Use versioned type names to manage
+                              breaking changes.)
+
+                            Note: this functionality is not currently available
+                            in the official
+
+                            protobuf release, and it is not used for type URLs
+                            beginning with
+
+                            type.googleapis.com.
+
+
+                            Schemes other than `http`, `https` (or the empty
+                            scheme) might be
+
+                            used with implementation specific semantics.
+                        value:
+                          type: string
+                          format: byte
+                          description: >-
+                            Must be a valid serialized protocol buffer of the
+                            above specified type.
+                  title: >-
+                    Grant is stored in the KVStore to record a grant with full
+                    context
+                description: allowances are allowance's granted for grantee by granter.
+              pagination:
+                description: pagination defines an pagination for the response.
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    title: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+            description: >-
+              QueryAllowancesResponse is the response type for the
+              Query/Allowances RPC method.
+        default:
+          description: An unexpected error response
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    type_url:
+                      type: string
+                      description: >-
+                        A URL/resource name that uniquely identifies the type of
+                        the serialized
+
+                        protocol buffer message. This string must contain at
+                        least
+
+                        one "/" character. The last segment of the URL's path
+                        must represent
+
+                        the fully qualified name of the type (as in
+
+                        `path/google.protobuf.Duration`). The name should be in
+                        a canonical form
+
+                        (e.g., leading "." is not accepted).
+
+
+                        In practice, teams usually precompile into the binary
+                        all types that they
+
+                        expect it to use in the context of Any. However, for
+                        URLs which use the
+
+                        scheme `http`, `https`, or no scheme, one can optionally
+                        set up a type
+
+                        server that maps type URLs to message definitions as
+                        follows:
+
+
+                        * If no scheme is provided, `https` is assumed.
+
+                        * An HTTP GET on the URL must yield a
+                        [google.protobuf.Type][]
+                          value in binary format, or produce an error.
+                        * Applications are allowed to cache lookup results based
+                        on the
+                          URL, or have them precompiled into a binary to avoid any
+                          lookup. Therefore, binary compatibility needs to be preserved
+                          on changes to types. (Use versioned type names to manage
+                          breaking changes.)
+
+                        Note: this functionality is not currently available in
+                        the official
+
+                        protobuf release, and it is not used for type URLs
+                        beginning with
+
+                        type.googleapis.com.
+
+
+                        Schemes other than `http`, `https` (or the empty scheme)
+                        might be
+
+                        used with implementation specific semantics.
+                    value:
+                      type: string
+                      format: byte
+                      description: >-
+                        Must be a valid serialized protocol buffer of the above
+                        specified type.
+                  description: >-
+                    `Any` contains an arbitrary serialized protocol buffer
+                    message along with a
+
+                    URL that describes the type of the serialized message.
+
+
+                    Protobuf library provides support to pack/unpack Any values
+                    in the form
+
+                    of utility functions or additional generated methods of the
+                    Any type.
+
+
+                    Example 1: Pack and unpack a message in C++.
+
+                        Foo foo = ...;
+                        Any any;
+                        any.PackFrom(foo);
+                        ...
+                        if (any.UnpackTo(&foo)) {
+                          ...
+                        }
+
+                    Example 2: Pack and unpack a message in Java.
+
+                        Foo foo = ...;
+                        Any any = Any.pack(foo);
+                        ...
+                        if (any.is(Foo.class)) {
+                          foo = any.unpack(Foo.class);
+                        }
+
+                     Example 3: Pack and unpack a message in Python.
+
+                        foo = Foo(...)
+                        any = Any()
+                        any.Pack(foo)
+                        ...
+                        if any.Is(Foo.DESCRIPTOR):
+                          any.Unpack(foo)
+                          ...
+
+                     Example 4: Pack and unpack a message in Go
+
+                         foo := &pb.Foo{...}
+                         any, err := ptypes.MarshalAny(foo)
+                         ...
+                         foo := &pb.Foo{}
+                         if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                           ...
+                         }
+
+                    The pack methods provided by protobuf library will by
+                    default use
+
+                    'type.googleapis.com/full.type.name' as the type URL and the
+                    unpack
+
+                    methods only use the fully qualified type name after the
+                    last '/'
+
+                    in the type URL, for example "foo.bar.com/x/y.z" will yield
+                    type
+
+                    name "y.z".
+
+
+
+                    JSON
+
+                    ====
+
+                    The JSON representation of an `Any` value uses the regular
+
+                    representation of the deserialized, embedded message, with
+                    an
+
+                    additional field `@type` which contains the type URL.
+                    Example:
+
+                        package google.profile;
+                        message Person {
+                          string first_name = 1;
+                          string last_name = 2;
+                        }
+
+                        {
+                          "@type": "type.googleapis.com/google.profile.Person",
+                          "firstName": <string>,
+                          "lastName": <string>
+                        }
+
+                    If the embedded message type is well-known and has a custom
+                    JSON
+
+                    representation, that representation will be embedded adding
+                    a field
+
+                    `value` which holds the custom JSON in addition to the
+                    `@type`
+
+                    field. Example (for message [google.protobuf.Duration][]):
+
+                        {
+                          "@type": "type.googleapis.com/google.protobuf.Duration",
+                          "value": "1.212s"
+                        }
+      parameters:
+        - name: grantee
+          in: path
+          required: true
+          type: string
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+          format: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+          in: query
+          required: false
+          type: boolean
+          format: boolean
       tags:
         - Query
 definitions:
@@ -27932,6 +30003,18 @@ definitions:
         format: date-time
         title: timestamp is the time at which the data was signed
     title: SignerEntry is a signer entry wrapping a signer address and timestamp
+  cosmos.base.v1beta1.Coin:
+    type: object
+    properties:
+      denom:
+        type: string
+      amount:
+        type: string
+    description: |-
+      Coin defines a token with a denomination and an amount.
+
+      NOTE: The amount field is an Int which implements the custom method
+      signatures required by gogoproto.
   regen.ecocredit.v1alpha1.BatchInfo:
     type: object
     properties:
@@ -28017,9 +30100,133 @@ definitions:
         type: string
         format: byte
         description: metadata is any arbitrary metadata to attached to the credit class.
+      credit_type:
+        description: >-
+          credit_type describes the type of credit (e.g. carbon, biodiversity),
+          as well as unit and precision.
+        type: object
+        properties:
+          name:
+            type: string
+            title: 'the type of credit (e.g. carbon, biodiversity, etc)'
+          abbreviation:
+            type: string
+            description: >-
+              abbreviation is a 1-3 character uppercase abbreviation of the
+              CreditType
+
+              name, used in batch denominations within the CreditType. It must
+              be unique.
+          unit:
+            type: string
+            title: 'the measurement unit (e.g. kg, ton, etc)'
+          precision:
+            type: integer
+            format: int64
+            title: the decimal precision
+        title: >-
+          CreditType defines the measurement unit/precision of a certain credit
+          type
+
+          (e.g. carbon, biodiversity...)
+      num_batches:
+        type: string
+        format: uint64
+        description: The number of batches issued in this credit class.
     description: >-
       ClassInfo represents the high-level on-chain information for a credit
       class.
+  regen.ecocredit.v1alpha1.CreditType:
+    type: object
+    properties:
+      name:
+        type: string
+        title: 'the type of credit (e.g. carbon, biodiversity, etc)'
+      abbreviation:
+        type: string
+        description: >-
+          abbreviation is a 1-3 character uppercase abbreviation of the
+          CreditType
+
+          name, used in batch denominations within the CreditType. It must be
+          unique.
+      unit:
+        type: string
+        title: 'the measurement unit (e.g. kg, ton, etc)'
+      precision:
+        type: integer
+        format: int64
+        title: the decimal precision
+    title: |-
+      CreditType defines the measurement unit/precision of a certain credit type
+      (e.g. carbon, biodiversity...)
+  regen.ecocredit.v1alpha1.Params:
+    type: object
+    properties:
+      credit_class_fee:
+        type: array
+        items:
+          type: object
+          properties:
+            denom:
+              type: string
+            amount:
+              type: string
+          description: |-
+            Coin defines a token with a denomination and an amount.
+
+            NOTE: The amount field is an Int which implements the custom method
+            signatures required by gogoproto.
+        title: >-
+          credit_class_fee is the fixed fee charged on creation of a new credit
+          class
+      allowed_class_creators:
+        type: array
+        items:
+          type: string
+        title: |-
+          allowed_class_creators is an allowlist defining the addresses with
+          the required permissions to create credit classes
+      allowlist_enabled:
+        type: boolean
+        format: boolean
+        title: >-
+          allowlist_enabled is a param that enables/disables the allowlist for
+          credit
+
+          creation
+      credit_types:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+              title: 'the type of credit (e.g. carbon, biodiversity, etc)'
+            abbreviation:
+              type: string
+              description: >-
+                abbreviation is a 1-3 character uppercase abbreviation of the
+                CreditType
+
+                name, used in batch denominations within the CreditType. It must
+                be unique.
+            unit:
+              type: string
+              title: 'the measurement unit (e.g. kg, ton, etc)'
+            precision:
+              type: integer
+              format: int64
+              title: the decimal precision
+          title: >-
+            CreditType defines the measurement unit/precision of a certain
+            credit type
+
+            (e.g. carbon, biodiversity...)
+        title: credit_types is a list of definitions for credit types
+    description: |-
+      Params defines the updatable global parameters of the ecocredit module for
+      use with the x/params module.
   regen.ecocredit.v1alpha1.QueryBalanceResponse:
     type: object
     properties:
@@ -28034,7 +30241,6 @@ definitions:
     type: object
     properties:
       info:
-        description: info is the BatchInfo for the credit batch.
         type: object
         properties:
           class_id:
@@ -28064,9 +30270,7 @@ definitions:
           metadata:
             type: string
             format: byte
-            description: >-
-              metadata is any arbitrary metadata to attached to the credit
-              batch.
+            description: metadata is any arbitrary metadata attached to the credit batch.
           amount_cancelled:
             type: string
             description: >-
@@ -28104,12 +30308,110 @@ definitions:
 
               batch. Full documentation can be found in
               MsgCreateBatch.project_location.
+        description: >-
+          BatchInfo represents the high-level on-chain information for a credit
+          batch.
     description: QueryBatchInfoResponse is the Query/BatchInfo response type.
+  regen.ecocredit.v1alpha1.QueryBatchesResponse:
+    type: object
+    properties:
+      batches:
+        type: array
+        items:
+          type: object
+          properties:
+            class_id:
+              type: string
+              description: class_id is the unique ID of credit class.
+            batch_denom:
+              type: string
+              description: batch_denom is the unique ID of credit batch.
+            issuer:
+              type: string
+              description: issuer is the issuer of the credit batch.
+            total_amount:
+              type: string
+              description: >-
+                total_amount is the total number of active credits in the credit
+                batch.
+
+                Some of the issued credits may be cancelled and will be removed
+                from
+
+                total_amount and tracked in amount_cancelled. total_amount and
+
+                amount_cancelled will always sum to the original amount of
+                credits that
+
+                were issued.
+            metadata:
+              type: string
+              format: byte
+              description: metadata is any arbitrary metadata attached to the credit batch.
+            amount_cancelled:
+              type: string
+              description: >-
+                amount_cancelled is the number of credits in the batch that have
+                been
+
+                cancelled, effectively undoing there issuance. The sum of
+                total_amount and
+
+                amount_cancelled will always sum to the original amount of
+                credits that
+
+                were issued.
+            start_date:
+              type: string
+              format: date-time
+              description: >-
+                start_date is the beginning of the period during which this
+                credit batch
+
+                was quantified and verified.
+            end_date:
+              type: string
+              format: date-time
+              description: >-
+                end_date is the end of the period during which this credit batch
+                was
+
+                quantified and verified.
+            project_location:
+              type: string
+              description: >-
+                project_location is the location of the project backing the
+                credits in this
+
+                batch. Full documentation can be found in
+                MsgCreateBatch.project_location.
+          description: >-
+            BatchInfo represents the high-level on-chain information for a
+            credit batch.
+        description: batches are the fetched credit batches within the class.
+      pagination:
+        description: pagination defines the pagination in the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            title: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+    description: QueryBatchesResponse is the Query/Batches response type.
   regen.ecocredit.v1alpha1.QueryClassInfoResponse:
     type: object
     properties:
       info:
-        description: info is the ClassInfo for the credit class.
         type: object
         properties:
           class_id:
@@ -28129,23 +30431,229 @@ definitions:
             description: >-
               metadata is any arbitrary metadata to attached to the credit
               class.
+          credit_type:
+            description: >-
+              credit_type describes the type of credit (e.g. carbon,
+              biodiversity), as well as unit and precision.
+            type: object
+            properties:
+              name:
+                type: string
+                title: 'the type of credit (e.g. carbon, biodiversity, etc)'
+              abbreviation:
+                type: string
+                description: >-
+                  abbreviation is a 1-3 character uppercase abbreviation of the
+                  CreditType
+
+                  name, used in batch denominations within the CreditType. It
+                  must be unique.
+              unit:
+                type: string
+                title: 'the measurement unit (e.g. kg, ton, etc)'
+              precision:
+                type: integer
+                format: int64
+                title: the decimal precision
+            title: >-
+              CreditType defines the measurement unit/precision of a certain
+              credit type
+
+              (e.g. carbon, biodiversity...)
+          num_batches:
+            type: string
+            format: uint64
+            description: The number of batches issued in this credit class.
+        description: >-
+          ClassInfo represents the high-level on-chain information for a credit
+          class.
     description: QueryClassInfoResponse is the Query/ClassInfo request type.
-  regen.ecocredit.v1alpha1.QueryPrecisionResponse:
+  regen.ecocredit.v1alpha1.QueryClassesResponse:
     type: object
     properties:
-      max_decimal_places:
-        type: integer
-        format: int64
-        description: >-
-          max_decimal_places is the maximum number of decimal places that can be
-          used
+      classes:
+        type: array
+        items:
+          type: object
+          properties:
+            class_id:
+              type: string
+              description: class_id is the unique ID of credit class.
+            admin:
+              type: string
+              description: admin is the admin of the credit class.
+            issuers:
+              type: array
+              items:
+                type: string
+              description: issuers are the approved issuers of the credit class.
+            metadata:
+              type: string
+              format: byte
+              description: >-
+                metadata is any arbitrary metadata to attached to the credit
+                class.
+            credit_type:
+              description: >-
+                credit_type describes the type of credit (e.g. carbon,
+                biodiversity), as well as unit and precision.
+              type: object
+              properties:
+                name:
+                  type: string
+                  title: 'the type of credit (e.g. carbon, biodiversity, etc)'
+                abbreviation:
+                  type: string
+                  description: >-
+                    abbreviation is a 1-3 character uppercase abbreviation of
+                    the CreditType
 
-          to represent some quantity of credits. It is an experimental feature
+                    name, used in batch denominations within the CreditType. It
+                    must be unique.
+                unit:
+                  type: string
+                  title: 'the measurement unit (e.g. kg, ton, etc)'
+                precision:
+                  type: integer
+                  format: int64
+                  title: the decimal precision
+              title: >-
+                CreditType defines the measurement unit/precision of a certain
+                credit type
 
-          to concretely explore an idea proposed in
+                (e.g. carbon, biodiversity...)
+            num_batches:
+              type: string
+              format: uint64
+              description: The number of batches issued in this credit class.
+          description: >-
+            ClassInfo represents the high-level on-chain information for a
+            credit class.
+        description: classes are the fetched credit classes.
+      pagination:
+        description: pagination defines the pagination in the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            title: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
 
-          https://github.com/cosmos/cosmos-sdk/issues/7113.
-    description: QueryPrecisionResponse is the Query/Precision response type.
+              was set, its value is undefined otherwise
+    description: QueryClassesResponse is the Query/Classes response type.
+  regen.ecocredit.v1alpha1.QueryCreditTypesResponse:
+    type: object
+    properties:
+      credit_types:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+              title: 'the type of credit (e.g. carbon, biodiversity, etc)'
+            abbreviation:
+              type: string
+              description: >-
+                abbreviation is a 1-3 character uppercase abbreviation of the
+                CreditType
+
+                name, used in batch denominations within the CreditType. It must
+                be unique.
+            unit:
+              type: string
+              title: 'the measurement unit (e.g. kg, ton, etc)'
+            precision:
+              type: integer
+              format: int64
+              title: the decimal precision
+          title: >-
+            CreditType defines the measurement unit/precision of a certain
+            credit type
+
+            (e.g. carbon, biodiversity...)
+        title: list of credit types
+    title: QueryCreditTypesRequest is the Query/Credit_Types response type
+  regen.ecocredit.v1alpha1.QueryParamsResponse:
+    type: object
+    properties:
+      params:
+        description: params defines the parameters of the ecocredit module.
+        type: object
+        properties:
+          credit_class_fee:
+            type: array
+            items:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
+
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
+            title: >-
+              credit_class_fee is the fixed fee charged on creation of a new
+              credit class
+          allowed_class_creators:
+            type: array
+            items:
+              type: string
+            title: |-
+              allowed_class_creators is an allowlist defining the addresses with
+              the required permissions to create credit classes
+          allowlist_enabled:
+            type: boolean
+            format: boolean
+            title: >-
+              allowlist_enabled is a param that enables/disables the allowlist
+              for credit
+
+              creation
+          credit_types:
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  type: string
+                  title: 'the type of credit (e.g. carbon, biodiversity, etc)'
+                abbreviation:
+                  type: string
+                  description: >-
+                    abbreviation is a 1-3 character uppercase abbreviation of
+                    the CreditType
+
+                    name, used in batch denominations within the CreditType. It
+                    must be unique.
+                unit:
+                  type: string
+                  title: 'the measurement unit (e.g. kg, ton, etc)'
+                precision:
+                  type: integer
+                  format: int64
+                  title: the decimal precision
+              title: >-
+                CreditType defines the measurement unit/precision of a certain
+                credit type
+
+                (e.g. carbon, biodiversity...)
+            title: credit_types is a list of definitions for credit types
+    description: QueryParamsResponse is the Query/Params response type.
   regen.ecocredit.v1alpha1.QuerySupplyResponse:
     type: object
     properties:
@@ -31682,6 +34190,28 @@ definitions:
             type: string
             format: uint64
     description: QueryParamsResponse is the response type for the Query/Params RPC method.
+  cosmos.bank.v1beta1.DenomOwner:
+    type: object
+    properties:
+      address:
+        type: string
+        description: address defines the address that owns a particular denomination.
+      balance:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
+    description: |-
+      DenomOwner defines structure representing an account that owns or holds a
+      particular denominated token. It contains the account address and account
+      balance of the denominated token.
   cosmos.bank.v1beta1.DenomUnit:
     type: object
     properties:
@@ -31769,6 +34299,18 @@ definitions:
           can
 
           be the same as the display.
+      uri:
+        type: string
+        description: >-
+          URI to a document (on or off-chain) that contains additional
+          information. Optional.
+      uri_hash:
+        type: string
+        description: >-
+          URIHash is a sha256 hash of a document pointed by URI. It's used to
+          verify that
+
+          the document didn't change. Optional.
     description: |-
       Metadata represents a struct that describes
       a basic token.
@@ -31915,6 +34457,18 @@ definitions:
               This can
 
               be the same as the display.
+          uri:
+            type: string
+            description: >-
+              URI to a document (on or off-chain) that contains additional
+              information. Optional.
+          uri_hash:
+            type: string
+            description: >-
+              URIHash is a sha256 hash of a document pointed by URI. It's used
+              to verify that
+
+              the document didn't change. Optional.
         description: |-
           Metadata represents a struct that describes
           a basic token.
@@ -31923,6 +34477,61 @@ definitions:
       Query/DenomMetadata RPC
 
       method.
+  cosmos.bank.v1beta1.QueryDenomOwnersResponse:
+    type: object
+    properties:
+      denom_owners:
+        type: array
+        items:
+          type: object
+          properties:
+            address:
+              type: string
+              description: address defines the address that owns a particular denomination.
+            balance:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
+
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
+          description: >-
+            DenomOwner defines structure representing an account that owns or
+            holds a
+
+            particular denominated token. It contains the account address and
+            account
+
+            balance of the denominated token.
+      pagination:
+        description: pagination defines the pagination in the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            title: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+    description: >-
+      QueryDenomOwnersResponse defines the RPC response of a DenomOwners RPC
+      query.
   cosmos.bank.v1beta1.QueryDenomsMetadataResponse:
     type: object
     properties:
@@ -31987,6 +34596,18 @@ definitions:
                 ATOM). This can
 
                 be the same as the display.
+            uri:
+              type: string
+              description: >-
+                URI to a document (on or off-chain) that contains additional
+                information. Optional.
+            uri_hash:
+              type: string
+              description: >-
+                URIHash is a sha256 hash of a document pointed by URI. It's used
+                to verify that
+
+                the document didn't change. Optional.
           description: |-
             Metadata represents a struct that describes
             a basic token.
@@ -32114,18 +34735,6 @@ definitions:
     description: |-
       SendEnabled maps coin denom to a send_enabled status (whether a denom is
       sendable).
-  cosmos.base.v1beta1.Coin:
-    type: object
-    properties:
-      denom:
-        type: string
-      amount:
-        type: string
-    description: |-
-      Coin defines a token with a denomination and an amount.
-
-      NOTE: The amount field is an Int which implements the custom method
-      signatures required by gogoproto.
   cosmos.base.tendermint.v1beta1.GetBlockByHeightResponse:
     type: object
     properties:
@@ -33506,6 +36115,8 @@ definitions:
                   type: string
                   title: checksum
               title: Module is the type for VersionInfo
+          cosmos_sdk_version:
+            type: string
         description: VersionInfo is the type for the GetNodeInfoResponse message.
     description: >-
       GetNodeInfoResponse is the request type for the Query/GetNodeInfo RPC
@@ -33943,6 +36554,8 @@ definitions:
               type: string
               title: checksum
           title: Module is the type for VersionInfo
+      cosmos_sdk_version:
+        type: string
     description: VersionInfo is the type for the GetNodeInfoResponse message.
   tendermint.crypto.PublicKey:
     type: object
@@ -38014,6 +40627,23 @@ definitions:
             format: uint64
           voter:
             type: string
+          option:
+            description: >-
+              Deprecated: Prefer to use `options` instead. This field is set in
+              queries
+
+              if and only if `len(options) == 1` and that option has weight 1.
+              In all
+
+              other cases, this field will default to VOTE_OPTION_UNSPECIFIED.
+            type: string
+            enum:
+              - VOTE_OPTION_UNSPECIFIED
+              - VOTE_OPTION_YES
+              - VOTE_OPTION_ABSTAIN
+              - VOTE_OPTION_NO
+              - VOTE_OPTION_NO_WITH_VETO
+            default: VOTE_OPTION_UNSPECIFIED
           options:
             type: array
             items:
@@ -38057,6 +40687,23 @@ definitions:
               format: uint64
             voter:
               type: string
+            option:
+              description: >-
+                Deprecated: Prefer to use `options` instead. This field is set
+                in queries
+
+                if and only if `len(options) == 1` and that option has weight 1.
+                In all
+
+                other cases, this field will default to VOTE_OPTION_UNSPECIFIED.
+              type: string
+              enum:
+                - VOTE_OPTION_UNSPECIFIED
+                - VOTE_OPTION_YES
+                - VOTE_OPTION_ABSTAIN
+                - VOTE_OPTION_NO
+                - VOTE_OPTION_NO_WITH_VETO
+              default: VOTE_OPTION_UNSPECIFIED
             options:
               type: array
               items:
@@ -38148,6 +40795,23 @@ definitions:
         format: uint64
       voter:
         type: string
+      option:
+        description: >-
+          Deprecated: Prefer to use `options` instead. This field is set in
+          queries
+
+          if and only if `len(options) == 1` and that option has weight 1. In
+          all
+
+          other cases, this field will default to VOTE_OPTION_UNSPECIFIED.
+        type: string
+        enum:
+          - VOTE_OPTION_UNSPECIFIED
+          - VOTE_OPTION_YES
+          - VOTE_OPTION_ABSTAIN
+          - VOTE_OPTION_NO
+          - VOTE_OPTION_NO_WITH_VETO
+        default: VOTE_OPTION_UNSPECIFIED
       options:
         type: array
         items:
@@ -39092,11 +41756,6 @@ definitions:
       bond_denom:
         type: string
         description: bond_denom defines the bondable coin denomination.
-      power_reduction:
-        type: string
-        title: >-
-          power_reduction is the amount of staking tokens required for 1 unit of
-          consensus-engine power
     description: Params defines the parameters for the staking module.
   cosmos.staking.v1beta1.Pool:
     type: object
@@ -40337,11 +42996,6 @@ definitions:
           bond_denom:
             type: string
             description: bond_denom defines the bondable coin denomination.
-          power_reduction:
-            type: string
-            title: >-
-              power_reduction is the amount of staking tokens required for 1
-              unit of consensus-engine power
     description: QueryParamsResponse is response type for the Query/Params RPC method.
   cosmos.staking.v1beta1.QueryPoolResponse:
     type: object
@@ -44876,6 +47530,16 @@ definitions:
           Height is
 
           reached and the software will exit.
+      time:
+        type: string
+        format: date-time
+        description: >-
+          Deprecated: Time based upgrades have been deprecated. Time based
+          upgrade logic
+
+          has been removed from the SDK.
+
+          If this field is not empty, an error will be thrown.
       height:
         type: string
         format: int64
@@ -44887,6 +47551,165 @@ definitions:
         title: |-
           Any application specific upgrade info to be included on-chain
           such as a git commit that validators could automatically upgrade to
+      upgraded_client_state:
+        type: object
+        properties:
+          type_url:
+            type: string
+            description: >-
+              A URL/resource name that uniquely identifies the type of the
+              serialized
+
+              protocol buffer message. This string must contain at least
+
+              one "/" character. The last segment of the URL's path must
+              represent
+
+              the fully qualified name of the type (as in
+
+              `path/google.protobuf.Duration`). The name should be in a
+              canonical form
+
+              (e.g., leading "." is not accepted).
+
+
+              In practice, teams usually precompile into the binary all types
+              that they
+
+              expect it to use in the context of Any. However, for URLs which
+              use the
+
+              scheme `http`, `https`, or no scheme, one can optionally set up a
+              type
+
+              server that maps type URLs to message definitions as follows:
+
+
+              * If no scheme is provided, `https` is assumed.
+
+              * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+                value in binary format, or produce an error.
+              * Applications are allowed to cache lookup results based on the
+                URL, or have them precompiled into a binary to avoid any
+                lookup. Therefore, binary compatibility needs to be preserved
+                on changes to types. (Use versioned type names to manage
+                breaking changes.)
+
+              Note: this functionality is not currently available in the
+              official
+
+              protobuf release, and it is not used for type URLs beginning with
+
+              type.googleapis.com.
+
+
+              Schemes other than `http`, `https` (or the empty scheme) might be
+
+              used with implementation specific semantics.
+          value:
+            type: string
+            format: byte
+            description: >-
+              Must be a valid serialized protocol buffer of the above specified
+              type.
+        description: >-
+          `Any` contains an arbitrary serialized protocol buffer message along
+          with a
+
+          URL that describes the type of the serialized message.
+
+
+          Protobuf library provides support to pack/unpack Any values in the
+          form
+
+          of utility functions or additional generated methods of the Any type.
+
+
+          Example 1: Pack and unpack a message in C++.
+
+              Foo foo = ...;
+              Any any;
+              any.PackFrom(foo);
+              ...
+              if (any.UnpackTo(&foo)) {
+                ...
+              }
+
+          Example 2: Pack and unpack a message in Java.
+
+              Foo foo = ...;
+              Any any = Any.pack(foo);
+              ...
+              if (any.is(Foo.class)) {
+                foo = any.unpack(Foo.class);
+              }
+
+           Example 3: Pack and unpack a message in Python.
+
+              foo = Foo(...)
+              any = Any()
+              any.Pack(foo)
+              ...
+              if any.Is(Foo.DESCRIPTOR):
+                any.Unpack(foo)
+                ...
+
+           Example 4: Pack and unpack a message in Go
+
+               foo := &pb.Foo{...}
+               any, err := ptypes.MarshalAny(foo)
+               ...
+               foo := &pb.Foo{}
+               if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                 ...
+               }
+
+          The pack methods provided by protobuf library will by default use
+
+          'type.googleapis.com/full.type.name' as the type URL and the unpack
+
+          methods only use the fully qualified type name after the last '/'
+
+          in the type URL, for example "foo.bar.com/x/y.z" will yield type
+
+          name "y.z".
+
+
+
+          JSON
+
+          ====
+
+          The JSON representation of an `Any` value uses the regular
+
+          representation of the deserialized, embedded message, with an
+
+          additional field `@type` which contains the type URL. Example:
+
+              package google.profile;
+              message Person {
+                string first_name = 1;
+                string last_name = 2;
+              }
+
+              {
+                "@type": "type.googleapis.com/google.profile.Person",
+                "firstName": <string>,
+                "lastName": <string>
+              }
+
+          If the embedded message type is well-known and has a custom JSON
+
+          representation, that representation will be embedded adding a field
+
+          `value` which holds the custom JSON in addition to the `@type`
+
+          field. Example (for message [google.protobuf.Duration][]):
+
+              {
+                "@type": "type.googleapis.com/google.protobuf.Duration",
+                "value": "1.212s"
+              }
     description: >-
       Plan specifies information about a planned upgrade and when it should
       occur.
@@ -44931,6 +47754,16 @@ definitions:
               Height is
 
               reached and the software will exit.
+          time:
+            type: string
+            format: date-time
+            description: >-
+              Deprecated: Time based upgrades have been deprecated. Time based
+              upgrade logic
+
+              has been removed from the SDK.
+
+              If this field is not empty, an error will be thrown.
           height:
             type: string
             format: int64
@@ -44944,6 +47777,171 @@ definitions:
 
               such as a git commit that validators could automatically upgrade
               to
+          upgraded_client_state:
+            type: object
+            properties:
+              type_url:
+                type: string
+                description: >-
+                  A URL/resource name that uniquely identifies the type of the
+                  serialized
+
+                  protocol buffer message. This string must contain at least
+
+                  one "/" character. The last segment of the URL's path must
+                  represent
+
+                  the fully qualified name of the type (as in
+
+                  `path/google.protobuf.Duration`). The name should be in a
+                  canonical form
+
+                  (e.g., leading "." is not accepted).
+
+
+                  In practice, teams usually precompile into the binary all
+                  types that they
+
+                  expect it to use in the context of Any. However, for URLs
+                  which use the
+
+                  scheme `http`, `https`, or no scheme, one can optionally set
+                  up a type
+
+                  server that maps type URLs to message definitions as follows:
+
+
+                  * If no scheme is provided, `https` is assumed.
+
+                  * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+                    value in binary format, or produce an error.
+                  * Applications are allowed to cache lookup results based on
+                  the
+                    URL, or have them precompiled into a binary to avoid any
+                    lookup. Therefore, binary compatibility needs to be preserved
+                    on changes to types. (Use versioned type names to manage
+                    breaking changes.)
+
+                  Note: this functionality is not currently available in the
+                  official
+
+                  protobuf release, and it is not used for type URLs beginning
+                  with
+
+                  type.googleapis.com.
+
+
+                  Schemes other than `http`, `https` (or the empty scheme) might
+                  be
+
+                  used with implementation specific semantics.
+              value:
+                type: string
+                format: byte
+                description: >-
+                  Must be a valid serialized protocol buffer of the above
+                  specified type.
+            description: >-
+              `Any` contains an arbitrary serialized protocol buffer message
+              along with a
+
+              URL that describes the type of the serialized message.
+
+
+              Protobuf library provides support to pack/unpack Any values in the
+              form
+
+              of utility functions or additional generated methods of the Any
+              type.
+
+
+              Example 1: Pack and unpack a message in C++.
+
+                  Foo foo = ...;
+                  Any any;
+                  any.PackFrom(foo);
+                  ...
+                  if (any.UnpackTo(&foo)) {
+                    ...
+                  }
+
+              Example 2: Pack and unpack a message in Java.
+
+                  Foo foo = ...;
+                  Any any = Any.pack(foo);
+                  ...
+                  if (any.is(Foo.class)) {
+                    foo = any.unpack(Foo.class);
+                  }
+
+               Example 3: Pack and unpack a message in Python.
+
+                  foo = Foo(...)
+                  any = Any()
+                  any.Pack(foo)
+                  ...
+                  if any.Is(Foo.DESCRIPTOR):
+                    any.Unpack(foo)
+                    ...
+
+               Example 4: Pack and unpack a message in Go
+
+                   foo := &pb.Foo{...}
+                   any, err := ptypes.MarshalAny(foo)
+                   ...
+                   foo := &pb.Foo{}
+                   if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                     ...
+                   }
+
+              The pack methods provided by protobuf library will by default use
+
+              'type.googleapis.com/full.type.name' as the type URL and the
+              unpack
+
+              methods only use the fully qualified type name after the last '/'
+
+              in the type URL, for example "foo.bar.com/x/y.z" will yield type
+
+              name "y.z".
+
+
+
+              JSON
+
+              ====
+
+              The JSON representation of an `Any` value uses the regular
+
+              representation of the deserialized, embedded message, with an
+
+              additional field `@type` which contains the type URL. Example:
+
+                  package google.profile;
+                  message Person {
+                    string first_name = 1;
+                    string last_name = 2;
+                  }
+
+                  {
+                    "@type": "type.googleapis.com/google.profile.Person",
+                    "firstName": <string>,
+                    "lastName": <string>
+                  }
+
+              If the embedded message type is well-known and has a custom JSON
+
+              representation, that representation will be embedded adding a
+              field
+
+              `value` which holds the custom JSON in addition to the `@type`
+
+              field. Example (for message [google.protobuf.Duration][]):
+
+                  {
+                    "@type": "type.googleapis.com/google.protobuf.Duration",
+                    "value": "1.212s"
+                  }
     description: >-
       QueryCurrentPlanResponse is the response type for the Query/CurrentPlan
       RPC
@@ -44984,6 +47982,649 @@ definitions:
       Query/UpgradedConsensusState
 
       RPC method.
+  cosmos.authz.v1beta1.Grant:
+    type: object
+    properties:
+      authorization:
+        type: object
+        properties:
+          type_url:
+            type: string
+            description: >-
+              A URL/resource name that uniquely identifies the type of the
+              serialized
+
+              protocol buffer message. This string must contain at least
+
+              one "/" character. The last segment of the URL's path must
+              represent
+
+              the fully qualified name of the type (as in
+
+              `path/google.protobuf.Duration`). The name should be in a
+              canonical form
+
+              (e.g., leading "." is not accepted).
+
+
+              In practice, teams usually precompile into the binary all types
+              that they
+
+              expect it to use in the context of Any. However, for URLs which
+              use the
+
+              scheme `http`, `https`, or no scheme, one can optionally set up a
+              type
+
+              server that maps type URLs to message definitions as follows:
+
+
+              * If no scheme is provided, `https` is assumed.
+
+              * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+                value in binary format, or produce an error.
+              * Applications are allowed to cache lookup results based on the
+                URL, or have them precompiled into a binary to avoid any
+                lookup. Therefore, binary compatibility needs to be preserved
+                on changes to types. (Use versioned type names to manage
+                breaking changes.)
+
+              Note: this functionality is not currently available in the
+              official
+
+              protobuf release, and it is not used for type URLs beginning with
+
+              type.googleapis.com.
+
+
+              Schemes other than `http`, `https` (or the empty scheme) might be
+
+              used with implementation specific semantics.
+          value:
+            type: string
+            format: byte
+            description: >-
+              Must be a valid serialized protocol buffer of the above specified
+              type.
+        description: >-
+          `Any` contains an arbitrary serialized protocol buffer message along
+          with a
+
+          URL that describes the type of the serialized message.
+
+
+          Protobuf library provides support to pack/unpack Any values in the
+          form
+
+          of utility functions or additional generated methods of the Any type.
+
+
+          Example 1: Pack and unpack a message in C++.
+
+              Foo foo = ...;
+              Any any;
+              any.PackFrom(foo);
+              ...
+              if (any.UnpackTo(&foo)) {
+                ...
+              }
+
+          Example 2: Pack and unpack a message in Java.
+
+              Foo foo = ...;
+              Any any = Any.pack(foo);
+              ...
+              if (any.is(Foo.class)) {
+                foo = any.unpack(Foo.class);
+              }
+
+           Example 3: Pack and unpack a message in Python.
+
+              foo = Foo(...)
+              any = Any()
+              any.Pack(foo)
+              ...
+              if any.Is(Foo.DESCRIPTOR):
+                any.Unpack(foo)
+                ...
+
+           Example 4: Pack and unpack a message in Go
+
+               foo := &pb.Foo{...}
+               any, err := ptypes.MarshalAny(foo)
+               ...
+               foo := &pb.Foo{}
+               if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                 ...
+               }
+
+          The pack methods provided by protobuf library will by default use
+
+          'type.googleapis.com/full.type.name' as the type URL and the unpack
+
+          methods only use the fully qualified type name after the last '/'
+
+          in the type URL, for example "foo.bar.com/x/y.z" will yield type
+
+          name "y.z".
+
+
+
+          JSON
+
+          ====
+
+          The JSON representation of an `Any` value uses the regular
+
+          representation of the deserialized, embedded message, with an
+
+          additional field `@type` which contains the type URL. Example:
+
+              package google.profile;
+              message Person {
+                string first_name = 1;
+                string last_name = 2;
+              }
+
+              {
+                "@type": "type.googleapis.com/google.profile.Person",
+                "firstName": <string>,
+                "lastName": <string>
+              }
+
+          If the embedded message type is well-known and has a custom JSON
+
+          representation, that representation will be embedded adding a field
+
+          `value` which holds the custom JSON in addition to the `@type`
+
+          field. Example (for message [google.protobuf.Duration][]):
+
+              {
+                "@type": "type.googleapis.com/google.protobuf.Duration",
+                "value": "1.212s"
+              }
+      expiration:
+        type: string
+        format: date-time
+    description: |-
+      Grant gives permissions to execute
+      the provide method with expiration time.
+  cosmos.authz.v1beta1.QueryGrantsResponse:
+    type: object
+    properties:
+      grants:
+        type: array
+        items:
+          type: object
+          properties:
+            authorization:
+              type: object
+              properties:
+                type_url:
+                  type: string
+                  description: >-
+                    A URL/resource name that uniquely identifies the type of the
+                    serialized
+
+                    protocol buffer message. This string must contain at least
+
+                    one "/" character. The last segment of the URL's path must
+                    represent
+
+                    the fully qualified name of the type (as in
+
+                    `path/google.protobuf.Duration`). The name should be in a
+                    canonical form
+
+                    (e.g., leading "." is not accepted).
+
+
+                    In practice, teams usually precompile into the binary all
+                    types that they
+
+                    expect it to use in the context of Any. However, for URLs
+                    which use the
+
+                    scheme `http`, `https`, or no scheme, one can optionally set
+                    up a type
+
+                    server that maps type URLs to message definitions as
+                    follows:
+
+
+                    * If no scheme is provided, `https` is assumed.
+
+                    * An HTTP GET on the URL must yield a
+                    [google.protobuf.Type][]
+                      value in binary format, or produce an error.
+                    * Applications are allowed to cache lookup results based on
+                    the
+                      URL, or have them precompiled into a binary to avoid any
+                      lookup. Therefore, binary compatibility needs to be preserved
+                      on changes to types. (Use versioned type names to manage
+                      breaking changes.)
+
+                    Note: this functionality is not currently available in the
+                    official
+
+                    protobuf release, and it is not used for type URLs beginning
+                    with
+
+                    type.googleapis.com.
+
+
+                    Schemes other than `http`, `https` (or the empty scheme)
+                    might be
+
+                    used with implementation specific semantics.
+                value:
+                  type: string
+                  format: byte
+                  description: >-
+                    Must be a valid serialized protocol buffer of the above
+                    specified type.
+              description: >-
+                `Any` contains an arbitrary serialized protocol buffer message
+                along with a
+
+                URL that describes the type of the serialized message.
+
+
+                Protobuf library provides support to pack/unpack Any values in
+                the form
+
+                of utility functions or additional generated methods of the Any
+                type.
+
+
+                Example 1: Pack and unpack a message in C++.
+
+                    Foo foo = ...;
+                    Any any;
+                    any.PackFrom(foo);
+                    ...
+                    if (any.UnpackTo(&foo)) {
+                      ...
+                    }
+
+                Example 2: Pack and unpack a message in Java.
+
+                    Foo foo = ...;
+                    Any any = Any.pack(foo);
+                    ...
+                    if (any.is(Foo.class)) {
+                      foo = any.unpack(Foo.class);
+                    }
+
+                 Example 3: Pack and unpack a message in Python.
+
+                    foo = Foo(...)
+                    any = Any()
+                    any.Pack(foo)
+                    ...
+                    if any.Is(Foo.DESCRIPTOR):
+                      any.Unpack(foo)
+                      ...
+
+                 Example 4: Pack and unpack a message in Go
+
+                     foo := &pb.Foo{...}
+                     any, err := ptypes.MarshalAny(foo)
+                     ...
+                     foo := &pb.Foo{}
+                     if err := ptypes.UnmarshalAny(any, foo); err != nil {
+                       ...
+                     }
+
+                The pack methods provided by protobuf library will by default
+                use
+
+                'type.googleapis.com/full.type.name' as the type URL and the
+                unpack
+
+                methods only use the fully qualified type name after the last
+                '/'
+
+                in the type URL, for example "foo.bar.com/x/y.z" will yield type
+
+                name "y.z".
+
+
+
+                JSON
+
+                ====
+
+                The JSON representation of an `Any` value uses the regular
+
+                representation of the deserialized, embedded message, with an
+
+                additional field `@type` which contains the type URL. Example:
+
+                    package google.profile;
+                    message Person {
+                      string first_name = 1;
+                      string last_name = 2;
+                    }
+
+                    {
+                      "@type": "type.googleapis.com/google.profile.Person",
+                      "firstName": <string>,
+                      "lastName": <string>
+                    }
+
+                If the embedded message type is well-known and has a custom JSON
+
+                representation, that representation will be embedded adding a
+                field
+
+                `value` which holds the custom JSON in addition to the `@type`
+
+                field. Example (for message [google.protobuf.Duration][]):
+
+                    {
+                      "@type": "type.googleapis.com/google.protobuf.Duration",
+                      "value": "1.212s"
+                    }
+            expiration:
+              type: string
+              format: date-time
+          description: |-
+            Grant gives permissions to execute
+            the provide method with expiration time.
+        description: authorizations is a list of grants granted for grantee by granter.
+      pagination:
+        description: pagination defines an pagination for the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            title: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+    description: >-
+      QueryGrantsResponse is the response type for the Query/Authorizations RPC
+      method.
+  cosmos.feegrant.v1beta1.Grant:
+    type: object
+    properties:
+      granter:
+        type: string
+        description: >-
+          granter is the address of the user granting an allowance of their
+          funds.
+      grantee:
+        type: string
+        description: >-
+          grantee is the address of the user being granted an allowance of
+          another user's funds.
+      allowance:
+        description: allowance can be any of basic and filtered fee allowance.
+        type: object
+        properties:
+          type_url:
+            type: string
+            description: >-
+              A URL/resource name that uniquely identifies the type of the
+              serialized
+
+              protocol buffer message. This string must contain at least
+
+              one "/" character. The last segment of the URL's path must
+              represent
+
+              the fully qualified name of the type (as in
+
+              `path/google.protobuf.Duration`). The name should be in a
+              canonical form
+
+              (e.g., leading "." is not accepted).
+
+
+              In practice, teams usually precompile into the binary all types
+              that they
+
+              expect it to use in the context of Any. However, for URLs which
+              use the
+
+              scheme `http`, `https`, or no scheme, one can optionally set up a
+              type
+
+              server that maps type URLs to message definitions as follows:
+
+
+              * If no scheme is provided, `https` is assumed.
+
+              * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+                value in binary format, or produce an error.
+              * Applications are allowed to cache lookup results based on the
+                URL, or have them precompiled into a binary to avoid any
+                lookup. Therefore, binary compatibility needs to be preserved
+                on changes to types. (Use versioned type names to manage
+                breaking changes.)
+
+              Note: this functionality is not currently available in the
+              official
+
+              protobuf release, and it is not used for type URLs beginning with
+
+              type.googleapis.com.
+
+
+              Schemes other than `http`, `https` (or the empty scheme) might be
+
+              used with implementation specific semantics.
+          value:
+            type: string
+            format: byte
+            description: >-
+              Must be a valid serialized protocol buffer of the above specified
+              type.
+    title: Grant is stored in the KVStore to record a grant with full context
+  cosmos.feegrant.v1beta1.QueryAllowanceResponse:
+    type: object
+    properties:
+      allowance:
+        description: allowance is a allowance granted for grantee by granter.
+        type: object
+        properties:
+          granter:
+            type: string
+            description: >-
+              granter is the address of the user granting an allowance of their
+              funds.
+          grantee:
+            type: string
+            description: >-
+              grantee is the address of the user being granted an allowance of
+              another user's funds.
+          allowance:
+            description: allowance can be any of basic and filtered fee allowance.
+            type: object
+            properties:
+              type_url:
+                type: string
+                description: >-
+                  A URL/resource name that uniquely identifies the type of the
+                  serialized
+
+                  protocol buffer message. This string must contain at least
+
+                  one "/" character. The last segment of the URL's path must
+                  represent
+
+                  the fully qualified name of the type (as in
+
+                  `path/google.protobuf.Duration`). The name should be in a
+                  canonical form
+
+                  (e.g., leading "." is not accepted).
+
+
+                  In practice, teams usually precompile into the binary all
+                  types that they
+
+                  expect it to use in the context of Any. However, for URLs
+                  which use the
+
+                  scheme `http`, `https`, or no scheme, one can optionally set
+                  up a type
+
+                  server that maps type URLs to message definitions as follows:
+
+
+                  * If no scheme is provided, `https` is assumed.
+
+                  * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+                    value in binary format, or produce an error.
+                  * Applications are allowed to cache lookup results based on
+                  the
+                    URL, or have them precompiled into a binary to avoid any
+                    lookup. Therefore, binary compatibility needs to be preserved
+                    on changes to types. (Use versioned type names to manage
+                    breaking changes.)
+
+                  Note: this functionality is not currently available in the
+                  official
+
+                  protobuf release, and it is not used for type URLs beginning
+                  with
+
+                  type.googleapis.com.
+
+
+                  Schemes other than `http`, `https` (or the empty scheme) might
+                  be
+
+                  used with implementation specific semantics.
+              value:
+                type: string
+                format: byte
+                description: >-
+                  Must be a valid serialized protocol buffer of the above
+                  specified type.
+        title: Grant is stored in the KVStore to record a grant with full context
+    description: >-
+      QueryAllowanceResponse is the response type for the Query/Allowance RPC
+      method.
+  cosmos.feegrant.v1beta1.QueryAllowancesResponse:
+    type: object
+    properties:
+      allowances:
+        type: array
+        items:
+          type: object
+          properties:
+            granter:
+              type: string
+              description: >-
+                granter is the address of the user granting an allowance of
+                their funds.
+            grantee:
+              type: string
+              description: >-
+                grantee is the address of the user being granted an allowance of
+                another user's funds.
+            allowance:
+              description: allowance can be any of basic and filtered fee allowance.
+              type: object
+              properties:
+                type_url:
+                  type: string
+                  description: >-
+                    A URL/resource name that uniquely identifies the type of the
+                    serialized
+
+                    protocol buffer message. This string must contain at least
+
+                    one "/" character. The last segment of the URL's path must
+                    represent
+
+                    the fully qualified name of the type (as in
+
+                    `path/google.protobuf.Duration`). The name should be in a
+                    canonical form
+
+                    (e.g., leading "." is not accepted).
+
+
+                    In practice, teams usually precompile into the binary all
+                    types that they
+
+                    expect it to use in the context of Any. However, for URLs
+                    which use the
+
+                    scheme `http`, `https`, or no scheme, one can optionally set
+                    up a type
+
+                    server that maps type URLs to message definitions as
+                    follows:
+
+
+                    * If no scheme is provided, `https` is assumed.
+
+                    * An HTTP GET on the URL must yield a
+                    [google.protobuf.Type][]
+                      value in binary format, or produce an error.
+                    * Applications are allowed to cache lookup results based on
+                    the
+                      URL, or have them precompiled into a binary to avoid any
+                      lookup. Therefore, binary compatibility needs to be preserved
+                      on changes to types. (Use versioned type names to manage
+                      breaking changes.)
+
+                    Note: this functionality is not currently available in the
+                    official
+
+                    protobuf release, and it is not used for type URLs beginning
+                    with
+
+                    type.googleapis.com.
+
+
+                    Schemes other than `http`, `https` (or the empty scheme)
+                    might be
+
+                    used with implementation specific semantics.
+                value:
+                  type: string
+                  format: byte
+                  description: >-
+                    Must be a valid serialized protocol buffer of the above
+                    specified type.
+          title: Grant is stored in the KVStore to record a grant with full context
+        description: allowances are allowance's granted for grantee by granter.
+      pagination:
+        description: pagination defines an pagination for the response.
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            title: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+    description: >-
+      QueryAllowancesResponse is the response type for the Query/Allowances RPC
+      method.
 securityDefinitions:
   kms:
     type: basic
