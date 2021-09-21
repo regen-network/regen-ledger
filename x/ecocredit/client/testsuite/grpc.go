@@ -313,7 +313,7 @@ func (s *IntegrationTestSuite) TestGetSupply() {
 			"denomination didn't match the format",
 		},
 		{
-			"valid test",
+			"valid request",
 			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s/supply", val.APIAddress, "C01-20210101-20210201-001"),
 			false,
 			"",
