@@ -267,7 +267,7 @@ func (s *IntegrationTestSuite) TestGetBalance() {
 			"decoding bech32 failed",
 		},
 		{
-			"valid test",
+			"valid request",
 			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s/balance/%s", val.APIAddress, "C01-20210101-20210201-002", val.Address.String()),
 			false,
 			"",
