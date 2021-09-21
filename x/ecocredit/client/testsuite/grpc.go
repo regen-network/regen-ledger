@@ -144,7 +144,7 @@ func (s *IntegrationTestSuite) TestGetBatches() {
 		},
 		{
 			"valid request with pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/classes/%sbatches?pagination.limit=2", val.APIAddress, "C01"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/classes/%s/batches?pagination.limit=2", val.APIAddress, "C01"),
 			2,
 			false,
 			"",
