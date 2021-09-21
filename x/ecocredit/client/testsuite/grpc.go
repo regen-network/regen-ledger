@@ -198,7 +198,7 @@ func (s *IntegrationTestSuite) TestGetBatch() {
 			"",
 		},
 		{
-			"valid test",
+			"valid request",
 			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s", val.APIAddress, "C01-20210101-20210201-002"),
 			false,
 			"",
