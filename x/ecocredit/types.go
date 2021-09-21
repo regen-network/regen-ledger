@@ -1,23 +1,30 @@
 package ecocredit
 
 import (
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strings"
 	"unicode"
+
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/orm"
 )
 
 var _, _, _ orm.PrimaryKeyed = &ClassInfo{}, &BatchInfo{}, &CreditTypeSeq{}
 
+// PrimaryKeyFields returns the fields of the object that will make up the
+// primary key for ClassInfo.
 func (m *ClassInfo) PrimaryKeyFields() []interface{} {
 	return []interface{}{m.ClassId}
 }
 
+// PrimaryKeyFields returns the fields of the object that will make up the
+// primary key for BatchInfo.
 func (m *BatchInfo) PrimaryKeyFields() []interface{} {
 	return []interface{}{m.BatchDenom}
 }
 
+// PrimaryKeyFields returns the fields of the object that will make up the
+// primary key for CreditTypeSeq.
 func (m *CreditTypeSeq) PrimaryKeyFields() []interface{} {
 	return []interface{}{m.Abbreviation}
 }

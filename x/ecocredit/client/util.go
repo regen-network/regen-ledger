@@ -107,6 +107,7 @@ func parseCredits(creditsStr string) (credits, error) {
 	}, nil
 }
 
+// ParseDate parses a date using the format yyyy-mm-dd.
 func ParseDate(field string, date string) (time.Time, error) {
 	t, err := time.Parse("2006-01-02", date)
 	if err != nil {

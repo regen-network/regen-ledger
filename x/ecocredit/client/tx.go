@@ -45,6 +45,7 @@ func txflags(cmd *cobra.Command) *cobra.Command {
 	return cmd
 }
 
+// TxCreateClassCmd returns a transaction command that creates a credit class.
 func TxCreateClassCmd() *cobra.Command {
 	return txflags(&cobra.Command{
 		Use:   "create-class [issuer[,issuer]*] [credit type name] [metadata]",
@@ -117,6 +118,8 @@ const (
 	FlagMetadata        string = "metadata"
 )
 
+// TxGenBatchJSONCmd returns a transaction command that generates JSON to
+// represent a new credit batch.
 func TxGenBatchJSONCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "gen-batch-json --class-id [class_id] --issuances [issuances] --start-date [start_date] --end-date [end_date] --project-location [project_location] --metadata [metadata]",
@@ -221,6 +224,7 @@ Required Flags:
 	return cmd
 }
 
+// TxCreateBatchCmd returns a transaction command that creates a credit batch.
 func TxCreateBatchCmd() *cobra.Command {
 
 	return txflags(&cobra.Command{
@@ -269,6 +273,8 @@ Parameters:
 	})
 }
 
+// TxSendCmd returns a transaction command that sends credits from one account
+// to another.
 func TxSendCmd() *cobra.Command {
 	return txflags(&cobra.Command{
 		Use:   "send [recipient] [credits]",
@@ -299,6 +305,7 @@ Parameters:
 	})
 }
 
+// TxRetireCmd returns a transaction command that retires credits.
 func TxRetireCmd() *cobra.Command {
 	return txflags(&cobra.Command{
 		Use:   "retire [credits] [retirement_location]",
@@ -334,6 +341,7 @@ Parameters:
 	})
 }
 
+// TxCancelCmd returns a transaction command that cancels credits.
 func TxCancelCmd() *cobra.Command {
 	return txflags(&cobra.Command{
 		Use:   "cancel [credits]",
