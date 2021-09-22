@@ -778,9 +778,8 @@ func (s *IntegrationTestSuite) TestTxSend() {
 				},
 				s.commonTxFlags()...,
 			),
-			expectErr:       true,
-			errInTxResponse: true,
-			expectedErrMsg:  "abcde is not a valid credit batch denom",
+			expectErr:      true,
+			expectedErrMsg: "denomination didn't match the format",
 		},
 		{
 			name: "invalid tradable amount",
@@ -930,9 +929,8 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 				},
 				s.commonTxFlags()...,
 			),
-			expectErr:       true,
-			errInTxResponse: true,
-			expectedErrMsg:  "abcde is not a valid credit batch denom",
+			expectErr:      true,
+			expectedErrMsg: "denomination didn't match the format",
 		},
 		{
 			name: "invalid amount",
