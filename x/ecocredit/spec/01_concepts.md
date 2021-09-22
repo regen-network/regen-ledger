@@ -1,13 +1,5 @@
 # Concepts
 
-## Credit Type
-
-A credit type is the primary indicator for the methodology defined within a credit class. A credit type includes a name (e.g. carbon, biodiversity), an abbreviation (a set of 1-3 uppercase characters), a measurement unit (e.g. kilograms, tons), and a decimal precision.
-
-The credit type abbreviation is used to construct the credit class ID. For example, "C1" is the ID for the first credit class that uses the "carbon" credit type where "C" is the credit type abbreviation and "1" is the sequence number of the credit class for the given credit type.
-
-Credit types are listed as an on-chain parameter. Adding a new credit type to the list of approved credit types requires a parameter change proposal.
-
 ## Credit Class
 
 A credit class is the primary abstraction for ecosystem service credits and is defined by 5 attributes:
@@ -15,9 +7,17 @@ A credit class is the primary abstraction for ecosystem service credits and is d
 - **admin**: The regen address who can update fields/attributes of this credit class
 - **issuer list**: The list of regen addresses who are allowed to issue credit batches under this credit class
 - **credit type**: The primary indicator for this credit class (e.g. Carbon measured in Tons Equiv. CO2 sequestered)
-- **metadata**: A byte array (up to 256 bytes) which can be used to store small amounts of metadata, or a URI that points to an off-chain resource for querying more complete metadata information. This usually would include descriptive information about the credit class's acceptable methodologies for monitoring changes in ecological state
+- **metadata**: A byte array (up to 256 bytes) which can be used to store small amounts of metadata, or a URI that points to an off-chain resource for querying more complete metadata information. This usually would include descriptive information about the credit class's acceptable methodologies for monitoring changes in ecological state.
 
 Once a new credit class is created, credits can be issued at-will in distinct batches by any address in the **issuer list** of the corresponding credit class.
+
+## Credit Type
+
+A credit type is the primary indicator for the methodology defined within a credit class. A credit type includes a name (e.g. carbon, biodiversity), an abbreviation (a set of 1-3 uppercase characters), a measurement unit (e.g. kilograms, tons), and a decimal precision.
+
+The credit type abbreviation is used to construct the credit class ID. For example, "C1" is the ID for the first credit class that uses the "carbon" credit type where "C" is the credit type abbreviation and "1" is the sequence number of the credit class for the given credit type.
+
+Credit types are listed as an on-chain parameter. Adding a new credit type to the list of approved credit types requires a parameter change proposal.
 
 ## Credit Class Creator Allowlist
 
@@ -35,9 +35,11 @@ The credit issuers are defined within a credit class as a list of addresses with
 
 ## Credit Batch
 
-Credits are issued in batches by credit issuers granted the authority to issue credits for a given credit class. A credit batch refers to a batch of credits issued at a single point in time. Each credit batch has a unique ID (i.e. denomination) that starts with the abbreviation of the credit type followed by the start date, end date, and batch sequence number.
+Credits are issued in batches by credit issuers granted the authority to issue credits for a given credit class. A credit batch refers to a batch of credits issued at a single point in time.
 
-A credit batch includes information about the issuer of the credit batch and the project location, and any additional information can be attached to the metadata field. The credit batch tracks the total number of active credits and the total number of cancelled credits.
+Each credit batch has a unique ID (i.e. denomination) that starts with the abbreviation of the credit type followed by the start date, end date, and batch sequence number. For example, `C01-20190101-20200101-001` would be the first batch issued (`001`) from the first carbon credit class (`C01`) and the reduction of carbon emissions was measured between `20190101` and `20200101`.
+
+A credit batch also includes information about the issuer of the credit batch and the project location, and any additional information can be attached to the metadata field. The credit batch tracks the total number of active credits and the total number of cancelled credits.
 
 ## Credits
 
@@ -49,4 +51,4 @@ Tradable credits are credits that can be transferred by the owner to another acc
 
 ## Retired Credits
 
-Retired credits are credits that cannot be transferred between accounts nor can they be unretired. Retired credits are equivalent to burned tokens with the exception that retired credits are actively tracked after being retired. Retiring a credit implies that the holder of a credit is “claiming” the credit as an offset. Credits can be retired upon issuance, retired upon transfer, and retired by the owner of the credits.
+Retired credits are credits that cannot be transferred between accounts nor can they be unretired. Retired credits are equivalent to burned tokens with the exception that retired credits are actively tracked after being retired. Retiring a credit implies that the holder of a credit is “claiming” the credit as an offset. Credits can be retired upon issuance, retired upon transfer, and retired by the owner of the credits. The retirement location is required upon retirement.
