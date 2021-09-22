@@ -31,7 +31,7 @@ type Manager struct {
 	initGenesisHandlers        map[string]module.InitGenesisHandler
 	exportGenesisHandlers      map[string]module.ExportGenesisHandler
 	registerInvariantsHandler  map[string]RegisterInvariantsHandler
-	weightedOperationsHandlers map[string]WeightedOperationsHandler
+	weightedOperationsHandlers []WeightedOperationsHandler
 }
 
 // RegisterInvariants registers all module routes and module querier routes
@@ -58,11 +58,11 @@ func NewManager(baseApp *baseapp.BaseApp, cdc *codec.ProtoCodec) *Manager {
 			msgServiceRouter: baseApp.MsgServiceRouter(),
 		},
 		requiredServices:           map[reflect.Type]bool{},
-		weightedOperationsHandlers: map[string]WeightedOperationsHandler{},
+		weightedOperationsHandlers: []WeightedOperationsHandler{},
 	}
 }
 
-func (mm *Manager) GetWeightedOperationsHandlers() map[string]WeightedOperationsHandler {
+func (mm *Manager) GetWeightedOperationsHandlers() []WeightedOperationsHandler {
 	return mm.weightedOperationsHandlers
 }
 
@@ -80,7 +80,7 @@ func (mm *Manager) RegisterGRPCGatewayRoutes(apiSvr *api.Server) {
 
 // RegisterModules registers modules with the Manager and registers their services.
 func (mm *Manager) RegisterModules(modules []module.Module) error {
-	mm.modules = modules
+	mm.modules = append(mm.modules, modules...)
 	// First we register all interface types. This is done for all modules first before registering
 	// any services in case there are any weird dependencies that will cause service initialization to fail.
 	for _, mod := range modules {
@@ -145,7 +145,7 @@ func (mm *Manager) RegisterModules(modules []module.Module) error {
 		mm.exportGenesisHandlers[name] = cfg.exportGenesisHandler
 
 		if cfg.weightedOperationHandler != nil {
-			mm.weightedOperationsHandlers[name] = cfg.weightedOperationHandler
+			mm.weightedOperationsHandlers = append(mm.weightedOperationsHandlers, cfg.weightedOperationHandler)
 		}
 
 		for typ := range cfg.requiredServices {
