@@ -8,7 +8,7 @@ import (
 // buildKeyFromParts encodes and concatenates primary key and index parts.
 // They can be []byte, string, and integer types. The function will return
 // an error if there is a part of any other type.
-// Key parts except the last part follow these rules:
+// Key parts, except the last part, follow these rules:
 //  - []byte is encoded with a single byte length prefix
 //  - strings are null-terminated
 //  - integers are encoded using 4 or 8 byte big endian.
@@ -21,7 +21,6 @@ func buildKeyFromParts(parts []interface{}) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		// bytesSlice[i] = keyPartBytes(part)
 		totalLen += len(bytesSlice[i])
 	}
 	key := make([]byte, 0, totalLen)
@@ -37,19 +36,11 @@ func keyPartBytes(part interface{}, last bool) ([]byte, error) {
 		if last || len(v) == 0 {
 			return v, nil
 		}
-		// if len(v) == 0 {
-		// 	return nil, nil
-		// 	// return nil, errors.Wrap(ErrArgument, "empty index key")
-		// }
 		return AddLengthPrefix(v), nil
 	case string:
 		if last || len(v) == 0 {
 			return []byte(v), nil
 		}
-		// if len(v) == 0 {
-		// 	return nil, nil
-		// 	// return nil, errors.Wrap(ErrArgument, "empty index key")
-		// }
 		return NullTerminatedBytes(v), nil
 	case uint64:
 		return EncodeSequence(v), nil
@@ -79,6 +70,9 @@ func NullTerminatedBytes(s string) []byte {
 	return bytes
 }
 
+// stripRowID returns the RowID from the indexKey. It is the reverse operation
+// to buildKeyFromParts for index keys where the first part is the encoded
+// secondaryIndexKey and the second part is the RowID.
 func stripRowID(indexKey []byte, indexKeyType reflect.Type) (RowID, error) {
 	switch indexKeyType {
 	case reflect.TypeOf(([]byte)(nil)):
