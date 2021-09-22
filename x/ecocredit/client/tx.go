@@ -367,7 +367,7 @@ Parameters:
 
 func TxUpdateClassMetadataCmd() *cobra.Command {
 	return txflags(&cobra.Command{
-		Use:   "update-metadata [class-id] [metadata]",
+		Use:   "update-class-metadata [class-id] [metadata]",
 		Short: "Updates the metadata for a specific credit class",
 		Long: `Updates the metadata for a specific credit class. the '--from' flag must equal the credit class admin.
 
@@ -409,7 +409,7 @@ Parameters:
 
 func TxUpdateClassAdminCmd() *cobra.Command {
 	return txflags(&cobra.Command{
-		Use:   "update-metadata [class-id] [admin]",
+		Use:   "update-class-admin [class-id] [admin]",
 		Short: "Updates the admin for a specific credit class",
 		Long: `Updates the admin for a specific credit class. the '--from' flag must equal the current credit class admin.
                WARNING: Updating the admin replaces the current admin. Be sure the address entered is correct.
@@ -449,14 +449,14 @@ Parameters:
 
 func TxUpdateClassIssuersCmd() *cobra.Command {
 	return txflags(&cobra.Command{
-		Use:   "update-issuers [class-id] [issuers]",
+		Use:   "update-class-issuers [class-id] [issuers]",
 		Short: "Update the list of issuers for a specific credit class",
 		Long: `Update the list of issuers for a specific credit class. the '--from' flag must equal the current credit class admin.
 
 Parameters:
   class-id:  the class id that corresponds with the credit class you want to update
   issuers:   the new list of issuers to replace the current issuers	
-            eg: 'regen tx ecocredit update-admin C01 <list of issuer addresses>`,
+            eg: 'regen tx ecocredit update-class-issuers C01 addr1,addr2,addr3`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 
