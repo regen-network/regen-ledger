@@ -36,28 +36,28 @@ func NewGroupKeeper(storeKey sdk.StoreKey, cdc codec.Codec) GroupKeeper {
 		panic(err.Error())
 	}
 	// note: quite easy to mess with Index prefixes when managed outside. no fail fast on duplicates
-	k.groupByAdminIndex, err = orm.NewIndex(groupTableBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
-		return []orm.RowID{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
+	k.groupByAdminIndex, err = orm.NewIndex(groupTableBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]interface{}, error) {
+		return []interface{}{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
 	})
 	if err != nil {
 		panic(err.Error())
 	}
 	k.groupTable = groupTableBuilder.Build()
 
-	groupMemberTableBuilder, err := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	groupMemberTableBuilder, err := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, storeKey, &testdata.GroupMember{}, cdc)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	k.groupMemberByGroupIndex, err = orm.NewIndex(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
+	k.groupMemberByGroupIndex, err = orm.NewIndex(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]interface{}, error) {
 		group := val.(*testdata.GroupMember).Group
-		return []orm.RowID{[]byte(group)}, nil
+		return []interface{}{[]byte(group)}, nil
 	})
 	if err != nil {
 		panic(err.Error())
 	}
-	k.groupMemberByMemberIndex, err = orm.NewIndex(groupMemberTableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
-		return []orm.RowID{[]byte(val.(*testdata.GroupMember).Member)}, nil
+	k.groupMemberByMemberIndex, err = orm.NewIndex(groupMemberTableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]interface{}, error) {
+		return []interface{}{[]byte(val.(*testdata.GroupMember).Member)}, nil
 	})
 	if err != nil {
 		panic(err.Error())

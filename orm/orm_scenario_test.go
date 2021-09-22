@@ -51,7 +51,8 @@ func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
 	assert.Equal(t, sdk.AccAddress([]byte("admin-address")), loaded.Admin)
 
 	// and exists in MultiKeyIndex
-	exists = k.groupByAdminIndex.Has(ctx, []byte("admin-address"))
+	exists, err = k.groupByAdminIndex.Has(ctx, []byte("admin-address"))
+	require.NoError(t, err)
 	require.True(t, exists)
 
 	// and when loaded
@@ -69,10 +70,12 @@ func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
 	require.NoError(t, err)
 
 	// then indexes are updated, too
-	exists = k.groupByAdminIndex.Has(ctx, []byte("new-admin-address"))
+	exists, err = k.groupByAdminIndex.Has(ctx, []byte("new-admin-address"))
+	require.NoError(t, err)
 	require.True(t, exists)
 
-	exists = k.groupByAdminIndex.Has(ctx, []byte("admin-address"))
+	exists, err = k.groupByAdminIndex.Has(ctx, []byte("admin-address"))
+	require.NoError(t, err)
 	require.False(t, exists)
 
 	// when deleted
@@ -84,7 +87,8 @@ func TestKeeperEndToEndWithAutoUInt64Table(t *testing.T) {
 	require.False(t, exists)
 
 	// and also removed from secondary MultiKeyIndex
-	exists = k.groupByAdminIndex.Has(ctx, []byte("new-admin-address"))
+	exists, err = k.groupByAdminIndex.Has(ctx, []byte("new-admin-address"))
+	require.NoError(t, err)
 	require.False(t, exists)
 }
 
@@ -128,11 +132,12 @@ func TestKeeperEndToEndWithPrimaryKeyTable(t *testing.T) {
 	require.Equal(t, m, loaded)
 
 	// and then the data should exists in MultiKeyIndex
-	exists = k.groupMemberByGroupIndex.Has(ctx, orm.EncodeSequence(groupRowID))
+	exists, err = k.groupMemberByGroupIndex.Has(ctx, groupRowID)
+	require.NoError(t, err)
 	require.True(t, exists)
 
 	// and when loaded from MultiKeyIndex
-	it, err := k.groupMemberByGroupIndex.Get(ctx, orm.EncodeSequence(groupRowID))
+	it, err := k.groupMemberByGroupIndex.Get(ctx, groupRowID)
 	require.NoError(t, err)
 
 	// then values should match as before
@@ -174,7 +179,8 @@ func TestKeeperEndToEndWithPrimaryKeyTable(t *testing.T) {
 	require.False(t, exists)
 
 	// and removed from secondary MultiKeyIndex
-	exists = k.groupMemberByGroupIndex.Has(ctx, orm.EncodeSequence(groupRowID))
+	exists, err = k.groupMemberByGroupIndex.Has(ctx, groupRowID)
+	require.NoError(t, err)
 	require.False(t, exists)
 }
 
@@ -320,7 +326,10 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 		assert.Equal(t, exp, loaded.Admin)
 
 		// and also the indexes
-		require.True(t, k.groupByAdminIndex.Has(ctx, exp))
+		exists, err := k.groupByAdminIndex.Has(ctx, exp)
+		require.NoError(t, err)
+		require.True(t, exists)
+
 		it, err := k.groupByAdminIndex.Get(ctx, exp)
 		require.NoError(t, err)
 		var all []testdata.GroupInfo

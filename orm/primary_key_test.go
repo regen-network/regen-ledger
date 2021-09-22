@@ -23,7 +23,7 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 		testTablePrefix = iota
 	)
 
-	builder, err := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	builder, err := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, cdc)
 	require.NoError(t, err)
 	tb := builder.Build()
 
@@ -246,7 +246,7 @@ func TestContains(t *testing.T) {
 	storeKey := sdk.NewKVStoreKey("test")
 	const testTablePrefix = iota
 
-	builder, err := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	builder, err := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, cdc)
 	require.NoError(t, err)
 	tb := builder.Build()
 

@@ -2,6 +2,9 @@ package orm
 
 import (
 	"fmt"
+
+	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // buildKeyFromParts encodes and concatenates primary key and index parts.
@@ -36,16 +39,22 @@ func keyPartBytes(part interface{}, last bool) ([]byte, error) {
 		if last {
 			return v, nil
 		}
+		if len(v) == 0 {
+			return nil, errors.Wrap(ErrArgument, "empty index key")
+		}
 		return AddLengthPrefix(v), nil
 	case string:
 		if last {
 			return []byte(v), nil
 		}
+		if len(v) == 0 {
+			return nil, errors.Wrap(ErrArgument, "empty index key")
+		}
 		return NullTerminatedBytes(v), nil
 	case uint64:
 		return EncodeSequence(v), nil
 	default:
-		return nil, fmt.Errorf("Type %T not allowed as key part", v)
+		return nil, fmt.Errorf("type %T not allowed as key part", v)
 	}
 }
 
@@ -68,4 +77,29 @@ func NullTerminatedBytes(s string) []byte {
 	bytes := make([]byte, len(s)+1)
 	copy(bytes, s)
 	return bytes
+}
+
+func stripRowID(indexKey []byte, indexerF IndexerFunc, dest codec.ProtoMarshaler) (RowID, error) {
+	keys, err := indexerF(dest)
+	if err != nil {
+		return nil, err
+	}
+	switch v := keys[0].(type) {
+	case []byte:
+		searchableKeyLen := indexKey[0]
+		return indexKey[1+searchableKeyLen:], nil
+	case string:
+		searchableKeyLen := 0
+		for i, b := range indexKey {
+			if b == 0 {
+				searchableKeyLen = i
+				break
+			}
+		}
+		return indexKey[1+searchableKeyLen:], nil
+	case uint64:
+		return indexKey[EncodedSeqLength:], nil
+	default:
+		return nil, fmt.Errorf("type %T not allowed as index key", v)
+	}
 }

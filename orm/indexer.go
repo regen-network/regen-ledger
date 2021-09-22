@@ -2,7 +2,6 @@ package orm
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // IndexerFunc creates one or multiple index keys for the source object.
@@ -14,7 +13,7 @@ type UniqueIndexerFunc func(value interface{}) (interface{}, error)
 // Indexer manages the persistence for an Index based on searchable keys and operations.
 type Indexer struct {
 	indexerFunc IndexerFunc
-	addFunc     func(store sdk.KVStore, secondaryIndexKey []byte, rowID RowID) error
+	addFunc     func(store sdk.KVStore, secondaryIndexKey interface{}, rowID RowID) error
 }
 
 // NewIndexer returns an indexer that supports multiple reference keys for an entity.
@@ -34,9 +33,9 @@ func NewUniqueIndexer(f UniqueIndexerFunc) (*Indexer, error) {
 		return nil, ErrArgument.Wrap("Indexer func must not be nil")
 	}
 	adaptor := func(indexerFunc UniqueIndexerFunc) IndexerFunc {
-		return func(v interface{}) ([]RowID, error) {
+		return func(v interface{}) ([]interface{}, error) {
 			k, err := indexerFunc(v)
-			return []RowID{k}, err
+			return []interface{}{k}, err
 		}
 	}
 	idx, err := NewIndexer(adaptor(f))
@@ -47,6 +46,12 @@ func NewUniqueIndexer(f UniqueIndexerFunc) (*Indexer, error) {
 	return idx, nil
 }
 
+// IndexerFunc returns the indexer IndexerFunc,
+// ensuring it has been prune from empty keys.
+func (i Indexer) IndexerFunc() IndexerFunc {
+	return i.indexerFunc
+}
+
 // OnCreate persists the secondary index entries for the new object.
 func (i Indexer) OnCreate(store sdk.KVStore, rowID RowID, value interface{}) error {
 	secondaryIndexKeys, err := i.indexerFunc(value)
@@ -55,7 +60,7 @@ func (i Indexer) OnCreate(store sdk.KVStore, rowID RowID, value interface{}) err
 	}
 
 	for _, secondaryIndexKey := range secondaryIndexKeys {
-		if err := i.addFunc(store, secondaryIndexKey, rowID); err != nil {
+		if err := i.addFunc(store, secondaryIndexKey, []byte(rowID)); err != nil {
 			return err
 		}
 	}
@@ -70,7 +75,7 @@ func (i Indexer) OnDelete(store sdk.KVStore, rowID RowID, value interface{}) err
 	}
 
 	for _, secondaryIndexKey := range secondaryIndexKeys {
-		indexKey, err := buildKeyFromParts([]interface{}{secondaryIndexKey, rowID})
+		indexKey, err := buildKeyFromParts([]interface{}{secondaryIndexKey, []byte(rowID)})
 		if err != nil {
 			return err
 		}
@@ -90,14 +95,14 @@ func (i Indexer) OnUpdate(store sdk.KVStore, rowID RowID, newValue, oldValue int
 		return err
 	}
 	for _, oldIdxKey := range difference(oldSecIdxKeys, newSecIdxKeys) {
-		indexKey, err := i.indexKeyCodec.BuildIndexKey(oldIdxKey, rowID)
+		indexKey, err := buildKeyFromParts([]interface{}{oldIdxKey, []byte(rowID)})
 		if err != nil {
 			return err
 		}
 		store.Delete(indexKey)
 	}
 	for _, newIdxKey := range difference(newSecIdxKeys, oldSecIdxKeys) {
-		if err := i.addFunc(store, i.indexKeyCodec, newIdxKey, rowID); err != nil {
+		if err := i.addFunc(store, newIdxKey, rowID); err != nil {
 			return err
 		}
 	}
@@ -105,17 +110,18 @@ func (i Indexer) OnUpdate(store sdk.KVStore, rowID RowID, newValue, oldValue int
 }
 
 // uniqueKeysAddFunc enforces keys to be unique
-func uniqueKeysAddFunc(store sdk.KVStore, codec IndexKeyCodec, secondaryIndexKey []byte, rowID RowID) error {
-	if len(secondaryIndexKey) == 0 {
-		return errors.Wrap(ErrArgument, "empty index key")
+func uniqueKeysAddFunc(store sdk.KVStore, secondaryIndexKey interface{}, rowID RowID) error {
+	encodedKey, err := keyPartBytes(secondaryIndexKey, false)
+	if err != nil {
+		return err
 	}
-	it := store.Iterator(PrefixRange(codec.PrefixSearchableKey(secondaryIndexKey)))
+	it := store.Iterator(PrefixRange(encodedKey))
 	defer it.Close()
 	if it.Valid() {
 		return ErrUniqueConstraint
 	}
 
-	indexKey, err := codec.BuildIndexKey(secondaryIndexKey, rowID)
+	indexKey, err := buildKeyFromParts([]interface{}{secondaryIndexKey, []byte(rowID)})
 	if err != nil {
 		return err
 	}
@@ -125,12 +131,8 @@ func uniqueKeysAddFunc(store sdk.KVStore, codec IndexKeyCodec, secondaryIndexKey
 }
 
 // multiKeyAddFunc allows multiple entries for a key
-func multiKeyAddFunc(store sdk.KVStore, codec IndexKeyCodec, secondaryIndexKey []byte, rowID RowID) error {
-	if len(secondaryIndexKey) == 0 {
-		return errors.Wrap(ErrArgument, "empty index key")
-	}
-
-	indexKey, err := codec.BuildIndexKey(secondaryIndexKey, rowID)
+func multiKeyAddFunc(store sdk.KVStore, secondaryIndexKey interface{}, rowID RowID) error {
+	indexKey, err := buildKeyFromParts([]interface{}{secondaryIndexKey, []byte(rowID)})
 	if err != nil {
 		return err
 	}
@@ -140,14 +142,14 @@ func multiKeyAddFunc(store sdk.KVStore, codec IndexKeyCodec, secondaryIndexKey [
 }
 
 // difference returns the list of elements that are in a but not in b.
-func difference(a []RowID, b []RowID) []RowID {
-	set := make(map[string]struct{}, len(b))
+func difference(a []interface{}, b []interface{}) []interface{} {
+	set := make(map[interface{}]struct{}, len(b))
 	for _, v := range b {
-		set[string(v)] = struct{}{}
+		set[v] = struct{}{}
 	}
-	var result []RowID
+	var result []interface{}
 	for _, v := range a {
-		if _, ok := set[string(v)]; !ok {
+		if _, ok := set[v]; !ok {
 			result = append(result, v)
 		}
 	}
