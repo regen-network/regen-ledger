@@ -278,7 +278,7 @@ func TxSendCmd() *cobra.Command {
 Parameters:
   recipient: recipient address
   credits:   YAML encoded credit list. Note: numerical values must be written in strings.
-             eg: '[{batch_denom: "100/2", tradable_amount: "5", retired_amount: "0", retirement_location: "YY-ZZ 12345"}]'
+             eg: '[{batch_denom: "C01-20210101-20220101-001", tradable_amount: "5", retired_amount: "0", retirement_location: "YY-ZZ 12345"}]'
              Note: "retirement_location" is only required when "retired_amount" is positive.`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -307,7 +307,7 @@ func TxRetireCmd() *cobra.Command {
 
 Parameters:
   credits:             YAML encoded credit list. Note: numerical values must be written in strings.
-                       eg: '[{batch_denom: "100/2", amount: "5"}]'
+                       eg: '[{batch_denom: "C01-20210101-20220101-001", amount: "5"}]'
   retirement_location: A string representing the location of the buyer or
                        beneficiary of retired credits. It has the form
                        <country-code>[-<region-code>[ <postal-code>]], where

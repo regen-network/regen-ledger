@@ -15,6 +15,11 @@ var (
 		&MsgRetire{}, &MsgCancel{}
 )
 
+// MaxMetadataLength defines the max length of the metadata bytes field
+// for the credit-class & credit-batch.
+// TODO: This could be used as params once x/params is upgraded to use protobuf
+const MaxMetadataLength = 256
+
 // Route Implements LegacyMsg.
 func (m MsgCreateClass) Route() string { return sdk.MsgTypeURL(&m) }
 
@@ -27,6 +32,10 @@ func (m MsgCreateClass) GetSignBytes() []byte {
 }
 
 func (m *MsgCreateClass) ValidateBasic() error {
+
+	if len(m.Metadata) > MaxMetadataLength {
+		return ErrMaxLimit.Wrap("credit class metadata")
+	}
 
 	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
 		return sdkerrors.Wrap(err, "admin")
@@ -66,6 +75,10 @@ func (m MsgCreateBatch) GetSignBytes() []byte {
 }
 
 func (m *MsgCreateBatch) ValidateBasic() error {
+
+	if len(m.Metadata) > MaxMetadataLength {
+		return ErrMaxLimit.Wrap("credit batch metadata")
+	}
 
 	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
 		return sdkerrors.Wrap(err, "issuer")

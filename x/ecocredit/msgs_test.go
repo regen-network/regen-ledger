@@ -1,11 +1,18 @@
 package ecocredit
 
 import (
+	"math/rand"
 	"testing"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/stretchr/testify/require"
+)
+
+var (
+	s = rand.NewSource(1)
+	r = rand.New(s)
 )
 
 func TestMsgCreateClass(t *testing.T) {
@@ -63,6 +70,15 @@ func TestMsgCreateClass(t *testing.T) {
 			src: MsgCreateClass{
 				Admin:   addr1.String(),
 				Issuers: []string{addr1.String(), addr2.String()},
+			},
+			expErr: true,
+		},
+		"invalid metadata maxlength is exceeded": {
+			src: MsgCreateClass{
+				Admin:          addr1.String(),
+				CreditTypeName: "carbon",
+				Issuers:        []string{addr1.String(), addr2.String()},
+				Metadata:       []byte(simtypes.RandStringOfLength(r, 288)),
 			},
 			expErr: true,
 		},
@@ -327,6 +343,17 @@ func TestMsgCreateBatch(t *testing.T) {
 					},
 				},
 				ProjectLocation: "AB-CDE FG1 345",
+			},
+			expErr: true,
+		},
+		"invalid metadata maxlength is exceeded": {
+			src: MsgCreateBatch{
+				Issuer:          addr1.String(),
+				ClassId:         "C01",
+				StartDate:       &startDate,
+				EndDate:         &endDate,
+				ProjectLocation: "AB-CDE FG1 345",
+				Metadata:        []byte(simtypes.RandStringOfLength(r, 288)),
 			},
 			expErr: true,
 		},

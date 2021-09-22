@@ -13,7 +13,8 @@
             "url": "./tmp-swagger-gen/regen/ecocredit/v1alpha1/query.swagger.json",
             "operationIds": {
                 "rename": {
-                  "Balance": "Ecocredit/Balance"
+                  "Balance": "Ecocredit/Balance",
+                  "Params": "Ecocredit/Params"
                 }
               }
         },

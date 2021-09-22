@@ -158,3 +158,11 @@ func (s serverImpl) CreditTypes(goCtx context.Context, _ *ecocredit.QueryCreditT
 	creditTypes := s.getAllCreditTypes(ctx)
 	return &ecocredit.QueryCreditTypesResponse{CreditTypes: creditTypes}, nil
 }
+
+// Params queries the ecocredit module params
+func (s serverImpl) Params(goCtx context.Context, req *ecocredit.QueryParamsRequest) (*ecocredit.QueryParamsResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx).Context
+	var params ecocredit.Params
+	s.paramSpace.GetParamSet(ctx, &params)
+	return &ecocredit.QueryParamsResponse{Params: &params}, nil
+}
