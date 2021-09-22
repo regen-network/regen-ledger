@@ -85,7 +85,7 @@ func TestServer(t *testing.T) {
 	baseApp.MountStore(stakingKey, sdk.StoreTypeIAVL)
 	baseApp.MountStore(mintKey, sdk.StoreTypeIAVL)
 
-	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, bankKeeper)
+	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper)
 	ff.SetModules([]module.Module{
 		group.Module{AccountKeeper: accountKeeper},
 		ecocreditModule,
