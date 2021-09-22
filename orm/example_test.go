@@ -37,8 +37,8 @@ func NewGroupKeeper(storeKey sdk.StoreKey, cdc codec.Codec) GroupKeeper {
 	}
 	// note: quite easy to mess with Index prefixes when managed outside. no fail fast on duplicates
 	k.groupByAdminIndex, err = orm.NewIndex(groupTableBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]interface{}, error) {
-		return []interface{}{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
-	})
+		return []interface{}{val.(*testdata.GroupInfo).Admin.Bytes()}, nil
+	}, []byte{})
 	if err != nil {
 		panic(err.Error())
 	}
@@ -51,14 +51,14 @@ func NewGroupKeeper(storeKey sdk.StoreKey, cdc codec.Codec) GroupKeeper {
 
 	k.groupMemberByGroupIndex, err = orm.NewIndex(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]interface{}, error) {
 		group := val.(*testdata.GroupMember).Group
-		return []interface{}{[]byte(group)}, nil
-	})
+		return []interface{}{group.Bytes()}, nil
+	}, []byte{})
 	if err != nil {
 		panic(err.Error())
 	}
 	k.groupMemberByMemberIndex, err = orm.NewIndex(groupMemberTableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]interface{}, error) {
-		return []interface{}{[]byte(val.(*testdata.GroupMember).Member)}, nil
-	})
+		return []interface{}{val.(*testdata.GroupMember).Member.Bytes()}, nil
+	}, []byte{})
 	if err != nil {
 		panic(err.Error())
 	}

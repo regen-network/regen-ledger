@@ -2,6 +2,7 @@ package orm
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // IndexerFunc creates one or multiple index keys for the source object.
@@ -111,11 +112,15 @@ func (i Indexer) OnUpdate(store sdk.KVStore, rowID RowID, newValue, oldValue int
 
 // uniqueKeysAddFunc enforces keys to be unique
 func uniqueKeysAddFunc(store sdk.KVStore, secondaryIndexKey interface{}, rowID RowID) error {
-	encodedKey, err := keyPartBytes(secondaryIndexKey, false)
+	secondaryIndexKeyBytes, err := keyPartBytes(secondaryIndexKey, false)
 	if err != nil {
 		return err
 	}
-	it := store.Iterator(PrefixRange(encodedKey))
+	if len(secondaryIndexKeyBytes) == 0 {
+		return errors.Wrap(ErrArgument, "empty index key")
+	}
+
+	it := store.Iterator(PrefixRange(secondaryIndexKeyBytes))
 	defer it.Close()
 	if it.Valid() {
 		return ErrUniqueConstraint
@@ -132,12 +137,23 @@ func uniqueKeysAddFunc(store sdk.KVStore, secondaryIndexKey interface{}, rowID R
 
 // multiKeyAddFunc allows multiple entries for a key
 func multiKeyAddFunc(store sdk.KVStore, secondaryIndexKey interface{}, rowID RowID) error {
-	indexKey, err := buildKeyFromParts([]interface{}{secondaryIndexKey, []byte(rowID)})
+	secondaryIndexKeyBytes, err := keyPartBytes(secondaryIndexKey, false)
 	if err != nil {
 		return err
 	}
+	if len(secondaryIndexKeyBytes) == 0 {
+		return errors.Wrap(ErrArgument, "empty index key")
+	}
 
-	store.Set(indexKey, []byte{})
+	encodedKey, err := buildKeyFromParts([]interface{}{secondaryIndexKey, []byte(rowID)})
+	if err != nil {
+		return err
+	}
+	if len(encodedKey) == 0 {
+		return errors.Wrap(ErrArgument, "empty index key")
+	}
+
+	store.Set(encodedKey, []byte{})
 	return nil
 }
 
@@ -145,11 +161,19 @@ func multiKeyAddFunc(store sdk.KVStore, secondaryIndexKey interface{}, rowID Row
 func difference(a []interface{}, b []interface{}) []interface{} {
 	set := make(map[interface{}]struct{}, len(b))
 	for _, v := range b {
-		set[v] = struct{}{}
+		bt, err := keyPartBytes(v, true)
+		if err != nil {
+			panic(err)
+		}
+		set[string(bt)] = struct{}{}
 	}
 	var result []interface{}
 	for _, v := range a {
-		if _, ok := set[v]; !ok {
+		bt, err := keyPartBytes(v, true)
+		if err != nil {
+			panic(err)
+		}
+		if _, ok := set[string(bt)]; !ok {
 			result = append(result, v)
 		}
 	}

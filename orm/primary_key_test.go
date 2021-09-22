@@ -59,11 +59,11 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 		"exact match with a single result": {
 			start: append(
 				orm.AddLengthPrefix([]byte("group-a")),
-				orm.AddLengthPrefix([]byte("member-one"))...,
+				[]byte("member-one")...,
 			), // == orm.PrimaryKey(&m1)
 			end: append(
 				orm.AddLengthPrefix([]byte("group-a")),
-				orm.AddLengthPrefix([]byte("member-two"))...,
+				[]byte("member-two")...,
 			), // == orm.PrimaryKey(&m2)
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1},
@@ -73,7 +73,7 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 			start: orm.AddLengthPrefix([]byte("group-a")),
 			end: append(
 				orm.AddLengthPrefix([]byte("group-a")),
-				orm.AddLengthPrefix([]byte("member-two"))...,
+				[]byte("member-two")...,
 			), // == orm.PrimaryKey(&m2)
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1},
@@ -142,11 +142,11 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 		"reverse: exact match with a single result": {
 			start: append(
 				orm.AddLengthPrefix([]byte("group-a")),
-				orm.AddLengthPrefix([]byte("member-one"))...,
+				[]byte("member-one")...,
 			), // == orm.PrimaryKey(&m1)
 			end: append(
 				orm.AddLengthPrefix([]byte("group-a")),
-				orm.AddLengthPrefix([]byte("member-two"))...,
+				[]byte("member-two")...,
 			), // == orm.PrimaryKey(&m2)
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m1},
@@ -156,7 +156,7 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 			start: orm.AddLengthPrefix([]byte("group-a")),
 			end: append(
 				orm.AddLengthPrefix([]byte("group-a")),
-				orm.AddLengthPrefix([]byte("member-two"))...,
+				[]byte("member-two")...,
 			), // == orm.PrimaryKey(&m2)
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m1},

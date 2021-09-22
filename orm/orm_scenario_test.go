@@ -132,12 +132,12 @@ func TestKeeperEndToEndWithPrimaryKeyTable(t *testing.T) {
 	require.Equal(t, m, loaded)
 
 	// and then the data should exists in MultiKeyIndex
-	exists, err = k.groupMemberByGroupIndex.Has(ctx, groupRowID)
+	exists, err = k.groupMemberByGroupIndex.Has(ctx, m.Group.Bytes())
 	require.NoError(t, err)
 	require.True(t, exists)
 
 	// and when loaded from MultiKeyIndex
-	it, err := k.groupMemberByGroupIndex.Get(ctx, groupRowID)
+	it, err := k.groupMemberByGroupIndex.Get(ctx, m.Group.Bytes())
 	require.NoError(t, err)
 
 	// then values should match as before
@@ -322,8 +322,8 @@ func TestExportImportStateAutoUInt64Table(t *testing.T) {
 
 		require.Equal(t, orm.RowID(orm.EncodeSequence(uint64(i))), groupRowID)
 		assert.Equal(t, fmt.Sprintf("my test %d", i), loaded.Description)
-		exp := sdk.AccAddress(bytes.Repeat([]byte{byte(i)}, addrLen))
-		assert.Equal(t, exp, loaded.Admin)
+		exp := bytes.Repeat([]byte{byte(i)}, addrLen)
+		assert.Equal(t, exp, loaded.Admin.Bytes())
 
 		// and also the indexes
 		exists, err := k.groupByAdminIndex.Has(ctx, exp)
@@ -384,7 +384,7 @@ func TestExportImportStatePrimaryKeyTable(t *testing.T) {
 	assert.Equal(t, testRecords, loaded)
 
 	// and first index setup
-	it, err = k.groupMemberByGroupIndex.Get(ctx, myGroupAddr)
+	it, err = k.groupMemberByGroupIndex.Get(ctx, myGroupAddr.Bytes())
 	require.NoError(t, err)
 	loaded = nil
 	keys, err = orm.ReadAll(it, &loaded)
@@ -396,7 +396,7 @@ func TestExportImportStatePrimaryKeyTable(t *testing.T) {
 
 	// and second index setup
 	for _, v := range testRecords {
-		it, err = k.groupMemberByMemberIndex.Get(ctx, v.Member)
+		it, err = k.groupMemberByMemberIndex.Get(ctx, v.Member.Bytes())
 		require.NoError(t, err)
 		loaded = nil
 		keys, err = orm.ReadAll(it, &loaded)

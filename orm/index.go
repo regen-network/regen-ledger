@@ -2,6 +2,7 @@ package orm
 
 import (
 	"bytes"
+	"reflect"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -28,18 +29,19 @@ type MultiKeyIndex struct {
 	rowGetter   RowGetter
 	indexer     indexer
 	indexerFunc IndexerFunc
+	indexKey    reflect.Type
 }
 
 // NewIndex builds a MultiKeyIndex
-func NewIndex(builder Indexable, prefix byte, indexerF IndexerFunc) (MultiKeyIndex, error) {
+func NewIndex(builder Indexable, prefix byte, indexerF IndexerFunc, indexKey interface{}) (MultiKeyIndex, error) {
 	indexer, err := NewIndexer(indexerF)
 	if err != nil {
 		return MultiKeyIndex{}, err
 	}
-	return newIndex(builder, prefix, indexer, indexer.IndexerFunc())
+	return newIndex(builder, prefix, indexer, indexer.IndexerFunc(), indexKey)
 }
 
-func newIndex(builder Indexable, prefix byte, indexer *Indexer, indexerF IndexerFunc) (MultiKeyIndex, error) {
+func newIndex(builder Indexable, prefix byte, indexer *Indexer, indexerF IndexerFunc, indexKey interface{}) (MultiKeyIndex, error) {
 	storeKey := builder.StoreKey()
 	if storeKey == nil {
 		return MultiKeyIndex{}, ErrArgument.Wrap("StoreKey must not be nil")
@@ -48,6 +50,11 @@ func newIndex(builder Indexable, prefix byte, indexer *Indexer, indexerF Indexer
 	if rowGetter == nil {
 		return MultiKeyIndex{}, ErrArgument.Wrap("RowGetter must not be nil")
 	}
+	if indexKey == nil {
+		return MultiKeyIndex{}, ErrArgument.Wrap("RowGetter must not be nil")
+	}
+	tp := reflect.TypeOf(indexKey)
+	// TODO verify tp is string, bytes or uint64
 
 	idx := MultiKeyIndex{
 		storeKey:    storeKey,
@@ -55,13 +62,14 @@ func newIndex(builder Indexable, prefix byte, indexer *Indexer, indexerF Indexer
 		rowGetter:   rowGetter,
 		indexer:     indexer,
 		indexerFunc: indexerF,
+		indexKey:    tp,
 	}
 	builder.AddAfterSetInterceptor(idx.onSet)
 	builder.AddAfterDeleteInterceptor(idx.onDelete)
 	return idx, nil
 }
 
-// Has checks if a key exists. Panics on nil key.
+// Has checks if a key exists. Returns an error on nil key.
 func (i MultiKeyIndex) Has(ctx HasKVStore, key interface{}) (bool, error) {
 	store := prefix.NewStore(ctx.KVStore(i.storeKey), []byte{i.prefix})
 	encodedKey, err := keyPartBytes(key, false)
@@ -81,7 +89,7 @@ func (i MultiKeyIndex) Get(ctx HasKVStore, searchKey interface{}) (Iterator, err
 		return nil, err
 	}
 	it := store.Iterator(PrefixRange(encodedKey))
-	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, indexerFunc: i.indexerFunc}, nil
+	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, indexKey: i.indexKey}, nil
 }
 
 // GetPaginated creates an iterator for the searchKey
@@ -97,13 +105,13 @@ func (i MultiKeyIndex) GetPaginated(ctx HasKVStore, searchKey interface{}, pageR
 
 	if pageRequest != nil && len(pageRequest.Key) != 0 {
 		var err error
-		start, err = buildKeyFromParts([]interface{}{searchKey, RowID(pageRequest.Key)})
+		start, err = buildKeyFromParts([]interface{}{searchKey, pageRequest.Key})
 		if err != nil {
 			return nil, err
 		}
 	}
 	it := store.Iterator(start, end)
-	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, indexerFunc: i.indexerFunc}, nil
+	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, indexKey: i.indexKey}, nil
 }
 
 // PrefixScan returns an Iterator over a domain of keys in ascending order. End is exclusive.
@@ -123,11 +131,11 @@ func (i MultiKeyIndex) GetPaginated(ctx HasKVStore, searchKey interface{}, pageR
 //
 // CONTRACT: No writes may happen within a domain while an iterator exists over it.
 func (i MultiKeyIndex) PrefixScan(ctx HasKVStore, startI interface{}, endI interface{}) (Iterator, error) {
-	start, err := keyPartBytes(startI, false)
+	start, err := getIndexKeyBytes(startI)
 	if err != nil {
 		return nil, err
 	}
-	end, err := keyPartBytes(endI, false)
+	end, err := getIndexKeyBytes(endI)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +145,7 @@ func (i MultiKeyIndex) PrefixScan(ctx HasKVStore, startI interface{}, endI inter
 	}
 	store := prefix.NewStore(ctx.KVStore(i.storeKey), []byte{i.prefix})
 	it := store.Iterator(start, end)
-	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, indexerFunc: i.indexerFunc}, nil
+	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, indexKey: i.indexKey}, nil
 }
 
 // ReversePrefixScan returns an Iterator over a domain of keys in descending order. End is exclusive.
@@ -150,11 +158,11 @@ func (i MultiKeyIndex) PrefixScan(ctx HasKVStore, startI interface{}, endI inter
 //
 // CONTRACT: No writes may happen within a domain while an iterator exists over it.
 func (i MultiKeyIndex) ReversePrefixScan(ctx HasKVStore, startI interface{}, endI interface{}) (Iterator, error) {
-	start, err := keyPartBytes(startI, false)
+	start, err := getIndexKeyBytes(startI)
 	if err != nil {
 		return nil, err
 	}
-	end, err := keyPartBytes(endI, false)
+	end, err := getIndexKeyBytes(endI)
 	if err != nil {
 		return nil, err
 	}
@@ -164,7 +172,23 @@ func (i MultiKeyIndex) ReversePrefixScan(ctx HasKVStore, startI interface{}, end
 	}
 	store := prefix.NewStore(ctx.KVStore(i.storeKey), []byte{i.prefix})
 	it := store.ReverseIterator(start, end)
-	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, indexerFunc: i.indexerFunc}, nil
+	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, indexKey: i.indexKey}, nil
+}
+
+func getIndexKeyBytes(keyI interface{}) ([]byte, error) {
+	var (
+		key []byte
+		err error
+	)
+	// nil value are accepted in the context of PrefixScans
+	if keyI == nil {
+		return nil, nil
+	}
+	key, err = keyPartBytes(keyI, false)
+	if err != nil {
+		return nil, err
+	}
+	return key, nil
 }
 
 func (i MultiKeyIndex) onSet(ctx HasKVStore, rowID RowID, newValue, oldValue codec.ProtoMarshaler) error {
@@ -185,12 +209,12 @@ type UniqueIndex struct {
 }
 
 // NewUniqueIndex create a new Index object where duplicate keys are prohibited.
-func NewUniqueIndex(builder Indexable, prefix byte, uniqueIndexerFunc UniqueIndexerFunc) (UniqueIndex, error) {
+func NewUniqueIndex(builder Indexable, prefix byte, uniqueIndexerFunc UniqueIndexerFunc, indexKey interface{}) (UniqueIndex, error) {
 	uniqueIndexer, err := NewUniqueIndexer(uniqueIndexerFunc)
 	if err != nil {
 		return UniqueIndex{}, err
 	}
-	multiKeyIndex, err := newIndex(builder, prefix, uniqueIndexer, uniqueIndexer.IndexerFunc())
+	multiKeyIndex, err := newIndex(builder, prefix, uniqueIndexer, uniqueIndexer.IndexerFunc(), indexKey)
 	if err != nil {
 		return UniqueIndex{}, err
 	}
@@ -201,10 +225,10 @@ func NewUniqueIndex(builder Indexable, prefix byte, uniqueIndexerFunc UniqueInde
 
 // indexIterator uses rowGetter to lazy load new model values on request.
 type indexIterator struct {
-	ctx         HasKVStore
-	rowGetter   RowGetter
-	it          types.Iterator
-	indexerFunc IndexerFunc
+	ctx       HasKVStore
+	rowGetter RowGetter
+	it        types.Iterator
+	indexKey  reflect.Type
 }
 
 // LoadNext loads the next value in the sequence into the pointer passed as dest and returns the key. If there
@@ -216,7 +240,7 @@ func (i indexIterator) LoadNext(dest codec.ProtoMarshaler) (RowID, error) {
 	}
 	indexPrefixKey := i.it.Key()
 	// rowID := i.keyCodec.StripRowID(indexPrefixKey)
-	rowID, err := stripRowID(indexPrefixKey, i.indexerFunc, dest)
+	rowID, err := stripRowID(indexPrefixKey, i.indexKey)
 	if err != nil {
 		return nil, err
 	}

@@ -208,7 +208,7 @@ func TestPaginate(t *testing.T) {
 	require.NoError(t, err)
 	idx, err := orm.NewIndex(tBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]interface{}, error) {
 		return []interface{}{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
-	})
+	}, []byte{})
 	require.NoError(t, err)
 	tb := tBuilder.Build()
 	ctx := orm.NewMockContext()

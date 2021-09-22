@@ -2,9 +2,7 @@ package orm
 
 import (
 	"fmt"
-
-	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/types/errors"
+	"reflect"
 )
 
 // buildKeyFromParts encodes and concatenates primary key and index parts.
@@ -36,20 +34,22 @@ func buildKeyFromParts(parts []interface{}) ([]byte, error) {
 func keyPartBytes(part interface{}, last bool) ([]byte, error) {
 	switch v := part.(type) {
 	case []byte:
-		if last {
+		if last || len(v) == 0 {
 			return v, nil
 		}
-		if len(v) == 0 {
-			return nil, errors.Wrap(ErrArgument, "empty index key")
-		}
+		// if len(v) == 0 {
+		// 	return nil, nil
+		// 	// return nil, errors.Wrap(ErrArgument, "empty index key")
+		// }
 		return AddLengthPrefix(v), nil
 	case string:
-		if last {
+		if last || len(v) == 0 {
 			return []byte(v), nil
 		}
-		if len(v) == 0 {
-			return nil, errors.Wrap(ErrArgument, "empty index key")
-		}
+		// if len(v) == 0 {
+		// 	return nil, nil
+		// 	// return nil, errors.Wrap(ErrArgument, "empty index key")
+		// }
 		return NullTerminatedBytes(v), nil
 	case uint64:
 		return EncodeSequence(v), nil
@@ -79,16 +79,12 @@ func NullTerminatedBytes(s string) []byte {
 	return bytes
 }
 
-func stripRowID(indexKey []byte, indexerF IndexerFunc, dest codec.ProtoMarshaler) (RowID, error) {
-	keys, err := indexerF(dest)
-	if err != nil {
-		return nil, err
-	}
-	switch v := keys[0].(type) {
-	case []byte:
+func stripRowID(indexKey []byte, indexKeyType reflect.Type) (RowID, error) {
+	switch indexKeyType {
+	case reflect.TypeOf(([]byte)(nil)):
 		searchableKeyLen := indexKey[0]
 		return indexKey[1+searchableKeyLen:], nil
-	case string:
+	case reflect.TypeOf((string)("")):
 		searchableKeyLen := 0
 		for i, b := range indexKey {
 			if b == 0 {
@@ -97,9 +93,9 @@ func stripRowID(indexKey []byte, indexerF IndexerFunc, dest codec.ProtoMarshaler
 			}
 		}
 		return indexKey[1+searchableKeyLen:], nil
-	case uint64:
+	case reflect.TypeOf((uint64)(0)):
 		return indexKey[EncodedSeqLength:], nil
 	default:
-		return nil, fmt.Errorf("type %T not allowed as index key", v)
+		return nil, fmt.Errorf("type %T not allowed as index key", reflect.New(indexKeyType).Interface())
 	}
 }
