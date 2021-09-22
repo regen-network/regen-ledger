@@ -56,7 +56,7 @@ func TestServer(t *testing.T) {
 		cdc, bankKey, accountKeeper, bankSubspace, nil,
 	)
 
-	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, bankKeeper)
+	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper)
 	ff.SetModules([]module.Module{ecocreditModule})
 
 	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper)

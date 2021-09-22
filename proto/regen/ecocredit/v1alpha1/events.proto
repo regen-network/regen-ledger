@@ -57,8 +57,11 @@ message EventReceive {
   // batch_denom is the unique ID of credit batch.
   string batch_denom = 3;
 
-  // amount is the decimal number of both tradable and retired credits received.
-  string amount = 4;
+  // tradable_amount is the decimal number of tradable credits received.
+  string tradable_amount = 4;
+
+  // retired_amount is the decimal number of retired credits received.
+  string retired_amount = 5;
 }
 
 // EventRetire is an event emitted when credits are retired. When credits are
