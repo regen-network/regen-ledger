@@ -14,6 +14,7 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
+// Classes queries for all credit classes with pagination.
 func (s serverImpl) Classes(goCtx context.Context, request *ecocredit.QueryClassesRequest) (*ecocredit.QueryClassesResponse, error) {
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
@@ -37,6 +38,7 @@ func (s serverImpl) Classes(goCtx context.Context, request *ecocredit.QueryClass
 	}, nil
 }
 
+// ClassInfo queries for information on a credit class.
 func (s serverImpl) ClassInfo(goCtx context.Context, request *ecocredit.QueryClassInfoRequest) (*ecocredit.QueryClassInfoResponse, error) {
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
@@ -57,6 +59,7 @@ func (s serverImpl) getClassInfo(ctx types.Context, classID string) (*ecocredit.
 	return &classInfo, err
 }
 
+// Batches queries for all batches in the given credit class.
 func (s serverImpl) Batches(goCtx context.Context, request *ecocredit.QueryBatchesRequest) (*ecocredit.QueryBatchesResponse, error) {
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
@@ -86,6 +89,7 @@ func (s serverImpl) Batches(goCtx context.Context, request *ecocredit.QueryBatch
 	}, nil
 }
 
+// BatchInfo queries for information on a credit batch.
 func (s serverImpl) BatchInfo(goCtx context.Context, request *ecocredit.QueryBatchInfoRequest) (*ecocredit.QueryBatchInfoResponse, error) {
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
@@ -102,6 +106,8 @@ func (s serverImpl) BatchInfo(goCtx context.Context, request *ecocredit.QueryBat
 	return &ecocredit.QueryBatchInfoResponse{Info: &batchInfo}, err
 }
 
+// Balance queries the balance (both tradable and retired) of a given credit
+// batch for a given account.
 func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalanceRequest) (*ecocredit.QueryBalanceResponse, error) {
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
@@ -132,6 +138,7 @@ func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalan
 	}, nil
 }
 
+// Supply queries the tradable and retired supply of a credit batch.
 func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupplyRequest) (*ecocredit.QuerySupplyResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
@@ -153,13 +160,14 @@ func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupply
 	}, nil
 }
 
+// CreditTypes queries the list of allowed types that credit classes can have.
 func (s serverImpl) CreditTypes(goCtx context.Context, _ *ecocredit.QueryCreditTypesRequest) (*ecocredit.QueryCreditTypesResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx).Context
 	creditTypes := s.getAllCreditTypes(ctx)
 	return &ecocredit.QueryCreditTypesResponse{CreditTypes: creditTypes}, nil
 }
 
-// Params queries the ecocredit module params
+// Params queries the ecocredit module parameters.
 func (s serverImpl) Params(goCtx context.Context, req *ecocredit.QueryParamsRequest) (*ecocredit.QueryParamsResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx).Context
 	var params ecocredit.Params
