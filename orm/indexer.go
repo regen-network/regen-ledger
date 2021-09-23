@@ -95,14 +95,22 @@ func (i Indexer) OnUpdate(store sdk.KVStore, rowID RowID, newValue, oldValue int
 	if err != nil {
 		return err
 	}
-	for _, oldIdxKey := range difference(oldSecIdxKeys, newSecIdxKeys) {
+	oldKeys, err := difference(oldSecIdxKeys, newSecIdxKeys)
+	if err != nil {
+		return err
+	}
+	for _, oldIdxKey := range oldKeys {
 		indexKey, err := buildKeyFromParts([]interface{}{oldIdxKey, []byte(rowID)})
 		if err != nil {
 			return err
 		}
 		store.Delete(indexKey)
 	}
-	for _, newIdxKey := range difference(newSecIdxKeys, oldSecIdxKeys) {
+	newKeys, err := difference(newSecIdxKeys, oldSecIdxKeys)
+	if err != nil {
+		return err
+	}
+	for _, newIdxKey := range newKeys {
 		if err := i.addFunc(store, newIdxKey, rowID); err != nil {
 			return err
 		}
@@ -158,12 +166,12 @@ func multiKeyAddFunc(store sdk.KVStore, secondaryIndexKey interface{}, rowID Row
 }
 
 // difference returns the list of elements that are in a but not in b.
-func difference(a []interface{}, b []interface{}) []interface{} {
+func difference(a []interface{}, b []interface{}) ([]interface{}, error) {
 	set := make(map[interface{}]struct{}, len(b))
 	for _, v := range b {
 		bt, err := keyPartBytes(v, true)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 		set[string(bt)] = struct{}{}
 	}
@@ -171,13 +179,13 @@ func difference(a []interface{}, b []interface{}) []interface{} {
 	for _, v := range a {
 		bt, err := keyPartBytes(v, true)
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 		if _, ok := set[string(bt)]; !ok {
 			result = append(result, v)
 		}
 	}
-	return result
+	return result, nil
 }
 
 // pruneEmptyKeys drops any empty key from IndexerFunc f returned

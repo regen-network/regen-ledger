@@ -52,7 +52,10 @@ func newIndex(builder Indexable, prefix byte, indexer *Indexer, indexerF Indexer
 	if indexKey == nil {
 		return MultiKeyIndex{}, ErrArgument.Wrap("RowGetter must not be nil")
 	}
-	// TODO verify indexKey is string, bytes or uint64 and same as type used in indexer func
+
+	// TODO Verify indexKey is string, bytes or uint64 and same as type used in indexerF
+	// switch indexKey.(type) {
+	// }
 
 	idx := MultiKeyIndex{
 		storeKey:    storeKey,

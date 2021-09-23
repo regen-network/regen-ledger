@@ -459,6 +459,7 @@ func TestDifference(t *testing.T) {
 		srcA      []interface{}
 		srcB      []interface{}
 		expResult []interface{}
+		expErr    bool
 	}{
 		"all of A": {
 			srcA:      []interface{}{"a", "b"},
@@ -470,11 +471,26 @@ func TestDifference(t *testing.T) {
 			srcB:      []interface{}{"b", "c", "d"},
 			expResult: []interface{}{"a"},
 		},
+		"type in A not allowed": {
+			srcA:   []interface{}{1},
+			srcB:   []interface{}{"b", "c", "d"},
+			expErr: true,
+		},
+		"type in B not allowed": {
+			srcA:   []interface{}{"b", "c", "d"},
+			srcB:   []interface{}{1},
+			expErr: true,
+		},
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
-			got := difference(spec.srcA, spec.srcB)
-			assert.Equal(t, spec.expResult, got)
+			got, err := difference(spec.srcA, spec.srcB)
+			if spec.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				assert.Equal(t, spec.expResult, got)
+			}
 		})
 	}
 }
