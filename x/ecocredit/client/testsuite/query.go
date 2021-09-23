@@ -2,6 +2,7 @@ package testsuite
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
@@ -469,4 +470,18 @@ func (s *IntegrationTestSuite) TestQueryCreditTypes() {
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestQueryParams() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	require := s.Require()
+
+	cmd := client.QueryParams()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+	require.NoError(err)
+
+	expected := `{"params":{"credit_class_fee":[{"denom":"stake","amount":"20000000"}],"allowed_class_creators":[],"allowlist_enabled":false,"credit_types":[{"name":"carbon","abbreviation":"C","unit":"metric ton CO2 equivalent","precision":6}]}}`
+	require.Equal(strings.TrimSpace(out.String()), strings.TrimSpace(expected))
 }
