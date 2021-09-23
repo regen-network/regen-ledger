@@ -8,8 +8,7 @@
 
 ### Validation:
 
-- `admin` must ba a valid address
-- `admin` is added to `GetSigners()` and therefore must sign the transaction
+- `admin` must ba a valid address, and their signature must be present in the transaction
 - if the `allowlist_enabled` paramater is set to `true`, `admin` must be on the list of approved credit class creators (the `allowed_class_creators` parameter)
 - `issuers` must not be empty and all addresses must be valid addresses 
 - `credit_type` must not be empty and on the list of approved credit types (the `credit_types` parameter)
@@ -27,10 +26,9 @@ In order to support use cases when credits are to be immediately retired upon is
 
 ### Validation:
 
-- `issuer` must ba a valid address
-- `issuer` is added to `GetSigners()` and therefore must sign the transaction
+- `issuer` must ba a valid address, and their signature must be present in the transaction
 - `issuer` must be on the list of approved `issuers` for the given credit class
-- `class_id` must be a valid class ID
+- `class_id` must be a valid credit class ID
 - `recipient` must ba a valid address
 - `tradable_amount` must not be negative
 - `retired_amount` must not be negative
@@ -48,8 +46,7 @@ Send sends tradable credits from one account to another account. Sent credits ca
 
 ### Validation:
 
-- `sender` must ba a valid address
-- `sender` is added to `GetSigners()` and therefore must sign the transaction
+- `sender` must ba a valid address, and their signature must be present in the transaction
 - `recipient` must ba a valid address
 - `credits` must not be empty
 - `batch_denom` must be a valid batch denomination
@@ -65,8 +62,7 @@ Retire retires a specified number of credits in the holder's account.
 
 ### Validation:
 
-- `holder` must ba a valid address
-- `holder` is added to `GetSigners()` and therefore must sign the transaction
+- `holder` must ba a valid address, and their signature must be present in the transaction
 - `credits` must not be empty
 - `batch_denom` must be a valid batch denomination
 - `amount` must be positive
@@ -80,8 +76,7 @@ Cancel removes a number of credits from the holder's account and also deducts th
 
 ### Validation:
 
-- `holder` must ba a valid address
-- `holder` is added to `GetSigners()` and therefore must sign the transaction
+- `holder` must ba a valid address, and their signature must be present in the transaction
 - `credits` must not be empty
 - `batch_denom` must be a valid batch denomination
 - `amount` must be positive

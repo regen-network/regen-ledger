@@ -1,6 +1,6 @@
 # State
 
-The `ecocredit` module uses the `KVStore` directly for credit batch balances and supplies and the `orm` package for table storage of credit type sequences, credit classes, and credit batches.
+The `ecocredit` module uses the Cosmos SDK's `KVStore` directly for credit batch balances and supplies and the `orm` package (an abstraction over the `KVStore`) for table storage of credit type sequences, credit classes, and credit batches.
 
 ## Tradable Balance
 
@@ -8,7 +8,7 @@ The `ecocredit` module uses the `KVStore` directly for credit batch balances and
 
 `TradableBalance` is stored directly in the `KVStore`:
 
-`0x0 | byte(address, denom) --> byte(amount)`
+`0x0 | byte(address length) | []byte(address) | []byte(denom) --> []byte(amount)`
 
 ## Tradable Supply
 
@@ -16,7 +16,7 @@ The `ecocredit` module uses the `KVStore` directly for credit batch balances and
 
 `TradableSupply` is stored directly in the `KVStore`:
 
-`0x1 | byte(denom) --> byte(amount)`
+`0x1 | []byte(denom) --> []byte(amount)`
 
 ## Retired Balance
 
@@ -24,7 +24,7 @@ The `ecocredit` module uses the `KVStore` directly for credit batch balances and
 
 `RetiredBalance` is stored directly in the `KVStore`:
 
-`0x2 | byte(address, denom) --> byte(amount)`
+`0x2 | byte(address length) | []byte(address) | []byte(denom) --> []byte(amount)`
 
 ## Retired Supply
 
@@ -32,13 +32,13 @@ The `ecocredit` module uses the `KVStore` directly for credit batch balances and
 
 `RetiredSupply` is stored directly in the `KVStore`:
 
-`0x3 | byte(denom) --> byte(amount)`
+`0x3 | []byte(denom) --> []byte(amount)`
 
 ## Credit Type Sequence Table
 
 `CreditTypeSeq` associates a sequence number with a credit type abbreviation.
 
-The sequence number is incremented on a per credit type basis, and it exists for the purpose of providing a sequence number for the credit class ID. A credit class ID is the combination of a credit type abbreviation and a sequence number (e.g. `C1` is the ID for the first "carbon" credit class).
+The sequence number is incremented on a per credit type basis, and it exists for the purpose of providing a sequence number for the credit class ID. A credit class ID is the combination of a credit type abbreviation and a sequence number (e.g. `C01` is the ID for the first "carbon" credit class).
 
 The `creditTypeSeqTable` stores `CreditTypeSeq`:
 
