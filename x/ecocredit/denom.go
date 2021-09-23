@@ -29,7 +29,7 @@ func FormatClassID(creditType CreditType, classSeqNo uint64) string {
 // - <batch seq no> is the sequence number of the batch, padded to at least
 //   three digits
 //
-// e.g C01-20190101-20200101-001
+// e.g. C01-20190101-20200101-001
 //
 // NB: This might differ from the actual denomination used.
 func FormatDenom(classId string, batchSeqNo uint64, startDate *time.Time, endDate *time.Time) (string, error) {

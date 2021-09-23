@@ -48,6 +48,7 @@ func txflags(cmd *cobra.Command) *cobra.Command {
 	return cmd
 }
 
+// TxCreateClassCmd returns a transaction command that creates a credit class.
 func TxCreateClassCmd() *cobra.Command {
 	return txflags(&cobra.Command{
 		Use:   "create-class [issuer[,issuer]*] [credit type name] [metadata]",
@@ -120,6 +121,8 @@ const (
 	FlagMetadata        string = "metadata"
 )
 
+// TxGenBatchJSONCmd returns a transaction command that generates JSON to
+// represent a new credit batch.
 func TxGenBatchJSONCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "gen-batch-json --class-id [class_id] --issuances [issuances] --start-date [start_date] --end-date [end_date] --project-location [project_location] --metadata [metadata]",
@@ -224,6 +227,7 @@ Required Flags:
 	return cmd
 }
 
+// TxCreateBatchCmd returns a transaction command that creates a credit batch.
 func TxCreateBatchCmd() *cobra.Command {
 
 	return txflags(&cobra.Command{
@@ -272,6 +276,8 @@ Parameters:
 	})
 }
 
+// TxSendCmd returns a transaction command that sends credits from one account
+// to another.
 func TxSendCmd() *cobra.Command {
 	return txflags(&cobra.Command{
 		Use:   "send [recipient] [credits]",
@@ -281,7 +287,7 @@ func TxSendCmd() *cobra.Command {
 Parameters:
   recipient: recipient address
   credits:   YAML encoded credit list. Note: numerical values must be written in strings.
-             eg: '[{batch_denom: "100/2", tradable_amount: "5", retired_amount: "0", retirement_location: "YY-ZZ 12345"}]'
+             eg: '[{batch_denom: "C01-20210101-20220101-001", tradable_amount: "5", retired_amount: "0", retirement_location: "YY-ZZ 12345"}]'
              Note: "retirement_location" is only required when "retired_amount" is positive.`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -302,6 +308,7 @@ Parameters:
 	})
 }
 
+// TxRetireCmd returns a transaction command that retires credits.
 func TxRetireCmd() *cobra.Command {
 	return txflags(&cobra.Command{
 		Use:   "retire [credits] [retirement_location]",
@@ -310,7 +317,7 @@ func TxRetireCmd() *cobra.Command {
 
 Parameters:
   credits:             YAML encoded credit list. Note: numerical values must be written in strings.
-                       eg: '[{batch_denom: "100/2", amount: "5"}]'
+                       eg: '[{batch_denom: "C01-20210101-20220101-001", amount: "5"}]'
   retirement_location: A string representing the location of the buyer or
                        beneficiary of retired credits. It has the form
                        <country-code>[-<region-code>[ <postal-code>]], where
@@ -337,6 +344,7 @@ Parameters:
 	})
 }
 
+// TxCancelCmd returns a transaction command that cancels credits.
 func TxCancelCmd() *cobra.Command {
 	return txflags(&cobra.Command{
 		Use:   "cancel [credits]",
