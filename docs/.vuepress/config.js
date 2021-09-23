@@ -105,11 +105,11 @@ module.exports = {
                   title: 'Overview',
                   path: '/modules/ecocredit/'
                 },
-                // '/modules/ecocredit/01_concepts',
-                // '/modules/ecocredit/02_state',
-                // '/modules/ecocredit/03_messages',
-                // '/modules/ecocredit/04_events',
-                // '/modules/ecocredit/05_client',
+                '/modules/ecocredit/01_concepts',
+                '/modules/ecocredit/02_state',
+                '/modules/ecocredit/03_messages',
+                '/modules/ecocredit/04_events',
+                '/modules/ecocredit/05_client',
                 {
                   title: 'Protobuf Documentation',
                   path: '/modules/ecocredit/protobuf'

@@ -35,6 +35,9 @@ func TxCmd(name string) *cobra.Command {
 		TxSendCmd(),
 		TxRetireCmd(),
 		TxCancelCmd(),
+		TxUpdateClassMetadataCmd(),
+		TxUpdateClassIssuersCmd(),
+		TxUpdateClassAdminCmd(),
 	)
 	return cmd
 }
@@ -45,6 +48,7 @@ func txflags(cmd *cobra.Command) *cobra.Command {
 	return cmd
 }
 
+// TxCreateClassCmd returns a transaction command that creates a credit class.
 func TxCreateClassCmd() *cobra.Command {
 	return txflags(&cobra.Command{
 		Use:   "create-class [issuer[,issuer]*] [credit type name] [metadata]",
@@ -117,6 +121,8 @@ const (
 	FlagMetadata        string = "metadata"
 )
 
+// TxGenBatchJSONCmd returns a transaction command that generates JSON to
+// represent a new credit batch.
 func TxGenBatchJSONCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "gen-batch-json --class-id [class_id] --issuances [issuances] --start-date [start_date] --end-date [end_date] --project-location [project_location] --metadata [metadata]",
@@ -221,6 +227,7 @@ Required Flags:
 	return cmd
 }
 
+// TxCreateBatchCmd returns a transaction command that creates a credit batch.
 func TxCreateBatchCmd() *cobra.Command {
 
 	return txflags(&cobra.Command{
@@ -269,6 +276,8 @@ Parameters:
 	})
 }
 
+// TxSendCmd returns a transaction command that sends credits from one account
+// to another.
 func TxSendCmd() *cobra.Command {
 	return txflags(&cobra.Command{
 		Use:   "send [recipient] [credits]",
@@ -278,7 +287,7 @@ func TxSendCmd() *cobra.Command {
 Parameters:
   recipient: recipient address
   credits:   YAML encoded credit list. Note: numerical values must be written in strings.
-             eg: '[{batch_denom: "100/2", tradable_amount: "5", retired_amount: "0", retirement_location: "YY-ZZ 12345"}]'
+             eg: '[{batch_denom: "C01-20210101-20220101-001", tradable_amount: "5", retired_amount: "0", retirement_location: "YY-ZZ 12345"}]'
              Note: "retirement_location" is only required when "retired_amount" is positive.`,
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -299,6 +308,7 @@ Parameters:
 	})
 }
 
+// TxRetireCmd returns a transaction command that retires credits.
 func TxRetireCmd() *cobra.Command {
 	return txflags(&cobra.Command{
 		Use:   "retire [credits] [retirement_location]",
@@ -307,7 +317,7 @@ func TxRetireCmd() *cobra.Command {
 
 Parameters:
   credits:             YAML encoded credit list. Note: numerical values must be written in strings.
-                       eg: '[{batch_denom: "100/2", amount: "5"}]'
+                       eg: '[{batch_denom: "C01-20210101-20220101-001", amount: "5"}]'
   retirement_location: A string representing the location of the buyer or
                        beneficiary of retired credits. It has the form
                        <country-code>[-<region-code>[ <postal-code>]], where
@@ -334,6 +344,7 @@ Parameters:
 	})
 }
 
+// TxCancelCmd returns a transaction command that cancels credits.
 func TxCancelCmd() *cobra.Command {
 	return txflags(&cobra.Command{
 		Use:   "cancel [credits]",
@@ -357,6 +368,128 @@ Parameters:
 				Holder:  clientCtx.GetFromAddress().String(),
 				Credits: credits,
 			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	})
+}
+
+func TxUpdateClassMetadataCmd() *cobra.Command {
+	return txflags(&cobra.Command{
+		Use:   "update-class-metadata [class-id] [metadata]",
+		Short: "Updates the metadata for a specific credit class",
+		Long: `Updates the metadata for a specific credit class. the '--from' flag must equal the credit class admin.
+
+Parameters:
+  class-id:  the class id that corresponds with the credit class you want to update
+  metadata:  base64 encoded metadata`,
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			if args[0] == "" {
+				return errors.New("class-id is required")
+			}
+			classID := args[0]
+
+			// Check that metadata is provided and decode it
+			if args[1] == "" {
+				return errors.New("base64_metadata is required")
+			}
+			b, err := base64.StdEncoding.DecodeString(args[1])
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
+			}
+
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := ecocredit.MsgUpdateClassMetadata{
+				Admin:    clientCtx.From,
+				ClassId:  classID,
+				Metadata: b,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	})
+}
+
+func TxUpdateClassAdminCmd() *cobra.Command {
+	return txflags(&cobra.Command{
+		Use:   "update-class-admin [class-id] [admin]",
+		Short: "Updates the admin for a specific credit class",
+		Long: `Updates the admin for a specific credit class. the '--from' flag must equal the current credit class admin.
+               WARNING: Updating the admin replaces the current admin. Be sure the address entered is correct.
+
+Parameters:
+  class-id:  the class id that corresponds with the credit class you want to update
+  new-admin: the address to overwrite the current admin address`,
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			if args[0] == "" {
+				return errors.New("class-id is required")
+			}
+			classID := args[0]
+
+			// check for the address
+			newAdmin := args[1]
+			if newAdmin == "" {
+				return errors.New("new admin address is required")
+			}
+
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := ecocredit.MsgUpdateClassAdmin{
+				Admin:    clientCtx.From,
+				ClassId:  classID,
+				NewAdmin: newAdmin,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	})
+}
+
+func TxUpdateClassIssuersCmd() *cobra.Command {
+	return txflags(&cobra.Command{
+		Use:   "update-class-issuers [class-id] [issuers]",
+		Short: "Update the list of issuers for a specific credit class",
+		Long: `Update the list of issuers for a specific credit class. the '--from' flag must equal the current credit class admin.
+
+Parameters:
+  class-id:  the class id that corresponds with the credit class you want to update
+  issuers:   the new list of issuers to replace the current issuers	
+            eg: 'regen tx ecocredit update-class-issuers C01 addr1,addr2,addr3`,
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			if args[0] == "" {
+				return errors.New("class-id is required")
+			}
+			classID := args[0]
+
+			// Parse the comma-separated list of issuers
+			issuers := strings.Split(args[1], ",")
+			for i := range issuers {
+				issuers[i] = strings.TrimSpace(issuers[i])
+			}
+
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := ecocredit.MsgUpdateClassIssuers{
+				Admin:   clientCtx.From,
+				ClassId: classID,
+				Issuers: issuers,
+			}
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	})

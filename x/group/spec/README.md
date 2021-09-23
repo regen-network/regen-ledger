@@ -41,4 +41,8 @@ This module allows the creation and management of on-chain multisig accounts and
     - [EventCreateProposal](04_events.md#eventcreateproposal)
     - [EventVote](04_events.md#eventvote)
     - [EventExec](04_events.md#eventexec)
+5. **[Client](05_client.md)**
 
+## Protobuf
+
+For a complete list of the Protobuf definitions, see the [Protobuf Documentation](./protobuf.html).

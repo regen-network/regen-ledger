@@ -32,6 +32,7 @@ type Module struct {
 	bankKeeper    ecocredit.BankKeeper
 }
 
+// NewModule returns a new Module object.
 func NewModule(paramSpace paramtypes.Subspace, accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper) Module {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(ecocredit.ParamKeyTable())
