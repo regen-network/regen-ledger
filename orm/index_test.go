@@ -57,28 +57,38 @@ func TestNewIndex(t *testing.T) {
 		builder     orm.Indexable
 		expectErr   bool
 		expectedErr string
+		indexKey    interface{}
 	}{
 		{
 			name:        "nil storeKey",
 			builder:     &nilStoreKeyBuilder{},
 			expectErr:   true,
 			expectedErr: "StoreKey must not be nil",
+			indexKey:    []byte{},
 		},
 		{
 			name:        "nil rowGetter",
 			builder:     &nilRowGetterBuilder{},
 			expectErr:   true,
 			expectedErr: "RowGetter must not be nil",
+			indexKey:    []byte{},
 		},
 		{
 			name:      "all not nil",
 			builder:   tBuilder,
 			expectErr: false,
+			indexKey:  []byte{},
+		},
+		{
+			name:      "index key type not allowed",
+			builder:   tBuilder,
+			expectErr: true,
+			indexKey:  1,
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			index, err := orm.NewIndex(tc.builder, 0x1, indexer, []byte{})
+			index, err := orm.NewIndex(tc.builder, 0x1, indexer, tc.indexKey)
 			if tc.expectErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.expectedErr)

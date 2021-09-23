@@ -53,9 +53,12 @@ func newIndex(builder Indexable, prefix byte, indexer *Indexer, indexerF Indexer
 		return MultiKeyIndex{}, ErrArgument.Wrap("RowGetter must not be nil")
 	}
 
-	// TODO Verify indexKey is string, bytes or uint64 and same as type used in indexerF
-	// switch indexKey.(type) {
-	// }
+	// Verify indexKey type is bytes, string or uint64
+	switch indexKey.(type) {
+	case []byte, string, uint64:
+	default:
+		return MultiKeyIndex{}, ErrArgument.Wrap("indexKey must be []byte, string or uint64")
+	}
 
 	idx := MultiKeyIndex{
 		storeKey:    storeKey,
@@ -132,11 +135,11 @@ func (i MultiKeyIndex) GetPaginated(ctx HasKVStore, searchKey interface{}, pageR
 //
 // CONTRACT: No writes may happen within a domain while an iterator exists over it.
 func (i MultiKeyIndex) PrefixScan(ctx HasKVStore, startI interface{}, endI interface{}) (Iterator, error) {
-	start, err := getIndexKeyBytes(startI)
+	start, err := getPrefixScanKeyBytes(startI)
 	if err != nil {
 		return nil, err
 	}
-	end, err := getIndexKeyBytes(endI)
+	end, err := getPrefixScanKeyBytes(endI)
 	if err != nil {
 		return nil, err
 	}
@@ -159,11 +162,11 @@ func (i MultiKeyIndex) PrefixScan(ctx HasKVStore, startI interface{}, endI inter
 //
 // CONTRACT: No writes may happen within a domain while an iterator exists over it.
 func (i MultiKeyIndex) ReversePrefixScan(ctx HasKVStore, startI interface{}, endI interface{}) (Iterator, error) {
-	start, err := getIndexKeyBytes(startI)
+	start, err := getPrefixScanKeyBytes(startI)
 	if err != nil {
 		return nil, err
 	}
-	end, err := getIndexKeyBytes(endI)
+	end, err := getPrefixScanKeyBytes(endI)
 	if err != nil {
 		return nil, err
 	}
@@ -176,7 +179,7 @@ func (i MultiKeyIndex) ReversePrefixScan(ctx HasKVStore, startI interface{}, end
 	return indexIterator{ctx: ctx, it: it, rowGetter: i.rowGetter, indexKey: i.indexKey}, nil
 }
 
-func getIndexKeyBytes(keyI interface{}) ([]byte, error) {
+func getPrefixScanKeyBytes(keyI interface{}) ([]byte, error) {
 	var (
 		key []byte
 		err error
