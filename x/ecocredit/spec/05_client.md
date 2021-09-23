@@ -56,7 +56,7 @@ info:
   class_id: C01
   end_date: "2021-01-01T00:00:00Z"
   issuer: regen1..
-  metadata: YQ==
+  metadata: cmVnZW4=
   project_location: AA-BB 12345
   start_date: "2020-01-01T00:00:00Z"
   total_amount: "50"
@@ -86,7 +86,7 @@ batches:
   class_id: C01
   end_date: "2021-01-01T00:00:00Z"
   issuer: regen1..
-  metadata: YQ==
+  metadata: cmVnZW4=
   project_location: AA-BB 12345
   start_date: "2020-01-01T00:00:00Z"
   total_amount: "50"
@@ -122,7 +122,7 @@ info:
     unit: metric ton CO2 equivalent
   issuers:
   - regen1..
-  metadata: YQ==
+  metadata: cmVnZW4=
   num_batches: "1"
 ```
 
@@ -153,7 +153,7 @@ classes:
     unit: metric ton CO2 equivalent
   issuers:
   - regen1..
-  metadata: YQ==
+  metadata: cmVnZW4=
   num_batches: "0"
 - admin: regen1..
   class_id: C02
@@ -164,7 +164,7 @@ classes:
     unit: metric ton CO2 equivalent
   issuers:
   - regen1..
-  metadata: YQ==
+  metadata: cmVnZW4=
   num_batches: "0"
 pagination:
   next_key: null
@@ -263,7 +263,7 @@ regen tx ecocredit create-class [issuer[,issuer]*] [credit type name] [metadata]
 Example:
 
 ```bash
-regen tx ecocredit create-class regen1.. carbon YQ== --from regen1..
+regen tx ecocredit create-class regen1.. carbon cmVnZW4= --from regen1..
 ```
 
 #### gen-batch-json
@@ -277,7 +277,7 @@ regen tx ecocredit gen-batch-json [flags]
 Example:
 
 ```bash
-regen tx ecocredit gen-batch-json --class-id C01 --issuances 1 --start-date 2020-01-01 --end-date 2021-01-01 --project-location 'AA-BB 12345' --metadata YQ==
+regen tx ecocredit gen-batch-json --class-id C01 --issuances 1 --start-date 2020-01-01 --end-date 2021-01-01 --project-location 'AA-BB 12345' --metadata cmVnZW4=
 ```
 
 Example Output:
@@ -294,7 +294,7 @@ Example Output:
             "retirement_location": "retirement-location"
         }
     ],
-    "metadata": "YQ==",
+    "metadata": "cmVnZW4=",
     "start_date": "2020-01-01T00:00:00Z",
     "end_date": "2021-01-01T00:00:00Z",
     "project_location": "AA-BB 12345"
@@ -329,6 +329,48 @@ Example:
 regen tx ecocredit send regen1.. '[{batch_denom: "C01-20200101-20210101-001", tradable_amount: "10", retired_amount: "0","retirement_location":"AA-BB 12345"}]' --from regen1..
 ```
 
+#### update-class-admin
+
+The `update-class-admin` command allows users to update the admin of a credit class.
+
+```bash
+regen tx ecocredit update-class-admin [class-id] [admin] [flags]
+```
+
+Example:
+
+```bash
+regen tx ecocredit update-class-admin C01 regen1.. --from regen1..
+```
+
+#### update-class-issuers
+
+The `update-class-issuers` command allows users to update the issuers of a credit class.
+
+```bash
+regen tx ecocredit update-class-issuers [class-id] [issuers] [flags]
+```
+
+Example:
+
+```bash
+regen tx ecocredit update-class-issuers C01 regen1.. --from regen1..
+```
+
+#### update-class-metadata
+
+The `update-class-metadata` command allows users to update the metadata of a credit class.
+
+```bash
+regen tx ecocredit update-class-metadata [class-id] [metadata] [flags]
+```
+
+Example:
+
+```bash
+regen tx ecocredit update-class-metadata C01 cmVnZW4= --from regen1..
+```
+
 ## gRPC
 
 A user can query the `ecocredit` module using gRPC endpoints.
@@ -360,7 +402,7 @@ Example Output:
       "issuers": [
         "regen1.."
       ],
-      "metadata": "YQ==",
+      "metadata": "cmVnZW4=",
       "creditType": {
         "name": "carbon",
         "abbreviation": "C",
@@ -403,7 +445,7 @@ Example Output:
     "issuers": [
       "regen1.."
     ],
-    "metadata": "YQ==",
+    "metadata": "cmVnZW4=",
     "creditType": {
       "name": "carbon",
       "abbreviation": "C",
@@ -442,7 +484,7 @@ Example Output:
     "issuers": [
       "regen1.."
     ],
-    "metadata": "YQ==",
+    "metadata": "cmVnZW4=",
     "creditType": {
       "name": "carbon",
       "abbreviation": "C",
@@ -480,7 +522,7 @@ Example Output:
     "batchDenom": "C01-20200101-20210101-001",
     "issuer": "regen1..",
     "totalAmount": "50",
-    "metadata": "YQ==",
+    "metadata": "cmVnZW4=",
     "amountCancelled": "10",
     "startDate": "2020-01-01T00:00:00Z",
     "endDate": "2021-01-01T00:00:00Z",
@@ -602,7 +644,7 @@ Example Output:
       "issuers": [
         "regen1.."
       ],
-      "metadata": "YQ==",
+      "metadata": "cmVnZW4=",
       "credit_type": {
         "name": "carbon",
         "abbreviation": "C",
@@ -643,7 +685,7 @@ Example Output:
     "issuers": [
       "regen1.."
     ],
-    "metadata": "YQ==",
+    "metadata": "cmVnZW4=",
     "credit_type": {
       "name": "carbon",
       "abbreviation": "C",
@@ -679,7 +721,7 @@ Example Output:
       "batch_denom": "C01-20200101-20210101-001",
       "issuer": "regen1..",
       "total_amount": "50",
-      "metadata": "YQ==",
+      "metadata": "cmVnZW4=",
       "amount_cancelled": "10",
       "start_date": "2020-01-01T00:00:00Z",
       "end_date": "2021-01-01T00:00:00Z",
@@ -716,7 +758,7 @@ Example Output:
     "batch_denom": "C01-20200101-20210101-001",
     "issuer": "regen1..",
     "total_amount": "50",
-    "metadata": "YQ==",
+    "metadata": "cmVnZW4=",
     "amount_cancelled": "10",
     "start_date": "2020-01-01T00:00:00Z",
     "end_date": "2021-01-01T00:00:00Z",
