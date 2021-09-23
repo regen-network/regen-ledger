@@ -9,10 +9,10 @@ import (
 )
 
 var (
-	_, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
-		&MsgRetire{}, &MsgCancel{}
-	_, _, _, _, _ legacytx.LegacyMsg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
-		&MsgRetire{}, &MsgCancel{}
+	_, _, _, _, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
+		&MsgRetire{}, &MsgCancel{}, &MsgUpdateClassAdmin{}, &MsgUpdateClassIssuers{}, &MsgUpdateClassMetadata{}
+	_, _, _, _, _, _, _, _ legacytx.LegacyMsg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
+		&MsgRetire{}, &MsgCancel{}, &MsgUpdateClassAdmin{}, &MsgUpdateClassIssuers{}, &MsgUpdateClassMetadata{}
 )
 
 // MaxMetadataLength defines the max length of the metadata bytes field
@@ -275,5 +275,102 @@ func (m *MsgCancel) ValidateBasic() error {
 // GetSigners returns the expected signers for MsgCancel.
 func (m *MsgCancel) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Holder)
+	return []sdk.AccAddress{addr}
+}
+
+func (m MsgUpdateClassAdmin) Route() string { return sdk.MsgTypeURL(&m) }
+
+func (m MsgUpdateClassAdmin) Type() string { return sdk.MsgTypeURL(&m) }
+
+func (m MsgUpdateClassAdmin) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+func (m *MsgUpdateClassAdmin) ValidateBasic() error {
+	if m.Admin == m.NewAdmin {
+		return sdkerrors.ErrInvalidAddress.Wrap("new admin should be a different address from the signer")
+	}
+
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+
+	if _, err := sdk.AccAddressFromBech32(m.NewAdmin); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+
+	if err := ValidateClassID(m.ClassId); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *MsgUpdateClassAdmin) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Admin)
+	return []sdk.AccAddress{addr}
+}
+
+func (m MsgUpdateClassIssuers) Route() string { return sdk.MsgTypeURL(&m) }
+
+func (m MsgUpdateClassIssuers) Type() string { return sdk.MsgTypeURL(&m) }
+
+func (m MsgUpdateClassIssuers) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+func (m *MsgUpdateClassIssuers) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+
+	if err := ValidateClassID(m.ClassId); err != nil {
+		return err
+	}
+
+	if len(m.Issuers) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("issuers cannot be empty")
+	}
+
+	for _, addr := range m.Issuers {
+		if _, err := sdk.AccAddressFromBech32(addr); err != nil {
+			return sdkerrors.ErrInvalidAddress
+		}
+	}
+
+	return nil
+}
+
+func (m *MsgUpdateClassIssuers) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Admin)
+	return []sdk.AccAddress{addr}
+}
+
+func (m MsgUpdateClassMetadata) Route() string { return sdk.MsgTypeURL(&m) }
+
+func (m MsgUpdateClassMetadata) Type() string { return sdk.MsgTypeURL(&m) }
+
+func (m MsgUpdateClassMetadata) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+func (m *MsgUpdateClassMetadata) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+
+	if err := ValidateClassID(m.ClassId); err != nil {
+		return err
+	}
+
+	if len(m.Metadata) > MaxMetadataLength {
+		return ErrMaxLimit.Wrap("credit class metadata")
+	}
+
+	return nil
+}
+
+func (m *MsgUpdateClassMetadata) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Admin)
 	return []sdk.AccAddress{addr}
 }

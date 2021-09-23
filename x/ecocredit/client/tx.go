@@ -35,6 +35,9 @@ func TxCmd(name string) *cobra.Command {
 		TxSendCmd(),
 		TxRetireCmd(),
 		TxCancelCmd(),
+		TxUpdateClassMetadataCmd(),
+		TxUpdateClassIssuersCmd(),
+		TxUpdateClassAdminCmd(),
 	)
 	return cmd
 }
@@ -365,6 +368,128 @@ Parameters:
 				Holder:  clientCtx.GetFromAddress().String(),
 				Credits: credits,
 			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	})
+}
+
+func TxUpdateClassMetadataCmd() *cobra.Command {
+	return txflags(&cobra.Command{
+		Use:   "update-class-metadata [class-id] [metadata]",
+		Short: "Updates the metadata for a specific credit class",
+		Long: `Updates the metadata for a specific credit class. the '--from' flag must equal the credit class admin.
+
+Parameters:
+  class-id:  the class id that corresponds with the credit class you want to update
+  metadata:  base64 encoded metadata`,
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			if args[0] == "" {
+				return errors.New("class-id is required")
+			}
+			classID := args[0]
+
+			// Check that metadata is provided and decode it
+			if args[1] == "" {
+				return errors.New("base64_metadata is required")
+			}
+			b, err := base64.StdEncoding.DecodeString(args[1])
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
+			}
+
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := ecocredit.MsgUpdateClassMetadata{
+				Admin:    clientCtx.From,
+				ClassId:  classID,
+				Metadata: b,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	})
+}
+
+func TxUpdateClassAdminCmd() *cobra.Command {
+	return txflags(&cobra.Command{
+		Use:   "update-class-admin [class-id] [admin]",
+		Short: "Updates the admin for a specific credit class",
+		Long: `Updates the admin for a specific credit class. the '--from' flag must equal the current credit class admin.
+               WARNING: Updating the admin replaces the current admin. Be sure the address entered is correct.
+
+Parameters:
+  class-id:  the class id that corresponds with the credit class you want to update
+  new-admin: the address to overwrite the current admin address`,
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			if args[0] == "" {
+				return errors.New("class-id is required")
+			}
+			classID := args[0]
+
+			// check for the address
+			newAdmin := args[1]
+			if newAdmin == "" {
+				return errors.New("new admin address is required")
+			}
+
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := ecocredit.MsgUpdateClassAdmin{
+				Admin:    clientCtx.From,
+				ClassId:  classID,
+				NewAdmin: newAdmin,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	})
+}
+
+func TxUpdateClassIssuersCmd() *cobra.Command {
+	return txflags(&cobra.Command{
+		Use:   "update-class-issuers [class-id] [issuers]",
+		Short: "Update the list of issuers for a specific credit class",
+		Long: `Update the list of issuers for a specific credit class. the '--from' flag must equal the current credit class admin.
+
+Parameters:
+  class-id:  the class id that corresponds with the credit class you want to update
+  issuers:   the new list of issuers to replace the current issuers	
+            eg: 'regen tx ecocredit update-class-issuers C01 addr1,addr2,addr3`,
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+
+			if args[0] == "" {
+				return errors.New("class-id is required")
+			}
+			classID := args[0]
+
+			// Parse the comma-separated list of issuers
+			issuers := strings.Split(args[1], ",")
+			for i := range issuers {
+				issuers[i] = strings.TrimSpace(issuers[i])
+			}
+
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			msg := ecocredit.MsgUpdateClassIssuers{
+				Admin:   clientCtx.From,
+				ClassId: classID,
+				Issuers: issuers,
+			}
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	})
