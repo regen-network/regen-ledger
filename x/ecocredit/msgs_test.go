@@ -778,3 +778,128 @@ func TestMsgCancel(t *testing.T) {
 		})
 	}
 }
+
+func TestMsgUpdateClassAdmin(t *testing.T) {
+	_, _, admin := testdata.KeyTestPubAddr()
+	_, _, newAdmin := testdata.KeyTestPubAddr()
+
+	tests := map[string]struct {
+		src    MsgUpdateClassAdmin
+		expErr bool
+	}{
+		"valid": {
+			src:    MsgUpdateClassAdmin{Admin: admin.String(), NewAdmin: newAdmin.String(), ClassId: "C01"},
+			expErr: false,
+		},
+		"invalid: same address": {
+			src:    MsgUpdateClassAdmin{Admin: admin.String(), NewAdmin: admin.String(), ClassId: "C01"},
+			expErr: true,
+		},
+		"invalid: bad ClassID": {
+			src:    MsgUpdateClassAdmin{Admin: admin.String(), NewAdmin: newAdmin.String(), ClassId: "asl;dfjkdjk???fgs;dfljgk"},
+			expErr: true,
+		},
+		"invalid: bad admin addr": {
+			src:    MsgUpdateClassAdmin{Admin: "?!@%)(87", NewAdmin: newAdmin.String(), ClassId: "C02"},
+			expErr: true,
+		},
+		"invalid: bad NewAdmin addr": {
+			src:    MsgUpdateClassAdmin{Admin: admin.String(), NewAdmin: "?!?@%?@$#6", ClassId: "C02"},
+			expErr: true,
+		},
+	}
+
+	for msg, test := range tests {
+		t.Run(msg, func(t *testing.T) {
+			err := test.src.ValidateBasic()
+			if test.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestMsgUpdateClassIssuers(t *testing.T) {
+	_, _, a1 := testdata.KeyTestPubAddr()
+	_, _, a2 := testdata.KeyTestPubAddr()
+
+	tests := map[string]struct {
+		src    MsgUpdateClassIssuers
+		expErr bool
+	}{
+		"valid": {
+			src:    MsgUpdateClassIssuers{Admin: a2.String(), ClassId: "C01", Issuers: []string{a1.String()}},
+			expErr: false,
+		},
+		"invalid: no issuers": {
+			src:    MsgUpdateClassIssuers{Admin: a2.String(), ClassId: "C01", Issuers: []string{}},
+			expErr: true,
+		},
+		"invalid: no class ID": {
+			src:    MsgUpdateClassIssuers{Admin: a2.String(), ClassId: "", Issuers: []string{a1.String()}},
+			expErr: true,
+		},
+		"invalid: bad admin address": {
+			src:    MsgUpdateClassIssuers{Admin: "//????.!", ClassId: "C01", Issuers: []string{a1.String()}},
+			expErr: true,
+		},
+		"invalid: bad class ID": {
+			src:    MsgUpdateClassIssuers{Admin: a1.String(), ClassId: "s.1%?#%", Issuers: []string{a1.String()}},
+			expErr: true,
+		},
+	}
+
+	for msg, test := range tests {
+		t.Run(msg, func(t *testing.T) {
+			err := test.src.ValidateBasic()
+			if test.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestMsgUpdateClassMetadata(t *testing.T) {
+	_, _, a1 := testdata.KeyTestPubAddr()
+
+	tests := map[string]struct {
+		src    MsgUpdateClassMetadata
+		expErr bool
+	}{
+		"valid": {
+			src:    MsgUpdateClassMetadata{Admin: a1.String(), ClassId: "C01", Metadata: []byte("hello world")},
+			expErr: false,
+		},
+		"invalid: bad admin address": {
+			src:    MsgUpdateClassMetadata{Admin: "???a!#)(%", ClassId: "C01", Metadata: []byte("hello world")},
+			expErr: true,
+		},
+		"invalid: bad class ID": {
+			src:    MsgUpdateClassMetadata{Admin: a1.String(), ClassId: "6012949", Metadata: []byte("hello world")},
+			expErr: true,
+		},
+		"invalid: no class ID": {
+			src:    MsgUpdateClassMetadata{Admin: a1.String()},
+			expErr: true,
+		},
+		"invalid: metadata too large": {
+			src:    MsgUpdateClassMetadata{Admin: a1.String(), ClassId: "C01", Metadata: []byte(simtypes.RandStringOfLength(r, 288))},
+			expErr: true,
+		},
+	}
+
+	for msg, test := range tests {
+		t.Run(msg, func(t *testing.T) {
+			err := test.src.ValidateBasic()
+			if test.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}

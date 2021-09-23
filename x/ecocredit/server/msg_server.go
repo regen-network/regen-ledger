@@ -453,6 +453,57 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 	return &ecocredit.MsgCancelResponse{}, nil
 }
 
+func (s serverImpl) UpdateClassAdmin(goCtx context.Context, req *ecocredit.MsgUpdateClassAdmin) (*ecocredit.MsgUpdateClassAdminResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	cInfo, err := s.getClassInfo(ctx, req.ClassId)
+	if err != nil {
+		return nil, err
+	}
+
+	if cInfo.Admin != req.Admin {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("you are not the administrator of this class")
+	}
+
+	cInfo.Admin = req.NewAdmin
+	err = s.classInfoTable.Update(ctx, cInfo)
+
+	return &ecocredit.MsgUpdateClassAdminResponse{}, err
+}
+
+func (s serverImpl) UpdateClassIssuers(goCtx context.Context, req *ecocredit.MsgUpdateClassIssuers) (*ecocredit.MsgUpdateClassIssuersResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	cInfo, err := s.getClassInfo(ctx, req.ClassId)
+	if err != nil {
+		return nil, err
+	}
+
+	if cInfo.Admin != req.Admin {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("you are not the administrator of this class")
+	}
+
+	cInfo.Issuers = req.Issuers
+	err = s.classInfoTable.Update(ctx, cInfo)
+
+	return &ecocredit.MsgUpdateClassIssuersResponse{}, err
+}
+
+func (s serverImpl) UpdateClassMetadata(goCtx context.Context, req *ecocredit.MsgUpdateClassMetadata) (*ecocredit.MsgUpdateClassMetadataResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	cInfo, err := s.getClassInfo(ctx, req.ClassId)
+	if err != nil {
+		return nil, err
+	}
+
+	if cInfo.Admin != req.Admin {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("you are not the administrator of this class")
+	}
+
+	cInfo.Metadata = req.Metadata
+	err = s.classInfoTable.Update(ctx, cInfo)
+
+	return &ecocredit.MsgUpdateClassMetadataResponse{}, err
+}
+
 // nextBatchInClass gets the sequence number for the next batch in the credit
 // class and updates the class info with the new batch number
 func (s serverImpl) nextBatchInClass(ctx types.Context, classInfo *ecocredit.ClassInfo) (uint64, error) {
