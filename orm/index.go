@@ -2,7 +2,6 @@ package orm
 
 import (
 	"bytes"
-	"reflect"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -29,7 +28,7 @@ type MultiKeyIndex struct {
 	rowGetter   RowGetter
 	indexer     indexer
 	indexerFunc IndexerFunc
-	indexKey    reflect.Type
+	indexKey    interface{}
 }
 
 // NewIndex builds a MultiKeyIndex
@@ -53,8 +52,7 @@ func newIndex(builder Indexable, prefix byte, indexer *Indexer, indexerF Indexer
 	if indexKey == nil {
 		return MultiKeyIndex{}, ErrArgument.Wrap("RowGetter must not be nil")
 	}
-	tp := reflect.TypeOf(indexKey)
-	// TODO verify tp is string, bytes or uint64
+	// TODO verify indexKey is string, bytes or uint64 and same as type used in indexer func
 
 	idx := MultiKeyIndex{
 		storeKey:    storeKey,
@@ -62,7 +60,7 @@ func newIndex(builder Indexable, prefix byte, indexer *Indexer, indexerF Indexer
 		rowGetter:   rowGetter,
 		indexer:     indexer,
 		indexerFunc: indexerF,
-		indexKey:    tp,
+		indexKey:    indexKey,
 	}
 	builder.AddAfterSetInterceptor(idx.onSet)
 	builder.AddAfterDeleteInterceptor(idx.onDelete)
@@ -228,7 +226,7 @@ type indexIterator struct {
 	ctx       HasKVStore
 	rowGetter RowGetter
 	it        types.Iterator
-	indexKey  reflect.Type
+	indexKey  interface{}
 }
 
 // LoadNext loads the next value in the sequence into the pointer passed as dest and returns the key. If there
@@ -239,7 +237,6 @@ func (i indexIterator) LoadNext(dest codec.ProtoMarshaler) (RowID, error) {
 		return nil, ErrIteratorDone
 	}
 	indexPrefixKey := i.it.Key()
-	// rowID := i.keyCodec.StripRowID(indexPrefixKey)
 	rowID, err := stripRowID(indexPrefixKey, i.indexKey)
 	if err != nil {
 		return nil, err

@@ -404,6 +404,17 @@ func TestExportImportStatePrimaryKeyTable(t *testing.T) {
 		assert.Equal(t, []orm.RowID{orm.PrimaryKey(&v)}, keys)
 		assert.Equal(t, []testdata.GroupMember{v}, loaded)
 	}
+
+	// and uint64 index setup
+	for _, v := range testRecords {
+		it, err = k.groupMemberByWeightIndex.Get(ctx, v.Weight)
+		require.NoError(t, err)
+		loaded = nil
+		keys, err = orm.ReadAll(it, &loaded)
+		require.NoError(t, err)
+		assert.Equal(t, []orm.RowID{orm.PrimaryKey(&v)}, keys)
+		assert.Equal(t, []testdata.GroupMember{v}, loaded)
+	}
 }
 
 func first(t *testing.T, it orm.Iterator) ([]byte, testdata.GroupInfo) {

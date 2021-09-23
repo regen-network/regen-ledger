@@ -1,7 +1,6 @@
 package orm_test
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -47,23 +46,3 @@ func TestNullTerminatedBytes(t *testing.T) {
 		})
 	}
 }
-
-// func TestStripRowID(t *testing.T) {
-// 	tcs := map[string]struct {
-// 		indexKey     []byte
-// 		indexKeyType reflect.Type
-// 		expRowID     RowID
-// 		expErr       bool
-// 	}{
-// 		"bytes": {
-// 			indexKey: []byte{0x3, 0x0, 0x1, 0x2, 0x3, 0x4},
-// 			indexKeyType:
-// 		}
-// 	}
-// 	for _, tc := range tcs {
-// 		t.Run(tc.name, func(t *testing.T) {
-// 			out := orm.NullTerminatedBytes(tc.in)
-// 			require.Equal(t, tc.expected, out)
-// 		})
-// 	}
-// }

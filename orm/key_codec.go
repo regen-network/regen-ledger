@@ -2,7 +2,6 @@ package orm
 
 import (
 	"fmt"
-	"reflect"
 )
 
 // buildKeyFromParts encodes and concatenates primary key and index parts.
@@ -70,15 +69,15 @@ func NullTerminatedBytes(s string) []byte {
 	return bytes
 }
 
-// stripRowID returns the RowID from the indexKey. It is the reverse operation
-// to buildKeyFromParts for index keys where the first part is the encoded
-// secondaryIndexKey and the second part is the RowID.
-func stripRowID(indexKey []byte, indexKeyType reflect.Type) (RowID, error) {
-	switch indexKeyType {
-	case reflect.TypeOf(([]byte)(nil)):
+// stripRowID returns the RowID from the indexKey based on secondaryIndexKey type.
+// It is the reverse operation to buildKeyFromParts for index keys
+// where the first part is the encoded secondaryIndexKey and the second part is the RowID.
+func stripRowID(indexKey []byte, secondaryIndexKey interface{}) (RowID, error) {
+	switch v := secondaryIndexKey.(type) {
+	case []byte:
 		searchableKeyLen := indexKey[0]
 		return indexKey[1+searchableKeyLen:], nil
-	case reflect.TypeOf((string)("")):
+	case string:
 		searchableKeyLen := 0
 		for i, b := range indexKey {
 			if b == 0 {
@@ -87,9 +86,9 @@ func stripRowID(indexKey []byte, indexKeyType reflect.Type) (RowID, error) {
 			}
 		}
 		return indexKey[1+searchableKeyLen:], nil
-	case reflect.TypeOf((uint64)(0)):
+	case uint64:
 		return indexKey[EncodedSeqLength:], nil
 	default:
-		return nil, fmt.Errorf("type %T not allowed as index key", reflect.New(indexKeyType).Interface())
+		return nil, fmt.Errorf("type %T not allowed as index key", v)
 	}
 }

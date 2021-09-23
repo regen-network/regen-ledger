@@ -105,6 +105,12 @@ func TestIndexPrefixScan(t *testing.T) {
 		return i, nil
 	}, testdata.GroupInfo{}.Admin.Bytes())
 	require.NoError(t, err)
+	strIdx, err := orm.NewIndex(tBuilder, GroupByDescriptionIndexPrefix, func(val interface{}) ([]interface{}, error) {
+		i := []interface{}{val.(*testdata.GroupInfo).Description}
+		return i, nil
+	}, testdata.GroupInfo{}.Description)
+	require.NoError(t, err)
+
 	tb := tBuilder.Build()
 	ctx := orm.NewMockContext()
 
@@ -126,7 +132,7 @@ func TestIndexPrefixScan(t *testing.T) {
 	}
 
 	specs := map[string]struct {
-		start, end []byte
+		start, end interface{}
 		expResult  []testdata.GroupInfo
 		expRowIDs  []orm.RowID
 		expError   *errors.Error
@@ -265,6 +271,13 @@ func TestIndexPrefixScan(t *testing.T) {
 			end:      []byte("a"),
 			method:   idx.ReversePrefixScan,
 			expError: orm.ErrArgument,
+		},
+		"exact match with a single result using string based index": {
+			start:     "my test 1",
+			end:       "my test 2",
+			method:    strIdx.PrefixScan,
+			expResult: []testdata.GroupInfo{g1},
+			expRowIDs: []orm.RowID{orm.EncodeSequence(1)},
 		},
 	}
 	for msg, spec := range specs {
