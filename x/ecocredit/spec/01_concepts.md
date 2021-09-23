@@ -13,7 +13,7 @@ Once a new credit class is created, credits can be issued at-will in distinct ba
 
 ## Credit Type
 
-A credit type is the primary indicator for the methodology defined within a credit class. A credit type includes a name (e.g. carbon, biodiversity), an abbreviation (a set of 1-3 uppercase characters), a measurement unit (e.g. kilograms, tons), and a decimal precision.
+A credit type is the primary indicator used by the methodology to measure the change or impact resulting from an ecosystem service. A credit type includes a name (e.g. carbon, biodiversity), an abbreviation (a set of 1-3 uppercase characters), a measurement unit (e.g. kilograms, tons), and a decimal precision.
 
 The credit type abbreviation is used to construct the credit class ID. For example, "C1" is the ID for the first credit class that uses the "carbon" credit type where "C" is the credit type abbreviation and "1" is the sequence number of the credit class for the given credit type.
 
