@@ -31,6 +31,7 @@ func (m MsgCreateClass) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
+// ValidateBasic does a sanity check on the provided data.
 func (m *MsgCreateClass) ValidateBasic() error {
 
 	if len(m.Metadata) > MaxMetadataLength {
@@ -58,6 +59,7 @@ func (m *MsgCreateClass) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns the expected signers for MsgCreateClass.
 func (m *MsgCreateClass) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Admin)
 	return []sdk.AccAddress{addr}
@@ -74,6 +76,7 @@ func (m MsgCreateBatch) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
+// ValidateBasic does a sanity check on the provided data.
 func (m *MsgCreateBatch) ValidateBasic() error {
 
 	if len(m.Metadata) > MaxMetadataLength {
@@ -131,6 +134,7 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns the expected signers for MsgCreateBatch.
 func (m *MsgCreateBatch) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Issuer)
 	return []sdk.AccAddress{addr}
@@ -147,6 +151,7 @@ func (m MsgSend) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
+// ValidateBasic does a sanity check on the provided data.
 func (m *MsgSend) ValidateBasic() error {
 
 	if _, err := sdk.AccAddressFromBech32(m.Sender); err != nil {
@@ -184,6 +189,7 @@ func (m *MsgSend) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns the expected signers for MsgSend.
 func (m *MsgSend) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Sender)
 	return []sdk.AccAddress{addr}
@@ -200,6 +206,7 @@ func (m MsgRetire) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
+// ValidateBasic does a sanity check on the provided data.
 func (m *MsgRetire) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Holder); err != nil {
 		return sdkerrors.Wrap(err, "holder")
@@ -225,6 +232,7 @@ func (m *MsgRetire) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns the expected signers for MsgRetire.
 func (m *MsgRetire) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Holder)
 	return []sdk.AccAddress{addr}
@@ -241,6 +249,7 @@ func (m MsgCancel) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
+// ValidateBasic does a sanity check on the provided data.
 func (m *MsgCancel) ValidateBasic() error {
 
 	if _, err := sdk.AccAddressFromBech32(m.Holder); err != nil {
@@ -263,6 +272,7 @@ func (m *MsgCancel) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns the expected signers for MsgCancel.
 func (m *MsgCancel) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Holder)
 	return []sdk.AccAddress{addr}
