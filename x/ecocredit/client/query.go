@@ -156,7 +156,7 @@ func QueryBalanceCmd() *cobra.Command {
 }
 
 // QuerySupplyCmd returns a query command that retrieves the tradable and
-// retired supply of credits for for a given credit batch.
+// retired supply of credits for a given credit batch.
 func QuerySupplyCmd() *cobra.Command {
 	return qflags(&cobra.Command{
 		Use:   "supply [batch_denom]",
