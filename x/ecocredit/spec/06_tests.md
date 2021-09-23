@@ -16,15 +16,15 @@ GIVEN - user is NOT on list of approved credit class creators
 WHEN - user tries to create a credit class
 THEN - transaction fails, credit class is NOT created
 
-If a user tries to create a credit class and the credit class includes a credit type on the list of approved credit types, then the transaction is successful and the credit class is created.
+If a user tries to create a credit class and the user provides a valid credit type (credit type is included in the list of approved credit types), then the transaction is successful and the credit class is created.
 
-GIVEN - credit type is on list of approved credit types
+GIVEN - user provides a valid credit type
 WHEN - user tries to create a credit class
 THEN - transaction is successful, credit class is created
 
-If a user tries to create a credit class and the credit class includes a credit type NOT on the list of approved credit types, then the transaction fails and the credit class is created.
+If a user tries to create a credit class and the user provide an invalid credit type (credit type is NOT included in the list of approved credit types), then the transaction fails and the credit class is NOT created.
 
-GIVEN - credit type is NOT on list of approved credit types
+GIVEN - user provides an invalid credit type
 WHEN - user tries to create a credit class
 THEN - transaction fails, credit class is NOT created
 
@@ -90,15 +90,15 @@ THEN - transaction fails, credit class is NOT created
 
 ### Create Credit Batch
 
-If a user tries to create a credit batch and their account address is on the list of approved credit issuers for the given credit class, then the transaction is successful and the credit batch is created.
+If a user tries to create a credit batch and their account address is on the list of approved credit issuers, then the transaction is successful and the credit batch is created.
 
-GIVEN - user is on list of approved credit issuers for the given credit class
+GIVEN - user is on list of approved credit issuers
 WHEN - user tries to create a credit batch
 THEN - transaction is successful, credit batch is created
 
-If a user tries to create a credit batch and their account address is NOT on the list of approved credit issuers for the given credit class, then the transaction fails and the credit batch is NOT created.
+If a user tries to create a credit batch and their account address is NOT on the list of approved credit issuers, then the transaction fails and the credit batch is NOT created.
 
-GIVEN - user is NOT on list of approved credit issuers for the given credit class
+GIVEN - user is NOT on list of approved credit issuers
 WHEN - user tries to create a credit batch
 THEN - transaction fails, credit batch is NOT created
 
@@ -240,17 +240,17 @@ THEN - transaction fails, credits are NOT retired
 
 ### Cancel Credits
 
-If a user tries to cancel 20 credits and their tradable balance is less than 20 credits, then the credits are NOT cancelled.
+If a user tries to cancel 20 credits and their credit balance is more than or equal to 20 credits, then the transaction is successful and the credits are cancelled.
 
-GIVEN - tradable balance is less than 20 credits
+GIVEN - credit balance is more than 20 credits
 WHEN - user tries to cancel 20 credits
-THEN - credits are NOT cancelled
+THEN - transaction is successful, credits are cancelled
 
-If a user tries to cancel 20 credits and their tradable balance is more than 20 credits, then the credits are cancelled.
+If a user tries to cancel 20 credits and their credit balance is less than 20 credits, then the transaction fails and the credits are NOT cancelled.
 
-GIVEN - tradable balance is more than 20 credits
+GIVEN - credit balance is less than 20 credits
 WHEN - user tries to cancel 20 credits
-THEN - credits are cancelled
+THEN - transaction fails, credits are NOT cancelled
 
 If a user tries to cancel credits and the user provides a valid batch denomination, then the transaction is successful and the credits are cancelled.
 
