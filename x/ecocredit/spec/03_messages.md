@@ -11,7 +11,7 @@
 - `admin` must ba a valid address, and their signature must be present in the transaction
 - if the `allowlist_enabled` paramater is set to `true`, `admin` must be on the list of approved credit class creators (the `allowed_class_creators` parameter)
 - `issuers` must not be empty and all addresses must be valid addresses 
-- `credit_type` must not be empty and on the list of approved credit types (the `credit_types` parameter)
+- `credit_type` (the name of the credit type) must not be empty and on the list of approved credit types (the `credit_types` parameter)
 - `metadata` must be less than or equal to 256 bytes
 
 ## MsgCreateBatch
