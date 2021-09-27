@@ -18,9 +18,5 @@ func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 	var params ecocredit.QueryParamsResponse
 	require.NoError(val.ClientCtx.Codec.UnmarshalJSON(resp, &params))
 
-	exp := ecocredit.DefaultParams()
-	s.Require().Equal(params.Params.AllowedClassCreators, exp.AllowedClassCreators)
-	s.Require().Equal(params.Params.AllowlistEnabled, exp.AllowlistEnabled)
-	s.Require().Equal(params.Params.CreditClassFee, exp.CreditClassFee)
-	s.Require().Equal(params.Params.CreditTypes, exp.CreditTypes)
+	s.Require().Equal(ecocredit.DefaultParams(), *params.Params)
 }

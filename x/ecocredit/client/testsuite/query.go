@@ -1,8 +1,8 @@
 package testsuite
 
 import (
+	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
@@ -482,6 +482,8 @@ func (s *IntegrationTestSuite) TestQueryParams() {
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
 	require.NoError(err)
 
-	expected := `{"params":{"credit_class_fee":[{"denom":"stake","amount":"20000000"}],"allowed_class_creators":[],"allowlist_enabled":false,"credit_types":[{"name":"carbon","abbreviation":"C","unit":"metric ton CO2 equivalent","precision":6}]}}`
-	require.Equal(strings.TrimSpace(out.String()), strings.TrimSpace(expected))
+	var params ecocredit.QueryParamsResponse
+	json.Unmarshal(out.Bytes(), &params)
+
+	require.Equal(ecocredit.DefaultParams(), *params.Params)
 }
