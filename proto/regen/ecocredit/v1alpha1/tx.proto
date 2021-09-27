@@ -30,6 +30,15 @@ service Msg {
   // deducts them from the tradable supply, effectively cancelling their
   // issuance on Regen Ledger
   rpc Cancel(MsgCancel) returns (MsgCancelResponse);
+
+  // UpdateClassAdmin updates the credit class admin
+  rpc UpdateClassAdmin(MsgUpdateClassAdmin) returns (MsgUpdateClassAdminResponse);
+
+  // UpdateClassIssuers updates the credit class issuer list
+  rpc UpdateClassIssuers(MsgUpdateClassIssuers) returns (MsgUpdateClassIssuersResponse);
+
+  // UpdateClassMetadata updates the credit class metadata
+  rpc UpdateClassMetadata(MsgUpdateClassMetadata) returns (MsgUpdateClassMetadataResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -218,3 +227,51 @@ message MsgCancel {
 
 // MsgCancelResponse is the Msg/Cancel response type.
 message MsgCancelResponse {}
+
+// MsgUpdateClassAdmin is the Msg/UpdateClassAdmin request type.
+message MsgUpdateClassAdmin {
+
+  // admin is the address of the account that is the admin of the credit class.
+  string admin = 1;
+
+  // class_id is the unique ID of the credit class.
+  string class_id = 2;
+
+  // new_admin is the address of the new admin of the credit class.
+  string new_admin = 3;
+}
+
+// MsgUpdateClassAdminResponse is the MsgUpdateClassAdmin response type.
+message MsgUpdateClassAdminResponse {}
+
+// MsgUpdateClassIssuers is the Msg/UpdateClassIssuers request type.
+message MsgUpdateClassIssuers {
+
+  // admin is the address of the account that is the admin of the credit class.
+  string admin = 1;
+
+  // class_id is the unique ID of the credit class.
+  string class_id = 2;
+
+  // issuers are the updated account addresses of the approved issuers.
+  repeated string issuers = 3;
+}
+
+// MsgUpdateClassIssuersResponse is the MsgUpdateClassIssuers response type.
+message MsgUpdateClassIssuersResponse {}
+
+// MsgUpdateClassMetadata is the Msg/UpdateClassMetadata request type.
+message MsgUpdateClassMetadata {
+
+  // admin is the address of the account that is the admin of the credit class.
+  string admin = 1;
+
+  // class_id is the unique ID of the credit class.
+  string class_id = 2;
+
+  // metadata is the updated arbitrary metadata to be attached to the credit class.
+  bytes metadata = 3;
+}
+
+// MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
+message MsgUpdateClassMetadataResponse {}

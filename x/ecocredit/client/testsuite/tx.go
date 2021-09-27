@@ -1,22 +1,23 @@
 package testsuite
 
 import (
+	"encoding/base64"
 	"fmt"
-	"strings"
-
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/testutil"
+	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
-	proto "github.com/gogo/protobuf/proto"
+	"github.com/gogo/protobuf/proto"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
+	"strings"
 )
 
 type IntegrationTestSuite struct {
@@ -25,8 +26,9 @@ type IntegrationTestSuite struct {
 	cfg     network.Config
 	network *network.Network
 
-	classInfo *ecocredit.ClassInfo
-	batchInfo *ecocredit.BatchInfo
+	testAccount sdk.AccAddress
+	classInfo   *ecocredit.ClassInfo
+	batchInfo   *ecocredit.BatchInfo
 }
 
 const (
@@ -64,6 +66,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	info, _, err := val.ClientCtx.Keyring.NewMnemonic("NewValidator0", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
 	s.Require().NoError(err)
 
+	_, a1pub, a1 := testdata.KeyTestPubAddr()
+	val.ClientCtx.Keyring.SavePubKey("throwaway", a1pub, hd.Secp256k1Type)
+
 	account := sdk.AccAddress(info.GetPubKey().Address())
 	_, err = banktestutil.MsgSendExec(
 		val.ClientCtx,
@@ -74,6 +79,17 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
 	)
 	s.Require().NoError(err)
+
+	_, err = banktestutil.MsgSendExec(
+		val.ClientCtx,
+		val.Address,
+		a1,
+		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	)
+	s.Require().NoError(err)
+	s.testAccount = a1
 
 	var commonFlags = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -1133,6 +1149,203 @@ func (s *IntegrationTestSuite) TestTxCancel() {
 				var res sdk.TxResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				s.Require().Equal(uint32(0), res.Code)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestTxUpdateAdmin() {
+	// use this classId as to not corrupt other tests
+	const classId = "C02"
+	_, _, a1 := testdata.KeyTestPubAddr()
+	val0 := s.network.Validators[0]
+	clientCtx := val0.ClientCtx
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "invalid request: not enough args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "accepts 2 arg(s), received 0",
+		},
+		{
+			name:      "invalid request: no id",
+			args:      []string{"", a1.String()},
+			expErr:    true,
+			expErrMsg: "class-id is required",
+		},
+		{
+			name:      "invalid request: no admin address",
+			args:      append([]string{classId, "", makeFlagFrom(a1.String())}, s.commonTxFlags()...),
+			expErr:    true,
+			expErrMsg: "new admin address is required",
+		},
+		{
+			name:   "valid request",
+			args:   append([]string{classId, a1.String(), makeFlagFrom(val0.Address.String())}, s.commonTxFlags()...),
+			expErr: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.TxUpdateClassAdminCmd()
+			_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+			} else {
+				s.Require().NoError(err)
+
+				// query the class info
+				query := client.QueryClassInfoCmd()
+				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{classId, flagOutputJSON})
+				s.Require().NoError(err, out.String())
+				var res ecocredit.QueryClassInfoResponse
+				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
+				s.Require().NoError(err)
+
+				// check the admin has been changed
+				s.Require().Equal(res.Info.Admin, tc.args[1])
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestTxUpdateMetadata() {
+	// use C03 here as C02 will be corrupted by the admin change test
+	const classId = "C03"
+	newMetaData := base64.StdEncoding.EncodeToString([]byte("hello"))
+	_, _, a1 := testdata.KeyTestPubAddr()
+	val0 := s.network.Validators[0]
+	clientCtx := val0.ClientCtx
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "invalid request: not enough args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "accepts 2 arg(s), received 0",
+		},
+		{
+			name:      "invalid request: bad id",
+			args:      []string{"", a1.String()},
+			expErr:    true,
+			expErrMsg: "class-id is required",
+		},
+		{
+			name:      "invalid request: no metadata",
+			args:      append([]string{classId, "", makeFlagFrom(a1.String())}, s.commonTxFlags()...),
+			expErr:    true,
+			expErrMsg: "base64_metadata is required",
+		},
+		{
+			name:      "invalid request: bad metadata",
+			args:      append([]string{classId, "test", makeFlagFrom(a1.String())}, s.commonTxFlags()...),
+			expErr:    true,
+			expErrMsg: "metadata is malformed, proper base64 string is required",
+		},
+		{
+			name:   "valid request",
+			args:   append([]string{classId, newMetaData, makeFlagFrom(val0.Address.String())}, s.commonTxFlags()...),
+			expErr: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.TxUpdateClassMetadataCmd()
+			_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+			} else {
+				s.Require().NoError(err)
+
+				// query the credit class info
+				query := client.QueryClassInfoCmd()
+				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{classId, flagOutputJSON})
+				s.Require().NoError(err, out.String())
+				var res ecocredit.QueryClassInfoResponse
+				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
+				s.Require().NoError(err)
+
+				// check metadata changed
+				b, err := base64.StdEncoding.DecodeString(newMetaData)
+				s.Require().NoError(err)
+				s.Require().Equal(res.Info.Metadata, b)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
+	const classId = "C03"
+	_, _, a2 := testdata.KeyTestPubAddr()
+	newIssuers := []string{s.testAccount.String(), a2.String()}
+	val0 := s.network.Validators[0]
+	clientCtx := val0.ClientCtx
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "invalid request: not enough args",
+			args:      append([]string{makeFlagFrom(s.testAccount.String())}, s.commonTxFlags()...),
+			expErr:    true,
+			expErrMsg: "accepts 2 arg(s), received 0",
+		},
+		{
+			name:      "invalid request: no id",
+			args:      append([]string{"", s.testAccount.String(), makeFlagFrom(val0.Address.String())}, s.commonTxFlags()...),
+			expErr:    true,
+			expErrMsg: "class-id is required",
+		},
+		{
+			name:      "invalid request: bad issuer addresses",
+			args:      append([]string{classId, "hello,world", makeFlagFrom(s.testAccount.String())}, s.commonTxFlags()...),
+			expErr:    true,
+			expErrMsg: "invalid address",
+		},
+		{
+			name:   "valid request",
+			args:   append([]string{classId, fmt.Sprintf("%s,%s", newIssuers[0], newIssuers[1]), makeFlagFrom(val0.Address.String())}, s.commonTxFlags()...),
+			expErr: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.TxUpdateClassIssuersCmd()
+			_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(err.Error(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err)
+
+				// query the credit class info
+				query := client.QueryClassInfoCmd()
+				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{classId, flagOutputJSON})
+				s.Require().NoError(err, out.String())
+				var res ecocredit.QueryClassInfoResponse
+				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
+				s.Require().NoError(err)
+
+				// check issuers list was changed
+				s.Require().NoError(err)
+				s.Require().Equal(res.Info.Issuers, newIssuers)
 			}
 		})
 	}
