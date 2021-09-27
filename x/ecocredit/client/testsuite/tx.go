@@ -516,7 +516,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "Error: parsing batch JSON",
+			expectedErrMsg: "invalid character",
 		},
 		{
 			name: "invalid class id",
