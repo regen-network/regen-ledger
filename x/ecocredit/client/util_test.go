@@ -1,6 +1,8 @@
 package client
 
 import (
+	"encoding/json"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -107,6 +109,80 @@ func TestParseCredits(t *testing.T) {
 			_, err = parseCancelCreditsList(spec.creditsListStr)
 			if spec.expectErr {
 				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestJSONDupliteKeys(t *testing.T) {
+	testCases := []struct {
+		name       string
+		input      string
+		expErr     bool
+		errMessage string
+	}{
+		{
+			"invalid json",
+			`{abcd}`,
+			true,
+			"invalid character",
+		},
+		{
+			"valid json simple",
+			`{"class_id": "C01", "end_date": "2022-09-08T00:00:00Z", "project_location": "AB-CDE FG1 345"}`,
+			false,
+			"",
+		},
+		{
+			"valid json nested",
+			`{
+				"class_id": "C01",
+				"issuance": [
+					{
+						"recipient": "regen1r9pl9gvr56kmclgkpjg3ynh4rm5am66f2a6y38",
+						"tradable_amount": "1000",
+						"retired_amount": "5",
+						"retirement_location": "ST-UVW XY Z12"
+					}
+				],
+				"metadata": "Y2FyYm9uCg==",
+				"start_date": "2021-09-08T00:00:00Z",
+				"end_date": "2022-09-08T00:00:00Z",
+				"project_location": "AB-CDE FG1 345"
+			}`,
+			false,
+			"",
+		},
+		{
+			"invalid json duplicate keys",
+			`{"class_id": "C01", "end_date": "2022-09-08T00:00:00Z", "class_id": "C01"}`,
+			true,
+			"duplicate key class_id",
+		},
+		{
+			"invalid nested json duplicate keys",
+			`{"class_id": "C01", "end_date": "2022-09-08T00:00:00Z", "issuance": [
+				{
+					"recipient": "regen1r9pl9gvr56kmclgkpjg3ynh4rm5am66f2a6y38",
+					"recipient": "regen1r9pl9gvr56kmclgkpjg3ynh4rm5am66f2a6y38",
+					"tradable_amount": "1000",
+					"retired_amount": "5",
+					"retirement_location": "ST-UVW XY Z12"
+				}
+			]}`,
+			true,
+			"duplicate key recipient",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			err := checkDuplicateKey(json.NewDecoder(strings.NewReader(tc.input)), nil)
+			if tc.expErr {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), tc.errMessage)
 			} else {
 				require.NoError(t, err)
 			}
