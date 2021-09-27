@@ -26,7 +26,7 @@ const (
 	OpWeightMsgRetire              = "op_weight_msg_retire"
 	OpWeightMsgCancel              = "op_weight_msg_cancel"
 	OpWeightMsgUpdateClassAdmin    = "op_weight_msg_update_class_admin"
-	OpWeightMsgUpdateClassMetaData = "op_weight_msg_update_class_metadata"
+	OpWeightMsgUpdateClassMetadata = "op_weight_msg_update_class_metadata"
 	OpWeightMsgUpdateClassIssuers  = "op_weight_msg_update_class_issuers"
 )
 
@@ -49,7 +49,7 @@ var (
 	TypeMsgCancel              = sdk.MsgTypeURL(&ecocredit.MsgCancel{})
 	TypeMsgUpdateClassAdmin    = sdk.MsgTypeURL(&ecocredit.MsgUpdateClassAdmin{})
 	TypeMsgUpdateClassIssuers  = sdk.MsgTypeURL(&ecocredit.MsgUpdateClassIssuers{})
-	TypeMsgUpdateClassMetaData = sdk.MsgTypeURL(&ecocredit.MsgUpdateClassMetadata{})
+	TypeMsgUpdateClassMetadata = sdk.MsgTypeURL(&ecocredit.MsgUpdateClassMetadata{})
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights
@@ -65,7 +65,7 @@ func WeightedOperations(
 		weightMsgCancel              int
 		weightMsgUpdateClassAdmin    int
 		weightMsgUpdateClassIssuers  int
-		weightMsgUpdateClassMetaData int
+		weightMsgUpdateClassMetadata int
 	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgCreateClass, &weightMsgCreateClass, nil,
@@ -110,9 +110,9 @@ func WeightedOperations(
 		},
 	)
 
-	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateClassMetaData, &weightMsgUpdateClassMetaData, nil,
+	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateClassMetadata, &weightMsgUpdateClassMetadata, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateClassMetaData = WeightUpdateClass
+			weightMsgUpdateClassMetadata = WeightUpdateClass
 		},
 	)
 
@@ -146,8 +146,8 @@ func WeightedOperations(
 			SimulateMsgUpdateClassIssuers(ak, bk, qryClient),
 		),
 		simulation.NewWeightedOperation(
-			weightMsgUpdateClassMetaData,
-			SimulateMsgUpdateClassMetaData(ak, bk, qryClient),
+			weightMsgUpdateClassMetadata,
+			SimulateMsgUpdateClassMetadata(ak, bk, qryClient),
 		),
 	}
 }
@@ -574,21 +574,21 @@ func SimulateMsgUpdateClassAdmin(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 	}
 }
 
-// SimulateMsgUpdateClassMetaData generates a MsgUpdateClassMetaData with random metadata
-func SimulateMsgUpdateClassMetaData(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+// SimulateMsgUpdateClassMetadata generates a MsgUpdateClassMetadata with random metadata
+func SimulateMsgUpdateClassMetadata(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 	qryClient ecocredit.QueryClient) simtypes.Operation {
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		ctx := regentypes.Context{Context: sdkCtx}
-		class, op, err := getRandomClass(ctx, r, qryClient, TypeMsgUpdateClassMetaData)
+		class, op, err := getRandomClass(ctx, r, qryClient, TypeMsgUpdateClassMetadata)
 		if class == nil {
 			return op, nil, err
 		}
 
 		addr, err := sdk.AccAddressFromBech32(class.Admin)
 		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassMetaData, err.Error()), nil, err
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassMetadata, err.Error()), nil, err
 		}
 
 		msg := &ecocredit.MsgUpdateClassMetadata{
@@ -599,7 +599,7 @@ func SimulateMsgUpdateClassMetaData(ak ecocredit.AccountKeeper, bk ecocredit.Ban
 
 		admin, found := simtypes.FindAccount(accs, addr)
 		if !found {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassMetaData, "account not found"), nil, nil
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassMetadata, "account not found"), nil, nil
 		}
 
 		spendable := bk.SpendableCoins(sdkCtx, addr)
