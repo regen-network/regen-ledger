@@ -301,7 +301,7 @@ message MsgSellResponse {
 
 message MsgCancelSellOrder {
   string owner = 1;
-  repeated uint64 sell_order_ids = 1;
+  repeated uint64 sell_order_ids = 2;
 }
 
 message MsgCancelSellOrderResponse {}
@@ -309,6 +309,7 @@ message MsgCancelSellOrderResponse {}
 message MsgBuyDirect {
   string buyer = 1;
   repeated Order orders = 2;
+
   message Order {
     uint64 sell_order_id = 1;
     string quantity = 2;
