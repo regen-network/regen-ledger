@@ -11,12 +11,12 @@ $ regen tx ecocredit --help
 #   regen tx ecocredit [command]
 #
 # Available Commands:
-#   cancel        Cancels a specified amount of credits from the account of the transaction author (--from)
-#   create_batch  Issues a new credit batch
-#   create_class  Creates a new credit class
-#   retire        Retires a specified amount of credits from the account of the transaction author (--from)
-#   send          Sends credits from the transaction author (--from) to the recipient
-#   set_precision Allows an issuer to increase the decimal precision of a credit batch
+#   cancel         Cancels a specified amount of credits from the account of the transaction author (--from)
+#   create-batch   Issues a new credit batch
+#   create-class   Creates a new credit class
+#   gen-batch-json Generates JSON to represent a new credit batch for use with create-batch command
+#   retire         Retires a specified amount of credits from the account of the transaction author (--from)
+#   send           Sends credits from the transaction author (--from) to the recipient
 ```
 
 ### Ecocredit Queries
@@ -31,8 +31,10 @@ $ regen q ecocredit --help
 #
 # Available Commands:
 #   balance     Retrieve the tradable and retired balances of the credit batch
-#   batch_info  Retrieve the credit issuance batch info
-#   class_info  Retrieve credit class info
-#   precision   Retrieve the maximum length of the fractional part of credits in the given batch
-# supply      Retrieve the tradable and retired supply of the credit batch
+#   batch-info  Retrieve the credit issuance batch info
+#   batches     List all credit batches in the given class with pagination flags
+#   class-info  Retrieve credit class info
+#   classes     List all credit classes with pagination flags
+#   supply      Retrieve the tradable and retired supply of the credit batch
+#   types       Retrieve the list of credit types
 ```

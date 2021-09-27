@@ -58,6 +58,12 @@
     - [MsgSend](#regen.ecocredit.v1alpha1.MsgSend)
     - [MsgSend.SendCredits](#regen.ecocredit.v1alpha1.MsgSend.SendCredits)
     - [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse)
+    - [MsgUpdateClassAdmin](#regen.ecocredit.v1alpha1.MsgUpdateClassAdmin)
+    - [MsgUpdateClassAdminResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassAdminResponse)
+    - [MsgUpdateClassIssuers](#regen.ecocredit.v1alpha1.MsgUpdateClassIssuers)
+    - [MsgUpdateClassIssuersResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassIssuersResponse)
+    - [MsgUpdateClassMetadata](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadata)
+    - [MsgUpdateClassMetadataResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadataResponse)
   
     - [Msg](#regen.ecocredit.v1alpha1.Msg)
   
@@ -859,6 +865,87 @@ MsgSendResponse is the Msg/Send response type.
 
 
 
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateClassAdmin"></a>
+
+### MsgUpdateClassAdmin
+MsgUpdateClassAdmin is the Msg/UpdateClassAdmin request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| admin | [string](#string) |  | admin is the address of the account that is the admin of the credit class. |
+| class_id | [string](#string) |  | class_id is the unique ID of the credit class. |
+| new_admin | [string](#string) |  | new_admin is the address of the new admin of the credit class. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateClassAdminResponse"></a>
+
+### MsgUpdateClassAdminResponse
+MsgUpdateClassAdminResponse is the MsgUpdateClassAdmin response type.
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateClassIssuers"></a>
+
+### MsgUpdateClassIssuers
+MsgUpdateClassIssuers is the Msg/UpdateClassIssuers request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| admin | [string](#string) |  | admin is the address of the account that is the admin of the credit class. |
+| class_id | [string](#string) |  | class_id is the unique ID of the credit class. |
+| issuers | [string](#string) | repeated | issuers are the updated account addresses of the approved issuers. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateClassIssuersResponse"></a>
+
+### MsgUpdateClassIssuersResponse
+MsgUpdateClassIssuersResponse is the MsgUpdateClassIssuers response type.
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateClassMetadata"></a>
+
+### MsgUpdateClassMetadata
+MsgUpdateClassMetadata is the Msg/UpdateClassMetadata request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| admin | [string](#string) |  | admin is the address of the account that is the admin of the credit class. |
+| class_id | [string](#string) |  | class_id is the unique ID of the credit class. |
+| metadata | [bytes](#bytes) |  | metadata is the updated arbitrary metadata to be attached to the credit class. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateClassMetadataResponse"></a>
+
+### MsgUpdateClassMetadataResponse
+MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
+
+
+
+
+
  <!-- end messages -->
 
  <!-- end enums -->
@@ -878,6 +965,9 @@ Msg is the regen.ecocredit.v1alpha1 Msg service.
 | Send | [MsgSend](#regen.ecocredit.v1alpha1.MsgSend) | [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse) | Send sends tradable credits from one account to another account. Sent credits can either be tradable or retired on receipt. |
 | Retire | [MsgRetire](#regen.ecocredit.v1alpha1.MsgRetire) | [MsgRetireResponse](#regen.ecocredit.v1alpha1.MsgRetireResponse) | Retire retires a specified number of credits in the holder's account. |
 | Cancel | [MsgCancel](#regen.ecocredit.v1alpha1.MsgCancel) | [MsgCancelResponse](#regen.ecocredit.v1alpha1.MsgCancelResponse) | Cancel removes a number of credits from the holder's account and also deducts them from the tradable supply, effectively cancelling their issuance on Regen Ledger |
+| UpdateClassAdmin | [MsgUpdateClassAdmin](#regen.ecocredit.v1alpha1.MsgUpdateClassAdmin) | [MsgUpdateClassAdminResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassAdminResponse) | UpdateClassAdmin updates the credit class admin |
+| UpdateClassIssuers | [MsgUpdateClassIssuers](#regen.ecocredit.v1alpha1.MsgUpdateClassIssuers) | [MsgUpdateClassIssuersResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassIssuersResponse) | UpdateClassIssuers updates the credit class issuer list |
+| UpdateClassMetadata | [MsgUpdateClassMetadata](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadata) | [MsgUpdateClassMetadataResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadataResponse) | UpdateClassMetadata updates the credit class metadata |
 
  <!-- end services -->
 

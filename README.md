@@ -18,7 +18,7 @@ A distributed ledger for ecology built on top of the
 ## Getting Started
 
 
-See [Getting Started](docs/getting-started.md) for instructions how to install and run the blockchain.
+See [Getting Started](docs/getting-started/README.md) for instructions how to install and run the blockchain.
 
 ## Core Features
 
