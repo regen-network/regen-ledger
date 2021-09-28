@@ -389,7 +389,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		tradableBalance, err := math.NewNonNegativeDecFromString(balanceRes.TradableAmount)
 		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, err.Error()), nil, err
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRetire, err.Error()), nil, err
 		}
 
 		if tradableBalance.IsZero() {
@@ -397,16 +397,10 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		randSub := math.NewDecFromInt64(int64(simtypes.RandIntBetween(r, 1, 10)))
-		addr, err := sdk.AccAddressFromBech32(batch.Issuer)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRetire, err.Error()), nil, err
+		spendable, account, op, err := getAccountAndSpendableCoins(sdkCtx, bk, accs, batch.Issuer, TypeMsgRetire)
+		if spendable == nil {
+			return op, nil, err
 		}
-
-		holder, found := simtypes.FindAccount(accs, addr)
-		if !found {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRetire, "account not found"), nil, nil
-		}
-		spendable := bk.SpendableCoins(sdkCtx, holder.Address)
 
 		if !spendable.IsAllPositive() {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRetire, "insufficient funds"), nil, nil
@@ -417,7 +411,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		msg := &ecocredit.MsgRetire{
-			Holder: holder.Address.String(),
+			Holder: account.Address.String(),
 			Credits: []*ecocredit.MsgRetire_RetireCredits{
 				{
 					BatchDenom: batch.BatchDenom,
@@ -435,7 +429,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Msg:             msg,
 			MsgType:         msg.Type(),
 			Context:         sdkCtx,
-			SimAccount:      holder,
+			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
 			ModuleName:      ecocredit.ModuleName,
@@ -464,14 +458,9 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return op, nil, err
 		}
 
-		addr, err := sdk.AccAddressFromBech32(batch.Issuer)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancel, err.Error()), nil, err
-		}
-
-		acc, found := simtypes.FindAccount(accs, addr)
-		if !found {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancel, "account not found"), nil, nil
+		spendable, account, op, err := getAccountAndSpendableCoins(sdkCtx, bk, accs, batch.Issuer, TypeMsgCancel)
+		if spendable == nil {
+			return op, nil, err
 		}
 
 		balanceRes, err := qryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{
@@ -501,7 +490,6 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			},
 		}
 
-		spendable := bk.SpendableCoins(sdkCtx, acc.Address)
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
@@ -510,7 +498,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Msg:             msg,
 			MsgType:         msg.Type(),
 			Context:         sdkCtx,
-			SimAccount:      acc,
+			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
 			ModuleName:      ecocredit.ModuleName,
@@ -533,9 +521,9 @@ func SimulateMsgUpdateClassAdmin(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 			return op, nil, err
 		}
 
-		addr, err := sdk.AccAddressFromBech32(class.Admin)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassAdmin, err.Error()), nil, err
+		spendable, account, op, err := getAccountAndSpendableCoins(sdkCtx, bk, accs, class.Admin, TypeMsgUpdateClassAdmin)
+		if spendable == nil {
+			return op, nil, err
 		}
 
 		newAdmin, _ := simtypes.RandomAcc(r, accs)
@@ -549,12 +537,6 @@ func SimulateMsgUpdateClassAdmin(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 			NewAdmin: newAdmin.Address.String(),
 		}
 
-		admin, found := simtypes.FindAccount(accs, addr)
-		if !found {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassAdmin, "account not found"), nil, nil
-		}
-
-		spendable := bk.SpendableCoins(sdkCtx, addr)
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
@@ -563,7 +545,7 @@ func SimulateMsgUpdateClassAdmin(ak ecocredit.AccountKeeper, bk ecocredit.BankKe
 			Msg:             msg,
 			MsgType:         msg.Type(),
 			Context:         sdkCtx,
-			SimAccount:      admin,
+			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
 			ModuleName:      ecocredit.ModuleName,
@@ -586,9 +568,9 @@ func SimulateMsgUpdateClassMetadata(ak ecocredit.AccountKeeper, bk ecocredit.Ban
 			return op, nil, err
 		}
 
-		addr, err := sdk.AccAddressFromBech32(class.Admin)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassMetadata, err.Error()), nil, err
+		spendable, account, op, err := getAccountAndSpendableCoins(sdkCtx, bk, accs, class.Admin, TypeMsgUpdateClassMetadata)
+		if spendable == nil {
+			return op, nil, err
 		}
 
 		msg := &ecocredit.MsgUpdateClassMetadata{
@@ -597,12 +579,6 @@ func SimulateMsgUpdateClassMetadata(ak ecocredit.AccountKeeper, bk ecocredit.Ban
 			Metadata: []byte(simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 10, 256))),
 		}
 
-		admin, found := simtypes.FindAccount(accs, addr)
-		if !found {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassMetadata, "account not found"), nil, nil
-		}
-
-		spendable := bk.SpendableCoins(sdkCtx, addr)
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
@@ -611,7 +587,7 @@ func SimulateMsgUpdateClassMetadata(ak ecocredit.AccountKeeper, bk ecocredit.Ban
 			Msg:             msg,
 			MsgType:         msg.Type(),
 			Context:         sdkCtx,
-			SimAccount:      admin,
+			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
 			ModuleName:      ecocredit.ModuleName,
@@ -634,9 +610,9 @@ func SimulateMsgUpdateClassIssuers(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			return op, nil, err
 		}
 
-		addr, err := sdk.AccAddressFromBech32(class.Admin)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassIssuers, err.Error()), nil, err
+		spendable, account, op, err := getAccountAndSpendableCoins(sdkCtx, bk, accs, class.Admin, TypeMsgUpdateClassIssuers)
+		if spendable == nil {
+			return op, nil, err
 		}
 
 		issuers := randomIssuers(r, accs)
@@ -646,12 +622,6 @@ func SimulateMsgUpdateClassIssuers(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			Issuers: issuers,
 		}
 
-		admin, found := simtypes.FindAccount(accs, addr)
-		if !found {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassIssuers, "account not found"), nil, nil
-		}
-
-		spendable := bk.SpendableCoins(sdkCtx, addr)
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
@@ -660,7 +630,7 @@ func SimulateMsgUpdateClassIssuers(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 			Msg:             msg,
 			MsgType:         msg.Type(),
 			Context:         sdkCtx,
-			SimAccount:      admin,
+			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
 			ModuleName:      ecocredit.ModuleName,
@@ -669,6 +639,23 @@ func SimulateMsgUpdateClassIssuers(ak ecocredit.AccountKeeper, bk ecocredit.Bank
 
 		return GenAndDeliverTxWithRandFees(txCtx)
 	}
+}
+
+func getAccountAndSpendableCoins(ctx sdk.Context, bk ecocredit.BankKeeper,
+	accs []simtypes.Account, addr, msgType string) (sdk.Coins, *simtypes.Account, simtypes.OperationMsg, error) {
+	accAddr, err := sdk.AccAddressFromBech32(addr)
+	if err != nil {
+		return nil, nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err
+	}
+
+	account, found := simtypes.FindAccount(accs, accAddr)
+	if !found {
+		return nil, &account, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "account not found"), nil
+	}
+
+	spendable := bk.SpendableCoins(ctx, accAddr)
+	return spendable, &account, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
+
 }
 
 func getRandomClass(ctx regentypes.Context, r *rand.Rand, qryClient ecocredit.QueryClient, msgType string) (*ecocredit.ClassInfo, simtypes.OperationMsg, error) {
