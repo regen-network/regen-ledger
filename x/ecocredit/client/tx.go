@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"strings"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
@@ -258,6 +259,15 @@ Parameters:
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
 			if err != nil {
+				return err
+			}
+
+			contents, err := ioutil.ReadFile(args[0])
+			if err != nil {
+				return err
+			}
+
+			if err := checkDuplicateKey(json.NewDecoder(bytes.NewReader(contents)), nil); err != nil {
 				return err
 			}
 
