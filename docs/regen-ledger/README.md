@@ -19,7 +19,7 @@ Regen Ledger has two custom modules in development that support our desired func
 ### Ecocredit Module
 
 ::: tip COMING SOON
-An experimental version of the ecocredit module is available on [Regen Devnet](/getting-started/live-networks.html#regen-devnet). Regen Ledger v2 will include the first official release of the ecocredit module, making the ecocredit module available on [Regen Mainnet](/getting-started/live-networks.html#regen-mainnet).
+An experimental version of the ecocredit module is available on [Hambach Testnet](/getting-started/live-networks.html#hambach-testnet). Regen Ledger v2 will include the first official release of the ecocredit module, making the ecocredit module available on [Regen Mainnet](/getting-started/live-networks.html#regen-mainnet).
 :::
 
 The **Ecocredit Module** is our module for managing the issuance, trading, and retiring of credits pertaining to verifiable changes in ecosystem health.
