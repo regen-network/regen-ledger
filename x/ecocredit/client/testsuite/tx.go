@@ -3,6 +3,8 @@ package testsuite
 import (
 	"encoding/base64"
 	"fmt"
+	"strings"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
@@ -17,7 +19,6 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
-	"strings"
 )
 
 type IntegrationTestSuite struct {
@@ -795,7 +796,7 @@ func (s *IntegrationTestSuite) TestTxSend() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "denomination didn't match the format",
+			expectedErrMsg: "invalid denom",
 		},
 		{
 			name: "invalid tradable amount",
@@ -946,7 +947,7 @@ func (s *IntegrationTestSuite) TestTxRetire() {
 				s.commonTxFlags()...,
 			),
 			expectErr:      true,
-			expectedErrMsg: "denomination didn't match the format",
+			expectedErrMsg: "invalid denom",
 		},
 		{
 			name: "invalid amount",
