@@ -34,11 +34,11 @@ regen init node --chain-id ${Chain} || exit_with_error "Error: Could not init no
 # Change the staking token to uregen
 # Note: sed works differently on different platforms
 echo "Updating your staking token to uregen in the genesis file..."
-
-if [[ `uname` == "Linux"* ]]; then
+OS=`uname`
+if [[ $OS == "Linux"* ]]; then
     echo "Your OS is a Linux variant..."
     sed -i "s/stake/uregen/g" ~/.regen/config/genesis.json || exit_with_error "Error: Could not update staking token"
-elif [[ `uname` == "Darwin"* ]]; then
+elif [[ $OS == "Darwin"* ]]; then
     echo "Your OS is Mac OS/darwin..."
     sed -i "" "s/stake/uregen/g" ~/.regen/config/genesis.json || exit_with_error "Error: Could not update staking token"
 else
