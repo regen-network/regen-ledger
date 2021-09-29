@@ -41,12 +41,16 @@ service Msg {
   // UpdateClassMetadata updates the credit class metadata
   rpc UpdateClassMetadata(MsgUpdateClassMetadata) returns (MsgUpdateClassMetadataResponse);
 
+  // Sell creates new sell orders.
   rpc Sell(MsgSell) returns (MsgSellResponse);
 
-  rpc UpdateSellOrder(MsgUpdateSellOrder) returns (MsgUpdateSellOrderResponse);
+  // UpdateSellOrders updates existing sell orders.
+  rpc UpdateSellOrders(MsgUpdateSellOrders) returns (MsgUpdateSellOrdersResponse);
 
+  // BuyDirect creates buy orders directly against sell orders.
   rpc BuyDirect (MsgBuyDirect) returns (MsgBuyDirectResponse);
 
+  // AllowAskDenom is a governance operation which authorizes a new ask denom to be used in sell orders
   rpc AllowAskDenom (MsgAllowAskDenom) returns (MsgAllowAskDenomResponse);
 }
 
@@ -285,6 +289,7 @@ message MsgUpdateClassMetadata {
 // MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
 message MsgUpdateClassMetadataResponse {}
 
+// MsgSell is the Msg/Sell request type.
 message MsgSell {
   string owner = 1;
   repeated Order orders = 2;
@@ -297,11 +302,13 @@ message MsgSell {
   }
 }
 
+// MsgSellResponse is the Msg/Sell response type.
 message MsgSellResponse {
   repeated uint64 sell_order_ids = 1;
 }
 
-message MsgUpdateSellOrder {
+// MsgUpdateSellOrders is the Msg/UpdateSellOrders request type.
+message MsgUpdateSellOrders {
   string owner = 1;
   repeated Update updates = 2;
 
@@ -314,8 +321,11 @@ message MsgUpdateSellOrder {
   }
 }
 
-message MsgUpdateSellOrderResponse {}
+// MsgUpdateSellOrdersResponse is the Msg/UpdateSellOrders response type.
+message MsgUpdateSellOrdersResponse {}
 
+
+// MsgBuyDirect is the Msg/BuyDirect request type.
 message MsgBuyDirect {
   string buyer = 1;
   repeated Order orders = 2;
@@ -327,13 +337,18 @@ message MsgBuyDirect {
   }
 }
 
-message MsgBuyDirectResponse {}
+// MsgBuyDirectResponse is the Msg/BuyDirect response type.
+message MsgBuyDirectResponse {
+  repeated uint64 buy_order_ids = 1;
+}
 
+
+// MsgAllowAskDenom is the Msg/AllowAskDenom request type.
 message MsgAllowAskDenom {
   // root_address is the address of the governance account which can authorize ask denoms
   string root_address = 1;
 
-  // denom is the denom to allow (ex. ibcc/GLKHDSG423SGS)
+  // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
   string denom = 2;
 
   // display_denom is the denom to display to the user and is informational
@@ -344,4 +359,5 @@ message MsgAllowAskDenom {
   uint32 exponent = 4;
 }
 
+// MsgAllowAskDenomResponse is the Msg/AllowAskDenom response type.
 message MsgAllowAskDenomResponse {}
