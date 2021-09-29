@@ -187,7 +187,7 @@ func (s *IntegrationTestSuite) TestGetBatch() {
 			"invalid batch denom",
 			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s", val.APIAddress, "C999"),
 			true,
-			"denomination didn't match the format",
+			"invalid denom",
 			"",
 		},
 		{
@@ -258,7 +258,7 @@ func (s *IntegrationTestSuite) TestGetBalance() {
 			"invalid batch-denom",
 			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s/balance/%s", val.APIAddress, "abcd", val.Address.String()),
 			true,
-			"denomination didn't match the format",
+			"invalid denom",
 		},
 		{
 			"invalid account address",
@@ -310,7 +310,7 @@ func (s *IntegrationTestSuite) TestGetSupply() {
 			"invalid batch-denom",
 			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s/supply", val.APIAddress, "abcd"),
 			true,
-			"denomination didn't match the format",
+			"invalid denom",
 		},
 		{
 			"valid request",

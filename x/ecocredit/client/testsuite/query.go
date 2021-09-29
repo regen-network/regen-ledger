@@ -329,7 +329,7 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 			name:           "invalid credit batch",
 			args:           []string{"abcde", s.network.Validators[0].Address.String()},
 			expectErr:      true,
-			expectedErrMsg: "denomination didn't match the format",
+			expectedErrMsg: "invalid denom",
 		},
 		{
 			name:                   "valid credit batch and invalid account",
@@ -402,7 +402,7 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 			name:           "invalid credit batch",
 			args:           []string{"abcde"},
 			expectErr:      true,
-			expectedErrMsg: "denomination didn't match the format",
+			expectedErrMsg: "invalid denom",
 		},
 		{
 			name:                   "valid credit batch",
