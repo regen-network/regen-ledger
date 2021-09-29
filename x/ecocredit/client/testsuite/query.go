@@ -1,6 +1,7 @@
 package testsuite
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -469,4 +470,20 @@ func (s *IntegrationTestSuite) TestQueryCreditTypes() {
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestQueryParams() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	require := s.Require()
+
+	cmd := client.QueryParams()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+	require.NoError(err)
+
+	var params ecocredit.QueryParamsResponse
+	json.Unmarshal(out.Bytes(), &params)
+
+	require.Equal(ecocredit.DefaultParams(), *params.Params)
 }
