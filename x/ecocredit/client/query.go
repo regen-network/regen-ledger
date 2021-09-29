@@ -1,8 +1,12 @@
 package client
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -27,6 +31,7 @@ func QueryCmd(name string) *cobra.Command {
 		QueryBalanceCmd(),
 		QuerySupplyCmd(),
 		QueryCreditTypesCmd(),
+		QueryParams(),
 	)
 	return cmd
 }
@@ -190,6 +195,30 @@ func QueryCreditTypesCmd() *cobra.Command {
 				return err
 			}
 			res, err := c.CreditTypes(cmd.Context(), &ecocredit.QueryCreditTypesRequest{})
+			return print(ctx, res, err)
+		},
+	})
+}
+
+// QueryParams returns ecocredit module parameters.
+func QueryParams() *cobra.Command {
+	return qflags(&cobra.Command{
+		Use:   "params",
+		Short: "Query the current ecocredit module parameters",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query the current ecocredit module parameters
+			
+Examples:
+$%s query %s params
+$%s q %s params
+			`, version.AppName, ecocredit.ModuleName, version.AppName, ecocredit.ModuleName),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			res, err := c.Params(cmd.Context(), &ecocredit.QueryParamsRequest{})
 			return print(ctx, res, err)
 		},
 	})
