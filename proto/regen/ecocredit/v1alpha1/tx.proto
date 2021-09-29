@@ -376,12 +376,16 @@ message MsgBuyDirect {
     // quantity is the quanity of credits to buy.
     string quantity = 2;
 
+    // bid price is the bid price for this buy order. A credit unit will be
+    // settled at a purchase price that is no more than the bid price.
+    cosmos.base.v1beta1.Coin bid_price = 3;
+
     // dont_auto_retire allows auto-retirement to be disabled. If it is set to
     // the credits will not auto-retire and can be resold assuming that the
     // corresponding sell order has auto-retirement disabled. If the sell order
     // hasn't disabled auto-retirement and the buy order tries to disable it,
     // that buy order will fail.
-    bool dont_auto_retire = 3;
+    bool dont_auto_retire = 4;
   }
 }
 
