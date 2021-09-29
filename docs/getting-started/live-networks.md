@@ -42,7 +42,7 @@ For more information, see [regen-network/testnets](https://github.com/regen-netw
 
 <!-- TODO: add information about genesis binary and upgrade binaries -->
 
-Hambach Testnet launched with the `v1.0.0` release tag of `regen-ledger`.
+Hambach Testnet launched with the `v2.0.0-beta1` release tag of `regen-ledger` using the experimental build.
 
 The following URL is the RPC endpoint for a dedicated full node operated by RND:
 

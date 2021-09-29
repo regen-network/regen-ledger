@@ -4,7 +4,7 @@ Regen Ledger is a public Proof-of-Stake (PoS) blockchain application built with 
 
 ## Regen Mainnet
 
-[Regen Mainnet](https://www.regen.network/mainnet/) is the primary network supported by Regen Ledger. When referring to the Regen Network blockchain, we are referring to Regen Mainnet. Regen Mainnet is powered by the official [REGEN](https://www.regen.network/token/) token and there are currently 75 validators securing the network. 
+[Regen Mainnet](https://www.regen.network/mainnet/) is the primary network supported by Regen Ledger. When referring to the Regen Network blockchain, we are referring to Regen Mainnet. Regen Mainnet is powered by the official [REGEN](https://www.regen.network/token/) token and there are currently 75 validators securing the network.
 
 For more information, check out [Getting Started: Live Networks](../getting-started/live-networks).
 
@@ -16,7 +16,12 @@ For more information, check out [Getting Started: Live Networks](../getting-star
 
 ## Hambach Testnet
 
-Hambach Testnet is a test network with experimental modules enabled. Developers can use Hambach Testnet to test out features not yet available on Regen Mainnet. Unofficial REGEN tokens can be redeemed using a faucet.
+Hambach Testnet is a test network with experimental modules enabled (modules that are still in development). Developers can use Hambach Testnet to test out features not yet available on Regen Mainnet. Unofficial REGEN tokens can be redeemed using a faucet.
+
+In addition to the main features available on Regen Mainnet and Redwood Testnet, Hambach Testnet includes the following modules:
+
+- [Ecocredit Module](../modules/ecocredit) <!-- TODO: remove once we upgrade to v2.0 -->
+- [Group Module](../modules/group)
 
 For more information, check out [Getting Started: Live Networks](../getting-started/live-networks).
 

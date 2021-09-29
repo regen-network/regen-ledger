@@ -24,8 +24,6 @@ Change to the `regen-ledger` directory:
 cd regen-ledger
 ```
 
-<!-- TODO: add information about genesis binary and upgrade binaries -->
-
 Check out the version that the network launched with.
 
 *For Regen Mainnet:*
@@ -40,7 +38,7 @@ git checkout v1.0.0
 
 *For Hambach Testnet:*
 ```
-git checkout v1.0.0
+git checkout v2.0.0-beta1
 ```
 
 Install the `regen` binary (the `EXPERIMENTAL` option enables experimental features).
