@@ -1,6 +1,7 @@
 package testsuite
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -265,7 +266,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 			name:           "malformed batch denom",
 			args:           []string{"abcde"},
 			expectErr:      true,
-			expectedErrMsg: "denomination didn't match the format",
+			expectedErrMsg: "invalid denom",
 		},
 		{
 			name:           "non-existent credit batch",
@@ -469,4 +470,20 @@ func (s *IntegrationTestSuite) TestQueryCreditTypes() {
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestQueryParams() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	require := s.Require()
+
+	cmd := client.QueryParams()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+	require.NoError(err)
+
+	var params ecocredit.QueryParamsResponse
+	json.Unmarshal(out.Bytes(), &params)
+
+	require.Equal(ecocredit.DefaultParams(), *params.Params)
 }
