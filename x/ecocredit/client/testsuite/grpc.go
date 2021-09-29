@@ -341,6 +341,7 @@ func (s *IntegrationTestSuite) TestGetSupply() {
 			}
 		})
 	}
+}
 
 func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 	val := s.network.Validators[0]
