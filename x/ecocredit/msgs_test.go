@@ -385,7 +385,7 @@ func TestMsgSend(t *testing.T) {
 				Recipient: addr2.String(),
 				Credits: []*MsgSend_SendCredits{
 					{
-						BatchDenom:         "some_denom",
+						BatchDenom:         "A00-00000000-00000000-000",
 						TradableAmount:     "10",
 						RetiredAmount:      "10",
 						RetirementLocation: "ST-UVW XY Z12",
@@ -505,7 +505,7 @@ func TestMsgSend(t *testing.T) {
 				Recipient: addr2.String(),
 				Credits: []*MsgSend_SendCredits{
 					{
-						BatchDenom:     "some_denom",
+						BatchDenom:     "A00-00000000-00000000-000",
 						TradableAmount: "10",
 						RetiredAmount:  "0",
 					},
@@ -567,7 +567,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "10",
 					},
 				},
@@ -579,7 +579,7 @@ func TestMsgRetire(t *testing.T) {
 			src: MsgRetire{
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "10",
 					},
 				},
@@ -592,7 +592,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: "wrongHolder",
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "10",
 					},
 				},
@@ -624,7 +624,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 					},
 				},
 				Location: "AB-CDE FG1 345",
@@ -636,7 +636,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "abc",
 					},
 				},
@@ -649,7 +649,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "10",
 					},
 				},
@@ -661,7 +661,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "10",
 					},
 				},
@@ -695,7 +695,7 @@ func TestMsgCancel(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "10",
 					},
 				},
@@ -706,7 +706,7 @@ func TestMsgCancel(t *testing.T) {
 			src: MsgCancel{
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "10",
 					},
 				},
@@ -718,7 +718,7 @@ func TestMsgCancel(t *testing.T) {
 				Holder: "wrongHolder",
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "10",
 					},
 				},
@@ -747,7 +747,7 @@ func TestMsgCancel(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 					},
 				},
 			},
@@ -758,7 +758,7 @@ func TestMsgCancel(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "abc",
 					},
 				},
