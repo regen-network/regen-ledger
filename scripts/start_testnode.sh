@@ -18,7 +18,7 @@ while getopts ":kc:" option; do
          Chain=$OPTARG;;
      \?) # Invalid option
          echo "Error: Invalid option"
-         exit;;
+         exit 1
    esac
 done
 
@@ -35,16 +35,16 @@ regen init node --chain-id ${Chain} || exit_with_error "Error: Could not init no
 # Note: sed works differently on different platforms
 echo "Updating your staking token to uregen in the genesis file..."
 
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+if [[ `uname` == "Linux"* ]]; then
     echo "Your OS is a Linux variant..."
     sed -i "s/stake/uregen/g" ~/.regen/config/genesis.json || exit_with_error "Error: Could not update staking token"
-elif [[ "$OSTYPE" == "darwin"* ]]; then
+elif [[ `uname` == "Darwin"* ]]; then
     echo "Your OS is Mac OS/darwin..."
     sed -i "" "s/stake/uregen/g" ~/.regen/config/genesis.json || exit_with_error "Error: Could not update staking token"
 else
     # Dunno
     echo "Your OS is not supported"
-    exit ;;
+    exit 1
 fi
 
 echo "Adding validator to genesis.json..."
