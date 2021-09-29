@@ -159,7 +159,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 			"empty batch denom",
 			&ecocredit.QueryBatchInfoRequest{},
 			true,
-			"denomination didn't match the format",
+			"invalid denom",
 		},
 		{
 			"batch not found",

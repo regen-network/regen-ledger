@@ -266,7 +266,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 			name:           "malformed batch denom",
 			args:           []string{"abcde"},
 			expectErr:      true,
-			expectedErrMsg: "denomination didn't match the format",
+			expectedErrMsg: "invalid denom",
 		},
 		{
 			name:           "non-existent credit batch",
