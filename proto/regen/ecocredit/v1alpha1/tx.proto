@@ -380,7 +380,7 @@ message MsgBuyDirect {
     // settled at a purchase price that is no more than the bid price.
     cosmos.base.v1beta1.Coin bid_price = 3;
 
-    // disable_auto_retire allows auto-retirement to be disabled. If it is set to
+    // disable_auto_retire allows auto-retirement to be disabled. If it is set to true
     // the credits will not auto-retire and can be resold assuming that the
     // corresponding sell order has auto-retirement disabled. If the sell order
     // hasn't disabled auto-retirement and the buy order tries to disable it,
