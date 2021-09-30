@@ -6,6 +6,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.0.0-rc1](https://github.com/regen-network/regen-ledger/releases/tag/v2.0.0-rc1) - 2021-09-30
+
+### General
+
+#### Changed
+
+* [#558](https://github.com/regen-network/regen-ledger/pull/558) Update SDK fork to v0.44.0-regen-2
+
+### `x/ecocredit`
+
+#### Added
+
+* [#539](https://github.com/regen-network/regen-ledger/pull/539) Add methods for updating a credit class
+* [#555](https://github.com/regen-network/regen-ledger/pull/555) Add ecocredit params query
+
+
+#### Changed
+
+* [#500](https://github.com/regen-network/regen-ledger/pull/500) Rename credit class designer to admin
+* [#540](https://github.com/regen-network/regen-ledger/pull/540) Add max-metadata check for credit class and credit batch
+* [#526](https://github.com/regen-network/regen-ledger/pull/526) Add gas per-loop-iteration in ecocredit messages
+* [#554](https://github.com/regen-network/regen-ledger/pull/554) Add ValidateDenom for MsgSend, MsgRetire and MsgCancel
+
+
+### ORM Package
+
+#### Fixed
+
+
+* [#518](https://github.com/regen-network/regen-ledger/pull/518) Fix bytes key field to have a max length
+
 ## [v2.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/v2.0.0-beta1) - 2021-08-19
 
 ### General
