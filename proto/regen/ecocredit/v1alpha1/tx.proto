@@ -314,10 +314,10 @@ message MsgSell {
     // ask_price or more.
     cosmos.base.v1beta1.Coin ask_price = 3;
 
-    // dont_auto_retire disables auto-retirement of credits which allows a
+    // disable_auto_retire disables auto-retirement of credits which allows a
     // buyer to disable auto-retirement in their buy order enabling them to
     // resell the credits to another buyer.
-    bool dont_auto_retire = 4;
+    bool disable_auto_retire = 4;
   }
 }
 
@@ -350,8 +350,8 @@ message MsgUpdateSellOrders {
     // new_ask_price is the new ask price for this sell order
     cosmos.base.v1beta1.Coin new_ask_price = 3;
 
-    // dont_auto_retire updates the dont_auto_retire field in the sell order.
-    bool dont_auto_retire = 4;
+    // disable_auto_retire updates the disable_auto_retire field in the sell order.
+    bool disable_auto_retire = 4;
   }
 }
 
@@ -380,12 +380,12 @@ message MsgBuyDirect {
     // settled at a purchase price that is no more than the bid price.
     cosmos.base.v1beta1.Coin bid_price = 3;
 
-    // dont_auto_retire allows auto-retirement to be disabled. If it is set to
+    // disable_auto_retire allows auto-retirement to be disabled. If it is set to
     // the credits will not auto-retire and can be resold assuming that the
     // corresponding sell order has auto-retirement disabled. If the sell order
     // hasn't disabled auto-retirement and the buy order tries to disable it,
     // that buy order will fail.
-    bool dont_auto_retire = 4;
+    bool disable_auto_retire = 4;
   }
 }
 
