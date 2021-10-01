@@ -19,7 +19,7 @@ The feegrant module enables the ability for a granter to grant an allowance to a
 
 ### Permanent Locked Accounts
 
-Regen Ledger v2.0 supports the on-chain creation of permanent locked accounts through the `MsgCreatePermanetLockedAccount` Msg and via CLI. These special types of accounts are intended to be used by Regen Foundation for seeding Community Staking DAOs, wherein the initial REGEN funds distributed to these accounts must be permanently locked and only usable for governance and staking. For more information see [regen-ledger#188](https://github.com/regen-network/regen-ledger/issues/188)
+Regen Ledger v2.0 supports the on-chain creation of permanent locked accounts through the `MsgCreatePermanetLockedAccount` message. These special types of accounts are intended to be used by Regen Foundation for seeding Community Staking DAOs, wherein the initial REGEN funds distributed to these accounts must be permanently locked and only usable for governance and staking. For more information see [regen-ledger#188](https://github.com/regen-network/regen-ledger/issues/188)
 
 ### Ecocredit Module
 
