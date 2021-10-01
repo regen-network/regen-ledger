@@ -71,6 +71,6 @@ To check the status of the Hambach Testnet node provided above, run the followin
 regen status --node http://hambach.regen.network:26657
 ```
 
-<!-- TODO: add `regen config node` instructions once updated to v1.1 -->
+<!-- TODO: add `regen config node` instructions once updated to v2.0 -->
 
-For more information about what commands are available, see [Command-Line Interface](../api.html#command-line-interface).
+For more information about, see [Command-Line Interface](../interfaces.html#command-line-interface).
