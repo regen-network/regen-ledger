@@ -266,7 +266,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 			name:           "malformed batch denom",
 			args:           []string{"abcde"},
 			expectErr:      true,
-			expectedErrMsg: "denomination didn't match the format",
+			expectedErrMsg: "invalid denom",
 		},
 		{
 			name:           "non-existent credit batch",
@@ -326,11 +326,10 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 			expectedErrMsg: "Error: accepts 2 arg(s), received 3",
 		},
 		{
-			name:                   "invalid credit batch",
-			args:                   []string{"abcde", s.network.Validators[0].Address.String()},
-			expectErr:              false,
-			expectedTradableAmount: "0",
-			expectedRetiredAmount:  "0",
+			name:           "invalid credit batch",
+			args:           []string{"abcde", s.network.Validators[0].Address.String()},
+			expectErr:      true,
+			expectedErrMsg: "invalid denom",
 		},
 		{
 			name:                   "valid credit batch and invalid account",
@@ -400,11 +399,10 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name:                   "invalid credit batch",
-			args:                   []string{"abcde"},
-			expectErr:              false,
-			expectedTradableSupply: "0",
-			expectedRetiredSupply:  "0",
+			name:           "invalid credit batch",
+			args:           []string{"abcde"},
+			expectErr:      true,
+			expectedErrMsg: "invalid denom",
 		},
 		{
 			name:                   "valid credit batch",
