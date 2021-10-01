@@ -790,9 +790,9 @@ Example Output:
 }
 ```
 
-### Supply
+### supply
 
-The `Supply` endpoint allows users to query the tradable and retired supply of a credit batch.
+The `supply` endpoint allows users to query the tradable and retired supply of a credit batch.
 
 ```bash
 /regen/ecocredit/v1alpha1/batches/{batch_denom}/supply
