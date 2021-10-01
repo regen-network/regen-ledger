@@ -1,14 +1,18 @@
 package client
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-// QueryCmd returns the parent command for all x/data CLI query commands
+// QueryCmd returns the parent command for all x/ecocredit query commands.
 func QueryCmd(name string) *cobra.Command {
 	cmd := &cobra.Command{
 		SuggestionsMinimumDistance: 2,
@@ -27,6 +31,7 @@ func QueryCmd(name string) *cobra.Command {
 		QueryBalanceCmd(),
 		QuerySupplyCmd(),
 		QueryCreditTypesCmd(),
+		QueryParams(),
 	)
 	return cmd
 }
@@ -36,6 +41,7 @@ func qflags(cmd *cobra.Command) *cobra.Command {
 	return cmd
 }
 
+// QueryClassesCmd returns a query command that lists all credit classes.
 func QueryClassesCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "classes",
@@ -62,6 +68,8 @@ func QueryClassesCmd() *cobra.Command {
 	return qflags(cmd)
 }
 
+// QueryClassInfoCmd returns a query command that retrieves information for a
+// given credit class.
 func QueryClassInfoCmd() *cobra.Command {
 	return qflags(&cobra.Command{
 		Use:   "class-info [class_id]",
@@ -80,6 +88,8 @@ func QueryClassInfoCmd() *cobra.Command {
 	})
 }
 
+// QueryBatchesCmd returns a query command that retrieves credit batches for a
+// given credit class.
 func QueryBatchesCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "batches [class_id]",
@@ -107,6 +117,8 @@ func QueryBatchesCmd() *cobra.Command {
 	return qflags(cmd)
 }
 
+// QueryBatchInfoCmd returns a query command that retrieves information for a
+// given credit batch.
 func QueryBatchInfoCmd() *cobra.Command {
 	return qflags(&cobra.Command{
 		Use:   "batch-info [batch_denom]",
@@ -127,6 +139,8 @@ func QueryBatchInfoCmd() *cobra.Command {
 	})
 }
 
+// QueryBalanceCmd returns a query command that retrieves the tradable and
+// retired balances for a given credit batch and account address.
 func QueryBalanceCmd() *cobra.Command {
 	return qflags(&cobra.Command{
 		Use:   "balance [batch_denom] [account]",
@@ -146,6 +160,8 @@ func QueryBalanceCmd() *cobra.Command {
 	})
 }
 
+// QuerySupplyCmd returns a query command that retrieves the tradable and
+// retired supply of credits for a given credit batch.
 func QuerySupplyCmd() *cobra.Command {
 	return qflags(&cobra.Command{
 		Use:   "supply [batch_denom]",
@@ -165,6 +181,8 @@ func QuerySupplyCmd() *cobra.Command {
 	})
 }
 
+// QueryCreditTypesCmd returns a query command that retrieves the list of
+// approved credit types.
 func QueryCreditTypesCmd() *cobra.Command {
 	return qflags(&cobra.Command{
 		Use:   "types",
@@ -177,6 +195,30 @@ func QueryCreditTypesCmd() *cobra.Command {
 				return err
 			}
 			res, err := c.CreditTypes(cmd.Context(), &ecocredit.QueryCreditTypesRequest{})
+			return print(ctx, res, err)
+		},
+	})
+}
+
+// QueryParams returns ecocredit module parameters.
+func QueryParams() *cobra.Command {
+	return qflags(&cobra.Command{
+		Use:   "params",
+		Short: "Query the current ecocredit module parameters",
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Query the current ecocredit module parameters
+			
+Examples:
+$%s query %s params
+$%s q %s params
+			`, version.AppName, ecocredit.ModuleName, version.AppName, ecocredit.ModuleName),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			res, err := c.Params(cmd.Context(), &ecocredit.QueryParamsRequest{})
 			return print(ctx, res, err)
 		},
 	})

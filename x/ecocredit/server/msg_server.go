@@ -13,6 +13,10 @@ import (
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
+// TODO: Revisit this once we have proper gas fee framework.
+// Tracking issues https://github.com/cosmos/cosmos-sdk/issues/9054, https://github.com/cosmos/cosmos-sdk/discussions/9072
+const gasCostPerIteration = uint64(10)
+
 // CreateClass creates a new class of ecocredit
 //
 // The admin is charged a fee for creating the class. This is controlled by
@@ -29,7 +33,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(ctx.Context, &params)
-	if params.AllowlistEnabled && !s.isCreatorAllowListed(params.AllowedClassCreators, adminAddress) {
+	if params.AllowlistEnabled && !s.isCreatorAllowListed(ctx, params.AllowedClassCreators, adminAddress) {
 		return nil, fmt.Errorf("%s is not allowed to create credit classes", adminAddress.String())
 	}
 
@@ -48,10 +52,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 		return nil, err
 	}
 
-	classID, err := ecocredit.FormatClassID(creditType, classSeqNo)
-	if err != nil {
-		return nil, err
-	}
+	classID := ecocredit.FormatClassID(creditType, classSeqNo)
 
 	err = s.classInfoTable.Create(ctx, &ecocredit.ClassInfo{
 		ClassId:    classID,
@@ -166,19 +167,17 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 			}
 		}
 
-		sum, err := tradable.Add(retired)
-		if err != nil {
-			return nil, err
-		}
-
 		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
-			Recipient:  recipient,
-			BatchDenom: string(batchDenom),
-			Amount:     sum.String(),
+			Recipient:      recipient,
+			BatchDenom:     string(batchDenom),
+			RetiredAmount:  tradable.String(),
+			TradableAmount: retired.String(),
 		})
 		if err != nil {
 			return nil, err
 		}
+
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "batch issuance")
 	}
 
 	setDecimal(store, TradableSupplyKey(batchDenom), tradableSupply)
@@ -300,14 +299,17 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 		}
 
 		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
-			Sender:     sender,
-			Recipient:  recipient,
-			BatchDenom: string(denom),
-			Amount:     sum.String(),
+			Sender:         sender,
+			Recipient:      recipient,
+			BatchDenom:     string(denom),
+			TradableAmount: tradable.String(),
+			RetiredAmount:  retired.String(),
 		})
 		if err != nil {
 			return nil, err
 		}
+
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "send ecocredits")
 	}
 
 	return &ecocredit.MsgSendResponse{}, nil
@@ -355,6 +357,8 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ec
 		if err != nil {
 			return nil, err
 		}
+
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "retire ecocredits")
 	}
 
 	return &ecocredit.MsgRetireResponse{}, nil
@@ -442,9 +446,62 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 		if err != nil {
 			return nil, err
 		}
+
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "cancel ecocredits")
 	}
 
 	return &ecocredit.MsgCancelResponse{}, nil
+}
+
+func (s serverImpl) UpdateClassAdmin(goCtx context.Context, req *ecocredit.MsgUpdateClassAdmin) (*ecocredit.MsgUpdateClassAdminResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	cInfo, err := s.getClassInfo(ctx, req.ClassId)
+	if err != nil {
+		return nil, err
+	}
+
+	if cInfo.Admin != req.Admin {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("you are not the administrator of this class")
+	}
+
+	cInfo.Admin = req.NewAdmin
+	err = s.classInfoTable.Update(ctx, cInfo)
+
+	return &ecocredit.MsgUpdateClassAdminResponse{}, err
+}
+
+func (s serverImpl) UpdateClassIssuers(goCtx context.Context, req *ecocredit.MsgUpdateClassIssuers) (*ecocredit.MsgUpdateClassIssuersResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	cInfo, err := s.getClassInfo(ctx, req.ClassId)
+	if err != nil {
+		return nil, err
+	}
+
+	if cInfo.Admin != req.Admin {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("you are not the administrator of this class")
+	}
+
+	cInfo.Issuers = req.Issuers
+	err = s.classInfoTable.Update(ctx, cInfo)
+
+	return &ecocredit.MsgUpdateClassIssuersResponse{}, err
+}
+
+func (s serverImpl) UpdateClassMetadata(goCtx context.Context, req *ecocredit.MsgUpdateClassMetadata) (*ecocredit.MsgUpdateClassMetadataResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	cInfo, err := s.getClassInfo(ctx, req.ClassId)
+	if err != nil {
+		return nil, err
+	}
+
+	if cInfo.Admin != req.Admin {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("you are not the administrator of this class")
+	}
+
+	cInfo.Metadata = req.Metadata
+	err = s.classInfoTable.Update(ctx, cInfo)
+
+	return &ecocredit.MsgUpdateClassMetadataResponse{}, err
 }
 
 // nextBatchInClass gets the sequence number for the next batch in the credit
@@ -510,9 +567,10 @@ func (s serverImpl) getBatchPrecision(ctx types.Context, denom batchDenomT) (uin
 	return classInfo.CreditType.Precision, nil
 }
 
-// Checks if the given address is in the allowlist of credit class designers
-func (s serverImpl) isCreatorAllowListed(allowlist []string, designer sdk.Address) bool {
+// Checks if the given address is in the allowlist of credit class creators
+func (s serverImpl) isCreatorAllowListed(ctx types.Context, allowlist []string, designer sdk.Address) bool {
 	for _, addr := range allowlist {
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "credit class creators allowlist")
 		allowListedAddr, _ := sdk.AccAddressFromBech32(addr)
 		if designer.Equals(allowListedAddr) {
 			return true

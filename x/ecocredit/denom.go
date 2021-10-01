@@ -12,8 +12,8 @@ import (
 //
 // The initial version has format:
 // <credit type abbreviation><class seq no>
-func FormatClassID(creditType CreditType, classSeqNo uint64) (string, error) {
-	return fmt.Sprintf("%s%02d", creditType.Abbreviation, classSeqNo), nil
+func FormatClassID(creditType CreditType, classSeqNo uint64) string {
+	return fmt.Sprintf("%s%02d", creditType.Abbreviation, classSeqNo)
 }
 
 // Calculate the denomination to use for a batch, based on the batch
@@ -29,7 +29,7 @@ func FormatClassID(creditType CreditType, classSeqNo uint64) (string, error) {
 // - <batch seq no> is the sequence number of the batch, padded to at least
 //   three digits
 //
-// e.g C01-20190101-20200101-001
+// e.g. C01-20190101-20200101-001
 //
 // NB: This might differ from the actual denomination used.
 func FormatDenom(classId string, batchSeqNo uint64, startDate *time.Time, endDate *time.Time) (string, error) {
@@ -72,7 +72,7 @@ func ValidateClassID(classId string) error {
 func ValidateDenom(denom string) error {
 	matches := reFullBatchDenom.FindStringSubmatch(denom)
 	if matches == nil {
-		return ErrParseFailure.Wrapf("denomination didn't match the format: expected A00-00000000-00000000-000, got %s", denom)
+		return ErrParseFailure.Wrap("invalid denom. Valid denom format is: A00-00000000-00000000-000")
 	}
 	return nil
 }

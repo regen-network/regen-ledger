@@ -1,11 +1,18 @@
 package ecocredit
 
 import (
+	"math/rand"
 	"testing"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/stretchr/testify/require"
+)
+
+var (
+	s = rand.NewSource(1)
+	r = rand.New(s)
 )
 
 func TestMsgCreateClass(t *testing.T) {
@@ -63,6 +70,15 @@ func TestMsgCreateClass(t *testing.T) {
 			src: MsgCreateClass{
 				Admin:   addr1.String(),
 				Issuers: []string{addr1.String(), addr2.String()},
+			},
+			expErr: true,
+		},
+		"invalid metadata maxlength is exceeded": {
+			src: MsgCreateClass{
+				Admin:          addr1.String(),
+				CreditTypeName: "carbon",
+				Issuers:        []string{addr1.String(), addr2.String()},
+				Metadata:       []byte(simtypes.RandStringOfLength(r, 288)),
 			},
 			expErr: true,
 		},
@@ -330,6 +346,17 @@ func TestMsgCreateBatch(t *testing.T) {
 			},
 			expErr: true,
 		},
+		"invalid metadata maxlength is exceeded": {
+			src: MsgCreateBatch{
+				Issuer:          addr1.String(),
+				ClassId:         "C01",
+				StartDate:       &startDate,
+				EndDate:         &endDate,
+				ProjectLocation: "AB-CDE FG1 345",
+				Metadata:        []byte(simtypes.RandStringOfLength(r, 288)),
+			},
+			expErr: true,
+		},
 	}
 
 	for msg, test := range tests {
@@ -358,7 +385,7 @@ func TestMsgSend(t *testing.T) {
 				Recipient: addr2.String(),
 				Credits: []*MsgSend_SendCredits{
 					{
-						BatchDenom:         "some_denom",
+						BatchDenom:         "A00-00000000-00000000-000",
 						TradableAmount:     "10",
 						RetiredAmount:      "10",
 						RetirementLocation: "ST-UVW XY Z12",
@@ -478,7 +505,7 @@ func TestMsgSend(t *testing.T) {
 				Recipient: addr2.String(),
 				Credits: []*MsgSend_SendCredits{
 					{
-						BatchDenom:     "some_denom",
+						BatchDenom:     "A00-00000000-00000000-000",
 						TradableAmount: "10",
 						RetiredAmount:  "0",
 					},
@@ -540,7 +567,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "10",
 					},
 				},
@@ -552,7 +579,7 @@ func TestMsgRetire(t *testing.T) {
 			src: MsgRetire{
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "10",
 					},
 				},
@@ -565,7 +592,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: "wrongHolder",
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "10",
 					},
 				},
@@ -597,7 +624,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 					},
 				},
 				Location: "AB-CDE FG1 345",
@@ -609,7 +636,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "abc",
 					},
 				},
@@ -622,7 +649,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "10",
 					},
 				},
@@ -634,7 +661,7 @@ func TestMsgRetire(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgRetire_RetireCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "10",
 					},
 				},
@@ -668,7 +695,7 @@ func TestMsgCancel(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "10",
 					},
 				},
@@ -679,7 +706,7 @@ func TestMsgCancel(t *testing.T) {
 			src: MsgCancel{
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "10",
 					},
 				},
@@ -691,7 +718,7 @@ func TestMsgCancel(t *testing.T) {
 				Holder: "wrongHolder",
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "10",
 					},
 				},
@@ -720,7 +747,7 @@ func TestMsgCancel(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 					},
 				},
 			},
@@ -731,11 +758,136 @@ func TestMsgCancel(t *testing.T) {
 				Holder: addr1.String(),
 				Credits: []*MsgCancel_CancelCredits{
 					{
-						BatchDenom: "some_denom",
+						BatchDenom: "A00-00000000-00000000-000",
 						Amount:     "abc",
 					},
 				},
 			},
+			expErr: true,
+		},
+	}
+
+	for msg, test := range tests {
+		t.Run(msg, func(t *testing.T) {
+			err := test.src.ValidateBasic()
+			if test.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestMsgUpdateClassAdmin(t *testing.T) {
+	_, _, admin := testdata.KeyTestPubAddr()
+	_, _, newAdmin := testdata.KeyTestPubAddr()
+
+	tests := map[string]struct {
+		src    MsgUpdateClassAdmin
+		expErr bool
+	}{
+		"valid": {
+			src:    MsgUpdateClassAdmin{Admin: admin.String(), NewAdmin: newAdmin.String(), ClassId: "C01"},
+			expErr: false,
+		},
+		"invalid: same address": {
+			src:    MsgUpdateClassAdmin{Admin: admin.String(), NewAdmin: admin.String(), ClassId: "C01"},
+			expErr: true,
+		},
+		"invalid: bad ClassID": {
+			src:    MsgUpdateClassAdmin{Admin: admin.String(), NewAdmin: newAdmin.String(), ClassId: "asl;dfjkdjk???fgs;dfljgk"},
+			expErr: true,
+		},
+		"invalid: bad admin addr": {
+			src:    MsgUpdateClassAdmin{Admin: "?!@%)(87", NewAdmin: newAdmin.String(), ClassId: "C02"},
+			expErr: true,
+		},
+		"invalid: bad NewAdmin addr": {
+			src:    MsgUpdateClassAdmin{Admin: admin.String(), NewAdmin: "?!?@%?@$#6", ClassId: "C02"},
+			expErr: true,
+		},
+	}
+
+	for msg, test := range tests {
+		t.Run(msg, func(t *testing.T) {
+			err := test.src.ValidateBasic()
+			if test.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestMsgUpdateClassIssuers(t *testing.T) {
+	_, _, a1 := testdata.KeyTestPubAddr()
+	_, _, a2 := testdata.KeyTestPubAddr()
+
+	tests := map[string]struct {
+		src    MsgUpdateClassIssuers
+		expErr bool
+	}{
+		"valid": {
+			src:    MsgUpdateClassIssuers{Admin: a2.String(), ClassId: "C01", Issuers: []string{a1.String()}},
+			expErr: false,
+		},
+		"invalid: no issuers": {
+			src:    MsgUpdateClassIssuers{Admin: a2.String(), ClassId: "C01", Issuers: []string{}},
+			expErr: true,
+		},
+		"invalid: no class ID": {
+			src:    MsgUpdateClassIssuers{Admin: a2.String(), ClassId: "", Issuers: []string{a1.String()}},
+			expErr: true,
+		},
+		"invalid: bad admin address": {
+			src:    MsgUpdateClassIssuers{Admin: "//????.!", ClassId: "C01", Issuers: []string{a1.String()}},
+			expErr: true,
+		},
+		"invalid: bad class ID": {
+			src:    MsgUpdateClassIssuers{Admin: a1.String(), ClassId: "s.1%?#%", Issuers: []string{a1.String()}},
+			expErr: true,
+		},
+	}
+
+	for msg, test := range tests {
+		t.Run(msg, func(t *testing.T) {
+			err := test.src.ValidateBasic()
+			if test.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestMsgUpdateClassMetadata(t *testing.T) {
+	_, _, a1 := testdata.KeyTestPubAddr()
+
+	tests := map[string]struct {
+		src    MsgUpdateClassMetadata
+		expErr bool
+	}{
+		"valid": {
+			src:    MsgUpdateClassMetadata{Admin: a1.String(), ClassId: "C01", Metadata: []byte("hello world")},
+			expErr: false,
+		},
+		"invalid: bad admin address": {
+			src:    MsgUpdateClassMetadata{Admin: "???a!#)(%", ClassId: "C01", Metadata: []byte("hello world")},
+			expErr: true,
+		},
+		"invalid: bad class ID": {
+			src:    MsgUpdateClassMetadata{Admin: a1.String(), ClassId: "6012949", Metadata: []byte("hello world")},
+			expErr: true,
+		},
+		"invalid: no class ID": {
+			src:    MsgUpdateClassMetadata{Admin: a1.String()},
+			expErr: true,
+		},
+		"invalid: metadata too large": {
+			src:    MsgUpdateClassMetadata{Admin: a1.String(), ClassId: "C01", Metadata: []byte(simtypes.RandStringOfLength(r, 288))},
 			expErr: true,
 		},
 	}

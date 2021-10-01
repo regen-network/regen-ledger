@@ -12,7 +12,7 @@ In order to install the `regen` binary, you'll need the following:
 - Make `>=4`
 - Go `>=1.15`
 
-For more information, see [Prerequisites](./prerequisites). 
+For more information, see [Prerequisites](prerequisites.md). 
 
 ## Install Regen
 

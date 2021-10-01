@@ -22,6 +22,7 @@ const (
 	PRECISION uint32 = 6
 )
 
+// ParamKeyTable returns the parameter key table.
 func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
 }
@@ -156,6 +157,7 @@ func validateCreditTypeAbbreviation(abbr string) error {
 	return nil
 }
 
+// NewParams creates a new Params object.
 func NewParams(creditClassFee sdk.Coins, allowlist []string, allowlistEnabled bool, creditTypes []*CreditType) Params {
 	return Params{
 		CreditClassFee:       creditClassFee,
@@ -165,6 +167,7 @@ func NewParams(creditClassFee sdk.Coins, allowlist []string, allowlistEnabled bo
 	}
 }
 
+// DefaultParams returns a default set of parameters.
 func DefaultParams() Params {
 	return NewParams(
 		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)),
