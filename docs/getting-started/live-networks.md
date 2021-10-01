@@ -16,7 +16,7 @@ Regen Mainnet launched with the `v1.0.0` release tag of `regen-ledger`.
 
 <!-- TODO: update to use dedicated full node operated by RND -->
 
-The following URL is the RPC endpoint for one of our lead validators:
+The following URL is the node address for a full node operated by VitWit:
 
 [http://104.131.169.70:26657/](http://104.131.169.70:26657/)
 
@@ -30,7 +30,7 @@ For more information, see [regen-network/mainnet](https://github.com/regen-netwo
 
 Redwood Testnet launched with the `v1.0.0` release tag of `regen-ledger`.
 
-The following URL is the RPC endpoint for a dedicated full node operated by RND:
+The following URL is the node address for a full node operated by RND:
 
 [http://redwood.regen.network:26657/](http://redwood.regen.network:26657/)
 
@@ -44,7 +44,7 @@ For more information, see [regen-network/testnets](https://github.com/regen-netw
 
 Hambach Testnet launched with the `v2.0.0-beta1` release tag of `regen-ledger` using the experimental build.
 
-The following URL is the RPC endpoint for a dedicated full node operated by RND:
+The following URL is the node address for a full node operated by RND:
 
 [http://hambach.regen.network:26657/](http://hambach.regen.network:26657/)
 
