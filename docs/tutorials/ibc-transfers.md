@@ -10,8 +10,10 @@ IBC transfers are only possible if there is a relayer running that establishes a
 
 The following IBC channels are currently available for transfers to and from Regen Mainnet:
 
-- Osmosis to Regen (`channel-8`)
-- Regen to Osmosis (`channel-1`)
+- regen-1 --> osmosis-1 (`channel-1`)
+- osmosis-1 --> regen-1 (`channel-8`)
+- regen-1 --> cosmoshub-4 (`channel-11`)
+- cosmoshub-4 --> regen-1 (`channel-185`)
 
 ## Using Keplr Wallet
 
