@@ -235,7 +235,7 @@ regen tx ecocredit cancel [credits] [flags]
 Example:
 
 ```bash
-regen tx ecocredit cancel '10 C01-20200101-20210101-001' --from regen1..
+regen tx ecocredit cancel '10 C01-20200101-20210101-001, 0.1 C01-20200101-20210101-002' --from regen1..
 ```
 
 #### create-batch
