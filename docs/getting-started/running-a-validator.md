@@ -33,9 +33,9 @@ Check out the version that the network launched with.
 git checkout v1.0.0
 ```
 
-*For Regen Devnet (Hambach):*
+*For Regen Devnet:*
 ```
-git checkout v1.0.0
+git checkout v1.0.0-rc0
 ```
 
 Install the `regen` binary (the `EXPERIMENTAL` option enables experimental features).
@@ -45,7 +45,7 @@ Install the `regen` binary (the `EXPERIMENTAL` option enables experimental featu
 make install
 ```
 
-*For Regen Devnet (Hambach):*
+*For Regen Devnet:*
 ```
 EXPERIMENTAL=true make install
 ```
@@ -66,7 +66,7 @@ regen init [moniker] --chain-id regen-1
 
 *For Regen Devnet:*
 ```
-regen init [moniker] --chain-id regen-hambach-1
+regen init [moniker] --chain-id regen-devnet-5
 ```
 
 ## Update Genesis
@@ -82,7 +82,7 @@ curl http://104.131.169.70:26657/genesis | jq .result.genesis > ~/.regen/config/
 
 <!-- TODO: update to use dedicated full node operated by RND -->
 
-*For Regen Devnet (Hambach):*
+*For Regen Devnet:*
 ```
 curl http://18.220.101.192:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
@@ -103,7 +103,7 @@ sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.reg
 
 *For Regen Devnet:*
 ```
-PERSISTENT_PEERS="4f5c0be7705bf4acb5b99dcaf93190059ac283a1@137.184.24.185:26656"
+PERSISTENT_PEERS="b2679a74d6bd9f89a3c294c447d6930293255e6b@18.220.101.192:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
