@@ -11,27 +11,19 @@ For more information about Cosmos SDK v0.43 and Cosmos SDK v0.44, see the releas
 
 ### Authz Module
 
-The authz module enables a granter to grant an authorization to a grantee that allows the grantee to execute a message on behalf of the granter. For more information about the authz module, see the specification:
-
-- [Authz Module Specification](https://docs.cosmos.network/master/modules/authz/)
+The authz module enables a granter to grant an authorization to a grantee that allows the grantee to execute a message on behalf of the granter. For more information about the authz module, see the [Authz Module Specification](https://docs.cosmos.network/master/modules/authz/).
 
 ### Feegrant Module
 
-The feegrant module enables the ability for a granter to grant an allowance to a grantee where the allowance is used to cover fees for sending transactions. For more information about the feegrant module, see the specification:
-
-- [Feegrant Module Specification](https://docs.cosmos.network/master/modules/feegrant/)
+The feegrant module enables the ability for a granter to grant an allowance to a grantee where the allowance is used to cover fees for sending transactions. For more information about the feegrant module, see the [Feegrant Module Specification](https://docs.cosmos.network/master/modules/feegrant/).
 
 ### Permanent Locked Accounts
 
-Regen Ledger v2.0 supports the on-chain creation of permanent locked accounts through the `MsgCreatePermanetLockedAccount` Msg and via CLI. These special types of accounts are intended to be used by Regen Foundation for seeding Community Staking DAOs, wherein the initial REGEN funds distributed to these accounts must be permanently locked and only usable for governance and staking.
-
-For more information see [regen-ledger#188](https://github.com/regen-network/regen-ledger/issues/188)
+Regen Ledger v2.0 supports the on-chain creation of permanent locked accounts through the `MsgCreatePermanetLockedAccount` Msg and via CLI. These special types of accounts are intended to be used by Regen Foundation for seeding Community Staking DAOs, wherein the initial REGEN funds distributed to these accounts must be permanently locked and only usable for governance and staking. For more information see [regen-ledger#188](https://github.com/regen-network/regen-ledger/issues/188)
 
 ### Ecocredit Module
 
-The ecocredit module enables the ability to manage classes of ecosystem service credits and to mint credits through a batch issuance process. For more information about the ecocredit module, see the specification:
-
-- [Ecocredit Module Specification](https://docs.regen.network/modules/ecocredit/)
+The ecocredit module enables the ability to manage classes of ecosystem service credits and to mint credits through a batch issuance process. For more information about the ecocredit module, see the [Ecocredit Module Specification](https://docs.regen.network/modules/ecocredit/).
 
 ## Changelog
 
