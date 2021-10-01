@@ -1,7 +1,6 @@
 package ecocredit
 
 import (
-	"fmt"
 	"regexp"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,10 +9,10 @@ import (
 )
 
 var (
-	// TODO: Decide a sensible default value
-	DefaultCreditClassFeeTokens = sdk.NewInt(10000)
+	// This is a value of 20 REGEN
+	DefaultCreditClassFeeTokens = sdk.NewInt(2e7)
 	KeyCreditClassFee           = []byte("CreditClassFee")
-	KeyAllowedClassDesigners    = []byte("AllowedClassDesigners")
+	KeyAllowedClassCreators     = []byte("AllowedClassCreators")
 	KeyAllowlistEnabled         = []byte("AllowlistEnabled")
 	KeyCreditTypes              = []byte("CreditTypes")
 )
@@ -23,6 +22,7 @@ const (
 	PRECISION uint32 = 6
 )
 
+// ParamKeyTable returns the parameter key table.
 func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
 }
@@ -31,16 +31,37 @@ func ParamKeyTable() paramtypes.KeyTable {
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyCreditClassFee, &p.CreditClassFee, validateCreditClassFee),
-		paramtypes.NewParamSetPair(KeyAllowedClassDesigners, &p.AllowedClassDesigners, validateAllowlistCreditDesigners),
+		paramtypes.NewParamSetPair(KeyAllowedClassCreators, &p.AllowedClassCreators, validateAllowedClassCreators),
 		paramtypes.NewParamSetPair(KeyAllowlistEnabled, &p.AllowlistEnabled, validateAllowlistEnabled),
 		paramtypes.NewParamSetPair(KeyCreditTypes, &p.CreditTypes, validateCreditTypes),
 	}
 }
 
+// Validate will run each param field's validate method
+func (p Params) Validate() error {
+	if err := validateCreditTypes(p.CreditTypes); err != nil {
+		return err
+	}
+
+	if err := validateAllowedClassCreators(p.AllowedClassCreators); err != nil {
+		return err
+	}
+
+	if err := validateAllowlistEnabled(p.AllowlistEnabled); err != nil {
+		return err
+	}
+
+	if err := validateCreditClassFee(p.CreditClassFee); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func validateCreditClassFee(i interface{}) error {
 	v, ok := i.(sdk.Coins)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
 	}
 
 	if err := v.Validate(); err != nil {
@@ -50,15 +71,15 @@ func validateCreditClassFee(i interface{}) error {
 	return nil
 }
 
-func validateAllowlistCreditDesigners(i interface{}) error {
+func validateAllowedClassCreators(i interface{}) error {
 	v, ok := i.([]string)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
 	}
 	for _, sAddr := range v {
 		_, err := sdk.AccAddressFromBech32(sAddr)
 		if err != nil {
-			return err
+			return sdkerrors.ErrInvalidAddress.Wrapf("invalid creator address: %s", err.Error())
 		}
 	}
 	return nil
@@ -67,7 +88,7 @@ func validateAllowlistCreditDesigners(i interface{}) error {
 func validateAllowlistEnabled(i interface{}) error {
 	_, ok := i.(bool)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
 	}
 
 	return nil
@@ -76,7 +97,7 @@ func validateAllowlistEnabled(i interface{}) error {
 func validateCreditTypes(i interface{}) error {
 	creditTypes, ok := i.([]*CreditType)
 	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", i)
+		return sdkerrors.ErrInvalidType.Wrapf("invalid parameter type: %T", i)
 	}
 
 	// ensure no duplicate credit types or abbreviations and that all
@@ -93,7 +114,7 @@ func validateCreditTypes(i interface{}) error {
 			return sdkerrors.ErrInvalidRequest.Wrap("empty credit type name")
 		}
 		if seenTypes[T] {
-			return sdkerrors.ErrInvalidRequest.Wrapf("duplicate credit types in request: %s", T)
+			return sdkerrors.ErrInvalidRequest.Wrapf("duplicate credit type name in request: %s", T)
 		}
 
 		// Validate abbreviation
@@ -136,15 +157,17 @@ func validateCreditTypeAbbreviation(abbr string) error {
 	return nil
 }
 
+// NewParams creates a new Params object.
 func NewParams(creditClassFee sdk.Coins, allowlist []string, allowlistEnabled bool, creditTypes []*CreditType) Params {
 	return Params{
-		CreditClassFee:        creditClassFee,
-		AllowedClassDesigners: allowlist,
-		AllowlistEnabled:      allowlistEnabled,
-		CreditTypes:           creditTypes,
+		CreditClassFee:       creditClassFee,
+		AllowedClassCreators: allowlist,
+		AllowlistEnabled:     allowlistEnabled,
+		CreditTypes:          creditTypes,
 	}
 }
 
+// DefaultParams returns a default set of parameters.
 func DefaultParams() Params {
 	return NewParams(
 		sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, DefaultCreditClassFeeTokens)),

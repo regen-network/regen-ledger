@@ -5,7 +5,19 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+func TestSequenceUniqueConstraint(t *testing.T) {
+	storeKey := sdk.NewKVStoreKey("test")
+	ctx := NewMockContext()
+	seq := NewSequence(storeKey, 0x1)
+
+	err := seq.InitVal(ctx, 2)
+	require.NoError(t, err)
+	err = seq.InitVal(ctx, 3)
+	require.True(t, ErrUniqueConstraint.Is(err))
+}
 
 func TestSequenceIncrements(t *testing.T) {
 	storeKey := sdk.NewKVStoreKey("test")

@@ -1,14 +1,13 @@
 package server
 
 import (
-	"bytes"
-	"encoding/binary"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
 func getDecimal(store sdk.KVStore, key []byte) (math.Dec, error) {
@@ -37,7 +36,7 @@ func setDecimal(store sdk.KVStore, key []byte, value math.Dec) {
 	}
 }
 
-func getAddAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
+func addAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 	value, err := getDecimal(store, key)
 	if err != nil {
 		return err
@@ -52,10 +51,14 @@ func getAddAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 	return nil
 }
 
-func getSubAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
+func subAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 	value, err := getDecimal(store, key)
 	if err != nil {
 		return err
+	}
+
+	if value.Cmp(x) == -1 {
+		return ecocredit.ErrInsufficientFunds
 	}
 
 	value, err = math.SafeSubBalance(value, x)
@@ -65,34 +68,6 @@ func getSubAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 
 	setDecimal(store, key, value)
 	return nil
-}
-
-func setUInt32(store sdk.KVStore, key []byte, value uint32) error {
-	bz := make([]byte, 0, 4)
-	buf := bytes.NewBuffer(bz)
-	err := binary.Write(buf, binary.LittleEndian, value)
-	if err != nil {
-		return err
-	}
-
-	store.Set(key, buf.Bytes())
-	return nil
-}
-
-func getUint32(store sdk.KVStore, key []byte) (uint32, error) {
-	bz := store.Get(key)
-	if bz == nil {
-		return 0, nil
-	}
-
-	buf := bytes.NewReader(bz)
-	var res uint32
-	err := binary.Read(buf, binary.LittleEndian, &res)
-	if err != nil {
-		return 0, err
-	}
-
-	return res, nil
 }
 
 func iterateSupplies(store sdk.KVStore, storeKey byte, cb func(denom, supply string) (bool, error)) error {

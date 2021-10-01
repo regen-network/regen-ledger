@@ -1,6 +1,7 @@
 package testsuite
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -89,7 +90,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 		expectedClassInfo *ecocredit.ClassInfo
 	}{
 		{
-			name:           "missing credit class",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
@@ -112,7 +113,7 @@ func (s *IntegrationTestSuite) TestQueryClassInfo() {
 			expectErr: false,
 			expectedClassInfo: &ecocredit.ClassInfo{
 				ClassId:    s.classInfo.ClassId,
-				Designer:   s.classInfo.Designer,
+				Admin:      s.classInfo.Admin,
 				Issuers:    s.classInfo.Issuers,
 				Metadata:   s.classInfo.Metadata,
 				CreditType: s.classInfo.CreditType,
@@ -152,7 +153,7 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 		expectedBatchDenoms []string
 	}{
 		{
-			name:           "missing class id",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
@@ -164,10 +165,10 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name:                "invalid class id",
-			args:                []string{"abcde"},
-			expectErr:           false,
-			expectedBatchDenoms: []string{},
+			name:           "invalid class id",
+			args:           []string{"abcde"},
+			expectErr:      true,
+			expectedErrMsg: "class ID didn't match the format",
 		},
 		{
 			name:                "existing class no batches",
@@ -250,7 +251,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 		expectedBatchInfo *ecocredit.BatchInfo
 	}{
 		{
-			name:           "missing credit batch",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
@@ -265,7 +266,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 			name:           "malformed batch denom",
 			args:           []string{"abcde"},
 			expectErr:      true,
-			expectedErrMsg: "denomination didn't match the format",
+			expectedErrMsg: "invalid denom",
 		},
 		{
 			name:           "non-existent credit batch",
@@ -313,16 +314,10 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 		expectedRetiredAmount  string
 	}{
 		{
-			name:           "missing credit batch",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 2 arg(s), received 0",
-		},
-		{
-			name:           "missing address",
-			args:           []string{"abcde"},
-			expectErr:      true,
-			expectedErrMsg: "Error: accepts 2 arg(s), received 1",
 		},
 		{
 			name:           "too many args",
@@ -331,11 +326,10 @@ func (s *IntegrationTestSuite) TestQueryBalance() {
 			expectedErrMsg: "Error: accepts 2 arg(s), received 3",
 		},
 		{
-			name:                   "invalid credit batch",
-			args:                   []string{"abcde", s.network.Validators[0].Address.String()},
-			expectErr:              false,
-			expectedTradableAmount: "0",
-			expectedRetiredAmount:  "0",
+			name:           "invalid credit batch",
+			args:           []string{"abcde", s.network.Validators[0].Address.String()},
+			expectErr:      true,
+			expectedErrMsg: "invalid denom",
 		},
 		{
 			name:                   "valid credit batch and invalid account",
@@ -393,7 +387,7 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 		expectedRetiredSupply  string
 	}{
 		{
-			name:           "missing credit batch",
+			name:           "missing args",
 			args:           []string{},
 			expectErr:      true,
 			expectedErrMsg: "Error: accepts 1 arg(s), received 0",
@@ -405,11 +399,10 @@ func (s *IntegrationTestSuite) TestQuerySupply() {
 			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name:                   "invalid credit batch",
-			args:                   []string{"abcde"},
-			expectErr:              false,
-			expectedTradableSupply: "0",
-			expectedRetiredSupply:  "0",
+			name:           "invalid credit batch",
+			args:           []string{"abcde"},
+			expectErr:      true,
+			expectedErrMsg: "invalid denom",
 		},
 		{
 			name:                   "valid credit batch",
@@ -475,4 +468,20 @@ func (s *IntegrationTestSuite) TestQueryCreditTypes() {
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestQueryParams() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	require := s.Require()
+
+	cmd := client.QueryParams()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
+	require.NoError(err)
+
+	var params ecocredit.QueryParamsResponse
+	json.Unmarshal(out.Bytes(), &params)
+
+	require.Equal(ecocredit.DefaultParams(), *params.Params)
 }

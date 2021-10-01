@@ -96,28 +96,101 @@ func TestReadAll(t *testing.T) {
 
 func TestLimitedIterator(t *testing.T) {
 	specs := map[string]struct {
-		src orm.Iterator
-		exp []testdata.GroupInfo
+		parent      orm.Iterator
+		max         int
+		expectErr   bool
+		expectedErr string
+		exp         []testdata.GroupInfo
 	}{
+		"nil parent": {
+			parent:      nil,
+			max:         0,
+			expectErr:   true,
+			expectedErr: "parent iterator must not be nil",
+		},
+		"negative max": {
+			parent:      mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}),
+			max:         -1,
+			expectErr:   true,
+			expectedErr: "quantity must not be negative",
+		},
 		"all from range with max > length": {
-			src: orm.LimitIterator(mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}), 2),
-			exp: []testdata.GroupInfo{{Description: "test"}},
+			parent: mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}),
+			max:    2,
+			exp:    []testdata.GroupInfo{{Description: "test"}},
 		},
 		"up to max": {
-			src: orm.LimitIterator(mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}), 1),
-			exp: []testdata.GroupInfo{{Description: "test"}},
+			parent: mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}),
+			max:    1,
+			exp:    []testdata.GroupInfo{{Description: "test"}},
 		},
 		"none when max = 0": {
-			src: orm.LimitIterator(mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}), 0),
-			exp: []testdata.GroupInfo{},
+			parent: mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}),
+			max:    0,
+			exp:    []testdata.GroupInfo{},
 		},
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
-			var loaded []testdata.GroupInfo
-			_, err := orm.ReadAll(spec.src, &loaded)
-			require.NoError(t, err)
-			assert.EqualValues(t, spec.exp, loaded)
+			src, err := orm.LimitIterator(spec.parent, spec.max)
+			if spec.expectErr {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), spec.expectedErr)
+			} else {
+				require.NoError(t, err)
+				var loaded []testdata.GroupInfo
+				_, err := orm.ReadAll(src, &loaded)
+				require.NoError(t, err)
+				assert.EqualValues(t, spec.exp, loaded)
+			}
+		})
+	}
+}
+
+func TestFirst(t *testing.T) {
+	testCases := []struct {
+		name          string
+		iterator      orm.Iterator
+		dest          codec.ProtoMarshaler
+		expectErr     bool
+		expectedErr   string
+		expectedRowID orm.RowID
+		expectedDest  codec.ProtoMarshaler
+	}{
+		{
+			name:        "nil iterator",
+			iterator:    nil,
+			dest:        &testdata.GroupInfo{},
+			expectErr:   true,
+			expectedErr: "iterator must not be nil",
+		},
+		{
+			name:        "nil dest",
+			iterator:    mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}),
+			dest:        nil,
+			expectErr:   true,
+			expectedErr: "destination object must not be nil",
+		},
+		{
+			name:          "all not nil",
+			iterator:      mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}),
+			dest:          &testdata.GroupInfo{},
+			expectErr:     false,
+			expectedRowID: orm.EncodeSequence(1),
+			expectedDest:  &testdata.GroupInfo{Description: "test"},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rowID, err := orm.First(tc.iterator, tc.dest)
+			if tc.expectErr {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), tc.expectedErr)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tc.expectedRowID, rowID)
+				require.Equal(t, tc.expectedDest, tc.dest)
+			}
 		})
 	}
 }
@@ -131,10 +204,12 @@ func TestPaginate(t *testing.T) {
 		testTablePrefix = iota
 		testTableSeqPrefix
 	)
-	tBuilder := orm.NewAutoUInt64TableBuilder(testTablePrefix, testTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
-	idx := orm.NewIndex(tBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
+	tBuilder, err := orm.NewAutoUInt64TableBuilder(testTablePrefix, testTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
+	require.NoError(t, err)
+	idx, err := orm.NewIndex(tBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
 		return []orm.RowID{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
 	})
+	require.NoError(t, err)
 	tb := tBuilder.Build()
 	ctx := orm.NewMockContext()
 
@@ -245,6 +320,26 @@ func TestPaginate(t *testing.T) {
 
 		})
 	}
+
+	t.Run("nil iterator", func(t *testing.T) {
+		var loaded []testdata.GroupInfo
+		res, err := orm.Paginate(nil, &query.PageRequest{}, &loaded)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "iterator must not be nil")
+		require.Nil(t, res)
+	})
+
+	t.Run("non-slice destination", func(t *testing.T) {
+		var loaded testdata.GroupInfo
+		res, err := orm.Paginate(
+			mockIter(orm.EncodeSequence(1), &testdata.GroupInfo{Description: "test"}),
+			&query.PageRequest{},
+			&loaded,
+		)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "destination must point to a slice")
+		require.Nil(t, res)
+	})
 }
 
 // mockIter amino encodes + decodes value object.

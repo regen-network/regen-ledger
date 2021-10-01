@@ -36,6 +36,8 @@
     - [QueryClassesResponse](#regen.ecocredit.v1alpha1.QueryClassesResponse)
     - [QueryCreditTypesRequest](#regen.ecocredit.v1alpha1.QueryCreditTypesRequest)
     - [QueryCreditTypesResponse](#regen.ecocredit.v1alpha1.QueryCreditTypesResponse)
+    - [QueryParamsRequest](#regen.ecocredit.v1alpha1.QueryParamsRequest)
+    - [QueryParamsResponse](#regen.ecocredit.v1alpha1.QueryParamsResponse)
     - [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest)
     - [QuerySupplyResponse](#regen.ecocredit.v1alpha1.QuerySupplyResponse)
   
@@ -56,6 +58,12 @@
     - [MsgSend](#regen.ecocredit.v1alpha1.MsgSend)
     - [MsgSend.SendCredits](#regen.ecocredit.v1alpha1.MsgSend.SendCredits)
     - [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse)
+    - [MsgUpdateClassAdmin](#regen.ecocredit.v1alpha1.MsgUpdateClassAdmin)
+    - [MsgUpdateClassAdminResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassAdminResponse)
+    - [MsgUpdateClassIssuers](#regen.ecocredit.v1alpha1.MsgUpdateClassIssuers)
+    - [MsgUpdateClassIssuersResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassIssuersResponse)
+    - [MsgUpdateClassMetadata](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadata)
+    - [MsgUpdateClassMetadataResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadataResponse)
   
     - [Msg](#regen.ecocredit.v1alpha1.Msg)
   
@@ -119,7 +127,7 @@ EventCreateClass is an event emitted when a credit class is created.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | class_id | [string](#string) |  | class_id is the unique ID of credit class. |
-| designer | [string](#string) |  | designer is the designer of the credit class. |
+| admin | [string](#string) |  | admin is the admin of the credit class. |
 
 
 
@@ -139,7 +147,8 @@ transferred will result in a separate EventReceive for easy indexing.
 | sender | [string](#string) |  | sender is the sender of the credits in the case that this event is the result of a transfer. It will not be set when credits are received at initial issuance. |
 | recipient | [string](#string) |  | recipient is the recipient of the credits |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
-| amount | [string](#string) |  | amount is the decimal number of both tradable and retired credits received. |
+| tradable_amount | [string](#string) |  | tradable_amount is the decimal number of tradable credits received. |
+| retired_amount | [string](#string) |  | retired_amount is the decimal number of retired credits received. |
 
 
 
@@ -194,7 +203,7 @@ BatchInfo represents the high-level on-chain information for a credit batch.
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
 | issuer | [string](#string) |  | issuer is the issuer of the credit batch. |
 | total_amount | [string](#string) |  | total_amount is the total number of active credits in the credit batch. Some of the issued credits may be cancelled and will be removed from total_amount and tracked in amount_cancelled. total_amount and amount_cancelled will always sum to the original amount of credits that were issued. |
-| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit batch. |
+| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata attached to the credit batch. |
 | amount_cancelled | [string](#string) |  | amount_cancelled is the number of credits in the batch that have been cancelled, effectively undoing there issuance. The sum of total_amount and amount_cancelled will always sum to the original amount of credits that were issued. |
 | start_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | start_date is the beginning of the period during which this credit batch was quantified and verified. |
 | end_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | end_date is the end of the period during which this credit batch was quantified and verified. |
@@ -214,7 +223,7 @@ ClassInfo represents the high-level on-chain information for a credit class.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | class_id | [string](#string) |  | class_id is the unique ID of credit class. |
-| designer | [string](#string) |  | designer is the designer of the credit class. |
+| admin | [string](#string) |  | admin is the admin of the credit class. |
 | issuers | [string](#string) | repeated | issuers are the approved issuers of the credit class. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit class. |
 | credit_type | [CreditType](#regen.ecocredit.v1alpha1.CreditType) |  | credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision. |
@@ -271,7 +280,7 @@ use with the x/params module.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | credit_class_fee | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) | repeated | credit_class_fee is the fixed fee charged on creation of a new credit class |
-| allowed_class_designers | [string](#string) | repeated | allowed_class_designers is an allowlist defining the addresses with the required permissions to create credit classes |
+| allowed_class_creators | [string](#string) | repeated | allowed_class_creators is an allowlist defining the addresses with the required permissions to create credit classes |
 | allowlist_enabled | [bool](#bool) |  | allowlist_enabled is a param that enables/disables the allowlist for credit creation |
 | credit_types | [CreditType](#regen.ecocredit.v1alpha1.CreditType) | repeated | credit_types is a list of definitions for credit types |
 
@@ -548,6 +557,31 @@ QueryCreditTypesRequest is the Query/Credit_Types response type
 
 
 
+<a name="regen.ecocredit.v1alpha1.QueryParamsRequest"></a>
+
+### QueryParamsRequest
+QueryParamsRequest is the Query/Params request type.
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QueryParamsResponse"></a>
+
+### QueryParamsResponse
+QueryParamsResponse is the Query/Params response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| params | [Params](#regen.ecocredit.v1alpha1.Params) |  | params defines the parameters of the ecocredit module. |
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha1.QuerySupplyRequest"></a>
 
 ### QuerySupplyRequest
@@ -599,6 +633,7 @@ Msg is the regen.ecocredit.v1alpha1 Query service.
 | Balance | [QueryBalanceRequest](#regen.ecocredit.v1alpha1.QueryBalanceRequest) | [QueryBalanceResponse](#regen.ecocredit.v1alpha1.QueryBalanceResponse) | Balance queries the balance (both tradable and retired) of a given credit batch for a given account. |
 | Supply | [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest) | [QuerySupplyResponse](#regen.ecocredit.v1alpha1.QuerySupplyResponse) | Supply queries the tradable and retired supply of a credit batch. |
 | CreditTypes | [QueryCreditTypesRequest](#regen.ecocredit.v1alpha1.QueryCreditTypesRequest) | [QueryCreditTypesResponse](#regen.ecocredit.v1alpha1.QueryCreditTypesResponse) | CreditTypes returns the list of allowed types that credit classes can have. See Types/CreditType for more details. |
+| Params | [QueryParamsRequest](#regen.ecocredit.v1alpha1.QueryParamsRequest) | [QueryParamsResponse](#regen.ecocredit.v1alpha1.QueryParamsResponse) | Params queries the ecocredit module parameters. |
 
  <!-- end services -->
 
@@ -664,7 +699,7 @@ MsgCreateBatch is the Msg/CreateBatch request type.
 | issuer | [string](#string) |  | issuer is the address of the batch issuer. |
 | class_id | [string](#string) |  | class_id is the unique ID of the class. |
 | issuance | [MsgCreateBatch.BatchIssuance](#regen.ecocredit.v1alpha1.MsgCreateBatch.BatchIssuance) | repeated | issuance are the credits issued in the batch. |
-| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit batch. |
+| metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata attached to the credit batch. |
 | start_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | start_date is the beginning of the period during which this credit batch was quantified and verified. |
 | end_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | end_date is the end of the period during which this credit batch was quantified and verified. |
 | project_location | [string](#string) |  | project_location is the location of the project backing the credits in this batch. It is a string of the form <country-code>[-<sub-national-code>[ <postal-code>]], with the first two fields conforming to ISO 3166-2, and postal-code being up to 64 alphanumeric characters. country-code is required, while sub-national-code and postal-code can be added for increasing precision. |
@@ -716,10 +751,10 @@ MsgCreateClass is the Msg/CreateClass request type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| designer | [string](#string) |  | designer is the address of the account which designed the credit class. The designer has special permissions to change the list of issuers and perform other administrative operations. |
+| admin | [string](#string) |  | admin is the address of the account that created the credit class. |
 | issuers | [string](#string) | repeated | issuers are the account addresses of the approved issuers. |
 | metadata | [bytes](#bytes) |  | metadata is any arbitrary metadata to attached to the credit class. |
-| credit_type | [string](#string) |  | credit_type describes the type of credit (e.g. "carbon", "biodiversity"). |
+| credit_type_name | [string](#string) |  | credit_type_name describes the type of credit (e.g. "carbon", "biodiversity"). |
 
 
 
@@ -830,6 +865,87 @@ MsgSendResponse is the Msg/Send response type.
 
 
 
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateClassAdmin"></a>
+
+### MsgUpdateClassAdmin
+MsgUpdateClassAdmin is the Msg/UpdateClassAdmin request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| admin | [string](#string) |  | admin is the address of the account that is the admin of the credit class. |
+| class_id | [string](#string) |  | class_id is the unique ID of the credit class. |
+| new_admin | [string](#string) |  | new_admin is the address of the new admin of the credit class. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateClassAdminResponse"></a>
+
+### MsgUpdateClassAdminResponse
+MsgUpdateClassAdminResponse is the MsgUpdateClassAdmin response type.
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateClassIssuers"></a>
+
+### MsgUpdateClassIssuers
+MsgUpdateClassIssuers is the Msg/UpdateClassIssuers request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| admin | [string](#string) |  | admin is the address of the account that is the admin of the credit class. |
+| class_id | [string](#string) |  | class_id is the unique ID of the credit class. |
+| issuers | [string](#string) | repeated | issuers are the updated account addresses of the approved issuers. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateClassIssuersResponse"></a>
+
+### MsgUpdateClassIssuersResponse
+MsgUpdateClassIssuersResponse is the MsgUpdateClassIssuers response type.
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateClassMetadata"></a>
+
+### MsgUpdateClassMetadata
+MsgUpdateClassMetadata is the Msg/UpdateClassMetadata request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| admin | [string](#string) |  | admin is the address of the account that is the admin of the credit class. |
+| class_id | [string](#string) |  | class_id is the unique ID of the credit class. |
+| metadata | [bytes](#bytes) |  | metadata is the updated arbitrary metadata to be attached to the credit class. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateClassMetadataResponse"></a>
+
+### MsgUpdateClassMetadataResponse
+MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
+
+
+
+
+
  <!-- end messages -->
 
  <!-- end enums -->
@@ -849,6 +965,9 @@ Msg is the regen.ecocredit.v1alpha1 Msg service.
 | Send | [MsgSend](#regen.ecocredit.v1alpha1.MsgSend) | [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse) | Send sends tradable credits from one account to another account. Sent credits can either be tradable or retired on receipt. |
 | Retire | [MsgRetire](#regen.ecocredit.v1alpha1.MsgRetire) | [MsgRetireResponse](#regen.ecocredit.v1alpha1.MsgRetireResponse) | Retire retires a specified number of credits in the holder's account. |
 | Cancel | [MsgCancel](#regen.ecocredit.v1alpha1.MsgCancel) | [MsgCancelResponse](#regen.ecocredit.v1alpha1.MsgCancelResponse) | Cancel removes a number of credits from the holder's account and also deducts them from the tradable supply, effectively cancelling their issuance on Regen Ledger |
+| UpdateClassAdmin | [MsgUpdateClassAdmin](#regen.ecocredit.v1alpha1.MsgUpdateClassAdmin) | [MsgUpdateClassAdminResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassAdminResponse) | UpdateClassAdmin updates the credit class admin |
+| UpdateClassIssuers | [MsgUpdateClassIssuers](#regen.ecocredit.v1alpha1.MsgUpdateClassIssuers) | [MsgUpdateClassIssuersResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassIssuersResponse) | UpdateClassIssuers updates the credit class issuer list |
+| UpdateClassMetadata | [MsgUpdateClassMetadata](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadata) | [MsgUpdateClassMetadataResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadataResponse) | UpdateClassMetadata updates the credit class metadata |
 
  <!-- end services -->
 

@@ -9,11 +9,16 @@ import (
 )
 
 var (
-	_, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
-		&MsgRetire{}, &MsgCancel{}
-	_, _, _, _, _ legacytx.LegacyMsg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
-		&MsgRetire{}, &MsgCancel{}
+	_, _, _, _, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
+		&MsgRetire{}, &MsgCancel{}, &MsgUpdateClassAdmin{}, &MsgUpdateClassIssuers{}, &MsgUpdateClassMetadata{}
+	_, _, _, _, _, _, _, _ legacytx.LegacyMsg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
+		&MsgRetire{}, &MsgCancel{}, &MsgUpdateClassAdmin{}, &MsgUpdateClassIssuers{}, &MsgUpdateClassMetadata{}
 )
+
+// MaxMetadataLength defines the max length of the metadata bytes field
+// for the credit-class & credit-batch.
+// TODO: This could be used as params once x/params is upgraded to use protobuf
+const MaxMetadataLength = 256
 
 // Route Implements LegacyMsg.
 func (m MsgCreateClass) Route() string { return sdk.MsgTypeURL(&m) }
@@ -26,42 +31,37 @@ func (m MsgCreateClass) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
+// ValidateBasic does a sanity check on the provided data.
 func (m *MsgCreateClass) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(m.Designer)
-	if err != nil {
-		return sdkerrors.Wrap(err, "designer")
+
+	if len(m.Metadata) > MaxMetadataLength {
+		return ErrMaxLimit.Wrap("credit class metadata")
+	}
+
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
+		return sdkerrors.Wrap(err, "admin")
 	}
 
 	if len(m.Issuers) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("issuers cannot be empty")
 	}
 
-	if len(m.CreditType) == 0 {
+	if len(m.CreditTypeName) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("credit class must have a credit type")
 	}
 	for _, issuer := range m.Issuers {
-		_, err := sdk.AccAddressFromBech32(issuer)
-		if err != nil {
-			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-		}
-	}
 
-	for _, issuer := range m.Issuers {
-		_, err := sdk.AccAddressFromBech32(issuer)
-		if err != nil {
-			return sdkerrors.Wrapf(err, "issuer: %s", issuer)
+		if _, err := sdk.AccAddressFromBech32(issuer); err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
 	}
 
 	return nil
 }
 
+// GetSigners returns the expected signers for MsgCreateClass.
 func (m *MsgCreateClass) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(m.Designer)
-	if err != nil {
-		panic(err)
-	}
-
+	addr, _ := sdk.AccAddressFromBech32(m.Admin)
 	return []sdk.AccAddress{addr}
 }
 
@@ -76,9 +76,14 @@ func (m MsgCreateBatch) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
+// ValidateBasic does a sanity check on the provided data.
 func (m *MsgCreateBatch) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(m.Issuer)
-	if err != nil {
+
+	if len(m.Metadata) > MaxMetadataLength {
+		return ErrMaxLimit.Wrap("credit batch metadata")
+	}
+
+	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
 		return sdkerrors.Wrap(err, "issuer")
 	}
 
@@ -91,37 +96,35 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 	if m.EndDate.Before(*m.StartDate) {
 		return sdkerrors.ErrInvalidRequest.Wrapf("the batch end date (%s) must be the same as or after the batch start date (%s)", m.EndDate.Format("2006-01-02"), m.StartDate.Format("2006-01-02"))
 	}
-	if m.ClassId == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("class ID should not be empty")
+
+	if err := ValidateClassID(m.ClassId); err != nil {
+		return err
 	}
 
-	err = validateLocation(m.ProjectLocation)
-	if err != nil {
+	if err := validateLocation(m.ProjectLocation); err != nil {
 		return err
 	}
 
 	for _, iss := range m.Issuance {
-		_, err := sdk.AccAddressFromBech32(iss.Recipient)
-		if err != nil {
+
+		if _, err := sdk.AccAddressFromBech32(iss.Recipient); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
 
 		if iss.TradableAmount != "" {
-			_, err := math.ParseNonNegativeDecimal(iss.TradableAmount)
-			if err != nil {
+			if _, err := math.NewNonNegativeDecFromString(iss.TradableAmount); err != nil {
 				return err
 			}
 		}
 
 		if iss.RetiredAmount != "" {
-			retiredAmount, err := math.ParseNonNegativeDecimal(iss.RetiredAmount)
+			retiredAmount, err := math.NewNonNegativeDecFromString(iss.RetiredAmount)
 			if err != nil {
 				return err
 			}
 
 			if !retiredAmount.IsZero() {
-				err = validateLocation(iss.RetirementLocation)
-				if err != nil {
+				if err = validateLocation(iss.RetirementLocation); err != nil {
 					return err
 				}
 			}
@@ -131,12 +134,9 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns the expected signers for MsgCreateBatch.
 func (m *MsgCreateBatch) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(m.Issuer)
-	if err != nil {
-		panic(err)
-	}
-
+	addr, _ := sdk.AccAddressFromBech32(m.Issuer)
 	return []sdk.AccAddress{addr}
 }
 
@@ -151,14 +151,14 @@ func (m MsgSend) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
+// ValidateBasic does a sanity check on the provided data.
 func (m *MsgSend) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(m.Sender)
-	if err != nil {
+
+	if _, err := sdk.AccAddressFromBech32(m.Sender); err != nil {
 		return sdkerrors.Wrap(err, "sender")
 	}
 
-	_, err = sdk.AccAddressFromBech32(m.Recipient)
-	if err != nil {
+	if _, err := sdk.AccAddressFromBech32(m.Recipient); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
@@ -167,23 +167,21 @@ func (m *MsgSend) ValidateBasic() error {
 	}
 
 	for _, credit := range m.Credits {
-		if credit.BatchDenom == "" {
-			return sdkerrors.ErrInvalidRequest.Wrap("batch denom should not be empty")
-		}
-
-		_, err := math.ParseNonNegativeDecimal(credit.TradableAmount)
-		if err != nil {
+		if err := ValidateDenom(credit.BatchDenom); err != nil {
 			return err
 		}
 
-		retiredAmount, err := math.ParseNonNegativeDecimal(credit.RetiredAmount)
+		if _, err := math.NewNonNegativeDecFromString(credit.TradableAmount); err != nil {
+			return err
+		}
+
+		retiredAmount, err := math.NewNonNegativeDecFromString(credit.RetiredAmount)
 		if err != nil {
 			return err
 		}
 
 		if !retiredAmount.IsZero() {
-			err = validateLocation(credit.RetirementLocation)
-			if err != nil {
+			if err = validateLocation(credit.RetirementLocation); err != nil {
 				return err
 			}
 		}
@@ -191,12 +189,9 @@ func (m *MsgSend) ValidateBasic() error {
 	return nil
 }
 
+// GetSigners returns the expected signers for MsgSend.
 func (m *MsgSend) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(m.Sender)
-	if err != nil {
-		panic(err)
-	}
-
+	addr, _ := sdk.AccAddressFromBech32(m.Sender)
 	return []sdk.AccAddress{addr}
 }
 
@@ -211,9 +206,9 @@ func (m MsgRetire) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
+// ValidateBasic does a sanity check on the provided data.
 func (m *MsgRetire) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(m.Holder)
-	if err != nil {
+	if _, err := sdk.AccAddressFromBech32(m.Holder); err != nil {
 		return sdkerrors.Wrap(err, "holder")
 	}
 
@@ -222,29 +217,25 @@ func (m *MsgRetire) ValidateBasic() error {
 	}
 
 	for _, credit := range m.Credits {
-		if credit.BatchDenom == "" {
-			return sdkerrors.ErrInvalidRequest.Wrap("batch denom should not be empty")
+		if err := ValidateDenom(credit.BatchDenom); err != nil {
+			return err
 		}
-		_, err := math.ParsePositiveDecimal(credit.Amount)
-		if err != nil {
+
+		if _, err := math.NewPositiveDecFromString(credit.Amount); err != nil {
 			return err
 		}
 	}
 
-	err = validateLocation(m.Location)
-	if err != nil {
+	if err := validateLocation(m.Location); err != nil {
 		return err
 	}
 
 	return nil
 }
 
+// GetSigners returns the expected signers for MsgRetire.
 func (m *MsgRetire) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(m.Holder)
-	if err != nil {
-		panic(err)
-	}
-
+	addr, _ := sdk.AccAddressFromBech32(m.Holder)
 	return []sdk.AccAddress{addr}
 }
 
@@ -259,9 +250,10 @@ func (m MsgCancel) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
 }
 
+// ValidateBasic does a sanity check on the provided data.
 func (m *MsgCancel) ValidateBasic() error {
-	_, err := sdk.AccAddressFromBech32(m.Holder)
-	if err != nil {
+
+	if _, err := sdk.AccAddressFromBech32(m.Holder); err != nil {
 		return sdkerrors.Wrap(err, "holder")
 	}
 
@@ -270,23 +262,116 @@ func (m *MsgCancel) ValidateBasic() error {
 	}
 
 	for _, credit := range m.Credits {
-		if credit.BatchDenom == "" {
-			return sdkerrors.ErrInvalidRequest.Wrap("batch denom should not be empty")
+		if err := ValidateDenom(credit.BatchDenom); err != nil {
+			return err
 		}
 
-		_, err := math.ParsePositiveDecimal(credit.Amount)
-		if err != nil {
+		if _, err := math.NewPositiveDecFromString(credit.Amount); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
+// GetSigners returns the expected signers for MsgCancel.
 func (m *MsgCancel) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(m.Holder)
-	if err != nil {
-		panic(err)
+	addr, _ := sdk.AccAddressFromBech32(m.Holder)
+	return []sdk.AccAddress{addr}
+}
+
+func (m MsgUpdateClassAdmin) Route() string { return sdk.MsgTypeURL(&m) }
+
+func (m MsgUpdateClassAdmin) Type() string { return sdk.MsgTypeURL(&m) }
+
+func (m MsgUpdateClassAdmin) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+func (m *MsgUpdateClassAdmin) ValidateBasic() error {
+	if m.Admin == m.NewAdmin {
+		return sdkerrors.ErrInvalidAddress.Wrap("new admin should be a different address from the signer")
 	}
 
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+
+	if _, err := sdk.AccAddressFromBech32(m.NewAdmin); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+
+	if err := ValidateClassID(m.ClassId); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *MsgUpdateClassAdmin) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Admin)
+	return []sdk.AccAddress{addr}
+}
+
+func (m MsgUpdateClassIssuers) Route() string { return sdk.MsgTypeURL(&m) }
+
+func (m MsgUpdateClassIssuers) Type() string { return sdk.MsgTypeURL(&m) }
+
+func (m MsgUpdateClassIssuers) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+func (m *MsgUpdateClassIssuers) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+
+	if err := ValidateClassID(m.ClassId); err != nil {
+		return err
+	}
+
+	if len(m.Issuers) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("issuers cannot be empty")
+	}
+
+	for _, addr := range m.Issuers {
+		if _, err := sdk.AccAddressFromBech32(addr); err != nil {
+			return sdkerrors.ErrInvalidAddress
+		}
+	}
+
+	return nil
+}
+
+func (m *MsgUpdateClassIssuers) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Admin)
+	return []sdk.AccAddress{addr}
+}
+
+func (m MsgUpdateClassMetadata) Route() string { return sdk.MsgTypeURL(&m) }
+
+func (m MsgUpdateClassMetadata) Type() string { return sdk.MsgTypeURL(&m) }
+
+func (m MsgUpdateClassMetadata) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+func (m *MsgUpdateClassMetadata) ValidateBasic() error {
+	if _, err := sdk.AccAddressFromBech32(m.Admin); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+
+	if err := ValidateClassID(m.ClassId); err != nil {
+		return err
+	}
+
+	if len(m.Metadata) > MaxMetadataLength {
+		return ErrMaxLimit.Wrap("credit class metadata")
+	}
+
+	return nil
+}
+
+func (m *MsgUpdateClassMetadata) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Admin)
 	return []sdk.AccAddress{addr}
 }

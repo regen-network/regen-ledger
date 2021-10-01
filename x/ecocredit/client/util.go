@@ -1,9 +1,11 @@
 package client
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -98,7 +100,7 @@ func parseCredits(creditsStr string) (credits, error) {
 
 	matches := reCredits.FindStringSubmatch(creditsStr)
 	if matches == nil {
-		return credits{}, fmt.Errorf("invalid credit expression: %s", creditsStr)
+		return credits{}, ecocredit.ErrParseFailure.Wrapf("invalid credit expression: %s", creditsStr)
 	}
 
 	return credits{
@@ -107,10 +109,71 @@ func parseCredits(creditsStr string) (credits, error) {
 	}, nil
 }
 
+// ParseDate parses a date using the format yyyy-mm-dd.
 func ParseDate(field string, date string) (time.Time, error) {
 	t, err := time.Parse("2006-01-02", date)
 	if err != nil {
 		return t, sdkerrors.ErrInvalidRequest.Wrapf("%s must have format yyyy-mm-dd, but received %v", field, date)
 	}
 	return t, nil
+}
+
+// checkDuplicateKey checks duplicate keys in a JSON
+func checkDuplicateKey(d *json.Decoder, path []string) error {
+	// Get next token from JSON
+	t, err := d.Token()
+	if err != nil {
+		return err
+	}
+
+	delim, ok := t.(json.Delim)
+
+	// There's nothing to do for simple values (strings, numbers, bool, nil)
+	if !ok {
+		return nil
+	}
+
+	switch delim {
+	case '{':
+		keys := make(map[string]bool)
+		for d.More() {
+			// Get field key
+			t, err := d.Token()
+			if err != nil {
+				return err
+			}
+
+			key := t.(string)
+			// Check for duplicates
+			if keys[key] {
+				return fmt.Errorf("duplicate key %s", key)
+			}
+			keys[key] = true
+
+			// Check value
+			if err := checkDuplicateKey(d, append(path, key)); err != nil {
+				return err
+			}
+		}
+		// Consume trailing }
+		if _, err := d.Token(); err != nil {
+			return err
+		}
+
+	case '[':
+		i := 0
+		for d.More() {
+			if err := checkDuplicateKey(d, append(path, strconv.Itoa(i))); err != nil {
+				return err
+			}
+			i++
+		}
+		// Consume trailing ]
+		if _, err := d.Token(); err != nil {
+			return err
+		}
+
+	}
+
+	return nil
 }

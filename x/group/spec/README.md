@@ -1,13 +1,8 @@
-<!--
-order: 0
-title: Group
-parent:
-  title: "group"
--->
+# Group Module
 
 ## Abstract
 
-This document specifies the group module.
+The following documents specify the group module.
 
 This module allows the creation and management of on-chain multisig accounts and enables voting for message execution based on configurable decision policies.
 
@@ -46,4 +41,8 @@ This module allows the creation and management of on-chain multisig accounts and
     - [EventCreateProposal](04_events.md#eventcreateproposal)
     - [EventVote](04_events.md#eventvote)
     - [EventExec](04_events.md#eventexec)
+5. **[Client](05_client.md)**
 
+## Protobuf
+
+For a complete list of the Protobuf definitions, see the [Protobuf Documentation](./protobuf.html).
