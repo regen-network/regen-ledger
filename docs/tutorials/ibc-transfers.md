@@ -17,7 +17,7 @@ The following IBC channels are currently available for transfers to and from Reg
 
 ## Using Keplr Wallet
 
-IBC transfers are possible using [Keplr Wallet](https://wallet.keplr.app/). In order transfer tokens between two IBC enabled blockchains, follow these steps:
+IBC transfers are possible using [Keplr Wallet](https://wallet.keplr.app/). In order to transfer tokens between two IBC enabled blockchains, follow these steps:
 
 1. Open the Keplr Wallet extension.
 2. In the header of the extension, select the blockchain that you want to transfer tokens from (for example, "Osmosis" or "Regen").
