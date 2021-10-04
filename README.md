@@ -17,10 +17,13 @@ A distributed ledger for ecology built on top of the
 
 ## Quickstart
 
+You'll need Go 1.17 installed.
+
 ```bash
 git clone https://github.com/regen-network/regen-ledger/
 cd regen-ledger
 git checkout v1.0.0
+make install
 regen init choose-cool-name-and-put-here
 wget wget https://github.com/regen-network/mainnet/raw/main/regen-1/genesis.json
 cp genesis.json ~/.regen/config
