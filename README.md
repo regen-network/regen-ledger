@@ -15,10 +15,22 @@
 A distributed ledger for ecology built on top of the
 [cosmos-sdk](http://github.com/cosmos/cosmos-sdk).
 
-## Getting Started
+## Quickstart
 
+```bash
+git clone https://github.com/regen-network/regen-ledger/
+cd regen-ledger
+git checkout v1.0.0
+regen init choose-cool-name-and-put-here
+wget wget https://github.com/regen-network/mainnet/raw/main/regen-1/genesis.json
+cp genesis.json ~/.regen/config
+regen start --p2p.persistent_peers 69975e7afdf731a165e40449fcffc75167a084fc@104.131.169.70:26656
+```
 
-See [Getting Started](docs/getting-started/README.md) for instructions how to install and run the blockchain.
+NB: To run an archive node, perhaps for relaying, simply add the flag --pruning nothing.
+
+**you are now a regenerate!**
+
 
 ## Core Features
 
