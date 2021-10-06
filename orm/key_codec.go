@@ -4,13 +4,16 @@ import (
 	"fmt"
 )
 
+// MaxBytesLen is the maximum allowed length for a key part of type []byte
+const MaxBytesLen = 255
+
 // buildKeyFromParts encodes and concatenates primary key and index parts.
 // They can be []byte, string, and integer types. The function will return
 // an error if there is a part of any other type.
 // Key parts, except the last part, follow these rules:
 //  - []byte is encoded with a single byte length prefix
 //  - strings are null-terminated
-//  - integers are encoded using 4 or 8 byte big endian.
+//  - integers are encoded using 8 byte big endian.
 func buildKeyFromParts(parts []interface{}) ([]byte, error) {
 	bytesSlice := make([][]byte, len(parts))
 	totalLen := 0
@@ -52,7 +55,7 @@ func keyPartBytes(part interface{}, last bool) ([]byte, error) {
 // if the bytes length is bigger than 255.
 func AddLengthPrefix(bytes []byte) []byte {
 	byteLen := len(bytes)
-	if byteLen > 255 {
+	if byteLen > MaxBytesLen {
 		panic("Cannot create primary key with an []byte of length greater than 255 bytes. Try again with a smaller []byte.")
 	}
 

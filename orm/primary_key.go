@@ -35,7 +35,7 @@ type PrimaryKeyed interface {
 	//
 	// PrimaryKey parts can be []byte, string, and integer types. []byte is
 	// encoded with a length prefix, strings are null-terminated, and
-	// integers are encoded using 4 or 8 byte big endian.
+	// integers are encoded using 8 byte big endian.
 	//
 	// IMPORTANT: []byte parts are encoded with a single byte length prefix,
 	// so cannot be longer than 255 bytes.
