@@ -159,7 +159,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 			"empty batch denom",
 			&ecocredit.QueryBatchInfoRequest{},
 			true,
-			"denomination didn't match the format",
+			"invalid denom",
 		},
 		{
 			"batch not found",
@@ -211,15 +211,15 @@ func (s *IntegrationTestSuite) TestBalanceQuery() {
 			"empty request",
 			&ecocredit.QueryBalanceRequest{},
 			true,
-			"empty address string is not allowed",
+			"invalid denom",
 		},
 		{
 			"with address",
 			&ecocredit.QueryBalanceRequest{
 				Account: s.signers[0].String(),
 			},
-			false,
-			"",
+			true,
+			"invalid denom",
 		},
 		{
 			"invalid denom",
@@ -227,8 +227,8 @@ func (s *IntegrationTestSuite) TestBalanceQuery() {
 				Account:    s.signers[0].String(),
 				BatchDenom: "invalid-batch",
 			},
-			false,
-			"",
+			true,
+			"invalid denom",
 		},
 		{
 			"valid testcase",
