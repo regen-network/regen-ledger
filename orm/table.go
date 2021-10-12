@@ -89,7 +89,7 @@ var _ TableExportable = &table{}
 // of another
 // - optimize Gas usage conditions
 // The caller must ensure that these things are handled. The table struct is
-// private, so that we only custom tables built on top of table, that do satisfy
+// private, so that we only have custom tables built on top of table, that do satisfy
 // these requirements.
 type table struct {
 	model       reflect.Type
