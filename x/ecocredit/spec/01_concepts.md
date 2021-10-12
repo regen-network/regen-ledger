@@ -1,5 +1,7 @@
 # Concepts
 
+![Ecocredit Components](./assets/types.png)
+
 ## Credit Class
 
 A credit class is the primary abstraction for ecosystem service credits and is defined by 5 attributes:
@@ -10,6 +12,8 @@ A credit class is the primary abstraction for ecosystem service credits and is d
 - **metadata**: A byte array (up to 256 bytes) which can be used to store small amounts of metadata, or a URI that points to an off-chain resource for querying more complete metadata information. This usually would include descriptive information about the credit class's acceptable methodologies for monitoring changes in ecological state.
 
 Once a new credit class is created, credits can be issued at-will in distinct batches by any address in the **issuer list** of the corresponding credit class.
+
+![Credit Class Roles](./assets/roles.png)
 
 ## Credit Type
 
