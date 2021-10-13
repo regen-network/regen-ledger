@@ -33,9 +33,14 @@ Check out the version that the network launched with.
 git checkout v1.0.0
 ```
 
-*For Regen Devnet:*
+*For Regen Testent (Redwood):*
 ```
-git checkout v1.0.0-rc0
+git checkout v1.0.0
+```
+
+*For Regen Devnet (Hambach):*
+```
+git checkout v2.0.0-beta1
 ```
 
 Install the `regen` binary (the `EXPERIMENTAL` option enables experimental features).
@@ -45,7 +50,12 @@ Install the `regen` binary (the `EXPERIMENTAL` option enables experimental featu
 make install
 ```
 
-*For Regen Devnet:*
+*For Regen Testnet(Redwood):*
+```
+make install
+```
+
+*For Regen Devnet(Hambach):*
 ```
 EXPERIMENTAL=true make install
 ```
@@ -64,9 +74,14 @@ Create the configuration files and data directory by initializing the node. In t
 regen init [moniker] --chain-id regen-1
 ```
 
-*For Regen Devnet:*
+*For Regen Testnet(Redwood):*
 ```
-regen init [moniker] --chain-id regen-devnet-5
+regen init [moniker] --chain-id regen-redwood-1
+```
+
+*For Regen Devnet(Hambach):*
+```
+regen init [moniker] --chain-id regen-hambach-1
 ```
 
 ## Update Genesis
@@ -82,9 +97,16 @@ curl http://104.131.169.70:26657/genesis | jq .result.genesis > ~/.regen/config/
 
 <!-- TODO: update to use dedicated full node operated by RND -->
 
-*For Regen Devnet:*
+*For Regen Testnet(Redwood):*
 ```
-curl http://18.220.101.192:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
+curl -s https://raw.githubusercontent.com/regen-network/testnets/master/redwood-testnet/genesis.json > ~/.regen/config/genesis.json
+
+```
+
+*For Regen Devnet(Hambach):*
+```
+curl -s https://raw.githubusercontent.com/regen-network/testnets/master/hambach-devnet/genesis.json > ~/.regen/config/genesis.json
+
 ```
 
 ## Update Peers
@@ -99,11 +121,17 @@ PERSISTENT_PEERS="69975e7afdf731a165e40449fcffc75167a084fc@104.131.169.70:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
+*For Regen Testnet(Redwood):*
+```
+PERSISTENT_PEERS="61f53f226a4a71968a87583f58902405e289b4b9@209.182.218.23:26656"
+sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
+```
+
 <!-- TODO: update to use dedicated full node operated by RND -->
 
 *For Regen Devnet:*
 ```
-PERSISTENT_PEERS="b2679a74d6bd9f89a3c294c447d6930293255e6b@18.220.101.192:26656"
+PERSISTENT_PEERS="b3d7efea17ece52ee848b641bca1f7a3c92b1d6e@138.68.56.161:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
