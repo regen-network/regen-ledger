@@ -1,6 +1,6 @@
 # Running a Validator
 
-This document provides instructions for running a validator node for a [live network](./live-networks.html). With both Regen Mainnet and Regen Devnet already launched and running, this document will focus on how to become a validator for a network post-genesis.
+This document provides instructions for running a validator node for a [live network](./live-networks.html). With Regen Mainnet, Regen Devnet (Hambach) and Regen Testnet (Redwood) already launched and running, this document will focus on how to become a validator for a network post-genesis.
 
 ## Prerequisites
 
@@ -33,9 +33,18 @@ Check out the version that the network launched with.
 git checkout v1.0.0
 ```
 
+<<<<<<< Updated upstream
 *For Regen Devnet:*
+=======
+*For Regen Devnet (Redwood):*
+>>>>>>> Stashed changes
 ```
 git checkout v1.0.0-rc0
+```
+
+*For Regen Devnet (Hambach):*
+```
+git checkout v2.0.0-beta1
 ```
 
 Install the `regen` binary (the `EXPERIMENTAL` option enables experimental features).
@@ -45,7 +54,16 @@ Install the `regen` binary (the `EXPERIMENTAL` option enables experimental featu
 make install
 ```
 
+<<<<<<< Updated upstream
 *For Regen Devnet:*
+=======
+*For Regen Testnet (Redwood):*
+```
+make install
+```
+
+*For Regen Devnet (Hambach):*
+>>>>>>> Stashed changes
 ```
 EXPERIMENTAL=true make install
 ```
@@ -64,7 +82,12 @@ Create the configuration files and data directory by initializing the node. In t
 regen init [moniker] --chain-id regen-1
 ```
 
-*For Regen Devnet:*
+*For Regen Testent (Redwood):*
+```
+regen init [moniker] --chain-id regen-redwood-1
+```
+
+*For Regen Devnet (Hambach):*
 ```
 regen init [moniker] --chain-id regen-devnet-5
 ```
@@ -82,9 +105,18 @@ curl http://104.131.169.70:26657/genesis | jq .result.genesis > ~/.regen/config/
 
 <!-- TODO: update to use dedicated full node operated by RND -->
 
+<<<<<<< Updated upstream
 *For Regen Devnet:*
+=======
+*For Regen Testnet (Redwood):*
 ```
-curl http://18.220.101.192:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
+(Coming Soon!)
+```
+
+*For Regen Devnet (Hambach):*
+>>>>>>> Stashed changes
+```
+(Coming Soon!)
 ```
 
 ## Update Peers
@@ -101,7 +133,13 @@ sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.reg
 
 <!-- TODO: update to use dedicated full node operated by RND -->
 
-*For Regen Devnet:*
+*For Regen Testnet (Redwood):*
+```
+PERSISTENT_PEERS="a5528d8f5fabd3d50e91e8d6a97e355403c5b842@128.199.249.31:26656"
+sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
+```
+
+*For Regen Devnet (Hambach):*
 ```
 PERSISTENT_PEERS="b2679a74d6bd9f89a3c294c447d6930293255e6b@18.220.101.192:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
