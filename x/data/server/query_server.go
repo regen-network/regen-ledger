@@ -21,7 +21,10 @@ func (s serverImpl) ByHash(ctx types.Context, request *data.QueryByHashRequest) 
 	}
 
 	store := ctx.KVStore(s.storeKey)
-	id := s.iriIDTable.GetOrCreateID(store, []byte(iri))
+	id := s.iriIDTable.GetID(store, []byte(iri))
+	if len(id) == 0 {
+		return nil, status.Errorf(codes.NotFound, "can't find %s", iri)
+	}
 
 	entry, err := s.getEntry(store, id)
 	if err != nil {
