@@ -56,7 +56,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	contentHash := &data.ContentHash{Sum: &data.ContentHash_Graph_{Graph: graphHash}}
 
 	//// anchor some data
-	anchorRes, err := s.msgClient.AnchorData(s.ctx, &data.MsgAnchorDataRequest{
+	anchorRes, err := s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
 		Sender: s.addr1.String(),
 		Hash:   contentHash,
 	})
@@ -64,7 +64,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	s.Require().NotNil(anchorRes)
 
 	// anchoring same data twice is a no-op
-	_, err = s.msgClient.AnchorData(s.ctx, &data.MsgAnchorDataRequest{
+	_, err = s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
 		Sender: s.addr1.String(),
 		Hash:   contentHash,
 	})
@@ -80,13 +80,12 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	ts := queryRes.Entry.Timestamp
 	s.Require().NotNil(ts)
 	s.Require().Empty(queryRes.Entry.Signers)
-	s.Require().Empty(queryRes.Entry.Content)
 	iri, err := graphHash.ToIRI()
 	s.Require().NoError(err)
 	s.Require().Equal(iri, queryRes.Entry.Iri)
 
 	// can sign data
-	_, err = s.msgClient.SignData(s.ctx, &data.MsgSignDataRequest{
+	_, err = s.msgClient.SignData(s.ctx, &data.MsgSignData{
 		Signers: []string{s.addr1.String()},
 		Hash:    graphHash,
 	})
@@ -100,7 +99,6 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	s.Require().Equal(ts, queryRes.Entry.Timestamp)
 	s.Require().Len(queryRes.Entry.Signers, 1)
 	s.Require().Equal(s.addr1.String(), queryRes.Entry.Signers[0].Signer)
-	s.Require().Empty(queryRes.Entry.Content)
 
 	// query data by signer
 	bySignerRes, err := s.queryClient.BySigner(s.ctx, &data.QueryBySignerRequest{
@@ -112,7 +110,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	s.Require().Equal(queryRes.Entry, bySignerRes.Entries[0])
 
 	// another signer can sign
-	_, err = s.msgClient.SignData(s.ctx, &data.MsgSignDataRequest{
+	_, err = s.msgClient.SignData(s.ctx, &data.MsgSignData{
 		Signers: []string{s.addr2.String()},
 		Hash:    graphHash,
 	})
@@ -139,7 +137,6 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	}
 	s.Require().Contains(signers, s.addr1.String())
 	s.Require().Contains(signers, s.addr2.String())
-	s.Require().Empty(queryRes.Entry.Content)
 }
 
 func (s *IntegrationTestSuite) TestRawDataScenario() {
@@ -156,7 +153,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	contentHash := &data.ContentHash{Sum: &data.ContentHash_Raw_{Raw: rawHash}}
 
 	//// anchor some data
-	anchorRes, err := s.msgClient.AnchorData(s.ctx, &data.MsgAnchorDataRequest{
+	anchorRes, err := s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
 		Sender: s.addr1.String(),
 		Hash:   contentHash,
 	})
@@ -164,7 +161,7 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	s.Require().NotNil(anchorRes)
 
 	// anchoring same data twice is a no-op
-	_, err = s.msgClient.AnchorData(s.ctx, &data.MsgAnchorDataRequest{
+	_, err = s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
 		Sender: s.addr1.String(),
 		Hash:   contentHash,
 	})
@@ -180,23 +177,6 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	ts := queryRes.Entry.Timestamp
 	s.Require().NotNil(ts)
 	s.Require().Empty(queryRes.Entry.Signers)
-	s.Require().Empty(queryRes.Entry.Content)
-
-	// can't store bad data
-	_, err = s.msgClient.StoreRawData(s.ctx, &data.MsgStoreRawDataRequest{
-		Sender:      s.addr1.String(),
-		ContentHash: rawHash,
-		Content:     []byte("sgkjhsgouiyh"),
-	})
-	s.Require().Error(err)
-
-	// can store good data
-	_, err = s.msgClient.StoreRawData(s.ctx, &data.MsgStoreRawDataRequest{
-		Sender:      s.addr1.String(),
-		ContentHash: rawHash,
-		Content:     testContent,
-	})
-	s.Require().NoError(err)
 
 	// can retrieve same timestamp, and data
 	queryRes, err = s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{
@@ -205,5 +185,4 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	s.Require().NoError(err)
 	s.Require().NotNil(queryRes)
 	s.Require().Equal(ts, queryRes.Entry.Timestamp)
-	s.Require().Equal(testContent, queryRes.Entry.Content.Sum.(*data.Content_RawData).RawData)
 }

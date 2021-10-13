@@ -118,7 +118,3 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignData) (
 
 	return &data.MsgSignDataResponse{}, nil
 }
-
-func (s serverImpl) StoreRawData(context.Context, *data.MsgStoreRawData) (*data.MsgStoreRawDataResponse, error) {
-	panic("implement me")
-}

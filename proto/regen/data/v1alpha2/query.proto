@@ -65,7 +65,4 @@ message ContentEntry {
 
   // signers are the signers, if any
   repeated SignerEntry signers = 4;
-
-  // content is the actual content if stored on-chain
-  Content content = 5;
 }

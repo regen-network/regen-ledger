@@ -5,7 +5,6 @@
 ## Table of Contents
 
 - [regen/data/v1alpha2/types.proto](#regen/data/v1alpha2/types.proto)
-    - [Content](#regen.data.v1alpha2.Content)
     - [ContentHash](#regen.data.v1alpha2.ContentHash)
     - [ContentHash.Graph](#regen.data.v1alpha2.ContentHash.Graph)
     - [ContentHash.Raw](#regen.data.v1alpha2.ContentHash.Raw)
@@ -39,8 +38,6 @@
     - [MsgAnchorDataResponse](#regen.data.v1alpha2.MsgAnchorDataResponse)
     - [MsgSignData](#regen.data.v1alpha2.MsgSignData)
     - [MsgSignDataResponse](#regen.data.v1alpha2.MsgSignDataResponse)
-    - [MsgStoreRawData](#regen.data.v1alpha2.MsgStoreRawData)
-    - [MsgStoreRawDataResponse](#regen.data.v1alpha2.MsgStoreRawDataResponse)
   
     - [Msg](#regen.data.v1alpha2.Msg)
   
@@ -52,21 +49,6 @@
 <p align="right"><a href="#top">Top</a></p>
 
 ## regen/data/v1alpha2/types.proto
-
-
-
-<a name="regen.data.v1alpha2.Content"></a>
-
-### Content
-Content is a wrapper for content stored on-chain
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| raw_data | [bytes](#bytes) |  | raw_data is the oneof field for raw data |
-
-
-
 
 
 
@@ -289,7 +271,6 @@ GenesisContentEntry is a genesis content entry
 | hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the ContentHash |
 | timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the anchor Timestamp |
 | signers | [SignerEntry](#regen.data.v1alpha2.SignerEntry) | repeated | signers are the signers, if any |
-| content | [Content](#regen.data.v1alpha2.Content) |  | content is the actual content if stored on-chain |
 
 
 
@@ -339,7 +320,6 @@ ContentEntry describes data referenced and possibly stored on chain
 | iri | [string](#string) |  | iri is the content IRI |
 | timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the anchor Timestamp |
 | signers | [SignerEntry](#regen.data.v1alpha2.SignerEntry) | repeated | signers are the signers, if any |
-| content | [Content](#regen.data.v1alpha2.Content) |  | content is the actual content if stored on-chain |
 
 
 
@@ -486,33 +466,6 @@ MsgSignDataResponse is the Msg/SignData response type.
 
 
 
-
-<a name="regen.data.v1alpha2.MsgStoreRawData"></a>
-
-### MsgStoreRawData
-MsgStoreRawData is the Msg/StoreRawData request type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| sender | [string](#string) |  | sender is the address of the sender of the transaction. The sender in StoreData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing services. |
-| content_hash | [ContentHash.Raw](#regen.data.v1alpha2.ContentHash.Raw) |  | content_hash is the hash-based identifier for the anchored content. |
-| content | [bytes](#bytes) |  | content is the content of the raw data corresponding to the provided content hash. |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.MsgStoreRawDataResponse"></a>
-
-### MsgStoreRawDataResponse
-MsgStoreRawData is the Msg/StoreRawData response type.
-
-
-
-
-
  <!-- end messages -->
 
  <!-- end enums -->
@@ -537,11 +490,6 @@ On-chain signatures have the following benefits: - on-chain identities can be ma
 SignData implicitly calls AnchorData if the data was not already anchored.
 
 SignData can be called multiple times for the same content hash with different signers and those signers will be appended to the list of signers. |
-| StoreRawData | [MsgStoreRawData](#regen.data.v1alpha2.MsgStoreRawData) | [MsgStoreRawDataResponse](#regen.data.v1alpha2.MsgStoreRawDataResponse) | StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
-
-StoreRawData implicitly calls AnchorData if the data was not already anchored.
-
-The sender in StoreRawData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing storage services. SignData should be used to create a digital signature attesting to the veracity of some piece of data. |
 
  <!-- end services -->
 
