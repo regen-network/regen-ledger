@@ -7,7 +7,6 @@ const (
 	AnchorTimestampPrefix byte = 0x1
 	IDSignerPrefix        byte = 0x2
 	SignerIDPrefix        byte = 0x2
-	RawDataPrefix         byte = 0x3
 )
 
 func AnchorTimestampKey(id []byte) []byte {
@@ -45,12 +44,5 @@ func SignerIDIndexPrefix(address sdk.AccAddress) []byte {
 	key = append(key, SignerIDPrefix)
 	key = append(key, byte(len(address)))
 	key = append(key, address...)
-	return key
-}
-
-func RawDataKey(id []byte) []byte {
-	key := make([]byte, 0, len(id)+1)
-	key = append(key, RawDataPrefix)
-	key = append(key, id...)
 	return key
 }

@@ -86,13 +86,6 @@ func (s serverImpl) getEntry(store sdk.KVStore, id []byte) (*data.ContentEntry, 
 		Hash:      contentHash,
 	}
 
-	rawData := store.Get(RawDataKey(id))
-	if rawData != nil {
-		entry.Content = &data.Content{Sum: &data.Content_RawData{
-			RawData: rawData,
-		}}
-	}
-
 	return entry, nil
 }
 
