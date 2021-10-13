@@ -1,7 +1,7 @@
 package server
 
 import (
-	"fmt"
+	"context"
 
 	types2 "github.com/cosmos/cosmos-sdk/types"
 
@@ -9,14 +9,15 @@ import (
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/regen-network/regen-ledger/types"
+	sdk "github.com/regen-network/regen-ledger/types"
 
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
 var _ data.MsgServer = serverImpl{}
 
-func (s serverImpl) AnchorData(ctx types.Context, request *data.MsgAnchorDataRequest) (*data.MsgAnchorDataResponse, error) {
+func (s serverImpl) AnchorData(goCtx context.Context, request *data.MsgAnchorData) (*data.MsgAnchorDataResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
 	_, _, _, err := s.getIRIAndAnchor(ctx, request.Hash)
 	if err != nil {
 		return nil, err
@@ -29,7 +30,7 @@ type ToIRI interface {
 	ToIRI() (string, error)
 }
 
-func (s serverImpl) getIRIAndAnchor(ctx types.Context, toIRI ToIRI) (iri string, id []byte, timestamp *gogotypes.Timestamp, err error) {
+func (s serverImpl) getIRIAndAnchor(ctx sdk.Context, toIRI ToIRI) (iri string, id []byte, timestamp *gogotypes.Timestamp, err error) {
 	iri, err = toIRI.ToIRI()
 	if err != nil {
 		return iri, nil, nil, err
@@ -45,7 +46,7 @@ func (s serverImpl) getIRIAndAnchor(ctx types.Context, toIRI ToIRI) (iri string,
 	return iri, id, timestamp, err
 }
 
-func (s serverImpl) anchor(ctx types.Context, id []byte, iri string) (*gogotypes.Timestamp, error) {
+func (s serverImpl) anchor(ctx sdk.Context, id []byte, iri string) (*gogotypes.Timestamp, error) {
 	timestamp, err := blockTimestamp(ctx)
 	if err != nil {
 		return nil, err
@@ -67,7 +68,7 @@ func (s serverImpl) anchor(ctx types.Context, id []byte, iri string) (*gogotypes
 	return timestamp, ctx.EventManager().EmitTypedEvent(&data.EventAnchorData{Iri: iri})
 }
 
-func blockTimestamp(ctx types.Context) (*gogotypes.Timestamp, error) {
+func blockTimestamp(ctx sdk.Context) (*gogotypes.Timestamp, error) {
 	timestamp, err := gogotypes.TimestampProto(ctx.BlockTime())
 	if err != nil {
 		return nil, sdkerrors.Wrap(err, "invalid block time")
@@ -78,7 +79,8 @@ func blockTimestamp(ctx types.Context) (*gogotypes.Timestamp, error) {
 
 var trueBz = []byte{1}
 
-func (s serverImpl) SignData(ctx types.Context, request *data.MsgSignDataRequest) (*data.MsgSignDataResponse, error) {
+func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignData) (*data.MsgSignDataResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
 	iri, id, timestamp, err := s.getIRIAndAnchor(ctx, request.Hash)
 	if err != nil {
 		return nil, err
@@ -117,39 +119,6 @@ func (s serverImpl) SignData(ctx types.Context, request *data.MsgSignDataRequest
 	return &data.MsgSignDataResponse{}, nil
 }
 
-const (
-	Blake2bVerificationCostPerByte uint64 = 10
-)
-
-func (s serverImpl) StoreRawData(ctx types.Context, request *data.MsgStoreRawDataRequest) (*data.MsgStoreRawDataResponse, error) {
-	// NOTE: hash verification already has happened in MsgStoreRawDataRequest.ValidateBasic()
-
-	contentLen := len(request.Content)
-	digestAlgorithm := request.ContentHash.DigestAlgorithm
-	switch digestAlgorithm {
-	case data.DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256:
-		ctx.GasMeter().ConsumeGas(uint64(contentLen)*Blake2bVerificationCostPerByte, "hash verification")
-	default:
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("unsupported %T %s", digestAlgorithm, digestAlgorithm))
-	}
-
-	iri, id, _, err := s.getIRIAndAnchor(ctx, request.ContentHash)
-	if err != nil {
-		return nil, err
-	}
-
-	key := RawDataKey(id)
-	store := ctx.KVStore(s.storeKey)
-	if store.Has(key) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("IRI %s already has stored data", iri))
-	}
-
-	store.Set(key, request.Content)
-
-	err = ctx.EventManager().EmitTypedEvent(&data.EventStoreRawData{Iri: iri})
-	if err != nil {
-		return nil, err
-	}
-
-	return &data.MsgStoreRawDataResponse{}, nil
+func (s serverImpl) StoreRawData(context.Context, *data.MsgStoreRawData) (*data.MsgStoreRawDataResponse, error) {
+	panic("implement me")
 }

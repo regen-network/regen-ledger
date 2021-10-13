@@ -1,6 +1,8 @@
 package server
 
 import (
+	"context"
+
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
@@ -14,7 +16,9 @@ import (
 
 var _ data.QueryServer = serverImpl{}
 
-func (s serverImpl) ByHash(ctx types.Context, request *data.QueryByHashRequest) (*data.QueryByHashResponse, error) {
+func (s serverImpl) ByHash(goCtx context.Context, request *data.QueryByHashRequest) (*data.QueryByHashResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+
 	iri, err := request.Hash.ToIRI()
 	if err != nil {
 		return nil, err
@@ -92,7 +96,8 @@ func (s serverImpl) getEntry(store sdk.KVStore, id []byte) (*data.ContentEntry, 
 	return entry, nil
 }
 
-func (s serverImpl) BySigner(ctx types.Context, request *data.QueryBySignerRequest) (*data.QueryBySignerResponse, error) {
+func (s serverImpl) BySigner(goCtx context.Context, request *data.QueryBySignerRequest) (*data.QueryBySignerResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
 
 	addr, err := sdk.AccAddressFromBech32(request.Signer)
