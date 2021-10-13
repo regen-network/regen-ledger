@@ -1,13 +1,57 @@
 package ecocredit
 
-import "github.com/regen-network/regen-ledger/orm"
+import (
+	"strings"
+	"unicode"
 
-var _, _ orm.NaturalKeyed = &ClassInfo{}, &BatchInfo{}
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-func (m *ClassInfo) NaturalKey() []byte {
-	return []byte(m.ClassId)
+	"github.com/regen-network/regen-ledger/orm"
+)
+
+var _, _, _ orm.PrimaryKeyed = &ClassInfo{}, &BatchInfo{}, &CreditTypeSeq{}
+
+// PrimaryKeyFields returns the fields of the object that will make up the
+// primary key for ClassInfo.
+func (m *ClassInfo) PrimaryKeyFields() []interface{} {
+	return []interface{}{m.ClassId}
 }
 
-func (m *BatchInfo) NaturalKey() []byte {
-	return []byte(m.BatchDenom)
+// PrimaryKeyFields returns the fields of the object that will make up the
+// primary key for BatchInfo.
+func (m *BatchInfo) PrimaryKeyFields() []interface{} {
+	return []interface{}{m.BatchDenom}
+}
+
+// PrimaryKeyFields returns the fields of the object that will make up the
+// primary key for CreditTypeSeq.
+func (m *CreditTypeSeq) PrimaryKeyFields() []interface{} {
+	return []interface{}{m.Abbreviation}
+}
+
+// AssertClassIssuer makes sure that the issuer is part of issuers of given classID.
+// Returns ErrUnauthorized otherwise.
+func (m *ClassInfo) AssertClassIssuer(issuer string) error {
+	for _, i := range m.Issuers {
+		if issuer == i {
+			return nil
+		}
+	}
+	return sdkerrors.ErrUnauthorized
+}
+
+// Normalize credit type name by removing whitespace and converting to lowercase
+func NormalizeCreditTypeName(name string) string {
+	return fastRemoveWhitespace(strings.ToLower(name))
+}
+
+func fastRemoveWhitespace(str string) string {
+	var b strings.Builder
+	b.Grow(len(str))
+	for _, ch := range str {
+		if !unicode.IsSpace(ch) {
+			b.WriteRune(ch)
+		}
+	}
+	return b.String()
 }

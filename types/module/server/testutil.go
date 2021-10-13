@@ -2,8 +2,11 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
+
+	"github.com/regen-network/regen-ledger/types/testutil"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -11,31 +14,50 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
+	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 	"google.golang.org/grpc"
 
-	"github.com/regen-network/regen-ledger/testutil/server"
 	regentypes "github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/module"
 )
 
-type fixtureFactory struct {
+type FixtureFactory struct {
 	t       *testing.T
 	modules []module.Module
 	signers []sdk.AccAddress
+	cdc     *codec.ProtoCodec
+	baseApp *baseapp.BaseApp
 }
 
-var _ server.FixtureFactory = fixtureFactory{}
-
-func NewFixtureFactory(t *testing.T, numSigners int, modules []module.Module) server.FixtureFactory {
+func NewFixtureFactory(t *testing.T, numSigners int) *FixtureFactory {
 	signers := makeTestAddresses(numSigners)
-	return fixtureFactory{
+	return &FixtureFactory{
 		t:       t,
-		modules: modules,
 		signers: signers,
+		// cdc and baseApp are initialized here just for compatibility with legacy modules which don't use ADR 033
+		// TODO: remove once all code using this uses ADR 033 module wiring
+		cdc:     codec.NewProtoCodec(types.NewInterfaceRegistry()),
+		baseApp: baseapp.NewBaseApp("test", log.NewNopLogger(), dbm.NewMemDB(), nil),
 	}
+}
+
+func (ff *FixtureFactory) SetModules(modules []module.Module) {
+	ff.modules = modules
+}
+
+// Codec is exposed just for compatibility of these test suites with legacy modules and can be removed when everything
+// has been migrated to ADR 033
+func (ff *FixtureFactory) Codec() *codec.ProtoCodec {
+	return ff.cdc
+}
+
+// BaseApp is exposed just for compatibility of these test suites with legacy modules and can be removed when everything
+// has been migrated to ADR 033
+func (ff *FixtureFactory) BaseApp() *baseapp.BaseApp {
+	return ff.baseApp
 }
 
 func makeTestAddresses(count int) []sdk.AccAddress {
@@ -46,17 +68,12 @@ func makeTestAddresses(count int) []sdk.AccAddress {
 	return addrs
 }
 
-func (ff fixtureFactory) Setup(setupHooks ...func(cdc *codec.ProtoCodec, app *baseapp.BaseApp)) server.Fixture {
-	registry := types.NewInterfaceRegistry()
-	baseApp := baseapp.NewBaseApp("test", log.NewNopLogger(), dbm.NewMemDB(), nil)
+func (ff FixtureFactory) Setup() testutil.Fixture {
+	cdc := ff.cdc
+	registry := cdc.InterfaceRegistry()
+	baseApp := ff.baseApp
 	baseApp.MsgServiceRouter().SetInterfaceRegistry(registry)
 	baseApp.GRPCQueryRouter().SetInterfaceRegistry(registry)
-	cdc := codec.NewProtoCodec(registry)
-
-	for _, hook := range setupHooks {
-		hook(cdc, baseApp)
-	}
-
 	mm := NewManager(baseApp, cdc)
 	err := mm.RegisterModules(ff.modules)
 	require.NoError(ff.t, err)
@@ -66,18 +83,24 @@ func (ff fixtureFactory) Setup(setupHooks ...func(cdc *codec.ProtoCodec, app *ba
 	require.NoError(ff.t, err)
 
 	return fixture{
-		baseApp: baseApp,
-		router:  mm.router,
-		t:       ff.t,
-		signers: ff.signers,
+		baseApp:               baseApp,
+		router:                mm.router,
+		cdc:                   cdc,
+		initGenesisHandlers:   mm.initGenesisHandlers,
+		exportGenesisHandlers: mm.exportGenesisHandlers,
+		t:                     ff.t,
+		signers:               ff.signers,
 	}
 }
 
 type fixture struct {
-	baseApp *baseapp.BaseApp
-	router  *router
-	t       *testing.T
-	signers []sdk.AccAddress
+	baseApp               *baseapp.BaseApp
+	router                *router
+	cdc                   *codec.ProtoCodec
+	initGenesisHandlers   map[string]module.InitGenesisHandler
+	exportGenesisHandlers map[string]module.ExportGenesisHandler
+	t                     *testing.T
+	signers               []sdk.AccAddress
 }
 
 func (f fixture) Context() context.Context {
@@ -94,6 +117,18 @@ func (f fixture) QueryConn() grpc.ClientConnInterface {
 
 func (f fixture) Signers() []sdk.AccAddress {
 	return f.signers
+}
+
+func (f fixture) InitGenesis(ctx sdk.Context, genesisData map[string]json.RawMessage) (abci.ResponseInitChain, error) {
+	return initGenesis(ctx, f.cdc, genesisData, []abci.ValidatorUpdate{}, f.initGenesisHandlers)
+}
+
+func (f fixture) ExportGenesis(ctx sdk.Context) (map[string]json.RawMessage, error) {
+	return exportGenesis(ctx, f.cdc, f.exportGenesisHandlers)
+}
+
+func (f fixture) Codec() *codec.ProtoCodec {
+	return f.cdc
 }
 
 func (f fixture) Teardown() {}

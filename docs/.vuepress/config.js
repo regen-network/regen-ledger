@@ -1,6 +1,14 @@
+require('dotenv').config()
+
 const { description } = require('../package')
+const webpack = require('webpack')
 
 module.exports = {
+  configureWebpack: (config) => {
+    return { plugins: [
+      new webpack.EnvironmentPlugin({ ...process.env })
+    ]}
+  },
   /**
    * Ref：https://v1.vuepress.vuejs.org/config/#title
    */
@@ -18,7 +26,27 @@ module.exports = {
   head: [
     ['meta', { name: 'theme-color', content: '#3eaf7c' }],
     ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
-    ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }]
+    ['meta', { name: 'apple-mobile-web-app-status-bar-style', content: 'black' }],
+    /**
+     * Google Analytics 4 is not supported in vuepress v1 but will be in v2.
+     * The following is a workaround until we update to vuepress v2.
+     *
+     * ref：https://github.com/vuejs/vuepress/issues/2713
+     */
+    [
+      'script',
+      {
+        async: true,
+        src: 'https://www.googletagmanager.com/gtag/js?id=' + process.env.GOOGLE_ANALYTICS_ID,
+      }
+    ],
+    [
+      'script',
+      {},
+      [
+        "window.dataLayer = window.dataLayer || [];\nfunction gtag(){dataLayer.push(arguments);}\ngtag('js', new Date());\ngtag('config', '" + process.env.GOOGLE_ANALYTICS_ID + "');",
+      ],
+    ],
   ],
 
   /**
@@ -39,39 +67,117 @@ module.exports = {
     ],
     sidebar: {
       '/': [
-        'getting-started',
-        'core-functionality',
-        'api',
+        {
+          title: 'Introduction',
+          collapsable: false,
+          children: [
+            '/intro/',
+          ]
+        },
+        {
+          title: 'Getting Started',
+          collapsable: false,
+          children: [
+            '/getting-started/',
+            '/getting-started/live-networks',
+            '/getting-started/running-a-full-node',
+            '/getting-started/running-a-validator',
+            '/getting-started/prerequisites'
+          ]
+        },
+        {
+          title: 'Regen Ledger',
+          collapsable: false,
+          children: [
+            '/regen-ledger/',
+            '/regen-ledger/interfaces',
+          ]
+        },
         {
           title: 'Modules',
+          collapsable: false,
           children: [
-            {
-              title: 'Data Module',
-              collapsable: false,
-              children: [
-                '/modules/data/',
-                {title: 'Protobuf Documentation', path: '/modules/data/protobuf', collapsable: true}
-              ]
-            },
             {
               title: 'Ecocredit Module',
               collapsable: false,
               children: [
-                '/modules/ecocredit/',
-                {title: 'Protobuf Documentation', path: '/modules/ecocredit/protobuf', collapsable: true}
+                {
+                  title: 'Overview',
+                  path: '/modules/ecocredit/'
+                },
+                '/modules/ecocredit/01_concepts',
+                '/modules/ecocredit/02_state',
+                '/modules/ecocredit/03_messages',
+                '/modules/ecocredit/04_events',
+                '/modules/ecocredit/05_client',
+                {
+                  title: 'Protobuf Documentation',
+                  path: '/modules/ecocredit/protobuf'
+                }
+              ]
+            },
+            {
+              title: 'Data Module',
+              collapsable: false,
+              children: [
+                {
+                  title: 'Overview',
+                  path: '/modules/data/'
+                },
+                '/modules/data/01_concepts',
+                // '/modules/data/02_state',
+                // '/modules/data/03_messages',
+                // '/modules/data/04_events',
+                // '/modules/data/05_client',
+                {
+                  title: 'Protobuf Documentation',
+                  path: '/modules/data/protobuf'
+                }
+              ]
+            },
+            {
+              title: 'Group Module',
+              collapsable: false,
+              children: [
+                {
+                  title: 'Overview',
+                  path: '/modules/group/'
+                },
+                '/modules/group/01_concepts',
+                '/modules/group/02_state',
+                '/modules/group/03_messages',
+                '/modules/group/04_events',
+                // '/modules/group/05_client',
+                {
+                  title: 'Protobuf Documentation',
+                  path: '/modules/group/protobuf'
+                }
               ]
             },
           ]
-        }
+        },
+        {
+          title: 'Tutorials',
+          collapsable: false,
+          children: [
+            '/tutorials/',
+            // '/tutorials/data-cli',
+            // '/tutorials/data-grpc',
+          ]
+        },
       ],
     }
   },
-
   /**
-   * Apply plugins，ref：https://v1.vuepress.vuejs.org/zh/plugin/
+   * Apply plugins，ref：https://v1.vuepress.vuejs.org/plugin/
    */
   plugins: [
     '@vuepress/plugin-back-to-top',
     '@vuepress/plugin-medium-zoom',
-  ]
+  ],
+  markdown: {
+    extendMarkdown: md => {
+      md.use(require('./markdown-it-gh'))
+    }
+  }
 }

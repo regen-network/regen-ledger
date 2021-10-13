@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.v1alpha1;
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 
@@ -11,79 +12,88 @@ service Msg {
 
   // CreateClass creates a new credit class with an approved list of issuers and
   // optional metadata.
-  rpc CreateClass(MsgCreateClassRequest) returns (MsgCreateClassResponse);
+  rpc CreateClass(MsgCreateClass) returns (MsgCreateClassResponse);
 
   // CreateBatch creates a new batch of credits for an existing credit class.
   // This will create a new batch denom with a fixed supply. Issued credits can
   // be distributed to recipients in either tradable or retired form.
-  rpc CreateBatch(MsgCreateBatchRequest) returns (MsgCreateBatchResponse);
+  rpc CreateBatch(MsgCreateBatch) returns (MsgCreateBatchResponse);
 
-  // Send sends tradeable credits from one account to another account. Sent
+  // Send sends tradable credits from one account to another account. Sent
   // credits can either be tradable or retired on receipt.
-  rpc Send(MsgSendRequest) returns (MsgSendResponse);
+  rpc Send(MsgSend) returns (MsgSendResponse);
 
   // Retire retires a specified number of credits in the holder's account.
-  rpc Retire(MsgRetireRequest) returns (MsgRetireResponse);
+  rpc Retire(MsgRetire) returns (MsgRetireResponse);
 
-  // SetPrecision allows an issuer to increase the decimal precision of a credit
-  // batch. It is an experimental feature to concretely explore an idea proposed
-  // in https://github.com/cosmos/cosmos-sdk/issues/7113. The number of decimal
-  // places allowed for a credit batch is determined by the original number of
-  // decimal places used with calling CreatBatch. SetPrecision allows the number
-  // of allowed decimal places to be increased, effectively making the supply
-  // more granular without actually changing any balances. It allows asset
-  // issuers to be able to issue an asset without needing to think about how
-  // many subdivisions are needed upfront. While it may not be relevant for
-  // credits which likely have a fairly stable market value, I wanted to
-  // experiment a bit and this serves as a proof of concept for a broader bank
-  // redesign where say for instance a coin like the ATOM or XRN could be issued
-  // in its own units rather than micro or nano-units. Instead an operation like
-  // SetPrecision would allow trading in micro, nano or pico in the future based
-  // on market demand. Arbitrary, unbounded precision is not desirable because
-  // this can lead to spam attacks (like sending
-  // 0.000000000000000000000000000001 coins). This is effectively fixed
-  // precision so under the hood it is still basically an integer, but the fixed
-  // precision can be increased so its more adaptable long term than just an
-  // integer.
-  rpc SetPrecision(MsgSetPrecisionRequest) returns (MsgSetPrecisionResponse);
+  // Cancel removes a number of credits from the holder's account and also
+  // deducts them from the tradable supply, effectively cancelling their
+  // issuance on Regen Ledger
+  rpc Cancel(MsgCancel) returns (MsgCancelResponse);
+
+  // UpdateClassAdmin updates the credit class admin
+  rpc UpdateClassAdmin(MsgUpdateClassAdmin) returns (MsgUpdateClassAdminResponse);
+
+  // UpdateClassIssuers updates the credit class issuer list
+  rpc UpdateClassIssuers(MsgUpdateClassIssuers) returns (MsgUpdateClassIssuersResponse);
+
+  // UpdateClassMetadata updates the credit class metadata
+  rpc UpdateClassMetadata(MsgUpdateClassMetadata) returns (MsgUpdateClassMetadataResponse);
 }
 
-// MsgCreateClassRequest is the Msg/CreateClass request type.
-message MsgCreateClassRequest {
+// MsgCreateClass is the Msg/CreateClass request type.
+message MsgCreateClass {
 
-  // designer is the address of the account which designed the credit class. The
-  // designer has special permissions to change the list of issuers and perform
-  // other administrative operations.
-  string designer = 1;
+  // admin is the address of the account that created the credit class.
+  string admin = 1;
 
   // issuers are the account addresses of the approved issuers.
   repeated string issuers = 2;
 
   // metadata is any arbitrary metadata to attached to the credit class.
   bytes metadata = 3;
+
+  // credit_type_name describes the type of credit (e.g. "carbon", "biodiversity").
+  string credit_type_name = 4;
 }
 
 // MsgCreateClassResponse is the Msg/CreateClass response type.
 message MsgCreateClassResponse {
 
   // class_id is the unique ID of the newly created credit class.
-  string class_id = 1 [ (gogoproto.moretags) = "yaml:\"class_id\"" ];
+  string class_id = 1;
 }
 
-// MsgCreateBatchRequest is the Msg/CreateBatch request type.
-message MsgCreateBatchRequest {
+// MsgCreateBatch is the Msg/CreateBatch request type.
+message MsgCreateBatch {
 
   // issuer is the address of the batch issuer.
   string issuer = 1;
 
   // class_id is the unique ID of the class.
-  string class_id = 2 [ (gogoproto.moretags) = "yaml:\"class_id\"" ];
+  string class_id = 2;
 
   // issuance are the credits issued in the batch.
   repeated BatchIssuance issuance = 3;
 
-  // metadata is any arbitrary metadata to attached to the credit batch.
+  // metadata is any arbitrary metadata attached to the credit batch.
   bytes metadata = 4;
+
+  // start_date is the beginning of the period during which this credit batch
+  // was quantified and verified.
+  google.protobuf.Timestamp start_date = 5 [ (gogoproto.stdtime) = true ];
+
+  // end_date is the end of the period during which this credit batch was
+  // quantified and verified.
+  google.protobuf.Timestamp end_date = 6 [ (gogoproto.stdtime) = true ];
+
+  // project_location is the location of the project backing the credits in this
+  // batch. It is a string of the form
+  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+  // fields conforming to ISO 3166-2, and postal-code being up to 64
+  // alphanumeric characters. country-code is required, while sub-national-code
+  // and postal-code can be added for increasing precision.
+  string project_location = 7;
 
   // BatchIssuance represents the issuance of some credits in a batch to a
   // single recipient.
@@ -92,16 +102,22 @@ message MsgCreateBatchRequest {
     // recipient is the account of the recipient.
     string recipient = 1;
 
-    // tradable_units are the units of credits in this issuance that can be
+    // tradable_amount is the number of credits in this issuance that can be
     // traded by this recipient. Decimal values are acceptable.
-    string tradable_units = 2
-        [ (gogoproto.moretags) = "yaml:\"tradable_units\"" ];
+    string tradable_amount = 2;
 
-    // retired_units are the units of credits in this issuance that are
+    // retired_amount is the number of credits in this issuance that are
     // effectively retired by the issuer on receipt. Decimal values are
     // acceptable.
-    string retired_units = 3
-        [ (gogoproto.moretags) = "yaml:\"retired_units\"" ];
+    string retired_amount = 3;
+
+    // retirement_location is the location of the beneficiary or buyer of the
+    // retired credits. This must be provided if retired_amount is positive. It
+    // is a string of the form
+    // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+    // fields conforming to ISO 3166-2, and postal-code being up to 64
+    // alphanumeric characters.
+    string retirement_location = 4;
   }
 }
 
@@ -109,11 +125,11 @@ message MsgCreateBatchRequest {
 message MsgCreateBatchResponse {
 
   // batch_denom is the unique denomination ID of the newly created batch.
-  string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+  string batch_denom = 1;
 }
 
-// MsgSendRequest is the Msg/Send request type.
-message MsgSendRequest {
+// MsgSend is the Msg/Send request type.
+message MsgSend {
 
   // sender is the address of the account sending credits.
   string sender = 1;
@@ -122,72 +138,140 @@ message MsgSendRequest {
   string recipient = 2;
 
   // credits are the credits being sent.
-  repeated SendUnits credits = 3;
+  repeated SendCredits credits = 3;
 
-  // SendUnits are the tradable and retired units of a credit batch to send.
-  message SendUnits {
+  // SendCredits specifies a batch and the number of credits being transferred.
+  // This is split into tradable credits, which will remain tradable on receipt,
+  // and retired credits, which will be retired on receipt.
+  message SendCredits {
 
     // batch_denom is the unique ID of the credit batch.
-    string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+    string batch_denom = 1;
 
-    // tradable_units are the units of credits in this issuance that can be
-    // traded by this recipient. Decimal values are acceptable within the
+    // tradable_amount is the number of credits in this transfer that can be
+    // traded by the recipient. Decimal values are acceptable within the
     // precision returned by Query/Precision.
-    string tradable_units = 2
-        [ (gogoproto.moretags) = "yaml:\"tradable_units\"" ];
+    string tradable_amount = 2;
 
-    // retired_units are the units of credits in this issuance that are
+    // retired_amount is the number of credits in this transfer that are
     // effectively retired by the issuer on receipt. Decimal values are
     // acceptable within the precision returned by Query/Precision.
-    string retired_units = 3
-        [ (gogoproto.moretags) = "yaml:\"retired_units\"" ];
+    string retired_amount = 3;
+
+    // retirement_location is the location of the beneficiary or buyer of the
+    // retired credits. This must be provided if retired_amount is positive. It
+    // is a string of the form
+    // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+    // fields conforming to ISO 3166-2, and postal-code being up to 64
+    // alphanumeric characters.
+    string retirement_location = 4;
   }
 }
 
 // MsgSendResponse is the Msg/Send response type.
 message MsgSendResponse {}
 
-// MsgRetireRequest is the Msg/Retire request type.
-message MsgRetireRequest {
+// MsgRetire is the Msg/Retire request type.
+message MsgRetire {
 
   // holder is the credit holder address.
   string holder = 1;
 
   // credits are the credits being retired.
-  repeated RetireUnits credits = 2;
+  repeated RetireCredits credits = 2;
 
-  // RetireUnits are the units of the batch being retired.
-  message RetireUnits {
+  // RetireCredits specifies a batch and the number of credits being retired.
+  message RetireCredits {
 
     // batch_denom is the unique ID of the credit batch.
-    string batch_denom = 1 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+    string batch_denom = 1;
 
-    // retired_units are the units of credits being retired.
+    // amount is the number of credits being retired.
     // Decimal values are acceptable within the precision returned by
     // Query/Precision.
-    string units = 2;
+    string amount = 2;
+  }
+
+  // location is the location of the beneficiary or buyer of the retired
+  // credits. It is a string of the form
+  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+  // fields conforming to ISO 3166-2, and postal-code being up to 64
+  // alphanumeric characters.
+  string location = 3;
+}
+
+// MsgRetire is the Msg/Retire response type.
+message MsgRetireResponse {}
+
+// MsgCancel is the Msg/Cancel request type.
+message MsgCancel {
+
+  // holder is the credit holder address.
+  string holder = 1;
+
+  // credits are the credits being cancelled.
+  repeated CancelCredits credits = 2;
+
+  // CancelCredits specifies a batch and the number of credits being cancelled.
+  message CancelCredits {
+
+    // batch_denom is the unique ID of the credit batch.
+    string batch_denom = 1;
+
+    // amount is the number of credits being cancelled.
+    // Decimal values are acceptable within the precision returned by
+    // Query/Precision.
+    string amount = 2;
   }
 }
 
-// MsgRetireRequest is the Msg/Retire response type.
-message MsgRetireResponse {}
+// MsgCancelResponse is the Msg/Cancel response type.
+message MsgCancelResponse {}
 
-// MsgRetireRequest is the Msg/SetPrecision request type.
-message MsgSetPrecisionRequest {
+// MsgUpdateClassAdmin is the Msg/UpdateClassAdmin request type.
+message MsgUpdateClassAdmin {
 
-  // issuer is the address of the batch issuer.
-  string issuer = 1;
+  // admin is the address of the account that is the admin of the credit class.
+  string admin = 1;
 
-  // batch_denom is the unique ID of the credit batch.
-  string batch_denom = 2 [ (gogoproto.moretags) = "yaml:\"batch_denom\"" ];
+  // class_id is the unique ID of the credit class.
+  string class_id = 2;
 
-  // max_decimal_places is the new maximum number of decimal places that can be
-  // used to represent some quantity of credit units. It is an experimental
-  // feature to concretely explore an idea proposed in
-  // https://github.com/cosmos/cosmos-sdk/issues/7113.
-  uint32 max_decimal_places = 3
-      [ (gogoproto.moretags) = "yaml:\"max_decimal_places\"" ];
+  // new_admin is the address of the new admin of the credit class.
+  string new_admin = 3;
 }
 
-// MsgRetireRequest is the Msg/SetPrecision response type.
-message MsgSetPrecisionResponse {}
+// MsgUpdateClassAdminResponse is the MsgUpdateClassAdmin response type.
+message MsgUpdateClassAdminResponse {}
+
+// MsgUpdateClassIssuers is the Msg/UpdateClassIssuers request type.
+message MsgUpdateClassIssuers {
+
+  // admin is the address of the account that is the admin of the credit class.
+  string admin = 1;
+
+  // class_id is the unique ID of the credit class.
+  string class_id = 2;
+
+  // issuers are the updated account addresses of the approved issuers.
+  repeated string issuers = 3;
+}
+
+// MsgUpdateClassIssuersResponse is the MsgUpdateClassIssuers response type.
+message MsgUpdateClassIssuersResponse {}
+
+// MsgUpdateClassMetadata is the Msg/UpdateClassMetadata request type.
+message MsgUpdateClassMetadata {
+
+  // admin is the address of the account that is the admin of the credit class.
+  string admin = 1;
+
+  // class_id is the unique ID of the credit class.
+  string class_id = 2;
+
+  // metadata is the updated arbitrary metadata to be attached to the credit class.
+  bytes metadata = 3;
+}
+
+// MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
+message MsgUpdateClassMetadataResponse {}

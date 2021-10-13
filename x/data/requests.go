@@ -5,20 +5,19 @@ import (
 	"crypto"
 	"fmt"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 var (
-	_, _, _ sdk.MsgRequest = &MsgAnchorDataRequest{}, &MsgSignDataRequest{}, &MsgStoreRawDataRequest{}
+	_, _, _ sdk.Msg = &MsgAnchorData{}, &MsgSignData{}, &MsgStoreRawData{}
 )
 
-func (m *MsgAnchorDataRequest) ValidateBasic() error {
+func (m *MsgAnchorData) ValidateBasic() error {
 	return m.Hash.Validate()
 }
 
-func (m *MsgAnchorDataRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgAnchorData) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Sender)
 	if err != nil {
 		panic(err)
@@ -27,11 +26,11 @@ func (m *MsgAnchorDataRequest) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
-func (m *MsgSignDataRequest) ValidateBasic() error {
+func (m *MsgSignData) ValidateBasic() error {
 	return m.Hash.Validate()
 }
 
-func (m *MsgSignDataRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgSignData) GetSigners() []sdk.AccAddress {
 	addrs := make([]sdk.AccAddress, len(m.Signers))
 
 	for i, signer := range m.Signers {
@@ -49,7 +48,7 @@ const (
 	MaxRawDataLength = 1024
 )
 
-func (m *MsgStoreRawDataRequest) ValidateBasic() error {
+func (m *MsgStoreRawData) ValidateBasic() error {
 	if len(m.Content) > MaxRawDataLength {
 		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("content is too long, got %d and limit is %d", len(m.Content), MaxRawDataLength))
 	}
@@ -79,7 +78,7 @@ func (m *MsgStoreRawDataRequest) ValidateBasic() error {
 	}
 }
 
-func (m *MsgStoreRawDataRequest) GetSigners() []sdk.AccAddress {
+func (m *MsgStoreRawData) GetSigners() []sdk.AccAddress {
 	addr, err := sdk.AccAddressFromBech32(m.Sender)
 	if err != nil {
 		panic(err)

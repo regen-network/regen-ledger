@@ -11,125 +11,141 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-var _ Indexable = &TableBuilder{}
+var _ Indexable = &tableBuilder{}
 
-type TableBuilder struct {
+type tableBuilder struct {
 	model         reflect.Type
 	prefixData    byte
 	storeKey      sdk.StoreKey
 	indexKeyCodec IndexKeyCodec
-	afterSave     []AfterSaveInterceptor
+	afterSet      []AfterSetInterceptor
 	afterDelete   []AfterDeleteInterceptor
-	cdc           codec.Marshaler
+	cdc           codec.Codec
 }
 
-// NewTableBuilder creates a builder to setup a Table object.
-func NewTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, idxKeyCodec IndexKeyCodec, cdc codec.Marshaler) *TableBuilder {
+// newTableBuilder creates a builder to setup a table object.
+func newTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, idxKeyCodec IndexKeyCodec, cdc codec.Codec) (*tableBuilder, error) {
 	if model == nil {
-		panic("Model must not be nil")
+		return nil, ErrArgument.Wrap("Model must not be nil")
 	}
 	if storeKey == nil {
-		panic("StoreKey must not be nil")
+		return nil, ErrArgument.Wrap("StoreKey must not be nil")
 	}
 	if idxKeyCodec == nil {
-		panic("IndexKeyCodec must not be nil")
+		return nil, ErrArgument.Wrap("IndexKeyCodec must not be nil")
 	}
 	tp := reflect.TypeOf(model)
 	if tp.Kind() == reflect.Ptr {
 		tp = tp.Elem()
 	}
-	return &TableBuilder{
+	return &tableBuilder{
 		prefixData:    prefixData,
 		storeKey:      storeKey,
 		model:         tp,
 		indexKeyCodec: idxKeyCodec,
 		cdc:           cdc,
-	}
+	}, nil
 }
 
-func (a TableBuilder) IndexKeyCodec() IndexKeyCodec {
+// TestTableBuilder exposes the private tableBuilder type for testing purposes.
+// It is not safe to use this outside of test code.
+func TestTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, idxKeyCodec IndexKeyCodec, cdc codec.Codec) (*tableBuilder, error) {
+	return newTableBuilder(prefixData, storeKey, model, idxKeyCodec, cdc)
+}
+
+func (a tableBuilder) IndexKeyCodec() IndexKeyCodec {
 	return a.indexKeyCodec
 }
 
 // RowGetter returns a type safe RowGetter.
-func (a TableBuilder) RowGetter() RowGetter {
+func (a tableBuilder) RowGetter() RowGetter {
 	return NewTypeSafeRowGetter(a.storeKey, a.prefixData, a.model, a.cdc)
 }
 
-func (a TableBuilder) StoreKey() sdk.StoreKey {
+func (a tableBuilder) StoreKey() sdk.StoreKey {
 	return a.storeKey
 }
 
-// Build creates a new Table object.
-func (a TableBuilder) Build() Table {
-	return Table{
+// Build creates a new table object.
+func (a tableBuilder) Build() table {
+	return table{
 		model:       a.model,
 		prefix:      a.prefixData,
 		storeKey:    a.storeKey,
-		afterSave:   a.afterSave,
+		afterSet:    a.afterSet,
 		afterDelete: a.afterDelete,
 		cdc:         a.cdc,
 	}
 }
 
-// AddAfterSaveInterceptor can be used to register a callback function that is executed after an object is created and/or updated.
-func (a *TableBuilder) AddAfterSaveInterceptor(interceptor AfterSaveInterceptor) {
-	a.afterSave = append(a.afterSave, interceptor)
+// AddAfterSetInterceptor can be used to register a callback function that is executed after an object is created and/or updated.
+func (a *tableBuilder) AddAfterSetInterceptor(interceptor AfterSetInterceptor) {
+	a.afterSet = append(a.afterSet, interceptor)
 }
 
 // AddAfterDeleteInterceptor can be used to register a callback function that is executed after an object is deleted.
-func (a *TableBuilder) AddAfterDeleteInterceptor(interceptor AfterDeleteInterceptor) {
+func (a *tableBuilder) AddAfterDeleteInterceptor(interceptor AfterDeleteInterceptor) {
 	a.afterDelete = append(a.afterDelete, interceptor)
 }
 
-var _ TableExportable = &Table{}
+var _ TableExportable = &table{}
 
-// Table is the high level object to storage mapper functionality. Persistent entities are stored by an unique identifier
-// called `RowID`.
-// The Table struct does not enforce uniqueness of the `RowID` but expects this to be satisfied by the callers and conditions
-// to optimize Gas usage.
-type Table struct {
+// table is the high level object to storage mapper functionality. Persistent
+// entities are stored by an unique identifier called `RowID`. The table struct
+// does not:
+// - enforce uniqueness of the `RowID`
+// - enforce prefix uniqueness of keys, i.e. not allowing one key to be a prefix
+// of another
+// - optimize Gas usage conditions
+// The caller must ensure that these things are handled. The table struct is
+// private, so that we only custom tables built on top of table, that do satisfy
+// these requirements.
+type table struct {
 	model       reflect.Type
 	prefix      byte
 	storeKey    sdk.StoreKey
-	afterSave   []AfterSaveInterceptor
+	afterSet    []AfterSetInterceptor
 	afterDelete []AfterDeleteInterceptor
-	cdc         codec.Marshaler
+	cdc         codec.Codec
 }
 
-// Create persists the given object under the rowID key. It does not check if the
-// key already exists. Any caller must either make sure that this contract is fulfilled
-// by providing a universal unique ID or sequence that is guaranteed to not exist yet or
-// by checking the state via `Has` function before.
+// Create persists the given object under the rowID key, returning an
+// ErrUniqueConstraint if a value already exists at that key.
 //
-// Create iterates though the registered callbacks and may add secondary index keys by them.
-func (a Table) Create(ctx HasKVStore, rowID RowID, obj codec.ProtoMarshaler) error {
-	if err := assertCorrectType(a.model, obj); err != nil {
-		return err
+// Create iterates through the registered callbacks that may add secondary index
+// keys.
+func (a table) Create(ctx HasKVStore, rowID RowID, obj codec.ProtoMarshaler) error {
+	if a.Has(ctx, rowID) {
+		return ErrUniqueConstraint
 	}
-	if err := assertValid(obj); err != nil {
-		return err
-	}
-	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
-	v, err := a.cdc.MarshalBinaryBare(obj)
-	if err != nil {
-		return errors.Wrapf(err, "failed to serialize %T", obj)
-	}
-	store.Set(rowID, v)
-	for i, itc := range a.afterSave {
-		if err := itc(ctx, rowID, obj, nil); err != nil {
-			return errors.Wrapf(err, "interceptor %d failed", i)
-		}
-	}
-	return nil
+
+	return a.Set(ctx, rowID, obj)
 }
 
-// Save updates the given object under the rowID key. It expects the key to exists already
-// and fails with an `ErrNotFound` otherwise. Any caller must therefore make sure that this contract
-// is fulfilled. Parameters must not be nil.
+// Update updates the given object under the rowID key. It expects the key to
+// exists already and fails with an `ErrNotFound` otherwise. Any caller must
+// therefore make sure that this contract is fulfilled. Parameters must not be
+// nil.
 //
-// Save iterates though the registered callbacks and may add or remove secondary index keys by them.
-func (a Table) Save(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler) error {
+// Update iterates through the registered callbacks that may add or remove
+// secondary index keys.
+func (a table) Update(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler) error {
+	if !a.Has(ctx, rowID) {
+		return ErrNotFound
+	}
+
+	return a.Set(ctx, rowID, newValue)
+}
+
+// Set persists the given object under the rowID key. It does not check if the
+// key already exists and overwrites the value if it does.
+//
+// Set iterates through the registered callbacks that may add secondary index
+// keys.
+func (a table) Set(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler) error {
+	if len(rowID) == 0 {
+		return ErrEmptyKey
+	}
 	if err := assertCorrectType(a.model, newValue); err != nil {
 		return err
 	}
@@ -138,18 +154,20 @@ func (a Table) Save(ctx HasKVStore, rowID RowID, newValue codec.ProtoMarshaler) 
 	}
 
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
-	var oldValue = reflect.New(a.model).Interface().(codec.ProtoMarshaler)
 
-	if err := a.GetOne(ctx, rowID, oldValue); err != nil {
-		return errors.Wrap(err, "load old value")
+	var oldValue codec.ProtoMarshaler
+	if a.Has(ctx, rowID) {
+		oldValue = reflect.New(a.model).Interface().(codec.ProtoMarshaler)
+		a.GetOne(ctx, rowID, oldValue)
 	}
-	newValueEncoded, err := a.cdc.MarshalBinaryBare(newValue)
+
+	newValueEncoded, err := a.cdc.Marshal(newValue)
 	if err != nil {
 		return errors.Wrapf(err, "failed to serialize %T", newValue)
 	}
 
 	store.Set(rowID, newValueEncoded)
-	for i, itc := range a.afterSave {
+	for i, itc := range a.afterSet {
 		if err := itc(ctx, rowID, newValue, oldValue); err != nil {
 			return errors.Wrapf(err, "interceptor %d failed", i)
 		}
@@ -166,12 +184,13 @@ func assertValid(obj codec.ProtoMarshaler) error {
 	return nil
 }
 
-// Delete removes the object under the rowID key. It expects the key to exists already
-// and fails with a `ErrNotFound` otherwise. Any caller must therefore make sure that this contract
-// is fulfilled.
+// Delete removes the object under the rowID key. It expects the key to exists
+// already and fails with a `ErrNotFound` otherwise. Any caller must therefore
+// make sure that this contract is fulfilled.
 //
-// Delete iterates though the registered callbacks and removes secondary index keys by them.
-func (a Table) Delete(ctx HasKVStore, rowID RowID) error {
+// Delete iterates through the registered callbacks that remove secondary index
+// keys.
+func (a table) Delete(ctx HasKVStore, rowID RowID) error {
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
 
 	var oldValue = reflect.New(a.model).Interface().(codec.ProtoMarshaler)
@@ -188,17 +207,25 @@ func (a Table) Delete(ctx HasKVStore, rowID RowID) error {
 	return nil
 }
 
-// Has checks if a key exists. Panics on nil key.
-func (a Table) Has(ctx HasKVStore, rowID RowID) bool {
+// Has checks if a key exists. Returns false when the key is empty or nil
+// because we don't allow creation of values without a key.
+func (a table) Has(ctx HasKVStore, key RowID) bool {
+	if len(key) == 0 {
+		return false
+	}
 	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
-	it := store.Iterator(prefixRange(rowID))
+	it := store.Iterator(PrefixRange(key))
 	defer it.Close()
 	return it.Valid()
 }
 
 // GetOne load the object persisted for the given RowID into the dest parameter.
-// If none exists `ErrNotFound` is returned instead. Parameters must not be nil.
-func (a Table) GetOne(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) error {
+// If none exists or `rowID==nil` then `ErrNotFound` is returned instead.
+// Parameters must not be nil - we don't allow creation of values with empty keys.
+func (a table) GetOne(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) error {
+	if len(rowID) == 0 {
+		return ErrNotFound
+	}
 	x := NewTypeSafeRowGetter(a.storeKey, a.prefix, a.model, a.cdc)
 	return x(ctx, rowID, dest)
 }
@@ -219,7 +246,7 @@ func (a Table) GetOne(ctx HasKVStore, rowID RowID, dest codec.ProtoMarshaler) er
 //			it = LimitIterator(it, defaultLimit)
 //
 // CONTRACT: No writes may happen within a domain while an iterator exists over it.
-func (a Table) PrefixScan(ctx HasKVStore, start, end RowID) (Iterator, error) {
+func (a table) PrefixScan(ctx HasKVStore, start, end RowID) (Iterator, error) {
 	if start != nil && end != nil && bytes.Compare(start, end) >= 0 {
 		return NewInvalidIterator(), errors.Wrap(ErrArgument, "start must be before end")
 	}
@@ -240,7 +267,7 @@ func (a Table) PrefixScan(ctx HasKVStore, start, end RowID) (Iterator, error) {
 // this as an endpoint to the public without further limits. See `LimitIterator`
 //
 // CONTRACT: No writes may happen within a domain while an iterator exists over it.
-func (a Table) ReversePrefixScan(ctx HasKVStore, start, end RowID) (Iterator, error) {
+func (a table) ReversePrefixScan(ctx HasKVStore, start, end RowID) (Iterator, error) {
 	if start != nil && end != nil && bytes.Compare(start, end) >= 0 {
 		return NewInvalidIterator(), errors.Wrap(ErrArgument, "start must be before end")
 	}
@@ -252,8 +279,51 @@ func (a Table) ReversePrefixScan(ctx HasKVStore, start, end RowID) (Iterator, er
 	}, nil
 }
 
-func (a Table) Table() Table {
-	return a
+// Export stores all the values in the table in the passed ModelSlicePtr.
+func (a table) Export(ctx HasKVStore, dest ModelSlicePtr) (uint64, error) {
+	it, err := a.PrefixScan(ctx, nil, nil)
+	if err != nil {
+		return 0, errors.Wrap(err, "table Export failure when exporting table data")
+	}
+	_, err = ReadAll(it, dest)
+	if err != nil {
+		return 0, err
+	}
+	return 0, nil
+}
+
+// Import clears the table and initializes it from the given data interface{}.
+// data should be a slice of structs that implement PrimaryKeyed.
+func (a table) Import(ctx HasKVStore, data interface{}, _ uint64) error {
+	// Clear all data
+	store := prefix.NewStore(ctx.KVStore(a.storeKey), []byte{a.prefix})
+	it := store.Iterator(nil, nil)
+	defer it.Close()
+	for ; it.Valid(); it.Next() {
+		if err := a.Delete(ctx, it.Key()); err != nil {
+			return err
+		}
+	}
+
+	// Provided data must be a slice
+	modelSlice := reflect.ValueOf(data)
+	if modelSlice.Kind() != reflect.Slice {
+		return errors.Wrap(ErrArgument, "data must be a slice")
+	}
+
+	// Import values from slice
+	for i := 0; i < modelSlice.Len(); i++ {
+		obj, ok := modelSlice.Index(i).Interface().(PrimaryKeyed)
+		if !ok {
+			return errors.Wrapf(ErrArgument, "unsupported type :%s", reflect.TypeOf(data).Elem().Elem())
+		}
+		err := a.Create(ctx, PrimaryKey(obj), obj)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // typeSafeIterator is initialized with a type safe RowGetter only.

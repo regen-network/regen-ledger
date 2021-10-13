@@ -1,6 +1,7 @@
 package module
 
 import (
+	"context"
 	"encoding/json"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
@@ -9,6 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	"github.com/spf13/cobra"
 
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
@@ -22,6 +24,7 @@ type Module struct{}
 
 var _ module.AppModuleBasic = Module{}
 var _ servermodule.Module = Module{}
+var _ restmodule.Module = Module{}
 var _ climodule.Module = Module{}
 
 func (a Module) Name() string {
@@ -36,9 +39,14 @@ func (a Module) RegisterServices(configurator servermodule.Configurator) {
 	server.RegisterServices(configurator)
 }
 
-func (a Module) DefaultGenesis(codec.JSONMarshaler) json.RawMessage { return nil }
+//nolint:errcheck
+func (a Module) RegisterGRPCGatewayRoutes(clientCtx sdkclient.Context, mux *runtime.ServeMux) {
+	data.RegisterQueryHandlerClient(context.Background(), mux, data.NewQueryClient(clientCtx))
+}
 
-func (a Module) ValidateGenesis(codec.JSONMarshaler, sdkclient.TxEncodingConfig, json.RawMessage) error {
+func (a Module) DefaultGenesis(codec.JSONCodec) json.RawMessage { return nil }
+
+func (a Module) ValidateGenesis(codec.JSONCodec, sdkclient.TxEncodingConfig, json.RawMessage) error {
 	return nil
 }
 
@@ -50,7 +58,8 @@ func (a Module) GetTxCmd() *cobra.Command {
 	return client.TxCmd(a.Name())
 }
 
-func (a Module) RegisterGRPCGatewayRoutes(sdkclient.Context, *runtime.ServeMux) {}
+// ConsensusVersion implements AppModule/ConsensusVersion.
+func (Module) ConsensusVersion() uint64 { return 1 }
 
 /**** DEPRECATED ****/
 func (a Module) RegisterRESTRoutes(sdkclient.Context, *mux.Router) {}

@@ -1,47 +1,48 @@
 package server
 
 import (
-	"bytes"
-	"encoding/binary"
 	"fmt"
-
-	"github.com/cockroachdb/apd/v2"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/regen-network/regen-ledger/math"
+	"github.com/regen-network/regen-ledger/types/math"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-func getDecimal(store sdk.KVStore, key []byte) (*apd.Decimal, error) {
+func getDecimal(store sdk.KVStore, key []byte) (math.Dec, error) {
 	bz := store.Get(key)
 	if bz == nil {
-		return apd.New(0, 0), nil
+		return math.NewDecFromInt64(0), nil
 	}
 
-	value, _, err := apd.NewFromString(string(bz))
+	value, err := math.NewDecFromString(string(bz))
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, fmt.Sprintf("can't unmarshal %s as decimal", bz))
+		return math.Dec{}, sdkerrors.Wrap(err, fmt.Sprintf("can't unmarshal %s as decimal", bz))
 	}
 
 	return value, nil
 }
 
-func setDecimal(store sdk.KVStore, key []byte, value *apd.Decimal) {
+func setDecimal(store sdk.KVStore, key []byte, value math.Dec) {
 	// always remove all trailing zeros for canonical representation
-	value, _ = value.Reduce(value)
-	// use floating notation here always for canonical representation
-	str := value.Text('f')
-	store.Set(key, []byte(str))
+	value, _ = value.Reduce()
+
+	if value.IsZero() {
+		store.Delete(key)
+	} else {
+		// use floating notation here always for canonical representation
+		store.Set(key, []byte(value.String()))
+	}
 }
 
-func getAddAndSetDecimal(store sdk.KVStore, key []byte, x *apd.Decimal) error {
+func addAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 	value, err := getDecimal(store, key)
 	if err != nil {
 		return err
 	}
 
-	err = math.Add(value, value, x)
+	value, err = value.Add(x)
 	if err != nil {
 		return err
 	}
@@ -50,13 +51,17 @@ func getAddAndSetDecimal(store sdk.KVStore, key []byte, x *apd.Decimal) error {
 	return nil
 }
 
-func getSubAndSetDecimal(store sdk.KVStore, key []byte, x *apd.Decimal) error {
+func subAndSetDecimal(store sdk.KVStore, key []byte, x math.Dec) error {
 	value, err := getDecimal(store, key)
 	if err != nil {
 		return err
 	}
 
-	err = math.SafeSub(value, value, x)
+	if value.Cmp(x) == -1 {
+		return ecocredit.ErrInsufficientFunds
+	}
+
+	value, err = math.SafeSubBalance(value, x)
 	if err != nil {
 		return err
 	}
@@ -65,30 +70,29 @@ func getSubAndSetDecimal(store sdk.KVStore, key []byte, x *apd.Decimal) error {
 	return nil
 }
 
-func setUInt32(store sdk.KVStore, key []byte, value uint32) error {
-	bz := make([]byte, 0, 4)
-	buf := bytes.NewBuffer(bz)
-	err := binary.Write(buf, binary.LittleEndian, value)
-	if err != nil {
-		return err
+func iterateSupplies(store sdk.KVStore, storeKey byte, cb func(denom, supply string) (bool, error)) error {
+	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		stop, err := cb(string(ParseSupplyKey(iter.Key())), string(iter.Value()))
+		if err != nil {
+			return err
+		}
+		if stop {
+			break
+		}
 	}
 
-	store.Set(key, buf.Bytes())
 	return nil
 }
 
-func getUint32(store sdk.KVStore, key []byte) (uint32, error) {
-	bz := store.Get(key)
-	if bz == nil {
-		return 0, nil
+func iterateBalances(store sdk.KVStore, storeKey byte, cb func(address, denom, balance string) bool) {
+	iter := sdk.KVStorePrefixIterator(store, []byte{storeKey})
+	defer iter.Close()
+	for ; iter.Valid(); iter.Next() {
+		addr, denom := ParseBalanceKey(iter.Key())
+		if cb(addr.String(), string(denom), string(iter.Value())) {
+			break
+		}
 	}
-
-	buf := bytes.NewReader(bz)
-	var res uint32
-	err := binary.Read(buf, binary.LittleEndian, &res)
-	if err != nil {
-		return 0, err
-	}
-
-	return res, nil
 }

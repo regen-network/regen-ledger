@@ -15,14 +15,7 @@ protoc_gen_doc() {
   go get -u github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc 2>/dev/null
 }
 
-protoc_gen_gocosmos2() {
-  cd protoc-gen-go-cosmos2
-  go install .
-  cd ..
-}
-
 protoc_gen_gocosmos
-protoc_gen_gocosmos2
 protoc_gen_doc
 go mod tidy
 
@@ -31,23 +24,12 @@ for dir in $proto_dirs; do
   buf protoc \
   -I "proto" \
   -I "third_party/proto" \
-  --gocosmos_out=\
+  --gocosmos_out=plugins=interfacetype+grpc,\
 Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,\
 Mgoogle/protobuf/struct.proto=github.com/gogo/protobuf/types,\
 Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,\
 Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types,\
 Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
-  $(find "${dir}" -maxdepth 1 -name '*.proto')
-
-  buf protoc \
-  -I "proto" \
-  -I "third_party/proto" \
-  --go-cosmos2_out=\
-google/protobuf/duration.proto=github.com/gogo/protobuf/types,\
-google/protobuf/struct.proto=github.com/gogo/protobuf/types,\
-google/protobuf/timestamp.proto=github.com/gogo/protobuf/types,\
-google/protobuf/wrappers.proto=github.com/gogo/protobuf/types,\
-google/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
   $(find "${dir}" -maxdepth 1 -name '*.proto')
 
   # command to generate gRPC gateway (*.pb.gw.go in respective modules) files
@@ -66,15 +48,15 @@ google/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
   buf protoc \
   -I "proto" \
   -I "third_party/proto" \
-  --doc_out=./docs/modules/${module} \
+  --doc_out=./x/${module}/spec \
   --doc_opt=docs/markdown.tmpl,protobuf.md \
   $(find "${dir}" -maxdepth 1 -name '*.proto')
 
 done
 
 # generate codec/testdata proto code
-buf protoc -I "proto" -I "third_party/proto" -I "testutil/testdata" --gocosmos_out=plugins=interfacetype+grpc,\
-Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. ./testutil/testdata/*.proto
+buf protoc -I "proto" -I "third_party/proto" -I "x/group/testdata" --gocosmos_out=plugins=interfacetype+grpc,\
+Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. ./x/group/testdata/*.proto
 
 # move proto files to the right places
 cp -r github.com/regen-network/regen-ledger/* ./

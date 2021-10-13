@@ -7,15 +7,15 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/regen-network/regen-ledger/testutil/server"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
 type IntegrationTestSuite struct {
 	suite.Suite
 
-	fixtureFactory server.FixtureFactory
-	fixture        server.Fixture
+	fixtureFactory testutil.FixtureFactory
+	fixture        testutil.Fixture
 
 	ctx         context.Context
 	msgClient   data.MsgClient
@@ -24,7 +24,7 @@ type IntegrationTestSuite struct {
 	addr2       sdk.AccAddress
 }
 
-func NewIntegrationTestSuite(fixtureFactory server.FixtureFactory) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory) *IntegrationTestSuite {
 	return &IntegrationTestSuite{fixtureFactory: fixtureFactory}
 }
 
