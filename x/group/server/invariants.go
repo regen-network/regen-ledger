@@ -132,7 +132,7 @@ func tallyVotesInvariant(ctx sdk.Context, prevCtx sdk.Context, proposalTable orm
 	return msg, broken
 }
 
-func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, groupMemberByGroupIndex orm.UInt64Index) (string, bool) {
+func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, groupMemberByGroupIndex orm.Index) (string, bool) {
 
 	var msg string
 	var broken bool
@@ -191,7 +191,7 @@ func groupTotalWeightInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, 
 	return msg, broken
 }
 
-func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, proposalTable orm.AutoUInt64Table, groupMemberTable orm.PrimaryKeyTable, voteByProposalIndex orm.UInt64Index, groupAccountTable orm.PrimaryKeyTable) (string, bool) {
+func tallyVotesSumInvariant(ctx sdk.Context, groupTable orm.AutoUInt64Table, proposalTable orm.AutoUInt64Table, groupMemberTable orm.PrimaryKeyTable, voteByProposalIndex orm.Index, groupAccountTable orm.PrimaryKeyTable) (string, bool) {
 	var msg string
 	var broken bool
 

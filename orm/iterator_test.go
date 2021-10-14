@@ -206,9 +206,9 @@ func TestPaginate(t *testing.T) {
 	)
 	tBuilder, err := orm.NewAutoUInt64TableBuilder(testTablePrefix, testTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
 	require.NoError(t, err)
-	idx, err := orm.NewIndex(tBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
-		return []orm.RowID{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
-	})
+	idx, err := orm.NewIndex(tBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]interface{}, error) {
+		return []interface{}{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
+	}, []byte{})
 	require.NoError(t, err)
 	tb := tBuilder.Build()
 	ctx := orm.NewMockContext()
