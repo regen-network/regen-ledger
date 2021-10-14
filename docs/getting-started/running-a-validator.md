@@ -1,6 +1,6 @@
 # Running a Validator
 
-This document provides instructions for running a validator node for a [live network](./live-networks.html). With Regen Mainnet, Redwood Testnet, and Hambach Testnet already launched and running, this document will focus on how to become a validator for a network post-genesis.
+This document provides instructions for running a validator node for a [live network](./live-networks.md). With Regen Mainnet, Redwood Testnet, and Hambach Testnet already launched and running, this document will focus on how to become a validator for a network post-genesis.
 
 ## Prerequisites
 
@@ -10,7 +10,7 @@ In order to install the `cosmovisor` and `regen` binaries, you'll need the follo
 - Make `>=4`
 - Go `>=1.15`
 
-For more information (including hardware recommendations), see [Prerequisites](./prerequisites). 
+For more information (including hardware recommendations), see [Prerequisites](./prerequisites.md). 
 
 ## Install Regen
 

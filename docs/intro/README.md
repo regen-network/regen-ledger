@@ -6,13 +6,13 @@ Regen Ledger is a public Proof-of-Stake (PoS) blockchain application built with 
 
 [Regen Mainnet](https://www.regen.network/mainnet/) is the primary network supported by Regen Ledger. When referring to the Regen Network blockchain, we are referring to Regen Mainnet. Regen Mainnet is powered by the official [REGEN](https://www.regen.network/token/) token and there are currently 75 validators securing the network.
 
-For more information, check out [Getting Started: Live Networks](../getting-started/live-networks).
+For more information, check out [Getting Started: Live Networks](../getting-started/live-networks.md#regen-mainnet).
 
 ## Redwood Testnet
 
 Redwood Testnet is a test network with the same configuration as Regen Mainnet. Developers can use Redwood Testnet to test out features in a stable testing environment. Unofficial REGEN tokens can be redeemed using a faucet.
 
-For more information, check out [Getting Started: Live Networks](../getting-started/live-networks).
+For more information, check out [Getting Started: Live Networks](../getting-started/live-networks.md#redwood-testnet).
 
 ## Hambach Testnet
 
@@ -20,10 +20,10 @@ Hambach Testnet is a test network with experimental modules enabled (modules tha
 
 Hambach Testnet includes the following experimental modules:
 
-- [Ecocredit Module](../modules/ecocredit) <!-- TODO: remove once we upgrade to v2.0 -->
-- [Group Module](../modules/group)
+- [Ecocredit Module](../modules/ecocredit/README.md) <!-- TODO: remove once we upgrade to v2.0 -->
+- [Group Module](../modules/group/README.md)
 
-For more information, check out [Getting Started: Live Networks](../getting-started/live-networks).
+For more information, check out [Getting Started: Live Networks](../getting-started/live-networks.md#hambach-testnet).
 
 ## Block Explorers
 

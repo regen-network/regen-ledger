@@ -52,7 +52,7 @@ For more information, see [regen-network/testnets](https://github.com/regen-netw
 
 ## Interacting With A Node
 
-First, you'll need to install the `regen` binary. For installation instructions, see [Install Regen](./#install-regen).
+First, you'll need to install the `regen` binary. For installation instructions, see [Install Regen](./README.md#install-regen).
 
 In order to interact with a node from a live network, you'll need to provide a `--node` flag with a valid node address to your commands. Before submitting any queries or transactions, you should first check the status of the node using the `status` command.
 
@@ -73,4 +73,4 @@ regen status --node http://hambach.regen.network:26657
 
 <!-- TODO: add `regen config node` instructions once updated to v2.0 -->
 
-For more information, see [Command-Line Interface](../regen-ledger/interfaces.html#command-line-interface).
+For more information, see [Command-Line Interface](../regen-ledger/interfaces.md#command-line-interface).

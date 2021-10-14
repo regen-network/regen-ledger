@@ -1,6 +1,6 @@
 # Running a Full Node
 
-This document provides instructions for running a full node for a [live network](./live-networks.html) (either Regen Mainnet, Redwood Testnet, or Hambach Testnet).
+This document provides instructions for running a full node for a [live network](./live-networks.md) (either Regen Mainnet, Redwood Testnet, or Hambach Testnet).
 
 ## Prerequisites
 
@@ -10,7 +10,7 @@ In order to install the `cosmovisor` and `regen` binaries, you'll need the follo
 - Make `>=4`
 - Go `>=1.15`
 
-For more information (including hardware recommendations), see [Prerequisites](./prerequisites). 
+For more information (including hardware recommendations), see [Prerequisites](./prerequisites.md). 
 
 ## Install Regen
 
