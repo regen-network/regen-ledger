@@ -39,11 +39,6 @@ type PrimaryKeyed interface {
 	//
 	// IMPORTANT: []byte parts are encoded with a single byte length prefix,
 	// so cannot be longer than 255 bytes.
-	//
-	// The `IndexKeyCodec` used with the `PrimaryKeyTable` may add certain
-	// constraints to the byte representation as max length = 255 in
-	// `Max255DynamicLengthIndexKeyCodec` or a fix length in
-	// `FixLengthIndexKeyCodec` for example.
 	PrimaryKeyFields() []interface{}
 	codec.ProtoMarshaler
 }
