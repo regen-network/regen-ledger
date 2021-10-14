@@ -31,7 +31,9 @@ type MultiKeyIndex struct {
 	indexKey    interface{}
 }
 
-// NewIndex builds a MultiKeyIndex
+// NewIndex builds a MultiKeyIndex.
+// Only single-field indexes are supported and `indexKey` represents such a field value,
+// which can be []byte, string or uint64.
 func NewIndex(builder Indexable, prefix byte, indexerF IndexerFunc, indexKey interface{}) (MultiKeyIndex, error) {
 	indexer, err := NewIndexer(indexerF)
 	if err != nil {
