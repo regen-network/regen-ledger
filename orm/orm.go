@@ -63,18 +63,18 @@ type Persistent interface {
 
 // Index allows efficient prefix scans is stored as key = concat(indexKeyBytes, rowIDUint64) with value empty
 // so that the row PrimaryKey is allows a fixed with 8 byte integer. This allows the MultiKeyIndex key bytes to be
-// variable length and scanned iteratively. The
+// variable length and scanned iteratively.
 type Index interface {
 	// Has checks if a key exists. Panics on nil key.
-	Has(ctx HasKVStore, key []byte) bool
+	Has(ctx HasKVStore, key interface{}) (bool, error)
 
 	// Get returns a result iterator for the searchKey.
 	// searchKey must not be nil.
-	Get(ctx HasKVStore, searchKey []byte) (Iterator, error)
+	Get(ctx HasKVStore, searchKey interface{}) (Iterator, error)
 
 	// GetPaginated returns a result iterator for the searchKey and optional pageRequest.
 	// searchKey must not be nil.
-	GetPaginated(ctx HasKVStore, searchKey []byte, pageRequest *query.PageRequest) (Iterator, error)
+	GetPaginated(ctx HasKVStore, searchKey interface{}, pageRequest *query.PageRequest) (Iterator, error)
 
 	// PrefixScan returns an Iterator over a domain of keys in ascending order. End is exclusive.
 	// Start is an MultiKeyIndex key or prefix. It must be less than end, or the Iterator is invalid and error is returned.
@@ -92,7 +92,7 @@ type Index interface {
 	//			it = LimitIterator(it, defaultLimit)
 	//
 	// CONTRACT: No writes may happen within a domain while an iterator exists over it.
-	PrefixScan(ctx HasKVStore, start []byte, end []byte) (Iterator, error)
+	PrefixScan(ctx HasKVStore, startI interface{}, endI interface{}) (Iterator, error)
 
 	// ReversePrefixScan returns an Iterator over a domain of keys in descending order. End is exclusive.
 	// Start is an MultiKeyIndex key or prefix. It must be less than end, or the Iterator is invalid  and error is returned.
@@ -103,7 +103,7 @@ type Index interface {
 	// this as an endpoint to the public without further limits. See `LimitIterator`
 	//
 	// CONTRACT: No writes may happen within a domain while an iterator exists over it.
-	ReversePrefixScan(ctx HasKVStore, start []byte, end []byte) (Iterator, error)
+	ReversePrefixScan(ctx HasKVStore, startI interface{}, endI interface{}) (Iterator, error)
 }
 
 // Iterator allows iteration through a sequence of key value pairs
@@ -116,21 +116,11 @@ type Iterator interface {
 	io.Closer
 }
 
-// IndexKeyCodec defines the encoding/ decoding methods for building/ splitting index keys.
-type IndexKeyCodec interface {
-	// BuildIndexKey encodes a searchable key and the target RowID.
-	BuildIndexKey(searchableKey []byte, rowID RowID) []byte
-	// StripRowID returns the RowID from the combined persistentIndexKey. It is the reverse operation to BuildIndexKey
-	// but with the searchableKey dropped.
-	StripRowID(persistentIndexKey []byte) RowID
-}
-
 // Indexable types are used to setup new tables.
 // This interface provides a set of functions that can be called by indexes to register and interact with the tables.
 type Indexable interface {
 	StoreKey() sdk.StoreKey
 	RowGetter() RowGetter
-	IndexKeyCodec() IndexKeyCodec
 	AddAfterSetInterceptor(interceptor AfterSetInterceptor)
 	AddAfterDeleteInterceptor(interceptor AfterDeleteInterceptor)
 }

@@ -23,7 +23,7 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 		testTablePrefix = iota
 	)
 
-	builder, err := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	builder, err := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, cdc)
 	require.NoError(t, err)
 	tb := builder.Build()
 
@@ -59,11 +59,11 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 		"exact match with a single result": {
 			start: append(
 				orm.AddLengthPrefix([]byte("group-a")),
-				orm.AddLengthPrefix([]byte("member-one"))...,
+				[]byte("member-one")...,
 			), // == orm.PrimaryKey(&m1)
 			end: append(
 				orm.AddLengthPrefix([]byte("group-a")),
-				orm.AddLengthPrefix([]byte("member-two"))...,
+				[]byte("member-two")...,
 			), // == orm.PrimaryKey(&m2)
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1},
@@ -73,7 +73,7 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 			start: orm.AddLengthPrefix([]byte("group-a")),
 			end: append(
 				orm.AddLengthPrefix([]byte("group-a")),
-				orm.AddLengthPrefix([]byte("member-two"))...,
+				[]byte("member-two")...,
 			), // == orm.PrimaryKey(&m2)
 			method:    tb.PrefixScan,
 			expResult: []testdata.GroupMember{m1},
@@ -142,11 +142,11 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 		"reverse: exact match with a single result": {
 			start: append(
 				orm.AddLengthPrefix([]byte("group-a")),
-				orm.AddLengthPrefix([]byte("member-one"))...,
+				[]byte("member-one")...,
 			), // == orm.PrimaryKey(&m1)
 			end: append(
 				orm.AddLengthPrefix([]byte("group-a")),
-				orm.AddLengthPrefix([]byte("member-two"))...,
+				[]byte("member-two")...,
 			), // == orm.PrimaryKey(&m2)
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m1},
@@ -156,7 +156,7 @@ func TestPrimaryKeyTablePrefixScan(t *testing.T) {
 			start: orm.AddLengthPrefix([]byte("group-a")),
 			end: append(
 				orm.AddLengthPrefix([]byte("group-a")),
-				orm.AddLengthPrefix([]byte("member-two"))...,
+				[]byte("member-two")...,
 			), // == orm.PrimaryKey(&m2)
 			method:    tb.ReversePrefixScan,
 			expResult: []testdata.GroupMember{m1},
@@ -246,7 +246,7 @@ func TestContains(t *testing.T) {
 	storeKey := sdk.NewKVStoreKey("test")
 	const testTablePrefix = iota
 
-	builder, err := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	builder, err := orm.NewPrimaryKeyTableBuilder(testTablePrefix, storeKey, &testdata.GroupMember{}, cdc)
 	require.NoError(t, err)
 	tb := builder.Build()
 
@@ -291,45 +291,6 @@ func TestContains(t *testing.T) {
 		t.Run(msg, func(t *testing.T) {
 			got := tb.Contains(ctx, spec.src)
 			assert.Equal(t, spec.exp, got)
-		})
-	}
-}
-
-func TestAddLengthPrefix(t *testing.T) {
-	tcs := []struct {
-		name     string
-		in       []byte
-		expected []byte
-	}{
-		{"empty", []byte{}, []byte{0}},
-		{"nil", nil, []byte{0}},
-		{"some data", []byte{0, 1, 100, 200}, []byte{4, 0, 1, 100, 200}},
-	}
-	for _, tc := range tcs {
-		t.Run(tc.name, func(t *testing.T) {
-			out := orm.AddLengthPrefix(tc.in)
-			require.Equal(t, tc.expected, out)
-		})
-	}
-
-	require.Panics(t, func() {
-		orm.AddLengthPrefix(make([]byte, 256))
-	})
-}
-
-func TestNullTerminatedBytes(t *testing.T) {
-	tcs := []struct {
-		name     string
-		in       string
-		expected []byte
-	}{
-		{"empty", "", []byte{0}},
-		{"some data", "abc", []byte{0x61, 0x62, 0x63, 0}},
-	}
-	for _, tc := range tcs {
-		t.Run(tc.name, func(t *testing.T) {
-			out := orm.NullTerminatedBytes(tc.in)
-			require.Equal(t, tc.expected, out)
 		})
 	}
 }
