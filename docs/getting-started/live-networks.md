@@ -16,31 +16,43 @@ Regen Mainnet launched with the `v1.0.0` release tag of `regen-ledger`.
 
 <!-- TODO: update to use dedicated full node operated by RND -->
 
-The following URL is the node endpoint for one of our lead validators:
+The following URL is the node address for a full node operated by VitWit:
 
 [http://104.131.169.70:26657/](http://104.131.169.70:26657/)
 
 For more information, see [regen-network/mainnet](https://github.com/regen-network/mainnet).
 
-### Regen Devnet
+### Redwood Testnet
 
-`regen-devnet-5` is the chain ID for Regen Devnet.
+`regen-redwood-1` is the chain ID for Redwood Testnet.
 
 <!-- TODO: add information about genesis binary and upgrade binaries -->
 
-Regen Devnet launched with the `v1.0.0-rc0` release tag of `regen-ledger`.
+Redwood Testnet launched with the `v1.0.0` release tag of `regen-ledger`.
 
-<!-- TODO: update to use dedicated full node operated by RND -->
+The following URL is the node address for a full node operated by RND:
 
-The following URL is the node endpoint for one of our lead validators:
+[http://redwood.regen.network:26657/](http://redwood.regen.network:26657/)
 
-[http://18.220.101.192:26657/](http://18.220.101.192:26657/)
+For more information, see [regen-network/testnets](https://github.com/regen-network/testnets).
+
+### Hambach Testnet
+
+`regen-hambach-1` is the chain ID for Hambach Testnet.
+
+<!-- TODO: add information about genesis binary and upgrade binaries -->
+
+Hambach Testnet launched with the `v2.0.0-beta1` release tag of `regen-ledger` using the experimental build.
+
+The following URL is the node address for a full node operated by RND:
+
+[http://hambach.regen.network:26657/](http://hambach.regen.network:26657/)
 
 For more information, see [regen-network/testnets](https://github.com/regen-network/testnets).
 
 ## Interacting With A Node
 
-First, you'll need to install the `regen` binary. For installation instructions, see [Install Regen](./#install-regen).
+First, you'll need to install the `regen` binary. For installation instructions, see [Install Regen](./README.md#install-regen).
 
 In order to interact with a node from a live network, you'll need to provide a `--node` flag with a valid node address to your commands. Before submitting any queries or transactions, you should first check the status of the node using the `status` command.
 
@@ -49,11 +61,16 @@ To check the status of the Regen Mainnet node provided above, run the following 
 regen status --node http://104.131.169.70:26657
 ```
 
-To check the status of the Regen Devnet node provided above, run the following command:
+To check the status of the Redwood Testnet node provided above, run the following command:
 ```
-regen status --node http://18.220.101.192:26657
+regen status --node http://redwood.regen.network:26657
 ```
 
-<!-- TODO: add `regen config node` instructions once updated to v1.1 -->
+To check the status of the Hambach Testnet node provided above, run the following command:
+```
+regen status --node http://hambach.regen.network:26657
+```
 
-For more information about what commands are available, see [Command-Line Interface](http://localhost:8080/api.html#command-line-interface).
+<!-- TODO: add `regen config node` instructions once updated to v2.0 -->
+
+For more information, see [Command-Line Interface](../regen-ledger/interfaces.md#command-line-interface).
