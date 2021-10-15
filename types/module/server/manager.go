@@ -8,7 +8,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/server/api"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkmodule "github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/types/simulation"
@@ -17,7 +16,6 @@ import (
 
 	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/module"
-	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 )
 
 // Manager is the server module manager
@@ -25,7 +23,6 @@ type Manager struct {
 	baseApp                    *baseapp.BaseApp
 	cdc                        *codec.ProtoCodec
 	keys                       map[string]ModuleKey
-	modules                    []module.Module
 	router                     *router
 	requiredServices           map[reflect.Type]bool
 	initGenesisHandlers        map[string]module.InitGenesisHandler
@@ -66,21 +63,8 @@ func (mm *Manager) GetWeightedOperationsHandlers() []WeightedOperationsHandler {
 	return mm.weightedOperationsHandlers
 }
 
-// RegisterGRPCGatewayRoutes registers all module grpc-gateway routes
-func (mm *Manager) RegisterGRPCGatewayRoutes(apiSvr *api.Server) {
-	for _, m := range mm.modules {
-		// check if we actually have a grpc-gateway module, otherwise skip
-		serverMod, ok := m.(restmodule.Module)
-		if !ok {
-			continue
-		}
-		serverMod.RegisterGRPCGatewayRoutes(apiSvr.ClientCtx, apiSvr.GRPCGatewayRouter)
-	}
-}
-
 // RegisterModules registers modules with the Manager and registers their services.
 func (mm *Manager) RegisterModules(modules []module.Module) error {
-	mm.modules = append(mm.modules, modules...)
 	// First we register all interface types. This is done for all modules first before registering
 	// any services in case there are any weird dependencies that will cause service initialization to fail.
 	for _, mod := range modules {

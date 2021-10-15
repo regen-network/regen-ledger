@@ -1,8 +1,6 @@
 package orm
 
 import (
-	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -10,8 +8,8 @@ import (
 var _ Indexable = &PrimaryKeyTableBuilder{}
 
 // NewPrimaryKeyTableBuilder creates a builder to setup a PrimaryKeyTable object.
-func NewPrimaryKeyTableBuilder(prefixData byte, storeKey sdk.StoreKey, model PrimaryKeyed, codec IndexKeyCodec, cdc codec.Codec) (*PrimaryKeyTableBuilder, error) {
-	tableBuilder, err := newTableBuilder(prefixData, storeKey, model, codec, cdc)
+func NewPrimaryKeyTableBuilder(prefixData byte, storeKey sdk.StoreKey, model PrimaryKeyed, cdc codec.Codec) (*PrimaryKeyTableBuilder, error) {
+	tableBuilder, err := newTableBuilder(prefixData, storeKey, model, cdc)
 	if err != nil {
 		return nil, err
 	}
@@ -37,15 +35,10 @@ type PrimaryKeyed interface {
 	//
 	// PrimaryKey parts can be []byte, string, and integer types. []byte is
 	// encoded with a length prefix, strings are null-terminated, and
-	// integers are encoded using 4 or 8 byte big endian.
+	// integers are encoded using 8 byte big endian.
 	//
 	// IMPORTANT: []byte parts are encoded with a single byte length prefix,
 	// so cannot be longer than 255 bytes.
-	//
-	// The `IndexKeyCodec` used with the `PrimaryKeyTable` may add certain
-	// constraints to the byte representation as max length = 255 in
-	// `Max255DynamicLengthIndexKeyCodec` or a fix length in
-	// `FixLengthIndexKeyCodec` for example.
 	PrimaryKeyFields() []interface{}
 	codec.ProtoMarshaler
 }
@@ -54,67 +47,13 @@ type PrimaryKeyed interface {
 // The primary key has to be unique within it's domain so that not two with same
 // value can exist in the same table. This means PrimaryKeyFields() has to
 // return a unique value for each object.
-//
-// PrimaryKey parts can be []byte, string, and integer types. The function will panic if
-// it there is a part of any other type.
-// []byte is encoded with a length prefix, strings are null-terminated, and integers are
-// encoded using 4 or 8 byte big endian.
-// The function panics if obj.PrimaryKey contains an
 func PrimaryKey(obj PrimaryKeyed) []byte {
 	fields := obj.PrimaryKeyFields()
-	return buildPrimaryKey(fields)
-}
-
-// buildPrimaryKey encodes and concatenates the PrimaryKeyFields. See PrimaryKey
-// for full documentation of the encoding.
-// fields must have elements of type []byte, string or integer. If it contains other type
-// the the function will panic.
-func buildPrimaryKey(fields []interface{}) []byte {
-	bytesSlice := make([][]byte, len(fields))
-	totalLen := 0
-	for i, field := range fields {
-		bytesSlice[i] = primaryKeyFieldBytes(field)
-		totalLen += len(bytesSlice[i])
+	key, err := buildKeyFromParts(fields)
+	if err != nil {
+		panic(err)
 	}
-	primaryKey := make([]byte, 0, totalLen)
-	for _, bs := range bytesSlice {
-		primaryKey = append(primaryKey, bs...)
-	}
-	return primaryKey
-}
-
-func primaryKeyFieldBytes(field interface{}) []byte {
-	switch v := field.(type) {
-	case []byte:
-		return AddLengthPrefix(v)
-	case string:
-		return NullTerminatedBytes(v)
-	case uint64:
-		return EncodeSequence(v)
-	default:
-		panic(fmt.Sprintf("Type %T not allowed as primary key field", v))
-	}
-}
-
-// Prefix the byte array with its length as 8 bytes. The function will panic
-// if the bytes length is bigger than 255.
-func AddLengthPrefix(bytes []byte) []byte {
-	byteLen := len(bytes)
-	if byteLen > 255 {
-		panic("Cannot create primary key with an []byte of length greater than 255 bytes. Try again with a smaller []byte.")
-	}
-
-	prefixedBytes := make([]byte, 1+len(bytes))
-	copy(prefixedBytes, []byte{uint8(byteLen)})
-	copy(prefixedBytes[1:], bytes)
-	return prefixedBytes
-}
-
-// Convert string to byte array and null terminate it
-func NullTerminatedBytes(s string) []byte {
-	bytes := make([]byte, len(s)+1)
-	copy(bytes, s)
-	return bytes
+	return key
 }
 
 var _ TableExportable = &PrimaryKeyTable{}
