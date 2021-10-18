@@ -142,7 +142,11 @@ func (p ThresholdDecisionPolicy) ValidateBasic() error {
 }
 
 func (g GroupMember) PrimaryKeyFields() []interface{} {
-	return []interface{}{ID(g.GroupId).Bytes(), g.Member.Address}
+	addr, err := sdk.AccAddressFromBech32(g.Member.Address)
+	if err != nil {
+		panic(err)
+	}
+	return []interface{}{g.GroupId, addr.Bytes()}
 }
 
 func (g GroupAccountInfo) PrimaryKeyFields() []interface{} {
@@ -150,7 +154,7 @@ func (g GroupAccountInfo) PrimaryKeyFields() []interface{} {
 	if err != nil {
 		panic(err)
 	}
-	return []interface{}{[]byte(addr)}
+	return []interface{}{addr.Bytes()}
 }
 
 var _ orm.Validateable = GroupAccountInfo{}
@@ -235,7 +239,11 @@ func (g GroupAccountInfo) UnpackInterfaces(unpacker codectypes.AnyUnpacker) erro
 }
 
 func (v Vote) PrimaryKeyFields() []interface{} {
-	return []interface{}{v.ProposalId, v.Voter}
+	addr, err := sdk.AccAddressFromBech32(v.Voter)
+	if err != nil {
+		panic(err)
+	}
+	return []interface{}{v.ProposalId, addr.Bytes()}
 }
 
 var _ orm.Validateable = Vote{}
