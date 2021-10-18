@@ -244,12 +244,12 @@ func TestGroupTotalWeightInvariant(t *testing.T) {
 	require.Equal(t, uint64(1), rowID)
 
 	// Group Member Table
-	groupMemberTableBuilder, err := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, key, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	groupMemberTableBuilder, err := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, key, &group.GroupMember{}, cdc)
 	require.NoError(t, err)
-	groupMemberByGroupIndex, err := orm.NewUInt64Index(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]uint64, error) {
+	groupMemberByGroupIndex, err := orm.NewIndex(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]interface{}, error) {
 		group := val.(*group.GroupMember).GroupId
-		return []uint64{group}, nil
-	})
+		return []interface{}{group}, nil
+	}, group.GroupMember{}.GroupId)
 	require.NoError(t, err)
 	groupMemberTable := groupMemberTableBuilder.Build()
 
@@ -321,12 +321,12 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 	groupTable := groupTableBuilder.Build()
 
 	// Group Account Table
-	groupAccountTableBuilder, err := orm.NewPrimaryKeyTableBuilder(GroupAccountTablePrefix, key, &group.GroupAccountInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	groupAccountTableBuilder, err := orm.NewPrimaryKeyTableBuilder(GroupAccountTablePrefix, key, &group.GroupAccountInfo{}, cdc)
 	require.NoError(t, err)
 	groupAccountTable := groupAccountTableBuilder.Build()
 
 	// Group Member Table
-	groupMemberTableBuilder, err := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, key, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	groupMemberTableBuilder, err := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, key, &group.GroupMember{}, cdc)
 	require.NoError(t, err)
 	groupMemberTable := groupMemberTableBuilder.Build()
 
@@ -336,11 +336,11 @@ func TestTallyVotesSumInvariant(t *testing.T) {
 	proposalTable := proposalTableBuilder.Build()
 
 	// Vote Table
-	voteTableBuilder, err := orm.NewPrimaryKeyTableBuilder(VoteTablePrefix, key, &group.Vote{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	voteTableBuilder, err := orm.NewPrimaryKeyTableBuilder(VoteTablePrefix, key, &group.Vote{}, cdc)
 	require.NoError(t, err)
-	voteByProposalIndex, err := orm.NewUInt64Index(voteTableBuilder, VoteByProposalIndexPrefix, func(value interface{}) ([]uint64, error) {
-		return []uint64{value.(*group.Vote).ProposalId}, nil
-	})
+	voteByProposalIndex, err := orm.NewIndex(voteTableBuilder, VoteByProposalIndexPrefix, func(value interface{}) ([]interface{}, error) {
+		return []interface{}{value.(*group.Vote).ProposalId}, nil
+	}, group.Vote{}.ProposalId)
 	require.NoError(t, err)
 	voteTable := voteTableBuilder.Build()
 

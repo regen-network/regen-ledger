@@ -25,7 +25,6 @@ func TestBuilder(t *testing.T) {
 		name        string
 		storeKey    sdk.StoreKey
 		model       codec.ProtoMarshaler
-		idxKeyCodec orm.IndexKeyCodec
 		expectErr   bool
 		expectedErr string
 	}{
@@ -33,7 +32,6 @@ func TestBuilder(t *testing.T) {
 			name:        "nil storeKey",
 			storeKey:    nil,
 			model:       &testdata.GroupInfo{},
-			idxKeyCodec: orm.Max255DynamicLengthIndexKeyCodec{},
 			expectErr:   true,
 			expectedErr: "StoreKey must not be nil",
 		},
@@ -41,29 +39,19 @@ func TestBuilder(t *testing.T) {
 			name:        "nil model",
 			storeKey:    storeKey,
 			model:       nil,
-			idxKeyCodec: orm.Max255DynamicLengthIndexKeyCodec{},
 			expectErr:   true,
 			expectedErr: "Model must not be nil",
 		},
 		{
-			name:        "nil idxKeyCodec",
-			storeKey:    storeKey,
-			model:       &testdata.GroupInfo{},
-			idxKeyCodec: nil,
-			expectErr:   true,
-			expectedErr: "IndexKeyCodec must not be nil",
-		},
-		{
-			name:        "all not nil",
-			storeKey:    storeKey,
-			model:       &testdata.GroupInfo{},
-			idxKeyCodec: orm.Max255DynamicLengthIndexKeyCodec{},
-			expectErr:   false,
+			name:      "all not nil",
+			storeKey:  storeKey,
+			model:     &testdata.GroupInfo{},
+			expectErr: false,
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			builder, err := orm.TestTableBuilder(0x1, tc.storeKey, tc.model, tc.idxKeyCodec, cdc)
+			builder, err := orm.TestTableBuilder(0x1, tc.storeKey, tc.model, cdc)
 			if tc.expectErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.expectedErr)
@@ -118,7 +106,7 @@ func TestCreate(t *testing.T) {
 
 			storeKey := sdk.NewKVStoreKey("test")
 			const anyPrefix = 0x10
-			tableBuilder, err := orm.TestTableBuilder(anyPrefix, storeKey, &testdata.GroupInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+			tableBuilder, err := orm.TestTableBuilder(anyPrefix, storeKey, &testdata.GroupInfo{}, cdc)
 			require.NoError(t, err)
 			myTable := tableBuilder.Build()
 
@@ -173,7 +161,7 @@ func TestUpdate(t *testing.T) {
 
 			storeKey := sdk.NewKVStoreKey("test")
 			const anyPrefix = 0x10
-			tableBuilder, err := orm.TestTableBuilder(anyPrefix, storeKey, &testdata.GroupInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+			tableBuilder, err := orm.TestTableBuilder(anyPrefix, storeKey, &testdata.GroupInfo{}, cdc)
 			require.NoError(t, err)
 			myTable := tableBuilder.Build()
 

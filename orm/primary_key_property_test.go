@@ -68,7 +68,6 @@ func (m *primaryKeyMachine) Init(t *rapid.T) {
 		testTablePrefix,
 		storeKey,
 		&testdata.GroupMember{},
-		orm.Max255DynamicLengthIndexKeyCodec{},
 		cdc,
 	)
 	require.NoError(t, err)

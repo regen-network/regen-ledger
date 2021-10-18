@@ -610,9 +610,6 @@ func (app *RegenApp) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIC
 	ModuleBasics.RegisterRESTRoutes(clientCtx, apiSvr.Router)
 	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
-	// Register `server.Manager` modules grpc-gateway routes with API server.
-	app.smm.RegisterGRPCGatewayRoutes(apiSvr)
-
 	// register swagger API from root so that other applications can override easily
 	if apiConfig.Swagger {
 		RegisterSwaggerAPI(clientCtx, apiSvr.Router)

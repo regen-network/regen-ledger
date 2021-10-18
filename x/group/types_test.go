@@ -199,12 +199,12 @@ func TestThresholdDecisionPolicyValidateBasic(t *testing.T) {
 }
 
 func TestVotePrimaryKey(t *testing.T) {
-	addr := []byte{0xff, 0xfe}
+	_, _, addr := testdata.KeyTestPubAddr()
 	v := Vote{
 		ProposalId: 1,
-		Voter:      string(addr[:]),
+		Voter:      addr.String(),
 	}
-	assert.Equal(t, []byte{0, 0, 0, 0, 0, 0, 0, 1, 0xff, 0xfe, 0}, orm.PrimaryKey(&v))
+	assert.Equal(t, append([]byte{0, 0, 0, 0, 0, 0, 0, 1}, addr.Bytes()...), orm.PrimaryKey(&v))
 }
 
 func TestGroupInfoValidation(t *testing.T) {
