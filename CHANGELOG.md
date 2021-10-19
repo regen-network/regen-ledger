@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.0.0-rc3](https://github.com/regen-network/regen-ledger/releases/tag/v2.0.0-rc3) - 2021-10-19
+
+### General
+
+#### Changed
+
+* [#587](https://github.com/regen-network/regen-ledger/pull/587) Update Go to v1.17.
+
+
 ## [v2.0.0-rc2](https://github.com/regen-network/regen-ledger/releases/tag/v2.0.0-rc2) - 2021-10-18
 
 ### General
