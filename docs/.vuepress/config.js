@@ -86,6 +86,13 @@ module.exports = {
           ]
         },
         {
+          title: 'Migrations',
+          collapsable: false,
+          children: [
+            '/migrations/v2.0-upgrade',
+          ]
+        },
+        {
           title: 'Regen Ledger',
           collapsable: false,
           children: [
