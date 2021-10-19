@@ -10,12 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### General
 
-* [#580](https://github.com/regen-network/regen-ledger/pull/580) Update SDK fork to v0.44.2-regen-1
+#### Added
+
 * [#538](https://github.com/regen-network/regen-ledger/pull/538) Add script for starting a local test node
 
-### Fixed
+#### Changed
 
-* (orm) [#525](https://github.com/regen-network/regen-ledger/pull/525) fix: ORM IndexKeyCodec
+* [#580](https://github.com/regen-network/regen-ledger/pull/580) Update SDK fork to v0.44.2-regen-1
+
+### ORM Package
+
+#### Fixed
+
+* (orm) [#525](https://github.com/regen-network/regen-ledger/pull/525) Fix IndexKeyCodec prefixing issue.
 
 ## [v2.0.0-rc1](https://github.com/regen-network/regen-ledger/releases/tag/v2.0.0-rc1) - 2021-09-30
 
