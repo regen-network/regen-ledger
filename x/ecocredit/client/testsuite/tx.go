@@ -269,6 +269,20 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			expectedErrMsg: "required flag(s) \"from\" not set",
 		},
 		{
+			name: "invalid creator",
+			args: append(
+				[]string{
+					s.testAccount.String(),
+					validCreditType,
+					validMetadata,
+					makeFlagFrom(s.testAccount.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr:      false,
+			expectedErrMsg: "not allowed to create credit classes",
+		},
+		{
 			name: "invalid credit type",
 			args: append(
 				[]string{
