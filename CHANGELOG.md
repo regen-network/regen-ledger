@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Fixed
 
 * [#386](https://github.com/regen-network/regen-ledger/pull/386) fix IBC proposal registration
+* [#592](https://github.com/regen-network/regen-ledger/pull/592) fixed `undefined` error msg for creating class
 
 ### `x/ecocredit`
 
