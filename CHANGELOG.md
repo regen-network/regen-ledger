@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### General
+
+#### Fixed
+
+* [#591](https://github.com/regen-network/regen-ledger/pull/591) Set credit class fee in upgrade handler
+
 ## [v2.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/v2.0.0-beta1) - 2021-08-19
 
 ### General
