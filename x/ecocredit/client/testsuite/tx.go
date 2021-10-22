@@ -62,7 +62,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 
 	val := s.network.Validators[0]
-	val1 := s.network.Validators[1]
 
 	// create an account for val
 	info, _, err := val.ClientCtx.Keyring.NewMnemonic("NewValidator0", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
@@ -72,7 +71,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	val.ClientCtx.Keyring.SavePubKey("throwaway", a1pub, hd.Secp256k1Type)
 
 	account := sdk.AccAddress(info.GetPubKey().Address())
-	for _, acc := range []sdk.AccAddress{account, val1.Address, a1} {
+	for _, acc := range []sdk.AccAddress{account, a1} {
 		_, err = banktestutil.MsgSendExec(
 			val.ClientCtx,
 			val.Address,
@@ -84,36 +83,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		s.Require().NoError(err)
 	}
 
-	// _, err = banktestutil.MsgSendExec(
-	// 	val.ClientCtx,
-	// 	val.Address,
-	// 	account,
-	// 	sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-	// 	fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-	// 	fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-	// )
-	// s.Require().NoError(err)
-
-	// _, err = banktestutil.MsgSendExec(
-	// 	val.ClientCtx,
-	// 	val.Address,
-	// 	val1.Address,
-	// 	sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-	// 	fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-	// 	fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-	// )
-	// s.Require().NoError(err)
-
-	// _, err = banktestutil.MsgSendExec(
-	// 	val.ClientCtx,
-	// 	val.Address,
-	// 	a1,
-	// 	sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-	// 	fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-	// 	fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-	// )
-	// s.Require().NoError(err)
-	s.testAccount = a1
+	s.testAccount = account
 
 	var commonFlags = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -290,20 +260,6 @@ func (s *IntegrationTestSuite) TestTxCreateClass() {
 			),
 			expectErr:      true,
 			expectedErrMsg: "required flag(s) \"from\" not set",
-		},
-		{
-			name: "invalid creator",
-			args: append(
-				[]string{
-					val1.Address.String(),
-					validCreditType,
-					validMetadata,
-					makeFlagFrom(val1.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      false,
-			expectedErrMsg: "not allowed to create credit classes",
 		},
 		{
 			name: "invalid credit type",
