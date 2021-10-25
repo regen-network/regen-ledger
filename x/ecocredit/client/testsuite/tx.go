@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"strings"
+	"testing"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -17,6 +18,7 @@ import (
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 )
@@ -40,6 +42,18 @@ const (
 )
 
 var validMetadataBytes = []byte{0x1}
+
+func RunCLITests(t *testing.T, cfg network.Config) {
+	suite.Run(t, NewIntegrationTestSuite(cfg))
+
+	// setup another cfg for testing ecocredit enabled class creators list.
+	genesisState := ecocredit.DefaultGenesisState()
+	genesisState.Params.AllowlistEnabled = true
+	bz, err := cfg.Codec.MarshalJSON(genesisState)
+	require.NoError(t, err)
+	cfg.GenesisState[ecocredit.ModuleName] = bz
+	suite.Run(t, NewAllowListEnabledTestSuite(cfg))
+}
 
 func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
 	return &IntegrationTestSuite{cfg: cfg}
@@ -71,26 +85,19 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	val.ClientCtx.Keyring.SavePubKey("throwaway", a1pub, hd.Secp256k1Type)
 
 	account := sdk.AccAddress(info.GetPubKey().Address())
-	_, err = banktestutil.MsgSendExec(
-		val.ClientCtx,
-		val.Address,
-		account,
-		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-	)
-	s.Require().NoError(err)
+	for _, acc := range []sdk.AccAddress{account, a1} {
+		_, err = banktestutil.MsgSendExec(
+			val.ClientCtx,
+			val.Address,
+			acc,
+			sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+			fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
+			fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+		)
+		s.Require().NoError(err)
+	}
 
-	_, err = banktestutil.MsgSendExec(
-		val.ClientCtx,
-		val.Address,
-		a1,
-		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
-		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
-		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
-	)
-	s.Require().NoError(err)
-	s.testAccount = a1
+	s.testAccount = account
 
 	var commonFlags = []string{
 		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
