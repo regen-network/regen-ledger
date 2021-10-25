@@ -28,6 +28,11 @@ func (s *AllowListEnabledTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 }
 
+func (s *AllowListEnabledTestSuite) TearDownSuite() {
+	s.T().Log("tearing down integration test suite")
+	s.network.Cleanup()
+}
+
 func (s *AllowListEnabledTestSuite) TestCreateClass() {
 	val := s.network.Validators[0]
 
