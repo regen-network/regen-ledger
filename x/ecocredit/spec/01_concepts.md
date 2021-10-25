@@ -1,7 +1,5 @@
 # Concepts
 
-![Ecocredit Components](./assets/types.png)
-
 ## Credit Class
 
 A credit class is the primary abstraction for ecosystem service credits and is defined by 5 attributes:
@@ -12,8 +10,6 @@ A credit class is the primary abstraction for ecosystem service credits and is d
 - **metadata**: A byte array (up to 256 bytes) which can be used to store small amounts of metadata, or a URI that points to an off-chain resource for querying more complete metadata information. This usually would include descriptive information about the credit class's acceptable methodologies for monitoring changes in ecological state.
 
 Once a new credit class is created, credits can be issued at-will in distinct batches by any address in the **issuer list** of the corresponding credit class.
-
-![Credit Class Roles](./assets/roles.png)
 
 ## Credit Type
 
@@ -56,3 +52,11 @@ Tradable credits are credits that can be transferred by the owner to another acc
 ## Retired Credits
 
 Retired credits are credits that cannot be transferred between accounts nor can they be unretired. Retired credits are equivalent to burned tokens with the exception that retired credits are actively tracked after being retired. Retiring a credit implies that the holder of a credit is “claiming” the credit as an offset. Credits can be retired upon issuance, retired upon transfer, and retired by the owner of the credits. The retirement location is required upon retirement.
+
+---
+
+![Ecocredit Types](./assets/types.png)
+
+![Credit Class Roles](./assets/roles.png)
+
+![Allowlist Params](./assets/params.png)
