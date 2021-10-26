@@ -131,7 +131,7 @@ func (t table) getOrCreateID(store KVStore, value []byte, create bool) (id []byt
 	// in cases where there are collisions
 
 	for i := t.minLen; ; i++ {
-		found, doesntExist := tryGetOrSetID(store, id, value, create)
+		found, doesntExist := tryGetOrSetIDIfNotFound(store, id, value, create)
 
 		if found {
 			return id, i - t.minLen
@@ -155,7 +155,7 @@ func (t table) getOrCreateID(store KVStore, value []byte, create bool) (id []byt
 		id = id[:t.bufLen]
 		n := binary.PutUvarint(id[preLen:], i)
 		id = id[:preLen+n]
-		found, doesntExist := tryGetOrSetID(store, id, value, create)
+		found, doesntExist := tryGetOrSetIDIfNotFound(store, id, value, create)
 
 		if found {
 			return id, t.hashLen + int(i) - t.minLen
@@ -167,7 +167,7 @@ func (t table) getOrCreateID(store KVStore, value []byte, create bool) (id []byt
 	}
 }
 
-func tryGetOrSetID(store KVStore, id, value []byte, create bool) (found, doesntExist bool) {
+func tryGetOrSetIDIfNotFound(store KVStore, id, value []byte, create bool) (found, doesntExist bool) {
 	bz := store.Get(id)
 
 	// id doesn't exist yet
@@ -176,6 +176,9 @@ func tryGetOrSetID(store KVStore, id, value []byte, create bool) (found, doesntE
 			store.Set(id, value)
 			return true, false
 		} else {
+			// doesntExist is true in the case when we're just trying to get an
+			// ID and not create it - this means there is no ID registered for
+			// this value
 			return false, true
 		}
 	}
