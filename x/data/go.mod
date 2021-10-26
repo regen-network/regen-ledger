@@ -13,6 +13,7 @@ require (
 	github.com/regen-network/regen-ledger/types v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.1.3
 	github.com/stretchr/testify v1.7.0
+	github.com/tendermint/tendermint v0.34.12 // indirect
 	google.golang.org/genproto v0.0.0-20210602131652-f16073e35f0c
 	google.golang.org/grpc v1.38.0
 )
