@@ -69,4 +69,4 @@ Source profile file:
 . ~/.profile
 ```
 
-You're now ready to set up a [full node](./running-a-full-node/) or a [validator node](./running-a-validator/).
+You're now ready to set up a [full node](./running-a-full-node.md) or a [validator node](./running-a-validator.md).

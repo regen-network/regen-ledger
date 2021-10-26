@@ -1,6 +1,6 @@
 # Running a Full Node
 
-This document provides instructions for running a full node for a [live network](./live-networks.html) (either Regen Mainnet or Regen Devnet).
+This document provides instructions for running a full node for a [live network](./live-networks.md) (either Regen Mainnet, Redwood Testnet, or Hambach Testnet).
 
 ## Prerequisites
 
@@ -10,7 +10,7 @@ In order to install the `cosmovisor` and `regen` binaries, you'll need the follo
 - Make `>=4`
 - Go `>=1.15`
 
-For more information (including hardware recommendations), see [Prerequisites](./prerequisites). 
+For more information (including hardware recommendations), see [Prerequisites](./prerequisites.md). 
 
 ## Install Regen
 
@@ -24,8 +24,6 @@ Change to the `regen-ledger` directory:
 cd regen-ledger
 ```
 
-<!-- TODO: add information about genesis binary and upgrade binaries -->
-
 Check out the version that the network launched with.
 
 *For Regen Mainnet:*
@@ -33,9 +31,14 @@ Check out the version that the network launched with.
 git checkout v1.0.0
 ```
 
-*For Regen Devnet:*
+*For Redwood Testnet:*
 ```
-git checkout v1.0.0-rc0
+git checkout v1.0.0
+```
+
+*For Hambach Testnet:*
+```
+git checkout v2.0.0-beta1
 ```
 
 Install the `regen` binary (the `EXPERIMENTAL` option enables experimental features).
@@ -45,7 +48,12 @@ Install the `regen` binary (the `EXPERIMENTAL` option enables experimental featu
 make install
 ```
 
-*For Regen Devnet:*
+*For Redwood Testnet:*
+```
+make install
+```
+
+*For Hambach Testnet:*
 ```
 EXPERIMENTAL=true make install
 ```
@@ -64,14 +72,19 @@ Create the configuration files and data directory by initializing the node. In t
 regen init [moniker] --chain-id regen-1
 ```
 
-*For Regen Devnet:*
+*For Redwood Testnet:*
 ```
-regen init [moniker] --chain-id regen-devnet-5
+regen init [moniker] --chain-id regen-redwood-1
+```
+
+*For Hambach Testnet:*
+```
+regen init [moniker] --chain-id regen-hambach-1
 ```
 
 ## Update Genesis
 
-Update the genesis file for either Regen Mainnet or Regen Devnet.
+Update the genesis file.
 
 <!-- TODO: update to use dedicated full node operated by RND -->
 
@@ -80,11 +93,14 @@ Update the genesis file for either Regen Mainnet or Regen Devnet.
 curl http://104.131.169.70:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
 
-<!-- TODO: update to use dedicated full node operated by RND -->
-
-*For Regen Devnet:*
+*For Redwood Testnet:*
 ```
-curl http://18.220.101.192:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
+curl http://redwood.regen.network:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
+```
+
+*For Hambach Testnet:*
+```
+curl http://hambach.regen.network:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
 
 ## Update Peers
@@ -99,11 +115,15 @@ PERSISTENT_PEERS="69975e7afdf731a165e40449fcffc75167a084fc@104.131.169.70:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
-<!-- TODO: update to use dedicated full node operated by RND -->
-
-*For Regen Devnet:*
+*For Redwood Testnet:*
 ```
-PERSISTENT_PEERS="b2679a74d6bd9f89a3c294c447d6930293255e6b@18.220.101.192:26656"
+PERSISTENT_PEERS="a5528d8f5fabd3d50e91e8d6a97e355403c5b842@redwood.regen.network:26656"
+sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
+```
+
+*For Hambach Testnet:*
+```
+PERSISTENT_PEERS="4f5c0be7705bf4acb5b99dcaf93190059ac283a1@hambach.regen.network:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
