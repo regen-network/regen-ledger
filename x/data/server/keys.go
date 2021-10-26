@@ -3,10 +3,10 @@ package server
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 const (
-	IriIDTablePrefix      byte = 0x0
-	AnchorTimestampPrefix byte = 0x1
-	IDSignerPrefix        byte = 0x2
-	SignerIDPrefix        byte = 0x2
+	IriIDTablePrefix byte = iota
+	AnchorTimestampPrefix
+	IDSignerPrefix
+	SignerIDPrefix
 )
 
 func AnchorTimestampKey(id []byte) []byte {
