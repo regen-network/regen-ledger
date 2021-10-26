@@ -57,17 +57,20 @@ First, you'll need to install the `regen` binary. For installation instructions,
 In order to interact with a node from a live network, you'll need to provide a `--node` flag with a valid node address to your commands. Before submitting any queries or transactions, you should first check the status of the node using the `status` command.
 
 To check the status of the Regen Mainnet node provided above, run the following command:
-```
+
+```bash
 regen status --node http://104.131.169.70:26657
 ```
 
 To check the status of the Redwood Testnet node provided above, run the following command:
-```
+
+```bash
 regen status --node http://redwood.regen.network:26657
 ```
 
 To check the status of the Hambach Testnet node provided above, run the following command:
-```
+
+```bash
 regen status --node http://hambach.regen.network:26657
 ```
 
