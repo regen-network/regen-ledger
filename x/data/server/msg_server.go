@@ -3,6 +3,8 @@ package server
 import (
 	"context"
 
+	"github.com/gogo/protobuf/proto"
+
 	types2 "github.com/cosmos/cosmos-sdk/types"
 
 	gogotypes "github.com/gogo/protobuf/types"
@@ -51,15 +53,21 @@ func (s serverImpl) anchor(ctx sdk.Context, id []byte, iri string) (*gogotypes.T
 		return nil, err
 	}
 
-	bz, err := timestamp.Marshal()
-	if err != nil {
-		return nil, err
-	}
-
 	store := ctx.KVStore(s.storeKey)
 	key := AnchorTimestampKey(id)
-	if store.Has(key) {
+	bz := store.Get(key)
+	if len(bz) != 0 {
+		err = proto.Unmarshal(bz, timestamp)
+		if err != nil {
+			return nil, err
+		}
+
 		return timestamp, nil
+	}
+
+	bz, err = proto.Marshal(timestamp)
+	if err != nil {
+		return nil, err
 	}
 
 	store.Set(key, bz)
