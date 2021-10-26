@@ -18,12 +18,15 @@ var _ data.MsgServer = serverImpl{}
 
 func (s serverImpl) AnchorData(goCtx context.Context, request *data.MsgAnchorData) (*data.MsgAnchorDataResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	_, _, _, err := s.getIRIAndAnchor(ctx, request.Hash)
+	iri, _, timestamp, err := s.getIRIAndAnchor(ctx, request.Hash)
 	if err != nil {
 		return nil, err
 	}
 
-	return &data.MsgAnchorDataResponse{}, nil
+	return &data.MsgAnchorDataResponse{
+		Timestamp: timestamp,
+		Iri:       iri,
+	}, nil
 }
 
 type ToIRI interface {
