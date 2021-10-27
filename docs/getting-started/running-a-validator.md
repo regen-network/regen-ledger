@@ -12,54 +12,71 @@ In order to install the `cosmovisor` and `regen` binaries, you'll need the follo
 
 For more information (including hardware recommendations), see [Prerequisites](./prerequisites.md). 
 
+## Quickstart
+
+If you would like to manually set up a validator node, skip to the [next section](#install-regen). Alternatively, you can run the following quickstart script:
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/regen-network/mainnet/blob/main/scripts/mainnet-val-setup.sh)
+```
+
 ## Install Regen
 
 Clone the `regen-ledger` repository:
-```
+
+```bash
 git clone https://github.com/regen-network/regen-ledger
 ```
 
 Change to the `regen-ledger` directory:
-```
+
+```bash
 cd regen-ledger
 ```
 
 Check out the version that the network launched with.
 
 *For Regen Mainnet:*
-```
+
+```bash
 git checkout v1.0.0
 ```
 
 *For Redwood Testnet:*
-```
+
+```bash
 git checkout v1.0.0
 ```
 
 *For Hambach Testnet:*
-```
+
+```bash
 git checkout v2.0.0-beta1
 ```
 
 Install the `regen` binary (the `EXPERIMENTAL` option enables experimental features).
 
 *For Regen Mainnet:*
-```
+
+```bash
 make install
 ```
 
 *For Redwood Testnet:*
-```
+
+```bash
 make install
 ```
 
 *For Hambach Testnet:*
-```
+
+```bash
 EXPERIMENTAL=true make install
 ```
 
 Check to ensure the install was successful:
-```
+
+```bash
 regen version
 ```
 
@@ -68,17 +85,20 @@ regen version
 Create the configuration files and data directory by initializing the node. In the following command, replace `[moniker]` with a name of your choice. 
 
 *For Regen Mainnet:*
-```
+
+```bash
 regen init [moniker] --chain-id regen-1
 ```
 
 *For Redwood Testnet:*
-```
+
+```bash
 regen init [moniker] --chain-id regen-redwood-1
 ```
 
 *For Hambach Testnet:*
-```
+
+```bash
 regen init [moniker] --chain-id regen-hambach-1
 ```
 
@@ -89,17 +109,20 @@ Update the genesis file using a node endpoint.
 <!-- TODO: update to use dedicated full node operated by RND -->
 
 *For Regen Mainnet:*
-```
+
+```bash
 curl http://104.131.169.70:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
 
 *For Redwood Testnet:*
-```
+
+```bash
 curl http://redwood.regen.network:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
 
 *For Hambach Testnet:*
-```
+
+```bash
 curl http://hambach.regen.network:26657/genesis | jq .result.genesis > ~/.regen/config/genesis.json
 ```
 
@@ -110,19 +133,22 @@ Add a seed node for initial peer discovery.
 <!-- TODO: update to use dedicated full node operated by RND -->
 
 *For Regen Mainnet:*
-```
+
+```bash
 PERSISTENT_PEERS="69975e7afdf731a165e40449fcffc75167a084fc@104.131.169.70:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
 *For Redwood Testnet:*
-```
+
+```bash
 PERSISTENT_PEERS="a5528d8f5fabd3d50e91e8d6a97e355403c5b842@redwood.regen.network:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
 
 *For Hambach Testnet:*
-```
+
+```bash
 PERSISTENT_PEERS="4f5c0be7705bf4acb5b99dcaf93190059ac283a1@hambach.regen.network:26656"
 sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.regen/config/config.toml
 ```
@@ -132,19 +158,22 @@ sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.reg
 [Cosmovisor](https://github.com/cosmos/cosmos-sdk/tree/master/cosmovisor) is a process manager for running application binaries. Using Cosmovisor is not required but recommended for node operators that would like to automate the upgrade process.
 
 To install `cosmovisor`, run the following command:
-```
+
+```bash
 go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0
 ```
 
 Check to ensure the install was successful:
-```
+
+```bash
 cosmovisor version
 ```
 
 ## Set Genesis Binary
 
 Create the folder for the genesis binary and copy the `regen` binary:
-```
+
+```bash
 mkdir -p $HOME/.regen/cosmovisor/genesis/bin
 cp $GOBIN/regen $HOME/.regen/cosmovisor/genesis/bin
 ```
@@ -158,7 +187,8 @@ You'll want to carefully consider the options you set when configuring cosmoviso
 :::
 
 Create the `cosmovisor.service` file:
-```
+
+```bash
 echo "[Unit]
 Description=Cosmovisor daemon
 After=network-online.target
@@ -178,18 +208,21 @@ WantedBy=multi-user.target
 ```
 
 Move the file to the systemd directory:
-```
+
+```bash
 sudo mv cosmovisor.service /lib/systemd/system/cosmovisor.service
 ```
 
 Reload systemctl and start `cosmovisor`:
-```
+
+```bash
 sudo systemctl daemon-reload
 sudo systemctl start cosmovisor
 ```
 
 Check the status of the `cosmovisor` service:
-```
+
+```bash
 sudo systemctl status cosmovisor
 ```
 
@@ -197,7 +230,7 @@ sudo systemctl status cosmovisor
 
 As a validator who signs blocks, your node must have a public/private key pair. Regen Ledger keys can be managed with the `regen keys` subcommand. A new key pair can be generated using:
 
-```
+```bash
 regen keys add [name]
 ```
 
@@ -217,7 +250,7 @@ You'll want to carefully consider the options you set when creating a validator.
 
 Submit a transaction to create a validator:
 
-```
+```bash
 regen tx staking create-validator \
   --amount=<stake_amount> \
   --pubkey=$(regen tendermint show-validator) \
