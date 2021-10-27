@@ -8,7 +8,7 @@ In order to install the `cosmovisor` and `regen` binaries, you'll need the follo
 
 - Git `>=2`
 - Make `>=4`
-- Go `>=1.15`
+- Go `>=1.17`
 
 For more information (including hardware recommendations), see [Prerequisites](./prerequisites.md). 
 
@@ -133,7 +133,7 @@ sed -i '/persistent_peers =/c\persistent_peers = "'"$PERSISTENT_PEERS"'"' ~/.reg
 
 To install `cosmovisor`, run the following command:
 ```
-go get github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor
+go install github.com/cosmos/cosmos-sdk/cosmovisor/cmd/cosmovisor@v1.0
 ```
 
 Check to ensure the install was successful:
@@ -166,7 +166,7 @@ After=network-online.target
 Environment="DAEMON_NAME=regen"
 Environment="DAEMON_HOME=${HOME}/.regen"
 Environment="DAEMON_RESTART_AFTER_UPGRADE=true"
-Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=true"
+Environment="DAEMON_ALLOW_DOWNLOAD_BINARIES=false"
 User=${USER}
 ExecStart=${GOBIN}/cosmovisor start
 Restart=always
