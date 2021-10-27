@@ -415,7 +415,7 @@ Parameters:
 			}
 
 			msg := ecocredit.MsgUpdateClassMetadata{
-				Admin:    clientCtx.From,
+				Admin:    clientCtx.GetFromAddress().String(),
 				ClassId:  classID,
 				Metadata: b,
 			}
@@ -455,7 +455,7 @@ Parameters:
 			}
 
 			msg := ecocredit.MsgUpdateClassAdmin{
-				Admin:    clientCtx.From,
+				Admin:    clientCtx.GetFromAddress().String(),
 				ClassId:  classID,
 				NewAdmin: newAdmin,
 			}
@@ -495,7 +495,7 @@ Parameters:
 			}
 
 			msg := ecocredit.MsgUpdateClassIssuers{
-				Admin:   clientCtx.From,
+				Admin:   clientCtx.GetFromAddress().String(),
 				ClassId: classID,
 				Issuers: issuers,
 			}
