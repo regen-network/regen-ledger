@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Fixed
 
 * [#591](https://github.com/regen-network/regen-ledger/pull/591) Set credit class fee in upgrade handler
-* [#592](https://github.com/regen-network/regen-ledger/pull/592) fixed `undefined` error msg for creating class
+* [#592](https://github.com/regen-network/regen-ledger/pull/592) Fix `undefined` error message when creating a credit class
 
 ## [v2.0.0-rc3](https://github.com/regen-network/regen-ledger/releases/tag/v2.0.0-rc3) - 2021-10-19
 
