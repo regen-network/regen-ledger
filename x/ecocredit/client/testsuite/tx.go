@@ -1196,6 +1196,11 @@ func (s *IntegrationTestSuite) TestTxUpdateAdmin() {
 			args:   append([]string{classId, a1.String(), makeFlagFrom(val0.Address.String())}, s.commonTxFlags()...),
 			expErr: false,
 		},
+		{
+			name:   "valid test: from key-name",
+			args:   append([]string{classId, a1.String(), makeFlagFrom("node0")}, s.commonTxFlags()...),
+			expErr: false,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -1265,6 +1270,11 @@ func (s *IntegrationTestSuite) TestTxUpdateMetadata() {
 			args:   append([]string{classId, newMetaData, makeFlagFrom(val0.Address.String())}, s.commonTxFlags()...),
 			expErr: false,
 		},
+		{
+			name:   "valid test: from key-name",
+			args:   append([]string{classId, newMetaData, makeFlagFrom("node0")}, s.commonTxFlags()...),
+			expErr: false,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -1327,6 +1337,11 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 		{
 			name:   "valid request",
 			args:   append([]string{classId, fmt.Sprintf("%s,%s", newIssuers[0], newIssuers[1]), makeFlagFrom(val0.Address.String())}, s.commonTxFlags()...),
+			expErr: false,
+		},
+		{
+			name:   "valid test: from key-name",
+			args:   append([]string{classId, fmt.Sprintf("%s,%s", newIssuers[0], newIssuers[1]), makeFlagFrom("node0")}, s.commonTxFlags()...),
 			expErr: false,
 		},
 	}
