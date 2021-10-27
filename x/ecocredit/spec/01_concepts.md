@@ -52,3 +52,11 @@ Tradable credits are credits that can be transferred by the owner to another acc
 ## Retired Credits
 
 Retired credits are credits that cannot be transferred between accounts nor can they be unretired. Retired credits are equivalent to burned tokens with the exception that retired credits are actively tracked after being retired. Retiring a credit implies that the holder of a credit is “claiming” the credit as an offset. Credits can be retired upon issuance, retired upon transfer, and retired by the owner of the credits. The retirement location is required upon retirement.
+
+---
+
+![Ecocredit Types](./assets/types.png)
+
+![Credit Class Roles](./assets/roles.png)
+
+![Allowlist Params](./assets/params.png)
