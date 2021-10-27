@@ -10,7 +10,7 @@ In order to install the `regen` binary, you'll need the following:
 
 - Git `>=2`
 - Make `>=4`
-- Go `>=1.15`
+- Go `>=1.17`
 
 For more information, see [Prerequisites](prerequisites.md). 
 
