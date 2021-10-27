@@ -1,4 +1,6 @@
+//go:build !experimental
 // +build !experimental
+
 // DONTCOVER
 
 package app
@@ -76,6 +78,7 @@ func (app *RegenApp) registerUpgradeHandlers() {
 
 		gen := ecocredittypes.DefaultGenesisState()
 		gen.Params.AllowlistEnabled = true
+		gen.Params.CreditClassFee = sdk.NewCoins(sdk.NewCoin("uregen", ecocredittypes.DefaultCreditClassFeeTokens))
 
 		modules := make(map[string]json.RawMessage)
 		modules[ecocredittypes.ModuleName] = app.cdc.MustMarshalJSON(gen)
