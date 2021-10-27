@@ -1164,6 +1164,7 @@ func (s *IntegrationTestSuite) TestTxUpdateAdmin() {
 	// use this classId as to not corrupt other tests
 	const classId = "C02"
 	_, _, a1 := testdata.KeyTestPubAddr()
+	_, _, a2 := testdata.KeyTestPubAddr()
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
 
@@ -1198,7 +1199,7 @@ func (s *IntegrationTestSuite) TestTxUpdateAdmin() {
 		},
 		{
 			name:   "valid test: from key-name",
-			args:   append([]string{classId, val0.Address.String(), makeFlagFrom("node0")}, s.commonTxFlags()...),
+			args:   append([]string{classId, a2.String(), makeFlagFrom("node0")}, s.commonTxFlags()...),
 			expErr: false,
 		},
 	}
