@@ -1,4 +1,6 @@
+//go:build experimental
 // +build experimental
+
 // DONTCOVER
 
 package app

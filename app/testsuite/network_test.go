@@ -1,3 +1,4 @@
+//go:build norace
 // +build norace
 
 package testsuite_test

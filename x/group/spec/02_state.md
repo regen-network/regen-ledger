@@ -7,7 +7,7 @@ Here's the list of tables and associated sequences and indexes stored as part of
 
 ## Group Table
 
-The `groupTable` stores `GroupInfo`: `0x0 | []byte(GroupId) -> ProtocolBuffer(GroupInfo)`.
+The `groupTable` stores `GroupInfo`: `0x0 | BigEndian(GroupId) -> ProtocolBuffer(GroupInfo)`.
 
 ### groupSeq
 
@@ -18,31 +18,31 @@ The second `0x1` corresponds to the ORM `sequenceStorageKey`.
 ### groupByAdminIndex
 
 `groupByAdminIndex` allows to retrieve groups by admin address:
-`0x2 | []byte(group.Admin) | []byte(GroupId) -> []byte()`.
+`0x2 | len([]byte(group.Admin)) | []byte(group.Admin) | BigEndian(GroupId) -> []byte()`.
 
 ## Group Member Table
 
-The `groupMemberTable` stores `GroupMember`s: `0x10 | []byte(GroupId) | []byte(member.Address) -> ProtocolBuffer(GroupMember)`.
+The `groupMemberTable` stores `GroupMember`s: `0x10 | BigEndian(GroupId) | []byte(member.Address) -> ProtocolBuffer(GroupMember)`.
 
 The `groupMemberTable` is a primary key table and its `PrimaryKey` is given by
-`[]byte(GroupId) | []byte(member.Address)` which is used by the following indexes.
+`BigEndian(GroupId) | []byte(member.Address)` which is used by the following indexes.
 
 ### groupMemberByGroupIndex
 
 `groupMemberByGroupIndex` allows to retrieve group members by group id:
-`0x11 | []byte(GroupId) | PrimaryKey | byte(len(PrimaryKey)) -> []byte()`.
+`0x11 | BigEndian(GroupId) | PrimaryKey -> []byte()`.
 
 ### groupMemberByMemberIndex
 
 `groupMemberByMemberIndex` allows to retrieve group members by member address:
-`0x12 | []byte(member.Address) | PrimaryKey | byte(len(PrimaryKey)) -> []byte()`.
+`0x12 | len([]byte(member.Address)) | []byte(member.Address) | PrimaryKey -> []byte()`.
 
 ## Group Account Table
 
-The `groupAccountTable` stores `GroupAccountInfo`: `0x20 | []byte(Address) -> ProtocolBuffer(GroupAccountInfo)`.
+The `groupAccountTable` stores `GroupAccountInfo`: `0x20 | len([]byte(Address)) | []byte(Address) -> ProtocolBuffer(GroupAccountInfo)`.
 
 The `groupAccountTable` is a primary key table and its `PrimaryKey` is given by
-`[]byte(Address)` which is used by the following indexes.
+`len([]byte(Address)) | []byte(Address)` which is used by the following indexes.
 
 ### groupAccountSeq
 
@@ -54,16 +54,16 @@ The second `0x1` corresponds to the ORM `sequenceStorageKey`.
 ### groupAccountByGroupIndex
 
 `groupAccountByGroupIndex` allows to retrieve group accounts by group id:
-`0x22 | []byte(GroupId) | PrimaryKey | byte(len(PrimaryKey)) -> []byte()`.
+`0x22 | BigEndian(GroupId) | PrimaryKey -> []byte()`.
 
 ### groupAccountByAdminIndex
 
 `groupAccountByAdminIndex` allows to retrieve group accounts by admin address:
-`0x23 | []byte(Address) | PrimaryKey | byte(len(PrimaryKey)) -> []byte()`.
+`0x23 | len([]byte(Address)) | []byte(Address) | PrimaryKey -> []byte()`.
 
 ## Proposal Table
 
-The `proposalTable` stores `Proposal`s: `0x30 | []byte(ProposalId) -> ProtocolBuffer(Proposal)`.
+The `proposalTable` stores `Proposal`s: `0x30 | BigEndian(ProposalId) -> ProtocolBuffer(Proposal)`.
 
 ### proposalSeq
 
@@ -74,27 +74,27 @@ The second `0x1` corresponds to the ORM `sequenceStorageKey`.
 ### proposalByGroupAccountIndex
 
 `proposalByGroupAccountIndex` allows to retrieve proposals by group account address:
-`0x32 | []byte(account.Address) | []byte(ProposalId) -> []byte()`.
+`0x32 | len([]byte(account.Address)) | []byte(account.Address) | BigEndian(ProposalId) -> []byte()`.
 
 ### proposalByProposerIndex
 
 `proposalByProposerIndex` allows to retrieve proposals by proposer address:
-`0x33 | []byte(proposer.Address) | []byte(ProposalId) -> []byte()`.
+`0x33 | len([]byte(proposer.Address)) |  []byte(proposer.Address) | BigEndian(ProposalId) -> []byte()`.
 
 ## Vote Table
 
-The `voteTable` stores `Vote`s: `0x40 | []byte(ProposalId) | []byte(voter.Address) -> ProtocolBuffer(Vote)`.
+The `voteTable` stores `Vote`s: `0x40 | BigEndian(ProposalId) | []byte(voter.Address) -> ProtocolBuffer(Vote)`.
 
 The `voteTable` is a primary key table and its `PrimaryKey` is given by
-`[]byte(ProposalId) | []byte(voter.Address)` which is used by the following indexes.
+`BigEndian(ProposalId) | []byte(voter.Address)` which is used by the following indexes.
 
 ### voteByProposalIndex
 
 `voteByProposalIndex` allows to retrieve votes by proposal id:
-`0x41 | []byte(ProposalId) | PrimaryKey | byte(len(PrimaryKey)) -> []byte()`.
+`0x41 | BigEndian(ProposalId) | PrimaryKey -> []byte()`.
 
 ### voteByVoterIndex
 
 `voteByVoterIndex` allows to retrieve votes by voter address:
-`0x42 | []byte(voter.Address) | PrimaryKey | byte(len(PrimaryKey)) -> []byte()`.
+`0x42 | len([]byte(voter.Address)) | []byte(voter.Address) | PrimaryKey -> []byte()`.
 

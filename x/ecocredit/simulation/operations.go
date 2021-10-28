@@ -20,11 +20,14 @@ import (
 
 // Simulation operation weights constants
 const (
-	OpWeightMsgCreateClass = "op_weight_msg_create_class"
-	OpWeightMsgCreateBatch = "op_weight_msg_create_batch"
-	OpWeightMsgSend        = "op_weight_msg_send"
-	OpWeightMsgRetire      = "op_weight_msg_retire"
-	OpWeightMsgCancel      = "op_weight_msg_cancel"
+	OpWeightMsgCreateClass         = "op_weight_msg_create_class"
+	OpWeightMsgCreateBatch         = "op_weight_msg_create_batch"
+	OpWeightMsgSend                = "op_weight_msg_send"
+	OpWeightMsgRetire              = "op_weight_msg_retire"
+	OpWeightMsgCancel              = "op_weight_msg_cancel"
+	OpWeightMsgUpdateClassAdmin    = "op_weight_msg_update_class_admin"
+	OpWeightMsgUpdateClassMetadata = "op_weight_msg_update_class_metadata"
+	OpWeightMsgUpdateClassIssuers  = "op_weight_msg_update_class_issuers"
 )
 
 // ecocredit operations weights
@@ -34,15 +37,19 @@ const (
 	WeightSend        = 100
 	WeightRetire      = 80
 	WeightCancel      = 30
+	WeightUpdateClass = 30
 )
 
 // ecocredit message types
 var (
-	TypeMsgCreateClass = sdk.MsgTypeURL(&ecocredit.MsgCreateClass{})
-	TypeMsgCreateBatch = sdk.MsgTypeURL(&ecocredit.MsgCreateBatch{})
-	TypeMsgSend        = sdk.MsgTypeURL(&ecocredit.MsgSend{})
-	TypeMsgRetire      = sdk.MsgTypeURL(&ecocredit.MsgRetire{})
-	TypeMsgCancel      = sdk.MsgTypeURL(&ecocredit.MsgCancel{})
+	TypeMsgCreateClass         = sdk.MsgTypeURL(&ecocredit.MsgCreateClass{})
+	TypeMsgCreateBatch         = sdk.MsgTypeURL(&ecocredit.MsgCreateBatch{})
+	TypeMsgSend                = sdk.MsgTypeURL(&ecocredit.MsgSend{})
+	TypeMsgRetire              = sdk.MsgTypeURL(&ecocredit.MsgRetire{})
+	TypeMsgCancel              = sdk.MsgTypeURL(&ecocredit.MsgCancel{})
+	TypeMsgUpdateClassAdmin    = sdk.MsgTypeURL(&ecocredit.MsgUpdateClassAdmin{})
+	TypeMsgUpdateClassIssuers  = sdk.MsgTypeURL(&ecocredit.MsgUpdateClassIssuers{})
+	TypeMsgUpdateClassMetadata = sdk.MsgTypeURL(&ecocredit.MsgUpdateClassMetadata{})
 )
 
 // WeightedOperations returns all the operations from the module with their respective weights
@@ -51,11 +58,14 @@ func WeightedOperations(
 	ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper, qryClient ecocredit.QueryClient) simulation.WeightedOperations {
 
 	var (
-		weightMsgCreateClass int
-		weightMsgCreateBatch int
-		weightMsgSend        int
-		weightMsgRetire      int
-		weightMsgCancel      int
+		weightMsgCreateClass         int
+		weightMsgCreateBatch         int
+		weightMsgSend                int
+		weightMsgRetire              int
+		weightMsgCancel              int
+		weightMsgUpdateClassAdmin    int
+		weightMsgUpdateClassIssuers  int
+		weightMsgUpdateClassMetadata int
 	)
 
 	appParams.GetOrGenerate(cdc, OpWeightMsgCreateClass, &weightMsgCreateClass, nil,
@@ -88,6 +98,24 @@ func WeightedOperations(
 		},
 	)
 
+	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateClassAdmin, &weightMsgUpdateClassAdmin, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateClassAdmin = WeightUpdateClass
+		},
+	)
+
+	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateClassIssuers, &weightMsgUpdateClassIssuers, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateClassIssuers = WeightUpdateClass
+		},
+	)
+
+	appParams.GetOrGenerate(cdc, OpWeightMsgUpdateClassMetadata, &weightMsgUpdateClassMetadata, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateClassMetadata = WeightUpdateClass
+		},
+	)
+
 	return simulation.WeightedOperations{
 		simulation.NewWeightedOperation(
 			weightMsgCreateClass,
@@ -108,6 +136,18 @@ func WeightedOperations(
 		simulation.NewWeightedOperation(
 			weightMsgCancel,
 			SimulateMsgCancel(ak, bk, qryClient),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgUpdateClassAdmin,
+			SimulateMsgUpdateClassAdmin(ak, bk, qryClient),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgUpdateClassIssuers,
+			SimulateMsgUpdateClassIssuers(ak, bk, qryClient),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgUpdateClassMetadata,
+			SimulateMsgUpdateClassMetadata(ak, bk, qryClient),
 		),
 	}
 }
@@ -349,7 +389,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		tradableBalance, err := math.NewNonNegativeDecFromString(balanceRes.TradableAmount)
 		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgSend, err.Error()), nil, err
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRetire, err.Error()), nil, err
 		}
 
 		if tradableBalance.IsZero() {
@@ -357,16 +397,10 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		randSub := math.NewDecFromInt64(int64(simtypes.RandIntBetween(r, 1, 10)))
-		addr, err := sdk.AccAddressFromBech32(batch.Issuer)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRetire, err.Error()), nil, err
+		spendable, account, op, err := getAccountAndSpendableCoins(sdkCtx, bk, accs, batch.Issuer, TypeMsgRetire)
+		if spendable == nil {
+			return op, nil, err
 		}
-
-		holder, found := simtypes.FindAccount(accs, addr)
-		if !found {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRetire, "account not found"), nil, nil
-		}
-		spendable := bk.SpendableCoins(sdkCtx, holder.Address)
 
 		if !spendable.IsAllPositive() {
 			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgRetire, "insufficient funds"), nil, nil
@@ -377,7 +411,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		msg := &ecocredit.MsgRetire{
-			Holder: holder.Address.String(),
+			Holder: account.Address.String(),
 			Credits: []*ecocredit.MsgRetire_RetireCredits{
 				{
 					BatchDenom: batch.BatchDenom,
@@ -395,7 +429,7 @@ func SimulateMsgRetire(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Msg:             msg,
 			MsgType:         msg.Type(),
 			Context:         sdkCtx,
-			SimAccount:      holder,
+			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
 			ModuleName:      ecocredit.ModuleName,
@@ -424,14 +458,9 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			return op, nil, err
 		}
 
-		addr, err := sdk.AccAddressFromBech32(batch.Issuer)
-		if err != nil {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancel, err.Error()), nil, err
-		}
-
-		acc, found := simtypes.FindAccount(accs, addr)
-		if !found {
-			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgCancel, "account not found"), nil, nil
+		spendable, account, op, err := getAccountAndSpendableCoins(sdkCtx, bk, accs, batch.Issuer, TypeMsgCancel)
+		if spendable == nil {
+			return op, nil, err
 		}
 
 		balanceRes, err := qryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{
@@ -461,7 +490,6 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			},
 		}
 
-		spendable := bk.SpendableCoins(sdkCtx, acc.Address)
 		txCtx := simulation.OperationInput{
 			R:               r,
 			App:             app,
@@ -470,7 +498,7 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 			Msg:             msg,
 			MsgType:         msg.Type(),
 			Context:         sdkCtx,
-			SimAccount:      acc,
+			SimAccount:      *account,
 			AccountKeeper:   ak,
 			Bankkeeper:      bk,
 			ModuleName:      ecocredit.ModuleName,
@@ -479,6 +507,155 @@ func SimulateMsgCancel(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 
 		return GenAndDeliverTxWithRandFees(txCtx)
 	}
+}
+
+// SimulateMsgUpdateClassAdmin generates a MsgUpdateClassAdmin with random values
+func SimulateMsgUpdateClassAdmin(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	qryClient ecocredit.QueryClient) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		ctx := regentypes.Context{Context: sdkCtx}
+		class, op, err := getRandomClass(ctx, r, qryClient, TypeMsgUpdateClassAdmin)
+		if class == nil {
+			return op, nil, err
+		}
+
+		spendable, account, op, err := getAccountAndSpendableCoins(sdkCtx, bk, accs, class.Admin, TypeMsgUpdateClassAdmin)
+		if spendable == nil {
+			return op, nil, err
+		}
+
+		newAdmin, _ := simtypes.RandomAcc(r, accs)
+		if newAdmin.Address.String() == class.Admin {
+			return simtypes.NoOpMsg(ecocredit.ModuleName, TypeMsgUpdateClassAdmin, "same account"), nil, nil // skip
+		}
+
+		msg := &ecocredit.MsgUpdateClassAdmin{
+			Admin:    class.Admin,
+			ClassId:  class.ClassId,
+			NewAdmin: newAdmin.Address.String(),
+		}
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      *account,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
+		}
+
+		return GenAndDeliverTxWithRandFees(txCtx)
+	}
+}
+
+// SimulateMsgUpdateClassMetadata generates a MsgUpdateClassMetadata with random metadata
+func SimulateMsgUpdateClassMetadata(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	qryClient ecocredit.QueryClient) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		ctx := regentypes.Context{Context: sdkCtx}
+		class, op, err := getRandomClass(ctx, r, qryClient, TypeMsgUpdateClassMetadata)
+		if class == nil {
+			return op, nil, err
+		}
+
+		spendable, account, op, err := getAccountAndSpendableCoins(sdkCtx, bk, accs, class.Admin, TypeMsgUpdateClassMetadata)
+		if spendable == nil {
+			return op, nil, err
+		}
+
+		msg := &ecocredit.MsgUpdateClassMetadata{
+			Admin:    class.Admin,
+			ClassId:  class.ClassId,
+			Metadata: []byte(simtypes.RandStringOfLength(r, simtypes.RandIntBetween(r, 10, 256))),
+		}
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      *account,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
+		}
+
+		return GenAndDeliverTxWithRandFees(txCtx)
+	}
+}
+
+// SimulateMsgUpdateClassIssuers generates a MsgUpdateClassMetaData with random values
+func SimulateMsgUpdateClassIssuers(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
+	qryClient ecocredit.QueryClient) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, sdkCtx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		ctx := regentypes.Context{Context: sdkCtx}
+		class, op, err := getRandomClass(ctx, r, qryClient, TypeMsgUpdateClassIssuers)
+		if class == nil {
+			return op, nil, err
+		}
+
+		spendable, account, op, err := getAccountAndSpendableCoins(sdkCtx, bk, accs, class.Admin, TypeMsgUpdateClassIssuers)
+		if spendable == nil {
+			return op, nil, err
+		}
+
+		issuers := randomIssuers(r, accs)
+		msg := &ecocredit.MsgUpdateClassIssuers{
+			Admin:   class.Admin,
+			ClassId: class.ClassId,
+			Issuers: issuers,
+		}
+
+		txCtx := simulation.OperationInput{
+			R:               r,
+			App:             app,
+			TxGen:           simappparams.MakeTestEncodingConfig().TxConfig,
+			Cdc:             nil,
+			Msg:             msg,
+			MsgType:         msg.Type(),
+			Context:         sdkCtx,
+			SimAccount:      *account,
+			AccountKeeper:   ak,
+			Bankkeeper:      bk,
+			ModuleName:      ecocredit.ModuleName,
+			CoinsSpentInMsg: spendable,
+		}
+
+		return GenAndDeliverTxWithRandFees(txCtx)
+	}
+}
+
+func getAccountAndSpendableCoins(ctx sdk.Context, bk ecocredit.BankKeeper,
+	accs []simtypes.Account, addr, msgType string) (sdk.Coins, *simtypes.Account, simtypes.OperationMsg, error) {
+	accAddr, err := sdk.AccAddressFromBech32(addr)
+	if err != nil {
+		return nil, nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, err.Error()), err
+	}
+
+	account, found := simtypes.FindAccount(accs, accAddr)
+	if !found {
+		return nil, &account, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "account not found"), nil
+	}
+
+	spendable := bk.SpendableCoins(ctx, accAddr)
+	return spendable, &account, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
+
 }
 
 func getRandomClass(ctx regentypes.Context, r *rand.Rand, qryClient ecocredit.QueryClient, msgType string) (*ecocredit.ClassInfo, simtypes.OperationMsg, error) {

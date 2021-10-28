@@ -402,7 +402,7 @@ message MsgBuyDirect {
 // MsgBuyDirectResponse is the Msg/BuyDirect response type.
 message MsgBuyDirectResponse {
 
-  // buy_order_ids are the buy order IDs of the newly created buy order. Buy
+  // buy_order_ids are the buy order IDs of the newly created buy orders. Buy
   // orders may not settle instantaneously, but rather in batches at specified
   // batch epoch times.
   repeated uint64 buy_order_ids = 1;
