@@ -14,8 +14,7 @@ func NewAutoUInt64TableBuilder(prefixData byte, prefixSeq byte, storeKey sdk.Sto
 		return nil, ErrUniqueConstraint.Wrap("prefixData and prefixSeq must be unique")
 	}
 
-	uInt64KeyCodec := FixLengthIndexKeys(EncodedSeqLength)
-	tableBuilder, err := newTableBuilder(prefixData, storeKey, model, uInt64KeyCodec, cdc)
+	tableBuilder, err := newTableBuilder(prefixData, storeKey, model, cdc)
 	if err != nil {
 		return nil, err
 	}

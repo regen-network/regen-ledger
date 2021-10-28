@@ -16,28 +16,13 @@ import (
 	"github.com/regen-network/regen-ledger/orm/testdata"
 )
 
-var _, _, _ orm.Indexable = &nilCodecBuilder{}, &nilStoreKeyBuilder{}, &nilRowGetterBuilder{}
-
-type nilCodecBuilder struct{}
-
-func (b *nilCodecBuilder) StoreKey() sdk.StoreKey {
-	return sdk.NewKVStoreKey("test")
-}
-func (b *nilCodecBuilder) RowGetter() orm.RowGetter {
-	return func(a orm.HasKVStore, b orm.RowID, c codec.ProtoMarshaler) error { return nil }
-}
-func (b *nilCodecBuilder) IndexKeyCodec() orm.IndexKeyCodec                     { return nil }
-func (b *nilCodecBuilder) AddAfterSetInterceptor(orm.AfterSetInterceptor)       {}
-func (b *nilCodecBuilder) AddAfterDeleteInterceptor(orm.AfterDeleteInterceptor) {}
+var _, _ orm.Indexable = &nilStoreKeyBuilder{}, &nilRowGetterBuilder{}
 
 type nilStoreKeyBuilder struct{}
 
 func (b *nilStoreKeyBuilder) StoreKey() sdk.StoreKey { return nil }
 func (b *nilStoreKeyBuilder) RowGetter() orm.RowGetter {
 	return func(a orm.HasKVStore, b orm.RowID, c codec.ProtoMarshaler) error { return nil }
-}
-func (b *nilStoreKeyBuilder) IndexKeyCodec() orm.IndexKeyCodec {
-	return orm.Max255DynamicLengthIndexKeyCodec{}
 }
 func (b *nilStoreKeyBuilder) AddAfterSetInterceptor(orm.AfterSetInterceptor)       {}
 func (b *nilStoreKeyBuilder) AddAfterDeleteInterceptor(orm.AfterDeleteInterceptor) {}
@@ -49,9 +34,6 @@ func (b *nilRowGetterBuilder) StoreKey() sdk.StoreKey {
 }
 func (b *nilRowGetterBuilder) RowGetter() orm.RowGetter {
 	return nil
-}
-func (b *nilRowGetterBuilder) IndexKeyCodec() orm.IndexKeyCodec {
-	return orm.Max255DynamicLengthIndexKeyCodec{}
 }
 func (b *nilRowGetterBuilder) AddAfterSetInterceptor(orm.AfterSetInterceptor)       {}
 func (b *nilRowGetterBuilder) AddAfterDeleteInterceptor(orm.AfterDeleteInterceptor) {}
@@ -66,8 +48,8 @@ func TestNewIndex(t *testing.T) {
 	)
 	tBuilder, err := orm.NewAutoUInt64TableBuilder(testTablePrefix, testTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
 	require.NoError(t, err)
-	indexer := func(val interface{}) ([]orm.RowID, error) {
-		return []orm.RowID{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
+	indexer := func(val interface{}) ([]interface{}, error) {
+		return []interface{}{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
 	}
 
 	testCases := []struct {
@@ -75,34 +57,38 @@ func TestNewIndex(t *testing.T) {
 		builder     orm.Indexable
 		expectErr   bool
 		expectedErr string
+		indexKey    interface{}
 	}{
-		{
-			name:        "nil codec",
-			builder:     &nilCodecBuilder{},
-			expectErr:   true,
-			expectedErr: "IndexKeyCodec must not be nil",
-		},
 		{
 			name:        "nil storeKey",
 			builder:     &nilStoreKeyBuilder{},
 			expectErr:   true,
 			expectedErr: "StoreKey must not be nil",
+			indexKey:    []byte{},
 		},
 		{
 			name:        "nil rowGetter",
 			builder:     &nilRowGetterBuilder{},
 			expectErr:   true,
 			expectedErr: "RowGetter must not be nil",
+			indexKey:    []byte{},
 		},
 		{
 			name:      "all not nil",
 			builder:   tBuilder,
 			expectErr: false,
+			indexKey:  []byte{},
+		},
+		{
+			name:      "index key type not allowed",
+			builder:   tBuilder,
+			expectErr: true,
+			indexKey:  1,
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			index, err := orm.NewIndex(tc.builder, 0x1, indexer)
+			index, err := orm.NewIndex(tc.builder, 0x1, indexer, tc.indexKey)
 			if tc.expectErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.expectedErr)
@@ -124,10 +110,17 @@ func TestIndexPrefixScan(t *testing.T) {
 	)
 	tBuilder, err := orm.NewAutoUInt64TableBuilder(testTablePrefix, testTableSeqPrefix, storeKey, &testdata.GroupInfo{}, cdc)
 	require.NoError(t, err)
-	idx, err := orm.NewIndex(tBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
-		return []orm.RowID{[]byte(val.(*testdata.GroupInfo).Admin)}, nil
-	})
+	idx, err := orm.NewIndex(tBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]interface{}, error) {
+		i := []interface{}{val.(*testdata.GroupInfo).Admin.Bytes()}
+		return i, nil
+	}, testdata.GroupInfo{}.Admin.Bytes())
 	require.NoError(t, err)
+	strIdx, err := orm.NewIndex(tBuilder, GroupByDescriptionIndexPrefix, func(val interface{}) ([]interface{}, error) {
+		i := []interface{}{val.(*testdata.GroupInfo).Description}
+		return i, nil
+	}, testdata.GroupInfo{}.Description)
+	require.NoError(t, err)
+
 	tb := tBuilder.Build()
 	ctx := orm.NewMockContext()
 
@@ -149,11 +142,11 @@ func TestIndexPrefixScan(t *testing.T) {
 	}
 
 	specs := map[string]struct {
-		start, end []byte
+		start, end interface{}
 		expResult  []testdata.GroupInfo
 		expRowIDs  []orm.RowID
 		expError   *errors.Error
-		method     func(ctx orm.HasKVStore, start, end []byte) (orm.Iterator, error)
+		method     func(ctx orm.HasKVStore, start, end interface{}) (orm.Iterator, error)
 	}{
 		"exact match with a single result": {
 			start:     []byte("admin-address-a"),
@@ -205,7 +198,7 @@ func TestIndexPrefixScan(t *testing.T) {
 			expRowIDs: []orm.RowID{orm.EncodeSequence(1), orm.EncodeSequence(2), orm.EncodeSequence(3)},
 		},
 		"non matching prefix": {
-			start:     []byte("nobody"),
+			start:     []byte("admin-address-c"),
 			end:       nil,
 			method:    idx.PrefixScan,
 			expResult: []testdata.GroupInfo{},
@@ -272,7 +265,7 @@ func TestIndexPrefixScan(t *testing.T) {
 			expRowIDs: []orm.RowID{orm.EncodeSequence(3), orm.EncodeSequence(2), orm.EncodeSequence(1)},
 		},
 		"reverse: non matching prefix": {
-			start:     []byte("nobody"),
+			start:     []byte("admin-address-c"),
 			end:       nil,
 			method:    idx.ReversePrefixScan,
 			expResult: []testdata.GroupInfo{},
@@ -288,6 +281,13 @@ func TestIndexPrefixScan(t *testing.T) {
 			end:      []byte("a"),
 			method:   idx.ReversePrefixScan,
 			expError: orm.ErrArgument,
+		},
+		"exact match with a single result using string based index": {
+			start:     "my test 1",
+			end:       "my test 2",
+			method:    strIdx.PrefixScan,
+			expResult: []testdata.GroupInfo{g1},
+			expRowIDs: []orm.RowID{orm.EncodeSequence(1)},
 		},
 	}
 	for msg, spec := range specs {
@@ -312,11 +312,11 @@ func TestUniqueIndex(t *testing.T) {
 
 	storeKey := sdk.NewKVStoreKey("test")
 
-	tableBuilder, err := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, storeKey, &testdata.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	tableBuilder, err := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, storeKey, &testdata.GroupMember{}, cdc)
 	require.NoError(t, err)
-	uniqueIdx, err := orm.NewUniqueIndex(tableBuilder, 0x10, func(val interface{}) (orm.RowID, error) {
+	uniqueIdx, err := orm.NewUniqueIndex(tableBuilder, 0x10, func(val interface{}) (interface{}, error) {
 		return []byte{val.(*testdata.GroupMember).Member[0]}, nil
-	})
+	}, []byte{})
 	require.NoError(t, err)
 	myTable := tableBuilder.Build()
 
@@ -330,10 +330,12 @@ func TestUniqueIndex(t *testing.T) {
 	err = myTable.Create(ctx, &m)
 	require.NoError(t, err)
 
-	indexedKey := []byte{byte('m')}
+	indexedKey := []byte{'m'}
 
 	// Has
-	assert.True(t, uniqueIdx.Has(ctx, indexedKey))
+	exists, err := uniqueIdx.Has(ctx, indexedKey)
+	require.NoError(t, err)
+	assert.True(t, exists)
 
 	// Get
 	it, err := uniqueIdx.Get(ctx, indexedKey)
@@ -375,7 +377,7 @@ func TestUniqueIndex(t *testing.T) {
 	}
 
 	// PrefixScan match
-	it, err = uniqueIdx.PrefixScan(ctx, []byte{byte('m')}, []byte{byte('n')})
+	it, err = uniqueIdx.PrefixScan(ctx, indexedKey, nil)
 	require.NoError(t, err)
 	rowID, err = it.LoadNext(&loaded)
 	require.NoError(t, err)
@@ -385,11 +387,11 @@ func TestUniqueIndex(t *testing.T) {
 	// PrefixScan no match
 	it, err = uniqueIdx.PrefixScan(ctx, []byte{byte('n')}, nil)
 	require.NoError(t, err)
-	rowID, err = it.LoadNext(&loaded)
+	_, err = it.LoadNext(&loaded)
 	require.Error(t, orm.ErrIteratorDone, err)
 
 	// ReversePrefixScan match
-	it, err = uniqueIdx.ReversePrefixScan(ctx, []byte{byte('a')}, []byte{byte('z')})
+	it, err = uniqueIdx.ReversePrefixScan(ctx, indexedKey, nil)
 	require.NoError(t, err)
 	rowID, err = it.LoadNext(&loaded)
 	require.NoError(t, err)
@@ -399,7 +401,7 @@ func TestUniqueIndex(t *testing.T) {
 	// ReversePrefixScan no match
 	it, err = uniqueIdx.ReversePrefixScan(ctx, []byte{byte('l')}, nil)
 	require.NoError(t, err)
-	rowID, err = it.LoadNext(&loaded)
+	_, err = it.LoadNext(&loaded)
 	require.Error(t, orm.ErrIteratorDone, err)
 	// create with same index key should fail
 	new := testdata.GroupMember{
@@ -415,7 +417,9 @@ func TestUniqueIndex(t *testing.T) {
 	require.NoError(t, err)
 
 	// then no persistent element
-	assert.False(t, uniqueIdx.Has(ctx, indexedKey))
+	exists, err = uniqueIdx.Has(ctx, indexedKey)
+	require.NoError(t, err)
+	assert.False(t, exists)
 }
 
 func TestPrefixRange(t *testing.T) {
