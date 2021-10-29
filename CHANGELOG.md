@@ -6,73 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [v2.0.0-rc4](https://github.com/regen-network/regen-ledger/releases/tag/v2.0.0-rc4) - 2021-10-26
-
-### General
-
-#### Fixed
-
-* [#591](https://github.com/regen-network/regen-ledger/pull/591) Set credit class fee in upgrade handler
-* [#592](https://github.com/regen-network/regen-ledger/pull/592) Fix `undefined` error message when creating a credit class
-
-## [v2.0.0-rc3](https://github.com/regen-network/regen-ledger/releases/tag/v2.0.0-rc3) - 2021-10-19
-
-### General
-
-#### Changed
-
-* [#587](https://github.com/regen-network/regen-ledger/pull/587) Update Go to v1.17.
-
-## [v2.0.0-rc2](https://github.com/regen-network/regen-ledger/releases/tag/v2.0.0-rc2) - 2021-10-18
-
-### General
-
-#### Added
-
-* [#538](https://github.com/regen-network/regen-ledger/pull/538) Add script for starting a local test node
-
-#### Changed
-
-* [#580](https://github.com/regen-network/regen-ledger/pull/580) Update SDK fork to v0.44.2-regen-1
-
-### ORM Package
-
-#### Fixed
-
-* (orm) [#525](https://github.com/regen-network/regen-ledger/pull/525) Fix IndexKeyCodec prefixing issue.
-
-## [v2.0.0-rc1](https://github.com/regen-network/regen-ledger/releases/tag/v2.0.0-rc1) - 2021-09-30
-
-### General
-
-#### Changed
-
-* [#558](https://github.com/regen-network/regen-ledger/pull/558) Update SDK fork to v0.44.0-regen-2
-
-### `x/ecocredit`
-
-#### Added
-
-* [#539](https://github.com/regen-network/regen-ledger/pull/539) Add methods for updating a credit class
-* [#555](https://github.com/regen-network/regen-ledger/pull/555) Add ecocredit params query
-
-
-#### Changed
-
-* [#500](https://github.com/regen-network/regen-ledger/pull/500) Rename credit class designer to admin
-* [#540](https://github.com/regen-network/regen-ledger/pull/540) Add max-metadata check for credit class and credit batch
-* [#526](https://github.com/regen-network/regen-ledger/pull/526) Add gas per-loop-iteration in ecocredit messages
-* [#554](https://github.com/regen-network/regen-ledger/pull/554) Add ValidateDenom for MsgSend, MsgRetire and MsgCancel
-
-
-### ORM Package
-
-#### Fixed
-
-
-* [#518](https://github.com/regen-network/regen-ledger/pull/518) Fix bytes key field to have a max length
-
-## [v2.0.0-beta1](https://github.com/regen-network/regen-ledger/releases/tag/v2.0.0-beta1) - 2021-08-19
+## [v2.0.0](https://github.com/regen-network/regen-ledger/releases/tag/v2.0.0) - 2021-10-28
 
 ### General
 
@@ -83,12 +17,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Add support for on-chain creation of Permanent Locked Accounts
     ([regen-network/cosmos-sdk#42](http://github.com/regen-network/cosmos-sdk/pull/42))
 * [#349](https://github.com/regen-network/regen-ledger/pull/349) Add x/feegrant & x/authz from Cosmos SDK v0.43
+* [#538](https://github.com/regen-network/regen-ledger/pull/538) Add script for starting a local test node
 
 #### Changed
 
 * [#422](https://github.com/regen-network/regen-ledger/pull/422) remove `Request` suffix in Msgs
 * [#322](https://github.com/regen-network/regen-ledger/pull/322) Split regen ledger into multiple go modules
-* [#482](https://github.com/regen-network/regen-ledger/pull/482) Upgrade Cosmos SDK to v0.43.0
+* [#580](https://github.com/regen-network/regen-ledger/pull/580) Update SDK fork to v0.44.2-regen-1
+* [#587](https://github.com/regen-network/regen-ledger/pull/587) Update Go to v1.17.
+
 
 #### Fixed
 
@@ -103,6 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#425](https://github.com/regen-network/regen-ledger/pull/425) add params for an allowlist of permissioned credit designers
 * [#451](https://github.com/regen-network/regen-ledger/pull/451) add queries to list classes and batches with a class
 * [#183](https://github.com/regen-network/regen-ledger/pull/183) add grpc-gateway support for query routes
+* [#539](https://github.com/regen-network/regen-ledger/pull/539) Add methods for updating a credit class
+* [#555](https://github.com/regen-network/regen-ledger/pull/555) Add ecocredit params query
 
 
 #### Changed
@@ -114,6 +53,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#394](https://github.com/regen-network/regen-ledger/pull/394) add project location as field in credit batches
 * [#435](https://github.com/regen-network/regen-ledger/pull/435) use dec wrapper for decimal operations
 * [#424](https://github.com/regen-network/regen-ledger/pull/424) add credit types to credit class
+* [#500](https://github.com/regen-network/regen-ledger/pull/500) Rename credit class designer to admin
+* [#540](https://github.com/regen-network/regen-ledger/pull/540) Add max-metadata check for credit class and credit batch
+* [#526](https://github.com/regen-network/regen-ledger/pull/526) Add gas per-loop-iteration in ecocredit messages
+* [#554](https://github.com/regen-network/regen-ledger/pull/554) Add ValidateDenom for MsgSend, MsgRetire and MsgCancel
+
+#### Fixed
+
+* [#591](https://github.com/regen-network/regen-ledger/pull/591) Set credit class fee in upgrade handler
+* [#592](https://github.com/regen-network/regen-ledger/pull/592) Fix `undefined` error message when creating a credit class
 
 ### `x/group`
 
@@ -122,6 +70,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [#330](https://github.com/regen-network/regen-ledger/pull/330) add invariant checks for groups' vote sums
 * [#333](https://github.com/regen-network/regen-ledger/pull/333) try to execute group proposal on submission or on new vote
 * [#183](https://github.com/regen-network/regen-ledger/pull/183) add grpc-gateway support for query routes
+
+### ORM Package
+
+#### Fixed
+
+* [#518](https://github.com/regen-network/regen-ledger/pull/518) Fix bytes key field to have a max length
+* [#525](https://github.com/regen-network/regen-ledger/pull/525) Fix IndexKeyCodec prefixing issue.
 
 ## [1.0.0] - 2021-04-13
 
