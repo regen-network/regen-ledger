@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package regen.ecocredit.v1alpha1;
+package regen.ecocredit.v1alpha2;
 
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
@@ -15,7 +15,10 @@ service Msg {
   // optional metadata.
   rpc CreateClass(MsgCreateClass) returns (MsgCreateClassResponse);
 
-  // CreateBatch creates a new batch of credits for an existing credit class.
+  // CreateProject creates a new project within a credit class.
+  rpc CreateProject(MsgCreateProject) returns (MsgCreateProjectResponse);
+
+  // CreateBatch creates a new batch of credits for an existing project.
   // This will create a new batch denom with a fixed supply. Issued credits can
   // be distributed to recipients in either tradable or retired form.
   rpc CreateBatch(MsgCreateBatch) returns (MsgCreateBatchResponse);
@@ -56,7 +59,6 @@ service Msg {
 
 // MsgCreateClass is the Msg/CreateClass request type.
 message MsgCreateClass {
-
   // admin is the address of the account that created the credit class.
   string admin = 1;
 
@@ -72,9 +74,35 @@ message MsgCreateClass {
 
 // MsgCreateClassResponse is the Msg/CreateClass response type.
 message MsgCreateClassResponse {
-
   // class_id is the unique ID of the newly created credit class.
   string class_id = 1;
+}
+
+// MsgCreateProjectResponse is the Msg/CreateProject request type.
+message MsgCreateProject {
+  // issuer is the address of an approved issuer for the credit class through
+  // which batches will be issued. The issuer of the project will issue all
+  // the batches of credits for the project.
+  string issuer = 1;
+
+  // class_id is the unique ID of the class within which the project is created.
+  string class_id = 2;
+
+  // metadata is any arbitrary metadata attached to the project.
+  bytes metadata = 3;
+
+  // project_location is the location of the project backing the credits in this
+  // batch. It is a string of the form
+  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
+  // fields conforming to ISO 3166-2, and postal-code being up to 64
+  // alphanumeric characters. country-code is required, while sub-national-code
+  // and postal-code can be added for increasing precision.
+  string project_location = 4;
+}
+
+// MsgCreateProjectResponse is the Msg/CreateProject response type.
+message MsgCreateProjectResponse {
+  string project_id = 1;
 }
 
 // MsgCreateBatch is the Msg/CreateBatch request type.
@@ -83,8 +111,8 @@ message MsgCreateBatch {
   // issuer is the address of the batch issuer.
   string issuer = 1;
 
-  // class_id is the unique ID of the class.
-  string class_id = 2;
+  // project_id is the unique ID of the project this batch belongs to.
+  string project_id = 2;
 
   // issuance are the credits issued in the batch.
   repeated BatchIssuance issuance = 3;
@@ -99,14 +127,6 @@ message MsgCreateBatch {
   // end_date is the end of the period during which this credit batch was
   // quantified and verified.
   google.protobuf.Timestamp end_date = 6 [ (gogoproto.stdtime) = true ];
-
-  // project_location is the location of the project backing the credits in this
-  // batch. It is a string of the form
-  // <country-code>[-<sub-national-code>[ <postal-code>]], with the first two
-  // fields conforming to ISO 3166-2, and postal-code being up to 64
-  // alphanumeric characters. country-code is required, while sub-national-code
-  // and postal-code can be added for increasing precision.
-  string project_location = 7;
 
   // BatchIssuance represents the issuance of some credits in a batch to a
   // single recipient.
