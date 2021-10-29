@@ -66,13 +66,13 @@ type startArgs struct {
 	algo          string
 	apiAddress    string
 	chainID       string
-	enableLogging bool
 	grpcAddress   string
 	minGasPrices  string
-	numValidators int
 	outputDir     string
-	printMnemonic bool
 	rpcAddress    string
+	numValidators int
+	enableLogging bool
+	printMnemonic bool
 }
 
 func addTestnetFlagsToCmd(cmd *cobra.Command) {
@@ -521,7 +521,11 @@ func startTestnet(cmd *cobra.Command, args startArgs) error {
 		return err
 	}
 
-	testnet.WaitForHeight(1)
+	_, err = testnet.WaitForHeight(1)
+	if err != nil {
+		return err
+	}
+
 	cmd.Println("press the Enter Key to terminate")
 	fmt.Scanln() // wait for Enter Key
 	testnet.Cleanup()
