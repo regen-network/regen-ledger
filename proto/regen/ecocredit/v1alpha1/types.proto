@@ -118,3 +118,17 @@ message CreditTypeSeq {
   // The sequence number of classes of the credit type
   uint64 seq_number = 2;
 }
+
+// TagTarget represents the target of a tag.
+message TagTarget {
+  oneof sum {
+    // class_id indicates that this tag targets all the credits within a given class.
+    string class_id = 1;
+
+    // project_id indicates that this tag targets all the credits within a given project.
+    string project_id = 2;
+
+    // project_id indicates that this tag targets the credits within a batch.
+    string batch_id = 3;
+  }
+}

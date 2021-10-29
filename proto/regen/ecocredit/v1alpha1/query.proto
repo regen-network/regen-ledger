@@ -58,6 +58,9 @@ service Query {
     option (google.api.http).get =
         "/regen/ecocredit/v1alpha1/params";
   }
+
+  // Tags returns the paginated list of tags for a given tag target.
+  rpc Tags(QueryTagsResquest) returns (QueryTagsResponse) {}
 }
 
 // QueryParamsRequest is the Query/Params request type.
@@ -172,8 +175,28 @@ message QuerySupplyResponse {
 // QueryCreditTypesRequest is the Query/Credit_Types request type
 message QueryCreditTypesRequest {}
 
-// QueryCreditTypesRequest is the Query/Credit_Types response type
+// QueryCreditTypesResponse is the Query/Credit_Types response type
 message QueryCreditTypesResponse {
   // list of credit types
   repeated CreditType credit_types = 1;
+}
+
+// QueryTagsRequest is the Query/Tags request type
+message QueryTagsRequest {
+
+  // target is the tag target to query.
+  TagTarget target = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryTagsResponse is the Query/Tags response type
+message QueryTagsResponse {
+
+  // tags are the tags which have been applied to the target.
+  repeated string tags = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

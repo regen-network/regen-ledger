@@ -52,6 +52,10 @@ service Msg {
 
   // AllowAskDenom is a governance operation which authorizes a new ask denom to be used in sell orders
   rpc AllowAskDenom (MsgAllowAskDenom) returns (MsgAllowAskDenomResponse);
+
+  // Tag allows curators to tag (or untag) classes, projects and batches with
+  // a tag name scoped to the curator. Tags thus take the form {curator}/{tag_name}.
+  rpc Tag(MsgTag) returns (MsgTagResponse);
 }
 
 // MsgCreateClass is the Msg/CreateClass request type.
@@ -427,3 +431,29 @@ message MsgAllowAskDenom {
 
 // MsgAllowAskDenomResponse is the Msg/AllowAskDenom response type.
 message MsgAllowAskDenomResponse {}
+
+// MsgTag is the Msg/Tag request type.
+message MsgTag {
+  // curator
+  string curator = 1;
+
+  // taggings are the tag operations.
+  repeated Tagging taggings = 2;
+
+  // Tagging is a tag operations.
+  message Tagging {
+    // tag_name is the name of the tag to apply to this target. It is scoped to the curator
+    // which is applying the tag, so the resultant tag is effectively {curator}/{tag_name}.
+    string tag_name = 1;
+
+    // targets are the tag operation targets.
+    repeated TagTarget targets = 2;
+
+    // untag indicates the a tag should be removed if set to true.
+    bool untag = 3;
+
+  }
+}
+
+// MsgTag is the Msg/Tag response type.
+message MsgTagResponse {}
