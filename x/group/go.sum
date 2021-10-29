@@ -914,8 +914,14 @@ github.com/regen-network/cosmos-sdk v0.44.2-regen-1 h1:Sm7rU4rMwLpEpgrQkF/4w/V/y
 github.com/regen-network/cosmos-sdk v0.44.2-regen-1/go.mod h1:fwQJdw+aECatpTvQTo1tSfHEsxACdZYU80QCZUPnHr4=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1 h1:OHEc+q5iIAXpqiqFKeLpu5NwTIkVXUs48vFMwzqpqY4=
 github.com/regen-network/protobuf v1.3.3-alpha.regen.1/go.mod h1:2DjTFR1HhMQhiWC5sZ4OhQ3+NtdbZ6oBDKQwq5Ou+FI=
+github.com/regen-network/regen-ledger/orm v1.0.0-beta1 h1:io3MMmqpIy3YCdkGmcsP+xAaq3JZi1/OAWk3ut+Th9s=
+github.com/regen-network/regen-ledger/orm v1.0.0-beta1/go.mod h1:iWlJmID0OfhKaIOoSsr35+gevY7h9OgpfemKNlLu7YU=
+github.com/regen-network/regen-ledger/types v1.0.0 h1:qb6NFP+nX7QOB2W4G9tSmnvriOqVUabESLzVeBeH5vQ=
+github.com/regen-network/regen-ledger/types v1.0.0/go.mod h1:wNKjSIFVRZN5pk4HwKmvcrXxNe93xFEjVaqiGXab9Bk=
 github.com/regen-network/regen-ledger/x/data v0.0.0-20210602121340-fa967f821a6e h1:CoCwz8MGTn9yReHzqsQWIook/o9yUrO+q4iZoUEFvG0=
 github.com/regen-network/regen-ledger/x/data v0.0.0-20210602121340-fa967f821a6e/go.mod h1:QFDn0RMBBgxcTjRvmdN9jLFFQdki9aKz2yDYhvP5l9I=
+github.com/regen-network/regen-ledger/x/ecocredit v1.0.0 h1:8fFw7l7QcfqIWmXf1SPhfoBB05SSyDiGgnRfsKC/qQ4=
+github.com/regen-network/regen-ledger/x/ecocredit v1.0.0/go.mod h1:5/0FxUpjsI7iwnNGaEPyM4sgzpyhDRVpt5t23sw2rdM=
 github.com/rjeczalik/notify v0.9.1/go.mod h1:rKwnCoCGeuQnwBtTSPL9Dad03Vh2n40ePRrjvIXnJho=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=
