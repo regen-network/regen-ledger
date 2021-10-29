@@ -102,6 +102,8 @@ message MsgCreateProject {
 
 // MsgCreateProjectResponse is the Msg/CreateProject response type.
 message MsgCreateProjectResponse {
+
+  // project_id is the ID of the newly created project.
   string project_id = 1;
 }
 
