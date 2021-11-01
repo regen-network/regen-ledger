@@ -81,8 +81,8 @@ message MsgCreateClassResponse {
 // MsgCreateProjectResponse is the Msg/CreateProject request type.
 message MsgCreateProject {
   // issuer is the address of an approved issuer for the credit class through
-  // which batches will be issued. The issuer of the project will issue all
-  // the batches of credits for the project.
+  // which batches will be issued. It is not required, however, that this same
+  // issuer issue all batches for a project.
   string issuer = 1;
 
   // class_id is the unique ID of the class within which the project is created.
