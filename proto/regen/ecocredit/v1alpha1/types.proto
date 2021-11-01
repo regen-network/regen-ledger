@@ -123,6 +123,7 @@ message Filter {
   oneof sum {
     And and = 1;
     Or or = 2;
+  }
     string credit_type_name = 3;
     string class_id = 4;
 
