@@ -375,3 +375,47 @@ func (m *MsgUpdateClassMetadata) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Admin)
 	return []sdk.AccAddress{addr}
 }
+
+// Route Implements LegacyMsg.
+func (m MsgSell) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type Implements LegacyMsg.
+func (m MsgSell) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes Implements LegacyMsg.
+func (m MsgSell) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+// ValidateBasic does a sanity check on the provided data.
+func (m *MsgSell) ValidateBasic() error {
+
+	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+
+	for i := range m.Orders {
+		if err := ValidateDenom(m.Orders[i].BatchDenom); err != nil {
+			return err
+		}
+
+		_, err := math.NewPositiveDecFromString(m.Orders[i].Quantity)
+		if err != nil {
+			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", m.Orders[i].Quantity)
+		}
+
+		m.Orders[i].AskPrice.Validate()
+
+		if !m.Orders[i].AskPrice.Amount.IsPositive() {
+			return sdkerrors.ErrInvalidRequest.Wrap("AskPrice must be positive amount")
+		}
+	}
+
+	return nil
+}
+
+// GetSigners returns the expected signers for MsgSell.
+func (m *MsgSell) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Owner)
+	return []sdk.AccAddress{addr}
+}

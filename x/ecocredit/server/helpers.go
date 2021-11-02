@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/store/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"

@@ -13,10 +13,12 @@
   
 - [regen/ecocredit/v1alpha1/types.proto](#regen/ecocredit/v1alpha1/types.proto)
     - [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo)
+    - [BuyOrder](#regen.ecocredit.v1alpha1.BuyOrder)
     - [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo)
     - [CreditType](#regen.ecocredit.v1alpha1.CreditType)
     - [CreditTypeSeq](#regen.ecocredit.v1alpha1.CreditTypeSeq)
     - [Params](#regen.ecocredit.v1alpha1.Params)
+    - [SellOrder](#regen.ecocredit.v1alpha1.SellOrder)
   
 - [regen/ecocredit/v1alpha1/genesis.proto](#regen/ecocredit/v1alpha1/genesis.proto)
     - [Balance](#regen.ecocredit.v1alpha1.Balance)
@@ -44,6 +46,11 @@
     - [Query](#regen.ecocredit.v1alpha1.Query)
   
 - [regen/ecocredit/v1alpha1/tx.proto](#regen/ecocredit/v1alpha1/tx.proto)
+    - [MsgAllowAskDenom](#regen.ecocredit.v1alpha1.MsgAllowAskDenom)
+    - [MsgAllowAskDenomResponse](#regen.ecocredit.v1alpha1.MsgAllowAskDenomResponse)
+    - [MsgBuyDirect](#regen.ecocredit.v1alpha1.MsgBuyDirect)
+    - [MsgBuyDirect.Order](#regen.ecocredit.v1alpha1.MsgBuyDirect.Order)
+    - [MsgBuyDirectResponse](#regen.ecocredit.v1alpha1.MsgBuyDirectResponse)
     - [MsgCancel](#regen.ecocredit.v1alpha1.MsgCancel)
     - [MsgCancel.CancelCredits](#regen.ecocredit.v1alpha1.MsgCancel.CancelCredits)
     - [MsgCancelResponse](#regen.ecocredit.v1alpha1.MsgCancelResponse)
@@ -55,6 +62,9 @@
     - [MsgRetire](#regen.ecocredit.v1alpha1.MsgRetire)
     - [MsgRetire.RetireCredits](#regen.ecocredit.v1alpha1.MsgRetire.RetireCredits)
     - [MsgRetireResponse](#regen.ecocredit.v1alpha1.MsgRetireResponse)
+    - [MsgSell](#regen.ecocredit.v1alpha1.MsgSell)
+    - [MsgSell.Order](#regen.ecocredit.v1alpha1.MsgSell.Order)
+    - [MsgSellResponse](#regen.ecocredit.v1alpha1.MsgSellResponse)
     - [MsgSend](#regen.ecocredit.v1alpha1.MsgSend)
     - [MsgSend.SendCredits](#regen.ecocredit.v1alpha1.MsgSend.SendCredits)
     - [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse)
@@ -64,6 +74,9 @@
     - [MsgUpdateClassIssuersResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassIssuersResponse)
     - [MsgUpdateClassMetadata](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadata)
     - [MsgUpdateClassMetadataResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadataResponse)
+    - [MsgUpdateSellOrders](#regen.ecocredit.v1alpha1.MsgUpdateSellOrders)
+    - [MsgUpdateSellOrders.Update](#regen.ecocredit.v1alpha1.MsgUpdateSellOrders.Update)
+    - [MsgUpdateSellOrdersResponse](#regen.ecocredit.v1alpha1.MsgUpdateSellOrdersResponse)
   
     - [Msg](#regen.ecocredit.v1alpha1.Msg)
   
@@ -214,6 +227,26 @@ BatchInfo represents the high-level on-chain information for a credit batch.
 
 
 
+<a name="regen.ecocredit.v1alpha1.BuyOrder"></a>
+
+### BuyOrder
+BuyOrder represents the information for a sell order.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| buy_order_id | [uint64](#uint64) |  | buy_order_id is the unique ID of buy order. |
+| sell_order_id | [uint64](#uint64) |  | sell_order_id is the sell order ID against which the buyer is trying to buy. |
+| quantity | [string](#string) |  | quantity is the quantity of credits to buy. If the quantity of credits available is less than this amount the order will be partially filled unless disable_partial_fill is true. |
+| bid_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | bid price is the bid price for this buy order. A credit unit will be settled at a purchase price that is no more than the bid price. The buy order will fail if the buyer does not have enough funds available to complete the purchase. |
+| disable_auto_retire | [bool](#bool) |  | disable_auto_retire allows auto-retirement to be disabled. If it is set to true the credits will not auto-retire and can be resold assuming that the corresponding sell order has auto-retirement disabled. If the sell order hasn't disabled auto-retirement and the buy order tries to disable it, that buy order will fail. |
+| disable_partial_fill | [bool](#bool) |  | disable_partial_fill disables the default behavior of partially filling buy orders if the requested quantity is not available. |
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha1.ClassInfo"></a>
 
 ### ClassInfo
@@ -283,6 +316,25 @@ use with the x/params module.
 | allowed_class_creators | [string](#string) | repeated | allowed_class_creators is an allowlist defining the addresses with the required permissions to create credit classes |
 | allowlist_enabled | [bool](#bool) |  | allowlist_enabled is a param that enables/disables the allowlist for credit creation |
 | credit_types | [CreditType](#regen.ecocredit.v1alpha1.CreditType) | repeated | credit_types is a list of definitions for credit types |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.SellOrder"></a>
+
+### SellOrder
+SellOrder represents the information for a sell order.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| order_id | [uint64](#uint64) |  | order_id is the unique ID of sell order. |
+| batch_denom | [string](#string) |  | batch_denom is the credit batch being sold. |
+| quantity | [string](#string) |  | quantity is the quantity of credits being sold. |
+| ask_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | ask_price is the price the seller is asking for each unit of the batch_denom. Each credit unit of the batch will be sold for at least the ask_price or more. |
+| disable_auto_retire | [bool](#bool) |  | disable_auto_retire disables auto-retirement of credits which allows a buyer to disable auto-retirement in their buy order enabling them to resell the credits to another buyer. |
 
 
 
@@ -646,6 +698,84 @@ Msg is the regen.ecocredit.v1alpha1 Query service.
 
 
 
+<a name="regen.ecocredit.v1alpha1.MsgAllowAskDenom"></a>
+
+### MsgAllowAskDenom
+MsgAllowAskDenom is the Msg/AllowAskDenom request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| root_address | [string](#string) |  | root_address is the address of the governance account which can authorize ask denoms |
+| denom | [string](#string) |  | denom is the denom to allow (ex. ibc/GLKHDSG423SGS) |
+| display_denom | [string](#string) |  | display_denom is the denom to display to the user and is informational |
+| exponent | [uint32](#uint32) |  | exponent is the exponent that relates the denom to the display_denom and is informational |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgAllowAskDenomResponse"></a>
+
+### MsgAllowAskDenomResponse
+MsgAllowAskDenomResponse is the Msg/AllowAskDenom response type.
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgBuyDirect"></a>
+
+### MsgBuyDirect
+MsgBuyDirect is the Msg/BuyDirect request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| buyer | [string](#string) |  | buyer is the address of the credit buyer. |
+| orders | [MsgBuyDirect.Order](#regen.ecocredit.v1alpha1.MsgBuyDirect.Order) | repeated | orders are the new buy orders. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgBuyDirect.Order"></a>
+
+### MsgBuyDirect.Order
+Order is a direct buy order.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sell_order_id | [uint64](#uint64) |  | sell_order_id is the sell order ID against which the buyer is trying to buy. |
+| quantity | [string](#string) |  | quantity is the quantity of credits to buy. If the quantity of credits available is less than this amount the order will be partially filled unless disable_partial_fill is true. |
+| bid_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | bid price is the bid price for this buy order. A credit unit will be settled at a purchase price that is no more than the bid price. The buy order will fail if the buyer does not have enough funds available to complete the purchase. |
+| disable_auto_retire | [bool](#bool) |  | disable_auto_retire allows auto-retirement to be disabled. If it is set to true the credits will not auto-retire and can be resold assuming that the corresponding sell order has auto-retirement disabled. If the sell order hasn't disabled auto-retirement and the buy order tries to disable it, that buy order will fail. |
+| disable_partial_fill | [bool](#bool) |  | disable_partial_fill disables the default behavior of partially filling buy orders if the requested quantity is not available. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgBuyDirectResponse"></a>
+
+### MsgBuyDirectResponse
+MsgBuyDirectResponse is the Msg/BuyDirect response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| buy_order_ids | [uint64](#uint64) | repeated | buy_order_ids are the buy order IDs of the newly created buy orders. Buy orders may not settle instantaneously, but rather in batches at specified batch epoch times. |
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha1.MsgCancel"></a>
 
 ### MsgCancel
@@ -819,6 +949,55 @@ MsgRetire is the Msg/Retire response type.
 
 
 
+<a name="regen.ecocredit.v1alpha1.MsgSell"></a>
+
+### MsgSell
+MsgSell is the Msg/Sell request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| owner | [string](#string) |  | owner is the address of the owner of the credits being sold. |
+| orders | [MsgSell.Order](#regen.ecocredit.v1alpha1.MsgSell.Order) | repeated | orders are the sell orders being created. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgSell.Order"></a>
+
+### MsgSell.Order
+Order is the content of a new sell order.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| batch_denom | [string](#string) |  | batch_denom is the credit batch being sold. |
+| quantity | [string](#string) |  | quantity is the quantity of credits being sold from this batch. If it is less then the balance of credits the owner has available at the time this sell order is matched, the quantity will be adjusted downwards to the owner's balance. However, if the balance of credits is less than this quantity at the time the sell order is created, the operation will fail. |
+| ask_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | ask_price is the price the seller is asking for each unit of the batch_denom. Each credit unit of the batch will be sold for at least the ask_price or more. |
+| disable_auto_retire | [bool](#bool) |  | disable_auto_retire disables auto-retirement of credits which allows a buyer to disable auto-retirement in their buy order enabling them to resell the credits to another buyer. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgSellResponse"></a>
+
+### MsgSellResponse
+MsgSellResponse is the Msg/Sell response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sell_order_ids | [uint64](#uint64) | repeated | sell_order_ids are the sell order IDs of the newly created sell orders. |
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha1.MsgSend"></a>
 
 ### MsgSend
@@ -946,6 +1125,50 @@ MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
 
 
 
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateSellOrders"></a>
+
+### MsgUpdateSellOrders
+MsgUpdateSellOrders is the Msg/UpdateSellOrders request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| owner | [string](#string) |  | owner is the owner of the sell orders. |
+| updates | [MsgUpdateSellOrders.Update](#regen.ecocredit.v1alpha1.MsgUpdateSellOrders.Update) | repeated | updates are updates to existing sell orders. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateSellOrders.Update"></a>
+
+### MsgUpdateSellOrders.Update
+Update is an update to an existing sell order.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sell_order_id | [uint64](#uint64) |  | sell_order_id is the ID of an existing sell order. |
+| new_quantity | [string](#string) |  | new_quantity is the updated quantity of credits available to sell, if it is set to zero then the order is cancelled. |
+| new_ask_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | new_ask_price is the new ask price for this sell order |
+| disable_auto_retire | [bool](#bool) |  | disable_auto_retire updates the disable_auto_retire field in the sell order. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateSellOrdersResponse"></a>
+
+### MsgUpdateSellOrdersResponse
+MsgUpdateSellOrdersResponse is the Msg/UpdateSellOrders response type.
+
+
+
+
+
  <!-- end messages -->
 
  <!-- end enums -->
@@ -968,6 +1191,10 @@ Msg is the regen.ecocredit.v1alpha1 Msg service.
 | UpdateClassAdmin | [MsgUpdateClassAdmin](#regen.ecocredit.v1alpha1.MsgUpdateClassAdmin) | [MsgUpdateClassAdminResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassAdminResponse) | UpdateClassAdmin updates the credit class admin |
 | UpdateClassIssuers | [MsgUpdateClassIssuers](#regen.ecocredit.v1alpha1.MsgUpdateClassIssuers) | [MsgUpdateClassIssuersResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassIssuersResponse) | UpdateClassIssuers updates the credit class issuer list |
 | UpdateClassMetadata | [MsgUpdateClassMetadata](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadata) | [MsgUpdateClassMetadataResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadataResponse) | UpdateClassMetadata updates the credit class metadata |
+| Sell | [MsgSell](#regen.ecocredit.v1alpha1.MsgSell) | [MsgSellResponse](#regen.ecocredit.v1alpha1.MsgSellResponse) | Sell creates new sell orders. |
+| UpdateSellOrders | [MsgUpdateSellOrders](#regen.ecocredit.v1alpha1.MsgUpdateSellOrders) | [MsgUpdateSellOrdersResponse](#regen.ecocredit.v1alpha1.MsgUpdateSellOrdersResponse) | UpdateSellOrders updates existing sell orders. |
+| BuyDirect | [MsgBuyDirect](#regen.ecocredit.v1alpha1.MsgBuyDirect) | [MsgBuyDirectResponse](#regen.ecocredit.v1alpha1.MsgBuyDirectResponse) | BuyDirect creates buy orders directly against sell orders. |
+| AllowAskDenom | [MsgAllowAskDenom](#regen.ecocredit.v1alpha1.MsgAllowAskDenom) | [MsgAllowAskDenomResponse](#regen.ecocredit.v1alpha1.MsgAllowAskDenomResponse) | AllowAskDenom is a governance operation which authorizes a new ask denom to be used in sell orders |
 
  <!-- end services -->
 
