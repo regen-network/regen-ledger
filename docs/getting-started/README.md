@@ -12,6 +12,8 @@ In order to install the `regen` binary, you'll need the following:
 
 For more information, see [Prerequisites](prerequisites.md). 
 
+*Note: The `regen` binary is installed into `$(go env GOPATH)/bin`, so make sure `$(go env GOPATH)/bin` is in your PATH (e.g. `export PATH=$(go env GOPATH)/bin:$PATH`).*
+
 ## Install Regen
 
 The `regen` binary serves as the node client and the application client. In other words, the `regen` binary can be used to both run a node and interact with it.
@@ -31,7 +33,7 @@ cd regen-ledger
 Check out the latest stable version:
 
 ```bash
-git checkout v1.0.0
+git checkout v2.0.0
 ```
 
 Install the `regen` binary:
@@ -40,15 +42,13 @@ Install the `regen` binary:
 make install
 ```
 
-Note: the `regen` binary is installed into `$(go env GOPATH)/bin`, so please make sure `$(go env GOPATH)/bin` is in your PATH (e.g. `export PATH=$(go env GOPATH)/bin:$PATH` if not already there)
-
 Check to make sure the install was successful:
 
 ```bash
 regen version
 ```
 
-You should see `v1.0.0` printed to the console. Now that you have successfully installed the `regen` binary, the next step will be to add a couple test accounts.
+You should see `v2.0.0` printed to the console. Now that you have successfully installed the `regen` binary, the next step will be to add a couple test accounts.
 
 ## Quickstart
 

@@ -52,22 +52,18 @@ grpcurl \
 In some programming languages, you may be able to leverage a pre-existing client library to take care of most of the heavy lifting, including compiling protobuf messages. For javascript/typescript developers, [CosmJS](https://github.com/cosmos/cosmjs) is a great place to start.
 
 ::: tip
-
-While CosmJS has basic support for all Cosmos SDK based blockchains, you will still need to compile the protobuf messages for Regen Ledger's own modules (e.g. data module, ecocredit module) if you intend to interact with credits or on-chain ecological data.
-
-Be sure to use [cosmjs/stargate](https://cosmos.github.io/cosmjs/latest/stargate/index.html) client!
+While CosmJS provides basic support for all Cosmos SDK based blockchains, you will still need to compile the protobuf messages for Regen Ledger's own modules (e.g. ecocredit module, data module) if you intend to interact with ecosytem service credits or on-chain ecological data.
 :::
 
 For more information about the gRPC interface, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/v0.43/run-node/interact-node.html).
 
 ## REST Interface
 
-::: tip COMING SOON
-
+::: tip Available in Regen Ledger v2.0
 All gRPC services and methods on Regen Ledger will soon be made available for more convenient REST based queries through [gRPC Gateway](https://github.com/grpc-ecosystem/grpc-gateway).
 :::
 
-Currently gRPC-gateway endpoints have yet to be added for Regen Ledger's own modules, however, you can still use the REST API to query general Cosmos SDK modules like `x/bank`, `x/staking`, etc.
+The REST interface is available through gRPC-gateway endpoints. Regen Ledger v1.0 supports REST endpoints for all Cosmos SDK modules and Regen Ledger v2.0 supports REST endpoints for all remaining modules, including domain-specific modules.
 
 For example, you can query the balance of an address using the following `curl` command:
 ```
@@ -77,6 +73,6 @@ curl \
     http://localhost:1317/cosmos/bank/v1beta1/balances/<address>
 ```
 
-If you're eager to play around with what's available so far while we're still working on full REST API support for Regen Ledger, make sure you have API server and (optionally) Swagger UI enabled in your `~/.regen/config/app.toml` file, and go to `http://localhost:1317/swagger/` to read through the OpenAPI documentation.
+In order to interact with the REST interface, make sure you have API server and (optionally) Swagger UI enabled in your `~/.regen/config/app.toml` file. With Swagger UI enabled, you can go to `http://localhost:1317/swagger/` to read through the OpenAPI documentation.
 
 For more information about the REST interface, check out the [Cosmos SDK Documentation](https://docs.cosmos.network/v0.43/run-node/interact-node.html).
