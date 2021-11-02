@@ -577,3 +577,109 @@ func (s serverImpl) isCreatorAllowListed(ctx types.Context, allowlist []string, 
 	}
 	return false
 }
+
+// Sell creates a new sell order for an ecocredit
+func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocredit.MsgSellResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	owner := req.Owner
+	store := ctx.KVStore(s.storeKey)
+
+	ownerAddr, err := sdk.AccAddressFromBech32(owner)
+	if err != nil {
+		return nil, err
+	}
+
+	var sellOrderIds []uint64
+
+	for i := range req.Orders {
+
+		err = verifyBalance(store, ownerAddr, req.Orders[i].BatchDenom, req.Orders[i].Quantity)
+		if err != nil {
+			return nil, err
+		}
+
+		orderID := s.sellOrderTable.Sequence().PeekNextVal(ctx)
+
+		sellOrderIds = append(sellOrderIds, orderID)
+
+		_, err = s.sellOrderTable.Create(ctx, &ecocredit.SellOrder{
+			OrderId:           orderID,
+			BatchDenom:        req.Orders[i].BatchDenom,
+			Quantity:          req.Orders[i].Quantity,
+			AskPrice:          req.Orders[i].AskPrice,
+			DisableAutoRetire: req.Orders[i].DisableAutoRetire,
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// TODO: emit event
+
+	return &ecocredit.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
+}
+
+func (s serverImpl) UpdateSellOrders(ctx context.Context, orders *ecocredit.MsgUpdateSellOrders) (*ecocredit.MsgUpdateSellOrdersResponse, error) {
+	panic("implement me")
+}
+
+func (s serverImpl) BuyDirect(goCtx context.Context, req *ecocredit.MsgBuyDirect) (*ecocredit.MsgBuyDirectResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	buyer := req.Buyer
+
+	buyerAddr, err := sdk.AccAddressFromBech32(buyer)
+	if err != nil {
+		return nil, err
+	}
+
+	var buyOrderIds []uint64
+
+	for i := range req.Orders {
+
+		balances := s.bankKeeper.SpendableCoins(ctx, buyerAddr)
+		bidPrice := req.Orders[i].BidPrice
+
+		quantity, err := math.NewPositiveDecFromString(req.Orders[i].Quantity)
+		if err != nil {
+			return nil, err
+		}
+
+		// TODO: Convert amount using lookup in denom metadata (from display denom)
+		amountNeeded, _ := quantity.Mul(math.NewDecFromInt64(bidPrice.Amount.Int64()))
+		// TODO: Better handling of rounding / Dec => Int conversion
+		amountNeededInt64, err := amountNeeded.Int64()
+		if err != nil {
+			return nil, err
+		}
+
+		balanceAmount := balances.AmountOf(bidPrice.Denom)
+		if balanceAmount.GTE(sdk.NewInt(amountNeededInt64)) {
+			return nil, ecocredit.ErrInsufficientFunds
+		}
+
+		buyOrderID := s.buyOrderTable.Sequence().PeekNextVal(ctx)
+
+		buyOrderIds = append(buyOrderIds, buyOrderID)
+
+		_, err = s.buyOrderTable.Create(ctx, &ecocredit.BuyOrder{
+			BuyOrderId:         buyOrderID,
+			SellOrderId:        req.Orders[i].SellOrderId,
+			Quantity:           req.Orders[i].Quantity,
+			BidPrice:           req.Orders[i].BidPrice,
+			DisableAutoRetire:  req.Orders[i].DisableAutoRetire,
+			DisablePartialFill: req.Orders[i].DisablePartialFill,
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// TODO: process buy order (or do it in EndBlocker?)
+	// TODO: emit event
+
+	return &ecocredit.MsgBuyDirectResponse{BuyOrderIds: buyOrderIds}, nil
+}
+
+func (s serverImpl) AllowAskDenom(ctx context.Context, denom *ecocredit.MsgAllowAskDenom) (*ecocredit.MsgAllowAskDenomResponse, error) {
+	panic("implement me")
+}

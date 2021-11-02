@@ -96,3 +96,23 @@ func iterateBalances(store sdk.KVStore, storeKey byte, cb func(address, denom, b
 		}
 	}
 }
+
+func verifyBalance(store types.KVStore, ownerAddr sdk.AccAddress, batchDenom string, quantity string) error {
+	bd := batchDenomT(batchDenom)
+
+	balance, err := getDecimal(store, TradableBalanceKey(ownerAddr, bd))
+	if err != nil {
+		return err
+	}
+
+	q, err := math.NewPositiveDecFromString(quantity)
+	if err != nil {
+		return err
+	}
+
+	if balance.Cmp(q) == -1 {
+		return ecocredit.ErrInsufficientFunds
+	}
+
+	return nil
+}
