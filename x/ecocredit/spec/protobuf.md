@@ -5,11 +5,13 @@
 ## Table of Contents
 
 - [regen/ecocredit/v1alpha1/events.proto](#regen/ecocredit/v1alpha1/events.proto)
+    - [EventBuy](#regen.ecocredit.v1alpha1.EventBuy)
     - [EventCancel](#regen.ecocredit.v1alpha1.EventCancel)
     - [EventCreateBatch](#regen.ecocredit.v1alpha1.EventCreateBatch)
     - [EventCreateClass](#regen.ecocredit.v1alpha1.EventCreateClass)
     - [EventReceive](#regen.ecocredit.v1alpha1.EventReceive)
     - [EventRetire](#regen.ecocredit.v1alpha1.EventRetire)
+    - [EventSell](#regen.ecocredit.v1alpha1.EventSell)
   
 - [regen/ecocredit/v1alpha1/types.proto](#regen/ecocredit/v1alpha1/types.proto)
     - [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo)
@@ -87,6 +89,26 @@
 <p align="right"><a href="#top">Top</a></p>
 
 ## regen/ecocredit/v1alpha1/events.proto
+
+
+
+<a name="regen.ecocredit.v1alpha1.EventBuy"></a>
+
+### EventBuy
+EventBuy is an event emitted when a buy order is created.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| buy_order_id | [uint64](#uint64) |  | buy_order_id is the unique ID of buy order. |
+| sell_order_id | [uint64](#uint64) |  | sell_order_id is the sell order ID against which the buyer is trying to buy. |
+| quantity | [string](#string) |  | quantity is the quantity of credits to buy. If the quantity of credits available is less than this amount the order will be partially filled unless disable_partial_fill is true. |
+| bid_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | bid price is the bid price for this buy order. A credit unit will be settled at a purchase price that is no more than the bid price. The buy order will fail if the buyer does not have enough funds available to complete the purchase. |
+| disable_auto_retire | [bool](#bool) |  | disable_auto_retire allows auto-retirement to be disabled. If it is set to true the credits will not auto-retire and can be resold assuming that the corresponding sell order has auto-retirement disabled. If the sell order hasn't disabled auto-retirement and the buy order tries to disable it, that buy order will fail. |
+| disable_partial_fill | [bool](#bool) |  | disable_partial_fill disables the default behavior of partially filling buy orders if the requested quantity is not available. |
+
+
+
 
 
 
@@ -181,6 +203,25 @@ emitted for each batch_denom. This allows for easier indexing.
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of credit batch. |
 | amount | [string](#string) |  | amount is the decimal number of credits that have been retired. |
 | location | [string](#string) |  | location is the location of the beneficiary or buyer of the retired credits. It is a string of the form <country-code>[-<sub-national-code>[ <postal-code>]], with the first two fields conforming to ISO 3166-2, and postal-code being up to 64 alphanumeric characters. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.EventSell"></a>
+
+### EventSell
+EventSell is an event emitted when a sell order is created.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| order_id | [uint64](#uint64) |  | order_id is the unique ID of sell order. |
+| batch_denom | [string](#string) |  | batch_denom is the credit batch being sold. |
+| quantity | [string](#string) |  | quantity is the quantity of credits being sold. |
+| ask_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | ask_price is the price the seller is asking for each unit of the batch_denom. Each credit unit of the batch will be sold for at least the ask_price or more. |
+| disable_auto_retire | [bool](#bool) |  | disable_auto_retire disables auto-retirement of credits which allows a buyer to disable auto-retirement in their buy order enabling them to resell the credits to another buyer. |
 
 
 

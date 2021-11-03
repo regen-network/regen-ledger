@@ -612,9 +612,18 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 		if err != nil {
 			return nil, err
 		}
-	}
 
-	// TODO: emit event
+		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventSell{
+			OrderId:           orderID,
+			BatchDenom:        req.Orders[i].BatchDenom,
+			Quantity:          req.Orders[i].Quantity,
+			AskPrice:          req.Orders[i].AskPrice,
+			DisableAutoRetire: req.Orders[i].DisableAutoRetire,
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	return &ecocredit.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
 }
@@ -626,7 +635,6 @@ func (s serverImpl) UpdateSellOrders(ctx context.Context, orders *ecocredit.MsgU
 func (s serverImpl) BuyDirect(goCtx context.Context, req *ecocredit.MsgBuyDirect) (*ecocredit.MsgBuyDirectResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	buyer := req.Buyer
-	store := ctx.KVStore(s.storeKey)
 
 	buyerAddr, err := sdk.AccAddressFromBech32(buyer)
 	if err != nil {
@@ -661,18 +669,21 @@ func (s serverImpl) BuyDirect(goCtx context.Context, req *ecocredit.MsgBuyDirect
 		buyOrderID := s.buyOrderSeq.NextVal(ctx)
 
 		buyOrderIds = append(buyOrderIds, buyOrderID)
+
+		// TODO: process buy order (or do it in EndBlocker?)
+
+		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventBuy{
+			BuyOrderId:         buyOrderID,
+			SellOrderId:        req.Orders[i].SellOrderId,
+			Quantity:           req.Orders[i].Quantity,
+			BidPrice:           req.Orders[i].BidPrice,
+			DisableAutoRetire:  req.Orders[i].DisableAutoRetire,
+			DisablePartialFill: req.Orders[i].DisablePartialFill,
+		})
+		if err != nil {
+			return nil, err
+		}
 	}
-
-	// TODO: process buy order (or do it in EndBlocker?)
-
-	// TODO: emit event
-
-	// BuyOrderId:         buyOrderID,
-	// SellOrderId:        req.Orders[i].SellOrderId,
-	// Quantity:           req.Orders[i].Quantity,
-	// BidPrice:           req.Orders[i].BidPrice,
-	// DisableAutoRetire:  req.Orders[i].DisableAutoRetire,
-	// DisablePartialFill: req.Orders[i].DisablePartialFill,
 
 	return &ecocredit.MsgBuyDirectResponse{BuyOrderIds: buyOrderIds}, nil
 }
