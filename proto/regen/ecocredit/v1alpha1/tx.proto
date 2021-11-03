@@ -371,7 +371,11 @@ message MsgBuy {
 
   // Order is a buy order.
   message Order {
+
+    // Selection defines a buy order selection.
     message Selection {
+
+      // sum defines the type of selection.
       oneof sum {
         // sell_order_id is the sell order ID against which the buyer is trying to buy.
         // When sell_order_id is set, this is known as a direct buy order because it
@@ -386,6 +390,7 @@ message MsgBuy {
       }
     }
 
+    // selection is the buy order selection.
     Selection selection = 1;
 
     // quantity is the quantity of credits to buy. If the quantity of credits
