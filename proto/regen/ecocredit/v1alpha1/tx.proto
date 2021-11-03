@@ -471,17 +471,17 @@ message MsgCreateBasket {
   // as one unit in user interfaces.
   uint32 exponent = 4;
 
-  // admission_criteria is the criteria by which credits can be added to the
-  // basket. Admission criteria will be applied in order and the first criteria
+  // basket_criteria is the criteria by which credits can be added to the
+  // basket. Basket criteria will be applied in order and the first criteria
   // which applies to a credit will determine its multiplier in the basket.
-  repeated AdmissionCriteria admission_criteria = 5;
+  repeated BasketCriteria basket_criteria = 5;
 
   bool retire_on_take = 6;
 
   bool allow_picking = 7;
 }
 
-message AdmissionCriteria {
+message BasketCriteria {
   Filter filter = 1;
 
   // multiplier is an integer number which is applied to credit units when
