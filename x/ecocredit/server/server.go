@@ -19,6 +19,7 @@ const (
 	ClassInfoTablePrefix     byte = 0x5
 	BatchInfoTablePrefix     byte = 0x6
 	BasketInfoTablePrefix    byte = 0x7
+	BasketCreditsPrefix      byte = 0x8
 )
 
 type serverImpl struct {
