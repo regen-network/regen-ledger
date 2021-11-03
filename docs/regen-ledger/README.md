@@ -18,10 +18,6 @@ Regen Ledger has two custom modules in development that support our desired func
 
 ### Ecocredit Module
 
-::: tip Available in Regen Ledger v2.0
-The ecocredit module is available on [Regen Mainnet](/getting-started/live-networks.md#regen-mainnet) and [Hambach Testnet](/getting-started/live-networks.md#hambach-testnet).
-:::
-
 The **Ecocredit Module** is our module for managing the issuance, trading, and retiring of credits pertaining to verifiable changes in ecosystem health.
 
 Initially, this module will be used for Regen Network's own [CarbonPlus Grasslands](https://regen-registry.s3.amazonaws.com/GHG+and+Co-Benefits+in+Grazing+Systems+Credit+Class.pdf) credit, but we've designed this module first and foremost to be an open platform for all credit designers - something like an [EIP721](https://eips.ethereum.org/EIPS/eip-721) token standard for ecosystem service credits.
@@ -31,7 +27,7 @@ Check out [Ecocredit Module Overview](./modules/ecocredit/README.md) for more in
 ### Data Module
 
 ::: tip COMING SOON
-The data module is under active development and will soon be made available in experimental builds of Regen Ledger and on [Hambach Testnet](/getting-started/live-networks.md#hambach-testnet).
+The data module is under active development and will soon be made available using the experimental build of Regen Ledger and on [Hambach Testnet](/getting-started/live-networks.md#hambach-testnet).
 :::
 
 High quality and verifiable ecological data is an essential component in any modern ecosystem service marketplace. The **Data Module** is intended to sit alongside the Ecocredit Module, serving as a generic repository for more complex metadata pertaining to a credit batch or an ecosystem service project.
@@ -50,11 +46,11 @@ Supplemental to the core featureset described, Regen Ledger has out-of-the-box s
 ### Groups Module
 
 ::: tip COMING SOON
-A beta version of the group module is currently available in experimental builds of Regen Ledger and on [Hambach Testnet](/getting-started/live-networks.md#hambach-testnet).
+A beta version of the group module is currently available using the experimental build of Regen Ledger and on [Hambach Testnet](/getting-started/live-networks.md#hambach-testnet).
 :::
 
 ### CosmWasm
 
 ::: tip COMING SOON
-CosmWasm support will soon be made available in experimental builds of Regen Ledger and on [Hambach Testnet](/getting-started/live-networks.md#hambach-testnet).
+CosmWasm support will soon be made available using the experimental build of Regen Ledger and on [Hambach Testnet](/getting-started/live-networks.md#hambach-testnet).
 :::

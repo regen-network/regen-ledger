@@ -59,11 +59,7 @@ For more information about the gRPC interface, check out the [Cosmos SDK Documen
 
 ## REST Interface
 
-::: tip Available in Regen Ledger v2.0
-All gRPC services and methods on Regen Ledger will soon be made available for more convenient REST based queries through [gRPC Gateway](https://github.com/grpc-ecosystem/grpc-gateway).
-:::
-
-The REST interface is available through gRPC-gateway endpoints. Regen Ledger v1.0 supports REST endpoints for all Cosmos SDK modules and Regen Ledger v2.0 supports REST endpoints for all remaining modules, including domain-specific modules.
+All gRPC services and methods on Regen Ledger are available for more convenient REST based queries through [gRPC Gateway](https://github.com/grpc-ecosystem/grpc-gateway).
 
 For example, you can query the balance of an address using the following `curl` command:
 ```

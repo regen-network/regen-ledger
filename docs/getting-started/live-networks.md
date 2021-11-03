@@ -74,7 +74,7 @@ To check the status of the Hambach Testnet node, run the following command:
 regen status --node http://hambach.regen.network:26657
 ```
 
-If you are using `v2.0.0` or later, you can set the `node` once using the `config` command rather than adding the `--node` flag to each command.
+If you are using `v2.0.0` or later, you can set the node address once using the `config` command rather than adding the `--node` flag to each command.
 
 ```bash
 regen config node http://104.131.169.70:26657
