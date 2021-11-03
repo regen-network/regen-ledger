@@ -89,11 +89,23 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 	}
 	multipliedAmtReceived, err := amtReceived.Mul(multiplier)
 
-	err = s.bankKeeper.MintCoins(ctx.Context, "ecocredit", sdk.NewCoins())
+	// TODO Is there another way than to convert from math.Dec to sdk.Int other than passing by int64?
+	i, err := multipliedAmtReceived.Int64()
 	if err != nil {
 		return nil, err
 	}
-	err = s.bankKeeper.SendCoinsFromModuleToAccount(ctx.Context, "ecocredit", owner, multipliedAmtReceived)
+	amtAsInt := sdk.NewIntFromUint64(uint64(i))
+	basketTokens := sdk.NewCoins(sdk.NewCoin(basket.BasketDenom, amtAsInt))
+
+	// TODO don't hardcode ecocredit string.
+	err = s.bankKeeper.MintCoins(ctx.Context, "ecocredit", basketTokens)
+	if err != nil {
+		return nil, err
+	}
+	err = s.bankKeeper.SendCoinsFromModuleToAccount(ctx.Context, "ecocredit", owner, basketTokens)
+	if err != nil {
+		return nil, err
+	}
 
 	return &ecocredit.MsgAddToBasketResponse{
 		AmountReceived: amtReceived.String(),
