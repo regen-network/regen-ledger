@@ -160,3 +160,26 @@ message EventBuy {
   // buy orders if the requested quantity is not available.
   bool disable_partial_fill = 6;
 }
+
+// EventUpdateSellOrder is an event emitted when a sell order is updated.
+message EventUpdateSellOrder {
+
+  // owner is the owner of the sell orders.
+  string owner = 1;
+
+  //  sell_order_id is the ID of an existing sell order.
+  uint64 sell_order_id = 2;
+
+  // batch_denom is the credit batch being sold.
+  string batch_denom = 3;
+
+  // new_quantity is the updated quantity of credits available to sell, if it
+  // is set to zero then the order is cancelled.
+  string new_quantity = 4;
+
+  // new_ask_price is the new ask price for this sell order
+  cosmos.base.v1beta1.Coin new_ask_price = 5;
+
+  // disable_auto_retire updates the disable_auto_retire field in the sell order.
+  bool disable_auto_retire = 6;
+}

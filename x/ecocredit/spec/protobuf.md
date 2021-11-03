@@ -12,6 +12,7 @@
     - [EventReceive](#regen.ecocredit.v1alpha1.EventReceive)
     - [EventRetire](#regen.ecocredit.v1alpha1.EventRetire)
     - [EventSell](#regen.ecocredit.v1alpha1.EventSell)
+    - [EventUpdateSellOrder](#regen.ecocredit.v1alpha1.EventUpdateSellOrder)
   
 - [regen/ecocredit/v1alpha1/types.proto](#regen/ecocredit/v1alpha1/types.proto)
     - [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo)
@@ -222,6 +223,26 @@ EventSell is an event emitted when a sell order is created.
 | quantity | [string](#string) |  | quantity is the quantity of credits being sold. |
 | ask_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | ask_price is the price the seller is asking for each unit of the batch_denom. Each credit unit of the batch will be sold for at least the ask_price or more. |
 | disable_auto_retire | [bool](#bool) |  | disable_auto_retire disables auto-retirement of credits which allows a buyer to disable auto-retirement in their buy order enabling them to resell the credits to another buyer. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.EventUpdateSellOrder"></a>
+
+### EventUpdateSellOrder
+EventUpdateSellOrder is an event emitted when a sell order is updated.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| owner | [string](#string) |  | owner is the owner of the sell orders. |
+| sell_order_id | [uint64](#uint64) |  | sell_order_id is the ID of an existing sell order. |
+| batch_denom | [string](#string) |  | batch_denom is the credit batch being sold. |
+| new_quantity | [string](#string) |  | new_quantity is the updated quantity of credits available to sell, if it is set to zero then the order is cancelled. |
+| new_ask_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | new_ask_price is the new ask price for this sell order |
+| disable_auto_retire | [bool](#bool) |  | disable_auto_retire updates the disable_auto_retire field in the sell order. |
 
 
 

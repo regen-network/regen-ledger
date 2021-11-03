@@ -628,8 +628,51 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 	return &ecocredit.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
 }
 
-func (s serverImpl) UpdateSellOrders(ctx context.Context, orders *ecocredit.MsgUpdateSellOrders) (*ecocredit.MsgUpdateSellOrdersResponse, error) {
-	panic("implement me")
+func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUpdateSellOrders) (*ecocredit.MsgUpdateSellOrdersResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	owner := req.Owner
+	store := ctx.KVStore(s.storeKey)
+
+	ownerAddr, err := sdk.AccAddressFromBech32(owner)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range req.Updates {
+
+		sellOrder, err := s.getSellOrder(ctx, req.Updates[i].SellOrderId)
+		if err != nil {
+			return nil, err
+		}
+
+		err = verifyBalance(store, ownerAddr, sellOrder.BatchDenom, req.Updates[i].NewQuantity)
+		if err != nil {
+			return nil, err
+		}
+
+		sellOrder.Quantity = req.Updates[i].NewQuantity
+		sellOrder.AskPrice = req.Updates[i].NewAskPrice
+		sellOrder.DisableAutoRetire = req.Updates[i].DisableAutoRetire
+
+		err = s.sellOrderTable.Update(ctx, sellOrder.OrderId, sellOrder)
+		if err != nil {
+			return nil, err
+		}
+
+		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventUpdateSellOrder{
+			Owner:             owner,
+			SellOrderId:       sellOrder.OrderId,
+			BatchDenom:        sellOrder.BatchDenom,
+			NewQuantity:       sellOrder.Quantity,
+			NewAskPrice:       sellOrder.AskPrice,
+			DisableAutoRetire: sellOrder.DisableAutoRetire,
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &ecocredit.MsgUpdateSellOrdersResponse{}, nil
 }
 
 func (s serverImpl) BuyDirect(goCtx context.Context, req *ecocredit.MsgBuyDirect) (*ecocredit.MsgBuyDirectResponse, error) {
