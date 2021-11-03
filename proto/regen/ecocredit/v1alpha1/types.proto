@@ -128,7 +128,7 @@ message TagTarget {
     // project_id indicates that this tag targets all the credits within a given project.
     string project_id = 2;
 
-    // project_id indicates that this tag targets the credits within a batch.
+    // batch_id indicates that this tag targets the credits within a batch.
     string batch_id = 3;
   }
 }
