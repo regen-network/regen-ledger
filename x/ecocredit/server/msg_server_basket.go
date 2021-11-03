@@ -45,6 +45,12 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid basket denom", req.BasketDenom)
 	}
 
+	var basket ecocredit.BasketInfo
+	err = s.basketInfoTable.GetOne(ctx, orm.RowID(req.BasketDenom), &basket)
+	if err != nil {
+		return nil, err
+	}
+
 	amtReceived := math.NewDecFromInt64(0)
 
 	for _, credit := range req.Credits {
@@ -76,7 +82,18 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 		}
 	}
 
-	// TODO Add minting the basket token on x/bank.
+	// TODO Why 10?
+	multiplier, err := math.NewNonNegativeFixedDecFromString(basket.AdmissionCriteria[0].Multiplier, 10)
+	if err != nil {
+		return nil, err
+	}
+	multipliedAmtReceived, err := amtReceived.Mul(multiplier)
+
+	err = s.bankKeeper.MintCoins(ctx.Context, "ecocredit", sdk.NewCoins())
+	if err != nil {
+		return nil, err
+	}
+	err = s.bankKeeper.SendCoinsFromModuleToAccount(ctx.Context, "ecocredit", owner, multipliedAmtReceived)
 
 	return &ecocredit.MsgAddToBasketResponse{
 		AmountReceived: amtReceived.String(),
