@@ -47,8 +47,8 @@ service Msg {
   // UpdateSellOrders updates existing sell orders.
   rpc UpdateSellOrders(MsgUpdateSellOrders) returns (MsgUpdateSellOrdersResponse);
 
-  // BuyDirect creates buy orders directly against sell orders.
-  rpc BuyDirect (MsgBuyDirect) returns (MsgBuyDirectResponse);
+  // Buy creates credit buy orders.
+  rpc Buy (MsgBuy) returns (MsgBuyResponse);
 
   // AllowAskDenom is a governance operation which authorizes a new ask denom to be used in sell orders
   rpc AllowAskDenom (MsgAllowAskDenom) returns (MsgAllowAskDenomResponse);
@@ -360,8 +360,8 @@ message MsgUpdateSellOrders {
 // MsgUpdateSellOrdersResponse is the Msg/UpdateSellOrders response type.
 message MsgUpdateSellOrdersResponse {}
 
-// MsgBuyDirect is the Msg/BuyDirect request type.
-message MsgBuyDirect {
+// MsgBuy is the Msg/Buy request type.
+message MsgBuy {
 
   // buyer is the address of the credit buyer.
   string buyer = 1;
@@ -369,11 +369,29 @@ message MsgBuyDirect {
   // orders are the new buy orders.
   repeated Order orders = 2;
 
-  // Order is a direct buy order.
+  // Order is a buy order.
   message Order {
 
-    // sell_order_id is the sell order ID against which the buyer is trying to buy.
-    uint64 sell_order_id = 1;
+    // Selection defines a buy order selection.
+    message Selection {
+
+      // sum defines the type of selection.
+      oneof sum {
+        // sell_order_id is the sell order ID against which the buyer is trying to buy.
+        // When sell_order_id is set, this is known as a direct buy order because it
+        // is placed directly against a specific sell order.
+        uint64 sell_order_id = 1;
+
+        // TODO: once we have filters defined for baskets, we can enable filtered
+        // buy orders which will involve full double-sided batch order matching
+        //
+        // filter selects credits to buy based upon the specified filter criteria.
+        // Filter filter = 2;
+      }
+    }
+
+    // selection is the buy order selection.
+    Selection selection = 1;
 
     // quantity is the quantity of credits to buy. If the quantity of credits
     // available is less than this amount the order will be partially filled
@@ -399,8 +417,8 @@ message MsgBuyDirect {
   }
 }
 
-// MsgBuyDirectResponse is the Msg/BuyDirect response type.
-message MsgBuyDirectResponse {
+// MsgBuyResponse is the Msg/Buy response type.
+message MsgBuyResponse {
 
   // buy_order_ids are the buy order IDs of the newly created buy orders. Buy
   // orders may not settle instantaneously, but rather in batches at specified
