@@ -12,10 +12,17 @@
     - [EventRetire](#regen.ecocredit.v1alpha1.EventRetire)
   
 - [regen/ecocredit/v1alpha1/types.proto](#regen/ecocredit/v1alpha1/types.proto)
+    - [AdmissionCriteria](#regen.ecocredit.v1alpha1.AdmissionCriteria)
+    - [BasketCredit](#regen.ecocredit.v1alpha1.BasketCredit)
+    - [BasketInfo](#regen.ecocredit.v1alpha1.BasketInfo)
     - [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo)
     - [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo)
     - [CreditType](#regen.ecocredit.v1alpha1.CreditType)
     - [CreditTypeSeq](#regen.ecocredit.v1alpha1.CreditTypeSeq)
+    - [Filter](#regen.ecocredit.v1alpha1.Filter)
+    - [Filter.And](#regen.ecocredit.v1alpha1.Filter.And)
+    - [Filter.DateRange](#regen.ecocredit.v1alpha1.Filter.DateRange)
+    - [Filter.Or](#regen.ecocredit.v1alpha1.Filter.Or)
     - [Params](#regen.ecocredit.v1alpha1.Params)
   
 - [regen/ecocredit/v1alpha1/genesis.proto](#regen/ecocredit/v1alpha1/genesis.proto)
@@ -44,26 +51,45 @@
     - [Query](#regen.ecocredit.v1alpha1.Query)
   
 - [regen/ecocredit/v1alpha1/tx.proto](#regen/ecocredit/v1alpha1/tx.proto)
+    - [MsgAddToBasket](#regen.ecocredit.v1alpha1.MsgAddToBasket)
+    - [MsgAddToBasketResponse](#regen.ecocredit.v1alpha1.MsgAddToBasketResponse)
+    - [MsgAllowAskDenom](#regen.ecocredit.v1alpha1.MsgAllowAskDenom)
+    - [MsgAllowAskDenomResponse](#regen.ecocredit.v1alpha1.MsgAllowAskDenomResponse)
+    - [MsgBuyDirect](#regen.ecocredit.v1alpha1.MsgBuyDirect)
+    - [MsgBuyDirect.Order](#regen.ecocredit.v1alpha1.MsgBuyDirect.Order)
+    - [MsgBuyDirectResponse](#regen.ecocredit.v1alpha1.MsgBuyDirectResponse)
     - [MsgCancel](#regen.ecocredit.v1alpha1.MsgCancel)
     - [MsgCancel.CancelCredits](#regen.ecocredit.v1alpha1.MsgCancel.CancelCredits)
     - [MsgCancelResponse](#regen.ecocredit.v1alpha1.MsgCancelResponse)
+    - [MsgCreateBasket](#regen.ecocredit.v1alpha1.MsgCreateBasket)
+    - [MsgCreateBasketResponse](#regen.ecocredit.v1alpha1.MsgCreateBasketResponse)
     - [MsgCreateBatch](#regen.ecocredit.v1alpha1.MsgCreateBatch)
     - [MsgCreateBatch.BatchIssuance](#regen.ecocredit.v1alpha1.MsgCreateBatch.BatchIssuance)
     - [MsgCreateBatchResponse](#regen.ecocredit.v1alpha1.MsgCreateBatchResponse)
     - [MsgCreateClass](#regen.ecocredit.v1alpha1.MsgCreateClass)
     - [MsgCreateClassResponse](#regen.ecocredit.v1alpha1.MsgCreateClassResponse)
+    - [MsgPickFromBasket](#regen.ecocredit.v1alpha1.MsgPickFromBasket)
+    - [MsgPickFromBasketResponse](#regen.ecocredit.v1alpha1.MsgPickFromBasketResponse)
     - [MsgRetire](#regen.ecocredit.v1alpha1.MsgRetire)
     - [MsgRetire.RetireCredits](#regen.ecocredit.v1alpha1.MsgRetire.RetireCredits)
     - [MsgRetireResponse](#regen.ecocredit.v1alpha1.MsgRetireResponse)
+    - [MsgSell](#regen.ecocredit.v1alpha1.MsgSell)
+    - [MsgSell.Order](#regen.ecocredit.v1alpha1.MsgSell.Order)
+    - [MsgSellResponse](#regen.ecocredit.v1alpha1.MsgSellResponse)
     - [MsgSend](#regen.ecocredit.v1alpha1.MsgSend)
     - [MsgSend.SendCredits](#regen.ecocredit.v1alpha1.MsgSend.SendCredits)
     - [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse)
+    - [MsgTakeFromBasket](#regen.ecocredit.v1alpha1.MsgTakeFromBasket)
+    - [MsgTakeFromBasketResponse](#regen.ecocredit.v1alpha1.MsgTakeFromBasketResponse)
     - [MsgUpdateClassAdmin](#regen.ecocredit.v1alpha1.MsgUpdateClassAdmin)
     - [MsgUpdateClassAdminResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassAdminResponse)
     - [MsgUpdateClassIssuers](#regen.ecocredit.v1alpha1.MsgUpdateClassIssuers)
     - [MsgUpdateClassIssuersResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassIssuersResponse)
     - [MsgUpdateClassMetadata](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadata)
     - [MsgUpdateClassMetadataResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadataResponse)
+    - [MsgUpdateSellOrders](#regen.ecocredit.v1alpha1.MsgUpdateSellOrders)
+    - [MsgUpdateSellOrders.Update](#regen.ecocredit.v1alpha1.MsgUpdateSellOrders.Update)
+    - [MsgUpdateSellOrdersResponse](#regen.ecocredit.v1alpha1.MsgUpdateSellOrdersResponse)
   
     - [Msg](#regen.ecocredit.v1alpha1.Msg)
   
@@ -191,6 +217,58 @@ emitted for each batch_denom. This allows for easier indexing.
 
 
 
+<a name="regen.ecocredit.v1alpha1.AdmissionCriteria"></a>
+
+### AdmissionCriteria
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [Filter](#regen.ecocredit.v1alpha1.Filter) |  |  |
+| multiplier | [string](#string) |  | multiplier is an integer number which is applied to credit units when converting to basket units. For example if the multiplier is 2000, then 1.1 credits will result in 2200 basket tokens. If there are any fractional amounts left over in this calculation when adding credits to a basket, those fractional amounts will not get added to the basket. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.BasketCredit"></a>
+
+### BasketCredit
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
+| tradable_amount | [string](#string) |  | tradable_amount is the number of credits in this transfer that can be traded by the recipient. Decimal values are acceptable within the precision returned by Query/Precision. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.BasketInfo"></a>
+
+### BasketInfo
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| basket_denom | [string](#string) |  | basket_denom is the basket denom to add credits to. |
+| display_name | [string](#string) |  | display_name will be used to create a bank Metadata display name for this basket token of the form ecocredit:{curator}:{display_name}. |
+| exponent | [uint32](#uint32) |  | exponent is the exponent that will be used for denom metadata. An exponent of 6 will mean that 10^6 units of a basket token should be displayed as one unit in user interfaces. |
+| admission_criteria | [AdmissionCriteria](#regen.ecocredit.v1alpha1.AdmissionCriteria) | repeated | admission_criteria is the criteria by which credits can be added to the basket. Admission criteria will be applied in order and the first criteria which applies to a credit will determine its multiplier in the basket. |
+| retire_on_take | [bool](#bool) |  |  |
+| allow_picking | [bool](#bool) |  |  |
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha1.BatchInfo"></a>
 
 ### BatchInfo
@@ -264,6 +342,78 @@ This represents the number of credit classes created with that credit type.
 | ----- | ---- | ----- | ----------- |
 | abbreviation | [string](#string) |  | The credit type abbreviation |
 | seq_number | [uint64](#uint64) |  | The sequence number of classes of the credit type |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.Filter"></a>
+
+### Filter
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| and | [Filter.And](#regen.ecocredit.v1alpha1.Filter.And) |  |  |
+| or | [Filter.Or](#regen.ecocredit.v1alpha1.Filter.Or) |  |  |
+| credit_type_name | [string](#string) |  |  |
+| class_id | [string](#string) |  |  |
+| project_id | [string](#string) |  | project_id filters against credits from this batch. |
+| batch_denom | [string](#string) |  | batch_id filters against credits from this batch. |
+| class_admin | [string](#string) |  | class_admin filters against credits issued by this class admin. |
+| issuer | [string](#string) |  | issuer filters against credits issued by this issuer address. |
+| owner | [string](#string) |  | owner filters against credits currently owned by this address. |
+| project_location | [string](#string) |  | project_location can be specified in three levels of granularity: country, sub-national-code, or postal code. If just country is given, for instance "US" then any credits in the "US" will be matched even their project location is more specific, ex. "US-NY 12345". If a country, sub-national-code and postal code are all provided then only projects in that postal code will match. |
+| date_range | [Filter.DateRange](#regen.ecocredit.v1alpha1.Filter.DateRange) |  |  |
+| tag | [string](#string) |  | tag specifies a curation tag to match against. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.Filter.And"></a>
+
+### Filter.And
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filters | [Filter](#regen.ecocredit.v1alpha1.Filter) | repeated |  |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.Filter.DateRange"></a>
+
+### Filter.DateRange
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| start_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | start_date is the beginning of the period during which this credit batch was quantified and verified. If it is empty then there is no start date limit. |
+| end_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | end_date is the end of the period during which this credit batch was quantified and verified. If it is empty then there is no end date limit. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.Filter.Or"></a>
+
+### Filter.Or
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filters | [Filter](#regen.ecocredit.v1alpha1.Filter) | repeated |  |
 
 
 
@@ -646,6 +796,116 @@ Msg is the regen.ecocredit.v1alpha1 Query service.
 
 
 
+<a name="regen.ecocredit.v1alpha1.MsgAddToBasket"></a>
+
+### MsgAddToBasket
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| owner | [string](#string) |  | owner is the owner of credits being added to the basket. |
+| basket_denom | [string](#string) |  | basket_denom is the basket denom to add credits to. |
+| credits | [BasketCredit](#regen.ecocredit.v1alpha1.BasketCredit) | repeated | credits are credits to add to the basket. If they do not match the basket's admission criteria the operation will fail. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgAddToBasketResponse"></a>
+
+### MsgAddToBasketResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| amount_received | [string](#string) |  | amount_received is the amount of basket tokens received. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgAllowAskDenom"></a>
+
+### MsgAllowAskDenom
+MsgAllowAskDenom is the Msg/AllowAskDenom request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| root_address | [string](#string) |  | root_address is the address of the governance account which can authorize ask denoms |
+| denom | [string](#string) |  | denom is the denom to allow (ex. ibc/GLKHDSG423SGS) |
+| display_denom | [string](#string) |  | display_denom is the denom to display to the user and is informational |
+| exponent | [uint32](#uint32) |  | exponent is the exponent that relates the denom to the display_denom and is informational |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgAllowAskDenomResponse"></a>
+
+### MsgAllowAskDenomResponse
+MsgAllowAskDenomResponse is the Msg/AllowAskDenom response type.
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgBuyDirect"></a>
+
+### MsgBuyDirect
+MsgBuyDirect is the Msg/BuyDirect request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| buyer | [string](#string) |  | buyer is the address of the credit buyer. |
+| orders | [MsgBuyDirect.Order](#regen.ecocredit.v1alpha1.MsgBuyDirect.Order) | repeated | orders are the new buy orders. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgBuyDirect.Order"></a>
+
+### MsgBuyDirect.Order
+Order is a direct buy order.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sell_order_id | [uint64](#uint64) |  | sell_order_id is the sell order ID against which the buyer is trying to buy. |
+| quantity | [string](#string) |  | quantity is the quantity of credits to buy. If the quantity of credits available is less than this amount the order will be partially filled unless disable_partial_fill is true. |
+| bid_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | bid price is the bid price for this buy order. A credit unit will be settled at a purchase price that is no more than the bid price. The buy order will fail if the buyer does not have enough funds available to complete the purchase. |
+| disable_auto_retire | [bool](#bool) |  | disable_auto_retire allows auto-retirement to be disabled. If it is set to true the credits will not auto-retire and can be resold assuming that the corresponding sell order has auto-retirement disabled. If the sell order hasn't disabled auto-retirement and the buy order tries to disable it, that buy order will fail. |
+| disable_partial_fill | [bool](#bool) |  | disable_partial_fill disables the default behavior of partially filling buy orders if the requested quantity is not available. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgBuyDirectResponse"></a>
+
+### MsgBuyDirectResponse
+MsgBuyDirectResponse is the Msg/BuyDirect response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| buy_order_ids | [uint64](#uint64) | repeated | buy_order_ids are the buy order IDs of the newly created buy orders. Buy orders may not settle instantaneously, but rather in batches at specified batch epoch times. |
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha1.MsgCancel"></a>
 
 ### MsgCancel
@@ -682,6 +942,42 @@ CancelCredits specifies a batch and the number of credits being cancelled.
 
 ### MsgCancelResponse
 MsgCancelResponse is the Msg/Cancel response type.
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgCreateBasket"></a>
+
+### MsgCreateBasket
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| curator | [string](#string) |  | curator is the address of the basket curator who is able to change certain basket settings. |
+| name | [string](#string) |  | name will be used to create a bank denom for this basket token of the form ecocredit:{curator}:{name}. |
+| display_name | [string](#string) |  | display_name will be used to create a bank Metadata display name for this basket token of the form ecocredit:{curator}:{display_name}. |
+| exponent | [uint32](#uint32) |  | exponent is the exponent that will be used for denom metadata. An exponent of 6 will mean that 10^6 units of a basket token should be displayed as one unit in user interfaces. |
+| admission_criteria | [AdmissionCriteria](#regen.ecocredit.v1alpha1.AdmissionCriteria) | repeated | admission_criteria is the criteria by which credits can be added to the basket. Admission criteria will be applied in order and the first criteria which applies to a credit will determine its multiplier in the basket. |
+| retire_on_take | [bool](#bool) |  |  |
+| allow_picking | [bool](#bool) |  |  |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgCreateBasketResponse"></a>
+
+### MsgCreateBasketResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| basket_denom | [string](#string) |  |  |
 
 
 
@@ -776,6 +1072,34 @@ MsgCreateClassResponse is the Msg/CreateClass response type.
 
 
 
+<a name="regen.ecocredit.v1alpha1.MsgPickFromBasket"></a>
+
+### MsgPickFromBasket
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| owner | [string](#string) |  | owner is the owner of the basket tokens. |
+| basket_denom | [string](#string) |  | basket_denom is the denom to pick from. |
+| credits | [BasketCredit](#regen.ecocredit.v1alpha1.BasketCredit) | repeated | credits are the units of credits being picked from the basket |
+| retirement_location | [string](#string) |  | retirement_location is the optional retirement location for the credits which will be used only if retire_on_take is true for this basket. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgPickFromBasketResponse"></a>
+
+### MsgPickFromBasketResponse
+
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha1.MsgRetire"></a>
 
 ### MsgRetire
@@ -813,6 +1137,55 @@ RetireCredits specifies a batch and the number of credits being retired.
 
 ### MsgRetireResponse
 MsgRetire is the Msg/Retire response type.
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgSell"></a>
+
+### MsgSell
+MsgSell is the Msg/Sell request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| owner | [string](#string) |  | owner is the address of the owner of the credits being sold. |
+| orders | [MsgSell.Order](#regen.ecocredit.v1alpha1.MsgSell.Order) | repeated | orders are the sell orders being created. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgSell.Order"></a>
+
+### MsgSell.Order
+Order is the content of a new sell order.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| batch_denom | [string](#string) |  | batch_denom is the credit batch being sold. |
+| quantity | [string](#string) |  | quantity is the quantity of credits being sold from this batch. If it is less then the balance of credits the owner has available at the time this sell order is matched, the quantity will be adjusted downwards to the owner's balance. However, if the balance of credits is less than this quantity at the time the sell order is created, the operation will fail. |
+| ask_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | ask_price is the price the seller is asking for each unit of the batch_denom. Each credit unit of the batch will be sold for at least the ask_price or more. |
+| disable_auto_retire | [bool](#bool) |  | disable_auto_retire disables auto-retirement of credits which allows a buyer to disable auto-retirement in their buy order enabling them to resell the credits to another buyer. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgSellResponse"></a>
+
+### MsgSellResponse
+MsgSellResponse is the Msg/Sell response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sell_order_ids | [uint64](#uint64) | repeated | sell_order_ids are the sell order IDs of the newly created sell orders. |
 
 
 
@@ -860,6 +1233,39 @@ and retired credits, which will be retired on receipt.
 
 ### MsgSendResponse
 MsgSendResponse is the Msg/Send response type.
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgTakeFromBasket"></a>
+
+### MsgTakeFromBasket
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| owner | [string](#string) |  |  |
+| basket_denom | [string](#string) |  |  |
+| amount | [string](#string) |  |  |
+| retirement_location | [string](#string) |  | retirement_location is the optional retirement location for the credits which will be used only if retire_on_take is true for this basket. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgTakeFromBasketResponse"></a>
+
+### MsgTakeFromBasketResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| credits | [BasketCredit](#regen.ecocredit.v1alpha1.BasketCredit) | repeated | credits are the credits taken out of the basket. |
 
 
 
@@ -946,6 +1352,50 @@ MsgUpdateClassMetadataResponse is the MsgUpdateClassMetadata response type.
 
 
 
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateSellOrders"></a>
+
+### MsgUpdateSellOrders
+MsgUpdateSellOrders is the Msg/UpdateSellOrders request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| owner | [string](#string) |  | owner is the owner of the sell orders. |
+| updates | [MsgUpdateSellOrders.Update](#regen.ecocredit.v1alpha1.MsgUpdateSellOrders.Update) | repeated | updates are updates to existing sell orders. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateSellOrders.Update"></a>
+
+### MsgUpdateSellOrders.Update
+Update is an update to an existing sell order.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sell_order_id | [uint64](#uint64) |  | sell_order_id is the ID of an existing sell order. |
+| new_quantity | [string](#string) |  | new_quantity is the updated quantity of credits available to sell, if it is set to zero then the order is cancelled. |
+| new_ask_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | new_ask_price is the new ask price for this sell order |
+| disable_auto_retire | [bool](#bool) |  | disable_auto_retire updates the disable_auto_retire field in the sell order. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgUpdateSellOrdersResponse"></a>
+
+### MsgUpdateSellOrdersResponse
+MsgUpdateSellOrdersResponse is the Msg/UpdateSellOrders response type.
+
+
+
+
+
  <!-- end messages -->
 
  <!-- end enums -->
@@ -968,6 +1418,14 @@ Msg is the regen.ecocredit.v1alpha1 Msg service.
 | UpdateClassAdmin | [MsgUpdateClassAdmin](#regen.ecocredit.v1alpha1.MsgUpdateClassAdmin) | [MsgUpdateClassAdminResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassAdminResponse) | UpdateClassAdmin updates the credit class admin |
 | UpdateClassIssuers | [MsgUpdateClassIssuers](#regen.ecocredit.v1alpha1.MsgUpdateClassIssuers) | [MsgUpdateClassIssuersResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassIssuersResponse) | UpdateClassIssuers updates the credit class issuer list |
 | UpdateClassMetadata | [MsgUpdateClassMetadata](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadata) | [MsgUpdateClassMetadataResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadataResponse) | UpdateClassMetadata updates the credit class metadata |
+| Sell | [MsgSell](#regen.ecocredit.v1alpha1.MsgSell) | [MsgSellResponse](#regen.ecocredit.v1alpha1.MsgSellResponse) | Sell creates new sell orders. |
+| UpdateSellOrders | [MsgUpdateSellOrders](#regen.ecocredit.v1alpha1.MsgUpdateSellOrders) | [MsgUpdateSellOrdersResponse](#regen.ecocredit.v1alpha1.MsgUpdateSellOrdersResponse) | UpdateSellOrders updates existing sell orders. |
+| BuyDirect | [MsgBuyDirect](#regen.ecocredit.v1alpha1.MsgBuyDirect) | [MsgBuyDirectResponse](#regen.ecocredit.v1alpha1.MsgBuyDirectResponse) | BuyDirect creates buy orders directly against sell orders. |
+| AllowAskDenom | [MsgAllowAskDenom](#regen.ecocredit.v1alpha1.MsgAllowAskDenom) | [MsgAllowAskDenomResponse](#regen.ecocredit.v1alpha1.MsgAllowAskDenomResponse) | AllowAskDenom is a governance operation which authorizes a new ask denom to be used in sell orders |
+| CreateBasket | [MsgCreateBasket](#regen.ecocredit.v1alpha1.MsgCreateBasket) | [MsgCreateBasketResponse](#regen.ecocredit.v1alpha1.MsgCreateBasketResponse) | CreateBasket creates a bank denom which wraps credits. |
+| AddToBasket | [MsgAddToBasket](#regen.ecocredit.v1alpha1.MsgAddToBasket) | [MsgAddToBasketResponse](#regen.ecocredit.v1alpha1.MsgAddToBasketResponse) | AddToBasket adds credits to a basket in return for basket tokens. |
+| TakeFromBasket | [MsgTakeFromBasket](#regen.ecocredit.v1alpha1.MsgTakeFromBasket) | [MsgTakeFromBasketResponse](#regen.ecocredit.v1alpha1.MsgTakeFromBasketResponse) | TakeFromBasket takes credits from a basket without regard for which credits they are. The credits will be auto-retired if retire_on_take is true. Credits will be chosen randomly using the previous block hash as a consensus source of randomness. |
+| PickFromBasket | [MsgPickFromBasket](#regen.ecocredit.v1alpha1.MsgPickFromBasket) | [MsgPickFromBasketResponse](#regen.ecocredit.v1alpha1.MsgPickFromBasketResponse) | PickFromBasket picks specific credits from a basket. If allow_picking is set to false, then only an address which deposited credits in the basket can pick those credits. All other addresses will be blocked from picking those credits. The credits will be auto-retired if retire_on_take is true unless the credits were previously put into the basket by the address picking them from the basket, in which case they will remain tradable. This functionality allows the owner of a credit to have more control over the credits they are putting in baskets then ordinary users to deal with the scenario where basket tokens end up being worth significantly less than the credits on their own. |
 
  <!-- end services -->
 

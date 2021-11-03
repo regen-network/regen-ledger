@@ -18,6 +18,7 @@ const (
 	CreditTypeSeqTablePrefix byte = 0x4
 	ClassInfoTablePrefix     byte = 0x5
 	BatchInfoTablePrefix     byte = 0x6
+	BasketInfoTablePrefix    byte = 0x7
 )
 
 type serverImpl struct {
@@ -30,8 +31,9 @@ type serverImpl struct {
 	// Store sequence numbers per credit type
 	creditTypeSeqTable orm.PrimaryKeyTable
 
-	classInfoTable orm.PrimaryKeyTable
-	batchInfoTable orm.PrimaryKeyTable
+	classInfoTable  orm.PrimaryKeyTable
+	batchInfoTable  orm.PrimaryKeyTable
+	basketInfoTable orm.PrimaryKeyTable
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
@@ -60,6 +62,12 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		panic(err.Error())
 	}
 	s.batchInfoTable = batchInfoTableBuilder.Build()
+
+	basketInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(BasketInfoTablePrefix, storeKey, &ecocredit.BasketInfo{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.basketInfoTable = basketInfoTableBuilder.Build()
 
 	return s
 }

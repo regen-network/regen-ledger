@@ -577,3 +577,16 @@ func (s serverImpl) isCreatorAllowListed(ctx types.Context, allowlist []string, 
 	}
 	return false
 }
+
+func (s serverImpl) BuyDirect(goCtx context.Context, req *ecocredit.MsgBuyDirect) (*ecocredit.MsgBuyDirectResponse, error) {
+	panic("not implemented")
+}
+func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUpdateSellOrders) (*ecocredit.MsgUpdateSellOrdersResponse, error) {
+	panic("not implemented")
+}
+func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocredit.MsgSellResponse, error) {
+	panic("not implemented")
+}
+func (s serverImpl) AllowAskDenom(goCtx context.Context, req *ecocredit.MsgAllowAskDenom) (*ecocredit.MsgAllowAskDenomResponse, error) {
+	panic("not implemented")
+}

@@ -124,37 +124,37 @@ message Filter {
     And and = 1;
     Or or = 2;
   }
-    string credit_type_name = 3;
-    string class_id = 4;
 
-    // project_id filters against credits from this batch.
-    string project_id = 5;
+  string credit_type_name = 3;
+  string class_id = 4;
 
-    // batch_id filters against credits from this batch.
-    string batch_denom = 6;
+  // project_id filters against credits from this batch.
+  string project_id = 5;
 
-    // class_admin filters against credits issued by this class admin.
-    string class_admin = 7;
+  // batch_id filters against credits from this batch.
+  string batch_denom = 6;
 
-    // issuer filters against credits issued by this issuer address.
-    string issuer = 8;
+  // class_admin filters against credits issued by this class admin.
+  string class_admin = 7;
 
-    // owner filters against credits currently owned by this address.
-    string owner = 9;
+  // issuer filters against credits issued by this issuer address.
+  string issuer = 8;
 
-    // project_location can be specified in three levels of granularity:
-    // country, sub-national-code, or postal code. If just country is given,
-    // for instance "US" then any credits in the "US" will be matched even
-    // their project location is more specific, ex. "US-NY 12345". If
-    // a country, sub-national-code and postal code are all provided then
-    // only projects in that postal code will match.
-    string project_location = 10;
+  // owner filters against credits currently owned by this address.
+  string owner = 9;
 
-    DateRange date_range = 11;
+  // project_location can be specified in three levels of granularity:
+  // country, sub-national-code, or postal code. If just country is given,
+  // for instance "US" then any credits in the "US" will be matched even
+  // their project location is more specific, ex. "US-NY 12345". If
+  // a country, sub-national-code and postal code are all provided then
+  // only projects in that postal code will match.
+  string project_location = 10;
 
-    // tag specifies a curation tag to match against.
-    string tag = 12;
-  }
+  DateRange date_range = 11;
+
+  // tag specifies a curation tag to match against.
+  string tag = 12;
 
   message And {
     repeated Filter filters = 1;
@@ -175,4 +175,48 @@ message Filter {
     // limit.
     google.protobuf.Timestamp end_date = 8 [ (gogoproto.stdtime) = true ];
   }
+}
+
+message BasketInfo {
+  // basket_denom is the basket denom to add credits to.
+  string basket_denom = 1;
+
+  // display_name will be used to create a bank Metadata display name for this
+  // basket token of the form ecocredit:{curator}:{display_name}.
+  string display_name = 3;
+
+  // exponent is the exponent that will be used for denom metadata. An exponent
+  // of 6 will mean that 10^6 units of a basket token should be displayed
+  // as one unit in user interfaces.
+  uint32 exponent = 4;
+
+  // admission_criteria is the criteria by which credits can be added to the
+  // basket. Admission criteria will be applied in order and the first criteria
+  // which applies to a credit will determine its multiplier in the basket.
+  repeated AdmissionCriteria admission_criteria = 5;
+
+  bool retire_on_take = 6;
+
+  bool allow_picking = 7;
+}
+
+message AdmissionCriteria {
+  Filter filter = 1;
+
+  // multiplier is an integer number which is applied to credit units when
+  // converting to basket units. For example if the multiplier is 2000, then
+  // 1.1 credits will result in 2200 basket tokens. If there are any fractional
+  // amounts left over in this calculation when adding credits to a basket,
+  // those fractional amounts will not get added to the basket.
+  string multiplier = 2;
+}
+
+message BasketCredit {
+  // batch_denom is the unique ID of the credit batch.
+  string batch_denom = 1;
+
+  // tradable_amount is the number of credits in this transfer that can be
+  // traded by the recipient. Decimal values are acceptable within the
+  // precision returned by Query/Precision.
+  string tradable_amount = 2;
 }

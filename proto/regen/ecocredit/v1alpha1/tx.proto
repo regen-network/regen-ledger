@@ -481,17 +481,6 @@ message MsgCreateBasket {
   bool allow_picking = 7;
 }
 
-message AdmissionCriteria {
-  Filter filter = 1;
-
-  // multiplier is an integer number which is applied to credit units when
-  // converting to basket units. For example if the multiplier is 2000, then
-  // 1.1 credits will result in 2200 basket tokens. If there are any fractional
-  // amounts left over in this calculation when adding credits to a basket,
-  // those fractional amounts will not get added to the basket.
-  string multiplier = 2;
-}
-
 message MsgCreateBasketResponse {
   string basket_denom = 1;
 }
@@ -546,13 +535,3 @@ message MsgPickFromBasket {
 }
 
 message MsgPickFromBasketResponse {}
-
-message BasketCredit {
-  // batch_denom is the unique ID of the credit batch.
-  string batch_denom = 1;
-
-  // tradable_amount is the number of credits in this transfer that can be
-  // traded by the recipient. Decimal values are acceptable within the
-  // precision returned by Query/Precision.
-  string tradable_amount = 2;
-}
