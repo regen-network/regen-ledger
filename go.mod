@@ -19,7 +19,7 @@ require (
 	github.com/tendermint/tm-db v0.6.4
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/genproto v0.0.0-20211101144312-62acf1d99145 // indirect
+	google.golang.org/genproto v0.0.0-20211102202547-e9cf271f7f2c // indirect
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2

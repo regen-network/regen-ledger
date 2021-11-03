@@ -626,6 +626,7 @@ func (s serverImpl) UpdateSellOrders(ctx context.Context, orders *ecocredit.MsgU
 func (s serverImpl) BuyDirect(goCtx context.Context, req *ecocredit.MsgBuyDirect) (*ecocredit.MsgBuyDirectResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	buyer := req.Buyer
+	store := ctx.KVStore(s.storeKey)
 
 	buyerAddr, err := sdk.AccAddressFromBech32(buyer)
 	if err != nil {
@@ -657,25 +658,21 @@ func (s serverImpl) BuyDirect(goCtx context.Context, req *ecocredit.MsgBuyDirect
 			return nil, ecocredit.ErrInsufficientFunds
 		}
 
-		buyOrderID := s.buyOrderTable.Sequence().PeekNextVal(ctx)
+		buyOrderID := s.buyOrderSeq.NextVal(ctx)
 
 		buyOrderIds = append(buyOrderIds, buyOrderID)
-
-		_, err = s.buyOrderTable.Create(ctx, &ecocredit.BuyOrder{
-			BuyOrderId:         buyOrderID,
-			SellOrderId:        req.Orders[i].SellOrderId,
-			Quantity:           req.Orders[i].Quantity,
-			BidPrice:           req.Orders[i].BidPrice,
-			DisableAutoRetire:  req.Orders[i].DisableAutoRetire,
-			DisablePartialFill: req.Orders[i].DisablePartialFill,
-		})
-		if err != nil {
-			return nil, err
-		}
 	}
 
 	// TODO: process buy order (or do it in EndBlocker?)
+
 	// TODO: emit event
+
+	// BuyOrderId:         buyOrderID,
+	// SellOrderId:        req.Orders[i].SellOrderId,
+	// Quantity:           req.Orders[i].Quantity,
+	// BidPrice:           req.Orders[i].BidPrice,
+	// DisableAutoRetire:  req.Orders[i].DisableAutoRetire,
+	// DisablePartialFill: req.Orders[i].DisablePartialFill,
 
 	return &ecocredit.MsgBuyDirectResponse{BuyOrderIds: buyOrderIds}, nil
 }

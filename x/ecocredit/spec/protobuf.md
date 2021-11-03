@@ -13,7 +13,6 @@
   
 - [regen/ecocredit/v1alpha1/types.proto](#regen/ecocredit/v1alpha1/types.proto)
     - [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo)
-    - [BuyOrder](#regen.ecocredit.v1alpha1.BuyOrder)
     - [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo)
     - [CreditType](#regen.ecocredit.v1alpha1.CreditType)
     - [CreditTypeSeq](#regen.ecocredit.v1alpha1.CreditTypeSeq)
@@ -221,26 +220,6 @@ BatchInfo represents the high-level on-chain information for a credit batch.
 | start_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | start_date is the beginning of the period during which this credit batch was quantified and verified. |
 | end_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | end_date is the end of the period during which this credit batch was quantified and verified. |
 | project_location | [string](#string) |  | project_location is the location of the project backing the credits in this batch. Full documentation can be found in MsgCreateBatch.project_location. |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha1.BuyOrder"></a>
-
-### BuyOrder
-BuyOrder represents the information for a sell order.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| buy_order_id | [uint64](#uint64) |  | buy_order_id is the unique ID of buy order. |
-| sell_order_id | [uint64](#uint64) |  | sell_order_id is the sell order ID against which the buyer is trying to buy. |
-| quantity | [string](#string) |  | quantity is the quantity of credits to buy. If the quantity of credits available is less than this amount the order will be partially filled unless disable_partial_fill is true. |
-| bid_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | bid price is the bid price for this buy order. A credit unit will be settled at a purchase price that is no more than the bid price. The buy order will fail if the buyer does not have enough funds available to complete the purchase. |
-| disable_auto_retire | [bool](#bool) |  | disable_auto_retire allows auto-retirement to be disabled. If it is set to true the credits will not auto-retire and can be resold assuming that the corresponding sell order has auto-retirement disabled. If the sell order hasn't disabled auto-retirement and the buy order tries to disable it, that buy order will fail. |
-| disable_partial_fill | [bool](#bool) |  | disable_partial_fill disables the default behavior of partially filling buy orders if the requested quantity is not available. |
 
 
 
