@@ -148,22 +148,13 @@ message SellOrder {
 // AskDenom represents the information for an ask denom.
 message AskDenom {
 
-  // order_id is the unique ID of sell order.
-  uint64 order_id = 1;
+  // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
+  string denom = 2;
 
-  // batch_denom is the credit batch being sold.
-  string batch_denom = 2;
+  // display_denom is the denom to display to the user and is informational
+  string display_denom = 3;
 
-  // quantity is the quantity of credits being sold.
-  string quantity = 3;
-
-  // ask_price is the price the seller is asking for each unit of the
-  // batch_denom. Each credit unit of the batch will be sold for at least the
-  // ask_price or more.
-  cosmos.base.v1beta1.Coin ask_price = 4;
-
-  // disable_auto_retire disables auto-retirement of credits which allows a
-  // buyer to disable auto-retirement in their buy order enabling them to
-  // resell the credits to another buyer.
-  bool disable_auto_retire = 5;
+  // exponent is the exponent that relates the denom to the display_denom and is
+  // informational
+  uint32 exponent = 4;
 }

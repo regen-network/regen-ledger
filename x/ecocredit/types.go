@@ -24,15 +24,21 @@ func (m *BatchInfo) PrimaryKeyFields() []interface{} {
 }
 
 // PrimaryKeyFields returns the fields of the object that will make up the
+// primary key for CreditTypeSeq.
+func (m *CreditTypeSeq) PrimaryKeyFields() []interface{} {
+	return []interface{}{m.Abbreviation}
+}
+
+// PrimaryKeyFields returns the fields of the object that will make up the
 // primary key for SellOrder.
 func (m *SellOrder) PrimaryKeyFields() []interface{} {
 	return []interface{}{m.OrderId}
 }
 
 // PrimaryKeyFields returns the fields of the object that will make up the
-// primary key for CreditTypeSeq.
-func (m *CreditTypeSeq) PrimaryKeyFields() []interface{} {
-	return []interface{}{m.Abbreviation}
+// primary key for AskDenom.
+func (m *AskDenom) PrimaryKeyFields() []interface{} {
+	return []interface{}{m.Denom}
 }
 
 // AssertClassIssuer makes sure that the issuer is part of issuers of given classID.

@@ -183,3 +183,17 @@ message EventUpdateSellOrder {
   // disable_auto_retire updates the disable_auto_retire field in the sell order.
   bool disable_auto_retire = 6;
 }
+
+// EventAllowAskDenom is an event emitted when an ask denom is added.
+message EventAllowAskDenom {
+
+  // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
+  string denom = 2;
+
+  // display_denom is the denom to display to the user and is informational
+  string display_denom = 3;
+
+  // exponent is the exponent that relates the denom to the display_denom and is
+  // informational
+  uint32 exponent = 4;
+}

@@ -5,6 +5,7 @@
 ## Table of Contents
 
 - [regen/ecocredit/v1alpha1/events.proto](#regen/ecocredit/v1alpha1/events.proto)
+    - [EventAllowAskDenom](#regen.ecocredit.v1alpha1.EventAllowAskDenom)
     - [EventBuy](#regen.ecocredit.v1alpha1.EventBuy)
     - [EventCancel](#regen.ecocredit.v1alpha1.EventCancel)
     - [EventCreateBatch](#regen.ecocredit.v1alpha1.EventCreateBatch)
@@ -92,6 +93,23 @@
 <p align="right"><a href="#top">Top</a></p>
 
 ## regen/ecocredit/v1alpha1/events.proto
+
+
+
+<a name="regen.ecocredit.v1alpha1.EventAllowAskDenom"></a>
+
+### EventAllowAskDenom
+EventAllowAskDenom is an event emitted when an ask denom is added.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| denom | [string](#string) |  | denom is the denom to allow (ex. ibc/GLKHDSG423SGS) |
+| display_denom | [string](#string) |  | display_denom is the denom to display to the user and is informational |
+| exponent | [uint32](#uint32) |  | exponent is the exponent that relates the denom to the display_denom and is informational |
+
+
+
 
 
 
@@ -275,11 +293,9 @@ AskDenom represents the information for an ask denom.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| order_id | [uint64](#uint64) |  | order_id is the unique ID of sell order. |
-| batch_denom | [string](#string) |  | batch_denom is the credit batch being sold. |
-| quantity | [string](#string) |  | quantity is the quantity of credits being sold. |
-| ask_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | ask_price is the price the seller is asking for each unit of the batch_denom. Each credit unit of the batch will be sold for at least the ask_price or more. |
-| disable_auto_retire | [bool](#bool) |  | disable_auto_retire disables auto-retirement of credits which allows a buyer to disable auto-retirement in their buy order enabling them to resell the credits to another buyer. |
+| denom | [string](#string) |  | denom is the denom to allow (ex. ibc/GLKHDSG423SGS) |
+| display_denom | [string](#string) |  | display_denom is the denom to display to the user and is informational |
+| exponent | [uint32](#uint32) |  | exponent is the exponent that relates the denom to the display_denom and is informational |
 
 
 

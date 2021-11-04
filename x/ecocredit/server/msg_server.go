@@ -244,6 +244,8 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 		if err != nil {
 			return nil, err
 		}
+
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "send ecocredits")
 	}
 
 	return &ecocredit.MsgSendResponse{}, nil
@@ -527,7 +529,6 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 	var sellOrderIds []uint64
 
 	for i := range req.Orders {
-		// TODO: implement gas counter #622
 
 		err = verifyBalance(store, ownerAddr, req.Orders[i].BatchDenom, req.Orders[i].Quantity)
 		if err != nil {
@@ -559,6 +560,9 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 		if err != nil {
 			return nil, err
 		}
+
+		// TODO: implement gas counter #622
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "create sell order")
 	}
 
 	return &ecocredit.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
@@ -576,7 +580,6 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 	}
 
 	for i := range req.Updates {
-		// TODO: implement gas counter #622
 
 		sellOrder, err := s.getSellOrder(ctx, req.Updates[i].SellOrderId)
 		if err != nil {
@@ -608,6 +611,9 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 		if err != nil {
 			return nil, err
 		}
+
+		// TODO: implement gas counter #622
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "update sell order")
 	}
 
 	return &ecocredit.MsgUpdateSellOrdersResponse{}, nil
@@ -628,7 +634,6 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 	var buyOrderIds []uint64
 
 	for i := range req.Orders {
-		// TODO: implement gas counter #622
 
 		balances := s.bankKeeper.SpendableCoins(sdkCtx, buyerAddr)
 		bidPrice := req.Orders[i].BidPrice
@@ -728,14 +733,37 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 		default:
 			return nil, sdkerrors.ErrInvalidRequest
 		}
+
+		// TODO: implement gas counter #622
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "create buy order")
 	}
 
 	return &ecocredit.MsgBuyResponse{BuyOrderIds: buyOrderIds}, nil
 }
 
 // AllowAskDenom adds a new ask denom
-func (s serverImpl) AllowAskDenom(ctx context.Context, denom *ecocredit.MsgAllowAskDenom) (*ecocredit.MsgAllowAskDenomResponse, error) {
-	panic("implement me")
+func (s serverImpl) AllowAskDenom(goCtx context.Context, req *ecocredit.MsgAllowAskDenom) (*ecocredit.MsgAllowAskDenomResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+
+	err := s.askDenomTable.Create(ctx, &ecocredit.AskDenom{
+		Denom:        req.Denom,
+		DisplayDenom: req.DisplayDenom,
+		Exponent:     req.Exponent,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventAllowAskDenom{
+		Denom:        req.Denom,
+		DisplayDenom: req.DisplayDenom,
+		Exponent:     req.Exponent,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.MsgAllowAskDenomResponse{}, nil
 }
 
 func (s serverImpl) sendEcocredits(ctx types.Context, credit *ecocredit.MsgSend_SendCredits, store sdk.KVStore, senderAddr sdk.AccAddress, recipientAddr sdk.AccAddress) error {
@@ -807,6 +835,5 @@ func (s serverImpl) sendEcocredits(ctx types.Context, credit *ecocredit.MsgSend_
 		return err
 	}
 
-	ctx.GasMeter().ConsumeGas(gasCostPerIteration, "send ecocredits")
 	return nil
 }

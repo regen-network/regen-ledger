@@ -426,7 +426,6 @@ message MsgBuyResponse {
   repeated uint64 buy_order_ids = 1;
 }
 
-
 // MsgAllowAskDenom is the Msg/AllowAskDenom request type.
 message MsgAllowAskDenom {
   // root_address is the address of the governance account which can authorize ask denoms

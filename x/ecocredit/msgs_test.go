@@ -1,12 +1,12 @@
 package ecocredit
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"math/rand"
 	"testing"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/stretchr/testify/require"
 )
@@ -1154,7 +1154,7 @@ func TestMsgBuy(t *testing.T) {
 			},
 			expErr: true,
 		},
-		"invalid: bad ask price": {
+		"invalid: bad bid price": {
 			src: MsgBuy{
 				Buyer: a1.String(),
 				Orders: []*MsgBuy_Order{
@@ -1186,5 +1186,56 @@ func TestMsgBuy(t *testing.T) {
 }
 
 func TestMsgAllowAskDenom(t *testing.T) {
-	// TODO
+	_, _, a1 := testdata.KeyTestPubAddr()
+
+	tests := map[string]struct {
+		src    MsgBuy
+		expErr bool
+	}{
+		"valid": {
+			src: MsgBuy{
+				Buyer: a1.String(),
+				Orders: []*MsgBuy_Order{
+					{
+						Quantity: "1.5",
+						BidPrice: &sdk.Coin{
+							Denom: "uregen",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire: true,
+						DisablePartialFill: true,
+					},
+				},
+			},
+			expErr: false,
+		},
+		"invalid: bad owner address": {
+			src: MsgBuy{
+				Buyer: "foobar",
+				Orders: []*MsgBuy_Order{
+					{
+						Quantity: "1.5",
+						BidPrice: &sdk.Coin{
+							Denom: "uregen",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire: true,
+						DisablePartialFill: true,
+					},
+				},
+			},
+			expErr: true,
+		},
+	}
+
+	for msg, test := range tests {
+		t.Run(msg, func(t *testing.T) {
+			err := test.src.ValidateBasic()
+			if test.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
 }
