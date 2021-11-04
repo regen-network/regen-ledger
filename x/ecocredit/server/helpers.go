@@ -2,11 +2,13 @@ package server
 
 import (
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/store/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	"github.com/regen-network/regen-ledger/orm"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	"github.com/regen-network/regen-ledger/types"
 	"github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -98,7 +100,7 @@ func iterateBalances(store sdk.KVStore, storeKey byte, cb func(address, denom, b
 	}
 }
 
-func verifyBalance(store types.KVStore, ownerAddr sdk.AccAddress, batchDenom string, quantity string) error {
+func verifyBalance(store storetypes.KVStore, ownerAddr sdk.AccAddress, batchDenom string, quantity string) error {
 	bd := batchDenomT(batchDenom)
 
 	balance, err := getDecimal(store, TradableBalanceKey(ownerAddr, bd))

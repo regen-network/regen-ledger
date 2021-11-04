@@ -240,75 +240,10 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 	}
 
 	for _, credit := range req.Credits {
-		denom := batchDenomT(credit.BatchDenom)
-		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
-		}
-
-		maxDecimalPlaces, err := s.getBatchPrecision(ctx, denom)
+		err := sendEcocredits(ctx, credit, store, senderAddr, recipientAddr)
 		if err != nil {
 			return nil, err
 		}
-
-		tradable, err := math.NewNonNegativeFixedDecFromString(credit.TradableAmount, maxDecimalPlaces)
-		if err != nil {
-			return nil, err
-		}
-
-		retired, err := math.NewNonNegativeFixedDecFromString(credit.RetiredAmount, maxDecimalPlaces)
-		if err != nil {
-			return nil, err
-		}
-
-		sum, err := tradable.Add(retired)
-		if err != nil {
-			return nil, err
-		}
-
-		// subtract balance
-		err = subAndSetDecimal(store, TradableBalanceKey(senderAddr, denom), sum)
-		if err != nil {
-			return nil, err
-		}
-
-		// Add tradable balance
-		err = addAndSetDecimal(store, TradableBalanceKey(recipientAddr, denom), tradable)
-		if err != nil {
-			return nil, err
-		}
-
-		if !retired.IsZero() {
-			// subtract retired from tradable supply
-			err = subAndSetDecimal(store, TradableSupplyKey(denom), retired)
-			if err != nil {
-				return nil, err
-			}
-
-			// Add retired balance
-			err = retire(ctx, store, recipientAddr, denom, retired, credit.RetirementLocation)
-			if err != nil {
-				return nil, err
-			}
-
-			// Add retired supply
-			err = addAndSetDecimal(store, RetiredSupplyKey(denom), retired)
-			if err != nil {
-				return nil, err
-			}
-		}
-
-		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
-			Sender:         sender,
-			Recipient:      recipient,
-			BatchDenom:     string(denom),
-			TradableAmount: tradable.String(),
-			RetiredAmount:  retired.String(),
-		})
-		if err != nil {
-			return nil, err
-		}
-
-		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "send ecocredits")
 	}
 
 	return &ecocredit.MsgSendResponse{}, nil
@@ -592,6 +527,7 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 	var sellOrderIds []uint64
 
 	for i := range req.Orders {
+		// TODO: implement gas counter #622
 
 		err = verifyBalance(store, ownerAddr, req.Orders[i].BatchDenom, req.Orders[i].Quantity)
 		if err != nil {
@@ -639,6 +575,7 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 	}
 
 	for i := range req.Updates {
+		// TODO: implement gas counter #622
 
 		sellOrder, err := s.getSellOrder(ctx, req.Updates[i].SellOrderId)
 		if err != nil {
@@ -675,8 +612,10 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 	return &ecocredit.MsgUpdateSellOrdersResponse{}, nil
 }
 
-func (s serverImpl) BuyDirect(goCtx context.Context, req *ecocredit.MsgBuyDirect) (*ecocredit.MsgBuyDirectResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredit.MsgBuyResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	sdkCtx := sdk.UnwrapSDKContext(goCtx)
+	store := ctx.KVStore(s.storeKey)
 	buyer := req.Buyer
 
 	buyerAddr, err := sdk.AccAddressFromBech32(buyer)
@@ -687,18 +626,33 @@ func (s serverImpl) BuyDirect(goCtx context.Context, req *ecocredit.MsgBuyDirect
 	var buyOrderIds []uint64
 
 	for i := range req.Orders {
+		// TODO: implement gas counter #622
 
-		balances := s.bankKeeper.SpendableCoins(ctx, buyerAddr)
+		balances := s.bankKeeper.SpendableCoins(sdkCtx, buyerAddr)
 		bidPrice := req.Orders[i].BidPrice
 
+		// decimal amount of ecocredits to be purchased
 		quantity, err := math.NewPositiveDecFromString(req.Orders[i].Quantity)
 		if err != nil {
 			return nil, err
 		}
 
-		// TODO: Convert amount using lookup in denom metadata (from display denom)
-		amountNeeded, _ := quantity.Mul(math.NewDecFromInt64(bidPrice.Amount.Int64()))
-		// TODO: Better handling of rounding / Dec => Int conversion
+		// amountNeeded is the amount (in bid denom) of coins necessary for purchase
+		amountNeeded, err := quantity.Mul(math.NewDecFromInt64(bidPrice.Amount.Int64()))
+		if err != nil {
+			return nil, err
+		}
+
+		// amountNeeded should always be rounded down to the nearest integer number
+		// as a buyer cannot spend fractional bank base denoms (e.g. fractional uregen).
+		// The ecocredit quantity sent back to the buyer should therefore be calculated by
+		// multiplying the integral amountNeeded by bidPrice as opposed to the quantity sent
+		// in the buy request.
+		amountNeeded, err = amountNeeded.QuoInteger(math.NewDecFromInt64(1))
+		if err != nil {
+			return nil, err
+		}
+
 		amountNeededInt64, err := amountNeeded.Int64()
 		if err != nil {
 			return nil, err
@@ -709,28 +663,147 @@ func (s serverImpl) BuyDirect(goCtx context.Context, req *ecocredit.MsgBuyDirect
 			return nil, ecocredit.ErrInsufficientFunds
 		}
 
-		buyOrderID := s.buyOrderSeq.NextVal(ctx)
-
-		buyOrderIds = append(buyOrderIds, buyOrderID)
-
-		// TODO: process buy order (or do it in EndBlocker?)
-
-		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventBuy{
-			BuyOrderId:         buyOrderID,
-			SellOrderId:        req.Orders[i].SellOrderId,
-			Quantity:           req.Orders[i].Quantity,
-			BidPrice:           req.Orders[i].BidPrice,
-			DisableAutoRetire:  req.Orders[i].DisableAutoRetire,
-			DisablePartialFill: req.Orders[i].DisablePartialFill,
-		})
+		quantityToSend, err := amountNeeded.Mul(quantity)
 		if err != nil {
 			return nil, err
 		}
+
+		coinsToSend := sdk.Coins{{Denom: bidPrice.Denom, Amount: sdk.NewInt(amountNeededInt64)}}
+
+		switch req.Orders[i].Selection.Sum.(type) {
+		case *ecocredit.MsgBuy_Order_Selection_SellOrderId:
+
+			sellOrderId := req.Orders[i].Selection.GetSellOrderId()
+
+			sellOrder, err := s.getSellOrder(ctx, req.Orders[i].Selection.GetSellOrderId())
+			if err != nil {
+				return nil, err
+			}
+
+			sellerAddr, err := sdk.AccAddressFromBech32(sellOrder.Owner)
+			if err != nil {
+				return nil, err
+			}
+
+			// Move the coins to the seller account
+			err = s.bankKeeper.SendCoins(sdkCtx, buyerAddr, sellerAddr, coinsToSend)
+			if err != nil {
+				return nil, err
+			}
+
+			credit := &ecocredit.MsgSend_SendCredits{
+				BatchDenom:     sellOrder.BatchDenom,
+				TradableAmount: quantityToSend.String(),
+				// TODO: handle auto-retire settings #621
+				//RetiredAmount: quantityToRetire.String(),
+				//RetirementLocation: retirementLocation,
+			}
+
+			// Move the credits to the buyer account
+			err = s.sendEcocredits(ctx, credit, store, sellerAddr, buyerAddr)
+			if err != nil {
+				return nil, err
+			}
+
+			buyOrderID := s.buyOrderSeq.NextVal(ctx)
+			buyOrderIds = append(buyOrderIds, buyOrderID)
+
+			err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventBuy{
+				BuyOrderId:         buyOrderID,
+				SellOrderId:        sellOrderId,
+				Quantity:           req.Orders[i].Quantity,
+				BidPrice:           req.Orders[i].BidPrice,
+				DisableAutoRetire:  req.Orders[i].DisableAutoRetire,
+				DisablePartialFill: req.Orders[i].DisablePartialFill,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+		// TODO: implement processing for filter option
+		//case *ecocredit.MsgBuy_Order_Selection_Filter:
+
+		default:
+			return nil, sdkerrors.ErrInvalidRequest
+		}
 	}
 
-	return &ecocredit.MsgBuyDirectResponse{BuyOrderIds: buyOrderIds}, nil
+	return &ecocredit.MsgBuyResponse{BuyOrderIds: buyOrderIds}, nil
 }
 
 func (s serverImpl) AllowAskDenom(ctx context.Context, denom *ecocredit.MsgAllowAskDenom) (*ecocredit.MsgAllowAskDenomResponse, error) {
 	panic("implement me")
+}
+
+func (s serverImpl) sendEcocredits(ctx types.Context, credit *ecocredit.MsgSend_SendCredits, store sdk.KVStore, senderAddr sdk.AccAddress, recipientAddr sdk.AccAddress) error {
+	denom := batchDenomT(credit.BatchDenom)
+	if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
+		return sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
+	}
+
+	maxDecimalPlaces, err := s.getBatchPrecision(ctx, denom)
+	if err != nil {
+		return err
+	}
+
+	tradable, err := math.NewNonNegativeFixedDecFromString(credit.TradableAmount, maxDecimalPlaces)
+	if err != nil {
+		return err
+	}
+
+	retired, err := math.NewNonNegativeFixedDecFromString(credit.RetiredAmount, maxDecimalPlaces)
+	if err != nil {
+		return err
+	}
+
+	sum, err := tradable.Add(retired)
+	if err != nil {
+		return err
+	}
+
+	// subtract balance
+	err = subAndSetDecimal(store, TradableBalanceKey(senderAddr, denom), sum)
+	if err != nil {
+		return err
+	}
+
+	// Add tradable balance
+	err = addAndSetDecimal(store, TradableBalanceKey(recipientAddr, denom), tradable)
+	if err != nil {
+		return err
+	}
+
+	if !retired.IsZero() {
+		// subtract retired from tradable supply
+		err = subAndSetDecimal(store, TradableSupplyKey(denom), retired)
+		if err != nil {
+			return err
+		}
+
+		// Add retired balance
+		err = retire(ctx, store, recipientAddr, denom, retired, credit.RetirementLocation)
+		if err != nil {
+			return err
+		}
+
+		// Add retired supply
+		err = addAndSetDecimal(store, RetiredSupplyKey(denom), retired)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
+		Sender:         senderAddr.String(),
+		Recipient:      recipientAddr.String(),
+		BatchDenom:     string(denom),
+		TradableAmount: tradable.String(),
+		RetiredAmount:  retired.String(),
+	})
+	if err != nil {
+		return err
+	}
+
+	ctx.GasMeter().ConsumeGas(gasCostPerIteration, "send ecocredits")
+	return nil
 }

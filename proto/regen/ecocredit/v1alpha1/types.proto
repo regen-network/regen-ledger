@@ -125,6 +125,32 @@ message SellOrder {
   // order_id is the unique ID of sell order.
   uint64 order_id = 1;
 
+  // owner is the address of the owner of the credits being sold.
+  string owner = 2;
+
+  // batch_denom is the credit batch being sold.
+  string batch_denom = 3;
+
+  // quantity is the quantity of credits being sold.
+  string quantity = 4;
+
+  // ask_price is the price the seller is asking for each unit of the
+  // batch_denom. Each credit unit of the batch will be sold for at least the
+  // ask_price or more.
+  cosmos.base.v1beta1.Coin ask_price = 5;
+
+  // disable_auto_retire disables auto-retirement of credits which allows a
+  // buyer to disable auto-retirement in their buy order enabling them to
+  // resell the credits to another buyer.
+  bool disable_auto_retire = 6;
+}
+
+// AskDenom represents the information for an ask denom.
+message AskDenom {
+
+  // order_id is the unique ID of sell order.
+  uint64 order_id = 1;
+
   // batch_denom is the credit batch being sold.
   string batch_denom = 2;
 
