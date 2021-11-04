@@ -46,7 +46,8 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	testContent := []byte("xyzabc123")
 	hash := crypto.BLAKE2b_256.New()
 	_, err := hash.Write(testContent)
-	s.Require().NoError(err)
+	require := s.Require()
+	require.NoError(err)
 	digest := hash.Sum(nil)
 	graphHash := &data.ContentHash_Graph{
 		Hash:                      digest,
@@ -60,90 +61,91 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 		Sender: s.addr1.String(),
 		Hash:   contentHash,
 	})
-	s.Require().NoError(err)
-	s.Require().NotNil(anchorRes)
+	require.NoError(err)
+	require.NotNil(anchorRes)
 
 	// anchoring same data twice is a no-op
 	_, err = s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
 		Sender: s.addr1.String(),
 		Hash:   contentHash,
 	})
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	// can query data and get timestamp
 	queryRes, err := s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{
 		Hash: contentHash,
 	})
-	s.Require().NoError(err)
-	s.Require().NotNil(queryRes)
-	s.Require().NotNil(queryRes.Entry)
+	require.NoError(err)
+	require.NotNil(queryRes)
+	require.NotNil(queryRes.Entry)
 	ts := queryRes.Entry.Timestamp
-	s.Require().NotNil(ts)
-	s.Require().Empty(queryRes.Entry.Signers)
+	require.NotNil(ts)
+	require.Empty(queryRes.Entry.Signers)
 	iri, err := graphHash.ToIRI()
-	s.Require().NoError(err)
-	s.Require().Equal(iri, queryRes.Entry.Iri)
+	require.NoError(err)
+	require.Equal(iri, queryRes.Entry.Iri)
 
 	// can sign data
 	_, err = s.msgClient.SignData(s.ctx, &data.MsgSignData{
 		Signers: []string{s.addr1.String()},
 		Hash:    graphHash,
 	})
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	// can retrieve signature, same timestamp
 	// can query data and get timestamp
 	queryRes, err = s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{Hash: contentHash})
-	s.Require().NoError(err)
-	s.Require().NotNil(queryRes)
-	s.Require().Equal(ts, queryRes.Entry.Timestamp)
-	s.Require().Len(queryRes.Entry.Signers, 1)
-	s.Require().Equal(s.addr1.String(), queryRes.Entry.Signers[0].Signer)
+	require.NoError(err)
+	require.NotNil(queryRes)
+	require.Equal(ts, queryRes.Entry.Timestamp) // ensure timestamp is equal to the original
+	require.Len(queryRes.Entry.Signers, 1)
+	require.Equal(s.addr1.String(), queryRes.Entry.Signers[0].Signer)
 
 	// query data by signer
 	bySignerRes, err := s.queryClient.BySigner(s.ctx, &data.QueryBySignerRequest{
 		Signer: s.addr1.String(),
 	})
-	s.Require().NoError(err)
-	s.Require().NotNil(bySignerRes)
-	s.Require().Len(bySignerRes.Entries, 1)
-	s.Require().Equal(queryRes.Entry, bySignerRes.Entries[0])
+	require.NoError(err)
+	require.NotNil(bySignerRes)
+	require.Len(bySignerRes.Entries, 1)
+	require.Equal(queryRes.Entry, bySignerRes.Entries[0])
 
 	// another signer can sign
 	_, err = s.msgClient.SignData(s.ctx, &data.MsgSignData{
 		Signers: []string{s.addr2.String()},
 		Hash:    graphHash,
 	})
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	// query data by signer
 	bySignerRes, err = s.queryClient.BySigner(s.ctx, &data.QueryBySignerRequest{
 		Signer: s.addr2.String(),
 	})
-	s.Require().NoError(err)
-	s.Require().NotNil(bySignerRes)
-	s.Require().Len(bySignerRes.Entries, 1)
-	s.Require().Equal(contentHash, bySignerRes.Entries[0].Hash)
+	require.NoError(err)
+	require.NotNil(bySignerRes)
+	require.Len(bySignerRes.Entries, 1)
+	require.Equal(contentHash, bySignerRes.Entries[0].Hash)
 
 	// query and get both signatures
 	queryRes, err = s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{Hash: contentHash})
-	s.Require().NoError(err)
-	s.Require().NotNil(queryRes)
-	s.Require().Equal(ts, queryRes.Entry.Timestamp)
-	s.Require().Len(queryRes.Entry.Signers, 2)
+	require.NoError(err)
+	require.NotNil(queryRes)
+	require.Equal(ts, queryRes.Entry.Timestamp)
+	require.Len(queryRes.Entry.Signers, 2)
 	signers := make([]string, len(queryRes.Entry.Signers))
 	for _, signer := range queryRes.Entry.Signers {
 		signers = append(signers, signer.Signer)
 	}
-	s.Require().Contains(signers, s.addr1.String())
-	s.Require().Contains(signers, s.addr2.String())
+	require.Contains(signers, s.addr1.String())
+	require.Contains(signers, s.addr2.String())
 }
 
 func (s *IntegrationTestSuite) TestRawDataScenario() {
 	testContent := []byte("19sdgh23t7sdghasf98sf")
 	hash := crypto.BLAKE2b_256.New()
 	_, err := hash.Write(testContent)
-	s.Require().NoError(err)
+	require := s.Require()
+	require.NoError(err)
 	digest := hash.Sum(nil)
 	rawHash := &data.ContentHash_Raw{
 		Hash:            digest,
@@ -157,32 +159,32 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 		Sender: s.addr1.String(),
 		Hash:   contentHash,
 	})
-	s.Require().NoError(err)
-	s.Require().NotNil(anchorRes)
+	require.NoError(err)
+	require.NotNil(anchorRes)
 
 	// anchoring same data twice is a no-op
 	_, err = s.msgClient.AnchorData(s.ctx, &data.MsgAnchorData{
 		Sender: s.addr1.String(),
 		Hash:   contentHash,
 	})
-	s.Require().NoError(err)
+	require.NoError(err)
 
 	// can query data and get timestamp
 	queryRes, err := s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{
 		Hash: contentHash,
 	})
-	s.Require().NoError(err)
-	s.Require().NotNil(queryRes)
-	s.Require().NotNil(queryRes.Entry)
+	require.NoError(err)
+	require.NotNil(queryRes)
+	require.NotNil(queryRes.Entry)
 	ts := queryRes.Entry.Timestamp
-	s.Require().NotNil(ts)
-	s.Require().Empty(queryRes.Entry.Signers)
+	require.NotNil(ts)
+	require.Empty(queryRes.Entry.Signers)
 
 	// can retrieve same timestamp, and data
 	queryRes, err = s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{
 		Hash: contentHash,
 	})
-	s.Require().NoError(err)
-	s.Require().NotNil(queryRes)
-	s.Require().Equal(ts, queryRes.Entry.Timestamp)
+	require.NoError(err)
+	require.NotNil(queryRes)
+	require.Equal(ts, queryRes.Entry.Timestamp)
 }

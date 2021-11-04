@@ -4,15 +4,12 @@ import (
 	"context"
 
 	"github.com/gogo/protobuf/proto"
-
-	types2 "github.com/cosmos/cosmos-sdk/types"
-
 	gogotypes "github.com/gogo/protobuf/types"
 
+	types2 "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	sdk "github.com/regen-network/regen-ledger/types"
-
 	"github.com/regen-network/regen-ledger/x/data"
 )
 
@@ -20,7 +17,7 @@ var _ data.MsgServer = serverImpl{}
 
 func (s serverImpl) AnchorData(goCtx context.Context, request *data.MsgAnchorData) (*data.MsgAnchorDataResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	iri, _, timestamp, err := s.getIRIAndAnchor(ctx, request.Hash)
+	iri, _, timestamp, err := s.anchorAndGetIRI(ctx, request.Hash)
 	if err != nil {
 		return nil, err
 	}
@@ -35,34 +32,35 @@ type ToIRI interface {
 	ToIRI() (string, error)
 }
 
-func (s serverImpl) getIRIAndAnchor(ctx sdk.Context, toIRI ToIRI) (iri string, id []byte, timestamp *gogotypes.Timestamp, err error) {
+func (s serverImpl) anchorAndGetIRI(ctx sdk.Context, toIRI ToIRI) (iri string, id []byte, timestamp *gogotypes.Timestamp, err error) {
 	iri, err = toIRI.ToIRI()
 	if err != nil {
-		return iri, nil, nil, err
+		return "", nil, nil, err
 	}
 
 	store := ctx.KVStore(s.storeKey)
 	id = s.iriIDTable.GetOrCreateID(store, []byte(iri))
-	timestamp, err = s.anchor(ctx, id, iri)
+	timestamp, err = s.anchorAndGetTimestamp(ctx, id, iri)
 	return iri, id, timestamp, err
 }
 
-func (s serverImpl) anchor(ctx sdk.Context, id []byte, iri string) (*gogotypes.Timestamp, error) {
-	timestamp, err := blockTimestamp(ctx)
-	if err != nil {
-		return nil, err
-	}
-
+func (s serverImpl) anchorAndGetTimestamp(ctx sdk.Context, id []byte, iri string) (*gogotypes.Timestamp, error) {
 	store := ctx.KVStore(s.storeKey)
 	key := AnchorTimestampKey(id)
 	bz := store.Get(key)
 	if len(bz) != 0 {
-		err = proto.Unmarshal(bz, timestamp)
+		var timestamp *gogotypes.Timestamp
+		err := proto.Unmarshal(bz, timestamp)
 		if err != nil {
 			return nil, err
 		}
 
 		return timestamp, nil
+	}
+
+	timestamp, err := blockTimestamp(ctx)
+	if err != nil {
+		return nil, err
 	}
 
 	bz, err = proto.Marshal(timestamp)
@@ -88,7 +86,7 @@ var trueBz = []byte{1}
 
 func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignData) (*data.MsgSignDataResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	iri, id, timestamp, err := s.getIRIAndAnchor(ctx, request.Hash)
+	iri, id, timestamp, err := s.anchorAndGetIRI(ctx, request.Hash)
 	if err != nil {
 		return nil, err
 	}

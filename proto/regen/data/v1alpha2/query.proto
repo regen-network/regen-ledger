@@ -20,6 +20,9 @@ service Query {
   rpc BySigner (QueryBySignerRequest) returns (QueryBySignerResponse) {
     option (google.api.http).get = "/regen/data/v1alpha2/signers/{signer}";
   }
+
+  // Signers queries by IRI.
+  rpc Signers(QuerySignersRequest) returns (QuerySignersResponse);
 }
 
 // QueryByContentHashRequest is the Query/ByContentHash request type.
@@ -62,7 +65,24 @@ message ContentEntry {
 
   // timestamp is the anchor Timestamp
   google.protobuf.Timestamp timestamp = 3;
+}
 
-  // signers are the signers, if any
-  repeated SignerEntry signers = 4;
+// QuerySignersRequest is the Query/Signers request type.
+message QuerySignersRequest {
+
+  // iri is the content IRI
+  string iri = 1;
+
+  // pagination is the PageRequest to use for pagination.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QuerySignersResponse is the Query/QuerySigners response type.
+message QuerySignersResponse {
+
+  // signers are the addresses of the signers.
+  repeated string signers = 1;
+
+  // pagination is the pagination PageResponse.
+  cosmos.base.query.v1beta1.PageResponse pagination = 3;
 }

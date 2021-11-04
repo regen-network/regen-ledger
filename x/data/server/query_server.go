@@ -16,6 +16,7 @@ import (
 
 var _ data.QueryServer = serverImpl{}
 
+// ByHash queries data based on its ContentHash.
 func (s serverImpl) ByHash(goCtx context.Context, request *data.QueryByHashRequest) (*data.QueryByHashResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 
@@ -43,7 +44,7 @@ func (s serverImpl) ByHash(goCtx context.Context, request *data.QueryByHashReque
 func (s serverImpl) getEntry(store sdk.KVStore, id []byte) (*data.ContentEntry, error) {
 	bz := store.Get(AnchorTimestampKey(id))
 	if len(bz) == 0 {
-		return nil, status.Error(codes.NotFound, "not found")
+		return nil, status.Error(codes.NotFound, "entry not found")
 	}
 
 	var timestamp gogotypes.Timestamp
@@ -74,14 +75,13 @@ func (s serverImpl) getEntry(store sdk.KVStore, id []byte) (*data.ContentEntry, 
 	}
 
 	iri := string(s.iriIDTable.GetValue(store, id))
-	contentHash, _, err := data.ParseIRI(sdk.GetConfig().GetBech32AccountAddrPrefix(), iri)
+	contentHash, err := data.ParseIRI(iri)
 	if err != nil {
 		return nil, err
 	}
 
 	entry := &data.ContentEntry{
 		Timestamp: &timestamp,
-		Signers:   signerEntries,
 		Iri:       iri,
 		Hash:      contentHash,
 	}
@@ -116,6 +116,34 @@ func (s serverImpl) BySigner(goCtx context.Context, request *data.QueryBySignerR
 
 	return &data.QueryBySignerResponse{
 		Entries:    entries,
+		Pagination: pageRes,
+	}, nil
+}
+
+// Signers queries the signers by IRI.
+func (s serverImpl) Signers(goCtx context.Context, request *data.QuerySignersRequest) (*data.QuerySignersResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	store := ctx.KVStore(s.storeKey)
+
+	id := s.iriIDTable.GetID(store, []byte(request.Iri))
+	if len(id) == 0 {
+		return nil,
+			status.Errorf(codes.NotFound, "IRI %s not found", request.Iri)
+	}
+
+	signerIDStore := prefix.NewStore(store, IDSignerIndexPrefix(id))
+
+	var signers []string
+	pageRes, err := query.Paginate(signerIDStore, request.Pagination, func(key []byte, value []byte) error {
+		signers = append(signers, sdk.AccAddress(key).String())
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &data.QuerySignersResponse{
+		Signers:    signers,
 		Pagination: pageRes,
 	}, nil
 }

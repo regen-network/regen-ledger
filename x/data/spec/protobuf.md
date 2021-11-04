@@ -30,6 +30,8 @@
     - [QueryByHashResponse](#regen.data.v1alpha2.QueryByHashResponse)
     - [QueryBySignerRequest](#regen.data.v1alpha2.QueryBySignerRequest)
     - [QueryBySignerResponse](#regen.data.v1alpha2.QueryBySignerResponse)
+    - [QuerySignersRequest](#regen.data.v1alpha2.QuerySignersRequest)
+    - [QuerySignersResponse](#regen.data.v1alpha2.QuerySignersResponse)
   
     - [Query](#regen.data.v1alpha2.Query)
   
@@ -319,7 +321,6 @@ ContentEntry describes data referenced and possibly stored on chain
 | hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the content hash |
 | iri | [string](#string) |  | iri is the content IRI |
 | timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the anchor Timestamp |
-| signers | [SignerEntry](#regen.data.v1alpha2.SignerEntry) | repeated | signers are the signers, if any |
 
 
 
@@ -387,6 +388,38 @@ QueryBySignerResponse is the Query/BySigner response type.
 
 
 
+
+<a name="regen.data.v1alpha2.QuerySignersRequest"></a>
+
+### QuerySignersRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| iri | [string](#string) |  |  |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination is the PageRequest to use for pagination. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.QuerySignersResponse"></a>
+
+### QuerySignersResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| signers | [string](#string) | repeated |  |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination is the pagination PageResponse. |
+
+
+
+
+
  <!-- end messages -->
 
  <!-- end enums -->
@@ -403,6 +436,7 @@ Query is the regen.data.v1alpha2 Query service
 | ----------- | ------------ | ------------- | ------------|
 | ByHash | [QueryByHashRequest](#regen.data.v1alpha2.QueryByHashRequest) | [QueryByHashResponse](#regen.data.v1alpha2.QueryByHashResponse) | ByHash queries data based on its ContentHash. |
 | BySigner | [QueryBySignerRequest](#regen.data.v1alpha2.QueryBySignerRequest) | [QueryBySignerResponse](#regen.data.v1alpha2.QueryBySignerResponse) | BySigner queries data based on signers. |
+| Signers | [QuerySignersRequest](#regen.data.v1alpha2.QuerySignersRequest) | [QuerySignersResponse](#regen.data.v1alpha2.QuerySignersResponse) |  |
 
  <!-- end services -->
 
