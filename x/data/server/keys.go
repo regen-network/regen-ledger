@@ -1,6 +1,10 @@
 package server
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import (
+	"fmt"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
 
 const (
 	IriIDTablePrefix byte = iota
@@ -14,6 +18,10 @@ func AnchorTimestampKey(id []byte) []byte {
 }
 
 func IDSignerTimestampKey(id []byte, address sdk.AccAddress) []byte {
+	if len(id) > 255 {
+		panic(fmt.Errorf("id length must be <= 255, found: %d", len(id)))
+	}
+
 	key := make([]byte, 0, len(id)+len(address)+2)
 	key = append(key, IDSignerPrefix, byte(len(id)))
 	key = append(key, id...)
@@ -50,8 +58,7 @@ func SignerIDIndexPrefix(address sdk.AccAddress) []byte {
 	}
 
 	key := make([]byte, 0, len(address)+2)
-	key = append(key, SignerIDPrefix)
-	key = append(key, byte(len(address)))
+	key = append(key, SignerIDPrefix, byte(len(address)))
 	key = append(key, address...)
 	return key
 }
