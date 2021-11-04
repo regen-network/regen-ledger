@@ -240,7 +240,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 	}
 
 	for _, credit := range req.Credits {
-		err := sendEcocredits(ctx, credit, store, senderAddr, recipientAddr)
+		err := s.sendEcocredits(ctx, credit, store, senderAddr, recipientAddr)
 		if err != nil {
 			return nil, err
 		}

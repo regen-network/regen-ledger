@@ -419,3 +419,78 @@ func (m *MsgSell) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Owner)
 	return []sdk.AccAddress{addr}
 }
+
+// Route Implements LegacyMsg.
+func (m MsgUpdateSellOrders) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type Implements LegacyMsg.
+func (m MsgUpdateSellOrders) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes Implements LegacyMsg.
+func (m MsgUpdateSellOrders) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+// ValidateBasic does a sanity check on the provided data.
+func (m *MsgUpdateSellOrders) ValidateBasic() error {
+
+	// TODO
+
+	return nil
+}
+
+// GetSigners returns the expected signers for MsgUpdateSellOrders.
+func (m *MsgUpdateSellOrders) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Owner)
+	return []sdk.AccAddress{addr}
+}
+
+// Route Implements LegacyMsg.
+func (m MsgBuy) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type Implements LegacyMsg.
+func (m MsgBuy) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes Implements LegacyMsg.
+func (m MsgBuy) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+// ValidateBasic does a sanity check on the provided data.
+func (m *MsgBuy) ValidateBasic() error {
+
+	// TODO
+
+	return nil
+}
+
+// GetSigners returns the expected signers for MsgBuy.
+func (m *MsgBuy) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Buyer)
+	return []sdk.AccAddress{addr}
+}
+
+// Route Implements LegacyMsg.
+func (m MsgAllowAskDenom) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type Implements LegacyMsg.
+func (m MsgAllowAskDenom) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes Implements LegacyMsg.
+func (m MsgAllowAskDenom) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+// ValidateBasic does a sanity check on the provided data.
+func (m *MsgAllowAskDenom) ValidateBasic() error {
+
+	// TODO
+
+	return nil
+}
+
+// GetSigners returns the expected signers for MsgAllowAskDenom.
+func (m *MsgAllowAskDenom) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.RootAddress)
+	return []sdk.AccAddress{addr}
+}
