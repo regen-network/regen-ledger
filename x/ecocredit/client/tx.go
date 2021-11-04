@@ -39,6 +39,10 @@ func TxCmd(name string) *cobra.Command {
 		TxUpdateClassMetadataCmd(),
 		TxUpdateClassIssuersCmd(),
 		TxUpdateClassAdminCmd(),
+		TxCreateBasketCmd(),
+		TxAddToBasketCmd(),
+		TxPickFromBasketCmd(),
+		TxTakeFromBasketCmd(),
 	)
 	return cmd
 }
@@ -506,7 +510,6 @@ Parameters:
 }
 
 const (
-	FlagName         string = "name"
 	FlagDisplayName  string = "display-name"
 	FlagExponent     string = "exponent"
 	FlagRetireOnTake string = "retire-on-take"
@@ -515,17 +518,16 @@ const (
 
 func TxCreateBasketCmd() *cobra.Command {
 	cmd := txflags(&cobra.Command{
-		Use:   "create-basket",
+		Use:   "create-basket [name]",
 		Short: "Create a new basket",
 		Long: `Create a new basket.
 
-Required Flags:
-	name:           TODO
+Optional Flags:
 	exponent:       TODO
 	display_name:   the display name used in the denom metadata, in the form ecocredit:{curator}:{name}
 	retire-on-take: TODO
 	allow-picking:  TODO`,
-		Args: cobra.ExactArgs(0),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
 			if err != nil {
@@ -534,11 +536,8 @@ Required Flags:
 
 			// Get the curator from the --from flag
 			curator := clientCtx.GetFromAddress()
+			name := args[0]
 
-			name, err := cmd.Flags().GetString(FlagName)
-			if err != nil {
-				return err
-			}
 			exponent, err := cmd.Flags().GetUint32(FlagExponent)
 			if err != nil {
 				return err
@@ -570,16 +569,10 @@ Required Flags:
 		},
 	})
 
-	cmd.Flags().String(FlagName, "", "basket name")
-	cmd.MarkFlagRequired(FlagName)
-	cmd.Flags().String(FlagDisplayName, "", "basket tokens display name")
-	cmd.MarkFlagRequired(FlagDisplayName)
 	cmd.Flags().Uint32(FlagExponent, 0, "exponent to use in denom metadata display")
-	cmd.MarkFlagRequired(FlagExponent)
+	cmd.Flags().String(FlagDisplayName, "", "basket tokens display name")
 	cmd.Flags().Bool(FlagRetireOnTake, false, "retire credits when taking away from basket")
-	cmd.MarkFlagRequired(FlagRetireOnTake)
 	cmd.Flags().Bool(FlagAllowPicking, true, "if allow_picking is set to false, then only an address which deposited credits in the basket can pick those credits. All other addresses will be blocked from picking those credits.")
-	cmd.MarkFlagRequired(FlagAllowPicking)
 	return cmd
 }
 
