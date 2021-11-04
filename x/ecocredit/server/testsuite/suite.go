@@ -973,6 +973,14 @@ func (s *IntegrationTestSuite) TestScenario() {
 		})
 	}
 
+	// TODO: test create sell order
+
+	// TODO: test update sell order
+
+	// TODO: test create buy order
+
+	// TODO: test allow ask denom
+
 	// reset the space to avoid corrupting other tests
 	s.paramSpace.Set(s.sdkCtx, ecocredit.KeyCreditTypes, ecocredit.DefaultParams().CreditTypes)
 }

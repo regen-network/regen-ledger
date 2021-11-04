@@ -407,7 +407,7 @@ func (m *MsgSell) ValidateBasic() error {
 		m.Orders[i].AskPrice.Validate()
 
 		if !m.Orders[i].AskPrice.Amount.IsPositive() {
-			return sdkerrors.ErrInvalidRequest.Wrap("AskPrice must be positive amount")
+			return sdkerrors.ErrInvalidRequest.Wrap("ask price must be positive amount")
 		}
 	}
 
@@ -434,7 +434,23 @@ func (m MsgUpdateSellOrders) GetSignBytes() []byte {
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgUpdateSellOrders) ValidateBasic() error {
 
-	// TODO
+	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+
+	for i := range m.Updates {
+
+		_, err := math.NewPositiveDecFromString(m.Updates[i].NewQuantity)
+		if err != nil {
+			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", m.Updates[i].NewQuantity)
+		}
+
+		m.Updates[i].NewAskPrice.Validate()
+
+		if !m.Updates[i].NewAskPrice.Amount.IsPositive() {
+			return sdkerrors.ErrInvalidRequest.Wrap("ask price must be positive amount")
+		}
+	}
 
 	return nil
 }
@@ -459,7 +475,23 @@ func (m MsgBuy) GetSignBytes() []byte {
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgBuy) ValidateBasic() error {
 
-	// TODO
+	if _, err := sdk.AccAddressFromBech32(m.Buyer); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+
+	for i := range m.Orders {
+
+		_, err := math.NewPositiveDecFromString(m.Orders[i].Quantity)
+		if err != nil {
+			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", m.Orders[i].Quantity)
+		}
+
+		m.Orders[i].BidPrice.Validate()
+
+		if !m.Orders[i].BidPrice.Amount.IsPositive() {
+			return sdkerrors.ErrInvalidRequest.Wrap("bid price must be positive amount")
+		}
+	}
 
 	return nil
 }

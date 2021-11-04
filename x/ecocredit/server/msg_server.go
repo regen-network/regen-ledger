@@ -513,7 +513,7 @@ func (s serverImpl) isCreatorAllowListed(ctx types.Context, allowlist []string, 
 	return false
 }
 
-// Sell creates a new sell order for an ecocredit
+// Sell creates new sell orders for credits
 func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocredit.MsgSellResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	owner := req.Owner
@@ -564,6 +564,7 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 	return &ecocredit.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
 }
 
+// UpdateSellOrders updates existing sell orders for credits
 func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUpdateSellOrders) (*ecocredit.MsgUpdateSellOrdersResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	owner := req.Owner
@@ -612,6 +613,7 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 	return &ecocredit.MsgUpdateSellOrdersResponse{}, nil
 }
 
+// Buy creates new buy orders for credits
 func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredit.MsgBuyResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	sdkCtx := sdk.UnwrapSDKContext(goCtx)
@@ -731,6 +733,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 	return &ecocredit.MsgBuyResponse{BuyOrderIds: buyOrderIds}, nil
 }
 
+// AllowAskDenom adds a new ask denom
 func (s serverImpl) AllowAskDenom(ctx context.Context, denom *ecocredit.MsgAllowAskDenom) (*ecocredit.MsgAllowAskDenomResponse, error) {
 	panic("implement me")
 }
