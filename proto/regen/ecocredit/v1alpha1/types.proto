@@ -220,3 +220,8 @@ message BasketCredit {
   // precision returned by Query/Precision.
   string tradable_amount = 2;
 }
+
+// BasketCredits is a type to describe an array of basket credits.
+message BasketCredits {
+  repeated BasketCredit credits = 1;
+}

@@ -14,6 +14,7 @@
 - [regen/ecocredit/v1alpha1/types.proto](#regen/ecocredit/v1alpha1/types.proto)
     - [AdmissionCriteria](#regen.ecocredit.v1alpha1.AdmissionCriteria)
     - [BasketCredit](#regen.ecocredit.v1alpha1.BasketCredit)
+    - [BasketCredits](#regen.ecocredit.v1alpha1.BasketCredits)
     - [BasketInfo](#regen.ecocredit.v1alpha1.BasketInfo)
     - [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo)
     - [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo)
@@ -55,9 +56,10 @@
     - [MsgAddToBasketResponse](#regen.ecocredit.v1alpha1.MsgAddToBasketResponse)
     - [MsgAllowAskDenom](#regen.ecocredit.v1alpha1.MsgAllowAskDenom)
     - [MsgAllowAskDenomResponse](#regen.ecocredit.v1alpha1.MsgAllowAskDenomResponse)
-    - [MsgBuyDirect](#regen.ecocredit.v1alpha1.MsgBuyDirect)
-    - [MsgBuyDirect.Order](#regen.ecocredit.v1alpha1.MsgBuyDirect.Order)
-    - [MsgBuyDirectResponse](#regen.ecocredit.v1alpha1.MsgBuyDirectResponse)
+    - [MsgBuy](#regen.ecocredit.v1alpha1.MsgBuy)
+    - [MsgBuy.Order](#regen.ecocredit.v1alpha1.MsgBuy.Order)
+    - [MsgBuy.Order.Selection](#regen.ecocredit.v1alpha1.MsgBuy.Order.Selection)
+    - [MsgBuyResponse](#regen.ecocredit.v1alpha1.MsgBuyResponse)
     - [MsgCancel](#regen.ecocredit.v1alpha1.MsgCancel)
     - [MsgCancel.CancelCredits](#regen.ecocredit.v1alpha1.MsgCancel.CancelCredits)
     - [MsgCancelResponse](#regen.ecocredit.v1alpha1.MsgCancelResponse)
@@ -243,6 +245,21 @@ emitted for each batch_denom. This allows for easier indexing.
 | ----- | ---- | ----- | ----------- |
 | batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
 | tradable_amount | [string](#string) |  | tradable_amount is the number of credits in this transfer that can be traded by the recipient. Decimal values are acceptable within the precision returned by Query/Precision. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.BasketCredits"></a>
+
+### BasketCredits
+BasketCredits is a type to describe an array of basket credits.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| credits | [BasketCredit](#regen.ecocredit.v1alpha1.BasketCredit) | repeated |  |
 
 
 
@@ -856,31 +873,31 @@ MsgAllowAskDenomResponse is the Msg/AllowAskDenom response type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.MsgBuyDirect"></a>
+<a name="regen.ecocredit.v1alpha1.MsgBuy"></a>
 
-### MsgBuyDirect
-MsgBuyDirect is the Msg/BuyDirect request type.
+### MsgBuy
+MsgBuy is the Msg/Buy request type.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | buyer | [string](#string) |  | buyer is the address of the credit buyer. |
-| orders | [MsgBuyDirect.Order](#regen.ecocredit.v1alpha1.MsgBuyDirect.Order) | repeated | orders are the new buy orders. |
+| orders | [MsgBuy.Order](#regen.ecocredit.v1alpha1.MsgBuy.Order) | repeated | orders are the new buy orders. |
 
 
 
 
 
 
-<a name="regen.ecocredit.v1alpha1.MsgBuyDirect.Order"></a>
+<a name="regen.ecocredit.v1alpha1.MsgBuy.Order"></a>
 
-### MsgBuyDirect.Order
-Order is a direct buy order.
+### MsgBuy.Order
+Order is a buy order.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sell_order_id | [uint64](#uint64) |  | sell_order_id is the sell order ID against which the buyer is trying to buy. |
+| selection | [MsgBuy.Order.Selection](#regen.ecocredit.v1alpha1.MsgBuy.Order.Selection) |  | selection is the buy order selection. |
 | quantity | [string](#string) |  | quantity is the quantity of credits to buy. If the quantity of credits available is less than this amount the order will be partially filled unless disable_partial_fill is true. |
 | bid_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | bid price is the bid price for this buy order. A credit unit will be settled at a purchase price that is no more than the bid price. The buy order will fail if the buyer does not have enough funds available to complete the purchase. |
 | disable_auto_retire | [bool](#bool) |  | disable_auto_retire allows auto-retirement to be disabled. If it is set to true the credits will not auto-retire and can be resold assuming that the corresponding sell order has auto-retirement disabled. If the sell order hasn't disabled auto-retirement and the buy order tries to disable it, that buy order will fail. |
@@ -891,10 +908,25 @@ Order is a direct buy order.
 
 
 
-<a name="regen.ecocredit.v1alpha1.MsgBuyDirectResponse"></a>
+<a name="regen.ecocredit.v1alpha1.MsgBuy.Order.Selection"></a>
 
-### MsgBuyDirectResponse
-MsgBuyDirectResponse is the Msg/BuyDirect response type.
+### MsgBuy.Order.Selection
+Selection defines a buy order selection.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sell_order_id | [uint64](#uint64) |  | sell_order_id is the sell order ID against which the buyer is trying to buy. When sell_order_id is set, this is known as a direct buy order because it is placed directly against a specific sell order. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.MsgBuyResponse"></a>
+
+### MsgBuyResponse
+MsgBuyResponse is the Msg/Buy response type.
 
 
 | Field | Type | Label | Description |
@@ -1420,7 +1452,7 @@ Msg is the regen.ecocredit.v1alpha1 Msg service.
 | UpdateClassMetadata | [MsgUpdateClassMetadata](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadata) | [MsgUpdateClassMetadataResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassMetadataResponse) | UpdateClassMetadata updates the credit class metadata |
 | Sell | [MsgSell](#regen.ecocredit.v1alpha1.MsgSell) | [MsgSellResponse](#regen.ecocredit.v1alpha1.MsgSellResponse) | Sell creates new sell orders. |
 | UpdateSellOrders | [MsgUpdateSellOrders](#regen.ecocredit.v1alpha1.MsgUpdateSellOrders) | [MsgUpdateSellOrdersResponse](#regen.ecocredit.v1alpha1.MsgUpdateSellOrdersResponse) | UpdateSellOrders updates existing sell orders. |
-| BuyDirect | [MsgBuyDirect](#regen.ecocredit.v1alpha1.MsgBuyDirect) | [MsgBuyDirectResponse](#regen.ecocredit.v1alpha1.MsgBuyDirectResponse) | BuyDirect creates buy orders directly against sell orders. |
+| Buy | [MsgBuy](#regen.ecocredit.v1alpha1.MsgBuy) | [MsgBuyResponse](#regen.ecocredit.v1alpha1.MsgBuyResponse) | Buy creates credit buy orders. |
 | AllowAskDenom | [MsgAllowAskDenom](#regen.ecocredit.v1alpha1.MsgAllowAskDenom) | [MsgAllowAskDenomResponse](#regen.ecocredit.v1alpha1.MsgAllowAskDenomResponse) | AllowAskDenom is a governance operation which authorizes a new ask denom to be used in sell orders |
 | CreateBasket | [MsgCreateBasket](#regen.ecocredit.v1alpha1.MsgCreateBasket) | [MsgCreateBasketResponse](#regen.ecocredit.v1alpha1.MsgCreateBasketResponse) | CreateBasket creates a bank denom which wraps credits. |
 | AddToBasket | [MsgAddToBasket](#regen.ecocredit.v1alpha1.MsgAddToBasket) | [MsgAddToBasketResponse](#regen.ecocredit.v1alpha1.MsgAddToBasketResponse) | AddToBasket adds credits to a basket in return for basket tokens. |
