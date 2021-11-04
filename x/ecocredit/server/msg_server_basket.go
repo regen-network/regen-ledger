@@ -9,7 +9,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types"
-	"github.com/regen-network/regen-ledger/types/math"
+	regenmath "github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -51,7 +51,7 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 		return nil, err
 	}
 
-	amtReceived := math.NewDecFromInt64(0)
+	amtReceived := regenmath.NewDecFromInt64(0)
 
 	for _, credit := range req.Credits {
 		batchDenom := batchDenomT(credit.BatchDenom)
@@ -66,7 +66,7 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 			return nil, err
 		}
 
-		tradable, err := math.NewNonNegativeFixedDecFromString(credit.TradableAmount, maxDecimalPlaces)
+		tradable, err := regenmath.NewNonNegativeFixedDecFromString(credit.TradableAmount, maxDecimalPlaces)
 		if err != nil {
 			return nil, err
 		}
@@ -83,13 +83,13 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 	}
 
 	// TODO Why 10?
-	multiplier, err := math.NewNonNegativeFixedDecFromString(basket.AdmissionCriteria[0].Multiplier, 10)
+	multiplier, err := regenmath.NewNonNegativeFixedDecFromString(basket.AdmissionCriteria[0].Multiplier, 10)
 	if err != nil {
 		return nil, err
 	}
 	multipliedAmtReceived, err := amtReceived.Mul(multiplier)
 
-	// TODO Is there another way than to convert from math.Dec to sdk.Int other than passing by int64?
+	// TODO Is there another way than to convert from regenmath.Dec to sdk.Int other than passing by int64?
 	i, err := multipliedAmtReceived.Int64()
 	if err != nil {
 		return nil, err
@@ -119,14 +119,140 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid basket denom", req.BasketDenom)
 	}
 
+	// store := ctx.KVStore(s.storeKey)
+	// it := sdk.KVStorePrefixIterator(store, address.MustLengthPrefix([]byte(req.BasketDenom)))
+	// defer it.Close()
+
+	// n := 0
+	// var tradable []regenmath.Dec
+	// // var batchDenoms []string
+	// // var owners [][]byte
+	// for ; it.Valid(); it.Next() {
+	// 	// strip batchDenom and owner from key
+	// 	// it.Key()
+	// 	// TODO use NewNonNegativeFixedDecFromString with batch precision
+	// 	v, err := regenmath.NewDecFromString(string(it.Value()))
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	tradable = append(tradable, v)
+	// 	n++
+	// }
+	// hashInt := new(big.Int)
+	// hashInt.SetString(prevBlockHash, 16)
+	// hashFloat := new(big.Float).SetInt(hashInt)
+	// hash, _ := hashFloat.Float64()
+	// idx := math.Mod(hash, float64(n))
+	return &ecocredit.MsgTakeFromBasketResponse{}, nil
 }
 
 func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPickFromBasket) (*ecocredit.MsgPickFromBasketResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 
-	if !s.basketInfoTable.Has(ctx, orm.RowID(req.BasketDenom)) {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid basket denom", req.BasketDenom)
+	var basketInfo ecocredit.BasketInfo
+	err := s.basketInfoTable.GetOne(ctx, orm.RowID(req.BasketDenom), &basketInfo)
+	if err != nil {
+		return nil, err
 	}
+
+	owner, err := sdk.AccAddressFromBech32(req.Owner)
+	if err != nil {
+		return nil, err
+	}
+
+	store := ctx.KVStore(s.storeKey)
+	basketDenom := basketDenomT(req.BasketDenom)
+	for _, c := range req.Credits {
+		batchDenom := batchDenomT(c.BatchDenom)
+		maxDecimalPlaces, err := s.getBatchPrecision(ctx, batchDenom)
+		if err != nil {
+			return nil, err
+		}
+		tradableAmount, err := regenmath.NewNonNegativeFixedDecFromString(c.TradableAmount, maxDecimalPlaces)
+		if err != nil {
+			return nil, err
+		}
+
+		// Only an address which deposited credits in the basket can pick those credits
+		if !basketInfo.AllowPicking {
+			basketCreditKey := BasketCreditsKey(basketDenom, owner, batchDenom)
+			totalTradable, err := getDecimal(store, basketCreditKey)
+			if err != nil {
+				return nil, err
+			}
+
+			totalTradable, err = regenmath.SafeSubBalance(totalTradable, tradableAmount)
+			if err != nil {
+				return nil, err
+			}
+			// Update basket credit
+			setDecimal(store, basketCreditKey, totalTradable)
+			// Retire if needed
+			if basketInfo.RetireOnTake {
+				err := retireUpdateBalanceSupply(ctx, store, owner, batchDenom, tradableAmount, req.RetirementLocation)
+				if err != nil {
+					return nil, err
+				}
+			}
+		} else {
+			prefix := BasketCreditsKey(basketDenom, []byte{}, batchDenom)
+			it := sdk.KVStorePrefixIterator(store, prefix)
+			defer it.Close()
+
+			basketCredits := make(map[string]regenmath.Dec)
+			batchTotalTradable := regenmath.NewDecFromInt64(0)
+			for ; it.Valid(); it.Next() {
+				value, err := regenmath.NewDecFromString(string(it.Value()))
+				if err != nil {
+					return nil, err
+				}
+				batchTotalTradable, err = batchTotalTradable.Add(value)
+				if err != nil {
+					return nil, err
+				}
+				basketCredits[string(it.Key())] = value
+			}
+			if batchTotalTradable.Cmp(tradableAmount) == -1 {
+				return nil, ecocredit.ErrInsufficientFunds
+			}
+			var nextTradableAmount regenmath.Dec
+			for key, value := range basketCredits {
+				sub, err := value.Sub(tradableAmount)
+				if err != nil {
+					return nil, err
+				}
+				// Update basket credit
+				if sub.IsPositive() || sub.IsZero() {
+					setDecimal(store, []byte(key), sub)
+					nextTradableAmount = regenmath.NewDecFromInt64(0)
+				} else if sub.IsNegative() {
+					setDecimal(store, []byte(key), regenmath.NewDecFromInt64(0))
+					nextTradableAmount, err = sub.Mul(regenmath.NewDecFromInt64(-1))
+					if err != nil {
+						return nil, err
+					}
+				}
+
+				// Retire if needed
+				if basketInfo.RetireOnTake {
+					// Strip owner from key
+					owner, err := sdk.AccAddressFromBech32(key[len(prefix):])
+					if err != nil {
+						return nil, err
+					}
+					err = retireUpdateBalanceSupply(ctx, store, owner, batchDenom, tradableAmount, req.RetirementLocation)
+					if err != nil {
+						return nil, err
+					}
+				}
+				if nextTradableAmount.IsZero() {
+					break
+				}
+				tradableAmount = nextTradableAmount
+			}
+		}
+	}
+	return &ecocredit.MsgPickFromBasketResponse{}, nil
 }
 
 func getBasketDenom(curator, name string) string {
