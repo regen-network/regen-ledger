@@ -375,3 +375,109 @@ func (m *MsgUpdateClassMetadata) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Admin)
 	return []sdk.AccAddress{addr}
 }
+
+func (m *MsgCreateBasket) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Curator)
+	if err != nil {
+		return err
+	}
+
+	if m.Name == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("basket name cannot be empty")
+	}
+
+	return nil
+}
+
+func (m *MsgCreateBasket) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Curator)
+	return []sdk.AccAddress{addr}
+}
+
+func (m *MsgAddToBasket) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Owner)
+	if err != nil {
+		return err
+	}
+
+	if len(m.Credits) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("cannot add 0 credits to a basket")
+	}
+
+	for _, c := range m.Credits {
+		if err := c.ValidateBasic(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *MsgAddToBasket) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Owner)
+	return []sdk.AccAddress{addr}
+}
+
+func (m *MsgPickFromBasket) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Owner)
+	if err != nil {
+		return err
+	}
+
+	if m.BasketDenom == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("basket denom cannot be empty")
+	}
+
+	if len(m.Credits) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("cannot pick 0 credits from a basket")
+	}
+
+	for _, c := range m.Credits {
+		if err := c.ValidateBasic(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *MsgPickFromBasket) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Owner)
+	return []sdk.AccAddress{addr}
+}
+
+func (m *MsgTakeFromBasket) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Owner)
+	if err != nil {
+		return err
+	}
+
+	if m.BasketDenom == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("basket denom cannot be empty")
+	}
+
+	if m.Amount == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("cannot take empty amount from basket")
+	}
+
+	return nil
+}
+
+func (m *MsgTakeFromBasket) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Owner)
+	return []sdk.AccAddress{addr}
+}
+
+// TODO Add legacy Amino support.
+
+func (m *BasketCredit) ValidateBasic() error {
+	if m.BatchDenom == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("basket credit batch denom should not be empty")
+	}
+
+	if m.TradableAmount == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("basket credit tradable amount should not be empty")
+	}
+
+	return nil
+}
