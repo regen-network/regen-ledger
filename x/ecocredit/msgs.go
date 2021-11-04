@@ -376,6 +376,15 @@ func (m *MsgUpdateClassMetadata) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{addr}
 }
 
+func (m *MsgSell) ValidateBasic() error                     { panic("TODO implement") }
+func (m *MsgSell) GetSigners() []sdk.AccAddress             { panic("TODO implement") }
+func (m *MsgAllowAskDenom) ValidateBasic() error            { panic("TODO implement") }
+func (m *MsgAllowAskDenom) GetSigners() []sdk.AccAddress    { panic("TODO implement") }
+func (m *MsgBuyDirect) ValidateBasic() error                { panic("TODO implement") }
+func (m *MsgBuyDirect) GetSigners() []sdk.AccAddress        { panic("TODO implement") }
+func (m *MsgUpdateSellOrders) ValidateBasic() error         { panic("TODO implement") }
+func (m *MsgUpdateSellOrders) GetSigners() []sdk.AccAddress { panic("TODO implement") }
+
 func (m *MsgCreateBasket) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(m.Curator)
 	if err != nil {
