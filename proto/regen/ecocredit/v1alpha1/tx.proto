@@ -55,6 +55,9 @@ service Msg {
   rpc AllowAskDenom (MsgAllowAskDenom) returns (MsgAllowAskDenomResponse);
 
   // CreateBasket creates a bank denom which wraps credits.
+  // Baskets are managed and created by Regen Ledger governance (REGEN holders).
+  // That means, basket creation and basket composition updates goes throuh
+  // gov process and module parameters.
   rpc CreateBasket(MsgCreateBasket) returns (MsgCreateBasketResponse);
 
   // AddToBasket adds credits to a basket in return for basket tokens.
