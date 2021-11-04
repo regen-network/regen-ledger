@@ -504,3 +504,209 @@ Parameters:
 		},
 	})
 }
+
+const (
+	FlagName         string = "name"
+	FlagDisplayName  string = "display-name"
+	FlagExponent     string = "exponent"
+	FlagRetireOnTake string = "retire-on-take"
+	FlagAllowPicking string = "allow-picking"
+)
+
+func TxCreateBasketCmd() *cobra.Command {
+	cmd := txflags(&cobra.Command{
+		Use:   "create-basket",
+		Short: "Create a new basket",
+		Long: `Create a new basket.
+
+Required Flags:
+	name:           TODO
+	exponent:       TODO
+	display_name:   the display name used in the denom metadata, in the form ecocredit:{curator}:{name}
+	retire-on-take: TODO
+	allow-picking:  TODO`,
+		Args: cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// Get the curator from the --from flag
+			curator := clientCtx.GetFromAddress()
+
+			name, err := cmd.Flags().GetString(FlagName)
+			if err != nil {
+				return err
+			}
+			exponent, err := cmd.Flags().GetUint32(FlagExponent)
+			if err != nil {
+				return err
+			}
+			displayName, err := cmd.Flags().GetString(FlagDisplayName)
+			if err != nil {
+				return err
+			}
+			retireOnTake, err := cmd.Flags().GetBool(FlagRetireOnTake)
+			if err != nil {
+				return err
+			}
+			allowPicking, err := cmd.Flags().GetBool(FlagAllowPicking)
+			if err != nil {
+				return err
+			}
+
+			msg := ecocredit.MsgCreateBasket{
+				Curator:      curator.String(),
+				Name:         name,
+				DisplayName:  displayName,
+				Exponent:     exponent,
+				RetireOnTake: retireOnTake,
+				AllowPicking: allowPicking,
+				// TODO Add admission criteria, which format? Maybe JSON file.
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	})
+
+	cmd.Flags().String(FlagName, "", "basket name")
+	cmd.MarkFlagRequired(FlagName)
+	cmd.Flags().String(FlagDisplayName, "", "basket tokens display name")
+	cmd.MarkFlagRequired(FlagDisplayName)
+	cmd.Flags().Uint32(FlagExponent, 0, "exponent to use in denom metadata display")
+	cmd.MarkFlagRequired(FlagExponent)
+	cmd.Flags().Bool(FlagRetireOnTake, false, "retire credits when taking away from basket")
+	cmd.MarkFlagRequired(FlagRetireOnTake)
+	cmd.Flags().Bool(FlagAllowPicking, true, "if allow_picking is set to false, then only an address which deposited credits in the basket can pick those credits. All other addresses will be blocked from picking those credits.")
+	cmd.MarkFlagRequired(FlagAllowPicking)
+	return cmd
+}
+
+func TxAddToBasketCmd() *cobra.Command {
+	cmd := txflags(&cobra.Command{
+		Use:   "add-to-basket [basket-denom] [credits_file.json]",
+		Short: "Add credits to a basket",
+		Long: `Add credits to a basket.
+
+TODO describe the JSON format of the credits JSON file, which should be ecocredits.BasketCredits proto JSON`,
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// Get the owner from the --from flag
+			owner := clientCtx.GetFromAddress()
+			basketDenom := args[0]
+
+			// Read the JSON file to get the ecocredits to add.
+			contents, err := ioutil.ReadFile(args[1])
+			if err != nil {
+				return err
+			}
+			var credits ecocredit.BasketCredits
+			err = clientCtx.Codec.UnmarshalJSON(contents, &credits)
+			if err != nil {
+				return err
+			}
+
+			msg := ecocredit.MsgAddToBasket{
+				Owner:       owner.String(),
+				BasketDenom: basketDenom,
+				Credits:     credits.Credits,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	})
+
+	return cmd
+}
+
+const FlagRetirementLocation string = "retirement-location"
+
+func TxPickFromBasketCmd() *cobra.Command {
+	cmd := txflags(&cobra.Command{
+		Use:   "pick-from-basket [basket-denom] [credits_file.json]",
+		Short: "Pick credits from a basket",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// Get the owner from the --from flag
+			owner := clientCtx.GetFromAddress()
+			basketDenom := args[0]
+
+			retirementLocation, err := cmd.Flags().GetString(FlagRetirementLocation)
+			if err != nil {
+				return err
+			}
+
+			// Read the JSON file to get the ecocredits to add.
+			contents, err := ioutil.ReadFile(args[1])
+			if err != nil {
+				return err
+			}
+			var credits ecocredit.BasketCredits
+			err = clientCtx.Codec.UnmarshalJSON(contents, &credits)
+			if err != nil {
+				return err
+			}
+
+			msg := ecocredit.MsgPickFromBasket{
+				Owner:              owner.String(),
+				BasketDenom:        basketDenom,
+				Credits:            credits.Credits,
+				RetirementLocation: retirementLocation,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	})
+
+	cmd.Flags().String(FlagRetirementLocation, "", "retirement location")
+
+	return cmd
+}
+
+func TxTakeFromBasketCmd() *cobra.Command {
+	cmd := txflags(&cobra.Command{
+		Use:   "Take-from-basket [basket-denom] [amount]",
+		Short: "Take credits from a basket",
+		Args:  cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// Get the owner from the --from flag
+			owner := clientCtx.GetFromAddress()
+			basketDenom := args[0]
+			amount := args[1]
+
+			retirementLocation, err := cmd.Flags().GetString(FlagRetirementLocation)
+			if err != nil {
+				return err
+			}
+
+			msg := ecocredit.MsgTakeFromBasket{
+				Owner:              owner.String(),
+				BasketDenom:        basketDenom,
+				Amount:             amount,
+				RetirementLocation: retirementLocation,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	})
+
+	cmd.Flags().String(FlagRetirementLocation, "", "retirement location")
+
+	return cmd
+}
