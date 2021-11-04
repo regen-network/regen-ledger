@@ -122,13 +122,13 @@ func ParseIRI(iri string) (*ContentHash, error) {
 	const regenPrefix = "regen:"
 
 	if !strings.HasPrefix(iri, regenPrefix) {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("can't parse IRI %s without %s prefix", iri, regenPrefix))
+		return nil, sdkerrors.ErrInvalidRequest.Wrap(fmt.Sprintf("can't parse IRI %s without %s prefix", iri, regenPrefix))
 	}
 
 	hashExtPart := iri[len(regenPrefix):]
 	parts := strings.Split(hashExtPart, ".")
 	if len(parts) != 2 {
-		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, fmt.Sprintf("error parsing IRI %s, expected a . followed by an suffix", iri))
+		return nil, sdkerrors.ErrInvalidRequest.Wrap(fmt.Sprintf("error parsing IRI %s, expected a . followed by an suffix", iri))
 	}
 
 	hashPart := parts[0]
@@ -140,7 +140,7 @@ func ParseIRI(iri string) (*ContentHash, error) {
 	}
 
 	if version != iriVersion0 {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid version found when parsing IRI %s", iri)
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("invalid version found when parsing IRI %s", iri)
 	}
 
 	rdr := bytes.NewBuffer(res)
@@ -183,7 +183,7 @@ func ParseIRI(iri string) (*ContentHash, error) {
 	case IriPrefixGraph:
 		// rdf extension is expected for graph data
 		if ext != "rdf" {
-			return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "expected extension .rdf for graph data, got .%s", ext)
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("expected extension .rdf for graph data, got .%s", ext)
 		}
 
 		// read next byte
