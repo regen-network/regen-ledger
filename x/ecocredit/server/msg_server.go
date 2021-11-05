@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -535,6 +534,8 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 			return nil, err
 		}
 
+		// TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
+
 		orderID := s.sellOrderTable.Sequence().PeekNextVal(ctx)
 
 		sellOrderIds = append(sellOrderIds, orderID)
@@ -561,7 +562,6 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 			return nil, err
 		}
 
-		// TODO: implement gas counter #622
 		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "create sell order")
 	}
 
@@ -585,6 +585,8 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 		if err != nil {
 			return nil, err
 		}
+
+		// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
 
 		err = verifyBalance(store, ownerAddr, sellOrder.BatchDenom, req.Updates[i].NewQuantity)
 		if err != nil {
@@ -612,7 +614,6 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 			return nil, err
 		}
 
-		// TODO: implement gas counter #622
 		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "update sell order")
 	}
 
@@ -637,54 +638,69 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 
 		balances := s.bankKeeper.SpendableCoins(sdkCtx, buyerAddr)
 		bidPrice := req.Orders[i].BidPrice
-
-		// decimal amount of ecocredits to be purchased
-		quantity, err := math.NewPositiveDecFromString(req.Orders[i].Quantity)
-		if err != nil {
-			return nil, err
-		}
-
-		// amountNeeded is the amount (in bid denom) of coins necessary for purchase
-		amountNeeded, err := quantity.Mul(math.NewDecFromInt64(bidPrice.Amount.Int64()))
-		if err != nil {
-			return nil, err
-		}
-
-		// amountNeeded should always be rounded down to the nearest integer number
-		// as a buyer cannot spend fractional bank base denoms (e.g. fractional uregen).
-		// The ecocredit quantity sent back to the buyer should therefore be calculated by
-		// multiplying the integral amountNeeded by bidPrice as opposed to the quantity sent
-		// in the buy request.
-		amountNeeded, err = amountNeeded.QuoInteger(math.NewDecFromInt64(1))
-		if err != nil {
-			return nil, err
-		}
-
-		amountNeededInt64, err := amountNeeded.Int64()
-		if err != nil {
-			return nil, err
-		}
-
 		balanceAmount := balances.AmountOf(bidPrice.Denom)
-		if balanceAmount.GTE(sdk.NewInt(amountNeededInt64)) {
+
+		// get decimal amount of ecocredits to be purchased
+		creditsDesired, err := math.NewPositiveDecFromString(req.Orders[i].Quantity)
+		if err != nil {
+			return nil, err
+		}
+
+		// TODO: Verify that bidPrice.Denom is in AllowAskDenom #624
+
+		// calculate the amount of coin needed for purchase
+		coinToSend, err := getCoinNeeded(creditsDesired, bidPrice)
+		if err != nil {
+			return nil, err
+		}
+
+		// verify buyer has sufficient funds for the given coinToSend
+		if balanceAmount.GTE(coinToSend.Amount) {
 			return nil, ecocredit.ErrInsufficientFunds
 		}
-
-		quantityToSend, err := amountNeeded.Mul(quantity)
-		if err != nil {
-			return nil, err
-		}
-
-		coinsToSend := sdk.Coins{{Denom: bidPrice.Denom, Amount: sdk.NewInt(amountNeededInt64)}}
 
 		switch req.Orders[i].Selection.Sum.(type) {
 		case *ecocredit.MsgBuy_Order_Selection_SellOrderId:
 
 			sellOrderId := req.Orders[i].Selection.GetSellOrderId()
-
-			sellOrder, err := s.getSellOrder(ctx, req.Orders[i].Selection.GetSellOrderId())
+			sellOrder, err := s.getSellOrder(ctx, sellOrderId)
 			if err != nil {
 				return nil, err
+			}
+
+			// verify that bid price is greater or equal to ask price
+			if bidPrice.Denom != sellOrder.AskPrice.Denom {
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price denom does not match ask price denom: got %s, expected: %s", bidPrice.Denom, sellOrder.AskPrice.Denom)
+			}
+
+			if bidPrice.Amount.GTE(sellOrder.AskPrice.Amount) {
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price too low: got %s, needed at least: %s", bidPrice.String(), sellOrder.AskPrice.String())
+			}
+
+			// TODO: We should maybe wrap with a query of the seller's ecocredit balance and ensure its at least the quantity in the SellOrder
+			// calculate creditsToReceive based off of creditsDesired and creditsAvailable in sell order
+			creditsAvailable, err := math.NewDecFromString(sellOrder.Quantity)
+			if err != nil {
+				return nil, ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
+			}
+
+			var creditsToReceive = creditsDesired
+
+			// check if credits desired is more than credits available
+			if creditsDesired.Cmp(creditsAvailable) == -1 {
+
+				// error if partial fill disabled
+				if req.Orders[i].DisablePartialFill {
+					return nil, ecocredit.ErrInvalidSellOrder.Wrap("sell order does not have sufficient creditsToReceive available")
+				}
+
+				creditsToReceive = creditsAvailable
+
+				// recalculate coinsNeeded if creditsToReceive is not creditsDesired
+				coinToSend, err = getCoinNeeded(creditsToReceive, bidPrice)
+				if err != nil {
+					return nil, err
+				}
 			}
 
 			sellerAddr, err := sdk.AccAddressFromBech32(sellOrder.Owner)
@@ -693,16 +709,16 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 			}
 
 			// Move the coins to the seller account
-			err = s.bankKeeper.SendCoins(sdkCtx, buyerAddr, sellerAddr, coinsToSend)
+			err = s.bankKeeper.SendCoins(sdkCtx, buyerAddr, sellerAddr, sdk.Coins{coinToSend})
 			if err != nil {
 				return nil, err
 			}
 
 			credit := &ecocredit.MsgSend_SendCredits{
 				BatchDenom:     sellOrder.BatchDenom,
-				TradableAmount: quantityToSend.String(),
+				TradableAmount: creditsToReceive.String(),
 				// TODO: handle auto-retire settings #621
-				//RetiredAmount: quantityToRetire.String(),
+				//RetiredAmount: creditsToRetire.String(),
 				//RetirementLocation: retirementLocation,
 			}
 
@@ -734,7 +750,6 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 			return nil, sdkerrors.ErrInvalidRequest
 		}
 
-		// TODO: implement gas counter #622
 		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "create buy order")
 	}
 
