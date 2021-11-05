@@ -122,13 +122,13 @@ func ParseIRI(iri string) (*ContentHash, error) {
 	const regenPrefix = "regen:"
 
 	if !strings.HasPrefix(iri, regenPrefix) {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap(fmt.Sprintf("can't parse IRI %s without %s prefix", iri, regenPrefix))
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("can't parse IRI %s without %s prefix", iri, regenPrefix)
 	}
 
 	hashExtPart := iri[len(regenPrefix):]
 	parts := strings.Split(hashExtPart, ".")
 	if len(parts) != 2 {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap(fmt.Sprintf("error parsing IRI %s, expected a . followed by an suffix", iri))
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("error parsing IRI %s, expected a . followed by an suffix", iri)
 	}
 
 	hashPart := parts[0]
