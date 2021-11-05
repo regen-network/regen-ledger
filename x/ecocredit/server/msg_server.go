@@ -727,7 +727,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 				return nil, err
 			}
 
-		// TODO: implement processing for filter option
+		// TODO: implement processing for filter option #623
 		//case *ecocredit.MsgBuy_Order_Selection_Filter:
 
 		default:

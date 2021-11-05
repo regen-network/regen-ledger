@@ -82,7 +82,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	if err != nil {
 		panic(err.Error())
 	}
-	s.batchInfoTable = askDenomTableBuilder.Build()
+	s.askDenomTable = askDenomTableBuilder.Build()
 
 	return s
 }

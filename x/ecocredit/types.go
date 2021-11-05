@@ -9,7 +9,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm"
 )
 
-var _, _, _, _ orm.PrimaryKeyed = &ClassInfo{}, &BatchInfo{}, &CreditTypeSeq{}, &SellOrder{}
+var _, _, _, _, _ orm.PrimaryKeyed = &ClassInfo{}, &BatchInfo{}, &CreditTypeSeq{}, &SellOrder{}, &AskDenom{}
 
 // PrimaryKeyFields returns the fields of the object that will make up the
 // primary key for ClassInfo.
