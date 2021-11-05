@@ -84,5 +84,5 @@ message QuerySignersResponse {
   repeated string signers = 1;
 
   // pagination is the pagination PageResponse.
-  cosmos.base.query.v1beta1.PageResponse pagination = 3;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
