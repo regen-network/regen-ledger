@@ -392,12 +392,12 @@ QueryBySignerResponse is the Query/BySigner response type.
 <a name="regen.data.v1alpha2.QuerySignersRequest"></a>
 
 ### QuerySignersRequest
-
+QuerySignersRequest is the Query/Signers request type.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| iri | [string](#string) |  |  |
+| iri | [string](#string) |  | iri is the content IRI |
 | pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination is the PageRequest to use for pagination. |
 
 
@@ -408,12 +408,12 @@ QueryBySignerResponse is the Query/BySigner response type.
 <a name="regen.data.v1alpha2.QuerySignersResponse"></a>
 
 ### QuerySignersResponse
-
+QuerySignersResponse is the Query/QuerySigners response type.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| signers | [string](#string) | repeated |  |
+| signers | [string](#string) | repeated | signers are the addresses of the signers. |
 | pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination is the pagination PageResponse. |
 
 
@@ -436,7 +436,7 @@ Query is the regen.data.v1alpha2 Query service
 | ----------- | ------------ | ------------- | ------------|
 | ByHash | [QueryByHashRequest](#regen.data.v1alpha2.QueryByHashRequest) | [QueryByHashResponse](#regen.data.v1alpha2.QueryByHashResponse) | ByHash queries data based on its ContentHash. |
 | BySigner | [QueryBySignerRequest](#regen.data.v1alpha2.QueryBySignerRequest) | [QueryBySignerResponse](#regen.data.v1alpha2.QueryBySignerResponse) | BySigner queries data based on signers. |
-| Signers | [QuerySignersRequest](#regen.data.v1alpha2.QuerySignersRequest) | [QuerySignersResponse](#regen.data.v1alpha2.QuerySignersResponse) |  |
+| Signers | [QuerySignersRequest](#regen.data.v1alpha2.QuerySignersRequest) | [QuerySignersResponse](#regen.data.v1alpha2.QuerySignersResponse) | Signers queries by IRI. |
 
  <!-- end services -->
 

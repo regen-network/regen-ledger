@@ -80,7 +80,10 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NotNil(queryRes.Entry)
 	ts := queryRes.Entry.Timestamp
 	require.NotNil(ts)
-	require.Empty(queryRes.Entry.Signers)
+
+	signerRes, err := s.queryClient.Signers(s.ctx, &data.QuerySignersRequest{Iri: queryRes.Entry.Iri, Pagination: nil})
+	require.NoError(err)
+	require.Empty(signerRes.Signers)
 	iri, err := graphHash.ToIRI()
 	require.NoError(err)
 	require.Equal(iri, queryRes.Entry.Iri)
@@ -98,8 +101,10 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NoError(err)
 	require.NotNil(queryRes)
 	require.Equal(ts, queryRes.Entry.Timestamp) // ensure timestamp is equal to the original
-	require.Len(queryRes.Entry.Signers, 1)
-	require.Equal(s.addr1.String(), queryRes.Entry.Signers[0].Signer)
+	signerRes, err = s.queryClient.Signers(s.ctx, &data.QuerySignersRequest{Iri: iri, Pagination: nil})
+	require.NoError(err)
+	require.Len(signerRes.Signers, 1)
+	require.Equal(s.addr1.String(), signerRes.Signers[0])
 
 	// query data by signer
 	bySignerRes, err := s.queryClient.BySigner(s.ctx, &data.QueryBySignerRequest{
@@ -131,10 +136,15 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NoError(err)
 	require.NotNil(queryRes)
 	require.Equal(ts, queryRes.Entry.Timestamp)
-	require.Len(queryRes.Entry.Signers, 2)
-	signers := make([]string, len(queryRes.Entry.Signers))
-	for _, signer := range queryRes.Entry.Signers {
-		signers = append(signers, signer.Signer)
+
+	iri2, err := contentHash.ToIRI()
+	require.NoError(err)
+	signerRes, err = s.queryClient.Signers(s.ctx, &data.QuerySignersRequest{Iri: iri2, Pagination: nil})
+	require.NoError(err)
+	require.Len(signerRes.Signers, 2)
+	signers := make([]string, len(signerRes.Signers))
+	for _, signer := range signerRes.Signers {
+		signers = append(signers, signer)
 	}
 	require.Contains(signers, s.addr1.String())
 	require.Contains(signers, s.addr2.String())
@@ -178,7 +188,9 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.NotNil(queryRes.Entry)
 	ts := queryRes.Entry.Timestamp
 	require.NotNil(ts)
-	require.Empty(queryRes.Entry.Signers)
+
+	signerRes, err := s.queryClient.Signers(s.ctx, &data.QuerySignersRequest{Iri: queryRes.Entry.Iri, Pagination: nil})
+	require.Empty(signerRes.Signers)
 
 	// can retrieve same timestamp, and data
 	queryRes, err = s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{

@@ -49,13 +49,13 @@ func (s serverImpl) anchorAndGetTimestamp(ctx sdk.Context, id []byte, iri string
 	key := AnchorTimestampKey(id)
 	bz := store.Get(key)
 	if len(bz) != 0 {
-		var timestamp *gogotypes.Timestamp
-		err := proto.Unmarshal(bz, timestamp)
+		var timestamp gogotypes.Timestamp
+		err := proto.Unmarshal(bz, &timestamp)
 		if err != nil {
 			return nil, err
 		}
 
-		return timestamp, nil
+		return &timestamp, nil
 	}
 
 	timestamp, err := blockTimestamp(ctx)

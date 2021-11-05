@@ -296,7 +296,9 @@ func (m *ContentEntry) GetTimestamp() *types.Timestamp {
 	return nil
 }
 
+// QuerySignersRequest is the Query/Signers request type.
 type QuerySignersRequest struct {
+	// iri is the content IRI
 	Iri string `protobuf:"bytes,1,opt,name=iri,proto3" json:"iri,omitempty"`
 	// pagination is the PageRequest to use for pagination.
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -349,7 +351,9 @@ func (m *QuerySignersRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
+// QuerySignersResponse is the Query/QuerySigners response type.
 type QuerySignersResponse struct {
+	// signers are the addresses of the signers.
 	Signers []string `protobuf:"bytes,1,rep,name=signers,proto3" json:"signers,omitempty"`
 	// pagination is the pagination PageResponse.
 	Pagination *query.PageResponse `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`
@@ -470,6 +474,7 @@ type QueryClient interface {
 	ByHash(ctx context.Context, in *QueryByHashRequest, opts ...grpc.CallOption) (*QueryByHashResponse, error)
 	// BySigner queries data based on signers.
 	BySigner(ctx context.Context, in *QueryBySignerRequest, opts ...grpc.CallOption) (*QueryBySignerResponse, error)
+	// Signers queries by IRI.
 	Signers(ctx context.Context, in *QuerySignersRequest, opts ...grpc.CallOption) (*QuerySignersResponse, error)
 }
 
@@ -514,6 +519,7 @@ type QueryServer interface {
 	ByHash(context.Context, *QueryByHashRequest) (*QueryByHashResponse, error)
 	// BySigner queries data based on signers.
 	BySigner(context.Context, *QueryBySignerRequest) (*QueryBySignerResponse, error)
+	// Signers queries by IRI.
 	Signers(context.Context, *QuerySignersRequest) (*QuerySignersResponse, error)
 }
 
