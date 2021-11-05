@@ -43,19 +43,19 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		accountKeeper: accountKeeper,
 	}
 
-	creditTypeSeqTable, err := orm.NewPrimaryKeyTableBuilder(CreditTypeSeqTablePrefix, storeKey, &ecocredit.CreditTypeSeq{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	creditTypeSeqTable, err := orm.NewPrimaryKeyTableBuilder(CreditTypeSeqTablePrefix, storeKey, &ecocredit.CreditTypeSeq{}, cdc)
 	if err != nil {
 		panic(err.Error())
 	}
 	s.creditTypeSeqTable = creditTypeSeqTable.Build()
 
-	classInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ecocredit.ClassInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	classInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ClassInfoTablePrefix, storeKey, &ecocredit.ClassInfo{}, cdc)
 	if err != nil {
 		panic(err.Error())
 	}
 	s.classInfoTable = classInfoTableBuilder.Build()
 
-	batchInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(BatchInfoTablePrefix, storeKey, &ecocredit.BatchInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
+	batchInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(BatchInfoTablePrefix, storeKey, &ecocredit.BatchInfo{}, cdc)
 	if err != nil {
 		panic(err.Error())
 	}
