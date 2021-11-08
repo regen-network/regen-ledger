@@ -436,7 +436,7 @@ Query is the regen.data.v1alpha2 Query service
 | ----------- | ------------ | ------------- | ------------|
 | ByHash | [QueryByHashRequest](#regen.data.v1alpha2.QueryByHashRequest) | [QueryByHashResponse](#regen.data.v1alpha2.QueryByHashResponse) | ByHash queries data based on its ContentHash. |
 | BySigner | [QueryBySignerRequest](#regen.data.v1alpha2.QueryBySignerRequest) | [QueryBySignerResponse](#regen.data.v1alpha2.QueryBySignerResponse) | BySigner queries data based on signers. |
-| Signers | [QuerySignersRequest](#regen.data.v1alpha2.QuerySignersRequest) | [QuerySignersResponse](#regen.data.v1alpha2.QuerySignersResponse) | Signers queries by IRI. |
+| Signers | [QuerySignersRequest](#regen.data.v1alpha2.QuerySignersRequest) | [QuerySignersResponse](#regen.data.v1alpha2.QuerySignersResponse) | Signers queries signers based on IRI. |
 
  <!-- end services -->
 

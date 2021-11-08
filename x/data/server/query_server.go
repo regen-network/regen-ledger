@@ -53,27 +53,6 @@ func (s serverImpl) getEntry(store sdk.KVStore, id []byte) (*data.ContentEntry, 
 		return nil, err
 	}
 
-	var signerEntries []*data.SignerEntry
-	idSignerIndexPrefix := IDSignerIndexPrefix(id)
-	prefixStore := prefix.NewStore(store, idSignerIndexPrefix)
-	iterator := prefixStore.Iterator(nil, nil)
-
-	for iterator.Valid() {
-		signer := sdk.AccAddress(iterator.Key())
-		var timestamp gogotypes.Timestamp
-		err = timestamp.Unmarshal(iterator.Value())
-		if err != nil {
-			return nil, err
-		}
-
-		signerEntries = append(signerEntries, &data.SignerEntry{
-			Signer:    signer.String(),
-			Timestamp: &timestamp,
-		})
-
-		iterator.Next()
-	}
-
 	iri := string(s.iriIDTable.GetValue(store, id))
 	contentHash, err := data.ParseIRI(iri)
 	if err != nil {
