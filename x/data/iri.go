@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-
 	"github.com/btcsuite/btcutil/base58"
 )
 
@@ -122,13 +120,13 @@ func ParseIRI(iri string) (*ContentHash, error) {
 	const regenPrefix = "regen:"
 
 	if !strings.HasPrefix(iri, regenPrefix) {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("can't parse IRI %s without %s prefix", iri, regenPrefix)
+		return nil, ErrInvalidIRI.Wrapf("can't parse IRI %s without %s prefix", iri, regenPrefix)
 	}
 
 	hashExtPart := iri[len(regenPrefix):]
 	parts := strings.Split(hashExtPart, ".")
 	if len(parts) != 2 {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("error parsing IRI %s, expected a . followed by an suffix", iri)
+		return nil, ErrInvalidIRI.Wrapf("error parsing IRI %s, expected a . followed by an suffix", iri)
 	}
 
 	hashPart := parts[0]
@@ -140,7 +138,7 @@ func ParseIRI(iri string) (*ContentHash, error) {
 	}
 
 	if version != iriVersion0 {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("invalid version found when parsing IRI %s", iri)
+		return nil, ErrInvalidIRI.Wrapf("invalid version found when parsing IRI %s", iri)
 	}
 
 	rdr := bytes.NewBuffer(res)
@@ -163,7 +161,7 @@ func ParseIRI(iri string) (*ContentHash, error) {
 		// look up extension as media type
 		mediaType, ok := mediaTypeExtensionsReverse[ext]
 		if !ok {
-			return nil, fmt.Errorf("can't resolve MediaType for extension %s", ext)
+			return nil, ErrInvalidMediaExtension.Wrapf("can't resolve MediaType for extension %s", ext)
 		}
 
 		// interpret next byte as digest algorithm
@@ -183,7 +181,7 @@ func ParseIRI(iri string) (*ContentHash, error) {
 	case IriPrefixGraph:
 		// rdf extension is expected for graph data
 		if ext != "rdf" {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("expected extension .rdf for graph data, got .%s", ext)
+			return nil, ErrInvalidMediaExtension.Wrapf("expected extension .rdf for graph data, got .%s", ext)
 		}
 
 		// read next byte
@@ -234,5 +232,5 @@ func ParseIRI(iri string) (*ContentHash, error) {
 		}}}, nil
 	}
 
-	return nil, fmt.Errorf("unable to parse IRI %s", iri)
+	return nil, ErrInvalidIRI.Wrapf("unable to parse IRI %s", iri)
 }
