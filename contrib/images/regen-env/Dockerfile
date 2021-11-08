@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:21.04
 
 RUN apt-get update && \
   apt-get -y upgrade && \
