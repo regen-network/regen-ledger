@@ -143,5 +143,5 @@ func getCoinNeeded(quantity math.Dec, bidPrice *sdk.Coin) (coinNeeded sdk.Coin, 
 		return coinNeeded, err
 	}
 
-	return sdk.Coin{Denom: bidPrice.Denom, Amount: sdk.NewInt(amountNeededInt64)}, nil
+	return sdk.NewCoin(bidPrice.Denom, sdk.NewInt(amountNeededInt64)), nil
 }

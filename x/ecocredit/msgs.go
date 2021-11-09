@@ -401,8 +401,7 @@ func (m *MsgSell) ValidateBasic() error {
 			return err
 		}
 
-		_, err := math.NewPositiveDecFromString(m.Orders[i].Quantity)
-		if err != nil {
+		if _, err := math.NewPositiveDecFromString(m.Orders[i].Quantity); err != nil {
 			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", m.Orders[i].Quantity)
 		}
 
@@ -442,8 +441,7 @@ func (m *MsgUpdateSellOrders) ValidateBasic() error {
 
 	for i := range m.Updates {
 
-		_, err := math.NewPositiveDecFromString(m.Updates[i].NewQuantity)
-		if err != nil {
+		if _, err := math.NewPositiveDecFromString(m.Updates[i].NewQuantity); err != nil {
 			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", m.Updates[i].NewQuantity)
 		}
 
@@ -483,8 +481,7 @@ func (m *MsgBuy) ValidateBasic() error {
 
 	for i := range m.Orders {
 
-		_, err := math.NewPositiveDecFromString(m.Orders[i].Quantity)
-		if err != nil {
+		if _, err := math.NewPositiveDecFromString(m.Orders[i].Quantity); err != nil {
 			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", m.Orders[i].Quantity)
 		}
 
