@@ -671,30 +671,41 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 				return nil, err
 			}
 
-			// verify that bid price is greater or equal to ask price
+			sellerAddr, err := sdk.AccAddressFromBech32(sellOrder.Owner)
+			if err != nil {
+				return nil, err
+			}
+
+			// verify that bid price and ask price denoms match
 			if bidPrice.Denom != sellOrder.AskPrice.Denom {
 				return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price denom does not match ask price denom: got %s, expected: %s", bidPrice.Denom, sellOrder.AskPrice.Denom)
 			}
 
+			// verify that bid price is greater or equal to ask price
 			if bidPrice.Amount.GTE(sellOrder.AskPrice.Amount) {
 				return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price too low: got %s, needed at least: %s", bidPrice.String(), sellOrder.AskPrice.String())
 			}
 
-			// TODO: We should maybe wrap with a query of the seller's ecocredit balance and ensure its at least the quantity in the SellOrder
-			// calculate creditsToReceive based off of creditsDesired and creditsAvailable in sell order
+			// verify that seller's credit balance has quantity in the sell order
+			err = verifyCreditBalance(store, sellerAddr, sellOrder.BatchDenom, sellOrder.Quantity)
+			if err != nil {
+				return nil, ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
+			}
+
+			// get decimal amount of credits available
 			creditsAvailable, err := math.NewDecFromString(sellOrder.Quantity)
 			if err != nil {
 				return nil, ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
 			}
 
-		 creditsToReceive := creditsDesired
+			creditsToReceive := creditsDesired
 
 			// check if credits desired is more than credits available
 			if creditsDesired.Cmp(creditsAvailable) == -1 {
 
 				// error if partial fill disabled
 				if order.DisablePartialFill {
-					return nil, ecocredit.ErrInvalidSellOrder.Wrap("sell order does not have sufficient creditsToReceive available")
+					return nil, ecocredit.ErrInsufficientFunds.Wrap("sell order does not have sufficient credits to fill the buy order")
 				}
 
 				creditsToReceive = creditsAvailable
@@ -704,11 +715,6 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 				if err != nil {
 					return nil, err
 				}
-			}
-
-			sellerAddr, err := sdk.AccAddressFromBech32(sellOrder.Owner)
-			if err != nil {
-				return nil, err
 			}
 
 			// Move the coins to the seller account
