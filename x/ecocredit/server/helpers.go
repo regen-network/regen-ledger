@@ -98,7 +98,7 @@ func iterateBalances(store sdk.KVStore, storeKey byte, cb func(address, denom, b
 	}
 }
 
-func verifyBalance(store storetypes.KVStore, ownerAddr sdk.AccAddress, batchDenom string, quantity string) error {
+func verifyCreditBalance(store storetypes.KVStore, ownerAddr sdk.AccAddress, batchDenom string, quantity string) error {
 	bd := batchDenomT(batchDenom)
 
 	balance, err := getDecimal(store, TradableBalanceKey(ownerAddr, bd))
