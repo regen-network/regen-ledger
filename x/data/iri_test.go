@@ -9,36 +9,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/types"
 )
 
-func TestAccAddressToDID(t *testing.T) {
-	addr := types.AccAddress("test12345")
-
-	type args struct {
-		address         types.AccAddress
-		bech32AccPrefix string
-	}
-	tests := []struct {
-		name string
-		args args
-		want string
-	}{
-		{
-			"1",
-			args{
-				address:         addr,
-				bech32AccPrefix: "regen",
-			},
-			"did:regen:1AhJcBqAfzfi4tQ8ZDv",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := AccAddressToDID(tt.args.address, tt.args.bech32AccPrefix); got != tt.want {
-				t.Errorf("AccAddressToDID() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestContentHash_ToIRI(t *testing.T) {
 	type fields struct {
 		Sum isContentHash_Sum
@@ -225,11 +195,6 @@ func TestParseIRI(t *testing.T) {
 			}}},
 		},
 		{
-			name:     "addr",
-			iri:      "did:regen:1AhJcBqAfzfi4tQ8ZDv",
-			wantAddr: types.AccAddress("test12345"),
-		},
-		{
 			name:    "no ext",
 			iri:     "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd",
 			wantErr: true,
@@ -237,16 +202,13 @@ func TestParseIRI(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, got1, err := ParseIRI("regen", tt.iri)
+			contentHash, err := ParseIRI(tt.iri)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ParseIRI() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.wantHash) {
-				t.Errorf("ParseIRI() got = %v, want %v", got, tt.wantHash)
-			}
-			if !reflect.DeepEqual(got1, tt.wantAddr) {
-				t.Errorf("ParseIRI() got1 = %v, want %v", got1, tt.wantAddr)
+			if !reflect.DeepEqual(contentHash, tt.wantHash) {
+				t.Errorf("ParseIRI() got = %v, want %v", contentHash, tt.wantHash)
 			}
 		})
 	}
