@@ -532,7 +532,7 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 
 	for i := range req.Orders {
 
-		err = verifyBalance(store, ownerAddr, req.Orders[i].BatchDenom, req.Orders[i].Quantity)
+		err = verifyCreditBalance(store, ownerAddr, req.Orders[i].BatchDenom, req.Orders[i].Quantity)
 		if err != nil {
 			return nil, err
 		}
@@ -591,7 +591,7 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 
 		// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
 
-		err = verifyBalance(store, ownerAddr, sellOrder.BatchDenom, req.Updates[i].NewQuantity)
+		err = verifyCreditBalance(store, ownerAddr, sellOrder.BatchDenom, req.Updates[i].NewQuantity)
 		if err != nil {
 			return nil, err
 		}

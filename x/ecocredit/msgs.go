@@ -405,7 +405,13 @@ func (m *MsgSell) ValidateBasic() error {
 			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", m.Orders[i].Quantity)
 		}
 
-		m.Orders[i].AskPrice.Validate()
+		if m.Orders[i].AskPrice == nil {
+			return sdkerrors.ErrInvalidRequest.Wrap("ask price cannot be empty")
+		}
+
+		if err := m.Orders[i].AskPrice.Validate(); err != nil {
+			return err
+		}
 
 		if !m.Orders[i].AskPrice.Amount.IsPositive() {
 			return sdkerrors.ErrInvalidRequest.Wrap("ask price must be positive amount")
@@ -445,7 +451,13 @@ func (m *MsgUpdateSellOrders) ValidateBasic() error {
 			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", m.Updates[i].NewQuantity)
 		}
 
-		m.Updates[i].NewAskPrice.Validate()
+		if m.Updates[i].NewAskPrice == nil {
+			return sdkerrors.ErrInvalidRequest.Wrap("new ask price cannot be empty")
+		}
+
+		if err := m.Updates[i].NewAskPrice.Validate(); err != nil {
+			return err
+		}
 
 		if !m.Updates[i].NewAskPrice.Amount.IsPositive() {
 			return sdkerrors.ErrInvalidRequest.Wrap("ask price must be positive amount")
@@ -485,7 +497,13 @@ func (m *MsgBuy) ValidateBasic() error {
 			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", m.Orders[i].Quantity)
 		}
 
-		m.Orders[i].BidPrice.Validate()
+		if m.Orders[i].BidPrice == nil {
+			return sdkerrors.ErrInvalidRequest.Wrap("bid price cannot be empty")
+		}
+
+		if err := m.Orders[i].BidPrice.Validate(); err != nil {
+			return err
+		}
 
 		if !m.Orders[i].BidPrice.Amount.IsPositive() {
 			return sdkerrors.ErrInvalidRequest.Wrap("bid price must be positive amount")
@@ -517,6 +535,10 @@ func (m *MsgAllowAskDenom) ValidateBasic() error {
 
 	if _, err := sdk.AccAddressFromBech32(m.RootAddress); err != nil {
 		return sdkerrors.ErrInvalidAddress
+	}
+
+	if err := sdk.ValidateDenom(m.Denom); err != nil {
+		return err
 	}
 
 	return nil

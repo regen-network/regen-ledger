@@ -1226,6 +1226,23 @@ func TestMsgAllowAskDenom(t *testing.T) {
 			},
 			expErr: true,
 		},
+		"invalid: bad denom": {
+			src: MsgBuy{
+				Buyer: a1.String(),
+				Orders: []*MsgBuy_Order{
+					{
+						Quantity: "1.5",
+						BidPrice: &sdk.Coin{
+							Denom: "$$$$$",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire: true,
+						DisablePartialFill: true,
+					},
+				},
+			},
+			expErr: true,
+		},
 	}
 
 	for msg, test := range tests {
