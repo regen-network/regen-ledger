@@ -76,7 +76,7 @@ func (chg ContentHash_Graph) ToIRI() (string, error) {
 
 // ToExtension converts the media type to a file extension based on the mediaTypeExtensions map.
 func (mt MediaType) ToExtension() (string, error) {
-	ext, ok := mediaTypeExtensions[mt]
+	ext, ok := mediaExtensionTypeToString[mt]
 	if !ok {
 		return "", fmt.Errorf("missing extension for %T %s", mt, mt)
 	}
@@ -84,7 +84,7 @@ func (mt MediaType) ToExtension() (string, error) {
 	return ext, nil
 }
 
-var mediaTypeExtensions = map[MediaType]string{
+var mediaExtensionTypeToString = map[MediaType]string{
 	MediaType_MEDIA_TYPE_UNSPECIFIED: "bin",
 	MediaType_MEDIA_TYPE_TEXT_PLAIN:  "txt",
 	MediaType_MEDIA_TYPE_CSV:         "csv",
@@ -105,11 +105,11 @@ var mediaTypeExtensions = map[MediaType]string{
 	MediaType_MEDIA_TYPE_OGG:         "ogg",
 }
 
-var mediaTypeExtensionsReverse = map[string]MediaType{}
+var stringToMediaExtensionType = map[string]MediaType{}
 
 func init() {
-	for mt, ext := range mediaTypeExtensions {
-		mediaTypeExtensionsReverse[ext] = mt
+	for mt, ext := range mediaExtensionTypeToString {
+		stringToMediaExtensionType[ext] = mt
 	}
 }
 
@@ -129,8 +129,7 @@ func ParseIRI(iri string) (*ContentHash, error) {
 		return nil, ErrInvalidIRI.Wrapf("error parsing IRI %s, expected a . followed by an suffix", iri)
 	}
 
-	hashPart := parts[0]
-	ext := parts[1]
+	hashPart, ext := parts[0], parts[1]
 
 	res, version, err := base58.CheckDecode(hashPart)
 	if err != nil {
@@ -159,9 +158,9 @@ func ParseIRI(iri string) (*ContentHash, error) {
 		}
 
 		// look up extension as media type
-		mediaType, ok := mediaTypeExtensionsReverse[ext]
+		mediaType, ok := stringToMediaExtensionType[ext]
 		if !ok {
-			return nil, ErrInvalidMediaExtension.Wrapf("can't resolve MediaType for extension %s", ext)
+			return nil, ErrInvalidMediaExtension.Wrapf("cannot resolve MediaType for extension %s", ext)
 		}
 
 		// interpret next byte as digest algorithm
@@ -203,7 +202,7 @@ func ParseIRI(iri string) (*ContentHash, error) {
 			return nil, err
 		}
 
-		// interpret next byte as canonicalization algorithm
+		// interpret next byte as merklization algorithm
 		mtAlg := GraphMerkleTree(b0)
 		err = mtAlg.Validate()
 		if err != nil {
