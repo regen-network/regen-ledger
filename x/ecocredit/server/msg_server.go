@@ -530,9 +530,9 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 
 	var sellOrderIds []uint64
 
-	for i := range req.Orders {
+	for _, order := range req.Orders {
 
-		err = verifyCreditBalance(store, ownerAddr, req.Orders[i].BatchDenom, req.Orders[i].Quantity)
+		err = verifyCreditBalance(store, ownerAddr, order.BatchDenom, order.Quantity)
 		if err != nil {
 			return nil, err
 		}
@@ -545,10 +545,10 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 
 		_, err = s.sellOrderTable.Create(ctx, &ecocredit.SellOrder{
 			OrderId:           orderID,
-			BatchDenom:        req.Orders[i].BatchDenom,
-			Quantity:          req.Orders[i].Quantity,
-			AskPrice:          req.Orders[i].AskPrice,
-			DisableAutoRetire: req.Orders[i].DisableAutoRetire,
+			BatchDenom:        order.BatchDenom,
+			Quantity:          order.Quantity,
+			AskPrice:          order.AskPrice,
+			DisableAutoRetire: order.DisableAutoRetire,
 		})
 		if err != nil {
 			return nil, err
@@ -556,10 +556,10 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 
 		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventSell{
 			OrderId:           orderID,
-			BatchDenom:        req.Orders[i].BatchDenom,
-			Quantity:          req.Orders[i].Quantity,
-			AskPrice:          req.Orders[i].AskPrice,
-			DisableAutoRetire: req.Orders[i].DisableAutoRetire,
+			BatchDenom:        order.BatchDenom,
+			Quantity:          order.Quantity,
+			AskPrice:          order.AskPrice,
+			DisableAutoRetire: order.DisableAutoRetire,
 		})
 		if err != nil {
 			return nil, err
@@ -582,23 +582,23 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 		return nil, err
 	}
 
-	for i := range req.Updates {
+	for _, update := range req.Updates {
 
-		sellOrder, err := s.getSellOrder(ctx, req.Updates[i].SellOrderId)
+		sellOrder, err := s.getSellOrder(ctx, update.SellOrderId)
 		if err != nil {
 			return nil, err
 		}
 
 		// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
 
-		err = verifyCreditBalance(store, ownerAddr, sellOrder.BatchDenom, req.Updates[i].NewQuantity)
+		err = verifyCreditBalance(store, ownerAddr, sellOrder.BatchDenom, update.NewQuantity)
 		if err != nil {
 			return nil, err
 		}
 
-		sellOrder.Quantity = req.Updates[i].NewQuantity
-		sellOrder.AskPrice = req.Updates[i].NewAskPrice
-		sellOrder.DisableAutoRetire = req.Updates[i].DisableAutoRetire
+		sellOrder.Quantity = update.NewQuantity
+		sellOrder.AskPrice = update.NewAskPrice
+		sellOrder.DisableAutoRetire = update.DisableAutoRetire
 
 		err = s.sellOrderTable.Update(ctx, sellOrder.OrderId, sellOrder)
 		if err != nil {
@@ -637,14 +637,14 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 
 	var buyOrderIds []uint64
 
-	for i := range req.Orders {
+	for _, order := range req.Orders {
 
 		balances := s.bankKeeper.SpendableCoins(sdkCtx, buyerAddr)
-		bidPrice := req.Orders[i].BidPrice
+		bidPrice := order.BidPrice
 		balanceAmount := balances.AmountOf(bidPrice.Denom)
 
 		// get decimal amount of ecocredits to be purchased
-		creditsDesired, err := math.NewPositiveDecFromString(req.Orders[i].Quantity)
+		creditsDesired, err := math.NewPositiveDecFromString(order.Quantity)
 		if err != nil {
 			return nil, err
 		}
@@ -659,13 +659,13 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 
 		// verify buyer has sufficient funds for the given coinToSend
 		if balanceAmount.GTE(coinToSend.Amount) {
-			return nil, ecocredit.ErrInsufficientFunds
+			return nil, ecocredit.ErrInsufficientFunds.Wrapf("insufficient balance: got %s, needed at least: %s", balanceAmount.String(), coinToSend.Amount.String())
 		}
 
-		switch req.Orders[i].Selection.Sum.(type) {
+		switch order.Selection.Sum.(type) {
 		case *ecocredit.MsgBuy_Order_Selection_SellOrderId:
 
-			sellOrderId := req.Orders[i].Selection.GetSellOrderId()
+			sellOrderId := order.Selection.GetSellOrderId()
 			sellOrder, err := s.getSellOrder(ctx, sellOrderId)
 			if err != nil {
 				return nil, err
@@ -693,8 +693,8 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 			if creditsDesired.Cmp(creditsAvailable) == -1 {
 
 				// error if partial fill disabled
-				if req.Orders[i].DisablePartialFill {
-					return nil, ecocredit.ErrInvalidSellOrder.Wrap("sell order does not have sufficient credits to fill the buy order")
+				if order.DisablePartialFill {
+					return nil, ecocredit.ErrInvalidSellOrder.Wrap("sell order does not have sufficient creditsToReceive available")
 				}
 
 				creditsToReceive = creditsAvailable
@@ -737,10 +737,10 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 			err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventBuy{
 				BuyOrderId:         buyOrderID,
 				SellOrderId:        sellOrderId,
-				Quantity:           req.Orders[i].Quantity,
-				BidPrice:           req.Orders[i].BidPrice,
-				DisableAutoRetire:  req.Orders[i].DisableAutoRetire,
-				DisablePartialFill: req.Orders[i].DisablePartialFill,
+				Quantity:           order.Quantity,
+				BidPrice:           order.BidPrice,
+				DisableAutoRetire:  order.DisableAutoRetire,
+				DisablePartialFill: order.DisablePartialFill,
 			})
 			if err != nil {
 				return nil, err
