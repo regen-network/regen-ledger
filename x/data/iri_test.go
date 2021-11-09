@@ -5,8 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-
-	"github.com/cosmos/cosmos-sdk/types"
 )
 
 func TestContentHash_ToIRI(t *testing.T) {
@@ -173,7 +171,6 @@ func TestParseIRI(t *testing.T) {
 		name     string
 		iri      string
 		wantHash *ContentHash
-		wantAddr types.AccAddress
 		wantErr  bool
 	}{
 		{
