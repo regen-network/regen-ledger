@@ -743,12 +743,19 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 				return nil, err
 			}
 
-			sellOrder.Quantity = creditsRemaining.String()
+			if creditsRemaining.IsZero() {
 
-			// update sell order quantity with remaining credits
-			err = s.sellOrderTable.Update(ctx, sellOrder.OrderId, sellOrder)
-			if err != nil {
-				return nil, err
+				// delete sell order if no remaining credits
+				s.sellOrderTable.Delete(ctx, sellOrder.OrderId)
+
+			} else {
+				sellOrder.Quantity = creditsRemaining.String()
+
+				// update sell order quantity with remaining credits
+				err = s.sellOrderTable.Update(ctx, sellOrder.OrderId, sellOrder)
+				if err != nil {
+					return nil, err
+				}
 			}
 
 			buyOrderID := s.buyOrderSeq.NextVal(ctx)
