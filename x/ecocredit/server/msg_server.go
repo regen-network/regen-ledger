@@ -643,21 +643,21 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 		bidPrice := order.BidPrice
 		balanceAmount := balances.AmountOf(bidPrice.Denom)
 
-		// get decimal amount of ecocredits to be purchased
+		// TODO: Verify that bidPrice.Denom is in AllowAskDenom #624
+
+		// get decimal amount of credits desired for purchase
 		creditsDesired, err := math.NewPositiveDecFromString(order.Quantity)
 		if err != nil {
 			return nil, err
 		}
 
-		// TODO: Verify that bidPrice.Denom is in AllowAskDenom #624
-
-		// calculate the amount of coin needed for purchase
+		// calculate the amount of coin to send for purchase
 		coinToSend, err := getCoinNeeded(creditsDesired, bidPrice)
 		if err != nil {
 			return nil, err
 		}
 
-		// verify buyer has sufficient funds for the given coinToSend
+		// verify buyer has sufficient balance in coin
 		if balanceAmount.GTE(coinToSend.Amount) {
 			return nil, ecocredit.ErrInsufficientFunds.Wrapf("insufficient balance: got %s, needed at least: %s", balanceAmount.String(), coinToSend.Amount.String())
 		}
@@ -676,23 +676,23 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 				return nil, err
 			}
 
-			// verify that bid price and ask price denoms match
+			// verify bid price and ask price denoms match
 			if bidPrice.Denom != sellOrder.AskPrice.Denom {
 				return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price denom does not match ask price denom: got %s, expected: %s", bidPrice.Denom, sellOrder.AskPrice.Denom)
 			}
 
-			// verify that bid price is greater or equal to ask price
+			// verify bid price is greater than or equal to ask price
 			if bidPrice.Amount.GTE(sellOrder.AskPrice.Amount) {
 				return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price too low: got %s, needed at least: %s", bidPrice.String(), sellOrder.AskPrice.String())
 			}
 
-			// verify that seller's credit balance has quantity in the sell order
+			// verify seller has sufficient balance in credits
 			err = verifyCreditBalance(store, sellerAddr, sellOrder.BatchDenom, sellOrder.Quantity)
 			if err != nil {
 				return nil, ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
 			}
 
-			// get decimal amount of credits available
+			// get decimal amount of credits available for purchase
 			creditsAvailable, err := math.NewDecFromString(sellOrder.Quantity)
 			if err != nil {
 				return nil, ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
@@ -710,14 +710,14 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 
 				creditsToReceive = creditsAvailable
 
-				// recalculate coinsNeeded if creditsToReceive is not creditsDesired
+				// recalculate coinToSend if creditsToReceive is not creditsDesired
 				coinToSend, err = getCoinNeeded(creditsToReceive, bidPrice)
 				if err != nil {
 					return nil, err
 				}
 			}
 
-			// Move the coins to the seller account
+			// send coin to the seller account
 			err = s.bankKeeper.SendCoins(sdkCtx, buyerAddr, sellerAddr, sdk.Coins{coinToSend})
 			if err != nil {
 				return nil, err
@@ -731,8 +731,22 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 				//RetirementLocation: retirementLocation,
 			}
 
-			// Move the credits to the buyer account
+			// send credits to the buyer account
 			err = s.sendEcocredits(ctx, credit, store, sellerAddr, buyerAddr)
+			if err != nil {
+				return nil, err
+			}
+
+			// get remaining credits in sell order
+			creditsRemaining, err := creditsAvailable.Sub(creditsToReceive)
+			if err != nil {
+				return nil, err
+			}
+
+			sellOrder.Quantity = creditsRemaining.String()
+
+			// update sell order quantity with remaining credits
+			err = s.sellOrderTable.Update(ctx, sellOrder.OrderId, sellOrder)
 			if err != nil {
 				return nil, err
 			}
