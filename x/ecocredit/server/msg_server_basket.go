@@ -9,6 +9,7 @@ import (
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/math"
 	regenmath "github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -76,7 +77,24 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 			return nil, err
 		}
 
-		err = addAndSetDecimal(store, BasketCreditsKey(basketDenomT(req.BasketDenom), owner, batchDenom), tradable)
+		basketCreditsKey := BasketCreditsKey(basketDenomT(req.BasketDenom), owner, batchDenom)
+		err = addAndSetDecimal(store, basketCreditsKey, tradable)
+		if err != nil {
+			return nil, err
+		}
+
+		// Send credits from owner to derived module account
+		derivedKey := s.storeKey.Derive(basketCreditsKey)
+		_, err = s.Send(goCtx, &ecocredit.MsgSend{
+			Sender:    req.Owner,
+			Recipient: derivedKey.Address().String(),
+			Credits: []*ecocredit.MsgSend_SendCredits{
+				{
+					BatchDenom:     credit.BatchDenom,
+					TradableAmount: credit.TradableAmount,
+				},
+			},
+		})
 		if err != nil {
 			return nil, err
 		}
@@ -88,6 +106,9 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 		return nil, err
 	}
 	multipliedAmtReceived, err := amtReceived.Mul(multiplier)
+	if err != nil {
+		return nil, err
+	}
 
 	// TODO Is there another way than to convert from regenmath.Dec to sdk.Int other than passing by int64?
 	i, err := multipliedAmtReceived.Int64()
@@ -193,6 +214,22 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 				if err != nil {
 					return nil, err
 				}
+			} else {
+				// Send credits from corresponding sub module account to req.Owner
+				derivedKey := s.storeKey.Derive(basketCreditKey)
+				_, err = s.Send(goCtx, &ecocredit.MsgSend{
+					Recipient: derivedKey.Address().String(),
+					Sender:    req.Owner,
+					Credits: []*ecocredit.MsgSend_SendCredits{
+						{
+							BatchDenom:     c.BatchDenom,
+							TradableAmount: c.TradableAmount,
+						},
+					},
+				})
+				if err != nil {
+					return nil, err
+				}
 			}
 		} else {
 			prefix := BasketCreditsKey(basketDenom, []byte{}, batchDenom)
@@ -233,14 +270,29 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 					}
 				}
 
+				err = s.sendOrRetire(basketInfo.RetireOnTake, goCtx, ctx, store, owner, batchDenom, basketCreditKey, tradableAmount, req.RetirementLocation)
+				if err != nil {
+					return nil, err
+				}
 				// Retire if needed
 				if basketInfo.RetireOnTake {
-					// Strip owner from key
-					owner, err := sdk.AccAddressFromBech32(key[len(prefix):])
+					err = retireUpdateBalanceSupply(ctx, store, owner, batchDenom, tradableAmount, req.RetirementLocation)
 					if err != nil {
 						return nil, err
 					}
-					err = retireUpdateBalanceSupply(ctx, store, owner, batchDenom, tradableAmount, req.RetirementLocation)
+					// Send credits from corresponding sub module account to req.Owner
+				} else {
+					derivedKey := s.storeKey.Derive(basketCreditKey)
+					_, err = s.Send(goCtx, &ecocredit.MsgSend{
+						Recipient: derivedKey.Address().String(),
+						Sender:    req.Owner,
+						Credits: []*ecocredit.MsgSend_SendCredits{
+							{
+								BatchDenom:     c.BatchDenom,
+								TradableAmount: c.TradableAmount,
+							},
+						},
+					})
 					if err != nil {
 						return nil, err
 					}
@@ -253,6 +305,32 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 		}
 	}
 	return &ecocredit.MsgPickFromBasketResponse{}, nil
+}
+
+func (s serverImpl) sendOrRetire(retireOnTake bool, goCtx context.Context, ctx types.Context,
+	store sdk.KVStore, recipient sdk.AccAddress, batchDenom batchDenomT, basketCreditKey []byte, amount math.Dec, location string) error {
+	if retireOnTake {
+		err := retireUpdateBalanceSupply(ctx, store, recipient, batchDenom, amount, location)
+		if err != nil {
+			return err
+		}
+	} else {
+		// Send credits from corresponding sub module account to req.Owner
+		derivedKey := s.storeKey.Derive(basketCreditKey)
+		_, err := s.Send(goCtx, &ecocredit.MsgSend{
+			Recipient: derivedKey.Address().String(),
+			Sender:    recipient.String(),
+			Credits: []*ecocredit.MsgSend_SendCredits{
+				{
+					BatchDenom:     string(batchDenom),
+					TradableAmount: amount.String(),
+				},
+			},
+		})
+		if err != nil {
+			return err
+		}
+	}
 }
 
 func getBasketDenom(curator, name string) string {

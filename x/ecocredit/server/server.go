@@ -2,11 +2,11 @@ package server
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types/module/server"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -23,7 +23,7 @@ const (
 )
 
 type serverImpl struct {
-	storeKey sdk.StoreKey
+	storeKey servermodule.RootModuleKey
 
 	paramSpace    paramtypes.Subspace
 	bankKeeper    ecocredit.BankKeeper
@@ -37,7 +37,7 @@ type serverImpl struct {
 	basketInfoTable orm.PrimaryKeyTable
 }
 
-func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
+func newServer(storeKey servermodule.RootModuleKey, paramSpace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, cdc codec.Codec) serverImpl {
 	s := serverImpl{
 		storeKey:      storeKey,
