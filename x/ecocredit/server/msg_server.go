@@ -740,13 +740,24 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 			buyOrderID := s.buyOrderSeq.NextVal(ctx)
 			buyOrderIds = append(buyOrderIds, buyOrderID)
 
-			err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventBuy{
+			err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventBuyOrderCreated{
 				BuyOrderId:         buyOrderID,
 				SellOrderId:        sellOrderId,
 				Quantity:           order.Quantity,
 				BidPrice:           order.BidPrice,
 				DisableAutoRetire:  order.DisableAutoRetire,
 				DisablePartialFill: order.DisablePartialFill,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventBuyOrderFilled{
+				BuyOrderId:  buyOrderID,
+				SellOrderId: sellOrderId,
+				BatchDenom:  sellOrder.BatchDenom,
+				Quantity:    creditsToReceive.String(),
+				TotalPrice:  &coinToSend,
 			})
 			if err != nil {
 				return nil, err

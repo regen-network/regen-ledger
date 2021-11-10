@@ -152,8 +152,8 @@ message EventUpdateSellOrder {
   bool disable_auto_retire = 6;
 }
 
-// EventBuy is an event emitted when a buy order is created.
-message EventBuy {
+// EventBuyOrderCreated is an event emitted when a buy order is created.
+message EventBuyOrderCreated {
 
   // buy_order_id is the unique ID of buy order.
   uint64 buy_order_id = 1;
@@ -182,6 +182,25 @@ message EventBuy {
   // disable_partial_fill disables the default behavior of partially filling
   // buy orders if the requested quantity is not available.
   bool disable_partial_fill = 6;
+}
+
+// EventBuyOrderFilled is an event emitted when a buy order is filled.
+message EventBuyOrderFilled {
+
+  // buy_order_id is the unique ID of the buy order.
+  uint64 buy_order_id = 1;
+
+  // sell_order_id is the unique ID of the sell order.
+  uint64 sell_order_id = 2;
+
+  // batch_denom is the credit batch ID of the purchased credits.
+  string batch_denom = 3;
+
+  // quantity is the quantity of the purchased credits.
+  string quantity = 4;
+
+  // total_price is the total price for the purchased credits.
+  cosmos.base.v1beta1.Coin total_price = 5;
 }
 
 // EventAllowAskDenom is an event emitted when an ask denom is added.

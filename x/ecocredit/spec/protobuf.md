@@ -6,7 +6,8 @@
 
 - [regen/ecocredit/v1alpha1/events.proto](#regen/ecocredit/v1alpha1/events.proto)
     - [EventAllowAskDenom](#regen.ecocredit.v1alpha1.EventAllowAskDenom)
-    - [EventBuy](#regen.ecocredit.v1alpha1.EventBuy)
+    - [EventBuyOrderCreated](#regen.ecocredit.v1alpha1.EventBuyOrderCreated)
+    - [EventBuyOrderFilled](#regen.ecocredit.v1alpha1.EventBuyOrderFilled)
     - [EventCancel](#regen.ecocredit.v1alpha1.EventCancel)
     - [EventCreateBatch](#regen.ecocredit.v1alpha1.EventCreateBatch)
     - [EventCreateClass](#regen.ecocredit.v1alpha1.EventCreateClass)
@@ -113,10 +114,10 @@ EventAllowAskDenom is an event emitted when an ask denom is added.
 
 
 
-<a name="regen.ecocredit.v1alpha1.EventBuy"></a>
+<a name="regen.ecocredit.v1alpha1.EventBuyOrderCreated"></a>
 
-### EventBuy
-EventBuy is an event emitted when a buy order is created.
+### EventBuyOrderCreated
+EventBuyOrderCreated is an event emitted when a buy order is created.
 
 
 | Field | Type | Label | Description |
@@ -127,6 +128,25 @@ EventBuy is an event emitted when a buy order is created.
 | bid_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | bid price is the bid price for this buy order. A credit unit will be settled at a purchase price that is no more than the bid price. The buy order will fail if the buyer does not have enough funds available to complete the purchase. |
 | disable_auto_retire | [bool](#bool) |  | disable_auto_retire allows auto-retirement to be disabled. If it is set to true the credits will not auto-retire and can be resold assuming that the corresponding sell order has auto-retirement disabled. If the sell order hasn't disabled auto-retirement and the buy order tries to disable it, that buy order will fail. |
 | disable_partial_fill | [bool](#bool) |  | disable_partial_fill disables the default behavior of partially filling buy orders if the requested quantity is not available. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.EventBuyOrderFilled"></a>
+
+### EventBuyOrderFilled
+EventBuyOrderFilled is an event emitted when a buy order is filled.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| buy_order_id | [uint64](#uint64) |  | buy_order_id is the unique ID of the buy order. |
+| sell_order_id | [uint64](#uint64) |  | sell_order_id is the unique ID of the sell order. |
+| batch_denom | [string](#string) |  | batch_denom is the credit batch ID of the purchased credits. |
+| quantity | [string](#string) |  | quantity is the quantity of the purchased credits. |
+| total_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | total_price is the total price for the purchased credits. |
 
 
 
