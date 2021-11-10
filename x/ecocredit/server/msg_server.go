@@ -340,19 +340,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ec
 			return nil, err
 		}
 
-		err = subtractTradableBalanceAndSupply(store, holderAddr, denom, toRetire)
-		if err != nil {
-			return nil, err
-		}
-
-		//  Add retired balance
-		err = retire(ctx, store, holderAddr, denom, toRetire, req.Location)
-		if err != nil {
-			return nil, err
-		}
-
-		//  Add retired supply
-		err = addAndSetDecimal(store, RetiredSupplyKey(denom), toRetire)
+		err = retireUpdateBalanceSupply(ctx, store, holderAddr, denom, toRetire, req.Location)
 		if err != nil {
 			return nil, err
 		}
@@ -517,6 +505,26 @@ func (s serverImpl) nextBatchInClass(ctx types.Context, classInfo *ecocredit.Cla
 	}
 
 	return nextVal, nil
+}
+
+func retireUpdateBalanceSupply(ctx types.Context, store sdk.KVStore, recipient sdk.AccAddress, batchDenom batchDenomT, retired math.Dec, location string) error {
+	err := subtractTradableBalanceAndSupply(store, recipient, batchDenom, retired)
+	if err != nil {
+		return err
+	}
+
+	//  Add retired balance
+	err = retire(ctx, store, recipient, batchDenom, retired, location)
+	if err != nil {
+		return err
+	}
+
+	//  Add retired supply
+	err = addAndSetDecimal(store, RetiredSupplyKey(batchDenom), retired)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func retire(ctx types.Context, store sdk.KVStore, recipient sdk.AccAddress, batchDenom batchDenomT, retired math.Dec, location string) error {
