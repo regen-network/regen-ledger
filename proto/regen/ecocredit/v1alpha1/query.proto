@@ -235,11 +235,6 @@ message QueryBasketCreditsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-message QueryBasketRequest {
-  // denom represents the denom of the basket to query. 
-  string denom = 1;
-}
-
 // Basket defines a credit basket.
 message Basket {
   // curator is the address of the basket curator who is able to change certain
