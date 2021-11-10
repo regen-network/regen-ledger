@@ -188,7 +188,7 @@ message QueryTagsRequest {
   TagTarget target = 1;
 
   // pagination defines an optional pagination for the request.
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 // QueryTagsResponse is the Query/Tags response type
