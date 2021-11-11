@@ -9,7 +9,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm"
 )
 
-var _, _, _, _, _ orm.PrimaryKeyed = &ClassInfo{}, &BatchInfo{}, &CreditTypeSeq{}, &SellOrder{}, &AskDenom{}
+var _, _, _, _, _, _ orm.PrimaryKeyed = &ClassInfo{}, &BatchInfo{}, &CreditTypeSeq{}, &SellOrder{}, &BuyOrder{}, &AskDenom{}
 
 // PrimaryKeyFields returns the fields of the object that will make up the
 // primary key for ClassInfo.
@@ -32,6 +32,12 @@ func (m *CreditTypeSeq) PrimaryKeyFields() []interface{} {
 // PrimaryKeyFields returns the fields of the object that will make up the
 // primary key for SellOrder.
 func (m *SellOrder) PrimaryKeyFields() []interface{} {
+	return []interface{}{m.OrderId}
+}
+
+// PrimaryKeyFields returns the fields of the object that will make up the
+// primary key for BuyOrder.
+func (m *BuyOrder) PrimaryKeyFields() []interface{} {
 	return []interface{}{m.OrderId}
 }
 

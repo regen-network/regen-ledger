@@ -758,7 +758,8 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 				}
 			}
 
-			buyOrderID := s.buyOrderSeq.NextVal(ctx)
+			// TODO: do we want to store a direct buy order? #623
+			buyOrderID := s.buyOrderTable.Sequence().NextVal(ctx)
 			buyOrderIds[i] = buyOrderID
 
 			err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventBuyOrderCreated{
