@@ -528,9 +528,9 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 		return nil, err
 	}
 
-	var sellOrderIds []uint64
+	sellOrderIds := make([]uint64, len(req.Orders))
 
-	for _, order := range req.Orders {
+	for i, order := range req.Orders {
 
 		err = verifyCreditBalance(store, ownerAddr, order.BatchDenom, order.Quantity)
 		if err != nil {
@@ -541,7 +541,7 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 
 		orderID := s.sellOrderTable.Sequence().PeekNextVal(ctx)
 
-		sellOrderIds = append(sellOrderIds, orderID)
+		sellOrderIds[i] = orderID
 
 		_, err = s.sellOrderTable.Create(ctx, &ecocredit.SellOrder{
 			OrderId:           orderID,
@@ -658,7 +658,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 		}
 
 		// verify buyer has sufficient balance in coin
-		if balanceAmount.GTE(coinToSend.Amount) {
+		if balanceAmount.LT(coinToSend.Amount) {
 			return nil, ecocredit.ErrInsufficientFunds.Wrapf("insufficient balance: got %s, needed at least: %s", balanceAmount.String(), coinToSend.Amount.String())
 		}
 
@@ -682,7 +682,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 			}
 
 			// verify bid price is greater than or equal to ask price
-			if bidPrice.Amount.GTE(sellOrder.AskPrice.Amount) {
+			if bidPrice.Amount.LT(sellOrder.AskPrice.Amount) {
 				return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price too low: got %s, needed at least: %s", bidPrice.String(), sellOrder.AskPrice.String())
 			}
 
@@ -701,7 +701,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 			creditsToReceive := creditsDesired
 
 			// check if credits desired is more than credits available
-			if creditsDesired.Cmp(creditsAvailable) == -1 {
+			if creditsDesired.Cmp(creditsAvailable) == 1 {
 
 				// error if partial fill disabled
 				if order.DisablePartialFill {
