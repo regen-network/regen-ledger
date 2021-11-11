@@ -363,6 +363,7 @@ message MsgAllowAskDenom {
   // root_address is the address of the governance account which can authorize ask denoms
   string root_address = 1;
 
+  // denom_info contains coin denom information.
   Denom denom_info = 2;
 }
 

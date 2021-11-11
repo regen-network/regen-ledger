@@ -71,12 +71,12 @@ service Query {
   }
 
   // SellOrdersByDenom queries a paginated list of all sell orders of a specific denom
-  rpc SellOrdersByDenom(QuerySellOrdersByDenomRequest) returns (QuerySellOrderResponse) {
+  rpc SellOrdersByDenom(QuerySellOrdersByDenomRequest) returns (QuerySellOrdersResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1alpha1/marketplace/sell-orders/denom/{denom}";
   }
 
   // SellOrdersByAddress queries a paginated list of all sell orders from a specific address
-  rpc SellOrdersByAddress(QuerySellOrdersByAddrRequest) returns (QuerySellOrderResponse) {
+  rpc SellOrdersByAddress(QuerySellOrdersByAddrRequest) returns (QuerySellOrdersResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1alpha1/marketplace/sell-orders/address/{address}";
   }
 
