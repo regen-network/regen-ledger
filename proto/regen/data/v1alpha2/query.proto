@@ -12,8 +12,8 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 // Query is the regen.data.v1alpha2 Query service
 service Query {
   // ByHash queries data based on its ContentHash.
-  rpc ByHash (QueryByHashRequest) returns (QueryByHashResponse) {
-    option (google.api.http).get = "/regen/data/v1alpha2/content/by_hash";
+  rpc ByIRI (QueryByIRIRequest) returns (QueryByIRIResponse) {
+    option (google.api.http).get = "/regen/data/v1alpha2/content/{iri}";
   }
 
   // BySigner queries data based on signers.
@@ -28,13 +28,13 @@ service Query {
 }
 
 // QueryByContentHashRequest is the Query/ByContentHash request type.
-message QueryByHashRequest {
+message QueryByIRIRequest {
   // hash is the hash-based identifier for the anchored content.
-  ContentHash hash = 1;
+  string iri = 1;
 }
 
 // QueryByContentHashResponse is the Query/ByContentHash response type.
-message QueryByHashResponse {
+message QueryByIRIResponse {
   // entry is the ContentEntry
   ContentEntry entry = 1;
 }

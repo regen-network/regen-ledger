@@ -26,8 +26,8 @@
   
 - [regen/data/v1alpha2/query.proto](#regen/data/v1alpha2/query.proto)
     - [ContentEntry](#regen.data.v1alpha2.ContentEntry)
-    - [QueryByHashRequest](#regen.data.v1alpha2.QueryByHashRequest)
-    - [QueryByHashResponse](#regen.data.v1alpha2.QueryByHashResponse)
+    - [QueryByIRIRequest](#regen.data.v1alpha2.QueryByIRIRequest)
+    - [QueryByIRIResponse](#regen.data.v1alpha2.QueryByIRIResponse)
     - [QueryBySignerRequest](#regen.data.v1alpha2.QueryBySignerRequest)
     - [QueryBySignerResponse](#regen.data.v1alpha2.QueryBySignerResponse)
     - [QuerySignersRequest](#regen.data.v1alpha2.QuerySignersRequest)
@@ -327,24 +327,24 @@ ContentEntry describes data referenced and possibly stored on chain
 
 
 
-<a name="regen.data.v1alpha2.QueryByHashRequest"></a>
+<a name="regen.data.v1alpha2.QueryByIRIRequest"></a>
 
-### QueryByHashRequest
+### QueryByIRIRequest
 QueryByContentHashRequest is the Query/ByContentHash request type.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the hash-based identifier for the anchored content. |
+| iri | [string](#string) |  | hash is the hash-based identifier for the anchored content. |
 
 
 
 
 
 
-<a name="regen.data.v1alpha2.QueryByHashResponse"></a>
+<a name="regen.data.v1alpha2.QueryByIRIResponse"></a>
 
-### QueryByHashResponse
+### QueryByIRIResponse
 QueryByContentHashResponse is the Query/ByContentHash response type.
 
 
@@ -434,7 +434,7 @@ Query is the regen.data.v1alpha2 Query service
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| ByHash | [QueryByHashRequest](#regen.data.v1alpha2.QueryByHashRequest) | [QueryByHashResponse](#regen.data.v1alpha2.QueryByHashResponse) | ByHash queries data based on its ContentHash. |
+| ByIRI | [QueryByIRIRequest](#regen.data.v1alpha2.QueryByIRIRequest) | [QueryByIRIResponse](#regen.data.v1alpha2.QueryByIRIResponse) | ByHash queries data based on its ContentHash. |
 | BySigner | [QueryBySignerRequest](#regen.data.v1alpha2.QueryBySignerRequest) | [QueryBySignerResponse](#regen.data.v1alpha2.QueryBySignerResponse) | BySigner queries data based on signers. |
 | Signers | [QuerySignersRequest](#regen.data.v1alpha2.QuerySignersRequest) | [QuerySignersResponse](#regen.data.v1alpha2.QuerySignersResponse) | Signers queries signers based on IRI. |
 

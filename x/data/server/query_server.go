@@ -16,19 +16,14 @@ import (
 
 var _ data.QueryServer = serverImpl{}
 
-// ByHash queries data based on its ContentHash.
-func (s serverImpl) ByHash(goCtx context.Context, request *data.QueryByHashRequest) (*data.QueryByHashResponse, error) {
+// ByIRI queries data based on its ContentHash.
+func (s serverImpl) ByIRI(goCtx context.Context, request *data.QueryByIRIRequest) (*data.QueryByIRIResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 
-	iri, err := request.Hash.ToIRI()
-	if err != nil {
-		return nil, err
-	}
-
 	store := ctx.KVStore(s.storeKey)
-	id := s.iriIDTable.GetID(store, []byte(iri))
+	id := s.iriIDTable.GetID(store, []byte(request.Iri))
 	if len(id) == 0 {
-		return nil, status.Errorf(codes.NotFound, "can't find %s", iri)
+		return nil, status.Errorf(codes.NotFound, "can't find %s", request.Iri)
 	}
 
 	entry, err := s.getEntry(store, id)
@@ -36,7 +31,7 @@ func (s serverImpl) ByHash(goCtx context.Context, request *data.QueryByHashReque
 		return nil, err
 	}
 
-	return &data.QueryByHashResponse{
+	return &data.QueryByIRIResponse{
 		Entry: entry,
 	}, nil
 }

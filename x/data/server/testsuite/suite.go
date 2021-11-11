@@ -72,8 +72,10 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.NoError(err)
 
 	// can query data and get timestamp
-	queryRes, err := s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{
-		Hash: contentHash,
+	iri, err := contentHash.ToIRI()
+	require.NoError(err)
+	queryRes, err := s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
+		Iri: iri,
 	})
 	require.NoError(err)
 	require.NotNil(queryRes)
@@ -84,7 +86,7 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	signerRes, err := s.queryClient.Signers(s.ctx, &data.QuerySignersRequest{Iri: queryRes.Entry.Iri, Pagination: nil})
 	require.NoError(err)
 	require.Empty(signerRes.Signers)
-	iri, err := graphHash.ToIRI()
+	iri, err = graphHash.ToIRI()
 	require.NoError(err)
 	require.Equal(iri, queryRes.Entry.Iri)
 
@@ -97,7 +99,9 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 
 	// can retrieve signature, same timestamp
 	// can query data and get timestamp
-	queryRes, err = s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{Hash: contentHash})
+	iri, err = contentHash.ToIRI()
+	require.NoError(err)
+	queryRes, err = s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{Iri: iri})
 	require.NoError(err)
 	require.NotNil(queryRes)
 	require.Equal(ts, queryRes.Entry.Timestamp) // ensure timestamp is equal to the original
@@ -132,7 +136,9 @@ func (s *IntegrationTestSuite) TestGraphScenario() {
 	require.Equal(contentHash, bySignerRes.Entries[0].Hash)
 
 	// query and get both signatures
-	queryRes, err = s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{Hash: contentHash})
+	iri, err = contentHash.ToIRI()
+	require.NoError(err)
+	queryRes, err = s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{Iri: iri})
 	require.NoError(err)
 	require.NotNil(queryRes)
 	require.Equal(ts, queryRes.Entry.Timestamp)
@@ -180,8 +186,10 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.NoError(err)
 
 	// can query data and get timestamp
-	queryRes, err := s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{
-		Hash: contentHash,
+	iri, err := contentHash.ToIRI()
+	require.NoError(err)
+	queryRes, err := s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
+		Iri: iri,
 	})
 	require.NoError(err)
 	require.NotNil(queryRes)
@@ -193,8 +201,10 @@ func (s *IntegrationTestSuite) TestRawDataScenario() {
 	require.Empty(signerRes.Signers)
 
 	// can retrieve same timestamp, and data
-	queryRes, err = s.queryClient.ByHash(s.ctx, &data.QueryByHashRequest{
-		Hash: contentHash,
+	iri, err = contentHash.ToIRI()
+	require.NoError(err)
+	queryRes, err = s.queryClient.ByIRI(s.ctx, &data.QueryByIRIRequest{
+		Iri: iri,
 	})
 	require.NoError(err)
 	require.NotNil(queryRes)
