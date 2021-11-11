@@ -635,9 +635,9 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 		return nil, err
 	}
 
-	var buyOrderIds []uint64
+	buyOrderIds := make([]uint64, len(req.Orders))
 
-	for _, order := range req.Orders {
+	for i, order := range req.Orders {
 
 		balances := s.bankKeeper.SpendableCoins(sdkCtx, buyerAddr)
 		bidPrice := order.BidPrice
@@ -759,7 +759,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 			}
 
 			buyOrderID := s.buyOrderSeq.NextVal(ctx)
-			buyOrderIds = append(buyOrderIds, buyOrderID)
+			buyOrderIds[i] = buyOrderID
 
 			err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventBuyOrderCreated{
 				BuyOrderId:         buyOrderID,
