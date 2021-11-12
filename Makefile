@@ -406,7 +406,7 @@ localnet-start: build-linux localnet-stop
 	docker-compose up -d
 
 localnet-stop:
-	docker-compose down
+	docker-compose down -v 
 
 .PHONY: localnet-start localnet-stop
 
