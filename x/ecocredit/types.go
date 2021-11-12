@@ -38,7 +38,7 @@ func (m *SellOrder) PrimaryKeyFields() []interface{} {
 // PrimaryKeyFields returns the fields of the object that will make up the
 // primary key for BuyOrder.
 func (m *BuyOrder) PrimaryKeyFields() []interface{} {
-	return []interface{}{m.OrderId}
+	return []interface{}{m.BuyOrderId}
 }
 
 // PrimaryKeyFields returns the fields of the object that will make up the
