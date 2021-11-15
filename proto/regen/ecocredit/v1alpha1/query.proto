@@ -271,7 +271,7 @@ message QuerySellOrdersByDenomResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QuerySellOrdersByAddrRequest is the Query/SellOrdersByAddress request type.
+// QuerySellOrdersByAddressRequest is the Query/SellOrdersByAddress request type.
 message QuerySellOrdersByAddressRequest {
 
   // address is the creator of the sell order
