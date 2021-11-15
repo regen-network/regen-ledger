@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package regen.ecocredit.v1alpha1;
 import "google/api/annotations.proto";
-import "proto/regen/ecocredit/v1alpha1/types.proto";
 import "regen/ecocredit/v1alpha1/types.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
