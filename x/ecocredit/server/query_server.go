@@ -186,3 +186,9 @@ func (s serverImpl) Params(goCtx context.Context, req *ecocredit.QueryParamsRequ
 	s.paramSpace.GetParamSet(ctx, &params)
 	return &ecocredit.QueryParamsResponse{Params: &params}, nil
 }
+
+func (s serverImpl) getSellOrder(ctx types.Context, orderID uint64) (*ecocredit.SellOrder, error) {
+	var sellOrder ecocredit.SellOrder
+	_, err := s.sellOrderTable.GetOne(ctx, orderID, &sellOrder)
+	return &sellOrder, err
+}
