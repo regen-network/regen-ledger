@@ -14,6 +14,10 @@ type Table interface {
 	// shortened identifier for the provided binary value.
 	GetOrCreateID(store KVStore, value []byte) []byte
 
+	// GetID returns the shortened identifier for the provided binary value if
+	// it exists or nil.
+	GetID(store KVStore, value []byte) []byte
+
 	// GetValue returns the binary data (if any) corresponding to the provided shortened identifier.
 	GetValue(store KVStore, id []byte) []byte
 }
@@ -102,11 +106,16 @@ func (t table) GetValue(store KVStore, id []byte) []byte {
 }
 
 func (t table) GetOrCreateID(store KVStore, value []byte) []byte {
-	id, _ := t.getOrCreateID(store, value)
+	id, _ := t.getOrCreateID(store, value, true)
 	return id
 }
 
-func (t table) getOrCreateID(store KVStore, value []byte) (id []byte, numCollisions int) {
+func (t table) GetID(store KVStore, value []byte) []byte {
+	id, _ := t.getOrCreateID(store, value, false)
+	return id
+}
+
+func (t table) getOrCreateID(store KVStore, value []byte, create bool) (id []byte, numCollisions int) {
 	hasher := t.newHash()
 	_, err := hasher.Write(value)
 	if err != nil {
@@ -122,8 +131,14 @@ func (t table) getOrCreateID(store KVStore, value []byte) (id []byte, numCollisi
 	// in cases where there are collisions
 
 	for i := t.minLen; ; i++ {
-		if tryID(store, id, value) {
+		found, doesntExist := tryGetOrSetIDIfNotFound(store, id, value, create)
+
+		if found {
 			return id, i - t.minLen
+		}
+
+		if doesntExist {
+			return nil, 0
 		}
 
 		if i >= t.hashLen {
@@ -140,19 +155,32 @@ func (t table) getOrCreateID(store KVStore, value []byte) (id []byte, numCollisi
 		id = id[:t.bufLen]
 		n := binary.PutUvarint(id[preLen:], i)
 		id = id[:preLen+n]
-		if tryID(store, id, value) {
+		found, doesntExist := tryGetOrSetIDIfNotFound(store, id, value, create)
+
+		if found {
 			return id, t.hashLen + int(i) - t.minLen
+		}
+
+		if doesntExist {
+			return nil, 0
 		}
 	}
 }
 
-func tryID(store KVStore, id []byte, value []byte) bool {
+func tryGetOrSetIDIfNotFound(store KVStore, id, value []byte, create bool) (found, doesntExist bool) {
 	bz := store.Get(id)
 
 	// id doesn't exist yet
 	if bz == nil {
-		store.Set(id, value)
-		return true
+		if create {
+			store.Set(id, value)
+			return true, false
+		} else {
+			// doesntExist is true in the case when we're just trying to get an
+			// ID and not create it - this means there is no ID registered for
+			// this value
+			return false, true
+		}
 	}
-	return bytes.Equal(value, bz)
+	return bytes.Equal(value, bz), false
 }

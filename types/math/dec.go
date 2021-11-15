@@ -146,11 +146,18 @@ func (x Dec) String() string {
 	return x.dec.Text('f')
 }
 
+// Cmp compares x and y and returns:
+//
+//   -1 if x <  y
+//    0 if x == y
+//   +1 if x >  y
+//   undefined if d or x are NaN
+//
 func (x Dec) Cmp(y Dec) int {
 	return x.dec.Cmp(&y.dec)
 }
 
-func (x Dec) IsEqual(y Dec) bool {
+func (x Dec) Equal(y Dec) bool {
 	return x.dec.Cmp(&y.dec) == 0
 }
 
@@ -175,6 +182,8 @@ func (x Dec) NumDecimalPlaces() uint32 {
 	return uint32(-exp)
 }
 
+// Reduce removes trailing zeros from x and returns x and the
+// number of zeros removed.
 func (x Dec) Reduce() (Dec, int) {
 	y := Dec{}
 	_, n := y.dec.Reduce(&x.dec)
