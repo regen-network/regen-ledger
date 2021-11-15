@@ -222,14 +222,11 @@ message QuerySellOrdersRequest {
 // QuerySellOrdersResponse is the Query/SellOrders response type.
 message QuerySellOrdersResponse {
 
-  // seller_addresses contain addresses associated with sell orders in the list of sell_orders
-  repeated string seller_addresses = 1;
-
   // sell_orders is a list of sell orders.
-  repeated SellOrder sell_orders = 2;
+  repeated SellOrder sell_orders = 1;
 
   // pagination defines the pagination in the response.
-  cosmos.base.query.v1beta1.PageResponse pagination = 3;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // QuerySellOrderRequest is the Query/SellOrder request type.
@@ -240,11 +237,8 @@ message QuerySellOrderRequest {
 
 // QuerySellOrderResponse is the Query/SellOrder response type.
 message QuerySellOrderResponse {
-  // seller_address is the address of the creator of the sell order
-  string seller_address = 1;
-
   // sell_order contains all information related to a sell order.
-  SellOrder sell_order = 2;
+  SellOrder sell_order = 1;
 }
 
 // QuerySellOrdersByDenomRequest is the Query/SellOrdersByDenom request type.
@@ -259,19 +253,16 @@ message QuerySellOrdersByDenomRequest {
 // QuerySellOrdersByDenomResponse is the Query/SellOrdersByDenom response type.
 message QuerySellOrdersByDenomResponse {
 
-  // seller_addresses contain addresses associated with sell orders in the sell_orders array
-  repeated string seller_addresses = 1;
-
   // sell_orders is a list of sell orders.
-  repeated SellOrder sell_orders = 2;
+  repeated SellOrder sell_orders = 1;
 
   // pagination defines an optional pagination for the response.
-  cosmos.base.query.v1beta1.PageResponse pagination = 3;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // QuerySellOrdersByAddrRequest is the Query/SellOrdersByAddress request type.
 message QuerySellOrdersByAddressRequest {
-  // address is the address which created the sell order.
+  // address is the creator of the sell order
   string address = 1;
 
   // pagination defines an optional pagination for the request.
@@ -297,14 +288,11 @@ message QueryBuyOrdersRequest {
 // QueryBuyOrdersResponse is the Query/BuyOrders response type.
 message QueryBuyOrdersResponse {
 
-  // buyer_addresses contain addresses associated with buy orders in the buy_orders array
-  repeated string buyer_addresses = 1;
-
   // buy_orders is a list of buy orders.
-  repeated BuyOrder buy_orders = 2;
+  repeated BuyOrder buy_orders = 1;
 
   // pagination defines an optional pagination for the response.
-  cosmos.base.query.v1beta1.PageResponse pagination = 3;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 // QueryBuyOrderRequest is the Query/BuyOrder request type.
@@ -315,12 +303,8 @@ message QueryBuyOrderRequest {
 
 // QueryBuyOrderResponse is the Query/BuyOrder response type.
 message QueryBuyOrderResponse {
-
-  // buyer_address is the address of the creator of the buy order
-  string buyer_address = 1;
-
   // buy_order contains all information related to a buy order.
-  BuyOrder buy_order = 2;
+  BuyOrder buy_order = 1;
 }
 
 // QueryAllowedAskDenomsRequest is the Query/AllowedAskDenoms request type.

@@ -339,13 +339,8 @@ message MsgUpdateSellOrdersResponse {}
 
 // MsgBuy is the Msg/Buy request type.
 message MsgBuy {
-
-  // buyer is the address of the credit buyer.
-  string buyer = 1;
-
   // orders are the new buy orders.
   repeated BuyOrder orders = 2;
-
 }
 
 // MsgBuyResponse is the Msg/Buy response type.
