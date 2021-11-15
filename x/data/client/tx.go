@@ -21,7 +21,6 @@ func TxCmd(name string) *cobra.Command {
 	cmd.AddCommand(
 		MsgAnchorDataCmd(),
 		MsgSignDataCmd(),
-		MsgStoreDataCmd(),
 	)
 
 	return cmd
@@ -101,55 +100,6 @@ func MsgSignDataCmd() *cobra.Command {
 			//svcMsgClientConn := &client.ServiceMsgClientConn{}
 			//msgClient := data.NewMsgClient(svcMsgClientConn)
 			//_, err = msgClient.SignData(cmd.Context(), &msg)
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), svcMsgClientConn.Msgs...)
-		},
-	}
-
-	flags.AddTxFlagsToCmd(cmd)
-
-	return cmd
-}
-
-// MsgStoreDataCmd creates a CLI command for Msg/StoreData.
-func MsgStoreDataCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "store [sender] [cid] [content-as-base64]",
-		Short: `Store a piece of data corresponding to a CID on the blockchain.`,
-		Args:  cobra.ExactArgs(3),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return fmt.Errorf("not implemented")
-			//err := cmd.Flags().Set(flags.FlagFrom, args[0])
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//clientCtx, err := sdkclient.GetClientTxContext(cmd)
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//cid, err := gocid.Decode(args[1])
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//content, err := base64.StdEncoding.DecodeString(args[2])
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//msg := data.MsgStoreDataRequest{
-			//	Sender:  clientCtx.GetFromAddress().String(),
-			//	Cid:     cid.Bytes(),
-			//	Content: content,
-			//}
-			//svcMsgClientConn := &client.ServiceMsgClientConn{}
-			//msgClient := data.NewMsgClient(svcMsgClientConn)
-			//_, err = msgClient.StoreData(cmd.Context(), &msg)
 			//if err != nil {
 			//	return err
 			//}
