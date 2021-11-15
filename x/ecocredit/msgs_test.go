@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/stretchr/testify/require"
 )
@@ -888,6 +889,358 @@ func TestMsgUpdateClassMetadata(t *testing.T) {
 		},
 		"invalid: metadata too large": {
 			src:    MsgUpdateClassMetadata{Admin: a1.String(), ClassId: "C01", Metadata: []byte(simtypes.RandStringOfLength(r, 288))},
+			expErr: true,
+		},
+	}
+
+	for msg, test := range tests {
+		t.Run(msg, func(t *testing.T) {
+			err := test.src.ValidateBasic()
+			if test.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestMsgSell(t *testing.T) {
+	_, _, a1 := testdata.KeyTestPubAddr()
+
+	tests := map[string]struct {
+		src    MsgSell
+		expErr bool
+	}{
+		"valid": {
+			src: MsgSell{
+				Owner: a1.String(),
+				Orders: []*MsgSell_Order{
+					{
+						BatchDenom: "A00-00000000-00000000-000",
+						Quantity: "1.5",
+						AskPrice: &sdk.Coin{
+							Denom: "uregen",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire: true,
+					},
+				},
+			},
+			expErr: false,
+		},
+		"invalid: bad owner address": {
+			src: MsgSell{
+				Owner: "foobar",
+				Orders: []*MsgSell_Order{
+					{
+						BatchDenom: "A00-00000000-00000000-000",
+						Quantity: "1.5",
+						AskPrice: &sdk.Coin{
+							Denom: "uregen",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire: true,
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid: bad batch denom": {
+			src: MsgSell{
+				Owner: a1.String(),
+				Orders: []*MsgSell_Order{
+					{
+						BatchDenom: "foobar",
+						Quantity: "1.5",
+						AskPrice: &sdk.Coin{
+							Denom: "uregen",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire: true,
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid: bad quantity": {
+			src: MsgSell{
+				Owner: a1.String(),
+				Orders: []*MsgSell_Order{
+					{
+						BatchDenom: "A00-00000000-00000000-000",
+						Quantity: "-1.5",
+						AskPrice: &sdk.Coin{
+							Denom: "uregen",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire: true,
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid: bad ask price": {
+			src: MsgSell{
+				Owner: a1.String(),
+				Orders: []*MsgSell_Order{
+					{
+						BatchDenom: "A00-00000000-00000000-000",
+						Quantity: "1.5",
+						AskPrice: &sdk.Coin{
+							Denom: "uregen",
+							Amount: sdk.NewInt(-20),
+						},
+						DisableAutoRetire: true,
+					},
+				},
+			},
+			expErr: true,
+		},
+	}
+
+	for msg, test := range tests {
+		t.Run(msg, func(t *testing.T) {
+			err := test.src.ValidateBasic()
+			if test.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestMsgUpdateSellOrders(t *testing.T) {
+	_, _, a1 := testdata.KeyTestPubAddr()
+
+	tests := map[string]struct {
+		src    MsgUpdateSellOrders
+		expErr bool
+	}{
+		"valid": {
+			src: MsgUpdateSellOrders{
+				Owner: a1.String(),
+				Updates: []*MsgUpdateSellOrders_Update{
+					{
+						NewQuantity: "1.5",
+						NewAskPrice: &sdk.Coin{
+							Denom: "uregen",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire: true,
+					},
+				},
+			},
+			expErr: false,
+		},
+		"invalid: bad owner address": {
+			src: MsgUpdateSellOrders{
+				Owner: "foobar",
+				Updates: []*MsgUpdateSellOrders_Update{
+					{
+						NewQuantity: "1.5",
+						NewAskPrice: &sdk.Coin{
+							Denom: "uregen",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire: true,
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid: bad quantity": {
+			src: MsgUpdateSellOrders{
+				Owner: a1.String(),
+				Updates: []*MsgUpdateSellOrders_Update{
+					{
+						NewQuantity: "-1.5",
+						NewAskPrice: &sdk.Coin{
+							Denom: "uregen",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire: true,
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid: bad ask price": {
+			src: MsgUpdateSellOrders{
+				Owner: a1.String(),
+				Updates: []*MsgUpdateSellOrders_Update{
+					{
+						NewQuantity: "1.5",
+						NewAskPrice: &sdk.Coin{
+							Denom: "uregen",
+							Amount: sdk.NewInt(-20),
+						},
+						DisableAutoRetire: true,
+					},
+				},
+			},
+			expErr: true,
+		},
+	}
+
+	for msg, test := range tests {
+		t.Run(msg, func(t *testing.T) {
+			err := test.src.ValidateBasic()
+			if test.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestMsgBuy(t *testing.T) {
+	_, _, a1 := testdata.KeyTestPubAddr()
+
+	tests := map[string]struct {
+		src    MsgBuy
+		expErr bool
+	}{
+		"valid": {
+			src: MsgBuy{
+				Buyer: a1.String(),
+				Orders: []*MsgBuy_Order{
+					{
+						Quantity: "1.5",
+						BidPrice: &sdk.Coin{
+							Denom: "uregen",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire: true,
+						DisablePartialFill: true,
+					},
+				},
+			},
+			expErr: false,
+		},
+		"invalid: bad owner address": {
+			src: MsgBuy{
+				Buyer: "foobar",
+				Orders: []*MsgBuy_Order{
+					{
+						Quantity: "1.5",
+						BidPrice: &sdk.Coin{
+							Denom: "uregen",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire: true,
+						DisablePartialFill: true,
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid: bad quantity": {
+			src: MsgBuy{
+				Buyer: a1.String(),
+				Orders: []*MsgBuy_Order{
+					{
+						Quantity: "-1.5",
+						BidPrice: &sdk.Coin{
+							Denom: "uregen",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire: true,
+						DisablePartialFill: true,
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid: bad bid price": {
+			src: MsgBuy{
+				Buyer: a1.String(),
+				Orders: []*MsgBuy_Order{
+					{
+						Quantity: "1.5",
+						BidPrice: &sdk.Coin{
+							Denom: "uregen",
+							Amount: sdk.NewInt(-20),
+						},
+						DisableAutoRetire: true,
+						DisablePartialFill: true,
+					},
+				},
+			},
+			expErr: true,
+		},
+	}
+
+	for msg, test := range tests {
+		t.Run(msg, func(t *testing.T) {
+			err := test.src.ValidateBasic()
+			if test.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestMsgAllowAskDenom(t *testing.T) {
+	_, _, a1 := testdata.KeyTestPubAddr()
+
+	tests := map[string]struct {
+		src    MsgBuy
+		expErr bool
+	}{
+		"valid": {
+			src: MsgBuy{
+				Buyer: a1.String(),
+				Orders: []*MsgBuy_Order{
+					{
+						Quantity: "1.5",
+						BidPrice: &sdk.Coin{
+							Denom: "uregen",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire: true,
+						DisablePartialFill: true,
+					},
+				},
+			},
+			expErr: false,
+		},
+		"invalid: bad owner address": {
+			src: MsgBuy{
+				Buyer: "foobar",
+				Orders: []*MsgBuy_Order{
+					{
+						Quantity: "1.5",
+						BidPrice: &sdk.Coin{
+							Denom: "uregen",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire: true,
+						DisablePartialFill: true,
+					},
+				},
+			},
+			expErr: true,
+		},
+		"invalid: bad denom": {
+			src: MsgBuy{
+				Buyer: a1.String(),
+				Orders: []*MsgBuy_Order{
+					{
+						Quantity: "1.5",
+						BidPrice: &sdk.Coin{
+							Denom: "$$$$$",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire: true,
+						DisablePartialFill: true,
+					},
+				},
+			},
 			expErr: true,
 		},
 	}
