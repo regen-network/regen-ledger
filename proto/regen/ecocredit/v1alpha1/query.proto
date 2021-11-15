@@ -89,6 +89,7 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/v1alpha1/buy-orders/id/{buy_order_id}";
   }
 
+  // BuyOrder queries a buy order by creator address
   rpc BuyOrdersByAddress(QueryBuyOrdersByAddressRequest) returns (QueryBuyOrdersByAddressResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1alpha1/buy-orders/address/{address}";
   }
