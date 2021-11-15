@@ -364,7 +364,7 @@ message MsgAllowAskDenom {
   string root_address = 1;
 
   // denom_info contains coin denom information.
-  Denom denom_info = 2;
+  AskDenom denom_info = 2;
 }
 
 // MsgAllowAskDenomResponse is the Msg/AllowAskDenom response type.

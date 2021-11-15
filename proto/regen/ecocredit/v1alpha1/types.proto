@@ -202,8 +202,8 @@ message BuyOrder {
   bool disable_partial_fill = 7;
 }
 
-// Denom is all information related to a denom in the marketplace
-message Denom {
+// AskDenom is all information related to a denom in the marketplace
+message AskDenom {
   // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
   string denom = 2;
 
