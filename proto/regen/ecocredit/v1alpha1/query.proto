@@ -319,7 +319,7 @@ message QueryBuyOrdersResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryBuyOrdersByDenomRequest is the Query/BuyOrdersByDenomRequest request type
+// QueryBuyOrdersByDenomRequest is the Query/BuyOrdersByDenom request type
 message QueryBuyOrdersByDenomRequest {
 
   // denom is the coin denom associated with the bid price of a buy order
@@ -329,7 +329,7 @@ message QueryBuyOrdersByDenomRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryBuyOrdersByDenomResponse is the Query/BuyOrdersByDenomResponse response type.
+// QueryBuyOrdersByDenomResponse is the Query/BuyOrdersByDenom response type.
 message QueryBuyOrdersByDenomResponse {
 
   // buy_orders is a list of buy orders.
@@ -339,7 +339,7 @@ message QueryBuyOrdersByDenomResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-// QueryBuyOrdersByAddressRequest is the Query/BuyOrdersByAddressRequest request type
+// QueryBuyOrdersByAddressRequest is the Query/BuyOrdersByAddress request type
 message QueryBuyOrdersByAddressRequest {
 
   // address of the buy order creator
@@ -349,7 +349,7 @@ message QueryBuyOrdersByAddressRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryBuyOrdersByAddressResponse is the Query/BuyOrdersByAddressResponse response type.
+// QueryBuyOrdersByAddressResponse is the Query/BuyOrdersByAddress response type.
 message QueryBuyOrdersByAddressResponse {
 
   // buy_orders is a list of buy orders.
