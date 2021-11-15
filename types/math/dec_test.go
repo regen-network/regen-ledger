@@ -82,37 +82,37 @@ func TestDec(t *testing.T) {
 
 	res, err := two.Add(zero)
 	require.NoError(t, err)
-	require.True(t, res.IsEqual(two))
+	require.True(t, res.Equal(two))
 
 	res, err = five.Sub(two)
 	require.NoError(t, err)
-	require.True(t, res.IsEqual(three))
+	require.True(t, res.Equal(three))
 
 	res, err = SafeSubBalance(five, two)
 	require.NoError(t, err)
-	require.True(t, res.IsEqual(three))
+	require.True(t, res.Equal(three))
 
 	res, err = SafeSubBalance(two, five)
 	require.Error(t, err, "Expected insufficient funds error")
 
 	res, err = SafeAddBalance(three, two)
 	require.NoError(t, err)
-	require.True(t, res.IsEqual(five))
+	require.True(t, res.Equal(five))
 
 	res, err = SafeAddBalance(minusFivePointZero, five)
 	require.Error(t, err, "Expected ErrInvalidRequest")
 
 	res, err = four.Quo(two)
 	require.NoError(t, err)
-	require.True(t, res.IsEqual(two))
+	require.True(t, res.Equal(two))
 
 	res, err = five.QuoInteger(two)
 	require.NoError(t, err)
-	require.True(t, res.IsEqual(two))
+	require.True(t, res.Equal(two))
 
 	res, err = five.Rem(two)
 	require.NoError(t, err)
-	require.True(t, res.IsEqual(one))
+	require.True(t, res.Equal(one))
 
 	x, err := four.Int64()
 	require.NoError(t, err)
@@ -122,15 +122,15 @@ func TestDec(t *testing.T) {
 
 	res, err = onePointOneFive.Add(twoPointThreeFour)
 	require.NoError(t, err)
-	require.True(t, res.IsEqual(threePointFourNine))
+	require.True(t, res.Equal(threePointFourNine))
 
 	res, err = threePointFourNine.Sub(two)
 	require.NoError(t, err)
-	require.True(t, res.IsEqual(onePointFourNine))
+	require.True(t, res.Equal(onePointFourNine))
 
 	res, err = minusOne.Sub(four)
 	require.NoError(t, err)
-	require.True(t, res.IsEqual(minusFivePointZero))
+	require.True(t, res.Equal(minusFivePointZero))
 
 	require.True(t, zero.IsZero())
 	require.False(t, zero.IsPositive())
@@ -243,7 +243,7 @@ func testAddLeftIdentity(t *rapid.T) {
 	b, err := zero.Add(a)
 	require.NoError(t, err)
 
-	require.True(t, a.IsEqual(b))
+	require.True(t, a.Equal(b))
 }
 
 // Property: a + 0 == a
@@ -254,7 +254,7 @@ func testAddRightIdentity(t *rapid.T) {
 	b, err := a.Add(zero)
 	require.NoError(t, err)
 
-	require.True(t, a.IsEqual(b))
+	require.True(t, a.Equal(b))
 }
 
 // Property: a + b == b + a
@@ -268,7 +268,7 @@ func testAddCommutative(t *rapid.T) {
 	d, err := b.Add(a)
 	require.NoError(t, err)
 
-	require.True(t, c.IsEqual(d))
+	require.True(t, c.Equal(d))
 }
 
 // Property: (a + b) + c == a + (b + c)
@@ -291,7 +291,7 @@ func testAddAssociative(t *rapid.T) {
 	g, err := a.Add(f)
 	require.NoError(t, err)
 
-	require.True(t, e.IsEqual(g))
+	require.True(t, e.Equal(g))
 }
 
 // Property: a - 0 == a
@@ -302,7 +302,7 @@ func testSubRightIdentity(t *rapid.T) {
 	b, err := a.Sub(zero)
 	require.NoError(t, err)
 
-	require.True(t, a.IsEqual(b))
+	require.True(t, a.Equal(b))
 }
 
 // Property: a - a == 0
@@ -313,7 +313,7 @@ func testSubZero(t *rapid.T) {
 	b, err := a.Sub(a)
 	require.NoError(t, err)
 
-	require.True(t, b.IsEqual(zero))
+	require.True(t, b.Equal(zero))
 }
 
 // Property: 1 * a == a
@@ -324,7 +324,7 @@ func testMulLeftIdentity(t *rapid.T) {
 	b, err := one.Mul(a)
 	require.NoError(t, err)
 
-	require.True(t, a.IsEqual(b))
+	require.True(t, a.Equal(b))
 }
 
 // Property: a * 1 == a
@@ -335,7 +335,7 @@ func testMulRightIdentity(t *rapid.T) {
 	b, err := a.Mul(one)
 	require.NoError(t, err)
 
-	require.True(t, a.IsEqual(b))
+	require.True(t, a.Equal(b))
 }
 
 // Property: a * b == b * a
@@ -349,7 +349,7 @@ func testMulCommutative(t *rapid.T) {
 	d, err := b.Mul(a)
 	require.NoError(t, err)
 
-	require.True(t, c.IsEqual(d))
+	require.True(t, c.Equal(d))
 }
 
 // Property: (a * b) * c == a * (b * c)
@@ -372,7 +372,7 @@ func testMulAssociative(t *rapid.T) {
 	g, err := a.Mul(f)
 	require.NoError(t, err)
 
-	require.True(t, e.IsEqual(g))
+	require.True(t, e.Equal(g))
 }
 
 // Property: (a - b) + b == a
@@ -386,7 +386,7 @@ func testSubAdd(t *rapid.T) {
 	d, err := c.Add(b)
 	require.NoError(t, err)
 
-	require.True(t, a.IsEqual(d))
+	require.True(t, a.Equal(d))
 }
 
 // Property: (a + b) - b == a
@@ -400,7 +400,7 @@ func testAddSub(t *rapid.T) {
 	d, err := c.Sub(b)
 	require.NoError(t, err)
 
-	require.True(t, a.IsEqual(d))
+	require.True(t, a.Equal(d))
 }
 
 // Property: a * 0 = 0
@@ -421,7 +421,7 @@ func testSelfQuo(t *rapid.T) {
 
 	b, err := a.Quo(a)
 	require.NoError(t, err)
-	require.True(t, one.IsEqual(b))
+	require.True(t, one.Equal(b))
 }
 
 // Property: a/1 = a
@@ -431,7 +431,7 @@ func testQuoByOne(t *rapid.T) {
 
 	b, err := a.Quo(one)
 	require.NoError(t, err)
-	require.True(t, a.IsEqual(b))
+	require.True(t, a.Equal(b))
 }
 
 // Property: (a * b) / a == b
@@ -446,7 +446,7 @@ func testMulQuoA(t *rapid.T) {
 	d, err := c.Quo(a)
 	require.NoError(t, err)
 
-	require.True(t, b.IsEqual(d))
+	require.True(t, b.Equal(d))
 }
 
 // Property: (a * b) / b == a
@@ -461,7 +461,7 @@ func testMulQuoB(t *rapid.T) {
 	d, err := c.Quo(b)
 	require.NoError(t, err)
 
-	require.True(t, a.IsEqual(d))
+	require.True(t, a.Equal(d))
 }
 
 // Property: Cmp(a, b) == -Cmp(b, a)
@@ -472,12 +472,12 @@ func testCmpInverse(t *rapid.T) {
 	require.Equal(t, a.Cmp(b), -b.Cmp(a))
 }
 
-// Property: IsEqual(a, b) == IsEqual(b, a)
+// Property: Equal(a, b) == Equal(b, a)
 func testEqualCommutative(t *rapid.T) {
 	a := genDec.Draw(t, "a").(Dec)
 	b := genDec.Draw(t, "b").(Dec)
 
-	require.Equal(t, a.IsEqual(b), b.IsEqual(a))
+	require.Equal(t, a.Equal(b), b.Equal(a))
 }
 
 // Property: isZero(f) == isZero(NewDecFromString(f.String()))

@@ -1,50 +1,64 @@
 package server
 
 import (
-	"encoding/base64"
+	"fmt"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 const (
-	AnchorTablePrefix byte = 0x0
-	CIDSignerPrefix   byte = 0x1
-	SignerCIDPrefix   byte = 0x2
-	DataTablePrefix   byte = 0x3
+	IriIDTablePrefix byte = iota
+	AnchorTimestampPrefix
+	IDSignerPrefix
+	SignerIDPrefix
 )
 
-func AnchorKey(cid []byte) []byte {
-	return append([]byte{AnchorTablePrefix}, cid...)
+func AnchorTimestampKey(id []byte) []byte {
+	return append([]byte{AnchorTimestampPrefix}, id...)
 }
 
-func CIDBase64String(cid []byte) string {
-	return base64.StdEncoding.EncodeToString(cid)
-}
+func IDSignerTimestampKey(id []byte, address sdk.AccAddress) []byte {
+	if len(id) > 255 {
+		panic(fmt.Errorf("id length must be <= 255, found: %d", len(id)))
+	}
 
-func CIDSignerKey(cidStr string, signer string) []byte {
-	key := CIDSignerIndexPrefix(cidStr)
-	key = append(key, signer...)
+	key := make([]byte, 0, len(id)+len(address)+2)
+	key = append(key, IDSignerPrefix, byte(len(id)))
+	key = append(key, id...)
+	key = append(key, address...)
 	return key
 }
 
-func CIDSignerIndexPrefix(cidStr string) []byte {
-	key := []byte{CIDSignerPrefix}
-	key = append(key, cidStr...)
-	key = append(key, 0)
+func IDSignerIndexPrefix(id []byte) []byte {
+	if len(id) > 255 {
+		panic(fmt.Errorf("id length must be <= 255, found: %d", len(id)))
+	}
+
+	key := make([]byte, 0, len(id)+2)
+	key = append(key, IDSignerPrefix, byte(len(id)))
+	key = append(key, id...)
 	return key
 }
 
-func SignerCIDKey(signer string, cid []byte) []byte {
-	key := SignerCIDIndexPrefix(signer)
-	key = append(key, cid...)
+func SignerIDKey(address sdk.AccAddress, id []byte) []byte {
+	if len(address) > 255 {
+		panic(fmt.Errorf("address length must be <= 255, found: %d", len(address)))
+	}
+
+	key := make([]byte, 0, len(id)+len(address)+2)
+	key = append(key, SignerIDPrefix, byte(len(address)))
+	key = append(key, address...)
+	key = append(key, id...)
 	return key
 }
 
-func SignerCIDIndexPrefix(signer string) []byte {
-	key := []byte{SignerCIDPrefix}
-	key = append(key, signer...)
-	key = append(key, 0)
-	return key
-}
+func SignerIDIndexPrefix(address sdk.AccAddress) []byte {
+	if len(address) > 255 {
+		panic(fmt.Errorf("address length must be <= 255, found: %d", len(address)))
+	}
 
-func DataKey(cid []byte) []byte {
-	return append([]byte{DataTablePrefix}, cid...)
+	key := make([]byte, 0, len(address)+2)
+	key = append(key, SignerIDPrefix, byte(len(address)))
+	key = append(key, address...)
+	return key
 }
