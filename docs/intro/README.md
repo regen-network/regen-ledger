@@ -20,7 +20,6 @@ Hambach Testnet is a test network with experimental modules enabled (modules tha
 
 Hambach Testnet includes the following experimental modules:
 
-- [Ecocredit Module](../modules/ecocredit/README.md) <!-- TODO: remove once we upgrade to v2.0 -->
 - [Group Module](../modules/group/README.md)
 
 For more information, check out [Getting Started: Live Networks](../getting-started/live-networks.md#hambach-testnet).
