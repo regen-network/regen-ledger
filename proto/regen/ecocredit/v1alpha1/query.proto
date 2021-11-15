@@ -76,7 +76,7 @@ service Query {
   }
 
   // SellOrdersByAddress queries a paginated list of all sell orders from a specific address
-  rpc SellOrdersByAddress(QuerySellOrdersByAddrRequest) returns (QuerySellOrdersByAddrResponse) {
+  rpc SellOrdersByAddress(QuerySellOrdersByAddressRequest) returns (QuerySellOrdersByAddressResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1alpha1/sell-orders/address/{address}";
   }
 
@@ -223,11 +223,14 @@ message QuerySellOrdersRequest {
 // QuerySellOrdersResponse is the Query/SellOrders response type.
 message QuerySellOrdersResponse {
 
+  // seller_addresses contain addresses associated with sell orders in the list of sell_orders
+  repeated string seller_addresses = 1;
+
   // sell_orders is a list of sell orders.
-  repeated SellOrder sell_orders = 1;
+  repeated SellOrder sell_orders = 2;
 
   // pagination defines the pagination in the response.
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+  cosmos.base.query.v1beta1.PageResponse pagination = 3;
 }
 
 // QuerySellOrderRequest is the Query/SellOrder request type.
@@ -238,8 +241,11 @@ message QuerySellOrderRequest {
 
 // QuerySellOrderResponse is the Query/SellOrder response type.
 message QuerySellOrderResponse {
+  // seller_address is the address of the creator of the sell order
+  string seller_address = 1;
+
   // sell_order contains all information related to a sell order.
-  SellOrder sell_order = 1;
+  SellOrder sell_order = 2;
 }
 
 // QuerySellOrdersByDenomRequest is the Query/SellOrdersByDenom request type.
@@ -251,15 +257,21 @@ message QuerySellOrdersByDenomRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+// QuerySellOrdersByDenomResponse is the Query/SellOrdersByDenom response type.
 message QuerySellOrdersByDenomResponse {
-  repeated SellOrder sell_orders = 1;
+
+  // seller_addresses contain addresses associated with sell orders in the sell_orders array
+  repeated string seller_addresses = 1;
+
+  // sell_orders is a list of sell orders.
+  repeated SellOrder sell_orders = 2;
 
   // pagination defines an optional pagination for the response.
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+  cosmos.base.query.v1beta1.PageResponse pagination = 3;
 }
 
 // QuerySellOrdersByAddrRequest is the Query/SellOrdersByAddress request type.
-message QuerySellOrdersByAddrRequest {
+message QuerySellOrdersByAddressRequest {
   // address is the address which created the sell order.
   string address = 1;
 
@@ -267,7 +279,10 @@ message QuerySellOrdersByAddrRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-message QuerySellOrdersByAddrResponse {
+// QuerySellOrdersByAddressResponse is the Query/SellOrdersByAddressResponse response type.
+message QuerySellOrdersByAddressResponse {
+
+  // sell_orders is a list of sell orders.
   repeated SellOrder sell_orders = 1;
 
   // pagination defines an optional pagination for the response.
@@ -283,11 +298,14 @@ message QueryBuyOrdersRequest {
 // QueryBuyOrdersResponse is the Query/BuyOrders response type.
 message QueryBuyOrdersResponse {
 
+  // buyer_addresses contain addresses associated with buy orders in the buy_orders array
+  repeated string buyer_addresses = 1;
+
   // buy_orders is a list of buy orders.
-  repeated BuyOrder buy_orders = 1;
+  repeated BuyOrder buy_orders = 2;
 
   // pagination defines an optional pagination for the response.
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+  cosmos.base.query.v1beta1.PageResponse pagination = 3;
 }
 
 // QueryBuyOrderRequest is the Query/BuyOrder request type.
@@ -298,8 +316,12 @@ message QueryBuyOrderRequest {
 
 // QueryBuyOrderResponse is the Query/BuyOrder response type.
 message QueryBuyOrderResponse {
+
+  // buyer_address is the address of the creator of the buy order
+  string buyer_address = 1;
+
   // buy_order contains all information related to a buy order.
-  BuyOrder buy_order = 1;
+  BuyOrder buy_order = 2;
 }
 
 // QueryAllowedAskDenomsRequest is the Query/AllowedAskDenoms request type.
