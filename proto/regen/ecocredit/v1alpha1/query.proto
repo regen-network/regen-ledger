@@ -70,7 +70,7 @@ service Query {
   }
 
   // SellOrdersByDenom queries a paginated list of all sell orders of a specific ecocredit denom
-  rpc SellOrdersByDenom(QuerySellOrdersByDenomRequest) returns (QuerySellOrdersByDenomResponse) {
+  rpc SellOrdersByBatchDenom(QuerySellOrdersByBatchDenomRequest) returns (QuerySellOrdersByBatchDenomResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1alpha1/sell-orders/denom/{denom}";
   }
 
@@ -247,7 +247,7 @@ message QuerySellOrdersResponse {
 }
 
 // QuerySellOrdersByDenomRequest is the Query/SellOrdersByDenom request type.
-message QuerySellOrdersByDenomRequest {
+message QuerySellOrdersByBatchDenomRequest {
 
   // denom is an ecocredit denom
   string denom = 1;
@@ -257,7 +257,7 @@ message QuerySellOrdersByDenomRequest {
 }
 
 // QuerySellOrdersByDenomResponse is the Query/SellOrdersByDenom response type.
-message QuerySellOrdersByDenomResponse {
+message QuerySellOrdersByBatchDenomResponse {
 
   // sell_orders is a list of sell orders.
   repeated SellOrder sell_orders = 1;
