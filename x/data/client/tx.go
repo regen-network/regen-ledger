@@ -1,7 +1,9 @@
 package client
 
 import (
-	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/tx"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/regen-network/regen-ledger/x/data"
 
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -29,39 +31,30 @@ func TxCmd(name string) *cobra.Command {
 // MsgAnchorDataCmd creates a CLI command for Msg/AnchorData.
 func MsgAnchorDataCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "anchor [sender] [cid]",
+		Use: "anchor [iri]",
 		Short: "Anchors a piece of data to the blockchain based on its secure " +
 			"hash, effectively providing a tamper resistant timestamp.",
-		Args: cobra.ExactArgs(2),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return fmt.Errorf("not implemented")
-			//err := cmd.Flags().Set(flags.FlagFrom, args[0])
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//clientCtx, err := sdkclient.GetClientTxContext(cmd)
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//cid, err := gocid.Decode(args[1])
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//msg := data.MsgAnchorDataRequest{
-			//	Sender: clientCtx.GetFromAddress().String(),
-			//	Cid:    cid.Bytes(),
-			//}
-			//svcMsgClientConn := &client.ServiceMsgClientConn{}
-			//msgClient := data.NewMsgClient(svcMsgClientConn)
-			//_, err = msgClient.AnchorData(cmd.Context(), &msg)
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), svcMsgClientConn.Msgs...)
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			iri := args[0]
+			if len(iri) == 0 {
+				return sdkerrors.ErrInvalidRequest.Wrap("iri is required")
+			}
+
+			signer := clientCtx.GetFromAddress()
+			content, err := data.ParseIRI(iri)
+
+			msg := data.MsgAnchorData{
+				Sender: signer.String(),
+				Hash:   content,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
 
@@ -73,38 +66,34 @@ func MsgAnchorDataCmd() *cobra.Command {
 // MsgSignDataCmd creates a CLI command for Msg/SignData.
 func MsgSignDataCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "sign [signer] [cid]",
-		Short: `Sign an arbitrary piece of data on the blockchain.`,
-		Args:  cobra.ExactArgs(2),
+		Use:   "sign [iri]",
+		Short: `Sign a piece of on-chain data.`,
+		Long: `Sign a piece of on-chain data, attesting to its validity. The data MUST be of rdf type.
+				Usage: sign regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return fmt.Errorf("not implemented")
-			//err := cmd.Flags().Set(flags.FlagFrom, args[0])
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//clientCtx, err := sdkclient.GetClientTxContext(cmd)
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//cid, err := gocid.Decode(args[1])
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//msg := data.MsgSignDataRequest{
-			//	Signers: []string{clientCtx.GetFromAddress().String()},
-			//	Cid:     cid.Bytes(),
-			//}
-			//svcMsgClientConn := &client.ServiceMsgClientConn{}
-			//msgClient := data.NewMsgClient(svcMsgClientConn)
-			//_, err = msgClient.SignData(cmd.Context(), &msg)
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), svcMsgClientConn.Msgs...)
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			iri := args[0]
+			if len(iri) == 0 {
+				return sdkerrors.ErrInvalidRequest.Wrap("iri is required")
+			}
+
+			signer := clientCtx.GetFromAddress()
+			content, err := data.ParseIRI(iri)
+			graph := content.GetGraph()
+			if graph == nil {
+				return sdkerrors.ErrInvalidRequest.Wrap("can only sign graph data types")
+			}
+
+			msg := data.MsgSignData{
+				Signers: []string{signer.String()},
+				Hash:    graph,
+			}
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	}
 
