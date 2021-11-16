@@ -35,9 +35,12 @@ A typical testing flow might look like the following:
 		cfg.NumValidators = 1
 
 		s.cfg = cfg
-		s.network = testutil.New(s.T(), cfg)
 
-		_, err := s.network.WaitForHeight(1)
+		var err error
+		s.network, err = testutil.New(s.T(), s.T().TempDir(), cfg)
+		s.Require().NoError(err)
+
+		_, err = s.network.WaitForHeight(1)
 		s.Require().NoError(err)
 	}
 
