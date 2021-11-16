@@ -208,3 +208,61 @@ message AskDenom {
   // informational
   uint32 exponent = 3;
 }
+
+message Filter {
+  oneof sum {
+    And and = 1;
+    Or or = 2;
+
+    string credit_type_name = 3;
+    string class_id = 4;
+
+    // project_id filters against credits from this batch.
+    string project_id = 5;
+
+    // batch_id filters against credits from this batch.
+    string batch_denom = 6;
+
+    // class_admin filters against credits issued by this class admin.
+    string class_admin = 7;
+
+    // issuer filters against credits issued by this issuer address.
+    string issuer = 8;
+
+    // owner filters against credits currently owned by this address.
+    string owner = 9;
+
+    // project_location can be specified in three levels of granularity:
+    // country, sub-national-code, or postal code. If just country is given,
+    // for instance "US" then any credits in the "US" will be matched even
+    // their project location is more specific, ex. "US-NY 12345". If
+    // a country, sub-national-code and postal code are all provided then
+    // only projects in that postal code will match.
+    string project_location = 10;
+
+    DateRange date_range = 11;
+
+    // tag specifies a curation tag to match against.
+    string tag = 12;
+  }
+
+  message And {
+    repeated Filter filters = 1;
+  }
+
+  message Or {
+    repeated Filter filters = 1;
+  }
+
+  message DateRange {
+    // start_date is the beginning of the period during which this credit batch
+    // was quantified and verified. If it is empty then there is no start date
+    // limit.
+    google.protobuf.Timestamp start_date = 7 [ (gogoproto.stdtime) = true ];
+
+    // end_date is the end of the period during which this credit batch was
+    // quantified and verified. If it is empty then there is no end date
+    // limit.
+    google.protobuf.Timestamp end_date = 8 [ (gogoproto.stdtime) = true ];
+  }
+}
