@@ -71,7 +71,7 @@ service Query {
 
   // SellOrdersByDenom queries a paginated list of all sell orders of a specific ecocredit denom
   rpc SellOrdersByBatchDenom(QuerySellOrdersByBatchDenomRequest) returns (QuerySellOrdersByBatchDenomResponse) {
-    option (google.api.http).get = "/regen/ecocredit/v1alpha1/sell-orders/denom/{batch_denom}";
+    option (google.api.http).get = "/regen/ecocredit/v1alpha1/sell-orders/batch-denom/{batch_denom}";
   }
 
   // SellOrdersByAddress queries a paginated list of all sell orders from a specific address
@@ -96,7 +96,7 @@ service Query {
 
   // AllowedAskDenoms queries all denoms allowed to be set in the AskPrice of a sell order
   rpc AllowedAskDenoms(QueryAllowedAskDenomsRequest) returns (QueryAllowedAskDenomsResponse) {
-    option (google.api.http).get = "/regen/ecocredit/v1alpha1/denoms";
+    option (google.api.http).get = "/regen/ecocredit/v1alpha1/ask-denoms";
   }
 }
 
