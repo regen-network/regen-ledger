@@ -69,7 +69,7 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/v1alpha1/sell-orders";
   }
 
-  // SellOrdersByDenom queries a paginated list of all sell orders of a specific denom
+  // SellOrdersByDenom queries a paginated list of all sell orders of a specific ecocredit denom
   rpc SellOrdersByDenom(QuerySellOrdersByDenomRequest) returns (QuerySellOrdersByDenomResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1alpha1/sell-orders/denom/{denom}";
   }
@@ -84,14 +84,9 @@ service Query {
     option (google.api.http).get = "/regen/ecocredit/v1alpha1/buy-orders/id/{buy_order_id}";
   }
 
-  // BuyOrders querires a paginated list of all buy orders
+  // BuyOrders queries a paginated list of all buy orders
   rpc BuyOrders(QueryBuyOrdersRequest) returns (QueryBuyOrdersResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1alpha1/buy-orders";
-  }
-
-  // BuyOrdersByDenom queries a paginated list of buy orders by denom
-  rpc BuyOrdersByDenom(QueryBuyOrdersByDenomRequest) returns (QueryBuyOrdersByDenomResponse) {
-    option (google.api.http).get = "/regen/ecocredit/v1alpha1/buy-orders/denom/{denom}";
   }
 
   // BuyOrdersByAddress queries a paginated list of buy orders by creator address
@@ -254,7 +249,7 @@ message QuerySellOrdersResponse {
 // QuerySellOrdersByDenomRequest is the Query/SellOrdersByDenom request type.
 message QuerySellOrdersByDenomRequest {
 
-  // denom is the coin denom associated with the ask price of a sell order
+  // denom is an ecocredit denom
   string denom = 1;
 
   // pagination defines an optional pagination for the request.
@@ -311,26 +306,6 @@ message QueryBuyOrdersRequest {
 
 // QueryBuyOrdersResponse is the Query/BuyOrders response type.
 message QueryBuyOrdersResponse {
-
-  // buy_orders is a list of buy orders.
-  repeated BuyOrder buy_orders = 1;
-
-  // pagination defines an optional pagination for the response.
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-// QueryBuyOrdersByDenomRequest is the Query/BuyOrdersByDenom request type
-message QueryBuyOrdersByDenomRequest {
-
-  // denom is the coin denom associated with the bid price of a buy order
-  string denom = 1;
-
-  // pagination defines an optional pagination for the request.
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
-}
-
-// QueryBuyOrdersByDenomResponse is the Query/BuyOrdersByDenom response type.
-message QueryBuyOrdersByDenomResponse {
 
   // buy_orders is a list of buy orders.
   repeated BuyOrder buy_orders = 1;
