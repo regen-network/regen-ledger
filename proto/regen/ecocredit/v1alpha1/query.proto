@@ -71,7 +71,7 @@ service Query {
 
   // SellOrdersByDenom queries a paginated list of all sell orders of a specific ecocredit denom
   rpc SellOrdersByBatchDenom(QuerySellOrdersByBatchDenomRequest) returns (QuerySellOrdersByBatchDenomResponse) {
-    option (google.api.http).get = "/regen/ecocredit/v1alpha1/sell-orders/denom/{denom}";
+    option (google.api.http).get = "/regen/ecocredit/v1alpha1/sell-orders/denom/{batch_denom}";
   }
 
   // SellOrdersByAddress queries a paginated list of all sell orders from a specific address
@@ -249,8 +249,8 @@ message QuerySellOrdersResponse {
 // QuerySellOrdersByDenomRequest is the Query/SellOrdersByDenom request type.
 message QuerySellOrdersByBatchDenomRequest {
 
-  // denom is an ecocredit denom
-  string denom = 1;
+  // batch_denom is an ecocredit denom
+  string batch_denom = 1;
 
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
