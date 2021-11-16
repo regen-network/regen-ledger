@@ -64,6 +64,13 @@ service Msg {
   // credits they are. The credits will be auto-retired if retire_on_take
   // is true. Credits will be chosen randomly using the previous block hash
   // as a consensus source of randomness.
+  // More concretely, the implementation is as follows:
+  // - take the previous block hash and convert it into an uint64,
+  // - given the total number of different credits within the basket `n`, the
+  //   first credits that will get picked correspond to: hash modulo n (in
+  //   terms of order),
+  // - then if we need to take more credits, we get some from the next one and
+  //   so on.
   rpc TakeFromBasket(MsgTakeFromBasket) returns (MsgTakeFromBasketResponse);
 
   // PickFromBasket picks specific credits from a basket. If allow_picking is
@@ -476,7 +483,7 @@ message MsgCreateBasket {
   // which applies to a credit will determine its multiplier in the basket.
   repeated BasketCriteria basket_criteria = 5;
 
-  bool retire_on_take = 6;
+  bool disable_auto_retire = 6;
 
   bool allow_picking = 7;
 }
