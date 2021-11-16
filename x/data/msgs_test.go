@@ -17,12 +17,11 @@ func TestMsgAnchorDataRequest_GetSigners(t *testing.T) {
 	require.Equal(t, []sdk.AccAddress{addr}, msg.GetSigners())
 
 	msg = &MsgAnchorData{Sender: ""}
-	require.Panics(t, func() {
-		msg.GetSigners()
-	})
+	require.Equal(t, "", msg.GetSigners()[0].String())
 }
 
 func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
+	_, _, addr := testdata.KeyTestPubAddr()
 	type fields struct {
 		Sender string
 		Hash   *ContentHash
@@ -35,7 +34,7 @@ func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
 		{
 			name: "good",
 			fields: fields{
-				Sender: "",
+				Sender: addr.String(),
 				Hash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
 					Hash:            make([]byte, 32),
 					DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
@@ -46,9 +45,17 @@ func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
 			wantErr: "",
 		},
 		{
+			name: "nil",
+			fields: fields{
+				Sender: addr.String(),
+				Hash:   nil,
+			},
+			wantErr: "hash cannot be empty: invalid request",
+		},
+		{
 			name: "bad",
 			fields: fields{
-				Sender: "",
+				Sender: addr.String(),
 				Hash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
 					Hash:            make([]byte, 31),
 					DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
@@ -85,13 +92,13 @@ func TestMsgSignDataRequest_GetSigners(t *testing.T) {
 	msg = &MsgSignData{Signers: nil}
 	require.Empty(t, msg.GetSigners())
 
-	msg = &MsgSignData{Signers: []string{"abcd"}}
-	require.Panics(t, func() {
-		msg.GetSigners()
-	})
+	msg = &MsgSignData{Signers: []string{""}}
+	require.Equal(t, "", msg.GetSigners()[0].String())
+
 }
 
 func TestMsgSignDataRequest_ValidateBasic(t *testing.T) {
+	_, _, addr := testdata.KeyTestPubAddr()
 	type fields struct {
 		Signers []string
 		Hash    *ContentHash_Graph
@@ -104,7 +111,7 @@ func TestMsgSignDataRequest_ValidateBasic(t *testing.T) {
 		{
 			"good",
 			fields{
-				Signers: nil,
+				Signers: []string{addr.String()},
 				Hash: &ContentHash_Graph{
 					Hash:                      make([]byte, 32),
 					DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,

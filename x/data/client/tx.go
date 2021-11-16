@@ -43,7 +43,7 @@ func MsgAnchorDataCmd() *cobra.Command {
 
 			iri := args[0]
 			if len(iri) == 0 {
-				return sdkerrors.ErrInvalidRequest.Wrap("iri is required")
+				return sdkerrors.ErrInvalidRequest.Wrap("iri cannot be empty")
 			}
 
 			signer := clientCtx.GetFromAddress()
@@ -66,11 +66,11 @@ func MsgAnchorDataCmd() *cobra.Command {
 // MsgSignDataCmd creates a CLI command for Msg/SignData.
 func MsgSignDataCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "sign [iri]",
-		Short: `Sign a piece of on-chain data.`,
-		Long: `Sign a piece of on-chain data, attesting to its validity. The data MUST be of rdf type.
-				Usage: sign regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf`,
-		Args: cobra.ExactArgs(1),
+		Use:     "sign [iri]",
+		Short:   `Sign a piece of on-chain data.`,
+		Long:    `Sign a piece of on-chain data, attesting to its validity. The data MUST be of rdf type.`,
+		Example: "sign regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
 			if err != nil {
