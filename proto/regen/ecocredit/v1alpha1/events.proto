@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package regen.ecocredit.v1alpha1;
 
+import "cosmos/base/v1beta1/coin.proto";
+
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 
 // EventCreateClass is an event emitted when a credit class is created.
@@ -102,4 +104,115 @@ message EventCancel {
 
   // amount is the decimal number of credits that have been cancelled.
   string amount = 3;
+}
+
+// EventSell is an event emitted when a sell order is created.
+message EventSell {
+
+  // order_id is the unique ID of sell order.
+  uint64 order_id = 1;
+
+  // batch_denom is the credit batch being sold.
+  string batch_denom = 2;
+
+  // quantity is the quantity of credits being sold.
+  string quantity = 3;
+
+  // ask_price is the price the seller is asking for each unit of the
+  // batch_denom. Each credit unit of the batch will be sold for at least the
+  // ask_price or more.
+  cosmos.base.v1beta1.Coin ask_price = 4;
+
+  // disable_auto_retire disables auto-retirement of credits which allows a
+  // buyer to disable auto-retirement in their buy order enabling them to
+  // resell the credits to another buyer.
+  bool disable_auto_retire = 5;
+}
+
+// EventUpdateSellOrder is an event emitted when a sell order is updated.
+message EventUpdateSellOrder {
+
+  // owner is the owner of the sell orders.
+  string owner = 1;
+
+  //  sell_order_id is the ID of an existing sell order.
+  uint64 sell_order_id = 2;
+
+  // batch_denom is the credit batch being sold.
+  string batch_denom = 3;
+
+  // new_quantity is the updated quantity of credits available to sell, if it
+  // is set to zero then the order is cancelled.
+  string new_quantity = 4;
+
+  // new_ask_price is the new ask price for this sell order
+  cosmos.base.v1beta1.Coin new_ask_price = 5;
+
+  // disable_auto_retire updates the disable_auto_retire field in the sell order.
+  bool disable_auto_retire = 6;
+}
+
+// EventBuyOrderCreated is an event emitted when a buy order is created.
+message EventBuyOrderCreated {
+
+  // buy_order_id is the unique ID of buy order.
+  uint64 buy_order_id = 1;
+
+  // sell_order_id is the sell order ID against which the buyer is trying to buy.
+  uint64 sell_order_id = 2;
+
+  // quantity is the quantity of credits to buy. If the quantity of credits
+  // available is less than this amount the order will be partially filled
+  // unless disable_partial_fill is true.
+  string quantity = 3;
+
+  // bid price is the bid price for this buy order. A credit unit will be
+  // settled at a purchase price that is no more than the bid price. The
+  // buy order will fail if the buyer does not have enough funds available
+  // to complete the purchase.
+  cosmos.base.v1beta1.Coin bid_price = 4;
+
+  // disable_auto_retire allows auto-retirement to be disabled. If it is set to true
+  // the credits will not auto-retire and can be resold assuming that the
+  // corresponding sell order has auto-retirement disabled. If the sell order
+  // hasn't disabled auto-retirement and the buy order tries to disable it,
+  // that buy order will fail.
+  bool disable_auto_retire = 5;
+
+  // disable_partial_fill disables the default behavior of partially filling
+  // buy orders if the requested quantity is not available.
+  bool disable_partial_fill = 6;
+}
+
+// EventBuyOrderFilled is an event emitted when a buy order is filled.
+message EventBuyOrderFilled {
+
+  // buy_order_id is the unique ID of the buy order.
+  uint64 buy_order_id = 1;
+
+  // sell_order_id is the unique ID of the sell order.
+  uint64 sell_order_id = 2;
+
+  // batch_denom is the credit batch ID of the purchased credits.
+  string batch_denom = 3;
+
+  // quantity is the quantity of the purchased credits.
+  string quantity = 4;
+
+  // total_price is the total price for the purchased credits.
+  cosmos.base.v1beta1.Coin total_price = 5;
+}
+
+// EventAllowAskDenom is an event emitted when an ask denom is added.
+message EventAllowAskDenom {
+
+  // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
+  string denom = 1;
+
+  // display_denom is the denom to display to the user and is informational
+  string display_denom = 2;
+
+  // exponent is the exponent that relates the denom to the display_denom and is
+  // informational
+  uint32 exponent = 3;
 }
