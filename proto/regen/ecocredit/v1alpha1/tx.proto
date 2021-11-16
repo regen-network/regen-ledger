@@ -477,6 +477,7 @@ message MsgAllowAskDenom {
 // MsgAllowAskDenomResponse is the Msg/AllowAskDenom response type.
 message MsgAllowAskDenomResponse {}
 
+// MsgCreateBasket is the Msg/CreateBasket request type.
 message MsgCreateBasket {
   // curator is the address of the basket curator who is able to change certain
   // basket settings.
@@ -505,21 +506,12 @@ message MsgCreateBasket {
   bool allow_picking = 7;
 }
 
-message BasketCriteria {
-  Filter filter = 1;
-
-  // multiplier is an integer number which is applied to credit units when
-  // converting to basket units. For example if the multiplier is 2000, then
-  // 1.1 credits will result in 2200 basket tokens. If there are any fractional
-  // amounts left over in this calculation when adding credits to a basket,
-  // those fractional amounts will not get added to the basket.
-  string multiplier = 2;
-}
-
+// MsgCreateBasketResponse is the Msg/CreateBasket response type.
 message MsgCreateBasketResponse {
   string basket_denom = 1;
 }
 
+// MsgAddToBasket is the Msg/AddToBasket request type.
 message MsgAddToBasket {
   // owner is the owner of credits being added to the basket.
   string owner = 1;
@@ -532,11 +524,13 @@ message MsgAddToBasket {
   repeated BasketCredit credits = 3;
 }
 
+// MsgAddToBasketResponse is the Msg/AddToBasket response type.
 message MsgAddToBasketResponse {
   // amount_received is the amount of basket tokens received.
   string amount_received = 1;
 }
 
+// MsgTakeFromBasket is the Msg/TakeFromBasket request type.
 message MsgTakeFromBasket {
   string owner = 1;
 
@@ -549,11 +543,13 @@ message MsgTakeFromBasket {
   string retirement_location = 4;
 }
 
+// MsgTakeFromBasketResponse is the Msg/TakeFromBasket response type.
 message MsgTakeFromBasketResponse {
   // credits are the credits taken out of the basket.
   repeated BasketCredit credits = 1;
 }
 
+// MsgPickFromBasket is the Msg/PickFromBasket request type.
 message MsgPickFromBasket {
   // owner is the owner of the basket tokens.
   string owner = 1;
@@ -569,14 +565,6 @@ message MsgPickFromBasket {
   string retirement_location = 4;
 }
 
+// MsgPickFromBasketResponse is the Msg/PickFromBasket response type.
 message MsgPickFromBasketResponse {}
 
-message BasketCredit {
-  // batch_denom is the unique ID of the credit batch.
-  string batch_denom = 1;
-
-  // tradable_amount is the number of credits in this transfer that can be
-  // traded by the recipient. Decimal values are acceptable within the
-  // precision returned by Query/Precision.
-  string tradable_amount = 2;
-}

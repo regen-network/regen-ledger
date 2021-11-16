@@ -62,7 +62,7 @@ service Query {
   // Basket queries one basket by denom.
   rpc Basket(QueryBasketRequest) returns (QueryBasketResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/baskets/{denom}";
+        "/regen/ecocredit/v1alpha1/baskets/{basket_denom}";
   }
 
   // Baskets lists all baskets in the ecocredit module.
@@ -74,7 +74,7 @@ service Query {
   // BasketCredits lists all ecocredits inside a given basket.
   rpc BasketCredits(QueryBasketCreditsRequest) returns (QueryBasketCreditsResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/baskets/{denom}/credits";
+        "/regen/ecocredit/v1alpha1/baskets/{basket_denom}/credits";
   }
 }
 
@@ -196,21 +196,26 @@ message QueryCreditTypesResponse {
   repeated CreditType credit_types = 1;
 }
 
+// QueryBasketRequest is the Query/Basket request type.
 message QueryBasketRequest {
   // basket_denom represents the denom of the basket to query. 
   string basket_denom = 1;
 }
 
+
+// QueryBasketResponse is the Query/Basket response type.
 message QueryBasketResponse {
   // basket is the queried basket.
   Basket basket = 1;
 }
 
+// QueryBasketsRequest is the Query/Baskets request type.
 message QueryBasketsRequest {
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
+// QueryBasketsResponse is the Query/Baskets response type.
 message QueryBasketsResponse {
   // baskets are the fetched baskets.
   repeated Basket baskets = 1;
@@ -219,6 +224,7 @@ message QueryBasketsResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+// QueryBasketCreditsRequest is the Query/BasketCredits request type.
 message QueryBasketCreditsRequest {
   // basket_denom is the basket denom to query credits for.
   string basket_denom = 1;
@@ -227,6 +233,7 @@ message QueryBasketCreditsRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+// QueryBasketCreditsResponse is the Query/BasketCredits response type.
 message QueryBasketCreditsResponse {
   // credits are the credits inside the basket.
   repeated BasketCredit credits = 1;
@@ -259,7 +266,7 @@ message Basket {
   // which applies to a credit will determine its multiplier in the basket.
   repeated BasketCriteria basket_criteria = 5;
 
-  bool retire_on_take = 6;
+  bool disable_auto_retire = 6;
 
   bool allow_picking = 7;
 }
