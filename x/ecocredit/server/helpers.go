@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -95,4 +96,52 @@ func iterateBalances(store sdk.KVStore, storeKey byte, cb func(address, denom, b
 			break
 		}
 	}
+}
+
+func verifyCreditBalance(store storetypes.KVStore, ownerAddr sdk.AccAddress, batchDenom string, quantity string) error {
+	bd := batchDenomT(batchDenom)
+
+	balance, err := getDecimal(store, TradableBalanceKey(ownerAddr, bd))
+	if err != nil {
+		return err
+	}
+
+	q, err := math.NewPositiveDecFromString(quantity)
+	if err != nil {
+		return err
+	}
+
+	if balance.Cmp(q) == -1 {
+		return ecocredit.ErrInsufficientFunds
+	}
+
+	return nil
+}
+
+// getCoinNeeded calculates the amount of coin needed for purchasing [quantity] ecocredits at [bidPrice] price
+func getCoinNeeded(quantity math.Dec, bidPrice *sdk.Coin) (coinNeeded sdk.Coin, err error) {
+
+	// amount is the amount (in bid denom) of coins necessary for purchasing
+	// the exact quantity requested
+	amountDec, err := quantity.Mul(math.NewDecFromInt64(bidPrice.Amount.Int64()))
+	if err != nil {
+		return coinNeeded, err
+	}
+
+	// amountNeeded should always be rounded down to the nearest integer number
+	// as a buyer cannot spend fractional sdk.Coin (e.g. fractional uregen).
+	// The ecocredit quantity sent to the buyer should always be calculated by
+	// multiplying the integral amountNeeded by bidPrice as opposed to the quantity sent
+	// in the Buy() request.
+	amountNeeded, err := amountDec.QuoInteger(math.NewDecFromInt64(1))
+	if err != nil {
+		return coinNeeded, err
+	}
+
+	amountNeededInt64, err := amountNeeded.Int64()
+	if err != nil {
+		return coinNeeded, err
+	}
+
+	return sdk.NewCoin(bidPrice.Denom, sdk.NewInt(amountNeededInt64)), nil
 }

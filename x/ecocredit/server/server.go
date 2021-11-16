@@ -18,6 +18,11 @@ const (
 	CreditTypeSeqTablePrefix byte = 0x4
 	ClassInfoTablePrefix     byte = 0x5
 	BatchInfoTablePrefix     byte = 0x6
+	SellOrderTablePrefix     byte = 0x7
+	SellOrderTableSeqPrefix  byte = 0x8
+	BuyOrderTablePrefix      byte = 0x9
+	BuyOrderTableSeqPrefix   byte = 0x10
+	AskDenomTablePrefix      byte = 0x11
 )
 
 type serverImpl struct {
@@ -32,6 +37,9 @@ type serverImpl struct {
 
 	classInfoTable orm.PrimaryKeyTable
 	batchInfoTable orm.PrimaryKeyTable
+	sellOrderTable orm.AutoUInt64Table
+	buyOrderTable orm.AutoUInt64Table
+	askDenomTable orm.PrimaryKeyTable
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
@@ -60,6 +68,24 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		panic(err.Error())
 	}
 	s.batchInfoTable = batchInfoTableBuilder.Build()
+
+	sellOrderTableBuilder, err := orm.NewAutoUInt64TableBuilder(SellOrderTablePrefix, SellOrderTableSeqPrefix, storeKey, &ecocredit.SellOrder{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.sellOrderTable = sellOrderTableBuilder.Build()
+
+	buyOrderTableBuilder, err := orm.NewAutoUInt64TableBuilder(BuyOrderTablePrefix, BuyOrderTableSeqPrefix, storeKey, &ecocredit.BuyOrder{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.buyOrderTable = buyOrderTableBuilder.Build()
+
+	askDenomTableBuilder, err := orm.NewPrimaryKeyTableBuilder(AskDenomTablePrefix, storeKey, &ecocredit.AskDenom{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.askDenomTable = askDenomTableBuilder.Build()
 
 	return s
 }
