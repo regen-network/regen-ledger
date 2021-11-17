@@ -803,6 +803,421 @@ func (m *QueryCreditTypesResponse) GetCreditTypes() []*CreditType {
 	return nil
 }
 
+// QueryBasketRequest is the Query/Basket request type.
+type QueryBasketRequest struct {
+	// basket_denom represents the denom of the basket to query.
+	BasketDenom string `protobuf:"bytes,1,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
+}
+
+func (m *QueryBasketRequest) Reset()         { *m = QueryBasketRequest{} }
+func (m *QueryBasketRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryBasketRequest) ProtoMessage()    {}
+func (*QueryBasketRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{16}
+}
+func (m *QueryBasketRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBasketRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBasketRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBasketRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBasketRequest.Merge(m, src)
+}
+func (m *QueryBasketRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBasketRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBasketRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBasketRequest proto.InternalMessageInfo
+
+func (m *QueryBasketRequest) GetBasketDenom() string {
+	if m != nil {
+		return m.BasketDenom
+	}
+	return ""
+}
+
+// QueryBasketResponse is the Query/Basket response type.
+type QueryBasketResponse struct {
+	// basket is the queried basket.
+	Basket *Basket `protobuf:"bytes,1,opt,name=basket,proto3" json:"basket,omitempty"`
+}
+
+func (m *QueryBasketResponse) Reset()         { *m = QueryBasketResponse{} }
+func (m *QueryBasketResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryBasketResponse) ProtoMessage()    {}
+func (*QueryBasketResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{17}
+}
+func (m *QueryBasketResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBasketResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBasketResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBasketResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBasketResponse.Merge(m, src)
+}
+func (m *QueryBasketResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBasketResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBasketResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBasketResponse proto.InternalMessageInfo
+
+func (m *QueryBasketResponse) GetBasket() *Basket {
+	if m != nil {
+		return m.Basket
+	}
+	return nil
+}
+
+// QueryBasketsRequest is the Query/Baskets request type.
+type QueryBasketsRequest struct {
+	// pagination defines an optional pagination for the request.
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryBasketsRequest) Reset()         { *m = QueryBasketsRequest{} }
+func (m *QueryBasketsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryBasketsRequest) ProtoMessage()    {}
+func (*QueryBasketsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{18}
+}
+func (m *QueryBasketsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBasketsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBasketsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBasketsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBasketsRequest.Merge(m, src)
+}
+func (m *QueryBasketsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBasketsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBasketsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBasketsRequest proto.InternalMessageInfo
+
+func (m *QueryBasketsRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QueryBasketsResponse is the Query/Baskets response type.
+type QueryBasketsResponse struct {
+	// baskets are the fetched baskets.
+	Baskets []*Basket `protobuf:"bytes,1,rep,name=baskets,proto3" json:"baskets,omitempty"`
+	// pagination defines the pagination in the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryBasketsResponse) Reset()         { *m = QueryBasketsResponse{} }
+func (m *QueryBasketsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryBasketsResponse) ProtoMessage()    {}
+func (*QueryBasketsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{19}
+}
+func (m *QueryBasketsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBasketsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBasketsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBasketsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBasketsResponse.Merge(m, src)
+}
+func (m *QueryBasketsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBasketsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBasketsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBasketsResponse proto.InternalMessageInfo
+
+func (m *QueryBasketsResponse) GetBaskets() []*Basket {
+	if m != nil {
+		return m.Baskets
+	}
+	return nil
+}
+
+func (m *QueryBasketsResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QueryBasketCreditsRequest is the Query/BasketCredits request type.
+type QueryBasketCreditsRequest struct {
+	// basket_denom is the basket denom to query credits for.
+	BasketDenom string `protobuf:"bytes,1,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
+	// pagination defines an optional pagination for the request.
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryBasketCreditsRequest) Reset()         { *m = QueryBasketCreditsRequest{} }
+func (m *QueryBasketCreditsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryBasketCreditsRequest) ProtoMessage()    {}
+func (*QueryBasketCreditsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{20}
+}
+func (m *QueryBasketCreditsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBasketCreditsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBasketCreditsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBasketCreditsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBasketCreditsRequest.Merge(m, src)
+}
+func (m *QueryBasketCreditsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBasketCreditsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBasketCreditsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBasketCreditsRequest proto.InternalMessageInfo
+
+func (m *QueryBasketCreditsRequest) GetBasketDenom() string {
+	if m != nil {
+		return m.BasketDenom
+	}
+	return ""
+}
+
+func (m *QueryBasketCreditsRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QueryBasketCreditsResponse is the Query/BasketCredits response type.
+type QueryBasketCreditsResponse struct {
+	// credits are the credits inside the basket.
+	Credits []*BasketCredit `protobuf:"bytes,1,rep,name=credits,proto3" json:"credits,omitempty"`
+	// pagination defines the pagination in the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryBasketCreditsResponse) Reset()         { *m = QueryBasketCreditsResponse{} }
+func (m *QueryBasketCreditsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryBasketCreditsResponse) ProtoMessage()    {}
+func (*QueryBasketCreditsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{21}
+}
+func (m *QueryBasketCreditsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBasketCreditsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBasketCreditsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBasketCreditsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBasketCreditsResponse.Merge(m, src)
+}
+func (m *QueryBasketCreditsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBasketCreditsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBasketCreditsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBasketCreditsResponse proto.InternalMessageInfo
+
+func (m *QueryBasketCreditsResponse) GetCredits() []*BasketCredit {
+	if m != nil {
+		return m.Credits
+	}
+	return nil
+}
+
+func (m *QueryBasketCreditsResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// Basket defines a credit basket.
+type Basket struct {
+	// curator is the address of the basket curator who is able to change certain
+	// basket settings.
+	Curator string `protobuf:"bytes,1,opt,name=curator,proto3" json:"curator,omitempty"`
+	// name will be used to create a bank denom for this basket token of the form
+	// ecocredit:{curator}:{name}.
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// display_name will be used to create a bank Metadata display name for this
+	// basket token of the form ecocredit:{curator}:{display_name}.
+	DisplayName string `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	// exponent is the exponent that will be used for denom metadata. An exponent
+	// of 6 will mean that 10^6 units of a basket token should be displayed
+	// as one unit in user interfaces.
+	Exponent uint32 `protobuf:"varint,4,opt,name=exponent,proto3" json:"exponent,omitempty"`
+	// basket_criteria is the criteria by which credits can be added to the
+	// basket. Basket criteria will be applied in order and the first criteria
+	// which applies to a credit will determine its multiplier in the basket.
+	BasketCriteria []*BasketCriteria `protobuf:"bytes,5,rep,name=basket_criteria,json=basketCriteria,proto3" json:"basket_criteria,omitempty"`
+	// disable_auto_retire allows auto-retirement to be disabled.
+	// The credits will be auto-retired if disable_auto_retire is
+	// false unless the credits were previously put into the basket by the
+	// address picking them from the basket, in which case they will remain
+	// tradable.
+	DisableAutoRetire bool `protobuf:"varint,6,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
+	// allow_picking specifies whether an address which didn't deposit the credits
+	// in the basket can pick those credits or not.
+	AllowPicking bool `protobuf:"varint,7,opt,name=allow_picking,json=allowPicking,proto3" json:"allow_picking,omitempty"`
+}
+
+func (m *Basket) Reset()         { *m = Basket{} }
+func (m *Basket) String() string { return proto.CompactTextString(m) }
+func (*Basket) ProtoMessage()    {}
+func (*Basket) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{22}
+}
+func (m *Basket) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Basket) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Basket.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Basket) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Basket.Merge(m, src)
+}
+func (m *Basket) XXX_Size() int {
+	return m.Size()
+}
+func (m *Basket) XXX_DiscardUnknown() {
+	xxx_messageInfo_Basket.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Basket proto.InternalMessageInfo
+
+func (m *Basket) GetCurator() string {
+	if m != nil {
+		return m.Curator
+	}
+	return ""
+}
+
+func (m *Basket) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
+func (m *Basket) GetDisplayName() string {
+	if m != nil {
+		return m.DisplayName
+	}
+	return ""
+}
+
+func (m *Basket) GetExponent() uint32 {
+	if m != nil {
+		return m.Exponent
+	}
+	return 0
+}
+
+func (m *Basket) GetBasketCriteria() []*BasketCriteria {
+	if m != nil {
+		return m.BasketCriteria
+	}
+	return nil
+}
+
+func (m *Basket) GetDisableAutoRetire() bool {
+	if m != nil {
+		return m.DisableAutoRetire
+	}
+	return false
+}
+
+func (m *Basket) GetAllowPicking() bool {
+	if m != nil {
+		return m.AllowPicking
+	}
+	return false
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "regen.ecocredit.v1alpha1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "regen.ecocredit.v1alpha1.QueryParamsResponse")
@@ -820,6 +1235,13 @@ func init() {
 	proto.RegisterType((*QuerySupplyResponse)(nil), "regen.ecocredit.v1alpha1.QuerySupplyResponse")
 	proto.RegisterType((*QueryCreditTypesRequest)(nil), "regen.ecocredit.v1alpha1.QueryCreditTypesRequest")
 	proto.RegisterType((*QueryCreditTypesResponse)(nil), "regen.ecocredit.v1alpha1.QueryCreditTypesResponse")
+	proto.RegisterType((*QueryBasketRequest)(nil), "regen.ecocredit.v1alpha1.QueryBasketRequest")
+	proto.RegisterType((*QueryBasketResponse)(nil), "regen.ecocredit.v1alpha1.QueryBasketResponse")
+	proto.RegisterType((*QueryBasketsRequest)(nil), "regen.ecocredit.v1alpha1.QueryBasketsRequest")
+	proto.RegisterType((*QueryBasketsResponse)(nil), "regen.ecocredit.v1alpha1.QueryBasketsResponse")
+	proto.RegisterType((*QueryBasketCreditsRequest)(nil), "regen.ecocredit.v1alpha1.QueryBasketCreditsRequest")
+	proto.RegisterType((*QueryBasketCreditsResponse)(nil), "regen.ecocredit.v1alpha1.QueryBasketCreditsResponse")
+	proto.RegisterType((*Basket)(nil), "regen.ecocredit.v1alpha1.Basket")
 }
 
 func init() {
@@ -827,62 +1249,83 @@ func init() {
 }
 
 var fileDescriptor_6a16cc4c1db940dc = []byte{
-	// 870 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x96, 0x4d, 0x4f, 0x1b, 0x47,
-	0x18, 0xc7, 0x59, 0xb7, 0xb5, 0xcb, 0xb8, 0xa5, 0xd2, 0x94, 0xb6, 0xc6, 0xaa, 0x5c, 0x77, 0xa1,
-	0xe0, 0x56, 0x78, 0xa7, 0x76, 0x08, 0x70, 0x48, 0x22, 0x01, 0x51, 0x10, 0xca, 0x21, 0xe0, 0xe4,
-	0x14, 0x29, 0xb2, 0xc6, 0xeb, 0xc1, 0xac, 0x62, 0xef, 0x2c, 0xbb, 0x6b, 0x02, 0x42, 0x5c, 0xf2,
-	0x05, 0x12, 0x89, 0x7b, 0x4e, 0x79, 0xb9, 0xe5, 0x92, 0x2f, 0x91, 0x23, 0x52, 0x2e, 0x39, 0x46,
-	0x90, 0x0f, 0x12, 0x79, 0xe6, 0xd9, 0x37, 0x9b, 0x65, 0xd7, 0x4a, 0x8e, 0xfb, 0xf0, 0xbc, 0xfc,
-	0xe6, 0xff, 0x78, 0xfe, 0x0c, 0x9a, 0xb3, 0x59, 0x87, 0x99, 0x84, 0xe9, 0x5c, 0xb7, 0x59, 0xdb,
-	0x70, 0xc9, 0x41, 0x8d, 0x76, 0xad, 0x3d, 0x5a, 0x23, 0xfb, 0x7d, 0x66, 0x1f, 0x69, 0x96, 0xcd,
-	0x5d, 0x8e, 0x0b, 0x22, 0x4b, 0xf3, 0xb3, 0x34, 0x2f, 0xab, 0xf8, 0x67, 0x87, 0xf3, 0x4e, 0x97,
-	0x11, 0x6a, 0x19, 0x84, 0x9a, 0x26, 0x77, 0xa9, 0x6b, 0x70, 0xd3, 0x91, 0x75, 0xc5, 0xf8, 0xee,
-	0xee, 0x91, 0xc5, 0xbc, 0xac, 0xff, 0x74, 0xee, 0xf4, 0xb8, 0x43, 0x5a, 0xd4, 0x61, 0x72, 0x2c,
-	0x39, 0xa8, 0xb5, 0x98, 0x4b, 0x6b, 0xc4, 0xa2, 0x1d, 0xc3, 0x14, 0x2d, 0x65, 0xae, 0x3a, 0x8d,
-	0xf0, 0xce, 0x20, 0x63, 0x9b, 0xda, 0xb4, 0xe7, 0x34, 0xd8, 0x7e, 0x9f, 0x39, 0xae, 0x7a, 0x0f,
-	0xfd, 0x1a, 0x89, 0x3a, 0x16, 0x37, 0x1d, 0x86, 0x57, 0x51, 0xd6, 0x12, 0x91, 0x82, 0x52, 0x56,
-	0x2a, 0xf9, 0x7a, 0x59, 0x8b, 0x3b, 0x87, 0x06, 0x95, 0x90, 0xaf, 0x3e, 0x82, 0x86, 0x1b, 0x5d,
-	0xea, 0x38, 0xcc, 0x9b, 0x83, 0xef, 0x20, 0x14, 0x10, 0x41, 0xd3, 0x79, 0x4d, 0xe2, 0x6b, 0x03,
-	0x7c, 0x4d, 0xaa, 0x06, 0xf8, 0xda, 0x36, 0xed, 0x30, 0xa8, 0x6d, 0x84, 0x2a, 0xd5, 0x17, 0x0a,
-	0x9a, 0x8e, 0xf6, 0x07, 0xe2, 0x9b, 0x28, 0xa7, 0xcb, 0x50, 0x41, 0x29, 0x7f, 0x57, 0xc9, 0xd7,
-	0x67, 0xe3, 0x91, 0x45, 0xed, 0x96, 0xb9, 0xcb, 0x1b, 0x5e, 0x0d, 0xde, 0x8c, 0xf0, 0x65, 0x04,
-	0xdf, 0x42, 0x22, 0x9f, 0x9c, 0x1d, 0x01, 0xac, 0xa3, 0xdf, 0x02, 0x3e, 0x31, 0x03, 0x14, 0x98,
-	0x41, 0x3f, 0x8a, 0x61, 0x4d, 0xa3, 0x2d, 0xce, 0x3f, 0x09, 0xc3, 0xb7, 0xda, 0xea, 0x0e, 0xfa,
-	0x7d, 0xb8, 0x06, 0x4e, 0xb5, 0x82, 0xbe, 0x37, 0xcc, 0x5d, 0x0e, 0x82, 0xa5, 0x3a, 0x92, 0x28,
-	0x50, 0x0f, 0x61, 0x0d, 0xeb, 0xd4, 0xd5, 0xf7, 0x82, 0x35, 0xc4, 0x43, 0x0c, 0x6d, 0x28, 0xf3,
-	0xf5, 0x1b, 0xf2, 0x47, 0x07, 0x1b, 0x6a, 0xc9, 0x50, 0xf2, 0x86, 0x44, 0xad, 0xdc, 0x10, 0xd4,
-	0x7c, 0xbb, 0x0d, 0xad, 0xc2, 0x86, 0x82, 0x19, 0x20, 0xce, 0x5f, 0x28, 0x2f, 0x86, 0x35, 0xdb,
-	0xcc, 0xe4, 0x3d, 0xd0, 0x07, 0x89, 0xd0, 0xed, 0x41, 0xc4, 0xdf, 0x53, 0xa8, 0x72, 0xdc, 0x3d,
-	0x05, 0xa5, 0x72, 0x4f, 0xdb, 0xfe, 0x9e, 0xba, 0xd4, 0xd4, 0x3d, 0x41, 0x71, 0x01, 0xe5, 0xa8,
-	0xae, 0xf3, 0xbe, 0xe9, 0x7a, 0x6b, 0x82, 0xcf, 0x61, 0xc8, 0xcc, 0x08, 0xe4, 0xae, 0x2f, 0x3f,
-	0x74, 0x04, 0xc4, 0x05, 0xf4, 0x8b, 0x6b, 0xd3, 0x36, 0x6d, 0x75, 0x59, 0x93, 0xf6, 0x42, 0xad,
-	0xa7, 0xbc, 0xf0, 0x9a, 0x88, 0xe2, 0x7f, 0xd0, 0x94, 0xcd, 0x5c, 0xc3, 0x66, 0x6d, 0x2f, 0x4f,
-	0x0e, 0xf9, 0x19, 0xa2, 0x32, 0x4d, 0xbd, 0x0e, 0x7e, 0x72, 0xbf, 0x6f, 0x59, 0xdd, 0xa3, 0xd4,
-	0x1a, 0x32, 0x38, 0xb0, 0x57, 0x76, 0x09, 0x9d, 0x23, 0xfe, 0x34, 0x4c, 0x27, 0x0b, 0xc2, 0x74,
-	0x90, 0x17, 0xa5, 0x93, 0x69, 0xea, 0x0c, 0xfa, 0x43, 0x5e, 0x29, 0xa1, 0xff, 0x83, 0x81, 0x67,
-	0x7a, 0x96, 0xa7, 0xa3, 0xc2, 0xe8, 0x9f, 0x00, 0x63, 0x13, 0xfd, 0x24, 0x37, 0xd6, 0x14, 0x36,
-	0x0b, 0x3f, 0xd4, 0xb9, 0x2b, 0xee, 0x9d, 0xdf, 0xa4, 0x91, 0xd7, 0x83, 0x86, 0xf5, 0xb7, 0x08,
-	0xfd, 0x20, 0xa6, 0xe0, 0x53, 0x05, 0xe5, 0xc0, 0xac, 0x70, 0x35, 0xbe, 0xd1, 0x25, 0xa6, 0x59,
-	0xd4, 0xd2, 0xa6, 0x4b, 0x7a, 0xf5, 0xdf, 0xa7, 0x1f, 0x3e, 0x9f, 0x66, 0x66, 0xf1, 0xdf, 0x24,
-	0xf6, 0xbf, 0x87, 0xe7, 0x77, 0x2f, 0x15, 0x34, 0xe9, 0x7b, 0x06, 0x26, 0x69, 0x06, 0x85, 0xae,
-	0x4a, 0xf1, 0xff, 0xf4, 0x05, 0xc0, 0xb6, 0x24, 0xd8, 0x34, 0xbc, 0x98, 0xc8, 0x46, 0x8e, 0x3d,
-	0x8b, 0x3a, 0xc1, 0xaf, 0x15, 0x94, 0x03, 0x1f, 0x49, 0x14, 0x2f, 0x6a, 0x75, 0x89, 0xe2, 0x0d,
-	0xd9, 0x93, 0x7a, 0x43, 0x00, 0x2e, 0xe3, 0xa5, 0x71, 0x00, 0x89, 0xe7, 0x4e, 0x6f, 0x14, 0x34,
-	0xe9, 0xdf, 0xed, 0x44, 0x3d, 0x87, 0xad, 0x27, 0x51, 0xcf, 0x11, 0xc7, 0x51, 0x57, 0x04, 0x6e,
-	0x0d, 0x93, 0x78, 0x5c, 0x60, 0x23, 0xc7, 0xa1, 0x1b, 0x79, 0x82, 0xdf, 0x09, 0x49, 0x85, 0x37,
-	0xa4, 0x90, 0x34, 0xec, 0x4a, 0x29, 0x24, 0x8d, 0x58, 0x8e, 0xba, 0x25, 0x18, 0x37, 0xf0, 0xda,
-	0x98, 0x8c, 0xa4, 0x25, 0x1b, 0x91, 0x63, 0x70, 0xbd, 0x13, 0xfc, 0x4a, 0x41, 0x59, 0x70, 0x80,
-	0xc5, 0x04, 0x8a, 0x88, 0x21, 0x15, 0xab, 0x29, 0xb3, 0x01, 0xf9, 0x96, 0x40, 0x5e, 0xc5, 0xcb,
-	0xe3, 0x22, 0x4b, 0x33, 0x1a, 0xdc, 0xab, 0x7c, 0xc8, 0x58, 0x70, 0x2d, 0xe9, 0xa2, 0x8c, 0xf8,
-	0x53, 0xb1, 0x3e, 0x4e, 0x09, 0x60, 0x6b, 0x02, 0xbb, 0x82, 0xe7, 0xaf, 0xf8, 0xf1, 0x8a, 0xef,
-	0xaa, 0xf0, 0x35, 0xfc, 0x4c, 0x41, 0x59, 0xf9, 0x70, 0x4b, 0x94, 0x33, 0xf2, 0x5e, 0x4c, 0x94,
-	0x33, 0xfa, 0x8e, 0x54, 0x2b, 0x82, 0x4b, 0xc5, 0xe5, 0x78, 0x2e, 0xf9, 0x6e, 0x5c, 0xbf, 0xfb,
-	0xfe, 0xbc, 0xa4, 0x9c, 0x9d, 0x97, 0x94, 0x4f, 0xe7, 0x25, 0xe5, 0xf9, 0x45, 0x69, 0xe2, 0xec,
-	0xa2, 0x34, 0xf1, 0xf1, 0xa2, 0x34, 0xf1, 0xb0, 0xd6, 0x31, 0xdc, 0xbd, 0x7e, 0x4b, 0xd3, 0x79,
-	0x4f, 0x76, 0xa9, 0x9a, 0xcc, 0x7d, 0xc2, 0xed, 0xc7, 0xf0, 0xd5, 0x65, 0xed, 0x0e, 0xb3, 0xc9,
-	0x61, 0xd0, 0xbc, 0x95, 0x15, 0x4f, 0xde, 0x6b, 0x5f, 0x02, 0x00, 0x00, 0xff, 0xff, 0x69, 0x0c,
-	0x2c, 0x87, 0xa4, 0x0b, 0x00, 0x00,
+	// 1201 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x58, 0x4f, 0x6f, 0x1b, 0x45,
+	0x14, 0xef, 0xa6, 0xa9, 0x9d, 0x8c, 0x93, 0x54, 0x4c, 0x0b, 0x38, 0x16, 0x32, 0xee, 0xa6, 0xa4,
+	0x06, 0x25, 0xbb, 0xb5, 0x1b, 0x9a, 0xa8, 0x02, 0xd4, 0xa4, 0x88, 0x2a, 0x42, 0xa2, 0x89, 0xe1,
+	0x84, 0x84, 0xac, 0xf1, 0x7a, 0xe2, 0xac, 0xb2, 0xde, 0xd9, 0xee, 0xae, 0xdb, 0x44, 0x51, 0x2e,
+	0x1c, 0xb8, 0x82, 0xd4, 0x23, 0x02, 0x2e, 0x94, 0x7e, 0x00, 0xae, 0x7c, 0x00, 0x8e, 0x95, 0xb8,
+	0x70, 0x44, 0x09, 0x1f, 0x04, 0xed, 0x9b, 0xb7, 0xff, 0x9c, 0x38, 0xbb, 0x16, 0xbe, 0x79, 0xde,
+	0xbe, 0x3f, 0xbf, 0xfd, 0xbd, 0x99, 0x37, 0xbf, 0x35, 0xb9, 0xed, 0xf2, 0x1e, 0xb7, 0x75, 0x6e,
+	0x08, 0xc3, 0xe5, 0x5d, 0xd3, 0xd7, 0x9f, 0x35, 0x98, 0xe5, 0xec, 0xb3, 0x86, 0xfe, 0x74, 0xc0,
+	0xdd, 0x23, 0xcd, 0x71, 0x85, 0x2f, 0x68, 0x19, 0xbc, 0xb4, 0xc8, 0x4b, 0x0b, 0xbd, 0x2a, 0xef,
+	0xf4, 0x84, 0xe8, 0x59, 0x5c, 0x67, 0x8e, 0xa9, 0x33, 0xdb, 0x16, 0x3e, 0xf3, 0x4d, 0x61, 0x7b,
+	0x32, 0xae, 0x32, 0x3a, 0xbb, 0x7f, 0xe4, 0xf0, 0xd0, 0xeb, 0x03, 0x43, 0x78, 0x7d, 0xe1, 0xe9,
+	0x1d, 0xe6, 0x71, 0x59, 0x56, 0x7f, 0xd6, 0xe8, 0x70, 0x9f, 0x35, 0x74, 0x87, 0xf5, 0x4c, 0x1b,
+	0x52, 0x4a, 0x5f, 0xf5, 0x26, 0xa1, 0xbb, 0x81, 0xc7, 0x0e, 0x73, 0x59, 0xdf, 0x6b, 0xf1, 0xa7,
+	0x03, 0xee, 0xf9, 0xea, 0x13, 0x72, 0x23, 0x65, 0xf5, 0x1c, 0x61, 0x7b, 0x9c, 0x6e, 0x90, 0x82,
+	0x03, 0x96, 0xb2, 0x52, 0x53, 0xea, 0xa5, 0x66, 0x4d, 0x1b, 0xf5, 0x1e, 0x1a, 0x46, 0xa2, 0xbf,
+	0xfa, 0x0d, 0x26, 0x7c, 0x64, 0x31, 0xcf, 0xe3, 0x61, 0x1d, 0xfa, 0x19, 0x21, 0x31, 0x22, 0x4c,
+	0xba, 0xac, 0x49, 0xf8, 0x5a, 0x00, 0x5f, 0x93, 0xac, 0x21, 0x7c, 0x6d, 0x87, 0xf5, 0x38, 0xc6,
+	0xb6, 0x12, 0x91, 0xea, 0xcf, 0x0a, 0xb9, 0x99, 0xce, 0x8f, 0x88, 0x3f, 0x26, 0x45, 0x43, 0x9a,
+	0xca, 0x4a, 0xed, 0x6a, 0xbd, 0xd4, 0x5c, 0x1a, 0x0d, 0x19, 0x62, 0xb7, 0xed, 0x3d, 0xd1, 0x0a,
+	0x63, 0xe8, 0xe3, 0x14, 0xbe, 0x29, 0xc0, 0x77, 0x27, 0x13, 0x9f, 0xac, 0x9d, 0x02, 0xd8, 0x24,
+	0x6f, 0xc6, 0xf8, 0xa0, 0x06, 0x32, 0xb0, 0x48, 0x66, 0xa0, 0x58, 0xdb, 0xec, 0xc2, 0xfb, 0xcf,
+	0x62, 0xf1, 0xed, 0xae, 0xba, 0x4b, 0xde, 0x1a, 0x8e, 0xc1, 0xb7, 0x5a, 0x27, 0xd3, 0xa6, 0xbd,
+	0x27, 0x90, 0xb0, 0x5c, 0xaf, 0x04, 0x01, 0xea, 0x21, 0xb6, 0x61, 0x8b, 0xf9, 0xc6, 0x7e, 0xdc,
+	0x86, 0xd1, 0x20, 0x86, 0x3a, 0x34, 0xf5, 0xff, 0x3b, 0x14, 0x95, 0x8e, 0x3b, 0xd4, 0x91, 0xa6,
+	0xec, 0x0e, 0x41, 0xac, 0xec, 0x10, 0xc6, 0x4c, 0xae, 0x43, 0x1b, 0xd8, 0xa1, 0xb8, 0x06, 0x92,
+	0xf3, 0x2e, 0x29, 0x41, 0xb1, 0x76, 0x97, 0xdb, 0xa2, 0x8f, 0xfc, 0x10, 0x30, 0x7d, 0x1a, 0x58,
+	0xa2, 0x3e, 0x25, 0x22, 0xc7, 0xed, 0x53, 0x1c, 0x2a, 0xfb, 0xb4, 0x13, 0xf5, 0xc9, 0x62, 0xb6,
+	0x11, 0x12, 0x4a, 0xcb, 0xa4, 0xc8, 0x0c, 0x43, 0x0c, 0x6c, 0x3f, 0x6c, 0x13, 0x2e, 0x87, 0x41,
+	0x4e, 0x9d, 0x03, 0xb9, 0x17, 0xd1, 0x8f, 0x19, 0x11, 0xe2, 0x1d, 0x72, 0xdd, 0x77, 0x59, 0x97,
+	0x75, 0x2c, 0xde, 0x66, 0xfd, 0x44, 0xea, 0x85, 0xd0, 0xbc, 0x09, 0x56, 0xfa, 0x1e, 0x59, 0x70,
+	0xb9, 0x6f, 0xba, 0xbc, 0x1b, 0xfa, 0xc9, 0x22, 0xf3, 0x68, 0x95, 0x6e, 0xea, 0x87, 0x38, 0x4f,
+	0xbe, 0x1c, 0x38, 0x8e, 0x75, 0x94, 0x9b, 0x43, 0x8e, 0x2f, 0x1c, 0x86, 0x5d, 0x80, 0xce, 0x83,
+	0x47, 0xc3, 0xe8, 0x64, 0x40, 0x12, 0x1d, 0xfa, 0xa5, 0xd1, 0x49, 0x37, 0x75, 0x91, 0xbc, 0x2d,
+	0x8f, 0x14, 0xf0, 0xff, 0x55, 0x30, 0x33, 0xc3, 0x91, 0x67, 0x90, 0xf2, 0xf9, 0x47, 0x08, 0xe3,
+	0x31, 0x99, 0x93, 0x1d, 0x6b, 0xc3, 0x98, 0xc5, 0x8d, 0x7a, 0xfb, 0x92, 0x73, 0x17, 0x25, 0x69,
+	0x95, 0x8c, 0x38, 0xa1, 0xba, 0x8e, 0xec, 0x6c, 0x31, 0xef, 0x80, 0xfb, 0x21, 0x3b, 0xb7, 0xc8,
+	0x5c, 0x07, 0x0c, 0x29, 0x7a, 0x4a, 0xd2, 0x26, 0xf9, 0x79, 0x12, 0x6d, 0x08, 0x19, 0x18, 0x0f,
+	0x64, 0xe9, 0x95, 0x3d, 0x90, 0x31, 0x12, 0xfd, 0xa3, 0x81, 0x2c, 0xcd, 0x13, 0x1f, 0xc8, 0x3f,
+	0xc6, 0xc7, 0x1d, 0xf3, 0x23, 0xe2, 0x07, 0xc1, 0x71, 0x07, 0x13, 0xb2, 0x98, 0x0d, 0x39, 0x0c,
+	0x98, 0xdc, 0x59, 0xff, 0x4e, 0x21, 0x8b, 0x09, 0x74, 0xb2, 0x5b, 0x5e, 0xfe, 0x76, 0x4c, 0x6c,
+	0x2a, 0xbe, 0x52, 0x48, 0xe5, 0x22, 0x20, 0x48, 0xd6, 0x43, 0x52, 0x94, 0x9c, 0x84, 0x64, 0x2d,
+	0x67, 0x91, 0x25, 0x33, 0xb4, 0xc2, 0xb0, 0xc9, 0x51, 0xf6, 0xd3, 0x14, 0x29, 0xc8, 0x12, 0xc1,
+	0x14, 0x32, 0x06, 0x2e, 0xf3, 0x85, 0x1b, 0x5d, 0x16, 0x72, 0x49, 0x29, 0x99, 0xb6, 0x59, 0x9f,
+	0xe3, 0xd9, 0x83, 0xdf, 0x01, 0x9b, 0x5d, 0xd3, 0x73, 0x2c, 0x76, 0xd4, 0x86, 0x67, 0x57, 0x25,
+	0x9b, 0x68, 0xfb, 0x22, 0x70, 0xa9, 0x90, 0x19, 0x7e, 0xe8, 0x08, 0x9b, 0xdb, 0x7e, 0x79, 0xba,
+	0xa6, 0xd4, 0xe7, 0x5b, 0xd1, 0x9a, 0xee, 0x92, 0xeb, 0xd8, 0x0c, 0xc3, 0x35, 0x7d, 0xee, 0x9a,
+	0xac, 0x7c, 0x0d, 0xa8, 0xa8, 0x67, 0x53, 0x21, 0xfd, 0x5b, 0x0b, 0x9d, 0xd4, 0x9a, 0x6a, 0xe4,
+	0x46, 0xd7, 0xf4, 0xe4, 0xc4, 0x1b, 0xf8, 0xa2, 0x2d, 0x47, 0x44, 0xb9, 0x50, 0x53, 0xea, 0x33,
+	0xad, 0x37, 0xf0, 0xd1, 0xe6, 0xc0, 0x17, 0x2d, 0x78, 0x40, 0x97, 0xc8, 0x3c, 0xb3, 0x2c, 0xf1,
+	0xbc, 0xed, 0x98, 0xc6, 0x81, 0x69, 0xf7, 0xca, 0x45, 0xf0, 0x9c, 0x03, 0xe3, 0x8e, 0xb4, 0x35,
+	0x5f, 0x2e, 0x90, 0x6b, 0xd0, 0x49, 0xfa, 0x42, 0x21, 0x45, 0x94, 0x21, 0x74, 0x75, 0x34, 0xc8,
+	0x0b, 0xe4, 0x50, 0x45, 0xcb, 0xeb, 0x2e, 0x1b, 0xa4, 0xbe, 0xff, 0xed, 0x5f, 0xff, 0xbe, 0x98,
+	0x5a, 0xa2, 0xb7, 0xf4, 0x91, 0xba, 0x30, 0x54, 0x32, 0xbf, 0x2a, 0x64, 0x36, 0x52, 0x03, 0x54,
+	0xcf, 0x53, 0x28, 0x71, 0x09, 0x56, 0xee, 0xe6, 0x0f, 0x40, 0x6c, 0x6b, 0x80, 0x4d, 0xa3, 0x2b,
+	0x99, 0xd8, 0xf4, 0xe3, 0x50, 0x7c, 0x9c, 0xd0, 0xdf, 0x14, 0x52, 0x44, 0x85, 0x90, 0x49, 0x5e,
+	0x5a, 0xc4, 0x64, 0x92, 0x37, 0x24, 0x3c, 0xd4, 0x8f, 0x00, 0xe0, 0x7d, 0xba, 0x36, 0x0e, 0x40,
+	0x3d, 0xd4, 0x1d, 0xaf, 0x14, 0x32, 0x1b, 0xdd, 0xda, 0x99, 0x7c, 0x0e, 0x8b, 0x8a, 0x4c, 0x3e,
+	0xcf, 0x69, 0x09, 0x75, 0x1d, 0xe0, 0x36, 0xa8, 0x3e, 0x1a, 0x2e, 0x62, 0xd3, 0x8f, 0x13, 0x77,
+	0xed, 0x09, 0xfd, 0x1d, 0x28, 0x85, 0x5b, 0x3f, 0x07, 0xa5, 0x49, 0xbd, 0x91, 0x83, 0xd2, 0x94,
+	0x98, 0x50, 0xb7, 0x01, 0xe3, 0x23, 0xba, 0x39, 0x26, 0x46, 0xbd, 0x23, 0x13, 0xe9, 0xc7, 0xa8,
+	0x67, 0x4e, 0xe8, 0x4b, 0x85, 0x14, 0xf0, 0x6e, 0x5f, 0xc9, 0x40, 0x91, 0x92, 0x1a, 0x95, 0xd5,
+	0x9c, 0xde, 0x08, 0xf9, 0x13, 0x80, 0xbc, 0x41, 0xef, 0x8f, 0x0b, 0x59, 0xca, 0x8c, 0xe0, 0x5c,
+	0x95, 0x12, 0x92, 0x81, 0x36, 0xb2, 0x0e, 0xca, 0x39, 0xe5, 0x51, 0x69, 0x8e, 0x13, 0x82, 0xb0,
+	0x35, 0x80, 0x5d, 0xa7, 0xcb, 0x97, 0x6c, 0x5e, 0x58, 0xaf, 0x82, 0x62, 0xa1, 0xdf, 0x2b, 0xa4,
+	0x20, 0x3f, 0xc9, 0x32, 0xe9, 0x4c, 0x7d, 0x09, 0x66, 0xd2, 0x99, 0xfe, 0x42, 0x54, 0xeb, 0x80,
+	0x4b, 0xa5, 0xb5, 0xd1, 0xb8, 0xe4, 0x17, 0x21, 0xfd, 0x45, 0x89, 0x2e, 0x94, 0x95, 0xcc, 0x6d,
+	0x96, 0x50, 0x4b, 0x95, 0xd5, 0x9c, 0xde, 0x88, 0x68, 0x03, 0x10, 0x35, 0xe9, 0xdd, 0xcb, 0x1a,
+	0x0c, 0xfa, 0x22, 0x68, 0x70, 0x7c, 0xed, 0x9f, 0xc0, 0x20, 0x47, 0xf9, 0x42, 0xf3, 0x15, 0x1d,
+	0x63, 0x16, 0xa5, 0x54, 0x51, 0x9e, 0x41, 0x1e, 0x8a, 0xa0, 0x3f, 0x14, 0x32, 0x9f, 0x52, 0x0b,
+	0xf4, 0x5e, 0xae, 0x62, 0x69, 0x91, 0x53, 0x59, 0x1b, 0x2f, 0x08, 0x71, 0x3e, 0x04, 0x9c, 0x0f,
+	0xe8, 0xc6, 0xb8, 0x64, 0xe2, 0x6e, 0xf4, 0xb6, 0x3e, 0xff, 0xf3, 0xb4, 0xaa, 0xbc, 0x3e, 0xad,
+	0x2a, 0xff, 0x9c, 0x56, 0x95, 0x1f, 0xce, 0xaa, 0x57, 0x5e, 0x9f, 0x55, 0xaf, 0xfc, 0x7d, 0x56,
+	0xbd, 0xf2, 0x75, 0xa3, 0x67, 0xfa, 0xfb, 0x83, 0x8e, 0x66, 0x88, 0xbe, 0xcc, 0xbe, 0x6a, 0x73,
+	0xff, 0xb9, 0x70, 0x0f, 0x70, 0x65, 0xf1, 0x6e, 0x8f, 0xbb, 0xfa, 0x61, 0x5c, 0xb4, 0x53, 0x80,
+	0xff, 0x30, 0xee, 0xfd, 0x17, 0x00, 0x00, 0xff, 0xff, 0xd5, 0x4c, 0x50, 0x40, 0x75, 0x11, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -915,6 +1358,12 @@ type QueryClient interface {
 	CreditTypes(ctx context.Context, in *QueryCreditTypesRequest, opts ...grpc.CallOption) (*QueryCreditTypesResponse, error)
 	// Params queries the ecocredit module parameters.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	// Basket queries one basket by denom.
+	Basket(ctx context.Context, in *QueryBasketRequest, opts ...grpc.CallOption) (*QueryBasketResponse, error)
+	// Baskets lists all baskets in the ecocredit module.
+	Baskets(ctx context.Context, in *QueryBasketsRequest, opts ...grpc.CallOption) (*QueryBasketsResponse, error)
+	// BasketCredits lists all ecocredits inside a given basket.
+	BasketCredits(ctx context.Context, in *QueryBasketCreditsRequest, opts ...grpc.CallOption) (*QueryBasketCreditsResponse, error)
 }
 
 type queryClient struct {
@@ -997,6 +1446,33 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
+func (c *queryClient) Basket(ctx context.Context, in *QueryBasketRequest, opts ...grpc.CallOption) (*QueryBasketResponse, error) {
+	out := new(QueryBasketResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/Basket", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Baskets(ctx context.Context, in *QueryBasketsRequest, opts ...grpc.CallOption) (*QueryBasketsResponse, error) {
+	out := new(QueryBasketsResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/Baskets", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) BasketCredits(ctx context.Context, in *QueryBasketCreditsRequest, opts ...grpc.CallOption) (*QueryBasketCreditsResponse, error) {
+	out := new(QueryBasketCreditsResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/BasketCredits", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Classes queries for all credit classes with pagination.
@@ -1017,6 +1493,12 @@ type QueryServer interface {
 	CreditTypes(context.Context, *QueryCreditTypesRequest) (*QueryCreditTypesResponse, error)
 	// Params queries the ecocredit module parameters.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	// Basket queries one basket by denom.
+	Basket(context.Context, *QueryBasketRequest) (*QueryBasketResponse, error)
+	// Baskets lists all baskets in the ecocredit module.
+	Baskets(context.Context, *QueryBasketsRequest) (*QueryBasketsResponse, error)
+	// BasketCredits lists all ecocredits inside a given basket.
+	BasketCredits(context.Context, *QueryBasketCreditsRequest) (*QueryBasketCreditsResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -1046,6 +1528,15 @@ func (*UnimplementedQueryServer) CreditTypes(ctx context.Context, req *QueryCred
 }
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
+}
+func (*UnimplementedQueryServer) Basket(ctx context.Context, req *QueryBasketRequest) (*QueryBasketResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Basket not implemented")
+}
+func (*UnimplementedQueryServer) Baskets(ctx context.Context, req *QueryBasketsRequest) (*QueryBasketsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Baskets not implemented")
+}
+func (*UnimplementedQueryServer) BasketCredits(ctx context.Context, req *QueryBasketCreditsRequest) (*QueryBasketCreditsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BasketCredits not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -1196,6 +1687,60 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_Basket_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBasketRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Basket(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1alpha1.Query/Basket",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Basket(ctx, req.(*QueryBasketRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Baskets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBasketsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Baskets(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1alpha1.Query/Baskets",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Baskets(ctx, req.(*QueryBasketsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_BasketCredits_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBasketCreditsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).BasketCredits(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1alpha1.Query/BasketCredits",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).BasketCredits(ctx, req.(*QueryBasketCreditsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "regen.ecocredit.v1alpha1.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -1231,6 +1776,18 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Params",
 			Handler:    _Query_Params_Handler,
+		},
+		{
+			MethodName: "Basket",
+			Handler:    _Query_Basket_Handler,
+		},
+		{
+			MethodName: "Baskets",
+			Handler:    _Query_Baskets_Handler,
+		},
+		{
+			MethodName: "BasketCredits",
+			Handler:    _Query_BasketCredits_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1801,6 +2358,329 @@ func (m *QueryCreditTypesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryBasketRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBasketRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBasketRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.BasketDenom) > 0 {
+		i -= len(m.BasketDenom)
+		copy(dAtA[i:], m.BasketDenom)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.BasketDenom)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryBasketResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBasketResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBasketResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Basket != nil {
+		{
+			size, err := m.Basket.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryBasketsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBasketsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBasketsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryBasketsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBasketsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBasketsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Baskets) > 0 {
+		for iNdEx := len(m.Baskets) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Baskets[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryBasketCreditsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBasketCreditsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBasketCreditsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.BasketDenom) > 0 {
+		i -= len(m.BasketDenom)
+		copy(dAtA[i:], m.BasketDenom)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.BasketDenom)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryBasketCreditsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBasketCreditsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBasketCreditsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Credits) > 0 {
+		for iNdEx := len(m.Credits) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Credits[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *Basket) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Basket) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Basket) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.AllowPicking {
+		i--
+		if m.AllowPicking {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x38
+	}
+	if m.DisableAutoRetire {
+		i--
+		if m.DisableAutoRetire {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x30
+	}
+	if len(m.BasketCriteria) > 0 {
+		for iNdEx := len(m.BasketCriteria) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.BasketCriteria[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x2a
+		}
+	}
+	if m.Exponent != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.Exponent))
+		i--
+		dAtA[i] = 0x20
+	}
+	if len(m.DisplayName) > 0 {
+		i -= len(m.DisplayName)
+		copy(dAtA[i:], m.DisplayName)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.DisplayName)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.Name) > 0 {
+		i -= len(m.Name)
+		copy(dAtA[i:], m.Name)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Name)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Curator) > 0 {
+		i -= len(m.Curator)
+		copy(dAtA[i:], m.Curator)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Curator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -2038,6 +2918,136 @@ func (m *QueryCreditTypesResponse) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
+	}
+	return n
+}
+
+func (m *QueryBasketRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.BasketDenom)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryBasketResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Basket != nil {
+		l = m.Basket.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryBasketsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryBasketsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Baskets) > 0 {
+		for _, e := range m.Baskets {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryBasketCreditsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.BasketDenom)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryBasketCreditsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Credits) > 0 {
+		for _, e := range m.Credits {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *Basket) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Curator)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.Name)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.DisplayName)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Exponent != 0 {
+		n += 1 + sovQuery(uint64(m.Exponent))
+	}
+	if len(m.BasketCriteria) > 0 {
+		for _, e := range m.BasketCriteria {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.DisableAutoRetire {
+		n += 2
+	}
+	if m.AllowPicking {
+		n += 2
 	}
 	return n
 }
@@ -3546,6 +4556,878 @@ func (m *QueryCreditTypesResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBasketRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBasketRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBasketRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BasketDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BasketDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBasketResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBasketResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBasketResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Basket", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Basket == nil {
+				m.Basket = &Basket{}
+			}
+			if err := m.Basket.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBasketsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBasketsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBasketsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBasketsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBasketsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBasketsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Baskets", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Baskets = append(m.Baskets, &Basket{})
+			if err := m.Baskets[len(m.Baskets)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBasketCreditsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBasketCreditsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBasketCreditsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BasketDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BasketDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBasketCreditsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBasketCreditsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBasketCreditsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Credits", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Credits = append(m.Credits, &BasketCredit{})
+			if err := m.Credits[len(m.Credits)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Basket) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Basket: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Basket: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Curator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Curator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Name", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Name = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DisplayName", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DisplayName = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Exponent", wireType)
+			}
+			m.Exponent = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Exponent |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BasketCriteria", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BasketCriteria = append(m.BasketCriteria, &BasketCriteria{})
+			if err := m.BasketCriteria[len(m.BasketCriteria)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DisableAutoRetire", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.DisableAutoRetire = bool(v != 0)
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AllowPicking", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.AllowPicking = bool(v != 0)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])

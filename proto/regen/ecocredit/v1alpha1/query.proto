@@ -266,7 +266,14 @@ message Basket {
   // which applies to a credit will determine its multiplier in the basket.
   repeated BasketCriteria basket_criteria = 5;
 
+  // disable_auto_retire allows auto-retirement to be disabled.
+  // The credits will be auto-retired if disable_auto_retire is
+  // false unless the credits were previously put into the basket by the
+  // address picking them from the basket, in which case they will remain
+  // tradable.
   bool disable_auto_retire = 6;
 
+  // allow_picking specifies whether an address which didn't deposit the credits
+  // in the basket can pick those credits or not. 
   bool allow_picking = 7;
 }
