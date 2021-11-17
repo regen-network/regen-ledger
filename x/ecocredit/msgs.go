@@ -574,8 +574,10 @@ func (m *MsgCreateBasket) ValidateBasic() error {
 		if _, err := math.NewNonNegativeDecFromString(criteria.Multiplier); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
-		if err := validateFilter(criteria.Filter); err != nil {
-			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		if criteria.Filter != nil { // TODO: is a filter required? or can we have open ended baskets
+			if err := validateFilter(criteria.Filter); err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+			}
 		}
 	}
 
@@ -649,6 +651,9 @@ func (m *MsgAddToBasket) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
+	if len(m.Credits) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("credits cannot be empty")
+	}
 	for _, credit := range m.Credits {
 		if err := validateCredit(*credit); err != nil {
 			return err
@@ -683,8 +688,13 @@ func (m *MsgPickFromBasket) ValidateBasic() error {
 	if err := ValidateDenom(m.BasketDenom); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
-	if err := validateLocation(m.RetirementLocation); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	if len(m.RetirementLocation) != 0 {
+		if err := validateLocation(m.RetirementLocation); err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		}
+	}
+	if len(m.Credits) == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("credits cannot be empty")
 	}
 	for _, credit := range m.Credits {
 		if err := validateCredit(*credit); err != nil {
