@@ -73,10 +73,6 @@
     - [Query](#regen.ecocredit.v1alpha1.Query)
   
 - [regen/ecocredit/v1alpha1/tx.proto](#regen/ecocredit/v1alpha1/tx.proto)
-    - [BasketCredit](#regen.ecocredit.v1alpha1.BasketCredit)
-    - [BasketCriteria](#regen.ecocredit.v1alpha1.BasketCriteria)
-    - [MsgAddToBasket](#regen.ecocredit.v1alpha1.MsgAddToBasket)
-    - [MsgAddToBasketResponse](#regen.ecocredit.v1alpha1.MsgAddToBasketResponse)
     - [MsgAllowAskDenom](#regen.ecocredit.v1alpha1.MsgAllowAskDenom)
     - [MsgAllowAskDenomResponse](#regen.ecocredit.v1alpha1.MsgAllowAskDenomResponse)
     - [MsgBuy](#regen.ecocredit.v1alpha1.MsgBuy)
@@ -86,15 +82,11 @@
     - [MsgCancel](#regen.ecocredit.v1alpha1.MsgCancel)
     - [MsgCancel.CancelCredits](#regen.ecocredit.v1alpha1.MsgCancel.CancelCredits)
     - [MsgCancelResponse](#regen.ecocredit.v1alpha1.MsgCancelResponse)
-    - [MsgCreateBasket](#regen.ecocredit.v1alpha1.MsgCreateBasket)
-    - [MsgCreateBasketResponse](#regen.ecocredit.v1alpha1.MsgCreateBasketResponse)
     - [MsgCreateBatch](#regen.ecocredit.v1alpha1.MsgCreateBatch)
     - [MsgCreateBatch.BatchIssuance](#regen.ecocredit.v1alpha1.MsgCreateBatch.BatchIssuance)
     - [MsgCreateBatchResponse](#regen.ecocredit.v1alpha1.MsgCreateBatchResponse)
     - [MsgCreateClass](#regen.ecocredit.v1alpha1.MsgCreateClass)
     - [MsgCreateClassResponse](#regen.ecocredit.v1alpha1.MsgCreateClassResponse)
-    - [MsgPickFromBasket](#regen.ecocredit.v1alpha1.MsgPickFromBasket)
-    - [MsgPickFromBasketResponse](#regen.ecocredit.v1alpha1.MsgPickFromBasketResponse)
     - [MsgRetire](#regen.ecocredit.v1alpha1.MsgRetire)
     - [MsgRetire.RetireCredits](#regen.ecocredit.v1alpha1.MsgRetire.RetireCredits)
     - [MsgRetireResponse](#regen.ecocredit.v1alpha1.MsgRetireResponse)
@@ -104,8 +96,6 @@
     - [MsgSend](#regen.ecocredit.v1alpha1.MsgSend)
     - [MsgSend.SendCredits](#regen.ecocredit.v1alpha1.MsgSend.SendCredits)
     - [MsgSendResponse](#regen.ecocredit.v1alpha1.MsgSendResponse)
-    - [MsgTakeFromBasket](#regen.ecocredit.v1alpha1.MsgTakeFromBasket)
-    - [MsgTakeFromBasketResponse](#regen.ecocredit.v1alpha1.MsgTakeFromBasketResponse)
     - [MsgUpdateClassAdmin](#regen.ecocredit.v1alpha1.MsgUpdateClassAdmin)
     - [MsgUpdateClassAdminResponse](#regen.ecocredit.v1alpha1.MsgUpdateClassAdminResponse)
     - [MsgUpdateClassIssuers](#regen.ecocredit.v1alpha1.MsgUpdateClassIssuers)
@@ -1194,70 +1184,6 @@ Msg is the regen.ecocredit.v1alpha1 Query service.
 
 
 
-<a name="regen.ecocredit.v1alpha1.BasketCredit"></a>
-
-### BasketCredit
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
-| tradable_amount | [string](#string) |  | tradable_amount is the number of credits in this transfer that can be traded by the recipient. Decimal values are acceptable within the precision returned by Query/Precision. |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha1.BasketCriteria"></a>
-
-### BasketCriteria
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| filter | [Filter](#regen.ecocredit.v1alpha1.Filter) |  |  |
-| multiplier | [string](#string) |  | multiplier is an integer number which is applied to credit units when converting to basket units. For example if the multiplier is 2000, then 1.1 credits will result in 2200 basket tokens. If there are any fractional amounts left over in this calculation when adding credits to a basket, those fractional amounts will not get added to the basket. |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha1.MsgAddToBasket"></a>
-
-### MsgAddToBasket
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| owner | [string](#string) |  | owner is the owner of credits being added to the basket. |
-| basket_denom | [string](#string) |  | basket_denom is the basket denom to add credits to. |
-| credits | [BasketCredit](#regen.ecocredit.v1alpha1.BasketCredit) | repeated | credits are credits to add to the basket. If they do not match the basket's admission criteria the operation will fail. |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha1.MsgAddToBasketResponse"></a>
-
-### MsgAddToBasketResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| amount_received | [string](#string) |  | amount_received is the amount of basket tokens received. |
-
-
-
-
-
-
 <a name="regen.ecocredit.v1alpha1.MsgAllowAskDenom"></a>
 
 ### MsgAllowAskDenom
@@ -1393,42 +1319,6 @@ MsgCancelResponse is the Msg/Cancel response type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.MsgCreateBasket"></a>
-
-### MsgCreateBasket
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| curator | [string](#string) |  | curator is the address of the basket curator who is able to change certain basket settings. |
-| name | [string](#string) |  | name will be used to create a bank denom for this basket token of the form ecocredit:{curator}:{name}. |
-| display_name | [string](#string) |  | display_name will be used to create a bank Metadata display name for this basket token of the form ecocredit:{curator}:{display_name}. |
-| exponent | [uint32](#uint32) |  | exponent is the exponent that will be used for denom metadata. An exponent of 6 will mean that 10^6 units of a basket token should be displayed as one unit in user interfaces. |
-| basket_criteria | [BasketCriteria](#regen.ecocredit.v1alpha1.BasketCriteria) | repeated | basket_criteria is the criteria by which credits can be added to the basket. Basket criteria will be applied in order and the first criteria which applies to a credit will determine its multiplier in the basket. |
-| disable_auto_retire | [bool](#bool) |  |  |
-| allow_picking | [bool](#bool) |  |  |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha1.MsgCreateBasketResponse"></a>
-
-### MsgCreateBasketResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| basket_denom | [string](#string) |  |  |
-
-
-
-
-
-
 <a name="regen.ecocredit.v1alpha1.MsgCreateBatch"></a>
 
 ### MsgCreateBatch
@@ -1511,34 +1401,6 @@ MsgCreateClassResponse is the Msg/CreateClass response type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | class_id | [string](#string) |  | class_id is the unique ID of the newly created credit class. |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha1.MsgPickFromBasket"></a>
-
-### MsgPickFromBasket
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| owner | [string](#string) |  | owner is the owner of the basket tokens. |
-| basket_denom | [string](#string) |  | basket_denom is the denom to pick from. |
-| credits | [BasketCredit](#regen.ecocredit.v1alpha1.BasketCredit) | repeated | credits are the units of credits being picked from the basket |
-| retirement_location | [string](#string) |  | retirement_location is the optional retirement location for the credits which will be used only if retire_on_take is true for this basket. |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha1.MsgPickFromBasketResponse"></a>
-
-### MsgPickFromBasketResponse
-
 
 
 
@@ -1678,39 +1540,6 @@ and retired credits, which will be retired on receipt.
 
 ### MsgSendResponse
 MsgSendResponse is the Msg/Send response type.
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha1.MsgTakeFromBasket"></a>
-
-### MsgTakeFromBasket
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| owner | [string](#string) |  |  |
-| basket_denom | [string](#string) |  |  |
-| amount | [string](#string) |  |  |
-| retirement_location | [string](#string) |  | retirement_location is the optional retirement location for the credits which will be used only if retire_on_take is true for this basket. |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha1.MsgTakeFromBasketResponse"></a>
-
-### MsgTakeFromBasketResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| credits | [BasketCredit](#regen.ecocredit.v1alpha1.BasketCredit) | repeated | credits are the credits taken out of the basket. |
 
 
 
@@ -1867,10 +1696,6 @@ Msg is the regen.ecocredit.v1alpha1 Msg service.
 | UpdateSellOrders | [MsgUpdateSellOrders](#regen.ecocredit.v1alpha1.MsgUpdateSellOrders) | [MsgUpdateSellOrdersResponse](#regen.ecocredit.v1alpha1.MsgUpdateSellOrdersResponse) | UpdateSellOrders updates existing sell orders. |
 | Buy | [MsgBuy](#regen.ecocredit.v1alpha1.MsgBuy) | [MsgBuyResponse](#regen.ecocredit.v1alpha1.MsgBuyResponse) | Buy creates credit buy orders. |
 | AllowAskDenom | [MsgAllowAskDenom](#regen.ecocredit.v1alpha1.MsgAllowAskDenom) | [MsgAllowAskDenomResponse](#regen.ecocredit.v1alpha1.MsgAllowAskDenomResponse) | AllowAskDenom is a governance operation which authorizes a new ask denom to be used in sell orders |
-| CreateBasket | [MsgCreateBasket](#regen.ecocredit.v1alpha1.MsgCreateBasket) | [MsgCreateBasketResponse](#regen.ecocredit.v1alpha1.MsgCreateBasketResponse) | CreateBasket creates a bank denom which wraps credits. |
-| AddToBasket | [MsgAddToBasket](#regen.ecocredit.v1alpha1.MsgAddToBasket) | [MsgAddToBasketResponse](#regen.ecocredit.v1alpha1.MsgAddToBasketResponse) | AddToBasket adds credits to a basket in return for basket tokens. |
-| TakeFromBasket | [MsgTakeFromBasket](#regen.ecocredit.v1alpha1.MsgTakeFromBasket) | [MsgTakeFromBasketResponse](#regen.ecocredit.v1alpha1.MsgTakeFromBasketResponse) | TakeFromBasket takes credits from a basket without regard for which credits they are. The credits will be auto-retired if retire_on_take is true. Credits will be chosen randomly using the previous block hash as a consensus source of randomness. More concretely, the implementation is as follows: - take the previous block hash and convert it into an uint64, - given the total number of different credits within the basket `n`, the first credits that will get picked correspond to: hash modulo n (in terms of order), - then if we need to take more credits, we get some from the next one and so on. |
-| PickFromBasket | [MsgPickFromBasket](#regen.ecocredit.v1alpha1.MsgPickFromBasket) | [MsgPickFromBasketResponse](#regen.ecocredit.v1alpha1.MsgPickFromBasketResponse) | PickFromBasket picks specific credits from a basket. If allow_picking is set to false, then only an address which deposited credits in the basket can pick those credits. All other addresses will be blocked from picking those credits. The credits will be auto-retired if retire_on_take is true unless the credits were previously put into the basket by the address picking them from the basket, in which case they will remain tradable. This functionality allows the owner of a credit to have more control over the credits they are putting in baskets then ordinary users to deal with the scenario where basket tokens end up being worth significantly less than the credits on their own. |
 
  <!-- end services -->
 
