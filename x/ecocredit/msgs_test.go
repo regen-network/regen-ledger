@@ -918,9 +918,9 @@ func TestMsgSell(t *testing.T) {
 				Orders: []*MsgSell_Order{
 					{
 						BatchDenom: "A00-00000000-00000000-000",
-						Quantity: "1.5",
+						Quantity:   "1.5",
 						AskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
 						DisableAutoRetire: true,
@@ -935,9 +935,9 @@ func TestMsgSell(t *testing.T) {
 				Orders: []*MsgSell_Order{
 					{
 						BatchDenom: "A00-00000000-00000000-000",
-						Quantity: "1.5",
+						Quantity:   "1.5",
 						AskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
 						DisableAutoRetire: true,
@@ -952,9 +952,9 @@ func TestMsgSell(t *testing.T) {
 				Orders: []*MsgSell_Order{
 					{
 						BatchDenom: "foobar",
-						Quantity: "1.5",
+						Quantity:   "1.5",
 						AskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
 						DisableAutoRetire: true,
@@ -969,9 +969,9 @@ func TestMsgSell(t *testing.T) {
 				Orders: []*MsgSell_Order{
 					{
 						BatchDenom: "A00-00000000-00000000-000",
-						Quantity: "-1.5",
+						Quantity:   "-1.5",
 						AskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
 						DisableAutoRetire: true,
@@ -986,9 +986,9 @@ func TestMsgSell(t *testing.T) {
 				Orders: []*MsgSell_Order{
 					{
 						BatchDenom: "A00-00000000-00000000-000",
-						Quantity: "1.5",
+						Quantity:   "1.5",
 						AskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(-20),
 						},
 						DisableAutoRetire: true,
@@ -1025,7 +1025,7 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 					{
 						NewQuantity: "1.5",
 						NewAskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
 						DisableAutoRetire: true,
@@ -1041,7 +1041,7 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 					{
 						NewQuantity: "1.5",
 						NewAskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
 						DisableAutoRetire: true,
@@ -1057,7 +1057,7 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 					{
 						NewQuantity: "-1.5",
 						NewAskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
 						DisableAutoRetire: true,
@@ -1073,7 +1073,7 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 					{
 						NewQuantity: "1.5",
 						NewAskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(-20),
 						},
 						DisableAutoRetire: true,
@@ -1110,10 +1110,10 @@ func TestMsgBuy(t *testing.T) {
 					{
 						Quantity: "1.5",
 						BidPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
-						DisableAutoRetire: true,
+						DisableAutoRetire:  true,
 						DisablePartialFill: true,
 					},
 				},
@@ -1127,10 +1127,10 @@ func TestMsgBuy(t *testing.T) {
 					{
 						Quantity: "1.5",
 						BidPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
-						DisableAutoRetire: true,
+						DisableAutoRetire:  true,
 						DisablePartialFill: true,
 					},
 				},
@@ -1144,10 +1144,10 @@ func TestMsgBuy(t *testing.T) {
 					{
 						Quantity: "-1.5",
 						BidPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
-						DisableAutoRetire: true,
+						DisableAutoRetire:  true,
 						DisablePartialFill: true,
 					},
 				},
@@ -1161,10 +1161,10 @@ func TestMsgBuy(t *testing.T) {
 					{
 						Quantity: "1.5",
 						BidPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(-20),
 						},
-						DisableAutoRetire: true,
+						DisableAutoRetire:  true,
 						DisablePartialFill: true,
 					},
 				},
@@ -1199,10 +1199,10 @@ func TestMsgAllowAskDenom(t *testing.T) {
 					{
 						Quantity: "1.5",
 						BidPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
-						DisableAutoRetire: true,
+						DisableAutoRetire:  true,
 						DisablePartialFill: true,
 					},
 				},
@@ -1216,10 +1216,10 @@ func TestMsgAllowAskDenom(t *testing.T) {
 					{
 						Quantity: "1.5",
 						BidPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
-						DisableAutoRetire: true,
+						DisableAutoRetire:  true,
 						DisablePartialFill: true,
 					},
 				},
@@ -1233,10 +1233,10 @@ func TestMsgAllowAskDenom(t *testing.T) {
 					{
 						Quantity: "1.5",
 						BidPrice: &sdk.Coin{
-							Denom: "$$$$$",
+							Denom:  "$$$$$",
 							Amount: sdk.NewInt(20),
 						},
-						DisableAutoRetire: true,
+						DisableAutoRetire:  true,
 						DisablePartialFill: true,
 					},
 				},
@@ -1252,6 +1252,420 @@ func TestMsgAllowAskDenom(t *testing.T) {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestMsgTakeFromBasket_ValidateBasic(t *testing.T) {
+	_, _, addr := testdata.KeyTestPubAddr()
+	validLocation := "AB-CDE FG1 345"
+	validDenom := "A00-00000000-00000000-000"
+
+	type fields struct {
+		Owner              string
+		BasketDenom        string
+		Amount             string
+		RetirementLocation string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name: "valid",
+			fields: fields{
+				Owner:              addr.String(),
+				BasketDenom:        validDenom,
+				Amount:             "10.23510",
+				RetirementLocation: validLocation,
+			},
+		},
+		{
+			name: "bad owner",
+			fields: fields{
+				Owner:              "foo",
+				BasketDenom:        validDenom,
+				Amount:             "10.23510",
+				RetirementLocation: validLocation,
+			},
+			wantErr: true,
+		},
+		{
+			name: "bad denom",
+			fields: fields{
+				Owner:              addr.String(),
+				BasketDenom:        "foo",
+				Amount:             "10.23510",
+				RetirementLocation: validLocation,
+			},
+			wantErr: true,
+		},
+		{
+			name: "bad amount",
+			fields: fields{
+				Owner:              addr.String(),
+				BasketDenom:        validDenom,
+				Amount:             "-4.20",
+				RetirementLocation: validLocation,
+			},
+			wantErr: true,
+		},
+		{
+			name: "bad location",
+			fields: fields{
+				Owner:              addr.String(),
+				BasketDenom:        validDenom,
+				Amount:             "10.23510",
+				RetirementLocation: "oops",
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &MsgTakeFromBasket{
+				Owner:              tt.fields.Owner,
+				BasketDenom:        tt.fields.BasketDenom,
+				Amount:             tt.fields.Amount,
+				RetirementLocation: tt.fields.RetirementLocation,
+			}
+			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
+				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestMsgPickFromBasket_ValidateBasic(t *testing.T) {
+	_, _, addr := testdata.KeyTestPubAddr()
+	validLocation := "AB-CDE FG1 345"
+	validDenom := "A00-00000000-00000000-000"
+
+	type fields struct {
+		Owner              string
+		BasketDenom        string
+		Credits            []*BasketCredit
+		RetirementLocation string
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name: "valid",
+			fields: fields{
+				Owner:              addr.String(),
+				BasketDenom:        validDenom,
+				Credits:            []*BasketCredit{{BatchDenom: validDenom, TradableAmount: "4.20"}},
+				RetirementLocation: validLocation,
+			},
+		},
+		{
+			name: "bad addr",
+			fields: fields{
+				Owner:              "foo",
+				BasketDenom:        validDenom,
+				Credits:            []*BasketCredit{{BatchDenom: validDenom, TradableAmount: "4.20"}},
+				RetirementLocation: validLocation,
+			},
+			wantErr: true,
+		},
+		{
+			name: "bad denom",
+			fields: fields{
+				Owner:              addr.String(),
+				BasketDenom:        "foo",
+				Credits:            []*BasketCredit{{BatchDenom: validDenom, TradableAmount: "4.20"}},
+				RetirementLocation: validLocation,
+			},
+			wantErr: true,
+		},
+		{
+			name: "no credits",
+			fields: fields{
+				Owner:              addr.String(),
+				BasketDenom:        validDenom,
+				Credits:            nil,
+				RetirementLocation: validLocation,
+			},
+			wantErr: true,
+		},
+		{
+			name: "bad basket credit denom",
+			fields: fields{
+				Owner:              addr.String(),
+				BasketDenom:        validDenom,
+				Credits:            []*BasketCredit{{BatchDenom: "alwkef", TradableAmount: "1.20"}},
+				RetirementLocation: validLocation,
+			},
+			wantErr: true,
+		},
+		{
+			name: "bad basket credit tradable amount",
+			fields: fields{
+				Owner:              addr.String(),
+				BasketDenom:        validDenom,
+				Credits:            []*BasketCredit{{BatchDenom: validDenom, TradableAmount: "-1.20"}},
+				RetirementLocation: validLocation,
+			},
+			wantErr: true,
+		},
+		{
+			name: "bad location",
+			fields: fields{
+				Owner:              addr.String(),
+				BasketDenom:        validDenom,
+				Credits:            []*BasketCredit{{BatchDenom: validDenom, TradableAmount: "4.20"}},
+				RetirementLocation: "foo",
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &MsgPickFromBasket{
+				Owner:              tt.fields.Owner,
+				BasketDenom:        tt.fields.BasketDenom,
+				Credits:            tt.fields.Credits,
+				RetirementLocation: tt.fields.RetirementLocation,
+			}
+			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
+				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestMsgAddToBasket_ValidateBasic(t *testing.T) {
+	_, _, addr := testdata.KeyTestPubAddr()
+	validDenom := "A00-00000000-00000000-000"
+
+	type fields struct {
+		Owner       string
+		BasketDenom string
+		Credits     []*BasketCredit
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name: "valid",
+			fields: fields{
+				Owner:       addr.String(),
+				BasketDenom: validDenom,
+				Credits:     []*BasketCredit{{validDenom, "12.402"}},
+			},
+		},
+		{
+			name: "bad addr",
+			fields: fields{
+				Owner:       "foo",
+				BasketDenom: validDenom,
+				Credits:     []*BasketCredit{{validDenom, "12.402"}},
+			},
+			wantErr: true,
+		},
+		{
+			name: "bad denom",
+			fields: fields{
+				Owner:       addr.String(),
+				BasketDenom: "foo",
+				Credits:     []*BasketCredit{{validDenom, "12.402"}},
+			},
+			wantErr: true,
+		},
+		{
+			name: "no credits",
+			fields: fields{
+				Owner:       addr.String(),
+				BasketDenom: validDenom,
+				Credits:     nil,
+			},
+			wantErr: true,
+		},
+		{
+			name: "bad credit denom",
+			fields: fields{
+				Owner:       addr.String(),
+				BasketDenom: validDenom,
+				Credits:     []*BasketCredit{{"foo", "12.402"}},
+			},
+			wantErr: true,
+		},
+		{
+			name: "bad credit tradable amount",
+			fields: fields{
+				Owner:       addr.String(),
+				BasketDenom: validDenom,
+				Credits:     []*BasketCredit{{validDenom, "-1.30"}},
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &MsgAddToBasket{
+				Owner:       tt.fields.Owner,
+				BasketDenom: tt.fields.BasketDenom,
+				Credits:     tt.fields.Credits,
+			}
+			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
+				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
+	_, _, addr := testdata.KeyTestPubAddr()
+	validLocation := "AB-CDE FG1 345"
+	_ = validLocation
+	validDenom := "A00-00000000-00000000-000"
+	_ = validDenom
+
+	type fields struct {
+		Curator           string
+		Name              string
+		DisplayName       string
+		Exponent          uint32
+		BasketCriteria    []*BasketCriteria
+		DisableAutoRetire bool
+		AllowPicking      bool
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name: "valid",
+			fields: fields{
+				Curator:     addr.String(),
+				Name:        "my very cool basket",
+				DisplayName: "cool BASKET, inc.",
+				Exponent:    10,
+				BasketCriteria: []*BasketCriteria{{
+					Multiplier: "4.20",
+					Filter:     &Filter{&Filter_Owner{Owner: addr.String()}},
+				}},
+				DisableAutoRetire: false,
+				AllowPicking:      false,
+			},
+		},
+		{
+			name: "valid nested",
+			fields: fields{
+				Curator:     addr.String(),
+				Name:        "my very cool basket",
+				DisplayName: "cool BASKET, inc.",
+				Exponent:    10,
+				BasketCriteria: []*BasketCriteria{{
+					Multiplier: "4.20",
+					Filter:     &Filter{&Filter_And_{And: &Filter_And{Filters: []*Filter{{Sum: &Filter_Issuer{Issuer: addr.String()}}}}}},
+				}},
+				DisableAutoRetire: false,
+				AllowPicking:      false,
+			},
+		},
+		{
+			name: "bad addr",
+			fields: fields{
+				Curator:     "oops",
+				Name:        "my very cool basket",
+				DisplayName: "cool BASKET, inc.",
+				Exponent:    10,
+				BasketCriteria: []*BasketCriteria{{
+					Multiplier: "4.20",
+					Filter:     &Filter{&Filter_Owner{Owner: addr.String()}},
+				}},
+				DisableAutoRetire: false,
+				AllowPicking:      false,
+			},
+			wantErr: true,
+		},
+		{
+			name: "bad multiplier",
+			fields: fields{
+				Curator:     addr.String(),
+				Name:        "my very cool basket",
+				DisplayName: "cool BASKET, inc.",
+				Exponent:    10,
+				BasketCriteria: []*BasketCriteria{{
+					Multiplier: "-1.39",
+					Filter:     &Filter{&Filter_Owner{Owner: addr.String()}},
+				}},
+				DisableAutoRetire: false,
+				AllowPicking:      false,
+			},
+			wantErr: true,
+		},
+		{
+			name: "bad filter",
+			fields: fields{
+				Curator:     addr.String(),
+				Name:        "my very cool basket",
+				DisplayName: "cool BASKET, inc.",
+				Exponent:    10,
+				BasketCriteria: []*BasketCriteria{{
+					Multiplier: "1.39",
+					Filter:     &Filter{&Filter_Owner{Owner: "foo"}},
+				}},
+				DisableAutoRetire: false,
+				AllowPicking:      false,
+			},
+			wantErr: true,
+		},
+		{
+			name: "bad filter nested",
+			fields: fields{
+				Curator:     addr.String(),
+				Name:        "my very cool basket",
+				DisplayName: "cool BASKET, inc.",
+				Exponent:    10,
+				BasketCriteria: []*BasketCriteria{{
+					Multiplier: "1.39",
+					Filter:     &Filter{&Filter_And_{And: &Filter_And{Filters: []*Filter{{Sum: &Filter_Issuer{Issuer: addr.String()}}, {Sum: &Filter_Owner{Owner: "foo"}}}}}},
+				}},
+				DisableAutoRetire: false,
+				AllowPicking:      false,
+			},
+			wantErr: true,
+		},
+		{
+			name: "bad filter location",
+			fields: fields{
+				Curator:     addr.String(),
+				Name:        "my very cool basket",
+				DisplayName: "cool BASKET, inc.",
+				Exponent:    10,
+				BasketCriteria: []*BasketCriteria{{
+					Multiplier: "1.39",
+					Filter:     &Filter{&Filter_ProjectLocation{ProjectLocation: "not a location"}},
+				}},
+				DisableAutoRetire: false,
+				AllowPicking:      false,
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := &MsgCreateBasket{
+				Curator:           tt.fields.Curator,
+				Name:              tt.fields.Name,
+				DisplayName:       tt.fields.DisplayName,
+				Exponent:          tt.fields.Exponent,
+				BasketCriteria:    tt.fields.BasketCriteria,
+				DisableAutoRetire: tt.fields.DisableAutoRetire,
+				AllowPicking:      tt.fields.AllowPicking,
+			}
+			if err := m.ValidateBasic(); (err != nil) != tt.wantErr {
+				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
