@@ -169,30 +169,33 @@ message BuyOrder {
   // buy_order_id is the unique ID of buy order.
   uint64 buy_order_id = 1;
 
+  // buyer is the address that created the buy order
+  string buyer = 2;
+
   // selection is the buy order selection.
-  Selection selection = 2;
+  Selection selection = 3;
 
   // quantity is the quantity of credits to buy. If the quantity of credits
   // available is less than this amount the order will be partially filled
   // unless disable_partial_fill is true.
-  string quantity = 3;
+  string quantity = 4;
 
   // bid price is the bid price for this buy order. A credit unit will be
   // settled at a purchase price that is no more than the bid price. The
   // buy order will fail if the buyer does not have enough funds available
   // to complete the purchase.
-  cosmos.base.v1beta1.Coin bid_price = 4;
+  cosmos.base.v1beta1.Coin bid_price = 5;
 
   // disable_auto_retire allows auto-retirement to be disabled. If it is set to true
   // the credits will not auto-retire and can be resold assuming that the
   // corresponding sell order has auto-retirement disabled. If the sell order
   // hasn't disabled auto-retirement and the buy order tries to disable it,
   // that buy order will fail.
-  bool disable_auto_retire = 5;
+  bool disable_auto_retire = 6;
 
   // disable_partial_fill disables the default behavior of partially filling
   // buy orders if the requested quantity is not available.
-  bool disable_partial_fill = 6;
+  bool disable_partial_fill = 7;
 }
 
 // AskDenom represents the information for an ask denom.
