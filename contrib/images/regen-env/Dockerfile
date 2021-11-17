@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:21.04
 
 RUN apt-get update && \
   apt-get -y upgrade && \
@@ -8,11 +8,11 @@ ARG UID=1000
 ARG GID=1000
 
 USER ${UID}:${GID}
-VOLUME [ /simd ]
-WORKDIR /simd
+VOLUME [ "/regen" ]
+WORKDIR /regen
 EXPOSE 26656 26657
-ENTRYPOINT ["/usr/bin/run.sh"]
-CMD ["start"]
+ENTRYPOINT ["/usr/bin/wrapper.sh"]
+CMD ["start", "--log_format", "plain"]
 STOPSIGNAL SIGTERM
 
-COPY run.sh /usr/bin/run.sh
+COPY wrapper.sh /usr/bin/wrapper.sh

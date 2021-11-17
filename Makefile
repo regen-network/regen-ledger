@@ -12,6 +12,7 @@ MOCKS_DIR = $(CURDIR)/tests/mocks
 HTTPS_GIT := https://github.com/regen-network/regen-ledger.git
 DOCKER_BUF := docker run -v $(shell pwd):/workspace --workdir /workspace bufbuild/buf
 PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
+DOCKER := $(shell which docker)
 
 export GO111MODULE = on
 
@@ -392,20 +393,20 @@ proto-update-deps:
 ###                                Localnet                                 ###
 ###############################################################################
 
-# Run a 4-node testnet locally
+# Run a 4-node testnet locally via docker compose
 localnet-start: build-linux localnet-stop
-	$(if $(shell docker inspect -f '{{ .Id }}' tendermint/xrnnode 2>/dev/null),$(info found image tendermint/xrnnode),$(MAKE) -C contrib/images xrnnode)
-	if ! [ -f build/node0/simd/config/genesis.json ]; then docker run --rm \
+	$(if $(shell $(DOCKER) inspect -f '{{ .Id }}' regenledger/regen-env 2>/dev/null),$(info found image regenledger/regen-env),$(MAKE) -C contrib/images regen-env)
+	if ! test -f build/node0/regen/config/genesis.json; then $(DOCKER) run --rm \
 		--user $(shell id -u):$(shell id -g) \
-		-v $(BUILDDIR):/simd:Z \
+		-v $(BUILDDIR):/regen:Z \
 		-v /etc/group:/etc/group:ro \
 		-v /etc/passwd:/etc/passwd:ro \
 		-v /etc/shadow:/etc/shadow:ro \
-		tendermint/xrnnode testnet --v 4 -o . --starting-ip-address 192.168.10.2 --keyring-backend=test ; fi
+		regenledger/regen-env testnet init-files --v 4 -o . --starting-ip-address 192.168.10.2 --keyring-backend=test ; fi
 	docker-compose up -d
 
 localnet-stop:
-	docker-compose down
+	docker-compose down -v 
 
 .PHONY: localnet-start localnet-stop
 
