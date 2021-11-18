@@ -58,24 +58,6 @@ service Query {
     option (google.api.http).get =
         "/regen/ecocredit/v1alpha1/params";
   }
-
-  // Basket queries one basket by denom.
-  rpc Basket(QueryBasketRequest) returns (QueryBasketResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/baskets/{basket_denom}";
-  }
-
-  // Baskets lists all baskets in the ecocredit module.
-  rpc Baskets(QueryBasketsRequest) returns (QueryBasketsResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/baskets";
-  }
-
-  // BasketCredits lists all ecocredits inside a given basket.
-  rpc BasketCredits(QueryBasketCreditsRequest) returns (QueryBasketCreditsResponse) {
-    option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/baskets/{basket_denom}/credits";
-  }
   
   // SellOrder queries a sell order by its ID
   rpc SellOrder(QuerySellOrderRequest) returns (QuerySellOrderResponse) {
@@ -115,6 +97,25 @@ service Query {
   // AllowedAskDenoms queries all denoms allowed to be set in the AskPrice of a sell order
   rpc AllowedAskDenoms(QueryAllowedAskDenomsRequest) returns (QueryAllowedAskDenomsResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1alpha1/ask-denoms";
+  }
+
+
+  // Basket queries one basket by denom.
+  rpc Basket(QueryBasketRequest) returns (QueryBasketResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/baskets/{basket_denom}";
+  }
+
+  // Baskets lists all baskets in the ecocredit module.
+  rpc Baskets(QueryBasketsRequest) returns (QueryBasketsResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/baskets";
+  }
+
+  // BasketCredits lists all ecocredits inside a given basket.
+  rpc BasketCredits(QueryBasketCreditsRequest) returns (QueryBasketCreditsResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/baskets/{basket_denom}/credits";
   }
 }
 
