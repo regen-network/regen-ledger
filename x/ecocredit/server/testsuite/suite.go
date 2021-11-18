@@ -1016,10 +1016,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 		Buyer:	admin.String(),
 		Orders:	[]*ecocredit.MsgBuy_Order{
 			{
-				Selection: 			selection,
-				Quantity:        	"1.0",
-				BidPrice:        	&askPrice,
-				DisableAutoRetire: 	true,
+				Selection:          selection,
+				Quantity:           "1.0",
+				BidPrice:           &askPrice,
+				DisableAutoRetire:  true,
 				DisablePartialFill: true,
 			},
 		},
@@ -1028,6 +1028,5 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Equal(expectedBuyOrderIds, createBuyOrder.BuyOrderIds)
 
 	// TODO: test allow ask denom #627
-
 
 }
