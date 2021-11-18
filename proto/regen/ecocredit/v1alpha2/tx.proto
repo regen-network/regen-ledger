@@ -64,8 +64,9 @@ service Msg {
   rpc AddToBasket(MsgAddToBasket) returns (MsgAddToBasketResponse);
 
   // TakeFromBasket takes credits from a basket without regard for which
-  // credits they are. The credits will be auto-retired if retire_on_take
-  // is true. Credits will be chosen randomly using the previous block hash
+  // credits they are. The credits will be auto-retired unless
+  // disable_auto_retire is set to true on both the Msg and basket level.
+  // Credits will be chosen randomly using the previous block hash
   // as a consensus source of randomness.
   // More concretely, the implementation is as follows:
   // - take the previous block hash and convert it into an uint64,
@@ -76,16 +77,10 @@ service Msg {
   //   so on.
   rpc TakeFromBasket(MsgTakeFromBasket) returns (MsgTakeFromBasketResponse);
 
-  // PickFromBasket picks specific credits from a basket. If allow_picking is
-  // set to false, then only an address which deposited credits in the basket
-  // can pick those credits. All other addresses will be blocked from picking
-  // those credits. The credits will be auto-retired if retire_on_take is
-  // true unless the credits were previously put into the basket by the
-  // address picking them from the basket, in which case they will remain
-  // tradable. This functionality allows the owner of a credit to have more
-  // control over the credits they are putting in baskets then ordinary users
-  // to deal with the scenario where basket tokens end up being worth
-  // significantly less than the credits on their own.
+  // PickFromBasket picks specific credits from a basket. It will fail if
+  // allow_picking is false at the basket level. The credits will be
+  // auto-retired unless disable_auto_retire is set to true on both the Msg and
+  // basket level.
   rpc PickFromBasket(MsgPickFromBasket) returns (MsgPickFromBasketResponse);
 }
 
@@ -519,30 +514,24 @@ message MsgCreateBasket {
   // basket token of the form ecocredit:{curator}:{display_name}.
   string display_name = 3;
 
-  // exponent is the exponent that will be used for denom metadata. An exponent
-  // of 6 will mean that 10^6 units of a basket token should be displayed
-  // as one unit in user interfaces.
+  // exponent is the exponent that will be used for converting credits to basket
+  // units as well as for denom metadata. An exponent of 6 will mean that 10^6
+  // units of a basket token should be issued for every 1.0 credits. If there
+  // are any fractional amounts left over in this calculation when adding
+  // credits to a basket, those fractional amounts will not get added to the
+  // basket.
   uint32 exponent = 4;
 
-  // basket_criteria is the criteria by which credits can be added to the
-  // basket. Basket criteria will be applied in order and the first criteria
-  // which applies to a credit will determine its multiplier in the basket.
-  repeated BasketCriteria basket_criteria = 5;
+  Filter filter = 5;
 
-  bool disable_auto_retire = 6;
+  // credit_type_name is the type of credits this basket will allow. Baskets can
+  // only hold one type of credit (ex. carbon) and all filter criteria will be
+  // applied within this credit type.
+  string credit_type_name = 6;
 
-  bool allow_picking = 7;
-}
+  bool disable_auto_retire = 7;
 
-message BasketCriteria {
-  Filter filter = 1;
-
-  // multiplier is an integer number which is applied to credit units when
-  // converting to basket units. For example if the multiplier is 2000, then
-  // 1.1 credits will result in 2200 basket tokens. If there are any fractional
-  // amounts left over in this calculation when adding credits to a basket,
-  // those fractional amounts will not get added to the basket.
-  string multiplier = 2;
+  bool allow_picking = 8;
 }
 
 message MsgCreateBasketResponse {
@@ -573,9 +562,12 @@ message MsgTakeFromBasket {
 
   string amount = 3;
 
-  // retirement_location is the optional retirement location for the credits
-  // which will be used only if retire_on_take is true for this basket.
+  // retirement_location is the optional retirement location for the credits.
   string retirement_location = 4;
+
+  // disable_auto_retire allows credits to be taken without retiring them. It
+  // can only be used if disable_auto_retire is set on the basket level.
+  bool disable_auto_retire = 5;
 }
 
 message MsgTakeFromBasketResponse {
@@ -593,9 +585,12 @@ message MsgPickFromBasket {
   // credits are the units of credits being picked from the basket
   repeated BasketCredit credits = 3;
 
-  // retirement_location is the optional retirement location for the credits
-  // which will be used only if retire_on_take is true for this basket.
+  // retirement_location is the optional retirement location for the credits.
   string retirement_location = 4;
+
+  // disable_auto_retire allows credits to be taken without retiring them. It
+  // can only be used if disable_auto_retire is set on the basket level.
+  bool disable_auto_retire = 5;
 }
 
 message MsgPickFromBasketResponse {}

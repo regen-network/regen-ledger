@@ -230,23 +230,22 @@ message Filter {
     And and = 1;
     Or or = 2;
 
-    string credit_type_name = 3;
-    string class_id = 4;
+    string class_id = 3;
 
     // project_id filters against credits from this batch.
-    string project_id = 5;
+    string project_id = 4;
 
     // batch_id filters against credits from this batch.
-    string batch_denom = 6;
+    string batch_denom = 5;
 
     // class_admin filters against credits issued by this class admin.
-    string class_admin = 7;
+    string class_admin = 6;
 
     // issuer filters against credits issued by this issuer address.
-    string issuer = 8;
+    string issuer = 7;
 
     // owner filters against credits currently owned by this address.
-    string owner = 9;
+    string owner = 8;
 
     // project_location can be specified in three levels of granularity:
     // country, sub-national-code, or postal code. If just country is given,
@@ -254,12 +253,12 @@ message Filter {
     // their project location is more specific, ex. "US-NY 12345". If
     // a country, sub-national-code and postal code are all provided then
     // only projects in that postal code will match.
-    string project_location = 10;
+    string project_location = 9;
 
-    DateRange date_range = 11;
+    DateRange date_range = 10;
 
     // tag specifies a curation tag to match against.
-    string tag = 12;
+    string tag = 11;
   }
 
   message And {
