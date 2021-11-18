@@ -72,7 +72,7 @@ service Query {
     option (google.api.http).get =
         "/regen/ecocredit/v1alpha2/params";
   }
-  
+
   // SellOrder queries a sell order by its ID
   rpc SellOrder(QuerySellOrderRequest) returns (QuerySellOrderResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1alpha1/sell-orders/id/{sell_order_id}";
@@ -112,7 +112,6 @@ service Query {
   rpc AllowedAskDenoms(QueryAllowedAskDenomsRequest) returns (QueryAllowedAskDenomsResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1alpha1/ask-denoms";
   }
-
 
   // Basket queries one basket by denom.
   rpc Basket(QueryBasketRequest) returns (QueryBasketResponse) {
