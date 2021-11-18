@@ -272,7 +272,7 @@ message Filter {
     // project_id filters against credits from this project.
     string project_id = 5;
 
-    // batch_id filters against credits from this batch.
+    // batch_denom filters against credits from this batch.
     string batch_denom = 6;
 
     // class_admin filters against credits issued by this class admin.
