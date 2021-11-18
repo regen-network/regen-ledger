@@ -77,8 +77,8 @@ service Msg {
   //   so on.
   rpc TakeFromBasket(MsgTakeFromBasket) returns (MsgTakeFromBasketResponse);
 
-  // PickFromBasket picks specific credits from a basket. It will fail if
-  // allow_picking is false at the basket level. The credits will be
+  // PickFromBasket picks specific credits from a basket for a fee. It will fail
+  // if allow_picking is false at the basket level. The credits will be
   // auto-retired unless disable_auto_retire is set to true on both the Msg and
   // basket level.
   rpc PickFromBasket(MsgPickFromBasket) returns (MsgPickFromBasketResponse);
@@ -591,6 +591,10 @@ message MsgPickFromBasket {
   // disable_auto_retire allows credits to be taken without retiring them. It
   // can only be used if disable_auto_retire is set on the basket level.
   bool disable_auto_retire = 5;
+
+  // fee is the fee that the user will pay for picking credits. It must be equal
+  // to or greater than the network enforced fee for this operation.
+  cosmos.base.v1beta1.Coin fee = 6;
 }
 
 message MsgPickFromBasketResponse {}
