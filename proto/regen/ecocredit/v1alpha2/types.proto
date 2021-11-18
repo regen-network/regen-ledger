@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package regen.ecocredit.v1alpha1;
+package regen.ecocredit.v1alpha2;
 
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
@@ -30,17 +30,34 @@ message ClassInfo {
   uint64 num_batches = 6;
 }
 
+// ProjectInfo represents the high-level on-chain information for a project.
+message ProjectInfo {
+
+  // project_id is the unique ID of the project.
+  string project_id = 1;
+
+  // class_id is the unique ID of credit class for this project.
+  string class_id = 2;
+
+  // issuer is the issuer of the credit batches for this project.
+  string issuer = 3;
+
+  // project_location is the location of the project.
+  // Full documentation can be found in MsgCreateProject.project_location.
+  string project_location = 4;
+
+  // metadata is any arbitrary metadata attached to the project.
+  bytes metadata = 5;
+}
+
 // BatchInfo represents the high-level on-chain information for a credit batch.
 message BatchInfo {
 
-  // class_id is the unique ID of credit class.
-  string class_id = 1;
+  // project_id is the unique ID of the project this batch belongs to.
+  string project_id = 1;
 
   // batch_denom is the unique ID of credit batch.
   string batch_denom = 2;
-
-  // issuer is the issuer of the credit batch.
-  string issuer = 3;
 
   // total_amount is the total number of active credits in the credit batch.
   // Some of the issued credits may be cancelled and will be removed from
@@ -65,10 +82,6 @@ message BatchInfo {
   // end_date is the end of the period during which this credit batch was
   // quantified and verified.
   google.protobuf.Timestamp end_date = 8 [ (gogoproto.stdtime) = true ];
-
-  // project_location is the location of the project backing the credits in this
-  // batch. Full documentation can be found in MsgCreateBatch.project_location.
-  string project_location = 9;
 }
 
 // Params defines the updatable global parameters of the ecocredit module for

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package regen.ecocredit.v1alpha1;
+package regen.ecocredit.v1alpha2;
 
 import "cosmos/base/v1beta1/coin.proto";
 
@@ -14,6 +14,23 @@ message EventCreateClass {
 
   // admin is the admin of the credit class.
   string admin = 2;
+}
+
+// EventCreateProject is an event emitted when a project is created.
+message EventCreateProject {
+
+  // project_id is the unique ID of the project.
+  string project_id = 1;
+
+  // class_id is the unique ID of credit class for this project.
+  string class_id = 2;
+
+  // issuer is the issuer of the credit batches for this project.
+  string issuer = 3;
+
+  // project_location is the location of the project.
+  // Full documentation can be found in MsgCreateProject.project_location.
+  string project_location = 4;
 }
 
 // EventCreateBatch is an event emitted when a credit batch is created.
@@ -39,9 +56,12 @@ message EventCreateBatch {
   // quantified and verified.
   string end_date = 6;
 
-  // project_location is the location of the project backing the credits in this
-  // batch. Full documentation can be found in MsgCreateBatch.project_location.
+  // project_location is the location of the project.
+  // Full documentation can be found in MsgCreateProject.project_location.
   string project_location = 7;
+
+  // project_id is the unique ID of the project this batch belongs to.
+  string project_id = 8;
 }
 
 // EventReceive is an event emitted when credits are received either upon
