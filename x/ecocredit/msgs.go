@@ -9,10 +9,11 @@ import (
 )
 
 var (
-	_, _, _, _, _, _, _, _, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
+	_, _, _, _, _, _, _, _, _, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
 		&MsgRetire{}, &MsgCancel{}, &MsgUpdateClassAdmin{}, &MsgUpdateClassIssuers{}, &MsgUpdateClassMetadata{},
 		&MsgSell{}, &MsgUpdateSellOrders{}, &MsgBuy{}, &MsgAllowAskDenom{}, &MsgCreateProject{}
-	_, _, _, _, _, _, _, _, _, _, _, _ legacytx.LegacyMsg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
+
+	_, _, _, _, _, _, _, _, _, _, _, _, _ legacytx.LegacyMsg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
 		&MsgRetire{}, &MsgCancel{}, &MsgUpdateClassAdmin{}, &MsgUpdateClassIssuers{}, &MsgUpdateClassMetadata{},
 		&MsgSell{}, &MsgUpdateSellOrders{}, &MsgBuy{}, &MsgAllowAskDenom{}, &MsgCreateProject{}
 )
@@ -99,11 +100,7 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf("the batch end date (%s) must be the same as or after the batch start date (%s)", m.EndDate.Format("2006-01-02"), m.StartDate.Format("2006-01-02"))
 	}
 
-	if err := ValidateClassID(m.ClassId); err != nil {
-		return err
-	}
-
-	if err := validateLocation(m.ProjectLocation); err != nil {
+	if err := validateProjectID(m.ProjectId); err != nil {
 		return err
 	}
 
