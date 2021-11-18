@@ -87,6 +87,9 @@ func MsgSignDataCmd() *cobra.Command {
 
 			signer := clientCtx.GetFromAddress()
 			content, err := data.ParseIRI(iri)
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrapf("invalid iri: ", err.Error())
+			}
 			graph := content.GetGraph()
 			if graph == nil {
 				return sdkerrors.ErrInvalidRequest.Wrap("can only sign graph data types")
