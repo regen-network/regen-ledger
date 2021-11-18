@@ -211,6 +211,10 @@ func (s serverImpl) getSellOrder(ctx types.Context, orderID uint64) (*ecocredit.
 
 // SellOrders queries for all sell orders with pagination.
 func (s serverImpl) SellOrders(goCtx context.Context, request *ecocredit.QuerySellOrdersRequest) (*ecocredit.QuerySellOrdersResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
 	ctx := types.UnwrapSDKContext(goCtx)
 	ordersIter, err := s.sellOrderTable.PrefixScan(ctx, 1, math.MaxUint64)
 	if err != nil {
@@ -265,6 +269,10 @@ func (s serverImpl) SellOrdersByBatchDenom(goCtx context.Context, request *ecocr
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
+	if err := ecocredit.ValidateDenom(request.BatchDenom); err != nil {
+		return nil, err
+	}
+
 	ctx := types.UnwrapSDKContext(goCtx)
 	ordersIter, err := s.sellOrderByBatchDenomIndex.GetPaginated(ctx, request.BatchDenom, request.Pagination)
 	if err != nil {
@@ -306,6 +314,10 @@ func (s serverImpl) getBuyOrder(ctx types.Context, orderID uint64) (*ecocredit.B
 
 // BuyOrders queries for all buy orders with pagination.
 func (s serverImpl) BuyOrders(goCtx context.Context, request *ecocredit.QueryBuyOrdersRequest) (*ecocredit.QueryBuyOrdersResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
 	ctx := types.UnwrapSDKContext(goCtx)
 	ordersIter, err := s.buyOrderTable.PrefixScan(ctx, 1, math.MaxUint64)
 	if err != nil {

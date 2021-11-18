@@ -20,17 +20,17 @@ const (
 	BatchInfoTablePrefix     byte = 0x6
 
 	// sell order table
-	SellOrderTablePrefix				byte = 0x10
-	SellOrderTableSeqPrefix				byte = 0x11
-	SellOrderByAddressIndexPrefix		byte = 0x12
-	SellOrderByBatchDenomIndexPrefix	byte = 0x13
+	SellOrderTablePrefix             byte = 0x10
+	SellOrderTableSeqPrefix          byte = 0x11
+	SellOrderByAddressIndexPrefix    byte = 0x12
+	SellOrderByBatchDenomIndexPrefix byte = 0x13
 
 	// buy order table
-	BuyOrderTablePrefix				byte = 0x20
-	BuyOrderTableSeqPrefix			byte = 0x21
-	BuyOrderByAddressIndexPrefix	byte = 0x22
+	BuyOrderTablePrefix          byte = 0x20
+	BuyOrderTableSeqPrefix       byte = 0x21
+	BuyOrderByAddressIndexPrefix byte = 0x22
 
-	AskDenomTablePrefix      byte = 0x30
+	AskDenomTablePrefix byte = 0x30
 )
 
 type serverImpl struct {
