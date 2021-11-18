@@ -48,6 +48,9 @@ func MsgAnchorDataCmd() *cobra.Command {
 
 			signer := clientCtx.GetFromAddress()
 			content, err := data.ParseIRI(iri)
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrapf("invalid iri: %s", err.Error())
+			}
 
 			msg := data.MsgAnchorData{
 				Sender: signer.String(),
@@ -68,7 +71,7 @@ func MsgSignDataCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "sign [iri]",
 		Short:   `Sign a piece of on-chain data.`,
-		Long:    `Sign a piece of on-chain data, attesting to its validity. The data MUST be of rdf type.`,
+		Long:    `Sign a piece of on-chain data, attesting to its validity. The data MUST be of graph type (rdf file extension).`,
 		Example: "sign regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

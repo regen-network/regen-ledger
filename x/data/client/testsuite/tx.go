@@ -92,7 +92,7 @@ func (s *IntegrationTestSuite) TestTxAnchorData() {
 			name:   "bad iri",
 			iri:    "foo",
 			expErr: true,
-			errMsg: "hash cannot be empty",
+			errMsg: "invalid iri",
 		},
 	}
 
