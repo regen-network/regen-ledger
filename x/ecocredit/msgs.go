@@ -11,10 +11,10 @@ import (
 var (
 	_, _, _, _, _, _, _, _, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
 		&MsgRetire{}, &MsgCancel{}, &MsgUpdateClassAdmin{}, &MsgUpdateClassIssuers{}, &MsgUpdateClassMetadata{},
-		&MsgSell{}, &MsgUpdateSellOrders{}, &MsgBuy{}, &MsgAllowAskDenom{}
+		&MsgSell{}, &MsgUpdateSellOrders{}, &MsgBuy{}, &MsgAllowAskDenom{}, &MsgCreateProject{}
 	_, _, _, _, _, _, _, _, _, _, _, _ legacytx.LegacyMsg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
 		&MsgRetire{}, &MsgCancel{}, &MsgUpdateClassAdmin{}, &MsgUpdateClassIssuers{}, &MsgUpdateClassMetadata{},
-		&MsgSell{}, &MsgUpdateSellOrders{}, &MsgBuy{}, &MsgAllowAskDenom{}
+		&MsgSell{}, &MsgUpdateSellOrders{}, &MsgBuy{}, &MsgAllowAskDenom{}, &MsgCreateProject{}
 )
 
 // MaxMetadataLength defines the max length of the metadata bytes field
@@ -547,5 +547,50 @@ func (m *MsgAllowAskDenom) ValidateBasic() error {
 // GetSigners returns the expected signers for MsgAllowAskDenom.
 func (m *MsgAllowAskDenom) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.RootAddress)
+	return []sdk.AccAddress{addr}
+}
+
+// Route implements the LegacyMsg interface.
+func (m MsgCreateProject) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type implements the LegacyMsg interface.
+func (m MsgCreateProject) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes implements the LegacyMsg interface.
+func (m MsgCreateProject) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+// ValidateBasic does a sanity check on the provided data.
+func (m *MsgCreateProject) ValidateBasic() error {
+
+	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+
+	if err := ValidateClassID(m.ClassId); err != nil {
+		return err
+	}
+
+	if len(m.Metadata) > MaxMetadataLength {
+		return ErrMaxLimit.Wrap("create project metadata")
+	}
+
+	if err := validateLocation(m.ProjectLocation); err != nil {
+		return err
+	}
+
+	if m.ProjectId != "" {
+		if err := validateProjectID(m.ProjectId); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// GetSigners returns the expected signers for MsgCreateProject.
+func (m *MsgCreateProject) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Issuer)
 	return []sdk.AccAddress{addr}
 }
