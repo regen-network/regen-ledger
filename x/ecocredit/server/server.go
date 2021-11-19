@@ -23,6 +23,7 @@ const (
 	BuyOrderTablePrefix      byte = 0x9
 	BuyOrderTableSeqPrefix   byte = 0x10
 	AskDenomTablePrefix      byte = 0x11
+	ProjectInfoTablePrefix   byte = 0x12
 )
 
 type serverImpl struct {
@@ -35,11 +36,12 @@ type serverImpl struct {
 	// Store sequence numbers per credit type
 	creditTypeSeqTable orm.PrimaryKeyTable
 
-	classInfoTable orm.PrimaryKeyTable
-	batchInfoTable orm.PrimaryKeyTable
-	sellOrderTable orm.AutoUInt64Table
-	buyOrderTable orm.AutoUInt64Table
-	askDenomTable orm.PrimaryKeyTable
+	classInfoTable   orm.PrimaryKeyTable
+	batchInfoTable   orm.PrimaryKeyTable
+	sellOrderTable   orm.AutoUInt64Table
+	buyOrderTable    orm.AutoUInt64Table
+	askDenomTable    orm.PrimaryKeyTable
+	projectInfoTable orm.PrimaryKeyTable
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
@@ -86,6 +88,12 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		panic(err.Error())
 	}
 	s.askDenomTable = askDenomTableBuilder.Build()
+
+	projectInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ProjectInfoTablePrefix, storeKey, &ecocredit.ProjectInfo{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.projectInfoTable = projectInfoTableBuilder.Build()
 
 	return s
 }

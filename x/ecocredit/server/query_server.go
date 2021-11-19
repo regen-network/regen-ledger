@@ -59,19 +59,36 @@ func (s serverImpl) getClassInfo(ctx types.Context, classID string) (*ecocredit.
 	return &classInfo, err
 }
 
+func (s serverImpl) getClassInfoByProjectID(ctx types.Context, projectID string) (*ecocredit.ClassInfo, error) {
+	projectInfo, err := s.getProjectInfo(ctx, projectID)
+	if err != nil {
+		return nil, err
+	}
+
+	var classInfo ecocredit.ClassInfo
+	err = s.classInfoTable.GetOne(ctx, orm.RowID(projectInfo.ClassId), &classInfo)
+	return &classInfo, err
+}
+
+func (s serverImpl) getProjectInfo(ctx types.Context, projectID string) (*ecocredit.ProjectInfo, error) {
+	var projectInfo ecocredit.ProjectInfo
+	err := s.projectInfoTable.GetOne(ctx, orm.RowID(projectID), &projectInfo)
+	return &projectInfo, err
+}
+
 // Batches queries for all batches in the given credit class.
 func (s serverImpl) Batches(goCtx context.Context, request *ecocredit.QueryBatchesRequest) (*ecocredit.QueryBatchesResponse, error) {
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
-	if err := ecocredit.ValidateClassID(request.ClassId); err != nil {
+	if err := ecocredit.ValidateProjectID(request.ProjectId); err != nil {
 		return nil, err
 	}
 
-	// Only read IDs that have a prefix match with the ClassID
+	// Only read IDs that have a prefix match with the ProjectID
 	ctx := types.UnwrapSDKContext(goCtx)
-	start, end := orm.PrefixRange([]byte(request.ClassId))
+	start, end := orm.PrefixRange([]byte(request.ProjectId))
 	batchesIter, err := s.batchInfoTable.PrefixScan(ctx, start, end)
 	if err != nil {
 		return nil, err
@@ -87,6 +104,48 @@ func (s serverImpl) Batches(goCtx context.Context, request *ecocredit.QueryBatch
 		Batches:    batches,
 		Pagination: pageResp,
 	}, nil
+}
+
+// Projects queries projects of a given credit batch.
+func (s serverImpl) Projects(goCtx context.Context, request *ecocredit.QueryProjectsRequest) (*ecocredit.QueryProjectsResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := types.UnwrapSDKContext(goCtx)
+	projectsIter, err := s.projectInfoTable.PrefixScan(ctx, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var projects []*ecocredit.ProjectInfo
+	pageResp, err := orm.Paginate(projectsIter, request.Pagination, &projects)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.QueryProjectsResponse{
+		Projects:   projects,
+		Pagination: pageResp,
+	}, nil
+}
+
+func (s serverImpl) ProjectInfo(goCtx context.Context, request *ecocredit.QueryProjectInfoRequest) (*ecocredit.QueryProjectInfoResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
+	if err := ecocredit.ValidateProjectID(request.ProjectId); err != nil {
+		return nil, err
+	}
+
+	var projectInfo ecocredit.ProjectInfo
+	ctx := types.UnwrapSDKContext(goCtx)
+	err := s.projectInfoTable.GetOne(ctx, orm.RowID(request.ProjectId), &projectInfo)
+
+	return &ecocredit.QueryProjectInfoResponse{
+		Info: &projectInfo,
+	}, err
 }
 
 // BatchInfo queries for information on a credit batch.
@@ -191,4 +250,44 @@ func (s serverImpl) getSellOrder(ctx types.Context, orderID uint64) (*ecocredit.
 	var sellOrder ecocredit.SellOrder
 	_, err := s.sellOrderTable.GetOne(ctx, orderID, &sellOrder)
 	return &sellOrder, err
+}
+
+func (s serverImpl) AllowedAskDenoms(goCtx context.Context, req *ecocredit.QueryAllowedAskDenomsRequest) (*ecocredit.QueryAllowedAskDenomsResponse, error) {
+	// TODO: implement AllowedAskDenoms
+	return nil, nil
+}
+
+func (s serverImpl) BuyOrders(goCtx context.Context, req *ecocredit.QueryBuyOrdersRequest) (*ecocredit.QueryBuyOrdersResponse, error) {
+	// TODO: implement BuyOrders
+	return nil, nil
+}
+
+func (s serverImpl) BuyOrder(goCtx context.Context, req *ecocredit.QueryBuyOrderRequest) (*ecocredit.QueryBuyOrderResponse, error) {
+	// TODO: implement BuyOrder
+	return nil, nil
+}
+
+func (s serverImpl) BuyOrdersByAddress(goCtx context.Context, req *ecocredit.QueryBuyOrdersByAddressRequest) (*ecocredit.QueryBuyOrdersByAddressResponse, error) {
+	// TODO: implement BuyOrdersByAddress
+	return nil, nil
+}
+
+func (s serverImpl) SellOrders(goCtx context.Context, req *ecocredit.QuerySellOrdersRequest) (*ecocredit.QuerySellOrdersResponse, error) {
+	// TODO: implement SellOrders
+	return nil, nil
+}
+
+func (s serverImpl) SellOrder(goCtx context.Context, req *ecocredit.QuerySellOrderRequest) (*ecocredit.QuerySellOrderResponse, error) {
+	// TODO: implement SellOrder
+	return nil, nil
+}
+
+func (s serverImpl) SellOrdersByAddress(goCtx context.Context, req *ecocredit.QuerySellOrdersByAddressRequest) (*ecocredit.QuerySellOrdersByAddressResponse, error) {
+	// TODO: implement SellOrdersByAddress
+	return nil, nil
+}
+
+func (s serverImpl) SellOrdersByBatchDenom(goCtx context.Context, req *ecocredit.QuerySellOrdersByBatchDenomRequest) (*ecocredit.QuerySellOrdersByBatchDenomResponse, error) {
+	// TODO: implement SellOrdersByBatchDenom
+	return nil, nil
 }
