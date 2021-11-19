@@ -1,4 +1,4 @@
-package v2
+package key
 
 import (
 	"bytes"
@@ -8,14 +8,14 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-type keyCodec struct {
-	numParts     int
-	partEncoders []keyPartEncoder
-	partDecoders []keyPartDecoder
-	pkDecoder    func(r *bytes.Reader) ([]protoreflect.Value, error)
+type Codec struct {
+	NumParts     int
+	PartEncoders []keyPartEncoder
+	PartDecoders []keyPartDecoder
+	PKDecoder    func(r *bytes.Reader) ([]protoreflect.Value, error)
 }
 
-func makeKeyCodec(fieldDescs []protoreflect.FieldDescriptor, isPrimaryKey bool) (*keyCodec, error) {
+func MakeCodec(fieldDescs []protoreflect.FieldDescriptor, isPrimaryKey bool) (*Codec, error) {
 	n := len(fieldDescs)
 	var encoders []keyPartEncoder
 	var decoders []keyPartDecoder
@@ -42,16 +42,16 @@ func makeKeyCodec(fieldDescs []protoreflect.FieldDescriptor, isPrimaryKey bool) 
 		decoders = append(decoders, dec)
 	}
 
-	return &keyCodec{
-		partEncoders: encoders,
-		partDecoders: decoders,
-		numParts:     n,
+	return &Codec{
+		PartEncoders: encoders,
+		PartDecoders: decoders,
+		NumParts:     n,
 	}, nil
 }
 
-func (cdc *keyCodec) encode(values []protoreflect.Value, w io.Writer, partial bool) error {
-	for i := 0; i < cdc.numParts; i++ {
-		err := cdc.partEncoders[i](values[i], w, partial)
+func (cdc *Codec) Encode(values []protoreflect.Value, w io.Writer, partial bool) error {
+	for i := 0; i < cdc.NumParts; i++ {
+		err := cdc.PartEncoders[i](values[i], w, partial)
 		if err != nil {
 			return err
 		}
@@ -59,13 +59,13 @@ func (cdc *keyCodec) encode(values []protoreflect.Value, w io.Writer, partial bo
 	return nil
 }
 
-func (cdc *keyCodec) decode(r *bytes.Reader) ([]protoreflect.Value, error) {
-	values := make([]protoreflect.Value, cdc.numParts)
-	for i := 0; i < cdc.numParts; i++ {
-		value, err := cdc.partDecoders[i](r)
+func (cdc *Codec) Decode(r *bytes.Reader) ([]protoreflect.Value, error) {
+	values := make([]protoreflect.Value, cdc.NumParts)
+	for i := 0; i < cdc.NumParts; i++ {
+		value, err := cdc.PartDecoders[i](r)
 		values = append(values, value)
 		if err == io.EOF {
-			if i == cdc.numParts-1 {
+			if i == cdc.NumParts-1 {
 				return values, nil
 			} else {
 				return nil, io.ErrUnexpectedEOF

@@ -1,4 +1,4 @@
-package v2
+package key
 
 import (
 	"encoding/binary"
