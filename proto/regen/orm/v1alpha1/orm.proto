@@ -4,9 +4,11 @@ package regen.orm.v1alpha1;
 
 import "google/protobuf/descriptor.proto";
 
+option go_package = "github.com/regen-network/regen-ledger/orm/v2";
+
 extend google.protobuf.MessageOptions {
   TableDescriptor table = 100000000;
-  bool singleton = 100000001;
+  SingletonDescriptor singleton = 100000001;
 }
 
 message TableDescriptor {
@@ -37,4 +39,11 @@ message SecondaryIndexDescriptor {
   // id is an integer ID for the index within the indexes for this table.
   // It will be deprecated in the future when this can be auto-generated.
   uint32 id = 2;
+}
+
+message SingletonDescriptor {
+  // id is an integer ID for the singleton that must be unique within the kv-store
+  // used for this ORM instance. It will be deprecated in the future when this
+  // can be auto-generated.
+  uint32 id = 1;
 }
