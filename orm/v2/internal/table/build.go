@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
-	"strings"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
@@ -24,7 +23,7 @@ func BuildStore(nsPrefix []byte, tableDesc *types.TableDescriptor, desc protoref
 		return nil, fmt.Errorf("0 is not a valid id for table %s", desc.FullName())
 	}
 
-	pkFields := getFieldDescriptors(desc, tableDesc.PrimaryKey.Fields)
+	pkFields := key.GetFieldDescriptors(desc, tableDesc.PrimaryKey.Fields)
 	var seqPrefix []byte
 	if tableDesc.PrimaryKey.AutoIncrement {
 		if len(pkFields) != 1 && pkFields[0].Kind() != protoreflect.Uint64Kind {
@@ -73,7 +72,7 @@ func BuildStore(nsPrefix []byte, tableDesc *types.TableDescriptor, desc protoref
 
 		idxIds[id] = true
 
-		idxFields := getFieldDescriptors(desc, idxDesc.Fields)
+		idxFields := key.GetFieldDescriptors(desc, idxDesc.Fields)
 		cdc, err := key.MakeIndexKeyCodec(idxFields, pkFields)
 		if err != nil {
 			return nil, err
@@ -92,14 +91,4 @@ func BuildStore(nsPrefix []byte, tableDesc *types.TableDescriptor, desc protoref
 	}
 
 	return st, nil
-}
-
-func getFieldDescriptors(desc protoreflect.MessageDescriptor, fields string) []protoreflect.FieldDescriptor {
-	fieldNames := strings.Split(fields, ",")
-	var fieldDescs []protoreflect.FieldDescriptor
-	for _, fname := range fieldNames {
-		fieldDesc := desc.Fields().ByName(protoreflect.Name(strings.TrimSpace(fname)))
-		fieldDescs = append(fieldDescs, fieldDesc)
-	}
-	return fieldDescs
 }

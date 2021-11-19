@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "regen/orm/v1alpha1/orm.proto";
+
+
+option go_package = "github.com/regen-network/regen-ledger/orm/v2/internal/testpb";
+
+enum Enumeration {
+  One = 0;
+  Two = 1;
+}
+
+message A {
+  option (regen.orm.v1alpha1.table) = {
+    id: 1;
+    primary_key: {
+      fields: "UINT32,BYTES,STRING"
+    }
+    index:{
+      id: 1;
+      fields:"BYTES,STRING"
+    }
+    index:{
+      id: 2;
+      fields:"STRING,BYTES"
+    }
+  };
+
+  Enumeration enum = 1;
+  bool some_boolean = 2;
+  int32 INT32 = 3;
+  sint32 SINT32 = 4;
+  uint32 UINT32 = 5;
+  int64 INT64 = 6;
+  sint64 SING64 = 7;
+  uint64 UINT64 = 8;
+  sfixed32 SFIXED32 = 9;
+  fixed32 FIXED32 = 10;
+  float FLOAT = 11;
+  sfixed64 SFIXED64 = 12;
+  fixed64 FIXED64 = 13;
+  double DOUBLE = 14;
+  string STRING = 15;
+  bytes BYTES = 16;
+  B MESSAGE = 17;
+  map<string, B> MAP = 18;
+  repeated B LIST = 19;
+  oneof ONEOF {
+    B ONEOF_B = 20;
+    string ONEOF_STRING = 21;
+  };
+  repeated Enumeration LIST_ENUM = 22;
+  google.protobuf.Timestamp timestamp = 23;
+  google.protobuf.Duration duration = 24;
+}
+
+message B {
+  option (regen.orm.v1alpha1.singleton) = {id: 2};
+  string x = 1;
+}
+
+message C {
+  option (regen.orm.v1alpha1.table) = {
+    id: 3
+    primary_key:{
+      fields:"id"
+      auto_increment: true
+    }
+  };
+
+  uint64 id = 1;
+  string x = 2;
+}

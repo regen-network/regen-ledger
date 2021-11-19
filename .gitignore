@@ -198,3 +198,6 @@ dist/
 
 # Data - ideally these don't exist
 .testnets
+
+# pgregory.net/rapid generative testing results
+*.fail

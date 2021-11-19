@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"strings"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
@@ -75,4 +76,18 @@ func (cdc *Codec) Decode(r *bytes.Reader) ([]protoreflect.Value, error) {
 		}
 	}
 	return values, nil
+}
+
+func GetFieldDescriptors(desc protoreflect.MessageDescriptor, fields string) []protoreflect.FieldDescriptor {
+	fieldNames := strings.Split(fields, ",")
+	var fieldDescs []protoreflect.FieldDescriptor
+	for _, fname := range fieldNames {
+		fieldDesc := GetFieldDescriptor(desc, fname)
+		fieldDescs = append(fieldDescs, fieldDesc)
+	}
+	return fieldDescs
+}
+
+func GetFieldDescriptor(desc protoreflect.MessageDescriptor, fname string) protoreflect.FieldDescriptor {
+	return desc.Fields().ByName(protoreflect.Name(fname))
 }
