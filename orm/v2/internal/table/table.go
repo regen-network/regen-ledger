@@ -2,6 +2,7 @@ package table
 
 import (
 	"bytes"
+	"encoding/binary"
 	"fmt"
 
 	"google.golang.org/protobuf/proto"
@@ -19,6 +20,7 @@ type Store struct {
 	PkCodec             *key.Codec
 	Indexers            []*Indexer
 	IndexerMap          map[string]*Indexer
+	SeqPrefix           []byte
 }
 
 func (s Store) isStore() {}
@@ -112,13 +114,46 @@ func (s Store) Delete(kv store.KVStore, message proto.Message) error {
 	return nil
 }
 
+func (s Store) nextSeqValue(kv store.KVStore) (uint64, error) {
+	bz := kv.Get(s.SeqPrefix)
+	seq := uint64(1)
+	if bz != nil {
+		x, err := binary.ReadUvarint(bytes.NewReader(bz))
+		if err != nil {
+			return 0, err
+		}
+		seq = x + 1
+	}
+	bz = make([]byte, binary.MaxVarintLen64)
+	n := binary.PutUvarint(bz, seq)
+	kv.Set(s.SeqPrefix, bz[:n])
+	return seq, nil
+}
+
 func (s Store) save(kv store.KVStore, message proto.Message, create bool) (bool, error) {
+	refm := message.ProtoReflect()
+
+	// handle auto-incrementing primary keys
+	if create && s.SeqPrefix != nil {
+		id := refm.Get(s.PkFields[0]).Uint()
+		if id != 0 {
+			return false, fmt.Errorf("trying generate an auto-incremented primary key, but the key is already set")
+		}
+
+		var err error
+		id, err = s.nextSeqValue(kv)
+		if err != nil {
+			return false, err
+		}
+
+		refm.Set(s.PkFields[0], protoreflect.ValueOfUint64(id))
+	}
+
 	pkValues, pk, err := s.primaryKey(message)
 	if err != nil {
 		return false, err
 	}
 
-	refm := message.ProtoReflect()
 	bz := kv.Get(pk)
 	var existing proto.Message
 	if bz != nil {

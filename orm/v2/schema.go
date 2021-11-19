@@ -120,7 +120,7 @@ func FileDescriptor(prefix uint32, descriptor protoreflect.FileDescriptor) Schem
 
 		schema.fileDescs[prefix] = descriptor
 
-		prefix := key.MakePrefix(nil, prefix)
+		prefix := key.MakeUint32Prefix(nil, prefix)
 
 		msgs := descriptor.Messages()
 		n := msgs.Len()

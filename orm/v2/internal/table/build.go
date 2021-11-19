@@ -1,6 +1,7 @@
 package table
 
 import (
+	"bytes"
 	"encoding/binary"
 	"fmt"
 	"strings"
@@ -11,6 +12,12 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
+const (
+	SchemaSpacePrefix   byte = 0
+	SequenceSpacePrefix      = 2
+	PrimaryKeyPrefix         = 0
+)
+
 func BuildStore(nsPrefix []byte, tableDesc *types.TableDescriptor, desc protoreflect.MessageDescriptor) (store.Store, error) {
 	tableId := tableDesc.Id
 	if tableId == 0 {
@@ -18,6 +25,19 @@ func BuildStore(nsPrefix []byte, tableDesc *types.TableDescriptor, desc protoref
 	}
 
 	pkFields := getFieldDescriptors(desc, tableDesc.PrimaryKey.Fields)
+	var seqPrefix []byte
+	if tableDesc.PrimaryKey.AutoIncrement {
+		if len(pkFields) != 1 && pkFields[0].Kind() != protoreflect.Uint64Kind {
+			return nil, fmt.Errorf("only a single uint64 field is supported for primary keys, got %s", pkFields)
+		}
+
+		buf := &bytes.Buffer{}
+		buf.Write(nsPrefix)
+		buf.WriteByte(SchemaSpacePrefix)
+		buf.WriteByte(SequenceSpacePrefix)
+		seqPrefix = key.MakeUint32Prefix(buf.Bytes(), tableId)
+	}
+
 	pkCodec, err := key.MakeCodec(pkFields, true)
 	if err != nil {
 		return nil, err
@@ -25,10 +45,10 @@ func BuildStore(nsPrefix []byte, tableDesc *types.TableDescriptor, desc protoref
 
 	numPrimaryKeyFields := len(pkFields)
 
-	prefix := key.MakePrefix(nsPrefix, tableDesc.Id)
+	prefix := key.MakeUint32Prefix(nsPrefix, tableDesc.Id)
 	pkPrefix := make([]byte, len(prefix))
 	copy(pkPrefix, prefix)
-	pkPrefix = append(pkPrefix, 0) // primary key table always prefixed with 0
+	pkPrefix = append(pkPrefix, PrimaryKeyPrefix) // primary key table always prefixed with 0
 
 	st := &Store{
 		NumPrimaryKeyFields: numPrimaryKeyFields,
@@ -37,6 +57,7 @@ func BuildStore(nsPrefix []byte, tableDesc *types.TableDescriptor, desc protoref
 		PkFields:            pkFields,
 		PkCodec:             pkCodec,
 		IndexerMap:          map[string]*Indexer{},
+		SeqPrefix:           seqPrefix,
 	}
 
 	idxIds := map[uint32]bool{}

@@ -10,7 +10,7 @@ import (
 )
 
 func BuildStore(nsPrefix []byte, descriptor *types.SingletonDescriptor) (store.Store, error) {
-	prefix := key.MakePrefix(nsPrefix, descriptor.Id)
+	prefix := key.MakeUint32Prefix(nsPrefix, descriptor.Id)
 	s := &Store{prefix: prefix}
 	return s, nil
 }
