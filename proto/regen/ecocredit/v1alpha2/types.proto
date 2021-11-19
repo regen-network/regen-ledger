@@ -266,7 +266,7 @@ message Filter {
     // credit_type_name filters against credits from this credit type name.
     string credit_type_name = 3;
 
-    // credit_type_name filters against credits from this credit class id.
+    // class_id filters against credits from this credit class id.
     string class_id = 4;
 
     // project_id filters against credits from this project.
