@@ -35,7 +35,7 @@ func TestProjectID(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			if err := validateProjectID(tc.projectID); tc.expectErr {
+			if err := ValidateProjectID(tc.projectID); tc.expectErr {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)

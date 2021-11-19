@@ -100,7 +100,7 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf("the batch end date (%s) must be the same as or after the batch start date (%s)", m.EndDate.Format("2006-01-02"), m.StartDate.Format("2006-01-02"))
 	}
 
-	if err := validateProjectID(m.ProjectId); err != nil {
+	if err := ValidateProjectID(m.ProjectId); err != nil {
 		return err
 	}
 
@@ -578,7 +578,7 @@ func (m *MsgCreateProject) ValidateBasic() error {
 	}
 
 	if m.ProjectId != "" {
-		if err := validateProjectID(m.ProjectId); err != nil {
+		if err := ValidateProjectID(m.ProjectId); err != nil {
 			return err
 		}
 	}
