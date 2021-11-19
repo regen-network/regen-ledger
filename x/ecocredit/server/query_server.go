@@ -113,7 +113,9 @@ func (s serverImpl) Projects(goCtx context.Context, request *ecocredit.QueryProj
 	}
 
 	ctx := types.UnwrapSDKContext(goCtx)
-	projectsIter, err := s.projectInfoTable.PrefixScan(ctx, nil, nil)
+	// Only read IDs that have a prefix match with the ClassID
+	start, end := orm.PrefixRange([]byte(request.ClassId))
+	projectsIter, err := s.projectInfoTable.PrefixScan(ctx, start, end)
 	if err != nil {
 		return nil, err
 	}
