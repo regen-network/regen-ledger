@@ -12,6 +12,7 @@ type Store interface {
 	Save(kv KVStore, message proto.Message, mode SaveMode) error
 	Delete(kv KVStore, message proto.Message) error
 	List(kv KVStore, options *list.Options) list.Iterator
+	Decode(k []byte, v []byte) (proto.Message, error)
 }
 
 type SaveMode int

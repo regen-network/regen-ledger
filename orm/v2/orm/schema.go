@@ -1,6 +1,8 @@
 package orm
 
 import (
+	"bytes"
+	"encoding/binary"
 	"fmt"
 
 	"google.golang.org/protobuf/proto"
@@ -55,7 +57,7 @@ func (s Schema) buildStore(nsPrefix []byte, fdId uint32, desc protoreflect.Messa
 
 	} else if singDesc != nil {
 		id = singDesc.Id
-		st, err = singleton.BuildStore(nsPrefix, singDesc)
+		st, err = singleton.BuildStore(nsPrefix, singDesc, desc)
 		if err != nil {
 			return err
 		}
@@ -136,4 +138,35 @@ func Prefix(prefix []byte) SchemaOption {
 		schema.prefix = prefix
 		return nil
 	})
+}
+
+func (s Schema) Decode(k, v []byte) (proto.Message, error) {
+	r := bytes.NewReader(k)
+	// we assume the prefix has been checked by the caller for performance
+	err := key.SkipPrefix(r, s.prefix)
+	if err != nil {
+		return nil, err
+	}
+
+	fdId, err := binary.ReadUvarint(r)
+	if err != nil {
+		return nil, err
+	}
+
+	tableId, err := binary.ReadUvarint(r)
+	if err != nil {
+		return nil, err
+	}
+
+	fdStores, ok := s.storesById[uint32(fdId)]
+	if !ok {
+		return nil, fmt.Errorf("can't resolve file descriptor ID %d", fdId)
+	}
+
+	store, ok := fdStores[uint32(tableId)]
+	if !ok {
+		return nil, fmt.Errorf("can't resolve table or singleton with ID %d", fdId)
+	}
+
+	return store.Decode(k, v)
 }

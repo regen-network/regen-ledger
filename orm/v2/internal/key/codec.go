@@ -58,21 +58,19 @@ func (cdc *Codec) Encode(values []protoreflect.Value, w io.Writer) error {
 
 // EncodePartial encodes the key up to the presence of any empty values in the
 // list of key values.
-func (cdc *Codec) EncodePartial(values []protoreflect.Value, w io.Writer) error {
+func (cdc *Codec) EncodePartial(message protoreflect.Message) ([]protoreflect.Value, []byte, error) {
 	lastNonEmpty := 0
+	values := make([]protoreflect.Value, cdc.NumParts)
 	for i := 0; i < cdc.NumParts; i++ {
-		if !cdc.PartCodecs[i].IsEmpty(values[i]) {
+		f := cdc.Fields[i]
+		if message.Has(f) {
 			lastNonEmpty = i
 		}
+		values[i] = message.Get(f)
 	}
 
-	return cdc.Encode(values[:lastNonEmpty], w)
-}
-
-func (cdc *Codec) EncodePartialFromMessage(message protoreflect.Message) ([]protoreflect.Value, []byte, error) {
 	var b bytes.Buffer
-	values := cdc.GetValues(message)
-	err := cdc.EncodePartial(values, &b)
+	err := cdc.Encode(values[:lastNonEmpty], &b)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -99,15 +97,23 @@ func (cdc *Codec) SetValues(mref protoreflect.Message, values []protoreflect.Val
 	}
 }
 
-func (cdc *Codec) Decode(r *bytes.Reader) ([]protoreflect.Value, error) {
-	n := len(cdc.Prefix)
+func SkipPrefix(r *bytes.Reader, prefix []byte) error {
+	n := len(prefix)
 	if n > 0 {
 		// we skip checking the prefix for performance reasons because we assume
 		// that it was checked by the caller
 		_, err := r.Seek(int64(n), io.SeekCurrent)
 		if err != nil {
-			return nil, err
+			return err
 		}
+	}
+	return nil
+}
+
+func (cdc *Codec) Decode(r *bytes.Reader) ([]protoreflect.Value, error) {
+	err := SkipPrefix(r, cdc.Prefix)
+	if err != nil {
+		return nil, err
 	}
 
 	values := make([]protoreflect.Value, cdc.NumParts)

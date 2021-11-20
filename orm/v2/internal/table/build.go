@@ -60,7 +60,9 @@ func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, desc protoref
 		Prefix:              prefix,
 		PkPrefix:            pkPrefix,
 		PkCodec:             pkCodec,
-		IndexerMap:          map[string]*Indexer{},
+		IndexersByFields:    map[string]*Indexer{},
+		IndexersById:        map[uint32]*Indexer{},
+		Descriptor:          desc,
 	}
 
 	idxIds := map[uint32]bool{}
@@ -92,7 +94,8 @@ func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, desc protoref
 			Codec:       cdc,
 		}
 		st.Indexers = append(st.Indexers, idx)
-		st.IndexerMap[idxDesc.Fields] = idx
+		st.IndexersByFields[idxDesc.Fields] = idx
+		st.IndexersById[id] = idx
 	}
 
 	if len(seqPrefix) != 0 {

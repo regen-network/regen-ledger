@@ -17,7 +17,7 @@ func (s *Store) List(kv store.KVStore, opts *list.Options) list.Iterator {
 	var idx *Indexer
 	if opts.UseIndex != "" {
 		var ok bool
-		idx, ok = s.IndexerMap[opts.UseIndex]
+		idx, ok = s.IndexersByFields[opts.UseIndex]
 		if !ok {
 			return list.ErrIterator{Err: fmt.Errorf("can't find indexer %s", opts.UseIndex)}
 		}
@@ -27,14 +27,14 @@ func (s *Store) List(kv store.KVStore, opts *list.Options) list.Iterator {
 	var start, end []byte
 	var err error
 	if opts.Start != nil {
-		_, start, err = cdc.EncodePartialFromMessage(opts.Start.ProtoReflect())
+		_, start, err = cdc.EncodePartial(opts.Start.ProtoReflect())
 		if err != nil {
 			return list.ErrIterator{Err: err}
 		}
 	}
 
 	if opts.End != nil {
-		_, end, err = cdc.EncodePartialFromMessage(opts.Start.ProtoReflect())
+		_, end, err = cdc.EncodePartial(opts.Start.ProtoReflect())
 		if err != nil {
 			return list.ErrIterator{Err: err}
 		}

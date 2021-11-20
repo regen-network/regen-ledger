@@ -1,7 +1,10 @@
 package table
 
 import (
+	"bytes"
 	"fmt"
+
+	"github.com/regen-network/regen-ledger/orm/v2/internal/dynamicmsg"
 
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -16,7 +19,9 @@ type Store struct {
 	PkPrefix            []byte
 	PkCodec             *key.Codec
 	Indexers            []*Indexer
-	IndexerMap          map[string]*Indexer
+	IndexersByFields    map[string]*Indexer
+	IndexersById        map[uint32]*Indexer
+	Descriptor          protoreflect.MessageDescriptor
 }
 
 func (s Store) isStore() {}
@@ -134,4 +139,24 @@ func (s Store) Delete(kv store.KVStore, message proto.Message) error {
 	kv.Delete(pk)
 
 	return nil
+}
+
+func (s Store) Decode(k []byte, v []byte) (proto.Message, error) {
+	if bytes.HasPrefix(k, s.PkPrefix) {
+		pkValues, err := s.PkCodec.Decode(bytes.NewReader(k))
+		if err != nil {
+			return nil, err
+		}
+
+		msg, err := dynamicmsg.Unmarshal(s.Descriptor, v)
+		if err != nil {
+			return nil, err
+		}
+
+		// rehydrate pk
+		s.PkCodec.SetValues(msg.ProtoReflect(), pkValues)
+
+		return msg, nil
+	}
+	return nil, nil
 }
