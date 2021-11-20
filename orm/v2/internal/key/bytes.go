@@ -10,12 +10,12 @@ import (
 
 type bytesPC struct{}
 
-func (b bytesPC) decode(r *bytes.Reader) (protoreflect.Value, error) {
+func (b bytesPC) Decode(r *bytes.Reader) (protoreflect.Value, error) {
 	bz, err := io.ReadAll(r)
 	return protoreflect.ValueOfBytes(bz), err
 }
 
-func (b bytesPC) encode(value protoreflect.Value, w io.Writer, partial bool) error {
+func (b bytesPC) Encode(value protoreflect.Value, w io.Writer, partial bool) error {
 	_, err := w.Write(value.Bytes())
 	return err
 }
@@ -30,7 +30,7 @@ func (b bytesNT_PC) Equal(v1, v2 protoreflect.Value) bool {
 	return bytes.Equal(v1.Bytes(), v2.Bytes())
 }
 
-func (b bytesNT_PC) decode(r *bytes.Reader) (protoreflect.Value, error) {
+func (b bytesNT_PC) Decode(r *bytes.Reader) (protoreflect.Value, error) {
 	n, err := r.ReadByte()
 	if err != nil {
 		return protoreflect.Value{}, err
@@ -45,7 +45,7 @@ func (b bytesNT_PC) decode(r *bytes.Reader) (protoreflect.Value, error) {
 	return protoreflect.ValueOfBytes(bz), err
 }
 
-func (b bytesNT_PC) encode(value protoreflect.Value, w io.Writer, partial bool) error {
+func (b bytesNT_PC) Encode(value protoreflect.Value, w io.Writer, partial bool) error {
 	bz := value.Bytes()
 	n := len(bz)
 	if n == 0 && partial {

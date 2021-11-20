@@ -43,7 +43,7 @@ func MakeCodec(fieldDescs []protoreflect.FieldDescriptor, isPrimaryKey bool) (*C
 
 func (cdc *Codec) Encode(values []protoreflect.Value, w io.Writer, partial bool) error {
 	for i := 0; i < cdc.NumParts; i++ {
-		err := cdc.PartCodecs[i].encode(values[i], w, partial)
+		err := cdc.PartCodecs[i].Encode(values[i], w, partial)
 		if err != nil {
 			return err
 		}
@@ -54,7 +54,7 @@ func (cdc *Codec) Encode(values []protoreflect.Value, w io.Writer, partial bool)
 func (cdc *Codec) Decode(r *bytes.Reader) ([]protoreflect.Value, error) {
 	values := make([]protoreflect.Value, cdc.NumParts)
 	for i := 0; i < cdc.NumParts; i++ {
-		value, err := cdc.PartCodecs[i].decode(r)
+		value, err := cdc.PartCodecs[i].Decode(r)
 		values[i] = value
 		if err == io.EOF {
 			if i == cdc.NumParts-1 {

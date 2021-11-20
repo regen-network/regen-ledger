@@ -45,9 +45,9 @@ func testKeyPartCodecNT(t *testing.T, fname string, generator *rapid.Generator, 
 	rapid.Check(t, func(t *rapid.T) {
 		x := protoreflect.ValueOf(generator.Draw(t, fname))
 		buf := &bytes.Buffer{}
-		err = cdc.encode(x, buf, false)
+		err = cdc.Encode(x, buf, false)
 		require.NoError(t, err)
-		y, err := cdc.decode(bytes.NewReader(buf.Bytes()))
+		y, err := cdc.Decode(bytes.NewReader(buf.Bytes()))
 		require.NoError(t, err)
 		require.Equal(t, x.Interface(), y.Interface())
 	})
