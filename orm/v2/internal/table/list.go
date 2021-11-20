@@ -54,7 +54,6 @@ func (s *Store) List(kv store.KVStore, opts *list.Options) list.Iterator {
 			iterator:  iterator,
 			start:     true,
 			pkDecoder: idx.Codec.PKDecoder,
-			prefix:    idx.Prefix,
 		}
 	} else {
 		return &pkIterator{
@@ -92,7 +91,7 @@ func (t *pkIterator) Next(message proto.Message) (bool, error) {
 		return false, err
 	}
 
-	k := t.iterator.Key()[len(t.store.PkPrefix):]
+	k := t.iterator.Key()
 	pkValues, err := t.store.PkCodec.Decode(bytes.NewReader(k))
 	if err != nil {
 		return false, err
@@ -111,7 +110,6 @@ type idxIterator struct {
 	iterator  store.KVStoreIterator
 	start     bool
 	pkDecoder func(r *bytes.Reader) ([]protoreflect.Value, error)
-	prefix    []byte
 }
 
 func (t *idxIterator) isIterator() {}
@@ -127,15 +125,13 @@ func (t *idxIterator) Next(message proto.Message) (bool, error) {
 		return false, nil
 	}
 
-	k := t.iterator.Key()[len(t.prefix):]
+	k := t.iterator.Key()
 	pkValues, err := t.pkDecoder(bytes.NewReader(k))
 	if err != nil {
 		return false, err
 	}
 
 	buf := &bytes.Buffer{}
-	buf.Write(t.store.Prefix)
-	buf.WriteByte(0)
 	err = t.store.PkCodec.Encode(pkValues, buf)
 	if err != nil {
 		return false, err
