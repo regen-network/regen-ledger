@@ -4,8 +4,6 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/regen-network/regen-ledger/orm/v2/internal/dynamicmsg"
-
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
@@ -21,7 +19,7 @@ type Store struct {
 	Indexers            []*Indexer
 	IndexersByFields    map[string]*Indexer
 	IndexersById        map[uint32]*Indexer
-	Descriptor          protoreflect.MessageDescriptor
+	MsgType             protoreflect.MessageType
 }
 
 func (s Store) isStore() {}
@@ -148,7 +146,8 @@ func (s Store) Decode(k []byte, v []byte) (proto.Message, error) {
 			return nil, err
 		}
 
-		msg, err := dynamicmsg.Unmarshal(s.Descriptor, v)
+		msg := s.MsgType.New().Interface()
+		err = proto.Unmarshal(v, msg)
 		if err != nil {
 			return nil, err
 		}

@@ -3,8 +3,6 @@ package singleton
 import (
 	"fmt"
 
-	"github.com/regen-network/regen-ledger/orm/v2/internal/dynamicmsg"
-
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
@@ -15,20 +13,20 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func BuildStore(nsPrefix []byte, singletonDescriptor *ormpb.SingletonDescriptor, descriptor protoreflect.MessageDescriptor) (store.Store, error) {
+func BuildStore(nsPrefix []byte, singletonDescriptor *ormpb.SingletonDescriptor, messageType protoreflect.MessageType) (store.Store, error) {
 	id := singletonDescriptor.Id
 	if id == 0 {
 		return nil, fmt.Errorf("singleton must have non-zero id")
 	}
 
 	prefix := key.MakeUint32Prefix(nsPrefix, id)
-	s := &Store{prefix: prefix, descriptor: descriptor}
+	s := &Store{prefix: prefix, msgType: messageType}
 	return s, nil
 }
 
 type Store struct {
-	prefix     []byte
-	descriptor protoreflect.MessageDescriptor
+	prefix  []byte
+	msgType protoreflect.MessageType
 }
 
 func (s *Store) isStore() {}
@@ -66,7 +64,9 @@ func (s *Store) List(kv store.KVStore, _ *list.Options) list.Iterator {
 }
 
 func (s *Store) Decode(_ []byte, v []byte) (proto.Message, error) {
-	return dynamicmsg.Unmarshal(s.descriptor, v)
+	msg := s.msgType.New().Interface()
+	err := proto.Unmarshal(v, msg)
+	return msg, err
 }
 
 type singletonIterator struct {

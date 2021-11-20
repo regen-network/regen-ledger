@@ -5,6 +5,9 @@ import (
 	"encoding/binary"
 	"fmt"
 
+	"google.golang.org/protobuf/reflect/protoregistry"
+	"google.golang.org/protobuf/types/dynamicpb"
+
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
@@ -50,14 +53,14 @@ func (s Schema) buildStore(nsPrefix []byte, fdId uint32, desc protoreflect.Messa
 		}
 
 		id = tableDesc.Id
-		st, err = table.BuildStore(nsPrefix, tableDesc, desc)
+		st, err = table.BuildStore(nsPrefix, tableDesc, getMessageType(desc))
 		if err != nil {
 			return err
 		}
 
 	} else if singDesc != nil {
 		id = singDesc.Id
-		st, err = singleton.BuildStore(nsPrefix, singDesc, desc)
+		st, err = singleton.BuildStore(nsPrefix, singDesc, getMessageType(desc))
 		if err != nil {
 			return err
 		}
@@ -73,6 +76,14 @@ func (s Schema) buildStore(nsPrefix []byte, fdId uint32, desc protoreflect.Messa
 	}
 
 	return nil
+}
+
+func getMessageType(descriptor protoreflect.MessageDescriptor) protoreflect.MessageType {
+	typ, err := protoregistry.GlobalTypes.FindMessageByName(descriptor.FullName())
+	if err != nil {
+		return dynamicpb.NewMessageType(descriptor)
+	}
+	return typ
 }
 
 func gatherListOptions(opts []ListOption) *list.Options {
@@ -163,10 +174,10 @@ func (s Schema) Decode(k, v []byte) (proto.Message, error) {
 		return nil, fmt.Errorf("can't resolve file descriptor ID %d", fdId)
 	}
 
-	store, ok := fdStores[uint32(tableId)]
+	st, ok := fdStores[uint32(tableId)]
 	if !ok {
 		return nil, fmt.Errorf("can't resolve table or singleton with ID %d", fdId)
 	}
 
-	return store.Decode(k, v)
+	return st.Decode(k, v)
 }

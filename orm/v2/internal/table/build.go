@@ -15,7 +15,8 @@ const (
 	PrimaryKeyPrefix    = 0
 )
 
-func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, desc protoreflect.MessageDescriptor) (store.Store, error) {
+func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, messageType protoreflect.MessageType) (store.Store, error) {
+	desc := messageType.Descriptor()
 	tableId := tableDesc.Id
 	if tableId == 0 {
 		return nil, fmt.Errorf("0 is not a valid id for table %s", desc.FullName())
@@ -62,7 +63,7 @@ func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, desc protoref
 		PkCodec:             pkCodec,
 		IndexersByFields:    map[string]*Indexer{},
 		IndexersById:        map[uint32]*Indexer{},
-		Descriptor:          desc,
+		MsgType:             messageType,
 	}
 
 	idxIds := map[uint32]bool{}
