@@ -1,4 +1,4 @@
-package v2
+package orm
 
 import (
 	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
@@ -32,12 +32,12 @@ func IndexHint(fields string) ListOption {
 }
 
 type ClientConn struct {
-	schema *Schema
+	Schema *Schema
 }
 
 func (c *ClientConn) Open(kvStore store.KVStore) Client {
 	return &client{
-		schema: c.schema,
+		schema: c.Schema,
 		kv:     kvStore,
 	}
 }
@@ -96,7 +96,7 @@ func (s client) List(message proto.Message, options ...ListOption) list.Iterator
 	if err != nil {
 		return list.ErrIterator{Err: err}
 	}
-	return st.List(s.kv, message, gatherListOptions(options))
+	return st.List(s.kv, gatherListOptions(options))
 }
 
 var _ Client = &client{}

@@ -12,5 +12,5 @@ type Store interface {
 	Read(kv KVStore, message proto.Message) (found bool, err error)
 	Save(kv KVStore, message proto.Message) error
 	Delete(kv KVStore, message proto.Message) error
-	List(kv KVStore, message proto.Message, options *list.Options) list.Iterator
+	List(kv KVStore, options *list.Options) list.Iterator
 }

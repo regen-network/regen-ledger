@@ -1,6 +1,8 @@
 package singleton
 
 import (
+	"fmt"
+
 	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
@@ -10,7 +12,12 @@ import (
 )
 
 func BuildStore(nsPrefix []byte, descriptor *types.SingletonDescriptor) (store.Store, error) {
-	prefix := key.MakeUint32Prefix(nsPrefix, descriptor.Id)
+	id := descriptor.Id
+	if id == 0 {
+		return nil, fmt.Errorf("singleton must have non-zero id")
+	}
+
+	prefix := key.MakeUint32Prefix(nsPrefix, id)
 	s := &Store{prefix: prefix}
 	return s, nil
 }
@@ -22,6 +29,10 @@ type Store struct {
 func (s *Store) isStore() {}
 
 func (s *Store) Create(kv store.KVStore, message proto.Message) error {
+	if s.Has(kv, message) {
+		return fmt.Errorf("already exists")
+	}
+
 	return s.Save(kv, message)
 }
 
@@ -53,8 +64,8 @@ func (s *Store) Delete(kv store.KVStore, _ proto.Message) error {
 	return nil
 }
 
-func (s *Store) List(store.KVStore, proto.Message, *list.Options) list.Iterator {
-	return &singletonIterator{store: s}
+func (s *Store) List(kv store.KVStore, _ *list.Options) list.Iterator {
+	return &singletonIterator{store: s, kv: kv}
 }
 
 type singletonIterator struct {
@@ -63,9 +74,9 @@ type singletonIterator struct {
 	done  bool
 }
 
-func (s singletonIterator) isIterator() {}
+func (s *singletonIterator) isIterator() {}
 
-func (s singletonIterator) Next(message proto.Message) (bool, error) {
+func (s *singletonIterator) Next(message proto.Message) (bool, error) {
 	if s.done {
 		return false, nil
 	}

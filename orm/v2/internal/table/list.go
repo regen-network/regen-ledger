@@ -2,8 +2,6 @@ package table
 
 import (
 	"bytes"
-	"fmt"
-	"io"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
@@ -11,66 +9,68 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-func (s *Store) List(kv store.KVStore, message proto.Message, opts *list.Options) list.Iterator {
-	if opts.IndexHint != "" {
-		idx, ok := s.IndexerMap[opts.IndexHint]
-		if !ok {
-			return list.ErrIterator{Err: fmt.Errorf("can't find indexer %s", opts.IndexHint)}
-		}
+func (s *Store) List(kv store.KVStore, opts *list.Options) list.Iterator {
+	panic("TODO")
+	//if opts.IndexHint != "" {
+	//	idx, ok := s.IndexerMap[opts.IndexHint]
+	//	if !ok {
+	//		return list.ErrIterator{Err: fmt.Errorf("can't find indexer %s", opts.IndexHint)}
+	//	}
+	//}
 
-		refm := message.ProtoReflect()
-		var values []protoreflect.Value
-		for _, f := range idx.IndexFields {
-			values = append(values, refm.Get(f))
-		}
-		buf := &bytes.Buffer{}
-		buf.Write(idx.Prefix)
-		err := idx.Codec.Encode(values, buf, true)
-		if err != nil && err != io.EOF {
-			return list.ErrIterator{Err: err}
-		}
-		prefix := buf.Bytes()
-
-		var iterator store.KVStoreIterator
-		if !opts.Reverse {
-			iterator = kv.Iterator(prefix, nil)
-		} else {
-			iterator = kv.ReverseIterator(prefix, nil)
-		}
-		return &idxIterator{
-			kv:        kv,
-			store:     s,
-			iterator:  iterator,
-			start:     true,
-			pkDecoder: idx.Codec.PKDecoder,
-			prefix:    idx.Prefix,
-		}
-	} else {
-		// first make prefix store for pk table
-		buf := &bytes.Buffer{}
-
-		pkValues := s.primaryKeyValues(message)
-		buf = &bytes.Buffer{}
-		buf.Write(s.PkPrefix)
-		err := s.PkCodec.Encode(pkValues, buf, true)
-		if err != nil && err != io.EOF {
-			return list.ErrIterator{Err: err}
-		}
-
-		prefix := buf.Bytes()
-		var iterator store.KVStoreIterator
-		if !opts.Reverse {
-			iterator = kv.Iterator(prefix, nil)
-		} else {
-			iterator = kv.ReverseIterator(prefix, nil)
-		}
-		return &pkIterator{
-			kv:       kv,
-			store:    s,
-			iterator: iterator,
-			start:    true,
-		}
-	}
+	//	refm := message.ProtoReflect()
+	//	var values []protoreflect.Value
+	//	for _, f := range idx.IndexFields {
+	//		values = append(values, refm.Get(f))
+	//	}
+	//	buf := &bytes.Buffer{}
+	//	buf.Write(idx.Prefix)
+	//	err := idx.Codec.Encode(values, buf, true)
+	//	if err != nil && err != io.EOF {
+	//		return list.ErrIterator{Err: err}
+	//	}
+	//	prefix := buf.Bytes()
+	//
+	//	var iterator store.KVStoreIterator
+	//	if !opts.Reverse {
+	//		iterator = kv.Iterator(prefix, nil)
+	//	} else {
+	//		iterator = kv.ReverseIterator(prefix, nil)
+	//	}
+	//	return &idxIterator{
+	//		kv:        kv,
+	//		store:     s,
+	//		iterator:  iterator,
+	//		start:     true,
+	//		pkDecoder: idx.Codec.PKDecoder,
+	//		prefix:    idx.Prefix,
+	//	}
+	//} else {
+	//	// first make prefix store for pk table
+	//	buf := &bytes.Buffer{}
+	//
+	//	pkValues := s.primaryKeyValues(message)
+	//	buf = &bytes.Buffer{}
+	//	buf.Write(s.PkPrefix)
+	//	err := s.PkCodec.Encode(pkValues, buf, true)
+	//	if err != nil && err != io.EOF {
+	//		return list.ErrIterator{Err: err}
+	//	}
+	//
+	//	prefix := buf.Bytes()
+	//	var iterator store.KVStoreIterator
+	//	if !opts.Reverse {
+	//		iterator = kv.Iterator(prefix, nil)
+	//	} else {
+	//		iterator = kv.ReverseIterator(prefix, nil)
+	//	}
+	//	return &pkIterator{
+	//		kv:       kv,
+	//		store:    s,
+	//		iterator: iterator,
+	//		start:    true,
+	//	}
+	//}
 }
 
 type pkIterator struct {
