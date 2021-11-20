@@ -58,13 +58,14 @@ func buildStructField(field protoreflect.FieldDescriptor, isPrimaryKey bool) (re
 		tag = tag + fmt.Sprintf(`;primaryKey;autoIncrement:false`)
 	}
 	var fieldName = strings.ToTitle(string(field.Name()))
+	typ, err := structFieldType(field)
 	return reflect.StructField{
 		Name: fieldName,
-		Type: nil,
+		Type: typ,
 		Tag:  reflect.StructTag(tag + `"`),
-	}, nil
+	}, err
 }
 
 func structFieldType(descriptor protoreflect.FieldDescriptor) (reflect.Type, error) {
-	panic("TODO")
+	return reflect.TypeOf(descriptor.Default().Interface()), nil
 }
