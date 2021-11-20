@@ -16,15 +16,19 @@ message A {
   option (regen.orm.v1alpha1.table) = {
     id: 1;
     primary_key: {
-      fields: "UINT32,BYTES,STRING"
+      fields: "UINT32,UINT64,STRING"
     }
     index:{
       id: 1;
-      fields:"BYTES,STRING"
+      fields:"UINT64,STRING"
     }
     index:{
       id: 2;
-      fields:"STRING,BYTES"
+      fields:"STRING,UINT32"
+    }
+    index:{
+      id: 3;
+      fields:"BYTES,STRING"
     }
   };
 

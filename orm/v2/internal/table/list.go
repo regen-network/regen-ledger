@@ -26,6 +26,7 @@ func (s *Store) List(kv store.KVStore, opts *list.Options) list.Iterator {
 
 	var start, end []byte
 	var err error
+
 	if opts.Start != nil {
 		_, start, err = cdc.EncodePartial(opts.Start.ProtoReflect())
 		if err != nil {
@@ -72,6 +73,10 @@ type pkIterator struct {
 	start    bool
 }
 
+func (t *pkIterator) Close() {
+	_ = t.iterator.Close()
+}
+
 func (t *pkIterator) isIterator() {}
 
 func (t *pkIterator) Next(message proto.Message) (bool, error) {
@@ -110,6 +115,10 @@ type idxIterator struct {
 	iterator  store.KVStoreIterator
 	start     bool
 	pkDecoder func(r *bytes.Reader) ([]protoreflect.Value, error)
+}
+
+func (t *idxIterator) Close() {
+	_ = t.iterator.Close()
 }
 
 func (t *idxIterator) isIterator() {}

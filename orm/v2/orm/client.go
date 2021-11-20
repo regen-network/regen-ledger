@@ -10,8 +10,8 @@ type Client interface {
 	Create(message proto.Message) error
 	Has(message proto.Message) bool
 	Read(message proto.Message) (found bool, err error)
-	Save(message proto.Message) error
-	Delete(message proto.Message) error
+	Save(message ...proto.Message) error
+	Delete(message ...proto.Message) error
 	List(message proto.Message, options ...ListOption) list.Iterator
 }
 
@@ -75,20 +75,32 @@ func (s client) Read(message proto.Message) (found bool, err error) {
 	return st.Read(s.kv, message)
 }
 
-func (s client) Save(message proto.Message) error {
-	st, err := s.schema.getStoreForMessage(message)
-	if err != nil {
-		return err
+func (s client) Save(messages ...proto.Message) error {
+	for _, msg := range messages {
+		st, err := s.schema.getStoreForMessage(msg)
+		if err != nil {
+			return err
+		}
+		err = st.Save(s.kv, msg, store.SAVE_MODE_DEFAULT)
+		if err != nil {
+			return err
+		}
 	}
-	return st.Save(s.kv, message, store.SAVE_MODE_DEFAULT)
+	return nil
 }
 
-func (s client) Delete(message proto.Message) error {
-	st, err := s.schema.getStoreForMessage(message)
-	if err != nil {
-		return err
+func (s client) Delete(messages ...proto.Message) error {
+	for _, msg := range messages {
+		st, err := s.schema.getStoreForMessage(msg)
+		if err != nil {
+			return err
+		}
+		err = st.Delete(s.kv, msg)
+		if err != nil {
+			return err
+		}
 	}
-	return st.Delete(s.kv, message)
+	return nil
 }
 
 func (s client) List(message proto.Message, options ...ListOption) list.Iterator {

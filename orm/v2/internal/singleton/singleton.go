@@ -75,8 +75,6 @@ type singletonIterator struct {
 	done  bool
 }
 
-func (s *singletonIterator) isIterator() {}
-
 func (s *singletonIterator) Next(message proto.Message) (bool, error) {
 	if s.done {
 		return false, nil
@@ -85,3 +83,5 @@ func (s *singletonIterator) Next(message proto.Message) (bool, error) {
 	s.done = true
 	return s.store.Read(s.kv, message)
 }
+
+func (s *singletonIterator) Close() {}
