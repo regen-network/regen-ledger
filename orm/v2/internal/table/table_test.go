@@ -119,7 +119,7 @@ func TestScenarios(t *testing.T) {
 		require.NoError(t, err)
 
 		pk1 := pk.Draw(t, "pk1")
-		pk.Set(a1, pk1)
+		pk.Codec.SetValues(a1.ProtoReflect(), pk1)
 		a1.MESSAGE = &testpb.B{X: "foo"}
 
 		// create
@@ -128,11 +128,11 @@ func TestScenarios(t *testing.T) {
 
 		// read
 		var a2 testpb.A
-		pk.Set(&a2, pk1)
+		pk.Codec.SetValues(a2.ProtoReflect(), pk1)
 		found, err = store.Read(kv, &a2)
 		require.True(t, found)
 		require.NoError(t, err)
-		pk.RequireValuesEqual(t, pk1, pk.Get(&a2))
+		pk.RequireValuesEqual(t, pk1, pk.Codec.GetValues(a2.ProtoReflect()))
 		require.NotNil(t, a2.MESSAGE)
 		require.Equal(t, a1.MESSAGE.X, a2.MESSAGE.X)
 	})

@@ -25,7 +25,7 @@ func MakeIndexKeyCodec(indexFields []protoreflect.FieldDescriptor, primaryKeyFie
 		pkFieldOrderMap[j] = j
 	}
 
-	cdc, err := MakeCodec(keyFields, false)
+	cdc, err := MakeCodec(keyFields)
 	if err != nil {
 		return nil, err
 	}

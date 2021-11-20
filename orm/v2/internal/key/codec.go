@@ -13,9 +13,10 @@ type Codec struct {
 	NumParts   int
 	PartCodecs []PartCodec
 	PKDecoder  func(r *bytes.Reader) ([]protoreflect.Value, error)
+	Fields     []protoreflect.FieldDescriptor
 }
 
-func MakeCodec(fieldDescs []protoreflect.FieldDescriptor, isPrimaryKey bool) (*Codec, error) {
+func MakeCodec(fieldDescs []protoreflect.FieldDescriptor) (*Codec, error) {
 	n := len(fieldDescs)
 	var partCodecs []PartCodec
 	for i := 0; i < n; i++ {
@@ -24,10 +25,6 @@ func MakeCodec(fieldDescs []protoreflect.FieldDescriptor, isPrimaryKey bool) (*C
 			nonTerminal = false
 		}
 		field := fieldDescs[i]
-		if field.IsList() && isPrimaryKey {
-			return nil, fmt.Errorf("repeated fields not allowed in primary key")
-		}
-
 		enc, err := makePartCodec(field, nonTerminal)
 		if err != nil {
 			return nil, err
@@ -38,6 +35,7 @@ func MakeCodec(fieldDescs []protoreflect.FieldDescriptor, isPrimaryKey bool) (*C
 	return &Codec{
 		PartCodecs: partCodecs,
 		NumParts:   n,
+		Fields:     fieldDescs,
 	}, nil
 }
 
@@ -49,6 +47,20 @@ func (cdc *Codec) Encode(values []protoreflect.Value, w io.Writer, partial bool)
 		}
 	}
 	return nil
+}
+
+func (cdc *Codec) GetValues(mref protoreflect.Message) []protoreflect.Value {
+	var res []protoreflect.Value
+	for _, f := range cdc.Fields {
+		res = append(res, mref.Get(f))
+	}
+	return res
+}
+
+func (cdc *Codec) SetValues(mref protoreflect.Message, values []protoreflect.Value) {
+	for i, f := range cdc.Fields {
+		mref.Set(f, values[i])
+	}
 }
 
 func (cdc *Codec) Decode(r *bytes.Reader) ([]protoreflect.Value, error) {

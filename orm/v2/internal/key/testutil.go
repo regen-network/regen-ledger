@@ -6,8 +6,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"google.golang.org/protobuf/proto"
-
 	"github.com/regen-network/regen-ledger/orm/v2/internal/testpb"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"pgregory.net/rapid"
@@ -50,10 +48,9 @@ func GetTestField(fname string) protoreflect.FieldDescriptor {
 }
 
 type TestKey struct {
-	KeySpecs         []TestKeyPartSpec
-	FieldDescriptors []protoreflect.FieldDescriptor
-	Fields           string
-	Codec            *Codec
+	KeySpecs []TestKeyPartSpec
+	Fields   string
+	Codec    *Codec
 }
 
 var TestKeyGen = rapid.SliceOfN(rapid.IntRange(0, len(TestKeyPartSpecs)-1), 1, len(TestKeyPartSpecs)).
@@ -78,16 +75,15 @@ var TestKeyGen = rapid.SliceOfN(rapid.IntRange(0, len(TestKeyPartSpecs)-1), 1, l
 		fnames = append(fnames, spec.fieldName)
 	}
 
-	cdc, err := MakeCodec(fields, false)
+	cdc, err := MakeCodec(fields)
 	if err != nil {
 		panic(err)
 	}
 
 	return TestKey{
-		Codec:            cdc,
-		KeySpecs:         specs,
-		FieldDescriptors: fields,
-		Fields:           strings.Join(fnames, ","),
+		Codec:    cdc,
+		KeySpecs: specs,
+		Fields:   strings.Join(fnames, ","),
 	}
 },
 )
@@ -99,22 +95,6 @@ func (k TestKey) Draw(t *rapid.T, id string) []protoreflect.Value {
 		keyValues[i] = protoreflect.ValueOf(k.gen.Draw(t, fmt.Sprintf("%s[%d]", id, i)))
 	}
 	return keyValues
-}
-
-func (k TestKey) Get(message proto.Message) []protoreflect.Value {
-	mref := message.ProtoReflect()
-	var res []protoreflect.Value
-	for _, f := range k.FieldDescriptors {
-		res = append(res, mref.Get(f))
-	}
-	return res
-}
-
-func (k TestKey) Set(message proto.Message, values []protoreflect.Value) {
-	mref := message.ProtoReflect()
-	for i, f := range k.FieldDescriptors {
-		mref.Set(f, values[i])
-	}
 }
 
 func (k TestKey) RequireValuesEqual(t require.TestingT, values, values2 []protoreflect.Value) {

@@ -49,7 +49,7 @@ func BuildStore(nsPrefix []byte, tableDesc *types.TableDescriptor, desc protoref
 		seqPrefix = key.MakeUint32Prefix(buf.Bytes(), tableId)
 	}
 
-	pkCodec, err := key.MakeCodec(pkFields, true)
+	pkCodec, err := key.MakeCodec(pkFields)
 	if err != nil {
 		return nil, err
 	}
