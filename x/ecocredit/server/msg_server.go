@@ -660,7 +660,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 
 		// verify buyer has sufficient balance in coin
 		if balanceAmount.LT(coinToSend.Amount) {
-			return nil, ecocredit.ErrInsufficientFunds.Wrapf("insufficient balance: got %s, needed at least: %s", balanceAmount.String(), coinToSend.Amount.String())
+			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance: got %s, needed at least: %s", balanceAmount.String(), coinToSend.Amount.String())
 		}
 
 		switch order.Selection.Sum.(type) {
@@ -747,7 +747,10 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 			if creditsRemaining.IsZero() {
 
 				// delete sell order if no remaining credits
-				s.sellOrderTable.Delete(ctx, sellOrder.OrderId)
+				err = s.sellOrderTable.Delete(ctx, sellOrder.OrderId)
+				if err != nil {
+					return nil, err
+				}
 
 			} else {
 				sellOrder.Quantity = creditsRemaining.String()
