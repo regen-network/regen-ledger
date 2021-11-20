@@ -6,12 +6,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/mem"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
+	"github.com/regen-network/regen-ledger/orm/v2/ormpb"
 
 	"pgregory.net/rapid"
 
 	"github.com/stretchr/testify/require"
-
-	"github.com/regen-network/regen-ledger/orm/v2/types"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/testpb"
 )
@@ -19,14 +18,14 @@ import (
 func TestBuildStore(t *testing.T) {
 	a := &testpb.A{}
 	msgDesc := a.ProtoReflect().Descriptor()
-	_, err := BuildStore(nil, &types.TableDescriptor{}, msgDesc)
+	_, err := BuildStore(nil, &ormpb.TableDescriptor{}, msgDesc)
 	require.Error(t, err)
-	_, err = BuildStore(nil, &types.TableDescriptor{Id: 1}, msgDesc)
+	_, err = BuildStore(nil, &ormpb.TableDescriptor{Id: 1}, msgDesc)
 	require.Error(t, err)
 
 	_, err = BuildStore(
 		nil,
-		&types.TableDescriptor{Id: 1, PrimaryKey: &types.PrimaryKeyDescriptor{
+		&ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
 			Fields: "FOO",
 		}},
 		msgDesc,
@@ -35,7 +34,7 @@ func TestBuildStore(t *testing.T) {
 
 	_, err = BuildStore(
 		nil,
-		&types.TableDescriptor{Id: 1, PrimaryKey: &types.PrimaryKeyDescriptor{
+		&ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
 			Fields: "UINT32",
 		}},
 		msgDesc,
@@ -44,7 +43,7 @@ func TestBuildStore(t *testing.T) {
 
 	_, err = BuildStore(
 		nil,
-		&types.TableDescriptor{Id: 1, PrimaryKey: &types.PrimaryKeyDescriptor{
+		&ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
 			Fields: "UINT32,UINT32",
 		}},
 		msgDesc,
@@ -53,9 +52,9 @@ func TestBuildStore(t *testing.T) {
 
 	_, err = BuildStore(
 		nil,
-		&types.TableDescriptor{Id: 1, PrimaryKey: &types.PrimaryKeyDescriptor{
+		&ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
 			Fields: "UINT32",
-		}, Index: []*types.SecondaryIndexDescriptor{
+		}, Index: []*ormpb.SecondaryIndexDescriptor{
 			{},
 		}},
 		msgDesc,
@@ -64,9 +63,9 @@ func TestBuildStore(t *testing.T) {
 
 	_, err = BuildStore(
 		nil,
-		&types.TableDescriptor{Id: 1, PrimaryKey: &types.PrimaryKeyDescriptor{
+		&ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
 			Fields: "UINT32",
-		}, Index: []*types.SecondaryIndexDescriptor{
+		}, Index: []*ormpb.SecondaryIndexDescriptor{
 			{Id: 1},
 		}},
 		msgDesc,
@@ -75,9 +74,9 @@ func TestBuildStore(t *testing.T) {
 
 	_, err = BuildStore(
 		nil,
-		&types.TableDescriptor{Id: 1, PrimaryKey: &types.PrimaryKeyDescriptor{
+		&ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
 			Fields: "UINT32",
-		}, Index: []*types.SecondaryIndexDescriptor{
+		}, Index: []*ormpb.SecondaryIndexDescriptor{
 			{Id: 1, Fields: "STRING"},
 		}},
 		msgDesc,
@@ -89,17 +88,17 @@ func TestScenarios(t *testing.T) {
 	rapid.Check(t, func(t *rapid.T) {
 		pk := key.TestKeyGen.Draw(t, "pk").(key.TestKey)
 		numIndexes := rapid.IntRange(0, 3).Draw(t, "num indexes").(int)
-		var indexes []*types.SecondaryIndexDescriptor
+		var indexes []*ormpb.SecondaryIndexDescriptor
 		for i := 0; i < numIndexes; i++ {
 			k := key.TestKeyGen.Draw(t, "pk").(key.TestKey)
-			indexes = append(indexes, &types.SecondaryIndexDescriptor{
+			indexes = append(indexes, &ormpb.SecondaryIndexDescriptor{
 				Fields: k.Fields,
 				Id:     uint32(i + 1),
 			})
 		}
 
-		tableDesc := &types.TableDescriptor{
-			PrimaryKey: &types.PrimaryKeyDescriptor{
+		tableDesc := &ormpb.TableDescriptor{
+			PrimaryKey: &ormpb.PrimaryKeyDescriptor{
 				Fields: pk.Fields,
 			},
 			Index: indexes,
@@ -139,8 +138,8 @@ func TestScenarios(t *testing.T) {
 }
 
 func TestAutoEnc(t *testing.T) {
-	tableDesc := &types.TableDescriptor{
-		PrimaryKey: &types.PrimaryKeyDescriptor{
+	tableDesc := &ormpb.TableDescriptor{
+		PrimaryKey: &ormpb.PrimaryKeyDescriptor{
 			Fields:        "UINT64",
 			AutoIncrement: true,
 		},

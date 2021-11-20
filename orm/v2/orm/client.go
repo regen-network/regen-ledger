@@ -27,7 +27,7 @@ func Reverse() ListOption {
 
 func IndexHint(fields string) ListOption {
 	return listOption(func(options *list.Options) {
-		options.IndexHint = fields
+		options.UseIndex = fields
 	})
 }
 

@@ -1,23 +1,21 @@
 package table
 
 import (
-	"bytes"
-	"encoding/binary"
 	"fmt"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
-	"github.com/regen-network/regen-ledger/orm/v2/types"
+	"github.com/regen-network/regen-ledger/orm/v2/ormpb"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 const (
-	SchemaSpacePrefix   byte = 0
-	SequenceSpacePrefix      = 2
-	PrimaryKeyPrefix         = 0
+	SchemaSpacePrefix   = 0
+	SequenceSpacePrefix = 2
+	PrimaryKeyPrefix    = 0
 )
 
-func BuildStore(nsPrefix []byte, tableDesc *types.TableDescriptor, desc protoreflect.MessageDescriptor) (store.Store, error) {
+func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, desc protoreflect.MessageDescriptor) (store.Store, error) {
 	tableId := tableDesc.Id
 	if tableId == 0 {
 		return nil, fmt.Errorf("0 is not a valid id for table %s", desc.FullName())
@@ -42,30 +40,25 @@ func BuildStore(nsPrefix []byte, tableDesc *types.TableDescriptor, desc protoref
 			return nil, fmt.Errorf("only a single uint64 field is supported for primary keys, got %s", pkFields)
 		}
 
-		buf := &bytes.Buffer{}
-		buf.Write(nsPrefix)
-		buf.WriteByte(SchemaSpacePrefix)
-		buf.WriteByte(SequenceSpacePrefix)
-		seqPrefix = key.MakeUint32Prefix(buf.Bytes(), tableId)
+		seqPrefix := key.MakeUint32Prefix(nsPrefix, SchemaSpacePrefix)
+		seqPrefix = key.MakeUint32Prefix(seqPrefix, SequenceSpacePrefix)
+		seqPrefix = key.MakeUint32Prefix(seqPrefix, tableId)
 	}
 
-	pkCodec, err := key.MakeCodec(pkFields)
+	prefix := key.MakeUint32Prefix(nsPrefix, tableDesc.Id)
+	pkPrefix := key.MakeUint32Prefix(prefix, PrimaryKeyPrefix)
+
+	pkCodec, err := key.MakeCodec(pkPrefix, pkFields)
 	if err != nil {
 		return nil, err
 	}
 
 	numPrimaryKeyFields := len(pkFields)
 
-	prefix := key.MakeUint32Prefix(nsPrefix, tableDesc.Id)
-	pkPrefix := make([]byte, len(prefix))
-	copy(pkPrefix, prefix)
-	pkPrefix = append(pkPrefix, PrimaryKeyPrefix) // primary key table always prefixed with 0
-
 	st := &Store{
 		NumPrimaryKeyFields: numPrimaryKeyFields,
 		Prefix:              prefix,
 		PkPrefix:            pkPrefix,
-		PkFields:            pkFields,
 		PkCodec:             pkCodec,
 		IndexerMap:          map[string]*Indexer{},
 		SeqPrefix:           seqPrefix,
@@ -89,17 +82,14 @@ func BuildStore(nsPrefix []byte, tableDesc *types.TableDescriptor, desc protoref
 			return nil, err
 		}
 
-		cdc, err := key.MakeIndexKeyCodec(idxFields, pkFields)
+		idxPrefix := key.MakeUint32Prefix(prefix, id)
+		cdc, err := key.MakeIndexKeyCodec(idxPrefix, idxFields, pkFields)
 		if err != nil {
 			return nil, err
 		}
-		lenPrefix := len(prefix)
-		idxPrefix := make([]byte, lenPrefix+binary.MaxVarintLen32)
-		copy(idxPrefix, prefix)
-		n := binary.PutUvarint(idxPrefix[lenPrefix:], uint64(id))
 		idx := &Indexer{
 			IndexFields: idxFields,
-			Prefix:      idxPrefix[:lenPrefix+n],
+			Prefix:      idxPrefix,
 			Codec:       cdc,
 		}
 		st.Indexers = append(st.Indexers, idx)

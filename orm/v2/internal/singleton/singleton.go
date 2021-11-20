@@ -4,14 +4,14 @@ import (
 	"fmt"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
+	"github.com/regen-network/regen-ledger/orm/v2/ormpb"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
-	"github.com/regen-network/regen-ledger/orm/v2/types"
 	"google.golang.org/protobuf/proto"
 )
 
-func BuildStore(nsPrefix []byte, descriptor *types.SingletonDescriptor) (store.Store, error) {
+func BuildStore(nsPrefix []byte, descriptor *ormpb.SingletonDescriptor) (store.Store, error) {
 	id := descriptor.Id
 	if id == 0 {
 		return nil, fmt.Errorf("singleton must have non-zero id")
@@ -51,7 +51,7 @@ func (s *Store) Read(kv store.KVStore, message proto.Message) (found bool, err e
 }
 
 func (s *Store) Save(kv store.KVStore, message proto.Message) error {
-	bz, err := proto.Marshal(message)
+	bz, err := proto.MarshalOptions{Deterministic: true}.Marshal(message)
 	if err != nil {
 		return err
 	}

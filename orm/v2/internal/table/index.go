@@ -30,7 +30,7 @@ func (i *Indexer) onCreate(kv store.KVStore, message protoreflect.Message) error
 func (i *Indexer) getKey(message protoreflect.Message) ([]byte, error) {
 	values := i.Codec.GetValues(message)
 	buf := &bytes.Buffer{}
-	err := i.Codec.Encode(values, buf, false)
+	err := i.Codec.Encode(values, buf)
 	if err != nil {
 		return nil, err
 	}

@@ -6,7 +6,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-func MakeIndexKeyCodec(indexFields []protoreflect.FieldDescriptor, primaryKeyFields []protoreflect.FieldDescriptor) (*Codec, error) {
+func MakeIndexKeyCodec(prefix []byte, indexFields []protoreflect.FieldDescriptor, primaryKeyFields []protoreflect.FieldDescriptor) (*Codec, error) {
 	indexFieldMap := map[protoreflect.Name]int{}
 	pkFieldOrderMap := map[int]int{}
 
@@ -25,7 +25,7 @@ func MakeIndexKeyCodec(indexFields []protoreflect.FieldDescriptor, primaryKeyFie
 		pkFieldOrderMap[j] = j
 	}
 
-	cdc, err := MakeCodec(keyFields)
+	cdc, err := MakeCodec(prefix, keyFields)
 	if err != nil {
 		return nil, err
 	}

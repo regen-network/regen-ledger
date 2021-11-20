@@ -14,7 +14,6 @@ import (
 
 type Store struct {
 	NumPrimaryKeyFields int
-	PkFields            []protoreflect.FieldDescriptor
 	Prefix              []byte
 	PkPrefix            []byte
 	PkCodec             *key.Codec
@@ -25,28 +24,12 @@ type Store struct {
 
 func (s Store) isStore() {}
 
-func (s Store) primaryKey(message proto.Message) ([]protoreflect.Value, []byte, error) {
-	pkValues := s.primaryKeyValues(message)
-
-	pkBuf := &bytes.Buffer{}
-	pkBuf.Write(s.PkPrefix)
-	err := s.PkCodec.Encode(pkValues, pkBuf, false)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return pkValues, pkBuf.Bytes(), nil
+func (s Store) primaryKey(message protoreflect.Message) ([]protoreflect.Value, []byte, error) {
+	return s.PkCodec.EncodeFromMessage(message)
 }
 
-func (s Store) primaryKeyValues(message proto.Message) []protoreflect.Value {
-	refm := message.ProtoReflect()
-	// encode primary key
-	pkValues := make([]protoreflect.Value, s.NumPrimaryKeyFields)
-	for i, f := range s.PkFields {
-		pkValues[i] = refm.Get(f)
-	}
-
-	return pkValues
+func (s Store) primaryKeyValues(message protoreflect.Message) []protoreflect.Value {
+	return s.PkCodec.GetValues(message)
 }
 
 func (s Store) Create(kv store.KVStore, message proto.Message) error {
@@ -55,7 +38,8 @@ func (s Store) Create(kv store.KVStore, message proto.Message) error {
 }
 
 func (s Store) Read(kv store.KVStore, message proto.Message) (bool, error) {
-	pkValues, pk, err := s.primaryKey(message)
+	refm := message.ProtoReflect()
+	pkValues, pk, err := s.primaryKey(refm)
 	if err != nil {
 		return false, err
 	}
@@ -70,18 +54,14 @@ func (s Store) Read(kv store.KVStore, message proto.Message) (bool, error) {
 		return true, err
 	}
 
-	refm := message.ProtoReflect()
-
 	// rehydrate primary key
-	for i, f := range s.PkFields {
-		refm.Set(f, pkValues[i])
-	}
+	s.PkCodec.SetValues(refm, pkValues)
 
 	return true, nil
 }
 
 func (s Store) Has(kv store.KVStore, message proto.Message) bool {
-	_, pk, err := s.primaryKey(message)
+	_, pk, err := s.primaryKey(message.ProtoReflect())
 	if err != nil {
 		return false
 	}
@@ -95,14 +75,15 @@ func (s Store) Save(kv store.KVStore, message proto.Message) error {
 }
 
 func (s Store) Delete(kv store.KVStore, message proto.Message) error {
-	_, pk, err := s.primaryKey(message)
+	mref := message.ProtoReflect()
+	_, pk, err := s.primaryKey(mref)
 	if err != nil {
 		return err
 	}
 
 	// clear indexes
 	for _, idx := range s.Indexers {
-		err := idx.onCreate(kv, message.ProtoReflect())
+		err := idx.onCreate(kv, mref)
 		if err != nil {
 			return err
 		}
@@ -131,11 +112,12 @@ func (s Store) nextSeqValue(kv store.KVStore) (uint64, error) {
 }
 
 func (s Store) save(kv store.KVStore, message proto.Message, create bool) (bool, error) {
-	refm := message.ProtoReflect()
+	mref := message.ProtoReflect()
 
 	// handle auto-incrementing primary keys
 	if create && s.SeqPrefix != nil {
-		id := refm.Get(s.PkFields[0]).Uint()
+		pkField := s.PkCodec.Fields[0]
+		id := mref.Get(pkField).Uint()
 		if id != 0 {
 			return false, fmt.Errorf("trying generate an auto-incremented primary key, but the key is already set")
 		}
@@ -146,10 +128,10 @@ func (s Store) save(kv store.KVStore, message proto.Message, create bool) (bool,
 			return false, err
 		}
 
-		refm.Set(s.PkFields[0], protoreflect.ValueOfUint64(id))
+		mref.Set(pkField, protoreflect.ValueOfUint64(id))
 	}
 
-	pkValues, pk, err := s.primaryKey(message)
+	pkValues, pk, err := s.primaryKey(mref)
 	if err != nil {
 		return false, err
 	}
@@ -161,7 +143,7 @@ func (s Store) save(kv store.KVStore, message proto.Message, create bool) (bool,
 			return true, fmt.Errorf("object of type %T with primary key %s already exists, can't create", message, pkValues)
 		}
 
-		existing = refm.New().Interface()
+		existing = mref.New().Interface()
 		err = proto.Unmarshal(bz, existing)
 		if err != nil {
 			return true, err
@@ -169,18 +151,14 @@ func (s Store) save(kv store.KVStore, message proto.Message, create bool) (bool,
 	}
 
 	// temporarily clear primary key
-	for _, f := range s.PkFields {
-		refm.Clear(f)
-	}
+	s.PkCodec.ClearKey(mref)
 
 	// store object
-	bz, err = proto.Marshal(message)
+	bz, err = proto.MarshalOptions{Deterministic: true}.Marshal(message)
 	kv.Set(pk, bz)
 
 	// set primary key again
-	for i, f := range s.PkFields {
-		refm.Set(f, pkValues[i])
-	}
+	s.PkCodec.SetValues(mref, pkValues)
 
 	created := existing == nil
 
@@ -189,9 +167,9 @@ func (s Store) save(kv store.KVStore, message proto.Message, create bool) (bool,
 		existingRef := existing.ProtoReflect()
 		for _, idx := range s.Indexers {
 			if existing == nil {
-				err = idx.onCreate(kv, refm)
+				err = idx.onCreate(kv, mref)
 			} else {
-				err = idx.onUpdate(kv, refm, existingRef)
+				err = idx.onUpdate(kv, mref, existingRef)
 			}
 			if err != nil {
 				return created, err

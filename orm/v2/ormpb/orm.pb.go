@@ -4,7 +4,7 @@
 // 	protoc        v3.14.0
 // source: regen/orm/v1alpha1/orm.proto
 
-package types
+package ormpb
 
 import (
 	reflect "reflect"

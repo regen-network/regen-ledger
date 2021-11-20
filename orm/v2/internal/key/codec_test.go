@@ -22,7 +22,7 @@ func TestCodec(t *testing.T) {
 		keyValues := key.Draw(t, "values")
 
 		buf := &bytes.Buffer{}
-		err := key.Codec.Encode(keyValues, buf, false)
+		err := key.Codec.Encode(keyValues, buf)
 		require.NoError(t, err)
 		keyValues2, err := key.Codec.Decode(bytes.NewReader(buf.Bytes()))
 		require.NoError(t, err)
@@ -45,7 +45,7 @@ func testKeyPartCodecNT(t *testing.T, fname string, generator *rapid.Generator, 
 	rapid.Check(t, func(t *rapid.T) {
 		x := protoreflect.ValueOf(generator.Draw(t, fname))
 		buf := &bytes.Buffer{}
-		err = cdc.Encode(x, buf, false)
+		err = cdc.Encode(x, buf)
 		require.NoError(t, err)
 		y, err := cdc.Decode(bytes.NewReader(buf.Bytes()))
 		require.NoError(t, err)

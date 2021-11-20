@@ -75,7 +75,7 @@ var TestKeyGen = rapid.SliceOfN(rapid.IntRange(0, len(TestKeyPartSpecs)-1), 1, l
 		fnames = append(fnames, spec.fieldName)
 	}
 
-	cdc, err := MakeCodec(fields)
+	cdc, err := MakeCodec([]byte{1}, fields)
 	if err != nil {
 		panic(err)
 	}

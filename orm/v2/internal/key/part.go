@@ -10,8 +10,9 @@ import (
 
 type PartCodec interface {
 	Decode(r *bytes.Reader) (protoreflect.Value, error)
-	Encode(value protoreflect.Value, w io.Writer, partial bool) error
+	Encode(value protoreflect.Value, w io.Writer) error
 	Equal(v1, v2 protoreflect.Value) bool
+	IsEmpty(value protoreflect.Value) bool
 }
 
 func makePartCodec(field protoreflect.FieldDescriptor, nonTerminal bool) (PartCodec, error) {

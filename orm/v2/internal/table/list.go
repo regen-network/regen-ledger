@@ -2,6 +2,9 @@ package table
 
 import (
 	"bytes"
+	"fmt"
+
+	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
@@ -10,67 +13,57 @@ import (
 )
 
 func (s *Store) List(kv store.KVStore, opts *list.Options) list.Iterator {
-	panic("TODO")
-	//if opts.IndexHint != "" {
-	//	idx, ok := s.IndexerMap[opts.IndexHint]
-	//	if !ok {
-	//		return list.ErrIterator{Err: fmt.Errorf("can't find indexer %s", opts.IndexHint)}
-	//	}
-	//}
+	var cdc *key.Codec
+	var idx *Indexer
+	if opts.UseIndex != "" {
+		var ok bool
+		idx, ok = s.IndexerMap[opts.UseIndex]
+		if !ok {
+			return list.ErrIterator{Err: fmt.Errorf("can't find indexer %s", opts.UseIndex)}
+		}
+		cdc = idx.Codec
+	}
 
-	//	refm := message.ProtoReflect()
-	//	var values []protoreflect.Value
-	//	for _, f := range idx.IndexFields {
-	//		values = append(values, refm.Get(f))
-	//	}
-	//	buf := &bytes.Buffer{}
-	//	buf.Write(idx.Prefix)
-	//	err := idx.Codec.Encode(values, buf, true)
-	//	if err != nil && err != io.EOF {
-	//		return list.ErrIterator{Err: err}
-	//	}
-	//	prefix := buf.Bytes()
-	//
-	//	var iterator store.KVStoreIterator
-	//	if !opts.Reverse {
-	//		iterator = kv.Iterator(prefix, nil)
-	//	} else {
-	//		iterator = kv.ReverseIterator(prefix, nil)
-	//	}
-	//	return &idxIterator{
-	//		kv:        kv,
-	//		store:     s,
-	//		iterator:  iterator,
-	//		start:     true,
-	//		pkDecoder: idx.Codec.PKDecoder,
-	//		prefix:    idx.Prefix,
-	//	}
-	//} else {
-	//	// first make prefix store for pk table
-	//	buf := &bytes.Buffer{}
-	//
-	//	pkValues := s.primaryKeyValues(message)
-	//	buf = &bytes.Buffer{}
-	//	buf.Write(s.PkPrefix)
-	//	err := s.PkCodec.Encode(pkValues, buf, true)
-	//	if err != nil && err != io.EOF {
-	//		return list.ErrIterator{Err: err}
-	//	}
-	//
-	//	prefix := buf.Bytes()
-	//	var iterator store.KVStoreIterator
-	//	if !opts.Reverse {
-	//		iterator = kv.Iterator(prefix, nil)
-	//	} else {
-	//		iterator = kv.ReverseIterator(prefix, nil)
-	//	}
-	//	return &pkIterator{
-	//		kv:       kv,
-	//		store:    s,
-	//		iterator: iterator,
-	//		start:    true,
-	//	}
-	//}
+	var start, end []byte
+	var err error
+	if opts.Start != nil {
+		_, start, err = cdc.EncodePartialFromMessage(opts.Start.ProtoReflect())
+		if err != nil {
+			return list.ErrIterator{Err: err}
+		}
+	}
+
+	if opts.End != nil {
+		_, end, err = cdc.EncodePartialFromMessage(opts.Start.ProtoReflect())
+		if err != nil {
+			return list.ErrIterator{Err: err}
+		}
+	}
+
+	var iterator store.KVStoreIterator
+	if !opts.Reverse {
+		iterator = kv.Iterator(start, end)
+	} else {
+		iterator = kv.ReverseIterator(start, end)
+	}
+
+	if idx != nil {
+		return &idxIterator{
+			kv:        kv,
+			store:     s,
+			iterator:  iterator,
+			start:     true,
+			pkDecoder: idx.Codec.PKDecoder,
+			prefix:    idx.Prefix,
+		}
+	} else {
+		return &pkIterator{
+			kv:       kv,
+			store:    s,
+			iterator: iterator,
+			start:    true,
+		}
+	}
 }
 
 type pkIterator struct {
@@ -99,18 +92,15 @@ func (t *pkIterator) Next(message proto.Message) (bool, error) {
 		return false, err
 	}
 
-	key := bytes.NewReader(t.iterator.Key()[len(t.store.PkPrefix):])
-	pkValues, err := t.store.PkCodec.Decode(key)
+	k := t.iterator.Key()[len(t.store.PkPrefix):]
+	pkValues, err := t.store.PkCodec.Decode(bytes.NewReader(k))
 	if err != nil {
 		return false, err
 	}
 
 	// rehydrate primary key
-	refm := message.ProtoReflect()
-	for i := 0; i < t.store.NumPrimaryKeyFields; i++ {
-		field := t.store.PkFields[i]
-		refm.Set(field, pkValues[i])
-	}
+	mref := message.ProtoReflect()
+	t.store.PkCodec.SetValues(mref, pkValues)
 
 	return true, nil
 }
@@ -137,8 +127,8 @@ func (t *idxIterator) Next(message proto.Message) (bool, error) {
 		return false, nil
 	}
 
-	key := t.iterator.Key()[len(t.prefix):]
-	pkValues, err := t.pkDecoder(bytes.NewReader(key))
+	k := t.iterator.Key()[len(t.prefix):]
+	pkValues, err := t.pkDecoder(bytes.NewReader(k))
 	if err != nil {
 		return false, err
 	}
@@ -146,7 +136,7 @@ func (t *idxIterator) Next(message proto.Message) (bool, error) {
 	buf := &bytes.Buffer{}
 	buf.Write(t.store.Prefix)
 	buf.WriteByte(0)
-	err = t.store.PkCodec.Encode(pkValues, buf, false)
+	err = t.store.PkCodec.Encode(pkValues, buf)
 	if err != nil {
 		return false, err
 	}
@@ -159,11 +149,7 @@ func (t *idxIterator) Next(message proto.Message) (bool, error) {
 	}
 
 	// rehydrate primary key
-	refm := message.ProtoReflect()
-	for i := 0; i < t.store.NumPrimaryKeyFields; i++ {
-		field := t.store.PkFields[i]
-		refm.Set(field, pkValues[i])
-	}
+	t.store.PkCodec.SetValues(message.ProtoReflect(), pkValues)
 
 	return true, nil
 }

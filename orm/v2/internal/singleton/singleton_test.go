@@ -4,8 +4,7 @@ import (
 	"testing"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
-
-	"github.com/regen-network/regen-ledger/orm/v2/types"
+	"github.com/regen-network/regen-ledger/orm/v2/ormpb"
 
 	"github.com/cosmos/cosmos-sdk/store/mem"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/testpb"
@@ -13,10 +12,10 @@ import (
 )
 
 func TestSingleton(t *testing.T) {
-	_, err := BuildStore(nil, &types.SingletonDescriptor{Id: 0})
+	_, err := BuildStore(nil, &ormpb.SingletonDescriptor{Id: 0})
 	require.Error(t, err)
 
-	store, err := BuildStore(nil, &types.SingletonDescriptor{Id: 1})
+	store, err := BuildStore(nil, &ormpb.SingletonDescriptor{Id: 1})
 	require.NoError(t, err)
 
 	kv := mem.NewStore()

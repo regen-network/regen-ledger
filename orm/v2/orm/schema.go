@@ -3,22 +3,22 @@ package orm
 import (
 	"fmt"
 
-	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
-
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
+	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/singleton"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/table"
-	"github.com/regen-network/regen-ledger/orm/v2/types"
+	"github.com/regen-network/regen-ledger/orm/v2/ormpb"
 )
 
 type Schema struct {
-	stores    map[protoreflect.FullName]store.Store
-	idMap     map[uint32]bool
-	fileDescs map[uint32]protoreflect.FileDescriptor
+	prefix     []byte
+	stores     map[protoreflect.FullName]store.Store
+	storesById map[uint32]map[uint32]store.Store
+	fileDescs  map[uint32]protoreflect.FileDescriptor
 }
 
 func (s Schema) getStoreForMessage(message proto.Message) (store.Store, error) {
@@ -30,50 +30,47 @@ func (s Schema) getStoreForMessage(message proto.Message) (store.Store, error) {
 	return nil, fmt.Errorf("can't find table store for message %s", name)
 }
 
-func (s Schema) buildStore(nsPrefix []byte, desc protoreflect.MessageDescriptor) error {
+func (s Schema) buildStore(nsPrefix []byte, fdId uint32, desc protoreflect.MessageDescriptor) error {
 	msgName := desc.FullName()
 	if _, ok := s.stores[msgName]; ok {
 		return fmt.Errorf("store already registered for %s", msgName)
 	}
 
-	tableDesc := proto.GetExtension(desc.Options(), types.E_Table).(*types.TableDescriptor)
-	singDesc := proto.GetExtension(desc.Options(), types.E_Singleton).(*types.SingletonDescriptor)
+	tableDesc := proto.GetExtension(desc.Options(), ormpb.E_Table).(*ormpb.TableDescriptor)
+	singDesc := proto.GetExtension(desc.Options(), ormpb.E_Singleton).(*ormpb.SingletonDescriptor)
 
+	var id uint32
+	var st store.Store
+	var err error
 	if tableDesc != nil {
 		if singDesc != nil {
 			return fmt.Errorf("message %s cannot be declared as both a table and a singleton", msgName)
 		}
 
-		tableId := tableDesc.Id
-		if s.idMap[tableId] {
-			return fmt.Errorf("duplicate ID %d in ORM", tableId)
-		}
-
-		st, err := table.BuildStore(nsPrefix, tableDesc, desc)
+		id = tableDesc.Id
+		st, err = table.BuildStore(nsPrefix, tableDesc, desc)
 		if err != nil {
 			return err
 		}
 
-		s.stores[msgName] = st
-		s.idMap[tableId] = true
-		return nil
 	} else if singDesc != nil {
-		id := singDesc.Id
-		if s.idMap[id] {
-			return fmt.Errorf("duplicate ID %d in ORM", id)
-		}
-
-		st, err := singleton.BuildStore(nsPrefix, singDesc)
+		id = singDesc.Id
+		st, err = singleton.BuildStore(nsPrefix, singDesc)
 		if err != nil {
 			return err
 		}
+	}
+
+	if st != nil {
+		if _, ok := s.storesById[fdId][id]; ok {
+			return fmt.Errorf("duplicate ID %d in file", id)
+		}
 
 		s.stores[msgName] = st
-		s.idMap[id] = true
-		return nil
-	} else {
-		return nil
+		s.storesById[fdId][id] = st
 	}
+
+	return nil
 }
 
 func gatherListOptions(opts []ListOption) *list.Options {
@@ -96,9 +93,9 @@ func (s schemaOpt) applySchemaOption(sch *Schema) error {
 
 func BuildSchema(opts ...SchemaOption) (*Schema, error) {
 	sch := &Schema{
-		stores:    map[protoreflect.FullName]store.Store{},
-		idMap:     map[uint32]bool{},
-		fileDescs: map[uint32]protoreflect.FileDescriptor{},
+		stores:     map[protoreflect.FullName]store.Store{},
+		storesById: map[uint32]map[uint32]store.Store{},
+		fileDescs:  map[uint32]protoreflect.FileDescriptor{},
 	}
 
 	for _, opt := range opts {
@@ -111,25 +108,32 @@ func BuildSchema(opts ...SchemaOption) (*Schema, error) {
 	return sch, nil
 }
 
-func FileDescriptor(prefix uint32, descriptor protoreflect.FileDescriptor) SchemaOption {
+func FileDescriptor(id uint32, descriptor protoreflect.FileDescriptor) SchemaOption {
 	return schemaOpt(func(schema *Schema) error {
-		if fd, ok := schema.fileDescs[prefix]; ok {
+		if fd, ok := schema.fileDescs[id]; ok {
 			return fmt.Errorf("file descriptor for package %d already "+
-				"registered with prefix %s, trying to register package %s", prefix, fd.Package(), descriptor.Package())
+				"registered with prefix %s, trying to register package %s", id, fd.Package(), descriptor.Package())
 		}
 
-		schema.fileDescs[prefix] = descriptor
+		schema.fileDescs[id] = descriptor
+		schema.storesById[id] = map[uint32]store.Store{}
 
-		prefix := key.MakeUint32Prefix(nil, prefix)
-
+		prefix := key.MakeUint32Prefix(schema.prefix, id)
 		msgs := descriptor.Messages()
 		n := msgs.Len()
 		for i := 0; i < n; i++ {
-			err := schema.buildStore(prefix, msgs.Get(i))
+			err := schema.buildStore(prefix, id, msgs.Get(i))
 			if err != nil {
 				return err
 			}
 		}
+		return nil
+	})
+}
+
+func Prefix(prefix []byte) SchemaOption {
+	return schemaOpt(func(schema *Schema) error {
+		schema.prefix = prefix
 		return nil
 	})
 }
