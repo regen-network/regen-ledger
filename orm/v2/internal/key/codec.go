@@ -10,16 +10,14 @@ import (
 )
 
 type Codec struct {
-	NumParts     int
-	PartEncoders []keyPartEncoder
-	PartDecoders []keyPartDecoder
-	PKDecoder    func(r *bytes.Reader) ([]protoreflect.Value, error)
+	NumParts   int
+	PartCodecs []PartCodec
+	PKDecoder  func(r *bytes.Reader) ([]protoreflect.Value, error)
 }
 
 func MakeCodec(fieldDescs []protoreflect.FieldDescriptor, isPrimaryKey bool) (*Codec, error) {
 	n := len(fieldDescs)
-	var encoders []keyPartEncoder
-	var decoders []keyPartDecoder
+	var partCodecs []PartCodec
 	for i := 0; i < n; i++ {
 		nonTerminal := true
 		if i == n-1 {
@@ -30,29 +28,22 @@ func MakeCodec(fieldDescs []protoreflect.FieldDescriptor, isPrimaryKey bool) (*C
 			return nil, fmt.Errorf("repeated fields not allowed in primary key")
 		}
 
-		enc, err := makeKeyPartEncoder(field, nonTerminal)
+		enc, err := makePartCodec(field, nonTerminal)
 		if err != nil {
 			return nil, err
 		}
-		encoders = append(encoders, enc)
-
-		dec, err := makeKeyPartDecoder(field, nonTerminal)
-		if err != nil {
-			return nil, err
-		}
-		decoders = append(decoders, dec)
+		partCodecs = append(partCodecs, enc)
 	}
 
 	return &Codec{
-		PartEncoders: encoders,
-		PartDecoders: decoders,
-		NumParts:     n,
+		PartCodecs: partCodecs,
+		NumParts:   n,
 	}, nil
 }
 
 func (cdc *Codec) Encode(values []protoreflect.Value, w io.Writer, partial bool) error {
 	for i := 0; i < cdc.NumParts; i++ {
-		err := cdc.PartEncoders[i](values[i], w, partial)
+		err := cdc.PartCodecs[i].encode(values[i], w, partial)
 		if err != nil {
 			return err
 		}
@@ -63,8 +54,8 @@ func (cdc *Codec) Encode(values []protoreflect.Value, w io.Writer, partial bool)
 func (cdc *Codec) Decode(r *bytes.Reader) ([]protoreflect.Value, error) {
 	values := make([]protoreflect.Value, cdc.NumParts)
 	for i := 0; i < cdc.NumParts; i++ {
-		value, err := cdc.PartDecoders[i](r)
-		values = append(values, value)
+		value, err := cdc.PartCodecs[i].decode(r)
+		values[i] = value
 		if err == io.EOF {
 			if i == cdc.NumParts-1 {
 				return values, nil
