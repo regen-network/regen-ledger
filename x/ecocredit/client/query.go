@@ -92,7 +92,7 @@ func QueryClassInfoCmd() *cobra.Command {
 // given credit class.
 func QueryBatchesCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "batches [class_id]",
+		Use:   "batches [project_id]",
 		Short: "List all credit batches in the given class with pagination flags",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -107,7 +107,7 @@ func QueryBatchesCmd() *cobra.Command {
 			}
 
 			res, err := c.Batches(cmd.Context(), &ecocredit.QueryBatchesRequest{
-				ClassId:    args[0],
+				ProjectId:  args[0],
 				Pagination: pagination,
 			})
 			return print(ctx, res, err)

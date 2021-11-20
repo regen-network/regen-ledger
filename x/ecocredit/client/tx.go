@@ -115,6 +115,7 @@ Parameters:
 
 const (
 	FlagClassId         string = "class-id"
+	FlagProjectId       string = "project-id"
 	FlagIssuances       string = "issuances"
 	FlagStartDate       string = "start-date"
 	FlagEndDate         string = "end-date"
@@ -126,22 +127,23 @@ const (
 // represent a new credit batch.
 func TxGenBatchJSONCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "gen-batch-json --class-id [class_id] --issuances [issuances] --start-date [start_date] --end-date [end_date] --project-location [project_location] --metadata [metadata]",
+		Use:   "gen-batch-json --project-id [project_id] --issuances [issuances] --start-date [start_date] --end-date [end_date] --project-location [project_location] --metadata [metadata]",
 		Short: "Generates JSON to represent a new credit batch for use with create-batch command",
 		Long: `Generates JSON to represent a new credit batch for use with create-batch command.
 
 Required Flags:
-  class_id:   id of the credit class
   issuances:  the amount of issuances to generate
   start-date: The beginning of the period during which this credit batch was
               quantified and verified. Format: yyyy-mm-dd.
   end-date:   The end of the period during which this credit batch was
               quantified and verified. Format: yyyy-mm-dd.
-  project-location: the location of the credit batch (see documentation for proper project-location formats).
-  metadata:   base64 encoded issuance metadata`,
+  metadata:   base64 encoded issuance metadata
+Optional Flags:
+  project_id:   id of the project
+  `,
 		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			classId, err := cmd.Flags().GetString(FlagClassId)
+			projectId, err := cmd.Flags().GetString(FlagProjectId)
 			if err != nil {
 				return err
 			}
@@ -177,11 +179,6 @@ Required Flags:
 				return err
 			}
 
-			projectLocation, err := cmd.Flags().GetString(FlagProjectLocation)
-			if err != nil {
-				return err
-			}
-
 			metadataStr, err := cmd.Flags().GetString(FlagMetadata)
 			if err != nil {
 				return err
@@ -192,12 +189,11 @@ Required Flags:
 			}
 
 			msg := &ecocredit.MsgCreateBatch{
-				ClassId:         classId,
-				Issuance:        issuances,
-				Metadata:        b,
-				StartDate:       &startDate,
-				EndDate:         &endDate,
-				ProjectLocation: projectLocation,
+				ProjectId: projectId,
+				Issuance:  issuances,
+				Metadata:  b,
+				StartDate: &startDate,
+				EndDate:   &endDate,
 			}
 
 			// Marshal and output JSON of message
@@ -214,16 +210,13 @@ Required Flags:
 			return nil
 		},
 	}
-	cmd.Flags().String(FlagClassId, "", "credit class")
-	cmd.MarkFlagRequired(FlagClassId)
+	cmd.Flags().String(FlagProjectId, "", "project id")
 	cmd.Flags().Uint32(FlagIssuances, 0, "The number of template issuances to generate")
 	cmd.MarkFlagRequired(FlagIssuances)
 	cmd.Flags().String(FlagStartDate, "", "The beginning of the period during which this credit batch was quantified and verified. Format: yyyy-mm-dd.")
 	cmd.MarkFlagRequired(FlagStartDate)
 	cmd.Flags().String(FlagEndDate, "", "The end of the period during which this credit batch was quantified and verified. Format: yyyy-mm-dd.")
 	cmd.MarkFlagRequired(FlagEndDate)
-	cmd.Flags().String(FlagProjectLocation, "", "The location of the project that is backing the credits in this batch")
-	cmd.MarkFlagRequired(FlagProjectLocation)
 	cmd.Flags().String(FlagMetadata, "", "base64 encoded issuance metadata")
 	return cmd
 }
@@ -240,7 +233,7 @@ Parameters:
   msg-create-batch-json-file: Path to a file containing a JSON object
                               representing MsgCreateBatch. The JSON has format:
                               {
-                                "class_id"": "C01",
+                                "project_id"": "C01",
                                 "issuance": [
                                   {
                                     "recipient":           "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
