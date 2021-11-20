@@ -56,7 +56,7 @@ func (s client) Create(message proto.Message) error {
 	if err != nil {
 		return err
 	}
-	return st.Create(s.kv, message)
+	return st.Save(s.kv, message, store.SAVE_MODE_CREATE)
 }
 
 func (s client) Has(message proto.Message) bool {
@@ -80,7 +80,7 @@ func (s client) Save(message proto.Message) error {
 	if err != nil {
 		return err
 	}
-	return st.Save(s.kv, message)
+	return st.Save(s.kv, message, store.SAVE_MODE_DEFAULT)
 }
 
 func (s client) Delete(message proto.Message) error {

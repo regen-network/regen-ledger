@@ -28,14 +28,6 @@ type Store struct {
 
 func (s *Store) isStore() {}
 
-func (s *Store) Create(kv store.KVStore, message proto.Message) error {
-	if s.Has(kv, message) {
-		return fmt.Errorf("already exists")
-	}
-
-	return s.Save(kv, message)
-}
-
 func (s *Store) Has(kv store.KVStore, _ proto.Message) bool {
 	return kv.Has(s.prefix)
 }
@@ -50,7 +42,7 @@ func (s *Store) Read(kv store.KVStore, message proto.Message) (found bool, err e
 	return true, err
 }
 
-func (s *Store) Save(kv store.KVStore, message proto.Message) error {
+func (s *Store) Save(kv store.KVStore, message proto.Message, _ store.SaveMode) error {
 	bz, err := proto.MarshalOptions{Deterministic: true}.Marshal(message)
 	if err != nil {
 		return err

@@ -3,6 +3,8 @@ package singleton
 import (
 	"testing"
 
+	store2 "github.com/regen-network/regen-ledger/orm/v2/internal/store"
+
 	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
 	"github.com/regen-network/regen-ledger/orm/v2/ormpb"
 
@@ -27,7 +29,7 @@ func TestSingleton(t *testing.T) {
 	require.NoError(t, err)
 
 	// create
-	err = store.Create(kv, b1)
+	err = store.Save(kv, b1, store2.SAVE_MODE_CREATE)
 	require.NoError(t, err)
 
 	// read
@@ -37,13 +39,13 @@ func TestSingleton(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, b1.X, b2.X)
 
-	// create a second time fails
+	// create a second time works (singleton tables don't care)
 	b1.X = "def"
-	err = store.Create(kv, b1)
-	require.Error(t, err)
+	err = store.Save(kv, b1, store2.SAVE_MODE_CREATE)
+	require.NoError(t, err)
 
 	// save succeeds
-	err = store.Save(kv, b1)
+	err = store.Save(kv, b1, store2.SAVE_MODE_UPDATE)
 	require.NoError(t, err)
 
 	// read

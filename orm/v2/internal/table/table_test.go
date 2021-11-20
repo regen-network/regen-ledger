@@ -4,15 +4,13 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/store/mem"
-
-	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
-	"github.com/regen-network/regen-ledger/orm/v2/ormpb"
-
+	"github.com/stretchr/testify/require"
 	"pgregory.net/rapid"
 
-	"github.com/stretchr/testify/require"
-
+	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
+	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/testpb"
+	"github.com/regen-network/regen-ledger/orm/v2/ormpb"
 )
 
 func TestBuildStore(t *testing.T) {
@@ -107,13 +105,13 @@ func TestScenarios(t *testing.T) {
 
 		a1 := &testpb.A{}
 		msgDesc := a1.ProtoReflect().Descriptor()
-		store, err := BuildStore(nil, tableDesc, msgDesc)
+		st, err := BuildStore(nil, tableDesc, msgDesc)
 		require.NoError(t, err)
-		require.NotNil(t, store)
+		require.NotNil(t, st)
 
 		// read empty
 		kv := mem.NewStore()
-		found, err := store.Read(kv, a1)
+		found, err := st.Read(kv, a1)
 		require.False(t, found)
 		require.NoError(t, err)
 
@@ -122,13 +120,13 @@ func TestScenarios(t *testing.T) {
 		a1.MESSAGE = &testpb.B{X: "foo"}
 
 		// create
-		err = store.Create(kv, a1)
+		err = st.Save(kv, a1, store.SAVE_MODE_CREATE)
 		require.NoError(t, err)
 
 		// read
 		var a2 testpb.A
 		pk.Codec.SetValues(a2.ProtoReflect(), pk1)
-		found, err = store.Read(kv, &a2)
+		found, err = st.Read(kv, &a2)
 		require.True(t, found)
 		require.NoError(t, err)
 		pk.RequireValuesEqual(t, pk1, pk.Codec.GetValues(a2.ProtoReflect()))
@@ -137,7 +135,7 @@ func TestScenarios(t *testing.T) {
 	})
 }
 
-func TestAutoEnc(t *testing.T) {
+func TestAutoInc(t *testing.T) {
 	tableDesc := &ormpb.TableDescriptor{
 		PrimaryKey: &ormpb.PrimaryKeyDescriptor{
 			Fields:        "UINT64",
@@ -148,31 +146,31 @@ func TestAutoEnc(t *testing.T) {
 
 	a1 := &testpb.A{}
 	msgDesc := a1.ProtoReflect().Descriptor()
-	store, err := BuildStore(nil, tableDesc, msgDesc)
+	st, err := BuildStore(nil, tableDesc, msgDesc)
 	require.NoError(t, err)
-	require.NotNil(t, store)
+	require.NotNil(t, st)
 
 	// read empty
 	kv := mem.NewStore()
-	found, err := store.Read(kv, a1)
+	found, err := st.Read(kv, a1)
 	require.False(t, found)
 	require.NoError(t, err)
 
 	// create fails
 	a1.UINT64 = 10
-	err = store.Create(kv, a1)
+	err = st.Save(kv, a1, store.SAVE_MODE_CREATE)
 	require.Error(t, err)
 
 	// create
 	a1.UINT64 = 0
 	a1.STRING = "foo"
-	err = store.Create(kv, a1)
+	err = st.Save(kv, a1, store.SAVE_MODE_CREATE)
 	require.NoError(t, err)
 	require.Equal(t, uint64(1), a1.UINT64)
 
 	// read
 	a2 := &testpb.A{UINT64: a1.UINT64}
-	found, err = store.Read(kv, a2)
+	found, err = st.Read(kv, a2)
 	require.True(t, found)
 	require.NoError(t, err)
 	require.Equal(t, uint64(1), a2.UINT64)

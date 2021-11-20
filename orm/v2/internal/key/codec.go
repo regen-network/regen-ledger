@@ -100,11 +100,14 @@ func (cdc *Codec) SetValues(mref protoreflect.Message, values []protoreflect.Val
 }
 
 func (cdc *Codec) Decode(r *bytes.Reader) ([]protoreflect.Value, error) {
-	// we skip checking the prefix for performance reasons because we assume
-	// that it was checked by the caller
-	_, err := r.Seek(int64(len(cdc.Prefix)), io.SeekCurrent)
-	if err != nil {
-		return nil, err
+	n := len(cdc.Prefix)
+	if n > 0 {
+		// we skip checking the prefix for performance reasons because we assume
+		// that it was checked by the caller
+		_, err := r.Seek(int64(n), io.SeekCurrent)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	values := make([]protoreflect.Value, cdc.NumParts)

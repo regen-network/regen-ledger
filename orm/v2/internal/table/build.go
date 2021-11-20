@@ -40,7 +40,7 @@ func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, desc protoref
 			return nil, fmt.Errorf("only a single uint64 field is supported for primary keys, got %s", pkFields)
 		}
 
-		seqPrefix := key.MakeUint32Prefix(nsPrefix, SchemaSpacePrefix)
+		seqPrefix = key.MakeUint32Prefix(nsPrefix, SchemaSpacePrefix)
 		seqPrefix = key.MakeUint32Prefix(seqPrefix, SequenceSpacePrefix)
 		seqPrefix = key.MakeUint32Prefix(seqPrefix, tableId)
 	}
@@ -61,7 +61,6 @@ func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, desc protoref
 		PkPrefix:            pkPrefix,
 		PkCodec:             pkCodec,
 		IndexerMap:          map[string]*Indexer{},
-		SeqPrefix:           seqPrefix,
 	}
 
 	idxIds := map[uint32]bool{}
@@ -96,5 +95,9 @@ func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, desc protoref
 		st.IndexerMap[idxDesc.Fields] = idx
 	}
 
-	return st, nil
+	if len(seqPrefix) != 0 {
+		return &AutoIncStore{Store: st, SeqPrefix: seqPrefix}, nil
+	} else {
+		return st, nil
+	}
 }
