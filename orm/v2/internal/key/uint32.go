@@ -10,6 +10,10 @@ import (
 
 type uint32PC struct{}
 
+func (u uint32PC) Equal(v1, v2 protoreflect.Value) bool {
+	return v1.Uint() == v2.Uint()
+}
+
 func (u uint32PC) decode(r *bytes.Reader) (protoreflect.Value, error) {
 	var x uint32
 	err := binary.Read(r, binary.BigEndian, &x)

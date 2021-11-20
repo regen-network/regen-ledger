@@ -28,13 +28,13 @@ message A {
     }
   };
 
-  Enumeration enum = 1;
-  bool some_boolean = 2;
+  Enumeration ENUM = 1;
+  bool BOOL = 2;
   int32 INT32 = 3;
   sint32 SINT32 = 4;
   uint32 UINT32 = 5;
   int64 INT64 = 6;
-  sint64 SING64 = 7;
+  sint64 SINT64 = 7;
   uint64 UINT64 = 8;
   sfixed32 SFIXED32 = 9;
   fixed32 FIXED32 = 10;
@@ -52,8 +52,8 @@ message A {
     string ONEOF_STRING = 21;
   };
   repeated Enumeration LIST_ENUM = 22;
-  google.protobuf.Timestamp timestamp = 23;
-  google.protobuf.Duration duration = 24;
+  google.protobuf.Timestamp TIMESTAMP = 23;
+  google.protobuf.Duration DURATION = 24;
 }
 
 message B {

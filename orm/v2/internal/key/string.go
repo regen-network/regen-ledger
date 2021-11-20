@@ -10,6 +10,10 @@ import (
 
 type stringPC struct{}
 
+func (s stringPC) Equal(v1, v2 protoreflect.Value) bool {
+	return v1.String() == v2.String()
+}
+
 func (s stringPC) decode(r *bytes.Reader) (protoreflect.Value, error) {
 	bz, err := io.ReadAll(r)
 	return protoreflect.ValueOfString(string(bz)), err
@@ -21,6 +25,10 @@ func (s stringPC) encode(value protoreflect.Value, w io.Writer, partial bool) er
 }
 
 type stringNT_PC struct{}
+
+func (s stringNT_PC) Equal(v1, v2 protoreflect.Value) bool {
+	return v1.String() == v2.String()
+}
 
 func (s stringNT_PC) decode(r *bytes.Reader) (protoreflect.Value, error) {
 	var bz []byte

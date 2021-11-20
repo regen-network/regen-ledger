@@ -20,7 +20,15 @@ func (b bytesPC) encode(value protoreflect.Value, w io.Writer, partial bool) err
 	return err
 }
 
+func (b bytesPC) Equal(v1, v2 protoreflect.Value) bool {
+	return bytes.Equal(v1.Bytes(), v2.Bytes())
+}
+
 type bytesNT_PC struct{}
+
+func (b bytesNT_PC) Equal(v1, v2 protoreflect.Value) bool {
+	return bytes.Equal(v1.Bytes(), v2.Bytes())
+}
 
 func (b bytesNT_PC) decode(r *bytes.Reader) (protoreflect.Value, error) {
 	n, err := r.ReadByte()

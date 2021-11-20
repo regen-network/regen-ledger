@@ -23,7 +23,19 @@ func BuildStore(nsPrefix []byte, tableDesc *types.TableDescriptor, desc protoref
 		return nil, fmt.Errorf("0 is not a valid id for table %s", desc.FullName())
 	}
 
-	pkFields := key.GetFieldDescriptors(desc, tableDesc.PrimaryKey.Fields)
+	if tableDesc.Id == 0 {
+		return nil, fmt.Errorf("table id must be non-zero")
+	}
+
+	if tableDesc.PrimaryKey == nil {
+		return nil, fmt.Errorf("no primary key defined")
+	}
+
+	pkFields, err := key.GetFieldDescriptors(desc, tableDesc.PrimaryKey.Fields)
+	if err != nil {
+		return nil, err
+	}
+
 	var seqPrefix []byte
 	if tableDesc.PrimaryKey.AutoIncrement {
 		if len(pkFields) != 1 && pkFields[0].Kind() != protoreflect.Uint64Kind {
@@ -72,7 +84,11 @@ func BuildStore(nsPrefix []byte, tableDesc *types.TableDescriptor, desc protoref
 
 		idxIds[id] = true
 
-		idxFields := key.GetFieldDescriptors(desc, idxDesc.Fields)
+		idxFields, err := key.GetFieldDescriptors(desc, idxDesc.Fields)
+		if err != nil {
+			return nil, err
+		}
+
 		cdc, err := key.MakeIndexKeyCodec(idxFields, pkFields)
 		if err != nil {
 			return nil, err

@@ -182,18 +182,20 @@ func (s Store) save(kv store.KVStore, message proto.Message, create bool) (bool,
 		refm.Set(f, pkValues[i])
 	}
 
-	created := existing != nil
+	created := existing == nil
 
 	// set indexes
-	existingRef := existing.ProtoReflect()
-	for _, idx := range s.Indexers {
-		if existing == nil {
-			err = idx.onCreate(kv, refm)
-		} else {
-			err = idx.onUpdate(kv, refm, existingRef)
-		}
-		if err != nil {
-			return created, err
+	if !created {
+		existingRef := existing.ProtoReflect()
+		for _, idx := range s.Indexers {
+			if existing == nil {
+				err = idx.onCreate(kv, refm)
+			} else {
+				err = idx.onUpdate(kv, refm, existingRef)
+			}
+			if err != nil {
+				return created, err
+			}
 		}
 	}
 

@@ -69,16 +69,35 @@ func (cdc *Codec) Decode(r *bytes.Reader) ([]protoreflect.Value, error) {
 	return values, nil
 }
 
-func GetFieldDescriptors(desc protoreflect.MessageDescriptor, fields string) []protoreflect.FieldDescriptor {
+func GetFieldDescriptors(desc protoreflect.MessageDescriptor, fields string) ([]protoreflect.FieldDescriptor, error) {
 	fieldNames := strings.Split(fields, ",")
+	if len(fieldNames) == 0 {
+		return nil, fmt.Errorf("must specify non-empty list of fields, got %s", fields)
+	}
+
+	have := map[string]bool{}
+
 	var fieldDescs []protoreflect.FieldDescriptor
 	for _, fname := range fieldNames {
+		if have[fname] {
+			return nil, fmt.Errorf("duplicate field in key %s", fname)
+		}
+
+		have[fname] = true
 		fieldDesc := GetFieldDescriptor(desc, fname)
+		if fieldDesc == nil {
+			return nil, fmt.Errorf("unable to resolve field %s", fname)
+		}
+
 		fieldDescs = append(fieldDescs, fieldDesc)
 	}
-	return fieldDescs
+	return fieldDescs, nil
 }
 
 func GetFieldDescriptor(desc protoreflect.MessageDescriptor, fname string) protoreflect.FieldDescriptor {
+	if desc == nil {
+		return nil
+	}
+
 	return desc.Fields().ByName(protoreflect.Name(fname))
 }
