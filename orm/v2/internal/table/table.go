@@ -2,7 +2,9 @@ package table
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
 
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -21,8 +23,6 @@ type Store struct {
 	IndexersById        map[uint32]*Indexer
 	MsgType             protoreflect.MessageType
 }
-
-func (s Store) isStore() {}
 
 func (s Store) primaryKey(message protoreflect.Message) ([]protoreflect.Value, []byte, error) {
 	return s.PkCodec.EncodeFromMessage(message)
@@ -158,4 +158,20 @@ func (s Store) Decode(k []byte, v []byte) (proto.Message, error) {
 		return msg, nil
 	}
 	return nil, nil
+}
+
+func (s Store) DefaultJSON() json.RawMessage {
+	return json.RawMessage("[]")
+}
+
+func (s Store) ValidateJSON(reader io.Reader) error {
+	panic("implement me")
+}
+
+func (s Store) ImportJSON(reader io.Reader) error {
+	panic("implement me")
+}
+
+func (s Store) ExportJSON(writer io.Writer) error {
+	panic("implement me")
 }

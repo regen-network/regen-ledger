@@ -1,7 +1,11 @@
 package singleton
 
 import (
+	"encoding/json"
 	"fmt"
+	io "io"
+
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
@@ -67,6 +71,27 @@ func (s *Store) Decode(_ []byte, v []byte) (proto.Message, error) {
 	msg := s.msgType.New().Interface()
 	err := proto.Unmarshal(v, msg)
 	return msg, err
+}
+
+func (s *Store) DefaultJSON() json.RawMessage {
+	msg := s.msgType.New().Interface()
+	bz, err := protojson.MarshalOptions{}.Marshal(msg)
+	if err != nil {
+		return json.RawMessage("{}")
+	}
+	return bz
+}
+
+func (s *Store) ValidateJSON(reader io.Reader) error {
+	panic("implement me")
+}
+
+func (s *Store) ImportJSON(reader io.Reader) error {
+	panic("implement me")
+}
+
+func (s *Store) ExportJSON(writer io.Writer) error {
+	panic("implement me")
 }
 
 type singletonIterator struct {

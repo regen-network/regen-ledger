@@ -1,6 +1,9 @@
 package store
 
 import (
+	"encoding/json"
+	"io"
+
 	"google.golang.org/protobuf/proto"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
@@ -13,6 +16,10 @@ type Store interface {
 	Delete(kv KVStore, message proto.Message) error
 	List(kv KVStore, options *list.Options) list.Iterator
 	Decode(k []byte, v []byte) (proto.Message, error)
+	DefaultJSON() json.RawMessage
+	ValidateJSON(io.Reader) error
+	ImportJSON(io.Reader) error
+	ExportJSON(io.Writer) error
 }
 
 type SaveMode int

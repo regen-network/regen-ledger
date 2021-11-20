@@ -38,6 +38,8 @@ require (
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.2 // indirect
 	github.com/jmhodges/levigo v1.0.0 // indirect
 	github.com/libp2p/go-buffer-pool v0.0.2 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
@@ -75,6 +77,7 @@ require (
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
+	gorm.io/gorm v1.22.3 // indirect
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
