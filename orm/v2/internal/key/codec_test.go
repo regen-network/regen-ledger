@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/reflect/protoreflect"
+	"gotest.tools/v3/assert"
 	"pgregory.net/rapid"
 )
 
@@ -21,13 +21,26 @@ func TestCodec(t *testing.T) {
 		key := TestKeyGen.Draw(t, "key").(TestKey)
 		keyValues := key.Draw(t, "values")
 
-		buf := &bytes.Buffer{}
-		err := key.Codec.Encode(keyValues, buf)
-		require.NoError(t, err)
-		keyValues2, err := key.Codec.Decode(bytes.NewReader(buf.Bytes()))
-		require.NoError(t, err)
-		key.RequireValuesEqual(t, keyValues, keyValues2)
+		bz1 := assertEncDecKey(t, key, keyValues)
+
+		if key.Codec.IsFullyOrdered() {
+			// check if ordered keys have ordered encodings
+			keyValues2 := key.Draw(t, "values2")
+			bz2 := assertEncDecKey(t, key, keyValues2)
+			// bytes comparison should equal comparison of values
+			assert.Equal(t, key.Codec.CompareValues(keyValues, keyValues2), bytes.Compare(bz1, bz2))
+		}
 	})
+}
+
+func assertEncDecKey(t *rapid.T, key TestKey, keyValues []protoreflect.Value) []byte {
+	buf := &bytes.Buffer{}
+	err := key.Codec.Encode(keyValues, buf)
+	assert.NilError(t, err)
+	keyValues2, err := key.Codec.Decode(bytes.NewReader(buf.Bytes()))
+	assert.NilError(t, err)
+	key.RequireValuesEqual(t, keyValues, keyValues2)
+	return buf.Bytes()
 }
 
 func testKeyPartCodec(t *testing.T, spec TestKeyPartSpec) {
@@ -41,14 +54,24 @@ func testKeyPartCodec(t *testing.T, spec TestKeyPartSpec) {
 
 func testKeyPartCodecNT(t *testing.T, fname string, generator *rapid.Generator, nonTerminal bool) {
 	cdc, err := MakeTestPartCodec(fname, nonTerminal)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 	rapid.Check(t, func(t *rapid.T) {
 		x := protoreflect.ValueOf(generator.Draw(t, fname))
-		buf := &bytes.Buffer{}
-		err = cdc.Encode(x, buf)
-		require.NoError(t, err)
-		y, err := cdc.Decode(bytes.NewReader(buf.Bytes()))
-		require.NoError(t, err)
-		require.Equal(t, x.Interface(), y.Interface())
+		bz1 := assertEncDecPart(t, x, cdc)
+		if cdc.IsOrdered() {
+			y := protoreflect.ValueOf(generator.Draw(t, fname+"2"))
+			bz2 := assertEncDecPart(t, y, cdc)
+			assert.Equal(t, cdc.Compare(x, y), bytes.Compare(bz1, bz2))
+		}
 	})
+}
+
+func assertEncDecPart(t *rapid.T, x protoreflect.Value, cdc PartCodec) []byte {
+	buf := &bytes.Buffer{}
+	err := cdc.Encode(x, buf)
+	assert.NilError(t, err)
+	y, err := cdc.Decode(bytes.NewReader(buf.Bytes()))
+	assert.NilError(t, err)
+	assert.Equal(t, 0, cdc.Compare(x, y))
+	return buf.Bytes()
 }

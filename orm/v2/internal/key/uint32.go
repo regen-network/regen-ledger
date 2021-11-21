@@ -10,12 +10,16 @@ import (
 
 type uint32PC struct{}
 
+func (u uint32PC) IsOrdered() bool {
+	return true
+}
+
 func (u uint32PC) IsEmpty(value protoreflect.Value) bool {
 	return value.Uint() == 0
 }
 
-func (u uint32PC) Equal(v1, v2 protoreflect.Value) bool {
-	return v1.Uint() == v2.Uint()
+func (u uint32PC) Compare(v1, v2 protoreflect.Value) int {
+	return compareUint(v1, v2)
 }
 
 func (u uint32PC) Decode(r *bytes.Reader) (protoreflect.Value, error) {

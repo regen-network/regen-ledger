@@ -1,7 +1,7 @@
 package table
 
 import (
-	"fmt"
+	"github.com/regen-network/regen-ledger/orm/v2/ormerrors"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
@@ -19,15 +19,11 @@ func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, messageType p
 	desc := messageType.Descriptor()
 	tableId := tableDesc.Id
 	if tableId == 0 {
-		return nil, fmt.Errorf("0 is not a valid id for table %s", desc.FullName())
-	}
-
-	if tableDesc.Id == 0 {
-		return nil, fmt.Errorf("table id must be non-zero")
+		return nil, ormerrors.InvalidTableId.Wrapf("table %s", messageType.Descriptor().FullName())
 	}
 
 	if tableDesc.PrimaryKey == nil {
-		return nil, fmt.Errorf("no primary key defined")
+		return nil, ormerrors.MissingPrimaryKey.Wrap(string(messageType.Descriptor().FullName()))
 	}
 
 	pkFields, err := key.GetFieldDescriptors(desc, tableDesc.PrimaryKey.Fields)
@@ -38,7 +34,7 @@ func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, messageType p
 	var seqPrefix []byte
 	if tableDesc.PrimaryKey.AutoIncrement {
 		if len(pkFields) != 1 && pkFields[0].Kind() != protoreflect.Uint64Kind {
-			return nil, fmt.Errorf("only a single uint64 field is supported for primary keys, got %s", pkFields)
+			return nil, ormerrors.InvalidAutoIncrementKey.Wrapf("got %s for %s", tableDesc.PrimaryKey.Fields, desc.FullName())
 		}
 
 		seqPrefix = key.MakeUint32Prefix(nsPrefix, SchemaSpacePrefix)
@@ -70,11 +66,11 @@ func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, messageType p
 	for _, idxDesc := range tableDesc.Index {
 		id := idxDesc.Id
 		if id == 0 {
-			return nil, fmt.Errorf("0 is not a valid id for index on table %s with fields %s", desc.FullName(), idxDesc.Fields)
+			return nil, ormerrors.InvalidIndexId.Wrapf("index on table %s with fields %s", desc.FullName(), idxDesc.Fields)
 		}
 
 		if idxIds[id] {
-			return nil, fmt.Errorf("duplicate index on table %s with id %d", desc.FullName(), id)
+			return nil, ormerrors.DuplicateIndexId.Wrapf("id %d on table %s", id, desc.FullName())
 		}
 
 		idxIds[id] = true

@@ -2,9 +2,10 @@ package key
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"strings"
+
+	"github.com/regen-network/regen-ledger/orm/v2/ormerrors"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
@@ -143,24 +144,56 @@ func (cdc *Codec) EncodeFromMessage(message protoreflect.Message) ([]protoreflec
 	return values, b.Bytes(), nil
 }
 
-func GetFieldDescriptors(desc protoreflect.MessageDescriptor, fields string) ([]protoreflect.FieldDescriptor, error) {
-	fieldNames := strings.Split(fields, ",")
-	if len(fieldNames) == 0 {
-		return nil, fmt.Errorf("must specify non-empty list of fields, got %s", fields)
+// IsFullyOrdered returns true if all parts are also ordered
+func (cdc *Codec) IsFullyOrdered() bool {
+	for _, p := range cdc.PartCodecs {
+		if !p.IsOrdered() {
+			return false
+		}
 	}
+	return true
+}
+
+func (cdc *Codec) CompareValues(values1, values2 []protoreflect.Value) int {
+	n := len(values1)
+	if n != len(values2) {
+		panic("expected arrays of the same length")
+	}
+	if n > cdc.NumParts {
+		panic("array is too long")
+	}
+
+	var cmp int
+	for i := 0; i < n; i++ {
+		cmp = cdc.PartCodecs[i].Compare(values1[i], values2[i])
+		// any non-equal parts determine our ordering
+		if cmp != 0 {
+			break
+		}
+	}
+
+	return cmp
+}
+
+func GetFieldDescriptors(desc protoreflect.MessageDescriptor, fields string) ([]protoreflect.FieldDescriptor, error) {
+	if len(fields) == 0 {
+		return nil, ormerrors.InvalidKeyFields.Wrapf("got fields %q for table %q", fields, desc.FullName())
+	}
+
+	fieldNames := strings.Split(fields, ",")
 
 	have := map[string]bool{}
 
 	var fieldDescs []protoreflect.FieldDescriptor
 	for _, fname := range fieldNames {
 		if have[fname] {
-			return nil, fmt.Errorf("duplicate field in key %s", fname)
+			return nil, ormerrors.DuplicateKeyField.Wrapf("field %q in %q", fname, desc.FullName())
 		}
 
 		have[fname] = true
 		fieldDesc := GetFieldDescriptor(desc, fname)
 		if fieldDesc == nil {
-			return nil, fmt.Errorf("unable to resolve field %s", fname)
+			return nil, ormerrors.FieldNotFound.Wrapf("field %q in %q", fname, desc.FullName())
 		}
 
 		fieldDescs = append(fieldDescs, fieldDesc)

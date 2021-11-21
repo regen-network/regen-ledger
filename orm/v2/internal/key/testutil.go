@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/stretchr/testify/require"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/testpb"
@@ -99,7 +101,7 @@ func (k TestKey) Draw(t *rapid.T, id string) []protoreflect.Value {
 
 func (k TestKey) RequireValuesEqual(t require.TestingT, values, values2 []protoreflect.Value) {
 	for i := 0; i < len(values); i++ {
-		require.Truef(t, k.Codec.PartCodecs[i].Equal(values[i], values2[i]),
+		assert.Equal(t, 0, k.Codec.PartCodecs[i].Compare(values[i], values2[i]),
 			"values[%d]: %v != %v", i, values[i].Interface(), values2[i].Interface())
 	}
 }

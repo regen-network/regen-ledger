@@ -11,8 +11,9 @@ import (
 type PartCodec interface {
 	Decode(r *bytes.Reader) (protoreflect.Value, error)
 	Encode(value protoreflect.Value, w io.Writer) error
-	Equal(v1, v2 protoreflect.Value) bool
+	Compare(v1, v2 protoreflect.Value) int
 	IsEmpty(value protoreflect.Value) bool
+	IsOrdered() bool
 }
 
 func makePartCodec(field protoreflect.FieldDescriptor, nonTerminal bool) (PartCodec, error) {

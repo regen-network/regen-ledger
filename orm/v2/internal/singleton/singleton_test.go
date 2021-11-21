@@ -3,6 +3,10 @@ package singleton
 import (
 	"testing"
 
+	"github.com/regen-network/regen-ledger/orm/v2/ormerrors"
+
+	"gotest.tools/v3/assert"
+
 	store2 "github.com/regen-network/regen-ledger/orm/v2/internal/store"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
@@ -10,72 +14,71 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/store/mem"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/testpb"
-	"github.com/stretchr/testify/require"
 )
 
 func TestSingleton(t *testing.T) {
-	_, err := BuildStore(nil, &ormpb.SingletonDescriptor{Id: 0})
-	require.Error(t, err)
+	b1 := &testpb.B{X: "abc"}
+	_, err := BuildStore(nil, &ormpb.SingletonDescriptor{Id: 0}, b1.ProtoReflect().Type())
+	assert.ErrorContains(t, err, ormerrors.InvalidTableId.Error())
 
-	store, err := BuildStore(nil, &ormpb.SingletonDescriptor{Id: 1})
-	require.NoError(t, err)
+	store, err := BuildStore(nil, &ormpb.SingletonDescriptor{Id: 1}, b1.ProtoReflect().Type())
+	assert.NilError(t, err)
 
 	kv := mem.NewStore()
-	b1 := &testpb.B{X: "abc"}
 
 	// read empty
 	found, err := store.Read(kv, b1)
-	require.False(t, found)
-	require.NoError(t, err)
+	assert.Assert(t, !found)
+	assert.NilError(t, err)
 
 	// create
 	err = store.Save(kv, b1, store2.SAVE_MODE_CREATE)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// read
 	var b2 testpb.B
 	found, err = store.Read(kv, &b2)
-	require.True(t, found)
-	require.NoError(t, err)
-	require.Equal(t, b1.X, b2.X)
+	assert.Assert(t, found)
+	assert.NilError(t, err)
+	assert.Equal(t, b1.X, b2.X)
 
 	// create a second time works (singleton tables don't care)
 	b1.X = "def"
 	err = store.Save(kv, b1, store2.SAVE_MODE_CREATE)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// save succeeds
 	err = store.Save(kv, b1, store2.SAVE_MODE_UPDATE)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 
 	// read
 	found, err = store.Read(kv, &b2)
-	require.True(t, found)
-	require.NoError(t, err)
-	require.Equal(t, b1.X, b2.X)
+	assert.Assert(t, found)
+	assert.NilError(t, err)
+	assert.Equal(t, b1.X, b2.X)
 
 	// iterator just returns one value always
 	it := store.List(kv, &list.Options{})
-	require.NotNil(t, it)
+	assert.Assert(t, it != nil)
 	found, err = it.Next(&b2)
-	require.True(t, found)
-	require.NoError(t, err)
-	require.Equal(t, b1.X, b2.X)
+	assert.Assert(t, found)
+	assert.NilError(t, err)
+	assert.Equal(t, b1.X, b2.X)
 	found, err = it.Next(&b2)
-	require.False(t, found)
-	require.NoError(t, err)
+	assert.Assert(t, !found)
+	assert.NilError(t, err)
 	found, err = it.Next(&b2) // next always does the same thing
-	require.False(t, found)
-	require.NoError(t, err)
+	assert.Assert(t, !found)
+	assert.NilError(t, err)
 
 	// delete
 	err = store.Delete(kv, b1)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 	err = store.Delete(kv, b1)
-	require.NoError(t, err) // deleting twice is a no-op
+	assert.NilError(t, err) // deleting twice is a no-op
 
 	// can't read
 	found, err = store.Read(kv, b1)
-	require.False(t, found)
-	require.NoError(t, err)
+	assert.Assert(t, !found)
+	assert.NilError(t, err)
 }

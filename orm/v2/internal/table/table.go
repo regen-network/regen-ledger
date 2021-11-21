@@ -3,8 +3,9 @@ package table
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
+
+	"github.com/regen-network/regen-ledger/orm/v2/ormerrors"
 
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -76,7 +77,7 @@ func (s Store) Save(kv store.KVStore, message proto.Message, mode store.SaveMode
 	var existing proto.Message
 	if bz != nil {
 		if mode == store.SAVE_MODE_CREATE {
-			return fmt.Errorf("object of type %T with primary key %s already exists, can't create", message, pkValues)
+			return ormerrors.PrimaryKeyConstraintViolation.Wrapf("%q", mref.Descriptor().FullName())
 		}
 
 		existing = mref.New().Interface()
@@ -86,7 +87,7 @@ func (s Store) Save(kv store.KVStore, message proto.Message, mode store.SaveMode
 		}
 	} else {
 		if mode == store.SAVE_MODE_UPDATE {
-			return fmt.Errorf("object of type %T with primary key %s wasn't saved before, can't update", message, pkValues)
+			return ormerrors.NotFoundOnUpdate.Wrapf("%q", mref.Descriptor().FullName())
 		}
 	}
 

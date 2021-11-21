@@ -2,8 +2,9 @@ package singleton
 
 import (
 	"encoding/json"
-	"fmt"
 	io "io"
+
+	"github.com/regen-network/regen-ledger/orm/v2/ormerrors"
 
 	"google.golang.org/protobuf/encoding/protojson"
 
@@ -20,7 +21,7 @@ import (
 func BuildStore(nsPrefix []byte, singletonDescriptor *ormpb.SingletonDescriptor, messageType protoreflect.MessageType) (store.Store, error) {
 	id := singletonDescriptor.Id
 	if id == 0 {
-		return nil, fmt.Errorf("singleton must have non-zero id")
+		return nil, ormerrors.InvalidTableId.Wrapf("singleton %s", messageType.Descriptor().FullName())
 	}
 
 	prefix := key.MakeUint32Prefix(nsPrefix, id)

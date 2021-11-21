@@ -3,7 +3,8 @@ package table
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
+
+	"github.com/regen-network/regen-ledger/orm/v2/ormerrors"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 
@@ -22,7 +23,7 @@ func (s *AutoIncStore) Save(kv store.KVStore, message proto.Message, mode store.
 	val := mref.Get(f).Uint()
 	if val == 0 {
 		if mode == store.SAVE_MODE_UPDATE {
-			return fmt.Errorf("can't update when no primary key is set")
+			return ormerrors.PrimaryKeyInvalidOnUpdate
 		}
 
 		mode = store.SAVE_MODE_CREATE
@@ -34,7 +35,7 @@ func (s *AutoIncStore) Save(kv store.KVStore, message proto.Message, mode store.
 		mref.Set(f, protoreflect.ValueOfUint64(key))
 	} else {
 		if mode == store.SAVE_MODE_CREATE {
-			return fmt.Errorf("can't create with auto-increment primary key already set")
+			return ormerrors.AutoIncrementKeyAlreadySet
 		}
 
 		mode = store.SAVE_MODE_UPDATE

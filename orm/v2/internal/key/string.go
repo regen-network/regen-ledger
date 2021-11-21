@@ -4,14 +4,19 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"strings"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 type stringPC struct{}
 
-func (s stringPC) Equal(v1, v2 protoreflect.Value) bool {
-	return v1.String() == v2.String()
+func (s stringPC) IsOrdered() bool {
+	return true
+}
+
+func (s stringPC) Compare(v1, v2 protoreflect.Value) int {
+	return strings.Compare(v1.String(), v2.String())
 }
 
 func (s stringPC) Decode(r *bytes.Reader) (protoreflect.Value, error) {
@@ -30,12 +35,16 @@ func (s stringPC) IsEmpty(value protoreflect.Value) bool {
 
 type stringNT_PC struct{}
 
+func (s stringNT_PC) IsOrdered() bool {
+	return true
+}
+
 func (s stringNT_PC) IsEmpty(value protoreflect.Value) bool {
 	return value.String() == ""
 }
 
-func (s stringNT_PC) Equal(v1, v2 protoreflect.Value) bool {
-	return v1.String() == v2.String()
+func (s stringNT_PC) Compare(v1, v2 protoreflect.Value) int {
+	return strings.Compare(v1.String(), v2.String())
 }
 
 func (s stringNT_PC) Decode(r *bytes.Reader) (protoreflect.Value, error) {

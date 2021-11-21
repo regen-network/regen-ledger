@@ -10,6 +10,10 @@ import (
 
 type bytesPC struct{}
 
+func (b bytesPC) IsOrdered() bool {
+	return false
+}
+
 func (b bytesPC) Decode(r *bytes.Reader) (protoreflect.Value, error) {
 	bz, err := io.ReadAll(r)
 	return protoreflect.ValueOfBytes(bz), err
@@ -20,8 +24,8 @@ func (b bytesPC) Encode(value protoreflect.Value, w io.Writer) error {
 	return err
 }
 
-func (b bytesPC) Equal(v1, v2 protoreflect.Value) bool {
-	return bytes.Equal(v1.Bytes(), v2.Bytes())
+func (b bytesPC) Compare(v1, v2 protoreflect.Value) int {
+	return bytes.Compare(v1.Bytes(), v2.Bytes())
 }
 
 func (b bytesPC) IsEmpty(value protoreflect.Value) bool {
@@ -30,12 +34,16 @@ func (b bytesPC) IsEmpty(value protoreflect.Value) bool {
 
 type bytesNT_PC struct{}
 
+func (b bytesNT_PC) IsOrdered() bool {
+	return false
+}
+
 func (b bytesNT_PC) IsEmpty(value protoreflect.Value) bool {
 	return len(value.Bytes()) == 0
 }
 
-func (b bytesNT_PC) Equal(v1, v2 protoreflect.Value) bool {
-	return bytes.Equal(v1.Bytes(), v2.Bytes())
+func (b bytesNT_PC) Compare(v1, v2 protoreflect.Value) int {
+	return bytes.Compare(v1.Bytes(), v2.Bytes())
 }
 
 func (b bytesNT_PC) Decode(r *bytes.Reader) (protoreflect.Value, error) {

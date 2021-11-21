@@ -29,7 +29,6 @@ func (b Builder) buildTable(tableDesc *ormpb.TableDescriptor, desc protoreflect.
 		Type:              objType,
 		Args:              nil,
 		Resolve:           nil,
-		Subscribe:         nil,
 		DeprecationReason: "",
 		Description:       "",
 	}, nil
