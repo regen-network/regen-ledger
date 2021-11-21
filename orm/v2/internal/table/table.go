@@ -169,10 +169,10 @@ func (s Store) ValidateJSON(reader io.Reader) error {
 	panic("implement me")
 }
 
-func (s Store) ImportJSON(reader io.Reader) error {
+func (s Store) ImportJSON(kvStore store.KVStore, reader io.Reader) error {
 	panic("implement me")
 }
 
-func (s Store) ExportJSON(writer io.Writer) error {
+func (s Store) ExportJSON(kvStore store.KVStore, writer io.Writer) error {
 	panic("implement me")
 }

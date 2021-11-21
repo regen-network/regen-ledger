@@ -87,12 +87,40 @@ func (s *Store) ValidateJSON(reader io.Reader) error {
 	panic("implement me")
 }
 
-func (s *Store) ImportJSON(reader io.Reader) error {
-	panic("implement me")
+func (s *Store) ImportJSON(kvStore store.KVStore, reader io.Reader) error {
+	bz, err := io.ReadAll(reader)
+	if err != nil {
+		return err
+	}
+
+	msg := s.msgType.New().Interface()
+	err = protojson.Unmarshal(bz, msg)
+	if err != nil {
+		return err
+	}
+
+	return s.Save(kvStore, msg, store.SAVE_MODE_DEFAULT)
 }
 
-func (s *Store) ExportJSON(writer io.Writer) error {
-	panic("implement me")
+func (s *Store) ExportJSON(kvStore store.KVStore, writer io.Writer) error {
+	msg := s.msgType.New().Interface()
+	found, err := s.Read(kvStore, msg)
+	if err != nil {
+		return err
+	}
+
+	var bz []byte
+	if !found {
+		bz = s.DefaultJSON()
+	} else {
+		bz, err = protojson.Marshal(msg)
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err = writer.Write(bz)
+	return err
 }
 
 type singletonIterator struct {

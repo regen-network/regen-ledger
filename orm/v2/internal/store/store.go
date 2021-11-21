@@ -18,8 +18,8 @@ type Store interface {
 	Decode(k []byte, v []byte) (proto.Message, error)
 	DefaultJSON() json.RawMessage
 	ValidateJSON(io.Reader) error
-	ImportJSON(io.Reader) error
-	ExportJSON(io.Writer) error
+	ImportJSON(KVStore, io.Reader) error
+	ExportJSON(KVStore, io.Writer) error
 }
 
 type SaveMode int
