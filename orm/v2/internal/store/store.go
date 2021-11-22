@@ -4,10 +4,9 @@ import (
 	"encoding/json"
 	"io"
 
-	"github.com/regen-network/regen-ledger/orm/v2/types/kvlayout"
-
 	"google.golang.org/protobuf/proto"
 
+	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormdecode"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
 )
 
@@ -17,7 +16,7 @@ type Store interface {
 	Save(kv KVStore, message proto.Message, mode SaveMode) error
 	Delete(kv KVStore, message proto.Message) error
 	List(kv KVStore, options *list.Options) list.Iterator
-	Decode(k []byte, v []byte) (kvlayout.Entry, error)
+	Decode(k []byte, v []byte) (ormdecode.Entry, error)
 	DefaultJSON() json.RawMessage
 	ValidateJSON(io.Reader) error
 	ImportJSON(KVStore, io.Reader) error

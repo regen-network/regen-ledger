@@ -8,9 +8,9 @@ import (
 	"gotest.tools/v3/assert"
 	"pgregory.net/rapid"
 
-	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/testpb"
+	"github.com/regen-network/regen-ledger/orm/v2/internal/testutil"
 	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
 	"github.com/regen-network/regen-ledger/orm/v2/types/ormpb"
 )
@@ -86,11 +86,11 @@ func TestBuildStore(t *testing.T) {
 
 func TestScenarios(t *testing.T) {
 	rapid.Check(t, func(t *rapid.T) {
-		pk := key.TestKeyGen.Draw(t, "pk").(key.TestKey)
+		pk := testutil.TestKeyGen.Draw(t, "pk").(testutil.TestKey)
 		numIndexes := rapid.IntRange(0, 3).Draw(t, "num indexes").(int)
 		var indexes []*ormpb.SecondaryIndexDescriptor
 		for i := 0; i < numIndexes; i++ {
-			k := key.TestKeyGen.Draw(t, "pk").(key.TestKey)
+			k := testutil.TestKeyGen.Draw(t, "pk").(testutil.TestKey)
 			indexes = append(indexes, &ormpb.SecondaryIndexDescriptor{
 				Fields: k.Fields,
 				Id:     uint32(i + 1),

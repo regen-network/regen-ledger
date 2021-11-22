@@ -4,8 +4,12 @@ go 1.17
 
 require (
 	github.com/cosmos/cosmos-sdk v0.44.3
+	github.com/graphql-go/graphql v0.8.0
 	github.com/stretchr/testify v1.7.0
 	google.golang.org/protobuf v1.27.1
+	gorm.io/gorm v1.22.3
+	gotest.tools v2.2.0+incompatible
+	gotest.tools/v3 v3.0.3
 	pgregory.net/rapid v0.4.7
 )
 
@@ -32,7 +36,6 @@ require (
 	github.com/golang/snappy v0.0.3-0.20201103224600-674baa8c7fc3 // indirect
 	github.com/google/btree v1.0.0 // indirect
 	github.com/google/go-cmp v0.5.5 // indirect
-	github.com/graphql-go/graphql v0.8.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
 	github.com/gtank/merlin v0.1.1 // indirect
 	github.com/hashicorp/go-immutable-radix v1.0.0 // indirect
@@ -73,13 +76,12 @@ require (
 	golang.org/x/net v0.0.0-20210903162142-ad29c8ab022f // indirect
 	golang.org/x/sys v0.0.0-20210903071746-97244b99971b // indirect
 	golang.org/x/text v0.3.6 // indirect
+	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/genproto v0.0.0-20210602131652-f16073e35f0c // indirect
 	google.golang.org/grpc v1.40.0 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
-	gorm.io/gorm v1.22.3 // indirect
-	gotest.tools/v3 v3.0.3 // indirect
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1

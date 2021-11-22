@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	io "io"
 
-	"github.com/regen-network/regen-ledger/orm/v2/types/kvlayout"
+	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormkey"
 
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
+	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormdecode"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
 	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
@@ -23,7 +23,7 @@ func BuildStore(nsPrefix []byte, singletonDescriptor *ormpb.SingletonDescriptor,
 		return nil, ormerrors.InvalidTableId.Wrapf("singleton %s", messageType.Descriptor().FullName())
 	}
 
-	prefix := key.MakeUint32Prefix(nsPrefix, id)
+	prefix := ormkey.MakeUint32Prefix(nsPrefix, id)
 	s := &Store{prefix: prefix, msgType: messageType}
 	return s, nil
 }
@@ -67,10 +67,10 @@ func (s *Store) List(kv store.KVStore, _ *list.Options) list.Iterator {
 	return &singletonIterator{store: s, kv: kv}
 }
 
-func (s *Store) Decode(k []byte, v []byte) (kvlayout.Entry, error) {
+func (s *Store) Decode(k []byte, v []byte) (ormdecode.Entry, error) {
 	msg := s.msgType.New().Interface()
 	err := proto.Unmarshal(v, msg)
-	return kvlayout.PrimaryEntry{Value: msg}, err
+	return ormdecode.PrimaryKeyEntry{Value: msg}, err
 }
 
 func (s *Store) DefaultJSON() json.RawMessage {

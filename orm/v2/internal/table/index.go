@@ -3,16 +3,17 @@ package table
 import (
 	"bytes"
 
+	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormkey"
+
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
 )
 
 type Indexer struct {
 	IndexFields []protoreflect.FieldDescriptor
 	Prefix      []byte
-	Codec       *key.Codec
+	Codec       *ormkey.IndexKeyCodec
 	FieldNames  string
 }
 

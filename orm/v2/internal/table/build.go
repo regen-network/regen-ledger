@@ -1,9 +1,9 @@
 package table
 
 import (
+	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormkey"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
 	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
 	"github.com/regen-network/regen-ledger/orm/v2/types/ormpb"
@@ -26,7 +26,7 @@ func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, messageType p
 		return nil, ormerrors.MissingPrimaryKey.Wrap(string(messageType.Descriptor().FullName()))
 	}
 
-	pkFields, err := key.GetFieldDescriptors(desc, tableDesc.PrimaryKey.Fields)
+	pkFields, err := ormkey.GetFieldDescriptors(desc, tableDesc.PrimaryKey.Fields)
 	if err != nil {
 		return nil, err
 	}
@@ -37,15 +37,15 @@ func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, messageType p
 			return nil, ormerrors.InvalidAutoIncrementKey.Wrapf("got %s for %s", tableDesc.PrimaryKey.Fields, desc.FullName())
 		}
 
-		seqPrefix = key.MakeUint32Prefix(nsPrefix, SchemaSpacePrefix)
-		seqPrefix = key.MakeUint32Prefix(seqPrefix, SequenceSpacePrefix)
-		seqPrefix = key.MakeUint32Prefix(seqPrefix, tableId)
+		seqPrefix = ormkey.MakeUint32Prefix(nsPrefix, SchemaSpacePrefix)
+		seqPrefix = ormkey.MakeUint32Prefix(seqPrefix, SequenceSpacePrefix)
+		seqPrefix = ormkey.MakeUint32Prefix(seqPrefix, tableId)
 	}
 
-	prefix := key.MakeUint32Prefix(nsPrefix, tableDesc.Id)
-	pkPrefix := key.MakeUint32Prefix(prefix, PrimaryKeyPrefix)
+	prefix := ormkey.MakeUint32Prefix(nsPrefix, tableDesc.Id)
+	pkPrefix := ormkey.MakeUint32Prefix(prefix, PrimaryKeyPrefix)
 
-	pkCodec, err := key.MakeCodec(pkPrefix, pkFields)
+	pkCodec, err := ormkey.MakeCodec(pkPrefix, pkFields)
 	if err != nil {
 		return nil, err
 	}
@@ -75,13 +75,13 @@ func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, messageType p
 
 		idxIds[id] = true
 
-		idxFields, err := key.GetFieldDescriptors(desc, idxDesc.Fields)
+		idxFields, err := ormkey.GetFieldDescriptors(desc, idxDesc.Fields)
 		if err != nil {
 			return nil, err
 		}
 
-		idxPrefix := key.MakeUint32Prefix(prefix, id)
-		cdc, err := key.MakeIndexKeyCodec(idxPrefix, idxFields, pkFields)
+		idxPrefix := ormkey.MakeUint32Prefix(prefix, id)
+		cdc, err := ormkey.MakeIndexKeyCodec(idxPrefix, idxFields, pkFields)
 		if err != nil {
 			return nil, err
 		}

@@ -1,4 +1,4 @@
-package key
+package ormkey
 
 import "encoding/binary"
 

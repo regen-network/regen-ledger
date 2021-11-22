@@ -1,10 +1,10 @@
 package table
 
 import (
+	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormkey"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
 	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
 )
@@ -13,7 +13,7 @@ type Store struct {
 	NumPrimaryKeyFields int
 	Prefix              []byte
 	PkPrefix            []byte
-	PkCodec             *key.Codec
+	PkCodec             *ormkey.Codec
 	Indexers            []*Indexer
 	IndexersByFields    map[string]*Indexer
 	IndexersById        map[uint32]*Indexer
@@ -118,16 +118,16 @@ func (s Store) Delete(kv store.KVStore, message proto.Message) error {
 		return err
 	}
 
+	// delete object
+	kv.Delete(pk)
+
 	// clear indexes
 	for _, idx := range s.Indexers {
-		err := idx.onCreate(kv, mref)
+		err := idx.onDelete(kv, mref)
 		if err != nil {
 			return err
 		}
 	}
-
-	// delete object
-	kv.Delete(pk)
 
 	return nil
 }

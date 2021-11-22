@@ -1,35 +1,31 @@
-package key
+package ormkey
 
 import (
 	"bytes"
 	"io"
 	"strings"
 
-	"google.golang.org/protobuf/reflect/protoreflect"
-
+	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormvalue"
 	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 type Codec struct {
-	NumParts      int
-	PartCodecs    []PartCodec
-	PKDecoder     func(r *bytes.Reader) ([]protoreflect.Value, error)
-	Fields        []protoreflect.FieldDescriptor
-	Prefix        []byte
-	SplitIndexPK  func([]protoreflect.Value) (idxKey []protoreflect.Value, pk []protoreflect.Value, err error)
-	NumIndexParts int
+	Prefix      []byte
+	Fields      []protoreflect.FieldDescriptor
+	ValueCodecs []ormvalue.Codec
 }
 
 func MakeCodec(prefix []byte, fieldDescs []protoreflect.FieldDescriptor) (*Codec, error) {
 	n := len(fieldDescs)
-	var partCodecs []PartCodec
+	var partCodecs []ormvalue.Codec
 	for i := 0; i < n; i++ {
 		nonTerminal := true
 		if i == n-1 {
 			nonTerminal = false
 		}
 		field := fieldDescs[i]
-		enc, err := makePartCodec(field, nonTerminal)
+		enc, err := ormvalue.MakeCodec(field, nonTerminal)
 		if err != nil {
 			return nil, err
 		}
@@ -37,10 +33,9 @@ func MakeCodec(prefix []byte, fieldDescs []protoreflect.FieldDescriptor) (*Codec
 	}
 
 	return &Codec{
-		PartCodecs: partCodecs,
-		NumParts:   n,
-		Fields:     fieldDescs,
-		Prefix:     prefix,
+		ValueCodecs: partCodecs,
+		Fields:      fieldDescs,
+		Prefix:      prefix,
 	}, nil
 }
 
@@ -51,7 +46,7 @@ func (cdc *Codec) Encode(values []protoreflect.Value, w io.Writer) error {
 	}
 
 	for i := 0; i < len(values); i++ {
-		err = cdc.PartCodecs[i].Encode(values[i], w)
+		err = cdc.ValueCodecs[i].Encode(values[i], w)
 		if err != nil {
 			return err
 		}
@@ -63,8 +58,9 @@ func (cdc *Codec) Encode(values []protoreflect.Value, w io.Writer) error {
 // list of key values.
 func (cdc *Codec) EncodePartial(message protoreflect.Message) ([]protoreflect.Value, []byte, error) {
 	lastNonEmpty := 0
-	values := make([]protoreflect.Value, cdc.NumParts)
-	for i := 0; i < cdc.NumParts; i++ {
+	n := len(cdc.ValueCodecs)
+	values := make([]protoreflect.Value, n)
+	for i := 0; i < n; i++ {
 		f := cdc.Fields[i]
 		if message.Has(f) {
 			lastNonEmpty = i
@@ -119,12 +115,13 @@ func (cdc *Codec) Decode(r *bytes.Reader) ([]protoreflect.Value, error) {
 		return nil, err
 	}
 
-	values := make([]protoreflect.Value, cdc.NumParts)
-	for i := 0; i < cdc.NumParts; i++ {
-		value, err := cdc.PartCodecs[i].Decode(r)
+	n := len(cdc.ValueCodecs)
+	values := make([]protoreflect.Value, n)
+	for i := 0; i < n; i++ {
+		value, err := cdc.ValueCodecs[i].Decode(r)
 		values[i] = value
 		if err == io.EOF {
-			if i == cdc.NumParts-1 {
+			if i == n-1 {
 				return values, nil
 			} else {
 				return nil, io.ErrUnexpectedEOF
@@ -148,7 +145,7 @@ func (cdc *Codec) EncodeFromMessage(message protoreflect.Message) ([]protoreflec
 
 // IsFullyOrdered returns true if all parts are also ordered
 func (cdc *Codec) IsFullyOrdered() bool {
-	for _, p := range cdc.PartCodecs {
+	for _, p := range cdc.ValueCodecs {
 		if !p.IsOrdered() {
 			return false
 		}
@@ -161,13 +158,13 @@ func (cdc *Codec) CompareValues(values1, values2 []protoreflect.Value) int {
 	if n != len(values2) {
 		panic("expected arrays of the same length")
 	}
-	if n > cdc.NumParts {
+	if n > len(cdc.ValueCodecs) {
 		panic("array is too long")
 	}
 
 	var cmp int
 	for i := 0; i < n; i++ {
-		cmp = cdc.PartCodecs[i].Compare(values1[i], values2[i])
+		cmp = cdc.ValueCodecs[i].Compare(values1[i], values2[i])
 		// any non-equal parts determine our ordering
 		if cmp != 0 {
 			break
@@ -209,4 +206,21 @@ func GetFieldDescriptor(desc protoreflect.MessageDescriptor, fname string) proto
 	}
 
 	return desc.Fields().ByName(protoreflect.Name(fname))
+}
+
+func (cdc Codec) Size(values []protoreflect.Value) (int, error) {
+	panic("TODO")
+}
+
+type CodecI interface {
+	Encode(values []protoreflect.Value, w io.Writer) error
+	EncodePartial(message protoreflect.Message) ([]protoreflect.Value, []byte, error)
+	GetValues(mref protoreflect.Message) []protoreflect.Value
+	ClearKey(mref protoreflect.Message)
+	SetValues(mref protoreflect.Message, values []protoreflect.Value)
+	Decode(r *bytes.Reader) ([]protoreflect.Value, error)
+	EncodeFromMessage(message protoreflect.Message) ([]protoreflect.Value, []byte, error)
+	IsFullyOrdered() bool
+	CompareValues(values1, values2 []protoreflect.Value) int
+	Size(values []protoreflect.Value) (int, error)
 }

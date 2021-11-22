@@ -1,8 +1,12 @@
-package key
+package testutil
 
 import (
 	"fmt"
 	"strings"
+
+	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormkey"
+
+	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormvalue"
 
 	"github.com/stretchr/testify/assert"
 
@@ -14,8 +18,8 @@ import (
 )
 
 type TestKeyPartSpec struct {
-	fieldName string
-	gen       *rapid.Generator
+	FieldName string
+	Gen       *rapid.Generator
 }
 
 var TestKeyPartSpecs = []TestKeyPartSpec{
@@ -40,19 +44,19 @@ var TestKeyPartSpecs = []TestKeyPartSpec{
 	},
 }
 
-func MakeTestPartCodec(fname string, nonTerminal bool) (PartCodec, error) {
-	return makePartCodec(GetTestField(fname), nonTerminal)
+func MakeTestPartCodec(fname string, nonTerminal bool) (ormvalue.Codec, error) {
+	return ormvalue.MakeCodec(GetTestField(fname), nonTerminal)
 }
 
 func GetTestField(fname string) protoreflect.FieldDescriptor {
 	a := &testpb.A{}
-	return GetFieldDescriptor(a.ProtoReflect().Descriptor(), fname)
+	return ormkey.GetFieldDescriptor(a.ProtoReflect().Descriptor(), fname)
 }
 
 type TestKey struct {
 	KeySpecs []TestKeyPartSpec
 	Fields   string
-	Codec    *Codec
+	Codec    *ormkey.Codec
 }
 
 var TestKeyGen = rapid.SliceOfN(rapid.IntRange(0, len(TestKeyPartSpecs)-1), 1, len(TestKeyPartSpecs)).
@@ -73,11 +77,11 @@ var TestKeyGen = rapid.SliceOfN(rapid.IntRange(0, len(TestKeyPartSpecs)-1), 1, l
 	for _, x := range xs {
 		spec := TestKeyPartSpecs[x]
 		specs = append(specs, spec)
-		fields = append(fields, GetTestField(spec.fieldName))
-		fnames = append(fnames, spec.fieldName)
+		fields = append(fields, GetTestField(spec.FieldName))
+		fnames = append(fnames, spec.FieldName)
 	}
 
-	cdc, err := MakeCodec([]byte{1}, fields)
+	cdc, err := ormkey.MakeCodec([]byte{1}, fields)
 	if err != nil {
 		panic(err)
 	}
@@ -94,14 +98,14 @@ func (k TestKey) Draw(t *rapid.T, id string) []protoreflect.Value {
 	n := len(k.KeySpecs)
 	keyValues := make([]protoreflect.Value, n)
 	for i, k := range k.KeySpecs {
-		keyValues[i] = protoreflect.ValueOf(k.gen.Draw(t, fmt.Sprintf("%s[%d]", id, i)))
+		keyValues[i] = protoreflect.ValueOf(k.Gen.Draw(t, fmt.Sprintf("%s[%d]", id, i)))
 	}
 	return keyValues
 }
 
 func (k TestKey) RequireValuesEqual(t require.TestingT, values, values2 []protoreflect.Value) {
 	for i := 0; i < len(values); i++ {
-		assert.Equal(t, 0, k.Codec.PartCodecs[i].Compare(values[i], values2[i]),
+		assert.Equal(t, 0, k.Codec.ValueCodecs[i].Compare(values[i], values2[i]),
 			"values[%d]: %v != %v", i, values[i].Interface(), values2[i].Interface())
 	}
 }

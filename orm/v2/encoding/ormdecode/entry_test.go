@@ -1,4 +1,4 @@
-package kvlayout
+package ormdecode
 
 import (
 	"testing"
@@ -11,11 +11,11 @@ import (
 )
 
 func Test1(t *testing.T) {
-	p1 := PrimaryEntry{
+	p1 := PrimaryKeyEntry{
 		Key:   []protoreflect.Value{protoreflect.ValueOfUint32(2)},
 		Value: &testpb.A{UINT32: 5},
 	}
-	p2 := PrimaryEntry{
+	p2 := PrimaryKeyEntry{
 		Key:   []protoreflect.Value{protoreflect.ValueOfUint32(2)},
 		Value: &testpb.A{UINT32: 5},
 	}

@@ -10,12 +10,11 @@ import (
 
 	"gotest.tools/v3/assert"
 
-	"github.com/regen-network/regen-ledger/orm/v2/types/kvlayout"
-
 	"github.com/cosmos/cosmos-sdk/store/listenkv"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 
 	"github.com/cosmos/cosmos-sdk/store/mem"
+	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormdecode"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/testpb"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
@@ -28,11 +27,13 @@ type TestDecoder struct {
 
 func (t *TestDecoder) OnWrite(_ storetypes.StoreKey, key []byte, value []byte, delete bool) error {
 	entry, err := t.schema.Decode(key, value)
-	t.ops = append(t.ops, Op{
+	op := Op{
 		Err:    err,
 		Entry:  entry,
 		Delete: delete,
-	})
+	}
+	fmt.Printf("%s\n", op)
+	t.ops = append(t.ops, op)
 	return nil
 }
 
@@ -44,14 +45,14 @@ func (t *TestDecoder) ConsumeOps() []Op {
 
 type Op struct {
 	Err    error
-	Entry  kvlayout.Entry
+	Entry  ormdecode.Entry
 	Delete bool
 }
 
 func (o Op) String() string {
 	str := ""
 	if o.Delete {
-		str += "!"
+		str += "-"
 	}
 	if o.Entry != nil {
 		str += fmt.Sprintf("%s", o.Entry)
@@ -71,17 +72,19 @@ func TestClient(t *testing.T) {
 	kv := listenkv.NewStore(mem.NewStore(), nil, []storetypes.WriteListener{decoder})
 	client := clientConn.Open(kv)
 
-	assert.NilError(t, client.Save(
-		&testpb.A{
-			UINT32: 4,
-			UINT64: 10,
-			STRING: "abc",
-		},
-	))
-	t.Logf("%+v", decoder.ops)
+	a0 := &testpb.A{
+		UINT32: 4,
+		UINT64: 10,
+		STRING: "abc",
+		BYTES:  []byte{0, 1, 2},
+	}
+	assert.NilError(t, client.Save(a0))
+	// clear bytes to make sure the right indexes still get deleted
+	a0.BYTES = nil
+	assert.NilError(t, client.Delete(a0))
 	assert.DeepEqual(t, []Op{
 		{
-			Entry: kvlayout.PrimaryEntry{
+			Entry: ormdecode.PrimaryKeyEntry{
 				Key: []protoreflect.Value{
 					protoreflect.ValueOfUint32(4),
 					protoreflect.ValueOfUint64(10),
@@ -119,21 +122,21 @@ func TestClient(t *testing.T) {
 	it := client.List(&testpb.A{})
 	defer it.Close()
 	require.NotNil(t, it)
-	var a1 testpb.A
-	have, err := it.Next(&a1)
+	var acopy testpb.A
+	have, err := it.Next(&acopy)
 	assert.Assert(t, have)
 	assert.NilError(t, err)
-	have, err = it.Next(&a1)
+	have, err = it.Next(&acopy)
 	assert.Assert(t, have)
 	assert.NilError(t, err)
-	have, err = it.Next(&a1)
+	have, err = it.Next(&acopy)
 	assert.Assert(t, have)
 	assert.NilError(t, err)
-	have, err = it.Next(&a1)
+	have, err = it.Next(&acopy)
 	assert.Assert(t, have)
 	assert.NilError(t, err)
 	// no more elements
-	have, err = it.Next(&a1)
+	have, err = it.Next(&acopy)
 	require.False(t, have)
 	assert.NilError(t, err)
 }

@@ -4,13 +4,14 @@ import (
 	"bytes"
 	"encoding/binary"
 
-	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
-	"github.com/regen-network/regen-ledger/orm/v2/types/kvlayout"
+	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormkey"
+
+	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormdecode"
 	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
 	"google.golang.org/protobuf/proto"
 )
 
-func (s Store) Decode(k []byte, v []byte) (kvlayout.Entry, error) {
+func (s Store) Decode(k []byte, v []byte) (ormdecode.Entry, error) {
 	if bytes.HasPrefix(k, s.Prefix) {
 		if bytes.HasPrefix(k, s.PkPrefix) {
 			pkValues, err := s.PkCodec.Decode(bytes.NewReader(k))
@@ -25,13 +26,13 @@ func (s Store) Decode(k []byte, v []byte) (kvlayout.Entry, error) {
 			}
 
 			// NOTE: here we skip rehydrating the primary key
-			return kvlayout.PrimaryEntry{
+			return ormdecode.PrimaryKeyEntry{
 				Key:   pkValues,
 				Value: msg,
 			}, nil
 		} else {
 			r := bytes.NewReader(k)
-			err := key.SkipPrefix(r, s.Prefix)
+			err := ormkey.SkipPrefix(r, s.Prefix)
 			if err != nil {
 				return nil, err
 			}
@@ -47,21 +48,8 @@ func (s Store) Decode(k []byte, v []byte) (kvlayout.Entry, error) {
 			}
 
 			r.Reset(k)
-			values, err := idx.Codec.Decode(r)
-			if err != nil {
-				return nil, err
-			}
+			return idx.Codec.DecodeKV(k, v)
 
-			idxKey, pk, err := idx.Codec.SplitIndexPK(values)
-			if err != nil {
-				return nil, err
-			}
-
-			return kvlayout.IndexEntry{
-				IndexFields: idx.FieldNames,
-				Key:         idxKey,
-				PrimaryKey:  pk,
-			}, nil
 		}
 	} else {
 		return nil, ormerrors.UnexpectedDecodePrefix

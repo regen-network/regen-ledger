@@ -4,16 +4,15 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
+	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormkey"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 func (s *Store) List(kv store.KVStore, opts *list.Options) list.Iterator {
-	var cdc *key.Codec
+	var cdc ormkey.CodecI
 	var idx *Indexer
 	if opts.UseIndex != "" {
 		var ok bool
@@ -21,7 +20,7 @@ func (s *Store) List(kv store.KVStore, opts *list.Options) list.Iterator {
 		if !ok {
 			return list.ErrIterator{Err: fmt.Errorf("can't find indexer %s", opts.UseIndex)}
 		}
-		cdc = idx.Codec
+		cdc = idx.Codec.Codec
 	}
 
 	var start, end []byte
@@ -50,11 +49,11 @@ func (s *Store) List(kv store.KVStore, opts *list.Options) list.Iterator {
 
 	if idx != nil {
 		return &idxIterator{
-			kv:        kv,
-			store:     s,
-			iterator:  iterator,
-			start:     true,
-			pkDecoder: idx.Codec.PKDecoder,
+			kv:       kv,
+			store:    s,
+			iterator: iterator,
+			start:    true,
+			cdc:      idx.Codec,
 		}
 	} else {
 		return &pkIterator{
@@ -110,11 +109,11 @@ func (t *pkIterator) Next(message proto.Message) (bool, error) {
 }
 
 type idxIterator struct {
-	kv        store.KVStore
-	store     *Store
-	iterator  store.KVStoreIterator
-	start     bool
-	pkDecoder func(r *bytes.Reader) ([]protoreflect.Value, error)
+	kv       store.KVStore
+	store    *Store
+	iterator store.KVStoreIterator
+	start    bool
+	cdc      *ormkey.IndexKeyCodec
 }
 
 func (t *idxIterator) Close() {
@@ -135,7 +134,7 @@ func (t *idxIterator) Next(message proto.Message) (bool, error) {
 	}
 
 	k := t.iterator.Key()
-	pkValues, err := t.pkDecoder(bytes.NewReader(k))
+	pkValues, err := t.cdc.ReadPrimaryKey(bytes.NewReader(k))
 	if err != nil {
 		return false, err
 	}

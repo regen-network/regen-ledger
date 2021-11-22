@@ -5,7 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"github.com/regen-network/regen-ledger/orm/v2/types/kvlayout"
+	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormkey"
 
 	"google.golang.org/protobuf/reflect/protoregistry"
 	"google.golang.org/protobuf/types/dynamicpb"
@@ -13,7 +13,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
+	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormdecode"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/singleton"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
@@ -133,7 +133,7 @@ func FileDescriptor(id uint32, descriptor protoreflect.FileDescriptor) SchemaOpt
 		schema.fileDescs[id] = descriptor
 		schema.storesById[id] = map[uint32]store.Store{}
 
-		prefix := key.MakeUint32Prefix(schema.prefix, id)
+		prefix := ormkey.MakeUint32Prefix(schema.prefix, id)
 		msgs := descriptor.Messages()
 		n := msgs.Len()
 		for i := 0; i < n; i++ {
@@ -153,10 +153,10 @@ func Prefix(prefix []byte) SchemaOption {
 	})
 }
 
-func (s Schema) Decode(k, v []byte) (kvlayout.Entry, error) {
+func (s Schema) Decode(k, v []byte) (ormdecode.Entry, error) {
 	r := bytes.NewReader(k)
 	// we assume the prefix has been checked by the caller for performance
-	err := key.SkipPrefix(r, s.prefix)
+	err := ormkey.SkipPrefix(r, s.prefix)
 	if err != nil {
 		return nil, err
 	}

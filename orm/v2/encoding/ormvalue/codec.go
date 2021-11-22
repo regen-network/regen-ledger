@@ -1,4 +1,4 @@
-package key
+package ormvalue
 
 import (
 	"bytes"
@@ -8,15 +8,22 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
-type PartCodec interface {
+type Codec interface {
 	Decode(r *bytes.Reader) (protoreflect.Value, error)
 	Encode(value protoreflect.Value, w io.Writer) error
 	Compare(v1, v2 protoreflect.Value) int
 	IsEmpty(value protoreflect.Value) bool
 	IsOrdered() bool
+
+	// FixedSize returns a positive value if this codec encodes values with
+	// a fixed number of bytes.
+	FixedSize() int
+
+	// Size computes the size of the field for the given value.
+	Size(value protoreflect.Value) (int, error)
 }
 
-func makePartCodec(field protoreflect.FieldDescriptor, nonTerminal bool) (PartCodec, error) {
+func MakeCodec(field protoreflect.FieldDescriptor, nonTerminal bool) (Codec, error) {
 	if field.IsList() {
 		return nil, fmt.Errorf("repeated fields aren't supported in keys")
 	}
@@ -28,20 +35,20 @@ func makePartCodec(field protoreflect.FieldDescriptor, nonTerminal bool) (PartCo
 	switch field.Kind() {
 	case protoreflect.BytesKind:
 		if nonTerminal {
-			return bytesNT_PC{}, nil
+			return NonTerminalBytesCodec{}, nil
 		} else {
-			return bytesPC{}, nil
+			return BytesCodec{}, nil
 		}
 	case protoreflect.StringKind:
 		if nonTerminal {
-			return stringNT_PC{}, nil
+			return NonTerminalStringCodec{}, nil
 		} else {
-			return stringPC{}, nil
+			return StringCodec{}, nil
 		}
 	case protoreflect.Uint32Kind:
-		return uint32PC{}, nil
+		return Uint32Codec{}, nil
 	case protoreflect.Uint64Kind:
-		return uint64PC{}, nil
+		return Uint64Codec{}, nil
 	default:
 		return nil, fmt.Errorf("unsupported index key kind %s", field.Kind())
 	}
