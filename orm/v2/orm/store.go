@@ -3,6 +3,8 @@ package orm
 import (
 	"context"
 
+	"google.golang.org/protobuf/reflect/protoreflect"
+
 	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
 
 	"google.golang.org/protobuf/proto"
@@ -13,7 +15,7 @@ type ReadStore interface {
 
 	Has(...proto.Message) bool
 	Get(...proto.Message) (found bool, err error)
-	List(condition proto.Message, options *ListOptions) Iterator
+	List(msgType proto.Message, options *ListOptions) Iterator
 }
 
 type Store interface {
@@ -37,9 +39,11 @@ type Iterator interface {
 type Cursor []byte
 
 type ListOptions struct {
-	Reverse  bool
-	UseIndex string
-	Cursor   Cursor
+	Reverse bool
+	Index   string
+	Cursor  Cursor
+	Start   []protoreflect.Value
+	End     []protoreflect.Value
 }
 
 type ReadStoreConn interface {

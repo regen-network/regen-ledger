@@ -26,11 +26,11 @@ func (s *TableModel) List(kvStore kv.ReadKVStore, condition proto.Message, opts 
 
 	var cdc ormkey.CodecI
 	var idx *Index
-	if opts.UseIndex != "" {
+	if opts.Index != "" {
 		var ok bool
-		idx, ok = s.IndexesByFields[opts.UseIndex]
+		idx, ok = s.IndexesByFields[opts.Index]
 		if !ok {
-			return orm.ErrIterator{Err: fmt.Errorf("can't find indexer %s", opts.UseIndex)}
+			return orm.ErrIterator{Err: fmt.Errorf("can't find indexer %s", opts.Index)}
 		}
 		cdc = idx.Codec.Codec
 	} else {
@@ -38,22 +38,25 @@ func (s *TableModel) List(kvStore kv.ReadKVStore, condition proto.Message, opts 
 	}
 
 	var start, end []byte
-	var err error
-
-	_, prefix, err := cdc.EncodePartial(condition.ProtoReflect())
-	if err != nil {
-		return orm.ErrIterator{Err: err}
-	}
-
 	if opts.Cursor != nil && !opts.Reverse {
 		start = opts.Cursor
 	} else {
+		prefix, err := cdc.EncodePartialValues(opts.Start)
+		if err != nil {
+			return orm.ErrIterator{Err: err}
+		}
+
 		start = prefix
 	}
 
 	if opts.Cursor != nil && opts.Reverse {
-		start = opts.Cursor
+		start = storetypes.PrefixEndBytes(opts.Cursor)
 	} else {
+		prefix, err := cdc.EncodePartialValues(opts.End)
+		if err != nil {
+			return orm.ErrIterator{Err: err}
+		}
+
 		end = storetypes.PrefixEndBytes(prefix)
 	}
 

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"google.golang.org/protobuf/reflect/protoreflect"
+
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"google.golang.org/protobuf/encoding/protojson"
@@ -315,7 +317,10 @@ func TestClient(t *testing.T) {
 	assert.NilError(t, err)
 
 	// condition
-	it = store.List(&testpb.A{UINT32: 4}, &orm.ListOptions{})
+	it = store.List(&testpb.A{}, &orm.ListOptions{
+		Start: []protoreflect.Value{protoreflect.ValueOfUint32(4)},
+		End:   []protoreflect.Value{protoreflect.ValueOfUint32(4)},
+	})
 	defer it.Close()
 	require.NotNil(t, it)
 	for i := 0; i < 3; i++ {
@@ -331,7 +336,7 @@ func TestClient(t *testing.T) {
 
 	// use index
 	it = store.List(&testpb.A{}, &orm.ListOptions{
-		UseIndex: "UINT64,STRING",
+		Index: "UINT64,STRING",
 	})
 	defer it.Close()
 	require.NotNil(t, it)
@@ -347,8 +352,10 @@ func TestClient(t *testing.T) {
 	assert.NilError(t, err)
 
 	// use index and condition
-	it = store.List(&testpb.A{UINT64: 10}, &orm.ListOptions{
-		UseIndex: "UINT64,STRING",
+	it = store.List(&testpb.A{}, &orm.ListOptions{
+		Index: "UINT64,STRING",
+		Start: []protoreflect.Value{protoreflect.ValueOfUint64(10)},
+		End:   []protoreflect.Value{protoreflect.ValueOfUint64(10)},
 	})
 	defer it.Close()
 	require.NotNil(t, it)

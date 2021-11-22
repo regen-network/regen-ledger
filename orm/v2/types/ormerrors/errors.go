@@ -22,4 +22,5 @@ var (
 	BytesFieldTooLong             = errors.New(codespace, 15, "bytes field is longer than 255 bytes")
 	UnsupportedOperation          = errors.New(codespace, 16, "unsupported operation")
 	BadDecodeEntry                = errors.New(codespace, 17, "bad decode entry")
+	IndexOutOfBounds              = errors.New(codespace, 18, "index out of bounds")
 )
