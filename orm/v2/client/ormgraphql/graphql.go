@@ -30,8 +30,12 @@ func (b Builder) buildTable(tableDesc *ormpb.TableDescriptor, desc protoreflect.
 		Args:              nil,
 		Resolve:           nil,
 		DeprecationReason: "",
-		Description:       "",
+		Description:       GetDocComments(desc),
 	}, nil
+}
+
+func GetDocComments(desc protoreflect.Descriptor) string {
+	return desc.ParentFile().SourceLocations().ByDescriptor(desc).LeadingComments
 }
 
 func messageName(descriptor protoreflect.MessageDescriptor) string {
@@ -73,8 +77,9 @@ func (b Builder) buildField(descriptor protoreflect.FieldDescriptor) (*graphql.F
 	}
 
 	return &graphql.Field{
-		Name: string(descriptor.Name()),
-		Type: typ,
+		Name:        string(descriptor.Name()),
+		Description: GetDocComments(descriptor),
+		Type:        typ,
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			mref := p.Source.(protoreflect.Message)
 			return mref.Get(descriptor), nil
