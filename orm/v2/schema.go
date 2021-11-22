@@ -16,7 +16,7 @@ import (
 	"github.com/regen-network/regen-ledger/orm/v2/internal/singleton"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/table"
-	"github.com/regen-network/regen-ledger/orm/v2/ormpb"
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormpb"
 )
 
 type Schema struct {

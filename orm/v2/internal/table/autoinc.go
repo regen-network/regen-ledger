@@ -4,12 +4,11 @@ import (
 	"bytes"
 	"encoding/binary"
 
-	"github.com/regen-network/regen-ledger/orm/v2/ormerrors"
-
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
-	"google.golang.org/protobuf/proto"
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
 )
 
 type AutoIncStore struct {

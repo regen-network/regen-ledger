@@ -5,8 +5,8 @@ import (
 
 	"gotest.tools/v3/assert"
 
+	"github.com/regen-network/regen-ledger/orm/v2"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/testpb"
-	"github.com/regen-network/regen-ledger/orm/v2/orm"
 )
 
 func TestSchema(t *testing.T) {

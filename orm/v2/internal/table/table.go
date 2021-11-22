@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"io"
 
-	"github.com/regen-network/regen-ledger/orm/v2/ormerrors"
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
 
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"

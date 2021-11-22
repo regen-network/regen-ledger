@@ -3,17 +3,14 @@ package singleton
 import (
 	"testing"
 
-	"github.com/regen-network/regen-ledger/orm/v2/ormerrors"
-
+	"github.com/cosmos/cosmos-sdk/store/mem"
 	"gotest.tools/v3/assert"
 
-	store2 "github.com/regen-network/regen-ledger/orm/v2/internal/store"
-
 	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
-	"github.com/regen-network/regen-ledger/orm/v2/ormpb"
-
-	"github.com/cosmos/cosmos-sdk/store/mem"
+	store2 "github.com/regen-network/regen-ledger/orm/v2/internal/store"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/testpb"
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormpb"
 )
 
 func TestSingleton(t *testing.T) {

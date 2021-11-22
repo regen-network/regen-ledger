@@ -5,9 +5,9 @@ import (
 	"io"
 	"strings"
 
-	"github.com/regen-network/regen-ledger/orm/v2/ormerrors"
-
 	"google.golang.org/protobuf/reflect/protoreflect"
+
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
 )
 
 type Codec struct {

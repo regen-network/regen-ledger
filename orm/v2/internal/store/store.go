@@ -16,6 +16,7 @@ type Store interface {
 	Delete(kv KVStore, message proto.Message) error
 	List(kv KVStore, options *list.Options) list.Iterator
 	Decode(k []byte, v []byte) (proto.Message, error)
+	//DecodeAll(k, v []byte) (kvlayout.Entry, error)
 	DefaultJSON() json.RawMessage
 	ValidateJSON(io.Reader) error
 	ImportJSON(KVStore, io.Reader) error

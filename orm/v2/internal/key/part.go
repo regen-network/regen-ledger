@@ -17,8 +17,12 @@ type PartCodec interface {
 }
 
 func makePartCodec(field protoreflect.FieldDescriptor, nonTerminal bool) (PartCodec, error) {
-	if field.IsMap() || field.IsList() {
-		return nil, fmt.Errorf("map fields aren't supported in keys")
+	if field.IsList() {
+		return nil, fmt.Errorf("repeated fields aren't supported in keys")
+	}
+
+	if field.ContainingOneof() != nil {
+		return nil, fmt.Errorf("oneof fields aren't supported in keys")
 	}
 
 	switch field.Kind() {

@@ -4,18 +4,15 @@ import (
 	"encoding/json"
 	io "io"
 
-	"github.com/regen-network/regen-ledger/orm/v2/ormerrors"
-
 	"google.golang.org/protobuf/encoding/protojson"
-
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
-	"github.com/regen-network/regen-ledger/orm/v2/ormpb"
-
 	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
-	"google.golang.org/protobuf/proto"
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormpb"
 )
 
 func BuildStore(nsPrefix []byte, singletonDescriptor *ormpb.SingletonDescriptor, messageType protoreflect.MessageType) (store.Store, error) {

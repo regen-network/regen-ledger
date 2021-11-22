@@ -1,12 +1,12 @@
 package table
 
 import (
-	"github.com/regen-network/regen-ledger/orm/v2/ormerrors"
+	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
-	"github.com/regen-network/regen-ledger/orm/v2/ormpb"
-	"google.golang.org/protobuf/reflect/protoreflect"
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormpb"
 )
 
 const (

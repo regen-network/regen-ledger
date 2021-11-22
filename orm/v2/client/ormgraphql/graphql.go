@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/regen-network/regen-ledger/orm/v2/ormpb"
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormpb"
 
 	"github.com/graphql-go/graphql/language/ast"
 

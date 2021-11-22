@@ -3,18 +3,16 @@ package table
 import (
 	"testing"
 
-	"github.com/regen-network/regen-ledger/orm/v2/ormerrors"
-
-	"gotest.tools/v3/assert"
-
 	"github.com/cosmos/cosmos-sdk/store/mem"
 	"github.com/stretchr/testify/require"
+	"gotest.tools/v3/assert"
 	"pgregory.net/rapid"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/testpb"
-	"github.com/regen-network/regen-ledger/orm/v2/ormpb"
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormpb"
 )
 
 func TestBuildStore(t *testing.T) {

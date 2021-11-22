@@ -1,11 +1,11 @@
-package gosql
+package ormsql
 
 import (
 	"fmt"
 	"reflect"
 	"strings"
 
-	"github.com/regen-network/regen-ledger/orm/v2/ormpb"
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormpb"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"gorm.io/gorm"
 )

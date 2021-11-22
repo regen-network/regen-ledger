@@ -35,7 +35,7 @@ func (s SeqEntry) isEntry() {}
 
 type SchemaEntry struct {
 	Id             uint32
-	FileDescriptor descriptorpb.FileDescriptorProto
+	FileDescriptor *descriptorpb.FileDescriptorProto
 }
 
 func (s SchemaEntry) isEntry() {}
