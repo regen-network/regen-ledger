@@ -6,19 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
-
-func TestMsgAnchorDataRequest_GetSigners(t *testing.T) {
-	_, _, addr := testdata.KeyTestPubAddr()
-
-	msg := &MsgAnchorData{Sender: addr.String()}
-	require.Equal(t, []sdk.AccAddress{addr}, msg.GetSigners())
-
-	msg = &MsgAnchorData{Sender: ""}
-	require.Equal(t, "", msg.GetSigners()[0].String())
-}
 
 func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
@@ -80,21 +68,6 @@ func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestMsgSignDataRequest_GetSigners(t *testing.T) {
-	_, _, addr := testdata.KeyTestPubAddr()
-	_, _, addr2 := testdata.KeyTestPubAddr()
-
-	msg := &MsgSignData{Signers: []string{addr.String(), addr2.String()}}
-	require.Equal(t, []sdk.AccAddress{addr, addr2}, msg.GetSigners())
-
-	msg = &MsgSignData{Signers: nil}
-	require.Empty(t, msg.GetSigners())
-
-	msg = &MsgSignData{Signers: []string{""}}
-	require.Equal(t, "", msg.GetSigners()[0].String())
-
 }
 
 func TestMsgSignDataRequest_ValidateBasic(t *testing.T) {
