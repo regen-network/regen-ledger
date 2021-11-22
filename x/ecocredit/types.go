@@ -47,6 +47,10 @@ func (m *AskDenom) PrimaryKeyFields() []interface{} {
 	return []interface{}{m.Denom}
 }
 
+func (m *Basket) PrimaryKeyFields() []interface{} {
+	return []interface{}{m.BasketDenom}
+}
+
 // AssertClassIssuer makes sure that the issuer is part of issuers of given classID.
 // Returns ErrUnauthorized otherwise.
 func (m *ClassInfo) AssertClassIssuer(issuer string) error {
