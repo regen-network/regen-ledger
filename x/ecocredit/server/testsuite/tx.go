@@ -259,7 +259,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 	})
 	s.Require().NoError(err)
 
-	// create buy orders
+	// process buy orders
 	testCases := []struct {
 		name             string
 		buyer            string
@@ -358,7 +358,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 			// get buyer balance before
 			balanceBefore := s.bankKeeper.GetBalance(s.sdkCtx, addr2, "stake")
 
-			// execute MsgBuy
+			// process buy orders
 			res, err := s.msgClient.Buy(s.ctx, &ecocredit.MsgBuy{
 				Buyer:  tc.buyer,
 				Orders: tc.orders,
@@ -395,7 +395,63 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 }
 
 func (s *IntegrationTestSuite) TestScenarioAllowAskDenom() {
-	// TODO
+	addr1 := s.signers[3].String()
+
+	//rootAddress := s.accountKeeper.GetModuleAddress(govtypes.ModuleName)
+	//s.Require().NotNil(rootAddress)
+
+	// add ask denom
+	testCases := []struct {
+		name             string
+		rootAddress      string
+		denom            string
+		displayDenom     string
+		exponent         uint32
+		expErr           string
+		wantErr          bool
+	}{
+		{
+			name: "unauthorized address",
+			rootAddress: addr1,
+			denom: "utoken",
+			displayDenom: "token",
+			exponent: 6,
+			expErr: "unauthorized",
+			wantErr: true,
+		},
+		//{
+		//	name: "valid request",
+		//	rootAddress: rootAddress.String(),
+		//	denom: "utoken",
+		//	displayDenom: "token",
+		//	exponent: 6,
+		//	expErr: "",
+		//	wantErr: false,
+		//},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+
+		s.Run(tc.name, func() {
+			require := s.Require()
+
+			res, err := s.msgClient.AllowAskDenom(s.ctx, &ecocredit.MsgAllowAskDenom{
+				RootAddress:  tc.rootAddress,
+				Denom:        tc.denom,
+				DisplayDenom: tc.displayDenom,
+				Exponent:     tc.exponent,
+			})
+
+			if tc.wantErr {
+				require.Error(err)
+				require.Contains(err.Error(), tc.expErr)
+			} else {
+				require.NoError(err)
+				require.NotNil(res)
+			}
+		})
+	}
 }
 
 func (s *IntegrationTestSuite) createClassAndIssueBatch(recipient string, tradableCredits string) (*ecocredit.MsgCreateClassResponse, *ecocredit.MsgCreateBatchResponse) {

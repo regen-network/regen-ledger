@@ -5,7 +5,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	"github.com/regen-network/regen-ledger/orm"
@@ -806,8 +805,10 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 func (s serverImpl) AllowAskDenom(goCtx context.Context, req *ecocredit.MsgAllowAskDenom) (*ecocredit.MsgAllowAskDenomResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 
-	if req.RootAddress != authtypes.NewModuleAddress(govtypes.ModuleName).String() {
-		return nil, sdkerrors.ErrUnauthorized.Wrap("root address must be governance module address")
+	rootAddress := s.accountKeeper.GetModuleAddress(govtypes.ModuleName).String()
+
+	if req.RootAddress != rootAddress {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("root address must be governance module address, got: %s, expected: %s", req.RootAddress, rootAddress)
 	}
 
 	err := s.askDenomTable.Create(ctx, &ecocredit.AskDenom{
