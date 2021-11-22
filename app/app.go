@@ -145,7 +145,7 @@ var (
 		stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
 		govtypes.ModuleName:            {authtypes.Burner},
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
-		ecocredit.ModuleName:           {authtypes.Burner},
+		ecocredit.ModuleName:           {authtypes.Minter, authtypes.Burner},
 	}
 )
 
