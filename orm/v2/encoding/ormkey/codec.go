@@ -39,7 +39,7 @@ func MakeCodec(prefix []byte, fieldDescs []protoreflect.FieldDescriptor) (*Codec
 	}, nil
 }
 
-func (cdc *Codec) Encode(values []protoreflect.Value, w io.Writer) error {
+func (cdc *Codec) EncodeWriter(values []protoreflect.Value, w io.Writer) error {
 	_, err := w.Write(cdc.prefix)
 	if err != nil {
 		return err
@@ -52,6 +52,12 @@ func (cdc *Codec) Encode(values []protoreflect.Value, w io.Writer) error {
 		}
 	}
 	return nil
+}
+
+func (cdc *Codec) Encode(values []protoreflect.Value) ([]byte, error) {
+	buf := &bytes.Buffer{}
+	err := cdc.EncodeWriter(values, buf)
+	return buf.Bytes(), err
 }
 
 // EncodePartial encodes the key up to the presence of any empty values in the
@@ -69,7 +75,7 @@ func (cdc *Codec) EncodePartial(message protoreflect.Message) ([]protoreflect.Va
 	}
 
 	var b bytes.Buffer
-	err := cdc.Encode(values[:lastNonEmpty], &b)
+	err := cdc.EncodeWriter(values[:lastNonEmpty], &b)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -136,7 +142,7 @@ func (cdc *Codec) Decode(r *bytes.Reader) ([]protoreflect.Value, error) {
 func (cdc *Codec) EncodeFromMessage(message protoreflect.Message) ([]protoreflect.Value, []byte, error) {
 	var b bytes.Buffer
 	values := cdc.GetValues(message)
-	err := cdc.Encode(values, &b)
+	err := cdc.EncodeWriter(values, &b)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -217,7 +223,7 @@ func (cdc Codec) Prefix() []byte {
 }
 
 type CodecI interface {
-	Encode(values []protoreflect.Value, w io.Writer) error
+	EncodeWriter(values []protoreflect.Value, w io.Writer) error
 	EncodePartial(message protoreflect.Message) ([]protoreflect.Value, []byte, error)
 	GetValues(mref protoreflect.Message) []protoreflect.Value
 	ClearKey(mref protoreflect.Message)

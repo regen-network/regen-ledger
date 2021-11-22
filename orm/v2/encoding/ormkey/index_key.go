@@ -54,7 +54,7 @@ func (i IndexKeyCodec) EncodeKV(entry ormdecode.Entry) (k, v []byte, err error) 
 	}
 
 	kbuf := &bytes.Buffer{}
-	err = i.Codec.Encode(indexEntry.FullKey, kbuf)
+	err = i.Codec.EncodeWriter(indexEntry.FullKey, kbuf)
 	if err != nil {
 		return nil, nil, err
 	}

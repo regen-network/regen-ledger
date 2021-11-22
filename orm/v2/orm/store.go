@@ -40,8 +40,6 @@ type ListOptions struct {
 	Reverse  bool
 	UseIndex string
 	Cursor   Cursor
-	Start    proto.Message
-	End      proto.Message
 }
 
 type ReadStoreConn interface {

@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 
+	"google.golang.org/protobuf/reflect/protoreflect"
+
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 
 	"github.com/regen-network/regen-ledger/orm/v2/backend/kv"
@@ -12,6 +14,10 @@ import (
 
 	"google.golang.org/protobuf/proto"
 )
+
+func (s *TableModel) List2(kvStore kv.ReadKVStore, keyPrefix []protoreflect.Value, opts *orm.ListOptions) orm.Iterator {
+	panic("TODO")
+}
 
 func (s *TableModel) List(kvStore kv.ReadKVStore, condition proto.Message, opts *orm.ListOptions) orm.Iterator {
 	if opts == nil {
@@ -41,22 +47,12 @@ func (s *TableModel) List(kvStore kv.ReadKVStore, condition proto.Message, opts 
 
 	if opts.Cursor != nil && !opts.Reverse {
 		start = opts.Cursor
-	} else if opts.Start != nil {
-		_, start, err = cdc.EncodePartial(opts.Start.ProtoReflect())
-		if err != nil {
-			return orm.ErrIterator{Err: err}
-		}
 	} else {
 		start = prefix
 	}
 
 	if opts.Cursor != nil && opts.Reverse {
 		start = opts.Cursor
-	} else if opts.End != nil {
-		_, end, err = cdc.EncodePartial(opts.End.ProtoReflect())
-		if err != nil {
-			return orm.ErrIterator{Err: err}
-		}
 	} else {
 		end = storetypes.PrefixEndBytes(prefix)
 	}
@@ -169,7 +165,7 @@ func (t *idxIterator) Next(message proto.Message) (bool, error) {
 	}
 
 	buf := &bytes.Buffer{}
-	err = t.store.PkCodec.Encode(pkValues, buf)
+	err = t.store.PkCodec.EncodeWriter(pkValues, buf)
 	if err != nil {
 		return false, err
 	}

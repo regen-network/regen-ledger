@@ -29,6 +29,28 @@ func (s TableModel) primaryKeyValues(message protoreflect.Message) []protoreflec
 	return s.PkCodec.GetValues(message)
 }
 
+func (s TableModel) Get2(kv kv.ReadKVStore, primaryKey []protoreflect.Value, message proto.Message) (bool, error) {
+	pk, err := s.PkCodec.Encode(primaryKey)
+	if err != nil {
+		return false, err
+	}
+
+	bz := kv.Get(pk)
+	if bz == nil {
+		return false, nil
+	}
+
+	err = proto.Unmarshal(bz, message)
+	if err != nil {
+		return true, err
+	}
+
+	// rehydrate primary key
+	s.PkCodec.SetValues(message.ProtoReflect(), primaryKey)
+
+	return true, nil
+}
+
 func (s TableModel) Get(kv kv.ReadKVStore, message proto.Message) (bool, error) {
 	refm := message.ProtoReflect()
 	pkValues, pk, err := s.primaryKey(refm)
@@ -59,6 +81,15 @@ func (s TableModel) Has(kv kv.ReadKVStore, message proto.Message) bool {
 	}
 
 	return kv.Has(pk)
+}
+
+func (s TableModel) Has2(kv kv.ReadKVStore, primaryKey []protoreflect.Value) (bool, error) {
+	pk, err := s.PkCodec.Encode(primaryKey)
+	if err != nil {
+		return false, err
+	}
+
+	return kv.Has(pk), nil
 }
 
 func (s TableModel) Save(kv kv.KVStore, message proto.Message, mode ormtable.SaveMode) error {

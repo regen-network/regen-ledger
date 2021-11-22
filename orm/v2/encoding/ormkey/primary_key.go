@@ -85,7 +85,7 @@ func (p PrimaryKeyCodec) EncodeKV(entry ormdecode.Entry) (k, v []byte, err error
 	}
 
 	kbuf := &bytes.Buffer{}
-	err = p.Codec.Encode(pkEntry.Key, kbuf)
+	err = p.Codec.EncodeWriter(pkEntry.Key, kbuf)
 	if err != nil {
 		return nil, nil, err
 	}
