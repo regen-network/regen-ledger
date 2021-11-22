@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"google.golang.org/protobuf/testing/protocmp"
+
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/regen-network/regen-ledger/orm/v2/orm"
@@ -100,11 +102,7 @@ func (r kvReadListener) Has(key []byte) bool {
 }
 
 func (r kvReadListener) Iterator(start, end []byte) kv.KVStoreIterator {
-	//fmt.Printf("  ITERATE %s -> %s\n",
-	//	fmtEmtry(r.schema.Decode(start, nil)),
-	//	fmtEmtry(r.schema.Decode(end, nil)),
-	//)
-	fmt.Printf("  ITERATE ->\n")
+	fmt.Printf("  ITERATE %x -> %x\n", start, end)
 	it := r.KVStore.Iterator(start, end)
 	return &kvIteratorListener{
 		it:     it,
@@ -113,12 +111,8 @@ func (r kvReadListener) Iterator(start, end []byte) kv.KVStoreIterator {
 }
 
 func (r kvReadListener) ReverseIterator(start, end []byte) kv.KVStoreIterator {
-	//fmt.Printf("  ITERATE %s <- %s\n",
-	//	fmtEmtry(r.schema.Decode(start, nil)),
-	//	fmtEmtry(r.schema.Decode(end, nil)),
-	//)
-	fmt.Printf("  ITERATE <-\n")
-	it := r.KVStore.Iterator(start, end)
+	fmt.Printf("  ITERATE %x <- %x\n", start, end)
+	it := r.KVStore.ReverseIterator(start, end)
 	return &kvIteratorListener{
 		it:     it,
 		schema: r.schema,
@@ -257,31 +251,13 @@ func TestClient(t *testing.T) {
 	})
 	store = &storeListener{store: store}
 
-	a0 := &testpb.A{
-		UINT32: 4,
-		UINT64: 10,
-		STRING: "abc",
-		BYTES:  []byte{0, 1, 2},
-	}
-	assert.NilError(t, store.Save(a0))
-	// clear bytes to make sure the right indexes still get deleted
-	a0.BYTES = nil
-	assert.NilError(t, store.Delete(a0))
-	assert.NilError(t, store.Save(a0))
-	//assert.DeepEqual(t, []Op{
-	//	{
-	//		Entry: ormdecode.PrimaryKeyEntry{
-	//			Key: []protoreflect.Value{
-	//				protoreflect.ValueOfUint32(4),
-	//				protoreflect.ValueOfUint64(10),
-	//				protoreflect.ValueOfString("abc"),
-	//			},
-	//			Value: &testpb.A{},
-	//		},
-	//	},
-	//}, decoder.ConsumeOps(), protocmp.Transform())
-
 	data := []proto.Message{
+		&testpb.A{
+			UINT32: 4,
+			UINT64: 10,
+			STRING: "abc",
+			BYTES:  []byte{0, 1, 2},
+		},
 		&testpb.A{
 			UINT32: 4,
 			UINT64: 10,
@@ -305,24 +281,89 @@ func TestClient(t *testing.T) {
 		assert.Assert(t, store.Has(x), "data", i)
 	}
 
+	// forward iteration
 	it := store.List(&testpb.A{}, nil)
 	defer it.Close()
 	require.NotNil(t, it)
 	var acopy testpb.A
+	for i := 0; i < len(data); i++ {
+		have, err := it.Next(&acopy)
+		assert.Assert(t, have)
+		assert.NilError(t, err)
+		AssertProtoEqual(t, data[i], &acopy)
+	}
+	// no more elements
 	have, err := it.Next(&acopy)
-	assert.Assert(t, have)
+	require.False(t, have)
 	assert.NilError(t, err)
-	have, err = it.Next(&acopy)
-	assert.Assert(t, have)
-	assert.NilError(t, err)
-	have, err = it.Next(&acopy)
-	assert.Assert(t, have)
-	assert.NilError(t, err)
-	have, err = it.Next(&acopy)
-	assert.Assert(t, have)
-	assert.NilError(t, err)
+
+	// reverse iteration
+	it = store.List(&testpb.A{}, &orm.ListOptions{
+		Reverse: true,
+	})
+	defer it.Close()
+	require.NotNil(t, it)
+	for i := len(data) - 1; i >= 0; i-- {
+		have, err := it.Next(&acopy)
+		assert.Assert(t, have)
+		assert.NilError(t, err)
+		AssertProtoEqual(t, data[i], &acopy)
+	}
 	// no more elements
 	have, err = it.Next(&acopy)
 	require.False(t, have)
 	assert.NilError(t, err)
+
+	// condition
+	it = store.List(&testpb.A{UINT32: 4}, &orm.ListOptions{})
+	defer it.Close()
+	require.NotNil(t, it)
+	for i := 0; i < 3; i++ {
+		have, err := it.Next(&acopy)
+		assert.Assert(t, have)
+		assert.NilError(t, err)
+		AssertProtoEqual(t, data[i], &acopy)
+	}
+	// no more elements
+	have, err = it.Next(&acopy)
+	require.False(t, have)
+	assert.NilError(t, err)
+
+	// use index
+	it = store.List(&testpb.A{}, &orm.ListOptions{
+		UseIndex: "UINT64,STRING",
+	})
+	defer it.Close()
+	require.NotNil(t, it)
+	for _, i := range []int{3, 0, 1, 2} {
+		have, err := it.Next(&acopy)
+		assert.Assert(t, have)
+		assert.NilError(t, err)
+		AssertProtoEqual(t, data[i], &acopy)
+	}
+	// no more elements
+	have, err = it.Next(&acopy)
+	require.False(t, have)
+	assert.NilError(t, err)
+
+	// use index and condition
+	it = store.List(&testpb.A{UINT64: 10}, &orm.ListOptions{
+		UseIndex: "UINT64,STRING",
+	})
+	defer it.Close()
+	require.NotNil(t, it)
+	for _, i := range []int{0, 1} {
+		have, err := it.Next(&acopy)
+		assert.Assert(t, have)
+		assert.NilError(t, err)
+		AssertProtoEqual(t, data[i], &acopy)
+	}
+	// no more elements
+	have, err = it.Next(&acopy)
+	require.False(t, have)
+	assert.NilError(t, err)
+}
+
+func AssertProtoEqual(t assert.TestingT, x, y proto.Message) {
+	assert.DeepEqual(t, x, y, protocmp.Transform())
 }

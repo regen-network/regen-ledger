@@ -88,13 +88,13 @@ func (s store) Delete(messages ...proto.Message) error {
 	return nil
 }
 
-func (s store) List(message proto.Message, options *orm.ListOptions) orm.Iterator {
-	st, err := s.schema.GetStoreForMessage(message)
+func (s store) List(condition proto.Message, options *orm.ListOptions) orm.Iterator {
+	st, err := s.schema.GetStoreForMessage(condition)
 	if err != nil {
 		return orm.ErrIterator{Err: err}
 	}
 
-	return st.List(s.kv, nil, options)
+	return st.List(s.kv, condition, options)
 }
 
 var _ orm.Store = &store{}

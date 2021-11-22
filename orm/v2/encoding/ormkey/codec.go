@@ -63,7 +63,7 @@ func (cdc *Codec) EncodePartial(message protoreflect.Message) ([]protoreflect.Va
 	for i := 0; i < n; i++ {
 		f := cdc.Fields[i]
 		if message.Has(f) {
-			lastNonEmpty = i
+			lastNonEmpty = i + 1
 		}
 		values[i] = message.Get(f)
 	}

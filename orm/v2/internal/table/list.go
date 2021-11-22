@@ -34,6 +34,11 @@ func (s *TableModel) List(kvStore kv.ReadKVStore, condition proto.Message, opts 
 	var start, end []byte
 	var err error
 
+	_, prefix, err := cdc.EncodePartial(condition.ProtoReflect())
+	if err != nil {
+		return orm.ErrIterator{Err: err}
+	}
+
 	if opts.Cursor != nil && !opts.Reverse {
 		start = opts.Cursor
 	} else if opts.Start != nil {
@@ -42,7 +47,7 @@ func (s *TableModel) List(kvStore kv.ReadKVStore, condition proto.Message, opts 
 			return orm.ErrIterator{Err: err}
 		}
 	} else {
-		start = cdc.Prefix()
+		start = prefix
 	}
 
 	if opts.Cursor != nil && opts.Reverse {
@@ -53,7 +58,7 @@ func (s *TableModel) List(kvStore kv.ReadKVStore, condition proto.Message, opts 
 			return orm.ErrIterator{Err: err}
 		}
 	} else {
-		end = storetypes.PrefixEndBytes(cdc.Prefix())
+		end = storetypes.PrefixEndBytes(prefix)
 	}
 
 	var iterator kv.KVStoreIterator
@@ -126,6 +131,10 @@ func (t *pkIterator) Next(message proto.Message) (bool, error) {
 	return true, nil
 }
 
+func (t pkIterator) Cursor() orm.Cursor {
+	return t.iterator.Key()
+}
+
 type idxIterator struct {
 	orm.UnimplementedIterator
 
@@ -176,4 +185,8 @@ func (t *idxIterator) Next(message proto.Message) (bool, error) {
 	t.store.PkCodec.SetValues(message.ProtoReflect(), pkValues)
 
 	return true, nil
+}
+
+func (t idxIterator) Cursor() orm.Cursor {
+	return t.iterator.Key()
 }
