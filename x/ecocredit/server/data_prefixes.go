@@ -9,10 +9,15 @@ import (
 // both represented as strings
 type batchDenomT string
 
+// batchDenomT is used to prevent errors when forming keys as accounts and denoms are
+// both represented as strings
+type basketDenomT string
+
 // - 0x0 <accAddrLen (1 Byte)><accAddr_Bytes><denom_Bytes>: TradableBalance
 // - 0x1 <denom_Bytes>: TradableSupply
 // - 0x2 <accAddrLen (1 Byte)><accAddr_Bytes><denom_Bytes>: RetiredBalance
 // - 0x3 <denom_Bytes>: RetiredSupply
+// - 0x4 <basket_denom_BytesLen (1 Byte)><basket_denom_Bytes><batch_denom_bytesLen (1 Byte)><batch_denom_bytes><owner_bytes>: BasketCredits
 
 // TradableBalanceKey creates the index key for recipient address and batch-denom
 func TradableBalanceKey(acc sdk.AccAddress, denom batchDenomT) []byte {
@@ -50,4 +55,13 @@ func RetiredBalanceKey(acc sdk.AccAddress, batchDenom batchDenomT) []byte {
 func RetiredSupplyKey(batchDenom batchDenomT) []byte {
 	key := []byte{RetiredSupplyPrefix}
 	return append(key, batchDenom...)
+}
+
+// BasketCreditsKey creates the basket credits key for a given basket denom and
+// owner.
+func BasketCreditsKey(basketDenom basketDenomT, owner []byte, batchDenom batchDenomT) []byte {
+	key := []byte{BasketCreditsPrefix}
+	key = append(key, address.MustLengthPrefix([]byte(basketDenom))...)
+	key = append(key, address.MustLengthPrefix([]byte(batchDenom))...)
+	return append(key, owner...)
 }
