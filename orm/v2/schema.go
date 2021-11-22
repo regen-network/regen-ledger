@@ -5,6 +5,8 @@ import (
 	"encoding/binary"
 	"fmt"
 
+	"github.com/regen-network/regen-ledger/orm/v2/types/kvlayout"
+
 	"google.golang.org/protobuf/reflect/protoregistry"
 	"google.golang.org/protobuf/types/dynamicpb"
 
@@ -151,7 +153,7 @@ func Prefix(prefix []byte) SchemaOption {
 	})
 }
 
-func (s Schema) Decode(k, v []byte) (proto.Message, error) {
+func (s Schema) Decode(k, v []byte) (kvlayout.Entry, error) {
 	r := bytes.NewReader(k)
 	// we assume the prefix has been checked by the caller for performance
 	err := key.SkipPrefix(r, s.prefix)

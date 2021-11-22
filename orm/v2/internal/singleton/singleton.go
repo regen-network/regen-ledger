@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	io "io"
 
+	"github.com/regen-network/regen-ledger/orm/v2/types/kvlayout"
+
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -65,10 +67,10 @@ func (s *Store) List(kv store.KVStore, _ *list.Options) list.Iterator {
 	return &singletonIterator{store: s, kv: kv}
 }
 
-func (s *Store) Decode(_ []byte, v []byte) (proto.Message, error) {
+func (s *Store) Decode(k []byte, v []byte) (kvlayout.Entry, error) {
 	msg := s.msgType.New().Interface()
 	err := proto.Unmarshal(v, msg)
-	return msg, err
+	return kvlayout.PrimaryEntry{Value: msg}, err
 }
 
 func (s *Store) DefaultJSON() json.RawMessage {

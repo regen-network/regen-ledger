@@ -31,6 +31,7 @@ func MakeIndexKeyCodec(prefix []byte, indexFields []protoreflect.FieldDescriptor
 	}
 
 	numPrimaryKeyFields := len(primaryKeyFields)
+	cdc.NumIndexParts = len(indexFields)
 	cdc.PKDecoder = func(r *bytes.Reader) ([]protoreflect.Value, error) {
 		fields, err := cdc.Decode(r)
 		if err != nil {
@@ -44,6 +45,15 @@ func MakeIndexKeyCodec(prefix []byte, indexFields []protoreflect.FieldDescriptor
 		}
 
 		return pkValues, nil
+	}
+	cdc.SplitIndexPK = func(fields []protoreflect.Value) (idxKey, pk []protoreflect.Value, err error) {
+		pkValues := make([]protoreflect.Value, numPrimaryKeyFields)
+
+		for i := 0; i < numPrimaryKeyFields; i++ {
+			pkValues[i] = fields[pkFieldOrderMap[i]]
+		}
+
+		return pkValues, fields[:cdc.NumIndexParts], nil
 	}
 
 	return cdc, nil

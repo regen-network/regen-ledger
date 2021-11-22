@@ -89,6 +89,7 @@ func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, messageType p
 			IndexFields: idxFields,
 			Prefix:      idxPrefix,
 			Codec:       cdc,
+			FieldNames:  idxDesc.Fields,
 		}
 		st.Indexers = append(st.Indexers, idx)
 		st.IndexersByFields[idxDesc.Fields] = idx

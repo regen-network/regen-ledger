@@ -1,17 +1,12 @@
 package table
 
 import (
-	"bytes"
-	"encoding/json"
-	"io"
-
-	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
-
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	"github.com/regen-network/regen-ledger/orm/v2/internal/key"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
 )
 
 type Store struct {
@@ -138,41 +133,4 @@ func (s Store) Delete(kv store.KVStore, message proto.Message) error {
 	kv.Delete(pk)
 
 	return nil
-}
-
-func (s Store) Decode(k []byte, v []byte) (proto.Message, error) {
-	if bytes.HasPrefix(k, s.PkPrefix) {
-		pkValues, err := s.PkCodec.Decode(bytes.NewReader(k))
-		if err != nil {
-			return nil, err
-		}
-
-		msg := s.MsgType.New().Interface()
-		err = proto.Unmarshal(v, msg)
-		if err != nil {
-			return nil, err
-		}
-
-		// rehydrate pk
-		s.PkCodec.SetValues(msg.ProtoReflect(), pkValues)
-
-		return msg, nil
-	}
-	return nil, nil
-}
-
-func (s Store) DefaultJSON() json.RawMessage {
-	return json.RawMessage("[]")
-}
-
-func (s Store) ValidateJSON(reader io.Reader) error {
-	panic("implement me")
-}
-
-func (s Store) ImportJSON(kvStore store.KVStore, reader io.Reader) error {
-	panic("implement me")
-}
-
-func (s Store) ExportJSON(kvStore store.KVStore, writer io.Writer) error {
-	panic("implement me")
 }

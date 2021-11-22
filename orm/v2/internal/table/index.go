@@ -13,6 +13,7 @@ type Indexer struct {
 	IndexFields []protoreflect.FieldDescriptor
 	Prefix      []byte
 	Codec       *key.Codec
+	FieldNames  string
 }
 
 var sentinel = []byte{0}

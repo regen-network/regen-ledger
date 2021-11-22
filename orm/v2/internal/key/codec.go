@@ -11,11 +11,13 @@ import (
 )
 
 type Codec struct {
-	NumParts   int
-	PartCodecs []PartCodec
-	PKDecoder  func(r *bytes.Reader) ([]protoreflect.Value, error)
-	Fields     []protoreflect.FieldDescriptor
-	Prefix     []byte
+	NumParts      int
+	PartCodecs    []PartCodec
+	PKDecoder     func(r *bytes.Reader) ([]protoreflect.Value, error)
+	Fields        []protoreflect.FieldDescriptor
+	Prefix        []byte
+	SplitIndexPK  func([]protoreflect.Value) (idxKey []protoreflect.Value, pk []protoreflect.Value, err error)
+	NumIndexParts int
 }
 
 func MakeCodec(prefix []byte, fieldDescs []protoreflect.FieldDescriptor) (*Codec, error) {

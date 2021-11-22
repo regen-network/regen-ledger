@@ -3,24 +3,80 @@ package orm
 import (
 	"testing"
 
+	"google.golang.org/protobuf/reflect/protoreflect"
+
+	"google.golang.org/protobuf/testing/protocmp"
+
+	"gotest.tools/v3/assert"
+
+	"github.com/regen-network/regen-ledger/orm/v2/types/kvlayout"
+
+	"github.com/cosmos/cosmos-sdk/store/listenkv"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+
 	"github.com/cosmos/cosmos-sdk/store/mem"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/testpb"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
 
+type TestDecoder struct {
+	schema *Schema
+	ops    []Op
+}
+
+func (t *TestDecoder) OnWrite(_ storetypes.StoreKey, key []byte, value []byte, delete bool) error {
+	entry, err := t.schema.Decode(key, value)
+	t.ops = append(t.ops, Op{
+		Err:    err,
+		Entry:  entry,
+		Delete: delete,
+	})
+	return nil
+}
+
+func (t *TestDecoder) ConsumeOps() []Op {
+	ops := t.ops
+	t.ops = nil
+	return ops
+}
+
+type Op struct {
+	Err    error
+	Entry  kvlayout.Entry
+	Delete bool
+}
+
 func TestClient(t *testing.T) {
 	schema, err := BuildSchema(FileDescriptor(0, testpb.File__1_proto))
-	require.NoError(t, err)
+	assert.NilError(t, err)
 	clientConn := &ClientConn{schema}
-	client := clientConn.Open(mem.NewStore())
+	decoder := &TestDecoder{schema: schema}
+	kv := listenkv.NewStore(mem.NewStore(), nil, []storetypes.WriteListener{decoder})
+	client := clientConn.Open(kv)
 
-	data := []proto.Message{
+	assert.NilError(t, client.Save(
 		&testpb.A{
 			UINT32: 4,
 			UINT64: 10,
 			STRING: "abc",
 		},
+	))
+	t.Logf("%+v", decoder.ops)
+	assert.Equal(t, []Op{
+		{
+			Entry: kvlayout.PrimaryEntry{
+				Key: []protoreflect.Value{
+					protoreflect.ValueOfUint32(4),
+					protoreflect.ValueOfUint64(10),
+					protoreflect.ValueOfString("abc"),
+				},
+				Value: &testpb.A{},
+			},
+		},
+	}, decoder.ConsumeOps(), protocmp.Transform())
+
+	data := []proto.Message{
 		&testpb.A{
 			UINT32: 4,
 			UINT64: 10,
@@ -38,10 +94,10 @@ func TestClient(t *testing.T) {
 		},
 	}
 
-	require.NoError(t, client.Save(data...))
+	assert.NilError(t, client.Save(data...))
 
 	for i, x := range data {
-		require.Truef(t, client.Has(x), "data[%d]", i)
+		assert.Assert(t, client.Has(x), "data", i)
 	}
 
 	it := client.List(&testpb.A{})
@@ -49,19 +105,19 @@ func TestClient(t *testing.T) {
 	require.NotNil(t, it)
 	var a1 testpb.A
 	have, err := it.Next(&a1)
-	require.True(t, have)
-	require.NoError(t, err)
+	assert.Assert(t, have)
+	assert.NilError(t, err)
 	have, err = it.Next(&a1)
-	require.True(t, have)
-	require.NoError(t, err)
+	assert.Assert(t, have)
+	assert.NilError(t, err)
 	have, err = it.Next(&a1)
-	require.True(t, have)
-	require.NoError(t, err)
+	assert.Assert(t, have)
+	assert.NilError(t, err)
 	have, err = it.Next(&a1)
-	require.True(t, have)
-	require.NoError(t, err)
+	assert.Assert(t, have)
+	assert.NilError(t, err)
 	// no more elements
 	have, err = it.Next(&a1)
 	require.False(t, have)
-	require.NoError(t, err)
+	assert.NilError(t, err)
 }

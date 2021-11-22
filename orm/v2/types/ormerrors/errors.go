@@ -17,4 +17,6 @@ var (
 	NotFoundOnUpdate              = errors.New(codespace, 10, "can't update object which doesn't exist")
 	PrimaryKeyInvalidOnUpdate     = errors.New(codespace, 11, "can't update object with missing or invalid primary key")
 	AutoIncrementKeyAlreadySet    = errors.New(codespace, 12, "can't create with auto-increment primary key already set")
+	CantFindIndexer               = errors.New(codespace, 13, "can't find indexer")
+	UnexpectedDecodePrefix        = errors.New(codespace, 14, "unexpected prefix while trying to decode an entry")
 )
