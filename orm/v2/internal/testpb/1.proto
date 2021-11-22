@@ -4,7 +4,6 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
 import "regen/orm/v1alpha1/orm.proto";
 
-
 option go_package = "github.com/regen-network/regen-ledger/orm/v2/internal/testpb";
 
 enum Enumeration {

@@ -97,17 +97,14 @@ func (s Store) Save(kv store.KVStore, message proto.Message, mode store.SaveMode
 	s.PkCodec.SetValues(mref, pkValues)
 
 	// set indexes
-	if existing != nil {
-		existingRef := existing.ProtoReflect()
-		for _, idx := range s.Indexers {
-			if existing == nil {
-				err = idx.onCreate(kv, mref)
-			} else {
-				err = idx.onUpdate(kv, mref, existingRef)
-			}
-			if err != nil {
-				return err
-			}
+	for _, idx := range s.Indexers {
+		if existing == nil {
+			err = idx.onCreate(kv, mref)
+		} else {
+			err = idx.onUpdate(kv, mref, existing.ProtoReflect())
+		}
+		if err != nil {
+			return err
 		}
 	}
 

@@ -4,7 +4,7 @@ package regen.orm.v1alpha1;
 
 import "google/protobuf/descriptor.proto";
 
-option go_package = "github.com/regen-network/regen-ledger/orm/v2/ormpb";
+option go_package = "github.com/regen-network/regen-ledger/orm/v2/types/ormpb";
 
 extend google.protobuf.MessageOptions {
   TableDescriptor table = 100000000;

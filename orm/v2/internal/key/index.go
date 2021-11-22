@@ -53,7 +53,7 @@ func MakeIndexKeyCodec(prefix []byte, indexFields []protoreflect.FieldDescriptor
 			pkValues[i] = fields[pkFieldOrderMap[i]]
 		}
 
-		return pkValues, fields[:cdc.NumIndexParts], nil
+		return fields[:cdc.NumIndexParts], pkValues, nil
 	}
 
 	return cdc, nil

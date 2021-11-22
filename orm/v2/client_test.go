@@ -1,6 +1,7 @@
 package orm
 
 import (
+	"fmt"
 	"testing"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -47,6 +48,21 @@ type Op struct {
 	Delete bool
 }
 
+func (o Op) String() string {
+	str := ""
+	if o.Delete {
+		str += "!"
+	}
+	if o.Entry != nil {
+		str += fmt.Sprintf("%s", o.Entry)
+	}
+	if o.Err != nil {
+		str += fmt.Sprintf("(ERR:%v)", o.Err)
+	}
+	str += ""
+	return str
+}
+
 func TestClient(t *testing.T) {
 	schema, err := BuildSchema(FileDescriptor(0, testpb.File__1_proto))
 	assert.NilError(t, err)
@@ -63,7 +79,7 @@ func TestClient(t *testing.T) {
 		},
 	))
 	t.Logf("%+v", decoder.ops)
-	assert.Equal(t, []Op{
+	assert.DeepEqual(t, []Op{
 		{
 			Entry: kvlayout.PrimaryEntry{
 				Key: []protoreflect.Value{
