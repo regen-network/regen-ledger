@@ -18,6 +18,10 @@
   
 - [regen/ecocredit/v1alpha1/types.proto](#regen/ecocredit/v1alpha1/types.proto)
     - [AskDenom](#regen.ecocredit.v1alpha1.AskDenom)
+    - [Basket](#regen.ecocredit.v1alpha1.Basket)
+    - [BasketCredit](#regen.ecocredit.v1alpha1.BasketCredit)
+    - [BasketCredits](#regen.ecocredit.v1alpha1.BasketCredits)
+    - [BasketCriteria](#regen.ecocredit.v1alpha1.BasketCriteria)
     - [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo)
     - [BuyOrder](#regen.ecocredit.v1alpha1.BuyOrder)
     - [BuyOrder.Selection](#regen.ecocredit.v1alpha1.BuyOrder.Selection)
@@ -73,8 +77,6 @@
     - [Query](#regen.ecocredit.v1alpha1.Query)
   
 - [regen/ecocredit/v1alpha1/tx.proto](#regen/ecocredit/v1alpha1/tx.proto)
-    - [BasketCredit](#regen.ecocredit.v1alpha1.BasketCredit)
-    - [BasketCriteria](#regen.ecocredit.v1alpha1.BasketCriteria)
     - [MsgAddToBasket](#regen.ecocredit.v1alpha1.MsgAddToBasket)
     - [MsgAddToBasketResponse](#regen.ecocredit.v1alpha1.MsgAddToBasketResponse)
     - [MsgAllowAskDenom](#regen.ecocredit.v1alpha1.MsgAllowAskDenom)
@@ -348,6 +350,75 @@ AskDenom represents the information for an ask denom.
 | denom | [string](#string) |  | denom is the denom to allow (ex. ibc/GLKHDSG423SGS) |
 | display_denom | [string](#string) |  | display_denom is the denom to display to the user and is informational |
 | exponent | [uint32](#uint32) |  | exponent is the exponent that relates the denom to the display_denom and is informational |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.Basket"></a>
+
+### Basket
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| basket_denom | [string](#string) |  | basket_denom is the denom of the basket's coin |
+| curator | [string](#string) |  | curator is the address of the basket curator who is able to change certain basket settings. |
+| name | [string](#string) |  | name will be used to create a bank denom for this basket token of the form ecocredit:{curator}:{name}. |
+| display_name | [string](#string) |  | display_name will be used to create a bank Metadata display name for this basket token of the form ecocredit:{curator}:{display_name}. |
+| exponent | [uint32](#uint32) |  | exponent is the exponent that will be used for denom metadata. An exponent of 6 will mean that 10^6 units of a basket token should be displayed as one unit in user interfaces. |
+| basket_criteria | [BasketCriteria](#regen.ecocredit.v1alpha1.BasketCriteria) | repeated | basket_criteria is the criteria by which credits can be added to the basket. Basket criteria will be applied in order and the first criteria which applies to a credit will determine its multiplier in the basket. |
+| disable_auto_retire | [bool](#bool) |  | disable_auto_retire disables the auto-retirement of credits upon taking from the basket. set to true to allow credits to be taken without retiring. |
+| allow_picking | [bool](#bool) |  | allow_picking allows the picking of specific credits from the basket |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.BasketCredit"></a>
+
+### BasketCredit
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
+| tradable_amount | [string](#string) |  | tradable_amount is the number of credits in this transfer that can be traded by the recipient. Decimal values are acceptable within the precision returned by Query/Precision. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.BasketCredits"></a>
+
+### BasketCredits
+BasketCredits is a type to describe an array of basket credits.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| credits | [BasketCredit](#regen.ecocredit.v1alpha1.BasketCredit) | repeated |  |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.BasketCriteria"></a>
+
+### BasketCriteria
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [Filter](#regen.ecocredit.v1alpha1.Filter) |  |  |
+| multiplier | [string](#string) |  | multiplier is an integer number which is applied to credit units when converting to basket units. For example if the multiplier is 2000, then 1.1 credits will result in 2200 basket tokens. If there are any fractional amounts left over in this calculation when adding credits to a basket, those fractional amounts will not get added to the basket. |
 
 
 
@@ -1191,38 +1262,6 @@ Msg is the regen.ecocredit.v1alpha1 Query service.
 <p align="right"><a href="#top">Top</a></p>
 
 ## regen/ecocredit/v1alpha1/tx.proto
-
-
-
-<a name="regen.ecocredit.v1alpha1.BasketCredit"></a>
-
-### BasketCredit
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
-| tradable_amount | [string](#string) |  | tradable_amount is the number of credits in this transfer that can be traded by the recipient. Decimal values are acceptable within the precision returned by Query/Precision. |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha1.BasketCriteria"></a>
-
-### BasketCriteria
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| filter | [Filter](#regen.ecocredit.v1alpha1.Filter) |  |  |
-| multiplier | [string](#string) |  | multiplier is an integer number which is applied to credit units when converting to basket units. For example if the multiplier is 2000, then 1.1 credits will result in 2200 basket tokens. If there are any fractional amounts left over in this calculation when adding credits to a basket, those fractional amounts will not get added to the basket. |
-
-
-
 
 
 
