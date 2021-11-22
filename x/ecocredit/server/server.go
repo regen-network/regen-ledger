@@ -2,7 +2,6 @@ package server
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/regen-network/regen-ledger/orm"
@@ -23,10 +22,12 @@ const (
 	BuyOrderTablePrefix      byte = 0x9
 	BuyOrderTableSeqPrefix   byte = 0x10
 	AskDenomTablePrefix      byte = 0x11
+	BasketTablePrefix        byte = 0x12
+	BasketCreditsPrefix      byte = 0x13
 )
 
 type serverImpl struct {
-	storeKey sdk.StoreKey
+	storeKey server.RootModuleKey
 
 	paramSpace    paramtypes.Subspace
 	bankKeeper    ecocredit.BankKeeper
@@ -38,11 +39,12 @@ type serverImpl struct {
 	classInfoTable orm.PrimaryKeyTable
 	batchInfoTable orm.PrimaryKeyTable
 	sellOrderTable orm.AutoUInt64Table
-	buyOrderTable orm.AutoUInt64Table
-	askDenomTable orm.PrimaryKeyTable
+	buyOrderTable  orm.AutoUInt64Table
+	askDenomTable  orm.PrimaryKeyTable
+	basketTable    orm.PrimaryKeyTable
 }
 
-func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
+func newServer(storeKey server.RootModuleKey, paramSpace paramtypes.Subspace,
 	accountKeeper ecocredit.AccountKeeper, bankKeeper ecocredit.BankKeeper, cdc codec.Codec) serverImpl {
 	s := serverImpl{
 		storeKey:      storeKey,
@@ -87,6 +89,12 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	}
 	s.askDenomTable = askDenomTableBuilder.Build()
 
+	basketTableBuilder, err := orm.NewPrimaryKeyTableBuilder(BasketTablePrefix, storeKey, &ecocredit.Basket{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.basketTable = basketTableBuilder.Build()
+
 	return s
 }
 
@@ -94,7 +102,7 @@ func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Su
 	bankKeeper ecocredit.BankKeeper) {
 	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, configurator.Marshaler())
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
-	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
+	//ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
