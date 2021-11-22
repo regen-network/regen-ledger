@@ -3,11 +3,13 @@ package singleton
 import (
 	"testing"
 
+	"github.com/regen-network/regen-ledger/orm/v2/orm"
+
+	"github.com/regen-network/regen-ledger/orm/v2/model/ormtable"
+
 	"github.com/cosmos/cosmos-sdk/store/mem"
 	"gotest.tools/v3/assert"
 
-	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
-	store2 "github.com/regen-network/regen-ledger/orm/v2/internal/store"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/testpb"
 	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
 	"github.com/regen-network/regen-ledger/orm/v2/types/ormpb"
@@ -24,38 +26,38 @@ func TestSingleton(t *testing.T) {
 	kv := mem.NewStore()
 
 	// read empty
-	found, err := store.Read(kv, b1)
+	found, err := store.Get(kv, b1)
 	assert.Assert(t, !found)
 	assert.NilError(t, err)
 
 	// create
-	err = store.Save(kv, b1, store2.SAVE_MODE_CREATE)
+	err = store.Save(kv, b1, ormtable.SAVE_MODE_CREATE)
 	assert.NilError(t, err)
 
 	// read
 	var b2 testpb.B
-	found, err = store.Read(kv, &b2)
+	found, err = store.Get(kv, &b2)
 	assert.Assert(t, found)
 	assert.NilError(t, err)
 	assert.Equal(t, b1.X, b2.X)
 
 	// create a second time works (singleton tables don't care)
 	b1.X = "def"
-	err = store.Save(kv, b1, store2.SAVE_MODE_CREATE)
+	err = store.Save(kv, b1, ormtable.SAVE_MODE_CREATE)
 	assert.NilError(t, err)
 
 	// save succeeds
-	err = store.Save(kv, b1, store2.SAVE_MODE_UPDATE)
+	err = store.Save(kv, b1, ormtable.SAVE_MODE_UPDATE)
 	assert.NilError(t, err)
 
 	// read
-	found, err = store.Read(kv, &b2)
+	found, err = store.Get(kv, &b2)
 	assert.Assert(t, found)
 	assert.NilError(t, err)
 	assert.Equal(t, b1.X, b2.X)
 
 	// iterator just returns one value always
-	it := store.List(kv, &list.Options{})
+	it := store.List(kv, nil, &orm.ListOptions{})
 	assert.Assert(t, it != nil)
 	found, err = it.Next(&b2)
 	assert.Assert(t, found)
@@ -75,7 +77,7 @@ func TestSingleton(t *testing.T) {
 	assert.NilError(t, err) // deleting twice is a no-op
 
 	// can't read
-	found, err = store.Read(kv, b1)
+	found, err = store.Get(kv, b1)
 	assert.Assert(t, !found)
 	assert.NilError(t, err)
 }

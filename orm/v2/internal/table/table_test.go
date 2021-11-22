@@ -3,12 +3,13 @@ package table
 import (
 	"testing"
 
+	"github.com/regen-network/regen-ledger/orm/v2/model/ormtable"
+
 	"github.com/cosmos/cosmos-sdk/store/mem"
 	"github.com/stretchr/testify/require"
 	"gotest.tools/v3/assert"
 	"pgregory.net/rapid"
 
-	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/testpb"
 	"github.com/regen-network/regen-ledger/orm/v2/internal/testutil"
 	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
@@ -18,69 +19,45 @@ import (
 func TestBuildStore(t *testing.T) {
 	a := &testpb.A{}
 	msgType := a.ProtoReflect().Type()
-	_, err := BuildStore(nil, &ormpb.TableDescriptor{}, msgType)
+	_, err := BuildStore(nil, msgType, &ormpb.TableDescriptor{})
 	assert.ErrorContains(t, err, ormerrors.InvalidTableId.Error())
-	_, err = BuildStore(nil, &ormpb.TableDescriptor{Id: 1}, msgType)
+	_, err = BuildStore(nil, msgType, &ormpb.TableDescriptor{Id: 1})
 	assert.ErrorContains(t, err, ormerrors.MissingPrimaryKey.Error())
 
-	_, err = BuildStore(
-		nil,
-		&ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
-			Fields: "FOO",
-		}},
-		msgType,
-	)
+	_, err = BuildStore(nil, msgType, &ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
+		Fields: "FOO",
+	}})
 	assert.ErrorContains(t, err, ormerrors.FieldNotFound.Error())
 
-	_, err = BuildStore(
-		nil,
-		&ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
-			Fields: "UINT32",
-		}},
-		msgType,
-	)
+	_, err = BuildStore(nil, msgType, &ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
+		Fields: "UINT32",
+	}})
 	assert.NilError(t, err)
 
-	_, err = BuildStore(
-		nil,
-		&ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
-			Fields: "UINT32,UINT32",
-		}},
-		msgType,
-	)
+	_, err = BuildStore(nil, msgType, &ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
+		Fields: "UINT32,UINT32",
+	}})
 	assert.ErrorContains(t, err, ormerrors.DuplicateKeyField.Error())
 
-	_, err = BuildStore(
-		nil,
-		&ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
-			Fields: "UINT32",
-		}, Index: []*ormpb.SecondaryIndexDescriptor{
-			{},
-		}},
-		msgType,
-	)
+	_, err = BuildStore(nil, msgType, &ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
+		Fields: "UINT32",
+	}, Index: []*ormpb.SecondaryIndexDescriptor{
+		{},
+	}})
 	assert.ErrorContains(t, err, ormerrors.InvalidIndexId.Error())
 
-	_, err = BuildStore(
-		nil,
-		&ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
-			Fields: "UINT32",
-		}, Index: []*ormpb.SecondaryIndexDescriptor{
-			{Id: 1},
-		}},
-		msgType,
-	)
+	_, err = BuildStore(nil, msgType, &ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
+		Fields: "UINT32",
+	}, Index: []*ormpb.SecondaryIndexDescriptor{
+		{Id: 1},
+	}})
 	assert.ErrorContains(t, err, ormerrors.InvalidKeyFields.Error())
 
-	_, err = BuildStore(
-		nil,
-		&ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
-			Fields: "UINT32",
-		}, Index: []*ormpb.SecondaryIndexDescriptor{
-			{Id: 1, Fields: "STRING"},
-		}},
-		msgType,
-	)
+	_, err = BuildStore(nil, msgType, &ormpb.TableDescriptor{Id: 1, PrimaryKey: &ormpb.PrimaryKeyDescriptor{
+		Fields: "UINT32",
+	}, Index: []*ormpb.SecondaryIndexDescriptor{
+		{Id: 1, Fields: "STRING"},
+	}})
 	assert.NilError(t, err)
 }
 
@@ -107,13 +84,13 @@ func TestScenarios(t *testing.T) {
 
 		a1 := &testpb.A{}
 		messageType := a1.ProtoReflect().Type()
-		st, err := BuildStore(nil, tableDesc, messageType)
+		st, err := BuildStore(nil, messageType, tableDesc)
 		assert.NilError(t, err)
 		require.NotNil(t, st)
 
 		// read empty
 		kv := mem.NewStore()
-		found, err := st.Read(kv, a1)
+		found, err := st.Get(kv, a1)
 		require.False(t, found)
 		assert.NilError(t, err)
 
@@ -122,13 +99,13 @@ func TestScenarios(t *testing.T) {
 		a1.MESSAGE = &testpb.B{X: "foo"}
 
 		// create
-		err = st.Save(kv, a1, store.SAVE_MODE_CREATE)
+		err = st.Save(kv, a1, ormtable.SAVE_MODE_CREATE)
 		assert.NilError(t, err)
 
 		// read
 		var a2 testpb.A
 		pk.Codec.SetValues(a2.ProtoReflect(), pk1)
-		found, err = st.Read(kv, &a2)
+		found, err = st.Get(kv, &a2)
 		assert.Assert(t, found)
 		assert.NilError(t, err)
 		pk.RequireValuesEqual(t, pk1, pk.Codec.GetValues(a2.ProtoReflect()))
@@ -148,31 +125,31 @@ func TestAutoInc(t *testing.T) {
 
 	a1 := &testpb.A{}
 	messageType := a1.ProtoReflect().Type()
-	st, err := BuildStore(nil, tableDesc, messageType)
+	st, err := BuildStore(nil, messageType, tableDesc)
 	assert.NilError(t, err)
 	require.NotNil(t, st)
 
 	// read empty
 	kv := mem.NewStore()
-	found, err := st.Read(kv, a1)
+	found, err := st.Get(kv, a1)
 	require.False(t, found)
 	assert.NilError(t, err)
 
 	// create fails
 	a1.UINT64 = 10
-	err = st.Save(kv, a1, store.SAVE_MODE_CREATE)
+	err = st.Save(kv, a1, ormtable.SAVE_MODE_CREATE)
 	assert.ErrorContains(t, err, ormerrors.AutoIncrementKeyAlreadySet.Error())
 
 	// create
 	a1.UINT64 = 0
 	a1.STRING = "foo"
-	err = st.Save(kv, a1, store.SAVE_MODE_CREATE)
+	err = st.Save(kv, a1, ormtable.SAVE_MODE_CREATE)
 	assert.NilError(t, err)
 	assert.Equal(t, uint64(1), a1.UINT64)
 
 	// read
 	a2 := &testpb.A{UINT64: a1.UINT64}
-	found, err = st.Read(kv, a2)
+	found, err = st.Get(kv, a2)
 	assert.Assert(t, found)
 	assert.NilError(t, err)
 	assert.Equal(t, uint64(1), a2.UINT64)

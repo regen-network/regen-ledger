@@ -1,34 +1,35 @@
 package table
 
 import (
+	"github.com/regen-network/regen-ledger/orm/v2/backend/kv"
 	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormkey"
+	"github.com/regen-network/regen-ledger/orm/v2/model/ormtable"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
 	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
 )
 
-type Store struct {
-	NumPrimaryKeyFields int
-	Prefix              []byte
-	PkPrefix            []byte
-	PkCodec             *ormkey.Codec
-	Indexers            []*Indexer
-	IndexersByFields    map[string]*Indexer
-	IndexersById        map[uint32]*Indexer
-	MsgType             protoreflect.MessageType
+type TableModel struct {
+	MsgType         protoreflect.MessageType
+	PkCodec         *ormkey.PrimaryKeyCodec
+	Indexes         []*Index
+	IndexesByFields map[string]*Index
+	IndexesById     map[uint32]*Index
+
+	Prefix   []byte
+	PkPrefix []byte
 }
 
-func (s Store) primaryKey(message protoreflect.Message) ([]protoreflect.Value, []byte, error) {
+func (s TableModel) primaryKey(message protoreflect.Message) ([]protoreflect.Value, []byte, error) {
 	return s.PkCodec.EncodeFromMessage(message)
 }
 
-func (s Store) primaryKeyValues(message protoreflect.Message) []protoreflect.Value {
+func (s TableModel) primaryKeyValues(message protoreflect.Message) []protoreflect.Value {
 	return s.PkCodec.GetValues(message)
 }
 
-func (s Store) Read(kv store.KVStore, message proto.Message) (bool, error) {
+func (s TableModel) Get(kv kv.ReadKVStore, message proto.Message) (bool, error) {
 	refm := message.ProtoReflect()
 	pkValues, pk, err := s.primaryKey(refm)
 	if err != nil {
@@ -51,7 +52,7 @@ func (s Store) Read(kv store.KVStore, message proto.Message) (bool, error) {
 	return true, nil
 }
 
-func (s Store) Has(kv store.KVStore, message proto.Message) bool {
+func (s TableModel) Has(kv kv.ReadKVStore, message proto.Message) bool {
 	_, pk, err := s.primaryKey(message.ProtoReflect())
 	if err != nil {
 		return false
@@ -60,7 +61,7 @@ func (s Store) Has(kv store.KVStore, message proto.Message) bool {
 	return kv.Has(pk)
 }
 
-func (s Store) Save(kv store.KVStore, message proto.Message, mode store.SaveMode) error {
+func (s TableModel) Save(kv kv.KVStore, message proto.Message, mode ormtable.SaveMode) error {
 	mref := message.ProtoReflect()
 
 	pkValues, pk, err := s.primaryKey(mref)
@@ -71,7 +72,7 @@ func (s Store) Save(kv store.KVStore, message proto.Message, mode store.SaveMode
 	bz := kv.Get(pk)
 	var existing proto.Message
 	if bz != nil {
-		if mode == store.SAVE_MODE_CREATE {
+		if mode == ormtable.SAVE_MODE_CREATE {
 			return ormerrors.PrimaryKeyConstraintViolation.Wrapf("%q", mref.Descriptor().FullName())
 		}
 
@@ -81,7 +82,7 @@ func (s Store) Save(kv store.KVStore, message proto.Message, mode store.SaveMode
 			return err
 		}
 	} else {
-		if mode == store.SAVE_MODE_UPDATE {
+		if mode == ormtable.SAVE_MODE_UPDATE {
 			return ormerrors.NotFoundOnUpdate.Wrapf("%q", mref.Descriptor().FullName())
 		}
 	}
@@ -97,7 +98,7 @@ func (s Store) Save(kv store.KVStore, message proto.Message, mode store.SaveMode
 	s.PkCodec.SetValues(mref, pkValues)
 
 	// set indexes
-	for _, idx := range s.Indexers {
+	for _, idx := range s.Indexes {
 		if existing == nil {
 			err = idx.onCreate(kv, mref)
 		} else {
@@ -111,7 +112,7 @@ func (s Store) Save(kv store.KVStore, message proto.Message, mode store.SaveMode
 	return nil
 }
 
-func (s Store) Delete(kv store.KVStore, message proto.Message) error {
+func (s TableModel) Delete(kv kv.KVStore, message proto.Message) error {
 	mref := message.ProtoReflect()
 	_, pk, err := s.primaryKey(mref)
 	if err != nil {
@@ -122,7 +123,7 @@ func (s Store) Delete(kv store.KVStore, message proto.Message) error {
 	kv.Delete(pk)
 
 	// clear indexes
-	for _, idx := range s.Indexers {
+	for _, idx := range s.Indexes {
 		err := idx.onDelete(kv, mref)
 		if err != nil {
 			return err

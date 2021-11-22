@@ -20,4 +20,6 @@ var (
 	CantFindIndexer               = errors.New(codespace, 13, "can't find indexer")
 	UnexpectedDecodePrefix        = errors.New(codespace, 14, "unexpected prefix while trying to decode an entry")
 	BytesFieldTooLong             = errors.New(codespace, 15, "bytes field is longer than 255 bytes")
+	UnsupportedOperation          = errors.New(codespace, 16, "unsupported operation")
+	BadDecodeEntry                = errors.New(codespace, 17, "bad decode entry")
 )

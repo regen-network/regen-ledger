@@ -3,14 +3,14 @@ package table
 import (
 	"bytes"
 
+	"github.com/regen-network/regen-ledger/orm/v2/backend/kv"
+
 	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormkey"
 
 	"google.golang.org/protobuf/reflect/protoreflect"
-
-	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
 )
 
-type Indexer struct {
+type Index struct {
 	IndexFields []protoreflect.FieldDescriptor
 	Prefix      []byte
 	Codec       *ormkey.IndexKeyCodec
@@ -19,7 +19,7 @@ type Indexer struct {
 
 var sentinel = []byte{0}
 
-func (i *Indexer) onCreate(kv store.KVStore, message protoreflect.Message) error {
+func (i *Index) onCreate(kv kv.KVStore, message protoreflect.Message) error {
 	k, err := i.getKey(message)
 	if err != nil {
 		return err
@@ -29,7 +29,7 @@ func (i *Indexer) onCreate(kv store.KVStore, message protoreflect.Message) error
 	return nil
 }
 
-func (i *Indexer) getKey(message protoreflect.Message) ([]byte, error) {
+func (i *Index) getKey(message protoreflect.Message) ([]byte, error) {
 	values := i.Codec.GetValues(message)
 	buf := &bytes.Buffer{}
 	err := i.Codec.Encode(values, buf)
@@ -39,7 +39,7 @@ func (i *Indexer) getKey(message protoreflect.Message) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func (i *Indexer) onDelete(kv store.KVStore, message protoreflect.Message) error {
+func (i *Index) onDelete(kv kv.KVStore, message protoreflect.Message) error {
 	k, err := i.getKey(message)
 	if err != nil {
 		return err
@@ -49,7 +49,7 @@ func (i *Indexer) onDelete(kv store.KVStore, message protoreflect.Message) error
 	return nil
 }
 
-func (i *Indexer) onUpdate(kv store.KVStore, new protoreflect.Message, existing protoreflect.Message) error {
+func (i *Index) onUpdate(kv kv.KVStore, new protoreflect.Message, existing protoreflect.Message) error {
 	newKey, err := i.getKey(new)
 	if err != nil {
 		return err

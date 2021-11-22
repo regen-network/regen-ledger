@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func (s Store) Decode(k []byte, v []byte) (ormdecode.Entry, error) {
+func (s TableModel) Decode(k []byte, v []byte) (ormdecode.Entry, error) {
 	if bytes.HasPrefix(k, s.Prefix) {
 		if bytes.HasPrefix(k, s.PkPrefix) {
 			pkValues, err := s.PkCodec.Decode(bytes.NewReader(k))
@@ -42,7 +42,7 @@ func (s Store) Decode(k []byte, v []byte) (ormdecode.Entry, error) {
 				return nil, err
 			}
 
-			idx, ok := s.IndexersById[uint32(id)]
+			idx, ok := s.IndexesById[uint32(id)]
 			if !ok {
 				return nil, ormerrors.CantFindIndexer.Wrapf("trying to decode entry with id %d", id)
 			}

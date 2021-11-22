@@ -1,34 +1,30 @@
-package orm
+package ormschema
 
 import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
 
+	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormdecode"
 	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormkey"
-
-	"google.golang.org/protobuf/reflect/protoregistry"
-	"google.golang.org/protobuf/types/dynamicpb"
-
+	"github.com/regen-network/regen-ledger/orm/v2/internal/singleton"
+	"github.com/regen-network/regen-ledger/orm/v2/internal/table"
+	"github.com/regen-network/regen-ledger/orm/v2/model/ormtable"
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormpb"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
-
-	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormdecode"
-	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
-	"github.com/regen-network/regen-ledger/orm/v2/internal/singleton"
-	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
-	"github.com/regen-network/regen-ledger/orm/v2/internal/table"
-	"github.com/regen-network/regen-ledger/orm/v2/types/ormpb"
+	"google.golang.org/protobuf/reflect/protoregistry"
+	"google.golang.org/protobuf/types/dynamicpb"
 )
 
 type Schema struct {
 	prefix     []byte
-	stores     map[protoreflect.FullName]store.Store
-	storesById map[uint32]map[uint32]store.Store
+	stores     map[protoreflect.FullName]ormtable.Model
+	storesById map[uint32]map[uint32]ormtable.Model
 	fileDescs  map[uint32]protoreflect.FileDescriptor
 }
 
-func (s Schema) getStoreForMessage(message proto.Message) (store.Store, error) {
+func (s Schema) GetStoreForMessage(message proto.Message) (ormtable.Model, error) {
 	name := message.ProtoReflect().Descriptor().FullName()
 	if ts, ok := s.stores[name]; ok {
 		return ts, nil
@@ -47,7 +43,7 @@ func (s Schema) buildStore(nsPrefix []byte, fdId uint32, desc protoreflect.Messa
 	singDesc := proto.GetExtension(desc.Options(), ormpb.E_Singleton).(*ormpb.SingletonDescriptor)
 
 	var id uint32
-	var st store.Store
+	var st ormtable.Model
 	var err error
 	if tableDesc != nil {
 		if singDesc != nil {
@@ -55,7 +51,7 @@ func (s Schema) buildStore(nsPrefix []byte, fdId uint32, desc protoreflect.Messa
 		}
 
 		id = tableDesc.Id
-		st, err = table.BuildStore(nsPrefix, tableDesc, getMessageType(desc))
+		st, err = table.BuildStore(nsPrefix, getMessageType(desc), tableDesc)
 		if err != nil {
 			return err
 		}
@@ -88,14 +84,6 @@ func getMessageType(descriptor protoreflect.MessageDescriptor) protoreflect.Mess
 	return typ
 }
 
-func gatherListOptions(opts []ListOption) *list.Options {
-	res := &list.Options{}
-	for _, opt := range opts {
-		opt.applyListOption(res)
-	}
-	return res
-}
-
 type SchemaOption interface {
 	applySchemaOption(*Schema) error
 }
@@ -108,8 +96,8 @@ func (s schemaOpt) applySchemaOption(sch *Schema) error {
 
 func BuildSchema(opts ...SchemaOption) (*Schema, error) {
 	sch := &Schema{
-		stores:     map[protoreflect.FullName]store.Store{},
-		storesById: map[uint32]map[uint32]store.Store{},
+		stores:     map[protoreflect.FullName]ormtable.Model{},
+		storesById: map[uint32]map[uint32]ormtable.Model{},
 		fileDescs:  map[uint32]protoreflect.FileDescriptor{},
 	}
 
@@ -131,7 +119,7 @@ func FileDescriptor(id uint32, descriptor protoreflect.FileDescriptor) SchemaOpt
 		}
 
 		schema.fileDescs[id] = descriptor
-		schema.storesById[id] = map[uint32]store.Store{}
+		schema.storesById[id] = map[uint32]ormtable.Model{}
 
 		prefix := ormkey.MakeUint32Prefix(schema.prefix, id)
 		msgs := descriptor.Messages()

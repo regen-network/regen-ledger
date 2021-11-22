@@ -1,31 +1,33 @@
 package table
 
 import (
-	"bytes"
-	"encoding/binary"
+	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormkey"
+
+	"github.com/regen-network/regen-ledger/orm/v2/backend/kv"
+
+	"github.com/regen-network/regen-ledger/orm/v2/model/ormtable"
 
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
 	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
 )
 
 type AutoIncStore struct {
-	*Store
-	SeqPrefix []byte
+	*TableModel
+	SeqCodec *ormkey.SeqCodec
 }
 
-func (s *AutoIncStore) Save(kv store.KVStore, message proto.Message, mode store.SaveMode) error {
+func (s *AutoIncStore) Save(kv kv.KVStore, message proto.Message, mode ormtable.SaveMode) error {
 	f := s.PkCodec.Fields[0]
 	mref := message.ProtoReflect()
 	val := mref.Get(f).Uint()
 	if val == 0 {
-		if mode == store.SAVE_MODE_UPDATE {
+		if mode == ormtable.SAVE_MODE_UPDATE {
 			return ormerrors.PrimaryKeyInvalidOnUpdate
 		}
 
-		mode = store.SAVE_MODE_CREATE
+		mode = ormtable.SAVE_MODE_CREATE
 		key, err := s.nextSeqValue(kv)
 		if err != nil {
 			return err
@@ -33,27 +35,23 @@ func (s *AutoIncStore) Save(kv store.KVStore, message proto.Message, mode store.
 
 		mref.Set(f, protoreflect.ValueOfUint64(key))
 	} else {
-		if mode == store.SAVE_MODE_CREATE {
+		if mode == ormtable.SAVE_MODE_CREATE {
 			return ormerrors.AutoIncrementKeyAlreadySet
 		}
 
-		mode = store.SAVE_MODE_UPDATE
+		mode = ormtable.SAVE_MODE_UPDATE
 	}
-	return s.Store.Save(kv, message, mode)
+	return s.TableModel.Save(kv, message, mode)
 }
 
-func (s *AutoIncStore) nextSeqValue(kv store.KVStore) (uint64, error) {
-	bz := kv.Get(s.SeqPrefix)
-	seq := uint64(1)
-	if bz != nil {
-		x, err := binary.ReadUvarint(bytes.NewReader(bz))
-		if err != nil {
-			return 0, err
-		}
-		seq = x + 1
+func (s *AutoIncStore) nextSeqValue(kv kv.KVStore) (uint64, error) {
+	bz := kv.Get(s.SeqCodec.Prefix)
+	seq, err := s.SeqCodec.DecodeValue(bz)
+	if err != nil {
+		return 0, err
 	}
-	bz = make([]byte, binary.MaxVarintLen64)
-	n := binary.PutUvarint(bz, seq)
-	kv.Set(s.SeqPrefix, bz[:n])
+
+	seq++
+	kv.Set(s.SeqCodec.Prefix, s.SeqCodec.EncodeValue(seq))
 	return seq, nil
 }

@@ -51,7 +51,8 @@ func (p PrimaryKeyEntry) isEntry() {}
 
 type IndexKeyEntry struct {
 	TableName       protoreflect.FullName
-	IndexFieldNames string
+	IndexFieldNames []protoreflect.Name
+	FullKey         []protoreflect.Value
 	IndexKey        []protoreflect.Value
 	PrimaryKeyRest  []protoreflect.Value
 	PrimaryKey      []protoreflect.Value
@@ -76,7 +77,7 @@ func (u UniqueKeyEntry) String() string {
 }
 
 type SeqEntry struct {
-	TableName string
+	TableName protoreflect.FullName
 	Value     uint64
 }
 

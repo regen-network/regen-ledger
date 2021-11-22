@@ -4,21 +4,25 @@ import (
 	"bytes"
 	"fmt"
 
+	"github.com/regen-network/regen-ledger/orm/v2/backend/kv"
 	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormkey"
+	"github.com/regen-network/regen-ledger/orm/v2/orm"
 
-	"github.com/regen-network/regen-ledger/orm/v2/internal/list"
-	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
 	"google.golang.org/protobuf/proto"
 )
 
-func (s *Store) List(kv store.KVStore, opts *list.Options) list.Iterator {
+func (s *TableModel) List(kvStore kv.ReadKVStore, condition proto.Message, opts *orm.ListOptions) orm.Iterator {
+	if opts == nil {
+		opts = &orm.ListOptions{}
+	}
+
 	var cdc ormkey.CodecI
-	var idx *Indexer
+	var idx *Index
 	if opts.UseIndex != "" {
 		var ok bool
-		idx, ok = s.IndexersByFields[opts.UseIndex]
+		idx, ok = s.IndexesByFields[opts.UseIndex]
 		if !ok {
-			return list.ErrIterator{Err: fmt.Errorf("can't find indexer %s", opts.UseIndex)}
+			return orm.ErrIterator{Err: fmt.Errorf("can't find indexer %s", opts.UseIndex)}
 		}
 		cdc = idx.Codec.Codec
 	}
@@ -29,27 +33,27 @@ func (s *Store) List(kv store.KVStore, opts *list.Options) list.Iterator {
 	if opts.Start != nil {
 		_, start, err = cdc.EncodePartial(opts.Start.ProtoReflect())
 		if err != nil {
-			return list.ErrIterator{Err: err}
+			return orm.ErrIterator{Err: err}
 		}
 	}
 
 	if opts.End != nil {
 		_, end, err = cdc.EncodePartial(opts.Start.ProtoReflect())
 		if err != nil {
-			return list.ErrIterator{Err: err}
+			return orm.ErrIterator{Err: err}
 		}
 	}
 
-	var iterator store.KVStoreIterator
+	var iterator kv.KVStoreIterator
 	if !opts.Reverse {
-		iterator = kv.Iterator(start, end)
+		iterator = kvStore.Iterator(start, end)
 	} else {
-		iterator = kv.ReverseIterator(start, end)
+		iterator = kvStore.ReverseIterator(start, end)
 	}
 
 	if idx != nil {
 		return &idxIterator{
-			kv:       kv,
+			kv:       kvStore,
 			store:    s,
 			iterator: iterator,
 			start:    true,
@@ -57,7 +61,7 @@ func (s *Store) List(kv store.KVStore, opts *list.Options) list.Iterator {
 		}
 	} else {
 		return &pkIterator{
-			kv:       kv,
+			kv:       kvStore,
 			store:    s,
 			iterator: iterator,
 			start:    true,
@@ -66,9 +70,11 @@ func (s *Store) List(kv store.KVStore, opts *list.Options) list.Iterator {
 }
 
 type pkIterator struct {
-	kv       store.KVStore
-	store    *Store
-	iterator store.KVStoreIterator
+	orm.UnimplementedIterator
+
+	kv       kv.ReadKVStore
+	store    *TableModel
+	iterator kv.KVStoreIterator
 	start    bool
 }
 
@@ -109,9 +115,11 @@ func (t *pkIterator) Next(message proto.Message) (bool, error) {
 }
 
 type idxIterator struct {
-	kv       store.KVStore
-	store    *Store
-	iterator store.KVStoreIterator
+	orm.UnimplementedIterator
+
+	kv       kv.ReadKVStore
+	store    *TableModel
+	iterator kv.KVStoreIterator
 	start    bool
 	cdc      *ormkey.IndexKeyCodec
 }

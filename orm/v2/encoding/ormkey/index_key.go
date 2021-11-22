@@ -3,6 +3,8 @@ package ormkey
 import (
 	"bytes"
 
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
+
 	"github.com/regen-network/regen-ledger/orm/v2/types/ormpb"
 
 	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormdecode"
@@ -13,7 +15,7 @@ type IndexKeyCodec struct {
 	*Codec
 	pkFieldOrder    []int
 	tableName       protoreflect.FullName
-	indexFieldNames string
+	indexFieldNames []protoreflect.Name
 	indexFields     []protoreflect.FieldDescriptor
 }
 
@@ -34,11 +36,33 @@ func (cdc IndexKeyCodec) DecodeKV(k, _ []byte) (ormdecode.Entry, error) {
 	return &ormdecode.IndexKeyEntry{
 		TableName:       cdc.tableName,
 		IndexFieldNames: cdc.indexFieldNames,
+		FullKey:         values,
 		IndexKey:        values[:numIndexFields],
 		PrimaryKeyRest:  values[numIndexFields:],
 		PrimaryKey:      pkValues,
 	}, nil
 }
+
+func (i IndexKeyCodec) EncodeKV(entry ormdecode.Entry) (k, v []byte, err error) {
+	indexEntry, ok := entry.(*ormdecode.IndexKeyEntry)
+	if !ok {
+		return nil, nil, ormerrors.BadDecodeEntry
+	}
+
+	if indexEntry.TableName != i.tableName {
+		return nil, nil, ormerrors.BadDecodeEntry
+	}
+
+	kbuf := &bytes.Buffer{}
+	err = i.Codec.Encode(indexEntry.FullKey, kbuf)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return kbuf.Bytes(), sentinel, nil
+}
+
+var sentinel = []byte{0}
 
 func (cdc IndexKeyCodec) ReadPrimaryKey(reader *bytes.Reader) ([]protoreflect.Value, error) {
 	values, err := cdc.Decode(reader)
@@ -104,4 +128,5 @@ func NewIndexKeyCodec(
 	tableDescriptor *ormpb.TableDescriptor,
 	indexId int,
 ) {
+
 }

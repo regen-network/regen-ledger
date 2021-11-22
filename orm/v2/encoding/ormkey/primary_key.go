@@ -73,3 +73,27 @@ func (p PrimaryKeyCodec) DecodeKV(k, v []byte) (ormdecode.Entry, error) {
 		Value: msg,
 	}, nil
 }
+
+func (p PrimaryKeyCodec) EncodeKV(entry ormdecode.Entry) (k, v []byte, err error) {
+	pkEntry, ok := entry.(ormdecode.PrimaryKeyEntry)
+	if !ok {
+		return nil, nil, ormerrors.BadDecodeEntry
+	}
+
+	if pkEntry.Value.ProtoReflect().Descriptor().FullName() != p.Type.Descriptor().FullName() {
+		return nil, nil, ormerrors.BadDecodeEntry
+	}
+
+	kbuf := &bytes.Buffer{}
+	err = p.Codec.Encode(pkEntry.Key, kbuf)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	v, err = proto.MarshalOptions{Deterministic: true}.Marshal(pkEntry.Value)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return kbuf.Bytes(), v, nil
+}

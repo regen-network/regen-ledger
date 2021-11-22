@@ -2,9 +2,9 @@ package table
 
 import (
 	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormkey"
+	"github.com/regen-network/regen-ledger/orm/v2/model/ormtable"
 	"google.golang.org/protobuf/reflect/protoreflect"
 
-	"github.com/regen-network/regen-ledger/orm/v2/internal/store"
 	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
 	"github.com/regen-network/regen-ledger/orm/v2/types/ormpb"
 )
@@ -15,7 +15,9 @@ const (
 	PrimaryKeyPrefix    = 0
 )
 
-func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, messageType protoreflect.MessageType) (store.Store, error) {
+func BuildStore(nsPrefix []byte, messageType protoreflect.MessageType, tableDesc *ormpb.TableDescriptor) (ormtable.Model, error) {
+	pkCodec, err := ormkey.NewPrimaryKeyCodec(nsPrefix, messageType, tableDesc)
+
 	desc := messageType.Descriptor()
 	tableId := tableDesc.Id
 	if tableId == 0 {
@@ -45,21 +47,13 @@ func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, messageType p
 	prefix := ormkey.MakeUint32Prefix(nsPrefix, tableDesc.Id)
 	pkPrefix := ormkey.MakeUint32Prefix(prefix, PrimaryKeyPrefix)
 
-	pkCodec, err := ormkey.MakeCodec(pkPrefix, pkFields)
-	if err != nil {
-		return nil, err
-	}
-
-	numPrimaryKeyFields := len(pkFields)
-
-	st := &Store{
-		NumPrimaryKeyFields: numPrimaryKeyFields,
-		Prefix:              prefix,
-		PkPrefix:            pkPrefix,
-		PkCodec:             pkCodec,
-		IndexersByFields:    map[string]*Indexer{},
-		IndexersById:        map[uint32]*Indexer{},
-		MsgType:             messageType,
+	st := &TableModel{
+		MsgType:         messageType,
+		Prefix:          prefix,
+		PkPrefix:        pkPrefix,
+		PkCodec:         pkCodec,
+		IndexesByFields: map[string]*Index{},
+		IndexesById:     map[uint32]*Index{},
 	}
 
 	idxIds := map[uint32]bool{}
@@ -85,19 +79,22 @@ func BuildStore(nsPrefix []byte, tableDesc *ormpb.TableDescriptor, messageType p
 		if err != nil {
 			return nil, err
 		}
-		idx := &Indexer{
+		idx := &Index{
 			IndexFields: idxFields,
 			Prefix:      idxPrefix,
 			Codec:       cdc,
 			FieldNames:  idxDesc.Fields,
 		}
-		st.Indexers = append(st.Indexers, idx)
-		st.IndexersByFields[idxDesc.Fields] = idx
-		st.IndexersById[id] = idx
+		st.Indexes = append(st.Indexes, idx)
+		st.IndexesByFields[idxDesc.Fields] = idx
+		st.IndexesById[id] = idx
 	}
 
 	if len(seqPrefix) != 0 {
-		return &AutoIncStore{Store: st, SeqPrefix: seqPrefix}, nil
+		return &AutoIncStore{TableModel: st, SeqCodec: &ormkey.SeqCodec{
+			TableName: desc.FullName(),
+			Prefix:    seqPrefix,
+		}}, nil
 	} else {
 		return st, nil
 	}
