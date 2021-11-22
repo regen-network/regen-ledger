@@ -11,7 +11,7 @@ import (
 )
 
 type Codec struct {
-	Prefix      []byte
+	prefix      []byte
 	Fields      []protoreflect.FieldDescriptor
 	ValueCodecs []ormvalue.Codec
 }
@@ -35,12 +35,12 @@ func MakeCodec(prefix []byte, fieldDescs []protoreflect.FieldDescriptor) (*Codec
 	return &Codec{
 		ValueCodecs: partCodecs,
 		Fields:      fieldDescs,
-		Prefix:      prefix,
+		prefix:      prefix,
 	}, nil
 }
 
 func (cdc *Codec) Encode(values []protoreflect.Value, w io.Writer) error {
-	_, err := w.Write(cdc.Prefix)
+	_, err := w.Write(cdc.prefix)
 	if err != nil {
 		return err
 	}
@@ -110,7 +110,7 @@ func SkipPrefix(r *bytes.Reader, prefix []byte) error {
 }
 
 func (cdc *Codec) Decode(r *bytes.Reader) ([]protoreflect.Value, error) {
-	err := SkipPrefix(r, cdc.Prefix)
+	err := SkipPrefix(r, cdc.prefix)
 	if err != nil {
 		return nil, err
 	}
@@ -212,6 +212,10 @@ func (cdc Codec) Size(values []protoreflect.Value) (int, error) {
 	panic("TODO")
 }
 
+func (cdc Codec) Prefix() []byte {
+	return cdc.prefix
+}
+
 type CodecI interface {
 	Encode(values []protoreflect.Value, w io.Writer) error
 	EncodePartial(message protoreflect.Message) ([]protoreflect.Value, []byte, error)
@@ -223,4 +227,5 @@ type CodecI interface {
 	IsFullyOrdered() bool
 	CompareValues(values1, values2 []protoreflect.Value) int
 	Size(values []protoreflect.Value) (int, error)
+	Prefix() []byte
 }

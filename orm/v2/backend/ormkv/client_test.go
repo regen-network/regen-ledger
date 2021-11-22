@@ -100,10 +100,11 @@ func (r kvReadListener) Has(key []byte) bool {
 }
 
 func (r kvReadListener) Iterator(start, end []byte) kv.KVStoreIterator {
-	fmt.Printf("  ITERATE %s -> %s\n",
-		fmtEmtry(r.schema.Decode(start, nil)),
-		fmtEmtry(r.schema.Decode(end, nil)),
-	)
+	//fmt.Printf("  ITERATE %s -> %s\n",
+	//	fmtEmtry(r.schema.Decode(start, nil)),
+	//	fmtEmtry(r.schema.Decode(end, nil)),
+	//)
+	fmt.Printf("  ITERATE ->\n")
 	it := r.KVStore.Iterator(start, end)
 	return &kvIteratorListener{
 		it:     it,
@@ -112,10 +113,11 @@ func (r kvReadListener) Iterator(start, end []byte) kv.KVStoreIterator {
 }
 
 func (r kvReadListener) ReverseIterator(start, end []byte) kv.KVStoreIterator {
-	fmt.Printf("  ITERATE %s <- %s\n",
-		fmtEmtry(r.schema.Decode(start, nil)),
-		fmtEmtry(r.schema.Decode(end, nil)),
-	)
+	//fmt.Printf("  ITERATE %s <- %s\n",
+	//	fmtEmtry(r.schema.Decode(start, nil)),
+	//	fmtEmtry(r.schema.Decode(end, nil)),
+	//)
+	fmt.Printf("  ITERATE <-\n")
 	it := r.KVStore.Iterator(start, end)
 	return &kvIteratorListener{
 		it:     it,
@@ -137,7 +139,7 @@ func (k kvIteratorListener) Valid() bool {
 	if valid {
 		fmt.Printf("    VALID %s\n", fmtEmtry(k.schema.Decode(k.it.Key(), k.it.Value())))
 	} else {
-		fmt.Printf("    INVALID")
+		fmt.Printf("    INVALID\n")
 	}
 	return valid
 }
@@ -160,7 +162,7 @@ func (k kvIteratorListener) Error() error {
 }
 
 func (k kvIteratorListener) Close() error {
-	panic("implement me")
+	return k.it.Close()
 }
 
 type storeListener struct {
@@ -210,7 +212,7 @@ func (l listenStoreIterator) Next(message proto.Message) (bool, error) {
 		if found {
 			fmt.Printf("    next %s\n", marshalJsonMessages(message))
 		} else {
-			fmt.Printf("    last")
+			fmt.Printf("    last\n")
 		}
 	}
 	return found, err
@@ -221,7 +223,7 @@ func (l listenStoreIterator) Cursor() orm.Cursor {
 }
 
 func (l listenStoreIterator) Close() {
-	panic("implement me")
+	l.it.Close()
 }
 
 func (o storeListener) Create(messages ...proto.Message) error {

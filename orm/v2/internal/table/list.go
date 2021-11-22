@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+
 	"github.com/regen-network/regen-ledger/orm/v2/backend/kv"
 	"github.com/regen-network/regen-ledger/orm/v2/encoding/ormkey"
 	"github.com/regen-network/regen-ledger/orm/v2/orm"
@@ -25,23 +27,33 @@ func (s *TableModel) List(kvStore kv.ReadKVStore, condition proto.Message, opts 
 			return orm.ErrIterator{Err: fmt.Errorf("can't find indexer %s", opts.UseIndex)}
 		}
 		cdc = idx.Codec.Codec
+	} else {
+		cdc = s.PkCodec
 	}
 
 	var start, end []byte
 	var err error
 
-	if opts.Start != nil {
+	if opts.Cursor != nil && !opts.Reverse {
+		start = opts.Cursor
+	} else if opts.Start != nil {
 		_, start, err = cdc.EncodePartial(opts.Start.ProtoReflect())
 		if err != nil {
 			return orm.ErrIterator{Err: err}
 		}
+	} else {
+		start = cdc.Prefix()
 	}
 
-	if opts.End != nil {
-		_, end, err = cdc.EncodePartial(opts.Start.ProtoReflect())
+	if opts.Cursor != nil && opts.Reverse {
+		start = opts.Cursor
+	} else if opts.End != nil {
+		_, end, err = cdc.EncodePartial(opts.End.ProtoReflect())
 		if err != nil {
 			return orm.ErrIterator{Err: err}
 		}
+	} else {
+		end = storetypes.PrefixEndBytes(cdc.Prefix())
 	}
 
 	var iterator kv.KVStoreIterator

@@ -39,8 +39,7 @@ type Cursor []byte
 type ListOptions struct {
 	Reverse  bool
 	UseIndex string
-	After    Cursor
-	Before   Cursor
+	Cursor   Cursor
 	Start    proto.Message
 	End      proto.Message
 }
