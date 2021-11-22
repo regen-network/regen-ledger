@@ -6,7 +6,7 @@ package testsuite_test
 import (
 	"testing"
 
-	"github.com/regen-network/regen-ledger/app/testsuite"
+	"github.com/regen-network/regen-ledger/v2/app/testsuite"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/stretchr/testify/suite"
 )

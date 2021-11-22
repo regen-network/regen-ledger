@@ -1,7 +1,7 @@
 syntax = "proto3";
-package regen.ecocredit.v1alpha1;
+package regen.ecocredit.v1alpha2;
 
-import "regen/ecocredit/v1alpha1/types.proto";
+import "regen/ecocredit/v1alpha2/types.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
@@ -26,6 +26,10 @@ message GenesisState {
 
   // supplies is the list of credit batch tradable/retired supply.
   repeated Supply supplies = 6;
+
+  // project_info is the list of projects.
+  repeated ProjectInfo project_info = 7;
+
 }
 
 // Balance represents tradable or retired units of a credit batch with an

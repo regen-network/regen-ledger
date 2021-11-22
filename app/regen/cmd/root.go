@@ -36,7 +36,7 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/regen-network/regen-ledger/app"
+	"github.com/regen-network/regen-ledger/v2/app"
 )
 
 // NewRootCmd creates a new root command for regen. It is called once in the
