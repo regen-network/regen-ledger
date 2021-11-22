@@ -566,6 +566,13 @@ func (m MsgCreateBasket) GetSignBytes() []byte {
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgCreateBasket) ValidateBasic() error {
 
+	if m.Name == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("name cannot be empty")
+	}
+	if m.DisplayName == "" {
+		m.DisplayName = m.Name // TODO: is this legal? lol its a pointer method anyway..
+		// not sure if we should do anything about an empty display name or name? idk
+	}
 	if _, err := sdk.AccAddressFromBech32(m.Curator); err != nil {
 		return sdkerrors.ErrInvalidAddress
 	}
@@ -588,9 +595,13 @@ func validateFilter(filters ...*Filter) error {
 	for _, filter := range filters {
 		switch f := filter.Sum.(type) {
 		case *Filter_And_:
-			return validateFilter(f.And.Filters...)
+			if err := validateFilter(f.And.Filters...); err != nil {
+				return err
+			}
 		case *Filter_Or_:
-			return validateFilter(f.Or.Filters...)
+			if err := validateFilter(f.Or.Filters...); err != nil {
+				return err
+			}
 		case *Filter_BatchDenom:
 			if err := ValidateDenom(f.BatchDenom); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
@@ -619,6 +630,8 @@ func validateFilter(filters ...*Filter) error {
 			if err := validateLocation(f.ProjectLocation); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 			}
+		default:
+			panic("uhh filter pls") // TODO: require a filter???
 		}
 	}
 	return nil
