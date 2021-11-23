@@ -17,11 +17,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func (s *TableModel) List2(kvStore kv.ReadKVStore, keyPrefix []protoreflect.Value, opts *orm.ListOptions) orm.Iterator {
-	panic("TODO")
-}
-
-func (s *TableModel) List(kvStore kv.ReadKVStore, condition proto.Message, opts *orm.ListOptions) orm.Iterator {
+func (s *TableModel) List(kvStore kv.ReadKVStore, opts *orm.ListOptions) orm.Iterator {
 	if opts == nil {
 		opts = &orm.ListOptions{}
 	}
@@ -57,7 +53,7 @@ func (s *TableModel) List(kvStore kv.ReadKVStore, condition proto.Message, opts 
 			prefix = opts.Start
 		}
 
-		start, err = cdc.EncodePartialValues(prefix)
+		start, err = cdc.Encode(prefix)
 		if err != nil {
 			return orm.ErrIterator{Err: err}
 		}
@@ -79,7 +75,7 @@ func (s *TableModel) List(kvStore kv.ReadKVStore, condition proto.Message, opts 
 			prefix = opts.End
 		}
 
-		end, err = cdc.EncodePartialValues(prefix)
+		end, err = cdc.Encode(prefix)
 		if err != nil {
 			return orm.ErrIterator{Err: err}
 		}
@@ -137,21 +133,17 @@ func (t *pkIterator) Next(message proto.Message) (bool, error) {
 		return false, nil
 	}
 
-	bz := t.iterator.Value()
-	err := proto.Unmarshal(bz, message)
-	if err != nil {
-		return false, err
-	}
-
 	k := t.iterator.Key()
 	pkValues, err := t.store.PkCodec.Decode(bytes.NewReader(k))
 	if err != nil {
 		return false, err
 	}
 
-	// rehydrate primary key
-	mref := message.ProtoReflect()
-	t.store.PkCodec.SetValues(mref, pkValues)
+	bz := t.iterator.Value()
+	err = t.store.PkCodec.Unmarshal(pkValues, bz, message)
+	if err != nil {
+		return false, err
+	}
 
 	return true, nil
 }
@@ -193,21 +185,16 @@ func (t *idxIterator) Next(message proto.Message) (bool, error) {
 		return false, err
 	}
 
-	buf := &bytes.Buffer{}
-	err = t.store.PkCodec.EncodeWriter(pkValues, buf)
+	pk, err := t.store.PkCodec.Encode(pkValues)
 	if err != nil {
 		return false, err
 	}
-	pk := buf.Bytes()
 
 	bz := t.kv.Get(pk)
-	err = proto.Unmarshal(bz, message)
+	err = t.store.PkCodec.Unmarshal(pkValues, bz, message)
 	if err != nil {
 		return false, err
 	}
-
-	// rehydrate primary key
-	t.store.PkCodec.SetValues(message.ProtoReflect(), pkValues)
 
 	return true, nil
 }

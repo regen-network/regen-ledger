@@ -13,7 +13,7 @@ import (
 type BytesCodec struct{}
 
 func (b BytesCodec) FixedSize() int {
-	panic("implement me")
+	return -1
 }
 
 func (b BytesCodec) Size(value protoreflect.Value) (int, error) {
@@ -47,10 +47,6 @@ func (b BytesCodec) Compare(v1, v2 protoreflect.Value) int {
 	return bytes.Compare(v1.Bytes(), v2.Bytes())
 }
 
-func (b BytesCodec) IsEmpty(value protoreflect.Value) bool {
-	return len(value.Bytes()) == 0
-}
-
 type NonTerminalBytesCodec struct{}
 
 func (b NonTerminalBytesCodec) FixedSize() int {
@@ -64,10 +60,6 @@ func (b NonTerminalBytesCodec) Size(value protoreflect.Value) (int, error) {
 
 func (b NonTerminalBytesCodec) IsOrdered() bool {
 	return false
-}
-
-func (b NonTerminalBytesCodec) IsEmpty(value protoreflect.Value) bool {
-	return len(value.Bytes()) == 0
 }
 
 func (b NonTerminalBytesCodec) Compare(v1, v2 protoreflect.Value) int {

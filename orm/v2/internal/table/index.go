@@ -31,12 +31,11 @@ func (i *Index) onCreate(kv kv.KVStore, message protoreflect.Message) error {
 
 func (i *Index) getKey(message protoreflect.Message) ([]byte, error) {
 	values := i.Codec.GetValues(message)
-	buf := &bytes.Buffer{}
-	err := i.Codec.EncodeWriter(values, buf)
+	bz, err := i.Codec.Encode(values)
 	if err != nil {
 		return nil, err
 	}
-	return buf.Bytes(), nil
+	return bz, nil
 }
 
 func (i *Index) onDelete(kv kv.KVStore, message protoreflect.Message) error {

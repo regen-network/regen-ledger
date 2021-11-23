@@ -29,11 +29,10 @@ func TestCodec(t *testing.T) {
 }
 
 func assertEncDecKey(t *rapid.T, key testutil.TestKey, keyValues []protoreflect.Value) []byte {
-	buf := &bytes.Buffer{}
-	err := key.Codec.EncodeWriter(keyValues, buf)
+	bz, err := key.Codec.Encode(keyValues)
 	assert.NilError(t, err)
-	keyValues2, err := key.Codec.Decode(bytes.NewReader(buf.Bytes()))
+	keyValues2, err := key.Codec.Decode(bytes.NewReader(bz))
 	assert.NilError(t, err)
 	key.RequireValuesEqual(t, keyValues, keyValues2)
-	return buf.Bytes()
+	return bz
 }

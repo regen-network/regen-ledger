@@ -26,7 +26,7 @@ func TestSingleton(t *testing.T) {
 	kv := mem.NewStore()
 
 	// read empty
-	found, err := store.Get(kv, b1)
+	found, err := store.Get(kv, nil, b1, nil)
 	assert.Assert(t, !found)
 	assert.NilError(t, err)
 
@@ -36,7 +36,7 @@ func TestSingleton(t *testing.T) {
 
 	// read
 	var b2 testpb.B
-	found, err = store.Get(kv, &b2)
+	found, err = store.Get(kv, nil, &b2, nil)
 	assert.Assert(t, found)
 	assert.NilError(t, err)
 	assert.Equal(t, b1.X, b2.X)
@@ -51,13 +51,13 @@ func TestSingleton(t *testing.T) {
 	assert.NilError(t, err)
 
 	// read
-	found, err = store.Get(kv, &b2)
+	found, err = store.Get(kv, nil, &b2, nil)
 	assert.Assert(t, found)
 	assert.NilError(t, err)
 	assert.Equal(t, b1.X, b2.X)
 
 	// iterator just returns one value always
-	it := store.List(kv, nil, &orm.ListOptions{})
+	it := store.List(kv, &orm.ListOptions{})
 	assert.Assert(t, it != nil)
 	found, err = it.Next(&b2)
 	assert.Assert(t, found)
@@ -71,13 +71,13 @@ func TestSingleton(t *testing.T) {
 	assert.NilError(t, err)
 
 	// delete
-	err = store.Delete(kv, b1)
+	err = store.Delete(kv, nil)
 	assert.NilError(t, err)
-	err = store.Delete(kv, b1)
+	err = store.Delete(kv, nil)
 	assert.NilError(t, err) // deleting twice is a no-op
 
 	// can't read
-	found, err = store.Get(kv, b1)
+	found, err = store.Get(kv, nil, b1, nil)
 	assert.Assert(t, !found)
 	assert.NilError(t, err)
 }

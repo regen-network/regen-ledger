@@ -53,13 +53,12 @@ func (i IndexKeyCodec) EncodeKV(entry ormdecode.Entry) (k, v []byte, err error) 
 		return nil, nil, ormerrors.BadDecodeEntry
 	}
 
-	kbuf := &bytes.Buffer{}
-	err = i.Codec.EncodeWriter(indexEntry.FullKey, kbuf)
+	bz, err := i.Codec.Encode(indexEntry.FullKey)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return kbuf.Bytes(), sentinel, nil
+	return bz, sentinel, nil
 }
 
 var sentinel = []byte{0}
@@ -109,7 +108,7 @@ func MakeIndexKeyCodec(prefix []byte, indexFields []protoreflect.FieldDescriptor
 		k++
 	}
 
-	cdc, err := MakeCodec(prefix, keyFields, nil)
+	cdc, err := MakeCodec(prefix, keyFields)
 	if err != nil {
 		return nil, err
 	}

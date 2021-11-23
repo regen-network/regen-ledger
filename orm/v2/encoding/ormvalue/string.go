@@ -37,10 +37,6 @@ func (s StringCodec) Encode(value protoreflect.Value, w io.Writer) error {
 	return err
 }
 
-func (s StringCodec) IsEmpty(value protoreflect.Value) bool {
-	return value.String() == ""
-}
-
 type NonTerminalStringCodec struct{}
 
 func (s NonTerminalStringCodec) FixedSize() int {
@@ -53,10 +49,6 @@ func (s NonTerminalStringCodec) Size(value protoreflect.Value) (int, error) {
 
 func (s NonTerminalStringCodec) IsOrdered() bool {
 	return true
-}
-
-func (s NonTerminalStringCodec) IsEmpty(value protoreflect.Value) bool {
-	return value.String() == ""
 }
 
 func (s NonTerminalStringCodec) Compare(v1, v2 protoreflect.Value) int {

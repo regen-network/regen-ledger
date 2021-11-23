@@ -48,7 +48,7 @@ func NewPrimaryKeyCodec(
 	pkPrefix := MakeUint32Prefix(prefix, tableDesc.Id)
 	pkPrefix = MakeUint32Prefix(pkPrefix, 0)
 
-	cdc, err := MakeCodec(pkPrefix, pkFields, nil)
+	cdc, err := MakeCodec(pkPrefix, pkFields)
 
 	return &PrimaryKeyCodec{
 		Codec: cdc,
@@ -84,8 +84,7 @@ func (p PrimaryKeyCodec) EncodeKV(entry ormdecode.Entry) (k, v []byte, err error
 		return nil, nil, ormerrors.BadDecodeEntry
 	}
 
-	kbuf := &bytes.Buffer{}
-	err = p.Codec.EncodeWriter(pkEntry.Key, kbuf)
+	bz, err := p.Codec.Encode(pkEntry.Key)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -95,5 +94,22 @@ func (p PrimaryKeyCodec) EncodeKV(entry ormdecode.Entry) (k, v []byte, err error
 		return nil, nil, err
 	}
 
-	return kbuf.Bytes(), v, nil
+	return bz, v, nil
+}
+
+func (p *PrimaryKeyCodec) Clear(mref protoreflect.Message) {
+	for _, f := range p.Fields {
+		mref.Clear(f)
+	}
+}
+
+func (p *PrimaryKeyCodec) Unmarshal(key []protoreflect.Value, value []byte, message proto.Message) error {
+	err := proto.Unmarshal(value, message)
+	if err != nil {
+		return err
+	}
+
+	// rehydrate primary key
+	p.SetValues(message.ProtoReflect(), key)
+	return nil
 }

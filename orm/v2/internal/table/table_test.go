@@ -90,7 +90,7 @@ func TestScenarios(t *testing.T) {
 
 		// read empty
 		kv := mem.NewStore()
-		found, err := st.Get(kv, a1)
+		found, err := st.Get(kv, nil, a1, nil)
 		require.False(t, found)
 		assert.NilError(t, err)
 
@@ -105,7 +105,7 @@ func TestScenarios(t *testing.T) {
 		// read
 		var a2 testpb.A
 		pk.Codec.SetValues(a2.ProtoReflect(), pk1)
-		found, err = st.Get(kv, &a2)
+		found, err = st.Get(kv, nil, &a2, nil)
 		assert.Assert(t, found)
 		assert.NilError(t, err)
 		pk.RequireValuesEqual(t, pk1, pk.Codec.GetValues(a2.ProtoReflect()))
@@ -131,7 +131,7 @@ func TestAutoInc(t *testing.T) {
 
 	// read empty
 	kv := mem.NewStore()
-	found, err := st.Get(kv, a1)
+	found, err := st.Get(kv, nil, a1, nil)
 	require.False(t, found)
 	assert.NilError(t, err)
 
@@ -149,7 +149,7 @@ func TestAutoInc(t *testing.T) {
 
 	// read
 	a2 := &testpb.A{UINT64: a1.UINT64}
-	found, err = st.Get(kv, a2)
+	found, err = st.Get(kv, nil, a2, nil)
 	assert.Assert(t, found)
 	assert.NilError(t, err)
 	assert.Equal(t, uint64(1), a2.UINT64)

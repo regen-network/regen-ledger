@@ -11,89 +11,78 @@ import (
 )
 
 type Codec struct {
-	prefix      []byte
+	prefix    []byte
+	fixedSize int
+	varSizers []struct {
+		cdc ormvalue.Codec
+		i   int
+	}
 	Fields      []protoreflect.FieldDescriptor
 	ValueCodecs []ormvalue.Codec
 }
 
-func MakeCodec(prefix []byte, fieldDescs []protoreflect.FieldDescriptor, otherFields []protoreflect.FieldDescriptor) (*Codec, error) {
+func MakeCodec(prefix []byte, fieldDescs []protoreflect.FieldDescriptor) (*Codec, error) {
 	n := len(fieldDescs)
-	var partCodecs []ormvalue.Codec
+	var valueCodecs []ormvalue.Codec
+	var varSizers []struct {
+		cdc ormvalue.Codec
+		i   int
+	}
+	fixedSize := 0
 	for i := 0; i < n; i++ {
 		nonTerminal := true
 		if i == n-1 {
 			nonTerminal = false
 		}
 		field := fieldDescs[i]
-		enc, err := ormvalue.MakeCodec(field, nonTerminal)
+		cdc, err := ormvalue.MakeCodec(field, nonTerminal)
 		if err != nil {
 			return nil, err
 		}
-		partCodecs = append(partCodecs, enc)
+		if x := cdc.FixedSize(); x > 0 {
+			fixedSize += x
+		} else {
+			varSizers = append(varSizers, struct {
+				cdc ormvalue.Codec
+				i   int
+			}{cdc, i})
+		}
+		valueCodecs = append(valueCodecs, cdc)
 	}
 
 	return &Codec{
-		ValueCodecs: partCodecs,
+		ValueCodecs: valueCodecs,
 		Fields:      fieldDescs,
 		prefix:      prefix,
+		fixedSize:   fixedSize,
+		varSizers:   varSizers,
 	}, nil
 }
 
-func (cdc *Codec) EncodeWriter(values []protoreflect.Value, w io.Writer) error {
-	_, err := w.Write(cdc.prefix)
-	if err != nil {
-		return err
-	}
-
-	for i := 0; i < len(values); i++ {
-		err = cdc.ValueCodecs[i].Encode(values[i], w)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func (cdc *Codec) Encode(values []protoreflect.Value) ([]byte, error) {
-	buf := &bytes.Buffer{}
-	err := cdc.EncodeWriter(values, buf)
-	return buf.Bytes(), err
-}
-
-// EncodePartial encodes the key up to the presence of any empty values in the
-// list of key values.
-func (cdc *Codec) EncodePartial(message protoreflect.Message) ([]protoreflect.Value, []byte, error) {
-	lastNonEmpty := 0
-	n := len(cdc.ValueCodecs)
-	values := make([]protoreflect.Value, n)
-	for i := 0; i < n; i++ {
-		f := cdc.Fields[i]
-		if message.Has(f) {
-			lastNonEmpty = i + 1
-		}
-		values[i] = message.Get(f)
-	}
-
-	bz, err := cdc.Encode(values[:lastNonEmpty])
+	sz, err := cdc.Size(values)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	return values, bz, nil
-}
 
-func (cdc *Codec) EncodePartialValues(values []protoreflect.Value) ([]byte, error) {
-	lastNonEmpty := 0
+	w := bytes.NewBuffer(make([]byte, 0, sz))
+	_, err = w.Write(cdc.prefix)
+	if err != nil {
+		return nil, err
+	}
+
 	n := len(values)
-	if n >= len(cdc.ValueCodecs) {
+	if n > len(cdc.ValueCodecs) {
 		return nil, ormerrors.IndexOutOfBounds
 	}
+
 	for i := 0; i < n; i++ {
-		if !cdc.ValueCodecs[i].IsEmpty(values[i]) {
-			lastNonEmpty = i + 1
+		err = cdc.ValueCodecs[i].Encode(values[i], w)
+		if err != nil {
+			return nil, err
 		}
 	}
-
-	return cdc.Encode(values[:lastNonEmpty])
+	return w.Bytes(), nil
 }
 
 func (cdc *Codec) GetValues(mref protoreflect.Message) []protoreflect.Value {
@@ -102,18 +91,6 @@ func (cdc *Codec) GetValues(mref protoreflect.Message) []protoreflect.Value {
 		res = append(res, mref.Get(f))
 	}
 	return res
-}
-
-func (cdc *Codec) ClearKey(mref protoreflect.Message) {
-	for _, f := range cdc.Fields {
-		mref.Clear(f)
-	}
-}
-
-func (cdc *Codec) SetValues(mref protoreflect.Message, values []protoreflect.Value) {
-	for i, f := range cdc.Fields {
-		mref.Set(f, values[i])
-	}
 }
 
 func SkipPrefix(r *bytes.Reader, prefix []byte) error {
@@ -154,13 +131,9 @@ func (cdc *Codec) Decode(r *bytes.Reader) ([]protoreflect.Value, error) {
 }
 
 func (cdc *Codec) EncodeFromMessage(message protoreflect.Message) ([]protoreflect.Value, []byte, error) {
-	var b bytes.Buffer
 	values := cdc.GetValues(message)
-	err := cdc.EncodeWriter(values, &b)
-	if err != nil {
-		return nil, nil, err
-	}
-	return values, b.Bytes(), nil
+	bz, err := cdc.Encode(values)
+	return values, bz, err
 }
 
 // IsFullyOrdered returns true if all parts are also ordered
@@ -229,7 +202,25 @@ func GetFieldDescriptor(desc protoreflect.MessageDescriptor, fname string) proto
 }
 
 func (cdc Codec) Size(values []protoreflect.Value) (int, error) {
-	panic("TODO")
+	size := cdc.fixedSize
+	n := len(values)
+	for _, sz := range cdc.varSizers {
+		if sz.i >= n {
+			return size, nil
+		}
+		x, err := sz.cdc.Size(values[sz.i])
+		if err != nil {
+			return 0, err
+		}
+		size += x
+	}
+	return size, nil
+}
+
+func (cdc *Codec) SetValues(mref protoreflect.Message, values []protoreflect.Value) {
+	for i, f := range cdc.Fields {
+		mref.Set(f, values[i])
+	}
 }
 
 func (cdc Codec) Prefix() []byte {
@@ -237,12 +228,8 @@ func (cdc Codec) Prefix() []byte {
 }
 
 type CodecI interface {
-	EncodeWriter(values []protoreflect.Value, w io.Writer) error
-	EncodePartial(message protoreflect.Message) ([]protoreflect.Value, []byte, error)
-	EncodePartialValues(values []protoreflect.Value) ([]byte, error)
+	Encode(values []protoreflect.Value) ([]byte, error)
 	GetValues(mref protoreflect.Message) []protoreflect.Value
-	ClearKey(mref protoreflect.Message)
-	SetValues(mref protoreflect.Message, values []protoreflect.Value)
 	Decode(r *bytes.Reader) ([]protoreflect.Value, error)
 	EncodeFromMessage(message protoreflect.Message) ([]protoreflect.Value, []byte, error)
 	IsFullyOrdered() bool

@@ -46,8 +46,16 @@ func assertEncDecPart(t *rapid.T, x protoreflect.Value, cdc ormvalue.Codec) []by
 	buf := &bytes.Buffer{}
 	err := cdc.Encode(x, buf)
 	assert.NilError(t, err)
-	y, err := cdc.Decode(bytes.NewReader(buf.Bytes()))
+	bz := buf.Bytes()
+	size, err := cdc.Size(x)
+	assert.NilError(t, err)
+	assert.Equal(t, size, len(bz))
+	fixedSize := cdc.FixedSize()
+	if fixedSize > 0 {
+		assert.Equal(t, fixedSize, size)
+	}
+	y, err := cdc.Decode(bytes.NewReader(bz))
 	assert.NilError(t, err)
 	assert.Equal(t, 0, cdc.Compare(x, y))
-	return buf.Bytes()
+	return bz
 }

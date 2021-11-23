@@ -12,7 +12,6 @@ type Codec interface {
 	Decode(r *bytes.Reader) (protoreflect.Value, error)
 	Encode(value protoreflect.Value, w io.Writer) error
 	Compare(v1, v2 protoreflect.Value) int
-	IsEmpty(value protoreflect.Value) bool
 	IsOrdered() bool
 
 	// FixedSize returns a positive value if this codec encodes values with

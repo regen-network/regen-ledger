@@ -38,7 +38,7 @@ func (s store) Has(messages ...proto.Message) bool {
 		if err != nil {
 			return false
 		}
-		found := st.Has(s.kv, message)
+		found, _ := st.Has(s.kv, nil, nil)
 		if !found {
 			return false
 		}
@@ -52,7 +52,7 @@ func (s store) Get(messages ...proto.Message) (found bool, err error) {
 		if err != nil {
 			return false, err
 		}
-		found, err = st.Get(s.kv, message)
+		found, err = st.Get(s.kv, nil, message, nil)
 		if !found || err != nil {
 			return false, err
 		}
@@ -80,7 +80,8 @@ func (s store) Delete(messages ...proto.Message) error {
 		if err != nil {
 			return err
 		}
-		err = st.Delete(s.kv, msg)
+		values := st.PrimaryKey().GetValues(msg.ProtoReflect())
+		err = st.Delete(s.kv, values)
 		if err != nil {
 			return err
 		}
@@ -94,7 +95,7 @@ func (s store) List(condition proto.Message, options *orm.ListOptions) orm.Itera
 		return orm.ErrIterator{Err: err}
 	}
 
-	return st.List(s.kv, condition, options)
+	return st.List(s.kv, options)
 }
 
 var _ orm.Store = &store{}

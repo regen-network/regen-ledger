@@ -22,10 +22,6 @@ func (u Uint32Codec) IsOrdered() bool {
 	return true
 }
 
-func (u Uint32Codec) IsEmpty(value protoreflect.Value) bool {
-	return value.Uint() == 0
-}
-
 func (u Uint32Codec) Compare(v1, v2 protoreflect.Value) int {
 	return compareUint(v1, v2)
 }
