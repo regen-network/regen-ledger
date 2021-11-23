@@ -903,14 +903,6 @@ github.com/regen-network/cosmos-sdk v0.44.2-regen-1 h1:Sm7rU4rMwLpEpgrQkF/4w/V/y
 github.com/regen-network/cosmos-sdk v0.44.2-regen-1/go.mod h1:fwQJdw+aECatpTvQTo1tSfHEsxACdZYU80QCZUPnHr4=
 github.com/regen-network/protobuf v1.3.2-alpha.regen.4 h1:c9jEnU+xm6vqyrQe3M94UFWqiXxRIKKnqBOh2EACmBE=
 github.com/regen-network/protobuf v1.3.2-alpha.regen.4/go.mod h1:/J8/bR1T/NXyIdQDLUaq15LjNE83nRzkyrLAMcPewig=
-github.com/regen-network/regen-ledger/orm v1.0.0-beta1 h1:io3MMmqpIy3YCdkGmcsP+xAaq3JZi1/OAWk3ut+Th9s=
-github.com/regen-network/regen-ledger/orm v1.0.0-beta1/go.mod h1:iWlJmID0OfhKaIOoSsr35+gevY7h9OgpfemKNlLu7YU=
-github.com/regen-network/regen-ledger/types v1.0.0 h1:qb6NFP+nX7QOB2W4G9tSmnvriOqVUabESLzVeBeH5vQ=
-github.com/regen-network/regen-ledger/types v1.0.0/go.mod h1:wNKjSIFVRZN5pk4HwKmvcrXxNe93xFEjVaqiGXab9Bk=
-github.com/regen-network/regen-ledger/x/ecocredit v1.0.0 h1:8fFw7l7QcfqIWmXf1SPhfoBB05SSyDiGgnRfsKC/qQ4=
-github.com/regen-network/regen-ledger/x/ecocredit v1.0.0/go.mod h1:5/0FxUpjsI7iwnNGaEPyM4sgzpyhDRVpt5t23sw2rdM=
-github.com/regen-network/regen-ledger/x/group v1.0.0-beta1 h1:VgkhHH7KA7TjH5pf7lwYLjgmyLgriKjJeg3+BGwrjgI=
-github.com/regen-network/regen-ledger/x/group v1.0.0-beta1/go.mod h1:0tVz1HanrGDmt0L6L0egBE/kFRNEAy8RFsCVreIrSbo=
 github.com/rjeczalik/notify v0.9.1/go.mod h1:rKwnCoCGeuQnwBtTSPL9Dad03Vh2n40ePRrjvIXnJho=
 github.com/rogpeppe/fastuuid v0.0.0-20150106093220-6724a57986af/go.mod h1:XWv6SoW27p1b0cqNHllgS5HIMJraePCO15w5zCzIWYg=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=
@@ -1141,14 +1133,9 @@ golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897/go.mod h1:LzIPMQfyMNhhGPh
 golang.org/x/crypto v0.0.0-20201117144127-c1f2f97bffc9/go.mod h1:jdWPYTVW3xRLrWPugEBEK3UY2ZEsg3UU495nc5E+M+I=
 golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad/go.mod h1:jdWPYTVW3xRLrWPugEBEK3UY2ZEsg3UU495nc5E+M+I=
 golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a/go.mod h1:P+XmwS30IXTQdn5tA2iutPOUgjI07+tq3H3K9MVA1s8=
-<<<<<<< HEAD
+golang.org/x/crypto v0.0.0-20210817164053-32db794688a5/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
 golang.org/x/crypto v0.0.0-20210920023735-84f357641f63 h1:kETrAMYZq6WVGPa8IIixL0CaEcIUNi+1WX7grUoi3y8=
 golang.org/x/crypto v0.0.0-20210920023735-84f357641f63/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
-=======
-golang.org/x/crypto v0.0.0-20210817164053-32db794688a5/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
-golang.org/x/crypto v0.0.0-20211108221036-ceb1ce70b4fa h1:idItI2DDfCokpg0N51B2VtiLdJ4vAuXC9fnCb2gACo4=
-golang.org/x/crypto v0.0.0-20211108221036-ceb1ce70b4fa/go.mod h1:GvvjBRRGRdwPK5ydBHafDWAxML/pGHZbMvKqRZ5+Abc=
->>>>>>> 78051dc (chore: update ibc-go to v2.0.0 (#652))
 golang.org/x/exp v0.0.0-20190121172915-509febef88a4/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20190306152737-a1d7652674e8/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20190510132918-efd6b22b2522/go.mod h1:ZjyILWgesfNpC6sMxTJOJm9Kp84zZh5NQWvqDGG3Qr8=
