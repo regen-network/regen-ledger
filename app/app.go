@@ -496,8 +496,7 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// note replicate if you do not need to test core IBC or light clients.
 	app.ScopedIBCMockKeeper = scopedIBCMockKeeper
 
-	// TODO: update height once proposal is passed
-	app.AddPatch(3038452, func(ctx sdk.Context) error {
+	app.AddPatch(3126912, func(ctx sdk.Context) error {
 		app.IBCKeeper.ConnectionKeeper.SetParams(ctx, ibcconnectiontypes.DefaultParams())
 		return nil
 	})
