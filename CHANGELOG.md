@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.1.0](https://github.com/regen-network/regen-ledger/releases/tag/v2.1.0) - 2021-11-23
+
+### General
+
+#### Fixed
+
+* [#654](https://github.com/regen-network/regen-ledger/pull/654) Add patch for IBC connection parameter
+
+#### Changed
+
+* [#657](https://github.com/regen-network/regen-ledger/pull/657) Update go.mod & imports to adhere to golang semver guidelines for regen-ledger/v2
+* [#658](https://github.com/regen-network/regen-ledger/pull/658) Upgrade `ibc-go` to v2.0.0
+
 ## [v2.0.0](https://github.com/regen-network/regen-ledger/releases/tag/v2.0.0) - 2021-10-29
 
 ### General
