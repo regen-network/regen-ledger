@@ -36,17 +36,32 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 		},
 	}
 
+	projectInfo := []*ecocredit.ProjectInfo{
+		{
+			ProjectId:       "P01",
+			ClassId:         "BIO01",
+			Issuer:          issuer1,
+			ProjectLocation: "AQ",
+			Metadata:        []byte("project metadata"),
+		},
+		{
+			ProjectId:       "P02",
+			ClassId:         "BIO02",
+			Issuer:          issuer2,
+			ProjectLocation: "AQ",
+			Metadata:        []byte("project metadata"),
+		},
+	}
+
 	batchInfo := []*ecocredit.BatchInfo{
 		{
-			ClassId:     "BIO01",
+			ProjectId:   "P01",
 			BatchDenom:  "BIO01-00000000-00000000-001",
-			Issuer:      issuer1,
 			TotalAmount: "100",
 			Metadata:    []byte("batch metadata"),
 		}, {
-			ClassId:     "BIO02",
+			ProjectId:   "P02",
 			BatchDenom:  "BIO02-00000000-00000000-001",
-			Issuer:      addr1,
 			TotalAmount: "100",
 			Metadata:    []byte("batch metadata"),
 		},
@@ -77,12 +92,14 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	}
 
 	genesisState := &ecocredit.GenesisState{
-		Params:    ecocredit.DefaultParams(),
-		Sequences: sequences,
-		ClassInfo: classInfo,
-		BatchInfo: batchInfo,
-		Balances:  balances,
-		Supplies:  supplies,
+		Params:      ecocredit.DefaultParams(),
+		Sequences:   sequences,
+		ClassInfo:   classInfo,
+		BatchInfo:   batchInfo,
+		Balances:    balances,
+		Supplies:    supplies,
+		ProjectInfo: projectInfo,
+		ProjectSeq:  2,
 	}
 	require.NoError(s.initGenesisState(ctx, genesisState))
 
@@ -96,6 +113,14 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 		})
 		require.NoError(err)
 		s.assetClassInfoEqual(res.Info, info)
+	}
+
+	for _, info := range projectInfo {
+		res, err := s.queryClient.ProjectInfo(ctx, &ecocredit.QueryProjectInfoRequest{
+			ProjectId: info.ProjectId,
+		})
+		require.NoError(err)
+		s.assetProjectInfoEqual(res.Info, info)
 	}
 
 	for _, info := range batchInfo {
@@ -140,18 +165,6 @@ func (s *IntegrationTestSuite) TestInitExportGenesis() {
 	require.Equal(genesisState.Balances, exported.Balances)
 	require.Equal(genesisState.Supplies, exported.Supplies)
 
-	// invalid supply
-	genesisState.Supplies = []*ecocredit.Supply{
-		{
-			BatchDenom:     "BIO01-00000000-00000000-001",
-			TradableSupply: "101.000",
-		},
-	}
-
-	err := s.initGenesisState(ctx, genesisState)
-	require.Error(err)
-	require.Contains(err.Error(), "supply is incorrect for BIO01-00000000-00000000-001 credit batch")
-
 }
 
 func (s *IntegrationTestSuite) exportGenesisState(ctx types.Context) ecocredit.GenesisState {
@@ -186,11 +199,19 @@ func (s *IntegrationTestSuite) assetClassInfoEqual(q, other *ecocredit.ClassInfo
 	require.Equal(q.Metadata, other.Metadata)
 }
 
-func (s *IntegrationTestSuite) assetBatchInfoEqual(q, other *ecocredit.BatchInfo) {
+func (s *IntegrationTestSuite) assetProjectInfoEqual(q, other *ecocredit.ProjectInfo) {
 	require := s.Require()
 	require.Equal(q.ClassId, other.ClassId)
-	require.Equal(q.BatchDenom, other.BatchDenom)
+	require.Equal(q.ProjectId, other.ProjectId)
+	require.Equal(q.ProjectLocation, other.ProjectLocation)
+	require.Equal(q.Metadata, other.Metadata)
 	require.Equal(q.Issuer, other.Issuer)
+}
+
+func (s *IntegrationTestSuite) assetBatchInfoEqual(q, other *ecocredit.BatchInfo) {
+	require := s.Require()
+	require.Equal(q.ProjectId, other.ProjectId)
+	require.Equal(q.BatchDenom, other.BatchDenom)
 	require.Equal(q.Metadata, other.Metadata)
 	require.Equal(q.TotalAmount, other.TotalAmount)
 }

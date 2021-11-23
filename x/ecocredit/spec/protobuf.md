@@ -674,6 +674,7 @@ GenesisState defines ecocredit module's genesis state.
 | balances | [Balance](#regen.ecocredit.v1alpha2.Balance) | repeated | balances is the list of credit batch tradable/retired units. |
 | supplies | [Supply](#regen.ecocredit.v1alpha2.Supply) | repeated | supplies is the list of credit batch tradable/retired supply. |
 | project_info | [ProjectInfo](#regen.ecocredit.v1alpha2.ProjectInfo) | repeated | project_info is the list of projects. |
+| project_seq | [uint64](#uint64) |  | project_seq is the project table orm.Sequence, it is used to get the next project ID. |
 
 
 

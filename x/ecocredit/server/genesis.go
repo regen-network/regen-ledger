@@ -35,6 +35,10 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 		return nil, errors.Wrap(err, "project-info")
 	}
 
+	if err := s.projectInfoSeq.InitVal(ctx, genesisState.ProjectSeq); err != nil {
+		return nil, errors.Wrap(err, "project seq")
+	}
+
 	if err := s.batchInfoTable.Import(ctx, genesisState.BatchInfo, 0); err != nil {
 		return nil, errors.Wrap(err, "batch-info")
 	}
@@ -233,6 +237,8 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		Supplies:    supplies,
 		ProjectInfo: projecInfo,
 	}
+
+	gs.ProjectSeq = s.projectInfoSeq.CurVal(ctx)
 
 	return cdc.MustMarshalJSON(gs), nil
 }

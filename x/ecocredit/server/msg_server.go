@@ -92,11 +92,7 @@ func (s serverImpl) CreateProject(goCtx context.Context, req *ecocredit.MsgCreat
 
 	projectID := req.ProjectId
 	if req.ProjectId == "" {
-		projectSeqNo, err := s.getCreditTypeSeqNextVal(ctx.Context, *classInfo.CreditType)
-		if err != nil {
-			return nil, err
-		}
-
+		projectSeqNo := s.projectInfoSeq.NextVal(ctx)
 		projectID = ecocredit.FormatProjectID(*classInfo.CreditType, projectSeqNo)
 	}
 

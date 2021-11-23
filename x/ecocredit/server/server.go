@@ -11,19 +11,20 @@ import (
 )
 
 const (
-	TradableBalancePrefix    byte = 0x0
-	TradableSupplyPrefix     byte = 0x1
-	RetiredBalancePrefix     byte = 0x2
-	RetiredSupplyPrefix      byte = 0x3
-	CreditTypeSeqTablePrefix byte = 0x4
-	ClassInfoTablePrefix     byte = 0x5
-	BatchInfoTablePrefix     byte = 0x6
-	SellOrderTablePrefix     byte = 0x7
-	SellOrderTableSeqPrefix  byte = 0x8
-	BuyOrderTablePrefix      byte = 0x9
-	BuyOrderTableSeqPrefix   byte = 0x10
-	AskDenomTablePrefix      byte = 0x11
-	ProjectInfoTablePrefix   byte = 0x12
+	TradableBalancePrefix     byte = 0x0
+	TradableSupplyPrefix      byte = 0x1
+	RetiredBalancePrefix      byte = 0x2
+	RetiredSupplyPrefix       byte = 0x3
+	CreditTypeSeqTablePrefix  byte = 0x4
+	ClassInfoTablePrefix      byte = 0x5
+	BatchInfoTablePrefix      byte = 0x6
+	SellOrderTablePrefix      byte = 0x7
+	SellOrderTableSeqPrefix   byte = 0x8
+	BuyOrderTablePrefix       byte = 0x9
+	BuyOrderTableSeqPrefix    byte = 0x10
+	AskDenomTablePrefix       byte = 0x11
+	ProjectInfoTablePrefix    byte = 0x12
+	ProjectInfoTableSeqPrefix byte = 0x13
 )
 
 type serverImpl struct {
@@ -42,6 +43,7 @@ type serverImpl struct {
 	buyOrderTable    orm.AutoUInt64Table
 	askDenomTable    orm.PrimaryKeyTable
 	projectInfoTable orm.PrimaryKeyTable
+	projectInfoSeq   orm.Sequence
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
@@ -89,6 +91,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	}
 	s.askDenomTable = askDenomTableBuilder.Build()
 
+	s.projectInfoSeq = orm.NewSequence(storeKey, ProjectInfoTableSeqPrefix)
 	projectInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ProjectInfoTablePrefix, storeKey, &ecocredit.ProjectInfo{}, cdc)
 	if err != nil {
 		panic(err.Error())
