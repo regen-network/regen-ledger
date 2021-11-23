@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	cmd "github.com/regen-network/regen-ledger/app/regen/cmd"
+	cmd "github.com/regen-network/regen-ledger/v2/app/regen/cmd"
 )
 
 func TestInitCmd(t *testing.T) {
