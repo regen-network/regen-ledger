@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 
+	"github.com/regen-network/regen-ledger/orm/v2/types/ormerrors"
+
 	"google.golang.org/protobuf/reflect/protoreflect"
 
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -38,26 +40,50 @@ func (s *TableModel) List(kvStore kv.ReadKVStore, condition proto.Message, opts 
 	}
 
 	var start, end []byte
+	var err error
 	if opts.Cursor != nil && !opts.Reverse {
 		start = opts.Cursor
 	} else {
-		prefix, err := cdc.EncodePartialValues(opts.Start)
+		var prefix []protoreflect.Value
+		if len(opts.Prefix) != 0 {
+			if len(opts.Start) != 0 {
+				return orm.ErrIterator{Err: ormerrors.InvalidListOptions}
+			}
+			prefix = opts.Prefix
+		} else if len(opts.Start) != 0 {
+			if len(opts.Prefix) != 0 {
+				return orm.ErrIterator{Err: ormerrors.InvalidListOptions}
+			}
+			prefix = opts.Start
+		}
+
+		start, err = cdc.EncodePartialValues(prefix)
 		if err != nil {
 			return orm.ErrIterator{Err: err}
 		}
-
-		start = prefix
 	}
 
 	if opts.Cursor != nil && opts.Reverse {
 		start = storetypes.PrefixEndBytes(opts.Cursor)
 	} else {
-		prefix, err := cdc.EncodePartialValues(opts.End)
+		var prefix []protoreflect.Value
+		if len(opts.Prefix) != 0 {
+			if len(opts.End) != 0 {
+				return orm.ErrIterator{Err: ormerrors.InvalidListOptions}
+			}
+			prefix = opts.Prefix
+		} else if len(opts.End) != 0 {
+			if len(opts.Prefix) != 0 {
+				return orm.ErrIterator{Err: ormerrors.InvalidListOptions}
+			}
+			prefix = opts.End
+		}
+
+		end, err = cdc.EncodePartialValues(prefix)
 		if err != nil {
 			return orm.ErrIterator{Err: err}
 		}
-
-		end = storetypes.PrefixEndBytes(prefix)
+		end = storetypes.PrefixEndBytes(end)
 	}
 
 	var iterator kv.KVStoreIterator

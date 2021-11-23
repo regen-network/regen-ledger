@@ -40,10 +40,28 @@ type Cursor []byte
 
 type ListOptions struct {
 	Reverse bool
-	Index   string
-	Cursor  Cursor
-	Start   []protoreflect.Value
-	End     []protoreflect.Value
+	// Index defines an index by field names. If it is empty the primary key
+	// will be used as the index.
+	Index string
+
+	// Cursor specifies a cursor returned by Iterator.Cursor() to restart iteration from.
+	Cursor Cursor
+
+	// Prefix defines an iteration prefix using values corresponding the the key
+	// being used. Not all of the values in the key need to be specified and
+	// they do not be sortable unlike start and end. Prefix or Start/End are
+	// mutually exclusive and shouldn't be specified together.
+	Prefix []protoreflect.Value
+
+	// Start defines a start position using a set of values corresponding to the
+	// index or primary key being used. Each of the values must match the type
+	// of the key at that position and also be a sortable value. Not all of
+	// the values in the key need to be specified.
+	Start []protoreflect.Value
+
+	// End defines an end position using a set of values correspond to the key
+	// being used. Not all of the values in the key need to be specified.
+	End []protoreflect.Value
 }
 
 type ReadStoreConn interface {

@@ -109,7 +109,7 @@ func MakeIndexKeyCodec(prefix []byte, indexFields []protoreflect.FieldDescriptor
 		k++
 	}
 
-	cdc, err := MakeCodec(prefix, keyFields)
+	cdc, err := MakeCodec(prefix, keyFields, nil)
 	if err != nil {
 		return nil, err
 	}

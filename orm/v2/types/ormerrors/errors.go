@@ -23,4 +23,5 @@ var (
 	UnsupportedOperation          = errors.New(codespace, 16, "unsupported operation")
 	BadDecodeEntry                = errors.New(codespace, 17, "bad decode entry")
 	IndexOutOfBounds              = errors.New(codespace, 18, "index out of bounds")
+	InvalidListOptions            = errors.New(codespace, 19, "invalid list options")
 )

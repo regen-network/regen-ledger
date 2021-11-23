@@ -318,8 +318,7 @@ func TestClient(t *testing.T) {
 
 	// condition
 	it = store.List(&testpb.A{}, &orm.ListOptions{
-		Start: []protoreflect.Value{protoreflect.ValueOfUint32(4)},
-		End:   []protoreflect.Value{protoreflect.ValueOfUint32(4)},
+		Prefix: []protoreflect.Value{protoreflect.ValueOfUint32(4)},
 	})
 	defer it.Close()
 	require.NotNil(t, it)
@@ -351,15 +350,40 @@ func TestClient(t *testing.T) {
 	require.False(t, have)
 	assert.NilError(t, err)
 
-	// use index and condition
+	// use index and prefix
 	it = store.List(&testpb.A{}, &orm.ListOptions{
-		Index: "UINT64,STRING",
-		Start: []protoreflect.Value{protoreflect.ValueOfUint64(10)},
-		End:   []protoreflect.Value{protoreflect.ValueOfUint64(10)},
+		Index:  "UINT64,STRING",
+		Prefix: []protoreflect.Value{protoreflect.ValueOfUint64(10)},
 	})
 	defer it.Close()
 	require.NotNil(t, it)
 	for _, i := range []int{0, 1} {
+		have, err := it.Next(&acopy)
+		assert.Assert(t, have)
+		assert.NilError(t, err)
+		AssertProtoEqual(t, data[i], &acopy)
+	}
+	// no more elements
+	have, err = it.Next(&acopy)
+	require.False(t, have)
+	assert.NilError(t, err)
+
+	// use index and start and end
+	it = store.List(&testpb.A{}, &orm.ListOptions{
+		Index:   "STRING,UINT32",
+		Reverse: true,
+		Start: []protoreflect.Value{
+			protoreflect.ValueOfString("abc"),
+			protoreflect.ValueOfUint32(4),
+		},
+		End: []protoreflect.Value{
+			protoreflect.ValueOfString("foo"),
+			protoreflect.ValueOfUint32(4),
+		},
+	})
+	defer it.Close()
+	require.NotNil(t, it)
+	for _, i := range []int{1, 2, 0} {
 		have, err := it.Next(&acopy)
 		assert.Assert(t, have)
 		assert.NilError(t, err)

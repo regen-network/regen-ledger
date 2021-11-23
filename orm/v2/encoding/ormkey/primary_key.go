@@ -48,7 +48,7 @@ func NewPrimaryKeyCodec(
 	pkPrefix := MakeUint32Prefix(prefix, tableDesc.Id)
 	pkPrefix = MakeUint32Prefix(pkPrefix, 0)
 
-	cdc, err := MakeCodec(pkPrefix, pkFields)
+	cdc, err := MakeCodec(pkPrefix, pkFields, nil)
 
 	return &PrimaryKeyCodec{
 		Codec: cdc,

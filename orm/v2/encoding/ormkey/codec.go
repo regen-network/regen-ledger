@@ -16,7 +16,7 @@ type Codec struct {
 	ValueCodecs []ormvalue.Codec
 }
 
-func MakeCodec(prefix []byte, fieldDescs []protoreflect.FieldDescriptor) (*Codec, error) {
+func MakeCodec(prefix []byte, fieldDescs []protoreflect.FieldDescriptor, otherFields []protoreflect.FieldDescriptor) (*Codec, error) {
 	n := len(fieldDescs)
 	var partCodecs []ormvalue.Codec
 	for i := 0; i < n; i++ {
