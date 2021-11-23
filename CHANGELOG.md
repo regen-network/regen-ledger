@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Fixed
 
-* [#654](https://github.com/regen-network/regen-ledger/pull/654) Fix IBC error
+* [#654](https://github.com/regen-network/regen-ledger/pull/654) Add patch for IBC connection parameter
 
 #### Changed
 
