@@ -13,7 +13,7 @@ type AccountKeeper interface {
 	// GetAccount retrieves an account from the store.
 	GetAccount(sdk.Context, sdk.AccAddress) authtypes.AccountI
 
-	// GetModuleAddress retrieve a module account address from the store.
+	// GetModuleAddress retrieves a module account address from the store.
 	GetModuleAddress(moduleName string) sdk.AccAddress
 
 	// SetAccount sets an account in the store.

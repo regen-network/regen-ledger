@@ -14,6 +14,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 	_, createBatchRes := s.createClassAndIssueBatch(addr1, "2.0")
 
 	askPrice1 := sdk.NewInt64Coin("stake", 1000000)
+	//askPrice2 := sdk.NewInt64Coin("token", 1000000) // TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
 
 	// create sell orders
 	testCases := []struct {
@@ -23,26 +24,6 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 		expErr  string
 		wantErr bool
 	}{
-		{
-			name:  "valid request",
-			owner: addr1,
-			orders: []*ecocredit.MsgSell_Order{
-				{
-					BatchDenom:        createBatchRes.BatchDenom,
-					Quantity:          "1.0",
-					AskPrice:          &askPrice1,
-					DisableAutoRetire: true,
-				},
-				{
-					BatchDenom:        createBatchRes.BatchDenom,
-					Quantity:          "1.0",
-					AskPrice:          &askPrice1,
-					DisableAutoRetire: true,
-				},
-			},
-			expErr:  "",
-			wantErr: false,
-		},
 		{
 			name:  "insufficient credit balance - batch denom",
 			owner: addr1,
@@ -83,6 +64,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 			expErr:  "insufficient credit balance",
 			wantErr: true,
 		},
+		// TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
 		//{
 		//	name: "denom not allowed",
 		//	owner: addr1,
@@ -103,6 +85,26 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 		//	expErr: "denom not allowed",
 		//	wantErr: true,
 		//},
+		{
+			name:  "valid request",
+			owner: addr1,
+			orders: []*ecocredit.MsgSell_Order{
+				{
+					BatchDenom:        createBatchRes.BatchDenom,
+					Quantity:          "1.0",
+					AskPrice:          &askPrice1,
+					DisableAutoRetire: true,
+				},
+				{
+					BatchDenom:        createBatchRes.BatchDenom,
+					Quantity:          "1.0",
+					AskPrice:          &askPrice1,
+					DisableAutoRetire: true,
+				},
+			},
+			expErr:  "",
+			wantErr: false,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -134,6 +136,7 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 	_, createBatchRes := s.createClassAndIssueBatch(addr1, "2.0")
 
 	askPrice1 := sdk.NewInt64Coin("stake", 1000000)
+	//askPrice2 := sdk.NewInt64Coin("token", 1000000) // TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
 
 	// create sell order
 	sellRes, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
@@ -164,26 +167,6 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 		wantErr bool
 	}{
 		{
-			name:  "valid request",
-			owner: addr1,
-			updates: []*ecocredit.MsgUpdateSellOrders_Update{
-				{
-					SellOrderId:       sellRes.SellOrderIds[0],
-					NewQuantity:       "1.0",
-					NewAskPrice:       &askPrice1,
-					DisableAutoRetire: true,
-				},
-				{
-					SellOrderId:       sellRes.SellOrderIds[1],
-					NewQuantity:       "1.0",
-					NewAskPrice:       &askPrice1,
-					DisableAutoRetire: true,
-				},
-			},
-			expErr:  "",
-			wantErr: false,
-		},
-		{
 			name:  "insufficient credit balance",
 			owner: addr1,
 			updates: []*ecocredit.MsgUpdateSellOrders_Update{
@@ -202,6 +185,47 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 			},
 			expErr:  "insufficient credit balance",
 			wantErr: true,
+		},
+		// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
+		//{
+		//	name: "denom not allowed",
+		//	owner: addr1,
+		//	updates: []*ecocredit.MsgUpdateSellOrders_Update{
+		//		{
+		//			SellOrderId:       sellRes.SellOrderIds[0],
+		//			NewQuantity:       "1.0",
+		//			NewAskPrice:       &askPrice2,
+		//			DisableAutoRetire: true,
+		//		},
+		//		{
+		//			SellOrderId:       sellRes.SellOrderIds[1],
+		//			NewQuantity:       "1.0",
+		//			NewAskPrice:       &askPrice2,
+		//			DisableAutoRetire: true,
+		//		},
+		//	},
+		//	expErr: "denom not allowed",
+		//	wantErr: true,
+		//},
+		{
+			name:  "valid request",
+			owner: addr1,
+			updates: []*ecocredit.MsgUpdateSellOrders_Update{
+				{
+					SellOrderId:       sellRes.SellOrderIds[0],
+					NewQuantity:       "1.0",
+					NewAskPrice:       &askPrice1,
+					DisableAutoRetire: true,
+				},
+				{
+					SellOrderId:       sellRes.SellOrderIds[1],
+					NewQuantity:       "1.0",
+					NewAskPrice:       &askPrice1,
+					DisableAutoRetire: true,
+				},
+			},
+			expErr:  "",
+			wantErr: false,
 		},
 	}
 
@@ -233,11 +257,12 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 	// create credit class and issue credits to addr1
 	_, createBatchRes := s.createClassAndIssueBatch(addr1.String(), "2.0")
 
-	bidPrice1 := sdk.NewInt64Coin("stake", 100)
-	bidPrice2 := sdk.NewInt64Coin("stake", 999)
+	bidPrice1 := sdk.NewInt64Coin("stake", 1000000)
+	bidPrice2 := sdk.NewInt64Coin("stake", 9999999)
+	//bidPrice3 := sdk.NewInt64Coin("token", 1000000) // TODO: Verify that BidPrice.Denom is in AllowAskDenom #624
 
 	// fund buyer account
-	s.Require().NoError(s.fundAccount(addr2, sdk.NewCoins(sdk.NewInt64Coin("stake", 200))))
+	s.Require().NoError(s.fundAccount(addr2, sdk.NewCoins(sdk.NewInt64Coin("stake", 2000000))))
 
 	// create sell orders
 	sellRes, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
@@ -327,6 +352,26 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 			expErr: "insufficient balance",
 			wantErr: true,
 		},
+		//{
+		//	name: "denom not allowed",
+		//	buyer: addr2.String(),
+		//	orders: []*ecocredit.MsgBuy_Order{
+		//		{
+		//			Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[0]}},
+		//			Quantity:          "1.0",
+		//			BidPrice:          &bidPrice3,
+		//			DisableAutoRetire: true,
+		//		},
+		//		{
+		//			Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[1]}},
+		//			Quantity:          "1.0",
+		//			BidPrice:          &bidPrice3,
+		//			DisableAutoRetire: true,
+		//		},
+		//	},
+		//	expErr: "denom not allowed",
+		//	wantErr: true,
+		//},
 		{
 			name: "valid request",
 			buyer: addr2.String(),
@@ -397,8 +442,8 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 func (s *IntegrationTestSuite) TestScenarioAllowAskDenom() {
 	addr1 := s.signers[3].String()
 
-	//rootAddress := s.accountKeeper.GetModuleAddress(govtypes.ModuleName)
-	//s.Require().NotNil(rootAddress)
+	// TODO: Verify governance module address for AllowAskDenom #624
+	//rootAddress := s.accountKeeper.GetModuleAddress(govtypes.ModuleName).String()
 
 	// add ask denom
 	testCases := []struct {
@@ -419,9 +464,10 @@ func (s *IntegrationTestSuite) TestScenarioAllowAskDenom() {
 			expErr: "unauthorized",
 			wantErr: true,
 		},
+		// TODO: Verify governance module address for AllowAskDenom #624
 		//{
 		//	name: "valid request",
-		//	rootAddress: rootAddress.String(),
+		//	rootAddress: rootAddress,
 		//	denom: "utoken",
 		//	displayDenom: "token",
 		//	exponent: 6,
