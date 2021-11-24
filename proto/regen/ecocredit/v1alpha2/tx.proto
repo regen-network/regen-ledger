@@ -64,8 +64,8 @@ service Msg {
   rpc AddToBasket(MsgAddToBasket) returns (MsgAddToBasketResponse);
 
   // TakeFromBasket takes credits from a basket without regard for which
-  // credits they are. The credits will be auto-retired if retire_on_take
-  // is true. Credits will be chosen randomly using the previous block hash
+  // credits they are. The credits will be auto-retired if disable_auto_retire
+  // is false. Credits will be chosen randomly using the previous block hash
   // as a consensus source of randomness.
   // More concretely, the implementation is as follows:
   // - take the previous block hash and convert it into an uint64,
@@ -79,8 +79,8 @@ service Msg {
   // PickFromBasket picks specific credits from a basket. If allow_picking is
   // set to false, then only an address which deposited credits in the basket
   // can pick those credits. All other addresses will be blocked from picking
-  // those credits. The credits will be auto-retired if retire_on_take is
-  // true unless the credits were previously put into the basket by the
+  // those credits. The credits will be auto-retired if disable_auto_retire is
+  // false unless the credits were previously put into the basket by the
   // address picking them from the basket, in which case they will remain
   // tradable. This functionality allows the owner of a credit to have more
   // control over the credits they are putting in baskets then ordinary users
@@ -506,6 +506,7 @@ message MsgAllowAskDenom {
 // MsgAllowAskDenomResponse is the Msg/AllowAskDenom response type.
 message MsgAllowAskDenomResponse {}
 
+// MsgCreateBasket is the Msg/CreateBasket request type.
 message MsgCreateBasket {
   // curator is the address of the basket curator who is able to change certain
   // basket settings.
@@ -529,26 +530,26 @@ message MsgCreateBasket {
   // which applies to a credit will determine its multiplier in the basket.
   repeated BasketCriteria basket_criteria = 5;
 
+  // disable_auto_retire allows auto-retirement to be disabled.
+  // The credits will be auto-retired if disable_auto_retire is
+  // false unless the credits were previously put into the basket by the
+  // address picking them from the basket, in which case they will remain
+  // tradable.
   bool disable_auto_retire = 6;
 
+  // allow_picking specifies whether an address which didn't deposit the credits
+  // in the basket can pick those credits or not. 
   bool allow_picking = 7;
 }
 
-message BasketCriteria {
-  Filter filter = 1;
-
-  // multiplier is an integer number which is applied to credit units when
-  // converting to basket units. For example if the multiplier is 2000, then
-  // 1.1 credits will result in 2200 basket tokens. If there are any fractional
-  // amounts left over in this calculation when adding credits to a basket,
-  // those fractional amounts will not get added to the basket.
-  string multiplier = 2;
-}
-
+// MsgCreateBasketResponse is the Msg/CreateBasket response type.
 message MsgCreateBasketResponse {
+
+  // basket_denom is the unique denomination ID of the newly created basket.
   string basket_denom = 1;
 }
 
+// MsgAddToBasket is the Msg/AddToBasket request type.
 message MsgAddToBasket {
   // owner is the owner of credits being added to the basket.
   string owner = 1;
@@ -561,16 +562,23 @@ message MsgAddToBasket {
   repeated BasketCredit credits = 3;
 }
 
+// MsgAddToBasketResponse is the Msg/AddToBasket response type.
 message MsgAddToBasketResponse {
+
   // amount_received is the amount of basket tokens received.
   string amount_received = 1;
 }
 
+// MsgTakeFromBasket is the Msg/TakeFromBasket request type.
 message MsgTakeFromBasket {
+
+  // owner is the owner of the basket tokens.
   string owner = 1;
 
+  // basket_denom is the basket denom to take credits from.
   string basket_denom = 2;
 
+  // amount is the number of credits to take from the basket.
   string amount = 3;
 
   // retirement_location is the optional retirement location for the credits
@@ -578,16 +586,20 @@ message MsgTakeFromBasket {
   string retirement_location = 4;
 }
 
+// MsgTakeFromBasketResponse is the Msg/TakeFromBasket response type.
 message MsgTakeFromBasketResponse {
+
   // credits are the credits taken out of the basket.
   repeated BasketCredit credits = 1;
 }
 
+// MsgPickFromBasket is the Msg/PickFromBasket request type.
 message MsgPickFromBasket {
+
   // owner is the owner of the basket tokens.
   string owner = 1;
 
-  // basket_denom is the denom to pick from.
+  // basket_denom is the basket denom to pick credits from.
   string basket_denom = 2;
 
   // credits are the units of credits being picked from the basket
@@ -598,14 +610,6 @@ message MsgPickFromBasket {
   string retirement_location = 4;
 }
 
+// MsgPickFromBasketResponse is the Msg/PickFromBasket response type.
 message MsgPickFromBasketResponse {}
 
-message BasketCredit {
-  // batch_denom is the unique ID of the credit batch.
-  string batch_denom = 1;
-
-  // tradable_amount is the number of credits in this transfer that can be
-  // traded by the recipient. Decimal values are acceptable within the
-  // precision returned by Query/Precision.
-  string tradable_amount = 2;
-}
