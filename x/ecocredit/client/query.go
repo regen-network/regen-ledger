@@ -32,6 +32,7 @@ func QueryCmd(name string) *cobra.Command {
 		QuerySupplyCmd(),
 		QueryCreditTypesCmd(),
 		QueryParams(),
+		QueryProjectsCmd(),
 	)
 	return cmd
 }
@@ -86,6 +87,34 @@ func QueryClassInfoCmd() *cobra.Command {
 			return print(ctx, res, err)
 		},
 	})
+}
+
+// QueryProjectsCmd returns a query command that retrieves projects.
+func QueryProjectsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "projects [class_id]",
+		Short: "List all projects in the given class with pagination flags",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.Projects(cmd.Context(), &ecocredit.QueryProjectsRequest{
+				ClassId:    args[0],
+				Pagination: pagination,
+			})
+			return print(ctx, res, err)
+		},
+	}
+	flags.AddPaginationFlagsToCmd(cmd, "projects")
+	return qflags(cmd)
 }
 
 // QueryBatchesCmd returns a query command that retrieves credit batches for a

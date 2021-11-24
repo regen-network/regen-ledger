@@ -39,6 +39,7 @@ func TxCmd(name string) *cobra.Command {
 		TxUpdateClassMetadataCmd(),
 		TxUpdateClassIssuersCmd(),
 		TxUpdateClassAdminCmd(),
+		TxCreateProject(),
 	)
 	return cmd
 }
@@ -496,4 +497,67 @@ Parameters:
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	})
+}
+
+// TxCreateProject returns a transaction command that creates a new project.
+func TxCreateProject() *cobra.Command {
+	cmd := txflags(&cobra.Command{
+		Use:   "create-project [class-id] [project-location] [metadata] --project-id [project-id]",
+		Short: "Create a new project within a credit class",
+		Long: `Create a new project within a credit class.
+		
+		Parameters:
+		class-id: id of the class
+		project-location: the location of the project (see documentation for proper project-location formats).
+		metadata: base64 encoded metadata - any arbitrary metadata attached to the project.
+		project-id: 
+		`,
+		Args: cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if args[0] == "" {
+				return errors.New("class-id is required")
+			}
+
+			classID := args[0]
+
+			if args[1] == "" {
+				return errors.New("project location is required")
+			}
+			projectLocation := args[1]
+
+			if args[2] == "" {
+				return errors.New("metadata is required")
+			}
+
+			b, err := base64.StdEncoding.DecodeString(args[2])
+			if err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
+			}
+
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			projectId, err := cmd.Flags().GetString(FlagProjectId)
+			if err != nil {
+				return err
+			}
+
+			msg := ecocredit.MsgCreateProject{
+				Issuer:          clientCtx.GetFromAddress().String(),
+				ClassId:         classID,
+				ProjectLocation: projectLocation,
+				Metadata:        b,
+				ProjectId:       projectId,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+
+		},
+	})
+
+	cmd.Flags().String(FlagProjectId, "", "id of the project")
+
+	return cmd
 }

@@ -165,20 +165,20 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name:           "invalid class id",
-			args:           []string{"abcde"},
+			name:           "invalid project id",
+			args:           []string{"abcd-e"},
 			expectErr:      true,
-			expectedErrMsg: "class ID didn't match the format",
+			expectedErrMsg: "invalid projectID",
 		},
 		{
-			name:                "existing class no batches",
-			args:                []string{"C02"},
+			name:                "existing project no batches",
+			args:                []string{"P02"},
 			expectErr:           false,
 			expectedBatchDenoms: []string{},
 		},
 		{
 			name:      "no pagination flags",
-			args:      []string{"C01"},
+			args:      []string{"P01"},
 			expectErr: false,
 			expectedBatchDenoms: []string{
 				"C01-20210101-20210201-001",
@@ -190,7 +190,7 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 		{
 			name: "limit 2",
 			args: []string{
-				"C01",
+				"P01",
 				fmt.Sprintf("--%s=2", flags.FlagLimit),
 			},
 			expectErr: false,
@@ -202,7 +202,7 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 		{
 			name: "limit 2, offset 2",
 			args: []string{
-				"C01",
+				"P01",
 				fmt.Sprintf("--%s=2", flags.FlagLimit),
 				fmt.Sprintf("--%s=2", flags.FlagOffset),
 			},

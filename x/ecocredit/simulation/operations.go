@@ -772,10 +772,6 @@ func getRandomProjectFromClass(ctx regentypes.Context, r *rand.Rand, qryClient e
 		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "no project found"), nil
 	}
 
-	fmt.Println("============================================")
-	fmt.Println(projects)
-	fmt.Println("============================================")
-
 	return projects[r.Intn(len(projects))], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
 
