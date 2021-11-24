@@ -114,8 +114,7 @@ func (s serverImpl) Projects(goCtx context.Context, request *ecocredit.QueryProj
 
 	ctx := types.UnwrapSDKContext(goCtx)
 	// Only read IDs that have a prefix match with the ClassID
-	start, end := orm.PrefixRange([]byte(request.ClassId))
-	projectsIter, err := s.projectInfoTable.PrefixScan(ctx, start, end)
+	projectsIter, err := s.projectsByClassIDIndex.GetPaginated(ctx, request.ClassId, request.Pagination)
 	if err != nil {
 		return nil, err
 	}

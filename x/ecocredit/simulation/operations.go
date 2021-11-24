@@ -366,7 +366,7 @@ func SimulateMsgSend(ak ecocredit.AccountKeeper, bk ecocredit.BankKeeper,
 		}
 
 		balres, err := qryClient.Balance(ctx, &ecocredit.QueryBalanceRequest{
-			Account:    project.ProjectId,
+			Account:    project.Issuer,
 			BatchDenom: batch.BatchDenom,
 		})
 		if err != nil {
@@ -771,6 +771,10 @@ func getRandomProjectFromClass(ctx regentypes.Context, r *rand.Rand, qryClient e
 	if len(projects) == 0 {
 		return nil, simtypes.NoOpMsg(ecocredit.ModuleName, msgType, "no project found"), nil
 	}
+
+	fmt.Println("============================================")
+	fmt.Println(projects)
+	fmt.Println("============================================")
 
 	return projects[r.Intn(len(projects))], simtypes.NoOpMsg(ecocredit.ModuleName, msgType, ""), nil
 }
