@@ -586,7 +586,11 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 
 		sellOrder, err := s.getSellOrder(ctx, update.SellOrderId)
 		if err != nil {
-			return nil, err
+			return nil, ecocredit.ErrInvalidSellOrder.Wrapf("sell order not found")
+		}
+
+		if req.Owner != sellOrder.Owner {
+			return nil, sdkerrors.ErrUnauthorized.Wrapf("signer is not the owner")
 		}
 
 		// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624

@@ -131,6 +131,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 
 func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 	addr1 := s.signers[3].String()
+	addr2 := s.signers[4].String()
 
 	// create credit class and issue credits to addr1
 	_, createBatchRes := s.createClassAndIssueBatch(addr1, "2.0")
@@ -166,6 +167,46 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 		expErr  string
 		wantErr bool
 	}{
+		{
+			name:  "invalid sell order",
+			owner: addr1,
+			updates: []*ecocredit.MsgUpdateSellOrders_Update{
+				{
+					SellOrderId:       99,
+					NewQuantity:       "1.0",
+					NewAskPrice:       &askPrice1,
+					DisableAutoRetire: true,
+				},
+				{
+					SellOrderId:       100,
+					NewQuantity:       "1.0",
+					NewAskPrice:       &askPrice1,
+					DisableAutoRetire: true,
+				},
+			},
+			expErr:  "invalid sell order",
+			wantErr: true,
+		},
+		{
+			name:  "unauthorized",
+			owner: addr2,
+			updates: []*ecocredit.MsgUpdateSellOrders_Update{
+				{
+					SellOrderId:       sellRes.SellOrderIds[0],
+					NewQuantity:       "1.0",
+					NewAskPrice:       &askPrice1,
+					DisableAutoRetire: true,
+				},
+				{
+					SellOrderId:       sellRes.SellOrderIds[1],
+					NewQuantity:       "1.0",
+					NewAskPrice:       &askPrice1,
+					DisableAutoRetire: true,
+				},
+			},
+			expErr:  "unauthorized",
+			wantErr: true,
+		},
 		{
 			name:  "insufficient credit balance",
 			owner: addr1,
