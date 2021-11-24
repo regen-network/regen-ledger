@@ -112,6 +112,24 @@ service Query {
   rpc AllowedAskDenoms(QueryAllowedAskDenomsRequest) returns (QueryAllowedAskDenomsResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1alpha1/ask-denoms";
   }
+
+  // Basket queries one basket by denom.
+  rpc Basket(QueryBasketRequest) returns (QueryBasketResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/baskets/{basket_denom}";
+  }
+
+  // Baskets lists all baskets in the ecocredit module.
+  rpc Baskets(QueryBasketsRequest) returns (QueryBasketsResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/baskets";
+  }
+
+  // BasketCredits lists all ecocredits inside a given basket.
+  rpc BasketCredits(QueryBasketCreditsRequest) returns (QueryBasketCreditsResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/baskets/{basket_denom}/credits";
+  }
 }
 
 // QueryParamsRequest is the Query/Params request type.
@@ -397,5 +415,83 @@ message QueryAllowedAskDenomsResponse {
   repeated AskDenom ask_denoms = 1;
 
   // pagination defines an optional pagination for the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// Basket defines a credit basket.
+message Basket {
+  // curator is the address of the basket curator who is able to change certain
+  // basket settings.
+  string curator = 1;
+
+  // name will be used to create a bank denom for this basket token of the form
+  // ecocredit:{curator}:{name}.
+  string name = 2;
+
+  // display_name will be used to create a bank Metadata display name for this
+  // basket token of the form ecocredit:{curator}:{display_name}.
+  string display_name = 3;
+
+  // exponent is the exponent that will be used for denom metadata. An exponent
+  // of 6 will mean that 10^6 units of a basket token should be displayed
+  // as one unit in user interfaces.
+  uint32 exponent = 4;
+
+  // basket_criteria is the criteria by which credits can be added to the
+  // basket. Basket criteria will be applied in order and the first criteria
+  // which applies to a credit will determine its multiplier in the basket.
+  repeated BasketCriteria basket_criteria = 5;
+
+  // disable_auto_retire allows auto-retirement to be disabled.
+  // The credits will be auto-retired if disable_auto_retire is
+  // false unless the credits were previously put into the basket by the
+  // address picking them from the basket, in which case they will remain
+  // tradable.
+  bool disable_auto_retire = 6;
+
+  // allow_picking specifies whether an address which didn't deposit the credits
+  // in the basket can pick those credits or not. 
+  bool allow_picking = 7;
+}
+
+// QueryBasketRequest is the Query/Basket request type.
+message QueryBasketRequest {
+  // basket_denom represents the denom of the basket to query. 
+  string basket_denom = 1;
+}
+
+// QueryBasketResponse is the Query/Basket response type.
+message QueryBasketResponse {
+  // basket is the queried basket.
+  Basket basket = 1;
+}
+
+// QueryBasketsRequest is the Query/Baskets request type.
+message QueryBasketsRequest {
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryBasketsResponse is the Query/Baskets response type.
+message QueryBasketsResponse {
+  // baskets are the fetched baskets.
+  repeated Basket baskets = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryBasketCreditsRequest is the Query/BasketCredits request type.
+message QueryBasketCreditsRequest {
+  // basket_denom is the basket denom to query credits for.
+  string basket_denom = 1;
+}
+
+// QueryBasketCreditsResponse is the Query/BasketCredits response type.
+message QueryBasketCreditsResponse {
+  // credits are the credits inside the basket.
+  repeated BasketCredit credits = 1;
+
+  // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
