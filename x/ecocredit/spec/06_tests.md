@@ -40,9 +40,9 @@ If a user tries to create a credit class and the user provides metadata that is 
 - WHEN - user tries to create a credit class
 - THEN - transaction is successful, credit class is created
 
-If a user tries to create a credit class and the user provides metadata that is NOT base54 encoded, then the transaction fails and the credit class is NOT created.
+If a user tries to create a credit class and the user provides metadata that is NOT base64 encoded, then the transaction fails and the credit class is NOT created.
 
-- GIVEN - user provides metadata that is NOT base54 encoded
+- GIVEN - user provides metadata that is NOT base64 encoded
 - WHEN - user tries to create a credit class
 - THEN - transaction fails, credit class is NOT created
 
@@ -73,18 +73,6 @@ If a user tries to create a credit class and the user provides a valid issuer ad
 If a user tries to create a credit class and the user provides an invalid issuer address, then the transaction fails and the credit class is NOT created.
 
 - GIVEN - user provides an invalid issuer address
-- WHEN - user tries to create a credit class
-- THEN - transaction fails, credit class is NOT created
-
-If a user tries to create a credit class and the user provides a valid credit type (credit type is included in the list of approved credit types), then the transaction is successful and the credit class is created.
-
-- GIVEN - user provides a valid credit type
-- WHEN - user tries to create a credit class
-- THEN - transaction is successful, credit class is created
-
-If a user tries to create a credit class and the user provide an invalid credit type (credit type is NOT included in the list of approved credit types), then the transaction fails and the credit class is NOT created.
-
-- GIVEN - user provides an invalid credit type
 - WHEN - user tries to create a credit class
 - THEN - transaction fails, credit class is NOT created
 
