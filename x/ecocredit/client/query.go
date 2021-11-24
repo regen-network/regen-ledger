@@ -33,6 +33,7 @@ func QueryCmd(name string) *cobra.Command {
 		QueryCreditTypesCmd(),
 		QueryParams(),
 		QueryProjectsCmd(),
+		QueryProjectInfoCmd(),
 	)
 	return cmd
 }
@@ -114,6 +115,28 @@ func QueryProjectsCmd() *cobra.Command {
 		},
 	}
 	flags.AddPaginationFlagsToCmd(cmd, "projects")
+	return qflags(cmd)
+}
+
+// QueryProjectInfoCmd returns a query command that retrieves project information.
+func QueryProjectInfoCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "project-info [project_id]",
+		Short: "Retrive project info",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			res, err := c.ProjectInfo(cmd.Context(), &ecocredit.QueryProjectInfoRequest{
+				ProjectId: args[0],
+			})
+			return print(ctx, res, err)
+		},
+	}
+
 	return qflags(cmd)
 }
 

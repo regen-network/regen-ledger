@@ -20,7 +20,7 @@ func (m *ClassInfo) PrimaryKeyFields() []interface{} {
 // PrimaryKeyFields returns the fields of the object that will make up the
 // primary key for ProjectInfo.
 func (m *ProjectInfo) PrimaryKeyFields() []interface{} {
-	return []interface{}{m.ProjectId, m.ClassId}
+	return []interface{}{m.ProjectId}
 }
 
 // PrimaryKeyFields returns the fields of the object that will make up the

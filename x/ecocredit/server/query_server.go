@@ -86,10 +86,8 @@ func (s serverImpl) Batches(goCtx context.Context, request *ecocredit.QueryBatch
 		return nil, err
 	}
 
-	// Only read IDs that have a prefix match with the ProjectID
 	ctx := types.UnwrapSDKContext(goCtx)
-	start, end := orm.PrefixRange([]byte(request.ProjectId))
-	batchesIter, err := s.batchInfoTable.PrefixScan(ctx, start, end)
+	batchesIter, err := s.batchesByProjectIDIndex.GetPaginated(ctx, request.ProjectId, request.Pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +111,6 @@ func (s serverImpl) Projects(goCtx context.Context, request *ecocredit.QueryProj
 	}
 
 	ctx := types.UnwrapSDKContext(goCtx)
-	// Only read IDs that have a prefix match with the ClassID
 	projectsIter, err := s.projectsByClassIDIndex.GetPaginated(ctx, request.ClassId, request.Pagination)
 	if err != nil {
 		return nil, err

@@ -26,6 +26,7 @@ const (
 	ProjectInfoTablePrefix    byte = 0x12
 	ProjectInfoTableSeqPrefix byte = 0x13
 	ProjectsByClassIDIndex    byte = 0x14
+	BatchesByProjectIndex     byte = 0x15
 )
 
 type serverImpl struct {
@@ -38,14 +39,15 @@ type serverImpl struct {
 	// Store sequence numbers per credit type
 	creditTypeSeqTable orm.PrimaryKeyTable
 
-	classInfoTable         orm.PrimaryKeyTable
-	batchInfoTable         orm.PrimaryKeyTable
-	sellOrderTable         orm.AutoUInt64Table
-	buyOrderTable          orm.AutoUInt64Table
-	askDenomTable          orm.PrimaryKeyTable
-	projectInfoTable       orm.PrimaryKeyTable
-	projectInfoSeq         orm.Sequence
-	projectsByClassIDIndex orm.Index
+	classInfoTable          orm.PrimaryKeyTable
+	batchInfoTable          orm.PrimaryKeyTable
+	sellOrderTable          orm.AutoUInt64Table
+	buyOrderTable           orm.AutoUInt64Table
+	askDenomTable           orm.PrimaryKeyTable
+	projectInfoTable        orm.PrimaryKeyTable
+	projectInfoSeq          orm.Sequence
+	projectsByClassIDIndex  orm.Index
+	batchesByProjectIDIndex orm.Index
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
@@ -73,6 +75,15 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	if err != nil {
 		panic(err.Error())
 	}
+
+	s.batchesByProjectIDIndex, err = orm.NewIndex(batchInfoTableBuilder, BatchesByProjectIndex, func(value interface{}) ([]interface{}, error) {
+		projectID := value.(*ecocredit.BatchInfo).ProjectId
+		return []interface{}{projectID}, nil
+	}, ecocredit.BatchInfo{}.ProjectId)
+	if err != nil {
+		panic(err.Error())
+	}
+
 	s.batchInfoTable = batchInfoTableBuilder.Build()
 
 	sellOrderTableBuilder, err := orm.NewAutoUInt64TableBuilder(SellOrderTablePrefix, SellOrderTableSeqPrefix, storeKey, &ecocredit.SellOrder{}, cdc)
