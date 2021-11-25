@@ -547,7 +547,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 			),
 			expectErr:       true,
 			errInTxResponse: false,
-			expectedErrMsg:  "invalid project id",
+			expectedErrMsg:  "invalid projectID",
 		},
 		{
 			name: "missing start date",
@@ -572,18 +572,6 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 			),
 			expectErr:      true,
 			expectedErrMsg: "must provide an end date for the credit batch: invalid request",
-		},
-		{
-			name: "invalid issuance recipient",
-			args: append(
-				[]string{
-					invalidRecipientJson,
-					makeFlagFrom(val.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "decoding bech32 failed: invalid bech32 string length 5",
 		},
 		{
 			name: "invalid issuance tradable amount",
