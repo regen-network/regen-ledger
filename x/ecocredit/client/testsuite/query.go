@@ -478,7 +478,6 @@ func (s *IntegrationTestSuite) TestQueryParams() {
 
 	cmd := client.QueryParams()
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
-	fmt.Println(out.String())
 	require.NoError(err)
 
 	var params ecocredit.QueryParamsResponse

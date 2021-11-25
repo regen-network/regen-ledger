@@ -20,11 +20,11 @@ func ValidateProjectID(projectID string) error {
 	return nil
 }
 
-// Calculate the ID to use for a new project, based on the credit type and
+// Calculate the ID to use for a new project, based on the project id and
 // sequence number.
 //
 // The initial version has format:
-// <credit type abbreviation><class seq no>
-func FormatProjectID(creditType CreditType, classSeqNo uint64) string {
-	return fmt.Sprintf("%s%02d", creditType.Abbreviation, classSeqNo)
+// <class id><project seq no>
+func FormatProjectID(classID string, projectSeqNo uint64) string {
+	return fmt.Sprintf("%s%02d", classID, projectSeqNo)
 }

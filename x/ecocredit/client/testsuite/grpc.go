@@ -144,7 +144,7 @@ func (s *IntegrationTestSuite) TestGetBatches() {
 		},
 		{
 			"valid request with pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/classes/%s/batches?pagination.limit=2", val.APIAddress, "P01"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/projects/%s/batches?pagination.limit=2", val.APIAddress, "P01"),
 			2,
 			false,
 			"",
@@ -348,7 +348,6 @@ func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 	require := s.Require()
 
 	resp, err := rest.GetRequest(fmt.Sprintf("%s/regen/ecocredit/v1alpha2/params", val.APIAddress))
-	fmt.Println(resp)
 	require.NoError(err)
 
 	var params ecocredit.QueryParamsResponse

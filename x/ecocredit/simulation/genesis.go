@@ -87,7 +87,7 @@ func genProjects(r *rand.Rand, classes []*ecocredit.ClassInfo) []*ecocredit.Proj
 
 	for i := 0; i < 3; i++ {
 		projects[i] = &ecocredit.ProjectInfo{
-			ProjectId:       ecocredit.FormatProjectID(*classes[i].CreditType, uint64(i)),
+			ProjectId:       ecocredit.FormatProjectID(classes[i].ClassId, uint64(i)),
 			ClassId:         classes[i].ClassId,
 			Issuer:          classes[i].Issuers[0],
 			ProjectLocation: "AB-CDE FG1 345",
