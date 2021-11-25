@@ -348,6 +348,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 	require := s.Require()
 
 	resp, err := rest.GetRequest(fmt.Sprintf("%s/regen/ecocredit/v1alpha2/params", val.APIAddress))
+	fmt.Println(resp)
 	require.NoError(err)
 
 	var params ecocredit.QueryParamsResponse
