@@ -487,6 +487,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 
 	// Write batch with invalid issuance recipient
 	msgCreateBatch.Issuance[0].Recipient = "abcde"
+	msgCreateBatch.EndDate = &endDate
 	invalidRecipientJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
 	// Write batch with invalid issuance tradable amount
@@ -572,6 +573,18 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 			),
 			expectErr:      true,
 			expectedErrMsg: "must provide an end date for the credit batch: invalid request",
+		},
+		{
+			name: "invalid issuance recipient",
+			args: append(
+				[]string{
+					invalidRecipientJson,
+					makeFlagFrom(val.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expectErr:      true,
+			expectedErrMsg: "decoding bech32 failed: invalid bech32 string length 5",
 		},
 		{
 			name: "invalid issuance tradable amount",
