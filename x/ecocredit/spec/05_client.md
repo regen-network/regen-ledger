@@ -100,7 +100,7 @@ pagination:
 The `class-info` command allows users to query information for a given credit class.
 
 ```bash
-regen query ecocredit class-info
+regen query ecocredit class-info [flags]
 ```
 
 Example:
@@ -214,6 +214,101 @@ credit_types:
   name: carbon
   precision: 6
   unit: metric ton CO2 equivalent
+```
+
+#### sell-order
+
+The `sell-order` command allows users to query information for a given sell order.
+
+```bash
+regen query ecocredit sell-order [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit sell-order 1
+```
+
+Example Output:
+
+```bash
+```
+
+#### sell-orders
+
+The `sell-orders` command allows users to query all sell orders.
+
+```bash
+regen query ecocredit sell-orders [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit sell-orders
+```
+
+Example Output:
+
+```bash
+```
+
+#### buy-order
+
+The `buy-order` command allows users to query information for a given buy order.
+
+```bash
+regen query ecocredit buy-order [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit buy-order 1
+```
+
+Example Output:
+
+```bash
+```
+
+#### buy-orders
+
+The `buy-orders` command allows users to query all buy orders.
+
+```bash
+regen query ecocredit buy-orders [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit buy-orders
+```
+
+Example Output:
+
+```bash
+```
+
+#### ask-denoms
+
+The `ask-denoms` command allows users to query the list of allowed ask denoms.
+
+```bash
+regen query ecocredit ask-denoms [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit ask-denoms
+```
+
+Example Output:
+
+```bash
 ```
 
 ### Transactions
@@ -369,6 +464,48 @@ Example:
 
 ```bash
 regen tx ecocredit update-class-metadata C01 cmVnZW4= --from regen1..
+```
+
+#### sell
+
+The `sell` command allows users to create new sell orders.
+
+```bash
+regen tx ecocredit sell ... [flags]
+```
+
+Example:
+
+```bash
+regen tx ecocredit sell ... --from regen1..
+```
+
+#### update-sell-order
+
+The `update-sell-order` command allows users to update a given sell order.
+
+```bash
+regen tx ecocredit update-sell-order ... [flags]
+```
+
+Example:
+
+```bash
+regen tx ecocredit update-sell-order ... --from regen1..
+```
+
+#### buy
+
+The `buy` command allows users to create new buy orders.
+
+```bash
+regen tx ecocredit buy ... [flags]
+```
+
+Example:
+
+```bash
+regen tx ecocredit buy ... --from regen1..
 ```
 
 ## gRPC
@@ -614,10 +751,116 @@ Example Output:
 }
 ```
 
+### SellOrder
+
+The `SellOrder` endpoint allows users to query for information on a sell order.
+
+```bash
+regen.ecocredit.v1alpha1.Query/SellOrder
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"sell_order_id": "1"}' \
+    localhost:9090 \
+    regen.ecocredit.v1alpha1.Query/SellOrder
+```
+
+Example Output:
+
+```bash
+```
+
+### SellOrders
+
+The `SellOrders` endpoint allows users to query all sell orders.
+
+```bash
+regen.ecocredit.v1alpha1.Query/SellOrders
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    localhost:9090 \
+    regen.ecocredit.v1alpha1.Query/SellOrders
+```
+
+Example Output:
+
+```bash
+```
+
+### BuyOrder
+
+The `BuyOrder` endpoint allows users to query for information on a buy order.
+
+```bash
+regen.ecocredit.v1alpha1.Query/BuyOrder
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"buy_order_id": "1"}' \
+    localhost:9090 \
+    regen.ecocredit.v1alpha1.Query/BuyOrder
+```
+
+Example Output:
+
+```bash
+```
+
+### BuyOrders
+
+The `BuyOrders` endpoint allows users to query all buy orders.
+
+```bash
+regen.ecocredit.v1alpha1.Query/BuyOrders
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    localhost:9090 \
+    regen.ecocredit.v1alpha1.Query/BuyOrders
+```
+
+Example Output:
+
+```bash
+```
+
+### AllowedAskDenoms
+
+The `AllowedAskDenoms` endpoint allows users to query all allowed ask denoms.
+
+```bash
+regen.ecocredit.v1alpha1.Query/AllowedAskDenoms
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    localhost:9090 \
+    regen.ecocredit.v1alpha1.Query/AllowedAskDenoms
+```
+
+Example Output:
+
+```bash
+```
+
 ## REST
 
 A user can query the `ecocredit` module using REST endpoints.
-
 
 ### classes
 
@@ -840,4 +1083,156 @@ Example Output:
     }
   ]
 }
+```
+
+### sell-orders
+
+The `sell-orders` endpoint allows users to query all sell orders.
+
+```bash
+/regen/ecocredit/v1alpha1/sell-orders
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1alpha1/sell-orders
+```
+
+Example Output:
+
+```bash
+```
+
+### sell-orders/address
+
+The `sell-orders/address` endpoint allows users to query for all sell orders by owner address.
+
+```bash
+/regen/ecocredit/v1alpha1/sell-orders/address/{address}
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1alpha1/sell-orders/address/regen1..
+```
+
+Example Output:
+
+```bash
+```
+
+### sell-orders/batch-denom
+
+The `sell-orders/batch-denom` endpoint allows users to query for all sell orders by credit batch denom.
+
+```bash
+/regen/ecocredit/v1alpha1/sell-orders/batch-denom/{batch-denom}
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1alpha1/sell-orders/batch-denom/C01-20200101-20210101-001
+```
+
+Example Output:
+
+```bash
+```
+
+### sell-orders/id
+
+The `sell-orders/id` endpoint allows users to query for information on a sell order by sell order id.
+
+```bash
+/regen/ecocredit/v1alpha1/sell-orders/id/{sell_order_id}
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1alpha1/sell-orders/id/1
+```
+
+Example Output:
+
+```bash
+```
+
+### buy-orders
+
+The `buy-orders` endpoint allows users to query all buy orders.
+
+```bash
+/regen/ecocredit/v1alpha1/buy-orders
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1alpha1/buy-orders
+```
+
+Example Output:
+
+```bash
+```
+
+### buy-orders/address
+
+The `buy-orders/address` endpoint allows users to query for all buy orders by buyer address.
+
+```bash
+/regen/ecocredit/v1alpha1/buy-orders/address/{address}
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1alpha1/buy-orders/address/regen1..
+```
+
+Example Output:
+
+```bash
+```
+
+### buy-orders/id
+
+The `buy-orders/id` endpoint allows users to query for information on a buy order by buy order id.
+
+```bash
+/regen/ecocredit/v1alpha1/buy-orders/id/{buy_order_id}
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1alpha1/buy-orders/id/1
+```
+
+Example Output:
+
+```bash
+```
+
+### ask-denoms
+
+The `ask-denoms` endpoint allows users to query all allowed ask denoms.
+
+```bash
+/regen/ecocredit/v1alpha1/ask-denoms
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/ecocredit/v1alpha1/ask-denoms
+```
+
+Example Output:
+
+```bash
 ```

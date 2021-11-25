@@ -68,7 +68,7 @@ The `sellOrderTable` stores `SellOrder`:
 
 `0x7 | []byte(OrderId) -> ProtocolBuffer(SellOrder)`
 
-<!-- TODO: add code snippet following #613 -->
++++ https://github.com/regen-network/regen-ledger/blob/081ae071b159b397b4c10837804b69137295e3af/proto/regen/ecocredit/v1alpha1/types.proto#L122-L146
 
 #### Sell Order Sequence Table
 
@@ -84,7 +84,7 @@ The `buyOrderTable` stores `BuyOrder`:
 
 `0x9 | []byte(BuyOrderId) -> ProtocolBuffer(BuyOrder)`
 
-<!-- TODO: add code snippet following #613 -->
++++ https://github.com/regen-network/regen-ledger/blob/081ae071b159b397b4c10837804b69137295e3af/proto/regen/ecocredit/v1alpha1/types.proto#L148-L196
 
 #### Buy Order Sequence Table
 
@@ -100,4 +100,4 @@ The `askDenomTable` stores `AskDenom`:
 
 `0x11 | []byte(Denom) -> ProtocolBuffer(AskDenom)`
 
-<!-- TODO: add code snippet following #613 -->
++++ https://github.com/regen-network/regen-ledger/blob/081ae071b159b397b4c10837804b69137295e3af/proto/regen/ecocredit/v1alpha1/types.proto#L198-L210
