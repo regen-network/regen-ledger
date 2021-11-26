@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/cosmos-sdk/types"
@@ -67,13 +68,27 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 			return nil, err
 		}
 
+		res, err := s.ClassInfo(goCtx, &ecocredit.QueryClassInfoRequest{ClassId: batchInfo.ClassId})
+		if err != nil {
+			return nil, err
+		}
+		classInfo := res.Info
+
 		// verify the user has sufficient ecocredits to send
 		err = verifyCreditBalance(store, owner, credit.BatchDenom, credit.TradableAmount)
 		if err != nil {
 			return nil, err
 		}
 
-		// verify this credit matches the filter
+		// TODO(tyler): verify this credit matches the filter
+		filters := make([]*ecocredit.Filter, len(basket.BasketCriteria))
+		for i, bc := range basket.BasketCriteria {
+			filters[i] = bc.Filter
+		}
+		_, err = checkFilters(filters, *classInfo, batchInfo, basket, req.Owner)
+		if err != nil {
+			return nil, err
+		}
 
 		// we dont have to check for error cause we already did in verifyCreditBalance
 		creditsToDeposit, _ := regenmath.NewDecFromString(credit.TradableAmount)
@@ -128,18 +143,6 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 
 	return &ecocredit.MsgAddToBasketResponse{AmountReceived: basketTokens.String()}, nil
 }
-
-//func assertCreditPassesFilter(batch ecocredit.BatchInfo, filter ecocredit.Filter) error {
-//	switch f := filter.(type) {
-//	case *ecocredit.Filter_And_:
-//		for _, fltr := range f.And.Filters {
-//			if err := assertCreditPassesFilter(batch, *fltr); err != nil {
-//				return err
-//			}
-//		}
-//	case *ecocredit.Filter_Or_:
-//	}
-//}
 
 func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTakeFromBasket) (*ecocredit.MsgTakeFromBasketResponse, error) {
 	panic("implement me")
@@ -208,32 +211,91 @@ func calculateBasketTokens(creditsDeposited regenmath.Dec, exponent uint32) (reg
 	return creditsDeposited.Mul(multiplier)
 }
 
-func assertCreditFilter(batchInfo ecocredit.BatchInfo, classInfo ecocredit.ClassInfo, filters []*ecocredit.Filter) error {
+func checkFilters(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, batchInfo ecocredit.BatchInfo, basketInfo ecocredit.Basket, owner string) (int, error) {
+	depth := len(filters)
+	var err error
 	for _, filter := range filters {
 		switch f := filter.Sum.(type) {
+		case *ecocredit.Filter_And_:
+			andFilter := f.And.Filters
+			andDepth := len(andFilter)
+			innerDepth, err := checkFilters(andFilter, classInfo, batchInfo, basketInfo, owner)
+			if andDepth != 0 || err != nil {
+				return innerDepth, err
+			} else {
+				depth -= 1
+			}
+		case *ecocredit.Filter_Or_:
+			orFilter := f.Or.Filters
+			orDepth := len(orFilter)
+			innerDepth, err := checkFilters(orFilter, classInfo, batchInfo, basketInfo, owner)
+			if orDepth == innerDepth {
+				return innerDepth, err
+			} else {
+				depth -= 1
+			}
 		case *ecocredit.Filter_CreditTypeName:
-			if f.CreditTypeName != classInfo.CreditType.Name {
-				return formatFilterError("class id", f.CreditTypeName, classInfo.CreditType.Name)
+			if classInfo.CreditType.Name == f.CreditTypeName {
+				depth -= 1
+			} else {
+				err = formatFilterError("credit type name", f.CreditTypeName, classInfo.CreditType.Name)
 			}
 		case *ecocredit.Filter_ClassId:
-			if f.ClassId != classInfo.ClassId {
-				return formatFilterError("class id", f.ClassId, classInfo.ClassId)
+			if batchInfo.ClassId == f.ClassId {
+				depth -= 1
+			} else {
+				err = formatFilterError("class id", f.ClassId, batchInfo.ClassId)
 			}
+		case *ecocredit.Filter_ProjectId:
+			//  depth -= 1 TODO: need projects PR
 		case *ecocredit.Filter_BatchDenom:
-			if f.BatchDenom != batchInfo.BatchDenom {
-				return formatFilterError("batch denom", f.BatchDenom, batchInfo.BatchDenom)
+			if batchInfo.BatchDenom == f.BatchDenom {
+				depth -= 1
+			} else {
+				err = formatFilterError("batch denom", f.BatchDenom, batchInfo.BatchDenom)
+			}
+		case *ecocredit.Filter_ClassAdmin:
+			if classInfo.Admin == f.ClassAdmin {
+				depth -= 1
+			} else {
+				err = formatFilterError("class admin", f.ClassAdmin, classInfo.Admin)
+			}
+		case *ecocredit.Filter_Issuer:
+			if batchInfo.Issuer == f.Issuer {
+				depth -= 1
+			} else {
+				err = formatFilterError("issuer", f.Issuer, batchInfo.Issuer)
+			}
+		case *ecocredit.Filter_Owner:
+			if owner == f.Owner {
+				depth -= 1
+			} else {
+				err = formatFilterError("credit owner", f.Owner, owner)
 			}
 		case *ecocredit.Filter_ProjectLocation:
-		// TODO: need projects
-		case *ecocredit.Filter_Owner:
-		// TODO: class admin? the actual depositor?
-		case *ecocredit.Filter_Issuer:
-			if f.Issuer != batchInfo.Issuer {
-				return formatFilterError("issuer", f.Issuer, batchInfo.Issuer)
+			// depth -= 1 TODO: wait for projects PR
+		case *ecocredit.Filter_DateRange_:
+			if batchInfo.StartDate.Equal(*f.DateRange.StartDate) || batchInfo.StartDate.After(*f.DateRange.StartDate) {
+				if batchInfo.EndDate.Equal(*f.DateRange.EndDate) || batchInfo.EndDate.Before(*f.DateRange.EndDate) {
+					depth -= 1
+				} else {
+					err = formatFilterError("date range", f.DateRange.StartDate.String()+" to "+f.DateRange.EndDate.String(), batchInfo.StartDate.String()+" to "+batchInfo.EndDate.String())
+				}
+			} else {
+				err = formatFilterError("date range", f.DateRange.StartDate.String()+" to "+f.DateRange.EndDate.String(), batchInfo.StartDate.String()+" to "+batchInfo.EndDate.String())
 			}
+		case *ecocredit.Filter_Tag:
+		// depth -= 1 TODO: wait for tags PR
+		default:
+			err = errors.New("no valid filter given")
 		}
+
 	}
-	return nil
+
+	if depth != 0 || err != nil {
+		return depth, err
+	}
+	return depth, nil
 }
 
 func formatFilterError(item, want, got string) error {
@@ -241,5 +303,5 @@ func formatFilterError(item, want, got string) error {
 }
 
 func getBasketDenom(curator, name string) string {
-	return fmt.Sprintf("ecocredit:%s:%s", curator, name)
+	return fmt.Sprintf("%s:%s:%s", ecocredit.ModuleName, curator, name)
 }

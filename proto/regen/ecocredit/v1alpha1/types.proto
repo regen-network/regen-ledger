@@ -248,7 +248,7 @@ message Filter {
     // tag specifies a curation tag to match against.
     string tag = 12;
   }
-
+// checkFilters(filters, batchInfo, basket, req.Owner, )
   message And {
     repeated Filter filters = 1;
   }
