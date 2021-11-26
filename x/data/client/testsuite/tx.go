@@ -151,10 +151,16 @@ func (s *IntegrationTestSuite) TestTxSignData() {
 			errMsg: "iri is required",
 		},
 		{
-			name:   "invalid",
+			name:   "invalid iri",
 			iri:    "noooo",
 			expErr: true,
-			errMsg: "can only sign graph data types",
+			errMsg: "invalid iri",
+		},
+		{
+			name:   "bad extension",
+			iri:    "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.png",
+			expErr: true,
+			errMsg: "invalid iri: expected extension .rdf for graph data, got .png",
 		},
 	}
 
