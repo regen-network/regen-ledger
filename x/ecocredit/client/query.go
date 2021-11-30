@@ -145,7 +145,7 @@ func QueryProjectInfoCmd() *cobra.Command {
 func QueryBatchesCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "batches [project_id]",
-		Short: "List all credit batches in the given class with pagination flags",
+		Short: "List all credit batches in the given project with pagination flags",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
