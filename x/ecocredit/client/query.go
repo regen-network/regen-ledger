@@ -141,7 +141,7 @@ func QueryProjectInfoCmd() *cobra.Command {
 }
 
 // QueryBatchesCmd returns a query command that retrieves credit batches for a
-// given credit class.
+// given project.
 func QueryBatchesCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "batches [project_id]",
