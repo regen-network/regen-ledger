@@ -20,8 +20,8 @@ func ValidateProjectID(projectID string) error {
 	return nil
 }
 
-// Calculate the ID to use for a new project, based on the project id and
-// sequence number.
+// Calculate the ID to use for a new project, based on the class id and
+// the project sequence number.
 //
 // The initial version has format:
 // <class id><project seq no>
