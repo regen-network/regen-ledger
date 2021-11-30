@@ -168,7 +168,7 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 			name:           "invalid project id",
 			args:           []string{"abcd-e"},
 			expectErr:      true,
-			expectedErrMsg: "invalid projectID",
+			expectedErrMsg: "invalid project id",
 		},
 		{
 			name:                "existing project no batches",

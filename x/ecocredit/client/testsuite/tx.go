@@ -548,7 +548,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 			),
 			expectErr:       true,
 			errInTxResponse: false,
-			expectedErrMsg:  "invalid projectID",
+			expectedErrMsg:  "invalid project id",
 		},
 		{
 			name: "missing start date",

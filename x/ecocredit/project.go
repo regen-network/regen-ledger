@@ -14,7 +14,7 @@ var reProjectID = regexp.MustCompile(`^[A-Za-z0-9]{2,16}$`)
 func ValidateProjectID(projectID string) error {
 	matches := reProjectID.FindStringSubmatch(projectID)
 	if matches == nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid projectID: %s.", projectID)
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidRequest, "invalid project id: %s.", projectID)
 	}
 
 	return nil

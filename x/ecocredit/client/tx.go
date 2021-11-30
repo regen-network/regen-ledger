@@ -234,7 +234,7 @@ Parameters:
   msg-create-batch-json-file: Path to a file containing a JSON object
                               representing MsgCreateBatch. The JSON has format:
                               {
-                                "project_id"": "C01",
+                                "project_id"": "C0101",
                                 "issuance": [
                                   {
                                     "recipient":           "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
@@ -510,7 +510,7 @@ func TxCreateProject() *cobra.Command {
 		class-id: id of the class
 		project-location: the location of the project (see documentation for proper project-location formats).
 		metadata: base64 encoded metadata - any arbitrary metadata attached to the project.
-		project-id: 
+		project-id: id of the project (optional).
 		`,
 		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {

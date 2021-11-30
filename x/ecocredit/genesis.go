@@ -161,11 +161,12 @@ func calculateSupply(decimalPlaces map[string]uint32, balances []*Balance, calSu
 // DefaultGenesisState returns a default ecocredit module genesis state.
 func DefaultGenesisState() *GenesisState {
 	return &GenesisState{
-		Params:    DefaultParams(),
-		ClassInfo: []*ClassInfo{},
-		BatchInfo: []*BatchInfo{},
-		Sequences: []*CreditTypeSeq{},
-		Balances:  []*Balance{},
-		Supplies:  []*Supply{},
+		Params:      DefaultParams(),
+		ClassInfo:   []*ClassInfo{},
+		BatchInfo:   []*BatchInfo{},
+		Sequences:   []*CreditTypeSeq{},
+		Balances:    []*Balance{},
+		Supplies:    []*Supply{},
+		ProjectInfo: []*ProjectInfo{},
 	}
 }

@@ -126,7 +126,7 @@ func (s *IntegrationTestSuite) TestGetBatches() {
 			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/projects/%s/batches", val.APIAddress, "abc-d"),
 			0,
 			true,
-			"invalid projectID",
+			"invalid project id",
 		},
 		{
 			"no batches found",
