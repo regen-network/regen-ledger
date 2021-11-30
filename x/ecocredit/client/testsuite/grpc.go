@@ -355,3 +355,411 @@ func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 
 	s.Require().Equal(ecocredit.DefaultParams(), *params.Params)
 }
+
+func (s *IntegrationTestSuite) TestGetSellOrder() {
+	val := s.network.Validators[0]
+
+	testCases := []struct {
+		name   string
+		url    string
+		expErr bool
+		errMsg string
+	}{
+		{
+			"not found",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/id/%s", val.APIAddress, "99"),
+			true,
+			"not found",
+		},
+		// TODO: create buy/sell orders via CLI tests #615
+		//{
+		//	"valid request",
+		//	fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/id/%s", val.APIAddress, "1"),
+		//	false,
+		//	"",
+		//},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var sellOrder ecocredit.QuerySellOrderResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &sellOrder)
+
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(string(resp), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.NotNil(sellOrder.SellOrder)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestGetSellOrders() {
+	val := s.network.Validators[0]
+
+	testCases := []struct {
+		name     string
+		url      string
+		expErr   bool
+		errMsg   string
+		expItems int
+	}{
+		{
+			"valid request",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders", val.APIAddress),
+			false,
+			"",
+			3,
+		},
+		{
+			"valid request pagination",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders?pagination.limit=2", val.APIAddress),
+			false,
+			"",
+			2,
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var sellOrders ecocredit.QuerySellOrdersResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &sellOrders)
+
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(string(resp), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.NotNil(sellOrders.SellOrders)
+				// TODO: create buy/sell orders via CLI tests #615
+				//require.Len(sellOrders.SellOrders, tc.expItems)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestGetSellOrdersByBatchDenom() {
+	val := s.network.Validators[0]
+	batchDenom := s.batchInfo.BatchDenom
+
+	testCases := []struct {
+		name     string
+		url      string
+		expErr   bool
+		errMsg   string
+		expItems int
+	}{
+		{
+			"invalid denom",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s", val.APIAddress, "abc"),
+			true,
+			"invalid denom",
+			0,
+		},
+		{
+			"valid request",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s", val.APIAddress, batchDenom),
+			false,
+			"",
+			3,
+		},
+		{
+			"valid request pagination",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s?pagination.limit=2", val.APIAddress, batchDenom),
+			false,
+			"",
+			2,
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var sellOrders ecocredit.QuerySellOrdersByBatchDenomResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &sellOrders)
+
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(string(resp), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.NotNil(sellOrders.SellOrders)
+				// TODO: create buy/sell orders via CLI tests #615
+				//require.Len(sellOrders.SellOrders, tc.expItems)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestGetSellOrdersByAddress() {
+	val := s.network.Validators[0]
+	addr := s.testAccount.String()
+
+	testCases := []struct {
+		name     string
+		url      string
+		expErr   bool
+		errMsg   string
+		expItems int
+	}{
+		{
+			"invalid address",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/address/%s", val.APIAddress, "abc"),
+			true,
+			"invalid request",
+			0,
+		},
+		{
+			"valid request",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/address/%s", val.APIAddress, addr),
+			false,
+			"",
+			3,
+		},
+		{
+			"valid request pagination",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/address/%s", val.APIAddress, addr),
+			false,
+			"",
+			2,
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var sellOrders ecocredit.QuerySellOrdersByAddressResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &sellOrders)
+
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(string(resp), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.NotNil(sellOrders.SellOrders)
+				// TODO: create buy/sell orders via CLI tests #615
+				//require.Len(sellOrders.SellOrders, tc.expItems)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestGetBuyOrder() {
+	val := s.network.Validators[0]
+
+	testCases := []struct {
+		name     string
+		url      string
+		expErr   bool
+		errMsg   string
+	}{
+		{
+			"not found",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/id/%s", val.APIAddress, "99"),
+			true,
+			"not found",
+		},
+		// TODO: filtered buy orders required #623
+		//{
+		//	"valid request",
+		//	fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/id/%s", val.APIAddress, "1"),
+		//	false,
+		//	"",
+		//},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var buyOrder ecocredit.QueryBuyOrderResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &buyOrder)
+
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(string(resp), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.NotNil(buyOrder.BuyOrder)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestGetBuyOrders() {
+	val := s.network.Validators[0]
+
+	testCases := []struct {
+		name     string
+		url      string
+		expErr   bool
+		errMsg   string
+		expItems int
+	}{
+		{
+			"valid request",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders", val.APIAddress),
+			false,
+			"",
+			3,
+		},
+		{
+			"valid request pagination",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders?pagination.limit=2", val.APIAddress),
+			false,
+			"",
+			2,
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var buyOrders ecocredit.QueryBuyOrdersResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &buyOrders)
+
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(string(resp), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.NotNil(buyOrders.BuyOrders)
+				// TODO: create buy/sell orders via CLI tests #615
+				//require.Len(buyOrders.BuyOrders, tc.expItems)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestGetBuyOrdersByAddress() {
+	val := s.network.Validators[0]
+	addr := s.testAccount.String()
+
+	testCases := []struct {
+		name     string
+		url      string
+		expErr   bool
+		errMsg   string
+		expItems int
+	}{
+		{
+			"invalid address",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/address/%s", val.APIAddress, "abc"),
+			true,
+			"invalid request",
+			0,
+		},
+		{
+			"valid request",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/address/%s", val.APIAddress, addr),
+			false,
+			"",
+			3,
+		},
+		{
+			"valid request",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/buy-orders/address/%s?pagination.limit=2", val.APIAddress, addr),
+			false,
+			"",
+			2,
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var buyOrders ecocredit.QueryBuyOrdersByAddressResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &buyOrders)
+
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(string(resp), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.NotNil(buyOrders.BuyOrders)
+				// TODO: create buy/sell orders via CLI tests #615
+				//require.Len(buyOrders.BuyOrders, tc.expItems)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestGetAllowedAskDenoms() {
+	val := s.network.Validators[0]
+
+	testCases := []struct {
+		name     string
+		url      string
+		expErr   bool
+		errMsg   string
+		expItems int
+	}{
+		{
+			"valid request",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/ask-denoms", val.APIAddress),
+			false,
+			"",
+			3,
+		},
+		{
+			"valid request pagination",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/ask-denoms", val.APIAddress),
+			false,
+			"",
+			2,
+		},
+	}
+
+	require := s.Require()
+	for _, tc := range testCases {
+		tc := tc
+		s.Run(tc.name, func() {
+			resp, err := rest.GetRequest(tc.url)
+			require.NoError(err)
+
+			var askDenoms ecocredit.QueryAllowedAskDenomsResponse
+			err = val.ClientCtx.Codec.UnmarshalJSON(resp, &askDenoms)
+
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(string(resp), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.NotNil(askDenoms.AskDenoms)
+				// TODO: create buy/sell orders via CLI tests #615
+				//require.Len(askDenoms.AskDenoms, tc.expItems)
+			}
+		})
+	}
+}
