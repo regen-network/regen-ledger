@@ -44,7 +44,6 @@ func (s serverImpl) CreateBasket(goCtx context.Context, req *ecocredit.MsgCreate
 
 func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBasket) (*ecocredit.MsgAddToBasketResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
-	//sdkCtx := sdk.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
 	owner, _ := types.AccAddressFromBech32(req.Owner)
 
@@ -56,11 +55,9 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 	}
 
 	totalCreditsDeposited := regenmath.NewDecFromInt64(0)
-	//creditsToSend := make([]*ecocredit.MsgSend_SendCredits, len(req.Credits))
-	//basketKeys := make([][]byte, len(req.Credits))
 	for _, credit := range req.Credits {
 
-		// verify this is a legit ecocredit batch
+		// try to get the batch
 		batchDenom := batchDenomT(credit.BatchDenom)
 		var batchInfo ecocredit.BatchInfo
 		err := s.batchInfoTable.GetOne(ctx, orm.RowID(batchDenom), &batchInfo)
@@ -68,6 +65,7 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 			return nil, err
 		}
 
+		// get the class info
 		res, err := s.ClassInfo(goCtx, &ecocredit.QueryClassInfoRequest{ClassId: batchInfo.ClassId})
 		if err != nil {
 			return nil, err
@@ -80,12 +78,13 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 			return nil, err
 		}
 
-		// TODO(tyler): verify this credit matches the filter
+		// TODO fix this hack
 		filters := make([]*ecocredit.Filter, len(basket.BasketCriteria))
 		for i, bc := range basket.BasketCriteria {
 			filters[i] = bc.Filter
 		}
-		_, err = checkFilters(filters, *classInfo, batchInfo, basket, req.Owner)
+		// check that the credits meet the filter
+		_, err = checkFilters(filters, *classInfo, batchInfo, req.Owner)
 		if err != nil {
 			return nil, err
 		}
@@ -118,12 +117,12 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 
 	}
 
-	// calculate how many basket tokens are to be awarded to the basket depositor
-	basketTokens, err := calculateBasketTokens(totalCreditsDeposited, basket.Exponent)
+	// calculate total basket tokens to be awarded to the depositor
+	basketTokensAmt, err := calculateBasketTokens(totalCreditsDeposited, basket.Exponent)
 	if err != nil {
 		return nil, err
 	}
-	basketTokensInt, err := basketTokens.Int64()
+	basketTokensInt, err := basketTokensAmt.Int64()
 	if err != nil {
 		return nil, err
 	}
@@ -141,15 +140,156 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 		return nil, err
 	}
 
-	return &ecocredit.MsgAddToBasketResponse{AmountReceived: basketTokens.String()}, nil
+	return &ecocredit.MsgAddToBasketResponse{AmountReceived: basketTokensAmt.String()}, nil
 }
 
 func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTakeFromBasket) (*ecocredit.MsgTakeFromBasketResponse, error) {
-	panic("implement me")
+	panic("impl!")
 }
 
+// PickFromBasket allows picking a specific ecocredit from a basket.
 func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPickFromBasket) (*ecocredit.MsgPickFromBasketResponse, error) {
-	panic("implement me")
+	sdkCtx := types.UnwrapSDKContext(goCtx)
+	regenCtx := sdk.UnwrapSDKContext(goCtx)
+	var basket ecocredit.Basket
+	err := s.basketTable.GetOne(sdkCtx, orm.RowID(req.BasketDenom), &basket)
+	if err != nil {
+		return nil, err
+	}
+
+	owner, _ := types.AccAddressFromBech32(req.Owner)
+	store := sdkCtx.KVStore(s.storeKey)
+	basketDenom := basketDenomT(req.BasketDenom)
+	basketTokenBalance := s.bankKeeper.GetBalance(sdkCtx, owner, basket.BasketDenom)
+	// calculate the the value of 1:1 basket token : basket credit
+	minToken, err := calculateBasketTokens(regenmath.NewDecFromInt64(1), basket.Exponent)
+	if err != nil {
+		return nil, err
+	}
+	minTokenI64, err := minToken.Int64()
+	if err != nil {
+		return nil, err
+	}
+
+	// check if user has at least the min amt of basket tokens to get at least 1 basket credit
+	if basketTokenBalance.IsLT(types.NewCoin(basket.BasketDenom, types.NewInt(minTokenI64))) {
+		return nil, ecocredit.ErrInsufficientFunds.Wrapf("cannot pick from basket with %s basket tokens", basketTokenBalance.String())
+	}
+
+	if basket.AllowPicking { // anyone can pick a credit
+		for _, credit := range req.Credits {
+			basketCreditMap := make(map[string]regenmath.Dec)
+			totalTradable := regenmath.NewDecFromInt64(0)
+			prefix := BasketCreditsKey(basketDenom, []byte{}, batchDenomT(credit.BatchDenom))
+			creditsRequested, _ := regenmath.NewDecFromString(credit.TradableAmount)
+			it := types.KVStorePrefixIterator(store, prefix)
+			// TODO: it could be faster to just stop the iteration once total tradable is equal to the credits in the request.
+			// this would make the execution faster, but would kill any randomness. what to do?
+			for ; it.Valid(); it.Next() {
+				amount, err := regenmath.NewDecFromString(string(it.Value()))
+				if err != nil {
+					return nil, err
+				}
+				totalTradable, err = totalTradable.Add(amount)
+				if err != nil {
+					return nil, err
+				}
+				basketCreditMap[string(it.Key())] = amount
+			}
+			if totalTradable.Cmp(creditsRequested) == -1 { // if total is less than the requested amt
+				return nil, ecocredit.ErrInsufficientFunds.Wrapf("basket only has %s %s credits", totalTradable.String(), credit.BatchDenom)
+			}
+
+			totalTraded := regenmath.NewDecFromInt64(0)
+			for creditDenom, amount := range basketCreditMap {
+				sub, err := amount.Sub(creditsRequested)
+				if err != nil {
+					return nil, err
+				}
+				// Update basket credit
+				if sub.IsPositive() || sub.IsZero() {
+					setDecimal(store, []byte(creditDenom), sub)
+				} else if sub.IsNegative() {
+					setDecimal(store, []byte(creditDenom), regenmath.NewDecFromInt64(0))
+				}
+				// Retire if needed
+				if !basket.DisableAutoRetire {
+					err = retireUpdateBalanceSupply(regenCtx, store, owner, batchDenomT(credit.BatchDenom), amount, req.RetirementLocation)
+					if err != nil {
+						return nil, err
+					}
+					// Send credits from corresponding sub module account to req.Owner
+				} else {
+					derivedKey := s.storeKey.Derive([]byte(creditDenom))
+					_, err = s.Send(goCtx, &ecocredit.MsgSend{
+						Recipient: derivedKey.Address().String(),
+						Sender:    req.Owner,
+						Credits: []*ecocredit.MsgSend_SendCredits{
+							{
+								BatchDenom:     c.BatchDenom,
+								TradableAmount: c.TradableAmount,
+							},
+						},
+					})
+					if err != nil {
+						return nil, err
+					}
+				}
+				if nextTradableAmount.IsZero() {
+					break
+				}
+				tradableAmount = nextTradableAmount
+			}
+
+			it.Close()
+
+		}
+	} else { // depositors can only pick the credits they deposited
+		for _, credit := range req.Credits {
+			basketKey := BasketCreditsKey(basketDenomT(basket.BasketDenom), owner.Bytes(), batchDenomT(credit.BatchDenom))
+			derivedKey := s.storeKey.Derive(basketKey)
+
+			wantedCreditAmt, _ := regenmath.NewDecFromString(credit.TradableAmount)
+			// calculate the amount of basket coins required to get the amount of ecocredits in the request
+			// and burn these coins
+			basketCoinsRequired, err := calculateBasketTokens(wantedCreditAmt, basket.Exponent)
+			if err != nil {
+				return nil, err
+			}
+			basketCoinsI64, err := basketCoinsRequired.Int64()
+			if err != nil {
+				return nil, err
+			}
+			coins := types.NewCoins(types.NewCoin(basket.BasketDenom, types.NewInt(basketCoinsI64)))
+			if err := s.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, owner, derivedKey.Address().String(), coins); err != nil {
+				return nil, err
+			}
+			if err := s.bankKeeper.BurnCoins(sdkCtx, ecocredit.ModuleName, coins); err != nil {
+				return nil, err
+			}
+
+			// send the credits from basket to user
+			msgSendCredit := &ecocredit.MsgSend_SendCredits{
+				BatchDenom:         credit.BatchDenom,
+				TradableAmount:     "",
+				RetiredAmount:      "",
+				RetirementLocation: "",
+			}
+			if basket.DisableAutoRetire { // do not retire these credits.
+				msgSendCredit.TradableAmount = credit.TradableAmount
+			} else { // retire the credits.
+				msgSendCredit.RetiredAmount = credit.TradableAmount
+				msgSendCredit.RetirementLocation = req.RetirementLocation
+			}
+			if _, err = s.Send(goCtx, &ecocredit.MsgSend{
+				Sender:    derivedKey.Address().String(),
+				Recipient: req.Owner,
+				Credits:   []*ecocredit.MsgSend_SendCredits{msgSendCredit},
+			}); err != nil {
+				return nil, err
+			}
+		}
+	}
 }
 
 // ----- HELPER METHODS -----
@@ -211,7 +351,7 @@ func calculateBasketTokens(creditsDeposited regenmath.Dec, exponent uint32) (reg
 	return creditsDeposited.Mul(multiplier)
 }
 
-func checkFilters(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, batchInfo ecocredit.BatchInfo, basketInfo ecocredit.Basket, owner string) (int, error) {
+func checkFilters(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, batchInfo ecocredit.BatchInfo, owner string) (int, error) {
 	depth := len(filters)
 	var err error
 	for _, filter := range filters {
@@ -219,7 +359,7 @@ func checkFilters(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, ba
 		case *ecocredit.Filter_And_:
 			andFilter := f.And.Filters
 			andDepth := len(andFilter)
-			innerDepth, err := checkFilters(andFilter, classInfo, batchInfo, basketInfo, owner)
+			innerDepth, err := checkFilters(andFilter, classInfo, batchInfo, owner)
 			if andDepth != 0 || err != nil {
 				return innerDepth, err
 			} else {
@@ -228,7 +368,7 @@ func checkFilters(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, ba
 		case *ecocredit.Filter_Or_:
 			orFilter := f.Or.Filters
 			orDepth := len(orFilter)
-			innerDepth, err := checkFilters(orFilter, classInfo, batchInfo, basketInfo, owner)
+			innerDepth, err := checkFilters(orFilter, classInfo, batchInfo, owner)
 			if orDepth == innerDepth {
 				return innerDepth, err
 			} else {
@@ -304,4 +444,50 @@ func formatFilterError(item, want, got string) error {
 
 func getBasketDenom(curator, name string) string {
 	return fmt.Sprintf("%s:%s:%s", ecocredit.ModuleName, curator, name)
+}
+
+func (s serverImpl) sendOrRetire(retireOnTake bool, goCtx context.Context, ctx sdk.Context,
+	store types.KVStore, recipient types.AccAddress, batchDenom batchDenomT, basketCreditKey []byte, amount regenmath.Dec, location string) error {
+	if retireOnTake {
+		err := retireUpdateBalanceSupply(ctx, store, recipient, batchDenom, amount, location)
+		if err != nil {
+			return err
+		}
+	} else {
+		// Send credits from corresponding sub module account to req.Owner
+		derivedKey := s.storeKey.Derive(basketCreditKey)
+		_, err := s.Send(goCtx, &ecocredit.MsgSend{
+			Recipient: derivedKey.Address().String(),
+			Sender:    recipient.String(),
+			Credits: []*ecocredit.MsgSend_SendCredits{
+				{
+					BatchDenom:     string(batchDenom),
+					TradableAmount: amount.String(),
+				},
+			},
+		})
+		if err != nil {
+			return err
+		}
+	}
+}
+
+func retireUpdateBalanceSupply(ctx sdk.Context, store types.KVStore, recipient types.AccAddress, batchDenom batchDenomT, retired regenmath.Dec, location string) error {
+	err := subtractTradableBalanceAndSupply(store, recipient, batchDenom, retired)
+	if err != nil {
+		return err
+	}
+
+	//  Add retired balance
+	err = retire(ctx, store, recipient, batchDenom, retired, location)
+	if err != nil {
+		return err
+	}
+
+	//  Add retired supply
+	err = addAndSetDecimal(store, RetiredSupplyKey(batchDenom), retired)
+	if err != nil {
+		return err
+	}
+	return nil
 }
