@@ -14,7 +14,8 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 	_, createBatchRes := s.createClassAndIssueBatch(addr1, "2.0")
 
 	askPrice1 := sdk.NewInt64Coin("stake", 1000000)
-	//askPrice2 := sdk.NewInt64Coin("token", 1000000) // TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
+	// TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
+	//askPrice2 := sdk.NewInt64Coin("token", 1000000)
 
 	// create sell orders
 	testCases := []struct {
@@ -137,7 +138,8 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 	_, createBatchRes := s.createClassAndIssueBatch(addr1, "2.0")
 
 	askPrice1 := sdk.NewInt64Coin("stake", 1000000)
-	//askPrice2 := sdk.NewInt64Coin("token", 1000000) // TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
+	// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
+	//askPrice2 := sdk.NewInt64Coin("token", 1000000)
 
 	// create sell order
 	sellRes, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
@@ -300,7 +302,8 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 
 	bidPrice1 := sdk.NewInt64Coin("stake", 1000000)
 	bidPrice2 := sdk.NewInt64Coin("stake", 9999999)
-	//bidPrice3 := sdk.NewInt64Coin("token", 1000000) // TODO: Verify that BidPrice.Denom is in AllowAskDenom #624
+	// TODO: Verify that BidPrice.Denom is in AllowAskDenom #624
+	//bidPrice3 := sdk.NewInt64Coin("token", 1000000)
 
 	// fund buyer account
 	s.Require().NoError(s.fundAccount(addr2, sdk.NewCoins(sdk.NewInt64Coin("stake", 2000000))))
@@ -393,6 +396,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 			expErr: "insufficient balance",
 			wantErr: true,
 		},
+		// TODO: Verify that BidPrice.Denom is in AllowAskDenom #624
 		//{
 		//	name: "denom not allowed",
 		//	buyer: addr2.String(),
