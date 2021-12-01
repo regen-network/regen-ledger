@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"math"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -187,8 +188,203 @@ func (s serverImpl) Params(goCtx context.Context, req *ecocredit.QueryParamsRequ
 	return &ecocredit.QueryParamsResponse{Params: &params}, nil
 }
 
+// SellOrder queries for information about a sell order by its ID
+func (s serverImpl) SellOrder(goCtx context.Context, request *ecocredit.QuerySellOrderRequest) (*ecocredit.QuerySellOrderResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := types.UnwrapSDKContext(goCtx)
+	sellOrder, err := s.getSellOrder(ctx, request.SellOrderId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.QuerySellOrderResponse{SellOrder: sellOrder}, nil
+}
+
 func (s serverImpl) getSellOrder(ctx types.Context, orderID uint64) (*ecocredit.SellOrder, error) {
 	var sellOrder ecocredit.SellOrder
 	_, err := s.sellOrderTable.GetOne(ctx, orderID, &sellOrder)
 	return &sellOrder, err
+}
+
+// SellOrders queries for all sell orders with pagination.
+func (s serverImpl) SellOrders(goCtx context.Context, request *ecocredit.QuerySellOrdersRequest) (*ecocredit.QuerySellOrdersResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := types.UnwrapSDKContext(goCtx)
+	ordersIter, err := s.sellOrderTable.PrefixScan(ctx, 1, math.MaxUint64)
+	if err != nil {
+		return nil, err
+	}
+
+	var orders []*ecocredit.SellOrder
+	pageResp, err := orm.Paginate(ordersIter, request.Pagination, &orders)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.QuerySellOrdersResponse{
+		SellOrders: orders,
+		Pagination: pageResp,
+	}, nil
+}
+
+// SellOrdersByAddress queries for all sell orders by address with pagination.
+func (s serverImpl) SellOrdersByAddress(goCtx context.Context, request *ecocredit.QuerySellOrdersByAddressRequest) (*ecocredit.QuerySellOrdersByAddressResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := types.UnwrapSDKContext(goCtx)
+	addr, err := sdk.AccAddressFromBech32(request.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	ordersIter, err := s.sellOrderByAddressIndex.GetPaginated(ctx, addr.Bytes(), request.Pagination)
+	if err != nil {
+		return nil, err
+	}
+
+	var orders []*ecocredit.SellOrder
+	pageResp, err := orm.Paginate(ordersIter, request.Pagination, &orders)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.QuerySellOrdersByAddressResponse{
+		SellOrders: orders,
+		Pagination: pageResp,
+	}, nil
+}
+
+
+// SellOrdersByBatchDenom queries for all sell orders by address with pagination.
+func (s serverImpl) SellOrdersByBatchDenom(goCtx context.Context, request *ecocredit.QuerySellOrdersByBatchDenomRequest) (*ecocredit.QuerySellOrdersByBatchDenomResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
+	if err := ecocredit.ValidateDenom(request.BatchDenom); err != nil {
+		return nil, err
+	}
+
+	ctx := types.UnwrapSDKContext(goCtx)
+	ordersIter, err := s.sellOrderByBatchDenomIndex.GetPaginated(ctx, request.BatchDenom, request.Pagination)
+	if err != nil {
+		return nil, err
+	}
+
+	var orders []*ecocredit.SellOrder
+	pageResp, err := orm.Paginate(ordersIter, request.Pagination, &orders)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.QuerySellOrdersByBatchDenomResponse{
+		SellOrders: orders,
+		Pagination: pageResp,
+	}, nil
+}
+
+// BuyOrder queries for information about a buy order by its ID
+func (s serverImpl) BuyOrder(goCtx context.Context, request *ecocredit.QueryBuyOrderRequest) (*ecocredit.QueryBuyOrderResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := types.UnwrapSDKContext(goCtx)
+	buyOrder, err := s.getBuyOrder(ctx, request.BuyOrderId)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.QueryBuyOrderResponse{BuyOrder: buyOrder}, nil
+}
+
+func (s serverImpl) getBuyOrder(ctx types.Context, orderID uint64) (*ecocredit.BuyOrder, error) {
+	var buyOrder ecocredit.BuyOrder
+	_, err := s.buyOrderTable.GetOne(ctx, orderID, &buyOrder)
+	return &buyOrder, err
+}
+
+// BuyOrders queries for all buy orders with pagination.
+func (s serverImpl) BuyOrders(goCtx context.Context, request *ecocredit.QueryBuyOrdersRequest) (*ecocredit.QueryBuyOrdersResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := types.UnwrapSDKContext(goCtx)
+	ordersIter, err := s.buyOrderTable.PrefixScan(ctx, 1, math.MaxUint64)
+	if err != nil {
+		return nil, err
+	}
+
+	var orders []*ecocredit.BuyOrder
+	pageResp, err := orm.Paginate(ordersIter, request.Pagination, &orders)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.QueryBuyOrdersResponse{
+		BuyOrders: orders,
+		Pagination: pageResp,
+	}, nil
+}
+
+// BuyOrdersByAddress queries for all buy orders by address with pagination.
+func (s serverImpl) BuyOrdersByAddress(goCtx context.Context, request *ecocredit.QueryBuyOrdersByAddressRequest) (*ecocredit.QueryBuyOrdersByAddressResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := types.UnwrapSDKContext(goCtx)
+	addr, err := sdk.AccAddressFromBech32(request.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	ordersIter, err := s.buyOrderByAddressIndex.GetPaginated(ctx, addr.Bytes(), request.Pagination)
+	if err != nil {
+		return nil, err
+	}
+
+	var orders []*ecocredit.BuyOrder
+	pageResp, err := orm.Paginate(ordersIter, request.Pagination, &orders)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.QueryBuyOrdersByAddressResponse{
+		BuyOrders: orders,
+		Pagination: pageResp,
+	}, nil
+}
+
+// AllowedAskDenoms queries for all allowed ask denoms with pagination.
+func (s serverImpl) AllowedAskDenoms(goCtx context.Context, request *ecocredit.QueryAllowedAskDenomsRequest) (*ecocredit.QueryAllowedAskDenomsResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := types.UnwrapSDKContext(goCtx)
+	denomsIter, err := s.askDenomTable.PrefixScan(ctx, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var denoms []*ecocredit.AskDenom
+	pageResp, err := orm.Paginate(denomsIter, request.Pagination, &denoms)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.QueryAllowedAskDenomsResponse{
+		AskDenoms: denoms,
+		Pagination: pageResp,
+	}, nil
 }

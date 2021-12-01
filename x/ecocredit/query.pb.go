@@ -803,6 +803,823 @@ func (m *QueryCreditTypesResponse) GetCreditTypes() []*CreditType {
 	return nil
 }
 
+// QuerySellOrderRequest is the Query/SellOrder request type.
+type QuerySellOrderRequest struct {
+	// sell_order_id is the id of the requested sell order.
+	SellOrderId uint64 `protobuf:"varint,1,opt,name=sell_order_id,json=sellOrderId,proto3" json:"sell_order_id,omitempty"`
+}
+
+func (m *QuerySellOrderRequest) Reset()         { *m = QuerySellOrderRequest{} }
+func (m *QuerySellOrderRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySellOrderRequest) ProtoMessage()    {}
+func (*QuerySellOrderRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{16}
+}
+func (m *QuerySellOrderRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySellOrderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySellOrderRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySellOrderRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySellOrderRequest.Merge(m, src)
+}
+func (m *QuerySellOrderRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySellOrderRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySellOrderRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySellOrderRequest proto.InternalMessageInfo
+
+func (m *QuerySellOrderRequest) GetSellOrderId() uint64 {
+	if m != nil {
+		return m.SellOrderId
+	}
+	return 0
+}
+
+// QuerySellOrderResponse is the Query/SellOrder response type.
+type QuerySellOrderResponse struct {
+	// sell_order contains all information related to a sell order.
+	SellOrder *SellOrder `protobuf:"bytes,1,opt,name=sell_order,json=sellOrder,proto3" json:"sell_order,omitempty"`
+}
+
+func (m *QuerySellOrderResponse) Reset()         { *m = QuerySellOrderResponse{} }
+func (m *QuerySellOrderResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySellOrderResponse) ProtoMessage()    {}
+func (*QuerySellOrderResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{17}
+}
+func (m *QuerySellOrderResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySellOrderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySellOrderResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySellOrderResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySellOrderResponse.Merge(m, src)
+}
+func (m *QuerySellOrderResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySellOrderResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySellOrderResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySellOrderResponse proto.InternalMessageInfo
+
+func (m *QuerySellOrderResponse) GetSellOrder() *SellOrder {
+	if m != nil {
+		return m.SellOrder
+	}
+	return nil
+}
+
+// QuerySellOrdersRequest is the Query/SellOrders request type.
+type QuerySellOrdersRequest struct {
+	// pagination defines an optional pagination for the request.
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QuerySellOrdersRequest) Reset()         { *m = QuerySellOrdersRequest{} }
+func (m *QuerySellOrdersRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySellOrdersRequest) ProtoMessage()    {}
+func (*QuerySellOrdersRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{18}
+}
+func (m *QuerySellOrdersRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySellOrdersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySellOrdersRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySellOrdersRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySellOrdersRequest.Merge(m, src)
+}
+func (m *QuerySellOrdersRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySellOrdersRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySellOrdersRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySellOrdersRequest proto.InternalMessageInfo
+
+func (m *QuerySellOrdersRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QuerySellOrdersResponse is the Query/SellOrders response type.
+type QuerySellOrdersResponse struct {
+	// sell_orders is a list of sell orders.
+	SellOrders []*SellOrder `protobuf:"bytes,1,rep,name=sell_orders,json=sellOrders,proto3" json:"sell_orders,omitempty"`
+	// pagination defines the pagination in the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QuerySellOrdersResponse) Reset()         { *m = QuerySellOrdersResponse{} }
+func (m *QuerySellOrdersResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySellOrdersResponse) ProtoMessage()    {}
+func (*QuerySellOrdersResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{19}
+}
+func (m *QuerySellOrdersResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySellOrdersResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySellOrdersResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySellOrdersResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySellOrdersResponse.Merge(m, src)
+}
+func (m *QuerySellOrdersResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySellOrdersResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySellOrdersResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySellOrdersResponse proto.InternalMessageInfo
+
+func (m *QuerySellOrdersResponse) GetSellOrders() []*SellOrder {
+	if m != nil {
+		return m.SellOrders
+	}
+	return nil
+}
+
+func (m *QuerySellOrdersResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QuerySellOrdersByDenomRequest is the Query/SellOrdersByDenom request type.
+type QuerySellOrdersByBatchDenomRequest struct {
+	// batch_denom is an ecocredit denom
+	BatchDenom string `protobuf:"bytes,1,opt,name=batch_denom,json=batchDenom,proto3" json:"batch_denom,omitempty"`
+	// pagination defines an optional pagination for the request.
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QuerySellOrdersByBatchDenomRequest) Reset()         { *m = QuerySellOrdersByBatchDenomRequest{} }
+func (m *QuerySellOrdersByBatchDenomRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySellOrdersByBatchDenomRequest) ProtoMessage()    {}
+func (*QuerySellOrdersByBatchDenomRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{20}
+}
+func (m *QuerySellOrdersByBatchDenomRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySellOrdersByBatchDenomRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySellOrdersByBatchDenomRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySellOrdersByBatchDenomRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySellOrdersByBatchDenomRequest.Merge(m, src)
+}
+func (m *QuerySellOrdersByBatchDenomRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySellOrdersByBatchDenomRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySellOrdersByBatchDenomRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySellOrdersByBatchDenomRequest proto.InternalMessageInfo
+
+func (m *QuerySellOrdersByBatchDenomRequest) GetBatchDenom() string {
+	if m != nil {
+		return m.BatchDenom
+	}
+	return ""
+}
+
+func (m *QuerySellOrdersByBatchDenomRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QuerySellOrdersByDenomResponse is the Query/SellOrdersByDenom response type.
+type QuerySellOrdersByBatchDenomResponse struct {
+	// sell_orders is a list of sell orders.
+	SellOrders []*SellOrder `protobuf:"bytes,1,rep,name=sell_orders,json=sellOrders,proto3" json:"sell_orders,omitempty"`
+	// pagination defines an optional pagination for the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QuerySellOrdersByBatchDenomResponse) Reset()         { *m = QuerySellOrdersByBatchDenomResponse{} }
+func (m *QuerySellOrdersByBatchDenomResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySellOrdersByBatchDenomResponse) ProtoMessage()    {}
+func (*QuerySellOrdersByBatchDenomResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{21}
+}
+func (m *QuerySellOrdersByBatchDenomResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySellOrdersByBatchDenomResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySellOrdersByBatchDenomResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySellOrdersByBatchDenomResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySellOrdersByBatchDenomResponse.Merge(m, src)
+}
+func (m *QuerySellOrdersByBatchDenomResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySellOrdersByBatchDenomResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySellOrdersByBatchDenomResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySellOrdersByBatchDenomResponse proto.InternalMessageInfo
+
+func (m *QuerySellOrdersByBatchDenomResponse) GetSellOrders() []*SellOrder {
+	if m != nil {
+		return m.SellOrders
+	}
+	return nil
+}
+
+func (m *QuerySellOrdersByBatchDenomResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QuerySellOrdersByAddressRequest is the Query/SellOrdersByAddress request type.
+type QuerySellOrdersByAddressRequest struct {
+	// address is the creator of the sell order
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// pagination defines an optional pagination for the request.
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QuerySellOrdersByAddressRequest) Reset()         { *m = QuerySellOrdersByAddressRequest{} }
+func (m *QuerySellOrdersByAddressRequest) String() string { return proto.CompactTextString(m) }
+func (*QuerySellOrdersByAddressRequest) ProtoMessage()    {}
+func (*QuerySellOrdersByAddressRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{22}
+}
+func (m *QuerySellOrdersByAddressRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySellOrdersByAddressRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySellOrdersByAddressRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySellOrdersByAddressRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySellOrdersByAddressRequest.Merge(m, src)
+}
+func (m *QuerySellOrdersByAddressRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySellOrdersByAddressRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySellOrdersByAddressRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySellOrdersByAddressRequest proto.InternalMessageInfo
+
+func (m *QuerySellOrdersByAddressRequest) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
+}
+
+func (m *QuerySellOrdersByAddressRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QuerySellOrdersByAddressResponse is the Query/SellOrdersByAddressResponse response type.
+type QuerySellOrdersByAddressResponse struct {
+	// sell_orders is a list of sell orders.
+	SellOrders []*SellOrder `protobuf:"bytes,1,rep,name=sell_orders,json=sellOrders,proto3" json:"sell_orders,omitempty"`
+	// pagination defines an optional pagination for the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QuerySellOrdersByAddressResponse) Reset()         { *m = QuerySellOrdersByAddressResponse{} }
+func (m *QuerySellOrdersByAddressResponse) String() string { return proto.CompactTextString(m) }
+func (*QuerySellOrdersByAddressResponse) ProtoMessage()    {}
+func (*QuerySellOrdersByAddressResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{23}
+}
+func (m *QuerySellOrdersByAddressResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QuerySellOrdersByAddressResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QuerySellOrdersByAddressResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QuerySellOrdersByAddressResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QuerySellOrdersByAddressResponse.Merge(m, src)
+}
+func (m *QuerySellOrdersByAddressResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QuerySellOrdersByAddressResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QuerySellOrdersByAddressResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QuerySellOrdersByAddressResponse proto.InternalMessageInfo
+
+func (m *QuerySellOrdersByAddressResponse) GetSellOrders() []*SellOrder {
+	if m != nil {
+		return m.SellOrders
+	}
+	return nil
+}
+
+func (m *QuerySellOrdersByAddressResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QueryBuyOrderRequest is the Query/BuyOrder request type.
+type QueryBuyOrderRequest struct {
+	// buy_order_id is the id of the buy order.
+	BuyOrderId uint64 `protobuf:"varint,1,opt,name=buy_order_id,json=buyOrderId,proto3" json:"buy_order_id,omitempty"`
+}
+
+func (m *QueryBuyOrderRequest) Reset()         { *m = QueryBuyOrderRequest{} }
+func (m *QueryBuyOrderRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryBuyOrderRequest) ProtoMessage()    {}
+func (*QueryBuyOrderRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{24}
+}
+func (m *QueryBuyOrderRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBuyOrderRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBuyOrderRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBuyOrderRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBuyOrderRequest.Merge(m, src)
+}
+func (m *QueryBuyOrderRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBuyOrderRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBuyOrderRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBuyOrderRequest proto.InternalMessageInfo
+
+func (m *QueryBuyOrderRequest) GetBuyOrderId() uint64 {
+	if m != nil {
+		return m.BuyOrderId
+	}
+	return 0
+}
+
+// QueryBuyOrderResponse is the Query/BuyOrder response type.
+type QueryBuyOrderResponse struct {
+	// buy_order contains all information related to a buy order.
+	BuyOrder *BuyOrder `protobuf:"bytes,1,opt,name=buy_order,json=buyOrder,proto3" json:"buy_order,omitempty"`
+}
+
+func (m *QueryBuyOrderResponse) Reset()         { *m = QueryBuyOrderResponse{} }
+func (m *QueryBuyOrderResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryBuyOrderResponse) ProtoMessage()    {}
+func (*QueryBuyOrderResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{25}
+}
+func (m *QueryBuyOrderResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBuyOrderResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBuyOrderResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBuyOrderResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBuyOrderResponse.Merge(m, src)
+}
+func (m *QueryBuyOrderResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBuyOrderResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBuyOrderResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBuyOrderResponse proto.InternalMessageInfo
+
+func (m *QueryBuyOrderResponse) GetBuyOrder() *BuyOrder {
+	if m != nil {
+		return m.BuyOrder
+	}
+	return nil
+}
+
+// QueryBuyOrdersRequest is the Query/BuyOrders request type.
+type QueryBuyOrdersRequest struct {
+	// pagination defines an optional pagination for the request.
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryBuyOrdersRequest) Reset()         { *m = QueryBuyOrdersRequest{} }
+func (m *QueryBuyOrdersRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryBuyOrdersRequest) ProtoMessage()    {}
+func (*QueryBuyOrdersRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{26}
+}
+func (m *QueryBuyOrdersRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBuyOrdersRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBuyOrdersRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBuyOrdersRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBuyOrdersRequest.Merge(m, src)
+}
+func (m *QueryBuyOrdersRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBuyOrdersRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBuyOrdersRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBuyOrdersRequest proto.InternalMessageInfo
+
+func (m *QueryBuyOrdersRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QueryBuyOrdersResponse is the Query/BuyOrders response type.
+type QueryBuyOrdersResponse struct {
+	// buy_orders is a list of buy orders.
+	BuyOrders []*BuyOrder `protobuf:"bytes,1,rep,name=buy_orders,json=buyOrders,proto3" json:"buy_orders,omitempty"`
+	// pagination defines an optional pagination for the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryBuyOrdersResponse) Reset()         { *m = QueryBuyOrdersResponse{} }
+func (m *QueryBuyOrdersResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryBuyOrdersResponse) ProtoMessage()    {}
+func (*QueryBuyOrdersResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{27}
+}
+func (m *QueryBuyOrdersResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBuyOrdersResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBuyOrdersResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBuyOrdersResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBuyOrdersResponse.Merge(m, src)
+}
+func (m *QueryBuyOrdersResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBuyOrdersResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBuyOrdersResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBuyOrdersResponse proto.InternalMessageInfo
+
+func (m *QueryBuyOrdersResponse) GetBuyOrders() []*BuyOrder {
+	if m != nil {
+		return m.BuyOrders
+	}
+	return nil
+}
+
+func (m *QueryBuyOrdersResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QueryBuyOrdersByAddressRequest is the Query/BuyOrdersByAddress request type
+type QueryBuyOrdersByAddressRequest struct {
+	// address of the buy order creator
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// pagination defines an optional pagination for the request.
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryBuyOrdersByAddressRequest) Reset()         { *m = QueryBuyOrdersByAddressRequest{} }
+func (m *QueryBuyOrdersByAddressRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryBuyOrdersByAddressRequest) ProtoMessage()    {}
+func (*QueryBuyOrdersByAddressRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{28}
+}
+func (m *QueryBuyOrdersByAddressRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBuyOrdersByAddressRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBuyOrdersByAddressRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBuyOrdersByAddressRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBuyOrdersByAddressRequest.Merge(m, src)
+}
+func (m *QueryBuyOrdersByAddressRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBuyOrdersByAddressRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBuyOrdersByAddressRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBuyOrdersByAddressRequest proto.InternalMessageInfo
+
+func (m *QueryBuyOrdersByAddressRequest) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
+}
+
+func (m *QueryBuyOrdersByAddressRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QueryBuyOrdersByAddressResponse is the Query/BuyOrdersByAddress response type.
+type QueryBuyOrdersByAddressResponse struct {
+	// buy_orders is a list of buy orders.
+	BuyOrders []*BuyOrder `protobuf:"bytes,1,rep,name=buy_orders,json=buyOrders,proto3" json:"buy_orders,omitempty"`
+	// pagination defines an optional pagination for the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryBuyOrdersByAddressResponse) Reset()         { *m = QueryBuyOrdersByAddressResponse{} }
+func (m *QueryBuyOrdersByAddressResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryBuyOrdersByAddressResponse) ProtoMessage()    {}
+func (*QueryBuyOrdersByAddressResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{29}
+}
+func (m *QueryBuyOrdersByAddressResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryBuyOrdersByAddressResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryBuyOrdersByAddressResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryBuyOrdersByAddressResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryBuyOrdersByAddressResponse.Merge(m, src)
+}
+func (m *QueryBuyOrdersByAddressResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryBuyOrdersByAddressResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryBuyOrdersByAddressResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryBuyOrdersByAddressResponse proto.InternalMessageInfo
+
+func (m *QueryBuyOrdersByAddressResponse) GetBuyOrders() []*BuyOrder {
+	if m != nil {
+		return m.BuyOrders
+	}
+	return nil
+}
+
+func (m *QueryBuyOrdersByAddressResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QueryAllowedAskDenomsRequest is the Query/AllowedAskDenoms request type.
+type QueryAllowedAskDenomsRequest struct {
+	// pagination defines an optional pagination for the request.
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllowedAskDenomsRequest) Reset()         { *m = QueryAllowedAskDenomsRequest{} }
+func (m *QueryAllowedAskDenomsRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllowedAskDenomsRequest) ProtoMessage()    {}
+func (*QueryAllowedAskDenomsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{30}
+}
+func (m *QueryAllowedAskDenomsRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllowedAskDenomsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllowedAskDenomsRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllowedAskDenomsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllowedAskDenomsRequest.Merge(m, src)
+}
+func (m *QueryAllowedAskDenomsRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllowedAskDenomsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllowedAskDenomsRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllowedAskDenomsRequest proto.InternalMessageInfo
+
+func (m *QueryAllowedAskDenomsRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QueryAllowedAskDenomsResponse is the Query/AllowedAskDenoms response type.
+type QueryAllowedAskDenomsResponse struct {
+	// ask_denoms is a list of coin denoms allowed to use in the ask price of sell orders.
+	AskDenoms []*AskDenom `protobuf:"bytes,1,rep,name=ask_denoms,json=askDenoms,proto3" json:"ask_denoms,omitempty"`
+	// pagination defines an optional pagination for the response.
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllowedAskDenomsResponse) Reset()         { *m = QueryAllowedAskDenomsResponse{} }
+func (m *QueryAllowedAskDenomsResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryAllowedAskDenomsResponse) ProtoMessage()    {}
+func (*QueryAllowedAskDenomsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_6a16cc4c1db940dc, []int{31}
+}
+func (m *QueryAllowedAskDenomsResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllowedAskDenomsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllowedAskDenomsResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllowedAskDenomsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllowedAskDenomsResponse.Merge(m, src)
+}
+func (m *QueryAllowedAskDenomsResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllowedAskDenomsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllowedAskDenomsResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllowedAskDenomsResponse proto.InternalMessageInfo
+
+func (m *QueryAllowedAskDenomsResponse) GetAskDenoms() []*AskDenom {
+	if m != nil {
+		return m.AskDenoms
+	}
+	return nil
+}
+
+func (m *QueryAllowedAskDenomsResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "regen.ecocredit.v1alpha1.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "regen.ecocredit.v1alpha1.QueryParamsResponse")
@@ -820,6 +1637,22 @@ func init() {
 	proto.RegisterType((*QuerySupplyResponse)(nil), "regen.ecocredit.v1alpha1.QuerySupplyResponse")
 	proto.RegisterType((*QueryCreditTypesRequest)(nil), "regen.ecocredit.v1alpha1.QueryCreditTypesRequest")
 	proto.RegisterType((*QueryCreditTypesResponse)(nil), "regen.ecocredit.v1alpha1.QueryCreditTypesResponse")
+	proto.RegisterType((*QuerySellOrderRequest)(nil), "regen.ecocredit.v1alpha1.QuerySellOrderRequest")
+	proto.RegisterType((*QuerySellOrderResponse)(nil), "regen.ecocredit.v1alpha1.QuerySellOrderResponse")
+	proto.RegisterType((*QuerySellOrdersRequest)(nil), "regen.ecocredit.v1alpha1.QuerySellOrdersRequest")
+	proto.RegisterType((*QuerySellOrdersResponse)(nil), "regen.ecocredit.v1alpha1.QuerySellOrdersResponse")
+	proto.RegisterType((*QuerySellOrdersByBatchDenomRequest)(nil), "regen.ecocredit.v1alpha1.QuerySellOrdersByBatchDenomRequest")
+	proto.RegisterType((*QuerySellOrdersByBatchDenomResponse)(nil), "regen.ecocredit.v1alpha1.QuerySellOrdersByBatchDenomResponse")
+	proto.RegisterType((*QuerySellOrdersByAddressRequest)(nil), "regen.ecocredit.v1alpha1.QuerySellOrdersByAddressRequest")
+	proto.RegisterType((*QuerySellOrdersByAddressResponse)(nil), "regen.ecocredit.v1alpha1.QuerySellOrdersByAddressResponse")
+	proto.RegisterType((*QueryBuyOrderRequest)(nil), "regen.ecocredit.v1alpha1.QueryBuyOrderRequest")
+	proto.RegisterType((*QueryBuyOrderResponse)(nil), "regen.ecocredit.v1alpha1.QueryBuyOrderResponse")
+	proto.RegisterType((*QueryBuyOrdersRequest)(nil), "regen.ecocredit.v1alpha1.QueryBuyOrdersRequest")
+	proto.RegisterType((*QueryBuyOrdersResponse)(nil), "regen.ecocredit.v1alpha1.QueryBuyOrdersResponse")
+	proto.RegisterType((*QueryBuyOrdersByAddressRequest)(nil), "regen.ecocredit.v1alpha1.QueryBuyOrdersByAddressRequest")
+	proto.RegisterType((*QueryBuyOrdersByAddressResponse)(nil), "regen.ecocredit.v1alpha1.QueryBuyOrdersByAddressResponse")
+	proto.RegisterType((*QueryAllowedAskDenomsRequest)(nil), "regen.ecocredit.v1alpha1.QueryAllowedAskDenomsRequest")
+	proto.RegisterType((*QueryAllowedAskDenomsResponse)(nil), "regen.ecocredit.v1alpha1.QueryAllowedAskDenomsResponse")
 }
 
 func init() {
@@ -827,62 +1660,94 @@ func init() {
 }
 
 var fileDescriptor_6a16cc4c1db940dc = []byte{
-	// 870 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x96, 0x4d, 0x4f, 0x1b, 0x47,
-	0x18, 0xc7, 0x59, 0xb7, 0xb5, 0xcb, 0xb8, 0xa5, 0xd2, 0x94, 0xb6, 0xc6, 0xaa, 0x5c, 0x77, 0xa1,
-	0xe0, 0x56, 0x78, 0xa7, 0x76, 0x08, 0x70, 0x48, 0x22, 0x01, 0x51, 0x10, 0xca, 0x21, 0xe0, 0xe4,
-	0x14, 0x29, 0xb2, 0xc6, 0xeb, 0xc1, 0xac, 0x62, 0xef, 0x2c, 0xbb, 0x6b, 0x02, 0x42, 0x5c, 0xf2,
-	0x05, 0x12, 0x89, 0x7b, 0x4e, 0x79, 0xb9, 0xe5, 0x92, 0x2f, 0x91, 0x23, 0x52, 0x2e, 0x39, 0x46,
-	0x90, 0x0f, 0x12, 0x79, 0xe6, 0xd9, 0x37, 0x9b, 0x65, 0xd7, 0x4a, 0x8e, 0xfb, 0xf0, 0xbc, 0xfc,
-	0xe6, 0xff, 0x78, 0xfe, 0x0c, 0x9a, 0xb3, 0x59, 0x87, 0x99, 0x84, 0xe9, 0x5c, 0xb7, 0x59, 0xdb,
-	0x70, 0xc9, 0x41, 0x8d, 0x76, 0xad, 0x3d, 0x5a, 0x23, 0xfb, 0x7d, 0x66, 0x1f, 0x69, 0x96, 0xcd,
-	0x5d, 0x8e, 0x0b, 0x22, 0x4b, 0xf3, 0xb3, 0x34, 0x2f, 0xab, 0xf8, 0x67, 0x87, 0xf3, 0x4e, 0x97,
-	0x11, 0x6a, 0x19, 0x84, 0x9a, 0x26, 0x77, 0xa9, 0x6b, 0x70, 0xd3, 0x91, 0x75, 0xc5, 0xf8, 0xee,
-	0xee, 0x91, 0xc5, 0xbc, 0xac, 0xff, 0x74, 0xee, 0xf4, 0xb8, 0x43, 0x5a, 0xd4, 0x61, 0x72, 0x2c,
-	0x39, 0xa8, 0xb5, 0x98, 0x4b, 0x6b, 0xc4, 0xa2, 0x1d, 0xc3, 0x14, 0x2d, 0x65, 0xae, 0x3a, 0x8d,
-	0xf0, 0xce, 0x20, 0x63, 0x9b, 0xda, 0xb4, 0xe7, 0x34, 0xd8, 0x7e, 0x9f, 0x39, 0xae, 0x7a, 0x0f,
-	0xfd, 0x1a, 0x89, 0x3a, 0x16, 0x37, 0x1d, 0x86, 0x57, 0x51, 0xd6, 0x12, 0x91, 0x82, 0x52, 0x56,
-	0x2a, 0xf9, 0x7a, 0x59, 0x8b, 0x3b, 0x87, 0x06, 0x95, 0x90, 0xaf, 0x3e, 0x82, 0x86, 0x1b, 0x5d,
-	0xea, 0x38, 0xcc, 0x9b, 0x83, 0xef, 0x20, 0x14, 0x10, 0x41, 0xd3, 0x79, 0x4d, 0xe2, 0x6b, 0x03,
-	0x7c, 0x4d, 0xaa, 0x06, 0xf8, 0xda, 0x36, 0xed, 0x30, 0xa8, 0x6d, 0x84, 0x2a, 0xd5, 0x17, 0x0a,
-	0x9a, 0x8e, 0xf6, 0x07, 0xe2, 0x9b, 0x28, 0xa7, 0xcb, 0x50, 0x41, 0x29, 0x7f, 0x57, 0xc9, 0xd7,
-	0x67, 0xe3, 0x91, 0x45, 0xed, 0x96, 0xb9, 0xcb, 0x1b, 0x5e, 0x0d, 0xde, 0x8c, 0xf0, 0x65, 0x04,
-	0xdf, 0x42, 0x22, 0x9f, 0x9c, 0x1d, 0x01, 0xac, 0xa3, 0xdf, 0x02, 0x3e, 0x31, 0x03, 0x14, 0x98,
-	0x41, 0x3f, 0x8a, 0x61, 0x4d, 0xa3, 0x2d, 0xce, 0x3f, 0x09, 0xc3, 0xb7, 0xda, 0xea, 0x0e, 0xfa,
-	0x7d, 0xb8, 0x06, 0x4e, 0xb5, 0x82, 0xbe, 0x37, 0xcc, 0x5d, 0x0e, 0x82, 0xa5, 0x3a, 0x92, 0x28,
-	0x50, 0x0f, 0x61, 0x0d, 0xeb, 0xd4, 0xd5, 0xf7, 0x82, 0x35, 0xc4, 0x43, 0x0c, 0x6d, 0x28, 0xf3,
-	0xf5, 0x1b, 0xf2, 0x47, 0x07, 0x1b, 0x6a, 0xc9, 0x50, 0xf2, 0x86, 0x44, 0xad, 0xdc, 0x10, 0xd4,
-	0x7c, 0xbb, 0x0d, 0xad, 0xc2, 0x86, 0x82, 0x19, 0x20, 0xce, 0x5f, 0x28, 0x2f, 0x86, 0x35, 0xdb,
-	0xcc, 0xe4, 0x3d, 0xd0, 0x07, 0x89, 0xd0, 0xed, 0x41, 0xc4, 0xdf, 0x53, 0xa8, 0x72, 0xdc, 0x3d,
-	0x05, 0xa5, 0x72, 0x4f, 0xdb, 0xfe, 0x9e, 0xba, 0xd4, 0xd4, 0x3d, 0x41, 0x71, 0x01, 0xe5, 0xa8,
-	0xae, 0xf3, 0xbe, 0xe9, 0x7a, 0x6b, 0x82, 0xcf, 0x61, 0xc8, 0xcc, 0x08, 0xe4, 0xae, 0x2f, 0x3f,
-	0x74, 0x04, 0xc4, 0x05, 0xf4, 0x8b, 0x6b, 0xd3, 0x36, 0x6d, 0x75, 0x59, 0x93, 0xf6, 0x42, 0xad,
-	0xa7, 0xbc, 0xf0, 0x9a, 0x88, 0xe2, 0x7f, 0xd0, 0x94, 0xcd, 0x5c, 0xc3, 0x66, 0x6d, 0x2f, 0x4f,
-	0x0e, 0xf9, 0x19, 0xa2, 0x32, 0x4d, 0xbd, 0x0e, 0x7e, 0x72, 0xbf, 0x6f, 0x59, 0xdd, 0xa3, 0xd4,
-	0x1a, 0x32, 0x38, 0xb0, 0x57, 0x76, 0x09, 0x9d, 0x23, 0xfe, 0x34, 0x4c, 0x27, 0x0b, 0xc2, 0x74,
-	0x90, 0x17, 0xa5, 0x93, 0x69, 0xea, 0x0c, 0xfa, 0x43, 0x5e, 0x29, 0xa1, 0xff, 0x83, 0x81, 0x67,
-	0x7a, 0x96, 0xa7, 0xa3, 0xc2, 0xe8, 0x9f, 0x00, 0x63, 0x13, 0xfd, 0x24, 0x37, 0xd6, 0x14, 0x36,
-	0x0b, 0x3f, 0xd4, 0xb9, 0x2b, 0xee, 0x9d, 0xdf, 0xa4, 0x91, 0xd7, 0x83, 0x86, 0xf5, 0xb7, 0x08,
-	0xfd, 0x20, 0xa6, 0xe0, 0x53, 0x05, 0xe5, 0xc0, 0xac, 0x70, 0x35, 0xbe, 0xd1, 0x25, 0xa6, 0x59,
-	0xd4, 0xd2, 0xa6, 0x4b, 0x7a, 0xf5, 0xdf, 0xa7, 0x1f, 0x3e, 0x9f, 0x66, 0x66, 0xf1, 0xdf, 0x24,
-	0xf6, 0xbf, 0x87, 0xe7, 0x77, 0x2f, 0x15, 0x34, 0xe9, 0x7b, 0x06, 0x26, 0x69, 0x06, 0x85, 0xae,
-	0x4a, 0xf1, 0xff, 0xf4, 0x05, 0xc0, 0xb6, 0x24, 0xd8, 0x34, 0xbc, 0x98, 0xc8, 0x46, 0x8e, 0x3d,
-	0x8b, 0x3a, 0xc1, 0xaf, 0x15, 0x94, 0x03, 0x1f, 0x49, 0x14, 0x2f, 0x6a, 0x75, 0x89, 0xe2, 0x0d,
-	0xd9, 0x93, 0x7a, 0x43, 0x00, 0x2e, 0xe3, 0xa5, 0x71, 0x00, 0x89, 0xe7, 0x4e, 0x6f, 0x14, 0x34,
-	0xe9, 0xdf, 0xed, 0x44, 0x3d, 0x87, 0xad, 0x27, 0x51, 0xcf, 0x11, 0xc7, 0x51, 0x57, 0x04, 0x6e,
-	0x0d, 0x93, 0x78, 0x5c, 0x60, 0x23, 0xc7, 0xa1, 0x1b, 0x79, 0x82, 0xdf, 0x09, 0x49, 0x85, 0x37,
-	0xa4, 0x90, 0x34, 0xec, 0x4a, 0x29, 0x24, 0x8d, 0x58, 0x8e, 0xba, 0x25, 0x18, 0x37, 0xf0, 0xda,
-	0x98, 0x8c, 0xa4, 0x25, 0x1b, 0x91, 0x63, 0x70, 0xbd, 0x13, 0xfc, 0x4a, 0x41, 0x59, 0x70, 0x80,
-	0xc5, 0x04, 0x8a, 0x88, 0x21, 0x15, 0xab, 0x29, 0xb3, 0x01, 0xf9, 0x96, 0x40, 0x5e, 0xc5, 0xcb,
-	0xe3, 0x22, 0x4b, 0x33, 0x1a, 0xdc, 0xab, 0x7c, 0xc8, 0x58, 0x70, 0x2d, 0xe9, 0xa2, 0x8c, 0xf8,
-	0x53, 0xb1, 0x3e, 0x4e, 0x09, 0x60, 0x6b, 0x02, 0xbb, 0x82, 0xe7, 0xaf, 0xf8, 0xf1, 0x8a, 0xef,
-	0xaa, 0xf0, 0x35, 0xfc, 0x4c, 0x41, 0x59, 0xf9, 0x70, 0x4b, 0x94, 0x33, 0xf2, 0x5e, 0x4c, 0x94,
-	0x33, 0xfa, 0x8e, 0x54, 0x2b, 0x82, 0x4b, 0xc5, 0xe5, 0x78, 0x2e, 0xf9, 0x6e, 0x5c, 0xbf, 0xfb,
-	0xfe, 0xbc, 0xa4, 0x9c, 0x9d, 0x97, 0x94, 0x4f, 0xe7, 0x25, 0xe5, 0xf9, 0x45, 0x69, 0xe2, 0xec,
-	0xa2, 0x34, 0xf1, 0xf1, 0xa2, 0x34, 0xf1, 0xb0, 0xd6, 0x31, 0xdc, 0xbd, 0x7e, 0x4b, 0xd3, 0x79,
-	0x4f, 0x76, 0xa9, 0x9a, 0xcc, 0x7d, 0xc2, 0xed, 0xc7, 0xf0, 0xd5, 0x65, 0xed, 0x0e, 0xb3, 0xc9,
-	0x61, 0xd0, 0xbc, 0x95, 0x15, 0x4f, 0xde, 0x6b, 0x5f, 0x02, 0x00, 0x00, 0xff, 0xff, 0x69, 0x0c,
-	0x2c, 0x87, 0xa4, 0x0b, 0x00, 0x00,
+	// 1392 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x99, 0xcf, 0x6f, 0x1b, 0x45,
+	0x14, 0xc7, 0x3b, 0xa1, 0x24, 0xf5, 0x73, 0x5b, 0xd0, 0xb4, 0x94, 0xd4, 0x2a, 0x6e, 0x98, 0xfe,
+	0x0a, 0xa8, 0xde, 0xc5, 0xa1, 0x34, 0x69, 0x69, 0x29, 0x4e, 0x2b, 0xaa, 0x88, 0x43, 0xdb, 0x94,
+	0x03, 0x42, 0x20, 0xb3, 0xf6, 0x4e, 0x5c, 0x2b, 0x9b, 0x5d, 0x77, 0x77, 0xdd, 0xd6, 0x8a, 0x7c,
+	0x29, 0x67, 0x04, 0x52, 0xaf, 0x08, 0x71, 0x28, 0x3f, 0xa4, 0x0a, 0x89, 0x0a, 0xfe, 0x08, 0x38,
+	0x20, 0x55, 0xe2, 0xc2, 0x09, 0xa1, 0x96, 0x3f, 0x04, 0x79, 0xe6, 0xcd, 0xfe, 0xb2, 0x37, 0xbb,
+	0x0e, 0x96, 0xc8, 0x2d, 0x3b, 0x9e, 0xf7, 0xde, 0x67, 0xbe, 0x6f, 0xe6, 0xed, 0xbc, 0x0d, 0x1c,
+	0x77, 0x79, 0x8b, 0xdb, 0x3a, 0x6f, 0x3a, 0x4d, 0x97, 0x9b, 0x6d, 0x5f, 0xbf, 0x53, 0x35, 0xac,
+	0xce, 0x2d, 0xa3, 0xaa, 0xdf, 0xee, 0x72, 0xb7, 0xa7, 0x75, 0x5c, 0xc7, 0x77, 0xe8, 0xac, 0x98,
+	0xa5, 0x05, 0xb3, 0x34, 0x35, 0xab, 0x74, 0xa4, 0xe5, 0x38, 0x2d, 0x8b, 0xeb, 0x46, 0xa7, 0xad,
+	0x1b, 0xb6, 0xed, 0xf8, 0x86, 0xdf, 0x76, 0x6c, 0x4f, 0xda, 0x95, 0xd2, 0xbd, 0xfb, 0xbd, 0x0e,
+	0x57, 0xb3, 0x5e, 0x6f, 0x3a, 0xde, 0x86, 0xe3, 0xe9, 0x0d, 0xc3, 0xe3, 0x32, 0xac, 0x7e, 0xa7,
+	0xda, 0xe0, 0xbe, 0x51, 0xd5, 0x3b, 0x46, 0xab, 0x6d, 0x0b, 0x97, 0x72, 0x2e, 0x3b, 0x08, 0xf4,
+	0xc6, 0x60, 0xc6, 0x75, 0xc3, 0x35, 0x36, 0xbc, 0x55, 0x7e, 0xbb, 0xcb, 0x3d, 0x9f, 0x5d, 0x83,
+	0x03, 0xb1, 0x51, 0xaf, 0xe3, 0xd8, 0x1e, 0xa7, 0x4b, 0x30, 0xdd, 0x11, 0x23, 0xb3, 0x64, 0x8e,
+	0xcc, 0x17, 0x17, 0xe6, 0xb4, 0xb4, 0x75, 0x68, 0x68, 0x89, 0xf3, 0xd9, 0x27, 0xe8, 0xf0, 0xb2,
+	0x65, 0x78, 0x1e, 0x57, 0x71, 0xe8, 0x7b, 0x00, 0x21, 0x11, 0x3a, 0x3d, 0xa9, 0x49, 0x7c, 0x6d,
+	0x80, 0xaf, 0x49, 0xd5, 0x10, 0x5f, 0xbb, 0x6e, 0xb4, 0x38, 0xda, 0xae, 0x46, 0x2c, 0xd9, 0xd7,
+	0x04, 0x0e, 0xc6, 0xfd, 0x23, 0xf1, 0x45, 0x98, 0x69, 0xca, 0xa1, 0x59, 0x32, 0xf7, 0xdc, 0x7c,
+	0x71, 0xe1, 0x58, 0x3a, 0xb2, 0xb0, 0x5d, 0xb1, 0xd7, 0x9c, 0x55, 0x65, 0x43, 0xaf, 0xc6, 0xf8,
+	0xa6, 0x04, 0xdf, 0xa9, 0x4c, 0x3e, 0x19, 0x3b, 0x06, 0xb8, 0x00, 0x2f, 0x85, 0x7c, 0x22, 0x06,
+	0x2a, 0x70, 0x18, 0xf6, 0x88, 0x60, 0xf5, 0xb6, 0x29, 0xd6, 0x5f, 0xc0, 0xe0, 0x2b, 0x26, 0xbb,
+	0x01, 0x87, 0x92, 0x36, 0xb8, 0xaa, 0x45, 0xd8, 0xdd, 0xb6, 0xd7, 0x1c, 0x14, 0x2c, 0xd7, 0x92,
+	0x84, 0x01, 0xbb, 0x87, 0x69, 0x58, 0x36, 0xfc, 0xe6, 0xad, 0x30, 0x0d, 0xe9, 0x10, 0x89, 0x0c,
+	0x4d, 0xfd, 0xf7, 0x0c, 0x05, 0xa1, 0xc3, 0x0c, 0x35, 0xe4, 0x50, 0x76, 0x86, 0x84, 0xad, 0xcc,
+	0x10, 0xda, 0x4c, 0x2e, 0x43, 0x4b, 0x98, 0xa1, 0x30, 0x06, 0x8a, 0x73, 0x14, 0x8a, 0x22, 0x58,
+	0xdd, 0xe4, 0xb6, 0xb3, 0x81, 0xfa, 0x80, 0x18, 0xba, 0x32, 0x18, 0x09, 0xf2, 0x14, 0xb1, 0x1c,
+	0x37, 0x4f, 0xa1, 0xa9, 0xcc, 0xd3, 0xf5, 0x20, 0x4f, 0x96, 0x61, 0x37, 0x95, 0xa0, 0x74, 0x16,
+	0x66, 0x8c, 0x66, 0xd3, 0xe9, 0xda, 0xbe, 0x4a, 0x13, 0x3e, 0x26, 0x21, 0xa7, 0x86, 0x20, 0xd7,
+	0x02, 0xf9, 0xd1, 0x23, 0x22, 0x9e, 0x82, 0x17, 0x7c, 0xd7, 0x30, 0x8d, 0x86, 0xc5, 0xeb, 0xc6,
+	0x46, 0xc4, 0xf5, 0x7e, 0x35, 0x5c, 0x13, 0xa3, 0xf4, 0x04, 0xec, 0x77, 0xb9, 0xdf, 0x76, 0xb9,
+	0xa9, 0xe6, 0xc9, 0x20, 0xfb, 0x70, 0x54, 0x4e, 0x63, 0x6f, 0x61, 0x3d, 0xb9, 0xd9, 0xed, 0x74,
+	0xac, 0x5e, 0x6e, 0x0d, 0x39, 0x2e, 0x58, 0x99, 0x8d, 0xa0, 0xf3, 0xc4, 0x4f, 0x49, 0x3a, 0x69,
+	0x10, 0xa5, 0xc3, 0x79, 0x71, 0x3a, 0x39, 0x8d, 0x1d, 0x86, 0x97, 0xe5, 0x91, 0x12, 0xfa, 0x7f,
+	0x30, 0xa8, 0x99, 0xaa, 0xe4, 0x35, 0x61, 0x76, 0xf8, 0x27, 0xc4, 0xb8, 0x0a, 0x7b, 0x65, 0xc6,
+	0xea, 0xa2, 0xcc, 0xe2, 0x46, 0x3d, 0xbe, 0xc5, 0xb9, 0x0b, 0x9c, 0xac, 0x16, 0x9b, 0xa1, 0x43,
+	0xf6, 0x36, 0x6e, 0xb2, 0x9b, 0xdc, 0xb2, 0xae, 0xb9, 0x26, 0x77, 0x95, 0x40, 0x0c, 0xf6, 0x79,
+	0xdc, 0xb2, 0xea, 0xce, 0x60, 0x50, 0x1d, 0xc3, 0xdd, 0xab, 0x45, 0x4f, 0x4d, 0x5c, 0x31, 0xd9,
+	0xc7, 0xb8, 0xcf, 0x22, 0xc6, 0xc8, 0xb7, 0x0c, 0x10, 0x5a, 0x67, 0xef, 0xb6, 0xd0, 0x41, 0x21,
+	0xf0, 0xcf, 0x3e, 0x4d, 0x7a, 0x9f, 0x78, 0x91, 0xfe, 0x81, 0xa0, 0xfa, 0xd1, 0x10, 0xb8, 0x82,
+	0x2b, 0x50, 0x0c, 0x57, 0x90, 0xa3, 0x12, 0x84, 0x4b, 0x80, 0x60, 0x09, 0x13, 0x2c, 0x06, 0x9f,
+	0x13, 0x60, 0x09, 0xd4, 0x65, 0x79, 0xbe, 0xc5, 0x76, 0xcd, 0xbb, 0xad, 0x27, 0x56, 0x3d, 0x7f,
+	0x21, 0x70, 0x6c, 0x4b, 0x9e, 0x9d, 0x29, 0xe3, 0x67, 0x04, 0x8e, 0x0e, 0x61, 0xd7, 0x4c, 0xd3,
+	0xe5, 0x9e, 0x17, 0xad, 0x69, 0x72, 0x24, 0xa8, 0x69, 0xf2, 0x71, 0x62, 0xe2, 0x3d, 0x26, 0x30,
+	0x97, 0x4e, 0xb1, 0x33, 0x95, 0x5b, 0x52, 0xe5, 0xba, 0xdb, 0x8b, 0xd5, 0x89, 0x39, 0xd8, 0xdb,
+	0xe8, 0xf6, 0x92, 0x65, 0x02, 0x1a, 0x38, 0x6d, 0xc5, 0x64, 0x1f, 0xaa, 0xf7, 0x58, 0x60, 0x89,
+	0x2b, 0xbc, 0x04, 0x85, 0xc0, 0x14, 0x4f, 0x31, 0xdb, 0xe2, 0x8d, 0xa4, 0xcc, 0xf7, 0x28, 0xdf,
+	0xac, 0x9e, 0xf0, 0x3c, 0xf1, 0x02, 0xf1, 0x90, 0xa8, 0x37, 0x69, 0x18, 0x01, 0xe1, 0x6b, 0x00,
+	0x01, 0xbc, 0xca, 0x4e, 0x1e, 0xfa, 0x82, 0xa2, 0x9f, 0x60, 0x6e, 0xee, 0x13, 0x28, 0xc7, 0x31,
+	0xff, 0x87, 0x4d, 0xfd, 0xa3, 0x3a, 0x5a, 0xa3, 0x20, 0x76, 0xa0, 0x68, 0x6b, 0x70, 0x44, 0xe0,
+	0xd6, 0x2c, 0xcb, 0xb9, 0xcb, 0xcd, 0x9a, 0xb7, 0x2e, 0x2a, 0xd7, 0xc4, 0xf7, 0xd0, 0x23, 0x02,
+	0xaf, 0xa4, 0x04, 0x0a, 0x55, 0x31, 0xbc, 0x75, 0x59, 0xb2, 0x73, 0xa8, 0xa2, 0x1c, 0xac, 0x16,
+	0x0c, 0xe5, 0x6a, 0x62, 0xaa, 0x2c, 0xdc, 0x3f, 0x04, 0xcf, 0x0b, 0x5a, 0xfa, 0x80, 0xc0, 0x0c,
+	0x36, 0x2f, 0xb4, 0x92, 0x4e, 0x33, 0xa2, 0x89, 0x2a, 0x69, 0x79, 0xa7, 0x4b, 0x00, 0xf6, 0xda,
+	0xfd, 0x3f, 0xfe, 0x79, 0x30, 0x75, 0x8c, 0xbe, 0xaa, 0xa7, 0x76, 0x93, 0xaa, 0xff, 0x79, 0x48,
+	0xa0, 0x10, 0xf4, 0x10, 0x54, 0xcf, 0x13, 0x28, 0x72, 0x75, 0x2e, 0xbd, 0x91, 0xdf, 0x00, 0xd9,
+	0xce, 0x08, 0x36, 0x8d, 0x9e, 0xce, 0x64, 0xd3, 0x37, 0x55, 0xcb, 0xd2, 0xa7, 0xdf, 0x11, 0x98,
+	0xc1, 0xbe, 0x22, 0x53, 0xbc, 0x78, 0xeb, 0x93, 0x29, 0x5e, 0xa2, 0x5d, 0x61, 0x17, 0x04, 0xe0,
+	0x59, 0x7a, 0x66, 0x1c, 0x40, 0x5d, 0x75, 0x2b, 0xdf, 0x13, 0x28, 0x04, 0x77, 0xfd, 0x4c, 0x3d,
+	0x93, 0xad, 0x48, 0xa6, 0x9e, 0x43, 0x1d, 0x08, 0x5b, 0x14, 0xb8, 0x55, 0xaa, 0xa7, 0xe3, 0x22,
+	0x9b, 0xbe, 0x19, 0xb9, 0xca, 0xf4, 0xe9, 0xcf, 0x42, 0x52, 0xd1, 0x2b, 0xe4, 0x90, 0x34, 0xda,
+	0xa5, 0xe4, 0x90, 0x34, 0xd6, 0x82, 0xb0, 0x15, 0xc1, 0x78, 0x99, 0xd6, 0xc6, 0x64, 0xd4, 0x1b,
+	0xd2, 0x91, 0xbe, 0x89, 0x5d, 0x50, 0x9f, 0x7e, 0x4b, 0x60, 0x1a, 0x3b, 0x82, 0xd3, 0x19, 0x14,
+	0xb1, 0x06, 0xa5, 0x54, 0xc9, 0x39, 0x1b, 0x91, 0xdf, 0x11, 0xc8, 0x4b, 0xf4, 0xec, 0xb8, 0xc8,
+	0xb2, 0x39, 0x19, 0x9c, 0xab, 0x62, 0xa4, 0xd1, 0xa0, 0xd5, 0xac, 0x83, 0x32, 0xd4, 0xaf, 0x94,
+	0x16, 0xc6, 0x31, 0x41, 0x6c, 0x4d, 0x60, 0xcf, 0xd3, 0x93, 0x5b, 0x6c, 0x5e, 0xf1, 0x5c, 0x11,
+	0x7d, 0x0e, 0xfd, 0x82, 0xc0, 0xb4, 0xfc, 0x90, 0x93, 0x29, 0x67, 0xec, 0xfb, 0x51, 0xa6, 0x9c,
+	0xf1, 0xef, 0x4a, 0x6c, 0x5e, 0x70, 0x31, 0x3a, 0x97, 0xce, 0x25, 0xbf, 0x23, 0xd1, 0x9f, 0x08,
+	0x14, 0x82, 0xab, 0x57, 0xe6, 0x01, 0x4a, 0xb6, 0x59, 0x99, 0x07, 0x68, 0xa8, 0xb5, 0x62, 0xef,
+	0x0a, 0xb4, 0xf3, 0x74, 0x29, 0x1d, 0x6d, 0x70, 0xff, 0xab, 0xc8, 0x97, 0xac, 0xde, 0x36, 0xf5,
+	0xcd, 0x58, 0x23, 0xd7, 0xa7, 0xdf, 0x10, 0x80, 0xf0, 0xe6, 0x49, 0x73, 0x23, 0x04, 0x62, 0x56,
+	0xc7, 0xb0, 0x40, 0xea, 0x8a, 0xa0, 0x3e, 0x45, 0x4f, 0xe4, 0xa2, 0xa6, 0x7f, 0x11, 0x38, 0x34,
+	0xba, 0xb3, 0xa0, 0x17, 0x72, 0x07, 0x1f, 0xd1, 0x20, 0x95, 0x2e, 0x6e, 0xd3, 0x1a, 0x97, 0x71,
+	0x55, 0x2c, 0xa3, 0x46, 0x2f, 0xe5, 0x13, 0x5f, 0x9c, 0xb4, 0x8a, 0x38, 0x69, 0x89, 0x6a, 0xf6,
+	0x3b, 0x81, 0x03, 0x23, 0x6e, 0xff, 0xf4, 0xdc, 0x18, 0x7c, 0xf1, 0x2b, 0x5e, 0xe9, 0xfc, 0x76,
+	0x4c, 0x71, 0x5d, 0x97, 0xc4, 0xba, 0xce, 0xd1, 0xc5, 0x7c, 0xeb, 0xc2, 0xbb, 0xa3, 0xbe, 0x89,
+	0x7f, 0xf4, 0xe9, 0x23, 0x02, 0x7b, 0xd4, 0x75, 0x8d, 0x66, 0xd6, 0xdb, 0x78, 0x0f, 0x51, 0xd2,
+	0x73, 0xcf, 0x1f, 0xa3, 0xda, 0x75, 0x7b, 0xd1, 0x23, 0x10, 0xed, 0x51, 0xfa, 0xf4, 0xab, 0xc1,
+	0x5b, 0x2f, 0xb8, 0x52, 0xe6, 0x0d, 0xef, 0xe5, 0x7e, 0xeb, 0x25, 0xbb, 0x05, 0x76, 0x5a, 0x00,
+	0x9f, 0xa4, 0xc7, 0xf3, 0x00, 0xd3, 0xdf, 0x08, 0xd0, 0xe1, 0x5b, 0x34, 0x5d, 0xca, 0x1b, 0x76,
+	0x68, 0x6b, 0x9c, 0xdb, 0x86, 0xe5, 0xb6, 0xa4, 0x1e, 0xde, 0x18, 0x8f, 0x09, 0xbc, 0x98, 0xbc,
+	0xf9, 0xd2, 0xb3, 0x19, 0x3c, 0x29, 0x77, 0xf2, 0xd2, 0xe2, 0xd8, 0x76, 0xf9, 0xf5, 0x37, 0xbc,
+	0x75, 0x79, 0x52, 0xbd, 0xe5, 0xf7, 0x7f, 0x7d, 0x5a, 0x26, 0x4f, 0x9e, 0x96, 0xc9, 0xdf, 0x4f,
+	0xcb, 0xe4, 0xcb, 0x67, 0xe5, 0x5d, 0x4f, 0x9e, 0x95, 0x77, 0xfd, 0xf9, 0xac, 0xbc, 0xeb, 0xa3,
+	0x6a, 0xab, 0xed, 0xdf, 0xea, 0x36, 0xb4, 0xa6, 0xb3, 0x21, 0x3d, 0x55, 0x6c, 0xee, 0xdf, 0x75,
+	0xdc, 0x75, 0x7c, 0xb2, 0xb8, 0xd9, 0xe2, 0xae, 0x7e, 0x2f, 0x0c, 0xd0, 0x98, 0x16, 0xff, 0xd6,
+	0x78, 0xf3, 0xdf, 0x00, 0x00, 0x00, 0xff, 0xff, 0xc0, 0xf9, 0x06, 0x3f, 0x88, 0x19, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -915,6 +1780,22 @@ type QueryClient interface {
 	CreditTypes(ctx context.Context, in *QueryCreditTypesRequest, opts ...grpc.CallOption) (*QueryCreditTypesResponse, error)
 	// Params queries the ecocredit module parameters.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	// SellOrder queries a sell order by its ID
+	SellOrder(ctx context.Context, in *QuerySellOrderRequest, opts ...grpc.CallOption) (*QuerySellOrderResponse, error)
+	// SellOrders queries a paginated list of all sell orders
+	SellOrders(ctx context.Context, in *QuerySellOrdersRequest, opts ...grpc.CallOption) (*QuerySellOrdersResponse, error)
+	// SellOrdersByDenom queries a paginated list of all sell orders of a specific ecocredit denom
+	SellOrdersByBatchDenom(ctx context.Context, in *QuerySellOrdersByBatchDenomRequest, opts ...grpc.CallOption) (*QuerySellOrdersByBatchDenomResponse, error)
+	// SellOrdersByAddress queries a paginated list of all sell orders from a specific address
+	SellOrdersByAddress(ctx context.Context, in *QuerySellOrdersByAddressRequest, opts ...grpc.CallOption) (*QuerySellOrdersByAddressResponse, error)
+	// BuyOrder queries a buy order by its id
+	BuyOrder(ctx context.Context, in *QueryBuyOrderRequest, opts ...grpc.CallOption) (*QueryBuyOrderResponse, error)
+	// BuyOrders queries a paginated list of all buy orders
+	BuyOrders(ctx context.Context, in *QueryBuyOrdersRequest, opts ...grpc.CallOption) (*QueryBuyOrdersResponse, error)
+	// BuyOrdersByAddress queries a paginated list of buy orders by creator address
+	BuyOrdersByAddress(ctx context.Context, in *QueryBuyOrdersByAddressRequest, opts ...grpc.CallOption) (*QueryBuyOrdersByAddressResponse, error)
+	// AllowedAskDenoms queries all denoms allowed to be set in the AskPrice of a sell order
+	AllowedAskDenoms(ctx context.Context, in *QueryAllowedAskDenomsRequest, opts ...grpc.CallOption) (*QueryAllowedAskDenomsResponse, error)
 }
 
 type queryClient struct {
@@ -997,6 +1878,78 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
+func (c *queryClient) SellOrder(ctx context.Context, in *QuerySellOrderRequest, opts ...grpc.CallOption) (*QuerySellOrderResponse, error) {
+	out := new(QuerySellOrderResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/SellOrder", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) SellOrders(ctx context.Context, in *QuerySellOrdersRequest, opts ...grpc.CallOption) (*QuerySellOrdersResponse, error) {
+	out := new(QuerySellOrdersResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/SellOrders", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) SellOrdersByBatchDenom(ctx context.Context, in *QuerySellOrdersByBatchDenomRequest, opts ...grpc.CallOption) (*QuerySellOrdersByBatchDenomResponse, error) {
+	out := new(QuerySellOrdersByBatchDenomResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/SellOrdersByBatchDenom", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) SellOrdersByAddress(ctx context.Context, in *QuerySellOrdersByAddressRequest, opts ...grpc.CallOption) (*QuerySellOrdersByAddressResponse, error) {
+	out := new(QuerySellOrdersByAddressResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/SellOrdersByAddress", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) BuyOrder(ctx context.Context, in *QueryBuyOrderRequest, opts ...grpc.CallOption) (*QueryBuyOrderResponse, error) {
+	out := new(QueryBuyOrderResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/BuyOrder", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) BuyOrders(ctx context.Context, in *QueryBuyOrdersRequest, opts ...grpc.CallOption) (*QueryBuyOrdersResponse, error) {
+	out := new(QueryBuyOrdersResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/BuyOrders", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) BuyOrdersByAddress(ctx context.Context, in *QueryBuyOrdersByAddressRequest, opts ...grpc.CallOption) (*QueryBuyOrdersByAddressResponse, error) {
+	out := new(QueryBuyOrdersByAddressResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/BuyOrdersByAddress", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) AllowedAskDenoms(ctx context.Context, in *QueryAllowedAskDenomsRequest, opts ...grpc.CallOption) (*QueryAllowedAskDenomsResponse, error) {
+	out := new(QueryAllowedAskDenomsResponse)
+	err := c.cc.Invoke(ctx, "/regen.ecocredit.v1alpha1.Query/AllowedAskDenoms", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
 	// Classes queries for all credit classes with pagination.
@@ -1017,6 +1970,22 @@ type QueryServer interface {
 	CreditTypes(context.Context, *QueryCreditTypesRequest) (*QueryCreditTypesResponse, error)
 	// Params queries the ecocredit module parameters.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	// SellOrder queries a sell order by its ID
+	SellOrder(context.Context, *QuerySellOrderRequest) (*QuerySellOrderResponse, error)
+	// SellOrders queries a paginated list of all sell orders
+	SellOrders(context.Context, *QuerySellOrdersRequest) (*QuerySellOrdersResponse, error)
+	// SellOrdersByDenom queries a paginated list of all sell orders of a specific ecocredit denom
+	SellOrdersByBatchDenom(context.Context, *QuerySellOrdersByBatchDenomRequest) (*QuerySellOrdersByBatchDenomResponse, error)
+	// SellOrdersByAddress queries a paginated list of all sell orders from a specific address
+	SellOrdersByAddress(context.Context, *QuerySellOrdersByAddressRequest) (*QuerySellOrdersByAddressResponse, error)
+	// BuyOrder queries a buy order by its id
+	BuyOrder(context.Context, *QueryBuyOrderRequest) (*QueryBuyOrderResponse, error)
+	// BuyOrders queries a paginated list of all buy orders
+	BuyOrders(context.Context, *QueryBuyOrdersRequest) (*QueryBuyOrdersResponse, error)
+	// BuyOrdersByAddress queries a paginated list of buy orders by creator address
+	BuyOrdersByAddress(context.Context, *QueryBuyOrdersByAddressRequest) (*QueryBuyOrdersByAddressResponse, error)
+	// AllowedAskDenoms queries all denoms allowed to be set in the AskPrice of a sell order
+	AllowedAskDenoms(context.Context, *QueryAllowedAskDenomsRequest) (*QueryAllowedAskDenomsResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -1046,6 +2015,30 @@ func (*UnimplementedQueryServer) CreditTypes(ctx context.Context, req *QueryCred
 }
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
+}
+func (*UnimplementedQueryServer) SellOrder(ctx context.Context, req *QuerySellOrderRequest) (*QuerySellOrderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SellOrder not implemented")
+}
+func (*UnimplementedQueryServer) SellOrders(ctx context.Context, req *QuerySellOrdersRequest) (*QuerySellOrdersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SellOrders not implemented")
+}
+func (*UnimplementedQueryServer) SellOrdersByBatchDenom(ctx context.Context, req *QuerySellOrdersByBatchDenomRequest) (*QuerySellOrdersByBatchDenomResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SellOrdersByBatchDenom not implemented")
+}
+func (*UnimplementedQueryServer) SellOrdersByAddress(ctx context.Context, req *QuerySellOrdersByAddressRequest) (*QuerySellOrdersByAddressResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SellOrdersByAddress not implemented")
+}
+func (*UnimplementedQueryServer) BuyOrder(ctx context.Context, req *QueryBuyOrderRequest) (*QueryBuyOrderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BuyOrder not implemented")
+}
+func (*UnimplementedQueryServer) BuyOrders(ctx context.Context, req *QueryBuyOrdersRequest) (*QueryBuyOrdersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BuyOrders not implemented")
+}
+func (*UnimplementedQueryServer) BuyOrdersByAddress(ctx context.Context, req *QueryBuyOrdersByAddressRequest) (*QueryBuyOrdersByAddressResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BuyOrdersByAddress not implemented")
+}
+func (*UnimplementedQueryServer) AllowedAskDenoms(ctx context.Context, req *QueryAllowedAskDenomsRequest) (*QueryAllowedAskDenomsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllowedAskDenoms not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -1196,6 +2189,150 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_SellOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySellOrderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).SellOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1alpha1.Query/SellOrder",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).SellOrder(ctx, req.(*QuerySellOrderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_SellOrders_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySellOrdersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).SellOrders(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1alpha1.Query/SellOrders",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).SellOrders(ctx, req.(*QuerySellOrdersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_SellOrdersByBatchDenom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySellOrdersByBatchDenomRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).SellOrdersByBatchDenom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1alpha1.Query/SellOrdersByBatchDenom",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).SellOrdersByBatchDenom(ctx, req.(*QuerySellOrdersByBatchDenomRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_SellOrdersByAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuerySellOrdersByAddressRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).SellOrdersByAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1alpha1.Query/SellOrdersByAddress",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).SellOrdersByAddress(ctx, req.(*QuerySellOrdersByAddressRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_BuyOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBuyOrderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).BuyOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1alpha1.Query/BuyOrder",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).BuyOrder(ctx, req.(*QueryBuyOrderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_BuyOrders_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBuyOrdersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).BuyOrders(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1alpha1.Query/BuyOrders",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).BuyOrders(ctx, req.(*QueryBuyOrdersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_BuyOrdersByAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryBuyOrdersByAddressRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).BuyOrdersByAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1alpha1.Query/BuyOrdersByAddress",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).BuyOrdersByAddress(ctx, req.(*QueryBuyOrdersByAddressRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_AllowedAskDenoms_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllowedAskDenomsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).AllowedAskDenoms(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.ecocredit.v1alpha1.Query/AllowedAskDenoms",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).AllowedAskDenoms(ctx, req.(*QueryAllowedAskDenomsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "regen.ecocredit.v1alpha1.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -1231,6 +2368,38 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Params",
 			Handler:    _Query_Params_Handler,
+		},
+		{
+			MethodName: "SellOrder",
+			Handler:    _Query_SellOrder_Handler,
+		},
+		{
+			MethodName: "SellOrders",
+			Handler:    _Query_SellOrders_Handler,
+		},
+		{
+			MethodName: "SellOrdersByBatchDenom",
+			Handler:    _Query_SellOrdersByBatchDenom_Handler,
+		},
+		{
+			MethodName: "SellOrdersByAddress",
+			Handler:    _Query_SellOrdersByAddress_Handler,
+		},
+		{
+			MethodName: "BuyOrder",
+			Handler:    _Query_BuyOrder_Handler,
+		},
+		{
+			MethodName: "BuyOrders",
+			Handler:    _Query_BuyOrders_Handler,
+		},
+		{
+			MethodName: "BuyOrdersByAddress",
+			Handler:    _Query_BuyOrdersByAddress_Handler,
+		},
+		{
+			MethodName: "AllowedAskDenoms",
+			Handler:    _Query_AllowedAskDenoms_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1801,6 +2970,657 @@ func (m *QueryCreditTypesResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
+func (m *QuerySellOrderRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySellOrderRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySellOrderRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.SellOrderId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.SellOrderId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySellOrderResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySellOrderResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySellOrderResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.SellOrder != nil {
+		{
+			size, err := m.SellOrder.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySellOrdersRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySellOrdersRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySellOrdersRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySellOrdersResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySellOrdersResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySellOrdersResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.SellOrders) > 0 {
+		for iNdEx := len(m.SellOrders) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.SellOrders[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySellOrdersByBatchDenomRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySellOrdersByBatchDenomRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySellOrdersByBatchDenomRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.BatchDenom) > 0 {
+		i -= len(m.BatchDenom)
+		copy(dAtA[i:], m.BatchDenom)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.BatchDenom)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySellOrdersByBatchDenomResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySellOrdersByBatchDenomResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySellOrdersByBatchDenomResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.SellOrders) > 0 {
+		for iNdEx := len(m.SellOrders) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.SellOrders[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySellOrdersByAddressRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySellOrdersByAddressRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySellOrdersByAddressRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Address)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QuerySellOrdersByAddressResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QuerySellOrdersByAddressResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QuerySellOrdersByAddressResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.SellOrders) > 0 {
+		for iNdEx := len(m.SellOrders) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.SellOrders[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryBuyOrderRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBuyOrderRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBuyOrderRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.BuyOrderId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.BuyOrderId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryBuyOrderResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBuyOrderResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBuyOrderResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.BuyOrder != nil {
+		{
+			size, err := m.BuyOrder.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryBuyOrdersRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBuyOrdersRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBuyOrdersRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryBuyOrdersResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBuyOrdersResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBuyOrdersResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.BuyOrders) > 0 {
+		for iNdEx := len(m.BuyOrders) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.BuyOrders[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryBuyOrdersByAddressRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBuyOrdersByAddressRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBuyOrdersByAddressRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Address)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryBuyOrdersByAddressResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryBuyOrdersByAddressResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryBuyOrdersByAddressResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.BuyOrders) > 0 {
+		for iNdEx := len(m.BuyOrders) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.BuyOrders[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllowedAskDenomsRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllowedAskDenomsRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllowedAskDenomsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllowedAskDenomsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllowedAskDenomsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllowedAskDenomsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.AskDenoms) > 0 {
+		for iNdEx := len(m.AskDenoms) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AskDenoms[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -2038,6 +3858,260 @@ func (m *QueryCreditTypesResponse) Size() (n int) {
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
+	}
+	return n
+}
+
+func (m *QuerySellOrderRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.SellOrderId != 0 {
+		n += 1 + sovQuery(uint64(m.SellOrderId))
+	}
+	return n
+}
+
+func (m *QuerySellOrderResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.SellOrder != nil {
+		l = m.SellOrder.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QuerySellOrdersRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QuerySellOrdersResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.SellOrders) > 0 {
+		for _, e := range m.SellOrders {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QuerySellOrdersByBatchDenomRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.BatchDenom)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QuerySellOrdersByBatchDenomResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.SellOrders) > 0 {
+		for _, e := range m.SellOrders {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QuerySellOrdersByAddressRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QuerySellOrdersByAddressResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.SellOrders) > 0 {
+		for _, e := range m.SellOrders {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryBuyOrderRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.BuyOrderId != 0 {
+		n += 1 + sovQuery(uint64(m.BuyOrderId))
+	}
+	return n
+}
+
+func (m *QueryBuyOrderResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.BuyOrder != nil {
+		l = m.BuyOrder.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryBuyOrdersRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryBuyOrdersResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.BuyOrders) > 0 {
+		for _, e := range m.BuyOrders {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryBuyOrdersByAddressRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryBuyOrdersByAddressResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.BuyOrders) > 0 {
+		for _, e := range m.BuyOrders {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryAllowedAskDenomsRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryAllowedAskDenomsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.AskDenoms) > 0 {
+		for _, e := range m.AskDenoms {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
 	}
 	return n
 }
@@ -3543,6 +5617,1696 @@ func (m *QueryCreditTypesResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.CreditTypes = append(m.CreditTypes, &CreditType{})
 			if err := m.CreditTypes[len(m.CreditTypes)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySellOrderRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySellOrderRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySellOrderRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SellOrderId", wireType)
+			}
+			m.SellOrderId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SellOrderId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySellOrderResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySellOrderResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySellOrderResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SellOrder", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.SellOrder == nil {
+				m.SellOrder = &SellOrder{}
+			}
+			if err := m.SellOrder.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySellOrdersRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySellOrdersRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySellOrdersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySellOrdersResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySellOrdersResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySellOrdersResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SellOrders", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SellOrders = append(m.SellOrders, &SellOrder{})
+			if err := m.SellOrders[len(m.SellOrders)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySellOrdersByBatchDenomRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySellOrdersByBatchDenomRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySellOrdersByBatchDenomRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BatchDenom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySellOrdersByBatchDenomResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySellOrdersByBatchDenomResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySellOrdersByBatchDenomResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SellOrders", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SellOrders = append(m.SellOrders, &SellOrder{})
+			if err := m.SellOrders[len(m.SellOrders)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySellOrdersByAddressRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySellOrdersByAddressRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySellOrdersByAddressRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QuerySellOrdersByAddressResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QuerySellOrdersByAddressResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QuerySellOrdersByAddressResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SellOrders", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SellOrders = append(m.SellOrders, &SellOrder{})
+			if err := m.SellOrders[len(m.SellOrders)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBuyOrderRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBuyOrderRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBuyOrderRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BuyOrderId", wireType)
+			}
+			m.BuyOrderId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BuyOrderId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBuyOrderResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBuyOrderResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBuyOrderResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BuyOrder", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.BuyOrder == nil {
+				m.BuyOrder = &BuyOrder{}
+			}
+			if err := m.BuyOrder.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBuyOrdersRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBuyOrdersRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBuyOrdersRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBuyOrdersResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBuyOrdersResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBuyOrdersResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BuyOrders", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BuyOrders = append(m.BuyOrders, &BuyOrder{})
+			if err := m.BuyOrders[len(m.BuyOrders)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBuyOrdersByAddressRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBuyOrdersByAddressRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBuyOrdersByAddressRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryBuyOrdersByAddressResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryBuyOrdersByAddressResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryBuyOrdersByAddressResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BuyOrders", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.BuyOrders = append(m.BuyOrders, &BuyOrder{})
+			if err := m.BuyOrders[len(m.BuyOrders)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllowedAskDenomsRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllowedAskDenomsRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllowedAskDenomsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllowedAskDenomsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllowedAskDenomsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllowedAskDenomsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AskDenoms", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AskDenoms = append(m.AskDenoms, &AskDenom{})
+			if err := m.AskDenoms[len(m.AskDenoms)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

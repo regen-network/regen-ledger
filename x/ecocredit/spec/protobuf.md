@@ -24,6 +24,10 @@
     - [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo)
     - [CreditType](#regen.ecocredit.v1alpha1.CreditType)
     - [CreditTypeSeq](#regen.ecocredit.v1alpha1.CreditTypeSeq)
+    - [Filter](#regen.ecocredit.v1alpha1.Filter)
+    - [Filter.And](#regen.ecocredit.v1alpha1.Filter.And)
+    - [Filter.DateRange](#regen.ecocredit.v1alpha1.Filter.DateRange)
+    - [Filter.Or](#regen.ecocredit.v1alpha1.Filter.Or)
     - [Params](#regen.ecocredit.v1alpha1.Params)
     - [SellOrder](#regen.ecocredit.v1alpha1.SellOrder)
   
@@ -33,12 +37,20 @@
     - [Supply](#regen.ecocredit.v1alpha1.Supply)
   
 - [regen/ecocredit/v1alpha1/query.proto](#regen/ecocredit/v1alpha1/query.proto)
+    - [QueryAllowedAskDenomsRequest](#regen.ecocredit.v1alpha1.QueryAllowedAskDenomsRequest)
+    - [QueryAllowedAskDenomsResponse](#regen.ecocredit.v1alpha1.QueryAllowedAskDenomsResponse)
     - [QueryBalanceRequest](#regen.ecocredit.v1alpha1.QueryBalanceRequest)
     - [QueryBalanceResponse](#regen.ecocredit.v1alpha1.QueryBalanceResponse)
     - [QueryBatchInfoRequest](#regen.ecocredit.v1alpha1.QueryBatchInfoRequest)
     - [QueryBatchInfoResponse](#regen.ecocredit.v1alpha1.QueryBatchInfoResponse)
     - [QueryBatchesRequest](#regen.ecocredit.v1alpha1.QueryBatchesRequest)
     - [QueryBatchesResponse](#regen.ecocredit.v1alpha1.QueryBatchesResponse)
+    - [QueryBuyOrderRequest](#regen.ecocredit.v1alpha1.QueryBuyOrderRequest)
+    - [QueryBuyOrderResponse](#regen.ecocredit.v1alpha1.QueryBuyOrderResponse)
+    - [QueryBuyOrdersByAddressRequest](#regen.ecocredit.v1alpha1.QueryBuyOrdersByAddressRequest)
+    - [QueryBuyOrdersByAddressResponse](#regen.ecocredit.v1alpha1.QueryBuyOrdersByAddressResponse)
+    - [QueryBuyOrdersRequest](#regen.ecocredit.v1alpha1.QueryBuyOrdersRequest)
+    - [QueryBuyOrdersResponse](#regen.ecocredit.v1alpha1.QueryBuyOrdersResponse)
     - [QueryClassInfoRequest](#regen.ecocredit.v1alpha1.QueryClassInfoRequest)
     - [QueryClassInfoResponse](#regen.ecocredit.v1alpha1.QueryClassInfoResponse)
     - [QueryClassesRequest](#regen.ecocredit.v1alpha1.QueryClassesRequest)
@@ -47,6 +59,14 @@
     - [QueryCreditTypesResponse](#regen.ecocredit.v1alpha1.QueryCreditTypesResponse)
     - [QueryParamsRequest](#regen.ecocredit.v1alpha1.QueryParamsRequest)
     - [QueryParamsResponse](#regen.ecocredit.v1alpha1.QueryParamsResponse)
+    - [QuerySellOrderRequest](#regen.ecocredit.v1alpha1.QuerySellOrderRequest)
+    - [QuerySellOrderResponse](#regen.ecocredit.v1alpha1.QuerySellOrderResponse)
+    - [QuerySellOrdersByAddressRequest](#regen.ecocredit.v1alpha1.QuerySellOrdersByAddressRequest)
+    - [QuerySellOrdersByAddressResponse](#regen.ecocredit.v1alpha1.QuerySellOrdersByAddressResponse)
+    - [QuerySellOrdersByBatchDenomRequest](#regen.ecocredit.v1alpha1.QuerySellOrdersByBatchDenomRequest)
+    - [QuerySellOrdersByBatchDenomResponse](#regen.ecocredit.v1alpha1.QuerySellOrdersByBatchDenomResponse)
+    - [QuerySellOrdersRequest](#regen.ecocredit.v1alpha1.QuerySellOrdersRequest)
+    - [QuerySellOrdersResponse](#regen.ecocredit.v1alpha1.QuerySellOrdersResponse)
     - [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest)
     - [QuerySupplyResponse](#regen.ecocredit.v1alpha1.QuerySupplyResponse)
   
@@ -356,6 +376,7 @@ BuyOrder represents the information for a buy order.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | buy_order_id | [uint64](#uint64) |  | buy_order_id is the unique ID of buy order. |
+| buyer | [string](#string) |  | buyer is the address that created the buy order |
 | selection | [BuyOrder.Selection](#regen.ecocredit.v1alpha1.BuyOrder.Selection) |  | selection is the buy order selection. |
 | quantity | [string](#string) |  | quantity is the quantity of credits to buy. If the quantity of credits available is less than this amount the order will be partially filled unless disable_partial_fill is true. |
 | bid_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | bid price is the bid price for this buy order. A credit unit will be settled at a purchase price that is no more than the bid price. The buy order will fail if the buyer does not have enough funds available to complete the purchase. |
@@ -432,6 +453,78 @@ This represents the number of credit classes created with that credit type.
 | ----- | ---- | ----- | ----------- |
 | abbreviation | [string](#string) |  | The credit type abbreviation |
 | seq_number | [uint64](#uint64) |  | The sequence number of classes of the credit type |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.Filter"></a>
+
+### Filter
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| and | [Filter.And](#regen.ecocredit.v1alpha1.Filter.And) |  |  |
+| or | [Filter.Or](#regen.ecocredit.v1alpha1.Filter.Or) |  |  |
+| credit_type_name | [string](#string) |  |  |
+| class_id | [string](#string) |  |  |
+| project_id | [string](#string) |  | project_id filters against credits from this batch. |
+| batch_denom | [string](#string) |  | batch_id filters against credits from this batch. |
+| class_admin | [string](#string) |  | class_admin filters against credits issued by this class admin. |
+| issuer | [string](#string) |  | issuer filters against credits issued by this issuer address. |
+| owner | [string](#string) |  | owner filters against credits currently owned by this address. |
+| project_location | [string](#string) |  | project_location can be specified in three levels of granularity: country, sub-national-code, or postal code. If just country is given, for instance "US" then any credits in the "US" will be matched even their project location is more specific, ex. "US-NY 12345". If a country, sub-national-code and postal code are all provided then only projects in that postal code will match. |
+| date_range | [Filter.DateRange](#regen.ecocredit.v1alpha1.Filter.DateRange) |  |  |
+| tag | [string](#string) |  | tag specifies a curation tag to match against. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.Filter.And"></a>
+
+### Filter.And
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filters | [Filter](#regen.ecocredit.v1alpha1.Filter) | repeated |  |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.Filter.DateRange"></a>
+
+### Filter.DateRange
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| start_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | start_date is the beginning of the period during which this credit batch was quantified and verified. If it is empty then there is no start date limit. |
+| end_date | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | end_date is the end of the period during which this credit batch was quantified and verified. If it is empty then there is no end date limit. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.Filter.Or"></a>
+
+### Filter.Or
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filters | [Filter](#regen.ecocredit.v1alpha1.Filter) | repeated |  |
 
 
 
@@ -565,6 +658,37 @@ Supply represents a tradable or retired supply of a credit batch.
 
 
 
+<a name="regen.ecocredit.v1alpha1.QueryAllowedAskDenomsRequest"></a>
+
+### QueryAllowedAskDenomsRequest
+QueryAllowedAskDenomsRequest is the Query/AllowedAskDenoms request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QueryAllowedAskDenomsResponse"></a>
+
+### QueryAllowedAskDenomsResponse
+QueryAllowedAskDenomsResponse is the Query/AllowedAskDenoms response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ask_denoms | [AskDenom](#regen.ecocredit.v1alpha1.AskDenom) | repeated | ask_denoms is a list of coin denoms allowed to use in the ask price of sell orders. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines an optional pagination for the response. |
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha1.QueryBalanceRequest"></a>
 
 ### QueryBalanceRequest
@@ -653,6 +777,99 @@ QueryBatchesResponse is the Query/Batches response type.
 | ----- | ---- | ----- | ----------- |
 | batches | [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo) | repeated | batches are the fetched credit batches within the class. |
 | pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QueryBuyOrderRequest"></a>
+
+### QueryBuyOrderRequest
+QueryBuyOrderRequest is the Query/BuyOrder request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| buy_order_id | [uint64](#uint64) |  | buy_order_id is the id of the buy order. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QueryBuyOrderResponse"></a>
+
+### QueryBuyOrderResponse
+QueryBuyOrderResponse is the Query/BuyOrder response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| buy_order | [BuyOrder](#regen.ecocredit.v1alpha1.BuyOrder) |  | buy_order contains all information related to a buy order. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QueryBuyOrdersByAddressRequest"></a>
+
+### QueryBuyOrdersByAddressRequest
+QueryBuyOrdersByAddressRequest is the Query/BuyOrdersByAddress request type
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| address | [string](#string) |  | address of the buy order creator |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QueryBuyOrdersByAddressResponse"></a>
+
+### QueryBuyOrdersByAddressResponse
+QueryBuyOrdersByAddressResponse is the Query/BuyOrdersByAddress response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| buy_orders | [BuyOrder](#regen.ecocredit.v1alpha1.BuyOrder) | repeated | buy_orders is a list of buy orders. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines an optional pagination for the response. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QueryBuyOrdersRequest"></a>
+
+### QueryBuyOrdersRequest
+QueryBuyOrdersRequest is the Query/BuyOrders request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QueryBuyOrdersResponse"></a>
+
+### QueryBuyOrdersResponse
+QueryBuyOrdersResponse is the Query/BuyOrders response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| buy_orders | [BuyOrder](#regen.ecocredit.v1alpha1.BuyOrder) | repeated | buy_orders is a list of buy orders. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines an optional pagination for the response. |
 
 
 
@@ -770,6 +987,131 @@ QueryParamsResponse is the Query/Params response type.
 
 
 
+<a name="regen.ecocredit.v1alpha1.QuerySellOrderRequest"></a>
+
+### QuerySellOrderRequest
+QuerySellOrderRequest is the Query/SellOrder request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sell_order_id | [uint64](#uint64) |  | sell_order_id is the id of the requested sell order. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QuerySellOrderResponse"></a>
+
+### QuerySellOrderResponse
+QuerySellOrderResponse is the Query/SellOrder response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sell_order | [SellOrder](#regen.ecocredit.v1alpha1.SellOrder) |  | sell_order contains all information related to a sell order. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QuerySellOrdersByAddressRequest"></a>
+
+### QuerySellOrdersByAddressRequest
+QuerySellOrdersByAddressRequest is the Query/SellOrdersByAddress request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| address | [string](#string) |  | address is the creator of the sell order |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QuerySellOrdersByAddressResponse"></a>
+
+### QuerySellOrdersByAddressResponse
+QuerySellOrdersByAddressResponse is the Query/SellOrdersByAddressResponse response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sell_orders | [SellOrder](#regen.ecocredit.v1alpha1.SellOrder) | repeated | sell_orders is a list of sell orders. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines an optional pagination for the response. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QuerySellOrdersByBatchDenomRequest"></a>
+
+### QuerySellOrdersByBatchDenomRequest
+QuerySellOrdersByDenomRequest is the Query/SellOrdersByDenom request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| batch_denom | [string](#string) |  | batch_denom is an ecocredit denom |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QuerySellOrdersByBatchDenomResponse"></a>
+
+### QuerySellOrdersByBatchDenomResponse
+QuerySellOrdersByDenomResponse is the Query/SellOrdersByDenom response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sell_orders | [SellOrder](#regen.ecocredit.v1alpha1.SellOrder) | repeated | sell_orders is a list of sell orders. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines an optional pagination for the response. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QuerySellOrdersRequest"></a>
+
+### QuerySellOrdersRequest
+QuerySellOrdersRequest is the Query/SellOrders request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha1.QuerySellOrdersResponse"></a>
+
+### QuerySellOrdersResponse
+QuerySellOrdersResponse is the Query/SellOrders response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| sell_orders | [SellOrder](#regen.ecocredit.v1alpha1.SellOrder) | repeated | sell_orders is a list of sell orders. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha1.QuerySupplyRequest"></a>
 
 ### QuerySupplyRequest
@@ -822,6 +1164,14 @@ Msg is the regen.ecocredit.v1alpha1 Query service.
 | Supply | [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest) | [QuerySupplyResponse](#regen.ecocredit.v1alpha1.QuerySupplyResponse) | Supply queries the tradable and retired supply of a credit batch. |
 | CreditTypes | [QueryCreditTypesRequest](#regen.ecocredit.v1alpha1.QueryCreditTypesRequest) | [QueryCreditTypesResponse](#regen.ecocredit.v1alpha1.QueryCreditTypesResponse) | CreditTypes returns the list of allowed types that credit classes can have. See Types/CreditType for more details. |
 | Params | [QueryParamsRequest](#regen.ecocredit.v1alpha1.QueryParamsRequest) | [QueryParamsResponse](#regen.ecocredit.v1alpha1.QueryParamsResponse) | Params queries the ecocredit module parameters. |
+| SellOrder | [QuerySellOrderRequest](#regen.ecocredit.v1alpha1.QuerySellOrderRequest) | [QuerySellOrderResponse](#regen.ecocredit.v1alpha1.QuerySellOrderResponse) | SellOrder queries a sell order by its ID |
+| SellOrders | [QuerySellOrdersRequest](#regen.ecocredit.v1alpha1.QuerySellOrdersRequest) | [QuerySellOrdersResponse](#regen.ecocredit.v1alpha1.QuerySellOrdersResponse) | SellOrders queries a paginated list of all sell orders |
+| SellOrdersByBatchDenom | [QuerySellOrdersByBatchDenomRequest](#regen.ecocredit.v1alpha1.QuerySellOrdersByBatchDenomRequest) | [QuerySellOrdersByBatchDenomResponse](#regen.ecocredit.v1alpha1.QuerySellOrdersByBatchDenomResponse) | SellOrdersByDenom queries a paginated list of all sell orders of a specific ecocredit denom |
+| SellOrdersByAddress | [QuerySellOrdersByAddressRequest](#regen.ecocredit.v1alpha1.QuerySellOrdersByAddressRequest) | [QuerySellOrdersByAddressResponse](#regen.ecocredit.v1alpha1.QuerySellOrdersByAddressResponse) | SellOrdersByAddress queries a paginated list of all sell orders from a specific address |
+| BuyOrder | [QueryBuyOrderRequest](#regen.ecocredit.v1alpha1.QueryBuyOrderRequest) | [QueryBuyOrderResponse](#regen.ecocredit.v1alpha1.QueryBuyOrderResponse) | BuyOrder queries a buy order by its id |
+| BuyOrders | [QueryBuyOrdersRequest](#regen.ecocredit.v1alpha1.QueryBuyOrdersRequest) | [QueryBuyOrdersResponse](#regen.ecocredit.v1alpha1.QueryBuyOrdersResponse) | BuyOrders queries a paginated list of all buy orders |
+| BuyOrdersByAddress | [QueryBuyOrdersByAddressRequest](#regen.ecocredit.v1alpha1.QueryBuyOrdersByAddressRequest) | [QueryBuyOrdersByAddressResponse](#regen.ecocredit.v1alpha1.QueryBuyOrdersByAddressResponse) | BuyOrdersByAddress queries a paginated list of buy orders by creator address |
+| AllowedAskDenoms | [QueryAllowedAskDenomsRequest](#regen.ecocredit.v1alpha1.QueryAllowedAskDenomsRequest) | [QueryAllowedAskDenomsResponse](#regen.ecocredit.v1alpha1.QueryAllowedAskDenomsResponse) | AllowedAskDenoms queries all denoms allowed to be set in the AskPrice of a sell order |
 
  <!-- end services -->
 
