@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"strings"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -39,6 +40,9 @@ func TxCmd(name string) *cobra.Command {
 		TxUpdateClassMetadataCmd(),
 		TxUpdateClassIssuersCmd(),
 		TxUpdateClassAdminCmd(),
+		TxSellCmd(),
+		//TxUpdateSellOrderCmd(),
+		//TxBuyCmd(),
 	)
 	return cmd
 }
@@ -500,6 +504,74 @@ Parameters:
 				Issuers: issuers,
 			}
 
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+		},
+	})
+}
+
+// TxSellCmd returns a transaction command that creates sell orders.
+func TxSellCmd() *cobra.Command {
+	return txflags(&cobra.Command{
+		Use:   "sell [orders]",
+		Short: "Creates new sell orders with transaction author (--from) as owner",
+		Long: fmt.Sprintf(
+			`Creates new sell orders with transaction author (--from) as owner.
+
+Parameters:
+  orders:  YAML encoded order list. Note: numerical values must be written in strings.
+           eg: '[{batch_denom: "C01-20210101-20220101-001", quantity: "5", ask_price: "100regen", disable_auto_retire: false}]'`,
+		),
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			// get the order owner from the --from flag
+			owner := clientCtx.GetFromAddress()
+
+			// declare orders array with ask price as string
+			var strOrders []struct {
+				BatchDenom        string `json:"batch_denom"`
+				Quantity          string `json:"quantity"`
+				AskPrice          string `json:"ask_price"`
+				DisableAutoRetire bool   `json:"disable_auto_retire"`
+			}
+
+			// unmarshal YAML encoded orders with ask price as string
+			if err := yaml.Unmarshal([]byte(args[0]), &strOrders); err != nil {
+				return err
+			}
+
+			// declare orders array with ask price as sdk.Coin
+			orders := make([]*ecocredit.MsgSell_Order, len(strOrders))
+
+			// loop through orders with ask price as string
+			for i, order := range strOrders {
+
+				// parse and normalize ask price as sdk.Coin
+				askPrice, err := sdk.ParseCoinNormalized(order.AskPrice)
+				if err != nil {
+					return err
+				}
+
+				// set order with ask price as sdk.Coin
+				orders[i] = &ecocredit.MsgSell_Order{
+					BatchDenom: order.BatchDenom,
+					AskPrice: &askPrice,
+					Quantity: order.Quantity,
+					DisableAutoRetire: order.DisableAutoRetire,
+				}
+			}
+
+			// create sell message
+			msg := ecocredit.MsgSell{
+				Owner:          owner.String(),
+				Orders:         orders,
+			}
+
+			// generate and broadcast transaction
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	})

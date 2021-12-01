@@ -1373,3 +1373,53 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 		})
 	}
 }
+
+func (s *IntegrationTestSuite) TestTxSell() {
+	val0 := s.network.Validators[0]
+	clientCtx := val0.ClientCtx
+
+	testCases := []struct {
+		name              string
+		args              []string
+		expErr            bool
+		expErrMsg         string
+	}{
+		{
+			name:           "missing args",
+			args:           []string{},
+			expErr:         true,
+			expErrMsg:      "accepts 1 arg(s), received 0",
+		},
+		{
+			name:           "too many args",
+			args:           []string{"foo", "bar"},
+			expErr:         true,
+			expErrMsg:      "accepts 1 arg(s), received 2",
+		},
+		{
+			name: "valid",
+			args: append(
+				[]string{
+					"[{batch_denom: \"C01-20210101-20220101-001\", quantity: \"5\", ask_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr: false,
+			expErrMsg: "",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.TxSellCmd()
+			_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(err.Error(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err)
+			}
+		})
+	}
+}
