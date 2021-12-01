@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package regen.ecocredit.v1alpha1;
+package regen.ecocredit.v1alpha2;
 
 import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
@@ -30,17 +30,34 @@ message ClassInfo {
   uint64 num_batches = 6;
 }
 
+// ProjectInfo represents the high-level on-chain information for a project.
+message ProjectInfo {
+
+  // project_id is the unique ID of the project.
+  string project_id = 1;
+
+  // class_id is the unique ID of credit class for this project.
+  string class_id = 2;
+
+  // issuer is the issuer of the credit batches for this project.
+  string issuer = 3;
+
+  // project_location is the location of the project.
+  // Full documentation can be found in MsgCreateProject.project_location.
+  string project_location = 4;
+
+  // metadata is any arbitrary metadata attached to the project.
+  bytes metadata = 5;
+}
+
 // BatchInfo represents the high-level on-chain information for a credit batch.
 message BatchInfo {
 
-  // class_id is the unique ID of credit class.
-  string class_id = 1;
+  // project_id is the unique ID of the project this batch belongs to.
+  string project_id = 1;
 
   // batch_denom is the unique ID of credit batch.
   string batch_denom = 2;
-
-  // issuer is the issuer of the credit batch.
-  string issuer = 3;
 
   // total_amount is the total number of active credits in the credit batch.
   // Some of the issued credits may be cancelled and will be removed from
@@ -65,10 +82,6 @@ message BatchInfo {
   // end_date is the end of the period during which this credit batch was
   // quantified and verified.
   google.protobuf.Timestamp end_date = 8 [ (gogoproto.stdtime) = true ];
-
-  // project_location is the location of the project backing the credits in this
-  // batch. Full documentation can be found in MsgCreateBatch.project_location.
-  string project_location = 9;
 }
 
 // Params defines the updatable global parameters of the ecocredit module for
@@ -212,18 +225,54 @@ message AskDenom {
   uint32 exponent = 3;
 }
 
+// BasketCredit represents the information for a credit batch inside a basket.
+message BasketCredit {
+  
+  // batch_denom is the unique ID of the credit batch.
+  string batch_denom = 1;
+
+  // tradable_amount is the number of credits in this transfer that can be
+  // traded by the recipient. Decimal values are acceptable within the
+  // precision returned by Query/Precision.
+  string tradable_amount = 2;
+}
+
+// BasketCriteria defines a criteria by which credits can be added to a basket.
+message BasketCriteria {
+  
+  // filter defines condition(s) that credits should satisfy in order to be
+  // added to the basket.
+  Filter filter = 1;
+
+  // multiplier is an integer number which is applied to credit units when
+  // converting to basket units. For example if the multiplier is 2000, then
+  // 1.1 credits will result in 2200 basket tokens. If there are any fractional
+  // amounts left over in this calculation when adding credits to a basket,
+  // those fractional amounts will not get added to the basket.
+  string multiplier = 2;
+}
+
+// Filter defines condition(s) that credits should satisfy in order to be added
+// to the basket. It can handled nested conditions linked with and/or operators.
 message Filter {
+  // sum is the oneof that specifies the type of filter.
   oneof sum {
+    // and specifies a list of filters where all conditions should be satisfied.
     And and = 1;
+
+    // or specifies a list of filters where at least one of the conditions should be satisfied.
     Or or = 2;
 
+    // credit_type_name filters against credits from this credit type name.
     string credit_type_name = 3;
+
+    // class_id filters against credits from this credit class id.
     string class_id = 4;
 
-    // project_id filters against credits from this batch.
+    // project_id filters against credits from this project.
     string project_id = 5;
 
-    // batch_id filters against credits from this batch.
+    // batch_denom filters against credits from this batch.
     string batch_denom = 6;
 
     // class_admin filters against credits issued by this class admin.
@@ -243,20 +292,26 @@ message Filter {
     // only projects in that postal code will match.
     string project_location = 10;
 
+    // date_range filters against credit batch start_date and/or end_date.
     DateRange date_range = 11;
 
     // tag specifies a curation tag to match against.
     string tag = 12;
   }
 
+  // And specifies an "and" condition between the list of filters.
   message And {
+    // filters is a list of filters where all conditions should be satisfied.
     repeated Filter filters = 1;
   }
 
+  // And specifies an "or" condition between the list of filters.
   message Or {
+    // filters is a list of filters where at least one of the conditions should be satisfied.
     repeated Filter filters = 1;
   }
 
+  // DateRange defines a period for credit batches in a basket.
   message DateRange {
     // start_date is the beginning of the period during which this credit batch
     // was quantified and verified. If it is empty then there is no start date

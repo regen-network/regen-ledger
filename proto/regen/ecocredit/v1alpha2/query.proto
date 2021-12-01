@@ -1,62 +1,76 @@
 syntax = "proto3";
 
-package regen.ecocredit.v1alpha1;
+package regen.ecocredit.v1alpha2;
+
 import "google/api/annotations.proto";
-import "regen/ecocredit/v1alpha1/types.proto";
+import "regen/ecocredit/v1alpha2/types.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 
-// Msg is the regen.ecocredit.v1alpha1 Query service.
+// Msg is the regen.ecocredit.v1alpha2 Query service.
 service Query {
+
   // Classes queries for all credit classes with pagination.
   rpc Classes(QueryClassesRequest) returns (QueryClassesResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/classes";
+        "/regen/ecocredit/v1alpha2/classes";
   }
 
   // ClassInfo queries for information on a credit class.
   rpc ClassInfo(QueryClassInfoRequest) returns (QueryClassInfoResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/classes/{class_id}";
+        "/regen/ecocredit/v1alpha2/classes/{class_id}";
   }
 
-  // Batches queries for all batches in the given credit class with pagination.
+  // Projects queries for all projects within a class with pagination.
+  rpc Projects(QueryProjectsRequest) returns (QueryProjectsResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha2/classes/{class_id}/projects";
+  }
+
+  // ClassInfo queries for information on a project.
+  rpc ProjectInfo(QueryProjectInfoRequest) returns (QueryProjectInfoResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha2/projects/{project_id}";
+  }
+
+  // Batches queries for all batches in the given project with pagination.
   rpc Batches(QueryBatchesRequest) returns (QueryBatchesResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/classes/{class_id}/batches";
+        "/regen/ecocredit/v1alpha2/projects/{project_id}/batches";
   }
 
   // BatchInfo queries for information on a credit batch.
   rpc BatchInfo(QueryBatchInfoRequest) returns (QueryBatchInfoResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/batches/{batch_denom}";
+        "/regen/ecocredit/v1alpha2/batches/{batch_denom}";
   }
 
   // Balance queries the balance (both tradable and retired) of a given credit
   // batch for a given account.
   rpc Balance(QueryBalanceRequest) returns (QueryBalanceResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/batches/{batch_denom}/balance/{account}";
+        "/regen/ecocredit/v1alpha2/batches/{batch_denom}/balance/{account}";
   }
 
   // Supply queries the tradable and retired supply of a credit batch.
   rpc Supply(QuerySupplyRequest) returns (QuerySupplyResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/batches/{batch_denom}/supply";
+        "/regen/ecocredit/v1alpha2/batches/{batch_denom}/supply";
   }
 
   // CreditTypes returns the list of allowed types that credit classes can have.
   // See Types/CreditType for more details.
   rpc CreditTypes(QueryCreditTypesRequest) returns (QueryCreditTypesResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/credit-types";
+        "/regen/ecocredit/v1alpha2/credit-types";
   }
 
   // Params queries the ecocredit module parameters.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get =
-        "/regen/ecocredit/v1alpha1/params";
+        "/regen/ecocredit/v1alpha2/params";
   }
 
   // SellOrder queries a sell order by its ID
@@ -98,6 +112,24 @@ service Query {
   rpc AllowedAskDenoms(QueryAllowedAskDenomsRequest) returns (QueryAllowedAskDenomsResponse) {
     option (google.api.http).get = "/regen/ecocredit/v1alpha1/ask-denoms";
   }
+
+  // Basket queries one basket by denom.
+  rpc Basket(QueryBasketRequest) returns (QueryBasketResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/baskets/{basket_denom}";
+  }
+
+  // Baskets lists all baskets in the ecocredit module.
+  rpc Baskets(QueryBasketsRequest) returns (QueryBasketsResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/baskets";
+  }
+
+  // BasketCredits lists all ecocredits inside a given basket.
+  rpc BasketCredits(QueryBasketCreditsRequest) returns (QueryBasketCreditsResponse) {
+    option (google.api.http).get =
+        "/regen/ecocredit/v1alpha1/baskets/{basket_denom}/credits";
+  }
 }
 
 // QueryParamsRequest is the Query/Params request type.
@@ -138,10 +170,45 @@ message QueryClassInfoResponse {
   ClassInfo info = 1;
 }
 
+// QueryProjectsRequest is the Query/Projects request type.
+message QueryProjectsRequest {
+
+  // class_id is the unique ID of credit class to query.
+  string class_id = 1;
+
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryProjectsResponse is the Query/Projects response type.
+message QueryProjectsResponse {
+  // projects are the fetched projects.
+  repeated ProjectInfo projects = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryProjectInfoRequest is the Query/Project request type.
+message QueryProjectInfoRequest {
+
+  // project_id is the unique ID of the project to query.
+  string project_id = 1;
+}
+
+// QueryProjectInfoResponse is the Query/Project response type.
+message QueryProjectInfoResponse {
+
+  // info is the ProjectInfo for the project.
+  ProjectInfo info = 1;
+}
+
+
 // QueryBatchesRequest is the Query/Batches request type.
 message QueryBatchesRequest {
-  // class_id is the unique ID of the credit class to query.
-  string class_id = 1;
+
+  // project_id is the unique ID of the project to query.
+  string project_id = 1;
 
   // pagination defines an optional pagination for the request.
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
@@ -149,7 +216,8 @@ message QueryBatchesRequest {
 
 // QueryBatchesResponse is the Query/Batches response type.
 message QueryBatchesResponse {
-  // batches are the fetched credit batches within the class.
+
+  // batches are the fetched credit batches within the project.
   repeated BatchInfo batches = 1;
 
   // pagination defines the pagination in the response.
@@ -347,5 +415,83 @@ message QueryAllowedAskDenomsResponse {
   repeated AskDenom ask_denoms = 1;
 
   // pagination defines an optional pagination for the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// Basket defines a credit basket.
+message Basket {
+  // curator is the address of the basket curator who is able to change certain
+  // basket settings.
+  string curator = 1;
+
+  // name will be used to create a bank denom for this basket token of the form
+  // ecocredit:{curator}:{name}.
+  string name = 2;
+
+  // display_name will be used to create a bank Metadata display name for this
+  // basket token of the form ecocredit:{curator}:{display_name}.
+  string display_name = 3;
+
+  // exponent is the exponent that will be used for denom metadata. An exponent
+  // of 6 will mean that 10^6 units of a basket token should be displayed
+  // as one unit in user interfaces.
+  uint32 exponent = 4;
+
+  // basket_criteria is the criteria by which credits can be added to the
+  // basket. Basket criteria will be applied in order and the first criteria
+  // which applies to a credit will determine its multiplier in the basket.
+  repeated BasketCriteria basket_criteria = 5;
+
+  // disable_auto_retire allows auto-retirement to be disabled.
+  // The credits will be auto-retired if disable_auto_retire is
+  // false unless the credits were previously put into the basket by the
+  // address picking them from the basket, in which case they will remain
+  // tradable.
+  bool disable_auto_retire = 6;
+
+  // allow_picking specifies whether an address which didn't deposit the credits
+  // in the basket can pick those credits or not. 
+  bool allow_picking = 7;
+}
+
+// QueryBasketRequest is the Query/Basket request type.
+message QueryBasketRequest {
+  // basket_denom represents the denom of the basket to query. 
+  string basket_denom = 1;
+}
+
+// QueryBasketResponse is the Query/Basket response type.
+message QueryBasketResponse {
+  // basket is the queried basket.
+  Basket basket = 1;
+}
+
+// QueryBasketsRequest is the Query/Baskets request type.
+message QueryBasketsRequest {
+  // pagination defines an optional pagination for the request.
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryBasketsResponse is the Query/Baskets response type.
+message QueryBasketsResponse {
+  // baskets are the fetched baskets.
+  repeated Basket baskets = 1;
+
+  // pagination defines the pagination in the response.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryBasketCreditsRequest is the Query/BasketCredits request type.
+message QueryBasketCreditsRequest {
+  // basket_denom is the basket denom to query credits for.
+  string basket_denom = 1;
+}
+
+// QueryBasketCreditsResponse is the Query/BasketCredits response type.
+message QueryBasketCreditsResponse {
+  // credits are the credits inside the basket.
+  repeated BasketCredit credits = 1;
+
+  // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
