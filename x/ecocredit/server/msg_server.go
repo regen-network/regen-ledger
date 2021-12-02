@@ -750,8 +750,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 			if creditsRemaining.IsZero() {
 
 				// delete sell order if no remaining credits
-				err = s.sellOrderTable.Delete(ctx, sellOrder.OrderId)
-				if err != nil {
+				if err := s.sellOrderTable.Delete(ctx, sellOrder.OrderId); err != nil {
 					return nil, err
 				}
 
