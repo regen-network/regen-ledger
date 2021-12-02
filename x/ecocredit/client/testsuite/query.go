@@ -476,7 +476,7 @@ func (s *IntegrationTestSuite) TestQueryParams() {
 	clientCtx.OutputFormat = "JSON"
 	require := s.Require()
 
-	cmd := client.QueryParams()
+	cmd := client.QueryParamsCmd()
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
 	require.NoError(err)
 
@@ -485,3 +485,43 @@ func (s *IntegrationTestSuite) TestQueryParams() {
 
 	require.Equal(ecocredit.DefaultParams(), *params.Params)
 }
+
+// TODO: query tests...
+
+//func (s *IntegrationTestSuite) TestQuerySellOrder() {
+//	val := s.network.Validators[0]
+//	clientCtx := val.ClientCtx
+//	clientCtx.OutputFormat = "JSON"
+//	testCases := []struct {
+//		name      string
+//		args      []string
+//		expErr    bool
+//		expErrMsg string
+//		expOrder  []*ecocredit.SellOrder
+//	}{
+//		{
+//			name:      "valid",
+//			args:      []string{"1"},
+//			expErr:    false,
+//			expErrMsg: "",
+//			expOrder:  []*ecocredit.SellOrder{},
+//		},
+//	}
+//
+//	for _, tc := range testCases {
+//		s.Run(tc.name, func() {
+//			cmd := client.QuerySellOrderCmd()
+//			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+//			if tc.expErr {
+//				s.Require().Error(err)
+//				s.Require().Contains(out.String(), tc.expErrMsg)
+//			} else {
+//				s.Require().NoError(err, out.String())
+//
+//				var res ecocredit.QuerySellOrderResponse
+//				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+//				s.Require().Equal(tc.expOrder, res.SellOrder)
+//			}
+//		})
+//	}
+//}
