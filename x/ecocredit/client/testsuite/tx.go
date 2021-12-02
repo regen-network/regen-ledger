@@ -1379,22 +1379,94 @@ func (s *IntegrationTestSuite) TestTxSell() {
 	clientCtx := val0.ClientCtx
 
 	testCases := []struct {
-		name              string
-		args              []string
-		expErr            bool
-		expErrMsg         string
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
 	}{
 		{
-			name:           "missing args",
-			args:           []string{},
-			expErr:         true,
-			expErrMsg:      "accepts 1 arg(s), received 0",
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "accepts 1 arg(s), received 0",
 		},
 		{
-			name:           "too many args",
-			args:           []string{"foo", "bar"},
-			expErr:         true,
-			expErrMsg:      "accepts 1 arg(s), received 2",
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "accepts 1 arg(s), received 2",
+		},
+		{
+			name: "missing batch denom",
+			args: append(
+				[]string{
+					"[{quantity: \"5\", ask_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid denom",
+		},
+		{
+			name: "invalid batch denom",
+			args: append(
+				[]string{
+					"[{batch_denom: \"foo\", quantity: \"5\", ask_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid denom",
+		},
+		{
+			name: "missing quantity",
+			args: append(
+				[]string{
+					"[{batch_denom: \"C01-20210101-20220101-001\", ask_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "quantity must be positive decimal",
+		},
+		{
+			name: "invalid quantity",
+			args: append(
+				[]string{
+					"[{batch_denom: \"C01-20210101-20220101-001\", quantity: \"foo\", ask_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "quantity must be positive decimal",
+		},
+		{
+			name: "missing ask price",
+			args: append(
+				[]string{
+					"[{batch_denom: \"C01-20210101-20220101-001\", quantity: \"5\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid decimal coin expression",
+		},
+		{
+			name: "invalid ask price",
+			args: append(
+				[]string{
+					"[{batch_denom: \"C01-20210101-20220101-001\", quantity: \"5\", ask_price: \"foo\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid decimal coin expression",
 		},
 		{
 			name: "valid",
@@ -1405,7 +1477,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 				},
 				s.commonTxFlags()...,
 			),
-			expErr: false,
+			expErr:    false,
 			expErrMsg: "",
 		},
 	}
@@ -1413,6 +1485,250 @@ func (s *IntegrationTestSuite) TestTxSell() {
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
 			cmd := client.TxSellCmd()
+			_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(err.Error(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
+	val0 := s.network.Validators[0]
+	clientCtx := val0.ClientCtx
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "accepts 1 arg(s), received 2",
+		},
+		{
+			name: "missing sell order",
+			args: append(
+				[]string{
+					"[{new_quantity: \"5\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid sell order",
+		},
+		{
+			name: "invalid sell order",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"foo\", new_quantity: \"5\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid sell order",
+		},
+		{
+			name: "missing new quantity",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"1\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "quantity must be positive decimal",
+		},
+		{
+			name: "invalid new quantity",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"1\", new_quantity: \"foo\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "quantity must be positive decimal",
+		},
+		{
+			name: "missing new ask price",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"1\", new_quantity: \"5\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid decimal coin expression",
+		},
+		{
+			name: "invalid new ask price",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"1\", new_quantity: \"5\", new_ask_price: \"foo\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid decimal coin expression",
+		},
+		{
+			name: "valid",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"1\", new_quantity: \"5\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    false,
+			expErrMsg: "",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.TxUpdateSellOrdersCmd()
+			_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(err.Error(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestTxBuy() {
+	val0 := s.network.Validators[0]
+	clientCtx := val0.ClientCtx
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "accepts 1 arg(s), received 2",
+		},
+		{
+			name: "missing sell order",
+			args: append(
+				[]string{
+					"[{quantity: \"5\", bid_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid sell order",
+		},
+		{
+			name: "invalid sell order",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"foo\", quantity: \"5\", bid_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid sell order",
+		},
+		{
+			name: "missing quantity",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"1\", bid_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "quantity must be positive decimal",
+		},
+		{
+			name: "invalid quantity",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"1\", quantity: \"foo\", bid_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "quantity must be positive decimal",
+		},
+		{
+			name: "missing bid price",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"1\", quantity: \"5\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid decimal coin expression",
+		},
+		{
+			name: "invalid bid price",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"1\", quantity: \"5\", bid_price: \"foo\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid decimal coin expression",
+		},
+		{
+			name: "valid",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"1\", quantity: \"5\", bid_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    false,
+			expErrMsg: "",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.TxBuyCmd()
 			_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
 			if tc.expErr {
 				s.Require().Error(err)
