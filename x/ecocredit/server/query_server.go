@@ -444,3 +444,18 @@ func (s serverImpl) AllowedAskDenoms(goCtx context.Context, request *ecocredit.Q
 		Pagination: pageResp,
 	}, nil
 }
+
+func (s serverImpl) Basket(goCtx context.Context, request *ecocredit.QueryBasketRequest) (*ecocredit.QueryBasketResponse, error) {
+	// TODO: #629
+	return nil, nil
+}
+
+func (s serverImpl) Baskets(goCtx context.Context, request *ecocredit.QueryBasketsRequest) (*ecocredit.QueryBasketsResponse, error) {
+	// TODO: #629
+	return nil, nil
+}
+
+func (s serverImpl) BasketCredits(goCtx context.Context, request *ecocredit.QueryBasketCreditsRequest) (*ecocredit.QueryBasketCreditsResponse, error) {
+	// TODO: #629
+	return nil, nil
+}
