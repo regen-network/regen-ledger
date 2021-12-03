@@ -591,6 +591,7 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 		sellOrderIds[i] = orderID
 
 		_, err = s.sellOrderTable.Create(ctx, &ecocredit.SellOrder{
+			Owner:             owner,
 			OrderId:           orderID,
 			BatchDenom:        order.BatchDenom,
 			Quantity:          order.Quantity,
@@ -774,7 +775,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 				BatchDenom:     sellOrder.BatchDenom,
 				TradableAmount: creditsToReceive.String(),
 				// TODO: handle auto-retire settings #621
-				//RetiredAmount: creditsToRetire.String(),
+				RetiredAmount: "0",
 				//RetirementLocation: retirementLocation,
 			}
 

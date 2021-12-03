@@ -170,7 +170,7 @@ func (s *IntegrationTestSuite) TestQueryBatchInfo() {
 			"not found",
 		},
 		{
-			"valid testcase",
+			"valid request",
 			&ecocredit.QueryBatchInfoRequest{
 				BatchDenom: "BIO01-00000000-00000000-001",
 			},
@@ -231,7 +231,7 @@ func (s *IntegrationTestSuite) TestBalanceQuery() {
 			"invalid denom",
 		},
 		{
-			"valid testcase",
+			"valid request",
 			&ecocredit.QueryBalanceRequest{
 				BatchDenom: "C01-20210823-20210823-001",
 				Account:    s.signers[3].String(),
@@ -280,6 +280,351 @@ func (s *IntegrationTestSuite) TestCreditTypeQuery() {
 	for _, tc := range testCases {
 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			_, err := s.queryClient.CreditTypes(s.ctx, tc.request)
+			if tc.expectErr {
+				require.Error(err)
+				require.Contains(err.Error(), tc.errMsg)
+			} else {
+				require.NoError(err)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestSellOrderQuery() {
+	require := s.Require()
+
+	testCases := []struct {
+		name      string
+		request   *ecocredit.QuerySellOrderRequest
+		expectErr bool
+		errMsg    string
+	}{
+		{
+			"nil request",
+			nil,
+			true,
+			"empty request",
+		},
+		{
+			"empty request",
+			&ecocredit.QuerySellOrderRequest{},
+			true,
+			"not found",
+		},
+		{
+			"invalid order id",
+			&ecocredit.QuerySellOrderRequest{
+				SellOrderId: 99,
+			},
+			true,
+			"not found",
+		},
+		{
+			"valid request",
+			&ecocredit.QuerySellOrderRequest{
+				SellOrderId: 1,
+			},
+			false,
+			"",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
+			_, err := s.queryClient.SellOrder(s.ctx, tc.request)
+			if tc.expectErr {
+				require.Error(err)
+				require.Contains(err.Error(), tc.errMsg)
+			} else {
+				require.NoError(err)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestSellOrdersQuery() {
+	require := s.Require()
+
+	testCases := []struct {
+		name      string
+		request   *ecocredit.QuerySellOrdersRequest
+		expectErr bool
+		errMsg    string
+	}{
+		{
+			"nil request",
+			nil,
+			true,
+			"empty request",
+		},
+		{
+			"valid request",
+			&ecocredit.QuerySellOrdersRequest{},
+			false,
+			"",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
+			_, err := s.queryClient.SellOrders(s.ctx, tc.request)
+			if tc.expectErr {
+				require.Error(err)
+				require.Contains(err.Error(), tc.errMsg)
+			} else {
+				require.NoError(err)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestSellOrdersByAddressQuery() {
+	require := s.Require()
+
+	testCases := []struct {
+		name      string
+		request   *ecocredit.QuerySellOrdersByAddressRequest
+		expectErr bool
+		errMsg    string
+	}{
+		{
+			"nil request",
+			nil,
+			true,
+			"empty request",
+		},
+		{
+			"empty request",
+			&ecocredit.QuerySellOrdersByAddressRequest{},
+			true,
+			"empty address string is not allowed",
+		},
+		{
+			"valid request",
+			&ecocredit.QuerySellOrdersByAddressRequest{
+				Address:    s.signers[3].String(),
+			},
+			false,
+			"",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
+			_, err := s.queryClient.SellOrdersByAddress(s.ctx, tc.request)
+			if tc.expectErr {
+				require.Error(err)
+				require.Contains(err.Error(), tc.errMsg)
+			} else {
+				require.NoError(err)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestSellOrdersByBatchDenomQuery() {
+	require := s.Require()
+
+	testCases := []struct {
+		name      string
+		request   *ecocredit.QuerySellOrdersByBatchDenomRequest
+		expectErr bool
+		errMsg    string
+	}{
+		{
+			"nil request",
+			nil,
+			true,
+			"empty request",
+		},
+		{
+			"empty request",
+			&ecocredit.QuerySellOrdersByBatchDenomRequest{},
+			true,
+			"invalid denom",
+		},
+		{
+			"valid request",
+			&ecocredit.QuerySellOrdersByBatchDenomRequest{
+				BatchDenom: "A00-00000000-00000000-000",
+			},
+			false,
+			"",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
+			_, err := s.queryClient.SellOrdersByBatchDenom(s.ctx, tc.request)
+			if tc.expectErr {
+				require.Error(err)
+				require.Contains(err.Error(), tc.errMsg)
+			} else {
+				require.NoError(err)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestBuyOrderQuery() {
+	require := s.Require()
+
+	testCases := []struct {
+		name      string
+		request   *ecocredit.QueryBuyOrderRequest
+		expectErr bool
+		errMsg    string
+	}{
+		{
+			"nil request",
+			nil,
+			true,
+			"empty request",
+		},
+		{
+			"empty request",
+			&ecocredit.QueryBuyOrderRequest{},
+			true,
+			"not found",
+		},
+		{
+			"invalid order id",
+			&ecocredit.QueryBuyOrderRequest{
+				BuyOrderId: 99,
+			},
+			true,
+			"not found",
+		},
+		// TODO: filtered buy orders required #623
+		//{
+		//	"valid request",
+		//	&ecocredit.QueryBuyOrderRequest{
+		//		BuyOrderId: 1,
+		//	},
+		//	false,
+		//	"",
+		//},
+	}
+
+	for _, tc := range testCases {
+		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
+			_, err := s.queryClient.BuyOrder(s.ctx, tc.request)
+			if tc.expectErr {
+				require.Error(err)
+				require.Contains(err.Error(), tc.errMsg)
+			} else {
+				require.NoError(err)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestBuyOrdersQuery() {
+	require := s.Require()
+
+	testCases := []struct {
+		name      string
+		request   *ecocredit.QueryBuyOrdersRequest
+		expectErr bool
+		errMsg    string
+	}{
+		{
+			"nil request",
+			nil,
+			true,
+			"empty request",
+		},
+		{
+			"valid request",
+			&ecocredit.QueryBuyOrdersRequest{},
+			false,
+			"",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
+			_, err := s.queryClient.BuyOrders(s.ctx, tc.request)
+			if tc.expectErr {
+				require.Error(err)
+				require.Contains(err.Error(), tc.errMsg)
+			} else {
+				require.NoError(err)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestBuyOrdersByAddressQuery() {
+	require := s.Require()
+
+	testCases := []struct {
+		name      string
+		request   *ecocredit.QueryBuyOrdersByAddressRequest
+		expectErr bool
+		errMsg    string
+	}{
+		{
+			"nil request",
+			nil,
+			true,
+			"empty request",
+		},
+		{
+			"empty request",
+			&ecocredit.QueryBuyOrdersByAddressRequest{},
+			true,
+			"empty address string is not allowed",
+		},
+		{
+			"valid request",
+			&ecocredit.QueryBuyOrdersByAddressRequest{
+				Address:    s.signers[3].String(),
+			},
+			false,
+			"",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
+			_, err := s.queryClient.BuyOrdersByAddress(s.ctx, tc.request)
+			if tc.expectErr {
+				require.Error(err)
+				require.Contains(err.Error(), tc.errMsg)
+			} else {
+				require.NoError(err)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestAllowedAskDenomsQuery() {
+	require := s.Require()
+
+	testCases := []struct {
+		name      string
+		request   *ecocredit.QueryAllowedAskDenomsRequest
+		expectErr bool
+		errMsg    string
+	}{
+		{
+			"nil request",
+			nil,
+			true,
+			"empty request",
+		},
+		{
+			"valid request",
+			&ecocredit.QueryAllowedAskDenomsRequest{},
+			false,
+			"",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
+			_, err := s.queryClient.AllowedAskDenoms(s.ctx, tc.request)
 			if tc.expectErr {
 				require.Error(err)
 				require.Contains(err.Error(), tc.errMsg)

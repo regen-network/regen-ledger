@@ -885,7 +885,7 @@ func (m *Filter) Reset()         { *m = Filter{} }
 func (m *Filter) String() string { return proto.CompactTextString(m) }
 func (*Filter) ProtoMessage()    {}
 func (*Filter) Descriptor() ([]byte, []int) {
-	return fileDescriptor_d49f179dcaefe4e9, []int{9}
+	return fileDescriptor_5342f4dcaeff1a84, []int{8}
 }
 func (m *Filter) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -918,6 +918,411 @@ type isFilter_Sum interface {
 	isFilter_Sum()
 	MarshalTo([]byte) (int, error)
 	Size() int
+}
+
+type Filter_And_ struct {
+	And *Filter_And `protobuf:"bytes,1,opt,name=and,proto3,oneof" json:"and,omitempty"`
+}
+type Filter_Or_ struct {
+	Or *Filter_Or `protobuf:"bytes,2,opt,name=or,proto3,oneof" json:"or,omitempty"`
+}
+type Filter_CreditTypeName struct {
+	CreditTypeName string `protobuf:"bytes,3,opt,name=credit_type_name,json=creditTypeName,proto3,oneof" json:"credit_type_name,omitempty"`
+}
+type Filter_ClassId struct {
+	ClassId string `protobuf:"bytes,4,opt,name=class_id,json=classId,proto3,oneof" json:"class_id,omitempty"`
+}
+type Filter_ProjectId struct {
+	ProjectId string `protobuf:"bytes,5,opt,name=project_id,json=projectId,proto3,oneof" json:"project_id,omitempty"`
+}
+type Filter_BatchDenom struct {
+	BatchDenom string `protobuf:"bytes,6,opt,name=batch_denom,json=batchDenom,proto3,oneof" json:"batch_denom,omitempty"`
+}
+type Filter_ClassAdmin struct {
+	ClassAdmin string `protobuf:"bytes,7,opt,name=class_admin,json=classAdmin,proto3,oneof" json:"class_admin,omitempty"`
+}
+type Filter_Issuer struct {
+	Issuer string `protobuf:"bytes,8,opt,name=issuer,proto3,oneof" json:"issuer,omitempty"`
+}
+type Filter_Owner struct {
+	Owner string `protobuf:"bytes,9,opt,name=owner,proto3,oneof" json:"owner,omitempty"`
+}
+type Filter_ProjectLocation struct {
+	ProjectLocation string `protobuf:"bytes,10,opt,name=project_location,json=projectLocation,proto3,oneof" json:"project_location,omitempty"`
+}
+type Filter_DateRange_ struct {
+	DateRange *Filter_DateRange `protobuf:"bytes,11,opt,name=date_range,json=dateRange,proto3,oneof" json:"date_range,omitempty"`
+}
+type Filter_Tag struct {
+	Tag string `protobuf:"bytes,12,opt,name=tag,proto3,oneof" json:"tag,omitempty"`
+}
+
+func (*Filter_And_) isFilter_Sum()            {}
+func (*Filter_Or_) isFilter_Sum()             {}
+func (*Filter_CreditTypeName) isFilter_Sum()  {}
+func (*Filter_ClassId) isFilter_Sum()         {}
+func (*Filter_ProjectId) isFilter_Sum()       {}
+func (*Filter_BatchDenom) isFilter_Sum()      {}
+func (*Filter_ClassAdmin) isFilter_Sum()      {}
+func (*Filter_Issuer) isFilter_Sum()          {}
+func (*Filter_Owner) isFilter_Sum()           {}
+func (*Filter_ProjectLocation) isFilter_Sum() {}
+func (*Filter_DateRange_) isFilter_Sum()      {}
+func (*Filter_Tag) isFilter_Sum()             {}
+
+func (m *Filter) GetSum() isFilter_Sum {
+	if m != nil {
+		return m.Sum
+	}
+	return nil
+}
+
+func (m *Filter) GetAnd() *Filter_And {
+	if x, ok := m.GetSum().(*Filter_And_); ok {
+		return x.And
+	}
+	return nil
+}
+
+func (m *Filter) GetOr() *Filter_Or {
+	if x, ok := m.GetSum().(*Filter_Or_); ok {
+		return x.Or
+	}
+	return nil
+}
+
+func (m *Filter) GetCreditTypeName() string {
+	if x, ok := m.GetSum().(*Filter_CreditTypeName); ok {
+		return x.CreditTypeName
+	}
+	return ""
+}
+
+func (m *Filter) GetClassId() string {
+	if x, ok := m.GetSum().(*Filter_ClassId); ok {
+		return x.ClassId
+	}
+	return ""
+}
+
+func (m *Filter) GetProjectId() string {
+	if x, ok := m.GetSum().(*Filter_ProjectId); ok {
+		return x.ProjectId
+	}
+	return ""
+}
+
+func (m *Filter) GetBatchDenom() string {
+	if x, ok := m.GetSum().(*Filter_BatchDenom); ok {
+		return x.BatchDenom
+	}
+	return ""
+}
+
+func (m *Filter) GetClassAdmin() string {
+	if x, ok := m.GetSum().(*Filter_ClassAdmin); ok {
+		return x.ClassAdmin
+	}
+	return ""
+}
+
+func (m *Filter) GetIssuer() string {
+	if x, ok := m.GetSum().(*Filter_Issuer); ok {
+		return x.Issuer
+	}
+	return ""
+}
+
+func (m *Filter) GetOwner() string {
+	if x, ok := m.GetSum().(*Filter_Owner); ok {
+		return x.Owner
+	}
+	return ""
+}
+
+func (m *Filter) GetProjectLocation() string {
+	if x, ok := m.GetSum().(*Filter_ProjectLocation); ok {
+		return x.ProjectLocation
+	}
+	return ""
+}
+
+func (m *Filter) GetDateRange() *Filter_DateRange {
+	if x, ok := m.GetSum().(*Filter_DateRange_); ok {
+		return x.DateRange
+	}
+	return nil
+}
+
+func (m *Filter) GetTag() string {
+	if x, ok := m.GetSum().(*Filter_Tag); ok {
+		return x.Tag
+	}
+	return ""
+}
+
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*Filter) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*Filter_And_)(nil),
+		(*Filter_Or_)(nil),
+		(*Filter_CreditTypeName)(nil),
+		(*Filter_ClassId)(nil),
+		(*Filter_ProjectId)(nil),
+		(*Filter_BatchDenom)(nil),
+		(*Filter_ClassAdmin)(nil),
+		(*Filter_Issuer)(nil),
+		(*Filter_Owner)(nil),
+		(*Filter_ProjectLocation)(nil),
+		(*Filter_DateRange_)(nil),
+		(*Filter_Tag)(nil),
+	}
+}
+
+type Filter_And struct {
+	Filters []*Filter `protobuf:"bytes,1,rep,name=filters,proto3" json:"filters,omitempty"`
+}
+
+func (m *Filter_And) Reset()         { *m = Filter_And{} }
+func (m *Filter_And) String() string { return proto.CompactTextString(m) }
+func (*Filter_And) ProtoMessage()    {}
+func (*Filter_And) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5342f4dcaeff1a84, []int{8, 0}
+}
+func (m *Filter_And) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Filter_And) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Filter_And.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Filter_And) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Filter_And.Merge(m, src)
+}
+func (m *Filter_And) XXX_Size() int {
+	return m.Size()
+}
+func (m *Filter_And) XXX_DiscardUnknown() {
+	xxx_messageInfo_Filter_And.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Filter_And proto.InternalMessageInfo
+
+func (m *Filter_And) GetFilters() []*Filter {
+	if m != nil {
+		return m.Filters
+	}
+	return nil
+}
+
+type Filter_Or struct {
+	Filters []*Filter `protobuf:"bytes,1,rep,name=filters,proto3" json:"filters,omitempty"`
+}
+
+func (m *Filter_Or) Reset()         { *m = Filter_Or{} }
+func (m *Filter_Or) String() string { return proto.CompactTextString(m) }
+func (*Filter_Or) ProtoMessage()    {}
+func (*Filter_Or) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5342f4dcaeff1a84, []int{8, 1}
+}
+func (m *Filter_Or) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Filter_Or) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Filter_Or.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Filter_Or) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Filter_Or.Merge(m, src)
+}
+func (m *Filter_Or) XXX_Size() int {
+	return m.Size()
+}
+func (m *Filter_Or) XXX_DiscardUnknown() {
+	xxx_messageInfo_Filter_Or.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Filter_Or proto.InternalMessageInfo
+
+func (m *Filter_Or) GetFilters() []*Filter {
+	if m != nil {
+		return m.Filters
+	}
+	return nil
+}
+
+type Filter_DateRange struct {
+	// start_date is the beginning of the period during which this credit batch
+	// was quantified and verified. If it is empty then there is no start date
+	// limit.
+	StartDate *time.Time `protobuf:"bytes,7,opt,name=start_date,json=startDate,proto3,stdtime" json:"start_date,omitempty"`
+	// end_date is the end of the period during which this credit batch was
+	// quantified and verified. If it is empty then there is no end date
+	// limit.
+	EndDate *time.Time `protobuf:"bytes,8,opt,name=end_date,json=endDate,proto3,stdtime" json:"end_date,omitempty"`
+}
+
+func (m *Filter_DateRange) Reset()         { *m = Filter_DateRange{} }
+func (m *Filter_DateRange) String() string { return proto.CompactTextString(m) }
+func (*Filter_DateRange) ProtoMessage()    {}
+func (*Filter_DateRange) Descriptor() ([]byte, []int) {
+	return fileDescriptor_5342f4dcaeff1a84, []int{8, 2}
+}
+func (m *Filter_DateRange) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Filter_DateRange) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Filter_DateRange.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Filter_DateRange) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Filter_DateRange.Merge(m, src)
+}
+func (m *Filter_DateRange) XXX_Size() int {
+	return m.Size()
+}
+func (m *Filter_DateRange) XXX_DiscardUnknown() {
+	xxx_messageInfo_Filter_DateRange.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Filter_DateRange proto.InternalMessageInfo
+
+func (m *Filter_DateRange) GetStartDate() *time.Time {
+	if m != nil {
+		return m.StartDate
+	}
+	return nil
+}
+
+func (m *Filter_DateRange) GetEndDate() *time.Time {
+	if m != nil {
+		return m.EndDate
+	}
+	return nil
+}
+
+func init() {
+	proto.RegisterType((*ClassInfo)(nil), "regen.ecocredit.v1alpha1.ClassInfo")
+	proto.RegisterType((*BatchInfo)(nil), "regen.ecocredit.v1alpha1.BatchInfo")
+	proto.RegisterType((*Params)(nil), "regen.ecocredit.v1alpha1.Params")
+	proto.RegisterType((*CreditType)(nil), "regen.ecocredit.v1alpha1.CreditType")
+	proto.RegisterType((*CreditTypeSeq)(nil), "regen.ecocredit.v1alpha1.CreditTypeSeq")
+	proto.RegisterType((*SellOrder)(nil), "regen.ecocredit.v1alpha1.SellOrder")
+	proto.RegisterType((*BuyOrder)(nil), "regen.ecocredit.v1alpha1.BuyOrder")
+	proto.RegisterType((*BuyOrder_Selection)(nil), "regen.ecocredit.v1alpha1.BuyOrder.Selection")
+	proto.RegisterType((*AskDenom)(nil), "regen.ecocredit.v1alpha1.AskDenom")
+	proto.RegisterType((*Filter)(nil), "regen.ecocredit.v1alpha1.Filter")
+	proto.RegisterType((*Filter_And)(nil), "regen.ecocredit.v1alpha1.Filter.And")
+	proto.RegisterType((*Filter_Or)(nil), "regen.ecocredit.v1alpha1.Filter.Or")
+	proto.RegisterType((*Filter_DateRange)(nil), "regen.ecocredit.v1alpha1.Filter.DateRange")
+}
+
+func init() {
+	proto.RegisterFile("regen/ecocredit/v1alpha1/types.proto", fileDescriptor_5342f4dcaeff1a84)
+}
+
+var fileDescriptor_5342f4dcaeff1a84 = []byte{
+	// 1207 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x56, 0xcd, 0x72, 0x13, 0x47,
+	0x10, 0xd6, 0x4a, 0xb2, 0xb4, 0xdb, 0x92, 0x13, 0x33, 0x71, 0x51, 0x8b, 0x92, 0xc8, 0x42, 0x70,
+	0x30, 0x10, 0x56, 0x98, 0xfc, 0x14, 0x95, 0x1c, 0x12, 0xd9, 0x40, 0xec, 0x90, 0x02, 0x6a, 0xe1,
+	0x94, 0xcb, 0xd6, 0xec, 0xee, 0x58, 0x6c, 0xbc, 0x3b, 0x23, 0xcf, 0xcc, 0x1a, 0x74, 0xcc, 0x31,
+	0x37, 0x9e, 0x23, 0x79, 0x11, 0x8e, 0x1c, 0x53, 0x39, 0x84, 0x04, 0xde, 0x20, 0x0f, 0x90, 0x4a,
+	0xcd, 0xcf, 0x4a, 0xb6, 0x81, 0xd8, 0x95, 0x1c, 0x72, 0xd2, 0xf4, 0xd7, 0xdd, 0xdb, 0xd3, 0x3d,
+	0x5f, 0x77, 0x0b, 0x2e, 0x72, 0x32, 0x21, 0x74, 0x44, 0x12, 0x96, 0x70, 0x92, 0x66, 0x72, 0x74,
+	0xb0, 0x81, 0xf3, 0xe9, 0x23, 0xbc, 0x31, 0x92, 0xb3, 0x29, 0x11, 0xc1, 0x94, 0x33, 0xc9, 0x90,
+	0xaf, 0xad, 0x82, 0xb9, 0x55, 0x50, 0x59, 0xf5, 0xfa, 0x09, 0x13, 0x05, 0x13, 0xa3, 0x18, 0x0b,
+	0x32, 0x3a, 0xd8, 0x88, 0x89, 0xc4, 0x1b, 0xa3, 0x84, 0x65, 0xd4, 0x78, 0xf6, 0x56, 0x27, 0x6c,
+	0xc2, 0xf4, 0x71, 0xa4, 0x4e, 0x16, 0x5d, 0x9b, 0x30, 0x36, 0xc9, 0xc9, 0x48, 0x4b, 0x71, 0xb9,
+	0x3b, 0x92, 0x59, 0x41, 0x84, 0xc4, 0xc5, 0xd4, 0x18, 0x0c, 0x7f, 0x75, 0xc0, 0xdb, 0xca, 0xb1,
+	0x10, 0x3b, 0x74, 0x97, 0xa1, 0x73, 0xe0, 0x26, 0x4a, 0x88, 0xb2, 0xd4, 0x77, 0x06, 0xce, 0xba,
+	0x17, 0xb6, 0xb5, 0xbc, 0x93, 0xa2, 0x55, 0x58, 0xc2, 0x69, 0x91, 0x51, 0xbf, 0xae, 0x71, 0x23,
+	0x20, 0x1f, 0xda, 0x99, 0x10, 0x25, 0xe1, 0xc2, 0x6f, 0x0c, 0x1a, 0xca, 0xde, 0x8a, 0xa8, 0x07,
+	0x6e, 0x41, 0x24, 0x4e, 0xb1, 0xc4, 0x7e, 0x73, 0xe0, 0xac, 0x77, 0xc3, 0xb9, 0x8c, 0x6e, 0x41,
+	0xc7, 0xa4, 0x17, 0xa9, 0xdc, 0xfd, 0xa5, 0x81, 0xb3, 0xde, 0xb9, 0x7e, 0x31, 0x78, 0x5b, 0xee,
+	0xc1, 0x96, 0x96, 0x1f, 0xce, 0xa6, 0x24, 0x84, 0x64, 0x7e, 0x46, 0x6b, 0xd0, 0xa1, 0x65, 0x11,
+	0xc5, 0x58, 0x26, 0x8f, 0x88, 0xf0, 0x5b, 0x03, 0x67, 0xbd, 0x19, 0x02, 0x2d, 0x8b, 0x4d, 0x83,
+	0x0c, 0xff, 0xac, 0x83, 0xa7, 0xcf, 0x27, 0x25, 0xb7, 0x06, 0x1d, 0xfd, 0x95, 0x28, 0x25, 0x94,
+	0x15, 0x36, 0x45, 0xd0, 0xd0, 0x4d, 0x85, 0xa0, 0xb3, 0xd0, 0x32, 0x89, 0xf9, 0x0d, 0xad, 0xb3,
+	0x12, 0x3a, 0x0f, 0x5d, 0xc9, 0x24, 0xce, 0x23, 0x5c, 0xb0, 0x92, 0x4a, 0x9d, 0xa9, 0x17, 0x76,
+	0x34, 0x36, 0xd6, 0xd0, 0x91, 0x42, 0x2c, 0x1d, 0x2b, 0xc4, 0x25, 0x58, 0x31, 0x8e, 0x51, 0x82,
+	0x69, 0x42, 0xf2, 0x9c, 0xa4, 0x3a, 0x0d, 0x2f, 0x7c, 0xd7, 0xe0, 0x5b, 0x15, 0x8c, 0xbe, 0x04,
+	0x10, 0x12, 0x73, 0x19, 0xa5, 0x58, 0x12, 0xbf, 0xad, 0x4b, 0xd6, 0x0b, 0xcc, 0xf3, 0x06, 0xd5,
+	0xf3, 0x06, 0x0f, 0xab, 0xe7, 0xdd, 0x6c, 0x3e, 0x7d, 0xb1, 0xe6, 0x84, 0x9e, 0xf6, 0xb9, 0x89,
+	0x25, 0x41, 0x5f, 0x80, 0x4b, 0x68, 0x6a, 0xdc, 0xdd, 0x53, 0xba, 0xb7, 0x09, 0x4d, 0xb5, 0xf3,
+	0x25, 0x58, 0x99, 0x72, 0xf6, 0x3d, 0x49, 0x64, 0x94, 0xb3, 0x04, 0xcb, 0x8c, 0x51, 0xdf, 0x33,
+	0x17, 0xb5, 0xf8, 0xb7, 0x16, 0x1e, 0xfe, 0x5c, 0x87, 0xd6, 0x7d, 0xcc, 0x71, 0x21, 0x50, 0x09,
+	0x2b, 0xf6, 0x9d, 0x4d, 0xe1, 0x77, 0x09, 0xf1, 0x9d, 0x41, 0x63, 0xbd, 0x73, 0xfd, 0x5c, 0x60,
+	0xe8, 0x1c, 0x28, 0x3a, 0x07, 0x96, 0xce, 0xc1, 0x16, 0xcb, 0xe8, 0xe6, 0xb5, 0x67, 0xbf, 0xad,
+	0xd5, 0x7e, 0x7a, 0xb1, 0xb6, 0x3e, 0xc9, 0xe4, 0xa3, 0x32, 0x0e, 0x12, 0x56, 0x8c, 0x2c, 0xf7,
+	0xcd, 0xcf, 0x55, 0x91, 0xee, 0xd9, 0xa6, 0x51, 0x0e, 0x22, 0x7c, 0xc7, 0x04, 0xd1, 0x34, 0xbe,
+	0x4d, 0x08, 0xfa, 0x04, 0xce, 0xe2, 0x3c, 0x67, 0x8f, 0x49, 0x6a, 0xe3, 0x26, 0x9c, 0x60, 0xc9,
+	0xb8, 0xf0, 0xeb, 0x9a, 0xa3, 0xab, 0x56, 0xab, 0x1d, 0xb6, 0xac, 0x0e, 0x5d, 0x81, 0x33, 0x1a,
+	0xcf, 0x33, 0x21, 0x23, 0x42, 0x71, 0xac, 0x1e, 0x43, 0xbd, 0xb6, 0x1b, 0xae, 0xcc, 0x15, 0xb7,
+	0x0c, 0x8e, 0xbe, 0x86, 0xee, 0x21, 0x06, 0x0b, 0xbf, 0xa9, 0xb3, 0x3a, 0x1d, 0x85, 0x3b, 0x0b,
+	0x0a, 0x8b, 0xe1, 0x01, 0xc0, 0x42, 0x85, 0x10, 0x34, 0x29, 0x2e, 0x88, 0xa5, 0xa7, 0x3e, 0xa3,
+	0x21, 0x74, 0x71, 0x1c, 0x73, 0x72, 0x90, 0x99, 0xb2, 0x1b, 0x72, 0x1e, 0xc1, 0x94, 0x5f, 0x49,
+	0x33, 0x69, 0xc9, 0xa9, 0xcf, 0xe8, 0x03, 0xf0, 0xa6, 0x9c, 0x24, 0x99, 0x50, 0x4e, 0x8a, 0x97,
+	0xcb, 0xe1, 0x02, 0x18, 0x86, 0xb0, 0xbc, 0x88, 0xfb, 0x80, 0xec, 0xbf, 0x16, 0xc6, 0x79, 0x43,
+	0x98, 0x0f, 0x01, 0x04, 0xd9, 0x8f, 0x68, 0x59, 0xc4, 0x84, 0xeb, 0x8b, 0x34, 0x43, 0x4f, 0x90,
+	0xfd, 0xbb, 0x1a, 0x18, 0xfe, 0xe1, 0x80, 0xf7, 0x80, 0xe4, 0xf9, 0x3d, 0x9e, 0x12, 0xae, 0xda,
+	0x8d, 0xa9, 0x43, 0xd5, 0x6e, 0xcd, 0xb0, 0xad, 0x65, 0x33, 0x4b, 0xd8, 0x63, 0x6a, 0x3f, 0xe1,
+	0x85, 0x46, 0x38, 0xde, 0x84, 0x8d, 0xd7, 0x9a, 0xb0, 0x07, 0xee, 0x7e, 0x89, 0xa9, 0xcc, 0xe4,
+	0xcc, 0x36, 0xda, 0x5c, 0x46, 0x9f, 0x81, 0x87, 0xc5, 0x5e, 0x34, 0xe5, 0x59, 0x52, 0x0d, 0x94,
+	0xb7, 0x73, 0x2c, 0x74, 0xb1, 0xd8, 0xbb, 0xaf, 0x4c, 0x51, 0x00, 0xef, 0xa5, 0x99, 0x50, 0x8f,
+	0x1a, 0xe1, 0x52, 0xb2, 0x88, 0x13, 0x99, 0x71, 0xa2, 0x9b, 0xd0, 0x0d, 0xcf, 0x58, 0xd5, 0xb8,
+	0x94, 0x2c, 0xd4, 0x8a, 0xe1, 0x5f, 0x75, 0x70, 0x37, 0xcb, 0x99, 0x49, 0x71, 0x00, 0xdd, 0xb8,
+	0x9c, 0x45, 0xc7, 0xd2, 0x84, 0xd8, 0xea, 0x4d, 0xa6, 0x71, 0x39, 0x5b, 0x64, 0xaa, 0x05, 0xf4,
+	0x0d, 0x78, 0x82, 0xe4, 0x24, 0xd1, 0x85, 0x6e, 0xe8, 0xcb, 0x7e, 0xf4, 0x76, 0xea, 0x54, 0xe1,
+	0x82, 0x07, 0x95, 0x4f, 0xb8, 0x70, 0x3f, 0xa9, 0x28, 0x71, 0x96, 0x9e, 0xba, 0x28, 0x71, 0x96,
+	0xfe, 0xab, 0xa2, 0xa0, 0x6b, 0xb0, 0x5a, 0xd9, 0x4f, 0x31, 0x97, 0x19, 0xce, 0xa3, 0xdd, 0x2c,
+	0xcf, 0xf5, 0x94, 0x72, 0x43, 0x64, 0x75, 0xf7, 0x8d, 0xea, 0x76, 0x96, 0xe7, 0xbd, 0x1b, 0x9a,
+	0x29, 0x36, 0x85, 0x8b, 0xb0, 0x2c, 0x48, 0x9e, 0x1f, 0xab, 0xe3, 0x76, 0x2d, 0xec, 0x88, 0x8a,
+	0x4d, 0x3b, 0xe9, 0xe6, 0x12, 0x34, 0x44, 0x59, 0x0c, 0x31, 0xb8, 0x63, 0xb1, 0x67, 0x08, 0xb1,
+	0x0a, 0x4b, 0x86, 0x2b, 0x86, 0xac, 0x46, 0x40, 0x17, 0x60, 0x39, 0xcd, 0xc4, 0x34, 0xc7, 0xb3,
+	0x23, 0xe3, 0xbc, 0x6b, 0xc1, 0x39, 0x97, 0xc8, 0x93, 0x29, 0xa3, 0x84, 0x9a, 0xae, 0x59, 0x0e,
+	0xe7, 0xf2, 0xf0, 0x87, 0x16, 0xb4, 0x6e, 0x67, 0xb9, 0x24, 0x1c, 0xdd, 0x80, 0x06, 0xa6, 0xe6,
+	0x42, 0xff, 0xd8, 0xde, 0xc6, 0x3c, 0x18, 0xd3, 0x74, 0xbb, 0x16, 0x2a, 0x17, 0xf4, 0x29, 0xd4,
+	0x99, 0x79, 0xf6, 0xce, 0xf5, 0x0b, 0x27, 0x3a, 0xde, 0xe3, 0xdb, 0xb5, 0xb0, 0xce, 0x38, 0xba,
+	0x3c, 0x1f, 0x99, 0x6a, 0xb0, 0x44, 0x7a, 0x1a, 0xe8, 0x4e, 0xd8, 0xae, 0x55, 0x73, 0x4e, 0x75,
+	0xec, 0x5d, 0x35, 0x19, 0xde, 0x3f, 0xb4, 0xd0, 0x9a, 0xd6, 0xe6, 0xd0, 0x4a, 0x83, 0x6a, 0x62,
+	0x67, 0xa9, 0x7e, 0x7c, 0xa5, 0xf6, 0x2c, 0xb6, 0x93, 0xa2, 0xf3, 0x47, 0xdb, 0xad, 0x65, 0x2d,
+	0x0e, 0x37, 0xdc, 0x79, 0xe8, 0x98, 0x00, 0x66, 0xf3, 0xb7, 0x2b, 0x13, 0x0d, 0x8e, 0xed, 0x1f,
+	0x80, 0x6a, 0x31, 0xba, 0x56, 0x5b, 0xad, 0xc6, 0xb3, 0x55, 0x93, 0x7b, 0x56, 0x61, 0xdb, 0xfc,
+	0xca, 0x1b, 0x56, 0x09, 0x58, 0x93, 0xe3, 0xcb, 0x04, 0xdd, 0x01, 0x50, 0x0b, 0x2b, 0xe2, 0x98,
+	0x4e, 0x88, 0xdf, 0xd1, 0xd5, 0xbc, 0x7c, 0x62, 0x35, 0xd5, 0xca, 0x0a, 0x95, 0x87, 0xca, 0x38,
+	0xad, 0x04, 0x84, 0xa0, 0x21, 0xf1, 0xc4, 0xef, 0xda, 0x60, 0x4a, 0xe8, 0x8d, 0xa1, 0x31, 0xa6,
+	0x29, 0xfa, 0x1c, 0xda, 0xbb, 0xda, 0x57, 0xd8, 0x05, 0x35, 0x38, 0x29, 0x48, 0x58, 0x39, 0xf4,
+	0xbe, 0x82, 0xfa, 0x3d, 0xfe, 0x9f, 0xbe, 0xf0, 0xa3, 0x03, 0xde, 0xfc, 0xce, 0xff, 0xef, 0xa6,
+	0xb7, 0x6d, 0xb6, 0x79, 0xe7, 0xd9, 0xcb, 0xbe, 0xf3, 0xfc, 0x65, 0xdf, 0xf9, 0xfd, 0x65, 0xdf,
+	0x79, 0xfa, 0xaa, 0x5f, 0x7b, 0xfe, 0xaa, 0x5f, 0xfb, 0xe5, 0x55, 0xbf, 0xf6, 0xdd, 0xc6, 0xa1,
+	0xbd, 0xac, 0x33, 0xbc, 0x4a, 0x89, 0x7c, 0xcc, 0xf8, 0x9e, 0x95, 0x72, 0x92, 0x4e, 0x08, 0x1f,
+	0x3d, 0x59, 0xfc, 0xd5, 0x8d, 0x5b, 0x3a, 0xec, 0xc7, 0x7f, 0x07, 0x00, 0x00, 0xff, 0xff, 0x1e,
+	0x8c, 0x34, 0xd7, 0x04, 0x0b, 0x00, 0x00,
 }
 
 type Filter_And_ struct {
@@ -2313,22 +2718,42 @@ func (m *ClassInfo) Size() (n int) {
 	return n
 }
 
-func (m *ProjectInfo) Size() (n int) {
+func (m *BatchInfo) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	l = len(m.ProjectId)
+	l = len(m.ClassId)
 	if l > 0 {
 		n += 1 + l + sovTypes(uint64(l))
 	}
-	l = len(m.ClassId)
+	l = len(m.BatchDenom)
 	if l > 0 {
 		n += 1 + l + sovTypes(uint64(l))
 	}
 	l = len(m.Issuer)
 	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	l = len(m.TotalAmount)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	l = len(m.Metadata)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	l = len(m.AmountCancelled)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	if m.StartDate != nil {
+		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.StartDate)
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	if m.EndDate != nil {
+		l = github_com_gogo_protobuf_types.SizeOfStdTime(*m.EndDate)
 		n += 1 + l + sovTypes(uint64(l))
 	}
 	l = len(m.ProjectLocation)
@@ -2984,221 +3409,6 @@ func (m *ClassInfo) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *ProjectInfo) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTypes
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ProjectInfo: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ProjectInfo: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProjectId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ProjectId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ClassId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Issuer", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Issuer = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProjectLocation", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ProjectLocation = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Metadata", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Metadata = append(m.Metadata[:0], dAtA[iNdEx:postIndex]...)
-			if m.Metadata == nil {
-				m.Metadata = []byte{}
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTypes(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
 func (m *BatchInfo) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -3230,7 +3440,7 @@ func (m *BatchInfo) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ProjectId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ClassId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -3258,7 +3468,7 @@ func (m *BatchInfo) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.ProjectId = string(dAtA[iNdEx:postIndex])
+			m.ClassId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -3291,6 +3501,38 @@ func (m *BatchInfo) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.BatchDenom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Issuer", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Issuer = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
@@ -3461,6 +3703,38 @@ func (m *BatchInfo) Unmarshal(dAtA []byte) error {
 			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(m.EndDate, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
+			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProjectLocation", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ProjectLocation = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
