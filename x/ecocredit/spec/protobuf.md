@@ -17,65 +17,77 @@
     - [EventSell](#regen.ecocredit.v1alpha2.EventSell)
     - [EventUpdateSellOrder](#regen.ecocredit.v1alpha2.EventUpdateSellOrder)
   
-- [regen/ecocredit/v1alpha1/types.proto](#regen/ecocredit/v1alpha1/types.proto)
-    - [AskDenom](#regen.ecocredit.v1alpha1.AskDenom)
-    - [BatchInfo](#regen.ecocredit.v1alpha1.BatchInfo)
-    - [BuyOrder](#regen.ecocredit.v1alpha1.BuyOrder)
-    - [BuyOrder.Selection](#regen.ecocredit.v1alpha1.BuyOrder.Selection)
-    - [ClassInfo](#regen.ecocredit.v1alpha1.ClassInfo)
-    - [CreditType](#regen.ecocredit.v1alpha1.CreditType)
-    - [CreditTypeSeq](#regen.ecocredit.v1alpha1.CreditTypeSeq)
-    - [Filter](#regen.ecocredit.v1alpha1.Filter)
-    - [Filter.And](#regen.ecocredit.v1alpha1.Filter.And)
-    - [Filter.DateRange](#regen.ecocredit.v1alpha1.Filter.DateRange)
-    - [Filter.Or](#regen.ecocredit.v1alpha1.Filter.Or)
-    - [Params](#regen.ecocredit.v1alpha1.Params)
-    - [SellOrder](#regen.ecocredit.v1alpha1.SellOrder)
+- [regen/ecocredit/v1alpha2/types.proto](#regen/ecocredit/v1alpha2/types.proto)
+    - [AskDenom](#regen.ecocredit.v1alpha2.AskDenom)
+    - [BasketCredit](#regen.ecocredit.v1alpha2.BasketCredit)
+    - [BasketCriteria](#regen.ecocredit.v1alpha2.BasketCriteria)
+    - [BatchInfo](#regen.ecocredit.v1alpha2.BatchInfo)
+    - [BuyOrder](#regen.ecocredit.v1alpha2.BuyOrder)
+    - [BuyOrder.Selection](#regen.ecocredit.v1alpha2.BuyOrder.Selection)
+    - [ClassInfo](#regen.ecocredit.v1alpha2.ClassInfo)
+    - [CreditType](#regen.ecocredit.v1alpha2.CreditType)
+    - [CreditTypeSeq](#regen.ecocredit.v1alpha2.CreditTypeSeq)
+    - [Filter](#regen.ecocredit.v1alpha2.Filter)
+    - [Filter.And](#regen.ecocredit.v1alpha2.Filter.And)
+    - [Filter.DateRange](#regen.ecocredit.v1alpha2.Filter.DateRange)
+    - [Filter.Or](#regen.ecocredit.v1alpha2.Filter.Or)
+    - [Params](#regen.ecocredit.v1alpha2.Params)
+    - [ProjectInfo](#regen.ecocredit.v1alpha2.ProjectInfo)
+    - [SellOrder](#regen.ecocredit.v1alpha2.SellOrder)
   
 - [regen/ecocredit/v1alpha2/genesis.proto](#regen/ecocredit/v1alpha2/genesis.proto)
     - [Balance](#regen.ecocredit.v1alpha2.Balance)
     - [GenesisState](#regen.ecocredit.v1alpha2.GenesisState)
     - [Supply](#regen.ecocredit.v1alpha2.Supply)
   
-- [regen/ecocredit/v1alpha1/query.proto](#regen/ecocredit/v1alpha1/query.proto)
-    - [QueryAllowedAskDenomsRequest](#regen.ecocredit.v1alpha1.QueryAllowedAskDenomsRequest)
-    - [QueryAllowedAskDenomsResponse](#regen.ecocredit.v1alpha1.QueryAllowedAskDenomsResponse)
-    - [QueryBalanceRequest](#regen.ecocredit.v1alpha1.QueryBalanceRequest)
-    - [QueryBalanceResponse](#regen.ecocredit.v1alpha1.QueryBalanceResponse)
-    - [QueryBatchInfoRequest](#regen.ecocredit.v1alpha1.QueryBatchInfoRequest)
-    - [QueryBatchInfoResponse](#regen.ecocredit.v1alpha1.QueryBatchInfoResponse)
-    - [QueryBatchesRequest](#regen.ecocredit.v1alpha1.QueryBatchesRequest)
-    - [QueryBatchesResponse](#regen.ecocredit.v1alpha1.QueryBatchesResponse)
-    - [QueryBuyOrderRequest](#regen.ecocredit.v1alpha1.QueryBuyOrderRequest)
-    - [QueryBuyOrderResponse](#regen.ecocredit.v1alpha1.QueryBuyOrderResponse)
-    - [QueryBuyOrdersByAddressRequest](#regen.ecocredit.v1alpha1.QueryBuyOrdersByAddressRequest)
-    - [QueryBuyOrdersByAddressResponse](#regen.ecocredit.v1alpha1.QueryBuyOrdersByAddressResponse)
-    - [QueryBuyOrdersRequest](#regen.ecocredit.v1alpha1.QueryBuyOrdersRequest)
-    - [QueryBuyOrdersResponse](#regen.ecocredit.v1alpha1.QueryBuyOrdersResponse)
-    - [QueryClassInfoRequest](#regen.ecocredit.v1alpha1.QueryClassInfoRequest)
-    - [QueryClassInfoResponse](#regen.ecocredit.v1alpha1.QueryClassInfoResponse)
-    - [QueryClassesRequest](#regen.ecocredit.v1alpha1.QueryClassesRequest)
-    - [QueryClassesResponse](#regen.ecocredit.v1alpha1.QueryClassesResponse)
-    - [QueryCreditTypesRequest](#regen.ecocredit.v1alpha1.QueryCreditTypesRequest)
-    - [QueryCreditTypesResponse](#regen.ecocredit.v1alpha1.QueryCreditTypesResponse)
-    - [QueryParamsRequest](#regen.ecocredit.v1alpha1.QueryParamsRequest)
-    - [QueryParamsResponse](#regen.ecocredit.v1alpha1.QueryParamsResponse)
-    - [QuerySellOrderRequest](#regen.ecocredit.v1alpha1.QuerySellOrderRequest)
-    - [QuerySellOrderResponse](#regen.ecocredit.v1alpha1.QuerySellOrderResponse)
-    - [QuerySellOrdersByAddressRequest](#regen.ecocredit.v1alpha1.QuerySellOrdersByAddressRequest)
-    - [QuerySellOrdersByAddressResponse](#regen.ecocredit.v1alpha1.QuerySellOrdersByAddressResponse)
-    - [QuerySellOrdersByBatchDenomRequest](#regen.ecocredit.v1alpha1.QuerySellOrdersByBatchDenomRequest)
-    - [QuerySellOrdersByBatchDenomResponse](#regen.ecocredit.v1alpha1.QuerySellOrdersByBatchDenomResponse)
-    - [QuerySellOrdersRequest](#regen.ecocredit.v1alpha1.QuerySellOrdersRequest)
-    - [QuerySellOrdersResponse](#regen.ecocredit.v1alpha1.QuerySellOrdersResponse)
-    - [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest)
-    - [QuerySupplyResponse](#regen.ecocredit.v1alpha1.QuerySupplyResponse)
+- [regen/ecocredit/v1alpha2/query.proto](#regen/ecocredit/v1alpha2/query.proto)
+    - [Basket](#regen.ecocredit.v1alpha2.Basket)
+    - [QueryAllowedAskDenomsRequest](#regen.ecocredit.v1alpha2.QueryAllowedAskDenomsRequest)
+    - [QueryAllowedAskDenomsResponse](#regen.ecocredit.v1alpha2.QueryAllowedAskDenomsResponse)
+    - [QueryBalanceRequest](#regen.ecocredit.v1alpha2.QueryBalanceRequest)
+    - [QueryBalanceResponse](#regen.ecocredit.v1alpha2.QueryBalanceResponse)
+    - [QueryBasketCreditsRequest](#regen.ecocredit.v1alpha2.QueryBasketCreditsRequest)
+    - [QueryBasketCreditsResponse](#regen.ecocredit.v1alpha2.QueryBasketCreditsResponse)
+    - [QueryBasketRequest](#regen.ecocredit.v1alpha2.QueryBasketRequest)
+    - [QueryBasketResponse](#regen.ecocredit.v1alpha2.QueryBasketResponse)
+    - [QueryBasketsRequest](#regen.ecocredit.v1alpha2.QueryBasketsRequest)
+    - [QueryBasketsResponse](#regen.ecocredit.v1alpha2.QueryBasketsResponse)
+    - [QueryBatchInfoRequest](#regen.ecocredit.v1alpha2.QueryBatchInfoRequest)
+    - [QueryBatchInfoResponse](#regen.ecocredit.v1alpha2.QueryBatchInfoResponse)
+    - [QueryBatchesRequest](#regen.ecocredit.v1alpha2.QueryBatchesRequest)
+    - [QueryBatchesResponse](#regen.ecocredit.v1alpha2.QueryBatchesResponse)
+    - [QueryBuyOrderRequest](#regen.ecocredit.v1alpha2.QueryBuyOrderRequest)
+    - [QueryBuyOrderResponse](#regen.ecocredit.v1alpha2.QueryBuyOrderResponse)
+    - [QueryBuyOrdersByAddressRequest](#regen.ecocredit.v1alpha2.QueryBuyOrdersByAddressRequest)
+    - [QueryBuyOrdersByAddressResponse](#regen.ecocredit.v1alpha2.QueryBuyOrdersByAddressResponse)
+    - [QueryBuyOrdersRequest](#regen.ecocredit.v1alpha2.QueryBuyOrdersRequest)
+    - [QueryBuyOrdersResponse](#regen.ecocredit.v1alpha2.QueryBuyOrdersResponse)
+    - [QueryClassInfoRequest](#regen.ecocredit.v1alpha2.QueryClassInfoRequest)
+    - [QueryClassInfoResponse](#regen.ecocredit.v1alpha2.QueryClassInfoResponse)
+    - [QueryClassesRequest](#regen.ecocredit.v1alpha2.QueryClassesRequest)
+    - [QueryClassesResponse](#regen.ecocredit.v1alpha2.QueryClassesResponse)
+    - [QueryCreditTypesRequest](#regen.ecocredit.v1alpha2.QueryCreditTypesRequest)
+    - [QueryCreditTypesResponse](#regen.ecocredit.v1alpha2.QueryCreditTypesResponse)
+    - [QueryParamsRequest](#regen.ecocredit.v1alpha2.QueryParamsRequest)
+    - [QueryParamsResponse](#regen.ecocredit.v1alpha2.QueryParamsResponse)
+    - [QueryProjectInfoRequest](#regen.ecocredit.v1alpha2.QueryProjectInfoRequest)
+    - [QueryProjectInfoResponse](#regen.ecocredit.v1alpha2.QueryProjectInfoResponse)
+    - [QueryProjectsRequest](#regen.ecocredit.v1alpha2.QueryProjectsRequest)
+    - [QueryProjectsResponse](#regen.ecocredit.v1alpha2.QueryProjectsResponse)
+    - [QuerySellOrderRequest](#regen.ecocredit.v1alpha2.QuerySellOrderRequest)
+    - [QuerySellOrderResponse](#regen.ecocredit.v1alpha2.QuerySellOrderResponse)
+    - [QuerySellOrdersByAddressRequest](#regen.ecocredit.v1alpha2.QuerySellOrdersByAddressRequest)
+    - [QuerySellOrdersByAddressResponse](#regen.ecocredit.v1alpha2.QuerySellOrdersByAddressResponse)
+    - [QuerySellOrdersByBatchDenomRequest](#regen.ecocredit.v1alpha2.QuerySellOrdersByBatchDenomRequest)
+    - [QuerySellOrdersByBatchDenomResponse](#regen.ecocredit.v1alpha2.QuerySellOrdersByBatchDenomResponse)
+    - [QuerySellOrdersRequest](#regen.ecocredit.v1alpha2.QuerySellOrdersRequest)
+    - [QuerySellOrdersResponse](#regen.ecocredit.v1alpha2.QuerySellOrdersResponse)
+    - [QuerySupplyRequest](#regen.ecocredit.v1alpha2.QuerySupplyRequest)
+    - [QuerySupplyResponse](#regen.ecocredit.v1alpha2.QuerySupplyResponse)
   
     - [Query](#regen.ecocredit.v1alpha2.Query)
   
 - [regen/ecocredit/v1alpha2/tx.proto](#regen/ecocredit/v1alpha2/tx.proto)
-    - [BasketCredit](#regen.ecocredit.v1alpha2.BasketCredit)
-    - [BasketCriteria](#regen.ecocredit.v1alpha2.BasketCriteria)
     - [MsgAddToBasket](#regen.ecocredit.v1alpha2.MsgAddToBasket)
     - [MsgAddToBasketResponse](#regen.ecocredit.v1alpha2.MsgAddToBasketResponse)
     - [MsgAllowAskDenom](#regen.ecocredit.v1alpha2.MsgAllowAskDenom)
@@ -376,6 +388,38 @@ AskDenom represents the information for an ask denom.
 
 
 
+<a name="regen.ecocredit.v1alpha2.BasketCredit"></a>
+
+### BasketCredit
+BasketCredit represents the information for a credit batch inside a basket.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
+| tradable_amount | [string](#string) |  | tradable_amount is the number of credits in this transfer that can be traded by the recipient. Decimal values are acceptable within the precision returned by Query/Precision. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha2.BasketCriteria"></a>
+
+### BasketCriteria
+BasketCriteria defines a criteria by which credits can be added to a basket.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filter | [Filter](#regen.ecocredit.v1alpha2.Filter) |  | filter defines condition(s) that credits should satisfy in order to be added to the basket. |
+| multiplier | [string](#string) |  | multiplier is an integer number which is applied to credit units when converting to basket units. For example if the multiplier is 2000, then 1.1 credits will result in 2200 basket tokens. If there are any fractional amounts left over in this calculation when adding credits to a basket, those fractional amounts will not get added to the basket. |
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha2.BatchInfo"></a>
 
 ### BatchInfo
@@ -407,7 +451,7 @@ BuyOrder represents the information for a buy order.
 | ----- | ---- | ----- | ----------- |
 | buy_order_id | [uint64](#uint64) |  | buy_order_id is the unique ID of buy order. |
 | buyer | [string](#string) |  | buyer is the address that created the buy order |
-| selection | [BuyOrder.Selection](#regen.ecocredit.v1alpha1.BuyOrder.Selection) |  | selection is the buy order selection. |
+| selection | [BuyOrder.Selection](#regen.ecocredit.v1alpha2.BuyOrder.Selection) |  | selection is the buy order selection. |
 | quantity | [string](#string) |  | quantity is the quantity of credits to buy. If the quantity of credits available is less than this amount the order will be partially filled unless disable_partial_fill is true. |
 | bid_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | bid price is the bid price for this buy order. A credit unit will be settled at a purchase price that is no more than the bid price. The buy order will fail if the buyer does not have enough funds available to complete the purchase. |
 | disable_auto_retire | [bool](#bool) |  | disable_auto_retire allows auto-retirement to be disabled. If it is set to true the credits will not auto-retire and can be resold assuming that the corresponding sell order has auto-retirement disabled. If the sell order hasn't disabled auto-retirement and the buy order tries to disable it, that buy order will fail. |
@@ -489,25 +533,26 @@ This represents the number of credit classes created with that credit type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.Filter"></a>
+<a name="regen.ecocredit.v1alpha2.Filter"></a>
 
 ### Filter
-
+Filter defines condition(s) that credits should satisfy in order to be added
+to the basket. It can handled nested conditions linked with and/or operators.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| and | [Filter.And](#regen.ecocredit.v1alpha1.Filter.And) |  |  |
-| or | [Filter.Or](#regen.ecocredit.v1alpha1.Filter.Or) |  |  |
-| credit_type_name | [string](#string) |  |  |
-| class_id | [string](#string) |  |  |
-| project_id | [string](#string) |  | project_id filters against credits from this batch. |
-| batch_denom | [string](#string) |  | batch_id filters against credits from this batch. |
+| and | [Filter.And](#regen.ecocredit.v1alpha2.Filter.And) |  | and specifies a list of filters where all conditions should be satisfied. |
+| or | [Filter.Or](#regen.ecocredit.v1alpha2.Filter.Or) |  | or specifies a list of filters where at least one of the conditions should be satisfied. |
+| credit_type_name | [string](#string) |  | credit_type_name filters against credits from this credit type name. |
+| class_id | [string](#string) |  | class_id filters against credits from this credit class id. |
+| project_id | [string](#string) |  | project_id filters against credits from this project. |
+| batch_denom | [string](#string) |  | batch_denom filters against credits from this batch. |
 | class_admin | [string](#string) |  | class_admin filters against credits issued by this class admin. |
 | issuer | [string](#string) |  | issuer filters against credits issued by this issuer address. |
 | owner | [string](#string) |  | owner filters against credits currently owned by this address. |
 | project_location | [string](#string) |  | project_location can be specified in three levels of granularity: country, sub-national-code, or postal code. If just country is given, for instance "US" then any credits in the "US" will be matched even their project location is more specific, ex. "US-NY 12345". If a country, sub-national-code and postal code are all provided then only projects in that postal code will match. |
-| date_range | [Filter.DateRange](#regen.ecocredit.v1alpha1.Filter.DateRange) |  |  |
+| date_range | [Filter.DateRange](#regen.ecocredit.v1alpha2.Filter.DateRange) |  | date_range filters against credit batch start_date and/or end_date. |
 | tag | [string](#string) |  | tag specifies a curation tag to match against. |
 
 
@@ -515,25 +560,25 @@ This represents the number of credit classes created with that credit type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.Filter.And"></a>
+<a name="regen.ecocredit.v1alpha2.Filter.And"></a>
 
 ### Filter.And
-
+And specifies an "and" condition between the list of filters.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| filters | [Filter](#regen.ecocredit.v1alpha1.Filter) | repeated |  |
+| filters | [Filter](#regen.ecocredit.v1alpha2.Filter) | repeated | filters is a list of filters where all conditions should be satisfied. |
 
 
 
 
 
 
-<a name="regen.ecocredit.v1alpha1.Filter.DateRange"></a>
+<a name="regen.ecocredit.v1alpha2.Filter.DateRange"></a>
 
 ### Filter.DateRange
-
+DateRange defines a period for credit batches in a basket.
 
 
 | Field | Type | Label | Description |
@@ -546,22 +591,22 @@ This represents the number of credit classes created with that credit type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.Filter.Or"></a>
+<a name="regen.ecocredit.v1alpha2.Filter.Or"></a>
 
 ### Filter.Or
-
+And specifies an "or" condition between the list of filters.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| filters | [Filter](#regen.ecocredit.v1alpha1.Filter) | repeated |  |
+| filters | [Filter](#regen.ecocredit.v1alpha2.Filter) | repeated | filters is a list of filters where at least one of the conditions should be satisfied. |
 
 
 
 
 
 
-<a name="regen.ecocredit.v1alpha1.Params"></a>
+<a name="regen.ecocredit.v1alpha2.Params"></a>
 
 ### Params
 Params defines the updatable global parameters of the ecocredit module for
@@ -709,6 +754,27 @@ Supply represents a tradable or retired supply of a credit batch.
 
 
 
+<a name="regen.ecocredit.v1alpha2.Basket"></a>
+
+### Basket
+Basket defines a credit basket.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| curator | [string](#string) |  | curator is the address of the basket curator who is able to change certain basket settings. |
+| name | [string](#string) |  | name will be used to create a bank denom for this basket token of the form ecocredit:{curator}:{name}. |
+| display_name | [string](#string) |  | display_name will be used to create a bank Metadata display name for this basket token of the form ecocredit:{curator}:{display_name}. |
+| exponent | [uint32](#uint32) |  | exponent is the exponent that will be used for denom metadata. An exponent of 6 will mean that 10^6 units of a basket token should be displayed as one unit in user interfaces. |
+| basket_criteria | [BasketCriteria](#regen.ecocredit.v1alpha2.BasketCriteria) | repeated | basket_criteria is the criteria by which credits can be added to the basket. Basket criteria will be applied in order and the first criteria which applies to a credit will determine its multiplier in the basket. |
+| disable_auto_retire | [bool](#bool) |  | disable_auto_retire allows auto-retirement to be disabled. The credits will be auto-retired if disable_auto_retire is false unless the credits were previously put into the basket by the address picking them from the basket, in which case they will remain tradable. |
+| allow_picking | [bool](#bool) |  | allow_picking specifies whether an address which didn't deposit the credits in the basket can pick those credits or not. |
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha2.QueryAllowedAskDenomsRequest"></a>
 
 ### QueryAllowedAskDenomsRequest
@@ -726,30 +792,13 @@ QueryAllowedAskDenomsRequest is the Query/AllowedAskDenoms request type.
 
 <a name="regen.ecocredit.v1alpha2.QueryAllowedAskDenomsResponse"></a>
 
-<a name="regen.ecocredit.v1alpha1.QueryAllowedAskDenomsRequest"></a>
-
-### QueryAllowedAskDenomsRequest
-QueryAllowedAskDenomsRequest is the Query/AllowedAskDenoms request type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha1.QueryAllowedAskDenomsResponse"></a>
-
 ### QueryAllowedAskDenomsResponse
 QueryAllowedAskDenomsResponse is the Query/AllowedAskDenoms response type.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| ask_denoms | [AskDenom](#regen.ecocredit.v1alpha1.AskDenom) | repeated | ask_denoms is a list of coin denoms allowed to use in the ask price of sell orders. |
+| ask_denoms | [AskDenom](#regen.ecocredit.v1alpha2.AskDenom) | repeated | ask_denoms is a list of coin denoms allowed to use in the ask price of sell orders. |
 | pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines an optional pagination for the response. |
 
 
@@ -757,7 +806,7 @@ QueryAllowedAskDenomsResponse is the Query/AllowedAskDenoms response type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.QueryBalanceRequest"></a>
+<a name="regen.ecocredit.v1alpha2.QueryBalanceRequest"></a>
 
 ### QueryBalanceRequest
 QueryBalanceRequest is the Query/Balance request type.
@@ -783,6 +832,98 @@ QueryBalanceResponse is the Query/Balance response type.
 | ----- | ---- | ----- | ----------- |
 | tradable_amount | [string](#string) |  | tradable_amount is the decimal number of tradable credits. |
 | retired_amount | [string](#string) |  | retired_amount is the decimal number of retired credits. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha2.QueryBasketCreditsRequest"></a>
+
+### QueryBasketCreditsRequest
+QueryBasketCreditsRequest is the Query/BasketCredits request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| basket_denom | [string](#string) |  | basket_denom is the basket denom to query credits for. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha2.QueryBasketCreditsResponse"></a>
+
+### QueryBasketCreditsResponse
+QueryBasketCreditsResponse is the Query/BasketCredits response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| credits | [BasketCredit](#regen.ecocredit.v1alpha2.BasketCredit) | repeated | credits are the credits inside the basket. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha2.QueryBasketRequest"></a>
+
+### QueryBasketRequest
+QueryBasketRequest is the Query/Basket request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| basket_denom | [string](#string) |  | basket_denom represents the denom of the basket to query. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha2.QueryBasketResponse"></a>
+
+### QueryBasketResponse
+QueryBasketResponse is the Query/Basket response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| basket | [Basket](#regen.ecocredit.v1alpha2.Basket) |  | basket is the queried basket. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha2.QueryBasketsRequest"></a>
+
+### QueryBasketsRequest
+QueryBasketsRequest is the Query/Baskets request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination defines an optional pagination for the request. |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha2.QueryBasketsResponse"></a>
+
+### QueryBasketsResponse
+QueryBasketsResponse is the Query/Baskets response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| baskets | [Basket](#regen.ecocredit.v1alpha2.Basket) | repeated | baskets are the fetched baskets. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
 
 
@@ -851,7 +992,7 @@ QueryBatchesResponse is the Query/Batches response type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.QueryBuyOrderRequest"></a>
+<a name="regen.ecocredit.v1alpha2.QueryBuyOrderRequest"></a>
 
 ### QueryBuyOrderRequest
 QueryBuyOrderRequest is the Query/BuyOrder request type.
@@ -866,7 +1007,7 @@ QueryBuyOrderRequest is the Query/BuyOrder request type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.QueryBuyOrderResponse"></a>
+<a name="regen.ecocredit.v1alpha2.QueryBuyOrderResponse"></a>
 
 ### QueryBuyOrderResponse
 QueryBuyOrderResponse is the Query/BuyOrder response type.
@@ -874,14 +1015,14 @@ QueryBuyOrderResponse is the Query/BuyOrder response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| buy_order | [BuyOrder](#regen.ecocredit.v1alpha1.BuyOrder) |  | buy_order contains all information related to a buy order. |
+| buy_order | [BuyOrder](#regen.ecocredit.v1alpha2.BuyOrder) |  | buy_order contains all information related to a buy order. |
 
 
 
 
 
 
-<a name="regen.ecocredit.v1alpha1.QueryBuyOrdersByAddressRequest"></a>
+<a name="regen.ecocredit.v1alpha2.QueryBuyOrdersByAddressRequest"></a>
 
 ### QueryBuyOrdersByAddressRequest
 QueryBuyOrdersByAddressRequest is the Query/BuyOrdersByAddress request type
@@ -897,7 +1038,7 @@ QueryBuyOrdersByAddressRequest is the Query/BuyOrdersByAddress request type
 
 
 
-<a name="regen.ecocredit.v1alpha1.QueryBuyOrdersByAddressResponse"></a>
+<a name="regen.ecocredit.v1alpha2.QueryBuyOrdersByAddressResponse"></a>
 
 ### QueryBuyOrdersByAddressResponse
 QueryBuyOrdersByAddressResponse is the Query/BuyOrdersByAddress response type.
@@ -905,7 +1046,7 @@ QueryBuyOrdersByAddressResponse is the Query/BuyOrdersByAddress response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| buy_orders | [BuyOrder](#regen.ecocredit.v1alpha1.BuyOrder) | repeated | buy_orders is a list of buy orders. |
+| buy_orders | [BuyOrder](#regen.ecocredit.v1alpha2.BuyOrder) | repeated | buy_orders is a list of buy orders. |
 | pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines an optional pagination for the response. |
 
 
@@ -913,7 +1054,7 @@ QueryBuyOrdersByAddressResponse is the Query/BuyOrdersByAddress response type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.QueryBuyOrdersRequest"></a>
+<a name="regen.ecocredit.v1alpha2.QueryBuyOrdersRequest"></a>
 
 ### QueryBuyOrdersRequest
 QueryBuyOrdersRequest is the Query/BuyOrders request type.
@@ -928,7 +1069,7 @@ QueryBuyOrdersRequest is the Query/BuyOrders request type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.QueryBuyOrdersResponse"></a>
+<a name="regen.ecocredit.v1alpha2.QueryBuyOrdersResponse"></a>
 
 ### QueryBuyOrdersResponse
 QueryBuyOrdersResponse is the Query/BuyOrders response type.
@@ -936,7 +1077,7 @@ QueryBuyOrdersResponse is the Query/BuyOrders response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| buy_orders | [BuyOrder](#regen.ecocredit.v1alpha1.BuyOrder) | repeated | buy_orders is a list of buy orders. |
+| buy_orders | [BuyOrder](#regen.ecocredit.v1alpha2.BuyOrder) | repeated | buy_orders is a list of buy orders. |
 | pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines an optional pagination for the response. |
 
 
@@ -944,7 +1085,7 @@ QueryBuyOrdersResponse is the Query/BuyOrders response type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.QueryClassInfoRequest"></a>
+<a name="regen.ecocredit.v1alpha2.QueryClassInfoRequest"></a>
 
 ### QueryClassInfoRequest
 QueryClassInfoRequest is the Query/ClassInfo request type.
@@ -1137,37 +1278,17 @@ QuerySellOrderRequest is the Query/SellOrder request type.
 ### QuerySellOrderResponse
 QuerySellOrderResponse is the Query/SellOrder response type.
 
-<a name="regen.ecocredit.v1alpha1.QuerySellOrderRequest"></a>
-
-### QuerySellOrderRequest
-QuerySellOrderRequest is the Query/SellOrder request type.
-
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sell_order_id | [uint64](#uint64) |  | sell_order_id is the id of the requested sell order. |
+| sell_order | [SellOrder](#regen.ecocredit.v1alpha2.SellOrder) |  | sell_order contains all information related to a sell order. |
 
 
 
 
 
 
-<a name="regen.ecocredit.v1alpha1.QuerySellOrderResponse"></a>
-
-### QuerySellOrderResponse
-QuerySellOrderResponse is the Query/SellOrder response type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| sell_order | [SellOrder](#regen.ecocredit.v1alpha1.SellOrder) |  | sell_order contains all information related to a sell order. |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha1.QuerySellOrdersByAddressRequest"></a>
+<a name="regen.ecocredit.v1alpha2.QuerySellOrdersByAddressRequest"></a>
 
 ### QuerySellOrdersByAddressRequest
 QuerySellOrdersByAddressRequest is the Query/SellOrdersByAddress request type.
@@ -1183,7 +1304,7 @@ QuerySellOrdersByAddressRequest is the Query/SellOrdersByAddress request type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.QuerySellOrdersByAddressResponse"></a>
+<a name="regen.ecocredit.v1alpha2.QuerySellOrdersByAddressResponse"></a>
 
 ### QuerySellOrdersByAddressResponse
 QuerySellOrdersByAddressResponse is the Query/SellOrdersByAddressResponse response type.
@@ -1191,7 +1312,7 @@ QuerySellOrdersByAddressResponse is the Query/SellOrdersByAddressResponse respon
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sell_orders | [SellOrder](#regen.ecocredit.v1alpha1.SellOrder) | repeated | sell_orders is a list of sell orders. |
+| sell_orders | [SellOrder](#regen.ecocredit.v1alpha2.SellOrder) | repeated | sell_orders is a list of sell orders. |
 | pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines an optional pagination for the response. |
 
 
@@ -1199,7 +1320,7 @@ QuerySellOrdersByAddressResponse is the Query/SellOrdersByAddressResponse respon
 
 
 
-<a name="regen.ecocredit.v1alpha1.QuerySellOrdersByBatchDenomRequest"></a>
+<a name="regen.ecocredit.v1alpha2.QuerySellOrdersByBatchDenomRequest"></a>
 
 ### QuerySellOrdersByBatchDenomRequest
 QuerySellOrdersByDenomRequest is the Query/SellOrdersByDenom request type.
@@ -1215,7 +1336,7 @@ QuerySellOrdersByDenomRequest is the Query/SellOrdersByDenom request type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.QuerySellOrdersByBatchDenomResponse"></a>
+<a name="regen.ecocredit.v1alpha2.QuerySellOrdersByBatchDenomResponse"></a>
 
 ### QuerySellOrdersByBatchDenomResponse
 QuerySellOrdersByDenomResponse is the Query/SellOrdersByDenom response type.
@@ -1223,7 +1344,7 @@ QuerySellOrdersByDenomResponse is the Query/SellOrdersByDenom response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sell_orders | [SellOrder](#regen.ecocredit.v1alpha1.SellOrder) | repeated | sell_orders is a list of sell orders. |
+| sell_orders | [SellOrder](#regen.ecocredit.v1alpha2.SellOrder) | repeated | sell_orders is a list of sell orders. |
 | pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines an optional pagination for the response. |
 
 
@@ -1231,7 +1352,7 @@ QuerySellOrdersByDenomResponse is the Query/SellOrdersByDenom response type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.QuerySellOrdersRequest"></a>
+<a name="regen.ecocredit.v1alpha2.QuerySellOrdersRequest"></a>
 
 ### QuerySellOrdersRequest
 QuerySellOrdersRequest is the Query/SellOrders request type.
@@ -1246,7 +1367,7 @@ QuerySellOrdersRequest is the Query/SellOrders request type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.QuerySellOrdersResponse"></a>
+<a name="regen.ecocredit.v1alpha2.QuerySellOrdersResponse"></a>
 
 ### QuerySellOrdersResponse
 QuerySellOrdersResponse is the Query/SellOrders response type.
@@ -1254,7 +1375,7 @@ QuerySellOrdersResponse is the Query/SellOrders response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| sell_orders | [SellOrder](#regen.ecocredit.v1alpha1.SellOrder) | repeated | sell_orders is a list of sell orders. |
+| sell_orders | [SellOrder](#regen.ecocredit.v1alpha2.SellOrder) | repeated | sell_orders is a list of sell orders. |
 | pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
 
@@ -1262,7 +1383,7 @@ QuerySellOrdersResponse is the Query/SellOrders response type.
 
 
 
-<a name="regen.ecocredit.v1alpha1.QuerySupplyRequest"></a>
+<a name="regen.ecocredit.v1alpha2.QuerySupplyRequest"></a>
 
 ### QuerySupplyRequest
 QuerySupplyRequest is the Query/Supply request type.
@@ -1306,22 +1427,27 @@ Msg is the regen.ecocredit.v1alpha2 Query service.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| Classes | [QueryClassesRequest](#regen.ecocredit.v1alpha1.QueryClassesRequest) | [QueryClassesResponse](#regen.ecocredit.v1alpha1.QueryClassesResponse) | Classes queries for all credit classes with pagination. |
-| ClassInfo | [QueryClassInfoRequest](#regen.ecocredit.v1alpha1.QueryClassInfoRequest) | [QueryClassInfoResponse](#regen.ecocredit.v1alpha1.QueryClassInfoResponse) | ClassInfo queries for information on a credit class. |
-| Batches | [QueryBatchesRequest](#regen.ecocredit.v1alpha1.QueryBatchesRequest) | [QueryBatchesResponse](#regen.ecocredit.v1alpha1.QueryBatchesResponse) | Batches queries for all batches in the given credit class with pagination. |
-| BatchInfo | [QueryBatchInfoRequest](#regen.ecocredit.v1alpha1.QueryBatchInfoRequest) | [QueryBatchInfoResponse](#regen.ecocredit.v1alpha1.QueryBatchInfoResponse) | BatchInfo queries for information on a credit batch. |
-| Balance | [QueryBalanceRequest](#regen.ecocredit.v1alpha1.QueryBalanceRequest) | [QueryBalanceResponse](#regen.ecocredit.v1alpha1.QueryBalanceResponse) | Balance queries the balance (both tradable and retired) of a given credit batch for a given account. |
-| Supply | [QuerySupplyRequest](#regen.ecocredit.v1alpha1.QuerySupplyRequest) | [QuerySupplyResponse](#regen.ecocredit.v1alpha1.QuerySupplyResponse) | Supply queries the tradable and retired supply of a credit batch. |
-| CreditTypes | [QueryCreditTypesRequest](#regen.ecocredit.v1alpha1.QueryCreditTypesRequest) | [QueryCreditTypesResponse](#regen.ecocredit.v1alpha1.QueryCreditTypesResponse) | CreditTypes returns the list of allowed types that credit classes can have. See Types/CreditType for more details. |
-| Params | [QueryParamsRequest](#regen.ecocredit.v1alpha1.QueryParamsRequest) | [QueryParamsResponse](#regen.ecocredit.v1alpha1.QueryParamsResponse) | Params queries the ecocredit module parameters. |
-| SellOrder | [QuerySellOrderRequest](#regen.ecocredit.v1alpha1.QuerySellOrderRequest) | [QuerySellOrderResponse](#regen.ecocredit.v1alpha1.QuerySellOrderResponse) | SellOrder queries a sell order by its ID |
-| SellOrders | [QuerySellOrdersRequest](#regen.ecocredit.v1alpha1.QuerySellOrdersRequest) | [QuerySellOrdersResponse](#regen.ecocredit.v1alpha1.QuerySellOrdersResponse) | SellOrders queries a paginated list of all sell orders |
-| SellOrdersByBatchDenom | [QuerySellOrdersByBatchDenomRequest](#regen.ecocredit.v1alpha1.QuerySellOrdersByBatchDenomRequest) | [QuerySellOrdersByBatchDenomResponse](#regen.ecocredit.v1alpha1.QuerySellOrdersByBatchDenomResponse) | SellOrdersByDenom queries a paginated list of all sell orders of a specific ecocredit denom |
-| SellOrdersByAddress | [QuerySellOrdersByAddressRequest](#regen.ecocredit.v1alpha1.QuerySellOrdersByAddressRequest) | [QuerySellOrdersByAddressResponse](#regen.ecocredit.v1alpha1.QuerySellOrdersByAddressResponse) | SellOrdersByAddress queries a paginated list of all sell orders from a specific address |
-| BuyOrder | [QueryBuyOrderRequest](#regen.ecocredit.v1alpha1.QueryBuyOrderRequest) | [QueryBuyOrderResponse](#regen.ecocredit.v1alpha1.QueryBuyOrderResponse) | BuyOrder queries a buy order by its id |
-| BuyOrders | [QueryBuyOrdersRequest](#regen.ecocredit.v1alpha1.QueryBuyOrdersRequest) | [QueryBuyOrdersResponse](#regen.ecocredit.v1alpha1.QueryBuyOrdersResponse) | BuyOrders queries a paginated list of all buy orders |
-| BuyOrdersByAddress | [QueryBuyOrdersByAddressRequest](#regen.ecocredit.v1alpha1.QueryBuyOrdersByAddressRequest) | [QueryBuyOrdersByAddressResponse](#regen.ecocredit.v1alpha1.QueryBuyOrdersByAddressResponse) | BuyOrdersByAddress queries a paginated list of buy orders by creator address |
-| AllowedAskDenoms | [QueryAllowedAskDenomsRequest](#regen.ecocredit.v1alpha1.QueryAllowedAskDenomsRequest) | [QueryAllowedAskDenomsResponse](#regen.ecocredit.v1alpha1.QueryAllowedAskDenomsResponse) | AllowedAskDenoms queries all denoms allowed to be set in the AskPrice of a sell order |
+| Classes | [QueryClassesRequest](#regen.ecocredit.v1alpha2.QueryClassesRequest) | [QueryClassesResponse](#regen.ecocredit.v1alpha2.QueryClassesResponse) | Classes queries for all credit classes with pagination. |
+| ClassInfo | [QueryClassInfoRequest](#regen.ecocredit.v1alpha2.QueryClassInfoRequest) | [QueryClassInfoResponse](#regen.ecocredit.v1alpha2.QueryClassInfoResponse) | ClassInfo queries for information on a credit class. |
+| Projects | [QueryProjectsRequest](#regen.ecocredit.v1alpha2.QueryProjectsRequest) | [QueryProjectsResponse](#regen.ecocredit.v1alpha2.QueryProjectsResponse) | Projects queries for all projects within a class with pagination. |
+| ProjectInfo | [QueryProjectInfoRequest](#regen.ecocredit.v1alpha2.QueryProjectInfoRequest) | [QueryProjectInfoResponse](#regen.ecocredit.v1alpha2.QueryProjectInfoResponse) | ClassInfo queries for information on a project. |
+| Batches | [QueryBatchesRequest](#regen.ecocredit.v1alpha2.QueryBatchesRequest) | [QueryBatchesResponse](#regen.ecocredit.v1alpha2.QueryBatchesResponse) | Batches queries for all batches in the given project with pagination. |
+| BatchInfo | [QueryBatchInfoRequest](#regen.ecocredit.v1alpha2.QueryBatchInfoRequest) | [QueryBatchInfoResponse](#regen.ecocredit.v1alpha2.QueryBatchInfoResponse) | BatchInfo queries for information on a credit batch. |
+| Balance | [QueryBalanceRequest](#regen.ecocredit.v1alpha2.QueryBalanceRequest) | [QueryBalanceResponse](#regen.ecocredit.v1alpha2.QueryBalanceResponse) | Balance queries the balance (both tradable and retired) of a given credit batch for a given account. |
+| Supply | [QuerySupplyRequest](#regen.ecocredit.v1alpha2.QuerySupplyRequest) | [QuerySupplyResponse](#regen.ecocredit.v1alpha2.QuerySupplyResponse) | Supply queries the tradable and retired supply of a credit batch. |
+| CreditTypes | [QueryCreditTypesRequest](#regen.ecocredit.v1alpha2.QueryCreditTypesRequest) | [QueryCreditTypesResponse](#regen.ecocredit.v1alpha2.QueryCreditTypesResponse) | CreditTypes returns the list of allowed types that credit classes can have. See Types/CreditType for more details. |
+| Params | [QueryParamsRequest](#regen.ecocredit.v1alpha2.QueryParamsRequest) | [QueryParamsResponse](#regen.ecocredit.v1alpha2.QueryParamsResponse) | Params queries the ecocredit module parameters. |
+| SellOrder | [QuerySellOrderRequest](#regen.ecocredit.v1alpha2.QuerySellOrderRequest) | [QuerySellOrderResponse](#regen.ecocredit.v1alpha2.QuerySellOrderResponse) | SellOrder queries a sell order by its ID |
+| SellOrders | [QuerySellOrdersRequest](#regen.ecocredit.v1alpha2.QuerySellOrdersRequest) | [QuerySellOrdersResponse](#regen.ecocredit.v1alpha2.QuerySellOrdersResponse) | SellOrders queries a paginated list of all sell orders |
+| SellOrdersByBatchDenom | [QuerySellOrdersByBatchDenomRequest](#regen.ecocredit.v1alpha2.QuerySellOrdersByBatchDenomRequest) | [QuerySellOrdersByBatchDenomResponse](#regen.ecocredit.v1alpha2.QuerySellOrdersByBatchDenomResponse) | SellOrdersByDenom queries a paginated list of all sell orders of a specific ecocredit denom |
+| SellOrdersByAddress | [QuerySellOrdersByAddressRequest](#regen.ecocredit.v1alpha2.QuerySellOrdersByAddressRequest) | [QuerySellOrdersByAddressResponse](#regen.ecocredit.v1alpha2.QuerySellOrdersByAddressResponse) | SellOrdersByAddress queries a paginated list of all sell orders from a specific address |
+| BuyOrder | [QueryBuyOrderRequest](#regen.ecocredit.v1alpha2.QueryBuyOrderRequest) | [QueryBuyOrderResponse](#regen.ecocredit.v1alpha2.QueryBuyOrderResponse) | BuyOrder queries a buy order by its id |
+| BuyOrders | [QueryBuyOrdersRequest](#regen.ecocredit.v1alpha2.QueryBuyOrdersRequest) | [QueryBuyOrdersResponse](#regen.ecocredit.v1alpha2.QueryBuyOrdersResponse) | BuyOrders queries a paginated list of all buy orders |
+| BuyOrdersByAddress | [QueryBuyOrdersByAddressRequest](#regen.ecocredit.v1alpha2.QueryBuyOrdersByAddressRequest) | [QueryBuyOrdersByAddressResponse](#regen.ecocredit.v1alpha2.QueryBuyOrdersByAddressResponse) | BuyOrdersByAddress queries a paginated list of buy orders by creator address |
+| AllowedAskDenoms | [QueryAllowedAskDenomsRequest](#regen.ecocredit.v1alpha2.QueryAllowedAskDenomsRequest) | [QueryAllowedAskDenomsResponse](#regen.ecocredit.v1alpha2.QueryAllowedAskDenomsResponse) | AllowedAskDenoms queries all denoms allowed to be set in the AskPrice of a sell order |
+| Basket | [QueryBasketRequest](#regen.ecocredit.v1alpha2.QueryBasketRequest) | [QueryBasketResponse](#regen.ecocredit.v1alpha2.QueryBasketResponse) | Basket queries one basket by denom. |
+| Baskets | [QueryBasketsRequest](#regen.ecocredit.v1alpha2.QueryBasketsRequest) | [QueryBasketsResponse](#regen.ecocredit.v1alpha2.QueryBasketsResponse) | Baskets lists all baskets in the ecocredit module. |
+| BasketCredits | [QueryBasketCreditsRequest](#regen.ecocredit.v1alpha2.QueryBasketCreditsRequest) | [QueryBasketCreditsResponse](#regen.ecocredit.v1alpha2.QueryBasketCreditsResponse) | BasketCredits lists all ecocredits inside a given basket. |
 
  <!-- end services -->
 
@@ -1334,42 +1460,10 @@ Msg is the regen.ecocredit.v1alpha2 Query service.
 
 
 
-<a name="regen.ecocredit.v1alpha2.BasketCredit"></a>
-
-### BasketCredit
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| batch_denom | [string](#string) |  | batch_denom is the unique ID of the credit batch. |
-| tradable_amount | [string](#string) |  | tradable_amount is the number of credits in this transfer that can be traded by the recipient. Decimal values are acceptable within the precision returned by Query/Precision. |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha2.BasketCriteria"></a>
-
-### BasketCriteria
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| filter | [Filter](#regen.ecocredit.v1alpha2.Filter) |  |  |
-| multiplier | [string](#string) |  | multiplier is an integer number which is applied to credit units when converting to basket units. For example if the multiplier is 2000, then 1.1 credits will result in 2200 basket tokens. If there are any fractional amounts left over in this calculation when adding credits to a basket, those fractional amounts will not get added to the basket. |
-
-
-
-
-
-
 <a name="regen.ecocredit.v1alpha2.MsgAddToBasket"></a>
 
 ### MsgAddToBasket
-
+MsgAddToBasket is the Msg/AddToBasket request type.
 
 
 | Field | Type | Label | Description |
@@ -1386,7 +1480,7 @@ Msg is the regen.ecocredit.v1alpha2 Query service.
 <a name="regen.ecocredit.v1alpha2.MsgAddToBasketResponse"></a>
 
 ### MsgAddToBasketResponse
-
+MsgAddToBasketResponse is the Msg/AddToBasket response type.
 
 
 | Field | Type | Label | Description |
@@ -1536,7 +1630,7 @@ MsgCancelResponse is the Msg/Cancel response type.
 <a name="regen.ecocredit.v1alpha2.MsgCreateBasket"></a>
 
 ### MsgCreateBasket
-
+MsgCreateBasket is the Msg/CreateBasket request type.
 
 
 | Field | Type | Label | Description |
@@ -1546,8 +1640,8 @@ MsgCancelResponse is the Msg/Cancel response type.
 | display_name | [string](#string) |  | display_name will be used to create a bank Metadata display name for this basket token of the form ecocredit:{curator}:{display_name}. |
 | exponent | [uint32](#uint32) |  | exponent is the exponent that will be used for denom metadata. An exponent of 6 will mean that 10^6 units of a basket token should be displayed as one unit in user interfaces. |
 | basket_criteria | [BasketCriteria](#regen.ecocredit.v1alpha2.BasketCriteria) | repeated | basket_criteria is the criteria by which credits can be added to the basket. Basket criteria will be applied in order and the first criteria which applies to a credit will determine its multiplier in the basket. |
-| disable_auto_retire | [bool](#bool) |  |  |
-| allow_picking | [bool](#bool) |  |  |
+| disable_auto_retire | [bool](#bool) |  | disable_auto_retire allows auto-retirement to be disabled. The credits will be auto-retired if disable_auto_retire is false unless the credits were previously put into the basket by the address picking them from the basket, in which case they will remain tradable. |
+| allow_picking | [bool](#bool) |  | allow_picking specifies whether an address which didn't deposit the credits in the basket can pick those credits or not. |
 
 
 
@@ -1557,12 +1651,12 @@ MsgCancelResponse is the Msg/Cancel response type.
 <a name="regen.ecocredit.v1alpha2.MsgCreateBasketResponse"></a>
 
 ### MsgCreateBasketResponse
-
+MsgCreateBasketResponse is the Msg/CreateBasket response type.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| basket_denom | [string](#string) |  |  |
+| basket_denom | [string](#string) |  | basket_denom is the unique denomination ID of the newly created basket. |
 
 
 
@@ -1693,13 +1787,13 @@ MsgCreateProjectResponse is the Msg/CreateProject response type.
 <a name="regen.ecocredit.v1alpha2.MsgPickFromBasket"></a>
 
 ### MsgPickFromBasket
-
+MsgPickFromBasket is the Msg/PickFromBasket request type.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | owner | [string](#string) |  | owner is the owner of the basket tokens. |
-| basket_denom | [string](#string) |  | basket_denom is the denom to pick from. |
+| basket_denom | [string](#string) |  | basket_denom is the basket denom to pick credits from. |
 | credits | [BasketCredit](#regen.ecocredit.v1alpha2.BasketCredit) | repeated | credits are the units of credits being picked from the basket |
 | retirement_location | [string](#string) |  | retirement_location is the optional retirement location for the credits which will be used only if retire_on_take is true for this basket. |
 
@@ -1711,7 +1805,7 @@ MsgCreateProjectResponse is the Msg/CreateProject response type.
 <a name="regen.ecocredit.v1alpha2.MsgPickFromBasketResponse"></a>
 
 ### MsgPickFromBasketResponse
-
+MsgPickFromBasketResponse is the Msg/PickFromBasket response type.
 
 
 
@@ -1860,14 +1954,14 @@ MsgSendResponse is the Msg/Send response type.
 <a name="regen.ecocredit.v1alpha2.MsgTakeFromBasket"></a>
 
 ### MsgTakeFromBasket
-
+MsgTakeFromBasket is the Msg/TakeFromBasket request type.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| owner | [string](#string) |  |  |
-| basket_denom | [string](#string) |  |  |
-| amount | [string](#string) |  |  |
+| owner | [string](#string) |  | owner is the owner of the basket tokens. |
+| basket_denom | [string](#string) |  | basket_denom is the basket denom to take credits from. |
+| amount | [string](#string) |  | amount is the number of credits to take from the basket. |
 | retirement_location | [string](#string) |  | retirement_location is the optional retirement location for the credits which will be used only if retire_on_take is true for this basket. |
 
 
@@ -1878,7 +1972,7 @@ MsgSendResponse is the Msg/Send response type.
 <a name="regen.ecocredit.v1alpha2.MsgTakeFromBasketResponse"></a>
 
 ### MsgTakeFromBasketResponse
-
+MsgTakeFromBasketResponse is the Msg/TakeFromBasket response type.
 
 
 | Field | Type | Label | Description |
@@ -2043,8 +2137,8 @@ Msg is the regen.ecocredit.v1alpha1 Msg service.
 | AllowAskDenom | [MsgAllowAskDenom](#regen.ecocredit.v1alpha2.MsgAllowAskDenom) | [MsgAllowAskDenomResponse](#regen.ecocredit.v1alpha2.MsgAllowAskDenomResponse) | AllowAskDenom is a governance operation which authorizes a new ask denom to be used in sell orders |
 | CreateBasket | [MsgCreateBasket](#regen.ecocredit.v1alpha2.MsgCreateBasket) | [MsgCreateBasketResponse](#regen.ecocredit.v1alpha2.MsgCreateBasketResponse) | CreateBasket creates a bank denom which wraps credits. |
 | AddToBasket | [MsgAddToBasket](#regen.ecocredit.v1alpha2.MsgAddToBasket) | [MsgAddToBasketResponse](#regen.ecocredit.v1alpha2.MsgAddToBasketResponse) | AddToBasket adds credits to a basket in return for basket tokens. |
-| TakeFromBasket | [MsgTakeFromBasket](#regen.ecocredit.v1alpha2.MsgTakeFromBasket) | [MsgTakeFromBasketResponse](#regen.ecocredit.v1alpha2.MsgTakeFromBasketResponse) | TakeFromBasket takes credits from a basket without regard for which credits they are. The credits will be auto-retired if retire_on_take is true. Credits will be chosen randomly using the previous block hash as a consensus source of randomness. More concretely, the implementation is as follows: - take the previous block hash and convert it into an uint64, - given the total number of different credits within the basket `n`, the first credits that will get picked correspond to: hash modulo n (in terms of order), - then if we need to take more credits, we get some from the next one and so on. |
-| PickFromBasket | [MsgPickFromBasket](#regen.ecocredit.v1alpha2.MsgPickFromBasket) | [MsgPickFromBasketResponse](#regen.ecocredit.v1alpha2.MsgPickFromBasketResponse) | PickFromBasket picks specific credits from a basket. If allow_picking is set to false, then only an address which deposited credits in the basket can pick those credits. All other addresses will be blocked from picking those credits. The credits will be auto-retired if retire_on_take is true unless the credits were previously put into the basket by the address picking them from the basket, in which case they will remain tradable. This functionality allows the owner of a credit to have more control over the credits they are putting in baskets then ordinary users to deal with the scenario where basket tokens end up being worth significantly less than the credits on their own. |
+| TakeFromBasket | [MsgTakeFromBasket](#regen.ecocredit.v1alpha2.MsgTakeFromBasket) | [MsgTakeFromBasketResponse](#regen.ecocredit.v1alpha2.MsgTakeFromBasketResponse) | TakeFromBasket takes credits from a basket without regard for which credits they are. The credits will be auto-retired if disable_auto_retire is false. Credits will be chosen randomly using the previous block hash as a consensus source of randomness. More concretely, the implementation is as follows: - take the previous block hash and convert it into an uint64, - given the total number of different credits within the basket `n`, the first credits that will get picked correspond to: hash modulo n (in terms of order), - then if we need to take more credits, we get some from the next one and so on. |
+| PickFromBasket | [MsgPickFromBasket](#regen.ecocredit.v1alpha2.MsgPickFromBasket) | [MsgPickFromBasketResponse](#regen.ecocredit.v1alpha2.MsgPickFromBasketResponse) | PickFromBasket picks specific credits from a basket. If allow_picking is set to false, then only an address which deposited credits in the basket can pick those credits. All other addresses will be blocked from picking those credits. The credits will be auto-retired if disable_auto_retire is false unless the credits were previously put into the basket by the address picking them from the basket, in which case they will remain tradable. This functionality allows the owner of a credit to have more control over the credits they are putting in baskets then ordinary users to deal with the scenario where basket tokens end up being worth significantly less than the credits on their own. |
 
  <!-- end services -->
 
