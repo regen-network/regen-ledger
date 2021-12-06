@@ -92,8 +92,11 @@ func (s serverImpl) CreateProject(goCtx context.Context, req *ecocredit.MsgCreat
 
 	projectID := req.ProjectId
 	if req.ProjectId == "" {
-		projectSeqNo := s.projectInfoSeq.NextVal(ctx)
-		projectID = ecocredit.FormatProjectID(classInfo.ClassId, projectSeqNo)
+		projectID := s.genProjectID(ctx, classInfo.ClassId)
+		for s.projectInfoTable.Has(ctx, orm.RowID(projectID)) {
+			projectID = s.genProjectID(ctx, classInfo.ClassId)
+			ctx.GasMeter().ConsumeGas(gasCostPerIteration, "project id sequence")
+		}
 	}
 
 	if err := s.projectInfoTable.Create(ctx, &ecocredit.ProjectInfo{
@@ -965,4 +968,9 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTakeFromBasket) (*ecocredit.MsgTakeFromBasketResponse, error) {
 	// TODO: implement create basket
 	return nil, nil
+}
+
+func (s serverImpl) genProjectID(ctx types.Context, classID string) string {
+	projectSeqNo := s.projectInfoSeq.NextVal(ctx)
+	return ecocredit.FormatProjectID(classID, projectSeqNo)
 }

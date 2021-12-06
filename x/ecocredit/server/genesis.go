@@ -35,7 +35,7 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 		return nil, errors.Wrap(err, "project-info")
 	}
 
-	if err := s.projectInfoSeq.InitVal(ctx, genesisState.ProjectSeq); err != nil {
+	if err := s.projectInfoSeq.InitVal(ctx, genesisState.ProjectSeqNum); err != nil {
 		return nil, errors.Wrap(err, "project seq")
 	}
 
@@ -238,7 +238,7 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		ProjectInfo: projecInfo,
 	}
 
-	gs.ProjectSeq = s.projectInfoSeq.CurVal(ctx)
+	gs.ProjectSeqNum = s.projectInfoSeq.CurVal(ctx)
 
 	return cdc.MustMarshalJSON(gs), nil
 }
