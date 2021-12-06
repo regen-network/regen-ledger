@@ -92,7 +92,7 @@ func (s serverImpl) CreateProject(goCtx context.Context, req *ecocredit.MsgCreat
 
 	projectID := req.ProjectId
 	if req.ProjectId == "" {
-		projectID := s.genProjectID(ctx, classInfo.ClassId)
+		projectID = s.genProjectID(ctx, classInfo.ClassId)
 		for s.projectInfoTable.Has(ctx, orm.RowID(projectID)) {
 			projectID = s.genProjectID(ctx, classInfo.ClassId)
 			ctx.GasMeter().ConsumeGas(gasCostPerIteration, "project id sequence")

@@ -21,6 +21,18 @@ import (
 )
 
 func TestServer(t *testing.T) {
+	ff, ecocreditSubspace, bankKeeper := setup(t)
+	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper)
+	suite.Run(t, s)
+}
+
+func TestInvalidGenesis(t *testing.T) {
+	ff, ecocreditSubspace, bankKeeper := setup(t)
+	s := testsuite.NewGenesisTestSuite(ff, ecocreditSubspace, bankKeeper)
+	suite.Run(t, s)
+}
+
+func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeeper.BaseKeeper) {
 	ff := server.NewFixtureFactory(t, 8)
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()
@@ -59,6 +71,5 @@ func TestServer(t *testing.T) {
 	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper)
 	ff.SetModules([]module.Module{ecocreditModule})
 
-	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper)
-	suite.Run(t, s)
+	return ff, ecocreditSubspace, bankKeeper
 }
