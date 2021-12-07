@@ -150,8 +150,8 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		return nil, errors.Wrap(err, "class-info")
 	}
 
-	var projecInfo []*ecocredit.ProjectInfo
-	if _, err := s.projectInfoTable.Export(ctx, &projecInfo); err != nil {
+	var projectInfo []*ecocredit.ProjectInfo
+	if _, err := s.projectInfoTable.Export(ctx, &projectInfo); err != nil {
 		return nil, errors.Wrap(err, "project-info")
 	}
 
