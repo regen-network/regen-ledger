@@ -139,7 +139,6 @@ Required Flags:
   end-date:   The end of the period during which this credit batch was
               quantified and verified. Format: yyyy-mm-dd.
   metadata:   base64 encoded issuance metadata
-Optional Flags:
   project_id:   id of the project
   `,
 		Args: cobra.ExactArgs(0),
@@ -212,6 +211,7 @@ Optional Flags:
 		},
 	}
 	cmd.Flags().String(FlagProjectId, "", "project id")
+	cmd.MarkFlagRequired(FlagProjectId)
 	cmd.Flags().Uint32(FlagIssuances, 0, "The number of template issuances to generate")
 	cmd.MarkFlagRequired(FlagIssuances)
 	cmd.Flags().String(FlagStartDate, "", "The beginning of the period during which this credit batch was quantified and verified. Format: yyyy-mm-dd.")

@@ -207,11 +207,7 @@ func (s *IntegrationTestSuite) assetClassInfoEqual(q, other *ecocredit.ClassInfo
 
 func (s *IntegrationTestSuite) assetProjectInfoEqual(q, other *ecocredit.ProjectInfo) {
 	require := s.Require()
-	require.Equal(q.ClassId, other.ClassId)
-	require.Equal(q.ProjectId, other.ProjectId)
-	require.Equal(q.ProjectLocation, other.ProjectLocation)
-	require.Equal(q.Metadata, other.Metadata)
-	require.Equal(q.Issuer, other.Issuer)
+	require.Equal(q, other)
 }
 
 func (s *IntegrationTestSuite) assetBatchInfoEqual(q, other *ecocredit.BatchInfo) {
@@ -257,7 +253,7 @@ func (s *GenesisTestSuite) SetupSuite() {
 
 func (s *GenesisTestSuite) TestInvalidGenesis() {
 	require := s.Require()
-	
+
 	ctx := s.genesisCtx
 	admin1 := s.signers[0]
 	admin2 := s.signers[1].String()

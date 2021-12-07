@@ -138,8 +138,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	}
 
 	// create project
-	projectID := "P01"
-	s.projectID = projectID
+	s.projectID = "P01"
 	out, err := cli.ExecTestCLICmd(val.ClientCtx, client.TxCreateProject(),
 		append(
 			[]string{
@@ -147,7 +146,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 				"GB",
 				validMetadata,
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
-				fmt.Sprintf("--%s=%s", client.FlagProjectId, projectID),
+				fmt.Sprintf("--%s=%s", client.FlagProjectId, s.projectID),
 			},
 			commonFlags...,
 		),
@@ -160,7 +159,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 
 	msgCreateBatch := ecocredit.MsgCreateBatch{
-		ProjectId: projectID,
+		ProjectId: s.projectID,
 		Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
 			{
 				Recipient:          val.Address.String(),
@@ -197,7 +196,7 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	// Store the first one in the test suite
 	s.batchInfo = &ecocredit.BatchInfo{
-		ProjectId:       projectID,
+		ProjectId:       s.projectID,
 		BatchDenom:      batchDenom,
 		TotalAmount:     "100.000001",
 		Metadata:        []byte{0x01},

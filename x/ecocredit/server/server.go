@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/regen-network/regen-ledger/orm"
@@ -11,13 +12,13 @@ import (
 )
 
 const (
-	TradableBalancePrefix     byte = 0x0
-	TradableSupplyPrefix      byte = 0x1
-	RetiredBalancePrefix      byte = 0x2
-	RetiredSupplyPrefix       byte = 0x3
-	CreditTypeSeqTablePrefix  byte = 0x4
-	ClassInfoTablePrefix      byte = 0x5
-	BatchInfoTablePrefix      byte = 0x6
+	TradableBalancePrefix    byte = 0x0
+	TradableSupplyPrefix     byte = 0x1
+	RetiredBalancePrefix     byte = 0x2
+	RetiredSupplyPrefix      byte = 0x3
+	CreditTypeSeqTablePrefix byte = 0x4
+	ClassInfoTablePrefix     byte = 0x5
+	BatchInfoTablePrefix     byte = 0x6
 
 	ProjectInfoTablePrefix    byte = 0x12
 	ProjectInfoTableSeqPrefix byte = 0x13
@@ -52,12 +53,12 @@ type serverImpl struct {
 	batchInfoTable orm.PrimaryKeyTable
 
 	// sell order table
-	sellOrderTable orm.AutoUInt64Table
-	sellOrderByAddressIndex orm.Index
+	sellOrderTable             orm.AutoUInt64Table
+	sellOrderByAddressIndex    orm.Index
 	sellOrderByBatchDenomIndex orm.Index
 
 	// buy order table
-	buyOrderTable orm.AutoUInt64Table
+	buyOrderTable          orm.AutoUInt64Table
 	buyOrderByAddressIndex orm.Index
 
 	askDenomTable orm.PrimaryKeyTable
@@ -96,8 +97,11 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	}
 
 	s.batchesByProjectIDIndex, err = orm.NewIndex(batchInfoTableBuilder, BatchesByProjectIndex, func(value interface{}) ([]interface{}, error) {
-		projectID := value.(*ecocredit.BatchInfo).ProjectId
-		return []interface{}{projectID}, nil
+		batchInfo, ok := value.(*ecocredit.BatchInfo)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.BatchInfo{}, value)
+		}
+		return []interface{}{batchInfo.ProjectId}, nil
 	}, ecocredit.BatchInfo{}.ProjectId)
 	if err != nil {
 		panic(err.Error())
@@ -110,8 +114,11 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		panic(err.Error())
 	}
 	s.sellOrderByAddressIndex, err = orm.NewIndex(sellOrderTableBuilder, SellOrderByAddressIndexPrefix, func(value interface{}) ([]interface{}, error) {
-		owner := value.(*ecocredit.SellOrder).Owner
-		addr, err := sdk.AccAddressFromBech32(owner)
+		order, ok := value.(*ecocredit.SellOrder)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.SellOrder{}, value)
+		}
+		addr, err := sdk.AccAddressFromBech32(order.Owner)
 		if err != nil {
 			return nil, err
 		}
@@ -121,8 +128,11 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		panic(err.Error())
 	}
 	s.sellOrderByBatchDenomIndex, err = orm.NewIndex(sellOrderTableBuilder, SellOrderByBatchDenomIndexPrefix, func(value interface{}) ([]interface{}, error) {
-		denom := value.(*ecocredit.SellOrder).BatchDenom
-		return []interface{}{denom}, nil
+		order, ok := value.(*ecocredit.SellOrder)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.SellOrder{}, value)
+		}
+		return []interface{}{order.BatchDenom}, nil
 	}, []byte{})
 	if err != nil {
 		panic(err.Error())
@@ -133,9 +143,12 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	if err != nil {
 		panic(err.Error())
 	}
-		s.buyOrderByAddressIndex, err = orm.NewIndex(buyOrderTableBuilder, BuyOrderByAddressIndexPrefix, func(value interface{}) ([]interface{}, error) {
-		owner := value.(*ecocredit.BuyOrder).Buyer
-		addr, err := sdk.AccAddressFromBech32(owner)
+	s.buyOrderByAddressIndex, err = orm.NewIndex(buyOrderTableBuilder, BuyOrderByAddressIndexPrefix, func(value interface{}) ([]interface{}, error) {
+		order, ok := value.(*ecocredit.BuyOrder)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.BuyOrder{}, value)
+		}
+		addr, err := sdk.AccAddressFromBech32(order.Buyer)
 		if err != nil {
 			return nil, err
 		}
@@ -159,8 +172,11 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	}
 
 	s.projectsByClassIDIndex, err = orm.NewIndex(projectInfoTableBuilder, ProjectsByClassIDIndex, func(value interface{}) ([]interface{}, error) {
-		classID := value.(*ecocredit.ProjectInfo).ClassId
-		return []interface{}{classID}, nil
+		projectInfo, ok := value.(*ecocredit.ProjectInfo)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.ProjectInfo{}, value)
+		}
+		return []interface{}{projectInfo.ClassId}, nil
 	}, ecocredit.ProjectInfo{}.ClassId)
 	if err != nil {
 		panic(err.Error())

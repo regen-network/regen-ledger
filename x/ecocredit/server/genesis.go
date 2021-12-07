@@ -235,7 +235,7 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		Sequences:   sequences,
 		Balances:    balances,
 		Supplies:    supplies,
-		ProjectInfo: projecInfo,
+		ProjectInfo: projectInfo,
 	}
 
 	gs.ProjectSeqNum = s.projectInfoSeq.CurVal(ctx)
