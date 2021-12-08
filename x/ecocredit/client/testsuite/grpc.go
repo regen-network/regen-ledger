@@ -465,21 +465,20 @@ func (s *IntegrationTestSuite) TestGetSellOrdersByBatchDenom() {
 			"invalid denom",
 			0,
 		},
-		// TODO: receiving unexpected error
-		//{
-		//	"valid request",
-		//	fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s", val.APIAddress, "C01-20210101-20210201-001"),
-		//	false,
-		//	"",
-		//	3,
-		//},
-		//{
-		//	"valid request pagination",
-		//	fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s?pagination.limit=2", val.APIAddress, "C01-20210101-20210201-001"),
-		//	false,
-		//	"",
-		//	2,
-		//},
+		{
+			"valid request",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s", val.APIAddress, "C01-20210101-20210201-001"),
+			false,
+			"",
+			3,
+		},
+		{
+			"valid request pagination",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s?pagination.limit=2", val.APIAddress, "C01-20210101-20210201-001"),
+			false,
+			"",
+			2,
+		},
 	}
 
 	require := s.Require()
