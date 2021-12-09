@@ -12,24 +12,29 @@ option go_package = "github.com/regen-network/regen-ledger/x/data";
 // Query is the regen.data.v1alpha2 Query service
 service Query {
   // ByHash queries data based on its ContentHash.
-  rpc ByHash (QueryByHashRequest) returns (QueryByHashResponse) {
-    option (google.api.http).get = "/regen/data/v1alpha2/by_hash";
+  rpc ByIRI (QueryByIRIRequest) returns (QueryByIRIResponse) {
+    option (google.api.http).get = "/regen/data/v1alpha2/content/{iri}";
   }
 
   // BySigner queries data based on signers.
   rpc BySigner (QueryBySignerRequest) returns (QueryBySignerResponse) {
-    option (google.api.http).get = "/regen/data/v1alpha2/signers/{signer}";
+    option (google.api.http).get = "/regen/data/v1alpha2/content/{signer}";
+  }
+
+  // Signers queries signers based on IRI.
+  rpc Signers(QuerySignersRequest) returns (QuerySignersResponse) {
+    option (google.api.http).get = "/regen/data/v1alpha2/signers/{iri}";
   }
 }
 
 // QueryByContentHashRequest is the Query/ByContentHash request type.
-message QueryByHashRequest {
+message QueryByIRIRequest {
   // hash is the hash-based identifier for the anchored content.
-  ContentHash hash = 1;
+  string iri = 1;
 }
 
 // QueryByContentHashResponse is the Query/ByContentHash response type.
-message QueryByHashResponse {
+message QueryByIRIResponse {
   // entry is the ContentEntry
   ContentEntry entry = 1;
 }
@@ -62,10 +67,24 @@ message ContentEntry {
 
   // timestamp is the anchor Timestamp
   google.protobuf.Timestamp timestamp = 3;
+}
 
-  // signers are the signers, if any
-  repeated SignerEntry signers = 4;
+// QuerySignersRequest is the Query/Signers request type.
+message QuerySignersRequest {
 
-  // content is the actual content if stored on-chain
-  Content content = 5;
+  // iri is the content IRI
+  string iri = 1;
+
+  // pagination is the PageRequest to use for pagination.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QuerySignersResponse is the Query/QuerySigners response type.
+message QuerySignersResponse {
+
+  // signers are the addresses of the signers.
+  repeated string signers = 1;
+
+  // pagination is the pagination PageResponse.
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

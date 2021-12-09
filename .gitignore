@@ -195,3 +195,6 @@ dist/
 
 # pre-commit
 .pre-commit-config.yaml
+
+# Data - ideally these don't exist
+.testnets

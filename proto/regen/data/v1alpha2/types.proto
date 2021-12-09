@@ -145,15 +145,6 @@ enum DigestAlgorithm {
     DIGEST_ALGORITHM_BLAKE2B_256 = 1;
 }
 
-// Content is a wrapper for content stored on-chain
-message Content {
-    // sum selects the type of data
-    oneof sum {
-        // raw_data is the oneof field for raw data
-        bytes raw_data = 1;
-    }
-}
-
 // SignerEntry is a signer entry wrapping a signer address and timestamp
 message SignerEntry {
     // signer is the address of the signer

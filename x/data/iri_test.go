@@ -1,42 +1,11 @@
 package data
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/require"
-
-	"github.com/cosmos/cosmos-sdk/types"
 )
-
-func TestAccAddressToDID(t *testing.T) {
-	addr := types.AccAddress("test12345")
-
-	type args struct {
-		address         types.AccAddress
-		bech32AccPrefix string
-	}
-	tests := []struct {
-		name string
-		args args
-		want string
-	}{
-		{
-			"1",
-			args{
-				address:         addr,
-				bech32AccPrefix: "regen",
-			},
-			"did:regen:1AhJcBqAfzfi4tQ8ZDv",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := AccAddressToDID(tt.args.address, tt.args.bech32AccPrefix); got != tt.want {
-				t.Errorf("AccAddressToDID() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
 
 func TestContentHash_ToIRI(t *testing.T) {
 	type fields struct {
@@ -195,4 +164,49 @@ func TestMediaType_ToExtension(t *testing.T) {
 
 	_, err := MediaType(-1).ToExtension()
 	require.Error(t, err)
+}
+
+func TestParseIRI(t *testing.T) {
+	tests := []struct {
+		name     string
+		iri      string
+		wantHash *ContentHash
+		wantErr  bool
+	}{
+		{
+			name: "raw",
+			iri:  "regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.pdf",
+			wantHash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
+				Hash:            []byte("abcdefghijklmnopqrstuvwxyz123456"),
+				DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+				MediaType:       MediaType_MEDIA_TYPE_PDF,
+			}}},
+		},
+		{
+			name: "graph",
+			iri:  "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+			wantHash: &ContentHash{Sum: &ContentHash_Graph_{Graph: &ContentHash_Graph{
+				Hash:                      []byte("abcdefghijklmnopqrstuvwxyz123456"),
+				DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
+				CanonicalizationAlgorithm: GraphCanonicalizationAlgorithm_GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015,
+			}}},
+		},
+		{
+			name:    "no ext",
+			iri:     "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd",
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			contentHash, err := ParseIRI(tt.iri)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ParseIRI() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(contentHash, tt.wantHash) {
+				t.Errorf("ParseIRI() got = %v, want %v", contentHash, tt.wantHash)
+			}
+		})
+	}
 }
