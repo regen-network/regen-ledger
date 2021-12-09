@@ -1,5 +1,6 @@
 # Regen Ledger
-![banner](docs/regen-network-image.jpg)
+
+![banner](docs/regen_ledger.png)
 
 [![Build status](https://github.com/regen-network/regen-ledger/workflows/Build/badge.svg)](https://github.com/regen-network/regen-ledger/commits/master)
 [![Tests status](https://github.com/regen-network/regen-ledger/workflows/Tests/badge.svg)](https://github.com/regen-network/regen-ledger/commits/master)
@@ -11,14 +12,12 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/regen-network/regen-ledger)](https://goreportcard.com/report/github.com/regen-network/regen-ledger)
 [![Gitter chat](https://badges.gitter.im/regen-network/regen-ledger.png)](https://gitter.im/regen-network/regen-ledger "Gitter chat")
 
-
 A distributed ledger for ecology built on top of the
 [cosmos-sdk](http://github.com/cosmos/cosmos-sdk).
 
 ## Getting Started
 
-
-See [Getting Started](docs/getting-started/README.md) for instructions how to install and run the blockchain.
+See [Get Started](https://docs.regen.network/getting-started) for instructions on how to run a single node network on your local machine. For instructions on how to run a full node or validator node on a live network, see [Running a Full Node](https://docs.regen.network/getting-started/running-a-full-node) or [Running a Validator](https://docs.regen.network/getting-started/running-a-validator).
 
 ## Core Features
 

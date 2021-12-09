@@ -1,6 +1,7 @@
 package lookup
 
 import (
+	"fmt"
 	"hash"
 	"hash/fnv"
 	"math"
@@ -46,15 +47,30 @@ func testTable(t *testing.T, tbl Table, k int) {
 	store := mem.NewStore()
 	n := int(math.Pow10(k))
 	data := make([][]byte, n)
+	values := map[string]bool{}
 	ids := map[int][]byte{}
 	totalCollisions := 0
 	secondaryCollisions := 0
 
 	for i := 0; i < n; i++ {
-		m := rand.Int31n(256)
-		value := rand.Bytes(int(m))
+		var value []byte
+		var valueStr string
+		for {
+			m := rand.Int31n(256)
+			value = rand.Bytes(int(m))
+			valueStr = fmt.Sprintf("%x", value)
+			if !values[valueStr] {
+				break
+			}
+		}
 		data[i] = value
-		id, collisions := table.getOrCreateID(store, value)
+		values[valueStr] = true
+
+		// id is nil before it gets set
+		id := table.GetID(store, value)
+		require.Empty(t, id)
+
+		id, collisions := table.getOrCreateID(store, value, true)
 		totalCollisions += collisions
 		if collisions > 1 {
 			secondaryCollisions += collisions - 1
@@ -71,6 +87,9 @@ func testTable(t *testing.T, tbl Table, k int) {
 		require.Equal(t, value, table.GetValue(store, id))
 		newId := table.GetOrCreateID(store, value)
 		// make sure getting an ID the second time returns the same ID
+		require.Equal(t, id, newId)
+		newId = table.GetID(store, value)
+		// make sure the normal get method returns an ID
 		require.Equal(t, id, newId)
 	}
 }

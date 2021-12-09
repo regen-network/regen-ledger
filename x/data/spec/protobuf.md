@@ -5,7 +5,6 @@
 ## Table of Contents
 
 - [regen/data/v1alpha2/types.proto](#regen/data/v1alpha2/types.proto)
-    - [Content](#regen.data.v1alpha2.Content)
     - [ContentHash](#regen.data.v1alpha2.ContentHash)
     - [ContentHash.Graph](#regen.data.v1alpha2.ContentHash.Graph)
     - [ContentHash.Raw](#regen.data.v1alpha2.ContentHash.Raw)
@@ -27,10 +26,12 @@
   
 - [regen/data/v1alpha2/query.proto](#regen/data/v1alpha2/query.proto)
     - [ContentEntry](#regen.data.v1alpha2.ContentEntry)
-    - [QueryByHashRequest](#regen.data.v1alpha2.QueryByHashRequest)
-    - [QueryByHashResponse](#regen.data.v1alpha2.QueryByHashResponse)
+    - [QueryByIRIRequest](#regen.data.v1alpha2.QueryByIRIRequest)
+    - [QueryByIRIResponse](#regen.data.v1alpha2.QueryByIRIResponse)
     - [QueryBySignerRequest](#regen.data.v1alpha2.QueryBySignerRequest)
     - [QueryBySignerResponse](#regen.data.v1alpha2.QueryBySignerResponse)
+    - [QuerySignersRequest](#regen.data.v1alpha2.QuerySignersRequest)
+    - [QuerySignersResponse](#regen.data.v1alpha2.QuerySignersResponse)
   
     - [Query](#regen.data.v1alpha2.Query)
   
@@ -39,8 +40,6 @@
     - [MsgAnchorDataResponse](#regen.data.v1alpha2.MsgAnchorDataResponse)
     - [MsgSignData](#regen.data.v1alpha2.MsgSignData)
     - [MsgSignDataResponse](#regen.data.v1alpha2.MsgSignDataResponse)
-    - [MsgStoreRawData](#regen.data.v1alpha2.MsgStoreRawData)
-    - [MsgStoreRawDataResponse](#regen.data.v1alpha2.MsgStoreRawDataResponse)
   
     - [Msg](#regen.data.v1alpha2.Msg)
   
@@ -52,21 +51,6 @@
 <p align="right"><a href="#top">Top</a></p>
 
 ## regen/data/v1alpha2/types.proto
-
-
-
-<a name="regen.data.v1alpha2.Content"></a>
-
-### Content
-Content is a wrapper for content stored on-chain
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| raw_data | [bytes](#bytes) |  | raw_data is the oneof field for raw data |
-
-
-
 
 
 
@@ -289,7 +273,6 @@ GenesisContentEntry is a genesis content entry
 | hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the ContentHash |
 | timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the anchor Timestamp |
 | signers | [SignerEntry](#regen.data.v1alpha2.SignerEntry) | repeated | signers are the signers, if any |
-| content | [Content](#regen.data.v1alpha2.Content) |  | content is the actual content if stored on-chain |
 
 
 
@@ -338,32 +321,30 @@ ContentEntry describes data referenced and possibly stored on chain
 | hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the content hash |
 | iri | [string](#string) |  | iri is the content IRI |
 | timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the anchor Timestamp |
-| signers | [SignerEntry](#regen.data.v1alpha2.SignerEntry) | repeated | signers are the signers, if any |
-| content | [Content](#regen.data.v1alpha2.Content) |  | content is the actual content if stored on-chain |
 
 
 
 
 
 
-<a name="regen.data.v1alpha2.QueryByHashRequest"></a>
+<a name="regen.data.v1alpha2.QueryByIRIRequest"></a>
 
-### QueryByHashRequest
+### QueryByIRIRequest
 QueryByContentHashRequest is the Query/ByContentHash request type.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [ContentHash](#regen.data.v1alpha2.ContentHash) |  | hash is the hash-based identifier for the anchored content. |
+| iri | [string](#string) |  | hash is the hash-based identifier for the anchored content. |
 
 
 
 
 
 
-<a name="regen.data.v1alpha2.QueryByHashResponse"></a>
+<a name="regen.data.v1alpha2.QueryByIRIResponse"></a>
 
-### QueryByHashResponse
+### QueryByIRIResponse
 QueryByContentHashResponse is the Query/ByContentHash response type.
 
 
@@ -407,6 +388,38 @@ QueryBySignerResponse is the Query/BySigner response type.
 
 
 
+
+<a name="regen.data.v1alpha2.QuerySignersRequest"></a>
+
+### QuerySignersRequest
+QuerySignersRequest is the Query/Signers request type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| iri | [string](#string) |  | iri is the content IRI |
+| pagination | [cosmos.base.query.v1beta1.PageRequest](#cosmos.base.query.v1beta1.PageRequest) |  | pagination is the PageRequest to use for pagination. |
+
+
+
+
+
+
+<a name="regen.data.v1alpha2.QuerySignersResponse"></a>
+
+### QuerySignersResponse
+QuerySignersResponse is the Query/QuerySigners response type.
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| signers | [string](#string) | repeated | signers are the addresses of the signers. |
+| pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination is the pagination PageResponse. |
+
+
+
+
+
  <!-- end messages -->
 
  <!-- end enums -->
@@ -421,8 +434,9 @@ Query is the regen.data.v1alpha2 Query service
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| ByHash | [QueryByHashRequest](#regen.data.v1alpha2.QueryByHashRequest) | [QueryByHashResponse](#regen.data.v1alpha2.QueryByHashResponse) | ByHash queries data based on its ContentHash. |
+| ByIRI | [QueryByIRIRequest](#regen.data.v1alpha2.QueryByIRIRequest) | [QueryByIRIResponse](#regen.data.v1alpha2.QueryByIRIResponse) | ByHash queries data based on its ContentHash. |
 | BySigner | [QueryBySignerRequest](#regen.data.v1alpha2.QueryBySignerRequest) | [QueryBySignerResponse](#regen.data.v1alpha2.QueryBySignerResponse) | BySigner queries data based on signers. |
+| Signers | [QuerySignersRequest](#regen.data.v1alpha2.QuerySignersRequest) | [QuerySignersResponse](#regen.data.v1alpha2.QuerySignersResponse) | Signers queries signers based on IRI. |
 
  <!-- end services -->
 
@@ -460,6 +474,7 @@ MsgAnchorData is the Msg/AnchorData response type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | timestamp | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | timestamp is the timestamp of the block at which the data was anchored. |
+| iri | [string](#string) |  | iri is the IRI of the data that was anchored. |
 
 
 
@@ -491,33 +506,6 @@ MsgSignDataResponse is the Msg/SignData response type.
 
 
 
-
-<a name="regen.data.v1alpha2.MsgStoreRawData"></a>
-
-### MsgStoreRawData
-MsgStoreRawData is the Msg/StoreRawData request type.
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| sender | [string](#string) |  | sender is the address of the sender of the transaction. The sender in StoreData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing services. |
-| content_hash | [ContentHash.Raw](#regen.data.v1alpha2.ContentHash.Raw) |  | content_hash is the hash-based identifier for the anchored content. |
-| content | [bytes](#bytes) |  | content is the content of the raw data corresponding to the provided content hash. |
-
-
-
-
-
-
-<a name="regen.data.v1alpha2.MsgStoreRawDataResponse"></a>
-
-### MsgStoreRawDataResponse
-MsgStoreRawData is the Msg/StoreRawData response type.
-
-
-
-
-
  <!-- end messages -->
 
  <!-- end enums -->
@@ -542,11 +530,6 @@ On-chain signatures have the following benefits: - on-chain identities can be ma
 SignData implicitly calls AnchorData if the data was not already anchored.
 
 SignData can be called multiple times for the same content hash with different signers and those signers will be appended to the list of signers. |
-| StoreRawData | [MsgStoreRawData](#regen.data.v1alpha2.MsgStoreRawData) | [MsgStoreRawDataResponse](#regen.data.v1alpha2.MsgStoreRawDataResponse) | StoreRawData stores a piece of raw data corresponding to an ContentHash.Raw on the blockchain.
-
-StoreRawData implicitly calls AnchorData if the data was not already anchored.
-
-The sender in StoreRawData is not attesting to the veracity of the underlying data. They can simply be a intermediary providing storage services. SignData should be used to create a digital signature attesting to the veracity of some piece of data. |
 
  <!-- end services -->
 

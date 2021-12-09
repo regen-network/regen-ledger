@@ -9,8 +9,8 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/pkg/errors v0.9.1
-	github.com/regen-network/regen-ledger/orm v1.0.0-beta1
-	github.com/regen-network/regen-ledger/types v1.0.0
+	github.com/regen-network/regen-ledger/orm v0.0.0-00010101000000-000000000000
+	github.com/regen-network/regen-ledger/types v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.13

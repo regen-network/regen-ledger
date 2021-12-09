@@ -12,7 +12,7 @@ require (
 	github.com/regen-network/regen-ledger/orm v1.0.0-beta1
 	github.com/regen-network/regen-ledger/types v1.0.0
 	github.com/regen-network/regen-ledger/x/data v0.0.0-20210602121340-fa967f821a6e
-	github.com/regen-network/regen-ledger/x/ecocredit v1.0.0
+	github.com/regen-network/regen-ledger/x/ecocredit v0.0.0-20210602121340-fa967f821a6e
 	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.13

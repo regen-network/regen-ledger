@@ -18,6 +18,19 @@ const (
 	CreditTypeSeqTablePrefix byte = 0x4
 	ClassInfoTablePrefix     byte = 0x5
 	BatchInfoTablePrefix     byte = 0x6
+
+	// sell order table
+	SellOrderTablePrefix             byte = 0x10
+	SellOrderTableSeqPrefix          byte = 0x11
+	SellOrderByAddressIndexPrefix    byte = 0x12
+	SellOrderByBatchDenomIndexPrefix byte = 0x13
+
+	// buy order table
+	BuyOrderTablePrefix          byte = 0x20
+	BuyOrderTableSeqPrefix       byte = 0x21
+	BuyOrderByAddressIndexPrefix byte = 0x22
+
+	AskDenomTablePrefix byte = 0x30
 )
 
 type serverImpl struct {
@@ -32,6 +45,17 @@ type serverImpl struct {
 
 	classInfoTable orm.PrimaryKeyTable
 	batchInfoTable orm.PrimaryKeyTable
+
+	// sell order table
+	sellOrderTable orm.AutoUInt64Table
+	sellOrderByAddressIndex orm.Index
+	sellOrderByBatchDenomIndex orm.Index
+
+	// buy order table
+	buyOrderTable orm.AutoUInt64Table
+	buyOrderByAddressIndex orm.Index
+
+	askDenomTable orm.PrimaryKeyTable
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
@@ -60,6 +84,53 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		panic(err.Error())
 	}
 	s.batchInfoTable = batchInfoTableBuilder.Build()
+
+	sellOrderTableBuilder, err := orm.NewAutoUInt64TableBuilder(SellOrderTablePrefix, SellOrderTableSeqPrefix, storeKey, &ecocredit.SellOrder{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.sellOrderByAddressIndex, err = orm.NewIndex(sellOrderTableBuilder, SellOrderByAddressIndexPrefix, func(value interface{}) ([]interface{}, error) {
+		owner := value.(*ecocredit.SellOrder).Owner
+		addr, err := sdk.AccAddressFromBech32(owner)
+		if err != nil {
+			return nil, err
+		}
+		return []interface{}{addr.Bytes()}, nil
+	}, []byte{})
+	if err != nil {
+		panic(err.Error())
+	}
+	s.sellOrderByBatchDenomIndex, err = orm.NewIndex(sellOrderTableBuilder, SellOrderByBatchDenomIndexPrefix, func(value interface{}) ([]interface{}, error) {
+		denom := value.(*ecocredit.SellOrder).BatchDenom
+		return []interface{}{denom}, nil
+	}, []byte{})
+	if err != nil {
+		panic(err.Error())
+	}
+	s.sellOrderTable = sellOrderTableBuilder.Build()
+
+	buyOrderTableBuilder, err := orm.NewAutoUInt64TableBuilder(BuyOrderTablePrefix, BuyOrderTableSeqPrefix, storeKey, &ecocredit.BuyOrder{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
+		s.buyOrderByAddressIndex, err = orm.NewIndex(buyOrderTableBuilder, BuyOrderByAddressIndexPrefix, func(value interface{}) ([]interface{}, error) {
+		owner := value.(*ecocredit.BuyOrder).Buyer
+		addr, err := sdk.AccAddressFromBech32(owner)
+		if err != nil {
+			return nil, err
+		}
+		return []interface{}{addr.Bytes()}, nil
+	}, []byte{})
+	if err != nil {
+		panic(err.Error())
+	}
+	s.buyOrderTable = buyOrderTableBuilder.Build()
+
+	askDenomTableBuilder, err := orm.NewPrimaryKeyTableBuilder(AskDenomTablePrefix, storeKey, &ecocredit.AskDenom{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.askDenomTable = askDenomTableBuilder.Build()
 
 	return s
 }
