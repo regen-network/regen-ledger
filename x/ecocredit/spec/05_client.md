@@ -233,6 +233,15 @@ regen query ecocredit sell-order 1
 Example Output:
 
 ```bash
+sell_order:
+  ask_price:
+    amount: "100"
+    denom: stake
+  batch_denom: C01-20200101-20210101-001
+  disable_auto_retire: false
+  order_id: "1"
+  owner: regen1..
+  quantity: "2"
 ```
 
 #### sell-orders
@@ -252,6 +261,80 @@ regen query ecocredit sell-orders
 Example Output:
 
 ```bash
+pagination:
+  next_key: null
+  total: "1"
+sell_orders:
+- ask_price:
+    amount: "100"
+    denom: stake
+  batch_denom: C01-20200101-20210101-001
+  disable_auto_retire: false
+  order_id: "1"
+  owner: regen1..
+  quantity: "2"
+```
+
+#### sell-orders-by-address
+
+The `sell-orders-by-address` command allows users to query sell orders by owner address.
+
+```bash
+regen query ecocredit sell-orders-by-address [address] [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit sell-orders-by-address regen1..
+```
+
+Example Output:
+
+```bash
+pagination:
+  next_key: null
+  total: "1"
+sell_orders:
+- ask_price:
+    amount: "100"
+    denom: stake
+  batch_denom: C01-20200101-20210101-001
+  disable_auto_retire: false
+  order_id: "1"
+  owner: regen1..
+  quantity: "2"
+```
+
+#### sell-orders-by-batch-denom
+
+The `sell-orders-by-batch-denom` command allows users to query sell orders by credit batch denom.
+
+```bash
+regen query ecocredit sell-orders-by-batch-denom [batch_denom] [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit sell-orders-by-batch-denom C01-20200101-20210101-001
+```
+
+Example Output:
+
+```bash
+pagination:
+  next_key: null
+  total: "1"
+sell_orders:
+- ask_price:
+    amount: "100"
+    denom: stake
+  batch_denom: C01-20200101-20210101-001
+  disable_auto_retire: false
+  order_id: "1"
+  owner: regen1..
+  quantity: "2"
 ```
 
 #### buy-order
@@ -271,6 +354,7 @@ regen query ecocredit buy-order 1
 Example Output:
 
 ```bash
+# not yet implemented
 ```
 
 #### buy-orders
@@ -290,6 +374,27 @@ regen query ecocredit buy-orders
 Example Output:
 
 ```bash
+# not yet implemented
+```
+
+#### buy-orders-by-address
+
+The `buy-orders-by-address` command allows users to query buy orders by buyer address.
+
+```bash
+regen query ecocredit buy-orders-by-address [address] [flags]
+```
+
+Example:
+
+```bash
+regen query ecocredit buy-orders-by-address regen1..
+```
+
+Example Output:
+
+```bash
+# not yet implemented
 ```
 
 #### ask-denoms
@@ -309,6 +414,7 @@ regen query ecocredit ask-denoms
 Example Output:
 
 ```bash
+# not yet implemented
 ```
 
 ### Transactions
@@ -471,13 +577,13 @@ regen tx ecocredit update-class-metadata C01 cmVnZW4= --from regen1..
 The `sell` command allows users to create new sell orders.
 
 ```bash
-regen tx ecocredit sell ... [flags]
+regen tx ecocredit sell [orders] [flags]
 ```
 
 Example:
 
 ```bash
-regen tx ecocredit sell ... --from regen1..
+regen tx ecocredit sell '[{batch_denom: "C01-20200101-20210101-001", quantity: "2", ask_price: "100stake", disable_auto_retire: false}]' --from regen1
 ```
 
 #### update-sell-order
@@ -485,13 +591,13 @@ regen tx ecocredit sell ... --from regen1..
 The `update-sell-order` command allows users to update a given sell order.
 
 ```bash
-regen tx ecocredit update-sell-order ... [flags]
+regen tx ecocredit update-sell-order [updates] [flags]
 ```
 
 Example:
 
 ```bash
-regen tx ecocredit update-sell-order ... --from regen1..
+regen tx ecocredit update-sell-orders '[{sell_order_id: 1, new_quantity: "2", new_ask_price: "200stake", disable_auto_retire: false}]' --from regen1
 ```
 
 #### buy
@@ -499,13 +605,13 @@ regen tx ecocredit update-sell-order ... --from regen1..
 The `buy` command allows users to create new buy orders.
 
 ```bash
-regen tx ecocredit buy ... [flags]
+regen tx ecocredit buy [orders] [flags]
 ```
 
 Example:
 
 ```bash
-regen tx ecocredit buy ... --from regen1..
+regen tx ecocredit buy '[{sell_order_id: "1", quantity: "2", bid_price: "100regen", disable_auto_retire: false}]' --from regen1..
 ```
 
 ## gRPC
@@ -771,6 +877,18 @@ grpcurl -plaintext \
 Example Output:
 
 ```bash
+{
+  "sellOrder": {
+    "orderId": "1",
+    "owner": "regen1..",
+    "batchDenom": "C01-20200101-20210101-001",
+    "quantity": "2",
+    "askPrice": {
+      "denom": "stake",
+      "amount": "100"
+    }
+  }
+}
 ```
 
 ### SellOrders
@@ -792,6 +910,101 @@ grpcurl -plaintext \
 Example Output:
 
 ```bash
+{
+  "sellOrders": [
+    {
+      "orderId": "1",
+      "owner": "regen1..",
+      "batchDenom": "C01-20200101-20210101-001",
+      "quantity": "2",
+      "askPrice": {
+        "denom": "stake",
+        "amount": "100"
+      }
+    }
+  ],
+  "pagination": {
+    "total": "1"
+  }
+}
+```
+
+### SellOrdersByAddress
+
+The `SellOrdersByAddress` endpoint allows users to query sell orders by owner address.
+
+```bash
+regen.ecocredit.v1alpha1.Query/SellOrdersByAddress
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"address": "regen1.."}' \
+    localhost:9090 \
+    regen.ecocredit.v1alpha1.Query/SellOrdersByAddress
+```
+
+Example Output:
+
+```bash
+{
+  "sellOrders": [
+    {
+      "orderId": "1",
+      "owner": "regen1..",
+      "batchDenom": "C01-20200101-20210101-001",
+      "quantity": "2",
+      "askPrice": {
+        "denom": "stake",
+        "amount": "100"
+      }
+    }
+  ],
+  "pagination": {
+    "total": "1"
+  }
+}
+```
+
+### SellOrdersByBatchDenom
+
+The `SellOrdersByBatchDenom` endpoint allows users to query sell orders by credit batch denom.
+
+```bash
+regen.ecocredit.v1alpha1.Query/SellOrdersByBatchDenom
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"batch_denom": "C01-20200101-20210101-001"}' \
+    localhost:9090 \
+    regen.ecocredit.v1alpha1.Query/SellOrdersByBatchDenom
+```
+
+Example Output:
+
+```bash
+{
+  "sellOrders": [
+    {
+      "orderId": "1",
+      "owner": "regen1..",
+      "batchDenom": "C01-20200101-20210101-001",
+      "quantity": "2",
+      "askPrice": {
+        "denom": "stake",
+        "amount": "100"
+      }
+    }
+  ],
+  "pagination": {
+    "total": "1"
+  }
+}
 ```
 
 ### BuyOrder
@@ -814,6 +1027,7 @@ grpcurl -plaintext \
 Example Output:
 
 ```bash
+# not yet implemented
 ```
 
 ### BuyOrders
@@ -835,6 +1049,30 @@ grpcurl -plaintext \
 Example Output:
 
 ```bash
+# not yet implemented
+```
+
+### BuyOrdersByAddress
+
+The `BuyOrdersByAddress` endpoint allows users to query buy orders by buyer address.
+
+```bash
+regen.ecocredit.v1alpha1.Query/BuyOrdersByAddress
+```
+
+Example:
+
+```bash
+grpcurl -plaintext \
+    -d '{"address": "regen1.."}' \
+    localhost:9090 \
+    regen.ecocredit.v1alpha1.Query/BuyOrdersByAddress
+```
+
+Example Output:
+
+```bash
+# not yet implemented
 ```
 
 ### AllowedAskDenoms
@@ -856,6 +1094,7 @@ grpcurl -plaintext \
 Example Output:
 
 ```bash
+# not yet implemented
 ```
 
 ## REST
@@ -1102,6 +1341,25 @@ curl localhost:1317/regen/ecocredit/v1alpha1/sell-orders
 Example Output:
 
 ```bash
+{
+  "sell_orders": [
+    {
+      "order_id": "1",
+      "owner": "regen1..",
+      "batch_denom": "C01-20200101-20210101-001",
+      "quantity": "2",
+      "ask_price": {
+        "denom": "stake",
+        "amount": "100"
+      },
+      "disable_auto_retire": false
+    }
+  ],
+  "pagination": {
+    "next_key": null,
+    "total": "1"
+  }
+}
 ```
 
 ### sell-orders/address
@@ -1121,6 +1379,25 @@ curl localhost:1317/regen/ecocredit/v1alpha1/sell-orders/address/regen1..
 Example Output:
 
 ```bash
+{
+  "sell_orders": [
+    {
+      "order_id": "1",
+      "owner": "regen1..",
+      "batch_denom": "C01-20200101-20210101-001",
+      "quantity": "2",
+      "ask_price": {
+        "denom": "stake",
+        "amount": "100"
+      },
+      "disable_auto_retire": false
+    }
+  ],
+  "pagination": {
+    "next_key": null,
+    "total": "1"
+  }
+}
 ```
 
 ### sell-orders/batch-denom
@@ -1140,6 +1417,25 @@ curl localhost:1317/regen/ecocredit/v1alpha1/sell-orders/batch-denom/C01-2020010
 Example Output:
 
 ```bash
+{
+  "sell_orders": [
+    {
+      "order_id": "1",
+      "owner": "regen1..",
+      "batch_denom": "C01-20200101-20210101-001",
+      "quantity": "2",
+      "ask_price": {
+        "denom": "stake",
+        "amount": "100"
+      },
+      "disable_auto_retire": false
+    }
+  ],
+  "pagination": {
+    "next_key": null,
+    "total": "1"
+  }
+}
 ```
 
 ### sell-orders/id
@@ -1159,6 +1455,25 @@ curl localhost:1317/regen/ecocredit/v1alpha1/sell-orders/id/1
 Example Output:
 
 ```bash
+{
+  "sell_orders": [
+    {
+      "order_id": "1",
+      "owner": "regen1..",
+      "batch_denom": "C01-20200101-20210101-001",
+      "quantity": "2",
+      "ask_price": {
+        "denom": "stake",
+        "amount": "100"
+      },
+      "disable_auto_retire": false
+    }
+  ],
+  "pagination": {
+    "next_key": null,
+    "total": "1"
+  }
+}
 ```
 
 ### buy-orders
@@ -1178,6 +1493,7 @@ curl localhost:1317/regen/ecocredit/v1alpha1/buy-orders
 Example Output:
 
 ```bash
+# not yet implemented
 ```
 
 ### buy-orders/address
@@ -1197,6 +1513,7 @@ curl localhost:1317/regen/ecocredit/v1alpha1/buy-orders/address/regen1..
 Example Output:
 
 ```bash
+# not yet implemented
 ```
 
 ### buy-orders/id
@@ -1216,6 +1533,7 @@ curl localhost:1317/regen/ecocredit/v1alpha1/buy-orders/id/1
 Example Output:
 
 ```bash
+# not yet implemented
 ```
 
 ### ask-denoms
@@ -1235,4 +1553,5 @@ curl localhost:1317/regen/ecocredit/v1alpha1/ask-denoms
 Example Output:
 
 ```bash
+# not yet implemented
 ```
