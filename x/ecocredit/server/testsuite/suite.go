@@ -44,7 +44,7 @@ func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace 
 		fixtureFactory: fixtureFactory,
 		paramSpace:     paramSpace,
 		bankKeeper:     bankKeeper,
-		accountKeeper: accountKeeper,
+		accountKeeper:  accountKeeper,
 	}
 }
 
@@ -979,14 +979,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 	// reset the space to avoid corrupting other tests
 	s.paramSpace.Set(s.sdkCtx, ecocredit.KeyCreditTypes, ecocredit.DefaultParams().CreditTypes)
 
-	// TODO: test create sell order #627
-
 	askPrice := sdk.NewInt64Coin("stake", 1)
-
 	expectedSellOrderIds := []uint64{1, 2}
-
 	createSellOrder, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
-		Owner:  addr3,
+		Owner: addr3,
 		Orders: []*ecocredit.MsgSell_Order{
 			{
 				BatchDenom:        batchDenom,
@@ -1005,19 +1001,13 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Nil(err)
 	s.Require().Equal(expectedSellOrderIds, createSellOrder.SellOrderIds)
 
-	// TODO: test update sell order #627
-
-	// TODO: test create buy order #627
-
 	expectedBuyOrderIds := []uint64{1}
-
 	selection := &ecocredit.MsgBuy_Order_Selection{
 		Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: 2},
 	}
-
 	createBuyOrder, err := s.msgClient.Buy(s.ctx, &ecocredit.MsgBuy{
-		Buyer:	admin.String(),
-		Orders:	[]*ecocredit.MsgBuy_Order{
+		Buyer: admin.String(),
+		Orders: []*ecocredit.MsgBuy_Order{
 			{
 				Selection:          selection,
 				Quantity:           "1.0",
@@ -1029,7 +1019,4 @@ func (s *IntegrationTestSuite) TestScenario() {
 	})
 	s.Require().Nil(err)
 	s.Require().Equal(expectedBuyOrderIds, createBuyOrder.BuyOrderIds)
-
-	// TODO: test allow ask denom #627
-
 }
