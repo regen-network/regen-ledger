@@ -7,10 +7,10 @@ require (
 	github.com/cosmos/ibc-go/v2 v2.0.0
 	github.com/gorilla/mux v1.8.0
 	github.com/rakyll/statik v0.1.7
-	github.com/regen-network/regen-ledger/types v1.0.0
+	github.com/regen-network/regen-ledger/types v0.0.0-00010101000000-000000000000
 	github.com/regen-network/regen-ledger/x/data v0.0.0-20210602121340-fa967f821a6e
-	github.com/regen-network/regen-ledger/x/ecocredit v1.0.0
-	github.com/regen-network/regen-ledger/x/group v1.0.0-beta1
+	github.com/regen-network/regen-ledger/x/ecocredit v0.0.0-20210602121340-fa967f821a6e
+	github.com/regen-network/regen-ledger/x/group v0.0.0-00010101000000-000000000000
 	github.com/rs/zerolog v1.23.0
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.2.1
@@ -107,7 +107,7 @@ require (
 	github.com/prometheus/procfs v0.6.0 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20200313005456-10cdbea86bc0 // indirect
 	github.com/regen-network/cosmos-proto v0.3.1 // indirect
-	github.com/regen-network/regen-ledger/orm v1.0.0-beta1 // indirect
+	github.com/regen-network/regen-ledger/orm v0.0.0-00010101000000-000000000000 // indirect
 	github.com/rs/cors v1.7.0 // indirect
 	github.com/sasha-s/go-deadlock v0.2.1-0.20190427202633-1595213edefa // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
