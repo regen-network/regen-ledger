@@ -206,8 +206,6 @@ type RegenApp struct {
 
 	// module configurator
 	configurator module.Configurator
-
-	bte *BlockTimerExecutor
 }
 
 // NewRegenApp returns a reference to an initialized RegenApp.
@@ -247,8 +245,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 		keys:              keys,
 		tkeys:             tkeys,
 		memKeys:           memKeys,
-
-		bte: NewBlockTimerExecutor(),
 	}
 
 	app.ParamsKeeper = initParamsKeeper(appCodec, legacyAmino, keys[paramstypes.StoreKey], tkeys[paramstypes.TStoreKey])
@@ -495,11 +491,6 @@ func NewRegenApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest 
 	// note replicate if you do not need to test core IBC or light clients.
 	app.ScopedIBCMockKeeper = scopedIBCMockKeeper
 
-	app.AddPatch(3126912, func(ctx sdk.Context) error {
-		app.IBCKeeper.ConnectionKeeper.SetParams(ctx, ibcconnectiontypes.DefaultParams())
-		return nil
-	})
-
 	return app
 }
 
@@ -516,12 +507,7 @@ func (app *RegenApp) Name() string { return app.BaseApp.Name() }
 
 // BeginBlocker application updates every begin block
 func (app *RegenApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	app.bte.Start(ctx)
 	return app.mm.BeginBlock(ctx, req)
-}
-
-func (app *RegenApp) AddPatch(height int64, patch Execute) {
-	app.bte.add(height, patch)
 }
 
 // EndBlocker application updates every end block
