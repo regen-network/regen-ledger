@@ -4,16 +4,17 @@ import (
 	"context"
 	"time"
 
-	"github.com/regen-network/regen-ledger/types/testutil"
+	"github.com/stretchr/testify/suite"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
-	"github.com/stretchr/testify/suite"
 
 	"github.com/regen-network/regen-ledger/types"
+	"github.com/regen-network/regen-ledger/types/testutil"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
@@ -30,18 +31,20 @@ type IntegrationTestSuite struct {
 	paramsQueryClient params.QueryClient
 	signers           []sdk.AccAddress
 
-	paramSpace paramstypes.Subspace
-	bankKeeper bankkeeper.Keeper
+	paramSpace    paramstypes.Subspace
+	bankKeeper    bankkeeper.Keeper
+	accountKeeper authkeeper.AccountKeeper
 
 	genesisCtx types.Context
 	blockTime  time.Time
 }
 
-func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper) *IntegrationTestSuite {
+func NewIntegrationTestSuite(fixtureFactory testutil.FixtureFactory, paramSpace paramstypes.Subspace, bankKeeper bankkeeper.BaseKeeper, accountKeeper authkeeper.AccountKeeper) *IntegrationTestSuite {
 	return &IntegrationTestSuite{
 		fixtureFactory: fixtureFactory,
 		paramSpace:     paramSpace,
 		bankKeeper:     bankKeeper,
+		accountKeeper:  accountKeeper,
 	}
 }
 
@@ -976,14 +979,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 	// reset the space to avoid corrupting other tests
 	s.paramSpace.Set(s.sdkCtx, ecocredit.KeyCreditTypes, ecocredit.DefaultParams().CreditTypes)
 
-	// TODO: test create sell order #627
-
 	askPrice := sdk.NewInt64Coin("stake", 1)
-
 	expectedSellOrderIds := []uint64{1, 2}
-
 	createSellOrder, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
-		Owner:  addr3,
+		Owner: addr3,
 		Orders: []*ecocredit.MsgSell_Order{
 			{
 				BatchDenom:        batchDenom,
@@ -1002,19 +1001,13 @@ func (s *IntegrationTestSuite) TestScenario() {
 	s.Require().Nil(err)
 	s.Require().Equal(expectedSellOrderIds, createSellOrder.SellOrderIds)
 
-	// TODO: test update sell order #627
-
-	// TODO: test create buy order #627
-
 	expectedBuyOrderIds := []uint64{1}
-
 	selection := &ecocredit.MsgBuy_Order_Selection{
 		Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: 2},
 	}
-
 	createBuyOrder, err := s.msgClient.Buy(s.ctx, &ecocredit.MsgBuy{
-		Buyer:	admin.String(),
-		Orders:	[]*ecocredit.MsgBuy_Order{
+		Buyer: admin.String(),
+		Orders: []*ecocredit.MsgBuy_Order{
 			{
 				Selection:          selection,
 				Quantity:           "1.0",
@@ -1026,7 +1019,4 @@ func (s *IntegrationTestSuite) TestScenario() {
 	})
 	s.Require().Nil(err)
 	s.Require().Equal(expectedBuyOrderIds, createBuyOrder.BuyOrderIds)
-
-	// TODO: test allow ask denom #627
-
 }
