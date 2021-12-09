@@ -125,6 +125,19 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 			} else {
 				require.NoError(err)
 				require.NotNil(res.SellOrderIds)
+
+				// query first sell order
+				_, sellError1 := s.queryClient.SellOrder(s.ctx, &ecocredit.QuerySellOrderRequest{
+					SellOrderId: res.SellOrderIds[0],
+				})
+
+				// query second sell order
+				_, sellError2 := s.queryClient.SellOrder(s.ctx, &ecocredit.QuerySellOrderRequest{
+					SellOrderId: res.SellOrderIds[1],
+				})
+
+				require.NoError(sellError1)
+				require.NoError(sellError2)
 			}
 		})
 	}
@@ -137,9 +150,9 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 	// create credit class and issue credits to addr1
 	_, createBatchRes := s.createClassAndIssueBatch(addr1, "2.0")
 
-	askPrice1 := sdk.NewInt64Coin("stake", 1000000)
+	askPrice1 := sdk.NewInt64Coin("stake", 2000000)
 	// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
-	//askPrice2 := sdk.NewInt64Coin("token", 1000000)
+	//askPrice2 := sdk.NewInt64Coin("token", 2000000)
 
 	// create sell order
 	sellRes, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
@@ -288,6 +301,21 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 				require.Contains(err.Error(), tc.expErr)
 			} else {
 				require.NoError(err)
+
+				// query first sell order
+				sellResponse1, sellError1 := s.queryClient.SellOrder(s.ctx, &ecocredit.QuerySellOrderRequest{
+					SellOrderId: tc.updates[0].SellOrderId,
+				})
+
+				// query second sell order
+				sellResponse2, sellError2 := s.queryClient.SellOrder(s.ctx, &ecocredit.QuerySellOrderRequest{
+					SellOrderId: tc.updates[1].SellOrderId,
+				})
+
+				require.NoError(sellError1)
+				require.NoError(sellError2)
+				require.Equal(tc.updates[0].NewAskPrice, sellResponse1.SellOrder.AskPrice)
+				require.Equal(tc.updates[1].NewAskPrice, sellResponse2.SellOrder.AskPrice)
 			}
 		})
 	}
@@ -298,7 +326,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 	addr2 := s.signers[4]
 
 	// create credit class and issue credits to addr1
-	_, createBatchRes := s.createClassAndIssueBatch(addr1.String(), "2.0")
+	_, createBatchRes := s.createClassAndIssueBatch(addr1.String(), "4.0")
 
 	bidPrice1 := sdk.NewInt64Coin("stake", 1000000)
 	bidPrice2 := sdk.NewInt64Coin("stake", 9999999)
@@ -306,12 +334,24 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 	//bidPrice3 := sdk.NewInt64Coin("token", 1000000)
 
 	// fund buyer account
-	s.Require().NoError(s.fundAccount(addr2, sdk.NewCoins(sdk.NewInt64Coin("stake", 2000000))))
+	s.Require().NoError(s.fundAccount(addr2, sdk.NewCoins(sdk.NewInt64Coin("stake", 4000000))))
 
 	// create sell orders
 	sellRes, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
 		Owner: addr1.String(),
 		Orders: []*ecocredit.MsgSell_Order{
+			{
+				BatchDenom:        createBatchRes.BatchDenom,
+				Quantity:          "1.0",
+				AskPrice:          &bidPrice1,
+				DisableAutoRetire: true,
+			},
+			{
+				BatchDenom:        createBatchRes.BatchDenom,
+				Quantity:          "1.0",
+				AskPrice:          &bidPrice1,
+				DisableAutoRetire: true,
+			},
 			{
 				BatchDenom:        createBatchRes.BatchDenom,
 				Quantity:          "1.0",
@@ -330,14 +370,15 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 
 	// process buy orders
 	testCases := []struct {
-		name             string
-		buyer            string
-		orders           []*ecocredit.MsgBuy_Order
-		expErr           string
-		wantErr          bool
+		name    string
+		buyer   string
+		orders  []*ecocredit.MsgBuy_Order
+		expErr  string
+		wantErr bool
+		partial bool
 	}{
 		{
-			name: "invalid sell order",
+			name:  "invalid sell order",
 			buyer: addr2.String(),
 			orders: []*ecocredit.MsgBuy_Order{
 				{
@@ -353,11 +394,11 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 					DisableAutoRetire: true,
 				},
 			},
-			expErr: "not found",
+			expErr:  "not found",
 			wantErr: true,
 		},
 		{
-			name: "insufficient coin balance - quantity",
+			name:  "insufficient coin balance - quantity",
 			buyer: addr2.String(),
 			orders: []*ecocredit.MsgBuy_Order{
 				{
@@ -373,11 +414,11 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 					DisableAutoRetire: true,
 				},
 			},
-			expErr: "insufficient balance",
+			expErr:  "insufficient balance",
 			wantErr: true,
 		},
 		{
-			name: "insufficient coin balance - bid price",
+			name:  "insufficient coin balance - bid price",
 			buyer: addr2.String(),
 			orders: []*ecocredit.MsgBuy_Order{
 				{
@@ -393,7 +434,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 					DisableAutoRetire: true,
 				},
 			},
-			expErr: "insufficient balance",
+			expErr:  "insufficient balance",
 			wantErr: true,
 		},
 		// TODO: Verify that BidPrice.Denom is in AllowAskDenom #624
@@ -418,7 +459,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 		//	wantErr: true,
 		//},
 		{
-			name: "valid request",
+			name:  "valid request",
 			buyer: addr2.String(),
 			orders: []*ecocredit.MsgBuy_Order{
 				{
@@ -434,8 +475,30 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 					DisableAutoRetire: true,
 				},
 			},
-			expErr: "",
+			expErr:  "",
 			wantErr: false,
+			partial: false,
+		},
+		{
+			name:  "valid request - partial fill",
+			buyer: addr2.String(),
+			orders: []*ecocredit.MsgBuy_Order{
+				{
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[2]}},
+					Quantity:          "0.5",
+					BidPrice:          &bidPrice1,
+					DisableAutoRetire: true,
+				},
+				{
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[3]}},
+					Quantity:          "0.5",
+					BidPrice:          &bidPrice1,
+					DisableAutoRetire: true,
+				},
+			},
+			expErr:  "",
+			wantErr: false,
+			partial: true,
 		},
 	}
 
@@ -445,8 +508,14 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 		s.Run(tc.name, func() {
 			require := s.Require()
 
-			// get buyer balance before
-			balanceBefore := s.bankKeeper.GetBalance(s.sdkCtx, addr2, "stake")
+			// get buyer coin balance before
+			coinBalanceBefore := s.bankKeeper.GetBalance(s.sdkCtx, addr2, "stake")
+
+			// get buyer credit balance before
+			creditBalanceBefore, _ := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
+				Account:    addr2.String(),
+				BatchDenom: createBatchRes.BatchDenom,
+			})
 
 			// process buy orders
 			res, err := s.msgClient.Buy(s.ctx, &ecocredit.MsgBuy{
@@ -454,8 +523,14 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 				Orders: tc.orders,
 			})
 
-			// get buyer balance after
-			balanceAfter := s.bankKeeper.GetBalance(s.sdkCtx, addr2, "stake")
+			// get buyer coin balance after
+			coinBalanceAfter := s.bankKeeper.GetBalance(s.sdkCtx, addr2, "stake")
+
+			// get buyer credit balance after
+			creditBalanceAfter, _ := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
+				Account:    addr2.String(),
+				BatchDenom: createBatchRes.BatchDenom,
+			})
 
 			// query first sell order
 			sellResponse1, sellError1 := s.queryClient.SellOrder(s.ctx, &ecocredit.QuerySellOrderRequest{
@@ -470,15 +545,25 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 			if tc.wantErr {
 				require.Error(err)
 				require.Contains(err.Error(), tc.expErr)
-				require.Equal(balanceBefore, balanceAfter)
+				require.Equal(coinBalanceBefore, coinBalanceAfter)
+				require.Equal(creditBalanceBefore, creditBalanceAfter)
 			} else {
 				require.NoError(err)
 				require.NotNil(res.BuyOrderIds)
-				require.NotEqual(balanceBefore, balanceAfter)
-				require.Nil(sellResponse1)
-				require.Nil(sellResponse2)
-				require.Error(sellError1)
-				require.Error(sellError2)
+				require.NotEqual(coinBalanceBefore, coinBalanceAfter)
+				require.NotEqual(creditBalanceBefore, creditBalanceAfter)
+
+				if tc.partial {
+					require.NotNil(sellResponse1)
+					require.NotNil(sellResponse2)
+					require.NoError(sellError1)
+					require.NoError(sellError2)
+				} else {
+					require.Nil(sellResponse1)
+					require.Nil(sellResponse2)
+					require.Error(sellError1)
+					require.Error(sellError2)
+				}
 			}
 		})
 	}
@@ -492,22 +577,22 @@ func (s *IntegrationTestSuite) TestScenarioAllowAskDenom() {
 
 	// add ask denom
 	testCases := []struct {
-		name             string
-		rootAddress      string
-		denom            string
-		displayDenom     string
-		exponent         uint32
-		expErr           string
-		wantErr          bool
+		name         string
+		rootAddress  string
+		denom        string
+		displayDenom string
+		exponent     uint32
+		expErr       string
+		wantErr      bool
 	}{
 		{
-			name: "unauthorized address",
-			rootAddress: addr1,
-			denom: "utoken",
+			name:         "unauthorized address",
+			rootAddress:  addr1,
+			denom:        "utoken",
 			displayDenom: "token",
-			exponent: 6,
-			expErr: "unauthorized",
-			wantErr: true,
+			exponent:     6,
+			expErr:       "unauthorized",
+			wantErr:      true,
 		},
 		// TODO: Verify governance module address for AllowAskDenom #624
 		//{
