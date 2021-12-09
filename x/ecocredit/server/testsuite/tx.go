@@ -334,7 +334,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 	//bidPrice3 := sdk.NewInt64Coin("token", 1000000)
 
 	// fund buyer account
-	s.Require().NoError(s.fundAccount(addr2, sdk.NewCoins(sdk.NewInt64Coin("stake", 4000000))))
+	s.Require().NoError(s.fundAccount(addr2, sdk.NewCoins(sdk.NewInt64Coin("stake", 3000000))))
 
 	// create sell orders
 	sellRes, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
@@ -370,12 +370,14 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 
 	// process buy orders
 	testCases := []struct {
-		name    string
-		buyer   string
-		orders  []*ecocredit.MsgBuy_Order
-		expErr  string
-		wantErr bool
-		partial bool
+		name             string
+		buyer            string
+		orders           []*ecocredit.MsgBuy_Order
+		expErr           string
+		wantErr          bool
+		partial          bool
+		expCoinBalance   sdk.Coin
+		expCreditBalance *ecocredit.QueryBalanceResponse
 	}{
 		{
 			name:  "invalid sell order",
@@ -478,6 +480,11 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 			expErr:  "",
 			wantErr: false,
 			partial: false,
+			expCoinBalance: sdk.Coin{
+				Denom:  "stake",
+				Amount: sdk.NewInt(1000000),
+			},
+			expCreditBalance: &ecocredit.QueryBalanceResponse{TradableAmount: "2", RetiredAmount: "0"},
 		},
 		{
 			name:  "valid request - partial fill",
@@ -499,6 +506,11 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 			expErr:  "",
 			wantErr: false,
 			partial: true,
+			expCoinBalance: sdk.Coin{
+				Denom:  "stake",
+				Amount: sdk.NewInt(0),
+			},
+			expCreditBalance: &ecocredit.QueryBalanceResponse{TradableAmount: "3", RetiredAmount: "0"},
 		},
 	}
 
@@ -550,8 +562,9 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 			} else {
 				require.NoError(err)
 				require.NotNil(res.BuyOrderIds)
-				require.NotEqual(coinBalanceBefore, coinBalanceAfter)
-				require.NotEqual(creditBalanceBefore, creditBalanceAfter)
+
+				require.Equal(tc.expCoinBalance, coinBalanceAfter)
+				require.Equal(tc.expCreditBalance, creditBalanceAfter)
 
 				if tc.partial {
 					require.NotNil(sellResponse1)
