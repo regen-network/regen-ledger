@@ -1502,7 +1502,7 @@ func (s *IntegrationTestSuite) TestTxSell() {
 			expOrder: &ecocredit.SellOrder{
 				OrderId:           4,
 				Owner:             val0.Address.String(),
-				BatchDenom:        "C01-20210101-20210201-001",
+				BatchDenom:        batchDenom,
 				Quantity:          "5",
 				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
 				DisableAutoRetire: false,
@@ -1645,7 +1645,7 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 			expOrder: &ecocredit.SellOrder{
 				OrderId:           4,
 				Owner:             val0.Address.String(),
-				BatchDenom:        "C01-20210101-20210201-001",
+				BatchDenom:        batchDenom,
 				Quantity:          "5",
 				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(200)},
 				DisableAutoRetire: false,
