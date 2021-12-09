@@ -364,6 +364,7 @@ AskDenom represents the information for an ask denom.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| basket_id | [uint64](#uint64) |  | basket_id is the id of the basket |
 | basket_denom | [string](#string) |  | basket_denom is the denom of the basket's coin |
 | curator | [string](#string) |  | curator is the address of the basket curator who is able to change certain basket settings. |
 | name | [string](#string) |  | name will be used to create a bank denom for this basket token of the form ecocredit:{curator}:{name}. |

@@ -248,7 +248,7 @@ message Filter {
     // tag specifies a curation tag to match against.
     string tag = 12;
   }
-// checkFilters(filters, batchInfo, basket, req.Owner, )
+
   message And {
     repeated Filter filters = 1;
   }
@@ -272,37 +272,40 @@ message Filter {
 
 message Basket {
 
+  // basket_id is the id of the basket
+  uint64 basket_id = 1;
+
   // basket_denom is the denom of the basket's coin
-  string basket_denom = 1;
+  string basket_denom = 2;
 
   // curator is the address of the basket curator who is able to change certain
   // basket settings.
-  string curator = 2;
+  string curator = 3;
 
   // name will be used to create a bank denom for this basket token of the form
   // ecocredit:{curator}:{name}.
-  string name = 3;
+  string name = 4;
 
   // display_name will be used to create a bank Metadata display name for this
   // basket token of the form ecocredit:{curator}:{display_name}.
-  string display_name = 4;
+  string display_name = 5;
 
   // exponent is the exponent that will be used for denom metadata. An exponent
   // of 6 will mean that 10^6 units of a basket token should be displayed
   // as one unit in user interfaces.
-  uint32 exponent = 5;
+  uint32 exponent = 6;
 
   // basket_criteria is the criteria by which credits can be added to the
   // basket. Basket criteria will be applied in order and the first criteria
   // which applies to a credit will determine its multiplier in the basket.
-  repeated BasketCriteria basket_criteria = 6;
+  repeated BasketCriteria basket_criteria = 7;
 
   // disable_auto_retire disables the auto-retirement of credits upon taking from the basket.
   // set to true to allow credits to be taken without retiring.
-  bool disable_auto_retire = 7;
+  bool disable_auto_retire = 8;
 
   // allow_picking allows the picking of specific credits from the basket
-  bool allow_picking = 8;
+  bool allow_picking = 9;
 }
 
 message BasketCriteria {
