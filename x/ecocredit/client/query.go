@@ -340,7 +340,7 @@ func QueryBuyOrderCmd() *cobra.Command {
 			}
 			buyOrderId, err := strconv.ParseUint(args[0], 10, 64)
 			if err != nil {
-				return ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
+				return ecocredit.ErrInvalidBuyOrder.Wrap(err.Error())
 			}
 			res, err := c.BuyOrder(cmd.Context(), &ecocredit.QueryBuyOrderRequest{
 				BuyOrderId: buyOrderId,

@@ -450,6 +450,7 @@ func (s *IntegrationTestSuite) TestGetSellOrders() {
 
 func (s *IntegrationTestSuite) TestGetSellOrdersByBatchDenom() {
 	val := s.network.Validators[0]
+	batchDenom := s.batchInfo.BatchDenom
 
 	testCases := []struct {
 		name     string
@@ -467,14 +468,14 @@ func (s *IntegrationTestSuite) TestGetSellOrdersByBatchDenom() {
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s", val.APIAddress, "C01-20210101-20210201-001"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s", val.APIAddress, batchDenom),
 			false,
 			"",
 			3,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s?pagination.limit=2", val.APIAddress, "C01-20210101-20210201-001"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s?pagination.limit=2", val.APIAddress, batchDenom),
 			false,
 			"",
 			2,
