@@ -98,9 +98,9 @@ Parameters:
 			if args[2] == "" {
 				return errors.New("base64_metadata is required")
 			}
-			b, err := base64.StdEncoding.DecodeString(args[2])
+			b, err := decodeMetadata(args[2])
 			if err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
+				return err
 			}
 
 			msg := ecocredit.MsgCreateClass{
@@ -183,9 +183,9 @@ Required Flags:
 			if err != nil {
 				return err
 			}
-			b, err := base64.StdEncoding.DecodeString(metadataStr)
+			b, err := decodeMetadata(metadataStr)
 			if err != nil {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
+				return err
 			}
 
 			msg := &ecocredit.MsgCreateBatch{
@@ -398,9 +398,9 @@ Parameters:
 			if args[1] == "" {
 				return errors.New("base64_metadata is required")
 			}
-			b, err := base64.StdEncoding.DecodeString(args[1])
+			b, err := decodeMetadata(args[1])
 			if err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
+				return err
 			}
 
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
@@ -523,15 +523,19 @@ func TxCreateProject() *cobra.Command {
 			if args[1] == "" {
 				return errors.New("project location is required")
 			}
+
 			projectLocation := args[1]
+			if err := ecocredit.ValidateLocation(projectLocation); err != nil {
+				return err
+			}
 
 			if args[2] == "" {
 				return errors.New("metadata is required")
 			}
 
-			b, err := base64.StdEncoding.DecodeString(args[2])
+			b, err := decodeMetadata(args[2])
 			if err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
+				return err
 			}
 
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
@@ -560,4 +564,13 @@ func TxCreateProject() *cobra.Command {
 	cmd.Flags().String(FlagProjectId, "", "id of the project")
 
 	return cmd
+}
+
+func decodeMetadata(metadataStr string) ([]byte, error) {
+	b, err := base64.StdEncoding.DecodeString(metadataStr)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
+	}
+
+	return b, nil
 }
