@@ -3,6 +3,8 @@ package server_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/suite"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -12,17 +14,17 @@ import (
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	params "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
+
 	"github.com/regen-network/regen-ledger/types/module"
 	"github.com/regen-network/regen-ledger/types/module/server"
 	ecocredittypes "github.com/regen-network/regen-ledger/x/ecocredit"
 	ecocredit "github.com/regen-network/regen-ledger/x/ecocredit/module"
 	"github.com/regen-network/regen-ledger/x/ecocredit/server/testsuite"
-	"github.com/stretchr/testify/suite"
 )
 
 func TestServer(t *testing.T) {
-	ff, ecocreditSubspace, bankKeeper := setup(t)
-	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper)
+	ff, ecocreditSubspace, bankKeeper, accountKeeper := setup(t)
+	s := testsuite.NewIntegrationTestSuite(ff, ecocreditSubspace, bankKeeper, accountKeeper)
 	suite.Run(t, s)
 }
 
@@ -32,7 +34,7 @@ func TestInvalidGenesis(t *testing.T) {
 	suite.Run(t, s)
 }
 
-func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeeper.BaseKeeper) {
+func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeeper.BaseKeeper, authkeeper.AccountKeeper) {
 	ff := server.NewFixtureFactory(t, 8)
 	baseApp := ff.BaseApp()
 	cdc := ff.Codec()
@@ -71,5 +73,5 @@ func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeep
 	ecocreditModule := ecocredit.NewModule(ecocreditSubspace, accountKeeper, bankKeeper)
 	ff.SetModules([]module.Module{ecocreditModule})
 
-	return ff, ecocreditSubspace, bankKeeper
+	return ff, ecocreditSubspace, bankKeeper, accountKeeper
 }
