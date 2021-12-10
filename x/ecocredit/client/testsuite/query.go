@@ -573,32 +573,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrders() {
 			args:      []string{},
 			expErr:    false,
 			expErrMsg: "",
-			expOrders: []*ecocredit.SellOrder{
-				{
-					OrderId:           1,
-					Owner:             val.Address.String(),
-					BatchDenom:        batchDenom,
-					Quantity:          "1",
-					AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-					DisableAutoRetire: false,
-				},
-				{
-					OrderId:           2,
-					Owner:             val.Address.String(),
-					BatchDenom:        batchDenom,
-					Quantity:          "1",
-					AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-					DisableAutoRetire: false,
-				},
-				{
-					OrderId:           3,
-					Owner:             val.Address.String(),
-					BatchDenom:        batchDenom,
-					Quantity:          "1",
-					AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-					DisableAutoRetire: false,
-				},
-			},
+			expOrders: s.sellOrders,
 		},
 	}
 
@@ -654,32 +629,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByAddress() {
 			args:      []string{val.Address.String()},
 			expErr:    false,
 			expErrMsg: "",
-			expOrders: []*ecocredit.SellOrder{
-				{
-					OrderId:           1,
-					Owner:             val.Address.String(),
-					BatchDenom:        batchDenom,
-					Quantity:          "1",
-					AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-					DisableAutoRetire: false,
-				},
-				{
-					OrderId:           2,
-					Owner:             val.Address.String(),
-					BatchDenom:        batchDenom,
-					Quantity:          "1",
-					AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-					DisableAutoRetire: false,
-				},
-				{
-					OrderId:           3,
-					Owner:             val.Address.String(),
-					BatchDenom:        batchDenom,
-					Quantity:          "1",
-					AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-					DisableAutoRetire: false,
-				},
-			},
+			expOrders: s.sellOrders,
 		},
 	}
 
@@ -735,32 +685,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenom() {
 			args:      []string{batchDenom},
 			expErr:    false,
 			expErrMsg: "",
-			expOrders: []*ecocredit.SellOrder{
-				{
-					OrderId:           1,
-					Owner:             val.Address.String(),
-					BatchDenom:        batchDenom,
-					Quantity:          "1",
-					AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-					DisableAutoRetire: false,
-				},
-				{
-					OrderId:           2,
-					Owner:             val.Address.String(),
-					BatchDenom:        batchDenom,
-					Quantity:          "1",
-					AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-					DisableAutoRetire: false,
-				},
-				{
-					OrderId:           3,
-					Owner:             val.Address.String(),
-					BatchDenom:        batchDenom,
-					Quantity:          "1",
-					AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-					DisableAutoRetire: false,
-				},
-			},
+			expOrders: s.sellOrders,
 		},
 	}
 

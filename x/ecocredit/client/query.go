@@ -389,6 +389,7 @@ func QueryBuyOrdersByAddressCmd() *cobra.Command {
 				return err
 			}
 			res, err := c.BuyOrdersByAddress(cmd.Context(), &ecocredit.QueryBuyOrdersByAddressRequest{
+				Address:    args[0],
 				Pagination: pagination,
 			})
 			return print(ctx, res, err)

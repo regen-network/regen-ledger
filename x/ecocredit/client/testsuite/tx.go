@@ -32,6 +32,7 @@ type IntegrationTestSuite struct {
 	testAccount sdk.AccAddress
 	classInfo   *ecocredit.ClassInfo
 	batchInfo   *ecocredit.BatchInfo
+	sellOrders  []*ecocredit.SellOrder
 }
 
 const (
@@ -210,6 +211,33 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	txResp := sdk.TxResponse{}
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResp), out.String())
 	s.Require().Equal(uint32(0), txResp.Code, out.String())
+
+	s.sellOrders = []*ecocredit.SellOrder{
+		{
+			OrderId:           1,
+			Owner:             val.Address.String(),
+			BatchDenom:        batchDenom,
+			Quantity:          "1",
+			AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+			DisableAutoRetire: false,
+		},
+		{
+			OrderId:           2,
+			Owner:             val.Address.String(),
+			BatchDenom:        batchDenom,
+			Quantity:          "1",
+			AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+			DisableAutoRetire: false,
+		},
+		{
+			OrderId:           3,
+			Owner:             val.Address.String(),
+			BatchDenom:        batchDenom,
+			Quantity:          "1",
+			AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+			DisableAutoRetire: false,
+		},
+	}
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
