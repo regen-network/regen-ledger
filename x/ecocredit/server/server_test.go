@@ -29,7 +29,7 @@ func TestServer(t *testing.T) {
 }
 
 func TestInvalidGenesis(t *testing.T) {
-	ff, ecocreditSubspace, bankKeeper := setup(t)
+	ff, ecocreditSubspace, bankKeeper, _ := setup(t)
 	s := testsuite.NewGenesisTestSuite(ff, ecocreditSubspace, bankKeeper)
 	suite.Run(t, s)
 }

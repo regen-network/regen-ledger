@@ -663,13 +663,21 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(recipient string, tradab
 	})
 	s.Require().NoError(err)
 
+	// create project
+	projectRes, err := s.msgClient.CreateProject(s.ctx, &ecocredit.MsgCreateProject{
+		ClassId:         createClassRes.ClassId,
+		Issuer:          issuer1,
+		Metadata:        []byte("metadata"),
+		ProjectLocation: "AB",
+	})
+	s.Require().NoError(err)
+
 	// create credit batch
 	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
-		Issuer:          issuer1,
-		ClassId:         createClassRes.ClassId,
-		StartDate:       &time1,
-		EndDate:         &time2,
-		ProjectLocation: "AB",
+		Issuer:    issuer1,
+		ProjectId: projectRes.ProjectId,
+		StartDate: &time1,
+		EndDate:   &time2,
 		Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
 			{
 				Recipient:          recipient,
