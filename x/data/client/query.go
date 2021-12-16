@@ -44,7 +44,7 @@ $ regen query data by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1h
 
 	cmd.AddCommand(
 		queryByIRICmd,
-		QuerySignersCmd(),
+		QueryBySignerCmd(),
 		QuerySignersCmd(),
 	)
 
