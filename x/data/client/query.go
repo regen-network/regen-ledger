@@ -2,13 +2,13 @@ package client
 
 import (
 	"fmt"
-	"github.com/regen-network/regen-ledger/x/data"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	gocid "github.com/ipfs/go-cid"
 	"github.com/spf13/cobra"
+
+	"github.com/regen-network/regen-ledger/x/data"
 )
 
 // QueryCmd returns the parent command for all x/data CLI query commands
@@ -32,8 +32,7 @@ $ regen query data by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1h
 		SuggestionsMinimumDistance: 2,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// If 1st arg is NOT an IRI, parse subcommands as usual.
-			_, err := gocid.Decode(args[0])
-			if err != nil {
+			if !strings.Contains(args[0], "regen:") {
 				return client.ValidateCmd(cmd, args)
 			}
 
