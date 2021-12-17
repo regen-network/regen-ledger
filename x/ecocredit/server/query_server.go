@@ -273,8 +273,7 @@ func (s serverImpl) SellOrdersByBatchDenom(goCtx context.Context, request *ecocr
 	}
 
 	ctx := types.UnwrapSDKContext(goCtx)
-	denomBytes := []byte(request.BatchDenom)
-	ordersIter, err := s.sellOrderByBatchDenomIndex.GetPaginated(ctx, denomBytes, request.Pagination)
+	ordersIter, err := s.sellOrderByBatchDenomIndex.GetPaginated(ctx, request.BatchDenom, request.Pagination)
 	if err != nil {
 		return nil, err
 	}

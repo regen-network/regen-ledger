@@ -102,8 +102,8 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	}
 	s.sellOrderByBatchDenomIndex, err = orm.NewIndex(sellOrderTableBuilder, SellOrderByBatchDenomIndexPrefix, func(value interface{}) ([]interface{}, error) {
 		denom := value.(*ecocredit.SellOrder).BatchDenom
-		return []interface{}{[]byte(denom)}, nil
-	}, []byte{})
+		return []interface{}{denom}, nil
+	}, ecocredit.SellOrder{}.BatchDenom)
 	if err != nil {
 		panic(err.Error())
 	}
