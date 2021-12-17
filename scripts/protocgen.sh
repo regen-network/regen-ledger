@@ -36,7 +36,7 @@ Mgoogle/protobuf/any.proto=github.com/cosmos/cosmos-sdk/codec/types:. \
   buf protoc \
   -I "proto" \
   -I "third_party/proto" \
-  --grpc-gateway_out=logtostderr=true:. \
+  --grpc-gateway_out=logtostderr=true,allow_colon_final_segments=true:. \
   $(find "${dir}" -maxdepth 1 -name '*.proto')
 
   # get the module name, e.g. from "./proto/regen/data/v1alpha1", extract "data"

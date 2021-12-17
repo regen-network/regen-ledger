@@ -400,11 +400,11 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_ByIRI_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "data", "v1alpha2", "content", "iri"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ByIRI_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "data", "v1alpha2", "by-iri", "iri"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_BySigner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "data", "v1alpha2", "content", "signer"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_BySigner_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "data", "v1alpha2", "by-signer", "signer"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Signers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "data", "v1alpha2", "signers", "iri"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Signers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "data", "v1alpha2", "signers", "iri"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (
