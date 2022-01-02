@@ -7,6 +7,7 @@ import (
 )
 
 func (s *IntegrationTestSuite) TestQueryClasses() {
+	require := s.Require()
 
 	testCases := []struct {
 		name      string
@@ -28,7 +29,6 @@ func (s *IntegrationTestSuite) TestQueryClasses() {
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			_, err := s.queryClient.Classes(s.ctx, tc.request)

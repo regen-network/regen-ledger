@@ -5,7 +5,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	"github.com/regen-network/regen-ledger/orm"
@@ -587,7 +586,11 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 
 		sellOrder, err := s.getSellOrder(ctx, update.SellOrderId)
 		if err != nil {
-			return nil, err
+			return nil, ecocredit.ErrInvalidSellOrder.Wrapf("sell order id %d not found", update.SellOrderId)
+		}
+
+		if req.Owner != sellOrder.Owner {
+			return nil, sdkerrors.ErrUnauthorized.Wrapf("signer is not the owner of sell order id %d",  update.SellOrderId)
 		}
 
 		// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
@@ -660,7 +663,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 
 		// verify buyer has sufficient balance in coin
 		if balanceAmount.LT(coinToSend.Amount) {
-			return nil, ecocredit.ErrInsufficientFunds.Wrapf("insufficient balance: got %s, needed at least: %s", balanceAmount.String(), coinToSend.Amount.String())
+			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance: got %s, needed at least: %s", balanceAmount.String(), coinToSend.Amount.String())
 		}
 
 		switch order.Selection.Sum.(type) {
@@ -747,7 +750,9 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 			if creditsRemaining.IsZero() {
 
 				// delete sell order if no remaining credits
-				s.sellOrderTable.Delete(ctx, sellOrder.OrderId)
+				if err := s.sellOrderTable.Delete(ctx, sellOrder.OrderId); err != nil {
+					return nil, err
+				}
 
 			} else {
 				sellOrder.Quantity = creditsRemaining.String()
@@ -803,8 +808,10 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 func (s serverImpl) AllowAskDenom(goCtx context.Context, req *ecocredit.MsgAllowAskDenom) (*ecocredit.MsgAllowAskDenomResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 
-	if req.RootAddress != authtypes.NewModuleAddress(govtypes.ModuleName).String() {
-		return nil, sdkerrors.ErrUnauthorized.Wrap("root address must be governance module address")
+	rootAddress := s.accountKeeper.GetModuleAddress(govtypes.ModuleName).String()
+
+	if req.RootAddress != rootAddress {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("root address must be governance module address, got: %s, expected: %s", req.RootAddress, rootAddress)
 	}
 
 	err := s.askDenomTable.Create(ctx, &ecocredit.AskDenom{
