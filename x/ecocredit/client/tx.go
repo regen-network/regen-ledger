@@ -510,7 +510,7 @@ func TxCreateProject() *cobra.Command {
 		class-id: id of the class
 		project-location: the location of the project (see documentation for proper project-location formats).
 		metadata: base64 encoded metadata - any arbitrary metadata attached to the project.
-		project-id: id of the project (optional).
+		project-id: id of the project (optional - if left blank, a project-id will be auto-generated).
 		`,
 		Args: cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) error {
