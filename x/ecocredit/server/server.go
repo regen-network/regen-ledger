@@ -39,7 +39,7 @@ const (
 
 	// basket tables
 	BasketTablePrefix   byte = 0x23
-	BasketCredtisPrefix byte = 0x24
+	BasketCreditsPrefix byte = 0x24
 
 	AskDenomTablePrefix byte = 0x30
 )

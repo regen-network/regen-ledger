@@ -956,26 +956,6 @@ func (s serverImpl) sendEcocredits(ctx types.Context, credit *ecocredit.MsgSend_
 	return nil
 }
 
-func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBasket) (*ecocredit.MsgAddToBasketResponse, error) {
-	// TODO: implement add to basket
-	return nil, nil
-}
-
-func (s serverImpl) CreateBasket(goCtx context.Context, req *ecocredit.MsgCreateBasket) (*ecocredit.MsgCreateBasketResponse, error) {
-	// TODO: implement create basket
-	return nil, nil
-}
-
-func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPickFromBasket) (*ecocredit.MsgPickFromBasketResponse, error) {
-	// TODO: implement create basket
-	return nil, nil
-}
-
-func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTakeFromBasket) (*ecocredit.MsgTakeFromBasketResponse, error) {
-	// TODO: implement create basket
-	return nil, nil
-}
-
 func (s serverImpl) genProjectID(ctx types.Context, classID string) string {
 	projectSeqNo := s.projectInfoSeq.NextVal(ctx)
 	return ecocredit.FormatProjectID(classID, projectSeqNo)

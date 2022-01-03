@@ -18,18 +18,12 @@ import (
 func (s serverImpl) CreateBasket(goCtx context.Context, req *ecocredit.MsgCreateBasket) (*ecocredit.MsgCreateBasketResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: wait for filter simplification issue to resolve.
-	// this will likely give us a SINGLE filter to validate, rather
-	// than a slice of criteria.
-	// stateful validation of filters
-	for _, criteria := range req.BasketCriteria {
-		if err := s.validateFilterData(ctx, criteria.Filter); err != nil {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("invalid basket filter: %s", err.Error())
-		}
+	if err := s.validateFilterData(ctx, req.BasketCriteria); err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("invalid basket filter: %s", err.Error())
 	}
 
-	// construct the basket denom - curatorAddress:basketName
-	basketDenom := constructBasketDenom(req.Curator, req.Name)
+	// construct the basket denom - ecocredit:curatorAddress:basketName
+	basketDenom := constructBasketDenom(req.Name)
 
 	if err := s.basketTable.Create(ctx, &ecocredit.Basket{
 		BasketDenom:       basketDenom,
@@ -72,33 +66,36 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 			return nil, err
 		}
 
-		// get the class info
-		res, err := s.ClassInfo(goCtx, &ecocredit.QueryClassInfoRequest{ClassId: batchInfo.ClassId})
+		// get project info
+		res, err := s.ProjectInfo(goCtx, &ecocredit.QueryProjectInfoRequest{ProjectId: batchInfo.ProjectId})
 		if err != nil {
 			return nil, err
 		}
-		classInfo := res.Info
+		projectInfo := res.Info
 
-		// TODO: should we even check here for fast exiting? s.Send could take care of this.
+		// get the class info
+		res2, err := s.ClassInfo(goCtx, &ecocredit.QueryClassInfoRequest{ClassId: res.Info.ClassId})
+		if err != nil {
+			return nil, err
+		}
+		classInfo := res2.Info
+
+		// TODO(Tyler): should we even check here for fast exiting? s.Send could take care of this.
 		// verify the user has sufficient ecocredits to send
 		err = verifyCreditBalance(store, owner, credit.BatchDenom, credit.TradableAmount)
 		if err != nil {
 			return nil, err
 		}
 
-		// TODO fix this hack when filters are ready.
-		filters := make([]*ecocredit.Filter, len(basket.BasketCriteria))
-		for i, bc := range basket.BasketCriteria {
-			filters[i] = bc.Filter
-		}
 		// check that the credits meet the filter
-		_, err = checkFilters(filters, *classInfo, batchInfo, req.Owner)
-		if err != nil {
+		if _, err = checkFilters([]*ecocredit.Filter{basket.BasketCriteria}, *classInfo, batchInfo, *projectInfo, req.Owner); err != nil {
 			return nil, err
 		}
 
-		// we dont have to check for error cause we already did in verifyCreditBalance
-		creditsToDeposit, _ := regenmath.NewDecFromString(credit.TradableAmount)
+		creditsToDeposit, err := regenmath.NewDecFromString(credit.TradableAmount)
+		if err != nil {
+			return nil, err
+		}
 
 		totalCreditsDeposited, err = totalCreditsDeposited.Add(creditsToDeposit)
 		if err != nil {
@@ -112,9 +109,11 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 			RetirementLocation: "",
 		}
 
-		// send the ecocredits to the basket
+		// derive the address of the basket
 		basketKey := BasketCreditsKey(basketDenomT(basket.BasketDenom), batchDenom)
 		derivedKey := s.storeKey.Derive(basketKey)
+
+		// send the credits do the derived address
 		if _, err := s.Send(goCtx, &ecocredit.MsgSend{
 			Sender:    owner.String(),
 			Recipient: derivedKey.Address().String(),
@@ -125,7 +124,7 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 
 	}
 
-	// TODO: should this return sdk.Dec? Is regen's dec okay for x/bank?
+	// TODO(Tyler): should this return sdk.Dec? Is regen's dec okay for x/bank?
 	// calculate total basket tokens to be awarded to the depositor
 	basketTokensAmt, err := calculateBasketTokens(totalCreditsDeposited, basket.Exponent)
 	if err != nil {
@@ -159,8 +158,7 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 	sdkCtx := types.UnwrapSDKContext(goCtx)
 	regenCtx := sdk.UnwrapSDKContext(goCtx)
 	var basket ecocredit.Basket
-	err := s.basketTable.GetOne(sdkCtx, orm.RowID(req.BasketDenom), &basket)
-	if err != nil {
+	if err := s.basketTable.GetOne(sdkCtx, orm.RowID(req.BasketDenom), &basket); err != nil {
 		return nil, err
 	}
 
@@ -168,6 +166,7 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 	store := sdkCtx.KVStore(s.storeKey)
 	basketDenom := basketDenomT(req.BasketDenom)
 	basketTokenBalance := s.bankKeeper.GetBalance(sdkCtx, owner, basket.BasketDenom)
+
 	// calculate the the value of 1:1 basket token : basket credit
 	minToken, err := calculateBasketTokens(regenmath.NewDecFromInt64(1), basket.Exponent)
 	if err != nil {
@@ -363,20 +362,20 @@ func calculateBasketTokens(creditsDeposited regenmath.Dec, exponent uint32) (reg
 	return creditsDeposited.Mul(multiplier)
 }
 
-// checkFilters recursively checks filters using `depth` to ensure valid AND and OR filters.
+// checkFilters recursively checks filters using `depth` to ensure valid filters.
 // it sets the depth equal the length of the filter slice, and subtracts by 1 for each valid filter encountered.
 // for AND filters, we require the depth to return 0, as each filter in the slice should subtract 1.
 // for OR filters, we simply require that the slice of it's inner filter is not equal to the depth returned.
 // this is because we only need ONE tree to be valid, thus, an invalid OR tree would be if 0 filters passed.
-func checkFilters(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, batchInfo ecocredit.BatchInfo, owner string) (int, error) {
+// TODO(Tyler): should we enforce a depth limit on OR/AND filters?
+func checkFilters(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, batchInfo ecocredit.BatchInfo, projectInfo ecocredit.ProjectInfo, owner string) (int, error) {
 	depth := len(filters)
 	var err error
 	for _, filter := range filters {
 		switch f := filter.Sum.(type) {
 		case *ecocredit.Filter_And_:
 			andFilter := f.And.Filters
-			// andDepth := len(andFilter)
-			innerDepth, err := checkFilters(andFilter, classInfo, batchInfo, owner)
+			innerDepth, err := checkFilters(andFilter, classInfo, batchInfo, projectInfo, owner)
 			if innerDepth != 0 || err != nil {
 				return innerDepth, sdkerrors.ErrInvalidRequest.Wrap("invalid AND filter")
 			} else {
@@ -385,8 +384,10 @@ func checkFilters(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, ba
 		case *ecocredit.Filter_Or_:
 			orFilter := f.Or.Filters
 			orDepth := len(orFilter)
-			innerDepth, err := checkFilters(orFilter, classInfo, batchInfo, owner)
-			if orDepth == innerDepth {
+			innerDepth, err := checkFilters(orFilter, classInfo, batchInfo, projectInfo, owner)
+
+			// when orDepth == innerDepth, none of the filters in the OR got a match. we need AT LEAST 1 match for a valid OR filter.
+			if orDepth == innerDepth || err != nil {
 				return innerDepth, err
 			} else {
 				depth -= 1
@@ -398,13 +399,17 @@ func checkFilters(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, ba
 				err = formatFilterError("credit type name", f.CreditTypeName, classInfo.CreditType.Name)
 			}
 		case *ecocredit.Filter_ClassId:
-			if batchInfo.ClassId == f.ClassId {
+			if classInfo.ClassId == f.ClassId {
 				depth -= 1
 			} else {
-				err = formatFilterError("class id", f.ClassId, batchInfo.ClassId)
+				err = formatFilterError("class id", f.ClassId, classInfo.ClassId)
 			}
 		case *ecocredit.Filter_ProjectId:
-			//  depth -= 1 TODO: need projects PR
+			if f.ProjectId == projectInfo.ProjectId {
+				depth -= 1
+			} else {
+				err = formatFilterError("project id", f.ProjectId, projectInfo.ProjectId)
+			}
 		case *ecocredit.Filter_BatchDenom:
 			if batchInfo.BatchDenom == f.BatchDenom {
 				depth -= 1
@@ -418,10 +423,16 @@ func checkFilters(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, ba
 				err = formatFilterError("class admin", f.ClassAdmin, classInfo.Admin)
 			}
 		case *ecocredit.Filter_Issuer:
-			if batchInfo.Issuer == f.Issuer {
-				depth -= 1
-			} else {
-				err = formatFilterError("issuer", f.Issuer, batchInfo.Issuer)
+			found := false
+			for _, issuer := range classInfo.Issuers {
+				if f.Issuer == issuer {
+					depth -= 1
+					found = true
+					break
+				}
+			}
+			if !found {
+				err = fmt.Errorf("credit class %s does not contain issuer %s", classInfo.ClassId, f.Issuer)
 			}
 		case *ecocredit.Filter_Owner:
 			if owner == f.Owner {
@@ -430,7 +441,11 @@ func checkFilters(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, ba
 				err = formatFilterError("credit owner", f.Owner, owner)
 			}
 		case *ecocredit.Filter_ProjectLocation:
-			// depth -= 1 TODO: wait for projects PR
+			if f.ProjectLocation == projectInfo.ProjectLocation {
+				depth -= 1
+			} else {
+				err = formatFilterError("project location", f.ProjectLocation, projectInfo.ProjectLocation)
+			}
 		case *ecocredit.Filter_DateRange_:
 			if batchInfo.StartDate.Equal(*f.DateRange.StartDate) || batchInfo.StartDate.After(*f.DateRange.StartDate) {
 				if batchInfo.EndDate.Equal(*f.DateRange.EndDate) || batchInfo.EndDate.Before(*f.DateRange.EndDate) {
@@ -441,7 +456,7 @@ func checkFilters(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, ba
 			} else {
 				err = formatFilterError("date range", f.DateRange.StartDate.String()+" to "+f.DateRange.EndDate.String(), batchInfo.StartDate.String()+" to "+batchInfo.EndDate.String())
 			}
-		case *ecocredit.Filter_Tag:
+		//case *ecocredit.Filter_Tag:
 		// depth -= 1 TODO: wait for tags PR
 		default:
 			err = errors.New("no valid filter given")
@@ -460,9 +475,9 @@ func formatFilterError(item, want, got string) error {
 	return fmt.Errorf("basket filter requires %s %s, but a credit with %s %s was given", item, got, item, want)
 }
 
-// constructBasketDenom constructs the denom for a basket. it takes the form of `ecocredit:regen1v35...1fa3:basketName`
-func constructBasketDenom(curator, name string) string {
-	return fmt.Sprintf("%s:%s:%s", ecocredit.ModuleName, curator, name)
+// constructBasketDenom constructs the denom for a basket token. it takes the form of `ecocredit:basketName`
+func constructBasketDenom(name string) string {
+	return fmt.Sprintf("%s:%s", ecocredit.ModuleName, name)
 }
 
 // sendOrRetire handles the trading of basket tokens
