@@ -987,22 +987,26 @@ func (s *IntegrationTestSuite) TestScenario() {
 	// reset the space to avoid corrupting other tests
 	s.paramSpace.Set(s.sdkCtx, ecocredit.KeyCreditTypes, ecocredit.DefaultParams().CreditTypes)
 
-	askPrice := sdk.NewInt64Coin("stake", 1)
+	coinPrice := sdk.NewInt64Coin("stake", 1000000)
+	expiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
 	expectedSellOrderIds := []uint64{1, 2}
+
 	createSellOrder, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
 		Owner: addr3,
 		Orders: []*ecocredit.MsgSell_Order{
 			{
 				BatchDenom:        batchDenom,
 				Quantity:          "1.0",
-				AskPrice:          &askPrice,
+				AskPrice:          &coinPrice,
 				DisableAutoRetire: true,
+				Expiration:        &expiration,
 			},
 			{
 				BatchDenom:        batchDenom,
 				Quantity:          "1.0",
-				AskPrice:          &askPrice,
+				AskPrice:          &coinPrice,
 				DisableAutoRetire: true,
+				Expiration:        &expiration,
 			},
 		},
 	})
@@ -1019,9 +1023,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 			{
 				Selection:          selection,
 				Quantity:           "1.0",
-				BidPrice:           &askPrice,
+				BidPrice:           &coinPrice,
 				DisableAutoRetire:  true,
 				DisablePartialFill: true,
+				Expiration:         &expiration,
 			},
 		},
 	})

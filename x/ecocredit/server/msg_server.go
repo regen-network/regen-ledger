@@ -599,6 +599,7 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 			Quantity:          order.Quantity,
 			AskPrice:          order.AskPrice,
 			DisableAutoRetire: order.DisableAutoRetire,
+			Expiration:        order.Expiration,
 		})
 		if err != nil {
 			return nil, err
@@ -610,6 +611,7 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 			Quantity:          order.Quantity,
 			AskPrice:          order.AskPrice,
 			DisableAutoRetire: order.DisableAutoRetire,
+			Expiration:        order.Expiration,
 		})
 		if err != nil {
 			return nil, err
@@ -640,7 +642,7 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 		}
 
 		if req.Owner != sellOrder.Owner {
-			return nil, sdkerrors.ErrUnauthorized.Wrapf("signer is not the owner of sell order id %d",  update.SellOrderId)
+			return nil, sdkerrors.ErrUnauthorized.Wrapf("signer is not the owner of sell order id %d", update.SellOrderId)
 		}
 
 		// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
@@ -653,6 +655,7 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 		sellOrder.Quantity = update.NewQuantity
 		sellOrder.AskPrice = update.NewAskPrice
 		sellOrder.DisableAutoRetire = update.DisableAutoRetire
+		sellOrder.Expiration = update.NewExpiration
 
 		err = s.sellOrderTable.Update(ctx, sellOrder.OrderId, sellOrder)
 		if err != nil {
@@ -666,6 +669,7 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 			NewQuantity:       sellOrder.Quantity,
 			NewAskPrice:       sellOrder.AskPrice,
 			DisableAutoRetire: sellOrder.DisableAutoRetire,
+			NewExpiration:     sellOrder.Expiration,
 		})
 		if err != nil {
 			return nil, err
@@ -825,6 +829,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 				BidPrice:           order.BidPrice,
 				DisableAutoRetire:  order.DisableAutoRetire,
 				DisablePartialFill: order.DisablePartialFill,
+				Expiration:         order.Expiration,
 			})
 			if err != nil {
 				return nil, err

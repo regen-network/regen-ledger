@@ -1,6 +1,8 @@
 package ecocredit
 
 import (
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
@@ -390,30 +392,35 @@ func (m MsgSell) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgSell) ValidateBasic() error {
+	now := time.Now()
 
 	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
 		return sdkerrors.ErrInvalidAddress
 	}
 
-	for i := range m.Orders {
-		if err := ValidateDenom(m.Orders[i].BatchDenom); err != nil {
+	for _, order := range m.Orders {
+		if err := ValidateDenom(order.BatchDenom); err != nil {
 			return err
 		}
 
-		if _, err := math.NewPositiveDecFromString(m.Orders[i].Quantity); err != nil {
-			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", m.Orders[i].Quantity)
+		if _, err := math.NewPositiveDecFromString(order.Quantity); err != nil {
+			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", order.Quantity)
 		}
 
-		if m.Orders[i].AskPrice == nil {
+		if order.AskPrice == nil {
 			return sdkerrors.ErrInvalidRequest.Wrap("ask price cannot be empty")
 		}
 
-		if err := m.Orders[i].AskPrice.Validate(); err != nil {
+		if err := order.AskPrice.Validate(); err != nil {
 			return err
 		}
 
-		if !m.Orders[i].AskPrice.Amount.IsPositive() {
+		if !order.AskPrice.Amount.IsPositive() {
 			return sdkerrors.ErrInvalidRequest.Wrap("ask price must be positive amount")
+		}
+
+		if order.Expiration != nil && order.Expiration.Before(now) {
+			return sdkerrors.ErrInvalidRequest.Wrap("expiration must be in the future")
 		}
 	}
 
@@ -439,27 +446,32 @@ func (m MsgUpdateSellOrders) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgUpdateSellOrders) ValidateBasic() error {
+	now := time.Now()
 
 	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
 		return sdkerrors.ErrInvalidAddress
 	}
 
-	for i := range m.Updates {
+	for _, update := range m.Updates {
 
-		if _, err := math.NewPositiveDecFromString(m.Updates[i].NewQuantity); err != nil {
-			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", m.Updates[i].NewQuantity)
+		if _, err := math.NewPositiveDecFromString(update.NewQuantity); err != nil {
+			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", update.NewQuantity)
 		}
 
-		if m.Updates[i].NewAskPrice == nil {
+		if update.NewAskPrice == nil {
 			return sdkerrors.ErrInvalidRequest.Wrap("new ask price cannot be empty")
 		}
 
-		if err := m.Updates[i].NewAskPrice.Validate(); err != nil {
+		if err := update.NewAskPrice.Validate(); err != nil {
 			return err
 		}
 
-		if !m.Updates[i].NewAskPrice.Amount.IsPositive() {
+		if !update.NewAskPrice.Amount.IsPositive() {
 			return sdkerrors.ErrInvalidRequest.Wrap("ask price must be positive amount")
+		}
+
+		if update.NewExpiration != nil && update.NewExpiration.Before(now) {
+			return sdkerrors.ErrInvalidRequest.Wrap("expiration must be in the future")
 		}
 	}
 
@@ -485,27 +497,32 @@ func (m MsgBuy) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgBuy) ValidateBasic() error {
+	now := time.Now()
 
 	if _, err := sdk.AccAddressFromBech32(m.Buyer); err != nil {
 		return sdkerrors.ErrInvalidAddress
 	}
 
-	for i := range m.Orders {
+	for _, order := range m.Orders {
 
-		if _, err := math.NewPositiveDecFromString(m.Orders[i].Quantity); err != nil {
-			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", m.Orders[i].Quantity)
+		if _, err := math.NewPositiveDecFromString(order.Quantity); err != nil {
+			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", order.Quantity)
 		}
 
-		if m.Orders[i].BidPrice == nil {
+		if order.BidPrice == nil {
 			return sdkerrors.ErrInvalidRequest.Wrap("bid price cannot be empty")
 		}
 
-		if err := m.Orders[i].BidPrice.Validate(); err != nil {
+		if err := order.BidPrice.Validate(); err != nil {
 			return err
 		}
 
-		if !m.Orders[i].BidPrice.Amount.IsPositive() {
+		if !order.BidPrice.Amount.IsPositive() {
 			return sdkerrors.ErrInvalidRequest.Wrap("bid price must be positive amount")
+		}
+
+		if order.Expiration != nil && order.Expiration.Before(now) {
+			return sdkerrors.ErrInvalidRequest.Wrap("expiration must be in the future")
 		}
 	}
 
