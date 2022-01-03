@@ -97,6 +97,104 @@ func TestMsgCreateClass(t *testing.T) {
 	}
 }
 
+func TestMsgCreateProject(t *testing.T) {
+	_, _, addr1 := testdata.KeyTestPubAddr()
+
+	testCases := []struct {
+		name   string
+		src    MsgCreateProject
+		expErr bool
+	}{
+		{
+			"valid msg with project id",
+			MsgCreateProject{
+				Issuer:          addr1.String(),
+				ClassId:         "A00",
+				Metadata:        []byte("hello"),
+				ProjectLocation: "AB-CDE FG1 345",
+				ProjectId:       "A0",
+			},
+			false,
+		},
+		{
+			"valid msg without project id",
+			MsgCreateProject{
+				Issuer:          addr1.String(),
+				ClassId:         "A00",
+				Metadata:        []byte("hello"),
+				ProjectLocation: "AB-CDE FG1 345",
+			},
+			false,
+		},
+		{
+			"invalid issuer",
+			MsgCreateProject{
+				Issuer:          "invalid address",
+				ClassId:         "A00",
+				Metadata:        []byte("hello"),
+				ProjectLocation: "AB-CDE FG1 345",
+				ProjectId:       "A0",
+			},
+			true,
+		},
+		{
+			"invalid project id",
+			MsgCreateProject{
+				Issuer:          addr1.String(),
+				ClassId:         "A00",
+				Metadata:        []byte("hello"),
+				ProjectLocation: "AB-CDE FG1 345",
+				ProjectId:       "A",
+			},
+			true,
+		},
+		{
+			"invalid class id",
+			MsgCreateProject{
+				Issuer:          addr1.String(),
+				ClassId:         "ABCD",
+				Metadata:        []byte("hello"),
+				ProjectLocation: "AB-CDE FG1 345",
+				ProjectId:       "AB",
+			},
+			true,
+		},
+		{
+			"invalid project location",
+			MsgCreateProject{
+				Issuer:          addr1.String(),
+				ClassId:         "A01",
+				Metadata:        []byte("hello"),
+				ProjectLocation: "abcd",
+				ProjectId:       "AB",
+			},
+			true,
+		},
+		{
+			"invalid: metadata is too large",
+			MsgCreateProject{
+				Issuer:          addr1.String(),
+				ClassId:         "A01",
+				Metadata:        []byte(simtypes.RandStringOfLength(r, 288)),
+				ProjectLocation: "AB-CDE FG1 345",
+				ProjectId:       "AB",
+			},
+			true,
+		},
+	}
+
+	for _, test := range testCases {
+		t.Run(test.name, func(t *testing.T) {
+			err := test.src.ValidateBasic()
+			if test.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+			}
+		})
+	}
+}
+
 func TestMsgCreateBatch(t *testing.T) {
 	_, _, addr1 := testdata.KeyTestPubAddr()
 	_, _, addr2 := testdata.KeyTestPubAddr()
@@ -111,7 +209,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"valid msg": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
-				ClassId:   "C01",
+				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*MsgCreateBatch_BatchIssuance{
@@ -122,35 +220,32 @@ func TestMsgCreateBatch(t *testing.T) {
 						RetirementLocation: "ST-UVW XY Z12",
 					},
 				},
-				ProjectLocation: "AB-CDE FG1 345",
-				Metadata:        []byte("hello"),
+				Metadata: []byte("hello"),
 			},
 			expErr: false,
 		},
 		"valid msg with minimal fields": {
 			src: MsgCreateBatch{
-				Issuer:          addr1.String(),
-				ClassId:         "C01",
-				StartDate:       &startDate,
-				EndDate:         &endDate,
-				ProjectLocation: "AB-CDE FG1 345",
+				Issuer:    addr1.String(),
+				ProjectId: "C01",
+				StartDate: &startDate,
+				EndDate:   &endDate,
 			},
 			expErr: false,
 		},
 		"invalid with  wrong issuer": {
 			src: MsgCreateBatch{
-				Issuer:          "wrongIssuer",
-				ClassId:         "ID",
-				StartDate:       &startDate,
-				EndDate:         &endDate,
-				ProjectLocation: "AB-CDE FG1 345",
+				Issuer:    "wrongIssuer",
+				ProjectId: "C01",
+				StartDate: &startDate,
+				EndDate:   &endDate,
 			},
 			expErr: true,
 		},
 		"valid msg without Issuance.TradableAmount (assumes zero by default)": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
-				ClassId:   "C01",
+				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*MsgCreateBatch_BatchIssuance{
@@ -160,14 +255,13 @@ func TestMsgCreateBatch(t *testing.T) {
 						RetirementLocation: "ST-UVW XY Z12",
 					},
 				},
-				ProjectLocation: "AB-CDE FG1 345",
 			},
 			expErr: false,
 		},
 		"invalid msg with wrong Issuance.TradableAmount": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
-				ClassId:   "ID",
+				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*MsgCreateBatch_BatchIssuance{
@@ -176,14 +270,13 @@ func TestMsgCreateBatch(t *testing.T) {
 						TradableAmount: "abc",
 					},
 				},
-				ProjectLocation: "AB-CDE FG1 345",
 			},
 			expErr: true,
 		},
 		"valid msg without Issuance.RetiredAmount (assumes zero by default)": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
-				ClassId:   "C01",
+				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*MsgCreateBatch_BatchIssuance{
@@ -191,14 +284,13 @@ func TestMsgCreateBatch(t *testing.T) {
 						Recipient: addr2.String(),
 					},
 				},
-				ProjectLocation: "AB-CDE FG1 345",
 			},
 			expErr: false,
 		},
 		"invalid msg with wrong Issuance.RetiredAmount": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
-				ClassId:   "ID",
+				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*MsgCreateBatch_BatchIssuance{
@@ -207,14 +299,13 @@ func TestMsgCreateBatch(t *testing.T) {
 						RetiredAmount: "abc",
 					},
 				},
-				ProjectLocation: "AB-CDE FG1 345",
 			},
 			expErr: true,
 		},
 		"invalid msg with wrong Issuance.RetirementLocation": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
-				ClassId:   "ID",
+				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*MsgCreateBatch_BatchIssuance{
@@ -224,14 +315,13 @@ func TestMsgCreateBatch(t *testing.T) {
 						RetirementLocation: "wrong location",
 					},
 				},
-				ProjectLocation: "AB-CDE FG1 345",
 			},
 			expErr: true,
 		},
 		"invalid msg without Issuance.RetirementLocation": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
-				ClassId:   "ID",
+				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*MsgCreateBatch_BatchIssuance{
@@ -240,66 +330,41 @@ func TestMsgCreateBatch(t *testing.T) {
 						RetiredAmount: "50",
 					},
 				},
-				ProjectLocation: "AB-CDE FG1 345",
-			},
-			expErr: true,
-		},
-		"invalid msg with wrong ProjectLocation": {
-			src: MsgCreateBatch{
-				Issuer:          addr1.String(),
-				ClassId:         "ID",
-				StartDate:       &startDate,
-				EndDate:         &endDate,
-				ProjectLocation: "wrong location",
 			},
 			expErr: true,
 		},
 		"invalid msg without issuer": {
 			src: MsgCreateBatch{
-				ClassId:         "ID",
-				StartDate:       &startDate,
-				EndDate:         &endDate,
-				ProjectLocation: "AB-CDE FG1 345",
-				Metadata:        []byte("hello"),
+				ProjectId: "C01",
+				StartDate: &startDate,
+				EndDate:   &endDate,
+				Metadata:  []byte("hello"),
 			},
 			expErr: true,
 		},
 		"invalid msg without class id": {
 			src: MsgCreateBatch{
-				Issuer:          addr1.String(),
-				StartDate:       &startDate,
-				EndDate:         &endDate,
-				ProjectLocation: "AB-CDE FG1 345",
-				Metadata:        []byte("hello"),
+				Issuer:    addr1.String(),
+				StartDate: &startDate,
+				EndDate:   &endDate,
+				Metadata:  []byte("hello"),
 			},
 			expErr: true,
 		},
 		"invalid msg without start date": {
 			src: MsgCreateBatch{
-				Issuer:          addr1.String(),
-				ClassId:         "ID",
-				EndDate:         &endDate,
-				ProjectLocation: "AB-CDE FG1 345",
-				Metadata:        []byte("hello"),
+				Issuer:    addr1.String(),
+				ProjectId: "C01",
+				EndDate:   &endDate,
+				Metadata:  []byte("hello"),
 			},
 			expErr: true,
 		},
 		"invalid msg without enddate": {
 			src: MsgCreateBatch{
-				Issuer:          addr1.String(),
-				ClassId:         "ID",
-				StartDate:       &startDate,
-				ProjectLocation: "AB-CDE FG1 345",
-				Metadata:        []byte("hello"),
-			},
-			expErr: true,
-		},
-		"invalid msg without project location": {
-			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
-				ClassId:   "ID",
+				ProjectId: "C01",
 				StartDate: &startDate,
-				EndDate:   &endDate,
 				Metadata:  []byte("hello"),
 			},
 			expErr: true,
@@ -307,7 +372,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"invalid msg with enddate < startdate": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
-				ClassId:   "ID",
+				ProjectId: "C01",
 				StartDate: &endDate,
 				EndDate:   &startDate,
 				Metadata:  []byte("hello"),
@@ -317,7 +382,7 @@ func TestMsgCreateBatch(t *testing.T) {
 		"invalid with wrong recipient": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
-				ClassId:   "ID",
+				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*MsgCreateBatch_BatchIssuance{
@@ -327,14 +392,13 @@ func TestMsgCreateBatch(t *testing.T) {
 						RetirementLocation: "ST-UVW XY Z12",
 					},
 				},
-				ProjectLocation: "AB-CDE FG1 345",
 			},
 			expErr: true,
 		},
 		"invalid msg without recipient address": {
 			src: MsgCreateBatch{
 				Issuer:    addr1.String(),
-				ClassId:   "ID",
+				ProjectId: "C01",
 				StartDate: &startDate,
 				EndDate:   &endDate,
 				Issuance: []*MsgCreateBatch_BatchIssuance{
@@ -343,18 +407,16 @@ func TestMsgCreateBatch(t *testing.T) {
 						RetirementLocation: "ST-UVW XY Z12",
 					},
 				},
-				ProjectLocation: "AB-CDE FG1 345",
 			},
 			expErr: true,
 		},
 		"invalid metadata maxlength is exceeded": {
 			src: MsgCreateBatch{
-				Issuer:          addr1.String(),
-				ClassId:         "C01",
-				StartDate:       &startDate,
-				EndDate:         &endDate,
-				ProjectLocation: "AB-CDE FG1 345",
-				Metadata:        []byte(simtypes.RandStringOfLength(r, 288)),
+				Issuer:    addr1.String(),
+				ProjectId: "C01",
+				StartDate: &startDate,
+				EndDate:   &endDate,
+				Metadata:  []byte(simtypes.RandStringOfLength(r, 288)),
 			},
 			expErr: true,
 		},
@@ -918,9 +980,9 @@ func TestMsgSell(t *testing.T) {
 				Orders: []*MsgSell_Order{
 					{
 						BatchDenom: "A00-00000000-00000000-000",
-						Quantity: "1.5",
+						Quantity:   "1.5",
 						AskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
 						DisableAutoRetire: true,
@@ -935,9 +997,9 @@ func TestMsgSell(t *testing.T) {
 				Orders: []*MsgSell_Order{
 					{
 						BatchDenom: "A00-00000000-00000000-000",
-						Quantity: "1.5",
+						Quantity:   "1.5",
 						AskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
 						DisableAutoRetire: true,
@@ -952,9 +1014,9 @@ func TestMsgSell(t *testing.T) {
 				Orders: []*MsgSell_Order{
 					{
 						BatchDenom: "foobar",
-						Quantity: "1.5",
+						Quantity:   "1.5",
 						AskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
 						DisableAutoRetire: true,
@@ -969,9 +1031,9 @@ func TestMsgSell(t *testing.T) {
 				Orders: []*MsgSell_Order{
 					{
 						BatchDenom: "A00-00000000-00000000-000",
-						Quantity: "-1.5",
+						Quantity:   "-1.5",
 						AskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
 						DisableAutoRetire: true,
@@ -986,9 +1048,9 @@ func TestMsgSell(t *testing.T) {
 				Orders: []*MsgSell_Order{
 					{
 						BatchDenom: "A00-00000000-00000000-000",
-						Quantity: "1.5",
+						Quantity:   "1.5",
 						AskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(-20),
 						},
 						DisableAutoRetire: true,
@@ -1025,7 +1087,7 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 					{
 						NewQuantity: "1.5",
 						NewAskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
 						DisableAutoRetire: true,
@@ -1041,7 +1103,7 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 					{
 						NewQuantity: "1.5",
 						NewAskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
 						DisableAutoRetire: true,
@@ -1057,7 +1119,7 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 					{
 						NewQuantity: "-1.5",
 						NewAskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
 						DisableAutoRetire: true,
@@ -1073,7 +1135,7 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 					{
 						NewQuantity: "1.5",
 						NewAskPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(-20),
 						},
 						DisableAutoRetire: true,
@@ -1110,10 +1172,10 @@ func TestMsgBuy(t *testing.T) {
 					{
 						Quantity: "1.5",
 						BidPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
-						DisableAutoRetire: true,
+						DisableAutoRetire:  true,
 						DisablePartialFill: true,
 					},
 				},
@@ -1127,10 +1189,10 @@ func TestMsgBuy(t *testing.T) {
 					{
 						Quantity: "1.5",
 						BidPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
-						DisableAutoRetire: true,
+						DisableAutoRetire:  true,
 						DisablePartialFill: true,
 					},
 				},
@@ -1144,10 +1206,10 @@ func TestMsgBuy(t *testing.T) {
 					{
 						Quantity: "-1.5",
 						BidPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
-						DisableAutoRetire: true,
+						DisableAutoRetire:  true,
 						DisablePartialFill: true,
 					},
 				},
@@ -1161,10 +1223,10 @@ func TestMsgBuy(t *testing.T) {
 					{
 						Quantity: "1.5",
 						BidPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(-20),
 						},
-						DisableAutoRetire: true,
+						DisableAutoRetire:  true,
 						DisablePartialFill: true,
 					},
 				},
@@ -1199,10 +1261,10 @@ func TestMsgAllowAskDenom(t *testing.T) {
 					{
 						Quantity: "1.5",
 						BidPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
-						DisableAutoRetire: true,
+						DisableAutoRetire:  true,
 						DisablePartialFill: true,
 					},
 				},
@@ -1216,10 +1278,10 @@ func TestMsgAllowAskDenom(t *testing.T) {
 					{
 						Quantity: "1.5",
 						BidPrice: &sdk.Coin{
-							Denom: "uregen",
+							Denom:  "uregen",
 							Amount: sdk.NewInt(20),
 						},
-						DisableAutoRetire: true,
+						DisableAutoRetire:  true,
 						DisablePartialFill: true,
 					},
 				},
@@ -1233,10 +1295,10 @@ func TestMsgAllowAskDenom(t *testing.T) {
 					{
 						Quantity: "1.5",
 						BidPrice: &sdk.Coin{
-							Denom: "$$$$$",
+							Denom:  "$$$$$",
 							Amount: sdk.NewInt(20),
 						},
-						DisableAutoRetire: true,
+						DisableAutoRetire:  true,
 						DisablePartialFill: true,
 					},
 				},

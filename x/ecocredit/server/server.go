@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/regen-network/regen-ledger/orm"
@@ -18,6 +19,11 @@ const (
 	CreditTypeSeqTablePrefix byte = 0x4
 	ClassInfoTablePrefix     byte = 0x5
 	BatchInfoTablePrefix     byte = 0x6
+
+	ProjectInfoTablePrefix    byte = 0x12
+	ProjectInfoTableSeqPrefix byte = 0x13
+	ProjectsByClassIDIndex    byte = 0x14
+	BatchesByProjectIndex     byte = 0x15
 
 	// sell order table
 	SellOrderTablePrefix             byte = 0x10
@@ -56,6 +62,12 @@ type serverImpl struct {
 	buyOrderByAddressIndex orm.Index
 
 	askDenomTable orm.PrimaryKeyTable
+
+	// project table
+	projectInfoTable        orm.PrimaryKeyTable
+	projectInfoSeq          orm.Sequence
+	projectsByClassIDIndex  orm.Index
+	batchesByProjectIDIndex orm.Index
 }
 
 func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
@@ -83,6 +95,18 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	if err != nil {
 		panic(err.Error())
 	}
+
+	s.batchesByProjectIDIndex, err = orm.NewIndex(batchInfoTableBuilder, BatchesByProjectIndex, func(value interface{}) ([]interface{}, error) {
+		batchInfo, ok := value.(*ecocredit.BatchInfo)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.BatchInfo{}, value)
+		}
+		return []interface{}{batchInfo.ProjectId}, nil
+	}, ecocredit.BatchInfo{}.ProjectId)
+	if err != nil {
+		panic(err.Error())
+	}
+
 	s.batchInfoTable = batchInfoTableBuilder.Build()
 
 	sellOrderTableBuilder, err := orm.NewAutoUInt64TableBuilder(SellOrderTablePrefix, SellOrderTableSeqPrefix, storeKey, &ecocredit.SellOrder{}, cdc)
@@ -90,8 +114,11 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		panic(err.Error())
 	}
 	s.sellOrderByAddressIndex, err = orm.NewIndex(sellOrderTableBuilder, SellOrderByAddressIndexPrefix, func(value interface{}) ([]interface{}, error) {
-		owner := value.(*ecocredit.SellOrder).Owner
-		addr, err := sdk.AccAddressFromBech32(owner)
+		order, ok := value.(*ecocredit.SellOrder)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.SellOrder{}, value)
+		}
+		addr, err := sdk.AccAddressFromBech32(order.Owner)
 		if err != nil {
 			return nil, err
 		}
@@ -101,8 +128,11 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		panic(err.Error())
 	}
 	s.sellOrderByBatchDenomIndex, err = orm.NewIndex(sellOrderTableBuilder, SellOrderByBatchDenomIndexPrefix, func(value interface{}) ([]interface{}, error) {
-		denom := value.(*ecocredit.SellOrder).BatchDenom
-		return []interface{}{denom}, nil
+		order, ok := value.(*ecocredit.SellOrder)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.SellOrder{}, value)
+		}
+		return []interface{}{order.BatchDenom}, nil
 	}, ecocredit.SellOrder{}.BatchDenom)
 	if err != nil {
 		panic(err.Error())
@@ -114,8 +144,11 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		panic(err.Error())
 	}
 	s.buyOrderByAddressIndex, err = orm.NewIndex(buyOrderTableBuilder, BuyOrderByAddressIndexPrefix, func(value interface{}) ([]interface{}, error) {
-		owner := value.(*ecocredit.BuyOrder).Buyer
-		addr, err := sdk.AccAddressFromBech32(owner)
+		order, ok := value.(*ecocredit.BuyOrder)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.BuyOrder{}, value)
+		}
+		addr, err := sdk.AccAddressFromBech32(order.Buyer)
 		if err != nil {
 			return nil, err
 		}
@@ -131,6 +164,25 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		panic(err.Error())
 	}
 	s.askDenomTable = askDenomTableBuilder.Build()
+
+	s.projectInfoSeq = orm.NewSequence(storeKey, ProjectInfoTableSeqPrefix)
+	projectInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ProjectInfoTablePrefix, storeKey, &ecocredit.ProjectInfo{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	s.projectsByClassIDIndex, err = orm.NewIndex(projectInfoTableBuilder, ProjectsByClassIDIndex, func(value interface{}) ([]interface{}, error) {
+		projectInfo, ok := value.(*ecocredit.ProjectInfo)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.ProjectInfo{}, value)
+		}
+		return []interface{}{projectInfo.ClassId}, nil
+	}, ecocredit.ProjectInfo{}.ClassId)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	s.projectInfoTable = projectInfoTableBuilder.Build()
 
 	return s
 }

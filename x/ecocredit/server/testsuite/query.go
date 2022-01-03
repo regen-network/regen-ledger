@@ -112,15 +112,15 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 			"empty request",
 		},
 		{
-			"empty class id",
+			"empty project id",
 			&ecocredit.QueryBatchesRequest{},
 			true,
-			"class ID didn't match the format",
+			"invalid project id",
 		},
 		{
 			"valid test case",
 			&ecocredit.QueryBatchesRequest{
-				ClassId: "C04",
+				ProjectId: "P01",
 			},
 			false,
 			"",

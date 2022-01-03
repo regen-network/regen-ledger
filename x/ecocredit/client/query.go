@@ -32,6 +32,8 @@ func QueryCmd(name string) *cobra.Command {
 		QueryBalanceCmd(),
 		QuerySupplyCmd(),
 		QueryCreditTypesCmd(),
+		QueryProjectsCmd(),
+		QueryProjectInfoCmd(),
 		QueryParamsCmd(),
 		QuerySellOrderCmd(),
 		QuerySellOrdersCmd(),
@@ -97,12 +99,62 @@ func QueryClassInfoCmd() *cobra.Command {
 	})
 }
 
+// QueryProjectsCmd returns a query command that retrieves projects.
+func QueryProjectsCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "projects [class_id]",
+		Short: "List all projects in the given class with pagination flags",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.Projects(cmd.Context(), &ecocredit.QueryProjectsRequest{
+				ClassId:    args[0],
+				Pagination: pagination,
+			})
+			return print(ctx, res, err)
+		},
+	}
+	flags.AddPaginationFlagsToCmd(cmd, "projects")
+	return qflags(cmd)
+}
+
+// QueryProjectInfoCmd returns a query command that retrieves project information.
+func QueryProjectInfoCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "project-info [project_id]",
+		Short: "Retrive project info",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			res, err := c.ProjectInfo(cmd.Context(), &ecocredit.QueryProjectInfoRequest{
+				ProjectId: args[0],
+			})
+			return print(ctx, res, err)
+		},
+	}
+
+	return qflags(cmd)
+}
+
 // QueryBatchesCmd returns a query command that retrieves credit batches for a
-// given credit class.
+// given project.
 func QueryBatchesCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "batches [class_id]",
-		Short: "List all credit batches in the given class with pagination flags",
+		Use:   "batches [project_id]",
+		Short: "List all credit batches in the given project with pagination flags",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c, ctx, err := mkQueryClient(cmd)
@@ -116,7 +168,7 @@ func QueryBatchesCmd() *cobra.Command {
 			}
 
 			res, err := c.Batches(cmd.Context(), &ecocredit.QueryBatchesRequest{
-				ClassId:    args[0],
+				ProjectId:  args[0],
 				Pagination: pagination,
 			})
 			return print(ctx, res, err)

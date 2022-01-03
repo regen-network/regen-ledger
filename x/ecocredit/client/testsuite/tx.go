@@ -32,6 +32,7 @@ type IntegrationTestSuite struct {
 	testAccount sdk.AccAddress
 	classInfo   *ecocredit.ClassInfo
 	batchInfo   *ecocredit.BatchInfo
+	projectID   string
 	sellOrders  []*ecocredit.SellOrder
 }
 
@@ -137,13 +138,29 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		Metadata:   validMetadataBytes,
 	}
 
+	// create project
+	s.projectID = "P01"
+	out, err := cli.ExecTestCLICmd(val.ClientCtx, client.TxCreateProject(),
+		append(
+			[]string{
+				classId,
+				"GB",
+				validMetadata,
+				fmt.Sprintf("--%s=%s", flags.FlagFrom, val.Address.String()),
+				fmt.Sprintf("--%s=%s", client.FlagProjectId, s.projectID),
+			},
+			commonFlags...,
+		),
+	)
+	s.Require().NoError(err, out.String())
+
 	startDate, err := client.ParseDate("start date", "2021-01-01")
 	s.Require().NoError(err)
 	endDate, err := client.ParseDate("end date", "2021-02-01")
 	s.Require().NoError(err)
 
 	msgCreateBatch := ecocredit.MsgCreateBatch{
-		ClassId: classId,
+		ProjectId: s.projectID,
 		Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
 			{
 				Recipient:          val.Address.String(),
@@ -152,10 +169,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 				RetirementLocation: "AB",
 			},
 		},
-		Metadata:        validMetadataBytes,
-		StartDate:       &startDate,
-		EndDate:         &endDate,
-		ProjectLocation: "GB",
+		Metadata:  validMetadataBytes,
+		StartDate: &startDate,
+		EndDate:   &endDate,
 	}
 
 	// Write MsgCreateBatch to a temporary file
@@ -181,19 +197,17 @@ func (s *IntegrationTestSuite) SetupSuite() {
 
 	// Store the first one in the test suite
 	s.batchInfo = &ecocredit.BatchInfo{
-		ClassId:         classId,
+		ProjectId:       s.projectID,
 		BatchDenom:      batchDenom,
-		Issuer:          val.Address.String(),
 		TotalAmount:     "100.000001",
 		Metadata:        []byte{0x01},
 		AmountCancelled: "0",
 		StartDate:       &startDate,
 		EndDate:         &endDate,
-		ProjectLocation: "GB",
 	}
 
 	// Create a few sell orders
-	out, err := cli.ExecTestCLICmd(val.ClientCtx, client.TxSellCmd(),
+	out, err = cli.ExecTestCLICmd(val.ClientCtx, client.TxSellCmd(),
 		append(
 			[]string{
 				"[" +
@@ -488,7 +502,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 	s.Require().NoError(err)
 
 	msgCreateBatch := ecocredit.MsgCreateBatch{
-		ClassId: s.classInfo.ClassId,
+		ProjectId: s.projectID,
 		Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
 			{
 				Recipient:          s.network.Validators[1].Address.String(),
@@ -497,20 +511,19 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 				RetirementLocation: "AB",
 			},
 		},
-		Metadata:        validMetadataBytes,
-		StartDate:       &startDate,
-		EndDate:         &endDate,
-		ProjectLocation: "GB",
+		Metadata:  validMetadataBytes,
+		StartDate: &startDate,
+		EndDate:   &endDate,
 	}
 
 	validBatchJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
-	// Write batch with invalid class id
-	msgCreateBatch.ClassId = "abcde"
-	invalidClassIdJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
+	// Write batch with invalid project
+	msgCreateBatch.ProjectId = "abcde-"
+	invalidProjectIdJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
 	// Write batch with missing start date
-	msgCreateBatch.ClassId = s.classInfo.ClassId
+	msgCreateBatch.ProjectId = s.projectID
 	msgCreateBatch.StartDate = nil
 	missingStartDateJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
@@ -519,14 +532,9 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 	msgCreateBatch.EndDate = nil
 	missingEndDateJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
-	// Write batch with missing project location
-	msgCreateBatch.EndDate = &endDate
-	msgCreateBatch.ProjectLocation = ""
-	missingProjectLocationJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
-
 	// Write batch with invalid issuance recipient
-	msgCreateBatch.ProjectLocation = "AB"
 	msgCreateBatch.Issuance[0].Recipient = "abcde"
+	msgCreateBatch.EndDate = &endDate
 	invalidRecipientJson := s.writeMsgCreateBatchJSON(&msgCreateBatch)
 
 	// Write batch with invalid issuance tradable amount
@@ -577,17 +585,17 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 			expectedErrMsg: "invalid character",
 		},
 		{
-			name: "invalid class id",
+			name: "invalid project id",
 			args: append(
 				[]string{
-					invalidClassIdJson,
+					invalidProjectIdJson,
 					makeFlagFrom(val.Address.String()),
 				},
 				s.commonTxFlags()...,
 			),
 			expectErr:       true,
 			errInTxResponse: false,
-			expectedErrMsg:  "class ID didn't match the format",
+			expectedErrMsg:  "invalid project id",
 		},
 		{
 			name: "missing start date",
@@ -612,18 +620,6 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 			),
 			expectErr:      true,
 			expectedErrMsg: "must provide an end date for the credit batch: invalid request",
-		},
-		{
-			name: "missing project location",
-			args: append(
-				[]string{
-					missingProjectLocationJson,
-					makeFlagFrom(val.Address.String()),
-				},
-				s.commonTxFlags()...,
-			),
-			expectErr:      true,
-			expectedErrMsg: "Invalid location",
 		},
 		{
 			name: "invalid issuance recipient",
@@ -695,8 +691,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 			),
 			expectErr: false,
 			expectedBatchInfo: &ecocredit.BatchInfo{
-				ClassId:         s.classInfo.ClassId,
-				Issuer:          val.Address.String(),
+				ProjectId:       s.projectID,
 				TotalAmount:     "100.000001",
 				Metadata:        []byte{0x1},
 				AmountCancelled: "0",
@@ -713,8 +708,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 			),
 			expectErr: false,
 			expectedBatchInfo: &ecocredit.BatchInfo{
-				ClassId:         s.classInfo.ClassId,
-				Issuer:          val.Address.String(),
+				ProjectId:       s.projectID,
 				TotalAmount:     "100.000001",
 				Metadata:        []byte{0x1},
 				AmountCancelled: "0",
@@ -732,8 +726,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 			),
 			expectErr: false,
 			expectedBatchInfo: &ecocredit.BatchInfo{
-				ClassId:         s.classInfo.ClassId,
-				Issuer:          val.Address.String(),
+				ProjectId:       s.projectID,
 				TotalAmount:     "100.000001",
 				Metadata:        []byte{0x1},
 				AmountCancelled: "0",
@@ -784,8 +777,7 @@ func (s *IntegrationTestSuite) TestTxCreateBatch() {
 								var queryRes ecocredit.QueryBatchInfoResponse
 								s.Require().NoError(clientCtx.Codec.UnmarshalJSON(queryOut.Bytes(), &queryRes))
 
-								s.Require().Equal(tc.expectedBatchInfo.ClassId, queryRes.Info.ClassId)
-								s.Require().Equal(tc.expectedBatchInfo.Issuer, queryRes.Info.Issuer)
+								s.Require().Equal(tc.expectedBatchInfo.ProjectId, queryRes.Info.ProjectId)
 								s.Require().Equal(tc.expectedBatchInfo.TotalAmount, queryRes.Info.TotalAmount)
 								s.Require().Equal(tc.expectedBatchInfo.Metadata, queryRes.Info.Metadata)
 								s.Require().Equal(tc.expectedBatchInfo.AmountCancelled, queryRes.Info.AmountCancelled)

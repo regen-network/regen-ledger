@@ -307,8 +307,17 @@ func (s *IntegrationTestSuite) TestScenario() {
 		s.Require().Equal(tc.expectedClassID, createClsRes.ClassId)
 	}
 
-	// Use first test class for remainder of tests
-	clsID := createClassTestCases[0].expectedClassID
+	// create project
+	createProjectRes, err := s.msgClient.CreateProject(s.ctx, &ecocredit.MsgCreateProject{
+		ClassId:         "C01",
+		Issuer:          issuer1,
+		Metadata:        []byte("metadata"),
+		ProjectLocation: "AQ",
+		ProjectId:       "P03",
+	})
+	s.Require().NoError(err)
+	s.Require().NotNil(createProjectRes)
+	s.Require().Equal(createProjectRes.ProjectId, "P03")
 
 	// admin should have no funds remaining
 	s.Require().Equal(s.bankKeeper.GetBalance(s.sdkCtx, admin, "stake"), sdk.NewInt64Coin("stake", 0))
@@ -324,11 +333,10 @@ func (s *IntegrationTestSuite) TestScenario() {
 
 	// Batch creation should succeed with StartDate before EndDate, and valid data
 	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
-		Issuer:          issuer1,
-		ClassId:         clsID,
-		StartDate:       &time1,
-		EndDate:         &time2,
-		ProjectLocation: "AB",
+		Issuer:    issuer1,
+		ProjectId: "P03",
+		StartDate: &time1,
+		EndDate:   &time2,
 		Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
 			{
 				Recipient:          addr1,

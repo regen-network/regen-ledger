@@ -18,19 +18,19 @@ func (s *IntegrationTestSuite) TestGetClasses() {
 	}{
 		{
 			"invalid path",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/class", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/class", val.APIAddress),
 			true,
 			0,
 		},
 		{
 			"valid query",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/classes", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/classes", val.APIAddress),
 			false,
 			4,
 		},
 		{
 			"valid query pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/classes?pagination.limit=2", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/classes?pagination.limit=2", val.APIAddress),
 			false,
 			2,
 		},
@@ -69,21 +69,21 @@ func (s *IntegrationTestSuite) TestGetClass() {
 	}{
 		{
 			"invalid path",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/class", val.APIAddress),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/class", val.APIAddress),
 			true,
 			"Not Implemented",
 			"",
 		},
 		{
 			"class not found",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/classes/%s", val.APIAddress, "C999"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/classes/%s", val.APIAddress, "C999"),
 			true,
 			"not found",
 			"",
 		},
 		{
 			"valid class-id",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/classes/%s", val.APIAddress, "C01"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/classes/%s", val.APIAddress, "C01"),
 			false,
 			"",
 			"C01",
@@ -122,29 +122,29 @@ func (s *IntegrationTestSuite) TestGetBatches() {
 		errMsg     string
 	}{
 		{
-			"invalid class-id",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/classes/%s/batches", val.APIAddress, "abcd"),
+			"invalid project-id",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/projects/%s/batches", val.APIAddress, "abc-d"),
 			0,
 			true,
-			"class ID didn't match the format",
+			"invalid project id",
 		},
 		{
 			"no batches found",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/classes/%s/batches", val.APIAddress, "C100"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/projects/%s/batches", val.APIAddress, "P02"),
 			0,
 			false,
 			"",
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/classes/%s/batches", val.APIAddress, "C01"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/projects/%s/batches", val.APIAddress, "P01"),
 			4,
 			false,
 			"",
 		},
 		{
 			"valid request with pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/classes/%s/batches?pagination.limit=2", val.APIAddress, "C01"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/projects/%s/batches?pagination.limit=2", val.APIAddress, "P01"),
 			2,
 			false,
 			"",
@@ -177,32 +177,32 @@ func (s *IntegrationTestSuite) TestGetBatch() {
 	val := s.network.Validators[0]
 
 	testCases := []struct {
-		name    string
-		url     string
-		expErr  bool
-		errMsg  string
-		classID string
+		name      string
+		url       string
+		expErr    bool
+		errMsg    string
+		projectID string
 	}{
 		{
 			"invalid batch denom",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s", val.APIAddress, "C999"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s", val.APIAddress, "C999"),
 			true,
 			"invalid denom",
 			"",
 		},
 		{
 			"no batches found",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s", val.APIAddress, "A00-00000000-00000000-000"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s", val.APIAddress, "A00-00000000-00000000-000"),
 			true,
 			"not found",
 			"",
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s", val.APIAddress, "C01-20210101-20210201-002"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s", val.APIAddress, "C01-20210101-20210201-002"),
 			false,
 			"",
-			"C01",
+			"P01",
 		},
 	}
 
@@ -222,7 +222,7 @@ func (s *IntegrationTestSuite) TestGetBatch() {
 			} else {
 				require.NoError(err)
 				require.NotNil(batch.Info)
-				require.Equal(batch.Info.ClassId, tc.classID)
+				require.Equal(batch.Info.ProjectId, tc.projectID)
 			}
 		})
 	}
@@ -232,7 +232,7 @@ func (s *IntegrationTestSuite) TestCreditTypes() {
 	require := s.Require()
 	val := s.network.Validators[0]
 
-	url := fmt.Sprintf("%s/regen/ecocredit/v1alpha1/credit-types", val.APIAddress)
+	url := fmt.Sprintf("%s/regen/ecocredit/v1alpha2/credit-types", val.APIAddress)
 	resp, err := rest.GetRequest(url)
 	require.NoError(err)
 
@@ -256,19 +256,19 @@ func (s *IntegrationTestSuite) TestGetBalance() {
 	}{
 		{
 			"invalid batch-denom",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s/balance/%s", val.APIAddress, "abcd", val.Address.String()),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s/balance/%s", val.APIAddress, "abcd", val.Address.String()),
 			true,
 			"invalid denom",
 		},
 		{
 			"invalid account address",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s/balance/%s", val.APIAddress, "C01-20210101-20210201-001", "abcd"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s/balance/%s", val.APIAddress, "C01-20210101-20210201-001", "abcd"),
 			true,
 			"decoding bech32 failed",
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s/balance/%s", val.APIAddress, "C01-20210101-20210201-002", val.Address.String()),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s/balance/%s", val.APIAddress, "C01-20210101-20210201-002", val.Address.String()),
 			false,
 			"",
 		},
@@ -308,13 +308,13 @@ func (s *IntegrationTestSuite) TestGetSupply() {
 	}{
 		{
 			"invalid batch-denom",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s/supply", val.APIAddress, "abcd"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s/supply", val.APIAddress, "abcd"),
 			true,
 			"invalid denom",
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/batches/%s/supply", val.APIAddress, "C01-20210101-20210201-001"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha2/batches/%s/supply", val.APIAddress, "C01-20210101-20210201-001"),
 			false,
 			"",
 		},
@@ -347,7 +347,7 @@ func (s *IntegrationTestSuite) TestGRPCQueryParams() {
 	val := s.network.Validators[0]
 	require := s.Require()
 
-	resp, err := rest.GetRequest(fmt.Sprintf("%s/regen/ecocredit/v1alpha1/params", val.APIAddress))
+	resp, err := rest.GetRequest(fmt.Sprintf("%s/regen/ecocredit/v1alpha2/params", val.APIAddress))
 	require.NoError(err)
 
 	var params ecocredit.QueryParamsResponse

@@ -41,6 +41,7 @@ func TxCmd(name string) *cobra.Command {
 		TxUpdateClassMetadataCmd(),
 		TxUpdateClassIssuersCmd(),
 		TxUpdateClassAdminCmd(),
+		TxCreateProject(),
 		TxSellCmd(),
 		TxUpdateSellOrdersCmd(),
 		TxBuyCmd(),
@@ -102,9 +103,9 @@ Parameters:
 			if args[2] == "" {
 				return errors.New("base64_metadata is required")
 			}
-			b, err := base64.StdEncoding.DecodeString(args[2])
+			b, err := decodeMetadata(args[2])
 			if err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
+				return err
 			}
 
 			msg := ecocredit.MsgCreateClass{
@@ -120,6 +121,7 @@ Parameters:
 
 const (
 	FlagClassId         string = "class-id"
+	FlagProjectId       string = "project-id"
 	FlagIssuances       string = "issuances"
 	FlagStartDate       string = "start-date"
 	FlagEndDate         string = "end-date"
@@ -131,22 +133,22 @@ const (
 // represent a new credit batch.
 func TxGenBatchJSONCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "gen-batch-json --class-id [class_id] --issuances [issuances] --start-date [start_date] --end-date [end_date] --project-location [project_location] --metadata [metadata]",
+		Use:   "gen-batch-json --project-id [project_id] --issuances [issuances] --start-date [start_date] --end-date [end_date] --project-location [project_location] --metadata [metadata]",
 		Short: "Generates JSON to represent a new credit batch for use with create-batch command",
 		Long: `Generates JSON to represent a new credit batch for use with create-batch command.
 
 Required Flags:
-  class_id:   id of the credit class
   issuances:  the amount of issuances to generate
   start-date: The beginning of the period during which this credit batch was
               quantified and verified. Format: yyyy-mm-dd.
   end-date:   The end of the period during which this credit batch was
               quantified and verified. Format: yyyy-mm-dd.
-  project-location: the location of the credit batch (see documentation for proper project-location formats).
-  metadata:   base64 encoded issuance metadata`,
+  metadata:   base64 encoded issuance metadata
+  project_id:   id of the project
+  `,
 		Args: cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			classId, err := cmd.Flags().GetString(FlagClassId)
+			projectId, err := cmd.Flags().GetString(FlagProjectId)
 			if err != nil {
 				return err
 			}
@@ -182,27 +184,21 @@ Required Flags:
 				return err
 			}
 
-			projectLocation, err := cmd.Flags().GetString(FlagProjectLocation)
-			if err != nil {
-				return err
-			}
-
 			metadataStr, err := cmd.Flags().GetString(FlagMetadata)
 			if err != nil {
 				return err
 			}
-			b, err := base64.StdEncoding.DecodeString(metadataStr)
+			b, err := decodeMetadata(metadataStr)
 			if err != nil {
-				return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "metadata is malformed, proper base64 string is required")
+				return err
 			}
 
 			msg := &ecocredit.MsgCreateBatch{
-				ClassId:         classId,
-				Issuance:        issuances,
-				Metadata:        b,
-				StartDate:       &startDate,
-				EndDate:         &endDate,
-				ProjectLocation: projectLocation,
+				ProjectId: projectId,
+				Issuance:  issuances,
+				Metadata:  b,
+				StartDate: &startDate,
+				EndDate:   &endDate,
 			}
 
 			// Marshal and output JSON of message
@@ -219,16 +215,14 @@ Required Flags:
 			return nil
 		},
 	}
-	cmd.Flags().String(FlagClassId, "", "credit class")
-	cmd.MarkFlagRequired(FlagClassId)
+	cmd.Flags().String(FlagProjectId, "", "project id")
+	cmd.MarkFlagRequired(FlagProjectId)
 	cmd.Flags().Uint32(FlagIssuances, 0, "The number of template issuances to generate")
 	cmd.MarkFlagRequired(FlagIssuances)
 	cmd.Flags().String(FlagStartDate, "", "The beginning of the period during which this credit batch was quantified and verified. Format: yyyy-mm-dd.")
 	cmd.MarkFlagRequired(FlagStartDate)
 	cmd.Flags().String(FlagEndDate, "", "The end of the period during which this credit batch was quantified and verified. Format: yyyy-mm-dd.")
 	cmd.MarkFlagRequired(FlagEndDate)
-	cmd.Flags().String(FlagProjectLocation, "", "The location of the project that is backing the credits in this batch")
-	cmd.MarkFlagRequired(FlagProjectLocation)
 	cmd.Flags().String(FlagMetadata, "", "base64 encoded issuance metadata")
 	return cmd
 }
@@ -245,7 +239,7 @@ Parameters:
   msg-create-batch-json-file: Path to a file containing a JSON object
                               representing MsgCreateBatch. The JSON has format:
                               {
-                                "class_id"": "C01",
+                                "project_id"": "C0101",
                                 "issuance": [
                                   {
                                     "recipient":           "regen1elq7ys34gpkj3jyvqee0h6yk4h9wsfxmgqelsw",
@@ -409,9 +403,9 @@ Parameters:
 			if args[1] == "" {
 				return errors.New("base64_metadata is required")
 			}
-			b, err := base64.StdEncoding.DecodeString(args[1])
+			b, err := decodeMetadata(args[1])
 			if err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
+				return err
 			}
 
 			clientCtx, err := sdkclient.GetClientTxContext(cmd)
@@ -729,4 +723,80 @@ Parameters:
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
 		},
 	})
+}
+
+// TxCreateProject returns a transaction command that creates a new project.
+func TxCreateProject() *cobra.Command {
+	cmd := txflags(&cobra.Command{
+		Use:   "create-project [class-id] [project-location] [metadata] --project-id [project-id]",
+		Short: "Create a new project within a credit class",
+		Long: `Create a new project within a credit class.
+		
+		Parameters:
+		class-id: id of the class
+		project-location: the location of the project (see documentation for proper project-location formats).
+		metadata: base64 encoded metadata - any arbitrary metadata attached to the project.
+		project-id: id of the project (optional - if left blank, a project-id will be auto-generated).
+		`,
+		Args: cobra.ExactArgs(3),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if args[0] == "" {
+				return errors.New("class-id is required")
+			}
+
+			classID := args[0]
+
+			if args[1] == "" {
+				return errors.New("project location is required")
+			}
+
+			projectLocation := args[1]
+			if err := ecocredit.ValidateLocation(projectLocation); err != nil {
+				return err
+			}
+
+			if args[2] == "" {
+				return errors.New("metadata is required")
+			}
+
+			b, err := decodeMetadata(args[2])
+			if err != nil {
+				return err
+			}
+
+			clientCtx, err := sdkclient.GetClientTxContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			projectId, err := cmd.Flags().GetString(FlagProjectId)
+			if err != nil {
+				return err
+			}
+
+			msg := ecocredit.MsgCreateProject{
+				Issuer:          clientCtx.GetFromAddress().String(),
+				ClassId:         classID,
+				ProjectLocation: projectLocation,
+				Metadata:        b,
+				ProjectId:       projectId,
+			}
+
+			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), &msg)
+
+		},
+	})
+
+	cmd.Flags().String(FlagProjectId, "", "id of the project")
+
+	return cmd
+}
+
+func decodeMetadata(metadataStr string) ([]byte, error) {
+	b, err := base64.StdEncoding.DecodeString(metadataStr)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap("metadata is malformed, proper base64 string is required")
+	}
+
+	return b, nil
 }

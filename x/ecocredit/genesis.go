@@ -12,6 +12,14 @@ func (s *GenesisState) Validate() error {
 	decimalPlaces := make(map[string]uint32)
 	calSupplies := make(map[string]math.Dec)
 	supplies := make(map[string]math.Dec)
+	classIds := make(map[string]string)
+
+	for _, project := range s.ProjectInfo {
+		if _, exists := classIds[project.ProjectId]; exists {
+			continue
+		}
+		classIds[project.ProjectId] = project.ClassId
+	}
 
 	for _, batch := range s.BatchInfo {
 		if _, exists := decimalPlaces[batch.BatchDenom]; exists {
@@ -19,7 +27,7 @@ func (s *GenesisState) Validate() error {
 		}
 
 		for _, class := range s.ClassInfo {
-			if batch.ClassId == class.ClassId {
+			if classIds[batch.ProjectId] == class.ClassId {
 				decimalPlaces[batch.BatchDenom] = class.CreditType.GetPrecision()
 				break
 			}
@@ -153,11 +161,12 @@ func calculateSupply(decimalPlaces map[string]uint32, balances []*Balance, calSu
 // DefaultGenesisState returns a default ecocredit module genesis state.
 func DefaultGenesisState() *GenesisState {
 	return &GenesisState{
-		Params:    DefaultParams(),
-		ClassInfo: []*ClassInfo{},
-		BatchInfo: []*BatchInfo{},
-		Sequences: []*CreditTypeSeq{},
-		Balances:  []*Balance{},
-		Supplies:  []*Supply{},
+		Params:      DefaultParams(),
+		ClassInfo:   []*ClassInfo{},
+		BatchInfo:   []*BatchInfo{},
+		Sequences:   []*CreditTypeSeq{},
+		Balances:    []*Balance{},
+		Supplies:    []*Supply{},
+		ProjectInfo: []*ProjectInfo{},
 	}
 }

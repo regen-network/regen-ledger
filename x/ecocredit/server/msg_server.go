@@ -76,9 +76,8 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 	return &ecocredit.MsgCreateClassResponse{ClassId: classID}, nil
 }
 
-// CreateBatch creates a new batch of credits.
-// Credits in the batch must not have more decimal places than the credit type's specified precision.
-func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatch) (*ecocredit.MsgCreateBatchResponse, error) {
+// CreateProject creates a new project.
+func (s serverImpl) CreateProject(goCtx context.Context, req *ecocredit.MsgCreateProject) (*ecocredit.MsgCreateProjectResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	classID := req.ClassId
 	classInfo, err := s.getClassInfo(ctx, classID)
@@ -90,13 +89,66 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		return nil, err
 	}
 
+	projectID := req.ProjectId
+	if req.ProjectId == "" {
+		projectID = s.genProjectID(ctx, classInfo.ClassId)
+		for s.projectInfoTable.Has(ctx, orm.RowID(projectID)) {
+			projectID = s.genProjectID(ctx, classInfo.ClassId)
+			ctx.GasMeter().ConsumeGas(gasCostPerIteration, "project id sequence")
+		}
+	}
+
+	if err := s.projectInfoTable.Create(ctx, &ecocredit.ProjectInfo{
+		ProjectId:       projectID,
+		ClassId:         classID,
+		Issuer:          req.Issuer,
+		ProjectLocation: req.ProjectLocation,
+		Metadata:        req.Metadata,
+	}); err != nil {
+		return nil, err
+	}
+
+	if err := ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateProject{
+		ClassId:         classID,
+		ProjectId:       projectID,
+		Issuer:          req.Issuer,
+		ProjectLocation: req.ProjectLocation,
+	}); err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.MsgCreateProjectResponse{
+		ProjectId: projectID,
+	}, nil
+}
+
+// CreateBatch creates a new batch of credits.
+// Credits in the batch must not have more decimal places than the credit type's specified precision.
+func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatch) (*ecocredit.MsgCreateBatchResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	projectID := req.ProjectId
+
+	projectInfo, err := s.getProjectInfo(ctx, projectID)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = projectInfo.AssertProjectIssuer(req.Issuer); err != nil {
+		return nil, err
+	}
+
+	classInfo, err := s.getClassInfo(ctx, projectInfo.ClassId)
+	if err != nil {
+		return nil, err
+	}
+
 	maxDecimalPlaces := classInfo.CreditType.Precision
 	batchSeqNo, err := s.nextBatchInClass(ctx, classInfo)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
-	batchDenomStr, err := ecocredit.FormatDenom(classID, batchSeqNo, req.StartDate, req.EndDate)
+	batchDenomStr, err := ecocredit.FormatDenom(classInfo.ClassId, batchSeqNo, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
@@ -192,28 +244,26 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	amountCancelledStr := math.NewDecFromInt64(0).String()
 
 	err = s.batchInfoTable.Create(ctx, &ecocredit.BatchInfo{
-		ClassId:         classID,
+		ProjectId:       projectID,
 		BatchDenom:      string(batchDenom),
-		Issuer:          req.Issuer,
 		TotalAmount:     totalSupplyStr,
 		Metadata:        req.Metadata,
 		AmountCancelled: amountCancelledStr,
 		StartDate:       req.StartDate,
 		EndDate:         req.EndDate,
-		ProjectLocation: req.ProjectLocation,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateBatch{
-		ClassId:         classID,
+		ProjectId:       projectID,
 		BatchDenom:      string(batchDenom),
 		Issuer:          req.Issuer,
 		TotalAmount:     totalSupplyStr,
 		StartDate:       req.StartDate.Format("2006-01-02"),
 		EndDate:         req.EndDate.Format("2006-01-02"),
-		ProjectLocation: req.ProjectLocation,
+		ProjectLocation: projectInfo.ProjectLocation,
 	})
 	if err != nil {
 		return nil, err
@@ -327,7 +377,7 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 			return nil, err
 		}
 
-		classInfo, err := s.getClassInfo(ctx, batchInfo.ClassId)
+		classInfo, err := s.getClassInfoByProjectID(ctx, batchInfo.ProjectId)
 		if err != nil {
 			return nil, err
 		}
@@ -496,7 +546,7 @@ func (s serverImpl) getBatchPrecision(ctx types.Context, denom batchDenomT) (uin
 		return 0, err
 	}
 
-	classInfo, err := s.getClassInfo(ctx, batchInfo.ClassId)
+	classInfo, err := s.getClassInfoByProjectID(ctx, batchInfo.ProjectId)
 	if err != nil {
 		return 0, err
 	}
@@ -905,4 +955,29 @@ func (s serverImpl) sendEcocredits(ctx types.Context, credit *ecocredit.MsgSend_
 	}
 
 	return nil
+}
+
+func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBasket) (*ecocredit.MsgAddToBasketResponse, error) {
+	// TODO: implement add to basket
+	return nil, nil
+}
+
+func (s serverImpl) CreateBasket(goCtx context.Context, req *ecocredit.MsgCreateBasket) (*ecocredit.MsgCreateBasketResponse, error) {
+	// TODO: implement create basket
+	return nil, nil
+}
+
+func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPickFromBasket) (*ecocredit.MsgPickFromBasketResponse, error) {
+	// TODO: implement create basket
+	return nil, nil
+}
+
+func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTakeFromBasket) (*ecocredit.MsgTakeFromBasketResponse, error) {
+	// TODO: implement create basket
+	return nil, nil
+}
+
+func (s serverImpl) genProjectID(ctx types.Context, classID string) string {
+	projectSeqNo := s.projectInfoSeq.NextVal(ctx)
+	return ecocredit.FormatProjectID(classID, projectSeqNo)
 }

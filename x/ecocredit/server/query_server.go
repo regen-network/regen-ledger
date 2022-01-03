@@ -60,20 +60,35 @@ func (s serverImpl) getClassInfo(ctx types.Context, classID string) (*ecocredit.
 	return &classInfo, err
 }
 
+func (s serverImpl) getClassInfoByProjectID(ctx types.Context, projectID string) (*ecocredit.ClassInfo, error) {
+	projectInfo, err := s.getProjectInfo(ctx, projectID)
+	if err != nil {
+		return nil, err
+	}
+
+	var classInfo ecocredit.ClassInfo
+	err = s.classInfoTable.GetOne(ctx, orm.RowID(projectInfo.ClassId), &classInfo)
+	return &classInfo, err
+}
+
+func (s serverImpl) getProjectInfo(ctx types.Context, projectID string) (*ecocredit.ProjectInfo, error) {
+	var projectInfo ecocredit.ProjectInfo
+	err := s.projectInfoTable.GetOne(ctx, orm.RowID(projectID), &projectInfo)
+	return &projectInfo, err
+}
+
 // Batches queries for all batches in the given credit class.
 func (s serverImpl) Batches(goCtx context.Context, request *ecocredit.QueryBatchesRequest) (*ecocredit.QueryBatchesResponse, error) {
 	if request == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
-	if err := ecocredit.ValidateClassID(request.ClassId); err != nil {
+	if err := ecocredit.ValidateProjectID(request.ProjectId); err != nil {
 		return nil, err
 	}
 
-	// Only read IDs that have a prefix match with the ClassID
 	ctx := types.UnwrapSDKContext(goCtx)
-	start, end := orm.PrefixRange([]byte(request.ClassId))
-	batchesIter, err := s.batchInfoTable.PrefixScan(ctx, start, end)
+	batchesIter, err := s.batchesByProjectIDIndex.GetPaginated(ctx, request.ProjectId, request.Pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -88,6 +103,48 @@ func (s serverImpl) Batches(goCtx context.Context, request *ecocredit.QueryBatch
 		Batches:    batches,
 		Pagination: pageResp,
 	}, nil
+}
+
+// Projects queries projects of a given credit batch.
+func (s serverImpl) Projects(goCtx context.Context, request *ecocredit.QueryProjectsRequest) (*ecocredit.QueryProjectsResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
+	ctx := types.UnwrapSDKContext(goCtx)
+	projectsIter, err := s.projectsByClassIDIndex.GetPaginated(ctx, request.ClassId, request.Pagination)
+	if err != nil {
+		return nil, err
+	}
+
+	var projects []*ecocredit.ProjectInfo
+	pageResp, err := orm.Paginate(projectsIter, request.Pagination, &projects)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.QueryProjectsResponse{
+		Projects:   projects,
+		Pagination: pageResp,
+	}, nil
+}
+
+func (s serverImpl) ProjectInfo(goCtx context.Context, request *ecocredit.QueryProjectInfoRequest) (*ecocredit.QueryProjectInfoResponse, error) {
+	if request == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "empty request")
+	}
+
+	if err := ecocredit.ValidateProjectID(request.ProjectId); err != nil {
+		return nil, err
+	}
+
+	var projectInfo ecocredit.ProjectInfo
+	ctx := types.UnwrapSDKContext(goCtx)
+	err := s.projectInfoTable.GetOne(ctx, orm.RowID(request.ProjectId), &projectInfo)
+
+	return &ecocredit.QueryProjectInfoResponse{
+		Info: &projectInfo,
+	}, err
 }
 
 // BatchInfo queries for information on a credit batch.
@@ -386,4 +443,19 @@ func (s serverImpl) AllowedAskDenoms(goCtx context.Context, request *ecocredit.Q
 		AskDenoms:  denoms,
 		Pagination: pageResp,
 	}, nil
+}
+
+func (s serverImpl) Basket(goCtx context.Context, request *ecocredit.QueryBasketRequest) (*ecocredit.QueryBasketResponse, error) {
+	// TODO: #629
+	return nil, nil
+}
+
+func (s serverImpl) Baskets(goCtx context.Context, request *ecocredit.QueryBasketsRequest) (*ecocredit.QueryBasketsResponse, error) {
+	// TODO: #629
+	return nil, nil
+}
+
+func (s serverImpl) BasketCredits(goCtx context.Context, request *ecocredit.QueryBasketCreditsRequest) (*ecocredit.QueryBasketCreditsResponse, error) {
+	// TODO: #629
+	return nil, nil
 }
