@@ -6,23 +6,10 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func TestMsgAnchorDataRequest_GetSigners(t *testing.T) {
-	_, _, addr := testdata.KeyTestPubAddr()
-
-	msg := &MsgAnchorData{Sender: addr.String()}
-	require.Equal(t, []sdk.AccAddress{addr}, msg.GetSigners())
-
-	msg = &MsgAnchorData{Sender: ""}
-	require.Panics(t, func() {
-		msg.GetSigners()
-	})
-}
-
 func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
+	_, _, addr := testdata.KeyTestPubAddr()
 	type fields struct {
 		Sender string
 		Hash   *ContentHash
@@ -35,7 +22,7 @@ func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
 		{
 			name: "good",
 			fields: fields{
-				Sender: "",
+				Sender: addr.String(),
 				Hash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
 					Hash:            make([]byte, 32),
 					DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
@@ -46,9 +33,17 @@ func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
 			wantErr: "",
 		},
 		{
+			name: "nil",
+			fields: fields{
+				Sender: addr.String(),
+				Hash:   nil,
+			},
+			wantErr: "hash cannot be empty: invalid request",
+		},
+		{
 			name: "bad",
 			fields: fields{
-				Sender: "",
+				Sender: addr.String(),
 				Hash: &ContentHash{Sum: &ContentHash_Raw_{Raw: &ContentHash_Raw{
 					Hash:            make([]byte, 31),
 					DigestAlgorithm: DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,
@@ -75,23 +70,8 @@ func TestMsgAnchorDataRequest_ValidateBasic(t *testing.T) {
 	}
 }
 
-func TestMsgSignDataRequest_GetSigners(t *testing.T) {
-	_, _, addr := testdata.KeyTestPubAddr()
-	_, _, addr2 := testdata.KeyTestPubAddr()
-
-	msg := &MsgSignData{Signers: []string{addr.String(), addr2.String()}}
-	require.Equal(t, []sdk.AccAddress{addr, addr2}, msg.GetSigners())
-
-	msg = &MsgSignData{Signers: nil}
-	require.Empty(t, msg.GetSigners())
-
-	msg = &MsgSignData{Signers: []string{"abcd"}}
-	require.Panics(t, func() {
-		msg.GetSigners()
-	})
-}
-
 func TestMsgSignDataRequest_ValidateBasic(t *testing.T) {
+	_, _, addr := testdata.KeyTestPubAddr()
 	type fields struct {
 		Signers []string
 		Hash    *ContentHash_Graph
@@ -104,7 +84,7 @@ func TestMsgSignDataRequest_ValidateBasic(t *testing.T) {
 		{
 			"good",
 			fields{
-				Signers: nil,
+				Signers: []string{addr.String()},
 				Hash: &ContentHash_Graph{
 					Hash:                      make([]byte, 32),
 					DigestAlgorithm:           DigestAlgorithm_DIGEST_ALGORITHM_BLAKE2B_256,

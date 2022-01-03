@@ -2,6 +2,8 @@ package server
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/regen-network/regen-ledger/orm"
@@ -17,13 +19,29 @@ const (
 	CreditTypeSeqTablePrefix byte = 0x4
 	ClassInfoTablePrefix     byte = 0x5
 	BatchInfoTablePrefix     byte = 0x6
-	SellOrderTablePrefix     byte = 0x7
-	SellOrderTableSeqPrefix  byte = 0x8
-	BuyOrderTablePrefix      byte = 0x9
-	BuyOrderTableSeqPrefix   byte = 0x10
-	AskDenomTablePrefix      byte = 0x11
-	BasketTablePrefix        byte = 0x12
-	BasketCreditsPrefix      byte = 0x13
+
+	// project tables
+	ProjectInfoTablePrefix    byte = 0x12
+	ProjectInfoTableSeqPrefix byte = 0x13
+	ProjectsByClassIDIndex    byte = 0x14
+	BatchesByProjectIndex     byte = 0x15
+
+	// sell order table
+	SellOrderTablePrefix             byte = 0x10
+	SellOrderTableSeqPrefix          byte = 0x11
+	SellOrderByAddressIndexPrefix    byte = 0x12
+	SellOrderByBatchDenomIndexPrefix byte = 0x13
+
+	// buy order table
+	BuyOrderTablePrefix          byte = 0x20
+	BuyOrderTableSeqPrefix       byte = 0x21
+	BuyOrderByAddressIndexPrefix byte = 0x22
+
+	// basket tables
+	BasketTablePrefix byte = 0x23
+	BasketCredtisPrefix byte = 0x24
+
+	AskDenomTablePrefix byte = 0x30
 )
 
 type serverImpl struct {
@@ -38,10 +56,26 @@ type serverImpl struct {
 
 	classInfoTable orm.PrimaryKeyTable
 	batchInfoTable orm.PrimaryKeyTable
-	sellOrderTable orm.AutoUInt64Table
-	buyOrderTable  orm.AutoUInt64Table
-	askDenomTable  orm.PrimaryKeyTable
-	basketTable    orm.PrimaryKeyTable
+
+	// sell order table
+	sellOrderTable             orm.AutoUInt64Table
+	sellOrderByAddressIndex    orm.Index
+	sellOrderByBatchDenomIndex orm.Index
+
+	// buy order table
+	buyOrderTable          orm.AutoUInt64Table
+	buyOrderByAddressIndex orm.Index
+
+	askDenomTable orm.PrimaryKeyTable
+
+	// project table
+	projectInfoTable        orm.PrimaryKeyTable
+	projectInfoSeq          orm.Sequence
+	projectsByClassIDIndex  orm.Index
+	batchesByProjectIDIndex orm.Index
+
+	// basket table
+	basketTable orm.PrimaryKeyTable
 }
 
 func newServer(storeKey server.RootModuleKey, paramSpace paramtypes.Subspace,
@@ -69,15 +103,65 @@ func newServer(storeKey server.RootModuleKey, paramSpace paramtypes.Subspace,
 	if err != nil {
 		panic(err.Error())
 	}
+
+	s.batchesByProjectIDIndex, err = orm.NewIndex(batchInfoTableBuilder, BatchesByProjectIndex, func(value interface{}) ([]interface{}, error) {
+		batchInfo, ok := value.(*ecocredit.BatchInfo)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.BatchInfo{}, value)
+		}
+		return []interface{}{batchInfo.ProjectId}, nil
+	}, ecocredit.BatchInfo{}.ProjectId)
+	if err != nil {
+		panic(err.Error())
+	}
+
 	s.batchInfoTable = batchInfoTableBuilder.Build()
 
 	sellOrderTableBuilder, err := orm.NewAutoUInt64TableBuilder(SellOrderTablePrefix, SellOrderTableSeqPrefix, storeKey, &ecocredit.SellOrder{}, cdc)
 	if err != nil {
 		panic(err.Error())
 	}
+	s.sellOrderByAddressIndex, err = orm.NewIndex(sellOrderTableBuilder, SellOrderByAddressIndexPrefix, func(value interface{}) ([]interface{}, error) {
+		order, ok := value.(*ecocredit.SellOrder)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.SellOrder{}, value)
+		}
+		addr, err := sdk.AccAddressFromBech32(order.Owner)
+		if err != nil {
+			return nil, err
+		}
+		return []interface{}{addr.Bytes()}, nil
+	}, []byte{})
+	if err != nil {
+		panic(err.Error())
+	}
+	s.sellOrderByBatchDenomIndex, err = orm.NewIndex(sellOrderTableBuilder, SellOrderByBatchDenomIndexPrefix, func(value interface{}) ([]interface{}, error) {
+		order, ok := value.(*ecocredit.SellOrder)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.SellOrder{}, value)
+		}
+		return []interface{}{order.BatchDenom}, nil
+	}, ecocredit.SellOrder{}.BatchDenom)
+	if err != nil {
+		panic(err.Error())
+	}
 	s.sellOrderTable = sellOrderTableBuilder.Build()
 
 	buyOrderTableBuilder, err := orm.NewAutoUInt64TableBuilder(BuyOrderTablePrefix, BuyOrderTableSeqPrefix, storeKey, &ecocredit.BuyOrder{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.buyOrderByAddressIndex, err = orm.NewIndex(buyOrderTableBuilder, BuyOrderByAddressIndexPrefix, func(value interface{}) ([]interface{}, error) {
+		order, ok := value.(*ecocredit.BuyOrder)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.BuyOrder{}, value)
+		}
+		addr, err := sdk.AccAddressFromBech32(order.Buyer)
+		if err != nil {
+			return nil, err
+		}
+		return []interface{}{addr.Bytes()}, nil
+	}, []byte{})
 	if err != nil {
 		panic(err.Error())
 	}
@@ -88,6 +172,25 @@ func newServer(storeKey server.RootModuleKey, paramSpace paramtypes.Subspace,
 		panic(err.Error())
 	}
 	s.askDenomTable = askDenomTableBuilder.Build()
+
+	s.projectInfoSeq = orm.NewSequence(storeKey, ProjectInfoTableSeqPrefix)
+	projectInfoTableBuilder, err := orm.NewPrimaryKeyTableBuilder(ProjectInfoTablePrefix, storeKey, &ecocredit.ProjectInfo{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	s.projectsByClassIDIndex, err = orm.NewIndex(projectInfoTableBuilder, ProjectsByClassIDIndex, func(value interface{}) ([]interface{}, error) {
+		projectInfo, ok := value.(*ecocredit.ProjectInfo)
+		if !ok {
+			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.ProjectInfo{}, value)
+		}
+		return []interface{}{projectInfo.ClassId}, nil
+	}, ecocredit.ProjectInfo{}.ClassId)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	s.projectInfoTable = projectInfoTableBuilder.Build()
 
 	basketTableBuilder, err := orm.NewPrimaryKeyTableBuilder(BasketTablePrefix, storeKey, &ecocredit.Basket{}, cdc)
 	if err != nil {
@@ -102,7 +205,7 @@ func RegisterServices(configurator server.Configurator, paramSpace paramtypes.Su
 	bankKeeper ecocredit.BankKeeper) {
 	impl := newServer(configurator.ModuleKey(), paramSpace, accountKeeper, bankKeeper, configurator.Marshaler())
 	ecocredit.RegisterMsgServer(configurator.MsgServer(), impl)
-	//ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
+	ecocredit.RegisterQueryServer(configurator.QueryServer(), impl)
 	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
 	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
 	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)

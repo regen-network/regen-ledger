@@ -4,7 +4,6 @@ import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	"github.com/regen-network/regen-ledger/orm"
@@ -76,9 +75,8 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 	return &ecocredit.MsgCreateClassResponse{ClassId: classID}, nil
 }
 
-// CreateBatch creates a new batch of credits.
-// Credits in the batch must not have more decimal places than the credit type's specified precision.
-func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatch) (*ecocredit.MsgCreateBatchResponse, error) {
+// CreateProject creates a new project.
+func (s serverImpl) CreateProject(goCtx context.Context, req *ecocredit.MsgCreateProject) (*ecocredit.MsgCreateProjectResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	classID := req.ClassId
 	classInfo, err := s.getClassInfo(ctx, classID)
@@ -90,13 +88,66 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		return nil, err
 	}
 
+	projectID := req.ProjectId
+	if req.ProjectId == "" {
+		projectID = s.genProjectID(ctx, classInfo.ClassId)
+		for s.projectInfoTable.Has(ctx, orm.RowID(projectID)) {
+			projectID = s.genProjectID(ctx, classInfo.ClassId)
+			ctx.GasMeter().ConsumeGas(gasCostPerIteration, "project id sequence")
+		}
+	}
+
+	if err := s.projectInfoTable.Create(ctx, &ecocredit.ProjectInfo{
+		ProjectId:       projectID,
+		ClassId:         classID,
+		Issuer:          req.Issuer,
+		ProjectLocation: req.ProjectLocation,
+		Metadata:        req.Metadata,
+	}); err != nil {
+		return nil, err
+	}
+
+	if err := ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateProject{
+		ClassId:         classID,
+		ProjectId:       projectID,
+		Issuer:          req.Issuer,
+		ProjectLocation: req.ProjectLocation,
+	}); err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.MsgCreateProjectResponse{
+		ProjectId: projectID,
+	}, nil
+}
+
+// CreateBatch creates a new batch of credits.
+// Credits in the batch must not have more decimal places than the credit type's specified precision.
+func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatch) (*ecocredit.MsgCreateBatchResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	projectID := req.ProjectId
+
+	projectInfo, err := s.getProjectInfo(ctx, projectID)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = projectInfo.AssertProjectIssuer(req.Issuer); err != nil {
+		return nil, err
+	}
+
+	classInfo, err := s.getClassInfo(ctx, projectInfo.ClassId)
+	if err != nil {
+		return nil, err
+	}
+
 	maxDecimalPlaces := classInfo.CreditType.Precision
 	batchSeqNo, err := s.nextBatchInClass(ctx, classInfo)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
-	batchDenomStr, err := ecocredit.FormatDenom(classID, batchSeqNo, req.StartDate, req.EndDate)
+	batchDenomStr, err := ecocredit.FormatDenom(classInfo.ClassId, batchSeqNo, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
@@ -192,28 +243,26 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	amountCancelledStr := math.NewDecFromInt64(0).String()
 
 	err = s.batchInfoTable.Create(ctx, &ecocredit.BatchInfo{
-		ClassId:         classID,
+		ProjectId:       projectID,
 		BatchDenom:      string(batchDenom),
-		Issuer:          req.Issuer,
 		TotalAmount:     totalSupplyStr,
 		Metadata:        req.Metadata,
 		AmountCancelled: amountCancelledStr,
 		StartDate:       req.StartDate,
 		EndDate:         req.EndDate,
-		ProjectLocation: req.ProjectLocation,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateBatch{
-		ClassId:         classID,
+		ProjectId:       projectID,
 		BatchDenom:      string(batchDenom),
 		Issuer:          req.Issuer,
 		TotalAmount:     totalSupplyStr,
 		StartDate:       req.StartDate.Format("2006-01-02"),
 		EndDate:         req.EndDate.Format("2006-01-02"),
-		ProjectLocation: req.ProjectLocation,
+		ProjectLocation: projectInfo.ProjectLocation,
 	})
 	if err != nil {
 		return nil, err
@@ -327,7 +376,7 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 			return nil, err
 		}
 
-		classInfo, err := s.getClassInfo(ctx, batchInfo.ClassId)
+		classInfo, err := s.getClassInfoByProjectID(ctx, batchInfo.ProjectId)
 		if err != nil {
 			return nil, err
 		}
@@ -496,7 +545,7 @@ func (s serverImpl) getBatchPrecision(ctx types.Context, denom batchDenomT) (uin
 		return 0, err
 	}
 
-	classInfo, err := s.getClassInfo(ctx, batchInfo.ClassId)
+	classInfo, err := s.getClassInfoByProjectID(ctx, batchInfo.ProjectId)
 	if err != nil {
 		return 0, err
 	}
@@ -543,6 +592,7 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 		sellOrderIds[i] = orderID
 
 		_, err = s.sellOrderTable.Create(ctx, &ecocredit.SellOrder{
+			Owner:             owner,
 			OrderId:           orderID,
 			BatchDenom:        order.BatchDenom,
 			Quantity:          order.Quantity,
@@ -585,7 +635,11 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 
 		sellOrder, err := s.getSellOrder(ctx, update.SellOrderId)
 		if err != nil {
-			return nil, err
+			return nil, ecocredit.ErrInvalidSellOrder.Wrapf("sell order id %d not found", update.SellOrderId)
+		}
+
+		if req.Owner != sellOrder.Owner {
+			return nil, sdkerrors.ErrUnauthorized.Wrapf("signer is not the owner of sell order id %d",  update.SellOrderId)
 		}
 
 		// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
@@ -658,7 +712,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 
 		// verify buyer has sufficient balance in coin
 		if balanceAmount.LT(coinToSend.Amount) {
-			return nil, ecocredit.ErrInsufficientFunds.Wrapf("insufficient balance: got %s, needed at least: %s", balanceAmount.String(), coinToSend.Amount.String())
+			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance: got %s, needed at least: %s", balanceAmount.String(), coinToSend.Amount.String())
 		}
 
 		switch order.Selection.Sum.(type) {
@@ -726,7 +780,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 				BatchDenom:     sellOrder.BatchDenom,
 				TradableAmount: creditsToReceive.String(),
 				// TODO: handle auto-retire settings #621
-				//RetiredAmount: creditsToRetire.String(),
+				RetiredAmount: "0",
 				//RetirementLocation: retirementLocation,
 			}
 
@@ -745,7 +799,9 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 			if creditsRemaining.IsZero() {
 
 				// delete sell order if no remaining credits
-				s.sellOrderTable.Delete(ctx, sellOrder.OrderId)
+				if err := s.sellOrderTable.Delete(ctx, sellOrder.OrderId); err != nil {
+					return nil, err
+				}
 
 			} else {
 				sellOrder.Quantity = creditsRemaining.String()
@@ -801,8 +857,10 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 func (s serverImpl) AllowAskDenom(goCtx context.Context, req *ecocredit.MsgAllowAskDenom) (*ecocredit.MsgAllowAskDenomResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 
-	if req.RootAddress != authtypes.NewModuleAddress(govtypes.ModuleName).String() {
-		return nil, sdkerrors.ErrUnauthorized.Wrap("root address must be governance module address")
+	rootAddress := s.accountKeeper.GetModuleAddress(govtypes.ModuleName).String()
+
+	if req.RootAddress != rootAddress {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("root address must be governance module address, got: %s, expected: %s", req.RootAddress, rootAddress)
 	}
 
 	err := s.askDenomTable.Create(ctx, &ecocredit.AskDenom{
@@ -896,4 +954,29 @@ func (s serverImpl) sendEcocredits(ctx types.Context, credit *ecocredit.MsgSend_
 	}
 
 	return nil
+}
+
+func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBasket) (*ecocredit.MsgAddToBasketResponse, error) {
+	// TODO: implement add to basket
+	return nil, nil
+}
+
+func (s serverImpl) CreateBasket(goCtx context.Context, req *ecocredit.MsgCreateBasket) (*ecocredit.MsgCreateBasketResponse, error) {
+	// TODO: implement create basket
+	return nil, nil
+}
+
+func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPickFromBasket) (*ecocredit.MsgPickFromBasketResponse, error) {
+	// TODO: implement create basket
+	return nil, nil
+}
+
+func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTakeFromBasket) (*ecocredit.MsgTakeFromBasketResponse, error) {
+	// TODO: implement create basket
+	return nil, nil
+}
+
+func (s serverImpl) genProjectID(ctx types.Context, classID string) string {
+	projectSeqNo := s.projectInfoSeq.NextVal(ctx)
+	return ecocredit.FormatProjectID(classID, projectSeqNo)
 }

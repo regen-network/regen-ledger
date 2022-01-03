@@ -31,6 +31,7 @@ The following block explorers currently support Regen Ledger:
 - [Aneka - Regen Mainnet](https://regen.aneka.io/)
 - [Aneka - Redwood Testnet](https://redwood.regen.aneka.io/)
 - [Aneka - Hambach Testnet](https://hambach.regen.aneka.io/)
+- [Mintscan - Regen Mainnet](https://mintscan.io/regen)
 - [Ping - Regen Mainnet](https://ping.pub/regen/)
 
 ## Wallets

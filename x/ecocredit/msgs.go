@@ -10,13 +10,20 @@ import (
 
 var (
 	_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
+	_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
 		&MsgRetire{}, &MsgCancel{}, &MsgUpdateClassAdmin{}, &MsgUpdateClassIssuers{}, &MsgUpdateClassMetadata{},
 		&MsgSell{}, &MsgUpdateSellOrders{}, &MsgBuy{}, &MsgAllowAskDenom{}, &MsgCreateBasket{}, &MsgAddToBasket{},
 		&MsgPickFromBasket{}, &MsgTakeFromBasket{}
 	_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ legacytx.LegacyMsg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
+		&MsgSell{}, &MsgUpdateSellOrders{}, &MsgBuy{}, &MsgAllowAskDenom{}, &MsgCreateProject{}, &MsgCreateBasket{}, &MsgPickFromBasket{},
+		&MsgAddToBasket{}, &MsgTakeFromBasket{}
+
+	_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ legacytx.LegacyMsg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
 		&MsgRetire{}, &MsgCancel{}, &MsgUpdateClassAdmin{}, &MsgUpdateClassIssuers{}, &MsgUpdateClassMetadata{},
 		&MsgSell{}, &MsgUpdateSellOrders{}, &MsgBuy{}, &MsgAllowAskDenom{}, &MsgCreateBasket{}, &MsgAddToBasket{},
 		&MsgPickFromBasket{}, &MsgTakeFromBasket{}
+		&MsgSell{}, &MsgUpdateSellOrders{}, &MsgBuy{}, &MsgAllowAskDenom{}, &MsgCreateProject{},
+		&MsgCreateBasket{}, &MsgPickFromBasket{}, &MsgAddToBasket{}, &MsgTakeFromBasket{}
 )
 
 // MaxMetadataLength defines the max length of the metadata bytes field
@@ -101,11 +108,7 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrapf("the batch end date (%s) must be the same as or after the batch start date (%s)", m.EndDate.Format("2006-01-02"), m.StartDate.Format("2006-01-02"))
 	}
 
-	if err := ValidateClassID(m.ClassId); err != nil {
-		return err
-	}
-
-	if err := validateLocation(m.ProjectLocation); err != nil {
+	if err := ValidateProjectID(m.ProjectId); err != nil {
 		return err
 	}
 
@@ -128,7 +131,7 @@ func (m *MsgCreateBatch) ValidateBasic() error {
 			}
 
 			if !retiredAmount.IsZero() {
-				if err = validateLocation(iss.RetirementLocation); err != nil {
+				if err = ValidateLocation(iss.RetirementLocation); err != nil {
 					return err
 				}
 			}
@@ -185,7 +188,7 @@ func (m *MsgSend) ValidateBasic() error {
 		}
 
 		if !retiredAmount.IsZero() {
-			if err = validateLocation(credit.RetirementLocation); err != nil {
+			if err = ValidateLocation(credit.RetirementLocation); err != nil {
 				return err
 			}
 		}
@@ -230,7 +233,7 @@ func (m *MsgRetire) ValidateBasic() error {
 		}
 	}
 
-	if err := validateLocation(m.Location); err != nil {
+	if err := ValidateLocation(m.Location); err != nil {
 		return err
 	}
 
@@ -549,6 +552,51 @@ func (m *MsgAllowAskDenom) ValidateBasic() error {
 // GetSigners returns the expected signers for MsgAllowAskDenom.
 func (m *MsgAllowAskDenom) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.RootAddress)
+	return []sdk.AccAddress{addr}
+}
+
+// Route implements the LegacyMsg interface.
+func (m MsgCreateProject) Route() string { return sdk.MsgTypeURL(&m) }
+
+// Type implements the LegacyMsg interface.
+func (m MsgCreateProject) Type() string { return sdk.MsgTypeURL(&m) }
+
+// GetSignBytes implements the LegacyMsg interface.
+func (m MsgCreateProject) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(&m))
+}
+
+// ValidateBasic does a sanity check on the provided data.
+func (m *MsgCreateProject) ValidateBasic() error {
+
+	if _, err := sdk.AccAddressFromBech32(m.Issuer); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
+
+	if err := ValidateClassID(m.ClassId); err != nil {
+		return err
+	}
+
+	if len(m.Metadata) > MaxMetadataLength {
+		return ErrMaxLimit.Wrap("create project metadata")
+	}
+
+	if err := ValidateLocation(m.ProjectLocation); err != nil {
+		return err
+	}
+
+	if m.ProjectId != "" {
+		if err := ValidateProjectID(m.ProjectId); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// GetSigners returns the expected signers for MsgCreateProject.
+func (m *MsgCreateProject) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Issuer)
 	return []sdk.AccAddress{addr}
 }
 

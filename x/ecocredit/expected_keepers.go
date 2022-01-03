@@ -7,13 +7,16 @@ import (
 
 // AccountKeeper defines the expected interface needed to create and retrieve accounts.
 type AccountKeeper interface {
-	// Return a new account with the next account number. Does not save the new account to the store.
+	// NewAccount returns a new account with the next account number. Does not save the new account to the store.
 	NewAccount(sdk.Context, authtypes.AccountI) authtypes.AccountI
 
-	// Retrieve an account from the store.
+	// GetAccount retrieves an account from the store.
 	GetAccount(sdk.Context, sdk.AccAddress) authtypes.AccountI
 
-	// Set an account in the store.
+	// GetModuleAddress retrieves a module account address from the store.
+	GetModuleAddress(moduleName string) sdk.AccAddress
+
+	// SetAccount sets an account in the store.
 	SetAccount(sdk.Context, authtypes.AccountI)
 }
 
