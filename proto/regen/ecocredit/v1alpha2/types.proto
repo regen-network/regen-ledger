@@ -237,21 +237,6 @@ message BasketCredit {
   string tradable_amount = 2;
 }
 
-// BasketCriteria defines a criteria by which credits can be added to a basket.
-message BasketCriteria {
-  
-  // filter defines condition(s) that credits should satisfy in order to be
-  // added to the basket.
-  Filter filter = 1;
-
-  // multiplier is an integer number which is applied to credit units when
-  // converting to basket units. For example if the multiplier is 2000, then
-  // 1.1 credits will result in 2200 basket tokens. If there are any fractional
-  // amounts left over in this calculation when adding credits to a basket,
-  // those fractional amounts will not get added to the basket.
-  string multiplier = 2;
-}
-
 // Filter defines condition(s) that credits should satisfy in order to be added
 // to the basket. It can handled nested conditions linked with and/or operators.
 message Filter {
@@ -353,7 +338,7 @@ message Basket {
   // basket_criteria is the criteria by which credits can be added to the
   // basket. Basket criteria will be applied in order and the first criteria
   // which applies to a credit will determine its multiplier in the basket.
-  repeated BasketCriteria basket_criteria = 7;
+  Filter basket_criteria = 7;
 
   // disable_auto_retire disables the auto-retirement of credits upon taking from the basket.
   // set to true to allow credits to be taken without retiring.
@@ -361,27 +346,6 @@ message Basket {
 
   // allow_picking allows the picking of specific credits from the basket
   bool allow_picking = 9;
-}
-
-message BasketCriteria {
-  Filter filter = 1;
-
-  // multiplier is an integer number which is applied to credit units when
-  // converting to basket units. For example if the multiplier is 2000, then
-  // 1.1 credits will result in 2200 basket tokens. If there are any fractional
-  // amounts left over in this calculation when adding credits to a basket,
-  // those fractional amounts will not get added to the basket.
-  string multiplier = 2;
-}
-
-message BasketCredit {
-  // batch_denom is the unique ID of the credit batch.
-  string batch_denom = 1;
-
-  // tradable_amount is the number of credits in this transfer that can be
-  // traded by the recipient. Decimal values are acceptable within the
-  // precision returned by Query/Precision.
-  string tradable_amount = 2;
 }
 
 // BasketCredits is a type to describe an array of basket credits.

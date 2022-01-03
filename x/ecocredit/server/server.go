@@ -38,7 +38,7 @@ const (
 	BuyOrderByAddressIndexPrefix byte = 0x22
 
 	// basket tables
-	BasketTablePrefix byte = 0x23
+	BasketTablePrefix   byte = 0x23
 	BasketCredtisPrefix byte = 0x24
 
 	AskDenomTablePrefix byte = 0x30

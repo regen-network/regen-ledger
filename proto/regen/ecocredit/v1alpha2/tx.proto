@@ -528,7 +528,7 @@ message MsgCreateBasket {
   // basket_criteria is the criteria by which credits can be added to the
   // basket. Basket criteria will be applied in order and the first criteria
   // which applies to a credit will determine its multiplier in the basket.
-  repeated BasketCriteria basket_criteria = 5;
+  Filter basket_criteria = 5;
 
   // disable_auto_retire allows auto-retirement to be disabled.
   // The credits will be auto-retired if disable_auto_retire is
@@ -612,13 +612,3 @@ message MsgPickFromBasket {
 
 // MsgPickFromBasketResponse is the Msg/PickFromBasket response type.
 message MsgPickFromBasketResponse {}
-
-message BasketCredit {
-  // batch_denom is the unique ID of the credit batch.
-  string batch_denom = 1;
-
-  // tradable_amount is the number of credits in this transfer that can be
-  // traded by the recipient. Decimal values are acceptable within the
-  // precision returned by Query/Precision.
-  string tradable_amount = 2;
-}
