@@ -6,40 +6,45 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	gocid "github.com/ipfs/go-cid"
 	"github.com/spf13/cobra"
+
+	"github.com/regen-network/regen-ledger/x/data"
 )
 
 // QueryCmd returns the parent command for all x/data CLI query commands
 func QueryCmd(name string) *cobra.Command {
-	queryByCidCmd := QueryByCidCmd()
+	queryByIRICmd := QueryByIRICmd()
 
 	cmd := &cobra.Command{
 		Args:  cobra.ExactArgs(1),
-		Use:   fmt.Sprintf("%s [cid]", name),
+		Use:   fmt.Sprintf("%s [iri]", name),
 		Short: "Querying commands for the data module",
 		Long: strings.TrimSpace(`Querying commands for the data module.
-If a CID is passed as first argument, then this command will query timestamp, signers and content (if available) for the given CID. Otherwise, this command will run the given subcommand.
+
+If an IRI is passed as first argument, then this command will query timestamp,
+signers and content (if available) for the given IRI. Otherwise, this command
+will run the given subcommand.
 
 Example (the two following commands are equivalent):
-$ regen query data bafzbeigai3eoy2ccc7ybwjfz5r3rdxqrinwi4rwytly24tdbh6yk7zslrm
-$ regen query data by-cid bafzbeigai3eoy2ccc7ybwjfz5r3rdxqrinwi4rwytly24tdbh6yk7zslrm`),
+$ regen query data regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf
+$ regen query data by-iri regen:113gdjFKcVCt13Za6vN7TtbgMM6LMSjRnu89BMCxeuHdkJ1hWUmy.rdf`),
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			// If 1st arg is NOT a CID, parse subcommands as usual.
-			_, err := gocid.Decode(args[0])
-			if err != nil {
+			// If 1st arg is NOT an IRI, parse subcommands as usual.
+			if !strings.Contains(args[0], "regen:") {
 				return client.ValidateCmd(cmd, args)
 			}
 
-			// Or else, we call QueryByCidCmd.
-			return queryByCidCmd.RunE(cmd, args)
+			// Or else, we call QueryByIRICmd.
+			return queryByIRICmd.RunE(cmd, args)
 		},
 	}
 
 	cmd.AddCommand(
-		queryByCidCmd,
+		queryByIRICmd,
+		QueryBySignerCmd(),
+		QuerySignersCmd(),
 	)
 
 	flags.AddQueryFlagsToCmd(cmd)
@@ -47,32 +52,85 @@ $ regen query data by-cid bafzbeigai3eoy2ccc7ybwjfz5r3rdxqrinwi4rwytly24tdbh6yk7
 	return cmd
 }
 
-// QueryByCidCmd creates a CLI command for Query/Data.
-func QueryByCidCmd() *cobra.Command {
+// QueryByIRICmd creates a CLI command for Query/Data.
+func QueryByIRICmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "by-cid [cid]",
-		Short: "Query for CID timestamp, signers and content (if available)",
+		Use:   "by-iri [iri]",
+		Short: "Query for anchored data based on IRI",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return fmt.Errorf("not implemented")
-			//clientCtx, err := client.GetClientQueryContext(cmd)
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//cid, err := gocid.Decode(args[0])
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//queryClient := data.NewQueryClient(clientCtx)
-			//
-			//res, err := queryClient.ByCid(cmd.Context(), &data.QueryByCidRequest{Cid: cid.Bytes()})
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//return clientCtx.PrintProto(res)
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			res, err := c.ByIRI(cmd.Context(), &data.QueryByIRIRequest{
+				Iri: args[0],
+			})
+
+			return print(ctx, res, err)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// QueryBySignerCmd creates a CLI command for Query/Data.
+func QueryBySignerCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "by-signer [signer]",
+		Short: "Query for anchored data based on signer",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.BySigner(cmd.Context(), &data.QueryBySignerRequest{
+				Signer:     args[0],
+				Pagination: pagination,
+			})
+
+			return print(ctx, res, err)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// QuerySignersCmd creates a CLI command for Query/Data.
+func QuerySignersCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "signers [iri]",
+		Short: "Query for signers based on IRI",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+
+			res, err := c.Signers(cmd.Context(), &data.QuerySignersRequest{
+				Iri:        args[0],
+				Pagination: pagination,
+			})
+
+			return print(ctx, res, err)
 		},
 	}
 
