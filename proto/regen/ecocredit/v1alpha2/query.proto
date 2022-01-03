@@ -419,7 +419,7 @@ message QueryAllowedAskDenomsResponse {
 }
 
 // Basket defines a credit basket.
-message Basket {
+message BasketInfo {
   // curator is the address of the basket curator who is able to change certain
   // basket settings.
   string curator = 1;
@@ -440,7 +440,7 @@ message Basket {
   // basket_criteria is the criteria by which credits can be added to the
   // basket. Basket criteria will be applied in order and the first criteria
   // which applies to a credit will determine its multiplier in the basket.
-  repeated BasketCriteria basket_criteria = 5;
+  Filter basket_criteria = 5;
 
   // disable_auto_retire allows auto-retirement to be disabled.
   // The credits will be auto-retired if disable_auto_retire is
@@ -463,7 +463,7 @@ message QueryBasketRequest {
 // QueryBasketResponse is the Query/Basket response type.
 message QueryBasketResponse {
   // basket is the queried basket.
-  Basket basket = 1;
+  BasketInfo basket = 1;
 }
 
 // QueryBasketsRequest is the Query/Baskets request type.
@@ -475,7 +475,7 @@ message QueryBasketsRequest {
 // QueryBasketsResponse is the Query/Baskets response type.
 message QueryBasketsResponse {
   // baskets are the fetched baskets.
-  repeated Basket baskets = 1;
+  repeated BasketInfo baskets = 1;
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;

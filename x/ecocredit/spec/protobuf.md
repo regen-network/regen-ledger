@@ -19,8 +19,9 @@
   
 - [regen/ecocredit/v1alpha2/types.proto](#regen/ecocredit/v1alpha2/types.proto)
     - [AskDenom](#regen.ecocredit.v1alpha2.AskDenom)
+    - [Basket](#regen.ecocredit.v1alpha2.Basket)
     - [BasketCredit](#regen.ecocredit.v1alpha2.BasketCredit)
-    - [BasketCriteria](#regen.ecocredit.v1alpha2.BasketCriteria)
+    - [BasketCredits](#regen.ecocredit.v1alpha2.BasketCredits)
     - [BatchInfo](#regen.ecocredit.v1alpha2.BatchInfo)
     - [BuyOrder](#regen.ecocredit.v1alpha2.BuyOrder)
     - [BuyOrder.Selection](#regen.ecocredit.v1alpha2.BuyOrder.Selection)
@@ -41,7 +42,7 @@
     - [Supply](#regen.ecocredit.v1alpha2.Supply)
   
 - [regen/ecocredit/v1alpha2/query.proto](#regen/ecocredit/v1alpha2/query.proto)
-    - [Basket](#regen.ecocredit.v1alpha2.Basket)
+    - [BasketInfo](#regen.ecocredit.v1alpha2.BasketInfo)
     - [QueryAllowedAskDenomsRequest](#regen.ecocredit.v1alpha2.QueryAllowedAskDenomsRequest)
     - [QueryAllowedAskDenomsResponse](#regen.ecocredit.v1alpha2.QueryAllowedAskDenomsResponse)
     - [QueryBalanceRequest](#regen.ecocredit.v1alpha2.QueryBalanceRequest)
@@ -388,6 +389,29 @@ AskDenom represents the information for an ask denom.
 
 
 
+<a name="regen.ecocredit.v1alpha2.Basket"></a>
+
+### Basket
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| basket_id | [uint64](#uint64) |  | basket_id is the id of the basket |
+| basket_denom | [string](#string) |  | basket_denom is the denom of the basket's coin |
+| curator | [string](#string) |  | curator is the address of the basket curator who is able to change certain basket settings. |
+| name | [string](#string) |  | name will be used to create a bank denom for this basket token of the form ecocredit:{curator}:{name}. |
+| display_name | [string](#string) |  | display_name will be used to create a bank Metadata display name for this basket token of the form ecocredit:{curator}:{display_name}. |
+| exponent | [uint32](#uint32) |  | exponent is the exponent that will be used for denom metadata. An exponent of 6 will mean that 10^6 units of a basket token should be displayed as one unit in user interfaces. |
+| basket_criteria | [Filter](#regen.ecocredit.v1alpha2.Filter) |  | basket_criteria is the criteria by which credits can be added to the basket. Basket criteria will be applied in order and the first criteria which applies to a credit will determine its multiplier in the basket. |
+| disable_auto_retire | [bool](#bool) |  | disable_auto_retire disables the auto-retirement of credits upon taking from the basket. set to true to allow credits to be taken without retiring. |
+| allow_picking | [bool](#bool) |  | allow_picking allows the picking of specific credits from the basket |
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha2.BasketCredit"></a>
 
 ### BasketCredit
@@ -404,16 +428,15 @@ BasketCredit represents the information for a credit batch inside a basket.
 
 
 
-<a name="regen.ecocredit.v1alpha2.BasketCriteria"></a>
+<a name="regen.ecocredit.v1alpha2.BasketCredits"></a>
 
-### BasketCriteria
-BasketCriteria defines a criteria by which credits can be added to a basket.
+### BasketCredits
+BasketCredits is a type to describe an array of basket credits.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| filter | [Filter](#regen.ecocredit.v1alpha2.Filter) |  | filter defines condition(s) that credits should satisfy in order to be added to the basket. |
-| multiplier | [string](#string) |  | multiplier is an integer number which is applied to credit units when converting to basket units. For example if the multiplier is 2000, then 1.1 credits will result in 2200 basket tokens. If there are any fractional amounts left over in this calculation when adding credits to a basket, those fractional amounts will not get added to the basket. |
+| credits | [BasketCredit](#regen.ecocredit.v1alpha2.BasketCredit) | repeated |  |
 
 
 
@@ -754,9 +777,9 @@ Supply represents a tradable or retired supply of a credit batch.
 
 
 
-<a name="regen.ecocredit.v1alpha2.Basket"></a>
+<a name="regen.ecocredit.v1alpha2.BasketInfo"></a>
 
-### Basket
+### BasketInfo
 Basket defines a credit basket.
 
 
@@ -766,7 +789,7 @@ Basket defines a credit basket.
 | name | [string](#string) |  | name will be used to create a bank denom for this basket token of the form ecocredit:{curator}:{name}. |
 | display_name | [string](#string) |  | display_name will be used to create a bank Metadata display name for this basket token of the form ecocredit:{curator}:{display_name}. |
 | exponent | [uint32](#uint32) |  | exponent is the exponent that will be used for denom metadata. An exponent of 6 will mean that 10^6 units of a basket token should be displayed as one unit in user interfaces. |
-| basket_criteria | [BasketCriteria](#regen.ecocredit.v1alpha2.BasketCriteria) | repeated | basket_criteria is the criteria by which credits can be added to the basket. Basket criteria will be applied in order and the first criteria which applies to a credit will determine its multiplier in the basket. |
+| basket_criteria | [Filter](#regen.ecocredit.v1alpha2.Filter) |  | basket_criteria is the criteria by which credits can be added to the basket. Basket criteria will be applied in order and the first criteria which applies to a credit will determine its multiplier in the basket. |
 | disable_auto_retire | [bool](#bool) |  | disable_auto_retire allows auto-retirement to be disabled. The credits will be auto-retired if disable_auto_retire is false unless the credits were previously put into the basket by the address picking them from the basket, in which case they will remain tradable. |
 | allow_picking | [bool](#bool) |  | allow_picking specifies whether an address which didn't deposit the credits in the basket can pick those credits or not. |
 
@@ -892,7 +915,7 @@ QueryBasketResponse is the Query/Basket response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| basket | [Basket](#regen.ecocredit.v1alpha2.Basket) |  | basket is the queried basket. |
+| basket | [BasketInfo](#regen.ecocredit.v1alpha2.BasketInfo) |  | basket is the queried basket. |
 
 
 
@@ -922,7 +945,7 @@ QueryBasketsResponse is the Query/Baskets response type.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| baskets | [Basket](#regen.ecocredit.v1alpha2.Basket) | repeated | baskets are the fetched baskets. |
+| baskets | [BasketInfo](#regen.ecocredit.v1alpha2.BasketInfo) | repeated | baskets are the fetched baskets. |
 | pagination | [cosmos.base.query.v1beta1.PageResponse](#cosmos.base.query.v1beta1.PageResponse) |  | pagination defines the pagination in the response. |
 
 
@@ -1639,7 +1662,7 @@ MsgCreateBasket is the Msg/CreateBasket request type.
 | name | [string](#string) |  | name will be used to create a bank denom for this basket token of the form ecocredit:{curator}:{name}. |
 | display_name | [string](#string) |  | display_name will be used to create a bank Metadata display name for this basket token of the form ecocredit:{curator}:{display_name}. |
 | exponent | [uint32](#uint32) |  | exponent is the exponent that will be used for denom metadata. An exponent of 6 will mean that 10^6 units of a basket token should be displayed as one unit in user interfaces. |
-| basket_criteria | [BasketCriteria](#regen.ecocredit.v1alpha2.BasketCriteria) | repeated | basket_criteria is the criteria by which credits can be added to the basket. Basket criteria will be applied in order and the first criteria which applies to a credit will determine its multiplier in the basket. |
+| basket_criteria | [Filter](#regen.ecocredit.v1alpha2.Filter) |  | basket_criteria is the criteria by which credits can be added to the basket. Basket criteria will be applied in order and the first criteria which applies to a credit will determine its multiplier in the basket. |
 | disable_auto_retire | [bool](#bool) |  | disable_auto_retire allows auto-retirement to be disabled. The credits will be auto-retired if disable_auto_retire is false unless the credits were previously put into the basket by the address picking them from the basket, in which case they will remain tradable. |
 | allow_picking | [bool](#bool) |  | allow_picking specifies whether an address which didn't deposit the credits in the basket can pick those credits or not. |
 
