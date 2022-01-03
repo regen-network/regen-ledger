@@ -9,21 +9,14 @@ import (
 )
 
 var (
-	_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
 	_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ sdk.Msg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
 		&MsgRetire{}, &MsgCancel{}, &MsgUpdateClassAdmin{}, &MsgUpdateClassIssuers{}, &MsgUpdateClassMetadata{},
 		&MsgSell{}, &MsgUpdateSellOrders{}, &MsgBuy{}, &MsgAllowAskDenom{}, &MsgCreateBasket{}, &MsgAddToBasket{},
-		&MsgPickFromBasket{}, &MsgTakeFromBasket{}
-	_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ legacytx.LegacyMsg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
-		&MsgSell{}, &MsgUpdateSellOrders{}, &MsgBuy{}, &MsgAllowAskDenom{}, &MsgCreateProject{}, &MsgCreateBasket{}, &MsgPickFromBasket{},
-		&MsgAddToBasket{}, &MsgTakeFromBasket{}
-
+		&MsgPickFromBasket{}, &MsgTakeFromBasket{}, &MsgCreateProject{}
 	_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ legacytx.LegacyMsg = &MsgCreateClass{}, &MsgCreateBatch{}, &MsgSend{},
 		&MsgRetire{}, &MsgCancel{}, &MsgUpdateClassAdmin{}, &MsgUpdateClassIssuers{}, &MsgUpdateClassMetadata{},
 		&MsgSell{}, &MsgUpdateSellOrders{}, &MsgBuy{}, &MsgAllowAskDenom{}, &MsgCreateBasket{}, &MsgAddToBasket{},
-		&MsgPickFromBasket{}, &MsgTakeFromBasket{}
-		&MsgSell{}, &MsgUpdateSellOrders{}, &MsgBuy{}, &MsgAllowAskDenom{}, &MsgCreateProject{},
-		&MsgCreateBasket{}, &MsgPickFromBasket{}, &MsgAddToBasket{}, &MsgTakeFromBasket{}
+		&MsgPickFromBasket{}, &MsgTakeFromBasket{}, &MsgCreateProject{}
 )
 
 // MaxMetadataLength defines the max length of the metadata bytes field
@@ -614,25 +607,18 @@ func (m MsgCreateBasket) GetSignBytes() []byte {
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgCreateBasket) ValidateBasic() error {
 
+	if _, err := sdk.AccAddressFromBech32(m.Curator); err != nil {
+		return sdkerrors.ErrInvalidAddress
+	}
 	if m.Name == "" {
 		return sdkerrors.ErrInvalidRequest.Wrap("name cannot be empty")
 	}
 	if m.DisplayName == "" {
-		m.DisplayName = m.Name // TODO: is this legal? lol its a pointer method anyway..
-		// not sure if we should do anything about an empty display name or name? idk
+		m.DisplayName = m.Name // TODO(tyler): how should we handle empty names?
 	}
-	if _, err := sdk.AccAddressFromBech32(m.Curator); err != nil {
-		return sdkerrors.ErrInvalidAddress
-	}
-
-	for _, criteria := range m.BasketCriteria {
-		if _, err := math.NewNonNegativeDecFromString(criteria.Multiplier); err != nil {
+	if m.BasketCriteria != nil { // TODO(Tyler): what if no filter? should we allow filterless baskets?
+		if err := validateFilter(m.BasketCriteria); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-		}
-		if criteria.Filter != nil { // TODO: is a filter required? or can we have open ended baskets
-			if err := validateFilter(criteria.Filter); err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-			}
 		}
 	}
 
@@ -675,11 +661,11 @@ func validateFilter(filters ...*Filter) error {
 				return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 			}
 		case *Filter_ProjectLocation:
-			if err := validateLocation(f.ProjectLocation); err != nil {
+			if err := ValidateLocation(f.ProjectLocation); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 			}
 		default:
-			panic("uhh filter pls") // TODO: require a filter???
+			panic("uhh filter pls") // TODO(Tyler): require a filter???
 		}
 	}
 	return nil
@@ -750,7 +736,7 @@ func (m *MsgPickFromBasket) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 	if len(m.RetirementLocation) != 0 {
-		if err := validateLocation(m.RetirementLocation); err != nil {
+		if err := ValidateLocation(m.RetirementLocation); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
 	}
@@ -790,7 +776,7 @@ func (m *MsgTakeFromBasket) ValidateBasic() error {
 	if err := ValidateDenom(m.BasketDenom); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
-	if err := validateLocation(m.RetirementLocation); err != nil {
+	if err := ValidateLocation(m.RetirementLocation); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 	if _, err := math.NewPositiveDecFromString(m.Amount); err != nil {

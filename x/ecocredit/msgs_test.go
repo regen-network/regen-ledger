@@ -1595,7 +1595,7 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 		Name              string
 		DisplayName       string
 		Exponent          uint32
-		BasketCriteria    []*BasketCriteria
+		BasketCriteria    *Filter
 		DisableAutoRetire bool
 		AllowPicking      bool
 	}
@@ -1607,14 +1607,11 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 		{
 			name: "valid",
 			fields: fields{
-				Curator:     addr.String(),
-				Name:        "my very cool basket",
-				DisplayName: "cool BASKET, inc.",
-				Exponent:    10,
-				BasketCriteria: []*BasketCriteria{{
-					Multiplier: "4.20",
-					Filter:     &Filter{&Filter_Owner{Owner: addr.String()}},
-				}},
+				Curator:           addr.String(),
+				Name:              "my very cool basket",
+				DisplayName:       "cool BASKET, inc.",
+				Exponent:          10,
+				BasketCriteria:    &Filter{Sum: &Filter_Owner{Owner: addr.String()}},
 				DisableAutoRetire: false,
 				AllowPicking:      false,
 			},
@@ -1622,14 +1619,11 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 		{
 			name: "valid nested",
 			fields: fields{
-				Curator:     addr.String(),
-				Name:        "my very cool basket",
-				DisplayName: "cool BASKET, inc.",
-				Exponent:    10,
-				BasketCriteria: []*BasketCriteria{{
-					Multiplier: "4.20",
-					Filter:     &Filter{&Filter_And_{And: &Filter_And{Filters: []*Filter{{Sum: &Filter_Issuer{Issuer: addr.String()}}}}}},
-				}},
+				Curator:           addr.String(),
+				Name:              "my very cool basket",
+				DisplayName:       "cool BASKET, inc.",
+				Exponent:          10,
+				BasketCriteria:    &Filter{Sum: &Filter_And_{And: &Filter_And{Filters: []*Filter{{Sum: &Filter_Issuer{Issuer: addr.String()}}}}}},
 				DisableAutoRetire: false,
 				AllowPicking:      false,
 			},
@@ -1637,30 +1631,11 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 		{
 			name: "bad addr",
 			fields: fields{
-				Curator:     "oops",
-				Name:        "my very cool basket",
-				DisplayName: "cool BASKET, inc.",
-				Exponent:    10,
-				BasketCriteria: []*BasketCriteria{{
-					Multiplier: "4.20",
-					Filter:     &Filter{&Filter_Owner{Owner: addr.String()}},
-				}},
-				DisableAutoRetire: false,
-				AllowPicking:      false,
-			},
-			wantErr: true,
-		},
-		{
-			name: "bad multiplier",
-			fields: fields{
-				Curator:     addr.String(),
-				Name:        "my very cool basket",
-				DisplayName: "cool BASKET, inc.",
-				Exponent:    10,
-				BasketCriteria: []*BasketCriteria{{
-					Multiplier: "-1.39",
-					Filter:     &Filter{&Filter_Owner{Owner: addr.String()}},
-				}},
+				Curator:           "oops",
+				Name:              "my very cool basket",
+				DisplayName:       "cool BASKET, inc.",
+				Exponent:          10,
+				BasketCriteria:    &Filter{Sum: &Filter_Owner{Owner: addr.String()}},
 				DisableAutoRetire: false,
 				AllowPicking:      false,
 			},
@@ -1669,14 +1644,11 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 		{
 			name: "bad filter",
 			fields: fields{
-				Curator:     addr.String(),
-				Name:        "my very cool basket",
-				DisplayName: "cool BASKET, inc.",
-				Exponent:    10,
-				BasketCriteria: []*BasketCriteria{{
-					Multiplier: "1.39",
-					Filter:     &Filter{&Filter_Owner{Owner: "foo"}},
-				}},
+				Curator:           addr.String(),
+				Name:              "my very cool basket",
+				DisplayName:       "cool BASKET, inc.",
+				Exponent:          10,
+				BasketCriteria:    &Filter{Sum: &Filter_Owner{Owner: "foo"}},
 				DisableAutoRetire: false,
 				AllowPicking:      false,
 			},
@@ -1685,14 +1657,11 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 		{
 			name: "bad filter nested",
 			fields: fields{
-				Curator:     addr.String(),
-				Name:        "my very cool basket",
-				DisplayName: "cool BASKET, inc.",
-				Exponent:    10,
-				BasketCriteria: []*BasketCriteria{{
-					Multiplier: "1.39",
-					Filter:     &Filter{&Filter_And_{And: &Filter_And{Filters: []*Filter{{Sum: &Filter_Issuer{Issuer: addr.String()}}, {Sum: &Filter_Owner{Owner: "foo"}}}}}},
-				}},
+				Curator:           addr.String(),
+				Name:              "my very cool basket",
+				DisplayName:       "cool BASKET, inc.",
+				Exponent:          10,
+				BasketCriteria:    &Filter{Sum: &Filter_And_{And: &Filter_And{Filters: []*Filter{{Sum: &Filter_Issuer{Issuer: addr.String()}}, {Sum: &Filter_Owner{Owner: "foo"}}}}}},
 				DisableAutoRetire: false,
 				AllowPicking:      false,
 			},
@@ -1701,14 +1670,11 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 		{
 			name: "bad filter location",
 			fields: fields{
-				Curator:     addr.String(),
-				Name:        "my very cool basket",
-				DisplayName: "cool BASKET, inc.",
-				Exponent:    10,
-				BasketCriteria: []*BasketCriteria{{
-					Multiplier: "1.39",
-					Filter:     &Filter{&Filter_ProjectLocation{ProjectLocation: "not a location"}},
-				}},
+				Curator:           addr.String(),
+				Name:              "my very cool basket",
+				DisplayName:       "cool BASKET, inc.",
+				Exponent:          10,
+				BasketCriteria:    &Filter{Sum: &Filter_ProjectLocation{ProjectLocation: "not a location"}},
 				DisableAutoRetire: false,
 				AllowPicking:      false,
 			},
