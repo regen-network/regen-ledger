@@ -7,10 +7,10 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// reProjectID defines regular expression to check if the string has alphanumeric characters
-// and can be 2 ~ 16 characters long.
+// reProjectID defines regular expression to check if the string has alphabets, numbers 
+// or combination of both characters and can be 2 ~ 16 characters long.
 //
-// e.g. P01, C01P01
+// e.g. P01, C01P01, 123
 var reProjectID = regexp.MustCompile(`^[A-Za-z0-9]{2,16}$`)
 
 // Validate a project ID conforms to the format described in reProjectID. The
