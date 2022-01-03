@@ -28,7 +28,7 @@ func TestServer(t *testing.T) {
 	suite.Run(t, s)
 }
 
-func TestInvalidGenesis(t *testing.T) {
+func TestGenesis(t *testing.T) {
 	ff, ecocreditSubspace, bankKeeper, _ := setup(t)
 	s := testsuite.NewGenesisTestSuite(ff, ecocreditSubspace, bankKeeper)
 	suite.Run(t, s)
