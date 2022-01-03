@@ -32,6 +32,7 @@ type IntegrationTestSuite struct {
 	testAccount sdk.AccAddress
 	classInfo   *ecocredit.ClassInfo
 	batchInfo   *ecocredit.BatchInfo
+	sellOrders  []*ecocredit.SellOrder
 }
 
 const (
@@ -189,6 +190,53 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		StartDate:       &startDate,
 		EndDate:         &endDate,
 		ProjectLocation: "GB",
+	}
+
+	// Create a few sell orders
+	out, err := cli.ExecTestCLICmd(val.ClientCtx, client.TxSellCmd(),
+		append(
+			[]string{
+				"[" +
+					"{batch_denom: \"C01-20210101-20210201-001\", quantity: \"1\", ask_price: \"100regen\", disable_auto_retire: false}," +
+					"{batch_denom: \"C01-20210101-20210201-001\", quantity: \"1\", ask_price: \"100regen\", disable_auto_retire: false}," +
+					"{batch_denom: \"C01-20210101-20210201-001\", quantity: \"1\", ask_price: \"100regen\", disable_auto_retire: false}" +
+					"]",
+				makeFlagFrom(val.Address.String()),
+			},
+			commonFlags...,
+		),
+	)
+
+	s.Require().NoError(err, out.String())
+	txResp := sdk.TxResponse{}
+	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txResp), out.String())
+	s.Require().Equal(uint32(0), txResp.Code, out.String())
+
+	s.sellOrders = []*ecocredit.SellOrder{
+		{
+			OrderId:           1,
+			Owner:             val.Address.String(),
+			BatchDenom:        batchDenom,
+			Quantity:          "1",
+			AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+			DisableAutoRetire: false,
+		},
+		{
+			OrderId:           2,
+			Owner:             val.Address.String(),
+			BatchDenom:        batchDenom,
+			Quantity:          "1",
+			AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+			DisableAutoRetire: false,
+		},
+		{
+			OrderId:           3,
+			Owner:             val.Address.String(),
+			BatchDenom:        batchDenom,
+			Quantity:          "1",
+			AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+			DisableAutoRetire: false,
+		},
 	}
 }
 
@@ -1369,6 +1417,420 @@ func (s *IntegrationTestSuite) TestTxUpdateIssuers() {
 				// check issuers list was changed
 				s.Require().NoError(err)
 				s.Require().Equal(res.Info.Issuers, newIssuers)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestTxSell() {
+	val0 := s.network.Validators[0]
+	clientCtx := val0.ClientCtx
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+		expOrder  *ecocredit.SellOrder
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "accepts 1 arg(s), received 2",
+		},
+		{
+			name: "missing batch denom",
+			args: append(
+				[]string{
+					"[{quantity: \"5\", ask_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid denom",
+		},
+		{
+			name: "invalid batch denom",
+			args: append(
+				[]string{
+					"[{batch_denom: \"foo\", quantity: \"5\", ask_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid denom",
+		},
+		{
+			name: "missing quantity",
+			args: append(
+				[]string{
+					"[{batch_denom: \"C01-20210101-20210201-001\", ask_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "quantity must be positive decimal",
+		},
+		{
+			name: "invalid quantity",
+			args: append(
+				[]string{
+					"[{batch_denom: \"C01-20210101-20210201-001\", quantity: \"foo\", ask_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "quantity must be positive decimal",
+		},
+		{
+			name: "missing ask price",
+			args: append(
+				[]string{
+					"[{batch_denom: \"C01-20210101-20210201-001\", quantity: \"5\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid decimal coin expression",
+		},
+		{
+			name: "invalid ask price",
+			args: append(
+				[]string{
+					"[{batch_denom: \"C01-20210101-20210201-001\", quantity: \"5\", ask_price: \"foo\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid decimal coin expression",
+		},
+		{
+			name: "valid",
+			args: append(
+				[]string{
+					"[{batch_denom: \"C01-20210101-20210201-001\", quantity: \"5\", ask_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr: false,
+			expOrder: &ecocredit.SellOrder{
+				OrderId:           4,
+				Owner:             val0.Address.String(),
+				BatchDenom:        batchDenom,
+				Quantity:          "5",
+				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+				DisableAutoRetire: false,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.TxSellCmd()
+			_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(err.Error(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err)
+
+				// query sell order
+				query := client.QuerySellOrderCmd()
+				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{"4", flagOutputJSON})
+				s.Require().NoError(err, out.String())
+
+				// unmarshal query response
+				var res ecocredit.QuerySellOrderResponse
+				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
+				s.Require().NoError(err)
+
+				// verify expected order
+				s.Require().Equal(tc.expOrder, res.SellOrder)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
+	val0 := s.network.Validators[0]
+	clientCtx := val0.ClientCtx
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+		expOrder  *ecocredit.SellOrder
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "accepts 1 arg(s), received 2",
+		},
+		{
+			name: "missing sell order",
+			args: append(
+				[]string{
+					"[{new_quantity: \"5\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid sell order",
+		},
+		{
+			name: "invalid sell order",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"foo\", new_quantity: \"5\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid sell order",
+		},
+		{
+			name: "missing new quantity",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"4\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "quantity must be positive decimal",
+		},
+		{
+			name: "invalid new quantity",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"4\", new_quantity: \"foo\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "quantity must be positive decimal",
+		},
+		{
+			name: "missing new ask price",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"4\", new_quantity: \"5\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid decimal coin expression",
+		},
+		{
+			name: "invalid new ask price",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"4\", new_quantity: \"5\", new_ask_price: \"foo\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid decimal coin expression",
+		},
+		{
+			name: "valid",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"4\", new_quantity: \"5\", new_ask_price: \"200regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr: false,
+			expOrder: &ecocredit.SellOrder{
+				OrderId:           4,
+				Owner:             val0.Address.String(),
+				BatchDenom:        batchDenom,
+				Quantity:          "5",
+				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(200)},
+				DisableAutoRetire: false,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.TxUpdateSellOrdersCmd()
+			_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(err.Error(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err)
+
+				// query sell order
+				query := client.QuerySellOrderCmd()
+				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{"4", flagOutputJSON})
+				s.Require().NoError(err, out.String())
+
+				// unmarshal query response
+				var res ecocredit.QuerySellOrderResponse
+				err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
+				s.Require().NoError(err)
+
+				// verify expected order
+				s.Require().Equal(tc.expOrder, res.SellOrder)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestTxBuy() {
+	val0 := s.network.Validators[0]
+	clientCtx := val0.ClientCtx
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "accepts 1 arg(s), received 2",
+		},
+		{
+			name: "missing sell order",
+			args: append(
+				[]string{
+					"[{quantity: \"5\", bid_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid sell order",
+		},
+		{
+			name: "invalid sell order",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"foo\", quantity: \"5\", bid_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid sell order",
+		},
+		{
+			name: "missing quantity",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"4\", bid_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "quantity must be positive decimal",
+		},
+		{
+			name: "invalid quantity",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"4\", quantity: \"foo\", bid_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "quantity must be positive decimal",
+		},
+		{
+			name: "missing bid price",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"4\", quantity: \"5\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid decimal coin expression",
+		},
+		{
+			name: "invalid bid price",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"4\", quantity: \"5\", bid_price: \"foo\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    true,
+			expErrMsg: "invalid decimal coin expression",
+		},
+		{
+			name: "valid",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"4\", quantity: \"5\", bid_price: \"100regen\", disable_auto_retire: false}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			expErr:    false,
+			expErrMsg: "",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.TxBuyCmd()
+			_, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(err.Error(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err)
+
+				// query sell order (should no longer exist)
+				query := client.QuerySellOrderCmd()
+				_, err := cli.ExecTestCLICmd(clientCtx, query, []string{"4", flagOutputJSON})
+				s.Require().Error(err)
+				s.Require().Contains(err.Error(), "not found")
 			}
 		})
 	}

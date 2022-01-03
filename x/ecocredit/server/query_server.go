@@ -239,12 +239,12 @@ func (s serverImpl) SellOrdersByAddress(goCtx context.Context, request *ecocredi
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
-	ctx := types.UnwrapSDKContext(goCtx)
 	addr, err := sdk.AccAddressFromBech32(request.Address)
 	if err != nil {
 		return nil, err
 	}
 
+	ctx := types.UnwrapSDKContext(goCtx)
 	ordersIter, err := s.sellOrderByAddressIndex.GetPaginated(ctx, addr.Bytes(), request.Pagination)
 	if err != nil {
 		return nil, err
@@ -261,7 +261,6 @@ func (s serverImpl) SellOrdersByAddress(goCtx context.Context, request *ecocredi
 		Pagination: pageResp,
 	}, nil
 }
-
 
 // SellOrdersByBatchDenom queries for all sell orders by address with pagination.
 func (s serverImpl) SellOrdersByBatchDenom(goCtx context.Context, request *ecocredit.QuerySellOrdersByBatchDenomRequest) (*ecocredit.QuerySellOrdersByBatchDenomResponse, error) {
@@ -331,7 +330,7 @@ func (s serverImpl) BuyOrders(goCtx context.Context, request *ecocredit.QueryBuy
 	}
 
 	return &ecocredit.QueryBuyOrdersResponse{
-		BuyOrders: orders,
+		BuyOrders:  orders,
 		Pagination: pageResp,
 	}, nil
 }
@@ -360,7 +359,7 @@ func (s serverImpl) BuyOrdersByAddress(goCtx context.Context, request *ecocredit
 	}
 
 	return &ecocredit.QueryBuyOrdersByAddressResponse{
-		BuyOrders: orders,
+		BuyOrders:  orders,
 		Pagination: pageResp,
 	}, nil
 }
@@ -384,7 +383,7 @@ func (s serverImpl) AllowedAskDenoms(goCtx context.Context, request *ecocredit.Q
 	}
 
 	return &ecocredit.QueryAllowedAskDenomsResponse{
-		AskDenoms: denoms,
+		AskDenoms:  denoms,
 		Pagination: pageResp,
 	}, nil
 }

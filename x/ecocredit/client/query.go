@@ -2,6 +2,7 @@ package client
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -31,7 +32,15 @@ func QueryCmd(name string) *cobra.Command {
 		QueryBalanceCmd(),
 		QuerySupplyCmd(),
 		QueryCreditTypesCmd(),
-		QueryParams(),
+		QueryParamsCmd(),
+		QuerySellOrderCmd(),
+		QuerySellOrdersCmd(),
+		QuerySellOrdersByAddressCmd(),
+		QuerySellOrdersByBatchDenomCmd(),
+		QueryBuyOrderCmd(),
+		QueryBuyOrdersCmd(),
+		QueryBuyOrdersByAddressCmd(),
+		QueryAllowedAskDenomsCmd(),
 	)
 	return cmd
 }
@@ -200,8 +209,8 @@ func QueryCreditTypesCmd() *cobra.Command {
 	})
 }
 
-// QueryParams returns ecocredit module parameters.
-func QueryParams() *cobra.Command {
+// QueryParamsCmd returns ecocredit module parameters.
+func QueryParamsCmd() *cobra.Command {
 	return qflags(&cobra.Command{
 		Use:   "params",
 		Short: "Query the current ecocredit module parameters",
@@ -219,6 +228,193 @@ $%s q %s params
 				return err
 			}
 			res, err := c.Params(cmd.Context(), &ecocredit.QueryParamsRequest{})
+			return print(ctx, res, err)
+		},
+	})
+}
+
+// QuerySellOrderCmd returns a query command that retrieves information for a given sell order.
+func QuerySellOrderCmd() *cobra.Command {
+	return qflags(&cobra.Command{
+		Use:   "sell-order [sell_order_id]",
+		Short: "Retrieve information for a given sell order",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			sellOrderId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
+			}
+			res, err := c.SellOrder(cmd.Context(), &ecocredit.QuerySellOrderRequest{
+				SellOrderId: sellOrderId,
+			})
+			return print(ctx, res, err)
+		},
+	})
+}
+
+// QuerySellOrdersCmd returns a query command that retrieves all sell orders with pagination.
+func QuerySellOrdersCmd() *cobra.Command {
+	return qflags(&cobra.Command{
+		Use:   "sell-orders",
+		Short: "List all sell orders with pagination",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			res, err := c.SellOrders(cmd.Context(), &ecocredit.QuerySellOrdersRequest{
+				Pagination: pagination,
+			})
+			return print(ctx, res, err)
+		},
+	})
+}
+
+// QuerySellOrdersByAddressCmd returns a query command that retrieves all sell orders by address with pagination.
+func QuerySellOrdersByAddressCmd() *cobra.Command {
+	return qflags(&cobra.Command{
+		Use:   "sell-orders-by-address [address]",
+		Short: "List all sell orders by owner address with pagination",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			res, err := c.SellOrdersByAddress(cmd.Context(), &ecocredit.QuerySellOrdersByAddressRequest{
+				Address:    args[0],
+				Pagination: pagination,
+			})
+			return print(ctx, res, err)
+		},
+	})
+}
+
+// QuerySellOrdersByBatchDenomCmd returns a query command that retrieves all sell orders by batch denom with pagination.
+func QuerySellOrdersByBatchDenomCmd() *cobra.Command {
+	return qflags(&cobra.Command{
+		Use:   "sell-orders-by-batch-denom [batch_denom]",
+		Short: "List all sell orders by batch denom with pagination",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			res, err := c.SellOrdersByBatchDenom(cmd.Context(), &ecocredit.QuerySellOrdersByBatchDenomRequest{
+				BatchDenom: args[0],
+				Pagination: pagination,
+			})
+			return print(ctx, res, err)
+		},
+	})
+}
+
+// QueryBuyOrderCmd returns a query command that retrieves information for a given buy order.
+func QueryBuyOrderCmd() *cobra.Command {
+	return qflags(&cobra.Command{
+		Use:   "buy-order [buy_order_id]",
+		Short: "Retrieve information for a given buy order",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			buyOrderId, err := strconv.ParseUint(args[0], 10, 64)
+			if err != nil {
+				return ecocredit.ErrInvalidBuyOrder.Wrap(err.Error())
+			}
+			res, err := c.BuyOrder(cmd.Context(), &ecocredit.QueryBuyOrderRequest{
+				BuyOrderId: buyOrderId,
+			})
+			return print(ctx, res, err)
+		},
+	})
+}
+
+// QueryBuyOrdersCmd returns a query command that retrieves all buy orders with pagination.
+func QueryBuyOrdersCmd() *cobra.Command {
+	return qflags(&cobra.Command{
+		Use:   "buy-orders",
+		Short: "List all buy orders with pagination",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			res, err := c.BuyOrders(cmd.Context(), &ecocredit.QueryBuyOrdersRequest{
+				Pagination: pagination,
+			})
+			return print(ctx, res, err)
+		},
+	})
+}
+
+// QueryBuyOrdersByAddressCmd returns a query command that retrieves all buy orders by address with pagination.
+func QueryBuyOrdersByAddressCmd() *cobra.Command {
+	return qflags(&cobra.Command{
+		Use:   "buy-orders-by-address [address]",
+		Short: "List all buy orders by buyer address with pagination",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			res, err := c.BuyOrdersByAddress(cmd.Context(), &ecocredit.QueryBuyOrdersByAddressRequest{
+				Address:    args[0],
+				Pagination: pagination,
+			})
+			return print(ctx, res, err)
+		},
+	})
+}
+
+// QueryAllowedAskDenomsCmd returns a query command that retrieves all allowed ask denoms with pagination.
+func QueryAllowedAskDenomsCmd() *cobra.Command {
+	return qflags(&cobra.Command{
+		Use:   "allowed-ask-denoms",
+		Short: "List all allowed ask denoms with pagination",
+		Args:  cobra.ExactArgs(0),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			c, ctx, err := mkQueryClient(cmd)
+			if err != nil {
+				return err
+			}
+			pagination, err := client.ReadPageRequest(cmd.Flags())
+			if err != nil {
+				return err
+			}
+			res, err := c.AllowedAskDenoms(cmd.Context(), &ecocredit.QueryAllowedAskDenomsRequest{
+				Pagination: pagination,
+			})
 			return print(ctx, res, err)
 		},
 	})

@@ -47,12 +47,12 @@ type serverImpl struct {
 	batchInfoTable orm.PrimaryKeyTable
 
 	// sell order table
-	sellOrderTable orm.AutoUInt64Table
-	sellOrderByAddressIndex orm.Index
+	sellOrderTable             orm.AutoUInt64Table
+	sellOrderByAddressIndex    orm.Index
 	sellOrderByBatchDenomIndex orm.Index
 
 	// buy order table
-	buyOrderTable orm.AutoUInt64Table
+	buyOrderTable          orm.AutoUInt64Table
 	buyOrderByAddressIndex orm.Index
 
 	askDenomTable orm.PrimaryKeyTable
@@ -103,7 +103,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	s.sellOrderByBatchDenomIndex, err = orm.NewIndex(sellOrderTableBuilder, SellOrderByBatchDenomIndexPrefix, func(value interface{}) ([]interface{}, error) {
 		denom := value.(*ecocredit.SellOrder).BatchDenom
 		return []interface{}{denom}, nil
-	}, []byte{})
+	}, ecocredit.SellOrder{}.BatchDenom)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -113,7 +113,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 	if err != nil {
 		panic(err.Error())
 	}
-		s.buyOrderByAddressIndex, err = orm.NewIndex(buyOrderTableBuilder, BuyOrderByAddressIndexPrefix, func(value interface{}) ([]interface{}, error) {
+	s.buyOrderByAddressIndex, err = orm.NewIndex(buyOrderTableBuilder, BuyOrderByAddressIndexPrefix, func(value interface{}) ([]interface{}, error) {
 		owner := value.(*ecocredit.BuyOrder).Buyer
 		addr, err := sdk.AccAddressFromBech32(owner)
 		if err != nil {
