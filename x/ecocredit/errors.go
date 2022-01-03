@@ -7,4 +7,5 @@ var (
 	ErrInsufficientFunds = sdkerrors.Register(ModuleName, 3, "insufficient credit balance")
 	ErrMaxLimit          = sdkerrors.Register(ModuleName, 4, "limit exceeded")
 	ErrInvalidSellOrder  = sdkerrors.Register(ModuleName, 5, "invalid sell order")
+	ErrInvalidBuyOrder   = sdkerrors.Register(ModuleName, 6, "invalid buy order")
 )

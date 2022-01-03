@@ -133,7 +133,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.SellOrder{}, value)
 		}
 		return []interface{}{order.BatchDenom}, nil
-	}, []byte{})
+	}, ecocredit.SellOrder{}.BatchDenom)
 	if err != nil {
 		panic(err.Error())
 	}

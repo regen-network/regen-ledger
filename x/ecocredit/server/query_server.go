@@ -296,12 +296,12 @@ func (s serverImpl) SellOrdersByAddress(goCtx context.Context, request *ecocredi
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
-	ctx := types.UnwrapSDKContext(goCtx)
 	addr, err := sdk.AccAddressFromBech32(request.Address)
 	if err != nil {
 		return nil, err
 	}
 
+	ctx := types.UnwrapSDKContext(goCtx)
 	ordersIter, err := s.sellOrderByAddressIndex.GetPaginated(ctx, addr.Bytes(), request.Pagination)
 	if err != nil {
 		return nil, err

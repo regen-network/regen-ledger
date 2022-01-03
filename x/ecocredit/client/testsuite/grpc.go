@@ -371,13 +371,12 @@ func (s *IntegrationTestSuite) TestGetSellOrder() {
 			true,
 			"not found",
 		},
-		// TODO: create buy/sell orders via CLI tests #615
-		//{
-		//	"valid request",
-		//	fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/id/%s", val.APIAddress, "1"),
-		//	false,
-		//	"",
-		//},
+		{
+			"valid request",
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/id/%s", val.APIAddress, "1"),
+			false,
+			"",
+		},
 	}
 
 	require := s.Require()
@@ -443,8 +442,7 @@ func (s *IntegrationTestSuite) TestGetSellOrders() {
 			} else {
 				require.NoError(err)
 				require.NotNil(sellOrders.SellOrders)
-				// TODO: create buy/sell orders via CLI tests #615
-				//require.Len(sellOrders.SellOrders, tc.expItems)
+				require.Len(sellOrders.SellOrders, tc.expItems)
 			}
 		})
 	}
@@ -463,7 +461,7 @@ func (s *IntegrationTestSuite) TestGetSellOrdersByBatchDenom() {
 	}{
 		{
 			"invalid denom",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s", val.APIAddress, "abc"),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/batch-denom/%s", val.APIAddress, "foo"),
 			true,
 			"invalid denom",
 			0,
@@ -500,8 +498,7 @@ func (s *IntegrationTestSuite) TestGetSellOrdersByBatchDenom() {
 			} else {
 				require.NoError(err)
 				require.NotNil(sellOrders.SellOrders)
-				// TODO: create buy/sell orders via CLI tests #615
-				//require.Len(sellOrders.SellOrders, tc.expItems)
+				require.Len(sellOrders.SellOrders, tc.expItems)
 			}
 		})
 	}
@@ -509,7 +506,6 @@ func (s *IntegrationTestSuite) TestGetSellOrdersByBatchDenom() {
 
 func (s *IntegrationTestSuite) TestGetSellOrdersByAddress() {
 	val := s.network.Validators[0]
-	addr := s.testAccount.String()
 
 	testCases := []struct {
 		name     string
@@ -527,14 +523,14 @@ func (s *IntegrationTestSuite) TestGetSellOrdersByAddress() {
 		},
 		{
 			"valid request",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/address/%s", val.APIAddress, addr),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/address/%s", val.APIAddress, val.Address.String()),
 			false,
 			"",
 			3,
 		},
 		{
 			"valid request pagination",
-			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/address/%s", val.APIAddress, addr),
+			fmt.Sprintf("%s/regen/ecocredit/v1alpha1/sell-orders/address/%s?pagination.limit=2", val.APIAddress, val.Address.String()),
 			false,
 			"",
 			2,
@@ -557,8 +553,7 @@ func (s *IntegrationTestSuite) TestGetSellOrdersByAddress() {
 			} else {
 				require.NoError(err)
 				require.NotNil(sellOrders.SellOrders)
-				// TODO: create buy/sell orders via CLI tests #615
-				//require.Len(sellOrders.SellOrders, tc.expItems)
+				require.Len(sellOrders.SellOrders, tc.expItems)
 			}
 		})
 	}
@@ -568,10 +563,10 @@ func (s *IntegrationTestSuite) TestGetBuyOrder() {
 	val := s.network.Validators[0]
 
 	testCases := []struct {
-		name     string
-		url      string
-		expErr   bool
-		errMsg   string
+		name   string
+		url    string
+		expErr bool
+		errMsg string
 	}{
 		{
 			"not found",
@@ -651,7 +646,7 @@ func (s *IntegrationTestSuite) TestGetBuyOrders() {
 			} else {
 				require.NoError(err)
 				require.NotNil(buyOrders.BuyOrders)
-				// TODO: create buy/sell orders via CLI tests #615
+				// TODO: filtered buy orders required #623
 				//require.Len(buyOrders.BuyOrders, tc.expItems)
 			}
 		})
@@ -708,7 +703,7 @@ func (s *IntegrationTestSuite) TestGetBuyOrdersByAddress() {
 			} else {
 				require.NoError(err)
 				require.NotNil(buyOrders.BuyOrders)
-				// TODO: create buy/sell orders via CLI tests #615
+				// TODO: filtered buy orders required #623
 				//require.Len(buyOrders.BuyOrders, tc.expItems)
 			}
 		})
@@ -757,7 +752,7 @@ func (s *IntegrationTestSuite) TestGetAllowedAskDenoms() {
 			} else {
 				require.NoError(err)
 				require.NotNil(askDenoms.AskDenoms)
-				// TODO: create buy/sell orders via CLI tests #615
+				// TODO: AllowAskDenom not yet implemented #624
 				//require.Len(askDenoms.AskDenoms, tc.expItems)
 			}
 		})
