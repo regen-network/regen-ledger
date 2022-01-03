@@ -43,7 +43,7 @@ func testValidateGenProjectID(t *rapid.T) {
 var genInvalidProjectID = rapid.OneOf(
 	rapid.StringMatching(`^[a-zA-Z0-9]{1}$`),
 	rapid.StringMatching(`^[a-zA-Z0-9]{17,}$`),
-	rapid.StringMatching(`^[a-zA-Z0-9]*[!@#$&()\\-\x60.+,/\"]*[a-zA-Z0-9]*$`),
+	rapid.StringMatching(`^[a-zA-Z0-9]*[!@#$&()\\-\x60.+,/\"]+[a-zA-Z0-9]*$`),
 )
 
 func testInvalidProjectsError(t *rapid.T) {
