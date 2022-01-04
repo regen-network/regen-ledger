@@ -1,7 +1,6 @@
 package testsuite
 
 import (
-	"encoding/base64"
 	"fmt"
 	"strings"
 	"testing"
@@ -18,7 +17,6 @@ import (
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
-	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 )
@@ -1823,6 +1821,108 @@ func (s *IntegrationTestSuite) TestTxBuy() {
 				_, err := cli.ExecTestCLICmd(clientCtx, query, []string{"4", flagOutputJSON})
 				s.Require().Error(err)
 				s.Require().Contains(err.Error(), "not found")
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestCreateProject() {
+	val0 := s.network.Validators[0]
+	clientCtx := val0.ClientCtx
+	require := s.Require()
+
+	query := client.QueryClassesCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, query, []string{flagOutputJSON})
+	require.NoError(err)
+
+	// unmarshal query response
+	var res ecocredit.QueryClassesResponse
+	err = clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res)
+	require.NoError(err)
+	require.Greater(len(res.Classes), 0)
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			"minimum args",
+			[]string{},
+			true,
+			"accepts 3 arg(s), received 0",
+		},
+		{
+			"missing project-location",
+			[]string{"C01"},
+			true,
+			"accepts 3 arg(s), received 1",
+		},
+		{
+			"missing metadata",
+			[]string{"C01", "AQ"},
+			true,
+			"accepts 3 arg(s), received 2",
+		},
+		{
+			"invalid metadata",
+			[]string{"C01", "AQ", "invalid-metadata", makeFlagFrom(val0.Address.String())},
+			true,
+			"metadata is malformed",
+		},
+		{
+			"invalid project location",
+			[]string{"C01", "abcde", "AQ==", makeFlagFrom(val0.Address.String())},
+			true,
+			"Invalid location: abcde",
+		},
+		{
+			"valid tx without project id",
+			append(
+				[]string{res.Classes[0].ClassId, "AQ", "AQ==", makeFlagFrom(val0.Address.String())},
+				s.commonTxFlags()...,
+			),
+			false,
+			"",
+		},
+		{
+			"valid tx with project id",
+			append(
+				[]string{res.Classes[0].ClassId, "AQ", "AQ==", makeFlagFrom(val0.Address.String()),
+					fmt.Sprintf("--project-id=%s", "C01P01"),
+				},
+				s.commonTxFlags()...,
+			),
+			false,
+			"",
+		},
+		{
+			"invalid project id format",
+			append(
+				[]string{res.Classes[0].ClassId, "AQ", "AQ==", makeFlagFrom(val0.Address.String()),
+					fmt.Sprintf("--project-id=%s", "C@a"),
+				},
+				s.commonTxFlags()...,
+			),
+			true,
+			"invalid project id",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.TxCreateProject()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(err.Error(), tc.expErrMsg)
+			} else {
+				require.NoError(err)
+
+				var res sdk.TxResponse
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.Equal(uint32(0), res.Code)
 			}
 		})
 	}
