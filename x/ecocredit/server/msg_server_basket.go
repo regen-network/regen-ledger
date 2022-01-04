@@ -150,7 +150,40 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 }
 
 func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTakeFromBasket) (*ecocredit.MsgTakeFromBasketResponse, error) {
-	panic("implement me")
+	sdkCtx := types.UnwrapSDKContext(goCtx)
+	regenCtx := sdk.UnwrapSDKContext(goCtx)
+
+	var basket ecocredit.Basket
+	if err := s.basketTable.GetOne(sdkCtx, orm.RowID(req.BasketDenom), &basket); err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+
+	if !basket.DisableAutoRetire && req.RetirementLocation == "" {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("basket %s has auto-retirement enabled, but the request did not include a retirement location.", basket.BasketDenom)
+	}
+
+	owner, _ := types.AccAddressFromBech32(req.Owner)
+	store := sdkCtx.KVStore(s.storeKey)
+	basketDenom := basketDenomT(req.BasketDenom)
+	basketTokenBalance := s.bankKeeper.GetBalance(sdkCtx, owner, basket.BasketDenom)
+
+	creditDec, err := regenmath.NewDecFromString(req.Amount)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+	basketTokensRequired, err := calculateBasketTokens(creditDec, basket.Exponent)
+	if err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+	}
+	balanceDec, err := regenmath.NewDecFromString(basketTokenBalance.Amount.String())
+	if err != nil {
+		return nil, err
+	}
+	if balanceDec.Cmp(basketTokensRequired) == -1 {
+		return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient basket token balance, got: %s, needed at least: %s", balanceDec.String(), basketTokensRequired.String())
+	}
+	// TODO(tyler): logic to award ecocredits to user
+	return nil, nil
 }
 
 // PickFromBasket allows picking a specific ecocredit from a basket.
@@ -353,7 +386,7 @@ func padRight(length int, prefix, add string) string {
 // calculateBasketTokens calculates the basket tokens to be awarded based on how many ecocredits were added to the basket.
 // the equation for calculating the award amount is as follows:
 // total_credits_deposited * 10^(basket.Exponent)
-func calculateBasketTokens(creditsDeposited regenmath.Dec, exponent uint32) (regenmath.Dec, error) {
+func calculateBasketTokens(credits regenmath.Dec, exponent uint32) (regenmath.Dec, error) {
 	// get the str to use in the multiplier
 	multiStr := padRight(int(exponent), "10", "0")
 
@@ -364,7 +397,7 @@ func calculateBasketTokens(creditsDeposited regenmath.Dec, exponent uint32) (reg
 	}
 
 	// return the credits deposited * 10^(exponent)
-	return creditsDeposited.Mul(multiplier)
+	return credits.Mul(multiplier)
 }
 
 // checkFilters recursively checks filters using `depth` to ensure valid filters.
