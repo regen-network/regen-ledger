@@ -150,7 +150,7 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 }
 
 func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTakeFromBasket) (*ecocredit.MsgTakeFromBasketResponse, error) {
-	panic("impl!")
+	panic("implement me")
 }
 
 // PickFromBasket allows picking a specific ecocredit from a basket.
@@ -159,7 +159,7 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 	regenCtx := sdk.UnwrapSDKContext(goCtx)
 	var basket ecocredit.Basket
 	if err := s.basketTable.GetOne(sdkCtx, orm.RowID(req.BasketDenom), &basket); err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
 	owner, _ := types.AccAddressFromBech32(req.Owner)
@@ -301,7 +301,8 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 
 // ----- HELPER METHODS -----
 
-// validateFilterData is a recursive, stateful filter validation mechanism.
+// validateFilterData is a recursive, stateful filter validation.
+// it ensures all filters relative to other state (classes, batches, projects, etc) in the blockchain are valid.
 func (s serverImpl) validateFilterData(ctx sdk.Context, filters ...*ecocredit.Filter) error {
 	for _, filter := range filters {
 		switch f := filter.Sum.(type) {
@@ -324,6 +325,10 @@ func (s serverImpl) validateFilterData(ctx sdk.Context, filters ...*ecocredit.Fi
 		case *ecocredit.Filter_BatchDenom:
 			if exists := s.batchInfoTable.Has(ctx, orm.RowID(f.BatchDenom)); !exists {
 				return sdkerrors.ErrNotFound.Wrapf("batch with denom %s not found", f.BatchDenom)
+			}
+		case *ecocredit.Filter_ProjectId:
+			if exists := s.projectInfoTable.Has(ctx, orm.RowID(f.ProjectId)); !exists {
+				return sdkerrors.ErrNotFound.Wrapf("project with id %s not found", f.ProjectId)
 			}
 		}
 	}
@@ -387,7 +392,7 @@ func checkFilters(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, ba
 			innerDepth, err := checkFilters(orFilter, classInfo, batchInfo, projectInfo, owner)
 
 			// when orDepth == innerDepth, none of the filters in the OR got a match. we need AT LEAST 1 match for a valid OR filter.
-			if orDepth == innerDepth || err != nil {
+			if orDepth == innerDepth {
 				return innerDepth, err
 			} else {
 				depth -= 1
