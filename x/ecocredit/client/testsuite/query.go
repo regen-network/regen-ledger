@@ -1067,8 +1067,6 @@ func (s *IntegrationTestSuite) TestQueryProjectInfo() {
 		s.Run(tc.name, func() {
 			cmd := client.QueryProjectInfoCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
-			fmt.Println(err)
-			fmt.Println(out.String())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -1076,9 +1074,7 @@ func (s *IntegrationTestSuite) TestQueryProjectInfo() {
 				require.NoError(err, out.String())
 
 				var res ecocredit.QueryProjectInfoResponse
-				require.NoError(clientCtx.Codec.Unmarshal(out.Bytes(), &res))
-				fmt.Println(res.Info)
-				fmt.Println(project)
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
 				require.Equal(project, res.Info)
 			}
 		})
