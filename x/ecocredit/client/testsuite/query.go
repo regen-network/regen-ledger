@@ -1028,7 +1028,7 @@ func (s *IntegrationTestSuite) TestQueryProjectInfo() {
 	require.NoError(err)
 	var res ecocredit.QueryProjectsResponse
 	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-	require.GreaterOrEqual(res.Projects, 1)
+	require.GreaterOrEqual(len(res.Projects), 1)
 	project := res.Projects[0]
 
 	testCases := []struct {
@@ -1045,7 +1045,7 @@ func (s *IntegrationTestSuite) TestQueryProjectInfo() {
 		},
 		{
 			name:      "invalid project id ",
-			args:      []string{"A@a"},
+			args:      []string{"A@a@"},
 			expErr:    true,
 			expErrMsg: "invalid project id",
 		},
@@ -1065,8 +1065,10 @@ func (s *IntegrationTestSuite) TestQueryProjectInfo() {
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-			cmd := client.QueryProjectsCmd()
+			cmd := client.QueryProjectInfoCmd()
 			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			fmt.Println(err)
+			fmt.Println(out.String())
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(out.String(), tc.expErrMsg)
@@ -1075,7 +1077,9 @@ func (s *IntegrationTestSuite) TestQueryProjectInfo() {
 
 				var res ecocredit.QueryProjectInfoResponse
 				require.NoError(clientCtx.Codec.Unmarshal(out.Bytes(), &res))
-				require.Equal(project.String(), res.Info.String())
+				fmt.Println(res.Info)
+				fmt.Println(project)
+				require.Equal(project, res.Info)
 			}
 		})
 	}
