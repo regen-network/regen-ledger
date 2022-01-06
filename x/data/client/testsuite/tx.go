@@ -35,22 +35,79 @@ func (s *IntegrationTestSuite) SetupSuite() {
 	_, err = s.network.WaitForHeight(1)
 	s.Require().NoError(err)
 
-	val := s.network.Validators[0]
+	val1 := s.network.Validators[0]
 
-	// create a new account
-	info, _, err := val.ClientCtx.Keyring.NewMnemonic("NewValidator", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
+	info1, _, err := val1.ClientCtx.Keyring.NewMnemonic("acc1", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
 	s.Require().NoError(err)
 
-	account := sdk.AccAddress(info.GetPubKey().Address())
-	_, err = banktestutil.MsgSendExec(
-		val.ClientCtx,
-		val.Address,
-		account,
-		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))), fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
+	info2, _, err := val1.ClientCtx.Keyring.NewMnemonic("acc2", keyring.English, sdk.FullFundraiserPath, keyring.DefaultBIP39Passphrase, hd.Secp256k1)
+	s.Require().NoError(err)
+
+	var commonFlags = []string{
+		fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
 		fmt.Sprintf("--%s=%s", flags.FlagBroadcastMode, flags.BroadcastBlock),
 		fmt.Sprintf("--%s=%s", flags.FlagFees, sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(10))).String()),
+	}
+
+	account1 := sdk.AccAddress(info1.GetPubKey().Address())
+	_, err = banktestutil.MsgSendExec(
+		val1.ClientCtx,
+		val1.Address,
+		account1,
+		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))),
+		commonFlags...,
 	)
 	s.Require().NoError(err)
+
+	account2 := sdk.AccAddress(info2.GetPubKey().Address())
+	_, err = banktestutil.MsgSendExec(
+		val1.ClientCtx,
+		val1.Address,
+		account2,
+		sdk.NewCoins(sdk.NewCoin(s.cfg.BondDenom, sdk.NewInt(2000))),
+		commonFlags...,
+	)
+	s.Require().NoError(err)
+
+	iris := []string{
+		"regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf",
+		"regen:13toVgfX85Ny2ZTVxNzuL7MUquwwF7vcMKSAdVw2bUpEaL7XCFnshuh.rdf",
+	}
+
+	for _, iri := range iris {
+		_, err := cli.ExecTestCLICmd(val1.ClientCtx, client.MsgAnchorDataCmd(),
+			append(
+				[]string{
+					iri,
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
+				},
+				commonFlags...,
+			),
+		)
+		s.Require().NoError(err)
+
+		_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgSignDataCmd(),
+			append(
+				[]string{
+					iri,
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, account1.String()),
+				},
+				commonFlags...,
+			),
+		)
+		s.Require().NoError(err)
+
+		_, err = cli.ExecTestCLICmd(val1.ClientCtx, client.MsgSignDataCmd(),
+			append(
+				[]string{
+					iris[0],
+					fmt.Sprintf("--%s=%s", flags.FlagFrom, account2.String()),
+				},
+				commonFlags...,
+			),
+		)
+		s.Require().NoError(err)
+	}
 }
 
 func (s *IntegrationTestSuite) TearDownSuite() {
