@@ -151,11 +151,11 @@ func (s *IntegrationTestSuite) TestQuerySignersCmd() {
 	s.Require().NoError(err)
 
 	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-		expResp   []string
+		name       string
+		args       []string
+		expErr     bool
+		expErrMsg  string
+		expSigners []string
 	}{
 		{
 			name:      "missing args",
@@ -179,9 +179,9 @@ func (s *IntegrationTestSuite) TestQuerySignersCmd() {
 			name:   "valid",
 			args:   []string{validIri},
 			expErr: false,
-			expResp: []string{
-				acc2.GetAddress().String(),
+			expSigners: []string{
 				acc1.GetAddress().String(),
+				acc2.GetAddress().String(),
 			},
 		},
 	}
@@ -198,7 +198,10 @@ func (s *IntegrationTestSuite) TestQuerySignersCmd() {
 
 				var res data.QuerySignersResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(tc.expResp, res.Signers)
+
+				for _, signer := range tc.expSigners {
+					s.Require().Contains(res.Signers, signer)
+				}
 			}
 		})
 	}
