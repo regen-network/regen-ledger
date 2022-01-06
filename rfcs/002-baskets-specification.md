@@ -4,7 +4,8 @@ RFC-002: Baskets Specification
 - Created: Fri Dec 3, 2021
 - Status: __ACCEPTED__
 - Superseded By: N/A
-- RFC PR: [regen-ledger#107](https://github.com/regen-network/regen-ledger/pull/107)
+- RFC PR: [regen-ledger#107](https://github.com/regen-network/regen-ledger/pull/681)
+- Original document: [google doc](https://docs.google.com/document/d/1YCmaQCI5ghll9IfMDAIPjImVPZpT7iZ7QpdVPVi-V5o/edit#)
 - Authors: Darren Kong, Cory Levinson
 
 # Background
