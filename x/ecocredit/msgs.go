@@ -420,7 +420,7 @@ func (m *MsgSell) ValidateBasic() error {
 		}
 
 		if order.Expiration != nil && order.Expiration.Before(now) {
-			return sdkerrors.ErrInvalidRequest.Wrap("expiration must be in the future")
+			return sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
 		}
 	}
 
@@ -471,7 +471,7 @@ func (m *MsgUpdateSellOrders) ValidateBasic() error {
 		}
 
 		if update.NewExpiration != nil && update.NewExpiration.Before(now) {
-			return sdkerrors.ErrInvalidRequest.Wrap("expiration must be in the future")
+			return sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", update.NewExpiration)
 		}
 	}
 
@@ -522,7 +522,7 @@ func (m *MsgBuy) ValidateBasic() error {
 		}
 
 		if order.Expiration != nil && order.Expiration.Before(now) {
-			return sdkerrors.ErrInvalidRequest.Wrap("expiration must be in the future")
+			return sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
 		}
 	}
 

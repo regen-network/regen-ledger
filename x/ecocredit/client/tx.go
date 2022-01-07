@@ -514,7 +514,8 @@ func TxSellCmd() *cobra.Command {
 
 Parameters:
   orders:  YAML encoded order list. Note: numerical values must be written in strings.
-           eg: '[{batch_denom: "C01-20210101-20210201-001", quantity: "5", ask_price: "100regen", disable_auto_retire: false}]'`,
+           eg: '[{batch_denom: "C01-20210101-20210201-001", quantity: "5", ask_price: "100regen", disable_auto_retire: false}]'
+           eg: '[{batch_denom: "C01-20210101-20210201-001", quantity: "5", ask_price: "100regen", disable_auto_retire: false, expiration: "2024-01-01"}]'`,
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -532,6 +533,7 @@ Parameters:
 				Quantity          string `json:"quantity"`
 				AskPrice          string `json:"ask_price"`
 				DisableAutoRetire bool   `json:"disable_auto_retire"`
+				Expiration        string `json:"expiration"`
 			}
 
 			// unmarshal YAML encoded orders with ask price as string
@@ -558,6 +560,15 @@ Parameters:
 					Quantity:          order.Quantity,
 					DisableAutoRetire: order.DisableAutoRetire,
 				}
+
+				// parse and set expiration
+				if order.Expiration != "" {
+					expiration, err := ParseDate("expiration", order.Expiration)
+					if err != nil {
+						return err
+					}
+					orders[i].Expiration = &expiration
+				}
 			}
 
 			// create sell message
@@ -582,7 +593,8 @@ func TxUpdateSellOrdersCmd() *cobra.Command {
 
 Parameters:
   updates:  YAML encoded update list. Note: numerical values must be written in strings.
-           eg: '[{sell_order_id: "1", new_quantity: "5", new_ask_price: "200regen", disable_auto_retire: false}]'`,
+           eg: '[{sell_order_id: "1", new_quantity: "5", new_ask_price: "200regen", disable_auto_retire: false}]'
+           eg: '[{sell_order_id: "1", new_quantity: "5", new_ask_price: "200regen", disable_auto_retire: false, new_expiration: "2026-01-01"}]'`,
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -600,6 +612,7 @@ Parameters:
 				NewQuantity       string `json:"new_quantity"`
 				NewAskPrice       string `json:"new_ask_price"`
 				DisableAutoRetire bool   `json:"disable_auto_retire"`
+				NewExpiration     string `json:"new_expiration"`
 			}
 
 			// unmarshal YAML encoded updates with new ask price as string
@@ -632,6 +645,15 @@ Parameters:
 					NewQuantity:       update.NewQuantity,
 					DisableAutoRetire: update.DisableAutoRetire,
 				}
+
+				// parse and set expiration
+				if update.NewExpiration != "" {
+					expiration, err := ParseDate("expiration", update.NewExpiration)
+					if err != nil {
+						return err
+					}
+					updates[i].NewExpiration = &expiration
+				}
 			}
 
 			// create update sell orders message
@@ -656,7 +678,8 @@ func TxBuyCmd() *cobra.Command {
 
 Parameters:
   orders:  YAML encoded order list. Note: numerical values must be written in strings.
-           eg: '[{sell_order_id: "1", quantity: "5", bid_price: "100regen", disable_auto_retire: false}]'`,
+           eg: '[{sell_order_id: "1", quantity: "5", bid_price: "100regen", disable_auto_retire: false}]'
+           eg: '[{sell_order_id: "1", quantity: "5", bid_price: "100regen", disable_auto_retire: false, expiration: "2024-01-01"}]'`,
 		),
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -674,6 +697,7 @@ Parameters:
 				Quantity          string `json:"quantity"`
 				BidPrice          string `json:"bid_price"`
 				DisableAutoRetire bool   `json:"disable_auto_retire"`
+				Expiration        string `json:"expiration"`
 			}
 
 			// unmarshal YAML encoded orders with new bid price as string
@@ -710,6 +734,15 @@ Parameters:
 					BidPrice:          &bidPrice,
 					Quantity:          order.Quantity,
 					DisableAutoRetire: order.DisableAutoRetire,
+				}
+
+				// parse and set expiration
+				if order.Expiration != "" {
+					expiration, err := ParseDate("expiration", order.Expiration)
+					if err != nil {
+						return err
+					}
+					orders[i].Expiration = &expiration
 				}
 			}
 

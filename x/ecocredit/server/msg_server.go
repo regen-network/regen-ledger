@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -592,6 +593,11 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 
 		sellOrderIds[i] = orderID
 
+		// TODO: better solution?
+		if order.Expiration == nil {
+			order.Expiration = &time.Time{}
+		}
+
 		_, err = s.sellOrderTable.Create(ctx, &ecocredit.SellOrder{
 			Owner:             owner,
 			OrderId:           orderID,
@@ -655,7 +661,13 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 		sellOrder.Quantity = update.NewQuantity
 		sellOrder.AskPrice = update.NewAskPrice
 		sellOrder.DisableAutoRetire = update.DisableAutoRetire
-		sellOrder.Expiration = update.NewExpiration
+
+		// TODO: better solution?
+		if update.NewExpiration == nil {
+			sellOrder.Expiration = &time.Time{}
+		} else {
+			sellOrder.Expiration = update.NewExpiration
+		}
 
 		err = s.sellOrderTable.Update(ctx, sellOrder.OrderId, sellOrder)
 		if err != nil {
@@ -821,6 +833,11 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 			// TODO: do we want to store a direct buy order? #623
 			buyOrderID := s.buyOrderTable.Sequence().NextVal(ctx)
 			buyOrderIds[i] = buyOrderID
+
+			// TODO: better solution?
+			if order.Expiration == nil {
+				order.Expiration = &time.Time{}
+			}
 
 			err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventBuyOrderCreated{
 				BuyOrderId:         buyOrderID,
