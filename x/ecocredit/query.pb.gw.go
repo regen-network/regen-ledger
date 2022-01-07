@@ -2006,47 +2006,47 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Classes_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "ecocredit", "v1alpha2", "classes"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Classes_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "ecocredit", "v1alpha2", "classes"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_ClassInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1alpha2", "classes", "class_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ClassInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1alpha2", "classes", "class_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Projects_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "ecocredit", "v1alpha2", "classes", "class_id", "projects"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Projects_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "ecocredit", "v1alpha2", "classes", "class_id", "projects"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_ProjectInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1alpha2", "projects", "project_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ProjectInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1alpha2", "projects", "project_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Batches_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "ecocredit", "v1alpha2", "projects", "project_id", "batches"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Batches_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "ecocredit", "v1alpha2", "projects", "project_id", "batches"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_BatchInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1alpha2", "batches", "batch_denom"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_BatchInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1alpha2", "batches", "batch_denom"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Balance_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5, 1, 0, 4, 1, 5, 6}, []string{"regen", "ecocredit", "v1alpha2", "batches", "batch_denom", "balance", "account"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Balance_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5, 1, 0, 4, 1, 5, 6}, []string{"regen", "ecocredit", "v1alpha2", "batches", "batch_denom", "balance", "account"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Supply_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "ecocredit", "v1alpha2", "batches", "batch_denom", "supply"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Supply_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "ecocredit", "v1alpha2", "batches", "batch_denom", "supply"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_CreditTypes_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "ecocredit", "v1alpha2", "credit-types"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_CreditTypes_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "ecocredit", "v1alpha2", "credit-types"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "ecocredit", "v1alpha2", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "ecocredit", "v1alpha2", "params"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_SellOrder_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"regen", "ecocredit", "v1alpha1", "sell-orders", "id", "sell_order_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_SellOrder_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"regen", "ecocredit", "v1alpha1", "sell-orders", "id", "sell_order_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_SellOrders_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "ecocredit", "v1alpha1", "sell-orders"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_SellOrders_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "ecocredit", "v1alpha1", "sell-orders"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_SellOrdersByBatchDenom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"regen", "ecocredit", "v1alpha1", "sell-orders", "batch-denom", "batch_denom"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_SellOrdersByBatchDenom_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"regen", "ecocredit", "v1alpha1", "sell-orders", "batch-denom", "batch_denom"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_SellOrdersByAddress_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1alpha1", "sell-orders", "address"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_SellOrdersByAddress_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1alpha1", "sell-orders", "address"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_BuyOrder_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"regen", "ecocredit", "v1alpha1", "buy-orders", "id", "buy_order_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_BuyOrder_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"regen", "ecocredit", "v1alpha1", "buy-orders", "id", "buy_order_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_BuyOrders_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "ecocredit", "v1alpha1", "buy-orders"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_BuyOrders_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "ecocredit", "v1alpha1", "buy-orders"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_BuyOrdersByAddress_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1alpha1", "buy-orders", "address"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_BuyOrdersByAddress_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1alpha1", "buy-orders", "address"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_AllowedAskDenoms_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "ecocredit", "v1alpha1", "ask-denoms"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_AllowedAskDenoms_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "ecocredit", "v1alpha1", "ask-denoms"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Basket_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1alpha1", "baskets", "basket_denom"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Basket_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "ecocredit", "v1alpha1", "baskets", "basket_denom"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Baskets_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "ecocredit", "v1alpha1", "baskets"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Baskets_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"regen", "ecocredit", "v1alpha1", "baskets"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_BasketCredits_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "ecocredit", "v1alpha1", "baskets", "basket_denom", "credits"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_BasketCredits_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "ecocredit", "v1alpha1", "baskets", "basket_denom", "credits"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (
