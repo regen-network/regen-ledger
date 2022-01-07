@@ -990,7 +990,7 @@ func (s *IntegrationTestSuite) TestQueryProjects() {
 			expErrMsg: "",
 		},
 		{
-			name:      "no projects found ",
+			name:      "valid query",
 			args:      []string{"C01"},
 			expErr:    false,
 			expErrMsg: "",
