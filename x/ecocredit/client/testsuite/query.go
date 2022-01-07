@@ -6,7 +6,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
@@ -965,4 +964,120 @@ func (s *IntegrationTestSuite) TestQueryAllowedAskDenoms() {
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestQueryProjects() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+		expLen    int
+	}{
+		{
+			name:      "no args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "no projects found ",
+			args:      []string{"CA10"},
+			expErr:    false,
+			expErrMsg: "",
+		},
+		{
+			name:      "valid query",
+			args:      []string{"C01"},
+			expErr:    false,
+			expErrMsg: "",
+			expLen:    3,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryProjectsCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res ecocredit.QueryProjectsResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Len(res.Projects, tc.expLen)
+			}
+		})
+	}
+
+}
+
+func (s *IntegrationTestSuite) TestQueryProjectInfo() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	require := s.Require()
+
+	cmd := client.QueryProjectsCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{"C01"})
+	require.NoError(err)
+	var res ecocredit.QueryProjectsResponse
+	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.GreaterOrEqual(len(res.Projects), 1)
+	project := res.Projects[0]
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "no args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "invalid project id ",
+			args:      []string{"A@a@"},
+			expErr:    true,
+			expErrMsg: "invalid project id",
+		},
+		{
+			name:      "not found",
+			args:      []string{"P100"},
+			expErr:    true,
+			expErrMsg: "not found",
+		},
+		{
+			name:      "valid query",
+			args:      []string{project.ProjectId},
+			expErr:    false,
+			expErrMsg: "",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryProjectInfoCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err, out.String())
+
+				var res ecocredit.QueryProjectInfoResponse
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.Equal(project, res.Info)
+			}
+		})
+	}
+
 }
