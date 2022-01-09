@@ -3,7 +3,12 @@ package ecocredit
 import (
 	"fmt"
 	"regexp"
+	"strings"
 	"time"
+)
+
+const (
+	TimeLayout = "20060102"
 )
 
 // Calculate the ID to use for a new credit class, based on the credit type and
@@ -40,14 +45,22 @@ func FormatDenom(classId string, batchSeqNo uint64, startDate *time.Time, endDat
 		classId,
 
 		// Start Date as YYYYMMDD
-		startDate.Format("20060102"),
+		startDate.Format(TimeLayout),
 
 		// End Date as YYYYMMDD
-		endDate.Format("20060102"),
+		endDate.Format(TimeLayout),
 
 		// Batch sequence number padded to at least three digits
 		batchSeqNo,
 	), nil
+}
+
+func DeconstructDenom(denom string) ([]string, error) {
+	split := strings.Split(denom, "-")
+	if len(split) != 4 {
+		return nil, fmt.Errorf("denom %s is malformed: expected 4 items, got %d", denom, len(split))
+	}
+	return split, nil
 }
 
 var (

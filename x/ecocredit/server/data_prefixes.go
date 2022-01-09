@@ -20,6 +20,7 @@ type basketDenomT string
 // - 0x4 <basket_denom_BytesLen (1 Byte)><basket_denom_Bytes><batch_denom_bytesLen (1 Byte)><batch_denom_bytes><owner_bytes>: BasketCredits
 
 // TradableBalanceKey creates the index key for recipient address and batch-denom
+// which takes the form of <balancePrefix><addrLength><addr><denom>
 func TradableBalanceKey(acc sdk.AccAddress, denom batchDenomT) []byte {
 	key := []byte{TradableBalancePrefix}
 	key = append(key, address.MustLengthPrefix(acc)...)
