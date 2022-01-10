@@ -1642,7 +1642,7 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "bad filter",
+			name: "bad filter (not an address)",
 			fields: fields{
 				Curator:           addr.String(),
 				Name:              "my very cool basket",

@@ -639,7 +639,7 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 		}
 
 		if req.Owner != sellOrder.Owner {
-			return nil, sdkerrors.ErrUnauthorized.Wrapf("signer is not the owner of sell order id %d",  update.SellOrderId)
+			return nil, sdkerrors.ErrUnauthorized.Wrapf("signer is not the owner of sell order id %d", update.SellOrderId)
 		}
 
 		// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
@@ -900,9 +900,14 @@ func (s serverImpl) sendEcocredits(ctx types.Context, credit *ecocredit.MsgSend_
 		return err
 	}
 
-	retired, err := math.NewNonNegativeFixedDecFromString(credit.RetiredAmount, maxDecimalPlaces)
-	if err != nil {
-		return err
+	var retired math.Dec
+	if credit.RetiredAmount != "" {
+		retired, err = math.NewNonNegativeFixedDecFromString(credit.RetiredAmount, maxDecimalPlaces)
+		if err != nil {
+			return err
+		}
+	} else {
+		retired = math.NewDecFromInt64(0)
 	}
 
 	sum, err := tradable.Add(retired)

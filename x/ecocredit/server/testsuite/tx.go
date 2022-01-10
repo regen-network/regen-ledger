@@ -1,649 +1,652 @@
 package testsuite
 
 import (
+	"fmt"
+	"github.com/regen-network/regen-ledger/types/math"
+	math2 "math"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
 
-func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
-	addr1 := s.signers[3].String()
+//func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
+//	addr1 := s.signers[3].String()
+//
+//	// create credit class and issue credits to addr1
+//	_, createBatchRes := s.createClassAndIssueBatch(addr1, "2.0")
+//
+//	askPrice1 := sdk.NewInt64Coin("stake", 1000000)
+//	// TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
+//	//askPrice2 := sdk.NewInt64Coin("token", 1000000)
+//
+//	// create sell orders
+//	testCases := []struct {
+//		name    string
+//		owner   string
+//		orders  []*ecocredit.MsgSell_Order
+//		expErr  string
+//		wantErr bool
+//	}{
+//		{
+//			name:  "insufficient credit balance - batch denom",
+//			owner: addr1,
+//			orders: []*ecocredit.MsgSell_Order{
+//				{
+//					BatchDenom:        "A00-00000000-00000000-000",
+//					Quantity:          "1.0",
+//					AskPrice:          &askPrice1,
+//					DisableAutoRetire: true,
+//				},
+//				{
+//					BatchDenom:        "A00-00000000-00000000-000",
+//					Quantity:          "1.0",
+//					AskPrice:          &askPrice1,
+//					DisableAutoRetire: true,
+//				},
+//			},
+//			expErr:  "insufficient credit balance",
+//			wantErr: true,
+//		},
+//		{
+//			name:  "insufficient credit balance - quantity",
+//			owner: addr1,
+//			orders: []*ecocredit.MsgSell_Order{
+//				{
+//					BatchDenom:        createBatchRes.BatchDenom,
+//					Quantity:          "99",
+//					AskPrice:          &askPrice1,
+//					DisableAutoRetire: true,
+//				},
+//				{
+//					BatchDenom:        createBatchRes.BatchDenom,
+//					Quantity:          "99",
+//					AskPrice:          &askPrice1,
+//					DisableAutoRetire: true,
+//				},
+//			},
+//			expErr:  "insufficient credit balance",
+//			wantErr: true,
+//		},
+//		// TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
+//		//{
+//		//	name: "denom not allowed",
+//		//	owner: addr1,
+//		//	orders: []*ecocredit.MsgSell_Order{
+//		//		{
+//		//			BatchDenom:        createBatchRes.BatchDenom,
+//		//			Quantity:          "1.0",
+//		//			AskPrice:          &askPrice2,
+//		//			DisableAutoRetire: true,
+//		//		},
+//		//		{
+//		//			BatchDenom:        createBatchRes.BatchDenom,
+//		//			Quantity:          "1.0",
+//		//			AskPrice:          &askPrice2,
+//		//			DisableAutoRetire: true,
+//		//		},
+//		//	},
+//		//	expErr: "denom not allowed",
+//		//	wantErr: true,
+//		//},
+//		{
+//			name:  "valid request",
+//			owner: addr1,
+//			orders: []*ecocredit.MsgSell_Order{
+//				{
+//					BatchDenom:        createBatchRes.BatchDenom,
+//					Quantity:          "1.0",
+//					AskPrice:          &askPrice1,
+//					DisableAutoRetire: true,
+//				},
+//				{
+//					BatchDenom:        createBatchRes.BatchDenom,
+//					Quantity:          "1.0",
+//					AskPrice:          &askPrice1,
+//					DisableAutoRetire: true,
+//				},
+//			},
+//			expErr:  "",
+//			wantErr: false,
+//		},
+//	}
+//
+//	for _, tc := range testCases {
+//		tc := tc
+//
+//		s.Run(tc.name, func() {
+//			require := s.Require()
+//
+//			res, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
+//				Owner:  tc.owner,
+//				Orders: tc.orders,
+//			})
+//
+//			if tc.wantErr {
+//				require.Error(err)
+//				require.Contains(err.Error(), tc.expErr)
+//			} else {
+//				require.NoError(err)
+//				require.NotNil(res.SellOrderIds)
+//
+//				// query first sell order
+//				_, sellError1 := s.queryClient.SellOrder(s.ctx, &ecocredit.QuerySellOrderRequest{
+//					SellOrderId: res.SellOrderIds[0],
+//				})
+//
+//				// query second sell order
+//				_, sellError2 := s.queryClient.SellOrder(s.ctx, &ecocredit.QuerySellOrderRequest{
+//					SellOrderId: res.SellOrderIds[1],
+//				})
+//
+//				require.NoError(sellError1)
+//				require.NoError(sellError2)
+//			}
+//		})
+//	}
+//}
+//
+//func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
+//	addr1 := s.signers[3].String()
+//	addr2 := s.signers[4].String()
+//
+//	// create credit class and issue credits to addr1
+//	_, createBatchRes := s.createClassAndIssueBatch(addr1, "2.0")
+//
+//	askPrice1 := sdk.NewInt64Coin("stake", 2000000)
+//	// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
+//	//askPrice2 := sdk.NewInt64Coin("token", 2000000)
+//
+//	// create sell order
+//	sellRes, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
+//		Owner: addr1,
+//		Orders: []*ecocredit.MsgSell_Order{
+//			{
+//				BatchDenom:        createBatchRes.BatchDenom,
+//				Quantity:          "1.0",
+//				AskPrice:          &askPrice1,
+//				DisableAutoRetire: true,
+//			},
+//			{
+//				BatchDenom:        createBatchRes.BatchDenom,
+//				Quantity:          "1.0",
+//				AskPrice:          &askPrice1,
+//				DisableAutoRetire: true,
+//			},
+//		},
+//	})
+//	s.Require().NoError(err)
+//
+//	// update sell orders
+//	testCases := []struct {
+//		name    string
+//		owner   string
+//		updates []*ecocredit.MsgUpdateSellOrders_Update
+//		expErr  string
+//		wantErr bool
+//	}{
+//		{
+//			name:  "invalid sell order",
+//			owner: addr1,
+//			updates: []*ecocredit.MsgUpdateSellOrders_Update{
+//				{
+//					SellOrderId:       99,
+//					NewQuantity:       "1.0",
+//					NewAskPrice:       &askPrice1,
+//					DisableAutoRetire: true,
+//				},
+//				{
+//					SellOrderId:       100,
+//					NewQuantity:       "1.0",
+//					NewAskPrice:       &askPrice1,
+//					DisableAutoRetire: true,
+//				},
+//			},
+//			expErr:  "invalid sell order",
+//			wantErr: true,
+//		},
+//		{
+//			name:  "unauthorized",
+//			owner: addr2,
+//			updates: []*ecocredit.MsgUpdateSellOrders_Update{
+//				{
+//					SellOrderId:       sellRes.SellOrderIds[0],
+//					NewQuantity:       "1.0",
+//					NewAskPrice:       &askPrice1,
+//					DisableAutoRetire: true,
+//				},
+//				{
+//					SellOrderId:       sellRes.SellOrderIds[1],
+//					NewQuantity:       "1.0",
+//					NewAskPrice:       &askPrice1,
+//					DisableAutoRetire: true,
+//				},
+//			},
+//			expErr:  "unauthorized",
+//			wantErr: true,
+//		},
+//		{
+//			name:  "insufficient credit balance",
+//			owner: addr1,
+//			updates: []*ecocredit.MsgUpdateSellOrders_Update{
+//				{
+//					SellOrderId:       sellRes.SellOrderIds[0],
+//					NewQuantity:       "99",
+//					NewAskPrice:       &askPrice1,
+//					DisableAutoRetire: true,
+//				},
+//				{
+//					SellOrderId:       sellRes.SellOrderIds[1],
+//					NewQuantity:       "99",
+//					NewAskPrice:       &askPrice1,
+//					DisableAutoRetire: true,
+//				},
+//			},
+//			expErr:  "insufficient credit balance",
+//			wantErr: true,
+//		},
+//		// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
+//		//{
+//		//	name: "denom not allowed",
+//		//	owner: addr1,
+//		//	updates: []*ecocredit.MsgUpdateSellOrders_Update{
+//		//		{
+//		//			SellOrderId:       sellRes.SellOrderIds[0],
+//		//			NewQuantity:       "1.0",
+//		//			NewAskPrice:       &askPrice2,
+//		//			DisableAutoRetire: true,
+//		//		},
+//		//		{
+//		//			SellOrderId:       sellRes.SellOrderIds[1],
+//		//			NewQuantity:       "1.0",
+//		//			NewAskPrice:       &askPrice2,
+//		//			DisableAutoRetire: true,
+//		//		},
+//		//	},
+//		//	expErr: "denom not allowed",
+//		//	wantErr: true,
+//		//},
+//		{
+//			name:  "valid request",
+//			owner: addr1,
+//			updates: []*ecocredit.MsgUpdateSellOrders_Update{
+//				{
+//					SellOrderId:       sellRes.SellOrderIds[0],
+//					NewQuantity:       "1.0",
+//					NewAskPrice:       &askPrice1,
+//					DisableAutoRetire: true,
+//				},
+//				{
+//					SellOrderId:       sellRes.SellOrderIds[1],
+//					NewQuantity:       "1.0",
+//					NewAskPrice:       &askPrice1,
+//					DisableAutoRetire: true,
+//				},
+//			},
+//			expErr:  "",
+//			wantErr: false,
+//		},
+//	}
+//
+//	for _, tc := range testCases {
+//		tc := tc
+//
+//		s.Run(tc.name, func() {
+//			require := s.Require()
+//
+//			_, err := s.msgClient.UpdateSellOrders(s.ctx, &ecocredit.MsgUpdateSellOrders{
+//				Owner:   tc.owner,
+//				Updates: tc.updates,
+//			})
+//
+//			if tc.wantErr {
+//				require.Error(err)
+//				require.Contains(err.Error(), tc.expErr)
+//			} else {
+//				require.NoError(err)
+//
+//				// query first sell order
+//				sellResponse1, sellError1 := s.queryClient.SellOrder(s.ctx, &ecocredit.QuerySellOrderRequest{
+//					SellOrderId: tc.updates[0].SellOrderId,
+//				})
+//
+//				// query second sell order
+//				sellResponse2, sellError2 := s.queryClient.SellOrder(s.ctx, &ecocredit.QuerySellOrderRequest{
+//					SellOrderId: tc.updates[1].SellOrderId,
+//				})
+//
+//				require.NoError(sellError1)
+//				require.NoError(sellError2)
+//				require.Equal(tc.updates[0].NewAskPrice, sellResponse1.SellOrder.AskPrice)
+//				require.Equal(tc.updates[1].NewAskPrice, sellResponse2.SellOrder.AskPrice)
+//			}
+//		})
+//	}
+//}
+//
+//func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
+//	addr1 := s.signers[3]
+//	addr2 := s.signers[4]
+//
+//	// create credit class and issue credits to addr1
+//	_, createBatchRes := s.createClassAndIssueBatch(addr1.String(), "4.0")
+//
+//	bidPrice1 := sdk.NewInt64Coin("stake", 1000000)
+//	bidPrice2 := sdk.NewInt64Coin("stake", 9999999)
+//	// TODO: Verify that BidPrice.Denom is in AllowAskDenom #624
+//	//bidPrice3 := sdk.NewInt64Coin("token", 1000000)
+//
+//	// fund buyer account
+//	s.Require().NoError(s.fundAccount(addr2, sdk.NewCoins(sdk.NewInt64Coin("stake", 3000000))))
+//
+//	// create sell orders
+//	sellRes, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
+//		Owner: addr1.String(),
+//		Orders: []*ecocredit.MsgSell_Order{
+//			{
+//				BatchDenom:        createBatchRes.BatchDenom,
+//				Quantity:          "1.0",
+//				AskPrice:          &bidPrice1,
+//				DisableAutoRetire: true,
+//			},
+//			{
+//				BatchDenom:        createBatchRes.BatchDenom,
+//				Quantity:          "1.0",
+//				AskPrice:          &bidPrice1,
+//				DisableAutoRetire: true,
+//			},
+//			{
+//				BatchDenom:        createBatchRes.BatchDenom,
+//				Quantity:          "1.0",
+//				AskPrice:          &bidPrice1,
+//				DisableAutoRetire: true,
+//			},
+//			{
+//				BatchDenom:        createBatchRes.BatchDenom,
+//				Quantity:          "1.0",
+//				AskPrice:          &bidPrice1,
+//				DisableAutoRetire: true,
+//			},
+//		},
+//	})
+//	s.Require().NoError(err)
+//
+//	// process buy orders
+//	testCases := []struct {
+//		name             string
+//		buyer            string
+//		orders           []*ecocredit.MsgBuy_Order
+//		expErr           string
+//		wantErr          bool
+//		partial          bool
+//		expCoinBalance   sdk.Coin
+//		expCreditBalance *ecocredit.QueryBalanceResponse
+//	}{
+//		{
+//			name:  "invalid sell order",
+//			buyer: addr2.String(),
+//			orders: []*ecocredit.MsgBuy_Order{
+//				{
+//					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: 99}},
+//					Quantity:          "1.0",
+//					BidPrice:          &bidPrice1,
+//					DisableAutoRetire: true,
+//				},
+//				{
+//					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: 100}},
+//					Quantity:          "1.0",
+//					BidPrice:          &bidPrice1,
+//					DisableAutoRetire: true,
+//				},
+//			},
+//			expErr:  "not found",
+//			wantErr: true,
+//		},
+//		{
+//			name:  "insufficient coin balance - quantity",
+//			buyer: addr2.String(),
+//			orders: []*ecocredit.MsgBuy_Order{
+//				{
+//					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[0]}},
+//					Quantity:          "99.99",
+//					BidPrice:          &bidPrice1,
+//					DisableAutoRetire: true,
+//				},
+//				{
+//					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[1]}},
+//					Quantity:          "99.99",
+//					BidPrice:          &bidPrice1,
+//					DisableAutoRetire: true,
+//				},
+//			},
+//			expErr:  "insufficient balance",
+//			wantErr: true,
+//		},
+//		{
+//			name:  "insufficient coin balance - bid price",
+//			buyer: addr2.String(),
+//			orders: []*ecocredit.MsgBuy_Order{
+//				{
+//					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[0]}},
+//					Quantity:          "1.0",
+//					BidPrice:          &bidPrice2,
+//					DisableAutoRetire: true,
+//				},
+//				{
+//					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[1]}},
+//					Quantity:          "1.0",
+//					BidPrice:          &bidPrice2,
+//					DisableAutoRetire: true,
+//				},
+//			},
+//			expErr:  "insufficient balance",
+//			wantErr: true,
+//		},
+//		// TODO: Verify that BidPrice.Denom is in AllowAskDenom #624
+//		//{
+//		//	name: "denom not allowed",
+//		//	buyer: addr2.String(),
+//		//	orders: []*ecocredit.MsgBuy_Order{
+//		//		{
+//		//			Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[0]}},
+//		//			Quantity:          "1.0",
+//		//			BidPrice:          &bidPrice3,
+//		//			DisableAutoRetire: true,
+//		//		},
+//		//		{
+//		//			Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[1]}},
+//		//			Quantity:          "1.0",
+//		//			BidPrice:          &bidPrice3,
+//		//			DisableAutoRetire: true,
+//		//		},
+//		//	},
+//		//	expErr: "denom not allowed",
+//		//	wantErr: true,
+//		//},
+//		{
+//			name:  "valid request",
+//			buyer: addr2.String(),
+//			orders: []*ecocredit.MsgBuy_Order{
+//				{
+//					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[0]}},
+//					Quantity:          "1.0",
+//					BidPrice:          &bidPrice1,
+//					DisableAutoRetire: true,
+//				},
+//				{
+//					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[1]}},
+//					Quantity:          "1.0",
+//					BidPrice:          &bidPrice1,
+//					DisableAutoRetire: true,
+//				},
+//			},
+//			expErr:  "",
+//			wantErr: false,
+//			partial: false,
+//			expCoinBalance: sdk.Coin{
+//				Denom:  "stake",
+//				Amount: sdk.NewInt(1000000),
+//			},
+//			expCreditBalance: &ecocredit.QueryBalanceResponse{TradableAmount: "2", RetiredAmount: "0"},
+//		},
+//		{
+//			name:  "valid request - partial fill",
+//			buyer: addr2.String(),
+//			orders: []*ecocredit.MsgBuy_Order{
+//				{
+//					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[2]}},
+//					Quantity:          "0.5",
+//					BidPrice:          &bidPrice1,
+//					DisableAutoRetire: true,
+//				},
+//				{
+//					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[3]}},
+//					Quantity:          "0.5",
+//					BidPrice:          &bidPrice1,
+//					DisableAutoRetire: true,
+//				},
+//			},
+//			expErr:  "",
+//			wantErr: false,
+//			partial: true,
+//			expCoinBalance: sdk.Coin{
+//				Denom:  "stake",
+//				Amount: sdk.NewInt(0),
+//			},
+//			expCreditBalance: &ecocredit.QueryBalanceResponse{TradableAmount: "3", RetiredAmount: "0"},
+//		},
+//	}
+//
+//	for _, tc := range testCases {
+//		tc := tc
+//
+//		s.Run(tc.name, func() {
+//			require := s.Require()
+//
+//			// get buyer coin balance before
+//			coinBalanceBefore := s.bankKeeper.GetBalance(s.sdkCtx, addr2, "stake")
+//
+//			// get buyer credit balance before
+//			creditBalanceBefore, _ := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
+//				Account:    addr2.String(),
+//				BatchDenom: createBatchRes.BatchDenom,
+//			})
+//
+//			// process buy orders
+//			res, err := s.msgClient.Buy(s.ctx, &ecocredit.MsgBuy{
+//				Buyer:  tc.buyer,
+//				Orders: tc.orders,
+//			})
+//
+//			// get buyer coin balance after
+//			coinBalanceAfter := s.bankKeeper.GetBalance(s.sdkCtx, addr2, "stake")
+//
+//			// get buyer credit balance after
+//			creditBalanceAfter, _ := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
+//				Account:    addr2.String(),
+//				BatchDenom: createBatchRes.BatchDenom,
+//			})
+//
+//			// query first sell order
+//			sellResponse1, sellError1 := s.queryClient.SellOrder(s.ctx, &ecocredit.QuerySellOrderRequest{
+//				SellOrderId: tc.orders[0].Selection.GetSellOrderId(),
+//			})
+//
+//			// query second sell order
+//			sellResponse2, sellError2 := s.queryClient.SellOrder(s.ctx, &ecocredit.QuerySellOrderRequest{
+//				SellOrderId: tc.orders[1].Selection.GetSellOrderId(),
+//			})
+//
+//			if tc.wantErr {
+//				require.Error(err)
+//				require.Contains(err.Error(), tc.expErr)
+//				require.Equal(coinBalanceBefore, coinBalanceAfter)
+//				require.Equal(creditBalanceBefore, creditBalanceAfter)
+//			} else {
+//				require.NoError(err)
+//				require.NotNil(res.BuyOrderIds)
+//
+//				require.Equal(tc.expCoinBalance, coinBalanceAfter)
+//				require.Equal(tc.expCreditBalance, creditBalanceAfter)
+//
+//				if tc.partial {
+//					require.NotNil(sellResponse1)
+//					require.NotNil(sellResponse2)
+//					require.NoError(sellError1)
+//					require.NoError(sellError2)
+//				} else {
+//					require.Nil(sellResponse1)
+//					require.Nil(sellResponse2)
+//					require.Error(sellError1)
+//					require.Error(sellError2)
+//				}
+//			}
+//		})
+//	}
+//}
+//
+//func (s *IntegrationTestSuite) TestScenarioAllowAskDenom() {
+//	addr1 := s.signers[3].String()
+//
+//	// TODO: Verify governance module address for AllowAskDenom #624
+//	//rootAddress := s.accountKeeper.GetModuleAddress(govtypes.ModuleName).String()
+//
+//	// add ask denom
+//	testCases := []struct {
+//		name         string
+//		rootAddress  string
+//		denom        string
+//		displayDenom string
+//		exponent     uint32
+//		expErr       string
+//		wantErr      bool
+//	}{
+//		{
+//			name:         "unauthorized address",
+//			rootAddress:  addr1,
+//			denom:        "utoken",
+//			displayDenom: "token",
+//			exponent:     6,
+//			expErr:       "unauthorized",
+//			wantErr:      true,
+//		},
+//		// TODO: Verify governance module address for AllowAskDenom #624
+//		//{
+//		//	name: "valid request",
+//		//	rootAddress: rootAddress,
+//		//	denom: "utoken",
+//		//	displayDenom: "token",
+//		//	exponent: 6,
+//		//	expErr: "",
+//		//	wantErr: false,
+//		//},
+//	}
+//
+//	for _, tc := range testCases {
+//		tc := tc
+//
+//		s.Run(tc.name, func() {
+//			require := s.Require()
+//
+//			res, err := s.msgClient.AllowAskDenom(s.ctx, &ecocredit.MsgAllowAskDenom{
+//				RootAddress:  tc.rootAddress,
+//				Denom:        tc.denom,
+//				DisplayDenom: tc.displayDenom,
+//				Exponent:     tc.exponent,
+//			})
+//
+//			if tc.wantErr {
+//				require.Error(err)
+//				require.Contains(err.Error(), tc.expErr)
+//			} else {
+//				require.NoError(err)
+//				require.NotNil(res)
+//			}
+//		})
+//	}
+//}
 
-	// create credit class and issue credits to addr1
-	_, createBatchRes := s.createClassAndIssueBatch(addr1, "2.0")
-
-	askPrice1 := sdk.NewInt64Coin("stake", 1000000)
-	// TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
-	//askPrice2 := sdk.NewInt64Coin("token", 1000000)
-
-	// create sell orders
-	testCases := []struct {
-		name    string
-		owner   string
-		orders  []*ecocredit.MsgSell_Order
-		expErr  string
-		wantErr bool
-	}{
-		{
-			name:  "insufficient credit balance - batch denom",
-			owner: addr1,
-			orders: []*ecocredit.MsgSell_Order{
-				{
-					BatchDenom:        "A00-00000000-00000000-000",
-					Quantity:          "1.0",
-					AskPrice:          &askPrice1,
-					DisableAutoRetire: true,
-				},
-				{
-					BatchDenom:        "A00-00000000-00000000-000",
-					Quantity:          "1.0",
-					AskPrice:          &askPrice1,
-					DisableAutoRetire: true,
-				},
-			},
-			expErr:  "insufficient credit balance",
-			wantErr: true,
-		},
-		{
-			name:  "insufficient credit balance - quantity",
-			owner: addr1,
-			orders: []*ecocredit.MsgSell_Order{
-				{
-					BatchDenom:        createBatchRes.BatchDenom,
-					Quantity:          "99",
-					AskPrice:          &askPrice1,
-					DisableAutoRetire: true,
-				},
-				{
-					BatchDenom:        createBatchRes.BatchDenom,
-					Quantity:          "99",
-					AskPrice:          &askPrice1,
-					DisableAutoRetire: true,
-				},
-			},
-			expErr:  "insufficient credit balance",
-			wantErr: true,
-		},
-		// TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
-		//{
-		//	name: "denom not allowed",
-		//	owner: addr1,
-		//	orders: []*ecocredit.MsgSell_Order{
-		//		{
-		//			BatchDenom:        createBatchRes.BatchDenom,
-		//			Quantity:          "1.0",
-		//			AskPrice:          &askPrice2,
-		//			DisableAutoRetire: true,
-		//		},
-		//		{
-		//			BatchDenom:        createBatchRes.BatchDenom,
-		//			Quantity:          "1.0",
-		//			AskPrice:          &askPrice2,
-		//			DisableAutoRetire: true,
-		//		},
-		//	},
-		//	expErr: "denom not allowed",
-		//	wantErr: true,
-		//},
-		{
-			name:  "valid request",
-			owner: addr1,
-			orders: []*ecocredit.MsgSell_Order{
-				{
-					BatchDenom:        createBatchRes.BatchDenom,
-					Quantity:          "1.0",
-					AskPrice:          &askPrice1,
-					DisableAutoRetire: true,
-				},
-				{
-					BatchDenom:        createBatchRes.BatchDenom,
-					Quantity:          "1.0",
-					AskPrice:          &askPrice1,
-					DisableAutoRetire: true,
-				},
-			},
-			expErr:  "",
-			wantErr: false,
-		},
-	}
-
-	for _, tc := range testCases {
-		tc := tc
-
-		s.Run(tc.name, func() {
-			require := s.Require()
-
-			res, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
-				Owner:  tc.owner,
-				Orders: tc.orders,
-			})
-
-			if tc.wantErr {
-				require.Error(err)
-				require.Contains(err.Error(), tc.expErr)
-			} else {
-				require.NoError(err)
-				require.NotNil(res.SellOrderIds)
-
-				// query first sell order
-				_, sellError1 := s.queryClient.SellOrder(s.ctx, &ecocredit.QuerySellOrderRequest{
-					SellOrderId: res.SellOrderIds[0],
-				})
-
-				// query second sell order
-				_, sellError2 := s.queryClient.SellOrder(s.ctx, &ecocredit.QuerySellOrderRequest{
-					SellOrderId: res.SellOrderIds[1],
-				})
-
-				require.NoError(sellError1)
-				require.NoError(sellError2)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
-	addr1 := s.signers[3].String()
-	addr2 := s.signers[4].String()
-
-	// create credit class and issue credits to addr1
-	_, createBatchRes := s.createClassAndIssueBatch(addr1, "2.0")
-
-	askPrice1 := sdk.NewInt64Coin("stake", 2000000)
-	// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
-	//askPrice2 := sdk.NewInt64Coin("token", 2000000)
-
-	// create sell order
-	sellRes, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
-		Owner: addr1,
-		Orders: []*ecocredit.MsgSell_Order{
-			{
-				BatchDenom:        createBatchRes.BatchDenom,
-				Quantity:          "1.0",
-				AskPrice:          &askPrice1,
-				DisableAutoRetire: true,
-			},
-			{
-				BatchDenom:        createBatchRes.BatchDenom,
-				Quantity:          "1.0",
-				AskPrice:          &askPrice1,
-				DisableAutoRetire: true,
-			},
-		},
-	})
-	s.Require().NoError(err)
-
-	// update sell orders
-	testCases := []struct {
-		name    string
-		owner   string
-		updates []*ecocredit.MsgUpdateSellOrders_Update
-		expErr  string
-		wantErr bool
-	}{
-		{
-			name:  "invalid sell order",
-			owner: addr1,
-			updates: []*ecocredit.MsgUpdateSellOrders_Update{
-				{
-					SellOrderId:       99,
-					NewQuantity:       "1.0",
-					NewAskPrice:       &askPrice1,
-					DisableAutoRetire: true,
-				},
-				{
-					SellOrderId:       100,
-					NewQuantity:       "1.0",
-					NewAskPrice:       &askPrice1,
-					DisableAutoRetire: true,
-				},
-			},
-			expErr:  "invalid sell order",
-			wantErr: true,
-		},
-		{
-			name:  "unauthorized",
-			owner: addr2,
-			updates: []*ecocredit.MsgUpdateSellOrders_Update{
-				{
-					SellOrderId:       sellRes.SellOrderIds[0],
-					NewQuantity:       "1.0",
-					NewAskPrice:       &askPrice1,
-					DisableAutoRetire: true,
-				},
-				{
-					SellOrderId:       sellRes.SellOrderIds[1],
-					NewQuantity:       "1.0",
-					NewAskPrice:       &askPrice1,
-					DisableAutoRetire: true,
-				},
-			},
-			expErr:  "unauthorized",
-			wantErr: true,
-		},
-		{
-			name:  "insufficient credit balance",
-			owner: addr1,
-			updates: []*ecocredit.MsgUpdateSellOrders_Update{
-				{
-					SellOrderId:       sellRes.SellOrderIds[0],
-					NewQuantity:       "99",
-					NewAskPrice:       &askPrice1,
-					DisableAutoRetire: true,
-				},
-				{
-					SellOrderId:       sellRes.SellOrderIds[1],
-					NewQuantity:       "99",
-					NewAskPrice:       &askPrice1,
-					DisableAutoRetire: true,
-				},
-			},
-			expErr:  "insufficient credit balance",
-			wantErr: true,
-		},
-		// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
-		//{
-		//	name: "denom not allowed",
-		//	owner: addr1,
-		//	updates: []*ecocredit.MsgUpdateSellOrders_Update{
-		//		{
-		//			SellOrderId:       sellRes.SellOrderIds[0],
-		//			NewQuantity:       "1.0",
-		//			NewAskPrice:       &askPrice2,
-		//			DisableAutoRetire: true,
-		//		},
-		//		{
-		//			SellOrderId:       sellRes.SellOrderIds[1],
-		//			NewQuantity:       "1.0",
-		//			NewAskPrice:       &askPrice2,
-		//			DisableAutoRetire: true,
-		//		},
-		//	},
-		//	expErr: "denom not allowed",
-		//	wantErr: true,
-		//},
-		{
-			name:  "valid request",
-			owner: addr1,
-			updates: []*ecocredit.MsgUpdateSellOrders_Update{
-				{
-					SellOrderId:       sellRes.SellOrderIds[0],
-					NewQuantity:       "1.0",
-					NewAskPrice:       &askPrice1,
-					DisableAutoRetire: true,
-				},
-				{
-					SellOrderId:       sellRes.SellOrderIds[1],
-					NewQuantity:       "1.0",
-					NewAskPrice:       &askPrice1,
-					DisableAutoRetire: true,
-				},
-			},
-			expErr:  "",
-			wantErr: false,
-		},
-	}
-
-	for _, tc := range testCases {
-		tc := tc
-
-		s.Run(tc.name, func() {
-			require := s.Require()
-
-			_, err := s.msgClient.UpdateSellOrders(s.ctx, &ecocredit.MsgUpdateSellOrders{
-				Owner:   tc.owner,
-				Updates: tc.updates,
-			})
-
-			if tc.wantErr {
-				require.Error(err)
-				require.Contains(err.Error(), tc.expErr)
-			} else {
-				require.NoError(err)
-
-				// query first sell order
-				sellResponse1, sellError1 := s.queryClient.SellOrder(s.ctx, &ecocredit.QuerySellOrderRequest{
-					SellOrderId: tc.updates[0].SellOrderId,
-				})
-
-				// query second sell order
-				sellResponse2, sellError2 := s.queryClient.SellOrder(s.ctx, &ecocredit.QuerySellOrderRequest{
-					SellOrderId: tc.updates[1].SellOrderId,
-				})
-
-				require.NoError(sellError1)
-				require.NoError(sellError2)
-				require.Equal(tc.updates[0].NewAskPrice, sellResponse1.SellOrder.AskPrice)
-				require.Equal(tc.updates[1].NewAskPrice, sellResponse2.SellOrder.AskPrice)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
-	addr1 := s.signers[3]
-	addr2 := s.signers[4]
-
-	// create credit class and issue credits to addr1
-	_, createBatchRes := s.createClassAndIssueBatch(addr1.String(), "4.0")
-
-	bidPrice1 := sdk.NewInt64Coin("stake", 1000000)
-	bidPrice2 := sdk.NewInt64Coin("stake", 9999999)
-	// TODO: Verify that BidPrice.Denom is in AllowAskDenom #624
-	//bidPrice3 := sdk.NewInt64Coin("token", 1000000)
-
-	// fund buyer account
-	s.Require().NoError(s.fundAccount(addr2, sdk.NewCoins(sdk.NewInt64Coin("stake", 3000000))))
-
-	// create sell orders
-	sellRes, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
-		Owner: addr1.String(),
-		Orders: []*ecocredit.MsgSell_Order{
-			{
-				BatchDenom:        createBatchRes.BatchDenom,
-				Quantity:          "1.0",
-				AskPrice:          &bidPrice1,
-				DisableAutoRetire: true,
-			},
-			{
-				BatchDenom:        createBatchRes.BatchDenom,
-				Quantity:          "1.0",
-				AskPrice:          &bidPrice1,
-				DisableAutoRetire: true,
-			},
-			{
-				BatchDenom:        createBatchRes.BatchDenom,
-				Quantity:          "1.0",
-				AskPrice:          &bidPrice1,
-				DisableAutoRetire: true,
-			},
-			{
-				BatchDenom:        createBatchRes.BatchDenom,
-				Quantity:          "1.0",
-				AskPrice:          &bidPrice1,
-				DisableAutoRetire: true,
-			},
-		},
-	})
-	s.Require().NoError(err)
-
-	// process buy orders
-	testCases := []struct {
-		name             string
-		buyer            string
-		orders           []*ecocredit.MsgBuy_Order
-		expErr           string
-		wantErr          bool
-		partial          bool
-		expCoinBalance   sdk.Coin
-		expCreditBalance *ecocredit.QueryBalanceResponse
-	}{
-		{
-			name:  "invalid sell order",
-			buyer: addr2.String(),
-			orders: []*ecocredit.MsgBuy_Order{
-				{
-					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: 99}},
-					Quantity:          "1.0",
-					BidPrice:          &bidPrice1,
-					DisableAutoRetire: true,
-				},
-				{
-					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: 100}},
-					Quantity:          "1.0",
-					BidPrice:          &bidPrice1,
-					DisableAutoRetire: true,
-				},
-			},
-			expErr:  "not found",
-			wantErr: true,
-		},
-		{
-			name:  "insufficient coin balance - quantity",
-			buyer: addr2.String(),
-			orders: []*ecocredit.MsgBuy_Order{
-				{
-					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[0]}},
-					Quantity:          "99.99",
-					BidPrice:          &bidPrice1,
-					DisableAutoRetire: true,
-				},
-				{
-					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[1]}},
-					Quantity:          "99.99",
-					BidPrice:          &bidPrice1,
-					DisableAutoRetire: true,
-				},
-			},
-			expErr:  "insufficient balance",
-			wantErr: true,
-		},
-		{
-			name:  "insufficient coin balance - bid price",
-			buyer: addr2.String(),
-			orders: []*ecocredit.MsgBuy_Order{
-				{
-					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[0]}},
-					Quantity:          "1.0",
-					BidPrice:          &bidPrice2,
-					DisableAutoRetire: true,
-				},
-				{
-					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[1]}},
-					Quantity:          "1.0",
-					BidPrice:          &bidPrice2,
-					DisableAutoRetire: true,
-				},
-			},
-			expErr:  "insufficient balance",
-			wantErr: true,
-		},
-		// TODO: Verify that BidPrice.Denom is in AllowAskDenom #624
-		//{
-		//	name: "denom not allowed",
-		//	buyer: addr2.String(),
-		//	orders: []*ecocredit.MsgBuy_Order{
-		//		{
-		//			Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[0]}},
-		//			Quantity:          "1.0",
-		//			BidPrice:          &bidPrice3,
-		//			DisableAutoRetire: true,
-		//		},
-		//		{
-		//			Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[1]}},
-		//			Quantity:          "1.0",
-		//			BidPrice:          &bidPrice3,
-		//			DisableAutoRetire: true,
-		//		},
-		//	},
-		//	expErr: "denom not allowed",
-		//	wantErr: true,
-		//},
-		{
-			name:  "valid request",
-			buyer: addr2.String(),
-			orders: []*ecocredit.MsgBuy_Order{
-				{
-					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[0]}},
-					Quantity:          "1.0",
-					BidPrice:          &bidPrice1,
-					DisableAutoRetire: true,
-				},
-				{
-					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[1]}},
-					Quantity:          "1.0",
-					BidPrice:          &bidPrice1,
-					DisableAutoRetire: true,
-				},
-			},
-			expErr:  "",
-			wantErr: false,
-			partial: false,
-			expCoinBalance: sdk.Coin{
-				Denom:  "stake",
-				Amount: sdk.NewInt(1000000),
-			},
-			expCreditBalance: &ecocredit.QueryBalanceResponse{TradableAmount: "2", RetiredAmount: "0"},
-		},
-		{
-			name:  "valid request - partial fill",
-			buyer: addr2.String(),
-			orders: []*ecocredit.MsgBuy_Order{
-				{
-					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[2]}},
-					Quantity:          "0.5",
-					BidPrice:          &bidPrice1,
-					DisableAutoRetire: true,
-				},
-				{
-					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[3]}},
-					Quantity:          "0.5",
-					BidPrice:          &bidPrice1,
-					DisableAutoRetire: true,
-				},
-			},
-			expErr:  "",
-			wantErr: false,
-			partial: true,
-			expCoinBalance: sdk.Coin{
-				Denom:  "stake",
-				Amount: sdk.NewInt(0),
-			},
-			expCreditBalance: &ecocredit.QueryBalanceResponse{TradableAmount: "3", RetiredAmount: "0"},
-		},
-	}
-
-	for _, tc := range testCases {
-		tc := tc
-
-		s.Run(tc.name, func() {
-			require := s.Require()
-
-			// get buyer coin balance before
-			coinBalanceBefore := s.bankKeeper.GetBalance(s.sdkCtx, addr2, "stake")
-
-			// get buyer credit balance before
-			creditBalanceBefore, _ := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
-				Account:    addr2.String(),
-				BatchDenom: createBatchRes.BatchDenom,
-			})
-
-			// process buy orders
-			res, err := s.msgClient.Buy(s.ctx, &ecocredit.MsgBuy{
-				Buyer:  tc.buyer,
-				Orders: tc.orders,
-			})
-
-			// get buyer coin balance after
-			coinBalanceAfter := s.bankKeeper.GetBalance(s.sdkCtx, addr2, "stake")
-
-			// get buyer credit balance after
-			creditBalanceAfter, _ := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
-				Account:    addr2.String(),
-				BatchDenom: createBatchRes.BatchDenom,
-			})
-
-			// query first sell order
-			sellResponse1, sellError1 := s.queryClient.SellOrder(s.ctx, &ecocredit.QuerySellOrderRequest{
-				SellOrderId: tc.orders[0].Selection.GetSellOrderId(),
-			})
-
-			// query second sell order
-			sellResponse2, sellError2 := s.queryClient.SellOrder(s.ctx, &ecocredit.QuerySellOrderRequest{
-				SellOrderId: tc.orders[1].Selection.GetSellOrderId(),
-			})
-
-			if tc.wantErr {
-				require.Error(err)
-				require.Contains(err.Error(), tc.expErr)
-				require.Equal(coinBalanceBefore, coinBalanceAfter)
-				require.Equal(creditBalanceBefore, creditBalanceAfter)
-			} else {
-				require.NoError(err)
-				require.NotNil(res.BuyOrderIds)
-
-				require.Equal(tc.expCoinBalance, coinBalanceAfter)
-				require.Equal(tc.expCreditBalance, creditBalanceAfter)
-
-				if tc.partial {
-					require.NotNil(sellResponse1)
-					require.NotNil(sellResponse2)
-					require.NoError(sellError1)
-					require.NoError(sellError2)
-				} else {
-					require.Nil(sellResponse1)
-					require.Nil(sellResponse2)
-					require.Error(sellError1)
-					require.Error(sellError2)
-				}
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestScenarioAllowAskDenom() {
-	addr1 := s.signers[3].String()
-
-	// TODO: Verify governance module address for AllowAskDenom #624
-	//rootAddress := s.accountKeeper.GetModuleAddress(govtypes.ModuleName).String()
-
-	// add ask denom
-	testCases := []struct {
-		name         string
-		rootAddress  string
-		denom        string
-		displayDenom string
-		exponent     uint32
-		expErr       string
-		wantErr      bool
-	}{
-		{
-			name:         "unauthorized address",
-			rootAddress:  addr1,
-			denom:        "utoken",
-			displayDenom: "token",
-			exponent:     6,
-			expErr:       "unauthorized",
-			wantErr:      true,
-		},
-		// TODO: Verify governance module address for AllowAskDenom #624
-		//{
-		//	name: "valid request",
-		//	rootAddress: rootAddress,
-		//	denom: "utoken",
-		//	displayDenom: "token",
-		//	exponent: 6,
-		//	expErr: "",
-		//	wantErr: false,
-		//},
-	}
-
-	for _, tc := range testCases {
-		tc := tc
-
-		s.Run(tc.name, func() {
-			require := s.Require()
-
-			res, err := s.msgClient.AllowAskDenom(s.ctx, &ecocredit.MsgAllowAskDenom{
-				RootAddress:  tc.rootAddress,
-				Denom:        tc.denom,
-				DisplayDenom: tc.displayDenom,
-				Exponent:     tc.exponent,
-			})
-
-			if tc.wantErr {
-				require.Error(err)
-				require.Contains(err.Error(), tc.expErr)
-			} else {
-				require.NoError(err)
-				require.NotNil(res)
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) createClassAndIssueBatch(recipient string, tradableCredits string) (*ecocredit.MsgCreateClassResponse, *ecocredit.MsgCreateBatchResponse) {
+func (s *IntegrationTestSuite) createClassAndIssueBatch(recipient string, tradableCredits string) (*ecocredit.MsgCreateClassResponse, *ecocredit.MsgCreateProjectResponse, *ecocredit.MsgCreateBatchResponse) {
 	admin := s.signers[0]
 	issuer1 := s.signers[1].String()
 	issuer2 := s.signers[2].String()
@@ -689,5 +692,258 @@ func (s *IntegrationTestSuite) createClassAndIssueBatch(recipient string, tradab
 	})
 	s.Require().NoError(err)
 
-	return createClassRes, createBatchRes
+	return createClassRes, projectRes, createBatchRes
+}
+
+func (s *IntegrationTestSuite) TestCreateBasket() {
+	server := s.msgClient
+	require := s.Require()
+	addr := s.signers[0]
+
+	class, project, batch := s.createClassAndIssueBatch(addr.String(), "9000000000000")
+
+	testCases := []struct {
+		name   string
+		msg    *ecocredit.MsgCreateBasket
+		expErr bool
+		errMsg string
+	}{
+		{
+			name: "valid - no basket criteria",
+			msg: &ecocredit.MsgCreateBasket{
+				Curator:           addr.String(),
+				Name:              "My Very Cool Basket",
+				DisplayName:       "COOL",
+				Exponent:          1,
+				BasketCriteria:    nil,
+				DisableAutoRetire: false,
+				AllowPicking:      false,
+			},
+		},
+		{
+			name: "valid - with all possible scalar criteria",
+			msg: &ecocredit.MsgCreateBasket{
+				Curator:     addr.String(),
+				Name:        "basket23095",
+				DisplayName: "basket23095",
+				Exponent:    1,
+				BasketCriteria: &ecocredit.Filter{
+					Sum: &ecocredit.Filter_And_{
+						And: &ecocredit.Filter_And{
+							Filters: []*ecocredit.Filter{
+								{Sum: &ecocredit.Filter_CreditTypeName{CreditTypeName: "carbon"}},
+								{Sum: &ecocredit.Filter_ClassId{ClassId: class.ClassId}},
+								{Sum: &ecocredit.Filter_BatchDenom{BatchDenom: batch.BatchDenom}},
+								{Sum: &ecocredit.Filter_ProjectId{ProjectId: project.ProjectId}},
+							}}}},
+				DisableAutoRetire: false,
+				AllowPicking:      false,
+			},
+		},
+		{
+			name: "invalid - basket with name already exists",
+			msg: &ecocredit.MsgCreateBasket{
+				Curator:           addr.String(),
+				Name:              "My Very Cool Basket",
+				DisplayName:       "COOL2",
+				Exponent:          1,
+				BasketCriteria:    nil,
+				DisableAutoRetire: false,
+				AllowPicking:      false,
+			},
+			expErr: true,
+			errMsg: "basket with name My Very Cool Basket already exists",
+		},
+		{
+			name: "invalid - bad credit type in filter",
+			msg: &ecocredit.MsgCreateBasket{
+				Curator:           addr.String(),
+				Name:              "basket203958",
+				DisplayName:       "basket203958",
+				Exponent:          1,
+				BasketCriteria:    &ecocredit.Filter{Sum: &ecocredit.Filter_CreditTypeName{CreditTypeName: "foobar"}},
+				DisableAutoRetire: false,
+				AllowPicking:      false,
+			},
+			expErr: true,
+			errMsg: "credit type foobar not found",
+		},
+		{
+			name: "invalid - bad class ID",
+			msg: &ecocredit.MsgCreateBasket{
+				Curator:           addr.String(),
+				Name:              "basket3",
+				DisplayName:       "bb3",
+				Exponent:          1,
+				BasketCriteria:    &ecocredit.Filter{Sum: &ecocredit.Filter_ClassId{ClassId: "Z15"}},
+				DisableAutoRetire: false,
+				AllowPicking:      false,
+			},
+			expErr: true,
+			errMsg: "credit class with id Z15 not found",
+		},
+		{
+			name: "invalid - bad batch denom",
+			msg: &ecocredit.MsgCreateBasket{
+				Curator:           addr.String(),
+				Name:              "basket4",
+				DisplayName:       "bb4",
+				Exponent:          1,
+				BasketCriteria:    &ecocredit.Filter{Sum: &ecocredit.Filter_BatchDenom{BatchDenom: "A00-00000000-00000000-000"}},
+				DisableAutoRetire: false,
+				AllowPicking:      false,
+			},
+			expErr: true,
+			errMsg: "batch with denom A00-00000000-00000000-000 not found",
+		},
+		{
+			name: "invalid - bad project ID",
+			msg: &ecocredit.MsgCreateBasket{
+				Curator:           addr.String(),
+				Name:              "basket5",
+				DisplayName:       "bb5",
+				Exponent:          1,
+				BasketCriteria:    &ecocredit.Filter{Sum: &ecocredit.Filter_ProjectId{ProjectId: "F00"}},
+				DisableAutoRetire: false,
+				AllowPicking:      false,
+			},
+			expErr: true,
+			errMsg: "project with id F00 not found",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			res, err := server.CreateBasket(s.ctx, tc.msg)
+			if tc.expErr {
+				require.Error(err)
+				require.Nil(res)
+				require.Contains(err.Error(), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.NotNil(res)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestAddToBasket() {
+	require := s.Require()
+	server := s.msgClient
+	admin := s.signers[0]
+
+	class, _, batch := s.createClassAndIssueBatch(admin.String(), "1000000000")
+	class2, _, batch2 := s.createClassAndIssueBatch(admin.String(), "50000050500")
+
+	testCases := []struct {
+		name   string
+		basket *ecocredit.MsgCreateBasket
+		msg    *ecocredit.MsgAddToBasket
+		expErr bool
+		errMsg string
+	}{
+		{
+			name: "valid - simple basket 1 basket token : 1 basket credit",
+			basket: &ecocredit.MsgCreateBasket{
+				Curator:        admin.String(),
+				Name:           "FooBarBasket",
+				BasketCriteria: &ecocredit.Filter{Sum: &ecocredit.Filter_BatchDenom{BatchDenom: batch.BatchDenom}},
+				DisplayName:    "FBB",
+				Exponent:       1,
+			},
+			msg: &ecocredit.MsgAddToBasket{
+				Owner:       admin.String(),
+				BasketDenom: "FooBarBasket",
+				Credits:     []*ecocredit.BasketCredit{{BatchDenom: batch.BatchDenom, TradableAmount: "10"}},
+			},
+		},
+		{
+			name:   "invalid - insufficient credits",
+			basket: nil, // using the basket from previous test
+			msg: &ecocredit.MsgAddToBasket{
+				Owner:       admin.String(),
+				BasketDenom: "FooBarBasket",
+				Credits:     []*ecocredit.BasketCredit{{BatchDenom: batch.BatchDenom, TradableAmount: "1000000000000"}},
+			},
+			expErr: true,
+			errMsg: "insufficient credit balance",
+		},
+		{
+			name:   "invalid - does not match filter",
+			basket: nil, // using the basket from previous test
+			msg: &ecocredit.MsgAddToBasket{
+				Owner:       admin.String(),
+				BasketDenom: "FooBarBasket",
+				Credits:     []*ecocredit.BasketCredit{{BatchDenom: batch2.BatchDenom, TradableAmount: "10"}},
+			},
+			expErr: true,
+			errMsg: fmt.Sprintf("basket filter requires batch denom %s, but a credit with batch denom %s was given", batch.BatchDenom, batch2.BatchDenom),
+		},
+		{
+			name: "valid - OR filter",
+			basket: &ecocredit.MsgCreateBasket{
+				Curator:     admin.String(),
+				Name:        "basketI",
+				DisplayName: "bask",
+				Exponent:    5,
+				BasketCriteria: &ecocredit.Filter{Sum: &ecocredit.Filter_Or_{
+					Or: &ecocredit.Filter_Or{Filters: []*ecocredit.Filter{
+						{Sum: &ecocredit.Filter_ClassId{ClassId: class.ClassId}},
+						{Sum: &ecocredit.Filter_ClassId{ClassId: class2.ClassId}}}}}},
+				DisableAutoRetire: false,
+				AllowPicking:      false,
+			},
+			msg: &ecocredit.MsgAddToBasket{
+				Owner:       admin.String(),
+				BasketDenom: "basketI",
+				Credits: []*ecocredit.BasketCredit{
+					{BatchDenom: batch.BatchDenom, TradableAmount: "2"},
+					{BatchDenom: batch2.BatchDenom, TradableAmount: "2"}},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			if tc.basket != nil {
+				res, err := server.CreateBasket(s.ctx, tc.basket)
+				require.NoError(err)
+				require.NotNil(res)
+			}
+
+			res2, err := server.AddToBasket(s.ctx, tc.msg)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(err.Error(), tc.errMsg)
+			} else {
+				require.NoError(err)
+				require.NotNil(res2)
+
+				actualTokensBack, err := math.NewPositiveFixedDecFromString(res2.AmountReceived, 6)
+				require.NoError(err)
+
+				creditsDeposited := math.NewDecFromInt64(0)
+				for _, credit := range tc.msg.Credits {
+					dec, err := math.NewDecFromString(credit.TradableAmount)
+					require.NoError(err)
+					creditsDeposited, err = creditsDeposited.Add(dec)
+					require.NoError(err)
+				}
+
+				var val float64 = 10
+				for i := 1; uint32(i) <= tc.basket.Exponent; i++ {
+					val = math2.Pow(10, float64(i))
+				}
+				valStr := fmt.Sprintf("%f", val)
+				multiplierDec, err := math.NewDecFromString(valStr)
+				require.NoError(err)
+
+				tokensExpected, err := creditsDeposited.Mul(multiplierDec)
+				require.NoError(err)
+
+				// 0 == equals
+				require.Equal(0, tokensExpected.Cmp(actualTokensBack))
+			}
+		})
+	}
 }

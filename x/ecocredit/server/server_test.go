@@ -59,7 +59,7 @@ func setup(t *testing.T) (*server.FixtureFactory, paramstypes.Subspace, bankkeep
 
 	maccPerms := map[string][]string{
 		minttypes.ModuleName:      {authtypes.Minter},
-		ecocredittypes.ModuleName: {authtypes.Burner},
+		ecocredittypes.ModuleName: {authtypes.Minter, authtypes.Burner},
 	}
 
 	accountKeeper := authkeeper.NewAccountKeeper(

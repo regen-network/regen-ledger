@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/types"
-	_ "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/store/types"
+	sdktypes "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/orm"
-	sdk "github.com/regen-network/regen-ledger/types"
+	regentypes "github.com/regen-network/regen-ledger/types"
 	regenmath "github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"sort"
@@ -18,14 +18,25 @@ import (
 
 // CreateBasket creates a basket keyed by a given basketDenom.
 func (s serverImpl) CreateBasket(goCtx context.Context, req *ecocredit.MsgCreateBasket) (*ecocredit.MsgCreateBasketResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx := regentypes.UnwrapSDKContext(goCtx)
 
-	if err := s.validateFilterData(ctx, req.BasketCriteria); err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("invalid basket filter: %s", err.Error())
+	// construct the basket denom - ecocredit:basketName
+	basketDenom := req.Name
+
+	// TODO(Tyler): should we enforce unique basket names? or do some sort of sequence thing?
+	// check if a basket with this name already exists
+	var basket ecocredit.Basket
+	err := s.basketTable.GetOne(ctx, orm.RowID(basketDenom), &basket)
+	if err == nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("basket with name %s already exists", req.Name)
 	}
 
-	// construct the basket denom - ecocredit:curatorAddress:basketName
-	basketDenom := constructBasketDenom(req.Name)
+	// TODO(Tyler): allow no basket criteria???
+	if req.BasketCriteria != nil {
+		if err := s.validateFilterData(ctx, req.BasketCriteria); err != nil {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("invalid basket filter: %s", err.Error())
+		}
+	}
 
 	if err := s.basketTable.Create(ctx, &ecocredit.Basket{
 		BasketDenom:       basketDenom,
@@ -46,10 +57,10 @@ func (s serverImpl) CreateBasket(goCtx context.Context, req *ecocredit.MsgCreate
 // AddToBasket adds ecocredits to the basket if they comply with the basket's filter
 // then mints and sends basket tokens to the depositor.
 func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBasket) (*ecocredit.MsgAddToBasketResponse, error) {
-	ctx := types.UnwrapSDKContext(goCtx)
-	regenCtx := sdk.UnwrapSDKContext(goCtx)
+	ctx := sdktypes.UnwrapSDKContext(goCtx)
+	regenCtx := regentypes.UnwrapSDKContext(goCtx)
 	store := ctx.KVStore(s.storeKey)
-	owner, _ := types.AccAddressFromBech32(req.Owner)
+	owner, _ := sdktypes.AccAddressFromBech32(req.Owner)
 
 	// get basket info
 	var basket ecocredit.Basket
@@ -90,9 +101,12 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 			return nil, err
 		}
 
-		// check that the credits meet the filter
-		if _, err = checkFilters([]*ecocredit.Filter{basket.BasketCriteria}, *classInfo, batchInfo, *projectInfo, req.Owner); err != nil {
-			return nil, err
+		// TODO(Tyler): can filter be nil??
+		if basket.BasketCriteria != nil {
+			// check that the credits meet the filter
+			if _, err = checkFilters([]*ecocredit.Filter{basket.BasketCriteria}, *classInfo, batchInfo, *projectInfo, req.Owner); err != nil {
+				return nil, err
+			}
 		}
 
 		maxDec, err := s.getBatchPrecision(regenCtx, batchDenom)
@@ -143,13 +157,13 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 	}
 
 	// mint basket tokens to send to basket depositor
-	basketCoins := types.NewCoin(basket.BasketDenom, types.NewInt(basketTokensInt))
-	if err = s.bankKeeper.MintCoins(ctx, ecocredit.ModuleName, types.Coins{basketCoins}); err != nil {
+	basketCoins := sdktypes.NewCoin(basket.BasketDenom, sdktypes.NewInt(basketTokensInt))
+	if err = s.bankKeeper.MintCoins(ctx, ecocredit.ModuleName, sdktypes.Coins{basketCoins}); err != nil {
 		return nil, err
 	}
 
 	// send the basket tokens to the basket depositor
-	if err = s.bankKeeper.SendCoinsFromModuleToAccount(ctx, ecocredit.ModuleName, owner, types.Coins{basketCoins}); err != nil {
+	if err = s.bankKeeper.SendCoinsFromModuleToAccount(ctx, ecocredit.ModuleName, owner, sdktypes.Coins{basketCoins}); err != nil {
 		return nil, err
 	}
 
@@ -161,8 +175,8 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 // TODO(Tyler): the response only indicates tradable amounts. Should we add retired amounts here?
 func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTakeFromBasket) (*ecocredit.MsgTakeFromBasketResponse, error) {
 	// setup vars
-	sdkCtx := types.UnwrapSDKContext(goCtx)
-	owner, _ := types.AccAddressFromBech32(req.Owner)
+	sdkCtx := sdktypes.UnwrapSDKContext(goCtx)
+	owner, _ := sdktypes.AccAddressFromBech32(req.Owner)
 	store := sdkCtx.KVStore(s.storeKey)
 	basketDenom := basketDenomT(req.BasketDenom)
 
@@ -305,11 +319,11 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 	if err != nil {
 		return nil, err
 	}
-	basketToken := types.NewCoin(basket.BasketDenom, types.NewInt(amountI64))
-	if err = s.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, owner, ecocredit.ModuleName, types.NewCoins(basketToken)); err != nil {
+	basketToken := sdktypes.NewCoin(basket.BasketDenom, sdktypes.NewInt(amountI64))
+	if err = s.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, owner, ecocredit.ModuleName, sdktypes.NewCoins(basketToken)); err != nil {
 		return nil, err
 	}
-	if err = s.bankKeeper.BurnCoins(sdkCtx, ecocredit.ModuleName, types.NewCoins(basketToken)); err != nil {
+	if err = s.bankKeeper.BurnCoins(sdkCtx, ecocredit.ModuleName, sdktypes.NewCoins(basketToken)); err != nil {
 		return nil, err
 	}
 
@@ -325,8 +339,8 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 // PickFromBasket allows picking a specific ecocredit from a basket.
 func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPickFromBasket) (*ecocredit.MsgPickFromBasketResponse, error) {
 	// setup
-	sdkCtx := types.UnwrapSDKContext(goCtx)
-	owner, _ := types.AccAddressFromBech32(req.Owner)
+	sdkCtx := sdktypes.UnwrapSDKContext(goCtx)
+	owner, _ := sdktypes.AccAddressFromBech32(req.Owner)
 
 	// get the basket
 	var basket ecocredit.Basket
@@ -418,11 +432,11 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 			return nil, err
 		}
 		// TODO(Tyler) should we send to module then burn? or should we just send to some sort of 0 address? what to do?
-		tokenCost := types.NewCoin(basket.BasketDenom, types.NewInt(ti64))
-		if err := s.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, owner, ecocredit.ModuleName, types.NewCoins(tokenCost)); err != nil {
+		tokenCost := sdktypes.NewCoin(basket.BasketDenom, sdktypes.NewInt(ti64))
+		if err := s.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, owner, ecocredit.ModuleName, sdktypes.NewCoins(tokenCost)); err != nil {
 			return nil, err
 		}
-		if err := s.bankKeeper.BurnCoins(sdkCtx, ecocredit.ModuleName, types.NewCoins(tokenCost)); err != nil {
+		if err := s.bankKeeper.BurnCoins(sdkCtx, ecocredit.ModuleName, sdktypes.NewCoins(tokenCost)); err != nil {
 			return nil, err
 		}
 
@@ -434,7 +448,7 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 
 // validateFilterData is a recursive, stateful filter validation.
 // it ensures all filters relative to other state (classes, batches, projects, etc) in the blockchain are valid.
-func (s serverImpl) validateFilterData(ctx sdk.Context, filters ...*ecocredit.Filter) error {
+func (s serverImpl) validateFilterData(ctx regentypes.Context, filters ...*ecocredit.Filter) error {
 	for _, filter := range filters {
 		switch f := filter.Sum.(type) {
 		case *ecocredit.Filter_And_:
@@ -611,10 +625,10 @@ func checkFilters(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, ba
 
 // formatFilterError is a helper method for formatting filter errors in a repeatable fashion.
 func formatFilterError(item, want, got string) error {
-	return fmt.Errorf("basket filter requires %s %s, but a credit with %s %s was given", item, got, item, want)
+	return fmt.Errorf("basket filter requires %s %s, but a credit with %s %s was given", item, want, item, got)
 }
 
 // constructBasketDenom constructs the denom for a basket token. it takes the form of `ecocredit:basketName`
-func constructBasketDenom(name string) string {
-	return fmt.Sprintf("%s:%s", ecocredit.ModuleName, name)
+func constructBasketDenom(basketName string) string {
+	return fmt.Sprintf("%s:%s", ecocredit.ModuleName, basketName)
 }

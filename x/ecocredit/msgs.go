@@ -616,7 +616,7 @@ func (m *MsgCreateBasket) ValidateBasic() error {
 	if m.DisplayName == "" {
 		m.DisplayName = m.Name // TODO(tyler): how should we handle empty names?
 	}
-	if m.BasketCriteria != nil { // TODO(Tyler): what if no filter? should we allow filterless baskets?
+	if m.BasketCriteria != nil { // TODO(Tyler): what if no filter? should we allow filter-less baskets?
 		if err := validateFilter(m.BasketCriteria); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
@@ -636,6 +636,14 @@ func validateFilter(filters ...*Filter) error {
 			if err := validateFilter(f.Or.Filters...); err != nil {
 				return err
 			}
+		case *Filter_ClassId:
+			if err := ValidateClassID(f.ClassId); err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+			}
+		case *Filter_ProjectId:
+			if err := ValidateProjectID(f.ProjectId); err != nil {
+				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+			}
 		case *Filter_BatchDenom:
 			if err := ValidateDenom(f.BatchDenom); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
@@ -643,14 +651,6 @@ func validateFilter(filters ...*Filter) error {
 		case *Filter_ClassAdmin:
 			if _, err := sdk.AccAddressFromBech32(f.ClassAdmin); err != nil {
 				return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
-			}
-		case *Filter_ClassId:
-			if err := ValidateClassID(f.ClassId); err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-			}
-		case *Filter_DateRange_:
-			if f.DateRange.StartDate.After(*f.DateRange.EndDate) {
-				return sdkerrors.ErrInvalidRequest.Wrap("invalid date range: star date must be before end date")
 			}
 		case *Filter_Issuer:
 			if _, err := sdk.AccAddressFromBech32(f.Issuer); err != nil {
@@ -664,8 +664,14 @@ func validateFilter(filters ...*Filter) error {
 			if err := ValidateLocation(f.ProjectLocation); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 			}
-		default:
-			panic("uhh filter pls") // TODO(Tyler): require a filter???
+		case *Filter_DateRange_:
+			if f.DateRange.StartDate.After(*f.DateRange.EndDate) {
+				return sdkerrors.ErrInvalidRequest.Wrap("invalid date range: star date must be before end date")
+			}
+		case *Filter_CreditTypeName:
+			if f.CreditTypeName == "" {
+				return sdkerrors.ErrInvalidRequest.Wrap("a credit type name filter was provided, but no credit type specified")
+			}
 		}
 	}
 	return nil
@@ -694,9 +700,7 @@ func (m *MsgAddToBasket) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
 
-	if err := ValidateDenom(m.BasketDenom); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-	}
+	// TODO(Tyler): validate basket denom
 
 	if len(m.Credits) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("credits cannot be empty")
