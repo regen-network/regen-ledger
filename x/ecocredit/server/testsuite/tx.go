@@ -473,7 +473,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 		//	wantErr: true,
 		//},
 		{
-			name:  "auto-retire required for sell order",
+			name:  "auto-retire is required for sell order",
 			buyer: addr2.String(),
 			orders: []*ecocredit.MsgBuy_Order{
 				{
@@ -489,7 +489,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 					DisableAutoRetire: true,
 				},
 			},
-			expErr:  "auto-retire required for sell order",
+			expErr:  "auto-retire is required for sell order",
 			wantErr: true,
 		},
 		{
