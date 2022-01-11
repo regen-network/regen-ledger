@@ -61,8 +61,8 @@ Our hope is that these basket assets increase marketability of ecocredits in the
 - Basket criteria provide market signals by curating acceptable standards
 - Basket assets enable easy retail and corporate purchases at larger volumes
 - Conversely, basket assets enable easy selling at larger volumes for brokers, project developers, and holders
-- Basket assets enable greater composability in cryptocurrency/blockchain such as in Defi for use as collateral
-- Basket assets are more easily Interoperable with existing carbon token standards that are emerging in other cryptocurrency/blockchain projects (e.g. KlimaDAO, MOSS Token)
+- Basket assets enable greater composability in cryptocurrency/blockchain such as in DeFi for use as collateral
+- Basket assets are more easily interoperable with existing carbon token standards that are emerging in other cryptocurrency/blockchain projects (e.g. KlimaDAO, MOSS Token)
 
 # Specification
 
@@ -72,7 +72,7 @@ Ecocredit baskets are containers/bundles for ecocredits meeting a specific set o
 - Basket Name & Display Name
 - Basket Criteria - a set of attributes an ecocredit must have in order to be added to the basket
 - Exponent (used for converting decimal ecocredits to integer bank denom)
-- _disable_auto_retire_ - boolean that determines if credits are auto retired when removed from the basket
+- _disable_auto_retire_ - boolean that determines if credits are auto-retired when removed from the basket
 - _enable_picking_ - boolean that enables or disables PickFromBasket functionality
 
 In the long term, we anticipate that there may be baskets which utilize [a complex set of filter criteria](https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha2/types.proto#L255-L326) consisting of many different ecocredit fields joined together with AND/OR operators.
@@ -88,13 +88,13 @@ However, in the initial implementation of the basket criteria, we reduce the pot
   - (>=, <=) a specific date
   - (>=) a relative date (e.g. 3 days ago, 2 years ago)
 
-After instantiation, basket criteria can be upgraded by the basket creator. Other fields (name, exponent, picking & auto retire options) are set at instantiation and cannot be changed later.
+After instantiation, basket criteria can be upgraded by the basket creator. Other fields (name, exponent, picking & auto-retire options) are set at instantiation and cannot be changed later.
 
 ### Basket Curators & Governance
 
 The address that creates the basket is referred to as the basket’s curator.
 
-Basket creation will require a fixed fee, payable in REGEN (similar to the fixed fee for Credit Class creation). The funds should go the community spend pool. This fixed fee will be an on-chain parameter controlled via network governance. In the initial software upgrade proposal the fee should start at 1,000 REGEN.
+Basket creation will require a fixed fee, payable in REGEN (similar to the fixed fee for Credit Class creation). The funds should go to the community spend pool. This fixed fee will be an on-chain parameter controlled via network governance. In the initial software upgrade proposal the fee should start at 1,000 REGEN.
 
 Future iterations of the fixed fee functionality could involve reduced fees based on a users staked REGEN, or similar mechanics.
 
