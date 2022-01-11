@@ -736,9 +736,9 @@ func (m *MsgPickFromBasket) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
-	if err := ValidateDenom(m.BasketDenom); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-	}
+
+	// TODO(Tyler): validate basket denom?
+
 	if len(m.RetirementLocation) != 0 {
 		if err := ValidateLocation(m.RetirementLocation); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
@@ -777,11 +777,13 @@ func (m *MsgTakeFromBasket) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
-	if err := ValidateDenom(m.BasketDenom); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-	}
-	if err := ValidateLocation(m.RetirementLocation); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+
+	// TODO(Tyler): validate basketdenom ??
+
+	if m.RetirementLocation != "" {
+		if err := ValidateLocation(m.RetirementLocation); err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		}
 	}
 	if _, err := math.NewPositiveDecFromString(m.Amount); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())

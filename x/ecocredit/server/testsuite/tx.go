@@ -901,6 +901,26 @@ func (s *IntegrationTestSuite) TestAddToBasket() {
 					{BatchDenom: batch2.BatchDenom, TradableAmount: "2"}},
 			},
 		},
+		{
+			name: "invalid - basket not found",
+			msg: &ecocredit.MsgAddToBasket{
+				Owner:       admin.String(),
+				BasketDenom: "FooBarBaz",
+				Credits:     []*ecocredit.BasketCredit{{batch.BatchDenom, "2"}},
+			},
+			expErr: true,
+			errMsg: "basket FooBarBaz not found",
+		},
+		{
+			name: "invalid - batch not found",
+			msg: &ecocredit.MsgAddToBasket{
+				Owner:       admin.String(),
+				BasketDenom: "basketI",
+				Credits:     []*ecocredit.BasketCredit{{"Z99-00000000-00000000-000", "2"}},
+			},
+			expErr: true,
+			errMsg: "batch Z99-00000000-00000000-000 not found",
+		},
 	}
 
 	for _, tc := range testCases {
@@ -943,7 +963,199 @@ func (s *IntegrationTestSuite) TestAddToBasket() {
 
 				// 0 == equals
 				require.Equal(0, tokensExpected.Cmp(actualTokensBack))
+
+				for _, c := range tc.msg.Credits {
+					balRes, err := s.queryClient.BasketBatchBalance(s.ctx, &ecocredit.QueryBasketBatchBalanceRequest{
+						BasketDenom: tc.msg.BasketDenom,
+						BatchDenom:  c.BatchDenom,
+					})
+					require.NoError(err)
+
+					basketBalanceDec, err := math.NewDecFromString(balRes.Credit.TradableAmount)
+					require.NoError(err)
+
+					depositedAmountDec, err := math.NewDecFromString(c.TradableAmount)
+					require.NoError(err)
+					require.Equal(0, basketBalanceDec.Cmp(depositedAmountDec))
+				}
 			}
 		})
 	}
+}
+
+func (s *IntegrationTestSuite) TestTakeFromBasketScenario() {
+	require := s.Require()
+	server := s.msgClient
+	admin := s.signers[0]
+
+	// create two batches
+	_, _, batch := s.createClassAndIssueBatch(admin.String(), "1000000000")
+	_, _, batch2 := s.createClassAndIssueBatch(admin.String(), "50000050500")
+
+	// create a basket with no criteria for simplicity
+	resBasket, err := server.CreateBasket(s.ctx, &ecocredit.MsgCreateBasket{
+		Curator:           admin.String(),
+		Name:              "testTakeFrom1",
+		DisplayName:       "ttf1",
+		Exponent:          1,
+		BasketCriteria:    nil,
+		DisableAutoRetire: true,
+		AllowPicking:      false,
+	})
+	require.NoError(err)
+	require.NotNil(resBasket)
+
+	basketDenom := resBasket.BasketDenom
+
+	// credits we are going to add to the basket
+	creditsAddedToBasket := []*ecocredit.BasketCredit{{BatchDenom: batch.BatchDenom, TradableAmount: "1"}, {BatchDenom: batch2.BatchDenom, TradableAmount: "1"}}
+
+	// add them to the basket - should pass
+	resAdd, err := server.AddToBasket(s.ctx, &ecocredit.MsgAddToBasket{
+		Owner:       admin.String(),
+		BasketDenom: basketDenom,
+		Credits:     creditsAddedToBasket,
+	})
+	require.NoError(err)
+	require.NotNil(resAdd)
+
+	// the basket exponent is 1 so -> 10^1 * creditDepositAmount = 10 * 2 = 20
+	expectedAmt := math.NewDecFromInt64(20)
+	amtReceived, err := math.NewDecFromString(resAdd.AmountReceived)
+	require.NoError(err)
+	require.True(expectedAmt.Equal(amtReceived))
+
+	// take credit from basket, should give us the first credit
+	resTake, err := server.TakeFromBasket(s.ctx, &ecocredit.MsgTakeFromBasket{
+		Owner:              admin.String(),
+		BasketDenom:        basketDenom,
+		Amount:             "1",
+		RetirementLocation: "",
+	})
+	require.NoError(err)
+	require.NotNil(resTake)
+
+	// it should take the oldest credit first, aka the first batch created
+	require.Equal(creditsAddedToBasket[0:1], resTake.Credits)
+
+	// check to see the credit as taken
+	queryRes, err := s.queryClient.BasketBatchBalance(s.ctx, &ecocredit.QueryBasketBatchBalanceRequest{
+		BasketDenom: basketDenom,
+		BatchDenom:  creditsAddedToBasket[0].BatchDenom,
+	})
+	require.NoError(err)
+	require.NotNil(queryRes)
+	require.Equal("0", queryRes.Credit.TradableAmount) // the first credit should be gone
+
+	// user should now have the credit
+	balRes, err := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
+		Account:    admin.String(),
+		BatchDenom: creditsAddedToBasket[0].BatchDenom,
+	})
+	require.NoError(err)
+	require.Equal(balRes.TradableAmount, "1000000000") // we minted 1000000000 to ourselves, deposited 1, and took it back.
+
+	// basket should still have the other credit left
+	queryRes, err = s.queryClient.BasketBatchBalance(s.ctx, &ecocredit.QueryBasketBatchBalanceRequest{
+		BasketDenom: basketDenom,
+		BatchDenom:  creditsAddedToBasket[1].BatchDenom,
+	})
+	require.NoError(err)
+	require.NotNil(queryRes)
+	require.Equal("1", queryRes.Credit.TradableAmount)
+
+	// user should now have 10 credits. swapping 1 = 10^1 * 1 = 10. 20 - 10 = 10.
+	basketTokenBalance := s.bankKeeper.GetBalance(s.sdkCtx, admin, basketDenom)
+	require.True(basketTokenBalance.Amount.Equal(sdk.NewInt(10)))
+
+	// trash some coins to check fail case
+	coins := sdk.NewCoins(sdk.NewCoin(basketDenom, sdk.NewInt(3)))
+	err = s.bankKeeper.SendCoinsFromAccountToModule(s.sdkCtx, admin, ecocredit.ModuleName, coins)
+	require.NoError(err)
+
+	// make sure we don't have enough to complete a swap
+	basketTokenBalance = s.bankKeeper.GetBalance(s.sdkCtx, admin, basketDenom)
+	require.True(basketTokenBalance.Amount.Equal(sdk.NewInt(7)))
+
+	// try to take again, but should fail cause of insufficient basket tokens, we need at least 10 for 1 ecocredit.
+	resTake2, err := server.TakeFromBasket(s.ctx, &ecocredit.MsgTakeFromBasket{
+		Owner:              admin.String(),
+		BasketDenom:        basketDenom,
+		Amount:             "1",
+		RetirementLocation: "",
+	})
+	require.Error(err)
+	require.Nil(resTake2)
+	require.Contains(err.Error(), "insufficient basket token balance, got: 7, needed at least: 10")
+
+	// get the tokens back so we can try to take again.
+	require.NoError(s.bankKeeper.SendCoinsFromModuleToAccount(s.sdkCtx, ecocredit.ModuleName, admin, coins))
+	balanceAfter := s.bankKeeper.GetBalance(s.sdkCtx, admin, basketDenom)
+	require.True(balanceAfter.Amount.Equal(sdk.NewInt(10)))
+
+	// try to take again, but ask for more than the basket has - should fail.
+	resTake3, err := server.TakeFromBasket(s.ctx, &ecocredit.MsgTakeFromBasket{
+		Owner:              admin.String(),
+		BasketDenom:        basketDenom,
+		Amount:             "25",
+		RetirementLocation: "",
+	})
+	require.Error(err)
+	require.Nil(resTake3)
+
+	// take the final credit from the basket
+	resTake4, err := server.TakeFromBasket(s.ctx, &ecocredit.MsgTakeFromBasket{
+		Owner:              admin.String(),
+		BasketDenom:        basketDenom,
+		Amount:             "1",
+		RetirementLocation: "",
+	})
+	require.NoError(err)
+	require.NotNil(resTake4)
+	require.Equal(resTake4.Credits, creditsAddedToBasket[1:])
+}
+
+func (s *IntegrationTestSuite) TestPickFromBasket() {
+	require := s.Require()
+	server := s.msgClient
+	admin := s.signers[0]
+
+	// create two batches
+	_, _, batch := s.createClassAndIssueBatch(admin.String(), "1000000000")
+	_, _, batch2 := s.createClassAndIssueBatch(admin.String(), "50000050500")
+
+	// no retire basket
+	basket, err := server.CreateBasket(s.ctx, &ecocredit.MsgCreateBasket{
+		Curator:           admin.String(),
+		Name:              "TestPickFromBasket",
+		DisplayName:       "TPFB1",
+		Exponent:          3,
+		BasketCriteria:    nil,
+		DisableAutoRetire: true,
+		AllowPicking:      true,
+	})
+	require.NoError(err)
+	require.NotNil(basket)
+
+	addRes, err := server.AddToBasket(s.ctx, &ecocredit.MsgAddToBasket{
+		Owner:       admin.String(),
+		BasketDenom: basket.BasketDenom,
+		Credits: []*ecocredit.BasketCredit{
+			{BatchDenom: batch.BatchDenom, TradableAmount: "10"},
+			{BatchDenom: batch2.BatchDenom, TradableAmount: "10"},
+		},
+	})
+	require.NoError(err)
+	require.NotNil(addRes)
+
+	pickRes, err := server.PickFromBasket(s.ctx, &ecocredit.MsgPickFromBasket{
+		Owner:       admin.String(),
+		BasketDenom: basket.BasketDenom,
+		Credits: []*ecocredit.BasketCredit{
+			{BatchDenom: batch.BatchDenom, TradableAmount: "5"},
+		},
+		RetirementLocation: "",
+	})
+	require.NoError(err)
+	require.NotNil(pickRes)
 }

@@ -58,10 +58,7 @@ func RetiredSupplyKey(batchDenom batchDenomT) []byte {
 	return append(key, batchDenom...)
 }
 
-// BasketCreditsKey creates the basket credits key for a given basket denom.
-// it takes the form of <prefixByte><basketDenom><batchDenom>
-func BasketCreditsKey(basketDenom basketDenomT, batchDenom batchDenomT) []byte {
+func BasketAddressKey(basketDenom basketDenomT) []byte {
 	key := []byte{BasketCreditsPrefix}
-	key = append(key, address.MustLengthPrefix([]byte(basketDenom))...)
-	return append(key, address.MustLengthPrefix([]byte(batchDenom))...)
+	return append(key, address.MustLengthPrefix([]byte(basketDenom))...)
 }

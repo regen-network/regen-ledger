@@ -47,6 +47,8 @@
     - [QueryAllowedAskDenomsResponse](#regen.ecocredit.v1alpha2.QueryAllowedAskDenomsResponse)
     - [QueryBalanceRequest](#regen.ecocredit.v1alpha2.QueryBalanceRequest)
     - [QueryBalanceResponse](#regen.ecocredit.v1alpha2.QueryBalanceResponse)
+    - [QueryBasketBatchBalanceRequest](#regen.ecocredit.v1alpha2.QueryBasketBatchBalanceRequest)
+    - [QueryBasketBatchBalanceResponse](#regen.ecocredit.v1alpha2.QueryBasketBatchBalanceResponse)
     - [QueryBasketCreditsRequest](#regen.ecocredit.v1alpha2.QueryBasketCreditsRequest)
     - [QueryBasketCreditsResponse](#regen.ecocredit.v1alpha2.QueryBasketCreditsResponse)
     - [QueryBasketRequest](#regen.ecocredit.v1alpha2.QueryBasketRequest)
@@ -861,6 +863,37 @@ QueryBalanceResponse is the Query/Balance response type.
 
 
 
+<a name="regen.ecocredit.v1alpha2.QueryBasketBatchBalanceRequest"></a>
+
+### QueryBasketBatchBalanceRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| basket_denom | [string](#string) |  |  |
+| batch_denom | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="regen.ecocredit.v1alpha2.QueryBasketBatchBalanceResponse"></a>
+
+### QueryBasketBatchBalanceResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| credit | [BasketCredit](#regen.ecocredit.v1alpha2.BasketCredit) |  |  |
+
+
+
+
+
+
 <a name="regen.ecocredit.v1alpha2.QueryBasketCreditsRequest"></a>
 
 ### QueryBasketCreditsRequest
@@ -1471,6 +1504,7 @@ Msg is the regen.ecocredit.v1alpha2 Query service.
 | Basket | [QueryBasketRequest](#regen.ecocredit.v1alpha2.QueryBasketRequest) | [QueryBasketResponse](#regen.ecocredit.v1alpha2.QueryBasketResponse) | Basket queries one basket by denom. |
 | Baskets | [QueryBasketsRequest](#regen.ecocredit.v1alpha2.QueryBasketsRequest) | [QueryBasketsResponse](#regen.ecocredit.v1alpha2.QueryBasketsResponse) | Baskets lists all baskets in the ecocredit module. |
 | BasketCredits | [QueryBasketCreditsRequest](#regen.ecocredit.v1alpha2.QueryBasketCreditsRequest) | [QueryBasketCreditsResponse](#regen.ecocredit.v1alpha2.QueryBasketCreditsResponse) | BasketCredits lists all ecocredits inside a given basket. |
+| BasketBatchBalance | [QueryBasketBatchBalanceRequest](#regen.ecocredit.v1alpha2.QueryBasketBatchBalanceRequest) | [QueryBasketBatchBalanceResponse](#regen.ecocredit.v1alpha2.QueryBasketBatchBalanceResponse) |  |
 
  <!-- end services -->
 

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdktypes "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/address"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/orm"
 	regentypes "github.com/regen-network/regen-ledger/types"
@@ -66,7 +67,7 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 	var basket ecocredit.Basket
 	err := s.basketTable.GetOne(ctx, orm.RowID(req.BasketDenom), &basket)
 	if err != nil {
-		return nil, err
+		return nil, sdkerrors.ErrNotFound.Wrapf("basket %s not found", req.BasketDenom)
 	}
 
 	totalCreditsDeposited := regenmath.NewDecFromInt64(0)
@@ -77,7 +78,7 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 		var batchInfo ecocredit.BatchInfo
 		err := s.batchInfoTable.GetOne(ctx, orm.RowID(batchDenom), &batchInfo)
 		if err != nil {
-			return nil, err
+			return nil, sdkerrors.ErrNotFound.Wrapf("batch %s not found", credit.BatchDenom)
 		}
 
 		// get project info
@@ -130,22 +131,12 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 			RetirementLocation: "",
 		}
 
-		// derive the address of the basket
-		basketKey := BasketCreditsKey(basketDenomT(basket.BasketDenom), batchDenom)
-		derivedKey := s.storeKey.Derive(basketKey)
-
-		// send the credits do the derived address
-		if _, err := s.Send(goCtx, &ecocredit.MsgSend{
-			Sender:    owner.String(),
-			Recipient: derivedKey.Address().String(),
-			Credits:   []*ecocredit.MsgSend_SendCredits{creditToAddToBasket},
-		}); err != nil {
+		if err = s.depositCreditsToBasket(goCtx, owner, basket, []*ecocredit.MsgSend_SendCredits{creditToAddToBasket}); err != nil {
 			return nil, err
 		}
 
 	}
 
-	// TODO(Tyler): should this return sdk.Dec? Is regen's dec okay for x/bank?
 	// calculate total basket tokens to be awarded to the depositor
 	basketTokensAmt, err := calculateBasketTokens(totalCreditsDeposited, basket.Exponent)
 	if err != nil {
@@ -156,7 +147,7 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 		return nil, err
 	}
 
-	// mint basket tokens to send to basket depositor
+	// mint basket tokens
 	basketCoins := sdktypes.NewCoin(basket.BasketDenom, sdktypes.NewInt(basketTokensInt))
 	if err = s.bankKeeper.MintCoins(ctx, ecocredit.ModuleName, sdktypes.Coins{basketCoins}); err != nil {
 		return nil, err
@@ -210,18 +201,21 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 		return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient basket token balance, got: %s, needed at least: %s", userBalanceDec.String(), tokensRequiredDec.String())
 	}
 
-	// put all the credits from this basket into a slice
-	prefix := BasketCreditsKey(basketDenom, "")
-	it := types.KVStorePrefixIterator(store, prefix)
-	credits := make([]struct {
+
+	creditsInBasket := make([]struct {
 		startTime time.Time
 		amount    string
 		denom     string
 	}, 0)
+
+	// get the iterator to scan all balances
+	it := s.basketCreditsIterator(basketDenom, store)
+
+	// loop over the balances and store them in a slice
 	for ; it.Valid(); it.Next() {
 		// get the denom and deconstruct it
-		creditDenom := string(it.Key())
-		deconstructedDenom, err := ecocredit.DeconstructDenom(creditDenom)
+		_, creditDenom := ParseBalanceKey(it.Key())
+		deconstructedDenom, err := ecocredit.DeconstructDenom(string(creditDenom))
 		if err != nil {
 			return nil, err
 		}
@@ -234,14 +228,14 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 		}
 
 		// add the credit to the slice
-		credits = append(credits, struct {
+		creditsInBasket = append(creditsInBasket, struct {
 			startTime time.Time
 			amount    string
 			denom     string
 		}{
 			startTime: t,
 			amount:    string(it.Value()),
-			denom:     creditDenom,
+			denom:     string(creditDenom),
 		})
 	}
 
@@ -251,8 +245,8 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 	}
 
 	// sort the slice based on start time (we want to take the OLDEST credits first)
-	sort.Slice(credits, func(i int, j int) bool {
-		return credits[i].startTime.After(credits[j].startTime)
+	sort.Slice(creditsInBasket, func(i int, j int) bool {
+		return creditsInBasket[i].startTime.After(creditsInBasket[j].startTime)
 	})
 
 	// response slice
@@ -261,7 +255,7 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 	// begin sending the credits
 	// keep track of how many credits we need to send and update each iteration
 	creditsNeeded := requestedCreditAmount
-	for _, credit := range credits {
+	for _, credit := range creditsInBasket {
 
 		// get the basket's credit amount in dec
 		creditAmtDec, err := regenmath.NewDecFromString(credit.amount)
@@ -297,14 +291,7 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 			})
 		}
 
-		// derive the address for this basket and send from basket to the caller
-		basketKey := BasketCreditsKey(basketDenomT(basket.BasketDenom), batchDenomT(credit.denom))
-		derivedKey := s.storeKey.Derive(basketKey)
-		if _, err = s.Send(goCtx, &ecocredit.MsgSend{
-			Sender:    derivedKey.Address().String(),
-			Recipient: req.Owner,
-			Credits:   []*ecocredit.MsgSend_SendCredits{&creditsToSend},
-		}); err != nil {
+		if err := s.sendCreditFromBasket(goCtx, owner, basket, &creditsToSend); err != nil {
 			return nil, err
 		}
 
@@ -314,8 +301,14 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 		}
 	}
 
-	// burn the basket tokens
-	amountI64, err := requestedCreditAmount.Int64()
+	// TODO(Tyler): should we cache the total amount of credits, regardless of batch, in the basket table? that way we can fail fast and avoid a lot of unnecessary calculations.
+	// check if we ended on zero. if it was not zero, the swap could not be fully executed, so we should error out.
+	if !creditsNeeded.IsZero() {
+		return nil, sdkerrors.ErrInsufficientFunds.Wrap("the basket does not have enough credits to complete this transaction, ")
+	}
+
+	// calculate how m
+	amountI64, err := tokensRequiredDec.Int64()
 	if err != nil {
 		return nil, err
 	}
@@ -327,12 +320,6 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 		return nil, err
 	}
 
-	// TODO(Tyler): should we cache the total amount of credits, regardless of batch, in the basket table? that way we can fail fast and avoid a lot of unnecessary calculations.
-	// check if we ended on zero. if it was not zero, the swap could not be fully executed, so we should error out.
-	if !creditsNeeded.IsZero() {
-		return nil, sdkerrors.ErrInsufficientFunds.Wrap("the basket does not have enough credits to complete this transaction")
-	}
-
 	return &ecocredit.MsgTakeFromBasketResponse{Credits: basketCreditsSent}, nil
 }
 
@@ -341,6 +328,7 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 	// setup
 	sdkCtx := sdktypes.UnwrapSDKContext(goCtx)
 	owner, _ := sdktypes.AccAddressFromBech32(req.Owner)
+	store := sdkCtx.KVStore(s.storeKey)
 
 	// get the basket
 	var basket ecocredit.Basket
@@ -354,8 +342,8 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 	}
 
 	// get the basket token balance of the requester
-	basketTokenBalanceStr := s.bankKeeper.GetBalance(sdkCtx, owner, basket.BasketDenom).String()
-	basketTokenBalance, err := regenmath.NewDecFromString(basketTokenBalanceStr)
+	tokenBalance := s.bankKeeper.GetBalance(sdkCtx, owner, basket.BasketDenom).Amount.String()
+	basketTokenBalance, err := regenmath.NewDecFromString(tokenBalance)
 	if err != nil {
 		return nil, err
 	}
@@ -370,7 +358,7 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 			creditAmtRequested, _ := regenmath.NewDecFromString(credit.TradableAmount)
 
 			// get the basket's balance of the requested credit
-			basketKey := BasketCreditsKey(basketDenomT(basket.BasketDenom), batchDenomT(credit.BatchDenom))
+			basketKey := BasketAddressKey(basketDenomT(basket.BasketDenom))
 			derivedKey := s.storeKey.Derive(basketKey)
 			res, err := s.Balance(goCtx, &ecocredit.QueryBalanceRequest{
 				Account:    derivedKey.Address().String(),
@@ -424,6 +412,11 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 			if _, err = s.Send(goCtx, send); err != nil {
 				return nil, err
 			}
+
+			// subtract the credits in the <basketDenom><batchDenom> key
+			if err = subAndSetDecimal(store, basketKey, creditAmtRequested); err != nil {
+				return nil, err
+			}
 		}
 
 		// burn the coins
@@ -439,9 +432,46 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 		if err := s.bankKeeper.BurnCoins(sdkCtx, ecocredit.ModuleName, sdktypes.NewCoins(tokenCost)); err != nil {
 			return nil, err
 		}
-
 	}
 	return &ecocredit.MsgPickFromBasketResponse{}, nil
+}
+
+func (s serverImpl) basketCreditsIterator(basketDenom basketDenomT, store sdktypes.KVStore) sdktypes.Iterator {
+	prefix := BasketAddressKey(basketDenom)
+	basketAddr := s.storeKey.Derive(prefix).Address()
+	key := []byte{TradableBalancePrefix}
+	key = append(key, address.MustLengthPrefix(basketAddr)...)
+	return types.KVStorePrefixIterator(store, key)
+}
+
+// depositCreditsToBasket deposits a set of credits to a basket
+func (s serverImpl) depositCreditsToBasket(goCtx context.Context, from sdktypes.Address, basket ecocredit.Basket, credits []*ecocredit.MsgSend_SendCredits) error {
+
+	// derive the address of the basket
+	basketKey := BasketAddressKey(basketDenomT(basket.BasketDenom))
+	derivedKey := s.storeKey.Derive(basketKey)
+
+	// send the credits do the derived address
+	_, err := s.Send(goCtx, &ecocredit.MsgSend{
+		Sender:    from.String(),
+		Recipient: derivedKey.Address().String(),
+		Credits:   credits,
+	})
+	return err
+}
+
+// sendCreditFromBasket sends credits from basket to the `to` address
+func (s serverImpl) sendCreditFromBasket(goCtx context.Context, to sdktypes.Address, basket ecocredit.Basket, credit *ecocredit.MsgSend_SendCredits) error {
+	// derive the address of the basket
+	basketKey := BasketAddressKey(basketDenomT(basket.BasketDenom))
+	derivedKey := s.storeKey.Derive(basketKey)
+
+	_, err := s.Send(goCtx, &ecocredit.MsgSend{
+		Sender:    derivedKey.Address().String(),
+		Recipient: to.String(),
+		Credits:   []*ecocredit.MsgSend_SendCredits{credit},
+	})
+	return err
 }
 
 // ----- HELPER METHODS -----
@@ -626,9 +656,4 @@ func checkFilters(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, ba
 // formatFilterError is a helper method for formatting filter errors in a repeatable fashion.
 func formatFilterError(item, want, got string) error {
 	return fmt.Errorf("basket filter requires %s %s, but a credit with %s %s was given", item, want, item, got)
-}
-
-// constructBasketDenom constructs the denom for a basket token. it takes the form of `ecocredit:basketName`
-func constructBasketDenom(basketName string) string {
-	return fmt.Sprintf("%s:%s", ecocredit.ModuleName, basketName)
 }

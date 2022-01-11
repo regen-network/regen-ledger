@@ -1384,6 +1384,16 @@ func TestMsgTakeFromBasket_ValidateBasic(t *testing.T) {
 			},
 			wantErr: true,
 		},
+		{
+			name: "no location",
+			fields: fields{
+				Owner:              addr.String(),
+				BasketDenom:        validDenom,
+				Amount:             "10.23510",
+				RetirementLocation: "",
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
