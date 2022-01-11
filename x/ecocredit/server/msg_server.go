@@ -779,7 +779,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 
 			// error if auto-retire is required for given sell order
 			if !sellOrder.DisableAutoRetire && order.DisableAutoRetire {
-				return nil, ecocredit.ErrInvalidBuyOrder.Wrapf("auto-retire required for sell order %d", sellOrder.OrderId)
+				return nil, ecocredit.ErrInvalidBuyOrder.Wrapf("auto-retire is required for sell order %d", sellOrder.OrderId)
 			}
 
 			// declare credit for send message
