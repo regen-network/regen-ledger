@@ -16,6 +16,11 @@ func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgSend{}, "regen-ledger/MsgSend", nil)
 	cdc.RegisterConcrete(&MsgRetire{}, "regen-ledger/MsgRetire", nil)
 	cdc.RegisterConcrete(&MsgCancel{}, "regen-ledger/MsgCancel", nil)
+	cdc.RegisterConcrete(&MsgCreateProject{}, "regen-ledger/MsgCreateProject", nil)
+	cdc.RegisterConcrete(&MsgAddToBasket{}, "regen-ledger/MsgAddToBasket", nil)
+	cdc.RegisterConcrete(&MsgPickFromBasket{}, "regen-ledger/MsgPickFromBasket", nil)
+	cdc.RegisterConcrete(&MsgCreateBasket{}, "regen-ledger/MsgCreateBasket", nil)
+	cdc.RegisterConcrete(&MsgTakeFromBasket{}, "regen-ledger/MsgTakeFromBasket", nil)
 }
 
 func RegisterTypes(registry codectypes.InterfaceRegistry) {

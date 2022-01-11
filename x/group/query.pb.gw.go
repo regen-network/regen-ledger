@@ -1264,27 +1264,27 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_GroupInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "group", "v1alpha1", "groups", "group_id", "info"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GroupInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "group", "v1alpha1", "groups", "group_id", "info"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_GroupAccountInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"regen", "group", "v1alpha1", "groups", "accounts", "address"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GroupAccountInfo_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"regen", "group", "v1alpha1", "groups", "accounts", "address"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_GroupMembers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "group", "v1alpha1", "groups", "group_id", "members"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GroupMembers_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "group", "v1alpha1", "groups", "group_id", "members"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_GroupsByAdmin_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"regen", "group", "v1alpha1", "groups", "admins", "admin"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GroupsByAdmin_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"regen", "group", "v1alpha1", "groups", "admins", "admin"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_GroupAccountsByGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "group", "v1alpha1", "groups", "group_id", "accounts"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GroupAccountsByGroup_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "group", "v1alpha1", "groups", "group_id", "accounts"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_GroupAccountsByAdmin_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "group", "v1alpha1", "admins", "admin", "accounts"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GroupAccountsByAdmin_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "group", "v1alpha1", "admins", "admin", "accounts"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_Proposal_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "group", "v1alpha1", "proposals", "proposal_id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Proposal_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "group", "v1alpha1", "proposals", "proposal_id"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_ProposalsByGroupAccount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "group", "v1alpha1", "group-accounts", "address", "proposals"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ProposalsByGroupAccount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "group", "v1alpha1", "group-accounts", "address", "proposals"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_VoteByProposalVoter_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5, 1, 0, 4, 1, 5, 6}, []string{"regen", "group", "v1alpha1", "proposals", "proposal_id", "votes", "voter"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_VoteByProposalVoter_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5, 1, 0, 4, 1, 5, 6}, []string{"regen", "group", "v1alpha1", "proposals", "proposal_id", "votes", "voter"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_VotesByProposal_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "group", "v1alpha1", "proposals", "proposal_id", "votes"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_VotesByProposal_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"regen", "group", "v1alpha1", "proposals", "proposal_id", "votes"}, "", runtime.AssumeColonVerbOpt(false)))
 
-	pattern_Query_VotesByVoter_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "group", "v1alpha1", "voters", "voter"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_VotesByVoter_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"regen", "group", "v1alpha1", "voters", "voter"}, "", runtime.AssumeColonVerbOpt(false)))
 )
 
 var (
