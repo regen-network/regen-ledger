@@ -14,47 +14,38 @@ import (
 var _ Indexable = &tableBuilder{}
 
 type tableBuilder struct {
-	model         reflect.Type
-	prefixData    byte
-	storeKey      sdk.StoreKey
-	indexKeyCodec IndexKeyCodec
-	afterSet      []AfterSetInterceptor
-	afterDelete   []AfterDeleteInterceptor
-	cdc           codec.Codec
+	model       reflect.Type
+	prefixData  byte
+	storeKey    sdk.StoreKey
+	afterSet    []AfterSetInterceptor
+	afterDelete []AfterDeleteInterceptor
+	cdc         codec.Codec
 }
 
 // newTableBuilder creates a builder to setup a table object.
-func newTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, idxKeyCodec IndexKeyCodec, cdc codec.Codec) (*tableBuilder, error) {
+func newTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, cdc codec.Codec) (*tableBuilder, error) {
 	if model == nil {
 		return nil, ErrArgument.Wrap("Model must not be nil")
 	}
 	if storeKey == nil {
 		return nil, ErrArgument.Wrap("StoreKey must not be nil")
 	}
-	if idxKeyCodec == nil {
-		return nil, ErrArgument.Wrap("IndexKeyCodec must not be nil")
-	}
 	tp := reflect.TypeOf(model)
 	if tp.Kind() == reflect.Ptr {
 		tp = tp.Elem()
 	}
 	return &tableBuilder{
-		prefixData:    prefixData,
-		storeKey:      storeKey,
-		model:         tp,
-		indexKeyCodec: idxKeyCodec,
-		cdc:           cdc,
+		prefixData: prefixData,
+		storeKey:   storeKey,
+		model:      tp,
+		cdc:        cdc,
 	}, nil
 }
 
 // TestTableBuilder exposes the private tableBuilder type for testing purposes.
 // It is not safe to use this outside of test code.
-func TestTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, idxKeyCodec IndexKeyCodec, cdc codec.Codec) (*tableBuilder, error) {
-	return newTableBuilder(prefixData, storeKey, model, idxKeyCodec, cdc)
-}
-
-func (a tableBuilder) IndexKeyCodec() IndexKeyCodec {
-	return a.indexKeyCodec
+func TestTableBuilder(prefixData byte, storeKey sdk.StoreKey, model codec.ProtoMarshaler, cdc codec.Codec) (*tableBuilder, error) {
+	return newTableBuilder(prefixData, storeKey, model, cdc)
 }
 
 // RowGetter returns a type safe RowGetter.
@@ -98,7 +89,7 @@ var _ TableExportable = &table{}
 // of another
 // - optimize Gas usage conditions
 // The caller must ensure that these things are handled. The table struct is
-// private, so that we only custom tables built on top of table, that do satisfy
+// private, so that we only have custom tables built on top of table, that do satisfy
 // these requirements.
 type table struct {
 	model       reflect.Type

@@ -2,10 +2,10 @@ package server
 
 import (
 	"context"
-	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/types"
@@ -34,7 +34,7 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 	var params ecocredit.Params
 	s.paramSpace.GetParamSet(ctx.Context, &params)
 	if params.AllowlistEnabled && !s.isCreatorAllowListed(ctx, params.AllowedClassCreators, adminAddress) {
-		return nil, fmt.Errorf("%s is not allowed to create credit classes", adminAddress.String())
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("%s is not allowed to create credit classes", adminAddress.String())
 	}
 
 	err = s.chargeCreditClassFee(ctx.Context, adminAddress)
@@ -76,9 +76,8 @@ func (s serverImpl) CreateClass(goCtx context.Context, req *ecocredit.MsgCreateC
 	return &ecocredit.MsgCreateClassResponse{ClassId: classID}, nil
 }
 
-// CreateBatch creates a new batch of credits.
-// Credits in the batch must not have more decimal places than the credit type's specified precision.
-func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatch) (*ecocredit.MsgCreateBatchResponse, error) {
+// CreateProject creates a new project.
+func (s serverImpl) CreateProject(goCtx context.Context, req *ecocredit.MsgCreateProject) (*ecocredit.MsgCreateProjectResponse, error) {
 	ctx := types.UnwrapSDKContext(goCtx)
 	classID := req.ClassId
 	classInfo, err := s.getClassInfo(ctx, classID)
@@ -90,13 +89,66 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 		return nil, err
 	}
 
+	projectID := req.ProjectId
+	if req.ProjectId == "" {
+		projectID = s.genProjectID(ctx, classInfo.ClassId)
+		for s.projectInfoTable.Has(ctx, orm.RowID(projectID)) {
+			projectID = s.genProjectID(ctx, classInfo.ClassId)
+			ctx.GasMeter().ConsumeGas(gasCostPerIteration, "project id sequence")
+		}
+	}
+
+	if err := s.projectInfoTable.Create(ctx, &ecocredit.ProjectInfo{
+		ProjectId:       projectID,
+		ClassId:         classID,
+		Issuer:          req.Issuer,
+		ProjectLocation: req.ProjectLocation,
+		Metadata:        req.Metadata,
+	}); err != nil {
+		return nil, err
+	}
+
+	if err := ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateProject{
+		ClassId:         classID,
+		ProjectId:       projectID,
+		Issuer:          req.Issuer,
+		ProjectLocation: req.ProjectLocation,
+	}); err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.MsgCreateProjectResponse{
+		ProjectId: projectID,
+	}, nil
+}
+
+// CreateBatch creates a new batch of credits.
+// Credits in the batch must not have more decimal places than the credit type's specified precision.
+func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateBatch) (*ecocredit.MsgCreateBatchResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	projectID := req.ProjectId
+
+	projectInfo, err := s.getProjectInfo(ctx, projectID)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = projectInfo.AssertProjectIssuer(req.Issuer); err != nil {
+		return nil, err
+	}
+
+	classInfo, err := s.getClassInfo(ctx, projectInfo.ClassId)
+	if err != nil {
+		return nil, err
+	}
+
 	maxDecimalPlaces := classInfo.CreditType.Precision
 	batchSeqNo, err := s.nextBatchInClass(ctx, classInfo)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 
-	batchDenomStr, err := ecocredit.FormatDenom(classID, batchSeqNo, req.StartDate, req.EndDate)
+	batchDenomStr, err := ecocredit.FormatDenom(classInfo.ClassId, batchSeqNo, req.StartDate, req.EndDate)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
@@ -192,28 +244,26 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 	amountCancelledStr := math.NewDecFromInt64(0).String()
 
 	err = s.batchInfoTable.Create(ctx, &ecocredit.BatchInfo{
-		ClassId:         classID,
+		ProjectId:       projectID,
 		BatchDenom:      string(batchDenom),
-		Issuer:          req.Issuer,
 		TotalAmount:     totalSupplyStr,
 		Metadata:        req.Metadata,
 		AmountCancelled: amountCancelledStr,
 		StartDate:       req.StartDate,
 		EndDate:         req.EndDate,
-		ProjectLocation: req.ProjectLocation,
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventCreateBatch{
-		ClassId:         classID,
+		ProjectId:       projectID,
 		BatchDenom:      string(batchDenom),
 		Issuer:          req.Issuer,
 		TotalAmount:     totalSupplyStr,
 		StartDate:       req.StartDate.Format("2006-01-02"),
 		EndDate:         req.EndDate.Format("2006-01-02"),
-		ProjectLocation: req.ProjectLocation,
+		ProjectLocation: projectInfo.ProjectLocation,
 	})
 	if err != nil {
 		return nil, err
@@ -241,70 +291,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 	}
 
 	for _, credit := range req.Credits {
-		denom := batchDenomT(credit.BatchDenom)
-		if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
-		}
-
-		maxDecimalPlaces, err := s.getBatchPrecision(ctx, denom)
-		if err != nil {
-			return nil, err
-		}
-
-		tradable, err := math.NewNonNegativeFixedDecFromString(credit.TradableAmount, maxDecimalPlaces)
-		if err != nil {
-			return nil, err
-		}
-
-		retired, err := math.NewNonNegativeFixedDecFromString(credit.RetiredAmount, maxDecimalPlaces)
-		if err != nil {
-			return nil, err
-		}
-
-		sum, err := tradable.Add(retired)
-		if err != nil {
-			return nil, err
-		}
-
-		// subtract balance
-		err = subAndSetDecimal(store, TradableBalanceKey(senderAddr, denom), sum)
-		if err != nil {
-			return nil, err
-		}
-
-		// Add tradable balance
-		err = addAndSetDecimal(store, TradableBalanceKey(recipientAddr, denom), tradable)
-		if err != nil {
-			return nil, err
-		}
-
-		if !retired.IsZero() {
-			// subtract retired from tradable supply
-			err = subAndSetDecimal(store, TradableSupplyKey(denom), retired)
-			if err != nil {
-				return nil, err
-			}
-
-			// Add retired balance
-			err = retire(ctx, store, recipientAddr, denom, retired, credit.RetirementLocation)
-			if err != nil {
-				return nil, err
-			}
-
-			// Add retired supply
-			err = addAndSetDecimal(store, RetiredSupplyKey(denom), retired)
-			if err != nil {
-				return nil, err
-			}
-		}
-
-		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
-			Sender:         sender,
-			Recipient:      recipient,
-			BatchDenom:     string(denom),
-			TradableAmount: tradable.String(),
-			RetiredAmount:  retired.String(),
-		})
+		err := s.sendEcocredits(ctx, credit, store, senderAddr, recipientAddr)
 		if err != nil {
 			return nil, err
 		}
@@ -390,7 +377,7 @@ func (s serverImpl) Cancel(goCtx context.Context, req *ecocredit.MsgCancel) (*ec
 			return nil, err
 		}
 
-		classInfo, err := s.getClassInfo(ctx, batchInfo.ClassId)
+		classInfo, err := s.getClassInfoByProjectID(ctx, batchInfo.ProjectId)
 		if err != nil {
 			return nil, err
 		}
@@ -559,7 +546,7 @@ func (s serverImpl) getBatchPrecision(ctx types.Context, denom batchDenomT) (uin
 		return 0, err
 	}
 
-	classInfo, err := s.getClassInfo(ctx, batchInfo.ClassId)
+	classInfo, err := s.getClassInfoByProjectID(ctx, batchInfo.ProjectId)
 	if err != nil {
 		return 0, err
 	}
@@ -577,4 +564,420 @@ func (s serverImpl) isCreatorAllowListed(ctx types.Context, allowlist []string, 
 		}
 	}
 	return false
+}
+
+// Sell creates new sell orders for credits
+func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocredit.MsgSellResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	owner := req.Owner
+	store := ctx.KVStore(s.storeKey)
+
+	ownerAddr, err := sdk.AccAddressFromBech32(owner)
+	if err != nil {
+		return nil, err
+	}
+
+	sellOrderIds := make([]uint64, len(req.Orders))
+
+	for i, order := range req.Orders {
+
+		err = verifyCreditBalance(store, ownerAddr, order.BatchDenom, order.Quantity)
+		if err != nil {
+			return nil, err
+		}
+
+		// TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
+
+		orderID := s.sellOrderTable.Sequence().PeekNextVal(ctx)
+
+		sellOrderIds[i] = orderID
+
+		_, err = s.sellOrderTable.Create(ctx, &ecocredit.SellOrder{
+			Owner:             owner,
+			OrderId:           orderID,
+			BatchDenom:        order.BatchDenom,
+			Quantity:          order.Quantity,
+			AskPrice:          order.AskPrice,
+			DisableAutoRetire: order.DisableAutoRetire,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventSell{
+			OrderId:           orderID,
+			BatchDenom:        order.BatchDenom,
+			Quantity:          order.Quantity,
+			AskPrice:          order.AskPrice,
+			DisableAutoRetire: order.DisableAutoRetire,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "create sell order")
+	}
+
+	return &ecocredit.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
+}
+
+// UpdateSellOrders updates existing sell orders for credits
+func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUpdateSellOrders) (*ecocredit.MsgUpdateSellOrdersResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	owner := req.Owner
+	store := ctx.KVStore(s.storeKey)
+
+	ownerAddr, err := sdk.AccAddressFromBech32(owner)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, update := range req.Updates {
+
+		sellOrder, err := s.getSellOrder(ctx, update.SellOrderId)
+		if err != nil {
+			return nil, ecocredit.ErrInvalidSellOrder.Wrapf("sell order id %d not found", update.SellOrderId)
+		}
+
+		if req.Owner != sellOrder.Owner {
+			return nil, sdkerrors.ErrUnauthorized.Wrapf("signer is not the owner of sell order id %d",  update.SellOrderId)
+		}
+
+		// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
+
+		err = verifyCreditBalance(store, ownerAddr, sellOrder.BatchDenom, update.NewQuantity)
+		if err != nil {
+			return nil, err
+		}
+
+		sellOrder.Quantity = update.NewQuantity
+		sellOrder.AskPrice = update.NewAskPrice
+		sellOrder.DisableAutoRetire = update.DisableAutoRetire
+
+		err = s.sellOrderTable.Update(ctx, sellOrder.OrderId, sellOrder)
+		if err != nil {
+			return nil, err
+		}
+
+		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventUpdateSellOrder{
+			Owner:             owner,
+			SellOrderId:       sellOrder.OrderId,
+			BatchDenom:        sellOrder.BatchDenom,
+			NewQuantity:       sellOrder.Quantity,
+			NewAskPrice:       sellOrder.AskPrice,
+			DisableAutoRetire: sellOrder.DisableAutoRetire,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "update sell order")
+	}
+
+	return &ecocredit.MsgUpdateSellOrdersResponse{}, nil
+}
+
+// Buy creates new buy orders for credits
+func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredit.MsgBuyResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+	sdkCtx := sdk.UnwrapSDKContext(goCtx)
+	store := ctx.KVStore(s.storeKey)
+	buyer := req.Buyer
+
+	buyerAddr, err := sdk.AccAddressFromBech32(buyer)
+	if err != nil {
+		return nil, err
+	}
+
+	buyOrderIds := make([]uint64, len(req.Orders))
+
+	for i, order := range req.Orders {
+
+		balances := s.bankKeeper.SpendableCoins(sdkCtx, buyerAddr)
+		bidPrice := order.BidPrice
+		balanceAmount := balances.AmountOf(bidPrice.Denom)
+
+		// TODO: Verify that bidPrice.Denom is in AllowAskDenom #624
+
+		// get decimal amount of credits desired for purchase
+		creditsDesired, err := math.NewPositiveDecFromString(order.Quantity)
+		if err != nil {
+			return nil, err
+		}
+
+		// calculate the amount of coin to send for purchase
+		coinToSend, err := getCoinNeeded(creditsDesired, bidPrice)
+		if err != nil {
+			return nil, err
+		}
+
+		// verify buyer has sufficient balance in coin
+		if balanceAmount.LT(coinToSend.Amount) {
+			return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient balance: got %s, needed at least: %s", balanceAmount.String(), coinToSend.Amount.String())
+		}
+
+		switch order.Selection.Sum.(type) {
+		case *ecocredit.MsgBuy_Order_Selection_SellOrderId:
+
+			sellOrderId := order.Selection.GetSellOrderId()
+			sellOrder, err := s.getSellOrder(ctx, sellOrderId)
+			if err != nil {
+				return nil, err
+			}
+
+			sellerAddr, err := sdk.AccAddressFromBech32(sellOrder.Owner)
+			if err != nil {
+				return nil, err
+			}
+
+			// verify bid price and ask price denoms match
+			if bidPrice.Denom != sellOrder.AskPrice.Denom {
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price denom does not match ask price denom: got %s, expected: %s", bidPrice.Denom, sellOrder.AskPrice.Denom)
+			}
+
+			// verify bid price is greater than or equal to ask price
+			if bidPrice.Amount.LT(sellOrder.AskPrice.Amount) {
+				return nil, sdkerrors.ErrInvalidRequest.Wrapf("bid price too low: got %s, needed at least: %s", bidPrice.String(), sellOrder.AskPrice.String())
+			}
+
+			// verify seller has sufficient balance in credits
+			err = verifyCreditBalance(store, sellerAddr, sellOrder.BatchDenom, sellOrder.Quantity)
+			if err != nil {
+				return nil, ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
+			}
+
+			// get decimal amount of credits available for purchase
+			creditsAvailable, err := math.NewDecFromString(sellOrder.Quantity)
+			if err != nil {
+				return nil, ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
+			}
+
+			creditsToReceive := creditsDesired
+
+			// check if credits desired is more than credits available
+			if creditsDesired.Cmp(creditsAvailable) == 1 {
+
+				// error if partial fill disabled
+				if order.DisablePartialFill {
+					return nil, ecocredit.ErrInsufficientFunds.Wrap("sell order does not have sufficient credits to fill the buy order")
+				}
+
+				creditsToReceive = creditsAvailable
+
+				// recalculate coinToSend if creditsToReceive is not creditsDesired
+				coinToSend, err = getCoinNeeded(creditsToReceive, bidPrice)
+				if err != nil {
+					return nil, err
+				}
+			}
+
+			// send coin to the seller account
+			err = s.bankKeeper.SendCoins(sdkCtx, buyerAddr, sellerAddr, sdk.Coins{coinToSend})
+			if err != nil {
+				return nil, err
+			}
+
+			credit := &ecocredit.MsgSend_SendCredits{
+				BatchDenom:     sellOrder.BatchDenom,
+				TradableAmount: creditsToReceive.String(),
+				// TODO: handle auto-retire settings #621
+				RetiredAmount: "0",
+				//RetirementLocation: retirementLocation,
+			}
+
+			// send credits to the buyer account
+			err = s.sendEcocredits(ctx, credit, store, sellerAddr, buyerAddr)
+			if err != nil {
+				return nil, err
+			}
+
+			// get remaining credits in sell order
+			creditsRemaining, err := creditsAvailable.Sub(creditsToReceive)
+			if err != nil {
+				return nil, err
+			}
+
+			if creditsRemaining.IsZero() {
+
+				// delete sell order if no remaining credits
+				if err := s.sellOrderTable.Delete(ctx, sellOrder.OrderId); err != nil {
+					return nil, err
+				}
+
+			} else {
+				sellOrder.Quantity = creditsRemaining.String()
+
+				// update sell order quantity with remaining credits
+				err = s.sellOrderTable.Update(ctx, sellOrder.OrderId, sellOrder)
+				if err != nil {
+					return nil, err
+				}
+			}
+
+			// TODO: do we want to store a direct buy order? #623
+			buyOrderID := s.buyOrderTable.Sequence().NextVal(ctx)
+			buyOrderIds[i] = buyOrderID
+
+			err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventBuyOrderCreated{
+				BuyOrderId:         buyOrderID,
+				SellOrderId:        sellOrderId,
+				Quantity:           order.Quantity,
+				BidPrice:           order.BidPrice,
+				DisableAutoRetire:  order.DisableAutoRetire,
+				DisablePartialFill: order.DisablePartialFill,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+			err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventBuyOrderFilled{
+				BuyOrderId:  buyOrderID,
+				SellOrderId: sellOrderId,
+				BatchDenom:  sellOrder.BatchDenom,
+				Quantity:    creditsToReceive.String(),
+				TotalPrice:  &coinToSend,
+			})
+			if err != nil {
+				return nil, err
+			}
+
+		// TODO: implement processing for filter option #623
+		//case *ecocredit.MsgBuy_Order_Selection_Filter:
+
+		default:
+			return nil, sdkerrors.ErrInvalidRequest
+		}
+
+		ctx.GasMeter().ConsumeGas(gasCostPerIteration, "create buy order")
+	}
+
+	return &ecocredit.MsgBuyResponse{BuyOrderIds: buyOrderIds}, nil
+}
+
+// AllowAskDenom adds a new ask denom
+func (s serverImpl) AllowAskDenom(goCtx context.Context, req *ecocredit.MsgAllowAskDenom) (*ecocredit.MsgAllowAskDenomResponse, error) {
+	ctx := types.UnwrapSDKContext(goCtx)
+
+	rootAddress := s.accountKeeper.GetModuleAddress(govtypes.ModuleName).String()
+
+	if req.RootAddress != rootAddress {
+		return nil, sdkerrors.ErrUnauthorized.Wrapf("root address must be governance module address, got: %s, expected: %s", req.RootAddress, rootAddress)
+	}
+
+	err := s.askDenomTable.Create(ctx, &ecocredit.AskDenom{
+		Denom:        req.Denom,
+		DisplayDenom: req.DisplayDenom,
+		Exponent:     req.Exponent,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventAllowAskDenom{
+		Denom:        req.Denom,
+		DisplayDenom: req.DisplayDenom,
+		Exponent:     req.Exponent,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.MsgAllowAskDenomResponse{}, nil
+}
+
+func (s serverImpl) sendEcocredits(ctx types.Context, credit *ecocredit.MsgSend_SendCredits, store sdk.KVStore, senderAddr sdk.AccAddress, recipientAddr sdk.AccAddress) error {
+	denom := batchDenomT(credit.BatchDenom)
+	if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
+		return sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)
+	}
+
+	maxDecimalPlaces, err := s.getBatchPrecision(ctx, denom)
+	if err != nil {
+		return err
+	}
+
+	tradable, err := math.NewNonNegativeFixedDecFromString(credit.TradableAmount, maxDecimalPlaces)
+	if err != nil {
+		return err
+	}
+
+	retired, err := math.NewNonNegativeFixedDecFromString(credit.RetiredAmount, maxDecimalPlaces)
+	if err != nil {
+		return err
+	}
+
+	sum, err := tradable.Add(retired)
+	if err != nil {
+		return err
+	}
+
+	// subtract balance
+	err = subAndSetDecimal(store, TradableBalanceKey(senderAddr, denom), sum)
+	if err != nil {
+		return err
+	}
+
+	// Add tradable balance
+	err = addAndSetDecimal(store, TradableBalanceKey(recipientAddr, denom), tradable)
+	if err != nil {
+		return err
+	}
+
+	if !retired.IsZero() {
+		// subtract retired from tradable supply
+		err = subAndSetDecimal(store, TradableSupplyKey(denom), retired)
+		if err != nil {
+			return err
+		}
+
+		// Add retired balance
+		err = retire(ctx, store, recipientAddr, denom, retired, credit.RetirementLocation)
+		if err != nil {
+			return err
+		}
+
+		// Add retired supply
+		err = addAndSetDecimal(store, RetiredSupplyKey(denom), retired)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventReceive{
+		Sender:         senderAddr.String(),
+		Recipient:      recipientAddr.String(),
+		BatchDenom:     string(denom),
+		TradableAmount: tradable.String(),
+		RetiredAmount:  retired.String(),
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBasket) (*ecocredit.MsgAddToBasketResponse, error) {
+	// TODO: implement add to basket
+	return nil, nil
+}
+
+func (s serverImpl) CreateBasket(goCtx context.Context, req *ecocredit.MsgCreateBasket) (*ecocredit.MsgCreateBasketResponse, error) {
+	// TODO: implement create basket
+	return nil, nil
+}
+
+func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPickFromBasket) (*ecocredit.MsgPickFromBasketResponse, error) {
+	// TODO: implement create basket
+	return nil, nil
+}
+
+func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTakeFromBasket) (*ecocredit.MsgTakeFromBasketResponse, error) {
+	// TODO: implement create basket
+	return nil, nil
+}
+
+func (s serverImpl) genProjectID(ctx types.Context, classID string) string {
+	projectSeqNo := s.projectInfoSeq.NextVal(ctx)
+	return ecocredit.FormatProjectID(classID, projectSeqNo)
 }

@@ -15,8 +15,8 @@ import (
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/regen-network/regen-ledger/app"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
+	"github.com/regen-network/regen-ledger/v2/app"
 )
 
 func NewRegenAppConstructor(val network.Validator) servertypes.Application {
@@ -54,5 +54,6 @@ func DefaultConfig() network.Config {
 		CleanupDir:        true,
 		SigningAlgo:       string(hd.Secp256k1Type),
 		KeyringOptions:    []keyring.Option{},
+		PrintMnemonic:     false,
 	}
 }

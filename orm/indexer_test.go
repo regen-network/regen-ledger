@@ -2,6 +2,7 @@ package orm
 
 import (
 	stdErrors "errors"
+	"fmt"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
@@ -15,34 +16,24 @@ func TestNewIndexer(t *testing.T) {
 	testCases := []struct {
 		name        string
 		indexerFunc IndexerFunc
-		codec       IndexKeyCodec
 		expectErr   bool
 		expectedErr string
 	}{
 		{
 			name:        "nil indexer func",
 			indexerFunc: nil,
-			codec:       Max255DynamicLengthIndexKeyCodec{},
 			expectErr:   true,
 			expectedErr: "Indexer func must not be nil",
 		},
 		{
-			name:        "nil codec",
-			indexerFunc: func(interface{}) ([]RowID, error) { return nil, nil },
-			codec:       nil,
-			expectErr:   true,
-			expectedErr: "IndexKeyCodec must not be nil",
-		},
-		{
 			name:        "all not nil",
-			indexerFunc: func(interface{}) ([]RowID, error) { return nil, nil },
-			codec:       Max255DynamicLengthIndexKeyCodec{},
+			indexerFunc: func(interface{}) ([]interface{}, error) { return nil, nil },
 			expectErr:   false,
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			indexer, err := NewIndexer(tc.indexerFunc, tc.codec)
+			indexer, err := NewIndexer(tc.indexerFunc)
 			if tc.expectErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.expectedErr)
@@ -58,34 +49,24 @@ func TestNewUniqueIndexer(t *testing.T) {
 	testCases := []struct {
 		name        string
 		indexerFunc UniqueIndexerFunc
-		codec       IndexKeyCodec
 		expectErr   bool
 		expectedErr string
 	}{
 		{
 			name:        "nil indexer func",
 			indexerFunc: nil,
-			codec:       Max255DynamicLengthIndexKeyCodec{},
 			expectErr:   true,
 			expectedErr: "Indexer func must not be nil",
 		},
 		{
-			name:        "nil codec",
-			indexerFunc: func(interface{}) (RowID, error) { return nil, nil },
-			codec:       nil,
-			expectErr:   true,
-			expectedErr: "IndexKeyCodec must not be nil",
-		},
-		{
 			name:        "all not nil",
-			indexerFunc: func(interface{}) (RowID, error) { return nil, nil },
-			codec:       Max255DynamicLengthIndexKeyCodec{},
+			indexerFunc: func(interface{}) (interface{}, error) { return nil, nil },
 			expectErr:   false,
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			indexer, err := NewUniqueIndexer(tc.indexerFunc, tc.codec)
+			indexer, err := NewUniqueIndexer(tc.indexerFunc)
 			if tc.expectErr {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), tc.expectedErr)
@@ -102,53 +83,54 @@ func TestIndexerOnCreate(t *testing.T) {
 
 	specs := map[string]struct {
 		srcFunc          IndexerFunc
-		expIndexKeys     []RowID
+		expIndexKeys     []interface{}
 		expRowIDs        []RowID
 		expAddFuncCalled bool
 		expErr           error
 	}{
 		"single key": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				return []RowID{{0, 0, 0, 0, 0, 0, 0, 1}}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				return []interface{}{uint64(1)}, nil
 			},
 			expAddFuncCalled: true,
-			expIndexKeys:     []RowID{{0, 0, 0, 0, 0, 0, 0, 1}},
+			expIndexKeys:     []interface{}{uint64(1)},
 			expRowIDs:        []RowID{myRowID},
 		},
 		"multi key": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				return []RowID{{0, 0, 0, 0, 0, 0, 0, 1}, {1, 0, 0, 0, 0, 0, 0, 0}}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				return []interface{}{uint64(1), uint64(128)}, nil
 			},
 			expAddFuncCalled: true,
-			expIndexKeys:     []RowID{{0, 0, 0, 0, 0, 0, 0, 1}, {1, 0, 0, 0, 0, 0, 0, 0}},
+			expIndexKeys:     []interface{}{uint64(1), uint64(128)},
 			expRowIDs:        []RowID{myRowID, myRowID},
 		},
 		"empty key in slice": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				return []RowID{{}}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				return []interface{}{[]byte{}}, nil
 			},
 			expAddFuncCalled: false,
 		},
 		"nil key in slice": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				return []RowID{nil}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				return []interface{}{nil}, nil
 			},
+			expErr:           fmt.Errorf("type %T not allowed as key part", nil),
 			expAddFuncCalled: false,
 		},
 		"empty key": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				return []RowID{}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				return []interface{}{}, nil
 			},
 			expAddFuncCalled: false,
 		},
 		"nil key": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
+			srcFunc: func(value interface{}) ([]interface{}, error) {
 				return nil, nil
 			},
 			expAddFuncCalled: false,
 		},
 		"error case": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
+			srcFunc: func(value interface{}) ([]interface{}, error) {
 				return nil, stdErrors.New("test")
 			},
 			expErr:           stdErrors.New("test"),
@@ -158,7 +140,7 @@ func TestIndexerOnCreate(t *testing.T) {
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
 			mockPolicy := &addFuncRecorder{}
-			idx, err := NewIndexer(spec.srcFunc, Max255DynamicLengthIndexKeyCodec{})
+			idx, err := NewIndexer(spec.srcFunc)
 			require.NoError(t, err)
 			idx.addFunc = mockPolicy.add
 
@@ -184,47 +166,48 @@ func TestIndexerOnDelete(t *testing.T) {
 	store := prefix.NewStore(ctx.KVStore(storeKey), []byte{multiKeyIndex.prefix})
 
 	specs := map[string]struct {
-		srcFunc      IndexerFunc
-		expIndexKeys []RowID
-		expErr       error
+		srcFunc        IndexerFunc
+		expDeletedKeys []RowID
+		expErr         error
 	}{
 		"single key": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				return []RowID{{0, 0, 0, 0, 0, 0, 0, 1}}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				return []interface{}{uint64(1)}, nil
 			},
-			expIndexKeys: []RowID{append([]byte{0, 0, 0, 0, 0, 0, 0, 1}, myRowID...)},
+			expDeletedKeys: []RowID{append(EncodeSequence(1), myRowID...)},
 		},
 		"multi key": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				return []RowID{{0, 0, 0, 0, 0, 0, 0, 1}, {1, 0, 0, 0, 0, 0, 0, 0}}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				return []interface{}{uint64(1), uint64(128)}, nil
 			},
-			expIndexKeys: []RowID{
-				append([]byte{0, 0, 0, 0, 0, 0, 0, 1}, myRowID...),
-				append([]byte{1, 0, 0, 0, 0, 0, 0, 0}, myRowID...),
+			expDeletedKeys: []RowID{
+				append(EncodeSequence(1), myRowID...),
+				append(EncodeSequence(128), myRowID...),
 			},
 		},
 		"empty key": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				return []RowID{}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				return []interface{}{}, nil
 			},
 		},
 		"nil key": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
+			srcFunc: func(value interface{}) ([]interface{}, error) {
 				return nil, nil
 			},
 		},
 		"empty key in slice": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				return []RowID{{}}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				return []interface{}{[]byte{}}, nil
 			},
 		},
 		"nil key in slice": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				return []RowID{nil}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				return []interface{}{nil}, nil
 			},
+			expErr: fmt.Errorf("type %T not allowed as key part", nil),
 		},
 		"error case": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
+			srcFunc: func(value interface{}) ([]interface{}, error) {
 				return nil, stdErrors.New("test")
 			},
 			expErr: stdErrors.New("test"),
@@ -232,22 +215,31 @@ func TestIndexerOnDelete(t *testing.T) {
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
-			codec := FixLengthIndexKeys(EncodedSeqLength)
-			idx, err := NewIndexer(spec.srcFunc, codec)
+			idx, err := NewIndexer(spec.srcFunc)
 			require.NoError(t, err)
+
+			if spec.expErr == nil {
+				err = idx.OnCreate(store, myRowID, nil)
+				require.NoError(t, err)
+				for _, key := range spec.expDeletedKeys {
+					require.Equal(t, true, store.Has(key))
+				}
+			}
+
 			err = idx.OnDelete(store, myRowID, nil)
 			if spec.expErr != nil {
 				require.Equal(t, spec.expErr, err)
 				return
 			}
 			require.NoError(t, err)
+			for _, key := range spec.expDeletedKeys {
+				require.Equal(t, false, store.Has(key))
+			}
 		})
 	}
 }
-
 func TestIndexerOnUpdate(t *testing.T) {
 	myRowID := EncodeSequence(1)
-	codec := FixLengthIndexKeys(EncodedSeqLength)
 
 	var multiKeyIndex MultiKeyIndex
 	ctx := NewMockContext()
@@ -256,21 +248,20 @@ func TestIndexerOnUpdate(t *testing.T) {
 
 	specs := map[string]struct {
 		srcFunc        IndexerFunc
-		mockStore      *updateKVStoreRecorder
 		expAddedKeys   []RowID
 		expDeletedKeys []RowID
 		expErr         error
-		addFunc        func(sdk.KVStore, IndexKeyCodec, []byte, RowID) error
+		addFunc        func(sdk.KVStore, interface{}, RowID) error
 	}{
 		"single key - same key, no update": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				return []RowID{EncodeSequence(1)}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				return []interface{}{uint64(1)}, nil
 			},
 		},
 		"single key - different key, replaced": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				keys := []RowID{EncodeSequence(1), EncodeSequence(2)}
-				return []RowID{keys[value.(int)]}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				keys := []uint64{1, 2}
+				return []interface{}{keys[value.(int)]}, nil
 			},
 			expAddedKeys: []RowID{
 				append(EncodeSequence(2), myRowID...),
@@ -280,14 +271,14 @@ func TestIndexerOnUpdate(t *testing.T) {
 			},
 		},
 		"multi key - same key, no update": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				return []RowID{EncodeSequence(1), EncodeSequence(2)}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				return []interface{}{uint64(1), uint64(2)}, nil
 			},
 		},
 		"multi key - replaced": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				keys := []RowID{EncodeSequence(1), EncodeSequence(2), EncodeSequence(3), EncodeSequence(4)}
-				return []RowID{keys[value.(int)], keys[value.(int)+2]}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				keys := []uint64{1, 2, 3, 4}
+				return []interface{}{keys[value.(int)], keys[value.(int)+2]}, nil
 			},
 			expAddedKeys: []RowID{
 				append(EncodeSequence(2), myRowID...),
@@ -299,47 +290,48 @@ func TestIndexerOnUpdate(t *testing.T) {
 			},
 		},
 		"empty key": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				return []RowID{}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				return []interface{}{}, nil
 			},
 		},
 		"nil key": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
+			srcFunc: func(value interface{}) ([]interface{}, error) {
 				return nil, nil
 			},
 		},
 		"empty key in slice": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				return []RowID{{}}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				return []interface{}{[]byte{}}, nil
 			},
 		},
 		"nil key in slice": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				return []RowID{nil}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				return []interface{}{nil}, nil
 			},
+			expErr: fmt.Errorf("type %T not allowed as key part", nil),
 		},
 		"error case with new value": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
+			srcFunc: func(value interface{}) ([]interface{}, error) {
 				return nil, stdErrors.New("test")
 			},
 			expErr: stdErrors.New("test"),
 		},
 		"error case with old value": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
+			srcFunc: func(value interface{}) ([]interface{}, error) {
 				var err error
 				if value.(int)%2 == 1 {
 					err = stdErrors.New("test")
 				}
-				return []RowID{myRowID}, err
+				return []interface{}{uint64(1)}, err
 			},
 			expErr: stdErrors.New("test"),
 		},
 		"error case on persisting new keys": {
-			srcFunc: func(value interface{}) ([]RowID, error) {
-				keys := []RowID{EncodeSequence(1), EncodeSequence(2)}
-				return []RowID{keys[value.(int)]}, nil
+			srcFunc: func(value interface{}) ([]interface{}, error) {
+				keys := []uint64{1, 2}
+				return []interface{}{keys[value.(int)]}, nil
 			},
-			addFunc: func(_ sdk.KVStore, _ IndexKeyCodec, _ []byte, _ RowID) error {
+			addFunc: func(_ sdk.KVStore, _ interface{}, _ RowID) error {
 				return stdErrors.New("test")
 			},
 			expErr: stdErrors.New("test"),
@@ -347,8 +339,14 @@ func TestIndexerOnUpdate(t *testing.T) {
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
-			idx, err := NewIndexer(spec.srcFunc, codec)
+			idx, err := NewIndexer(spec.srcFunc)
 			require.NoError(t, err)
+
+			if spec.expErr == nil {
+				err = idx.OnCreate(store, myRowID, 0)
+				require.NoError(t, err)
+			}
+
 			if spec.addFunc != nil {
 				idx.addFunc = spec.addFunc
 			}
@@ -358,14 +356,20 @@ func TestIndexerOnUpdate(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-
+			for _, key := range spec.expAddedKeys {
+				require.Equal(t, true, store.Has(key))
+			}
+			for _, key := range spec.expDeletedKeys {
+				require.Equal(t, false, store.Has(key))
+			}
 		})
 	}
 }
 
 func TestUniqueKeyAddFunc(t *testing.T) {
 	myRowID := EncodeSequence(1)
-	myPresetKey := append([]byte("my-preset-key"), myRowID...)
+	presetKeyPart := []byte("my-preset-key")
+	presetKey := append(AddLengthPrefix(presetKeyPart), myRowID...)
 
 	specs := map[string]struct {
 		srcKey           []byte
@@ -375,10 +379,10 @@ func TestUniqueKeyAddFunc(t *testing.T) {
 
 		"create when not exists": {
 			srcKey:           []byte("my-index-key"),
-			expExistingEntry: append([]byte("my-index-key"), myRowID...),
+			expExistingEntry: append(AddLengthPrefix([]byte("my-index-key")), myRowID...),
 		},
 		"error when exists already": {
-			srcKey: []byte("my-preset-key"),
+			srcKey: presetKeyPart,
 			expErr: ErrUniqueConstraint,
 		},
 		"nil key not allowed": {
@@ -394,10 +398,9 @@ func TestUniqueKeyAddFunc(t *testing.T) {
 		t.Run(msg, func(t *testing.T) {
 			storeKey := sdk.NewKVStoreKey("test")
 			store := NewMockContext().KVStore(storeKey)
-			store.Set(myPresetKey, []byte{})
+			store.Set(presetKey, []byte{})
 
-			codec := FixLengthIndexKeys(EncodedSeqLength)
-			err := uniqueKeysAddFunc(store, codec, spec.srcKey, myRowID)
+			err := uniqueKeysAddFunc(store, spec.srcKey, myRowID)
 			require.True(t, spec.expErr.Is(err))
 			if spec.expErr != nil {
 				return
@@ -409,7 +412,8 @@ func TestUniqueKeyAddFunc(t *testing.T) {
 
 func TestMultiKeyAddFunc(t *testing.T) {
 	myRowID := EncodeSequence(1)
-	myPresetKey := append([]byte("my-preset-key"), myRowID...)
+	presetKeyPart := []byte("my-preset-key")
+	presetKey := append(AddLengthPrefix(presetKeyPart), myRowID...)
 
 	specs := map[string]struct {
 		srcKey           []byte
@@ -419,11 +423,11 @@ func TestMultiKeyAddFunc(t *testing.T) {
 
 		"create when not exists": {
 			srcKey:           []byte("my-index-key"),
-			expExistingEntry: append([]byte("my-index-key"), myRowID...),
+			expExistingEntry: append(AddLengthPrefix([]byte("my-index-key")), myRowID...),
 		},
 		"noop when exists already": {
-			srcKey:           []byte("my-preset-key"),
-			expExistingEntry: myPresetKey,
+			srcKey:           presetKeyPart,
+			expExistingEntry: presetKey,
 		},
 		"nil key not allowed": {
 			srcKey: nil,
@@ -438,10 +442,9 @@ func TestMultiKeyAddFunc(t *testing.T) {
 		t.Run(msg, func(t *testing.T) {
 			storeKey := sdk.NewKVStoreKey("test")
 			store := NewMockContext().KVStore(storeKey)
-			store.Set(myPresetKey, []byte{})
+			store.Set(presetKey, []byte{})
 
-			codec := FixLengthIndexKeys(EncodedSeqLength)
-			err := multiKeyAddFunc(store, codec, spec.srcKey, myRowID)
+			err := multiKeyAddFunc(store, spec.srcKey, myRowID)
 			require.True(t, spec.expErr.Is(err))
 			if spec.expErr != nil {
 				return
@@ -452,34 +455,42 @@ func TestMultiKeyAddFunc(t *testing.T) {
 }
 
 func TestDifference(t *testing.T) {
-	asByte := func(s []string) []RowID {
-		r := make([]RowID, len(s))
-		for i := 0; i < len(s); i++ {
-			r[i] = []byte(s[i])
-		}
-		return r
-	}
-
 	specs := map[string]struct {
-		srcA      []string
-		srcB      []string
-		expResult []RowID
+		srcA      []interface{}
+		srcB      []interface{}
+		expResult []interface{}
+		expErr    bool
 	}{
 		"all of A": {
-			srcA:      []string{"a", "b"},
-			srcB:      []string{"c"},
-			expResult: []RowID{[]byte("a"), []byte("b")},
+			srcA:      []interface{}{"a", "b"},
+			srcB:      []interface{}{"c"},
+			expResult: []interface{}{"a", "b"},
 		},
 		"A - B": {
-			srcA:      []string{"a", "b"},
-			srcB:      []string{"b", "c", "d"},
-			expResult: []RowID{[]byte("a")},
+			srcA:      []interface{}{"a", "b"},
+			srcB:      []interface{}{"b", "c", "d"},
+			expResult: []interface{}{"a"},
+		},
+		"type in A not allowed": {
+			srcA:   []interface{}{1},
+			srcB:   []interface{}{"b", "c", "d"},
+			expErr: true,
+		},
+		"type in B not allowed": {
+			srcA:   []interface{}{"b", "c", "d"},
+			srcB:   []interface{}{1},
+			expErr: true,
 		},
 	}
 	for msg, spec := range specs {
 		t.Run(msg, func(t *testing.T) {
-			got := difference(asByte(spec.srcA), asByte(spec.srcB))
-			assert.Equal(t, spec.expResult, got)
+			got, err := difference(spec.srcA, spec.srcB)
+			if spec.expErr {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				assert.Equal(t, spec.expResult, got)
+			}
 		})
 	}
 }
@@ -487,64 +498,46 @@ func TestDifference(t *testing.T) {
 func TestPruneEmptyKeys(t *testing.T) {
 	specs := map[string]struct {
 		srcFunc   IndexerFunc
-		expResult []RowID
+		expResult []interface{}
 		expError  error
 	}{
 		"non empty": {
-			srcFunc: func(v interface{}) ([]RowID, error) {
-				return []RowID{{0}, {1}}, nil
+			srcFunc: func(v interface{}) ([]interface{}, error) {
+				return []interface{}{uint64(0), uint64(1)}, nil
 			},
-			expResult: []RowID{{0}, {1}},
+			expResult: []interface{}{uint64(0), uint64(1)},
 		},
 		"empty": {
-			srcFunc: func(v interface{}) ([]RowID, error) {
-				return []RowID{}, nil
+			srcFunc: func(v interface{}) ([]interface{}, error) {
+				return []interface{}{}, nil
 			},
-			expResult: []RowID{},
+			expResult: []interface{}{},
 		},
 		"nil": {
-			srcFunc: func(v interface{}) ([]RowID, error) {
+			srcFunc: func(v interface{}) ([]interface{}, error) {
 				return nil, nil
 			},
 		},
-		"nil in the beginning": {
-			srcFunc: func(v interface{}) ([]RowID, error) {
-				return []RowID{nil, {0}, {1}}, nil
-			},
-			expResult: []RowID{{0}, {1}},
-		},
-		"nil in the middle": {
-			srcFunc: func(v interface{}) ([]RowID, error) {
-				return []RowID{{0}, nil, {1}}, nil
-			},
-			expResult: []RowID{{0}, {1}},
-		},
-		"nil at the end": {
-			srcFunc: func(v interface{}) ([]RowID, error) {
-				return []RowID{{0}, nil, {1}}, nil
-			},
-			expResult: []RowID{{0}, {1}},
-		},
 		"empty in the beginning": {
-			srcFunc: func(v interface{}) ([]RowID, error) {
-				return []RowID{{}, {0}, {1}}, nil
+			srcFunc: func(v interface{}) ([]interface{}, error) {
+				return []interface{}{[]byte{}, uint64(0), uint64(1)}, nil
 			},
-			expResult: []RowID{{0}, {1}},
+			expResult: []interface{}{uint64(0), uint64(1)},
 		},
 		"empty in the middle": {
-			srcFunc: func(v interface{}) ([]RowID, error) {
-				return []RowID{{0}, {}, {1}}, nil
+			srcFunc: func(v interface{}) ([]interface{}, error) {
+				return []interface{}{uint64(0), []byte{}, uint64(1)}, nil
 			},
-			expResult: []RowID{{0}, {1}},
+			expResult: []interface{}{uint64(0), uint64(1)},
 		},
 		"empty at the end": {
-			srcFunc: func(v interface{}) ([]RowID, error) {
-				return []RowID{{0}, {}, {1}}, nil
+			srcFunc: func(v interface{}) ([]interface{}, error) {
+				return []interface{}{uint64(0), uint64(1), []byte{}}, nil
 			},
-			expResult: []RowID{{0}, {1}},
+			expResult: []interface{}{uint64(0), uint64(1)},
 		},
 		"error passed": {
-			srcFunc: func(v interface{}) ([]RowID, error) {
+			srcFunc: func(v interface{}) ([]interface{}, error) {
 				return nil, stdErrors.New("test")
 			},
 			expError: stdErrors.New("test"),
@@ -563,54 +556,14 @@ func TestPruneEmptyKeys(t *testing.T) {
 }
 
 type addFuncRecorder struct {
-	secondaryIndexKeys []RowID
+	secondaryIndexKeys []interface{}
 	rowIDs             []RowID
 	called             bool
 }
 
-func (c *addFuncRecorder) add(_ sdk.KVStore, _ IndexKeyCodec, key []byte, rowID RowID) error {
+func (c *addFuncRecorder) add(_ sdk.KVStore, key interface{}, rowID RowID) error {
 	c.secondaryIndexKeys = append(c.secondaryIndexKeys, key)
 	c.rowIDs = append(c.rowIDs, rowID)
 	c.called = true
 	return nil
-}
-
-type deleteKVStoreRecorder struct {
-	AlwaysPanicKVStore
-	deletes []RowID
-}
-
-func (m *deleteKVStoreRecorder) Delete(key []byte) {
-	m.deletes = append(m.deletes, key)
-}
-
-type updateKVStoreRecorder struct {
-	deleteKVStoreRecorder
-	stored    tuples
-	hasResult bool
-}
-
-func (u *updateKVStoreRecorder) Set(key, value []byte) {
-	u.stored = append(u.stored, tuple{key, value})
-}
-
-func (u updateKVStoreRecorder) Has(key []byte) bool {
-	return u.hasResult
-}
-
-type tuple struct {
-	key, val []byte
-}
-
-type tuples []tuple
-
-func (t tuples) Keys() []RowID {
-	if t == nil {
-		return nil
-	}
-	r := make([]RowID, len(t))
-	for i, v := range t {
-		r[i] = v.key
-	}
-	return r
 }

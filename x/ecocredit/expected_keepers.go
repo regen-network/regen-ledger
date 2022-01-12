@@ -7,13 +7,16 @@ import (
 
 // AccountKeeper defines the expected interface needed to create and retrieve accounts.
 type AccountKeeper interface {
-	// Return a new account with the next account number. Does not save the new account to the store.
+	// NewAccount returns a new account with the next account number. Does not save the new account to the store.
 	NewAccount(sdk.Context, authtypes.AccountI) authtypes.AccountI
 
-	// Retrieve an account from the store.
+	// GetAccount retrieves an account from the store.
 	GetAccount(sdk.Context, sdk.AccAddress) authtypes.AccountI
 
-	// Set an account in the store.
+	// GetModuleAddress retrieves a module account address from the store.
+	GetModuleAddress(moduleName string) sdk.AccAddress
+
+	// SetAccount sets an account in the store.
 	SetAccount(sdk.Context, authtypes.AccountI)
 }
 
@@ -22,4 +25,5 @@ type BankKeeper interface {
 	BurnCoins(ctx sdk.Context, moduleName string, amt sdk.Coins) error
 	SpendableCoins(ctx sdk.Context, addr sdk.AccAddress) sdk.Coins
 	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
+	SendCoins(ctx sdk.Context, fromAddr sdk.AccAddress, toAddr sdk.AccAddress, amt sdk.Coins) error
 }
