@@ -647,55 +647,6 @@ import (
 //	}
 //}
 
-func (s *IntegrationTestSuite) createClassAndIssueBatch(recipient string, tradableCredits string) (*ecocredit.MsgCreateClassResponse, *ecocredit.MsgCreateProjectResponse, *ecocredit.MsgCreateBatchResponse) {
-	admin := s.signers[0]
-	issuer1 := s.signers[1].String()
-	issuer2 := s.signers[2].String()
-
-	time1 := time.Now()
-	time2 := time.Now()
-
-	// fund admin account
-	s.Require().NoError(s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", ecocredit.DefaultCreditClassFeeTokens.Int64()))))
-
-	// create credit class
-	createClassRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
-		Admin:          admin.String(),
-		Issuers:        []string{issuer1, issuer2},
-		Metadata:       nil,
-		CreditTypeName: "carbon",
-	})
-	s.Require().NoError(err)
-
-	// create project
-	projectRes, err := s.msgClient.CreateProject(s.ctx, &ecocredit.MsgCreateProject{
-		ClassId:         createClassRes.ClassId,
-		Issuer:          issuer1,
-		Metadata:        []byte("metadata"),
-		ProjectLocation: "AB",
-	})
-	s.Require().NoError(err)
-
-	// create credit batch
-	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
-		Issuer:    issuer1,
-		ProjectId: projectRes.ProjectId,
-		StartDate: &time1,
-		EndDate:   &time2,
-		Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
-			{
-				Recipient:          recipient,
-				TradableAmount:     tradableCredits,
-				RetiredAmount:      "0",
-				RetirementLocation: "YZ",
-			},
-		},
-	})
-	s.Require().NoError(err)
-
-	return createClassRes, projectRes, createBatchRes
-}
-
 func (s *IntegrationTestSuite) TestCreateBasket() {
 	server := s.msgClient
 	require := s.Require()
@@ -1384,6 +1335,55 @@ func (s *IntegrationTestSuite) getBasketTokenBalance(addr sdk.AccAddress, denom 
 	amtDec, err := math.NewDecFromString(coin.Amount.String())
 	s.Require().NoError(err)
 	return amtDec
+}
+
+func (s *IntegrationTestSuite) createClassAndIssueBatch(recipient string, tradableCredits string) (*ecocredit.MsgCreateClassResponse, *ecocredit.MsgCreateProjectResponse, *ecocredit.MsgCreateBatchResponse) {
+	admin := s.signers[0]
+	issuer1 := s.signers[1].String()
+	issuer2 := s.signers[2].String()
+
+	time1 := time.Now()
+	time2 := time.Now()
+
+	// fund admin account
+	s.Require().NoError(s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", ecocredit.DefaultCreditClassFeeTokens.Int64()))))
+
+	// create credit class
+	createClassRes, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
+		Admin:          admin.String(),
+		Issuers:        []string{issuer1, issuer2},
+		Metadata:       nil,
+		CreditTypeName: "carbon",
+	})
+	s.Require().NoError(err)
+
+	// create project
+	projectRes, err := s.msgClient.CreateProject(s.ctx, &ecocredit.MsgCreateProject{
+		ClassId:         createClassRes.ClassId,
+		Issuer:          issuer1,
+		Metadata:        []byte("metadata"),
+		ProjectLocation: "AB",
+	})
+	s.Require().NoError(err)
+
+	// create credit batch
+	createBatchRes, err := s.msgClient.CreateBatch(s.ctx, &ecocredit.MsgCreateBatch{
+		Issuer:    issuer1,
+		ProjectId: projectRes.ProjectId,
+		StartDate: &time1,
+		EndDate:   &time2,
+		Issuance: []*ecocredit.MsgCreateBatch_BatchIssuance{
+			{
+				Recipient:          recipient,
+				TradableAmount:     tradableCredits,
+				RetiredAmount:      "0",
+				RetirementLocation: "YZ",
+			},
+		},
+	})
+	s.Require().NoError(err)
+
+	return createClassRes, projectRes, createBatchRes
 }
 
 func (s *IntegrationTestSuite) createClassAndIssueBatchWithTime(recipient, tradableCredits, startTime, endTime string) (*ecocredit.MsgCreateClassResponse, *ecocredit.MsgCreateProjectResponse, *ecocredit.MsgCreateBatchResponse) {
