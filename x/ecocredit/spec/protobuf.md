@@ -392,7 +392,7 @@ AskDenom represents the information for an ask denom.
 <a name="regen.ecocredit.v1alpha2.Basket"></a>
 
 ### Basket
-
+Basket represents a basket of credits.
 
 
 | Field | Type | Label | Description |
@@ -437,7 +437,7 @@ BasketCredits is a type to describe an array of basket credits.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| credits | [BasketCredit](#regen.ecocredit.v1alpha2.BasketCredit) | repeated |  |
+| credits | [BasketCredit](#regen.ecocredit.v1alpha2.BasketCredit) | repeated | credits is a list of credits with a batch denom and traceable amount. |
 
 
 

@@ -1291,6 +1291,7 @@ func (m *Filter_DateRange) GetEndDate() *time.Time {
 	return nil
 }
 
+// Basket represents a basket of credits.
 type Basket struct {
 	// basket_address is the address of the basket
 	BasketAddress string `protobuf:"bytes,1,opt,name=basket_address,json=basketAddress,proto3" json:"basket_address,omitempty"`
@@ -1427,6 +1428,7 @@ func (m *Basket) GetAllowPicking() bool {
 
 // BasketCredits is a type to describe an array of basket credits.
 type BasketCredits struct {
+	// credits is a list of credits with a batch denom and traceable amount.
 	Credits []*BasketCredit `protobuf:"bytes,1,rep,name=credits,proto3" json:"credits,omitempty"`
 }
 

@@ -310,6 +310,7 @@ message Filter {
   }
 }
 
+// Basket represents a basket of credits.
 message Basket {
 
   // basket_address is the address of the basket
@@ -353,5 +354,6 @@ message Basket {
 
 // BasketCredits is a type to describe an array of basket credits.
 message BasketCredits {
+  // credits is a list of credits with a batch denom and traceable amount.
   repeated BasketCredit credits = 1;
 }
