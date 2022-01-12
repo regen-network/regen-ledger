@@ -885,6 +885,7 @@ func (s serverImpl) AllowAskDenom(goCtx context.Context, req *ecocredit.MsgAllow
 }
 
 func (s serverImpl) sendEcocredits(ctx types.Context, credit *ecocredit.MsgSend_SendCredits, store sdk.KVStore, senderAddr sdk.AccAddress, recipientAddr sdk.AccAddress) error {
+
 	denom := batchDenomT(credit.BatchDenom)
 	if !s.batchInfoTable.Has(ctx, orm.RowID(denom)) {
 		return sdkerrors.ErrInvalidRequest.Wrapf("%s is not a valid credit batch denom", denom)

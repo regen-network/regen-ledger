@@ -312,40 +312,43 @@ message Filter {
 
 message Basket {
 
+  // basket_address is the address of the basket
+  string basket_address = 1;
+
   // basket_id is the id of the basket
-  uint64 basket_id = 1;
+  uint64 basket_id = 2;
 
   // basket_denom is the denom of the basket's coin
-  string basket_denom = 2;
+  string basket_denom = 3;
 
   // curator is the address of the basket curator who is able to change certain
   // basket settings.
-  string curator = 3;
+  string curator = 4;
 
   // name will be used to create a bank denom for this basket token of the form
   // ecocredit:{curator}:{name}.
-  string name = 4;
+  string name = 5;
 
   // display_name will be used to create a bank Metadata display name for this
   // basket token of the form ecocredit:{curator}:{display_name}.
-  string display_name = 5;
+  string display_name = 6;
 
   // exponent is the exponent that will be used for denom metadata. An exponent
   // of 6 will mean that 10^6 units of a basket token should be displayed
   // as one unit in user interfaces.
-  uint32 exponent = 6;
+  uint32 exponent = 7;
 
   // basket_criteria is the criteria by which credits can be added to the
   // basket. Basket criteria will be applied in order and the first criteria
   // which applies to a credit will determine its multiplier in the basket.
-  Filter basket_criteria = 7;
+  Filter basket_criteria = 8;
 
   // disable_auto_retire disables the auto-retirement of credits upon taking from the basket.
   // set to true to allow credits to be taken without retiring.
-  bool disable_auto_retire = 8;
+  bool disable_auto_retire = 9;
 
   // allow_picking allows the picking of specific credits from the basket
-  bool allow_picking = 9;
+  bool allow_picking = 10;
 }
 
 // BasketCredits is a type to describe an array of basket credits.

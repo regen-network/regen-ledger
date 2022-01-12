@@ -459,20 +459,3 @@ func (s serverImpl) BasketCredits(goCtx context.Context, request *ecocredit.Quer
 	// TODO: #629
 	return nil, nil
 }
-
-// BasketBatchBalance gets a basket's ecocredit balance of a given batch denom
-func (s serverImpl) BasketBatchBalance(goCtx context.Context, request *ecocredit.QueryBasketBatchBalanceRequest) (*ecocredit.QueryBasketBatchBalanceResponse, error) {
-	basketKey := BasketAddressKey(basketDenomT(request.BasketDenom))
-	derivedKey := s.storeKey.Derive(basketKey)
-	res, err := s.Balance(goCtx, &ecocredit.QueryBalanceRequest{
-		Account:    derivedKey.Address().String(),
-		BatchDenom: request.BatchDenom,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &ecocredit.QueryBasketBatchBalanceResponse{Credit: &ecocredit.BasketCredit{
-		BatchDenom:     request.BatchDenom,
-		TradableAmount: res.TradableAmount,
-	}}, nil
-}

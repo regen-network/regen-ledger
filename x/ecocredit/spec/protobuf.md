@@ -47,8 +47,6 @@
     - [QueryAllowedAskDenomsResponse](#regen.ecocredit.v1alpha2.QueryAllowedAskDenomsResponse)
     - [QueryBalanceRequest](#regen.ecocredit.v1alpha2.QueryBalanceRequest)
     - [QueryBalanceResponse](#regen.ecocredit.v1alpha2.QueryBalanceResponse)
-    - [QueryBasketBatchBalanceRequest](#regen.ecocredit.v1alpha2.QueryBasketBatchBalanceRequest)
-    - [QueryBasketBatchBalanceResponse](#regen.ecocredit.v1alpha2.QueryBasketBatchBalanceResponse)
     - [QueryBasketCreditsRequest](#regen.ecocredit.v1alpha2.QueryBasketCreditsRequest)
     - [QueryBasketCreditsResponse](#regen.ecocredit.v1alpha2.QueryBasketCreditsResponse)
     - [QueryBasketRequest](#regen.ecocredit.v1alpha2.QueryBasketRequest)
@@ -399,6 +397,7 @@ AskDenom represents the information for an ask denom.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| basket_address | [string](#string) |  | basket_address is the address of the basket |
 | basket_id | [uint64](#uint64) |  | basket_id is the id of the basket |
 | basket_denom | [string](#string) |  | basket_denom is the denom of the basket's coin |
 | curator | [string](#string) |  | curator is the address of the basket curator who is able to change certain basket settings. |
@@ -857,37 +856,6 @@ QueryBalanceResponse is the Query/Balance response type.
 | ----- | ---- | ----- | ----------- |
 | tradable_amount | [string](#string) |  | tradable_amount is the decimal number of tradable credits. |
 | retired_amount | [string](#string) |  | retired_amount is the decimal number of retired credits. |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha2.QueryBasketBatchBalanceRequest"></a>
-
-### QueryBasketBatchBalanceRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| basket_denom | [string](#string) |  |  |
-| batch_denom | [string](#string) |  |  |
-
-
-
-
-
-
-<a name="regen.ecocredit.v1alpha2.QueryBasketBatchBalanceResponse"></a>
-
-### QueryBasketBatchBalanceResponse
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| credit | [BasketCredit](#regen.ecocredit.v1alpha2.BasketCredit) |  |  |
 
 
 
@@ -1504,7 +1472,6 @@ Msg is the regen.ecocredit.v1alpha2 Query service.
 | Basket | [QueryBasketRequest](#regen.ecocredit.v1alpha2.QueryBasketRequest) | [QueryBasketResponse](#regen.ecocredit.v1alpha2.QueryBasketResponse) | Basket queries one basket by denom. |
 | Baskets | [QueryBasketsRequest](#regen.ecocredit.v1alpha2.QueryBasketsRequest) | [QueryBasketsResponse](#regen.ecocredit.v1alpha2.QueryBasketsResponse) | Baskets lists all baskets in the ecocredit module. |
 | BasketCredits | [QueryBasketCreditsRequest](#regen.ecocredit.v1alpha2.QueryBasketCreditsRequest) | [QueryBasketCreditsResponse](#regen.ecocredit.v1alpha2.QueryBasketCreditsResponse) | BasketCredits lists all ecocredits inside a given basket. |
-| BasketBatchBalance | [QueryBasketBatchBalanceRequest](#regen.ecocredit.v1alpha2.QueryBasketBatchBalanceRequest) | [QueryBasketBatchBalanceResponse](#regen.ecocredit.v1alpha2.QueryBasketBatchBalanceResponse) |  |
 
  <!-- end services -->
 
@@ -1714,6 +1681,7 @@ MsgCreateBasketResponse is the Msg/CreateBasket response type.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | basket_denom | [string](#string) |  | basket_denom is the unique denomination ID of the newly created basket. |
+| basket_address | [string](#string) |  | basket_address is the derived address of the newly created basket. |
 
 
 

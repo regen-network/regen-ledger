@@ -544,9 +544,11 @@ message MsgCreateBasket {
 
 // MsgCreateBasketResponse is the Msg/CreateBasket response type.
 message MsgCreateBasketResponse {
-
   // basket_denom is the unique denomination ID of the newly created basket.
   string basket_denom = 1;
+
+  // basket_address is the derived address of the newly created basket.
+  string basket_address = 2;
 }
 
 // MsgAddToBasket is the Msg/AddToBasket request type.

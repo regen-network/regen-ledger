@@ -20,13 +20,9 @@ require (
 )
 
 require (
-	github.com/gogo/protobuf v1.3.3
-	github.com/golang/protobuf v1.5.2
-	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/genproto v0.0.0-20220107163113-42d7afdf6368
-	google.golang.org/grpc v1.40.0
+	google.golang.org/genproto v0.0.0-20220111164026-67b88f271998 // indirect
 )
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.33.2
