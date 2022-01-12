@@ -210,11 +210,19 @@ func TestGenesisValidate(t *testing.T) {
 						CreditType: genesisState.Params.CreditTypes[0],
 					},
 				}
+				genesisState.ProjectInfo = []*ecocredit.ProjectInfo{
+					{
+						ProjectId:       "01",
+						ClassId:         "1",
+						Issuer:          addr1.String(),
+						Metadata:        []byte("meta-data"),
+						ProjectLocation: "AQ",
+					},
+				}
 				genesisState.BatchInfo = []*ecocredit.BatchInfo{
 					{
-						ClassId:     "1",
+						ProjectId:   "01",
 						BatchDenom:  "1/2",
-						Issuer:      addr1.String(),
 						TotalAmount: "1000",
 						Metadata:    []byte("meta-data"),
 					},
@@ -244,11 +252,19 @@ func TestGenesisValidate(t *testing.T) {
 						CreditType: genesisState.Params.CreditTypes[0],
 					},
 				}
+				genesisState.ProjectInfo = []*ecocredit.ProjectInfo{
+					{
+						ProjectId:       "01",
+						ClassId:         "1",
+						Issuer:          addr1.String(),
+						Metadata:        []byte("meta-data"),
+						ProjectLocation: "AQ",
+					},
+				}
 				genesisState.BatchInfo = []*ecocredit.BatchInfo{
 					{
-						ClassId:     "1",
+						ProjectId:   "01",
 						BatchDenom:  "1/2",
-						Issuer:      addr1.String(),
 						TotalAmount: "1000",
 						Metadata:    []byte("meta-data"),
 					},
@@ -285,11 +301,19 @@ func TestGenesisValidate(t *testing.T) {
 						CreditType: genesisState.Params.CreditTypes[0],
 					},
 				}
+				genesisState.ProjectInfo = []*ecocredit.ProjectInfo{
+					{
+						ProjectId:       "01",
+						ClassId:         "1",
+						Issuer:          addr1.String(),
+						Metadata:        []byte("meta-data"),
+						ProjectLocation: "AQ",
+					},
+				}
 				genesisState.BatchInfo = []*ecocredit.BatchInfo{
 					{
-						ClassId:     "1",
+						ProjectId:   "01",
 						BatchDenom:  "1/2",
-						Issuer:      addr1.String(),
 						TotalAmount: "1000",
 						Metadata:    []byte("meta-data"),
 					},
@@ -340,18 +364,25 @@ func TestGenesisValidate(t *testing.T) {
 						CreditType: genesisState.Params.CreditTypes[0],
 					},
 				}
+				genesisState.ProjectInfo = []*ecocredit.ProjectInfo{
+					{
+						ProjectId:       "01",
+						ClassId:         "1",
+						Issuer:          addr1.String(),
+						Metadata:        []byte("meta-data"),
+						ProjectLocation: "AQ",
+					},
+				}
 				genesisState.BatchInfo = []*ecocredit.BatchInfo{
 					{
-						ClassId:     "1",
+						ProjectId:   "01",
 						BatchDenom:  "1/2",
-						Issuer:      addr1.String(),
 						TotalAmount: "1000",
 						Metadata:    []byte("meta-data"),
 					},
 					{
-						ClassId:         "2",
+						ProjectId:       "01",
 						BatchDenom:      "2/2",
-						Issuer:          addr2.String(),
 						AmountCancelled: "0",
 						TotalAmount:     "1000",
 						Metadata:        []byte("meta-data"),

@@ -9,12 +9,18 @@ import (
 	"github.com/regen-network/regen-ledger/orm"
 )
 
-var _, _, _, _, _, _ orm.PrimaryKeyed = &ClassInfo{}, &BatchInfo{}, &CreditTypeSeq{}, &SellOrder{}, &BuyOrder{}, &AskDenom{}
+var _, _, _, _, _, _, _ orm.PrimaryKeyed = &ClassInfo{}, &BatchInfo{}, &CreditTypeSeq{}, &SellOrder{}, &BuyOrder{}, &AskDenom{}, &ProjectInfo{}
 
 // PrimaryKeyFields returns the fields of the object that will make up the
 // primary key for ClassInfo.
 func (m *ClassInfo) PrimaryKeyFields() []interface{} {
 	return []interface{}{m.ClassId}
+}
+
+// PrimaryKeyFields returns the fields of the object that will make up the
+// primary key for ProjectInfo.
+func (m *ProjectInfo) PrimaryKeyFields() []interface{} {
+	return []interface{}{m.ProjectId}
 }
 
 // PrimaryKeyFields returns the fields of the object that will make up the
@@ -72,4 +78,14 @@ func fastRemoveWhitespace(str string) string {
 		}
 	}
 	return b.String()
+}
+
+// AssertProjectIssuer makes sure that the issuer is equals to the issuer of the credit batches for this project.
+// Returns ErrUnauthorized otherwise.
+func (m *ProjectInfo) AssertProjectIssuer(issuer string) error {
+	if m.Issuer == issuer {
+		return nil
+	}
+
+	return sdkerrors.ErrUnauthorized
 }

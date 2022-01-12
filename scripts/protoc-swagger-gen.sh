@@ -19,11 +19,19 @@ for dir in $proto_dirs; do
 done
 
 
-# download Cosmos SDK swagger doc
 rm -f ./tmp-swagger-gen/swagger.yaml
+
+# download Cosmos SDK swagger doc
 SDK_VERSION=$(go list -m -f '{{ .Version }}' github.com/cosmos/cosmos-sdk)
 echo "SDK version ${SDK_VERSION}"
 wget "https://raw.githubusercontent.com/cosmos/cosmos-sdk/${SDK_VERSION}/client/docs/swagger-ui/swagger.yaml" -P ./tmp-swagger-gen
+mv ./tmp-swagger-gen/swagger.yaml ./tmp-swagger-gen/swagger-sdk.yaml
+
+# # download IBC swagger doc
+IBC_VERSION=$(go list -m -f '{{ .Version }}' github.com/cosmos/ibc-go/v2)
+echo "IBC version ${IBC_VERSION}"
+wget "https://raw.githubusercontent.com/cosmos/ibc-go/${IBC_VERSION}/docs/client/swagger-ui/swagger.yaml" -P ./tmp-swagger-gen
+mv ./tmp-swagger-gen/swagger.yaml ./tmp-swagger-gen/swagger-ibc.yaml
 
 # combine swagger files
 # uses nodejs package `swagger-combine`.
