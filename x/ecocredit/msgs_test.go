@@ -1358,7 +1358,7 @@ func TestMsgTakeFromBasket_ValidateBasic(t *testing.T) {
 			name: "bad denom",
 			fields: fields{
 				Owner:              addr.String(),
-				BasketDenom:        "foo",
+				BasketDenom:        "foo.bar",
 				Amount:             "10.23510",
 				RetirementLocation: validLocation,
 			},
@@ -1385,14 +1385,14 @@ func TestMsgTakeFromBasket_ValidateBasic(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "no location",
+			name: "valid - no location is fine",
 			fields: fields{
 				Owner:              addr.String(),
 				BasketDenom:        validDenom,
 				Amount:             "10.23510",
 				RetirementLocation: "",
 			},
-			wantErr: true,
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
@@ -1449,7 +1449,7 @@ func TestMsgPickFromBasket_ValidateBasic(t *testing.T) {
 			name: "bad denom",
 			fields: fields{
 				Owner:              addr.String(),
-				BasketDenom:        "foo",
+				BasketDenom:        "foo.bar//",
 				Credits:            []*BasketCredit{{BatchDenom: validDenom, TradableAmount: "4.20"}},
 				RetirementLocation: validLocation,
 			},
@@ -1546,7 +1546,7 @@ func TestMsgAddToBasket_ValidateBasic(t *testing.T) {
 			name: "bad denom",
 			fields: fields{
 				Owner:       addr.String(),
-				BasketDenom: "foo",
+				BasketDenom: "foo.bar//--",
 				Credits:     []*BasketCredit{{validDenom, "12.402"}},
 			},
 			wantErr: true,
@@ -1618,7 +1618,7 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 			name: "valid",
 			fields: fields{
 				Curator:           addr.String(),
-				Name:              "my very cool basket",
+				Name:              "MyVeryCoolBasket",
 				DisplayName:       "cool BASKET, inc.",
 				Exponent:          10,
 				BasketCriteria:    &Filter{Sum: &Filter_Owner{Owner: addr.String()}},
@@ -1630,7 +1630,7 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 			name: "valid nested",
 			fields: fields{
 				Curator:           addr.String(),
-				Name:              "my very cool basket",
+				Name:              "MyVeryCoolBasket",
 				DisplayName:       "cool BASKET, inc.",
 				Exponent:          10,
 				BasketCriteria:    &Filter{Sum: &Filter_And_{And: &Filter_And{Filters: []*Filter{{Sum: &Filter_Issuer{Issuer: addr.String()}}}}}},

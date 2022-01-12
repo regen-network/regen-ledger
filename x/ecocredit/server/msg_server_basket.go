@@ -24,7 +24,6 @@ func (s serverImpl) CreateBasket(goCtx context.Context, req *ecocredit.MsgCreate
 	// construct the basket denom - ecocredit:basketName
 	basketDenom := req.Name
 
-	// TODO(Tyler): should we enforce unique basket names? or do some sort of sequence thing?
 	// check if a basket with this name already exists
 	var basket ecocredit.Basket
 	err := s.basketTable.GetOne(ctx, orm.RowID(basketDenom), &basket)
@@ -43,7 +42,7 @@ func (s serverImpl) CreateBasket(goCtx context.Context, req *ecocredit.MsgCreate
 	derivedKey := s.storeKey.Derive(basketKey)
 
 	if err := s.basketTable.Create(ctx, &ecocredit.Basket{
-		BasketAddress: derivedKey.Address().String(),
+		BasketAddress:     derivedKey.Address().String(),
 		BasketDenom:       basketDenom,
 		Curator:           req.Curator,
 		Name:              req.Name,
@@ -61,6 +60,10 @@ func (s serverImpl) CreateBasket(goCtx context.Context, req *ecocredit.MsgCreate
 
 // AddToBasket adds ecocredits to the basket if they comply with the basket's filter
 // then mints and sends basket tokens to the depositor.
+// TODO(Tyler): this method mints tokens based on the basket name. some issues:
+// if someone names a basket OSMO, that could be confusing on chain.
+// should we instead use something akin to wrapped token names?
+// i.e. (wBTC for wrapped bitcoin -> bsktBasketName for basket tokens)?
 func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBasket) (*ecocredit.MsgAddToBasketResponse, error) {
 	ctx := sdktypes.UnwrapSDKContext(goCtx)
 	regenCtx := regentypes.UnwrapSDKContext(goCtx)
@@ -99,7 +102,6 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 		}
 		classInfo := res2.Info
 
-		// TODO(Tyler): should we even check here for fast exiting? s.Send could take care of this.
 		// verify the user has sufficient ecocredits to send
 		err = verifyCreditBalance(store, owner, credit.BatchDenom, credit.TradableAmount)
 		if err != nil {
@@ -166,7 +168,6 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 }
 
 // TakeFromBasket will take the oldest credit from the batch
-// TODO(Tyler): do we need to more actively check for batch precision?
 // TODO(Tyler): the response only indicates tradable amounts. Should we add retired amounts here?
 func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTakeFromBasket) (*ecocredit.MsgTakeFromBasketResponse, error) {
 	// setup vars
@@ -204,21 +205,20 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 		return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient basket token balance, got: %s, needed at least: %s", userBalanceDec.String(), tokensRequiredDec.String())
 	}
 
-
 	creditsInBasket := make([]struct {
 		startTime time.Time
 		amount    string
 		denom     string
 	}, 0)
 
-
 	it := s.basketCreditsIterator(basket, store)
 
+	// TODO(Tyler): how do we handle request amounts with baskets that contain batches with different precision?
 	// loop over the balances and store them in a slice
 	for ; it.Valid(); it.Next() {
 		// get the denom and deconstruct it
 		_, creditDenom := ParseBalanceKey(it.Key())
-		deconstructedDenom, err := ecocredit.DeconstructDenom(string(creditDenom))
+		deconstructedDenom, err := ecocredit.DeconstructBatchDenom(string(creditDenom))
 		if err != nil {
 			return nil, err
 		}
@@ -337,7 +337,7 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 	// get the basket
 	var basket ecocredit.Basket
 	if err := s.basketTable.GetOne(sdkCtx, orm.RowID(req.BasketDenom), &basket); err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get basket with denom %s: %s",req.BasketDenom, err.Error())
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get basket with denom %s: %s", req.BasketDenom, err.Error())
 	}
 
 	// fail fast if they didn't specify a retirement location for an auto-retirement basket
@@ -375,7 +375,6 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 				return nil, err
 			}
 
-			// TODO(Tyler): should we partial fill?
 			// check if the basket has the credit balance to support this tx
 			if basketBalance.Cmp(creditAmtRequested) == -1 { // if the requested credits is more than what's in the basket..
 				return nil, sdkerrors.ErrInvalidRequest.Wrapf("requested %s credits but basket %s only has %s credits from batch %s", credit.TradableAmount, basket.BasketDenom, res.TradableAmount, credit.BatchDenom)

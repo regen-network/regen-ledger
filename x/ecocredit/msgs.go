@@ -167,7 +167,7 @@ func (m *MsgSend) ValidateBasic() error {
 	}
 
 	for _, credit := range m.Credits {
-		if err := ValidateDenom(credit.BatchDenom); err != nil {
+		if err := ValidateBatchDenom(credit.BatchDenom); err != nil {
 			return err
 		}
 
@@ -217,7 +217,7 @@ func (m *MsgRetire) ValidateBasic() error {
 	}
 
 	for _, credit := range m.Credits {
-		if err := ValidateDenom(credit.BatchDenom); err != nil {
+		if err := ValidateBatchDenom(credit.BatchDenom); err != nil {
 			return err
 		}
 
@@ -262,7 +262,7 @@ func (m *MsgCancel) ValidateBasic() error {
 	}
 
 	for _, credit := range m.Credits {
-		if err := ValidateDenom(credit.BatchDenom); err != nil {
+		if err := ValidateBatchDenom(credit.BatchDenom); err != nil {
 			return err
 		}
 
@@ -395,7 +395,7 @@ func (m *MsgSell) ValidateBasic() error {
 	}
 
 	for i := range m.Orders {
-		if err := ValidateDenom(m.Orders[i].BatchDenom); err != nil {
+		if err := ValidateBatchDenom(m.Orders[i].BatchDenom); err != nil {
 			return err
 		}
 
@@ -607,6 +607,11 @@ func (m MsgCreateBasket) GetSignBytes() []byte {
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgCreateBasket) ValidateBasic() error {
 
+	// we use the coin denom validation from the sdk as the basket name will be used
+	// in the coin denom to mint basket coins
+	if err := sdk.ValidateDenom(m.Name); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrapf("invalid basket denom format")
+	}
 	if _, err := sdk.AccAddressFromBech32(m.Curator); err != nil {
 		return sdkerrors.ErrInvalidAddress
 	}
@@ -614,7 +619,11 @@ func (m *MsgCreateBasket) ValidateBasic() error {
 		return sdkerrors.ErrInvalidRequest.Wrap("name cannot be empty")
 	}
 	if m.DisplayName == "" {
-		m.DisplayName = m.Name // TODO(tyler): how should we handle empty names?
+		// TODO(Tyler): what is display name for? do we need it? how should it be validated?
+	}
+	// TODO(Tyler): should we allow 0 exponent? it would essentially allow credits:tokens to be 1:1
+	if m.Exponent == 0 {
+		return sdkerrors.ErrInvalidRequest.Wrap("exponent should be greater than 0")
 	}
 	if m.BasketCriteria != nil { // TODO(Tyler): what if no filter? should we allow filter-less baskets?
 		if err := validateFilter(m.BasketCriteria); err != nil {
@@ -645,7 +654,7 @@ func validateFilter(filters ...*Filter) error {
 				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 			}
 		case *Filter_BatchDenom:
-			if err := ValidateDenom(f.BatchDenom); err != nil {
+			if err := ValidateBatchDenom(f.BatchDenom); err != nil {
 				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 			}
 		case *Filter_ClassAdmin:
@@ -665,8 +674,11 @@ func validateFilter(filters ...*Filter) error {
 				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 			}
 		case *Filter_DateRange_:
+			if f.DateRange.StartDate == nil || f.DateRange.EndDate == nil {
+				return sdkerrors.ErrInvalidRequest.Wrap("start date or end date was nil")
+			}
 			if f.DateRange.StartDate.After(*f.DateRange.EndDate) {
-				return sdkerrors.ErrInvalidRequest.Wrap("invalid date range: star date must be before end date")
+				return sdkerrors.ErrInvalidRequest.Wrap("invalid date range: start date must be before end date")
 			}
 		case *Filter_CreditTypeName:
 			if f.CreditTypeName == "" {
@@ -700,7 +712,9 @@ func (m *MsgAddToBasket) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
 
-	// TODO(Tyler): validate basket denom
+	if err := sdk.ValidateDenom(m.BasketDenom); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("invalid basket denom format")
+	}
 
 	if len(m.Credits) == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("credits cannot be empty")
@@ -737,7 +751,9 @@ func (m *MsgPickFromBasket) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
 
-	// TODO(Tyler): validate basket denom?
+	if err := sdk.ValidateDenom(m.BasketDenom); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("invalid basket denom")
+	}
 
 	if len(m.RetirementLocation) != 0 {
 		if err := ValidateLocation(m.RetirementLocation); err != nil {
@@ -778,7 +794,9 @@ func (m *MsgTakeFromBasket) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
 	}
 
-	// TODO(Tyler): validate basketdenom ??
+	if err := sdk.ValidateDenom(m.BasketDenom); err != nil {
+		return sdkerrors.ErrInvalidRequest.Wrap("invalid basket denom")
+	}
 
 	if m.RetirementLocation != "" {
 		if err := ValidateLocation(m.RetirementLocation); err != nil {
@@ -798,7 +816,7 @@ func (m *MsgTakeFromBasket) GetSigners() []sdk.AccAddress {
 }
 
 func validateCredit(credit BasketCredit) error {
-	if err := ValidateDenom(credit.BatchDenom); err != nil {
+	if err := ValidateBatchDenom(credit.BatchDenom); err != nil {
 		return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 	}
 	if _, err := math.NewPositiveDecFromString(credit.TradableAmount); err != nil {

@@ -55,10 +55,11 @@ func FormatDenom(classId string, batchSeqNo uint64, startDate *time.Time, endDat
 	), nil
 }
 
-func DeconstructDenom(denom string) ([]string, error) {
+// DeconstructBatchDenom breaks apart a denom string into a slice
+func DeconstructBatchDenom(denom string) ([]string, error) {
 	split := strings.Split(denom, "-")
 	if len(split) != 4 {
-		return nil, fmt.Errorf("denom %s is malformed: expected 4 items, got %d", denom, len(split))
+		return nil, fmt.Errorf("batch denom %s is malformed: expected 4 items, got %d", denom, len(split))
 	}
 	return split, nil
 }
@@ -82,7 +83,7 @@ func ValidateClassID(classId string) error {
 
 // Validate a batch denomination conforms to the format described in
 // FormatDenom. The return is nil if the denom is valid.
-func ValidateDenom(denom string) error {
+func ValidateBatchDenom(denom string) error {
 	matches := reFullBatchDenom.FindStringSubmatch(denom)
 	if matches == nil {
 		return ErrParseFailure.Wrap("invalid denom. Valid denom format is: A00-00000000-00000000-000")

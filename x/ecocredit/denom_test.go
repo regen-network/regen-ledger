@@ -31,7 +31,7 @@ func testInvalidClassIDsError(t *rapid.T) {
 	require.Error(t, ValidateClassID(classID))
 }
 
-// Property: ValidateDenom(FormatDenom(a, b, c, d)) == nil
+// Property: ValidateBatchDenom(FormatDenom(a, b, c, d)) == nil
 func testValidateFormatDenom(t *rapid.T) {
 	creditType := genCreditType.Draw(t, "creditType").(*CreditType)
 	classSeqNo := rapid.Uint64().Draw(t, "classSeqNo").(uint64)
@@ -45,13 +45,13 @@ func testValidateFormatDenom(t *rapid.T) {
 	require.NoError(t, err)
 	t.Log(denom)
 
-	err = ValidateDenom(denom)
+	err = ValidateBatchDenom(denom)
 	require.NoError(t, err)
 }
 
 func testInvalidBatchDenomsError(t *rapid.T) {
 	batchDenom := genInvalidBatchDenom.Draw(t, "batchDenom").(string)
-	require.Error(t, ValidateDenom(batchDenom))
+	require.Error(t, ValidateBatchDenom(batchDenom))
 }
 
 // genCreditType generates an empty credit type with a random valid abbreviation

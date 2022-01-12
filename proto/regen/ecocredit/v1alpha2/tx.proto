@@ -614,3 +614,4 @@ message MsgPickFromBasket {
 
 // MsgPickFromBasketResponse is the Msg/PickFromBasket response type.
 message MsgPickFromBasketResponse {}
+

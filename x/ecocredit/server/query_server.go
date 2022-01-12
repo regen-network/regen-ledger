@@ -153,7 +153,7 @@ func (s serverImpl) BatchInfo(goCtx context.Context, request *ecocredit.QueryBat
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
-	if err := ecocredit.ValidateDenom(request.BatchDenom); err != nil {
+	if err := ecocredit.ValidateBatchDenom(request.BatchDenom); err != nil {
 		return nil, err
 	}
 
@@ -171,7 +171,7 @@ func (s serverImpl) Balance(goCtx context.Context, request *ecocredit.QueryBalan
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
-	if err := ecocredit.ValidateDenom(request.BatchDenom); err != nil {
+	if err := ecocredit.ValidateBatchDenom(request.BatchDenom); err != nil {
 		return nil, err
 	}
 
@@ -206,7 +206,7 @@ func (s serverImpl) Supply(goCtx context.Context, request *ecocredit.QuerySupply
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
-	if err := ecocredit.ValidateDenom(request.BatchDenom); err != nil {
+	if err := ecocredit.ValidateBatchDenom(request.BatchDenom); err != nil {
 		return nil, err
 	}
 
@@ -325,7 +325,7 @@ func (s serverImpl) SellOrdersByBatchDenom(goCtx context.Context, request *ecocr
 		return nil, status.Errorf(codes.InvalidArgument, "empty request")
 	}
 
-	if err := ecocredit.ValidateDenom(request.BatchDenom); err != nil {
+	if err := ecocredit.ValidateBatchDenom(request.BatchDenom); err != nil {
 		return nil, err
 	}
 
