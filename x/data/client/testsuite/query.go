@@ -6,12 +6,12 @@ import (
 	"github.com/regen-network/regen-ledger/x/data/client"
 )
 
-func (s *IntegrationTestSuite) TestZQueryByIRICmd() {
+func (s *IntegrationTestSuite) TestQueryByIRICmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 
-	validIri := "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
+	validIri := "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
 
 	testCases := []struct {
 		name      string
@@ -71,12 +71,15 @@ func (s *IntegrationTestSuite) TestZQueryByIRICmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestZQueryBySignerCmd() {
+func (s *IntegrationTestSuite) TestQueryBySignerCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 
-	validIri := "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
+	validIris := []string{
+		"regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf",
+		"regen:13toVgfX85Ny2ZTVxNzuL7MUquwwF7vcMKSAdVw2bUpEaL7XCFnshuh.rdf",
+	}
 
 	testCases := []struct {
 		name      string
@@ -107,7 +110,7 @@ func (s *IntegrationTestSuite) TestZQueryBySignerCmd() {
 			name:    "valid",
 			args:    []string{val.Address.String()},
 			expErr:  false,
-			expIRIs: []string{validIri},
+			expIRIs: validIris,
 		},
 	}
 
@@ -134,19 +137,25 @@ func (s *IntegrationTestSuite) TestZQueryBySignerCmd() {
 	}
 }
 
-func (s *IntegrationTestSuite) TestZQuerySignersCmd() {
+func (s *IntegrationTestSuite) TestQuerySignersCmd() {
 	val := s.network.Validators[0]
 	clientCtx := val.ClientCtx
 	clientCtx.OutputFormat = "JSON"
 
-	validIri := "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"
+	validIri := "regen:13toVgf5UjYBz6J29x28pLQyjKz5FpcW3f4bT5uRKGxGREWGKjEdXYG.rdf"
+
+	acc1, err := val.ClientCtx.Keyring.Key("acc1")
+	s.Require().NoError(err)
+
+	acc2, err := val.ClientCtx.Keyring.Key("acc2")
+	s.Require().NoError(err)
 
 	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-		expResp   []string
+		name       string
+		args       []string
+		expErr     bool
+		expErrMsg  string
+		expSigners []string
 	}{
 		{
 			name:      "missing args",
@@ -167,10 +176,13 @@ func (s *IntegrationTestSuite) TestZQuerySignersCmd() {
 			expErrMsg: "key not found",
 		},
 		{
-			name:    "valid",
-			args:    []string{validIri},
-			expErr:  false,
-			expResp: []string{val.Address.String()},
+			name:   "valid",
+			args:   []string{validIri},
+			expErr: false,
+			expSigners: []string{
+				acc1.GetAddress().String(),
+				acc2.GetAddress().String(),
+			},
 		},
 	}
 
@@ -186,7 +198,10 @@ func (s *IntegrationTestSuite) TestZQuerySignersCmd() {
 
 				var res data.QuerySignersResponse
 				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
-				s.Require().Equal(tc.expResp, res.Signers)
+
+				for _, signer := range tc.expSigners {
+					s.Require().Contains(res.Signers, signer)
+				}
 			}
 		})
 	}
