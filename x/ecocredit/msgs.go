@@ -615,6 +615,7 @@ func (m *MsgCreateBasket) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(m.Curator); err != nil {
 		return sdkerrors.ErrInvalidAddress
 	}
+	// TODO(Tyler): should we enforce a name length?
 	if m.Name == "" {
 		return sdkerrors.ErrInvalidRequest.Wrap("name cannot be empty")
 	}

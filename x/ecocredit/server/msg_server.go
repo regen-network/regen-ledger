@@ -902,14 +902,9 @@ func (s serverImpl) sendEcocredits(ctx types.Context, credit *ecocredit.MsgSend_
 		return err
 	}
 
-	var retired math.Dec
-	if credit.RetiredAmount != "" {
-		retired, err = math.NewNonNegativeFixedDecFromString(credit.RetiredAmount, maxDecimalPlaces)
-		if err != nil {
-			return err
-		}
-	} else {
-		retired = math.NewDecFromInt64(0)
+	retired, err := math.NewNonNegativeFixedDecFromString(credit.RetiredAmount, maxDecimalPlaces)
+	if err != nil {
+		return err
 	}
 
 	sum, err := tradable.Add(retired)

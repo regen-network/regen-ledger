@@ -12,8 +12,8 @@ import (
 	regentypes "github.com/regen-network/regen-ledger/types"
 	regenmath "github.com/regen-network/regen-ledger/types/math"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"math"
 	"sort"
-	"strings"
 	"time"
 )
 
@@ -108,14 +108,6 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 			return nil, err
 		}
 
-		// TODO(Tyler): can filter be nil??
-		if basket.BasketCriteria != nil {
-			// check that the credits meet the filter
-			if _, err = checkFilters([]*ecocredit.Filter{basket.BasketCriteria}, *classInfo, batchInfo, *projectInfo, req.Owner); err != nil {
-				return nil, err
-			}
-		}
-
 		maxDec, err := s.getBatchPrecision(regenCtx, batchDenom)
 		if err != nil {
 			return nil, err
@@ -123,6 +115,14 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 		creditsToDeposit, err := regenmath.NewPositiveFixedDecFromString(credit.TradableAmount, maxDec)
 		if err != nil {
 			return nil, err
+		}
+
+		// TODO(Tyler): can filter be nil??
+		if basket.BasketCriteria != nil {
+			// check that the credits meet the filter
+			if _, err = checkFilters([]*ecocredit.Filter{basket.BasketCriteria}, *classInfo, batchInfo, *projectInfo, req.Owner); err != nil {
+				return nil, err
+			}
 		}
 
 		totalCreditsDeposited, err = totalCreditsDeposited.Add(creditsToDeposit)
@@ -310,14 +310,12 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 		return nil, sdkerrors.ErrInsufficientFunds.Wrap("the basket does not have enough credits to complete this transaction")
 	}
 
-	// calculate how m
-
-	amountSDKDec, ok := sdktypes.NewIntFromString(tokensRequiredDec.String())
-	if !ok {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not convert %s to %T", tokensRequiredDec.String(), sdktypes.Int{})
+	// burn the basket coins
+	amountI64, err := tokensRequiredDec.Int64()
+	if err != nil {
+		return nil, err
 	}
-
-	basketToken := sdktypes.NewCoin(basket.BasketDenom, amountSDKDec)
+	basketToken := sdktypes.NewCoin(basket.BasketDenom, sdktypes.NewInt(amountI64))
 	if err = s.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, owner, ecocredit.ModuleName, sdktypes.NewCoins(basketToken)); err != nil {
 		return nil, err
 	}
@@ -411,12 +409,9 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 				msgSendCredits.RetiredAmount = credit.TradableAmount
 				msgSendCredits.RetirementLocation = req.RetirementLocation
 			}
-			send := &ecocredit.MsgSend{
-				Sender:    basket.BasketAddress,
-				Recipient: req.Owner,
-				Credits:   []*ecocredit.MsgSend_SendCredits{msgSendCredits},
-			}
-			if _, err = s.Send(goCtx, send); err != nil {
+
+			// send credits from the basket to the user
+			if err := s.sendCreditFromBasket(goCtx, owner, basket, msgSendCredits); err != nil {
 				return nil, err
 			}
 		}
@@ -426,7 +421,6 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 		if err != nil {
 			return nil, err
 		}
-		// TODO(Tyler) should we send to module then burn? or should we just send to some sort of 0 address? what to do?
 		tokenCost := sdktypes.NewCoin(basket.BasketDenom, sdktypes.NewInt(ti64))
 		if err := s.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, owner, ecocredit.ModuleName, sdktypes.NewCoins(tokenCost)); err != nil {
 			return nil, err
@@ -503,28 +497,14 @@ func (s serverImpl) validateFilterData(ctx regentypes.Context, filters ...*ecocr
 	return nil
 }
 
-// padRight is a helper function to construct a string of length
-// `length` with a prefix, and a given `add` string, which serves
-// as the string to continuously add until len(string) == length
-func padRight(length int, prefix, add string) string {
-	builder := strings.Builder{}
-	builder.Grow(length + len(prefix))
-
-	builder.WriteString(prefix)
-	for i := 0; i < length-1; i++ {
-		builder.WriteString(add)
-	}
-
-	return builder.String()
-}
-
 // CalculateBasketTokens calculates the basket tokens to be awarded based on how many ecocredits were added to the basket.
 // the equation for calculating the award amount is as follows:
 // total_credits_deposited * 10^(basket.Exponent)
 // TODO(Tyler): not too convinced on this function's name...
 func CalculateBasketTokens(credits regenmath.Dec, exponent uint32) (regenmath.Dec, error) {
-	// get the str to use in the multiplier
-	multiStr := padRight(int(exponent), "10", "0")
+	// calculate the multiplier and convert to string
+	multi := math.Pow(10, float64(exponent))
+	multiStr := fmt.Sprintf("%f", multi)
 
 	// get the multiplier in dec form
 	multiplier, err := regenmath.NewPositiveDecFromString(multiStr)

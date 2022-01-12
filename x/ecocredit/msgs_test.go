@@ -1322,7 +1322,7 @@ func TestMsgAllowAskDenom(t *testing.T) {
 func TestMsgTakeFromBasket_ValidateBasic(t *testing.T) {
 	_, _, addr := testdata.KeyTestPubAddr()
 	validLocation := "AB-CDE FG1 345"
-	validDenom := "A00-00000000-00000000-000"
+	validDenom := "FooBar-Basket"
 
 	type fields struct {
 		Owner              string
