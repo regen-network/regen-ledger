@@ -54,11 +54,6 @@ git checkout v1.0.0
 git checkout v2.0.0-beta1
 ```
 
-*For Regen Devnet (Hambach):*
-```
-git checkout v2.0.0-beta1
-```
-
 Install the `regen` binary (the `EXPERIMENTAL` option enables experimental features).
 
 *For Regen Mainnet:*
