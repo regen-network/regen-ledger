@@ -586,31 +586,14 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 		if err != nil {
 			return nil, err
 		}
-
 		// TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
 
-		orderID := s.sellOrderTable.Sequence().PeekNextVal(ctx)
-
-		sellOrderIds[i] = orderID
-
-		// TODO: better solution?
-		if order.Expiration == nil {
-			order.Expiration = &time.Time{}
-		}
-
-		_, err = s.sellOrderTable.Create(ctx, &ecocredit.SellOrder{
-			Owner:             owner,
-			OrderId:           orderID,
-			BatchDenom:        order.BatchDenom,
-			Quantity:          order.Quantity,
-			AskPrice:          order.AskPrice,
-			DisableAutoRetire: order.DisableAutoRetire,
-			Expiration:        order.Expiration,
-		})
+		orderID, err := s.createSellOrder(ctx, owner, order)
 		if err != nil {
 			return nil, err
 		}
 
+		sellOrderIds[i] = orderID
 		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventSell{
 			OrderId:           orderID,
 			BatchDenom:        order.BatchDenom,
@@ -627,6 +610,20 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 	}
 
 	return &ecocredit.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
+}
+
+func (s serverImpl) createSellOrder(ctx types.Context, owner string, o *ecocredit.MsgSell_Order) (uint64, error) {
+	orderID := s.sellOrderTable.Sequence().PeekNextVal(ctx)
+	_, err := s.sellOrderTable.Create(ctx, &ecocredit.SellOrder{
+		Owner:             owner,
+		OrderId:           orderID,
+		BatchDenom:        o.BatchDenom,
+		Quantity:          o.Quantity,
+		AskPrice:          o.AskPrice,
+		DisableAutoRetire: o.DisableAutoRetire,
+		Expiration:        o.Expiration,
+	})
+	return orderID, err
 }
 
 // UpdateSellOrders updates existing sell orders for credits

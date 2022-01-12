@@ -145,7 +145,10 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		if !ok {
 			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.SellOrder{}, value)
 		}
-		return []interface{}{order.Expiration.String()}, nil
+		if order.Expiration == nil {
+			return nil, nil
+		}
+		return []interface{}{order.Expiration.UnixNano()}, nil
 	}, []byte{})
 	if err != nil {
 		panic(err.Error())
