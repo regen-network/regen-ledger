@@ -44,7 +44,7 @@ regen tx ibc-transfer transfer transfer channel-1 <receiver_osmosis_address> 100
 - In this example, `src_port_id` is `transfer`.
 - In this example, `src_channel_id` is `channel-1`.
 
-Transfer back the tokens to source chain (aka `regen-1 `):
+Transfer back the tokens to source chain (in this case, `regen-1`):
 
 The following command can be used to perform an IBC transfer back to the source chain:
 ```
