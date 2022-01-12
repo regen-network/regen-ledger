@@ -177,7 +177,7 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 	// get the basket
 	var basket ecocredit.Basket
 	if err := s.basketTable.GetOne(sdkCtx, orm.RowID(req.BasketDenom), &basket); err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("unable to get basket with denom %s: %s", req.BasketDenom, err.Error())
 	}
 
 	// we fail fast in the event they didn't provide a retirement location when this basket requires retiring on swaps
@@ -249,7 +249,7 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 
 	// sort the slice based on start time (we want to take the OLDEST credits first)
 	sort.Slice(creditsInBasket, func(i int, j int) bool {
-		return creditsInBasket[i].startTime.After(creditsInBasket[j].startTime)
+		return creditsInBasket[i].startTime.Before(creditsInBasket[j].startTime)
 	})
 
 	// response slice
@@ -311,11 +311,13 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 	}
 
 	// calculate how m
-	amountI64, err := tokensRequiredDec.Int64()
-	if err != nil {
-		return nil, err
+
+	amountSDKDec, ok := sdktypes.NewIntFromString(tokensRequiredDec.String())
+	if !ok {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not convert %s to %T", tokensRequiredDec.String(), sdktypes.Int{})
 	}
-	basketToken := sdktypes.NewCoin(basket.BasketDenom, sdktypes.NewInt(amountI64))
+
+	basketToken := sdktypes.NewCoin(basket.BasketDenom, amountSDKDec)
 	if err = s.bankKeeper.SendCoinsFromAccountToModule(sdkCtx, owner, ecocredit.ModuleName, sdktypes.NewCoins(basketToken)); err != nil {
 		return nil, err
 	}
@@ -335,7 +337,7 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 	// get the basket
 	var basket ecocredit.Basket
 	if err := s.basketTable.GetOne(sdkCtx, orm.RowID(req.BasketDenom), &basket); err != nil {
-		return nil, sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("could not get basket with denom %s: %s",req.BasketDenom, err.Error())
 	}
 
 	// fail fast if they didn't specify a retirement location for an auto-retirement basket
