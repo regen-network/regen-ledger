@@ -62,3 +62,14 @@ func BasketAddressKey(basketDenom basketDenomT) []byte {
 	key := []byte{BasketCreditsPrefix}
 	return append(key, address.MustLengthPrefix([]byte(basketDenom))...)
 }
+
+func BasketIteratorKey(basketDenom basketDenomT) []byte {
+	key := []byte{BasketCreditsPrefix}
+	return append(key, address.MustLengthPrefix([]byte(basketDenom))...)
+}
+
+func BasketBatchKey(basketDenom basketDenomT, batchDenom batchDenomT) []byte {
+	key := []byte{BasketCreditsPrefix}
+	key = append(key, address.MustLengthPrefix([]byte(basketDenom))...)
+	return append(key, []byte(batchDenom)...)
+}

@@ -130,6 +130,11 @@ service Query {
     option (google.api.http).get =
         "/regen/ecocredit/v1alpha1/baskets/{basket_denom}/credits";
   }
+
+  rpc BasketBalanceByBatch(QueryBasketBalanceByBatchRequest) returns (QueryBasketBalanceByBatchResponse) {
+    option (google.api.http).get =
+      "/regen/ecocredit/v1alpha1/baskets/{basket_denom}/credits/{batch_denom}";
+  }
 }
 
 // QueryParamsRequest is the Query/Params request type.
@@ -494,4 +499,19 @@ message QueryBasketCreditsResponse {
 
   // pagination defines the pagination in the response.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryBasketBalanceByBatchRequest is the Query/QueryBasketBalanceByBatch request type
+message QueryBasketBalanceByBatchRequest {
+  // basket_denom is the basket of the denom to query
+  string basket_denom = 1;
+
+  // batch_denom is the batch to query by
+  string batch_denom = 2;
+}
+
+// QueryBasketBalanceByBatchResponse is the Query/QueryBasketBalanceByBatch request type
+message QueryBasketBalanceByBatchResponse {
+  // credit is the credit inside the basket
+  BasketCredit credit = 1;
 }

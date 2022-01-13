@@ -883,7 +883,7 @@ func (s *IntegrationTestSuite) TestAddToBasket() {
 				res, err := server.CreateBasket(s.ctx, tc.basket)
 				require.NoError(err)
 				require.NotNil(res)
-				lastBasket = res.BasketAddress
+				lastBasket = res.BasketDenom
 			}
 
 			res2, err := server.AddToBasket(s.ctx, tc.msg)
@@ -905,10 +905,7 @@ func (s *IntegrationTestSuite) TestAddToBasket() {
 					require.NoError(err)
 				}
 
-				var val float64 = 10
-				for i := 1; uint32(i) <= tc.basket.Exponent; i++ {
-					val = math2.Pow(10, float64(i))
-				}
+				val := math2.Pow(10, float64(tc.basket.Exponent))
 				valStr := fmt.Sprintf("%f", val)
 				multiplierDec, err := math.NewDecFromString(valStr)
 				require.NoError(err)
@@ -916,17 +913,16 @@ func (s *IntegrationTestSuite) TestAddToBasket() {
 				tokensExpected, err := creditsDeposited.Mul(multiplierDec)
 				require.NoError(err)
 
-				// 0 == equals
-				require.Equal(0, tokensExpected.Cmp(actualTokensBack))
+				require.True(tokensExpected.Equal(actualTokensBack))
 
 				for _, c := range tc.msg.Credits {
-					balRes, err := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
-						Account:    lastBasket,
-						BatchDenom: c.BatchDenom,
+					balRes, err := s.queryClient.BasketBalanceByBatch(s.ctx, &ecocredit.QueryBasketBalanceByBatchRequest{
+						BasketDenom: lastBasket,
+						BatchDenom:  c.BatchDenom,
 					})
 					require.NoError(err)
 
-					basketBalanceDec, err := math.NewDecFromString(balRes.TradableAmount)
+					basketBalanceDec, err := math.NewDecFromString(balRes.Credit.TradableAmount)
 					require.NoError(err)
 
 					depositedAmountDec, err := math.NewDecFromString(c.TradableAmount)
@@ -994,13 +990,13 @@ func (s *IntegrationTestSuite) TestTakeFromBasketScenario() {
 	require.Equal(creditsAddedToBasket[0:1], resTake.Credits)
 
 	// check to see the credit as taken
-	queryRes, err := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
-		Account:    resBasket.BasketAddress,
-		BatchDenom: creditsAddedToBasket[0].BatchDenom,
+	queryRes, err := s.queryClient.BasketBalanceByBatch(s.ctx, &ecocredit.QueryBasketBalanceByBatchRequest{
+		BasketDenom: resBasket.BasketDenom,
+		BatchDenom:  creditsAddedToBasket[0].BatchDenom,
 	})
 	require.NoError(err)
 	require.NotNil(queryRes)
-	require.Equal("0", queryRes.TradableAmount) // the first credit should be gone
+	require.Equal("0", queryRes.Credit.TradableAmount) // the first credit should be gone
 
 	// user should now have the credit
 	balRes, err := s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
@@ -1011,13 +1007,13 @@ func (s *IntegrationTestSuite) TestTakeFromBasketScenario() {
 	require.Equal(balRes.TradableAmount, "1000000000") // we minted 1000000000 to ourselves, deposited 1, and took it back.
 
 	// basket should still have the other credit left
-	queryRes, err = s.queryClient.Balance(s.ctx, &ecocredit.QueryBalanceRequest{
-		Account:    resBasket.BasketAddress,
-		BatchDenom: creditsAddedToBasket[1].BatchDenom,
+	queryRes, err = s.queryClient.BasketBalanceByBatch(s.ctx, &ecocredit.QueryBasketBalanceByBatchRequest{
+		BasketDenom: resBasket.BasketDenom,
+		BatchDenom:  creditsAddedToBasket[1].BatchDenom,
 	})
 	require.NoError(err)
 	require.NotNil(queryRes)
-	require.Equal("1", queryRes.TradableAmount)
+	require.Equal("1", queryRes.Credit.TradableAmount)
 
 	// user should now have 10 credits. swapping 1 = 10^1 * 1 = 10. 20 - 10 = 10.
 	basketTokenBalance := s.bankKeeper.GetBalance(s.sdkCtx, admin, basketDenom)
@@ -1114,8 +1110,6 @@ func (s *IntegrationTestSuite) TestPickFromBasket() {
 	})
 	require.NoError(err)
 
-	denomToAddr := map[string]string{retireBasket.BasketDenom: retireBasket.BasketAddress, noRetireBasket.BasketDenom: noRetireBasket.BasketAddress, testBasket.BasketDenom: testBasket.BasketAddress}
-
 	_, err = server.AddToBasket(s.ctx, &ecocredit.MsgAddToBasket{
 		Owner:       admin.String(),
 		BasketDenom: retireBasket.BasketDenom,
@@ -1186,7 +1180,7 @@ func (s *IntegrationTestSuite) TestPickFromBasket() {
 				RetirementLocation: "",
 			},
 			expErr: true,
-			errMsg: fmt.Sprintf("requested 1000000000000000000000 credits but basket %s only has ", noRetireBasket.BasketDenom), // cut out the last part of the error to decrease complexity
+			errMsg: "insufficient funds", // cut out the last part of the error to decrease complexity
 		},
 		{
 			name:        "invalid - no picking",
@@ -1260,34 +1254,48 @@ func (s *IntegrationTestSuite) TestPickFromBasket() {
 				RetirementLocation: "",
 			},
 			expErr: true,
-			errMsg: "requested 3.25013587299818 credits but basket TestPickBasketII only has 0 credits from batch A00-00000000-00000000-000",
+			errMsg: "not found",
 		},
 	}
 
 	for _, tc := range testCases {
 		s.Run(tc.name, func() {
-
-			// basket balance
-			basketBeforeTradable, _ := s.getCreditBalance(denomToAddr[tc.basketDenom], tc.msg.Credits[0].BatchDenom)
-
-			// user balances
-			userBeforeTradable, userBeforeRetired := s.getCreditBalance(admin.String(), tc.msg.Credits[0].BatchDenom)
-			userTokenBalanceBefore := s.getBasketTokenBalance(admin, tc.basketDenom)
-
-			// run the msg tx
-			_, err = s.msgClient.PickFromBasket(s.ctx, tc.msg)
-
 			if tc.expErr {
+				// run the msg tx
+				_, err = s.msgClient.PickFromBasket(s.ctx, tc.msg)
 				require.Error(err)
 				require.Contains(err.Error(), tc.errMsg)
 			} else {
-				for _, creditRequested := range tc.msg.Credits {
+
+				// get all the balances before we pick
+				basketCreditBalances := make([]math.Dec, len(tc.msg.Credits))
+				userCreditBalances := make([]struct {
+					tradable math.Dec
+					retired  math.Dec
+				}, len(tc.msg.Credits))
+				for i, creditReq := range tc.msg.Credits {
+					basketCreditBalances[i] = s.getBasketCreditBalance(tc.basketDenom, creditReq.BatchDenom)
+
+					userTrad, userRet := s.getCreditBalance(admin.String(), creditReq.BatchDenom)
+					userCreditBalances[i] = struct {
+						tradable math.Dec
+						retired  math.Dec
+					}{userTrad, userRet}
+				}
+				userTokenBalanceBefore := s.getBasketTokenBalance(admin, tc.basketDenom)
+
+				_, err = s.msgClient.PickFromBasket(s.ctx, tc.msg)
+
+				for i, creditRequested := range tc.msg.Credits {
+					basketBeforeTradable := basketCreditBalances[i]
+					userBeforeRetired := userCreditBalances[i].retired
+					userBeforeTradable := userCreditBalances[i].tradable
 					require.NoError(err)
 					amountTakenDec, _ := math.NewDecFromString(creditRequested.TradableAmount)
 
 					// ensure the basket has balanceBefore - amountTaken.
 					// [important: baskets only have tradable credits. they will never have retired balances]
-					basketAfterTradable, _ := s.getCreditBalance(denomToAddr[tc.basketDenom], creditRequested.BatchDenom)
+					basketAfterTradable := s.getBasketCreditBalance(tc.basketDenom, creditRequested.BatchDenom)
 					newBalanceBasket, err := basketBeforeTradable.Sub(amountTakenDec)
 					require.NoError(err)
 					require.True(basketAfterTradable.Equal(newBalanceBasket), fmt.Sprintf("expected basket tradable to be %s, got: %s", basketAfterTradable.String(), newBalanceBasket.String()))
@@ -1310,7 +1318,7 @@ func (s *IntegrationTestSuite) TestPickFromBasket() {
 					require.NoError(err)
 					expectedBalanceAfter, err := userTokenBalanceBefore.Sub(swapCost)
 					require.NoError(err)
-					require.True(expectedBalanceAfter.Equal(userTokenBalanceAfter))
+					require.True(expectedBalanceAfter.Equal(userTokenBalanceAfter), fmt.Sprintf("expected balance after to be %s, user's balance was %s", expectedBalanceAfter.String(), userTokenBalanceAfter.String()))
 				}
 			}
 		})
@@ -1328,6 +1336,19 @@ func (s *IntegrationTestSuite) getCreditBalance(addr string, denom string) (trad
 	retired, _ = math.NewDecFromString(res.RetiredAmount)
 
 	return tradable, retired
+}
+
+func (s *IntegrationTestSuite) getBasketCreditBalance(basketDenom, batchDenom string) (tradable math.Dec) {
+	res, err := s.queryClient.BasketBalanceByBatch(s.ctx, &ecocredit.QueryBasketBalanceByBatchRequest{
+		BasketDenom: basketDenom,
+		BatchDenom:  batchDenom,
+	})
+	s.Require().NoError(err)
+
+	tradable, err = math.NewDecFromString(res.Credit.TradableAmount)
+	s.Require().NoError(err)
+
+	return tradable
 }
 
 func (s *IntegrationTestSuite) getBasketTokenBalance(addr sdk.AccAddress, denom string) math.Dec {

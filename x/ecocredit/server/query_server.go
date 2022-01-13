@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"math"
 
 	"google.golang.org/grpc/codes"
@@ -458,4 +459,23 @@ func (s serverImpl) Baskets(goCtx context.Context, request *ecocredit.QueryBaske
 func (s serverImpl) BasketCredits(goCtx context.Context, request *ecocredit.QueryBasketCreditsRequest) (*ecocredit.QueryBasketCreditsResponse, error) {
 	// TODO: #629
 	return nil, nil
+}
+
+func (s serverImpl) BasketBalanceByBatch(goCtx context.Context, request *ecocredit.QueryBasketBalanceByBatchRequest) (*ecocredit.QueryBasketBalanceByBatchResponse, error) {
+	if request.BasketDenom == "" || request.BatchDenom == "" {
+		return nil, sdkerrors.ErrInvalidRequest
+	}
+
+	regenCtx := types.UnwrapSDKContext(goCtx)
+	store := regenCtx.KVStore(s.storeKey)
+	basketDenom := basketDenomT(request.BasketDenom)
+	dec, err := getDecimal(store, basketDenom.GetTradableBalanceKey(batchDenomT(request.BatchDenom)))
+	if err != nil {
+		return nil, err
+	}
+
+	return &ecocredit.QueryBasketBalanceByBatchResponse{Credit: &ecocredit.BasketCredit{
+		BatchDenom:     request.BatchDenom,
+		TradableAmount: dec.String(),
+	}}, nil
 }

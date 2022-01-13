@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/cosmos/cosmos-sdk/store/types"
 	sdktypes "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/address"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/regen-network/regen-ledger/orm"
 	regentypes "github.com/regen-network/regen-ledger/types"
@@ -38,11 +37,7 @@ func (s serverImpl) CreateBasket(goCtx context.Context, req *ecocredit.MsgCreate
 		}
 	}
 
-	basketKey := BasketAddressKey(basketDenomT(basketDenom))
-	derivedKey := s.storeKey.Derive(basketKey)
-
 	if err := s.basketTable.Create(ctx, &ecocredit.Basket{
-		BasketAddress:     derivedKey.Address().String(),
 		BasketDenom:       basketDenom,
 		Curator:           req.Curator,
 		Name:              req.Name,
@@ -55,7 +50,7 @@ func (s serverImpl) CreateBasket(goCtx context.Context, req *ecocredit.MsgCreate
 		return nil, err
 	}
 
-	return &ecocredit.MsgCreateBasketResponse{BasketDenom: basketDenom, BasketAddress: derivedKey.Address().String()}, nil
+	return &ecocredit.MsgCreateBasketResponse{BasketDenom: basketDenom}, nil
 }
 
 // AddToBasket adds ecocredits to the basket if they comply with the basket's filter
@@ -120,7 +115,7 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 		// TODO(Tyler): can filter be nil??
 		if basket.BasketCriteria != nil {
 			// check that the credits meet the filter
-			if _, err = checkFilters([]*ecocredit.Filter{basket.BasketCriteria}, *classInfo, batchInfo, *projectInfo, req.Owner); err != nil {
+			if _, err = checkCreditMatchesFilter([]*ecocredit.Filter{basket.BasketCriteria}, *classInfo, batchInfo, *projectInfo, req.Owner); err != nil {
 				return nil, err
 			}
 		}
@@ -137,7 +132,7 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 			RetirementLocation: "",
 		}
 
-		if err = s.depositCreditsToBasket(goCtx, owner, basket, []*ecocredit.MsgSend_SendCredits{creditToAddToBasket}); err != nil {
+		if err = s.depositCreditToBasket(regenCtx, store, owner, basket, creditToAddToBasket); err != nil {
 			return nil, err
 		}
 
@@ -171,6 +166,7 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 // TODO(Tyler): the response only indicates tradable amounts. Should we add retired amounts here?
 func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTakeFromBasket) (*ecocredit.MsgTakeFromBasketResponse, error) {
 	// setup vars
+	regenCtx := regentypes.UnwrapSDKContext(goCtx)
 	sdkCtx := sdktypes.UnwrapSDKContext(goCtx)
 	owner, _ := sdktypes.AccAddressFromBech32(req.Owner)
 	store := sdkCtx.KVStore(s.storeKey)
@@ -294,7 +290,7 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 			})
 		}
 
-		if err := s.sendCreditFromBasket(goCtx, owner, basket, &creditsToSend); err != nil {
+		if err := s.sendCreditFromBasket(regenCtx, store, owner, basket, &creditsToSend); err != nil {
 			return nil, err
 		}
 
@@ -330,7 +326,9 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPickFromBasket) (*ecocredit.MsgPickFromBasketResponse, error) {
 	// setup
 	sdkCtx := sdktypes.UnwrapSDKContext(goCtx)
+	regenCtx := regentypes.UnwrapSDKContext(goCtx)
 	owner, _ := sdktypes.AccAddressFromBech32(req.Owner)
+	store := regenCtx.KVStore(s.storeKey)
 
 	// get the basket
 	var basket ecocredit.Basket
@@ -358,25 +356,6 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 		for _, credit := range req.Credits {
 			//prefix := BasketCreditsKey(basketDenom, batchDenomT(credit.BatchDenom))
 			creditAmtRequested, _ := regenmath.NewDecFromString(credit.TradableAmount)
-
-			// get the basket's balance of the requested credit
-			res, err := s.Balance(goCtx, &ecocredit.QueryBalanceRequest{
-				Account:    basket.BasketAddress,
-				BatchDenom: credit.BatchDenom,
-			})
-			if err != nil {
-				return nil, err
-			}
-
-			basketBalance, err := regenmath.NewDecFromString(res.TradableAmount)
-			if err != nil {
-				return nil, err
-			}
-
-			// check if the basket has the credit balance to support this tx
-			if basketBalance.Cmp(creditAmtRequested) == -1 { // if the requested credits is more than what's in the basket..
-				return nil, sdkerrors.ErrInvalidRequest.Wrapf("requested %s credits but basket %s only has %s credits from batch %s", credit.TradableAmount, basket.BasketDenom, res.TradableAmount, credit.BatchDenom)
-			}
 
 			// calculate the token cost for this specific credit
 			requiredTokens, err := CalculateBasketTokens(creditAmtRequested, basket.Exponent)
@@ -411,7 +390,7 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 			}
 
 			// send credits from the basket to the user
-			if err := s.sendCreditFromBasket(goCtx, owner, basket, msgSendCredits); err != nil {
+			if err := s.sendCreditFromBasket(regenCtx, store, owner, basket, msgSendCredits); err != nil {
 				return nil, err
 			}
 		}
@@ -434,34 +413,19 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 
 func (s serverImpl) basketCreditsIterator(basket ecocredit.Basket, store sdktypes.KVStore) sdktypes.Iterator {
 	// get the iterator to scan all balances
-	basketAddr, _ := sdktypes.AccAddressFromBech32(basket.BasketAddress)
-	key := []byte{TradableBalancePrefix}
-	key = append(key, address.MustLengthPrefix(basketAddr)...)
+	key := BasketIteratorKey(basketDenomT(basket.BasketDenom))
 	return types.KVStorePrefixIterator(store, key)
 }
 
-// depositCreditsToBasket deposits a set of credits to a basket
-func (s serverImpl) depositCreditsToBasket(goCtx context.Context, from sdktypes.Address, basket ecocredit.Basket, credits []*ecocredit.MsgSend_SendCredits) error {
-	// send the credits do the basket
-	_, err := s.Send(goCtx, &ecocredit.MsgSend{
-		Sender:    from.String(),
-		Recipient: basket.BasketAddress,
-		Credits:   credits,
-	})
-	return err
+// depositCreditToBasket deposits a set of credits to a basket
+func (s serverImpl) depositCreditToBasket(ctx regentypes.Context, store sdktypes.KVStore, senderAddr sdktypes.AccAddress, basket ecocredit.Basket, credit *ecocredit.MsgSend_SendCredits) error {
+	return s.sendEcocredits(ctx, credit, store, EcocreditAcc(senderAddr), basketDenomT(basket.BasketDenom))
 }
 
 // sendCreditFromBasket sends credits from basket to the `to` address
-func (s serverImpl) sendCreditFromBasket(goCtx context.Context, to sdktypes.Address, basket ecocredit.Basket, credit *ecocredit.MsgSend_SendCredits) error {
-	_, err := s.Send(goCtx, &ecocredit.MsgSend{
-		Sender:    basket.BasketAddress,
-		Recipient: to.String(),
-		Credits:   []*ecocredit.MsgSend_SendCredits{credit},
-	})
-	return err
+func (s serverImpl) sendCreditFromBasket(regenCtx regentypes.Context, store sdktypes.KVStore, to sdktypes.AccAddress, basket ecocredit.Basket, credit *ecocredit.MsgSend_SendCredits) error {
+	return s.sendEcocredits(regenCtx, credit, store,basketDenomT(basket.BasketDenom),  EcocreditAcc(to))
 }
-
-// ----- HELPER METHODS -----
 
 // validateFilterData is a recursive, stateful filter validation.
 // it ensures all filters relative to other state (classes, batches, projects, etc) in the blockchain are valid.
@@ -516,20 +480,20 @@ func CalculateBasketTokens(credits regenmath.Dec, exponent uint32) (regenmath.De
 	return credits.Mul(multiplier)
 }
 
-// checkFilters recursively checks filters using `depth` to ensure valid filters.
+// checkCreditMatchesFilter recursively checks filters using `depth` to ensure valid filters.
 // it sets the depth equal the length of the filter slice, and subtracts by 1 for each valid filter encountered.
 // for AND filters, we require the depth to return 0, as each filter in the slice should subtract 1.
 // for OR filters, we simply require that the slice of it's inner filter is not equal to the depth returned.
 // this is because we only need ONE tree to be valid, thus, an invalid OR tree would be if 0 filters passed.
 // TODO(Tyler): should we enforce a depth limit on OR/AND filters?
-func checkFilters(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, batchInfo ecocredit.BatchInfo, projectInfo ecocredit.ProjectInfo, owner string) (int, error) {
+func checkCreditMatchesFilter(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, batchInfo ecocredit.BatchInfo, projectInfo ecocredit.ProjectInfo, owner string) (int, error) {
 	depth := len(filters)
 	var err error
 	for _, filter := range filters {
 		switch f := filter.Sum.(type) {
 		case *ecocredit.Filter_And_:
 			andFilter := f.And.Filters
-			innerDepth, err := checkFilters(andFilter, classInfo, batchInfo, projectInfo, owner)
+			innerDepth, err := checkCreditMatchesFilter(andFilter, classInfo, batchInfo, projectInfo, owner)
 			if innerDepth != 0 || err != nil {
 				return innerDepth, sdkerrors.ErrInvalidRequest.Wrap("invalid AND filter")
 			} else {
@@ -538,7 +502,7 @@ func checkFilters(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, ba
 		case *ecocredit.Filter_Or_:
 			orFilter := f.Or.Filters
 			orDepth := len(orFilter)
-			innerDepth, err := checkFilters(orFilter, classInfo, batchInfo, projectInfo, owner)
+			innerDepth, err := checkCreditMatchesFilter(orFilter, classInfo, batchInfo, projectInfo, owner)
 
 			// when orDepth == innerDepth, none of the filters in the OR got a match. we need AT LEAST 1 match for a valid OR filter.
 			if orDepth == innerDepth {

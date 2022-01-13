@@ -157,13 +157,13 @@ func Test_checkFilters(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := checkFilters(tt.args.filters, tt.args.classInfo, tt.args.batchInfo, tt.args.projectInfo, tt.args.owner)
+			got, err := checkCreditMatchesFilter(tt.args.filters, tt.args.classInfo, tt.args.batchInfo, tt.args.projectInfo, tt.args.owner)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("checkFilters() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("checkCreditMatchesFilter() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("checkFilters() got = %v, want %v", got, tt.want)
+				t.Errorf("checkCreditMatchesFilter() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
