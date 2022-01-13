@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
@@ -213,9 +212,9 @@ func (s *IntegrationTestSuite) SetupSuite() {
 		append(
 			[]string{
 				"[" +
-					"{batch_denom: C01-20210101-20210201-001, quantity: 1, ask_price: 100regen, disable_auto_retire: false}," +
-					"{batch_denom: C01-20210101-20210201-001, quantity: 1, ask_price: 100regen, disable_auto_retire: false}," +
-					"{batch_denom: C01-20210101-20210201-001, quantity: 1, ask_price: 100regen, disable_auto_retire: false}" +
+					"{batch_denom: \"C01-20210101-20210201-001\", quantity: \"1\", ask_price: \"100regen\", disable_auto_retire: false}," +
+					"{batch_denom: \"C01-20210101-20210201-001\", quantity: \"1\", ask_price: \"100regen\", disable_auto_retire: false}," +
+					"{batch_denom: \"C01-20210101-20210201-001\", quantity: \"1\", ask_price: \"100regen\", disable_auto_retire: false}" +
 					"]",
 				makeFlagFrom(val.Address.String()),
 			},
@@ -236,7 +235,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			Quantity:          "1",
 			AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
 			DisableAutoRetire: false,
-			Expiration:        &time.Time{},
 		},
 		{
 			OrderId:           2,
@@ -245,7 +243,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			Quantity:          "1",
 			AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
 			DisableAutoRetire: false,
-			Expiration:        &time.Time{},
 		},
 		{
 			OrderId:           3,
@@ -254,7 +251,6 @@ func (s *IntegrationTestSuite) SetupSuite() {
 			Quantity:          "1",
 			AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
 			DisableAutoRetire: false,
-			Expiration:        &time.Time{},
 		},
 	}
 }
@@ -1536,7 +1532,6 @@ func (s *IntegrationTestSuite) TestTxSell() {
 				Quantity:          "5",
 				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
 				DisableAutoRetire: false,
-				Expiration:        &time.Time{},
 			},
 		},
 		{
@@ -1709,7 +1704,6 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 				Quantity:          "5",
 				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(200)},
 				DisableAutoRetire: false,
-				Expiration:        &time.Time{},
 			},
 		},
 		{

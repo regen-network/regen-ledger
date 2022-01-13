@@ -148,7 +148,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		if order.Expiration == nil {
 			return nil, nil
 		}
-		return []interface{}{order.Expiration.UnixNano()}, nil
+		return []interface{}{uint64(order.Expiration.UnixNano())}, nil
 	}, []byte{})
 	if err != nil {
 		panic(err.Error())
@@ -178,7 +178,10 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 		if !ok {
 			return nil, sdkerrors.ErrInvalidType.Wrapf("expected %T got %T", ecocredit.BuyOrder{}, value)
 		}
-		return []interface{}{order.Expiration.String()}, nil
+		if order.Expiration == nil {
+			return nil, nil
+		}
+		return []interface{}{uint64(order.Expiration.UnixNano())}, nil
 	}, []byte{})
 	if err != nil {
 		panic(err.Error())

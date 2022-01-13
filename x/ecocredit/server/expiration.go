@@ -10,10 +10,8 @@ import (
 
 // PruneOrders checks if there are any expired sell or buy orders and removes them from state.
 func (s serverImpl) PruneOrders(ctx sdk.Context) error {
-
-	blockTime := ctx.BlockTime().String()
-	// TODO: better solution?
-	minTime := time.Time{}.Add(time.Nanosecond) // ignore zero-value
+	blockTime := ctx.BlockTime()
+	minTime := time.Time{}
 
 	sellOrdersIter, err := s.sellOrderByExpirationIndex.PrefixScan(ctx, minTime, blockTime)
 	if err != nil {
@@ -27,7 +25,7 @@ func (s serverImpl) PruneOrders(ctx sdk.Context) error {
 	}
 
 	for _, order := range sellOrders {
-		err := s.buyOrderTable.Delete(ctx, order.OrderId)
+		err := s.sellOrderTable.Delete(ctx, order.OrderId)
 		if err != nil {
 			return err
 		}

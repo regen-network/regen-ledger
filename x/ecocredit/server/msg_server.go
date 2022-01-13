@@ -2,8 +2,6 @@ package server
 
 import (
 	"context"
-	"time"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -586,6 +584,7 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 		if err != nil {
 			return nil, err
 		}
+
 		// TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
 
 		orderID, err := s.createSellOrder(ctx, owner, order)
@@ -658,13 +657,7 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 		sellOrder.Quantity = update.NewQuantity
 		sellOrder.AskPrice = update.NewAskPrice
 		sellOrder.DisableAutoRetire = update.DisableAutoRetire
-
-		// TODO: better solution?
-		if update.NewExpiration == nil {
-			sellOrder.Expiration = &time.Time{}
-		} else {
-			sellOrder.Expiration = update.NewExpiration
-		}
+		sellOrder.Expiration = update.NewExpiration
 
 		err = s.sellOrderTable.Update(ctx, sellOrder.OrderId, sellOrder)
 		if err != nil {
@@ -831,11 +824,6 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 			buyOrderID := s.buyOrderTable.Sequence().NextVal(ctx)
 			buyOrderIds[i] = buyOrderID
 
-			// TODO: better solution?
-			if order.Expiration == nil {
-				order.Expiration = &time.Time{}
-			}
-
 			err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventBuyOrderCreated{
 				BuyOrderId:         buyOrderID,
 				SellOrderId:        sellOrderId,
@@ -871,6 +859,26 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 	}
 
 	return &ecocredit.MsgBuyResponse{BuyOrderIds: buyOrderIds}, nil
+}
+
+func (s serverImpl) createBuyOrder(ctx types.Context, buyer string, o *ecocredit.MsgBuy_Order) (uint64, error) {
+	orderID := s.buyOrderTable.Sequence().PeekNextVal(ctx)
+	selection := ecocredit.BuyOrder_Selection{
+		Sum: &ecocredit.BuyOrder_Selection_SellOrderId{
+			SellOrderId: o.Selection.GetSellOrderId(),
+		},
+	}
+	_, err := s.buyOrderTable.Create(ctx, &ecocredit.BuyOrder{
+		Buyer:              buyer,
+		BuyOrderId:         orderID,
+		Selection:          &selection,
+		Quantity:           o.Quantity,
+		BidPrice:           o.BidPrice,
+		DisableAutoRetire:  o.DisableAutoRetire,
+		DisablePartialFill: o.DisablePartialFill,
+		Expiration:         o.Expiration,
+	})
+	return orderID, err
 }
 
 // AllowAskDenom adds a new ask denom
