@@ -1504,7 +1504,7 @@ Msg is the regen.ecocredit.v1alpha2 Query service.
 | Basket | [QueryBasketRequest](#regen.ecocredit.v1alpha2.QueryBasketRequest) | [QueryBasketResponse](#regen.ecocredit.v1alpha2.QueryBasketResponse) | Basket queries one basket by denom. |
 | Baskets | [QueryBasketsRequest](#regen.ecocredit.v1alpha2.QueryBasketsRequest) | [QueryBasketsResponse](#regen.ecocredit.v1alpha2.QueryBasketsResponse) | Baskets lists all baskets in the ecocredit module. |
 | BasketCredits | [QueryBasketCreditsRequest](#regen.ecocredit.v1alpha2.QueryBasketCreditsRequest) | [QueryBasketCreditsResponse](#regen.ecocredit.v1alpha2.QueryBasketCreditsResponse) | BasketCredits lists all ecocredits inside a given basket. |
-| BasketCredit | [QueryBasketCreditRequest](#regen.ecocredit.v1alpha2.QueryBasketCreditRequest) | [QueryBasketCreditResponse](#regen.ecocredit.v1alpha2.QueryBasketCreditResponse) | BasketCredits gets a single credit by batch inside a given basket |
+| BasketCredit | [QueryBasketCreditRequest](#regen.ecocredit.v1alpha2.QueryBasketCreditRequest) | [QueryBasketCreditResponse](#regen.ecocredit.v1alpha2.QueryBasketCreditResponse) | BasketCredit gets a single credit by batch inside a given basket |
 
  <!-- end services -->
 

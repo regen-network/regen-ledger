@@ -2562,7 +2562,7 @@ type QueryClient interface {
 	Baskets(ctx context.Context, in *QueryBasketsRequest, opts ...grpc.CallOption) (*QueryBasketsResponse, error)
 	// BasketCredits lists all ecocredits inside a given basket.
 	BasketCredits(ctx context.Context, in *QueryBasketCreditsRequest, opts ...grpc.CallOption) (*QueryBasketCreditsResponse, error)
-	// BasketCredits gets a single credit by batch inside a given basket
+	// BasketCredit gets a single credit by batch inside a given basket
 	BasketCredit(ctx context.Context, in *QueryBasketCreditRequest, opts ...grpc.CallOption) (*QueryBasketCreditResponse, error)
 }
 
@@ -2818,7 +2818,7 @@ type QueryServer interface {
 	Baskets(context.Context, *QueryBasketsRequest) (*QueryBasketsResponse, error)
 	// BasketCredits lists all ecocredits inside a given basket.
 	BasketCredits(context.Context, *QueryBasketCreditsRequest) (*QueryBasketCreditsResponse, error)
-	// BasketCredits gets a single credit by batch inside a given basket
+	// BasketCredit gets a single credit by batch inside a given basket
 	BasketCredit(context.Context, *QueryBasketCreditRequest) (*QueryBasketCreditResponse, error)
 }
 

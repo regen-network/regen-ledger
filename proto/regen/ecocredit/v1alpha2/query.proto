@@ -131,7 +131,7 @@ service Query {
         "/regen/ecocredit/v1alpha1/baskets/{basket_denom}/credits";
   }
 
-  // BasketCredits gets a single credit by batch inside a given basket
+  // BasketCredit gets a single credit by batch inside a given basket
   rpc BasketCredit(QueryBasketCreditRequest) returns (QueryBasketCreditResponse) {
     option (google.api.http).get =
       "/regen/ecocredit/v1alpha1/baskets/{basket_denom}/credits/{batch_denom}";
