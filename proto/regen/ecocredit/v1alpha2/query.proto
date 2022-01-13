@@ -131,7 +131,8 @@ service Query {
         "/regen/ecocredit/v1alpha1/baskets/{basket_denom}/credits";
   }
 
-  rpc BasketBalanceByBatch(QueryBasketBalanceByBatchRequest) returns (QueryBasketBalanceByBatchResponse) {
+  // BasketCredits gets a single credit by batch inside a given basket
+  rpc BasketCredit(QueryBasketCreditRequest) returns (QueryBasketCreditResponse) {
     option (google.api.http).get =
       "/regen/ecocredit/v1alpha1/baskets/{basket_denom}/credits/{batch_denom}";
   }
@@ -502,7 +503,7 @@ message QueryBasketCreditsResponse {
 }
 
 // QueryBasketBalanceByBatchRequest is the Query/QueryBasketBalanceByBatch request type
-message QueryBasketBalanceByBatchRequest {
+message QueryBasketCreditRequest {
   // basket_denom is the basket of the denom to query
   string basket_denom = 1;
 
@@ -511,7 +512,7 @@ message QueryBasketBalanceByBatchRequest {
 }
 
 // QueryBasketBalanceByBatchResponse is the Query/QueryBasketBalanceByBatch request type
-message QueryBasketBalanceByBatchResponse {
+message QueryBasketCreditResponse {
   // credit is the credit inside the basket
   BasketCredit credit = 1;
 }
