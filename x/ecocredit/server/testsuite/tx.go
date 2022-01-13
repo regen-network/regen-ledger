@@ -916,7 +916,7 @@ func (s *IntegrationTestSuite) TestAddToBasket() {
 				require.True(tokensExpected.Equal(actualTokensBack))
 
 				for _, c := range tc.msg.Credits {
-					balRes, err := s.queryClient.BasketBalanceByBatch(s.ctx, &ecocredit.QueryBasketBalanceByBatchRequest{
+					balRes, err := s.queryClient.BasketCredit(s.ctx, &ecocredit.QueryBasketCreditRequest{
 						BasketDenom: lastBasket,
 						BatchDenom:  c.BatchDenom,
 					})
@@ -990,7 +990,7 @@ func (s *IntegrationTestSuite) TestTakeFromBasketScenario() {
 	require.Equal(creditsAddedToBasket[0:1], resTake.Credits)
 
 	// check to see the credit as taken
-	queryRes, err := s.queryClient.BasketBalanceByBatch(s.ctx, &ecocredit.QueryBasketBalanceByBatchRequest{
+	queryRes, err := s.queryClient.BasketCredit(s.ctx, &ecocredit.QueryBasketCreditRequest{
 		BasketDenom: resBasket.BasketDenom,
 		BatchDenom:  creditsAddedToBasket[0].BatchDenom,
 	})
@@ -1007,7 +1007,7 @@ func (s *IntegrationTestSuite) TestTakeFromBasketScenario() {
 	require.Equal(balRes.TradableAmount, "1000000000") // we minted 1000000000 to ourselves, deposited 1, and took it back.
 
 	// basket should still have the other credit left
-	queryRes, err = s.queryClient.BasketBalanceByBatch(s.ctx, &ecocredit.QueryBasketBalanceByBatchRequest{
+	queryRes, err = s.queryClient.BasketCredit(s.ctx, &ecocredit.QueryBasketCreditRequest{
 		BasketDenom: resBasket.BasketDenom,
 		BatchDenom:  creditsAddedToBasket[1].BatchDenom,
 	})
@@ -1339,7 +1339,7 @@ func (s *IntegrationTestSuite) getCreditBalance(addr string, denom string) (trad
 }
 
 func (s *IntegrationTestSuite) getBasketCreditBalance(basketDenom, batchDenom string) (tradable math.Dec) {
-	res, err := s.queryClient.BasketBalanceByBatch(s.ctx, &ecocredit.QueryBasketBalanceByBatchRequest{
+	res, err := s.queryClient.BasketCredit(s.ctx, &ecocredit.QueryBasketCreditRequest{
 		BasketDenom: basketDenom,
 		BatchDenom:  batchDenom,
 	})

@@ -2228,7 +2228,7 @@ func (m *QueryBasketCreditsResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
-// QueryBasketBalanceByBatchRequest is the Query/QueryBasketBalanceByBatch request type
+// QueryBasketCreditRequest is the Query/BasketCredit request type
 type QueryBasketCreditRequest struct {
 	// basket_denom is the basket of the denom to query
 	BasketDenom string `protobuf:"bytes,1,opt,name=basket_denom,json=basketDenom,proto3" json:"basket_denom,omitempty"`
@@ -2283,7 +2283,7 @@ func (m *QueryBasketCreditRequest) GetBatchDenom() string {
 	return ""
 }
 
-// QueryBasketBalanceByBatchResponse is the Query/QueryBasketBalanceByBatch request type
+// QueryBasketCreditResponse is the Query/BasketCredit request type
 type QueryBasketCreditResponse struct {
 	// credit is the credit inside the basket
 	Credit *BasketCredit `protobuf:"bytes,1,opt,name=credit,proto3" json:"credit,omitempty"`
@@ -2562,6 +2562,7 @@ type QueryClient interface {
 	Baskets(ctx context.Context, in *QueryBasketsRequest, opts ...grpc.CallOption) (*QueryBasketsResponse, error)
 	// BasketCredits lists all ecocredits inside a given basket.
 	BasketCredits(ctx context.Context, in *QueryBasketCreditsRequest, opts ...grpc.CallOption) (*QueryBasketCreditsResponse, error)
+	// BasketCredits gets a single credit by batch inside a given basket
 	BasketCredit(ctx context.Context, in *QueryBasketCreditRequest, opts ...grpc.CallOption) (*QueryBasketCreditResponse, error)
 }
 
@@ -2817,6 +2818,7 @@ type QueryServer interface {
 	Baskets(context.Context, *QueryBasketsRequest) (*QueryBasketsResponse, error)
 	// BasketCredits lists all ecocredits inside a given basket.
 	BasketCredits(context.Context, *QueryBasketCreditsRequest) (*QueryBasketCreditsResponse, error)
+	// BasketCredits gets a single credit by batch inside a given basket
 	BasketCredit(context.Context, *QueryBasketCreditRequest) (*QueryBasketCreditResponse, error)
 }
 

@@ -461,7 +461,7 @@ func (s serverImpl) BasketCredits(goCtx context.Context, request *ecocredit.Quer
 	return nil, nil
 }
 
-func (s serverImpl) BasketBalanceByBatch(goCtx context.Context, request *ecocredit.QueryBasketBalanceByBatchRequest) (*ecocredit.QueryBasketBalanceByBatchResponse, error) {
+func (s serverImpl) BasketCredit(goCtx context.Context, request *ecocredit.QueryBasketCreditRequest) (*ecocredit.QueryBasketCreditResponse, error) {
 	if request.BasketDenom == "" || request.BatchDenom == "" {
 		return nil, sdkerrors.ErrInvalidRequest
 	}
@@ -474,7 +474,7 @@ func (s serverImpl) BasketBalanceByBatch(goCtx context.Context, request *ecocred
 		return nil, err
 	}
 
-	return &ecocredit.QueryBasketBalanceByBatchResponse{Credit: &ecocredit.BasketCredit{
+	return &ecocredit.QueryBasketCreditResponse{Credit: &ecocredit.BasketCredit{
 		BatchDenom:     request.BatchDenom,
 		TradableAmount: dec.String(),
 	}}, nil
