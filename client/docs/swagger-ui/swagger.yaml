@@ -6,10 +6,10 @@ info:
     broadcasting transactions
   version: 1.0.0
 paths:
-  '/regen/data/v1alpha2/content/{iri}':
+  /regen/data/v1alpha2/by_hash:
     get:
       summary: ByHash queries data based on its ContentHash.
-      operationId: ByIRI
+      operationId: ByHash
       responses:
         '200':
           description: A successful response.
@@ -138,6 +138,30 @@ paths:
                     type: string
                     format: date-time
                     title: timestamp is the anchor Timestamp
+                  signers:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        signer:
+                          type: string
+                          title: signer is the address of the signer
+                        timestamp:
+                          type: string
+                          format: date-time
+                          title: timestamp is the time at which the data was signed
+                      title: >-
+                        SignerEntry is a signer entry wrapping a signer address
+                        and timestamp
+                    title: 'signers are the signers, if any'
+                  content:
+                    title: content is the actual content if stored on-chain
+                    type: object
+                    properties:
+                      raw_data:
+                        type: string
+                        format: byte
+                        title: raw_data is the oneof field for raw data
             description: >-
               QueryByContentHashResponse is the Query/ByContentHash response
               type.
@@ -164,14 +188,121 @@ paths:
                       type: string
                       format: byte
       parameters:
-        - name: iri
-          description: hash is the hash-based identifier for the anchored content.
-          in: path
-          required: true
+        - name: hash.raw.hash
+          description: >-
+            hash represents the hash of the data based on the specified
+            digest_algorithm.
+          in: query
+          required: false
           type: string
+          format: byte
+        - name: hash.raw.digest_algorithm
+          description: |-
+            digest_algorithm represents the hash digest algorithm.
+
+             - DIGEST_ALGORITHM_UNSPECIFIED: unspecified and invalid
+             - DIGEST_ALGORITHM_BLAKE2B_256: BLAKE2b-256
+          in: query
+          required: false
+          type: string
+          enum:
+            - DIGEST_ALGORITHM_UNSPECIFIED
+            - DIGEST_ALGORITHM_BLAKE2B_256
+          default: DIGEST_ALGORITHM_UNSPECIFIED
+        - name: hash.raw.media_type
+          description: |-
+            media_type represents the MediaType for raw data.
+
+             - MEDIA_TYPE_UNSPECIFIED: MEDIA_TYPE_UNSPECIFIED can be used for raw binary data
+             - MEDIA_TYPE_TEXT_PLAIN: plain text
+             - MEDIA_TYPE_JSON: JSON
+             - MEDIA_TYPE_CSV: CSV
+             - MEDIA_TYPE_XML: XML
+             - MEDIA_TYPE_PDF: PDF
+             - MEDIA_TYPE_TIFF: TIIF
+             - MEDIA_TYPE_JPG: JPG
+             - MEDIA_TYPE_PNG: PNG
+             - MEDIA_TYPE_SVG: SVG
+             - MEDIA_TYPE_WEBP: WEBP
+             - MEDIA_TYPE_AVIF: AVIF
+             - MEDIA_TYPE_GIF: GIF
+             - MEDIA_TYPE_APNG: APNG
+             - MEDIA_TYPE_MPEG: MPEG
+             - MEDIA_TYPE_MP4: MP4
+             - MEDIA_TYPE_WEBM: WEBM
+             - MEDIA_TYPE_OGG: OGG
+          in: query
+          required: false
+          type: string
+          enum:
+            - MEDIA_TYPE_UNSPECIFIED
+            - MEDIA_TYPE_TEXT_PLAIN
+            - MEDIA_TYPE_JSON
+            - MEDIA_TYPE_CSV
+            - MEDIA_TYPE_XML
+            - MEDIA_TYPE_PDF
+            - MEDIA_TYPE_TIFF
+            - MEDIA_TYPE_JPG
+            - MEDIA_TYPE_PNG
+            - MEDIA_TYPE_SVG
+            - MEDIA_TYPE_WEBP
+            - MEDIA_TYPE_AVIF
+            - MEDIA_TYPE_GIF
+            - MEDIA_TYPE_APNG
+            - MEDIA_TYPE_MPEG
+            - MEDIA_TYPE_MP4
+            - MEDIA_TYPE_WEBM
+            - MEDIA_TYPE_OGG
+          default: MEDIA_TYPE_UNSPECIFIED
+        - name: hash.graph.hash
+          description: >-
+            hash represents the hash of the data based on the specified
+            digest_algorithm.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: hash.graph.digest_algorithm
+          description: |-
+            digest_algorithm represents the hash digest algorithm.
+
+             - DIGEST_ALGORITHM_UNSPECIFIED: unspecified and invalid
+             - DIGEST_ALGORITHM_BLAKE2B_256: BLAKE2b-256
+          in: query
+          required: false
+          type: string
+          enum:
+            - DIGEST_ALGORITHM_UNSPECIFIED
+            - DIGEST_ALGORITHM_BLAKE2B_256
+          default: DIGEST_ALGORITHM_UNSPECIFIED
+        - name: hash.graph.canonicalization_algorithm
+          description: >-
+            graph_canonicalization_algorithm represents the RDF graph
+            canonicalization algorithm.
+
+             - GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED: unspecified and invalid
+             - GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015: URDNA2015 graph hashing
+          in: query
+          required: false
+          type: string
+          enum:
+            - GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED
+            - GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015
+          default: GRAPH_CANONICALIZATION_ALGORITHM_UNSPECIFIED
+        - name: hash.graph.merkle_tree
+          description: |-
+            merkle_tree is the merkle tree type used for the graph hash, if any.
+
+             - GRAPH_MERKLE_TREE_NONE_UNSPECIFIED: no merkle tree
+          in: query
+          required: false
+          type: string
+          enum:
+            - GRAPH_MERKLE_TREE_NONE_UNSPECIFIED
+          default: GRAPH_MERKLE_TREE_NONE_UNSPECIFIED
       tags:
         - Query
-  '/regen/data/v1alpha2/content/{signer}':
+  '/regen/data/v1alpha2/signers/{signer}':
     get:
       summary: BySigner queries data based on signers.
       operationId: BySigner
@@ -310,6 +441,30 @@ paths:
                       type: string
                       format: date-time
                       title: timestamp is the anchor Timestamp
+                    signers:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          signer:
+                            type: string
+                            title: signer is the address of the signer
+                          timestamp:
+                            type: string
+                            format: date-time
+                            title: timestamp is the time at which the data was signed
+                        title: >-
+                          SignerEntry is a signer entry wrapping a signer
+                          address and timestamp
+                      title: 'signers are the signers, if any'
+                    content:
+                      title: content is the actual content if stored on-chain
+                      type: object
+                      properties:
+                        raw_data:
+                          type: string
+                          format: byte
+                          title: raw_data is the oneof field for raw data
                   title: >-
                     ContentEntry describes data referenced and possibly stored
                     on chain
@@ -418,1563 +573,7 @@ paths:
           format: boolean
       tags:
         - Query
-  '/regen/data/v1alpha2/signers/{iri}':
-    get:
-      summary: Signers queries signers based on IRI.
-      operationId: Signers
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              signers:
-                type: array
-                items:
-                  type: string
-                description: signers are the addresses of the signers.
-              pagination:
-                description: pagination is the pagination PageResponse.
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    title: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-            description: QuerySignersResponse is the Query/QuerySigners response type.
-        default:
-          description: An unexpected error response
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: iri
-          description: iri is the content IRI
-          in: path
-          required: true
-          type: string
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
-      tags:
-        - Query
-  /regen/ecocredit/v1alpha1/ask-denoms:
-    get:
-      summary: >-
-        AllowedAskDenoms queries all denoms allowed to be set in the AskPrice of
-        a sell order
-      operationId: AllowedAskDenoms
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              ask_denoms:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    denom:
-                      type: string
-                      title: denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
-                    display_denom:
-                      type: string
-                      title: >-
-                        display_denom is the denom to display to the user and is
-                        informational
-                    exponent:
-                      type: integer
-                      format: int64
-                      title: >-
-                        exponent is the exponent that relates the denom to the
-                        display_denom and is
-
-                        informational
-                  description: AskDenom represents the information for an ask denom.
-                description: >-
-                  ask_denoms is a list of coin denoms allowed to use in the ask
-                  price of sell orders.
-              pagination:
-                description: pagination defines an optional pagination for the response.
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    title: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-            description: >-
-              QueryAllowedAskDenomsResponse is the Query/AllowedAskDenoms
-              response type.
-        default:
-          description: An unexpected error response
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
-      tags:
-        - Query
-  /regen/ecocredit/v1alpha1/baskets:
-    get:
-      summary: Baskets lists all baskets in the ecocredit module.
-      operationId: Baskets
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/regen.ecocredit.v1alpha2.QueryBasketsResponse'
-        default:
-          description: An unexpected error response
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
-      tags:
-        - Query
-  '/regen/ecocredit/v1alpha1/baskets/{basket_denom}':
-    get:
-      summary: Basket queries one basket by denom.
-      operationId: Basket
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            $ref: '#/definitions/regen.ecocredit.v1alpha2.QueryBasketResponse'
-        default:
-          description: An unexpected error response
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: basket_denom
-          description: basket_denom represents the denom of the basket to query.
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  '/regen/ecocredit/v1alpha1/baskets/{basket_denom}/credits':
-    get:
-      summary: BasketCredits lists all ecocredits inside a given basket.
-      operationId: BasketCredits
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              credits:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    batch_denom:
-                      type: string
-                      description: batch_denom is the unique ID of the credit batch.
-                    tradable_amount:
-                      type: string
-                      description: >-
-                        tradable_amount is the number of credits in this
-                        transfer that can be
-
-                        traded by the recipient. Decimal values are acceptable
-                        within the
-
-                        precision returned by Query/Precision.
-                  description: >-
-                    BasketCredit represents the information for a credit batch
-                    inside a basket.
-                description: credits are the credits inside the basket.
-              pagination:
-                description: pagination defines the pagination in the response.
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    title: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-            description: >-
-              QueryBasketCreditsResponse is the Query/BasketCredits response
-              type.
-        default:
-          description: An unexpected error response
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: basket_denom
-          description: basket_denom is the basket denom to query credits for.
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /regen/ecocredit/v1alpha1/buy-orders:
-    get:
-      summary: BuyOrders queries a paginated list of all buy orders
-      operationId: BuyOrders
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              buy_orders:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    buy_order_id:
-                      type: string
-                      format: uint64
-                      description: buy_order_id is the unique ID of buy order.
-                    buyer:
-                      type: string
-                      title: buyer is the address that created the buy order
-                    selection:
-                      description: selection is the buy order selection.
-                      type: object
-                      properties:
-                        sell_order_id:
-                          type: string
-                          format: uint64
-                          description: >-
-                            sell_order_id is the sell order ID against which the
-                            buyer is trying to buy.
-
-                            When sell_order_id is set, this is known as a direct
-                            buy order because it
-
-                            is placed directly against a specific sell order.
-                    quantity:
-                      type: string
-                      description: >-
-                        quantity is the quantity of credits to buy. If the
-                        quantity of credits
-
-                        available is less than this amount the order will be
-                        partially filled
-
-                        unless disable_partial_fill is true.
-                    bid_price:
-                      description: >-
-                        bid price is the bid price for this buy order. A credit
-                        unit will be
-
-                        settled at a purchase price that is no more than the bid
-                        price. The
-
-                        buy order will fail if the buyer does not have enough
-                        funds available
-
-                        to complete the purchase.
-                      type: object
-                      properties:
-                        denom:
-                          type: string
-                        amount:
-                          type: string
-                    disable_auto_retire:
-                      type: boolean
-                      format: boolean
-                      description: >-
-                        disable_auto_retire allows auto-retirement to be
-                        disabled. If it is set to true
-
-                        the credits will not auto-retire and can be resold
-                        assuming that the
-
-                        corresponding sell order has auto-retirement disabled.
-                        If the sell order
-
-                        hasn't disabled auto-retirement and the buy order tries
-                        to disable it,
-
-                        that buy order will fail.
-                    disable_partial_fill:
-                      type: boolean
-                      format: boolean
-                      description: >-
-                        disable_partial_fill disables the default behavior of
-                        partially filling
-
-                        buy orders if the requested quantity is not available.
-                  description: BuyOrder represents the information for a buy order.
-                description: buy_orders is a list of buy orders.
-              pagination:
-                description: pagination defines an optional pagination for the response.
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    title: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-            description: QueryBuyOrdersResponse is the Query/BuyOrders response type.
-        default:
-          description: An unexpected error response
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
-      tags:
-        - Query
-  '/regen/ecocredit/v1alpha1/buy-orders/address/{address}':
-    get:
-      summary: >-
-        BuyOrdersByAddress queries a paginated list of buy orders by creator
-        address
-      operationId: BuyOrdersByAddress
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              buy_orders:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    buy_order_id:
-                      type: string
-                      format: uint64
-                      description: buy_order_id is the unique ID of buy order.
-                    buyer:
-                      type: string
-                      title: buyer is the address that created the buy order
-                    selection:
-                      description: selection is the buy order selection.
-                      type: object
-                      properties:
-                        sell_order_id:
-                          type: string
-                          format: uint64
-                          description: >-
-                            sell_order_id is the sell order ID against which the
-                            buyer is trying to buy.
-
-                            When sell_order_id is set, this is known as a direct
-                            buy order because it
-
-                            is placed directly against a specific sell order.
-                    quantity:
-                      type: string
-                      description: >-
-                        quantity is the quantity of credits to buy. If the
-                        quantity of credits
-
-                        available is less than this amount the order will be
-                        partially filled
-
-                        unless disable_partial_fill is true.
-                    bid_price:
-                      description: >-
-                        bid price is the bid price for this buy order. A credit
-                        unit will be
-
-                        settled at a purchase price that is no more than the bid
-                        price. The
-
-                        buy order will fail if the buyer does not have enough
-                        funds available
-
-                        to complete the purchase.
-                      type: object
-                      properties:
-                        denom:
-                          type: string
-                        amount:
-                          type: string
-                    disable_auto_retire:
-                      type: boolean
-                      format: boolean
-                      description: >-
-                        disable_auto_retire allows auto-retirement to be
-                        disabled. If it is set to true
-
-                        the credits will not auto-retire and can be resold
-                        assuming that the
-
-                        corresponding sell order has auto-retirement disabled.
-                        If the sell order
-
-                        hasn't disabled auto-retirement and the buy order tries
-                        to disable it,
-
-                        that buy order will fail.
-                    disable_partial_fill:
-                      type: boolean
-                      format: boolean
-                      description: >-
-                        disable_partial_fill disables the default behavior of
-                        partially filling
-
-                        buy orders if the requested quantity is not available.
-                  description: BuyOrder represents the information for a buy order.
-                description: buy_orders is a list of buy orders.
-              pagination:
-                description: pagination defines an optional pagination for the response.
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    title: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-            description: >-
-              QueryBuyOrdersByAddressResponse is the Query/BuyOrdersByAddress
-              response type.
-        default:
-          description: An unexpected error response
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: address
-          description: address of the buy order creator
-          in: path
-          required: true
-          type: string
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
-      tags:
-        - Query
-  '/regen/ecocredit/v1alpha1/buy-orders/id/{buy_order_id}':
-    get:
-      summary: BuyOrder queries a buy order by its id
-      operationId: BuyOrder
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              buy_order:
-                type: object
-                properties:
-                  buy_order_id:
-                    type: string
-                    format: uint64
-                    description: buy_order_id is the unique ID of buy order.
-                  buyer:
-                    type: string
-                    title: buyer is the address that created the buy order
-                  selection:
-                    description: selection is the buy order selection.
-                    type: object
-                    properties:
-                      sell_order_id:
-                        type: string
-                        format: uint64
-                        description: >-
-                          sell_order_id is the sell order ID against which the
-                          buyer is trying to buy.
-
-                          When sell_order_id is set, this is known as a direct
-                          buy order because it
-
-                          is placed directly against a specific sell order.
-                  quantity:
-                    type: string
-                    description: >-
-                      quantity is the quantity of credits to buy. If the
-                      quantity of credits
-
-                      available is less than this amount the order will be
-                      partially filled
-
-                      unless disable_partial_fill is true.
-                  bid_price:
-                    description: >-
-                      bid price is the bid price for this buy order. A credit
-                      unit will be
-
-                      settled at a purchase price that is no more than the bid
-                      price. The
-
-                      buy order will fail if the buyer does not have enough
-                      funds available
-
-                      to complete the purchase.
-                    type: object
-                    properties:
-                      denom:
-                        type: string
-                      amount:
-                        type: string
-                  disable_auto_retire:
-                    type: boolean
-                    format: boolean
-                    description: >-
-                      disable_auto_retire allows auto-retirement to be disabled.
-                      If it is set to true
-
-                      the credits will not auto-retire and can be resold
-                      assuming that the
-
-                      corresponding sell order has auto-retirement disabled. If
-                      the sell order
-
-                      hasn't disabled auto-retirement and the buy order tries to
-                      disable it,
-
-                      that buy order will fail.
-                  disable_partial_fill:
-                    type: boolean
-                    format: boolean
-                    description: >-
-                      disable_partial_fill disables the default behavior of
-                      partially filling
-
-                      buy orders if the requested quantity is not available.
-                description: BuyOrder represents the information for a buy order.
-            description: QueryBuyOrderResponse is the Query/BuyOrder response type.
-        default:
-          description: An unexpected error response
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: buy_order_id
-          description: buy_order_id is the id of the buy order.
-          in: path
-          required: true
-          type: string
-          format: uint64
-      tags:
-        - Query
-  /regen/ecocredit/v1alpha1/sell-orders:
-    get:
-      summary: SellOrders queries a paginated list of all sell orders
-      operationId: SellOrders
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              sell_orders:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    order_id:
-                      type: string
-                      format: uint64
-                      description: order_id is the unique ID of sell order.
-                    owner:
-                      type: string
-                      description: >-
-                        owner is the address of the owner of the credits being
-                        sold.
-                    batch_denom:
-                      type: string
-                      description: batch_denom is the credit batch being sold.
-                    quantity:
-                      type: string
-                      description: quantity is the quantity of credits being sold.
-                    ask_price:
-                      description: >-
-                        ask_price is the price the seller is asking for each
-                        unit of the
-
-                        batch_denom. Each credit unit of the batch will be sold
-                        for at least the
-
-                        ask_price or more.
-                      type: object
-                      properties:
-                        denom:
-                          type: string
-                        amount:
-                          type: string
-                    disable_auto_retire:
-                      type: boolean
-                      format: boolean
-                      description: >-
-                        disable_auto_retire disables auto-retirement of credits
-                        which allows a
-
-                        buyer to disable auto-retirement in their buy order
-                        enabling them to
-
-                        resell the credits to another buyer.
-                  description: SellOrder represents the information for a sell order.
-                description: sell_orders is a list of sell orders.
-              pagination:
-                description: pagination defines the pagination in the response.
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    title: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-            description: QuerySellOrdersResponse is the Query/SellOrders response type.
-        default:
-          description: An unexpected error response
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
-      tags:
-        - Query
-  '/regen/ecocredit/v1alpha1/sell-orders/address/{address}':
-    get:
-      summary: >-
-        SellOrdersByAddress queries a paginated list of all sell orders from a
-        specific address
-      operationId: SellOrdersByAddress
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              sell_orders:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    order_id:
-                      type: string
-                      format: uint64
-                      description: order_id is the unique ID of sell order.
-                    owner:
-                      type: string
-                      description: >-
-                        owner is the address of the owner of the credits being
-                        sold.
-                    batch_denom:
-                      type: string
-                      description: batch_denom is the credit batch being sold.
-                    quantity:
-                      type: string
-                      description: quantity is the quantity of credits being sold.
-                    ask_price:
-                      description: >-
-                        ask_price is the price the seller is asking for each
-                        unit of the
-
-                        batch_denom. Each credit unit of the batch will be sold
-                        for at least the
-
-                        ask_price or more.
-                      type: object
-                      properties:
-                        denom:
-                          type: string
-                        amount:
-                          type: string
-                    disable_auto_retire:
-                      type: boolean
-                      format: boolean
-                      description: >-
-                        disable_auto_retire disables auto-retirement of credits
-                        which allows a
-
-                        buyer to disable auto-retirement in their buy order
-                        enabling them to
-
-                        resell the credits to another buyer.
-                  description: SellOrder represents the information for a sell order.
-                description: sell_orders is a list of sell orders.
-              pagination:
-                description: pagination defines an optional pagination for the response.
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    title: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-            description: >-
-              QuerySellOrdersByAddressResponse is the
-              Query/SellOrdersByAddressResponse response type.
-        default:
-          description: An unexpected error response
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: address
-          description: address is the creator of the sell order
-          in: path
-          required: true
-          type: string
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
-      tags:
-        - Query
-  '/regen/ecocredit/v1alpha1/sell-orders/batch-denom/{batch_denom}':
-    get:
-      summary: >-
-        SellOrdersByDenom queries a paginated list of all sell orders of a
-        specific ecocredit denom
-      operationId: SellOrdersByBatchDenom
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              sell_orders:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    order_id:
-                      type: string
-                      format: uint64
-                      description: order_id is the unique ID of sell order.
-                    owner:
-                      type: string
-                      description: >-
-                        owner is the address of the owner of the credits being
-                        sold.
-                    batch_denom:
-                      type: string
-                      description: batch_denom is the credit batch being sold.
-                    quantity:
-                      type: string
-                      description: quantity is the quantity of credits being sold.
-                    ask_price:
-                      description: >-
-                        ask_price is the price the seller is asking for each
-                        unit of the
-
-                        batch_denom. Each credit unit of the batch will be sold
-                        for at least the
-
-                        ask_price or more.
-                      type: object
-                      properties:
-                        denom:
-                          type: string
-                        amount:
-                          type: string
-                    disable_auto_retire:
-                      type: boolean
-                      format: boolean
-                      description: >-
-                        disable_auto_retire disables auto-retirement of credits
-                        which allows a
-
-                        buyer to disable auto-retirement in their buy order
-                        enabling them to
-
-                        resell the credits to another buyer.
-                  description: SellOrder represents the information for a sell order.
-                description: sell_orders is a list of sell orders.
-              pagination:
-                description: pagination defines an optional pagination for the response.
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    title: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-            description: >-
-              QuerySellOrdersByDenomResponse is the Query/SellOrdersByDenom
-              response type.
-        default:
-          description: An unexpected error response
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: batch_denom
-          description: batch_denom is an ecocredit denom
-          in: path
-          required: true
-          type: string
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
-      tags:
-        - Query
-  '/regen/ecocredit/v1alpha1/sell-orders/id/{sell_order_id}':
-    get:
-      summary: SellOrder queries a sell order by its ID
-      operationId: SellOrder
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              sell_order:
-                type: object
-                properties:
-                  order_id:
-                    type: string
-                    format: uint64
-                    description: order_id is the unique ID of sell order.
-                  owner:
-                    type: string
-                    description: >-
-                      owner is the address of the owner of the credits being
-                      sold.
-                  batch_denom:
-                    type: string
-                    description: batch_denom is the credit batch being sold.
-                  quantity:
-                    type: string
-                    description: quantity is the quantity of credits being sold.
-                  ask_price:
-                    description: >-
-                      ask_price is the price the seller is asking for each unit
-                      of the
-
-                      batch_denom. Each credit unit of the batch will be sold
-                      for at least the
-
-                      ask_price or more.
-                    type: object
-                    properties:
-                      denom:
-                        type: string
-                      amount:
-                        type: string
-                  disable_auto_retire:
-                    type: boolean
-                    format: boolean
-                    description: >-
-                      disable_auto_retire disables auto-retirement of credits
-                      which allows a
-
-                      buyer to disable auto-retirement in their buy order
-                      enabling them to
-
-                      resell the credits to another buyer.
-                description: SellOrder represents the information for a sell order.
-            description: QuerySellOrderResponse is the Query/SellOrder response type.
-        default:
-          description: An unexpected error response
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: sell_order_id
-          description: sell_order_id is the id of the requested sell order.
-          in: path
-          required: true
-          type: string
-          format: uint64
-      tags:
-        - Query
-  '/regen/ecocredit/v1alpha2/batches/{batch_denom}':
+  '/regen/ecocredit/v1alpha1/batches/{batch_denom}':
     get:
       summary: BatchInfo queries for information on a credit batch.
       operationId: BatchInfo
@@ -1988,14 +587,15 @@ paths:
                 description: info is the BatchInfo for the credit batch.
                 type: object
                 properties:
-                  project_id:
+                  class_id:
                     type: string
-                    description: >-
-                      project_id is the unique ID of the project this batch
-                      belongs to.
+                    description: class_id is the unique ID of credit class.
                   batch_denom:
                     type: string
                     description: batch_denom is the unique ID of credit batch.
+                  issuer:
+                    type: string
+                    description: issuer is the issuer of the credit batch.
                   total_amount:
                     type: string
                     description: >-
@@ -2047,6 +647,14 @@ paths:
                       batch was
 
                       quantified and verified.
+                  project_location:
+                    type: string
+                    description: >-
+                      project_location is the location of the project backing
+                      the credits in this
+
+                      batch. Full documentation can be found in
+                      MsgCreateBatch.project_location.
             description: QueryBatchInfoResponse is the Query/BatchInfo response type.
         default:
           description: An unexpected error response
@@ -2078,7 +686,7 @@ paths:
           type: string
       tags:
         - Query
-  '/regen/ecocredit/v1alpha2/batches/{batch_denom}/balance/{account}':
+  '/regen/ecocredit/v1alpha1/batches/{batch_denom}/balance/{account}':
     get:
       summary: >-
         Balance queries the balance (both tradable and retired) of a given
@@ -2136,7 +744,7 @@ paths:
           type: string
       tags:
         - Query
-  '/regen/ecocredit/v1alpha2/batches/{batch_denom}/supply':
+  '/regen/ecocredit/v1alpha1/batches/{batch_denom}/supply':
     get:
       summary: Supply queries the tradable and retired supply of a credit batch.
       operationId: Supply
@@ -2191,7 +799,7 @@ paths:
           type: string
       tags:
         - Query
-  /regen/ecocredit/v1alpha2/classes:
+  /regen/ecocredit/v1alpha1/classes:
     get:
       summary: Classes queries for all credit classes with pagination.
       operationId: Classes
@@ -2359,7 +967,7 @@ paths:
           format: boolean
       tags:
         - Query
-  '/regen/ecocredit/v1alpha2/classes/{class_id}':
+  '/regen/ecocredit/v1alpha1/classes/{class_id}':
     get:
       summary: ClassInfo queries for information on a credit class.
       operationId: ClassInfo
@@ -2456,51 +1064,95 @@ paths:
           type: string
       tags:
         - Query
-  '/regen/ecocredit/v1alpha2/classes/{class_id}/projects':
+  '/regen/ecocredit/v1alpha1/classes/{class_id}/batches':
     get:
-      summary: Projects queries for all projects within a class with pagination.
-      operationId: Projects
+      summary: >-
+        Batches queries for all batches in the given credit class with
+        pagination.
+      operationId: Batches
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
             properties:
-              projects:
+              batches:
                 type: array
                 items:
                   type: object
                   properties:
-                    project_id:
-                      type: string
-                      description: project_id is the unique ID of the project.
                     class_id:
                       type: string
-                      description: >-
-                        class_id is the unique ID of credit class for this
-                        project.
+                      description: class_id is the unique ID of credit class.
+                    batch_denom:
+                      type: string
+                      description: batch_denom is the unique ID of credit batch.
                     issuer:
                       type: string
-                      description: >-
-                        issuer is the issuer of the credit batches for this
-                        project.
-                    project_location:
+                      description: issuer is the issuer of the credit batch.
+                    total_amount:
                       type: string
                       description: >-
-                        project_location is the location of the project.
+                        total_amount is the total number of active credits in
+                        the credit batch.
 
-                        Full documentation can be found in
-                        MsgCreateProject.project_location.
+                        Some of the issued credits may be cancelled and will be
+                        removed from
+
+                        total_amount and tracked in amount_cancelled.
+                        total_amount and
+
+                        amount_cancelled will always sum to the original amount
+                        of credits that
+
+                        were issued.
                     metadata:
                       type: string
                       format: byte
                       description: >-
                         metadata is any arbitrary metadata attached to the
-                        project.
+                        credit batch.
+                    amount_cancelled:
+                      type: string
+                      description: >-
+                        amount_cancelled is the number of credits in the batch
+                        that have been
+
+                        cancelled, effectively undoing there issuance. The sum
+                        of total_amount and
+
+                        amount_cancelled will always sum to the original amount
+                        of credits that
+
+                        were issued.
+                    start_date:
+                      type: string
+                      format: date-time
+                      description: >-
+                        start_date is the beginning of the period during which
+                        this credit batch
+
+                        was quantified and verified.
+                    end_date:
+                      type: string
+                      format: date-time
+                      description: >-
+                        end_date is the end of the period during which this
+                        credit batch was
+
+                        quantified and verified.
+                    project_location:
+                      type: string
+                      description: >-
+                        project_location is the location of the project backing
+                        the credits in this
+
+                        batch. Full documentation can be found in
+                        MsgCreateBatch.project_location.
                   description: >-
-                    ProjectInfo represents the high-level on-chain information
-                    for a project.
-                description: projects are the fetched projects.
+                    BatchInfo represents the high-level on-chain information for
+                    a credit batch.
+                description: batches are the fetched credit batches within the class.
               pagination:
                 description: pagination defines the pagination in the response.
                 type: object
@@ -2519,7 +1171,7 @@ paths:
                       PageRequest.count_total
 
                       was set, its value is undefined otherwise
-            description: QueryProjectsResponse is the Query/Projects response type.
+            description: QueryBatchesResponse is the Query/Batches response type.
         default:
           description: An unexpected error response
           schema:
@@ -2544,7 +1196,7 @@ paths:
                       format: byte
       parameters:
         - name: class_id
-          description: class_id is the unique ID of credit class to query.
+          description: class_id is the unique ID of the credit class to query.
           in: path
           required: true
           type: string
@@ -2605,7 +1257,7 @@ paths:
           format: boolean
       tags:
         - Query
-  /regen/ecocredit/v1alpha2/credit-types:
+  /regen/ecocredit/v1alpha1/credit-types:
     get:
       summary: >-
         CreditTypes returns the list of allowed types that credit classes can
@@ -2673,7 +1325,7 @@ paths:
                       format: byte
       tags:
         - Query
-  /regen/ecocredit/v1alpha2/params:
+  /regen/ecocredit/v1alpha1/params:
     get:
       summary: Params queries the ecocredit module parameters.
       operationId: Ecocredit/Params
@@ -2776,261 +1428,6 @@ paths:
                     value:
                       type: string
                       format: byte
-      tags:
-        - Query
-  '/regen/ecocredit/v1alpha2/projects/{project_id}':
-    get:
-      summary: ClassInfo queries for information on a project.
-      operationId: ProjectInfo
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              info:
-                type: object
-                properties:
-                  project_id:
-                    type: string
-                    description: project_id is the unique ID of the project.
-                  class_id:
-                    type: string
-                    description: >-
-                      class_id is the unique ID of credit class for this
-                      project.
-                  issuer:
-                    type: string
-                    description: >-
-                      issuer is the issuer of the credit batches for this
-                      project.
-                  project_location:
-                    type: string
-                    description: >-
-                      project_location is the location of the project.
-
-                      Full documentation can be found in
-                      MsgCreateProject.project_location.
-                  metadata:
-                    type: string
-                    format: byte
-                    description: >-
-                      metadata is any arbitrary metadata attached to the
-                      project.
-                description: >-
-                  ProjectInfo represents the high-level on-chain information for
-                  a project.
-            description: QueryProjectInfoResponse is the Query/Project response type.
-        default:
-          description: An unexpected error response
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: project_id
-          description: project_id is the unique ID of the project to query.
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  '/regen/ecocredit/v1alpha2/projects/{project_id}/batches':
-    get:
-      summary: Batches queries for all batches in the given project with pagination.
-      operationId: Batches
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              batches:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    project_id:
-                      type: string
-                      description: >-
-                        project_id is the unique ID of the project this batch
-                        belongs to.
-                    batch_denom:
-                      type: string
-                      description: batch_denom is the unique ID of credit batch.
-                    total_amount:
-                      type: string
-                      description: >-
-                        total_amount is the total number of active credits in
-                        the credit batch.
-
-                        Some of the issued credits may be cancelled and will be
-                        removed from
-
-                        total_amount and tracked in amount_cancelled.
-                        total_amount and
-
-                        amount_cancelled will always sum to the original amount
-                        of credits that
-
-                        were issued.
-                    metadata:
-                      type: string
-                      format: byte
-                      description: >-
-                        metadata is any arbitrary metadata attached to the
-                        credit batch.
-                    amount_cancelled:
-                      type: string
-                      description: >-
-                        amount_cancelled is the number of credits in the batch
-                        that have been
-
-                        cancelled, effectively undoing there issuance. The sum
-                        of total_amount and
-
-                        amount_cancelled will always sum to the original amount
-                        of credits that
-
-                        were issued.
-                    start_date:
-                      type: string
-                      format: date-time
-                      description: >-
-                        start_date is the beginning of the period during which
-                        this credit batch
-
-                        was quantified and verified.
-                    end_date:
-                      type: string
-                      format: date-time
-                      description: >-
-                        end_date is the end of the period during which this
-                        credit batch was
-
-                        quantified and verified.
-                  description: >-
-                    BatchInfo represents the high-level on-chain information for
-                    a credit batch.
-                description: batches are the fetched credit batches within the project.
-              pagination:
-                description: pagination defines the pagination in the response.
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    title: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-            description: QueryBatchesResponse is the Query/Batches response type.
-        default:
-          description: An unexpected error response
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    type_url:
-                      type: string
-                    value:
-                      type: string
-                      format: byte
-      parameters:
-        - name: project_id
-          description: project_id is the unique ID of the project to query.
-          in: path
-          required: true
-          type: string
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-          in: query
-          required: false
-          type: boolean
-          format: boolean
       tags:
         - Query
   '/regen/group/v1alpha1/admins/{admin}/accounts':
@@ -40277,6 +38674,14 @@ definitions:
                   "@type": "type.googleapis.com/google.protobuf.Duration",
                   "value": "1.212s"
                 }
+  regen.data.v1alpha2.Content:
+    type: object
+    properties:
+      raw_data:
+        type: string
+        format: byte
+        title: raw_data is the oneof field for raw data
+    title: Content is a wrapper for content stored on-chain
   regen.data.v1alpha2.ContentEntry:
     type: object
     properties:
@@ -40391,6 +38796,30 @@ definitions:
         type: string
         format: date-time
         title: timestamp is the anchor Timestamp
+      signers:
+        type: array
+        items:
+          type: object
+          properties:
+            signer:
+              type: string
+              title: signer is the address of the signer
+            timestamp:
+              type: string
+              format: date-time
+              title: timestamp is the time at which the data was signed
+          title: >-
+            SignerEntry is a signer entry wrapping a signer address and
+            timestamp
+        title: 'signers are the signers, if any'
+      content:
+        title: content is the actual content if stored on-chain
+        type: object
+        properties:
+          raw_data:
+            type: string
+            format: byte
+            title: raw_data is the oneof field for raw data
     title: ContentEntry describes data referenced and possibly stored on chain
   regen.data.v1alpha2.ContentHash:
     type: object
@@ -40642,7 +39071,7 @@ definitions:
        - MEDIA_TYPE_MP4: MP4
        - MEDIA_TYPE_WEBM: WEBM
        - MEDIA_TYPE_OGG: OGG
-  regen.data.v1alpha2.QueryByIRIResponse:
+  regen.data.v1alpha2.QueryByHashResponse:
     type: object
     properties:
       entry:
@@ -40761,6 +39190,30 @@ definitions:
             type: string
             format: date-time
             title: timestamp is the anchor Timestamp
+          signers:
+            type: array
+            items:
+              type: object
+              properties:
+                signer:
+                  type: string
+                  title: signer is the address of the signer
+                timestamp:
+                  type: string
+                  format: date-time
+                  title: timestamp is the time at which the data was signed
+              title: >-
+                SignerEntry is a signer entry wrapping a signer address and
+                timestamp
+            title: 'signers are the signers, if any'
+          content:
+            title: content is the actual content if stored on-chain
+            type: object
+            properties:
+              raw_data:
+                type: string
+                format: byte
+                title: raw_data is the oneof field for raw data
     description: QueryByContentHashResponse is the Query/ByContentHash response type.
   regen.data.v1alpha2.QueryBySignerResponse:
     type: object
@@ -40882,6 +39335,30 @@ definitions:
               type: string
               format: date-time
               title: timestamp is the anchor Timestamp
+            signers:
+              type: array
+              items:
+                type: object
+                properties:
+                  signer:
+                    type: string
+                    title: signer is the address of the signer
+                  timestamp:
+                    type: string
+                    format: date-time
+                    title: timestamp is the time at which the data was signed
+                title: >-
+                  SignerEntry is a signer entry wrapping a signer address and
+                  timestamp
+              title: 'signers are the signers, if any'
+            content:
+              title: content is the actual content if stored on-chain
+              type: object
+              properties:
+                raw_data:
+                  type: string
+                  format: byte
+                  title: raw_data is the oneof field for raw data
           title: ContentEntry describes data referenced and possibly stored on chain
         title: entries is the ContentEntry's signed by the queried signer
       pagination:
@@ -40903,33 +39380,17 @@ definitions:
 
               was set, its value is undefined otherwise
     description: QueryBySignerResponse is the Query/BySigner response type.
-  regen.data.v1alpha2.QuerySignersResponse:
+  regen.data.v1alpha2.SignerEntry:
     type: object
     properties:
-      signers:
-        type: array
-        items:
-          type: string
-        description: signers are the addresses of the signers.
-      pagination:
-        description: pagination is the pagination PageResponse.
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            title: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-    description: QuerySignersResponse is the Query/QuerySigners response type.
+      signer:
+        type: string
+        title: signer is the address of the signer
+      timestamp:
+        type: string
+        format: date-time
+        title: timestamp is the time at which the data was signed
+    title: SignerEntry is a signer entry wrapping a signer address and timestamp
   cosmos.base.v1beta1.Coin:
     type: object
     properties:
@@ -40942,136 +39403,18 @@ definitions:
 
       NOTE: The amount field is an Int which implements the custom method
       signatures required by gogoproto.
-  regen.ecocredit.v1alpha2.AskDenom:
+  regen.ecocredit.v1alpha1.BatchInfo:
     type: object
     properties:
-      denom:
+      class_id:
         type: string
-        title: denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
-      display_denom:
-        type: string
-        title: display_denom is the denom to display to the user and is informational
-      exponent:
-        type: integer
-        format: int64
-        title: >-
-          exponent is the exponent that relates the denom to the display_denom
-          and is
-
-          informational
-    description: AskDenom represents the information for an ask denom.
-  regen.ecocredit.v1alpha2.Basket:
-    type: object
-    properties:
-      curator:
-        type: string
-        description: >-
-          curator is the address of the basket curator who is able to change
-          certain
-
-          basket settings.
-      name:
-        type: string
-        description: >-
-          name will be used to create a bank denom for this basket token of the
-          form
-
-          ecocredit:{curator}:{name}.
-      display_name:
-        type: string
-        description: >-
-          display_name will be used to create a bank Metadata display name for
-          this
-
-          basket token of the form ecocredit:{curator}:{display_name}.
-      exponent:
-        type: integer
-        format: int64
-        description: >-
-          exponent is the exponent that will be used for denom metadata. An
-          exponent
-
-          of 6 will mean that 10^6 units of a basket token should be displayed
-
-          as one unit in user interfaces.
-      basket_criteria:
-        type: array
-        items:
-          $ref: '#/definitions/regen.ecocredit.v1alpha2.BasketCriteria'
-        description: >-
-          basket_criteria is the criteria by which credits can be added to the
-
-          basket. Basket criteria will be applied in order and the first
-          criteria
-
-          which applies to a credit will determine its multiplier in the basket.
-      disable_auto_retire:
-        type: boolean
-        format: boolean
-        description: |-
-          disable_auto_retire allows auto-retirement to be disabled.
-          The credits will be auto-retired if disable_auto_retire is
-          false unless the credits were previously put into the basket by the
-          address picking them from the basket, in which case they will remain
-          tradable.
-      allow_picking:
-        type: boolean
-        format: boolean
-        description: >-
-          allow_picking specifies whether an address which didn't deposit the
-          credits
-
-          in the basket can pick those credits or not.
-    description: Basket defines a credit basket.
-  regen.ecocredit.v1alpha2.BasketCredit:
-    type: object
-    properties:
-      batch_denom:
-        type: string
-        description: batch_denom is the unique ID of the credit batch.
-      tradable_amount:
-        type: string
-        description: |-
-          tradable_amount is the number of credits in this transfer that can be
-          traded by the recipient. Decimal values are acceptable within the
-          precision returned by Query/Precision.
-    description: >-
-      BasketCredit represents the information for a credit batch inside a
-      basket.
-  regen.ecocredit.v1alpha2.BasketCriteria:
-    type: object
-    properties:
-      filter:
-        $ref: '#/definitions/regen.ecocredit.v1alpha2.Filter'
-        description: |-
-          filter defines condition(s) that credits should satisfy in order to be
-          added to the basket.
-      multiplier:
-        type: string
-        description: >-
-          multiplier is an integer number which is applied to credit units when
-
-          converting to basket units. For example if the multiplier is 2000,
-          then
-
-          1.1 credits will result in 2200 basket tokens. If there are any
-          fractional
-
-          amounts left over in this calculation when adding credits to a basket,
-
-          those fractional amounts will not get added to the basket.
-    description: >-
-      BasketCriteria defines a criteria by which credits can be added to a
-      basket.
-  regen.ecocredit.v1alpha2.BatchInfo:
-    type: object
-    properties:
-      project_id:
-        type: string
-        description: project_id is the unique ID of the project this batch belongs to.
+        description: class_id is the unique ID of credit class.
       batch_denom:
         type: string
         description: batch_denom is the unique ID of credit batch.
+      issuer:
+        type: string
+        description: issuer is the issuer of the credit batch.
       total_amount:
         type: string
         description: >-
@@ -41116,92 +39459,18 @@ definitions:
         description: |-
           end_date is the end of the period during which this credit batch was
           quantified and verified.
+      project_location:
+        type: string
+        description: >-
+          project_location is the location of the project backing the credits in
+          this
+
+          batch. Full documentation can be found in
+          MsgCreateBatch.project_location.
     description: >-
       BatchInfo represents the high-level on-chain information for a credit
       batch.
-  regen.ecocredit.v1alpha2.BuyOrder:
-    type: object
-    properties:
-      buy_order_id:
-        type: string
-        format: uint64
-        description: buy_order_id is the unique ID of buy order.
-      buyer:
-        type: string
-        title: buyer is the address that created the buy order
-      selection:
-        description: selection is the buy order selection.
-        type: object
-        properties:
-          sell_order_id:
-            type: string
-            format: uint64
-            description: >-
-              sell_order_id is the sell order ID against which the buyer is
-              trying to buy.
-
-              When sell_order_id is set, this is known as a direct buy order
-              because it
-
-              is placed directly against a specific sell order.
-      quantity:
-        type: string
-        description: |-
-          quantity is the quantity of credits to buy. If the quantity of credits
-          available is less than this amount the order will be partially filled
-          unless disable_partial_fill is true.
-      bid_price:
-        description: |-
-          bid price is the bid price for this buy order. A credit unit will be
-          settled at a purchase price that is no more than the bid price. The
-          buy order will fail if the buyer does not have enough funds available
-          to complete the purchase.
-        type: object
-        properties:
-          denom:
-            type: string
-          amount:
-            type: string
-      disable_auto_retire:
-        type: boolean
-        format: boolean
-        description: >-
-          disable_auto_retire allows auto-retirement to be disabled. If it is
-          set to true
-
-          the credits will not auto-retire and can be resold assuming that the
-
-          corresponding sell order has auto-retirement disabled. If the sell
-          order
-
-          hasn't disabled auto-retirement and the buy order tries to disable it,
-
-          that buy order will fail.
-      disable_partial_fill:
-        type: boolean
-        format: boolean
-        description: >-
-          disable_partial_fill disables the default behavior of partially
-          filling
-
-          buy orders if the requested quantity is not available.
-    description: BuyOrder represents the information for a buy order.
-  regen.ecocredit.v1alpha2.BuyOrder.Selection:
-    type: object
-    properties:
-      sell_order_id:
-        type: string
-        format: uint64
-        description: >-
-          sell_order_id is the sell order ID against which the buyer is trying
-          to buy.
-
-          When sell_order_id is set, this is known as a direct buy order because
-          it
-
-          is placed directly against a specific sell order.
-    description: Selection defines a buy order selection.
-  regen.ecocredit.v1alpha2.ClassInfo:
+  regen.ecocredit.v1alpha1.ClassInfo:
     type: object
     properties:
       class_id:
@@ -41255,7 +39524,7 @@ definitions:
     description: >-
       ClassInfo represents the high-level on-chain information for a credit
       class.
-  regen.ecocredit.v1alpha2.CreditType:
+  regen.ecocredit.v1alpha1.CreditType:
     type: object
     properties:
       name:
@@ -41279,126 +39548,7 @@ definitions:
     title: |-
       CreditType defines the measurement unit/precision of a certain credit type
       (e.g. carbon, biodiversity...)
-  regen.ecocredit.v1alpha2.Filter:
-    type: object
-    properties:
-      and:
-        $ref: '#/definitions/regen.ecocredit.v1alpha2.Filter.And'
-        description: >-
-          and specifies a list of filters where all conditions should be
-          satisfied.
-      or:
-        $ref: '#/definitions/regen.ecocredit.v1alpha2.Filter.Or'
-        description: >-
-          or specifies a list of filters where at least one of the conditions
-          should be satisfied.
-      credit_type_name:
-        type: string
-        description: credit_type_name filters against credits from this credit type name.
-      class_id:
-        type: string
-        description: class_id filters against credits from this credit class id.
-      project_id:
-        type: string
-        description: project_id filters against credits from this project.
-      batch_denom:
-        type: string
-        description: batch_denom filters against credits from this batch.
-      class_admin:
-        type: string
-        description: class_admin filters against credits issued by this class admin.
-      issuer:
-        type: string
-        description: issuer filters against credits issued by this issuer address.
-      owner:
-        type: string
-        description: owner filters against credits currently owned by this address.
-      project_location:
-        type: string
-        description: |-
-          project_location can be specified in three levels of granularity:
-          country, sub-national-code, or postal code. If just country is given,
-          for instance "US" then any credits in the "US" will be matched even
-          their project location is more specific, ex. "US-NY 12345". If
-          a country, sub-national-code and postal code are all provided then
-          only projects in that postal code will match.
-      date_range:
-        description: date_range filters against credit batch start_date and/or end_date.
-        type: object
-        properties:
-          start_date:
-            type: string
-            format: date-time
-            description: >-
-              start_date is the beginning of the period during which this credit
-              batch
-
-              was quantified and verified. If it is empty then there is no start
-              date
-
-              limit.
-          end_date:
-            type: string
-            format: date-time
-            description: >-
-              end_date is the end of the period during which this credit batch
-              was
-
-              quantified and verified. If it is empty then there is no end date
-
-              limit.
-      tag:
-        type: string
-        description: tag specifies a curation tag to match against.
-    description: >-
-      Filter defines condition(s) that credits should satisfy in order to be
-      added
-
-      to the basket. It can handled nested conditions linked with and/or
-      operators.
-  regen.ecocredit.v1alpha2.Filter.And:
-    type: object
-    properties:
-      filters:
-        type: array
-        items:
-          $ref: '#/definitions/regen.ecocredit.v1alpha2.Filter'
-        description: filters is a list of filters where all conditions should be satisfied.
-    description: And specifies an "and" condition between the list of filters.
-  regen.ecocredit.v1alpha2.Filter.DateRange:
-    type: object
-    properties:
-      start_date:
-        type: string
-        format: date-time
-        description: >-
-          start_date is the beginning of the period during which this credit
-          batch
-
-          was quantified and verified. If it is empty then there is no start
-          date
-
-          limit.
-      end_date:
-        type: string
-        format: date-time
-        description: |-
-          end_date is the end of the period during which this credit batch was
-          quantified and verified. If it is empty then there is no end date
-          limit.
-    description: DateRange defines a period for credit batches in a basket.
-  regen.ecocredit.v1alpha2.Filter.Or:
-    type: object
-    properties:
-      filters:
-        type: array
-        items:
-          $ref: '#/definitions/regen.ecocredit.v1alpha2.Filter'
-        description: >-
-          filters is a list of filters where at least one of the conditions
-          should be satisfied.
-    description: And specifies an "or" condition between the list of filters.
-  regen.ecocredit.v1alpha2.Params:
+  regen.ecocredit.v1alpha1.Params:
     type: object
     properties:
       credit_class_fee:
@@ -41465,76 +39615,7 @@ definitions:
     description: |-
       Params defines the updatable global parameters of the ecocredit module for
       use with the x/params module.
-  regen.ecocredit.v1alpha2.ProjectInfo:
-    type: object
-    properties:
-      project_id:
-        type: string
-        description: project_id is the unique ID of the project.
-      class_id:
-        type: string
-        description: class_id is the unique ID of credit class for this project.
-      issuer:
-        type: string
-        description: issuer is the issuer of the credit batches for this project.
-      project_location:
-        type: string
-        description: |-
-          project_location is the location of the project.
-          Full documentation can be found in MsgCreateProject.project_location.
-      metadata:
-        type: string
-        format: byte
-        description: metadata is any arbitrary metadata attached to the project.
-    description: ProjectInfo represents the high-level on-chain information for a project.
-  regen.ecocredit.v1alpha2.QueryAllowedAskDenomsResponse:
-    type: object
-    properties:
-      ask_denoms:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-              title: denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
-            display_denom:
-              type: string
-              title: >-
-                display_denom is the denom to display to the user and is
-                informational
-            exponent:
-              type: integer
-              format: int64
-              title: >-
-                exponent is the exponent that relates the denom to the
-                display_denom and is
-
-                informational
-          description: AskDenom represents the information for an ask denom.
-        description: >-
-          ask_denoms is a list of coin denoms allowed to use in the ask price of
-          sell orders.
-      pagination:
-        description: pagination defines an optional pagination for the response.
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            title: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-    description: QueryAllowedAskDenomsResponse is the Query/AllowedAskDenoms response type.
-  regen.ecocredit.v1alpha2.QueryBalanceResponse:
+  regen.ecocredit.v1alpha1.QueryBalanceResponse:
     type: object
     properties:
       tradable_amount:
@@ -41544,97 +39625,22 @@ definitions:
         type: string
         description: retired_amount is the decimal number of retired credits.
     description: QueryBalanceResponse is the Query/Balance response type.
-  regen.ecocredit.v1alpha2.QueryBasketCreditsResponse:
-    type: object
-    properties:
-      credits:
-        type: array
-        items:
-          type: object
-          properties:
-            batch_denom:
-              type: string
-              description: batch_denom is the unique ID of the credit batch.
-            tradable_amount:
-              type: string
-              description: >-
-                tradable_amount is the number of credits in this transfer that
-                can be
-
-                traded by the recipient. Decimal values are acceptable within
-                the
-
-                precision returned by Query/Precision.
-          description: >-
-            BasketCredit represents the information for a credit batch inside a
-            basket.
-        description: credits are the credits inside the basket.
-      pagination:
-        description: pagination defines the pagination in the response.
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            title: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-    description: QueryBasketCreditsResponse is the Query/BasketCredits response type.
-  regen.ecocredit.v1alpha2.QueryBasketResponse:
-    type: object
-    properties:
-      basket:
-        $ref: '#/definitions/regen.ecocredit.v1alpha2.Basket'
-        description: basket is the queried basket.
-    description: QueryBasketResponse is the Query/Basket response type.
-  regen.ecocredit.v1alpha2.QueryBasketsResponse:
-    type: object
-    properties:
-      baskets:
-        type: array
-        items:
-          $ref: '#/definitions/regen.ecocredit.v1alpha2.Basket'
-        description: baskets are the fetched baskets.
-      pagination:
-        description: pagination defines the pagination in the response.
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            title: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-    description: QueryBasketsResponse is the Query/Baskets response type.
-  regen.ecocredit.v1alpha2.QueryBatchInfoResponse:
+  regen.ecocredit.v1alpha1.QueryBatchInfoResponse:
     type: object
     properties:
       info:
         description: info is the BatchInfo for the credit batch.
         type: object
         properties:
-          project_id:
+          class_id:
             type: string
-            description: project_id is the unique ID of the project this batch belongs to.
+            description: class_id is the unique ID of credit class.
           batch_denom:
             type: string
             description: batch_denom is the unique ID of credit batch.
+          issuer:
+            type: string
+            description: issuer is the issuer of the credit batch.
           total_amount:
             type: string
             description: >-
@@ -41683,8 +39689,16 @@ definitions:
               was
 
               quantified and verified.
+          project_location:
+            type: string
+            description: >-
+              project_location is the location of the project backing the
+              credits in this
+
+              batch. Full documentation can be found in
+              MsgCreateBatch.project_location.
     description: QueryBatchInfoResponse is the Query/BatchInfo response type.
-  regen.ecocredit.v1alpha2.QueryBatchesResponse:
+  regen.ecocredit.v1alpha1.QueryBatchesResponse:
     type: object
     properties:
       batches:
@@ -41692,14 +39706,15 @@ definitions:
         items:
           type: object
           properties:
-            project_id:
+            class_id:
               type: string
-              description: >-
-                project_id is the unique ID of the project this batch belongs
-                to.
+              description: class_id is the unique ID of credit class.
             batch_denom:
               type: string
               description: batch_denom is the unique ID of credit batch.
+            issuer:
+              type: string
+              description: issuer is the issuer of the credit batch.
             total_amount:
               type: string
               description: >-
@@ -41748,10 +39763,18 @@ definitions:
                 was
 
                 quantified and verified.
+            project_location:
+              type: string
+              description: >-
+                project_location is the location of the project backing the
+                credits in this
+
+                batch. Full documentation can be found in
+                MsgCreateBatch.project_location.
           description: >-
             BatchInfo represents the high-level on-chain information for a
             credit batch.
-        description: batches are the fetched credit batches within the project.
+        description: batches are the fetched credit batches within the class.
       pagination:
         description: pagination defines the pagination in the response.
         type: object
@@ -41771,300 +39794,7 @@ definitions:
 
               was set, its value is undefined otherwise
     description: QueryBatchesResponse is the Query/Batches response type.
-  regen.ecocredit.v1alpha2.QueryBuyOrderResponse:
-    type: object
-    properties:
-      buy_order:
-        type: object
-        properties:
-          buy_order_id:
-            type: string
-            format: uint64
-            description: buy_order_id is the unique ID of buy order.
-          buyer:
-            type: string
-            title: buyer is the address that created the buy order
-          selection:
-            description: selection is the buy order selection.
-            type: object
-            properties:
-              sell_order_id:
-                type: string
-                format: uint64
-                description: >-
-                  sell_order_id is the sell order ID against which the buyer is
-                  trying to buy.
-
-                  When sell_order_id is set, this is known as a direct buy order
-                  because it
-
-                  is placed directly against a specific sell order.
-          quantity:
-            type: string
-            description: >-
-              quantity is the quantity of credits to buy. If the quantity of
-              credits
-
-              available is less than this amount the order will be partially
-              filled
-
-              unless disable_partial_fill is true.
-          bid_price:
-            description: >-
-              bid price is the bid price for this buy order. A credit unit will
-              be
-
-              settled at a purchase price that is no more than the bid price.
-              The
-
-              buy order will fail if the buyer does not have enough funds
-              available
-
-              to complete the purchase.
-            type: object
-            properties:
-              denom:
-                type: string
-              amount:
-                type: string
-          disable_auto_retire:
-            type: boolean
-            format: boolean
-            description: >-
-              disable_auto_retire allows auto-retirement to be disabled. If it
-              is set to true
-
-              the credits will not auto-retire and can be resold assuming that
-              the
-
-              corresponding sell order has auto-retirement disabled. If the sell
-              order
-
-              hasn't disabled auto-retirement and the buy order tries to disable
-              it,
-
-              that buy order will fail.
-          disable_partial_fill:
-            type: boolean
-            format: boolean
-            description: >-
-              disable_partial_fill disables the default behavior of partially
-              filling
-
-              buy orders if the requested quantity is not available.
-        description: BuyOrder represents the information for a buy order.
-    description: QueryBuyOrderResponse is the Query/BuyOrder response type.
-  regen.ecocredit.v1alpha2.QueryBuyOrdersByAddressResponse:
-    type: object
-    properties:
-      buy_orders:
-        type: array
-        items:
-          type: object
-          properties:
-            buy_order_id:
-              type: string
-              format: uint64
-              description: buy_order_id is the unique ID of buy order.
-            buyer:
-              type: string
-              title: buyer is the address that created the buy order
-            selection:
-              description: selection is the buy order selection.
-              type: object
-              properties:
-                sell_order_id:
-                  type: string
-                  format: uint64
-                  description: >-
-                    sell_order_id is the sell order ID against which the buyer
-                    is trying to buy.
-
-                    When sell_order_id is set, this is known as a direct buy
-                    order because it
-
-                    is placed directly against a specific sell order.
-            quantity:
-              type: string
-              description: >-
-                quantity is the quantity of credits to buy. If the quantity of
-                credits
-
-                available is less than this amount the order will be partially
-                filled
-
-                unless disable_partial_fill is true.
-            bid_price:
-              description: >-
-                bid price is the bid price for this buy order. A credit unit
-                will be
-
-                settled at a purchase price that is no more than the bid price.
-                The
-
-                buy order will fail if the buyer does not have enough funds
-                available
-
-                to complete the purchase.
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-            disable_auto_retire:
-              type: boolean
-              format: boolean
-              description: >-
-                disable_auto_retire allows auto-retirement to be disabled. If it
-                is set to true
-
-                the credits will not auto-retire and can be resold assuming that
-                the
-
-                corresponding sell order has auto-retirement disabled. If the
-                sell order
-
-                hasn't disabled auto-retirement and the buy order tries to
-                disable it,
-
-                that buy order will fail.
-            disable_partial_fill:
-              type: boolean
-              format: boolean
-              description: >-
-                disable_partial_fill disables the default behavior of partially
-                filling
-
-                buy orders if the requested quantity is not available.
-          description: BuyOrder represents the information for a buy order.
-        description: buy_orders is a list of buy orders.
-      pagination:
-        description: pagination defines an optional pagination for the response.
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            title: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-    description: >-
-      QueryBuyOrdersByAddressResponse is the Query/BuyOrdersByAddress response
-      type.
-  regen.ecocredit.v1alpha2.QueryBuyOrdersResponse:
-    type: object
-    properties:
-      buy_orders:
-        type: array
-        items:
-          type: object
-          properties:
-            buy_order_id:
-              type: string
-              format: uint64
-              description: buy_order_id is the unique ID of buy order.
-            buyer:
-              type: string
-              title: buyer is the address that created the buy order
-            selection:
-              description: selection is the buy order selection.
-              type: object
-              properties:
-                sell_order_id:
-                  type: string
-                  format: uint64
-                  description: >-
-                    sell_order_id is the sell order ID against which the buyer
-                    is trying to buy.
-
-                    When sell_order_id is set, this is known as a direct buy
-                    order because it
-
-                    is placed directly against a specific sell order.
-            quantity:
-              type: string
-              description: >-
-                quantity is the quantity of credits to buy. If the quantity of
-                credits
-
-                available is less than this amount the order will be partially
-                filled
-
-                unless disable_partial_fill is true.
-            bid_price:
-              description: >-
-                bid price is the bid price for this buy order. A credit unit
-                will be
-
-                settled at a purchase price that is no more than the bid price.
-                The
-
-                buy order will fail if the buyer does not have enough funds
-                available
-
-                to complete the purchase.
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-            disable_auto_retire:
-              type: boolean
-              format: boolean
-              description: >-
-                disable_auto_retire allows auto-retirement to be disabled. If it
-                is set to true
-
-                the credits will not auto-retire and can be resold assuming that
-                the
-
-                corresponding sell order has auto-retirement disabled. If the
-                sell order
-
-                hasn't disabled auto-retirement and the buy order tries to
-                disable it,
-
-                that buy order will fail.
-            disable_partial_fill:
-              type: boolean
-              format: boolean
-              description: >-
-                disable_partial_fill disables the default behavior of partially
-                filling
-
-                buy orders if the requested quantity is not available.
-          description: BuyOrder represents the information for a buy order.
-        description: buy_orders is a list of buy orders.
-      pagination:
-        description: pagination defines an optional pagination for the response.
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            title: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-    description: QueryBuyOrdersResponse is the Query/BuyOrders response type.
-  regen.ecocredit.v1alpha2.QueryClassInfoResponse:
+  regen.ecocredit.v1alpha1.QueryClassInfoResponse:
     type: object
     properties:
       info:
@@ -42124,7 +39854,7 @@ definitions:
           ClassInfo represents the high-level on-chain information for a credit
           class.
     description: QueryClassInfoResponse is the Query/ClassInfo request type.
-  regen.ecocredit.v1alpha2.QueryClassesResponse:
+  regen.ecocredit.v1alpha1.QueryClassesResponse:
     type: object
     properties:
       classes:
@@ -42205,7 +39935,7 @@ definitions:
 
               was set, its value is undefined otherwise
     description: QueryClassesResponse is the Query/Classes response type.
-  regen.ecocredit.v1alpha2.QueryCreditTypesResponse:
+  regen.ecocredit.v1alpha1.QueryCreditTypesResponse:
     type: object
     properties:
       credit_types:
@@ -42238,7 +39968,7 @@ definitions:
             (e.g. carbon, biodiversity...)
         title: list of credit types
     title: QueryCreditTypesRequest is the Query/Credit_Types response type
-  regen.ecocredit.v1alpha2.QueryParamsResponse:
+  regen.ecocredit.v1alpha1.QueryParamsResponse:
     type: object
     properties:
       params:
@@ -42310,339 +40040,7 @@ definitions:
                 (e.g. carbon, biodiversity...)
             title: credit_types is a list of definitions for credit types
     description: QueryParamsResponse is the Query/Params response type.
-  regen.ecocredit.v1alpha2.QueryProjectInfoResponse:
-    type: object
-    properties:
-      info:
-        type: object
-        properties:
-          project_id:
-            type: string
-            description: project_id is the unique ID of the project.
-          class_id:
-            type: string
-            description: class_id is the unique ID of credit class for this project.
-          issuer:
-            type: string
-            description: issuer is the issuer of the credit batches for this project.
-          project_location:
-            type: string
-            description: >-
-              project_location is the location of the project.
-
-              Full documentation can be found in
-              MsgCreateProject.project_location.
-          metadata:
-            type: string
-            format: byte
-            description: metadata is any arbitrary metadata attached to the project.
-        description: >-
-          ProjectInfo represents the high-level on-chain information for a
-          project.
-    description: QueryProjectInfoResponse is the Query/Project response type.
-  regen.ecocredit.v1alpha2.QueryProjectsResponse:
-    type: object
-    properties:
-      projects:
-        type: array
-        items:
-          type: object
-          properties:
-            project_id:
-              type: string
-              description: project_id is the unique ID of the project.
-            class_id:
-              type: string
-              description: class_id is the unique ID of credit class for this project.
-            issuer:
-              type: string
-              description: issuer is the issuer of the credit batches for this project.
-            project_location:
-              type: string
-              description: >-
-                project_location is the location of the project.
-
-                Full documentation can be found in
-                MsgCreateProject.project_location.
-            metadata:
-              type: string
-              format: byte
-              description: metadata is any arbitrary metadata attached to the project.
-          description: >-
-            ProjectInfo represents the high-level on-chain information for a
-            project.
-        description: projects are the fetched projects.
-      pagination:
-        description: pagination defines the pagination in the response.
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            title: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-    description: QueryProjectsResponse is the Query/Projects response type.
-  regen.ecocredit.v1alpha2.QuerySellOrderResponse:
-    type: object
-    properties:
-      sell_order:
-        type: object
-        properties:
-          order_id:
-            type: string
-            format: uint64
-            description: order_id is the unique ID of sell order.
-          owner:
-            type: string
-            description: owner is the address of the owner of the credits being sold.
-          batch_denom:
-            type: string
-            description: batch_denom is the credit batch being sold.
-          quantity:
-            type: string
-            description: quantity is the quantity of credits being sold.
-          ask_price:
-            description: >-
-              ask_price is the price the seller is asking for each unit of the
-
-              batch_denom. Each credit unit of the batch will be sold for at
-              least the
-
-              ask_price or more.
-            type: object
-            properties:
-              denom:
-                type: string
-              amount:
-                type: string
-          disable_auto_retire:
-            type: boolean
-            format: boolean
-            description: >-
-              disable_auto_retire disables auto-retirement of credits which
-              allows a
-
-              buyer to disable auto-retirement in their buy order enabling them
-              to
-
-              resell the credits to another buyer.
-        description: SellOrder represents the information for a sell order.
-    description: QuerySellOrderResponse is the Query/SellOrder response type.
-  regen.ecocredit.v1alpha2.QuerySellOrdersByAddressResponse:
-    type: object
-    properties:
-      sell_orders:
-        type: array
-        items:
-          type: object
-          properties:
-            order_id:
-              type: string
-              format: uint64
-              description: order_id is the unique ID of sell order.
-            owner:
-              type: string
-              description: owner is the address of the owner of the credits being sold.
-            batch_denom:
-              type: string
-              description: batch_denom is the credit batch being sold.
-            quantity:
-              type: string
-              description: quantity is the quantity of credits being sold.
-            ask_price:
-              description: >-
-                ask_price is the price the seller is asking for each unit of the
-
-                batch_denom. Each credit unit of the batch will be sold for at
-                least the
-
-                ask_price or more.
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-            disable_auto_retire:
-              type: boolean
-              format: boolean
-              description: >-
-                disable_auto_retire disables auto-retirement of credits which
-                allows a
-
-                buyer to disable auto-retirement in their buy order enabling
-                them to
-
-                resell the credits to another buyer.
-          description: SellOrder represents the information for a sell order.
-        description: sell_orders is a list of sell orders.
-      pagination:
-        description: pagination defines an optional pagination for the response.
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            title: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-    description: >-
-      QuerySellOrdersByAddressResponse is the Query/SellOrdersByAddressResponse
-      response type.
-  regen.ecocredit.v1alpha2.QuerySellOrdersByBatchDenomResponse:
-    type: object
-    properties:
-      sell_orders:
-        type: array
-        items:
-          type: object
-          properties:
-            order_id:
-              type: string
-              format: uint64
-              description: order_id is the unique ID of sell order.
-            owner:
-              type: string
-              description: owner is the address of the owner of the credits being sold.
-            batch_denom:
-              type: string
-              description: batch_denom is the credit batch being sold.
-            quantity:
-              type: string
-              description: quantity is the quantity of credits being sold.
-            ask_price:
-              description: >-
-                ask_price is the price the seller is asking for each unit of the
-
-                batch_denom. Each credit unit of the batch will be sold for at
-                least the
-
-                ask_price or more.
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-            disable_auto_retire:
-              type: boolean
-              format: boolean
-              description: >-
-                disable_auto_retire disables auto-retirement of credits which
-                allows a
-
-                buyer to disable auto-retirement in their buy order enabling
-                them to
-
-                resell the credits to another buyer.
-          description: SellOrder represents the information for a sell order.
-        description: sell_orders is a list of sell orders.
-      pagination:
-        description: pagination defines an optional pagination for the response.
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            title: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-    description: >-
-      QuerySellOrdersByDenomResponse is the Query/SellOrdersByDenom response
-      type.
-  regen.ecocredit.v1alpha2.QuerySellOrdersResponse:
-    type: object
-    properties:
-      sell_orders:
-        type: array
-        items:
-          type: object
-          properties:
-            order_id:
-              type: string
-              format: uint64
-              description: order_id is the unique ID of sell order.
-            owner:
-              type: string
-              description: owner is the address of the owner of the credits being sold.
-            batch_denom:
-              type: string
-              description: batch_denom is the credit batch being sold.
-            quantity:
-              type: string
-              description: quantity is the quantity of credits being sold.
-            ask_price:
-              description: >-
-                ask_price is the price the seller is asking for each unit of the
-
-                batch_denom. Each credit unit of the batch will be sold for at
-                least the
-
-                ask_price or more.
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-            disable_auto_retire:
-              type: boolean
-              format: boolean
-              description: >-
-                disable_auto_retire disables auto-retirement of credits which
-                allows a
-
-                buyer to disable auto-retirement in their buy order enabling
-                them to
-
-                resell the credits to another buyer.
-          description: SellOrder represents the information for a sell order.
-        description: sell_orders is a list of sell orders.
-      pagination:
-        description: pagination defines the pagination in the response.
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            title: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-    description: QuerySellOrdersResponse is the Query/SellOrders response type.
-  regen.ecocredit.v1alpha2.QuerySupplyResponse:
+  regen.ecocredit.v1alpha1.QuerySupplyResponse:
     type: object
     properties:
       tradable_supply:
@@ -42656,44 +40054,6 @@ definitions:
           retired_supply is the decimal number of retired credits in the batch
           supply.
     description: QuerySupplyResponse is the Query/Supply response type.
-  regen.ecocredit.v1alpha2.SellOrder:
-    type: object
-    properties:
-      order_id:
-        type: string
-        format: uint64
-        description: order_id is the unique ID of sell order.
-      owner:
-        type: string
-        description: owner is the address of the owner of the credits being sold.
-      batch_denom:
-        type: string
-        description: batch_denom is the credit batch being sold.
-      quantity:
-        type: string
-        description: quantity is the quantity of credits being sold.
-      ask_price:
-        description: >-
-          ask_price is the price the seller is asking for each unit of the
-
-          batch_denom. Each credit unit of the batch will be sold for at least
-          the
-
-          ask_price or more.
-        type: object
-        properties:
-          denom:
-            type: string
-          amount:
-            type: string
-      disable_auto_retire:
-        type: boolean
-        format: boolean
-        description: |-
-          disable_auto_retire disables auto-retirement of credits which allows a
-          buyer to disable auto-retirement in their buy order enabling them to
-          resell the credits to another buyer.
-    description: SellOrder represents the information for a sell order.
   regen.group.v1alpha1.Choice:
     type: string
     enum:
