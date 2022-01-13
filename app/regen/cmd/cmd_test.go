@@ -2,15 +2,15 @@ package regen_test
 
 import (
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/client/flags"
-	"github.com/regen-network/regen-ledger/app"
 	"io/ioutil"
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 	"github.com/stretchr/testify/require"
 
-	cmd "github.com/regen-network/regen-ledger/app/regen/cmd"
+	"github.com/regen-network/regen-ledger/v2/app"
+	cmd "github.com/regen-network/regen-ledger/v2/app/regen/cmd"
 )
 
 func TestInitCmd(t *testing.T) {

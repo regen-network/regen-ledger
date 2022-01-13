@@ -65,6 +65,7 @@ flycheck_*.el
 # Test binary, build with `go test -c`
 *.test
 coverage.txt
+coverage.txt.bak
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
@@ -182,9 +183,18 @@ tags
 
 build/
 
+# swagger-gen
+/tmp-swagger-gen
 # OS
 .DS_Store
 
 /protoc-gen-go-cosmos2/protoc-gen-go-cosmos2
 /proto-tools-stamp
 /tools-stamp
+dist/
+
+# pre-commit
+.pre-commit-config.yaml
+
+# Data - ideally these don't exist
+.testnets

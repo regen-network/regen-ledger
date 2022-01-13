@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/cockroachdb/apd/v2"
 	proto "github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/types"
-	"github.com/regen-network/regen-ledger/math"
 	"github.com/regen-network/regen-ledger/orm"
+	"github.com/regen-network/regen-ledger/types/math"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -76,11 +75,11 @@ func (p ThresholdDecisionPolicy) Allow(tally Tally, totalPower string, votingDur
 		return DecisionPolicyResult{Allow: false, Final: true}, nil
 	}
 
-	threshold, err := math.ParsePositiveDecimal(p.Threshold)
+	threshold, err := math.NewPositiveDecFromString(p.Threshold)
 	if err != nil {
 		return DecisionPolicyResult{}, err
 	}
-	yesCount, err := math.ParseNonNegativeDecimal(tally.YesCount)
+	yesCount, err := math.NewNonNegativeDecFromString(tally.YesCount)
 	if err != nil {
 		return DecisionPolicyResult{}, err
 	}
@@ -88,7 +87,7 @@ func (p ThresholdDecisionPolicy) Allow(tally Tally, totalPower string, votingDur
 		return DecisionPolicyResult{Allow: true, Final: true}, nil
 	}
 
-	totalPowerDec, err := math.ParseNonNegativeDecimal(totalPower)
+	totalPowerDec, err := math.NewNonNegativeDecFromString(totalPower)
 	if err != nil {
 		return DecisionPolicyResult{}, err
 	}
@@ -96,13 +95,11 @@ func (p ThresholdDecisionPolicy) Allow(tally Tally, totalPower string, votingDur
 	if err != nil {
 		return DecisionPolicyResult{}, err
 	}
-	var undecided apd.Decimal
-	err = math.SafeSub(&undecided, totalPowerDec, totalCounts)
+	undecided, err := math.SubNonNegative(totalPowerDec, totalCounts)
 	if err != nil {
 		return DecisionPolicyResult{}, err
 	}
-	var sum apd.Decimal
-	err = math.Add(&sum, yesCount, &undecided)
+	sum, err := yesCount.Add(undecided)
 	if err != nil {
 		return DecisionPolicyResult{}, err
 	}
@@ -114,11 +111,11 @@ func (p ThresholdDecisionPolicy) Allow(tally Tally, totalPower string, votingDur
 
 // Validate returns an error if policy threshold is greater than the total group weight
 func (p *ThresholdDecisionPolicy) Validate(g GroupInfo) error {
-	threshold, err := math.ParsePositiveDecimal(p.Threshold)
+	threshold, err := math.NewPositiveDecFromString(p.Threshold)
 	if err != nil {
 		return sdkerrors.Wrap(err, "threshold")
 	}
-	totalWeight, err := math.ParseNonNegativeDecimal(g.TotalWeight)
+	totalWeight, err := math.NewNonNegativeDecFromString(g.TotalWeight)
 	if err != nil {
 		return sdkerrors.Wrap(err, "group total weight")
 	}
@@ -129,7 +126,7 @@ func (p *ThresholdDecisionPolicy) Validate(g GroupInfo) error {
 }
 
 func (p ThresholdDecisionPolicy) ValidateBasic() error {
-	if _, err := math.ParsePositiveDecimal(p.Threshold); err != nil {
+	if _, err := math.NewPositiveDecFromString(p.Threshold); err != nil {
 		return sdkerrors.Wrap(err, "threshold")
 	}
 
@@ -144,31 +141,34 @@ func (p ThresholdDecisionPolicy) ValidateBasic() error {
 	return nil
 }
 
-func (g GroupMember) NaturalKey() []byte {
-	result := make([]byte, 8, 8+len(g.Member.Address))
-	copy(result[0:8], ID(g.GroupId).Bytes())
-	result = append(result, g.Member.Address...)
-	return result
-}
-
-func (g GroupAccountInfo) NaturalKey() []byte {
-	addr, err := sdk.AccAddressFromBech32(g.GroupAccount)
+func (g GroupMember) PrimaryKeyFields() []interface{} {
+	addr, err := sdk.AccAddressFromBech32(g.Member.Address)
 	if err != nil {
 		panic(err)
 	}
-	return addr
+	return []interface{}{g.GroupId, addr.Bytes()}
+}
+
+func (g GroupAccountInfo) PrimaryKeyFields() []interface{} {
+	addr, err := sdk.AccAddressFromBech32(g.Address)
+	if err != nil {
+		panic(err)
+	}
+	return []interface{}{addr.Bytes()}
 }
 
 var _ orm.Validateable = GroupAccountInfo{}
 
 // NewGroupAccountInfo creates a new GroupAccountInfo instance
-func NewGroupAccountInfo(groupAccount sdk.AccAddress, group uint64, admin sdk.AccAddress, metadata []byte, version uint64, decisionPolicy DecisionPolicy) (GroupAccountInfo, error) {
+func NewGroupAccountInfo(address sdk.AccAddress, group uint64, admin sdk.AccAddress, metadata []byte,
+	version uint64, decisionPolicy DecisionPolicy, derivationKey []byte) (GroupAccountInfo, error) {
 	p := GroupAccountInfo{
-		GroupAccount: groupAccount.String(),
-		GroupId:      group,
-		Admin:        admin.String(),
-		Metadata:     metadata,
-		Version:      version,
+		Address:       address.String(),
+		GroupId:       group,
+		Admin:         admin.String(),
+		Metadata:      metadata,
+		Version:       version,
+		DerivationKey: derivationKey,
 	}
 
 	err := p.SetDecisionPolicy(decisionPolicy)
@@ -206,7 +206,7 @@ func (g GroupAccountInfo) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
-	_, err = sdk.AccAddressFromBech32(g.GroupAccount)
+	_, err = sdk.AccAddressFromBech32(g.Address)
 	if err != nil {
 		return sdkerrors.Wrap(err, "group account")
 	}
@@ -225,6 +225,10 @@ func (g GroupAccountInfo) ValidateBasic() error {
 	if err := policy.ValidateBasic(); err != nil {
 		return sdkerrors.Wrap(err, "policy")
 	}
+
+	if g.DerivationKey == nil {
+		return sdkerrors.Wrap(ErrEmpty, "derivationKey")
+	}
 	return nil
 }
 
@@ -234,11 +238,12 @@ func (g GroupAccountInfo) UnpackInterfaces(unpacker codectypes.AnyUnpacker) erro
 	return unpacker.UnpackAny(g.DecisionPolicy, &decisionPolicy)
 }
 
-func (v Vote) NaturalKey() []byte {
-	result := make([]byte, 8, 8+len(v.Voter))
-	copy(result[0:8], ProposalID(v.ProposalId).Bytes())
-	result = append(result, v.Voter...)
-	return result
+func (v Vote) PrimaryKeyFields() []interface{} {
+	addr, err := sdk.AccAddressFromBech32(v.Voter)
+	if err != nil {
+		panic(err)
+	}
+	return []interface{}{v.ProposalId, addr.Bytes()}
 }
 
 var _ orm.Validateable = Vote{}
@@ -295,13 +300,17 @@ func (g GroupInfo) ValidateBasic() error {
 		return sdkerrors.Wrap(err, "admin")
 	}
 
-	if _, err := math.ParseNonNegativeDecimal(g.TotalWeight); err != nil {
+	if _, err := math.NewNonNegativeDecFromString(g.TotalWeight); err != nil {
 		return sdkerrors.Wrap(err, "total weight")
 	}
 	if g.Version == 0 {
 		return sdkerrors.Wrap(ErrEmpty, "version")
 	}
 	return nil
+}
+
+func (g GroupInfo) PrimaryKeyFields() []interface{} {
+	return []interface{}{g.GroupId}
 }
 
 var _ orm.Validateable = GroupMember{}
@@ -319,7 +328,7 @@ func (g GroupMember) ValidateBasic() error {
 }
 
 func (t *Tally) Sub(vote Vote, weight string) error {
-	if err := t.operation(vote, weight, math.SafeSub); err != nil {
+	if err := t.operation(vote, weight, math.SubNonNegative); err != nil {
 		return err
 	}
 	return nil
@@ -332,10 +341,10 @@ func (t *Tally) Add(vote Vote, weight string) error {
 	return nil
 }
 
-type operation func(res, x, y *apd.Decimal) error
+type operation func(x, y math.Dec) (math.Dec, error)
 
 func (t *Tally) operation(vote Vote, weight string, op operation) error {
-	weightDec, err := math.ParsePositiveDecimal(weight)
+	weightDec, err := math.NewPositiveDecFromString(weight)
 	if err != nil {
 		return err
 	}
@@ -359,29 +368,29 @@ func (t *Tally) operation(vote Vote, weight string, op operation) error {
 
 	switch vote.Choice {
 	case Choice_CHOICE_YES:
-		err := op(yesCount, yesCount, weightDec)
+		yesCount, err := op(yesCount, weightDec)
 		if err != nil {
 			return sdkerrors.Wrap(err, "yes count")
 		}
-		t.YesCount = math.DecimalString(yesCount)
+		t.YesCount = yesCount.String()
 	case Choice_CHOICE_NO:
-		err := op(noCount, noCount, weightDec)
+		noCount, err := op(noCount, weightDec)
 		if err != nil {
 			return sdkerrors.Wrap(err, "no count")
 		}
-		t.NoCount = math.DecimalString(noCount)
+		t.NoCount = noCount.String()
 	case Choice_CHOICE_ABSTAIN:
-		err := op(abstainCount, abstainCount, weightDec)
+		abstainCount, err := op(abstainCount, weightDec)
 		if err != nil {
 			return sdkerrors.Wrap(err, "abstain count")
 		}
-		t.AbstainCount = math.DecimalString(abstainCount)
+		t.AbstainCount = abstainCount.String()
 	case Choice_CHOICE_VETO:
-		err := op(vetoCount, vetoCount, weightDec)
+		vetoCount, err := op(vetoCount, weightDec)
 		if err != nil {
 			return sdkerrors.Wrap(err, "veto count")
 		}
-		t.VetoCount = math.DecimalString(vetoCount)
+		t.VetoCount = vetoCount.String()
 	default:
 		return sdkerrors.Wrapf(ErrInvalid, "unknown choice %s", vote.Choice.String())
 	}
@@ -389,72 +398,72 @@ func (t *Tally) operation(vote Vote, weight string, op operation) error {
 }
 
 // TotalCounts is the sum of all weights.
-func (t Tally) TotalCounts() (*apd.Decimal, error) {
+func (t Tally) TotalCounts() (math.Dec, error) {
 	yesCount, err := t.GetYesCount()
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "yes count")
+		return math.Dec{}, sdkerrors.Wrap(err, "yes count")
 	}
 	noCount, err := t.GetNoCount()
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "no count")
+		return math.Dec{}, sdkerrors.Wrap(err, "no count")
 	}
 	abstainCount, err := t.GetAbstainCount()
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "abstain count")
+		return math.Dec{}, sdkerrors.Wrap(err, "abstain count")
 	}
 	vetoCount, err := t.GetVetoCount()
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "veto count")
+		return math.Dec{}, sdkerrors.Wrap(err, "veto count")
 	}
 
-	totalCounts := apd.New(0, 0)
-	err = math.Add(totalCounts, totalCounts, yesCount)
+	totalCounts := math.NewDecFromInt64(0)
+	totalCounts, err = totalCounts.Add(yesCount)
 	if err != nil {
-		return nil, err
+		return math.Dec{}, err
 	}
-	err = math.Add(totalCounts, totalCounts, noCount)
+	totalCounts, err = totalCounts.Add(noCount)
 	if err != nil {
-		return nil, err
+		return math.Dec{}, err
 	}
-	err = math.Add(totalCounts, totalCounts, abstainCount)
+	totalCounts, err = totalCounts.Add(abstainCount)
 	if err != nil {
-		return nil, err
+		return math.Dec{}, err
 	}
-	err = math.Add(totalCounts, totalCounts, vetoCount)
+	totalCounts, err = totalCounts.Add(vetoCount)
 	if err != nil {
-		return nil, err
+		return math.Dec{}, err
 	}
 	return totalCounts, nil
 }
 
-func (t Tally) GetYesCount() (*apd.Decimal, error) {
-	yesCount, err := math.ParseNonNegativeDecimal(t.YesCount)
+func (t Tally) GetYesCount() (math.Dec, error) {
+	yesCount, err := math.NewNonNegativeDecFromString(t.YesCount)
 	if err != nil {
-		return nil, err
+		return math.Dec{}, err
 	}
 	return yesCount, nil
 }
 
-func (t Tally) GetNoCount() (*apd.Decimal, error) {
-	noCount, err := math.ParseNonNegativeDecimal(t.NoCount)
+func (t Tally) GetNoCount() (math.Dec, error) {
+	noCount, err := math.NewNonNegativeDecFromString(t.NoCount)
 	if err != nil {
-		return nil, err
+		return math.Dec{}, err
 	}
 	return noCount, nil
 }
 
-func (t Tally) GetAbstainCount() (*apd.Decimal, error) {
-	abstainCount, err := math.ParseNonNegativeDecimal(t.AbstainCount)
+func (t Tally) GetAbstainCount() (math.Dec, error) {
+	abstainCount, err := math.NewNonNegativeDecFromString(t.AbstainCount)
 	if err != nil {
-		return nil, err
+		return math.Dec{}, err
 	}
 	return abstainCount, nil
 }
 
-func (t Tally) GetVetoCount() (*apd.Decimal, error) {
-	vetoCount, err := math.ParseNonNegativeDecimal(t.VetoCount)
+func (t Tally) GetVetoCount() (math.Dec, error) {
+	vetoCount, err := math.NewNonNegativeDecFromString(t.VetoCount)
 	if err != nil {
-		return nil, err
+		return math.Dec{}, err
 	}
 	return vetoCount, nil
 }
@@ -477,19 +486,16 @@ func (t Tally) ValidateBasic() error {
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (q QueryGroupAccountsByGroupResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
-	for _, g := range q.GroupAccounts {
-		err := g.UnpackInterfaces(unpacker)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return unpackGroupAccounts(unpacker, q.GroupAccounts)
 }
 
 // UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
 func (q QueryGroupAccountsByAdminResponse) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
-	for _, g := range q.GroupAccounts {
+	return unpackGroupAccounts(unpacker, q.GroupAccounts)
+}
+
+func unpackGroupAccounts(unpacker codectypes.AnyUnpacker, accs []*GroupAccountInfo) error {
+	for _, g := range accs {
 		err := g.UnpackInterfaces(unpacker)
 		if err != nil {
 			return err

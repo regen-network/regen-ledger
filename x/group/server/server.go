@@ -1,12 +1,15 @@
 package server
 
 import (
-	"github.com/regen-network/regen-ledger/orm"
-	servermodule "github.com/regen-network/regen-ledger/types/module/server"
-	"github.com/regen-network/regen-ledger/x/group"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/regen-network/regen-ledger/orm"
+	servermodule "github.com/regen-network/regen-ledger/types/module/server"
+	"github.com/regen-network/regen-ledger/x/data"
+	"github.com/regen-network/regen-ledger/x/ecocredit"
+	"github.com/regen-network/regen-ledger/x/group"
+	"github.com/regen-network/regen-ledger/x/group/exported"
 )
 
 const (
@@ -39,25 +42,24 @@ const (
 )
 
 type serverImpl struct {
-	key    servermodule.RootModuleKey
-	router sdk.Router
+	key servermodule.RootModuleKey
 
-	accKeeper AccountKeeper
+	accKeeper  exported.AccountKeeper
+	bankKeeper exported.BankKeeper
 
 	// Group Table
-	groupSeq          orm.Sequence
-	groupTable        orm.Table
+	groupTable        orm.AutoUInt64Table
 	groupByAdminIndex orm.Index
 
 	// Group Member Table
-	groupMemberTable         orm.NaturalKeyTable
-	groupMemberByGroupIndex  orm.UInt64Index
+	groupMemberTable         orm.PrimaryKeyTable
+	groupMemberByGroupIndex  orm.Index
 	groupMemberByMemberIndex orm.Index
 
 	// Group Account Table
 	groupAccountSeq          orm.Sequence
-	groupAccountTable        orm.NaturalKeyTable
-	groupAccountByGroupIndex orm.UInt64Index
+	groupAccountTable        orm.PrimaryKeyTable
+	groupAccountByGroupIndex orm.Index
 	groupAccountByAdminIndex orm.Index
 
 	// Proposal Table
@@ -66,73 +68,100 @@ type serverImpl struct {
 	proposalByProposerIndex     orm.Index
 
 	// Vote Table
-	voteTable           orm.NaturalKeyTable
-	voteByProposalIndex orm.UInt64Index
+	voteTable           orm.PrimaryKeyTable
+	voteByProposalIndex orm.Index
 	voteByVoterIndex    orm.Index
 }
 
-func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper AccountKeeper, cdc codec.Marshaler) serverImpl {
-	s := serverImpl{key: storeKey, router: router, accKeeper: accKeeper}
+func newServer(storeKey servermodule.RootModuleKey, accKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper, cdc codec.Codec) serverImpl {
+	s := serverImpl{key: storeKey, accKeeper: accKeeper, bankKeeper: bankKeeper}
 
 	// Group Table
-	groupTableBuilder := orm.NewTableBuilder(GroupTablePrefix, storeKey, &group.GroupInfo{}, orm.FixLengthIndexKeys(orm.EncodedSeqLength), cdc)
-	s.groupSeq = orm.NewSequence(storeKey, GroupTableSeqPrefix)
-	s.groupByAdminIndex = orm.NewIndex(groupTableBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
+	groupTableBuilder, err := orm.NewAutoUInt64TableBuilder(GroupTablePrefix, GroupTableSeqPrefix, storeKey, &group.GroupInfo{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.groupByAdminIndex, err = orm.NewIndex(groupTableBuilder, GroupByAdminIndexPrefix, func(val interface{}) ([]interface{}, error) {
 		addr, err := sdk.AccAddressFromBech32(val.(*group.GroupInfo).Admin)
 		if err != nil {
 			return nil, err
 		}
-		return []orm.RowID{addr.Bytes()}, nil
-	})
+		return []interface{}{addr.Bytes()}, nil
+	}, []byte{})
+	if err != nil {
+		panic(err.Error())
+	}
 	s.groupTable = groupTableBuilder.Build()
 
 	// Group Member Table
-	groupMemberTableBuilder := orm.NewNaturalKeyTableBuilder(GroupMemberTablePrefix, storeKey, &group.GroupMember{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
-	s.groupMemberByGroupIndex = orm.NewUInt64Index(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]uint64, error) {
+	groupMemberTableBuilder, err := orm.NewPrimaryKeyTableBuilder(GroupMemberTablePrefix, storeKey, &group.GroupMember{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.groupMemberByGroupIndex, err = orm.NewIndex(groupMemberTableBuilder, GroupMemberByGroupIndexPrefix, func(val interface{}) ([]interface{}, error) {
 		group := val.(*group.GroupMember).GroupId
-		return []uint64{group}, nil
-	})
-	s.groupMemberByMemberIndex = orm.NewIndex(groupMemberTableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]orm.RowID, error) {
+		return []interface{}{group}, nil
+	}, group.GroupMember{}.GroupId)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.groupMemberByMemberIndex, err = orm.NewIndex(groupMemberTableBuilder, GroupMemberByMemberIndexPrefix, func(val interface{}) ([]interface{}, error) {
 		memberAddr := val.(*group.GroupMember).Member.Address
 		addr, err := sdk.AccAddressFromBech32(memberAddr)
 		if err != nil {
 			return nil, err
 		}
-		return []orm.RowID{addr.Bytes()}, nil
-	})
+		return []interface{}{addr.Bytes()}, nil
+	}, []byte{})
+	if err != nil {
+		panic(err.Error())
+	}
 	s.groupMemberTable = groupMemberTableBuilder.Build()
 
 	// Group Account Table
 	s.groupAccountSeq = orm.NewSequence(storeKey, GroupAccountTableSeqPrefix)
-	groupAccountTableBuilder := orm.NewNaturalKeyTableBuilder(GroupAccountTablePrefix, storeKey, &group.GroupAccountInfo{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
-	s.groupAccountByGroupIndex = orm.NewUInt64Index(groupAccountTableBuilder, GroupAccountByGroupIndexPrefix, func(value interface{}) ([]uint64, error) {
-		group := value.(*group.GroupAccountInfo).GroupId
-		return []uint64{group}, nil
-	})
-	s.groupAccountByAdminIndex = orm.NewIndex(groupAccountTableBuilder, GroupAccountByAdminIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
+	groupAccountTableBuilder, err := orm.NewPrimaryKeyTableBuilder(GroupAccountTablePrefix, storeKey, &group.GroupAccountInfo{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.groupAccountByGroupIndex, err = orm.NewIndex(groupAccountTableBuilder, GroupAccountByGroupIndexPrefix, func(value interface{}) ([]interface{}, error) {
+		return []interface{}{value.(*group.GroupAccountInfo).GroupId}, nil
+	}, group.GroupAccountInfo{}.GroupId)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.groupAccountByAdminIndex, err = orm.NewIndex(groupAccountTableBuilder, GroupAccountByAdminIndexPrefix, func(value interface{}) ([]interface{}, error) {
 		admin := value.(*group.GroupAccountInfo).Admin
 		addr, err := sdk.AccAddressFromBech32(admin)
 		if err != nil {
 			return nil, err
 		}
-		return []orm.RowID{addr.Bytes()}, nil
-	})
+		return []interface{}{addr.Bytes()}, nil
+	}, []byte{})
+	if err != nil {
+		panic(err.Error())
+	}
 	s.groupAccountTable = groupAccountTableBuilder.Build()
 
 	// Proposal Table
-	proposalTableBuilder := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, storeKey, &group.Proposal{}, cdc)
-	// proposalTableBuilder := orm.NewNaturalKeyTableBuilder(ProposalTablePrefix, key, &group.Proposal{}, orm.Max255DynamicLengthIndexKeyCodec{})
-	s.proposalByGroupAccountIndex = orm.NewIndex(proposalTableBuilder, ProposalByGroupAccountIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
-		account := value.(*group.Proposal).GroupAccount
+	proposalTableBuilder, err := orm.NewAutoUInt64TableBuilder(ProposalTablePrefix, ProposalTableSeqPrefix, storeKey, &group.Proposal{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.proposalByGroupAccountIndex, err = orm.NewIndex(proposalTableBuilder, ProposalByGroupAccountIndexPrefix, func(value interface{}) ([]interface{}, error) {
+		account := value.(*group.Proposal).Address
 		addr, err := sdk.AccAddressFromBech32(account)
 		if err != nil {
 			return nil, err
 		}
-		return []orm.RowID{addr.Bytes()}, nil
-	})
-	s.proposalByProposerIndex = orm.NewIndex(proposalTableBuilder, ProposalByProposerIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
+		return []interface{}{addr.Bytes()}, nil
+	}, []byte{})
+	if err != nil {
+		panic(err.Error())
+	}
+	s.proposalByProposerIndex, err = orm.NewIndex(proposalTableBuilder, ProposalByProposerIndexPrefix, func(value interface{}) ([]interface{}, error) {
 		proposers := value.(*group.Proposal).Proposers
-		r := make([]orm.RowID, len(proposers))
+		r := make([]interface{}, len(proposers))
 		for i := range proposers {
 			addr, err := sdk.AccAddressFromBech32(proposers[i])
 			if err != nil {
@@ -141,28 +170,47 @@ func newServer(storeKey servermodule.RootModuleKey, router sdk.Router, accKeeper
 			r[i] = addr.Bytes()
 		}
 		return r, nil
-	})
+	}, []byte{})
+	if err != nil {
+		panic(err.Error())
+	}
 	s.proposalTable = proposalTableBuilder.Build()
 
 	// Vote Table
-	voteTableBuilder := orm.NewNaturalKeyTableBuilder(VoteTablePrefix, storeKey, &group.Vote{}, orm.Max255DynamicLengthIndexKeyCodec{}, cdc)
-	s.voteByProposalIndex = orm.NewUInt64Index(voteTableBuilder, VoteByProposalIndexPrefix, func(value interface{}) ([]uint64, error) {
-		return []uint64{value.(*group.Vote).ProposalId}, nil
-	})
-	s.voteByVoterIndex = orm.NewIndex(voteTableBuilder, VoteByVoterIndexPrefix, func(value interface{}) ([]orm.RowID, error) {
+	voteTableBuilder, err := orm.NewPrimaryKeyTableBuilder(VoteTablePrefix, storeKey, &group.Vote{}, cdc)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.voteByProposalIndex, err = orm.NewIndex(voteTableBuilder, VoteByProposalIndexPrefix, func(value interface{}) ([]interface{}, error) {
+		return []interface{}{value.(*group.Vote).ProposalId}, nil
+	}, group.Vote{}.ProposalId)
+	if err != nil {
+		panic(err.Error())
+	}
+	s.voteByVoterIndex, err = orm.NewIndex(voteTableBuilder, VoteByVoterIndexPrefix, func(value interface{}) ([]interface{}, error) {
 		addr, err := sdk.AccAddressFromBech32(value.(*group.Vote).Voter)
 		if err != nil {
 			return nil, err
 		}
-		return []orm.RowID{addr.Bytes()}, nil
-	})
+		return []interface{}{addr.Bytes()}, nil
+	}, []byte{})
+	if err != nil {
+		panic(err.Error())
+	}
 	s.voteTable = voteTableBuilder.Build()
 
 	return s
 }
 
-func RegisterServices(configurator servermodule.Configurator, accountKeeper AccountKeeper) {
-	impl := newServer(configurator.ModuleKey(), configurator.Router(), accountKeeper, configurator.Marshaler())
+func RegisterServices(configurator servermodule.Configurator, accountKeeper exported.AccountKeeper, bankKeeper exported.BankKeeper) {
+	impl := newServer(configurator.ModuleKey(), accountKeeper, bankKeeper, configurator.Marshaler())
 	group.RegisterMsgServer(configurator.MsgServer(), impl)
 	group.RegisterQueryServer(configurator.QueryServer(), impl)
+	configurator.RegisterInvariantsHandler(impl.RegisterInvariants)
+	configurator.RegisterGenesisHandlers(impl.InitGenesis, impl.ExportGenesis)
+	configurator.RegisterWeightedOperationsHandler(impl.WeightedOperations)
+
+	// Require servers from external modules for ADR 033 message routing
+	configurator.RequireServer((*ecocredit.MsgServer)(nil))
+	configurator.RequireServer((*data.MsgServer)(nil))
 }

@@ -9,9 +9,11 @@ lint:
     - COMMENTS
   except:
     - SERVICE_SUFFIX
+    - RPC_REQUEST_STANDARD_NAME
   ignore:
     - cosmos
     - gogoproto
+    - google
     - cosmos_proto
 breaking:
   use:
@@ -19,4 +21,5 @@ breaking:
   ignore:
     - cosmos
     - gogoproto
+    - google
     - cosmos_proto

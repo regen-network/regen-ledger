@@ -6,8 +6,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
-	"github.com/regen-network/regen-ledger/app"
-	cmd "github.com/regen-network/regen-ledger/app/regen/cmd"
+	"github.com/regen-network/regen-ledger/v2/app"
+	cmd "github.com/regen-network/regen-ledger/v2/app/regen/cmd"
 )
 
 // In main we call the rootCmd
