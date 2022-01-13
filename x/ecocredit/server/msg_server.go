@@ -213,7 +213,7 @@ func (s serverImpl) CreateBatch(goCtx context.Context, req *ecocredit.MsgCreateB
 				return nil, err
 			}
 
-			err = retire(ctx, store, EcocreditAcc(recipientAddr), batchDenom, retired, issuance.RetirementLocation)
+			err = retire(ctx, store, EcocreditEOA(recipientAddr), batchDenom, retired, issuance.RetirementLocation)
 			if err != nil {
 				return nil, err
 			}
@@ -291,7 +291,7 @@ func (s serverImpl) Send(goCtx context.Context, req *ecocredit.MsgSend) (*ecocre
 	}
 
 	for _, credit := range req.Credits {
-		err := s.sendEcocredits(ctx, credit, store, EcocreditAcc(senderAddr), EcocreditAcc(recipientAddr))
+		err := s.sendEcocredits(ctx, credit, store, EcocreditEOA(senderAddr), EcocreditEOA(recipientAddr))
 		if err != nil {
 			return nil, err
 		}
@@ -334,7 +334,7 @@ func (s serverImpl) Retire(goCtx context.Context, req *ecocredit.MsgRetire) (*ec
 		}
 
 		//  Add retired balance
-		err = retire(ctx, store, EcocreditAcc(holderAddr), denom, toRetire, req.Location)
+		err = retire(ctx, store, EcocreditEOA(holderAddr), denom, toRetire, req.Location)
 		if err != nil {
 			return nil, err
 		}
@@ -508,7 +508,7 @@ func (s serverImpl) nextBatchInClass(ctx types.Context, classInfo *ecocredit.Cla
 }
 
 func retire(ctx types.Context, store sdk.KVStore, recipient EcocreditAccount, batchDenom batchDenomT, retired math.Dec, location string) error {
-	err := addAndSetDecimal(store, recipient.GetRetiredBalanceKey(batchDenom), retired)
+	err := addAndSetDecimal(store, recipient.RetiredBalanceKey(batchDenom), retired)
 	if err != nil {
 		return err
 	}
@@ -786,7 +786,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 			}
 
 			// send credits to the buyer account
-			err = s.sendEcocredits(ctx, credit, store, EcocreditAcc(sellerAddr), EcocreditAcc(buyerAddr))
+			err = s.sendEcocredits(ctx, credit, store, EcocreditEOA(sellerAddr), EcocreditEOA(buyerAddr))
 			if err != nil {
 				return nil, err
 			}
@@ -909,13 +909,13 @@ func (s serverImpl) sendEcocredits(ctx types.Context, credit *ecocredit.MsgSend_
 	}
 
 	// subtract balance
-	err = subAndSetDecimal(store, sender.GetTradableBalanceKey(denom), sum)
+	err = subAndSetDecimal(store, sender.TradableBalanceKey(denom), sum)
 	if err != nil {
 		return err
 	}
 
 	// Add tradable balance
-	err = addAndSetDecimal(store, recipient.GetTradableBalanceKey(denom), tradable)
+	err = addAndSetDecimal(store, recipient.TradableBalanceKey(denom), tradable)
 	if err != nil {
 		return err
 	}

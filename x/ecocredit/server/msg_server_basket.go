@@ -419,12 +419,12 @@ func (s serverImpl) basketCreditsIterator(basket ecocredit.Basket, store sdktype
 
 // depositCreditToBasket deposits a set of credits to a basket
 func (s serverImpl) depositCreditToBasket(ctx regentypes.Context, store sdktypes.KVStore, senderAddr sdktypes.AccAddress, basket ecocredit.Basket, credit *ecocredit.MsgSend_SendCredits) error {
-	return s.sendEcocredits(ctx, credit, store, EcocreditAcc(senderAddr), basketDenomT(basket.BasketDenom))
+	return s.sendEcocredits(ctx, credit, store, EcocreditEOA(senderAddr), basketDenomT(basket.BasketDenom))
 }
 
 // sendCreditFromBasket sends credits from basket to the `to` address
 func (s serverImpl) sendCreditFromBasket(regenCtx regentypes.Context, store sdktypes.KVStore, to sdktypes.AccAddress, basket ecocredit.Basket, credit *ecocredit.MsgSend_SendCredits) error {
-	return s.sendEcocredits(regenCtx, credit, store,basketDenomT(basket.BasketDenom),  EcocreditAcc(to))
+	return s.sendEcocredits(regenCtx, credit, store, basketDenomT(basket.BasketDenom), EcocreditEOA(to))
 }
 
 // validateFilterData is a recursive, stateful filter validation.

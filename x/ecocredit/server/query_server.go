@@ -469,7 +469,7 @@ func (s serverImpl) BasketCredit(goCtx context.Context, request *ecocredit.Query
 	regenCtx := types.UnwrapSDKContext(goCtx)
 	store := regenCtx.KVStore(s.storeKey)
 	basketDenom := basketDenomT(request.BasketDenom)
-	dec, err := getDecimal(store, basketDenom.GetTradableBalanceKey(batchDenomT(request.BatchDenom)))
+	dec, err := getDecimal(store, basketDenom.TradableBalanceKey(batchDenomT(request.BatchDenom)))
 	if err != nil {
 		return nil, err
 	}

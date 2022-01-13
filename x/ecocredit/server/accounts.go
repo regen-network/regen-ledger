@@ -3,30 +3,30 @@ package server
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 type EcocreditAccount interface {
-	GetTradableBalanceKey(denom batchDenomT) []byte
-	GetRetiredBalanceKey(denom batchDenomT) []byte
+	TradableBalanceKey(denom batchDenomT) []byte
+	RetiredBalanceKey(denom batchDenomT) []byte
 	String() string
 }
 
-type EcocreditAcc sdk.AccAddress
+type EcocreditEOA sdk.AccAddress
 
-func (ea EcocreditAcc) GetTradableBalanceKey(denom batchDenomT) []byte {
+func (ea EcocreditEOA) TradableBalanceKey(denom batchDenomT) []byte {
 	return TradableBalanceKey(sdk.AccAddress(ea), denom)
 }
 
-func (ea EcocreditAcc) GetRetiredBalanceKey(denom batchDenomT) []byte {
+func (ea EcocreditEOA) RetiredBalanceKey(denom batchDenomT) []byte {
 	return RetiredBalanceKey(sdk.AccAddress(ea), denom)
 }
 
-func (ea EcocreditAcc) String() string {
+func (ea EcocreditEOA) String() string {
 	return sdk.AccAddress(ea).String()
 }
 
-func (bd basketDenomT) GetTradableBalanceKey(denom batchDenomT) []byte {
+func (bd basketDenomT) TradableBalanceKey(denom batchDenomT) []byte {
 	return BasketBatchKey(bd, denom)
 }
 
-func (bd basketDenomT) GetRetiredBalanceKey(_ batchDenomT) []byte {
+func (bd basketDenomT) RetiredBalanceKey(_ batchDenomT) []byte {
 	return nil
 }
 
