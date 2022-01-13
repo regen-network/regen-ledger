@@ -7,15 +7,18 @@
     },
     "apis": [
         {
-            "url": "./tmp-swagger-gen/regen/data/v1alpha2/query.swagger.json",
+            "url": "./tmp-swagger-gen/regen/data/v1alpha2/query.swagger.json"
         },
         {
-            "url": "./tmp-swagger-gen/regen/ecocredit/v1alpha1/query.swagger.json",
+            "url": "./tmp-swagger-gen/regen/ecocredit/v1alpha2/query.swagger.json",
             "operationIds": {
                 "rename": {
                   "Balance": "Ecocredit/Balance",
                   "Params": "Ecocredit/Params"
                 }
+              },
+              "dereference": {
+                "circular": "ignore"
               }
         },
         {
@@ -27,7 +30,7 @@
               }
         },
         {
-            "url": "./tmp-swagger-gen/swagger.yaml",
+            "url": "./tmp-swagger-gen/swagger-sdk.yaml",
             "dereference": {
                 "circular": "ignore"
             },
@@ -35,6 +38,17 @@
                 "rename": {
                 "Gaia REST": "Tendermint RPC"
                 }
+            },
+            "operationIds": {
+                "rename": {
+                  "UpgradedConsensusState": "sdk/UpgradedConsensusState"
+                }
+              }
+        },
+        {
+            "url": "./tmp-swagger-gen/swagger-ibc.yaml",
+            "dereference": {
+                "circular": "ignore"
             }
         }
     ]
