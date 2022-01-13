@@ -2,7 +2,7 @@
 
 ## AnchorData
 
-`AnchorData` "anchors" a piece of data to the blockchain based on its secure hash, effectively providing a tamper resistant timestamp. The sender in AnchorData is not attesting to the veracity of the underlying data. They can simply be an intermediary providing timestamp services. `SignData` should be used to create a digital signature attesting to the veracity of some piece of data. 
+`AnchorData` "anchors" a piece of data to the blockchain based on its secure hash, effectively providing a tamper resistant timestamp. The sender in `AnchorData` is not attesting to the veracity of the underlying data. They can simply be an intermediary providing timestamp services. `SignData` should be used to create a digital signature attesting to the veracity of some piece of data. 
 
 +++ https://github.com/regen-network/regen-ledger/blob/55d39dc7d9768e5a0bd18c48ca78cb4a02145e81/proto/regen/data/v1alpha2/tx.proto#L44-L53
 

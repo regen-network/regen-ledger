@@ -23,13 +23,21 @@ regen query data by-iri [iri] [flags]
 Example:
 
 ```bash
-regen query data by-iri ...
+regen query data by-iri regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
 ```
 
 Example Output:
 
 ```bash
-# not yet implemented
+entry:
+  hash:
+    graph:
+      canonicalization_algorithm: GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015
+      digest_algorithm: DIGEST_ALGORITHM_BLAKE2B_256
+      hash: YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=
+      merkle_tree: GRAPH_MERKLE_TREE_NONE_UNSPECIFIED
+  iri: regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
+  timestamp: "2022-01-01T00:00:00.000000000Z"
 ```
 
 #### by-signer
@@ -43,13 +51,24 @@ regen query data by-signer [signer] [flags]
 Example:
 
 ```bash
-regen query data by-signer ...
+regen query data by-signer regen1..
 ```
 
 Example Output:
 
 ```bash
-# not yet implemented
+entries:
+- hash:
+    graph:
+      canonicalization_algorithm: GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015
+      digest_algorithm: DIGEST_ALGORITHM_BLAKE2B_256
+      hash: YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=
+      merkle_tree: GRAPH_MERKLE_TREE_NONE_UNSPECIFIED
+  iri: regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
+  timestamp: "2022-01-01T00:00:00.000000000Z"
+pagination:
+  next_key: null
+  total: "1"
 ```
 
 #### signers
@@ -57,19 +76,23 @@ Example Output:
 The `signers` command allows users to query signers based on a content hash (i.e. IRI).
 
 ```bash
-regen query data signers [signers] [flags]
+regen query data signers [iri] [flags]
 ```
 
 Example:
 
 ```bash
-regen query data signers ...
+regen query data signers regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
 ```
 
 Example Output:
 
 ```bash
-# not yet implemented
+pagination:
+  next_key: null
+  total: "1"
+signers:
+- regen1..
 ```
 
 ### Transactions
@@ -132,6 +155,19 @@ grpcurl -plaintext \
 Example Output:
 
 ```bash
+{
+  "entry": {
+    "hash": {
+      "graph": {
+        "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
+        "digestAlgorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+        "canonicalizationAlgorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015"
+      }
+    },
+    "iri": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+    "timestamp": "2022-01-01T00:00:00.000000000Z"
+  }
+}
 ```
 
 ### BySigner
@@ -154,6 +190,24 @@ grpcurl -plaintext \
 Example Output:
 
 ```bash
+{
+  "entries": [
+    {
+      "hash": {
+        "graph": {
+          "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
+          "digestAlgorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+          "canonicalizationAlgorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015"
+        }
+      },
+      "iri": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+      "timestamp": "2022-01-01T00:00:00.000000000Z"
+    }
+  ],
+  "pagination": {
+    "total": "1"
+  }
+}
 ```
 
 ### Signers
@@ -168,7 +222,7 @@ Example:
 
 ```bash
 grpcurl -plaintext \
-    -d '{"signers":"regen1.., regen1.."}' \
+    -d '{"iri":"regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf"}' \
     localhost:9090 \
     regen.data.v1alpha2.Query/Signers
 ```
@@ -176,29 +230,90 @@ grpcurl -plaintext \
 Example Output:
 
 ```bash
+{
+  "signers": [
+    "regen16md38uw5z9v4du2dtq4qgake8ewyf36u6qgfza"
+  ],
+  "pagination": {
+    "total": "1"
+  }
+}
 ```
 
 ## REST
 
 A user can query the `data` module using REST endpoints.
 
-### content
+### by-iri
 
-The `content` endpoint allows users to query anchored data based on a content hash (i.e. IRI) or a signer.
+The `content` endpoint allows users to query anchored data based on a content hash (i.e. IRI).
 
 ```bash
-/regen/data/v1alpha1/content/{iri_or_signer}
+/regen/data/v1alpha2/by-iri/{iri}
 ```
 
 Example:
 
 ```bash
-curl localhost:1317/regen/data/v1alpha1/content/regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
+curl localhost:1317/regen/data/v1alpha2/by-iri/regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
 ```
 
 Example Output:
 
 ```bash
+{
+  "entry": {
+    "hash": {
+      "graph": {
+        "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
+        "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+        "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015",
+        "merkle_tree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
+      }
+    },
+    "iri": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+    "timestamp": "2022-01-01T00:00:00.000000000Z"
+  }
+}
+```
+
+### by-signer
+
+The `by-signer` endpoint allows users to query anchored data based on a signer.
+
+```bash
+/regen/data/v1alpha2/by-signer/{signer}
+```
+
+Example:
+
+```bash
+curl localhost:1317/regen/data/v1alpha2/by-signer/regen1..
+```
+
+Example Output:
+
+```bash
+{
+  "entries": [
+    {
+      "hash": {
+        "graph": {
+          "hash": "YWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXoxMjM0NTY=",
+          "digest_algorithm": "DIGEST_ALGORITHM_BLAKE2B_256",
+          "canonicalization_algorithm": "GRAPH_CANONICALIZATION_ALGORITHM_URDNA2015",
+          "merkle_tree": "GRAPH_MERKLE_TREE_NONE_UNSPECIFIED"
+        }
+      },
+      "iri": "regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf",
+      "timestamp": "2022-01-01T00:00:00.000000000Z"
+    }
+  ],
+  "pagination": {
+    "next_key": null,
+    "total": "1"
+  }
+}
 ```
 
 ### signers
@@ -206,16 +321,25 @@ Example Output:
 The `signers` endpoint allows users to query signers based on a content hash (i.e. IRI).
 
 ```bash
-/regen/data/v1alpha1/signers/{iri}
+/regen/data/v1alpha2/signers/{iri}
 ```
 
 Example:
 
 ```bash
-curl localhost:1317/regen/data/v1alpha1/signers/regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
+curl localhost:1317/regen/data/v1alpha2/signers/regen:13toVgf5aZqSVSeJQv562xkkeoe3rr3bJWa29PHVKVf77VAkVMcDvVd.rdf
 ```
 
 Example Output:
 
 ```bash
+{
+  "signers": [
+    "regen1.."
+  ],
+  "pagination": {
+    "next_key": null,
+    "total": "1"
+  }
+}
 ```
