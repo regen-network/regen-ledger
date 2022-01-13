@@ -1,8 +1,6 @@
 package server
 
 import (
-	"time"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/orm"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
@@ -10,8 +8,8 @@ import (
 
 // PruneOrders checks if there are any expired sell or buy orders and removes them from state.
 func (s serverImpl) PruneOrders(ctx sdk.Context) error {
-	blockTime := ctx.BlockTime()
-	minTime := time.Time{}
+	blockTime := uint64(ctx.BlockTime().UnixNano())
+	minTime := uint64(0)
 
 	sellOrdersIter, err := s.sellOrderByExpirationIndex.PrefixScan(ctx, minTime, blockTime)
 	if err != nil {

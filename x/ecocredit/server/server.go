@@ -149,7 +149,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 			return nil, nil
 		}
 		return []interface{}{uint64(order.Expiration.UnixNano())}, nil
-	}, []byte{})
+	}, uint64(0))
 	if err != nil {
 		panic(err.Error())
 	}
@@ -182,7 +182,7 @@ func newServer(storeKey sdk.StoreKey, paramSpace paramtypes.Subspace,
 			return nil, nil
 		}
 		return []interface{}{uint64(order.Expiration.UnixNano())}, nil
-	}, []byte{})
+	}, uint64(0))
 	if err != nil {
 		panic(err.Error())
 	}
