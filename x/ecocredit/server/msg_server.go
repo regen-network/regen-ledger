@@ -782,6 +782,11 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 				return nil, ecocredit.ErrInvalidBuyOrder.Wrapf("auto-retire is required for sell order %d", sellOrder.OrderId)
 			}
 
+			// error if auto-retire is required and missing location
+			if !sellOrder.DisableAutoRetire && order.RetirementLocation == "" {
+				return nil, ecocredit.ErrInvalidBuyOrder.Wrapf("retirement location is required for sell order %d", sellOrder.OrderId)
+			}
+
 			// declare credit for send message
 			credit := &ecocredit.MsgSend_SendCredits{
 				BatchDenom: sellOrder.BatchDenom,
@@ -837,6 +842,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 				BidPrice:           order.BidPrice,
 				DisableAutoRetire:  order.DisableAutoRetire,
 				DisablePartialFill: order.DisablePartialFill,
+				RetirementLocation: order.RetirementLocation,
 			})
 			if err != nil {
 				return nil, err

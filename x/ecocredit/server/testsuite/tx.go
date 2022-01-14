@@ -493,6 +493,26 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 			wantErr: true,
 		},
 		{
+			name:  "retirement location is required for sell order",
+			buyer: addr2.String(),
+			orders: []*ecocredit.MsgBuy_Order{
+				{
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[2]}},
+					Quantity:          "1.0",
+					BidPrice:          &bidPrice1,
+					DisableAutoRetire: false,
+				},
+				{
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[3]}},
+					Quantity:          "1.0",
+					BidPrice:          &bidPrice1,
+					DisableAutoRetire: false,
+				},
+			},
+			expErr:  "retirement location is required for sell order",
+			wantErr: true,
+		},
+		{
 			name:  "valid request",
 			buyer: addr2.String(),
 			orders: []*ecocredit.MsgBuy_Order{
@@ -523,16 +543,18 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 			buyer: addr2.String(),
 			orders: []*ecocredit.MsgBuy_Order{
 				{
-					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[2]}},
-					Quantity:          "1.0",
-					BidPrice:          &bidPrice1,
-					DisableAutoRetire: false,
+					Selection:          &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[2]}},
+					Quantity:           "1.0",
+					BidPrice:           &bidPrice1,
+					DisableAutoRetire:  false,
+					RetirementLocation: "AB",
 				},
 				{
-					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[3]}},
-					Quantity:          "1.0",
-					BidPrice:          &bidPrice1,
-					DisableAutoRetire: false,
+					Selection:          &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[3]}},
+					Quantity:           "1.0",
+					BidPrice:           &bidPrice1,
+					DisableAutoRetire:  false,
+					RetirementLocation: "AB",
 				},
 			},
 			expErr:  "",
