@@ -6,7 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-  "github.com/regen-network/regen-ledger/types/testutil/cli"
+	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
 )

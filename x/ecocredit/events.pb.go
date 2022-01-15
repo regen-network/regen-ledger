@@ -519,7 +519,7 @@ type EventSell struct {
 	// buyer to disable auto-retirement in their buy order enabling them to
 	// resell the credits to another buyer.
 	DisableAutoRetire bool `protobuf:"varint,5,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
-	// expiration is the optional timestamp when the sell order expires. When the
+	// expiration is an optional timestamp when the sell order expires. When the
 	// expiration time is reached, the sell order is removed from state.
 	Expiration *time.Time `protobuf:"bytes,6,opt,name=expiration,proto3,stdtime" json:"expiration,omitempty"`
 }
@@ -614,7 +614,7 @@ type EventUpdateSellOrder struct {
 	NewAskPrice *types.Coin `protobuf:"bytes,5,opt,name=new_ask_price,json=newAskPrice,proto3" json:"new_ask_price,omitempty"`
 	// disable_auto_retire updates the disable_auto_retire field in the sell order.
 	DisableAutoRetire bool `protobuf:"varint,6,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
-	// new_expiration is the optional timestamp when the sell order expires. When the
+	// new_expiration is an optional timestamp when the sell order expires. When the
 	// expiration time is reached, the sell order is removed from state.
 	NewExpiration *time.Time `protobuf:"bytes,7,opt,name=new_expiration,json=newExpiration,proto3,stdtime" json:"new_expiration,omitempty"`
 }

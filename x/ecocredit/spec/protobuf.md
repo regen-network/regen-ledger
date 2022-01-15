@@ -330,7 +330,7 @@ EventSell is an event emitted when a sell order is created.
 | quantity | [string](#string) |  | quantity is the quantity of credits being sold. |
 | ask_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | ask_price is the price the seller is asking for each unit of the batch_denom. Each credit unit of the batch will be sold for at least the ask_price or more. |
 | disable_auto_retire | [bool](#bool) |  | disable_auto_retire disables auto-retirement of credits which allows a buyer to disable auto-retirement in their buy order enabling them to resell the credits to another buyer. |
-| expiration | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | expiration is the optional timestamp when the sell order expires. When the expiration time is reached, the sell order is removed from state. |
+| expiration | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | expiration is an optional timestamp when the sell order expires. When the expiration time is reached, the sell order is removed from state. |
 
 
 
@@ -351,7 +351,7 @@ EventUpdateSellOrder is an event emitted when a sell order is updated.
 | new_quantity | [string](#string) |  | new_quantity is the updated quantity of credits available to sell, if it is set to zero then the order is cancelled. |
 | new_ask_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | new_ask_price is the new ask price for this sell order |
 | disable_auto_retire | [bool](#bool) |  | disable_auto_retire updates the disable_auto_retire field in the sell order. |
-| new_expiration | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | new_expiration is the optional timestamp when the sell order expires. When the expiration time is reached, the sell order is removed from state. |
+| new_expiration | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | new_expiration is an optional timestamp when the sell order expires. When the expiration time is reached, the sell order is removed from state. |
 
 
 
@@ -662,7 +662,7 @@ SellOrder represents the information for a sell order.
 | quantity | [string](#string) |  | quantity is the quantity of credits being sold. |
 | ask_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | ask_price is the price the seller is asking for each unit of the batch_denom. Each credit unit of the batch will be sold for at least the ask_price or more. |
 | disable_auto_retire | [bool](#bool) |  | disable_auto_retire disables auto-retirement of credits which allows a buyer to disable auto-retirement in their buy order enabling them to resell the credits to another buyer. |
-| expiration | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | expiration is the optional timestamp when the sell order expires. When the expiration time is reached, the sell order is removed from state. |
+| expiration | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | expiration is an optional timestamp when the sell order expires. When the expiration time is reached, the sell order is removed from state. |
 
 
 
@@ -1889,7 +1889,7 @@ Order is the content of a new sell order.
 | quantity | [string](#string) |  | quantity is the quantity of credits being sold from this batch. If it is less then the balance of credits the owner has available at the time this sell order is matched, the quantity will be adjusted downwards to the owner's balance. However, if the balance of credits is less than this quantity at the time the sell order is created, the operation will fail. |
 | ask_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | ask_price is the price the seller is asking for each unit of the batch_denom. Each credit unit of the batch will be sold for at least the ask_price or more. |
 | disable_auto_retire | [bool](#bool) |  | disable_auto_retire disables auto-retirement of credits which allows a buyer to disable auto-retirement in their buy order enabling them to resell the credits to another buyer. |
-| expiration | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | expiration is the optional timestamp when the sell order expires. When the expiration time is reached, the sell order is removed from state. |
+| expiration | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | expiration is an optional timestamp when the sell order expires. When the expiration time is reached, the sell order is removed from state. |
 
 
 
@@ -2100,7 +2100,7 @@ Update is an update to an existing sell order.
 | new_quantity | [string](#string) |  | new_quantity is the updated quantity of credits available to sell, if it is set to zero then the order is cancelled. |
 | new_ask_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | new_ask_price is the new ask price for this sell order |
 | disable_auto_retire | [bool](#bool) |  | disable_auto_retire updates the disable_auto_retire field in the sell order. |
-| new_expiration | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | new_expiration is the optional timestamp when the sell order expires. When the expiration time is reached, the sell order is removed from state. |
+| new_expiration | [google.protobuf.Timestamp](#google.protobuf.Timestamp) |  | new_expiration is an optional timestamp when the sell order expires. When the expiration time is reached, the sell order is removed from state. |
 
 
 

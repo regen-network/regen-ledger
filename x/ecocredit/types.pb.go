@@ -537,7 +537,7 @@ type SellOrder struct {
 	// buyer to disable auto-retirement in their buy order enabling them to
 	// resell the credits to another buyer.
 	DisableAutoRetire bool `protobuf:"varint,6,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
-	// expiration is the optional timestamp when the sell order expires. When the
+	// expiration is an optional timestamp when the sell order expires. When the
 	// expiration time is reached, the sell order is removed from state.
 	Expiration *time.Time `protobuf:"bytes,7,opt,name=expiration,proto3,stdtime" json:"expiration,omitempty"`
 }

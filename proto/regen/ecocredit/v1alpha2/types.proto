@@ -157,7 +157,7 @@ message SellOrder {
   // resell the credits to another buyer.
   bool disable_auto_retire = 6;
 
-  // expiration is the optional timestamp when the sell order expires. When the
+  // expiration is an optional timestamp when the sell order expires. When the
   // expiration time is reached, the sell order is removed from state.
   google.protobuf.Timestamp expiration = 7 [ (gogoproto.stdtime) = true ];
 }

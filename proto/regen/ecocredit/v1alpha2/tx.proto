@@ -382,7 +382,7 @@ message MsgSell {
     // resell the credits to another buyer.
     bool disable_auto_retire = 4;
 
-    // expiration is the optional timestamp when the sell order expires. When the
+    // expiration is an optional timestamp when the sell order expires. When the
     // expiration time is reached, the sell order is removed from state.
     google.protobuf.Timestamp expiration = 5 [ (gogoproto.stdtime) = true ];
   }
@@ -420,7 +420,7 @@ message MsgUpdateSellOrders {
     // disable_auto_retire updates the disable_auto_retire field in the sell order.
     bool disable_auto_retire = 4;
 
-    // new_expiration is the optional timestamp when the sell order expires. When the
+    // new_expiration is an optional timestamp when the sell order expires. When the
     // expiration time is reached, the sell order is removed from state.
     google.protobuf.Timestamp new_expiration = 5 [ (gogoproto.stdtime) = true ];
   }

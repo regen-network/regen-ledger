@@ -1,8 +1,6 @@
 package ecocredit
 
 import (
-	"time"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/legacy/legacytx"
@@ -392,8 +390,6 @@ func (m MsgSell) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgSell) ValidateBasic() error {
-	now := time.Now()
-
 	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
 		return sdkerrors.ErrInvalidAddress
 	}
@@ -417,10 +413,6 @@ func (m *MsgSell) ValidateBasic() error {
 
 		if !order.AskPrice.Amount.IsPositive() {
 			return sdkerrors.ErrInvalidRequest.Wrap("ask price must be positive amount")
-		}
-
-		if order.Expiration != nil && order.Expiration.Before(now) {
-			return sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
 		}
 	}
 
@@ -446,8 +438,6 @@ func (m MsgUpdateSellOrders) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgUpdateSellOrders) ValidateBasic() error {
-	now := time.Now()
-
 	if _, err := sdk.AccAddressFromBech32(m.Owner); err != nil {
 		return sdkerrors.ErrInvalidAddress
 	}
@@ -468,10 +458,6 @@ func (m *MsgUpdateSellOrders) ValidateBasic() error {
 
 		if !update.NewAskPrice.Amount.IsPositive() {
 			return sdkerrors.ErrInvalidRequest.Wrap("ask price must be positive amount")
-		}
-
-		if update.NewExpiration != nil && update.NewExpiration.Before(now) {
-			return sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", update.NewExpiration)
 		}
 	}
 
@@ -497,8 +483,6 @@ func (m MsgBuy) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgBuy) ValidateBasic() error {
-	now := time.Now()
-
 	if _, err := sdk.AccAddressFromBech32(m.Buyer); err != nil {
 		return sdkerrors.ErrInvalidAddress
 	}
@@ -519,10 +503,6 @@ func (m *MsgBuy) ValidateBasic() error {
 
 		if !order.BidPrice.Amount.IsPositive() {
 			return sdkerrors.ErrInvalidRequest.Wrap("bid price must be positive amount")
-		}
-
-		if order.Expiration != nil && order.Expiration.Before(now) {
-			return sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
 		}
 	}
 

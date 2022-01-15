@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
@@ -580,6 +581,11 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 
 	for i, order := range req.Orders {
 
+		// verify expiration is in the future
+		if order.Expiration != nil && order.Expiration.Before(ctx.BlockTime()) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
+		}
+
 		err = verifyCreditBalance(store, ownerAddr, order.BatchDenom, order.Quantity)
 		if err != nil {
 			return nil, err
@@ -637,6 +643,11 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 	}
 
 	for _, update := range req.Updates {
+
+		// verify expiration is in the future
+		if update.NewExpiration != nil && update.NewExpiration.Before(ctx.BlockTime()) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", update.NewExpiration)
+		}
 
 		sellOrder, err := s.getSellOrder(ctx, update.SellOrderId)
 		if err != nil {
@@ -698,6 +709,11 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 	buyOrderIds := make([]uint64, len(req.Orders))
 
 	for i, order := range req.Orders {
+
+		// verify expiration is in the future
+		if order.Expiration != nil && order.Expiration.Before(ctx.BlockTime()) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
+		}
 
 		balances := s.bankKeeper.SpendableCoins(sdkCtx, buyerAddr)
 		bidPrice := order.BidPrice
