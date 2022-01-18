@@ -16,15 +16,18 @@ func (s serverImpl) PruneOrders(ctx sdk.Context) error {
 	if err != nil {
 		return err
 	}
+	defer sellOrdersIter.Close()
 
-	var sellOrders []*ecocredit.SellOrder
-	_, err = orm.ReadAll(sellOrdersIter, &sellOrders)
-	if err != nil {
-		return err
-	}
-
-	for _, order := range sellOrders {
-		err := s.sellOrderTable.Delete(ctx, order.OrderId)
+	var sellOrder ecocredit.SellOrder
+	for {
+		_, err := sellOrdersIter.LoadNext(&sellOrder)
+		if err != nil {
+			if orm.ErrIteratorDone.Is(err) {
+				break
+			}
+			return err
+		}
+		err = s.sellOrderTable.Delete(ctx, sellOrder.OrderId)
 		if err != nil {
 			return err
 		}
@@ -34,15 +37,18 @@ func (s serverImpl) PruneOrders(ctx sdk.Context) error {
 	if err != nil {
 		return err
 	}
+	defer buyOrdersIter.Close()
 
-	var buyOrders []*ecocredit.BuyOrder
-	_, err = orm.ReadAll(buyOrdersIter, &buyOrders)
-	if err != nil {
-		return err
-	}
-
-	for _, order := range buyOrders {
-		err := s.buyOrderTable.Delete(ctx, order.BuyOrderId)
+	var buyOrder ecocredit.BuyOrder
+	for {
+		_, err := buyOrdersIter.LoadNext(&buyOrder)
+		if err != nil {
+			if orm.ErrIteratorDone.Is(err) {
+				break
+			}
+			return err
+		}
+		err = s.buyOrderTable.Delete(ctx, buyOrder.BuyOrderId)
 		if err != nil {
 			return err
 		}
