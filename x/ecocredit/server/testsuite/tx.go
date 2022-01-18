@@ -326,7 +326,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 	addr2 := s.signers[4]
 
 	// create credit class and issue credits to addr1
-	_, createBatchRes := s.createClassAndIssueBatch(addr1.String(), "4.0")
+	_, createBatchRes := s.createClassAndIssueBatch(addr1.String(), "6.0")
 
 	bidPrice1 := sdk.NewInt64Coin("stake", 1000000)
 	bidPrice2 := sdk.NewInt64Coin("stake", 9999999)
@@ -334,7 +334,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 	//bidPrice3 := sdk.NewInt64Coin("token", 1000000)
 
 	// fund buyer account
-	s.Require().NoError(s.fundAccount(addr2, sdk.NewCoins(sdk.NewInt64Coin("stake", 3000000))))
+	s.Require().NoError(s.fundAccount(addr2, sdk.NewCoins(sdk.NewInt64Coin("stake", 5000000))))
 
 	// create sell orders
 	sellRes, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
@@ -351,6 +351,18 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 				Quantity:          "1.0",
 				AskPrice:          &bidPrice1,
 				DisableAutoRetire: true,
+			},
+			{
+				BatchDenom:        createBatchRes.BatchDenom,
+				Quantity:          "1.0",
+				AskPrice:          &bidPrice1,
+				DisableAutoRetire: false,
+			},
+			{
+				BatchDenom:        createBatchRes.BatchDenom,
+				Quantity:          "1.0",
+				AskPrice:          &bidPrice1,
+				DisableAutoRetire: false,
 			},
 			{
 				BatchDenom:        createBatchRes.BatchDenom,
@@ -461,6 +473,46 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 		//	wantErr: true,
 		//},
 		{
+			name:  "auto-retire is required for sell order",
+			buyer: addr2.String(),
+			orders: []*ecocredit.MsgBuy_Order{
+				{
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[2]}},
+					Quantity:          "1.0",
+					BidPrice:          &bidPrice1,
+					DisableAutoRetire: true,
+				},
+				{
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[3]}},
+					Quantity:          "1.0",
+					BidPrice:          &bidPrice1,
+					DisableAutoRetire: true,
+				},
+			},
+			expErr:  "auto-retire is required for sell order",
+			wantErr: true,
+		},
+		{
+			name:  "retirement location is required for sell order",
+			buyer: addr2.String(),
+			orders: []*ecocredit.MsgBuy_Order{
+				{
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[2]}},
+					Quantity:          "1.0",
+					BidPrice:          &bidPrice1,
+					DisableAutoRetire: false,
+				},
+				{
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[3]}},
+					Quantity:          "1.0",
+					BidPrice:          &bidPrice1,
+					DisableAutoRetire: false,
+				},
+			},
+			expErr:  "retirement location is required for sell order",
+			wantErr: true,
+		},
+		{
 			name:  "valid request",
 			buyer: addr2.String(),
 			orders: []*ecocredit.MsgBuy_Order{
@@ -482,22 +534,50 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 			partial: false,
 			expCoinBalance: sdk.Coin{
 				Denom:  "stake",
-				Amount: sdk.NewInt(1000000),
+				Amount: sdk.NewInt(3000000),
 			},
 			expCreditBalance: &ecocredit.QueryBalanceResponse{TradableAmount: "2", RetiredAmount: "0"},
+		},
+		{
+			name:  "valid request - auto-retire",
+			buyer: addr2.String(),
+			orders: []*ecocredit.MsgBuy_Order{
+				{
+					Selection:          &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[2]}},
+					Quantity:           "1.0",
+					BidPrice:           &bidPrice1,
+					DisableAutoRetire:  false,
+					RetirementLocation: "AB",
+				},
+				{
+					Selection:          &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[3]}},
+					Quantity:           "1.0",
+					BidPrice:           &bidPrice1,
+					DisableAutoRetire:  false,
+					RetirementLocation: "AB",
+				},
+			},
+			expErr:  "",
+			wantErr: false,
+			partial: false,
+			expCoinBalance: sdk.Coin{
+				Denom:  "stake",
+				Amount: sdk.NewInt(1000000),
+			},
+			expCreditBalance: &ecocredit.QueryBalanceResponse{TradableAmount: "2", RetiredAmount: "2"},
 		},
 		{
 			name:  "valid request - partial fill",
 			buyer: addr2.String(),
 			orders: []*ecocredit.MsgBuy_Order{
 				{
-					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[2]}},
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[4]}},
 					Quantity:          "0.5",
 					BidPrice:          &bidPrice1,
 					DisableAutoRetire: true,
 				},
 				{
-					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[3]}},
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[5]}},
 					Quantity:          "0.5",
 					BidPrice:          &bidPrice1,
 					DisableAutoRetire: true,
@@ -510,7 +590,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 				Denom:  "stake",
 				Amount: sdk.NewInt(0),
 			},
-			expCreditBalance: &ecocredit.QueryBalanceResponse{TradableAmount: "3", RetiredAmount: "0"},
+			expCreditBalance: &ecocredit.QueryBalanceResponse{TradableAmount: "3", RetiredAmount: "2"},
 		},
 	}
 
