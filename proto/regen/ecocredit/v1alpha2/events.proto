@@ -213,9 +213,13 @@ message EventBuyOrderCreated {
   // buy orders if the requested quantity is not available.
   bool disable_partial_fill = 6;
 
+  // retirement_location is the optional retirement location for the credits
+  // which will be used only if disable_auto_retire is false.
+  string retirement_location = 7;
+
   // expiration is the optional timestamp when the buy order expires. When the
   // expiration time is reached, the buy order is removed from state.
-  google.protobuf.Timestamp expiration = 7 [ (gogoproto.stdtime) = true ];
+  google.protobuf.Timestamp expiration = 8 [ (gogoproto.stdtime) = true ];
 }
 
 // EventBuyOrderFilled is an event emitted when a buy order is filled.

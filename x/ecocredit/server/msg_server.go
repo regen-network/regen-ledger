@@ -799,12 +799,29 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 				return nil, err
 			}
 
+			// error if auto-retire is required for given sell order
+			if !sellOrder.DisableAutoRetire && order.DisableAutoRetire {
+				return nil, ecocredit.ErrInvalidBuyOrder.Wrapf("auto-retire is required for sell order %d", sellOrder.OrderId)
+			}
+
+			// error if auto-retire is required and missing location
+			if !sellOrder.DisableAutoRetire && order.RetirementLocation == "" {
+				return nil, ecocredit.ErrInvalidBuyOrder.Wrapf("retirement location is required for sell order %d", sellOrder.OrderId)
+			}
+
+			// declare credit for send message
 			credit := &ecocredit.MsgSend_SendCredits{
-				BatchDenom:     sellOrder.BatchDenom,
-				TradableAmount: creditsToReceive.String(),
-				// TODO: handle auto-retire settings #621
-				RetiredAmount: "0",
-				//RetirementLocation: retirementLocation,
+				BatchDenom: sellOrder.BatchDenom,
+			}
+
+			// set tradable or retired amount depending on auto-retire
+			if sellOrder.DisableAutoRetire && order.DisableAutoRetire {
+				credit.RetiredAmount = "0"
+				credit.TradableAmount = creditsToReceive.String()
+			} else {
+				credit.RetiredAmount = creditsToReceive.String()
+				credit.RetirementLocation = order.RetirementLocation
+				credit.TradableAmount = "0"
 			}
 
 			// send credits to the buyer account
@@ -847,6 +864,7 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 				BidPrice:           order.BidPrice,
 				DisableAutoRetire:  order.DisableAutoRetire,
 				DisablePartialFill: order.DisablePartialFill,
+				RetirementLocation: order.RetirementLocation,
 				Expiration:         order.Expiration,
 			})
 			if err != nil {

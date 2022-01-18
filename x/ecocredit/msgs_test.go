@@ -1330,6 +1330,24 @@ func TestMsgBuy(t *testing.T) {
 			},
 			expErr: true,
 		},
+		"invalid: bad retirement location": {
+			src: MsgBuy{
+				Buyer: a1.String(),
+				Orders: []*MsgBuy_Order{
+					{
+						Quantity: "1.5",
+						BidPrice: &sdk.Coin{
+							Denom:  "uregen",
+							Amount: sdk.NewInt(20),
+						},
+						DisableAutoRetire:  true,
+						DisablePartialFill: true,
+						RetirementLocation: "foo",
+					},
+				},
+			},
+			expErr: true,
+		},
 		"invalid: bad expiration": {
 			src: MsgBuy{
 				Buyer: a1.String(),

@@ -504,6 +504,12 @@ func (m *MsgBuy) ValidateBasic() error {
 		if !order.BidPrice.Amount.IsPositive() {
 			return sdkerrors.ErrInvalidRequest.Wrap("bid price must be positive amount")
 		}
+
+		if order.RetirementLocation != "" {
+			if err := ValidateLocation(order.RetirementLocation); err != nil {
+				return err
+			}
+		}
 	}
 
 	return nil
