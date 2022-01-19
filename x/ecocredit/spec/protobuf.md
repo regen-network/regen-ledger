@@ -175,6 +175,7 @@ EventBuyOrderCreated is an event emitted when a buy order is created.
 | bid_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | bid price is the bid price for this buy order. A credit unit will be settled at a purchase price that is no more than the bid price. The buy order will fail if the buyer does not have enough funds available to complete the purchase. |
 | disable_auto_retire | [bool](#bool) |  | disable_auto_retire allows auto-retirement to be disabled. If it is set to true the credits will not auto-retire and can be resold assuming that the corresponding sell order has auto-retirement disabled. If the sell order hasn't disabled auto-retirement and the buy order tries to disable it, that buy order will fail. |
 | disable_partial_fill | [bool](#bool) |  | disable_partial_fill disables the default behavior of partially filling buy orders if the requested quantity is not available. |
+| retirement_location | [string](#string) |  | retirement_location is the optional retirement location for the credits which will be used only if disable_auto_retire is false. |
 
 
 
@@ -1549,6 +1550,7 @@ Order is a buy order.
 | bid_price | [cosmos.base.v1beta1.Coin](#cosmos.base.v1beta1.Coin) |  | bid price is the bid price for this buy order. A credit unit will be settled at a purchase price that is no more than the bid price. The buy order will fail if the buyer does not have enough funds available to complete the purchase. |
 | disable_auto_retire | [bool](#bool) |  | disable_auto_retire allows auto-retirement to be disabled. If it is set to true the credits will not auto-retire and can be resold assuming that the corresponding sell order has auto-retirement disabled. If the sell order hasn't disabled auto-retirement and the buy order tries to disable it, that buy order will fail. |
 | disable_partial_fill | [bool](#bool) |  | disable_partial_fill disables the default behavior of partially filling buy orders if the requested quantity is not available. |
+| retirement_location | [string](#string) |  | retirement_location is the optional retirement location for the credits which will be used only if disable_auto_retire is false. |
 
 
 

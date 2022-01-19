@@ -490,22 +490,28 @@ func (m *MsgBuy) ValidateBasic() error {
 		return sdkerrors.ErrInvalidAddress
 	}
 
-	for i := range m.Orders {
+	for _, order := range m.Orders {
 
-		if _, err := math.NewPositiveDecFromString(m.Orders[i].Quantity); err != nil {
-			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", m.Orders[i].Quantity)
+		if _, err := math.NewPositiveDecFromString(order.Quantity); err != nil {
+			return sdkerrors.Wrapf(err, "quantity must be positive decimal: %s", order.Quantity)
 		}
 
-		if m.Orders[i].BidPrice == nil {
+		if order.BidPrice == nil {
 			return sdkerrors.ErrInvalidRequest.Wrap("bid price cannot be empty")
 		}
 
-		if err := m.Orders[i].BidPrice.Validate(); err != nil {
+		if err := order.BidPrice.Validate(); err != nil {
 			return err
 		}
 
-		if !m.Orders[i].BidPrice.Amount.IsPositive() {
+		if !order.BidPrice.Amount.IsPositive() {
 			return sdkerrors.ErrInvalidRequest.Wrap("bid price must be positive amount")
+		}
+
+		if order.RetirementLocation != "" {
+			if err := ValidateLocation(order.RetirementLocation); err != nil {
+				return err
+			}
 		}
 	}
 
