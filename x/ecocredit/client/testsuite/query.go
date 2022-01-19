@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
@@ -165,20 +166,20 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 			expectedErrMsg: "Error: accepts 1 arg(s), received 2",
 		},
 		{
-			name:           "invalid class id",
-			args:           []string{"abcde"},
+			name:           "invalid project id",
+			args:           []string{"abcd-e"},
 			expectErr:      true,
-			expectedErrMsg: "class ID didn't match the format",
+			expectedErrMsg: "invalid project id",
 		},
 		{
-			name:                "existing class no batches",
-			args:                []string{"C02"},
+			name:                "existing project no batches",
+			args:                []string{"P02"},
 			expectErr:           false,
 			expectedBatchDenoms: []string{},
 		},
 		{
 			name:      "no pagination flags",
-			args:      []string{"C01"},
+			args:      []string{"P01"},
 			expectErr: false,
 			expectedBatchDenoms: []string{
 				"C01-20210101-20210201-001",
@@ -190,7 +191,7 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 		{
 			name: "limit 2",
 			args: []string{
-				"C01",
+				"P01",
 				fmt.Sprintf("--%s=2", flags.FlagLimit),
 			},
 			expectErr: false,
@@ -202,7 +203,7 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 		{
 			name: "limit 2, offset 2",
 			args: []string{
-				"C01",
+				"P01",
 				fmt.Sprintf("--%s=2", flags.FlagLimit),
 				fmt.Sprintf("--%s=2", flags.FlagOffset),
 			},
@@ -476,7 +477,7 @@ func (s *IntegrationTestSuite) TestQueryParams() {
 	clientCtx.OutputFormat = "JSON"
 	require := s.Require()
 
-	cmd := client.QueryParams()
+	cmd := client.QueryParamsCmd()
 	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{})
 	require.NoError(err)
 
@@ -484,4 +485,599 @@ func (s *IntegrationTestSuite) TestQueryParams() {
 	json.Unmarshal(out.Bytes(), &params)
 
 	require.Equal(ecocredit.DefaultParams(), *params.Params)
+}
+
+func (s *IntegrationTestSuite) TestQuerySellOrder() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+		expOrder  *ecocredit.SellOrder
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "invalid sell order",
+			args:      []string{"foo"},
+			expErr:    true,
+			expErrMsg: "invalid sell order",
+		},
+		{
+			name:      "valid",
+			args:      []string{"1"},
+			expErr:    false,
+			expErrMsg: "",
+			expOrder: &ecocredit.SellOrder{
+				OrderId:           1,
+				Owner:             val.Address.String(),
+				BatchDenom:        batchDenom,
+				Quantity:          "1",
+				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+				DisableAutoRetire: false,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QuerySellOrderCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res ecocredit.QuerySellOrderResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(tc.expOrder, res.SellOrder)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQuerySellOrders() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+		expOrders []*ecocredit.SellOrder
+	}{
+		{
+			name:      "too many args",
+			args:      []string{"foo"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 0 arg(s), received 1",
+		},
+		{
+			name:      "valid",
+			args:      []string{},
+			expErr:    false,
+			expErrMsg: "",
+			expOrders: s.sellOrders,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QuerySellOrdersCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res ecocredit.QuerySellOrdersResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(tc.expOrders, res.SellOrders)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQuerySellOrdersByAddress() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+		expOrders []*ecocredit.SellOrder
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "invalid address",
+			args:      []string{"foo"},
+			expErr:    true,
+			expErrMsg: "invalid request",
+		},
+		{
+			name:      "valid",
+			args:      []string{val.Address.String()},
+			expErr:    false,
+			expErrMsg: "",
+			expOrders: s.sellOrders,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QuerySellOrdersByAddressCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res ecocredit.QuerySellOrdersByAddressResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(tc.expOrders, res.SellOrders)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQuerySellOrdersByBatchDenom() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+		expOrders []*ecocredit.SellOrder
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "invalid denom",
+			args:      []string{"foo"},
+			expErr:    true,
+			expErrMsg: "invalid request",
+		},
+		{
+			name:      "valid",
+			args:      []string{batchDenom},
+			expErr:    false,
+			expErrMsg: "",
+			expOrders: s.sellOrders,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QuerySellOrdersByBatchDenomCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res ecocredit.QuerySellOrdersByBatchDenomResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(tc.expOrders, res.SellOrders)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryBuyOrder() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+		expOrder  *ecocredit.BuyOrder
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "invalid buy order",
+			args:      []string{"foo"},
+			expErr:    true,
+			expErrMsg: "invalid buy order",
+		},
+		// TODO: filtered buy orders required #623
+		//{
+		//	name:      "valid",
+		//	args:      []string{"1"},
+		//	expErr:    false,
+		//	expErrMsg: "",
+		//	expOrder: &ecocredit.BuyOrder{
+		//		BuyOrderId:        1,
+		//		Buyer:             val.Address.String(),
+		//		Quantity:          "1",
+		//		BidPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+		//		DisableAutoRetire: false,
+		//	},
+		//},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryBuyOrderCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res ecocredit.QueryBuyOrderResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(tc.expOrder, res.BuyOrder)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryBuyOrders() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+		expOrders []*ecocredit.BuyOrder
+	}{
+		{
+			name:      "too many args",
+			args:      []string{"foo"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 0 arg(s), received 1",
+		},
+		// TODO: filtered buy orders required #623
+		//{
+		//	name:      "valid",
+		//	args:      []string{},
+		//	expErr:    false,
+		//	expErrMsg: "",
+		//	expOrders: []*ecocredit.BuyOrder{
+		//		{
+		//			BuyOrderId:        1,
+		//			Buyer:             val.Address.String(),
+		//			Quantity:          "1",
+		//			BidPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+		//			DisableAutoRetire: false,
+		//		},
+		//		{
+		//			BuyOrderId:        2,
+		//			Buyer:             val.Address.String(),
+		//			Quantity:          "1",
+		//			BidPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+		//			DisableAutoRetire: false,
+		//		},
+		//		{
+		//			BuyOrderId:        3,
+		//			Buyer:             val.Address.String(),
+		//			Quantity:          "1",
+		//			BidPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+		//			DisableAutoRetire: false,
+		//		},
+		//	},
+		//},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryBuyOrdersCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res ecocredit.QueryBuyOrdersResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(tc.expOrders, res.BuyOrders)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryBuyOrdersByAddress() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+		expOrders []*ecocredit.BuyOrder
+	}{
+		{
+			name:      "missing args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "too many args",
+			args:      []string{"foo", "bar"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 2",
+		},
+		{
+			name:      "invalid address",
+			args:      []string{"foo"},
+			expErr:    true,
+			expErrMsg: "invalid request",
+		},
+		// TODO: filtered buy orders required #623
+		//{
+		//	name:      "valid",
+		//	args:      []string{val.Address.String()},
+		//	expErr:    false,
+		//	expErrMsg: "",
+		//	expOrders: []*ecocredit.BuyOrder{
+		//		{
+		//			BuyOrderId:        1,
+		//			Buyer:             val.Address.String(),
+		//			Quantity:          "1",
+		//			BidPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+		//			DisableAutoRetire: false,
+		//		},
+		//		{
+		//			BuyOrderId:        2,
+		//			Buyer:             val.Address.String(),
+		//			Quantity:          "1",
+		//			BidPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+		//			DisableAutoRetire: false,
+		//		},
+		//		{
+		//			BuyOrderId:        3,
+		//			Buyer:             val.Address.String(),
+		//			Quantity:          "1",
+		//			BidPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+		//			DisableAutoRetire: false,
+		//		},
+		//	},
+		//},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryBuyOrdersByAddressCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res ecocredit.QueryBuyOrdersByAddressResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(tc.expOrders, res.BuyOrders)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryAllowedAskDenoms() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+		expDenoms []*ecocredit.AskDenom
+	}{
+		{
+			name:      "too many args",
+			args:      []string{"foo"},
+			expErr:    true,
+			expErrMsg: "Error: accepts 0 arg(s), received 1",
+		},
+		// TODO: AllowAskDenom not yet implemented #624
+		//{
+		//	name:      "valid",
+		//	args:      []string{},
+		//	expErr:    false,
+		//	expErrMsg: "",
+		//	expDenoms: []*ecocredit.AskDenom{
+		//		{
+		//			Denom:        "regen",
+		//			DisplayDenom: "uregen",
+		//			Exponent:     6,
+		//		},
+		//	},
+		//},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryAllowedAskDenomsCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res ecocredit.QueryAllowedAskDenomsResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Equal(tc.expDenoms, res.AskDenoms)
+			}
+		})
+	}
+}
+
+func (s *IntegrationTestSuite) TestQueryProjects() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+		expLen    int
+	}{
+		{
+			name:      "no args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "no projects found ",
+			args:      []string{"CA10"},
+			expErr:    false,
+			expErrMsg: "",
+		},
+		{
+			name:      "valid query",
+			args:      []string{"C01"},
+			expErr:    false,
+			expErrMsg: "",
+			expLen:    3,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryProjectsCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				s.Require().Error(err)
+				s.Require().Contains(out.String(), tc.expErrMsg)
+			} else {
+				s.Require().NoError(err, out.String())
+
+				var res ecocredit.QueryProjectsResponse
+				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				s.Require().Len(res.Projects, tc.expLen)
+			}
+		})
+	}
+
+}
+
+func (s *IntegrationTestSuite) TestQueryProjectInfo() {
+	val := s.network.Validators[0]
+	clientCtx := val.ClientCtx
+	clientCtx.OutputFormat = "JSON"
+	require := s.Require()
+
+	cmd := client.QueryProjectsCmd()
+	out, err := cli.ExecTestCLICmd(clientCtx, cmd, []string{"C01"})
+	require.NoError(err)
+	var res ecocredit.QueryProjectsResponse
+	require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+	require.GreaterOrEqual(len(res.Projects), 1)
+	project := res.Projects[0]
+
+	testCases := []struct {
+		name      string
+		args      []string
+		expErr    bool
+		expErrMsg string
+	}{
+		{
+			name:      "no args",
+			args:      []string{},
+			expErr:    true,
+			expErrMsg: "Error: accepts 1 arg(s), received 0",
+		},
+		{
+			name:      "invalid project id ",
+			args:      []string{"A@a@"},
+			expErr:    true,
+			expErrMsg: "invalid project id",
+		},
+		{
+			name:      "not found",
+			args:      []string{"P100"},
+			expErr:    true,
+			expErrMsg: "not found",
+		},
+		{
+			name:      "valid query",
+			args:      []string{project.ProjectId},
+			expErr:    false,
+			expErrMsg: "",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			cmd := client.QueryProjectInfoCmd()
+			out, err := cli.ExecTestCLICmd(clientCtx, cmd, tc.args)
+			if tc.expErr {
+				require.Error(err)
+				require.Contains(out.String(), tc.expErrMsg)
+			} else {
+				require.NoError(err, out.String())
+
+				var res ecocredit.QueryProjectInfoResponse
+				require.NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), &res))
+				require.Equal(project, res.Info)
+			}
+		})
+	}
+
 }
