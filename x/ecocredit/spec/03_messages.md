@@ -83,7 +83,7 @@ In order to support use cases when credits are to be immediately retired upon is
 
 ## MsgSell
 
-`Sell` creates one or more sell orders. Sell orders can be created in batches.
+`Sell` creates one or more sell orders (i.e. sell orders are created in batches).
 
 +++ https://github.com/regen-network/regen-ledger/blob/a70af9b4d5da6cf065eb23232ba8020769249688/proto/regen/ecocredit/v1alpha1/tx.proto#L292-L324
 
@@ -96,7 +96,7 @@ In order to support use cases when credits are to be immediately retired upon is
 
 ## MsgUpdateSellOrders
 
-`UpdateSellOrders` updates one or more sell orders...
+`UpdateSellOrders` updates one or more sell orders (i.e. sell orders are updated in batches).
 
 +++ https://github.com/regen-network/regen-ledger/blob/a70af9b4d5da6cf065eb23232ba8020769249688/proto/regen/ecocredit/v1alpha1/tx.proto#L333-L358
 
@@ -108,7 +108,7 @@ In order to support use cases when credits are to be immediately retired upon is
 
 ## MsgBuy
 
-`MsgBuy` creates one or more buy orders...
+`MsgBuy` creates one or more buy orders (i.e. buy orders are created in batches).
 
 +++ https://github.com/regen-network/regen-ledger/blob/a70af9b4d5da6cf065eb23232ba8020769249688/proto/regen/ecocredit/v1alpha1/tx.proto#L363-L391
 
@@ -120,7 +120,7 @@ In order to support use cases when credits are to be immediately retired upon is
 
 ## MsgAllowAskDenom
 
-`AllowAskDenom` adds a denom and details about the denom...
+`AllowAskDenom` is a governance operation which authorizes a new ask denom to be used in sell orders.
 
 +++ https://github.com/regen-network/regen-ledger/blob/a70af9b4d5da6cf065eb23232ba8020769249688/proto/regen/ecocredit/v1alpha1/tx.proto#L430-L444
 
