@@ -83,7 +83,7 @@ In order to support use cases when credits are to be immediately retired upon is
 
 ## MsgSell
 
-`Sell` creates one or more sell orders. Sell orders can be created in batches 
+`Sell` creates one or more sell orders. Sell orders can be created in batches.
 
 +++ https://github.com/regen-network/regen-ledger/blob/a70af9b4d5da6cf065eb23232ba8020769249688/proto/regen/ecocredit/v1alpha1/tx.proto#L292-L324
 
@@ -126,5 +126,5 @@ In order to support use cases when credits are to be immediately retired upon is
 
 ### Validation:
 
-- `root_address` must ba the address of the governance module, and its signature must be present in the transaction
+- `root_address` must be the address of the governance module
 - `denom` must be a valid denom
