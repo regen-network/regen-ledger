@@ -31,6 +31,14 @@ func (s serverImpl) InitGenesis(ctx types.Context, cdc codec.Codec, data json.Ra
 		return nil, errors.Wrap(err, "class-info")
 	}
 
+	if err := s.projectInfoTable.Import(ctx, genesisState.ProjectInfo, 0); err != nil {
+		return nil, errors.Wrap(err, "project-info")
+	}
+
+	if err := s.projectInfoSeq.InitVal(ctx, genesisState.ProjectSeqNum); err != nil {
+		return nil, errors.Wrap(err, "project seq")
+	}
+
 	if err := s.batchInfoTable.Import(ctx, genesisState.BatchInfo, 0); err != nil {
 		return nil, errors.Wrap(err, "batch-info")
 	}
@@ -142,6 +150,11 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 		return nil, errors.Wrap(err, "class-info")
 	}
 
+	var projectInfo []*ecocredit.ProjectInfo
+	if _, err := s.projectInfoTable.Export(ctx, &projectInfo); err != nil {
+		return nil, errors.Wrap(err, "project-info")
+	}
+
 	var batchInfo []*ecocredit.BatchInfo
 	if _, err := s.batchInfoTable.Export(ctx, &batchInfo); err != nil {
 		return nil, errors.Wrap(err, "batch-info")
@@ -216,13 +229,16 @@ func (s serverImpl) ExportGenesis(ctx types.Context, cdc codec.Codec) (json.RawM
 	}
 
 	gs := &ecocredit.GenesisState{
-		Params:    params,
-		ClassInfo: classInfo,
-		BatchInfo: batchInfo,
-		Sequences: sequences,
-		Balances:  balances,
-		Supplies:  supplies,
+		Params:      params,
+		ClassInfo:   classInfo,
+		BatchInfo:   batchInfo,
+		Sequences:   sequences,
+		Balances:    balances,
+		Supplies:    supplies,
+		ProjectInfo: projectInfo,
 	}
+
+	gs.ProjectSeqNum = s.projectInfoSeq.CurVal(ctx)
 
 	return cdc.MustMarshalJSON(gs), nil
 }

@@ -7,6 +7,7 @@ import (
 )
 
 func (s *IntegrationTestSuite) TestQueryClasses() {
+	require := s.Require()
 
 	testCases := []struct {
 		name      string
@@ -28,7 +29,6 @@ func (s *IntegrationTestSuite) TestQueryClasses() {
 		},
 	}
 
-	require := s.Require()
 	for _, tc := range testCases {
 		s.Run(fmt.Sprintf("Case %s", tc.name), func() {
 			_, err := s.queryClient.Classes(s.ctx, tc.request)
@@ -112,15 +112,15 @@ func (s *IntegrationTestSuite) TestQueryBatches() {
 			"empty request",
 		},
 		{
-			"empty class id",
+			"empty project id",
 			&ecocredit.QueryBatchesRequest{},
 			true,
-			"class ID didn't match the format",
+			"invalid project id",
 		},
 		{
 			"valid test case",
 			&ecocredit.QueryBatchesRequest{
-				ClassId: "C04",
+				ProjectId: "P01",
 			},
 			false,
 			"",
