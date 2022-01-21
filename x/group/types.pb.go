@@ -7,11 +7,10 @@ import (
 	bytes "bytes"
 	fmt "fmt"
 	_ "github.com/cosmos/cosmos-proto"
-	types "github.com/cosmos/cosmos-sdk/codec/types"
+	types1 "github.com/cosmos/cosmos-sdk/codec/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
-	durationpb "google.golang.org/protobuf/types/known/durationpb"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	types "github.com/gogo/protobuf/types"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -293,7 +292,7 @@ type ThresholdDecisionPolicy struct {
 	Threshold string `protobuf:"bytes,1,opt,name=threshold,proto3" json:"threshold,omitempty"`
 	// timeout is the duration from submission of a proposal to the end of voting period
 	// Within this times votes and exec messages can be submitted.
-	Timeout durationpb.Duration `protobuf:"bytes,2,opt,name=timeout,proto3" json:"timeout"`
+	Timeout types.Duration `protobuf:"bytes,2,opt,name=timeout,proto3" json:"timeout"`
 }
 
 func (m *ThresholdDecisionPolicy) Reset()         { *m = ThresholdDecisionPolicy{} }
@@ -336,11 +335,11 @@ func (m *ThresholdDecisionPolicy) GetThreshold() string {
 	return ""
 }
 
-func (m *ThresholdDecisionPolicy) GetTimeout() durationpb.Duration {
+func (m *ThresholdDecisionPolicy) GetTimeout() types.Duration {
 	if m != nil {
 		return m.Timeout
 	}
-	return durationpb.Duration{}
+	return types.Duration{}
 }
 
 // GroupInfo represents the high-level on-chain information for a group.
@@ -497,7 +496,7 @@ type GroupAccountInfo struct {
 	// would create a different result on a running proposal.
 	Version uint64 `protobuf:"varint,5,opt,name=version,proto3" json:"version,omitempty"`
 	// decision_policy specifies the group account's decision policy.
-	DecisionPolicy *types.Any `protobuf:"bytes,6,opt,name=decision_policy,json=decisionPolicy,proto3" json:"decision_policy,omitempty"`
+	DecisionPolicy *types1.Any `protobuf:"bytes,6,opt,name=decision_policy,json=decisionPolicy,proto3" json:"decision_policy,omitempty"`
 	// derivation_key is the "derivation" key of the group account,
 	// which is needed to derive the group root module key and execute proposals.
 	DerivationKey []byte `protobuf:"bytes,7,opt,name=derivation_key,json=derivationKey,proto3" json:"derivation_key,omitempty"`
@@ -550,7 +549,7 @@ type Proposal struct {
 	// proposers are the account addresses of the proposers.
 	Proposers []string `protobuf:"bytes,4,rep,name=proposers,proto3" json:"proposers,omitempty"`
 	// submitted_at is a timestamp specifying when a proposal was submitted.
-	SubmittedAt timestamppb.Timestamp `protobuf:"bytes,5,opt,name=submitted_at,json=submittedAt,proto3" json:"submitted_at"`
+	SubmittedAt types.Timestamp `protobuf:"bytes,5,opt,name=submitted_at,json=submittedAt,proto3" json:"submitted_at"`
 	// group_version tracks the version of the group that this proposal corresponds to.
 	// When group membership is changed, existing proposals from previous group versions will become invalid.
 	GroupVersion uint64 `protobuf:"varint,6,opt,name=group_version,json=groupVersion,proto3" json:"group_version,omitempty"`
@@ -567,11 +566,11 @@ type Proposal struct {
 	// timeout is the timestamp of the block where the proposal execution times out. Header times of the votes and execution messages
 	// must be before this end time to be included in the election. After the timeout timestamp the proposal can not be
 	// executed anymore and should be considered pending delete.
-	Timeout timestamppb.Timestamp `protobuf:"bytes,11,opt,name=timeout,proto3" json:"timeout"`
+	Timeout types.Timestamp `protobuf:"bytes,11,opt,name=timeout,proto3" json:"timeout"`
 	// executor_result is the final result based on the votes and election rule. Initial value is NotRun.
 	ExecutorResult Proposal_ExecutorResult `protobuf:"varint,12,opt,name=executor_result,json=executorResult,proto3,enum=regen.group.v1alpha1.Proposal_ExecutorResult" json:"executor_result,omitempty"`
 	// msgs is a list of Msgs that will be executed if the proposal passes.
-	Msgs []*types.Any `protobuf:"bytes,13,rep,name=msgs,proto3" json:"msgs,omitempty"`
+	Msgs []*types1.Any `protobuf:"bytes,13,rep,name=msgs,proto3" json:"msgs,omitempty"`
 }
 
 func (m *Proposal) Reset()         { *m = Proposal{} }
@@ -663,7 +662,7 @@ type Vote struct {
 	// metadata is any arbitrary metadata to attached to the vote.
 	Metadata []byte `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
 	// submitted_at is the timestamp when the vote was submitted.
-	SubmittedAt timestamppb.Timestamp `protobuf:"bytes,5,opt,name=submitted_at,json=submittedAt,proto3" json:"submitted_at"`
+	SubmittedAt types.Timestamp `protobuf:"bytes,5,opt,name=submitted_at,json=submittedAt,proto3" json:"submitted_at"`
 }
 
 func (m *Vote) Reset()         { *m = Vote{} }
@@ -727,11 +726,11 @@ func (m *Vote) GetMetadata() []byte {
 	return nil
 }
 
-func (m *Vote) GetSubmittedAt() timestamppb.Timestamp {
+func (m *Vote) GetSubmittedAt() types.Timestamp {
 	if m != nil {
 		return m.SubmittedAt
 	}
-	return timestamppb.Timestamp{}
+	return types.Timestamp{}
 }
 
 func init() {
@@ -2491,7 +2490,7 @@ func (m *GroupAccountInfo) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.DecisionPolicy == nil {
-				m.DecisionPolicy = &types.Any{}
+				m.DecisionPolicy = &types1.Any{}
 			}
 			if err := m.DecisionPolicy.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -2924,7 +2923,7 @@ func (m *Proposal) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Msgs = append(m.Msgs, &types.Any{})
+			m.Msgs = append(m.Msgs, &types1.Any{})
 			if err := m.Msgs[len(m.Msgs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}

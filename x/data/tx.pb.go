@@ -9,10 +9,10 @@ import (
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
+	types "github.com/gogo/protobuf/types"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -89,7 +89,7 @@ func (m *MsgAnchorData) GetHash() *ContentHash {
 // MsgAnchorData is the Msg/AnchorData response type.
 type MsgAnchorDataResponse struct {
 	// timestamp is the timestamp of the block at which the data was anchored.
-	Timestamp *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Timestamp *types.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	// iri is the IRI of the data that was anchored.
 	Iri string `protobuf:"bytes,2,opt,name=iri,proto3" json:"iri,omitempty"`
 }
@@ -127,7 +127,7 @@ func (m *MsgAnchorDataResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgAnchorDataResponse proto.InternalMessageInfo
 
-func (m *MsgAnchorDataResponse) GetTimestamp() *timestamppb.Timestamp {
+func (m *MsgAnchorDataResponse) GetTimestamp() *types.Timestamp {
 	if m != nil {
 		return m.Timestamp
 	}
@@ -839,7 +839,7 @@ func (m *MsgAnchorDataResponse) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Timestamp == nil {
-				m.Timestamp = &timestamppb.Timestamp{}
+				m.Timestamp = &types.Timestamp{}
 			}
 			if err := m.Timestamp.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
