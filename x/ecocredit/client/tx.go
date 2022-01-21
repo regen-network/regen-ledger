@@ -524,7 +524,6 @@ Parameters:
 				return err
 			}
 
-			// get the order owner from the --from flag
 			owner := clientCtx.GetFromAddress()
 
 			// declare orders array with ask price as string
@@ -541,33 +540,28 @@ Parameters:
 				return err
 			}
 
-			// declare orders array with ask price as sdk.Coin
 			orders := make([]*ecocredit.MsgSell_Order, len(strOrders))
 
 			// loop through orders with ask price as string
-			for i, order := range strOrders {
+			for i, o := range strOrders {
 
-				// parse and normalize ask price as sdk.Coin
-				askPrice, err := sdk.ParseCoinNormalized(order.AskPrice)
+				askPrice, err := sdk.ParseCoinNormalized(o.AskPrice)
 				if err != nil {
 					return err
 				}
 
 				// set order with ask price as sdk.Coin
 				orders[i] = &ecocredit.MsgSell_Order{
-					BatchDenom:        order.BatchDenom,
+					BatchDenom:        o.BatchDenom,
 					AskPrice:          &askPrice,
-					Quantity:          order.Quantity,
-					DisableAutoRetire: order.DisableAutoRetire,
+					Quantity:          o.Quantity,
+					DisableAutoRetire: o.DisableAutoRetire,
 				}
 
-				// parse and set expiration
-				if order.Expiration != "" {
-					expiration, err := ParseDate("expiration", order.Expiration)
-					if err != nil {
+				if o.Expiration != "" {
+					if err := parseAndSetDate(&orders[i].Expiration, "expiration", o.Expiration); err != nil {
 						return err
 					}
-					orders[i].Expiration = &expiration
 				}
 			}
 
@@ -624,16 +618,16 @@ Parameters:
 			updates := make([]*ecocredit.MsgUpdateSellOrders_Update, len(strUpdates))
 
 			// loop through updates with new ask price as string
-			for i, update := range strUpdates {
+			for i, u := range strUpdates {
 
 				// parse sell order id
-				sellOrderId, err := strconv.ParseUint(update.SellOrderId, 10, 64)
+				sellOrderId, err := strconv.ParseUint(u.SellOrderId, 10, 64)
 				if err != nil {
 					return ecocredit.ErrInvalidSellOrder.Wrap(err.Error())
 				}
 
 				// parse and normalize new ask price as sdk.Coin
-				askPrice, err := sdk.ParseCoinNormalized(update.NewAskPrice)
+				askPrice, err := sdk.ParseCoinNormalized(u.NewAskPrice)
 				if err != nil {
 					return err
 				}
@@ -642,17 +636,14 @@ Parameters:
 				updates[i] = &ecocredit.MsgUpdateSellOrders_Update{
 					SellOrderId:       sellOrderId,
 					NewAskPrice:       &askPrice,
-					NewQuantity:       update.NewQuantity,
-					DisableAutoRetire: update.DisableAutoRetire,
+					NewQuantity:       u.NewQuantity,
+					DisableAutoRetire: u.DisableAutoRetire,
 				}
 
-				// parse and set expiration
-				if update.NewExpiration != "" {
-					expiration, err := ParseDate("expiration", update.NewExpiration)
-					if err != nil {
+				if u.NewExpiration != "" {
+					if err := parseAndSetDate(&updates[i].NewExpiration, "expiration", u.NewExpiration); err != nil {
 						return err
 					}
-					updates[i].NewExpiration = &expiration
 				}
 			}
 
