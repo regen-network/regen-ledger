@@ -6,7 +6,7 @@ package data
 import (
 	fmt "fmt"
 	proto "github.com/gogo/protobuf/proto"
-	types "github.com/gogo/protobuf/types"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -74,7 +74,7 @@ type GenesisContentEntry struct {
 	// hash is the ContentHash
 	Hash *ContentHash `protobuf:"bytes,1,opt,name=hash,proto3" json:"hash,omitempty"`
 	// timestamp is the anchor Timestamp
-	Timestamp *types.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Timestamp *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	// signers are the signers, if any
 	Signers []*SignerEntry `protobuf:"bytes,3,rep,name=signers,proto3" json:"signers,omitempty"`
 }
@@ -119,7 +119,7 @@ func (m *GenesisContentEntry) GetHash() *ContentHash {
 	return nil
 }
 
-func (m *GenesisContentEntry) GetTimestamp() *types.Timestamp {
+func (m *GenesisContentEntry) GetTimestamp() *timestamppb.Timestamp {
 	if m != nil {
 		return m.Timestamp
 	}
@@ -498,7 +498,7 @@ func (m *GenesisContentEntry) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.Timestamp == nil {
-				m.Timestamp = &types.Timestamp{}
+				m.Timestamp = &timestamppb.Timestamp{}
 			}
 			if err := m.Timestamp.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

@@ -6,11 +6,11 @@ package ecocredit
 import (
 	fmt "fmt"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
-	types1 "github.com/cosmos/cosmos-sdk/types"
+	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
-	_ "github.com/gogo/protobuf/types"
 	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -532,7 +532,7 @@ type SellOrder struct {
 	// ask_price is the price the seller is asking for each unit of the
 	// batch_denom. Each credit unit of the batch will be sold for at least the
 	// ask_price or more.
-	AskPrice *types1.Coin `protobuf:"bytes,5,opt,name=ask_price,json=askPrice,proto3" json:"ask_price,omitempty"`
+	AskPrice *types.Coin `protobuf:"bytes,5,opt,name=ask_price,json=askPrice,proto3" json:"ask_price,omitempty"`
 	// disable_auto_retire disables auto-retirement of credits which allows a
 	// buyer to disable auto-retirement in their buy order enabling them to
 	// resell the credits to another buyer.
@@ -600,7 +600,7 @@ func (m *SellOrder) GetQuantity() string {
 	return ""
 }
 
-func (m *SellOrder) GetAskPrice() *types1.Coin {
+func (m *SellOrder) GetAskPrice() *types.Coin {
 	if m != nil {
 		return m.AskPrice
 	}
@@ -630,7 +630,7 @@ type BuyOrder struct {
 	// settled at a purchase price that is no more than the bid price. The
 	// buy order will fail if the buyer does not have enough funds available
 	// to complete the purchase.
-	BidPrice *types1.Coin `protobuf:"bytes,5,opt,name=bid_price,json=bidPrice,proto3" json:"bid_price,omitempty"`
+	BidPrice *types.Coin `protobuf:"bytes,5,opt,name=bid_price,json=bidPrice,proto3" json:"bid_price,omitempty"`
 	// disable_auto_retire allows auto-retirement to be disabled. If it is set to true
 	// the credits will not auto-retire and can be resold assuming that the
 	// corresponding sell order has auto-retirement disabled. If the sell order
@@ -703,7 +703,7 @@ func (m *BuyOrder) GetQuantity() string {
 	return ""
 }
 
-func (m *BuyOrder) GetBidPrice() *types1.Coin {
+func (m *BuyOrder) GetBidPrice() *types.Coin {
 	if m != nil {
 		return m.BidPrice
 	}
@@ -3790,7 +3790,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.CreditClassFee = append(m.CreditClassFee, types1.Coin{})
+			m.CreditClassFee = append(m.CreditClassFee, types.Coin{})
 			if err := m.CreditClassFee[len(m.CreditClassFee)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
@@ -4351,7 +4351,7 @@ func (m *SellOrder) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.AskPrice == nil {
-				m.AskPrice = &types1.Coin{}
+				m.AskPrice = &types.Coin{}
 			}
 			if err := m.AskPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -4579,7 +4579,7 @@ func (m *BuyOrder) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.BidPrice == nil {
-				m.BidPrice = &types1.Coin{}
+				m.BidPrice = &types.Coin{}
 			}
 			if err := m.BidPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

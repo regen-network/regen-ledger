@@ -6,15 +6,15 @@ package ecocredit
 import (
 	context "context"
 	fmt "fmt"
-	types1 "github.com/cosmos/cosmos-sdk/types"
+	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
-	_ "github.com/gogo/protobuf/types"
 	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	io "io"
 	math "math"
 	math_bits "math/bits"
@@ -1379,7 +1379,7 @@ type MsgSell_Order struct {
 	// ask_price is the price the seller is asking for each unit of the
 	// batch_denom. Each credit unit of the batch will be sold for at least the
 	// ask_price or more.
-	AskPrice *types1.Coin `protobuf:"bytes,3,opt,name=ask_price,json=askPrice,proto3" json:"ask_price,omitempty"`
+	AskPrice *types.Coin `protobuf:"bytes,3,opt,name=ask_price,json=askPrice,proto3" json:"ask_price,omitempty"`
 	// disable_auto_retire disables auto-retirement of credits which allows a
 	// buyer to disable auto-retirement in their buy order enabling them to
 	// resell the credits to another buyer.
@@ -1433,7 +1433,7 @@ func (m *MsgSell_Order) GetQuantity() string {
 	return ""
 }
 
-func (m *MsgSell_Order) GetAskPrice() *types1.Coin {
+func (m *MsgSell_Order) GetAskPrice() *types.Coin {
 	if m != nil {
 		return m.AskPrice
 	}
@@ -1556,7 +1556,7 @@ type MsgUpdateSellOrders_Update struct {
 	// is set to zero then the order is cancelled.
 	NewQuantity string `protobuf:"bytes,2,opt,name=new_quantity,json=newQuantity,proto3" json:"new_quantity,omitempty"`
 	// new_ask_price is the new ask price for this sell order
-	NewAskPrice *types1.Coin `protobuf:"bytes,3,opt,name=new_ask_price,json=newAskPrice,proto3" json:"new_ask_price,omitempty"`
+	NewAskPrice *types.Coin `protobuf:"bytes,3,opt,name=new_ask_price,json=newAskPrice,proto3" json:"new_ask_price,omitempty"`
 	// disable_auto_retire updates the disable_auto_retire field in the sell order.
 	DisableAutoRetire bool `protobuf:"varint,4,opt,name=disable_auto_retire,json=disableAutoRetire,proto3" json:"disable_auto_retire,omitempty"`
 }
@@ -1608,7 +1608,7 @@ func (m *MsgUpdateSellOrders_Update) GetNewQuantity() string {
 	return ""
 }
 
-func (m *MsgUpdateSellOrders_Update) GetNewAskPrice() *types1.Coin {
+func (m *MsgUpdateSellOrders_Update) GetNewAskPrice() *types.Coin {
 	if m != nil {
 		return m.NewAskPrice
 	}
@@ -1726,7 +1726,7 @@ type MsgBuy_Order struct {
 	// settled at a purchase price that is no more than the bid price. The
 	// buy order will fail if the buyer does not have enough funds available
 	// to complete the purchase.
-	BidPrice *types1.Coin `protobuf:"bytes,3,opt,name=bid_price,json=bidPrice,proto3" json:"bid_price,omitempty"`
+	BidPrice *types.Coin `protobuf:"bytes,3,opt,name=bid_price,json=bidPrice,proto3" json:"bid_price,omitempty"`
 	// disable_auto_retire allows auto-retirement to be disabled. If it is set to true
 	// the credits will not auto-retire and can be resold assuming that the
 	// corresponding sell order has auto-retirement disabled. If the sell order
@@ -1788,7 +1788,7 @@ func (m *MsgBuy_Order) GetQuantity() string {
 	return ""
 }
 
-func (m *MsgBuy_Order) GetBidPrice() *types1.Coin {
+func (m *MsgBuy_Order) GetBidPrice() *types.Coin {
 	if m != nil {
 		return m.BidPrice
 	}
@@ -8984,7 +8984,7 @@ func (m *MsgSell_Order) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.AskPrice == nil {
-				m.AskPrice = &types1.Coin{}
+				m.AskPrice = &types.Coin{}
 			}
 			if err := m.AskPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -9392,7 +9392,7 @@ func (m *MsgUpdateSellOrders_Update) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.NewAskPrice == nil {
-				m.NewAskPrice = &types1.Coin{}
+				m.NewAskPrice = &types.Coin{}
 			}
 			if err := m.NewAskPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -9741,7 +9741,7 @@ func (m *MsgBuy_Order) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if m.BidPrice == nil {
-				m.BidPrice = &types1.Coin{}
+				m.BidPrice = &types.Coin{}
 			}
 			if err := m.BidPrice.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
