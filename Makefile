@@ -10,7 +10,7 @@ BUILDDIR ?= $(CURDIR)/build
 APP_DIR = ./app
 MOCKS_DIR = $(CURDIR)/tests/mocks
 HTTPS_GIT := https://github.com/regen-network/regen-ledger.git
-DOCKER_BUF := docker run -v $(shell pwd):/workspace --workdir /workspace bufbuild/buf
+DOCKER_BUF := docker run -v $(shell pwd):/workspace --workdir /workspace bufbuild/buf:1.0.0-rc11
 PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
 DOCKER := $(shell which docker)
 
