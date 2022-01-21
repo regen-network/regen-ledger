@@ -51,99 +51,83 @@ func (s *USuite) TestExpiration() {
 
 	before := s.startTime.Add(time.Hour * 24)
 	expiration := s.startTime.Add(time.Hour * 48)
+	expiration2 := s.startTime.Add(time.Hour * 50)
 	after := s.startTime.Add(time.Hour * 72)
+	owner := s.owner.String()
 
-	// create sell order with expiration (order id: 1)
-	sell1 := &ecocredit.MsgSell_Order{
-		BatchDenom:        "C",
-		Quantity:          "1",
-		AskPrice:          &sdk.Coin{"token", sdk.NewInt(1)},
-		DisableAutoRetire: false,
-		Expiration:        &expiration,
-	}
-	_, err := s.server.createSellOrder(types.Context{s.sctx}, s.owner.String(), sell1)
-	require.NoError(err)
+	s1 := s.createSellOrder(&expiration, owner)
+	s2 := s.createSellOrder(&expiration2, owner)
+	s3 := s.createSellOrder(nil, owner)
 
-	// create sell order without expiration (order id: 2)
-	sell2 := &ecocredit.MsgSell_Order{
-		BatchDenom:        "C",
-		Quantity:          "1",
-		AskPrice:          &sdk.Coin{"token", sdk.NewInt(1)},
-		DisableAutoRetire: false,
-	}
-	_, err = s.server.createSellOrder(types.Context{s.sctx}, s.owner.String(), sell2)
-	require.NoError(err)
+	b1 := s.createBuyOrder(&expiration, owner)
+	b2 := s.createBuyOrder(&expiration2, owner)
+	b3 := s.createBuyOrder(nil, owner)
 
-	// create buy order with expiration (order id: 1)
-	buy1 := &ecocredit.MsgBuy_Order{
-		Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: 1}},
-		Quantity:          "1",
-		BidPrice:          &sdk.Coin{"token", sdk.NewInt(1)},
-		DisableAutoRetire: false,
-		Expiration:        &expiration,
-	}
-	_, err = s.server.createBuyOrder(types.Context{s.sctx}, s.owner.String(), buy1)
-	require.NoError(err)
+	/*
+	 * TEST1: set blockchain before the expiration time.
+	 * prunning shouldn't remove anything */
 
-	// create buy order without expiration (order id: 2)
-	buy2 := &ecocredit.MsgBuy_Order{
-		Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: 1}},
-		Quantity:          "1",
-		BidPrice:          &sdk.Coin{"token", sdk.NewInt(1)},
-		DisableAutoRetire: false,
-	}
-	_, err = s.server.createBuyOrder(types.Context{s.sctx}, s.owner.String(), buy2)
-	require.NoError(err)
-
-	// set block time before expiration
 	s.sctx = s.sctx.WithBlockTime(before)
-
 	s.server.PruneOrders(s.sctx)
 
-	require.True(s.server.sellOrderTable.Has(s.sctx, 1))
-	require.True(s.server.sellOrderTable.Has(s.sctx, 2))
-	require.True(s.server.buyOrderTable.Has(s.sctx, 1))
-	require.True(s.server.buyOrderTable.Has(s.sctx, 2))
+	require.True(s.server.sellOrderTable.Has(s.sctx, s1))
+	require.True(s.server.sellOrderTable.Has(s.sctx, s2))
+	require.True(s.server.sellOrderTable.Has(s.sctx, s3))
+	require.True(s.server.buyOrderTable.Has(s.sctx, b1))
+	require.True(s.server.buyOrderTable.Has(s.sctx, b2))
+	require.True(s.server.buyOrderTable.Has(s.sctx, b3))
 
-	// set block time after expiration
+	/*
+	 * TEST2: set blockchain at expiration time.
+	 * prunning remove orders <= expiration */
+
+	s.sctx = s.sctx.WithBlockTime(expiration)
+	s.server.PruneOrders(s.sctx)
+
+	require.False(s.server.sellOrderTable.Has(s.sctx, s1))
+	require.True(s.server.sellOrderTable.Has(s.sctx, s2))
+	require.True(s.server.sellOrderTable.Has(s.sctx, s3))
+	require.False(s.server.buyOrderTable.Has(s.sctx, b1))
+	require.True(s.server.buyOrderTable.Has(s.sctx, b2))
+	require.True(s.server.buyOrderTable.Has(s.sctx, b3))
+
 	s.sctx = s.sctx.WithBlockTime(after)
 
+	/*
+	 * TEST3: set blockchain at "after".
+	 * prunning remove all orders those with no expiration */
+
+	s.sctx = s.sctx.WithBlockTime(after)
 	s.server.PruneOrders(s.sctx)
 
-	require.False(s.server.sellOrderTable.Has(s.sctx, 1))
-	require.True(s.server.sellOrderTable.Has(s.sctx, 2))
-	require.False(s.server.buyOrderTable.Has(s.sctx, 1))
-	require.True(s.server.buyOrderTable.Has(s.sctx, 2))
+	require.False(s.server.sellOrderTable.Has(s.sctx, s2))
+	require.True(s.server.sellOrderTable.Has(s.sctx, s3))
+	require.False(s.server.buyOrderTable.Has(s.sctx, b2))
+	require.True(s.server.buyOrderTable.Has(s.sctx, b3))
+}
 
-	// create sell order with expiration (order id: 3)
-	sell3 := &ecocredit.MsgSell_Order{
+func (s *USuite) createSellOrder(expiration *time.Time, owner string) uint64 {
+	o := &ecocredit.MsgSell_Order{
 		BatchDenom:        "C",
 		Quantity:          "1",
 		AskPrice:          &sdk.Coin{"token", sdk.NewInt(1)},
 		DisableAutoRetire: false,
-		Expiration:        &expiration,
+		Expiration:        expiration,
 	}
-	_, err = s.server.createSellOrder(types.Context{s.sctx}, s.owner.String(), sell3)
-	require.NoError(err)
+	id, err := s.server.createSellOrder(types.Context{s.sctx}, owner, o)
+	s.Require().NoError(err)
+	return id
+}
 
-	// create buy order with expiration (order id: 3)
-	buy3 := &ecocredit.MsgBuy_Order{
+func (s *USuite) createBuyOrder(expiration *time.Time, owner string) uint64 {
+	o := &ecocredit.MsgBuy_Order{
 		Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: 1}},
 		Quantity:          "1",
 		BidPrice:          &sdk.Coin{"token", sdk.NewInt(1)},
 		DisableAutoRetire: false,
-		Expiration:        &expiration,
+		Expiration:        expiration,
 	}
-	_, err = s.server.createBuyOrder(types.Context{s.sctx}, s.owner.String(), buy3)
-	require.NoError(err)
-
-	// set block time at expiration
-	s.sctx = s.sctx.WithBlockTime(expiration)
-
-	s.server.PruneOrders(s.sctx)
-
-	require.True(s.server.sellOrderTable.Has(s.sctx, 2))
-	require.False(s.server.sellOrderTable.Has(s.sctx, 3))
-	require.True(s.server.buyOrderTable.Has(s.sctx, 2))
-	require.False(s.server.buyOrderTable.Has(s.sctx, 3))
+	id, err := s.server.createBuyOrder(types.Context{s.sctx}, owner, o)
+	s.Require().NoError(err)
+	return id
 }
