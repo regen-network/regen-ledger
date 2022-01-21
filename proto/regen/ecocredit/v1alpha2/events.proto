@@ -202,6 +202,10 @@ message EventBuyOrderCreated {
   // disable_partial_fill disables the default behavior of partially filling
   // buy orders if the requested quantity is not available.
   bool disable_partial_fill = 6;
+
+  // retirement_location is the optional retirement location for the credits
+  // which will be used only if disable_auto_retire is false.
+  string retirement_location = 7;
 }
 
 // EventBuyOrderFilled is an event emitted when a buy order is filled.

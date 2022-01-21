@@ -30,6 +30,9 @@ message GenesisState {
   // project_info is the list of projects.
   repeated ProjectInfo project_info = 7;
 
+  // project_seq_num is the project table orm.Sequence,
+  // it is used to generate the next project id.
+  uint64 project_seq_num = 8;
 }
 
 // Balance represents tradable or retired units of a credit batch with an
