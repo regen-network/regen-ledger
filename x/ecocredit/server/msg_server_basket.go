@@ -20,7 +20,7 @@ import (
 func (s serverImpl) CreateBasket(goCtx context.Context, req *ecocredit.MsgCreateBasket) (*ecocredit.MsgCreateBasketResponse, error) {
 	ctx := regentypes.UnwrapSDKContext(goCtx)
 
-	// construct the basket denom - ecocredit:basketName
+	// basket denom = name of basket? TODO(Tyler)
 	basketDenom := req.Name
 
 	// check if a basket with this name already exists
@@ -30,7 +30,7 @@ func (s serverImpl) CreateBasket(goCtx context.Context, req *ecocredit.MsgCreate
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("basket with name %s already exists", req.Name)
 	}
 
-	// TODO(Tyler): allow no basket criteria???
+	// TODO(Tyler): enforce criteria here
 	if req.BasketCriteria != nil {
 		if err := s.validateFilterData(ctx, req.BasketCriteria); err != nil {
 			return nil, sdkerrors.ErrInvalidRequest.Wrapf("invalid basket filter: %s", err.Error())
@@ -112,7 +112,7 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 			return nil, err
 		}
 
-		// TODO(Tyler): can filter be nil??
+		// TODO(Tyler): enforce criteria
 		if basket.BasketCriteria != nil {
 			// check that the credits meet the filter
 			if _, err = checkCreditMatchesFilter([]*ecocredit.Filter{basket.BasketCriteria}, *classInfo, batchInfo, *projectInfo, req.Owner); err != nil {
@@ -209,7 +209,6 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 
 	it := s.basketCreditsIterator(basket, store)
 
-	// TODO(Tyler): how do we handle request amounts with baskets that contain batches with different precision?
 	// loop over the balances and store them in a slice
 	for ; it.Valid(); it.Next() {
 		// get the denom and deconstruct it
@@ -300,7 +299,7 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 		}
 	}
 
-	// TODO(Tyler): should we cache the total amount of credits, regardless of batch, in the basket table? that way we can fail fast and avoid a lot of unnecessary calculations.
+	// TODO(Tyler): check bank supply to ensure this tx can be fulfilled
 	// check if we ended on zero. if it was not zero, the swap could not be fully executed, so we should error out.
 	if !creditsNeeded.IsZero() {
 		return nil, sdkerrors.ErrInsufficientFunds.Wrap("the basket does not have enough credits to complete this transaction")
@@ -348,7 +347,6 @@ func (s serverImpl) PickFromBasket(goCtx context.Context, req *ecocredit.MsgPick
 		return nil, err
 	}
 
-	// TODO(tyler): should the basket curator be able to pick even if its disabled?
 	if !basket.AllowPicking { // can only pick if the basket allows it!
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("basket %s does not allow picking", basket.BasketDenom)
 	} else {
@@ -485,7 +483,8 @@ func CalculateBasketTokens(credits regenmath.Dec, exponent uint32) (regenmath.De
 // for AND filters, we require the depth to return 0, as each filter in the slice should subtract 1.
 // for OR filters, we simply require that the slice of it's inner filter is not equal to the depth returned.
 // this is because we only need ONE tree to be valid, thus, an invalid OR tree would be if 0 filters passed.
-// TODO(Tyler): should we enforce a depth limit on OR/AND filters?
+// TODO(Tyler): assume depth limit is enforced here already
+// TODO(Tyler): simplify
 func checkCreditMatchesFilter(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, batchInfo ecocredit.BatchInfo, projectInfo ecocredit.ProjectInfo, owner string) (int, error) {
 	depth := len(filters)
 	var err error

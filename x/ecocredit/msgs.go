@@ -622,7 +622,7 @@ func (m *MsgCreateBasket) ValidateBasic() error {
 	if m.DisplayName == "" {
 		// TODO(Tyler): what is display name for? do we need it? how should it be validated?
 	}
-	// TODO(Tyler): should we allow 0 exponent? it would essentially allow credits:tokens to be 1:1
+	// TODO(Tyler): should be >= credit type precision of basket
 	if m.Exponent == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("exponent should be greater than 0")
 	}
