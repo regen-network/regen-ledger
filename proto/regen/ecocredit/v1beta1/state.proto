@@ -7,33 +7,11 @@ import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
-// CreditType defines the measurement unit/precision of a certain credit type
-// (e.g. carbon, biodiversity...)
-message CreditType {
-    option (cosmos.orm.v1alpha1.table) = {
-        id: 1,
-        primary_key: {fields: "abbreviation"}
-    };
-
-    // the type of credit (e.g. carbon, biodiversity, etc)
-    string name = 1;
-
-    // abbreviation is a 1-3 character uppercase abbreviation of the CreditType
-    // name, used in batch denominations within the CreditType. It must be unique.
-    string abbreviation = 2;
-
-    // the measurement unit (e.g. kg, ton, etc)
-    string unit = 3;
-
-    // the decimal precision
-    uint32 precision = 4;
-}
-
 // ClassInfo represents the high-level on-chain information for a credit class.
 message ClassInfo {
 
     option (cosmos.orm.v1alpha1.table) = {
-        id: 2,
+        id: 1,
         primary_key: {fields: "class_id"}
     };
 
@@ -60,7 +38,7 @@ message ClassInfo {
 message ProjectInfo {
 
     option (cosmos.orm.v1alpha1.table) = {
-        id: 3,
+        id: 2,
         primary_key: {fields: "project_id"}
     };
 
@@ -85,7 +63,7 @@ message ProjectInfo {
 message BatchInfo {
 
     option (cosmos.orm.v1alpha1.table) = {
-        id: 4,
+        id: 3,
         primary_key: {fields: "batch_denom"}
         index: {id: 1 fields: "project_id"}
         index: {id: 2 fields: "start_date"}
@@ -120,6 +98,28 @@ message BatchInfo {
     // end_date is the end of the period during which this credit batch was
     // quantified and verified.
     google.protobuf.Timestamp end_date = 8 [ (gogoproto.stdtime) = true ];
+}
+
+// CreditType defines the measurement unit/precision of a certain credit type
+// (e.g. carbon, biodiversity...)
+message CreditType {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 4,
+        primary_key: {fields: "abbreviation"}
+    };
+
+    // the type of credit (e.g. carbon, biodiversity, etc)
+    string name = 1;
+
+    // abbreviation is a 1-3 character uppercase abbreviation of the CreditType
+    // name, used in batch denominations within the CreditType. It must be unique.
+    string abbreviation = 2;
+
+    // the measurement unit (e.g. kg, ton, etc)
+    string unit = 3;
+
+    // the decimal precision
+    uint32 precision = 4;
 }
 
 // SellOrder represents the information for a sell order.
