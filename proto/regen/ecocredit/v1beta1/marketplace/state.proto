@@ -9,7 +9,7 @@ import "cosmos/base/v1beta1/coin.proto";
 message SellOrder {
 
     option (cosmos.orm.v1alpha1.table) = {
-        id: 5,
+        id: 1,
         primary_key: {fields: "order_id"}
         index: {id: 1 fields: "batch_denom"}
     };
@@ -41,7 +41,7 @@ message SellOrder {
 message BuyOrder {
 
     option (cosmos.orm.v1alpha1.table) = {
-        id: 6,
+        id: 2,
         primary_key: {fields: "buy_order_id"}
     };
 
