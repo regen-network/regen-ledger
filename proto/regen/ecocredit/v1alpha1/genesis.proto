@@ -1,0 +1,57 @@
+syntax = "proto3";
+package regen.ecocredit.v1alpha1;
+
+import "regen/ecocredit/v1alpha1/types.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
+
+// GenesisState defines ecocredit module's genesis state.
+message GenesisState {
+  // Params contains the updateable global parameters for use with the x/params
+  // module
+  Params params = 1 [ (gogoproto.nullable) = false ];
+
+  // class_info is the list of credit class info.
+  repeated ClassInfo class_info = 2;
+
+  // batch_info is the list of credit batch info.
+  repeated BatchInfo batch_info = 3;
+
+  // sequences is the list of credit type sequence.
+  repeated CreditTypeSeq sequences  = 4;
+
+  // balances is the list of credit batch tradable/retired units.
+  repeated Balance balances = 5;
+
+  // supplies is the list of credit batch tradable/retired supply.
+  repeated Supply supplies = 6;
+}
+
+// Balance represents tradable or retired units of a credit batch with an
+// account address, batch_denom, and balance.
+message Balance {
+  // address is the account address of the account holding credits.
+  string address = 1;
+
+  // batch_denom is the unique ID of the credit batch.
+  string batch_denom = 2;
+
+  // tradable_balance is the tradable balance of the credit batch.
+  string tradable_balance = 3;
+
+  // retired_balance is the retired balance of the credit batch.
+  string retired_balance = 4;
+}
+
+// Supply represents a tradable or retired supply of a credit batch.
+message Supply {
+  // batch_denom is the unique ID of the credit batch.
+  string batch_denom = 1;
+
+  // tradable_supply is the tradable supply of the credit batch.
+  string tradable_supply = 2;
+
+  // retired_supply is the retired supply of the credit batch.
+  string retired_supply = 3;
+}
