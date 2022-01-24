@@ -10,7 +10,7 @@ BUILDDIR ?= $(CURDIR)/build
 APP_DIR = ./app
 MOCKS_DIR = $(CURDIR)/tests/mocks
 HTTPS_GIT := https://github.com/regen-network/regen-ledger.git
-DOCKER_BUF := docker run -v $(shell pwd):/workspace --workdir /workspace bufbuild/buf
+DOCKER_BUF := docker run -v $(shell pwd):/workspace --workdir /workspace bufbuild/buf:1.0.0-rc11
 PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
 DOCKER := $(shell which docker)
 
@@ -345,8 +345,10 @@ proto-all: proto-gen proto-lint proto-check-breaking proto-format
 
 proto-gen:
 	@echo "Generating Protobuf files"
-	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGen}$$"; then docker start -a $(containerProtoGen); else docker run --name $(containerProtoGen) -v $(CURDIR):/workspace --workdir /workspace $(containerProtoImage) \
-		sh ./scripts/protocgen.sh; fi
+	@echo "If you're having trouble with this command, you need to install the latest buf, protoc-gen-gocosmos, protoc-gen-grpc-gateway, protoc-gen-go-pulsar, and protoc-gen-go-grpc locally"
+#	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGen}$$"; then docker start -a $(containerProtoGen); else docker run --name $(containerProtoGen) -v $(CURDIR):/workspace --workdir /workspace $(containerProtoImage) \
+#		sh ./scripts/protocgen.sh; fi
+	./scripts/protocgen.sh
 
 proto-format:
 	@echo "Formatting Protobuf files"
