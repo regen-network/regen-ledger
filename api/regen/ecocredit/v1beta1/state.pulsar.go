@@ -1,4 +1,4 @@
-package ecocreditv1
+package ecocreditv1beta1
 
 import (
 	fmt "fmt"
@@ -21,8 +21,8 @@ var (
 )
 
 func init() {
-	file_regen_ecocredit_v1_state_proto_init()
-	md_CreditType = File_regen_ecocredit_v1_state_proto.Messages().ByName("CreditType")
+	file_regen_ecocredit_v1beta1_state_proto_init()
+	md_CreditType = File_regen_ecocredit_v1beta1_state_proto.Messages().ByName("CreditType")
 	fd_CreditType_name = md_CreditType.Fields().ByName("name")
 	fd_CreditType_abbreviation = md_CreditType.Fields().ByName("abbreviation")
 	fd_CreditType_unit = md_CreditType.Fields().ByName("unit")
@@ -38,7 +38,7 @@ func (x *CreditType) ProtoReflect() protoreflect.Message {
 }
 
 func (x *CreditType) slowProtoReflect() protoreflect.Message {
-	mi := &file_regen_ecocredit_v1_state_proto_msgTypes[0]
+	mi := &file_regen_ecocredit_v1beta1_state_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -133,19 +133,19 @@ func (x *fastReflection_CreditType) Range(f func(protoreflect.FieldDescriptor, p
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_CreditType) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.CreditType.name":
+	case "regen.ecocredit.v1beta1.CreditType.name":
 		return x.Name != ""
-	case "regen.ecocredit.v1.CreditType.abbreviation":
+	case "regen.ecocredit.v1beta1.CreditType.abbreviation":
 		return x.Abbreviation != ""
-	case "regen.ecocredit.v1.CreditType.unit":
+	case "regen.ecocredit.v1beta1.CreditType.unit":
 		return x.Unit != ""
-	case "regen.ecocredit.v1.CreditType.precision":
+	case "regen.ecocredit.v1beta1.CreditType.precision":
 		return x.Precision != uint32(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.CreditType"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1beta1.CreditType"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.CreditType does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1beta1.CreditType does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -157,19 +157,19 @@ func (x *fastReflection_CreditType) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_CreditType) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.CreditType.name":
+	case "regen.ecocredit.v1beta1.CreditType.name":
 		x.Name = ""
-	case "regen.ecocredit.v1.CreditType.abbreviation":
+	case "regen.ecocredit.v1beta1.CreditType.abbreviation":
 		x.Abbreviation = ""
-	case "regen.ecocredit.v1.CreditType.unit":
+	case "regen.ecocredit.v1beta1.CreditType.unit":
 		x.Unit = ""
-	case "regen.ecocredit.v1.CreditType.precision":
+	case "regen.ecocredit.v1beta1.CreditType.precision":
 		x.Precision = uint32(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.CreditType"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1beta1.CreditType"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.CreditType does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1beta1.CreditType does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -181,23 +181,23 @@ func (x *fastReflection_CreditType) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_CreditType) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "regen.ecocredit.v1.CreditType.name":
+	case "regen.ecocredit.v1beta1.CreditType.name":
 		value := x.Name
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.CreditType.abbreviation":
+	case "regen.ecocredit.v1beta1.CreditType.abbreviation":
 		value := x.Abbreviation
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.CreditType.unit":
+	case "regen.ecocredit.v1beta1.CreditType.unit":
 		value := x.Unit
 		return protoreflect.ValueOfString(value)
-	case "regen.ecocredit.v1.CreditType.precision":
+	case "regen.ecocredit.v1beta1.CreditType.precision":
 		value := x.Precision
 		return protoreflect.ValueOfUint32(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.CreditType"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1beta1.CreditType"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.CreditType does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1beta1.CreditType does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -213,19 +213,19 @@ func (x *fastReflection_CreditType) Get(descriptor protoreflect.FieldDescriptor)
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_CreditType) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.CreditType.name":
+	case "regen.ecocredit.v1beta1.CreditType.name":
 		x.Name = value.Interface().(string)
-	case "regen.ecocredit.v1.CreditType.abbreviation":
+	case "regen.ecocredit.v1beta1.CreditType.abbreviation":
 		x.Abbreviation = value.Interface().(string)
-	case "regen.ecocredit.v1.CreditType.unit":
+	case "regen.ecocredit.v1beta1.CreditType.unit":
 		x.Unit = value.Interface().(string)
-	case "regen.ecocredit.v1.CreditType.precision":
+	case "regen.ecocredit.v1beta1.CreditType.precision":
 		x.Precision = uint32(value.Uint())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.CreditType"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1beta1.CreditType"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.CreditType does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1beta1.CreditType does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -241,19 +241,19 @@ func (x *fastReflection_CreditType) Set(fd protoreflect.FieldDescriptor, value p
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_CreditType) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.CreditType.name":
-		panic(fmt.Errorf("field name of message regen.ecocredit.v1.CreditType is not mutable"))
-	case "regen.ecocredit.v1.CreditType.abbreviation":
-		panic(fmt.Errorf("field abbreviation of message regen.ecocredit.v1.CreditType is not mutable"))
-	case "regen.ecocredit.v1.CreditType.unit":
-		panic(fmt.Errorf("field unit of message regen.ecocredit.v1.CreditType is not mutable"))
-	case "regen.ecocredit.v1.CreditType.precision":
-		panic(fmt.Errorf("field precision of message regen.ecocredit.v1.CreditType is not mutable"))
+	case "regen.ecocredit.v1beta1.CreditType.name":
+		panic(fmt.Errorf("field name of message regen.ecocredit.v1beta1.CreditType is not mutable"))
+	case "regen.ecocredit.v1beta1.CreditType.abbreviation":
+		panic(fmt.Errorf("field abbreviation of message regen.ecocredit.v1beta1.CreditType is not mutable"))
+	case "regen.ecocredit.v1beta1.CreditType.unit":
+		panic(fmt.Errorf("field unit of message regen.ecocredit.v1beta1.CreditType is not mutable"))
+	case "regen.ecocredit.v1beta1.CreditType.precision":
+		panic(fmt.Errorf("field precision of message regen.ecocredit.v1beta1.CreditType is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.CreditType"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1beta1.CreditType"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.CreditType does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1beta1.CreditType does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -262,19 +262,19 @@ func (x *fastReflection_CreditType) Mutable(fd protoreflect.FieldDescriptor) pro
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_CreditType) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "regen.ecocredit.v1.CreditType.name":
+	case "regen.ecocredit.v1beta1.CreditType.name":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.CreditType.abbreviation":
+	case "regen.ecocredit.v1beta1.CreditType.abbreviation":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.CreditType.unit":
+	case "regen.ecocredit.v1beta1.CreditType.unit":
 		return protoreflect.ValueOfString("")
-	case "regen.ecocredit.v1.CreditType.precision":
+	case "regen.ecocredit.v1beta1.CreditType.precision":
 		return protoreflect.ValueOfUint32(uint32(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1.CreditType"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: regen.ecocredit.v1beta1.CreditType"))
 		}
-		panic(fmt.Errorf("message regen.ecocredit.v1.CreditType does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message regen.ecocredit.v1beta1.CreditType does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -284,7 +284,7 @@ func (x *fastReflection_CreditType) NewField(fd protoreflect.FieldDescriptor) pr
 func (x *fastReflection_CreditType) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1.CreditType", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in regen.ecocredit.v1beta1.CreditType", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -612,7 +612,7 @@ func (x *fastReflection_CreditType) ProtoMethods() *protoiface.Methods {
 // versions:
 // 	protoc-gen-go v1.27.0
 // 	protoc        (unknown)
-// source: regen/ecocredit/v1/state.proto
+// source: regen/ecocredit/v1beta1/state.proto
 
 const (
 	// Verify that this generated code is sufficiently up-to-date.
@@ -642,7 +642,7 @@ type CreditType struct {
 func (x *CreditType) Reset() {
 	*x = CreditType{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_regen_ecocredit_v1_state_proto_msgTypes[0]
+		mi := &file_regen_ecocredit_v1beta1_state_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -656,7 +656,7 @@ func (*CreditType) ProtoMessage() {}
 
 // Deprecated: Use CreditType.ProtoReflect.Descriptor instead.
 func (*CreditType) Descriptor() ([]byte, []int) {
-	return file_regen_ecocredit_v1_state_proto_rawDescGZIP(), []int{0}
+	return file_regen_ecocredit_v1beta1_state_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *CreditType) GetName() string {
@@ -687,57 +687,60 @@ func (x *CreditType) GetPrecision() uint32 {
 	return 0
 }
 
-var File_regen_ecocredit_v1_state_proto protoreflect.FileDescriptor
+var File_regen_ecocredit_v1beta1_state_proto protoreflect.FileDescriptor
 
-var file_regen_ecocredit_v1_state_proto_rawDesc = []byte{
-	0x0a, 0x1e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x2f, 0x76, 0x31, 0x2f, 0x73, 0x74, 0x61, 0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x12, 0x12, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x2e, 0x76, 0x31, 0x1a, 0x1d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x6f, 0x72, 0x6d,
-	0x2f, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x31, 0x2f, 0x6f, 0x72, 0x6d, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x22, 0x90, 0x01, 0x0a, 0x0a, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79,
-	0x70, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x22, 0x0a, 0x0c, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76,
-	0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x61, 0x62,
-	0x62, 0x72, 0x65, 0x76, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x12, 0x0a, 0x04, 0x75, 0x6e,
-	0x69, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x75, 0x6e, 0x69, 0x74, 0x12, 0x1c,
-	0x0a, 0x09, 0x70, 0x72, 0x65, 0x63, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28,
-	0x0d, 0x52, 0x09, 0x70, 0x72, 0x65, 0x63, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x3a, 0x18, 0xf2, 0x9e,
-	0xd3, 0x8e, 0x03, 0x12, 0x0a, 0x0e, 0x0a, 0x0c, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76, 0x69, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x42, 0xd8, 0x01, 0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x2e, 0x72,
-	0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76,
-	0x31, 0x42, 0x0a, 0x53, 0x74, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a,
-	0x48, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65,
-	0x6e, 0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e,
-	0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
-	0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x65, 0x63,
-	0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa,
-	0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
-	0x74, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x12, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f,
-	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0xe2, 0x02, 0x1e, 0x52, 0x65, 0x67, 0x65,
-	0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x5c, 0x47,
-	0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x14, 0x52, 0x65, 0x67,
-	0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56,
-	0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+var file_regen_ecocredit_v1beta1_state_proto_rawDesc = []byte{
+	0x0a, 0x23, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69,
+	0x74, 0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x73, 0x74, 0x61, 0x74, 0x65, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x17, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65, 0x63, 0x6f,
+	0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x1a, 0x1d,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x6f, 0x72, 0x6d, 0x2f, 0x76, 0x31, 0x61, 0x6c, 0x70,
+	0x68, 0x61, 0x31, 0x2f, 0x6f, 0x72, 0x6d, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x90, 0x01,
+	0x0a, 0x0a, 0x43, 0x72, 0x65, 0x64, 0x69, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x12, 0x0a, 0x04,
+	0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65,
+	0x12, 0x22, 0x0a, 0x0c, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76, 0x69, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x12, 0x0a, 0x04, 0x75, 0x6e, 0x69, 0x74, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x04, 0x75, 0x6e, 0x69, 0x74, 0x12, 0x1c, 0x0a, 0x09, 0x70, 0x72, 0x65, 0x63,
+	0x69, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x09, 0x70, 0x72, 0x65,
+	0x63, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x3a, 0x18, 0xf2, 0x9e, 0xd3, 0x8e, 0x03, 0x12, 0x0a, 0x0e,
+	0x0a, 0x0c, 0x61, 0x62, 0x62, 0x72, 0x65, 0x76, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01,
+	0x42, 0xfb, 0x01, 0x0a, 0x1b, 0x63, 0x6f, 0x6d, 0x2e, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2e, 0x65,
+	0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
+	0x42, 0x0a, 0x53, 0x74, 0x61, 0x74, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x52,
+	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e,
+	0x2d, 0x6c, 0x65, 0x64, 0x67, 0x65, 0x72, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2d, 0x6e, 0x65,
+	0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x67, 0x65, 0x6e, 0x2f,
+	0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61,
+	0x31, 0x3b, 0x65, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x76, 0x31, 0x62, 0x65, 0x74,
+	0x61, 0x31, 0xa2, 0x02, 0x03, 0x52, 0x45, 0x58, 0xaa, 0x02, 0x17, 0x52, 0x65, 0x67, 0x65, 0x6e,
+	0x2e, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x2e, 0x56, 0x31, 0x62, 0x65, 0x74,
+	0x61, 0x31, 0xca, 0x02, 0x17, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72,
+	0x65, 0x64, 0x69, 0x74, 0x5c, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xe2, 0x02, 0x23, 0x52,
+	0x65, 0x67, 0x65, 0x6e, 0x5c, 0x45, 0x63, 0x6f, 0x63, 0x72, 0x65, 0x64, 0x69, 0x74, 0x5c, 0x56,
+	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
+	0x74, 0x61, 0xea, 0x02, 0x19, 0x52, 0x65, 0x67, 0x65, 0x6e, 0x3a, 0x3a, 0x45, 0x63, 0x6f, 0x63,
+	0x72, 0x65, 0x64, 0x69, 0x74, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x62, 0x06,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
-	file_regen_ecocredit_v1_state_proto_rawDescOnce sync.Once
-	file_regen_ecocredit_v1_state_proto_rawDescData = file_regen_ecocredit_v1_state_proto_rawDesc
+	file_regen_ecocredit_v1beta1_state_proto_rawDescOnce sync.Once
+	file_regen_ecocredit_v1beta1_state_proto_rawDescData = file_regen_ecocredit_v1beta1_state_proto_rawDesc
 )
 
-func file_regen_ecocredit_v1_state_proto_rawDescGZIP() []byte {
-	file_regen_ecocredit_v1_state_proto_rawDescOnce.Do(func() {
-		file_regen_ecocredit_v1_state_proto_rawDescData = protoimpl.X.CompressGZIP(file_regen_ecocredit_v1_state_proto_rawDescData)
+func file_regen_ecocredit_v1beta1_state_proto_rawDescGZIP() []byte {
+	file_regen_ecocredit_v1beta1_state_proto_rawDescOnce.Do(func() {
+		file_regen_ecocredit_v1beta1_state_proto_rawDescData = protoimpl.X.CompressGZIP(file_regen_ecocredit_v1beta1_state_proto_rawDescData)
 	})
-	return file_regen_ecocredit_v1_state_proto_rawDescData
+	return file_regen_ecocredit_v1beta1_state_proto_rawDescData
 }
 
-var file_regen_ecocredit_v1_state_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_regen_ecocredit_v1_state_proto_goTypes = []interface{}{
-	(*CreditType)(nil), // 0: regen.ecocredit.v1.CreditType
+var file_regen_ecocredit_v1beta1_state_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_regen_ecocredit_v1beta1_state_proto_goTypes = []interface{}{
+	(*CreditType)(nil), // 0: regen.ecocredit.v1beta1.CreditType
 }
-var file_regen_ecocredit_v1_state_proto_depIdxs = []int32{
+var file_regen_ecocredit_v1beta1_state_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -745,13 +748,13 @@ var file_regen_ecocredit_v1_state_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_regen_ecocredit_v1_state_proto_init() }
-func file_regen_ecocredit_v1_state_proto_init() {
-	if File_regen_ecocredit_v1_state_proto != nil {
+func init() { file_regen_ecocredit_v1beta1_state_proto_init() }
+func file_regen_ecocredit_v1beta1_state_proto_init() {
+	if File_regen_ecocredit_v1beta1_state_proto != nil {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_regen_ecocredit_v1_state_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_regen_ecocredit_v1beta1_state_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*CreditType); i {
 			case 0:
 				return &v.state
@@ -768,18 +771,18 @@ func file_regen_ecocredit_v1_state_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_regen_ecocredit_v1_state_proto_rawDesc,
+			RawDescriptor: file_regen_ecocredit_v1beta1_state_proto_rawDesc,
 			NumEnums:      0,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_regen_ecocredit_v1_state_proto_goTypes,
-		DependencyIndexes: file_regen_ecocredit_v1_state_proto_depIdxs,
-		MessageInfos:      file_regen_ecocredit_v1_state_proto_msgTypes,
+		GoTypes:           file_regen_ecocredit_v1beta1_state_proto_goTypes,
+		DependencyIndexes: file_regen_ecocredit_v1beta1_state_proto_depIdxs,
+		MessageInfos:      file_regen_ecocredit_v1beta1_state_proto_msgTypes,
 	}.Build()
-	File_regen_ecocredit_v1_state_proto = out.File
-	file_regen_ecocredit_v1_state_proto_rawDesc = nil
-	file_regen_ecocredit_v1_state_proto_goTypes = nil
-	file_regen_ecocredit_v1_state_proto_depIdxs = nil
+	File_regen_ecocredit_v1beta1_state_proto = out.File
+	file_regen_ecocredit_v1beta1_state_proto_rawDesc = nil
+	file_regen_ecocredit_v1beta1_state_proto_goTypes = nil
+	file_regen_ecocredit_v1beta1_state_proto_depIdxs = nil
 }
