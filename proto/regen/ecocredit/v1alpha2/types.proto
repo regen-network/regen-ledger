@@ -3,7 +3,6 @@ syntax = "proto3";
 package regen.ecocredit.v1alpha2;
 
 import "cosmos/base/v1beta1/coin.proto";
-import "cosmos/orm/v1alpha1/orm.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
