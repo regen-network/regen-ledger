@@ -590,6 +590,103 @@ func checkCreditMatchesFilter(filters []*ecocredit.Filter, classInfo ecocredit.C
 	return depth, nil
 }
 
+// checkCreditMatchesFilter recursively checks filters using `depth` to ensure valid filters.
+// it sets the depth equal the length of the filter slice, and subtracts by 1 for each valid filter encountered.
+// for AND filters, we require the depth to return 0, as each filter in the slice should subtract 1.
+// for OR filters, we simply require that the slice of it's inner filter is not equal to the depth returned.
+// this is because we only need ONE tree to be valid, thus, an invalid OR tree would be if 0 filters passed.
+// TODO(Tyler): assume depth limit is enforced here already
+// TODO(Tyler): simplify
+func checkFilterMatch(filter *ecocredit.Filter, classInfo ecocredit.ClassInfo, batchInfo ecocredit.BatchInfo, projectInfo ecocredit.ProjectInfo, owner string) error {
+	switch f := filter.Sum.(type) {
+	case *ecocredit.Filter_And_:
+		for _, f := range f.And.Filters {
+			err := checkFilterMatch(f, classInfo, batchInfo, projectInfo, owner)
+			if err != nil {
+				return err
+			}
+		}
+	case *ecocredit.Filter_Or_:
+		var err1 error
+		for _, f := range f.Or.Filters {
+			err := checkFilterMatch(f, classInfo, batchInfo, projectInfo, owner)
+			if err == nil {
+				return nil
+			} else {
+				err1 = err
+			}
+		}
+		return err1
+
+	case *ecocredit.Filter_CreditTypeName:
+		if classInfo.CreditType.Name == f.CreditTypeName {
+			return nil
+		} else {
+			return formatFilterError("credit type name", f.CreditTypeName, classInfo.CreditType.Name)
+		}
+	case *ecocredit.Filter_ClassId:
+		if classInfo.ClassId == f.ClassId {
+			return nil
+		} else {
+			return formatFilterError("class id", f.ClassId, classInfo.ClassId)
+		}
+	case *ecocredit.Filter_ProjectId:
+		if f.ProjectId == projectInfo.ProjectId {
+			return nil
+		} else {
+			return formatFilterError("project id", f.ProjectId, projectInfo.ProjectId)
+		}
+	case *ecocredit.Filter_BatchDenom:
+		if batchInfo.BatchDenom == f.BatchDenom {
+			return nil
+		} else {
+			return formatFilterError("batch denom", f.BatchDenom, batchInfo.BatchDenom)
+		}
+	case *ecocredit.Filter_ClassAdmin:
+		if classInfo.Admin == f.ClassAdmin {
+			return nil
+		} else {
+			return formatFilterError("class admin", f.ClassAdmin, classInfo.Admin)
+		}
+	case *ecocredit.Filter_Issuer:
+		for _, issuer := range classInfo.Issuers {
+			if f.Issuer == issuer {
+				return nil
+			}
+		}
+		return fmt.Errorf("credit class %s does not contain issuer %s", classInfo.ClassId, f.Issuer)
+
+	case *ecocredit.Filter_Owner:
+		if owner == f.Owner {
+			return nil
+		} else {
+			return formatFilterError("credit owner", f.Owner, owner)
+		}
+	case *ecocredit.Filter_ProjectLocation:
+		if f.ProjectLocation == projectInfo.ProjectLocation {
+			return nil
+		} else {
+			return formatFilterError("project location", f.ProjectLocation, projectInfo.ProjectLocation)
+		}
+	case *ecocredit.Filter_DateRange_:
+		if batchInfo.StartDate.Equal(*f.DateRange.StartDate) || batchInfo.StartDate.After(*f.DateRange.StartDate) {
+			if batchInfo.EndDate.Equal(*f.DateRange.EndDate) || batchInfo.EndDate.Before(*f.DateRange.EndDate) {
+				return nil
+			} else {
+				return formatFilterError("date range", f.DateRange.StartDate.String()+" to "+f.DateRange.EndDate.String(), batchInfo.StartDate.String()+" to "+batchInfo.EndDate.String())
+			}
+		} else {
+			return formatFilterError("date range", f.DateRange.StartDate.String()+" to "+f.DateRange.EndDate.String(), batchInfo.StartDate.String()+" to "+batchInfo.EndDate.String())
+		}
+	//case *ecocredit.Filter_Tag:
+	// depth -= 1 TODO: wait for tags PR
+	default:
+		return errors.New("no valid filter given")
+	}
+
+	return nil
+}
+
 // formatFilterError is a helper method for formatting filter errors in a repeatable fashion.
 func formatFilterError(item, want, got string) error {
 	return fmt.Errorf("basket filter requires %s %s, but a credit with %s %s was given", item, want, item, got)
