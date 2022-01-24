@@ -5,15 +5,17 @@ go 1.17
 require (
 	github.com/cockroachdb/apd/v2 v2.0.2
 	github.com/cosmos/cosmos-sdk v0.44.2
+	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.1
 	github.com/gogo/protobuf v1.3.3
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
+	github.com/regen-network/regen-ledger/api v0.0.0
 	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.13
 	github.com/tendermint/tm-db v0.6.6
 	google.golang.org/grpc v1.43.0
+	google.golang.org/protobuf v1.27.1
 	pgregory.net/rapid v0.4.7
-	github.com/regen-network/regen-ledger/api v0.0.0
 )
 
 require (
@@ -30,7 +32,9 @@ require (
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/coinbase/rosetta-sdk-go v0.6.10 // indirect
 	github.com/confio/ics23/go v0.6.6 // indirect
-	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.1 // indirect
+	github.com/cosmos/cosmos-proto v1.0.0-alpha6 // indirect
+	github.com/cosmos/cosmos-sdk/api v0.1.0-alpha3 // indirect
+	github.com/cosmos/cosmos-sdk/errors v1.0.0-beta.2 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/iavl v0.17.1 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.11.1 // indirect
@@ -112,7 +116,6 @@ require (
 	golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1 // indirect
 	golang.org/x/text v0.3.6 // indirect
 	google.golang.org/genproto v0.0.0-20211223182754-3ac035c7e7cb // indirect
-	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect

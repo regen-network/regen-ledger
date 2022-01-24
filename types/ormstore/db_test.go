@@ -40,6 +40,27 @@ func TestStoreKeyDB(t *testing.T) {
 		ormdb.ModuleDBOptions{},
 	)
 	require.NoError(t, err)
-	ctx := sdkContextForStoreKey(storeKey)
+	sdkCtx := sdkContextForStoreKey(storeKey)
+	ctx := sdk.WrapSDKContext(sdkCtx)
 
+	creditTypeTable := db.GetTable(&ecocreditv1.CreditType{})
+	require.NotNil(t, creditTypeTable)
+
+	require.NoError(t, creditTypeTable.Save(ctx, &ecocreditv1.CreditType{
+		Name:         "carbon",
+		Abbreviation: "C",
+		Unit:         "tons of co2e",
+		Precision:    6,
+	}))
+
+	creditType := &ecocreditv1.CreditType{
+		Abbreviation: "C",
+	}
+	found, err := creditTypeTable.Get(ctx, creditType)
+	require.NoError(t, err)
+	require.True(t, found)
+	require.Equal(t, "C", creditType.Abbreviation)
+	require.Equal(t, "carbon", creditType.Name)
+	require.Equal(t, "tons of co2e", creditType.Unit)
+	require.Equal(t, uint32(6), creditType.Precision)
 }
