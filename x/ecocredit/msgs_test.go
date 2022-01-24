@@ -971,7 +971,6 @@ func TestMsgSell(t *testing.T) {
 	_, _, a1 := testdata.KeyTestPubAddr()
 
 	validExpiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
-	invalidExpiration := time.Date(2020, 01, 01, 0, 0, 0, 0, time.UTC)
 
 	tests := map[string]struct {
 		src    MsgSell
@@ -990,23 +989,6 @@ func TestMsgSell(t *testing.T) {
 						},
 						DisableAutoRetire: true,
 						Expiration:        &validExpiration,
-					},
-				},
-			},
-			expErr: false,
-		},
-		"valid: no expiration": {
-			src: MsgSell{
-				Owner: a1.String(),
-				Orders: []*MsgSell_Order{
-					{
-						BatchDenom: "A00-00000000-00000000-000",
-						Quantity:   "1.5",
-						AskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire: true,
 					},
 				},
 			},
@@ -1080,24 +1062,6 @@ func TestMsgSell(t *testing.T) {
 			},
 			expErr: true,
 		},
-		"invalid: bad expiration": {
-			src: MsgSell{
-				Owner: a1.String(),
-				Orders: []*MsgSell_Order{
-					{
-						BatchDenom: "A00-00000000-00000000-000",
-						Quantity:   "1.5",
-						AskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(-20),
-						},
-						DisableAutoRetire: true,
-						Expiration:        &invalidExpiration,
-					},
-				},
-			},
-			expErr: true,
-		},
 	}
 
 	for msg, test := range tests {
@@ -1116,7 +1080,6 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 	_, _, a1 := testdata.KeyTestPubAddr()
 
 	validExpiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
-	invalidExpiration := time.Date(2020, 01, 01, 0, 0, 0, 0, time.UTC)
 
 	tests := map[string]struct {
 		src    MsgUpdateSellOrders
@@ -1134,22 +1097,6 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 						},
 						DisableAutoRetire: true,
 						NewExpiration:     &validExpiration,
-					},
-				},
-			},
-			expErr: false,
-		},
-		"valid: no expiration": {
-			src: MsgUpdateSellOrders{
-				Owner: a1.String(),
-				Updates: []*MsgUpdateSellOrders_Update{
-					{
-						NewQuantity: "1.5",
-						NewAskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire: true,
 					},
 				},
 			},
@@ -1203,23 +1150,6 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 			},
 			expErr: true,
 		},
-		"invalid: bad expiration": {
-			src: MsgUpdateSellOrders{
-				Owner: a1.String(),
-				Updates: []*MsgUpdateSellOrders_Update{
-					{
-						NewQuantity: "1.5",
-						NewAskPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(-20),
-						},
-						DisableAutoRetire: true,
-						NewExpiration:     &invalidExpiration,
-					},
-				},
-			},
-			expErr: true,
-		},
 	}
 
 	for msg, test := range tests {
@@ -1238,7 +1168,6 @@ func TestMsgBuy(t *testing.T) {
 	_, _, a1 := testdata.KeyTestPubAddr()
 
 	validExpiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
-	invalidExpiration := time.Date(2020, 01, 01, 0, 0, 0, 0, time.UTC)
 
 	tests := map[string]struct {
 		src    MsgBuy
@@ -1257,23 +1186,6 @@ func TestMsgBuy(t *testing.T) {
 						DisableAutoRetire:  true,
 						DisablePartialFill: true,
 						Expiration:         &validExpiration,
-					},
-				},
-			},
-			expErr: false,
-		},
-		"valid: no expiration": {
-			src: MsgBuy{
-				Buyer: a1.String(),
-				Orders: []*MsgBuy_Order{
-					{
-						Quantity: "1.5",
-						BidPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire:  true,
-						DisablePartialFill: true,
 					},
 				},
 			},
@@ -1343,24 +1255,6 @@ func TestMsgBuy(t *testing.T) {
 						DisableAutoRetire:  true,
 						DisablePartialFill: true,
 						RetirementLocation: "foo",
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid: bad expiration": {
-			src: MsgBuy{
-				Buyer: a1.String(),
-				Orders: []*MsgBuy_Order{
-					{
-						Quantity: "1.5",
-						BidPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(-20),
-						},
-						DisableAutoRetire:  true,
-						DisablePartialFill: true,
-						Expiration:         &invalidExpiration,
 					},
 				},
 			},
