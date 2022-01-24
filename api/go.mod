@@ -1,4 +1,4 @@
-module api
+module github.com/regen-network/regen-ledger/api
 
 go 1.17
 

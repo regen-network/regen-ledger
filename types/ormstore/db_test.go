@@ -3,6 +3,8 @@ package ormstore
 import (
 	"testing"
 
+	ecocreditv1 "github.com/regen-network/regen-ledger/api/regen/ecocredit/v1"
+
 	"github.com/cosmos/cosmos-sdk/store"
 	storetypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/libs/log"
@@ -31,7 +33,9 @@ func sdkContextForStoreKey(key *types.KVStoreKey) sdk.Context {
 func TestStoreKeyDB(t *testing.T) {
 	storeKey := types.NewKVStoreKey("test")
 	db, err := NewStoreKeyDB(
-		ormdb.ModuleSchema{FileDescriptors: map[uint32]protoreflect.FileDescriptor{}},
+		ormdb.ModuleSchema{FileDescriptors: map[uint32]protoreflect.FileDescriptor{
+			1: ecocreditv1.File_regen_ecocredit_v1_state_proto,
+		}},
 		storeKey,
 		ormdb.ModuleDBOptions{},
 	)
