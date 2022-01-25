@@ -12,6 +12,7 @@ message SellOrder {
         id: 1,
         primary_key: {fields: "order_id"}
         index: {id: 1 fields: "batch_denom"}
+        index: {id: 2 fields: "owner"}
     };
 
     // order_id is the unique ID of sell order.
@@ -43,6 +44,7 @@ message BuyOrder {
     option (cosmos.orm.v1alpha1.table) = {
         id: 2,
         primary_key: {fields: "buy_order_id"}
+        index: {id: 1 fields: "buyer"}
     };
 
     // Selection defines a buy order selection.
