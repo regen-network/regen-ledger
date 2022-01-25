@@ -2,7 +2,9 @@ syntax = "proto3";
 
 package regen.ecocredit.v1alpha2;
 
+import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/regen-network/regen-ledger/x/ecocredit";
 
@@ -147,6 +149,10 @@ message EventSell {
   // buyer to disable auto-retirement in their buy order enabling them to
   // resell the credits to another buyer.
   bool disable_auto_retire = 5;
+
+  // expiration is an optional timestamp when the sell order expires. When the
+  // expiration time is reached, the sell order is removed from state.
+  google.protobuf.Timestamp expiration = 6 [ (gogoproto.stdtime) = true ];
 }
 
 // EventUpdateSellOrder is an event emitted when a sell order is updated.
@@ -170,6 +176,10 @@ message EventUpdateSellOrder {
 
   // disable_auto_retire updates the disable_auto_retire field in the sell order.
   bool disable_auto_retire = 6;
+
+  // new_expiration is an optional timestamp when the sell order expires. When the
+  // expiration time is reached, the sell order is removed from state.
+  google.protobuf.Timestamp new_expiration = 7 [ (gogoproto.stdtime) = true ];
 }
 
 // EventBuyOrderCreated is an event emitted when a buy order is created.
@@ -206,6 +216,10 @@ message EventBuyOrderCreated {
   // retirement_location is the optional retirement location for the credits
   // which will be used only if disable_auto_retire is false.
   string retirement_location = 7;
+
+  // expiration is the optional timestamp when the buy order expires. When the
+  // expiration time is reached, the buy order is removed from state.
+  google.protobuf.Timestamp expiration = 8 [ (gogoproto.stdtime) = true ];
 }
 
 // EventBuyOrderFilled is an event emitted when a buy order is filled.

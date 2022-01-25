@@ -17,6 +17,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	restmodule "github.com/regen-network/regen-ledger/types/module/client/grpc_gateway"
 	"github.com/spf13/cobra"
+	abci "github.com/tendermint/tendermint/abci/types"
 
 	climodule "github.com/regen-network/regen-ledger/types/module/client/cli"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
@@ -30,6 +31,7 @@ type Module struct {
 	paramSpace    paramtypes.Subspace
 	accountKeeper ecocredit.AccountKeeper
 	bankKeeper    ecocredit.BankKeeper
+	keeper        ecocredit.Keeper
 }
 
 // NewModule returns a new Module object.
@@ -60,7 +62,7 @@ func (a Module) RegisterInterfaces(registry types.InterfaceRegistry) {
 }
 
 func (a Module) RegisterServices(configurator servermodule.Configurator) {
-	server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper)
+	a.keeper = server.RegisterServices(configurator, a.paramSpace, a.accountKeeper, a.bankKeeper)
 }
 
 //nolint:errcheck
@@ -125,4 +127,12 @@ func (Module) RegisterStoreDecoder(sdr sdk.StoreDecoderRegistry) {
 // registered in the `x/ecocredit/server` package.
 func (Module) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	return nil
+}
+
+// BeginBlock checks if there are any expired sell or buy orders and removes them from state.
+func (a Module) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) {
+	err := ecocredit.BeginBlocker(ctx, a.keeper)
+	if err != nil {
+		panic(err)
+	}
 }

@@ -118,6 +118,16 @@ func ParseDate(field string, date string) (time.Time, error) {
 	return t, nil
 }
 
+// parseAndSetDate is as helper function which sets the time do the provided argument if
+// the ParseDate was successful.
+func parseAndSetDate(dest **time.Time, field string, date string) error {
+	t, err := ParseDate(field, date)
+	if err == nil {
+		*dest = &t
+	}
+	return err
+}
+
 // checkDuplicateKey checks duplicate keys in a JSON
 func checkDuplicateKey(d *json.Decoder, path []string) error {
 	// Get next token from JSON
