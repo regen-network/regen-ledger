@@ -146,7 +146,7 @@ message ProjectSequence {
 
     string project_id = 1;
 
-    uint64 id = 2;
+    uint64 next_id = 2;
 }
 
 // EcocreditBalance stores each users credit balance
