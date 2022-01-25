@@ -147,7 +147,7 @@ message EcocreditBalance {
     };
 
     // address is the address of the credit holder
-    string address = 1;
+    bytes address = 1;
 
     // batch_id is the id of the credit batch
     uint64 batch_id = 2;
@@ -163,11 +163,11 @@ message EcocreditBalance {
 message BatchSequence {
     option (cosmos.orm.v1alpha1.table) = {
         id: 10,
-        primary_key: {fields: "class_id"}
+        primary_key: {fields: "project_id"}
     };
 
-    // class_id is the id of the class for a batch
-    uint64 class_id = 1;
+    // project_id is the id of the project for a batch
+    string project_id = 1;
 
     // num_batches is a sequence number incrementing on each issued batch
     uint64 num_batches = 2;
