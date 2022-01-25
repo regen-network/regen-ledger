@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package regen.ecocredit.curation.v1beta1;
+
+import "regen/ecocredit/curation/v1beta1/types.proto";
+
+service Msg {
+  rpc DefineTag(MsgDefineTag) returns (MsgDefineTagResponse) {}
+  rpc DefineNumericAtt(MsgDefineNumericAttr) returns (MsgDefineNumericAttrResponse) {}
+  rpc Tag(MsgTag) returns (MsgTagResponse) {}
+  rpc SetNumericAttr(MsgSetNumericAttr) returns (MsgSetNumericAttrResponse) {}
+}
+
+message MsgDefineTag {
+
+}
+
+message MsgDefineTagResponse {
+
+}
+
+message MsgDefineNumericAttr {
+
+}
+
+message MsgDefineNumericAttrResponse {
+
+}
+
+// MsgTag is the Msg/Tag request type.
+message MsgTag {
+  // curator
+  string curator = 1;
+
+  // taggings are the tag operations.
+  repeated Tagging taggings = 2;
+
+  // Tagging is a tag operations.
+  message Tagging {
+    uint64 tag_id = 1;
+
+    // targets are the tag operation targets.
+    repeated TagTarget targets = 2;
+
+    // untag indicates that a tag should be removed if set to true.
+    bool untag = 3;
+
+  }
+}
+
+message MsgTagResponse { }
+
+message MsgSetNumericAttr {
+  string curator = 1;
+
+  repeated SetAttr set_attr = 2;
+
+  message SetAttr {
+    uint64 attr_id = 1;
+
+    TagTarget targets = 2;
+
+    // value should be unset to delete
+    optional fixed32 value = 3;
+  }
+}
+
+message MsgSetNumericAttrResponse {
+
+}

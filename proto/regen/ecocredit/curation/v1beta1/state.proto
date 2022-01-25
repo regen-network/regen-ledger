@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package regen.ecocredit.curation.v1beta1;
+
+import "cosmos/orm/v1alpha1/orm.proto";
+
+message TagDefinition {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 1,
+    primary_key: {fields: "id", auto_increment: true}
+    index: {id: 1, fields: "owner_address"}
+  };
+
+  uint64 id = 1;
+  bytes owner_address = 2;
+  bytes metadata = 3;
+}
+
+// NumericAttributeDefinition allows curators to define numeric attributes
+// which can be assigned to credit classes
+message NumericAttributeDefinition {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 1,
+    primary_key: {fields: "id", auto_increment: true}
+    index: {id: 1, fields: "owner_address"}
+  };
+
+  uint64 id = 1;
+  bytes owner_address = 2;
+  bytes metadata = 3;
+
+  // max_decimal_places
+  uint32 max_decimal_places = 4;
+  optional int32 min = 5;
+  optional int32 max = 6;
+}
+
+message ClassTagEntry {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 1,
+    primary_key: {fields: "class_id,tag_id"}
+  };
+
+  uint64 class_id = 1;
+  uint64 tag_id = 2;
+  bytes metadata = 3;
+}
+
+message TagEntry {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 1,
+    primary_key: {fields: "target,tag_id"}
+  };
+
+  string target = 1;
+  uint64 tag_id = 2;
+  bytes metadata = 3;
+}
+
+message NumericAttributeEntry {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 1,
+    primary_key: {fields: "target,tag_id"}
+    index:{id: 1, fields: "tag_id,value"}
+  };
+
+  string target = 1;
+  uint64 attr_id = 2;
+  bytes metadata = 3;
+  // value represents a 32-bit decimal value with 2 decimal places, equivalent to value/100.
+  sfixed32 value = 4;
+}

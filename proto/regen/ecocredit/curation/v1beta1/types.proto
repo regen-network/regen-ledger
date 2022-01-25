@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package regen.ecocredit.curation.v1beta1;
+
+// TagTarget represents the target of a tag.
+message TagTarget {
+  oneof sum {
+    // class_id indicates that this tag targets all the credits within a given class.
+    string class_id = 1;
+
+    // project_id indicates that this tag targets all the credits within a given project.
+    string project_id = 2;
+
+    // batch_id indicates that this tag targets the credits within a batch.
+    string batch_id = 3;
+  }
+}
