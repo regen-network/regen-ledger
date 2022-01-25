@@ -516,30 +516,29 @@ message MsgCreateBasket {
   // ecocredit:{curator}:{name}.
   string name = 2;
 
-  // display_name will be used to create a bank Metadata display name for this
-  // basket token of the form ecocredit:{curator}:{display_name}.
-  string display_name = 3;
-
   // exponent is the exponent that will be used for denom metadata. An exponent
   // of 6 will mean that 10^6 units of a basket token should be displayed
   // as one unit in user interfaces.
-  uint32 exponent = 4;
+  uint32 exponent = 3;
 
   // basket_criteria is the criteria by which credits can be added to the
   // basket. Basket criteria will be applied in order and the first criteria
   // which applies to a credit will determine its multiplier in the basket.
-  Filter basket_criteria = 5;
+  Filter basket_criteria = 4;
 
   // disable_auto_retire allows auto-retirement to be disabled.
   // The credits will be auto-retired if disable_auto_retire is
   // false unless the credits were previously put into the basket by the
   // address picking them from the basket, in which case they will remain
   // tradable.
-  bool disable_auto_retire = 6;
+  bool disable_auto_retire = 5;
 
   // allow_picking specifies whether an address which didn't deposit the credits
   // in the basket can pick those credits or not.
-  bool allow_picking = 7;
+  bool allow_picking = 6;
+
+  // credit_type is the type of credit this basket will hold
+  string credit_type_name = 7;
 }
 
 // MsgCreateBasketResponse is the Msg/CreateBasket response type.

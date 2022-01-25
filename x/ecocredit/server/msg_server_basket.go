@@ -19,6 +19,7 @@ import (
 // CreateBasket creates a basket keyed by a given basketDenom.
 func (s serverImpl) CreateBasket(goCtx context.Context, req *ecocredit.MsgCreateBasket) (*ecocredit.MsgCreateBasketResponse, error) {
 	ctx := regentypes.UnwrapSDKContext(goCtx)
+	sdkCtx := sdktypes.UnwrapSDKContext(goCtx)
 
 	// basket denom = name of basket? TODO(Tyler)
 	basketDenom := req.Name
@@ -30,18 +31,27 @@ func (s serverImpl) CreateBasket(goCtx context.Context, req *ecocredit.MsgCreate
 		return nil, sdkerrors.ErrInvalidRequest.Wrapf("basket with name %s already exists", req.Name)
 	}
 
-	// TODO(Tyler): enforce criteria here
-	if req.BasketCriteria != nil {
-		if err := s.validateFilterData(ctx, req.BasketCriteria); err != nil {
-			return nil, sdkerrors.ErrInvalidRequest.Wrapf("invalid basket filter: %s", err.Error())
-		}
+	// TODO(Tyler): generate this
+	displayName := ""
+
+	ct, err := s.getCreditType(sdkCtx, req.CreditTypeName)
+	if err != nil {
+		return nil, err
+	}
+	if req.Exponent < ct.Precision {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("creating a basket with credit type %s requires exponent >= %d", req.CreditTypeName, ct.Precision)
+	}
+
+	// stateful validation of basket criteria. checks that the filters actually apply to existing types.
+	if err := s.validateFilterData(ctx, req.BasketCriteria); err != nil {
+		return nil, sdkerrors.ErrInvalidRequest.Wrapf("invalid basket filter: %s", err.Error())
 	}
 
 	if err := s.basketTable.Create(ctx, &ecocredit.Basket{
 		BasketDenom:       basketDenom,
 		Curator:           req.Curator,
 		Name:              req.Name,
-		DisplayName:       req.DisplayName,
+		DisplayName:       displayName,
 		Exponent:          req.Exponent,
 		BasketCriteria:    req.BasketCriteria,
 		DisableAutoRetire: req.DisableAutoRetire,
@@ -115,7 +125,7 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 		// TODO(Tyler): enforce criteria
 		if basket.BasketCriteria != nil {
 			// check that the credits meet the filter
-			if _, err = checkCreditMatchesFilter([]*ecocredit.Filter{basket.BasketCriteria}, *classInfo, batchInfo, *projectInfo, req.Owner); err != nil {
+			if err = checkFilterMatch(basket.BasketCriteria, *classInfo, batchInfo, *projectInfo, req.Owner); err != nil {
 				return nil, err
 			}
 		}
@@ -438,10 +448,6 @@ func (s serverImpl) validateFilterData(ctx regentypes.Context, filters ...*ecocr
 			if err := s.validateFilterData(ctx, f.Or.Filters...); err != nil {
 				return err
 			}
-		case *ecocredit.Filter_CreditTypeName:
-			if _, err := s.getCreditType(ctx.Context, f.CreditTypeName); err != nil {
-				return sdkerrors.ErrNotFound.Wrapf("credit type %s not found", f.CreditTypeName)
-			}
 		case *ecocredit.Filter_ClassId:
 			if exists := s.classInfoTable.Has(ctx, orm.RowID(f.ClassId)); !exists {
 				return sdkerrors.ErrNotFound.Wrapf("credit class with id %s not found", f.ClassId)
@@ -484,119 +490,6 @@ func CalculateBasketTokens(credits regenmath.Dec, exponent uint32) (regenmath.De
 // for OR filters, we simply require that the slice of it's inner filter is not equal to the depth returned.
 // this is because we only need ONE tree to be valid, thus, an invalid OR tree would be if 0 filters passed.
 // TODO(Tyler): assume depth limit is enforced here already
-// TODO(Tyler): simplify
-func checkCreditMatchesFilter(filters []*ecocredit.Filter, classInfo ecocredit.ClassInfo, batchInfo ecocredit.BatchInfo, projectInfo ecocredit.ProjectInfo, owner string) (int, error) {
-	depth := len(filters)
-	var err error
-	for _, filter := range filters {
-		switch f := filter.Sum.(type) {
-		case *ecocredit.Filter_And_:
-			andFilter := f.And.Filters
-			innerDepth, err := checkCreditMatchesFilter(andFilter, classInfo, batchInfo, projectInfo, owner)
-			if innerDepth != 0 || err != nil {
-				return innerDepth, sdkerrors.ErrInvalidRequest.Wrap("invalid AND filter")
-			} else {
-				depth -= 1
-			}
-		case *ecocredit.Filter_Or_:
-			orFilter := f.Or.Filters
-			orDepth := len(orFilter)
-			innerDepth, err := checkCreditMatchesFilter(orFilter, classInfo, batchInfo, projectInfo, owner)
-
-			// when orDepth == innerDepth, none of the filters in the OR got a match. we need AT LEAST 1 match for a valid OR filter.
-			if orDepth == innerDepth {
-				return innerDepth, err
-			} else {
-				depth -= 1
-			}
-		case *ecocredit.Filter_CreditTypeName:
-			if classInfo.CreditType.Name == f.CreditTypeName {
-				depth -= 1
-			} else {
-				err = formatFilterError("credit type name", f.CreditTypeName, classInfo.CreditType.Name)
-			}
-		case *ecocredit.Filter_ClassId:
-			if classInfo.ClassId == f.ClassId {
-				depth -= 1
-			} else {
-				err = formatFilterError("class id", f.ClassId, classInfo.ClassId)
-			}
-		case *ecocredit.Filter_ProjectId:
-			if f.ProjectId == projectInfo.ProjectId {
-				depth -= 1
-			} else {
-				err = formatFilterError("project id", f.ProjectId, projectInfo.ProjectId)
-			}
-		case *ecocredit.Filter_BatchDenom:
-			if batchInfo.BatchDenom == f.BatchDenom {
-				depth -= 1
-			} else {
-				err = formatFilterError("batch denom", f.BatchDenom, batchInfo.BatchDenom)
-			}
-		case *ecocredit.Filter_ClassAdmin:
-			if classInfo.Admin == f.ClassAdmin {
-				depth -= 1
-			} else {
-				err = formatFilterError("class admin", f.ClassAdmin, classInfo.Admin)
-			}
-		case *ecocredit.Filter_Issuer:
-			found := false
-			for _, issuer := range classInfo.Issuers {
-				if f.Issuer == issuer {
-					depth -= 1
-					found = true
-					break
-				}
-			}
-			if !found {
-				err = fmt.Errorf("credit class %s does not contain issuer %s", classInfo.ClassId, f.Issuer)
-			}
-		case *ecocredit.Filter_Owner:
-			if owner == f.Owner {
-				depth -= 1
-			} else {
-				err = formatFilterError("credit owner", f.Owner, owner)
-			}
-		case *ecocredit.Filter_ProjectLocation:
-			if f.ProjectLocation == projectInfo.ProjectLocation {
-				depth -= 1
-			} else {
-				err = formatFilterError("project location", f.ProjectLocation, projectInfo.ProjectLocation)
-			}
-		case *ecocredit.Filter_DateRange_:
-			if batchInfo.StartDate.Equal(*f.DateRange.StartDate) || batchInfo.StartDate.After(*f.DateRange.StartDate) {
-				if batchInfo.EndDate.Equal(*f.DateRange.EndDate) || batchInfo.EndDate.Before(*f.DateRange.EndDate) {
-					depth -= 1
-				} else {
-					err = formatFilterError("date range", f.DateRange.StartDate.String()+" to "+f.DateRange.EndDate.String(), batchInfo.StartDate.String()+" to "+batchInfo.EndDate.String())
-				}
-			} else {
-				err = formatFilterError("date range", f.DateRange.StartDate.String()+" to "+f.DateRange.EndDate.String(), batchInfo.StartDate.String()+" to "+batchInfo.EndDate.String())
-			}
-		//case *ecocredit.Filter_Tag:
-		// depth -= 1 TODO: wait for tags PR
-		default:
-			err = errors.New("no valid filter given")
-		}
-
-	}
-
-	if err != nil {
-		return depth, err
-	}
-	if depth != 0 {
-		return depth, fmt.Errorf("the filter could not be matched with depth %d", depth)
-	}
-	return depth, nil
-}
-
-// checkCreditMatchesFilter recursively checks filters using `depth` to ensure valid filters.
-// it sets the depth equal the length of the filter slice, and subtracts by 1 for each valid filter encountered.
-// for AND filters, we require the depth to return 0, as each filter in the slice should subtract 1.
-// for OR filters, we simply require that the slice of it's inner filter is not equal to the depth returned.
-// this is because we only need ONE tree to be valid, thus, an invalid OR tree would be if 0 filters passed.
-// TODO(Tyler): assume depth limit is enforced here already
-// TODO(Tyler): simplify
 func checkFilterMatch(filter *ecocredit.Filter, classInfo ecocredit.ClassInfo, batchInfo ecocredit.BatchInfo, projectInfo ecocredit.ProjectInfo, owner string) error {
 	switch f := filter.Sum.(type) {
 	case *ecocredit.Filter_And_:
@@ -617,13 +510,6 @@ func checkFilterMatch(filter *ecocredit.Filter, classInfo ecocredit.ClassInfo, b
 			}
 		}
 		return err1
-
-	case *ecocredit.Filter_CreditTypeName:
-		if classInfo.CreditType.Name == f.CreditTypeName {
-			return nil
-		} else {
-			return formatFilterError("credit type name", f.CreditTypeName, classInfo.CreditType.Name)
-		}
 	case *ecocredit.Filter_ClassId:
 		if classInfo.ClassId == f.ClassId {
 			return nil

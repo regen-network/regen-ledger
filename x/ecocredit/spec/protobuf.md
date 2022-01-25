@@ -408,6 +408,7 @@ Basket represents a basket of credits.
 | basket_criteria | [Filter](#regen.ecocredit.v1alpha2.Filter) |  | basket_criteria is the criteria by which credits can be added to the basket. Basket criteria will be applied in order and the first criteria which applies to a credit will determine its multiplier in the basket. |
 | disable_auto_retire | [bool](#bool) |  | disable_auto_retire disables the auto-retirement of credits upon taking from the basket. set to true to allow credits to be taken without retiring. |
 | allow_picking | [bool](#bool) |  | allow_picking allows the picking of specific credits from the basket |
+| credit_type_name | [string](#string) |  | credit_type is the type of credit this basket will hold |
 
 
 
@@ -569,7 +570,6 @@ to the basket. It can handled nested conditions linked with and/or operators.
 | ----- | ---- | ----- | ----------- |
 | and | [Filter.And](#regen.ecocredit.v1alpha2.Filter.And) |  | and specifies a list of filters where all conditions should be satisfied. |
 | or | [Filter.Or](#regen.ecocredit.v1alpha2.Filter.Or) |  | or specifies a list of filters where at least one of the conditions should be satisfied. |
-| credit_type_name | [string](#string) |  | credit_type_name filters against credits from this credit type name. |
 | class_id | [string](#string) |  | class_id filters against credits from this credit class id. |
 | project_id | [string](#string) |  | project_id filters against credits from this project. |
 | batch_denom | [string](#string) |  | batch_denom filters against credits from this batch. |
@@ -1694,11 +1694,11 @@ MsgCreateBasket is the Msg/CreateBasket request type.
 | ----- | ---- | ----- | ----------- |
 | curator | [string](#string) |  | curator is the address of the basket curator who is able to change certain basket settings. |
 | name | [string](#string) |  | name will be used to create a bank denom for this basket token of the form ecocredit:{curator}:{name}. |
-| display_name | [string](#string) |  | display_name will be used to create a bank Metadata display name for this basket token of the form ecocredit:{curator}:{display_name}. |
 | exponent | [uint32](#uint32) |  | exponent is the exponent that will be used for denom metadata. An exponent of 6 will mean that 10^6 units of a basket token should be displayed as one unit in user interfaces. |
 | basket_criteria | [Filter](#regen.ecocredit.v1alpha2.Filter) |  | basket_criteria is the criteria by which credits can be added to the basket. Basket criteria will be applied in order and the first criteria which applies to a credit will determine its multiplier in the basket. |
 | disable_auto_retire | [bool](#bool) |  | disable_auto_retire allows auto-retirement to be disabled. The credits will be auto-retired if disable_auto_retire is false unless the credits were previously put into the basket by the address picking them from the basket, in which case they will remain tradable. |
 | allow_picking | [bool](#bool) |  | allow_picking specifies whether an address which didn't deposit the credits in the basket can pick those credits or not. |
+| credit_type_name | [string](#string) |  | credit_type is the type of credit this basket will hold |
 
 
 

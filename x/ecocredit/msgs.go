@@ -606,87 +606,81 @@ func (m MsgCreateBasket) GetSignBytes() []byte {
 
 // ValidateBasic does a sanity check on the provided data.
 func (m *MsgCreateBasket) ValidateBasic() error {
-
-	// we use the coin denom validation from the sdk as the basket name will be used
-	// in the coin denom to mint basket coins
-	if err := sdk.ValidateDenom(m.Name); err != nil {
-		return sdkerrors.ErrInvalidRequest.Wrapf("invalid basket denom format")
+	// TODO(Tyler): should we enforce a name length?
+	if m.Name == "" {
+		return sdkerrors.ErrInvalidRequest.Wrapf("basket name cannot be empty")
 	}
 	if _, err := sdk.AccAddressFromBech32(m.Curator); err != nil {
 		return sdkerrors.ErrInvalidAddress
 	}
-	// TODO(Tyler): should we enforce a name length?
-	if m.Name == "" {
-		return sdkerrors.ErrInvalidRequest.Wrap("name cannot be empty")
+	if m.CreditTypeName == "" {
+		return sdkerrors.ErrInvalidRequest.Wrap("credit type name required")
 	}
-	if m.DisplayName == "" {
-		// TODO(Tyler): what is display name for? do we need it? how should it be validated?
-	}
-	// TODO(Tyler): should be >= credit type precision of basket
 	if m.Exponent == 0 {
 		return sdkerrors.ErrInvalidRequest.Wrap("exponent should be greater than 0")
 	}
-	if m.BasketCriteria != nil { // TODO(Tyler): what if no filter? should we allow filter-less baskets?
+	if m.BasketCriteria != nil {
 		if err := validateFilter(m.BasketCriteria); err != nil {
 			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
 		}
+	} else {
+		return sdkerrors.ErrInvalidRequest.Wrap("cannot create a basket without a filter")
 	}
 
 	return nil
 }
 
-func validateFilter(filters ...*Filter) error {
-	for _, filter := range filters {
-		switch f := filter.Sum.(type) {
-		case *Filter_And_:
-			if err := validateFilter(f.And.Filters...); err != nil {
+func validateFilter(filter *Filter) error {
+	switch f := filter.Sum.(type) {
+	case *Filter_And_:
+		for _, f := range f.And.Filters {
+			if err := validateFilter(f); err != nil {
 				return err
-			}
-		case *Filter_Or_:
-			if err := validateFilter(f.Or.Filters...); err != nil {
-				return err
-			}
-		case *Filter_ClassId:
-			if err := ValidateClassID(f.ClassId); err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-			}
-		case *Filter_ProjectId:
-			if err := ValidateProjectID(f.ProjectId); err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-			}
-		case *Filter_BatchDenom:
-			if err := ValidateBatchDenom(f.BatchDenom); err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-			}
-		case *Filter_ClassAdmin:
-			if _, err := sdk.AccAddressFromBech32(f.ClassAdmin); err != nil {
-				return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
-			}
-		case *Filter_Issuer:
-			if _, err := sdk.AccAddressFromBech32(f.Issuer); err != nil {
-				return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
-			}
-		case *Filter_Owner:
-			if _, err := sdk.AccAddressFromBech32(f.Owner); err != nil {
-				return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
-			}
-		case *Filter_ProjectLocation:
-			if err := ValidateLocation(f.ProjectLocation); err != nil {
-				return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
-			}
-		case *Filter_DateRange_:
-			if f.DateRange.StartDate == nil || f.DateRange.EndDate == nil {
-				return sdkerrors.ErrInvalidRequest.Wrap("start date or end date was nil")
-			}
-			if f.DateRange.StartDate.After(*f.DateRange.EndDate) {
-				return sdkerrors.ErrInvalidRequest.Wrap("invalid date range: start date must be before end date")
-			}
-		case *Filter_CreditTypeName:
-			if f.CreditTypeName == "" {
-				return sdkerrors.ErrInvalidRequest.Wrap("a credit type name filter was provided, but no credit type specified")
 			}
 		}
+	case *Filter_Or_:
+		for _, f := range f.Or.Filters {
+			if err := validateFilter(f); err != nil {
+				return err
+			}
+		}
+	case *Filter_ClassId:
+		if err := ValidateClassID(f.ClassId); err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		}
+	case *Filter_ProjectId:
+		if err := ValidateProjectID(f.ProjectId); err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		}
+	case *Filter_BatchDenom:
+		if err := ValidateBatchDenom(f.BatchDenom); err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		}
+	case *Filter_ClassAdmin:
+		if _, err := sdk.AccAddressFromBech32(f.ClassAdmin); err != nil {
+			return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
+		}
+	case *Filter_Issuer:
+		if _, err := sdk.AccAddressFromBech32(f.Issuer); err != nil {
+			return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
+		}
+	case *Filter_Owner:
+		if _, err := sdk.AccAddressFromBech32(f.Owner); err != nil {
+			return sdkerrors.ErrInvalidAddress.Wrap(err.Error())
+		}
+	case *Filter_ProjectLocation:
+		if err := ValidateLocation(f.ProjectLocation); err != nil {
+			return sdkerrors.ErrInvalidRequest.Wrap(err.Error())
+		}
+	case *Filter_DateRange_:
+		if f.DateRange.StartDate == nil || f.DateRange.EndDate == nil {
+			return sdkerrors.ErrInvalidRequest.Wrap("start date or end date was nil")
+		}
+		if f.DateRange.StartDate.After(*f.DateRange.EndDate) {
+			return sdkerrors.ErrInvalidRequest.Wrap("invalid date range: start date must be before end date")
+		}
 	}
+
 	return nil
 }
 

@@ -1604,6 +1604,7 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 		Curator           string
 		Name              string
 		DisplayName       string
+		CreditTypeName    string
 		Exponent          uint32
 		BasketCriteria    *Filter
 		DisableAutoRetire bool
@@ -1620,6 +1621,7 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 				Curator:           addr.String(),
 				Name:              "MyVeryCoolBasket",
 				DisplayName:       "cool BASKET, inc.",
+				CreditTypeName:    "carbon",
 				Exponent:          10,
 				BasketCriteria:    &Filter{Sum: &Filter_Owner{Owner: addr.String()}},
 				DisableAutoRetire: false,
@@ -1631,6 +1633,7 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 			fields: fields{
 				Curator:           addr.String(),
 				Name:              "MyVeryCoolBasket",
+				CreditTypeName:    "carbon",
 				DisplayName:       "cool BASKET, inc.",
 				Exponent:          10,
 				BasketCriteria:    &Filter{Sum: &Filter_And_{And: &Filter_And{Filters: []*Filter{{Sum: &Filter_Issuer{Issuer: addr.String()}}}}}},
@@ -1644,6 +1647,7 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 				Curator:           "oops",
 				Name:              "my very cool basket",
 				DisplayName:       "cool BASKET, inc.",
+				CreditTypeName:    "carbon",
 				Exponent:          10,
 				BasketCriteria:    &Filter{Sum: &Filter_Owner{Owner: addr.String()}},
 				DisableAutoRetire: false,
@@ -1657,6 +1661,7 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 				Curator:           addr.String(),
 				Name:              "my very cool basket",
 				DisplayName:       "cool BASKET, inc.",
+				CreditTypeName:    "carbon",
 				Exponent:          10,
 				BasketCriteria:    &Filter{Sum: &Filter_Owner{Owner: "foo"}},
 				DisableAutoRetire: false,
@@ -1670,6 +1675,7 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 				Curator:           addr.String(),
 				Name:              "my very cool basket",
 				DisplayName:       "cool BASKET, inc.",
+				CreditTypeName:    "carbon",
 				Exponent:          10,
 				BasketCriteria:    &Filter{Sum: &Filter_And_{And: &Filter_And{Filters: []*Filter{{Sum: &Filter_Issuer{Issuer: addr.String()}}, {Sum: &Filter_Owner{Owner: "foo"}}}}}},
 				DisableAutoRetire: false,
@@ -1683,6 +1689,21 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 				Curator:           addr.String(),
 				Name:              "my very cool basket",
 				DisplayName:       "cool BASKET, inc.",
+				CreditTypeName:    "carbon",
+				Exponent:          10,
+				BasketCriteria:    &Filter{Sum: &Filter_ProjectLocation{ProjectLocation: "not a location"}},
+				DisableAutoRetire: false,
+				AllowPicking:      false,
+			},
+			wantErr: true,
+		},
+		{
+			name: "no credit type",
+			fields: fields{
+				Curator:           addr.String(),
+				Name:              "my very cool basket",
+				DisplayName:       "cool BASKET, inc.",
+				CreditTypeName:    "",
 				Exponent:          10,
 				BasketCriteria:    &Filter{Sum: &Filter_ProjectLocation{ProjectLocation: "not a location"}},
 				DisableAutoRetire: false,
@@ -1696,8 +1717,8 @@ func TestMsgCreateBasket_ValidateBasic(t *testing.T) {
 			m := &MsgCreateBasket{
 				Curator:           tt.fields.Curator,
 				Name:              tt.fields.Name,
-				DisplayName:       tt.fields.DisplayName,
 				Exponent:          tt.fields.Exponent,
+				CreditTypeName:    tt.fields.CreditTypeName,
 				BasketCriteria:    tt.fields.BasketCriteria,
 				DisableAutoRetire: tt.fields.DisableAutoRetire,
 				AllowPicking:      tt.fields.AllowPicking,
