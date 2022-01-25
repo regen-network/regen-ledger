@@ -28,9 +28,6 @@ message ClassInfo {
 
     // credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision.
     CreditType credit_type = 4;
-
-    // The number of batches issued in this credit class.
-    uint64 num_batches = 5;
 }
 
 // ClassIssuers is a JOIN table for Class Info that stores the credit class issuers
@@ -94,29 +91,16 @@ message BatchInfo {
     // batch_denom is the unique ID of credit batch.
     string batch_denom = 3;
 
-    // total_amount is the total number of active credits in the credit batch.
-    // Some of the issued credits may be cancelled and will be removed from
-    // total_amount and tracked in amount_cancelled. total_amount and
-    // amount_cancelled will always sum to the original amount of credits that
-    // were issued.
-    string total_amount = 4;
-
     // metadata is any arbitrary metadata attached to the credit batch.
     bytes metadata = 5;
 
-    // amount_cancelled is the number of credits in the batch that have been
-    // cancelled, effectively undoing there issuance. The sum of total_amount and
-    // amount_cancelled will always sum to the original amount of credits that
-    // were issued.
-    string amount_cancelled = 6;
-
     // start_date is the beginning of the period during which this credit batch
     // was quantified and verified.
-    google.protobuf.Timestamp start_date = 7 [ (gogoproto.stdtime) = true ];
+    google.protobuf.Timestamp start_date = 6 [ (gogoproto.stdtime) = true ];
 
     // end_date is the end of the period during which this credit batch was
     // quantified and verified.
-    google.protobuf.Timestamp end_date = 8 [ (gogoproto.stdtime) = true ];
+    google.protobuf.Timestamp end_date = 7 [ (gogoproto.stdtime) = true ];
 }
 
 // CreditType defines the measurement unit/precision of a certain credit type
@@ -202,4 +186,40 @@ message BasketBalance {
 
     // balance is the amount of ecocredits held in the basket
     string balance = 3;
+}
+
+// BatchSequence tracks the sequence number for batches within a class
+message BatchSequence {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 10,
+        primary_key: {fields: "class_id"}
+    };
+
+    // class_id is the id of the class for a batch
+    uint64 class_id = 1;
+
+    // num_batches is a sequence number incrementing on each issued batch
+    uint64 num_batches = 2;
+}
+
+// BatchSupply tracks the supply of a credit batch
+message BatchSupply {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 11,
+        primary_key: {fields: "batch_denom"}
+    };
+
+    // batch_denom is the denom of the batch
+    string batch_denom = 1;
+
+    // total_amount is the total number of active credits in the credit batch.
+    // Some of the issued credits may be cancelled and will be removed from
+    // total_amount and tracked in amount_cancelled. total_amount and
+    // amount_cancelled will always sum to the original credit issuance amount.
+    string total_amount = 2;
+
+    // cancelled_amount is the number of credits in the batch that have been
+    // cancelled, effectively undoing the issuance. The sum of total_amount and
+    // amount_cancelled will always equal the original credit issuance amount.
+    string cancelled_amount = 3;
 }
