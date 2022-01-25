@@ -44,7 +44,7 @@ message ClassIssuers {
     string class_id = 1;
 
     // issuers are the approved issuers of the credit class.
-    repeated string issuers = 2;
+   string issuer = 2;
 }
 
 // ProjectInfo represents the high-level on-chain information for a project.
