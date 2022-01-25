@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package regen.ecocredit.v1beta1;
+
+import "cosmos/orm/v1alpha1/orm.proto";
+
+// CreditType defines the measurement unit/precision of a certain credit type
+// (e.g. carbon, biodiversity...)
+message CreditType {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 1,
+    primary_key: {fields: "abbreviation"}
+  };
+
+  // the type of credit (e.g. carbon, biodiversity, etc)
+  string name = 1;
+
+  // abbreviation is a 1-3 character uppercase abbreviation of the CreditType
+  // name, used in batch denominations within the CreditType. It must be unique.
+  string abbreviation = 2;
+
+  // the measurement unit (e.g. kg, ton, etc)
+  string unit = 3;
+
+  // the decimal precision
+  uint32 precision = 4;
+}
