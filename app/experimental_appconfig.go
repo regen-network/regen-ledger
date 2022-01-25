@@ -121,7 +121,9 @@ func setCustomModules(app *RegenApp, interfaceRegistry types.InterfaceRegistry) 
 func (app *RegenApp) registerUpgradeHandlers() {}
 
 func (app *RegenApp) setCustomModuleManager() []module.AppModule {
-	return []module.AppModule{}
+	return []module.AppModule{
+		wasm.NewAppModule(app.appCodec, &app.wasmKeeper, app.StakingKeeper),
+	}
 }
 
 func setCustomOrderInitGenesis() []string {
