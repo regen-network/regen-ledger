@@ -44,7 +44,7 @@ message ClassIssuer {
     string class_id = 1;
 
     // issuer is the approved issuer of the credit class.
-   string issuer = 2;
+    string issuer = 2;
 }
 
 // ProjectInfo represents the high-level on-chain information for a project.
@@ -85,11 +85,14 @@ message BatchInfo {
         index: {id: 2 fields: "start_date"}
     };
 
+    // id is a an incrementing integer to identify the batch
+    uint64 id = 1;
+
     // project_id is the unique ID of the project this batch belongs to.
-    string project_id = 1;
+    string project_id = 2;
 
     // batch_denom is the unique ID of credit batch.
-    string batch_denom = 2;
+    string batch_denom = 3;
 
     // total_amount is the total number of active credits in the credit batch.
     // Some of the issued credits may be cancelled and will be removed from
@@ -138,3 +141,65 @@ message CreditType {
     uint32 precision = 4;
 }
 
+// CreditTypeSequence stores and increments the sequence number for credit types
+message CreditTypeSequence {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 6,
+        primary_key: {fields: "abbreviation"}
+    };
+
+    string abbreviation = 1;
+
+    uint64 id = 2;
+}
+
+// ProjectSequence stores and increments the sequence number for projects
+message ProjectSequence {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 7,
+        primary_key: {fields: "project_id"}
+    };
+
+    string project_id = 1;
+
+    uint64 id = 2;
+}
+
+// EcocreditBalance stores each users credit balance
+message EcocreditBalance {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 8,
+        primary_key: {fields: "address,batch_denom"}
+    };
+
+    // address is the address of the credit holder
+    string address = 1;
+
+    // batch_denom is the denom of the credit batch
+    string batch_denom = 2;
+
+    message CreditBalance {
+        string tradable = 1;
+        string retired = 2;
+    }
+
+    // balance is the balance of both tradable and retired credits
+    CreditBalance balance = 3;
+}
+
+// BasketBalance stores the amount of credits from a batch in a basket
+message BasketBalance {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 9,
+        primary_key: {fields: "basket_denom,batch_denom"}
+    };
+
+    // basket_denom is the denom of the basket
+    string basket_denom = 1;
+
+    // batch_denom is the denom of the batch
+    string batch_denom = 2;
+
+    // balance is the amount of ecocredits held in the basket
+    string balance = 3;
+}
