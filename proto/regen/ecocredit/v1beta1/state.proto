@@ -37,7 +37,7 @@ message ClassInfo {
 message ClassIssuers {
     option (cosmos.orm.v1alpha1.table) = {
         id: 2,
-        primary_key: {fields: "class_id"}
+        primary_key: {fields: "class_id,issuer"}
     };
 
     // class_id is the unique ID of credit class.
