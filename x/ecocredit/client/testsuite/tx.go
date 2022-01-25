@@ -14,13 +14,14 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/client/testutil"
 	"github.com/gogo/protobuf/proto"
+	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/suite"
+	tmcli "github.com/tendermint/tendermint/libs/cli"
+
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/types/testutil/network"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
-	"github.com/stretchr/testify/require"
-	"github.com/stretchr/testify/suite"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
 )
 
 type IntegrationTestSuite struct {
@@ -1418,12 +1419,16 @@ func (s *IntegrationTestSuite) TestTxSell() {
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
 
+	expiration, err := client.ParseDate("expiration", "2024-01-01")
+	s.Require().NoError(err)
+
 	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-		expOrder  *ecocredit.SellOrder
+		name        string
+		args        []string
+		sellOrderId string
+		expErr      bool
+		expErrMsg   string
+		expOrder    *ecocredit.SellOrder
 	}{
 		{
 			name:      "missing args",
@@ -1518,7 +1523,8 @@ func (s *IntegrationTestSuite) TestTxSell() {
 				},
 				s.commonTxFlags()...,
 			),
-			expErr: false,
+			sellOrderId: "4",
+			expErr:      false,
 			expOrder: &ecocredit.SellOrder{
 				OrderId:           4,
 				Owner:             val0.Address.String(),
@@ -1526,6 +1532,27 @@ func (s *IntegrationTestSuite) TestTxSell() {
 				Quantity:          "5",
 				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
 				DisableAutoRetire: false,
+			},
+		},
+		{
+			name: "valid with expiration",
+			args: append(
+				[]string{
+					"[{batch_denom: \"C01-20210101-20210201-001\", quantity: \"5\", ask_price: \"100regen\", disable_auto_retire: false, expiration: \"2024-01-01\"}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			sellOrderId: "5",
+			expErr:      false,
+			expOrder: &ecocredit.SellOrder{
+				OrderId:           5,
+				Owner:             val0.Address.String(),
+				BatchDenom:        batchDenom,
+				Quantity:          "5",
+				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
+				DisableAutoRetire: false,
+				Expiration:        &expiration,
 			},
 		},
 	}
@@ -1542,7 +1569,10 @@ func (s *IntegrationTestSuite) TestTxSell() {
 
 				// query sell order
 				query := client.QuerySellOrderCmd()
-				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{"4", flagOutputJSON})
+				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{
+					tc.sellOrderId,
+					flagOutputJSON,
+				})
 				s.Require().NoError(err, out.String())
 
 				// unmarshal query response
@@ -1561,12 +1591,16 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 	val0 := s.network.Validators[0]
 	clientCtx := val0.ClientCtx
 
+	expiration, err := client.ParseDate("expiration", "2026-01-01")
+	s.Require().NoError(err)
+
 	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
-		expOrder  *ecocredit.SellOrder
+		name        string
+		args        []string
+		sellOrderId string
+		expErr      bool
+		expErrMsg   string
+		expOrder    *ecocredit.SellOrder
 	}{
 		{
 			name:      "missing args",
@@ -1661,7 +1695,8 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 				},
 				s.commonTxFlags()...,
 			),
-			expErr: false,
+			sellOrderId: "4",
+			expErr:      false,
 			expOrder: &ecocredit.SellOrder{
 				OrderId:           4,
 				Owner:             val0.Address.String(),
@@ -1669,6 +1704,27 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 				Quantity:          "5",
 				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(200)},
 				DisableAutoRetire: false,
+			},
+		},
+		{
+			name: "valid with expiration",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"5\", new_quantity: \"5\", new_ask_price: \"200regen\", disable_auto_retire: false, new_expiration: \"2026-01-01\"}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			sellOrderId: "5",
+			expErr:      false,
+			expOrder: &ecocredit.SellOrder{
+				OrderId:           5,
+				Owner:             val0.Address.String(),
+				BatchDenom:        batchDenom,
+				Quantity:          "5",
+				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(200)},
+				DisableAutoRetire: false,
+				Expiration:        &expiration,
 			},
 		},
 	}
@@ -1685,7 +1741,10 @@ func (s *IntegrationTestSuite) TestTxUpdateSellOrders() {
 
 				// query sell order
 				query := client.QuerySellOrderCmd()
-				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{"4", flagOutputJSON})
+				out, err := cli.ExecTestCLICmd(clientCtx, query, []string{
+					tc.sellOrderId,
+					flagOutputJSON,
+				})
 				s.Require().NoError(err, out.String())
 
 				// unmarshal query response
@@ -1705,10 +1764,11 @@ func (s *IntegrationTestSuite) TestTxBuy() {
 	clientCtx := val0.ClientCtx
 
 	testCases := []struct {
-		name      string
-		args      []string
-		expErr    bool
-		expErrMsg string
+		name        string
+		args        []string
+		sellOrderId string
+		expErr      bool
+		expErrMsg   string
 	}{
 		{
 			name:      "missing args",
@@ -1803,8 +1863,22 @@ func (s *IntegrationTestSuite) TestTxBuy() {
 				},
 				s.commonTxFlags()...,
 			),
-			expErr:    false,
-			expErrMsg: "",
+			sellOrderId: "4",
+			expErr:      false,
+			expErrMsg:   "",
+		},
+		{
+			name: "valid with expiration",
+			args: append(
+				[]string{
+					"[{sell_order_id: \"5\", quantity: \"5\", bid_price: \"100regen\", disable_auto_retire: false, expiration: \"2024-01-01\"}]",
+					makeFlagFrom(val0.Address.String()),
+				},
+				s.commonTxFlags()...,
+			),
+			sellOrderId: "5",
+			expErr:      false,
+			expErrMsg:   "",
 		},
 	}
 
@@ -1820,7 +1894,10 @@ func (s *IntegrationTestSuite) TestTxBuy() {
 
 				// query sell order (should no longer exist)
 				query := client.QuerySellOrderCmd()
-				_, err := cli.ExecTestCLICmd(clientCtx, query, []string{"4", flagOutputJSON})
+				_, err := cli.ExecTestCLICmd(clientCtx, query, []string{
+					tc.sellOrderId,
+					flagOutputJSON,
+				})
 				s.Require().Error(err)
 				s.Require().Contains(err.Error(), "not found")
 			}

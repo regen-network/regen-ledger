@@ -970,6 +970,8 @@ func TestMsgUpdateClassMetadata(t *testing.T) {
 func TestMsgSell(t *testing.T) {
 	_, _, a1 := testdata.KeyTestPubAddr()
 
+	validExpiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
+
 	tests := map[string]struct {
 		src    MsgSell
 		expErr bool
@@ -986,6 +988,7 @@ func TestMsgSell(t *testing.T) {
 							Amount: sdk.NewInt(20),
 						},
 						DisableAutoRetire: true,
+						Expiration:        &validExpiration,
 					},
 				},
 			},
@@ -1076,6 +1079,8 @@ func TestMsgSell(t *testing.T) {
 func TestMsgUpdateSellOrders(t *testing.T) {
 	_, _, a1 := testdata.KeyTestPubAddr()
 
+	validExpiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
+
 	tests := map[string]struct {
 		src    MsgUpdateSellOrders
 		expErr bool
@@ -1091,6 +1096,7 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 							Amount: sdk.NewInt(20),
 						},
 						DisableAutoRetire: true,
+						NewExpiration:     &validExpiration,
 					},
 				},
 			},
@@ -1161,6 +1167,8 @@ func TestMsgUpdateSellOrders(t *testing.T) {
 func TestMsgBuy(t *testing.T) {
 	_, _, a1 := testdata.KeyTestPubAddr()
 
+	validExpiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
+
 	tests := map[string]struct {
 		src    MsgBuy
 		expErr bool
@@ -1177,6 +1185,7 @@ func TestMsgBuy(t *testing.T) {
 						},
 						DisableAutoRetire:  true,
 						DisablePartialFill: true,
+						Expiration:         &validExpiration,
 					},
 				},
 			},
@@ -1269,57 +1278,24 @@ func TestMsgAllowAskDenom(t *testing.T) {
 	_, _, a1 := testdata.KeyTestPubAddr()
 
 	tests := map[string]struct {
-		src    MsgBuy
+		src    MsgAllowAskDenom
 		expErr bool
 	}{
 		"valid": {
-			src: MsgBuy{
-				Buyer: a1.String(),
-				Orders: []*MsgBuy_Order{
-					{
-						Quantity: "1.5",
-						BidPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire:  true,
-						DisablePartialFill: true,
-					},
-				},
+			src: MsgAllowAskDenom{
+				RootAddress:  a1.String(),
+				Denom:        "uregen",
+				DisplayDenom: "regen",
+				Exponent:     6,
 			},
 			expErr: false,
 		},
-		"invalid: bad owner address": {
-			src: MsgBuy{
-				Buyer: "foobar",
-				Orders: []*MsgBuy_Order{
-					{
-						Quantity: "1.5",
-						BidPrice: &sdk.Coin{
-							Denom:  "uregen",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire:  true,
-						DisablePartialFill: true,
-					},
-				},
-			},
-			expErr: true,
-		},
-		"invalid: bad denom": {
-			src: MsgBuy{
-				Buyer: a1.String(),
-				Orders: []*MsgBuy_Order{
-					{
-						Quantity: "1.5",
-						BidPrice: &sdk.Coin{
-							Denom:  "$$$$$",
-							Amount: sdk.NewInt(20),
-						},
-						DisableAutoRetire:  true,
-						DisablePartialFill: true,
-					},
-				},
+		"invalid address": {
+			src: MsgAllowAskDenom{
+				RootAddress:  "foobar",
+				Denom:        "uregen",
+				DisplayDenom: "regen",
+				Exponent:     6,
 			},
 			expErr: true,
 		},

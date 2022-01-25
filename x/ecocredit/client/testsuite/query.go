@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/regen-network/regen-ledger/types/testutil/cli"
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 	"github.com/regen-network/regen-ledger/x/ecocredit/client"
@@ -482,7 +482,8 @@ func (s *IntegrationTestSuite) TestQueryParams() {
 	require.NoError(err)
 
 	var params ecocredit.QueryParamsResponse
-	json.Unmarshal(out.Bytes(), &params)
+	err = json.Unmarshal(out.Bytes(), &params)
+	require.NoError(err)
 
 	require.Equal(ecocredit.DefaultParams(), *params.Params)
 }
@@ -521,14 +522,7 @@ func (s *IntegrationTestSuite) TestQuerySellOrder() {
 			args:      []string{"1"},
 			expErr:    false,
 			expErrMsg: "",
-			expOrder: &ecocredit.SellOrder{
-				OrderId:           1,
-				Owner:             val.Address.String(),
-				BatchDenom:        batchDenom,
-				Quantity:          "1",
-				AskPrice:          &sdk.Coin{Denom: "regen", Amount: sdk.NewInt(100)},
-				DisableAutoRetire: false,
-			},
+			expOrder:  s.sellOrders[0],
 		},
 	}
 
