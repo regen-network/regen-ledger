@@ -128,30 +128,18 @@ func setCustomOrderInitGenesis() []string {
 	return []string{
 		// wasm after ibc transfer
 		wasm.ModuleName,
-
-		//regen experimental modules
-		group.ModuleName,
-		data.ModuleName,
 	}
 }
 
 func setCustomOrderBeginBlocker() []string {
 	return []string{
 		wasm.ModuleName,
-
-		//regen experimental modules
-		group.ModuleName,
-		data.ModuleName,
 	}
 }
 
 func setCustomOrderEndBlocker() []string {
 	return []string{
 		wasm.ModuleName,
-
-		//regen experimental modules
-		group.ModuleName,
-		data.ModuleName,
 	}
 }
 
@@ -180,7 +168,7 @@ func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
 			BankKeeper:    app.BankKeeper,
 			AccountKeeper: app.AccountKeeper,
 		},
-		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.StakingKeeper),
+		wasm.NewAppModule(app.appCodec, &app.wasmKeeper, app.StakingKeeper),
 	}
 }
 
@@ -189,5 +177,5 @@ func initCustomParamsKeeper(paramsKeeper *paramskeeper.Keeper) {
 }
 
 func (app *RegenApp) initializeCustomScopedKeepers() {
-	scopedWasmKeeper := app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
+	app.scopedWasmKeeper = app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
 }
