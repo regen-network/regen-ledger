@@ -153,39 +153,20 @@ message ProjectSequence {
 message EcocreditBalance {
     option (cosmos.orm.v1alpha1.table) = {
         id: 8,
-        primary_key: {fields: "address,batch_denom"}
+        primary_key: {fields: "address,batch_id"}
     };
 
     // address is the address of the credit holder
     string address = 1;
 
-    // batch_denom is the denom of the credit batch
-    string batch_denom = 2;
+    // batch_id is the id of the credit batch
+    uint64 batch_id = 2;
 
-    message CreditBalance {
-        string tradable = 1;
-        string retired = 2;
-    }
+    // tradable is the tradable amount of credits
+    string tradable = 3;
 
-    // balance is the balance of both tradable and retired credits
-    CreditBalance balance = 3;
-}
-
-// BasketBalance stores the amount of credits from a batch in a basket
-message BasketBalance {
-    option (cosmos.orm.v1alpha1.table) = {
-        id: 9,
-        primary_key: {fields: "basket_denom,batch_denom"}
-    };
-
-    // basket_denom is the denom of the basket
-    string basket_denom = 1;
-
-    // batch_denom is the denom of the batch
-    string batch_denom = 2;
-
-    // balance is the amount of ecocredits held in the basket
-    string balance = 3;
+    // retired is the retired amount of credits
+    string retired = 4;
 }
 
 // BatchSequence tracks the sequence number for batches within a class
@@ -206,11 +187,11 @@ message BatchSequence {
 message BatchSupply {
     option (cosmos.orm.v1alpha1.table) = {
         id: 11,
-        primary_key: {fields: "batch_denom"}
+        primary_key: {fields: "id"}
     };
 
-    // batch_denom is the denom of the batch
-    string batch_denom = 1;
+    // id is the id of the batch
+    uint64 id = 1;
 
     // total_amount is the total number of active credits in the credit batch.
     // Some of the issued credits may be cancelled and will be removed from
