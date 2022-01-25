@@ -125,18 +125,6 @@ message CreditType {
     uint32 precision = 4;
 }
 
-// CreditTypeSequence stores and increments the sequence number for credit types
-message CreditTypeSequence {
-    option (cosmos.orm.v1alpha1.table) = {
-        id: 6,
-        primary_key: {fields: "abbreviation"}
-    };
-
-    string abbreviation = 1;
-
-    uint64 id = 2;
-}
-
 // ProjectSequence stores and increments the sequence number for projects
 message ProjectSequence {
     option (cosmos.orm.v1alpha1.table) = {
