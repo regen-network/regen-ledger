@@ -34,7 +34,7 @@ message ClassInfo {
 }
 
 // ClassIssuers is a JOIN table for Class Info that stores the credit class issuers
-message ClassIssuers {
+message ClassIssuer {
     option (cosmos.orm.v1alpha1.table) = {
         id: 2,
         primary_key: {fields: "class_id"}
@@ -43,8 +43,8 @@ message ClassIssuers {
     // class_id is the unique ID of credit class.
     string class_id = 1;
 
-    // issuers are the approved issuers of the credit class.
-    repeated string issuers = 2;
+    // issuer is the approved issuer of the credit class.
+    string issuer = 2;
 }
 
 // ProjectInfo represents the high-level on-chain information for a project.
