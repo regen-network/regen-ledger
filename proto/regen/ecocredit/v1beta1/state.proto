@@ -159,7 +159,7 @@ message EcocreditBalance {
     string retired = 4;
 }
 
-// BatchSequence tracks the sequence number for batches within a class
+// BatchSequence tracks the sequence number for batches within a project
 message BatchSequence {
     option (cosmos.orm.v1alpha1.table) = {
         id: 10,
