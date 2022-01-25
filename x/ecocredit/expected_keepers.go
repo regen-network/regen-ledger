@@ -27,3 +27,8 @@ type BankKeeper interface {
 	SendCoinsFromAccountToModule(ctx sdk.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error
 	SendCoins(ctx sdk.Context, fromAddr sdk.AccAddress, toAddr sdk.AccAddress, amt sdk.Coins) error
 }
+
+// Keeper defines the expected interface needed to prune expired buy and sell orders.
+type Keeper interface {
+	PruneOrders(ctx sdk.Context) error
+}
