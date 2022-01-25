@@ -37,7 +37,7 @@ message ClassInfo {
 message ClassIssuer {
     option (cosmos.orm.v1alpha1.table) = {
         id: 2,
-        primary_key: {fields: "class_id"}
+        primary_key: {fields: "class_id,issuer"}
     };
 
     // class_id is the unique ID of credit class.
@@ -79,7 +79,8 @@ message BatchInfo {
 
     option (cosmos.orm.v1alpha1.table) = {
         id: 4,
-        primary_key: {fields: "batch_denom"}
+        primary_key: {fields: "id", auto_increment: true}
+        index: {fields: "batch_denom", unique: true}
         index: {id: 1 fields: "project_id"}
         index: {id: 2 fields: "start_date"}
     };
