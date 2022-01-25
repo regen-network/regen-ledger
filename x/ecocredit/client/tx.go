@@ -6,16 +6,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"strconv"
+	"strings"
+
 	sdkclient "github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/spf13/cobra"
-	"io/ioutil"
 	"sigs.k8s.io/yaml"
-	"strconv"
-	"strings"
 
 	"github.com/regen-network/regen-ledger/x/ecocredit"
 )
@@ -734,9 +735,6 @@ Parameters:
 					}
 					orders[i].Expiration = &expiration
 				}
-				//if err := setExpiration(order.Expiration, orders[i].Expiration); err != nil {
-				//	return nil
-				//}
 			}
 
 			// create buy message
@@ -826,14 +824,3 @@ func decodeMetadata(metadataStr string) ([]byte, error) {
 
 	return b, nil
 }
-
-//func setExpiration(expiration string, dest *time.Time) error {
-//	if expiration != "" {
-//		parsed, err := ParseDate("expiration", expiration)
-//		if err != nil {
-//			return err
-//		}
-//		*dest = parsed
-//	}
-//	return nil
-//}
