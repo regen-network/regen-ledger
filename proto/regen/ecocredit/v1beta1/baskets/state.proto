@@ -14,7 +14,7 @@ message BasketBalance {
     // basket_denom is the denom of the basket
     string basket_denom = 1;
 
-    // batch_id is the denom of the batch
+    // batch_id is the id of the credit batch
     uint64 batch_id = 2;
 
     // balance is the amount of ecocredits held in the basket
