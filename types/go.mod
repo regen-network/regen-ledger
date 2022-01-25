@@ -8,7 +8,7 @@ require (
 	github.com/cosmos/cosmos-sdk/orm v1.0.0-alpha.1
 	github.com/gogo/protobuf v1.3.3
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/regen-network/regen-ledger/api v0.0.0
+	github.com/regen-network/regen-ledger/api v0.1.0-alpha.1
 	github.com/spf13/cobra v1.2.1
 	github.com/stretchr/testify v1.7.0
 	github.com/tendermint/tendermint v0.34.13
