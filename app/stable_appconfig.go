@@ -58,7 +58,7 @@ func setCustomOrderEndBlocker() []string {
 
 func (app *RegenApp) registerUpgradeHandlers() {}
 
-func (app *RegenApp) setCustomAnteHandler(encCfg simappparams.EncodingConfig, wasmKey *sdk.KVStoreKey) (sdk.AnteHandler, error) {
+func (app *RegenApp) setCustomAnteHandler(encCfg simappparams.EncodingConfig, wasmKey *sdk.KVStoreKey, _ *wasm.Config) (sdk.AnteHandler, error) {
 	return ante.NewAnteHandler(
 		ante.HandlerOptions{
 			AccountKeeper:   app.AccountKeeper,

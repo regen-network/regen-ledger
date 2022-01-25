@@ -143,7 +143,8 @@ func setCustomOrderEndBlocker() []string {
 	}
 }
 
-func (app *RegenApp) setCustomAnteHandler(encCfg simappparams.EncodingConfig, wasmKey *sdk.KVStoreKey) (sdk.AnteHandler, error) {
+func (app *RegenApp) setCustomAnteHandler(encCfg simappparams.EncodingConfig,
+	wasmKey *sdk.KVStoreKey, wasmCfg *wasm.Config) (sdk.AnteHandler, error) {
 	return NewAnteHandler(
 		HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
@@ -154,7 +155,7 @@ func (app *RegenApp) setCustomAnteHandler(encCfg simappparams.EncodingConfig, wa
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 			},
 			IBCChannelkeeper:  app.IBCKeeper.ChannelKeeper,
-			WasmConfig:        &app.wasmCfg,
+			WasmConfig:        wasmCfg,
 			TXCounterStoreKey: wasmKey,
 		},
 	)
@@ -168,7 +169,6 @@ func (app *RegenApp) setCustomSimulationManager() []module.AppModuleSimulation {
 			BankKeeper:    app.BankKeeper,
 			AccountKeeper: app.AccountKeeper,
 		},
-		wasm.NewAppModule(app.appCodec, &app.wasmKeeper, app.StakingKeeper),
 	}
 }
 
