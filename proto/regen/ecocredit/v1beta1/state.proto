@@ -82,7 +82,7 @@ message BatchInfo {
         index: {id: 2 fields: "start_date"}
     };
 
-    // id is a an incrementing integer to identify the batch
+    // id is an auto-incrementing integer to succinctly identify the batch
     uint64 id = 1;
 
     // project_id is the unique ID of the project this batch belongs to.
