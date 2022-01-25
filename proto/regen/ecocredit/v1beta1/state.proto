@@ -195,14 +195,17 @@ message BatchSupply {
     // id is the id of the batch
     uint64 id = 1;
 
-    // total_amount is the total number of active credits in the credit batch.
+    // tradable_amount is the total number of tradable credits in the credit batch.
     // Some of the issued credits may be cancelled and will be removed from
-    // total_amount and tracked in amount_cancelled. total_amount and
+    // tradable_amount and tracked in amount_cancelled. tradable_amount + retired_amount +
     // amount_cancelled will always sum to the original credit issuance amount.
-    string total_amount = 2;
+    string tradable_amount = 2;
+
+    // retired_amount is the total amount of credits that have been retired from the credit batch.
+    string retired_amount = 3;
 
     // cancelled_amount is the number of credits in the batch that have been
     // cancelled, effectively undoing the issuance. The sum of total_amount and
     // amount_cancelled will always equal the original credit issuance amount.
-    string cancelled_amount = 3;
+    string cancelled_amount = 4;
 }
