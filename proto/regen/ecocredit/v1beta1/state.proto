@@ -162,13 +162,8 @@ message EcocreditBalance {
     // batch_denom is the denom of the credit batch
     string batch_denom = 2;
 
-    message CreditBalance {
         string tradable = 1;
         string retired = 2;
-    }
-
-    // balance is the balance of both tradable and retired credits
-    CreditBalance balance = 3;
 }
 
 // BasketBalance stores the amount of credits from a batch in a basket
