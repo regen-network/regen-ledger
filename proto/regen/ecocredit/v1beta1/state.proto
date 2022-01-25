@@ -144,6 +144,7 @@ message EcocreditBalance {
     option (cosmos.orm.v1alpha1.table) = {
         id: 8,
         primary_key: {fields: "address,batch_id"}
+        index: {id: 1, fields: "batch_id,address"}
     };
 
     // address is the address of the credit holder
