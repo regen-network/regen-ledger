@@ -581,6 +581,11 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 
 	for i, order := range req.Orders {
 
+		// verify expiration is in the future
+		if order.Expiration != nil && order.Expiration.Before(ctx.BlockTime()) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
+		}
+
 		err = verifyCreditBalance(store, ownerAddr, order.BatchDenom, order.Quantity)
 		if err != nil {
 			return nil, err
@@ -588,28 +593,19 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 
 		// TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
 
-		orderID := s.sellOrderTable.Sequence().PeekNextVal(ctx)
-
-		sellOrderIds[i] = orderID
-
-		_, err = s.sellOrderTable.Create(ctx, &ecocredit.SellOrder{
-			Owner:             owner,
-			OrderId:           orderID,
-			BatchDenom:        order.BatchDenom,
-			Quantity:          order.Quantity,
-			AskPrice:          order.AskPrice,
-			DisableAutoRetire: order.DisableAutoRetire,
-		})
+		orderID, err := s.createSellOrder(ctx, owner, order)
 		if err != nil {
 			return nil, err
 		}
 
+		sellOrderIds[i] = orderID
 		err = ctx.EventManager().EmitTypedEvent(&ecocredit.EventSell{
 			OrderId:           orderID,
 			BatchDenom:        order.BatchDenom,
 			Quantity:          order.Quantity,
 			AskPrice:          order.AskPrice,
 			DisableAutoRetire: order.DisableAutoRetire,
+			Expiration:        order.Expiration,
 		})
 		if err != nil {
 			return nil, err
@@ -619,6 +615,20 @@ func (s serverImpl) Sell(goCtx context.Context, req *ecocredit.MsgSell) (*ecocre
 	}
 
 	return &ecocredit.MsgSellResponse{SellOrderIds: sellOrderIds}, nil
+}
+
+func (s serverImpl) createSellOrder(ctx types.Context, owner string, o *ecocredit.MsgSell_Order) (uint64, error) {
+	orderID := s.sellOrderTable.Sequence().PeekNextVal(ctx)
+	_, err := s.sellOrderTable.Create(ctx, &ecocredit.SellOrder{
+		Owner:             owner,
+		OrderId:           orderID,
+		BatchDenom:        o.BatchDenom,
+		Quantity:          o.Quantity,
+		AskPrice:          o.AskPrice,
+		DisableAutoRetire: o.DisableAutoRetire,
+		Expiration:        o.Expiration,
+	})
+	return orderID, err
 }
 
 // UpdateSellOrders updates existing sell orders for credits
@@ -634,13 +644,18 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 
 	for _, update := range req.Updates {
 
+		// verify expiration is in the future
+		if update.NewExpiration != nil && update.NewExpiration.Before(ctx.BlockTime()) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", update.NewExpiration)
+		}
+
 		sellOrder, err := s.getSellOrder(ctx, update.SellOrderId)
 		if err != nil {
 			return nil, ecocredit.ErrInvalidSellOrder.Wrapf("sell order id %d not found", update.SellOrderId)
 		}
 
 		if req.Owner != sellOrder.Owner {
-			return nil, sdkerrors.ErrUnauthorized.Wrapf("signer is not the owner of sell order id %d",  update.SellOrderId)
+			return nil, sdkerrors.ErrUnauthorized.Wrapf("signer is not the owner of sell order id %d", update.SellOrderId)
 		}
 
 		// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
@@ -653,6 +668,7 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 		sellOrder.Quantity = update.NewQuantity
 		sellOrder.AskPrice = update.NewAskPrice
 		sellOrder.DisableAutoRetire = update.DisableAutoRetire
+		sellOrder.Expiration = update.NewExpiration
 
 		err = s.sellOrderTable.Update(ctx, sellOrder.OrderId, sellOrder)
 		if err != nil {
@@ -666,6 +682,7 @@ func (s serverImpl) UpdateSellOrders(goCtx context.Context, req *ecocredit.MsgUp
 			NewQuantity:       sellOrder.Quantity,
 			NewAskPrice:       sellOrder.AskPrice,
 			DisableAutoRetire: sellOrder.DisableAutoRetire,
+			NewExpiration:     sellOrder.Expiration,
 		})
 		if err != nil {
 			return nil, err
@@ -692,6 +709,11 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 	buyOrderIds := make([]uint64, len(req.Orders))
 
 	for i, order := range req.Orders {
+
+		// verify expiration is in the future
+		if order.Expiration != nil && order.Expiration.Before(ctx.BlockTime()) {
+			return nil, sdkerrors.ErrInvalidRequest.Wrapf("expiration must be in the future: %s", order.Expiration)
+		}
 
 		balances := s.bankKeeper.SpendableCoins(sdkCtx, buyerAddr)
 		bidPrice := order.BidPrice
@@ -777,12 +799,29 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 				return nil, err
 			}
 
+			// error if auto-retire is required for given sell order
+			if !sellOrder.DisableAutoRetire && order.DisableAutoRetire {
+				return nil, ecocredit.ErrInvalidBuyOrder.Wrapf("auto-retire is required for sell order %d", sellOrder.OrderId)
+			}
+
+			// error if auto-retire is required and missing location
+			if !sellOrder.DisableAutoRetire && order.RetirementLocation == "" {
+				return nil, ecocredit.ErrInvalidBuyOrder.Wrapf("retirement location is required for sell order %d", sellOrder.OrderId)
+			}
+
+			// declare credit for send message
 			credit := &ecocredit.MsgSend_SendCredits{
-				BatchDenom:     sellOrder.BatchDenom,
-				TradableAmount: creditsToReceive.String(),
-				// TODO: handle auto-retire settings #621
-				RetiredAmount: "0",
-				//RetirementLocation: retirementLocation,
+				BatchDenom: sellOrder.BatchDenom,
+			}
+
+			// set tradable or retired amount depending on auto-retire
+			if sellOrder.DisableAutoRetire && order.DisableAutoRetire {
+				credit.RetiredAmount = "0"
+				credit.TradableAmount = creditsToReceive.String()
+			} else {
+				credit.RetiredAmount = creditsToReceive.String()
+				credit.RetirementLocation = order.RetirementLocation
+				credit.TradableAmount = "0"
 			}
 
 			// send credits to the buyer account
@@ -825,6 +864,8 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 				BidPrice:           order.BidPrice,
 				DisableAutoRetire:  order.DisableAutoRetire,
 				DisablePartialFill: order.DisablePartialFill,
+				RetirementLocation: order.RetirementLocation,
+				Expiration:         order.Expiration,
 			})
 			if err != nil {
 				return nil, err
@@ -852,6 +893,26 @@ func (s serverImpl) Buy(goCtx context.Context, req *ecocredit.MsgBuy) (*ecocredi
 	}
 
 	return &ecocredit.MsgBuyResponse{BuyOrderIds: buyOrderIds}, nil
+}
+
+func (s serverImpl) createBuyOrder(ctx types.Context, buyer string, o *ecocredit.MsgBuy_Order) (uint64, error) {
+	orderID := s.buyOrderTable.Sequence().PeekNextVal(ctx)
+	selection := ecocredit.BuyOrder_Selection{
+		Sum: &ecocredit.BuyOrder_Selection_SellOrderId{
+			SellOrderId: o.Selection.GetSellOrderId(),
+		},
+	}
+	_, err := s.buyOrderTable.Create(ctx, &ecocredit.BuyOrder{
+		Buyer:              buyer,
+		BuyOrderId:         orderID,
+		Selection:          &selection,
+		Quantity:           o.Quantity,
+		BidPrice:           o.BidPrice,
+		DisableAutoRetire:  o.DisableAutoRetire,
+		DisablePartialFill: o.DisablePartialFill,
+		Expiration:         o.Expiration,
+	})
+	return orderID, err
 }
 
 // AllowAskDenom adds a new ask denom

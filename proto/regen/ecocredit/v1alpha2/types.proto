@@ -156,6 +156,10 @@ message SellOrder {
   // buyer to disable auto-retirement in their buy order enabling them to
   // resell the credits to another buyer.
   bool disable_auto_retire = 6;
+
+  // expiration is an optional timestamp when the sell order expires. When the
+  // expiration time is reached, the sell order is removed from state.
+  google.protobuf.Timestamp expiration = 7 [ (gogoproto.stdtime) = true ];
 }
 
 // BuyOrder represents the information for a buy order.
@@ -209,6 +213,10 @@ message BuyOrder {
   // disable_partial_fill disables the default behavior of partially filling
   // buy orders if the requested quantity is not available.
   bool disable_partial_fill = 7;
+
+  // expiration is the optional timestamp when the buy order expires. When the
+  // expiration time is reached, the buy order is removed from state.
+  google.protobuf.Timestamp expiration = 8 [ (gogoproto.stdtime) = true ];
 }
 
 // AskDenom represents the information for an ask denom.

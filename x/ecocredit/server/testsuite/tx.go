@@ -17,6 +17,9 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 	// TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
 	//askPrice2 := sdk.NewInt64Coin("token", 1000000)
 
+	expiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
+	invalidExpiration := time.Date(2020, 01, 01, 0, 0, 0, 0, time.UTC)
+
 	// create sell orders
 	testCases := []struct {
 		name    string
@@ -34,12 +37,14 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 					Quantity:          "1.0",
 					AskPrice:          &askPrice1,
 					DisableAutoRetire: true,
+					Expiration:        &expiration,
 				},
 				{
 					BatchDenom:        "A00-00000000-00000000-000",
 					Quantity:          "1.0",
 					AskPrice:          &askPrice1,
 					DisableAutoRetire: true,
+					Expiration:        &expiration,
 				},
 			},
 			expErr:  "insufficient credit balance",
@@ -54,15 +59,39 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 					Quantity:          "99",
 					AskPrice:          &askPrice1,
 					DisableAutoRetire: true,
+					Expiration:        &expiration,
 				},
 				{
 					BatchDenom:        createBatchRes.BatchDenom,
 					Quantity:          "99",
 					AskPrice:          &askPrice1,
 					DisableAutoRetire: true,
+					Expiration:        &expiration,
 				},
 			},
 			expErr:  "insufficient credit balance",
+			wantErr: true,
+		},
+		{
+			name:  "invalid expiration",
+			owner: addr1,
+			orders: []*ecocredit.MsgSell_Order{
+				{
+					BatchDenom:        createBatchRes.BatchDenom,
+					Quantity:          "1.0",
+					AskPrice:          &askPrice1,
+					DisableAutoRetire: true,
+					Expiration:        &invalidExpiration,
+				},
+				{
+					BatchDenom:        createBatchRes.BatchDenom,
+					Quantity:          "1.0",
+					AskPrice:          &askPrice1,
+					DisableAutoRetire: true,
+					Expiration:        &invalidExpiration,
+				},
+			},
+			expErr:  "expiration must be in the future",
 			wantErr: true,
 		},
 		// TODO: Verify that AskPrice.Denom is in AllowAskDenom #624
@@ -75,12 +104,14 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 		//			Quantity:          "1.0",
 		//			AskPrice:          &askPrice2,
 		//			DisableAutoRetire: true,
+		//			Expiration:        &expiration,
 		//		},
 		//		{
 		//			BatchDenom:        createBatchRes.BatchDenom,
 		//			Quantity:          "1.0",
 		//			AskPrice:          &askPrice2,
 		//			DisableAutoRetire: true,
+		//			Expiration:        &expiration,
 		//		},
 		//	},
 		//	expErr: "denom not allowed",
@@ -95,12 +126,14 @@ func (s *IntegrationTestSuite) TestScenarioCreateSellOrders() {
 					Quantity:          "1.0",
 					AskPrice:          &askPrice1,
 					DisableAutoRetire: true,
+					Expiration:        &expiration,
 				},
 				{
 					BatchDenom:        createBatchRes.BatchDenom,
 					Quantity:          "1.0",
 					AskPrice:          &askPrice1,
 					DisableAutoRetire: true,
+					Expiration:        &expiration,
 				},
 			},
 			expErr:  "",
@@ -154,6 +187,9 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 	// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
 	//askPrice2 := sdk.NewInt64Coin("token", 2000000)
 
+	expiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
+	invalidExpiration := time.Date(2020, 01, 01, 0, 0, 0, 0, time.UTC)
+
 	// create sell order
 	sellRes, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
 		Owner: addr1,
@@ -163,12 +199,14 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 				Quantity:          "1.0",
 				AskPrice:          &askPrice1,
 				DisableAutoRetire: true,
+				Expiration:        &expiration,
 			},
 			{
 				BatchDenom:        createBatchRes.BatchDenom,
 				Quantity:          "1.0",
 				AskPrice:          &askPrice1,
 				DisableAutoRetire: true,
+				Expiration:        &expiration,
 			},
 		},
 	})
@@ -191,12 +229,14 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 					NewQuantity:       "1.0",
 					NewAskPrice:       &askPrice1,
 					DisableAutoRetire: true,
+					NewExpiration:     &expiration,
 				},
 				{
 					SellOrderId:       100,
 					NewQuantity:       "1.0",
 					NewAskPrice:       &askPrice1,
 					DisableAutoRetire: true,
+					NewExpiration:     &expiration,
 				},
 			},
 			expErr:  "invalid sell order",
@@ -211,12 +251,14 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 					NewQuantity:       "1.0",
 					NewAskPrice:       &askPrice1,
 					DisableAutoRetire: true,
+					NewExpiration:     &expiration,
 				},
 				{
 					SellOrderId:       sellRes.SellOrderIds[1],
 					NewQuantity:       "1.0",
 					NewAskPrice:       &askPrice1,
 					DisableAutoRetire: true,
+					NewExpiration:     &expiration,
 				},
 			},
 			expErr:  "unauthorized",
@@ -231,15 +273,39 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 					NewQuantity:       "99",
 					NewAskPrice:       &askPrice1,
 					DisableAutoRetire: true,
+					NewExpiration:     &expiration,
 				},
 				{
 					SellOrderId:       sellRes.SellOrderIds[1],
 					NewQuantity:       "99",
 					NewAskPrice:       &askPrice1,
 					DisableAutoRetire: true,
+					NewExpiration:     &expiration,
 				},
 			},
 			expErr:  "insufficient credit balance",
+			wantErr: true,
+		},
+		{
+			name:  "invalid expiration",
+			owner: addr1,
+			updates: []*ecocredit.MsgUpdateSellOrders_Update{
+				{
+					SellOrderId:       sellRes.SellOrderIds[0],
+					NewQuantity:       "1.0",
+					NewAskPrice:       &askPrice1,
+					DisableAutoRetire: true,
+					NewExpiration:     &invalidExpiration,
+				},
+				{
+					SellOrderId:       sellRes.SellOrderIds[1],
+					NewQuantity:       "1.0",
+					NewAskPrice:       &askPrice1,
+					DisableAutoRetire: true,
+					NewExpiration:     &invalidExpiration,
+				},
+			},
+			expErr:  "expiration must be in the future",
 			wantErr: true,
 		},
 		// TODO: Verify that NewAskPrice.Denom is in AllowAskDenom #624
@@ -252,12 +318,14 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 		//			NewQuantity:       "1.0",
 		//			NewAskPrice:       &askPrice2,
 		//			DisableAutoRetire: true,
+		//			NewExpiration:     &expiration,
 		//		},
 		//		{
 		//			SellOrderId:       sellRes.SellOrderIds[1],
 		//			NewQuantity:       "1.0",
 		//			NewAskPrice:       &askPrice2,
 		//			DisableAutoRetire: true,
+		//			NewExpiration:     &expiration,
 		//		},
 		//	},
 		//	expErr: "denom not allowed",
@@ -272,12 +340,14 @@ func (s *IntegrationTestSuite) TestScenarioUpdateSellOrders() {
 					NewQuantity:       "1.0",
 					NewAskPrice:       &askPrice1,
 					DisableAutoRetire: true,
+					NewExpiration:     &expiration,
 				},
 				{
 					SellOrderId:       sellRes.SellOrderIds[1],
 					NewQuantity:       "1.0",
 					NewAskPrice:       &askPrice1,
 					DisableAutoRetire: true,
+					NewExpiration:     &expiration,
 				},
 			},
 			expErr:  "",
@@ -326,15 +396,18 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 	addr2 := s.signers[4]
 
 	// create credit class and issue credits to addr1
-	_, createBatchRes := s.createClassAndIssueBatch(addr1.String(), "4.0")
+	_, createBatchRes := s.createClassAndIssueBatch(addr1.String(), "6.0")
 
 	bidPrice1 := sdk.NewInt64Coin("stake", 1000000)
 	bidPrice2 := sdk.NewInt64Coin("stake", 9999999)
 	// TODO: Verify that BidPrice.Denom is in AllowAskDenom #624
 	//bidPrice3 := sdk.NewInt64Coin("token", 1000000)
 
+	expiration := time.Date(2030, 01, 01, 0, 0, 0, 0, time.UTC)
+	invalidExpiration := time.Date(2020, 01, 01, 0, 0, 0, 0, time.UTC)
+
 	// fund buyer account
-	s.Require().NoError(s.fundAccount(addr2, sdk.NewCoins(sdk.NewInt64Coin("stake", 3000000))))
+	s.Require().NoError(s.fundAccount(addr2, sdk.NewCoins(sdk.NewInt64Coin("stake", 5000000))))
 
 	// create sell orders
 	sellRes, err := s.msgClient.Sell(s.ctx, &ecocredit.MsgSell{
@@ -345,24 +418,40 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 				Quantity:          "1.0",
 				AskPrice:          &bidPrice1,
 				DisableAutoRetire: true,
+				Expiration:        &expiration,
 			},
 			{
 				BatchDenom:        createBatchRes.BatchDenom,
 				Quantity:          "1.0",
 				AskPrice:          &bidPrice1,
 				DisableAutoRetire: true,
+				Expiration:        &expiration,
+			},
+			{
+				BatchDenom:        createBatchRes.BatchDenom,
+				Quantity:          "1.0",
+				AskPrice:          &bidPrice1,
+				DisableAutoRetire: false,
+			},
+			{
+				BatchDenom:        createBatchRes.BatchDenom,
+				Quantity:          "1.0",
+				AskPrice:          &bidPrice1,
+				DisableAutoRetire: false,
 			},
 			{
 				BatchDenom:        createBatchRes.BatchDenom,
 				Quantity:          "1.0",
 				AskPrice:          &bidPrice1,
 				DisableAutoRetire: true,
+				Expiration:        &expiration,
 			},
 			{
 				BatchDenom:        createBatchRes.BatchDenom,
 				Quantity:          "1.0",
 				AskPrice:          &bidPrice1,
 				DisableAutoRetire: true,
+				Expiration:        &expiration,
 			},
 		},
 	})
@@ -388,12 +477,14 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 					Quantity:          "1.0",
 					BidPrice:          &bidPrice1,
 					DisableAutoRetire: true,
+					Expiration:        &expiration,
 				},
 				{
 					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: 100}},
 					Quantity:          "1.0",
 					BidPrice:          &bidPrice1,
 					DisableAutoRetire: true,
+					Expiration:        &expiration,
 				},
 			},
 			expErr:  "not found",
@@ -408,12 +499,14 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 					Quantity:          "99.99",
 					BidPrice:          &bidPrice1,
 					DisableAutoRetire: true,
+					Expiration:        &expiration,
 				},
 				{
 					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[1]}},
 					Quantity:          "99.99",
 					BidPrice:          &bidPrice1,
 					DisableAutoRetire: true,
+					Expiration:        &expiration,
 				},
 			},
 			expErr:  "insufficient balance",
@@ -428,15 +521,39 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 					Quantity:          "1.0",
 					BidPrice:          &bidPrice2,
 					DisableAutoRetire: true,
+					Expiration:        &expiration,
 				},
 				{
 					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[1]}},
 					Quantity:          "1.0",
 					BidPrice:          &bidPrice2,
 					DisableAutoRetire: true,
+					Expiration:        &expiration,
 				},
 			},
 			expErr:  "insufficient balance",
+			wantErr: true,
+		},
+		{
+			name:  "invalid expiration",
+			buyer: addr2.String(),
+			orders: []*ecocredit.MsgBuy_Order{
+				{
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[0]}},
+					Quantity:          "1.0",
+					BidPrice:          &bidPrice1,
+					DisableAutoRetire: true,
+					Expiration:        &invalidExpiration,
+				},
+				{
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[1]}},
+					Quantity:          "1.0",
+					BidPrice:          &bidPrice1,
+					DisableAutoRetire: true,
+					Expiration:        &invalidExpiration,
+				},
+			},
+			expErr:  "expiration must be in the future",
 			wantErr: true,
 		},
 		// TODO: Verify that BidPrice.Denom is in AllowAskDenom #624
@@ -449,17 +566,59 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 		//			Quantity:          "1.0",
 		//			BidPrice:          &bidPrice3,
 		//			DisableAutoRetire: true,
+		//			Expiration: &expiration,
 		//		},
 		//		{
 		//			Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[1]}},
 		//			Quantity:          "1.0",
 		//			BidPrice:          &bidPrice3,
 		//			DisableAutoRetire: true,
+		//			Expiration: &expiration,
 		//		},
 		//	},
 		//	expErr: "denom not allowed",
 		//	wantErr: true,
 		//},
+		{
+			name:  "auto-retire is required for sell order",
+			buyer: addr2.String(),
+			orders: []*ecocredit.MsgBuy_Order{
+				{
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[2]}},
+					Quantity:          "1.0",
+					BidPrice:          &bidPrice1,
+					DisableAutoRetire: true,
+				},
+				{
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[3]}},
+					Quantity:          "1.0",
+					BidPrice:          &bidPrice1,
+					DisableAutoRetire: true,
+				},
+			},
+			expErr:  "auto-retire is required for sell order",
+			wantErr: true,
+		},
+		{
+			name:  "retirement location is required for sell order",
+			buyer: addr2.String(),
+			orders: []*ecocredit.MsgBuy_Order{
+				{
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[2]}},
+					Quantity:          "1.0",
+					BidPrice:          &bidPrice1,
+					DisableAutoRetire: false,
+				},
+				{
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[3]}},
+					Quantity:          "1.0",
+					BidPrice:          &bidPrice1,
+					DisableAutoRetire: false,
+				},
+			},
+			expErr:  "retirement location is required for sell order",
+			wantErr: true,
+		},
 		{
 			name:  "valid request",
 			buyer: addr2.String(),
@@ -469,12 +628,42 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 					Quantity:          "1.0",
 					BidPrice:          &bidPrice1,
 					DisableAutoRetire: true,
+					Expiration:        &expiration,
 				},
 				{
 					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[1]}},
 					Quantity:          "1.0",
 					BidPrice:          &bidPrice1,
 					DisableAutoRetire: true,
+					Expiration:        &expiration,
+				},
+			},
+			expErr:  "",
+			wantErr: false,
+			partial: false,
+			expCoinBalance: sdk.Coin{
+				Denom:  "stake",
+				Amount: sdk.NewInt(3000000),
+			},
+			expCreditBalance: &ecocredit.QueryBalanceResponse{TradableAmount: "2", RetiredAmount: "0"},
+		},
+		{
+			name:  "valid request - auto-retire",
+			buyer: addr2.String(),
+			orders: []*ecocredit.MsgBuy_Order{
+				{
+					Selection:          &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[2]}},
+					Quantity:           "1.0",
+					BidPrice:           &bidPrice1,
+					DisableAutoRetire:  false,
+					RetirementLocation: "AB",
+				},
+				{
+					Selection:          &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[3]}},
+					Quantity:           "1.0",
+					BidPrice:           &bidPrice1,
+					DisableAutoRetire:  false,
+					RetirementLocation: "AB",
 				},
 			},
 			expErr:  "",
@@ -484,23 +673,25 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 				Denom:  "stake",
 				Amount: sdk.NewInt(1000000),
 			},
-			expCreditBalance: &ecocredit.QueryBalanceResponse{TradableAmount: "2", RetiredAmount: "0"},
+			expCreditBalance: &ecocredit.QueryBalanceResponse{TradableAmount: "2", RetiredAmount: "2"},
 		},
 		{
 			name:  "valid request - partial fill",
 			buyer: addr2.String(),
 			orders: []*ecocredit.MsgBuy_Order{
 				{
-					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[2]}},
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[4]}},
 					Quantity:          "0.5",
 					BidPrice:          &bidPrice1,
 					DisableAutoRetire: true,
+					Expiration:        &expiration,
 				},
 				{
-					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[3]}},
+					Selection:         &ecocredit.MsgBuy_Order_Selection{Sum: &ecocredit.MsgBuy_Order_Selection_SellOrderId{SellOrderId: sellRes.SellOrderIds[5]}},
 					Quantity:          "0.5",
 					BidPrice:          &bidPrice1,
 					DisableAutoRetire: true,
+					Expiration:        &expiration,
 				},
 			},
 			expErr:  "",
@@ -510,7 +701,7 @@ func (s *IntegrationTestSuite) TestScenarioCreateBuyOrders() {
 				Denom:  "stake",
 				Amount: sdk.NewInt(0),
 			},
-			expCreditBalance: &ecocredit.QueryBalanceResponse{TradableAmount: "3", RetiredAmount: "0"},
+			expCreditBalance: &ecocredit.QueryBalanceResponse{TradableAmount: "3", RetiredAmount: "2"},
 		},
 	}
 
