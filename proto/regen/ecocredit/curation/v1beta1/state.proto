@@ -4,16 +4,29 @@ package regen.ecocredit.curation.v1beta1;
 
 import "cosmos/orm/v1alpha1/orm.proto";
 
+message TagSet {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 1,
+    primary_key: {fields: "id", auto_increment: true}
+    index: {id: 1, fields: "curator"}
+  };
+
+  uint64 id = 1;
+  string curator = 2;
+  string domain_name = 3;
+}
+
 message TagDefinition {
   option (cosmos.orm.v1alpha1.table) = {
     id: 1,
     primary_key: {fields: "id", auto_increment: true}
-    index: {id: 1, fields: "owner_address"}
+    index: {id: 1, fields: "tag_set,name", unique: true}
   };
 
   uint64 id = 1;
-  bytes owner_address = 2;
-  bytes metadata = 3;
+  uint64 tag_set = 2;
+  string name = 3;
+  bytes metadata = 4;
 }
 
 // NumericAttributeDefinition allows curators to define numeric attributes
