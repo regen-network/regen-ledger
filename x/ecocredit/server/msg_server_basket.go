@@ -122,12 +122,9 @@ func (s serverImpl) AddToBasket(goCtx context.Context, req *ecocredit.MsgAddToBa
 			return nil, err
 		}
 
-		// TODO(Tyler): enforce criteria
-		if basket.BasketCriteria != nil {
-			// check that the credits meet the filter
-			if err = checkFilterMatch(basket.BasketCriteria, *classInfo, batchInfo, *projectInfo, req.Owner); err != nil {
-				return nil, err
-			}
+		// check that the credits meet the filter
+		if err = checkFilterMatch(basket.BasketCriteria, *classInfo, batchInfo, *projectInfo, req.Owner); err != nil {
+			return nil, err
 		}
 
 		totalCreditsDeposited, err = totalCreditsDeposited.Add(creditsToDeposit)
@@ -209,6 +206,13 @@ func (s serverImpl) TakeFromBasket(goCtx context.Context, req *ecocredit.MsgTake
 	// check they have enough basket tokens to complete this transaction
 	if userBalanceDec.Cmp(tokensRequiredDec) == -1 {
 		return nil, sdkerrors.ErrInsufficientFunds.Wrapf("insufficient basket token balance, got: %s, needed at least: %s", userBalanceDec.String(), tokensRequiredDec.String())
+	}
+
+	// check that there's enough credits to make the transaction. we can use the bank supply to check this
+
+	basketTokenSupply := regenmath.NewDecFromInt64(s.bankKeeper.GetSupply(sdkCtx, basket.BasketDenom).Amount.Int64())
+	if basketTokenSupply.Cmp(tokensRequiredDec) == -1 {
+		return nil, sdkerrors.ErrInsufficientFunds.Wrapf("basket does not have enough credits to fulfil the order")
 	}
 
 	creditsInBasket := make([]struct {

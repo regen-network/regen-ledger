@@ -2,6 +2,7 @@ package testsuite
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"github.com/stretchr/testify/suite"
@@ -271,40 +272,37 @@ func (s *IntegrationTestSuite) TestScenario() {
 	// create class with sufficient funds and it should succeed
 	s.Require().NoError(s.fundAccount(admin, sdk.NewCoins(sdk.NewInt64Coin("stake", 4*ecocredit.DefaultCreditClassFeeTokens.Int64()))))
 
-	// Run multiple tests to test the CreditTypeSeqs
-	createClassTestCases := []struct {
-		creditType      string
-		expectedClassID string
-	}{
-		{
-			creditType:      "carbon",
-			expectedClassID: "C07",
-		},
-		{
-			creditType:      "biodiversity",
-			expectedClassID: "BIO04",
-		},
-		{
-			creditType:      "biodiversity",
-			expectedClassID: "BIO05",
-		},
-		{
-			creditType:      "carbon",
-			expectedClassID: "C08",
-		},
-	}
+	createClassTestCases := []string{"carbon", "biodiversity"}
 
-	for _, tc := range createClassTestCases {
+	for _, ctype := range createClassTestCases {
 		createClsRes, err = s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
 			Admin:          admin.String(),
 			Issuers:        []string{issuer1, issuer2},
 			Metadata:       nil,
-			CreditTypeName: tc.creditType,
+			CreditTypeName: ctype,
 		})
 		s.Require().NoError(err)
 		s.Require().NotNil(createClsRes)
 
-		s.Require().Equal(tc.expectedClassID, createClsRes.ClassId)
+		createClsRes2, err := s.msgClient.CreateClass(s.ctx, &ecocredit.MsgCreateClass{
+			Admin:          admin.String(),
+			Issuers:        []string{issuer1, issuer2},
+			Metadata:       nil,
+			CreditTypeName: ctype,
+		})
+		s.Require().NoError(err)
+		s.Require().NotNil(createClsRes2)
+
+		id1 := createClsRes.ClassId
+		id2 := createClsRes2.ClassId
+
+		// check that the sequence number at the end of the classId was incremented
+		seq1, err := strconv.Atoi(id1[len(id1)-2:])
+		s.Require().NoError(err)
+		seq2, err := strconv.Atoi(id2[len(id2)-2:])
+		s.Require().NoError(err)
+
+		s.Require().Equal(seq1+1, seq2)
 	}
 
 	// create project
