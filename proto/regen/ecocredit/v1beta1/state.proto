@@ -144,9 +144,11 @@ message ProjectSequence {
         primary_key: {fields: "project_id"}
     };
 
+    // project_id is the id of the project
     string project_id = 1;
 
-    uint64 id = 2;
+    // next_id is the sequence number for the project
+    uint64 next_id = 2;
 }
 
 // EcocreditBalance stores each users credit balance
