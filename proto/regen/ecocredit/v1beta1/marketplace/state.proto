@@ -5,6 +5,7 @@ package regen.ecocredit.v1beta1.marketplace;
 import "cosmos/orm/v1alpha1/orm.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "google/protobuf/timestamp.proto";
+import "gogoproto/gogo.proto";
 
 // SellOrder represents the information for a sell order.
 message SellOrder {

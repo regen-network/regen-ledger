@@ -123,3 +123,8 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignData) (
 
 	return &data.MsgSignDataResponse{}, nil
 }
+
+func (s serverImpl) RegisterResolver(ctx context.Context, resolver *data.MsgRegisterResolver) (*data.MsgRegisterResolverResponse, error) {
+	//TODO implement me
+	panic("implement me")
+}

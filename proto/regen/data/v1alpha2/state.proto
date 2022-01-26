@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package regen.data.v1alpha2;
+
+import "cosmos/orm/v1alpha1/orm.proto";
+import "google/protobuf/timestamp.proto";
+
+message DataID {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 1
+    primary_key: {fields: "id", auto_increment: true}
+    index:{id:1, fields:"iri", unique:true}
+  };
+
+  bytes id = 1;
+  string iri = 2;
+}
+
+message DataAnchor {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 2
+    primary_key: {fields: "id", auto_increment: true}
+  };
+
+  bytes id = 1;
+  google.protobuf.Timestamp timestamp = 2;
+}
+
+message DataSigner {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 3
+    primary_key: {fields: "id", auto_increment: true}
+  };
+
+  bytes id = 1;
+  string signer = 2;
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+message ResolverURL {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 4
+    primary_key: {fields: "id", auto_increment: true}
+  };
+
+  uint64 id = 1;
+  string url = 2;
+}
+
+message DataResolver {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 5
+    primary_key: {fields: "data_id,resolver_id"}
+  };
+
+  uint64 data_id = 1;
+  uint64 resolver_id = 2;
+}

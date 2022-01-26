@@ -50,6 +50,7 @@ type MsgClient interface {
 	// SignData can be called multiple times for the same content hash with different
 	// signers and those signers will be appended to the list of signers.
 	SignData(ctx context.Context, in *MsgSignData, opts ...grpc.CallOption) (*MsgSignDataResponse, error)
+	RegisterResolver(ctx context.Context, in *MsgRegisterResolver, opts ...grpc.CallOption) (*MsgRegisterResolverResponse, error)
 }
 
 type msgClient struct {
@@ -72,6 +73,15 @@ func (c *msgClient) AnchorData(ctx context.Context, in *MsgAnchorData, opts ...g
 func (c *msgClient) SignData(ctx context.Context, in *MsgSignData, opts ...grpc.CallOption) (*MsgSignDataResponse, error) {
 	out := new(MsgSignDataResponse)
 	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Msg/SignData", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) RegisterResolver(ctx context.Context, in *MsgRegisterResolver, opts ...grpc.CallOption) (*MsgRegisterResolverResponse, error) {
+	out := new(MsgRegisterResolverResponse)
+	err := c.cc.Invoke(ctx, "/regen.data.v1alpha2.Msg/RegisterResolver", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -110,6 +120,7 @@ type MsgServer interface {
 	// SignData can be called multiple times for the same content hash with different
 	// signers and those signers will be appended to the list of signers.
 	SignData(context.Context, *MsgSignData) (*MsgSignDataResponse, error)
+	RegisterResolver(context.Context, *MsgRegisterResolver) (*MsgRegisterResolverResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -122,6 +133,9 @@ func (UnimplementedMsgServer) AnchorData(context.Context, *MsgAnchorData) (*MsgA
 }
 func (UnimplementedMsgServer) SignData(context.Context, *MsgSignData) (*MsgSignDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignData not implemented")
+}
+func (UnimplementedMsgServer) RegisterResolver(context.Context, *MsgRegisterResolver) (*MsgRegisterResolverResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegisterResolver not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -172,6 +186,24 @@ func _Msg_SignData_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_RegisterResolver_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgRegisterResolver)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).RegisterResolver(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/regen.data.v1alpha2.Msg/RegisterResolver",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).RegisterResolver(ctx, req.(*MsgRegisterResolver))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -186,6 +218,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SignData",
 			Handler:    _Msg_SignData_Handler,
+		},
+		{
+			MethodName: "RegisterResolver",
+			Handler:    _Msg_RegisterResolver_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
