@@ -3,25 +3,198 @@ syntax = "proto3";
 package regen.ecocredit.v1beta1;
 
 import "cosmos/orm/v1alpha1/orm.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/timestamp.proto";
+
+// ClassInfo represents the high-level on-chain information for a credit class.
+message ClassInfo {
+
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 1,
+        primary_key: {fields: "class_id"}
+        index: {id: 1 fields: "admin"}
+        index: {id: 2 fields: "credit_type"}
+    };
+
+    // class_id is the unique ID of credit class.
+    string class_id = 1;
+
+    // admin is the admin of the credit class.
+    string admin = 2;
+
+    // metadata is any arbitrary metadata to attached to the credit class.
+    bytes metadata = 3;
+
+    // credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision.
+    CreditType credit_type = 4;
+}
+
+// ClassIssuers is a JOIN table for Class Info that stores the credit class issuers
+message ClassIssuer {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 2,
+        primary_key: {fields: "class_id,issuer"}
+    };
+
+    // class_id is the unique ID of credit class.
+    string class_id = 1;
+
+    // issuer is the approved issuer of the credit class.
+    string issuer = 2;
+}
+
+// ProjectInfo represents the high-level on-chain information for a project.
+message ProjectInfo {
+
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 3,
+        primary_key: {fields: "project_id"}
+        index: {id: 1 fields: "issuer"}
+        index: {id: 2 fields: "class_id"}
+    };
+
+    // project_id is the unique ID of the project.
+    string project_id = 1;
+
+    // class_id is the unique ID of credit class for this project.
+    string class_id = 2;
+
+    // issuer is the issuer of the credit batches for this project.
+    string issuer = 3;
+
+    // project_location is the location of the project.
+    // Full documentation can be found in MsgCreateProject.project_location.
+    string project_location = 4;
+
+    // metadata is any arbitrary metadata attached to the project.
+    bytes metadata = 5;
+}
+
+// BatchInfo represents the high-level on-chain information for a credit batch.
+message BatchInfo {
+
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 4,
+        primary_key: {fields: "id", auto_increment: true}
+        index: {fields: "batch_denom", unique: true}
+        index: {id: 1 fields: "project_id"}
+        index: {id: 2 fields: "start_date"}
+    };
+
+    // id is an auto-incrementing integer to succinctly identify the batch
+    uint64 id = 1;
+
+    // project_id is the unique ID of the project this batch belongs to.
+    string project_id = 2;
+
+    // batch_denom is the unique ID of credit batch.
+    string batch_denom = 3;
+
+    // metadata is any arbitrary metadata attached to the credit batch.
+    bytes metadata = 5;
+
+    // start_date is the beginning of the period during which this credit batch
+    // was quantified and verified.
+    google.protobuf.Timestamp start_date = 6 [ (gogoproto.stdtime) = true ];
+
+    // end_date is the end of the period during which this credit batch was
+    // quantified and verified.
+    google.protobuf.Timestamp end_date = 7 [ (gogoproto.stdtime) = true ];
+}
 
 // CreditType defines the measurement unit/precision of a certain credit type
 // (e.g. carbon, biodiversity...)
 message CreditType {
-  option (cosmos.orm.v1alpha1.table) = {
-    id: 1,
-    primary_key: {fields: "abbreviation"}
-  };
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 5,
+        primary_key: {fields: "abbreviation"}
+    };
 
-  // the type of credit (e.g. carbon, biodiversity, etc)
-  string name = 1;
+    // the type of credit (e.g. carbon, biodiversity, etc)
+    string name = 1;
 
-  // abbreviation is a 1-3 character uppercase abbreviation of the CreditType
-  // name, used in batch denominations within the CreditType. It must be unique.
-  string abbreviation = 2;
+    // abbreviation is a 1-3 character uppercase abbreviation of the CreditType
+    // name, used in batch denominations within the CreditType. It must be unique.
+    string abbreviation = 2;
 
-  // the measurement unit (e.g. kg, ton, etc)
-  string unit = 3;
+    // the measurement unit (e.g. kg, ton, etc)
+    string unit = 3;
 
-  // the decimal precision
-  uint32 precision = 4;
+    // the decimal precision
+    uint32 precision = 4;
+}
+
+// ProjectSequence stores and increments the sequence number for projects
+message ProjectSequence {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 7,
+        primary_key: {fields: "project_id"}
+    };
+
+    // project_id is the id of the project
+    string project_id = 1;
+
+    // next_id is the sequence number for the project
+    uint64 next_id = 2;
+}
+
+// EcocreditBalance stores each users credit balance
+message EcocreditBalance {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 8,
+        primary_key: {fields: "address,batch_id"}
+        index: {id: 1, fields: "batch_id,address"}
+    };
+
+    // address is the address of the credit holder
+    bytes address = 1;
+
+    // batch_id is the id of the credit batch
+    uint64 batch_id = 2;
+
+    // tradable is the tradable amount of credits
+    string tradable = 3;
+
+    // retired is the retired amount of credits
+    string retired = 4;
+}
+
+// BatchSequence tracks the sequence number for batches within a project
+message BatchSequence {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 9,
+        primary_key: {fields: "project_id"}
+    };
+
+    // project_id is the id of the project for a batch
+    string project_id = 1;
+
+    // num_batches is a sequence number incrementing on each issued batch
+    uint64 num_batches = 2;
+}
+
+// BatchSupply tracks the supply of a credit batch
+message BatchSupply {
+    option (cosmos.orm.v1alpha1.table) = {
+        id: 10,
+        primary_key: {fields: "id"}
+    };
+
+    // id is the id of the batch
+    uint64 id = 1;
+
+    // tradable_amount is the total number of tradable credits in the credit batch.
+    // Some of the issued credits may be cancelled and will be removed from
+    // tradable_amount and tracked in amount_cancelled. tradable_amount + retired_amount +
+    // amount_cancelled will always sum to the original credit issuance amount.
+    string tradable_amount = 2;
+
+    // retired_amount is the total amount of credits that have been retired from the credit batch.
+    string retired_amount = 3;
+
+    // cancelled_amount is the number of credits in the batch that have been
+    // cancelled, effectively undoing the issuance. The sum of total_amount and
+    // amount_cancelled will always equal the original credit issuance amount.
+    string cancelled_amount = 4;
 }
