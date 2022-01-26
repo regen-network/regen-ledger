@@ -163,7 +163,7 @@ message EcocreditBalance {
 // BatchSequence tracks the sequence number for batches within a project
 message BatchSequence {
     option (cosmos.orm.v1alpha1.table) = {
-        id: 10,
+        id: 9,
         primary_key: {fields: "project_id"}
     };
 
@@ -177,7 +177,7 @@ message BatchSequence {
 // BatchSupply tracks the supply of a credit batch
 message BatchSupply {
     option (cosmos.orm.v1alpha1.table) = {
-        id: 11,
+        id: 10,
         primary_key: {fields: "id"}
     };
 
