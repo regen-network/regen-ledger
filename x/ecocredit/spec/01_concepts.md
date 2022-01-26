@@ -53,9 +53,9 @@ Tradable credits are credits that can be transferred by the owner to another acc
 
 Retired credits are credits that cannot be transferred between accounts nor can they be unretired. Retired credits are equivalent to burned tokens with the exception that retired credits are actively tracked after being retired. Retiring a credit implies that the holder of a credit is “claiming” the credit as an offset. Credits can be retired upon issuance, retired upon transfer, and retired by the owner of the credits. The retirement location is required upon retirement.
 
-## Order Book
+## Simple Order Book
 
-The ecocredit module supports marketplace functionality using an order book model. The order book is an aggregate list of all the open buy and sell orders for ecosystem service credits. Depending on the preference of buyers and sellers, orders can be fully or partially executed and credits can be auto-retired or remain in a tradable state upon execution.
+The ecocredit module supports marketplace functionality using an order book model. The order book is an aggregate list of all the open buy and sell orders for ecosystem service credits. Depending on the preference of buyers and sellers, orders can be fully or partially executed and credits can be auto-retired or remain in a tradable state upon execution. In the current implementation of the order book, there is no automatic matching and users have to manually take the orders.
 
 ### Sell Order
 

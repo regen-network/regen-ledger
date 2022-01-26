@@ -434,20 +434,20 @@ If a user tries to create a buy order and the user provides a bid price using an
 
 ## Allow Ask Denom
 
-If a user tries to add an ask denom and the user submits a governance proposal that is approved, then the transaction is successful and the ask denom is added.
+If a user tries to add an ask denom and the user submits a governance proposal to execute the AllowAskDenom message that is approved, then the transaction is successful and the ask denom is added.
 
-- GIVEN - user submits a governance proposal that is approved
+- GIVEN - user submits a governance proposal to execute the AllowAskDenom message that is approved
 - WHEN - user tries to add an ask denom
 - THEN - transaction is successful, ask denom is added
 
-If a user tries to add an ask denom and the user submits a governance proposal that is NOT approved, then the transaction fails and the ask denom is NOT added.
+If a user tries to add an ask denom and the user submits a governance proposal to execute the AllowAskDenom message that is NOT approved, then the transaction fails and the ask denom is NOT added.
 
-- GIVEN - user provides a bid price using an ask denom that is NOT allowed
+- GIVEN - user submits a governance proposal to execute the AllowAskDenom message that is NOT approved
 - WHEN - user tries to add an ask denom
 - THEN - transaction fails, ask denom is NOT added
 
-If a user tries to add an ask denom and the user submits a transaction directly from their account, then the transaction fails and the ask denom is NOT added.
+If a user tries to add an ask denom and the user submits a transaction with the AllowAskDenom message directly from their account, then the transaction fails and the ask denom is NOT added.
 
-- GIVEN - user submits a transaction directly from their account
+- GIVEN - user tries to add an ask denom and the user submits a transaction with the AllowAskDenom message directly from their account
 - WHEN - user tries to add an ask denom
 - THEN - transaction fails, ask denom is NOT added
