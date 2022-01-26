@@ -14,6 +14,7 @@ message SellOrder {
         primary_key: {fields: "order_id"}
         index: {id: 1 fields: "batch_denom"}
         index: {id: 2 fields: "owner"}
+        index: {id: 3 fields: "expiration"}
     };
 
     // order_id is the unique ID of sell order.
@@ -50,6 +51,7 @@ message BuyOrder {
         id: 2,
         primary_key: {fields: "buy_order_id"}
         index: {id: 1 fields: "buyer"}
+        index: {id: 2 fields: "expiration"}
     };
 
     // Selection defines a buy order selection.
