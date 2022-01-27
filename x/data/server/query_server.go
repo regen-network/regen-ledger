@@ -122,3 +122,32 @@ func (s serverImpl) Signers(goCtx context.Context, request *data.QuerySignersReq
 		Pagination: pageRes,
 	}, nil
 }
+
+func (s serverImpl) Resolvers(ctx context.Context, request *data.QueryResolversRequest) (*data.QueryResolversResponse, error) {
+	s.stateStore.DataResolver()
+}
+
+func (s serverImpl) ResolverID(ctx context.Context, request *data.QueryResolverIDRequest) (*data.QueryResolverIDResponse, error) {
+	//ormtable.Paginate(DataResolverPaginationOptions{
+	//	Prefix: nil,
+	//	Start:  nil,
+	//	End:    nil,
+	//	Filter: nil,
+	//	OnItem: nil,
+	//})
+	//TODO implement me
+	panic("implement me")
+}
+
+//type DataResolverPaginationOptions struct {
+//	Prefix datav1alpha2.DataResolverIndexKey
+//	Start  datav1alpha2.DataResolverIndexKey
+//	End    datav1alpha2.DataResolverIndexKey
+//
+//	// Filter is an optional filter function that can be used to filter
+//	// the results in the underlying iterator and should return true to include
+//	// an item in the result.
+//	Filter func(message *datav1alpha2.DataResolver) bool
+//
+//	OnItem func(message *datav1alpha2.DataResolver)
+//}

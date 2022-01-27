@@ -6,13 +6,17 @@ type QueryStore interface {
 }
 
 type queryStore struct {
-	queryByIRIRequest     *queryByIRIRequestStore
-	queryByIRIResponse    *queryByIRIResponseStore
-	queryBySignerRequest  *queryBySignerRequestStore
-	queryBySignerResponse *queryBySignerResponseStore
-	contentEntry          *contentEntryStore
-	querySignersRequest   *querySignersRequestStore
-	querySignersResponse  *querySignersResponseStore
+	queryByIRIRequest       *queryByIRIRequestStore
+	queryByIRIResponse      *queryByIRIResponseStore
+	queryBySignerRequest    *queryBySignerRequestStore
+	queryBySignerResponse   *queryBySignerResponseStore
+	contentEntry            *contentEntryStore
+	querySignersRequest     *querySignersRequestStore
+	querySignersResponse    *querySignersResponseStore
+	queryResolversRequest   *queryResolversRequestStore
+	queryResolversResponse  *queryResolversResponseStore
+	queryResolverIDRequest  *queryResolverIDRequestStore
+	queryResolverIDResponse *queryResolverIDResponseStore
 }
 
 func (x queryStore) QueryByIRIRequest() QueryByIRIRequestStore {
@@ -35,6 +39,18 @@ func (x queryStore) QuerySignersRequest() QuerySignersRequestStore {
 }
 func (x queryStore) QuerySignersResponse() QuerySignersResponseStore {
 	return x.querySignersResponse
+}
+func (x queryStore) QueryResolversRequest() QueryResolversRequestStore {
+	return x.queryResolversRequest
+}
+func (x queryStore) QueryResolversResponse() QueryResolversResponseStore {
+	return x.queryResolversResponse
+}
+func (x queryStore) QueryResolverIDRequest() QueryResolverIDRequestStore {
+	return x.queryResolverIDRequest
+}
+func (x queryStore) QueryResolverIDResponse() QueryResolverIDResponseStore {
+	return x.queryResolverIDResponse
 }
 
 var _ QueryStore = queryStore{}

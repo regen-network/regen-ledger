@@ -124,8 +124,23 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignData) (
 	return &data.MsgSignDataResponse{}, nil
 }
 
-func (s serverImpl) DefineResolver(ctx context.Context, resolver *data.MsgDefineResolver) (*data.MsgDefineResolverResponse, error) {
-	s.stateStore.ResolverURL().Ge
+func (s serverImpl) DefineResolver(ctx context.Context, msg *data.MsgDefineResolver) (*data.MsgDefineResolverResponse, error) {
+	resolverUrl, err := s.stateStore.ResolverURL().GetByUrl(ctx, msg.ResolverUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	if resolverUrl != nil {
+		return nil, data.ErrResolverURLExists
+	}
+
+	resolverUrl.Url = msg.ResolverUrl
+	err = s.stateStore.ResolverURL().Insert(ctx, resolverUrl)
+	if err != nil {
+		return nil, err
+	}
+
+	return &data.MsgDefineResolverResponse{ResolverId: resolverUrl.Id}, nil
 }
 
 func (s serverImpl) RegisterResolver(ctx context.Context, resolver *data.MsgRegisterResolver) (*data.MsgRegisterResolverResponse, error) {
