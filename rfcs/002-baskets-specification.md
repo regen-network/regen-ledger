@@ -35,8 +35,8 @@ incorporate auto-issuance via smart contracts, for now it is assumed that
 credit issuance is a manual process with issuers holding full authority and
 discretion of credit issuance.
 
-Ecocredits are semi-fungible, where their fungibility is limited in volume to
-the amount issued in specific batches.
+Ecocredits are semi-fungible, where their fungibility is limited to the volume of
+credits within the specific batch they were issued in.
 
 | Example 1                                      | Example 2                     |
 |------------------------------------------------|-------------------------------|
@@ -55,7 +55,7 @@ When bringing ecocredits to market (e.g. offering them for sale on a decentraliz
 
 Baskets are intended to solve these problems, by aggregating heterogeneous ecocredits together. Baskets enable ecocredits from different batches to be deposited in a basket in exchange for redeemable vouchers, known as “basket tokens”. Any basket token is fully fungible with any other basket token from the same basket. And every basket token is redeemable for an underlying ecocredit that was originally put in the given basket.
 
-These basket tokens in aggregate hold the same value as the sum of all the underlying ecocredits in the basket, and the basket tokens can be brought to market in a more unified form for a more streamlined credit buyer experience, and for using ecocredits in high volume liquidity pools.
+These basket tokens in aggregate hold the same value as the sum of all the underlying ecocredits in the basket, and the basket tokens can be brought to market in a more unified form for a more streamlined credit buyer experience, and for using ecocredits in use cases which require more fungibility and/or higher volume.
 
 Our hope is that these basket assets increase marketability of ecocredits in the following ways:
 - Basket criteria provide market signals by curating acceptable standards
@@ -73,9 +73,9 @@ Ecocredit baskets are containers/bundles for ecocredits meeting a specific set o
 - Basket Criteria - a set of attributes an ecocredit must have in order to be added to the basket
 - Exponent (used for converting decimal ecocredits to integer bank denom)
 - _disable_auto_retire_ - boolean that determines if credits are auto-retired when removed from the basket
-- _enable_picking_ - boolean that enables or disables PickFromBasket functionality
+- _enable_picking_ - boolean that enables or disables PickFromBasket functionality, where a basket token holder can select a specific desired ecocredit batch when redeeming ecocredits from the basket
 
-In the long term, we anticipate that there may be baskets which utilize [a complex set of filter criteria](https://github.com/regen-network/regen-ledger/blob/master/proto/regen/ecocredit/v1alpha2/types.proto#L255-L326) consisting of many different ecocredit fields joined together with AND/OR operators.
+In the long term, we anticipate that there may be baskets which utilize [a complex set of filter criteria](https://github.com/regen-network/regen-ledger/blob/26cb432c298245804dd56360437f7f96977cd39b/proto/regen/ecocredit/v1alpha2/types.proto#L263-L334) consisting of many different ecocredit fields joined together with AND/OR operators.
 
 However, in the initial implementation of the basket criteria, we reduce the potential filter criteria to the following fields, which we see as the fields most needed for the initial baskets that we hope to see live:
 - Credit Type
@@ -108,11 +108,13 @@ A basket token holder may also later redeem their basket tokens in exchange for 
 - **PickFromBasket**: picking a specific set of ecocredits from discrete batches in the basket (and paying a fixed fee in REGEN that is sent to the Community Spend Pool). Future versions of PickFromBasket may allow for a portion of fees to be sent to the basket curator, and for fee amount to be set at basket instantiation.
 - **TakeFromBasket**: taking an equivalent number of ecocredits from the basket, oldest credits first based on batch start date, from one or more ecocredit batches in the basket (at no fee)
 
-This redemption process affords the possibility of arbitrage between basket tokens and ecocredits (if picking is enabled). The market may value a specific ecocredit higher than the underlying basket token price. As traders execute such arbitrage opportunities, it is expected that the basket token price should move towards the “floor price”, the average price of the lowest valued credits in a given basket. A user may also find a specific ecocredit more valuable to them for intrinsic reasons (e.g. holding an ecocredit from a specific bioregion for offsetting).
+TakeFromBasket redeems ecocredits oldest first, a mechanism which mitigates a basket's aging. A basket with considerable Take redemptions and new deposits will have a healthy cycling of credits, facilitating a freshness to the basket. 
+
+PickFromBasket (if enabled) affords the possibility of arbitrage between basket tokens and ecocredits. The market may value a specific ecocredit higher than the underlying basket token price. As traders execute such arbitrage opportunities, it is expected that the basket token price should move towards the “floor price”, the average price of the lowest valued credits in a given basket. A user may also find a specific ecocredit more valuable to them for intrinsic reasons (e.g. holding an ecocredit from a specific bioregion for offsetting).
 
 An ecocredit holder has the ability to retire, transfer, or hold their ecocredits. In the future, there could be the opportunity to create an ability to retire a basket token wherein a random underlying ecocredit would be retired on behalf of that basket token retirement (equivalent of redeeming a basket token for an ecocredit with a Take action and then retiring that taken ecocredit).
 
-#### Ecocredit Basket Depsoiting (Fig. 2)
+#### Ecocredit Basket Depositing (Fig. 2)
 
 ![](media/002-fig-2.jpg)
 
