@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package regen.ecocredit.v1beta1.marketplace;
+package regen.ecocredit.marketplace.v1beta1;
 
 import "cosmos/orm/v1alpha1/orm.proto";
 import "cosmos/base/v1beta1/coin.proto";
@@ -41,7 +41,7 @@ message SellOrder {
 
     // expiration is an optional timestamp when the sell order expires. When the
     // expiration time is reached, the sell order is removed from state.
-    google.protobuf.Timestamp expiration = 7 [ (gogoproto.stdtime) = true ];
+    google.protobuf.Timestamp expiration = 7;
 }
 
 // BuyOrder represents the information for a buy order.
@@ -105,7 +105,7 @@ message BuyOrder {
 
     // expiration is the optional timestamp when the buy order expires. When the
     // expiration time is reached, the buy order is removed from state.
-    google.protobuf.Timestamp expiration = 8 [ (gogoproto.stdtime) = true ];
+    google.protobuf.Timestamp expiration = 8;
 }
 
 // AskDenom represents the information for an ask denom.
