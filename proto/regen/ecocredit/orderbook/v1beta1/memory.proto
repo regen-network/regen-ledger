@@ -3,6 +3,7 @@ syntax = "proto3";
 package regen.ecocredit.orderbook.v1beta1;
 
 import "cosmos/orm/v1alpha1/orm.proto";
+import "regen/ecocredit/marketplace/v1beta1/types.proto";
 
 // BuyOrderAssetMatch indexes buy orders which match assets and can be
 // indexed by either buy_order_id or asset_id.
@@ -48,4 +49,15 @@ message BuyOrderSellOrderMatch {
 
   // ask_price is of the ask price encoded to a uint64. Ask prices are sorted low to high.
   uint64 ask_price = 5;
+}
+
+message BuyOrderUInt64SelectorMatch {
+  option (cosmos.orm.v1alpha1.table) = {
+    id: 1
+    primary_key: { fields: "buy_order_id,type,value" }
+  };
+
+  uint64 buy_order_id = 1;
+  regen.ecocredit.marketplace.v1beta1.SelectorType type = 2;
+  uint64 value = 3;
 }

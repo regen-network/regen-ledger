@@ -4,28 +4,18 @@ package regen.ecocredit.marketplace.v1beta1;
 
 import "google/protobuf/timestamp.proto";
 
-message Selector {
-  oneof sum {
-    // credit_type_abbrev filters against credits from this credit type abbreviation.
-    uint64 credit_type_abbrev = 3;
+message Filter {
+  // or is a list of criteria for matching credit batches. A credit which
+  // matches this filter must match at least one of these criteria.
+  repeated Criteria or = 1;
 
-    // class_id filters against credits from this credit class id.
-    uint64 class_id = 4;
-
-    // project_id filters against credits from this project.
-    string project_id = 5;
-
-    // batch_denom filters against credits from this batch.
-    string batch_denom = 6;
-
-    // class_admin filters against credits issued by this class admin.
-    string class_admin = 7;
-
-    // issuer filters against credits issued by this issuer address.
-    string issuer = 8;
-
-    // owner filters against credits currently owned by this address.
-    string owner = 9;
+  // Criteria is a simple filter criteria for matching a credit batch.
+  message Criteria {
+    // selector specifies the primary selector criteria. Every criteria
+    // must specify a selector and every selector criteria must be based on
+    // an assertion by some authority such as a credit class creator, credit
+    // issuer, seller or curator.
+    Selector selector = 1;
 
     // project_location can be specified in three levels of granularity:
     // country, sub-national-code, or postal code. If just country is given,
@@ -33,49 +23,31 @@ message Selector {
     // their project location is more specific, ex. "US-NY 12345". If
     // a country, sub-national-code and postal code are all provided then
     // only projects in that postal code will match.
-    string project_location = 10;
+    string project_location = 2;
 
-    // date_range filters against credit batch start_date and/or end_date.
-    DateRange date_range = 11;
+    // start_date is the beginning of the period during which a credit batch
+    // was quantified and verified. If it is empty then there is no start date
+    // limit.
+    google.protobuf.Timestamp min_start_date = 3;
 
-    // tag specifies a curation tag to match against.
-    string tag = 12;
+    // end_date is the end of the period during which a credit batch was
+    // quantified and verified. If it is empty then there is no end date
+    // limit.
+    google.protobuf.Timestamp end_date = 4;
   }
 }
 
 enum SelectorType {
   SELECTOR_TYPE_UNDEFINED = 0;
-  SELECTOR_TYPE_CREDIT_CLASS = 1;
+  SELECTOR_TYPE_CLASS = 1;
   SELECTOR_TYPE_PROJECT = 2;
   SELECTOR_TYPE_BATCH = 3;
 }
 
-message Filter {
-  repeated Criteria or = 1;
-
-  message Criteria {
-    SelectorType selector_type = 1;
-
-    oneof selector_value {
-      uint64 value_uint64 = 2;
-    }
-
-    // project_location can be specified in three levels of granularity:
-    // country, sub-national-code, or postal code. If just country is given,
-    // for instance "US" then any credits in the "US" will be matched even
-    // their project location is more specific, ex. "US-NY 12345". If
-    // a country, sub-national-code and postal code are all provided then
-    // only projects in that postal code will match.
-    string project_location = 3;
-
-    // start_date is the beginning of the period during which a credit batch
-    // was quantified and verified. If it is empty then there is no start date
-    // limit.
-    google.protobuf.Timestamp min_start_date = 4;
-
-    // end_date is the end of the period during which a credit batch was
-    // quantified and verified. If it is empty then there is no end date
-    // limit.
-    google.protobuf.Timestamp end_date = 5;
+message Selector {
+  SelectorType type = 1;
+  oneof sum {
+    uint64 uint64_value = 2;
   }
 }
+
