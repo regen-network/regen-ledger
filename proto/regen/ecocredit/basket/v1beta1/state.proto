@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package regen.ecocredit.v1beta1.baskets;
+package regen.ecocredit.basket.v1beta1;
 
 import "cosmos/orm/v1alpha1/orm.proto";
 
