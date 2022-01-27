@@ -132,7 +132,7 @@ message ProjectSequence {
         primary_key: {fields: "class_id"}
     };
 
-    // class_id is the id of the project
+    // class_id is the id of the credit class
     string class_id = 1;
 
     // next_id is the sequence number for the project
