@@ -11,13 +11,13 @@ message ClassInfo {
 
     option (cosmos.orm.v1alpha1.table) = {
         id: 1,
-        primary_key: {fields: "class_id"}
+        primary_key: {fields: "id", auto_increment: true}
         index: {id: 1 fields: "admin"}
         index: {id: 2 fields: "credit_type"}
     };
 
-    // class_id is the unique ID of credit class.
-    string class_id = 1;
+    // id is the unique ID of credit class.
+    uint64 id = 1;
 
     // admin is the admin of the credit class.
     string admin = 2;
@@ -48,19 +48,19 @@ message ProjectInfo {
 
     option (cosmos.orm.v1alpha1.table) = {
         id: 3,
-        primary_key: {fields: "project_id"}
-        index: {id: 1 fields: "issuer"}
-        index: {id: 2 fields: "class_id"}
+        primary_key: {fields: "id", auto_increment: true}
+        index: {id: 1 fields: "class_id,project_id", unique: true}
+        index: {id: 2 fields: "issuer"}
     };
 
-    // project_id is the unique ID of the project.
-    string project_id = 1;
+    // id is the unique ID of the project
+    uint64 id = 1;
 
-    // class_id is the unique ID of credit class for this project.
-    string class_id = 2;
+    // class_id is the ID of credit class for this project.
+    uint64 class_id = 2;
 
-    // issuer is the issuer of the credit batches for this project.
-    string issuer = 3;
+    // project_id is the unique ID of the project within its class.
+    string project_id = 3;
 
     // project_location is the location of the project.
     // Full documentation can be found in MsgCreateProject.project_location.
@@ -72,7 +72,6 @@ message ProjectInfo {
 
 // BatchInfo represents the high-level on-chain information for a credit batch.
 message BatchInfo {
-
     option (cosmos.orm.v1alpha1.table) = {
         id: 4,
         primary_key: {fields: "id", auto_increment: true}
@@ -107,21 +106,25 @@ message BatchInfo {
 message CreditType {
     option (cosmos.orm.v1alpha1.table) = {
         id: 5,
-        primary_key: {fields: "abbreviation"}
+        primary_key: {fields:"id", auto_increment: true}
+        index: {id: 1, fields: "abbreviation", unique: true}
+        index: {id: 2, fields: "name", unique: true}
     };
 
-    // the type of credit (e.g. carbon, biodiversity, etc)
-    string name = 1;
+    uint64 id = 1;
+
+    // the type of credit (e.g. carbon, biodiversity, etc). It must be unique.
+    string name = 3;
 
     // abbreviation is a 1-3 character uppercase abbreviation of the CreditType
     // name, used in batch denominations within the CreditType. It must be unique.
-    string abbreviation = 2;
+    string abbreviation = 3;
 
     // the measurement unit (e.g. kg, ton, etc)
-    string unit = 3;
+    string unit = 4;
 
     // the decimal precision
-    uint32 precision = 4;
+    uint32 precision = 5;
 }
 
 // ProjectSequence stores and increments the sequence number for projects

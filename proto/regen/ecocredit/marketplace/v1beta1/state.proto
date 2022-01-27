@@ -110,20 +110,24 @@ message BuyOrder {
 
 // AskDenom represents the information for an ask denom.
 message AskDenom {
-
     option (cosmos.orm.v1alpha1.table) = {
         id: 3,
-        primary_key: {fields: "denom"}
-        index: {id: 1 fields: "display_denom"}
+        primary_key: {fields: "id"}
+        index: {id: 1, fields: "denom", unique: true}
+        index: {id: 1 fields: "display_denom", unique: true}
     };
 
-    // denom is the denom to allow (ex. ibc/GLKHDSG423SGS)
-    string denom = 1;
+    // id is an auto-generated ID for efficiently referencing denoms in the
+    // order book.
+    uint64 id = 1;
+
+    // denom is the bank denom to allow (ex. ibc/GLKHDSG423SGS)
+    string denom = 2;
 
     // display_denom is the denom to display to the user and is informational
-    string display_denom = 2;
+    string display_denom = 3;
 
     // exponent is the exponent that relates the denom to the display_denom and is
     // informational
-    uint32 exponent = 3;
+    uint32 exponent = 4;
 }
