@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package regen.ecocredit.orderbook.v1beta1;
 
+import "google/protobuf/timestamp.proto";
 import "cosmos/orm/v1alpha1/orm.proto";
 import "regen/ecocredit/marketplace/v1beta1/types.proto";
 
@@ -51,13 +52,17 @@ message BuyOrderSellOrderMatch {
   uint64 ask_price = 5;
 }
 
-message BuyOrderUInt64SelectorMatch {
+message UInt64SelectorBuyOrder {
   option (cosmos.orm.v1alpha1.table) = {
     id: 1
     primary_key: { fields: "buy_order_id,type,value" }
+    index: {id: 1, fields: "type,value"}
   };
 
   uint64 buy_order_id = 1;
   regen.ecocredit.marketplace.v1beta1.SelectorType type = 2;
   uint64 value = 3;
+  string project_location = 4;
+  google.protobuf.Timestamp min_start_date = 5;
+  google.protobuf.Timestamp end_date = 6;
 }
