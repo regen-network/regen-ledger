@@ -3,7 +3,6 @@ syntax = "proto3";
 package regen.ecocredit.v1beta1;
 
 import "cosmos/orm/v1alpha1/orm.proto";
-import "cosmos/base/v1beta1/coin.proto";
 import "gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -126,14 +125,15 @@ message CreditType {
 }
 
 // ProjectSequence stores and increments the sequence number for projects
+// within a given credit class.
 message ProjectSequence {
     option (cosmos.orm.v1alpha1.table) = {
         id: 7,
-        primary_key: {fields: "project_id"}
+        primary_key: {fields: "class_id"}
     };
 
-    // project_id is the id of the project
-    string project_id = 1;
+    // class_id is the id of the credit class
+    string class_id = 1;
 
     // next_id is the sequence number for the project
     uint64 next_id = 2;
