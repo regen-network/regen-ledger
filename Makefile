@@ -265,12 +265,14 @@ run-tests:
 ifneq (,$(shell which tparse 2>/dev/null))
 	@echo "Unit tests"; \
 	for module in $(SUB_MODULES); do \
+		echo "Testing Module $$module"; \
 		cd ${CURRENT_DIR}/$$module; \
 		go test -mod=readonly -json $(ARGS) $(TEST_PACKAGES) ./... | tparse; \
 	done
 else
 	@echo "Unit tests"; \
 	for module in $(SUB_MODULES); do \
+		echo "Testing Module $$module"; \
 		cd ${CURRENT_DIR}/$$module; \
 		go test -mod=readonly $(ARGS) $(TEST_PACKAGES) ./... ; \
 	done
