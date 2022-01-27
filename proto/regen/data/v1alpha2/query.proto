@@ -25,6 +25,14 @@ service Query {
   rpc Signers(QuerySignersRequest) returns (QuerySignersResponse) {
     option (google.api.http).get = "/regen/data/v1alpha2/signers/{iri}";
   }
+
+  rpc Resolvers(QueryResolversRequest) returns (QueryResolversResponse) {
+    option (google.api.http).get = "/regen/data/v1alpha2/resolvers/{iri}";
+  }
+
+  rpc ResolverID(QueryResolverIDRequest) returns (QueryResolverIDResponse) {
+    option (google.api.http).get = "/regen/data/v1alpha2/resolver_id/{url}";
+  }
 }
 
 // QueryByContentHashRequest is the Query/ByContentHash request type.
@@ -87,4 +95,27 @@ message QuerySignersResponse {
 
   // pagination is the pagination PageResponse.
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryResolversRequest {
+  // iri is the content IRI
+  string iri = 1;
+
+  // pagination is the PageRequest to use for pagination.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryResolversResponse {
+  string resolver_urls = 1;
+
+  // pagination is the PageRequest to use for pagination.
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryResolverIDRequest {
+  string url = 1;
+}
+
+message QueryResolverIDResponse {
+  uint64 id = 1;
 }
