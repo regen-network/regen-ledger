@@ -124,6 +124,10 @@ func (s serverImpl) SignData(goCtx context.Context, request *data.MsgSignData) (
 	return &data.MsgSignDataResponse{}, nil
 }
 
+func (s serverImpl) DefineResolver(ctx context.Context, resolver *data.MsgDefineResolver) (*data.MsgDefineResolverResponse, error) {
+	s.stateStore.ResolverURL().Ge
+}
+
 func (s serverImpl) RegisterResolver(ctx context.Context, resolver *data.MsgRegisterResolver) (*data.MsgRegisterResolverResponse, error) {
 	//TODO implement me
 	panic("implement me")

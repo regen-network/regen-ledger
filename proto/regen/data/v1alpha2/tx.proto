@@ -40,6 +40,7 @@ service Msg {
   // signers and those signers will be appended to the list of signers.
   rpc SignData(MsgSignData) returns (MsgSignDataResponse);
 
+  rpc DefineResolver(MsgDefineResolver) returns (MsgDefineResolverResponse);
   rpc RegisterResolver(MsgRegisterResolver) returns (MsgRegisterResolverResponse);
 }
 
@@ -81,9 +82,18 @@ message MsgSignData {
 // MsgSignDataResponse is the Msg/SignData response type.
 message MsgSignDataResponse {}
 
-message MsgRegisterResolver {
+message MsgDefineResolver {
   string signer = 1;
   string resolver_url = 2;
+}
+
+message MsgDefineResolverResponse {
+  uint64 resolver_id = 1;
+}
+
+message MsgRegisterResolver {
+  string signer = 1;
+  uint64 resolver_id = 2;
   repeated ContentHash.Graph data = 3;
 }
 

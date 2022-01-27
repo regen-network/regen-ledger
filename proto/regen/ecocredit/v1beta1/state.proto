@@ -26,8 +26,8 @@ message ClassInfo {
     // metadata is any arbitrary metadata to attached to the credit class.
     bytes metadata = 3;
 
-    // credit_type describes the type of credit (e.g. carbon, biodiversity), as well as unit and precision.
-    CreditType credit_type = 4;
+    // credit_type is the abbreviation of the credit type
+    string credit_type = 4;
 }
 
 // ClassIssuers is a JOIN table for Class Info that stores the credit class issuers
@@ -77,9 +77,9 @@ message BatchInfo {
     option (cosmos.orm.v1alpha1.table) = {
         id: 4,
         primary_key: {fields: "id", auto_increment: true}
-        index: {fields: "batch_denom", unique: true}
-        index: {id: 1 fields: "project_id"}
-        index: {id: 2 fields: "start_date"}
+        index: {id: 1, fields: "batch_denom", unique: true}
+        index: {id: 2, fields: "project_id"}
+        index: {id: 3, fields: "start_date"}
     };
 
     // id is an auto-incrementing integer to succinctly identify the batch

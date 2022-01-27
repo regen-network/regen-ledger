@@ -3,6 +3,7 @@ package server
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+	datav1alpha2 "github.com/regen-network/regen-ledger/api/regen/data/v1alpha2"
 	servermodule "github.com/regen-network/regen-ledger/types/module/server"
 	"github.com/regen-network/regen-ledger/x/data"
 	"github.com/regen-network/regen-ledger/x/data/server/lookup"
@@ -11,6 +12,7 @@ import (
 type serverImpl struct {
 	storeKey   sdk.StoreKey
 	iriIDTable lookup.Table
+	stateStore datav1alpha2.StateStore
 }
 
 func newServer(storeKey sdk.StoreKey) serverImpl {
