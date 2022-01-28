@@ -1,7 +1,7 @@
 # Data Module
 
 ::: tip COMING SOON
-The data module is under active development, and is currently only available in experimental builds of Regen Network.
+The data module is under active development, and is currently only available in experimental builds of Regen Ledger.
 :::
 
 ## Abstract
