@@ -62,7 +62,7 @@ enum SelectorType {
 message Selector {
 
   // type is the selector type
-  SelectorType type = 1;
+  SelectorType selector_type = 1;
 
   // value is the oneof for selector values and varies depending on type.
   oneof value {
