@@ -115,7 +115,7 @@ message CreditType {
     uint64 id = 1;
 
     // the type of credit (e.g. carbon, biodiversity, etc). It must be unique.
-    string name = 3;
+    string name = 2;
 
     // abbreviation is a 1-3 character uppercase abbreviation of the CreditType
     // name, used in batch denominations within the CreditType. It must be unique.
